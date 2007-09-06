@@ -358,26 +358,6 @@ test:
 regression-install: config-install
 	$(PERL) -pi -e 's/Set\(\$$DatabaseName.*\);/Set\(\$$DatabaseName, "rt3regression"\);/' $(DESTDIR)/$(CONFIG_FILE)
 
-regression: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db fixperms apachectl run-regression
-
-run-regression:
-	prove -I$(LOCAL_LIB_PATH) -Ilib lib/t/setup_regression.t  lib/t/autogen/ lib/t/regression/
-
-run-cover-regression:
-	PERL5OPT=-MDevel::Cover prove -I$(LOCAL_LIB_PATH) -Ilib lib/t/setup_regression.t  lib/t/autogen/ lib/t/regression/
-
-
-regression-noapache: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db fixperms start-httpd  run-regression
-
-regression-cover: regression-install dirs files-install libs-install sbin-install bin-install regression-instruct regression-reset-db fixperms start-httpd  run-cover-regression
-
-regression-quiet:
-	$(PERL) sbin/regression_harness
-
-regression-instruct:
-	@echo "About to wipe your database for a regression test. ABORT NOW with Control-C"
-
-
 # {{{ database-installation
 
 regression-reset-db: force-dropdb

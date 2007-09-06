@@ -1519,7 +1519,7 @@ msgstr "Luo toiminto työjonolle %1"
 msgid "Create a template"
 msgstr "Luo pohja"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr ""
 
@@ -4660,7 +4660,7 @@ msgstr "Valitse ryhmä"
 msgid "Select a queue"
 msgstr "Valitse työjono"
 
-#: html/SelfService/CreateTicket_in_queue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr ""
 

@@ -436,8 +436,9 @@ attachment for this transaction.
 =cut
 
 sub Message {
-
     my $self = shift;
+
+    # XXX: Where is ACL check?
     
     if ( !defined( $self->{'message'} ) ) {
 
@@ -632,6 +633,7 @@ sub Attachments {
     $self->{'attachments'} = RT::Model::Attachments->new( $self->CurrentUser );
 
     unless ( $self->CurrentUserCanSee ) {
+        $self->{'attachments'}->Limit(FIELD => 'id', VALUE => '0');
         return $self->{'attachments'};
     }
 

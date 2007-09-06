@@ -58,7 +58,7 @@ use warnings;
 
 use Test::More tests => 153;
 
-use RT::Test config => 'Set( $UnsafeEmailCommands, 1);';
+use RT::Test config => 'set( $UnsafeEmailCommands, 1);';
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use RT::Model::Tickets;

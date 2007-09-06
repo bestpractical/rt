@@ -305,5 +305,7 @@ diag 'verify inline and in attachment signatures' if $ENV{'TEST_VERBOSE'};
     is( $status[0]->{'Operation'}, 'Verify', 'operation is correct');
     is( $status[0]->{'Status'}, 'DONE', 'good passphrase');
     is( $status[0]->{'Trust'}, 'ULTIMATE', 'have trust value');
+
+    $parser->filer->purge();
 }
 

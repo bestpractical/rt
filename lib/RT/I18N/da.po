@@ -1696,7 +1696,7 @@ msgid "Create a template"
 msgstr "Opret en skabelon"
 
 #: html/SelfService/Create.html:46
-#: html/SelfService/CreateTicket_in_queue.html:46
+#: html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Opret en sag"
 
@@ -5313,7 +5313,7 @@ msgstr "Vælg en gruppe"
 msgid "Select a queue"
 msgstr "Vælg en kø"
 
-#: html/SelfService/CreateTicket_in_queue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Vælg en kø til din nye sag"
 

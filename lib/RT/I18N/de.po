@@ -1309,7 +1309,7 @@ msgstr "Erstelle ein Scrip für den Bereich %1"
 msgid "Create a template"
 msgstr "Erstelle eine Vorlage"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Neue Anfrage"
 
@@ -4087,7 +4087,7 @@ msgstr "Wählen Sie eine Gruppe aus"
 msgid "Select a queue"
 msgstr "Stapel auswählen"
 
-#: html/SelfService/CreateTicket_in_queue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Wählen Sie einen Bereich für Ihre neue Anfrage"
 

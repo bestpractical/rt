@@ -84,7 +84,7 @@ my $tabs = { A  => { title => loc('Open tickets'),
 
 if ($queue_count > 1) {
         $tabs->{C} = { title => loc('New ticket'),
-                       path => 'SelfService/CreateTicket_in_queue.html'
+                       path => 'SelfService/CreateTicketInQueue.html'
                        };
 } else {
         $tabs->{C} = { title => loc('New ticket'),

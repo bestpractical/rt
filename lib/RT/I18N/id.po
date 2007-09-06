@@ -1279,7 +1279,7 @@ msgstr "Buat scrip untuk antrian %1"
 msgid "Create a template"
 msgstr "Buat template"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Buat Tiket"
 
@@ -4136,7 +4136,7 @@ msgstr "Pilih grup"
 msgid "Select a queue"
 msgstr "Pilih antrian"
 
-#: html/SelfService/CreateTicket_in_queue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Pilih antrian untuk tiket baru anda"
 

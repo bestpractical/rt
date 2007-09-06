@@ -151,9 +151,9 @@
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <tr>
 <td><% loc('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', Currentvalue => $ARGS{'Sign'} &></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
 <td><% loc('Encrypt')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', Currentvalue => $ARGS{'Encrypt'} &></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
 <td colspan="2">&nbsp;</td>
 </tr>
 % }

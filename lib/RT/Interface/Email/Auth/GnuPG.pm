@@ -65,10 +65,12 @@ you care about and specify the following in your SiteConfig.pm
 sub ApplyBeforeDecode { return 1 }
 
 use RT::Crypt::GnuPG;
+use RT::EmailParser ();
 
 sub GetCurrentUser {
     my %args = (
         Message       => undef,
+        RawMessageRef => undef,
         @_
     );
 
@@ -77,6 +79,7 @@ sub GetCurrentUser {
                X-RT-Incoming-Signature X-RT-Privacy);
 
     my $msg = $args{'Message'}->dup;
+
     my ($status, @res) = VerifyDecrypt( Entity => $args{'Message'} );
     if ( $status && !@res ) {
         $args{'Message'}->head->add(
@@ -100,7 +103,7 @@ sub GetCurrentUser {
     $args{'Message'}->attach(
         Type        => 'application/x-rt-original-message',
         Disposition => 'inline',
-        Data        => $msg->as_string,
+        Data        => ${ $args{'RawMessageRef'} },
     );
 
     $args{'Message'}->head->add( 'X-RT-GnuPG-Status' => $_->{'status'} )
@@ -162,20 +165,26 @@ sub CheckNoPrivateKey {
     my %args = (Message => undef, Status => [], @_ );
     my @status = @{ $args{'Status'} };
 
-    my @encrypted_to = grep $_->{'Keyword'} eq 'ENC_TO', @status;
-    return 1 unless @encrypted_to;
-    return 1 if grep !$_->{'KeyMissing'}, @encrypted_to;
+    my @decrypts = grep $_->{'Operation'} eq 'Decrypt', @status;
+    return 1 unless @decrypts;
+    foreach my $action ( @decrypts ) {
+        # if at least one secrete key exist then it's another error
+        return 1 if
+            grep !$_->{'User'}{'SecretKeyMissing'},
+                @{ $action->{'EncryptedTo'} };
+    }
 
     $RT::Logger->error("Couldn't decrypt a message: have no private key");
 
     my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
-    my $status = RT::Interface::Email::SendEmailUsingTemplate(
+    my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
         To        => $address,
         Template  => 'Error: no private key',
         Arguments => {
             Message   => $args{'Message'},
             TicketObj => $args{'Ticket'},
         },
+        InReplyTo => $args{'Message'},
     );
     unless ( $status ) {
         $RT::Logger->error("Couldn't send 'Error: no private key'");
@@ -194,13 +203,14 @@ sub CheckBadData {
     $RT::Logger->error("Couldn't process a message: ". join ', ', @bad_data_messages );
 
     my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
-    my $status = RT::Interface::Email::SendEmailUsingTemplate(
+    my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
         To        => $address,
         Template  => 'Error: bad GnuPG data',
         Arguments => {
             Messages  => [ @bad_data_messages ],
             TicketObj => $args{'Ticket'},
         },
+        InReplyTo => $args{'Message'},
     );
     unless ( $status ) {
         $RT::Logger->error("Couldn't send 'Error: bad GnuPG data'");

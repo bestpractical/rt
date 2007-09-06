@@ -393,6 +393,14 @@ Your ticket has been rejected by { eval { $Approval->OwnerObj->Name } }.
 '
     },
     {  Queue       => 0,
+       Name        => "Forward",    # loc
+       Description => "Heading of a forwarded message", # loc
+       Content => q{
+
+This is forward of transaction #{ $Transaction->id } of a ticket #{ $Ticket->id }
+}
+    },
+    {  Queue       => 0,
        Name        => "Error: public key",    # loc
        Description =>
          "Inform user that he has problems with public key and couldn't recieve encrypted content", # loc

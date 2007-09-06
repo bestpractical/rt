@@ -1680,7 +1680,7 @@ msgstr "Создать скриплет для очереди %1"
 msgid "Create a template"
 msgstr "Создать шаблон"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Создать заявку"
 
@@ -5041,7 +5041,7 @@ msgstr "Выберите группу"
 msgid "Select a queue"
 msgstr "Выберите очередь"
 
-#: html/SelfService/CreateTicket_in_queue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Выберите очередь для вашей новой заявки"
 

@@ -1451,7 +1451,7 @@ msgstr ""
 msgid "Create a template"
 msgstr "テンプレートの作成"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr ""
 
@@ -4470,7 +4470,7 @@ msgstr "グループの選択"
 msgid "Select a queue"
 msgstr "キューの選択"
 
-#: html/SelfService/CreateTicket_in_queue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr ""
 

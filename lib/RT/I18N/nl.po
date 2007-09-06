@@ -1537,7 +1537,7 @@ msgstr "Creëer een scrip voor rij %1"
 msgid "Create a template"
 msgstr "Creëer een sjabloon"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Maak een ticket aan"
 
@@ -4674,7 +4674,7 @@ msgstr "Selecteer een groep"
 msgid "Select a queue"
 msgstr "Selecteer een rij"
 
-#: html/SelfService/CreateTicket_in_queue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr ""
 

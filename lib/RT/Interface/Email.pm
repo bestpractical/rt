@@ -468,6 +468,36 @@ sub SendEmail {
     return 1;
 }
 
+=head2 PrepareEmailUsingTemplate Template => '', Arguments => {}
+
+Loads a template. Parses it using arguments if it's not empty.
+Returns a tuple (L<RT::Model::Template> object, error message).
+
+Note that even if a template object is returned MIMEObj method
+may return undef for empty templates.
+
+=cut
+
+sub PrepareEmailUsingTemplate {
+    my %args = (
+        Template => '',
+        Arguments => {},
+        @_
+    );
+
+    my $template = RT::Model::Template->new( $RT::SystemUser );
+    $template->loadGlobalTemplate( $args{'Template'} );
+    unless ( $template->id ) {
+        return (undef, "Couldn't load template '". $args{'Template'} ."'");
+    }
+    return $template if $template->IsEmpty;
+
+    my ($status, $msg) = $template->Parse( %{ $args{'Arguments'} } );
+    return (undef, $msg) unless $status;
+
+    return $template;
+}
+
 =head2 SendEmailUsingTemplate Template => '', Arguments => {}, To => '', Cc => '', Bcc => ''
 
 Sends email using a template, takes name of template, arguments for it and recipients.
@@ -478,28 +508,44 @@ sub SendEmailUsingTemplate {
     my %args = (
         Template => '',
         Arguments => {},
-        To => undef,
-        Cc => undef,
-        Bcc => undef,
-        @_
-    );
-
-    my $template = RT::Model::Template->new( $RT::SystemUser );
-    $template->loadGlobalTemplate( $args{'Template'} );
-    unless ( $template->id ) {
-        $RT::Logger->error("Couldn't load template '". $args{'Template'} ."'");
-        return 0;
-    }
-    $template->Parse( %{ $args{'Arguments'} } );
-
-    my $msg = $template->MIMEObj;
-    # template parsing error
-    return 0 unless $msg;
-
-    $msg->head->set( $_ => $args{ $_ } )
-        foreach grep defined $args{$_}, qw(To Cc Bcc);
-
-    return SendEmail( Entity => $msg );
+          To => undef,
+          Cc => undef,
+          Bcc => undef,
+         InReplyTo => undef,
+          @_
+      );
+  
+     my ($template, $msg) = PrepareEmailUsingTemplate( %args );
+     return (0, $msg) unless $template;
+ 
+     my $mail = $template->MIMEObj;
+     unless ( $mail ) {
+         $RT::Logger->info("Message is not sent as template #". $template->id ." is empty");
+         return -1;
+     }
+  
+     $mail->head->set( $_ => $args{ $_ } )
+         foreach grep defined $args{$_}, qw(To Cc Bcc);
+ 
+     if ( $args{'InReplyTo'} ) {
+         my @id = $args{'InReplyTo'}->head->get('Message-ID');
+         my @in_reply_to = $args{'InReplyTo'}->head->get('In-Reply-To');
+         my @references = $args{'InReplyTo'}->head->get('References');
+ 
+         $mail->head->set( 'In-Reply-To' => join ' ', @id ) if @id;
+         my @new_references;
+         if ( @references ) {
+             @new_references = (@references, @id);
+        } else {
+             @new_references = (@in_reply_to, @id);
+         }
+         @new_references = splice @new_references, 4, -6
+             if @new_references > 10;
+ 
+         $mail->head->set( 'References' => join ' ', @new_references );
+     }
+ 
+     return SendEmail( Entity => $mail );
 }
 
 =head2 ForwardTransaction TRANSACTION, To => '', Cc => '', Bcc => ''
@@ -554,16 +600,33 @@ sub ForwardTransaction {
         $entity->add_part( $a->ContentAsMIME );
     }
 
-    my $description = 'This is forward of transaction #'
-        . $txn->id ." of a ticket #". $txn->ObjectId;
-
-    my $mail = MIME::Entity->build(
-        To => $args{'To'},
-        Cc => $args{'Cc'},
-        Bcc => $args{'Bcc'},
-        Type => 'text/plain',
-        Data => $description,
+    my ($template, $msg) = PrepareEmailUsingTemplate(
+        Template  => 'Forward',
+        Arguments => {
+            Transaction => $txn,
+            Ticket      => $txn->Object,
+        },
     );
+    my $mail;
+    if ( $template ) {
+        $mail = $template->MIMEObj;
+    } else {
+        $RT::Logger->warning($msg);
+    }
+    unless ( $mail ) {
+        $RT::Logger->warning("Couldn't generate email using template 'Forward'");
+
+        my $description = 'This is forward of transaction #'
+            . $txn->id ." of a ticket #". $txn->ObjectId;
+        $mail = MIME::Entity->build(
+            Type => 'text/plain',
+            Data => $description,
+        );
+    }
+
+    $mail->head->set( $_ => $args{ $_ } )
+        foreach grep defined $args{$_}, qw(To Cc Bcc);
+
     $mail->attach(
         Type => 'message/rfc822',
         Disposition => 'attachment',
@@ -669,7 +732,7 @@ sub SignEncrypt {
         $RT::Logger->error("Couldn't send 'Error to RT owner: public key'");
     }
 
-    DeleteRecipientsFromHead(
+    delete_recipients_from_head(
         $args{'Entity'}->head,
         map $_->{'AddressObj'}->address, @bad_recipients
     );
@@ -859,14 +922,14 @@ sub ParseAddressFromHeader {
     return ( $Address, $Name );
 }
 
-=head2 DeleteRecipientsFromHead HEAD RECIPIENTS
+=head2 delete_recipients_from_head HEAD RECIPIENTS
 
 Gets a head object and list of addresses.
 Deletes addresses from To, Cc or Bcc fields.
 
 =cut
 
-sub deleteRecipientsFromHead {
+sub delete_recipients_from_head {
     my $head = shift;
     my %skip = map { lc $_ => 1 } @_;
 
@@ -1003,7 +1066,11 @@ sub Gateway {
     }
 
     my $parser = RT::EmailParser->new();
-    $parser->SmartParseMIMEEntityFromScalar( Message => $args{'message'}, Decode => 0 );
+    $parser->SmartParseMIMEEntityFromScalar(
+        Message => $args{'message'},
+        Decode => 0,
+        Exact => 1,
+    );
 
     my $Message = $parser->Entity();
     unless ($Message) {
@@ -1055,6 +1122,7 @@ sub Gateway {
         }
     }
     @mail_plugins = grep !$skip_plugin{"$_"}, @mail_plugins;
+    $parser->_DecodeBodies;
     $parser->_PostProcessNewEntity;
 
     my $head = $Message->head;

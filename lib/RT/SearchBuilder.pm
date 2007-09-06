@@ -95,13 +95,10 @@ sub _set_current_user  {
     }
     $self->SUPER::_init( 'handle' => $RT::Handle);
 }
-# }}}
-
-# {{{ sub LimitToEnabled
 
 =head2 LimitToEnabled
 
-Only find items that haven\'t been disabled
+Only find items that haven't been disabled
 
 =cut
 
@@ -112,9 +109,6 @@ sub LimitToEnabled {
 		  value => '0',
 		  operator => '=' );
 }
-# }}}
-
-# {{{ sub LimitToDisabled
 
 =head2 LimitToDeleted
 
@@ -131,9 +125,6 @@ sub LimitToDeleted {
 		  value => '1'
 		);
 }
-# }}}
-
-# {{{ sub LimitAttribute
 
 =head2 LimitAttribute PARAMHASH
 
@@ -224,9 +215,6 @@ sub LimitAttribute {
 	value      => 'NULL',
     ) if $args{NULL};
 }
-# }}}
-
-# {{{ sub LimitCustomField
 
 =head2 LimitCustomField
 
@@ -285,8 +273,6 @@ sub LimitCustomField {
     );
 }
 
-# {{{ sub FindAllRows
-
 =head2 FindAllRows
 
 Find all matching rows, regardless of whether they are disabled or not
@@ -296,8 +282,6 @@ Find all matching rows, regardless of whether they are disabled or not
 sub FindAllRows {
     shift->{'find_disabled_rows'} = 1;
 }
-
-# {{{ sub Limit 
 
 =head2 Limit PARAMHASH
 

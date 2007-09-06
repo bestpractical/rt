@@ -6,11 +6,7 @@ use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
-use constant ImageFileContent => do {
-    local $/;
-    open my $fh, '<:raw', ImageFile or die $!;
-    scalar <$fh>;
-};
+use constant ImageFileContent => RT::Test->file_content(ImageFile);
 
 ok $m->login, 'logged in';
 
@@ -72,7 +68,7 @@ diag "check that we have no the CF on the create"
         if $ENV{'TEST_VERBOSE'};
 {
     $m->submit_form(
-        form_name => "CreateTicket_in_queue",
+        form_name => "CreateTicketInQueue",
         fields => { Queue => 'General' },
     );
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
@@ -103,7 +99,7 @@ diag "check that we have no the CF on the create"
         if $ENV{'TEST_VERBOSE'};
 {
     $m->submit_form(
-        form_name => "CreateTicket_in_queue",
+        form_name => "CreateTicketInQueue",
         fields => { Queue => 'General' },
     );
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
@@ -136,7 +132,7 @@ diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
 my $tid;
 {
     $m->submit_form(
-        form_name => "CreateTicket_in_queue",
+        form_name => "CreateTicketInQueue",
         fields => { Queue => 'General' },
     );
     $m->content_like(qr/Upload multiple images/, 'has a upload image field');

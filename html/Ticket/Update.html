@@ -50,7 +50,7 @@
     Ticket => $TicketObj, 
     Title=> $title &>
     
-<& /Elements/ShowLock, Ticket => $TicketObj, Unlock => 0 &>
+% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $TicketObj);
 
 <form action="Update.html" name="TicketUpdate"
     method="post" enctype="multipart/form-data">
@@ -64,7 +64,13 @@
 <td>
 <& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)), Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
 <&|/l&>Owner</&>:  
-<& /Elements/SelectOwner, Name=>"Owner", DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name()), QueueObj => $TicketObj->QueueObj, TicketObj => $TicketObj, Default => $ARGS{'Owner'}||$RT::Nobody->id &>
+<& /Elements/SelectOwner,
+     Name         => "Owner",
+     TicketObj    => $TicketObj,
+     QueueObj     => $TicketObj->QueueObj,
+     DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name),
+     Default      => $ARGS{'Owner'}
+ &>
 <&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}||'' %>" /> 
 <& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked'&>
 </td></tr>
@@ -115,9 +121,9 @@
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <tr><td>&nbsp;</td><td><table>
 <td><% loc('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', Currentvalue => $ARGS{'Sign'} &></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
 <td><% loc('Encrypt')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', Currentvalue => $ARGS{'Encrypt'} &></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
 </table></td></tr>
 % }
 
@@ -146,11 +152,12 @@
 <%INIT>
 my $CanRespond = 0;
 my $CanComment = 0;
+my $checks_failure = 0;
 my $title;
 
 my $TicketObj = load_ticket($id);
 
-$TicketObj->Lock();
+$m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
@@ -200,14 +207,14 @@ $CanComment = 1 if ( $TicketObj->current_user_has_right('CommentOnTicket') or
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
-	delete $session{'Attachments'}{$1};
+    delete $session{'Attachments'}{$1};
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
 # }}}
 
 # {{{ store the uploaded attachment in session
-if ($ARGS{'Attach'}) {			# attachment?
+if ($ARGS{'Attach'}) {            # attachment?
     $session{'Attachments'} = {} unless defined $session{'Attachments'};
 
     my $subject = "$ARGS{'Attach'}";
@@ -223,7 +230,7 @@ if ($ARGS{'Attach'}) {			# attachment?
     );
 
     $session{'Attachments'} = { %{$session{'Attachments'} || {}},
-				$ARGS{'Attach'} => $attachment };
+                $ARGS{'Attach'} => $attachment };
 }
 # }}}
 
@@ -233,12 +240,9 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 }
 # }}}
 
-if ( exists $ARGS{SubmitTicket} ) {
-	my $lock = $TicketObj->Locked();
-	my $Duration = time() - $lock->Content->{'Timestamp'} if $lock;
-	$TicketObj->Unlock();
-    $m->comp('Display.html', TicketObj => $TicketObj, Duration => $Duration, %ARGS);
-    return;
+if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
+    $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'BeforeDisplay' );
+    return $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
 }
 
 

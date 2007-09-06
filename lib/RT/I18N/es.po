@@ -1620,7 +1620,7 @@ msgstr "Crear un scrip para la cola %1"
 msgid "Create a template"
 msgstr "Crear una plantilla"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Crear un ticket"
 
@@ -4886,7 +4886,7 @@ msgstr "Seleccione un grupo"
 msgid "Select a queue"
 msgstr "Seleccione una cola"
 
-#: html/SelfService/CreateTicket_in_queue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Seleccionar una cola para tu nuevo caso"
 

@@ -206,7 +206,7 @@ Fetches type and name of the DB from the config.
 
 =cut
 
-sub createDatabase {
+sub CreateDatabase {
     my $self = shift;
     my $dbh  = shift || die "No DBI handle provided";
     my $db_type = RT->Config->Get('DatabaseType');

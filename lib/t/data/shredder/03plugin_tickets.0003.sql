@@ -20,7 +20,7 @@ INSERT INTO "Principals"("ObjectId","PrincipalType","id") valueS('30','Group','3
 INSERT INTO "Transactions"("Creator","ObjectId","ObjectType","Type","id") valueS('1','3','RT::Model::Ticket','Create','37');
 INSERT INTO "Links"("Base","Creator","LocalBase","LocalTarget","Target","Type","id") valueS('fsck.com-rt://example.com/ticket/3','1','3','1','fsck.com-rt://example.com/ticket/1','MemberOf','2');
 INSERT INTO "Transactions"("Creator","Field","NewValue","ObjectId","ObjectType","Type","id") valueS('1','has_member','fsck.com-rt://example.com/ticket/3','1','RT::Model::Ticket','AddLink','36');
-INSERT INTO "Tickets"("Creator","Due","EffectiveId","LastUpdated","LastUpdatedBy","Owner","Queue","Resolved","Started","Starts","Status","Subject","Type","id") valueS('1','1970-01-01 00:00:00','3','2007-09-05 07:13:27','1','10','1','2007-09-05 07:13:27','2007-09-05 07:13:27','1970-01-01 00:00:00','resolved','child','ticket','3');
+INSERT INTO "Tickets"("Creator","Due","EffectiveId","LastUpdated","LastUpdatedBy","Owner","Queue","Resolved","Started","Starts","Status","Subject","Type","id") valueS('1','1970-01-01 00:00:00','3','2007-09-06 01:18:23','1','10','1','2007-09-06 01:18:22','2007-09-06 01:18:22','1970-01-01 00:00:00','resolved','child','ticket','3');
 INSERT INTO "CachedGroupMembers"("GroupId","ImmediateParentId","MemberId","Via","id") valueS('25','25','25','33','33');
 INSERT INTO "Transactions"("Creator","ObjectId","ObjectType","Type","id") valueS('1','25','RT::Model::Group','Create','24');
 INSERT INTO "Groups"("Domain","Instance","Type","id") valueS('RT::Model::Ticket-Role','1','AdminCc','25');
@@ -43,7 +43,7 @@ INSERT INTO "Principals"("ObjectId","PrincipalType","id") valueS('22','Group','2
 INSERT INTO "Transactions"("Creator","ObjectId","ObjectType","Type","id") valueS('1','1','RT::Model::Ticket','Create','25');
 INSERT INTO "Transactions"("Creator","Field","NewValue","ObjectId","ObjectType","Type","id") valueS('1','has_member','fsck.com-rt://example.com/ticket/2','1','RT::Model::Ticket','AddLink','30');
 INSERT INTO "Links"("Base","Creator","LocalBase","LocalTarget","Target","Type","id") valueS('fsck.com-rt://example.com/ticket/2','1','2','1','fsck.com-rt://example.com/ticket/1','MemberOf','1');
-INSERT INTO "Tickets"("Creator","Due","EffectiveId","LastUpdated","LastUpdatedBy","Owner","Queue","Resolved","Started","Starts","Status","Subject","Type","id") valueS('1','1970-01-01 00:00:00','1','2007-09-05 07:13:27','1','10','1','2007-09-05 07:13:27','2007-09-05 07:13:27','1970-01-01 00:00:00','resolved','parent','ticket','1');
+INSERT INTO "Tickets"("Creator","Due","EffectiveId","LastUpdated","LastUpdatedBy","Owner","Queue","Resolved","Started","Starts","Status","Subject","Type","id") valueS('1','1970-01-01 00:00:00','1','2007-09-06 01:18:23','1','10','1','2007-09-06 01:18:22','2007-09-06 01:18:22','1970-01-01 00:00:00','resolved','parent','ticket','1');
 INSERT INTO "CachedGroupMembers"("GroupId","ImmediateParentId","MemberId","Via","id") valueS('29','29','29','39','39');
 INSERT INTO "Transactions"("Creator","ObjectId","ObjectType","Type","id") valueS('1','29','RT::Model::Group','Create','29');
 INSERT INTO "Groups"("Domain","Instance","Type","id") valueS('RT::Model::Ticket-Role','2','AdminCc','29');
@@ -64,4 +64,4 @@ INSERT INTO "Transactions"("Creator","ObjectId","ObjectType","Type","id") valueS
 INSERT INTO "Groups"("Domain","Instance","Type","id") valueS('RT::Model::Ticket-Role','2','Requestor','26');
 INSERT INTO "Principals"("ObjectId","PrincipalType","id") valueS('26','Group','26');
 INSERT INTO "Transactions"("Creator","ObjectId","ObjectType","Type","id") valueS('1','2','RT::Model::Ticket','Create','31');
-INSERT INTO "Tickets"("Creator","Due","EffectiveId","LastUpdated","LastUpdatedBy","Owner","Queue","Resolved","Started","Starts","Status","Subject","Type","id") valueS('1','1970-01-01 00:00:00','2','2007-09-05 07:13:27','1','10','1','1970-01-01 00:00:00','1970-01-01 00:00:00','1970-01-01 00:00:00','new','child','ticket','2');
+INSERT INTO "Tickets"("Creator","Due","EffectiveId","LastUpdated","LastUpdatedBy","Owner","Queue","Resolved","Started","Starts","Status","Subject","Type","id") valueS('1','1970-01-01 00:00:00','2','2007-09-06 01:18:22','1','10','1','1970-01-01 00:00:00','1970-01-01 00:00:00','1970-01-01 00:00:00','new','child','ticket','2');

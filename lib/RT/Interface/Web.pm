@@ -343,6 +343,12 @@ sub CreateTicket {
         }
     }
 
+    foreach my $argument (qw(Encrypt Sign)) {
+        $MIMEObj->head->add(
+            "X-RT-$argument" => $ARGS{ $argument }
+        ) if defined $ARGS{ $argument };
+    }
+
     my %create_args = (
         Type            => $ARGS{'Type'} || 'ticket',
         Queue           => $ARGS{'Queue'},
@@ -516,7 +522,11 @@ sub ProcessUpdateMessage {
         @_
     );
 
-    my @results;
+    if ( $args{ARGSRef}->{'UpdateAttachments'}
+        && !keys %{$args{ARGSRef}->{'UpdateAttachments'}} )
+    {
+        delete $args{ARGSRef}->{'UpdateAttachments'};
+    }
 
     #Make the update content have no 'weird' newlines in it
     return () unless    $args{ARGSRef}->{'UpdateTimeWorked'}
@@ -530,7 +540,7 @@ sub ProcessUpdateMessage {
     if ( $args{'SkipSignatureOnly'} ) {
         my $sig = $args{'TicketObj'}->CurrentUser->UserObj->Signature || '';
         $sig =~ s/^\s*|\s*$//g;
-        if( $args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ ) {
+        if ( $args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ ) {
             return () unless $args{ARGSRef}->{'UpdateTimeWorked'} ||
                              $args{ARGSRef}->{'UpdateAttachments'};
 
@@ -621,6 +631,7 @@ sub ProcessUpdateMessage {
         }
     }
 
+    my @results;
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
         my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(%message_args);
         push( @results, $Description );

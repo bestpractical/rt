@@ -36,11 +36,11 @@ sub import {
 
     $config = File::Temp->new;
     print $config qq{
-Set( \$WebPort , $port);
-Set( \$WebBaseURL , "http://localhost:\$WebPort");
-Set( \$DatabaseName , "rt3test");
-Set( \$LogToSyslog , undef);
-Set( \$LogToScreen , "warning");
+set( \$WebPort , $port);
+set( \$WebBaseURL , "http://localhost:\$WebPort");
+set( \$DatabaseName , "rt3test");
+set( \$LogToSyslog , undef);
+set( \$LogToScreen , "warning");
 };
     print $config $args{'config'} if $args{'config'};
     print $config "\n1;\n";
@@ -81,7 +81,7 @@ sub bootstrap_db {
 
 
     RT::Handle->DropDatabase( $dbh, Force => 1 );
-    RT::Handle->createDatabase( $dbh );
+    RT::Handle->CreateDatabase( $dbh );
     $dbh->disconnect;
 
     $dbh = _get_dbh(RT::Handle->dsn,
@@ -176,6 +176,11 @@ sub mailsent_ok {
 sub load_or_create_user {
     my $self = shift;
     my %args = ( Privileged => 1, Disabled => 0, @_ );
+
+     my $MemberOf = delete $args{'MemberOf'};
+     $MemberOf = [ $MemberOf ] if defined $MemberOf && !ref $MemberOf;
+     $MemberOf ||= [];
+
     my $obj = RT::Model::User->new( $RT::SystemUser );
     if ( $args{'Name'} ) {
         $obj->load_by_cols( Name => $args{'Name'} );
@@ -193,6 +198,28 @@ sub load_or_create_user {
     } else {
         my ($val, $msg) = $obj->create( %args );
         die "$msg" unless $val;
+    }
+
+    # clean group membership
+    {
+        require RT::Model::GroupMembers;
+        my $gms = RT::Model::GroupMembers->new( $RT::SystemUser );
+        my $groups_alias = $gms->join(
+            column1 => 'GroupId', table2 => 'Groups', column2 => 'id',
+        );
+        $gms->limit( alias => $groups_alias, column => 'Domain', value => 'UserDefined' );
+        $gms->limit( column => 'MemberId', value => $obj->id );
+        while ( my $group_member_record = $gms->next ) {
+            $group_member_record->Delete;
+        }
+    }
+
+    # add new user to groups
+    foreach ( @$MemberOf ) {
+        my $group = RT::Model::Group->new( RT::SystemUser() );
+        $group->loadUserDefinedGroup( $_ );
+        die "couldn't load group '$_'" unless $group->id;
+        $group->AddMember( $obj->id );
     }
 
     return $obj;
@@ -214,14 +241,65 @@ sub load_or_create_queue {
     unless ( $obj->id ) {
         my ($val, $msg) = $obj->create( %args );
         die "$msg" unless $val;
+    } else {
+        my @fields = qw(CorrespondAddress CommentAddress);
+        foreach my $field ( @fields ) {
+            next unless exists $args{ $field };
+            next if $args{ $field } eq $obj->$field;
+            
+            no warnings 'uninitialized';
+            my $method = 'set_'. $field;
+            my ($val, $msg) = $obj->$method( $args{ $field } );
+            die "$msg" unless $val;
+        }
     }
 
     return $obj;
 }
 
+sub store_rights {
+    my $self = shift;
+
+    require RT::ACE;
+    # fake construction
+    RT::ACE->new( $RT::SystemUser );
+    my @fields = keys %{ RT::ACE->_ClassAccessible };
+
+    require RT::ACL;
+    my $acl = RT::ACL->new( $RT::SystemUser );
+    $acl->limit( column => 'RightName', operator => '!=', value => 'SuperUser' );
+
+    my @res;
+    while ( my $ace = $acl->next ) {
+        my $obj = $ace->PrincipalObj->Object;
+        if ( $obj->isa('RT::Model::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {
+            next;
+        }
+
+        my %tmp = ();
+        foreach my $field( @fields ) {
+            $tmp{ $field } = $ace->__Value( $field );
+        }
+        push @res, \%tmp;
+    }
+    return @res;
+}
+
+sub restore_rights {
+    my $self = shift;
+    my @entries = @_;
+    foreach my $entry ( @entries ) {
+        my $ace = RT::Model::ACE->new( $RT::SystemUser );
+        my ($status, $msg) = $ace->RT::Record::create( %$entry );
+        unless ( $status ) {
+            diag "couldn't create a record: $msg";
+        }
+    }
+}
+
 sub set_rights {
     my $self = shift;
-    my @list = ref $_[0]? @_: { @_ };
+    my @list = ref $_[0]? @_: @_? { @_ }: ();
 
     require RT::Model::ACL;
     my $acl = RT::Model::ACL->new( $RT::SystemUser );
@@ -236,6 +314,19 @@ sub set_rights {
 
     foreach my $e (@list) {
         my $principal = delete $e->{'Principal'};
+        unless ( ref $principal ) {
+            if ( $principal =~ /^(everyone|(?:un)?privileged)$/i ) {
+                $principal = RT::Model::Group->new( $RT::SystemUser );
+                $principal->load_system_internal_group($1);
+            } else {
+                die "principal is not an object, but also is not name of a system group";
+            }
+        }
+        unless ( $principal->isa('RT::Principal') ) {
+            if ( $principal->can('PrincipalObj') ) {
+                $principal = $principal->PrincipalObj;
+            }
+        }
         my @rights = ref $e->{'Right'}? @{ $e->{'Right'} }: ($e->{'Right'});
         foreach my $right ( @rights ) {
             my ($status, $msg) = $principal->GrantRight( %$e, Right => $right );
@@ -306,20 +397,59 @@ sub send_via_mailgate {
     return ($status, $id);
 }
 
+
 sub import_gnupg_key {
     my $self = shift;
     my $key = shift;
     my $type = shift || 'secret';
-    
+
     $key =~ s/\@/-at-/g;
     $key .= ".$type.key";
-    $key = 't/data/gnupg/keys/'. $key;
-    open my $fh, '<:raw', $key or die "couldn't open '$key': $!";
-    
     require RT::Crypt::GnuPG;
-    return RT::Crypt::GnuPG::ImportKey( do { local $/; <$fh> } );
+    return RT::Crypt::GnuPG::ImportKey(
+        RT::Test->file_content([qw(t data gnupg keys), $key])
+    );
 }
 
 
+sub set_mail_catcher {
+    my $self = shift;
+    my $catcher = sub {
+        my $MIME = shift;
+
+        open my $handle, '>>', 't/mailbox'
+            or die "Unable to open t/mailbox for appending: $!";
+
+        $MIME->print($handle);
+        print $handle "%% split me! %%\n";
+        close $handle;
+    };
+    RT->Config->set( MailCommand => $catcher );
+}
+
+sub fetch_caught_mails {
+    my $self = shift;
+    return grep /\S/, split /%% split me! %%/,
+        RT::Test->file_content( 't/mailbox', 'unlink' => 1 );
+}
+
+sub file_content {
+    my $self = shift;
+    my $path = shift;
+    my %args = @_;
+
+    $path = File::Spec->catfile( @$path ) if ref $path;
+
+    diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
+
+    open my $fh, "<:raw", $path
+        or die "couldn't open file '$path': $!";
+    my $content = do { local $/; <$fh> };
+    close $fh;
+
+    unlink $path if $args{'unlink'};
+
+    return $content;
+}
 
 1;

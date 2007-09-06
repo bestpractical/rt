@@ -28,13 +28,13 @@ ok($ok, "mason syntax is ok");
 use HTML::Mason;
 use HTML::Mason::Compiler;
 use HTML::Mason::Compiler::ToObject;
+BEGIN { require RT::Test; }
+use Encode qw(decode_utf8);
 
 sub compile_file {
     my $file = shift;
 
-    open my $fh, '<:utf8', $file or die "couldn't open '$file': $!";
-    my $text = do { local $/; <$fh> };
-    close $fh or die "couldn't close '$file': $!";
+    my $text = decode_utf8(RT::Test->file_content($file));
 
     my $compiler = new HTML::Mason::Compiler::ToObject;
     $compiler->compile(

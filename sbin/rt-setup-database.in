@@ -143,7 +143,7 @@ foreach my $action ( @actions ) {
         my $dbh = get_system_dbh();
         print "Now creating a database for RT.\n";
         if ( $db_type ne 'Oracle' || $dba_user ne $db_user ) {
-            RT::Handle->createDatabase( $dbh );
+            RT::Handle->CreateDatabase( $dbh );
         } else {
             print "...skipped as $dba_user is not $db_user or we're working with Oracle.\n";
         }

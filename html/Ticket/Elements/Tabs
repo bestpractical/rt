@@ -60,7 +60,7 @@ my $searchtabs = {};
 my $actions;
 
 if ( $Ticket) {
-	
+    
 my $id   = $Ticket->id();
 
 if ( defined $session{'tickets'} ) {
@@ -72,7 +72,7 @@ if ( defined $session{'tickets'} ) {
 
         if ($updatesession) {
                 $session{'i'}++;
-		$session{'tickets'}->PrepForSerialization();
+        $session{'tickets'}->PrepForSerialization();
         }
 
         # Don't display prev links if we're on the first ticket
@@ -163,23 +163,22 @@ if ( $can{'ModifyTicket'} ) {
     }
 }
 
-if ( $Ticket->current_user_has_right('OwnTicket') ) {
-    if ( $Ticket->OwnerObj->id == $RT::Nobody->id
-         and ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('TakeTicket') ) )
-    {
-        $actions->{'B'} = {
-            path => "Ticket/Display.html?Action=Take&id=" . $id,
-            title => loc('Take'),
-        };
-    }
-    elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id 
-            and ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('StealTicket') ) )
-    {
-        $actions->{'C'} = {
-            path => "Ticket/Display.html?Action=Steal&id=" . $id,
-            title => loc('Steal'),
-        };
-    }
+
+ if ( $Ticket->current_user_has_right('OwnTicket') ) {
+     if ( $Ticket->OwnerObj->Id == $RT::Nobody->id ) {
+         $actions->{'B'} = {
+             path => "Ticket/Display.html?Action=Take&id=" . $id,
+             title => loc('Take'),
+         } if $can{'ModifyTicket'} or $Ticket->current_user_has_right('TakeTicket');
+     }
+     elsif ( $Ticket->OwnerObj->id != $session{CurrentUser}->id ) {
+         $actions->{'C'} = {
+             path => "Ticket/Display.html?Action=Steal&id=" . $id,
+             title => loc('Steal'),
+         } if $can{'ModifyTicket'} or $Ticket->current_user_has_right('StealTicket');
+     }
+
+
 }
 
 if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('CommentOnTicket') ) {
@@ -235,30 +234,6 @@ if ($args) {
     ($searchtab =~ /^_/) ? $tabs->{"s".$searchtab} = $searchtabs->{$searchtab} : $tabs->{"z_".$searchtab} = $searchtabs->{$searchtab};
   }
 }
-if ($Ticket) {
-	if (my $Lock = $Ticket->Locked()) {
-		if ($Lock->Content->{'User'} == $session{'CurrentUser'}->id) {
-		$actions->{'Lock'} = { 
-						path  => "Ticket/Display.html?Lock=remove&id=" . $Ticket->id,
-						title => loc('Unlock') 
-						};
-		} else {
-		$actions->{'Lock'} = { 
-						path  => "Ticket/Display.html?Lock=break&id=" . $Ticket->id,
-						title => loc('Break lock') 
-						};
-
-		}
-	} else {
-		$actions->{'Lock'} = { 
-						path  => "Ticket/Display.html?Lock=add&id=" . $Ticket->id,
-						title => loc('Lock') 
-						};
-
-
-	}
-}
-
 </%INIT>
 
   

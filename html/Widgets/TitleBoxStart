@@ -50,23 +50,21 @@
 % if ($hideable) {
     <span class="widget"><a href="#" onclick="return rollup('<%$tid%>');" onfocus="this.blur(); return false;" title="Toggle visibility">X</a></span>
 % }
-    <span class="left"><% $title_href && qq[<a href="$title_href">] | n %><% $title  %><% $title_href && "</a>" |n%></span>
+    <span class="left"><% $title_href && qq[<a href="$title_href">] | n %><% $title %><% $title_raw |n %><% $title_href && "</a>" |n%></span>
     <span class="right"><% $titleright_href && qq[<a href="$titleright_href">] | n %><% $titleright  %><% $titleright_raw |n%> <% $titleright_href && "</a>" |n%></span>
   </div>
   <div class="titlebox-content <% $bodyclass %>" id="<% $tid %>">
 
 <%ARGS>
-$width => undef
 $class => ''
 $bodyclass => ''
 $title_href => ''
 $title => ''
+$title_raw => ''
 $title_class => ''
 $titleright_href => ''
 $titleright => ''
 $titleright_raw => ''
-$contentbg => "#dddddd"
-$color => "#336699"
 $id => ''
 $hideable => 1
 </%ARGS>

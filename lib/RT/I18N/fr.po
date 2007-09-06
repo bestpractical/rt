@@ -1218,7 +1218,7 @@ msgstr "Ajouter un scrip pour la file %1"
 msgid "Create a template"
 msgstr "Ajouter un modèle"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Ajouter un ticket"
 
@@ -3863,7 +3863,7 @@ msgstr "Choisir un groupe"
 msgid "Select a queue"
 msgstr "Choisir une file"
 
-#: html/SelfService/CreateTicket_in_queue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Choisir une file pour votre nouveau ticket"
 

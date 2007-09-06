@@ -231,7 +231,7 @@ $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
 To: general\@$RT::rtname
-Subject: signed message for queue
+Subject: encrypted message for queue
 
 $buf
 EOF

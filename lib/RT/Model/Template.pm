@@ -217,15 +217,35 @@ sub delete {
     return ( $self->SUPER::delete(@_) );
 }
 
-# }}}
 
-# {{{ sub MIMEObj
+
+
+=head2 IsEmpty
+ 
+Returns true value if content of the template is empty, otherwise
+returns false.
+
+=cut
+
+sub IsEmpty {
+     my $self = shift;
+    my $content = $self->Content;
+    return 0 if defined $content && length $content;
+    return 1;
+ } 
+ 
+=head2 MIMEObj
+ 
+Returns L<MIME::Entity> object parsed using L</Parse> method. Returns
+undef if last call to L</Parse> failed or never be called.
+ 
+=cut
+
 sub MIMEObj {
     my $self = shift;
     return ( $self->{'MIMEObj'} );
 }
 
-# }}}
 
 # {{{ sub Parse 
 
@@ -241,14 +261,31 @@ sub MIMEObj {
 
 =cut
 
-sub Parse {
-    my $self = shift;
+=head2 Parse
+         
+This routine performs L<Text::Template> parsing on the template and then
+imports the results into a L<MIME::Entity> so we can really use it. Use
+L</MIMEObj> method to get the L<MIME::Entity> object.
+ 
+Takes a hash containing Argument, TicketObj, and TransactionObj and other
+arguments that will be available in the template's code.
+     
+It returns a tuple of (val, message). If val is false, the message contains
+an error message.
+ 
+=cut
 
-    #We're passing in whatever we were passed. it's destined for _ParseContent
-    my ($content, $msg) = $self->_ParseContent(@_);
-    return ( 0, $msg ) unless defined $content;
+ sub Parse {
+     my $self = shift;
 
-    #Lets build our mime Entity
+    # clear prev MIME object
+    $self->{'MIMEObj'} = undef;
+
+     #We're passing in whatever we were passed. it's destined for _ParseContent
+     my ($content, $msg) = $self->_ParseContent(@_);
+     return ( 0, $msg ) unless defined $content && length $content;
+
+     #Lets build our mime Entity
 
     my $parser = MIME::Parser->new();
 

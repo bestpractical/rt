@@ -1997,7 +1997,7 @@ msgstr "為 %1 表單新增手續"
 msgid "Create a template"
 msgstr "新增範本"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "提出申請單"
 
@@ -6406,7 +6406,7 @@ msgstr "選擇群組"
 msgid "Select a queue"
 msgstr "選擇表單"
 
-#: html/SelfService/CreateTicket_in_queue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr ""
 

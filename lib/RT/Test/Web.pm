@@ -8,6 +8,15 @@ use base qw(Test::WWW::Mechanize);
 require RT::Test;
 require Test::More;
 
+sub get_ok {
+    my $self = shift;
+    my $url = shift;
+    if ( $url =~ m{^/} ) {
+        $url = $self->rt_base_url . $url;
+    }
+    return $self->SUPER::get_ok($url, @_);
+}
+
 sub rt_base_url {
     return $RT::Test::existing_server if $RT::Test::existing_server;
     return "http://localhost:" . RT->Config->Get('WebPort') . RT->Config->Get('WebPath') . "/";
@@ -55,7 +64,21 @@ sub goto_ticket {
         return 0;
     }
     return 1;
+}
 
+sub goto_create_ticket {
+    my $self = shift;
+    my $queue = shift;
+    unless ( ref $queue ) {
+        die "not yet implemented";
+    }
+
+    $self->get('/');
+    $self->form_name('CreateTicketInQueue');
+    $self->select( 'Queue', $queue->id );
+    $self->submit;
+
+    return 1;
 }
 
 1;

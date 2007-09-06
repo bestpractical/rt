@@ -266,7 +266,7 @@ sub _load_config
 
     eval {
         package RT;
-        local *Set = sub(\[$@%]@) {
+        local *set = sub(\[$@%]@) {
             my ($opt_ref, @args) = @_;
             my ($pack, $file, $line) = caller;
             return $self->set_from_config(

@@ -225,6 +225,42 @@ $TICKET_COLUMN_MAP = {
                 $_[0]->loc('New'), \'</a>';
         },
     },
+    KeyRequestors => {
+        title     => 'Requestors',
+        attribute => 'Requestor.EmailAddress',
+        value => sub {
+            my $t = shift;
+            my @requestors = $t->Requestors->MemberEmailAddresses;
+            for my $email (@requestors)
+            {
+                my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
+                if (!defined $key{'info'}) {
+                    $email .= loc(" (no pubkey!)");
+                }
+                elsif ($key{'info'}{'TrustLevel'} == 0) {
+                    $email .= loc(" (untrusted!)");
+                }
+            }
+            return join ', ', @requestors;
+        }
+    },
+    KeyOwnerName => {
+        title     => 'Owner',
+        attribute => 'Owner',
+        value     => sub {
+            my $t = shift;
+            my $name = $t->OwnerObj->Name;
+            my %key = RT::Crypt::GnuPG::GetKeyInfo($t->OwnerObj->EmailAddress);
+            if (!defined $key{'info'}) {
+                $name .= loc(" (no pubkey!)");
+            }
+            elsif ($key{'info'}{'TrustLevel'} == 0) {
+                $name .= loc(" (untrusted!)");
+            }
+
+            return $name;
+        }
+    },
 
     # Everything from LINKTYPEMAP
     (map {
@@ -271,6 +307,15 @@ $TICKET_COLUMN_MAP = {
 
 $TICKET_COLUMN_MAP->{'CF'} = $TICKET_COLUMN_MAP->{'CustomField'};
 
+# if no GPG support, then KeyOwnerName and KeyRequestors fall back to the regular
+# versions
+if (RT->Config->Get('GnuPG')->{'Enable'}) {
+    require RT::Crypt::GnuPG;
+}
+else {
+    $TICKET_COLUMN_MAP->{KeyOwnerName} = $TICKET_COLUMN_MAP->{OwnerName};
+    $TICKET_COLUMN_MAP->{KeyRequestors} = $TICKET_COLUMN_MAP->{Requestors};
+}
 </%ONCE>
 <%init>
 $m->callback( COLUMN_MAP => $TICKET_COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );

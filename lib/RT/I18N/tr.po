@@ -1190,7 +1190,7 @@ msgstr "%1 kuyruğu için yeni bir senet oluştur"
 msgid "Create a template"
 msgstr "Bir şablon oluştur"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Yeni bir bilet oluştur"
 
@@ -3823,7 +3823,7 @@ msgstr "Bir grubu seç"
 msgid "Select a queue"
 msgstr "Bir kuyruğu seç"
 
-#: html/SelfService/CreateTicket_in_queue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Yeni biletiniz için bir kuyruk seçin"
 

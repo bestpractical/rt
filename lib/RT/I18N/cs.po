@@ -1534,7 +1534,7 @@ msgstr "Vytvořit scrips pro frontu %1"
 msgid "Create a template"
 msgstr "Vytvořit vzor"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicket_in_queue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Vytvořit požadavek"
 
@@ -4644,7 +4644,7 @@ msgstr "Výběr skupiny"
 msgid "Select a queue"
 msgstr "Výběr fronty"
 
-#: html/SelfService/CreateTicket_in_queue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Výběr fronty pro váš nový požadavek"
 
