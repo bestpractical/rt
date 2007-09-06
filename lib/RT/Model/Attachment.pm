@@ -498,7 +498,7 @@ Add one or many fields to the attachment's headers.
 sub AddHeader {
     my $self = shift;
 
-    my $newheader = $self->__Value( 'Headers' );
+    my $newheader = $self->__value( 'Headers' );
     while ( my ($tag, $value) = splice @_, 0, 2 ) {
         $value = '' unless defined $value;
         $value =~ s/\s+$//s;

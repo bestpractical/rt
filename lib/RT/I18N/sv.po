@@ -5037,7 +5037,7 @@ msgstr "Ärende %1"
 #. ($self->id, $QueueObj->Name)
 #: lib/RT/Ticket_Overlay.pm:755
 #: lib/RT/Ticket_Overlay.pm:775
-msgid "Ticket %1 Created in queue '%2'"
+msgid "Ticket %1 created in queue '%2'"
 msgstr "Ärende %1 har skapats i kö '%2'"
 
 #. ($Ticket->id, $_)

@@ -46,7 +46,6 @@ diag "current user has no right to own, nobody selected as owner on create";
     $agent_a->content_like(qr/Ticket \d+ created in queue/i, 'created ticket');
     my ($id) = ($agent_a->content =~ /Ticket (\d+) created in queue/);
     ok $id, 'found id of the ticket';
-
     my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
     $ticket->load( $id );
     ok $ticket->id, 'loaded the ticket';

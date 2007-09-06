@@ -80,8 +80,8 @@ my $reverify_cb = sub {
         return (0, "Couldn't get transaction of attachment #". $top->id);
     }
 
-    my $attachments = $txn->Attachments->Clone;
-    $attachments->Limit( FIELD => 'ContentType', VALUE => 'application/x-rt-original-message' );
+    my $attachments = $txn->Attachments->clone;
+    $attachments->limit( column => 'ContentType', value => 'application/x-rt-original-message' );
     my $original = $attachments->first;
     unless ( $original ) {
         return (0, "Couldn't find attachment with original email of transaction #". $txn->id);
@@ -109,7 +109,7 @@ my $reverify_cb = sub {
 
         $top->DelHeader('X-RT-GnuPG-Status');
         $top->AddHeader(map { ('X-RT-GnuPG-Status' => $_->{'status'} ) } @res);
-        $top->SetHeader('X-RT-Privacy' => 'PGP' );
+        $top->set_Header('X-RT-Privacy' => 'PGP' );
         $top->DelHeader('X-RT-Incoming-Signature');
 
         my @status = RT::Crypt::GnuPG::ParseStatus( $res[0]->{'status'} );

@@ -5734,7 +5734,7 @@ msgstr "Zgłoszenie %1"
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
 #. ($self->id, $QueueObj->Name)
-msgid "Ticket %1 Created in queue '%2'"
+msgid "Ticket %1 created in queue '%2'"
 msgstr "Zgłoszenie %1 zostało utworzone w kolejce '%2'"
 
 #: NOT FOUND IN SOURCE

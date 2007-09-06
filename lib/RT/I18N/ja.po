@@ -5099,7 +5099,7 @@ msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
 #. ($self->id, $QueueObj->Name)
-msgid "Ticket %1 Created in queue '%2'"
+msgid "Ticket %1 created in queue '%2'"
 msgstr "チケット %1がキュー '%2'で作成されました"
 
 #: NOT FOUND IN SOURCE

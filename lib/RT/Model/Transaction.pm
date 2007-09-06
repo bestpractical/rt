@@ -633,7 +633,7 @@ sub Attachments {
     $self->{'attachments'} = RT::Model::Attachments->new( $self->CurrentUser );
 
     unless ( $self->CurrentUserCanSee ) {
-        $self->{'attachments'}->Limit(FIELD => 'id', VALUE => '0');
+        $self->{'attachments'}->limit(column => 'id', value => '0');
         return $self->{'attachments'};
     }
 

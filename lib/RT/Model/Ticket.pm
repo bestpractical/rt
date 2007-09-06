@@ -703,8 +703,8 @@ sub create {
 
             $TransObj->UpdateCustomFields(ARGSRef => \%args);
 
-            $RT::Logger->info( "Ticket " . $self->id . " Created in queue '" . $QueueObj->Name . "' by " . $self->CurrentUser->Name );
-            $ErrStr = $self->loc( "Ticket [_1] Created in queue '[_2]'", $self->id, $QueueObj->Name );
+            $RT::Logger->info( "Ticket " . $self->id . " created in queue '" . $QueueObj->Name . "' by " . $self->CurrentUser->Name );
+            $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->id, $QueueObj->Name );
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
         }
         else {
@@ -724,7 +724,7 @@ sub create {
 
         # Not going to record a transaction
         $RT::Handle->commit();
-        $ErrStr = $self->loc( "Ticket [_1] Created in queue '[_2]'", $self->id, $QueueObj->Name );
+        $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->id, $QueueObj->Name );
         $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
         return ( $self->id, 0, $ErrStr );
 

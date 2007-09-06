@@ -278,7 +278,7 @@ sub store_rights {
 
         my %tmp = ();
         foreach my $field( @fields ) {
-            $tmp{ $field } = $ace->__Value( $field );
+            $tmp{ $field } = $ace->__value( $field );
         }
         push @res, \%tmp;
     }

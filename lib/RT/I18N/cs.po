@@ -5295,7 +5295,7 @@ msgstr "Požadavek %1"
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
 #. ($self->id, $QueueObj->Name)
-msgid "Ticket %1 Created in queue '%2'"
+msgid "Ticket %1 created in queue '%2'"
 msgstr "Požadavek %1 vytvořen ve frontě '%2'"
 
 #: NOT FOUND IN SOURCE

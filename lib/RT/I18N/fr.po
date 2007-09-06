@@ -4418,7 +4418,7 @@ msgstr "Ticket %1"
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
 #. ($self->id, $QueueObj->Name)
-msgid "Ticket %1 Created in queue '%2'"
+msgid "Ticket %1 created in queue '%2'"
 msgstr "Ticket %1 créé dans la file '%2'"
 
 #: html/Search/Bulk.html:377
