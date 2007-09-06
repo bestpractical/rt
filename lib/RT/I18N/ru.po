@@ -32,7 +32,7 @@ msgstr " %1 сохранена."
 
 #: NOT FOUND IN SOURCE
 msgid "#"
-msgstr "&#8470;"
+msgstr "№"
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
 #. ($Ticket->id, $Ticket->Subject)
