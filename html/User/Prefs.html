@@ -160,6 +160,23 @@
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormRightColumn' );
 </td>
 </tr>
+
+% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+ <tr>
+ <td valign="top" class="boxcontainer">
+ <br />
+<&| /Widgets/TitleBox, title => loc('Cryptography') &>
+ <table cellspacing="0" cellpadding="0">
+   <tr>
+     <td class="label"><&|/l&>Preferred Key</&>:</td>
+     <td class="value"><& /Elements/SelectKey, EmailAddress => $UserObj->EmailAddress, Default => $UserObj->PreferredKey &></td>
+   </tr>
+ </table>
+</&>
+ </td>
+ </tr>
+% }
+
 <tr>
 
 
@@ -176,6 +193,7 @@
 </td>
 
 </tr>
+
 </table>
 
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormEnd' );
@@ -288,4 +306,5 @@ $Country => undef
 $Pass1 => undef
 $Pass2=> undef
 $Create=> undef
+$PreferredKey => undef
 </%ARGS>
