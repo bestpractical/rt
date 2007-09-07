@@ -169,7 +169,9 @@
  <table cellspacing="0" cellpadding="0">
    <tr>
      <td class="label"><&|/l&>Preferred Key</&>:</td>
-     <td class="value"><& /Elements/SelectKey, EmailAddress => $UserObj->EmailAddress, Default => $UserObj->PreferredKey &></td>
+% my $prefkey = $UserObj->FirstAttribute('PreferredKey');
+% $prefkey = $prefkey ? $prefkey->Content : '';
+     <td class="value"><& /Elements/SelectKey, EmailAddress => $UserObj->EmailAddress, Default => $prefkey &></td>
    </tr>
  </table>
 </&>
@@ -225,7 +227,7 @@ if ($UserObj->Id) {
 		    Organization RealName NickName Lang EmailEncoding WebEncoding 
 		    ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
 		    AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
-		Address2 City State Zip Country Lang PreferredKey
+		Address2 City State Zip Country Lang
 		   );
 
     $m->callback(
@@ -247,7 +249,7 @@ if ($UserObj->Id) {
     push (@results,@fieldresults);
 
 
-# {{{ Deal with special fields: Privileged, Enabled and Password
+# {{{ Deal with special fields: Privileged, Enabled, Password, PreferredKey
 if  ( ($SetPrivileged) and ( $Privileged != $UserObj->Privileged) ) {
 my  ($code, $msg) = $UserObj->SetPrivileged($Privileged);
      push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
@@ -262,6 +264,11 @@ if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->I
     push @results, loc('Password: [_1]', loc_fuzzy($msg));
 } elsif ( $Pass1 && ($Pass1 ne $Pass2)) {
     push @results, loc("Passwords do not match. Your password has not been changed");
+}
+
+if ((defined $PreferredKey) && $PreferredKey ne $UserObj->FirstAttribute('PreferredKey')) {
+    my ($code, $msg) = $UserObj->SetAttribute(Name => 'PreferredKey', Content => $PreferredKey);
+    push @results, loc('Preferred Key: [_1]', loc_fuzzy($msg));
 }
 
 # }}}

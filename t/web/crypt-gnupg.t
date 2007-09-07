@@ -390,7 +390,9 @@ is ($tick->Subject,
 # test key selection
 ok($user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
-is($user->PreferredKey, "9FA662C06DE22FC2", "preferred key is set correctly");
+my $prefkey = $user->FirstAttribute('PreferredKey');
+$prefkey = $prefkey ? $prefkey->Content : '';
+is($prefkey, "9FA662C06DE22FC2", "preferred key is set correctly");
 $m->get("$baseurl/User/Prefs.html");
 like($m->content, qr/Preferred Key/, "preferred key option shows up in preference");
 
@@ -405,7 +407,9 @@ $m->submit;
 
 ok($user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
-is($user->PreferredKey, "DF651FA0632C4F50", "preferred key is set correctly to the new value");
+$prefkey = $user->FirstAttribute('PreferredKey');
+$prefkey = $prefkey ? $prefkey->Content : '';
+is($prefkey, "DF651FA0632C4F50", "preferred key is set correctly to the new value");
 
 $m->get("$baseurl/User/Prefs.html");
 like($m->content, qr/Preferred Key/, "preferred key option shows up in preference");
