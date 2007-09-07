@@ -118,7 +118,6 @@ Create takes a hash of values and creates a row in the database:
   varchar(50) 'Country'.
   varchar(50) 'Timezone'.
   text 'PGPKey'.
-  text 'PreferredKey'.
 
 =cut
 
@@ -157,7 +156,6 @@ sub Create {
                 Country => '',
                 Timezone => '',
                 PGPKey => '',
-                PreferredKey => '',
 
 		  @_);
     $self->SUPER::Create(
@@ -190,7 +188,6 @@ sub Create {
                          Country => $args{'Country'},
                          Timezone => $args{'Timezone'},
                          PGPKey => $args{'PGPKey'},
-                         PreferredKey => $args{'PreferredKey'},
 );
 
 }
@@ -727,22 +724,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
-=head2 PreferredKey
-
-Returns the current value of PreferredKey. 
-(In the database, PreferredKey is stored as text.)
-
-
-
-=head2 SetPreferredKey VALUE
-
-
-Set PreferredKey to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, PreferredKey will be stored as a text.)
-
-
-=cut
 
 =head2 Creator
 
@@ -844,7 +825,6 @@ sub _CoreAccessible {
 		{read => 1, write => 1, sql_type => 12, length => 50,  is_blob => 0,  is_numeric => 0,  type => 'varchar(50)', default => ''},
         PGPKey => 
 		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
-        PreferredKey => 
 		{read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         Creator => 
 		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},

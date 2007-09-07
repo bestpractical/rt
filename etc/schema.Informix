@@ -209,7 +209,6 @@ CREATE TABLE Users (
   	Country 		VARCHAR(50),
 	Timezone		VARCHAR(50),
 	PGPKey			BYTE,
-	PreferredKey		BYTE,
   	Creator 		INTEGER DEFAULT 0 NOT NULL,
   	Created 		DATETIME YEAR TO SECOND,
   	LastUpdatedBy 		INTEGER DEFAULT 0 NOT NULL,

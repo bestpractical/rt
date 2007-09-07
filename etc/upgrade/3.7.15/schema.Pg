@@ -1,2 +1,0 @@
-alter table Users add column PreferredKey text NULL;
-

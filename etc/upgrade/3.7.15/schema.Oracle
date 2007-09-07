@@ -1,2 +1,0 @@
-ALTER TABLE Users ADD PreferredKey CLOB NULL;
-

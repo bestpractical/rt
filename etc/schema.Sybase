@@ -247,7 +247,6 @@ CREATE TABLE rt3.Users (
   Country varchar(50) NULL  ,
   Timezone varchar(50) NULL  ,
   PGPKey text NULL,
-  PreferredKey text NULL,
 
   Creator integer NOT NULL   ,
   Created DATETIME NULL  ,

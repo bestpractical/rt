@@ -218,7 +218,6 @@ CREATE TABLE Users (
   	Country 		VARCHAR2(50),
 	Timezone		VARCHAR2(50),
 	PGPKey			CLOB,
-	PreferredKey		CLOB,
   	Creator 		NUMBER(11,0) DEFAULT 0 NOT NULL,
   	Created 		DATE,
   	LastUpdatedBy 		NUMBER(11,0) DEFAULT 0 NOT NULL,
