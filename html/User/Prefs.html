@@ -169,9 +169,7 @@
  <table cellspacing="0" cellpadding="0">
    <tr>
      <td class="label"><&|/l&>Preferred Key</&>:</td>
-% my $prefkey = $UserObj->FirstAttribute('PreferredKey');
-% $prefkey = $prefkey ? $prefkey->Content : '';
-     <td class="value"><& /Elements/SelectKey, EmailAddress => $UserObj->EmailAddress, Default => $prefkey &></td>
+     <td class="value"><& /Elements/SelectKey, EmailAddress => $UserObj->EmailAddress, Default => $UserObj->PreferredKey &></td>
    </tr>
  </table>
 </&>
