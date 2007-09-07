@@ -50,7 +50,7 @@
 % } else {
 <select name="PreferredKey">
 %     foreach my $key (@keys) {
-<option value="<% $key->{'Key'} %>"><% $key->{'Key'} %></option>
+<option value="<% $key->{'Key'} %>"><% $key->{'Key'} %> (trust: <% $key->{'TrustTerse'}%>)</option>
 %     }
 </select>
 % }
@@ -67,6 +67,9 @@ my @keys = map {
                    : $_
            }
            @{ $res{'info'} };
+
+@keys = sort { $b->{'TrustLevel'} <=> $a->{'TrustLevel'} } @keys;
+
 unshift @keys, $d if defined $d;
 
 </%INIT>

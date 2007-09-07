@@ -1641,6 +1641,8 @@ sub ParseKeysInfo {
             ) } = split /:/, $line, 12;
             $info{'Trust'} = _ConvertTrustChar( $info{'TrustChar'} );
             $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
+            $info{'TrustTerse'} = _ConvertTrustChar( $info{'TrustChar'}, 1 );
+            $info{'OwnerTrustTerse'} = _ConvertTrustChar( $info{'OwnerTrustChar'}, 1 );
             $info{'TrustLevel'} = _ConvertTrustLevel( $info{'TrustChar'} );
             $info{'OwnerTrustLevel'} = _ConvertTrustLevel( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
@@ -1655,6 +1657,7 @@ sub ParseKeysInfo {
                 Empty Empty KeyCapabilities Other
             ) } = split /:/, $line, 12;
             $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
+            $info{'OwnerTrustTerse'} = _ConvertTrustChar( $info{'OwnerTrustChar'}, 1 );
             $info{'OwnerTrustLevel'} = _ConvertTrustLevel( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
@@ -1676,8 +1679,8 @@ sub ParseKeysInfo {
 }
 
 {
-    my %mapping = (
-        o => 'Unknown (this value is new to the system)', #loc
+    my %verbose = (
+        o   => 'Unknown (this value is new to the system)', #loc
         # deprecated
         d   => "The key has been disabled", #loc
         r   => "The key has been revoked", #loc
@@ -1689,6 +1692,21 @@ sub ParseKeysInfo {
         m   => "There is marginal trust in this key", #loc
         f   => "The key is fully trusted", #loc
         u   => "The key is ultimately trusted", #loc
+    );
+
+    my %terse = (
+        o   => 'unknown', #loc
+        # deprecated
+        d   => "key disabled", #loc
+        r   => "key revoked", #loc
+        e   => "key expired", #loc
+        '-' => 'unknown', #loc
+        #gpupg docs says that '-' and 'q' may safely be treated as the same value
+        q   => 'unknown', #loc
+        n   => "none", #loc
+        m   => "marginal", #loc
+        f   => "full", #loc
+        u   => "ultimate", #loc
     );
 
     my %level = (
@@ -1709,10 +1727,14 @@ sub ParseKeysInfo {
 
     sub _ConvertTrustChar {
         my $value = shift;
-        return $mapping{'-'} unless $value;
+        my $terse = shift;
+
+        my $lookup = $terse ? \%terse : \%verbose;
+
+        return $lookup->{'-'} unless $value;
 
         $value = substr $value, 0, 1;
-        return $mapping{ $value } || $mapping{'o'};
+        return $lookup->{ $value } || $lookup->{'o'};
     }
 
     sub _ConvertTrustLevel {
