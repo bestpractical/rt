@@ -50,7 +50,7 @@
 % } else {
 <select name="PreferredKey">
 %     foreach my $key (@keys) {
-<option value="<% $key->{'Key'} %>"><% $key->{'Key'} %> (trust: <% $key->{'TrustTerse'}%>)</option>
+<option value="<% $key->{'Key'} %>"><% $key->{'Key'} %> <% loc("(trust: [_1])", $key->{'TrustTerse'}) %></option>
 %     }
 </select>
 % }
