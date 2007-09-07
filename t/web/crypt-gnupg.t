@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 80;
+use Test::More tests => 94;
 use RT::Test;
 use RT::Action::SendEmail;
 
@@ -44,6 +44,8 @@ RT::Test->import_gnupg_key('recipient@example.com', 'public');
 RT::Test->import_gnupg_key('recipient@example.com', 'secret');
 RT::Test->import_gnupg_key('general@example.com', 'public');
 RT::Test->import_gnupg_key('general@example.com', 'secret');
+RT::Test->import_gnupg_key('general@example.com.2', 'public');
+RT::Test->import_gnupg_key('general@example.com.2', 'secret');
 
 ok(my $user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
@@ -384,6 +386,34 @@ is ($tick->Subject,
     "Nokey requestor",
     "Correct subject"
 );
+
+# test key selection
+ok($user = RT::User->new($RT::SystemUser));
+ok($user->Load('root'), "Loaded user 'root'");
+is($user->PreferredKey, "9FA662C06DE22FC2", "preferred key is set correctly");
+$m->get("$baseurl/User/Prefs.html");
+like($m->content, qr/Preferred Key/, "preferred key option shows up in preference");
+
+# XXX: mech doesn't let us see the current value of the select, apparently
+like($m->content, qr/9FA662C06DE22FC2/, "first key shows up in preferences");
+like($m->content, qr/DF651FA0632C4F50/, "second key shows up in preferences");
+like($m->content, qr/9FA662C06DE22FC2.*?DF651FA0632C4F50/s, "first key shows up before the second");
+
+$m->form_number(3);
+$m->select("PreferredKey" => "DF651FA0632C4F50");
+$m->submit;
+
+ok($user = RT::User->new($RT::SystemUser));
+ok($user->Load('root'), "Loaded user 'root'");
+is($user->PreferredKey, "DF651FA0632C4F50", "preferred key is set correctly to the new value");
+
+$m->get("$baseurl/User/Prefs.html");
+like($m->content, qr/Preferred Key/, "preferred key option shows up in preference");
+
+# XXX: mech doesn't let us see the current value of the select, apparently
+like($m->content, qr/DF651FA0632C4F50/, "second key shows up in preferences");
+like($m->content, qr/9FA662C06DE22FC2/, "first key shows up in preferences");
+like($m->content, qr/DF651FA0632C4F50.*?9FA662C06DE22FC2/s, "second key (now preferred) shows up before the first");
 
 # test that the new fields work
 $m->get("$baseurl/Search/Simple.html?q=General");
