@@ -68,6 +68,12 @@
 </&>
 % }
 
+% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+<&|/Widgets/TitleBox, title => loc( 'Cryptography' ) &>
+Preferred key: <& /Elements/SelectKey, EmailAddress => $UserObj->EmailAddress, Default => $UserObj->PreferredKey &>
+</&>
+% }
+
 <& /Elements/Submit, Name => 'Update', Label => loc('Save changes') &>
 </form>
 <%INIT>
