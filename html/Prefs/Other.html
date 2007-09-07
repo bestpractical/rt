@@ -83,6 +83,11 @@ my $title = loc("Other preferences");
 my $UserObj = $session{'CurrentUser'}->UserObj;
 my $preferences = $UserObj->Preferences( $RT::System );
 
+if ((defined $PreferredKey) && $PreferredKey ne $UserObj->FirstAttribute('PreferredKey')) {
+    my ($code, $msg) = $UserObj->SetAttribute(Name => 'PreferredKey', Content => $PreferredKey);
+    push @results, loc('Preferred Key: [_1]', loc_fuzzy($msg));
+}
+
 if ( $Update ) {
     foreach my $option( RT->Config->Options ) {
         my $meta = RT->Config->Meta( $option );
@@ -115,4 +120,5 @@ my $localize_meta = sub {
 <%ARGS>
 $Update => 0,
 $User   => undef,
+$PreferredKey => undef,
 </%ARGS>

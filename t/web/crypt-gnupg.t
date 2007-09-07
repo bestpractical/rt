@@ -391,8 +391,8 @@ is ($tick->Subject,
 ok($user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 is($user->PreferredKey, "9FA662C06DE22FC2", "preferred key is set correctly");
-$m->get("$baseurl/User/Prefs.html");
-like($m->content, qr/Preferred Key/, "preferred key option shows up in preference");
+$m->get("$baseurl/Prefs/Other.html");
+like($m->content, qr/Preferred key/, "preferred key option shows up in preference");
 
 # XXX: mech doesn't let us see the current value of the select, apparently
 like($m->content, qr/9FA662C06DE22FC2/, "first key shows up in preferences");
@@ -407,8 +407,8 @@ ok($user = RT::User->new($RT::SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 is($user->PreferredKey, "DF651FA0632C4F50", "preferred key is set correctly to the new value");
 
-$m->get("$baseurl/User/Prefs.html");
-like($m->content, qr/Preferred Key/, "preferred key option shows up in preference");
+$m->get("$baseurl/Prefs/Other.html");
+like($m->content, qr/Preferred key/, "preferred key option shows up in preference");
 
 # XXX: mech doesn't let us see the current value of the select, apparently
 like($m->content, qr/DF651FA0632C4F50/, "second key shows up in preferences");
