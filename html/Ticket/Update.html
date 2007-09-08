@@ -243,42 +243,7 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 
 my @results;
 if ( $ARGS{'SubmitTicket'} && $ARGS{'Encrypt'} ) {
-    my $action;
-    if ( ( $ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq 'response' )
-        || ( $ARGS{'Action'} && $ARGS{'Action'} eq 'Respond' ) )
-    {
-        $action = 'Correspond';
-    }
-    else {
-        $action = 'Comment';
-    }
-
-    my $Message = MakeMIMEEntity(
-        Subject => $ARGS{'UpdateSubject'},
-        Body    => $ARGS{'UpdateContent'},
-    );
-
-    my ( $id, $msg, $txn ) = $TicketObj->$action(
-        CcMessageTo  => $ARGS{'UpdateCc'},
-        BccMessageTo => $ARGS{'UpdateBcc'},
-        MIMEObj      => $Message,
-        TimeTaken    => $ARGS{'UpdateTimeWorked'},
-        DryRun       => 1
-    );
-    unless ( $id ) {
-        $RT::Logger->error("Couldn't fire '$action' action: $msg");
-    }
-    my @recipients;
-    if ( $txn ) {
-        foreach my $scrip ( @{ $txn->Scrips->Prepared } ) {
-            my $action = $scrip->ActionObj->Action;
-            next unless $action->isa('RT::Action::SendEmail');
-
-            foreach my $type qw(To Cc Bcc) {
-                push @recipients, $action->$type();
-            }
-        }
-    }
+    my @recipients = $m->comp( '/Ticket/Elements/PreviewScrips:GetRecipients', TicketObj => $TicketObj, %ARGS );
     foreach my $address ( map $_->address, @recipients ) {
         my %res = RT::Crypt::GnuPG::GetPublicKeyInfo( $address );
         unless ( $res{'info'} ) {
