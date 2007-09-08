@@ -1553,6 +1553,28 @@ sub _PrepareGnuPGOptions {
     return %res;
 }
 
+sub GetKeysForEncryption {
+    my $key_id = shift;
+    my %res = GetKeysInfo( $key_id, 'public' );
+    return %res if $res{'exit_code'};
+    return %res unless $res{'info'};
+
+    my @keys = @{ $res{'info'} };
+    $res{'info'} = [];
+
+    foreach my $key ( @keys ) {
+        # skip disabled keys
+        next if $key->{'Capabilities'} =~ /D/;
+        # skip disabled, expired, revoke and keys with no trust,
+        # but leave keys with unknown trust level
+        next if $key->{'TrustLevel'} < 0;
+
+        push @{ $res{'info'} }, $key;
+    }
+
+    return %res;
+}
+
 sub GetPublicKeyInfo {
     return GetKeyInfo(shift, 'public');
 }
@@ -1637,7 +1659,7 @@ sub ParseKeysInfo {
             @info{ qw(
                 TrustChar KeyLength Algorithm Key
                 Created Expire Empty OwnerTrustChar
-                Empty Empty KeyCapabilities Other
+                Empty Empty Capabilities Other
             ) } = split /:/, $line, 12;
             $info{'Trust'} = _ConvertTrustChar( $info{'TrustChar'} );
             $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
@@ -1654,7 +1676,7 @@ sub ParseKeysInfo {
             @info{ qw(
                 Empty KeyLength Algorithm Key
                 Created Expire Empty OwnerTrustChar
-                Empty Empty KeyCapabilities Other
+                Empty Empty Capabilities Other
             ) } = split /:/, $line, 12;
             $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
             $info{'OwnerTrustTerse'} = _ConvertTrustChar( $info{'OwnerTrustChar'}, 1 );
