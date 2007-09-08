@@ -131,4 +131,49 @@ my @non_recipients = $TicketObj->SquelchMailTo;
 <% $recipient->Content %>
 % }
 </ul>
-<& /Elements/Submit, Value => 'UpdatePreview', Label => loc('Save changes')&>  
+<& /Elements/Submit, Value => 'UpdatePreview', Label => loc('Save changes')&>
+
+<%METHOD GetRecipients>
+<%ARGS>
+$TicketObj
+</%ARGS>
+<%INIT>
+my $action;
+if ( ( $ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq 'response' )
+    || ( $ARGS{'Action'} && $ARGS{'Action'} eq 'Respond' ) )
+{
+    $action = 'Correspond';
+}
+else {
+    $action = 'Comment';
+}
+
+my $Message = MakeMIMEEntity(
+    Subject => $ARGS{'UpdateSubject'},
+    Body    => $ARGS{'UpdateContent'},
+);
+
+my ( $id, $msg, $txn ) = $TicketObj->$action(
+    CcMessageTo  => $ARGS{'UpdateCc'},
+    BccMessageTo => $ARGS{'UpdateBcc'},
+    MIMEObj      => $Message,
+    TimeTaken    => $ARGS{'UpdateTimeWorked'},
+    DryRun       => 1
+);
+unless ( $id && $txn ) {
+    $RT::Logger->error("Couldn't fire '$action' action: $msg");
+    return ();
+}
+
+my @recipients;
+foreach my $scrip ( @{ $txn->Scrips->Prepared } ) {
+    my $action = $scrip->ActionObj->Action;
+    next unless $action->isa('RT::Action::SendEmail');
+
+    foreach my $type qw(To Cc Bcc) {
+        push @recipients, $action->$type();
+    }
+}
+return @recipients;
+</%INIT>
+</%METHOD>
