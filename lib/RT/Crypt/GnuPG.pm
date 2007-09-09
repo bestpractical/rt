@@ -1665,12 +1665,10 @@ sub ParseKeysInfo {
                 Created Expire Empty OwnerTrustChar
                 Empty Empty Capabilities Other
             ) } = split /:/, $line, 12;
-            $info{'Trust'} = _ConvertTrustChar( $info{'TrustChar'} );
-            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
-            $info{'TrustTerse'} = _ConvertTrustChar( $info{'TrustChar'}, 1 );
-            $info{'OwnerTrustTerse'} = _ConvertTrustChar( $info{'OwnerTrustChar'}, 1 );
-            $info{'TrustLevel'} = _ConvertTrustLevel( $info{'TrustChar'} );
-            $info{'OwnerTrustLevel'} = _ConvertTrustLevel( $info{'OwnerTrustChar'} );
+            @info{qw(Trust TrustTerse TrustLevel)} = 
+                _ConvertTrustChar( $info{'TrustChar'} );
+            @info{qw(OwnerTrust OwnerTrustTerse OwnerTrustLevel)} = 
+                _ConvertTrustChar( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
@@ -1682,9 +1680,8 @@ sub ParseKeysInfo {
                 Created Expire Empty OwnerTrustChar
                 Empty Empty Capabilities Other
             ) } = split /:/, $line, 12;
-            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
-            $info{'OwnerTrustTerse'} = _ConvertTrustChar( $info{'OwnerTrustChar'}, 1 );
-            $info{'OwnerTrustLevel'} = _ConvertTrustLevel( $info{'OwnerTrustChar'} );
+            @info{qw(OwnerTrust OwnerTrustTerse OwnerTrustLevel)} = 
+                _ConvertTrustChar( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
@@ -1706,69 +1703,68 @@ sub ParseKeysInfo {
 
 {
     my %verbose = (
-        o   => 'Unknown (this value is new to the system)', #loc
         # deprecated
-        d   => "The key has been disabled", #loc
-        r   => "The key has been revoked", #loc
-        e   => "The key has expired", #loc
-        '-' => 'Unknown (no trust value assigned)', #loc
+        d   => [
+            "The key has been disabled", #loc
+            "key disabled", #loc
+            "-2"
+        ],
+
+        r   => [
+            "The key has been revoked", #loc
+            "key revoked", #loc
+            -3,
+        ],
+
+        e   => [ "The key has expired", #loc
+            "key expired", #loc
+            '-4',
+        ],
+
+        n   => [ "Don't trust this key at all", #loc
+            'none', #loc
+            -1,
+        ],
+
         #gpupg docs says that '-' and 'q' may safely be treated as the same value
-        q   => 'Unknown (no trust value assigned)', #loc
-        n   => "Don't trust this key at all", #loc
-        m   => "There is marginal trust in this key", #loc
-        f   => "The key is fully trusted", #loc
-        u   => "The key is ultimately trusted", #loc
-    );
+        '-' => [
+            'Unknown (no trust value assigned)', #loc
+            'not set',
+            0,
+        ],
+        q   => [
+            'Unknown (no trust value assigned)', #loc
+            'not set',
+            0,
+        ],
+        o   => [
+            'Unknown (this value is new to the system)', #loc
+            'unknown',
+            0,
+        ],
 
-    my %terse = (
-        o   => 'unknown', #loc
-        # deprecated
-        d   => "key disabled", #loc
-        r   => "key revoked", #loc
-        e   => "key expired", #loc
-        '-' => 'unknown', #loc
-        #gpupg docs says that '-' and 'q' may safely be treated as the same value
-        q   => 'unknown', #loc
-        n   => "none", #loc
-        m   => "marginal", #loc
-        f   => "full", #loc
-        u   => "ultimate", #loc
-    );
-
-    my %level = (
-        d   => 0,
-        r   => 0,
-        e   => 0,
-        n   => 0,
-
-        # err on the side of caution
-        o   => 0,
-        '-' => 0,
-        q   => 0,
-
-        m   => 2,
-        f   => 3,
-        u   => 4,
+        m   => [
+            "There is marginal trust in this key", #loc
+            'marginal', #loc
+            1,
+        ],
+        f   => [
+            "The key is fully trusted", #loc
+            'full', #loc
+            2,
+        ],
+        u   => [
+            "The key is ultimately trusted", #loc
+            'ultimate', #loc
+            3,
+        ],
     );
 
     sub _ConvertTrustChar {
         my $value = shift;
-        my $terse = shift;
-
-        my $lookup = $terse ? \%terse : \%verbose;
-
-        return $lookup->{'-'} unless $value;
-
+        return @{ $verbose{'-'} } unless $value;
         $value = substr $value, 0, 1;
-        return $lookup->{ $value } || $lookup->{'o'};
-    }
-
-    sub _ConvertTrustLevel {
-        my $value = shift;
-        return $level{'-'} unless $value;
-
-        $value = substr $value, 0, 1;
-        return $level{ $value } || $level{'o'};
+        return @{ $lookup->{ $value } || $lookup->{'o'} };
     }
 }
 
