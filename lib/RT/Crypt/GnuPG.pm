@@ -1573,7 +1573,7 @@ sub GetKeysForEncryption {
 
         push @{ $res{'info'} }, $key;
     }
-
+    delete $res{'info'} unless @{ $res{'info'} };
     return %res;
 }
 
