@@ -242,14 +242,54 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 # }}}
 
 my @results;
+my @gnupg_keys_issues;
 if ( $ARGS{'SubmitTicket'} && $ARGS{'Encrypt'} ) {
-    my @recipients = $m->comp( '/Ticket/Elements/PreviewScrips:GetRecipients', TicketObj => $TicketObj, %ARGS );
-    foreach my $address ( map $_->address, @recipients ) {
-        my %res = RT::Crypt::GnuPG::GetPublicKeyInfo( $address );
-        unless ( $res{'info'} ) {
-            push @results, loc("There is no key for [_1]", $address);
-            $checks_failure = 1;
+    my @gnupg_messages;
+
+    my @recipients = $m->comp(
+        '/Ticket/Elements/PreviewScrips:GetRecipients',
+        %ARGS, TicketObj => $TicketObj
+    );
+
+    my %seen;
+    foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
+        my %res = RT::Crypt::GnuPG::GetKeysForEncryption( $address );
+        if ( $res{'info'} && @{ $res{'info'} } == 1 && $res{'info'}[0]{'TrustLevel'} > 0 ) {
+            # good, one suitable and trusted key 
+            next;
         }
+
+        my $user = RT::User->new( $RT::SystemUser );
+        $user->LoadByEmail( $address );
+        # it's possible that we have no User record with the email
+        $user = undef unless $user->id;
+
+        my $prefered_key;
+        $prefered_key = $user->PreferredKey if $user;
+        #XXX: prefered key is not yet implemented...
+
+        unless ( $res{'info'} && @{ $res{'info'} } ) {
+            # no keys
+            push @gnupg_messages, loc("There is no key suitable to encrypt messages to [_1]", $address);
+        }
+        elsif ( @{ $res{'info'} } == 1 ) {
+            # trust is not set
+            push @gnupg_messages, loc("There is one key for address [_1], but trust is not set", $address);
+        }
+        else {
+            # multiple keys
+            push @gnupg_messages, loc("There are several keys suitable to encrypt messages to [_1]", $address);
+        }
+        $checks_failure = 1;
+        push @gnupg_keys_issues, {
+            EmailAddress => $address,
+            $user? (User => $user) : (),
+            Keys => undef,
+        };
+    }
+    if ( @gnupg_messages ) {
+        push @results, loc("You are going to encrypt outgoing email messages, but there is a problem(s) with recipients' public keys. You have to figured out problems with keys, disable sending a message to particular recipient or disable encryption.");
+        push @results, @gnupg_messages;
     }
 }
 
