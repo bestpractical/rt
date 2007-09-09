@@ -57,23 +57,23 @@ use RT::Shredder::Exceptions;
 use RT::Shredder::Dependencies;
 
 my @OBJECTS = qw(
-    Attachments
-    CachedGroupMembers
-    CustomFields
-    CustomFieldValues
-    GroupMembers
-    Groups
-    Links
-    Principals
-    Queues
-    ScripActions
-    ScripConditions
-    Scrips
-    Templates
-    ObjectCustomFieldValues
-    Tickets
-    Transactions
-    Users
+    AttachmentCollection
+    CachedGroupMemberCollection
+    CustomFieldCollection
+    CustomFieldValueCollection
+    GroupMemberCollection
+    GroupCollection
+    LinkCollection
+    PrincipalCollection
+    QueueCollection
+    ScripActionCollection
+    ScripConditionCollection
+    ScripCollection
+    TemplateCollection
+    ObjectCustomFieldValueCollection
+    TicketCollection
+    TransactionCollection
+    UserCollection
 );
 
 sub __DependsOn

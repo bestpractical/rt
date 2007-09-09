@@ -67,7 +67,7 @@ use warnings;
 
 use RT::Date;
 use RT::Model::User;
-use RT::Model::Attributecollection;
+use RT::Model::AttributeCollection;
 use RT::Model::Attribute;
 use Encode qw();
 
@@ -166,7 +166,7 @@ sub ObjectTypeStr {
 
 =head2 Attributes
 
-Return this object's attributes as an RT::Model::Attributecollection object
+Return this object's attributes as an RT::Model::AttributeCollection object
 
 =cut
 
@@ -174,7 +174,7 @@ sub attributes {
     my $self = shift;
     
     unless ($self->{'attributes'}) {
-        $self->{'attributes'} = RT::Model::Attributecollection->new($self->CurrentUser);     
+        $self->{'attributes'} = RT::Model::AttributeCollection->new($self->CurrentUser);     
        $self->{'attributes'}->LimitToObject($self); 
     }
     return ($self->{'attributes'}); 

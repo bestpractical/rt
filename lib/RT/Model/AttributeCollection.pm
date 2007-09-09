@@ -47,12 +47,12 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::Attributecollection - collection of RT::Model::Attribute objects
+  RT::Model::AttributeCollection - collection of RT::Model::Attribute objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::Attributecollection;
-my $Attributes = new RT::Model::Attributecollection($CurrentUser);
+  use RT::Model::AttributeCollection;
+my $Attributes = new RT::Model::AttributeCollection($CurrentUser);
 
 =head1 DESCRIPTION
 
@@ -64,7 +64,7 @@ my $Attributes = new RT::Model::Attributecollection($CurrentUser);
 
 use strict;
 use warnings;
-package RT::Model::Attributecollection;
+package RT::Model::AttributeCollection;
 use base qw'RT::SearchBuilder';
 
 

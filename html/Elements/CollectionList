@@ -140,7 +140,7 @@ foreach my $col (@Format) {
 }
 
 my $Class = ref $Collection;
-$Class =~ s/s$//;
+$Class =~ s/Collection$//;
 $Class =~ s/:/_/g;
 
 </%INIT>
