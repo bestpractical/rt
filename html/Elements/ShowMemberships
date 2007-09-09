@@ -57,7 +57,7 @@
 % }
 </ul>
 <%INIT>
-my $GroupMembers = RT::Model::GroupMembers->new($session{'CurrentUser'});
+my $GroupMembers = RT::Model::GroupMemberCollection->new($session{'CurrentUser'});
 $GroupMembers->limit( column => 'MemberId', value => $UserObj->id );
 my $alias = $GroupMembers->join(
     type => 'left',

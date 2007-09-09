@@ -56,7 +56,7 @@ package RT;
 use Getopt::Long;
 
 use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc);
-use RT::Model::Tickets;
+use RT::Model::TicketCollection;
 use RT::Model::Template;
 
 #Clean out all the nasties from the environment
@@ -116,7 +116,7 @@ my $void_scrip_action = RT::Model::ScripAction->new( $CurrentUser );
 #At the appointed time:
 
 #find a bunch of tickets
-my $tickets = RT::Model::Tickets->new($CurrentUser);
+my $tickets = RT::Model::TicketCollection->new($CurrentUser);
 my $search  = $search->new(
     TicketsObj  => $tickets,
     Argument    => $search_arg,
@@ -125,7 +125,7 @@ my $search  = $search->new(
 
 $search->prepare();
 
-# TicketsFound is an RT::Model::Tickets object
+# TicketsFound is an RT::Model::TicketCollection object
 my $tickets = $search->TicketsObj;
 
 #for each ticket we've found

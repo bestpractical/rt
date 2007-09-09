@@ -54,33 +54,33 @@
 # Known Issues: FIXME!
 
 # - ClearRestrictions and Reinitialization is messy and unclear.  The
-# only good way to do it is to create a new RT::Model::Tickets object.
+# only good way to do it is to create a new RT::Model::TicketCollection object.
 
 =head1 NAME
 
-  RT::Model::Tickets - A collection of Ticket objects
+  RT::Model::TicketCollection - A collection of Ticket objects
 
 
 =head1 SYNOPSIS
 
-  use RT::Model::Tickets;
-  my $tickets = new RT::Model::Tickets($CurrentUser);
+  use RT::Model::TicketCollection;
+  my $tickets = new RT::Model::TicketCollection($CurrentUser);
 
 =head1 description
 
-   A collection of RT::Model::Tickets.
+   A collection of RT::Model::TicketCollection.
 
 =head1 METHODS
 
 
 =cut
 
-package RT::Model::Tickets;
+package RT::Model::TicketCollection;
 
 use strict;
 no warnings qw(redefine);
 
-use RT::Model::CustomFields;
+use RT::Model::CustomFieldCollection;
 use Jifty::DBI::Collection::Unique;
 
 # Configuration Tables:
@@ -201,7 +201,7 @@ sub dispatch   { return \%dispatch }
 sub can_bundle { return \%can_bundle }
 
 # Bring in the clowns.
-require RT::Model::Tickets_Overlay_SQL;
+require RT::Model::TicketCollection_Overlay_SQL;
 
 # {{{ sub SortFields
 
@@ -2871,7 +2871,7 @@ sub PrepForSerialization {
 
 =head1 FLAGS
 
-RT::Model::Tickets supports several flags which alter search behavior:
+RT::Model::TicketCollection supports several flags which alter search behavior:
 
 
 allow_deleted_search  (Otherwise never show deleted tickets in search results)

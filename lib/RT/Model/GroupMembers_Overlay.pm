@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::GroupMembers - a collection of RT::Model::GroupMember objects
+  RT::Model::GroupMemberCollection - a collection of RT::Model::GroupMember objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::GroupMembers;
+  use RT::Model::GroupMemberCollection;
 
 =head1 DESCRIPTION
 
@@ -63,7 +63,7 @@
 =cut
 
 
-package RT::Model::GroupMembers;
+package RT::Model::GroupMemberCollection;
 
 use strict;
 no warnings qw(redefine);

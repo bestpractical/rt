@@ -54,7 +54,7 @@
 </ul>
 
 <%INIT>
-my $ACL = new RT::Model::ACL($session{'CurrentUser'});
+my $ACL = new RT::Model::ACECollection($session{'CurrentUser'});
 $ACL->LimitToQueue($QueueObj->id);
 $ACL->LimitPrincipalToUser($PrincipalId);
 </%INIT>

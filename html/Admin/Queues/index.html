@@ -76,7 +76,7 @@
 
 <%INIT>
 my ($queue, $caption);
-my $queues = new RT::Model::Queues($session{'CurrentUser'});
+my $queues = new RT::Model::QueueCollection($session{'CurrentUser'});
 $queues->find_all_rows();
 
 if ($FindDisabledQueues) {

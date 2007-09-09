@@ -45,24 +45,24 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Model::CustomFieldValues::External;
+package RT::Model::CustomFieldValueCollection::External;
 
 use strict;
 use warnings;
 
-use base qw(RT::Model::CustomFieldValues);
+use base qw(RT::Model::CustomFieldValueCollection);
 
 =head1 NAME
 
-RT::Model::CustomFieldValues::External - Pull possible values for a custom
+RT::Model::CustomFieldValueCollection::External - Pull possible values for a custom
 field from an arbitrary external data source.
 
 =head1 SYNOPSIS
 
 Custom field value lists can be produced by creating a class that
-inherits from C<RT::Model::CustomFieldValues::External>, and overloading
+inherits from C<RT::Model::CustomFieldValueCollection::External>, and overloading
 C<SourceDescription> and C<ExternalValues>.  See
-L<RT::Model::CustomFieldValues::Groups> for a simple example.
+L<RT::Model::CustomFieldValueCollection::Groups> for a simple example.
 
 =head1 DESCRIPTION
 

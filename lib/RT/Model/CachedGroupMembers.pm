@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::CachedGroupMembers -- Class Description
+  RT::Model::CachedGroupMemberCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::CachedGroupMembers
+  use RT::Model::CachedGroupMemberCollection
 
 =head1 DESCRIPTION
 
@@ -69,7 +69,7 @@ use strict;
 
 =cut
 
-package RT::Model::CachedGroupMembers;
+package RT::Model::CachedGroupMemberCollection;
 
 use RT::SearchBuilder;
 use RT::Model::CachedGroupMember;
@@ -99,17 +99,17 @@ sub new_item {
     return(RT::Model::CachedGroupMember->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::CachedGroupMembers_Overlay";
+        eval "require RT::Model::CachedGroupMemberCollection_Overlay";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/CachedGroupMembers_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::CachedGroupMembers_Vendor";
+        eval "require RT::Model::CachedGroupMemberCollection_Vendor";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/CachedGroupMembers_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::CachedGroupMembers_Local";
+        eval "require RT::Model::CachedGroupMemberCollection_Local";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/CachedGroupMembers_Local.pm}) {
             die $@;
         };
@@ -131,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::CachedGroupMembers_Overlay, RT::Model::CachedGroupMembers_Vendor, RT::Model::CachedGroupMembers_Local
+RT::Model::CachedGroupMemberCollection_Overlay, RT::Model::CachedGroupMemberCollection_Vendor, RT::Model::CachedGroupMemberCollection_Local
 
 =cut
 

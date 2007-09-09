@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::CachedGroupMembers - a collection of RT::Model::GroupMember objects
+  RT::Model::CachedGroupMemberCollection - a collection of RT::Model::GroupMember objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::CachedGroupMembers;
+  use RT::Model::CachedGroupMemberCollection;
 
 =head1 DESCRIPTION
 
@@ -63,7 +63,7 @@
 =cut
 
 
-package RT::Model::CachedGroupMembers;
+package RT::Model::CachedGroupMemberCollection;
 
 use strict;
 no warnings qw(redefine);

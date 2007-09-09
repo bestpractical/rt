@@ -64,7 +64,7 @@ ok($id, 'record test ticket creation 2');
 ok(require RT::Search::FromSQL, "Search::FromSQL loaded");
 my $ticketsqlstr = "Requestor.EmailAddress = '" . $CurrentUser->EmailAddress .
     "' AND Priority > '20'";
-my $search = RT::Search::FromSQL->new(Argument => $ticketsqlstr, TicketsObj => RT::Model::Tickets->new($CurrentUser),
+my $search = RT::Search::FromSQL->new(Argument => $ticketsqlstr, TicketsObj => RT::Model::TicketCollection->new($CurrentUser),
 				      );
 is(ref($search), 'RT::Search::FromSQL', "search Created");
 ok($search->prepare(), "from_sql search run");

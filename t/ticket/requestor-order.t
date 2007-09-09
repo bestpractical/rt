@@ -27,13 +27,13 @@ while (@requestors) {
 }
 
 {
-    my $tix = RT::Model::Tickets->new($RT::SystemUser);
+    my $tix = RT::Model::TicketCollection->new($RT::SystemUser);
     $tix->from_sql("Queue = '$queue'");
     is($tix->count, 30, "found thirty tickets");
 }
 
 {
-    my $tix = RT::Model::Tickets->new($RT::SystemUser);
+    my $tix = RT::Model::TicketCollection->new($RT::SystemUser);
     $tix->from_sql("Queue = '$queue' AND requestor = 'alpha\@example.com'");
     $tix->order_by({ column => "Subject" });
     my @subjects;
@@ -62,7 +62,7 @@ sub check_emails_order
 }
 
 {
-    my $tix = RT::Model::Tickets->new($RT::SystemUser);
+    my $tix = RT::Model::TicketCollection->new($RT::SystemUser);
     $tix->from_sql("Queue = '$queue' AND subject = 'first test' AND Requestor.EmailAddress LIKE 'example.com'");
     $tix->order_by({ column => "Requestor.EmailAddress" });
     check_emails_order($tix, 5, 'ASC');
@@ -71,7 +71,7 @@ sub check_emails_order
 }
 
 {
-    my $tix = RT::Model::Tickets->new($RT::SystemUser);
+    my $tix = RT::Model::TicketCollection->new($RT::SystemUser);
     $tix->from_sql("Queue = '$queue' AND Subject = 'first test'");
     $tix->order_by({ column => "Requestor.EmailAddress" });
     check_emails_order($tix, 6, 'ASC');
@@ -81,7 +81,7 @@ sub check_emails_order
 
 
 {
-    my $tix = RT::Model::Tickets->new($RT::SystemUser);
+    my $tix = RT::Model::TicketCollection->new($RT::SystemUser);
     $tix->from_sql("Queue = '$queue' AND Subject = 'first test'");
     $tix->order_by({ column => "Requestor.EmailAddress" });
     check_emails_order($tix, 6, 'ASC');
@@ -109,7 +109,7 @@ sub check_emails_order
     ok($id, "added group to requestors group") or diag("error: $msg");
 }
 
-    my $tix = RT::Model::Tickets->new($RT::SystemUser);    
+    my $tix = RT::Model::TicketCollection->new($RT::SystemUser);    
     $tix->from_sql("Queue = '$queue' AND Subject = 'first test'");
 TODO: {
     local $TODO = "if group has non users members we get wrong order";
@@ -120,7 +120,7 @@ TODO: {
     check_emails_order($tix, 7, 'DESC');
 
 {
-    my $tix = RT::Model::Tickets->new($RT::SystemUser);
+    my $tix = RT::Model::TicketCollection->new($RT::SystemUser);
     $tix->from_sql("Queue = '$queue'");
     $tix->order_by({ column => "Requestor.EmailAddress" });
     $tix->rows_per_page(30);
@@ -131,7 +131,7 @@ TODO: {
 }
 
 {
-    my $tix = RT::Model::Tickets->new($RT::SystemUser);
+    my $tix = RT::Model::TicketCollection->new($RT::SystemUser);
     $tix->from_sql("Queue = '$queue'");
     $tix->order_by({ column => "Requestor.EmailAddress" });
     $tix->rows_per_page(30);

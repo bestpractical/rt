@@ -240,7 +240,7 @@ sub ParseSQL {
 
     my @results;
 
-    my %field = %{ RT::Model::Tickets->new( $args{'CurrentUser'} )->columns };
+    my %field = %{ RT::Model::TicketCollection->new( $args{'CurrentUser'} )->columns };
     my %lcfield = map { ( lc($_) => $_ ) } keys %field;
 
     my $node =  $self;

@@ -11,8 +11,8 @@ use RT::Test;
 
 my $SUBJECT = "Search test - ".$$;
 
-use_ok('RT::Model::Tickets');
-my $tix = RT::Model::Tickets->new($RT::SystemUser);
+use_ok('RT::Model::TicketCollection');
+my $tix = RT::Model::TicketCollection->new($RT::SystemUser);
 can_ok($tix, 'from_sql');
 $tix->from_sql('Updated = "2005-08-05" AND Subject = "$SUBJECT"');
 

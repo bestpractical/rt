@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::Queues -- Class Description
+  RT::Model::QueueCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::Queues
+  use RT::Model::QueueCollection
 
 =head1 DESCRIPTION
 
@@ -69,7 +69,7 @@ use strict;
 
 =cut
 
-package RT::Model::Queues;
+package RT::Model::QueueCollection;
 
 use RT::SearchBuilder;
 use RT::Model::Queue;
@@ -99,17 +99,17 @@ sub new_item {
     return(RT::Model::Queue->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::Queues_Overlay";
+        eval "require RT::Model::QueueCollection_Overlay";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Queues_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::Queues_Vendor";
+        eval "require RT::Model::QueueCollection_Vendor";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Queues_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::Queues_Local";
+        eval "require RT::Model::QueueCollection_Local";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Queues_Local.pm}) {
             die $@;
         };
@@ -131,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::Queues_Overlay, RT::Model::Queues_Vendor, RT::Model::Queues_Local
+RT::Model::QueueCollection_Overlay, RT::Model::QueueCollection_Vendor, RT::Model::QueueCollection_Local
 
 =cut
 

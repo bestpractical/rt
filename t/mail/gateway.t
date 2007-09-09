@@ -61,7 +61,7 @@ use Test::More tests => 153;
 use RT::Test config => 'set( $UnsafeEmailCommands, 1);';
 my ($baseurl, $m) = RT::Test->started_ok;
 
-use RT::Model::Tickets;
+use RT::Model::TicketCollection;
 
 use MIME::Entity;
 use Digest::MD5 qw(md5_base64);
@@ -72,7 +72,7 @@ use LWP::UserAgent;
 my $url = $m->rt_base_url;
 
 sub latest_ticket {
-    my $tickets = RT::Model::Tickets->new( $RT::SystemUser );
+    my $tickets = RT::Model::TicketCollection->new( $RT::SystemUser );
     $tickets->order_by( { column => 'id', order => 'DESC'} );
     $tickets->limit( column => 'id', operator => '>', value => '0' );
     $tickets->rows_per_page( 1 );
@@ -487,7 +487,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     diag "for the raw file the md5 hex is ". Digest::MD5::md5_hex($file) if $ENV{'TEST_VERBOSE'};
 
     # Verify that the binary attachment is valid in the database
-    my $attachments = RT::Model::Attachments->new($RT::SystemUser);
+    my $attachments = RT::Model::AttachmentCollection->new($RT::SystemUser);
     $attachments->limit(column => 'ContentType', value => 'image/gif');
     my $txn_alias = $attachments->join(
         alias1 => 'main',
@@ -741,7 +741,7 @@ use RT::Model::ACE;
 my $ace = RT::Model::ACE->new($RT::SystemUser);
 $ace->load( $ace_id );
 $ace->delete;
-my $acl = RT::Model::ACL->new($RT::SystemUser);
+my $acl = RT::Model::ACECollection->new($RT::SystemUser);
 $acl->limit( column => 'RightName', value => 'ReplyToTicket' );
 $acl->LimitToObject( $RT::System );
 while( my $ace = $acl->next ) {

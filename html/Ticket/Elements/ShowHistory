@@ -128,7 +128,7 @@ $m->flush_buffer();
 % }
 </div>
 <%INIT>
-my $Transactions = new RT::Model::Transactions($session{'CurrentUser'});
+my $Transactions = new RT::Model::TransactionCollection($session{'CurrentUser'});
 if ($Tickets) {
     while (my $t = $Tickets->next) {
         $Transactions->LimitToTicket($t->id);

@@ -49,7 +49,7 @@
 
 package RT::Action::ResolveMembers;
 require RT::Action::Generic;
-require RT::Model::Links;
+require RT::Model::LinkCollection;
 
 use strict;
 use vars qw/@ISA/;
@@ -77,7 +77,7 @@ sub prepare  {
 sub commit {
     my $self = shift;
 
-    my $Links=RT::Model::Links->new($RT::SystemUser);
+    my $Links=RT::Model::LinkCollection->new($RT::SystemUser);
     $Links->limit(column => 'Type', value => 'MemberOf');
     $Links->limit(column => 'Target', value => $self->TicketObj->id);
 

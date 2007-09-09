@@ -26,7 +26,7 @@ use base qw/RT::Record/;
 
 
 use Digest::MD5;
-use RT::Model::Principals;
+use RT::Model::PrincipalCollection;
 use RT::Model::ACE;
 use RT::Interface::Email;
 use Encode;
@@ -1175,7 +1175,7 @@ user is a member.
 
 sub OwnGroups {
     my $self = shift;
-    my $groups = RT::Model::Groups->new($self->CurrentUser);
+    my $groups = RT::Model::GroupCollection->new($self->CurrentUser);
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember(PrincipalId => $self->id, 
             Recursively => 1);
@@ -1340,7 +1340,7 @@ sub set_Preferences {
 
 =head2 WatchedQueues ROLE_LIST
 
-Returns a RT::Model::Queues object containing every queue watched by the user.
+Returns a RT::Model::QueueCollection object containing every queue watched by the user.
 
 Takes a list of roles which is some subset of ('Cc', 'AdminCc').  Defaults to:
 
@@ -1355,7 +1355,7 @@ sub WatchedQueues {
 
     $RT::Logger->debug('WatcheQueues got user ' . $self->Name);
 
-    my $watched_queues = RT::Model::Queues->new($self->CurrentUser);
+    my $watched_queues = RT::Model::QueueCollection->new($self->CurrentUser);
 
     my $group_alias = $watched_queues->join(
                                              alias1 => 'main',
@@ -1445,7 +1445,7 @@ sub _CleanupInvalidDelegations {
                   Object => $RT::System));
 
     # Look up all delegation rights currently posessed by this user.
-    my $deleg_acl = RT::Model::ACL->new($RT::SystemUser);
+    my $deleg_acl = RT::Model::ACECollection->new($RT::SystemUser);
     $deleg_acl->LimitToPrincipal(Type => 'User',
                  Id => $self->PrincipalId,
                  IncludeGroupMembership => 1);
@@ -1457,7 +1457,7 @@ sub _CleanupInvalidDelegations {
 
     # Look up all rights delegated by this principal which are
     # inconsistent with the allowed delegation objects.
-    my $acl_to_del = RT::Model::ACL->new($RT::SystemUser);
+    my $acl_to_del = RT::Model::ACECollection->new($RT::SystemUser);
     $acl_to_del->DelegatedBy(Id => $self->id);
     foreach (@allowed_deleg_objects) {
     $acl_to_del->LimitNotObject($_);

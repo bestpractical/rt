@@ -67,7 +67,7 @@
 
 
 <%INIT>
-my $CustomFields = RT::Model::CustomFields->new($session{'CurrentUser'});
+my $CustomFields = RT::Model::CustomFieldCollection->new($session{'CurrentUser'});
 my @results;
 my (@GlobalCFs, @UnassignedCFs);
 
@@ -85,7 +85,7 @@ $CustomFields->order_by( column => 'Name' );
 
 
 my ($GlobalCFs, $ObjectCFs);
-$ObjectCFs = RT::Model::ObjectCustomFields->new($session{'CurrentUser'});
+$ObjectCFs = RT::Model::ObjectCustomFieldCollection->new($session{'CurrentUser'});
 $ObjectCFs->find_all_rows;
 $ObjectCFs->LimitToObjectId($id);
 $ObjectCFs->LimitToLookupType($lookup);
@@ -145,7 +145,7 @@ if ($CustomField and $Move) {
 # }}}
 
 if ($id) {
-    $GlobalCFs = RT::Model::ObjectCustomFields->new($session{'CurrentUser'});
+    $GlobalCFs = RT::Model::ObjectCustomFieldCollection->new($session{'CurrentUser'});
     $GlobalCFs->LimitToObjectId(0);
     $GlobalCFs->LimitToLookupType($lookup);
 }
@@ -186,7 +186,7 @@ while (my $cf = $CustomFields->next) {
 }
 
 # redo search...
-$ObjectCFs = RT::Model::ObjectCustomFields->new($session{'CurrentUser'});
+$ObjectCFs = RT::Model::ObjectCustomFieldCollection->new($session{'CurrentUser'});
 $ObjectCFs->find_all_rows;
 $ObjectCFs->LimitToObjectId($id);
 $ObjectCFs->LimitToLookupType($lookup);

@@ -71,6 +71,6 @@
 % }
 
 <%init>
-my $Scrips = new RT::Model::Scrips ($session{'CurrentUser'});
+my $Scrips = new RT::Model::ScripCollection ($session{'CurrentUser'});
 $Scrips->LimitToGlobal();
 </%INIT>

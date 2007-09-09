@@ -83,7 +83,7 @@ $users->limit(
 );
 $users->LimitToPrivileged();
 
-my $groups = new RT::Model::Groups($session{'CurrentUser'});
+my $groups = new RT::Model::GroupCollection($session{'CurrentUser'});
 
 # self-recursive group membership considered harmful!
 $groups->limit(column => 'id', value => $Group->id, operator => '!=' );

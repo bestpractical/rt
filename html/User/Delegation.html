@@ -91,11 +91,11 @@ foreach $arg (keys %ARGS) {
     push (@results, $delmsg);
 }
 
-my $personalgroups = RT::Model::Groups->new($session{'CurrentUser'});
+my $personalgroups = RT::Model::GroupCollection->new($session{'CurrentUser'});
 $personalgroups->LimitToPersonalGroupsFor($session{'CurrentUser'}->PrincipalId);
 
 my $objects;
-my $acl = RT::Model::ACL->new ($session{'CurrentUser'});
+my $acl = RT::Model::ACECollection->new ($session{'CurrentUser'});
 $acl->ExcludeDelegatedRights();
 $acl->LimitToPrincipal(Id => $session{'CurrentUser'}->PrincipalId, 
                        IncludeGroupMembership => 1

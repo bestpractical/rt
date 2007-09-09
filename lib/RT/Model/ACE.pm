@@ -65,9 +65,9 @@ package RT::Model::ACE;
 
 use strict;
 no warnings qw(redefine);
-use RT::Model::Principals;
-use RT::Model::Queues;
-use RT::Model::Groups;
+use RT::Model::PrincipalCollection;
+use RT::Model::QueueCollection;
+use RT::Model::GroupCollection;
 
 use base qw/RT::Record/;
 
@@ -464,7 +464,7 @@ sub _delete {
 
     $RT::Handle->begin_transaction() unless $InsideTransaction;
 
-    my $delegated_from_this = RT::Model::ACL->new($RT::SystemUser);
+    my $delegated_from_this = RT::Model::ACECollection->new($RT::SystemUser);
     $delegated_from_this->limit( column    => 'DelegatedFrom',
                                  operator => '=',
                                  value    => $self->id );

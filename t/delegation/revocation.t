@@ -110,7 +110,7 @@ ok( not( $pg2->PrincipalObj->has_right( Right  => 'ShowConfigTab',
 
 sub clear_acls_and_groups {
     # Revoke all rights granted to our cast
-    my $acl = RT::Model::ACL->new($RT::SystemUser);
+    my $acl = RT::Model::ACECollection->new($RT::SystemUser);
     foreach (@principals) {
 	$acl->LimitToPrincipal(Type => $$_->PrincipalObj->PrincipalType,
 			       Id => $$_->PrincipalObj->id);
@@ -120,7 +120,7 @@ sub clear_acls_and_groups {
     }
 
     # Remove all group memberships
-    my $members = RT::Model::GroupMembers->new($RT::SystemUser);
+    my $members = RT::Model::GroupMemberCollection->new($RT::SystemUser);
     foreach (@groups) {
 	$members->LimitToMembersOfGroup( $$_->PrincipalId );
     }

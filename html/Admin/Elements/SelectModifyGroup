@@ -50,7 +50,7 @@
 %}
 <%INIT>
 my ($Group);
-my $Groups = new RT::Model::Groups($session{'CurrentUser'});
+my $Groups = new RT::Model::GroupCollection($session{'CurrentUser'});
 $Groups->find_all_rows;
 </%INIT>
 <%ARGS>

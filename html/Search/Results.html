@@ -114,7 +114,7 @@ if ( !defined($Rows) ) {
 
 my ($title, $ticketcount);
 $session{'i'}++;
-$session{'tickets'} = RT::Model::Tickets->new($session{'CurrentUser'}) ;
+$session{'tickets'} = RT::Model::TicketCollection->new($session{'CurrentUser'}) ;
 $session{'tickets'}->from_sql($Query) if ($Query);
 
 if ($order_by =~ /\|/) {

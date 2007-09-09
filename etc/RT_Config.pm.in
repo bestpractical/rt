@@ -696,7 +696,7 @@ set($StrictLinkACL, 1);
 # others' existence.
 
 # set @CustomFieldValuesSources to a list of class names which extend
-# RT::Model::CustomFieldValues::External.  This can be used to pull lists of
+# RT::Model::CustomFieldValueCollection::External.  This can be used to pull lists of
 # custom field values from external sources at runtime.
 
 # }}}

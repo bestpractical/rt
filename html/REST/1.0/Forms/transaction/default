@@ -54,7 +54,7 @@ $format => undef
 $fields => undef
 </%ARGS>
 <%INIT>
-my $trans = new RT::Model::Transactions $session{CurrentUser};
+my $trans = new RT::Model::TransactionCollection $session{CurrentUser};
 my ($c, $o, $k, $e) = ("", [], {} , "");
 
 chomp $args;

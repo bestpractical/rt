@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
-my $Tickets = RT::Model::Tickets->new($session{'CurrentUser'});
+my $Tickets = RT::Model::TicketCollection->new($session{'CurrentUser'});
 $Tickets->from_sql($ARGS{'Query'});
 $r->content_type('application/rss+xml');
 

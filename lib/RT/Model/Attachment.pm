@@ -206,7 +206,7 @@ sub ParentObj {
 
 =head2 Children
 
-Returns an L<RT::Model::Attachments> object which is preloaded with
+Returns an L<RT::Model::AttachmentCollection> object which is preloaded with
 all attachments objects with this attachment\'s Id as their
 C<Parent>.
 
@@ -215,7 +215,7 @@ C<Parent>.
 sub Children {
     my $self = shift;
     
-    my $kids = RT::Model::Attachments->new( $self->CurrentUser );
+    my $kids = RT::Model::AttachmentCollection->new( $self->CurrentUser );
     $kids->ChildrenOf( $self->id );
     return($kids);
 }

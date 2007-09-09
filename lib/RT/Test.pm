@@ -202,8 +202,8 @@ sub load_or_create_user {
 
     # clean group membership
     {
-        require RT::Model::GroupMembers;
-        my $gms = RT::Model::GroupMembers->new( $RT::SystemUser );
+        require RT::Model::GroupMemberCollection;
+        my $gms = RT::Model::GroupMemberCollection->new( $RT::SystemUser );
         my $groups_alias = $gms->join(
             column1 => 'GroupId', table2 => 'Groups', column2 => 'id',
         );
@@ -301,8 +301,8 @@ sub set_rights {
     my $self = shift;
     my @list = ref $_[0]? @_: @_? { @_ }: ();
 
-    require RT::Model::ACL;
-    my $acl = RT::Model::ACL->new( $RT::SystemUser );
+    require RT::Model::ACECollection;
+    my $acl = RT::Model::ACECollection->new( $RT::SystemUser );
     $acl->limit( column => 'RightName', operator => '!=', value => 'SuperUser' );
     while ( my $ace = $acl->next ) {
         my $obj = $ace->PrincipalObj->Object;

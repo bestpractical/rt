@@ -138,7 +138,7 @@ sub __DependsOn
     push( @$list, $objs );
 
 # Transactions
-    $objs = RT::Model::Transactions->new( $self->CurrentUser );
+    $objs = RT::Model::TransactionCollection->new( $self->CurrentUser );
     $objs->limit( column => 'ObjectType', value => ref $self );
     $objs->limit( column => 'ObjectId', value => $self->id );
     push( @$list, $objs );
@@ -156,7 +156,7 @@ sub __DependsOn
     }
 
 # ACE records
-    $objs = RT::Model::ACL->new( $self->CurrentUser );
+    $objs = RT::Model::ACECollection->new( $self->CurrentUser );
     $objs->LimitToObject( $self );
     push( @$list, $objs );
 

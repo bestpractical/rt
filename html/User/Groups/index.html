@@ -58,7 +58,7 @@
 </ul>
 
 <%INIT>
-my $Groups = RT::Model::Groups->new($session{'CurrentUser'});
+my $Groups = RT::Model::GroupCollection->new($session{'CurrentUser'});
 $Groups->LimitToPersonalGroupsFor($session{'CurrentUser'}->PrincipalId());
 my $title = loc('Personal groups');
 

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
-my $attachments = RT::Model::Attachments->new( $session{'CurrentUser'} );
+my $attachments = RT::Model::AttachmentCollection->new( $session{'CurrentUser'} );
 
 $attachments->columns( qw(id Content ContentType TransactionId ContentEncoding));
 

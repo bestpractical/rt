@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::Groups -- Class Description
+  RT::Model::GroupCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::Groups
+  use RT::Model::GroupCollection
 
 =head1 DESCRIPTION
 
@@ -69,7 +69,7 @@ use strict;
 
 =cut
 
-package RT::Model::Groups;
+package RT::Model::GroupCollection;
 
 use RT::SearchBuilder;
 use RT::Model::Group;
@@ -99,17 +99,17 @@ sub new_item {
     return(RT::Model::Group->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::Groups_Overlay";
+        eval "require RT::Model::GroupCollection_Overlay";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Groups_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::Groups_Vendor";
+        eval "require RT::Model::GroupCollection_Vendor";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Groups_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::Groups_Local";
+        eval "require RT::Model::GroupCollection_Local";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Groups_Local.pm}) {
             die $@;
         };
@@ -131,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::Groups_Overlay, RT::Model::Groups_Vendor, RT::Model::Groups_Local
+RT::Model::GroupCollection_Overlay, RT::Model::GroupCollection_Vendor, RT::Model::GroupCollection_Local
 
 =cut
 

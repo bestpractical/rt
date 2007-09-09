@@ -92,7 +92,7 @@
     }
 
 
-    my $ACLObj = new RT::Model::ACL($session{'CurrentUser'});
+    my $ACLObj = new RT::Model::ACECollection($session{'CurrentUser'});
     my $ACE = new RT::Model::ACE($session{'CurrentUser'});
 
 

@@ -267,8 +267,8 @@ sub table {'Transactions'}
 
 use vars qw( %_BriefDescriptions );
 
-use RT::Model::Attachments;
-use RT::Model::Scrips;
+use RT::Model::AttachmentCollection;
+use RT::Model::ScripCollection;
 
 use HTML::FormatText;
 use HTML::TreeBuilder;
@@ -354,7 +354,7 @@ sub create {
     #Provide a way to turn off scrips if we need to
         $RT::Logger->debug('About to think about scrips for transaction #' .$self->id);
     if ( $args{'ActivateScrips'} and $args{'ObjectType'} eq 'RT::Model::Ticket' ) {
-       $self->{'scrips'} = RT::Model::Scrips->new($RT::SystemUser);
+       $self->{'scrips'} = RT::Model::ScripCollection->new($RT::SystemUser);
 
         $RT::Logger->debug('About to prepare scrips for transaction #' .$self->id); 
         $self->{'scrips'}->prepare(
@@ -430,7 +430,7 @@ sub delete {
 
 =head2 Message
 
-Returns the L<RT::Model::Attachments> Object which contains the "top-level" object
+Returns the L<RT::Model::AttachmentCollection> Object which contains the "top-level" object
 attachment for this transaction.
 
 =cut
@@ -442,7 +442,7 @@ sub Message {
     
     if ( !defined( $self->{'message'} ) ) {
 
-        $self->{'message'} = new RT::Model::Attachments( $self->CurrentUser );
+        $self->{'message'} = new RT::Model::AttachmentCollection( $self->CurrentUser );
         $self->{'message'}->limit(
             column => 'TransactionId',
             value => $self->id
@@ -630,7 +630,7 @@ sub Attachments {
         return $self->{'attachments'};
     }
 
-    $self->{'attachments'} = RT::Model::Attachments->new( $self->CurrentUser );
+    $self->{'attachments'} = RT::Model::AttachmentCollection->new( $self->CurrentUser );
 
     unless ( $self->CurrentUserCanSee ) {
         $self->{'attachments'}->limit(column => 'id', value => '0');
@@ -1250,7 +1250,7 @@ sub CustomFieldValues {
         # XXX: $field could be undef when we want fetch values for all CFs
         #      do we want to cover this situation somehow here?
         unless ( defined $field && $field =~ /^\d+$/o ) {
-            my $CFs = RT::Model::CustomFields->new( $self->CurrentUser );
+            my $CFs = RT::Model::CustomFieldCollection->new( $self->CurrentUser );
             $CFs->limit( column => 'Name', value => $field );
             $CFs->LimitToLookupType($self->CustomFieldLookupType);
             $CFs->LimitToGlobalOrObjectId($self->Object->QueueObj->id);

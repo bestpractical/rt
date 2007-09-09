@@ -58,7 +58,7 @@
 </select>
 
 <%INIT>
-my $Scrips = RT::Model::Scrips->new($session{'CurrentUser'});
+my $Scrips = RT::Model::ScripCollection->new($session{'CurrentUser'});
 $Scrips->find_all_rows;
 
 

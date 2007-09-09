@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::ObjectCustomFieldValues -- Class Description
+  RT::Model::ObjectCustomFieldValueCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::ObjectCustomFieldValues
+  use RT::Model::ObjectCustomFieldValueCollection
 
 =head1 DESCRIPTION
 
@@ -69,7 +69,7 @@ use strict;
 
 =cut
 
-package RT::Model::ObjectCustomFieldValues;
+package RT::Model::ObjectCustomFieldValueCollection;
 
 use RT::SearchBuilder;
 use RT::Model::ObjectCustomFieldValue;
@@ -110,17 +110,17 @@ sub new_item {
     return(RT::Model::ObjectCustomFieldValue->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::ObjectCustomFieldValues_Overlay";
+        eval "require RT::Model::ObjectCustomFieldValueCollection_Overlay";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/ObjectCustomFieldValues_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::ObjectCustomFieldValues_Vendor";
+        eval "require RT::Model::ObjectCustomFieldValueCollection_Vendor";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/ObjectCustomFieldValues_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::ObjectCustomFieldValues_Local";
+        eval "require RT::Model::ObjectCustomFieldValueCollection_Local";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/ObjectCustomFieldValues_Local.pm}) {
             die $@;
         };
@@ -142,7 +142,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::ObjectCustomFieldValues_Overlay, RT::Model::ObjectCustomFieldValues_Vendor, RT::Model::ObjectCustomFieldValues_Local
+RT::Model::ObjectCustomFieldValueCollection_Overlay, RT::Model::ObjectCustomFieldValueCollection_Vendor, RT::Model::ObjectCustomFieldValueCollection_Local
 
 =cut
 

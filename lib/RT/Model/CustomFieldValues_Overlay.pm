@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Model::CustomFieldValues;
+package RT::Model::CustomFieldValueCollection;
 
 use strict;
 use warnings;

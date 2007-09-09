@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::Attachments -- Class Description
+  RT::Model::AttachmentCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::Attachments
+  use RT::Model::AttachmentCollection
 
 =head1 DESCRIPTION
 
@@ -69,7 +69,7 @@ use strict;
 
 =cut
 
-package RT::Model::Attachments;
+package RT::Model::AttachmentCollection;
 
 use RT::SearchBuilder;
 use RT::Model::Attachment;
@@ -99,17 +99,17 @@ sub new_item {
     return(RT::Model::Attachment->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::Attachments_Overlay";
+        eval "require RT::Model::AttachmentCollection_Overlay";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Attachments_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::Attachments_Vendor";
+        eval "require RT::Model::AttachmentCollection_Vendor";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Attachments_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::Attachments_Local";
+        eval "require RT::Model::AttachmentCollection_Local";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Attachments_Local.pm}) {
             die $@;
         };
@@ -131,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::Attachments_Overlay, RT::Model::Attachments_Vendor, RT::Model::Attachments_Local
+RT::Model::AttachmentCollection_Overlay, RT::Model::AttachmentCollection_Vendor, RT::Model::AttachmentCollection_Local
 
 =cut
 

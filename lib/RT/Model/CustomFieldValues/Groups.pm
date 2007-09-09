@@ -49,8 +49,8 @@
 use strict;
 use warnings;
 
-package RT::Model::CustomFieldValues::Groups;
-use base qw(RT::Model::CustomFieldValues::External);
+package RT::Model::CustomFieldValueCollection::Groups;
+use base qw(RT::Model::CustomFieldValueCollection::External);
 
 sub SourceDescription {
     return 'RT user defined groups';
@@ -61,7 +61,7 @@ sub ExternalValues {
 
     my @res;
     my $i = 0;
-    my $groups = RT::Model::Groups->new( $self->CurrentUser );
+    my $groups = RT::Model::GroupCollection->new( $self->CurrentUser );
     $groups->LimitToUserDefinedGroups;
     $groups->order_by( { column => 'Name' } );
     while( my $group = $groups->next ) {

@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::Tickets -- Class Description
+  RT::Model::TicketCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::Tickets
+  use RT::Model::TicketCollection
 
 =head1 DESCRIPTION
 
@@ -69,7 +69,7 @@ use strict;
 
 =cut
 
-package RT::Model::Tickets;
+package RT::Model::TicketCollection;
 
 use RT::SearchBuilder;
 use RT::Model::Ticket;
@@ -99,17 +99,17 @@ sub new_item {
     return(RT::Model::Ticket->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::Tickets_Overlay";
+        eval "require RT::Model::TicketCollection_Overlay";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Tickets_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::Tickets_Vendor";
+        eval "require RT::Model::TicketCollection_Vendor";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Tickets_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::Tickets_Local";
+        eval "require RT::Model::TicketCollection_Local";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Tickets_Local.pm}) {
             die $@;
         };
@@ -131,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::Tickets_Overlay, RT::Model::Tickets_Vendor, RT::Model::Tickets_Local
+RT::Model::TicketCollection_Overlay, RT::Model::TicketCollection_Vendor, RT::Model::TicketCollection_Local
 
 =cut
 

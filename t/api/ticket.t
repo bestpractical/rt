@@ -205,7 +205,7 @@ is ($t->OwnerObj->id, $RT::SystemUser->id , "SystemUser owns the ticket");
  ($val,$msg) =$t->set_Owner('root');
 ok($val,$msg);
 is ($t->OwnerObj->Name, 'root' , "Root owns the ticket");
-my $txns = RT::Model::Transactions->new($RT::SystemUser);
+my $txns = RT::Model::TransactionCollection->new($RT::SystemUser);
 $txns->order_by(column => 'id', order => 'DESC');
 $txns->limit(column => 'ObjectId', value => '1');
 $txns->limit(column => 'ObjectType', value => 'RT::Model::Ticket');

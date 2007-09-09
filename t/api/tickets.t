@@ -11,8 +11,8 @@ use RT::Test;
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-ok (require RT::Model::Tickets);
-ok( my $testtickets = RT::Model::Tickets->new( $RT::SystemUser ) );
+ok (require RT::Model::TicketCollection);
+ok( my $testtickets = RT::Model::TicketCollection->new( $RT::SystemUser ) );
 ok( $testtickets->LimitStatus( value => 'deleted' ) );
 # Should be zero until 'allow_deleted_search'
 is( $testtickets->count , 0 );
@@ -52,23 +52,23 @@ my $t3 = RT::Model::Ticket->new($RT::SystemUser);
 ok ($id, $msg);
 
 
-my $tix1 = RT::Model::Tickets->new($RT::SystemUser);
+my $tix1 = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix1->from_sql('Requestor.EmailAddress LIKE "rqtest1" OR Requestor.EmailAddress LIKE "rqtest2"');
 
 is ($tix1->count, 3);
 
-my $tix2 = RT::Model::Tickets->new($RT::SystemUser);
+my $tix2 = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix2->from_sql('Requestor.Name LIKE "TestOne" OR Requestor.Name LIKE "TestTwo"');
 
 is ($tix2->count, 3);
 
 
-my $tix3 = RT::Model::Tickets->new($RT::SystemUser);
+my $tix3 = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix3->from_sql('Requestor.EmailAddress LIKE "rqtest1"');
 
 is ($tix3->count, 2);
 
-my $tix4 = RT::Model::Tickets->new($RT::SystemUser);
+my $tix4 = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix4->from_sql('Requestor.Name LIKE "TestOne" ');
 
 is ($tix4->count, 2);
@@ -77,12 +77,12 @@ is ($tix4->count, 2);
 # There's no way to differentiate "one requestor name that matches foo and bar"
 # and "two requestors, one matching foo and one matching bar"
 
-# my $tix5 = RT::Model::Tickets->new($RT::SystemUser);
+# my $tix5 = RT::Model::TicketCollection->new($RT::SystemUser);
 # $tix5->from_sql('Requestor.Name LIKE "TestOne" AND Requestor.Name LIKE "TestTwo"');
 # 
 # is ($tix5->count, 1);
 # 
-# my $tix6 = RT::Model::Tickets->new($RT::SystemUser);
+# my $tix6 = RT::Model::TicketCollection->new($RT::SystemUser);
 # $tix6->from_sql('Requestor.EmailAddress LIKE "rqtest1" AND Requestor.EmailAddress LIKE "rqtest2"');
 # 
 # is ($tix6->count, 1);
@@ -110,7 +110,7 @@ $t1->create(Queue => 'general', Subject => "LimitWatchers test", Requestors => \
     undef $main::_STDERR_;
 
 # We assume that we've got some tickets hanging around from before.
-ok( my $unlimittickets = RT::Model::Tickets->new( $RT::SystemUser ) );
+ok( my $unlimittickets = RT::Model::TicketCollection->new( $RT::SystemUser ) );
 ok( $unlimittickets->find_all_rows );
 ok( $unlimittickets->count > 0, "unlimited tickets object should return tickets" );
 

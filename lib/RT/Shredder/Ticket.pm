@@ -68,14 +68,14 @@ sub __DependsOn
     my $list = [];
 
 # Tickets which were merged in
-    my $objs = RT::Model::Tickets->new( $self->CurrentUser );
+    my $objs = RT::Model::TicketCollection->new( $self->CurrentUser );
     $objs->{'allow_deleted_search'} = 1;
     $objs->limit( column => 'EffectiveId', value => $self->id );
     $objs->limit( column => 'id', operator => '!=', value => $self->id );
     push( @$list, $objs );
 
 # Ticket role groups( Owner, Requestors, Cc, AdminCc )
-    $objs = RT::Model::Groups->new( $self->CurrentUser );
+    $objs = RT::Model::GroupCollection->new( $self->CurrentUser );
     $objs->limit( column => 'Domain', value => 'RT::Model::Ticket-Role' );
     $objs->limit( column => 'Instance', value => $self->id );
     push( @$list, $objs );

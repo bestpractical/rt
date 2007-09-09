@@ -9,7 +9,7 @@ use RT::Test;
 use strict;
 use warnings;
 
-use RT::Model::Tickets;
+use RT::Model::TicketCollection;
 use RT::Model::Queue;
 use RT::Model::CustomField;
 
@@ -79,7 +79,7 @@ sub check_order {
 # The real tests start here
 
 my $cme = new RT::CurrentUser( $me );
-my $metx = new RT::Model::Tickets( $cme );
+my $metx = new RT::Model::TicketCollection( $cme );
 # Make sure we can sort in both directions on a queue specific field.
 $metx->from_sql(qq[queue="$queue"] );
 $metx->order_by( {column => "Custom.Ownership", order => 'ASC'} );
@@ -93,7 +93,7 @@ check_order( $metx, reverse qw[2 1 6 5 4 3]);
 
 
 my $cyou = new RT::CurrentUser( $you );
-my $youtx = new RT::Model::Tickets( $cyou );
+my $youtx = new RT::Model::TicketCollection( $cyou );
 # Make sure we can sort in both directions on a queue specific field.
 $youtx->from_sql(qq[queue="$queue"] );
 $youtx->order_by({ column => "Custom.Ownership", order => 'ASC'} );

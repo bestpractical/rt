@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::Queues - a collection of RT::Model::Queue objects
+  RT::Model::QueueCollection - a collection of RT::Model::Queue objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::Queues;
+  use RT::Model::QueueCollection;
 
 =head1 DESCRIPTION
 
@@ -63,7 +63,7 @@
 =cut
 
 
-package RT::Model::Queues;
+package RT::Model::QueueCollection;
 
 use strict;
 no warnings qw(redefine);

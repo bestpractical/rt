@@ -58,6 +58,6 @@
 % }
 </dl>
 <%init>
-my $queues = RT::Model::Queues->new($session{'CurrentUser'});
+my $queues = RT::Model::QueueCollection->new($session{'CurrentUser'});
 $queues->find_all_rows;
 </%init>

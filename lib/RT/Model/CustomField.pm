@@ -54,8 +54,8 @@ use base qw/ RT::Record/;
 use strict;
 no warnings qw(redefine);
 
-use RT::Model::CustomFieldValues;
-use RT::Model::ObjectCustomFieldValues;
+use RT::Model::CustomFieldValueCollection;
+use RT::Model::ObjectCustomFieldValueCollection;
 
 sub table {'CustomFields'}
 use Jifty::DBI::Schema;
@@ -308,7 +308,7 @@ sub load_by_name {
 
     # XXX - really naive implementation.  Slow. - not really. still just one query
 
-    my $CFs = RT::Model::CustomFields->new( $self->CurrentUser );
+    my $CFs = RT::Model::CustomFieldCollection->new( $self->CurrentUser );
     Carp::cluck unless ($args{'Name'});
     $CFs->limit( column => 'Name', value => $args{'Name'}, case_sensitive => 0);
     # Don't limit to queue if queue is 0.  Trying to do so breaks
@@ -348,7 +348,7 @@ of the C<ValuesClass> method.
 sub Values {
     my $self = shift;
 
-    my $class = $self->ValuesClass || 'RT::Model::CustomFieldValues';
+    my $class = $self->ValuesClass || 'RT::Model::CustomFieldValueCollection';
     eval "require $class" or die "$@";
     my $cf_values = $class->new( $self->CurrentUser );
     # if the user has no rights, return an empty object
@@ -488,7 +488,7 @@ sub IsExternalValues {
     return $selectable unless $selectable;
 
     my $class = $self->ValuesClass;
-    return 0 if $class eq 'RT::Model::CustomFieldValues';
+    return 0 if $class eq 'RT::Model::CustomFieldValueCollection';
     return 1;
 }
 
@@ -498,14 +498,14 @@ sub ValuesClass {
 
     my $class = $self->first_attribute( 'ValuesClass' );
     $class = $class->Content if $class;
-    return $class || 'RT::Model::CustomFieldValues';
+    return $class || 'RT::Model::CustomFieldValueCollection';
 }
 
 sub set_ValuesClass {
     my $self = shift;
-    my $class = shift || 'RT::Model::CustomFieldValues';
+    my $class = shift || 'RT::Model::CustomFieldValueCollection';
 
-    if( $class eq 'RT::Model::CustomFieldValues' ) {
+    if( $class eq 'RT::Model::CustomFieldValueCollection' ) {
         return $self->delete_attribute( 'ValuesClass' );
     }
     return $self->set_Attribute( Name => 'ValuesClass', Content => $class );
@@ -748,7 +748,7 @@ sub set_LookupType {
     my $lookup = shift;
     if ( $lookup ne $self->LookupType ) {
         # Okay... We need to invalidate our existing relationships
-        my $ObjectCustomFields = RT::Model::ObjectCustomFields->new($self->CurrentUser);
+        my $ObjectCustomFields = RT::Model::ObjectCustomFieldCollection->new($self->CurrentUser);
         $ObjectCustomFields->limit_to_custom_field($self->id);
         $_->delete foreach @{$ObjectCustomFields->items_array_ref};
     }
@@ -1069,7 +1069,7 @@ sub deleteValueForObject {
 
 =head2 ValuesForObject OBJECT
 
-Return an L<RT::Model::ObjectCustomFieldValues> object containing all of this custom field's values for OBJECT 
+Return an L<RT::Model::ObjectCustomFieldValueCollection> object containing all of this custom field's values for OBJECT 
 
 =cut
 
@@ -1077,7 +1077,7 @@ sub ValuesForObject {
     my $self = shift;
     my $object = shift;
 
-    my $values = new RT::Model::ObjectCustomFieldValues($self->CurrentUser);
+    my $values = new RT::Model::ObjectCustomFieldValueCollection($self->CurrentUser);
     unless ($self->current_user_has_right('SeeCustomField')) {
         # Return an empty object if they have no rights to see
         return ($values);

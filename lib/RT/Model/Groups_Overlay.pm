@@ -47,12 +47,12 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::Groups - a collection of RT::Model::Group objects
+  RT::Model::GroupCollection - a collection of RT::Model::Group objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::Groups;
-  my $groups = RT::Model::Groups->new($CurrentUser);
+  use RT::Model::GroupCollection;
+  my $groups = RT::Model::GroupCollection->new($CurrentUser);
   $groups->find_all_rows();
   while (my $group = $groups->next()) {
      print $group->id ." is a group id\n";
@@ -68,7 +68,7 @@
 =cut
 
 
-package RT::Model::Groups;
+package RT::Model::GroupCollection;
 
 use strict;
 no warnings qw(redefine);

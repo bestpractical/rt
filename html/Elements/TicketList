@@ -113,7 +113,7 @@ my $next = $m->comp(
 % }
 <%INIT>
 unless ($Collection) {
-        $Collection = RT::Model::Tickets->new( $session{'CurrentUser'} );
+        $Collection = RT::Model::TicketCollection->new( $session{'CurrentUser'} );
         $Collection->from_sql( $Query );
 }
 

@@ -73,11 +73,11 @@
 </&>
 
 <%init>
-my $tickets = RT::Model::Tickets->new( $session{'CurrentUser'} );
+my $tickets = RT::Model::TicketCollection->new( $session{'CurrentUser'} );
 $tickets->LimitOwner( value => $session{'CurrentUser'}->id );
 
 # also consider AdminCcs as potential approvers.
-my $group_tickets = RT::Model::Tickets->new( $session{'CurrentUser'} );
+my $group_tickets = RT::Model::TicketCollection->new( $session{'CurrentUser'} );
 $group_tickets->LimitWatcher( value => $session{'CurrentUser'}->UserObj->EmailAddress, type => 'AdminCc' );
 
 my $Created_before = RT::Date->new( $session{'CurrentUser'} );

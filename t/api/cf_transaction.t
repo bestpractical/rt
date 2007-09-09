@@ -7,7 +7,7 @@ use Test::More;
 plan tests => 14;
 
 use_ok('RT');
-use_ok('RT::Model::Transactions');
+use_ok('RT::Model::TransactionCollection');
 use RT::Test;
 
 

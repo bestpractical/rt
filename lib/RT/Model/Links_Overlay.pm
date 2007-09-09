@@ -47,12 +47,12 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::Links - A collection of Link objects
+  RT::Model::LinkCollection - A collection of Link objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::Links;
-  my $links = new RT::Model::Links($CurrentUser);
+  use RT::Model::LinkCollection;
+  my $links = new RT::Model::LinkCollection($CurrentUser);
 
 =head1 DESCRIPTION
 
@@ -64,7 +64,7 @@
 =cut
 
 
-package RT::Model::Links;
+package RT::Model::LinkCollection;
 
 use strict;
 no warnings qw(redefine);

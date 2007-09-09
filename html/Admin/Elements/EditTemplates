@@ -34,7 +34,7 @@ $Format ||= qq{'<a href="__WebPath__$dir_path/Template.html?Queue=$id&Template=_
 my $QueueObj = RT::Model::Queue->new( $session{'CurrentUser'} );
 $QueueObj->load( $id ) if $id;
 
-my $Templates = RT::Model::Templates->new($session{'CurrentUser'});
+my $Templates = RT::Model::TemplateCollection->new($session{'CurrentUser'});
 if ( $QueueObj->id ) {
     $Templates->LimitToQueue( $id );
 }

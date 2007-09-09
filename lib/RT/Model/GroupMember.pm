@@ -27,7 +27,7 @@ package RT::Model::GroupMember;
 
 use strict;
 no warnings qw(redefine);
-use RT::Model::CachedGroupMembers;
+use RT::Model::CachedGroupMemberCollection;
 
 use base qw/RT::Record/;
 
@@ -130,7 +130,7 @@ sub create {
     #When adding a member to a group, we need to go back
     #and popuplate the CachedGroupMembers of all the groups that group is part of .
 
-    my $cgm = RT::Model::CachedGroupMembers->new( $self->CurrentUser );
+    my $cgm = RT::Model::CachedGroupMemberCollection->new( $self->CurrentUser );
 
     # find things which have the current group as a member. 
     # $group is an RT::Model::Principal for the group.
@@ -255,7 +255,7 @@ sub delete {
     # a member of A, will delete C as a member of A without touching
     # C as a member of B
 
-    my $cached_submembers = RT::Model::CachedGroupMembers->new( $self->CurrentUser );
+    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new( $self->CurrentUser );
 
     $cached_submembers->limit(
         column    => 'MemberId',

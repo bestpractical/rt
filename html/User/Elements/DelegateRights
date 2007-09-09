@@ -65,7 +65,7 @@ my $object_obj = @{$objects->{$ObjectType}{$object}}[0]->Object;
 <%perl>
 my $i;
 foreach my $right (@{$objects->{$ObjectType}{$object}}) {
-my $delegations = RT::Model::ACL->new($session{'CurrentUser'});
+my $delegations = RT::Model::ACECollection->new($session{'CurrentUser'});
 $delegations->DelegatedBy( Id => $session{'CurrentUser'}->PrincipalId);
 $delegations->DelegatedFrom ( Id => $right->id);
 

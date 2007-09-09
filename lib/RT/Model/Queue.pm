@@ -71,8 +71,8 @@ package RT::Model::Queue;
 use strict;
 no warnings qw(redefine);
 
-use RT::Model::Groups;
-use RT::Model::ACL;
+use RT::Model::GroupCollection;
+use RT::Model::ACECollection;
 use RT::Interface::Email;
 
 
@@ -143,7 +143,7 @@ our $RIGHTS = {
 # Tell RT::Model::ACE that this sort of object can get acls granted
 $RT::Model::ACE::OBJECT_TYPES{'RT::Model::Queue'} = 1;
 
-# TODO: This should be refactored out into an RT::Model::ACLedObject or something
+# TODO: This should be refactored out into an RT::Model::ACECollectionedObject or something
 # stuff the rights into a hash of rights that can exist.
 
 foreach my $right ( keys %{$RIGHTS} ) {
@@ -530,14 +530,14 @@ sub set_Encrypt {
 
 =head2 Templates
 
-Returns an RT::Model::Templates object of all of this queue's templates.
+Returns an RT::Model::TemplateCollection object of all of this queue's templates.
 
 =cut
 
 sub Templates {
     my $self = shift;
 
-    my $templates = RT::Model::Templates->new( $self->CurrentUser );
+    my $templates = RT::Model::TemplateCollection->new( $self->CurrentUser );
 
     if ( $self->current_user_has_right('ShowTemplate') ) {
         $templates->LimitToQueue( $self->id );
@@ -571,7 +571,7 @@ sub CustomField {
 
 =head2 TicketCustomFields
 
-Returns an L<RT::Model::CustomFields> object containing all global and
+Returns an L<RT::Model::CustomFieldCollection> object containing all global and
 queue-specific B<ticket> custom fields.
 
 =cut
@@ -579,7 +579,7 @@ queue-specific B<ticket> custom fields.
 sub TicketCustomFields {
     my $self = shift;
 
-    my $cfs = RT::Model::CustomFields->new( $self->CurrentUser );
+    my $cfs = RT::Model::CustomFieldCollection->new( $self->CurrentUser );
     if ( $self->current_user_has_right('SeeQueue') ) {
 	$cfs->LimitToGlobalOrObjectId( $self->id );
 	$cfs->LimitToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
@@ -593,7 +593,7 @@ sub TicketCustomFields {
 
 =head2 TicketTransactionCustomFields
 
-Returns an L<RT::Model::CustomFields> object containing all global and
+Returns an L<RT::Model::CustomFieldCollection> object containing all global and
 queue-specific B<transaction> custom fields.
 
 =cut
@@ -601,7 +601,7 @@ queue-specific B<transaction> custom fields.
 sub TicketTransactionCustomFields {
     my $self = shift;
 
-    my $cfs = RT::Model::CustomFields->new( $self->CurrentUser );
+    my $cfs = RT::Model::CustomFieldCollection->new( $self->CurrentUser );
     if ( $self->current_user_has_right('SeeQueue') ) {
 	$cfs->LimitToGlobalOrObjectId( $self->id );
 	$cfs->LimitToLookupType( 'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' );

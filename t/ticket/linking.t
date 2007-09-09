@@ -5,10 +5,10 @@ use warnings;
 
 use_ok('RT');
 use_ok('RT::Model::Ticket');
-use_ok('RT::Model::ScripConditions');
-use_ok('RT::Model::ScripActions');
+use_ok('RT::Model::ScripConditionCollection');
+use_ok('RT::Model::ScripActionCollection');
 use_ok('RT::Model::Template');
-use_ok('RT::Model::Scrips');
+use_ok('RT::Model::ScripCollection');
 use_ok('RT::Model::Scrip');
 use RT::Test;
 
@@ -63,7 +63,7 @@ my $commit_code = <<END;
 	1;
 END
 
-my $Scrips = RT::Model::Scrips->new( $RT::SystemUser );
+my $Scrips = RT::Model::ScripCollection->new( $RT::SystemUser );
 $Scrips->find_all_rows;
 while ( my $Scrip = $Scrips->next ) {
     $Scrip->delete if $Scrip->Description and $Scrip->Description =~ /Add or Delete Link \d+/;
@@ -302,7 +302,7 @@ RT->Config->set( LinkTransactionsRun1Scrip => $link_scrips_orig );
 RT->Config->set( StrictLinkACL => $link_acl_checks_orig );
 
 {
-    my $Scrips = RT::Model::Scrips->new( $RT::SystemUser );
+    my $Scrips = RT::Model::ScripCollection->new( $RT::SystemUser );
     $Scrips->limit( column => 'Description', operator => 'STARTSWITH', value => 'Add or Delete Link ');
     while ( my $s = $Scrips->next ) { $s->delete };
 }

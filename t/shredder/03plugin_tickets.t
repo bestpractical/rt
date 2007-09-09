@@ -20,7 +20,7 @@ use_ok('RT::Shredder::Plugin::Tickets');
 init_db();
 create_savepoint('clean');
 use_ok('RT::Model::Ticket');
-use_ok('RT::Model::Tickets');
+use_ok('RT::Model::TicketCollection');
 
 { # create parent and child and check functionality of 'with_linked' arg
     my $parent = RT::Model::Ticket->new( $RT::SystemUser );

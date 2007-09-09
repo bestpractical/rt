@@ -68,7 +68,7 @@ package RT::System;
 use base qw /RT::Record/;
 use strict;
 
-use RT::Model::ACL;
+use RT::Model::ACECollection;
 use vars qw/ $RIGHTS/;
 
 # System rights are rights granted to the whole system

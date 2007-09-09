@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::Attachments - a collection of RT::Model::Attachment objects
+  RT::Model::AttachmentCollection - a collection of RT::Model::Attachment objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::Attachments;
+  use RT::Model::AttachmentCollection;
 
 =head1 DESCRIPTION
 
@@ -66,7 +66,7 @@ should only be accessed through exported APIs in Ticket, Queue and other similar
 =cut
 
 
-package RT::Model::Attachments;
+package RT::Model::AttachmentCollection;
 
 use strict;
 no warnings qw(redefine);

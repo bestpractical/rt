@@ -145,7 +145,7 @@ foreach my $class (@classes) {
 	    }
 	}
 
-	if (eval { require RT::Model::Attributes; 1 }) {
+	if (eval { require RT::Model::Attributecollection; 1 }) {
 	    my $attributes = $obj->attributes;
 	    while (my $attribute = $attributes->next) {
 		my $content = $attribute->Content;

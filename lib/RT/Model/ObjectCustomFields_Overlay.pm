@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Model::ObjectCustomFields;
+package RT::Model::ObjectCustomFieldCollection;
 
 use strict;
 no warnings qw(redefine);

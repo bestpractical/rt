@@ -87,7 +87,7 @@ sub create {
 
     #XXX: Where is ACL check for 'AssignCustomFields'?
 
-    my $ObjectCFs = RT::Model::ObjectCustomFields->new($self->CurrentUser);
+    my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new($self->CurrentUser);
     $ObjectCFs->LimitToObjectId( $args{'ObjectId'} );
     $ObjectCFs->limit_to_custom_field( $cf->id );
     $ObjectCFs->LimitToLookupType( $cf->LookupType );
@@ -97,7 +97,7 @@ sub create {
     }
 
     unless ( defined $args{'SortOrder'} ) {
-        my $ObjectCFs = RT::Model::ObjectCustomFields->new( $RT::SystemUser );
+        my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new( $RT::SystemUser );
         $ObjectCFs->LimitToObjectId( $args{'ObjectId'} );
         $ObjectCFs->LimitToLookupType( $cf->LookupType );
         $ObjectCFs->order_by( column => 'SortOrder', order => 'DESC' );
@@ -118,7 +118,7 @@ sub create {
 sub delete {
     my $self = shift;
 
-    my $ObjectCFs = RT::Model::ObjectCustomFields->new($self->CurrentUser);
+    my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new($self->CurrentUser);
     $ObjectCFs->LimitToObjectId($self->ObjectId);
     $ObjectCFs->LimitToLookupType($self->CustomFieldObj->LookupType);
 

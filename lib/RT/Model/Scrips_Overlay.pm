@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::Scrips - a collection of RT Scrip objects
+  RT::Model::ScripCollection - a collection of RT Scrip objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::Scrips;
+  use RT::Model::ScripCollection;
 
 =head1 DESCRIPTION
 
@@ -63,7 +63,7 @@
 =cut
 
 
-package RT::Model::Scrips;
+package RT::Model::ScripCollection;
 
 use strict;
 no warnings qw(redefine);

@@ -129,7 +129,7 @@ A convoluted example
    # of which the creator of this ticket is a member
     my $name = "HR";
    
-    my $groups = RT::Model::Groups->new($RT::SystemUser);
+    my $groups = RT::Model::GroupCollection->new($RT::SystemUser);
     $groups->LimitToUserDefinedGroups();
     $groups->limit(column => "Name", operator => "=", value => "$name");
     $groups->WithMember($TransactionObj->CreatorObj->id);

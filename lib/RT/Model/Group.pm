@@ -39,9 +39,9 @@ column Instance => type is 'integer';
 sub table { 'Groups'}
 
 use RT::Model::Users;
-use RT::Model::GroupMembers;
-use RT::Model::Principals;
-use RT::Model::ACL;
+use RT::Model::GroupMemberCollection;
+use RT::Model::PrincipalCollection;
+use RT::Model::ACECollection;
 
 use vars qw/$RIGHTS/;
 
@@ -63,7 +63,7 @@ $RT::Model::ACE::OBJECT_TYPES{'RT::Model::Group'} = 1;
 
 #
 
-# TODO: This should be refactored out into an RT::Model::ACLedObject or something
+# TODO: This should be refactored out into an RT::Model::ACECollectionedObject or something
 # stuff the rights into a hash of rights that can exist.
 
 foreach my $right ( keys %{$RIGHTS} ) {
@@ -637,7 +637,7 @@ This routine finds all the cached group members that are members of this group  
     # a member of A, will delete C as a member of A without touching
     # C as a member of B
 
-    my $cached_submembers = RT::Model::CachedGroupMembers->new( $self->CurrentUser );
+    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new( $self->CurrentUser );
 
     $cached_submembers->limit( column    => 'ImmediateParentId', operator => '=', value    => $self->id);
 
@@ -675,14 +675,14 @@ sub Disabled {
 
 =head2 DeepMembersObj
 
-Returns an RT::Model::CachedGroupMembers object of this group's members,
+Returns an RT::Model::CachedGroupMemberCollection object of this group's members,
 including all members of subgroups.
 
 =cut
 
 sub DeepMembersObj {
     my $self = shift;
-    my $members_obj = RT::Model::CachedGroupMembers->new( $self->CurrentUser );
+    my $members_obj = RT::Model::CachedGroupMemberCollection->new( $self->CurrentUser );
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
@@ -698,13 +698,13 @@ sub DeepMembersObj {
 
 =head2 MembersObj
 
-Returns an RT::Model::GroupMembers object of this group's direct members.
+Returns an RT::Model::GroupMemberCollection object of this group's direct members.
 
 =cut
 
 sub MembersObj {
     my $self = shift;
-    my $members_obj = RT::Model::GroupMembers->new( $self->CurrentUser );
+    my $members_obj = RT::Model::GroupMemberCollection->new( $self->CurrentUser );
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
@@ -720,7 +720,7 @@ sub MembersObj {
 
 =head2 GroupMembersObj [Recursively => 1]
 
-Returns an L<RT::Model::Groups> object of this group's members.
+Returns an L<RT::Model::GroupCollection> object of this group's members.
 By default returns groups including all subgroups, but
 could be changed with C<Recursively> named argument.
 
@@ -733,7 +733,7 @@ sub GroupMembersObj {
     my $self = shift;
     my %args = ( Recursively => 1, @_ );
 
-    my $groups = RT::Model::Groups->new( $self->CurrentUser );
+    my $groups = RT::Model::GroupCollection->new( $self->CurrentUser );
     my $members_table = $args{'Recursively'}?
         'CachedGroupMembers': 'GroupMembers';
 

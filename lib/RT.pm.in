@@ -372,21 +372,21 @@ Load all modules that define base classes.
 =cut
 
 sub InitClasses {
-    require RT::Model::Tickets;
-    require RT::Model::Transactions;
+    require RT::Model::TicketCollection;
+    require RT::Model::TransactionCollection;
     require RT::Model::Users;
     require RT::CurrentUser;
-    require RT::Model::Templates;
-    require RT::Model::Queues;
-    require RT::Model::ScripActions;
-    require RT::Model::ScripConditions;
-    require RT::Model::Scrips;
-    require RT::Model::Groups;
-    require RT::Model::GroupMembers;
-    require RT::Model::CustomFields;
-    require RT::Model::CustomFieldValues;
-    require RT::Model::ObjectCustomFields;
-    require RT::Model::ObjectCustomFieldValues;
+    require RT::Model::TemplateCollection;
+    require RT::Model::QueueCollection;
+    require RT::Model::ScripActionCollection;
+    require RT::Model::ScripConditionCollection;
+    require RT::Model::ScripCollection;
+    require RT::Model::GroupCollection;
+    require RT::Model::GroupMemberCollection;
+    require RT::Model::CustomFieldCollection;
+    require RT::Model::CustomFieldValueCollection;
+    require RT::Model::ObjectCustomFieldCollection;
+    require RT::Model::ObjectCustomFieldValueCollection;
 }
 
 =head2 InitSystemObjects

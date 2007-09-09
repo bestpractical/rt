@@ -67,7 +67,7 @@ use warnings;
 
 use RT::Date;
 use RT::Model::User;
-use RT::Model::Attributes;
+use RT::Model::Attributecollection;
 use RT::Model::Attribute;
 use Encode qw();
 
@@ -166,7 +166,7 @@ sub ObjectTypeStr {
 
 =head2 Attributes
 
-Return this object's attributes as an RT::Model::Attributes object
+Return this object's attributes as an RT::Model::Attributecollection object
 
 =cut
 
@@ -174,7 +174,7 @@ sub attributes {
     my $self = shift;
     
     unless ($self->{'attributes'}) {
-        $self->{'attributes'} = RT::Model::Attributes->new($self->CurrentUser);     
+        $self->{'attributes'} = RT::Model::Attributecollection->new($self->CurrentUser);     
        $self->{'attributes'}->LimitToObject($self); 
     }
     return ($self->{'attributes'}); 
@@ -855,7 +855,7 @@ sub Update {
 
 =head2 Members
 
-  This returns an RT::Model::Links object which references all the tickets 
+  This returns an RT::Model::LinkCollection object which references all the tickets 
 which are 'MembersOf' this ticket
 
 =cut
@@ -871,7 +871,7 @@ sub Members {
 
 =head2 MemberOf
 
-  This returns an RT::Model::Links object which references all the tickets that this
+  This returns an RT::Model::LinkCollection object which references all the tickets that this
 ticket is a 'MemberOf'
 
 =cut
@@ -887,7 +887,7 @@ sub MemberOf {
 
 =head2 RefersTo
 
-  This returns an RT::Model::Links object which shows all references for which this ticket is a base
+  This returns an RT::Model::LinkCollection object which shows all references for which this ticket is a base
 
 =cut
 
@@ -902,7 +902,7 @@ sub RefersTo {
 
 =head2 ReferredToBy
 
-  This returns an RT::Model::Links object which shows all references for which this ticket is a target
+  This returns an RT::Model::LinkCollection object which shows all references for which this ticket is a target
 
 =cut
 
@@ -917,7 +917,7 @@ sub ReferredToBy {
 
 =head2 DependedOnBy
 
-  This returns an RT::Model::Links object which references all the tickets that depend on this one
+  This returns an RT::Model::LinkCollection object which references all the tickets that depend on this one
 
 =cut
 
@@ -971,7 +971,7 @@ sub has_unresolved_dependencies {
 
 =head2 unresolved_dependencies
 
-Returns an RT::Model::Tickets object of tickets which this ticket depends on
+Returns an RT::Model::TicketCollection object of tickets which this ticket depends on
 and which have a status of new, open or stalled. (That list comes from
 RT::Model::Queue->ActiveStatusArray
 
@@ -980,7 +980,7 @@ RT::Model::Queue->ActiveStatusArray
 
 sub unresolved_dependencies {
     my $self = shift;
-    my $deps = RT::Model::Tickets->new($self->CurrentUser);
+    my $deps = RT::Model::TicketCollection->new($self->CurrentUser);
 
     my @live_statuses = RT::Model::Queue->ActiveStatusArray();
     foreach my $status (@live_statuses) {
@@ -1046,7 +1046,7 @@ sub AllDependedOnBy {
 
 =head2 DependsOn
 
-  This returns an RT::Model::Links object which references all the tickets that this ticket depends on
+  This returns an RT::Model::LinkCollection object which references all the tickets that this ticket depends on
 
 =cut
 
@@ -1079,7 +1079,7 @@ sub _Links {
     my $type  = shift || "";
 
     unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} = RT::Model::Links->new( $self->CurrentUser );
+        $self->{"$field$type"} = RT::Model::LinkCollection->new( $self->CurrentUser );
             # at least to myself
             $self->{"$field$type"}->limit( column => $field,
                                            value => $self->URI,
@@ -1325,15 +1325,15 @@ sub _NewTransaction {
 
 =head2 Transactions
 
-  Returns an RT::Model::Transactions object of all transactions on this record object
+  Returns an RT::Model::TransactionCollection object of all transactions on this record object
 
 =cut
 
 sub Transactions {
     my $self = shift;
 
-    use RT::Model::Transactions;
-    my $transactions = RT::Model::Transactions->new( $self->CurrentUser );
+    use RT::Model::TransactionCollection;
+    my $transactions = RT::Model::TransactionCollection->new( $self->CurrentUser );
 
     #If the user has no rights, return an empty object
     $transactions->limit(
@@ -1355,7 +1355,7 @@ sub Transactions {
 
 sub CustomFields {
     my $self = shift;
-    my $cfs  = RT::Model::CustomFields->new( $self->CurrentUser );
+    my $cfs  = RT::Model::CustomFieldCollection->new( $self->CurrentUser );
 
     # XXX handle multiple types properly
     $cfs->LimitToLookupType( $self->CustomFieldLookupType );
@@ -1678,7 +1678,7 @@ sub first_custom_field_value {
 Return a ObjectCustomFieldValues object of all values of the CustomField whose 
 id or Name is column for this record.
 
-Returns an RT::Model::ObjectCustomFieldValues object
+Returns an RT::Model::ObjectCustomFieldValueCollection object
 
 =cut
 
@@ -1692,12 +1692,12 @@ sub CustomFieldValues {
         # we were asked to search on a custom field we couldn't find
         unless ( $cf->id ) {
             $RT::Logger->warning("Couldn't load custom field by '$field' identifier");
-            return RT::Model::ObjectCustomFieldValues->new( $self->CurrentUser );
+            return RT::Model::ObjectCustomFieldValueCollection->new( $self->CurrentUser );
         }
         return ( $cf->ValuesForObject($self) );
     }
     # we're not limiting to a specific custom field;
-    my $ocfs = RT::Model::ObjectCustomFieldValues->new( $self->CurrentUser );
+    my $ocfs = RT::Model::ObjectCustomFieldValueCollection->new( $self->CurrentUser );
     $ocfs->LimitToObject( $self );
     return $ocfs;
 }

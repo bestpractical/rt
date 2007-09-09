@@ -564,7 +564,7 @@ sub ForwardTransaction {
     if ( $main_content->Parent ) {
         # main content is not top most entity, we shouldn't loose
         # From/To/Cc headers that are on a top part
-        my $attachments = RT::Model::Attachments->new( $txn->CurrentUser );
+        my $attachments = RT::Model::AttachmentCollection->new( $txn->CurrentUser );
         $attachments->columns(qw(id Parent TransactionId Headers));
         $attachments->limit( column => 'TransactionId', value => $txn->id );
         $attachments->limit( column => 'Parent', value => 0 );
@@ -578,7 +578,7 @@ sub ForwardTransaction {
         }
     }
 
-    my $attachments = RT::Model::Attachments->new( $txn->CurrentUser );
+    my $attachments = RT::Model::AttachmentCollection->new( $txn->CurrentUser );
     $attachments->limit( column => 'TransactionId', value => $txn->id );
     $attachments->limit(
         column => 'id',

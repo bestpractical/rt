@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::ScripActions - Collection of Action objects
+  RT::Model::ScripActionCollection - Collection of Action objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::ScripActions;
+  use RT::Model::ScripActionCollection;
 
 
 =head1 DESCRIPTION
@@ -63,7 +63,7 @@
 =cut
 
 
-package RT::Model::ScripActions;
+package RT::Model::ScripActionCollection;
 
 use strict;
 no warnings qw(redefine);

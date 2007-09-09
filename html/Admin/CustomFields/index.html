@@ -100,7 +100,7 @@ if ( !$Type && $ARGS{'type'} ) {
     $RT::Logger->warning("'type' argument is deprecated use 'Type' instead");
 }
 
-my $CustomFields = RT::Model::CustomFields->new($session{'CurrentUser'});
+my $CustomFields = RT::Model::CustomFieldCollection->new($session{'CurrentUser'});
 $CustomFields->find_all_rows;
 $CustomFields->{'find_disabled_rows'} = 1 if $ShowDisabled;
 $CustomFields->LimitToLookupType( $Type ) if $Type;

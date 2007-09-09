@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::ScripConditions - Collection of Action objects
+  RT::Model::ScripConditionCollection - Collection of Action objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::ScripConditions;
+  use RT::Model::ScripConditionCollection;
 
 
 =head1 DESCRIPTION
@@ -64,7 +64,7 @@
 =cut
 
 
-package RT::Model::ScripConditions;
+package RT::Model::ScripConditionCollection;
 
 use strict;
 no warnings qw(redefine);

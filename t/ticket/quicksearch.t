@@ -24,7 +24,7 @@ my ( $id, undef, $msg ) = $t1->create(
 ok( $id, $msg );
 
 use_ok("RT::Search::Googleish");
-my $tickets = RT::Model::Tickets->new($RT::SystemUser);
+my $tickets = RT::Model::TicketCollection->new($RT::SystemUser);
 my $quick = RT::Search::Googleish->new(Argument => "",
                                  TicketsObj => $tickets);
 my @tests = (

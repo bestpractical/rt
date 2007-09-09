@@ -10,7 +10,7 @@ my $runid = rand(200);
 
 my $attribute = "squelch-$runid";
 
-ok(require RT::Model::Attributes);
+ok(require RT::Model::Attributecollection);
 
 my $user = RT::Model::User->new($RT::SystemUser);
 ok (UNIVERSAL::isa($user, 'RT::Model::User'));
@@ -26,7 +26,7 @@ $attr->order_by({ column => 'id' });
 ok(1, $attr->build_select_query);
 
 
-ok (UNIVERSAL::isa($attr,'RT::Model::Attributes'), 'got the attributes object');
+ok (UNIVERSAL::isa($attr,'RT::Model::Attributecollection'), 'got the attributes object');
 
 ($id, $msg) =  $user->add_attribute(Name => 'TestAttr', Content => 'The attribute has content'); 
 ok ($id, $msg);

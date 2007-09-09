@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 package RT::Report::Tickets;
 
-use base qw/RT::Model::Tickets/;
+use base qw/RT::Model::TicketCollection/;
 use RT::Report::Tickets::Entry;
 
 use strict;
@@ -91,7 +91,7 @@ sub Groupings {
     }
 
     if ( $queues ) {
-        my $CustomFields = RT::Model::CustomFields->new( $self->CurrentUser );
+        my $CustomFields = RT::Model::CustomFieldCollection->new( $self->CurrentUser );
         foreach my $id (keys %$queues) {
             my $queue = RT::Model::Queue->new( $self->CurrentUser );
             $queue->load($id);
@@ -210,7 +210,7 @@ sub add_record {
 
 
 
-# Gotta skip over RT::Model::Tickets->next, since it does all sorts of crazy magic we 
+# Gotta skip over RT::Model::TicketCollection->next, since it does all sorts of crazy magic we 
 # don't want.
 sub Next {
     my $self = shift;

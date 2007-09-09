@@ -47,12 +47,12 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::ACL - collection of RT ACE objects
+  RT::Model::ACECollection - collection of RT ACE objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::ACL;
-my $ACL = new RT::Model::ACL($CurrentUser);
+  use RT::Model::ACECollection;
+my $ACL = new RT::Model::ACECollection($CurrentUser);
 
 =head1 DESCRIPTION
 
@@ -63,7 +63,7 @@ my $ACL = new RT::Model::ACL($CurrentUser);
 =cut
 
 
-package RT::Model::ACL;
+package RT::Model::ACECollection;
 
 use strict;
 no warnings qw(redefine);

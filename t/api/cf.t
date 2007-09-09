@@ -7,7 +7,7 @@ use RT::Test;
 
 # Before we get going, ditch all object_cfs; this will remove 
 # all custom fields systemwide;
-my $object_cfs = RT::Model::ObjectCustomFields->new($RT::SystemUser);
+my $object_cfs = RT::Model::ObjectCustomFieldCollection->new($RT::SystemUser);
 $object_cfs->find_all_rows();
 while (my $ocf = $object_cfs->next) {
 	$ocf->delete();

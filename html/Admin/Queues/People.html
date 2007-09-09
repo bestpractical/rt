@@ -189,7 +189,7 @@ if (!length $ARGS{'GroupString'}) {
 $group_msg = loc("No principals selected.");
  }
 else {
-$Groups = new RT::Model::Groups($session{'CurrentUser'});
+$Groups = new RT::Model::GroupCollection($session{'CurrentUser'});
 $Groups->limit(column => 'Domain', operator => '=', value => 'UserDefined');
 $Groups->limit(column => $ARGS{'GroupField'},
 		value => $ARGS{'GroupString'},

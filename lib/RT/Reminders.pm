@@ -79,13 +79,13 @@ sub TicketObj {
 
 =head2 Collection
 
-Returns an RT::Model::Tickets object containing reminders for this object's "Ticket"
+Returns an RT::Model::TicketCollection object containing reminders for this object's "Ticket"
 
 =cut
 
 sub Collection {
     my $self = shift;
-    my $col = RT::Model::Tickets->new($self->CurrentUser);
+    my $col = RT::Model::TicketCollection->new($self->CurrentUser);
 
      my $query =     'Queue = "'. $self->TicketObj->QueueObj->Name .'" AND Type = "reminder"';
     $query .= ' AND RefersTo = "'.$self->Ticket.'"';

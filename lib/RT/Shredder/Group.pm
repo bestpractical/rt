@@ -91,12 +91,12 @@ sub __DependsOn
         );
 
 # Group members records
-    my $objs = RT::Model::GroupMembers->new( $self->CurrentUser );
+    my $objs = RT::Model::GroupMemberCollection->new( $self->CurrentUser );
     $objs->LimitToMembersOfGroup( $self->PrincipalId );
     push( @$list, $objs );
 
 # Group member records group belongs to
-    $objs = RT::Model::GroupMembers->new( $self->CurrentUser );
+    $objs = RT::Model::GroupMemberCollection->new( $self->CurrentUser );
     $objs->limit(
             value => $self->PrincipalId,
             column => 'MemberId',
@@ -109,7 +109,7 @@ sub __DependsOn
     push( @$list, $self->DeepMembersObj );
 
 # Cached group member records group belongs to
-    $objs = RT::Model::GroupMembers->new( $self->CurrentUser );
+    $objs = RT::Model::GroupMemberCollection->new( $self->CurrentUser );
     $objs->limit(
             value => $self->PrincipalId,
             column => 'MemberId',

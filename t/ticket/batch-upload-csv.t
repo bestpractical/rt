@@ -33,7 +33,7 @@ ok ($action->CurrentUser->id , "WE have a current user");
 $action->Parse(Content => $data);
 my @results = $action->createByTemplate();
 
-my $tix = RT::Model::Tickets->new($RT::SystemUser);
+my $tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql ("Queue = '". $QUEUE."'");
 $tix->order_by( column => 'id', order => 'ASC' );
 is($tix->count, 2, '2 tickets');

@@ -80,7 +80,7 @@
 <%init>
 my (@actions);
 
-my $Scrips = RT::Model::Scrips->new($session{'CurrentUser'});
+my $Scrips = RT::Model::ScripCollection->new($session{'CurrentUser'});
 
 
 my $QueueObj = RT::Model::Queue->new($session{'CurrentUser'});

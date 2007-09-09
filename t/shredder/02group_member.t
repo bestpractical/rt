@@ -37,7 +37,7 @@ plan tests => 22;
 	($status, $msg) = $cgroup->AddMember( $user->id );
 	ok( $status, "added user to child group") or diag "error: $msg";
 	
-	my $members = RT::Model::GroupMembers->new( $RT::SystemUser );
+	my $members = RT::Model::GroupMemberCollection->new( $RT::SystemUser );
 	$members->limit( column => 'MemberId', value => $uid );
 	$members->limit( column => 'GroupId', value => $cgid );
 	is( $members->count, 1, "find membership record" );
@@ -72,7 +72,7 @@ plan tests => 22;
 
 	$user->PrincipalObj->GrantRight( Right => 'OwnTicket', Object => $queue );
 
-	use RT::Model::Tickets;
+	use RT::Model::TicketCollection;
 	my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
 	my ($id) = $ticket->create( Subject => 'test', Queue => $queue->id );
 	ok( $id, "Created new ticket" );

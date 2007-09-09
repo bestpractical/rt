@@ -9,10 +9,10 @@ use RT::Test;
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-use RT::Model::Tickets;
+use RT::Model::TicketCollection;
 use strict;
 
-my $tix = RT::Model::Tickets->new($RT::SystemUser);
+my $tix = RT::Model::TicketCollection->new($RT::SystemUser);
 {
     my $query = "Status = 'open'";
     my ($status, $msg)  = $tix->from_sql($query);

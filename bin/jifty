@@ -1,0 +1,11 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+use File::Basename qw(dirname); 
+use UNIVERSAL::require;
+
+use Jifty;
+use Jifty::Script;
+
+local $SIG{INT} = sub { warn "Stopped\n"; exit; };
+Jifty::Script->dispatch();

@@ -28,7 +28,7 @@ Later in this doc we'll describe the example a little bit more.
 
 After the custom code is written, you need to tell RT about its
 existence by adding something like following to your RT_SiteConfig.pm:
-Set(@CustomFieldValuesSources, "RT::Model::CustomFieldValues::MySource");
+Set(@CustomFieldValuesSources, "RT::Model::CustomFieldValueCollection::MySource");
 
 The value in quotes should be the name of the class that you Created.
 
@@ -45,7 +45,7 @@ Choose the class you wrote from the list and save changes.
 
 =head2 How to write custom source
 
-You have to implement a subclass of L<RT::Model::CustomFieldValues::External>.
+You have to implement a subclass of L<RT::Model::CustomFieldValueCollection::External>.
 There are two main methods you want to override:
 
 =over 4
@@ -66,10 +66,10 @@ C<sortorder>. C<name> is most important one. The others are optional
 
 Here's a simple static example:
 
-  package RT::Model::CustomFieldValues::MySource;
+  package RT::Model::CustomFieldValueCollection::MySource;
   
   # define class inheritance
-  use base qw(RT::Model::CustomFieldValues::External);
+  use base qw(RT::Model::CustomFieldValueCollection::External);
 
   # admin friendly description, the default valuse is the name of the class
   sub SourceDescription {

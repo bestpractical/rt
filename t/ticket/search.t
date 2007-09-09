@@ -138,68 +138,68 @@ my $t7 = RT::Model::Ticket->new($RT::SystemUser);
 ok( $id, $msg );
 
 # we have tickets. start searching
-my $tix = RT::Model::Tickets->new($RT::SystemUser);
+my $tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue'");
 is($tix->count, 7, "found all the tickets");
 
 
 # very simple searches. both CF and normal
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND CF.SearchTest = 'foo1'");
 is($tix->count, 1, "matched identical subject");
 
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND CF.SearchTest LIKE 'foo1'");
 is($tix->count, 1, "matched LIKE subject");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND CF.SearchTest = 'foo'");
 is($tix->count, 0, "IS a regexp match");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND CF.SearchTest LIKE 'foo'");
 is($tix->count, 5, "matched LIKE subject");
 
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND CF.SearchTest IS NULL");
 is($tix->count, 2, "IS null CF");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND Requestors LIKE 'search1'");
 is($tix->count, 1, "LIKE requestor");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND Requestors = 'search1\@example.com'");
 is($tix->count, 1, "IS requestor");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND Requestors LIKE 'search'");
 is($tix->count, 6, "LIKE requestor");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND Requestors IS NULL");
 is($tix->count, 1, "Search for no requestor");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND Subject = 'SearchTest1'");
 is($tix->count, 1, "IS subject");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND Subject LIKE 'SearchTest1'");
 is($tix->count, 1, "LIKE subject");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND Subject = ''");
 is($tix->count, 1, "found one ticket");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND Subject LIKE 'SearchTest'");
 is($tix->count, 6, "found two ticket");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND Subject LIKE 'qwerty'");
 is($tix->count, 0, "found zero ticket");
 
@@ -208,58 +208,58 @@ is($tix->count, 0, "found zero ticket");
 
 # various combinations
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("CF.SearchTest LIKE 'foo' AND CF.SearchTest2 LIKE 'bar1'");
 is($tix->count, 1, "LIKE cf and LIKE cf");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("CF.SearchTest = 'foo1' AND CF.SearchTest2 = 'bar1'");
 is($tix->count, 1, "is cf and is cf");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("CF.SearchTest = 'foo' AND CF.SearchTest2 LIKE 'bar1'");
 is($tix->count, 0, "is cf and like cf");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("CF.SearchTest LIKE 'foo' AND CF.SearchTest2 LIKE 'bar' AND CF.SearchTest3 LIKE 'qux'");
 is($tix->count, 3, "like cf and like cf and like cf");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("CF.SearchTest LIKE 'foo' AND CF.SearchTest2 LIKE 'bar' AND CF.SearchTest3 LIKE 'qux6'");
 is($tix->count, 1, "like cf and like cf and is cf");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("CF.SearchTest LIKE 'foo' AND Subject LIKE 'SearchTest'");
 is($tix->count, 4, "like cf and like subject");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("CF.SearchTest IS NULL AND CF.SearchTest2 = 'bar2'");
 is($tix->count, 1, "null cf and is cf");
 
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("Queue = '$queue' AND CF.SearchTest IS NULL AND CF.SearchTest2 IS NULL");
 is($tix->count, 1, "null cf and null cf"); 
 
 # tests with the same CF listed twice
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("CF.{SearchTest} = 'foo1'");
 is($tix->count, 1, "is cf.{name} format");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3'");
 is($tix->count, 2, "is cf1 or is cf1");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("CF.SearchTest = 'foo1' OR CF.SearchTest IS NULL");
 is($tix->count, 3, "is cf1 or null cf1");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("(CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3') AND (CF.SearchTest2 = 'bar1' OR CF.SearchTest2 = 'bar2')");
 is($tix->count, 1, "(is cf1 or is cf1) and (is cf2 or is cf2)");
 
-$tix = RT::Model::Tickets->new($RT::SystemUser);
+$tix = RT::Model::TicketCollection->new($RT::SystemUser);
 $tix->from_sql("CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3' OR CF.SearchTest2 = 'bar1' OR CF.SearchTest2 = 'bar2'");
 is($tix->count, 3, "is cf1 or is cf1 or is cf2 or is cf2");
 

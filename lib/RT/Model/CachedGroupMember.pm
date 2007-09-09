@@ -161,7 +161,7 @@ sub delete {
     
     my $member = $self->MemberObj();
     if ( $member->IsGroup ) {
-        my $deletable = RT::Model::CachedGroupMembers->new( $self->CurrentUser );
+        my $deletable = RT::Model::CachedGroupMemberCollection->new( $self->CurrentUser );
 
         $deletable->limit( column    => 'id',
                            operator => '!=',
@@ -197,13 +197,13 @@ sub delete {
 
 
         #   Find all ACEs granted to $self->GroupId
-        my $acl = RT::Model::ACL->new($RT::SystemUser);
+        my $acl = RT::Model::ACECollection->new($RT::SystemUser);
         $acl->LimitToPrincipal( Id => $self->GroupId );
 
 
         while ( my $this_ace = $acl->next() ) {
             #       Find all ACEs which $self-MemberObj has delegated from $this_ace
-            my $delegations = RT::Model::ACL->new($RT::SystemUser);
+            my $delegations = RT::Model::ACECollection->new($RT::SystemUser);
             $delegations->DelegatedFrom( Id => $this_ace->id );
             $delegations->DelegatedBy( Id => $self->MemberId );
 
@@ -248,7 +248,7 @@ sub set_Disabled {
     
     my $member = $self->MemberObj();
     if ( $member->IsGroup ) {
-        my $deletable = RT::Model::CachedGroupMembers->new( $self->CurrentUser );
+        my $deletable = RT::Model::CachedGroupMemberCollection->new( $self->CurrentUser );
 
         $deletable->limit( column    => 'Via', operator => '=', value    => $self->id );
         $deletable->limit( column    => 'id', operator => '!=', value    => $self->id );
@@ -266,12 +266,12 @@ sub set_Disabled {
     # (Since we SetDisabledd the database row above, $self no longer counts)
     unless ( $self->GroupObj->Object->has_member_recursively( $self->MemberObj ) ) {
         #   Find all ACEs granted to $self->GroupId
-        my $acl = RT::Model::ACL->new($RT::SystemUser);
+        my $acl = RT::Model::ACECollection->new($RT::SystemUser);
         $acl->LimitToPrincipal( Id => $self->GroupId );
 
         while ( my $this_ace = $acl->next() ) {
             #       Find all ACEs which $self-MemberObj has delegated from $this_ace
-            my $delegations = RT::Model::ACL->new($RT::SystemUser);
+            my $delegations = RT::Model::ACECollection->new($RT::SystemUser);
             $delegations->DelegatedFrom( Id => $this_ace->id );
             $delegations->DelegatedBy( Id => $self->MemberId );
 

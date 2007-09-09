@@ -108,11 +108,11 @@ column        Disabled => max_length is 6,      type is 'smallint(6)', default i
 use RT::Model::Queue;
 use RT::Model::User;
 use RT::Record;
-use RT::Model::Links;
+use RT::Model::LinkCollection;
 use RT::Date;
-use RT::Model::CustomFields;
-use RT::Model::Tickets;
-use RT::Model::Transactions;
+use RT::Model::CustomFieldCollection;
+use RT::Model::TicketCollection;
+use RT::Model::TransactionCollection;
 use RT::Reminders;
 use RT::URI::fsck_com_rt;
 use RT::URI;
@@ -2207,10 +2207,10 @@ sub _Links {
     my $type  = shift || "";
 
     unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} = new RT::Model::Links( $self->CurrentUser );
+        $self->{"$field$type"} = new RT::Model::LinkCollection( $self->CurrentUser );
         if ( $self->current_user_has_right('ShowTicket') ) {
             # Maybe this ticket is a merged ticket
-            my $Tickets = new RT::Model::Tickets( $self->CurrentUser );
+            my $Tickets = new RT::Model::TicketCollection( $self->CurrentUser );
             # at least to myself
             $self->{"$field$type"}->limit( column => $field,
                                            value => $self->URI,
@@ -2532,7 +2532,7 @@ sub MergeInto {
     }
 
     # update all the links that point to that old ticket
-    my $old_links_to = RT::Model::Links->new($self->CurrentUser);
+    my $old_links_to = RT::Model::LinkCollection->new($self->CurrentUser);
     $old_links_to->limit(column => 'Target', value => $self->URI);
 
     my %old_seen;
@@ -2557,7 +2557,7 @@ sub MergeInto {
 
     }
 
-    my $old_links_from = RT::Model::Links->new($self->CurrentUser);
+    my $old_links_from = RT::Model::LinkCollection->new($self->CurrentUser);
     $old_links_from->limit(column => 'Base', value => $self->URI);
 
     while (my $link = $old_links_from->next) {
@@ -2611,7 +2611,7 @@ sub MergeInto {
     }
 
     #find all of the tickets that were merged into this ticket. 
-    my $old_mergees = new RT::Model::Tickets( $self->CurrentUser );
+    my $old_mergees = new RT::Model::TicketCollection( $self->CurrentUser );
     $old_mergees->limit(
         column    => 'EffectiveId',
         operator => '=',
@@ -3172,8 +3172,8 @@ sub DESTROY {
     my $batch = $self->TransactionBatch or return;
     return unless @$batch;
 
-    require RT::Model::Scrips;
-    RT::Model::Scrips->new($RT::SystemUser)->Apply(
+    require RT::Model::ScripCollection;
+    RT::Model::ScripCollection->new($RT::SystemUser)->Apply(
     Stage        => 'TransactionBatch',
     TicketObj    => $self,
     TransactionObj    => $batch->[0],
@@ -3429,14 +3429,14 @@ sub Reminders {
 
 =head2 Transactions
 
-  Returns an RT::Model::Transactions object of all transactions on this ticket
+  Returns an RT::Model::TransactionCollection object of all transactions on this ticket
 
 =cut
 
 sub Transactions {
     my $self = shift;
 
-    my $transactions = RT::Model::Transactions->new( $self->CurrentUser );
+    my $transactions = RT::Model::TransactionCollection->new( $self->CurrentUser );
 
     #If the user has no rights, return an empty object
     if ( $self->current_user_has_right('ShowTicket') ) {
@@ -3504,7 +3504,7 @@ sub CustomFieldValues {
         }
         unless ( $cf->id ) {
             # If we didn't find a valid cfid, give up.
-            return RT::Model::CustomFieldValues->new($self->CurrentUser);
+            return RT::Model::CustomFieldValueCollection->new($self->CurrentUser);
         }
     }
     return $self->SUPER::CustomFieldValues($field);

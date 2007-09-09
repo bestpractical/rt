@@ -56,7 +56,7 @@
 <& /Elements/SelectMatch, Name=> 'GroupOp' &>
 <input size="8" name="GroupString" />
 <%INIT>
-my $CFs = RT::Model::CustomFields->new($session{'CurrentUser'});
+my $CFs = RT::Model::CustomFieldCollection->new($session{'CurrentUser'});
 $CFs->LimitToChildType('RT::Model::Group');
 $CFs->order_by( column => 'Name' );
 </%INIT>

@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::Principals - a collection of RT::Model::Principal objects
+  RT::Model::PrincipalCollection - a collection of RT::Model::Principal objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::Principals;
+  use RT::Model::PrincipalCollection;
 
 =head1 DESCRIPTION
 
@@ -63,7 +63,7 @@
 =cut
 
 
-package RT::Model::Principals;
+package RT::Model::PrincipalCollection;
 
 use strict;
 no warnings qw(redefine);

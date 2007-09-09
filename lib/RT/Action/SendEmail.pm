@@ -314,7 +314,7 @@ sub AddAttachments {
 
     $MIMEObj->head->delete('RT-Attach-Message');
 
-    my $attachments = RT::Model::Attachments->new($RT::SystemUser);
+    my $attachments = RT::Model::AttachmentCollection->new($RT::SystemUser);
     $attachments->limit(
         column => 'TransactionId',
         value => $self->TransactionObj->id
@@ -418,7 +418,7 @@ sub AddTicket {
     my $tid = shift;
 
     # XXX: we need a current user here, but who is current user?
-    my $attachs = RT::Model::Attachments->new( $RT::SystemUser );
+    my $attachs = RT::Model::AttachmentCollection->new( $RT::SystemUser );
     my $txn_alias = $attachs->TransactionAlias;
     $attachs->limit( alias => $txn_alias, column => 'Type', value => 'Create' );
     $attachs->limit( alias => $txn_alias, column => 'Type', value => 'Correspond' );

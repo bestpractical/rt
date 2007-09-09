@@ -100,7 +100,7 @@ $Objects->order_by( column => 'Name' );
 
 
 my $ObjectCFs;
-$ObjectCFs = RT::Model::ObjectCustomFields->new($session{'CurrentUser'});
+$ObjectCFs = RT::Model::ObjectCustomFieldCollection->new($session{'CurrentUser'});
 $ObjectCFs->find_all_rows;
 $ObjectCFs->limit_to_custom_field($id);
 

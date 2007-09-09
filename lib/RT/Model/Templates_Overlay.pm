@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::Templates - a collection of RT Template objects
+  RT::Model::TemplateCollection - a collection of RT Template objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::Templates;
+  use RT::Model::TemplateCollection;
 
 =head1 DESCRIPTION
 
@@ -62,7 +62,7 @@
 =cut
 
 
-package RT::Model::Templates;
+package RT::Model::TemplateCollection;
 
 use strict;
 no warnings qw(redefine);
@@ -72,7 +72,7 @@ no warnings qw(redefine);
 
 =head2 _init
 
-  Returns RT::Model::Templates specific init info like table and primary key names
+  Returns RT::Model::TemplateCollection specific init info like table and primary key names
 
 =cut
 

@@ -102,7 +102,7 @@ if ($UserString) {
      }
 
 if ($GroupString) {
-    $Groups = RT::Model::Groups->new($session{'CurrentUser'});
+    $Groups = RT::Model::GroupCollection->new($session{'CurrentUser'});
     $Groups->limit(column => 'Domain', operator => '=', value => 'UserDefined');
     $Groups->limit(column => $GroupField, value => $GroupString, operator => $GroupOp);
      }

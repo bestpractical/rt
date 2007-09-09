@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::ScripConditions -- Class Description
+  RT::Model::ScripConditionCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::ScripConditions
+  use RT::Model::ScripConditionCollection
 
 =head1 DESCRIPTION
 
@@ -69,7 +69,7 @@ use strict;
 
 =cut
 
-package RT::Model::ScripConditions;
+package RT::Model::ScripConditionCollection;
 
 use RT::SearchBuilder;
 use RT::Model::ScripCondition;
@@ -99,17 +99,17 @@ sub new_item {
     return(RT::Model::ScripCondition->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::ScripConditions_Overlay";
+        eval "require RT::Model::ScripConditionCollection_Overlay";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/ScripConditions_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::ScripConditions_Vendor";
+        eval "require RT::Model::ScripConditionCollection_Vendor";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/ScripConditions_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::ScripConditions_Local";
+        eval "require RT::Model::ScripConditionCollection_Local";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/ScripConditions_Local.pm}) {
             die $@;
         };
@@ -131,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::ScripConditions_Overlay, RT::Model::ScripConditions_Vendor, RT::Model::ScripConditions_Local
+RT::Model::ScripConditionCollection_Overlay, RT::Model::ScripConditionCollection_Vendor, RT::Model::ScripConditionCollection_Local
 
 =cut
 

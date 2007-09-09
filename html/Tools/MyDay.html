@@ -107,7 +107,7 @@ foreach my $arg ( keys %ARGS ) {
 
 }
 
-my $Tickets = RT::Model::Tickets->new($session{'CurrentUser'});
+my $Tickets = RT::Model::TicketCollection->new($session{'CurrentUser'});
 $Tickets->LimitOwner(value => $session{'CurrentUser'}->id);
 $Tickets->LimitStatus( value => 'open' );
 $Tickets->LimitStatus ( value => 'new');

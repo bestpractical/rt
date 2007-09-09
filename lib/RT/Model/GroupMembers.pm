@@ -3,11 +3,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::GroupMembers -- Class Description
+  RT::Model::GroupMemberCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::GroupMembers
+  use RT::Model::GroupMemberCollection
 
 =head1 DESCRIPTION
 
@@ -16,7 +16,7 @@ use strict;
 
 =cut
 
-package RT::Model::GroupMembers;
+package RT::Model::GroupMemberCollection;
 
 use RT::Model::GroupMember;
 use base qw/RT::SearchBuilder/;

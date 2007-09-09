@@ -150,7 +150,7 @@
 </&>
 <&|/Widgets/TitleBox, title => loc('Edit Custom Fields'), color => "#336633"&>
 <%perl>
-my $cfs = RT::Model::CustomFields->new($session{'CurrentUser'});
+my $cfs = RT::Model::CustomFieldCollection->new($session{'CurrentUser'});
 $cfs->LimitToGlobal();
 $cfs->LimitToQueue($_) for keys %$seen_queues;
 </%perl>
@@ -213,7 +213,7 @@ $Format ||= RT->Config->Get('DefaultSearchResultFormat');
 # inject _CHECKBOX to the first field.
 $Format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;
 
-my $Tickets = RT::Model::Tickets->new( $session{'CurrentUser'} );
+my $Tickets = RT::Model::TicketCollection->new( $session{'CurrentUser'} );
 $Tickets->from_sql($Query);
 if ( $order_by =~ /\|/ ) {
 
@@ -363,7 +363,7 @@ while ( my $Ticket = $Tickets->next ) {
     @results = ( @results, @tempresults );
 }
 
-my $TxnCFs = RT::Model::CustomFields->new( $session{CurrentUser} );
+my $TxnCFs = RT::Model::CustomFieldCollection->new( $session{CurrentUser} );
 $TxnCFs->LimitToLookupType( RT::Model::Transaction->CustomFieldLookupType );
 $TxnCFs->LimitToGlobalOrObjectId( sort keys %queues );
 

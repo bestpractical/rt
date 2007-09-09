@@ -12,7 +12,7 @@ sub new (*) {
     return $class->new($RT::SystemUser);
 }
 
-use constant VALUES_CLASS => 'RT::Model::CustomFieldValues::Groups';
+use constant VALUES_CLASS => 'RT::Model::CustomFieldValueCollection::Groups';
 
 my $q = new( RT::Model::Queue );
 isa_ok( $q, 'RT::Model::Queue' );

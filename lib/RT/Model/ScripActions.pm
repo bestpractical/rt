@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::ScripActions -- Class Description
+  RT::Model::ScripActionCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::ScripActions
+  use RT::Model::ScripActionCollection
 
 =head1 DESCRIPTION
 
@@ -69,7 +69,7 @@ use strict;
 
 =cut
 
-package RT::Model::ScripActions;
+package RT::Model::ScripActionCollection;
 
 use RT::SearchBuilder;
 use RT::Model::ScripAction;
@@ -99,17 +99,17 @@ sub new_item {
     return(RT::Model::ScripAction->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::ScripActions_Overlay";
+        eval "require RT::Model::ScripActionCollection_Overlay";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/ScripActions_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::ScripActions_Vendor";
+        eval "require RT::Model::ScripActionCollection_Vendor";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/ScripActions_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::ScripActions_Local";
+        eval "require RT::Model::ScripActionCollection_Local";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/ScripActions_Local.pm}) {
             die $@;
         };
@@ -131,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::ScripActions_Overlay, RT::Model::ScripActions_Vendor, RT::Model::ScripActions_Local
+RT::Model::ScripActionCollection_Overlay, RT::Model::ScripActionCollection_Vendor, RT::Model::ScripActionCollection_Local
 
 =cut
 

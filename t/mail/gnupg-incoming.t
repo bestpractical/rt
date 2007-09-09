@@ -319,7 +319,7 @@ is(@mail, 1, 'caught outgoing mail.');
 }
 
 sub get_latest_ticket_ok {
-    my $tickets = RT::Model::Tickets->new($RT::SystemUser);
+    my $tickets = RT::Model::TicketCollection->new($RT::SystemUser);
     $tickets->order_by( column => 'id', order => 'DESC' );
     $tickets->limit( column => 'id', operator => '>', value => '0' );
     my $tick = $tickets->first();

@@ -740,7 +740,7 @@ sub MakeMIMEEntity {
 
 =head2 ProcessSearchQuery
 
-  Takes a form such as the one filled out in webrt/Search/Elements/PickRestriction and turns it into something that RT::Model::Tickets can understand.
+  Takes a form such as the one filled out in webrt/Search/Elements/PickRestriction and turns it into something that RT::Model::TicketCollection can understand.
 
 TODO Doc exactly what comes in the paramhash
 
@@ -763,7 +763,7 @@ sub ProcessSearchQuery {
     else {
 
         # Init a new search
-        $session{'tickets'} = RT::Model::Tickets->new( $session{'CurrentUser'} );
+        $session{'tickets'} = RT::Model::TicketCollection->new( $session{'CurrentUser'} );
     }
 
     #Import a bookmarked search if we have one

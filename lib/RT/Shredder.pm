@@ -175,7 +175,7 @@ example from L</SYNOPSIS>:
 
   use RT::Shredder;
   RT::Shredder::Init( force => 1 );
-  my $deleted = RT::Model::Tickets->new( $RT::SystemUser );
+  my $deleted = RT::Model::TicketCollection->new( $RT::SystemUser );
   $deleted->{'allow_deleted_search'} = 1;
   $deleted->LimitQueue( value => 'general' );
   $deleted->LimitStatus( value => 'deleted' );
@@ -316,7 +316,7 @@ For example:
     my @objs = $shredder->CastObjectsToRecords(
         Objects => [             # ARRAY reference
             'RT::Model::Attachment-10', # SCALAR or SCALAR reference
-            $tickets,            # RT::Model::Tickets object (isa RT::SearchBuilder)
+            $tickets,            # RT::Model::TicketCollection object (isa RT::SearchBuilder)
             $user,               # RT::Model::User object (isa RT::Record)
         ],
     );

@@ -13,7 +13,7 @@ init_db();
 create_savepoint('clean');
 
 use RT::Model::Ticket;
-use RT::Model::Tickets;
+use RT::Model::TicketCollection;
 
 {
     my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
@@ -22,7 +22,7 @@ use RT::Model::Tickets;
     $ticket->delete;
     is( $ticket->Status, 'deleted', "successfuly changed status" );
 
-    my $tickets = RT::Model::Tickets->new( $RT::SystemUser );
+    my $tickets = RT::Model::TicketCollection->new( $RT::SystemUser );
     $tickets->{'allow_deleted_search'} = 1;
     $tickets->LimitStatus( value => 'deleted' );
     is( $tickets->count, 1, "found one deleted ticket" );

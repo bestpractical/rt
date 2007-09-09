@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::Transactions - a collection of RT Transaction objects
+  RT::Model::TransactionCollection - a collection of RT Transaction objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::Transactions;
+  use RT::Model::TransactionCollection;
 
 
 =head1 DESCRIPTION
@@ -63,7 +63,7 @@
 =cut
 
 
-package RT::Model::Transactions;
+package RT::Model::TransactionCollection;
 
 use strict;
 no warnings qw(redefine);

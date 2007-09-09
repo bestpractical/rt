@@ -66,7 +66,7 @@
 </&>
 
 <%init>
-my $reminders = RT::Model::Tickets->new($session{'CurrentUser'});
+my $reminders = RT::Model::TicketCollection->new($session{'CurrentUser'});
 $reminders->from_sql('(Owner = "Nobody" OR Owner = "'.$session{'CurrentUser'}->Name.'")' .
     ' AND Type = "reminder" AND (Status = "new" OR Status = "open") AND Due > "1970-01-01"'); 
 $reminders->order_by(column => 'Due', order => 'DESC');

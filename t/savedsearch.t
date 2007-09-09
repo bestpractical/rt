@@ -121,7 +121,7 @@ is($loadedsearch1->Name, 'owned by me', "Name of mysearch correct");
 is($loadedsearch1->Type, 'Ticket', "Type of mysearch correct");
 
 # See if it can be used to search for tickets.
-my $tickets = RT::Model::Tickets->new($curruser);
+my $tickets = RT::Model::TicketCollection->new($curruser);
 $tickets->from_sql($loadedsearch1->GetParameter('Query'));
 is($tickets->count, 1, "Found a ticket");
 
@@ -136,7 +136,7 @@ is($loadedsearch3->id, $groupsearch->id, "Loaded groupsearch");
 like($loadedsearch3->GetParameter('Query'), qr/Queue/,
      "Retrieved query of groupsearch");
 # Can it get tickets?
-$tickets = RT::Model::Tickets->new($curruser);
+$tickets = RT::Model::TicketCollection->new($curruser);
 $tickets->from_sql($loadedsearch3->GetParameter('Query'));
 is($tickets->count, 1, "Found a ticket");
 

@@ -69,7 +69,7 @@ sub __DependsOn
     my $list = [];
 
 # deep memebership
-    my $objs = RT::Model::CachedGroupMembers->new( $self->CurrentUser );
+    my $objs = RT::Model::CachedGroupMemberCollection->new( $self->CurrentUser );
     $objs->limit( column => 'Via', value => $self->id );
     $objs->limit( column => 'id', operator => '!=', value => $self->id );
     push( @$list, $objs );
@@ -81,12 +81,12 @@ sub __DependsOn
 # cause we didn't delete anything yet. :(
     # if pricipal is not member anymore(could be via other groups) then proceed
     if( $self->GroupObj->Object->has_member_recursively( $self->MemberObj ) ) {
-        my $acl = RT::Model::ACL->new( $self->CurrentUser );
+        my $acl = RT::Model::ACECollection->new( $self->CurrentUser );
         $acl->LimitToPrincipal( Id => $self->GroupId );
 
         # look into all rights that have group
         while( my $ace = $acl->next ) {
-            my $delegations = RT::Model::ACL->new( $self->CurrentUser );
+            my $delegations = RT::Model::ACECollection->new( $self->CurrentUser );
             $delegations->DelegatedFrom( Id => $ace->id );
             $delegations->DelegatedBy( Id => $self->MemberId );
             push( @$list, $delegations );

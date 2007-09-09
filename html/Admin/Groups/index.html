@@ -75,7 +75,7 @@
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
 <%INIT>
-my $Groups = RT::Model::Groups->new($session{'CurrentUser'});
+my $Groups = RT::Model::GroupCollection->new($session{'CurrentUser'});
 $Groups->LimitToUserDefinedGroups();
 my $title = loc('Select a group');
 my $caption;

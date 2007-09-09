@@ -58,7 +58,7 @@
 </select>
 
 <%INIT>
-my $ScripConditions = RT::Model::ScripConditions->new($session{'CurrentUser'});
+my $ScripConditions = RT::Model::ScripConditionCollection->new($session{'CurrentUser'});
 $ScripConditions->find_all_rows;
 
 

@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::Templates -- Class Description
+  RT::Model::TemplateCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::Templates
+  use RT::Model::TemplateCollection
 
 =head1 DESCRIPTION
 
@@ -69,7 +69,7 @@ use strict;
 
 =cut
 
-package RT::Model::Templates;
+package RT::Model::TemplateCollection;
 
 use RT::SearchBuilder;
 use RT::Model::Template;
@@ -99,17 +99,17 @@ sub new_item {
     return(RT::Model::Template->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::Templates_Overlay";
+        eval "require RT::Model::TemplateCollection_Overlay";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Templates_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::Templates_Vendor";
+        eval "require RT::Model::TemplateCollection_Vendor";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Templates_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::Templates_Local";
+        eval "require RT::Model::TemplateCollection_Local";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Templates_Local.pm}) {
             die $@;
         };
@@ -131,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::Templates_Overlay, RT::Model::Templates_Vendor, RT::Model::Templates_Local
+RT::Model::TemplateCollection_Overlay, RT::Model::TemplateCollection_Vendor, RT::Model::TemplateCollection_Local
 
 =cut
 

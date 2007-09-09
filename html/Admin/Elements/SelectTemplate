@@ -66,12 +66,12 @@
 <%INIT>
 
 
-my $PrimaryTemplates = RT::Model::Templates->new($session{'CurrentUser'});
+my $PrimaryTemplates = RT::Model::TemplateCollection->new($session{'CurrentUser'});
 if ($Queue != 0) {
 $PrimaryTemplates->LimitToQueue($Queue);
 }
 
-my $OtherTemplates = RT::Model::Templates->new($session{'CurrentUser'});
+my $OtherTemplates = RT::Model::TemplateCollection->new($session{'CurrentUser'});
 $OtherTemplates->LimitToGlobal($DefaultQueue);
 
 </%INIT>

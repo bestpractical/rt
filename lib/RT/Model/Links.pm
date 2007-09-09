@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::Links -- Class Description
+  RT::Model::LinkCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::Links
+  use RT::Model::LinkCollection
 
 =head1 DESCRIPTION
 
@@ -69,7 +69,7 @@ use strict;
 
 =cut
 
-package RT::Model::Links;
+package RT::Model::LinkCollection;
 
 use RT::SearchBuilder;
 use RT::Model::Link;
@@ -99,17 +99,17 @@ sub new_item {
     return(RT::Model::Link->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::Links_Overlay";
+        eval "require RT::Model::LinkCollection_Overlay";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Links_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::Links_Vendor";
+        eval "require RT::Model::LinkCollection_Vendor";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Links_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::Links_Local";
+        eval "require RT::Model::LinkCollection_Local";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Links_Local.pm}) {
             die $@;
         };
@@ -131,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::Links_Overlay, RT::Model::Links_Vendor, RT::Model::Links_Local
+RT::Model::LinkCollection_Overlay, RT::Model::LinkCollection_Vendor, RT::Model::LinkCollection_Local
 
 =cut
 

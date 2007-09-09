@@ -68,19 +68,19 @@ sub __DependsOn
     my $list = [];
 
 # Tickets
-    my $objs = RT::Model::Tickets->new( $self->CurrentUser );
+    my $objs = RT::Model::TicketCollection->new( $self->CurrentUser );
     $objs->{'allow_deleted_search'} = 1;
     $objs->limit( column => 'Queue', value => $self->id );
     push( @$list, $objs );
 
 # Queue role groups( Cc, AdminCc )
-    $objs = RT::Model::Groups->new( $self->CurrentUser );
+    $objs = RT::Model::GroupCollection->new( $self->CurrentUser );
     $objs->limit( column => 'Domain', value => 'RT::Model::Queue-Role' );
     $objs->limit( column => 'Instance', value => $self->id );
     push( @$list, $objs );
 
 # Scrips
-    $objs = RT::Model::Scrips->new( $self->CurrentUser );
+    $objs = RT::Model::ScripCollection->new( $self->CurrentUser );
     $objs->LimitToQueue( $self->id );
     push( @$list, $objs );
 
@@ -89,7 +89,7 @@ sub __DependsOn
     push( @$list, $objs );
 
 # Custom Fields
-    $objs = RT::Model::CustomFields->new( $self->CurrentUser );
+    $objs = RT::Model::CustomFieldCollection->new( $self->CurrentUser );
     $objs->LimitToQueue( $self->id );
     push( @$list, $objs );
 

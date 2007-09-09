@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::CustomFields - a collection of RT CustomField objects
+  RT::Model::CustomFieldCollection - a collection of RT CustomField objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::CustomFields;
+  use RT::Model::CustomFieldCollection;
 
 =head1 DESCRIPTION
 
@@ -62,7 +62,7 @@
 =cut
 
 
-package RT::Model::CustomFields;
+package RT::Model::CustomFieldCollection;
 
 use strict;
 no warnings qw(redefine);

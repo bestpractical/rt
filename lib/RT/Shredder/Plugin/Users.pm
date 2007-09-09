@@ -217,7 +217,7 @@ sub FilterWithoutTickets {
 
 sub _WithoutTickets {
     my ($self, $user) = @_;
-    my $tickets = RT::Model::Tickets->new( $RT::SystemUser );
+    my $tickets = RT::Model::TicketCollection->new( $RT::SystemUser );
     $tickets->from_sql( 'Watcher.id = '. $user->id );
     # HACK: we may use Count method which counts all records
     # that match condtion, but we really want to know only that

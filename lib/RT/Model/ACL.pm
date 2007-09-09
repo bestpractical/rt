@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::ACL -- Class Description
+  RT::Model::ACECollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::ACL
+  use RT::Model::ACECollection
 
 =head1 DESCRIPTION
 
@@ -69,7 +69,7 @@ use strict;
 
 =cut
 
-package RT::Model::ACL;
+package RT::Model::ACECollection;
 
 use RT::SearchBuilder;
 use RT::Model::ACE;
@@ -89,17 +89,17 @@ sub new_item {
     return(RT::Model::ACE->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::ACL_Overlay";
+        eval "require RT::Model::ACECollection_Overlay";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/ACL_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::ACL_Vendor";
+        eval "require RT::Model::ACECollection_Vendor";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/ACL_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::ACL_Local";
+        eval "require RT::Model::ACECollection_Local";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/ACL_Local.pm}) {
             die $@;
         };
@@ -121,7 +121,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::ACL_Overlay, RT::Model::ACL_Vendor, RT::Model::ACL_Local
+RT::Model::ACECollection_Overlay, RT::Model::ACECollection_Vendor, RT::Model::ACECollection_Local
 
 =cut
 

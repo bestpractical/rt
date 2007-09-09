@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Model::Tickets;
+package RT::Model::TicketCollection;
 
 use strict;
 use warnings;

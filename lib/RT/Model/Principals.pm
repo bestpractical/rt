@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::Principals -- Class Description
+  RT::Model::PrincipalCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::Principals
+  use RT::Model::PrincipalCollection
 
 =head1 DESCRIPTION
 
@@ -69,7 +69,7 @@ use strict;
 
 =cut
 
-package RT::Model::Principals;
+package RT::Model::PrincipalCollection;
 
 use RT::SearchBuilder;
 use RT::Model::Principal;
@@ -99,17 +99,17 @@ sub new_item {
     return(RT::Model::Principal->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::Principals_Overlay";
+        eval "require RT::Model::PrincipalCollection_Overlay";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Principals_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::Principals_Vendor";
+        eval "require RT::Model::PrincipalCollection_Vendor";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Principals_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::Principals_Local";
+        eval "require RT::Model::PrincipalCollection_Local";
         if ($@ && $@ !~ qr{^Can't locate RT/Model/Principals_Local.pm}) {
             die $@;
         };
@@ -131,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::Principals_Overlay, RT::Model::Principals_Vendor, RT::Model::Principals_Local
+RT::Model::PrincipalCollection_Overlay, RT::Model::PrincipalCollection_Vendor, RT::Model::PrincipalCollection_Local
 
 =cut
 
