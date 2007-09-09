@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::TicketCollection -- Class Description
+  RT::Model::PrincipalCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::TicketCollection
+  use RT::Model::PrincipalCollection
 
 =head1 DESCRIPTION
 
@@ -69,10 +69,10 @@ use strict;
 
 =cut
 
-package RT::Model::TicketCollection;
+package RT::Model::PrincipalCollection;
 
 use RT::SearchBuilder;
-use RT::Model::Ticket;
+use RT::Model::Principal;
 
 use vars qw( @ISA );
 @ISA= qw(RT::SearchBuilder);
@@ -80,7 +80,7 @@ use vars qw( @ISA );
 
 sub _init {
     my $self = shift;
-    $self->{'table'} = 'Tickets';
+    $self->{'table'} = 'Principals';
     $self->{'primary_key'} = 'id';
 
 
@@ -90,27 +90,27 @@ sub _init {
 
 =head2 new_item
 
-Returns an empty new RT::Model::Ticket item
+Returns an empty new RT::Model::Principal item
 
 =cut
 
 sub new_item {
     my $self = shift;
-    return(RT::Model::Ticket->new($self->CurrentUser));
+    return(RT::Model::Principal->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::TicketCollection_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Tickets_Overlay.pm}) {
+        eval "require RT::Model::PrincipalCollection_Overlay";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/PrincipalCollection_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::TicketCollection_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Tickets_Vendor.pm}) {
+        eval "require RT::Model::PrincipalCollection_Vendor";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/PrincipalCollection_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::TicketCollection_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Tickets_Local.pm}) {
+        eval "require RT::Model::PrincipalCollection_Local";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/PrincipalCollection_Local.pm}) {
             die $@;
         };
 
@@ -131,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::TicketCollection_Overlay, RT::Model::TicketCollection_Vendor, RT::Model::TicketCollection_Local
+RT::Model::PrincipalCollection_Overlay, RT::Model::PrincipalCollection_Vendor, RT::Model::PrincipalCollection_Local
 
 =cut
 

@@ -1172,7 +1172,7 @@ msgstr "無法載入附件 '%1'"
 msgid "Attachment Created"
 msgstr "附件新增完畢"
 
-#: lib/RT/Tickets_Overlay.pm:1945
+#: lib/RT/TicketCollection_Overlay.pm:1945
 msgid "Attachment filename"
 msgstr "附件檔名"
 
@@ -1180,7 +1180,7 @@ msgstr "附件檔名"
 msgid "Attachments"
 msgstr "附件"
 
-#: lib/RT/Attributes_Overlay.pm:171
+#: lib/RT/AttributeCollection_Overlay.pm:171
 msgid "Attribute Deleted"
 msgstr "已刪除該屬性"
 
@@ -2183,12 +2183,12 @@ msgstr "自訂欄位 %1 %2 %3"
 msgid "Custom field %1 does not apply to this object"
 msgstr "自訂欄位 %1 不適用於此物件"
 
-#: lib/RT/Tickets_Overlay.pm:2424
+#: lib/RT/TicketCollection_Overlay.pm:2424
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
 msgstr "自訂欄位 %1 已有值"
 
-#: lib/RT/Tickets_Overlay.pm:2420
+#: lib/RT/TicketCollection_Overlay.pm:2420
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
 msgstr "自訂欄位 %1 沒有值"
@@ -3108,7 +3108,7 @@ msgstr "篩選列表："
 msgid "Fin"
 msgstr "最終"
 
-#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:182 html/Ticket/Elements/EditBasics:97 lib/RT/Tickets_Overlay.pm:1841
+#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:182 html/Ticket/Elements/EditBasics:97 lib/RT/TicketCollection_Overlay.pm:1841
 msgid "Final Priority"
 msgstr "最終順位"
 
@@ -3549,7 +3549,7 @@ msgstr "身分證號"
 msgid "ID Type"
 msgstr "身分類別"
 
-#: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1766
+#: html/Ticket/Elements/ShowBasics:48 lib/RT/TicketCollection_Overlay.pm:1766
 msgid "Id"
 msgstr "編號"
 
@@ -3625,7 +3625,7 @@ msgstr ""
 msgid "Indirect Employee"
 msgstr "直接/間接員工"
 
-#: html/Search/Elements/PickBasics:148 lib/RT/Tickets_Overlay.pm:1816
+#: html/Search/Elements/PickBasics:148 lib/RT/TicketCollection_Overlay.pm:1816
 msgid "Initial Priority"
 msgstr "初始優先順位"
 
@@ -4767,7 +4767,7 @@ msgstr "沒有附上申請單回覆"
 msgid "No description for %1"
 msgstr "沒有對 %1 的描述"
 
-#: lib/RT/Users_Overlay.pm:190
+#: lib/RT/UserCollection_Overlay.pm:190
 msgid "No group specified"
 msgstr "未指定群組"
 
@@ -5250,7 +5250,7 @@ msgstr "承辦申請單"
 msgid "OwnTicket"
 msgstr "承辦申請單"
 
-#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/Ticket/Create.html:72 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:129 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/Tickets_Overlay.pm:2006
+#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/Ticket/Create.html:72 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:129 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/TicketCollection_Overlay.pm:2006
 msgid "Owner"
 msgstr "承辦人"
 
@@ -5557,7 +5557,7 @@ msgstr "優先順位"
 msgid "Principal %1 not found."
 msgstr "找不到單位 %1。"
 
-#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:181 html/Ticket/Elements/EditBasics:92 html/Ticket/Elements/ShowBasics:72 lib/RT/Tickets_Overlay.pm:1790
+#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:181 html/Ticket/Elements/EditBasics:92 html/Ticket/Elements/ShowBasics:72 lib/RT/TicketCollection_Overlay.pm:1790
 msgid "Priority"
 msgstr "優先順位"
 
@@ -5630,7 +5630,7 @@ msgstr "建立查詢"
 msgid "Query:"
 msgstr ""
 
-#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:62 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:85 html/Tools/Reports/ResolvedByDates.html:86 html/Tools/Reports/ResolvedByOwner.html:66 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1617
+#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:62 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:85 html/Tools/Reports/ResolvedByDates.html:86 html/Tools/Reports/ResolvedByOwner.html:66 html/User/Elements/DelegateRights:101 lib/RT/TicketCollection_Overlay.pm:1617
 msgid "Queue"
 msgstr "表單"
 
@@ -6754,7 +6754,7 @@ msgstr "無法解讀起始日期 '%1"
 msgid "State"
 msgstr "州"
 
-#: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/Tickets_Overlay.pm:1651
+#: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/TicketCollection_Overlay.pm:1651
 msgid "Status"
 msgstr "現況"
 
@@ -6799,7 +6799,7 @@ msgstr ""
 msgid "Subgroup"
 msgstr "子群組"
 
-#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Update.html:65 html/Ticket/Create.html:108 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1162 lib/RT/Tickets_Overlay.pm:1733
+#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Update.html:65 html/Ticket/Create.html:108 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1162 lib/RT/TicketCollection_Overlay.pm:1733
 msgid "Subject"
 msgstr "主題"
 
@@ -7246,11 +7246,11 @@ msgstr "表單種類"
 msgid "Ticket attachment"
 msgstr "申請單附件"
 
-#: lib/RT/Tickets_Overlay.pm:1920
+#: lib/RT/TicketCollection_Overlay.pm:1920
 msgid "Ticket content"
 msgstr "申請單內容"
 
-#: lib/RT/Tickets_Overlay.pm:1969
+#: lib/RT/TicketCollection_Overlay.pm:1969
 msgid "Ticket content type"
 msgstr "申請單內容類別"
 
@@ -7355,7 +7355,7 @@ msgstr "剩餘時間"
 msgid "Time Worked"
 msgstr "處理時間"
 
-#: lib/RT/Tickets_Overlay.pm:1891
+#: lib/RT/TicketCollection_Overlay.pm:1891
 msgid "Time left"
 msgstr "剩餘時間"
 
@@ -7363,7 +7363,7 @@ msgstr "剩餘時間"
 msgid "Time to display"
 msgstr "顯示時間"
 
-#: lib/RT/Tickets_Overlay.pm:1866
+#: lib/RT/TicketCollection_Overlay.pm:1866
 msgid "Time worked"
 msgstr "已處理時間"
 
@@ -7461,7 +7461,7 @@ msgstr "星期二"
 msgid "Tue."
 msgstr "星期二"
 
-#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1168 lib/RT/Tickets_Overlay.pm:1705
+#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1168 lib/RT/TicketCollection_Overlay.pm:1705
 msgid "Type"
 msgstr "類別"
 

@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::AttachmentCollection -- Class Description
+  RT::Model::CustomFieldCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::AttachmentCollection
+  use RT::Model::CustomFieldCollection
 
 =head1 DESCRIPTION
 
@@ -69,10 +69,10 @@ use strict;
 
 =cut
 
-package RT::Model::AttachmentCollection;
+package RT::Model::CustomFieldCollection;
 
 use RT::SearchBuilder;
-use RT::Model::Attachment;
+use RT::Model::CustomField;
 
 use vars qw( @ISA );
 @ISA= qw(RT::SearchBuilder);
@@ -80,9 +80,20 @@ use vars qw( @ISA );
 
 sub _init {
     my $self = shift;
-    $self->{'table'} = 'Attachments';
+    $self->{'table'} = 'CustomFields';
     $self->{'primary_key'} = 'id';
 
+
+
+  # By default, order by SortOrder
+  $self->order_by(
+	 { alias => 'main',
+	   column => 'SortOrder',
+	   order => 'ASC' },
+	 { alias => 'main',
+	   column => 'id',
+	   order => 'ASC' },
+     );
 
     return ( $self->SUPER::_init(@_) );
 }
@@ -90,27 +101,27 @@ sub _init {
 
 =head2 new_item
 
-Returns an empty new RT::Model::Attachment item
+Returns an empty new RT::Model::CustomField item
 
 =cut
 
 sub new_item {
     my $self = shift;
-    return(RT::Model::Attachment->new($self->CurrentUser));
+    return(RT::Model::CustomField->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::AttachmentCollection_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Attachments_Overlay.pm}) {
+        eval "require RT::Model::CustomFieldCollection_Overlay";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/CustomFieldCollection_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::AttachmentCollection_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Attachments_Vendor.pm}) {
+        eval "require RT::Model::CustomFieldCollection_Vendor";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/CustomFieldCollection_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::AttachmentCollection_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Attachments_Local.pm}) {
+        eval "require RT::Model::CustomFieldCollection_Local";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/CustomFieldCollection_Local.pm}) {
             die $@;
         };
 
@@ -131,7 +142,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::AttachmentCollection_Overlay, RT::Model::AttachmentCollection_Vendor, RT::Model::AttachmentCollection_Local
+RT::Model::CustomFieldCollection_Overlay, RT::Model::CustomFieldCollection_Vendor, RT::Model::CustomFieldCollection_Local
 
 =cut
 

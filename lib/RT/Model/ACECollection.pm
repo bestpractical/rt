@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::QueueCollection -- Class Description
+  RT::Model::ACECollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::QueueCollection
+  use RT::Model::ACECollection
 
 =head1 DESCRIPTION
 
@@ -69,48 +69,38 @@ use strict;
 
 =cut
 
-package RT::Model::QueueCollection;
+package RT::Model::ACECollection;
 
 use RT::SearchBuilder;
-use RT::Model::Queue;
+use RT::Model::ACE;
 
 use vars qw( @ISA );
 @ISA= qw(RT::SearchBuilder);
 
 
-sub _init {
-    my $self = shift;
-    $self->{'table'} = 'Queues';
-    $self->{'primary_key'} = 'id';
-
-
-    return ( $self->SUPER::_init(@_) );
-}
-
-
 =head2 new_item
 
-Returns an empty new RT::Model::Queue item
+Returns an empty new RT::Model::ACE item
 
 =cut
 
 sub new_item {
     my $self = shift;
-    return(RT::Model::Queue->new($self->CurrentUser));
+    return(RT::Model::ACE->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::QueueCollection_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Queues_Overlay.pm}) {
+        eval "require RT::Model::ACECollection_Overlay";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/ACECollection_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::QueueCollection_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Queues_Vendor.pm}) {
+        eval "require RT::Model::ACECollection_Vendor";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/ACECollection_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::QueueCollection_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Queues_Local.pm}) {
+        eval "require RT::Model::ACECollection_Local";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/ACECollection_Local.pm}) {
             die $@;
         };
 
@@ -131,7 +121,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::QueueCollection_Overlay, RT::Model::QueueCollection_Vendor, RT::Model::QueueCollection_Local
+RT::Model::ACECollection_Overlay, RT::Model::ACECollection_Vendor, RT::Model::ACECollection_Local
 
 =cut
 

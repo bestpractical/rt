@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::CustomFieldCollection -- Class Description
+  RT::Model::TransactionCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::CustomFieldCollection
+  use RT::Model::TransactionCollection
 
 =head1 DESCRIPTION
 
@@ -69,10 +69,10 @@ use strict;
 
 =cut
 
-package RT::Model::CustomFieldCollection;
+package RT::Model::TransactionCollection;
 
 use RT::SearchBuilder;
-use RT::Model::CustomField;
+use RT::Model::Transaction;
 
 use vars qw( @ISA );
 @ISA= qw(RT::SearchBuilder);
@@ -80,20 +80,9 @@ use vars qw( @ISA );
 
 sub _init {
     my $self = shift;
-    $self->{'table'} = 'CustomFields';
+    $self->{'table'} = 'Transactions';
     $self->{'primary_key'} = 'id';
 
-
-
-  # By default, order by SortOrder
-  $self->order_by(
-	 { alias => 'main',
-	   column => 'SortOrder',
-	   order => 'ASC' },
-	 { alias => 'main',
-	   column => 'id',
-	   order => 'ASC' },
-     );
 
     return ( $self->SUPER::_init(@_) );
 }
@@ -101,27 +90,27 @@ sub _init {
 
 =head2 new_item
 
-Returns an empty new RT::Model::CustomField item
+Returns an empty new RT::Model::Transaction item
 
 =cut
 
 sub new_item {
     my $self = shift;
-    return(RT::Model::CustomField->new($self->CurrentUser));
+    return(RT::Model::Transaction->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::CustomFieldCollection_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/CustomFields_Overlay.pm}) {
+        eval "require RT::Model::TransactionCollection_Overlay";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/TransactionCollection_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::CustomFieldCollection_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/CustomFields_Vendor.pm}) {
+        eval "require RT::Model::TransactionCollection_Vendor";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/TransactionCollection_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::CustomFieldCollection_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/CustomFields_Local.pm}) {
+        eval "require RT::Model::TransactionCollection_Local";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/TransactionCollection_Local.pm}) {
             die $@;
         };
 
@@ -142,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::CustomFieldCollection_Overlay, RT::Model::CustomFieldCollection_Vendor, RT::Model::CustomFieldCollection_Local
+RT::Model::TransactionCollection_Overlay, RT::Model::TransactionCollection_Vendor, RT::Model::TransactionCollection_Local
 
 =cut
 

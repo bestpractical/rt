@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::ObjectCustomFieldCollection -- Class Description
+  RT::Model::CustomFieldValueCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::ObjectCustomFieldCollection
+  use RT::Model::CustomFieldValueCollection
 
 =head1 DESCRIPTION
 
@@ -69,10 +69,10 @@ use strict;
 
 =cut
 
-package RT::Model::ObjectCustomFieldCollection;
+package RT::Model::CustomFieldValueCollection;
 
 use RT::SearchBuilder;
-use RT::Model::ObjectCustomField;
+use RT::Model::CustomFieldValue;
 
 use vars qw( @ISA );
 @ISA= qw(RT::SearchBuilder);
@@ -80,20 +80,19 @@ use vars qw( @ISA );
 
 sub _init {
     my $self = shift;
-    $self->{'table'} = 'ObjectCustomFields';
-    $self->{'primary_key'} = 'id';
-
-
-
-  # By default, order by SortOrder
-  $self->order_by(
-	 { alias => 'main',
-	   column => 'SortOrder',
-	   order => 'ASC' },
-	 { alias => 'main',
-	   column => 'id',
-	   order => 'ASC' },
-     );
+    $self->{'table'} = 'CustomFieldValues';
+    # By default, order by SortOrder
+    $self->order_by(
+         { alias => 'main',
+           column => 'SortOrder',
+           order => 'ASC' },
+         { alias => 'main',
+           column => 'Name',
+           order => 'ASC' },
+         { alias => 'main',
+           column => 'id',
+           order => 'ASC' },
+    );
 
     return ( $self->SUPER::_init(@_) );
 }
@@ -101,27 +100,27 @@ sub _init {
 
 =head2 new_item
 
-Returns an empty new RT::Model::ObjectCustomField item
+Returns an empty new RT::Model::CustomFieldValue item
 
 =cut
 
 sub new_item {
     my $self = shift;
-    return(RT::Model::ObjectCustomField->new($self->CurrentUser));
+    return(RT::Model::CustomFieldValue->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::ObjectCustomFieldCollection_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/ObjectCustomFields_Overlay.pm}) {
+        eval "require RT::Model::CustomFieldValueCollection_Overlay";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/CustomFieldValueCollection_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::ObjectCustomFieldCollection_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/ObjectCustomFields_Vendor.pm}) {
+        eval "require RT::Model::CustomFieldValueCollection_Vendor";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/CustomFieldValueCollection_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::ObjectCustomFieldCollection_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/ObjectCustomFields_Local.pm}) {
+        eval "require RT::Model::CustomFieldValueCollection_Local";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/CustomFieldValueCollection_Local.pm}) {
             die $@;
         };
 
@@ -142,7 +141,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::ObjectCustomFieldCollection_Overlay, RT::Model::ObjectCustomFieldCollection_Vendor, RT::Model::ObjectCustomFieldCollection_Local
+RT::Model::CustomFieldValueCollection_Overlay, RT::Model::CustomFieldValueCollection_Vendor, RT::Model::CustomFieldValueCollection_Local
 
 =cut
 

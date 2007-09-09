@@ -374,7 +374,7 @@ Load all modules that define base classes.
 sub InitClasses {
     require RT::Model::TicketCollection;
     require RT::Model::TransactionCollection;
-    require RT::Model::Users;
+    require RT::Model::UserCollection;
     require RT::CurrentUser;
     require RT::Model::TemplateCollection;
     require RT::Model::QueueCollection;

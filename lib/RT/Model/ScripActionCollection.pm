@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::ObjectCustomFieldValueCollection -- Class Description
+  RT::Model::ScripActionCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::ObjectCustomFieldValueCollection
+  use RT::Model::ScripActionCollection
 
 =head1 DESCRIPTION
 
@@ -69,10 +69,10 @@ use strict;
 
 =cut
 
-package RT::Model::ObjectCustomFieldValueCollection;
+package RT::Model::ScripActionCollection;
 
 use RT::SearchBuilder;
-use RT::Model::ObjectCustomFieldValue;
+use RT::Model::ScripAction;
 
 use vars qw( @ISA );
 @ISA= qw(RT::SearchBuilder);
@@ -80,20 +80,9 @@ use vars qw( @ISA );
 
 sub _init {
     my $self = shift;
-    $self->{'table'} = 'ObjectCustomFieldValues';
+    $self->{'table'} = 'ScripActions';
     $self->{'primary_key'} = 'id';
 
-
-
-  # By default, order by SortOrder
-  $self->order_by(
-	 { alias => 'main',
-	   column => 'SortOrder',
-	   order => 'ASC' },
-	 { alias => 'main',
-	   column => 'id',
-	   order => 'ASC' },
-     );
 
     return ( $self->SUPER::_init(@_) );
 }
@@ -101,27 +90,27 @@ sub _init {
 
 =head2 new_item
 
-Returns an empty new RT::Model::ObjectCustomFieldValue item
+Returns an empty new RT::Model::ScripAction item
 
 =cut
 
 sub new_item {
     my $self = shift;
-    return(RT::Model::ObjectCustomFieldValue->new($self->CurrentUser));
+    return(RT::Model::ScripAction->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::ObjectCustomFieldValueCollection_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/ObjectCustomFieldValues_Overlay.pm}) {
+        eval "require RT::Model::ScripActionCollection_Overlay";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/ScripActionCollection_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::ObjectCustomFieldValueCollection_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/ObjectCustomFieldValues_Vendor.pm}) {
+        eval "require RT::Model::ScripActionCollection_Vendor";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/ScripActionCollection_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::ObjectCustomFieldValueCollection_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/ObjectCustomFieldValues_Local.pm}) {
+        eval "require RT::Model::ScripActionCollection_Local";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/ScripActionCollection_Local.pm}) {
             die $@;
         };
 
@@ -142,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::ObjectCustomFieldValueCollection_Overlay, RT::Model::ObjectCustomFieldValueCollection_Vendor, RT::Model::ObjectCustomFieldValueCollection_Local
+RT::Model::ScripActionCollection_Overlay, RT::Model::ScripActionCollection_Vendor, RT::Model::ScripActionCollection_Local
 
 =cut
 

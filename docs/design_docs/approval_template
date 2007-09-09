@@ -7,7 +7,7 @@
 
    my $groupid = $groups->first->id;
 
-   my $adminccs = RT::Model::Users->new($RT::SystemUser);
+   my $adminccs = RT::Model::UserCollection->new($RT::SystemUser);
    $adminccs->WhoHaveRight(Right => 'AdminGroup', IncludeSystemRights => undef, IncludeSuperusers => 0, IncludeSubgroupMembers => 0, Object => $groups->first);
 
     my @admins;

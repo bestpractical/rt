@@ -131,7 +131,7 @@ sub Run
 {
     my $self = shift;
     my %args = ( Shredder => undef, @_ );
-    my $objs = RT::Model::Users->new( $RT::SystemUser );
+    my $objs = RT::Model::UserCollection->new( $RT::SystemUser );
     # XXX: we want preload only things we need, but later while
     # logging we need all data, TODO envestigate this
     # $objs->columns(qw(id Name EmailAddress Lang Timezone

@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::CustomFieldValueCollection -- Class Description
+  RT::Model::QueueCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::CustomFieldValueCollection
+  use RT::Model::QueueCollection
 
 =head1 DESCRIPTION
 
@@ -69,10 +69,10 @@ use strict;
 
 =cut
 
-package RT::Model::CustomFieldValueCollection;
+package RT::Model::QueueCollection;
 
 use RT::SearchBuilder;
-use RT::Model::CustomFieldValue;
+use RT::Model::Queue;
 
 use vars qw( @ISA );
 @ISA= qw(RT::SearchBuilder);
@@ -80,19 +80,9 @@ use vars qw( @ISA );
 
 sub _init {
     my $self = shift;
-    $self->{'table'} = 'CustomFieldValues';
-    # By default, order by SortOrder
-    $self->order_by(
-         { alias => 'main',
-           column => 'SortOrder',
-           order => 'ASC' },
-         { alias => 'main',
-           column => 'Name',
-           order => 'ASC' },
-         { alias => 'main',
-           column => 'id',
-           order => 'ASC' },
-    );
+    $self->{'table'} = 'Queues';
+    $self->{'primary_key'} = 'id';
+
 
     return ( $self->SUPER::_init(@_) );
 }
@@ -100,27 +90,27 @@ sub _init {
 
 =head2 new_item
 
-Returns an empty new RT::Model::CustomFieldValue item
+Returns an empty new RT::Model::Queue item
 
 =cut
 
 sub new_item {
     my $self = shift;
-    return(RT::Model::CustomFieldValue->new($self->CurrentUser));
+    return(RT::Model::Queue->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::CustomFieldValueCollection_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/CustomFieldValues_Overlay.pm}) {
+        eval "require RT::Model::QueueCollection_Overlay";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/QueueCollection_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::CustomFieldValueCollection_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/CustomFieldValues_Vendor.pm}) {
+        eval "require RT::Model::QueueCollection_Vendor";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/QueueCollection_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::CustomFieldValueCollection_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/CustomFieldValues_Local.pm}) {
+        eval "require RT::Model::QueueCollection_Local";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/QueueCollection_Local.pm}) {
             die $@;
         };
 
@@ -141,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::CustomFieldValueCollection_Overlay, RT::Model::CustomFieldValueCollection_Vendor, RT::Model::CustomFieldValueCollection_Local
+RT::Model::QueueCollection_Overlay, RT::Model::QueueCollection_Vendor, RT::Model::QueueCollection_Local
 
 =cut
 

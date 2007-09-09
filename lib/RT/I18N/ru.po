@@ -995,7 +995,7 @@ msgstr "Вложение '%1' не может быть загружено"
 msgid "Attachment Created"
 msgstr "Вложение создано"
 
-#: lib/RT/Tickets_Overlay.pm:1945
+#: lib/RT/TicketCollection_Overlay.pm:1945
 msgid "Attachment filename"
 msgstr "Имя файла для вложения"
 
@@ -1003,7 +1003,7 @@ msgstr "Имя файла для вложения"
 msgid "Attachments"
 msgstr "Вложения"
 
-#: lib/RT/Attributes_Overlay.pm:171
+#: lib/RT/AttributeCollection_Overlay.pm:171
 msgid "Attribute Deleted"
 msgstr "Атрибут удален"
 
@@ -1830,12 +1830,12 @@ msgstr "Дополнительное поле %1 %2 %3"
 msgid "Custom field %1 does not apply to this object"
 msgstr "Дополнительное поле %1 не относится к этому объекту"
 
-#: lib/RT/Tickets_Overlay.pm:2424
+#: lib/RT/TicketCollection_Overlay.pm:2424
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
 msgstr "Дополнительное поле %1 имеет значение."
 
-#: lib/RT/Tickets_Overlay.pm:2420
+#: lib/RT/TicketCollection_Overlay.pm:2420
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
 msgstr "Дополнительное поле %1 не имеет значения."
@@ -2451,7 +2451,7 @@ msgstr "Заполнить до %1 полей wikitext"
 msgid "Fin"
 msgstr "Конец"
 
-#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:182 html/Ticket/Elements/EditBasics:97 lib/RT/Tickets_Overlay.pm:1841
+#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:182 html/Ticket/Elements/EditBasics:97 lib/RT/TicketCollection_Overlay.pm:1841
 msgid "Final Priority"
 msgstr "Конечный приоритет"
 
@@ -2696,7 +2696,7 @@ msgstr "Имеется [quant,_1,concrete mixer]."
 msgid "I'm lost"
 msgstr ""
 
-#: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1766
+#: html/Ticket/Elements/ShowBasics:48 lib/RT/TicketCollection_Overlay.pm:1766
 msgid "Id"
 msgstr "Заявка"
 
@@ -2764,7 +2764,7 @@ msgstr "Незавершенный запрос"
 msgid "Incomplete query"
 msgstr "Незавершенный запрос"
 
-#: html/Search/Elements/PickBasics:148 lib/RT/Tickets_Overlay.pm:1816
+#: html/Search/Elements/PickBasics:148 lib/RT/TicketCollection_Overlay.pm:1816
 msgid "Initial Priority"
 msgstr "Начальный приоритет"
 
@@ -3774,7 +3774,7 @@ msgstr "Пустое сообщение"
 msgid "No description for %1"
 msgstr "Нет описания для %1"
 
-#: lib/RT/Users_Overlay.pm:190
+#: lib/RT/UserCollection_Overlay.pm:190
 msgid "No group specified"
 msgstr "Не указана группа"
 
@@ -4173,7 +4173,7 @@ msgstr "Назначить себя"
 msgid "OwnTicket"
 msgstr "БытьОтветственнымЗаЗаявку"
 
-#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/Ticket/Create.html:72 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:129 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/Tickets_Overlay.pm:2006
+#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/Ticket/Create.html:72 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:129 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/TicketCollection_Overlay.pm:2006
 msgid "Owner"
 msgstr "Ответственный"
 
@@ -4344,7 +4344,7 @@ msgstr "Приоритет"
 msgid "Principal %1 not found."
 msgstr "Пользователь %1 не найден."
 
-#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:181 html/Ticket/Elements/EditBasics:92 html/Ticket/Elements/ShowBasics:72 lib/RT/Tickets_Overlay.pm:1790
+#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:181 html/Ticket/Elements/EditBasics:92 html/Ticket/Elements/ShowBasics:72 lib/RT/TicketCollection_Overlay.pm:1790
 msgid "Priority"
 msgstr "Приоритет"
 
@@ -4389,7 +4389,7 @@ msgstr "Построитель запроса"
 msgid "Query:"
 msgstr "Запрос:"
 
-#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:62 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:85 html/Tools/Reports/ResolvedByDates.html:86 html/Tools/Reports/ResolvedByOwner.html:66 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1617
+#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:62 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:85 html/Tools/Reports/ResolvedByDates.html:86 html/Tools/Reports/ResolvedByOwner.html:66 html/User/Elements/DelegateRights:101 lib/RT/TicketCollection_Overlay.pm:1617
 msgid "Queue"
 msgstr "Очередь"
 
@@ -5369,7 +5369,7 @@ msgstr "Не могу разобрать дату 'Начато': '%1'"
 msgid "State"
 msgstr "Состояние"
 
-#: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/Tickets_Overlay.pm:1651
+#: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/TicketCollection_Overlay.pm:1651
 msgid "Status"
 msgstr "Статус"
 
@@ -5410,7 +5410,7 @@ msgstr "Ответственный переназначен с %1"
 msgid "Style"
 msgstr "Стиль"
 
-#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Update.html:65 html/Ticket/Create.html:108 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1162 lib/RT/Tickets_Overlay.pm:1733
+#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Update.html:65 html/Ticket/Create.html:108 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1162 lib/RT/TicketCollection_Overlay.pm:1733
 msgid "Subject"
 msgstr "Тема"
 
@@ -5797,11 +5797,11 @@ msgstr "Транзакции заявки"
 msgid "Ticket attachment"
 msgstr "Вложения заявки"
 
-#: lib/RT/Tickets_Overlay.pm:1920
+#: lib/RT/TicketCollection_Overlay.pm:1920
 msgid "Ticket content"
 msgstr "Содержимое заявки"
 
-#: lib/RT/Tickets_Overlay.pm:1969
+#: lib/RT/TicketCollection_Overlay.pm:1969
 msgid "Ticket content type"
 msgstr "Тип данных содержимого заявки"
 
@@ -5898,7 +5898,7 @@ msgstr "Осталось времени"
 msgid "Time Worked"
 msgstr "Время в работе"
 
-#: lib/RT/Tickets_Overlay.pm:1891
+#: lib/RT/TicketCollection_Overlay.pm:1891
 msgid "Time left"
 msgstr "Осталось времени"
 
@@ -5906,7 +5906,7 @@ msgstr "Осталось времени"
 msgid "Time to display"
 msgstr "Время генерации страницы"
 
-#: lib/RT/Tickets_Overlay.pm:1866
+#: lib/RT/TicketCollection_Overlay.pm:1866
 msgid "Time worked"
 msgstr "Время в работе"
 
@@ -5984,7 +5984,7 @@ msgstr "Пытаемся удалить право: %1"
 msgid "Tue."
 msgstr "Втр."
 
-#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1168 lib/RT/Tickets_Overlay.pm:1705
+#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1168 lib/RT/TicketCollection_Overlay.pm:1705
 msgid "Type"
 msgstr "Тип"
 

@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::GroupCollection -- Class Description
+  RT::Model::ScripConditionCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::GroupCollection
+  use RT::Model::ScripConditionCollection
 
 =head1 DESCRIPTION
 
@@ -69,10 +69,10 @@ use strict;
 
 =cut
 
-package RT::Model::GroupCollection;
+package RT::Model::ScripConditionCollection;
 
 use RT::SearchBuilder;
-use RT::Model::Group;
+use RT::Model::ScripCondition;
 
 use vars qw( @ISA );
 @ISA= qw(RT::SearchBuilder);
@@ -80,7 +80,7 @@ use vars qw( @ISA );
 
 sub _init {
     my $self = shift;
-    $self->{'table'} = 'Groups';
+    $self->{'table'} = 'ScripConditions';
     $self->{'primary_key'} = 'id';
 
 
@@ -90,27 +90,27 @@ sub _init {
 
 =head2 new_item
 
-Returns an empty new RT::Model::Group item
+Returns an empty new RT::Model::ScripCondition item
 
 =cut
 
 sub new_item {
     my $self = shift;
-    return(RT::Model::Group->new($self->CurrentUser));
+    return(RT::Model::ScripCondition->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::GroupCollection_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Groups_Overlay.pm}) {
+        eval "require RT::Model::ScripConditionCollection_Overlay";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/ScripConditionCollection_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::GroupCollection_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Groups_Vendor.pm}) {
+        eval "require RT::Model::ScripConditionCollection_Vendor";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/ScripConditionCollection_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::GroupCollection_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Groups_Local.pm}) {
+        eval "require RT::Model::ScripConditionCollection_Local";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/ScripConditionCollection_Local.pm}) {
             die $@;
         };
 
@@ -131,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::GroupCollection_Overlay, RT::Model::GroupCollection_Vendor, RT::Model::GroupCollection_Local
+RT::Model::ScripConditionCollection_Overlay, RT::Model::ScripConditionCollection_Vendor, RT::Model::ScripConditionCollection_Local
 
 =cut
 

@@ -73,7 +73,7 @@ package RT::Model::GroupCollection;
 use strict;
 no warnings qw(redefine);
 
-use RT::Model::Users;
+use RT::Model::UserCollection;
 
 # XXX: below some code is marked as subject to generalize in Groups, Users classes.
 # RUZ suggest name Principals::Generic or Principals::Base as abstract class, but
@@ -309,20 +309,20 @@ sub _joinGroups {
     my $self = shift;
     my %args = (@_);
     return 'main' unless $args{'IncludeSubgroupMembers'};
-    return $self->RT::Model::Users::_joinGroups( %args );
+    return $self->RT::Model::UserCollection::_joinGroups( %args );
 }
 sub _joinGroupMembers {
     my $self = shift;
     my %args = (@_);
     return 'main' unless $args{'IncludeSubgroupMembers'};
-    return $self->RT::Model::Users::_joinGroupMembers( %args );
+    return $self->RT::Model::UserCollection::_joinGroupMembers( %args );
 }
 sub _joinGroupMembersForGroupRights {
     my $self = shift;
     my %args = (@_);
     my $group_members = $self->_joinGroupMembers( %args );
     unless( $group_members eq 'main' ) {
-        return $self->RT::Model::Users::_joinGroupMembersForGroupRights( %args );
+        return $self->RT::Model::UserCollection::_joinGroupMembersForGroupRights( %args );
     }
     $self->limit( alias => $args{'ACLAlias'},
                   column => 'PrincipalId',
@@ -330,10 +330,10 @@ sub _joinGroupMembersForGroupRights {
                   quote_value => 0,
                 );
 }
-sub _joinACL          { return (shift)->RT::Model::Users::_joinACL( @_ ) }
-sub _GetEquivObjects  { return (shift)->RT::Model::Users::_GetEquivObjects( @_ ) }
-sub WithGroupRight    { return (shift)->RT::Model::Users::WhoHaveGroupRight( @_ ) }
-sub WithRoleRight     { return (shift)->RT::Model::Users::WhoHaveRoleRight( @_ ) }
+sub _joinACL          { return (shift)->RT::Model::UserCollection::_joinACL( @_ ) }
+sub _GetEquivObjects  { return (shift)->RT::Model::UserCollection::_GetEquivObjects( @_ ) }
+sub WithGroupRight    { return (shift)->RT::Model::UserCollection::WhoHaveGroupRight( @_ ) }
+sub WithRoleRight     { return (shift)->RT::Model::UserCollection::WhoHaveRoleRight( @_ ) }
 
 # {{{ sub LimitToEnabled
 

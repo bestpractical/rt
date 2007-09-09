@@ -766,7 +766,7 @@ msgstr "Anhang '%1' konnte nicht geladen werden"
 msgid "Attachment Created"
 msgstr "Anhang erstellt"
 
-#: lib/RT/Tickets_Overlay.pm:1945
+#: lib/RT/TicketCollection_Overlay.pm:1945
 msgid "Attachment filename"
 msgstr "Dateiname des Anhangs"
 
@@ -774,7 +774,7 @@ msgstr "Dateiname des Anhangs"
 msgid "Attachments"
 msgstr "Anhänge"
 
-#: lib/RT/Attributes_Overlay.pm:171
+#: lib/RT/AttributeCollection_Overlay.pm:171
 msgid "Attribute Deleted"
 msgstr "Attribut gelöscht"
 
@@ -1415,31 +1415,31 @@ msgstr "Benutzerdefinierter Aktions-Vorbereitungs-Code"
 msgid "Custom condition"
 msgstr "Benutzerdefinierte Bedingung"
 
-#: lib/RT/Tickets_Overlay.pm:2424
+#: lib/RT/TicketCollection_Overlay.pm:2424
 #. ($CF->Name)
-#: lib/RT/Tickets_Overlay.pm:2194
-#: lib/RT/Tickets_Overlay.pm:2194
-#: lib/RT/Tickets_Overlay.pm:2194
-#: lib/RT/Tickets_Overlay.pm:2194
-#: lib/RT/Tickets_Overlay.pm:2194
-#: lib/RT/Tickets_Overlay.pm:2194
-#: lib/RT/Tickets_Overlay.pm:2194
-#: lib/RT/Tickets_Overlay.pm:2194
-#: lib/RT/Tickets_Overlay.pm:2194
+#: lib/RT/TicketCollection_Overlay.pm:2194
+#: lib/RT/TicketCollection_Overlay.pm:2194
+#: lib/RT/TicketCollection_Overlay.pm:2194
+#: lib/RT/TicketCollection_Overlay.pm:2194
+#: lib/RT/TicketCollection_Overlay.pm:2194
+#: lib/RT/TicketCollection_Overlay.pm:2194
+#: lib/RT/TicketCollection_Overlay.pm:2194
+#: lib/RT/TicketCollection_Overlay.pm:2194
+#: lib/RT/TicketCollection_Overlay.pm:2194
 msgid "Custom field %1 has a value."
 msgstr "Benutzerdefiniertes Feld %1 hat einen Wert."
 
-#: lib/RT/Tickets_Overlay.pm:2420
+#: lib/RT/TicketCollection_Overlay.pm:2420
 #. ($CF->Name)
-#: lib/RT/Tickets_Overlay.pm:2190
-#: lib/RT/Tickets_Overlay.pm:2190
-#: lib/RT/Tickets_Overlay.pm:2190
-#: lib/RT/Tickets_Overlay.pm:2190
-#: lib/RT/Tickets_Overlay.pm:2190
-#: lib/RT/Tickets_Overlay.pm:2190
-#: lib/RT/Tickets_Overlay.pm:2190
-#: lib/RT/Tickets_Overlay.pm:2190
-#: lib/RT/Tickets_Overlay.pm:2190
+#: lib/RT/TicketCollection_Overlay.pm:2190
+#: lib/RT/TicketCollection_Overlay.pm:2190
+#: lib/RT/TicketCollection_Overlay.pm:2190
+#: lib/RT/TicketCollection_Overlay.pm:2190
+#: lib/RT/TicketCollection_Overlay.pm:2190
+#: lib/RT/TicketCollection_Overlay.pm:2190
+#: lib/RT/TicketCollection_Overlay.pm:2190
+#: lib/RT/TicketCollection_Overlay.pm:2190
+#: lib/RT/TicketCollection_Overlay.pm:2190
 msgid "Custom field %1 has no value."
 msgstr "Benutzerdefiniertes Feld %1 hat keinen Wert."
 
@@ -1935,7 +1935,7 @@ msgstr "%1 Textfelder füllen"
 msgid "Fill in up to %1 wikitext areas"
 msgstr "Schreibe bis zu %1 Wikitext Bereiche"
 
-#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:182 html/Ticket/Elements/EditBasics:97 lib/RT/Tickets_Overlay.pm:1841
+#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:182 html/Ticket/Elements/EditBasics:97 lib/RT/TicketCollection_Overlay.pm:1841
 msgid "Final Priority"
 msgstr "Endpriorität"
 
@@ -2133,7 +2133,7 @@ msgstr "Ich habe %quant(%1, Betonmischer)"
 msgid "I'm lost"
 msgstr "Ich bin verwirrt"
 
-#: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1766
+#: html/Ticket/Elements/ShowBasics:48 lib/RT/TicketCollection_Overlay.pm:1766
 msgid "Id"
 msgstr "Nr."
 
@@ -2197,7 +2197,7 @@ msgstr "Unvollständige Suche"
 msgid "Incomplete query"
 msgstr "Unvollständige Anfrage"
 
-#: html/Search/Elements/PickBasics:148 lib/RT/Tickets_Overlay.pm:1816
+#: html/Search/Elements/PickBasics:148 lib/RT/TicketCollection_Overlay.pm:1816
 msgid "Initial Priority"
 msgstr "Anfängliche Priorität"
 
@@ -3046,7 +3046,7 @@ msgstr "Kein Kommentar zu diesem Benutzer angegeben"
 msgid "No description for %1"
 msgstr "Keine Beschreibung für %1 vorhanden"
 
-#: lib/RT/Users_Overlay.pm:190
+#: lib/RT/UserCollection_Overlay.pm:190
 msgid "No group specified"
 msgstr "Keine Gruppe angegeben"
 
@@ -3397,7 +3397,7 @@ msgstr "Eigene Anfragen"
 msgid "OwnTicket"
 msgstr "EigeneAnfrage"
 
-#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/Ticket/Create.html:72 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:129 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/Tickets_Overlay.pm:2006
+#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/Ticket/Create.html:72 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:129 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/TicketCollection_Overlay.pm:2006
 msgid "Owner"
 msgstr "Besitzer"
 
@@ -3536,7 +3536,7 @@ msgstr "Vorherige Seite"
 msgid "Principal %1 not found."
 msgstr "Rolle %1 nicht gefunden."
 
-#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:181 html/Ticket/Elements/EditBasics:92 html/Ticket/Elements/ShowBasics:72 lib/RT/Tickets_Overlay.pm:1790
+#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:181 html/Ticket/Elements/EditBasics:92 html/Ticket/Elements/ShowBasics:72 lib/RT/TicketCollection_Overlay.pm:1790
 msgid "Priority"
 msgstr "Priorität"
 
@@ -3577,7 +3577,7 @@ msgstr "Suche erstellen"
 msgid "Query:"
 msgstr ""
 
-#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:62 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:85 html/Tools/Reports/ResolvedByDates.html:86 html/Tools/Reports/ResolvedByOwner.html:66 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1617
+#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:62 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:85 html/Tools/Reports/ResolvedByDates.html:86 html/Tools/Reports/ResolvedByOwner.html:66 html/User/Elements/DelegateRights:101 lib/RT/TicketCollection_Overlay.pm:1617
 msgid "Queue"
 msgstr "Bereich"
 
@@ -4339,7 +4339,7 @@ msgstr "Beginnt"
 msgid "State"
 msgstr "Staat"
 
-#: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/Tickets_Overlay.pm:1651
+#: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/TicketCollection_Overlay.pm:1651
 msgid "Status"
 msgstr "Status"
 
@@ -4372,7 +4372,7 @@ msgstr "Gestohlen von %1"
 msgid "Style"
 msgstr "Darstellung"
 
-#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Update.html:65 html/Ticket/Create.html:108 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1162 lib/RT/Tickets_Overlay.pm:1733
+#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Update.html:65 html/Ticket/Create.html:108 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1162 lib/RT/TicketCollection_Overlay.pm:1733
 msgid "Subject"
 msgstr "Betreff"
 
@@ -4685,11 +4685,11 @@ msgstr "Anfrage erledigt"
 msgid "Ticket Transactions"
 msgstr "Anfrage Transaktion"
 
-#: lib/RT/Tickets_Overlay.pm:1920
+#: lib/RT/TicketCollection_Overlay.pm:1920
 msgid "Ticket content"
 msgstr "Inhalt der Anfrage"
 
-#: lib/RT/Tickets_Overlay.pm:1969
+#: lib/RT/TicketCollection_Overlay.pm:1969
 msgid "Ticket content type"
 msgstr "Art des Inhalts der Anfrage"
 
@@ -4746,7 +4746,7 @@ msgstr "Verbleibende Zeit"
 msgid "Time Worked"
 msgstr "Arbeitszeit"
 
-#: lib/RT/Tickets_Overlay.pm:1891
+#: lib/RT/TicketCollection_Overlay.pm:1891
 msgid "Time left"
 msgstr "Verbleibende Zeit"
 
@@ -4754,7 +4754,7 @@ msgstr "Verbleibende Zeit"
 msgid "Time to display"
 msgstr "Zeit zum anzeigen"
 
-#: lib/RT/Tickets_Overlay.pm:1866
+#: lib/RT/TicketCollection_Overlay.pm:1866
 msgid "Time worked"
 msgstr "Gearbeitete Zeit"
 
@@ -4821,7 +4821,7 @@ msgstr "Transaktionen sind unveränderbar"
 msgid "Tue."
 msgstr "Di."
 
-#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1168 lib/RT/Tickets_Overlay.pm:1705
+#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1168 lib/RT/TicketCollection_Overlay.pm:1705
 msgid "Type"
 msgstr "Typ"
 

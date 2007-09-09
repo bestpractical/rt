@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::ACECollection -- Class Description
+  RT::Model::CachedGroupMemberCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::ACECollection
+  use RT::Model::CachedGroupMemberCollection
 
 =head1 DESCRIPTION
 
@@ -69,38 +69,48 @@ use strict;
 
 =cut
 
-package RT::Model::ACECollection;
+package RT::Model::CachedGroupMemberCollection;
 
 use RT::SearchBuilder;
-use RT::Model::ACE;
+use RT::Model::CachedGroupMember;
 
 use vars qw( @ISA );
 @ISA= qw(RT::SearchBuilder);
 
 
+sub _init {
+    my $self = shift;
+    $self->{'table'} = 'CachedGroupMembers';
+    $self->{'primary_key'} = 'id';
+
+
+    return ( $self->SUPER::_init(@_) );
+}
+
+
 =head2 new_item
 
-Returns an empty new RT::Model::ACE item
+Returns an empty new RT::Model::CachedGroupMember item
 
 =cut
 
 sub new_item {
     my $self = shift;
-    return(RT::Model::ACE->new($self->CurrentUser));
+    return(RT::Model::CachedGroupMember->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::ACECollection_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/ACL_Overlay.pm}) {
+        eval "require RT::Model::CachedGroupMemberCollection_Overlay";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/CachedGroupMemberCollection_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::ACECollection_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/ACL_Vendor.pm}) {
+        eval "require RT::Model::CachedGroupMemberCollection_Vendor";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/CachedGroupMemberCollection_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::ACECollection_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/ACL_Local.pm}) {
+        eval "require RT::Model::CachedGroupMemberCollection_Local";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/CachedGroupMemberCollection_Local.pm}) {
             die $@;
         };
 
@@ -121,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::ACECollection_Overlay, RT::Model::ACECollection_Vendor, RT::Model::ACECollection_Local
+RT::Model::CachedGroupMemberCollection_Overlay, RT::Model::CachedGroupMemberCollection_Vendor, RT::Model::CachedGroupMemberCollection_Local
 
 =cut
 

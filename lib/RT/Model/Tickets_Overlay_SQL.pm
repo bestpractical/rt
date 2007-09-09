@@ -359,7 +359,7 @@ be worried that the dies will trigger user visible errors, all are
 trapped via evals.
 
 99% of the dies fall in subroutines called via from_sql and then parse.
-(This includes all of the _FooLimit routines in Tickets_Overlay.pm.)
+(This includes all of the _FooLimit routines in TicketCollection_Overlay.pm.)
 The other 1% or so are via _ProcessRestrictions.
 
 All dies are trapped by eval {}s, and will be logged at the 'error'

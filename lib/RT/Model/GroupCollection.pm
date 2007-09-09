@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::TransactionCollection -- Class Description
+  RT::Model::GroupCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::TransactionCollection
+  use RT::Model::GroupCollection
 
 =head1 DESCRIPTION
 
@@ -69,10 +69,10 @@ use strict;
 
 =cut
 
-package RT::Model::TransactionCollection;
+package RT::Model::GroupCollection;
 
 use RT::SearchBuilder;
-use RT::Model::Transaction;
+use RT::Model::Group;
 
 use vars qw( @ISA );
 @ISA= qw(RT::SearchBuilder);
@@ -80,7 +80,7 @@ use vars qw( @ISA );
 
 sub _init {
     my $self = shift;
-    $self->{'table'} = 'Transactions';
+    $self->{'table'} = 'Groups';
     $self->{'primary_key'} = 'id';
 
 
@@ -90,27 +90,27 @@ sub _init {
 
 =head2 new_item
 
-Returns an empty new RT::Model::Transaction item
+Returns an empty new RT::Model::Group item
 
 =cut
 
 sub new_item {
     my $self = shift;
-    return(RT::Model::Transaction->new($self->CurrentUser));
+    return(RT::Model::Group->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::TransactionCollection_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Transactions_Overlay.pm}) {
+        eval "require RT::Model::GroupCollection_Overlay";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/GroupCollection_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::TransactionCollection_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Transactions_Vendor.pm}) {
+        eval "require RT::Model::GroupCollection_Vendor";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/GroupCollection_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::TransactionCollection_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Transactions_Local.pm}) {
+        eval "require RT::Model::GroupCollection_Local";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/GroupCollection_Local.pm}) {
             die $@;
         };
 
@@ -131,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::TransactionCollection_Overlay, RT::Model::TransactionCollection_Vendor, RT::Model::TransactionCollection_Local
+RT::Model::GroupCollection_Overlay, RT::Model::GroupCollection_Vendor, RT::Model::GroupCollection_Local
 
 =cut
 

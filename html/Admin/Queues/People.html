@@ -179,7 +179,7 @@ if (!length $ARGS{'UserString'}) {
 $user_msg = loc("No principals selected.");
  }
 else {
-    $Users = new RT::Model::Users($session{'CurrentUser'});
+    $Users = new RT::Model::UserCollection($session{'CurrentUser'});
     $Users->limit(column => $ARGS{'UserField'},
                  value => $ARGS{'UserString'},
                  operator => $ARGS{'UserOp'});

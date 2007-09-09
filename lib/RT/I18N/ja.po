@@ -828,7 +828,7 @@ msgstr "添付ファイル%1は見つかりません"
 msgid "Attachment Created"
 msgstr "添付ファイルが作成されました"
 
-#: lib/RT/Tickets_Overlay.pm:1945
+#: lib/RT/TicketCollection_Overlay.pm:1945
 msgid "Attachment filename"
 msgstr "添付ファイル名"
 
@@ -836,7 +836,7 @@ msgstr "添付ファイル名"
 msgid "Attachments"
 msgstr "添付ファイル"
 
-#: lib/RT/Attributes_Overlay.pm:171
+#: lib/RT/AttributeCollection_Overlay.pm:171
 msgid "Attribute Deleted"
 msgstr ""
 
@@ -1565,12 +1565,12 @@ msgstr ""
 msgid "Custom field %1 %2 %3"
 msgstr "カスタムフィールド%1 %2 %3"
 
-#: lib/RT/Tickets_Overlay.pm:2424
+#: lib/RT/TicketCollection_Overlay.pm:2424
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
 msgstr "カスタムフィールド%1はバリューがあります"
 
-#: lib/RT/Tickets_Overlay.pm:2420
+#: lib/RT/TicketCollection_Overlay.pm:2420
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
 msgstr "カスタムフィールド%1はバリューがありません"
@@ -2114,7 +2114,7 @@ msgstr ""
 msgid "Fin"
 msgstr "終了"
 
-#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:182 html/Ticket/Elements/EditBasics:97 lib/RT/Tickets_Overlay.pm:1841
+#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:182 html/Ticket/Elements/EditBasics:97 lib/RT/TicketCollection_Overlay.pm:1841
 msgid "Final Priority"
 msgstr "最終優先順位"
 
@@ -2347,7 +2347,7 @@ msgstr "私は[quant,_1,concrete mixer]があります。"
 msgid "I'm lost"
 msgstr ""
 
-#: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1766
+#: html/Ticket/Elements/ShowBasics:48 lib/RT/TicketCollection_Overlay.pm:1766
 msgid "Id"
 msgstr "ID"
 
@@ -2407,7 +2407,7 @@ msgstr ""
 msgid "Incomplete query"
 msgstr ""
 
-#: html/Search/Elements/PickBasics:148 lib/RT/Tickets_Overlay.pm:1816
+#: html/Search/Elements/PickBasics:148 lib/RT/TicketCollection_Overlay.pm:1816
 msgid "Initial Priority"
 msgstr "最初の優先権"
 
@@ -3297,7 +3297,7 @@ msgstr "通信文書の添付はありません"
 msgid "No description for %1"
 msgstr "%1記述はありません"
 
-#: lib/RT/Users_Overlay.pm:190
+#: lib/RT/UserCollection_Overlay.pm:190
 msgid "No group specified"
 msgstr "グループが指定されていません"
 
@@ -3676,7 +3676,7 @@ msgstr ""
 msgid "OwnTicket"
 msgstr ""
 
-#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/Ticket/Create.html:72 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:129 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/Tickets_Overlay.pm:2006
+#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/Ticket/Create.html:72 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:129 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/TicketCollection_Overlay.pm:2006
 msgid "Owner"
 msgstr "担当者"
 
@@ -3845,7 +3845,7 @@ msgstr "優先度"
 msgid "Principal %1 not found."
 msgstr ""
 
-#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:181 html/Ticket/Elements/EditBasics:92 html/Ticket/Elements/ShowBasics:72 lib/RT/Tickets_Overlay.pm:1790
+#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:181 html/Ticket/Elements/EditBasics:92 html/Ticket/Elements/ShowBasics:72 lib/RT/TicketCollection_Overlay.pm:1790
 msgid "Priority"
 msgstr "優先度"
 
@@ -3882,7 +3882,7 @@ msgstr ""
 msgid "Query:"
 msgstr ""
 
-#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:62 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:85 html/Tools/Reports/ResolvedByDates.html:86 html/Tools/Reports/ResolvedByOwner.html:66 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1617
+#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:62 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:85 html/Tools/Reports/ResolvedByDates.html:86 html/Tools/Reports/ResolvedByOwner.html:66 html/User/Elements/DelegateRights:101 lib/RT/TicketCollection_Overlay.pm:1617
 msgid "Queue"
 msgstr "キュー"
 
@@ -4758,7 +4758,7 @@ msgstr "開始日'%1'を解析できませんでした"
 msgid "State"
 msgstr "都道府県"
 
-#: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/Tickets_Overlay.pm:1651
+#: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/TicketCollection_Overlay.pm:1651
 msgid "Status"
 msgstr "状態"
 
@@ -4795,7 +4795,7 @@ msgstr "%1から盗用した "
 msgid "Style"
 msgstr ""
 
-#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Update.html:65 html/Ticket/Create.html:108 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1162 lib/RT/Tickets_Overlay.pm:1733
+#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Update.html:65 html/Ticket/Create.html:108 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1162 lib/RT/TicketCollection_Overlay.pm:1733
 msgid "Subject"
 msgstr "件名"
 
@@ -5136,11 +5136,11 @@ msgstr ""
 msgid "Ticket attachment"
 msgstr "チケット添付"
 
-#: lib/RT/Tickets_Overlay.pm:1920
+#: lib/RT/TicketCollection_Overlay.pm:1920
 msgid "Ticket content"
 msgstr "チケットコンテンツ"
 
-#: lib/RT/Tickets_Overlay.pm:1969
+#: lib/RT/TicketCollection_Overlay.pm:1969
 msgid "Ticket content type"
 msgstr "チケットコンテンツタイプ"
 
@@ -5217,7 +5217,7 @@ msgstr "残り時間"
 msgid "Time Worked"
 msgstr "作業時間"
 
-#: lib/RT/Tickets_Overlay.pm:1891
+#: lib/RT/TicketCollection_Overlay.pm:1891
 msgid "Time left"
 msgstr "残り時間"
 
@@ -5225,7 +5225,7 @@ msgstr "残り時間"
 msgid "Time to display"
 msgstr "表示する時間"
 
-#: lib/RT/Tickets_Overlay.pm:1866
+#: lib/RT/TicketCollection_Overlay.pm:1866
 msgid "Time worked"
 msgstr "使った時間"
 
@@ -5295,7 +5295,7 @@ msgstr "権利: %1を削除しています"
 msgid "Tue."
 msgstr "火曜日"
 
-#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1168 lib/RT/Tickets_Overlay.pm:1705
+#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1168 lib/RT/TicketCollection_Overlay.pm:1705
 msgid "Type"
 msgstr "タイプ"
 

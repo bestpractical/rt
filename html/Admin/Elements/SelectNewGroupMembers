@@ -67,7 +67,7 @@
 % }
 
 <%INIT>
-my $users = new RT::Model::Users($session{'CurrentUser'});
+my $users = new RT::Model::UserCollection($session{'CurrentUser'});
 
 $users->limit(
     column           => 'id',

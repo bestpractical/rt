@@ -56,11 +56,11 @@ use strict;
 
 =head1 NAME
 
-  RT::Model::LinkCollection -- Class Description
+  RT::Model::UserCollection -- Class Description
  
 =head1 SYNOPSIS
 
-  use RT::Model::LinkCollection
+  use RT::Model::UserCollection
 
 =head1 DESCRIPTION
 
@@ -69,10 +69,10 @@ use strict;
 
 =cut
 
-package RT::Model::LinkCollection;
+package RT::Model::UserCollection;
 
 use RT::SearchBuilder;
-use RT::Model::Link;
+use RT::Model::User;
 
 use vars qw( @ISA );
 @ISA= qw(RT::SearchBuilder);
@@ -80,7 +80,7 @@ use vars qw( @ISA );
 
 sub _init {
     my $self = shift;
-    $self->{'table'} = 'Links';
+    $self->{'table'} = 'Users';
     $self->{'primary_key'} = 'id';
 
 
@@ -90,27 +90,27 @@ sub _init {
 
 =head2 new_item
 
-Returns an empty new RT::Model::Link item
+Returns an empty new RT::Model::User item
 
 =cut
 
 sub new_item {
     my $self = shift;
-    return(RT::Model::Link->new($self->CurrentUser));
+    return(RT::Model::User->new($self->CurrentUser));
 }
 
-        eval "require RT::Model::LinkCollection_Overlay";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Links_Overlay.pm}) {
+        eval "require RT::Model::UserCollection_Overlay";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/UserCollection_Overlay.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::LinkCollection_Vendor";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Links_Vendor.pm}) {
+        eval "require RT::Model::UserCollection_Vendor";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/UserCollection_Vendor.pm}) {
             die $@;
         };
 
-        eval "require RT::Model::LinkCollection_Local";
-        if ($@ && $@ !~ qr{^Can't locate RT/Model/Links_Local.pm}) {
+        eval "require RT::Model::UserCollection_Local";
+        if ($@ && $@ !~ qr{^Can't locate RT/Model/UserCollection_Local.pm}) {
             die $@;
         };
 
@@ -131,7 +131,7 @@ Each of these files should begin with the line
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
 
-RT::Model::LinkCollection_Overlay, RT::Model::LinkCollection_Vendor, RT::Model::LinkCollection_Local
+RT::Model::UserCollection_Overlay, RT::Model::UserCollection_Vendor, RT::Model::UserCollection_Local
 
 =cut
 

@@ -724,7 +724,7 @@ msgstr "A csatolt '%1' nem betölthetõ"
 msgid "Attachment Created"
 msgstr "Csatolt fájl létrehozva"
 
-#: lib/RT/Tickets_Overlay.pm:1945
+#: lib/RT/TicketCollection_Overlay.pm:1945
 msgid "Attachment filename"
 msgstr "Csatolt fájl neve"
 
@@ -732,7 +732,7 @@ msgstr "Csatolt fájl neve"
 msgid "Attachments"
 msgstr "Csatolt fájlok"
 
-#: lib/RT/Attributes_Overlay.pm:171
+#: lib/RT/AttributeCollection_Overlay.pm:171
 msgid "Attribute Deleted"
 msgstr ""
 
@@ -1313,12 +1313,12 @@ msgstr "Egyéni feltétel"
 msgid "Custom field %1 %2 %3"
 msgstr "Egyéni mezõ %1 %2 %3"
 
-#: lib/RT/Tickets_Overlay.pm:2424
+#: lib/RT/TicketCollection_Overlay.pm:2424
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
 msgstr "[%1] egyéni mezõnek van értéke."
 
-#: lib/RT/Tickets_Overlay.pm:2420
+#: lib/RT/TicketCollection_Overlay.pm:2420
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
 msgstr "[%1] egyéni mezõnek nincs értéke."
@@ -1795,7 +1795,7 @@ msgstr ""
 msgid "Fill in up to %1 wikitext areas"
 msgstr ""
 
-#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:182 html/Ticket/Elements/EditBasics:97 lib/RT/Tickets_Overlay.pm:1841
+#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:182 html/Ticket/Elements/EditBasics:97 lib/RT/TicketCollection_Overlay.pm:1841
 msgid "Final Priority"
 msgstr "Végsõ prioritás"
 
@@ -1980,7 +1980,7 @@ msgstr ""
 msgid "I'm lost"
 msgstr ""
 
-#: html/Ticket/Elements/ShowBasics:48 lib/RT/Tickets_Overlay.pm:1766
+#: html/Ticket/Elements/ShowBasics:48 lib/RT/TicketCollection_Overlay.pm:1766
 msgid "Id"
 msgstr "Sorszám"
 
@@ -2045,7 +2045,7 @@ msgstr ""
 msgid "Incomplete query"
 msgstr ""
 
-#: html/Search/Elements/PickBasics:148 lib/RT/Tickets_Overlay.pm:1816
+#: html/Search/Elements/PickBasics:148 lib/RT/TicketCollection_Overlay.pm:1816
 msgid "Initial Priority"
 msgstr "Kezdõ prioritás"
 
@@ -2874,7 +2874,7 @@ msgstr "Nincs kiegészítés tárolva"
 msgid "No description for %1"
 msgstr "Nincs leírás a(z) %1-hez"
 
-#: lib/RT/Users_Overlay.pm:190
+#: lib/RT/UserCollection_Overlay.pm:190
 msgid "No group specified"
 msgstr "Nincs <b>csoport</b> megadva!"
 
@@ -3226,7 +3226,7 @@ msgstr "Saját problémák"
 msgid "OwnTicket"
 msgstr ""
 
-#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/Ticket/Create.html:72 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:129 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/Tickets_Overlay.pm:2006
+#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/Ticket/Create.html:72 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:129 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/TicketCollection_Overlay.pm:2006
 msgid "Owner"
 msgstr "Tulajdonos"
 
@@ -3365,7 +3365,7 @@ msgstr "Elõzõ oldal"
 msgid "Principal %1 not found."
 msgstr "%1 vezetõ nem található."
 
-#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:181 html/Ticket/Elements/EditBasics:92 html/Ticket/Elements/ShowBasics:72 lib/RT/Tickets_Overlay.pm:1790
+#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:181 html/Ticket/Elements/EditBasics:92 html/Ticket/Elements/ShowBasics:72 lib/RT/TicketCollection_Overlay.pm:1790
 msgid "Priority"
 msgstr "Prioritás"
 
@@ -3406,7 +3406,7 @@ msgstr "Lekérdezésszerkesztõ"
 msgid "Query:"
 msgstr ""
 
-#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:62 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:85 html/Tools/Reports/ResolvedByDates.html:86 html/Tools/Reports/ResolvedByOwner.html:66 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1617
+#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:62 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:85 html/Tools/Reports/ResolvedByDates.html:86 html/Tools/Reports/ResolvedByOwner.html:66 html/User/Elements/DelegateRights:101 lib/RT/TicketCollection_Overlay.pm:1617
 msgid "Queue"
 msgstr "Sor"
 
@@ -4142,7 +4142,7 @@ msgstr "Kiosztva"
 msgid "State"
 msgstr "Állam"
 
-#: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/Tickets_Overlay.pm:1651
+#: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/TicketCollection_Overlay.pm:1651
 msgid "Status"
 msgstr "Státusz"
 
@@ -4179,7 +4179,7 @@ msgstr "Probléma elcsenése %1 tulajdonostól "
 msgid "Style"
 msgstr ""
 
-#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Update.html:65 html/Ticket/Create.html:108 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1162 lib/RT/Tickets_Overlay.pm:1733
+#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Update.html:65 html/Ticket/Create.html:108 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1162 lib/RT/TicketCollection_Overlay.pm:1733
 msgid "Subject"
 msgstr "Tárgy"
 
@@ -4474,11 +4474,11 @@ msgstr "Pobléma megoldva"
 msgid "Ticket Transactions"
 msgstr "Probléma tranzakciói"
 
-#: lib/RT/Tickets_Overlay.pm:1920
+#: lib/RT/TicketCollection_Overlay.pm:1920
 msgid "Ticket content"
 msgstr "A probléma tartalma"
 
-#: lib/RT/Tickets_Overlay.pm:1969
+#: lib/RT/TicketCollection_Overlay.pm:1969
 msgid "Ticket content type"
 msgstr ""
 
@@ -4535,7 +4535,7 @@ msgstr "Maradék idõ"
 msgid "Time Worked"
 msgstr "Ráfordított munkaidõ"
 
-#: lib/RT/Tickets_Overlay.pm:1891
+#: lib/RT/TicketCollection_Overlay.pm:1891
 msgid "Time left"
 msgstr "Maradék idõ"
 
@@ -4543,7 +4543,7 @@ msgstr "Maradék idõ"
 msgid "Time to display"
 msgstr ""
 
-#: lib/RT/Tickets_Overlay.pm:1866
+#: lib/RT/TicketCollection_Overlay.pm:1866
 msgid "Time worked"
 msgstr "Munkaidõ"
 
@@ -4601,7 +4601,7 @@ msgstr ""
 msgid "Tue."
 msgstr "K"
 
-#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1168 lib/RT/Tickets_Overlay.pm:1705
+#: html/Admin/CustomFields/Modify.html:66 html/Admin/Elements/EditCustomField:65 html/Ticket/Elements/AddWatchers:54 html/Ticket/Elements/AddWatchers:65 html/Ticket/Elements/AddWatchers:75 lib/RT/Ticket_Overlay.pm:1168 lib/RT/TicketCollection_Overlay.pm:1705
 msgid "Type"
 msgstr "Típus"
 

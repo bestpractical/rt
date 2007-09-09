@@ -3,6 +3,7 @@ use strict;
 
 
 package RT::Model::Group;
+
 =head1 NAME
 
   RT::Model::Group - RT\'s group object
@@ -22,23 +23,22 @@ An RT group object.
 =cut
 
 
-
 use Jifty::DBI::Schema;
 use base qw/RT::Record/;
 
 use Jifty::DBI::Record schema {
-        column Name =>  type is 'varchar(200)';
+    column Name        => type is 'varchar(200)';
     column Description => type is 'text';
-    column Domain => type is 'varchar(64)';
-    column Type => type is 'varchar(64)';
-column Instance => type is 'integer';
+    column Domain      => type is 'varchar(64)';
+    column Type        => type is 'varchar(64)';
+    column Instance    => type is 'integer';
 
 };
 
 
 sub table { 'Groups'}
 
-use RT::Model::Users;
+use RT::Model::UserCollection;
 use RT::Model::GroupMemberCollection;
 use RT::Model::PrincipalCollection;
 use RT::Model::ACECollection;
@@ -762,7 +762,7 @@ sub GroupMembersObj {
 
 =head2 UserMembersObj
 
-Returns an L<RT::Model::Users> object of this group's members, by default
+Returns an L<RT::Model::UserCollection> object of this group's members, by default
 returns users including all members of subgroups, but could be
 changed with C<Recursively> named argument.
 
@@ -778,7 +778,7 @@ sub UserMembersObj {
     my $members_table = $args{'Recursively'}?
         'CachedGroupMembers': 'GroupMembers';
 
-    my $users = RT::Model::Users->new($self->CurrentUser);
+    my $users = RT::Model::UserCollection->new($self->CurrentUser);
     my $members_alias = $users->new_alias( $members_table );
     $users->join(
         alias1 => $members_alias,           column1 => 'MemberId',

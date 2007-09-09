@@ -82,7 +82,7 @@ my %user_uniq_hash;
 $m->callback( %ARGS, objects => \@objects, CallbackName => 'UpdateObjectList');
 
 foreach my $object (@objects) {
-	my $Users = RT::Model::Users->new($session{CurrentUser});
+	my $Users = RT::Model::UserCollection->new($session{CurrentUser});
         $Users->WhoHaveRight(Right => 'OwnTicket', Object => $object, IncludeSystemRights => 1, IncludeSuperusers => 0); 
         while (my $User = $Users->next()) {
                 next if ($User->id == $RT::Nobody->id); # skip nobody here, so we can make them first later

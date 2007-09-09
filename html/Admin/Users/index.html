@@ -93,7 +93,7 @@
 
 <%INIT>
 my $caption;
-my $users = RT::Model::Users->new( $session{'CurrentUser'} );
+my $users = RT::Model::UserCollection->new( $session{'CurrentUser'} );
 $users->{'find_disabled_rows'} = 1 if $FindDisabledUsers;
 
 if ( defined($UserString) && length $UserString ) {

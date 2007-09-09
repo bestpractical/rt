@@ -835,7 +835,7 @@ sub _WatcherLimit {
         # "X = 'Y'" matches more then one user so we try to fetch two records and
         # do the right thing when there is only one exist and semi-working solution
         # otherwise.
-        my $users_obj = RT::Model::Users->new( $self->CurrentUser );
+        my $users_obj = RT::Model::UserCollection->new( $self->CurrentUser );
         $users_obj->limit(
             column         => $rest{subkey},
             operator      => $op,

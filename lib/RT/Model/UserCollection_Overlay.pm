@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Model::Users - Collection of RT::Model::User objects
+  RT::Model::UserCollection - Collection of RT::Model::User objects
 
 =head1 SYNOPSIS
 
-  use RT::Model::Users;
+  use RT::Model::UserCollection;
 
 
 =head1 DESCRIPTION
@@ -63,7 +63,7 @@
 =cut
 
 
-package RT::Model::Users;
+package RT::Model::UserCollection;
 
 use strict;
 no warnings qw(redefine);

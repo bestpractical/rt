@@ -136,7 +136,7 @@ A convoluted example
  
     my $groupid = $groups->first->id;
  
-    my $adminccs = RT::Model::Users->new($RT::SystemUser);
+    my $adminccs = RT::Model::UserCollection->new($RT::SystemUser);
     $adminccs->WhoHaveRight(
 	Right => "AdminGroup",
 	Object =>$groups->first,
@@ -1238,9 +1238,9 @@ sub PostProcess {
 }
 
 eval "require RT::Action::CreateTickets_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/CreateTickets_Vendor.pm} );
+die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/CreateTicketCollection_Vendor.pm} );
 eval "require RT::Action::CreateTickets_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/CreateTickets_Local.pm} );
+die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/CreateTicketCollection_Local.pm} );
 
 1;
 

@@ -977,7 +977,7 @@ msgstr "Vedhæftede fil '%1' kunne ikke indlæses"
 msgid "Attachment Created"
 msgstr "Vedhæftet fil oprettet"
 
-#: lib/RT/Tickets_Overlay.pm:1945
+#: lib/RT/TicketCollection_Overlay.pm:1945
 msgid "Attachment filename"
 msgstr "Navn på vedhæftet fil"
 
@@ -985,7 +985,7 @@ msgstr "Navn på vedhæftet fil"
 msgid "Attachments"
 msgstr "Vedhæftede filer"
 
-#: lib/RT/Attributes_Overlay.pm:171
+#: lib/RT/AttributeCollection_Overlay.pm:171
 msgid "Attribute Deleted"
 msgstr "Egenskab slettet"
 
@@ -1833,12 +1833,12 @@ msgid "Custom field %1 %2 %3"
 msgstr "Ekstrafelt %1 %2 %3"
 
 #. ($CF->Name)
-#: lib/RT/Tickets_Overlay.pm:2424
+#: lib/RT/TicketCollection_Overlay.pm:2424
 msgid "Custom field %1 has a value."
 msgstr "Ekstrafelt %1 har en værdi."
 
 #. ($CF->Name)
-#: lib/RT/Tickets_Overlay.pm:2420
+#: lib/RT/TicketCollection_Overlay.pm:2420
 msgid "Custom field %1 has no value."
 msgstr "Ekstrafelt %1 har ingen værdi."
 
@@ -2475,7 +2475,7 @@ msgstr "Slut"
 #: html/Search/Elements/PickBasics:149
 #: html/Ticket/Create.html:182
 #: html/Ticket/Elements/EditBasics:97
-#: lib/RT/Tickets_Overlay.pm:1841
+#: lib/RT/TicketCollection_Overlay.pm:1841
 msgid "Final Priority"
 msgstr "Endelig prioritet"
 
@@ -2773,7 +2773,7 @@ msgid "I'm lost"
 msgstr "Jeg er faret vild"
 
 #: html/Ticket/Elements/ShowBasics:48
-#: lib/RT/Tickets_Overlay.pm:1766
+#: lib/RT/TicketCollection_Overlay.pm:1766
 msgid "Id"
 msgstr "ID"
 
@@ -2848,7 +2848,7 @@ msgid "Incomplete query"
 msgstr "Ufuldstændig søgning"
 
 #: html/Search/Elements/PickBasics:148
-#: lib/RT/Tickets_Overlay.pm:1816
+#: lib/RT/TicketCollection_Overlay.pm:1816
 msgid "Initial Priority"
 msgstr "Første prioritet"
 
@@ -3866,7 +3866,7 @@ msgstr "Ingen korrespondance vedhæftet"
 msgid "No description for %1"
 msgstr "Ingen beskrivelse af %1"
 
-#: lib/RT/Users_Overlay.pm:190
+#: lib/RT/UserCollection_Overlay.pm:190
 msgid "No group specified"
 msgstr "Ingen gruppe angivet"
 
@@ -4270,7 +4270,7 @@ msgstr "EgenSag"
 #: html/Ticket/Elements/ShowPeople:48
 #: html/Ticket/Update.html:62
 #: lib/RT/ACE_Overlay.pm:110
-#: lib/RT/Tickets_Overlay.pm:2006
+#: lib/RT/TicketCollection_Overlay.pm:2006
 msgid "Owner"
 msgstr "Ejer"
 
@@ -4553,7 +4553,7 @@ msgstr "Principal %1 ikke fundet."
 #: html/Ticket/Create.html:181
 #: html/Ticket/Elements/EditBasics:92
 #: html/Ticket/Elements/ShowBasics:72
-#: lib/RT/Tickets_Overlay.pm:1790
+#: lib/RT/TicketCollection_Overlay.pm:1790
 msgid "Priority"
 msgstr "Prioritet"
 
@@ -4613,7 +4613,7 @@ msgstr "Søgning:"
 #: html/Tools/Reports/ResolvedByDates.html:86
 #: html/Tools/Reports/ResolvedByOwner.html:66
 #: html/User/Elements/DelegateRights:101
-#: lib/RT/Tickets_Overlay.pm:1617
+#: lib/RT/TicketCollection_Overlay.pm:1617
 msgid "Queue"
 msgstr "Kø"
 
@@ -5649,7 +5649,7 @@ msgstr "Stat"
 #: html/Ticket/Elements/ShowBasics:52
 #: html/Ticket/Update.html:59
 #: lib/RT/Ticket_Overlay.pm:1166
-#: lib/RT/Tickets_Overlay.pm:1651
+#: lib/RT/TicketCollection_Overlay.pm:1651
 msgid "Status"
 msgstr "Status"
 
@@ -5697,7 +5697,7 @@ msgstr "Stil"
 #: html/Ticket/ModifyAll.html:100
 #: html/Ticket/Update.html:82
 #: lib/RT/Ticket_Overlay.pm:1162
-#: lib/RT/Tickets_Overlay.pm:1733
+#: lib/RT/TicketCollection_Overlay.pm:1733
 msgid "Subject"
 msgstr "Emne"
 
@@ -6087,11 +6087,11 @@ msgstr "Sagstransaktioner"
 msgid "Ticket attachment"
 msgstr "Vedhæftet fil til sag"
 
-#: lib/RT/Tickets_Overlay.pm:1920
+#: lib/RT/TicketCollection_Overlay.pm:1920
 msgid "Ticket content"
 msgstr "Sagsindhold"
 
-#: lib/RT/Tickets_Overlay.pm:1969
+#: lib/RT/TicketCollection_Overlay.pm:1969
 msgid "Ticket content type"
 msgstr "Sagsindholdstype"
 
@@ -6197,7 +6197,7 @@ msgstr "Resterende tid"
 msgid "Time Worked"
 msgstr "Tid brugt"
 
-#: lib/RT/Tickets_Overlay.pm:1891
+#: lib/RT/TicketCollection_Overlay.pm:1891
 msgid "Time left"
 msgstr "Resterende tid"
 
@@ -6205,7 +6205,7 @@ msgstr "Resterende tid"
 msgid "Time to display"
 msgstr "Tid for sidevisning"
 
-#: lib/RT/Tickets_Overlay.pm:1866
+#: lib/RT/TicketCollection_Overlay.pm:1866
 msgid "Time worked"
 msgstr "Tid brugt"
 
@@ -6289,7 +6289,7 @@ msgstr "Tirs."
 #: html/Ticket/Elements/AddWatchers:65
 #: html/Ticket/Elements/AddWatchers:75
 #: lib/RT/Ticket_Overlay.pm:1168
-#: lib/RT/Tickets_Overlay.pm:1705
+#: lib/RT/TicketCollection_Overlay.pm:1705
 msgid "Type"
 msgstr "Type"
 

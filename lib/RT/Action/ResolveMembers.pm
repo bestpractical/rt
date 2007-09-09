@@ -104,9 +104,9 @@ sub IsApplicable  {
 # }}}
 
 eval "require RT::Action::ResolveMembers_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/ResolveMembers_Vendor.pm});
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/ResolveMemberCollection_Vendor.pm});
 eval "require RT::Action::ResolveMembers_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/ResolveMembers_Local.pm});
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/ResolveMemberCollection_Local.pm});
 
 1;
 

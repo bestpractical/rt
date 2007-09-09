@@ -50,7 +50,7 @@
 %}
 <%INIT>
 my ($user);
-my $users = new RT::Model::Users($session{'CurrentUser'});
+my $users = new RT::Model::UserCollection($session{'CurrentUser'});
 $users->limit(column => 'id',
               value => $RT::SystemUser->id,
               operator => '!=' );

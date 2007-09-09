@@ -96,7 +96,7 @@
 my ($Users, $Groups);
 
 if ($UserString) {
-    $Users = RT::Model::Users->new($session{'CurrentUser'});
+    $Users = RT::Model::UserCollection->new($session{'CurrentUser'});
     $Users->limit(column => $UserField, value => $UserString, operator => $UserOp);
     $Users->LimitToPrivileged if $PrivilegedOnly;
      }

@@ -54,7 +54,7 @@
 </select>
 
 <%INIT>
-my $users = new RT::Model::Users($session{'CurrentUser'});
+my $users = new RT::Model::UserCollection($session{'CurrentUser'});
 
 $users->limit(column => 'id', value => $RT::SystemUser->id, operator => '!=' );
 $users->limit(column => 'id', value => $RT::Nobody->id, operator => '!=' );
