@@ -1599,6 +1599,8 @@ sub GetKeysInfo {
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'with-colons'} = undef; # parseable format
+    # Not sure if we need it
+    # $opt{'fingerprint'} = undef; # show fingerprint
     $opt{'fixed-list-mode'} = undef; # don't merge uid with keys
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
