@@ -1553,6 +1553,15 @@ sub _PrepareGnuPGOptions {
     return %res;
 }
 
+=head2 GetKeysForEncryption
+
+Takes identfier and returns keys suitable for encryption.
+
+B<Note> that keys for which trust level is not set are
+also listed.
+
+=cut
+
 sub GetKeysForEncryption {
     my $key_id = shift;
     my %res = GetKeysInfo( $key_id, 'public' );
