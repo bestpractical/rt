@@ -704,7 +704,7 @@ Returns an RT::Model::GroupMemberCollection object of this group's direct member
 
 sub MembersObj {
     my $self = shift;
-    my $members_obj = RT::Model::GroupMemberCollection->new( $self->current_user );
+    my $members_obj = RT::Model::GroupMemberCollection->new( current_user => $self->current_user );
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?

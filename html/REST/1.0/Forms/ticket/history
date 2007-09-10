@@ -54,7 +54,7 @@ $format => undef
 $fields => undef
 </%ARGS>
 <%INIT>
-my $ticket = new RT::Model::Ticket Jifty->web->current_user;
+my $ticket = new RT::Model::Ticket ;
 my ($c, $o, $k, $e) = ("", [], {}, "");
 
 $ticket->load($id);
@@ -95,7 +95,7 @@ if ($type) {
 
 if ($tid) {
     my @data;
-    my $t = new RT::Model::Transaction Jifty->web->current_user;
+    my $t = new RT::Model::Transaction ;
     
     # this paragraph limits the transaction ID query to transactions on this ticket. 
     # Otherwise you can query any transaction from any ticket, which makes no sense.
@@ -132,7 +132,7 @@ if ($tid) {
 
 
     if (!%$fields || exists $fields->{lc 'Content'}) {    
-	my $creator = new RT::Model::User Jifty->web->current_user;
+	my $creator = new RT::Model::User ;
 	$creator->load($t->Creator);
 	push @data, [ Creator    => $creator->Name   ];
     }

@@ -61,11 +61,11 @@
 
 =cut
 
+use warnings;
+use strict;
 
 package RT::Model::CustomFieldCollection;
-
-use strict;
-no warnings qw(redefine);
+use base qw/RT::SearchBuilder/;
 use Jifty::DBI::Collection::Unique;
 
 

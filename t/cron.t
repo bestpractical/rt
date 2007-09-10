@@ -22,7 +22,7 @@ my $CurrentUser = RT::CurrentUser->new('tara');
 is($user_obj->Name,'tara');
 is ($user_obj->id, $CurrentUser->id);
 
-# Create our template, which will be used for tests of RT::Action::Record*.
+# Create our template, which will be used for tests of RT::ScripAction::Record*.
 
 my $template_content = 'RT-Send-Cc: tla@example.com
 RT-Send-Bcc: jesse@example.com
@@ -77,12 +77,12 @@ is ($counter, 1, "from_sql search results 2");
 
 # Right.  Now test the actions.
 
-ok(require RT::Action::RecordComment);
-ok(require RT::Action::RecordCorrespondence);
+ok(require RT::ScripAction::RecordComment);
+ok(require RT::ScripAction::RecordCorrespondence);
 
 my ($comment_act, $correspond_act);
-ok($comment_act = RT::Action::RecordComment->new(TicketObj => $ticket1, TemplateObj => $template_obj, CurrentUser => $CurrentUser), "RecordComment Created");
-ok($correspond_act = RT::Action::RecordCorrespondence->new(TicketObj => $ticket2, TemplateObj => $template_obj, CurrentUser => $CurrentUser), "RecordCorrespondence Created");
+ok($comment_act = RT::ScripAction::RecordComment->new(TicketObj => $ticket1, TemplateObj => $template_obj, CurrentUser => $CurrentUser), "RecordComment Created");
+ok($correspond_act = RT::ScripAction::RecordCorrespondence->new(TicketObj => $ticket2, TemplateObj => $template_obj, CurrentUser => $CurrentUser), "RecordCorrespondence Created");
 ok($comment_act->prepare(), "Comment prepared");
 ok($correspond_act->prepare(), "Correspond prepared");
 ok($comment_act->commit(), "Comment committed");
@@ -90,7 +90,7 @@ ok($correspond_act->commit(), "Correspondence committed");
 
 # Now test for loop suppression.
 my ($trans, $desc, $transaction) = $ticket2->Comment(MIMEObj => $template_obj->MIMEObj);
-my $bogus_action = RT::Action::RecordComment->new(TicketObj => $ticket1, TemplateObj => $template_obj, TransactionObj => $transaction, CurrentUser => $CurrentUser);
+my $bogus_action = RT::ScripAction::RecordComment->new(TicketObj => $ticket1, TemplateObj => $template_obj, TransactionObj => $transaction, CurrentUser => $CurrentUser);
 ok(!$bogus_action->prepare(), "Comment aborted to prevent loop");
 
 1;

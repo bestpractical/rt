@@ -76,7 +76,7 @@
 =cut
 
 package RT::Model::TicketCollection;
-
+use base qw/RT::SearchBuilder/;
 use strict;
 no warnings qw(redefine);
 

@@ -46,12 +46,12 @@
 # 
 # END BPS TAGGED BLOCK }}}
 #
-package RT::Action::Notify;
+package RT::ScripAction::Notify;
 
 use strict;
 use warnings;
 
-use base qw(RT::Action::SendEmail);
+use base qw(RT::ScripAction::SendEmail);
 
 use Mail::Address;
 
@@ -158,9 +158,9 @@ sub set_Recipients {
 
 }
 
-eval "require RT::Action::Notify_Vendor";
+eval "require RT::ScripAction::Notify_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Notify_Vendor.pm});
-eval "require RT::Action::Notify_Local";
+eval "require RT::ScripAction::Notify_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Notify_Local.pm});
 
 1;

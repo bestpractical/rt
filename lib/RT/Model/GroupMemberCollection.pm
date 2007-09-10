@@ -62,11 +62,12 @@
 
 =cut
 
+use warnings;
+use strict;
 
 package RT::Model::GroupMemberCollection;
+use base qw/RT::SearchBuilder/;
 
-use strict;
-no warnings qw(redefine);
 
 # {{{ LimitToUsers
 

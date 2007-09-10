@@ -56,7 +56,7 @@ use RT::Model::UserCollection;
 my $field = "Name";
 $field = "EmailAddress" if $id =~ /\@/;
 
-my $users = new RT::Model::UserCollection Jifty->web->current_user;
+my $users = new RT::Model::UserCollection ;
 $users->limit(column => $field, operator => '=', value => $id);
 if ($users->count == 0) {
     return (0, "No user named $id exists.");

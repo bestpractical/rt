@@ -149,7 +149,7 @@ sub load  {
 
 =head2 LoadAction HASH
 
-  Takes a hash consisting of TicketObj and TransactionObj.  Loads an RT::Action:: module.
+  Takes a hash consisting of TicketObj and TransactionObj.  Loads an RT::ScripAction:: module.
 
 =cut
 
@@ -164,7 +164,7 @@ sub loadAction  {
     #TODO: Put this in an eval  
     $self->ExecModule =~ /^(\w+)$/;
     my $module = $1;
-    my $type = "RT::Action::". $module;
+    my $type = "RT::ScripAction::". $module;
  
     eval "require $type" || die "Require of $type failed.\n$@\n";
     
@@ -247,7 +247,7 @@ sub Describe  {
 
 =head2 Action
 
-Return the actual RT::Action object for this scrip.
+Return the actual RT::ScripAction object for this scrip.
 
 =cut
 
@@ -267,7 +267,7 @@ sub DESTROY {
 
 =head2 TODO
 
-Between this, RT::Model::Scrip and RT::Action::*, we need to be able to get rid of a 
+Between this, RT::Model::Scrip and RT::ScripAction::*, we need to be able to get rid of a 
 class. This just reeks of too much complexity -- jesse
 
 =cut

@@ -63,10 +63,10 @@
 =cut
 
 
-package RT::Model::ScripCollection;
-
+use warnings;
 use strict;
-no warnings qw(redefine);
+package RT::Model::ScripCollection;
+use base qw/RT::SearchBuilder/;
 
 # {{{ sub LimitToQueue 
 

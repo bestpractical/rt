@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Action::EscalatePriority
+  RT::ScripAction::EscalatePriority
 
 =head1 DESCRIPTION
 
@@ -70,12 +70,12 @@ as the ticket heads toward its due date.
 =cut
 
 
-package RT::Action::EscalatePriority;
-require RT::Action::Generic;
+package RT::ScripAction::EscalatePriority;
+require RT::ScripAction::Generic;
 
 use strict;
 use vars qw/@ISA/;
-@ISA=qw(RT::Action::Generic);
+@ISA=qw(RT::ScripAction::Generic);
 
 #Do what we need to do and send it out.
 
@@ -159,9 +159,9 @@ sub commit {
    }
 }
 
-eval "require RT::Action::EscalatePriority_Vendor";
+eval "require RT::ScripAction::EscalatePriority_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/EscalatePriority_Vendor.pm});
-eval "require RT::Action::EscalatePriority_Local";
+eval "require RT::ScripAction::EscalatePriority_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/EscalatePriority_Local.pm});
 
 1;

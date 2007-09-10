@@ -56,7 +56,7 @@ use LWP::MediaTypes;
 use RT::Interface::REST;
 use File::Temp qw(tempfile);
 
-my $ticket = new RT::Model::Ticket Jifty->web->current_user;
+my $ticket = new RT::Model::Ticket ;
 my $object = $r->path_info;
 my $status = "200 Ok";
 my $output;

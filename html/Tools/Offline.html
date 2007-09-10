@@ -102,8 +102,8 @@ $string => undef
 <%INIT>
 
 my @results;
-use RT::Action::CreateTickets;
-my $action = RT::Action::CreateTickets->new(CurrentUser => $session{'CurrentUser'});
+use RT::ScripAction::CreateTickets;
+my $action = RT::ScripAction::CreateTickets->new(CurrentUser => $session{'CurrentUser'});
 ;
 if ($ARGS{'Parse'} && $ARGS{'Template'}) {
     $string = "";

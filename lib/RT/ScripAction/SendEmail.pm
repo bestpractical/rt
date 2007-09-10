@@ -47,12 +47,12 @@
 # END BPS TAGGED BLOCK }}}
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org>
 
-package RT::Action::SendEmail;
+package RT::ScripAction::SendEmail;
 
 use strict;
 use warnings;
 
-use base qw(RT::Action::Generic);
+use base qw(RT::ScripAction::Generic);
 
 use MIME::Words qw(encode_mimeword);
 
@@ -63,20 +63,20 @@ use Date::Format qw(strftime);
 
 =head1 NAME
 
-RT::Action::SendEmail - An Action which users can use to send mail 
+RT::ScripAction::SendEmail - An Action which users can use to send mail 
 or can subclassed for more specialized mail sending behavior. 
-RT::Action::AutoReply is a good example subclass.
+RT::ScripAction::AutoReply is a good example subclass.
 
 =head1 SYNOPSIS
 
-  require RT::Action::SendEmail;
-  @ISA  = qw(RT::Action::SendEmail);
+  require RT::ScripAction::SendEmail;
+  @ISA  = qw(RT::ScripAction::SendEmail);
 
 
 =head1 DESCRIPTION
 
-Basically, you create another module RT::Action::YourAction which ISA
-RT::Action::SendEmail.
+Basically, you create another module RT::ScripAction::YourAction which ISA
+RT::ScripAction::SendEmail.
 
 =head1 METHODS
 
@@ -956,9 +956,9 @@ sub MIMEEncodeString {
     }
 }
 
-eval "require RT::Action::SendEmail_Vendor";
+eval "require RT::ScripAction::SendEmail_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Vendor.pm});
-eval "require RT::Action::SendEmail_Local";
+eval "require RT::ScripAction::SendEmail_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Local.pm});
 
 =head1 AUTHOR
@@ -967,7 +967,7 @@ Jesse Vincent <jesse@bestpractical.com> and Tobias Brox <tobix@cpan.org>
 
 =head1 SEE ALSO
 
-L<RT::Action::Notify>, L<RT::Action::NotifyAsComment> and L<RT::Action::Autoreply>
+L<RT::ScripAction::Notify>, L<RT::ScripAction::NotifyAsComment> and L<RT::ScripAction::Autoreply>
 
 =cut
 

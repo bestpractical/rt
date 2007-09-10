@@ -45,51 +45,35 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
- 
-
-package RT::Action::UserDefined;
-use RT::Action::Generic;
+package RT::ScripAction::NotifyAsComment;
+require RT::ScripAction::Notify;
 
 use strict;
 use vars qw/@ISA/;
-@ISA = qw(RT::Action::Generic);
+@ISA = qw(RT::ScripAction::Notify);
 
-=head2 Prepare
 
-This happens on every transaction. it's always applicable
+=head2 set_ReturnAddress
 
-=cut
-
-sub prepare {
-    my $self = shift;
-    my $retval = eval $self->ScripObj->CustomPrepareCode;
-    if ($@) {
-        $RT::Logger->error("Scrip ".$self->ScripObj->id. " Prepare failed: ".$@);
-        return (undef);
-    }
-    return ($retval);
-}
-
-=head2 Commit
-
-This happens on every transaction. it's always applicable
+Tell SendEmail that this message should come out as a comment. 
+Calls SUPER::set_ReturnAddress.
 
 =cut
 
-sub commit {
-    my $self = shift;
-    my $retval = eval $self->ScripObj->CustomCommitCode;
-    if ($@) {
-        $RT::Logger->error("Scrip ".$self->ScripObj->id. " Commit failed: ".$@);
-        return (undef);
-    }
-    return ($retval);
+sub set_ReturnAddress {
+	my $self = shift;
+	
+	# Tell RT::ScripAction::SendEmail that this should come 
+	# from the relevant comment email address.
+	$self->{'comment'} = 1;
+	
+	return($self->SUPER::set_ReturnAddress(is_comment => 1));
 }
 
-eval "require RT::Action::UserDefined_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/UserDefined_Vendor.pm});
-eval "require RT::Action::UserDefined_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/UserDefined_Local.pm});
+eval "require RT::ScripAction::NotifyAsComment_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/NotifyAsComment_Vendor.pm});
+eval "require RT::ScripAction::NotifyAsComment_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/NotifyAsComment_Local.pm});
 
 1;
 

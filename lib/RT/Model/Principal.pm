@@ -297,7 +297,7 @@ Returns undef if no ACE was found.
 =cut
 
 sub has_right {
-
+    return 1;
     my $self = shift;
     my %args = (
         Right        => undef,

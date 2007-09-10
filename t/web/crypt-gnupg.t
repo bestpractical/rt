@@ -3,7 +3,7 @@ use strict;
 
 use Test::More tests => 80;
 use RT::Test;
-use RT::Action::SendEmail;
+use RT::ScripAction::SendEmail;
 
 eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 

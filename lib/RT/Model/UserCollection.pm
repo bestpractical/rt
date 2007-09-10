@@ -62,11 +62,10 @@
 
 =cut
 
-
-package RT::Model::UserCollection;
-
+use warnings;
 use strict;
-no warnings qw(redefine);
+package RT::Model::UserCollection;
+use base qw/RT::SearchBuilder/;
 
 # {{{ sub _init 
 sub _init {

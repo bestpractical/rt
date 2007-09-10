@@ -45,24 +45,23 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Action::RecordCorrespondence;
-require RT::Action::Generic;
+package RT::ScripAction::RecordComment;
+require RT::ScripAction::Generic;
 use strict;
 use vars qw/@ISA/;
-@ISA = qw(RT::Action::Generic);
+@ISA = qw(RT::ScripAction::Generic);
 
 =head1 NAME
 
-RT::Action::RecordCorrespondence - An Action which can be used from an
+RT::ScripAction::RecordComment - An Action which can be used from an
 external tool, or in any situation where a ticket transaction has not
 been started, to make a comment on the ticket.
 
 =head1 SYNOPSIS
 
-my $action_obj = RT::Action::RecordCorrespondence->new(
-			'TicketObj'   => $ticket_obj,
-			'TemplateObj' => $template_obj,
-			);
+my $action_obj = RT::ScripAction::RecordComment->new('TicketObj'   => $ticket_obj,
+						'TemplateObj' => $template_obj,
+						);
 my $result = $action_obj->prepare();
 $action_obj->commit() if $result;
 
@@ -88,10 +87,10 @@ sub prepare {
 
 =head2 Commit
 
-Create a Transaction by calling the ticket's Correspond method on our
+Create a Transaction by calling the ticket's Comment method on our
 parsed Template, which may have an RT-Send-Cc or RT-Send-Bcc header.
-The Transaction will be of type Correspond.  This Transaction can then
-be used by the scrips that actually send the email.
+The Transaction will be of type Comment.  This Transaction can then be
+used by the scrips that actually send the email.
 
 =cut
 
@@ -107,15 +106,15 @@ sub createTransaction {
 	TicketObj => $self->{'TicketObj'});
     return undef unless $result;
     
-    my ($trans, $desc, $transaction) = $self->{'TicketObj'}->Correspond(
+    my ($trans, $desc, $transaction) = $self->{'TicketObj'}->Comment(
 	MIMEObj => $self->TemplateObj->MIMEObj);
     $self->{'TransactionObj'} = $transaction;
 }
     
 
-eval "require RT::Action::RecordCorrespondence_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RecordCorrespondence_Vendor.pm});
-eval "require RT::Action::RecordCorrespondence_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RecordCorrespondence_Local.pm});
+eval "require RT::ScripAction::RecordComment_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RecordComment_Vendor.pm});
+eval "require RT::ScripAction::RecordComment_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RecordComment_Local.pm});
 
 1;

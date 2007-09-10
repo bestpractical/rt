@@ -81,8 +81,14 @@ Returns the current user object of L<RT::CurrentUser> class.
 
 sub current_user {
     my $self = shift;
-    if (@_) {
+    if (UNIVERSAL::isa($_[0], 'RT::CurrentUser')) {
         $self->{'user'} = shift @_;
+
+    } elsif( @_) {
+        my %args = @_;
+        if ($args{'current_user'}) {
+            $self->{'user'} = $args{'current_user'};
+        }
 
     }
     return $self->{'user'};
@@ -124,9 +130,12 @@ sub loc {
     if (my $user = $self->OriginalUser) {
         return $user->loc(@_);
     }
-    else {
+    elsif ($self->current_user) {
         return $self->current_user->loc(@_);
 
+    }
+    else {
+        return RT->SystemUser->loc(@_);
     }
 }
 

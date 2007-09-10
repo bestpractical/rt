@@ -96,7 +96,7 @@ my $Dirty = $m->comp(
 );
 
 use RT::SavedSearches;
-my @Objects = RT::SavedSearches->new(Jifty->web->current_user)->_PrivacyObjects;
+my @Objects = RT::SavedSearches->new()->_PrivacyObjects;
 push @Objects, RT::System->new( $session{'CurrentUser'} )
     if $session{'CurrentUser'}->has_right( Object=> $RT::System,
                                           Right => 'SuperUser' );

@@ -45,35 +45,77 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Action::NotifyAsComment;
-require RT::Action::Notify;
-
+package RT::ScripAction::RecordCorrespondence;
+require RT::ScripAction::Generic;
 use strict;
 use vars qw/@ISA/;
-@ISA = qw(RT::Action::Notify);
+@ISA = qw(RT::ScripAction::Generic);
 
+=head1 NAME
 
-=head2 set_ReturnAddress
+RT::ScripAction::RecordCorrespondence - An Action which can be used from an
+external tool, or in any situation where a ticket transaction has not
+been started, to make a comment on the ticket.
 
-Tell SendEmail that this message should come out as a comment. 
-Calls SUPER::set_ReturnAddress.
+=head1 SYNOPSIS
+
+my $action_obj = RT::ScripAction::RecordCorrespondence->new(
+			'TicketObj'   => $ticket_obj,
+			'TemplateObj' => $template_obj,
+			);
+my $result = $action_obj->prepare();
+$action_obj->commit() if $result;
+
+=head1 METHODS
+
+=head2 Prepare
+
+Check for the existence of a Transaction.  If a Transaction already
+exists, and is of type "Comment" or "Correspond", abort because that
+will give us a loop.
 
 =cut
 
-sub set_ReturnAddress {
-	my $self = shift;
-	
-	# Tell RT::Action::SendEmail that this should come 
-	# from the relevant comment email address.
-	$self->{'comment'} = 1;
-	
-	return($self->SUPER::set_ReturnAddress(is_comment => 1));
+
+sub prepare {
+    my $self = shift;
+    if (defined $self->{'TransactionObj'} &&
+	$self->{'TransactionObj'}->Type =~ /^(Comment|Correspond)$/) {
+	return undef;
+    }
+    return 1;
 }
 
-eval "require RT::Action::NotifyAsComment_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/NotifyAsComment_Vendor.pm});
-eval "require RT::Action::NotifyAsComment_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/NotifyAsComment_Local.pm});
+=head2 Commit
+
+Create a Transaction by calling the ticket's Correspond method on our
+parsed Template, which may have an RT-Send-Cc or RT-Send-Bcc header.
+The Transaction will be of type Correspond.  This Transaction can then
+be used by the scrips that actually send the email.
+
+=cut
+
+sub commit {
+    my $self = shift;
+    $self->createTransaction();
+}
+
+sub createTransaction {
+    my $self = shift;
+
+    my ($result, $msg) = $self->{'TemplateObj'}->Parse(
+	TicketObj => $self->{'TicketObj'});
+    return undef unless $result;
+    
+    my ($trans, $desc, $transaction) = $self->{'TicketObj'}->Correspond(
+	MIMEObj => $self->TemplateObj->MIMEObj);
+    $self->{'TransactionObj'} = $transaction;
+}
+    
+
+eval "require RT::ScripAction::RecordCorrespondence_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RecordCorrespondence_Vendor.pm});
+eval "require RT::ScripAction::RecordCorrespondence_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RecordCorrespondence_Local.pm});
 
 1;
-

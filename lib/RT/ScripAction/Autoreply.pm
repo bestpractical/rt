@@ -45,12 +45,12 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Action::Autoreply;
+package RT::ScripAction::Autoreply;
 
 use strict;
 use warnings;
 
-use base qw(RT::Action::SendEmail);
+use base qw(RT::ScripAction::SendEmail);
 
 =head2 Prepare
 
@@ -132,9 +132,9 @@ sub set_ReturnAddress {
   
 # }}}
 
-eval "require RT::Action::Autoreply_Vendor";
+eval "require RT::ScripAction::Autoreply_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Autoreply_Vendor.pm});
-eval "require RT::Action::Autoreply_Local";
+eval "require RT::ScripAction::Autoreply_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Autoreply_Local.pm});
 
 1;

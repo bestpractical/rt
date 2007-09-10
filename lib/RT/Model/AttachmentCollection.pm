@@ -66,10 +66,10 @@ should only be accessed through exported APIs in Ticket, Queue and other similar
 =cut
 
 
-package RT::Model::AttachmentCollection;
-
+use warnings;
 use strict;
-no warnings qw(redefine);
+package RT::Model::AttachmentCollection;
+use base qw/RT::SearchBuilder/;
 
 use RT::Model::Attachment;
 

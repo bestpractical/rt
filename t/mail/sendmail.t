@@ -7,7 +7,7 @@ use RT::Test;
 
 use RT::EmailParser;
 use RT::Model::TicketCollection;
-use RT::Action::SendEmail;
+use RT::ScripAction::SendEmail;
 
 my @_outgoing_messages;
 my @scrips_fired;
@@ -22,7 +22,7 @@ is (__PACKAGE__, 'main', "We're operating in the main package");
 
 {
     no warnings qw/redefine/;
-    sub RT::Action::SendEmail::SendMessage {
+    sub RT::ScripAction::SendEmail::SendMessage {
         my $self = shift;
         my $MIME = shift;
 
@@ -190,7 +190,7 @@ sub _fired_scrip {
 sub utf8_redef_sendmessage {
     no warnings qw/redefine/;
     eval ' 
-    sub RT::Action::SendEmail::SendMessage {
+    sub RT::ScripAction::SendEmail::SendMessage {
         my $self = shift;
         my $MIME = shift;
 
@@ -217,7 +217,7 @@ sub utf8_redef_sendmessage {
 sub iso8859_redef_sendmessage {
     no warnings qw/redefine/;
     eval ' 
-    sub RT::Action::SendEmail::SendMessage {
+    sub RT::ScripAction::SendEmail::SendMessage {
         my $self = shift;
         my $MIME = shift;
 
@@ -250,7 +250,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 # be as much like the mail gateway as possible.
 {
     no warnings qw/redefine/;
-    local *RT::Action::SendEmail::SendMessage = sub { return 1};
+    local *RT::ScripAction::SendEmail::SendMessage = sub { return 1};
 
     %args = (message => $content, queue => 1, action => 'correspond');
     RT::Interface::Email::Gateway(\%args);
@@ -293,7 +293,7 @@ is (count_attachs($tick), 1 , "Has one attachment, presumably a text-html and a 
 
 sub text_html_umlauts_redef_sendmessage {
     no warnings qw/redefine/;
-    eval 'sub RT::Action::SendEmail::SendMessage { 
+    eval 'sub RT::ScripAction::SendEmail::SendMessage { 
                 my $self = shift;
                 my $MIME = shift;
                 return (1) unless ($self->ScripObj->ActionObj->Name eq "Notify AdminCcs" );
@@ -329,7 +329,7 @@ is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-html and a 
 
 sub text_html_russian_redef_sendmessage {
     no warnings qw/redefine/;
-    eval 'sub RT::Action::SendEmail::SendMessage { 
+    eval 'sub RT::ScripAction::SendEmail::SendMessage { 
                 my $self = shift; 
                 my $MIME = shift; 
                 use Data::Dumper;
@@ -371,7 +371,7 @@ is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-plain");
 is ($tick->Subject, "\x{442}\x{435}\x{441}\x{442} \x{442}\x{435}\x{441}\x{442}", "Recorded the subject right");
 sub text_plain_russian_redef_sendmessage {
     no warnings qw/redefine/;
-    eval 'sub RT::Action::SendEmail::SendMessage { 
+    eval 'sub RT::ScripAction::SendEmail::SendMessage { 
                 my $self = shift; 
                 my $MIME = shift; 
                 return (1) unless ($self->ScripObj->ActionObj->Name eq "Notify AdminCcs" );
@@ -412,7 +412,7 @@ like (first_attach($tick)->ContentType , qr/multipart\/mixed/, "We recorded the 
 is (count_attachs($tick) , 5 , "Has one attachment, presumably a text-plain and a message RFC 822 and another plain");
 sub text_plain_nested_redef_sendmessage {
     no warnings qw/redefine/;
-    eval 'sub RT::Action::SendEmail::SendMessage { 
+    eval 'sub RT::ScripAction::SendEmail::SendMessage { 
                 my $self = shift; 
                 my $MIME = shift; 
                 return (1) unless ($self->ScripObj->ActionObj->Name eq "Notify AdminCcs" );
@@ -439,7 +439,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 # be as much like the mail gateway as possible.
 {
     no warnings qw/redefine/;
-    local *RT::Action::SendEmail::SendMessage = sub { return 1};
+    local *RT::ScripAction::SendEmail::SendMessage = sub { return 1};
     %args =        (message => $content, queue => 1, action => 'correspond');
     RT::Interface::Email::Gateway(\%args);
     $tickets = RT::Model::TicketCollection->new($RT::SystemUser);
@@ -464,7 +464,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 # be as much like the mail gateway as possible.
 
 no warnings qw/redefine/;
-local *RT::Action::SendEmail::SendMessage = sub { return 1};
+local *RT::ScripAction::SendEmail::SendMessage = sub { return 1};
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
  $tickets = RT::Model::TicketCollection->new($RT::SystemUser);

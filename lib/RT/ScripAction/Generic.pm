@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Action::Generic - a generic baseclass for RT Actions
+  RT::ScripAction::Generic - a generic baseclass for RT Actions
 
 =head1 SYNOPSIS
 
-  use RT::Action::Generic;
+  use RT::ScripAction::Generic;
 
 =head1 DESCRIPTION
 
@@ -60,7 +60,7 @@
 
 =cut
 
-package RT::Action::Generic;
+package RT::ScripAction::Generic;
 
 use strict;
 use Scalar::Util;
@@ -218,9 +218,9 @@ sub DESTROY {
 
 # }}}
 
-eval "require RT::Action::Generic_Vendor";
+eval "require RT::ScripAction::Generic_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Generic_Vendor.pm});
-eval "require RT::Action::Generic_Local";
+eval "require RT::ScripAction::Generic_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Generic_Local.pm});
 
 1;

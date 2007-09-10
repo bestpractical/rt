@@ -77,7 +77,7 @@ use Jifty::DBI::Record schema {
         column Template => type is 'int';
         column ScripAction => type is 'int';
        column  ScripCondition         => type is 'int';
-       column  Stage                  => type is 'text', default is 'TransactionCreate';
+       column  Stage                  => type is 'varchar(32)', default is 'TransactionCreate';
      column   Description            => type is 'text';
     column     CustomPrepareCode      => type is 'text';
    column     CustomCommitCode       => type is 'text';
@@ -236,7 +236,7 @@ sub QueueObj {
 
 =head2 ActionObj
 
-Retuns an RT::Action object with this Scrip\'s Action
+Retuns an RT::ScripAction object with this Scrip\'s Action
 
 =cut
 

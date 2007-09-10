@@ -553,7 +553,7 @@ foreach my $link (@{ $links->items_array_ref }) {
 }
 
 # Now magically turn myself into a Requestor Notify object...
-require RT::Action::Notify; bless($self, 'RT::Action::Notify');
+require RT::ScripAction::Notify; bless($self, 'RT::ScripAction::Notify');
 $self->{Argument} = 'Requestor'; $self->prepare;
 
 return $rejected;
@@ -589,7 +589,7 @@ foreach my $obj ($self->TicketObj->AllDependedOnBy( Type => 'ticket' )) {
 }
 
 # Now magically turn myself into a Requestor Notify object...
-require RT::Action::Notify; bless($self, 'RT::Action::Notify');
+require RT::ScripAction::Notify; bless($self, 'RT::ScripAction::Notify');
 $self->{Argument} = 'Requestor'; $self->prepare;
 
 return 1;
@@ -646,7 +646,7 @@ while (my $link = $links->next) {
 }
 
 # Now magically turn myself into a Requestor Notify object...
-require RT::Action::Notify; bless($self, 'RT::Action::Notify');
+require RT::ScripAction::Notify; bless($self, 'RT::ScripAction::Notify');
 $self->{Argument} = 'Requestor'; $self->prepare;
 
 return 0; # ignore $passed;

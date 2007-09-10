@@ -60,7 +60,7 @@ use File::Temp qw(tempfile);
 $RT::Logger->debug("Got ticket id=$id for comment");
 $RT::Logger->debug("Got args @{[keys(%changes)]}.");
 
-my $ticket = new RT::Model::Ticket Jifty->web->current_user;
+my $ticket = new RT::Model::Ticket ;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 
 # http://.../REST/1.0/ticket/1/comment

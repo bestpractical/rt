@@ -5,7 +5,7 @@ use Test::More tests => 12;
 use_ok('RT');
 use RT::Test;
 
-use_ok('RT::Action::CreateTickets');
+use_ok('RT::ScripAction::CreateTickets');
 
 my $QUEUE = 'uploadtest-'.$$;
 
@@ -27,7 +27,7 @@ create-1,$QUEUE,hi,new,root,2.0
 create-2,$QUEUE,hello,new,root,3.0
 EOF
 
-my $action = RT::Action::CreateTickets->new(CurrentUser => RT::CurrentUser->new('root'));
+my $action = RT::ScripAction::CreateTickets->new(CurrentUser => RT::CurrentUser->new('root'));
 ok ($action->current_user->id , "WE have a current user");
  
 $action->Parse(Content => $data);

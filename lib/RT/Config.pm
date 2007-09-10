@@ -45,11 +45,11 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Config;
 
 use strict;
 use warnings;
 
+package RT::Config;
 use File::Spec ();
 
 =head1 NAME
@@ -182,8 +182,7 @@ Object constructor returns new object. Takes no arguments.
 
 =cut
 
-sub new
-{
+sub new {
     my $proto = shift;
     my $class = ref($proto)? ref($proto): $proto;
     my $self = bless {}, $class;
@@ -191,10 +190,7 @@ sub new
     return $self;
 }
 
-sub _init
-{
-    return;
-}
+sub _init { return; }
 
 =head2 InitConfig
 

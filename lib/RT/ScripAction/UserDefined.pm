@@ -45,60 +45,51 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-# This Action will open the base if a dependent is resolved.
-package RT::Action::AutoOpen;
+ 
+
+package RT::ScripAction::UserDefined;
+use RT::ScripAction::Generic;
 
 use strict;
-use warnings;
+use vars qw/@ISA/;
+@ISA = qw(RT::ScripAction::Generic);
 
-use base qw(RT::Action::Generic);
+=head2 Prepare
 
-=head1 DESCRIPTION
-
-Opens a ticket unless it's allready open, but only unless transaction
-L<RT::Model::Transaction/IsInbound is inbound>.
-
-Doesn't open a ticket if message's head has field C<RT-Control> with
-C<no-autoopen> substring.
+This happens on every transaction. it's always applicable
 
 =cut
 
 sub prepare {
     my $self = shift;
-
-    # if the ticket is already open or the ticket is new and the message is more mail from the
-    # requestor, don't reopen it.
-
-    my $status = $self->TicketObj->Status;
-    return undef if $status eq 'open';
-    return undef if $status eq 'new' && $self->TransactionObj->IsInbound;
-
-    if ( my $msg = $self->TransactionObj->Message->first ) {
-        return undef if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
+    my $retval = eval $self->ScripObj->CustomPrepareCode;
+    if ($@) {
+        $RT::Logger->error("Scrip ".$self->ScripObj->id. " Prepare failed: ".$@);
+        return (undef);
     }
-
-    return 1;
+    return ($retval);
 }
+
+=head2 Commit
+
+This happens on every transaction. it's always applicable
+
+=cut
 
 sub commit {
     my $self = shift;
-
-    my $oldstatus = $self->TicketObj->Status;
-    $self->TicketObj->__set( column => 'Status', value => 'open' );
-    $self->TicketObj->_NewTransaction(
-        Type     => 'Status',
-        Field    => 'Status',
-        OldValue => $oldstatus,
-        NewValue => 'open',
-        Data     => 'Ticket auto-opened on incoming correspondence'
-    );
-
-    return 1;
+    my $retval = eval $self->ScripObj->CustomCommitCode;
+    if ($@) {
+        $RT::Logger->error("Scrip ".$self->ScripObj->id. " Commit failed: ".$@);
+        return (undef);
+    }
+    return ($retval);
 }
 
-eval "require RT::Action::AutoOpen_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/AutoOpen_Vendor.pm});
-eval "require RT::Action::AutoOpen_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/AutoOpen_Local.pm});
+eval "require RT::ScripAction::UserDefined_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/UserDefined_Vendor.pm});
+eval "require RT::ScripAction::UserDefined_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/UserDefined_Local.pm});
 
 1;
+

@@ -45,76 +45,62 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Action::RecordComment;
-require RT::Action::Generic;
+# This Action will resolve all members of a resolved group ticket
+
+package RT::ScripAction::ResolveMembers;
+require RT::ScripAction::Generic;
+require RT::Model::LinkCollection;
+
 use strict;
 use vars qw/@ISA/;
-@ISA = qw(RT::Action::Generic);
+@ISA=qw(RT::ScripAction::Generic);
 
-=head1 NAME
+#Do what we need to do and send it out.
 
-RT::Action::RecordComment - An Action which can be used from an
-external tool, or in any situation where a ticket transaction has not
-been started, to make a comment on the ticket.
+#What does this type of Action does
 
-=head1 SYNOPSIS
-
-my $action_obj = RT::Action::RecordComment->new('TicketObj'   => $ticket_obj,
-						'TemplateObj' => $template_obj,
-						);
-my $result = $action_obj->prepare();
-$action_obj->commit() if $result;
-
-=head1 METHODS
-
-=head2 Prepare
-
-Check for the existence of a Transaction.  If a Transaction already
-exists, and is of type "Comment" or "Correspond", abort because that
-will give us a loop.
-
-=cut
+# {{{ sub Describe 
+sub Describe  {
+  my $self = shift;
+  return $self->loc("[_1] will resolve all members of a resolved group ticket.", ref $self);
+}
+# }}}
 
 
-sub prepare {
-    my $self = shift;
-    if (defined $self->{'TransactionObj'} &&
-	$self->{'TransactionObj'}->Type =~ /^(Comment|Correspond)$/) {
-	return undef;
-    }
+# {{{ sub prepare 
+sub prepare  {
+    # nothing to prepare
     return 1;
 }
-
-=head2 Commit
-
-Create a Transaction by calling the ticket's Comment method on our
-parsed Template, which may have an RT-Send-Cc or RT-Send-Bcc header.
-The Transaction will be of type Comment.  This Transaction can then be
-used by the scrips that actually send the email.
-
-=cut
+# }}}
 
 sub commit {
     my $self = shift;
-    $self->createTransaction();
+
+    my $Links=RT::Model::LinkCollection->new($RT::SystemUser);
+    $Links->limit(column => 'Type', value => 'MemberOf');
+    $Links->limit(column => 'Target', value => $self->TicketObj->id);
+
+    while (my $Link=$Links->next()) {
+	# Todo: Try to deal with remote URIs as well
+	next unless $Link->BaseURI->IsLocal;
+	my $base=RT::Model::Ticket->new($self->TicketObj->current_user);
+	# Todo: Only work if Base is a plain ticket num:
+	$base->load($Link->Base);
+	# I'm afraid this might be a major bottleneck if ResolveGroupTicket is on.
+        $base->Resolve;
+    }
 }
 
-sub createTransaction {
-    my $self = shift;
 
-    my ($result, $msg) = $self->{'TemplateObj'}->Parse(
-	TicketObj => $self->{'TicketObj'});
-    return undef unless $result;
-    
-    my ($trans, $desc, $transaction) = $self->{'TicketObj'}->Comment(
-	MIMEObj => $self->TemplateObj->MIMEObj);
-    $self->{'TransactionObj'} = $transaction;
+# Applicability checked in Commit.
+
+# {{{ sub IsApplicable 
+sub IsApplicable  {
+  my $self = shift;
+  1;  
+  return 1;
 }
-    
-
-eval "require RT::Action::RecordComment_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RecordComment_Vendor.pm});
-eval "require RT::Action::RecordComment_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RecordComment_Local.pm});
 
 1;
+

@@ -80,7 +80,7 @@ use base qw(Jifty::Record);
 sub new {
     my $class = shift;
     my $self = $class->SUPER::new(handle => Jifty->handle, current_user => $_[0]);
-    $self->current_user(@_);
+    $self->current_user(@_) if (UNIVERSAL::isa($_[0], "RT::CurrentUser"));
     $self->_init(@_);
     return $self;
 }
@@ -269,7 +269,7 @@ sub first_attribute {
 # {{{ sub _Handle 
 sub _Handle { return Jifty->handle }
 sub _handle { return Jifty->handle }
-
+ 
 # }}}
 
 # {{{ sub create 
@@ -304,9 +304,9 @@ sub create {
     }
 
 
-    $attribs{'Creator'} ||= $self->current_user->id if $self->can('Creator');
+    $attribs{'Creator'} ||= $self->current_user->id if $self->can('Creator') && $self->current_user;
 
-    my $now = RT::Date->new( $self->current_user );
+    my $now = RT::Date->new( current_user =>  $self->current_user );
     $now->set( Format => 'unix', value => time );
 
     my $id = $self->SUPER::create(%attribs);
@@ -557,7 +557,7 @@ sub _setLastUpdated {
         );
         ( $msg, $val ) = $self->__set(
             column => 'LastUpdatedBy',
-            value => $self->current_user->id
+            value =>  $self->current_user ? $self->current_user->id  : 0
         );
 }
 

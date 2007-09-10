@@ -82,7 +82,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value" colspan="5">
-<input name="Requestors" value="<% ($ARGS{Requestors}) || Jifty->web->current_user->EmailAddress %>" size="40" />
+    <input name="Requestors" value="<% ($ARGS{Requestors}) || $session{'CurrentUser'}->EmailAddress %>" size="40" />
 </td>
 </tr>
 <tr>

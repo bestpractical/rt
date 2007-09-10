@@ -15,7 +15,7 @@ BEGIN {
     Jifty->new();
     use RT;
     RT::load_config();
-}
+};
 
 use Term::ReadKey;
 use Getopt::Long;
@@ -127,8 +127,6 @@ foreach my $action ( @actions ) {
         Jifty->handle->InsertACL( $dbh, $args{'datadir'} ) # unless $db_type eq 'Oracle'
     }
     elsif ( $action eq 'coredata' ) {
-        Jifty->handle = new RT::Handle;
-        Jifty->handle->dbh( undef );
         RT::connect_to_database();
         RT::InitLogging();
         RT::InitSystemObjects();

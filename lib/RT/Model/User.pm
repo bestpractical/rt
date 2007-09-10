@@ -64,7 +64,7 @@ use Jifty::DBI::Record schema {
     column        Zip  => max_length is 16,      type is 'varchar(16)', default is '';
     column        Country  => max_length is 50,      type is 'varchar(50)', default is '';
     column        Timezone  => max_length is 50,      type is 'varchar(50)', default is '';
-    column        PGPKey  =>        type is 'text', default is '';
+    column        PGPKey  =>        type is 'text';
     column        Creator =>  max_length is 11,      type is 'int(11)', default is '0';
     column        Created =>       type is 'datetime', default is '';
     column        LastUpdatedBy => max_length is 11,      type is 'int(11)', default is '0';
@@ -1560,12 +1560,12 @@ sub _value {
 
     #If the user wants to see their own values, let them
     # TODO figure ouyt a better way to deal with this
-   if ( $self->id && $self->current_user->id == $self->id ) {
+   if ( $self->id && $self->current_user && $self->current_user->id == $self->id ) {
         return ( $self->SUPER::_value($field) );
     }
 
     #If the user has the admin users right, return the field
-    elsif ( $self->current_user->has_right(Right =>'AdminUsers', Object => $RT::System) ) {
+    elsif ($self->current_user &&  $self->current_user->has_right(Right =>'AdminUsers', Object => $RT::System) ) {
         return ( $self->SUPER::_value($field) );
     }
     else {

@@ -176,7 +176,7 @@ Flush the searchbuilder query cache
 sub CleanupRequest {
 
     if ( Jifty->handle->transaction_depth ) {
-        Jifty->handle->Forcerollback;
+        Jifty->handle->force_rollback;
         $RT::Logger->crit(
             "Transaction not committed. Usually indicates a software fault."
             . "Data loss may have occurred" );
@@ -191,8 +191,8 @@ sub CleanupRequest {
             'Jifty::DBI::Record::Cachable' => 'flush_cache' ) );
 
     # cleanup global squelching of the mails
-    require RT::Action::SendEmail;
-    RT::Action::SendEmail->clean_slate;
+    require RT::ScripAction::SendEmail;
+    RT::ScripAction::SendEmail->clean_slate;
 }
 # }}}
 

@@ -83,7 +83,7 @@
 </head>
   <body<% $id && qq[ id="comp-$id"] |n %>>
 
-% if ($ShowBar) {
+% if ($ShowBar && $session{'CurrentUser'}) {
 <& /Elements/Logo, %ARGS &>
 
 <div id="quickbar">

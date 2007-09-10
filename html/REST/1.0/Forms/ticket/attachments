@@ -54,7 +54,7 @@ $args => undef
 <%INIT>
 my @data;
 my ($c, $o, $k, $e) = ("", [], {}, "");
-my $ticket = new RT::Model::Ticket Jifty->web->current_user;
+my $ticket = new RT::Model::Ticket ;
 
 $ticket->load($id);
 unless ($ticket->id) {
@@ -76,7 +76,7 @@ if ($aid) {
     unless ($aid =~ /^\d+$/) {
         return [ "# Invalid attachment id: $aid", [], {}, 1 ];
     }
-    my $attachment = new RT::Model::Attachment Jifty->web->current_user;
+    my $attachment = new RT::Model::Attachment ;
     $attachment->load($aid);
     unless ($attachment->id eq $aid) {
         return [ "# Invalid attachment id: $aid", [], {}, 1 ];

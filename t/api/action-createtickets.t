@@ -11,7 +11,7 @@ use RT::Test;
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-ok (require RT::Action::CreateTickets);
+ok (require RT::ScripAction::CreateTickets);
 use_ok('RT::Model::Scrip');
 use_ok('RT::Model::Template');
 use_ok('RT::Model::ScripAction');
@@ -83,8 +83,8 @@ ok ($dependson->id, "It depends on a real ticket");
 unlike ($dependson->Subject, qr/{/, "The subject doesn't have braces in it. that means we're interpreting expressions");
 is ($t->ReferredToBy->count,1, "It's only referred to by one other ticket");
 is ($t->ReferredToBy->first->BaseObj->id,$t->DependsOn->first->TargetObj->id, "The same ticket that depends on it refers to it.");
-use RT::Action::CreateTickets;
-my $action =  RT::Action::CreateTickets->new( CurrentUser => $RT::SystemUser);;
+use RT::ScripAction::CreateTickets;
+my $action =  RT::ScripAction::CreateTickets->new( CurrentUser => $RT::SystemUser);;
 
 # comma-delimited templates
 my $commas = <<"EOF";

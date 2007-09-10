@@ -1,0 +1,67 @@
+--- 
+framework: 
+  AdminMode: 1
+  ApplicationClass: RT
+  ApplicationName: RT
+  ApplicationUUID: EAFC6FF2-5E8D-11DC-9FAD-91A9684ED971
+  ConfigFileVersion: 2
+  Database: 
+    CheckSchema: 1
+    Database: rt3
+    Driver: mysql
+    Host: localhost
+    Password: ''
+    RecordBaseClass: Jifty::DBI::Record::Cachable
+    User: root
+    Version: 0.0.1
+  DevelMode: 1
+  L10N: 
+    PoDir: share/po
+  LogLevel: DEBUG
+  Mailer: Sendmail
+  MailerArgs: []
+
+  Plugins: 
+    - 
+      LetMe: {}
+
+    - 
+      SkeletonApp: {}
+
+    - 
+      REST: {}
+
+    - 
+      Halo: {}
+
+    - 
+      ErrorTemplates: {}
+
+    - 
+      OnlineDocs: {}
+
+    - 
+      CompressedCSSandJS: {}
+
+    - 
+      AdminUI: {}
+
+  PubSub: 
+    Backend: Memcached
+    Enable: ~
+  SkipAccessControl: 0
+  TemplateClass: RT::View
+  Web: 
+    BaseURL: http://localhost
+    DataDir: var/mason
+    Globals: [%session]
+
+    MasonConfig: 
+      autoflush: 0
+      default_escape_flags: h
+      error_format: text
+      error_mode: fatal
+    Port: 8888
+    ServeStaticFiles: 1
+    StaticRoot: share/web/static
+    TemplateRoot: html

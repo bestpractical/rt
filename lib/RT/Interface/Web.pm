@@ -230,6 +230,7 @@ through
 =cut
 
 sub loc {
+    return _(@_);
 
     if ($session{'CurrentUser'} && 
         UNIVERSAL::can($session{'CurrentUser'}, 'loc')){
@@ -377,14 +378,14 @@ sub CreateTicket {
     }
 
     if ( @temp_squelch ) {
-        require RT::Action::SendEmail;
-        RT::Action::SendEmail->SquelchMailTo( RT::Action::SendEmail->SquelchMailTo, @temp_squelch );
+        require RT::ScripAction::SendEmail;
+        RT::ScripAction::SendEmail->SquelchMailTo( RT::ScripAction::SendEmail->SquelchMailTo, @temp_squelch );
     }
 
     if ( $ARGS{'AttachTickets'} ) {
-        require RT::Action::SendEmail;
-        RT::Action::SendEmail->AttachTickets(
-            RT::Action::SendEmail->AttachTickets,
+        require RT::ScripAction::SendEmail;
+        RT::ScripAction::SendEmail->AttachTickets(
+            RT::ScripAction::SendEmail->AttachTickets,
             ref $ARGS{'AttachTickets'}?
                 @{ $ARGS{'AttachTickets'} }
                 :( $ARGS{'AttachTickets'} )
@@ -596,9 +597,9 @@ sub ProcessUpdateMessage {
     }
 
     if ( $args{ARGSRef}->{'AttachTickets'} ) {
-        require RT::Action::SendEmail;
-        RT::Action::SendEmail->AttachTickets(
-            RT::Action::SendEmail->AttachTickets,
+        require RT::ScripAction::SendEmail;
+        RT::ScripAction::SendEmail->AttachTickets(
+            RT::ScripAction::SendEmail->AttachTickets,
             ref $args{ARGSRef}->{'AttachTickets'}?
                 @{ $args{ARGSRef}->{'AttachTickets'} }
                 :( $args{ARGSRef}->{'AttachTickets'} )

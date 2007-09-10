@@ -45,19 +45,19 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Action::CreateTickets;
-require RT::Action::Generic;
+package RT::ScripAction::CreateTickets;
+require RT::ScripAction::Generic;
 
 use strict;
 use warnings;
 use vars qw/@ISA/;
-@ISA = qw(RT::Action::Generic);
+@ISA = qw(RT::ScripAction::Generic);
 
 use MIME::Entity;
 
 =head1 NAME
 
- RT::Action::CreateTickets
+ RT::ScripAction::CreateTickets
 
 Create one or more tickets according to an externally supplied template.
 
@@ -1237,9 +1237,9 @@ sub PostProcess {
 
 }
 
-eval "require RT::Action::CreateTickets_Vendor";
+eval "require RT::ScripAction::CreateTickets_Vendor";
 die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/CreateTickets_Vendor.pm} );
-eval "require RT::Action::CreateTickets_Local";
+eval "require RT::ScripAction::CreateTickets_Local";
 die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/CreateTickets_Local.pm} );
 
 1;

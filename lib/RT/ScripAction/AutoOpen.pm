@@ -45,62 +45,60 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-# This Action will resolve all members of a resolved group ticket
-
-package RT::Action::ResolveMembers;
-require RT::Action::Generic;
-require RT::Model::LinkCollection;
+# This Action will open the base if a dependent is resolved.
+package RT::ScripAction::AutoOpen;
 
 use strict;
-use vars qw/@ISA/;
-@ISA=qw(RT::Action::Generic);
+use warnings;
 
-#Do what we need to do and send it out.
+use base qw(RT::ScripAction::Generic);
 
-#What does this type of Action does
+=head1 DESCRIPTION
 
-# {{{ sub Describe 
-sub Describe  {
-  my $self = shift;
-  return $self->loc("[_1] will resolve all members of a resolved group ticket.", ref $self);
-}
-# }}}
+Opens a ticket unless it's allready open, but only unless transaction
+L<RT::Model::Transaction/IsInbound is inbound>.
 
+Doesn't open a ticket if message's head has field C<RT-Control> with
+C<no-autoopen> substring.
 
-# {{{ sub prepare 
-sub prepare  {
-    # nothing to prepare
+=cut
+
+sub prepare {
+    my $self = shift;
+
+    # if the ticket is already open or the ticket is new and the message is more mail from the
+    # requestor, don't reopen it.
+
+    my $status = $self->TicketObj->Status;
+    return undef if $status eq 'open';
+    return undef if $status eq 'new' && $self->TransactionObj->IsInbound;
+
+    if ( my $msg = $self->TransactionObj->Message->first ) {
+        return undef if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
+    }
+
     return 1;
 }
-# }}}
 
 sub commit {
     my $self = shift;
 
-    my $Links=RT::Model::LinkCollection->new($RT::SystemUser);
-    $Links->limit(column => 'Type', value => 'MemberOf');
-    $Links->limit(column => 'Target', value => $self->TicketObj->id);
+    my $oldstatus = $self->TicketObj->Status;
+    $self->TicketObj->__set( column => 'Status', value => 'open' );
+    $self->TicketObj->_NewTransaction(
+        Type     => 'Status',
+        Field    => 'Status',
+        OldValue => $oldstatus,
+        NewValue => 'open',
+        Data     => 'Ticket auto-opened on incoming correspondence'
+    );
 
-    while (my $Link=$Links->next()) {
-	# Todo: Try to deal with remote URIs as well
-	next unless $Link->BaseURI->IsLocal;
-	my $base=RT::Model::Ticket->new($self->TicketObj->current_user);
-	# Todo: Only work if Base is a plain ticket num:
-	$base->load($Link->Base);
-	# I'm afraid this might be a major bottleneck if ResolveGroupTicket is on.
-        $base->Resolve;
-    }
+    return 1;
 }
 
-
-# Applicability checked in Commit.
-
-# {{{ sub IsApplicable 
-sub IsApplicable  {
-  my $self = shift;
-  1;  
-  return 1;
-}
+eval "require RT::ScripAction::AutoOpen_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/AutoOpen_Vendor.pm});
+eval "require RT::ScripAction::AutoOpen_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/AutoOpen_Local.pm});
 
 1;
-

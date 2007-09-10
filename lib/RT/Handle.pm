@@ -87,80 +87,6 @@ from the config.
 
 use File::Spec;
 
-sub _build_dsn {
-    my $self = shift;
-# Unless the database port is a positive integer, we really don't want to pass it.
-    my $db_port = RT->Config->Get('DatabasePort');
-    $db_port = undef unless (defined $db_port && $db_port =~ /^(\d+)$/);
-    my $db_host = RT->Config->Get('DatabaseHost');
-    $db_host = undef unless $db_host;
-    my $db_name = RT->Config->Get('DatabaseName');
-    my $db_type = RT->Config->Get('DatabaseType');
-    $db_name = File::Spec->catfile($RT::VarPath, $db_name)
-        if $db_type eq 'SQLite' && !File::Spec->file_name_is_absolute($db_name);
-
-
-    $self->SUPER::build_dsn( host       => $db_host,
-			                database   => $db_name,
-                            port       => $db_port,
-                            driver     => $db_type,
-                            requiressl => RT->Config->Get('DatabaseRequireSSL'),
-                          );
-   
-
-}
-
-=head2 dsn
-
-Returns the dsn for this handle. In order to get correct value you must
-build dsn first, see L</build_dsn>.
-
-This is method can be called as class method, in this case creates
-temporary handle object, L</build_dsn builds dsn> and returns it.
-
-=cut
-
-sub _dsn {
-    my $self = shift;
-    return $self->SUPER::dsn if ref $self;
-
-    my $handle = $self->new;
-    $handle->build_dsn;
-    return $handle->dsn;
-}
-
-=head2 system_dsn
-
-Returns a dsn suitable for database creates and drops
-and user creates and drops.
-
-Gets RT's dsn first (see L<dsn>) and then change it according
-to requirements of a database system RT's using.
-
-=cut
-
-sub system_dsn {
-    my $self = shift;
-
-    my $db_name = RT->Config->Get('DatabaseName');
-    my $db_type = RT->Config->Get('DatabaseType');
-
-    my $dsn = $self->dsn;
-    if ( $db_type eq 'mysql' ) {
-        # with mysql, you want to connect sans database to funge things
-        $dsn =~ s/dbname=\Q$db_name//;
-    }
-    elsif ( $db_type eq 'Pg' ) {
-        # with postgres, you want to connect to template1 database
-        $dsn =~ s/dbname=\Q$db_name/dbname=template1/;
-    }
-    elsif ( $db_type eq 'Informix' ) {
-        # with Informix, you want to connect sans database:
-        $dsn =~ s/Informix:\Q$db_name/Informix:/;
-    }
-    return $dsn;
-}
-
 =head2 Database maintanance
 
 =head2 CreateDatabase $DBH
@@ -263,43 +189,7 @@ sub _yesno {
     $x =~ /^y/i;
 }
 
-=head2 InsertACL
-
-=cut
-
-sub InsertACL {
-    my $self      = shift;
-    my $dbh       = shift || $self->dbh;
-    my $base_path = shift || $RT::EtcPath;
-
-    my $db_type = RT->Config->Get('DatabaseType');
-    return if $db_type eq 'SQLite';
-
-    die "'$base_path' doesn't exist" unless -e $base_path;
-
-    my $path;
-    if ( -d $base_path ) {
-        $path = File::Spec->catfile( $base_path, "acl.$db_type");
-        $path = File::Spec->catfile( $base_path, "acl")
-            unless -e $path;
-        die "Couldn't find ACLs for $db_type"
-            unless -e $path;
-    } else {
-        $path = $base_path;
-    }
-
-    local *acl;
-    do $path || die "Couldn't load ACLs: " . $@;
-    my @acl = acl($dbh);
-    foreach my $statement (@acl) {
-#        print STDERR $statement if $args{'debug'};
-        my $sth = $dbh->prepare($statement) or die $dbh->errstr;
-        unless ( $sth->execute ) {
-            die "Problem with statement:\n $statement\n" . $sth->errstr;
-        }
-    }
-    print "Done setting up database ACLs.\n";
-}
+sub InsertACL{}
 
 =head2 InsertSchema
 
@@ -638,6 +528,10 @@ sub InsertData {
                 $princ = RT::Model::User->new($RT::SystemUser);
                 $princ->load( $item->{'UserId'} );
             }
+
+        unless ($princ->id) {
+            Carp::confess("Could not create principal! - ". YAML::Dump($item));
+        }
 
             # Grant it
             my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
