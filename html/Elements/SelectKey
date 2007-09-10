@@ -59,7 +59,7 @@
 require RT::Crypt::GnuPG;
 my $d;
 
-my %res = RT::Crypt::GnuPG::GetKeysInfo($EmailAddress);
+my %res = RT::Crypt::GnuPG::GetKeysForEncryption($EmailAddress);
 # move the preferred key to the top of the list
 my @keys = map {
                $_->{'Fingerprint'} eq $Default
