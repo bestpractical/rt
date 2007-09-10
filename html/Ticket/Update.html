@@ -59,6 +59,26 @@
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
+
+% if ( @gnupg_keys_issues ) {
+<&| /Widgets/TitleBox, title => loc('GnuPG issues') &>
+<% loc("You are going to encrypt outgoing email messages, but there is a problem(s) with recipients' public keys. You have to figure out problems with keys, disable sending a message to some recipients or disable encryption.") %>
+
+<ul>
+% foreach my $issue ( @gnupg_keys_issues ) {
+<li>
+% if ( $issue->{'User'} ) {
+User <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $issue->{'User'}->id %>"><&/Elements/ShowUser, User => $issue->{'User'} &></a> has a problem.
+% } else {
+There is a problem with key(s) for address <% $issue->{'EmailAddress'} %>, but there is no user in the DB for this address.
+% }
+<% $issue->{'Message'} %>
+</li>
+% }
+</ul>
+</&>
+% }
+
 <table border="0">
 
 <tr><td align="right"><&|/l&>Status</&>:</td>
@@ -241,6 +261,8 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 }
 # }}}
 
+# XXX: we must apply squelshing here, to get real recipients below
+
 my @results;
 my @gnupg_keys_issues;
 if ( $ARGS{'SubmitTicket'} && $ARGS{'Encrypt'} ) {
@@ -266,30 +288,30 @@ if ( $ARGS{'SubmitTicket'} && $ARGS{'Encrypt'} ) {
 
         my $prefered_key;
         $prefered_key = $user->PreferredKey if $user;
+
         #XXX: prefered key is not yet implemented...
 
-        unless ( $res{'info'} && @{ $res{'info'} } ) {
-            # no keys
-            push @gnupg_messages, loc("There is no key suitable to encrypt messages to [_1]", $address);
-        }
-        elsif ( @{ $res{'info'} } == 1 ) {
-            # trust is not set
-            push @gnupg_messages, loc("There is one key for address [_1], but trust is not set", $address);
-        }
-        else {
-            # multiple keys
-            push @gnupg_messages, loc("There are several keys suitable to encrypt messages to [_1]", $address);
-        }
+        # classify errors
         $checks_failure = 1;
-        push @gnupg_keys_issues, {
+        my %issue = (
             EmailAddress => $address,
             $user? (User => $user) : (),
             Keys => undef,
-        };
-    }
-    if ( @gnupg_messages ) {
-        push @results, loc("You are going to encrypt outgoing email messages, but there is a problem(s) with recipients' public keys. You have to figured out problems with keys, disable sending a message to particular recipient or disable encryption.");
-        push @results, @gnupg_messages;
+        );
+
+        unless ( $res{'info'} && @{ $res{'info'} } ) {
+            # no key
+            $issue{'Message'} = loc("There is no key suitable for encryption.");
+        }
+        elsif ( @{ $res{'info'} } == 1 && !$res{'info'}[0]{'TrustLevel'} ) {
+            # trust is not set
+            $issue{'Message'} = loc("There is one suitable key, but trust level is not set.");
+        }
+        else {
+            # multiple keys
+            $issue{'Message'} = loc("There are several keys suitable for encryption.");
+        }
+        push @gnupg_keys_issues, \%issue;
     }
 }
 
