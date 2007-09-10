@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if (!@keys) {
-<% loc("No known keys.") %>
+<% loc("No usable keys.") %>
 % } else {
 <select name="<% $Name %>">
 %     foreach my $key (@keys) {
