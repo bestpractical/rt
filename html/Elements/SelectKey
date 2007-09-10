@@ -48,7 +48,7 @@
 % if (!@keys) {
 <% loc("No known keys.") %>
 % } else {
-<select name="PreferredKey">
+<select name="<% $Name %>">
 %     foreach my $key (@keys) {
 <option value="<% $key->{'Fingerprint'} %>"><% $key->{'Fingerprint'} %> <% loc("(trust: [_1])", $key->{'TrustTerse'}) %></option>
 %     }
@@ -74,7 +74,8 @@ unshift @keys, $d if defined $d;
 
 </%INIT>
 <%ARGS>
+$Name         => 'PreferredKey'
 $EmailAddress => undef
-$Default => undef
+$Default      => undef
 </%ARGS>
 
