@@ -79,7 +79,7 @@ sub new  {
     my $self  = {};
     $self->{'Id'} = 0;
     bless ($self, $class);
-    $self->CurrentUser(@_);
+    $self->current_user(@_);
     return $self;
 }
 
@@ -131,7 +131,7 @@ and message, where status is true on success.  Defaults are:
 
 sub Save {
     my $self = shift;
-    my %args = ('Privacy' => 'RT::Model::User-' . $self->CurrentUser->id,
+    my %args = ('Privacy' => 'RT::Model::User-' . $self->current_user->id,
 		'Type' => 'Ticket',
 		'Name' => 'new search',
 		'SearchParams' => {},
@@ -149,7 +149,7 @@ sub Save {
 
     if ( $object->isa('RT::System') ) {
         return ( 0, $self->loc("No permission to save system-wide searches") )
-            unless $self->CurrentUser->has_right(
+            unless $self->current_user->has_right(
             Object => $RT::System,
             Right  => 'SuperUser'
         );
@@ -283,16 +283,16 @@ sub Type {
 
 sub _load_privacy_object {
     my ($self, $obj_type, $obj_id) = @_;
-    if ( $obj_type eq 'RT::Model::User' && $obj_id == $self->CurrentUser->id)  {
-        return $self->CurrentUser->UserObj;
+    if ( $obj_type eq 'RT::Model::User' && $obj_id == $self->current_user->id)  {
+        return $self->current_user->UserObj;
     }
     elsif ($obj_type eq 'RT::Model::Group') {
-        my $group = RT::Model::Group->new($self->CurrentUser);
+        my $group = RT::Model::Group->new($self->current_user);
         $group->load($obj_id);
         return $group;
     }
     elsif ($obj_type eq 'RT::System') {
-        return RT::System->new($self->CurrentUser);
+        return RT::System->new($self->current_user);
     }
 
     $RT::Logger->error("Tried to load a search belonging to an $obj_type, which is neither a user nor a group");
@@ -319,13 +319,13 @@ sub _GetObject {
     # user, or of a group object of which the current user is not a member.
 
     if ($obj_type eq 'RT::Model::User' 
-	&& $object->id != $self->CurrentUser->UserObj->id()) {
+	&& $object->id != $self->current_user->UserObj->id()) {
 	$RT::Logger->debug("Permission denied for user other than self");
 	return undef;
     }
     if ($obj_type eq 'RT::Model::Group' &&
-	!$object->has_member_recursively($self->CurrentUser->PrincipalObj)) {
-	$RT::Logger->debug("Permission denied, ".$self->CurrentUser->Name.
+	!$object->has_member_recursively($self->current_user->PrincipalObj)) {
+	$RT::Logger->debug("Permission denied, ".$self->current_user->Name.
 			   " is not a member of group");
 	return undef;
     }

@@ -257,7 +257,7 @@ sub create {
     # {{{ Check the ACL
 
     if (ref( $args{'Object'}) eq 'RT::Model::Group' ) {
-        unless ( $self->CurrentUser->has_right( Object => $args{'Object'},
+        unless ( $self->current_user->has_right( Object => $args{'Object'},
                                                   Right => 'AdminGroup' )
           ) {
             return ( 0, $self->loc('Permission Denied') );
@@ -265,7 +265,7 @@ sub create {
     }
 
     else {
-        unless ( $self->CurrentUser->has_right( Object => $args{'Object'}, Right => 'ModifyACL' )) {
+        unless ( $self->current_user->has_right( Object => $args{'Object'}, Right => 'ModifyACL' )) {
             return ( 0, $self->loc('Permission Denied') );
         }
     }
@@ -363,7 +363,7 @@ sub Delegate {
 
     # First, we check to se if the user is delegating rights and
     # they have the permission to
-    unless ( $self->CurrentUser->has_right(Right => 'DelegateRights', Object => $self->Object) ) {
+    unless ( $self->current_user->has_right(Right => 'DelegateRights', Object => $self->Object) ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
@@ -371,7 +371,7 @@ sub Delegate {
         return ( 0, $self->loc("System Error") );
     }
     unless ( $self->PrincipalObj->Object->has_member_recursively(
-                                                $self->CurrentUser->PrincipalObj
+                                                $self->current_user->PrincipalObj
              )
       ) {
         return ( 0, $self->loc("Permission Denied") );
@@ -387,7 +387,7 @@ sub Delegate {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $delegated_ace = RT::Model::ACE->new( $self->CurrentUser );
+    my $delegated_ace = RT::Model::ACE->new( $self->current_user );
 
     # Make sure the right doesn't already exist.
     $delegated_ace->load_by_cols( PrincipalId   => $princ_obj->id,
@@ -395,7 +395,7 @@ sub Delegate {
                                 RightName     => $self->__value('RightName'),
                                 ObjectType    => $self->__value('ObjectType'),
                                 ObjectId      => $self->__value('ObjectId'),
-                                DelegatedBy => $self->CurrentUser->PrincipalId,
+                                DelegatedBy => $self->current_user->PrincipalId,
                                 DelegatedFrom => $self->id );
     if ( $delegated_ace->id ) {
         return ( 0, $self->loc('That principal already has that right') );
@@ -406,7 +406,7 @@ sub Delegate {
         RightName     => $self->__value('RightName'),
         ObjectType    => $self->__value('ObjectType'),
         ObjectId      => $self->__value('ObjectId'),
-        DelegatedBy   => $self->CurrentUser->PrincipalId,
+        DelegatedBy   => $self->current_user->PrincipalId,
         DelegatedFrom => $self->id );
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
@@ -445,9 +445,9 @@ sub delete {
     # A user can delete an ACE if the current user has the right to modify it and it's not a delegated ACE
     # or if it's a delegated ACE and it was delegated by the current user
     unless (
-         (    $self->CurrentUser->has_right(Right => 'ModifyACL', Object => $self->Object)
+         (    $self->current_user->has_right(Right => 'ModifyACL', Object => $self->Object)
            && $self->__value('DelegatedBy') == 0 )
-         || ( $self->__value('DelegatedBy') == $self->CurrentUser->PrincipalId )
+         || ( $self->__value('DelegatedBy') == $self->current_user->PrincipalId )
       ) {
         return ( 0, $self->loc('Permission Denied') );
     }
@@ -462,7 +462,7 @@ sub _delete {
 
     my $InsideTransaction = $args{'InsideTransaction'};
 
-    $RT::Handle->begin_transaction() unless $InsideTransaction;
+    Jifty->handle->begin_transaction() unless $InsideTransaction;
 
     my $delegated_from_this = RT::Model::ACECollection->new($RT::SystemUser);
     $delegated_from_this->limit( column    => 'DelegatedFrom',
@@ -478,7 +478,7 @@ sub _delete {
     }
 
     unless ($delete_succeeded) {
-        $RT::Handle->rollback() unless $InsideTransaction;
+        Jifty->handle->rollback() unless $InsideTransaction;
         return ( 0, $self->loc('Right could not be revoked') );
     }
 
@@ -495,11 +495,11 @@ sub _delete {
 	#Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
 	# TODO what about the groups key cache?
 	RT::Model::Principal->invalidate_acl_cache();
-        $RT::Handle->commit() unless $InsideTransaction;
+        Jifty->handle->commit() unless $InsideTransaction;
         return ( $val, $self->loc('Right revoked') );
     }
 
-    $RT::Handle->rollback() unless $InsideTransaction;
+    Jifty->handle->rollback() unless $InsideTransaction;
     return ( 0, $self->loc('Right could not be revoked') );
 }
 
@@ -524,7 +524,7 @@ sub _bootstrap_create {
 
     # When bootstrapping, make sure we get the _right_ users
     if ( $args{'UserId'} ) {
-        my $user = RT::Model::User->new( $self->CurrentUser );
+        my $user = RT::Model::User->new( $self->current_user );
         $user->load( $args{'UserId'} );
         delete $args{'UserId'};
         $args{'PrincipalId'}   = $user->PrincipalId;
@@ -583,7 +583,7 @@ sub Object {
     my $appliesto_obj;
 
     if ($self->__value('ObjectType') && $OBJECT_TYPES{$self->__value('ObjectType')} ) {
-        $appliesto_obj =  $self->__value('ObjectType')->new($self->CurrentUser);
+        $appliesto_obj =  $self->__value('ObjectType')->new($self->current_user);
         unless (ref( $appliesto_obj) eq $self->__value('ObjectType')) {
             return undef;
         }
@@ -611,7 +611,7 @@ Returns the RT::Model::Principal object for this ACE.
 sub PrincipalObj {
     my $self = shift;
 
-    my $princ_obj = RT::Model::Principal->new( $self->CurrentUser );
+    my $princ_obj = RT::Model::Principal->new( $self->current_user );
     $princ_obj->load( $self->__value('PrincipalId') );
 
     unless ( $princ_obj->id ) {
@@ -639,17 +639,17 @@ sub _set {
 sub _value {
     my $self = shift;
 
-    if ( $self->__value('DelegatedBy') eq $self->CurrentUser->PrincipalId ) {
+    if ( $self->__value('DelegatedBy') eq $self->current_user->PrincipalId ) {
         return ( $self->__value(@_) );
     }
     elsif ( $self->PrincipalObj->IsGroup
             && $self->PrincipalObj->Object->has_member_recursively(
-                                                $self->CurrentUser->PrincipalObj
+                                                $self->current_user->PrincipalObj
             )
       ) {
         return ( $self->__value(@_) );
     }
-    elsif ( $self->CurrentUser->has_right(Right => 'ShowACL', Object => $self->Object) ) {
+    elsif ( $self->current_user->has_right(Right => 'ShowACL', Object => $self->Object) ) {
         return ( $self->__value(@_) );
     }
     else {
@@ -691,7 +691,7 @@ sub _CanonicalizePrincipal {
     # Rights never get granted to users. they get granted to their 
     # ACL equivalence groups
     if ( $princ_type eq 'User' ) {
-        my $equiv_group = RT::Model::Group->new( $self->CurrentUser );
+        my $equiv_group = RT::Model::Group->new( $self->current_user );
         $equiv_group->load_acl_equivalence_group($princ_obj);
         unless ( $equiv_group->id ) {
             $RT::Logger->crit( "No ACL equiv group for princ " . $princ_obj->id );
@@ -721,7 +721,7 @@ sub _ParseObjectArg {
 	my $obj = $args{'Object'};
 	return ($obj, ref $obj, $obj->id);
     } elsif ( $args{'ObjectType'} ) {
-	my $obj =  $args{'ObjectType'}->new( $self->CurrentUser );
+	my $obj =  $args{'ObjectType'}->new( $self->current_user );
 	$obj->load( $args{'ObjectId'} );
 	return ($obj, ref $obj, $obj->id);
     } else {

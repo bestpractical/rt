@@ -677,7 +677,7 @@ sub ParseLines {
         }
     }
 
-    my $TicketObj ||= RT::Model::Ticket->new( $self->CurrentUser );
+    my $TicketObj ||= RT::Model::Ticket->new( $self->current_user );
 
     my %args;
     my %original_tags;
@@ -723,7 +723,7 @@ sub ParseLines {
     }
 
     foreach my $date qw(due starts started resolved) {
-        my $dateobj = RT::Date->new( $self->CurrentUser );
+        my $dateobj = RT::Date->new( $self->current_user );
         next unless $args{$date};
         if ( $args{$date} =~ /^\d+$/ ) {
             $dateobj->set( Format => 'unix', value => $args{$date} );
@@ -779,11 +779,11 @@ sub ParseLines {
         if ( $orig_tag =~ /^customfield-?(\d+)$/i ) {
             $ticketargs{ "CustomField-" . $1 } = $args{$tag};
         } elsif ( $orig_tag =~ /^(?:customfield|cf)-?(.*)$/i ) {
-            my $cf = RT::Model::CustomField->new( $self->CurrentUser );
+            my $cf = RT::Model::CustomField->new( $self->current_user );
             $cf->load_by_name( Name => $1, Queue => $ticketargs{Queue} );
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
         } elsif ($orig_tag) {
-            my $cf = RT::Model::CustomField->new( $self->CurrentUser );
+            my $cf = RT::Model::CustomField->new( $self->current_user );
             $cf->load_by_name( Name => $orig_tag, Queue => $ticketargs{Queue} );
             next unless ($cf->id) ;
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
@@ -1096,7 +1096,7 @@ sub UpdateWatchers {
                 push @new, $_;
             } else {
                 # It doesn't look like an email address.  Try to load it.
-                my $user = RT::Model::User->new($self->CurrentUser);
+                my $user = RT::Model::User->new($self->current_user);
                 $user->load($_);
                 if ($user->id) {
                     push @new, $user->EmailAddress;
@@ -1144,7 +1144,7 @@ sub UpdateCustomFields {
         next unless $arg =~ /^CustomField-(\d+)$/;
         my $cf = $1;
 
-        my $CustomFieldObj = RT::Model::CustomField->new($self->CurrentUser);
+        my $CustomFieldObj = RT::Model::CustomField->new($self->current_user);
         $CustomFieldObj->load_by_id($cf);
 
         my @values;

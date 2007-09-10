@@ -74,7 +74,7 @@ sub _AsInsertQuery
 {
     my $self = shift;
 
-    my $dbh = $RT::Handle->dbh;
+    my $dbh = Jifty->handle->dbh;
 
     my $res = "INSERT INTO ". $dbh->quote_identifier( $self->table );
     my $values = $self->{'values'};
@@ -138,7 +138,7 @@ sub __DependsOn
     push( @$list, $objs );
 
 # Transactions
-    $objs = RT::Model::TransactionCollection->new( $self->CurrentUser );
+    $objs = RT::Model::TransactionCollection->new( $self->current_user );
     $objs->limit( column => 'ObjectType', value => ref $self );
     $objs->limit( column => 'ObjectId', value => $self->id );
     push( @$list, $objs );
@@ -156,7 +156,7 @@ sub __DependsOn
     }
 
 # ACE records
-    $objs = RT::Model::ACECollection->new( $self->CurrentUser );
+    $objs = RT::Model::ACECollection->new( $self->current_user );
     $objs->LimitToObject( $self );
     push( @$list, $objs );
 
@@ -181,7 +181,7 @@ sub __Relates
     my $list = [];
 
     if( $self->can('Creator')) {
-        my $obj = RT::Model::Principal->new( $self->CurrentUser );
+        my $obj = RT::Model::Principal->new( $self->current_user );
         $obj->load( $self->Creator );
 
         if( $obj && defined $obj->id ) {
@@ -196,7 +196,7 @@ sub __Relates
     }
 
     if( $self->can( 'LastUpdatedBy') ) {
-        my $obj = RT::Model::Principal->new( $self->CurrentUser );
+        my $obj = RT::Model::Principal->new( $self->current_user );
         $obj->load( $self->LastUpdatedBy );
 
         if( $obj && defined $obj->id ) {

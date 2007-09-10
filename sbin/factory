@@ -281,7 +281,7 @@ Returns the $modulemap{$field} Object which has the id returned by $field
 
 sub ${field}Obj {
 	my \$self = shift;
-	my \$$field =  ${namespace}::$modulemap{$field}->new(\$self->CurrentUser);
+	my \$$field =  ${namespace}::$modulemap{$field}->new(\$self->current_user);
 	\$$field->load(\$self->__value('$field'));
 	return(\$$field);
 }
@@ -383,7 +383,7 @@ Returns an empty new $RecordClassName item
 
 sub new_item {
     my \$self = shift;
-    return($RecordClassName->new(\$self->CurrentUser));
+    return($RecordClassName->new(\$self->current_user));
 }
 " . MagicImport($CollectionClassName);
 

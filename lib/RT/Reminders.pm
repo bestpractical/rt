@@ -56,7 +56,7 @@ sub new {
     my $class = shift;
     my $self = {};
     bless $self, $class;
-    $self->CurrentUser(@_);
+    $self->current_user(@_);
     return($self);
 }
 
@@ -70,7 +70,7 @@ sub Ticket {
 sub TicketObj {
     my $self = shift;
     unless ($self->{'_ticketobj'}) {
-        $self->{'_ticketobj'} = RT::Model::Ticket->new($self->CurrentUser);
+        $self->{'_ticketobj'} = RT::Model::Ticket->new($self->current_user);
         $self->{'_ticketobj'}->load($self->Ticket);
     }
         return $self->{'_ticketobj'};
@@ -85,7 +85,7 @@ Returns an RT::Model::TicketCollection object containing reminders for this obje
 
 sub Collection {
     my $self = shift;
-    my $col = RT::Model::TicketCollection->new($self->CurrentUser);
+    my $col = RT::Model::TicketCollection->new($self->current_user);
 
      my $query =     'Queue = "'. $self->TicketObj->QueueObj->Name .'" AND Type = "reminder"';
     $query .= ' AND RefersTo = "'.$self->Ticket.'"';
@@ -116,7 +116,7 @@ sub Add {
                  Due => undef,
                  @_);
 
-    my $reminder = RT::Model::Ticket->new($self->CurrentUser);
+    my $reminder = RT::Model::Ticket->new($self->current_user);
     $reminder->create( Subject => $args{'Subject'},
                        Owner => $args{'Owner'},
                        Due => $args{'Due'},

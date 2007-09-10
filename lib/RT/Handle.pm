@@ -70,41 +70,10 @@ package RT::Handle;
 
 use strict;
 use warnings; 
-use vars qw/@ISA/;
-eval "use Jifty::DBI::Handle::". RT->Config->Get('DatabaseType') .";
-\@ISA= qw(Jifty::DBI::Handle::". RT->Config->Get('DatabaseType') .");";
+use base qw/Jifty::Handle/;
 
-if ($@) {
-    die "Unable to load Jifty::DBI database handle for '". RT->Config->Get('DatabaseType') ."'.".
-        "\n".
-        "Perhaps you've picked an invalid database type or spelled it incorrectly.".
-        "\n". $@;
-}
 
 =head1 METHODS
-
-=head2 Connect
-
-Connects to RT's database using credentials and options from the RT config.
-Takes nothing.
-
-=cut
-
-sub Connect {
-    my $self = shift;
-
-    if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
-        $ENV{'NLS_LANG'} = "AMERICAN_AMERICA.AL32UTF8";
-        $ENV{'NLS_NCHAR'} = "AL32UTF8";
-    }
-
-    $self->SUPER::connect(
-	    user => RT->Config->Get('DatabaseUser'),
-        password => RT->Config->Get('DatabasePassword'),
-	);
-
-    $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
-}
 
 
 sub _handle { shift->dbh }
@@ -118,7 +87,7 @@ from the config.
 
 use File::Spec;
 
-sub build_dsn {
+sub _build_dsn {
     my $self = shift;
 # Unless the database port is a positive integer, we really don't want to pass it.
     my $db_port = RT->Config->Get('DatabasePort');
@@ -151,7 +120,7 @@ temporary handle object, L</build_dsn builds dsn> and returns it.
 
 =cut
 
-sub dsn {
+sub _dsn {
     my $self = shift;
     return $self->SUPER::dsn if ref $self;
 
@@ -404,7 +373,7 @@ sub get_version_file {
     return '' unless @files;
 
     my %version = map { $_ =~ /\.\w+-([-\w\.]+)$/; ($1||0) => $_ } @files;
-    my $db_version = $RT::Handle->database_version;
+    my $db_version = Jifty->handle->database_version;
     print "Server version $db_version\n";
     my $version;
     foreach ( reverse sort cmp_version keys %version ) {
@@ -443,7 +412,7 @@ sub InsertInitialData {
     my $CurrentUser = new RT::CurrentUser();
 
     print "Checking for existing system user...";
-    my $test_user = RT::Model::User->new($CurrentUser);
+    my $test_user = RT::Model::User->new(current_user => );
     $test_user->load('RT_System');
     if ( $test_user->id ) {
         print "found!\n\nYou appear to have a functional RT database.\n"
@@ -456,7 +425,7 @@ sub InsertInitialData {
     }
 
     print "Creating system user...";
-    my $RT_System = RT::Model::User->new($CurrentUser);
+    my $RT_System = RT::Model::User->new(current_user => );
 
     my ( $val, $msg ) = $RT_System->_bootstrap_create(
         Name     => 'RT_System',
@@ -493,7 +462,7 @@ sub InsertInitialData {
     );
 
     print "done.\n";
-    $RT::Handle->disconnect() unless $db_type eq 'SQLite';
+    Jifty->handle->disconnect() unless $db_type eq 'SQLite';
 }
 
 =head InsertData
@@ -521,6 +490,7 @@ sub InsertData {
     }
     if ( @Groups ) {
         print "Creating groups...";
+        print "My systemuser is ".$RT::SystemUser ."\n";
         foreach my $item (@Groups) {
             my $new_entry = RT::Model::Group->new( $RT::SystemUser );
             my $member_of = delete $item->{'MemberOf'};
@@ -767,7 +737,7 @@ sub InsertData {
     }
 
     my $db_type = RT->Config->Get('DatabaseType');
-    $RT::Handle->disconnect() unless $db_type eq 'SQLite';
+    Jifty->handle->disconnect() unless $db_type eq 'SQLite';
     print "Done setting up database content.\n";
 }
 

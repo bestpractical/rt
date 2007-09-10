@@ -106,7 +106,7 @@ diag('Create tickets without rights to link') if $ENV{'TEST_VERBOSE'};
     my $child = RT::Model::Ticket->new( $creator );
     ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
     ok($id,$msg);
-    $child->CurrentUser( $RT::SystemUser );
+    $child->current_user( $RT::SystemUser );
     is($child->_Links('Base')->count, 0, 'link was not Created, no permissions');
     is($child->_Links('Target')->count, 0, 'link was not create, no permissions');
 }
@@ -121,7 +121,7 @@ diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VER
     my $child = RT::Model::Ticket->new( $creator );
     ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
     ok($id,$msg);
-    $child->CurrentUser( $RT::SystemUser );
+    $child->current_user( $RT::SystemUser );
     is($child->_Links('Base')->count, 1, 'link was Created');
     is($child->_Links('Target')->count, 0, 'link was Created only one');
     # no scrip run on second ticket accroding to config option
@@ -144,7 +144,7 @@ diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
     ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
     ok(!$id, $msg);
     is(link_count($filename), undef, "scrips ok");
-    $child->CurrentUser( $RT::SystemUser );
+    $child->current_user( $RT::SystemUser );
     is($child->_Links('Base')->count, 0, 'link was not Created, no permissions');
     is($child->_Links('Target')->count, 0, 'link was not create, no permissions');
 }
@@ -162,27 +162,27 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
     ok($id, $msg);
     is(link_count($filename), 1, "scrips ok");
-    $child->CurrentUser( $RT::SystemUser );
+    $child->current_user( $RT::SystemUser );
     is($child->_Links('Base')->count, 1, 'link was Created');
     is($child->_Links('Target')->count, 0, 'link was Created only one');
-    $child->CurrentUser( $creator );
+    $child->current_user( $creator );
 
     # turn off feature and try to delete link, we should fail
     RT->Config->set( StrictLinkACL => 1 );
     ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
     ok(!$id, $msg);
     is(link_count($filename), 1, "scrips ok");
-    $child->CurrentUser( $RT::SystemUser );
+    $child->current_user( $RT::SystemUser );
     $child->_Links('Base')->_do_count;
     is($child->_Links('Base')->count, 1, 'link was not deleted');
-    $child->CurrentUser( $creator );
+    $child->current_user( $creator );
 
     # try to delete link, we should success as feature is active
     RT->Config->set( StrictLinkACL => 0 );
     ($id, $msg) = $child->delete_link(Type => 'MemberOf', Target => $parent->id);
     ok($id, $msg);
     is(link_count($filename), 0, "scrips ok");
-    $child->CurrentUser( $RT::SystemUser );
+    $child->current_user( $RT::SystemUser );
     $child->_Links('Base')->_do_count;
     is($child->_Links('Base')->count, 0, 'link was deleted');
     RT->Config->set( StrictLinkACL => 1 );

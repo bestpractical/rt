@@ -28,7 +28,7 @@ create-2,$QUEUE,hello,new,root,3.0
 EOF
 
 my $action = RT::Action::CreateTickets->new(CurrentUser => RT::CurrentUser->new('root'));
-ok ($action->CurrentUser->id , "WE have a current user");
+ok ($action->current_user->id , "WE have a current user");
  
 $action->Parse(Content => $data);
 my @results = $action->createByTemplate();

@@ -46,14 +46,15 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-
+use RT;
+RT->Init;
 # Roll back any dangling transactions from a previous failed connection
-$RT::Handle->Forcerollback() if $RT::Handle->transaction_depth;
+Jifty->handle->Forcerollback() if Jifty->handle->transaction_depth;
 
 
 if (RT->Config->Get('StatementLog')) {
-    $RT::Handle->ClearSQLStatementLog;
-    $RT::Handle->LogSQLStatements(1);
+    Jifty->handle->ClearSQLStatementLog;
+    Jifty->handle->LogSQLStatements(1);
 }
 
 # avoid reentrancy, as suggested by masonbook
@@ -303,8 +304,8 @@ else {
 $m->comp( '/Elements/Footer', %ARGS );
 
 if (RT->Config->Get('StatementLog')) {
-    my @log = $RT::Handle->SQLStatementLog;
-    $RT::Handle->ClearSQLStatementLog;
+    my @log = Jifty->handle->SQLStatementLog;
+    Jifty->handle->ClearSQLStatementLog;
     for my $stmt (@log) {
         my ( $time, $sql, $bind, $duration ) = @{$stmt};
         my @bind;

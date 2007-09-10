@@ -545,14 +545,14 @@ sub Wipeout
     my $self = shift;
     my $mark;
     eval {
-        die "Couldn't begin transaction" unless $RT::Handle->begin_transaction;
+        die "Couldn't begin transaction" unless Jifty->handle->begin_transaction;
         $mark = $self->PushDumpMark or die "Couldn't get dump mark";
         $self->_Wipeout( @_ );
         $self->PopDumpMark( Mark => $mark );
-        die "Couldn't commit transaction" unless $RT::Handle->commit;
+        die "Couldn't commit transaction" unless Jifty->handle->commit;
     };
     if( $@ ) {
-        $RT::Handle->rollback('force');
+        Jifty->handle->rollback('force');
         $self->rollbackDumpTo( Mark => $mark ) if $mark;
         die $@ if RT::Shredder::Exception::Info->caught;
         die "Couldn't wipeout object: $@";

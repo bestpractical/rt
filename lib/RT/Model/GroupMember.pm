@@ -88,7 +88,7 @@ sub create {
     # TODO what about the groups key cache?
     RT::Model::Principal->invalidate_acl_cache();
 
-    $RT::Handle->begin_transaction() unless ($args{'InsideTransaction'});
+    Jifty->handle->begin_transaction() unless ($args{'InsideTransaction'});
 
     # We really need to make sure we don't add any members to this group
     # that contain the group itself. that would, um, suck. 
@@ -114,11 +114,11 @@ sub create {
     );
 
     unless ($id) {
-        $RT::Handle->rollback() unless ($args{'InsideTransaction'});
+        Jifty->handle->rollback() unless ($args{'InsideTransaction'});
         return (undef);
     }
 
-    my $cached_member = RT::Model::CachedGroupMember->new( $self->CurrentUser );
+    my $cached_member = RT::Model::CachedGroupMember->new( $self->current_user );
     my $cached_id     = $cached_member->create(
         Member          => $args{'Member'},
         Group           => $args{'Group'},
@@ -130,7 +130,7 @@ sub create {
     #When adding a member to a group, we need to go back
     #and popuplate the CachedGroupMembers of all the groups that group is part of .
 
-    my $cgm = RT::Model::CachedGroupMemberCollection->new( $self->CurrentUser );
+    my $cgm = RT::Model::CachedGroupMemberCollection->new( $self->current_user );
 
     # find things which have the current group as a member. 
     # $group is an RT::Model::Principal for the group.
@@ -142,7 +142,7 @@ sub create {
         my $group_id  = $parent_member->GroupId;
 
           my $other_cached_member =
-          RT::Model::CachedGroupMember->new( $self->CurrentUser );
+          RT::Model::CachedGroupMember->new( $self->current_user );
         my $other_cached_id = $other_cached_member->create(
             Member          => $args{'Member'},
                       Group => $parent_member->GroupObj,
@@ -152,17 +152,17 @@ sub create {
         unless ($other_cached_id) {
             $RT::Logger->err( "Couldn't add " . $args{'Member'}
                   . " as a submember of a supergroup" );
-            $RT::Handle->rollback() unless ($args{'InsideTransaction'});
+            Jifty->handle->rollback() unless ($args{'InsideTransaction'});
             return (undef);
         }
     } 
 
     unless ($cached_id) {
-        $RT::Handle->rollback() unless ($args{'InsideTransaction'});
+        Jifty->handle->rollback() unless ($args{'InsideTransaction'});
         return (undef);
     }
 
-    $RT::Handle->commit() unless ($args{'InsideTransaction'});
+    Jifty->handle->commit() unless ($args{'InsideTransaction'});
 
     return ($id);
 }
@@ -212,7 +212,7 @@ sub _StashUser {
         return (undef);
     }
 
-    my $cached_member = RT::Model::CachedGroupMember->new( $self->CurrentUser );
+    my $cached_member = RT::Model::CachedGroupMember->new( $self->current_user );
     my $cached_id     = $cached_member->create(
         Member          => $args{'Member'},
         Group           => $args{'Group'},
@@ -244,7 +244,7 @@ sub delete {
     my $self = shift;
 
 
-    $RT::Handle->begin_transaction();
+    Jifty->handle->begin_transaction();
 
     # Find all occurrences of this member as a member of this group
     # in the cache and nuke them, recursively.
@@ -255,7 +255,7 @@ sub delete {
     # a member of A, will delete C as a member of A without touching
     # C as a member of B
 
-    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new( $self->CurrentUser );
+    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new( $self->current_user );
 
     $cached_submembers->limit(
         column    => 'MemberId',
@@ -276,7 +276,7 @@ sub delete {
     while ( my $item_to_del = $cached_submembers->next() ) {
         my ($del_err,$del_msg) = $item_to_del->delete();
         unless ($del_err) {
-            $RT::Handle->rollback();
+            Jifty->handle->rollback();
             $RT::Logger->warning("Couldn't delete cached group submember ".$item_to_del->id);
             return (undef);
         }
@@ -285,7 +285,7 @@ sub delete {
     my ($err, $msg) = $self->SUPER::delete();
     unless ($err) {
             $RT::Logger->warning("Couldn't delete cached group submember ".$self->id);
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return (undef);
     }
 
@@ -295,7 +295,7 @@ sub delete {
     ($err,$msg) = $self->MemberObj->_CleanupInvalidDelegations(InsideTransaction => 1);
     unless ($err) {
 	$RT::Logger->warning("Unable to revoke delegated rights for principal ".$self->id);
-	$RT::Handle->rollback();
+	Jifty->handle->rollback();
 	return (undef);
     }
 
@@ -303,7 +303,7 @@ sub delete {
     # TODO what about the groups key cache?
     RT::Model::Principal->invalidate_acl_cache();
 
-    $RT::Handle->commit();
+    Jifty->handle->commit();
     return ($err);
 
 }
@@ -321,7 +321,7 @@ Returns an RT::Model::Principal object for the Principal specified by $self->Pri
 sub MemberObj {
     my $self = shift;
     unless ( defined( $self->{'Member_obj'} ) ) {
-        $self->{'Member_obj'} = RT::Model::Principal->new( $self->CurrentUser );
+        $self->{'Member_obj'} = RT::Model::Principal->new( $self->current_user );
         $self->{'Member_obj'}->load( $self->MemberId ) if ($self->MemberId);
     }
     return ( $self->{'Member_obj'} );
@@ -340,7 +340,7 @@ Returns an RT::Model::Principal object for the Group specified in $self->GroupId
 sub GroupObj {
     my $self = shift;
     unless ( defined( $self->{'Group_obj'} ) ) {
-        $self->{'Group_obj'} = RT::Model::Principal->new( $self->CurrentUser );
+        $self->{'Group_obj'} = RT::Model::Principal->new( $self->current_user );
         $self->{'Group_obj'}->load( $self->GroupId );
     }
     return ( $self->{'Group_obj'} );

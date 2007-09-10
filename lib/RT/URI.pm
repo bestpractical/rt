@@ -85,7 +85,7 @@ sub new {
     my $self  = {};
     bless( $self, $class );
 
-    $self->CurrentUser(@_);
+    $self->current_user(@_);
 
     return ($self);
 }
@@ -145,7 +145,7 @@ sub FromURI {
     
     unless ($self->Resolver->ParseURI($uri)) {
         $RT::Logger->warning("Resolver ".ref($self->Resolver)." could not parse $uri");
-        $self->{resolver} = RT::URI::base->new( $self->CurrentUser ); # clear resolver
+        $self->{resolver} = RT::URI::base->new( $self->current_user ); # clear resolver
     	return (undef);
     }
 
@@ -174,13 +174,13 @@ sub _GetResolver {
     
     eval " 
         require RT::URI::$scheme;
-        \$resolver = RT::URI::$scheme->new(\$self->CurrentUser);
+        \$resolver = RT::URI::$scheme->new(\$self->current_user);
     ";
      
     if ($resolver) {
         $self->{'resolver'} = $resolver;
     } else {
-        $self->{'resolver'} = RT::URI::base->new($self->CurrentUser); 
+        $self->{'resolver'} = RT::URI::base->new($self->current_user); 
     }
 
 }

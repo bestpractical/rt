@@ -87,13 +87,13 @@ sub _set_current_user  {
     my $self = shift;
     
     $self->{'user'} = shift;
-    unless(defined($self->CurrentUser)) {
+    unless(defined($self->current_user)) {
 	use Carp;
 	Carp::confess("$self was Created without a CurrentUser");
 	$RT::Logger->err("$self was Created without a CurrentUser");
 	return(0);
     }
-    $self->SUPER::_init( 'handle' => $RT::Handle);
+    $self->SUPER::_init( 'handle' => Jifty->handle);
 }
 
 =head2 LimitToEnabled
@@ -353,7 +353,7 @@ sub new_item {
     die "Jifty::DBI::Collection needs to be subclassed; override new_item\n"
         unless $class;
     $class->require();
-    return $class->new( $self->CurrentUser);
+    return $class->new( $self->current_user);
 }
 
 1;

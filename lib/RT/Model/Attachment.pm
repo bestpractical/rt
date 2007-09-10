@@ -106,18 +106,18 @@ sub create {
         );
 
         unless ($id) {
-            $RT::Logger->crit("Attachment insert failed - ". $RT::Handle->dbh->errstr);
+            $RT::Logger->crit("Attachment insert failed - ". Jifty->handle->dbh->errstr);
         }
 
         foreach my $part ( $Attachment->parts ) {
-            my $SubAttachment = new RT::Model::Attachment( $self->CurrentUser );
+            my $SubAttachment = new RT::Model::Attachment( $self->current_user );
             my ($id) = $SubAttachment->create(
                 TransactionId => $args{'TransactionId'},
                 Parent        => $id,
                 Attachment    => $part,
             );
             unless ($id) {
-                $RT::Logger->crit("Attachment insert failed: ". $RT::Handle->dbh->errstr);
+                $RT::Logger->crit("Attachment insert failed: ". Jifty->handle->dbh->errstr);
             }
         }
         return ($id);
@@ -144,7 +144,7 @@ sub create {
         );
 
         unless ($id) {
-            $RT::Logger->crit("Attachment insert failed: ". $RT::Handle->dbh->errstr);
+            $RT::Logger->crit("Attachment insert failed: ". Jifty->handle->dbh->errstr);
         }
         return $id;
     }
@@ -176,7 +176,7 @@ sub TransactionObj {
     my $self = shift;
 
     unless ( $self->{_TransactionObj} ) {
-        $self->{_TransactionObj} = RT::Model::Transaction->new( $self->CurrentUser );
+        $self->{_TransactionObj} = RT::Model::Transaction->new( $self->current_user );
         $self->{_TransactionObj}->load( $self->TransactionId );
     }
 
@@ -199,7 +199,7 @@ sub ParentObj {
     my $self = shift;
     return undef unless $self->Parent;
 
-    my $parent = RT::Model::Attachment->new( $self->CurrentUser );
+    my $parent = RT::Model::Attachment->new( $self->current_user );
     $parent->load_by_id( $self->Parent );
     return $parent;
 }
@@ -215,7 +215,7 @@ C<Parent>.
 sub Children {
     my $self = shift;
     
-    my $kids = RT::Model::AttachmentCollection->new( $self->CurrentUser );
+    my $kids = RT::Model::AttachmentCollection->new( $self->current_user );
     $kids->ChildrenOf( $self->id );
     return($kids);
 }
@@ -295,7 +295,7 @@ Returns length of L</Content> in bytes.
 sub ContentLength {
     my $self = shift;
 
-    return undef unless $self->TransactionObj->CurrentUserCanSee;
+    return undef unless $self->TransactionObj->current_userCanSee;
 
     my $len = $self->GetHeader('Content-Length');
     unless ( defined $len ) {
@@ -397,7 +397,7 @@ sub Addresses {
     my $self = shift;
 
     my %data = ();
-    my $current_user_address = lc $self->CurrentUser->EmailAddress;
+    my $current_user_address = lc $self->current_user->EmailAddress;
     my $correspond = lc $self->TransactionObj->TicketObj->QueueObj->CorrespondAddress;
     my $comment = lc $self->TransactionObj->TicketObj->QueueObj->CommentAddress;
     foreach my $hdr (qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {
@@ -583,7 +583,7 @@ sub _value {
         return ( $self->__value( $field, @_ ) );
     }
 
-    return undef unless $self->TransactionObj->CurrentUserCanSee;
+    return undef unless $self->TransactionObj->current_userCanSee;
     return $self->__value( $field, @_ );
 }
 

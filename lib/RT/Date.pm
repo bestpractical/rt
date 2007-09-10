@@ -119,7 +119,7 @@ sub new {
     my $class = ref($proto) || $proto;
     my $self  = {};
     bless ($self, $class);
-    $self->CurrentUser(@_);
+    $self->current_user(@_);
     $self->Unix(0);
     return $self;
 }
@@ -380,7 +380,7 @@ sub AsString {
 
     return $self->loc("Not set") unless $self->Unix > 0;
 
-    my $format = RT->Config->Get( 'DateTimeFormat', $self->CurrentUser ) || 'DefaultFormat';
+    my $format = RT->Config->Get( 'DateTimeFormat', $self->current_user ) || 'DefaultFormat';
     $format = { Format => $format } unless ref $format;
     %args = (%$format, %args);
 
@@ -867,7 +867,7 @@ sub Timezone {
 
     my $tz;
     if( $context eq 'user' ) {
-        $tz = $self->CurrentUser->UserObj->Timezone;
+        $tz = $self->current_user->UserObj->Timezone;
     } elsif( $context eq 'server') {
         $tz = RT->Config->Get('Timezone');
     } else {

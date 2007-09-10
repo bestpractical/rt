@@ -112,8 +112,8 @@ new session objects.
 sub attributes {
 
     return $_[0]->Backends->{RT->Config->Get('DatabaseType')} ? {
-            Handle     => $RT::Handle->dbh,
-            LockHandle => $RT::Handle->dbh,
+            Handle     => Jifty->handle->dbh,
+            LockHandle => Jifty->handle->dbh,
         } : {
             Directory     => $RT::MasonSessionDir,
             LockDirectory => $RT::MasonSessionDir,
@@ -132,7 +132,7 @@ sub Ids {
     if( $attributes->{Directory} ) {
         return $self->_IdsDir( $attributes->{Directory} );
     } else {
-        return $self->_IdsDB( $RT::Handle->dbh );
+        return $self->_IdsDB( Jifty->handle->dbh );
     }
 }
 
@@ -169,7 +169,7 @@ sub ClearOld {
     if( $attributes->{Directory} ) {
         return $class->_CleariOldDir( $attributes->{Directory}, @_ );
     } else {
-        return $class->_ClearOldDB( $RT::Handle->dbh, @_ );
+        return $class->_ClearOldDB( Jifty->handle->dbh, @_ );
     }
 }
 

@@ -86,14 +86,14 @@ sub Groupings {
     if ( !$queues && $args{'Query'} ) {
         require RT::Interface::Web::QueryBuilder::Tree;
         my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-        $tree->ParseSQL( Query => $args{'Query'}, CurrentUser => $self->CurrentUser );
+        $tree->ParseSQL( Query => $args{'Query'}, CurrentUser => $self->current_user );
         $queues = $tree->GetReferencedQueues;
     }
 
     if ( $queues ) {
-        my $CustomFields = RT::Model::CustomFieldCollection->new( $self->CurrentUser );
+        my $CustomFields = RT::Model::CustomFieldCollection->new( $self->current_user );
         foreach my $id (keys %$queues) {
-            my $queue = RT::Model::Queue->new( $self->CurrentUser );
+            my $queue = RT::Model::Queue->new( $self->current_user );
             $queue->load($id);
             unless ($queue->id) {
                 # XXX TODO: This ancient code dates from a former developer
@@ -116,12 +116,12 @@ sub Label {
     my $field = shift;
     if ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {
         my $cf = $1;
-        return $self->CurrentUser->loc( "Custom field '[_1]'", $cf ) if $cf =~ /\D/;
-        my $obj = RT::Model::CustomField->new( $self->CurrentUser );
+        return $self->current_user->loc( "Custom field '[_1]'", $cf ) if $cf =~ /\D/;
+        my $obj = RT::Model::CustomField->new( $self->current_user );
         $obj->load( $cf );
-        return $self->CurrentUser->loc( "Custom field '[_1]'", $obj->Name );
+        return $self->current_user->loc( "Custom field '[_1]'", $obj->Name );
     }
-    return $self->CurrentUser->loc($field);
+    return $self->current_user->loc($field);
 }
 
 sub GroupBy {
@@ -184,7 +184,7 @@ sub _FieldToFunction {
         }
     } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) { #XXX: use CFDecipher method
         my $cf_name = $1;
-        my $cf = RT::Model::CustomField->new( $self->CurrentUser );
+        my $cf = RT::Model::CustomField->new( $self->current_user );
         $cf->load($cf_name);
         unless ( $cf->id ) {
             $RT::Logger->error("Couldn't load CustomField #$cf_name");
@@ -220,7 +220,7 @@ sub Next {
 
 sub new_item {
     my $self = shift;
-    return RT::Report::Tickets::Entry->new($RT::SystemUser); # $self->CurrentUser);
+    return RT::Report::Tickets::Entry->new($RT::SystemUser); # $self->current_user);
 }
 
 
@@ -236,7 +236,7 @@ sub AddEmptyRows {
     if ( $self->{'_group_by_field'} eq 'Status' ) {
         my %has = map { $_->__value('Status') => 1 } @{ $self->items_array_ref || [] };
 
-        foreach my $status ( grep !$has{$_}, RT::Model::Queue->new($self->CurrentUser)->StatusArray ) {
+        foreach my $status ( grep !$has{$_}, RT::Model::Queue->new($self->current_user)->StatusArray ) {
 
             my $record = $self->new_item;
             $record->load_from_hash( {

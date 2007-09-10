@@ -188,7 +188,7 @@ sub create {
         @_,
     );
 
-    unless ( $self->CurrentUser->has_right(Object => $RT::System, Right => 'AdminCustomField') ) {
+    unless ( $self->current_user->has_right(Object => $RT::System, Right => 'AdminCustomField') ) {
         return (0, $self->loc('Permission Denied'));
     }
 
@@ -204,13 +204,13 @@ sub create {
     # do nothing -- things below are strictly backward compat
     }
     elsif (  ! $args{'Queue'} ) {
-        unless ( $self->CurrentUser->has_right( Object => $RT::System, Right => 'AssignCustomFields') ) {
+        unless ( $self->current_user->has_right( Object => $RT::System, Right => 'AssignCustomFields') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
         $args{'LookupType'} = 'RT::Model::Queue-RT::Model::Ticket';
     }
     else {
-        my $queue = RT::Model::Queue->new($self->CurrentUser);
+        my $queue = RT::Model::Queue->new($self->current_user);
         $queue->load($args{'Queue'});
         unless ($queue->id) {
             return (0, $self->loc("Queue not found"));
@@ -243,7 +243,7 @@ sub create {
     return ($rv, $msg) unless exists $args{'Queue'};
 
     # Compat code -- create a new ObjectCustomField mapping
-    my $OCF = RT::Model::ObjectCustomField->new( $self->CurrentUser );
+    my $OCF = RT::Model::ObjectCustomField->new( $self->current_user );
     $OCF->create(
         CustomField => $self->id,
         ObjectId => $args{'Queue'},
@@ -301,14 +301,14 @@ sub load_by_name {
 
     # if we're looking for a queue by name, make it a number
     if ( defined $args{'Queue'} && $args{'Queue'} =~ /\D/ ) {
-        my $QueueObj = RT::Model::Queue->new( $self->CurrentUser );
+        my $QueueObj = RT::Model::Queue->new( $self->current_user );
         $QueueObj->load( $args{'Queue'} );
         $args{'Queue'} = $QueueObj->id;
     }
 
     # XXX - really naive implementation.  Slow. - not really. still just one query
 
-    my $CFs = RT::Model::CustomFieldCollection->new( $self->CurrentUser );
+    my $CFs = RT::Model::CustomFieldCollection->new( $self->current_user );
     Carp::cluck unless ($args{'Name'});
     $CFs->limit( column => 'Name', value => $args{'Name'}, case_sensitive => 0);
     # Don't limit to queue if queue is 0.  Trying to do so breaks
@@ -350,7 +350,7 @@ sub Values {
 
     my $class = $self->ValuesClass || 'RT::Model::CustomFieldValueCollection';
     eval "require $class" or die "$@";
-    my $cf_values = $class->new( $self->CurrentUser );
+    my $cf_values = $class->new( $self->current_user );
     # if the user has no rights, return an empty object
     if ( $self->id && $self->current_user_has_right( 'SeeCustomField') ) {
         $cf_values->limit_to_custom_field( $self->id );
@@ -380,7 +380,7 @@ sub AddValue {
         return (0, $self->loc("Can't add a custom field value without a name"));
     }
 
-    my $newval = RT::Model::CustomFieldValue->new( $self->CurrentUser );
+    my $newval = RT::Model::CustomFieldValue->new( $self->current_user );
     return $newval->create( %args, CustomField => $self->id );
 }
 
@@ -404,7 +404,7 @@ sub deleteValue {
         return (0, $self->loc('Permission Denied'));
     }
 
-    my $val_to_del = RT::Model::CustomFieldValue->new( $self->CurrentUser );
+    my $val_to_del = RT::Model::CustomFieldValue->new( $self->current_user );
     $val_to_del->load( $id );
     unless ( $val_to_del->id ) {
         return (0, $self->loc("Couldn't find that value"));
@@ -663,7 +663,7 @@ sub current_user_has_right {
     my $self  = shift;
     my $right = shift;
 
-    return $self->CurrentUser->has_right(
+    return $self->current_user->has_right(
         Object => $self,
         Right  => $right,
     );
@@ -701,7 +701,7 @@ sub _value {
     # we need to do the rights check
     unless ( $self->current_user_has_right('SeeCustomField') ) {
         $RT::Logger->debug(
-            "Permission denied. User #". $self->CurrentUser->id
+            "Permission denied. User #". $self->current_user->id
             ." has no SeeCustomField right on CF #". $self->id
         );
         return (undef);
@@ -748,7 +748,7 @@ sub set_LookupType {
     my $lookup = shift;
     if ( $lookup ne $self->LookupType ) {
         # Okay... We need to invalidate our existing relationships
-        my $ObjectCustomFields = RT::Model::ObjectCustomFieldCollection->new($self->CurrentUser);
+        my $ObjectCustomFields = RT::Model::ObjectCustomFieldCollection->new($self->current_user);
         $ObjectCustomFields->limit_to_custom_field($self->id);
         $_->delete foreach @{$ObjectCustomFields->items_array_ref};
     }
@@ -837,7 +837,7 @@ sub AddToObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $ObjectCF = RT::Model::ObjectCustomField->new( $self->CurrentUser );
+    my $ObjectCF = RT::Model::ObjectCustomField->new( $self->current_user );
     $ObjectCF->load_by_cols( ObjectId => $id, CustomField => $self->id );
     if ( $ObjectCF->id ) {
         return ( 0, $self->loc("That is already the current value") );
@@ -871,7 +871,7 @@ sub RemoveFromObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $ObjectCF = RT::Model::ObjectCustomField->new( $self->CurrentUser );
+    my $ObjectCF = RT::Model::ObjectCustomField->new( $self->current_user );
     $ObjectCF->load_by_cols( ObjectId => $id, CustomField => $self->id );
     unless ( $ObjectCF->id ) {
         return ( 0, $self->loc("This custom field does not apply to that object") );
@@ -920,7 +920,7 @@ sub AddValueForObject {
         return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
     }
 
-    $RT::Handle->begin_transaction;
+    Jifty->handle->begin_transaction;
 
     if ( $self->MaxValues ) {
         my $current_values = $self->ValuesForObject($obj);
@@ -937,14 +937,14 @@ sub AddValueForObject {
             unless ( $extra_item->id ) {
                 $RT::Logger->crit( "We were just asked to delete "
                     ."a custom field value that doesn't exist!" );
-                $RT::Handle->rollback();
+                Jifty->handle->rollback();
                 return (undef);
             }
             $extra_item->delete;
             $extra_values--;
         }
     }
-    my $newval = RT::Model::ObjectCustomFieldValue->new( $self->CurrentUser );
+    my $newval = RT::Model::ObjectCustomFieldValue->new( $self->current_user );
     my $val    = $newval->create(
         ObjectType   => ref($obj),
         ObjectId     => $obj->id,
@@ -955,11 +955,11 @@ sub AddValueForObject {
     );
 
     unless ($val) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ($val, $self->loc("Couldn't create record"));
     }
 
-    $RT::Handle->commit();
+    Jifty->handle->commit();
     return ($val);
 
 }
@@ -1033,7 +1033,7 @@ sub deleteValueForObject {
         return (0, $self->loc('Permission Denied'));
     }
 
-    my $oldval = RT::Model::ObjectCustomFieldValue->new($self->CurrentUser);
+    my $oldval = RT::Model::ObjectCustomFieldValue->new($self->current_user);
 
     if (my $id = $args{'Id'}) {
         $oldval->load($id);
@@ -1077,7 +1077,7 @@ sub ValuesForObject {
     my $self = shift;
     my $object = shift;
 
-    my $values = new RT::Model::ObjectCustomFieldValueCollection($self->CurrentUser);
+    my $values = new RT::Model::ObjectCustomFieldValueCollection($self->current_user);
     unless ($self->current_user_has_right('SeeCustomField')) {
         # Return an empty object if they have no rights to see
         return ($values);

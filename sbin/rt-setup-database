@@ -1,66 +1,20 @@
 #!/usr/bin/perl -w
-# BEGIN BPS TAGGED BLOCK {{{
-# 
-# COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
-#                                          <jesse@bestpractical.com>
-# 
-# (Except where explicitly superseded by other copyright notices)
-# 
-# 
-# LICENSE:
-# 
-# This work is made available to you under the terms of Version 2 of
-# the GNU General Public License. A copy of that license should have
-# been provided with this software, but in any event can be snarfed
-# from www.gnu.org.
-# 
-# This work is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301 or visit their web page on the internet at
-# http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
-# CONTRIBUTION SUBMISSION POLICY:
-# 
-# (The following paragraph is not intended to limit the rights granted
-# to you to modify and distribute this software under the terms of
-# the GNU General Public License and is only of importance to you if
-# you choose to contribute your changes and enhancements to the
-# community by submitting them to Best Practical Solutions, LLC.)
-# 
-# By intentionally submitting any modifications, corrections or
-# derivatives to this work, or any other work intended for use with
-# Request Tracker, to Best Practical Solutions, LLC, you confirm that
-# you are the copyright holder for those contributions and you grant
-# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
-# royalty-free, perpetual, license to use, copy, create derivative
-# works based on those contributions, and sublicense and distribute
-# those contributions and any derivatives thereof.
-# 
-# END BPS TAGGED BLOCK }}}
 use strict;
 use warnings;
 
 use vars qw($Nobody $SystemUser $item);
 
-use lib "@LOCAL_LIB_PATH@";
-use lib "@RT_LIB_PATH@";
+
+
 
 #This drags in  RT's config.pm
 # We do it in a begin block because RT::Handle needs to know the type to do its
 # inheritance
 BEGIN {
+    use Jifty;
+    Jifty->new();
     use RT;
     RT::load_config();
-    RT::InitClasses();
 }
 
 use Term::ReadKey;
@@ -156,96 +110,37 @@ foreach my $action ( @actions ) {
     }
     elsif ( $action eq 'schema' ) {
         my $dbh = get_admin_dbh();
-        check_db_compatibility( $dbh );
 
-        $RT::Handle = new RT::Handle;
-        $RT::Handle->dbh( $dbh );
+        Jifty->handle = new RT::Handle;
+        Jifty->handle->dbh( $dbh );
 
         print "Now populating database schema.\n";
-        $RT::Handle->InsertSchema( $dbh, $args{'datadir'} );
+        Jifty->handle->InsertSchema( $dbh, $args{'datadir'} );
     }
     elsif ( $action eq 'acl' ) {
         my $dbh = get_admin_dbh();
-        check_db_compatibility( $dbh );
 
-        $RT::Handle = new RT::Handle;
-        $RT::Handle->dbh( $dbh );
+        Jifty->handle = new RT::Handle;
+        Jifty->handle->dbh( $dbh );
 
         print "Now inserting database ACLs\n";
-        $RT::Handle->InsertACL( $dbh, $args{'datadir'} ) # unless $db_type eq 'Oracle'
+        Jifty->handle->InsertACL( $dbh, $args{'datadir'} ) # unless $db_type eq 'Oracle'
     }
     elsif ( $action eq 'coredata' ) {
-        $RT::Handle = new RT::Handle;
-        $RT::Handle->dbh( undef );
-        RT::ConnectToDatabase();
+        Jifty->handle = new RT::Handle;
+        Jifty->handle->dbh( undef );
+        RT::connect_to_database();
         RT::InitLogging();
         RT::InitSystemObjects();
-        check_db_compatibility( $RT::Handle->dbh );
 
         print "Now inserting RT core system objects\n";
-        $RT::Handle->InsertInitialData();
+        Jifty->handle->InsertInitialData();
     }
     elsif ( $action eq 'insert' ) {
-        $RT::Handle = new RT::Handle;
         RT::Init();
-        check_db_compatibility( $RT::Handle->dbh );
 
         print "Now inserting data\n";
-        $RT::Handle->InsertData( $args{'datafile'} || ($args{'datadir'}."/content") );
-    }
-}
-
-sub check_db_compatibility {
-    my $dbh = shift;
-    if ( lc $db_type eq "mysql" ) {
-        # Check which version we're running
-        my $version = ($dbh->selectrow_array("show variables like 'version'"))[1];
-        unless ( $version ) {
-            print STDERR "Couldn't get version of the mysql server\n";
-            exit -1;
-        }
-
-        ($version) = $version =~ /^(\d+\.\d+)/;
-        if ( $version < 4 ) {
-            print STDERR "RT is unsupported on MySQL versions before 4.0.x, it's $version\n";
-            exit -1;
-        }
-
-        # MySQL must have InnoDB support
-        if ( $args{'action'} =~ /^(init|insert|schema)$/ ) {
-            print "Checking that mysql has spport for InnoDB.\n" if $args{'debug'};
-            my $innodb = ($dbh->selectrow_array("show variables like 'have_innodb'"))[1];
-            if ( lc $innodb eq "no" ) {
-                print STDERR "RT requires that MySQL be compiled with InnoDB table support.\n".
-                  "See http://dev.mysql.com/doc/mysql/en/InnoDB.html\n";
-                exit -1;
-            } elsif ( lc $innodb eq "disabled" ) {
-                print STDERR "RT requires that MySQL InnoDB table support be enabled.\n".
-                  ($version < 4
-                   ? "Add 'innodb_data_file_path=ibdata1:10M:autoextend' to the [mysqld] section of my.cnf\n"
-                   : "Remove the 'skip-innodb' line from your my.cnf file, restart MySQL, and try again.\n");
-                exit -1;
-            }
-        }
-
-        if ( $args{'action'} =~ /^(insert)$/ ) {
-            print "Checking that Tickets table is of InnoDB type.\n" if $args{'debug'};
-            my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Tickets")->[1];
-            unless ( $create_table =~ /(?:ENGINE|TYPE)=InnoDB/i ) {
-                print STDERR "RT requires that all its tables be of InnoDB type.\n".
-                    "Upgrade RT tables.\n";
-                exit -1;
-            }
-        }
-#        if ( $version >= 4.1 && $args{'action'} =~ /^(insert|schema)$/ ) {
-#            print "MySQL >= 4.1, checking that user upgraded.\n" if $args{'debug'};
-#            my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Attachments")->[1];
-#            unless ( $create_table =~ /\bContent\b[^,]*BLOB/i ) {
-#                print STDERR "*** WARNING: RT since version 3.6 has new schema for MySQL versions after 4.1.0\n"
-#                    ."Follow instructions in the UPGRADING.mysql file.\n";
-#                sleep 3;
-#            }
-#        }
+        Jifty->handle->InsertData( $args{'datafile'} || ($args{'datadir'}."/content") );
     }
 }
 

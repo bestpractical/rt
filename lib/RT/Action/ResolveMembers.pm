@@ -84,7 +84,7 @@ sub commit {
     while (my $Link=$Links->next()) {
 	# Todo: Try to deal with remote URIs as well
 	next unless $Link->BaseURI->IsLocal;
-	my $base=RT::Model::Ticket->new($self->TicketObj->CurrentUser);
+	my $base=RT::Model::Ticket->new($self->TicketObj->current_user);
 	# Todo: Only work if Base is a plain ticket num:
 	$base->load($Link->Base);
 	# I'm afraid this might be a major bottleneck if ResolveGroupTicket is on.
@@ -101,12 +101,6 @@ sub IsApplicable  {
   1;  
   return 1;
 }
-# }}}
-
-eval "require RT::Action::ResolveMembers_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/ResolveMemberCollection_Vendor.pm});
-eval "require RT::Action::ResolveMembers_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/ResolveMemberCollection_Local.pm});
 
 1;
 

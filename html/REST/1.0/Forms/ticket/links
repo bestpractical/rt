@@ -55,7 +55,7 @@ $changes => undef
 <%INIT>
 my @data;
 $format ||= 's';
-my $ticket = new RT::Model::Ticket $session{CurrentUser};
+my $ticket = new RT::Model::Ticket Jifty->web->current_user;
 
 $ticket->load($id);
 if (!$ticket->id) {
@@ -97,8 +97,8 @@ if ($changes) {
             my %new;
             foreach my $nkey (@{vsplit($val)}) {
                 if ($nkey =~ /^\d+$/) {
-                    my $uri = new RT::URI $session{CurrentUser};
-                    my $tick = new RT::Model::Ticket $session{CurrentUser};
+                    my $uri = new RT::URI Jifty->web->current_user;
+                    my $tick = new RT::Model::Ticket Jifty->web->current_user;
                     $tick->load($nkey);
                     if ($tick->id) {
                         $nkey = $uri->FromObject($tick);

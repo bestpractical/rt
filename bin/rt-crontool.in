@@ -107,7 +107,7 @@ load_module($condition) if ($condition);
 # load template if specified
 my $template_obj;
 if ($template_id) {
-    $template_obj = RT::Model::Template->new($CurrentUser);
+    $template_obj = RT::Model::Template->new(current_user => );
     $template_obj->load($template_id);
 }
 my $void_scrip = RT::Model::Scrip->new( $CurrentUser );
@@ -116,7 +116,7 @@ my $void_scrip_action = RT::Model::ScripAction->new( $CurrentUser );
 #At the appointed time:
 
 #find a bunch of tickets
-my $tickets = RT::Model::TicketCollection->new($CurrentUser);
+my $tickets = RT::Model::TicketCollection->new(current_user => );
 my $search  = $search->new(
     TicketsObj  => $tickets,
     Argument    => $search_arg,

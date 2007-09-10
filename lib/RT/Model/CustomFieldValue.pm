@@ -90,7 +90,7 @@ sub create {
 
     my $cf_id = ref $args{'CustomField'}? $args{'CustomField'}->id: $args{'CustomField'};
 
-    my $cf = RT::Model::CustomField->new( $self->CurrentUser );
+    my $cf = RT::Model::CustomField->new( $self->current_user );
     $cf->load( $cf_id );
     unless ( $cf->id ) {
         return (0, $self->loc("Couldn't load Custom Field #[_1]", $cf_id));

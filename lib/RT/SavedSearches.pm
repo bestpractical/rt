@@ -76,7 +76,7 @@ sub new  {
     my $class = ref($proto) || $proto;
     my $self  = {};
     bless ($self, $class);
-    $self->CurrentUser(@_);
+    $self->current_user(@_);
     $self->{'idx'} = 0;
     $self->{'objects'} = [];
     return $self;
@@ -104,7 +104,7 @@ sub LimitToPrivacy {
 	$self->{'objects'} = [];
 	my @search_atts = $object->attributes->Named('SavedSearch');
 	foreach my $att (@search_atts) {
-	    my $search = RT::SavedSearch->new($self->CurrentUser);
+	    my $search = RT::SavedSearch->new($self->current_user);
 	    $search->load($privacy, $att->id);
 	    next if $type && $search->Type ne $type;
 	    push(@{$self->{'objects'}}, $search);
@@ -154,7 +154,7 @@ sub _GetObject {
     my $self = shift;
     my $privacy = shift;
 
-    return RT::SavedSearch->new($self->CurrentUser)->_GetObject($privacy);
+    return RT::SavedSearch->new($self->current_user)->_GetObject($privacy);
 }
 
 ### Internal methods
@@ -163,9 +163,9 @@ sub _GetObject {
 
 sub _PrivacyObjects {
     my $self        = shift;
-    my $CurrentUser = $self->CurrentUser;
+    my $CurrentUser = $self->current_user;
 
-    my $groups = RT::Model::GroupCollection->new($CurrentUser);
+    my $groups = RT::Model::GroupCollection->new(current_user => );
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember( PrincipalId => $CurrentUser->id,
                          Recursively => 1 );

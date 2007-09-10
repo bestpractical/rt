@@ -129,10 +129,10 @@ sub Object {
 
     unless ( $self->{'object'} ) {
         if ( $self->IsUser ) {
-           $self->{'object'} = RT::Model::User->new($self->CurrentUser);
+           $self->{'object'} = RT::Model::User->new($self->current_user);
         }
         elsif ( $self->IsGroup ) {
-            $self->{'object'}  = RT::Model::Group->new($self->CurrentUser);
+            $self->{'object'}  = RT::Model::Group->new($self->current_user);
         }
         else { 
             return(undef);
@@ -173,7 +173,7 @@ sub GrantRight {
 
 
     #ACL check handled in ACE.pm
-    my $ace = RT::Model::ACE->new( $self->CurrentUser );
+    my $ace = RT::Model::ACE->new( $self->current_user );
 
 
     my $type = $self->_GetPrincipalTypeForACL();
@@ -217,7 +217,7 @@ sub RevokeRight {
     #ACL check handled in ACE.pm
     my $type = $self->_GetPrincipalTypeForACL();
 
-    my $ace = RT::Model::ACE->new( $self->CurrentUser );
+    my $ace = RT::Model::ACE->new( $self->current_user );
     $ace->load_by_values(
         RightName     => $args{'Right'},
         Object    => $args{'Object'},

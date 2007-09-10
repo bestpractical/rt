@@ -68,7 +68,7 @@ while ( my $cgi = CGI::Fast->new ) {
     $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 
     Module::Refresh->refresh if RT->Config->Get('DevelMode');
-    RT::ConnectToDatabase();
+    RT::connect_to_database();
 
     if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
         && ( $Handler->interp->comp_exists( $cgi->path_info . "/index.html" ) ) ) {

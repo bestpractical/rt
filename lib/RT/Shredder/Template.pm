@@ -69,7 +69,7 @@ sub __DependsOn
     my $list = [];
 
 # Scrips
-    my $objs = RT::Model::ScripCollection->new( $self->CurrentUser );
+    my $objs = RT::Model::ScripCollection->new( $self->current_user );
     $objs->limit( column => 'Template', value => $self->id );
     push( @$list, $objs );
 

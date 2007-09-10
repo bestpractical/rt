@@ -73,19 +73,19 @@ use Encode qw();
 
 our $_TABLE_ATTR = { };
 use base qw(RT::Base);
-use base qw(Jifty::DBI::Record::Cachable);
+use base qw(Jifty::Record);
 
 # {{{ sub _init 
 
 sub new {
     my $class = shift;
-    my $self = $class->SUPER::new(handle => $RT::Handle);
-    $self->CurrentUser(@_);
+    my $self = $class->SUPER::new(handle => Jifty->handle, current_user => $_[0]);
+    $self->current_user(@_);
     $self->_init(@_);
     return $self;
 }
 
-
+sub current_user_can {1}
 
 sub table { my $class = shift; 
 
@@ -174,7 +174,7 @@ sub attributes {
     my $self = shift;
     
     unless ($self->{'attributes'}) {
-        $self->{'attributes'} = RT::Model::AttributeCollection->new($self->CurrentUser);     
+        $self->{'attributes'} = RT::Model::AttributeCollection->new($self->current_user);     
        $self->{'attributes'}->LimitToObject($self); 
     }
     return ($self->{'attributes'}); 
@@ -195,7 +195,7 @@ sub add_attribute {
                  Content     => undef,
                  @_ );
 
-    my $attr = RT::Model::Attribute->new( $self->CurrentUser );
+    my $attr = RT::Model::Attribute->new( $self->current_user );
     my ( $id, $msg ) = $attr->create( 
                                       Object    => $self,
                                       Name        => $args{'Name'},
@@ -267,8 +267,8 @@ sub first_attribute {
 
 
 # {{{ sub _Handle 
-sub _Handle { return $RT::Handle }
-sub _handle { return $RT::Handle }
+sub _Handle { return Jifty->handle }
+sub _handle { return Jifty->handle }
 
 # }}}
 
@@ -304,9 +304,9 @@ sub create {
     }
 
 
-    $attribs{'Creator'} ||= $self->CurrentUser->id if $self->can('Creator');
+    $attribs{'Creator'} ||= $self->current_user->id if $self->can('Creator');
 
-    my $now = RT::Date->new( $self->CurrentUser );
+    my $now = RT::Date->new( $self->current_user );
     $now->set( Format => 'unix', value => time );
 
     my $id = $self->SUPER::create(%attribs);
@@ -404,7 +404,7 @@ sub load_by_cols {
 
 sub LastUpdatedObj {
     my $self = shift;
-    my $obj  = new RT::Date( $self->CurrentUser );
+    my $obj  = new RT::Date( $self->current_user );
 
     $obj->set( Format => 'sql', value => $self->LastUpdated );
     return $obj;
@@ -416,7 +416,7 @@ sub LastUpdatedObj {
 
 sub CreatedObj {
     my $self = shift;
-    my $obj  = new RT::Date( $self->CurrentUser );
+    my $obj  = new RT::Date( $self->current_user );
 
     $obj->set( Format => 'sql', value => $self->Created );
 
@@ -528,7 +528,7 @@ sub _set {
           );
       } else {
 
-          $msg = $self->CurrentUser->loc_fuzzy($msg);
+          $msg = $self->current_user->loc_fuzzy($msg);
     }
     return wantarray ? ($status, $msg) : $ret;     
 
@@ -548,7 +548,7 @@ It takes no options. Arguably, this is a bug
 sub _setLastUpdated {
     my $self = shift;
     use RT::Date;
-    my $now = new RT::Date( $self->CurrentUser );
+    my $now = new RT::Date( $self->current_user );
     $now->set_to_now();
 
         my ( $msg, $val ) = $self->__set(
@@ -557,7 +557,7 @@ sub _setLastUpdated {
         );
         ( $msg, $val ) = $self->__set(
             column => 'LastUpdatedBy',
-            value => $self->CurrentUser->id
+            value => $self->current_user->id
         );
 }
 
@@ -575,7 +575,7 @@ sub CreatorObj {
     my $self = shift;
     unless ( exists $self->{'CreatorObj'} ) {
 
-        $self->{'CreatorObj'} = RT::Model::User->new( $self->CurrentUser );
+        $self->{'CreatorObj'} = RT::Model::User->new( $self->current_user );
         $self->{'CreatorObj'}->load( $self->Creator );
     }
     return ( $self->{'CreatorObj'} );
@@ -594,7 +594,7 @@ sub CreatorObj {
 sub LastUpdatedByObj {
     my $self = shift;
     unless ( exists $self->{LastUpdatedByObj} ) {
-        $self->{'LastUpdatedByObj'} = RT::Model::User->new( $self->CurrentUser );
+        $self->{'LastUpdatedByObj'} = RT::Model::User->new( $self->current_user );
         $self->{'LastUpdatedByObj'}->load( $self->LastUpdatedBy );
     }
     return $self->{'LastUpdatedByObj'};
@@ -612,7 +612,7 @@ Returns this record's URI
 
 sub URI {
     my $self = shift;
-    my $uri = RT::URI::fsck_com_rt->new($self->CurrentUser);
+    my $uri = RT::URI::fsck_com_rt->new($self->current_user);
     return($uri->URIForObject($self));
 }
 
@@ -685,7 +685,7 @@ sub _EncodeLOB {
             $RT::Logger->debug("Max size is $MaxSize\n");
             $MaxSize = $MaxSize * 3 / 4;
         # Some databases (postgres) can't handle non-utf8 data
-        } elsif (  0 #   !$RT::Handle->binary_safe_blobs
+        } elsif (  0 #   !Jifty->handle->binary_safe_blobs
                   && $MIMEType !~ /text\/plain/gi
                   && !Encode::is_utf8( $Body, 1 ) ) {
               $ContentEncoding = 'quoted-printable';
@@ -980,7 +980,7 @@ RT::Model::Queue->ActiveStatusArray
 
 sub unresolved_dependencies {
     my $self = shift;
-    my $deps = RT::Model::TicketCollection->new($self->CurrentUser);
+    my $deps = RT::Model::TicketCollection->new($self->current_user);
 
     my @live_statuses = RT::Model::Queue->ActiveStatusArray();
     foreach my $status (@live_statuses) {
@@ -1079,7 +1079,7 @@ sub _Links {
     my $type  = shift || "";
 
     unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} = RT::Model::LinkCollection->new( $self->CurrentUser );
+        $self->{"$field$type"} = RT::Model::LinkCollection->new( $self->current_user );
             # at least to myself
             $self->{"$field$type"}->limit( column => $field,
                                            value => $self->URI,
@@ -1140,7 +1140,7 @@ sub _AddLink {
 
     # {{{ Check if the link already exists - we don't want duplicates
     use RT::Model::Link;
-    my $old_link = RT::Model::Link->new( $self->CurrentUser );
+    my $old_link = RT::Model::Link->new( $self->current_user );
     $old_link->loadByParams( Base   => $args{'Base'},
                              Type   => $args{'Type'},
                              Target => $args{'Target'} );
@@ -1153,7 +1153,7 @@ sub _AddLink {
 
 
     # Storing the link in the DB.
-    my $link = RT::Model::Link->new( $self->CurrentUser );
+    my $link = RT::Model::Link->new( $self->current_user );
     my ($linkid, $linkmsg) = $link->create( Target => $args{Target},
                                   Base   => $args{Base},
                                   Type   => $args{Type} );
@@ -1215,7 +1215,7 @@ sub _delete_link {
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
-    my $link = new RT::Model::Link( $self->CurrentUser );
+    my $link = new RT::Model::Link( $self->current_user );
     $RT::Logger->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} . "\n" );
 
 
@@ -1283,7 +1283,7 @@ sub _NewTransaction {
     }
 
     require RT::Model::Transaction;
-    my $trans = new RT::Model::Transaction( $self->CurrentUser );
+    my $trans = new RT::Model::Transaction( $self->current_user );
     my ( $transaction, $msg ) = $trans->create(
 	ObjectId  => $self->id,
 	ObjectType => ref($self),
@@ -1333,7 +1333,7 @@ sub Transactions {
     my $self = shift;
 
     use RT::Model::TransactionCollection;
-    my $transactions = RT::Model::TransactionCollection->new( $self->CurrentUser );
+    my $transactions = RT::Model::TransactionCollection->new( $self->current_user );
 
     #If the user has no rights, return an empty object
     $transactions->limit(
@@ -1355,7 +1355,7 @@ sub Transactions {
 
 sub CustomFields {
     my $self = shift;
-    my $cfs  = RT::Model::CustomFieldCollection->new( $self->CurrentUser );
+    my $cfs  = RT::Model::CustomFieldCollection->new( $self->current_user );
 
     # XXX handle multiple types properly
     $cfs->LimitToLookupType( $self->CustomFieldLookupType );
@@ -1533,7 +1533,7 @@ sub _AddCustomFieldValue {
             return ( 0, $self->loc( "Could not add new custom field value: [_1]", $value_msg ) );
         }
 
-        my $new_value = RT::Model::ObjectCustomFieldValue->new( $self->CurrentUser );
+        my $new_value = RT::Model::ObjectCustomFieldValue->new( $self->current_user );
         $new_value->load( $new_value_id );
 
         # now that adding the new value was successful, delete the old one
@@ -1692,12 +1692,12 @@ sub CustomFieldValues {
         # we were asked to search on a custom field we couldn't find
         unless ( $cf->id ) {
             $RT::Logger->warning("Couldn't load custom field by '$field' identifier");
-            return RT::Model::ObjectCustomFieldValueCollection->new( $self->CurrentUser );
+            return RT::Model::ObjectCustomFieldValueCollection->new( $self->current_user );
         }
         return ( $cf->ValuesForObject($self) );
     }
     # we're not limiting to a specific custom field;
-    my $ocfs = RT::Model::ObjectCustomFieldValueCollection->new( $self->CurrentUser );
+    my $ocfs = RT::Model::ObjectCustomFieldValueCollection->new( $self->current_user );
     $ocfs->LimitToObject( $self );
     return $ocfs;
 }
@@ -1717,19 +1717,19 @@ sub load_custom_field_by_identifier {
     unless (defined $field) {
         Carp::confess;
     }
-    my $cf = RT::Model::CustomField->new($self->CurrentUser);
+    my $cf = RT::Model::CustomField->new($self->current_user);
 
     if ( UNIVERSAL::isa( $field, "RT::Model::CustomField" ) ) {
         $cf->load_by_id( $field->id );
     }
     elsif ($field =~ /^\d+$/) {
-        $cf = RT::Model::CustomField->new($self->CurrentUser);
+        $cf = RT::Model::CustomField->new($self->current_user);
         $cf->load_by_id($field);
     } else {
 
-        my $cfs = $self->CustomFields($self->CurrentUser);
+        my $cfs = $self->CustomFields($self->current_user);
         $cfs->limit(column => 'Name', value => $field, case_sensitive => 0);
-        $cf = $cfs->first || RT::Model::CustomField->new($self->CurrentUser);
+        $cf = $cfs->first || RT::Model::CustomField->new($self->current_user);
     }
     return $cf;
 }

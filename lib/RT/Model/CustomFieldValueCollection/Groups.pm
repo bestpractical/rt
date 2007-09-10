@@ -61,7 +61,7 @@ sub ExternalValues {
 
     my @res;
     my $i = 0;
-    my $groups = RT::Model::GroupCollection->new( $self->CurrentUser );
+    my $groups = RT::Model::GroupCollection->new( $self->current_user );
     $groups->LimitToUserDefinedGroups;
     $groups->order_by( { column => 'Name' } );
     while( my $group = $groups->next ) {

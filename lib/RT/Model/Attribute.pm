@@ -112,7 +112,7 @@ sub LookupObjectRight {
                  @_);
 
     # if it's an attribute on oneself, check the personal acl map
-    if (($args{'ObjectType'} eq 'RT::Model::User') && ($args{'ObjectId'} eq $self->CurrentUser->id)) {
+    if (($args{'ObjectType'} eq 'RT::Model::User') && ($args{'ObjectId'} eq $self->current_user->id)) {
     return('allow') unless ($PERSONAL_ACL_MAP->{$args{'Name'}});
     return('allow') unless ($PERSONAL_ACL_MAP->{$args{'Name'}}->{$args{'Right'}});
     return($PERSONAL_ACL_MAP->{$args{'Name'}}->{$args{'Right'}}); 
@@ -177,7 +177,7 @@ sub create {
     elsif ($object_right eq 'allow') {
         # do nothing, we're ok
     }
-    elsif (!$self->CurrentUser->has_right( Object => $args{Object}, Right => $object_right)) {
+    elsif (!$self->current_user->has_right( Object => $args{Object}, Right => $object_right)) {
         return (0, $self->loc('Permission Denied'));
     }
 
@@ -372,7 +372,7 @@ sub Object {
     my $self = shift;
     my $object_type = $self->__value('ObjectType');
     my $object;
-    eval { $object = $object_type->new($self->CurrentUser) };
+    eval { $object = $object_type->new($self->current_user) };
     unless(UNIVERSAL::isa($object, $object_type)) {
         $RT::Logger->error("Attribute ".$self->id." has a bogus object type - $object_type (".$@.")");
         return(undef);
@@ -436,7 +436,7 @@ sub current_user_has_right {
    
     return (1) if ($object_right eq 'allow');
     return (0) if ($object_right eq 'deny');
-    return(1) if ($self->CurrentUser->has_right( Object => $self->Object, Right => $object_right));
+    return(1) if ($self->current_user->has_right( Object => $self->Object, Right => $object_right));
     return(0);
 
 }

@@ -101,7 +101,7 @@ sub create {
     my $record_transaction = delete $args{'_RecordTransaction'};
 
     #Check the ACL
-    unless ( $self->CurrentUser->has_right(Right => 'AdminUsers', Object => $RT::System) ) {
+    unless ( $self->current_user->has_right(Right => 'AdminUsers', Object => $RT::System) ) {
         return ( 0, $self->loc('No permission to create users') );
     }
 
@@ -157,16 +157,16 @@ sub create {
     }
 
 
-    $RT::Handle->begin_transaction();
+    Jifty->handle->begin_transaction();
     # Groups deal with principal ids, rather than user ids.
     # When creating this user, set up a principal Id for it.
-    my $principal = RT::Model::Principal->new($self->CurrentUser);
+    my $principal = RT::Model::Principal->new($self->current_user);
     my $principal_id = $principal->create(PrincipalType => 'User',
                                 Disabled => $args{'Disabled'},
                                 ObjectId => '0');
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         $RT::Logger->crit("Couldn't create a Principal on new user create.");
         $RT::Logger->crit("Strange things are afoot at the circle K");
         return ( 0, $self->loc('Could not create user') );
@@ -180,27 +180,27 @@ sub create {
 
     #If the create failed.
     unless ($id) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         $RT::Logger->error("Could not create a new user - " .join('-', %args));
 
         return ( 0, $self->loc('Could not create user') );
     }
 
-    my $aclstash = RT::Model::Group->new($self->CurrentUser);
+    my $aclstash = RT::Model::Group->new($self->current_user);
     my $stash_id = $aclstash->_createACLEquivalenceGroup($principal);
 
     unless ($stash_id) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         $RT::Logger->crit("Couldn't stash the user in groupmembers");
         return ( 0, $self->loc('Could not create user') );
     }
 
 
-    my $everyone = RT::Model::Group->new($self->CurrentUser);
+    my $everyone = RT::Model::Group->new($self->current_user);
     $everyone->load_system_internal_group('Everyone');
     unless ($everyone->id) {
         $RT::Logger->crit("Could not load Everyone group on user creation.");
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, $self->loc('Could not create user') );
     }
 
@@ -209,12 +209,12 @@ sub create {
     unless ($everyone_id) {
         $RT::Logger->crit("Could not add user to Everyone group on user creation.");
         $RT::Logger->crit($everyone_msg);
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, $self->loc('Could not create user') );
     }
 
 
-    my $access_class = RT::Model::Group->new($self->CurrentUser);
+    my $access_class = RT::Model::Group->new($self->current_user);
     if ($privileged)  {
         $access_class->load_system_internal_group('Privileged');
     } else {
@@ -223,7 +223,7 @@ sub create {
 
     unless ($access_class->id) {
         $RT::Logger->crit("Could not load Privileged or Unprivileged group on user creation");
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, $self->loc('Could not create user') );
     }
 
@@ -233,7 +233,7 @@ sub create {
     unless ($ac_id) {
         $RT::Logger->crit("Could not add user to Privileged or Unprivileged group on user creation. Aborted");
         $RT::Logger->crit($ac_msg);
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, $self->loc('Could not create user') );
     }
 
@@ -242,7 +242,7 @@ sub create {
     $self->_NewTransaction( Type => "Create" );
     }
 
-    $RT::Handle->commit;
+    Jifty->handle->commit;
 
     return ( $id, $self->loc('User Created') );
 }
@@ -268,10 +268,10 @@ sub set_Privileged {
     my $val = shift;
 
     #Check the ACL
-    unless ( $self->CurrentUser->has_right(Right => 'AdminUsers', Object => $RT::System) ) {
+    unless ( $self->current_user->has_right(Right => 'AdminUsers', Object => $RT::System) ) {
         return ( 0, $self->loc('Permission Denied') );
     }
-    my $priv = RT::Model::Group->new($self->CurrentUser);
+    my $priv = RT::Model::Group->new($self->current_user);
     $priv->load_system_internal_group('Privileged');
    
     unless ($priv->id) {
@@ -279,7 +279,7 @@ sub set_Privileged {
         return(0,$self->loc("Failed to find 'Privileged' users pseudogroup."));
     }
 
-    my $unpriv = RT::Model::Group->new($self->CurrentUser);
+    my $unpriv = RT::Model::Group->new($self->current_user);
     $unpriv->load_system_internal_group('Unprivileged');
     unless ($unpriv->id) {
         $RT::Logger->crit("Could not find unprivileged pseudogroup");
@@ -342,7 +342,7 @@ Returns true if this user is privileged. Returns undef otherwise.
 
 sub Privileged {
     my $self = shift;
-    my $priv = RT::Model::Group->new($self->CurrentUser);
+    my $priv = RT::Model::Group->new($self->current_user);
     $priv->load_system_internal_group('Privileged');
     if ($priv->has_member($self->PrincipalObj)) {
         return(1);
@@ -368,15 +368,15 @@ sub _bootstrap_create {
     $args{'Password'} = '*NO-PASSWORD*';
 
 
-    $RT::Handle->begin_transaction(); 
+    Jifty->handle->begin_transaction(); 
 
     # Groups deal with principal ids, rather than user ids.
     # When creating this user, set up a principal Id for it.
-    my $principal = RT::Model::Principal->new($self->CurrentUser);
+    my $principal = RT::Model::Principal->new($self->current_user);
     my ($principal_id , $pmsg) = $principal->create(  PrincipalType => 'User', ObjectId => '0', Disabled => '0');
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         $RT::Logger->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K: $pmsg");
         return ( 0, 'Could not create user' );
     }
@@ -389,23 +389,23 @@ sub _bootstrap_create {
     my $id = $self->id;
     #If the create failed.
       unless ($id) {
-      $RT::Handle->rollback();
+      Jifty->handle->rollback();
       return ( 0, 'Could not create user' ) ; #never loc this
     }
 
     
-    my $aclstash = RT::Model::Group->new($self->CurrentUser);
+    my $aclstash = RT::Model::Group->new($self->current_user);
 
     my $stash_id  = $aclstash->_createACLEquivalenceGroup($principal);
 
     unless ($stash_id) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         $RT::Logger->crit("Couldn't stash the user in groupmembers");
         return ( 0, $self->loc('Could not create user') );
     }
 
                                     
-    $RT::Handle->commit();
+    Jifty->handle->commit();
 
     return ( $id, 'User Created' );
 }
@@ -641,7 +641,7 @@ If the status is anything else, the new value returned is the error code.
 sub set_RandomPassword {
     my $self = shift;
 
-    unless ( $self->CurrentUserCanModify('Password') ) {
+    unless ( $self->current_userCanModify('Password') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
@@ -680,7 +680,7 @@ for privileged and Non-privileged users respectively.
 sub ResetPassword {
     my $self = shift;
 
-    unless ( $self->CurrentUserCanModify('Password') ) {
+    unless ( $self->current_userCanModify('Password') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
     my ( $status, $pass ) = $self->set_RandomPassword();
@@ -911,7 +911,7 @@ sub set_Password {
     my $self     = shift;
     my $password = shift;
 
-    unless ( $self->CurrentUserCanModify('Password') ) {
+    unless ( $self->current_userCanModify('Password') ) {
         return ( 0, $self->loc('Password: Permission Denied') );
     }
 
@@ -1057,7 +1057,7 @@ user will fail. The user will appear in no user listings.
 
 sub set_Disabled {
     my $self = shift;
-    unless ( $self->CurrentUser->has_right(Right => 'AdminUsers', Object => $RT::System) ) {
+    unless ( $self->current_user->has_right(Right => 'AdminUsers', Object => $RT::System) ) {
         return (0, $self->loc('Permission Denied'));
     }
     return $self->PrincipalObj->set_Disabled(@_);
@@ -1084,7 +1084,7 @@ The response is cached. PrincipalObj should never ever change.
 sub PrincipalObj {
     my $self = shift;
     unless ( $self->{'PrincipalObj'} ) {
-        my $obj = RT::Model::Principal->new( $self->CurrentUser );
+        my $obj = RT::Model::Principal->new( $self->current_user );
         $obj->load_by_id( $self->id );
         unless ( $obj->id && $obj->PrincipalType eq 'User' ) {
             $RT::Logger->crit( 'Wrong principal for user #'. $self->id );
@@ -1139,7 +1139,7 @@ sub HasGroupRight {
 
 
     if ( defined $args{'Group'} ) {
-        $args{'GroupObj'} = RT::Model::Group->new( $self->CurrentUser );
+        $args{'GroupObj'} = RT::Model::Group->new( $self->current_user );
         $args{'GroupObj'}->load( $args{'Group'} );
     }
 
@@ -1175,7 +1175,7 @@ user is a member.
 
 sub OwnGroups {
     my $self = shift;
-    my $groups = RT::Model::GroupCollection->new($self->CurrentUser);
+    my $groups = RT::Model::GroupCollection->new($self->current_user);
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember(PrincipalId => $self->id, 
             Recursively => 1);
@@ -1226,7 +1226,7 @@ sub CurrentUserCanModify {
     my $self  = shift;
     my $right = shift;
 
-    if ( $self->CurrentUser->has_right(Right => 'AdminUsers', Object => $RT::System) ) {
+    if ( $self->current_user->has_right(Right => 'AdminUsers', Object => $RT::System) ) {
         return (1);
     }
 
@@ -1237,8 +1237,8 @@ sub CurrentUserCanModify {
     }
 
     #If the current user is trying to modify themselves
-    elsif ( ( $self->id == $self->CurrentUser->id )
-        and ( $self->CurrentUser->has_right(Right => 'ModifySelf', Object => $RT::System) ) )
+    elsif ( ( $self->id == $self->current_user->id )
+        and ( $self->current_user->has_right(Right => 'ModifySelf', Object => $RT::System) ) )
     {
         return (1);
     }
@@ -1257,7 +1257,7 @@ sub CurrentUserCanModify {
 
 =head2 current_user_has_right
   
-Takes a single argument. returns 1 if $Self->CurrentUser
+Takes a single argument. returns 1 if $Self->current_user
 has the requested right. returns undef otherwise
 
 =cut
@@ -1265,7 +1265,7 @@ has the requested right. returns undef otherwise
 sub current_user_has_right {
     my $self  = shift;
     my $right = shift;
-    return ( $self->CurrentUser->has_right(Right => $right, Object => $RT::System) );
+    return ( $self->current_user->has_right(Right => $right, Object => $RT::System) );
 }
 
 sub _PrefName {
@@ -1292,7 +1292,7 @@ sub Preferences {
     my $name = _PrefName (shift);
     my $default = shift;
 
-    my $attr = RT::Model::Attribute->new( $self->CurrentUser );
+    my $attr = RT::Model::Attribute->new( $self->current_user );
     $attr->load_by_nameAndObject( Object => $self, Name => $name );
 
     my $content = $attr->id ? $attr->Content : undef;
@@ -1325,7 +1325,7 @@ sub set_Preferences {
     my $self = shift;
     my $name = _PrefName( shift );
     my $value = shift;
-    my $attr = RT::Model::Attribute->new( $self->CurrentUser );
+    my $attr = RT::Model::Attribute->new( $self->current_user );
     $attr->load_by_nameAndObject( Object => $self, Name => $name );
     if ( $attr->id ) {
         return $attr->set_Content( $value );
@@ -1355,7 +1355,7 @@ sub WatchedQueues {
 
     $RT::Logger->debug('WatcheQueues got user ' . $self->Name);
 
-    my $watched_queues = RT::Model::QueueCollection->new($self->CurrentUser);
+    my $watched_queues = RT::Model::QueueCollection->new($self->current_user);
 
     my $group_alias = $watched_queues->join(
                                              alias1 => 'main',
@@ -1467,13 +1467,13 @@ sub _CleanupInvalidDelegations {
     while ( my $ace = $acl_to_del->next() ) {
     my $ret = $ace->_delete(InsideTransaction => 1);
     unless ($ret) {
-        $RT::Handle->rollback() unless $in_trans;
+        Jifty->handle->rollback() unless $in_trans;
         $RT::Logger->warning("Couldn't delete delegated ACL entry ".$ace->id);
         return (undef);
     }
     }
 
-    $RT::Handle->commit() unless $in_trans;
+    Jifty->handle->commit() unless $in_trans;
     return (1);
 }
 
@@ -1498,7 +1498,7 @@ sub _set {
          ($self->id == $RT::Nobody->id)) {
         return ( 0, $self->loc("Can not modify system users") );
     }
-    unless ( $self->CurrentUserCanModify( $args{'column'} ) ) {
+    unless ( $self->current_userCanModify( $args{'column'} ) ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
@@ -1560,12 +1560,12 @@ sub _value {
 
     #If the user wants to see their own values, let them
     # TODO figure ouyt a better way to deal with this
-   if ( $self->id && $self->CurrentUser->id == $self->id ) {
+   if ( $self->id && $self->current_user->id == $self->id ) {
         return ( $self->SUPER::_value($field) );
     }
 
     #If the user has the admin users right, return the field
-    elsif ( $self->CurrentUser->has_right(Right =>'AdminUsers', Object => $RT::System) ) {
+    elsif ( $self->current_user->has_right(Right =>'AdminUsers', Object => $RT::System) ) {
         return ( $self->SUPER::_value($field) );
     }
     else {

@@ -106,7 +106,7 @@ sub create {
                  Type   => undef,
                  @_ );
 
-    my $base = RT::URI->new( $self->CurrentUser );
+    my $base = RT::URI->new( $self->current_user );
     $base->FromURI( $args{'Base'} );
 
     unless ( $base->Resolver && $base->Scheme ) {
@@ -121,7 +121,7 @@ sub create {
 	}
     }
 
-    my $target = RT::URI->new( $self->CurrentUser );
+    my $target = RT::URI->new( $self->current_user );
     $target->FromURI( $args{'Target'} );
 
     unless ( $target->Resolver ) {
@@ -195,10 +195,10 @@ sub loadByParams {
                  Type   => undef,
                  @_ );
 
-    my $base = RT::URI->new($self->CurrentUser);
+    my $base = RT::URI->new($self->current_user);
     $base->FromURI( $args{'Base'} );
 
-    my $target = RT::URI->new($self->CurrentUser);
+    my $target = RT::URI->new($self->current_user);
     $target->FromURI( $args{'Target'} );
     
     unless ($base->Resolver && $target->Resolver) {
@@ -257,7 +257,7 @@ returns an RT::URI object for the "Target" of this link.
 
 sub TargetURI {
     my $self = shift;
-    my $URI = RT::URI->new($self->CurrentUser);
+    my $URI = RT::URI->new($self->current_user);
     $URI->FromURI($self->Target);
     return ($URI);
 }
@@ -285,7 +285,7 @@ returns an RT::URI object for the "Base" of this link.
 
 sub BaseURI {
     my $self = shift;
-    my $URI = RT::URI->new($self->CurrentUser);
+    my $URI = RT::URI->new($self->current_user);
     $URI->FromURI($self->Base);
     return ($URI);
 }

@@ -94,7 +94,7 @@ Returns a user-readable description of what this group is for and what it's name
 sub SelfDescription {
 	my $self = shift;
 	if ($self->Domain eq 'ACLEquivalence') {
-		my $user = RT::Model::Principal->new($self->CurrentUser);
+		my $user = RT::Model::Principal->new($self->current_user);
 		$user->load($self->Instance);
 		return $self->loc("user [_1]",$user->Object->Name);
 	}
@@ -102,7 +102,7 @@ sub SelfDescription {
 		return $self->loc("group '[_1]'",$self->Name);
 	}
 	elsif ($self->Domain eq 'Personal') {
-		my $user = RT::Model::User->new($self->CurrentUser);
+		my $user = RT::Model::User->new($self->current_user);
 		$user->load($self->Instance);
 		return $self->loc("personal group '[_1]' for user '[_2]'",$self->Name, $user->Name);
 	}
@@ -110,7 +110,7 @@ sub SelfDescription {
 		return $self->loc("system [_1]",$self->Type);
 	}
 	elsif ($self->Domain eq 'RT::Model::Queue-Role') {
-		my $queue = RT::Model::Queue->new($self->CurrentUser);
+		my $queue = RT::Model::Queue->new($self->current_user);
 		$queue->load($self->Instance);
 		return $self->loc("queue [_1] [_2]",$queue->Name, $self->Type);
 	}
@@ -357,10 +357,10 @@ sub _create {
         _RecordTransaction => 1,
         @_
     );
-    $RT::Handle->begin_transaction() unless ($args{'InsideTransaction'});
+    Jifty->handle->begin_transaction() unless ($args{'InsideTransaction'});
     # Groups deal with principal ids, rather than user ids.
     # When creating this group, set up a principal Id for it.
-    my $principal    = RT::Model::Principal->new( $self->CurrentUser );
+    my $principal    = RT::Model::Principal->new( $self->current_user );
     my ($principal_id,$msg) = $principal->create(
         PrincipalType => 'Group',
         ObjectId      => '0'
@@ -383,7 +383,7 @@ sub _create {
 
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
-        $RT::Handle->rollback() unless ($args{'InsideTransaction'});
+        Jifty->handle->rollback() unless ($args{'InsideTransaction'});
         $RT::Logger->crit( "Couldn't create a Principal on new user create. Strange things are afoot at the circle K" );
         return ( 0, $self->loc('Could not create group') );
     }
@@ -395,7 +395,7 @@ sub _create {
 
     # in the ordinary case, this would fail badly because it would recurse and add all the members of this group as 
     # cached members. thankfully, we're creating the group now...so it has no members.
-    my $cgm = RT::Model::CachedGroupMember->new($self->CurrentUser);
+    my $cgm = RT::Model::CachedGroupMember->new($self->current_user);
     $cgm->create(Group =>$self->PrincipalObj, Member => $self->PrincipalObj, ImmediateParent => $self->PrincipalObj);
 
 
@@ -403,7 +403,7 @@ sub _create {
 	$self->_NewTransaction( Type => "Create" );
     }
 
-    $RT::Handle->commit() unless ($args{'InsideTransaction'});
+    Jifty->handle->commit() unless ($args{'InsideTransaction'});
 
     return ( $id, $self->loc("Group Created") );
 }
@@ -424,7 +424,7 @@ sub create_userDefinedGroup {
     my $self = shift;
 
     unless ( $self->current_user_has_right('AdminGroup') ) {
-        $RT::Logger->warning( $self->CurrentUser->Name
+        $RT::Logger->warning( $self->current_user->Name
               . " Tried to create a group without permission." );
         return ( 0, $self->loc('Permission Denied') );
     }
@@ -463,7 +463,7 @@ sub _createACLEquivalenceGroup {
     
        # We use stashuser so we don't get transactions inside transactions
        # and so we bypass all sorts of cruft we don't need
-       my $aclstash = RT::Model::GroupMember->new($self->CurrentUser);
+       my $aclstash = RT::Model::GroupMember->new($self->current_user);
        my ($stash_id, $add_msg) = $aclstash->_StashUser(Group => $self->PrincipalObj, Member => $princ);
 
       unless ($stash_id) {
@@ -494,14 +494,14 @@ sub createPersonalGroup {
     my %args = (
         Name        => undef,
         Description => undef,
-        PrincipalId => $self->CurrentUser->PrincipalId,
+        PrincipalId => $self->current_user->PrincipalId,
         @_
     );
 
-    if ( $self->CurrentUser->PrincipalId == $args{'PrincipalId'} ) {
+    if ( $self->current_user->PrincipalId == $args{'PrincipalId'} ) {
 
         unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
-            $RT::Logger->warning( $self->CurrentUser->Name
+            $RT::Logger->warning( $self->current_user->Name
                   . " Tried to create a group without permission." );
             return ( 0, $self->loc('Permission Denied') );
         }
@@ -509,7 +509,7 @@ sub createPersonalGroup {
     }
     else {
         unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-            $RT::Logger->warning( $self->CurrentUser->Name
+            $RT::Logger->warning( $self->current_user->Name
                   . " Tried to create a group without permission." );
             return ( 0, $self->loc('Permission Denied') );
         }
@@ -607,7 +607,7 @@ This routine finds all the cached group members that are members of this group  
      my $self = shift;
      my $val = shift;
     if ($self->Domain eq 'Personal') {
-   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
+   		if ($self->current_user->PrincipalId == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
         		return ( 0, $self->loc('Permission Denied') );
     		}
@@ -622,7 +622,7 @@ This routine finds all the cached group members that are members of this group  
                  return (0, $self->loc('Permission Denied'));
     }
     }
-    $RT::Handle->begin_transaction();
+    Jifty->handle->begin_transaction();
     $self->PrincipalObj->set_Disabled($val);
 
 
@@ -637,7 +637,7 @@ This routine finds all the cached group members that are members of this group  
     # a member of A, will delete C as a member of A without touching
     # C as a member of B
 
-    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new( $self->CurrentUser );
+    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new( $self->current_user );
 
     $cached_submembers->limit( column    => 'ImmediateParentId', operator => '=', value    => $self->id);
 
@@ -650,13 +650,13 @@ This routine finds all the cached group members that are members of this group  
     while ( my $item = $cached_submembers->next() ) {
         my $del_err = $item->set_Disabled($val);
         unless ($del_err) {
-            $RT::Handle->rollback();
+            Jifty->handle->rollback();
             $RT::Logger->warning("Couldn't disable cached group submember ".$item->id);
             return (undef);
         }
     }
 
-    $RT::Handle->commit();
+    Jifty->handle->commit();
     return (1, $self->loc("Succeeded"));
 
 }
@@ -682,7 +682,7 @@ including all members of subgroups.
 
 sub DeepMembersObj {
     my $self = shift;
-    my $members_obj = RT::Model::CachedGroupMemberCollection->new( $self->CurrentUser );
+    my $members_obj = RT::Model::CachedGroupMemberCollection->new( $self->current_user );
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
@@ -704,7 +704,7 @@ Returns an RT::Model::GroupMemberCollection object of this group's direct member
 
 sub MembersObj {
     my $self = shift;
-    my $members_obj = RT::Model::GroupMemberCollection->new( $self->CurrentUser );
+    my $members_obj = RT::Model::GroupMemberCollection->new( $self->current_user );
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
@@ -733,7 +733,7 @@ sub GroupMembersObj {
     my $self = shift;
     my %args = ( Recursively => 1, @_ );
 
-    my $groups = RT::Model::GroupCollection->new( $self->CurrentUser );
+    my $groups = RT::Model::GroupCollection->new( $self->current_user );
     my $members_table = $args{'Recursively'}?
         'CachedGroupMembers': 'GroupMembers';
 
@@ -778,7 +778,7 @@ sub UserMembersObj {
     my $members_table = $args{'Recursively'}?
         'CachedGroupMembers': 'GroupMembers';
 
-    my $users = RT::Model::UserCollection->new($self->CurrentUser);
+    my $users = RT::Model::UserCollection->new($self->current_user);
     my $members_alias = $users->new_alias( $members_table );
     $users->join(
         alias1 => $members_alias,           column1 => 'MemberId',
@@ -856,7 +856,7 @@ sub AddMember {
 
 
     if ($self->Domain eq 'Personal') {
-   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
+   		if ($self->current_user->PrincipalId == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
         		return ( 0, $self->loc('Permission Denied') );
     		}
@@ -871,7 +871,7 @@ sub AddMember {
     # We should only allow membership changes if the user has the right 
     # to modify group membership or the user is the principal in question
     # and the user has the right to modify his own membership
-    unless ( ($new_member == $self->CurrentUser->PrincipalId &&
+    unless ( ($new_member == $self->current_user->PrincipalId &&
 	      $self->current_user_has_right('ModifyOwnMembership') ) ||
 	      $self->current_user_has_right('AdminGroupMembership') ) {
         #User has no permission to be doing this
@@ -906,7 +906,7 @@ sub _AddMember {
     }
 
 
-    my $new_member_obj = RT::Model::Principal->new( $self->CurrentUser );
+    my $new_member_obj = RT::Model::Principal->new( $self->current_user );
     $new_member_obj->load($new_member);
 
 
@@ -927,7 +927,7 @@ sub _AddMember {
         return ( 0, $self->loc("Groups can't be members of their members"));
     }
 
-    my $member_object = RT::Model::GroupMember->new( $self->CurrentUser );
+    my $member_object = RT::Model::GroupMember->new( $self->current_user );
     my $id = $member_object->create(
         Member => $new_member_obj,
         Group => $self->PrincipalObj,
@@ -969,7 +969,7 @@ sub has_member {
         return(undef);
     }
 
-    my $member_obj = RT::Model::GroupMember->new( $self->CurrentUser );
+    my $member_obj = RT::Model::GroupMember->new( $self->current_user );
     $member_obj->load_by_cols( MemberId => $principal->id, 
                              GroupId => $self->PrincipalId );
 
@@ -1008,7 +1008,7 @@ sub has_member_recursively {
                           "isn't an RT::Model::Principal. It's $principal");
         return(undef);
     }
-    my $member_obj = RT::Model::CachedGroupMember->new( $self->CurrentUser );
+    my $member_obj = RT::Model::CachedGroupMember->new( $self->current_user );
     $member_obj->load_by_cols( MemberId => $principal->id,
                              GroupId => $self->PrincipalId ,
                              Disabled => 0
@@ -1049,7 +1049,7 @@ sub delete_member {
     # and the user has the right to modify his own membership
 
     if ($self->Domain eq 'Personal') {
-   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
+   		if ($self->current_user->PrincipalId == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
         		return ( 0, $self->loc('Permission Denied') );
     		}
@@ -1060,7 +1060,7 @@ sub delete_member {
     	}
 	}
 	else {
-    unless ( (($member_id == $self->CurrentUser->PrincipalId) &&
+    unless ( (($member_id == $self->current_user->PrincipalId) &&
 	      $self->current_user_has_right('ModifyOwnMembership') ) ||
 	      $self->current_user_has_right('AdminGroupMembership') ) {
         #User has no permission to be doing this
@@ -1080,7 +1080,7 @@ sub _delete_member {
     my $self = shift;
     my $member_id = shift;
 
-    my $member_obj =  RT::Model::GroupMember->new( $self->CurrentUser );
+    my $member_obj =  RT::Model::GroupMember->new( $self->current_user );
     
     $member_obj->load_by_cols( MemberId  => $member_id,
                              GroupId => $self->PrincipalId);
@@ -1143,16 +1143,16 @@ sub _CleanupInvalidDelegations {
     # TODO: Can this be unrolled such that the number of DB queries is constant rather than linear in exploded group size?
     my $members = $self->DeepMembersObj();
     $members->LimitToUsers();
-    $RT::Handle->begin_transaction() unless $in_trans;
+    Jifty->handle->begin_transaction() unless $in_trans;
     while ( my $member = $members->next()) {
 	my $ret = $member->MemberObj->_CleanupInvalidDelegations(InsideTransaction => 1,
 								 Object => $args{Object});
 	unless ($ret) {
-	    $RT::Handle->rollback() unless $in_trans;
+	    Jifty->handle->rollback() unless $in_trans;
 	    return (undef);
 	}
     }
-    $RT::Handle->commit() unless $in_trans;
+    Jifty->handle->commit() unless $in_trans;
     return(1);
 }
 
@@ -1172,7 +1172,7 @@ sub _set {
     );
 
 	if ($self->Domain eq 'Personal') {
-   		if ($self->CurrentUser->PrincipalId == $self->Instance) {
+   		if ($self->current_user->PrincipalId == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
         		return ( 0, $self->loc('Permission Denied') );
     		}
@@ -1235,11 +1235,11 @@ sub current_user_has_right {
 
 
     if ($self->id && 
-		$self->CurrentUser->has_right( Object => $self,
+		$self->current_user->has_right( Object => $self,
 										   Right => $right )) {
         return(1);
    }
-    elsif ( $self->CurrentUser->has_right(Object => $RT::System, Right =>  $right )) {
+    elsif ( $self->current_user->has_right(Object => $RT::System, Right =>  $right )) {
 		return (1);
     } else {
         return(undef);
@@ -1270,7 +1270,7 @@ sub PrincipalObj {
             ($self->{'PrincipalObj'}->ObjectId == $self->id) &&
             ($self->{'PrincipalObj'}->PrincipalType eq 'Group')) {
 
-            $self->{'PrincipalObj'} = RT::Model::Principal->new($self->CurrentUser);
+            $self->{'PrincipalObj'} = RT::Model::Principal->new($self->current_user);
             $self->{'PrincipalObj'}->load_by_cols('ObjectId' => $self->id,
                                                 'PrincipalType' => 'Group') ;
             }

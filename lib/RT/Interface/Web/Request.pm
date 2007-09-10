@@ -101,6 +101,8 @@ be called as default callback for F</autohandler>.
 
 =cut
 
+package HTML::Mason::Request::Jifty;
+
 {
 my %cache = ();
 my %called = ();

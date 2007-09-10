@@ -109,7 +109,7 @@ sub _init  {
   $self->{'TicketObj'} = $args{'TicketObj'};
   $self->{'TransactionObj'} = $args{'TransactionObj'};
   $self->{'ApplicableTransTypes'} = $args{'ApplicableTransTypes'};
-  $self->CurrentUser($args{'CurrentUser'});
+  $self->current_user($args{'CurrentUser'});
 }
 # }}}
 

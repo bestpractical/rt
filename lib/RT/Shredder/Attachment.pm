@@ -68,7 +68,7 @@ sub __DependsOn
     my $list = [];
 
 # Nested attachments
-    my $objs = RT::Model::AttachmentCollection->new( $self->CurrentUser );
+    my $objs = RT::Model::AttachmentCollection->new( $self->current_user );
     $objs->limit(
             column => 'Parent',
             operator        => '=',

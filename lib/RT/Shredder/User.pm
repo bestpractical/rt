@@ -97,13 +97,13 @@ sub __DependsOn
 
 # ACL equivalence group
 # don't use load_acl_equivalence_group cause it may not exists any more
-    my $objs = RT::Model::GroupCollection->new( $self->CurrentUser );
+    my $objs = RT::Model::GroupCollection->new( $self->current_user );
     $objs->limit( column => 'Domain', value => 'ACLEquivalence' );
     $objs->limit( column => 'Instance', value => $self->id );
     push( @$list, $objs );
 
 # Cleanup user's membership
-    $objs = RT::Model::GroupMemberCollection->new( $self->CurrentUser );
+    $objs = RT::Model::GroupMemberCollection->new( $self->current_user );
     $objs->limit( column => 'MemberId', value => $self->id );
     push( @$list, $objs );
 
@@ -120,7 +120,7 @@ sub __DependsOn
     foreach( @OBJECTS ) {
         my $class = "RT::Model::$_";
         foreach my $method ( qw(Creator LastUpdatedBy) ) {
-            my $objs = $class->new( $self->CurrentUser );
+            my $objs = $class->new( $self->current_user );
             next unless $objs->new_item->can($method);
             $objs->limit( column => $method, value => $self->id );
             push @var_objs, $objs;

@@ -75,7 +75,7 @@ sub new {
     my $class = ref($proto) || $proto;
     my $self  = {};
     bless( $self, $class );
-    $self->CurrentUser(@_);
+    $self->current_user(@_);
     return ($self);
 }
 

@@ -538,7 +538,7 @@ sub ProcessUpdateMessage {
     # skip updates if the content contains only user's signature
     # and we don't update other fields
     if ( $args{'SkipSignatureOnly'} ) {
-        my $sig = $args{'TicketObj'}->CurrentUser->UserObj->Signature || '';
+        my $sig = $args{'TicketObj'}->current_user->UserObj->Signature || '';
         $sig =~ s/^\s*|\s*$//g;
         if ( $args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ ) {
             return () unless $args{ARGSRef}->{'UpdateTimeWorked'} ||

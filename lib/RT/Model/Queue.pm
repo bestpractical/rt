@@ -348,7 +348,7 @@ sub create {
         @_
     );
 
-    unless ( $self->CurrentUser->has_right(Right => 'AdminQueue', Object => $RT::System) )
+    unless ( $self->current_user->has_right(Right => 'AdminQueue', Object => $RT::System) )
     {    #Check them ACLs
         return ( 0, $self->loc("No permission to create queues") );
     }
@@ -360,19 +360,19 @@ sub create {
     my %attrs = map {$_ => 1} $self->readable_attributes;
 
     #TODO better input validation
-    $RT::Handle->begin_transaction();
+    Jifty->handle->begin_transaction();
     my $id = $self->SUPER::create( map { $_ => $args{$_} } grep exists $args{$_}, keys %attrs );
     unless ($id) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, $self->loc('Queue could not be Created') );
     }
 
     my $create_ret = $self->_createQueueGroups();
     unless ($create_ret) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, $self->loc('Queue could not be Created') );
     }
-    $RT::Handle->commit;
+    Jifty->handle->commit;
 
     if ( defined $args{'Sign'} ) {
         my ($status, $msg) = $self->set_Sign( $args{'Sign'} );
@@ -537,7 +537,7 @@ Returns an RT::Model::TemplateCollection object of all of this queue's templates
 sub Templates {
     my $self = shift;
 
-    my $templates = RT::Model::TemplateCollection->new( $self->CurrentUser );
+    my $templates = RT::Model::TemplateCollection->new( $self->current_user );
 
     if ( $self->current_user_has_right('ShowTemplate') ) {
         $templates->LimitToQueue( $self->id );
@@ -561,7 +561,7 @@ Load the queue-specific custom field named NAME
 sub CustomField {
     my $self = shift;
     my $name = shift;
-    my $cf = RT::Model::CustomField->new($self->CurrentUser);
+    my $cf = RT::Model::CustomField->new($self->current_user);
     $cf->load_by_name_and_queue(Name => $name, Queue => $self->id); 
     return ($cf);
 }
@@ -579,7 +579,7 @@ queue-specific B<ticket> custom fields.
 sub TicketCustomFields {
     my $self = shift;
 
-    my $cfs = RT::Model::CustomFieldCollection->new( $self->CurrentUser );
+    my $cfs = RT::Model::CustomFieldCollection->new( $self->current_user );
     if ( $self->current_user_has_right('SeeQueue') ) {
 	$cfs->LimitToGlobalOrObjectId( $self->id );
 	$cfs->LimitToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
@@ -601,7 +601,7 @@ queue-specific B<transaction> custom fields.
 sub TicketTransactionCustomFields {
     my $self = shift;
 
-    my $cfs = RT::Model::CustomFieldCollection->new( $self->CurrentUser );
+    my $cfs = RT::Model::CustomFieldCollection->new( $self->current_user );
     if ( $self->current_user_has_right('SeeQueue') ) {
 	$cfs->LimitToGlobalOrObjectId( $self->id );
 	$cfs->LimitToLookupType( 'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' );
@@ -637,7 +637,7 @@ sub _createQueueGroups {
     my @types = qw(Cc AdminCc Requestor Owner);
 
     foreach my $type (@types) {
-        my $type_obj = RT::Model::Group->new($self->CurrentUser);
+        my $type_obj = RT::Model::Group->new($self->current_user);
         my ($id, $msg) = $type_obj->createRoleGroup(Instance => $self->id, 
                                                      Type => $type,
                                                      Domain => 'RT::Model::Queue-Role');
@@ -683,7 +683,7 @@ sub AddWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
+    if ( $self->current_user->PrincipalId  eq $args{'PrincipalId'}) {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
         if ( $args{'Type'} eq 'AdminCc' ) {
@@ -735,13 +735,13 @@ sub _AddWatcher {
     );
 
 
-    my $principal = RT::Model::Principal->new($self->CurrentUser);
+    my $principal = RT::Model::Principal->new($self->current_user);
     if ($args{'PrincipalId'}) {
         $principal->load($args{'PrincipalId'});
     }
     elsif ($args{'Email'}) {
 
-        my $user = RT::Model::User->new($self->CurrentUser);
+        my $user = RT::Model::User->new($self->current_user);
         $user->load_by_email($args{'Email'});
 
         unless ($user->id) {
@@ -777,7 +777,7 @@ sub _AddWatcher {
     }
 
 
-    my $group = RT::Model::Group->new($self->CurrentUser);
+    my $group = RT::Model::Group->new($self->current_user);
     $group->loadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
@@ -829,7 +829,7 @@ sub deleteWatcher {
     unless ($args{'PrincipalId'} ) {
         return(0, $self->loc("No principal specified"));
     }
-    my $principal = RT::Model::Principal->new($self->CurrentUser);
+    my $principal = RT::Model::Principal->new($self->current_user);
     $principal->load($args{'PrincipalId'});
 
     # If we can't find this watcher, we need to bail.
@@ -837,7 +837,7 @@ sub deleteWatcher {
         return(0, $self->loc("Could not find that principal"));
     }
 
-    my $group = RT::Model::Group->new($self->CurrentUser);
+    my $group = RT::Model::Group->new($self->current_user);
     $group->loadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
@@ -845,7 +845,7 @@ sub deleteWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
+    if ( $self->current_user->PrincipalId  eq $args{'PrincipalId'}) {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyQueue', bail
   if ( $args{'Type'} eq 'AdminCc' ) {
@@ -955,7 +955,7 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub Cc {
     my $self = shift;
 
-    my $group = RT::Model::Group->new($self->CurrentUser);
+    my $group = RT::Model::Group->new($self->current_user);
     if ( $self->current_user_has_right('SeeQueue') ) {
         $group->loadQueueRoleGroup(Type => 'Cc', Queue => $self->id);
     }
@@ -978,7 +978,7 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub AdminCc {
     my $self = shift;
 
-    my $group = RT::Model::Group->new($self->CurrentUser);
+    my $group = RT::Model::Group->new($self->current_user);
     if ( $self->current_user_has_right('SeeQueue') ) {
         $group->loadQueueRoleGroup(Type => 'AdminCc', Queue => $self->id);
     }
@@ -1015,11 +1015,11 @@ sub IsWatcher {
     );
 
     # Load the relevant group. 
-    my $group = RT::Model::Group->new($self->CurrentUser);
+    my $group = RT::Model::Group->new($self->current_user);
     $group->loadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
     # Ask if it has the member in question
 
-    my $principal = RT::Model::Principal->new($self->CurrentUser);
+    my $principal = RT::Model::Principal->new($self->current_user);
     $principal->load($args{'PrincipalId'});
     unless ($principal->id) {
         return (undef);
@@ -1123,7 +1123,7 @@ sub current_user_has_right {
 
     return (
         $self->has_right(
-            Principal => $self->CurrentUser,
+            Principal => $self->current_user,
             Right     => "$right"
           )
     );
@@ -1148,7 +1148,7 @@ sub has_right {
     my $self = shift;
     my %args = (
         Right     => undef,
-        Principal => $self->CurrentUser,
+        Principal => $self->current_user,
         @_
     );
      my $principal = delete $args{'Principal'};

@@ -114,7 +114,7 @@ my @items = map ["component-$_", $_], grep !$seen{$_}++, @{RT->Config->Get('Home
 my $sys = RT::System->new($session{'CurrentUser'});
 my @objs = ($sys);
 
-push @objs, RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects
+push @objs, RT::SavedSearches->new( Jifty->web->current_user )->_PrivacyObjects
     if $session{'CurrentUser'}->has_right( Right  => 'LoadSavedSearch',
                                           Object => $RT::System );
 

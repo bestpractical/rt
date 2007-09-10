@@ -120,9 +120,9 @@ sub Run
     return (0, "At least one condition should be provided" ) unless @conditions;
     my $query = "SELECT id FROM Attachments WHERE ". join ' AND ', @conditions;
     if( $self->{'opt'}{'limit'} ) {
-        $RT::Handle->apply_limits( \$query, $self->{'opt'}{'limit'} );
+        Jifty->handle->apply_limits( \$query, $self->{'opt'}{'limit'} );
     }
-    my $sth = $RT::Handle->SimpleQuery( $query, @values );
+    my $sth = Jifty->handle->SimpleQuery( $query, @values );
     return (0, "Internal error: '$sth'. Please send bug report.") unless $sth;
 
     my @objs;

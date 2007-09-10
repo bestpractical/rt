@@ -93,7 +93,7 @@ sub _init  {
                @_ );
 
   $self->{'Argument'} = $args{'Argument'};
-  $self->CurrentUser( $args{'CurrentUser'});
+  $self->current_user( $args{'CurrentUser'});
   $self->{'ScripActionObj'} = $args{'ScripActionObj'};
   $self->{'ScripObj'} = $args{'ScripObj'};
   $self->{'TemplateObj'} = $args{'TemplateObj'};

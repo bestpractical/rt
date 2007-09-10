@@ -124,7 +124,7 @@ sub create {
         my $GroupMembers = $args{'Member'}->Object->MembersObj();
         while ( my $member = $GroupMembers->next() ) {
             my $cached_member =
-              RT::Model::CachedGroupMember->new( $self->CurrentUser );
+              RT::Model::CachedGroupMember->new( $self->current_user );
             my $c_id = $cached_member->create(
                                              Group  => $args{'Group'},
                                              Member => $member->MemberObj,
@@ -161,7 +161,7 @@ sub delete {
     
     my $member = $self->MemberObj();
     if ( $member->IsGroup ) {
-        my $deletable = RT::Model::CachedGroupMemberCollection->new( $self->CurrentUser );
+        my $deletable = RT::Model::CachedGroupMemberCollection->new( $self->current_user );
 
         $deletable->limit( column    => 'id',
                            operator => '!=',
@@ -248,7 +248,7 @@ sub set_Disabled {
     
     my $member = $self->MemberObj();
     if ( $member->IsGroup ) {
-        my $deletable = RT::Model::CachedGroupMemberCollection->new( $self->CurrentUser );
+        my $deletable = RT::Model::CachedGroupMemberCollection->new( $self->current_user );
 
         $deletable->limit( column    => 'Via', operator => '=', value    => $self->id );
         $deletable->limit( column    => 'id', operator => '!=', value    => $self->id );
@@ -301,7 +301,7 @@ Returns the RT::Model::Principal object for this group Group
 
 sub GroupObj {
     my $self      = shift;
-    my $principal = RT::Model::Principal->new( $self->CurrentUser );
+    my $principal = RT::Model::Principal->new( $self->current_user );
     $principal->load( $self->GroupId );
     return ($principal);
 }
@@ -318,7 +318,7 @@ Returns the RT::Model::Principal object for this group ImmediateParent
 
 sub ImmediateParentObj {
     my $self      = shift;
-    my $principal = RT::Model::Principal->new( $self->CurrentUser );
+    my $principal = RT::Model::Principal->new( $self->current_user );
     $principal->load( $self->ImmediateParentId );
     return ($principal);
 }
@@ -335,7 +335,7 @@ Returns the RT::Model::Principal object for this group member
 
 sub MemberObj {
     my $self      = shift;
-    my $principal = RT::Model::Principal->new( $self->CurrentUser );
+    my $principal = RT::Model::Principal->new( $self->current_user );
     $principal->load( $self->MemberId );
     return ($principal);
 }

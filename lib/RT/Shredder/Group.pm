@@ -72,7 +72,7 @@ sub __DependsOn
     if( $self->Domain eq 'ACLEquivalence' ) {
         # delete user entry after ACL equiv group
         # in other case we will get deep recursion
-        my $objs = RT::Model::User->new($self->CurrentUser);
+        my $objs = RT::Model::User->new($self->current_user);
         $objs->load( $self->Instance );
         $deps->_PushDependency(
                 BaseObject => $self,
@@ -91,12 +91,12 @@ sub __DependsOn
         );
 
 # Group members records
-    my $objs = RT::Model::GroupMemberCollection->new( $self->CurrentUser );
+    my $objs = RT::Model::GroupMemberCollection->new( $self->current_user );
     $objs->LimitToMembersOfGroup( $self->PrincipalId );
     push( @$list, $objs );
 
 # Group member records group belongs to
-    $objs = RT::Model::GroupMemberCollection->new( $self->CurrentUser );
+    $objs = RT::Model::GroupMemberCollection->new( $self->current_user );
     $objs->limit(
             value => $self->PrincipalId,
             column => 'MemberId',
@@ -109,7 +109,7 @@ sub __DependsOn
     push( @$list, $self->DeepMembersObj );
 
 # Cached group member records group belongs to
-    $objs = RT::Model::GroupMemberCollection->new( $self->CurrentUser );
+    $objs = RT::Model::GroupMemberCollection->new( $self->current_user );
     $objs->limit(
             value => $self->PrincipalId,
             column => 'MemberId',
@@ -140,7 +140,7 @@ sub __Relates
 
 # Equivalence group id inconsistent without User
     if( $self->Domain eq 'ACLEquivalence' ) {
-        my $obj = RT::Model::User->new($self->CurrentUser);
+        my $obj = RT::Model::User->new($self->current_user);
         $obj->load( $self->Instance );
         if( $obj->id ) {
             push( @$list, $obj );

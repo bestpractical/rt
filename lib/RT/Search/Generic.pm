@@ -52,7 +52,7 @@
 =head1 SYNOPSIS
 
     use RT::Search::Generic;
-    my $tickets = RT::Model::TicketCollection->new($CurrentUser);
+    my $tickets = RT::Model::TicketCollection->new(current_user => );
     my $foo = RT::Search::Generic->new(Argument => $arg,
                                        TicketsObj => $tickets);
     $foo->prepare();

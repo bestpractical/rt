@@ -69,7 +69,7 @@ sub __DependsOn
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-    my $objs = RT::Model::CachedGroupMemberCollection->new( $self->CurrentUser );
+    my $objs = RT::Model::CachedGroupMemberCollection->new( $self->current_user );
     $objs->limit( column => 'MemberId', value => $self->MemberId );
     $objs->limit( column => 'ImmediateParentId', value => $self->GroupId );
     push( @$list, $objs );
@@ -119,7 +119,7 @@ sub __DependsOn
                 my( $status, $msg ) = $group->AddMember( $RT::Nobody->id );
                 RT::Shredder::Exception->throw( $msg ) unless $status;
 
-                my $ticket = RT::Model::Ticket->new( $group->CurrentUser );
+                my $ticket = RT::Model::Ticket->new( $group->current_user );
                 $ticket->load( $group->Instance );
                 RT::Shredder::Exception->throw( "Couldn't load ticket" ) unless $ticket->id;
 

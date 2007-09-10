@@ -175,7 +175,7 @@ sub loadCondition  {
 					 'TransactionObj' => $args{'TransactionObj'},
 					 'Argument' => $self->Argument,
 				     'ApplicableTransTypes' => $self->ApplicableTransTypes,
-                     CurrentUser => $self->CurrentUser 
+                     CurrentUser => $self->current_user 
 				       );
 }
 # }}}

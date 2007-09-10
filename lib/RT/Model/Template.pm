@@ -50,7 +50,7 @@ column        Created =>   type is 'datetime', default is '';
 sub _set {
     my $self = shift;
     
-    unless ( $self->CurrentUserHasQueueRight('ModifyTemplate') ) {
+    unless ( $self->current_userHasQueueRight('ModifyTemplate') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
     return $self->SUPER::_set( @_ );
@@ -74,7 +74,7 @@ Returns its value as a string, if the user passes an ACL check
 sub _value {
     my $self  = shift;
 
-    unless ( $self->CurrentUserHasQueueRight('ShowTemplate') ) {
+    unless ( $self->current_userHasQueueRight('ShowTemplate') ) {
         return undef;
     }
     return $self->__value( @_ );
@@ -171,13 +171,13 @@ sub create {
     );
 
     unless ( $args{'Queue'} ) {
-        unless ( $self->CurrentUser->has_right(Right =>'ModifyTemplate', Object => $RT::System) ) {
+        unless ( $self->current_user->has_right(Right =>'ModifyTemplate', Object => $RT::System) ) {
             return ( undef, $self->loc('Permission denied') );
         }
         $args{'Queue'} = 0;
     }
     else {
-        my $QueueObj = new RT::Model::Queue( $self->CurrentUser );
+        my $QueueObj = new RT::Model::Queue( $self->current_user );
         $QueueObj->load( $args{'Queue'} ) || return ( undef, $self->loc('Invalid queue') );
     
         unless ( $QueueObj->current_user_has_right('ModifyTemplate') ) {
@@ -210,7 +210,7 @@ Delete this template.
 sub delete {
     my $self = shift;
 
-    unless ( $self->CurrentUserHasQueueRight('ModifyTemplate') ) {
+    unless ( $self->current_userHasQueueRight('ModifyTemplate') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
@@ -401,7 +401,7 @@ sub CurrentUserHasQueueRight {
 
 sub QueueObj {
     my $self = shift;
-    my $q = RT::Model::Queue->new($self->CurrentUser);
+    my $q = RT::Model::Queue->new($self->current_user);
     $q->load($self->__value('Queue'));
     return $q;
 }

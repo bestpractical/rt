@@ -85,7 +85,7 @@ if( $opt{'debug'} ) {
     RT->Config->set( LogToScreen => undef );
 }
 
-RT::ConnectToDatabase();
+RT::connect_to_database();
 RT::InitLogging();
 
 require RT::Interface::Web::Session;

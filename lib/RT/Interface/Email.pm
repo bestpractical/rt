@@ -564,7 +564,7 @@ sub ForwardTransaction {
     if ( $main_content->Parent ) {
         # main content is not top most entity, we shouldn't loose
         # From/To/Cc headers that are on a top part
-        my $attachments = RT::Model::AttachmentCollection->new( $txn->CurrentUser );
+        my $attachments = RT::Model::AttachmentCollection->new( $txn->current_user );
         $attachments->columns(qw(id Parent TransactionId Headers));
         $attachments->limit( column => 'TransactionId', value => $txn->id );
         $attachments->limit( column => 'Parent', value => 0 );
@@ -578,7 +578,7 @@ sub ForwardTransaction {
         }
     }
 
-    my $attachments = RT::Model::AttachmentCollection->new( $txn->CurrentUser );
+    my $attachments = RT::Model::AttachmentCollection->new( $txn->current_user );
     $attachments->limit( column => 'TransactionId', value => $txn->id );
     $attachments->limit(
         column => 'id',
@@ -637,7 +637,7 @@ sub ForwardTransaction {
     my $from;
     my $subject = $txn->Subject || $txn->Object->Subject;
     if ( RT->Config->Get('ForwardFromUser') ) {
-        $from = $txn->CurrentUser->UserObj->EmailAddress;
+        $from = $txn->current_user->UserObj->EmailAddress;
     } else {
         # XXX: what if want to forward txn of other object than ticket?
         $subject = AddSubjectTag( $subject, $txn->ObjectId );
@@ -1261,7 +1261,7 @@ sub Gateway {
     # if plugin's updated SystemTicket then update arguments
     $args{'ticket'} = $SystemTicket->id if $SystemTicket && $SystemTicket->id;
 
-    my $Ticket = RT::Model::Ticket->new($CurrentUser);
+    my $Ticket = RT::Model::Ticket->new(current_user => );
 
     if ( !$args{'ticket'} && grep /^(comment|correspond)$/, @actions )
     {

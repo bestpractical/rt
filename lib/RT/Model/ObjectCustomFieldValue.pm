@@ -77,7 +77,7 @@ sub CustomFieldObj {
 
     my $self = shift;
     unless ($self->{cf}){
-    $self->{cf} = RT::Model::CustomField->new($self->CurrentUser);
+    $self->{cf} = RT::Model::CustomField->new($self->current_user);
     $self->{cf}->load($self->CustomField);
 }
     return $self->{cf};
@@ -205,7 +205,7 @@ Returns the object this value applies to
 
 sub Object {
     my $self  = shift;
-    my $Object = $self->__value('ObjectType')->new( $self->CurrentUser );
+    my $Object = $self->__value('ObjectType')->new( $self->current_user );
     $Object->load_by_id( $self->__value('ObjectId') );
     return $Object;
 }

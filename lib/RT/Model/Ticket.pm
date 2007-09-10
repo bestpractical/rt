@@ -117,7 +117,6 @@ use RT::Reminders;
 use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
-use RT::Model::TicketLocking;
 
 
 # {{{ LINKTYPEMAP
@@ -347,7 +346,7 @@ sub create {
 
     #Now that we have a queue, Check the ACLS
     unless (
-        $self->CurrentUser->has_right(
+        $self->current_user->has_right(
             Right  => 'CreateTicket',
             Object => $QueueObj
         )
@@ -384,7 +383,7 @@ sub create {
     # than assuming it's in ISO format.
 
     #Set the due date. if we didn't get fed one, use the queue default due in
-    my $Due = new RT::Date( $self->CurrentUser );
+    my $Due = new RT::Date( $self->current_user );
     if ( defined $args{'Due'} ) {
         $Due->set( Format => 'ISO', value => $args{'Due'} );
     }
@@ -393,12 +392,12 @@ sub create {
         $Due->AddDays( $due_in );
     }
 
-    my $Starts = new RT::Date( $self->CurrentUser );
+    my $Starts = new RT::Date( $self->current_user );
     if ( defined $args{'Starts'} ) {
         $Starts->set( Format => 'ISO', value => $args{'Starts'} );
     }
 
-    my $Started = new RT::Date( $self->CurrentUser );
+    my $Started = new RT::Date( $self->current_user );
     if ( defined $args{'Started'} ) {
         $Started->set( Format => 'ISO', value => $args{'Started'} );
     }
@@ -406,7 +405,7 @@ sub create {
         $Started->set_to_now;
     }
 
-    my $Resolved = new RT::Date( $self->CurrentUser );
+    my $Resolved = new RT::Date( $self->current_user );
     if ( defined $args{'Resolved'} ) {
         $Resolved->set( Format => 'ISO', value => $args{'Resolved'} );
     }
@@ -445,7 +444,7 @@ sub create {
 
     #If we've been handed something else, try to load the user.
     elsif ( $args{'Owner'} ) {
-        $Owner = RT::Model::User->new( $self->CurrentUser );
+        $Owner = RT::Model::User->new( $self->current_user );
         $Owner->load( $args{'Owner'} );
         unless ( $Owner->id ) {
             push @non_fatal_errors,
@@ -470,7 +469,7 @@ sub create {
 
     #If we haven't been handed a valid owner, make it nobody.
     unless ( defined($Owner) && $Owner->id ) {
-        $Owner = new RT::Model::User( $self->CurrentUser );
+        $Owner = new RT::Model::User( $self->current_user );
         $Owner->load( $RT::Nobody->id );
     }
 
@@ -500,7 +499,7 @@ sub create {
         }
     }
 
-    $RT::Handle->begin_transaction();
+    Jifty->handle->begin_transaction();
 
     my %params = (
         Queue           => $QueueObj->id,
@@ -539,7 +538,7 @@ sub create {
     my ($id,$ticket_message) = $self->SUPER::create( %params );
     unless ($id) {
         $RT::Logger->crit( "Couldn't create a ticket: " . $ticket_message );
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, 0,
             $self->loc("Ticket could not be Created due to an internal error")
         );
@@ -552,7 +551,7 @@ sub create {
     );
     unless ( $val ) {
         $RT::Logger->crit("Couldn't set EffectiveId: $msg\n");
-        $RT::Handle->rollback;
+        Jifty->handle->rollback;
         return ( 0, 0,
             $self->loc("Ticket could not be Created due to an internal error")
         );
@@ -563,7 +562,7 @@ sub create {
         $RT::Logger->crit( "Couldn't create ticket groups for ticket "
               . $self->id
               . ". aborting Ticket creation." );
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, 0,
             $self->loc("Ticket could not be Created due to an internal error")
         );
@@ -703,19 +702,19 @@ sub create {
 
             $TransObj->UpdateCustomFields(ARGSRef => \%args);
 
-            $RT::Logger->info( "Ticket " . $self->id . " created in queue '" . $QueueObj->Name . "' by " . $self->CurrentUser->Name );
+            $RT::Logger->info( "Ticket " . $self->id . " created in queue '" . $QueueObj->Name . "' by " . $self->current_user->Name );
             $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->id, $QueueObj->Name );
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
         }
         else {
-            $RT::Handle->rollback();
+            Jifty->handle->rollback();
 
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
             $RT::Logger->error("Ticket couldn't be Created: $ErrStr");
             return ( 0, 0, $self->loc( "Ticket could not be Created due to an internal error"));
         }
 
-        $RT::Handle->commit();
+        Jifty->handle->commit();
         return ( $self->id, $TransObj->id, $ErrStr );
 
         # }}}
@@ -723,7 +722,7 @@ sub create {
     else {
 
         # Not going to record a transaction
-        $RT::Handle->commit();
+        Jifty->handle->commit();
         $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->id, $QueueObj->Name );
         $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
         return ( $self->id, 0, $ErrStr );
@@ -853,7 +852,7 @@ sub Import {
 
     #Now that we have a queue, Check the ACLS
     unless (
-        $self->CurrentUser->has_right(
+        $self->current_user->has_right(
             Right    => 'CreateTicket',
             Object => $QueueObj
         )
@@ -873,7 +872,7 @@ sub Import {
             $Owner = $args{'Owner'};
         }
         else {
-            $Owner = new RT::Model::User( $self->CurrentUser );
+            $Owner = new RT::Model::User( $self->current_user );
             $Owner->load( $args{'Owner'} );
             if ( !defined( $Owner->id ) ) {
                 $Owner->load( $RT::Nobody->id );
@@ -908,7 +907,7 @@ sub Import {
 
     #If we haven't been handed a valid owner, make it nobody.
     unless ( defined($Owner) ) {
-        $Owner = new RT::Model::User( $self->CurrentUser );
+        $Owner = new RT::Model::User( $self->current_user );
         $Owner->load( $RT::Nobody->UserObj->id );
     }
 
@@ -1008,7 +1007,7 @@ sub _CreateTicket_groups {
     my @types = qw(Requestor Owner Cc AdminCc);
 
     foreach my $type (@types) {
-        my $type_obj = RT::Model::Group->new($self->CurrentUser);
+        my $type_obj = RT::Model::Group->new($self->current_user);
         my ($id, $msg) = $type_obj->createRoleGroup(Domain => 'RT::Model::Ticket-Role',
                                                        Instance => $self->id, 
                                                        Type => $type);
@@ -1034,7 +1033,7 @@ A constructor which returns an RT::Model::Group object containing the owner of t
 
 sub OwnerGroup {
     my $self = shift;
-    my $owner_obj = RT::Model::Group->new($self->CurrentUser);
+    my $owner_obj = RT::Model::Group->new($self->current_user);
     $owner_obj->load_ticket_role_group( Ticket => $self->id,  Type => 'Owner');
     return ($owner_obj);
 }
@@ -1077,17 +1076,17 @@ sub AddWatcher {
         return (0, $self->loc("Couldn't parse address from '[_1] string", $args{'Email'} ))
             unless $addr;
 
-        if ( lc $self->CurrentUser->UserObj->EmailAddress
+        if ( lc $self->current_user->UserObj->EmailAddress
             eq lc RT::Model::User->CanonicalizeEmailAddress( $addr->address ) )
         {
-            $args{'PrincipalId'} = $self->CurrentUser->id;
+            $args{'PrincipalId'} = $self->current_user->id;
             delete $args{'Email'};
         }
     }
 
     # If the watcher isn't the current user then the current user has no right
     # bail
-    unless ( $args{'PrincipalId'} && $self->CurrentUser->id == $args{'PrincipalId'} ) {
+    unless ( $args{'PrincipalId'} && $self->current_user->id == $args{'PrincipalId'} ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
@@ -1125,7 +1124,7 @@ sub _AddWatcher {
     );
 
 
-    my $principal = RT::Model::Principal->new($self->CurrentUser);
+    my $principal = RT::Model::Principal->new($self->current_user);
     if ($args{'Email'}) {
         my $user = RT::Model::User->new($RT::SystemUser);
         my ($pid, $msg) = $user->load_or_create_by_email( $args{'Email'} );
@@ -1143,7 +1142,7 @@ sub _AddWatcher {
     }
 
 
-    my $group = RT::Model::Group->new($self->CurrentUser);
+    my $group = RT::Model::Group->new($self->current_user);
     $group->load_ticket_role_group(Type => $args{'Type'}, Ticket => $self->id);
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
@@ -1207,13 +1206,13 @@ sub deleteWatcher {
     unless ( $args{'PrincipalId'} || $args{'Email'} ) {
         return ( 0, $self->loc("No principal specified") );
     }
-    my $principal = RT::Model::Principal->new( $self->CurrentUser );
+    my $principal = RT::Model::Principal->new( $self->current_user );
     if ( $args{'PrincipalId'} ) {
 
         $principal->load( $args{'PrincipalId'} );
     }
     else {
-        my $user = RT::Model::User->new( $self->CurrentUser );
+        my $user = RT::Model::User->new( $self->current_user );
         $user->load_by_email( $args{'Email'} );
         $principal->load( $user->id );
     }
@@ -1223,7 +1222,7 @@ sub deleteWatcher {
         return ( 0, $self->loc("Could not find that principal") );
     }
 
-    my $group = RT::Model::Group->new( $self->CurrentUser );
+    my $group = RT::Model::Group->new( $self->current_user );
     $group->load_ticket_role_group( Type => $args{'Type'}, Ticket => $self->id );
     unless ( $group->id ) {
         return ( 0, $self->loc("Group not found") );
@@ -1231,7 +1230,7 @@ sub deleteWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId == $principal->id ) {
+    if ( $self->current_user->PrincipalId == $principal->id ) {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
@@ -1427,7 +1426,7 @@ Returns this ticket's Requestors as an RT::Model::Group object
 sub Requestors {
     my $self = shift;
 
-    my $group = RT::Model::Group->new($self->CurrentUser);
+    my $group = RT::Model::Group->new($self->current_user);
     if ( $self->current_user_has_right('ShowTicket') ) {
         $group->load_ticket_role_group(Type => 'Requestor', Ticket => $self->id);
     }
@@ -1450,7 +1449,7 @@ If the user doesn't have "ShowTicket" permission, returns an empty group
 sub Cc {
     my $self = shift;
 
-    my $group = RT::Model::Group->new($self->CurrentUser);
+    my $group = RT::Model::Group->new($self->current_user);
     if ( $self->current_user_has_right('ShowTicket') ) {
         $group->load_ticket_role_group(Type => 'Cc', Ticket => $self->id);
     }
@@ -1472,7 +1471,7 @@ If the user doesn't have "ShowTicket" permission, returns an empty group
 
 sub AdminCc {
     my $self = shift;
-    my $group = RT::Model::Group->new($self->CurrentUser);
+    my $group = RT::Model::Group->new($self->current_user);
     if ( $self->current_user_has_right('ShowTicket') ) {
         $group->load_ticket_role_group(Type => 'AdminCc', Ticket => $self->id);
     }
@@ -1514,14 +1513,14 @@ sub IsWatcher {
     );
 
     # Load the relevant group. 
-    my $group = RT::Model::Group->new($self->CurrentUser);
+    my $group = RT::Model::Group->new($self->current_user);
     $group->load_ticket_role_group(Type => $args{'Type'}, Ticket => $self->id);
 
     # Find the relevant principal.
-    my $principal = RT::Model::Principal->new($self->CurrentUser);
+    my $principal = RT::Model::Principal->new($self->current_user);
     if (!$args{PrincipalId} && $args{Email}) {
         # Look up the specified user.
-        my $user = RT::Model::User->new($self->CurrentUser);
+        my $user = RT::Model::User->new($self->current_user);
         $user->load_by_email($args{Email});
         if ($user->id) {
             $args{PrincipalId} = $user->PrincipalId;
@@ -1686,7 +1685,7 @@ sub validate_Queue {
         return (1);
     }
 
-    my $QueueObj = RT::Model::Queue->new( $self->CurrentUser );
+    my $QueueObj = RT::Model::Queue->new( $self->current_user );
     my $id       = $QueueObj->load($Value);
 
     if ($id) {
@@ -1710,7 +1709,7 @@ sub set_Queue {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my $NewQueueObj = RT::Model::Queue->new( $self->CurrentUser );
+    my $NewQueueObj = RT::Model::Queue->new( $self->current_user );
     $NewQueueObj->load($NewQueue);
 
     unless ( $NewQueueObj->id() ) {
@@ -1721,7 +1720,7 @@ sub set_Queue {
         return ( 0, $self->loc('That is the same value') );
     }
     unless (
-        $self->CurrentUser->has_right(
+        $self->current_user->has_right(
             Right    => 'CreateTicket',
             Object => $NewQueueObj
         )
@@ -1762,7 +1761,7 @@ Takes nothing. returns this ticket's queue object
 sub QueueObj {
     my $self = shift;
 
-    my $queue_obj = RT::Model::Queue->new( $self->CurrentUser );
+    my $queue_obj = RT::Model::Queue->new( $self->current_user );
 
     #We call __value so that we can avoid the ACL decision and some deep recursion
     my ($result) = $queue_obj->load( $self->__value('Queue') );
@@ -1786,7 +1785,7 @@ sub QueueObj {
 sub DueObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->CurrentUser );
+    my $time = new RT::Date( $self->current_user );
 
     # -1 is RT::Date slang for never
     if ( my $due = $self->Due ) {
@@ -1827,7 +1826,7 @@ sub DueAsString {
 sub ResolvedObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->CurrentUser );
+    my $time = new RT::Date( $self->current_user );
     $time->set( Format => 'sql', value => $self->Resolved );
     return $time;
 }
@@ -1854,7 +1853,7 @@ sub set_Started {
     }
 
     #We create a date object to catch date weirdness
-    my $time_obj = new RT::Date( $self->CurrentUser() );
+    my $time_obj = new RT::Date( $self->current_user() );
     if ( $time ) {
         $time_obj->set( Format => 'ISO', value => $time );
     }
@@ -1892,7 +1891,7 @@ sub set_Started {
 sub StartedObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->CurrentUser );
+    my $time = new RT::Date( $self->current_user );
     $time->set( Format => 'sql', value => $self->Started );
     return $time;
 }
@@ -1911,7 +1910,7 @@ sub StartedObj {
 sub StartsObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->CurrentUser );
+    my $time = new RT::Date( $self->current_user );
     $time->set( Format => 'sql', value => $self->Starts );
     return $time;
 }
@@ -1930,7 +1929,7 @@ sub StartsObj {
 sub ToldObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->CurrentUser );
+    my $time = new RT::Date( $self->current_user );
     $time->set( Format => 'sql', value => $self->Told );
     return $time;
 }
@@ -1974,7 +1973,7 @@ sub TimeWorkedAsString {
     #This is not really a date object, but if we diff a number of seconds 
     #vs the epoch, we'll get a nice description of time worked.
 
-    my $worked = new RT::Date( $self->CurrentUser );
+    my $worked = new RT::Date( $self->current_user );
 
     #return the  #of minutes worked turned into seconds and written as
     # a simple text string
@@ -2025,13 +2024,13 @@ sub Comment {
     $args{'NoteType'} = 'Comment';
 
     if ($args{'DryRun'}) {
-        $RT::Handle->begin_transaction();
+        Jifty->handle->begin_transaction();
         $args{'CommitScrips'} = 0;
     }
 
     my @results = $self->_RecordNote(%args);
     if ($args{'DryRun'}) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
     }
 
     return(@results);
@@ -2075,7 +2074,7 @@ sub Correspond {
 
     $args{'NoteType'} = 'Correspond'; 
     if ($args{'DryRun'}) {
-        $RT::Handle->begin_transaction();
+        Jifty->handle->begin_transaction();
         $args{'CommitScrips'} = 0;
     }
 
@@ -2083,10 +2082,10 @@ sub Correspond {
 
     #Set the last told date to now if this isn't mail from the requestor.
     #TODO: Note that this will wrongly ack mail from any non-requestor as a "told"
-    $self->_setTold unless ( $self->IsRequestor($self->CurrentUser->id));
+    $self->_setTold unless ( $self->IsRequestor($self->current_user->id));
 
     if ($args{'DryRun'}) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
     }
 
     return (@results);
@@ -2207,10 +2206,10 @@ sub _Links {
     my $type  = shift || "";
 
     unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} = new RT::Model::LinkCollection( $self->CurrentUser );
+        $self->{"$field$type"} = new RT::Model::LinkCollection( $self->current_user );
         if ( $self->current_user_has_right('ShowTicket') ) {
             # Maybe this ticket is a merged ticket
-            my $Tickets = new RT::Model::TicketCollection( $self->CurrentUser );
+            my $Tickets = new RT::Model::TicketCollection( $self->current_user );
             # at least to myself
             $self->{"$field$type"}->limit( column => $field,
                                            value => $self->URI,
@@ -2300,7 +2299,7 @@ sub delete_link {
         $direction = 'Base';
     } 
 
-    my $remote_uri = RT::URI->new( $self->CurrentUser );
+    my $remote_uri = RT::URI->new( $self->current_user );
     $remote_uri->FromURI( $remote_link );
 
     unless ( $args{ 'Silent'. $direction } ) {
@@ -2387,7 +2386,7 @@ sub __GetTicketFromURI {
 
     # If the other URI is an RT::Model::Ticket, we want to make sure the user
     # can modify it too...
-    my $uri_obj = RT::URI->new( $self->CurrentUser );
+    my $uri_obj = RT::URI->new( $self->current_user );
     $uri_obj->FromURI( $args{'URI'} );
 
     unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
@@ -2431,7 +2430,7 @@ sub _AddLink {
         $direction    = 'Target';
     }
 
-    my $remote_uri = RT::URI->new( $self->CurrentUser );
+    my $remote_uri = RT::URI->new( $self->current_user );
     $remote_uri->FromURI( $remote_link );
 
     unless ( $args{ 'Silent'. $direction } ) {
@@ -2495,7 +2494,7 @@ sub MergeInto {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    $RT::Handle->begin_transaction();
+    Jifty->handle->begin_transaction();
 
     # We use EffectiveId here even though it duplicates information from
     # the links table becasue of the massive performance hit we'd take
@@ -2509,7 +2508,7 @@ sub MergeInto {
     );
 
     unless ($id_val) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, $self->loc("Merge failed. Couldn't set EffectiveId") );
     }
 
@@ -2520,7 +2519,7 @@ sub MergeInto {
             = $self->__set( column => 'Status', value => 'resolved' );
 
         unless ($status_val) {
-            $RT::Handle->rollback();
+            Jifty->handle->rollback();
             $RT::Logger->error(
                 $self->loc(
                     "[_1] couldn't set status to resolved. RT's Database may be inconsistent.",
@@ -2532,7 +2531,7 @@ sub MergeInto {
     }
 
     # update all the links that point to that old ticket
-    my $old_links_to = RT::Model::LinkCollection->new($self->CurrentUser);
+    my $old_links_to = RT::Model::LinkCollection->new($self->current_user);
     $old_links_to->limit(column => 'Target', value => $self->URI);
 
     my %old_seen;
@@ -2557,7 +2556,7 @@ sub MergeInto {
 
     }
 
-    my $old_links_from = RT::Model::LinkCollection->new($self->CurrentUser);
+    my $old_links_from = RT::Model::LinkCollection->new($self->current_user);
     $old_links_from->limit(column => 'Base', value => $self->URI);
 
     while (my $link = $old_links_from->next) {
@@ -2611,7 +2610,7 @@ sub MergeInto {
     }
 
     #find all of the tickets that were merged into this ticket. 
-    my $old_mergees = new RT::Model::TicketCollection( $self->CurrentUser );
+    my $old_mergees = new RT::Model::TicketCollection( $self->current_user );
     $old_mergees->limit(
         column    => 'EffectiveId',
         operator => '=',
@@ -2631,7 +2630,7 @@ sub MergeInto {
 
     $MergeInto->_setLastUpdated;    
 
-    $RT::Handle->commit();
+    Jifty->handle->commit();
     return ( 1, $self->loc("Merge Successful") );
 }
 
@@ -2657,7 +2656,7 @@ sub OwnerObj {
     #get deep recursion. if we need ACLs here, we need
     #an equiv without ACLs
 
-    my $owner = new RT::Model::User( $self->CurrentUser );
+    my $owner = new RT::Model::User( $self->current_user );
     $owner->load( $self->__value('Owner') );
 
     #Return the owner object
@@ -2699,17 +2698,17 @@ sub set_Owner {
     my $NewOwner = shift;
     my $Type     = shift || "Give";
 
-    $RT::Handle->begin_transaction();
+    Jifty->handle->begin_transaction();
 
     $self->_setLastUpdated(); # lock the ticket
     $self->load( $self->id ); # in case $self changed while waiting for lock
 
     my $OldOwnerObj = $self->OwnerObj;
 
-    my $NewOwnerObj = RT::Model::User->new( $self->CurrentUser );
+    my $NewOwnerObj = RT::Model::User->new( $self->current_user );
     $NewOwnerObj->load( $NewOwner );
     unless ( $NewOwnerObj->id ) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, $self->loc("That user does not exist") );
     }
 
@@ -2720,24 +2719,24 @@ sub set_Owner {
     if ( $OldOwnerObj->id == $RT::Nobody->id ) {
         unless (    $self->current_user_has_right('ModifyTicket')
                  || $self->current_user_has_right('TakeTicket') ) {
-            $RT::Handle->rollback();
+            Jifty->handle->rollback();
             return ( 0, $self->loc("Permission Denied") );
         }
     }
 
     # see if it's a steal
     elsif (    $OldOwnerObj->id != $RT::Nobody->id
-            && $OldOwnerObj->id != $self->CurrentUser->id ) {
+            && $OldOwnerObj->id != $self->current_user->id ) {
 
         unless (    $self->current_user_has_right('ModifyTicket')
                  || $self->current_user_has_right('StealTicket') ) {
-            $RT::Handle->rollback();
+            Jifty->handle->rollback();
             return ( 0, $self->loc("Permission Denied") );
         }
     }
     else {
         unless ( $self->current_user_has_right('ModifyTicket') ) {
-            $RT::Handle->rollback();
+            Jifty->handle->rollback();
             return ( 0, $self->loc("Permission Denied") );
         }
     }
@@ -2746,11 +2745,11 @@ sub set_Owner {
     # the current user
     if ( $Type ne 'Steal' and $Type ne 'Force'
          and $OldOwnerObj->id != $RT::Nobody->id
-         and $OldOwnerObj->id != $self->CurrentUser->id )
+         and $OldOwnerObj->id != $self->current_user->id )
     {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, $self->loc("You can only take tickets that are unowned") )
-            if $NewOwnerObj->id == $self->CurrentUser->id;
+            if $NewOwnerObj->id == $self->current_user->id;
         return (
             0,
             $self->loc("You can only reassign tickets that you own or that are unowned" )
@@ -2759,14 +2758,14 @@ sub set_Owner {
 
     #If we've specified a new owner and that user can't modify the ticket
     elsif ( !$NewOwnerObj->has_right( Right => 'OwnTicket', Object => $self ) ) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, $self->loc("That user may not own tickets in that queue") );
     }
 
     # If the ticket has an owner and it's the new owner, we don't need
     # To do anything
     elsif ( $NewOwnerObj->id == $OldOwnerObj->id ) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, $self->loc("That user already owns that ticket") );
     }
 
@@ -2775,14 +2774,14 @@ sub set_Owner {
     # for most things, but it's fast.
     my ( $del_id, ) = $self->OwnerGroup->MembersObj->first->delete();
     unless ($del_id) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, $self->loc("Could not change owner. ") . $del_id );
     }
     my ( $add_id, $add_msg ) = $self->OwnerGroup->_AddMember(
                                        PrincipalId => $NewOwnerObj->PrincipalId,
                                        InsideTransaction => 1 );
     unless ($add_id) {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, $self->loc("Could not change owner. ") . $add_msg );
     }
 
@@ -2799,7 +2798,7 @@ sub set_Owner {
     );
 
     if  (ref($return) and !$return) {
-        $RT::Handle->rollback;
+        Jifty->handle->rollback;
         return ( 0, $self->loc("Could not change owner. ") . $return );
     }
 
@@ -2816,11 +2815,11 @@ sub set_Owner {
                            $OldOwnerObj->Name, $NewOwnerObj->Name );
     }
     else {
-        $RT::Handle->rollback();
+        Jifty->handle->rollback();
         return ( 0, $msg );
     }
 
-    $RT::Handle->commit();
+    Jifty->handle->commit();
 
     return ( $val, $msg );
 }
@@ -2837,7 +2836,7 @@ A convenince method to set the ticket's owner to the current user
 
 sub Take {
     my $self = shift;
-    return ( $self->set_Owner( $self->CurrentUser->id, 'Take' ) );
+    return ( $self->set_Owner( $self->current_user->id, 'Take' ) );
 }
 
 # }}}
@@ -2869,11 +2868,11 @@ current user. Even if it's owned by another user.
 sub Steal {
     my $self = shift;
 
-    if ( $self->IsOwner( $self->CurrentUser ) ) {
+    if ( $self->IsOwner( $self->current_user ) ) {
         return ( 0, $self->loc("You already own this ticket") );
     }
     else {
-        return ( $self->set_Owner( $self->CurrentUser->id, 'Steal' ) );
+        return ( $self->set_Owner( $self->current_user->id, 'Steal' ) );
 
     }
 
@@ -2951,7 +2950,7 @@ sub set_Status {
     unless ( $self->validate_Status( $args{'Status'} ) ) { return ( 0, $self->loc("'[_1]' is an invalid value for status", $args{'Status'}) ); }
 
 
-    my $now = RT::Date->new( $self->CurrentUser );
+    my $now = RT::Date->new( $self->current_user );
     $now->set_to_now();
 
     #If we're changing the status from new, record that we've started
@@ -3083,7 +3082,7 @@ sub set_Told {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my $datetold = new RT::Date( $self->CurrentUser );
+    my $datetold = new RT::Date( $self->current_user );
     if ($told) {
         $datetold->set( Format => 'iso',
                         value  => $told );
@@ -3107,7 +3106,7 @@ Updates the told without a transaction or acl check. Useful when we're sending r
 sub _setTold {
     my $self = shift;
 
-    my $now = new RT::Date( $self->CurrentUser );
+    my $now = new RT::Date( $self->current_user );
     $now->set_to_now();
 
     #use __set to get no ACLs ;)
@@ -3123,7 +3122,7 @@ sub _setTold {
 sub SeenUpTo {
     my $self = shift;
 
-    my $uid = $self->CurrentUser->id;
+    my $uid = $self->current_user->id;
     my $attr = $self->first_attribute( "User-". $uid ."-SeenUpTo" );
     return if $attr && $attr->Content gt $self->LastUpdated;
 
@@ -3358,7 +3357,7 @@ sub current_user_has_right {
     my $self  = shift;
     my $right = shift;
 
-    return $self->CurrentUser->PrincipalObj->has_right(
+    return $self->current_user->PrincipalObj->has_right(
         Object => $self,
         Right  => $right,
     )
@@ -3416,7 +3415,7 @@ sub Reminders {
     my $self = shift;
     
     unless ($self->{'__reminders'}) {
-        $self->{'__reminders'} = RT::Reminders->new($self->CurrentUser);
+        $self->{'__reminders'} = RT::Reminders->new($self->current_user);
         $self->{'__reminders'}->Ticket($self->id);
     }
     return $self->{'__reminders'};
@@ -3436,7 +3435,7 @@ sub Reminders {
 sub Transactions {
     my $self = shift;
 
-    my $transactions = RT::Model::TransactionCollection->new( $self->CurrentUser );
+    my $transactions = RT::Model::TransactionCollection->new( $self->current_user );
 
     #If the user has no rights, return an empty object
     if ( $self->current_user_has_right('ShowTicket') ) {
@@ -3497,14 +3496,14 @@ sub CustomFieldValues {
     my $self  = shift;
     my $field = shift;
     if ( $field and $field !~ /^\d+$/ ) {
-        my $cf = RT::Model::CustomField->new( $self->CurrentUser );
+        my $cf = RT::Model::CustomField->new( $self->current_user );
         $cf->load_by_name_and_queue( Name => $field, Queue => $self->Queue );
         unless ( $cf->id ) {
             $cf->load_by_name_and_queue( Name => $field, Queue => 0 );
         }
         unless ( $cf->id ) {
             # If we didn't find a valid cfid, give up.
-            return RT::Model::CustomFieldValueCollection->new($self->CurrentUser);
+            return RT::Model::CustomFieldValueCollection->new($self->current_user);
         }
     }
     return $self->SUPER::CustomFieldValues($field);

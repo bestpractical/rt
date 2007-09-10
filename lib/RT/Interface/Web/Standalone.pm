@@ -74,7 +74,7 @@ sub handle_request {
 
     Module::Refresh->refresh if RT->Config->Get('DevelMode');
 
-    RT::ConnectToDatabase();
+    RT::connect_to_database();
     $self->SUPER::handle_request($cgi);
     $RT::Logger->crit($@) if ($@);
 

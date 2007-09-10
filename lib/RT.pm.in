@@ -127,7 +127,7 @@ sub load_config {
 
 =head2 Init
 
-L<Connect to the database /ConnectToDatabase>, L<initilizes system objects /InitSystemObjects>,
+L<Connect to the database /connect_to_database>, L<initilizes system objects /InitSystemObjects>,
 L<preloads classes /InitClasses> and L<set up logging /InitLogging>.
 
 =cut
@@ -137,22 +137,22 @@ sub Init {
     CheckPerlRequirements();
 
     #Get a database connection
-    ConnectToDatabase();
+    connect_to_database();
     InitSystemObjects();
     InitClasses();
     InitLogging(); 
 }
 
-=head2 ConnectToDatabase
+=head2 connect_to_database
 
 Get a database connection. See also </Handle>.
 
 =cut
 
-sub ConnectToDatabase {
+sub connect_to_database {
     require RT::Handle;
     $Handle = new RT::Handle unless $Handle;
-    $Handle->Connect;
+    $Handle->connect;
     return $Handle;
 }
 
@@ -324,7 +324,7 @@ sub InitLogging {
         # if we are not in eval and perl is not parsing code
         # then rollback transactions and log RT error
         unless ($^S || !defined $^S ) {
-            $RT::Handle->rollback(1) if $RT::Handle;
+            Jifty->handle->rollback(1) if Jifty->handle;
             $RT::Logger->crit("$_[0]") if $RT::Logger;
         }
         die $_[0];
@@ -429,7 +429,7 @@ sub Config { return $Config }
 
 Returns the current L<database handle object RT::Handle>.
 
-See also L</ConnectToDatabase>.
+See also L</connect_to_database>.
 
 =cut
 

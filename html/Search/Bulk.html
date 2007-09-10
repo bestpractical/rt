@@ -363,7 +363,7 @@ while ( my $Ticket = $Tickets->next ) {
     @results = ( @results, @tempresults );
 }
 
-my $TxnCFs = RT::Model::CustomFieldCollection->new( $session{CurrentUser} );
+my $TxnCFs = RT::Model::CustomFieldCollection->new( Jifty->web->current_user );
 $TxnCFs->LimitToLookupType( RT::Model::Transaction->CustomFieldLookupType );
 $TxnCFs->LimitToGlobalOrObjectId( sort keys %queues );
 

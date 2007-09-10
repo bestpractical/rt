@@ -120,7 +120,7 @@ sub ParseURI {
     my $uri  = shift;
 
     if ( $uri =~ /^\d+$/ ) {
-        my $ticket = RT::Model::Ticket->new( $self->CurrentUser );
+        my $ticket = RT::Model::Ticket->new( $self->current_user );
         $ticket->load( $uri );
         $self->{'uri'} = $ticket->URI;
         $self->{'object'} = $ticket;
@@ -142,7 +142,7 @@ sub ParseURI {
             # We can instantiate any RT::Record subtype. but not anything else
 
             if ( UNIVERSAL::isa( $type, 'RT::Record' ) ) {
-                my $record = $type->new( $self->CurrentUser );
+                my $record = $type->new( $self->current_user );
                 $record->load($id);
 
                 if ( $record->id ) {

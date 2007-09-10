@@ -87,30 +87,30 @@ sub bootstrap_db {
     $dbh = _get_dbh(RT::Handle->dsn,
             $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
 
-    $RT::Handle = new RT::Handle;
-    $RT::Handle->dbh( $dbh );
-    $RT::Handle->InsertSchema( $dbh );
+    Jifty->handle = new RT::Handle;
+    Jifty->handle->dbh( $dbh );
+    Jifty->handle->InsertSchema( $dbh );
 
     my $db_type = RT->Config->Get('DatabaseType');
-    $RT::Handle->InsertACL( $dbh ) unless $db_type eq 'Oracle';
+    Jifty->handle->InsertACL( $dbh ) unless $db_type eq 'Oracle';
 
-    $RT::Handle = new RT::Handle;
-    $RT::Handle->dbh( undef );
-    RT->ConnectToDatabase;
+    Jifty->handle = new RT::Handle;
+    Jifty->handle->dbh( undef );
+    RT->connect_to_database;
     RT->InitLogging;
     RT->InitSystemObjects;
-    $RT::Handle->InsertInitialData;
+    Jifty->handle->InsertInitialData;
 
     Jifty::DBI::Record::Cachable->flush_cache;
-    $RT::Handle = new RT::Handle;
-    $RT::Handle->dbh( undef );
+    Jifty->handle = new RT::Handle;
+    Jifty->handle->dbh( undef );
     RT->Init;
 
-    $RT::Handle->print_error;
-    $RT::Handle->dbh->{PrintError} = 1;
+    Jifty->handle->print_error;
+    Jifty->handle->dbh->{PrintError} = 1;
 
     unless ( $args{'nodata'} ) {
-        $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
+        Jifty->handle->InsertData( $RT::EtcPath . "/initialdata" );
     }
     Jifty::DBI::Record::Cachable->flush_cache;
 }
@@ -125,9 +125,9 @@ sub started_ok {
     my $s = RT::Interface::Web::Standalone->new($port);
     push @server, $s;
     my $ret = $s->started_ok;
-    $RT::Handle = new RT::Handle;
-    $RT::Handle->dbh( undef );
-    RT->ConnectToDatabase;
+    Jifty->handle = new RT::Handle;
+    Jifty->handle->dbh( undef );
+    RT->connect_to_database;
     return ($ret, RT::Test::Web->new);
 }
 

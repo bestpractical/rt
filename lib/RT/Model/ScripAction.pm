@@ -169,7 +169,7 @@ sub loadAction  {
     eval "require $type" || die "Require of $type failed.\n$@\n";
     
     $self->{'Action'}  = $type->new ( Argument => $self->Argument,
-                                      CurrentUser => $self->CurrentUser,
+                                      CurrentUser => $self->current_user,
                                       ScripActionObj => $self, 
                                       ScripObj => $args{'ScripObj'},
                                       TemplateObj => $self->TemplateObj,
@@ -194,12 +194,12 @@ sub TemplateObj {
     my $self = shift;
     return undef unless $self->{Template};
     if ( !$self->{'TemplateObj'} ) {
-        $self->{'TemplateObj'} = RT::Model::Template->new( $self->CurrentUser );
+        $self->{'TemplateObj'} = RT::Model::Template->new( $self->current_user );
         $self->{'TemplateObj'}->load_by_id( $self->{'Template'} );
 
         if ( ( $self->{'TemplateObj'}->__value('Queue') == 0 )
             && $self->{'_TicketObj'} ) {
-            my $tmptemplate = RT::Model::Template->new( $self->CurrentUser );
+            my $tmptemplate = RT::Model::Template->new( $self->current_user );
             my ( $ok, $err ) = $tmptemplate->loadQueueTemplate(
                 Queue => $self->{'_TicketObj'}->QueueObj->id,
                 Name  => $self->{'TemplateObj'}->Name);

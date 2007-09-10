@@ -55,7 +55,7 @@ return \%ARGS;
 
 <%init>
 my @actions;
-my @Objects = RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects;
+my @Objects = RT::SavedSearches->new( Jifty->web->current_user )->_PrivacyObjects;
 push @Objects, RT::System->new($session{'CurrentUser'})
     if $session{'CurrentUser'}->has_right( Object=> $RT::System,
                                           Right => 'SuperUser');

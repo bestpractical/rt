@@ -99,7 +99,7 @@ sub QueryToSQL {
 
         # Is there a status with this name?
         elsif (
-            $Queue = RT::Model::Queue->new( $self->TicketsObj->CurrentUser )
+            $Queue = RT::Model::Queue->new( $self->TicketsObj->current_user )
             and $Queue->IsValidStatus($key)
           )
         {
@@ -108,14 +108,14 @@ sub QueryToSQL {
 
         # Is there a owner named $key?
         # Is there a queue named $key?
-        elsif ( $Queue = RT::Model::Queue->new( $self->TicketsObj->CurrentUser )
+        elsif ( $Queue = RT::Model::Queue->new( $self->TicketsObj->current_user )
             and $Queue->load($key) )
         {
             push @queue_clauses, "Queue = '" . $Queue->Name . "'";
         }
 
         # Is there a owner named $key?
-        elsif ( $User = RT::Model::User->new( $self->TicketsObj->CurrentUser )
+        elsif ( $User = RT::Model::User->new( $self->TicketsObj->current_user )
             and $User->load($key)
             and $User->Privileged )
         {

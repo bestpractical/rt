@@ -23,7 +23,7 @@ is ($uri->LocalURIPrefix , 'fsck.com-rt://'.RT->Config->Get('Organization'));
 
 my $ticket = RT::Model::Ticket->new($RT::SystemUser);
 $ticket->load(1);
-$uri = RT::URI::fsck_com_rt->new($ticket->CurrentUser);
+$uri = RT::URI::fsck_com_rt->new($ticket->current_user);
 is($uri->LocalURIPrefix. "/ticket/1" , $uri->URIForObject($ticket));
 
 1;

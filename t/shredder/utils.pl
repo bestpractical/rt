@@ -271,14 +271,14 @@ sub restore_savepoint { return __cp_db( savepoint_name( shift ) => db_name() ) }
 sub __cp_db
 {
     my( $orig, $dest ) = @_;
-    $RT::Handle->dbh->disconnect;
+    Jifty->handle->dbh->disconnect;
     # DIRTY HACK: undef Handles to force reconnect
-    $RT::Handle = undef;
+    Jifty->handle = undef;
     %Jifty::DBI::DBIHandle = ();
     $Jifty::DBI::PrevHandle = undef;
 
     File::Copy::copy( $orig, $dest ) or die "Couldn't copy '$orig' => '$dest': $!";
-    RT::ConnectToDatabase();
+    RT::connect_to_database();
     return;
 }
 
@@ -336,7 +336,7 @@ sub dump_current_and_savepoint
     my $orig = savepoint_name( shift );
     die "Couldn't find savepoint file" unless -f $orig && -r _;
     my $odbh = connect_sqlite( $orig );
-    return ( dump_sqlite( $RT::Handle->dbh, @_ ), dump_sqlite( $odbh, @_ ) );
+    return ( dump_sqlite( Jifty->handle->dbh, @_ ), dump_sqlite( $odbh, @_ ) );
 }
 
 =head3 dump_savepoint_and_current

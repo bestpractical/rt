@@ -175,8 +175,8 @@ Flush the searchbuilder query cache
 
 sub CleanupRequest {
 
-    if ( $RT::Handle->transaction_depth ) {
-        $RT::Handle->Forcerollback;
+    if ( Jifty->handle->transaction_depth ) {
+        Jifty->handle->Forcerollback;
         $RT::Logger->crit(
             "Transaction not committed. Usually indicates a software fault."
             . "Data loss may have occurred" );

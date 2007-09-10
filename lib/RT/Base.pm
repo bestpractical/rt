@@ -79,7 +79,7 @@ Returns the current user object of L<RT::CurrentUser> class.
 
 =cut
 
-sub CurrentUser {
+sub current_user {
     my $self = shift;
     if (@_) {
         $self->{'user'} = shift @_;
@@ -125,7 +125,7 @@ sub loc {
         return $user->loc(@_);
     }
     else {
-        return $self->CurrentUser->loc(@_);
+        return $self->current_user->loc(@_);
 
     }
 }
