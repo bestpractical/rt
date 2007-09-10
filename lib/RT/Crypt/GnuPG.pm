@@ -1764,7 +1764,7 @@ sub ParseKeysInfo {
         my $value = shift;
         return @{ $verbose{'-'} } unless $value;
         $value = substr $value, 0, 1;
-        return @{ $lookup->{ $value } || $lookup->{'o'} };
+        return @{ $verbose{ $value } || $verbose{'o'} };
     }
 }
 
