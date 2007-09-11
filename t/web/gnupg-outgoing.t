@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 428;
+use Test::More tests => 476;
 use RT::Test;
 use RT::Action::SendEmail;
 use File::Temp qw(tempdir);
@@ -292,8 +292,10 @@ sub update_ticket {
         }
     }
 
-    $m->submit;
+    $m->click('SubmitTicket');
     is $m->status, 200, "request successful";
+    $m->content_like(qr/Message recorded/, 'Message recorded') or diag $m->content;
+
     $m->get_ok('/'); # ensure that the mail has been processed
 
     my @mail = RT::Test->fetch_caught_mails;
