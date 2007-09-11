@@ -1680,6 +1680,8 @@ sub GetKeysInfo {
 sub ParseKeysInfo {
     my @lines = @_;
 
+    my %gpg_opt = RT->Config->Get('GnuPGOptions');
+
     my @res = ();
     foreach my $line( @lines ) {
         chomp $line;
@@ -1692,8 +1694,21 @@ sub ParseKeysInfo {
                 Created Expire Empty OwnerTrustChar
                 Empty Empty Capabilities Other
             ) } = split /:/, $line, 12;
+
+            # workaround gnupg's wierd behaviour, --list-keys command report calculated trust levels
+            # for any model except 'always', so you can change models and see changes, but not for 'always'
+            # we try to handle it in a simple way - we set ultimate trust for any key with trust
+            # level >= 0 if trust model is 'always'
+            my $always_trust;
+            $always_trust = 1 if exists $gpg_opt{'always-trust'};
+            $always_trust = 1 if exists $gpg_opt{'trust-model'} && $gpg_opt{'trust-model'} eq 'always';
             @info{qw(Trust TrustTerse TrustLevel)} = 
                 _ConvertTrustChar( $info{'TrustChar'} );
+            if ( $always_trust && $info{'TrustLevel'} >= 0 ) {
+                @info{qw(Trust TrustTerse TrustLevel)} = 
+                    _ConvertTrustChar( 'u' );
+            }
+
             @info{qw(OwnerTrust OwnerTrustTerse OwnerTrustLevel)} = 
                 _ConvertTrustChar( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
