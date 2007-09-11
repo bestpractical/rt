@@ -469,8 +469,9 @@ sub SignEncryptRFC3156 {
     }
     if ( $args{'Encrypt'} ) {
         my %seen;
-        $gnupg->options->push_recipients( $_ )
-            foreach grep !$seen{ $_ }++, map $_->address,
+        $gnupg->options->push_recipients( $_ ) foreach 
+            map UseKeyForEncryption($_),
+            grep !$seen{ $_ }++, map $_->address,
             map Mail::Address->parse( $entity->head->get( $_ ) ),
             qw(To Cc Bcc);
 
@@ -591,8 +592,9 @@ sub _SignEncryptTextInline {
     }
 
     if ( $args{'Encrypt'} ) {
-        $gnupg->options->push_recipients( $_ )
-            foreach @{ $args{'Recipients'} || [] };
+        $gnupg->options->push_recipients( $_ ) foreach 
+            map UseKeyForEncryption($_),
+            @{ $args{'Recipients'} || [] };
     }
 
     my %res;
@@ -680,8 +682,9 @@ sub _SignEncryptAttachmentInline {
 
     my $entity = $args{'Entity'};
     if ( $args{'Encrypt'} ) {
-        $gnupg->options->push_recipients( $_ )
-            foreach @{ $args{'Recipients'} || [] };
+        $gnupg->options->push_recipients( $_ ) foreach
+            map UseKeyForEncryption($_),
+            @{ $args{'Recipients'} || [] };
     }
 
     my %res;
@@ -1552,6 +1555,22 @@ sub _PrepareGnuPGOptions {
     }
     return %res;
 }
+
+{ my %key;
+# no args -> clear
+# one arg -> return preferred key
+# many -> set
+sub UseKeyForEncryption {
+    unless ( @_ ) {
+        %key = ();
+    } elsif ( @_ > 1 ) {
+        %key = (%key, @_);
+        $key{ lc($_) } = delete $key{ $_ } foreach grep lc ne $_, keys %key;
+    } else {
+        return $key{ $_[0] } || $_[0];
+    }
+    return ();
+} }
 
 =head2 GetKeysForEncryption
 
