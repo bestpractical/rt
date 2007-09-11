@@ -287,6 +287,10 @@ if ( $ARGS{'SubmitTicket'} && $ARGS{'Encrypt'} ) {
             # good, one suitable and trusted key 
             next;
         }
+        if ( my $fingerprint = $ARGS{ 'UseKey-'. $address } ) {
+            RT::Crypt::GnuPG::UseKeyForEncryption( $address => $fingerprint );
+            next;
+        }
 
         my $user = RT::User->new( $RT::SystemUser );
         $user->LoadByEmail( $address );
