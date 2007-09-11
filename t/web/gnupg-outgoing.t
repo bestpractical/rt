@@ -39,7 +39,7 @@ ok $queue && $queue->id, 'loaded or created queue';
 
 RT::Test->set_rights(
     Principal => 'Everyone',
-    Right => ['CreateTicket', 'ShowTicket', 'SeeQueue', 'ModifyTicket'],
+    Right => ['CreateTicket', 'ShowTicket', 'SeeQueue', 'ReplyTicket', 'ModifyTicket'],
 );
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -118,7 +118,7 @@ foreach my $queue_set ( @variants ) {
 my $tid;
 {
     my $ticket = RT::Ticket->new( $RT::SystemUser );
-    my ($tid) = $ticket->Create(
+    ($tid) = $ticket->Create(
         Subject   => 'test',
         Queue     => $queue->id,
         Requestor => 'rt-test@example.com',
@@ -130,7 +130,7 @@ my $tid;
 foreach my $queue_set ( @variants ) {
     set_queue_crypt_options( %$queue_set );
     foreach my $ticket_set ( @variants ) {
-        create_a_ticket( %$ticket_set );
+        update_ticket( $tid, %$ticket_set );
     }
 }
 
@@ -273,12 +273,13 @@ sub create_a_ticket {
 }
 
 sub update_ticket {
+    my $tid = shift;
     my %args = (@_);
 
     # cleanup mail catcher's storage
     unlink "t/mailbox";
 
-    $m->goto_ticket( $tid );
+    ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
     $m->form_number(3);
     $m->field( UpdateContent => 'Some content' );
