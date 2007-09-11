@@ -167,9 +167,24 @@ sub NewHandler {
 
 =head2 CleanupRequest
 
-Rollback any uncommitted transaction.
-Flush the ACL cache
-Flush the searchbuilder query cache
+Clean ups globals, caches and other things that could be still
+there from previous requests:
+
+=over 4
+
+=item Rollback any uncommitted transaction(s)
+
+=item Flush the ACL cache
+
+=item Flush records cache of the L<DBIx::SearchBuilder> if
+WebFlushDbCacheEveryRequest option is enabled, what is true by default
+and is not recommended to change.
+
+=item Clean up state of RT::Action::SendEmail using 'CleanSlate' method
+
+=item Flush tmp GnuPG key preferences
+
+=back
 
 =cut
 
@@ -193,6 +208,9 @@ sub CleanupRequest {
     # cleanup global squelching of the mails
     require RT::Action::SendEmail;
     RT::Action::SendEmail->CleanSlate;
+    
+    require RT::Crypt::GnuPG;
+    RT::Crypt::GnuPG::UseKeyForEncryption();
 }
 # }}}
 
