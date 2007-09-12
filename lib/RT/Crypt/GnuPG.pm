@@ -1617,21 +1617,36 @@ sub CheckRecipients {
             # good, one suitable and trusted key 
             next;
         }
-        next if UseKeyForEncryption( $address );
-
         my $user = RT::User->new( $RT::SystemUser );
         $user->LoadByEmail( $address );
         # it's possible that we have no User record with the email
         $user = undef unless $user->id;
 
+        if ( my $fpr = UseKeyForEncryption( $address ) ) {
+            if ( $res{'info'} && @{ $res{'info'} } ) {
+                next if
+                    grep lc $_->{'Fingerprint'} eq lc $fpr,
+                    grep $_->{'TrustLevel'} > 0,
+                    @{ $res{'info'} };
+            }
+
+            $status = 0;
+            my %issue = (
+                EmailAddress => $address,
+                $user? (User => $user) : (),
+                Keys => undef,
+            );
+            $issue{'Message'} = "Selected key either is not trusted or doesn't exist anymore."; #loc
+            push @issues, \%issue;
+            next;
+        }
+
         my $prefered_key;
         $prefered_key = $user->PreferredKey if $user;
-
         #XXX: prefered key is not yet implemented...
 
-        $status = 0;
-
         # classify errors
+        $status = 0;
         my %issue = (
             EmailAddress => $address,
             $user? (User => $user) : (),
