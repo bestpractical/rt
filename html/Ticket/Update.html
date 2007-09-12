@@ -272,10 +272,19 @@ my @results;
 my @gnupg_keys_issues;
 if ( $ARGS{'SubmitTicket'} && $ARGS{'Encrypt'} ) {
 
-    my @recipients = $m->comp(
+    # skip any email addresses that we won't be sending mail to
+    my @non_recipients = $m->comp(
+                            '/Ticket/Elements/PreviewScrips:SquelchRecipients',
+                            %ARGS, TicketObj => $TicketObj
+                        );
+    shift @non_recipients;
+    my %seen = map { lc($_) => 1 } @non_recipients;
+
+    my @recipients = grep {!$seen{lc $_}} $m->comp(
         '/Ticket/Elements/PreviewScrips:GetRecipients',
         %ARGS, TicketObj => $TicketObj
     );
+
     RT::Crypt::GnuPG::UseKeyForEncryption(
         map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
         grep $ARGS{$_} && /^UseKey-/,
