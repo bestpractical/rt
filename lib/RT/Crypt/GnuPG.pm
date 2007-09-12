@@ -470,7 +470,7 @@ sub SignEncryptRFC3156 {
     if ( $args{'Encrypt'} ) {
         my %seen;
         $gnupg->options->push_recipients( $_ ) foreach 
-            map UseKeyForEncryption($_),
+            map UseKeyForEncryption($_) || $_,
             grep !$seen{ $_ }++, map $_->address,
             map Mail::Address->parse( $entity->head->get( $_ ) ),
             qw(To Cc Bcc);
@@ -593,7 +593,7 @@ sub _SignEncryptTextInline {
 
     if ( $args{'Encrypt'} ) {
         $gnupg->options->push_recipients( $_ ) foreach 
-            map UseKeyForEncryption($_),
+            map UseKeyForEncryption($_) || $_,
             @{ $args{'Recipients'} || [] };
     }
 
@@ -683,7 +683,7 @@ sub _SignEncryptAttachmentInline {
     my $entity = $args{'Entity'};
     if ( $args{'Encrypt'} ) {
         $gnupg->options->push_recipients( $_ ) foreach
-            map UseKeyForEncryption($_),
+            map UseKeyForEncryption($_) || $_,
             @{ $args{'Recipients'} || [] };
     }
 
@@ -1567,7 +1567,7 @@ sub UseKeyForEncryption {
         %key = (%key, @_);
         $key{ lc($_) } = delete $key{ $_ } foreach grep lc ne $_, keys %key;
     } else {
-        return $key{ $_[0] } || $_[0];
+        return $key{ $_[0] };
     }
     return ();
 } }
@@ -1653,7 +1653,6 @@ sub CheckRecipients {
         push @issues, \%issue;
     }
     return ($status, @issues);
-    
 }
 
 sub GetPublicKeyInfo {
