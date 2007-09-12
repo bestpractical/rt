@@ -286,6 +286,7 @@ sub Create {
         Resolved           => undef,
         MIMEObj            => undef,
         _RecordTransaction => 1,
+        DryRun             => 0,
         @_
     );
 
@@ -660,9 +661,10 @@ sub Create {
 
         # {{{ Add a transaction for the create
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-            Type      => "Create",
-            TimeTaken => $args{'TimeWorked'},
-            MIMEObj   => $args{'MIMEObj'},
+            Type         => "Create",
+            TimeTaken    => $args{'TimeWorked'},
+            MIMEObj      => $args{'MIMEObj'},
+            CommitScrips => !$args{'DryRun'},
         );
 
         if ( $self->Id && $Trans ) {
@@ -681,6 +683,10 @@ sub Create {
             return ( 0, 0, $self->loc( "Ticket could not be created due to an internal error"));
         }
 
+        if ( $args{'DryRun'} ) {
+            $RT::Handle->Rollback();
+            return ($self->id, $TransObj, $ErrStr);
+        }
         $RT::Handle->Commit();
         return ( $self->Id, $TransObj->Id, $ErrStr );
 
