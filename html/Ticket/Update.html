@@ -289,8 +289,9 @@ if ( $ARGS{'SubmitTicket'} && $ARGS{'Encrypt'} ) {
         grep $ARGS{$_} && /^UseKey-/,
         keys %ARGS
     );
-    my ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
-    $checks_failure = 1;
+    my $status;
+    ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
+    $checks_failure = 1 unless $status;
 }
 
 if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
