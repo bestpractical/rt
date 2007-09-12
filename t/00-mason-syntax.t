@@ -12,7 +12,8 @@ find( {
     no_chdir => 1,
     wanted   => sub {
         return if /(?:\.(?:jpe?g|png|gif|rej)|\~)$/i;
-        if (m!/\.svn$!) {
+        return if m{/\.[^/]+\.swp$}; # vim swap files
+        if (m{/\.svn$}) {
             $File::Find::prune = 1;
             return;
         }
