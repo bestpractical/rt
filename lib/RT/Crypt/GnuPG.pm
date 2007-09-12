@@ -1605,6 +1605,57 @@ sub GetKeysForEncryption {
     return %res;
 }
 
+sub CheckRecipients {
+    my @recipients = (@_);
+
+    my ($status, @issues) = (1, ());
+
+    my %seen;
+    foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
+        my %res = GetKeysForEncryption( $address );
+        if ( $res{'info'} && @{ $res{'info'} } == 1 && $res{'info'}[0]{'TrustLevel'} > 0 ) {
+            # good, one suitable and trusted key 
+            next;
+        }
+        next if UseKeyForEncryption( $address );
+
+        my $user = RT::User->new( $RT::SystemUser );
+        $user->LoadByEmail( $address );
+        # it's possible that we have no User record with the email
+        $user = undef unless $user->id;
+
+        my $prefered_key;
+        $prefered_key = $user->PreferredKey if $user;
+
+        #XXX: prefered key is not yet implemented...
+
+        $status = 0;
+
+        # classify errors
+        my %issue = (
+            EmailAddress => $address,
+            $user? (User => $user) : (),
+            Keys => undef,
+        );
+
+        unless ( $res{'info'} && @{ $res{'info'} } ) {
+            # no key
+            $issue{'Message'} = "There is no key suitable for encryption."; #loc
+        }
+        elsif ( @{ $res{'info'} } == 1 && !$res{'info'}[0]{'TrustLevel'} ) {
+            # trust is not set
+            $issue{'Message'} = "There is one suitable key, but trust level is not set."; #loc
+        }
+        else {
+            # multiple keys
+            $issue{'Message'} = "There are several keys suitable for encryption."; #loc
+        }
+        push @issues, \%issue;
+    }
+    return ($status, @issues);
+    
+}
+
 sub GetPublicKeyInfo {
     return GetKeyInfo(shift, 'public');
 }
