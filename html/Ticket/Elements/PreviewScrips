@@ -188,3 +188,48 @@ foreach my $scrip ( @{ $txn->Scrips->Prepared } ) {
 return @recipients;
 </%INIT>
 </%METHOD>
+
+<%METHOD GetRecipientsOnCreate>
+<%INIT>
+my $action;
+my $Message = MakeMIMEEntity(
+    Subject => $ARGS{'Subject'},
+    Cc => $ARGS{'Cc'},
+    Body    => $ARGS{'Content'},
+);
+
+my $TicketObj = RT::Ticket->new( $session{'CurrentUser'} );
+my ( $id, $txn, $msg ) = $TicketObj->Create(
+    Type            => $ARGS{'Type'} || 'ticket',
+    Queue           => $ARGS{'Queue'},
+    Owner           => $ARGS{'Owner'},
+    Requestor       => $ARGS{'Requestors'},
+    Cc              => $ARGS{'Cc'},
+    AdminCc         => $ARGS{'AdminCc'},
+    InitialPriority => $ARGS{'InitialPriority'},
+    FinalPriority   => $ARGS{'FinalPriority'},
+    TimeLeft        => $ARGS{'TimeLeft'},
+    TimeEstimated   => $ARGS{'TimeEstimated'},
+    TimeWorked      => $ARGS{'TimeWorked'},
+    Subject         => $ARGS{'Subject'},
+    Status          => $ARGS{'Status'},
+    MIMEObj      => $Message,
+    DryRun       => 1
+);
+unless ( $id && $txn ) {
+    $RT::Logger->error("Couldn't fire '$action' action: $msg");
+    return ();
+}
+
+my @recipients;
+foreach my $scrip ( @{ $txn->Scrips->Prepared } ) {
+    my $action = $scrip->ActionObj->Action;
+    next unless $action->isa('RT::Action::SendEmail');
+
+    foreach my $type qw(To Cc Bcc) {
+        push @recipients, $action->$type();
+    }
+}
+return @recipients;
+</%INIT>
+</%METHOD>
