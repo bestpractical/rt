@@ -57,6 +57,32 @@
 <input type="hidden" class="hidden" name="id" value="new" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 
+% if ( @gnupg_keys_issues ) {
+<&| /Widgets/TitleBox, title => loc('GnuPG issues') &>
+<% loc("You are going to encrypt outgoing email messages, but there is a problem(s) with recipients' public keys. You have to figure out problems with keys, disable sending a message to some recipients or disable encryption.") %>
+
+<ul>
+% foreach my $issue ( @gnupg_keys_issues ) {
+<li>
+% if ( $issue->{'User'} ) {
+User <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $issue->{'User'}->id %>"><&/Elements/ShowUser, User => $issue->{'User'} &></a> has a problem.
+% } else {
+There is a problem with key(s) for address <% $issue->{'EmailAddress'} %>, but there is no user in the DB for this address.
+% }
+<% $issue->{'Message'} %>
+<br />
+Select a key you want to use for encryption:
+<& /Elements/SelectKey,
+    Name         => 'UseKey-'. $issue->{'EmailAddress'},
+    EmailAddress => $issue->{'EmailAddress'},
+    Default      => ( $issue->{'User'}? $issue->{'User'}->PreferredKey : undef ),
+&>
+</li>
+% }
+</ul>
+</&>
+% }
+
 <div id="Ticket-Create-basics">
 <a name="basics"></a>
 <&| /Widgets/TitleBox, title => loc("Create a new ticket") &>
@@ -312,16 +338,34 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
     delete $session{'Attachments'};
 }
 
+my $checks_failure = 0;
+my @gnupg_keys_issues;
+if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' && $ARGS{'Encrypt'} ) {
 
-# }}}
+    my @recipients = $m->comp(
+        '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
+        %ARGS
+    );
+
+    RT::Crypt::GnuPG::UseKeyForEncryption(
+        map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
+        grep $ARGS{$_} && /^UseKey-/,
+        keys %ARGS
+    );
+
+    my $status;
+    ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
+    $checks_failure = 1 unless $status;
+}
+
 
 if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
-    if ($ValidCFs) {
+    if ( $ValidCFs && !$checks_failure ) {
         $m->comp('Display.html', %ARGS);
         $RT::Logger->crit("After display call; error is $@");
         $m->abort();
     }
-    else {
+    elsif ( !$ValidCFs ) {
         # Invalid CFs
         while (my $CF = $CFs->Next) {
             my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
