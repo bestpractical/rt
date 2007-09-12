@@ -273,57 +273,18 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 my @results;
 my @gnupg_keys_issues;
 if ( $ARGS{'SubmitTicket'} && $ARGS{'Encrypt'} ) {
-    my @gnupg_messages;
 
     my @recipients = $m->comp(
         '/Ticket/Elements/PreviewScrips:GetRecipients',
         %ARGS, TicketObj => $TicketObj
     );
-
-    my %seen;
-    foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
-        my %res = RT::Crypt::GnuPG::GetKeysForEncryption( $address );
-        if ( $res{'info'} && @{ $res{'info'} } == 1 && $res{'info'}[0]{'TrustLevel'} > 0 ) {
-            # good, one suitable and trusted key 
-            next;
-        }
-        if ( my $fingerprint = $ARGS{ 'UseKey-'. $address } ) {
-            RT::Crypt::GnuPG::UseKeyForEncryption( $address => $fingerprint );
-            next;
-        }
-
-        my $user = RT::User->new( $RT::SystemUser );
-        $user->LoadByEmail( $address );
-        # it's possible that we have no User record with the email
-        $user = undef unless $user->id;
-
-        my $prefered_key;
-        $prefered_key = $user->PreferredKey if $user;
-
-        #XXX: prefered key is not yet implemented...
-
-        # classify errors
-        $checks_failure = 1;
-        my %issue = (
-            EmailAddress => $address,
-            $user? (User => $user) : (),
-            Keys => undef,
-        );
-
-        unless ( $res{'info'} && @{ $res{'info'} } ) {
-            # no key
-            $issue{'Message'} = loc("There is no key suitable for encryption.");
-        }
-        elsif ( @{ $res{'info'} } == 1 && !$res{'info'}[0]{'TrustLevel'} ) {
-            # trust is not set
-            $issue{'Message'} = loc("There is one suitable key, but trust level is not set.");
-        }
-        else {
-            # multiple keys
-            $issue{'Message'} = loc("There are several keys suitable for encryption.");
-        }
-        push @gnupg_keys_issues, \%issue;
-    }
+    RT::Crypt::GnuPG::UseKeyForEncryption(
+        map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
+        grep $ARGS{$_} && /^UseKey-/,
+        keys %ARGS
+    );
+    my ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
+    $checks_failure = 1;
 }
 
 if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
