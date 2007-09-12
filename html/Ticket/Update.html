@@ -268,8 +268,6 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 }
 # }}}
 
-# XXX: we must apply squelshing here, to get real recipients below
-
 my @results;
 my @gnupg_keys_issues;
 if ( $ARGS{'SubmitTicket'} && $ARGS{'Encrypt'} ) {
