@@ -45,10 +45,13 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Model::ObjectCustomFieldValueCollection;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
+package RT::Model::ObjectCustomFieldValueCollection;
+
+use base qw/RT::SearchBuilder/;
 
 # {{{ sub limit_to_custom_field
 

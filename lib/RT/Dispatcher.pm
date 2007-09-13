@@ -8,4 +8,10 @@ use Jifty::Dispatcher -base;
 use RT;
 RT->load_config;
 
+
+
+after qr/.*/ => run {
+    RT::Interface::Web::Handler::CleanupRequest()
+};
+
 1;

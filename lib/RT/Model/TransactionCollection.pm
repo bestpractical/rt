@@ -62,11 +62,12 @@
 
 =cut
 
+use warnings;
+use strict;
 
 package RT::Model::TransactionCollection;
+use base qw/RT::SearchBuilder/;
 
-use strict;
-no warnings qw(redefine);
 
 # {{{ sub _init  
 sub _init   {

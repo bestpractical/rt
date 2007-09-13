@@ -171,7 +171,7 @@ if ( $can{'ModifyTicket'} ) {
              title => loc('Take'),
          } if $can{'ModifyTicket'} or $Ticket->current_user_has_right('TakeTicket');
      }
-     elsif ( $Ticket->OwnerObj->id != ->id ) {
+     elsif ( $Ticket->OwnerObj->id != $session{'CurrentUser'}->id ) {
          $actions->{'C'} = {
              path => "Ticket/Display.html?Action=Steal&id=" . $id,
              title => loc('Steal'),

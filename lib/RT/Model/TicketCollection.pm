@@ -2498,7 +2498,7 @@ sub items_array_ref {
 
     unless ( $self->{'items_array'} ) {
 
-        my $placeholder = $self->_ItemsCounter;
+        my $placeholder = $self->_items_counter;
         $self->goto_first_item();
         while ( my $item = $self->next ) {
             push( @{ $self->{'items_array'} }, $item );

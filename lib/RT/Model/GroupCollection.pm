@@ -67,11 +67,11 @@
 
 =cut
 
-
+use warnings;
+use strict;
 package RT::Model::GroupCollection;
 
-use strict;
-no warnings qw(redefine);
+use base qw/RT::SearchBuilder/;
 
 use RT::Model::UserCollection;
 

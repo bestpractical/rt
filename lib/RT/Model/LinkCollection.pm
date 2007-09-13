@@ -63,15 +63,17 @@
 
 =cut
 
+use warnings;
+use strict;
 
 package RT::Model::LinkCollection;
 
-use strict;
-no warnings qw(redefine);
+use base qw/RT::Collection/;
+
 use RT::URI;
 
 # {{{ sub Limit 
-sub Limit  {
+sub limit  {
     my $self = shift;
     my %args = ( entry_aggregator => 'AND',
 		 operator => '=',

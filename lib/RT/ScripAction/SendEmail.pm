@@ -956,11 +956,6 @@ sub MIMEEncodeString {
     }
 }
 
-eval "require RT::ScripAction::SendEmail_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Vendor.pm});
-eval "require RT::ScripAction::SendEmail_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Local.pm});
-
 =head1 AUTHOR
 
 Jesse Vincent <jesse@bestpractical.com> and Tobias Brox <tobix@cpan.org>
