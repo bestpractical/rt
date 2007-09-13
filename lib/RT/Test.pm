@@ -592,4 +592,29 @@ sub trust_gnupg_key {
     return %res;
 }
 
+sub generate_port {
+    my $self = shift;
+    my $port = 1024 + int rand(10000) + $$ % 1024;
+
+    my $paddr = sockaddr_in( $port, inet_aton('localhost') );
+    socket( SOCK, PF_INET, SOCK_STREAM, getprotobyname('tcp') )
+      or die "socket: $!";
+    if ( connect( SOCK, $paddr ) ) {
+        close(SOCK);
+        return generate_port();
+    }
+    close(SOCK);
+
+    return $port;
+}
+
+END {
+    if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
+        my $dbh =
+          _get_dbh( RT::Handle->DSN, $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD} );
+        RT::Handle->DropDatabase( $dbh, Force => 1 );
+        $dbh->disconnect;
+    }
+}
+
 1;
