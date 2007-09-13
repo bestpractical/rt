@@ -4,21 +4,20 @@ use strict;
 use warnings;
 
 use Test::More;
-
+use Socket;
 use File::Temp;
 my $config;
-our ($existing_server, $port);
+our ($existing_server, $port, $dbname);
 my $mailsent;
 
 BEGIN {
-    # TODO: allocate a port dynamically
     if ( my $test_server = $ENV{'RT_TEST_SERVER'} ) {
         my ($host, $test_port) = split(':', $test_server, 2);
         $port = $test_port || 80;
         $existing_server = "http://$host:$port";
-    }
-    else {
-        $port = 11229;
+
+        # we can't parallel test with $existing_server
+        undef $ENV{RT_TEST_PARALLEL};
     }
 };
 
@@ -30,6 +29,17 @@ unshift @RT::Interface::Web::Standalone::ISA, 'Test::HTTP::Server::Simple';
 
 my @server;
 
+if ( $ENV{RT_TEST_PARALLEL} ) {
+    $port   = generate_port();
+    $dbname = "rt3test_$port";    #yes, dbname also makes use of $port
+}
+else {
+    $dbname = "rt3test";
+}
+
+$port = generate_port() unless $port;
+
+
 sub import {
     my $class = shift;
     my %args = @_;
@@ -38,7 +48,7 @@ sub import {
     print $config qq{
 Set( \$WebPort , $port);
 Set( \$WebBaseURL , "http://localhost:\$WebPort");
-Set( \$DatabaseName , "rt3test");
+Set( \$DatabaseName , $dbname);
 Set( \$LogToSyslog , undef);
 Set( \$LogToScreen , "warning");
 };
@@ -68,6 +78,8 @@ Set( \$LogToScreen , "warning");
     RT->Init;
 }
 
+my $created_new_db;    # have we created new db? mainly for parallel testing
+
 sub bootstrap_db {
     my $self = shift;
     my %args = @_;
@@ -79,10 +91,14 @@ sub bootstrap_db {
     my $dbh = _get_dbh(RT::Handle->SystemDSN,
                $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
 
+    unless ( $ENV{RT_TEST_PARALLEL} ) {
+        # already dropped db in parallel tests, need to do so for other cases.
+        RT::Handle->DropDatabase( $dbh, Force => 1 );
+    }
 
-    RT::Handle->DropDatabase( $dbh, Force => 1 );
     RT::Handle->CreateDatabase( $dbh );
     $dbh->disconnect;
+    $created_new_db++;
 
     $dbh = _get_dbh(RT::Handle->DSN,
             $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
