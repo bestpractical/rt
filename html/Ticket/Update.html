@@ -60,31 +60,7 @@
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
 
-% if ( @gnupg_keys_issues ) {
-<&| /Widgets/TitleBox, title => loc('GnuPG issues') &>
-<% loc("You are going to encrypt outgoing email messages, but there is a problem(s) with recipients' public keys. You have to figure out problems with keys, disable sending a message to some recipients or disable encryption.") %>
-
-<ul>
-% foreach my $issue ( @gnupg_keys_issues ) {
-<li>
-% if ( $issue->{'User'} ) {
-User <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $issue->{'User'}->id %>"><&/Elements/ShowUser, User => $issue->{'User'} &></a> has a problem.
-% } else {
-There is a problem with key(s) for address <% $issue->{'EmailAddress'} %>, but there is no user in the DB for this address.
-% }
-<% $issue->{'Message'} %>
-<br />
-Select a key you want to use for encryption:
-<& /Elements/SelectKey,
-    Name         => 'UseKey-'. $issue->{'EmailAddress'},
-    EmailAddress => $issue->{'EmailAddress'},
-    Default      => ( $issue->{'User'}? $issue->{'User'}->PreferredKey : undef ),
-&>
-</li>
-% }
-</ul>
-</&>
-% }
+<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
 
 <table border="0">
 
