@@ -444,7 +444,7 @@ sub file_content {
     diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
 
     open my $fh, "<:raw", $path
-        or die "couldn't open file '$path': $!";
+        or do { warn "couldn't open file '$path': $!"; return '' };
     my $content = do { local $/; <$fh> };
     close $fh;
 
