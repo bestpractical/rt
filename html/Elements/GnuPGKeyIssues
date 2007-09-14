@@ -47,7 +47,11 @@
 %# END BPS TAGGED BLOCK }}}
 % if ( @$Issues ) {
 <&| /Widgets/TitleBox, title => loc('GnuPG issues') &>
-<% loc("You are going to encrypt outgoing email messages, but there is a problem(s) with recipients' public keys. You have to figure out problems with keys, disable sending a message to some recipients or disable encryption.") %>
+% if (@$Issues == 1) {
+<% loc("You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key. You have to fix the problem with the key, disable sending a message to that recipient, or disable encryption.") %>
+% } else {
+<% loc("You are going to encrypt outgoing email messages, but there are problems with recipients' public keys. You have to fix the problems with the keys, disable sending a message to the recipients with key problems, or disable encryption.") %>
+% }
 
 <ul>
 % foreach my $issue ( @$Issues ) {
