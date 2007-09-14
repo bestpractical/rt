@@ -1104,10 +1104,10 @@ The response is cached. PrincipalObj should never ever change.
 sub PrincipalObj {
     my $self = shift;
 
-#    unless ( $self->id ) {
-#        $RT::Logger->error('User not found');
-#        return;
-#    }
+    unless ( $self->id ) {
+        $RT::Logger->error('User not found');
+        return;
+    }
 
     unless ( $self->{'PrincipalObj'} ) {
         my $obj = RT::Principal->new( $self->CurrentUser );
