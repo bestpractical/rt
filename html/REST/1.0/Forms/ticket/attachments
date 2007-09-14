@@ -61,10 +61,10 @@ unless ($ticket->Id) {
     return [ "# Ticket $id does not exist.", [], {}, 1 ];
 }
 
-my @arglist = split('/', $args);
+my @arglist = split('/', $args || '');
 my ($aid, $content);
 
-if ($arglist[1] eq 'content') {
+if ( defined $arglist[1] && $arglist[1] eq 'content') {
     $aid = $arglist[0];
     $content = 1;
 } else {
@@ -115,7 +115,7 @@ else {
     while (my $t = $transactions->Next) {
         my $attachments = $t->Attachments;
         while (my $a = $attachments->Next) {
-            my $size = length($a->Content);
+            my $size = length($a->Content || '');
             if ($size > 1024) { $size  = int($size/102.4)/10 . "k" }
             else              { $size .= "b" }
             push @attachments, $a->Id.": ".($a->Filename || '(Unnamed)')." (".$a->ContentType . " / ".$size.")";

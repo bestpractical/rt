@@ -237,7 +237,7 @@ Load a custom field.  If the value handed in is an integer, load by custom field
 
 sub Load {
     my $self = shift;
-    my $id = shift;
+    my $id = shift || '';
 
     if ( $id =~ /^\d+$/ ) {
         return $self->SUPER::Load( $id );
@@ -500,6 +500,7 @@ sub FriendlyType {
 
     my $type = @_ ? shift : $self->Type;
     my $max  = @_ ? shift : $self->MaxValues;
+    $max = 0 unless $max;
 
     if (my $friendly_type = $FieldTypes{$type}[$max>2 ? 2 : $max]) {
         return ( $self->loc( $friendly_type, $max ) );
@@ -740,7 +741,7 @@ Returns a composite value composed of this object's type and maximum values
 
 sub TypeComposite {
     my $self = shift;
-    join('-', $self->Type, $self->MaxValues);
+    join('-', $self->Type || '', $self->MaxValues || '');
 }
 
 =head2 TypeComposites
@@ -953,10 +954,9 @@ and returns a boolean; returns true if the Pattern is empty.
 
 sub MatchPattern {
     my $self = shift;
-    my $regex = $self->Pattern;
+    my $regex = $self->Pattern or return 1;
 
-    return 1 unless length $regex;
-    return ($_[0] =~ $regex);
+    return (($_[0] || '') =~ $regex);
 }
 
 

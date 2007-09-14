@@ -198,7 +198,8 @@ sub form_compose {
                 $sp = " "x4 if length($sp) > 16;
 
                 foreach $v (@values) {
-                    if ($v =~ /\n/) {
+                    $v = '' unless $v;
+                    if ( $v =~ /\n/) {
                         $v =~ s/^/$sp/gm;
                         $v =~ s/^$sp//;
 
@@ -268,7 +269,7 @@ sub vsplit {
 
     foreach $line (map {split /\n/} (ref $val eq 'ARRAY') ? @$val : $val)
     {
-        # XXX: This should become a real parser, à la Text::ParseWords.
+        # XXX: This should become a real parser, ? la Text::ParseWords.
         $line =~ s/^\s+//;
         $line =~ s/\s+$//;
         push @words, split /\s*,\s*/, $line;

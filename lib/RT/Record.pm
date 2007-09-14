@@ -891,7 +891,7 @@ sub Update {
             my $object = $attribute . "Obj";
             next if ($self->$object->Name eq $value);
         };
-        next if ( $value eq $self->$attribute() );
+        next if ( $value eq ( $self->$attribute() || '' ) );
         my $method = "Set$attribute";
         my ( $code, $msg ) = $self->$method($value);
         my ($prefix) = ref($self) =~ /RT(?:.*)::(\w+)/;

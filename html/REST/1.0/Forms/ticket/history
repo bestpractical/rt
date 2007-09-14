@@ -65,13 +65,18 @@ unless ($ticket->Id) {
 my $trans = $ticket->Transactions();
 my $total = $trans->Count();
 
-chomp $args;
-my @arglist = split('/', $args);
-my ($type, $tid);
+if ( $args ) {
+    chomp $args;
+}
+else {
+    $args = '';
+}
 
-if ($arglist[0] eq 'type') {
+my @arglist = split('/', $args );
+my ($type, $tid);
+if (defined $arglist[0] && $arglist[0] eq 'type') {
     $type = $arglist[1];
-} elsif ($arglist[0] eq 'id') {
+} elsif ( defined $arglist[0] && $arglist[0] eq 'id') {
     $tid = $arglist[1];
 } else {
     $type = $args;

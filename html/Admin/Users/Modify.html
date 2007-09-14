@@ -259,8 +259,9 @@ if ($Create) {
 } 
 else {
 
-    $current_tab = 'Admin/Users/Modify.html?id='.$id;
-    if ($id eq 'new') {
+    $current_tab = 'Admin/Users/Modify.html?id='.$id if $id;
+
+    if ( defined $id && $id eq 'new') {
 	( $val, $msg ) = $UserObj->Create(
 	    Name                  => $Name,
 	    EmailAddress          => $ARGS{'EmailAddress'},
@@ -307,7 +308,8 @@ else {
 		push @results, loc('User could not be created: [_1]', $msg);
 	}
     } else {
-	    $UserObj->Load($id) || $UserObj->Load($Name) || Abort("Couldn't load user '$Name'");
+	    $UserObj->Load($id) || $UserObj->Load($Name) 
+            || Abort("Couldn't load user '" . ( $Name || '') . "'");
         $val = $UserObj->Id();
     }
 

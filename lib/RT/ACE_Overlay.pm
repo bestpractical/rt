@@ -660,7 +660,7 @@ Returns a tuple of  (RT::Principal, PrincipalType)  for the principal we really 
 sub _CanonicalizePrincipal {
     my $self       = shift;
     my $princ_id   = shift;
-    my $princ_type = shift;
+    my $princ_type = shift || '';
 
     my $princ_obj = RT::Principal->new($RT::SystemUser);
     $princ_obj->Load($princ_id);

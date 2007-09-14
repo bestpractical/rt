@@ -159,7 +159,7 @@ else {
         while (my $link = $ticket->$key->Next) {
             push @val, $link->$field;
         }
-        push(@val, "") if (@val == 0 && $format eq 'l');
+        push(@val, "") if (@val == 0 && defined $format && $format eq 'l');
         push @data, [ $key => [ @val ] ] if @val;
     }
 

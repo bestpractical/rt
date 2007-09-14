@@ -208,7 +208,8 @@ if (RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} ) ne '3.4-c
   <%init>
     if ($current) {
       for my $key (keys %$data) {
-          next if $data->{$key}->{'path'} ne $current;
+          next if !defined $data->{$key}->{'path'} 
+                    || $data->{$key}->{'path'} ne $current;
           next unless    ref( $data->{$key} ) eq 'HASH'
                       && ref( $data->{$key}->{'subtabs'} ) eq 'HASH'
                       && keys %{ $data->{$key}->{'subtabs'} };

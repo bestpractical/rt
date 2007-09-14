@@ -662,10 +662,11 @@ sub AddWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
+    if ( defined $args{'PrincipalID'} && 
+            $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
-        if ( $args{'Type'} eq 'AdminCc' ) {
+        if ( defined $args{'Type'} && ($args{'Type'} eq 'AdminCc') ) {
             unless ( $self->CurrentUserHasRight('ModifyQueueWatchers')
                 or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
                 return ( 0, $self->loc('Permission Denied'))

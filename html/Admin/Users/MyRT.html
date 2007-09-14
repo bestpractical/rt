@@ -71,9 +71,10 @@
 % }
 
 <%init>
-my $current_tab = 'Admin/Users/MyRT.html?id='.$id;
+my $current_tab;
+$current_tab = 'Admin/Users/MyRT.html?id='.$id if $id;
 my $UserObj = new RT::User($session{'CurrentUser'});
-$UserObj->Load($id) || Abort("Couldn't load user '$id'");
+$UserObj->Load($id) || Abort("Couldn't load user '" . ($id || '') . "'");
 my $title = loc("RT at a glance for the user [_1]", $UserObj->Name);
 
 if ($ARGS{Reset}) {

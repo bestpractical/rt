@@ -39,7 +39,6 @@ else {
 
 $port = generate_port() unless $port;
 
-
 sub import {
     my $class = shift;
     my %args = @_;
@@ -135,7 +134,7 @@ sub started_ok {
     require RT::Test::Web;
     if ( $existing_server ) {
         ok(1, "using existing server $existing_server");
-        warn $existing_server;
+        RT::Logger->warning( $existing_server);
         return ($existing_server, RT::Test::Web->new);
     }
     my $s = RT::Interface::Web::Standalone->new($port);
@@ -346,7 +345,7 @@ sub set_rights {
         my @rights = ref $e->{'Right'}? @{ $e->{'Right'} }: ($e->{'Right'});
         foreach my $right ( @rights ) {
             my ($status, $msg) = $principal->GrantRight( %$e, Right => $right );
-            warn "$msg";
+            $RT::Logger->warning($msg);
         }
     }
     return 1;

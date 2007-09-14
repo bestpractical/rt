@@ -71,7 +71,7 @@ if ($id ne 'new') {
     }
 }
 else {
-    if (%data == 0) {
+    if (keys %data == 0) {
         return [
             "# Required: Name, EmailAddress",
             [ qw(id Name EmailAddress Organization Password Comments) ],
@@ -109,11 +109,11 @@ else {
         $id = $user->Id;
         delete $data{id};
         push(@comments, "# User $id created.");
-        goto DONE if %data == 0;
+        goto DONE if keys %data == 0;
     }
 }
 
-if (%data == 0) {
+if (keys %data == 0) {
     my @data;
 
     push @data, [ id => "user/".$user->Id ];

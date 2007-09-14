@@ -1386,7 +1386,7 @@ sub OrderByCols {
         }
         my ( $field, $subkey ) = split /\./, $row->{FIELD}, 2;
         my $meta = $self->FIELDS->{$field};
-        if ( $meta->[0] eq 'WATCHERFIELD' ) {
+        if ( defined $meta->[0] && $meta->[0] eq 'WATCHERFIELD' ) {
             # cache alias as we want to use one alias per watcher type for sorting
             my $users = $self->{_sql_u_watchers_alias_for_sort}{ $meta->[1] };
             unless ( $users ) {

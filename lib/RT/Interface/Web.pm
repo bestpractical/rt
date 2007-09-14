@@ -59,8 +59,6 @@ RT::Interface::Web
 =cut
 
 
-use URI;
-
 use strict;
 use warnings;
 

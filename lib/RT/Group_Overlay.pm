@@ -997,7 +997,7 @@ between ACL failure and non membership.
 
 sub HasMember {
     my $self    = shift;
-    my $principal = shift;
+    my $principal = shift || '';
 
 
     unless (UNIVERSAL::isa($principal,'RT::Principal')) {
@@ -1307,9 +1307,11 @@ The response is cached. PrincipalObj should never ever change.
 
 sub PrincipalObj {
     my $self = shift;
-    unless ($self->{'PrincipalObj'} &&
+    unless ( defined $self->{'PrincipalObj'} &&
+             defined $self->{'PrincipalObj'}->ObjectId &&
             ($self->{'PrincipalObj'}->ObjectId == $self->Id) &&
-            ($self->{'PrincipalObj'}->PrincipalType eq 'Group')) {
+            (defined $self->{'PrincipalObj'}->PrincipalType && 
+                $self->{'PrincipalObj'}->PrincipalType eq 'Group')) {
 
             $self->{'PrincipalObj'} = RT::Principal->new($self->CurrentUser);
             $self->{'PrincipalObj'}->LoadByCols('ObjectId' => $self->Id,

@@ -137,11 +137,11 @@ if ($ARGS{'id'} eq 'new') {
             Actions => \@Actions);
     
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
+    my $signature = $session{'CurrentUser'}->UserObj->Signature || '';
     if ( $ARGS{'UpdateTimeWorked'} || (
         defined $ARGS{'UpdateContent'}
         && $ARGS{'UpdateContent'} ne ''
-        && $ARGS{'UpdateContent'} ne "-- \n"
-           . $session{'CurrentUser'}->UserObj->Signature ) )
+        && $ARGS{'UpdateContent'} ne "-- \n" . $signature ))
     {
         $ARGS{UpdateAttachments} = $session{'Attachments'};
         push @Actions, ProcessUpdateMessage(

@@ -152,9 +152,9 @@ sub Load {
     # thing. be careful to cache all the interim tickets we try so we don't loop forever.
 
     # FIXME: there is no TicketBaseURI option in config
-    my $base_uri = RT->Config->Get('TicketBaseURI');
+    my $base_uri = RT->Config->Get('TicketBaseURI') || '';
     #If it's a local URI, turn it into a ticket id
-    if ( $base_uri && $id =~ /^$base_uri(\d+)$/ ) {
+    if ( $base_uri && defined $id && $id =~ /^$base_uri(\d+)$/ ) {
         $id = $1;
     }
 
@@ -164,7 +164,7 @@ sub Load {
     }
 
     #If we have an integer URI, load the ticket
-    if ( $id =~ /^\d+$/ ) {
+    if ( defined $id && $id =~ /^\d+$/ ) {
         my ($ticketid,$msg) = $self->LoadById($id);
 
         unless ($self->Id) {
@@ -1386,7 +1386,6 @@ sub CcAddresses {
     unless ( $self->CurrentUserHasRight('ShowTicket') ) {
         return undef;
     }
-
     return ( $self->Cc->MemberEmailAddressesAsString);
 
 }
