@@ -10,6 +10,22 @@ my $config;
 our ($existing_server, $port, $dbname);
 my $mailsent;
 
+sub generate_port {
+    my $self = shift;
+    my $port = 1024 + int rand(10000) + $$ % 1024;
+
+    my $paddr = sockaddr_in( $port, inet_aton('localhost') );
+    socket( SOCK, PF_INET, SOCK_STREAM, getprotobyname('tcp') )
+      or die "socket: $!";
+    if ( connect( SOCK, $paddr ) ) {
+        close(SOCK);
+        return generate_port();
+    }
+    close(SOCK);
+
+    return $port;
+}
+
 BEGIN {
     if ( my $test_server = $ENV{'RT_TEST_SERVER'} ) {
         my ($host, $test_port) = split(':', $test_server, 2);
@@ -19,6 +35,16 @@ BEGIN {
         # we can't parallel test with $existing_server
         undef $ENV{RT_TEST_PARALLEL};
     }
+    if ( $ENV{RT_TEST_PARALLEL} ) {
+        $port   = generate_port();
+        $dbname = "rt3test_$port";    #yes, dbname also makes use of $port
+    }
+    else {
+        $dbname = "rt3test";
+    }
+
+    $port = generate_port() unless $port;
+
 };
 
 use RT::Interface::Web::Standalone;
@@ -28,16 +54,6 @@ use Test::WWW::Mechanize;
 unshift @RT::Interface::Web::Standalone::ISA, 'Test::HTTP::Server::Simple';
 
 my @server;
-
-if ( $ENV{RT_TEST_PARALLEL} ) {
-    $port   = generate_port();
-    $dbname = "rt3test_$port";    #yes, dbname also makes use of $port
-}
-else {
-    $dbname = "rt3test";
-}
-
-$port = generate_port() unless $port;
 
 sub import {
     my $class = shift;
@@ -589,22 +605,6 @@ sub trust_gnupg_key {
         $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
     }
     return %res;
-}
-
-sub generate_port {
-    my $self = shift;
-    my $port = 1024 + int rand(10000) + $$ % 1024;
-
-    my $paddr = sockaddr_in( $port, inet_aton('localhost') );
-    socket( SOCK, PF_INET, SOCK_STREAM, getprotobyname('tcp') )
-      or die "socket: $!";
-    if ( connect( SOCK, $paddr ) ) {
-        close(SOCK);
-        return generate_port();
-    }
-    close(SOCK);
-
-    return $port;
 }
 
 END {
