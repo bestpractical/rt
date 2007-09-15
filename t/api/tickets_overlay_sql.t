@@ -6,8 +6,6 @@ use RT::Test;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 use RT::Tickets;
 use strict;
@@ -72,8 +70,6 @@ my $string = 'subject/content SQL test';
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

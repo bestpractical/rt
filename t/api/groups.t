@@ -8,19 +8,13 @@ use RT::Test;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok (require RT::Groups);
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 # next had bugs
 # Groups->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => xx );
@@ -35,13 +29,9 @@ my $bug = grep $_->id == $g->id, @{$groups->ItemsArrayRef};
 ok (!$bug, "didn't find group");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $u = RT::User->new($RT::SystemUser);
 my ($id, $msg) = $u->Create( Name => 'Membertests'. $$ );
@@ -62,13 +52,9 @@ is ($groups->Count , 1,"found the 1 group - " . $groups->Count);
 is ($groups->First->Id , $g->Id, "it's the right one");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
     no warnings qw/redefine once/;
 
 my $q = RT::Queue->new($RT::SystemUser);
@@ -150,8 +136,6 @@ is($groups->Count, 1, "RTxGroupRight found for RTxObj2");
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

@@ -8,8 +8,6 @@ use RT::Test;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 
 use RT::Link;
@@ -23,8 +21,6 @@ ok (UNIVERSAL::isa($link, 'RT::Record'));
 ok (UNIVERSAL::isa($link, 'DBIx::SearchBuilder::Record'));
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

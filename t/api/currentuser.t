@@ -8,19 +8,13 @@ use RT::Test;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok (require RT::CurrentUser);
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok (my $cu = RT::CurrentUser->new('root'));
 ok (my $lh = $cu->LanguageHandle('en-us'));
@@ -35,8 +29,6 @@ SKIP: {
 }
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

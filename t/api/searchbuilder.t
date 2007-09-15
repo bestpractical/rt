@@ -8,19 +8,13 @@ use RT::Test;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok (require RT::SearchBuilder);
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 use_ok('RT::Queues');
 ok(my $queues = RT::Queues->new($RT::SystemUser), 'Created a queues object');
@@ -43,8 +37,6 @@ is_deeply(\@items_ids, \@sorted_ids, "ItemsArrayRef sorts alphabetically by name
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

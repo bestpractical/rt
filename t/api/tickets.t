@@ -8,8 +8,6 @@ use RT::Test;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok (require RT::Tickets);
 ok( my $testtickets = RT::Tickets->new( $RT::SystemUser ) );
@@ -18,13 +16,9 @@ ok( $testtickets->LimitStatus( VALUE => 'deleted' ) );
 is( $testtickets->Count , 0 );
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 # Test to make sure that you can search for tickets by requestor address and
 # by requestor name.
@@ -89,25 +83,17 @@ is ($tix4->Count, 2);
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $t1 = RT::Ticket->new($RT::SystemUser);
 $t1->Create(Queue => 'general', Subject => "LimitWatchers test", Requestors => \['requestor1@example.com']);
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 # We assume that we've got some tickets hanging around from before.
 ok( my $unlimittickets = RT::Tickets->new( $RT::SystemUser ) );
@@ -115,8 +101,6 @@ ok( $unlimittickets->UnLimit );
 ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets" );
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

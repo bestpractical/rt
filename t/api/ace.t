@@ -8,19 +8,13 @@ use RT::Test;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok(require RT::ACE);
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $Queue = RT::Queue->new($RT::SystemUser);
 
@@ -29,13 +23,9 @@ is ($RT::System->AvailableRights->{'SuperUser'},  'Do anything and everything', 
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 use_ok('RT::User'); 
 my $user_a = RT::User->new($RT::SystemUser);
@@ -245,8 +235,6 @@ ok(  !$user_b->HasRight(Right => 'OwnTicket', Object => $q)   ,"user b does not 
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

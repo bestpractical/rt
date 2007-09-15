@@ -8,8 +8,6 @@ use RT::Test;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $user = $RT::SystemUser;
 my ($id, $msg) =  $user->AddAttribute(Name => 'SavedSearch', Content => { Query => 'Foo'} );
@@ -41,8 +39,6 @@ my $attr3 = RT::Attribute->new($RT::SystemUser);
 is ($id, 0);
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

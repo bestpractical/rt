@@ -8,8 +8,6 @@ use RT::Test;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok (require RT::Scrip);
 
@@ -48,8 +46,6 @@ isnt ($ticket2->Priority , '87', "Ticket priority is set right");
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

@@ -9,8 +9,6 @@ use RT::Test;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 use_ok ('RT::Queue');
 ok(my $testqueue = RT::Queue->new($RT::SystemUser));
@@ -86,25 +84,17 @@ is($t3->CustomFieldValues($testcf->Id)->Count , 1,
    "This ticket has 1 custom field value");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 
 ok(require RT::Ticket, "Loading the RT::Ticket library");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $t = RT::Ticket->new($RT::SystemUser);
 
@@ -116,13 +106,9 @@ like ($t->ReferredToBy->First->Base , qr/cpan.org/, "Got referredtoby");
 is ($t->ResolvedObj->Unix, 0, "It hasn't been resolved - ". $t->ResolvedObj->Unix);
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my ($id, $msg) = $ticket->Create(Subject => "Foo",
@@ -164,13 +150,9 @@ ok ($group->Id, "Found the Owner object for this ticket");
 ok($group->HasMember($RT::SystemUser->UserObj->PrincipalObj), "the owner group has the member 'RT_System'");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $t = RT::Ticket->new($RT::SystemUser);
 ok($t->Create(Queue => 'general', Subject => 'SquelchTest'));
@@ -199,13 +181,9 @@ is($#returned, -1, "The ticket has no squelched recipients". join(',',@returned)
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $t1 = RT::Ticket->new($RT::SystemUser);
 $t1->Create ( Subject => 'Merge test 1', Queue => 'general', Requestor => 'merge1@example.com');
@@ -225,13 +203,9 @@ is ($t1->Requestors->MembersObj->Count, 2);
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $root = RT::User->new($RT::SystemUser);
 $root->Load('root');
@@ -253,13 +227,9 @@ is($steal->OldValue , $root->Id , "Stolen from root");
 is($steal->NewValue , $RT::SystemUser->Id , "Stolen by the systemuser");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $tt = RT::Ticket->new($RT::SystemUser);
 my ($id, $tid, $msg)= $tt->Create(Queue => 'general',
@@ -278,8 +248,6 @@ ok(!$id,$msg);
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

@@ -8,19 +8,13 @@ use RT::Test;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok(require RT::Users);
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
     no warnings qw(redefine once);
 
 ok(my $users = RT::Users->new($RT::SystemUser));
@@ -83,8 +77,6 @@ is($users->Count, 1, "RTxUserRight found for RTxObj2");
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;
