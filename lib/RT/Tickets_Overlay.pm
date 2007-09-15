@@ -1394,7 +1394,7 @@ sub OrderByCols {
                     = $users = ( $self->_WatcherJoin( $meta->[1] ) )[2];
             }
             push @res, { %$row, ALIAS => $users, FIELD => $subkey };
-       } elsif ( $meta->[0] eq 'CUSTOMFIELD' ) {
+       } elsif ( defined $meta->[0] && $meta->[0] eq 'CUSTOMFIELD' ) {
            my ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $subkey );
            my $cfkey = $cfid ? $cfid : "$queue.$field";
            my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
