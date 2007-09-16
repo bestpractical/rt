@@ -496,9 +496,10 @@ sub InsertInitialData {
 
 =head InsertData
 
+Load some sort of data into the database, takes path to a file.
+
 =cut
 
-# load some sort of data into the database
 sub InsertData {
     my $self     = shift;
     my $datafile = shift;
