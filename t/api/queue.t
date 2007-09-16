@@ -61,7 +61,7 @@ my $Queue = RT::Queue->new($RT::SystemUser); my ($id, $msg) = $Queue->Create(Nam
                 );
 ok ($id, "Foo $id was created");
 ok(my $group = RT::Group->new($RT::SystemUser));
-ok($group->LoadQueueRoleGroup(Queue => $id, Type=> 'Cc'));
+ok($group->LoadQueueRoleGroup(Queue => $id, Type=> 'Requestor'));
 ok ($group->Id, "Found the requestors object for this Queue");
 
 

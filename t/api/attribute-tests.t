@@ -30,7 +30,7 @@ ok (UNIVERSAL::isa($attr,'RT::Attributes'), 'got the attributes object');
 
 ($id, $msg) =  $user->AddAttribute(Name => 'TestAttr', Content => 'The attribute has content'); 
 ok ($id, $msg);
-is ($attr->Count,1, " One attr after adidng a first one");
+is ($attr->Count,1, " One attr after adding a first one");
 
 my $first_attr = $user->FirstAttribute('TestAttr');
 ok($first_attr, "got some sort of attribute");
