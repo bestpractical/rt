@@ -313,6 +313,10 @@ else {
                 $s = "Unknown custom field.";
             }
             else {
+                my $vals = $ticket->CustomFieldValues($cf->id);
+                while (my $v = $vals->Next()) {
+                    $v->Delete();
+                }
                 ($n, $s) = $ticket->AddCustomFieldValue(
                              Field => $cf, Value => $val );
                 $s =~ s/^# // if defined $s;
