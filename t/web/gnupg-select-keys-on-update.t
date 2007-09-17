@@ -253,23 +253,68 @@ diag "check that key selector works and we can select trusted key";
     check_text_emails( { Encrypt => 1 }, @mail );
 }
 
+diag "check encrypting of attachments";
+{
+    unlink "t/mailbox";
+
+    ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
+    $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
+    $m->form_number(3);
+    $m->tick( Encrypt => 1 );
+    $m->field( UpdateCc => 'rt-test@example.com' );
+    $m->field( UpdateContent => 'Some content' );
+    $m->field( Attach => $0 );
+    $m->click('SubmitTicket');
+    $m->content_like(
+        qr/You are going to encrypt outgoing email messages/i,
+        'problems with keys'
+    );
+    $m->content_like(
+        qr/There are several keys suitable for encryption/i,
+        'problems with keys'
+    );
+
+    my $form = $m->form_number(3);
+    ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
+    is scalar $input->possible_values, 2, 'two options';
+
+    $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
+    $m->click('SubmitTicket');
+    $m->content_like( qr/Message recorded/i, 'Message recorded' );
+
+    my @mail = RT::Test->fetch_caught_mails;
+    ok @mail, 'there are some emails';
+    check_text_emails( { Encrypt => 1, Attachment => 1 }, @mail );
+}
+
 sub check_text_emails {
     my %args = %{ shift @_ };
     my @mail = @_;
 
     ok scalar @mail, "got some mail";
     for my $mail (@mail) {
-        if ( $args{'Encrypt'} ) {
-            unlike $mail, qr/Some content/, "outgoing email was encrypted";
-        } else {
-            like $mail, qr/Some content/, "outgoing email was not encrypted";
-        } 
-        if ( $args{'Sign'} && $args{'Encrypt'} ) {
-            like $mail, qr/BEGIN PGP MESSAGE/, 'outgoing email was signed';
-        } elsif ( $args{'Sign'} ) {
-            like $mail, qr/SIGNATURE/, 'outgoing email was signed';
-        } else {
-            unlike $mail, qr/SIGNATURE/, 'outgoing email was not signed';
+        for my $type ('email', 'attachment') {
+            next if $type eq 'attachment' && !$args{'Attachment'};
+
+            my $content = $type eq 'email'
+                        ? "Some content"
+                        : "Attachment content";
+
+            if ( $args{'Encrypt'} ) {
+                unlike $mail, qr/$content/, "outgoing $type was encrypted";
+            } else {
+                like $mail, qr/$content/, "outgoing $type was not encrypted";
+            } 
+
+            next unless $type eq 'email';
+
+            if ( $args{'Sign'} && $args{'Encrypt'} ) {
+                like $mail, qr/BEGIN PGP MESSAGE/, 'outgoing email was signed';
+            } elsif ( $args{'Sign'} ) {
+                like $mail, qr/SIGNATURE/, 'outgoing email was signed';
+            } else {
+                unlike $mail, qr/SIGNATURE/, 'outgoing email was not signed';
+            }
         }
     }
 }

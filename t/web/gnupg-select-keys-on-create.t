@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 57;
+use Test::More tests => 69;
 use RT::Test;
 use RT::Action::SendEmail;
 use File::Temp qw(tempdir);
