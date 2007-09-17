@@ -209,8 +209,10 @@ sub CleanupRequest {
     require RT::Action::SendEmail;
     RT::Action::SendEmail->CleanSlate;
     
-    require RT::Crypt::GnuPG;
-    RT::Crypt::GnuPG::UseKeyForEncryption();
+    if (RT->Config->Get('GnuPG')->{'Enable'}) {
+        require RT::Crypt::GnuPG;
+        RT::Crypt::GnuPG::UseKeyForEncryption();
+    }
 }
 # }}}
 
