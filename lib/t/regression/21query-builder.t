@@ -241,6 +241,7 @@ is( getQueryFromForm, "( id > 1234 AND Status = 'stalled' ) OR Queue != 'Regress
         "no changes, no duplicate condition with badly encoded text"
     );
 
+	$cf->delete();
 }
 
 1;
