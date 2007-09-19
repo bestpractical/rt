@@ -56,7 +56,7 @@ use RT::EmailParser ();
 
 =head1 NAME
 
-RT::Crypt::GnuPG - encryt/decrypt and sign/verify email messages with the GNU Privacy Guard (GPG)
+RT::Crypt::GnuPG - encrypt/decrypt and sign/verify email messages with the GNU Privacy Guard (GPG)
 
 =head1 DESCRIPTION
 
@@ -67,7 +67,7 @@ as well as the decryption and verification of incoming email.
 
 You can control the configuration of this subsystem from RT's configuration file.
 Some options are available via the web interface, but to enable this functionality, you
-MUST start in the congiration file.
+MUST start in the configuration file.
 
 There are two hashes, GnuPG and GnuPGOptions in the configuration file. The 
 first one controls RT specific options. It enables you to enable/disable facility 
@@ -125,7 +125,7 @@ This format doesn't take advantage of MIME, but some mail clients do
 not support GPG/MIME.
 
 We sign text parts using clear signatures. For each attachments another
-attchment with a signature is added with '.sig' extension.
+attachment with a signature is added with '.sig' extension.
 
 Encryption of text parts is implemented using inline format, other parts
 are replaced with attachments with the filename extension '.pgp'.
@@ -162,21 +162,21 @@ Other utilities may be used as well.
 In a standard installation, access to this directory should be granted to
 the web server user which is running RT's web interface, but if you're running
 cronjobs or other utilities that access RT directly via API and may generate
-encrypted/signed notifications then  theu sers you execute these scripts under
+encrypted/signed notifications then the users you execute these scripts under
 must have access too. 
 
 However, granting access to the dir to many users makes your setup less secure,
-some features, such as auto-import of keys, may not be avialable if you do not.
+some features, such as auto-import of keys, may not be available if you do not.
 To enable this features and suppress warnings about permissions on
 the dir use --no-permission-warning.
 
 =item --digest-algo
 
-This option is required in advance when RFC format for outgoung messages is
-used. We can not get default algorith from gpg program so RT uses 'SHA1' by
+This option is required in advance when RFC format for outgoing messages is
+used. We can not get default algorithm from gpg program so RT uses 'SHA1' by
 default. You may want to override it. You can use MD5, SHA1, RIPEMD160,
 SHA256 or other, however use `gpg --version` command to get information about
-supported algorithms by your gpg. These algoriths are listed as hash-functions.
+supported algorithms by your gpg. These algorithms are listed as hash-functions.
 
 =item other
 
@@ -193,7 +193,7 @@ at the bottom and two checkboxes to choose default actions.
 
 =head2 Handling incoming messages
 
-To enable handling of encryped and signed message in the RT you should add
+To enable handling of encrypted and signed message in the RT you should add
 'Auth::GnuPG' mail plugin.
 
     Set(@MailPlugins, 'Auth::MailFrom', 'Auth::GnuPG', ...other filter...);
@@ -223,7 +223,7 @@ his public key and won't be able to send him encrypted content. There are severa
 reasons why RT can't use a key. However, the actual reason is not sent to the user, 
 but sent to RT owner using 'Error to RT owner: public key'.
 
-The possible reasons: "Not Found", "Ambigious specification", "Wrong
+The possible reasons: "Not Found", "Ambiguous specification", "Wrong
 key usage", "Key revoked", "Key expired", "No CRL known", "CRL too
 old", "Policy mismatch", "Not a secret key", "Key not trusted" or
 "No specific reason given".
@@ -243,7 +243,7 @@ Template 'Error: bad GnuPG data' used to inform the user that a
 message he sent has invalid data and can not be handled.
 
 There are several reasons for this error, but most of them are data
-corruptio or absence of expected information.
+corruption or absence of expected information.
 
 In this template C<@Messages> array is available and contains list
 of error messages.
@@ -1219,7 +1219,7 @@ All hashes have Operation, Status and Message elements.
 
 =item Operation
 
-Classification of operations gnupg perfoms. Now we have suppoort
+Classification of operations gnupg performs. Now we have support
 for Sign, Encrypt, Decrypt, Verify, PassphraseCheck, RecipientsCheck and Data
 values.
 
@@ -1574,7 +1574,7 @@ sub UseKeyForEncryption {
 
 =head2 GetKeysForEncryption
 
-Takes identfier and returns keys suitable for encryption.
+Takes identifier and returns keys suitable for encryption.
 
 B<Note> that keys for which trust level is not set are
 also listed.
