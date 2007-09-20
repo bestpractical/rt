@@ -317,7 +317,7 @@ else {
                 while (my $v = $vals->Next()) {
                     $v->Delete();
                 }
-                for ( split /,/, $val ) {
+                for ( split /,\s*/, $val ) {
                     ($n, $s) = $ticket->AddCustomFieldValue(
                              Field => $cf, Value => $_ );
                     $s =~ s/^# // if defined $s;
