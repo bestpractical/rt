@@ -3,7 +3,7 @@
 use strict;
 use Test::Expect;
 #use Test::More qw/no_plan/;
-use Test::More tests => 235;
+use Test::More tests => 241;
 
 use RT;
 RT::LoadConfig();
@@ -166,6 +166,14 @@ expect_send("edit ticket/$ticket_id set 'CF-my CF$$=VALUE' ", 'Changing CF...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
 expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking new value');
 expect_like(qr/my CF$$: VALUE/i, 'Verified change');
+
+# Test reading and setting single value custom field with commas
+expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking initial value');
+expect_like(qr/my CF$$:/i, 'Verified change');
+expect_send("edit ticket/$ticket_id set 'CF-my CF$$=1,2,3' ", 'Changing CF...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
+expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking new value');
+expect_like(qr/my CF$$: 1,2,3/i, 'Verified change');
 
 # Test reading and setting custom fields with multiple values
 expect_send("show ticket/$ticket_id -f CF-MultipleCF$$", 'Checking initial value');

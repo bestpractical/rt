@@ -314,13 +314,44 @@ else {
             }
             else {
                 my $vals = $ticket->CustomFieldValues($cf->id);
-                while (my $v = $vals->Next()) {
-                    $v->Delete();
+
+                if ( $cf->SingleValue ) {
+                    my $old = $vals->Next;
+                    if ( $old ) {
+                        if ( $val ne $old->Content ) {
+                            $old->Delete;
+                            ($n, $s) = $ticket->AddCustomFieldValue(
+                                 Field => $cf, Value => $val );
+                            $s =~ s/^# // if defined $s;
+                        }
+                    }
+                    else {
+                        ($n, $s) = $ticket->AddCustomFieldValue(
+                             Field => $cf, Value => $val );
+                        $s =~ s/^# // if defined $s;
+                    }
                 }
-                for ( split /,\s*/, $val ) {
-                    ($n, $s) = $ticket->AddCustomFieldValue(
-                             Field => $cf, Value => $_ );
-                    $s =~ s/^# // if defined $s;
+                else {
+                    my @new = split ',\s*', $val;
+                    my %new;
+                    $new{$_}++ for @new;
+                     
+                    while (my $v = $vals->Next()) {
+                        my $c = $v->Content;
+                        if ( $new{$c} ) {
+                            $new{$c}--;
+                        }
+                        else {
+                            $v->Delete();
+                        }
+                    }
+                    for ( @new ) {
+                        while ( $new{$_} && $new{$_}-- ) {
+                            ($n, $s) = $ticket->AddCustomFieldValue(
+                                Field => $cf, Value => $_ );
+                            $s =~ s/^# // if defined $s;
+                        }
+                    }
                 }
             }
         }
