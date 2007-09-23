@@ -59,6 +59,7 @@ use LWP;
 use Text::ParseWords;
 use HTTP::Request::Common;
 use Term::ReadLine;
+use Text::Balanced qw/extract_quotelike/;
 
 # We derive configuration information from hardwired defaults, dotfiles,
 # and the RT* environment variables (in increasing order of precedence).
@@ -1327,11 +1328,36 @@ sub vsplit {
     my ($word, @words);
     my @values = ref $val eq 'ARRAY' ? @$val : $val;
 
-    foreach my $line (map {split /\n/} @values) {
-        # XXX: This should become a real parser, à la Text::ParseWords.
+    foreach my $line ( map { split /\n/ } @values ) {
         $line =~ s/^\s+//;
         $line =~ s/\s+$//;
-        push @words, split /\s*,\s*/, $line;
+        my ( $extracted, $remainder ) = extract_quotelike($line);
+        while ($remainder) {
+            if ($extracted) {
+                if ( $extracted =~ /^q{/ ) {
+                    $extracted =~ s/'/\\'/g;
+                    $extracted =~ s/^q{/'/;
+                    $extracted =~ s/}$/'/;
+                }
+                push @words, $extracted;
+                $remainder =~ s/^\s*,\s*//;
+            }
+            else {
+                my @t = split /,/, $remainder;
+                push @words, shift @t;
+                last unless @t;
+                $remainder =~ s/.*?,\s*//;
+            }
+            ( $extracted, $remainder ) = extract_quotelike($remainder);
+        }
+        if ( $extracted ) {
+            if ( $extracted =~ /^q{/ ) {
+                $extracted =~ s/'/\\'/g;
+                $extracted =~ s/^q{/'/;
+                $extracted =~ s/}$/'/;
+            }
+            push @words, $extracted;
+        }
     }
 
     return \@words;
