@@ -55,6 +55,7 @@ $args => undef
 </%ARGS>
 <%INIT>
 use MIME::Entity;
+use Text::Balanced qw /extract_quotelike/;
 
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
@@ -217,8 +218,21 @@ if (!keys(%data)) {
 	next unless (!%$fields || (exists $fields->{"cf-".lc $cf->Name}));
         my $vals = $ticket->CustomFieldValues($cf->Id());
         my @out = ();
-        while (my $v = $vals->Next()) {
-            push @out, $v->Content;
+        if ( $cf->SingleValue ) {
+            my $v = $vals->Next;
+            push @out, $v->Content if $v;
+        }
+        else {
+            while (my $v = $vals->Next()) {
+                my $content = $v->Content;
+                $content =~ s/'/\\'/g; 
+                if ( $v->Content =~ /,/ ) {
+                    push @out, q{'} . $content . q{'};
+                }
+                else {
+                    push @out, $content;
+                }
+            }
         }
         push @data, [ 'CF-' . $cf->Name => join ',', @out ];
     }
@@ -332,7 +346,36 @@ else {
                     }
                 }
                 else {
-                    my @new = split ',\s*', $val;
+                    my @new;
+                    my ( $extracted, $remainder ) = extract_quotelike($val);
+                    while ($remainder) {
+                        if ($extracted) {
+                            $extracted =~ s/\\'/'/g;
+                            my $length = length $extracted;
+                            my $first_letter = substr $extracted, 0, 1;
+                            push @new, substr $extracted, 
+                                 $first_letter eq 'q' ? 2 : 1, 
+                                 $first_letter eq 'q' ? $length-3 : $length-2;
+                            $remainder =~ s/\s*,\s*//;
+                        }
+                        else {
+                            my @t = split /,\s*/, $remainder;
+                            push @new, shift @t;
+                            last unless @t;
+                            $remainder =~ s/.*?,\s*//;
+                        }
+                        ( $extracted, $remainder ) =
+                            extract_quotelike($remainder);
+                    }
+                    if ( $extracted ) {
+                        $extracted =~ s/\\'/'/g;
+                        my $length = length $extracted;
+                        my $first_letter = substr $extracted, 0, 1;
+                        push @new, substr $extracted, 
+                             $first_letter eq 'q' ? 2 : 1, 
+                             $first_letter eq 'q' ? $length-3 : $length-2;
+                    }
+
                     my %new;
                     $new{$_}++ for @new;
                      
