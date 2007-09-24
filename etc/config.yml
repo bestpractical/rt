@@ -6,7 +6,7 @@ framework:
   ApplicationUUID: EAFC6FF2-5E8D-11DC-9FAD-91A9684ED971
   ConfigFileVersion: 2
   Database: 
-    CheckSchema: 1
+    CheckSchema: 0
     Database: rt3
     Driver: mysql
     Host: localhost

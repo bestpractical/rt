@@ -43,7 +43,7 @@ if ( @actions > 1 && $args{'datafile'} ) {
     exit(-1);
 }
 foreach ( @actions ) {
-    unless ( /^(?:init|create|drop|schema|acl|coredata|insert)$/ ) {
+    unless ( /^(?:init|create|drop|schema|acl|insert)$/ ) {
         print STDERR "$0 called with an invalid --action parameter.\n";
         exit(-1);
     }
@@ -55,7 +55,7 @@ foreach ( @actions ) {
 
 # convert init to multiple actions
 if ( $actions[0] eq 'init' ) {
-    @actions = qw(create schema acl coredata insert);
+    @actions = qw(create schema acl insert);
     $args{'datafile'} ||= $RT::EtcPath . "/initialdata";
 }
 
@@ -125,14 +125,6 @@ foreach my $action ( @actions ) {
 
         print "Now inserting database ACLs\n";
         Jifty->handle->InsertACL( $dbh, $args{'datadir'} ) # unless $db_type eq 'Oracle'
-    }
-    elsif ( $action eq 'coredata' ) {
-        RT::connect_to_database();
-        RT::InitLogging();
-        RT::InitSystemObjects();
-
-        print "Now inserting RT core system objects\n";
-        Jifty->handle->InsertInitialData();
     }
     elsif ( $action eq 'insert' ) {
         RT::Init();
