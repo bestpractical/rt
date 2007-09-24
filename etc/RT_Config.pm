@@ -69,26 +69,26 @@ set($Timezone , 'US/Eastern');
 # Database driver being used; case matters.  Valid types are "mysql",
 # "Oracle" and "Pg"
 
-set($DatabaseType , '@DB_TYPE@');
+set($DatabaseType , 'mysql');
 
 # The domain name of your database server
 # If you're running mysql and it's on localhost,
 # leave it blank for enhanced performance
-set($DatabaseHost   , '@DB_HOST@');
-set($DatabaseRTHost , '@DB_RT_HOST@');
+set($DatabaseHost   , 'localhost');
+set($DatabaseRTHost , 'localhost');
 
 # The port that your database server is running on.  Ignored unless it's
 # a positive integer. It's usually safe to leave this blank
-set($DatabasePort , '@DB_PORT@');
+set($DatabasePort , '');
 
 #The name of the database user (inside the database)
-set($DatabaseUser , '@DB_RT_USER@');
+set($DatabaseUser , 'rt_user');
 
 # Password the DatabaseUser should use to access the database
-set($DatabasePassword , '@DB_RT_PASS@');
+set($DatabasePassword , 'rt_pass');
 
 # The name of the RT's database on your database server
-set($DatabaseName , '@DB_DATABASE@');
+set($DatabaseName , 'rt3');
 
 # If you're using Postgres and have compiled in SSL support,
 # set DatabaseRequireSSL to 1 to turn on SSL communication
@@ -318,7 +318,7 @@ set( %GnuPG,
 # Options of GnuPG program
 
 set(%GnuPGOptions,
-    homedir => '@RT_VAR_PATH@/data/gpg',
+    homedir => '/Users/jesse/svk/3.999-DANGEROUS/var/data/gpg',
 
 # URL of a keyserver
 #    keyserver => 'hkp://subkeys.pgp.net',
@@ -360,7 +360,7 @@ set($LogToScreen    , 'error');
 # direct file logging.
 
 set($LogToFile      , undef);
-set($LogDir, '@RT_LOG_PATH@');
+set($LogDir, '/Users/jesse/svk/3.999-DANGEROUS/var/log');
 set($LogToFileNamed , "rt.log");    #log to rt.log
 
 # If set to a log level then logging will include stack
@@ -717,7 +717,7 @@ set($StrictLinkACL, 1);
 #  * More to come
 #
 
-set($DevelMode, '@RT_DEVEL_MODE@');
+set($DevelMode, '0');
 
 # }}}
 
