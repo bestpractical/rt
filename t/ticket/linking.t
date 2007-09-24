@@ -1,4 +1,4 @@
-use Test::More  tests => '89';
+use RT::Test; use Test::More  tests => '89';
 
 use strict;
 use warnings;
@@ -10,7 +10,7 @@ use_ok('RT::Model::ScripActionCollection');
 use_ok('RT::Model::Template');
 use_ok('RT::Model::ScripCollection');
 use_ok('RT::Model::Scrip');
-use RT::Test;
+
 
 
 use File::Temp qw/tempfile/;

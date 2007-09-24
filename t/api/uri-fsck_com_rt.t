@@ -1,8 +1,8 @@
 use strict;
 use warnings;
-use Test::More tests => 8;
+use RT::Test; use Test::More tests => 8;
 use RT;
-use RT::Test;
+
 
 use_ok("RT::URI::fsck_com_rt");
 my $uri = RT::URI::fsck_com_rt->new($RT::SystemUser);

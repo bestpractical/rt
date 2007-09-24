@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 78;
-use RT::Test;
+use RT::Test; use Test::More tests => 78;
+
 use RT::Model::Ticket;
 
 my $q = RT::Model::Queue->new( $RT::SystemUser );

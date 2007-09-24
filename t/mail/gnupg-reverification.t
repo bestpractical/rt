@@ -2,8 +2,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 111;
-use RT::Test;
+use RT::Test; use Test::More tests => 111;
+
 
 use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );

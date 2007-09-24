@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 
 use strict;
-use Test::More tests => 20;
+use RT::Test; use Test::More tests => 20;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
 use Encode;
 
-use RT::Test;
+
 my ($baseurl, $agent) = RT::Test->started_ok;
 $agent->cookie_jar( HTTP::Cookies->new );
 
@@ -33,7 +33,6 @@ $agent->field( 'pass' => 'password' );
 $agent->click(0);
 is($agent->{'status'}, 200, "Fetched the page ok");
 ok( $agent->{'content'} =~ /Logout/i, "Found a logout link");
-
 
 
 $agent->get($url."Ticket/Create.html?Queue=1");

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use RT::Test; use Test::More;
 
 
 my %clicky = map { $_ => 1 } grep $_, RT->Config->Get('Active_MakeClicky');
@@ -13,7 +13,7 @@ if ( keys %clicky ) {
     plan skip_all => 'No active Make Clicky actions';
 }
 
-use RT::Test;
+
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use_ok('MIME::Entity');

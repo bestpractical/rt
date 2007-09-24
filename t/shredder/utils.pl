@@ -273,9 +273,6 @@ sub __cp_db
     my( $orig, $dest ) = @_;
     Jifty->handle->dbh->disconnect;
     # DIRTY HACK: undef Handles to force reconnect
-    Jifty->handle = undef;
-    %Jifty::DBI::DBIHandle = ();
-    $Jifty::DBI::PrevHandle = undef;
 
     File::Copy::copy( $orig, $dest ) or die "Couldn't copy '$orig' => '$dest': $!";
     RT::connect_to_database();

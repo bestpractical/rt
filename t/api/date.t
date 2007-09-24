@@ -1,9 +1,8 @@
 #!/usr/bin/perl
 
-use Test::More tests => 164;
-
+use RT::Test; use Test::More tests => 164;;
 use warnings; use strict;
-use RT::Test;
+
 use RT::Model::User;
 
 use_ok('RT::Date');

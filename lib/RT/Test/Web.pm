@@ -3,7 +3,7 @@ package RT::Test::Web;
 use strict;
 use warnings;
 
-use base qw(Test::WWW::Mechanize);
+use base qw(Jifty::Test::WWW::Mechanize);
 
 require RT::Test;
 require Test::More;
@@ -19,7 +19,7 @@ sub get_ok {
 
 sub rt_base_url {
     return $RT::Test::existing_server if $RT::Test::existing_server;
-    return "http://localhost:" . RT->Config->Get('WebPort') . RT->Config->Get('WebPath') . "/";
+    return $RT::Test::server_url if $RT::Test::server_url;
 }
 
 sub login {

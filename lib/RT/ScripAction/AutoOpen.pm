@@ -96,9 +96,5 @@ sub commit {
     return 1;
 }
 
-eval "require RT::ScripAction::AutoOpen_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/AutoOpen_Vendor.pm});
-eval "require RT::ScripAction::AutoOpen_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/AutoOpen_Local.pm});
 
 1;

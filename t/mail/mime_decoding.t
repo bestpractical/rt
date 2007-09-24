@@ -1,8 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 5;
-use RT::Test nodata => 1;
+use RT::Test; use Test::More tests => 5;
 
 use_ok('RT::I18N');
 

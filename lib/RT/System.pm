@@ -1,50 +1,4 @@
-# BEGIN BPS TAGGED BLOCK {{{
-# 
-# COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
-#                                          <jesse@bestpractical.com>
-# 
-# (Except where explicitly superseded by other copyright notices)
-# 
-# 
-# LICENSE:
-# 
-# This work is made available to you under the terms of Version 2 of
-# the GNU General Public License. A copy of that license should have
-# been provided with this software, but in any event can be snarfed
-# from www.gnu.org.
-# 
-# This work is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301 or visit their web page on the internet at
-# http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
-# CONTRIBUTION SUBMISSION POLICY:
-# 
-# (The following paragraph is not intended to limit the rights granted
-# to you to modify and distribute this software under the terms of
-# the GNU General Public License and is only of importance to you if
-# you choose to contribute your changes and enhancements to the
-# community by submitting them to Best Practical Solutions, LLC.)
-# 
-# By intentionally submitting any modifications, corrections or
-# derivatives to this work, or any other work intended for use with
-# Request Tracker, to Best Practical Solutions, LLC, you confirm that
-# you are the copyright holder for those contributions and you grant
-# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
-# royalty-free, perpetual, license to use, copy, create derivative
-# works based on those contributions, and sublicense and distribute
-# those contributions and any derivatives thereof.
-# 
-# END BPS TAGGED BLOCK }}}
+
 =head1 NAME 
 
 RT::System
@@ -63,13 +17,24 @@ In the future, there will probably be other API goodness encapsulated here.
 
 =cut
 
-
-package RT::System;
-use base qw /RT::Record/;
+use warnings;
 use strict;
 
+package RT::System;
+use base qw/RT::Record/;
+
+sub new { 
+        my $class = shift;
+        my $self = {};
+        bless $self, $class;
+        return $self;
+
+    }
+
+
+our $RIGHTS;
+
 use RT::Model::ACECollection;
-use vars qw/ $RIGHTS/;
 
 # System rights are rights granted to the whole system
 # XXX TODO Can't localize these outside of having an object around.
@@ -125,11 +90,6 @@ sub AvailableRights {
     return(\%rights);
 }
 
-sub _init {
-    my $self = shift;
-    $self->SUPER::_init (@_) if @_ && $_[0];
-}
-
 =head2 id
 
 Returns RT::System's id. It's 1. 
@@ -140,26 +100,9 @@ Returns RT::System's id. It's 1.
 =cut
 
 *Id = \&id;
-
-sub id {
-    return (1);
-}
-
-=head2 Load
-
-Since this object is pretending to be an RT::Record, we need a load method.
-It does nothing
-
-=cut
-
-sub load {
-	return (1);
-}
-
-sub Name {
-    return 'RT System';
-}
-
+sub id { return (1); }
+sub load { return (1); }
+sub Name { return 'RT System'; }
 sub __set { 0 }
 sub __value { 0 }
 sub create { 0 }

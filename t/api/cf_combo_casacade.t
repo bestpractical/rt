@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 use warnings;
 use strict;
-use Test::More tests => 13;
+use RT::Test; use Test::More tests => 13;
 
-use RT::Test;
+
 
 sub fails { ok(!$_[0], "This should fail: $_[1]") }
 sub works { ok($_[0], $_[1] || 'This works') }

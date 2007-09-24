@@ -158,9 +158,4 @@ sub set_Recipients {
 
 }
 
-eval "require RT::ScripAction::Notify_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Notify_Vendor.pm});
-eval "require RT::ScripAction::Notify_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Notify_Local.pm});
-
 1;

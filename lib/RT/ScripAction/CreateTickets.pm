@@ -1237,10 +1237,5 @@ sub PostProcess {
 
 }
 
-eval "require RT::ScripAction::CreateTickets_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/CreateTickets_Vendor.pm} );
-eval "require RT::ScripAction::CreateTickets_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/CreateTickets_Local.pm} );
-
 1;
 

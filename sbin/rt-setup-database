@@ -7,14 +7,9 @@ use vars qw($Nobody $SystemUser $item);
 
 
 
-#This drags in  RT's config.pm
-# We do it in a begin block because RT::Handle needs to know the type to do its
-# inheritance
 BEGIN {
     use Jifty;
     Jifty->new();
-    use RT;
-    RT::load_config();
 };
 
 use Term::ReadKey;
@@ -72,8 +67,6 @@ my $db_name = RT->Config->Get('DatabaseName') || '';
 my $db_user = RT->Config->Get('DatabaseUser') || '';
 my $db_pass = RT->Config->Get('DatabasePassword') || '';
 
-# load it here to get error immidiatly if DB type is not supported
-require RT::Handle;
 
 if ( $db_type eq 'SQLite' && !File::Spec->file_name_is_absolute($db_name) ) {
     $db_name = File::Spec->catfile($RT::VarPath, $db_name);
@@ -93,76 +86,8 @@ print "Working with:\n"
     ."User:\t$db_user\nDBA:\t$dba_user\n";
 
 foreach my $action ( @actions ) {
-    if ( $action eq 'create' ) {
-        my $dbh = get_system_dbh();
-        print "Now creating a database for RT.\n";
-        if ( $db_type ne 'Oracle' || $dba_user ne $db_user ) {
-            RT::Handle->CreateDatabase( $dbh );
-        } else {
-            print "...skipped as $dba_user is not $db_user or we're working with Oracle.\n";
-        }
-    }
-    elsif ( $action eq 'drop' ) {
-        my $dbh = get_system_dbh();
-
-        print "Now dropping RT database\n";
-        RT::Handle->DropDatabase( $dbh, Force => $args{'force'} );
-    }
-    elsif ( $action eq 'schema' ) {
-        my $dbh = get_admin_dbh();
-
-        Jifty->handle = new RT::Handle;
-        Jifty->handle->dbh( $dbh );
-
-        print "Now populating database schema.\n";
-        Jifty->handle->InsertSchema( $dbh, $args{'datadir'} );
-    }
-    elsif ( $action eq 'acl' ) {
-        my $dbh = get_admin_dbh();
-
-        Jifty->handle = new RT::Handle;
-        Jifty->handle->dbh( $dbh );
-
-        print "Now inserting database ACLs\n";
-        Jifty->handle->InsertACL( $dbh, $args{'datadir'} ) # unless $db_type eq 'Oracle'
-    }
-    elsif ( $action eq 'insert' ) {
-        RT::Init();
-
-        print "Now inserting data\n";
-        Jifty->handle->InsertData( $args{'datafile'} || ($args{'datadir'}."/content") );
-    }
-}
-
-sub get_dba_password {
-    print "In order to create or update your RT database,"
-        . " this script needs to connect to your "
-        . " $db_type instance on $db_host as $dba_user\n";
-    print "Please specify that user's database password below. If the user has no database\n";
-    print "password, just press return.\n\n";
-    print "Password: ";
-    ReadMode('noecho');
-    my $password = ReadLine(0);
-    ReadMode('normal');
-    print "\n";
-    return ($password);
-}
-
-=head2 get_system_dbh
-
-Returns L<DBI> database handle connected to B<system> with DBA credentials.
-
-See also L<RT::Handle/system_dsn>.
-
-=cut
-
-sub get_system_dbh {
-    return _get_dbh( RT::Handle->system_dsn, $dba_user, $dba_pass );
-}
-
-sub get_admin_dbh {
-    return _get_dbh( RT::Handle->dsn, $dba_user, $dba_pass );
-}
+    if ( $action eq 'schema' ) {
+        my $dbh = 
 
 =head2 get_rt_dbh [USER, PASSWORD]
 

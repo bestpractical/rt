@@ -1,54 +1,43 @@
-package RT::Test;
 
 use strict;
 use warnings;
 
+package RT::Test;
+use base qw/Jifty::Test/;
 use Test::More;
-
 use File::Temp;
 my $config;
 our ($existing_server, $port);
 my $mailsent;
-
-BEGIN {
-    # TODO: allocate a port dynamically
-    if ( my $test_server = $ENV{'RT_TEST_SERVER'} ) {
-        my ($host, $test_port) = split(':', $test_server, 2);
-        $port = $test_port || 80;
-        $existing_server = "http://$host:$port";
-    }
-    else {
-        $port = 11229;
-    }
-};
-
-use RT::Interface::Web::Standalone;
-use Test::HTTP::Server::Simple;
-use Test::WWW::Mechanize;
-
-unshift @RT::Interface::Web::Standalone::ISA, 'Test::HTTP::Server::Simple';
 
 my @server;
 
 sub import {
     my $class = shift;
     my %args = @_;
+    $class->_setup_config(%args);
+    $class->SUPER::import(@_);
+    RT::InitSystemObjects();
+}
 
+sub _setup_config   {
+    my $class = shift;
+    my %args = (@_);
+
+    require RT;
+    RT->load_config();
+    my $port = 999;
     $config = File::Temp->new;
     print $config qq{
 set( \$WebPort , $port);
 set( \$WebBaseURL , "http://localhost:\$WebPort");
-set( \$DatabaseName , "rt3test");
-set( \$LogToSyslog , undef);
-set( \$LogToScreen , "warning");
+set( \$LogToScreen , "debug");
 };
     print $config $args{'config'} if $args{'config'};
     print $config "\n1;\n";
     $ENV{'RT_SITE_CONFIG'} = $config->filename;
     close $config;
 
-    use RT;
-    RT::load_config;
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
     # make it another function
@@ -59,62 +48,8 @@ set( \$LogToScreen , "warning");
         return 1;
     };
     RT::Config->set( 'MailCommand' => $mailfunc);
-
-    require RT::Handle;
-    unless ( $existing_server ) {
-        $class->bootstrap_db( %args );
-    }
-
-    RT->Init;
 }
-
-sub bootstrap_db {
-    my $self = shift;
-    my %args = @_;
-
-   unless (defined $ENV{'RT_DBA_USER'} && defined $ENV{'RT_DBA_PASSWORD'}) {
-	die "RT_DBA_USER and RT_DBA_PASSWORD environment variables need to be set in order to run 'make test'";
-   }
-    # bootstrap with dba cred
-    my $dbh = _get_dbh(RT::Handle->system_dsn,
-               $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
-
-
-    RT::Handle->DropDatabase( $dbh, Force => 1 );
-    RT::Handle->CreateDatabase( $dbh );
-    $dbh->disconnect;
-
-    $dbh = _get_dbh(RT::Handle->dsn,
-            $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
-
-    Jifty->handle = new RT::Handle;
-    Jifty->handle->dbh( $dbh );
-    Jifty->handle->InsertSchema( $dbh );
-
-    my $db_type = RT->Config->Get('DatabaseType');
-    Jifty->handle->InsertACL( $dbh ) unless $db_type eq 'Oracle';
-
-    Jifty->handle = new RT::Handle;
-    Jifty->handle->dbh( undef );
-    RT->connect_to_database;
-    RT->InitLogging;
-    RT->InitSystemObjects;
-    Jifty->handle->InsertInitialData;
-
-    Jifty::DBI::Record::Cachable->flush_cache;
-    Jifty->handle = new RT::Handle;
-    Jifty->handle->dbh( undef );
-    RT->Init;
-
-    Jifty->handle->print_error;
-    Jifty->handle->dbh->{PrintError} = 1;
-
-    unless ( $args{'nodata'} ) {
-        Jifty->handle->InsertData( $RT::EtcPath . "/initialdata" );
-    }
-    Jifty::DBI::Record::Cachable->flush_cache;
-}
-
+our $server_url;
 sub started_ok {
     require RT::Test::Web;
     if ( $existing_server ) {
@@ -122,26 +57,10 @@ sub started_ok {
         warn $existing_server;
         return ($existing_server, RT::Test::Web->new);
     }
-    my $s = RT::Interface::Web::Standalone->new($port);
-    push @server, $s;
-    my $ret = $s->started_ok;
-    Jifty->handle = new RT::Handle;
-    Jifty->handle->dbh( undef );
-    RT->connect_to_database;
-    return ($ret, RT::Test::Web->new);
-}
+        my $server = Jifty::Test->make_server;
+             $RT::Test::server_url = $server->started_ok."/";
 
-sub _get_dbh {
-    my ($dsn, $user, $pass) = @_;
-    my $dbh = DBI->connect(
-        $dsn, $user, $pass,
-        { RaiseError => 0, PrintError => 1 },
-    );
-    unless ( $dbh ) {
-        my $msg = "Failed to connect to $dsn as user '$user': ". $DBI::errstr;
-        print STDERR $msg; exit -1;
-    }
-    return $dbh;
+    return ($RT::Test::server_url, RT::Test::Web->new);
 }
 
 sub open_mailgate_ok {

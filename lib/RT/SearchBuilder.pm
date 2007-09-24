@@ -72,24 +72,28 @@ use UNIVERSAL::require;
 
 sub new {
     my $self = shift->SUPER::new();
-    $self->_set_current_user(@_);
+    $self->_set_current_user(@_) if ($_[0]);
     $self->_init();
     return $self;
 }
 
 sub _handle {
-
-    return RT->DatabaseHandle;
+    return Jifty->handle
 }
+
+sub current_user {
+    shift->{'user'};
+}
+
 
 # {{{ sub _init 
 sub _set_current_user  {
     my $self = shift;
-    
     $self->{'user'} = shift;
+    
     unless(defined($self->current_user)) {
 	use Carp;
-	Carp::confess("$self was Created without a CurrentUser");
+	Carp::confess("$self was Created without a CurrentUser" . join(',',@_));
 	$RT::Logger->err("$self was Created without a CurrentUser");
 	return(0);
     }

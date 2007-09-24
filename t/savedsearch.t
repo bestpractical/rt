@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use Test::More tests => 26;
+use RT::Test; use Test::More tests => 26;
 use RT::Model::User;
 use RT::Model::Group;
 use RT::Model::Ticket;
@@ -9,7 +9,7 @@ use RT::Model::Queue;
 
 use_ok('RT::SavedSearch');
 use_ok('RT::SavedSearches');
-use RT::Test;
+
 
 # Set up some infrastructure.  These calls are tested elsewhere.
 

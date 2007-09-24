@@ -1,11 +1,11 @@
-use Test::More  tests => '17';
+use RT::Test; use Test::More  tests => '17';
 
 use strict;
 use warnings;
 
 use_ok('RT');
 use_ok('RT::Model::Ticket');
-use RT::Test;
+
 
 
 my $tester = RT::Test->load_or_create_user(

@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
 
-use Test::More tests => 63;
+use RT::Test; use Test::More tests => 63;
 use strict;
 use RT;
 
 # Load the config file
-use RT::Test;
+
 
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
 

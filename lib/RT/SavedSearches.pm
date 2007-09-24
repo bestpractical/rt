@@ -165,17 +165,12 @@ sub _PrivacyObjects {
     my $self        = shift;
     my $CurrentUser = $self->current_user;
 
-    my $groups = RT::Model::GroupCollection->new(current_user => );
+    my $groups = RT::Model::GroupCollection->new($self->current_user );
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember( PrincipalId => $CurrentUser->id,
                          Recursively => 1 );
 
     return ( $CurrentUser->UserObj, @{ $groups->items_array_ref() } );
 }
-
-eval "require RT::SavedSearches_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SavedSearches_Vendor.pm});
-eval "require RT::SavedSearches_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SavedSearches_Local.pm});
 
 1;

@@ -218,9 +218,4 @@ sub DESTROY {
 
 # }}}
 
-eval "require RT::ScripAction::Generic_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Generic_Vendor.pm});
-eval "require RT::ScripAction::Generic_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Generic_Local.pm});
-
 1;

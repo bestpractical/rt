@@ -497,7 +497,6 @@ sub createPersonalGroup {
         PrincipalId => $self->current_user->PrincipalId,
         @_
     );
-
     if ( $self->current_user->PrincipalId == $args{'PrincipalId'} ) {
 
         unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {

@@ -2,8 +2,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 14;
-use RT::Test;
+use RT::Test; use Test::More tests => 14;
+
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, "logged in";

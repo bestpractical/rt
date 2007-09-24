@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use Test::More;
+use RT::Test; use Test::More;
 plan tests => 387;
 use HTTP::Request::Common;
 use HTTP::Cookies;
@@ -10,7 +10,7 @@ use Encode;
 
 my $cookie_jar = HTTP::Cookies->new;
 
-use RT::Test;
+
 my ($baseurl, $agent) = RT::Test->started_ok;
 
 # give the agent a place to stash the cookies

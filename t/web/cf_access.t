@@ -1,8 +1,8 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 26;
-use RT::Test;
+use RT::Test; use Test::More tests => 26;
+
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';

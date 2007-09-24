@@ -2,12 +2,12 @@
 
 use strict;
 use warnings;
-use Test::More; 
+use RT::Test; use Test::More; 
 plan tests => 22;
 
 use RT;
 
-use RT::Test;
+
 
 my ($u1, $g1, $pg1, $pg2, $ace, @groups, @users, @principals);
 @groups = (\$g1, \$pg1, \$pg2);

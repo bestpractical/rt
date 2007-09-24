@@ -1,10 +1,9 @@
 
 use strict;
 use warnings;
-use Test::More; 
-plan tests => 76;
-use RT;
-use RT::Test;
+
+use RT::Test; 
+use Test::More tests => 76;
 
 
 {
@@ -25,7 +24,7 @@ ok(require RT::Model::ACE);
 my $Queue = RT::Model::Queue->new($RT::SystemUser);
 
 is ($Queue->AvailableRights->{'DeleteTicket'} , 'Delete tickets', "Found the delete ticket right");
-is ($RT::System->AvailableRights->{'SuperUser'},  'Do anything and everything', "Found the superuser right");
+is (RT::System->AvailableRights->{'SuperUser'},  'Do anything and everything', "Found the superuser right");
 
 
 
@@ -52,7 +51,6 @@ my $q = RT::Model::Queue->new($RT::SystemUser);
 $q->create(Name =>'DelegationTest');
 ok ($q->id, "Created a delegation test queue");
 
-
 #------ First, we test whether a user can delegate a right that's been granted to him personally 
 my ($val, $msg) = $user_a->PrincipalObj->GrantRight(Object => $RT::System, Right => 'AdminOwnPersonalGroups');
 ok($val, $msg);
@@ -62,7 +60,7 @@ ok($val, $msg);
 
 ok($user_a->has_right( Object => $RT::System, Right => 'AdminOwnPersonalGroups')    ,"user a has the right 'AdminOwnPersonalGroups' directly");
 
-my $a_delegates = RT::Model::Group->new($user_a);
+my $a_delegates = RT::Model::Group->new( $user_a);
 $a_delegates->createPersonalGroup(Name => 'Delegates');
 ok( $a_delegates->id   ,"user a creates a personal group 'Delegates'");
 ok( $a_delegates->AddMember($user_b->PrincipalId)   ,"user a adds user b to personal group 'delegates'");

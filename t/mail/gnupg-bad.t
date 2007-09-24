@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 6;
-use RT::Test;
+use RT::Test; use Test::More tests => 6;
+
 use Cwd 'getcwd';
 
 my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );

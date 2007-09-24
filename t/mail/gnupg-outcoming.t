@@ -2,8 +2,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 176;
-use RT::Test;
+use RT::Test; use Test::More tests => 176;
+
 
 use Digest::MD5 qw(md5_hex);
 

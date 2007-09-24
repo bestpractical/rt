@@ -2,9 +2,9 @@
 
 use strict;
 use Test::Expect;
-#use Test::More qw/no_plan/;
-use Test::More tests => 217;
-use RT::Test;
+#use RT::Test; use Test::More qw/no_plan/;
+use RT::Test; use Test::More tests => 217;
+
 my ($baseurl, $m) = RT::Test->started_ok;
 use RT::Model::User;
 use RT::Model::Queue;

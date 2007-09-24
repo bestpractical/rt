@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use RT::Test; use Test::More;
 use Test::Deep;
 
 plan tests => 15;

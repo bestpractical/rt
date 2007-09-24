@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 16;
-use RT::Test;
+use RT::Test; use Test::More tests => 16;
+
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';

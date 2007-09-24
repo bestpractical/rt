@@ -2,11 +2,10 @@
 
 use strict;
 use warnings;
-use Test::More;
+use RT::Test; use Test::More;
 eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 
 plan tests => 94;
-use RT::Test nodata => 1;
 
 RT->Config->set( LogToScreen => 'debug' );
 RT->Config->set( LogStackTraces => 'error' );

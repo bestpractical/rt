@@ -70,10 +70,5 @@ sub set_ReturnAddress {
 	return($self->SUPER::set_ReturnAddress(is_comment => 1));
 }
 
-eval "require RT::ScripAction::NotifyAsComment_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/NotifyAsComment_Vendor.pm});
-eval "require RT::ScripAction::NotifyAsComment_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/NotifyAsComment_Local.pm});
-
 1;
 

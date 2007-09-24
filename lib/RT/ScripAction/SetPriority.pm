@@ -79,9 +79,5 @@ sub commit {
 
 }
 
-eval "require RT::ScripAction::SetPriority_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SetPriority_Vendor.pm});
-eval "require RT::ScripAction::SetPriority_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SetPriority_Local.pm});
 
 1;

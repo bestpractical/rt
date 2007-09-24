@@ -1,11 +1,10 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More; 
+use RT::Test; use Test::More; 
 plan tests => 22;
 
 use RT;
-use RT::Test;
 
 
 ### Set up some testing data.  Test the testing data because why not?

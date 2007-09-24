@@ -26,8 +26,6 @@ use base qw/RT::Record/;
 
 
 use Digest::MD5;
-use RT::Model::PrincipalCollection;
-use RT::Model::ACE;
 use RT::Interface::Email;
 use Encode;
 
@@ -101,6 +99,7 @@ sub create {
     my $record_transaction = delete $args{'_RecordTransaction'};
 
     #Check the ACL
+    Carp::confess unless($self->current_user);
     unless ( $self->current_user->has_right(Right => 'AdminUsers', Object => $RT::System) ) {
         return ( 0, $self->loc('No permission to create users') );
     }
@@ -1087,6 +1086,7 @@ sub PrincipalObj {
         my $obj = RT::Model::Principal->new( $self->current_user );
         $obj->load_by_id( $self->id );
         unless ( $obj->id && $obj->PrincipalType eq 'User' ) {
+            Carp::cluck;
             $RT::Logger->crit( 'Wrong principal for user #'. $self->id );
         } else {
             $self->{'PrincipalObj'} = $obj;

@@ -706,27 +706,32 @@ sub _CanonicalizePrincipal {
 
 sub _ParseObjectArg {
     my $self = shift;
-    my %args = ( Object    => undef,
-                 ObjectId    => undef,
-                 ObjectType    => undef,
-                 @_ );
+    my %args = (
+        Object     => undef,
+        ObjectId   => undef,
+        ObjectType => undef,
+        @_
+    );
 
-    if( $args{'Object'} && ($args{'ObjectId'} || $args{'ObjectType'}) ) {
-	$RT::Logger->crit( "Method called with an ObjectType or an ObjectId and Object args" );
-	return ();
-    } elsif( $args{'Object'} && !UNIVERSAL::can($args{'Object'},'id') ) {
-	$RT::Logger->crit( "Method called called Object that has no id method" );
-	return ();
-    } elsif( $args{'Object'} ) {
-	my $obj = $args{'Object'};
-	return ($obj, ref $obj, $obj->id);
+    if ( $args{'Object'} && ( $args{'ObjectId'} || $args{'ObjectType'} ) ) {
+        $RT::Logger->crit(
+            "Method called with an ObjectType or an ObjectId and Object args"
+        );
+        return ();
+    } elsif ( $args{'Object'} && !UNIVERSAL::can( $args{'Object'}, 'id' ) ) {
+        $RT::Logger->crit( "Method called called Object that has no id method");
+        return ();
+    } elsif ( $args{'Object'} ) {
+        my $obj = $args{'Object'};
+        return ( $obj, ref $obj, $obj->id );
     } elsif ( $args{'ObjectType'} ) {
-	my $obj =  $args{'ObjectType'}->new( $self->current_user );
-	$obj->load( $args{'ObjectId'} );
-	return ($obj, ref $obj, $obj->id);
+        my $obj = $args{'ObjectType'}->new( $self->current_user );
+        $obj->load( $args{'ObjectId'} );
+        return ( $obj, ref $obj, $obj->id );
     } else {
-	$RT::Logger->crit( "Method called with wrong args" );
-	return ();
+        Carp::confess;
+        $RT::Logger->crit("Method called with wrong args");
+        return ();
     }
 }
 

@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 use strict;
-use Test::More tests => 46;
+use RT::Test; use Test::More tests => 46;
 use File::Temp;
-use RT::Test;
+
 use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';

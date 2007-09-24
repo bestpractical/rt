@@ -1,10 +1,10 @@
 
 use strict;
 use warnings;
-use Test::More; 
+use RT::Test; use Test::More; 
 plan tests => 26;
 use RT;
-use RT::Test;
+
 
 
 {

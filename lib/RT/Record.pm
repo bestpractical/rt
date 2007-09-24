@@ -72,15 +72,15 @@ use RT::Model::Attribute;
 use Encode qw();
 
 our $_TABLE_ATTR = { };
-use base qw(RT::Base);
 use base qw(Jifty::Record);
+use base qw(RT::Base);
 
 # {{{ sub _init 
 
 sub new {
     my $class = shift;
     my $self = $class->SUPER::new(handle => Jifty->handle, current_user => $_[0]);
-    $self->current_user(@_) if (UNIVERSAL::isa($_[0], "RT::CurrentUser"));
+    $self->current_user(@_) if (UNIVERSAL::isa($_[0], "RT::Model::User") || UNIVERSAL::isa($_[0],'RT::CurrentUser'));
     $self->_init(@_);
     return $self;
 }
@@ -93,10 +93,7 @@ $class = ref($class) || $class;
 $class =~ s/^(.*):://g;
 return $class;
 }
-
-sub _init {
-    my $self = shift;
-}
+sub _init{}
 
 sub __set {
     my $self = shift;
@@ -174,7 +171,7 @@ sub attributes {
     my $self = shift;
     
     unless ($self->{'attributes'}) {
-        $self->{'attributes'} = RT::Model::AttributeCollection->new($self->current_user);     
+        $self->{'attributes'} = RT::Model::AttributeCollection->new( $self->current_user);     
        $self->{'attributes'}->LimitToObject($self); 
     }
     return ($self->{'attributes'}); 
@@ -265,12 +262,6 @@ sub first_attribute {
     return ($self->attributes->Named( $name ))[0];
 }
 
-
-# {{{ sub _Handle 
-sub _Handle { return Jifty->handle }
-sub _handle { return Jifty->handle }
- 
-# }}}
 
 # {{{ sub create 
 

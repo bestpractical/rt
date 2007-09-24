@@ -1,9 +1,8 @@
 #!/usr/bin/perl
 
 use strict;
-use Test::More tests => 138;
+use RT::Test tests => 138;
 
-use RT::Test;
 
 # Before we get going, ditch all object_cfs; this will remove 
 # all custom fields systemwide;

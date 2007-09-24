@@ -132,9 +132,4 @@ sub set_ReturnAddress {
   
 # }}}
 
-eval "require RT::ScripAction::Autoreply_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Autoreply_Vendor.pm});
-eval "require RT::ScripAction::Autoreply_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Autoreply_Local.pm});
-
 1;

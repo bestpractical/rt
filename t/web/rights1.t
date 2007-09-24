@@ -2,8 +2,8 @@
 use strict;
 use HTTP::Cookies;
 
-use Test::More tests => 37;
-use RT::Test;
+use RT::Test; use Test::More tests => 37;
+
 my ($baseurl, $agent) = RT::Test->started_ok;
 
 # Create a user with basically no rights, to start.

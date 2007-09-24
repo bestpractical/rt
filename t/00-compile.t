@@ -1,14 +1,11 @@
 
 use strict;
 use warnings;
-use Carp::REPL;
-use RT::Test nodata => 1;
-use Test::More tests => 32;
+use RT::Test; use Test::More tests => 32;
 
 require_ok("RT");
 require_ok("RT::Test");
 require_ok("RT::Model::ACECollection");
-require_ok("RT::Handle");
 require_ok("RT::Model::Transaction");
 require_ok("RT::Interface::CLI");
 require_ok("RT::Interface::Email");

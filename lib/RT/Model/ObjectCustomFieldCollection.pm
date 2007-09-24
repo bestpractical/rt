@@ -45,10 +45,11 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Model::ObjectCustomFieldCollection;
 
+use warnings;
 use strict;
-no warnings qw(redefine);
+package RT::Model::ObjectCustomFieldCollection;
+use base qw/RT::SearchBuilder/;
 
 sub limit_to_custom_field {
     my $self = shift;

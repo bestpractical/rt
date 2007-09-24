@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 41;
-use RT::Test;
+use RT::Test; use Test::More tests => 41;
+
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';

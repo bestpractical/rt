@@ -134,8 +134,11 @@ sub loc {
         return $self->current_user->loc(@_);
 
     }
-    else {
+    elsif(RT->SystemUser) {
         return RT->SystemUser->loc(@_);
+    }
+    else {
+        return(@_);
     }
 }
 

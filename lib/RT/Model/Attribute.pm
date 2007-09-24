@@ -45,10 +45,12 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
+
+use warnings;
+use strict;
 package RT::Model::Attribute;
 
-use strict;
-no warnings qw(redefine);
 use Storable qw/nfreeze thaw/;
 use MIME::Base64;
 
@@ -70,7 +72,7 @@ column        Content =>   type is 'blob', default is '';
 
 =head1 NAME
 
-  RT::Model::Attribute_Overlay 
+  RT::Model::Attribute 
 
 =head1 Content
 

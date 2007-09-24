@@ -1,8 +1,8 @@
 
-use Test::More; 
+use RT::Test; use Test::More; 
 plan tests => 7;
 use RT;
-use RT::Test;
+
 
 
 {

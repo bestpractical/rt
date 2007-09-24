@@ -63,10 +63,10 @@ my $ACL = new RT::Model::ACECollection($CurrentUser);
 =cut
 
 
-package RT::Model::ACECollection;
-
 use strict;
-no warnings qw(redefine);
+use warnings;
+package RT::Model::ACECollection;
+use base qw/RT::SearchBuilder/;
 
 
 =head2 Next
