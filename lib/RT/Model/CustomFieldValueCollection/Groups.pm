@@ -52,6 +52,7 @@ use warnings;
 package RT::Model::CustomFieldValueCollection::Groups;
 use base qw(RT::Model::CustomFieldValueCollection::External);
 
+sub record_class { 'RT::Model::CustomFieldValue'}
 sub SourceDescription {
     return 'RT user defined groups';
 }

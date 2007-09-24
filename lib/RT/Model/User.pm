@@ -100,7 +100,7 @@ sub create {
 
     #Check the ACL
     Carp::confess unless($self->current_user);
-    unless ( $self->current_user->has_right(Right => 'AdminUsers', Object => $RT::System) ) {
+    unless ( $self->current_user->has_right(Right => 'AdminUsers', Object => RT->System) ) {
         return ( 0, $self->loc('No permission to create users') );
     }
 
@@ -143,8 +143,8 @@ sub create {
     }
 
     #SANITY CHECK THE NAME AND ABORT IF IT'S TAKEN
-    if ($RT::SystemUser) {   #This only works if RT::SystemUser has been defined
-        my $TempUser = RT::Model::User->new($RT::SystemUser);
+    if (RT->SystemUser) {   #This only works if RT::SystemUser has been defined
+        my $TempUser = RT::Model::User->new(RT->SystemUser);
         $TempUser->load( $args{'Name'} );
         return ( 0, $self->loc('Name in use') ) if ( $TempUser->id );
 
@@ -267,7 +267,7 @@ sub set_Privileged {
     my $val = shift;
 
     #Check the ACL
-    unless ( $self->current_user->has_right(Right => 'AdminUsers', Object => $RT::System) ) {
+    unless ( $self->current_user->has_right(Right => 'AdminUsers', Object => RT->System) ) {
         return ( 0, $self->loc('Permission Denied') );
     }
     my $priv = RT::Model::Group->new($self->current_user);
@@ -552,7 +552,7 @@ sub validate_EmailAddress {
     # if the email address is null, it's always valid
     return (1) if ( !$Value || $Value eq "" );
 
-    my $TempUser = RT::Model::User->new($RT::SystemUser);
+    my $TempUser = RT::Model::User->new(RT->SystemUser);
     $TempUser->load_by_email($Value);
 
     if ( $TempUser->id && ( !$self->id || $TempUser->id != $self->id ) )
@@ -1056,7 +1056,7 @@ user will fail. The user will appear in no user listings.
 
 sub set_Disabled {
     my $self = shift;
-    unless ( $self->current_user->has_right(Right => 'AdminUsers', Object => $RT::System) ) {
+    unless ( $self->current_user->has_right(Right => 'AdminUsers', Object => RT->System) ) {
         return (0, $self->loc('Permission Denied'));
     }
     return $self->PrincipalObj->set_Disabled(@_);
@@ -1226,7 +1226,7 @@ sub CurrentUserCanModify {
     my $self  = shift;
     my $right = shift;
 
-    if ( $self->current_user->has_right(Right => 'AdminUsers', Object => $RT::System) ) {
+    if ( $self->current_user->has_right(Right => 'AdminUsers', Object => RT->System) ) {
         return (1);
     }
 
@@ -1238,7 +1238,7 @@ sub CurrentUserCanModify {
 
     #If the current user is trying to modify themselves
     elsif ( ( $self->id == $self->current_user->id )
-        and ( $self->current_user->has_right(Right => 'ModifySelf', Object => $RT::System) ) )
+        and ( $self->current_user->has_right(Right => 'ModifySelf', Object => RT->System) ) )
     {
         return (1);
     }
@@ -1265,7 +1265,7 @@ has the requested right. returns undef otherwise
 sub current_user_has_right {
     my $self  = shift;
     my $right = shift;
-    return ( $self->current_user->has_right(Right => $right, Object => $RT::System) );
+    return ( $self->current_user->has_right(Right => $right, Object => RT->System) );
 }
 
 sub _PrefName {
@@ -1442,10 +1442,10 @@ sub _CleanupInvalidDelegations {
     my $in_trans = $args{InsideTransaction};
 
     return(1) if ($self->has_right(Right => 'DelegateRights',
-                  Object => $RT::System));
+                  Object => RT->System));
 
     # Look up all delegation rights currently posessed by this user.
-    my $deleg_acl = RT::Model::ACECollection->new($RT::SystemUser);
+    my $deleg_acl = RT::Model::ACECollection->new(RT->SystemUser);
     $deleg_acl->LimitToPrincipal(Type => 'User',
                  Id => $self->PrincipalId,
                  IncludeGroupMembership => 1);
@@ -1457,7 +1457,7 @@ sub _CleanupInvalidDelegations {
 
     # Look up all rights delegated by this principal which are
     # inconsistent with the allowed delegation objects.
-    my $acl_to_del = RT::Model::ACECollection->new($RT::SystemUser);
+    my $acl_to_del = RT::Model::ACECollection->new(RT->SystemUser);
     $acl_to_del->DelegatedBy(Id => $self->id);
     foreach (@allowed_deleg_objects) {
     $acl_to_del->LimitNotObject($_);
@@ -1494,7 +1494,7 @@ sub _set {
 
     # Nobody is allowed to futz with RT_System or Nobody 
 
-    if ( ($self->id == $RT::SystemUser->id )  || 
+    if ( ($self->id == RT->SystemUser->id )  || 
          ($self->id == $RT::Nobody->id)) {
         return ( 0, $self->loc("Can not modify system users") );
     }
@@ -1565,7 +1565,7 @@ sub _value {
     }
 
     #If the user has the admin users right, return the field
-    elsif ($self->current_user &&  $self->current_user->has_right(Right =>'AdminUsers', Object => $RT::System) ) {
+    elsif ($self->current_user &&  $self->current_user->has_right(Right =>'AdminUsers', Object => RT->System) ) {
         return ( $self->SUPER::_value($field) );
     }
     else {

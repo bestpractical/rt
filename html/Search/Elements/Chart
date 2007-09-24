@@ -55,9 +55,9 @@ $ChartStyle => 'bars'
 use RT::Report::Tickets;
 my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
 $tix->from_sql( $Query );
-my $count_name = $tix->Column( FUNCTION => 'COUNT', column => 'id' );
-$tix->GroupBy( column => $PrimaryGroupBy );
-my $value_name = $tix->Column( column => $PrimaryGroupBy );
+my $count_name = $tix->column( function => 'COUNT', column => 'id' );
+$tix->group_by( column => $PrimaryGroupBy );
+my $value_name = $tix->column( column => $PrimaryGroupBy );
 
 my %class = (
     Queue => 'RT::Model::Queue',

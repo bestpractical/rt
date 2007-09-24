@@ -166,6 +166,7 @@ sub create {
 
     }
    
+    Carp::confess unless  $self->current_user;
     # object_right is the right that the user has to have on the object for them to have $right on this attribute
     my $object_right = $self->LookupObjectRight(
         Right      => 'create',
@@ -179,6 +180,8 @@ sub create {
     elsif ($object_right eq 'allow') {
         # do nothing, we're ok
     }
+
+
     elsif (!$self->current_user->has_right( Object => $args{Object}, Right => $object_right)) {
         return (0, $self->loc('Permission Denied'));
     }

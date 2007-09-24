@@ -201,9 +201,9 @@ sub LanguageHandle {
         || !UNIVERSAL::can( $self->{'LangHandle'}, 'maketext' )
         || @_ )
     {
-        if (   !$RT::SystemUser
-            || !$RT::SystemUser->id
-            || ( $self->id || 0 ) == $RT::SystemUser->id ) {
+        if (   !RT->SystemUser
+            || !RT->SystemUser->id
+            || ( $self->id || 0 ) == RT->SystemUser->id ) {
             @_ = qw(en-US);
         }
         elsif ( $self->id && $self->Lang ) {
@@ -251,7 +251,7 @@ Return the current currentuser object
 
 =cut
 
-sub CurrentUser {
+sub current_user {
     my $self = shift;
     return($self);
 

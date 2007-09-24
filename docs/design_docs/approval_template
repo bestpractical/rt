@@ -1,13 +1,13 @@
 ===Create-Ticket: approval
  {  my $name = "HR";
-     my $groups = RT::Model::GroupCollection->new($RT::SystemUser);
+     my $groups = RT::Model::GroupCollection->new(RT->SystemUser);
    $groups->LimitToUserDefinedGroups();
    $groups->limit(column => 'Name', operator => '=', value => "$name");
    $groups->WithMember($TransactionObj->CreatorObj->id);
 
    my $groupid = $groups->first->id;
 
-   my $adminccs = RT::Model::UserCollection->new($RT::SystemUser);
+   my $adminccs = RT::Model::UserCollection->new(RT->SystemUser);
    $adminccs->WhoHaveRight(Right => 'AdminGroup', IncludeSystemRights => undef, IncludeSuperusers => 0, IncludeSubgroupMembers => 0, Object => $groups->first);
 
     my @admins;

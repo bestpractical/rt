@@ -107,7 +107,7 @@ my $action = RT::ScripAction::CreateTickets->new(CurrentUser => $session{'Curren
 ;
 if ($ARGS{'Parse'} && $ARGS{'Template'}) {
     $string = "";
-    my $cgi_object = $m->cgi_object;
+    my $cgi_object = Jifty->handler->cgi;
     my $fh = $cgi_object->upload('Template');
     my $filename = "$fh";
 

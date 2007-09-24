@@ -87,7 +87,7 @@ print "Working with:\n"
 
 foreach my $action ( @actions ) {
     if ( $action eq 'schema' ) {
-        my $dbh = 
+        my $dbh = Jifty->handle_handle;
 
 =head2 get_rt_dbh [USER, PASSWORD]
 

@@ -153,10 +153,11 @@ $m->comp(
     Parent    => $message->id,
     ParentObj => $message
 );
-
+</%perl>
+</div>
+<%perl>
 }
 </%PERL>
-</div>
 <%ARGS>
 $Ticket => undef
 $Transaction => undef

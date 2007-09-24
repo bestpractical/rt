@@ -79,7 +79,7 @@
 <& /Elements/Submit, Label => loc('Forward Message'), Name => 'Forward' &>
 </form>
 <%INIT>
-my $TicketObj = LoadTicket($id);
+my $TicketObj = load_ticket($id);
 $id = $ARGS{'id'} = $TicketObj->id;
 
 Abort( loc("Permission denied") )

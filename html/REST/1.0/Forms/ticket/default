@@ -132,7 +132,7 @@ else {
             }
             # Set custom field
             elsif ($k =~ /^CF-/i) {
-                my $cf = RT::Model::CustomField->new( $RT::SystemUser );
+                my $cf = RT::Model::CustomField->new( RT->SystemUser );
                 my $cfk = $k;
                 $cfk =~ s/^CF-//i;
                 unless($cf->load_by_name( Name => $cfk )) {
@@ -307,7 +307,7 @@ else {
         }
         # Set custom field
         elsif ($key =~ /^CF-/i) {
-            my $cf = RT::Model::CustomField->new( $RT::SystemUser );
+            my $cf = RT::Model::CustomField->new( RT->SystemUser );
             $key =~ s/^CF-//i;
             if (not $cf->load_by_name( Name => $key )) {
                 $n = 0;

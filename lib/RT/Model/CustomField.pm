@@ -188,7 +188,7 @@ sub create {
         @_,
     );
 
-    unless ( $self->current_user->has_right(Object => $RT::System, Right => 'AdminCustomField') ) {
+    unless ( $self->current_user->has_right(Object => RT->System, Right => 'AdminCustomField') ) {
         return (0, $self->loc('Permission Denied'));
     }
 
@@ -204,7 +204,7 @@ sub create {
     # do nothing -- things below are strictly backward compat
     }
     elsif (  ! $args{'Queue'} ) {
-        unless ( $self->current_user->has_right( Object => $RT::System, Right => 'AssignCustomFields') ) {
+        unless ( $self->current_user->has_right( Object => RT->System, Right => 'AssignCustomFields') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
         $args{'LookupType'} = 'RT::Model::Queue-RT::Model::Ticket';
@@ -437,7 +437,7 @@ sub validate_Queue {
     # 0 means "Global" null would _not_ be ok.
     return 1 if $id eq '0';
 
-    my $q = RT::Model::Queue->new( $RT::SystemUser );
+    my $q = RT::Model::Queue->new( RT->SystemUser );
     $q->load( $id );
     return undef unless $q->id;
     return 1;

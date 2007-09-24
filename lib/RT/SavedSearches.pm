@@ -165,9 +165,10 @@ sub _PrivacyObjects {
     my $self        = shift;
     my $CurrentUser = $self->current_user;
 
-    my $groups = RT::Model::GroupCollection->new($self->current_user );
+    Carp::confess unless ($self->current_user);
+    my $groups = RT::Model::GroupCollection->new($self->current_user);
     $groups->LimitToUserDefinedGroups;
-    $groups->WithMember( PrincipalId => $CurrentUser->id,
+    $groups->WithMember( PrincipalId => $self->current_user->id,
                          Recursively => 1 );
 
     return ( $CurrentUser->UserObj, @{ $groups->items_array_ref() } );

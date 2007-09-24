@@ -22,7 +22,7 @@ ok(require RT::Model::Template);
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-my $t = RT::Model::Template->new($RT::SystemUser);
+my $t = RT::Model::Template->new(RT->SystemUser);
 $t->create(Name => "Foo", Queue => 1);
 my $t2 = RT::Model::Template->new($RT::Nobody);
 $t2->load($t->id);

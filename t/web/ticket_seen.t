@@ -62,7 +62,7 @@ diag "user B adds a message, we check that user A see notification and can clear
         'we have not seen something'
     );
 
-    $agent_a->follow_link_ok({text => 'mark'}, 'try to mark all as seen');
+    $agent_a->follow_link_ok(text => 'mark');
     $agent_a->content_like(
         qr/Marked all messages as seen/ims,
         'see success message'

@@ -97,7 +97,7 @@ sub create {
     }
 
     unless ( defined $args{'SortOrder'} ) {
-        my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new( $RT::SystemUser );
+        my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new( RT->SystemUser );
         $ObjectCFs->LimitToObjectId( $args{'ObjectId'} );
         $ObjectCFs->LimitToLookupType( $cf->LookupType );
         $ObjectCFs->order_by( column => 'SortOrder', order => 'DESC' );

@@ -90,7 +90,7 @@ if ($id) {
         }
         };
 }
-if ($session{'CurrentUser'}->has_right( Object => $RT::System, Right => 'AdminQueue')) {
+if ($session{'CurrentUser'}->has_right( Object => RT->System, Right => 'AdminQueue')) {
   $tabs->{"A"} = { title => loc('Select queue'),
   		     	path => "Admin/Queues/",
 			   };

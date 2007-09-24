@@ -23,7 +23,7 @@ ok (require RT::SearchBuilder);
     undef $main::_STDERR_;
 
 use_ok('RT::Model::QueueCollection');
-ok(my $queues = RT::Model::QueueCollection->new($RT::SystemUser), 'Created a queues object');
+ok(my $queues = RT::Model::QueueCollection->new(RT->SystemUser), 'Created a queues object');
 ok( $queues->find_all_rows(),'unlimited the result set of the queues object');
 my $items = $queues->items_array_ref();
 my @items = @{$items};

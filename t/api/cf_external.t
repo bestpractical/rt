@@ -2,17 +2,16 @@
 
 use warnings;
 use strict;
-use RT::Test; use Test::More tests => 11;
+use RT::Test; use Test::More tests => 12;
 
-use RT;
 
 sub new (*) {
     my $class = shift;
-    return $class->new($RT::SystemUser);
+    return $class->new(RT->SystemUser);
 }
 
 use constant VALUES_CLASS => 'RT::Model::CustomFieldValueCollection::Groups';
-
+use_ok(VALUES_CLASS);
 my $q = new( RT::Model::Queue );
 isa_ok( $q, 'RT::Model::Queue' );
 my ($qid) = $q->create( Name => "CF-External-". $$ );
@@ -35,7 +34,7 @@ isa_ok( $cf, 'RT::Model::CustomField' );
 
 {
     # create at least on group for the tests
-    my $group = RT::Model::Group->new( $RT::SystemUser );
+    my $group = RT::Model::Group->new( RT->SystemUser );
     my ($ret, $msg) = $group->create_userDefinedGroup( Name => $q->Name );
     ok $ret, 'Created group' or diag "error: $msg";
 }

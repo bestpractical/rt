@@ -12,7 +12,7 @@ use RT;
     undef $main::_STDERR_;
 
 use_ok('RT::Model::CustomField');
-ok(my $cf = RT::Model::CustomField->new($RT::SystemUser));
+ok(my $cf = RT::Model::CustomField->new(RT->SystemUser));
 ok(my ($id, $msg)=  $cf->create( Name => 'TestingCF',
                                  Queue => '0',
                                  SortOrder => '1',
@@ -31,7 +31,7 @@ ok(!$cf->SingleValue );
 ok(my ($bogus_val, $bogus_msg) = $cf->set_Type('BogusType') , "Trying to set a custom field's type to a bogus type");
 is($bogus_val , 0, "Unable to set a custom field's type to a bogus type");
 
-ok(my $bad_cf = RT::Model::CustomField->new($RT::SystemUser));
+ok(my $bad_cf = RT::Model::CustomField->new(RT->SystemUser));
 ok(my ($bad_id, $bad_msg)=  $cf->create( Name => 'TestingCF-bad',
                                  Queue => '0',
                                  SortOrder => '1',
@@ -48,7 +48,7 @@ is($bad_id , 0, 'Global custom field correctly decided to not create a cf with a
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-ok(my $cf = RT::Model::CustomField->new($RT::SystemUser));
+ok(my $cf = RT::Model::CustomField->new(RT->SystemUser));
 $cf->load(1);
 is($cf->id , 1);
 ok(my ($val,$msg)  = $cf->AddValue(Name => 'foo' , Description => 'TestCFValue', SortOrder => '6'));
@@ -65,7 +65,7 @@ ok ($delval,"Deleting a cf value: $delmsg");
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-ok(my $cf = RT::Model::CustomField->new($RT::SystemUser));
+ok(my $cf = RT::Model::CustomField->new(RT->SystemUser));
 ok($cf->validate_Type('SelectSingle'));
 ok($cf->validate_Type('SelectMultiple'));
 ok(!$cf->validate_Type('SelectFooMultiple'));

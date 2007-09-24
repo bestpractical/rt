@@ -363,7 +363,7 @@ while ( my $Ticket = $Tickets->next ) {
     @results = ( @results, @tempresults );
 }
 
-my $TxnCFs = RT::Model::CustomFieldCollection->new(  );
+my $TxnCFs = RT::Model::CustomFieldCollection->new( $session{'CurrentUser'} );
 $TxnCFs->LimitToLookupType( RT::Model::Transaction->CustomFieldLookupType );
 $TxnCFs->LimitToGlobalOrObjectId( sort keys %queues );
 
@@ -371,7 +371,7 @@ $TxnCFs->LimitToGlobalOrObjectId( sort keys %queues );
 <%args>
 $Format => undef
 $Page => 1
-$Rows => undef
+$Rows => 50
 $Order => 'ASC'
 $order_by => 'id'
 $Query => undef

@@ -77,7 +77,7 @@ sub prepare  {
 sub commit {
     my $self = shift;
 
-    my $Links=RT::Model::LinkCollection->new($RT::SystemUser);
+    my $Links=RT::Model::LinkCollection->new(RT->SystemUser);
     $Links->limit(column => 'Type', value => 'MemberOf');
     $Links->limit(column => 'Target', value => $self->TicketObj->id);
 

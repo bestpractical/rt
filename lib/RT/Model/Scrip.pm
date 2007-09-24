@@ -125,7 +125,7 @@ sub create {
     );
 
     unless ( $args{'Queue'} ) {
-        unless ( $self->current_user->has_right( Object => $RT::System,
+        unless ( $self->current_user->has_right( Object => RT->System,
                                                Right  => 'ModifyScrips' ) )
         {
             return ( 0, $self->loc('Permission Denied') );
@@ -579,7 +579,7 @@ sub has_right {
     }
     else {
         return $args{'Principal'}->has_right(
-            Object => $RT::System,
+            Object => RT->System,
             Right  => $args{'Right'},
         );
     }

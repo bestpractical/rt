@@ -53,7 +53,7 @@
     Title => $title
 &>
 <& /Elements/ListActions, actions => \@actions &>
-% if ($session{'CurrentUser'}->has_right( Object=> $RT::System, Right => 'SuperUser')) {
+% if ($session{'CurrentUser'}->has_right( Object=> RT->System, Right => 'SuperUser')) {
 <p>
   <&|/l&>You can also edit the predefined search itself</&>:
   <a href="<% RT->Config->Get('WebPath').'/Search/Build.html?'.

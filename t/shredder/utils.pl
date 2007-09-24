@@ -8,10 +8,6 @@ require File::Path;
 require File::Copy;
 require Cwd;
 
-BEGIN {
-### after:     push @INC, qw(@RT_LIB_PATH@);
-    push @INC, qw(/opt/rt3/local/lib /opt/rt3/lib);
-}
 use RT::Shredder;
 
 =head1 DESCRIPTION
@@ -118,16 +114,10 @@ in common situation.
 
 sub init_db
 {
-    RT::load_config();
-    rewrite_rtconfig();
-    cleanup_tmp();
-    RT::InitLogging();
 
-    diag( _init_db() );
 
-    RT::Init();
     $SIG{__WARN__} = sub { $RT::Logger->warning( @_ ); warn @_ };
-    $SIG{__DIE__} = sub { $RT::Logger->crit( @_ ) unless $^S; die @_ };
+    $SIG{__DIE__} = sub { $RT::Logger->crit( @_ ) unless $^S; Carp::confess @_ };
 }
 
 use IPC::Open2;

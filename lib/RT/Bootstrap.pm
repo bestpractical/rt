@@ -36,7 +36,7 @@ sub CreateDatabase {
     my $dbh  = shift || die "No DBI handle provided";
     my $db_type = RT->Config->Get('DatabaseType');
     my $db_name = RT->Config->Get('DatabaseName');
-    print "Creating $db_type database $db_name.\n";
+    #print "Creating $db_type database $db_name.\n";
     if ( $db_type eq 'SQLite' ) {
         return;
     }
@@ -102,7 +102,7 @@ END
 
     }
 
-    print "Dropping $db_type database $db_name.\n";
+    #print "Dropping $db_type database $db_name.\n";
 
     if ( $db_type eq 'SQLite' ) {
 	my $path = $db_name;
@@ -114,7 +114,7 @@ END
 }
 
 sub _yesno {
-    print "Proceed [y/N]:";
+    #print "Proceed [y/N]:";
     my $x = scalar(<STDIN>);
     $x =~ /^y/i;
 }
@@ -140,7 +140,7 @@ sub InsertSchema {
     }
 
     my (@schema);
-    print "Creating database schema.\n";
+    #print "Creating database schema.\n";
 
     open my $fh_schema, "<$file";
 
@@ -167,7 +167,7 @@ sub InsertSchema {
     foreach my $statement (@schema) {
         if ( $statement =~ /^\s*;$/ ) { $is_local = 1; next; }
 
-#        print "Executing SQL:\n$statement\n" if defined $args{'debug'};
+#        #print "Executing SQL:\n$statement\n" if defined $args{'debug'};
         my $sth = $dbh->prepare($statement) or die $dbh->errstr;
         unless ( $sth->execute or $is_local ) {
             die "Problem with statement:\n$statement\n" . $sth->errstr;
@@ -175,7 +175,7 @@ sub InsertSchema {
     }
     $dbh->commit or die $dbh->errstr;
 
-    print "Done setting up database schema.\n";
+    #print "Done setting up database schema.\n";
 }
 
 =head1 get_version_file
@@ -194,7 +194,7 @@ sub get_version_file {
 
     my %version = map { $_ =~ /\.\w+-([-\w\.]+)$/; ($1||0) => $_ } @files;
     my $db_version = Jifty->handle->database_version;
-    print "Server version $db_version\n";
+    #print "Server version $db_version\n";
     my $version;
     foreach ( reverse sort cmp_version keys %version ) {
         if ( cmp_version( $db_version, $_ ) >= 0 ) {
@@ -233,21 +233,20 @@ sub InsertInitialData {
     require RT::CurrentUser;
     my $CurrentUser = new RT::CurrentUser();
 
-    print "Checking for existing system user...";
-    my $test_user = RT::Model::User->new(current_user => );
+    #print "Checking for existing system user...";
+    my $test_user = RT::Model::User->new();
     $test_user->load('RT_System');
     if ( $test_user->id ) {
-        print "found!\n\nYou appear to have a functional RT database.\n"
-          . "Exiting, so as not to clobber your existing data.\n";
-        exit(-1);
-
+        #print "found!\n\nYou appear to have a functional RT database.\n"
+        #. "Exiting, so as not to clobber your existing data.\n";
+    
     }
     else {
-        print "not found.  This appears to be a new installation.\n";
+        #print "not found.  This appears to be a new installation.\n";
     }
 
-    print "Creating system user...";
-    my $RT_System = RT::Model::User->new(current_user => );
+    #print "Creating system user...";
+    my $RT_System = RT::Model::User->new();
 
     my ( $val, $msg ) = $RT_System->_bootstrap_create(
         Name     => 'RT_System',
@@ -259,18 +258,18 @@ sub InsertInitialData {
     );
 
     unless ( $val ) {
-        print "$msg\n";
+        #print "$msg\n";
         exit(-1);
     }
     Jifty::DBI::Record::Cachable->flush_cache;
-    print "done.\n";
+    #print "done.\n";
 
-    print "Creating system user's ACL...";
+    #print "Creating system user's ACL...";
 
     $CurrentUser = new RT::CurrentUser;
     $CurrentUser->load_by_cols(Name => 'RT_System');
     unless ( $CurrentUser->id ) {
-        print "Couldn't load system user\n";
+        #print "Couldn't load system user\n";
         exit(-1);
     }
 
@@ -283,7 +282,7 @@ sub InsertInitialData {
         ObjectId      => 1,
     );
 
-    print "done.\n";
+    #print "done.\n";
 }
 
 =head InsertData
@@ -306,25 +305,25 @@ sub InsertData {
       || die "Couldn't find initial data for import\n" . $@;
 
     if ( @Initial ) {
-        print "Running initial actions...\n";
+        #print "Running initial actions...\n";
         # Don't trap errors here, as they *should* be fatal
         $_->() for @Initial;
     }
     if ( @Groups ) {
-        print "Creating groups...";
-        print "My systemuser is ".$RT::SystemUser ."\n";
+        #print "Creating groups...";
+        #print "My systemuser is ".RT->SystemUser ."\n";
         $RT::SystemUser = RT::CurrentUser->new;
-        $RT::SystemUser->load_by_cols(Name => 'RT_System');
+        RT->SystemUser->load_by_cols(Name => 'RT_System');
         foreach my $item (@Groups) {
-            my $new_entry = RT::Model::Group->new( $RT::SystemUser );
+            my $new_entry = RT::Model::Group->new( RT->SystemUser );
             my $member_of = delete $item->{'MemberOf'};
             my ( $return, $msg ) = $new_entry->_create(%$item);
-            print "(Error: $msg)" unless $return;
-            print $return. ".";
+            #print "(Error: $msg)" unless $return;
+            #print $return. ".";
             if ( $member_of ) {
                 $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
                 foreach( @$member_of ) {
-                    my $parent = RT::Model::Group->new($RT::SystemUser);
+                    my $parent = RT::Model::Group->new(RT->SystemUser);
                     if ( ref $_ eq 'HASH' ) {
                         $parent->load_by_cols( %$_ );
                     }
@@ -332,7 +331,7 @@ sub InsertData {
                         $parent->loadUserDefinedGroup( $_ );
                     }
                     else {
-                        print "(Error: wrong format of MemberOf field."
+                      print "(Error: wrong format of MemberOf field."
                             ." Should be name of user defined group or"
                             ." hash reference with 'column => value' pairs."
                             ." Use array reference to add to multiple groups)";
@@ -343,37 +342,37 @@ sub InsertData {
                         next;
                     }
                     my ( $return, $msg ) = $parent->AddMember( $new_entry->id );
-                    print "(Error: $msg)" unless ($return);
-                    print $return. ".";
+                    #print "(Error: $msg)" unless ($return);
+                    #print $return. ".";
                 }
             }
         }
-        print "done.\n";
+        #print "done.\n";
     }
     if ( @Users ) {
-        print "Creating users...";
+        #print "Creating users...";
         foreach my $item (@Users) {
-            my $new_entry = new RT::Model::User($RT::SystemUser);
+            my $new_entry = new RT::Model::User(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->create(%$item);
             print "(Error: $msg)" unless $return;
-            print $return. ".";
+            #print $return. ".";
         }
-        print "done.\n";
+        #print "done.\n";
     }
     if ( @Queues ) {
-        print "Creating queues...";
+        #print "Creating queues...";
         for my $item (@Queues) {
-            my $new_entry = new RT::Model::Queue($RT::SystemUser);
+            my $new_entry = new RT::Model::Queue(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->create(%$item);
-            print "(Error: $msg)" unless $return;
-            print $return. ".";
+            #print "(Error: $msg)" unless $return;
+            #print $return. ".";
         }
-        print "done.\n";
+        #print "done.\n";
     }
     if ( @CustomFields ) {
-        print "Creating custom fields...";
+        #print "Creating custom fields...";
         for my $item ( @CustomFields ) {
-            my $new_entry = new RT::Model::CustomField( $RT::SystemUser );
+            my $new_entry = new RT::Model::CustomField( RT->SystemUser );
             my $values    = delete $item->{'Values'};
 
             my @queues;
@@ -385,65 +384,65 @@ sub InsertData {
 
             my ( $return, $msg ) = $new_entry->create(%$item);
             unless( $return ) {
-                print "(Error: $msg)\n";
+                #print "(Error: $msg)\n";
                 next;
             }
 
             foreach my $value ( @{$values} ) {
                 my ( $return, $msg ) = $new_entry->AddValue(%$value);
-                print "(Error: $msg)\n" unless $return;
+                #print "(Error: $msg)\n" unless $return;
             }
 
             # apply by default
             if ( !@queues && !exists $item->{'Queue'} && $item->{LookupType} ) {
-                my $ocf = RT::Model::ObjectCustomField->new($RT::SystemUser);
+                my $ocf = RT::Model::ObjectCustomField->new(RT->SystemUser);
                 $ocf->create( CustomField => $new_entry->id );
             }
 
             for my $q (@queues) {
-                my $q_obj = RT::Model::Queue->new($RT::SystemUser);
+                my $q_obj = RT::Model::Queue->new(RT->SystemUser);
                 $q_obj->load($q);
                 unless ( $q_obj->id ) {
-                    print "(Error: Could not find queue " . $q . ")\n";
+                    #print "(Error: Could not find queue " . $q . ")\n";
                     next;
                 }
-                my $OCF = RT::Model::ObjectCustomField->new($RT::SystemUser);
+                my $OCF = RT::Model::ObjectCustomField->new(RT->SystemUser);
                 ( $return, $msg ) = $OCF->create(
                     CustomField => $new_entry->id,
                     ObjectId    => $q_obj->id,
                 );
-                print "(Error: $msg)\n" unless $return and $OCF->id;
+                #print "(Error: $msg)\n" unless $return and $OCF->id;
             }
 
-            print $new_entry->id. ".";
+            #print $new_entry->id. ".";
         }
 
-        print "done.\n";
+        #print "done.\n";
     }
     if ( @ACL ) {
-        print "Creating ACL...";
+        #print "Creating ACL...";
         for my $item (@ACL) {
 
             my ($princ, $object);
 
             # Global rights or Queue rights?
             if ( $item->{'CF'} ) {
-                $object = RT::Model::CustomField->new( $RT::SystemUser );
+                $object = RT::Model::CustomField->new( RT->SystemUser );
                 my @columns = ( Name => $item->{'CF'} );
                 push @columns, Queue => $item->{'Queue'} if $item->{'Queue'} and not ref $item->{'Queue'};
                 $object->load_by_name( @columns );
             } elsif ( $item->{'Queue'} ) {
-                $object = RT::Model::Queue->new($RT::SystemUser);
+                $object = RT::Model::Queue->new(RT->SystemUser);
                 $object->load( $item->{'Queue'} );
             } else {
-                $object = $RT::System;
+                $object = RT->System;
             }
 
-            print "Couldn't load object" and next unless $object and $object->id;
+            #print "Couldn't load object" and next unless $object and $object->id;
 
             # Group rights or user rights?
             if ( $item->{'GroupDomain'} ) {
-                $princ = RT::Model::Group->new($RT::SystemUser);
+                $princ = RT::Model::Group->new(RT->SystemUser);
                 if ( $item->{'GroupDomain'} eq 'UserDefined' ) {
                   $princ->loadUserDefinedGroup( $item->{'GroupId'} );
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
@@ -459,7 +458,7 @@ sub InsertData {
                   $princ->load( $item->{'GroupId'} );
                 }
             } else {
-                $princ = RT::Model::User->new($RT::SystemUser);
+                $princ = RT::Model::User->new(RT->SystemUser);
                 $princ->load( $item->{'UserId'} );
             }
 
@@ -473,56 +472,56 @@ sub InsertData {
                                                      Object => $object );
 
             if ( $return ) {
-                print $return. ".";
+                #print $return. ".";
             }
             else {
-                print $msg . ".";
+                #print $msg . ".";
 
             }
 
         }
-        print "done.\n";
+        #print "done.\n";
     }
 
     if ( @ScripActions ) {
-        print "Creating ScripActions...";
+        #print "Creating ScripActions...";
 
         for my $item (@ScripActions) {
-            my $new_entry = RT::Model::ScripAction->new($RT::SystemUser);
+            my $new_entry = RT::Model::ScripAction->new(RT->SystemUser);
             my $return    = $new_entry->create(%$item);
-            print $return. ".";
+            #print $return. ".";
         }
 
-        print "done.\n";
+        #print "done.\n";
     }
 
     if ( @ScripConditions ) {
-        print "Creating ScripConditions...";
+        #print "Creating ScripConditions...";
 
         for my $item (@ScripConditions) {
-            my $new_entry = RT::Model::ScripCondition->new($RT::SystemUser);
+            my $new_entry = RT::Model::ScripCondition->new(RT->SystemUser);
             my $return    = $new_entry->create(%$item);
-            print $return. ".";
+            #print $return. ".";
         }
 
-        print "done.\n";
+        #print "done.\n";
     }
 
     if ( @Templates ) {
-        print "Creating templates...";
+        #print "Creating templates...";
 
         for my $item (@Templates) {
-            my $new_entry = new RT::Model::Template($RT::SystemUser);
+            my $new_entry = new RT::Model::Template(RT->SystemUser);
             my $return    = $new_entry->create(%$item);
-            print $return. ".";
+            #print $return. ".";
         }
-        print "done.\n";
+        #print "done.\n";
     }
     if ( @Scrips ) {
-        print "Creating scrips...";
+        #print "Creating scrips...";
 
         for my $item (@Scrips) {
-            my $new_entry = new RT::Model::Scrip($RT::SystemUser);
+            my $new_entry = new RT::Model::Scrip(RT->SystemUser);
 
             my @queues = ref $item->{'Queue'} eq 'ARRAY'? @{ $item->{'Queue'} }: $item->{'Queue'} || 0;
             push @queues, 0 unless @queues; # add global queue at least
@@ -530,36 +529,36 @@ sub InsertData {
             foreach my $q ( @queues ) {
                 my ( $return, $msg ) = $new_entry->create( %$item, Queue => $q );
             if ( $return ) {
-                    print $return. ".";
+                    #print $return. ".";
                 }
                 else {
-                    print "(Error: $msg)\n";
+                    #print "(Error: $msg)\n";
                 }
             }
         }
-        print "done.\n";
+        #print "done.\n";
     }
 
     if (  @Attributes ) {
-        print "Creating predefined searches...";
+        #print "Creating predefined searches...";
     
         use RT::System;
-        my $sys = RT::System->new($RT::SystemUser);
+        my $sys = RT::System->new(RT->SystemUser);
         for my $item (@Attributes) {
             my $obj = delete $item->{Object}; # XXX: make this something loadable
             $obj ||= $sys;
-            my ( $return, $msg ) = $obj->add_attribute (%$item);
+            my ( $return, $msg ) = $obj->add_attribute(%$item);
             if ( $return ) {
-                print $return. ".";
+                #print $return. ".";
             }
             else {
-                print "(Error: $msg)\n";
+                #print "(Error: $msg)\n";
             }
         }
-        print "done.\n";
+        #print "done.\n";
     }
     if ( @Final ) {
-        print "Running final actions...\n";
+        #print "Running final actions...\n";
         for ( @Final ) {
             eval { $_->(); };
             print "(Error: $@)\n" if $@;
@@ -567,7 +566,7 @@ sub InsertData {
     }
 
     my $db_type = RT->Config->Get('DatabaseType');
-    print "Done setting up database content.\n";
+    #print "Done setting up database content.\n";
 }
 
 =head2 ACLEquivGroupId
@@ -578,9 +577,9 @@ Given a userid, return that user's acl equivalence group
 
 sub ACLEquivGroupId {
     my $username = shift;
-    my $user     = RT::Model::User->new($RT::SystemUser);
+    my $user     = RT::Model::User->new(RT->SystemUser);
     $user->load($username);
-    my $equiv_group = RT::Model::Group->new($RT::SystemUser);
+    my $equiv_group = RT::Model::Group->new(RT->SystemUser);
     $equiv_group->load_acl_equivalence_group($user);
     return ( $equiv_group->id );
 }

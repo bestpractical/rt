@@ -59,9 +59,9 @@
 <input type="submit" class="button" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
 
 <& AddWatchers, Ticket => $Ticket, UserString => $UserString,
-        UserOp => $UserOp, Usercolumn => $UserField,
+        UserOp => $UserOp, UserField => $UserField,
 	GroupString => $GroupString, GroupOp => $GroupOp,
-	Groupcolumn => $GroupField, PrivilegedOnly => $PrivilegedOnly &> 
+	GroupField => $GroupField, PrivilegedOnly => $PrivilegedOnly &> 
 </td><td valign="top">
 <h3><&|/l&>Owner</&></h3>
 <&|/l&>Owner</&>: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->id, DefaultValue => 0&>
@@ -82,10 +82,10 @@
 </table>
 
 <%ARGS>
-$Usercolumn => undef
+$UserField => undef
 $UserOp => undef
 $UserString => undef
-$Groupcolumn => undef
+$GroupField => undef
 $GroupOp => undef
 $GroupString => undef
 $PrivilegedOnly => undef

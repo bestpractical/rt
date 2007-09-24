@@ -66,7 +66,7 @@ use Jifty::DBI::Record schema {
 
     column PrincipalType => type is 'text';
     column ObjectId      => type is 'integer';
-    column Disabled      => type is 'integer';
+    column Disabled      => type is 'integer', default is '0';
 
 };
 
@@ -212,7 +212,7 @@ sub RevokeRight {
 
     #if we haven't specified any sort of right, we're talking about a global right
     if (!defined $args{'Object'} && !defined $args{'ObjectId'} && !defined $args{'ObjectType'}) {
-        $args{'Object'} = $RT::System;
+        $args{'Object'} = RT->System;
     }
     #ACL check handled in ACE.pm
     my $type = $self->_GetPrincipalTypeForACL();
@@ -297,7 +297,6 @@ Returns undef if no ACE was found.
 =cut
 
 sub has_right {
-    return 1;
     my $self = shift;
     my %args = (
         Right        => undef,
@@ -440,8 +439,8 @@ sub _has_right
       "(ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') "
 
       # Never find disabled groups.
-      . "AND Principals.Disabled = 0 "
-      . "AND CachedGroupMembers.Disabled = 0 "
+      . "AND ( Principals.Disabled = 0 OR Principals.Disabled IS NULL) " 
+      . "AND (CachedGroupMembers.Disabled = 0 OR CachedGroupMembers.Disabled IS NULL )" 
 
       # We always grant rights to Groups
       . "AND Principals.id = Groups.id "
@@ -465,19 +464,18 @@ sub _has_right
       . "AND ACL.PrincipalId = Principals.id "
       . "AND ACL.PrincipalType = 'Group' ";
 
-    $self->_Handle->apply_limits( \$groups_query, 1 ); #only return one result
-    my $hitcount = $self->_Handle->fetch_result($groups_query);
+    $self->_handle->apply_limits( \$groups_query, 1 ); #only return one result
+    my $hitcount = $self->_handle->fetch_result($groups_query);
     return 1 if $hitcount; # get out of here if success
 
     # The roles query does the query based on roles
     my $roles_query = $query_base
       . "AND ACL.PrincipalType = Groups.Type "
       . "AND ($check_roles) ";
-    $self->_Handle->apply_limits( \$roles_query, 1 ); #only return one result
+    $self->_handle->apply_limits( \$roles_query, 1 ); #only return one result
 
-    $hitcount = $self->_Handle->fetch_result($roles_query);
+    $hitcount = $self->_handle->fetch_result($roles_query);
     return 1 if $hitcount; # get out of here if success
-
     return 0;
 }
 

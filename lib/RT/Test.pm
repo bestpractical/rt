@@ -100,7 +100,7 @@ sub load_or_create_user {
      $MemberOf = [ $MemberOf ] if defined $MemberOf && !ref $MemberOf;
      $MemberOf ||= [];
 
-    my $obj = RT::Model::User->new( $RT::SystemUser );
+    my $obj = RT::Model::User->new( RT->SystemUser );
     if ( $args{'Name'} ) {
         $obj->load_by_cols( Name => $args{'Name'} );
     } elsif ( $args{'EmailAddress'} ) {
@@ -122,7 +122,7 @@ sub load_or_create_user {
     # clean group membership
     {
         require RT::Model::GroupMemberCollection;
-        my $gms = RT::Model::GroupMemberCollection->new( $RT::SystemUser );
+        my $gms = RT::Model::GroupMemberCollection->new( RT->SystemUser );
         my $groups_alias = $gms->join(
             column1 => 'GroupId', table2 => 'Groups', column2 => 'id',
         );
@@ -151,7 +151,7 @@ sub load_or_create_user {
 sub load_or_create_queue {
     my $self = shift;
     my %args = ( Disabled => 0, @_ );
-    my $obj = RT::Model::Queue->new( $RT::SystemUser );
+    my $obj = RT::Model::Queue->new( RT->SystemUser );
     if ( $args{'Name'} ) {
         $obj->load_by_cols( Name => $args{'Name'} );
     } else {
@@ -181,11 +181,11 @@ sub store_rights {
 
     require RT::ACE;
     # fake construction
-    RT::ACE->new( $RT::SystemUser );
+    RT::ACE->new( RT->SystemUser );
     my @fields = keys %{ RT::ACE->_ClassAccessible };
 
     require RT::ACL;
-    my $acl = RT::ACL->new( $RT::SystemUser );
+    my $acl = RT::ACL->new( RT->SystemUser );
     $acl->limit( column => 'RightName', operator => '!=', value => 'SuperUser' );
 
     my @res;
@@ -208,7 +208,7 @@ sub restore_rights {
     my $self = shift;
     my @entries = @_;
     foreach my $entry ( @entries ) {
-        my $ace = RT::Model::ACE->new( $RT::SystemUser );
+        my $ace = RT::Model::ACE->new( RT->SystemUser );
         my ($status, $msg) = $ace->RT::Record::create( %$entry );
         unless ( $status ) {
             diag "couldn't create a record: $msg";
@@ -221,7 +221,7 @@ sub set_rights {
     my @list = ref $_[0]? @_: @_? { @_ }: ();
 
     require RT::Model::ACECollection;
-    my $acl = RT::Model::ACECollection->new( $RT::SystemUser );
+    my $acl = RT::Model::ACECollection->new( RT->SystemUser );
     $acl->limit( column => 'RightName', operator => '!=', value => 'SuperUser' );
     while ( my $ace = $acl->next ) {
         my $obj = $ace->PrincipalObj->Object;
@@ -235,7 +235,7 @@ sub set_rights {
         my $principal = delete $e->{'Principal'};
         unless ( ref $principal ) {
             if ( $principal =~ /^(everyone|(?:un)?privileged)$/i ) {
-                $principal = RT::Model::Group->new( $RT::SystemUser );
+                $principal = RT::Model::Group->new( RT->SystemUser );
                 $principal->load_system_internal_group($1);
             } else {
                 die "principal is not an object, but also is not name of a system group";

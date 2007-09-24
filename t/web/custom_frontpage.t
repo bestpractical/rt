@@ -7,7 +7,7 @@ my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
 
-my $user_obj = RT::Model::User->new($RT::SystemUser);
+my $user_obj = RT::Model::User->new(RT->SystemUser);
 my ($ret, $msg) = $user_obj->load_or_create_by_email('customer@example.com');
 ok($ret, 'ACL test user creation');
 $user_obj->set_Name('customer');

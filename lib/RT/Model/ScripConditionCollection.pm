@@ -64,10 +64,10 @@
 =cut
 
 
-package RT::Model::ScripConditionCollection;
-
 use strict;
-no warnings qw(redefine);
+use warnings;
+package RT::Model::ScripConditionCollection;
+use base qw/RT::SearchBuilder/;
 
 # {{{ sub _init
 sub _init { 

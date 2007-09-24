@@ -73,7 +73,7 @@
 
 
 <&| /Widgets/TitleBox, title => loc('People') &>
-<& Elements/EditPeople, Ticket => $Ticket, Usercolumn => $UserField, UserString => $UserString, UserOp => $UserOp &>
+<& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
 </&>
 
 <br />
@@ -209,7 +209,7 @@ unless ($Ticket->current_user_has_right('ShowTicket')) {
 
 <%ARGS>
 $OnlySearchForPeople => undef
-$Usercolumn => undef
+$UserField => undef
 $UserOp => undef
 $UserString => undef
 $id => undef

@@ -24,7 +24,7 @@ RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
 my $everyone;
 {
-    $everyone = RT::Model::Group->new( $RT::SystemUser );
+    $everyone = RT::Model::Group->new( RT->SystemUser );
     $everyone->load_system_internal_group('Everyone');
     ok $everyone->id, "loaded 'everyone' group";
 }
@@ -56,7 +56,7 @@ foreach my $file ( @files ) {
     is $status >> 8, 0, "$eid: the mail gateway exited normally";
     ok $id, "$eid: got id of a newly created ticket - $id";
 
-    my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Model::Ticket->new( RT->SystemUser );
     $ticket->load( $id );
     ok $ticket->id, "$eid: loaded ticket #$id";
     is $ticket->Subject, "Test Email ID:$eid", "$eid: correct subject";

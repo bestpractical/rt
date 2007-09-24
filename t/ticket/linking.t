@@ -21,20 +21,20 @@ RT->Config->set( 'LinkTransactionsRun1Scrip', 1 );
 my $link_acl_checks_orig = RT->Config->Get( 'StrictLinkACL' );
 RT->Config->set( 'StrictLinkACL', 1);
 
-my $condition = RT::Model::ScripCondition->new( $RT::SystemUser );
+my $condition = RT::Model::ScripCondition->new( RT->SystemUser );
 $condition->load('User Defined');
 ok($condition->id);
-my $action = RT::Model::ScripAction->new( $RT::SystemUser );
+my $action = RT::Model::ScripAction->new( RT->SystemUser );
 $action->load('User Defined');
 ok($action->id);
-my $template = RT::Model::Template->new( $RT::SystemUser );
+my $template = RT::Model::Template->new( RT->SystemUser );
 $template->load('Blank');
 ok($template->id);
 
-my $q1 = RT::Model::Queue->new($RT::SystemUser);
+my $q1 = RT::Model::Queue->new(RT->SystemUser);
 my ($id,$msg) = $q1->create(Name => "LinkTest1.$$");
 ok ($id,$msg);
-my $q2 = RT::Model::Queue->new($RT::SystemUser);
+my $q2 = RT::Model::Queue->new(RT->SystemUser);
 ($id,$msg) = $q2->create(Name => "LinkTest2.$$");
 ok ($id,$msg);
 
@@ -63,14 +63,14 @@ my $commit_code = <<END;
 	1;
 END
 
-my $Scrips = RT::Model::ScripCollection->new( $RT::SystemUser );
+my $Scrips = RT::Model::ScripCollection->new( RT->SystemUser );
 $Scrips->find_all_rows;
 while ( my $Scrip = $Scrips->next ) {
     $Scrip->delete if $Scrip->Description and $Scrip->Description =~ /Add or Delete Link \d+/;
 }
 
 
-my $scrip = RT::Model::Scrip->new($RT::SystemUser);
+my $scrip = RT::Model::Scrip->new(RT->SystemUser);
 ($id,$msg) = $scrip->create( Description => "Add or Delete Link $$",
                           ScripCondition => $condition->id,
                           ScripAction    => $action->id,
@@ -83,7 +83,7 @@ my $scrip = RT::Model::Scrip->new($RT::SystemUser);
                            );
 ok($id, "Scrip Created");
 
-my $u1 = RT::Model::User->new($RT::SystemUser);
+my $u1 = RT::Model::User->new(RT->SystemUser);
 ($id,$msg) = $u1->create(Name => "LinkTestUser.$$");
 ok ($id,$msg);
 
@@ -100,13 +100,13 @@ my $creator = RT::CurrentUser->new($u1->id);
 diag('Create tickets without rights to link') if $ENV{'TEST_VERBOSE'};
 {
     # on q2 we have no rights, yet
-    my $parent = RT::Model::Ticket->new( $RT::SystemUser );
+    my $parent = RT::Model::Ticket->new( RT->SystemUser );
     my ($id,$tid,$msg) = $parent->create( Subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
     my $child = RT::Model::Ticket->new( $creator );
     ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
     ok($id,$msg);
-    $child->current_user( $RT::SystemUser );
+    $child->current_user( RT->SystemUser );
     is($child->_Links('Base')->count, 0, 'link was not Created, no permissions');
     is($child->_Links('Target')->count, 0, 'link was not create, no permissions');
 }
@@ -115,13 +115,13 @@ diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VER
 {
     # on q2 we have no rights, but use checking one only on thing
     RT->Config->set( StrictLinkACL => 0 );
-    my $parent = RT::Model::Ticket->new( $RT::SystemUser );
+    my $parent = RT::Model::Ticket->new( RT->SystemUser );
     my ($id,$tid,$msg) = $parent->create( Subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
     my $child = RT::Model::Ticket->new( $creator );
     ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
     ok($id,$msg);
-    $child->current_user( $RT::SystemUser );
+    $child->current_user( RT->SystemUser );
     is($child->_Links('Base')->count, 1, 'link was Created');
     is($child->_Links('Target')->count, 0, 'link was Created only one');
     # no scrip run on second ticket accroding to config option
@@ -135,7 +135,7 @@ ok ($id,$msg);
 diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
 {
     # on q2 we have no rights, yet
-    my $parent = RT::Model::Ticket->new( $RT::SystemUser );
+    my $parent = RT::Model::Ticket->new( RT->SystemUser );
     my ($id,$tid,$msg) = $parent->create( Subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
     my $child = RT::Model::Ticket->new( $creator );
@@ -144,7 +144,7 @@ diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
     ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
     ok(!$id, $msg);
     is(link_count($filename), undef, "scrips ok");
-    $child->current_user( $RT::SystemUser );
+    $child->current_user( RT->SystemUser );
     is($child->_Links('Base')->count, 0, 'link was not Created, no permissions');
     is($child->_Links('Target')->count, 0, 'link was not create, no permissions');
 }
@@ -153,7 +153,7 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
 {
     # on q2 we have no rights, but use checking one only on thing
     RT->Config->set( StrictLinkACL => 0 );
-    my $parent = RT::Model::Ticket->new( $RT::SystemUser );
+    my $parent = RT::Model::Ticket->new( RT->SystemUser );
     my ($id,$tid,$msg) = $parent->create( Subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
     my $child = RT::Model::Ticket->new( $creator );
@@ -162,7 +162,7 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
     ok($id, $msg);
     is(link_count($filename), 1, "scrips ok");
-    $child->current_user( $RT::SystemUser );
+    $child->current_user( RT->SystemUser );
     is($child->_Links('Base')->count, 1, 'link was Created');
     is($child->_Links('Target')->count, 0, 'link was Created only one');
     $child->current_user( $creator );
@@ -172,7 +172,7 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
     ok(!$id, $msg);
     is(link_count($filename), 1, "scrips ok");
-    $child->current_user( $RT::SystemUser );
+    $child->current_user( RT->SystemUser );
     $child->_Links('Base')->_do_count;
     is($child->_Links('Base')->count, 1, 'link was not deleted');
     $child->current_user( $creator );
@@ -182,7 +182,7 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     ($id, $msg) = $child->delete_link(Type => 'MemberOf', Target => $parent->id);
     ok($id, $msg);
     is(link_count($filename), 0, "scrips ok");
-    $child->current_user( $RT::SystemUser );
+    $child->current_user( RT->SystemUser );
     $child->_Links('Base')->_do_count;
     is($child->_Links('Base')->count, 0, 'link was deleted');
     RT->Config->set( StrictLinkACL => 1 );
@@ -201,7 +201,7 @@ diag('try link to itself') if $ENV{'TEST_VERBOSE'};
     is(link_count($filename), 0, "scrips ok");
 }
 
-my $ticket2 = RT::Model::Ticket->new($RT::SystemUser);
+my $ticket2 = RT::Model::Ticket->new(RT->SystemUser);
 ($id, $tid, $msg) = $ticket2->create(Subject => 'Link test 2', Queue => $q2->id);
 ok ($id, $msg);
 ($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
@@ -302,7 +302,7 @@ RT->Config->set( LinkTransactionsRun1Scrip => $link_scrips_orig );
 RT->Config->set( StrictLinkACL => $link_acl_checks_orig );
 
 {
-    my $Scrips = RT::Model::ScripCollection->new( $RT::SystemUser );
+    my $Scrips = RT::Model::ScripCollection->new( RT->SystemUser );
     $Scrips->limit( column => 'Description', operator => 'STARTSWITH', value => 'Add or Delete Link ');
     while ( my $s = $Scrips->next ) { $s->delete };
 }

@@ -16,7 +16,7 @@ ok $tester && $tester->id, 'loaded or Created user';
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 ok $queue && $queue->id, 'loaded or Created queue';
 
-my $owner_role_group = RT::Model::Group->new( $RT::SystemUser );
+my $owner_role_group = RT::Model::Group->new( RT->SystemUser );
 $owner_role_group->loadQueueRoleGroup( Type => 'Owner', Queue => $queue->id );
 ok $owner_role_group->id, 'loaded owners role group of the queue';
 

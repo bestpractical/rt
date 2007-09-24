@@ -1,7 +1,7 @@
 
 use strict;
 use warnings;
-use RT::Test; use Test::More tests => 32;
+use RT::Test; use Test::More tests => 31;
 
 require_ok("RT");
 require_ok("RT::Test");

@@ -23,14 +23,6 @@ use strict;
 package RT::System;
 use base qw/RT::Record/;
 
-sub new { 
-        my $class = shift;
-        my $self = {};
-        bless $self, $class;
-        return $self;
-
-    }
-
 
 our $RIGHTS;
 
@@ -77,9 +69,9 @@ those rights globally.
 sub AvailableRights {
     my $self = shift;
 
-    my $queue = RT::Model::Queue->new($RT::SystemUser);
-    my $group = RT::Model::Group->new($RT::SystemUser);
-    my $cf    = RT::Model::CustomField->new($RT::SystemUser);
+    my $queue = RT::Model::Queue->new(RT->SystemUser);
+    my $group = RT::Model::Group->new(RT->SystemUser);
+    my $cf    = RT::Model::CustomField->new(RT->SystemUser);
 
     my $qr = $queue->AvailableRights();
     my $gr = $group->AvailableRights();

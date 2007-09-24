@@ -52,7 +52,7 @@
 =head1 SYNOPSIS
 
   use RT::Model::GroupCollection;
-  my $groups = RT::Model::GroupCollection->new(current_user => );
+  my $groups = RT::Model::GroupCollection->new($current_user );
   $groups->find_all_rows();
   while (my $group = $groups->next()) {
      print $group->id ." is a group id\n";

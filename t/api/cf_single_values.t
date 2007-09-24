@@ -8,11 +8,11 @@ use RT;
 
 
 
-my $q = RT::Model::Queue->new($RT::SystemUser);
+my $q = RT::Model::Queue->new(RT->SystemUser);
 my ($id,$msg) =$q->create(Name => "CF-Single-".$$);
 ok($id,$msg);
 
-my $cf = RT::Model::CustomField->new($RT::SystemUser);
+my $cf = RT::Model::CustomField->new(RT->SystemUser);
 ($id,$msg) = $cf->create(Name => 'Single-'.$$, Type => 'Select', MaxValues => '1', Queue => $q->id);
 ok($id,$msg);
 
@@ -24,7 +24,7 @@ ok($id,$msg);
 ok($id,$msg);
 
 
-my $t = RT::Model::Ticket->new($RT::SystemUser);
+my $t = RT::Model::Ticket->new(RT->SystemUser);
 ($id,undef,$msg) = $t->create(Queue => $q->id,
           Subject => 'CF Test');
 

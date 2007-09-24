@@ -133,7 +133,7 @@ sub load_object
 	$class = 'RT::'. $class;
 	eval "require $class";
 	die "Couldn't load '$class' module" if $@;
-	my $obj = $class->new( $RT::SystemUser );
+	my $obj = $class->new( RT->SystemUser );
 	die "Couldn't construct new '$class' object" unless $obj;
 	$obj->load( $id );
 	die "Couldn't load '$class' object by id '$id'" unless $obj->id;

@@ -46,7 +46,7 @@ diag "current user has no right to own, nobody selected as owner on create";
     $agent_a->content_like(qr/Ticket \d+ created in queue/i, 'created ticket');
     my ($id) = ($agent_a->content =~ /Ticket (\d+) created in queue/);
     ok $id, 'found id of the ticket';
-    my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Model::Ticket->new( RT->SystemUser );
     $ticket->load( $id );
     ok $ticket->id, 'loaded the ticket';
     is $ticket->Owner, $RT::Nobody->id, 'correct owner';
@@ -72,7 +72,7 @@ diag "user can chose owner of a new ticket";
     my ($id) = ($agent_a->content =~ /Ticket (\d+) created in queue/);
     ok $id, 'found id of the ticket';
 
-    my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Model::Ticket->new( RT->SystemUser );
     $ticket->load( $id );
     ok $ticket->id, 'loaded the ticket';
     is $ticket->Owner, $user_b->id, 'correct owner';
@@ -96,7 +96,8 @@ diag "user A can not change owner after create";
     my $test_cb = sub {
         my $agent = shift;
         $agent->goto_ticket( $id );
-        $agent->follow_link_ok({text => 'Basics'}, 'Ticket -> Basics');
+        diag("Going to ticket $id");
+        $agent->follow_link_ok(text => 'Basics');
         my $form = $agent->form_number(3);
         is $form->value('Owner'), $user_b->id, 'correct owner selected';
         $agent->select('Owner', $RT::Nobody->id);
@@ -107,7 +108,7 @@ diag "user A can not change owner after create";
             'no way to change owner after create if you have no rights'
         );
 
-        my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+        my $ticket = RT::Model::Ticket->new( RT->SystemUser );
         $ticket->load( $id );
         ok $ticket->id, 'loaded the ticket';
         is $ticket->Owner, $user_b->id, 'correct owner';
@@ -130,13 +131,13 @@ diag "on reply correct owner is selected";
     is $ticket->Owner, $user_b->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
-    $agent_a->follow_link_ok({text => 'Reply'}, 'Ticket -> Basics');
+    $agent_a->follow_link_ok(text => 'Reply');
 
     my $form = $agent_a->form_number(3);
     is $form->value('Owner'), '', 'empty value selected';
     $agent_a->submit;
 
-    my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Model::Ticket->new( RT->SystemUser );
     $ticket->load( $id );
     ok $ticket->id, 'loaded the ticket';
     is $ticket->Owner, $user_b->id, 'correct owner';
@@ -221,9 +222,9 @@ diag "TakeTicket+OwnTicket work";
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Steal' ))[0],
         'no Steal link';
-    $agent_a->follow_link_ok({text => 'Take'}, 'Ticket -> Take');
+    $agent_a->follow_link_ok(text => 'Take');
 
-    $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+    $ticket = RT::Model::Ticket->new( RT->SystemUser );
     $ticket->load( $id );
     ok $ticket->id, 'loaded the ticket';
     is $ticket->Owner, $user_a->id, 'correct owner';
@@ -289,9 +290,9 @@ diag "StealTicket+OwnTicket work";
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Take' ))[0],
         'but no Take link';
-    $agent_a->follow_link_ok({text => 'Steal'}, 'Ticket -> Steal');
+    $agent_a->follow_link_ok(text => 'Steal');
 
-    $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+    $ticket = RT::Model::Ticket->new( RT->SystemUser );
     $ticket->load( $id );
     ok $ticket->id, 'loaded the ticket';
     is $ticket->Owner, $user_a->id, 'correct owner';

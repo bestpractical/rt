@@ -129,14 +129,14 @@ A convoluted example
    # of which the creator of this ticket is a member
     my $name = "HR";
    
-    my $groups = RT::Model::GroupCollection->new($RT::SystemUser);
+    my $groups = RT::Model::GroupCollection->new(RT->SystemUser);
     $groups->LimitToUserDefinedGroups();
     $groups->limit(column => "Name", operator => "=", value => "$name");
     $groups->WithMember($TransactionObj->CreatorObj->id);
  
     my $groupid = $groups->first->id;
  
-    my $adminccs = RT::Model::UserCollection->new($RT::SystemUser);
+    my $adminccs = RT::Model::UserCollection->new(RT->SystemUser);
     $adminccs->WhoHaveRight(
 	Right => "AdminGroup",
 	Object =>$groups->first,

@@ -63,10 +63,10 @@
 =cut
 
 
-package RT::Model::ScripActionCollection;
-
 use strict;
-no warnings qw(redefine);
+use warnings;
+package RT::Model::ScripActionCollection;
+use base qw/RT::SearchBuilder/;
 
 # {{{ sub _init
 sub _init { 

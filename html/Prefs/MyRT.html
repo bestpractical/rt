@@ -114,9 +114,9 @@ my @items = map ["component-$_", $_], grep !$seen{$_}++, @{RT->Config->Get('Home
 my $sys = RT::System->new($session{'CurrentUser'});
 my @objs = ($sys);
 
-push @objs, RT::SavedSearches->new(  )->_PrivacyObjects
+push @objs, RT::SavedSearches->new($session{'CurrentUser'}  )->_PrivacyObjects
     if $session{'CurrentUser'}->has_right( Right  => 'LoadSavedSearch',
-                                          Object => $RT::System );
+                                          Object => RT->System );
 
 my @sys_searches;
 for my $object (@objs) {

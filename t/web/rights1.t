@@ -7,7 +7,7 @@ use RT::Test; use Test::More tests => 37;
 my ($baseurl, $agent) = RT::Test->started_ok;
 
 # Create a user with basically no rights, to start.
-my $user_obj = RT::Model::User->new($RT::SystemUser);
+my $user_obj = RT::Model::User->new(RT->SystemUser);
 my ($ret, $msg) = $user_obj->load_or_create_by_email('customer-'.$$.'@example.com');
 ok($ret, 'ACL test user creation');
 ($ret,$msg) =$user_obj->set_Name('customer-'.$$);
@@ -39,7 +39,7 @@ ok(!$agent->find_link( url => "$RT::WebPath/User/Prefs.html",
 
 # Now test for their presence, one at a time.  Sleep for a bit after
 # ACL changes, thanks to the 10s ACL cache.
-my ($grantid,$grantmsg) =$user_obj->PrincipalObj->GrantRight(Right => 'ShowConfigTab', Object => $RT::System);
+my ($grantid,$grantmsg) =$user_obj->PrincipalObj->GrantRight(Right => 'ShowConfigTab', Object => RT->System);
 
 ok($grantid,$grantmsg);
 
@@ -83,11 +83,11 @@ like($agent->{'content'} , qr/input\s+type=.submit.\s+name=.Save./i,
 # Create a group, and a queue, so we can test limited user visibility
 # via SelectOwner.
 
-my $queue_obj = RT::Model::Queue->new($RT::SystemUser);
+my $queue_obj = RT::Model::Queue->new(RT->SystemUser);
 ($ret, $msg) = $queue_obj->create(Name => 'CustomerQueue-'.$$, 
 				  Description => 'queue for SelectOwner testing');
 ok($ret, "SelectOwner test queue creation. $msg");
-my $group_obj = RT::Model::Group->new($RT::SystemUser);
+my $group_obj = RT::Model::Group->new(RT->SystemUser);
 ($ret, $msg) = $group_obj->create_userDefinedGroup(Name => 'CustomerGroup-'.$$,
 			      Description => 'group for SelectOwner testing');
 ok($ret, "SelectOwner test group creation. $msg");
@@ -113,10 +113,10 @@ ok(grep(/customer-$$/, $input->value_names()), "Found self in the actor listing"
 sub login {
     my $agent = shift;
 
-    my $url = "http://localhost:" . RT->Config->Get('WebPort') . RT->Config->Get('WebPath') . "/";
+    my $url = $baseurl;
     $agent->get($url);
     is( $agent->{'status'}, 200,
-        "Loaded a page - http://localhost" . RT->Config->Get('WebPath') );
+        "Loaded a page - ".$baseurl);
 
     # {{{ test a login
 

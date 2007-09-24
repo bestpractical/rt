@@ -3,9 +3,9 @@
 use strict;
 use warnings;
 
+BEGIN { require "t/shredder/utils.pl"; }
 use RT::Test; use Test::More;
 use Test::Deep;
-BEGIN { require "t/shredder/utils.pl"; }
 init_db();
 
 plan tests => 3;
@@ -13,11 +13,11 @@ plan tests => 3;
 create_savepoint();
 
 use RT::Model::TicketCollection;
-my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+my $ticket = RT::Model::Ticket->new( RT->SystemUser );
 my ($id,undef,$cmsg) = $ticket->create( Subject => 'test', Queue => 1 );
 ok( $id, "Created new ticket $cmsg " );
 
-$ticket = RT::Model::Ticket->new( $RT::SystemUser );
+$ticket = RT::Model::Ticket->new( RT->SystemUser );
 my ($status, $msg) = $ticket->load( $id );
 ok( $id, "load ticket" ) or diag( "error: $msg" );
 

@@ -61,11 +61,10 @@
 
 =cut
 
-
-package RT::Model::TemplateCollection;
-
 use strict;
-no warnings qw(redefine);
+use warnings;
+package RT::Model::TemplateCollection;
+use base qw/RT::SearchBuilder/;
 
 
 # {{{ sub _init
@@ -177,7 +176,7 @@ sub Next {
         # If it's part of a queue, and the user can read templates in
         # that queue, or the user can globally read templates, show it
         if ($templ->Queue && $templ->current_userHasQueueRight('ShowTemplate') or
-            $templ->current_user->has_right(Object => $RT::System, Right => 'ShowTemplate')) {
+            $templ->current_user->has_right(Object => RT->System, Right => 'ShowTemplate')) {
 	    return($templ);
 	}
 	

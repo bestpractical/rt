@@ -47,7 +47,7 @@ $m->submit_form( form_number => 3,
 		 fields      => { CorrespondAddress => 'general@example.com' } );
 $m->content_like(qr/general\@example.com.* - never/, 'has key info.');
 
-ok(my $user = RT::Model::User->new($RT::SystemUser));
+ok(my $user = RT::Model::User->new(RT->SystemUser));
 ok($user->load('root'), "Loaded user 'root'");
 $user->set_EmailAddress('recipient@example.com');
 
@@ -319,7 +319,7 @@ is(@mail, 1, 'caught outgoing mail.');
 }
 
 sub get_latest_ticket_ok {
-    my $tickets = RT::Model::TicketCollection->new($RT::SystemUser);
+    my $tickets = RT::Model::TicketCollection->new(RT->SystemUser);
     $tickets->order_by( column => 'id', order => 'DESC' );
     $tickets->limit( column => 'id', operator => '>', value => '0' );
     my $tick = $tickets->first();

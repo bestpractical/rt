@@ -21,7 +21,7 @@ if ( $m->request_comp->attr_exists('AutoFlush') ) {
 # in the session, as we deserialize it so we never call constructor of the principal
 # class, so the list of accessible fields is empty and we die with "Method xxx is
 # not implemented in RT::Model::Principal"
-{ my $tmp = RT::Model::Principal->new( $RT::SystemUser ) }
+{ my $tmp = RT::Model::Principal->new( RT->SystemUser ) }
 
 %ARGS = map {
 
@@ -116,7 +116,7 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
 
             # Create users on-the-fly
 
-            my $UserObj = RT::Model::User->new( $RT::SystemUser );
+            my $UserObj = RT::Model::User->new( RT->SystemUser );
             my ($val, $msg) = $UserObj->create(
                 %{ ref RT->Config->Get('AutoCreate') ? RT->Config->Get('AutoCreate') : {} },
                 Name  => $user,

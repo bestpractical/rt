@@ -21,7 +21,7 @@ my($ret,$msg);
 
 # ---- Create a queue to test with.
 my $queue = "PAWSortQueue-$$";
-my $queue_obj = RT::Model::Queue->new($RT::SystemUser);
+my $queue_obj = RT::Model::Queue->new(RT->SystemUser);
 ($ret, $msg) = $queue_obj->create(Name => $queue,
                                   Description => 'queue for custom field sort testing');
 ok($ret, "$queue test queue creation. $msg");
@@ -29,18 +29,18 @@ ok($ret, "$queue test queue creation. $msg");
 
 # ---- Create some users
 
-my $me = RT::Model::User->new($RT::SystemUser);
+my $me = RT::Model::User->new(RT->SystemUser);
 ($ret, $msg) = $me->create(Name => "Me$$", EmailAddress => $$.'create-me-1@example.com');
 ($ret, $msg) = $me->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'OwnTicket');
 ($ret, $msg) = $me->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'SeeQueue');
 ($ret, $msg) = $me->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'ShowTicket');
-my $you = RT::Model::User->new($RT::SystemUser);
+my $you = RT::Model::User->new(RT->SystemUser);
 ($ret, $msg) = $you->create(Name => "You$$", EmailAddress => $$.'create-you-1@example.com');
 ($ret, $msg) = $you->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'OwnTicket');
 ($ret, $msg) = $you->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'SeeQueue');
 ($ret, $msg) = $you->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'ShowTicket');
 
-my $nobody = RT::Model::User->new($RT::SystemUser);
+my $nobody = RT::Model::User->new(RT->SystemUser);
 $nobody->load('nobody');
 
 
@@ -56,7 +56,7 @@ my @tickets = (
                [qw[6 55], $nobody],
               );
 for (@tickets) {
-  my $t = RT::Model::Ticket->new($RT::SystemUser);
+  my $t = RT::Model::Ticket->new(RT->SystemUser);
   $t->create( Queue => $queue_obj->id,
               Subject => $_->[0],
               Owner => $_->[2]->id,

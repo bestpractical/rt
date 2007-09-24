@@ -12,7 +12,7 @@ sub works { ok($_[0], $_[1] || 'This works') }
 
 sub new (*) {
     my $class = shift;
-    return $class->new($RT::SystemUser);
+    return $class->new(RT->SystemUser);
 }
 
 my $q = new(RT::Model::Queue);

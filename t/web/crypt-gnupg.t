@@ -38,7 +38,7 @@ RT->Config->set( 'GnuPGOptions',
                  'no-permission-warning' => undef);
 RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
-ok(my $user = RT::Model::User->new($RT::SystemUser));
+ok(my $user = RT::Model::User->new(RT->SystemUser));
 ok($user->load('root'), "Loaded user 'root'");
 $user->set_EmailAddress('recipient@example.com');
 
@@ -101,7 +101,7 @@ MAIL
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Model::Ticket->new( RT->SystemUser );
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -169,7 +169,7 @@ MAIL
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Model::Ticket->new( RT->SystemUser );
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -240,7 +240,7 @@ MAIL
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Model::Ticket->new( RT->SystemUser );
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -306,7 +306,7 @@ MAIL
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Model::Ticket->new( RT->SystemUser );
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -348,12 +348,12 @@ my $nokey = RT::Test->load_or_create_user(Name => 'nokey', EmailAddress => 'noke
 $nokey->PrincipalObj->GrantRight(Right => 'CreateTicket');
 $nokey->PrincipalObj->GrantRight(Right => 'OwnTicket');
 
-my $tick = RT::Model::Ticket->new( $RT::SystemUser );
+my $tick = RT::Model::Ticket->new( RT->SystemUser );
 $tick->create(Subject => 'owner lacks pubkey', Queue => 'general',
               Owner => $nokey);
 ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
 
-$tick = RT::Model::Ticket->new( $RT::SystemUser );
+$tick = RT::Model::Ticket->new( RT->SystemUser );
 $tick->create(Subject => 'owner has pubkey', Queue => 'general',
               Owner => 'root');
 ok($id = $tick->id, 'created ticket for owner-with-pubkey');
@@ -370,7 +370,7 @@ MAIL
 is ($status >> 8, 0, "The mail gateway exited normally");
 ok ($id, "got id of a newly created ticket - $id");
 
-$tick = RT::Model::Ticket->new( $RT::SystemUser );
+$tick = RT::Model::Ticket->new( RT->SystemUser );
 $tick->load( $id );
 ok ($tick->id, "loaded ticket #$id");
 

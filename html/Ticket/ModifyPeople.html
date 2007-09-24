@@ -58,7 +58,7 @@
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 <&| /Widgets/TitleBox, title => loc('Modify people related to ticket #[_1]', $Ticket->id),   width => "100%", color=> "#333399" &>
-<& Elements/EditPeople, Ticket => $Ticket, Usercolumn => $UserField, UserString => $UserString, UserOp => $UserOp, GroupString => $GroupString, GroupOp => $GroupOp, Groupcolumn => $GroupField &>
+<& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp, GroupString => $GroupString, GroupOp => $GroupOp, GroupField => $GroupField &>
 </&>
 <& /Elements/Submit, Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
 </form>
@@ -82,12 +82,12 @@ push @results, @wresults;
 
 
 <%ARGS>
+$UserField => undef
+$GroupField => undef
 $OnlySearchForPeople => undef
 $OnlySearchForGroup => undef
-$Usercolumn => undef
 $UserOp => undef
 $UserString => undef
-$Groupcolumn => undef
 $GroupOp => undef
 $GroupString => undef
 $id => undef

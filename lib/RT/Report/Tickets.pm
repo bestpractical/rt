@@ -134,7 +134,7 @@ sub GroupBy {
     $self->SUPER::GroupBy( \%args );
 }
 
-sub Column {
+sub column {
     my $self = shift;
     my %args = (@_);
 
@@ -142,7 +142,7 @@ sub Column {
         %args = $self->_FieldToFunction( %args );
     }
 
-    return $self->SUPER::Column( %args );
+    return $self->SUPER::column( %args );
 }
 
 =head2 _do_search
@@ -220,7 +220,7 @@ sub Next {
 
 sub new_item {
     my $self = shift;
-    return RT::Report::Tickets::Entry->new($RT::SystemUser); # $self->current_user);
+    return RT::Report::Tickets::Entry->new(RT->SystemUser); # $self->current_user);
 }
 
 

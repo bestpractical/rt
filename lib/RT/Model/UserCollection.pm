@@ -445,7 +445,7 @@ sub WhoHaveRoleRight
     $self->limit( alias => $self->PrincipalsAlias,
                   column => 'id',
                   operator => '!=',
-                  value => $RT::SystemUser->id
+                  value => RT->SystemUser->id
                 );
     return;
 }
@@ -515,7 +515,7 @@ sub WhoHaveGroupRight
     $self->limit( alias => $self->PrincipalsAlias,
                   column => 'id',
                   operator => '!=',
-                  value => $RT::SystemUser->id
+                  value => RT->SystemUser->id
                 );
     return;
 }

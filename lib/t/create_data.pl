@@ -65,7 +65,7 @@ sub create_users {
     $domain = $ARGS{'subdomain'} . ".$domain" if $ARGS{'subdomain'};
 
     foreach my $user (@usernames) {
-	my $user_obj = RT::Model::User->new($RT::SystemUser);
+	my $user_obj = RT::Model::User->new(RT->SystemUser);
 	$user_obj->load($user);
 	if ($user_obj->id() && !$anon) {
 	    # Use this user; assume we know what we're doing.  Don't

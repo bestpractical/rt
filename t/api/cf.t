@@ -1,27 +1,27 @@
 #!/usr/bin/perl
 
 use strict;
-use RT::Test tests => 138;
+use RT::Test; use Test::More tests => 138;
 
 
 # Before we get going, ditch all object_cfs; this will remove 
 # all custom fields systemwide;
-my $object_cfs = RT::Model::ObjectCustomFieldCollection->new($RT::SystemUser);
+my $object_cfs = RT::Model::ObjectCustomFieldCollection->new(RT->SystemUser);
 $object_cfs->find_all_rows();
 while (my $ocf = $object_cfs->next) {
 	$ocf->delete();
 }
 
 
-my $queue = RT::Model::Queue->new( $RT::SystemUser );
+my $queue = RT::Model::Queue->new( RT->SystemUser );
 $queue->create( Name => 'RecordCustomFields-'.$$ );
 ok ($queue->id, "Created the queue" . $queue->id);
 
-my $queue2 = RT::Model::Queue->new( $RT::SystemUser );
+my $queue2 = RT::Model::Queue->new( RT->SystemUser );
 $queue2->create( Name => 'RecordCustomFields2' );
 ok ($queue->id, "Created the second  queue");
 
-my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+my $ticket = RT::Model::Ticket->new( RT->SystemUser );
 $ticket->create(
 	Queue => $queue->id,
 	Requestor => 'root@localhost',
@@ -38,7 +38,7 @@ my $cfvs = $ticket->CustomFieldValues;
 is( $cfvs->count, 0 );
 is( $ticket->first_custom_field_value, undef );
 
-my $local_cf1 = RT::Model::CustomField->new( $RT::SystemUser );
+my $local_cf1 = RT::Model::CustomField->new( RT->SystemUser );
 my ($status,$msg) = $local_cf1->create( Name => 'RecordCustomFields1-'.$$, Type => 'SelectSingle', Queue => $queue->id );
 ok($status,$msg);
 ($status,$msg)=$local_cf1->AddValue( Name => 'RecordCustomFieldValues11' );
@@ -46,17 +46,17 @@ ok($status,$msg);
 ($status,$msg)= $local_cf1->AddValue( Name => 'RecordCustomFieldValues12' );
 ok($status,$msg);
 
-my $local_cf2 = RT::Model::CustomField->new( $RT::SystemUser );
+my $local_cf2 = RT::Model::CustomField->new( RT->SystemUser );
 $local_cf2->create( Name => 'RecordCustomFields2-'.$$, Type => 'SelectSingle', Queue => $queue->id );
 $local_cf2->AddValue( Name => 'RecordCustomFieldValues21' );
 $local_cf2->AddValue( Name => 'RecordCustomFieldValues22' );
 
-my $global_cf3 = RT::Model::CustomField->new( $RT::SystemUser );
+my $global_cf3 = RT::Model::CustomField->new( RT->SystemUser );
 $global_cf3->create( Name => 'RecordCustomFields3-'.$$, Type => 'SelectSingle', Queue => 0 );
 $global_cf3->AddValue( Name => 'RecordCustomFieldValues31' );
 $global_cf3->AddValue( Name => 'RecordCustomFieldValues32' );
 
-my $local_cf4 = RT::Model::CustomField->new( $RT::SystemUser );
+my $local_cf4 = RT::Model::CustomField->new( RT->SystemUser );
 $local_cf4->create( Name => 'RecordCustomFields4', Type => 'SelectSingle', Queue => $queue2->id );
 $local_cf4->AddValue( Name => 'RecordCustomFieldValues41' );
 $local_cf4->AddValue( Name => 'RecordCustomFieldValues42' );

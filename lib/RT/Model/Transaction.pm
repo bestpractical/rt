@@ -354,7 +354,7 @@ sub create {
     #Provide a way to turn off scrips if we need to
         $RT::Logger->debug('About to think about scrips for transaction #' .$self->id);
     if ( $args{'ActivateScrips'} and $args{'ObjectType'} eq 'RT::Model::Ticket' ) {
-       $self->{'scrips'} = RT::Model::ScripCollection->new($RT::SystemUser);
+       $self->{'scrips'} = RT::Model::ScripCollection->new(RT->SystemUser);
 
         $RT::Logger->debug('About to prepare scrips for transaction #' .$self->id); 
         $self->{'scrips'}->prepare(
@@ -632,7 +632,7 @@ sub Attachments {
 
     $self->{'attachments'} = RT::Model::AttachmentCollection->new( $self->current_user );
 
-    unless ( $self->current_userCanSee ) {
+    unless ( $self->current_user_can_see ) {
         $self->{'attachments'}->limit(column => 'id', value => '0');
         return $self->{'attachments'};
     }
@@ -693,7 +693,7 @@ Returns a text string which describes this transaction
 sub Description {
     my $self = shift;
 
-    unless ( $self->current_userCanSee ) {
+    unless ( $self->current_user_can_see ) {
         return ( $self->loc("Permission Denied") );
     }
 
@@ -717,7 +717,7 @@ Returns a text string which briefly describes this transaction
 sub BriefDescription {
     my $self = shift;
 
-    unless ( $self->current_userCanSee ) {
+    unless ( $self->current_user_can_see ) {
         return ( $self->loc("Permission Denied") );
     }
 
@@ -1010,18 +1010,6 @@ sub IsInbound {
 
 # }}}
 
-# }}}
-
-sub _OverlayAccessible {
-    {
-
-          ObjectType => { public => 1},
-          ObjectId => { public => 1},
-
-    }
-};
-
-# }}}
 
 # }}}
 
@@ -1048,11 +1036,11 @@ sub _value {
     my $field = shift;
 
     #if the field is public, return it.
-    if ( 0) {# $self->_Accessible( $field, 'public' ) ) {
+    if ( $field eq 'ObjectType') {
         return $self->SUPER::_value( $field );
     }
 
-    unless ( $self->current_userCanSee ) {
+    unless ( $self->current_user_can_see ) {
         return undef;
     }
 
@@ -1079,7 +1067,7 @@ sub current_user_has_right {
     );
 }
 
-=head2 CurrentUserCanSee
+=head2 current_user_can_see
 
 Returns true if current user has rights to see this particular transaction.
 
@@ -1089,7 +1077,7 @@ custom implementations.
 
 =cut
 
-sub CurrentUserCanSee {
+sub current_user_can_see {
     my $self = shift;
 
     # If it's a comment, we need to be extra special careful
@@ -1176,7 +1164,7 @@ sub Object {
 sub FriendlyObjectType {
     my $self = shift;
     my $type = $self->ObjectType or return undef;
-    $type =~ s/^RT:://;
+    $type =~ s/^RT::Model:://;
     return $self->loc($type);
 }
 

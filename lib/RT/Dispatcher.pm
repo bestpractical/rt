@@ -9,6 +9,7 @@ use RT;
 RT->load_config;
 use RT::Interface::Web;
 use RT::Interface::Web::Handler;
+RT::I18N->init();
 
 before qr/.*/ => run {
 RT::InitSystemObjects();

@@ -18,7 +18,7 @@ my($ret,$msg);
 
 # ---- Create a queue to test with.
 my $queue = "CFSortQueue-$$";
-my $queue_obj = RT::Model::Queue->new( $RT::SystemUser );
+my $queue_obj = RT::Model::Queue->new( RT->SystemUser );
 ($ret, $msg) = $queue_obj->create(
     Name => $queue,
     Description => 'queue for custom field sort testing'
@@ -27,10 +27,10 @@ ok($ret, "$queue test queue creation. $msg");
 
 # ---- Create some custom fields.  We're not currently using all of
 # them to test with, but the more the merrier.
-my $cfO = RT::Model::CustomField->new($RT::SystemUser);
-my $cfA = RT::Model::CustomField->new($RT::SystemUser);
-my $cfB = RT::Model::CustomField->new($RT::SystemUser);
-my $cfC = RT::Model::CustomField->new($RT::SystemUser);
+my $cfO = RT::Model::CustomField->new(RT->SystemUser);
+my $cfA = RT::Model::CustomField->new(RT->SystemUser);
+my $cfB = RT::Model::CustomField->new(RT->SystemUser);
+my $cfC = RT::Model::CustomField->new(RT->SystemUser);
 
 ($ret, $msg) = $cfO->create( Name => 'Order',
                              Queue => 0,
@@ -60,7 +60,7 @@ ok($ret, "Custom Field Charlie Created");
 
 # ----- Create some tickets to test with.  Assign them some values to
 # make it easy to sort with.
-my $t1 = RT::Model::Ticket->new($RT::SystemUser);
+my $t1 = RT::Model::Ticket->new(RT->SystemUser);
 $t1->create( Queue => $queue_obj->id,
              Subject => 'One',
            );
@@ -69,7 +69,7 @@ $t1->AddCustomFieldValue(Field => $cfA->id,  value => '2');
 $t1->AddCustomFieldValue(Field => $cfB->id,  value => '1');
 $t1->AddCustomFieldValue(Field => $cfC->id,  value => 'BBB');
 
-my $t2 = RT::Model::Ticket->new($RT::SystemUser);
+my $t2 = RT::Model::Ticket->new(RT->SystemUser);
 $t2->create( Queue => $queue_obj->id,
              Subject => 'Two',
            );
@@ -92,7 +92,7 @@ sub check_order {
 }
 
 # The real tests start here
-my $tx = new RT::Model::TicketCollection( $RT::SystemUser );
+my $tx = new RT::Model::TicketCollection( RT->SystemUser );
 
 
 # Make sure we can sort in both directions on a queue specific field.
@@ -101,7 +101,7 @@ $tx->order_by({ column => "CF.${queue}.{Charlie}", order => 'DES' });
 is($tx->count,2 ,"We found 2 tickets when lookign for cf charlie");
 check_order( $tx, 1, 2);
 
-$tx = new RT::Model::TicketCollection( $RT::SystemUser );
+$tx = new RT::Model::TicketCollection( RT->SystemUser );
 $tx->from_sql(qq[queue="$queue"] );
 $tx->order_by( {column => "CF.${queue}.{Charlie}", order => 'ASC' });
 is($tx->count,2, "We found two tickets when sorting by cf charlie without limiting to it" );
@@ -110,7 +110,7 @@ check_order( $tx, 2, 1);
 # When ordering by _global_ CustomFields, if more than one queue has a
 # CF named Charlie, things will go bad.  So, these results are uniqued
 # in Tickets_Overlay.
-$tx = new RT::Model::TicketCollection( $RT::SystemUser );
+$tx = new RT::Model::TicketCollection( RT->SystemUser );
 $tx->from_sql(qq[queue="$queue"] );
 $tx->order_by({ column => "CF.{Charlie}", order => 'DESC' });
 diag $tx->build_select_query;
@@ -120,7 +120,7 @@ TODO: {
 check_order( $tx, 1, 2);
 }
 
-$tx = new RT::Model::TicketCollection( $RT::SystemUser );
+$tx = new RT::Model::TicketCollection( RT->SystemUser );
 $tx->from_sql(qq[queue="$queue"] );
 $tx->order_by( {column => "CF.{Charlie}", order => 'ASC' });
 diag $tx->build_select_query;
@@ -131,7 +131,7 @@ check_order( $tx, 2, 1);
 }
 
 # Add a new ticket, to test sorting on multiple columns.
-my $t3 = RT::Model::Ticket->new($RT::SystemUser);
+my $t3 = RT::Model::Ticket->new(RT->SystemUser);
 $t3->create( Queue => $queue_obj->id,
              Subject => 'Three',
            );
@@ -140,7 +140,7 @@ $t3->AddCustomFieldValue(Field => $cfA->id,  value => '3');
 $t3->AddCustomFieldValue(Field => $cfB->id,  value => '2');
 $t3->AddCustomFieldValue(Field => $cfC->id,  value => 'AAA');
 
-$tx = new RT::Model::TicketCollection( $RT::SystemUser );
+$tx = new RT::Model::TicketCollection( RT->SystemUser );
 $tx->from_sql(qq[queue="$queue"] );
 $tx->order_by(
     { column => "CF.${queue}.{Charlie}", order => 'ASC' },
@@ -152,7 +152,7 @@ TODO: {
 check_order( $tx, 3, 2, 1);
 }
 
-$tx = new RT::Model::TicketCollection( $RT::SystemUser );
+$tx = new RT::Model::TicketCollection( RT->SystemUser );
 $tx->from_sql(qq[queue="$queue"] );
 $tx->order_by(
     { column => "CF.${queue}.{Charlie}", order => 'DES' },
@@ -166,7 +166,7 @@ check_order( $tx, 1, 2, 3);
 
 # Reverse the order of the secondary column, which changes the order
 # of the first two tickets.
-$tx = new RT::Model::TicketCollection( $RT::SystemUser );
+$tx = new RT::Model::TicketCollection( RT->SystemUser );
 $tx->from_sql(qq[queue="$queue"] );
 $tx->order_by(
     { column => "CF.${queue}.{Charlie}", order => 'ASC' },
@@ -178,7 +178,7 @@ TODO: {
 check_order( $tx, 2, 3, 1);
 }
 
-$tx = new RT::Model::TicketCollection( $RT::SystemUser );
+$tx = new RT::Model::TicketCollection( RT->SystemUser );
 $tx->from_sql(qq[queue="$queue"] );
 $tx->order_by(
     { column => "CF.${queue}.{Charlie}", order => 'DES' },

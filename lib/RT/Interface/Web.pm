@@ -201,7 +201,7 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 =cut
 
 sub StaticFileHeaders {
-    my $date = RT::Date->new( $RT::SystemUser );
+    my $date = RT::Date->new( RT->SystemUser );
 
     # Expire things in a month.
     $date->set( value => time + 30*24*60*60 );
@@ -230,13 +230,12 @@ through
 =cut
 
 sub loc {
-    return _(@_);
 
     if ($session{'CurrentUser'} && 
         UNIVERSAL::can($session{'CurrentUser'}, 'loc')){
         return($session{'CurrentUser'}->loc(@_));
     }
-    elsif ( my $u = eval { RT::CurrentUser->new($RT::SystemUser->id) } ) {
+    elsif ( my $u = RT::CurrentUser->new(RT->SystemUser->id)  ) {
         return ($u->loc(@_));
     }
     else {
@@ -268,7 +267,7 @@ sub loc_fuzzy {
         return($session{'CurrentUser'}->loc_fuzzy($msg));
     }
     else  {
-        my $u = RT::CurrentUser->new($RT::SystemUser->id);
+        my $u = RT::CurrentUser->new(RT->SystemUser->id);
         return ($u->loc_fuzzy($msg));
     }
 }
@@ -701,7 +700,7 @@ sub MakeMIMEEntity {
 
     if ( $args{'AttachmentFieldName'} ) {
 
-        my $cgi_object = $m->cgi_object;
+        my $cgi_object = Jifty->handler->cgi;
 
         if ( my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} ) ) {
 
@@ -1009,7 +1008,7 @@ sub ProcessACLChanges {
 
         my $obj;
         if ($object_type eq 'RT::System') {
-            $obj = $RT::System;
+            $obj = RT->System;
         } elsif ($RT::Model::ACE::OBJECT_TYPES{$object_type}) {
             $obj = $object_type->new($session{'CurrentUser'});
             $obj->load($object_id);
@@ -1155,7 +1154,7 @@ sub ProcessTicketBasics {
 
 
     if ( $ARGSRef->{'Queue'} and ( $ARGSRef->{'Queue'} !~ /^(\d+)$/ ) ) {
-        my $tempqueue = RT::Model::Queue->new($RT::SystemUser);
+        my $tempqueue = RT::Model::Queue->new(RT->SystemUser);
         $tempqueue->load( $ARGSRef->{'Queue'} );
         if ( $tempqueue->id ) {
             $ARGSRef->{'Queue'} = $tempqueue->id;
@@ -1640,7 +1639,7 @@ Returns C<undef> if no files were uploaded in the C<$arg> field.
 
 sub _UploadedFile {
     my $arg = shift;
-    my $cgi_object = $m->cgi_object;
+    my $cgi_object = Jifty->handler->cgi;
     my $fh = $cgi_object->upload($arg) or return undef;
     my $upload_info = $cgi_object->uploadInfo($fh);
 

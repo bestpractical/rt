@@ -48,7 +48,7 @@
 <%init>
 require  Module::Versions::Report;
 my $title = loc('System Configuration');
-unless ($session{'CurrentUser'}->has_right( Object=> $RT::System, Right => 'SuperUser')) {
+unless ($session{'CurrentUser'}->has_right( Object=> RT->System, Right => 'SuperUser')) {
  Abort(loc('This feature is only available to system administrators'));
 } 
 

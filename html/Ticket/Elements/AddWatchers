@@ -110,10 +110,10 @@ if ($GroupString) {
 </%INIT>
 
 <%ARGS>
-$Usercolumn => 'Name'
+$UserField => 'Name'
 $UserOp => '='
 $UserString => undef
-$Groupcolumn => 'Name'
+$GroupField => 'Name'
 $GroupOp => '='
 $GroupString => undef
 $PrivilegedOnly => undef

@@ -76,7 +76,7 @@ subtabs => {
 	}
 }
 }
-if ($session{'CurrentUser'}->has_right( Object => $RT::System, Right => 'AdminUsers')) {
+if ($session{'CurrentUser'}->has_right( Object => RT->System, Right => 'AdminUsers')) {
   $tabs->{"A"} = { title => loc('Select user'),
   		     	path => "Admin/Users/",
 			   };

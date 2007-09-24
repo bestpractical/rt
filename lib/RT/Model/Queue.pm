@@ -348,7 +348,7 @@ sub create {
         @_
     );
 
-    unless ( $self->current_user->has_right(Right => 'AdminQueue', Object => $RT::System) )
+    unless ( $self->current_user->has_right(Right => 'AdminQueue', Object => RT->System) )
     {    #Check them ACLs
         return ( 0, $self->loc("No permission to create queues") );
     }
@@ -453,7 +453,7 @@ sub validate_Name {
     my $self = shift;
     my $name = shift;
 
-    my $tempqueue = new RT::Model::Queue($RT::SystemUser);
+    my $tempqueue = new RT::Model::Queue(RT->SystemUser);
     $tempqueue->load($name);
 
     #If this queue exists, return undef
@@ -752,7 +752,7 @@ sub _AddWatcher {
         } else {
 
         # if the user doesn't exist, we need to create a new user
-             my $new_user = RT::Model::User->new($RT::SystemUser);
+             my $new_user = RT::Model::User->new(RT->SystemUser);
 
             my ( $Address, $Name ) =  
                RT::Interface::Email::ParseAddressFromHeader($args{'Email'});
@@ -1159,7 +1159,7 @@ sub has_right {
   
      return $principal->has_right(
          %args,
-         Object => ($self->id ? $self : $RT::System),
+         Object => ($self->id ? $self : RT->System),
     );
 }
 

@@ -1730,7 +1730,7 @@ sub _ParseDate {
     return $value unless $value;
 
     require RT::Date;
-    my $obj = RT::Date->new( $RT::SystemUser );
+    my $obj = RT::Date->new( RT->SystemUser );
     # unix time
     if ( $value =~ /^\d+$/ ) {
         $obj->set( value => $value );

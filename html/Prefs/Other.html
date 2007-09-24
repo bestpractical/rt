@@ -75,7 +75,7 @@ my @results;
 my $title = loc("Other preferences");
 
 my $UserObj = $session{'CurrentUser'}->UserObj;
-my $preferences = $UserObj->Preferences( $RT::System );
+my $preferences = $UserObj->Preferences( RT->System );
 
 if ( $Update ) {
     foreach my $option( RT->Config->Options ) {
@@ -93,7 +93,7 @@ if ( $Update ) {
             delete $preferences->{ $option };
         }
     }
-    $UserObj->set_Preferences( $RT::System, $preferences );
+    $UserObj->set_Preferences( RT->System, $preferences );
 }
 my $localize_meta = sub {
     my %meta = %{ shift() };

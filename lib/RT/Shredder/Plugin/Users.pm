@@ -117,7 +117,7 @@ sub TestArgs
     if( $args{'replace_relations'} ) {
         my $uid = $args{'replace_relations'};
         # XXX: it's possible that SystemUser is not available
-        my $user = RT::Model::User->new( $RT::SystemUser );
+        my $user = RT::Model::User->new( RT->SystemUser );
         $user->load( $uid );
         unless( $user->id ) {
             return (0, "Couldn't load user '$uid'" );
@@ -131,7 +131,7 @@ sub Run
 {
     my $self = shift;
     my %args = ( Shredder => undef, @_ );
-    my $objs = RT::Model::UserCollection->new( $RT::SystemUser );
+    my $objs = RT::Model::UserCollection->new( RT->SystemUser );
     # XXX: we want preload only things we need, but later while
     # logging we need all data, TODO envestigate this
     # $objs->columns(qw(id Name EmailAddress Lang Timezone
@@ -217,7 +217,7 @@ sub FilterWithoutTickets {
 
 sub _WithoutTickets {
     my ($self, $user) = @_;
-    my $tickets = RT::Model::TicketCollection->new( $RT::SystemUser );
+    my $tickets = RT::Model::TicketCollection->new( RT->SystemUser );
     $tickets->from_sql( 'Watcher.id = '. $user->id );
     # HACK: we may use Count method which counts all records
     # that match condtion, but we really want to know only that
