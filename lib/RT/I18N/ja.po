@@ -345,7 +345,7 @@ msgstr "（スクリプトを削除するためのチェックボックス）"
 
 #: html/Admin/Elements/EditCustomFieldValues:50 html/Admin/Elements/EditQueueWatchers:50 html/Admin/Elements/EditScrips:56 html/Admin/Elements/EditTemplates:57 html/Admin/Groups/Members.html:73 html/Elements/EditLinks:54 html/Ticket/Elements/EditPeople:67 html/User/Groups/Members.html:76
 msgid "(Check box to delete)"
-msgstr "（削除のためのチェックボックス）"
+msgstr "(ボックスのチェックで削除)"
 
 #: html/Ticket/Elements/PreviewScrips:99
 msgid "(Check boxes to disable notifications to the listed recipients)"
@@ -598,7 +598,7 @@ msgstr "このキューにスクリプトを追加する"
 
 #: html/Admin/Global/Scrip.html:83
 msgid "Add a scrip which will apply to all queues"
-msgstr "すべてのキューに適応するスクリプトを追加する"
+msgstr "すべてのキューに適用するスクリップを追加する"
 
 #: html/Search/Build.html:109 html/Search/Build.html:94
 msgid "Add and Search"
@@ -989,11 +989,11 @@ msgstr ""
 
 #: html/SelfService/Update.html:78 html/Ticket/Create.html:134 html/Ticket/Update.html:97
 msgid "Check box to delete"
-msgstr ""
+msgstr "ボックスのチェックで削除"
 
 #: html/Admin/Elements/SelectRights:55
 msgid "Check box to revoke right"
-msgstr "権利を無効にするチェックボックス"
+msgstr "ボックスのチェックで権利を剥脱"
 
 # XXX - I can't come up with a good translation yet. leave as is in English
 # XXX - I can't come up with a good translation yet. leave as is in English
