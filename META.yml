@@ -1,7 +1,7 @@
 --- 
 abstract: RT FM Extension
 distribution_type: module
-generated_by: Module::Install version 0.67
+generated_by: Module::Install version 0.670
 license: GPL version 2
 meta-spec: 
   url: http://module-build.sourceforge.net/META-spec-v1.3.html
@@ -25,4 +25,4 @@ requires:
   Tree::Simple: 0
   YAML: 0
   perl: 5.8.0
-version: 2.2.0RC7
+version: 2.2.0
