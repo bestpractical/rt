@@ -3,7 +3,7 @@
 use strict;
 use Test::Expect;
 #use Test::More qw/no_plan/;
-use Test::More tests => 269;
+use Test::More tests => 216;
 
 use RT;
 RT::LoadConfig();
@@ -100,10 +100,6 @@ my $othercf = RT::CustomField->new($RT::SystemUser);
 ($val,$msg) = $othercf->Create(Name => 'My CF'.$$, Type => 'FreeformSingle', Queue => $queue_id);
 ok($val,$msg);
 
-my $multiple_cf = RT::CustomField->new($RT::SystemUser);
-($val,$msg) = $multiple_cf->Create(Name => 'MultipleCF'.$$, Type =>
-        'FreeformMultiple', Queue => $queue_id);
-ok($val,$msg);
 
 
 # add a comment to ticket
@@ -166,65 +162,6 @@ expect_send("edit ticket/$ticket_id set 'CF-my CF$$=VALUE' ", 'Changing CF...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
 expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking new value');
 expect_like(qr/my CF$$: VALUE/i, 'Verified change');
-
-# Test reading and setting single value custom field with commas or quotes
-expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking initial value');
-expect_like(qr/myCF$$:/i, 'Verified change');
-expect_send("edit ticket/$ticket_id set CF-myCF$$=1,2,3", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
-expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking new value');
-expect_like(qr/myCF$$: 1,2,3/i, 'Verified change');
-expect_send("edit ticket/$ticket_id set CF-myCF$$=\"1's,2,3\"", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
-expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking new value');
-expect_like(qr/myCF$$: 1's,2,3/i, 'Verified change');
-
-# Test reading and setting custom fields with multiple values
-expect_send("show ticket/$ticket_id -f CF-MultipleCF$$", 'Checking initial value');
-expect_like(qr/CF-MultipleCF$$:/i, 'Verified multiple cf change');
-expect_send("edit ticket/$ticket_id set CF-MultipleCF$$=1,2,3 ", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF-MultipleCF$$", 'Checking new value');
-expect_like(qr/CF-MultipleCF$$: 1,\s*2,\s*3/i, 'Verified multiple cf change');
-expect_send("edit ticket/$ticket_id set CF-MultipleCF$$=a,b,c ", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF-MultipleCF$$", 'Checking new value');
-expect_like(qr/CF-MultipleCF$$: a,\s*b,\s*c/i, 'Verified change');
-expect_send("edit ticket/$ticket_id del CF-MultipleCF$$=a", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'del multiple cf');
-expect_send("show ticket/$ticket_id -f CF-MultipleCF$$", 'Checking new value');
-expect_like(qr/CF-MultipleCF$$: b,\s*c/i, 'Verified multiple cf change');
-expect_send("edit ticket/$ticket_id add CF-MultipleCF$$=o", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF-MultipleCF$$", 'Checking new value');
-expect_like(qr/CF-MultipleCF$$: b,\s*c,\s*o/i, 'Verified multiple cf change');
-
-expect_send("edit ticket/$ticket_id set CF-MultipleCF$$=\"'a,b,c'\" ", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF-MultipleCF$$", 'Checking new value');
-expect_like(qr/CF-MultipleCF$$: 'a,b,c'/i, 'Verified change');
-expect_send("edit ticket/$ticket_id del CF-MultipleCF$$=a", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF-MultipleCF$$", 'Checking new value');
-expect_like(qr/CF-MultipleCF$$: 'a,b,c'/i, 'Verified change');
-
-expect_send("edit ticket/$ticket_id set CF-MultipleCF$$=q{a,b,c}", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF-MultipleCF$$", 'Checking new value');
-expect_like(qr/CF-MultipleCF$$: 'a,b,c'/i, 'Verified change');
-expect_send("edit ticket/$ticket_id del CF-MultipleCF$$=a", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF-MultipleCF$$", 'Checking new value');
-expect_like(qr/CF-MultipleCF$$: 'a,b,c'/i, 'Verified change');
-expect_send("edit ticket/$ticket_id del CF-MultipleCF$$=\"'a,b,c'\"", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF-MultipleCF$$", 'Checking new value');
-expect_like(qr/CF-MultipleCF$$: \s*$/i, 'Verified change');
-
-expect_send("edit ticket/$ticket_id set CF-MultipleCF$$=\"q{1,2's,3}\"", 'Changing CF...');
-expect_like(qr/Ticket $ticket_id updated/, 'Changed multiple cf');
-expect_send("show ticket/$ticket_id -f CF-MultipleCF$$", 'Checking new value');
-expect_like(qr/CF-MultipleCF$$: '1,2\\'s,3'/i, 'Verified change');
 
 # ...
 # change a ticket's ...[other properties]...
@@ -502,7 +439,5 @@ sub check_attachment {
     chomp $attachment_content;
     expect_is($attachment_content,"Attachment contains original text");
 }
-
-
 
 1;
