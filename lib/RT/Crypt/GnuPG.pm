@@ -2010,6 +2010,29 @@ sub ImportKey {
     return %res;
 }
 
+# signs the input message, to make sure we have a useable passphrase
+# the first argument MUST be the email address of the signer
+# returns a true value if all went well
+sub DrySign {
+    my $from = shift;
+    my @message = @_;
+
+    my $mime = MIME::Entity->build(
+        From    => $from,
+        To      => 'nobody@localhost',
+        Subject => "dry run",
+        Message => \@message,
+    );
+
+    my %res = SignEncrypt(
+        Sign    => 1,
+        Encrypt => 0,
+        Entity  => $mime,
+    );
+
+    return $res{exit_code} == 0;
+}
+
 1;
 
 # helper package to avoid using temp file

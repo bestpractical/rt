@@ -57,6 +57,10 @@
 <input type="hidden" class="hidden" name="id" value="new" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 
+% if ($cannot_sign) {
+<& /Elements/GnuPGSignIssues &>
+% }
+
 <& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
 
 <div id="Ticket-Create-basics">
@@ -315,6 +319,16 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 }
 
 my $checks_failure = 0;
+
+# check to see if we have a good passphrase
+my $cannot_sign = 0;
+if ( $ARGS{'Sign'} ) {
+    if (!RT::Crypt::GnuPG::DrySign($QueueObj->CorrespondAddress, "x")) {
+        $cannot_sign = 1;
+        $checks_failure = 1;
+    }
+}
+
 my @gnupg_keys_issues;
 if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' && $ARGS{'Encrypt'} ) {
 
