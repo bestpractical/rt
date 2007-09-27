@@ -60,6 +60,10 @@
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
 
+% if ($cannot_sign) {
+<& /Elements/GnuPGSignIssues &>
+% }
+
 <& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
 
 <table border="0">
@@ -245,29 +249,44 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 # }}}
 
 my @results;
+my $cannot_sign = 0;
 my @gnupg_keys_issues;
-if ( $ARGS{'SubmitTicket'} && $ARGS{'Encrypt'} ) {
+if ( $ARGS{'SubmitTicket'} ) {
 
-    # skip any email addresses that we won't be sending mail to
-    my %squelch = $m->comp(
-                      '/Ticket/Elements/PreviewScrips:SquelchRecipients',
-                      %ARGS, TicketObj => $TicketObj
-                  );
-    my %seen = map { lc($_) => 1 } @{ $squelch{'EmailAddresses'} };
+    # check to see if we have a good passphrase
+    if ( $ARGS{'Sign'} ) {
+        my $address = $ARGS{'UpdateType'} eq "private"
+                    ? $TicketObj->QueueObj->CommentAddress
+                    : $TicketObj->QueueObj->CorrespondAddress;
+        if (!RT::Crypt::GnuPG::DrySign($address, "x")) {
+            $cannot_sign = 1;
+            $checks_failure = 1;
+        }
+    }
 
-    my @recipients = grep {!$seen{lc $_}} $m->comp(
-        '/Ticket/Elements/PreviewScrips:GetRecipients',
-        %ARGS, TicketObj => $TicketObj
-    );
+    if ( $ARGS{'Encrypt'} ) {
 
-    RT::Crypt::GnuPG::UseKeyForEncryption(
-        map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
-        grep $ARGS{$_} && /^UseKey-/,
-        keys %ARGS
-    );
-    my $status;
-    ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
-    $checks_failure = 1 unless $status;
+        # skip any email addresses that we won't be sending mail to
+        my %squelch = $m->comp(
+                        '/Ticket/Elements/PreviewScrips:SquelchRecipients',
+                        %ARGS, TicketObj => $TicketObj
+                    );
+        my %seen = map { lc($_) => 1 } @{ $squelch{'EmailAddresses'} };
+
+        my @recipients = grep {!$seen{lc $_}} $m->comp(
+            '/Ticket/Elements/PreviewScrips:GetRecipients',
+            %ARGS, TicketObj => $TicketObj
+        );
+
+        RT::Crypt::GnuPG::UseKeyForEncryption(
+            map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
+            grep $ARGS{$_} && /^UseKey-/,
+            keys %ARGS
+        );
+        my $status;
+        ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
+        $checks_failure = 1 unless $status;
+    }
 }
 
 if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {

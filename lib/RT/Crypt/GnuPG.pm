@@ -2018,16 +2018,18 @@ sub DrySign {
     my @message = @_;
 
     my $mime = MIME::Entity->build(
+        Type    => "multipart/mixed",
         From    => $from,
         To      => 'nobody@localhost',
         Subject => "dry run",
-        Message => \@message,
+        Data    => \@message,
     );
 
     my %res = SignEncrypt(
         Sign    => 1,
         Encrypt => 0,
         Entity  => $mime,
+        Signer  => $from,
     );
 
     return $res{exit_code} == 0;
