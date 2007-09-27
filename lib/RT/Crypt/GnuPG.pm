@@ -178,6 +178,18 @@ default. You may want to override it. You can use MD5, SHA1, RIPEMD160,
 SHA256 or other, however use `gpg --version` command to get information about
 supported algorithms by your gpg. These algorithms are listed as hash-functions.
 
+=item --use-agent
+
+This option lets you use GPG Agent to cache the passphrase of RT's key.
+
+=item --passphrase
+
+This option lets you set the passphrase of RT's key directly. This option is
+special in that it isn't passed directly to GPG, but is put into a file that
+GPG then reads (which is more secure). The downside is that anyone who has read
+access to your RT_SiteConfig.pm file can see the passphrase, thus we recommend
+the --use-agent option instead.
+
 =item other
 
 Read `man gpg` to get list of all options this program support.
