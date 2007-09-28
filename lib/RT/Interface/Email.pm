@@ -694,6 +694,14 @@ sub SignEncrypt {
 
     my @bad_recipients;
     foreach my $line ( @status ) {
+        # if the passphrase fails, either you have a bad passphrase
+        # or gpg-agent has died.  That should get caught in Create and
+        # Update, but at least throw an error here
+        if (($line->{'Operation'}||'' eq 'PassphraseCheck')
+            && $line->{'Status'} =~ /^(?:BAD|MISSING)$/ ) {
+            $RT::Logger->error( "$line->{'Status'} PASSPHRASE: $line->{'Message'}" );
+            return 0;
+        }
         next unless ($line->{'Operation'}||'') eq 'RecipientsCheck';
         next if $line->{'Status'} eq 'DONE';
         $RT::Logger->error( $line->{'Message'} );
