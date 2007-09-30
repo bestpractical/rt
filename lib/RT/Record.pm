@@ -280,6 +280,8 @@ If this object's table has any of the following atetributes defined as
 sub create {
     my $self    = shift;
     my %attribs = (@_);
+    if (ref($self) eq 'RT::Model::Queue') {
+    }
     foreach my $key ( keys %attribs ) {
         my $method = $self->can("validate_$key");
         if ($method) { 
@@ -365,7 +367,6 @@ sub load_by_cols {
     # We don't want to hang onto this
     delete $self->{'attributes'};
 
-    warn YAML::Dump(\%hash);
     return $self->SUPER::load_by_cols( @_ );# unless $self->_Handle->case_sensitive;
 
     # If this database is case sensitive we need to uncase objects for

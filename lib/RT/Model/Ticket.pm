@@ -2531,7 +2531,7 @@ sub MergeInto {
     }
 
     # update all the links that point to that old ticket
-    my $old_links_to = RT::Model::LinkCollection->new($self->current_user);
+    my $old_links_to = RT::Model::LinkCollection->new(current_user => $self->current_user);
     $old_links_to->limit(column => 'Target', value => $self->URI);
 
     my %old_seen;
@@ -2556,7 +2556,7 @@ sub MergeInto {
 
     }
 
-    my $old_links_from = RT::Model::LinkCollection->new($self->current_user);
+    my $old_links_from = RT::Model::LinkCollection->new(current_user=> $self->current_user);
     $old_links_from->limit(column => 'Base', value => $self->URI);
 
     while (my $link = $old_links_from->next) {

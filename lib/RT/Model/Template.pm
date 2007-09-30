@@ -50,7 +50,7 @@ column        Created =>   type is 'datetime', default is '';
 sub _set {
     my $self = shift;
     
-    unless ( $self->current_userHasQueueRight('ModifyTemplate') ) {
+    unless ( $self->current_user_has_queue_right('ModifyTemplate') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
     return $self->SUPER::_set( @_ );
@@ -74,7 +74,7 @@ Returns its value as a string, if the user passes an ACL check
 sub _value {
     my $self  = shift;
 
-    unless ( $self->current_userHasQueueRight('ShowTemplate') ) {
+    unless ( $self->current_user_has_queue_right('ShowTemplate') ) {
         return undef;
     }
     return $self->__value( @_ );
@@ -210,7 +210,7 @@ Delete this template.
 sub delete {
     my $self = shift;
 
-    unless ( $self->current_userHasQueueRight('ModifyTemplate') ) {
+    unless ( $self->current_user_has_queue_right('ModifyTemplate') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
@@ -383,15 +383,15 @@ sub _ParseContent {
 
 # }}}
 
-# {{{ sub CurrentUserHasQueueRight
+# {{{ sub current_user_has_queue_right
 
-=head2 CurrentUserHasQueueRight
+=head2 current_user_has_queue_right
 
-Helper function to call the template's queue's CurrentUserHasQueueRight with the passed in args.
+Helper function to call the template's queue's current_user_has_queue_right with the passed in args.
 
 =cut
 
-sub CurrentUserHasQueueRight {
+sub current_user_has_queue_right {
     my $self = shift;
     return ( $self->QueueObj->current_user_has_right(@_) );
 }

@@ -125,7 +125,6 @@ sub set_Recipients {
         }
 
     }
-
     if ( $arg =~ /\bAdminCc\b/ ) {
         push ( @Bcc, $ticket->AdminCc->MemberEmailAddresses  );
         push ( @Bcc, $ticket->QueueObj->AdminCc->MemberEmailAddresses  );
@@ -138,7 +137,7 @@ sub set_Recipients {
         }
     }
 
-    my $creator = $self->TransactionObj->CreatorObj->EmailAddress();
+    my $creator = $self->TransactionObj->CreatorObj->EmailAddress() ||'' ;
 
     #Strip the sender out of the To, Cc and AdminCc and set the 
     # recipients fields used to build the message by the superclass.
@@ -149,9 +148,9 @@ sub set_Recipients {
         @{ $self->{'Bcc'} } = @Bcc;
     }
     else {
-        @{ $self->{'To'} }  = grep ( lc $_ ne lc $creator, @To );
-        @{ $self->{'Cc'} }  = grep ( lc $_ ne lc $creator, @Cc );
-        @{ $self->{'Bcc'} } = grep ( lc $_ ne lc $creator, @Bcc );
+        @{ $self->{'To'} }  = grep { lc $_ ne lc $creator} @To;
+        @{ $self->{'Cc'} }  = grep { lc $_ ne lc $creator} @Cc;
+        @{ $self->{'Bcc'} } = grep { lc $_ ne lc $creator} @Bcc;
     }
     @{ $self->{'PseudoTo'} } = @PseudoTo;
 

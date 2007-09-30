@@ -640,7 +640,7 @@ If the status is anything else, the new value returned is the error code.
 sub set_RandomPassword {
     my $self = shift;
 
-    unless ( $self->current_userCanModify('Password') ) {
+    unless ( $self->current_user_can_modify('Password') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
@@ -679,7 +679,7 @@ for privileged and Non-privileged users respectively.
 sub ResetPassword {
     my $self = shift;
 
-    unless ( $self->current_userCanModify('Password') ) {
+    unless ( $self->current_user_can_modify('Password') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
     my ( $status, $pass ) = $self->set_RandomPassword();
@@ -910,7 +910,7 @@ sub set_Password {
     my $self     = shift;
     my $password = shift;
 
-    unless ( $self->current_userCanModify('Password') ) {
+    unless ( $self->current_user_can_modify('Password') ) {
         return ( 0, $self->loc('Password: Permission Denied') );
     }
 
@@ -1212,9 +1212,9 @@ sub has_right {
 
 # }}}
 
-# {{{ sub CurrentUserCanModify
+# {{{ sub current_user_can_modify
 
-=head2 CurrentUserCanModify RIGHT
+=head2 current_user_can_modify RIGHT
 
 If the user has rights for this object, either because
 he has 'AdminUsers' or (if he\'s trying to edit himself and the right isn\'t an 
@@ -1222,7 +1222,7 @@ admin right) 'ModifySelf', return 1. otherwise, return undef.
 
 =cut
 
-sub CurrentUserCanModify {
+sub current_user_can_modify {
     my $self  = shift;
     my $right = shift;
 
@@ -1498,7 +1498,7 @@ sub _set {
          ($self->id == $RT::Nobody->id)) {
         return ( 0, $self->loc("Can not modify system users") );
     }
-    unless ( $self->current_userCanModify( $args{'column'} ) ) {
+    unless ( $self->current_user_can_modify( $args{'column'} ) ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 

@@ -348,6 +348,7 @@ sub create {
         @_
     );
 
+
     unless ( $self->current_user->has_right(Right => 'AdminQueue', Object => RT->System) )
     {    #Check them ACLs
         return ( 0, $self->loc("No permission to create queues") );

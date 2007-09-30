@@ -82,7 +82,6 @@ unless ( $session{'CurrentUser'} && $session{'CurrentUser'}->id ) {
     $session{'CurrentUser'} = RT::CurrentUser->new;
 }
 
-warn "My currentuser is ".$session{'CurrentUser'};
 
 # Set the proper encoding for the current language handle
 $r->content_type("text/html; charset=utf-8");

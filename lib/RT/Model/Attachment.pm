@@ -295,7 +295,7 @@ Returns length of L</Content> in bytes.
 sub ContentLength {
     my $self = shift;
 
-    return undef unless $self->TransactionObj->current_userCanSee;
+    return undef unless $self->TransactionObj->current_user_can_see;
 
     my $len = $self->GetHeader('Content-Length');
     unless ( defined $len ) {
@@ -583,7 +583,7 @@ sub _value {
         return ( $self->__value( $field, @_ ) );
     }
 
-    return undef unless $self->TransactionObj->current_userCanSee;
+    return undef unless $self->TransactionObj->current_user_can_see;
     return $self->__value( $field, @_ );
 }
 

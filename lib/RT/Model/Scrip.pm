@@ -449,15 +449,12 @@ sub prepare {
                                       TicketObj      => $args{'TicketObj'},
                                       TransactionObj => $args{'TransactionObj'},
         );
-
         $return = $self->ActionObj->prepare();
     };
-    if ($@) {
-        $RT::Logger->error( "Scrip prepare " . $self->id . " died. - " . $@ );
+    if (my $err = $@) {
+        $RT::Logger->error( "Scrip prepare " . $self->id . " died. - " . $err ." ".$self->ActionObj->ExecModule);
         return (undef);
     }
-        unless ($return) {
-        }
         return ($return);
 }
 
