@@ -539,7 +539,7 @@ It takes no options. Arguably, this is a bug
 sub _setLastUpdated {
     my $self = shift;
     use RT::Date;
-    my $now = new RT::Date( $self->current_user );
+    my $now = new RT::Date( current_user => $self->current_user );
     $now->set_to_now();
 
         my ( $msg, $val ) = $self->__set(
