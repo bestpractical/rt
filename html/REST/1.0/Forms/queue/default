@@ -56,7 +56,7 @@ $changes => {}
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
-my $queue = new RT::Model::Queue ;
+my $queue = new RT::Model::Queue( $session{CurrentUser} ) ;
 my @fields = qw(Name Description CorrespondAddress CommentAddress
                 InitialPriority FinalPriority DefaultDueIn);
 my %fields = map { lc $_ => $_ } @fields;
@@ -116,7 +116,7 @@ else {
     }
 }
 
-if (%data == 0) {
+if ( keys %data == 0) {
     my @data;
 
     push @data, [ id => "queue/".$queue->id ];
