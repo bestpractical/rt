@@ -53,7 +53,7 @@
 % if ($Templates->Count == 0 ) {
 <p><i><&|/l&>(No templates)</&></i></p>
 % } else {
-<table>
+<table width="100%">
 <tr>
 <th>
 <i><&|/l&>(Check box to delete)</&></i>

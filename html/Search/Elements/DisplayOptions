@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc("Display Columns") &>
-<table>
+<table width="100%">
 <tr>
 <td>
 <& EditFormat, %ARGS &>
