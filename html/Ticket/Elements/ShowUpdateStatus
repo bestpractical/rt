@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('New messages'), title_href => "#txn-". $txn->id &>
-<&|/l, RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1" &>There is new messages you havn't seen, click on title box to jump to the oldest message. You can also <a href="[_1]">mark</a> the current available messages as seen.</&>
+<&|/l, RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1" &>There are unread messages on this ticket, click "New Messages" above to jump to the oldest unread message. If you've read all messages, <a href="[_1]">mark them all as seen</a>.</&>
 </&>
 <%ARGS>
 $Ticket
