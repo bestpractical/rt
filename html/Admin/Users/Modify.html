@@ -134,6 +134,7 @@
 </table>
 % }
 </&>
+<& /Elements/Callback, _CallbackName => 'LeftColumnBottom', UserObj => $UserObj, %ARGS &>
 </td>
 
 <td valign="top" class="boxcontainer">
@@ -201,6 +202,7 @@
 </td><td>
 <input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size="13" /><br />
 </td>
+</tr>
 </table>
 </&>
 <br />
@@ -218,10 +220,10 @@
 % }
 </td></tr>
 % }
-<tr>
-</tr>
 </table>
 </&>
+<& /Elements/Callback, _CallbackName => 'RightColumnBottom', UserObj => $UserObj, %ARGS &>
+</td></tr>
 <tr>
 <td colspan="2">
 <&| /Widgets/TitleBox, title => loc('Comments about this user') &>
