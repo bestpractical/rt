@@ -30,8 +30,10 @@ $ENV{'RTUSER'} = 'root';
 #    - RTPASSWD
 $ENV{'RTPASSWD'} = 'password';
 #    - RTSERVER
-$RT::Logger->debug("Connecting to server at ".RT->Config->Get('WebBaseURL'));
-$ENV{'RTSERVER'} =RT->Config->Get('WebBaseURL') ;
+$RT::Logger->debug("Connecting to server at ". $RT::Test::server_url);
+$ENV{'RTSERVER'} = $RT::Test::server_url;
+$ENV{'RTSERVER'} =~ s/\/$//;
+
 #    - RTDEBUG       Numeric debug level. (Set to 3 for full logs.)
 $ENV{'RTDEBUG'} = '1';
 #    - RTCONFIG      Specifies a name other than ".rtrc" for the

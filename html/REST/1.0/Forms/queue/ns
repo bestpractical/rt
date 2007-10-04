@@ -53,7 +53,7 @@ $id
 <%perl>
 use RT::Model::QueueCollection;
 
-my $queues = new RT::Model::QueueCollection ;
+my $queues = new RT::Model::QueueCollection($session{CurrentUser});
 $queues->limit(column => 'Name', operator => '=', value => $id);
 if ($queues->count == 0) {
     return (0, "No queue named $id exists.");
