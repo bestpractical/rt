@@ -197,7 +197,7 @@ is($tix->count, 1, "found one ticket");
 
 $tix = RT::Model::TicketCollection->new(RT->SystemUser);
 $tix->from_sql("Queue = '$queue' AND Subject LIKE 'SearchTest'");
-is($tix->count, 6, "found two ticket");
+is($tix->count, 6, "found 6 tickets");
 
 $tix = RT::Model::TicketCollection->new(RT->SystemUser);
 $tix->from_sql("Queue = '$queue' AND Subject LIKE 'qwerty'");

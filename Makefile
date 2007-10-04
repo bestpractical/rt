@@ -51,9 +51,9 @@
 #
 
 
-PERL			= 	/opt/local/bin/perl
+PERL			= 	/usr/bin/perl
 
-CONFIG_FILE_PATH	=	/Users/jesse/svk/3.999-DANGEROUS/etc
+CONFIG_FILE_PATH	=	/home/sunnavy/pub/pb/rt/3.999/etc
 CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_Config.pm
 SITE_CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_SiteConfig.pm
 
@@ -93,23 +93,23 @@ APACHECTL		=	/usr/sbin/apachectl
 DESTDIR			=	
 
 
-RT_PATH			=	/Users/jesse/svk/3.999-DANGEROUS
-RT_ETC_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/etc
-RT_BIN_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/bin
-RT_SBIN_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/sbin
-RT_LIB_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/lib
-RT_MAN_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/man
-RT_VAR_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/var
-RT_DOC_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/share/doc
-RT_LOCAL_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/local
-LOCAL_ETC_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/local/etc
-LOCAL_LIB_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/local/lib
-LOCAL_LEXICON_PATH	=	/Users/jesse/svk/3.999-DANGEROUS/local/po
-MASON_HTML_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/html
-MASON_LOCAL_HTML_PATH	=	/Users/jesse/svk/3.999-DANGEROUS/local/html
-MASON_DATA_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/var/mason_data
-MASON_SESSION_PATH	=	/Users/jesse/svk/3.999-DANGEROUS/var/session_data
-RT_LOG_PATH	    =       /Users/jesse/svk/3.999-DANGEROUS/var/log
+RT_PATH			=	/home/sunnavy/pb/pub/rt/3.999
+RT_ETC_PATH		=	/home/sunnavy/pb/pub/rt/3.999/etc
+RT_BIN_PATH		=	/home/sunnavy/pb/pub/rt/3.999/bin
+RT_SBIN_PATH		=	/home/sunnavy/pb/pub/rt/3.999/sbin
+RT_LIB_PATH		=	/home/sunnavy/pb/pub/rt/3.999/lib
+RT_MAN_PATH		=	/home/sunnavy/pb/pub/rt/3.999/man
+RT_VAR_PATH		=	/home/sunnavy/pb/pub/rt/3.999/var
+RT_DOC_PATH		=	/home/sunnavy/pb/pub/rt/3.999/share/doc
+RT_LOCAL_PATH		=	/home/sunnavy/pb/pub/rt/3.999/local
+LOCAL_ETC_PATH		=	/home/sunnavy/pb/pub/rt/3.999/local/etc
+LOCAL_LIB_PATH		=	/home/sunnavy/pb/pub/rt/3.999/local/lib
+LOCAL_LEXICON_PATH	=	/home/sunnavy/pb/pub/rt/3.999/local/po
+MASON_HTML_PATH		=	/home/sunnavy/pb/pub/rt/3.999/html
+MASON_LOCAL_HTML_PATH	=	/home/sunnavy/pb/pub/rt/3.999/local/html
+MASON_DATA_PATH		=	/home/sunnavy/pb/pub/rt/3.999/var/mason_data
+MASON_SESSION_PATH	=	/home/sunnavy/pb/pub/rt/3.999/var/session_data
+RT_LOG_PATH	    =       /home/sunnavy/pb/pub/rt/3.999/var/log
 
 # RT_READABLE_DIR_MODE is the mode of directories that are generally meant
 # to be accessable
@@ -166,7 +166,7 @@ WEB_HANDLER		=	modperl1
 # "Pg" is known to work
 # "Informix" is known to work
 
-DB_TYPE			=	mysql
+DB_TYPE			=	Pg
 
 # Set DBA to the name of a unix account with the proper permissions and 
 # environment to run your commandline SQL sbin
@@ -178,7 +178,7 @@ DB_TYPE			=	mysql
 # For Oracle, you want 'system'
 # For Informix, you want 'informix'
 
-DB_DBA			=	root
+DB_DBA			=	postgres
 
 DB_HOST			=	localhost
 

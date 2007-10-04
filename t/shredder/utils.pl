@@ -115,6 +115,13 @@ in common situation.
 sub init_db
 {
 
+    rewrite_rtconfig();
+    cleanup_tmp();
+    RT::InitLogging();
+
+    diag( _init_db() );
+
+    RT::Init();
 
     $SIG{__WARN__} = sub { $RT::Logger->warning( @_ ); warn @_ };
     $SIG{__DIE__} = sub { $RT::Logger->crit( @_ ) unless $^S; Carp::confess @_ };

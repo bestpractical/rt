@@ -13,30 +13,30 @@ use vars qw($Config $System $SystemUser $Nobody $Handle $Logger);
 our $VERSION = '3.7.14';
 
 
-our $BasePath = '/Users/jesse/svk/3.999-DANGEROUS';
-our $EtcPath = '/Users/jesse/svk/3.999-DANGEROUS/etc';
-our $BinPath = '/Users/jesse/svk/3.999-DANGEROUS/bin';
-our $VarPath = '/Users/jesse/svk/3.999-DANGEROUS/var';
-our $LocalPath = '/Users/jesse/svk/3.999-DANGEROUS/local';
-our $LocalEtcPath = '/Users/jesse/svk/3.999-DANGEROUS/local/etc';
-our $LocalLexiconPath = '/Users/jesse/svk/3.999-DANGEROUS/local/po';
+our $BasePath = '/home/sunnavy/bp/pub/rt/3.999';
+our $EtcPath = '/home/sunnavy/bp/pub/rt/3.999/etc';
+our $BinPath = '/home/sunnavy/bp/pub/rt/3.999/bin';
+our $VarPath = '/home/sunnavy/bp/pub/rt/3.999/var';
+our $LocalPath = '/home/sunnavy/bp/pub/rt/3.999/local';
+our $LocalEtcPath = '/home/sunnavy/bp/pub/rt/3.999/local/etc';
+our $LocalLexiconPath = '/home/sunnavy/bp/pub/rt/3.999/local/po';
 
 # $MasonComponentRoot is where your rt instance keeps its mason html files
 
-our $MasonComponentRoot = '/Users/jesse/svk/3.999-DANGEROUS/html';
+our $MasonComponentRoot = '/home/sunnavy/bp/pub/rt/3.999/html';
 
 # $MasonLocalComponentRoot is where your rt instance keeps its site-local
 # mason html files.
 
-our $MasonLocalComponentRoot = '/Users/jesse/svk/3.999-DANGEROUS/local/html';
+our $MasonLocalComponentRoot = '/home/sunnavy/bp/pub/rt/3.999/local/html';
 
 # $MasonDataDir Where mason keeps its datafiles
 
-our $MasonDataDir = '/Users/jesse/svk/3.999-DANGEROUS/var/mason_data';
+our $MasonDataDir = '/home/sunnavy/bp/pub/rt/3.999/var/mason_data';
 
 # RT needs to put session data (for preserving state between connections
 # via the web interface)
-our $MasonSessionDir = '/Users/jesse/svk/3.999-DANGEROUS/var/session_data';
+our $MasonSessionDir = '/home/sunnavy/bp/pub/rt/3.999/var/session_data';
 
 
 
