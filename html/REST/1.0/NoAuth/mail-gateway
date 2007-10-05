@@ -54,6 +54,8 @@ $action => "correspond"
 $ticket => undef
 </%ARGS>
 <%init>
+require Encode;
+Encode::_utf8_off($ARGS{message});
 $m->callback( %ARGS, CallbackName => 'Pre' );
 use RT::Interface::Email ();    # It's an exporter, but we don't care
 $r->content_type('text/plain; charset=utf-8');
