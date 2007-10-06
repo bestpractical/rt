@@ -139,7 +139,7 @@ shredding session when the file had been created.
 
 =head2 $RT::DependenciesLimit
 
-Shredder stops with an error if object has more then
+Shredder stops with an error if the object has more than
 C<$RT::DependenciesLimit> dependencies. For example: a ticket has 1000
 transactions or a transaction has 1000 attachments. This is protection
 from bugs in shredder from wiping out your whole database, but
@@ -170,7 +170,7 @@ RT objects and classes.  The API is not well documented yet, but you
 can find usage examples in L<rt-shredder> and the
 F<lib/t/regression/shredder/*.t> test files.
 
-However, here is small example that do the same action as in CLI
+However, here is a small example that do the same action as in CLI
 example from L</SYNOPSIS>:
 
   use RT::Shredder;
@@ -424,7 +424,7 @@ All three methods takes C<String> (format C<< <class>-<id> >>) or C<Object> argu
 C<String> argument has more priority than C<Object> so if it's not empty then methods
 leave C<Object> argument unchecked.
 
-You can read about possible states and thier meaning in L<RT::Shredder::Constants> docs.
+You can read about possible states and their meanings in L<RT::Shredder::Constants> docs.
 
 =cut
 
@@ -631,7 +631,7 @@ path by next rules:
 
 * if C<FromStorage> argument is true (default behaviour) then result path would always be relative to C<StoragePath>;
 
-* if C<FromStorage> argument is false then result would be relative to the current dir unless it's allready absolute path.
+* if C<FromStorage> argument is false then result would be relative to the current dir unless it's already absolute path.
 
 Returns an absolute path of the file.
 
