@@ -741,7 +741,7 @@ Returns a composite value composed of this object's type and maximum values
 
 sub TypeComposite {
     my $self = shift;
-    join('-', $self->Type || '', $self->MaxValues || '');
+    return join '-', ($self->Type || ''), ($self->MaxValues || 0);
 }
 
 =head2 TypeComposites
