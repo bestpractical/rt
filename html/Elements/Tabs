@@ -53,7 +53,8 @@
     tabs => $tabs,
     actions => $actions,
     subactions => $subactions,
-    title => $Title
+    title => $Title,
+    show_menu => $show_menu,
 &>
 <a name="skipnav" id="skipnav" accesskey="8"></a>
 <%INIT>
@@ -117,4 +118,5 @@ $tabs => undef
 $actions => undef
 $subactions => undef
 $Title => undef
+$show_menu => 1
 </%ARGS>

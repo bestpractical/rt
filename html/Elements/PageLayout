@@ -56,9 +56,11 @@
 %# End of div#quickbar from /Elements/Header
 </div>
 
+% if ( $show_menu ) {
 <div id="nav">
 <& /Elements/Menu, toptabs => $toptabs, current_toptab => $current_toptab &>
 </div>
+% }
 
 <div id="header">
   <h1><%$title%></h1>
@@ -231,4 +233,5 @@ $actions => undef
 $subactions => undef
 $title => $m->callers(-1)->path
 $AppName => undef
+$show_menu => 1
 </%ARGS>
