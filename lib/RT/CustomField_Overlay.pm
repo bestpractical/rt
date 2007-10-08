@@ -709,9 +709,23 @@ Set this custom field's type and maximum values as a composite value
 sub SetTypeComposite {
     my $self = shift;
     my $composite = shift;
+
+    my $old = $self->TypeComposite;
+
     my ($type, $max_values) = split(/-/, $composite, 2);
-    $self->SetType($type);
-    $self->SetMaxValues($max_values);
+    if ( $type ne $self->Type ) {
+        my ($status, $msg) = $self->SetType( $type );
+        return ($status, $msg) unless $status;
+    }
+    if ( ($max_values || 0) != ($self->MaxValues || 0) ) {
+        my ($status, $msg) = $self->SetMaxValues( $max_values );
+        return ($status, $msg) unless $status;
+    }
+    return 1, $self->loc(
+        "Type changed from '[_1]' to '[_2]'",
+        $self->FriendlyTypeComposite( $old ),
+        $self->FriendlyTypeComposite( $composite ),
+    );
 }
 
 =head2 SetLookupType
