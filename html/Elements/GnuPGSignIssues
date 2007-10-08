@@ -45,12 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('New messages'), title_href => "#txn-". $txn->id &>
-<&|/l, RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1" &>There are unread messages on this ticket, click "New Messages" above to jump to the oldest unread message. If you've read all messages, <a href="[_1]">mark them all as seen</a>.</&>
+<&| /Widgets/TitleBox, title => loc('GnuPG error') &>
+<% loc("The system is unable to sign outgoing messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately.") %>
 </&>
-<%ARGS>
-$Ticket
-</%ARGS>
-<%INIT>
-my $txn = $Ticket->SeenUpTo or return;
-</%INIT>
+

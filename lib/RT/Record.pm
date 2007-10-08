@@ -887,11 +887,13 @@ sub Update {
         # This is in an eval block because $object might not exist.
         # and might not have a Name method. But "can" won't find autoloaded
         # items. If it fails, we don't care
-        eval {
-            my $object = $attribute . "Obj";
-            next if ($self->$object->Name eq $value);
+        do { no warnings "uninitialized";
+            eval {
+                my $object = $attribute . "Obj";
+                next if $self->$object->Name eq $value;
+            };
+            next if $value eq $self->$attribute();
         };
-        next if ( $value eq ( $self->$attribute() || '' ) );
         my $method = "Set$attribute";
         my ( $code, $msg ) = $self->$method($value);
         my ($prefix) = ref($self) =~ /RT(?:.*)::(\w+)/;

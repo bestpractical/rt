@@ -57,6 +57,10 @@
 <input type="hidden" class="hidden" name="id" value="new" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 
+% if ($cannot_sign) {
+<& /Elements/GnuPGSignIssues &>
+% }
+
 <& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
 
 <div id="Ticket-Create-basics">
@@ -315,23 +319,34 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 }
 
 my $checks_failure = 0;
+my $cannot_sign = 0;
 my @gnupg_keys_issues;
-if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' && $ARGS{'Encrypt'} ) {
+if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
 
-    my @recipients = $m->comp(
-        '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
-        %ARGS
-    );
+    # check to see if we have a good passphrase
+    if ( $ARGS{'Sign'} ) {
+        if (!RT::Crypt::GnuPG::DrySign($QueueObj->CorrespondAddress, "x")) {
+            $cannot_sign = 1;
+            $checks_failure = 1;
+        }
+    }
 
-    RT::Crypt::GnuPG::UseKeyForEncryption(
-        map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
-        grep $ARGS{$_} && /^UseKey-/,
-        keys %ARGS
-    );
+    if ( $ARGS{'Encrypt'} ) {
+        my @recipients = $m->comp(
+            '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
+            %ARGS
+        );
 
-    my $status;
-    ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
-    $checks_failure = 1 unless $status;
+        RT::Crypt::GnuPG::UseKeyForEncryption(
+            map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
+            grep $ARGS{$_} && /^UseKey-/,
+            keys %ARGS
+        );
+
+        my $status;
+        ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
+        $checks_failure = 1 unless $status;
+    }
 }
 
 
