@@ -100,7 +100,8 @@ is ($t->ResolvedObj->Unix, 0, "It hasn't been resolved - ". $t->ResolvedObj->Uni
 
 
 my $ticket = RT::Model::Ticket->new(RT->SystemUser);
-my ($id, $msg) = $ticket->create(Subject => "Foo",
+my $msg;
+($id, $msg) = $ticket->create(Subject => "Foo",
                 Owner => $RT::Nobody->id,
                 Status => 'open',
                 Requestor => ['jesse@example.com'],
@@ -140,7 +141,7 @@ ok($group->has_member($RT::Nobody->UserObj->PrincipalObj), "the owner group has 
 
 
 
-my $t = RT::Model::Ticket->new(RT->SystemUser);
+$t = RT::Model::Ticket->new(RT->SystemUser);
 ok($t->create(Queue => 'general', Subject => 'SquelchTest'));
 
 is(scalar $t->SquelchMailTo, 0, "The ticket has no squelched recipients");
@@ -159,8 +160,8 @@ is($#returned, 0, "The ticket has one squelched recipients");
 @names = $t->attributes->Names;
 is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
 
-
-my ($ret, $msg) = $t->UnsquelchMailTo('nobody@example.com');
+my $ret;
+($ret, $msg) = $t->UnsquelchMailTo('nobody@example.com');
 ok($ret, "Removed nobody as a squelched recipient - ".$msg);
 @returned = $t->SquelchMailTo();
 is($#returned, -1, "The ticket has no squelched recipients". join(',',@returned));
@@ -174,7 +175,8 @@ my $t1id = $t1->id;
 my $t2 = RT::Model::Ticket->new(RT->SystemUser);
 $t2->create ( Subject => 'Merge test 2', Queue => 'general', Requestor => 'merge2@example.com');
 my $t2id = $t2->id;
-my ($msg, $val) = $t1->MergeInto($t2->id);
+my $val;
+($msg, $val) = $t1->MergeInto($t2->id);
 ok ($msg,$val);
 $t1 = RT::Model::Ticket->new(RT->SystemUser);
 is ($t1->id, undef, "ok. we've got a blank ticket1");

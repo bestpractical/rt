@@ -2206,7 +2206,8 @@ sub _Links {
     my $type  = shift || "";
 
     unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} = new RT::Model::LinkCollection( $self->current_user );
+        $self->{"$field$type"} =
+          new RT::Model::LinkCollection( current_user => $self->current_user );
         if ( $self->current_user_has_right('ShowTicket') ) {
             # Maybe this ticket is a merged ticket
             my $Tickets = new RT::Model::TicketCollection( $self->current_user );

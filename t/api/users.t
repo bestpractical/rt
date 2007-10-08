@@ -4,7 +4,7 @@ use warnings;
 use RT::Test; use Test::More; 
 plan tests => 11;
 use RT;
-
+no warnings qw/redefine once/;
 
 
 use_ok('RT::Model::UserCollection');

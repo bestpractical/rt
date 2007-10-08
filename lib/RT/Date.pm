@@ -273,7 +273,7 @@ sub Diff {
     if ( UNIVERSAL::isa( $other, 'RT::Date' ) ) {
         $other = $other->Unix;
     }
-    return undef unless $other > 0;
+    return undef unless $other=~ /^\d+$/ && $other > 0;
 
     my $unix = $self->Unix;
     return undef unless $unix > 0;
