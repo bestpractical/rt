@@ -228,6 +228,8 @@ key usage", "Key revoked", "Key expired", "No CRL known", "CRL too
 old", "Policy mismatch", "Not a secret key", "Key not trusted" or
 "No specific reason given".
 
+Due to limitations of GnuPG, it's impossible to encrypt to an untrusted key.
+
 =head3 Private key doesn't exist
 
 Template 'Error: no private key' is used to inform the user that

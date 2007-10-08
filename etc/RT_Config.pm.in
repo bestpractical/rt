@@ -316,6 +316,8 @@ Set( %GnuPG,
 );
 
 # Options of GnuPG program
+# If you override this in your RT_SiteConfig, you should be sure
+# to include a homedir setting
 
 Set(%GnuPGOptions,
     homedir => '@RT_VAR_PATH@/data/gpg',
