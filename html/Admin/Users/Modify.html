@@ -227,7 +227,7 @@
 <&| /Widgets/TitleBox, title => loc('Comments about this user') &>
 <textarea class="comments" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments%></textarea>
 </&>
-%if ($UserObj->Privileged) {
+%if (!$Create && $UserObj->Privileged) {
 <br />
 <&| /Widgets/TitleBox, title => loc('Signature') &>
 <textarea class="signature" cols="80" rows="5" name="Signature" wrap="hard"><%$UserObj->Signature%></textarea>
@@ -386,7 +386,7 @@ unless ( $UserObj->id && $UserObj->Disabled ) {
     $EnabledChecked ="CHECKED";
 }
 
-if ($UserObj->Privileged()) {  
+if (!$Create && $UserObj->Privileged()) {  
     $PrivilegedChecked = "CHECKED";
 }
 
