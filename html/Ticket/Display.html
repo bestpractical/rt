@@ -72,7 +72,8 @@
       
       &> 
 
-<& /Elements/Callback, _CallbackName => 'AfterShowHistory', Ticket => $TicketObj, %ARGS &>
+<& /Elements/Callback, _CallbackName => 'AfterShowHistory', Ticket => $TicketObj, 
+current_tab => 'Ticket/Display.html?id=' . $TicketObj->id, %ARGS &>
 
 <%ARGS>
 $id => undef
