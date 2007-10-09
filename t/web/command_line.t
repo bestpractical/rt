@@ -392,7 +392,7 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
         expect_send("link $link1_id $reln $link2_id", "Link by $reln...");
         expect_like(qr/Created link $link1_id $reln $link2_id/, 'Linked');
         expect_send("show ticket/$link1_id/links", "Checking creation of $reln...");
-        expect_like(qr/$display_relns{reln}: [\w\d\.\-]+:\/\/[\w\d\.]+\/ticket\/$link2_id/, "Created link $reln");
+        expect_like(qr/$display_relns{$reln}: [\w\d\.\-]+:\/\/[\w\d\.]+\/ticket\/$link2_id/, "Created link $reln");
 
         # delete link
         expect_send("link -d $link1_id $reln $link2_id", "Delete $reln...");
@@ -421,7 +421,7 @@ sub ok_CreateTicket {
 # wrap up all the file handling stuff for attachment testing
 sub check_attachment {
     my $attachment_path = shift;
-    (my $filename = $attachment_path) =~ s/.*\/(.*?)$/$1/;
+    (my $filename = $attachment_path) =~ s/.*\/(.*)$/$1/;
     expect_send("comment -m 'attach file' -a $attachment_path $ticket_id", "Adding an attachment ($filename)");
     expect_like(qr/Message recorded/, "Added the attachment");
     expect_send("show ticket/$ticket_id/attachments","Finding Attachment");

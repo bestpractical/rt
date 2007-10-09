@@ -137,7 +137,7 @@ diag "on reply correct owner is selected";
     is $form->value('Owner'), '', 'empty value selected';
     $agent_a->submit;
 
-    my $ticket = RT::Model::Ticket->new( RT->SystemUser );
+    $ticket = RT::Model::Ticket->new( RT->SystemUser );
     $ticket->load( $id );
     ok $ticket->id, 'loaded the ticket';
     is $ticket->Owner, $user_b->id, 'correct owner';

@@ -916,7 +916,7 @@ sub AddValueForObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    unless ( $self->MatchPattern($args{'Content'}) ) {
+    unless ( $self->MatchPattern($args{'Content'} || '' ) ) {
         return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
     }
 
@@ -977,7 +977,7 @@ and returns a boolean; returns true if the Pattern is empty.
 
 sub MatchPattern {
     my $self = shift;
-    my $regex = $self->Pattern;
+    my $regex = $self->Pattern || '';
 
     return 1 unless length $regex;
     return ($_[0] =~ $regex);

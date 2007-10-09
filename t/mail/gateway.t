@@ -777,7 +777,7 @@ $tick->load( $id );
 is( $tick->Owner, $user->id, "we changed owner" );
 ok( $user->has_right( Right => 'ReplyToTicket', Object => $tick ), "owner can reply to ticket" );
 is( $tick->Transactions->count, 5, "transactions added" );
-my $txns = $tick->Transactions;
+$txns = $tick->Transactions;
 while (my $t = $txns->next) {
     diag( $t->id, $t->Description."\n");
 }

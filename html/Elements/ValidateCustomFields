@@ -66,10 +66,10 @@ while ( my $CF = $CustomFields->next ) {
     my @values = ();
     if ( ref $value eq 'ARRAY' ) {
         @values = @$value;
-    } elsif ( $CF->Type =~ /text/i ) {
+    } elsif ( defined $CF->Type && $CF->Type =~ /text/i ) {
         @values = ($value);
     } else {
-        @values = split /\r*\n/, $value;
+        @values = split /\r*\n/, $value || '';
     }
     @values = grep $_ ne '',
         map {

@@ -61,10 +61,10 @@ unless ($ticket->id) {
     return [ "# Ticket $id does not exist.", [], {}, 1 ];
 }
 
-my @arglist = split('/', $args);
+my @arglist = split('/', $args || '');
 my ($aid, $content);
 
-if ($arglist[1] eq 'content') {
+if ( defined $arglist[1] && $arglist[1] eq 'content') {
     $aid = $arglist[0];
     $content = 1;
 } else {

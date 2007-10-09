@@ -82,7 +82,9 @@ C<sortorder>.
 =cut
 
 
-sub table {} 
+# XXX What's the use of table?
+#sub table {} 
+
 sub _init {
     my $self = shift;
     return ( $self->SUPER::_init(@_) );

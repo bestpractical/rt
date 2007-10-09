@@ -29,7 +29,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
 }
 
 diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
-my $cfid;
+my ( $cf, $cfid, $tid );
 {
     $m->title_is(q/Created CustomField img/, 'admin-cf Created');
     $m->follow_link( text => 'Queues' );
@@ -46,9 +46,10 @@ my $cfid;
                 sort { $a->[0] <=> $b->[0] }
                 map  { /Object-1-CF-(\d+)/ ? [ $1 => $_ ] : () }
                 grep defined, map $_->name, $m->current_form->inputs;
-    $cfid = pop(@names);
-    $cfid =~ /(\d+)$/ or die "Hey this is impossible dude";
-    $m->field( $cfid => 1 );         # Associate the new CF with this queue
+    $cf = pop(@names);
+    $cf =~ /(\d+)$/ or die "Hey this is impossible dude";
+    $cfid = $1;
+    $m->field( $cf => 1 );         # Associate the new CF with this queue
     $m->field( $_ => undef ) for @names;    # ...and not any other. ;-)
     $m->submit;
 
@@ -74,7 +75,7 @@ diag "check that we have no the CF on the create"
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
     my $form = $m->form_name("TicketCreate");
-    my $upload_field = "Object-RT::Model::Ticket--CustomField-$1-Upload";
+    my $upload_field = "Object-RT::Model::Ticket--CustomField-$cfid-Upload";
     ok !$form->find_input( $upload_field ), 'no form field on the page';
 
     $m->submit_form(
@@ -105,14 +106,14 @@ diag "check that we have no the CF on the create"
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
     my $form = $m->form_name("TicketCreate");
-    my $upload_field = "Object-RT::Model::Ticket--CustomField-$1-Upload";
+    my $upload_field = "Object-RT::Model::Ticket--CustomField-$cfid-Upload";
     ok !$form->find_input( $upload_field ), 'no form field on the page';
 
     $m->submit_form(
         form_name => "TicketCreate",
         fields => { Subject => 'test' },
     );
-    my $tid = $1 if $m->content =~ /Ticket (\d+) created/i;
+    $tid = $1 if $m->content =~ /Ticket (\d+) created/i;
     ok $tid, "a ticket is Created succesfully";
 
     $m->follow_link( text => 'Custom Fields' );
@@ -129,7 +130,6 @@ RT::Test->set_rights(
 );
 
 diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
-my $tid;
 {
     $m->submit_form(
         form_name => "CreateTicketInQueue",
