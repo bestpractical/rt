@@ -234,7 +234,7 @@
 </&>
 % }
 
-% if ( my $email = $UserObj->EmailAddress ) {
+% if ( RT->Config->Get('GnuPG')->{'Enable'} && my $email = $UserObj->EmailAddress ) {
 <& /Admin/Elements/ShowKeyInfo, EmailAddress => $email &>
 % }
 
