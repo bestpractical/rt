@@ -1558,6 +1558,7 @@ sub ProcessTicketLinks {
 
     #Merge if we need to
     if ( $ARGSRef->{ $Ticket->Id . "-MergeInto" } ) {
+        $ARGSRef->{ $Ticket->Id . "-MergeInto" } =~ s/\s+//g;
         my ( $val, $msg ) =
           $Ticket->MergeInto( $ARGSRef->{ $Ticket->Id . "-MergeInto" } );
         push @results, $msg;
