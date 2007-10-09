@@ -53,7 +53,7 @@
 </option>
 % }
 <%INIT>
-if ($Default eq '') {
+if ( !defined $Default || $Default eq '') {
     $Default = 'TransactionCreate';
 }
 my @stages = 'TransactionCreate';

@@ -806,7 +806,7 @@ sub Update {
             my $object = $attribute . "Obj";
             next if ($self->can($object) && $self->$object->Name eq $value);
         };
-        next if ( $value eq $self->$attribute() );
+        next if ( $value eq ( $self->$attribute()|| '' ) );
         my $method = "set_$attribute";
         my ( $code, $msg ) = $self->$method($value);
         my ($prefix) = ref($self) =~ /RT(?:.*)::(\w+)/;

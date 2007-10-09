@@ -59,7 +59,6 @@ $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
 # since ticked quese are wanted, we do the invesrsion.  So any
 # queue added during the quicksearch setting will be unticked.
 my $nlinks = $#{$m->find_all_links( text => "General" )};
-warn $nlinks;
 $m->get ($cus_qs);
 $m->form_name ('Preferences');
 $m->untick('Want-General', '1');
