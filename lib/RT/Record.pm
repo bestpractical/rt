@@ -659,6 +659,7 @@ sub _CacheConfig {
 
 sub _BuildTableAttributes {
     my $self = shift;
+    my $class = ref($self) || $self;
 
     my $attributes;
     if ( UNIVERSAL::can( $self, '_CoreAccessible' ) ) {
@@ -670,37 +671,19 @@ sub _BuildTableAttributes {
 
     foreach my $column (%$attributes) {
         foreach my $attr ( %{ $attributes->{$column} } ) {
-            $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
+            $_TABLE_ATTR->{$class}->{$column}->{$attr} = $attributes->{$column}->{$attr};
         }
     }
-    if ( UNIVERSAL::can( $self, '_OverlayAccessible' ) ) {
-        $attributes = $self->_OverlayAccessible();
+    foreach my $method ( qw(_OverlayAccessible _VendorAccessible _LocalAccessible) ) {
+        next unless UNIVERSAL::can( $self, $method );
+        $attributes = $self->$method();
 
         foreach my $column (%$attributes) {
             foreach my $attr ( %{ $attributes->{$column} } ) {
-                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
+                $_TABLE_ATTR->{$class}->{$column}->{$attr} = $attributes->{$column}->{$attr};
             }
         }
     }
-    if ( UNIVERSAL::can( $self, '_VendorAccessible' ) ) {
-        $attributes = $self->_VendorAccessible();
-
-        foreach my $column (%$attributes) {
-            foreach my $attr ( %{ $attributes->{$column} } ) {
-                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
-            }
-        }
-    }
-    if ( UNIVERSAL::can( $self, '_LocalAccessible' ) ) {
-        $attributes = $self->_LocalAccessible();
-
-        foreach my $column (%$attributes) {
-            foreach my $attr ( %{ $attributes->{$column} } ) {
-                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
-            }
-        }
-    }
-
 }
 
 
