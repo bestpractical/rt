@@ -75,7 +75,7 @@ my $value_name = $tix->Column( FIELD => $PrimaryGroupBy );
 
 my $chart = $chart_class->new( 600 => 400 );
 
-my $font = $RT::FontForCharts || ['verdana', 'arial', gdMediumBoldFont];
+my $font = $RT::ChartFont || ['verdana', 'arial', gdMediumBoldFont];
 $chart->set_title_font( $font, 12 ) if $chart->can('set_title_font');
 $chart->set_legend_font( $font, 12 ) if $chart->can('set_legend_font');
 $chart->set_x_label_font( $font, 10 ) if $chart->can('set_x_label_font');
