@@ -391,11 +391,16 @@ sub InitClasses {
     require RT::ObjectCustomFieldValues;
     require RT::Attributes;
 
+    # on a cold server (just after restart) people could have an object
+    # in the session, as we deserialize it so we never call constructor
+    # of the class, so the list of accessible fields is empty and we die
+    # with "Method xxx is not implemented in RT::SomeClass"
     $_->_BuildTableAttributes foreach qw(
         RT::Ticket
         RT::Transaction
         RT::Attachment
         RT::User
+        RT::Principal
         RT::Template
         RT::Queue
         RT::ScripAction
