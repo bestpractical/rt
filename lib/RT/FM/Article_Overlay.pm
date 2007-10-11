@@ -227,7 +227,7 @@ Delete this article.
 
 sub Delete {
     my $self = shift;
-    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
+    unless ( $self->CurrentUserHasRight('DeleteArticle') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
