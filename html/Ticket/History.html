@@ -60,6 +60,8 @@
     AttachmentContent => $attachment_content
     &> 
 
+<& /Elements/Callback, _CallbackName => 'AfterShowHistory', Ticket => $Ticket, 
+current_tab => 'Ticket/History.html?id=' . $Ticket->id, %ARGS &>
 
 <%ARGS>
 $id => undef
