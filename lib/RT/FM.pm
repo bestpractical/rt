@@ -21,7 +21,7 @@ package RT::FM;
 use strict;
 use warnings;
 
-our $VERSION = '2.2.0';
+our $VERSION = '2.2.1';
 
 # Create a system object for RTFM
 use RT::FM::System;
