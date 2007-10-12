@@ -25,4 +25,4 @@ requires:
   Tree::Simple: 0
   YAML: 0
   perl: 5.8.0
-version: 2.2.0
+version: 2.2.1
