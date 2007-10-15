@@ -251,6 +251,11 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 my @results;
 my $cannot_sign = 0;
 my @gnupg_keys_issues;
+
+if (RT->Config->Get('GnuPG')->{'Enable'}) {
+    require RT::Crypt::GnuPG;
+}
+
 if ( $ARGS{'SubmitTicket'} ) {
 
     # check to see if we have a good passphrase

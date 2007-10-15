@@ -321,6 +321,11 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 my $checks_failure = 0;
 my $cannot_sign = 0;
 my @gnupg_keys_issues;
+
+if (RT->Config->Get('GnuPG')->{'Enable'}) {
+    require RT::Crypt::GnuPG;
+}
+
 if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
 
     # check to see if we have a good passphrase
