@@ -360,7 +360,7 @@ sub _FindScrips {
     );
 
     # Promise some kind of ordering
-    $self->OrderBy( FIELD => 'description' );
+    $self->OrderBy( FIELD => 'Description' );
 
     $RT::Logger->debug(
         "Found ". $self->Count ." scrips for $args{'Stage'} stage"
