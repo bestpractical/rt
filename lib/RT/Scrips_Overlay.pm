@@ -362,6 +362,10 @@ sub _FindScrips {
     # Promise some kind of ordering
     $self->OrderBy( FIELD => 'Description' );
 
+    # we call Count below, but later we always do search
+    # so just do search and get count from results
+    $self->_DoSearch if $self->{'must_redo_search'};
+
     $RT::Logger->debug(
         "Found ". $self->Count ." scrips for $args{'Stage'} stage"
         ." with applicable type(s) $args{'Type'}"
