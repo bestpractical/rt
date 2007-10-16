@@ -186,6 +186,11 @@ sub Commit {
 
     
     foreach my $scrip (@{$self->Prepared}) {
+        $RT::Logger->debug(
+            "Committing scrip #". $scrip->id
+            ." on txn #". $self->{'TransactionObj'}->id
+            ." of ticket #". $self->{'TicketObj'}->id
+        );
 
         $scrip->Commit( TicketObj      => $self->{'TicketObj'},
                         TransactionObj => $self->{'TransactionObj'} );
@@ -357,7 +362,10 @@ sub _FindScrips {
     # Promise some kind of ordering
     $self->OrderBy( FIELD => 'description' );
 
-    $RT::Logger->debug("Found ".$self->Count. " scrips");
+    $RT::Logger->debug(
+        "Found ". $self->Count ." scrips for $args{'Stage'} stage"
+        ." with applicable type(s) $args{'Type'}"
+    );
 }
 
 # }}}
