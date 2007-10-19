@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 64;
+use Test::More tests => 68;
 use RT::Test;
 use RT::Action::SendEmail;
 use File::Temp qw(tempdir);
@@ -43,13 +43,6 @@ RT::Test->set_rights(
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
 
-{
-    RT::Test->import_gnupg_key('rt-recipient@example.com');
-    RT::Test->trust_gnupg_key('rt-recipient@example.com');
-    my %res = RT::Crypt::GnuPG::GetKeysInfo('rt-recipient@example.com');
-    is $res{'info'}[0]{'TrustTerse'}, 'ultimate', 'ultimately trusted key';
-}
-
 
 my $tid;
 {
@@ -59,6 +52,33 @@ my $tid;
         Queue     => $queue->id,
     );
     ok $tid, 'ticket created';
+}
+
+diag "check that signing doesn't work if there is no key";
+{
+    unlink "t/mailbox";
+
+    ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
+    $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
+    $m->form_number(3);
+    $m->tick( Sign => 1 );
+    $m->field( UpdateCc => 'rt-test@example.com' );
+    $m->field( UpdateContent => 'Some content' );
+    $m->click('SubmitTicket');
+    $m->content_like(
+        qr/unable to sign outgoing email messages/i,
+        'problems with passphrase'
+    );
+
+    my @mail = RT::Test->fetch_caught_mails;
+    ok !@mail, 'there are no outgoing emails';
+}
+
+{
+    RT::Test->import_gnupg_key('rt-recipient@example.com');
+    RT::Test->trust_gnupg_key('rt-recipient@example.com');
+    my %res = RT::Crypt::GnuPG::GetKeysInfo('rt-recipient@example.com');
+    is $res{'info'}[0]{'TrustTerse'}, 'ultimate', 'ultimately trusted key';
 }
 
 diag "check that things don't work if there is no key";
