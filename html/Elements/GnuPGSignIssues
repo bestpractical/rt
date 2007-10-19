@@ -46,6 +46,12 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('GnuPG error') &>
-<% loc("The system is unable to sign outgoing messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately.") %>
+% if (defined $Address) {
+    <% loc("The system is unable to sign outgoing messages to [_1]. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately.", $Address) %>
+% } else {
+    <% loc("The system is unable to sign outgoing messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately.") %>
+% }
 </&>
-
+<%ARGS>
+$Address
+</%ARGS>
