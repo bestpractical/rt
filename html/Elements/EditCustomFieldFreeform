@@ -57,7 +57,8 @@ if ($Multiple and $Values) {
   while (my $value = $Values->Next ) {
     $Default .= $value->Content."\n";
   }
-} else {
+} 
+elsif ( ! $Multiple ) {
   $Default =~ s/\s*\n\s*/ /g if $Default;
 }
 </%INIT>
