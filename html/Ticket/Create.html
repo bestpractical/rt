@@ -326,8 +326,9 @@ if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
 
     # check to see if we have a good passphrase
     if ( $ARGS{'Sign'} ) {
-        my $address = $QueueObj->CorrespondAddress;
-        if (!RT::Crypt::GnuPG::DrySign($address, "x")) {
+        my $address = $QueueObj->CorrespondAddress
+            || RT->Config->Get('CorrespondAddress');
+        unless ( RT::Crypt::GnuPG::DrySign($address, "x") ) {
             push @cannot_sign_as, $address;
             $checks_failure = 1;
         }
