@@ -59,7 +59,6 @@ use MIME::Words qw(encode_mimeword);
 use RT::EmailParser;
 use RT::Interface::Email;
 use Mail::Address;
-use Date::Format qw(strftime);
 
 =head1 NAME
 
