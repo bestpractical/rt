@@ -45,8 +45,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ( @$Issues ) {
+% if ( @$Issues || @$SignAddresses ) {
 <&| /Widgets/TitleBox, title => loc('GnuPG issues') &>
+
+% if ( @$SignAddresses ) {
+<% loc("The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:") %>
+<ul>
+% for my $address (@$SignAddresses) {
+    <li><% $address %></li>
+% }
+</ul>
+% }
+
 % if (@$Issues == 1) {
 <% loc("You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key. You have to fix the problem with the key, disable sending a message to that recipient, or disable encryption.") %>
 % } else {
@@ -77,5 +87,6 @@ Select a key you want to use for encryption:
 
 <%ARGS>
 $Issues => []
+$SignAddresses => []
 </%ARGS>
 

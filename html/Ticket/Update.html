@@ -60,11 +60,7 @@
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
 
-% if ($cannot_sign) {
-<& /Elements/GnuPGSignIssues &>
-% }
-
-<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues &>
+<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
 
 <table border="0">
 
@@ -249,7 +245,7 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 # }}}
 
 my @results;
-my $cannot_sign = 0;
+my @cannot_sign_as;
 my @gnupg_keys_issues;
 
 if (RT->Config->Get('GnuPG')->{'Enable'}) {
@@ -264,7 +260,7 @@ if ( $ARGS{'SubmitTicket'} ) {
                     ? $TicketObj->QueueObj->CommentAddress
                     : $TicketObj->QueueObj->CorrespondAddress;
         if (!RT::Crypt::GnuPG::DrySign($address, "x")) {
-            $cannot_sign = 1;
+            push @cannot_sign_as, $address;
             $checks_failure = 1;
         }
     }
