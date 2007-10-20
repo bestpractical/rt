@@ -267,7 +267,7 @@ if ( $CloneTicket ) {
         while ( my $member_of = $members_of->Next ) {
             push @members_of, $member_of->LocalTarget;
         }
-        $clone->{'new-MemberOf'} = join ' ', @members_of, $CloneTicketObj->id;
+        $clone->{'new-MemberOf'} = join ' ', @members_of;
         
         my $refers = $CloneTicketObj->RefersTo;
         while ( my $refer = $refers->Next ) {
@@ -308,7 +308,7 @@ if ( $CloneTicket ) {
     }
     
     for ( keys %$clone ) {
-        $ARGS{$_} = $clone->{$_};
+        $ARGS{$_} = $clone->{$_} if not defined $ARGS{$_};
     }
 
 }
