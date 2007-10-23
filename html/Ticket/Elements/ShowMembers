@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ($members->Count) {
 <ul>
 % while (my $link = $members->Next) {
 % my $member= $link->BaseObj;
@@ -55,11 +54,11 @@
 % }
 % }
 </ul>
-% }
 
 <%INIT>
 
 my $members = $Ticket->Members;
+return unless $members->Count;
 
 </%INIT>
 
