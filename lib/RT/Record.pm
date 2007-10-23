@@ -1033,7 +1033,7 @@ sub RefersTo {
 
 =head2 ReferredToBy
 
-  This returns an RT::Links object which shows all references for which this ticket is a target
+This returns an L<RT::Links> object which shows all references for which this ticket is a target
 
 =cut
 
@@ -1236,9 +1236,14 @@ sub DependsOn {
 
 # {{{ sub _Links 
 
-=head2 Links DIRECTION TYPE 
+=head2 Links DIRECTION [TYPE]
 
-return links to/from this object. 
+Return links (L<RT::Links>) to/from this object.
+
+DIRECTION is either 'Base' or 'Target'.
+
+TYPE is a type of links to return, it can be omitted to get
+links of any type.
 
 =cut
 
