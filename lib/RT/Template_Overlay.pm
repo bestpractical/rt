@@ -299,7 +299,8 @@ sub MIMEObj {
  This routine performs Text::Template parsing on the template and then
  imports the results into a MIME::Entity so we can really use it
 
- Takes a hash containing Argument, TicketObj, and TransactionObj.
+ Takes a hash containing Argument, TicketObj, and TransactionObj. TicketObj
+ and TransactionObj are not mandatory, but highly recommended.
 
  It returns a tuple of (val, message)
  If val is 0, the message contains an error message
@@ -365,9 +366,13 @@ sub _ParseContent {
     local $T::Ticket      = $args{'TicketObj'};
     local $T::Transaction = $args{'TransactionObj'};
     local $T::Argument    = $args{'Argument'};
-    local $T::Requestor   = eval { $T::Ticket->Requestors->UserMembersObj->First->Name };
+    local $T::Requestor   = eval { $T::Ticket->Requestors->UserMembersObj->First->Name } if $T::Ticket;
     local $T::rtname      = $RT::rtname;
-    local *T::loc         = sub { $T::Ticket->loc(@_) };
+
+    local *T::loc         = sub {
+        $T::Ticket ? $T::Ticket->loc(@_)
+                   : $self->CurrentUser->loc(@_)
+    };
 
     my $content = $self->Content;
     unless ( defined $content ) {
