@@ -68,7 +68,6 @@
     <td class="labeltop"><&|/l&>Depended on by</&>:</td>
     <td class="value">
 % while (my $link = $Object->DependedOnBy->Next) {
-% my $member = $link->BaseObj;
       <input type="checkbox" class="checkbox" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1" />
         <& ShowLink, URI => $link->BaseURI &><br />
 % }
