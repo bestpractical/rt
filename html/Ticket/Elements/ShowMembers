@@ -52,6 +52,7 @@
 % if ($depth < 8) {
 <&/Ticket/Elements/ShowMembers, Ticket => $member, depth => ($depth+1) &> 
 % }
+</li>
 % }
 </ul>
 
