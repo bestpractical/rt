@@ -67,10 +67,12 @@
 
 
 <%INIT>
-  
+
 my $Ticket = LoadTicket($id);
-$m->comp('/Elements/Callback', TicketObj => $Ticket, ARGSRef => \%ARGS);
-my @results = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+
+my @results;  
+$m->comp('/Elements/Callback', TicketObj => $Ticket, ARGSRef => \%ARGS, Results => \@results );
+push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
     
 </%INIT>
       
