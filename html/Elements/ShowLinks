@@ -51,7 +51,7 @@
     <td class="value">
 <ul>
 % while (my $Link = $Ticket->DependsOn->Next) {
-<li><& ShowLink, URI => $Link->TargetURI &>
+<li><& ShowLink, URI => $Link->TargetURI &></li>
 % }
 </ul>
     </td>
@@ -61,7 +61,7 @@
     <td class="value">
 <ul>
 % while (my $Link = $Ticket->DependedOnBy->Next) {
-<li><& ShowLink, URI => $Link->BaseURI &>
+<li><& ShowLink, URI => $Link->BaseURI &></li>
 % }
 </ul>
     </td>
@@ -71,7 +71,7 @@
     <td class="value">
 <ul>
 % while (my $Link = $Ticket->MemberOf->Next) {
-<li><& ShowLink, URI => $Link->TargetURI &>
+<li><& ShowLink, URI => $Link->TargetURI &></li>
 % }
 </ul>
     </td>
@@ -85,7 +85,7 @@
     <td class="value">
 <ul>
 % while (my $Link = $Ticket->RefersTo->Next) {
-<li><& ShowLink, URI => $Link->TargetURI &>
+<li><& ShowLink, URI => $Link->TargetURI &></li>
 % }
 </ul>
     </td>
@@ -96,7 +96,7 @@
     <ul>
 % while (my $Link = $Ticket->ReferredToBy->Next) {
 % next if (UNIVERSAL::isa($Link->BaseObj, 'RT::Ticket')  && $Link->BaseObj->Type eq 'reminder');
-<li><& ShowLink, URI => $Link->BaseURI &>
+<li><& ShowLink, URI => $Link->BaseURI &></li>
 % }
 </ul>
     </td>
