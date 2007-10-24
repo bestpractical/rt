@@ -49,7 +49,7 @@
 % while (my $link = $members->Next) {
 <li><& /Elements/ShowLink, URI => $link->BaseURI &><br />
 % if ($depth < 8) {
-<&/Ticket/Elements/ShowMembers, Ticket => $member, depth => ($depth+1) &> 
+<& /Ticket/Elements/ShowMembers, Ticket => $link->BaseObj, depth => ($depth+1) &> 
 % }
 </li>
 % }
