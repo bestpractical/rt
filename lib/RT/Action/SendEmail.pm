@@ -473,7 +473,11 @@ sub RecordOutgoingMailTransaction {
         ActivateScrips => 0
     );
 
-
+    if( $id ) {
+	$self->{'OutgoingMessageTransaction'} = $id;
+    } else {
+	$RT::Logger->warning( "Could not record outgoing message transaction: $msg" );
+    }
 }
 
 # }}}
