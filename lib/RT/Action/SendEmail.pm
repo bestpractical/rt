@@ -100,7 +100,9 @@ perl(1).
 # {{{ sub Commit
 
 sub Commit {
-    my $self = shift;
+    # DO NOT SHIFT ARGS in this subroutine.  It will break any lex-
+    # wrapping that extensions might do.
+    my $self = $_[0];
 
     my ($ret) = $self->SendMessage( $self->TemplateObj->MIMEObj );
     if ( $ret > 0 ) {
@@ -241,8 +243,9 @@ TODO: Break this out to a separate module
 =cut
 
 sub SendMessage {
-    my $self    = shift;
-    my $MIMEObj = shift;
+    # DO NOT SHIFT ARGS in this subroutine.  It will break any lex-
+    # wrapping that extensions might do.
+    my ( $self, $MIMEObj ) = @_;
 
     my $msgid = $MIMEObj->head->get('Message-ID');
     chomp $msgid;
