@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<& /Elements/Callback, tabs => $tabs, %ARGS &>
 <& /Elements/PageLayout,
     current_toptab => $current_toptab,
     current_tab => $current_tab,
@@ -79,7 +80,7 @@ my $tabs = { A  => { title => loc('Open tickets'),
                       },
              B => { title => loc('Closed tickets'),
                          path => 'SelfService/Closed.html',
-                       }
+                       },
            };
 
 if ($queue_count > 1) {
