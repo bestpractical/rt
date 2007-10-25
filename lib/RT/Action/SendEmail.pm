@@ -104,7 +104,7 @@ sub Commit {
 
     my ($ret) = $self->SendMessage( $self->TemplateObj->MIMEObj );
     if ( $ret > 0 ) {
-        $ret = $self->RecordOutgoingMailTransaction( $self->TemplateObj->MIMEObj )
+        $self->RecordOutgoingMailTransaction( $self->TemplateObj->MIMEObj )
             if ($RT::RecordOutgoingEmail);
     }
     return (abs $ret);
