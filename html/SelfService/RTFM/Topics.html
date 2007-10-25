@@ -1,0 +1,236 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
+%#  
+%#  This program is free software; you can redistribute it and/or modify
+%#  it under the terms of version 2 of the GNU General Public License 
+%#  as published by the Free Software Foundation.
+%# 
+%#  A copy of that license should have arrived with this
+%#  software, but in any event can be snarfed from www.gnu.org.
+%# 
+%#  This program is distributed in the hope that it will be useful,
+%#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%#  GNU General Public License for more details.
+%# 
+%# END LICENSE BLOCK
+
+<& /SelfService/Elements/Header, Title => loc('Article Topics') &>
+
+<& /Elements/ListActions, actions => \@Actions &>
+<a href="Topics.html"><&|/l&>All topics</&></a>
+% if (defined $class) {
+&gt; <a href="Topics.html?class=<%$currclass->Id%>"><% $currclass->Name %></a>
+% }
+
+% if ($id != 0) {
+&gt; <& /SelfService/RTFM/Elements/ShowTopic, topic => $currtopic &>
+% }
+<br />
+<h1><&|/l&>Browse by topic</&></h1>
+<%perl>
+if (defined $class) {
+   $m->print('<h2>'.'<a href="'.
+   $RT::WebPath."/SelfService/RTFM/Topics.html?class=" . $currclass->Id
+   .'">'.$currclass->Name."</a></h2>\n");
+   ProduceTree(\@Actions, $currclass, 0, $id);
+} else {
+    $m->print("<ul>\n");
+    while (my $c = $Classes->Next) {
+        $m->print('<li><h2>'.'<a href="'.
+        $RT::WebPath."/SelfService/RTFM/Topics.html?class=" . $c->Id
+        .'">'.$c->Name."</a></h2>\n");
+        $m->print("\n</li>\n");
+    }
+    $m->print("</ul>\n");
+}
+</%perl>
+
+<br />
+<%perl>
+my @articles;
+if ($id or $showall) {
+    my $Articles = RT::FM::ObjectTopicCollection->new($session{'CurrentUser'});
+    $Articles->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Article');
+    if ($id) {
+        $Articles->Limit(FIELD => 'Topic', VALUE => $id, ENTRYAGGREGATOR => 'OR');
+        if ($showall) {
+            my $kids = $currtopic->Children;
+            while (my $k = $kids->Next) {
+                $Articles->Limit(FIELD => 'Topic', VALUE => $k->Id,
+                                 ENTRYAGGREGATOR => 'OR');
+            }
+        }
+    }
+    @articles = map {$a = RT::FM::Article->new($session{'CurrentUser'}); $a->Load($_->ObjectId); $a} @{$Articles->ItemsArrayRef}
+} elsif ($class) {
+    my $Articles = RT::FM::ArticleCollection->new($session{'CurrentUser'});
+    my $TopicsAlias = $Articles->Join(
+        TYPE   => 'left',
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'FM_ObjectTopics',
+        FIELD2 => 'ObjectId',
+    );
+    $Articles->Limit(
+        LEFTJOIN => $TopicsAlias,
+        FIELD    => 'ObjectType',
+        VALUE    => 'RT::FM::Article',
+    );
+    $Articles->Limit(
+        ALIAS      => $TopicsAlias,
+        FIELD      => 'Topic',
+        OPERATOR   => 'IS',
+        VALUE      => 'NULL',
+        QUOTEVALUE => 0,
+    );
+    $Articles->Limit(
+        FIELD      => 'Class',
+        OPERATOR   => '=',
+        VALUE      => $class,
+    );
+    @articles = @{$Articles->ItemsArrayRef};
+}
+</%perl>
+
+% if (@articles) {
+% if ($id) {
+<h2><&|/l&>Articles in this topic</&></h2>
+% } elsif ($class) {
+<h2><&|/l&>Articles with no topics</&></h2>
+% }
+<ul>
+% for my $a (@articles) {
+<li><a href="Article/Display.html?id=<% $a->Id %>"><% $a->Name || loc("(no name)") %></a></li>
+% }
+</ul>
+% } else {
+%#<i><&|/l&>No articles found in this topic</&></i>
+% }
+
+
+<%init>
+my @Actions;
+my $Classes;
+my $currclass;
+my $currtopic;
+
+if ($class) {
+    $currclass = RT::FM::Class->new($session{'CurrentUser'});
+    $currclass->Load($class);
+} else {
+    $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});
+    $Classes->LimitToEnabled(); 
+}
+
+if ($id) {
+    $currtopic = RT::FM::Topic->new($session{'CurrentUser'});
+    $currtopic->Load($id);
+}
+
+# A subroutine that iterates through topics and their children, producing
+# the necessary ul, li, and href links for the table of contents.  Thank
+# heaven for query caching.  The $restrict variable is used to display only
+# the branch of the hierarchy which contains that topic ID.
+
+sub ProduceTree {
+    my ($Actions, $c, $parentid, $restrictid) = @_;
+    $parentid = 0 unless $parentid;
+
+    # Deal with tree restriction, if any.
+    if ($restrictid) {
+        my $rtopic = RT::FM::Topic->new($session{'CurrentUser'});
+	$rtopic->Load($restrictid);
+	unless ($rtopic->Id() &&
+	        $rtopic->ObjectId() == $c->Id) {
+	    push(@{$Actions}, "Could not restrict view to topic $restrictid");
+	    # Start over, without the restriction.
+	    &ProduceTree($Actions, $c, $parentid, undef);
+	} else {
+	    my @showtopics;
+	    push(@showtopics, $rtopic);
+	    my $parent = $rtopic->ParentObj;
+	    while ($parent->Id) {
+		push(@showtopics, $parent);
+		my $newparent = $parent->ParentObj;
+		$parent = $newparent;
+	    }
+	    
+	    # List the topics.
+            my $indents = @showtopics;
+	    while (my $t = pop @showtopics) {
+		print "<ul>";
+		print &MakeLinks($t, $c, $t->Children->Count);
+		if ($t->Id == $restrictid) {
+		    &ProduceTree($Actions, $c, $restrictid, undef);
+		}
+	    }
+            print "</ul>" x $indents;
+	}
+    } else {
+	# No restriction in place.  Build the entire tree.
+	my $topics = RT::FM::TopicCollection->new($session{'CurrentUser'});
+	$topics->LimitToObject($c);
+	$topics->LimitToKids($parentid);
+        print "<ul>" if $topics->Count;
+	while (my $t = $topics->Next) {
+	    if ($t->Children->Count) {
+		print &MakeLinks($t, $c, 1);
+		&ProduceTree($Actions, $c, $t->Id);
+	    } else {
+		print &MakeLinks($t, $c, 0);
+	    }
+	}
+        print "</ul>\n" if $topics->Count;
+    }
+}
+
+sub MakeLinks {
+    my ($topic, $c, $haschild) = @_;
+    my $query;
+    my $output;
+
+    if (ref($topic) eq 'RT::FM::Topic') {
+	if ($haschild) {
+	    $query = "Topics.html?id=" . $topic->Id . "&class=" . $c->Id;
+	} else {
+	    $query = "Topics.html?id=" . $topic->Id . "&class=" . $c->Id .
+		"&showall=1";
+	}
+	
+	$output = "<li><a href=\"$query\">" . ($topic->Name() || loc("(no name)"));
+	$output .= ": " . $topic->Description() if $topic->Description();
+	$output .= "</a>";
+	
+        my $Articles = RT::FM::ObjectTopicCollection->new($session{'CurrentUser'});
+        $Articles->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Article');
+        $Articles->Limit(FIELD => 'Topic', VALUE => $topic->Id);
+        $output .= " (".loc("[quant,_1,article]", $Articles->Count).")" if $Articles->Count;
+
+	if ($haschild) {
+        #  Commented out by Jesse, since it seems confusing
+        #  
+        #   $output .= " &nbsp;&nbsp;&nbsp;[ <a href=\"$query&showall=1\">Show all articles</a> ]";
+	}
+	
+	$output .= "</li>\n";
+	
+    } else {
+	# This builds a link for the class specified, with no particular
+	# topic.
+	$query = "Topics.html?class=" . $c->Id;
+	$output = "<li><a href=\"$query\">" . $c->Name . "</a>";
+	$output .= ": " . $c->Description if $c->Description;
+    }
+    
+    return $output;
+}
+
+</%init>
+
+<%args>
+$id => 0
+$class => undef
+$showall => undef
+</%args>

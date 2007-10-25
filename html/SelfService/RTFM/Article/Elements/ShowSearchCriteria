@@ -1,0 +1,133 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
+%#  
+%#  This program is free software; you can redistribute it and/or modify
+%#  it under the terms of version 2 of the GNU General Public License 
+%#  as published by the Free Software Foundation.
+%# 
+%#  A copy of that license should have arrived with this
+%#  software, but in any event can be snarfed from www.gnu.org.
+%# 
+%#  This program is distributed in the hope that it will be useful,
+%#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%#  GNU General Public License for more details.
+%# 
+%# END LICENSE BLOCK
+
+% if ($ARGS{'HideOptions'}) {
+<& /Elements/TitleBoxStart, title => loc('Advanced search'), class => "rolled-up", bodyclass => "hidden" &>
+% } else {
+<& /Elements/TitleBoxStart, title => loc('Advanced search') &>
+% }
+<table>
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Basics</&></h2></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Class</&></td><td class="value">is <& /SelfService/RTFM/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
+<&|/l&>and not</&>
+<& /SelfService/RTFM/Elements/SelectClass, Name => 'Class!', Multiple =>1, Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Name</&></td>
+<td class="value"><&|/l&>matches</&> <input name="Name~" value="<%$ARGS{'Name~'}%>" /> <&|/l&>and not</&> <input name="Name!~" value="<%$ARGS{'Name!~'}%>" /></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Summary</&></td>
+<td class="value"><&|/l&>matches</&> <input name="Summary~" value="<%$ARGS{'Summary~'}%>" /> <&|/l&>and not</&> <input name="Summary!~" value="<%$ARGS{'Summary!~'}%>" /></td>
+</tr>
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Content</&></h2></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Any field</&></td><td class="value"> <&|/l&>matches</&> <input name="Article~" value="<%$ARGS{'Article~'}%>" /> <&|/l&>and not</&> <input name="Article!~" value="<%$ARGS{'Article!~'}%>" /></td>
+</tr>
+% while (my $field = $customfields->Next ) {
+<tr>
+<td class="label"><% $field->Name %></td>
+<td class="value"><&|/l&>matches</&> 
+% my $matches = $field->Name."~";
+% my $nomatches = $field->Name."!~";
+<& /SelfService/RTFM/Article/Elements/SearchByCustomField, 
+    Field => $field, 
+    Name => $matches,
+    Values => $ARGS{$matches} &>
+    <&|/l&>and not</&>
+<& /SelfService/RTFM/Article/Elements/SearchByCustomField, 
+    Field => $field, 
+    Name => $nomatches,
+    Values => $ARGS{$nomatches}
+    &>
+</td>
+</tr>
+% }
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Dates</&></h2></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Created</&></td>
+<td class="value"><&|/l&>after</&>
+<& /Elements/SelectDate, Name=>"Created>", Default => ($dates->{'Created>'} ? $dates->{'Created>'}->ISO : '') &>
+<&|/l&>and before</&>
+<& /Elements/SelectDate, Name=>"Created<", Default => ($dates->{'Created<'} ? $dates->{'Created<'}->ISO:'')&>
+</td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Last updated</&></td>
+<td class="value"><&|/l&>after</&>
+<& /Elements/SelectDate, Name=>"LastUpdated>", Default =>
+($dates->{'LastUpdated>'} ? $dates->{'LastUpdated>'}->AsString:'')&>
+<&|/l&>and before</&>
+<& /Elements/SelectDate, Name=>"LastUpdated<", Default => 
+($dates->{'LastUpdated<'} ? $dates->{'LastUpdated<'}->AsString:'')&>
+</td>
+</tr>
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Links</&></h2></td>
+</tr>
+<tr>
+<td class="label"></td>
+<td><& LinkEntryInstructions &></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Refer to</&></td>
+<td class="value"><input type=text size=50 name="RefersTo" value="<%$RefersTo%>" /></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Referred to by</&></td>
+<td class="value"><input type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>" /></td>
+</tr>
+<tr>
+<td class="label" colspan="2"><h2><&|/l&>Topics</&></h2></td>
+</tr>
+<tr>
+<td class="label"></td>
+<td>
+<br />
+<input type="checkbox" name="ExpandTopics" <% $ARGS{'ExpandTopics'} ? 'checked="checked"' : "" %> />
+<&|/l&>Include subtopics</&> 
+</td>
+</tr>
+</table>
+<& /Elements/Submit, Label => loc('Search') &>
+<&/Elements/TitleBoxEnd&>
+<%init>
+my @Classes =
+ ( ref $ARGS{'Class'} eq 'ARRAY' )
+      ? @{ $ARGS{'Class'} }
+      : ( $ARGS{'Class'} );
+for (@Classes) {
+  my $class = RT::FM::Class->new( $session{'CurrentUser'} );
+  $class->LoadById($_);
+  $_ = $class;
+}
+</%init>
+
+<%ARGS>
+$dates =>undef
+$RefersTo => undef
+$ReferredToBy => undef
+$customfields => undef
+</%ARGS>

@@ -1,0 +1,64 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
+%#  
+%#  This program is free software; you can redistribute it and/or modify
+%#  it under the terms of version 2 of the GNU General Public License 
+%#  as published by the Free Software Foundation.
+%# 
+%#  A copy of that license should have arrived with this
+%#  software, but in any event can be snarfed from www.gnu.org.
+%# 
+%#  This program is distributed in the hope that it will be useful,
+%#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%#  GNU General Public License for more details.
+%# 
+%# END LICENSE BLOCK
+
+
+<span class="label"><&|/l&>Refers to</&></span>:<br />
+<ul class="value">
+% my $refersto = $article->RefersTo;
+
+% while (my $link = $refersto->Next) {
+% my $member = $link->TargetURI;
+<li>
+% if ($link->TargetURI->IsLocal) {
+<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%>: 
+% if (UNIVERSAL::isa($member->Object, "RT::FM::Article") or UNIVERSAL::can($member->Object, 'Name')) {
+<%$member->Object->Name%>
+% } elsif (UNIVERSAL::isa($member->Object, "RT::Ticket") or UNIVERSAL::can($member->Object, 'Subject')) {
+<%$member->Object->Subject%>
+% }
+</a>
+% } else {
+<a href="<%$member->Resolver->HREF%>"><%$link->Target%></a>
+% }
+</li>
+% }
+</ul>
+
+<span class="label"><&|/l&>Referred to by</&></span>:<br />
+<ul class="value">
+% my $referredtoby = $article->ReferredToBy;
+% while (my $link = $referredtoby->Next) {
+% my $member = $link->BaseURI;
+<li>
+% if ($member->IsLocal) {
+<a href="<%$member->Resolver->HREF%>"><% loc($member->Object->ObjectTypeStr) %> <%$member->Object->Id%>: 
+% if (UNIVERSAL::isa($member->Object, "RT::FM::Article") or UNIVERSAL::can($member->Object, 'Name')) {
+<%$member->Object->Name%>
+% } elsif (UNIVERSAL::isa($member->Object, "RT::Ticket") or UNIVERSAL::can($member->Object, 'Subject')) {
+<%$member->Object->Subject%>
+% }
+</a>
+% } else {
+<a href="<%$member->Resolver->HREF%>"><%$link->Base%></a>
+% }
+</li>
+% }
+</ul>
+<%args>
+$article => undef
+</%args>

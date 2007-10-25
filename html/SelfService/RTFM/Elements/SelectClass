@@ -1,0 +1,66 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
+%#  
+%#  This program is free software; you can redistribute it and/or modify
+%#  it under the terms of version 2 of the GNU General Public License 
+%#  as published by the Free Software Foundation.
+%# 
+%#  A copy of that license should have arrived with this
+%#  software, but in any event can be snarfed from www.gnu.org.
+%# 
+%#  This program is distributed in the hope that it will be useful,
+%#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%#  GNU General Public License for more details.
+%# 
+%# END LICENSE BLOCK
+
+% if ($Lite) {
+<input name="<%$Name%>" size="25" default="<%$d->Name%>" />
+% } else {
+<select NAME ="<%$Name%>"
+% if ($Multiple) {
+MULTIPLE
+% }
+% if ($Size) {
+SIZE=<%$Size%>
+% }
+>
+% if ($ShowNullOption) {
+<option value="">-</option>
+% }
+% while (my $Class=$Classes->Next) {
+% next unless ($Class->Name); # if they can't see it, don't list it
+% if ($ShowAllClasses || $Class->CurrentUserHasRight('CreateArticle')) {
+<option VALUE="<%$Class->Id%>" <%(grep { $_ && ( $Class->Id == $_ || $Class->Name eq $_ )} @Default) ? 'SELECTED' : '' %>><%$Class->Name%>
+%   if (($Verbose) and ($Class->Description) ){
+(<%$Class->Description%>)
+%  }
+</option>
+% }
+% }
+</select>
+% }
+<%ARGS>
+$Multiple => undef
+$Size => undef
+$ShowNullOption => 1
+$ShowAllClasses => 1
+$Name => undef
+$Verbose => undef
+$Default => undef
+$Lite => 0
+</%ARGS>
+
+<%INIT>
+
+my @Default = ref($Default) eq 'ARRAY' ? @$Default : ( $Default);
+
+my $Classes=new RT::FM::ClassCollection($session{'CurrentUser'});
+$Classes->LimitToEnabled();
+
+my $d = new RT::FM::Class($session{'CurrentUser'});
+$d->Load($Default[0]);
+
+</%INIT>

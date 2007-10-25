@@ -1,0 +1,44 @@
+%# BEGIN LICENSE BLOCK
+%# 
+%#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
+%#  
+%#  This program is free software; you can redistribute it and/or modify
+%#  it under the terms of version 2 of the GNU General Public License 
+%#  as published by the Free Software Foundation.
+%# 
+%#  A copy of that license should have arrived with this
+%#  software, but in any event can be snarfed from www.gnu.org.
+%# 
+%#  This program is distributed in the hope that it will be useful,
+%#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%#  GNU General Public License for more details.
+%# 
+%# END LICENSE BLOCK
+
+<form ACTION="<%$RT::WebPath%>/SelfService/RTFM/Article/Search.html">
+<input type="hidden" name="HideOptions" value="1" />
+<input size="12" name="q" accesskey="0" />
+% if ($class or $topic) {
+<input type="hidden" name="ExpandTopics" value="1" />
+<select name="Topics">
+% if ($topic) {
+<option value="<% $topic %>">in this topic</option>
+% }
+% if ($class) {
+% my $Topics = RT::FM::TopicCollection->new($session{'CurrentUser'});
+% $Topics->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Class');
+% $Topics->Limit(FIELD => 'ObjectId',   VALUE => $class);
+% my @topics;
+% push @topics, $_->Id while $_ = $Topics->Next;
+<option value="<% join(' ', @topics) %>">in this hierarchy</option>
+% }
+<option value="">in all topics</option>
+</select>
+% }
+<input type="submit" value="<&|/l&>Search RTFM</&>" />&nbsp;
+</form>
+<%args>
+$topic => ""
+$class => ""
+</%args>
