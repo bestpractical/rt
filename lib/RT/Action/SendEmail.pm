@@ -100,8 +100,8 @@ perl(1).
 # {{{ sub Commit
 
 sub Commit {
-    # DO NOT SHIFT ARGS in this subroutine.  It will break any lex-
-    # wrapping that extensions might do.
+    # DO NOT SHIFT @_ in this subroutine.  It breaks Hook::LexWrap's
+    # ability to pass @_ to a 'post' routine.
     my $self = $_[0];
 
     my ($ret) = $self->SendMessage( $self->TemplateObj->MIMEObj );
@@ -243,8 +243,8 @@ TODO: Break this out to a separate module
 =cut
 
 sub SendMessage {
-    # DO NOT SHIFT ARGS in this subroutine.  It will break any lex-
-    # wrapping that extensions might do.
+    # DO NOT SHIFT @_ in this subroutine.  It breaks Hook::LexWrap's
+    # ability to pass @_ to a 'post' routine.
     my ( $self, $MIMEObj ) = @_;
 
     my $msgid = $MIMEObj->head->get('Message-ID');
