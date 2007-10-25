@@ -104,7 +104,7 @@ sub Commit {
 
     my ($ret) = $self->SendMessage( $self->TemplateObj->MIMEObj );
     if ( $ret > 0 ) {
-        $self->RecordOutgoingMailTransaction( $self->TemplateObj->MIMEObj )
+        $ret = $self->RecordOutgoingMailTransaction( $self->TemplateObj->MIMEObj )
             if ($RT::RecordOutgoingEmail);
     }
     return (abs $ret);
@@ -474,10 +474,11 @@ sub RecordOutgoingMailTransaction {
     );
 
     if( $id ) {
-	$self->{'OutgoingMessageTransaction'} = $id;
+	$self->{'OutgoingMailTransaction'} = $id;
     } else {
-	$RT::Logger->warning( "Could not record outgoing message transaction: $msg" );
+        $RT::Logger->warning( "Could not record outgoing message transaction: $msg" );
     }
+    return $id;
 }
 
 # }}}
@@ -724,6 +725,7 @@ sub SetHeader {
     my $field = shift;
     my $val   = shift;
 
+    $RT::Logger->debug( "Setting header $field to $val" );
     chomp $val;
     chomp $field;
     $self->TemplateObj->MIMEObj->head->fold_length( $field, 10000 );
