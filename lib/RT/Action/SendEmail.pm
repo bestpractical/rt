@@ -728,7 +728,6 @@ sub SetHeader {
     my $field = shift;
     my $val   = shift;
 
-    $RT::Logger->debug( "Setting header $field to $val" );
     chomp $val;
     chomp $field;
     $self->TemplateObj->MIMEObj->head->fold_length( $field, 10000 );
