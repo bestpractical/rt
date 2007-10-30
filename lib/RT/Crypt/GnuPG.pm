@@ -130,6 +130,9 @@ attachment with a signature is added with '.sig' extension.
 Encryption of text parts is implemented using inline format, other parts
 are replaced with attachments with the filename extension '.pgp'.
 
+This format is discouraged because modern mail clients typically don't support
+it well.
+
 =back
 
 =head2 %GnuPGOptions
