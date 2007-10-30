@@ -69,13 +69,13 @@ $CurrentValue => undef,
 </%ARGS>
 % unless ( $Default ) {
 <input type="hidden" name="<% $Name %>" value="0" />\
-<input type="checkbox" name="<% $Name %>" value="1" <% $CurrentValue? 'checked="checked"': '' %> />\
+<input type="checkbox" name="<% $Name %>" value="1"<% $CurrentValue? ' checked="checked"': '' |n %> />\
 % } else {
-<input type="radio" name="<% $Name %>" value="1" <% $CurrentValue? 'checked="checked"': '' %> />\
+<input type="radio" name="<% $Name %>" value="1"<% $CurrentValue? ' checked="checked"': '' |n %> />\
 <% loc('Yes') %>
-<input type="radio" name="<% $Name %>" value="0" <% defined $CurrentValue && !$CurrentValue? 'checked="checked"': '' %> />\
+<input type="radio" name="<% $Name %>" value="0"<% defined $CurrentValue && !$CurrentValue? ' checked="checked"': '' |n %> />\
 <% loc('No') %>
-<input type="radio" name="<% $Name %>" value="__empty_value__" <% !defined $CurrentValue? 'checked="checked"': '' %> />\
+<input type="radio" name="<% $Name %>" value="__empty_value__"<% !defined $CurrentValue? ' checked="checked"': '' |n %> />\
 <% $DefaultLabel %>
 % }
 </%METHOD>
