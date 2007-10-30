@@ -498,7 +498,7 @@ sub PrepareEmailUsingTemplate {
     return $template;
 }
 
-=head2 SendEmailUsingTemplate Template => '', Arguments => {}, To => '', Cc => '', Bcc => ''
+=head2 SendEmailUsingTemplate Template => '', Arguments => {}, From => CorrespondAddress, To => '', Cc => '', Bcc => ''
 
 Sends email using a template, takes name of template, arguments for it and recipients.
 
@@ -511,6 +511,7 @@ sub SendEmailUsingTemplate {
         To => undef,
         Cc => undef,
         Bcc => undef,
+        From => RT->Config->Get('CorrespondAddress'),
         InReplyTo => undef,
         @_
     );
@@ -525,7 +526,7 @@ sub SendEmailUsingTemplate {
     }
 
     $mail->head->set( $_ => $args{ $_ } )
-        foreach grep defined $args{$_}, qw(To Cc Bcc);
+        foreach grep defined $args{$_}, qw(To Cc Bcc From);
 
     if ( $args{'InReplyTo'} ) {
         my @id = $args{'InReplyTo'}->head->get('Message-ID');
