@@ -15,8 +15,8 @@ my @server;
 sub import {
     my $class = shift;
     my %args = @_;
-    $class->_setup_config(%args);
     $class->SUPER::import(@_);
+    $class->_setup_config(%args);
     RT::InitSystemObjects();
 }
 
