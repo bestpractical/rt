@@ -54,7 +54,7 @@
 @import "../3.5-default/quickbar.css";
 @import "../3.5-default/ticket.css";
 
-%# ...and then import the 3.4 compat styles afterwards so they can cascade
+/* ...and then import the 3.4 compat styles afterwards so they can cascade */
 @import "nav.css";
 @import "footer.css";
 @import "body.css";
