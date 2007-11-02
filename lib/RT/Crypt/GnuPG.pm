@@ -152,6 +152,9 @@ To disable these option just comment them out or delete them from the hash
         # 'commented-option' => 'value or undef',
     );
 
+B<NOTE> that options may contain '-' character and such options B<MUST> be
+quoted, otherwise you can see quite cryptic error 'gpg: Invalid option "--0"'.
+
 =over
 
 =item --homedir
