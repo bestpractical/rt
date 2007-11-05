@@ -60,8 +60,8 @@
 <&|/l&>Description</&>:
 <input size="25" name="SavedSearchDescription" value="<% $Description %>" />
 
-<nobr>
 % if ($Id ne 'new') {
+<nobr>
 % if ($Dirty) {
 <input type="submit" class="button" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
