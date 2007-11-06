@@ -214,11 +214,16 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 =cut
 
 sub StaticFileHeaders {
+    # make cache public
+    $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'public';
+
     # Expire things in a month.
     $HTML::Mason::Commands::r->headers_out->{'Expires'} = HTTP::Date::time2str( time() + 2592000 );
 
+    # if we set 'Last-Modified' then browser request a comp using 'If-Modified-Since'
+    # request, but we don't handle it and generate full reply again
     # Last modified at server start time
-    $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = HTTP::Date::time2str($^T);
+    #$HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = HTTP::Date::time2str($^T);
 
 }
 
