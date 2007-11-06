@@ -62,8 +62,8 @@
 <&| /Widgets/TitleBox, title => loc("Create a new ticket") &>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td class="label"><&|/l&>Queue</&>:</td>
-<td class="value"><% $QueueObj->Name %>
-<input type="hidden" class="hidden" name="Queue" value="<%$QueueObj->Name%>" />
+<td class="value"><& Elements/ShowQueue, QueueObj => $QueueObj &>
+<input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->Name %>" />
 </td>
 <td class="label"><&|/l&>Status</&>:
 </td>

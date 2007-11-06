@@ -76,7 +76,7 @@
   </tr>
   <tr>
     <td class="label queue"><&|/l&>Queue</&>:</td>
-    <td class="value queue"><%$Ticket->QueueObj->Name%></td>
+    <td class="value queue"><& ShowQueue, QueueObj => $Ticket->QueueObj &></td>
   </tr>
 <& /Elements/Callback, _CallbackName => 'EndOfList', TicketObj => $Ticket, %ARGS &>
 </table>
