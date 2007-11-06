@@ -95,7 +95,7 @@ sub GetCurrentUser {
     unless ( $status ) {
         $RT::Logger->error("Had a problem during decrypting and verifying");
         my $reject = HandleErrors( Message => $args{'Message'}, Result => \@res );
-        return (-2, 'rejected because of problems during decrypting and verifying')
+        return (0, 'rejected because of problems during decrypting and verifying')
             if $reject;
     }
 

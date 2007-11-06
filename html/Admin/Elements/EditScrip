@@ -177,6 +177,7 @@ if ( $id eq 'new' ) {
         CustomPrepareCode      => $ARGS{"Scrip-new-CustomPrepareCode"},
         CustomCommitCode       => $ARGS{"Scrip-new-CustomCommitCode"},
         CustomIsApplicableCode => $ARGS{"Scrip-new-CustomIsApplicableCode"},
+        Stage                  => $ARGS{"Scrip-new-Stage"},
     );
 }
 else {

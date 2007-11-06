@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 476;
+use Test::More tests => 492;
 use RT::Test;
 use RT::Action::SendEmail;
 use File::Temp qw(tempdir);
@@ -266,6 +266,9 @@ sub create_a_ticket {
 
     $m->submit;
     is $m->status, 200, "request successful";
+
+    unlike($m->content, qr/unable to sign outgoing email messages/);
+
     $m->get_ok('/'); # ensure that the mail has been processed
 
     my @mail = RT::Test->fetch_caught_mails;

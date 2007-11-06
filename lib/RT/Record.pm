@@ -659,6 +659,7 @@ sub _CacheConfig {
 
 sub _BuildTableAttributes {
     my $self = shift;
+    my $class = ref($self) || $self;
 
     my $attributes;
     if ( UNIVERSAL::can( $self, '_CoreAccessible' ) ) {
@@ -670,37 +671,19 @@ sub _BuildTableAttributes {
 
     foreach my $column (%$attributes) {
         foreach my $attr ( %{ $attributes->{$column} } ) {
-            $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
+            $_TABLE_ATTR->{$class}->{$column}->{$attr} = $attributes->{$column}->{$attr};
         }
     }
-    if ( UNIVERSAL::can( $self, '_OverlayAccessible' ) ) {
-        $attributes = $self->_OverlayAccessible();
+    foreach my $method ( qw(_OverlayAccessible _VendorAccessible _LocalAccessible) ) {
+        next unless UNIVERSAL::can( $self, $method );
+        $attributes = $self->$method();
 
         foreach my $column (%$attributes) {
             foreach my $attr ( %{ $attributes->{$column} } ) {
-                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
+                $_TABLE_ATTR->{$class}->{$column}->{$attr} = $attributes->{$column}->{$attr};
             }
         }
     }
-    if ( UNIVERSAL::can( $self, '_VendorAccessible' ) ) {
-        $attributes = $self->_VendorAccessible();
-
-        foreach my $column (%$attributes) {
-            foreach my $attr ( %{ $attributes->{$column} } ) {
-                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
-            }
-        }
-    }
-    if ( UNIVERSAL::can( $self, '_LocalAccessible' ) ) {
-        $attributes = $self->_LocalAccessible();
-
-        foreach my $column (%$attributes) {
-            foreach my $attr ( %{ $attributes->{$column} } ) {
-                $_TABLE_ATTR->{ref($self)}->{$column}->{$attr} = $attributes->{$column}->{$attr};
-            }
-        }
-    }
-
 }
 
 
@@ -887,13 +870,18 @@ sub Update {
         # This is in an eval block because $object might not exist.
         # and might not have a Name method. But "can" won't find autoloaded
         # items. If it fails, we don't care
-        do { no warnings "uninitialized";
+        do {
+            no warnings "uninitialized";
+            local $@;
             eval {
                 my $object = $attribute . "Obj";
-                next if $self->$object->Name eq $value;
+                my $name = $self->$object->Name;
+                next if $name eq $value || $name eq ($value || 0);
             };
             next if $value eq $self->$attribute();
+            next if ($value || 0) eq $self->$attribute();
         };
+
         my $method = "Set$attribute";
         my ( $code, $msg ) = $self->$method($value);
         my ($prefix) = ref($self) =~ /RT(?:.*)::(\w+)/;
@@ -1570,7 +1558,7 @@ sub _AddCustomFieldValue {
             my $is_the_same = 1;
             if ( defined $args{'Value'} ) {
                 $is_the_same = 0 unless defined $old_content
-                    && lc $old_value eq lc $args{'Value'};
+                    && lc $old_content eq lc $args{'Value'};
             } else {
                 $is_the_same = 0 if defined $old_content;
             }

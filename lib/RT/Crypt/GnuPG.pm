@@ -130,6 +130,9 @@ attachment with a signature is added with '.sig' extension.
 Encryption of text parts is implemented using inline format, other parts
 are replaced with attachments with the filename extension '.pgp'.
 
+This format is discouraged because modern mail clients typically don't support
+it well.
+
 =back
 
 =head2 %GnuPGOptions
@@ -148,6 +151,9 @@ To disable these option just comment them out or delete them from the hash
         'enabled-option-without-value' => undef,
         # 'commented-option' => 'value or undef',
     );
+
+B<NOTE> that options may contain '-' character and such options B<MUST> be
+quoted, otherwise you can see quite cryptic error 'gpg: Invalid option "--0"'.
 
 =over
 

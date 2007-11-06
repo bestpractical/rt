@@ -154,9 +154,9 @@ $m->comp(
     ParentObj => $message
 );
 
-}
 </%PERL>
 </div>
+% }
 <%ARGS>
 $Ticket => undef
 $Transaction => undef

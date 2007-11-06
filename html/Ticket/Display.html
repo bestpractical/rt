@@ -183,7 +183,9 @@ if (@Actions) {
     # We've done something, so we need to clear the decks to avoid 
     # resubmission on refresh.
     # But we need to store Actions somewhere too, so we don't lose them.
-    $session{"Actions"} = \@Actions;
+    push @{ $session{"Actions"} ||= [] }, @Actions;
+    $session{'i'}++;
+
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL') ."Ticket/Display.html?id=".$TicketObj->id);
 } else {
     @Actions = @{ delete $session{"Actions"} || [] };

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 57;
+use Test::More tests => 60;
 use RT::Test;
 use RT::Action::SendEmail;
 use File::Temp qw(tempdir);
@@ -42,6 +42,25 @@ RT::Test->set_rights(
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
+
+diag "check that signing doesn't work if there is no key";
+{
+    unlink "t/mailbox";
+
+    ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
+    $m->form_number(3);
+    $m->tick( Sign => 1 );
+    $m->field( Requestors => 'rt-test@example.com' );
+    $m->field( Content => 'Some content' );
+    $m->submit;
+    $m->content_like(
+        qr/unable to sign outgoing email messages/i,
+        'problems with passphrase'
+    );
+
+    my @mail = RT::Test->fetch_caught_mails;
+    ok !@mail, 'there are no outgoing emails';
+}
 
 {
     RT::Test->import_gnupg_key('rt-recipient@example.com');

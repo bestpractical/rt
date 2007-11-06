@@ -616,7 +616,7 @@ sub BriefDescription {
         if ( ! defined $self->OldValue || $self->OldValue eq '' ) {
             return ( $self->loc("[_1] [_2] added", $field, $self->NewValue) );
         }
-        elsif ( $self->NewValue eq '' ) {
+        elsif ( !defined $self->NewValue || $self->NewValue eq '' ) {
             return ( $self->loc("[_1] [_2] deleted", $field, $self->OldValue) );
 
         }
