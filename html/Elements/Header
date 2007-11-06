@@ -58,7 +58,7 @@
 % }
 
 <link rel="shortcut icon" href="<%$RT::WebImagesURL%>/favicon.png" type="image/png" />
-<link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/css/<% $RT::WebDefaultStylesheet %>/main.css" type="text/css" media="all" />
+<link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/css/<% $RT::WebDefaultStylesheet %>/main-squished.css" type="text/css" media="all" />
 <link rel="stylesheet" href="<%$RT::WebPath%>/NoAuth/css/print.css" type="text/css" media="print" />
 
 % if ( $RSSAutoDiscovery ) {

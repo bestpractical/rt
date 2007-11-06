@@ -214,6 +214,7 @@ GD
 GD::Graph
 GD::Text
 Text::WikiFormat 0.76
+CSS::Squish 0.06
 .
 
 $deps{'STANDALONE'} = [ text_to_hash( << '.') ];
