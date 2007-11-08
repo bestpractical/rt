@@ -57,8 +57,8 @@
 % }
 <&|/l&>Description</&>:<br>
 <font size="-1"><input size="25" name="Description" value="<%$CurrentSearch->{'Description'} || ''%>" /></font>
-<nobr>
 % if ($SearchId ne 'new') {
+<nobr>
 % if ($Dirty) {
 <input type="submit" class="button" name="Revert" value="<%loc('Revert')%>" />
 % }
