@@ -200,6 +200,7 @@ Module::Versions::Report 1.03
 Cache::Simple::TimedExpiry
 UNIVERSAL::require
 Calendar::Simple
+CSS::Squish 0.06
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
