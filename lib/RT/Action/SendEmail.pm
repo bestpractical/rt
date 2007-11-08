@@ -915,10 +915,6 @@ sub SetHeaderAsEncoding {
 
     my $value = $self->TemplateObj->MIMEObj->head->get($field);
 
-    # don't bother if it's us-ascii
-
-    # See RT::I18N, 'NOTES:  Why Encode::_utf8_off before Encode::from_to'
-
     $value =  $self->MIMEEncodeString($value, $enc);
 
     $self->TemplateObj->MIMEObj->head->replace( $field, $value );
@@ -954,25 +950,36 @@ sub MIMEEncodeString {
     $max = int($max/3)*3;
 
     chomp $value;
+
+    if ( $max <= 0 ) {
+      # gives an error...
+      $RT::Logger->crit("Can't encode! Charset or encoding too big.\n");
+      return ($value);
+    }
+
     return ($value) unless $value =~ /[^\x20-\x7e]/;
 
     $value =~ s/\s*$//;
-    Encode::_utf8_off($value);
-    my $res = Encode::from_to( $value, "utf-8", $charset );
-   
-    if ($max > 0) {
-      # copy value and split in chuncks
-      my $str=$value;
-      my @chunks = unpack("a$max" x int(length($str)/$max 
-                                  + ((length($str) % $max) ? 1:0)), $str);
-      # encode an join chuncks
-      $value = join " ", 
-                     map encode_mimeword( $_, $encoding, $charset ), @chunks ;
-      return($value); 
-    } else {
-      # gives an error...
-      $RT::Logger->crit("Can't encode! Charset or encoding too big.\n");
+
+    # we need perl string to split thing char by char
+    Encode::_utf8_on($value) unless Encode::is_utf8( $value );
+
+    my ($tmp, @chunks) = ('', ());
+    while ( length $value ) {
+        my $char = substr($value, 0, 1, '');
+        my $octets = Encode::encode( $charset, $char );
+        if ( length($tmp) + length($octets) > $max ) {
+            push @chunks, $tmp;
+            $tmp = '';
+        }
+        $tmp .= $octets;
     }
+    push @chunks, $tmp if length $tmp;
+
+    # encode an join chuncks
+    $value = join "\n ",
+               map encode_mimeword( $_, $encoding, $charset ), @chunks ;
+    return($value); 
 }
 
 # }}}
