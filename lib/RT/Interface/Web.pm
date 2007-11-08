@@ -215,7 +215,7 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 
 sub StaticFileHeaders {
     # make cache public
-    $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'public';
+    $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'max-age=259200, public';
 
     # Expire things in a month.
     $HTML::Mason::Commands::r->headers_out->{'Expires'} = HTTP::Date::time2str( time() + 2592000 );
