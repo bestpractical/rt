@@ -862,7 +862,7 @@ sub _DecodeLOB {
     elsif ( $ContentEncoding && $ContentEncoding ne 'none' ) {
         return ( $self->loc( "Unknown ContentEncoding [_1]", $ContentEncoding ) );
     }
-    if ( $ContentType eq 'text/plain' ) {
+    if ( $ContentType =~ m{^text/} ) {
        $Content = Encode::decode_utf8($Content) unless Encode::is_utf8($Content);
     }
         return ($Content);
