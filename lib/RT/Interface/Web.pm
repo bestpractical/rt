@@ -341,6 +341,7 @@ sub CreateTicket {
         From                => $ARGS{'From'},
         Cc                  => $ARGS{'Cc'},
         Body                => $ARGS{'Content'},
+        Type                => $ARGS{'ContentType'},
     );
 
     if ( $ARGS{'Attachments'} ) {
@@ -538,6 +539,7 @@ sub ProcessUpdateMessage {
         my $Message = MakeMIMEEntity(
             Subject => $args{ARGSRef}->{'UpdateSubject'},
             Body    => $args{ARGSRef}->{'UpdateContent'},
+            Type    => $args{ARGSRef}->{'UpdateContentType'},
         );
 
         $Message->head->add( 'Message-ID' => 
@@ -615,6 +617,8 @@ sub ProcessUpdateMessage {
 
 Takes a paramhash Subject, Body and AttachmentFieldName.
 
+Also takes Form, Cc and Type as optional paramhash keys.
+
   Returns a MIME::Entity.
 
 =cut
@@ -628,6 +632,7 @@ sub MakeMIMEEntity {
         Cc                  => undef,
         Body                => undef,
         AttachmentFieldName => undef,
+        Type                => undef,
 #        map Encode::encode_utf8($_), @_,
         @_,
     );
@@ -645,6 +650,7 @@ sub MakeMIMEEntity {
             Subject => $args{'Subject'} || "",
             From    => $args{'From'},
             Cc      => $args{'Cc'},
+            Type    => $args{'Type'} || 'text/plain',
             'Charset:' => 'utf8',
             Data    => [ $args{'Body'} ]
         );
