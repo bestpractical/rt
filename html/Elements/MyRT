@@ -48,7 +48,7 @@
 <table border="0" width="100%">
 <tr valign="top">
 
-<td class="boxcontainer" width="70%" <% $summary? 'width="70%"': '' %>>
+<td class="boxcontainer" <% $summary? 'width="70%"': '' |n %>>
 % $show_cb->($_) foreach @$body;
 </td>
 
