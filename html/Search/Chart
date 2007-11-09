@@ -86,6 +86,26 @@ $chart->set_y_axis_font( $font, 9 ) if $chart->can('set_y_axis_font');
 $chart->set_values_font( $font, 9 ) if $chart->can('set_values_font');
 $chart->set_value_font( $font, 9 ) if $chart->can('set_value_font');
 
+# Pie charts don't like having no input, so we show a special image
+# that indicates an error message. Because this is used in an <img>
+# context, it can't be a simple error message. Without this check,
+# the chart will just be a non-loading image.
+if ($tix->Count == 0) {
+    my $plot = GD::Image->new(600 => 400);
+    $plot->colorAllocate(255, 255, 255); # background
+    my $black = $plot->colorAllocate(0, 0, 0);
+
+    require GD::Text::Wrap;
+    my $error = GD::Text::Wrap->new($plot,
+        color => $black,
+        text  => loc("No tickets found."),
+    );
+    $error->set_font( $font, 12 );
+    $error->draw(0, 0);
+
+    $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
+}
+
 if ($chart_class eq "GD::Graph::bars") {
     $chart->set(
         x_label => $tix->Label( $PrimaryGroupBy ),
@@ -143,17 +163,26 @@ my @sorted_values = map { $data{$_}} @sorted_keys;
 
 
 my $plot = $chart->plot( [ [@sorted_keys], [@sorted_values] ] ) or die $chart->error;
-
-if ( $plot->can('png') ) {
-    $r->content_type('image/png');
-    $m->out( $plot->png );
-}
-elsif ( $plot->can('gif') ) {
-    $r->content_type('image/gif');
-    $m->out( $plot->gif );
-}
-else { 
-    die "Your GD library appears to support neither PNG nor GIF";
-}
-$m->abort();
+$m->comp( 'SELF:Plot', plot => $plot, %ARGS );
 </%init>
+
+<%METHOD Plot>
+<%ARGS>
+$plot => undef
+</%ARGS>
+<%INIT>
+my @types = ('png', 'gif');
+
+for my $type (@types) {
+    $plot->can($type)
+        or next;
+
+    $r->content_type("image/$type");
+    $m->out( $plot->$type );
+    $m->abort();
+}
+
+die "Your GD library appears to support none of the following image types: " . join(', ', @types);
+</%INIT>
+
+</%METHOD>
