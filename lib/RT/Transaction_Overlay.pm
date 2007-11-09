@@ -293,9 +293,13 @@ sub Content {
         $content = $content_obj->Content;
 
 	if ($content_obj->ContentType =~ m{^text/html$}i) {
-        $content = HTML::FormatText->new(leftmargin => 0, rightmargin => 78)->format(  HTML::TreeBuilder->new_from_content( $content));
+            $content =~ s/<p>--\s+<br \/>.*?$//s if $args{'Quote'};
+            $content = HTML::FormatText->new(leftmargin => 0, rightmargin => 78)->format(  HTML::TreeBuilder->new_from_content( $content));
 
 	}
+        else {
+            $content =~ s/\n-- \n.*?$//s if $args{'Quote'};
+        }
     }
 
     # If all else fails, return a message that we couldn't find any content
@@ -304,9 +308,6 @@ sub Content {
     }
 
     if ( $args{'Quote'} ) {
-
-        # Remove quoted signature.
-        $content =~ s/\n-- \n(.*?)$//s;
 
         # What's the longest line like?
         my $max = 0;
