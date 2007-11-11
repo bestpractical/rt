@@ -277,14 +277,16 @@ text/plain, text/html or message/* part.  Otherwise, returns undef.
 Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message 
 at $args{'Wrap'}.  $args{'Wrap'} defaults to 70.
 
-If C<$RT::Transaction::PreferredContentType> is set to C<text/html>, plain texts
-are upgraded to HTML.  Otherwise, HTML texts are downgraded to plain text.
+If $args{'Type'} is set to C<text/html>, plain texts are upgraded to HTML.
+Otherwise, HTML texts are downgraded to plain text.  If $args{'Type'} is missing,
+it defaults to the value of C<$RT::Transaction::PreferredContentType>.
 
 =cut
 
 sub Content {
     my $self = shift;
     my %args = (
+        Type  => $PreferredContentType,
         Quote => 0,
         Wrap  => 70,
         @_
@@ -297,7 +299,7 @@ sub Content {
 	if ($content_obj->ContentType =~ m{^text/html$}i) {
             $content =~ s/<p>--\s+<br \/>.*?$//s if $args{'Quote'};
 
-            if ($PreferredContentType ne 'text/html') {
+            if ($args{Type} ne 'text/html') {
                 $content = HTML::FormatText->new(
                     leftmargin  => 0,
                     rightmargin => 78,
@@ -309,7 +311,7 @@ sub Content {
         else {
             $content =~ s/\n-- \n.*?$//s if $args{'Quote'};
 
-            if ($PreferredContentType eq 'text/html') {
+            if ($args{Type} eq 'text/html') {
                 # Extremely simple text->html converter
                 $content =~ s/&/&#38;/g;
                 $content =~ s/</&lt;/g;
