@@ -78,7 +78,7 @@ package RT::Transaction;
 use strict;
 no warnings qw(redefine);
 
-use vars qw( %_BriefDescriptions );
+use vars qw( %_BriefDescriptions $PreferredContentType );
 
 use RT::Attachments;
 use RT::Scrips;
@@ -271,12 +271,14 @@ sub Message {
 
 =head2 Content PARAMHASH
 
-If this transaction has attached mime objects, returns the first text/plain part.
-Otherwise, returns undef.
+If this transaction has attached mime objects, returns the body of the first
+text/plain, text/html or message/* part.  Otherwise, returns undef.
 
 Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message 
 at $args{'Wrap'}.  $args{'Wrap'} defaults to 70.
 
+If C<$RT::Transaction::PreferredContentType> is set to C<text/html>, plain texts
+are upgraded to HTML.  Otherwise, HTML texts are downgraded to plain text.
 
 =cut
 
@@ -294,11 +296,26 @@ sub Content {
 
 	if ($content_obj->ContentType =~ m{^text/html$}i) {
             $content =~ s/<p>--\s+<br \/>.*?$//s if $args{'Quote'};
-            $content = HTML::FormatText->new(leftmargin => 0, rightmargin => 78)->format(  HTML::TreeBuilder->new_from_content( $content));
 
+            if ($PreferredContentType ne 'text/html') {
+                $content = HTML::FormatText->new(
+                    leftmargin  => 0,
+                    rightmargin => 78,
+                )->format(
+                    HTML::TreeBuilder->new_from_content( $content )
+                );
+            }
 	}
         else {
             $content =~ s/\n-- \n.*?$//s if $args{'Quote'};
+
+            if ($PreferredContentType eq 'text/html') {
+                # Extremely simple text->html converter
+                $content =~ s/&/&#38;/g;
+                $content =~ s/</&lt;/g;
+                $content =~ s/>/&gt;/g;
+                $content = "<pre>$content</pre>";
+            }
         }
     }
 
@@ -356,9 +373,9 @@ sub ContentObj {
     # Get the set of toplevel attachments to this transaction.
     my $Attachment = $self->Attachments->First();
 
-    # If it's a message or a plain part, just return the
-    # body.
-    if ( $Attachment->ContentType() =~ '^(?:text/plain$|text/html|message/)' ) {
+    # If it's a text/plain, text/html or message/* part, just return the body.
+    my $wanted_mime_types = qr{^(?:text/plain$|text/html$|message/)}i;
+    if ( $Attachment->ContentType() =~ $wanted_mime_types ) {
         return ($Attachment);
     }
 
@@ -375,13 +392,13 @@ sub ContentObj {
         }
 
 
-        # If that fails, return the  first text/plain or message/ part
+        # If that fails, return the first text/plain, text/html or message/* part
         # which has some content.
 
         else {
             my $all_parts = $self->Attachments();
             while ( my $part = $all_parts->Next ) {
-                if (( $part->ContentType() =~ '^(text/plain$|message/)' ) &&  $part->Content()  ) {
+                if (( $part->ContentType() =~ $wanted_mime_types ) &&  $part->Content()  ) {
                     return ($part);
                 }
             }
