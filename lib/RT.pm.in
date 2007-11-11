@@ -459,6 +459,8 @@ ok ($RT::SystemUser->Name() ne 'noname', "The system user isn't noname");
 
 =cut
 
+eval "require RT_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT_Vendor.pm});
 eval "require RT_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT_Local.pm});
 
