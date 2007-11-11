@@ -480,15 +480,6 @@ Set($PreferRichText, undef);
 
 Set($WebExternalAuth , undef);
 
-
-# If $WebOpenIdAuth is enabled, RT will allow OpenID logins. New users who present
-# OpenID Credentials will be created as unprivileged users with their OpenID as their Name.
-# To enable OpenID Support, you need to install LWPx::ParanoidAgent, Cache::FileCache
-# and Net::OpenID::Consumer.
-#
-Set($WebOpenIdAuth, undef);
-
-
 # If $WebFallbackToInternalAuth is undefined, the user is allowed a chance
 # of fallback to the login screen, even if REMOTE_USER failed.
 

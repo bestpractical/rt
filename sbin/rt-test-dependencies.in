@@ -64,7 +64,6 @@ GetOptions(
     'with-SPEEDYCGI',                     'with-MODPERL1',
     'with-MODPERL2',                      'with-DEV',
     'with-STANDALONE',
-    'with-OPENID',
     'download=s',
     'repository=s'
 );
@@ -78,7 +77,6 @@ my %default = (
     'with-MASON' => 1,
     'with-CORE' => 1,
     'with-CLI' => 1,
-    'with-OPENID' => 0,
     'with-MAILGATE' => 1, 
     'with-DEV' => @RT_DEVEL_MODE@, 
     'with-STANDALONE' => @RT_STANDALONE@,
@@ -158,8 +156,7 @@ The following switches will tell the tool to check for specific dependencies
 	--with-modperl1		Libraries needed to support the modperl 1 handler
 	--with-modperl2		Libraries needed to support the modperl 2 handler
 
-	--with-dev		    Tools needed for RT development
-    --with-openid       Libraries needed to support OpenID logins
+	--with-dev		Tools needed for RT development
 
 You can also specify -v or --verbose to list the status of all dependencies,
 rather than just the missing ones.
@@ -307,16 +304,10 @@ DBD::Pg 1.43
 $deps{'SQLITE'} = [ text_to_hash( << '.') ];
 DBD::SQLite 1.00
 .
-$deps{'OPENID'} = [text_to_hash(<< '.')];
-Net::OpenID::Consumer
-LWPx::ParanoidAgent
-Cache::FileCache
-.
-
 
 if ($args{'download'}) {
 
-    dowoload_mods();
+    download_mods();
 }
 
 
