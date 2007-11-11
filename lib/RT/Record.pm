@@ -207,13 +207,13 @@ sub add_attribute {
 }
 
 
-=head2 Set_Attribute { Name, Description, Content }
+=head2 set_attribute { Name, Description, Content }
 
 Like add_attribute, but replaces all existing attributes with the same Name.
 
 =cut
 
-sub set_Attribute {
+sub set_attribute {
     my $self = shift;
     my %args = ( Name        => undef,
                  Description => undef,

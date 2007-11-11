@@ -716,7 +716,7 @@ sub create {
             return ( 0, 0, $self->loc( "Ticket could not be created due to an internal error"));
         }
          if ( $args{'DryRun'} ) {
-                 $RT::Handle->Rollback();
+                 $RT::Handle->rollback();
                  return ($self->id, $TransObj, $ErrStr);
              }
 

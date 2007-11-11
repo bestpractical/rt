@@ -193,7 +193,7 @@ function createCalendarLink(input) {
     var e = $(input);
     if (e) {
         var link = document.createElement('a');
-        link.setAttribute('href', '#');
+        link.set_attribute('href', '#');
 
         clickevent = function clickevent(e) { openCalWindow(input); return false; };
         if (! addEvent(link, "click", clickevent)) {

@@ -60,7 +60,7 @@ my @non_recipients = @{ $squelch{'EmailAddresses'} };
 % if ( $Object ) {
 <i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br />
 
-% foreach my $scrip (@{$Object->Scrips->Prepared}) {
+% foreach my $scrip (@{$Object->Scrips->prepared}) {
 % next unless $scrip->ActionObj->Action->isa('RT::ScripAction::SendEmail');
 <b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
 <&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name)&>[_1] [_2] with template [_3]</&>
@@ -177,7 +177,7 @@ unless ( $id && $txn ) {
 }
 
 my @recipients;
-foreach my $scrip ( @{ $txn->Scrips->Prepared } ) {
+foreach my $scrip ( @{ $txn->Scrips->prepared } ) {
     my $action = $scrip->ActionObj->Action;
     next unless $action->isa('RT::ScripAction::SendEmail');
 
@@ -198,7 +198,7 @@ my $Message = MakeMIMEEntity(
     Body    => $ARGS{'Content'},
 );
 
-my $TicketObj = RT::Ticket->new( $session{'CurrentUser'} );
+my $TicketObj = RT::Model::Ticket->new( $session{'CurrentUser'} );
 my ( $id, $txn, $msg ) = $TicketObj->create(
     Type            => $ARGS{'Type'} || 'ticket',
     Queue           => $ARGS{'Queue'},
@@ -222,7 +222,7 @@ unless ( $id && $txn ) {
 }
 
 my @recipients;
-foreach my $scrip ( @{ $txn->Scrips->Prepared } ) {
+foreach my $scrip ( @{ $txn->Scrips->prepared } ) {
     my $action = $scrip->ActionObj->Action;
     next unless $action->isa('RT::ScripAction::SendEmail');
 

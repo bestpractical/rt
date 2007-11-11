@@ -363,7 +363,7 @@ sub _FindScrips {
 
     # we call Count below, but later we always do search
     # so just do search and get count from results
-    $self->_DoSearch if $self->{'must_redo_search'};
+    $self->_do_search if $self->{'must_redo_search'};
 
     $RT::Logger->debug(
         "Found ". $self->count ." scrips for $args{'Stage'} stage"

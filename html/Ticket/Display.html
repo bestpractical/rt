@@ -161,7 +161,7 @@ if ($ARGS{'id'} eq 'new') {
         Abort("No permission to view ticket");
     }
     if ( $ARGS{'MarkAsSeen'} ) {
-        $TicketObj->set_Attribute(
+        $TicketObj->set_attribute(
             Name => 'User-'. $TicketObj->current_user->id .'-SeenUpTo',
             Content => $TicketObj->LastUpdated,
         );

@@ -126,7 +126,7 @@ sub set_Category {
     my $self = shift;
     my $category = shift;
     if ( defined $category && length $category ) {
-        return $self->set_Attribute(
+        return $self->set_attribute(
             Name    => 'Category',
             Content => $category,
         );

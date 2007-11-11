@@ -1632,7 +1632,7 @@ sub PreferredKey
         $prefkey = $keys[0]->{'Fingerprint'};
     }
 
-    $self->SetAttribute(Name => 'PreferredKey', Content => $prefkey);
+    $self->set_attribute(Name => 'PreferredKey', Content => $prefkey);
     return $prefkey;
 }
 

@@ -1,16 +1,18 @@
+
+
+use RT::Test;
 use Test::More  tests => '19';
 
 use strict;
 use warnings;
 
 use_ok('RT');
-use_ok('RT::Ticket');
-use RT::Test;
+use_ok('RT::Model::Ticket');
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
 
-RT->Config->Set( UseTransactionBatch => 1 );
+RT->Config->set( UseTransactionBatch => 1 );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';

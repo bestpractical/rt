@@ -497,13 +497,5 @@ sub trust_gnupg_key {
     return %res;
 }
 
-END {
-    if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
-        my $dbh =
-          _get_dbh( RT::Handle->DSN, $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD} );
-        RT::Handle->DropDatabase( $dbh, Force => 1 );
-        $dbh->disconnect;
-    }
-}
 
 1;

@@ -491,7 +491,7 @@ sub set_Sign {
     return ( 0, $self->loc('Permission Denied') )
         unless $self->current_user_has_right('AdminQueue');
 
-    my ($status, $msg) = $self->set_Attribute(
+    my ($status, $msg) = $self->set_attribute(
         Name        => 'Sign',
         Description => 'Sign outgoing messages by default',
         Content     => $value,
@@ -517,7 +517,7 @@ sub set_Encrypt {
     return ( 0, $self->loc('Permission Denied') )
         unless $self->current_user_has_right('AdminQueue');
 
-    my ($status, $msg) = $self->set_Attribute(
+    my ($status, $msg) = $self->set_attribute(
         Name        => 'Encrypt',
         Description => 'Encrypt outgoing messages by default',
         Content     => $value,

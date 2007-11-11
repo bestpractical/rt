@@ -4,29 +4,29 @@ use warnings;
 
 use Test::More tests => 68;
 use RT::Test;
-use RT::Action::SendEmail;
+use RT::ScripAction::SendEmail;
 use File::Temp qw(tempdir);
 
 RT::Test->set_mail_catcher;
 
-RT->Config->Set( LogToScreen => 'debug' );
-RT->Config->Set( LogStackTraces => 'error' );
+RT->Config->set( LogToScreen => 'debug' );
+RT->Config->set( LogStackTraces => 'error' );
 
 use_ok('RT::Crypt::GnuPG');
 
-RT->Config->Set( GnuPG =>
+RT->Config->set( GnuPG =>
     Enable => 1,
     OutgoingMessagesFormat => 'RFC',
 );
 
-RT->Config->Set( GnuPGOptions =>
+RT->Config->set( GnuPGOptions =>
     homedir => scalar tempdir( CLEANUP => 0 ),
     passphrase => 'rt-test',
     'no-permission-warning' => undef,
 );
 diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'};
 
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Regression',
@@ -46,8 +46,8 @@ ok $m->login, 'logged in';
 
 my $tid;
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    ($tid) = $ticket->Create(
+    my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+    ($tid) = $ticket->create(
         Subject   => 'test',
         Queue     => $queue->id,
     );

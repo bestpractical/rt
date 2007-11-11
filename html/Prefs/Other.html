@@ -90,7 +90,7 @@ my $UserObj = $session{'CurrentUser'}->UserObj;
 my $preferences = $UserObj->Preferences( RT->System );
 
 if ((defined $PreferredKey) && $PreferredKey ne $UserObj->FirstAttribute('PreferredKey')) {
-    my ($code, $msg) = $UserObj->SetAttribute(Name => 'PreferredKey', Content => $PreferredKey);
+    my ($code, $msg) = $UserObj->set_attribute(Name => 'PreferredKey', Content => $PreferredKey);
     push @results, loc('Preferred Key: [_1]', loc_fuzzy($msg));
 }
 

@@ -508,7 +508,7 @@ sub set_ValuesClass {
     if( $class eq 'RT::Model::CustomFieldValueCollection' ) {
         return $self->delete_attribute( 'ValuesClass' );
     }
-    return $self->set_Attribute( Name => 'ValuesClass', Content => $class );
+    return $self->set_attribute( Name => 'ValuesClass', Content => $class );
 }
 
 
@@ -1189,7 +1189,7 @@ sub _URLTemplate {
         unless ( $self->current_user_has_right('AdminCustomField') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
-        $self->set_Attribute( Name => $template_name, Content => $value );
+        $self->set_attribute( Name => $template_name, Content => $value );
         return ( 1, $self->loc('Updated') );
     } else {
         unless ( $self->id && $self->current_user_has_right('SeeCustomField') ) {

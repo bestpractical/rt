@@ -126,7 +126,7 @@ Autocompleter.Base.prototype = {
 
     this.observer = null;
     
-    this.element.setAttribute('autocomplete','off');
+    this.element.set_attribute('autocomplete','off');
 
     Element.hide(this.update);
 
