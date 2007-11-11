@@ -72,7 +72,7 @@
 <td><input type="text" size="50" name="<% $paramtag %>-Description" value="<% $value->Description %>" /></td>
 % if ( $CustomField->Type ne 'Combobox' ) {
 <td><input type="text" size="10" name="<% $paramtag %>-Category" value="<%
-    $value->Category || ''%>" /></td>
+    $value->Category || '' %>" /></td>
 % }
 </tr>
 % }

@@ -132,7 +132,7 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 <%loc('Total')%>
 </td>
 <td class="value collection-as-table">
-<%$total%>
+<%$total||''%>
 </td>
 </tr>
 

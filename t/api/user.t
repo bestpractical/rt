@@ -69,13 +69,9 @@ is ($u7->EmailAddress, '');
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 
 ok(my $user = RT::Model::User->new(RT->SystemUser));
@@ -90,13 +86,9 @@ is ($v2 ,1, "Set privileged suceeded ($m2");
 ok($user->Privileged, "User 'root' is privileged again");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok(my $u = RT::Model::User->new(RT->SystemUser));
 ok($u->load(1), "Loaded the first user");
@@ -104,13 +96,9 @@ is($u->PrincipalObj->ObjectId , 1, "user 1 is the first principal");
 is($u->PrincipalObj->PrincipalType, 'User' , "Principal 1 is a user, not a group");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $root = RT::Model::User->new(RT->SystemUser);
 $root->load('root');
@@ -340,8 +328,6 @@ ok($rqv, "Revoked the right successfully - $rqm");
 # have the privileged user try to create another user and fail the ACL check
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

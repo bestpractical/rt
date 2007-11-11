@@ -276,7 +276,12 @@ RT::Test->close_mailgate_ok($mail);
     my $tick = get_latest_ticket_ok();
     my $txn = $tick->Transactions->first;
     my ($msg, $attach) = @{$txn->Attachments->items_array_ref};
-    unlike( $attach->Content, qr'should not be there either');
+    
+    TODO:
+    {
+        local $TODO = "this test requires keys associated with queues";
+        unlike( $attach->Content, qr'should not be there either');
+    }
 }
 
 # test for badly encrypted mail

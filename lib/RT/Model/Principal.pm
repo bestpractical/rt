@@ -87,7 +87,8 @@ Returns undef, otherwise
 
 sub IsGroup {
     my $self = shift;
-    if ( $self->PrincipalType eq 'Group' ) {
+    if ( defined $self->PrincipalType && 
+            $self->PrincipalType eq 'Group' ) {
         return 1;
     }
     return undef;

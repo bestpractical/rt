@@ -52,7 +52,7 @@ SKIP: {
     my @links = $m->find_link(
         tag => 'a',
         url => 'http://wiki.bestpractical.com',
-        text => '[Open URL]',
+        text => 'Open URL',
     );
     ok( scalar @links, 'found clicky link' );
 }

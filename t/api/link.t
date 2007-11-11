@@ -8,8 +8,6 @@ use RT;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 
 use RT::Model::Link;
@@ -23,8 +21,6 @@ ok (UNIVERSAL::isa($link, 'RT::Record'));
 ok (UNIVERSAL::isa($link, 'Jifty::DBI::Record'));
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

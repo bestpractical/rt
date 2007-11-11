@@ -498,7 +498,7 @@ sub PrepareEmailUsingTemplate {
     return $template;
 }
 
-=head2 SendEmailUsingTemplate Template => '', Arguments => {}, To => '', Cc => '', Bcc => ''
+=head2 SendEmailUsingTemplate Template => '', Arguments => {}, From => CorrespondAddress, To => '', Cc => '', Bcc => ''
 
 Sends email using a template, takes name of template, arguments for it and recipients.
 
@@ -511,6 +511,7 @@ sub SendEmailUsingTemplate {
           To => undef,
           Cc => undef,
           Bcc => undef,
+          From => RT->Config->Get('CorrespondAddress'),
          InReplyTo => undef,
           @_
       );
@@ -625,7 +626,7 @@ sub ForwardTransaction {
     }
 
     $mail->head->set( $_ => $args{ $_ } )
-        foreach grep defined $args{$_}, qw(To Cc Bcc);
+        foreach grep defined $args{$_}, qw(To Cc Bcc From);
 
     $mail->attach(
         Type => 'message/rfc822',
@@ -694,6 +695,14 @@ sub SignEncrypt {
 
     my @bad_recipients;
     foreach my $line ( @status ) {
+        # if the passphrase fails, either you have a bad passphrase
+        # or gpg-agent has died.  That should get caught in Create and
+        # Update, but at least throw an error here
+        if (($line->{'Operation'}||'' eq 'PassphraseCheck')
+            && $line->{'Status'} =~ /^(?:BAD|MISSING)$/ ) {
+            $RT::Logger->error( "$line->{'Status'} PASSPHRASE: $line->{'Message'}" );
+            return 0;
+        }
         next unless ($line->{'Operation'}||'') eq 'RecipientsCheck';
         next if $line->{'Status'} eq 'DONE';
         $RT::Logger->error( $line->{'Message'} );

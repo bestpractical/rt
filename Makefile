@@ -53,7 +53,7 @@
 
 PERL			= 	/opt/local/bin/perl
 
-CONFIG_FILE_PATH	=	/Users/jesse/svk/3.999-DANGEROUS/etc
+CONFIG_FILE_PATH	=	/home/jesse/svk/3.999-DANGEROUS/etc
 CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_Config.pm
 SITE_CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_SiteConfig.pm
 
@@ -93,23 +93,23 @@ APACHECTL		=	/usr/sbin/apachectl
 DESTDIR			=	
 
 
-RT_PATH			=	/Users/jesse/svk/3.999-DANGEROUS
-RT_ETC_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/etc
-RT_BIN_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/bin
-RT_SBIN_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/sbin
-RT_LIB_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/lib
-RT_MAN_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/man
-RT_VAR_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/var
-RT_DOC_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/share/doc
-RT_LOCAL_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/local
-LOCAL_ETC_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/local/etc
-LOCAL_LIB_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/local/lib
-LOCAL_LEXICON_PATH	=	/Users/jesse/svk/3.999-DANGEROUS/local/po
-MASON_HTML_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/html
-MASON_LOCAL_HTML_PATH	=	/Users/jesse/svk/3.999-DANGEROUS/local/html
-MASON_DATA_PATH		=	/Users/jesse/svk/3.999-DANGEROUS/var/mason_data
-MASON_SESSION_PATH	=	/Users/jesse/svk/3.999-DANGEROUS/var/session_data
-RT_LOG_PATH	    =       /Users/jesse/svk/3.999-DANGEROUS/var/log
+RT_PATH			=	/home/jesse/svk/3.999-DANGEROUS
+RT_ETC_PATH		=	/home/jesse/svk/3.999-DANGEROUS/etc
+RT_BIN_PATH		=	/home/jesse/svk/3.999-DANGEROUS/bin
+RT_SBIN_PATH		=	/home/jesse/svk/3.999-DANGEROUS/sbin
+RT_LIB_PATH		=	/home/jesse/svk/3.999-DANGEROUS/lib
+RT_MAN_PATH		=	/home/jesse/svk/3.999-DANGEROUS/man
+RT_VAR_PATH		=	/home/jesse/svk/3.999-DANGEROUS/var
+RT_DOC_PATH		=	/home/jesse/svk/3.999-DANGEROUS/share/doc
+RT_LOCAL_PATH		=	/home/jesse/svk/3.999-DANGEROUS/local
+LOCAL_ETC_PATH		=	/home/jesse/svk/3.999-DANGEROUS/local/etc
+LOCAL_LIB_PATH		=	/home/jesse/svk/3.999-DANGEROUS/local/lib
+LOCAL_LEXICON_PATH	=	/home/jesse/svk/3.999-DANGEROUS/local/po
+MASON_HTML_PATH		=	/home/jesse/svk/3.999-DANGEROUS/html
+MASON_LOCAL_HTML_PATH	=	/home/jesse/svk/3.999-DANGEROUS/local/html
+MASON_DATA_PATH		=	/home/jesse/svk/3.999-DANGEROUS/var/mason_data
+MASON_SESSION_PATH	=	/home/jesse/svk/3.999-DANGEROUS/var/session_data
+RT_LOG_PATH	    =       /home/jesse/svk/3.999-DANGEROUS/var/log
 
 # RT_READABLE_DIR_MODE is the mode of directories that are generally meant
 # to be accessable

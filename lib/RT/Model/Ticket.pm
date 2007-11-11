@@ -200,7 +200,7 @@ sub load {
     }
 
     #If we have an integer URI, load the ticket
-    if ( $id =~ /^\d+$/ ) {
+    if (defined $id &&  $id =~ /^\d+$/ ) {
         my ($ticketid,$msg) = $self->load_by_id($id);
 
         unless ($self->id) {
@@ -281,7 +281,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
 Ticket links can be set up during create by passing the link type as a hask key and
 the ticket id to be linked to as a value (or a URI when linking to other objects).
-Multiple links of the same type can be Created by passing an array ref. For example:
+Multiple links of the same type can be created by passing an array ref. For example:
 
   Parent => 45,
   DependsOn => [ 15, 22 ],
@@ -322,6 +322,7 @@ sub create {
         Resolved           => undef,
         MIMEObj            => undef,
         _RecordTransaction => 1,
+        DryRun             => 0,
         @_
     );
 
@@ -540,7 +541,7 @@ sub create {
         $RT::Logger->crit( "Couldn't create a ticket: " . $ticket_message );
         Jifty->handle->rollback();
         return ( 0, 0,
-            $self->loc("Ticket could not be Created due to an internal error")
+            $self->loc("Ticket could not be created due to an internal error")
         );
     }
 
@@ -553,7 +554,7 @@ sub create {
         $RT::Logger->crit("Couldn't set EffectiveId: $msg\n");
         Jifty->handle->rollback;
         return ( 0, 0,
-            $self->loc("Ticket could not be Created due to an internal error")
+            $self->loc("Ticket could not be created due to an internal error")
         );
     }
 
@@ -564,7 +565,7 @@ sub create {
               . ". aborting Ticket creation." );
         Jifty->handle->rollback();
         return ( 0, 0,
-            $self->loc("Ticket could not be Created due to an internal error")
+            $self->loc("Ticket could not be created due to an internal error")
         );
     }
 
@@ -694,9 +695,10 @@ sub create {
 
         # {{{ Add a transaction for the create
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-            Type      => "Create",
-            TimeTaken => $args{'TimeWorked'},
-            MIMEObj   => $args{'MIMEObj'},
+            Type         => "Create",
+            TimeTaken    => $args{'TimeWorked'},
+            MIMEObj      => $args{'MIMEObj'},
+            CommitScrips => !$args{'DryRun'},
         );
         if ( $self->id && $Trans ) {
 
@@ -710,9 +712,13 @@ sub create {
             Jifty->handle->rollback();
 
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
-            $RT::Logger->error("Ticket couldn't be Created: $ErrStr");
-            return ( 0, 0, $self->loc( "Ticket could not be Created due to an internal error"));
+            $RT::Logger->error("Ticket couldn't be created: $ErrStr");
+            return ( 0, 0, $self->loc( "Ticket could not be created due to an internal error"));
         }
+         if ( $args{'DryRun'} ) {
+                 $RT::Handle->Rollback();
+                 return ($self->id, $TransObj, $ErrStr);
+             }
 
         Jifty->handle->commit();
         return ( $self->id, $TransObj->id, $ErrStr );
@@ -1052,7 +1058,7 @@ Type        One of Requestor, Cc, AdminCc
 PrinicpalId The RT::Model::Principal id of the user or group that's being added as a watcher
 
 Email       The email address of the new watcher. If a user with this 
-            email address can't be found, a new nonprivileged user will be Created.
+            email address can't be found, a new nonprivileged user will be created.
 
 If the watcher you\'re trying to set has an RT account, set the Owner paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
 
@@ -1405,7 +1411,6 @@ sub CcAddresses {
     unless ( $self->current_user_has_right('ShowTicket') ) {
         return undef;
     }
-
     return ( $self->Cc->MemberEmailAddressesAsString);
 
 }

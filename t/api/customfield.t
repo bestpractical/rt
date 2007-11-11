@@ -8,8 +8,6 @@ use RT;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 use_ok('RT::Model::CustomField');
 ok(my $cf = RT::Model::CustomField->new(RT->SystemUser));
@@ -40,13 +38,9 @@ ok(my ($bad_id, $bad_msg)=  $cf->create( Name => 'TestingCF-bad',
 is($bad_id , 0, 'Global custom field correctly decided to not create a cf with a bogus type ');
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok(my $cf = RT::Model::CustomField->new(RT->SystemUser));
 $cf->load(1);
@@ -57,13 +51,9 @@ ok (my ($delval, $delmsg) = $cf->deleteValue($val));
 ok ($delval,"Deleting a cf value: $delmsg");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok(my $cf = RT::Model::CustomField->new(RT->SystemUser));
 ok($cf->validate_Type('SelectSingle'));
@@ -71,8 +61,6 @@ ok($cf->validate_Type('SelectMultiple'));
 ok(!$cf->validate_Type('SelectFooMultiple'));
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

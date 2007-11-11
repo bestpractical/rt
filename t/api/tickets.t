@@ -8,8 +8,6 @@ use RT;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok (require RT::Model::TicketCollection);
 ok( my $testtickets = RT::Model::TicketCollection->new( RT->SystemUser ) );
@@ -18,13 +16,9 @@ ok( $testtickets->LimitStatus( value => 'deleted' ) );
 is( $testtickets->count , 0 );
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 # Test to make sure that you can search for tickets by requestor address and
 # by requestor name.
@@ -115,8 +109,6 @@ ok( $unlimittickets->find_all_rows );
 ok( $unlimittickets->count > 0, "unlimited tickets object should return tickets" );
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

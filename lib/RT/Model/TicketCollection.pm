@@ -1386,7 +1386,7 @@ sub order_by {
         }
         my ( $field, $subkey ) = split /\./, $row->{column}, 2;
         my $meta = $self->columns->{$field};
-        if ( $meta->[0] eq 'WATCHERFIELD' ) {
+        if ( defined $meta[0] &&  $meta->[0] eq 'WATCHERFIELD' ) {
             # cache alias as we want to use one alias per watcher type for sorting
             my $users = $self->{_sql_u_watchers_alias_for_sort}{ $meta->[1] };
             unless ( $users ) {
@@ -1394,7 +1394,7 @@ sub order_by {
                     = $users = ( $self->_Watcherjoin( $meta->[1] ) )[2];
             }
             push @res, { %$row, alias => $users, column => $subkey };
-       } elsif ( $meta->[0] =~ /customfield/i ) {
+       } elsif ( defined $meta->[0] && $meta->[0] =~ /customfield/i ) {
            my ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $subkey );
            my $cfkey = $cfid ? $cfid : "$queue.$field";
            my ($TicketCFs, $CFs) = $self->_CustomFieldjoin( $cfkey, $cfid, $field );

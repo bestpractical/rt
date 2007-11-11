@@ -59,8 +59,6 @@ RT::Interface::Web
 =cut
 
 
-use URI;
-
 use strict;
 use warnings;
 
@@ -372,7 +370,7 @@ sub CreateTicket {
     my @temp_squelch;
     foreach my $type (qw(Requestor Cc AdminCc)) {
         push @temp_squelch, map $_->address, Mail::Address->parse( $create_args{ $type } )
-            if grep $_ eq $type, @{ $ARGS{'SkipNotification'} || [] };
+            if grep $_ eq $type || $_ eq ($type.'s'), @{ $ARGS{'SkipNotification'} || [] };
 
     }
 
@@ -1561,6 +1559,7 @@ sub ProcessTicketLinks {
 
     #Merge if we need to
     if ( $ARGSRef->{ $Ticket->id . "-MergeInto" } ) {
+         $ARGSRef->{ $Ticket->Id . "-MergeInto" } =~ s/\s+//g;
         my ( $val, $msg ) =
           $Ticket->MergeInto( $ARGSRef->{ $Ticket->id . "-MergeInto" } );
         push @results, $msg;

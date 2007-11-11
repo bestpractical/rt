@@ -17,12 +17,6 @@ if ( $m->request_comp->attr_exists('AutoFlush') ) {
     $m->autoflush( $m->request_comp->attr('AutoFlush') );
 }
 
-# XXX: on a cold server (just after restart) people could have a principal object
-# in the session, as we deserialize it so we never call constructor of the principal
-# class, so the list of accessible fields is empty and we die with "Method xxx is
-# not implemented in RT::Model::Principal"
-{ my $tmp = RT::Model::Principal->new( RT->SystemUser ) }
-
 %ARGS = map {
 
     # if they've passed multiple values, they'll be an array. if they've

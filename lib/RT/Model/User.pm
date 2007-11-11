@@ -1082,6 +1082,12 @@ The response is cached. PrincipalObj should never ever change.
 
 sub PrincipalObj {
     my $self = shift;
+
+    unless ( $self->id ) {
+        $RT::Logger->error('User not found');
+        return;
+    }
+
     unless ( $self->{'PrincipalObj'} ) {
         my $obj = RT::Model::Principal->new( $self->current_user );
         $obj->load_by_id( $self->id );
@@ -1267,6 +1273,8 @@ sub current_user_has_right {
     my $right = shift;
     return ( $self->current_user->has_right(Right => $right, Object => RT->System) );
 }
+
+# }}}
 
 sub _PrefName {
     my $name = shift;
@@ -1592,6 +1600,41 @@ sub FriendlyName {
 }
 
 # }}}
+
+=head2 PreferredKey
+
+Returns the preferred key of the user. If none is set, then this will query
+GPG and set the preferred key to the maximally trusted key found (and then
+return it). Returns C<undef> if no preferred key can be found.
+
+=cut
+
+sub PreferredKey
+{
+    my $self = shift;
+    return undef unless RT->Config->Get('GnuPG')->{'Enable'};
+    my $prefkey = $self->FirstAttribute('PreferredKey');
+    return $prefkey->Content if $prefkey;
+
+    # we don't have a preferred key for this user, so now we must query GPG
+    require RT::Crypt::GnuPG;
+    my %res = RT::Crypt::GnuPG::GetKeysForEncryption($self->EmailAddress);
+    return undef unless defined $res{'info'};
+    my @keys = @{ $res{'info'} };
+    return undef if @keys == 0;
+
+    if (@keys == 1) {
+        $prefkey = $keys[0]->{'Fingerprint'};
+    }
+    else {
+        # prefer the maximally trusted key
+        @keys = sort { $b->{'TrustLevel'} <=> $a->{'TrustLevel'} } @keys;
+        $prefkey = $keys[0]->{'Fingerprint'};
+    }
+
+    $self->SetAttribute(Name => 'PreferredKey', Content => $prefkey);
+    return $prefkey;
+}
 
 sub BasicColumns {
     (

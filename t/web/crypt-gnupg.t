@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test; use Test::More tests => 80;
+use RT::Test; use Test::More tests => 94;
 
 use RT::ScripAction::SendEmail;
 
@@ -24,7 +24,8 @@ RT->Config->set( DefaultSearchResultFormat => qq{
 
 use File::Spec ();
 use Cwd;
-my $homedir = File::Spec->catdir( cwd(), qw(lib t data crypt-gnupg) );
+use File::Temp qw(tempdir);
+my $homedir = tempdir( CLEANUP => 1 );
 
 use_ok('RT::Crypt::GnuPG');
 
@@ -35,8 +36,18 @@ RT->Config->set( 'GnuPG',
 RT->Config->set( 'GnuPGOptions',
                  homedir => $homedir,
                  passphrase => 'recipient',
-                 'no-permission-warning' => undef);
+                  'no-permission-warning' => undef,
+                  'trust-model' => 'always');
 RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT::Test->import_gnupg_key('recipient@example.com', 'public');
+RT::Test->import_gnupg_key('recipient@example.com', 'secret');
+RT::Test->import_gnupg_key('general@example.com', 'public');
+RT::Test->import_gnupg_key('general@example.com', 'secret');
+RT::Test->import_gnupg_key('general@example.com.2', 'public');
+RT::Test->import_gnupg_key('general@example.com.2', 'secret');
+
+  ok(my $user = RT::User->new($RT::SystemUser));
+  ok($user->Load('root'), "Loaded user 'root'");
 
 ok(my $user = RT::Model::User->new(RT->SystemUser));
 ok($user->load('root'), "Loaded user 'root'");
@@ -378,6 +389,37 @@ is ($tick->Subject,
     "Nokey requestor",
     "Correct subject"
 );
+
+# test key selection
+my $key1 = "EC1E81E7DC3DB42788FB0E4E9FA662C06DE22FC2";
+my $key2 = "75E156271DCCF02DDD4A7A8CDF651FA0632C4F50";
+
+ok($user = RT::User->new($RT::SystemUser));
+ok($user->Load('root'), "Loaded user 'root'");
+is($user->PreferredKey, $key1, "preferred key is set correctly");
+$m->get("$baseurl/Prefs/Other.html");
+like($m->content, qr/Preferred key/, "preferred key option shows up in preference");
+
+# XXX: mech doesn't let us see the current value of the select, apparently
+like($m->content, qr/$key1/, "first key shows up in preferences");
+like($m->content, qr/$key2/, "second key shows up in preferences");
+like($m->content, qr/$key1.*?$key2/s, "first key shows up before the second");
+
+$m->form_number(3);
+$m->select("PreferredKey" => $key2);
+$m->submit;
+
+ok($user = RT::User->new($RT::SystemUser));
+ok($user->Load('root'), "Loaded user 'root'");
+is($user->PreferredKey, $key2, "preferred key is set correctly to the new value");
+
+$m->get("$baseurl/Prefs/Other.html");
+like($m->content, qr/Preferred key/, "preferred key option shows up in preference");
+
+# XXX: mech doesn't let us see the current value of the select, apparently
+like($m->content, qr/$key2/, "second key shows up in preferences");
+like($m->content, qr/$key1/, "first key shows up in preferences");
+like($m->content, qr/$key2.*?$key1/s, "second key (now preferred) shows up before the first");
 
 # test that the new fields work
 $m->get("$baseurl/Search/Simple.html?q=General");

@@ -6,8 +6,6 @@ use RT;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 use RT::Model::TicketCollection;
 use strict;
@@ -72,8 +70,6 @@ my $string = 'subject/content SQL test';
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

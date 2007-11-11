@@ -54,7 +54,7 @@ sub started_ok {
     require RT::Test::Web;
     if ( $existing_server ) {
         ok(1, "using existing server $existing_server");
-        warn $existing_server;
+        RT::Logger->warning( $existing_server);
         return ($existing_server, RT::Test::Web->new);
     }
         my $server = Jifty::Test->make_server;
@@ -249,7 +249,7 @@ sub set_rights {
         my @rights = ref $e->{'Right'}? @{ $e->{'Right'} }: ($e->{'Right'});
         foreach my $right ( @rights ) {
             my ($status, $msg) = $principal->GrantRight( %$e, Right => $right );
-            warn "$msg" unless $status;
+            $RT::Logger->warning($msg) unless $status;
         }
     }
     return 1;
@@ -362,13 +362,148 @@ sub file_content {
     diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
 
     open my $fh, "<:raw", $path
-        or die "couldn't open file '$path': $!";
+        or do { warn "couldn't open file '$path': $!"; return '' };
     my $content = do { local $/; <$fh> };
     close $fh;
 
     unlink $path if $args{'unlink'};
 
     return $content;
+}
+
+
+sub lsign_gnupg_key {
+    my $self = shift;
+    my $key = shift;
+
+    require RT::Crypt::GnuPG; require GnuPG::Interface;
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPGOptions');
+    $gnupg->options->hash_init(
+        RT::Crypt::GnuPG::_PrepareGnuPGOptions( %opt ),
+        meta_interactive => 0,
+    );
+
+    my %handle; 
+    my $handles = GnuPG::Handles->new(
+        stdin   => ($handle{'input'}   = new IO::Handle),
+        stdout  => ($handle{'output'}  = new IO::Handle),
+        stderr  => ($handle{'error'}   = new IO::Handle),
+        logger  => ($handle{'logger'}  = new IO::Handle),
+        status  => ($handle{'status'}  = new IO::Handle),
+        command => ($handle{'command'} = new IO::Handle),
+    );
+
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
+        my $pid = $gnupg->wrap_call(
+            handles => $handles,
+            commands => ['--lsign-key'],
+            command_args => [$key],
+        );
+        close $handle{'input'};
+        while ( my $str = readline $handle{'status'} ) {
+            if ( $str =~ /^\[GNUPG:\]\s*GET_BOOL sign_uid\..*/ ) {
+                print { $handle{'command'} } "y\n";
+            }
+        }
+        waitpid $pid, 0;
+    };
+    my $err = $@;
+    close $handle{'output'};
+
+    my %res;
+    $res{'exit_code'} = $?;
+    foreach ( qw(error logger status) ) {
+        $res{$_} = do { local $/; readline $handle{$_} };
+        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
+        close $handle{$_};
+    }
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    if ( $err || $res{'exit_code'} ) {
+        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
+    }
+    return %res;
+}
+
+sub trust_gnupg_key {
+    my $self = shift;
+    my $key = shift;
+
+    require RT::Crypt::GnuPG; require GnuPG::Interface;
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPGOptions');
+    $gnupg->options->hash_init(
+        RT::Crypt::GnuPG::_PrepareGnuPGOptions( %opt ),
+        meta_interactive => 0,
+    );
+
+    my %handle; 
+    my $handles = GnuPG::Handles->new(
+        stdin   => ($handle{'input'}   = new IO::Handle),
+        stdout  => ($handle{'output'}  = new IO::Handle),
+        stderr  => ($handle{'error'}   = new IO::Handle),
+        logger  => ($handle{'logger'}  = new IO::Handle),
+        status  => ($handle{'status'}  = new IO::Handle),
+        command => ($handle{'command'} = new IO::Handle),
+    );
+
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        local @ENV{'LANG', 'LC_ALL'} = ('C', 'C');
+        my $pid = $gnupg->wrap_call(
+            handles => $handles,
+            commands => ['--edit-key'],
+            command_args => [$key],
+        );
+        close $handle{'input'};
+
+        my $done = 0;
+        while ( my $str = readline $handle{'status'} ) {
+            if ( $str =~ /^\[GNUPG:\]\s*\QGET_LINE keyedit.prompt/ ) {
+                if ( $done ) {
+                    print { $handle{'command'} } "quit\n";
+                } else {
+                    print { $handle{'command'} } "trust\n";
+                }
+            } elsif ( $str =~ /^\[GNUPG:\]\s*\QGET_LINE edit_ownertrust.value/ ) {
+                print { $handle{'command'} } "5\n";
+            } elsif ( $str =~ /^\[GNUPG:\]\s*\QGET_BOOL edit_ownertrust.set_ultimate.okay/ ) {
+                print { $handle{'command'} } "y\n";
+                $done = 1;
+            }
+        }
+        waitpid $pid, 0;
+    };
+    my $err = $@;
+    close $handle{'output'};
+
+    my %res;
+    $res{'exit_code'} = $?;
+    foreach ( qw(error logger status) ) {
+        $res{$_} = do { local $/; readline $handle{$_} };
+        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
+        close $handle{$_};
+    }
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    if ( $err || $res{'exit_code'} ) {
+        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
+    }
+    return %res;
+}
+
+END {
+    if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
+        my $dbh =
+          _get_dbh( RT::Handle->DSN, $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD} );
+        RT::Handle->DropDatabase( $dbh, Force => 1 );
+        $dbh->disconnect;
+    }
 }
 
 1;

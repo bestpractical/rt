@@ -55,7 +55,7 @@ my %actions = (
     },
     url => sub {
         my %args = @_;
-        my $result = qq{[<a target="new" href="$args{value}">}. loc('open URL') .qq{</a>]};
+        my $result = qq{[<a target="new" href="$args{value}">}. loc('Open URL') .qq{</a>]};
         return $args{value} . qq{ <span class="clickylink">$result</span>};
     },
     url_overwrite => sub {
@@ -140,13 +140,13 @@ while ( $$content =~ /($regexp)/gsio ) {
     if ( $skipped_len > 0 ) {
         my $plain = $escaper->( substr( $$content, $pos, $skipped_len ) );
         substr( $$content, $pos, $skipped_len ) = $plain;
-        $pos += ( $skipped_len = length($plain) );
+        $pos += length($plain);
     }
-    {
-        my $plain = $handle->( %ARGS, value => $match );
-        substr( $$content, $pos, length($match) ) = $plain;
-        pos($$content) = ( $pos += length($plain) );
-    }
+
+    my $plain = $handle->( %ARGS, value => $match );
+    substr( $$content, $pos, length($match) ) = $plain;
+    pos($$content) = ( $pos += length($plain) );
+
 }
 substr( $$content, $pos ) = $escaper->( substr( $$content, $pos ) ) unless $pos == length $$content;
 

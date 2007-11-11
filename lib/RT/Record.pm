@@ -763,6 +763,7 @@ use vars '%LINKDIRMAP';
 
 sub Update {
     my $self = shift;
+    my $class = ref($self) || $self;
 
     my %args = (
         ARGSRef         => undef,
@@ -1495,7 +1496,7 @@ sub _AddCustomFieldValue {
             my $is_the_same = 1;
             if ( defined $args{'Value'} ) {
                 $is_the_same = 0 unless defined $old_content
-                    && lc $old_value eq lc $args{'Value'};
+                    && lc $old_content eq lc $args{'Value'};
             } else {
                 $is_the_same = 0 if defined $old_content;
             }

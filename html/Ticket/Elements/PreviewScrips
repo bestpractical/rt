@@ -50,7 +50,54 @@ $TicketObj => undef
 
 </%args>
 <%init>
+my %squelch = $m->comp('SELF:SquelchRecipients', %ARGS);
+my $Object = $squelch{'Object'};
+my @non_recipients = @{ $squelch{'EmailAddresses'} };
 
+</%init>
+<h2><&|/l&>This message will be sent to...</&></h2>
+
+% if ( $Object ) {
+<i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br />
+
+% foreach my $scrip (@{$Object->Scrips->Prepared}) {
+% next unless $scrip->ActionObj->Action->isa('RT::ScripAction::SendEmail');
+<b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
+<&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name)&>[_1] [_2] with template [_3]</&>
+<br />
+%foreach my $type qw(To Cc Bcc) {
+%my @addresses =  $scrip->ActionObj->Action->$type();
+<ul>
+%foreach my $addr (@addresses) {
+<li> <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-SquelchMailTo" value="<%$addr->address%>" /> <%$addr->address%>
+% }
+</ul>
+% }
+% if (RT->Config->Get('PreviewScripMessages')) {
+<textarea cols="80" rows="5">
+<%$scrip->ActionObj->TemplateObj->MIMEObj->as_string%>
+</textarea>
+% }
+% }
+% }
+<br />
+
+<h2><&|/l&>Messages about this ticket will not be sent to...</&></h2>
+<i><&|/l&>(Check boxes to enable notifications to the listed recipients)</&></i>
+<br />
+<ul>
+% foreach my $recipient (@non_recipients) {
+<li><input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-UnsquelchMailTo" value="<%$recipient->Content%>" />
+<% $recipient->Content %>
+% }
+</ul>
+<& /Elements/Submit, Value => 'UpdatePreview', Label => loc('Save changes')&>
+
+<%METHOD SquelchRecipients>
+<%ARGS>
+$TicketObj => undef
+</%ARGS>
+<%INIT>
 my $arg = 'Ticket-'.$TicketObj->id.'-SquelchMailTo';
 my @squelchto = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
 
@@ -93,42 +140,96 @@ unless ( $Transaction ) {
 }
 
 
-my @non_recipients = $TicketObj->SquelchMailTo;
-</%init>
-<h2><&|/l&>This message will be sent to...</&></h2>
+return (Object => $Object, EmailAddresses => [$TicketObj->SquelchMailTo]);
+</%INIT>
+</%METHOD>
 
-% if ( $Object ) {
-<i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br />
+<%METHOD GetRecipients>
+<%ARGS>
+$TicketObj
+</%ARGS>
+<%INIT>
+my $action;
+if ( ( $ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq 'response' )
+    || ( $ARGS{'Action'} && $ARGS{'Action'} eq 'Respond' ) )
+{
+    $action = 'Correspond';
+}
+else {
+    $action = 'Comment';
+}
 
-% foreach my $scrip (@{$Object->Scrips->prepared}) {
-% next unless $scrip->ActionObj->Action->isa('RT::ScripAction::SendEmail');
-<b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
-<&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name)&>[_1] [_2] with template [_3]</&>
-<br />
-%foreach my $type qw(To Cc Bcc) {
-%my @addresses =  $scrip->ActionObj->Action->$type();
-<ul>
-%foreach my $addr (@addresses) {
-<li> <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-SquelchMailTo" value="<%$addr->address%>" /> <%$addr->address%>
-% }
-</ul>
-% }
-% if (RT->Config->Get('PreviewScripMessages')) {
-<textarea cols="80" rows="5">
-<%$scrip->ActionObj->TemplateObj->MIMEObj->as_string%>
-</textarea>
-% }
-% }
-% }
-<br />
+my $Message = MakeMIMEEntity(
+    Subject => $ARGS{'UpdateSubject'},
+    Body    => $ARGS{'UpdateContent'},
+);
 
-<h2><&|/l&>Messages about this ticket will not be sent to...</&></h2>
-<i><&|/l&>(Check boxes to enable notifications to the listed recipients)</&></i>
-<br />
-<ul>
-% foreach my $recipient (@non_recipients) {
-<li><input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-UnsquelchMailTo" value="<%$recipient->Content%>" />
-<% $recipient->Content %>
-% }
-</ul>
-<& /Elements/Submit, value => 'UpdatePreview', Label => loc('Save changes')&>  
+my ( $id, $msg, $txn ) = $TicketObj->$action(
+    CcMessageTo  => $ARGS{'UpdateCc'},
+    BccMessageTo => $ARGS{'UpdateBcc'},
+    MIMEObj      => $Message,
+    TimeTaken    => $ARGS{'UpdateTimeWorked'},
+    DryRun       => 1
+);
+unless ( $id && $txn ) {
+    $RT::Logger->error("Couldn't fire '$action' action: $msg");
+    return ();
+}
+
+my @recipients;
+foreach my $scrip ( @{ $txn->Scrips->Prepared } ) {
+    my $action = $scrip->ActionObj->Action;
+    next unless $action->isa('RT::ScripAction::SendEmail');
+
+    foreach my $type qw(To Cc Bcc) {
+        push @recipients, $action->$type();
+    }
+}
+return @recipients;
+</%INIT>
+</%METHOD>
+
+<%METHOD GetRecipientsOnCreate>
+<%INIT>
+my $action;
+my $Message = MakeMIMEEntity(
+    Subject => $ARGS{'Subject'},
+    Cc => $ARGS{'Cc'},
+    Body    => $ARGS{'Content'},
+);
+
+my $TicketObj = RT::Ticket->new( $session{'CurrentUser'} );
+my ( $id, $txn, $msg ) = $TicketObj->create(
+    Type            => $ARGS{'Type'} || 'ticket',
+    Queue           => $ARGS{'Queue'},
+    Owner           => $ARGS{'Owner'},
+    Requestor       => $ARGS{'Requestors'},
+    Cc              => $ARGS{'Cc'},
+    AdminCc         => $ARGS{'AdminCc'},
+    InitialPriority => $ARGS{'InitialPriority'},
+    FinalPriority   => $ARGS{'FinalPriority'},
+    TimeLeft        => $ARGS{'TimeLeft'},
+    TimeEstimated   => $ARGS{'TimeEstimated'},
+    TimeWorked      => $ARGS{'TimeWorked'},
+    Subject         => $ARGS{'Subject'},
+    Status          => $ARGS{'Status'},
+    MIMEObj      => $Message,
+    DryRun       => 1
+);
+unless ( $id && $txn ) {
+    $RT::Logger->error("Couldn't fire '$action' action: $msg");
+    return ();
+}
+
+my @recipients;
+foreach my $scrip ( @{ $txn->Scrips->Prepared } ) {
+    my $action = $scrip->ActionObj->Action;
+    next unless $action->isa('RT::ScripAction::SendEmail');
+
+    foreach my $type qw(To Cc Bcc) {
+        push @recipients, $action->$type();
+    }
+}
+return @recipients;
+</%INIT>
+</%METHOD>

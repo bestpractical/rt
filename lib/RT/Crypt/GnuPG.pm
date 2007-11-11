@@ -56,7 +56,7 @@ use RT::EmailParser ();
 
 =head1 NAME
 
-RT::Crypt::GnuPG - encryt/decrypt and sign/verify email messages with the GNU Privacy Guard (GPG)
+RT::Crypt::GnuPG - encrypt/decrypt and sign/verify email messages with the GNU Privacy Guard (GPG)
 
 =head1 DESCRIPTION
 
@@ -67,7 +67,7 @@ as well as the decryption and verification of incoming email.
 
 You can control the configuration of this subsystem from RT's configuration file.
 Some options are available via the web interface, but to enable this functionality, you
-MUST start in the congiration file.
+MUST start in the configuration file.
 
 There are two hashes, GnuPG and GnuPGOptions in the configuration file. The 
 first one controls RT specific options. It enables you to enable/disable facility 
@@ -125,10 +125,13 @@ This format doesn't take advantage of MIME, but some mail clients do
 not support GPG/MIME.
 
 We sign text parts using clear signatures. For each attachments another
-attchment with a signature is added with '.sig' extension.
+attachment with a signature is added with '.sig' extension.
 
 Encryption of text parts is implemented using inline format, other parts
 are replaced with attachments with the filename extension '.pgp'.
+
+This format is discouraged because modern mail clients typically don't support
+it well.
 
 =back
 
@@ -149,6 +152,9 @@ To disable these option just comment them out or delete them from the hash
         # 'commented-option' => 'value or undef',
     );
 
+B<NOTE> that options may contain '-' character and such options B<MUST> be
+quoted, otherwise you can see quite cryptic error 'gpg: Invalid option "--0"'.
+
 =over
 
 =item --homedir
@@ -162,21 +168,35 @@ Other utilities may be used as well.
 In a standard installation, access to this directory should be granted to
 the web server user which is running RT's web interface, but if you're running
 cronjobs or other utilities that access RT directly via API and may generate
-encrypted/signed notifications then  theu sers you execute these scripts under
+encrypted/signed notifications then the users you execute these scripts under
 must have access too. 
 
 However, granting access to the dir to many users makes your setup less secure,
-some features, such as auto-import of keys, may not be avialable if you do not.
+some features, such as auto-import of keys, may not be available if you do not.
 To enable this features and suppress warnings about permissions on
 the dir use --no-permission-warning.
 
 =item --digest-algo
 
-This option is required in advance when RFC format for outgoung messages is
-used. We can not get default algorith from gpg program so RT uses 'SHA1' by
+This option is required in advance when RFC format for outgoing messages is
+used. We can not get default algorithm from gpg program so RT uses 'SHA1' by
 default. You may want to override it. You can use MD5, SHA1, RIPEMD160,
 SHA256 or other, however use `gpg --version` command to get information about
-supported algorithms by your gpg. These algoriths are listed as hash-functions.
+supported algorithms by your gpg. These algorithms are listed as hash-functions.
+
+=item --use-agent
+
+This option lets you use GPG Agent to cache the passphrase of RT's key. See
+L<http://www.gnupg.org/documentation/manuals./gnupg/Invoking-GPG_002dAGENT.html>
+for information about GPG Agent.
+
+=item --passphrase
+
+This option lets you set the passphrase of RT's key directly. This option is
+special in that it isn't passed directly to GPG, but is put into a file that
+GPG then reads (which is more secure). The downside is that anyone who has read
+access to your RT_SiteConfig.pm file can see the passphrase, thus we recommend
+the --use-agent option instead.
 
 =item other
 
@@ -193,7 +213,7 @@ at the bottom and two checkboxes to choose default actions.
 
 =head2 Handling incoming messages
 
-To enable handling of encryped and signed message in the RT you should add
+To enable handling of encrypted and signed message in the RT you should add
 'Auth::GnuPG' mail plugin.
 
     set(@MailPlugins, 'Auth::MailFrom', 'Auth::GnuPG', ...other filter...);
@@ -223,10 +243,12 @@ his public key and won't be able to send him encrypted content. There are severa
 reasons why RT can't use a key. However, the actual reason is not sent to the user, 
 but sent to RT owner using 'Error to RT owner: public key'.
 
-The possible reasons: "Not Found", "Ambigious specification", "Wrong
+The possible reasons: "Not Found", "Ambiguous specification", "Wrong
 key usage", "Key revoked", "Key expired", "No CRL known", "CRL too
 old", "Policy mismatch", "Not a secret key", "Key not trusted" or
 "No specific reason given".
+
+Due to limitations of GnuPG, it's impossible to encrypt to an untrusted key.
 
 =head3 Private key doesn't exist
 
@@ -243,7 +265,7 @@ Template 'Error: bad GnuPG data' used to inform the user that a
 message he sent has invalid data and can not be handled.
 
 There are several reasons for this error, but most of them are data
-corruptio or absence of expected information.
+corruption or absence of expected information.
 
 In this template C<@Messages> array is available and contains list
 of error messages.
@@ -469,8 +491,9 @@ sub SignEncryptRFC3156 {
     }
     if ( $args{'Encrypt'} ) {
         my %seen;
-        $gnupg->options->push_recipients( $_ )
-            foreach grep !$seen{ $_ }++, map $_->address,
+        $gnupg->options->push_recipients( $_ ) foreach 
+            map UseKeyForEncryption($_) || $_,
+            grep !$seen{ $_ }++, map $_->address,
             map Mail::Address->parse( $entity->head->get( $_ ) ),
             qw(To Cc Bcc);
 
@@ -591,8 +614,9 @@ sub _SignEncryptTextInline {
     }
 
     if ( $args{'Encrypt'} ) {
-        $gnupg->options->push_recipients( $_ )
-            foreach @{ $args{'Recipients'} || [] };
+        $gnupg->options->push_recipients( $_ ) foreach 
+            map UseKeyForEncryption($_) || $_,
+            @{ $args{'Recipients'} || [] };
     }
 
     my %res;
@@ -680,8 +704,9 @@ sub _SignEncryptAttachmentInline {
 
     my $entity = $args{'Entity'};
     if ( $args{'Encrypt'} ) {
-        $gnupg->options->push_recipients( $_ )
-            foreach @{ $args{'Recipients'} || [] };
+        $gnupg->options->push_recipients( $_ ) foreach
+            map UseKeyForEncryption($_) || $_,
+            @{ $args{'Recipients'} || [] };
     }
 
     my %res;
@@ -1217,7 +1242,7 @@ All hashes have Operation, Status and Message elements.
 
 =item Operation
 
-Classification of operations gnupg perfoms. Now we have suppoort
+Classification of operations gnupg performs. Now we have support
 for Sign, Encrypt, Decrypt, Verify, PassphraseCheck, RecipientsCheck and Data
 values.
 
@@ -1554,6 +1579,120 @@ sub _PrepareGnuPGOptions {
     return %res;
 }
 
+{ my %key;
+# no args -> clear
+# one arg -> return preferred key
+# many -> set
+sub UseKeyForEncryption {
+    unless ( @_ ) {
+        %key = ();
+    } elsif ( @_ > 1 ) {
+        %key = (%key, @_);
+        $key{ lc($_) } = delete $key{ $_ } foreach grep lc ne $_, keys %key;
+    } else {
+        return $key{ $_[0] };
+    }
+    return ();
+} }
+
+=head2 GetKeysForEncryption
+
+Takes identifier and returns keys suitable for encryption.
+
+B<Note> that keys for which trust level is not set are
+also listed.
+
+=cut
+
+sub GetKeysForEncryption {
+    my $key_id = shift;
+    my %res = GetKeysInfo( $key_id, 'public' );
+    return %res if $res{'exit_code'};
+    return %res unless $res{'info'};
+
+    my @keys = @{ $res{'info'} };
+    $res{'info'} = [];
+
+    foreach my $key ( @keys ) {
+        # skip disabled keys
+        next if $key->{'Capabilities'} =~ /D/;
+        # skip keys not suitable for encryption
+        next unless $key->{'Capabilities'} =~ /e/i;
+        # skip disabled, expired, revoke and keys with no trust,
+        # but leave keys with unknown trust level
+        next if $key->{'TrustLevel'} < 0;
+
+        push @{ $res{'info'} }, $key;
+    }
+    delete $res{'info'} unless @{ $res{'info'} };
+    return %res;
+}
+
+sub CheckRecipients {
+    my @recipients = (@_);
+
+    my ($status, @issues) = (1, ());
+
+    my %seen;
+    foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
+        my %res = GetKeysForEncryption( $address );
+        if ( $res{'info'} && @{ $res{'info'} } == 1 && $res{'info'}[0]{'TrustLevel'} > 0 ) {
+            # good, one suitable and trusted key 
+            next;
+        }
+        my $user = RT::User->new( $RT::SystemUser );
+        $user->LoadByEmail( $address );
+        # it's possible that we have no User record with the email
+        $user = undef unless $user->id;
+
+        if ( my $fpr = UseKeyForEncryption( $address ) ) {
+            if ( $res{'info'} && @{ $res{'info'} } ) {
+                next if
+                    grep lc $_->{'Fingerprint'} eq lc $fpr,
+                    grep $_->{'TrustLevel'} > 0,
+                    @{ $res{'info'} };
+            }
+
+            $status = 0;
+            my %issue = (
+                EmailAddress => $address,
+                $user? (User => $user) : (),
+                Keys => undef,
+            );
+            $issue{'Message'} = "Selected key either is not trusted or doesn't exist anymore."; #loc
+            push @issues, \%issue;
+            next;
+        }
+
+        my $prefered_key;
+        $prefered_key = $user->PreferredKey if $user;
+        #XXX: prefered key is not yet implemented...
+
+        # classify errors
+        $status = 0;
+        my %issue = (
+            EmailAddress => $address,
+            $user? (User => $user) : (),
+            Keys => undef,
+        );
+
+        unless ( $res{'info'} && @{ $res{'info'} } ) {
+            # no key
+            $issue{'Message'} = "There is no key suitable for encryption."; #loc
+        }
+        elsif ( @{ $res{'info'} } == 1 && !$res{'info'}[0]{'TrustLevel'} ) {
+            # trust is not set
+            $issue{'Message'} = "There is one suitable key, but trust level is not set."; #loc
+        }
+        else {
+            # multiple keys
+            $issue{'Message'} = "There are several keys suitable for encryption."; #loc
+        }
+        push @issues, \%issue;
+    }
+    return ($status, @issues);
+}
+
 sub GetPublicKeyInfo {
     return GetKeyInfo(shift, 'public');
 }
@@ -1576,6 +1715,7 @@ sub GetKeysInfo {
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'with-colons'} = undef; # parseable format
+    $opt{'fingerprint'} = undef; # show fingerprint
     $opt{'fixed-list-mode'} = undef; # don't merge uid with keys
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
@@ -1613,7 +1753,8 @@ sub GetKeysInfo {
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
     $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    $RT::Logger->error( "Tried to get $type key '$email'.\n". $res{'logger'} )
+        if $res{'logger'} && $?;
     if ( $@ || $? ) {
         $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
         return %res;
@@ -1627,6 +1768,8 @@ sub GetKeysInfo {
 sub ParseKeysInfo {
     my @lines = @_;
 
+    my %gpg_opt = RT->Config->Get('GnuPGOptions');
+
     my @res = ();
     foreach my $line( @lines ) {
         chomp $line;
@@ -1637,12 +1780,25 @@ sub ParseKeysInfo {
             @info{ qw(
                 TrustChar KeyLength Algorithm Key
                 Created Expire Empty OwnerTrustChar
-                Empty Empty KeyCapabilities Other
+                Empty Empty Capabilities Other
             ) } = split /:/, $line, 12;
-            $info{'Trust'} = _ConvertTrustChar( $info{'TrustChar'} );
-            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
-            $info{'TrustLevel'} = _ConvertTrustLevel( $info{'TrustChar'} );
-            $info{'OwnerTrustLevel'} = _ConvertTrustLevel( $info{'OwnerTrustChar'} );
+
+            # workaround gnupg's wierd behaviour, --list-keys command report calculated trust levels
+            # for any model except 'always', so you can change models and see changes, but not for 'always'
+            # we try to handle it in a simple way - we set ultimate trust for any key with trust
+            # level >= 0 if trust model is 'always'
+            my $always_trust;
+            $always_trust = 1 if exists $gpg_opt{'always-trust'};
+            $always_trust = 1 if exists $gpg_opt{'trust-model'} && $gpg_opt{'trust-model'} eq 'always';
+            @info{qw(Trust TrustTerse TrustLevel)} = 
+                _ConvertTrustChar( $info{'TrustChar'} );
+            if ( $always_trust && $info{'TrustLevel'} >= 0 ) {
+                @info{qw(Trust TrustTerse TrustLevel)} = 
+                    _ConvertTrustChar( 'u' );
+            }
+
+            @info{qw(OwnerTrust OwnerTrustTerse OwnerTrustLevel)} = 
+                _ConvertTrustChar( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
@@ -1652,10 +1808,10 @@ sub ParseKeysInfo {
             @info{ qw(
                 Empty KeyLength Algorithm Key
                 Created Expire Empty OwnerTrustChar
-                Empty Empty KeyCapabilities Other
+                Empty Empty Capabilities Other
             ) } = split /:/, $line, 12;
-            $info{'OwnerTrust'} = _ConvertTrustChar( $info{'OwnerTrustChar'} );
-            $info{'OwnerTrustLevel'} = _ConvertTrustLevel( $info{'OwnerTrustChar'} );
+            @info{qw(OwnerTrust OwnerTrustTerse OwnerTrustLevel)} = 
+                _ConvertTrustChar( $info{'OwnerTrustChar'} );
             $info{ $_ } = _ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
@@ -1676,51 +1832,69 @@ sub ParseKeysInfo {
 }
 
 {
-    my %mapping = (
-        o => 'Unknown (this value is new to the system)', #loc
+    my %verbose = (
         # deprecated
-        d   => "The key has been disabled", #loc
-        r   => "The key has been revoked", #loc
-        e   => "The key has expired", #loc
-        '-' => 'Unknown (no trust value assigned)', #loc
+        d   => [
+            "The key has been disabled", #loc
+            "key disabled", #loc
+            "-2"
+        ],
+
+        r   => [
+            "The key has been revoked", #loc
+            "key revoked", #loc
+            -3,
+        ],
+
+        e   => [ "The key has expired", #loc
+            "key expired", #loc
+            '-4',
+        ],
+
+        n   => [ "Don't trust this key at all", #loc
+            'none', #loc
+            -1,
+        ],
+
         #gpupg docs says that '-' and 'q' may safely be treated as the same value
-        q   => 'Unknown (no trust value assigned)', #loc
-        n   => "Don't trust this key at all", #loc
-        m   => "There is marginal trust in this key", #loc
-        f   => "The key is fully trusted", #loc
-        u   => "The key is ultimately trusted", #loc
-    );
+        '-' => [
+            'Unknown (no trust value assigned)', #loc
+            'not set',
+            0,
+        ],
+        q   => [
+            'Unknown (no trust value assigned)', #loc
+            'not set',
+            0,
+        ],
+        o   => [
+            'Unknown (this value is new to the system)', #loc
+            'unknown',
+            0,
+        ],
 
-    my %level = (
-        d   => 0,
-        r   => 0,
-        e   => 0,
-        n   => 0,
-
-        # err on the side of caution
-        o   => 0,
-        '-' => 0,
-        q   => 0,
-
-        m   => 2,
-        f   => 3,
-        u   => 4,
+        m   => [
+            "There is marginal trust in this key", #loc
+            'marginal', #loc
+            1,
+        ],
+        f   => [
+            "The key is fully trusted", #loc
+            'full', #loc
+            2,
+        ],
+        u   => [
+            "The key is ultimately trusted", #loc
+            'ultimate', #loc
+            3,
+        ],
     );
 
     sub _ConvertTrustChar {
         my $value = shift;
-        return $mapping{'-'} unless $value;
-
+        return @{ $verbose{'-'} } unless $value;
         $value = substr $value, 0, 1;
-        return $mapping{ $value } || $mapping{'o'};
-    }
-
-    sub _ConvertTrustLevel {
-        my $value = shift;
-        return $level{'-'} unless $value;
-
-        $value = substr $value, 0, 1;
-        return $level{ $value } || $level{'o'};
+        return @{ $verbose{ $value } || $verbose{'o'} };
     }
 }
 
@@ -1843,6 +2017,31 @@ sub ImportKey {
         $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
     }
     return %res;
+}
+
+# signs the input message, to make sure we have a useable passphrase
+# the first argument MUST be the email address of the signer
+# returns a true value if all went well
+sub DrySign {
+    my $from = shift;
+    my @message = @_;
+
+    my $mime = MIME::Entity->build(
+        Type    => "multipart/mixed",
+        From    => $from,
+        To      => 'nobody@localhost',
+        Subject => "dry run",
+        Data    => \@message,
+    );
+
+    my %res = SignEncrypt(
+        Sign    => 1,
+        Encrypt => 0,
+        Entity  => $mime,
+        Signer  => $from,
+    );
+
+    return $res{exit_code} == 0;
 }
 
 1;

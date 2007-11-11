@@ -34,13 +34,9 @@ my $bug = grep $_->id == $g->id, @{$groups->items_array_ref};
 ok (!$bug, "didn't find group");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $u = RT::Model::User->new(RT->SystemUser);
 my ($id, $msg) = $u->create( Name => 'Membertests'. $$ );
@@ -61,13 +57,9 @@ is ($groups->count , 1,"found the 1 group - " . $groups->count);
 is ($groups->first->id , $g->id, "it's the right one");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
     no warnings qw/redefine once/;
 
 my $q = RT::Model::Queue->new(RT->SystemUser);
@@ -146,8 +138,6 @@ is($groups->count, 1, "RTxGroupRight found for RTxObj2");
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

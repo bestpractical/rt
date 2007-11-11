@@ -431,7 +431,7 @@ Make sure that the queue specified is a valid queue name
 
 sub validate_Queue {
     my $self = shift;
-    my $id = shift;
+    my $id = shift || '';
 
     return undef unless defined $id;
     # 0 means "Global" null would _not_ be ok.
@@ -733,9 +733,23 @@ Set this custom field's type and maximum values as a composite value
 sub set_TypeComposite {
     my $self = shift;
     my $composite = shift;
+
+    my $old = $self->TypeComposite;
+
     my ($type, $max_values) = split(/-/, $composite, 2);
-    $self->set_Type($type);
-    $self->set_MaxValues($max_values);
+    if ( $type ne $self->Type ) {
+        my ($status, $msg) = $self->set_Type( $type );
+        return ($status, $msg) unless $status;
+    }
+    if ( ($max_values || 0) != ($self->MaxValues || 0) ) {
+        my ($status, $msg) = $self->set_MaxValues( $max_values );
+        return ($status, $msg) unless $status;
+    }
+    return 1, $self->loc(
+        "Type changed from '[_1]' to '[_2]'",
+        $self->FriendlyTypeComposite( $old ),
+        $self->FriendlyTypeComposite( $composite ),
+    );
 }
 
 =head2 SetLookupType
@@ -765,7 +779,7 @@ Returns a composite value composed of this object's type and maximum values
 
 sub TypeComposite {
     my $self = shift;
-    join('-', $self->Type || '', $self->MaxValues || '');
+    return join '-', ($self->Type || ''), ($self->MaxValues || 0);
 }
 
 =head2 TypeComposites
@@ -978,10 +992,9 @@ and returns a boolean; returns true if the Pattern is empty.
 
 sub MatchPattern {
     my $self = shift;
-    my $regex = $self->Pattern || '';
+    my $regex = $self->Pattern or return 1;
 
-    return 1 unless length $regex;
-    return ($_[0] =~ $regex);
+    return (($_[0] || '') =~ $regex);
 }
 
 

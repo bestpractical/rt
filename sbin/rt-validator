@@ -73,7 +73,7 @@ C<RT::Shredder>
 use strict;
 use Getopt::Long;
 
-### after: use lib qw(/Users/jesse/svk/3.999-DANGEROUS/lib);
+### after: use lib qw(/home/jesse/svk/3.999-DANGEROUS/lib);
 use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
 
 use RT::Shredder;

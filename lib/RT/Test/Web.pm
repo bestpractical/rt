@@ -69,13 +69,19 @@ sub goto_ticket {
 sub goto_create_ticket {
     my $self = shift;
     my $queue = shift;
-    unless ( ref $queue ) {
+
+    my $id;
+    if ( ref $queue ) {
+        $id = $queue->id;
+    } elsif ( $queue =~ /^\d+$/ ) {
+        $id = $queue;
+    } else {
         die "not yet implemented";
     }
 
     $self->get('/');
     $self->form_name('CreateTicketInQueue');
-    $self->select( 'Queue', $queue->id );
+    $self->select( 'Queue', $id );
     $self->submit;
 
     return 1;

@@ -193,8 +193,6 @@ is ($t1->Requestors->MembersObj->count, 2);
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $root = RT::Model::User->new(RT->SystemUser);
 $root->load('root');
@@ -221,13 +219,9 @@ is($give-> NewValue , $root->id , "Stolen from root");
 is($give->OldValue , RT->SystemUser->id , "Stolen by the systemuser");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $tt = RT::Model::Ticket->new(RT->SystemUser);
 my ($id, $tid, $msg)= $tt->create(Queue => 'general',
@@ -246,8 +240,6 @@ ok(!$id,$msg);
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

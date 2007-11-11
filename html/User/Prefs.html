@@ -160,6 +160,8 @@
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormRightColumn' );
 </td>
 </tr>
+
+
 <tr>
 
 
@@ -176,6 +178,7 @@
 </td>
 
 </tr>
+
 </table>
 
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormEnd' );
@@ -229,7 +232,7 @@ if ($UserObj->id) {
     push (@results,@fieldresults);
 
 
-# {{{ Deal with special fields: Privileged, Enabled and Password
+# {{{ Deal with special fields: Privileged, Enabled, and Password
 if  ( ($SetPrivileged) and ( $Privileged != $UserObj->Privileged) ) {
 my  ($code, $msg) = $UserObj->set_Privileged($Privileged);
      push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));

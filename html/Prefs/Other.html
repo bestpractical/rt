@@ -68,7 +68,19 @@
 </&>
 % }
 
-<& /Elements/Submit, Name => 'Update', value => loc('Save changes') &>
+% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+<&|/Widgets/TitleBox, title => loc( 'Cryptography' ) &>
+Preferred key: <& /Elements/SelectKey, EmailAddress => $UserObj->EmailAddress, Default => $UserObj->PreferredKey &>
+</&>
+% }
+
+% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+<&|/Widgets/TitleBox, title => loc( 'Cryptography' ) &>
+Preferred key: <& /Elements/SelectKey, EmailAddress => $UserObj->EmailAddress, Default => $UserObj->PreferredKey &>
+</&>
+% }
+
+<& /Elements/Submit, Name => 'Update', Label => loc('Save changes') &>
 </form>
 <%INIT>
 my @results;
@@ -76,6 +88,11 @@ my $title = loc("Other preferences");
 
 my $UserObj = $session{'CurrentUser'}->UserObj;
 my $preferences = $UserObj->Preferences( RT->System );
+
+if ((defined $PreferredKey) && $PreferredKey ne $UserObj->FirstAttribute('PreferredKey')) {
+    my ($code, $msg) = $UserObj->SetAttribute(Name => 'PreferredKey', Content => $PreferredKey);
+    push @results, loc('Preferred Key: [_1]', loc_fuzzy($msg));
+}
 
 if ( $Update ) {
     foreach my $option( RT->Config->Options ) {
@@ -109,4 +126,5 @@ my $localize_meta = sub {
 <%ARGS>
 $Update => 0,
 $User   => undef,
+$PreferredKey => undef,
 </%ARGS>

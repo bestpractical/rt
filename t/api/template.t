@@ -29,8 +29,6 @@ $t2->load($t->id);
 ok($t2->QueueObj->id, "Got the template's queue objet");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

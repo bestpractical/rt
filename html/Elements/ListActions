@@ -53,6 +53,12 @@
   </ul>
 </&>
 <%init>
+
+if ( ref( $session{'Actions'} ) eq 'ARRAY' ) {
+    unshift @actions, @{ $session{'Actions'} };
+}
+delete $session{'Actions'};
+
 # XXX: run callbacks per row really crazy idea
 @actions =
     grep $_,

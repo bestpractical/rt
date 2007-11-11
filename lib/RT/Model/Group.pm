@@ -1000,7 +1000,7 @@ between ACL failure and non membership.
 
 sub has_member_recursively {
     my $self    = shift;
-    my $principal = shift;
+    my $principal = shift || '';
 
     unless (UNIVERSAL::isa($principal,'RT::Model::Principal')) {
         $RT::Logger->crit("Group::has_member_recursively was called with an argument that".
@@ -1265,9 +1265,12 @@ The response is cached. PrincipalObj should never ever change.
 
 sub PrincipalObj {
     my $self = shift;
-    unless ($self->{'PrincipalObj'} &&
-            ($self->{'PrincipalObj'}->ObjectId == $self->id) &&
-            ($self->{'PrincipalObj'}->PrincipalType eq 'Group')) {
+     unless ( defined $self->{'PrincipalObj'} &&
+              defined $self->{'PrincipalObj'}->ObjectId &&
+              ($self->{'PrincipalObj'}->ObjectId == $self->Id) &&
+             (defined $self->{'PrincipalObj'}->PrincipalType && 
+                 $self->{'PrincipalObj'}->PrincipalType eq 'Group')) {
+
 
             $self->{'PrincipalObj'} = RT::Model::Principal->new($self->current_user);
             $self->{'PrincipalObj'}->load_by_cols('ObjectId' => $self->id,

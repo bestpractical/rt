@@ -227,14 +227,14 @@
 <&| /Widgets/TitleBox, title => loc('Comments about this user') &>
 <textarea class="comments" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments%></textarea>
 </&>
-%if ($UserObj->Privileged) {
+%if (!$Create && $UserObj->Privileged) {
 <br />
 <&| /Widgets/TitleBox, title => loc('Signature') &>
 <textarea class="signature" cols="80" rows="5" name="Signature" wrap="hard"><%$UserObj->Signature%></textarea>
 </&>
 % }
 
-% if ( my $email = $UserObj->EmailAddress ) {
+% if ( RT->Config->Get('GnuPG')->{'Enable'} && (my $email = $UserObj->EmailAddress )) {
 <& /Admin/Elements/ShowKeyInfo, EmailAddress => $email &>
 % }
 
@@ -259,8 +259,9 @@ if ($Create) {
 } 
 else {
 
-    $current_tab = 'Admin/Users/Modify.html?id='.$id;
-    if ($id eq 'new') {
+    if ($id =~ /^\d+$/) { 
+        $current_tab = 'Admin/Users/Modify.html?id='.$id;
+    } elsif ($id eq 'new') {
 	( $val, $msg ) = $UserObj->create(
 	    Name                  => $Name,
 	    EmailAddress          => $ARGS{'EmailAddress'},
@@ -384,7 +385,7 @@ unless ( $UserObj->id && $UserObj->Disabled ) {
     $EnabledChecked ="CHECKED";
 }
 
-if ($UserObj->Privileged()) {  
+if (!$Create && $UserObj->Privileged()) {  
     $PrivilegedChecked = "CHECKED";
 }
 

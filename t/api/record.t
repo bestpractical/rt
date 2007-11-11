@@ -8,19 +8,13 @@ use RT;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok (require RT::Record);
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $ticket = RT::Model::Ticket->new(RT->SystemUser);
 my $group = RT::Model::Group->new(RT->SystemUser);
@@ -28,13 +22,9 @@ is($ticket->ObjectTypeStr, 'Ticket', "Ticket returns correct typestring");
 is($group->ObjectTypeStr, 'Group', "Group returns correct typestring");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $t1 = RT::Model::Ticket->new(RT->SystemUser);
 my ($id, $trans, $msg) = $t1->create(Subject => 'DepTest1', Queue => 'general');
@@ -76,8 +66,6 @@ ok($rid, $rmsg);
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

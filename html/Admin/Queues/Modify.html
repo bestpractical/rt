@@ -124,7 +124,7 @@ if ($Create) {
     $current_tab = 'Admin/Queues/Modify.html?Create=1';
     $title = loc("Create a queue");
 } else {
-    if ( $id eq 'new' ) {
+    if ( defined $id && $id eq 'new' ) {
         my ($val, $msg) = $QueueObj->create( Name => $Name );
         Abort("$msg") unless $val;
         delete $session{'create_in_queues'};

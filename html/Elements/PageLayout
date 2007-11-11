@@ -168,10 +168,6 @@ if ( defined $current_toptab ) {
     }
 }
 
-unless ( defined $AppName ) {
-    $AppName = loc("RT for [_1]", RT->Config->Get('rtname'));
-}
-
 my ($menu_depth, $almost_last, $page_tabs);
 
 if (RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} ) ne '3.4-compat') {
@@ -235,5 +231,4 @@ $tabs => undef
 $actions => undef
 $subactions => undef
 $title => $m->callers(-1)->path
-$AppName => undef
 </%ARGS>

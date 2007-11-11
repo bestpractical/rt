@@ -8,20 +8,14 @@ use RT;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 use_ok ('RT::I18N');
 ok(RT::I18N->Init);
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok(my $chinese = RT::I18N->get_handle('zh_tw'));
 ok(UNIVERSAL::can($chinese, 'maketext'));
@@ -33,8 +27,6 @@ ok(UNIVERSAL::can($en, 'maketext'));
 is($en->encoding , 'utf-8', "The encoding ".$en->encoding." is 'utf-8'");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

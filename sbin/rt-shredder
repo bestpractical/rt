@@ -110,7 +110,7 @@ L<RT::Shredder>
 use strict;
 use warnings FATAL => 'all';
 
-use lib ("/Users/jesse/svk/3.999-DANGEROUS/local/lib", "/Users/jesse/svk/3.999-DANGEROUS/lib");
+use lib ("/home/jesse/svk/3.999-DANGEROUS/local/lib", "/home/jesse/svk/3.999-DANGEROUS/lib");
 
 use RT::Shredder ();
 use Getopt::Long qw(GetOptions);

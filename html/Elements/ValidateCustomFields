@@ -69,7 +69,7 @@ while ( my $CF = $CustomFields->next ) {
     } elsif ( defined $CF->Type && $CF->Type =~ /text/i ) {
         @values = ($value);
     } else {
-        @values = split /\r*\n/, $value || '';
+        @values = split /\r*\n/, ($value || '');
     }
     @values = grep $_ ne '',
         map {

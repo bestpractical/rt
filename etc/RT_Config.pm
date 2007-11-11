@@ -316,9 +316,12 @@ set( %GnuPG,
 );
 
 # Options of GnuPG program
+# If you override this in your RT_SiteConfig, you should be sure
+# to include a homedir setting
+# NOTE that options with '-' character MUST be quoted.
 
 set(%GnuPGOptions,
-    homedir => '/Users/jesse/svk/3.999-DANGEROUS/var/data/gpg',
+    homedir => '/home/jesse/svk/3.999-DANGEROUS/var/data/gpg',
 
 # URL of a keyserver
 #    keyserver => 'hkp://subkeys.pgp.net',
@@ -360,7 +363,7 @@ set($LogToScreen    , 'error');
 # direct file logging.
 
 set($LogToFile      , undef);
-set($LogDir, '/Users/jesse/svk/3.999-DANGEROUS/var/log');
+set($LogDir, '/home/jesse/svk/3.999-DANGEROUS/var/log');
 set($LogToFileNamed , "rt.log");    #log to rt.log
 
 # If set to a log level then logging will include stack

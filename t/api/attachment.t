@@ -48,8 +48,6 @@ is ($#headers, 2, "testing a bunch of singline multiple headers" );
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

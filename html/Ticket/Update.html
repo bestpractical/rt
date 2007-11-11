@@ -51,6 +51,7 @@
     Title=> $title &>
     
 % $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $TicketObj);
+<& /Elements/ListActions, actions => \@results &>
 
 <form action="Update.html" name="TicketUpdate"
     method="post" enctype="multipart/form-data">
@@ -58,6 +59,9 @@
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
+
+<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
+
 <table border="0">
 
 <tr><td align="right"><&|/l&>Status</&>:</td>
@@ -240,12 +244,58 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 }
 # }}}
 
+my @results;
+my @cannot_sign_as;
+my @gnupg_keys_issues;
+
+if (RT->Config->Get('GnuPG')->{'Enable'}) {
+    require RT::Crypt::GnuPG;
+}
+
+if ( $ARGS{'SubmitTicket'} ) {
+
+    # check to see if we have a good passphrase
+    if ( $ARGS{'Sign'} ) {
+        my $address = $ARGS{'UpdateType'} eq "private"
+            ? ( $TicketObj->QueueObj->CommentAddress
+                || RT->Config->Get('CommentAddress') )
+            : ( $TicketObj->QueueObj->CorrespondAddress
+                || RT->Config->Get('CorrespondAddress') );
+        unless ( RT::Crypt::GnuPG::DrySign($address, "x") ) {
+            push @cannot_sign_as, $address;
+            $checks_failure = 1;
+        }
+    }
+
+    if ( $ARGS{'Encrypt'} ) {
+
+        # skip any email addresses that we won't be sending mail to
+        my %squelch = $m->comp(
+                        '/Ticket/Elements/PreviewScrips:SquelchRecipients',
+                        %ARGS, TicketObj => $TicketObj
+                    );
+        my %seen = map { lc($_) => 1 } @{ $squelch{'EmailAddresses'} };
+
+        my @recipients = grep {!$seen{lc $_}} $m->comp(
+            '/Ticket/Elements/PreviewScrips:GetRecipients',
+            %ARGS, TicketObj => $TicketObj
+        );
+
+        RT::Crypt::GnuPG::UseKeyForEncryption(
+            map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
+            grep $ARGS{$_} && /^UseKey-/,
+            keys %ARGS
+        );
+        my $status;
+        ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
+        $checks_failure = 1 unless $status;
+    }
+}
+
 if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
     $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'BeforeDisplay' );
     return $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
 }
-
-
 
 </%INIT>
 

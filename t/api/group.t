@@ -8,8 +8,6 @@ use RT;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 # {{{ Tests
 ok (require RT::Model::Group);
@@ -88,13 +86,9 @@ is($group_3->has_member_recursively($principal_2), undef, "group 3 has member 2 
 # }}}
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok(my $u = RT::Model::Group->new(RT->SystemUser));
 ok($u->load(4), "Loaded the first user");
@@ -102,8 +96,6 @@ is($u->PrincipalObj->ObjectId , 4, "user 4 is the fourth principal");
 is($u->PrincipalObj->PrincipalType , 'Group' , "Principal 4 is a group");
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

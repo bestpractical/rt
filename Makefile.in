@@ -148,7 +148,11 @@ BINARIES		=	$(DESTDIR)/$(RT_MODPERL_HANDLER) \
 				$(DESTDIR)/$(RT_SPEEDYCGI_HANDLER) \
 				$(DESTDIR)/$(RT_FASTCGI_HANDLER) \
 				$(DESTDIR)/$(RT_WIN32_FASTCGI_HANDLER)
-SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/
+SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/rt-dump-database \
+				$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database \
+				$(DESTDIR)/$(RT_SBIN_PATH)/rt-test-dependencies \
+				$(DESTDIR)/$(RT_SBIN_PATH)/rt-clean-sessions \
+				$(DESTDIR)/$(RT_SBIN_PATH)/rt-shredder
 
 # }}}
 
@@ -298,6 +302,11 @@ fixperms:
 	chown $(BIN_OWNER) $(BINARIES)
 	chgrp $(RTGROUP) $(BINARIES)
 	chmod 0755  $(BINARIES)
+
+	# Make the system binaries executable also
+	chown $(BIN_OWNER) $(SYSTEM_BINARIES)
+	chgrp $(RTGROUP) $(SYSTEM_BINARIES)
+	chmod 0755  $(SYSTEM_BINARIES)
 
 	# Make the web ui readable by all. 
 	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)/$(MASON_HTML_PATH) \

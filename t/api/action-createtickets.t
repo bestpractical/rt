@@ -8,8 +8,6 @@ use RT;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok (require RT::ScripAction::CreateTickets);
 use_ok('RT::Model::Scrip');
@@ -239,8 +237,6 @@ foreach my $id ( sort keys %expected ) {
 }
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

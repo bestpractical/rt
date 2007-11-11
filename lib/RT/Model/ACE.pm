@@ -676,7 +676,7 @@ Returns a tuple of  (RT::Model::Principal, PrincipalType)  for the principal we 
 sub _CanonicalizePrincipal {
     my $self       = shift;
     my $princ_id   = shift;
-    my $princ_type = shift || 'Group';;
+    my $princ_type = shift || 'Group';
 
     my $princ_obj = RT::Model::Principal->new(RT->SystemUser);
     $princ_obj->load($princ_id);

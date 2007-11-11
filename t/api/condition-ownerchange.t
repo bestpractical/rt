@@ -8,8 +8,6 @@ use RT;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $q = RT::Model::Queue->new(RT->SystemUser);
 $q->create(Name =>'ownerChangeTest');
@@ -50,8 +48,6 @@ is ($ticket->Priority , '24', "Ticket priority is set right");
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 1;

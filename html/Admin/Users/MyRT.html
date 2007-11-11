@@ -71,7 +71,8 @@
 % }
 
 <%init>
-my $current_tab = 'Admin/Users/MyRT.html?id='.$id;
+my $current_tab;
+$current_tab = 'Admin/Users/MyRT.html?id='.$id if ($id);
 my $UserObj = new RT::Model::User($session{'CurrentUser'});
 $UserObj->load($id) || Abort("Couldn't load user '$id'");
 my $title = loc("RT at a glance for the user [_1]", $UserObj->Name);
@@ -128,5 +129,5 @@ $m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1 )
 
 </%init>
 <%ARGS>
-$id => undef
+$id => ''
 </%ARGS>

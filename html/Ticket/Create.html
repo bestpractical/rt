@@ -57,6 +57,8 @@
 <input type="hidden" class="hidden" name="id" value="new" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 
+<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
+
 <div id="Ticket-Create-basics">
 <a name="basics"></a>
 <&| /Widgets/TitleBox, title => loc("Create a new ticket") &>
@@ -312,16 +314,52 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
     delete $session{'Attachments'};
 }
 
+my $checks_failure = 0;
+my @cannot_sign_as;
+my @gnupg_keys_issues;
 
-# }}}
+if (RT->Config->Get('GnuPG')->{'Enable'}) {
+    require RT::Crypt::GnuPG;
+}
+
+if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
+
+    # check to see if we have a good passphrase
+    if ( $ARGS{'Sign'} ) {
+        my $address = $QueueObj->CorrespondAddress
+            || RT->Config->Get('CorrespondAddress');
+        unless ( RT::Crypt::GnuPG::DrySign($address, "x") ) {
+            push @cannot_sign_as, $address;
+            $checks_failure = 1;
+        }
+    }
+
+    if ( $ARGS{'Encrypt'} ) {
+        my @recipients = $m->comp(
+            '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
+            %ARGS
+        );
+
+        RT::Crypt::GnuPG::UseKeyForEncryption(
+            map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
+            grep $ARGS{$_} && /^UseKey-/,
+            keys %ARGS
+        );
+
+        my $status;
+        ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
+        $checks_failure = 1 unless $status;
+    }
+}
+
 
 if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
-    if ($ValidCFs) {
+    if ( $ValidCFs && !$checks_failure ) {
         $m->comp('Display.html', %ARGS);
         $RT::Logger->crit("After display call; error is $@");
         $m->abort();
     }
-    else {
+    elsif ( !$ValidCFs ) {
         # Invalid CFs
         while (my $CF = $CFs->next) {
             my $msg = $m->notes('InvalidField-' . $CF->id) or next;

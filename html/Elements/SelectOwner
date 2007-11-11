@@ -49,8 +49,11 @@
 %if ($DefaultValue) {
 <option <% !$Default ? "SELECTED" : '' %> value=""><%$DefaultLabel%></option>
 %}
+
+
+% $Default = 0 unless defined $Default && $Default =~ /^\d+$/;
 %foreach my $User ( @users)  {
-<option <% ($Default && $User->id == $Default) ? "SELECTED" : ''%>
+<option <% ( $User->id == $Default) ? "SELECTED" : ''%>
 %if ($ValueAttribute eq 'id') {
     value="<%$User->id%>"
 %} elsif ($ValueAttribute eq 'Name') {

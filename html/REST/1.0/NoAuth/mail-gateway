@@ -63,7 +63,7 @@ $m->error_format('text');
 my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway( \%ARGS );
 if ( $status == 1 ) {
   $m->out('ok');
-  if ( $Ticket->id ) {
+  if ( $Ticket &&  $Ticket->id ) {
     $m->out( 'Ticket: '  . ($Ticket->id             || '') );
     $m->out( 'Queue: '   . ($Ticket->QueueObj->Name || '') );
     $m->out( 'Owner: '   . ($Ticket->OwnerObj->Name || '') );
