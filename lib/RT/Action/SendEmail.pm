@@ -164,16 +164,20 @@ sub Prepare {
     # We should never have to set the MIME-Version header
     $self->SetHeader( 'MIME-Version', '1.0' );
 
+    # For security reasons, we only send out text/* mails.
+    my $content_type = $MIMEObj->mime_type;
+    $content_type =~ s/;.*//;
+    $content_type = 'text/plain' unless ( $content_type =~ m{^text/} );
+
     # try to convert message body from utf-8 to $RT::EmailOutputEncoding
-    $self->SetHeader( 'Content-Type', 'text/plain; charset="utf-8"' );
+    $self->SetHeader( 'Content-Type', $content_type.'; charset="utf-8"' );
 
     # fsck.com #5959: Since RT sends 8bit mail, we should say so.
     $self->SetHeader( 'Content-Transfer-Encoding','8bit');
 
-
     RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, $RT::EmailOutputEncoding,
         'mime_words_ok' );
-    $self->SetHeader( 'Content-Type', 'text/plain; charset="' . $RT::EmailOutputEncoding . '"' );
+    $self->SetHeader( 'Content-Type', $content_type.'; charset="' . $RT::EmailOutputEncoding . '"' );
 
     # Build up a MIME::Entity that looks like the original message.
     $self->AddAttachments() if ( $MIMEObj->head->get('RT-Attach-Message') );
