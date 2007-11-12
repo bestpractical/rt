@@ -402,7 +402,7 @@ sub AddAttachments {
         # Don't attach anything blank
         next unless ( $attach->ContentLength );
 
-# We want to make sure that we don't include the attachment that's being sued as the "Content" of this message"
+# We want to make sure that we don't include the attachment that's being used as the "Content" of this message.
         next
           if ( $transaction_content_obj
             && $transaction_content_obj->Id == $attach->Id
