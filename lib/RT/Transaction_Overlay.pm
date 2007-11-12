@@ -272,14 +272,15 @@ sub Message {
 =head2 Content PARAMHASH
 
 If this transaction has attached mime objects, returns the body of the first
-text/plain, text/html or message/* part.  Otherwise, returns undef.
+textual part (as defined in RT::I18N::IsTextualContentType).  Otherwise,
+returns undef.
 
 Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message 
 at $args{'Wrap'}.  $args{'Wrap'} defaults to 70.
 
 If $args{'Type'} is set to C<text/html>, plain texts are upgraded to HTML.
-Otherwise, HTML texts are downgraded to plain text.  If $args{'Type'} is missing,
-it defaults to the value of C<$RT::Transaction::PreferredContentType>.
+Otherwise, HTML texts are downgraded to plain text.  If $args{'Type'} is
+missing, it defaults to the value of C<$RT::Transaction::PreferredContentType>.
 
 =cut
 
@@ -375,14 +376,12 @@ sub ContentObj {
     # Get the set of toplevel attachments to this transaction.
     my $Attachment = $self->Attachments->First();
 
-    # If it's a text/plain, text/html or message/* part, just return the body.
-    my $wanted_mime_types = qr{^(?:text/plain$|text/html$|message/)}i;
-    if ( $Attachment->ContentType() =~ $wanted_mime_types ) {
+    # If it's a textual part, just return the body.
+    if ( RT::I18N::IsTextualContentType($Attachment->ContentType) ) {
         return ($Attachment);
     }
 
-    # If it's a multipart object, first try returning the first
-    # text/plain part.
+    # If it's a multipart object, first try returning the first text/plain part.
 
     elsif ( $Attachment->ContentType() =~ '^multipart/' ) {
         my $plain_parts = $Attachment->Children();
@@ -394,13 +393,12 @@ sub ContentObj {
         }
 
 
-        # If that fails, return the first text/plain, text/html or message/* part
-        # which has some content.
+        # If that fails, return the first textual part which has some content.
 
         else {
             my $all_parts = $self->Attachments();
             while ( my $part = $all_parts->Next ) {
-                if (( $part->ContentType() =~ $wanted_mime_types ) &&  $part->Content()  ) {
+                if ( ( RT::I18N::IsTextualContentType($part->ContentType) ) and ( $part->Content() ne '' ) ) {
                     return ($part);
                 }
             }
