@@ -153,7 +153,7 @@ sub encoding { 'utf-8' }
 
 =head2 SetMIMEEntityToUTF8 $entity
 
-An utility method which will try to convert entity body into utf8.
+An utility function which will try to convert entity body into utf8.
 It's now a wrap-up of SetMIMEEntityToEncoding($entity, 'utf-8').
 
 =cut
@@ -164,16 +164,37 @@ sub SetMIMEEntityToUTF8 {
 
 # }}}
 
+# {{{ IsTextualContentType
+
+=head2 IsTextualContentType $type
+
+An utility function that determines whether $type is I<textual>, meaning
+that it can sensibly be converted to Unicode text.
+
+Currently, it returns true iff $type matches this regular expression
+(case-insensitively):
+
+    ^(?:text/(?:plain|html)|message/rfc822)\b
+
+# }}}
+
+=cut
+
+sub IsTextualContentType {
+    my $type = shift;
+    ($type =~ m{^(?:text/(?:plain|html)|message/rfc822)\b}i) ? 1 : 0;
+}
+
 # {{{ SetMIMEEntityToEncoding
 
 =head2 SetMIMEEntityToEncoding $entity, $encoding
 
-An utility method which will try to convert entity body into specified
+An utility function which will try to convert entity body into specified
 charset encoding (encoded as octets, *not* unicode-strings).  It will
 iterate all the entities in $entity, and try to convert each one into
 specified charset if whose Content-Type is 'text/plain'.
 
-This method doesn't return anything meaningful.
+This function doesn't return anything meaningful.
 
 =cut
 
@@ -205,11 +226,9 @@ sub SetMIMEEntityToEncoding {
 
     # If this is a textual entity, we'd need to preserve its original encoding
     $head->add( "X-RT-Original-Encoding" => $charset )
-	if $head->mime_attr('content-type.charset') or $head->mime_type =~ /^text/;
+	if $head->mime_attr('content-type.charset') or IsTextualContentType($head->mime_type);
 
-
-    return unless ( $head->mime_type =~ qr{^(text/plain|message/rfc822)$}i  );
-    
+    return unless IsTextualContentType($head->mime_type);
 
     my $body = $entity->bodyhandle;
 
