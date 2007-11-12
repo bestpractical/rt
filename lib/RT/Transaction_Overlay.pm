@@ -381,11 +381,12 @@ sub ContentObj {
         return ($Attachment);
     }
 
-    # If it's a multipart object, first try returning the first text/plain part.
+    # If it's a multipart object, first try returning the first part with preferred
+    # MIME type ('text/plain' by default).
 
     elsif ( $Attachment->ContentType() =~ '^multipart/' ) {
         my $plain_parts = $Attachment->Children();
-        $plain_parts->ContentType( VALUE => 'text/plain' );
+        $plain_parts->ContentType( VALUE => ($PreferredContentType || 'text/plain') );
 
         # If we actully found a part, return its content
         if ( $plain_parts->First && $plain_parts->First->Content ne '' ) {
