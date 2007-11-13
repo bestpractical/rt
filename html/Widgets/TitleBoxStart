@@ -64,8 +64,6 @@ $title => ''
 $title_class => ''
 $titleright_href => undef
 $titleright => undef
-$contentbg => "#dddddd"
-$color => "#336699"
 $id => ''
 $hideable => 1
 </%ARGS>
