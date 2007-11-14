@@ -18,11 +18,10 @@
 <%INIT>
 if ($session{'CurrentUser'}->HasRight( Right => 'ShowArticle',
 				       Object => $RT::FM::System )) {
-        $tabs->{D} = { title => loc('Search Articles'),
-                         path => 'SelfService/RTFM/Article/Search.html',
-                       }
+        $actions->{C} = { html => $m->scomp('/SelfService/Elements/SearchArticle') };
 }
 </%INIT>
 <%ARGS>
 $tabs => {}
+$actions => {}
 </%ARGS>
