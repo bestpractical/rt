@@ -19,12 +19,38 @@
 <& /SelfService/Elements/Header, Title => loc('Search Articles') &>
 
 <table>
+<form action="<%$RT::WebPath%>/SelfService/Article/Search.html">
 <tr>
 <td><&|/l&>Search for RTFM articles matching</&></td>
 <td><input size=20 name="RTFM_Content" /></td>
+<td><input type="submit" value="Search"></td>
+</tr>
+</form>
+
+<tr>
+<td>&nbsp;</td>
+<td>
+% if ($RTFM_Content) {
+%   if ($articles_basics->Count || $articles_content->Count) {
+<&|/l,$RTFM_Content&>Articles matching [_1]</&>
+%   } else {
+<&|/l,$RTFM_Content&>No Articles match [_1]</&>
+%   }
+% }
+</td>
 </tr>
 
+% my %dedupe_articles;
+% while (my $article = $articles_content->Next) {
+%   $dedupe_articles{$article->Id}++;
+<tr>
+<td>&nbsp;</td>
+<td><a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%><a></td>
+</tr>
+% }
+
 % while (my $article = $articles_basics->Next) {
+%   next if $dedupe_articles{$article->Id};
 <tr>
 <td>&nbsp;</td>
 <td><a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%><a></td>
@@ -34,8 +60,7 @@
 <%init>
 use RT::FM::ArticleCollection;
 
-my $articles_content =
-  RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+my $articles_content = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 my $articles_basics = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 if ( $ARGS{'RTFM_Content'} ) {
     $articles_content->LimitCustomField( VALUE => $ARGS{'RTFM_Content'},
@@ -55,3 +80,6 @@ if ( $ARGS{'RTFM_Content'} ) {
 
 
 </%init>
+<%args>
+$RTFM_Content => ''
+</%args>

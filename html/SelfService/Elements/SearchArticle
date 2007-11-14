@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <form action="<%$RT::WebPath%>/SelfService/Article/Search.html">
-<input type="submit" class="button" value="<&|/l&>Search Article</&>" />&nbsp;
-<input size="4" name="RTFM_Content" />
+<input type="submit" class="button" value="<&|/l&>Search Articles</&>" />&nbsp;
+<input size="15" name="RTFM_Content" />
 </form>
 
