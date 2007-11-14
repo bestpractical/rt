@@ -77,7 +77,10 @@
 <tr valign="top"><td align="right">
 <% $CF->Name %>:
 </td><td>
-<& /Elements/EditCustomField, CustomField => $CF, Object => $Group &>
+<& /Elements/EditCustomField, CustomField => $CF, 
+                              Object => $Group, 
+                              ($Create ? (NamePrefix => 'Object-RT::Group--CustomField-') 
+                                       : () )&>
 </td></tr>
 % }
 <tr>
