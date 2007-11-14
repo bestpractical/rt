@@ -16,4 +16,28 @@
 %# 
 %# END LICENSE BLOCK
 <& /SelfService/Elements/Header, Title => loc('Display Article ' . $ARGS{id} ) &>
-<& /RTFM/Article/Display.html, id => $ARGS{id}, SelfService => 1 &>
+<span class="label"><%$article->Name || loc("(no name)")%></span><br />
+<em><span class="value"><%$article->Summary%></span></em>
+<& /Elements/ShowCustomFields, Object => $article &>
+
+<%init>
+
+my $article = RT::FM::Article->new( $session{'CurrentUser'} );
+if ($id) {
+    $article->Load($id);
+}
+unless ( $article->Id ) {
+    $m->comp( "/Elements/Error", Why => loc("Article not found") );
+}
+
+unless ( $article->CurrentUserHasRight('ShowArticle') ) {
+    $m->comp( "/RTFM/Elements/Error", Why => loc("Permission Denied") );
+}
+my $title = loc( "Article #[_1]: [_2]", $article->Id, $article->Name || loc("(no name)"));
+
+$id = $article->id;
+
+</%init>
+<%args>
+$id => undef
+</%args>
