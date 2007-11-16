@@ -303,7 +303,8 @@ sub HasRight {
         return (undef);
     }
 
-    $args{EquivObjects} = [ @{ $args{EquivObjects} } ] if $args{EquivObjects};
+    $args{'EquivObjects'} = [ @{ $args{'EquivObjects'} } ]
+        if $args{'EquivObjects'};
 
     if ( $self->Disabled ) {
         $RT::Logger->error( "Disabled User #"
@@ -317,7 +318,7 @@ sub HasRight {
         && UNIVERSAL::can( $args{'Object'}, 'id' )
         && $args{'Object'}->id ) {
 
-        push( @{ $args{'EquivObjects'} }, $args{Object} );
+        push @{ $args{'EquivObjects'} }, $args{'Object'};
     }
     else {
         $RT::Logger->crit("HasRight called with no valid object");
@@ -428,7 +429,7 @@ sub _HasRight
       "SELECT ACL.id from ACL, Groups, Principals, CachedGroupMembers WHERE  " .
 
       # Only find superuser or rights with the name $right
-      "(ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') "
+      "(ACL.RightName = 'SuperUser' OR ACL.RightName = '$right') "
 
       # Never find disabled groups.
       . "AND Principals.Disabled = 0 "
