@@ -331,11 +331,13 @@ sub HasRight {
         # this is a little bit hacky, but basically, now that we've done
         # the ticket roles magic, we load the queue object
         # and ask all the rest of our questions about the queue.
-        push( @{ $args{'EquivObjects'} }, $args{'Object'}->QueueObj );
+        unshift @{ $args{'EquivObjects'} }, $args{'Object'}->QueueObj;
 
     }
 
-    # {{{ If we've cached a win or loss for this lookup say so
+    unshift @{ $args{'EquivObjects'} }, $RT::System
+        unless $self->can('_IsOverrideGlobalACL')
+               && $self->_IsOverrideGlobalACL( $args{'Object'} );
 
     # {{{ Construct a hashkey to cache decisions in
     my $hashkey = do {
@@ -395,10 +397,6 @@ sub _HasRight
     my @objects = @{ $args{'EquivObjects'} };
 
     # If an object is defined, we want to look at rights for that object
-
-    push( @objects, 'RT::System' )
-      unless $self->can('_IsOverrideGlobalACL')
-             && $self->_IsOverrideGlobalACL( $args{Object} );
 
     my ($check_roles, $check_objects) = ('','');
     if( @objects ) {
