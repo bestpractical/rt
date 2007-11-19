@@ -64,7 +64,10 @@ our $BinPath = '@RT_BIN_PATH@';
 our $VarPath = '@RT_VAR_PATH@';
 our $LocalPath = '@RT_LOCAL_PATH@';
 our $LocalEtcPath = '@LOCAL_ETC_PATH@';
+our $LocalLibPath		=	'@LOCAL_LIB_PATH@';
 our $LocalLexiconPath = '@LOCAL_LEXICON_PATH@';
+our $LocalPluginPath = $LocalPath."/plugins";
+
 
 # $MasonComponentRoot is where your rt instance keeps its mason html files
 
@@ -141,6 +144,7 @@ sub Init {
     InitSystemObjects();
     InitClasses();
     InitLogging(); 
+    InitPlugins();
 }
 
 =head2 ConnectToDatabase
@@ -499,10 +503,66 @@ also L</InitSystemObjects>.
 
 sub Nobody { return $Nobody }
 
+=head2 Plugins
+
+Returns a listref of all Plugins currently configured for this RT instance.
+You can define plugins by adding them to the @Plugins list in your RT_SiteConfig
+
+=cut
+
+our @PLUGINS = ();
+sub Plugins {
+    my $self = shift;
+    @PLUGINS = $self->InitPlugins  unless (@PLUGINS);
+    return \@PLUGINS;
+}
+
+=head2 InitPlugins
+
+Initialze all Plugins found in the RT configuration file, setting up their lib and HTML::Mason component roots.
+
+=cut
+
+sub InitPlugins {
+    my $self    = shift;
+    my @plugins;
+    use RT::Plugin;
+    foreach my $plugin (RT->Config->Get('Plugins')) {
+        next unless $plugin;
+        my $plugindir = $plugin;
+        $plugindir =~ s/::/-/g;
+        unless (-d $RT::LocalPluginPath."/$plugindir") {
+            $RT::Logger->crit("Plugin $plugindir not found in $RT::LocalPluginPath");
+        }
+
+        # Splice the plugin's lib dir into @INC;
+        my @tmp_inc;
+
+
+        for (@INC){
+            if 
+            ( $_ eq $RT::LocalLibPath) {
+                push @tmp_inc, $_, $RT::LocalPluginPath . "/$plugindir";
+            } else {
+                push @tmp_inc, $_;
+        }
+    }
+
+        @INC = @tmp_inc;
+        $plugin->require;
+        die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
+        push @plugins, RT::Plugin->new(name =>$plugin);
+    }
+    return @plugins;
+
+}
+
+
+
 =head1 BUGS
 
-Please report them to rt-bugs@fsck.com, if you know what's broken and have at least 
-some idea of what needs to be fixed.
+Please report them to rt-bugs@bestpractical.com, if you know what's
+broken and have at least some idea of what needs to be fixed.
 
 If you're not sure what's going on, report them rt-devel@lists.bestpractical.com.
 
