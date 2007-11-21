@@ -84,9 +84,7 @@ $nojs => 0
 
 <%method new>
 <%init>
-$ARGS{_item_map} = { map { $_->[0] => $_->[1] } @{ $ARGS{Available} } };
-$ARGS{_item_map} = { %{ $ARGS{_item_map} }, %{ $ARGS{'Label'} } }
-    if $ARGS{'Label'};
+$ARGS{_item_map} = {map {$_->[0] => $_->[1]} @{$ARGS{Available}}};
 return \%ARGS;
 </%init>
 </%method>
@@ -200,7 +198,7 @@ onsubmit="list_<% $name %>.selectAll();"
 % if (exists $selected{$_}) {
 selected="selected"
 % }
-><% $self->{_item_map}{$_} || $_ %></option>
+><% $self->{_item_map}{$_} %></option>
 % }
 </select>
  <input name="moveup" type="submit" class="button" value=" &uarr; " />

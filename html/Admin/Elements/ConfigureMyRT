@@ -64,35 +64,15 @@ for my $pane (@$panes) {
         AutoSave  => 1,
         OnSubmit  => sub {
             my $sel = shift;
-
-            my @res;
-            foreach my $e ( @{ $sel->{Current} } ) {
-                my %row;
-                @row{qw(type name id)} = split /-/, $e, 3;
-                my $old = ( grep {
-                    ($_->{'type'}||'') eq ($row{'type'}||'')
-                    && ($_->{'name'}||'') eq ($row{'name'}||'')
-                    && ($_->{'id'}||'') eq ($row{'id'}||'')
-                } @{ $portlets->{$pane} || [] } )[0];
-                %row = %$old if $old;
-                push @res, \%row;
-            }
-
-            $portlets->{$pane} = \@res;
+            $portlets->{$pane} = [
+                map { m/(\w+)-(.*)$}/;
+                      { type => $1,
+                        name => $2 } } @{ $sel->{Current} }
+            ];
             $OnSave->( $portlets, $pane );
         },
-        Selected => [
-            map {
-                join( '-', grep $_, @{$_}{qw/type name id/} )
-            } @{ $portlets->{$pane} }
-        ],
-        Label => {
-            map {
-                join( '-', grep $_, @{$_}{qw/type name id/} ),
-                $_->{'label'}
-            }
-            grep $_->{'label'}, @{ $portlets->{$pane} }
-        },
+        Selected => [ map { join( '-', @{$_}{qw/type name/} ) }
+                      @{ $portlets->{$pane} } ]
     );
 }
 
