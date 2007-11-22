@@ -136,8 +136,16 @@ $args
 <form method="post" action="<% $Action %>" name="SaveSearch">
 <& /Search/Elements/EditSearches, Name => 'Owner', SearchType => $self->{SearchType}, AllowCopy => 0,
    CurrentSearch => $self->{CurrentSearch}, SearchId => $self->{SearchId}, Title => $Title  &><br />
-% for my $field (@{$self->{SearchFields}}) {
-<input type="hidden" class="hidden" name="<%$field%>" value="<%$ARGS{$field} || ''%>" />
+<%PERL>
+foreach my $field ( @{$self->{SearchFields}} ) {
+    if ( ref($ARGS{$field}) && ref($ARGS{$field}) ne 'ARRAY' ) {
+        $RT::Logger->error("Couldn't store '$field'. it's reference to ". ref($ARGS{$field}) );
+        next;
+    }
+    foreach my $value ( grep defined, ref($ARGS{$field})? @{ $ARGS{$field} } : $ARGS{$field} ) {
+</%PERL>
+<input type="hidden" class="hidden" name="<% $field %>" value="<% $value %>" />
+%   }
 % }
 </form>
 <%ARGS>
