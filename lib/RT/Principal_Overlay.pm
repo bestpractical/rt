@@ -461,7 +461,7 @@ sub _HasRoleRight
     my $right = $args{'Right'};
 
     my $query =
-      "SELECT ACL.id" .
+      "SELECT ACL.id " .
       "FROM ACL, Groups, Principals, CachedGroupMembers WHERE " .
 
       # Only find superuser or rights with the name $right
