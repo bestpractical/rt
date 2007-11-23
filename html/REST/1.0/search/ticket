@@ -59,7 +59,7 @@ my $status = "200 Ok";
 my $tickets = new RT::Tickets $session{CurrentUser};
 
 # Parse and validate any field specifications.
-my $field  = '[a-zA-Z][a-zA-Z0-9_-]*';
+my $field  = '[a-zA-Z](?:[a-zA-Z0-9_-]|\s+)*';
 my (%fields, @fields);
 if ($fields) {
     $format ||= "l";
