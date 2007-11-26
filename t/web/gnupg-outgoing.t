@@ -158,7 +158,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'plain'} } ) {
     ok ($id, "got id of a newly created ticket - $id");
 
     my $tick = RT::Model::Ticket->new( $RT::system_user );
-    $tick->Load( $id );
+    $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
     my $txn = $tick->Transactions->first;
@@ -179,7 +179,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed'} } ) {
     ok ($id, "got id of a newly created ticket - $id");
 
     my $tick = RT::Model::Ticket->new( $RT::system_user );
-    $tick->Load( $id );
+    $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
     my $txn = $tick->Transactions->first;
@@ -203,7 +203,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'encrypted'} } ) {
     ok ($id, "got id of a newly created ticket - $id");
 
     my $tick = RT::Model::Ticket->new( $RT::system_user );
-    $tick->Load( $id );
+    $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
     my $txn = $tick->Transactions->first;
@@ -226,7 +226,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed_encrypted'} } ) {
     ok ($id, "got id of a newly created ticket - $id");
 
     my $tick = RT::Model::Ticket->new( $RT::system_user );
-    $tick->Load( $id );
+    $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
     my $txn = $tick->Transactions->first;

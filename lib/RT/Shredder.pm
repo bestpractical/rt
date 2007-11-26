@@ -553,7 +553,7 @@ sub Wipeout
     };
     if( $@ ) {
         Jifty->handle->rollback('force');
-        $selfJifty->handle->rollbackDumpTo( Mark => $mark ) if $mark;
+        $self->RollbackDumpTo( Mark => $mark ) if $mark;
         die $@ if RT::Shredder::Exception::Info->caught;
         die "Couldn't wipeout object: $@";
     }
@@ -784,10 +784,10 @@ sub PopDumpMark {
         die "Couldn't pop mark: $msg" unless $state;
     }
 }
-sub rollbackDumpTo {
+sub RollbackDumpTo {
     my $self = shift;
     foreach (@{ $self->{'dump_plugins'} }) {
-        my ($state, $msg) = $_Jifty->handle->rollbackTo( @_ );
+        my ($state, $msg) = $_->rollbackTo( @_ );
         die "Couldn't rollback to mark: $msg" unless $state;
     }
 }

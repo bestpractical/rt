@@ -68,7 +68,9 @@
 
 <%INIT>
 my $CF = RT::Model::CustomField->new($session{'CurrentUser'});
-$CF->load($id) or Abort(loc("Could not load CustomField [_1]"), $id);
+$CF->load($id) if ($id);
+
+unless ($CF->id) {  Abort(loc("Could not load CustomField [_1]"), $id)};
 my $LookupType = $CF->LookupType || '';
 $LookupType =~ /^(.*?)-/ ||
      Abort(loc("Object of type [_1] cannot take custom fields", $LookupType));

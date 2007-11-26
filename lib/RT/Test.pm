@@ -271,7 +271,8 @@ sub run_mailgate {
     my $cmd = $RT::BinPath .'/rt-mailgate';
     die "Couldn't find mailgate ($cmd) command" unless -f $cmd;
 
-    $cmd .= ' --debug';
+    
+    $cmd = $^X . " " .$cmd. ' --debug';
     while( my ($k,$v) = each %args ) {
         next unless $v;
         $cmd .= " --$k '$v'";
