@@ -1,4 +1,4 @@
-#!@PERL@
+#!/opt/local/bin/perl
 # BEGIN BPS TAGGED BLOCK {{{
 # 
 # COPYRIGHT:
@@ -46,92 +46,41 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-use strict;
+package RT::Mason;
 
-BEGIN {
-    $ENV{'PATH'}   = '/bin:/usr/bin';                     # or whatever you need
+use strict;
+use vars '$Handler';
+use File::Basename;
+require ('/home/jesse/svk/3.999-DANGEROUS/bin/webmux.pl');
+
+# Enter CGI::Fast mode, which should also work as a vanilla CGI script.
+require CGI::Fast;
+
+RT::Init();
+
+while ( my $cgi = CGI::Fast->new ) {
+    # the whole point of fastcgi requires the env to get reset here..
+    # So we must squash it again
+    $ENV{'PATH'}   = '/bin:/usr/bin';
     $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
     $ENV{'SHELL'}  = '/bin/sh' if defined $ENV{'SHELL'};
     $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
     $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 
-    use CGI qw(-private_tempfiles);    #bring this in before mason, to make sure we
-                                   #set private_tempfiles
-
-    die "RT does not support mod_perl 1.99. Please upgrade to mod_perl 2.0"
-      if $ENV{'MOD_PERL'}
-      and $ENV{'MOD_PERL'} =~ m{mod_perl/(?:1\.9)};
-
-}
-
-use lib ( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@" );
-use RT;
-
-package RT::Mason;
-
-use vars qw($Nobody $system_user $Handler $r);
-
-#This drags in RT's config.pm
-BEGIN {
-    RT::load_config();
-    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
-}
-
-
-{
-
-    package HTML::Mason::Commands;
-    use vars qw(%session);
-}
-
-use RT::Interface::Web;
-use RT::Interface::Web::Handler;
-$Handler = RT::Interface::Web::Handler->new(RT->Config->Get('MasonParameters'));
-
-if ($ENV{'MOD_PERL'} && !RT->Config->Get('DevelMode')) {
-    # Under static_source, we need to purge the component cache
-    # each time we restart, so newer components may be reloaded.
-    #
-    # We can't do this in FastCGI or we'll blow away the component root _every_ time a new server starts
-    # which happens every few hits.
-    
-    use File::Path qw( rmtree );
-    use File::Glob qw( bsd_glob );
-    my @files = bsd_glob("$RT::MasonDataDir/obj/*");
-    rmtree([ @files ], 0, 1) if @files;
-}
-
-sub handler {
-    ($r) = @_;
-
-    local $SIG{__WARN__};
-    local $SIG{__DIE__};
-
-    if ($r->content_type =~ m/^httpd\b.*\bdirectory/i) {
-        use File::Spec::Unix;
-        # Our DirectoryIndex is always index.html, regardless of httpd settings
-        $r->filename( File::Spec::Unix->catfile( $r->filename, 'index.html' ) );
-    }
-#    elsif (defined( $r->content_type )) {
-        #$r->content_type !~ m!(^text/|\bxml\b)!i or return -1;
-#    }
-
     Module::Refresh->refresh if RT->Config->Get('DevelMode');
+    RT::connect_to_database();
 
-    RT::Init();
+    if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
+        && ( $Handler->interp->comp_exists( $cgi->path_info . "/index.html" ) ) ) {
+        $cgi->path_info( $cgi->path_info . "/index.html" );
+    }
 
-    my %session;
-    my $status;
-    eval { $status = $Handler->handle_request($r) };
+    eval { $Handler->handle_cgi_object($cgi); };
     if ($@) {
         $RT::Logger->crit($@);
     }
+    RT::Interface::Web::Handler->CleanupRequest(); 
 
-    undef(%session);
-
-    RT::Interface::Web::Handler->CleanupRequest();
-
-    return $status;
 }
 
 1;

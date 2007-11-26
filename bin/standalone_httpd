@@ -1,4 +1,4 @@
-#!@SPEEDY_BIN@
+#!/opt/local/bin/perl -w
 # BEGIN BPS TAGGED BLOCK {{{
 # 
 # COPYRIGHT:
@@ -46,22 +46,22 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Mason;
-
+use warnings;
 use strict;
-use vars '$Handler';
-require ('@RT_BIN_PATH@/webmux.pl');
 
-require CGI;
+BEGIN {
+    use lib( "/home/jesse/svk/3.999-DANGEROUS/local/lib", "/home/jesse/svk/3.999-DANGEROUS/lib");
+    use RT;
+    RT::load_config();
+    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
+}
 
 RT::Init();
 
-my $cgi = CGI->new;
-if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
-    && ( $Handler->interp->comp_exists( $cgi->path_info . "/index.html" ) ) ) {
-    $cgi->path_info( $cgi->path_info . "/index.html" );
-}
+my $port = shift @ARGV || RT->Config->Get('WebPort') || '8080';
+use RT::Interface::Web::Standalone;
+my $server = RT::Interface::Web::Standalone->new;
+$server->port($port);
+$server->run();
 
-$Handler->handle_cgi_object($cgi);
-RT::Interface::Web::Handler->CleanupRequest();
-1;
+

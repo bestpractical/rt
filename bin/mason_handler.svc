@@ -1,4 +1,4 @@
-#!@PERL@
+#!/opt/local/bin/perl
 # BEGIN BPS TAGGED BLOCK {{{
 # 
 # COPYRIGHT:
