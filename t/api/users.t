@@ -12,6 +12,8 @@ use_ok('RT::Model::UserCollection');
 ok(my $users = RT::Model::UserCollection->new(RT->system_user));
 $users->WhoHaveRight(Object =>RT->system, Right =>'SuperUser');
 is($users->count , 1, "There is one privileged superuser - Found ". $users->count );
+
+
 # TODO: this wants more testing
 
 my $RTxUser = RT::Model::User->new(RT->system_user);

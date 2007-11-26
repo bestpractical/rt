@@ -70,9 +70,6 @@ use base qw/RT::SearchBuilder/;
 # {{{ sub _init 
 sub _init {
     my $self = shift;
-    $self->{'table'} = 'Users';
-        $self->{'primary_key'} = 'id';
-
 
 
     my @result =          $self->SUPER::_init(@_);
