@@ -65,7 +65,9 @@
   <tr>
     <td colspan="4" class="content">
 % if ( $Attachments->[0] && $Attachments->[0]->id ) {
-    <& ShowGnuPGStatus, Attachment => $Attachments->[0], WarnUnsigned => $WarnUnsigned &>
+%   if (RT->Config->Get('GnuPG')->{'Enable'}) {
+        <& ShowGnuPGStatus, Attachment => $Attachments->[0], WarnUnsigned => $WarnUnsigned &>
+%   }
 % }
 % if ( $Transaction->CustomFieldValues->Count ) {
       <& /Elements/ShowCustomFields, Object => $Transaction &>
