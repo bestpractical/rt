@@ -91,7 +91,7 @@
     <span class="hide"><a href="#skipnav"><&|/l&>Skip Menu</&></a> | </span>
 % if ($session{'CurrentUser'}->Name) {
     <&|/l, "<span>".$session{'CurrentUser'}->Name."</span>" &>Logged in as [_1]</&>
-%     if ( $session{'CurrentUser'}->has_right( Right => 'ModifySelf', Object => RT->System ) ) {
+%     if ( $session{'CurrentUser'}->has_right( Right => 'ModifySelf', Object => RT->system ) ) {
     | <a href="<%RT->Config->Get('WebPath')%><%$Prefs%>"><&|/l&>Preferences</&></a>
 %     }
 % } else {

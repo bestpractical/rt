@@ -381,7 +381,7 @@ sub Get {
     my $res;
     if ( $user && $META{ $name }->{'Overridable'} ) {
         $user = $user->UserObj if $user->isa('RT::CurrentUser');
-        my $prefs = $user->Preferences( RT->System );
+        my $prefs = $user->Preferences( RT->system );
         $res = $prefs->{ $name } if $prefs;
     }
     $res = $OPTIONS{ $name } unless defined $res;

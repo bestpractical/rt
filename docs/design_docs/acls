@@ -12,7 +12,7 @@ if ($args{'ObjectType'} eq 'Ticket') {
      # If we're looking at ticket rights, we also want to look at the associated queue rights.
      # this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
      # and ask all the rest of our questions about the queue.
-     my $tick = RT::Model::Ticket->new(RT->SystemUser);
+     my $tick = RT::Model::Ticket->new(RT->system_user);
      $tick->load($args{'ObjectId'});
      $args{'ObjectType'} = 'Queue';
      $args{'ObjectId'} = $tick->QueueObj->id();

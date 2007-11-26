@@ -109,7 +109,7 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
 
             # Create users on-the-fly
 
-            my $UserObj = RT::Model::User->new( RT->SystemUser );
+            my $UserObj = RT::Model::User->new( RT->system_user );
             my ($val, $msg) = $UserObj->create(
                 %{ ref RT->Config->Get('AutoCreate') ? RT->Config->Get('AutoCreate') : {} },
                 Name  => $user,

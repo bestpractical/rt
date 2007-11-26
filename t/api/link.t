@@ -11,7 +11,7 @@ use RT;
 
 
 use RT::Model::Link;
-my $link = RT::Model::Link->new(RT->SystemUser);
+my $link = RT::Model::Link->new(RT->system_user);
 
 
 ok (ref $link);

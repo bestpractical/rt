@@ -56,7 +56,7 @@
 <%INIT>
 my $users = new RT::Model::UserCollection($session{'CurrentUser'});
 
-$users->limit(column => 'id', value => RT->SystemUser->id, operator => '!=' );
+$users->limit(column => 'id', value => RT->system_user->id, operator => '!=' );
 $users->limit(column => 'id', value => $RT::Nobody->id, operator => '!=' );
 $users->LimitToPrivileged();
 

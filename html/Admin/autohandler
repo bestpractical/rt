@@ -48,6 +48,6 @@
 <%init>
 $m->call_next(%ARGS) if $session{'CurrentUser'}->UserObj->has_right(
     Right => 'ShowConfigTab',
-    Object => RT->System,
+    Object => RT->system,
 );
 </%init>

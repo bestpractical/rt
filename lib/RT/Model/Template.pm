@@ -171,7 +171,7 @@ sub create {
     );
 
     unless ( $args{'Queue'} ) {
-        unless ( $self->current_user->has_right(Right =>'ModifyTemplate', Object => RT->System) ) {
+        unless ( $self->current_user->has_right(Right =>'ModifyTemplate', Object => RT->system) ) {
             return ( undef, $self->loc('Permission denied') );
         }
         $args{'Queue'} = 0;

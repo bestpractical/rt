@@ -9,12 +9,12 @@ use RT;
 
 {
 
-my $q = RT::Model::Queue->new(RT->SystemUser);
+my $q = RT::Model::Queue->new(RT->system_user);
 $q->create(Name =>'ownerChangeTest');
 
 ok($q->id, "Created a scriptest queue");
 
-my $s1 = RT::Model::Scrip->new(RT->SystemUser);
+my $s1 = RT::Model::Scrip->new(RT->system_user);
 my ($val, $msg) =$s1->create( Queue => $q->id,
              ScripAction => 'User Defined',
              ScripCondition => 'On Owner Change',
@@ -28,7 +28,7 @@ my ($val, $msg) =$s1->create( Queue => $q->id,
     );
 ok($val,$msg);
 
-my $ticket = RT::Model::Ticket->new(RT->SystemUser);
+my $ticket = RT::Model::Ticket->new(RT->system_user);
 my ($tv,$ttv,$tm) = $ticket->create(Queue => $q->id,
                                     Subject => "hair on fire",
                                     InitialPriority => '20'

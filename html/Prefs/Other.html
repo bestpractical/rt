@@ -87,9 +87,9 @@ my @results;
 my $title = loc("Other preferences");
 
 my $UserObj = $session{'CurrentUser'}->UserObj;
-my $preferences = $UserObj->Preferences( RT->System );
+my $preferences = $UserObj->Preferences( RT->system );
 
-if ((defined $PreferredKey) && $PreferredKey ne $UserObj->FirstAttribute('PreferredKey')) {
+if ((defined $PreferredKey) && $PreferredKey ne $UserObj->first_attribute('PreferredKey')) {
     my ($code, $msg) = $UserObj->set_attribute(Name => 'PreferredKey', Content => $PreferredKey);
     push @results, loc('Preferred Key: [_1]', loc_fuzzy($msg));
 }
@@ -110,7 +110,7 @@ if ( $Update ) {
             delete $preferences->{ $option };
         }
     }
-    $UserObj->set_Preferences( RT->System, $preferences );
+    $UserObj->set_Preferences( RT->system, $preferences );
 }
 my $localize_meta = sub {
     my %meta = %{ shift() };

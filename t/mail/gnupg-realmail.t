@@ -36,7 +36,7 @@ $m->content_like(qr/rt-recipient\@example.com.* - never/, 'has key info.');
 diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
 my $everyone;
 {
-    $everyone = RT::Model::Group->new( RT->SystemUser );
+    $everyone = RT::Model::Group->new( RT->system_user );
     $everyone->load_system_internal_group('Everyone');
     ok $everyone->id, "loaded 'everyone' group";
 }
@@ -85,7 +85,7 @@ sub email_ok {
     is ($status >> 8, 0, "$eid: The mail gateway exited normally");
     ok ($id, "$eid: got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( RT->SystemUser );
+    my $tick = RT::Model::Ticket->new( RT->system_user );
     $tick->load( $id );
     ok ($tick->id, "$eid: loaded ticket #$id");
 

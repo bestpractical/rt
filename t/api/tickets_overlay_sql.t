@@ -10,7 +10,7 @@ use RT;
 use RT::Model::TicketCollection;
 use strict;
 
-my $tix = RT::Model::TicketCollection->new(RT->SystemUser);
+my $tix = RT::Model::TicketCollection->new(RT->system_user);
 {
     my $query = "Status = 'open'";
     my ($status, $msg)  = $tix->from_sql($query);
@@ -21,7 +21,7 @@ my $tix = RT::Model::TicketCollection->new(RT->SystemUser);
 my (@Created,%Created);
 my $string = 'subject/content SQL test';
 {
-    my $t = RT::Model::Ticket->new(RT->SystemUser);
+    my $t = RT::Model::Ticket->new(RT->system_user);
     ok( $t->create(Queue => 'General', Subject => $string), "Ticket Created");
     $Created{ $t->id }++; push @Created, $t->id;
 }
@@ -33,7 +33,7 @@ my $string = 'subject/content SQL test';
                      Data        => [ $string ],
             );
 
-    my $t = RT::Model::Ticket->new(RT->SystemUser);
+    my $t = RT::Model::Ticket->new(RT->system_user);
     ok( $t->create( Queue => 'General',
                     Subject => 'another ticket',
                     MIMEObj => $Message,

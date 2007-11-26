@@ -9,7 +9,7 @@ use RT::CurrentUser;
 use strict;
 use warnings;
 use File::Spec ();
-use vars qw($Config $System $SystemUser $Nobody $Handle $Logger);
+use vars qw($Config $System $system_user $Nobody $Handle $Logger);
 our $VERSION = '3.7.14';
 
 
@@ -294,7 +294,7 @@ EOF
 
 =head2 InitSystemObjects
 
-Initializes system objects: C<RT->System>, C<RT->SystemUser>
+Initializes system objects: C<RT->system>, C<RT->system_user>
 and C<$RT::Nobody>.
 
 =cut
@@ -347,9 +347,9 @@ L</InitSystemObjects>.
 
 =cut
 
-sub System { return RT::System->new }
+sub system { return RT::System->new }
 
-=head2 SystemUser
+=head2 system_user
 
 Returns the system user's object, it's object of
 L<RT::CurrentUser> class that represents the system. See also
@@ -357,14 +357,14 @@ L</InitSystemObjects>.
 
 =cut
 
-sub SystemUser { 
+sub system_user { 
     
-    unless ($SystemUser) { 
-        $SystemUser = new RT::CurrentUser;
-    $SystemUser->load_by_name('RT_System');
+    unless ($system_user) { 
+        $system_user = new RT::CurrentUser;
+    $system_user->load_by_name('RT_System');
     }
     
-    return $SystemUser }
+    return $system_user }
 
 =head2 Nobody
 

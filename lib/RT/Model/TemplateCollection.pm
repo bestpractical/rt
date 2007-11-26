@@ -176,7 +176,7 @@ sub Next {
         # If it's part of a queue, and the user can read templates in
         # that queue, or the user can globally read templates, show it
         if ($templ->Queue && $templ->current_user_has_queue_right('ShowTemplate') or
-            $templ->current_user->has_right(Object => RT->System, Right => 'ShowTemplate')) {
+            $templ->current_user->has_right(Object => RT->system, Right => 'ShowTemplate')) {
 	    return($templ);
 	}
 	

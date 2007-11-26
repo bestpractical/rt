@@ -4,12 +4,12 @@ use RT::Test; use Test::More tests => 6;
 use RT;
 
 
-my $t1 = RT::Model::Ticket->new(RT->SystemUser);
+my $t1 = RT::Model::Ticket->new(RT->system_user);
 my ($id,$trans,$msg) =$t1->create (Queue => 'general', Subject => 'Requestor test one', );
 ok ($id, $msg);
 
 use_ok("RT::URI::t");
-my $uri = RT::URI::t->new(RT->SystemUser);
+my $uri = RT::URI::t->new(RT->system_user);
 ok(ref($uri), "URI object exists");
 
 my $uristr = "t:1";

@@ -7,7 +7,7 @@ use RT::Test; use Test::More tests => 78;
 
 use RT::Model::Ticket;
 
-my $q = RT::Model::Queue->new( RT->SystemUser );
+my $q = RT::Model::Queue->new( RT->system_user );
 my $queue = 'SearchTests-'. rand(200);
 $q->create( Name => $queue );
 
@@ -16,7 +16,7 @@ my ($total, @data, @tickets, %test) = (0, ());
 sub add_tix_from_data {
     my @res = ();
     while (@data) {
-        my $t = RT::Model::Ticket->new(RT->SystemUser);
+        my $t = RT::Model::Ticket->new(RT->system_user);
         my ( $id, undef $msg ) = $t->create(
             Queue => $q->id,
             %{ shift(@data) },
@@ -31,7 +31,7 @@ sub add_tix_from_data {
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
     foreach my $key ( sort keys %test ) {
-        my $tix = RT::Model::TicketCollection->new(RT->SystemUser);
+        my $tix = RT::Model::TicketCollection->new(RT->system_user);
         $tix->from_sql( "( $query_prefix ) AND ( $key )" );
 
         my $error = 0;
@@ -87,7 +87,7 @@ sub run_tests {
 );
 @tickets = add_tix_from_data();
 {
-    my $tix = RT::Model::TicketCollection->new(RT->SystemUser);
+    my $tix = RT::Model::TicketCollection->new(RT->system_user);
     $tix->from_sql("Queue = '$queue'");
     is($tix->count, $total, "found $total tickets");
 }
@@ -134,7 +134,7 @@ TODO: {
 );
 @tickets = add_tix_from_data();
 {
-    my $tix = RT::Model::TicketCollection->new(RT->SystemUser);
+    my $tix = RT::Model::TicketCollection->new(RT->system_user);
     $tix->from_sql("Queue = '$queue'");
     is($tix->count, $total, "found $total tickets");
 }
@@ -145,28 +145,28 @@ run_tests();
 # style ENUM searches for backward compatibility
 my $nobody = RT::Nobody();
 {
-    my $tix = RT::Model::TicketCollection->new(RT->SystemUser);
+    my $tix = RT::Model::TicketCollection->new(RT->system_user);
     $tix->from_sql("Queue = '$queue' AND Owner = '". $nobody->id ."'");
     ok($tix->count, "found ticket(s)");
 }
 {
-    my $tix = RT::Model::TicketCollection->new(RT->SystemUser);
+    my $tix = RT::Model::TicketCollection->new(RT->system_user);
     $tix->from_sql("Queue = '$queue' AND Owner = '". $nobody->Name ."'");
     ok($tix->count, "found ticket(s)");
 }
 {
-    my $tix = RT::Model::TicketCollection->new(RT->SystemUser);
+    my $tix = RT::Model::TicketCollection->new(RT->system_user);
     $tix->from_sql("Queue = '$queue' AND Owner != '". $nobody->id ."'");
     is($tix->count, 0, "found ticket(s)");
 }
 {
-    my $tix = RT::Model::TicketCollection->new(RT->SystemUser);
+    my $tix = RT::Model::TicketCollection->new(RT->system_user);
     $tix->from_sql("Queue = '$queue' AND Owner != '". $nobody->Name ."'");
     is($tix->count, 0, "found ticket(s)");
 }
 
 {
-    my $tix = RT::Model::TicketCollection->new(RT->SystemUser);
+    my $tix = RT::Model::TicketCollection->new(RT->system_user);
     $tix->from_sql("Queue = '$queue' AND Owner.Name LIKE 'nob'");
     ok($tix->count, "found ticket(s)");
 }
@@ -184,13 +184,13 @@ my $nobody = RT::Nobody();
             );
     $total--;
 
-    my $tix = RT::Model::TicketCollection->new(RT->SystemUser);
+    my $tix = RT::Model::TicketCollection->new(RT->system_user);
     $tix->from_sql("Queue = '$queue' AND Owner = 'Nobody'");
     is($tix->count, $total, "found ticket(s)");
 }
 
 {
-    my $everyone = RT::Model::Group->new( RT->SystemUser );
+    my $everyone = RT::Model::Group->new( RT->system_user );
     $everyone->load_system_internal_group('Everyone');
     ok($everyone->id, "loaded 'everyone' group");
     my($id, $msg) = $everyone->PrincipalObj->GrantRight( Right => 'OwnTicket',
@@ -198,7 +198,7 @@ my $nobody = RT::Nobody();
                                                        );
     ok($id, "granted OwnTicket right to Everyone on '$queue'") or diag("error: $msg");
 
-    my $u = RT::Model::User->new( RT->SystemUser );
+    my $u = RT::Model::User->new( RT->system_user );
     $u->load_or_create_by_email('alpha@example.com');
     ok($u->id, "loaded user");
     @data = ( { Subject => '4', Owner => $u->id } );
@@ -206,7 +206,7 @@ my $nobody = RT::Nobody();
     is( $t->Owner, $u->id, "Created ticket with custom owner" );
     my $u_alpha_id = $u->id;
 
-    $u = RT::Model::User->new( RT->SystemUser );
+    $u = RT::Model::User->new( RT->system_user );
     $u->load_or_create_by_email('bravo@example.com');
     ok($u->id, "loaded user");
     @data = ( { Subject => '5', Owner => $u->id } );
@@ -214,7 +214,7 @@ my $nobody = RT::Nobody();
     is( $t->Owner, $u->id, "Created ticket with custom owner" );
     my $u_bravo_id = $u->id;
 
-    my $tix = RT::Model::TicketCollection->new(RT->SystemUser);
+    my $tix = RT::Model::TicketCollection->new(RT->system_user);
     $tix->from_sql("Queue = '$queue' AND
                    ( Owner = '$u_alpha_id' OR
                      Owner = '$u_bravo_id' )"

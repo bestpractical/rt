@@ -328,7 +328,7 @@ sub create {
 
     my ($ErrStr, @non_fatal_errors);
 
-    my $QueueObj = RT::Model::Queue->new( RT->SystemUser );
+    my $QueueObj = RT::Model::Queue->new( RT->system_user );
     if ( ref $args{'Queue'} && $args{'Queue'}->isa( 'RT::Model::Queue') ) {
         $QueueObj->load( $args{'Queue'}->id );
     }
@@ -487,7 +487,7 @@ sub create {
             } else {
                 my @addresses = Mail::Address->parse( $watcher );
                 foreach my $address( @addresses ) {
-                    my $user = RT::Model::User->new( RT->SystemUser );
+                    my $user = RT::Model::User->new( RT->system_user );
                     my ($uid, $msg) = $user->load_or_create_by_email( $address );
                     unless ( $uid ) {
                         push @non_fatal_errors,
@@ -716,7 +716,7 @@ sub create {
             return ( 0, 0, $self->loc( "Ticket could not be created due to an internal error"));
         }
          if ( $args{'DryRun'} ) {
-                 $RT::Handle->rollback();
+                 Jifty->handle->rollback();
                  return ($self->id, $TransObj, $ErrStr);
              }
 
@@ -782,7 +782,7 @@ sub _Parse822HeadersForAttributes {
     }
 
     foreach my $date qw(due starts started resolved) {
-        my $dateobj = RT::Date->new(RT->SystemUser);
+        my $dateobj = RT::Date->new(RT->system_user);
         if ( defined ($args{$date}) and $args{$date} =~ /^\d+$/ ) {
             $dateobj->set( Format => 'unix', value => $args{$date} );
         }
@@ -839,11 +839,11 @@ sub Import {
     );
 
     if ( ( defined( $args{'Queue'} ) ) && ( !ref( $args{'Queue'} ) ) ) {
-        $QueueObj = RT::Model::Queue->new(RT->SystemUser);
+        $QueueObj = RT::Model::Queue->new(RT->system_user);
         $QueueObj->load( $args{'Queue'} );
     }
     elsif ( ref( $args{'Queue'} ) eq 'RT::Model::Queue' ) {
-        $QueueObj = RT::Model::Queue->new(RT->SystemUser);
+        $QueueObj = RT::Model::Queue->new(RT->system_user);
         $QueueObj->load( $args{'Queue'}->id );
     }
     else {
@@ -1132,7 +1132,7 @@ sub _AddWatcher {
 
     my $principal = RT::Model::Principal->new($self->current_user);
     if ($args{'Email'}) {
-        my $user = RT::Model::User->new(RT->SystemUser);
+        my $user = RT::Model::User->new(RT->system_user);
         my ($pid, $msg) = $user->load_or_create_by_email( $args{'Email'} );
         $args{'PrincipalId'} = $pid if $pid; 
     }
@@ -1741,7 +1741,7 @@ sub set_Queue {
         )
       )
     {
-        my $clone = RT::Model::Ticket->new( RT->SystemUser );
+        my $clone = RT::Model::Ticket->new( RT->system_user );
         $clone->load( $self->id );
         unless ( $clone->id ) {
             return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->id) );
@@ -1872,7 +1872,7 @@ sub set_Started {
     #We need $TicketAsSystem, in case the current user doesn't have
     #ShowTicket
     #
-    my $TicketAsSystem = new RT::Model::Ticket(RT->SystemUser);
+    my $TicketAsSystem = new RT::Model::Ticket(RT->system_user);
     $TicketAsSystem->load( $self->id );
     if ( $TicketAsSystem->Status eq 'new' ) {
         $TicketAsSystem->Open();
@@ -2487,7 +2487,7 @@ sub MergeInto {
     }
 
     # Load up the new ticket.
-    my $MergeInto = RT::Model::Ticket->new(RT->SystemUser);
+    my $MergeInto = RT::Model::Ticket->new(RT->system_user);
     $MergeInto->load($ticket_id);
 
     # make sure it exists.
@@ -2549,7 +2549,7 @@ sub MergeInto {
             $link->delete;
         } else {
             # First, make sure the link doesn't already exist. then move it over.
-            my $tmp = RT::Model::Link->new(RT->SystemUser);
+            my $tmp = RT::Model::Link->new(RT->system_user);
             $tmp->load_by_cols(Base => $link->Base, Type => $link->Type, LocalTarget => $MergeInto->id);
             if ($tmp->id)   {
                     $link->delete;
@@ -2573,7 +2573,7 @@ sub MergeInto {
             $link->delete;
         } else {
             # First, make sure the link doesn't already exist. then move it over.
-            my $tmp = RT::Model::Link->new(RT->SystemUser);
+            my $tmp = RT::Model::Link->new(RT->system_user);
             $tmp->load_by_cols(Target => $link->Target, Type => $link->Type, LocalBase => $MergeInto->id);
             if ($tmp->id)   {
                     $link->delete;
@@ -3178,7 +3178,7 @@ sub DESTROY {
     return unless @$batch;
 
     require RT::Model::ScripCollection;
-    RT::Model::ScripCollection->new(RT->SystemUser)->Apply(
+    RT::Model::ScripCollection->new(RT->system_user)->Apply(
     Stage        => 'TransactionBatch',
     TicketObj    => $self,
     TransactionObj    => $batch->[0],

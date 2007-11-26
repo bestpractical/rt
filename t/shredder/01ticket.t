@@ -16,13 +16,13 @@ use RT::Model::Ticket;
 use RT::Model::TicketCollection;
 
 {
-    my $ticket = RT::Model::Ticket->new( RT->SystemUser );
+    my $ticket = RT::Model::Ticket->new( RT->system_user );
     my ($id) = $ticket->create( Subject => 'test', Queue => 1 );
     ok( $id, "Created new ticket" );
     $ticket->delete;
     is( $ticket->Status, 'deleted', "successfuly changed status" );
 
-    my $tickets = RT::Model::TicketCollection->new( RT->SystemUser );
+    my $tickets = RT::Model::TicketCollection->new( RT->system_user );
     $tickets->{'allow_deleted_search'} = 1;
     $tickets->LimitStatus( value => 'deleted' );
     is( $tickets->count, 1, "found one deleted ticket" );
@@ -34,12 +34,12 @@ use RT::Model::TicketCollection;
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
 {
-    my $parent = RT::Model::Ticket->new( RT->SystemUser );
+    my $parent = RT::Model::Ticket->new( RT->system_user );
     my ($pid) = $parent->create( Subject => 'test', Queue => 1 );
     ok( $pid, "Created new ticket" );
     create_savepoint('parent_ticket');
 
-    my $child = RT::Model::Ticket->new( RT->SystemUser );
+    my $child = RT::Model::Ticket->new( RT->system_user );
     my ($cid) = $child->create( Subject => 'test', Queue => 1 );
     ok( $cid, "Created new ticket" );
 
@@ -56,14 +56,14 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
 {
-    my $parent = RT::Model::Ticket->new( RT->SystemUser );
+    my $parent = RT::Model::Ticket->new( RT->system_user );
     my ($pid) = $parent->create( Subject => 'test', Queue => 1 );
     ok( $pid, "Created new ticket" );
     my ($status, $msg) = $parent->delete;
     ok( $status, 'deleted parent ticket');
     create_savepoint('parent_ticket');
 
-    my $child = RT::Model::Ticket->new( RT->SystemUser );
+    my $child = RT::Model::Ticket->new( RT->system_user );
     my ($cid) = $child->create( Subject => 'test', Queue => 1 );
     ok( $cid, "Created new ticket" );
 

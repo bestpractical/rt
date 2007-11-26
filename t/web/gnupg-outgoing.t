@@ -81,7 +81,7 @@ diag "check in read-only mode that queue's props influence create/update ticket 
     # to avoid encryption/signing during create
     set_queue_crypt_options();
 
-    my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Model::Ticket->new( $RT::system_user );
     my ($id) = $ticket->create(
         Subject   => 'test',
         Queue     => $queue->id,
@@ -117,7 +117,7 @@ foreach my $queue_set ( @variants ) {
 
 my $tid;
 {
-    my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Model::Ticket->new( $RT::system_user );
     ($tid) = $ticket->create(
         Subject   => 'test',
         Queue     => $queue->id,
@@ -157,12 +157,12 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'plain'} } ) {
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Model::Ticket->new( $RT::system_user );
     $tick->Load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
-    my $txn = $tick->Transactions->First;
-    my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
+    my $txn = $tick->Transactions->first;
+    my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
 
     ok !$msg->GetHeader('X-RT-Privacy'), "RT's outgoing mail has no crypto";
     is $msg->GetHeader('X-RT-Incoming-Encryption'), 'Not encrypted',
@@ -178,12 +178,12 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed'} } ) {
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Model::Ticket->new( $RT::system_user );
     $tick->Load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
-    my $txn = $tick->Transactions->First;
-    my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
+    my $txn = $tick->Transactions->first;
+    my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
 
     is $msg->GetHeader('X-RT-Privacy'), 'PGP',
         "RT's outgoing mail has crypto";
@@ -202,12 +202,12 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'encrypted'} } ) {
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Model::Ticket->new( $RT::system_user );
     $tick->Load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
-    my $txn = $tick->Transactions->First;
-    my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
+    my $txn = $tick->Transactions->first;
+    my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
 
     is $msg->GetHeader('X-RT-Privacy'), 'PGP',
         "RT's outgoing mail has crypto";
@@ -225,12 +225,12 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed_encrypted'} } ) {
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( $RT::SystemUser );
+    my $tick = RT::Model::Ticket->new( $RT::system_user );
     $tick->Load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
-    my $txn = $tick->Transactions->First;
-    my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
+    my $txn = $tick->Transactions->first;
+    my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
 
     is $msg->GetHeader('X-RT-Privacy'), 'PGP',
         "RT's outgoing mail has crypto";

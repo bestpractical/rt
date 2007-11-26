@@ -304,7 +304,7 @@ sub ParseCcAddressesFromHead {
 
     foreach my $AddrObj ( @ToObjs, @CcObjs ) {
         my $Address = $AddrObj->address;
-        my $user = RT::Model::User->new(RT->SystemUser);
+        my $user = RT::Model::User->new(RT->system_user);
         $Address = $user->CanonicalizeEmailAddress($Address);
         next if ( lc $args{'CurrentUser'}->EmailAddress   eq lc $Address );
         next if ( lc $args{'QueueObj'}->CorrespondAddress eq lc $Address );

@@ -199,7 +199,7 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 =cut
 
 sub StaticFileHeaders {
-    my $date = RT::Date->new( RT->SystemUser );
+    my $date = RT::Date->new( RT->system_user );
 
     # Expire things in a month.
     $date->set( value => time + 30*24*60*60 );
@@ -233,11 +233,11 @@ sub loc {
         UNIVERSAL::can($session{'CurrentUser'}, 'loc')){
         return($session{'CurrentUser'}->loc(@_));
     }
-    elsif ( my $u = RT::CurrentUser->new(RT->SystemUser->id)  ) {
+    elsif ( my $u = RT::CurrentUser->new(RT->system_user->id)  ) {
         return ($u->loc(@_));
     }
     else {
-        # pathetic case -- SystemUser is gone.
+        # pathetic case -- system_user is gone.
         return $_[0];
     }
 }
@@ -265,7 +265,7 @@ sub loc_fuzzy {
         return($session{'CurrentUser'}->loc_fuzzy($msg));
     }
     else  {
-        my $u = RT::CurrentUser->new(RT->SystemUser->id);
+        my $u = RT::CurrentUser->new(RT->system_user->id);
         return ($u->loc_fuzzy($msg));
     }
 }
@@ -1006,7 +1006,7 @@ sub ProcessACLChanges {
 
         my $obj;
         if ($object_type eq 'RT::System') {
-            $obj = RT->System;
+            $obj = RT->system;
         } elsif ($RT::Model::ACE::OBJECT_TYPES{$object_type}) {
             $obj = $object_type->new($session{'CurrentUser'});
             $obj->load($object_id);
@@ -1152,7 +1152,7 @@ sub ProcessTicketBasics {
 
 
     if ( $ARGSRef->{'Queue'} and ( $ARGSRef->{'Queue'} !~ /^(\d+)$/ ) ) {
-        my $tempqueue = RT::Model::Queue->new(RT->SystemUser);
+        my $tempqueue = RT::Model::Queue->new(RT->system_user);
         $tempqueue->load( $ARGSRef->{'Queue'} );
         if ( $tempqueue->id ) {
             $ARGSRef->{'Queue'} = $tempqueue->id;

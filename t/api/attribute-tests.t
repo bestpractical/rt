@@ -10,7 +10,7 @@ my $attribute = "squelch-$runid";
 
 ok(require RT::Model::AttributeCollection);
 
-my $user = RT::Model::User->new(RT->SystemUser);
+my $user = RT::Model::User->new(RT->system_user);
 ok (UNIVERSAL::isa($user, 'RT::Model::User'));
 my ($id,$msg)  = $user->create(Name => 'attrtest-'.$runid);
 ok ($id, $msg);

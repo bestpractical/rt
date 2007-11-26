@@ -185,9 +185,9 @@ sub _do_search {
             customfield => $self->{'__external_cf'},
             sortorder => 0,
             description => '',
-            creator => RT->SystemUser->id,
+            creator => RT->system_user->id,
             Created => undef,
-            lastupdatedby => RT->SystemUser->id,
+            lastupdatedby => RT->system_user->id,
             lastupdated => undef,
     );
 

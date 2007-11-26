@@ -406,7 +406,7 @@ sub Addresses {
         
         foreach my $AddrObj ( Mail::Address->parse( $line )) {
             my $address = $AddrObj->address;
-            my $user    = RT::Model::User->new(RT->SystemUser);
+            my $user    = RT::Model::User->new(RT->system_user);
             $address = lc $user->CanonicalizeEmailAddress($address);
             next if ( $current_user_address eq $address );
             next if ( $comment              eq $address );

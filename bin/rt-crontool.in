@@ -65,7 +65,7 @@ CleanEnv();
 # Load the config file
 RT::load_config();
 
-#Connect to the database and get RT::SystemUser and RT::Nobody loaded
+#Connect to the database and get RT::system_user and RT::Nobody loaded
 RT::Init();
 
 #Get the current user all loaded

@@ -71,7 +71,7 @@ use LWP::UserAgent;
 my $url = $m->rt_base_url;
 
 sub latest_ticket {
-    my $tickets = RT::Model::TicketCollection->new( RT->SystemUser );
+    my $tickets = RT::Model::TicketCollection->new( RT->system_user );
     $tickets->order_by( { column => 'id', order => 'DESC'} );
     $tickets->limit( column => 'id', operator => '>', value => '0' );
     $tickets->rows_per_page( 1 );
@@ -109,7 +109,7 @@ EOF
 my $everyone_group;
 diag "revoke rights tests depend on" if $ENV{'TEST_VERBOSE'};
 {
-    $everyone_group = RT::Model::Group->new( RT->SystemUser );
+    $everyone_group = RT::Model::Group->new( RT->system_user );
     $everyone_group->load_system_internal_group( 'Everyone' );
     ok ($everyone_group->id, "Found group 'everyone'");
 
@@ -247,7 +247,7 @@ EOF
     ok ($tick->id, "found ticket ".$tick->id);
     isnt ($tick->Subject , 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 
-    my $u = RT::Model::User->new(RT->SystemUser);
+    my $u = RT::Model::User->new(RT->system_user);
     $u->load("doesnotexist\@@{[RT->Config->Get('rtname')]}");
     ok( !$u->id, "user does not exist and was not Created by failed ticket submission");
 }
@@ -282,7 +282,7 @@ EOF
     is ($tick->id, $id, "correct ticket id");
     is ($tick->Subject , 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 
-    my $u = RT::Model::User->new( RT->SystemUser );
+    my $u = RT::Model::User->new( RT->system_user );
     $u->load( "doesnotexist\@@{[RT->Config->Get('rtname')]}" );
     ok ($u->id, "user does not exist and was Created by ticket submission");
     $ticket_id = $id;
@@ -302,7 +302,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok (!$id, "no way to reply to the ticket");
 
-    my $u = RT::Model::User->new(RT->SystemUser);
+    my $u = RT::Model::User->new(RT->system_user);
     $u->load('doesnotexist-2@'.RT->Config->Get('rtname'));
     ok( !$u->id, " user does not exist and was not Created by ticket correspondence submission");
 }
@@ -330,7 +330,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     is ($id, $ticket_id, "replied to the ticket");
 
-    my $u = RT::Model::User->new(RT->SystemUser);
+    my $u = RT::Model::User->new(RT->system_user);
     $u->load('doesnotexist-2@'.RT->Config->Get('rtname'));
     ok ($u->id, "user exists and was Created by ticket correspondence submission");
 }
@@ -381,7 +381,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok (!$id, "no way to comment on the ticket");
 
-    my $u = RT::Model::User->new(RT->SystemUser);
+    my $u = RT::Model::User->new(RT->system_user);
     $u->load('doesnotexist-3@'.RT->Config->Get('rtname'));
     ok( !$u->id, " user does not exist and was not Created by ticket comment submission");
 }
@@ -410,7 +410,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     is ($id, $ticket_id, "replied to the ticket");
 
-    my $u = RT::Model::User->new(RT->SystemUser);
+    my $u = RT::Model::User->new(RT->system_user);
     $u->load('doesnotexist-3@'.RT->Config->Get('rtname'));
     ok ($u->id, " user exists and was Created by ticket comment submission");
 }
@@ -486,7 +486,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     diag "for the raw file the md5 hex is ". Digest::MD5::md5_hex($file) if $ENV{'TEST_VERBOSE'};
 
     # Verify that the binary attachment is valid in the database
-    my $attachments = RT::Model::AttachmentCollection->new(RT->SystemUser);
+    my $attachments = RT::Model::AttachmentCollection->new(RT->system_user);
     $attachments->limit(column => 'ContentType', value => 'image/gif');
     my $txn_alias = $attachments->join(
         alias1 => 'main',
@@ -592,7 +592,7 @@ skip "Advanced mailgate actions require an unsafe configuration", 47
 
 # create new queue to be shure we don't mess with rights
 use RT::Model::Queue;
-my $queue = RT::Model::Queue->new(RT->SystemUser);
+my $queue = RT::Model::Queue->new(RT->system_user);
 my ($qid) = $queue->create( Name => 'ext-mailgate');
 ok( $qid, 'queue Created for ext-mailgate tests' );
 
@@ -600,7 +600,7 @@ ok( $qid, 'queue Created for ext-mailgate tests' );
 
 # create ticket that is owned by nobody
 use RT::Model::Ticket;
-my $tick = RT::Model::Ticket->new(RT->SystemUser);
+my $tick = RT::Model::Ticket->new(RT->system_user);
 my ($id) = $tick->create( Queue => 'ext-mailgate', Subject => 'test');
 ok( $id, 'new ticket Created' );
 is( $tick->Owner, $RT::Nobody->id, 'owner of the new ticket is nobody' );
@@ -615,7 +615,7 @@ EOF
 close (MAIL);
 is ($? >> 8, 0, "The mail gateway exited normally");
 
-$tick = RT::Model::Ticket->new(RT->SystemUser);
+$tick = RT::Model::Ticket->new(RT->system_user);
 $tick->load( $id );
 is( $tick->id, $id, 'load correct ticket');
 is( $tick->OwnerObj->EmailAddress, 'root@localhost', 'successfuly take ticket via email');
@@ -642,7 +642,7 @@ is ($? >> 8, 0, "The mail gateway exited normally");
 
 Jifty::DBI::Record::Cachable->flush_cache;
 
-$tick = RT::Model::Ticket->new(RT->SystemUser);
+$tick = RT::Model::Ticket->new(RT->system_user);
 $tick->load( $id );
 is( $tick->id, $id, "load correct ticket #$id");
 is( $tick->OwnerObj->EmailAddress, 'root@localhost', 'successfuly take ticket via email');
@@ -665,14 +665,14 @@ is ($? >> 8, 0, "The mail gateway exited normally");
 
 Jifty::DBI::Record::Cachable->flush_cache;
 
-$tick = RT::Model::Ticket->new(RT->SystemUser);
+$tick = RT::Model::Ticket->new(RT->system_user);
 $tick->load( $id );
 is( $tick->id, $id, 'load correct ticket');
 is( $tick->Status, 'resolved', 'successfuly resolved ticket via email');
 is( $tick->Transactions->count, 7, 'no superfluous transactions');
 
 use RT::Model::User;
-my $user = RT::Model::User->new( RT->SystemUser );
+my $user = RT::Model::User->new( RT->system_user );
 my ($uid) = $user->create( Name => 'ext-mailgate',
 			   EmailAddress => 'ext-mailgate@localhost',
 			   Privileged => 1,
@@ -681,7 +681,7 @@ my ($uid) = $user->create( Name => 'ext-mailgate',
 ok( $uid, 'user Created for ext-mailgate tests' );
 ok( !$user->has_right( Right => 'OwnTicket', Object => $queue ), "User can't own ticket" );
 
-$tick = RT::Model::Ticket->new(RT->SystemUser);
+$tick = RT::Model::Ticket->new(RT->system_user);
 ($id) = $tick->create( Queue => $qid, Subject => 'test' );
 ok( $id, 'create new ticket' );
 
@@ -737,12 +737,12 @@ is( $tick->Transactions->count, 3, "no transactions added, user can't take ticke
 
 # revoke ReplyToTicket right
 use RT::Model::ACE;
-my $ace = RT::Model::ACE->new(RT->SystemUser);
+my $ace = RT::Model::ACE->new(RT->system_user);
 $ace->load( $ace_id );
 $ace->delete;
-my $acl = RT::Model::ACECollection->new(RT->SystemUser);
+my $acl = RT::Model::ACECollection->new(RT->system_user);
 $acl->limit( column => 'RightName', value => 'ReplyToTicket' );
-$acl->LimitToObject( RT->System );
+$acl->LimitToObject( RT->system );
 while( my $ace = $acl->next ) {
 	$ace->delete;
 }
@@ -750,9 +750,9 @@ while( my $ace = $acl->next ) {
 ok( !$user->has_right( Right => 'ReplyToTicket', Object => $tick ), "User can't reply to ticket any more" );
 
 
-my $group = RT::Model::Group->new( RT->SystemUser );
+my $group = RT::Model::Group->new( RT->system_user );
 ok( $group->loadQueueRoleGroup( Queue => $qid, Type=> 'Owner' ), "load queue owners role group" );
-$ace = RT::Model::ACE->new( RT->SystemUser );
+$ace = RT::Model::ACE->new( RT->system_user );
 ($ace_id, $msg) = $group->PrincipalObj->GrantRight( Right => 'ReplyToTicket', Object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right" );
 

@@ -82,14 +82,14 @@ my $basetabs = {     A => { title => loc('Homepage'),
                  };
 
 if ($session{'CurrentUser'}->has_right( Right => 'ShowConfigTab', 
-				       Object => RT->System )) {
+				       Object => RT->system )) {
     $basetabs->{E} = { title => loc('Configuration'),
                        path => 'Admin/',
 		     };
 }
 
 if ($session{'CurrentUser'}->has_right( Right => 'ModifySelf', 
-				       Object => RT->System )) {
+				       Object => RT->system )) {
     $basetabs->{K} = { title => loc('Preferences'),
                        path => 'User/Prefs.html'
 		     };

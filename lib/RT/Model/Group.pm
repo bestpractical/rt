@@ -1238,7 +1238,7 @@ sub current_user_has_right {
 										   Right => $right )) {
         return(1);
    }
-    elsif ( $self->current_user->has_right(Object => RT->System, Right =>  $right )) {
+    elsif ( $self->current_user->has_right(Object => RT->system, Right =>  $right )) {
 		return (1);
     } else {
         return(undef);

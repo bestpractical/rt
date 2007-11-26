@@ -8,7 +8,7 @@ ok(RT::Init, "Basic initialization and DB connectivity");
 
 # Create a new queue
 use_ok(RT::Model::Queue);
-my $q = RT::Model::Queue->new(RT->SystemUser);
+my $q = RT::Model::Queue->new(RT->system_user);
 
 $q->load('regression');
 if ($q->id != 0) {
@@ -22,7 +22,7 @@ my ($id, $msg) = $q->create( Name => 'Regression',
 
 isnt($id, 0, "Queue was Created sucessfully - $msg");
 
-my $q2 = RT::Model::Queue->new(RT->SystemUser);
+my $q2 = RT::Model::Queue->new(RT->system_user);
 
 ok($q2->load($id));
 is($q2->id, $id, "Sucessfully loaded the queue again");

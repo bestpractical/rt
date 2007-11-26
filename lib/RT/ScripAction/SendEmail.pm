@@ -313,7 +313,7 @@ sub AddAttachments {
 
     $MIMEObj->head->delete('RT-Attach-Message');
 
-    my $attachments = RT::Model::AttachmentCollection->new(RT->SystemUser);
+    my $attachments = RT::Model::AttachmentCollection->new(RT->system_user);
     $attachments->limit(
         column => 'TransactionId',
         value => $self->TransactionObj->id
@@ -417,7 +417,7 @@ sub AddTicket {
     my $tid = shift;
 
     # XXX: we need a current user here, but who is current user?
-    my $attachs = RT::Model::AttachmentCollection->new( RT->SystemUser );
+    my $attachs = RT::Model::AttachmentCollection->new( RT->system_user );
     my $txn_alias = $attachs->TransactionAlias;
     $attachs->limit( alias => $txn_alias, column => 'Type', value => 'Create' );
     $attachs->limit( alias => $txn_alias, column => 'Type', value => 'Correspond' );
@@ -634,7 +634,7 @@ sub RemoveInappropriateRecipients {
                 foreach my $type (@types) {
 
                     foreach my $addr ( @{ $self->{$type} } ) {
-                        my $user = RT::Model::User->new(RT->SystemUser);
+                        my $user = RT::Model::User->new(RT->system_user);
                         $user->load_by_email($addr);
                         @{ $self->{$type} } =
                           grep ( !/^\Q$addr\E$/, @{ $self->{$type} } )

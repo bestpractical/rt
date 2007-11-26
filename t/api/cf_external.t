@@ -7,7 +7,7 @@ use RT::Test; use Test::More tests => 12;
 
 sub new (*) {
     my $class = shift;
-    return $class->new(RT->SystemUser);
+    return $class->new(RT->system_user);
 }
 
 use constant VALUES_CLASS => 'RT::Model::CustomFieldValueCollection::Groups';
@@ -34,7 +34,7 @@ isa_ok( $cf, 'RT::Model::CustomField' );
 
 {
     # create at least on group for the tests
-    my $group = RT::Model::Group->new( RT->SystemUser );
+    my $group = RT::Model::Group->new( RT->system_user );
     my ($ret, $msg) = $group->create_userDefinedGroup( Name => $q->Name );
     ok $ret, 'Created group' or diag "error: $msg";
 }

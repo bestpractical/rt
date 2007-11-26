@@ -12,13 +12,13 @@ BEGIN{ $ENV{'TZ'} = 'GMT'};
 my $SUBJECT = "Search test - ".$$;
 
 use_ok('RT::Model::TicketCollection');
-my $tix = RT::Model::TicketCollection->new(RT->SystemUser);
+my $tix = RT::Model::TicketCollection->new(RT->system_user);
 can_ok($tix, 'from_sql');
 $tix->from_sql('Updated = "2005-08-05" AND Subject = "$SUBJECT"');
 
 ok(! $tix->count, "Searching for tickets updated on a random date finds nothing" . $tix->count);
 
-my $ticket = RT::Model::Ticket->new(RT->SystemUser);
+my $ticket = RT::Model::Ticket->new(RT->system_user);
 $ticket->create(Queue => 'General', Subject => $SUBJECT);
 ok ($ticket->id, "We Created a ticket");
 my ($id, $txnid, $txnobj) =  $ticket->Comment( Content => 'A comment that happend on 2004-01-01');

@@ -49,7 +49,7 @@
 
 %# Hide all the save functionality if the user shouldn't see it.
 % if ($session{'CurrentUser'}->has_right( Right => 'CreateSavedSearch',
-%                                        Object=> RT->System )) {
+%                                        Object=> RT->system )) {
 <&|/l&>Privacy:</&>
 % if ( $Object && $Object->id ) {
 <& SearchPrivacy, Object => $Object->Object &>
@@ -85,7 +85,7 @@
 <%INIT>
 return unless $session{'CurrentUser'}->has_right(
     Right  => 'LoadSavedSearch',
-    Object => RT->System,
+    Object => RT->system,
 );
 
 # If we're modifying an old query, check if it's been changed
@@ -98,7 +98,7 @@ my $Dirty = $m->comp(
 use RT::SavedSearches;
 my @Objects = RT::SavedSearches->new($session{'CurrentUser'})->_PrivacyObjects;
 push @Objects, RT::System->new( $session{'CurrentUser'} )
-    if $session{'CurrentUser'}->has_right( Object=> RT->System,
+    if $session{'CurrentUser'}->has_right( Object=> RT->system,
                                           Right => 'SuperUser' );
 
 </%INIT>
@@ -182,7 +182,7 @@ my $desc = $SavedSearch->{'Description'};
 if ( $obj && $obj->id ) {
     # permission check
     if ($obj->Object->isa('RT::System')) {
-        unless ($session{'CurrentUser'}->has_right( Object=> RT->System, Right => 'SuperUser')) {
+        unless ($session{'CurrentUser'}->has_right( Object=> RT->system, Right => 'SuperUser')) {
             push @results, [ loc("No permission to save system-wide searches"), 0 ];
             return @results;
         }

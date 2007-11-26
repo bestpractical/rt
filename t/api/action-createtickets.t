@@ -16,7 +16,7 @@ use_ok('RT::Model::ScripAction');
 use_ok('RT::Model::ScripCondition');
 use_ok('RT::Model::Ticket');
 
-my $approvalsq = RT::Model::Queue->new(RT->SystemUser);
+my $approvalsq = RT::Model::Queue->new(RT->system_user);
 $approvalsq->create(Name => 'Approvals');
 ok ($approvalsq->id, "Created Approvals test queue");
 
@@ -47,16 +47,16 @@ ENDOFCONTENT
 
 like ($approvals , qr/Content/, "Read in the approvals template");
 
-my $apptemp = RT::Model::Template->new(RT->SystemUser);
+my $apptemp = RT::Model::Template->new(RT->system_user);
 $apptemp->create( Content => $approvals, Name => "Approvals", Queue => "0");
 
 ok ($apptemp->id);
 
-my $q = RT::Model::Queue->new(RT->SystemUser);
+my $q = RT::Model::Queue->new(RT->system_user);
 $q->create(Name => 'WorkflowTest');
 ok ($q->id, "Created workflow test queue");
 
-my $scrip = RT::Model::Scrip->new(RT->SystemUser);
+my $scrip = RT::Model::Scrip->new(RT->system_user);
 my ($sval, $smsg) =$scrip->create( ScripCondition => 'On Transaction',
                 ScripAction => 'Create Tickets',
                 Template => 'Approvals',
@@ -67,7 +67,7 @@ ok ($scrip->TemplateObj->id, "Created the scrip template");
 ok ($scrip->ConditionObj->id, "Created the scrip condition");
 ok ($scrip->ActionObj->id, "Created the scrip action");
 
-my $t = RT::Model::Ticket->new(RT->SystemUser);
+my $t = RT::Model::Ticket->new(RT->system_user);
 my($tid, $ttrans, $tmsg) = $t->create(Subject => "Sample workflow test",
            Owner => "root",
            Queue => $q->id);
@@ -82,7 +82,7 @@ unlike ($dependson->Subject, qr/{/, "The subject doesn't have braces in it. that
 is ($t->ReferredToBy->count,1, "It's only referred to by one other ticket");
 is ($t->ReferredToBy->first->BaseObj->id,$t->DependsOn->first->TargetObj->id, "The same ticket that depends on it refers to it.");
 use RT::ScripAction::CreateTickets;
-my $action =  RT::ScripAction::CreateTickets->new( CurrentUser => RT->SystemUser);;
+my $action =  RT::ScripAction::CreateTickets->new( CurrentUser => RT->system_user);;
 
 # comma-delimited templates
 my $commas = <<"EOF";

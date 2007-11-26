@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-unless( $session{'CurrentUser'}->has_right( Right => 'SuperUser', Object => RT->System ) ) {
+unless( $session{'CurrentUser'}->has_right( Right => 'SuperUser', Object => RT->system ) ) {
 	return $m->comp( 'Elements/Error/NoRights' );
 }
 

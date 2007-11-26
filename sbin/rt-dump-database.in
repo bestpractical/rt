@@ -69,14 +69,14 @@ my %Ignore = (
     )],
 );
 
-my $SystemUserId = RT->SystemUser->id;
+my $system_userId = RT->system_user->id;
 my @classes = qw(
     Users Groups Queues ScripActions ScripConditions
     Templates Scrips ACL CustomFields
 );
 foreach my $class (@classes) {
     require "RT/$class.pm";
-    my $objects = "RT::$class"->new(RT->SystemUser);
+    my $objects = "RT::$class"->new(RT->system_user);
     $objects->{find_disabled_rows} = 1;
     $objects->find_all_rows;
 
@@ -93,9 +93,9 @@ foreach my $class (@classes) {
 
     if ($LocalOnly) {
         next if $class eq 'ACL'; # XXX - would go into infinite loop - XXX
-	$objects->limit( column => 'LastUpdatedBy', operator => '!=', value => $SystemUserId )
+	$objects->limit( column => 'LastUpdatedBy', operator => '!=', value => $system_userId )
 	    unless $class eq 'Groups';
-	$objects->limit( column => 'Id', operator => '!=', value => $SystemUserId )
+	$objects->limit( column => 'Id', operator => '!=', value => $system_userId )
 	    if $class eq 'Users';
 	$objects->limit( column => 'Domain', operator => '=', value => 'UserDefined' )
 	    if $class eq 'Groups';
@@ -103,7 +103,7 @@ foreach my $class (@classes) {
 
     my %fields;
     while (my $obj = $objects->next) {
-	next if $obj->can('LastUpdatedBy') and $obj->LastUpdatedBy == $SystemUserId;
+	next if $obj->can('LastUpdatedBy') and $obj->LastUpdatedBy == $system_userId;
 
 	if (!%fields) {
 	    %fields = map { $_ => 1 } keys %{$obj->_ClassAccessible};
@@ -125,7 +125,7 @@ foreach my $class (@classes) {
 	    foreach my $key (map "$record$_", ('', 'Id')) {
 		next unless exists $rv->{$key};
 		my $id = $rv->{$key} or next;
-		my $obj = "RT::$record"->new(RT->SystemUser);
+		my $obj = "RT::$record"->new(RT->system_user);
 		$obj->load_by_cols( Id => $id ) or next;
 		$rv->{$key} = $obj->__value('Name') || 0;
 	    }

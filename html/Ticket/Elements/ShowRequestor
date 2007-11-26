@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
 my $rows = 10;
-my $has_right_adminusers = $session{'CurrentUser'}->has_right(Object => RT->System, Right => 'AdminUsers');
+my $has_right_adminusers = $session{'CurrentUser'}->has_right(Object => RT->system, Right => 'AdminUsers');
 my $people = $Ticket->Requestors->UserMembersObj;
 while ( my $requestor = $people->next ) {
     next if $requestor->Privileged;

@@ -104,7 +104,7 @@ if ($ARGS{'HomeRefreshInterval'}) {
 }
 
 my $actions;
-if ($session{'CurrentUser'}->has_right(Right => 'ModifySelf', Object => RT->System)) {
+if ($session{'CurrentUser'}->has_right(Right => 'ModifySelf', Object => RT->system)) {
     $actions = {
         A => { title => loc('Edit'),
                path  => 'Prefs/MyRT.html',

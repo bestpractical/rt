@@ -10,7 +10,7 @@ use RT;
 ### Set up some testing data.  Test the testing data because why not?
 
 # Create a user with rights, a queue, and some tickets.
-my $user_obj = RT::Model::User->new(RT->SystemUser);
+my $user_obj = RT::Model::User->new(RT->system_user);
 my ($ret, $msg) = $user_obj->load_or_create_by_email('tara@example.com');
 ok($ret, 'record test user creation');
 ($ret,$msg) =$user_obj->set_Name('tara');
@@ -28,7 +28,7 @@ RT-Send-Bcc: jesse@example.com
 
 This is a content string with no content.';
 
-my $template_obj = RT::Model::Template->new(RT->SystemUser);
+my $template_obj = RT::Model::Template->new(RT->system_user);
 $template_obj->create(Queue       => '0',
 		      Name        => 'recordtest',
 		      Description => 'testing Record actions',
@@ -37,18 +37,18 @@ $template_obj->create(Queue       => '0',
 
 # Create a queue and some tickets.
 
-my $queue_obj = RT::Model::Queue->new(RT->SystemUser);
+my $queue_obj = RT::Model::Queue->new(RT->system_user);
 ($ret, $msg) = $queue_obj->create(Name => 'recordtest', Description => 'queue for Action::Record testing');
 ok($ret, 'record test queue creation');
 
-my $ticket1 = RT::Model::Ticket->new(RT->SystemUser);
+my $ticket1 = RT::Model::Ticket->new(RT->system_user);
 my ($id, $tobj, $msg2) = $ticket1->create(Queue    => $queue_obj,
 					 Requestor => ['tara@example.com'],
 					 Subject   => 'bork bork bork',
 					 Priority  => 22,
 					);
 ok($id, 'record test ticket creation 1');
-my $ticket2 = RT::Model::Ticket->new(RT->SystemUser);
+my $ticket2 = RT::Model::Ticket->new(RT->system_user);
 ($id, $tobj, $msg2) = $ticket2->create(Queue     => $queue_obj,
 				      Requestor => ['root@localhost'],
 				      Subject   => 'hurdy gurdy'
@@ -63,7 +63,7 @@ ok($id, 'record test ticket creation 2');
 ok(require RT::Search::FromSQL, "Search::FromSQL loaded");
 my $ticketsqlstr = "Requestor.EmailAddress = '" . $CurrentUser->EmailAddress .
     "' AND Priority > '20'";
-my $search = RT::Search::FromSQL->new(Argument => $ticketsqlstr, TicketsObj => RT::Model::TicketCollection->new(RT->SystemUser),
+my $search = RT::Search::FromSQL->new(Argument => $ticketsqlstr, TicketsObj => RT::Model::TicketCollection->new(RT->system_user),
 				      );
 is(ref($search), 'RT::Search::FromSQL', "search Created");
 ok($search->prepare(), "from_sql search run");

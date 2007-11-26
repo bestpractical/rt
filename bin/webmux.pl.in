@@ -69,7 +69,7 @@ use RT;
 
 package RT::Mason;
 
-use vars qw($Nobody $SystemUser $Handler $r);
+use vars qw($Nobody $system_user $Handler $r);
 
 #This drags in RT's config.pm
 BEGIN {

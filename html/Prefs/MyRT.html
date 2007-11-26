@@ -116,7 +116,7 @@ my @objs = ($sys);
 
 push @objs, RT::SavedSearches->new($session{'CurrentUser'}  )->_PrivacyObjects
     if $session{'CurrentUser'}->has_right( Right  => 'LoadSavedSearch',
-                                          Object => RT->System );
+                                          Object => RT->system );
 
 my @sys_searches;
 for my $object (@objs) {

@@ -175,7 +175,7 @@ example from L</SYNOPSIS>:
 
   use RT::Shredder;
   RT::Shredder::Init( force => 1 );
-  my $deleted = RT::Model::TicketCollection->new( RT->SystemUser );
+  my $deleted = RT::Model::TicketCollection->new( RT->system_user );
   $deleted->{'allow_deleted_search'} = 1;
   $deleted->LimitQueue( value => 'general' );
   $deleted->LimitStatus( value => 'deleted' );
@@ -351,7 +351,7 @@ sub CastObjectsToRecords
         $class = 'RT::'. $class unless $class =~ /^RTx?::/i;
         eval "require $class";
         die "Couldn't load '$class' module" if $@;
-        my $obj = $class->new( RT->SystemUser );
+        my $obj = $class->new( RT->system_user );
         die "Couldn't construct new '$class' object" unless $obj;
         $obj->load( $id );
         unless ( $obj->id ) {
@@ -553,7 +553,7 @@ sub Wipeout
     };
     if( $@ ) {
         Jifty->handle->rollback('force');
-        $self->rollbackDumpTo( Mark => $mark ) if $mark;
+        $selfJifty->handle->rollbackDumpTo( Mark => $mark ) if $mark;
         die $@ if RT::Shredder::Exception::Info->caught;
         die "Couldn't wipeout object: $@";
     }
@@ -787,7 +787,7 @@ sub PopDumpMark {
 sub rollbackDumpTo {
     my $self = shift;
     foreach (@{ $self->{'dump_plugins'} }) {
-        my ($state, $msg) = $_->rollbackTo( @_ );
+        my ($state, $msg) = $_Jifty->handle->rollbackTo( @_ );
         die "Couldn't rollback to mark: $msg" unless $state;
     }
 }

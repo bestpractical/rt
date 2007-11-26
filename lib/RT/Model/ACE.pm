@@ -233,7 +233,7 @@ sub create {
 
     #if we haven't specified any sort of right, we're talking about a global right
     if (!defined $args{'Object'} && !defined $args{'ObjectId'} && !defined $args{'ObjectType'}) {
-        $args{'Object'} = RT->System;
+        $args{'Object'} = RT->system;
     }
     ($args{'Object'}, $args{'ObjectType'}, $args{'ObjectId'}) = $self->_ParseObjectArg( %args );
     unless( $args{'Object'} ) {
@@ -379,7 +379,7 @@ sub Delegate {
 
     # }}}
 
-    my $concurrency_check = RT::Model::ACE->new(RT->SystemUser);
+    my $concurrency_check = RT::Model::ACE->new(RT->system_user);
     $concurrency_check->load( $self->id );
     unless ( $concurrency_check->id ) {
         $RT::Logger->crit(
@@ -464,7 +464,7 @@ sub _delete {
 
     Jifty->handle->begin_transaction() unless $InsideTransaction;
 
-    my $delegated_from_this = RT::Model::ACECollection->new(RT->SystemUser);
+    my $delegated_from_this = RT::Model::ACECollection->new(RT->system_user);
     $delegated_from_this->limit( column    => 'DelegatedFrom',
                                  operator => '=',
                                  value    => $self->id );
@@ -678,7 +678,7 @@ sub _CanonicalizePrincipal {
     my $princ_id   = shift;
     my $princ_type = shift || 'Group';
 
-    my $princ_obj = RT::Model::Principal->new(RT->SystemUser);
+    my $princ_obj = RT::Model::Principal->new(RT->system_user);
     $princ_obj->load($princ_id);
 
     unless ( $princ_obj->id ) {
@@ -695,7 +695,7 @@ sub _CanonicalizePrincipal {
         $equiv_group->load_acl_equivalence_group($princ_obj);
         unless ( $equiv_group->id ) {
             $RT::Logger->crit( "No ACL equiv group for princ " . $princ_obj->id );
-            return ( RT::Model::Principal->new(RT->SystemUser), undef );
+            return ( RT::Model::Principal->new(RT->system_user), undef );
         }
         $princ_obj  = $equiv_group->PrincipalObj();
         $princ_type = 'Group';

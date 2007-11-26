@@ -69,9 +69,9 @@ those rights globally.
 sub AvailableRights {
     my $self = shift;
 
-    my $queue = RT::Model::Queue->new(RT->SystemUser);
-    my $group = RT::Model::Group->new(RT->SystemUser);
-    my $cf    = RT::Model::CustomField->new(RT->SystemUser);
+    my $queue = RT::Model::Queue->new(RT->system_user);
+    my $group = RT::Model::Group->new(RT->system_user);
+    my $cf    = RT::Model::CustomField->new(RT->system_user);
 
     my $qr = $queue->AvailableRights();
     my $gr = $group->AvailableRights();

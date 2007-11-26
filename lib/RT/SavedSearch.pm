@@ -150,7 +150,7 @@ sub Save {
     if ( $object->isa('RT::System') ) {
         return ( 0, $self->loc("No permission to save system-wide searches") )
             unless $self->current_user->has_right(
-            Object => RT->System,
+            Object => RT->system,
             Right  => 'SuperUser'
         );
     }

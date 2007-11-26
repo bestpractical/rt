@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use vars qw($Nobody $SystemUser $item);
+use vars qw($Nobody $system_user $item);
 
 
 

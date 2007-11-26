@@ -393,7 +393,7 @@ sub SendEmail {
 
     unless ( $args{'Entity'}->head->get('Date') ) {
         require RT::Date;
-        my $date = RT::Date->new( RT->SystemUser );
+        my $date = RT::Date->new( RT->system_user );
         $date->set_to_now;
         $args{'Entity'}->head->set( 'Date', $date->RFC2822( Timezone => 'server' ) );
     }
@@ -485,7 +485,7 @@ sub PrepareEmailUsingTemplate {
         @_
     );
 
-    my $template = RT::Model::Template->new( RT->SystemUser );
+    my $template = RT::Model::Template->new( RT->system_user );
     $template->loadGlobalTemplate( $args{'Template'} );
     unless ( $template->id ) {
         return (undef, "Couldn't load template '". $args{'Template'} ."'");
@@ -765,7 +765,7 @@ sub SignEncrypt {
 sub create_user {
     my ( $Username, $Address, $Name, $ErrorsTo, $entity ) = @_;
 
-    my $NewUser = RT::Model::User->new( RT->SystemUser );
+    my $NewUser = RT::Model::User->new( RT->system_user );
 
     my ( $Val, $Message ) = $NewUser->create(
         Name => ( $Username || $Address ),
@@ -1162,7 +1162,7 @@ sub Gateway {
 
     $args{'ticket'} ||= ParseTicketId( $Subject );
 
-    $SystemTicket = RT::Model::Ticket->new( RT->SystemUser );
+    $SystemTicket = RT::Model::Ticket->new( RT->system_user );
     $SystemTicket->load( $args{'ticket'} ) if ( $args{'ticket'} ) ;
     if ( $SystemTicket->id ) {
         $Right = 'ReplyToTicket';
@@ -1171,7 +1171,7 @@ sub Gateway {
     }
 
     #Set up a queue object
-    my $SystemQueueObj = RT::Model::Queue->new( RT->SystemUser );
+    my $SystemQueueObj = RT::Model::Queue->new( RT->system_user );
     $SystemQueueObj->load( $args{'queue'} );
 
     # We can safely have no queue of we have a known-good ticket

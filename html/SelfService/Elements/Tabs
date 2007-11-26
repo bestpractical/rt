@@ -93,7 +93,7 @@ if ($queue_count > 1) {
 }
 
 if ($session{'CurrentUser'}->has_right( Right => 'ModifySelf',
-				       Object => RT->System )) {
+				       Object => RT->system )) {
 	$tabs->{Z} = { title => loc('Preferences'),
 		       path => 'SelfService/Prefs.html'
 		       };

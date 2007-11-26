@@ -197,13 +197,13 @@ sub delete {
 
 
         #   Find all ACEs granted to $self->GroupId
-        my $acl = RT::Model::ACECollection->new(RT->SystemUser);
+        my $acl = RT::Model::ACECollection->new(RT->system_user);
         $acl->LimitToPrincipal( Id => $self->GroupId );
 
 
         while ( my $this_ace = $acl->next() ) {
             #       Find all ACEs which $self-MemberObj has delegated from $this_ace
-            my $delegations = RT::Model::ACECollection->new(RT->SystemUser);
+            my $delegations = RT::Model::ACECollection->new(RT->system_user);
             $delegations->DelegatedFrom( Id => $this_ace->id );
             $delegations->DelegatedBy( Id => $self->MemberId );
 
@@ -266,12 +266,12 @@ sub set_Disabled {
     # (Since we SetDisabledd the database row above, $self no longer counts)
     unless ( $self->GroupObj->Object->has_member_recursively( $self->MemberObj ) ) {
         #   Find all ACEs granted to $self->GroupId
-        my $acl = RT::Model::ACECollection->new(RT->SystemUser);
+        my $acl = RT::Model::ACECollection->new(RT->system_user);
         $acl->LimitToPrincipal( Id => $self->GroupId );
 
         while ( my $this_ace = $acl->next() ) {
             #       Find all ACEs which $self-MemberObj has delegated from $this_ace
-            my $delegations = RT::Model::ACECollection->new(RT->SystemUser);
+            my $delegations = RT::Model::ACECollection->new(RT->system_user);
             $delegations->DelegatedFrom( Id => $this_ace->id );
             $delegations->DelegatedBy( Id => $self->MemberId );
 

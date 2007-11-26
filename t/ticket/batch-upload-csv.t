@@ -9,10 +9,10 @@ use_ok('RT::ScripAction::CreateTickets');
 
 my $QUEUE = 'uploadtest-'.$$;
 
-my $queue_obj = RT::Model::Queue->new(RT->SystemUser);
+my $queue_obj = RT::Model::Queue->new(RT->system_user);
 $queue_obj->create(Name => $QUEUE);
 
-my $cf = RT::Model::CustomField->new(RT->SystemUser);
+my $cf = RT::Model::CustomField->new(RT->system_user);
 my ($val,$msg)  = $cf->create(Name => 'Work Package-'.$$, Type => 'Freeform', LookupType => RT::Model::Ticket->CustomFieldLookupType, MaxValues => 1);
 ok($cf->id);
 ok($val,$msg);
@@ -33,7 +33,7 @@ ok ($action->current_user->id , "WE have a current user");
 $action->Parse(Content => $data);
 my @results = $action->createByTemplate();
 
-my $tix = RT::Model::TicketCollection->new(RT->SystemUser);
+my $tix = RT::Model::TicketCollection->new(RT->system_user);
 $tix->from_sql ("Queue = '". $QUEUE."'");
 $tix->order_by( column => 'id', order => 'ASC' );
 is($tix->count, 2, '2 tickets');

@@ -354,7 +354,7 @@ sub create {
     #Provide a way to turn off scrips if we need to
         $RT::Logger->debug('About to think about scrips for transaction #' .$self->id);
     if ( $args{'ActivateScrips'} and $args{'ObjectType'} eq 'RT::Model::Ticket' ) {
-       $self->{'scrips'} = RT::Model::ScripCollection->new(RT->SystemUser);
+       $self->{'scrips'} = RT::Model::ScripCollection->new(RT->system_user);
 
         $RT::Logger->debug('About to prepare scrips for transaction #' .$self->id); 
         $self->{'scrips'}->prepare(

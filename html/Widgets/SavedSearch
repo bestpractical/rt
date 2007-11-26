@@ -57,7 +57,7 @@ return \%ARGS;
 my @actions;
 my @Objects = RT::SavedSearches->new( $session{'CurrentUser'} )->_PrivacyObjects;
 push @Objects, RT::System->new($session{'CurrentUser'})
-    if $session{'CurrentUser'}->has_right( Object=> RT->System,
+    if $session{'CurrentUser'}->has_right( Object=> RT->system,
                                           Right => 'SuperUser');
 $self->{SearchId} ||= 'new';
 my $SearchParams = { map { $_ => $args->{$_} } @{$self->{SearchFields}} };

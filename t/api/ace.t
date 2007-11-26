@@ -21,7 +21,7 @@ ok(require RT::Model::ACE);
     undef $main::_STDOUT_;
     undef $main::_STDERR_;
 
-my $Queue = RT::Model::Queue->new(RT->SystemUser);
+my $Queue = RT::Model::Queue->new(RT->system_user);
 
 is ($Queue->AvailableRights->{'DeleteTicket'} , 'Delete tickets', "Found the delete ticket right");
 is (RT::System->AvailableRights->{'SuperUser'},  'Do anything and everything', "Found the superuser right");
@@ -33,28 +33,28 @@ is (RT::System->AvailableRights->{'SuperUser'},  'Do anything and everything', "
 {
 
 use_ok('RT::Model::User'); 
-my $user_a = RT::Model::User->new(RT->SystemUser);
+my $user_a = RT::Model::User->new(RT->system_user);
 $user_a->create( Name => 'DelegationA', Privileged => 1);
 ok ($user_a->id, "Created delegation user a");
 
-my $user_b = RT::Model::User->new(RT->SystemUser);
+my $user_b = RT::Model::User->new(RT->system_user);
 $user_b->create( Name => 'DelegationB', Privileged => 1);
 ok ($user_b->id, "Created delegation user b");
 
 
 use_ok('RT::Model::Queue');
-my $q = RT::Model::Queue->new(RT->SystemUser);
+my $q = RT::Model::Queue->new(RT->system_user);
 $q->create(Name =>'DelegationTest');
 ok ($q->id, "Created a delegation test queue");
 
 #------ First, we test whether a user can delegate a right that's been granted to him personally 
-my ($val, $msg) = $user_a->PrincipalObj->GrantRight(Object => RT->System, Right => 'AdminOwnPersonalGroups');
+my ($val, $msg) = $user_a->PrincipalObj->GrantRight(Object => RT->system, Right => 'AdminOwnPersonalGroups');
 ok($val, $msg);
 
 ($val, $msg) = $user_a->PrincipalObj->GrantRight(Object =>$q, Right => 'OwnTicket');
 ok($val, $msg);
 
-ok($user_a->has_right( Object => RT->System, Right => 'AdminOwnPersonalGroups')    ,"user a has the right 'AdminOwnPersonalGroups' directly");
+ok($user_a->has_right( Object => RT->system, Right => 'AdminOwnPersonalGroups')    ,"user a has the right 'AdminOwnPersonalGroups' directly");
 
 my $a_delegates = RT::Model::Group->new( $user_a);
 $a_delegates->createPersonalGroup(Name => 'Delegates');
@@ -63,7 +63,7 @@ ok( $a_delegates->AddMember($user_b->PrincipalId)   ,"user a adds user b to pers
 
 ok( !$user_b->has_right(Right => 'OwnTicket', Object => $q)    ,"user b does not have the right to OwnTicket' in queue 'DelegationTest'");
 ok(  $user_a->has_right(Right => 'OwnTicket', Object => $q)  ,"user a has the right to 'OwnTicket' in queue 'DelegationTest'");
-ok(!$user_a->has_right( Object => RT->System, Right => 'DelegateRights')    ,"user a does not have the right 'delegate rights'");
+ok(!$user_a->has_right( Object => RT->system, Right => 'DelegateRights')    ,"user a does not have the right 'delegate rights'");
 
 
 my $own_ticket_ace = RT::Model::ACE->new($user_a);
@@ -85,7 +85,7 @@ ok( !$val ,"user a tries and fails to delegate the right 'ownticket' in queue 'D
 ($val, $msg) = $user_a->PrincipalObj->GrantRight( Right => 'DelegateRights');
 ok($val, "user a is granted the right to 'delegate rights' - $msg");
 
-ok($user_a->has_right( Object => RT->System, Right => 'DelegateRights') ,"user a has the right 'DeletgateRights'");
+ok($user_a->has_right( Object => RT->system, Right => 'DelegateRights') ,"user a has the right 'DeletgateRights'");
 
 ($val, $msg) = $own_ticket_ace->Delegate(PrincipalId => $a_delegates->PrincipalId) ;
 
@@ -130,23 +130,23 @@ ok( !$user_a->has_right(Right => 'OwnTicket', Object => $q)    ,"make sure that 
 
 
 # {{{ Set up some groups and membership
-my $del1 = RT::Model::Group->new(RT->SystemUser);
+my $del1 = RT::Model::Group->new(RT->system_user);
 ($val, $msg) = $del1->create_userDefinedGroup(Name => 'Del1');
 ok( $val   ,"create a group del1 - $msg");
 
-my $del2 = RT::Model::Group->new(RT->SystemUser);
+my $del2 = RT::Model::Group->new(RT->system_user);
 ($val, $msg) = $del2->create_userDefinedGroup(Name => 'Del2');
 ok( $val   ,"create a group del2 - $msg");
 ($val, $msg) = $del1->AddMember($del2->PrincipalId);
 ok( $val,"make del2 a member of del1 - $msg");
 
-my $del2a = RT::Model::Group->new(RT->SystemUser);
+my $del2a = RT::Model::Group->new(RT->system_user);
 ($val, $msg) = $del2a->create_userDefinedGroup(Name => 'Del2a');
 ok( $val   ,"create a group del2a - $msg");
 ($val, $msg) = $del2->AddMember($del2a->PrincipalId);  
 ok($val    ,"make del2a a member of del2 - $msg");
 
-my $del2b = RT::Model::Group->new(RT->SystemUser);
+my $del2b = RT::Model::Group->new(RT->system_user);
 ($val, $msg) = $del2b->create_userDefinedGroup(Name => 'Del2b');
 ok( $val   ,"create a group del2b - $msg");
 ($val, $msg) = $del2->AddMember($del2b->PrincipalId);  

@@ -73,7 +73,7 @@ $ShortQueryString => undef
 </form>
 
 <%PERL>
-if ( $session{'CurrentUser'}->has_right( Right => 'SuperUser', Object => RT->System ) ) {
+if ( $session{'CurrentUser'}->has_right( Right => 'SuperUser', Object => RT->system ) ) {
     my $query_string = $m->comp('/Elements/QueryString',
         Search => 1,
         Plugin => 'Tickets',

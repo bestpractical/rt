@@ -220,7 +220,7 @@ sub Next {
 
 sub new_item {
     my $self = shift;
-    return RT::Report::Tickets::Entry->new(RT->SystemUser); # $self->current_user);
+    return RT::Report::Tickets::Entry->new(RT->system_user); # $self->current_user);
 }
 
 

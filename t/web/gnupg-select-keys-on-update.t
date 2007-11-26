@@ -46,7 +46,7 @@ ok $m->login, 'logged in';
 
 my $tid;
 {
-    my $ticket = RT::Model::Ticket->new( $RT::SystemUser );
+    my $ticket = RT::Model::Ticket->new( $RT::system_user );
     ($tid) = $ticket->create(
         Subject   => 'test',
         Queue     => $queue->id,

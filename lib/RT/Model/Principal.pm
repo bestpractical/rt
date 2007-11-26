@@ -213,7 +213,7 @@ sub RevokeRight {
 
     #if we haven't specified any sort of right, we're talking about a global right
     if (!defined $args{'Object'} && !defined $args{'ObjectId'} && !defined $args{'ObjectType'}) {
-        $args{'Object'} = RT->System;
+        $args{'Object'} = RT->system;
     }
     #ACL check handled in ACE.pm
     my $type = $self->_GetPrincipalTypeForACL();

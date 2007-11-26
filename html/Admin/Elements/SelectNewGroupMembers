@@ -71,7 +71,7 @@ my $users = new RT::Model::UserCollection($session{'CurrentUser'});
 
 $users->limit(
     column           => 'id',
-    value           => RT->SystemUser->id,
+    value           => RT->system_user->id,
     operator        => '!=',
     entry_aggregator => 'AND'
 );
