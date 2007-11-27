@@ -1105,20 +1105,20 @@ sub PrincipalObj {
     my $self = shift;
 
     unless ( $self->id ) {
-        $RT::Logger->error('User not found');
-        return;
+        $RT::Logger->error("Couldn't get principal for not loaded object");
+        return undef;
     }
 
-    unless ( $self->{'PrincipalObj'} ) {
-        my $obj = RT::Principal->new( $self->CurrentUser );
-        $obj->LoadById( $self->id );
-        unless ( $obj->id && $obj->PrincipalType eq 'User' ) {
-            $RT::Logger->crit( 'Wrong principal for user #'. $self->id );
-        } else {
-            $self->{'PrincipalObj'} = $obj;
-        }
+    my $obj = RT::Principal->new( $self->CurrentUser );
+    $obj->LoadById( $self->id );
+    unless ( $obj->id ) {
+        $RT::Logger->crit( 'No principal for user #'. $self->id );
+        return undef;
+    } elsif ( $obj->PrincipalType ne 'User' ) {
+        $RT::Logger->crit( 'User #'. $self->id .' has principal of '. $obj->PrincipalType .' type' );
+        return undef;
     }
-    return $self->{'PrincipalObj'};
+    return $obj;
 }
 
 
