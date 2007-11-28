@@ -365,6 +365,15 @@ sub _ParseContent {
 
     $args{'Ticket'} = delete $args{'TicketObj'} if $args{'TicketObj'};
     $args{'Transaction'} = delete $args{'TransactionObj'} if $args{'TransactionObj'};
+    $args{'Requestor'} = eval { $args{'Ticket'}->Requestors->UserMembersObj->First->Name };
+    $args{'rtname'}    = RT->Config->Get('rtname');
+    if ( $args{'Ticket'} ) {
+        my $t = $args{'Ticket'}; # avoid memory leak
+        $args{'loc'} = sub { $t->loc(@_) };
+    } else {
+        $args{'loc'} = sub { $self->loc(@_) };
+    }
+
     foreach my $key ( keys %args ) {
         next unless ref $args{ $key };
         next if ref $args{ $key } =~ /^(ARRAY|HASH|SCALAR|CODE)$/;
@@ -372,13 +381,6 @@ sub _ParseContent {
         $args{ $key } = \$val;
     }
 
-    $args{'Requestor'} = eval { $args{'Ticket'}->Requestors->UserMembersObj->First->Name };
-    $args{'rtname'}    = RT->Config->Get('rtname');
-    if ( $args{'Ticket'} ) {
-        $args{'loc'} = sub { $args{'Ticket'}->loc(@_) };
-    } else {
-        $args{'loc'} = sub { $self->loc(@_) };
-    }
 
     my $is_broken = 0;
     my $retval = $template->fill_in(
