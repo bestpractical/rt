@@ -47,11 +47,11 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
 <option value="" 
-<% $Default eq undef && 'SELECTED' %>
+<% $Default eq undef ? 'SELECTED' : '' %>
 >-</option>
 %while  (my $Scrip = $Scrips->next) {
 <option value="<% $Scrip->id %>"
-<% $Scrip->id == $Default && 'SELECTED' %>
+<% $Scrip->id == $Default ?'SELECTED' :'' %>
 ><% loc($Scrip->Name) %>
 </option>
 %}

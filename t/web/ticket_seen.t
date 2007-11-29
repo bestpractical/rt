@@ -58,11 +58,11 @@ diag "user B adds a message, we check that user A see notification and can clear
     $agent_a->content_like(qr/bla-bla/ims, 'the message on the page');
 
     $agent_a->content_like(
-        qr/There is new messages you havn't seen/ims,
+        qr/There are unread/ims,
         'we have not seen something'
     );
 
-    $agent_a->follow_link_ok(text => 'mark');
+    $agent_a->follow_link_ok(text => 'mark them all as seen');
     $agent_a->content_like(
         qr/Marked all messages as seen/ims,
         'see success message'
@@ -70,7 +70,7 @@ diag "user B adds a message, we check that user A see notification and can clear
 
     $agent_a->goto_ticket($tid);
     $agent_a->content_unlike(
-        qr/There is new messages you havn't seen/ims,
+        qr/There are unread/ims,
         'we have seen everything, so no messages'
     );
 }

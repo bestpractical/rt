@@ -52,6 +52,7 @@
 ><% loc($stage) %>
 </option>
 % }
+</select>
 <%INIT>
 if ( !defined $Default || $Default eq '') {
     $Default = 'TransactionCreate';

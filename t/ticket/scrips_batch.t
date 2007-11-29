@@ -19,11 +19,11 @@ ok $m->login, 'logged in as root';
 
 my $sid;
 {
-    $m->follow_link_ok( { text => 'Configuration' } );
-    $m->follow_link_ok( { text => 'Queues' } );
-    $m->follow_link_ok( { text => $queue->Name } );
-    $m->follow_link_ok( { text => 'Scrips' } );
-    $m->follow_link_ok( { text => 'New scrip' } );
+    $m->follow_link_ok(  text => 'Configuration'  );
+    $m->follow_link_ok(  text => 'Queues'  );
+    $m->follow_link_ok(  text => $queue->Name  );
+    $m->follow_link_ok(  text => 'Scrips'  );
+    $m->follow_link_ok(  text => 'New scrip'  );
     $m->form_number(3);
     $m->field('Scrip-new-Description' => 'test');
     $m->select('Scrip-new-ScripCondition' => 'On Transaction');
@@ -70,7 +70,7 @@ END
 
     is_deeply parse_handle($tmp_fh), ['Create'], 'Create';
 
-    $m->follow_link_ok( { text => 'Resolve' } );
+    $m->follow_link_ok(  text => 'Resolve'  );
     $m->form_number(3);
     $m->field( "UpdateContent" => 'resolve it' );
     $m->click('SubmitTicket');
