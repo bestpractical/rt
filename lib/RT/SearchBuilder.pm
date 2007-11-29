@@ -89,7 +89,14 @@ sub current_user {
 # {{{ sub _init 
 sub _set_current_user  {
     my $self = shift;
-    $self->{'user'} = shift;
+
+    my %args; 
+    if ( @_ %2 ) {
+        $args{'current_user'} =  shift @_ if (@_);
+    } else {
+        %args = (@_);
+    }
+    $self->{'user'} = $args{'current_user'};
     
     unless(defined($self->current_user)) {
 	use Carp;
@@ -97,7 +104,7 @@ sub _set_current_user  {
 	$RT::Logger->err("$self was Created without a CurrentUser");
 	return(0);
     }
-    $self->SUPER::_init( 'handle' => Jifty->handle);
+    $self->SUPER::_init( 'handle' => Jifty->handle, current_user => $self->current_user);
 }
 
 =head2 LimitToEnabled

@@ -27,17 +27,17 @@ plan tests => 22;
 	ok( $status, "added child group to parent") or diag "error: $msg";
 	
 	create_savepoint('bucreate'); # before user create
-	my $user = RT::Model::User->new( RT->system_user );
+	my $user = RT::Model::User->new(  RT->system_user );
 	my $uid;
 	($uid, $msg) = $user->create( Name => 'new user', Privileged => 1, Disabled => 0 );
-	ok( $uid, "Created new user" ) or diag "error: $msg";
+	ok( $uid, "Created new user $msg " ) or diag "error: $msg";
 	is( $user->id, $uid, "id is correct" );
 	
 	create_savepoint('buadd'); # before group add
 	($status, $msg) = $cgroup->AddMember( $user->id );
 	ok( $status, "added user to child group") or diag "error: $msg";
 	
-	my $members = RT::Model::GroupMemberCollection->new( RT->system_user );
+	my $members = RT::Model::GroupMemberCollection->new( current_user => RT->system_user );
 	$members->limit( column => 'MemberId', value => $uid );
 	$members->limit( column => 'GroupId', value => $cgid );
 	is( $members->count, 1, "find membership record" );

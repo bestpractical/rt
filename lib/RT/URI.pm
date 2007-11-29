@@ -169,16 +169,12 @@ sub _GetResolver {
     my $scheme = shift;
 
     $scheme =~ s/(\.|-)/_/g;
-    my $resolver;
 
-    
-    eval " 
-        require RT::URI::$scheme;
-        \$resolver = RT::URI::$scheme->new(\$self->current_user);
-    ";
-     
-    if ($resolver) {
-        $self->{'resolver'} = $resolver;
+    my $class = "RT::URI::$scheme";
+    Jifty::Util->try_to_require( $class);
+   
+    if ($class->can('new') ){ 
+        $self->{'resolver'} =$class->new(current_user => $self->current_user)
     } else {
         $self->{'resolver'} = RT::URI::base->new($self->current_user); 
     }
@@ -274,10 +270,5 @@ sub Resolver {
     my $self =shift;
     return ($self->{'resolver'});
 }
-
-eval "require RT::URI_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/URI_Vendor.pm});
-eval "require RT::URI_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/URI_Local.pm});
 
 1;

@@ -234,7 +234,7 @@ sub InsertInitialData {
     my $CurrentUser = new RT::CurrentUser();
 
     #print "Checking for existing system user...";
-    my $test_user = RT::Model::User->new();
+    my $test_user = RT::Model::User->new($CurrentUser);
     $test_user->load('RT_System');
     if ( $test_user->id ) {
         #print "found!\n\nYou appear to have a functional RT database.\n"
@@ -246,7 +246,7 @@ sub InsertInitialData {
     }
 
     #print "Creating system user...";
-    my $RT_System = RT::Model::User->new();
+    my $RT_System = RT::Model::User->new($CurrentUser);
 
     my ( $val, $msg ) = $RT_System->_bootstrap_create(
         Name     => 'RT_System',

@@ -145,7 +145,7 @@ See also C<test_name> function.
 
 =cut
 
-sub db_name { return File::Spec->catfile(create_tmpdir(), test_name() .".db") }
+sub db_name { return Jifty->config->framework('Database')->{'Database'} }
 
 =head3 connect_sqlite
 
@@ -167,7 +167,7 @@ sub connect_sqlite
 
 sub shredder_new
 {
-    my $obj = new RT::Shredder;
+    my $obj = RT::Shredder->new();
 
     my $file = File::Spec->catfile( tmpdir(), test_name() .'.XXXX.sql' );
     $obj->AddDumpPlugin( Arguments => {
@@ -265,7 +265,7 @@ sub __cp_db
     # DIRTY HACK: undef Handles to force reconnect
 
     File::Copy::copy( $orig, $dest ) or die "Couldn't copy '$orig' => '$dest': $!";
-    RT::connect_to_database();
+    Jifty->handle->connect();
     return;
 }
 
@@ -301,7 +301,7 @@ sub dump_sqlite
 
     my $res = {};
     foreach my $t( @tables ) {
-        next if lc($t) eq 'sessions';
+        next if lc($t) =~/^_|sqlite/;
         $res->{$t} = $dbh->selectall_hashref("SELECT * FROM $t", 'id');
         clean_dates( $res->{$t} ) if $args{'CleanDates'};
         die $DBI::err if $DBI::err;

@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-BEGIN { require "t/shredder/utils.pl"; }
 use RT::Test; use Test::More;
+BEGIN { require "t/shredder/utils.pl"; }
 use Test::Deep;
 init_db();
 
