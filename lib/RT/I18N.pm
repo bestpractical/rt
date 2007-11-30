@@ -411,6 +411,7 @@ sub _GuessCharset {
 	Encode::Guess->set_suspects(@RT::EmailInputEncodings);
 	my $decoder = Encode::Guess->guess( $_[0] );
 
+      if ( defined($decoder) ) {
 	if ( ref $decoder ) {
 	    $charset = $decoder->name;
 	    $RT::Logger->debug("Guessed encoding: $charset");
@@ -430,6 +431,10 @@ sub _GuessCharset {
 	else {
 	    $RT::Logger->warning("Encode::Guess failed: $decoder; fallback to $fallback");
 	}
+      }
+      else {
+	  $RT::Logger->warning("Encode::Guess failed: decoder is undefined; fallback to $fallback");
+      }
     }
     else {
 	$RT::Logger->warning("Cannot Encode::Guess; fallback to $fallback");

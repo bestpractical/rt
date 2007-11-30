@@ -639,7 +639,7 @@ sub MakeMIMEEntity {
 
     #Make the update content have no 'weird' newlines in it
 
-    $args{'Body'} =~ s/\r\n/\n/gs;
+    $args{'Body'} =~ s/\r\n/\n/gs if $args{'Body'};
     my $Message;
     {
         # MIME::Head is not happy in utf-8 domain.  This only happens
@@ -1286,7 +1286,7 @@ sub _ProcessObjectCustomFieldUpdates {
             @values = @{ $args{'ARGS'}->{$arg} };
         } elsif ( $cf_type =~ /text/i ) { # Both Text and Wikitext
             @values = ($args{'ARGS'}->{$arg});
-        } else {
+        } elsif ( defined( $args{'ARGS'}->{ $arg } ) ) {
             @values = split /\n/, $args{'ARGS'}->{ $arg };
         }
         
@@ -1512,7 +1512,7 @@ sub ProcessTicketDates {
         my $DateObj = RT::Date->new( $session{'CurrentUser'} );
 
         #If it's something other than just whitespace
-        if ( $ARGSRef->{ $field . '_Date' } ne '' ) {
+        if ( $ARGSRef->{ $field . '_Date' } && ($ARGSRef->{ $field . '_Date' } ne '') ) {
             $DateObj->Set(
                 Format => 'unknown',
                 Value  => $ARGSRef->{ $field . '_Date' }
