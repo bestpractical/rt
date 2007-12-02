@@ -52,7 +52,11 @@
 %   my $name = $addr->Name;
 %   undef $name if $name eq $email;
 %   my $this = Mail::Address->new($name, $email)->format;
-<li><span class="informal"><% $this %></span><span class="hidden_value"><% $prefix %><% $this %>, </span></li>
+%   my $show = $this;
+%   RT::Interface::Web::EscapeUTF8(\$show);
+%   RT::Interface::Web::EscapeUTF8(\$query);
+%   $show =~ s{\Q$query\E}{<b>$query</b>}g;
+<li><span class="informal"><% $show |n %></span><span class="hidden_value"><% $prefix %><% $this %>, </span></li>
 % }
 </ul>
 </body>
@@ -75,11 +79,12 @@ unless ($lookup) {
 my $prefix = '';
 $prefix = join(', ', (grep { length $_ } map { $_->format } @addresses), '') if @addresses;
 
+my $query = $lookup->format;
 my $users = RT::Users->new($session{'CurrentUser'});
 $users->Limit(
     FIELD           => $_,
     OPERATOR        => 'LIKE',
-    VALUE           => $lookup->format,
+    VALUE           => $query,
     SUBCLAUSE       => 'EmailAutocomplete',
     ENTRYAGGREGATOR => 'OR',
 ) for qw< EmailAddress Name >;
