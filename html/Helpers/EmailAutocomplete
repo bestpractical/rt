@@ -48,12 +48,18 @@
 <body>
 <ul>
 % while (my $addr = $users->next) {
-<li><span class="informal"><% $addr->EmailAddress %></span><span class="hidden_value"><% $prefix %><% $addr->EmailAddress %>, </span></li>
+%   my $email = $addr->EmailAddress or next;
+%   my $name = $addr->Name;
+%   undef $name if $name eq $email;
+%   my $this = Mail::Address->new($name, $email)->format;
+<li><span class="informal"><% $this %></span><span class="hidden_value"><% $prefix %><% $this %>, </span></li>
 % }
 </ul>
 </body>
 % $m->abort;
 <%INIT>
+require Mail::Address;
+
 $r->content_type('text/xml; charset=UTF-8');
 $Value =~ s/^\s+//;
 $Value =~ s/\s+$//;
@@ -71,10 +77,12 @@ $prefix = join(', ', (grep { length $_ } map { $_->format } @addresses), '') if 
 
 my $users = RT::Users->new($session{'CurrentUser'});
 $users->Limit(
-    FIELD    => 'Name',
-    OPERATOR => 'LIKE',
-    VALUE    => $lookup->format,
-);
+    FIELD           => $_,
+    OPERATOR        => 'LIKE',
+    VALUE           => $lookup->format,
+    SUBCLAUSE       => 'EmailAutocomplete',
+    ENTRYAGGREGATOR => 'OR',
+) for qw< EmailAddress Name >;
 $users->OrderBy( FIELD => 'Name' );
 
 </%INIT>
