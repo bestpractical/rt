@@ -65,7 +65,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value">
- <& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $session{CurrentUser}->EmailAddress &>
+<input name="Requestors" value="<%$session{CurrentUser}->EmailAddress%>" size="20" />
 </td>
 </tr>
 <tr>
@@ -73,7 +73,7 @@
 <&|/l&>Cc</&>:
 </td>
 <td class="value">
- <& /Elements/EmailInput, Name => 'Cc', Size => '20' &>
+ <input name="Cc" size="20" />
 </td>
 </tr>
 <tr>

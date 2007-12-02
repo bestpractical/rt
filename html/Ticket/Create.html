@@ -82,7 +82,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value" colspan="5">
-<& /Elements/EmailInput, Name => 'Requestors', Size => '40', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress &>
+<input name="Requestors" value="<% ($ARGS{Requestors}) || $session{CurrentUser}->EmailAddress %>" size="40" />
 </td>
 </tr>
 <tr>
@@ -90,7 +90,7 @@
 <&|/l&>Cc</&>:
 </td>
 <td class="value" colspan="5">
-<& /Elements/EmailInput, Name => 'Cc', Size => '40', Default => $ARGS{Cc} &><br />
+<input name="Cc" size="40" value="<% $ARGS{Cc} %>" /><br />
 <i><font size="-2">
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
 </td>
@@ -100,7 +100,7 @@
 <&|/l&>Admin Cc</&>:
 </td>
 <td class="value" colspan="5">
-<& /Elements/EmailInput, Name => 'AdminCc', Size => '40', Default => $ARGS{AdminCc} &><br />
+<input name="AdminCc" size="40" value="<% $ARGS{AdminCc} %>" /><br />
 <i><font size="-2">
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
 </td>
