@@ -45,6 +45,114 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% if (!$m->notes('RT-Scriptaculous-Loaded')) {
+%     $m->notes('RT-Scriptaculous-Loaded' => 1);
+<script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/js/scriptaculous/prototype.js"></script>
+<script type="text/javascript" src="<%$RT::WebPath%>/NoAuth/js/scriptaculous/scriptaculous.js?load=effects,controls"></script>
+<style type="text/css">
+<!--/*--><![CDATA[/*><!--*/
+
+/* This part wants to be in a .css file */
+
+form input.ajaxautocompletes {
+    background: #fff url(<%$RT::WebPath%>/NoAuth/images/css/fieldbg-autocomplete.gif) repeat-x top right;
+    padding-right: 18px;
+}
+
+/* Autocomplete */
+
+.autocomplete {
+    border: 1px solid #666;
+    background: white;
+    z-index: 43;
+}
+
+.autocomplete ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.autocomplete li {
+    padding: 0.1em 0 0.1em 0.3em;
+    cursor: default;
+}
+
+.autocomplete .selected {
+    background: rgb(82, 134, 181);
+    color: white;
+}
+
+div.inline .autocomplete .hidden_value,
+.autocomplete .hidden_value {
+    display: none;
+}
+
+/*]]>*/-->
+</style>
+% }
+% my $id = "EmailInput-$Name";
+% my $div = "$id-Autocomplete";
+% my $indicator = "$id-Indicator";
+<input id="<% $id %>" class="ajaxautocompletes" name="<% $Name %>" size="<% $Size %>" value="<% $Default %>" />
+<div id="<% $div %>" class="autocomplete"></div>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+new Ajax.Autocompleter("<% $id %>", "<% $div %>", "<%$RT::WebPath%>/Helpers/EmailAutocomplete", {paramName: 'Value'});
+//--><!]]>
+</script>
+<%ARGS>
+$Name
+$Size    => 40
+$Default => ''
+</%ARGS>
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
 <input id="EmailInput-<% $Name %>" name="<% $Name %>" size="<% $Size %>" value="<% $Default %>" />
 <%ARGS>
 $Name
