@@ -88,7 +88,7 @@ lightwindow.prototype = {
 				page : {height : 250, width : 250},
 				inline : {height : 250, width : 250},
 				media : {height : 250, width : 250},
-				external : {height : 250, width : 250},
+				external : {height : 500, width : 300},
 				titleHeight : 25
 			},
 			classNames : {	
@@ -153,8 +153,8 @@ lightwindow.prototype = {
 			EOLASFix : 'swf,wmv,fla,flv',
 			overlay : {
 				opacity : 0.7,
-				image : 'images/black.png',
-				presetImage : 'images/black-70.png'
+				image : '../NoAuth/images/lightwindow/black.png',
+				presetImage : '../NoAuth/images/lightwindow/black-70.png'
 			},
 			skin : 	{
 				main : 	'<div id="lightwindow_container" >'+
@@ -204,7 +204,7 @@ lightwindow.prototype = {
 							'</div>'+
 						'</div>',	
 				loading : 	'<div id="lightwindow_loading" >'+
-								'<img src="images/ajax-loading.gif" alt="loading" />'+
+								'<img src="../NoAuth/images/lightwindow/ajax-loading.gif" alt="loading" />'+
 								'<span>Loading or <a href="javascript: myLightWindow.deactivate();">Cancel</a></span>'+
 								'<iframe name="lightwindow_loading_shim" id="lightwindow_loading_shim" src="javascript:false;" frameBorder="0" scrolling="no"></iframe>'+
 							'</div>',
@@ -1676,9 +1676,6 @@ lightwindow.prototype = {
 								width: this.resizeTo.width+'px'
 							});
 						}
-						if (this.containerChange.height != 0 || this.containerChange.width != 0) {
-							new Effect.MoveBy('lightwindow_container', this.containerChange.height, this.containerChange.width, {transition: Effect.Transitions.sinoidal});
-						}
 					}.bind(this),			
 					afterFinish: function() {
 						this._finishWindow();
@@ -1700,7 +1697,7 @@ lightwindow.prototype = {
 			this._setStatus(false);
 		} else {
 			Effect.Fade('lightwindow_loading', {
-				duration: 0.75,
+				duration: 0.5,
 				delay: 1.0, 
 				afterFinish: function() {
 					// Just in case we need some scroll goodness (this also avoids the swiss cheese effect)
@@ -1783,7 +1780,7 @@ lightwindow.prototype = {
 		if ($('lightwindow_data_slide').getStyle('display') != 'none') {
 			this.dimensions.dataEffects.push(
 				new Effect.SlideUp('lightwindow_data_slide', {sync: true}),
-				new Effect.Fade('lightwindow_data_slide', {sync: true, from: 1.0, to: 0.0})
+				new Effect.Fade('lightwindow_data_slide', {sync: true, from: 1.0, to: 0.0, duration: 0.5})
 			);
 		}
 		
@@ -1819,7 +1816,7 @@ lightwindow.prototype = {
 		// We always want the title bar as well
 		this.dimensions.dataEffects.push(
 			new Effect.Morph('lightwindow_title_bar_inner', {sync: true, style: {height: '0px', marginTop: this.options.dimensions.titleHeight+'px'}}),
-		 	new Effect.Fade('lightwindow_title_bar_inner', {sync: true, from: 1.0, to: 0.0})
+		 	new Effect.Fade('lightwindow_title_bar_inner', {sync: true, from: 1.0, to: 0.0, duration: 0.5})
 		);
 
 		new Effect.Parallel(this.dimensions.dataEffects, {
@@ -1917,5 +1914,6 @@ Event.observe(window, 'load', lightwindowInit, false);
 //
 var myLightWindow = null;
 function lightwindowInit() {
+        window.myLightWindow = myLightWindow;
 	myLightWindow = new lightwindow();
 }
