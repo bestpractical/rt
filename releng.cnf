@@ -1,5 +1,5 @@
 PRODUCT			        = rt
-TAG			            = 3.6.5
+TAG			            = 3.6.6rc1
 CANONICAL_REPO		    = svn+ssh://svn.bestpractical.com/svn/bps-public/rt/
 TAGS		            = tags/
 TRUNK	                = branches/3.6-RELEASE
