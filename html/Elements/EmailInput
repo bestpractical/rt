@@ -479,7 +479,7 @@ div.inline .autocomplete .hidden_value,
 % my $popup = "$id-Popup";
 % my $indicator = "$id-Indicator";
 <input id="<% $id %>" class="ajaxautocompletes" name="<% $Name %>" size="<% $Size %>" value="<% $Default %>" />
-<a class="lightwindow page-options" params="lightwindow_type=external,lightwindow_width=300,lightwindow_height=500" id="<% $popup %>" href="<%$RT::WebPath%>/Helpers/EmailPopup.html?id=<% $id %>" style="visibility: hidden" />
+<a class="lightwindow page-options" params="lightwindow_type=external,lightwindow_width=400,lightwindow_height=500" id="<% $popup %>" title="<&|/l&>Select a user</&>" caption="<&|/l&>Press 'Esc' to close this window.</&>" href="<%$RT::WebPath%>/Helpers/EmailPopup.html?id=<% $id %>" style="visibility: hidden" />
 <div id="<% $div %>" class="autocomplete"></div>
 <script type="text/javascript">
 <!--//--><![CDATA[//><!--

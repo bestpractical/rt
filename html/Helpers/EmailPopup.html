@@ -47,20 +47,98 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, ShowBar => 0 &>
 <body>
-% my $users = RT::Users->new($session{'CurrentUser'});
-% $users->OrderBy( FIELD => 'Name' );
-% $users->UnLimit;
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+function add_or_remove(addr) {
+    var elm = parent.document.getElementById('<% $id %>');
+    var vals = elm.value.split(/\s*,\s*/);
+    var to_concat = addr;
+    var new_vals = [];
+    for (var i = 0, length = vals.length; i < length; i++) {
+        if (vals[i] == addr) {
+            to_concat = [];
+        }
+        else if (vals[i].length > 0) {
+            new_vals.push(vals[i]);
+        }
+    }
+    elm.value = new_vals.concat(to_concat).join(', ');
+}
+document.onkeydown = function(e) {
+    if (e == null) {
+        var keycode = event.keyCode;
+    } else {
+        var keycode = e.which;
+    }
+    if (keycode == 27) {
+        parent.myLightWindow.deactivate();
+    }
+}
+//--><!]]>
+</script>
+<div class="titlebox"><div class="titlebox">
+<form method="get" action="<% $RT::WebPath %>/Helpers/EmailPopup.html" class="titlebox-content">
+<input type="hidden" name="id" value="<% $id %>" />
+<input style="float: right" type="submit" class="button" value="<&|/l&>Go!</&>" />
+<& /Elements/SelectUsers, %ARGS &><br />
+<label><input style="float: left" type="checkbox" class="checkbox" name="FindDisabledUsers" value="1" /> <&|/l&>Include disabled users in search.</&></label>
+</form></div>
+<div class="titlebox-title">
+<%$caption%>
+</div>
+</div>
 <ul>
-% while (my $addr = $users->next) {
-%   my $email = $addr->EmailAddress or next;
-%   my $name = $addr->Name;
-%   undef $name if $name eq $email;
-%   my $this = Mail::Address->new($name, $email)->format;
-<li><a class="lightwindow_action" rel="deactivate" href="javascript:(parent.document.getElementById('<% $id %>').value='<% $this %>') && parent.myLightWindow.deactivate()"><% $this %></a></li>
+%if ($users->Count == 0) {
+<li><em><&|/l&>No users matching search criteria found.</&></em></li>
 % }
+%my @ids;
+%require Mail::Address;
+%while ( $user = $users->Next) {
+%    my $email = $user->EmailAddress or next;
+%    my $name = $user->Name;
+%    undef $name if $name eq $email;
+%    my $this = Mail::Address->new($name, $email)->format;
+<li><a href="javascript:add_or_remove('<% $this %>')"><% $this %></a></li>
+%}
 </ul>
-</body>
+</body></html>
 % $m->abort;
+<%INIT>
+my ($user, $caption);
+my $users = new RT::Users($session{'CurrentUser'});
+
+if ($FindDisabledUsers) {
+	$users->{'find_disabled_rows'} = 1;
+}
+
+if (length $UserString) {
+    $caption = loc("Users matching search criteria");
+    if ($UserField =~ /^CustomField-(\d+)/) {
+	$users->LimitCustomField(
+	    CUSTOMFIELD => $1,
+	    OPERATOR => $UserOp,
+	    VALUE => $UserString,
+	); 
+    }
+    else {
+	$users->Limit(
+	    FIELD => $UserField,
+	    OPERATOR => $UserOp,
+	    VALUE => $UserString,
+	); 
+    }
+}
+else {
+    $caption = loc("Privileged users");
+    $users->LimitToPrivileged;
+}
+</%INIT>
 <%ARGS>
 $id
+$UserString        => undef
+$UserOp            => '='
+$UserField         => 'Name'
+$IdLike            => undef
+$EmailLike         => undef
+$FindDisabledUsers => 0
 </%ARGS>

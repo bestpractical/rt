@@ -88,7 +88,7 @@ lightwindow.prototype = {
 				page : {height : 250, width : 250},
 				inline : {height : 250, width : 250},
 				media : {height : 250, width : 250},
-				external : {height : 500, width : 300},
+				external : {height : 500, width : 400},
 				titleHeight : 25
 			},
 			classNames : {	
@@ -161,7 +161,7 @@ lightwindow.prototype = {
 							'<div id="lightwindow_title_bar" >'+
 								'<div id="lightwindow_title_bar_inner" >'+
 									'<span id="lightwindow_title_bar_title"></span>'+
-									'<a id="lightwindow_title_bar_close_link" >close</a>'+
+									'<a id="lightwindow_title_bar_close_link" >[ X ]</a>'+
 								'</div>'+
 							'</div>'+
 							'<div id="lightwindow_stage" >'+
