@@ -608,7 +608,7 @@ msgstr "<%$field%>"
 #: html/Elements/CreateTicket:47
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr ""
+msgid "<input type=\"submit\" class=\"button\" value=\"提出申請單\" />&nbsp;%1"
 
 #: docs/design_docs/string-extraction-guide.txt:54 lib/RT/StyleGuide.pod:787
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
@@ -718,7 +718,7 @@ msgstr "新增副本收件人"
 
 #: html/Search/Elements/EditFormat:49
 msgid "Add Columns"
-msgstr ""
+msgstr "新增欄位"
 
 #: html/Search/Elements/PickCriteria:46
 msgid "Add Criteria"
@@ -774,7 +774,7 @@ msgstr "新增查詢條件"
 
 #: html/Search/Build.html:109 html/Search/Build.html:94
 msgid "Add and Search"
-msgstr ""
+msgstr "新增並開始查詢"
 
 #: html/Search/Bulk.html:124
 msgid "Add comments or replies to selected tickets"
@@ -790,7 +790,7 @@ msgstr "新增視察員"
 
 #: html/Search/Build.html:85
 msgid "Add these terms to your search"
-msgstr ""
+msgstr "將這些條件加進查詢內"
 
 #: html/Search/Bulk.html:158
 msgid "Add values"
@@ -1137,7 +1137,7 @@ msgstr "您確定要刪除？"
 
 #: html/Search/Elements/DisplayOptions:81
 msgid "Asc"
-msgstr ""
+msgstr "遞增"
 
 #: html/Elements/SelectSortOrder:56
 msgid "Ascending"
@@ -1306,7 +1306,7 @@ msgstr "空白範本"
 
 #: html/Search/Elements/EditFormat:84
 msgid "Bold"
-msgstr ""
+msgstr "粗體"
 
 #: NOT FOUND IN SOURCE
 msgid "Bookmarkable URL for this search"
@@ -1453,7 +1453,7 @@ msgstr "中英文"
 
 #: html/NoAuth/js/util.js:201
 msgid "Choose a date"
-msgstr ""
+msgstr "選擇日期"
 
 #: html/Admin/Users/Modify.html:156 html/User/Prefs.html:141
 msgid "City"
@@ -2136,7 +2136,7 @@ msgstr "現有權限"
 
 #: html/Search/Elements/EditQuery:47
 msgid "Current search"
-msgstr ""
+msgstr "現有查詢條件"
 
 #: NOT FOUND IN SOURCE
 msgid "Current search criteria"
@@ -2520,7 +2520,7 @@ msgstr "需先處理"
 
 #: html/Search/Elements/DisplayOptions:86
 msgid "Desc"
-msgstr ""
+msgstr "遞減"
 
 #: html/Elements/SelectSortOrder:56
 msgid "Descending"
@@ -2689,7 +2689,7 @@ msgstr "編輯查詢"
 
 #: html/Ticket/Elements/Tabs:214
 msgid "Edit Search"
-msgstr ""
+msgstr "編輯查詢"
 
 #: NOT FOUND IN SOURCE
 msgid "Edit Subgroups"
@@ -3190,7 +3190,7 @@ msgstr "電子表單作業區"
 
 #: html/Search/Elements/EditFormat:52
 msgid "Format"
-msgstr ""
+msgstr "格式"
 
 #: html/Search/Results.html:145
 #. ($ticketcount)
@@ -3530,7 +3530,7 @@ msgstr "住宿費"
 
 #: html/Elements/SelectTimeUnits:48
 msgid "Hours"
-msgstr ""
+msgstr "小時"
 
 #: lib/RT/Base.pm:119
 #. (6)
@@ -3720,7 +3720,7 @@ msgstr "它接受下列參數："
 
 #: html/Search/Elements/EditFormat:85
 msgid "Italic"
-msgstr ""
+msgstr "斜體"
 
 #: NOT FOUND IN SOURCE
 msgid "Item Name"
@@ -3812,7 +3812,7 @@ msgstr "語言"
 
 #: html/Search/Elements/EditFormat:79
 msgid "Large"
-msgstr ""
+msgstr "大"
 
 #: html/Ticket/Elements/Tabs:96
 msgid "Last"
@@ -3864,7 +3864,7 @@ msgstr "限制表單為 %1 到 %2"
 
 #: html/Search/Elements/EditFormat:68
 msgid "Link"
-msgstr ""
+msgstr "鏈結"
 
 #: NOT FOUND IN SOURCE
 msgid "Link a Queue"
@@ -4175,7 +4175,7 @@ msgstr "此申請單的相關訊息不會寄送給..."
 
 #: html/Elements/SelectTimeUnits:47
 msgid "Minutes"
-msgstr ""
+msgstr "分鐘"
 
 #: NOT FOUND IN SOURCE
 msgid "Misc. Expense"
@@ -4620,7 +4620,7 @@ msgstr "新增表單"
 
 #: html/Ticket/Elements/Reminders:118
 msgid "New reminder:"
-msgstr ""
+msgstr "新增提醒項目："
 
 #: NOT FOUND IN SOURCE
 msgid "New request"
@@ -5962,7 +5962,7 @@ msgstr ""
 
 #: html/Elements/MyReminders:48 html/Ticket/Elements/ShowSummary:75 html/Ticket/Elements/Tabs:122 html/Ticket/Reminders.html:52
 msgid "Reminders"
-msgstr ""
+msgstr "提醒項目"
 
 #: html/Ticket/Reminders.html:50
 #. ($Ticket->Id)
@@ -6672,7 +6672,7 @@ msgstr "使用者：%1"
 
 #: html/Elements/Tabs:68
 msgid "Simple Search"
-msgstr ""
+msgstr "簡易查詢"
 
 #: html/Admin/Elements/SelectSingleOrMultiple:47
 msgid "Single"
@@ -6680,7 +6680,7 @@ msgstr "單一"
 
 #: html/Search/Elements/EditFormat:75
 msgid "Size"
-msgstr ""
+msgstr "大小"
 
 #: html/Elements/Header:89
 msgid "Skip Menu"
@@ -6688,7 +6688,7 @@ msgstr "略過選單"
 
 #: html/Search/Elements/EditFormat:78
 msgid "Small"
-msgstr ""
+msgstr "小"
 
 #: html/Admin/CustomFields/Modify.html:120
 msgid "Some browsers may only load content from the same domain as your RT server."
@@ -6793,7 +6793,7 @@ msgstr "承辦人從 %1 強制更換 "
 
 #: html/Search/Elements/EditFormat:81
 msgid "Style"
-msgstr ""
+msgstr "樣式"
 
 #: NOT FOUND IN SOURCE
 msgid "Subgroup"
@@ -7627,7 +7627,7 @@ msgstr "上載您的更動"
 
 #: html/Admin/index.html:90
 msgid "Use other RT administrative tools"
-msgstr ""
+msgstr "使用其他的 RT 管理工具"
 
 #: NOT FOUND IN SOURCE
 msgid "User"
@@ -8344,3 +8344,5 @@ msgstr "範本：%1"
 msgid "years"
 msgstr "年"
 
+msgid "Press 'Esc' to close this window."
+msgstr "按 'Esc' 鍵可關閉本視窗。"
