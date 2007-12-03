@@ -47,16 +47,22 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="GroupField">
 % foreach my $col (RT::Group->BasicColumns) {
-<option value="<% $col->[0] %>"><% loc($col->[1]) %></option>
+<option <% ($GroupField eq $col->[0]) ? 'SELECTED' : '' %> value="<% $col->[0] %>"><% loc($col->[1]) %></option>
 % }
 % while (my $CF = $CFs->Next) {
-<option value="CustomField-<% $CF->Id %>"><&|/l&>CustomField</&>: <% $CF->Name %></option>
+%   my $val = "CustomField-" . $CF->Id;
+<option <% ($GroupField eq $val) ? 'SELECTED' : '' %> value="<% $val %>"><&|/l&>CustomField</&>: <% $CF->Name %></option>
 % }
 </select>
-<& /Elements/SelectMatch, Name=> 'GroupOp' &>
-<input size="8" name="GroupString" />
+<& /Elements/SelectMatch, Name => 'GroupOp', Default => $GroupOp &>
+<input size="8" name="GroupString" value="<% $GroupString %>" />
 <%INIT>
 my $CFs = RT::CustomFields->new($session{'CurrentUser'});
 $CFs->LimitToChildType('RT::Group');
 $CFs->OrderBy( FIELD => 'Name' );
 </%INIT>
+<%ARGS>
+$GroupField  => ''
+$GroupOp     => ''
+$GroupString => ''
+</%ARGS>

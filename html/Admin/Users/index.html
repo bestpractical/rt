@@ -69,8 +69,8 @@
 <br /><br />
 <form method="post" action="<% $RT::WebPath %>/Admin/Users/index.html">
 
-<&|/l&>Find people whose</&> <& /Elements/SelectUsers &><br />
-<input type="checkbox" class="checkbox" name="FindDisabledUsers" value="1" /> <&|/l&>Include disabled users in search.</&>
+<&|/l&>Find people whose</&> <& /Elements/SelectUsers, %ARGS &><br />
+<label><input type="checkbox" class="checkbox" name="FindDisabledUsers" value="1" /> <&|/l&>Include disabled users in search.</&></label>
 <br />
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
