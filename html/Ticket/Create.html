@@ -153,7 +153,15 @@
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <tr>
 <td><% loc('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &>
+<%PERL>
+    my @signers = ( 
+        ($QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress')),
+        $session{'CurrentUser'}->EmailAddress,
+    );
+</%PERL>
+using <& /Elements/SelectKeyForSigning, Addresses => \@signers &>
+</td>
 <td><% loc('Encrypt')%></td>
 <td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
 <td colspan="2">&nbsp;</td>
