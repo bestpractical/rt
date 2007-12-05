@@ -61,6 +61,7 @@ html/Callbacks/RTFM/Elements/Header/Head
 html/Callbacks/RTFM/Elements/MessageBox/Default
 html/Callbacks/RTFM/Elements/Tabs/Default
 html/Callbacks/RTFM/RTIR/Elements/Tabs/Default
+html/Callbacks/RTFM/SelfService/Elements/Tabs/Default
 html/Callbacks/RTFM/Ticket/Elements/Tabs/Default
 html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox
 html/NoAuth/webrtfm.css
@@ -101,6 +102,10 @@ html/RTFM/Elements/Tabs
 html/RTFM/Elements/UpdatedArticles
 html/RTFM/index.html
 html/RTFM/Topics.html
+html/SelfService/Article/autohandler
+html/SelfService/Article/Display.html
+html/SelfService/Article/Search.html
+html/SelfService/Elements/SearchArticle
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AutoInstall.pm
