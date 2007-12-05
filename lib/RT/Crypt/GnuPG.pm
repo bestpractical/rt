@@ -428,7 +428,7 @@ sub SignEncryptRFC3156 {
 
     my $entity = $args{'Entity'};
 
-    # handling passphrase in GnupGOptions
+    # handling passphrase in GnuPGOptions
     $args{'Passphrase'} = delete $opt{'passphrase'}
         if !defined $args{'Passphrase'};
 
@@ -770,7 +770,6 @@ sub _SignEncryptAttachmentInline {
     $entity->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
 
     return %res;
-
 }
 
 sub FindProtectedParts {
@@ -1609,10 +1608,7 @@ sub GetKeysForEncryption {
     return %res if $res{'exit_code'};
     return %res unless $res{'info'};
 
-    my @keys = @{ $res{'info'} };
-    $res{'info'} = [];
-
-    foreach my $key ( @keys ) {
+    foreach my $key ( splice @{ $res{'info'} } ) {
         # skip disabled keys
         next if $key->{'Capabilities'} =~ /D/;
         # skip keys not suitable for encryption
