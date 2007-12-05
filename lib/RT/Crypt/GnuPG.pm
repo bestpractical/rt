@@ -382,7 +382,8 @@ sub SignEncrypt {
 
     my $entity = $args{'Entity'};
     if ( $args{'Sign'} && !defined $args{'Signer'} ) {
-        $args{'Signer'} = (Mail::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
+        $args{'Signer'} = UseKeyForSigning()
+            || (Mail::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
     }
     if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
         my %seen;
@@ -1591,6 +1592,17 @@ sub UseKeyForEncryption {
         return $key{ $_[0] };
     }
     return ();
+} }
+
+{ my $key;
+# no args -> get
+# one arg -> set
+# undef -> clear
+sub UseKeyForSigning {
+    if ( @_ ) {
+        $key = $_[0];
+    }
+    return $key;
 } }
 
 =head2 GetKeysForEncryption
