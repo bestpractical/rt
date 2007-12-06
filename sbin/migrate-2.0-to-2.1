@@ -4,7 +4,7 @@ use RT;
 RT::LoadConfig;
 RT::Init;
 use RT::FM::CustomFieldCollection;
-use YAML;
+use Data::Dumper;
 
 # find each rtfm custom field
 my $cfs = RT::FM::CustomFieldCollection->new($RT::SystemUser);
@@ -95,7 +95,7 @@ while ( my $cf = $cfs->Next ) {
         LookupType  => 'RT::FM::Class-RT::FM::Article'
 
     );
-    unless ($core_cf->id) { print "ERROR creating ".$cf->id.": $val ". YAML::Dump($cf_data->{$cf->id}); die;}
+    unless ($core_cf->id) { print "ERROR creating ".$cf->id.": $val ". Dumper($cf_data->{$cf->id}); die;}
     print " Migrated core custom field.\n";
 
     # cache old id, new id
@@ -226,7 +226,6 @@ while ( my $txn = $txns->Next ) {
         print " $txn_msg\n";
 }
 
-#print YAML::Dump($cf_data);
 #
 #
 #

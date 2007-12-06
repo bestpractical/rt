@@ -23,6 +23,5 @@ requires:
   Text::WikiFormat: 0
   Time::ParseDate: 0
   Tree::Simple: 0
-  YAML: 0
   perl: 5.8.0
 version: 2.3.0
