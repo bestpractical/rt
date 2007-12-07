@@ -2052,14 +2052,13 @@ sub ImportKey {
 # returns a true value if all went well
 sub DrySign {
     my $from = shift;
-    my @message = @_;
 
     my $mime = MIME::Entity->build(
-        Type    => "multipart/mixed",
+        Type    => "text/plain",
         From    => $from,
         To      => 'nobody@localhost',
-        Subject => "dry run",
-        Data    => \@message,
+        Subject => "dry sign",
+        Data    => ['t'],
     );
 
     my %res = SignEncrypt(
