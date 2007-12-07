@@ -12,17 +12,17 @@ msgstr ""
 #: html/Widgets/SavedSearch:70
 #. ($self->{CurrentSearch}{Object}->Description)
 msgid " %1 deleted."
-msgstr ""
+msgstr " 已刪除 %1。"
 
 #: html/Widgets/SavedSearch:47
 #. ($self->{CurrentSearch}{Description}, $args->{Description})
 msgid " %1 renamed to %2."
-msgstr ""
+msgstr " %1 已更名為 %2。"
 
 #: html/Widgets/SavedSearch:60
 #. ($args->{Description})
 msgid " %1 saved."
-msgstr ""
+msgstr " %1 已儲存。"
 
 #: NOT FOUND IN SOURCE
 msgid "#"
@@ -364,7 +364,7 @@ msgstr "%1 內的 %2 的 %3 物件"
 #. ($object->Name)
 #. ($Object->Name)
 msgid "%1's saved searches"
-msgstr "%1 已儲存的查詢"
+msgstr "%1 的預存查詢"
 
 #: lib/RT/Transaction_Overlay.pm:481
 #. ($self)
@@ -384,7 +384,7 @@ msgstr "%1k 位元組"
 #: html/Ticket/Elements/ShowTime:49
 #. (sprintf("%.1f",$minutes / 60))
 msgid "%quant(%1,hour)"
-msgstr ""
+msgstr "%1 小時"
 
 #: NOT FOUND IN SOURCE
 msgid "%quant(%1,result) found"
@@ -471,7 +471,7 @@ msgstr "(送出本份更新的密件副本給名單上以逗號隔開的電子�
 
 #: html/Ticket/Update.html:90
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
-msgstr ""
+msgstr "(送出本份更新的密件副本給名單上以逗號隔開的電子郵件位址。這<strong>不會</strong>更改後續的收件者名單。)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)"
@@ -479,7 +479,7 @@ msgstr "(送出本份更新的副本給名單上以逗號隔開的管理員電�
 
 #: html/Ticket/Create.html:103
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
+msgstr "(送出本份更新的副本給名單上以逗號隔開的管理員電子郵件位址。這<strong>將會</strong>更改後續的收件者名單。)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
@@ -491,7 +491,7 @@ msgstr "(送出本份更新的副本給名單上以逗號隔開的電子郵件�
 
 #: html/Ticket/Update.html:86
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
-msgstr ""
+msgstr "(送出本份更新的副本給名單上以逗號隔開的電子郵件位址。這<strong>不會</strong>更改後續的收件者名單。)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
@@ -499,7 +499,7 @@ msgstr "(送出本份更新的副本給名單上以逗號隔開的電子郵件�
 
 #: html/Ticket/Create.html:93
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
+msgstr "(送出本份更新的副本給名單上以逗號隔開的電子郵件位址。這<strong>將會</strong>更改後續的收件者名單。)"
 
 #: html/Admin/Elements/EditScrip:96
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
@@ -507,7 +507,7 @@ msgstr "(當條件或動作設為「使用者自訂」時，請填入這些欄�
 
 #: html/Ticket/Elements/EditWatchers:60 html/Ticket/Elements/ShowUserEntry:53
 msgid "(Will not be sent email)"
-msgstr ""
+msgstr "(不會收到郵件)"
 
 #: NOT FOUND IN SOURCE
 msgid "(default delegate)"
@@ -621,7 +621,7 @@ msgstr "空白範本"
 
 #: html/Admin/Users/Modify.html:371
 msgid "A password was not set, so user won't be able to login."
-msgstr ""
+msgstr "密碼沒有設定，因此該使用者將無法登入。"
 
 #: NOT FOUND IN SOURCE
 msgid "ACE Deleted"
@@ -694,7 +694,7 @@ msgstr ""
 
 #: lib/RT/Scrip_Overlay.pm:168
 msgid "Action is mandatory argument"
-msgstr ""
+msgstr "動作為必填欄位"
 
 #: bin/rt-crontool:167
 msgid "Action prepared..."
@@ -794,11 +794,11 @@ msgstr "將這些條件加進查詢內"
 
 #: html/Search/Bulk.html:158
 msgid "Add values"
-msgstr ""
+msgstr "新增值"
 
 #: lib/RT/CustomField_Overlay.pm:108
 msgid "Add, delete and modify custom field values for objects"
-msgstr ""
+msgstr "新增、刪除及修改物件的自訂欄位值"
 
 #: NOT FOUND IN SOURCE
 msgid "AddNextState"
@@ -881,6 +881,18 @@ msgstr "管理所有代理人群組"
 #: etc/initialdata:56 html/Ticket/Elements/ShowPeople:60 lib/RT/ACE_Overlay.pm:113
 msgid "AdminCc"
 msgstr "管理員副本"
+
+msgid "AdminCc.EmailAddress"
+msgstr "管理員副本: 電子郵件信箱"
+
+msgid "Cc.EmailAddress"
+msgstr "副本: 電子郵件信箱"
+
+msgid "Requestor.EmailAddress"
+msgstr "申請人: 電子郵件信箱"
+
+msgid "Custom.Ownership"
+msgstr "自訂: 承辦狀態"
 
 #: NOT FOUND IN SOURCE
 msgid "AdminComment"
@@ -968,7 +980,7 @@ msgstr "經歷時間"
 
 #: html/Search/Elements/PickCriteria:52
 msgid "Aggregator"
-msgstr ""
+msgstr "結合方式"
 
 #: NOT FOUND IN SOURCE
 msgid "Alias"
@@ -1226,7 +1238,7 @@ msgstr "自動對申請人回覆"
 
 #: html/Widgets/SelectionBox:185
 msgid "Available"
-msgstr ""
+msgstr "可用"
 
 #: NOT FOUND IN SOURCE
 msgid "Available Columns"
@@ -1290,7 +1302,7 @@ msgstr "起始日"
 
 #: html/Elements/Logo:47
 msgid "Best Practical Solutions, LLC corporate logo"
-msgstr ""
+msgstr "Best Practical Solutions, LLC 公司識別圖案"
 
 #: NOT FOUND IN SOURCE
 msgid "Binary"
@@ -1322,11 +1334,11 @@ msgstr "精簡標頭檔"
 
 #: html/Ticket/Elements/Tabs:227
 msgid "Bulk Update"
-msgstr ""
+msgstr "整批更新"
 
 #: NOT FOUND IN SOURCE
 msgid "Bulk ticket update"
-msgstr "更新整批申請單"
+msgstr "整批更新申請單"
 
 #: NOT FOUND IN SOURCE
 msgid "Business Unit"
@@ -1351,11 +1363,11 @@ msgstr "不能新增沒有名稱的自訂欄位值"
 #: html/Admin/CustomFields/Objects.html:86
 #. ($Class)
 msgid "Can't find a collection class for '%1'"
-msgstr ""
+msgstr "找不到「%1」的集合類別"
 
 #: html/Search/Build.html:286
 msgid "Can't find a saved search to work with"
-msgstr "找不到已儲存的查詢"
+msgstr "找不到預存查詢"
 
 #: lib/RT/Link_Overlay.pm:159
 msgid "Can't link a ticket to itself"
@@ -1846,7 +1858,7 @@ msgstr "無法載入手續。"
 #: lib/RT/Ticket_Overlay.pm:2016
 #. ($self->Id)
 msgid "Couldn't load copy of ticket #%1."
-msgstr ""
+msgstr "無法載入申請單 %1 的複本。"
 
 #: html/Admin/Groups/GroupRights.html:109 html/Admin/Groups/UserRights.html:96
 #. ($id)
@@ -1879,7 +1891,7 @@ msgstr "無法載入手續"
 #: html/Admin/Elements/EditScrip:126 html/Admin/Elements/EditScrip:167
 #. ($id)
 msgid "Couldn't load scrip #%1"
-msgstr ""
+msgstr "無法載入手續 %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Couldn't load template"
@@ -1897,7 +1909,7 @@ msgstr "無法載入申請單 '%1'"
 #: lib/RT/Ticket_Overlay.pm:2643
 #. ($args{'URI'})
 msgid "Couldn't resolve '%1' into a URI."
-msgstr ""
+msgstr "無法將「%1」解讀為網址"
 
 #: html/Admin/Users/Modify.html:173 html/User/Prefs.html:153
 msgid "Country"
@@ -2051,7 +2063,7 @@ msgstr "新增、刪除及更改使用者"
 
 #: lib/RT/System.pm:87
 msgid "CreateSavedSearch"
-msgstr ""
+msgstr "新增預存查詢"
 
 #: lib/RT/Queue_Overlay.pm:109
 msgid "CreateTicket"
@@ -2068,7 +2080,7 @@ msgstr "自訂欄位 %1 新增成功"
 
 #: html/Tools/Reports/Elements/Tabs:63
 msgid "Created in a date range"
-msgstr ""
+msgstr "在指定日期內建立"
 
 #: NOT FOUND IN SOURCE
 msgid "Created template %1"
@@ -2076,7 +2088,7 @@ msgstr "範本 %1 新增成功"
 
 #: html/Tools/Reports/CreatedByDates.html:52
 msgid "Created tickets in period, grouped by status"
-msgstr ""
+msgstr "在指定日期內建立的申請單，依狀態分組"
 
 #: NOT FOUND IN SOURCE
 msgid "Created workflow %1"
@@ -2202,7 +2214,7 @@ msgstr "找不到自訂欄位 %1"
 #. ($cf)
 #. ($obj->Name)
 msgid "Custom field '%1'"
-msgstr ""
+msgstr "自訂欄位「%1」"
 
 #: NOT FOUND IN SOURCE
 msgid "Custom field deleted"
@@ -2239,7 +2251,7 @@ msgstr "自訂欄位"
 
 #: html/Prefs/MyRT.html:78 html/Prefs/Quicksearch.html:70 html/Prefs/Search.html:75
 msgid "Customize"
-msgstr ""
+msgstr "自訂"
 
 #: NOT FOUND IN SOURCE
 msgid "Data error"
@@ -2404,7 +2416,7 @@ msgstr "刪除範本"
 #: lib/RT/SavedSearch.pm:220
 #. ($msg)
 msgid "Delete failed: %1"
-msgstr ""
+msgstr "刪除失敗：%1"
 
 #: html/Admin/Elements/EditScrips:74
 msgid "Delete selected scrips"
@@ -2416,7 +2428,7 @@ msgstr "刪除申請單"
 
 #: html/Search/Bulk.html:159
 msgid "Delete values"
-msgstr ""
+msgstr "刪除值"
 
 #: lib/RT/Queue_Overlay.pm:114
 msgid "DeleteTicket"
@@ -2424,7 +2436,7 @@ msgstr "刪除申請單"
 
 #: lib/RT/SavedSearch.pm:218
 msgid "Deleted search"
-msgstr ""
+msgstr "已刪除的搜尋"
 
 #: NOT FOUND IN SOURCE
 msgid "Deleting this object could break referential integrity"
@@ -2588,7 +2600,7 @@ msgstr "顯示模式"
 
 #: lib/RT/Group_Overlay.pm:168
 msgid "Display saved searches for this group"
-msgstr "顯示此群組已儲存的查詢"
+msgstr "顯示此群組的預存查詢"
 
 #: NOT FOUND IN SOURCE
 msgid "Display ticket #%1"
@@ -2656,7 +2668,7 @@ msgstr "編輯前置條件"
 
 #: html/Search/Bulk.html:149
 msgid "Edit Custom Fields"
-msgstr ""
+msgstr "編輯自訂欄位"
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
 #. ($Object->Name)
@@ -2665,11 +2677,11 @@ msgstr "編輯 %1 的自訂欄位"
 
 #: html/Admin/Global/CustomFields/Groups.html:54
 msgid "Edit Custom Fields for all groups"
-msgstr ""
+msgstr "編輯適用於所有群組的自訂欄位"
 
 #: html/Admin/Global/CustomFields/Users.html:54
 msgid "Edit Custom Fields for all users"
-msgstr ""
+msgstr "編輯適用於所有使用者的自訂欄位"
 
 #: NOT FOUND IN SOURCE
 msgid "Edit Custom Fields for queue %1"
@@ -2677,7 +2689,7 @@ msgstr "編輯表單 %1 的自訂欄位"
 
 #: html/Admin/Global/CustomFields/Queue-Tickets.html:54 html/Admin/Global/CustomFields/Queue-Transactions.html:54
 msgid "Edit Custom Fields for tickets in all queues"
-msgstr ""
+msgstr "編輯適用於所有表單內申請單的自訂欄位"
 
 #: html/Search/Bulk.html:188 html/Ticket/ModifyLinks.html:57
 msgid "Edit Links"
@@ -2710,7 +2722,7 @@ msgstr "編輯關鍵字"
 
 #: lib/RT/Group_Overlay.pm:167
 msgid "Edit saved searches for this group"
-msgstr "編輯此群組已儲存的查詢"
+msgstr "編輯此群組的預存查詢"
 
 #: NOT FOUND IN SOURCE
 msgid "Edit scrips"
@@ -2734,7 +2746,7 @@ msgstr "編輯 %1 的流程"
 
 #: lib/RT/Group_Overlay.pm:167
 msgid "EditSavedSearches"
-msgstr "編輯已儲存的查詢"
+msgstr "編輯預存查詢"
 
 #: html/Admin/Queues/Modify.html:140
 #. ($QueueObj->Name)
@@ -3008,7 +3020,7 @@ msgstr "備註"
 
 #: lib/RT/SavedSearch.pm:177
 msgid "Failed to create search attribute"
-msgstr ""
+msgstr "搜尋屬性建立失敗"
 
 #: lib/RT/User_Overlay.pm:376
 msgid "Failed to find 'Privileged' users pseudogroup."
@@ -3021,12 +3033,12 @@ msgstr "找不到「非內部成員」虛擬群組的使用者。"
 #: bin/rt-crontool:206
 #. ($modname, $@)
 msgid "Failed to load module %1. (%2)"
-msgstr "無法載入模組 %1. (%2)"
+msgstr "無法載入模組 %1。(%2)"
 
 #: lib/RT/SavedSearch.pm:152
 #. ($privacy)
 msgid "Failed to load object for %1"
-msgstr ""
+msgstr "無法為 %1 載入物件。"
 
 #: NOT FOUND IN SOURCE
 msgid "Feb"
@@ -3070,7 +3082,7 @@ msgstr "填入多個文字框"
 
 #: lib/RT/CustomField_Overlay.pm:74
 msgid "Fill in multiple wikitext areas"
-msgstr ""
+msgstr "填入多個 Wiki 文字框"
 
 #: lib/RT/CustomField_Overlay.pm:70
 msgid "Fill in one text area"
@@ -3078,11 +3090,11 @@ msgstr "填入一個文字框"
 
 #: lib/RT/CustomField_Overlay.pm:75
 msgid "Fill in one wikitext area"
-msgstr ""
+msgstr "填入一個 Wiki 文字框"
 
 #: html/Admin/CustomFields/Modify.html:107 html/Admin/CustomFields/Modify.html:118
 msgid "Fill in this field with a URL."
-msgstr ""
+msgstr "填入一個網址"
 
 #: lib/RT/CustomField_Overlay.pm:71
 msgid "Fill in up to %1 text areas"
@@ -3090,7 +3102,7 @@ msgstr "填入最多 %1 個文字框"
 
 #: lib/RT/CustomField_Overlay.pm:76
 msgid "Fill in up to %1 wikitext areas"
-msgstr ""
+msgstr "填入最多 %1 個 Wiki 文字框"
 
 #: NOT FOUND IN SOURCE
 msgid "Filter"
@@ -3304,12 +3316,12 @@ msgstr "全域設定"
 
 #: html/Admin/Global/CustomFields/index.html:59
 msgid "Global custom field configuration"
-msgstr ""
+msgstr "全域自訂欄位設定"
 
 #: html/Admin/Global/MyRT.html:48
 #. ($pane)
 msgid "Global portlet %1 saved."
-msgstr ""
+msgstr "成功儲存全域入口元件 %1。"
 
 #: html/Admin/Elements/SelectTemplate:59
 #. (loc($Template->Name))
@@ -3539,7 +3551,7 @@ msgstr "我有 %quant(%1,份固體攪拌器)。"
 
 #: html/Search/Build.html:460 lib/RT/Report/Tickets.pm:415
 msgid "I'm lost"
-msgstr ""
+msgstr "我昏了"
 
 #: NOT FOUND IN SOURCE
 msgid "ID Number"
@@ -3611,15 +3623,15 @@ msgstr "列出停用的使用者"
 
 #: html/Admin/CustomFields/Modify.html:113
 msgid "Include page"
-msgstr ""
+msgstr "引入頁面"
 
 #: html/Search/Build.html:486 lib/RT/Report/Tickets.pm:441
 msgid "Incomplete Query"
-msgstr ""
+msgstr "不完整的查詢"
 
 #: html/Search/Build.html:483 lib/RT/Report/Tickets.pm:438
 msgid "Incomplete query"
-msgstr ""
+msgstr "不完整的查詢"
 
 #: NOT FOUND IN SOURCE
 msgid "Indirect Employee"
@@ -3641,7 +3653,7 @@ msgstr "輸入錯誤"
 #. ($self->FriendlyPattern)
 #. ($CF->FriendlyPattern)
 msgid "Input must match %1"
-msgstr ""
+msgstr "輸入必須符合 %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Interest noted"
@@ -3679,7 +3691,7 @@ msgstr "錯誤的承辦人。改為預設承辦人「nobody」。"
 #: lib/RT/CustomField_Overlay.pm:207 lib/RT/CustomField_Overlay.pm:678
 #. ($msg)
 msgid "Invalid pattern: %1"
-msgstr ""
+msgstr "不合理的樣式：%1"
 
 #: lib/RT/Scrip_Overlay.pm:157 lib/RT/Template_Overlay.pm:244
 msgid "Invalid queue"
@@ -3903,11 +3915,11 @@ msgstr "鏈結申請單 %1"
 
 #: html/Admin/CustomFields/Modify.html:102
 msgid "Link values to"
-msgstr ""
+msgstr "將值連結至"
 
 #: lib/RT/Ticket_Overlay.pm:700
 msgid "Linking. Permission denied"
-msgstr ""
+msgstr "連結中。權限不足"
 
 #: html/Ticket/Create.html:216 html/Ticket/Elements/ShowSummary:89 html/Ticket/Elements/Tabs:120 html/Ticket/ModifyAll.html:78
 msgid "Links"
@@ -3923,11 +3935,11 @@ msgstr "載入"
 
 #: html/Search/Elements/EditSearches:73
 msgid "Load saved search:"
-msgstr "載入已儲存的查詢："
+msgstr "載入預存查詢："
 
 #: lib/RT/System.pm:86
 msgid "LoadSavedSearch"
-msgstr ""
+msgstr "載入預存查詢"
 
 #: html/Admin/Tools/Configuration.html:64
 msgid "Loaded perl modules"
@@ -3936,7 +3948,7 @@ msgstr "已載入的 Perl 模組"
 #: lib/RT/SavedSearch.pm:111
 #. ($self->Name)
 msgid "Loaded search %1"
-msgstr ""
+msgstr "已載入查詢 %1"
 
 #: html/Admin/Users/Modify.html:138 html/User/Prefs.html:126
 msgid "Location"
@@ -4017,7 +4029,7 @@ msgstr "新增主題"
 
 #: lib/RT/Group_Overlay.pm:169
 msgid "Make this group visible to user"
-msgstr ""
+msgstr "讓此群組能被使用者看見"
 
 #: NOT FOUND IN SOURCE
 msgid "Male"
@@ -4142,7 +4154,7 @@ msgstr "整合失敗。無法設定 EffectiveId"
 
 #: lib/RT/Ticket_Overlay.pm:2788
 msgid "Merge failed. Couldn't set Status"
-msgstr ""
+msgstr "整合失敗。無法設定 Status"
 
 #: html/Elements/EditLinks:131 html/Ticket/Elements/BulkLinks:48
 msgid "Merge into"
@@ -4528,7 +4540,7 @@ msgstr "表單簽核"
 
 #: html/Tools/Elements/Tabs:63
 msgid "My Day"
-msgstr ""
+msgstr "今日事"
 
 #: NOT FOUND IN SOURCE
 msgid "My Requests"
@@ -4544,7 +4556,7 @@ msgstr "表單簽核"
 
 #: html/Search/Elements/SearchPrivacy:50 html/Search/Elements/SelectSearchObject:53 html/Search/Elements/SelectSearchesForObjects:54
 msgid "My saved searches"
-msgstr "我已儲存的查詢"
+msgstr "我的預存查詢"
 
 #: html/Admin/CustomFields/Modify.html:58 html/Admin/Elements/AddCustomFieldValue:53 html/Admin/Elements/EditCustomField:55 html/Admin/Elements/EditCustomFieldValues:55 html/Admin/Elements/ModifyTemplate:49 html/Admin/Groups/Modify.html:65 html/Search/Bulk.html:157 html/User/Groups/Modify.html:65
 msgid "Name"
@@ -4882,7 +4894,7 @@ msgstr "一般用戶群組"
 
 #: html/Search/Chart:71 html/Search/Elements/Chart:88
 msgid "Not Set"
-msgstr ""
+msgstr "未設定"
 
 #: NOT FOUND IN SOURCE
 msgid "Not configured to fetch the content from a %1 in %2"
@@ -5022,7 +5034,7 @@ msgstr "無法新增物件"
 
 #: lib/RT/Record.pm:123
 msgid "Object could not be deleted"
-msgstr ""
+msgstr "無法刪除物件"
 
 #: lib/RT/Record.pm:341
 msgid "Object created"
@@ -5030,7 +5042,7 @@ msgstr "物件新增完畢"
 
 #: lib/RT/Record.pm:120
 msgid "Object deleted"
-msgstr ""
+msgstr "物件刪除完畢"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($ObjectType)
@@ -5135,7 +5147,7 @@ msgstr "僅顯示 %1 之前新增的申請單"
 
 #: html/Admin/CustomFields/index.html:75
 msgid "Only show custom fields for:"
-msgstr ""
+msgstr "僅顯示適用於下列項目的自訂欄位："
 
 #: NOT FOUND IN SOURCE
 msgid "Open"
@@ -5143,7 +5155,7 @@ msgstr "開啟"
 
 #: html/SelfService/index.html:46
 msgid "Open Tickets"
-msgstr ""
+msgstr "開啟申請單"
 
 #: html/Ticket/Elements/Tabs:160
 msgid "Open it"
@@ -5183,7 +5195,7 @@ msgstr "選項名稱"
 
 #: html/Prefs/MyRT.html:70
 msgid "Options"
-msgstr ""
+msgstr "選項"
 
 #: html/Search/Elements/DisplayOptions:59
 msgid "Order by"
@@ -5318,7 +5330,7 @@ msgstr "密碼提示"
 
 #: lib/RT/Transaction_Overlay.pm:781 lib/RT/User_Overlay.pm:1045
 msgid "Password changed"
-msgstr ""
+msgstr "密碼更改完畢"
 
 #: lib/RT/User_Overlay.pm:1037 lib/RT/User_Overlay.pm:214
 #. ($RT::MinimumPasswordLength)
@@ -5340,7 +5352,7 @@ msgstr "密碼：%1"
 
 #: lib/RT/User_Overlay.pm:1030
 msgid "Password: Permission Denied"
-msgstr ""
+msgstr "密碼：權限不足"
 
 #: html/Admin/Users/Modify.html:364
 msgid "Passwords do not match."
@@ -5384,11 +5396,11 @@ msgstr "權限設定"
 
 #: lib/RT/Template_Overlay.pm:238 lib/RT/Template_Overlay.pm:247
 msgid "Permission denied"
-msgstr ""
+msgstr "權限不足"
 
 #: lib/RT/Template_Overlay.pm:372
 msgid "Permissions denied"
-msgstr ""
+msgstr "權限不足"
 
 #: NOT FOUND IN SOURCE
 msgid "Permitted Queues:"
@@ -5628,7 +5640,7 @@ msgstr "建立查詢"
 
 #: html/Search/Elements/Chart:101
 msgid "Query:"
-msgstr ""
+msgstr "查詢："
 
 #: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:62 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:85 html/Tools/Reports/ResolvedByDates.html:86 html/Tools/Reports/ResolvedByOwner.html:66 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1617
 msgid "Queue"
@@ -5702,11 +5714,11 @@ msgstr "表單"
 
 #: html/Elements/MyAdminQueues:46
 msgid "Queues I administer"
-msgstr ""
+msgstr "由我管理的表單"
 
 #: html/Elements/MySupportQueues:46
 msgid "Queues I'm an AdminCc for"
-msgstr ""
+msgstr "管理員副本有我的表單"
 
 #: NOT FOUND IN SOURCE
 msgid "Quick Search"
@@ -5778,8 +5790,8 @@ msgid "RT Recieved mail (%1) from itself."
 msgstr "RT 收到從自己寄出的郵件 (%1)。"
 
 #: NOT FOUND IN SOURCE
-msgid "RT Self Service / Closed Tickets"
-msgstr "RT 自助服務/已解決的申請單"
+msgid "RT Self Service"
+msgstr "RT 自助服務"
 
 #: html/Admin/Tools/Configuration.html:73
 msgid "RT Variables"
@@ -5816,7 +5828,7 @@ msgstr "RT 找不到表單：%1"
 
 #: html/Elements/SetupSessionCookie:100
 msgid "RT couldn't store your session."
-msgstr ""
+msgstr "RT 無法儲存您的登入階段。"
 
 #: NOT FOUND IN SOURCE
 msgid "RT couldn't validate this PGP signature. \\n"
@@ -6015,7 +6027,7 @@ msgstr "到職日期"
 
 #: html/Tools/Elements/Tabs:59 html/Tools/Reports/index.html:46 html/Tools/Reports/index.html:47
 msgid "Reports"
-msgstr ""
+msgstr "報表"
 
 #: etc/initialdata:44 lib/RT/ACE_Overlay.pm:111
 msgid "Requestor"
@@ -6064,7 +6076,7 @@ msgstr "重設"
 
 #: html/Admin/Users/MyRT.html:15 html/Prefs/MyRT.html:60
 msgid "Reset to default"
-msgstr ""
+msgstr "重設為預設值"
 
 #: html/Admin/Users/Modify.html:183 html/User/Prefs.html:84
 msgid "Residence"
@@ -6089,19 +6101,19 @@ msgstr "已解決"
 
 #: html/Tools/Reports/Elements/Tabs:55
 msgid "Resolved by owner"
-msgstr ""
+msgstr "已由承辦人解決"
 
 #: html/Tools/Reports/Elements/Tabs:59
 msgid "Resolved in date range"
-msgstr ""
+msgstr "已在指定日期內解決"
 
 #: html/Tools/Reports/ResolvedByDates.html:52
 msgid "Resolved tickets in period, grouped by owner"
-msgstr ""
+msgstr "已在指定日期內內解決，依承辦人分組"
 
 #: html/Tools/Reports/ResolvedByOwner.html:50
 msgid "Resolved tickets, grouped by owner"
-msgstr ""
+msgstr "已解決的申請單，依承辦人分組"
 
 #: NOT FOUND IN SOURCE
 msgid "Response to requestors"
@@ -6191,7 +6203,7 @@ msgstr "交由系統管理員簽核"
 
 #: html/Prefs/MyRT.html:72
 msgid "Rows per box"
-msgstr ""
+msgstr "每格筆數"
 
 #: html/Search/Elements/DisplayOptions:93
 msgid "Rows per page"
@@ -6240,11 +6252,11 @@ msgstr "儲存更改"
 #: lib/RT/SavedSearch.pm:173
 #. ($name)
 msgid "Saved search %1"
-msgstr ""
+msgstr "成功儲存查詢：%1"
 
 #: NOT FOUND IN SOURCE
 msgid "Saved searches"
-msgstr "已儲存的查詢"
+msgstr "預存查詢"
 
 #: html/Admin/Elements/ListGlobalScrips:60 html/Admin/Global/Scrip.html:77 html/Admin/Queues/Scrip.html:84
 #. ($scrip->Id)
@@ -6302,7 +6314,7 @@ msgstr "查詢條件"
 
 #: html/Prefs/SearchOptions.html:47 html/Prefs/SearchOptions.html:50
 msgid "Search Preferences"
-msgstr ""
+msgstr "搜尋偏好"
 
 #: lib/RT/SavedSearch.pm:115
 msgid "Search attribute load failure"
@@ -6314,7 +6326,7 @@ msgstr "簽核單查詢"
 
 #: html/Search/Simple.html:67
 msgid "Search for tickets"
-msgstr ""
+msgstr "申請單查詢"
 
 #: html/Search/Simple.html:55
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>. RT will look for anything else you enter in ticket bodies and attachments."
@@ -6322,7 +6334,7 @@ msgstr ""
 
 #: html/User/Elements/Tabs:62
 msgid "Search options"
-msgstr ""
+msgstr "搜尋選項"
 
 #: html/Search/Chart.html:56
 #. ($PrimaryGroupBy)
@@ -6356,7 +6368,7 @@ msgstr "安全性："
 
 #: html/Elements/ShowCustomFields:98
 msgid "See also:"
-msgstr ""
+msgstr "參見："
 
 #: lib/RT/CustomField_Overlay.pm:105
 msgid "See custom fields"
@@ -6380,7 +6392,7 @@ msgstr "查閱自訂欄位"
 
 #: lib/RT/Group_Overlay.pm:169
 msgid "SeeGroup"
-msgstr ""
+msgstr "查閱群組"
 
 #: lib/RT/Queue_Overlay.pm:91
 msgid "SeeQueue"
@@ -6456,7 +6468,7 @@ msgstr "選擇表單"
 
 #: html/Prefs/Quicksearch.html:53
 msgid "Select queues to be displayed on the \"RT at a glance\" page"
-msgstr ""
+msgstr "選擇要在「RT 一覽」頁面顯示的表單"
 
 #: html/Admin/Global/Scrip.html:59 html/Admin/Global/Scrips.html:57 html/Admin/Queues/Scrip.html:67 html/Admin/Queues/Scrips.html:73
 msgid "Select scrip"
@@ -6628,7 +6640,7 @@ msgstr "顯示權限清單"
 
 #: lib/RT/System.pm:85
 msgid "ShowConfigTab"
-msgstr ""
+msgstr "顯示設定頁籤"
 
 #: lib/RT/Queue_Overlay.pm:106
 msgid "ShowOutgoingEmail"
@@ -6636,7 +6648,7 @@ msgstr "顯示寄送郵件"
 
 #: lib/RT/Group_Overlay.pm:168
 msgid "ShowSavedSearches"
-msgstr "顯示已儲存的查詢"
+msgstr "顯示預存查詢"
 
 #: lib/RT/Queue_Overlay.pm:102
 msgid "ShowScrips"
@@ -6742,6 +6754,33 @@ msgstr "無法解讀起始日期 '%1"
 msgid "Starts"
 msgstr "應起始日"
 
+msgid "StartsRelative"
+msgstr "應起始日(相對值)"
+
+msgid "StartedRelative"
+msgstr "實際起始日(相對值)"
+
+msgid "CreatedRelative"
+msgstr "實際新增日(相對值)"
+
+msgid "LastUpdatedRelative"
+msgstr "上次更新(相對值)"
+
+msgid "ToldRelative"
+msgstr "告知日(相對值)"
+
+msgid "DueRelative"
+msgstr "到期日(相對值)"
+
+msgid "ResolvedRelative"
+msgstr "解決日(相對值)"
+
+msgid "ReferredToBy"
+msgstr "被參考"
+
+msgid "DependedOnBy"
+msgstr "可接續處理"
+
 #: NOT FOUND IN SOURCE
 msgid "Starts By"
 msgstr "應起始日"
@@ -6757,6 +6796,9 @@ msgstr "州"
 #: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/Tickets_Overlay.pm:1651
 msgid "Status"
 msgstr "現況"
+
+msgid "ExtendedStatus"
+msgstr "額外現況"
 
 #: etc/initialdata:309
 msgid "Status Change"
@@ -6871,7 +6913,7 @@ msgstr "系統錯誤。設定權限失敗。"
 #: lib/RT/Transaction_Overlay.pm:224 lib/RT/Transaction_Overlay.pm:230
 #. ($msg)
 msgid "System Error: %1"
-msgstr ""
+msgstr "系統錯誤：%1"
 
 #: NOT FOUND IN SOURCE
 msgid "System Rights"
@@ -6960,7 +7002,7 @@ msgstr "範本已刪除"
 
 #: lib/RT/Scrip_Overlay.pm:176
 msgid "Template is mandatory argument"
-msgstr ""
+msgstr "範本是必填欄位"
 
 #: lib/RT/Scrip_Overlay.pm:180
 msgid "Template not found"
@@ -6976,7 +7018,7 @@ msgstr "範本剖析完畢"
 
 #: lib/RT/Template_Overlay.pm:391
 msgid "Template parsing error"
-msgstr ""
+msgstr "範本剖析錯誤"
 
 #: html/Admin/Elements/QueueTabs:70 html/Admin/Elements/SystemTabs:57 html/Admin/Global/index.html:66
 msgid "Templates"
@@ -7297,7 +7339,7 @@ msgstr "申請單視察員"
 #: lib/RT/Search/FromSQL.pm:82
 #. (ref $self)
 msgid "TicketSQL search module"
-msgstr ""
+msgstr "TicketSQL 查詢模組"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:64 html/Admin/Global/CustomFields/index.html:75 html/Elements/Tabs:71 html/Search/Elements/Chart:109 lib/RT/CustomField_Overlay.pm:1206
 msgid "Tickets"
@@ -7319,13 +7361,16 @@ msgstr "待處理的申請單"
 msgid "Tickets I requested"
 msgstr "送出的申請單"
 
+msgid "CreatedBy"
+msgstr "建立人"
+
 #: html/Tools/Reports/CreatedByDates.html:86
 msgid "Tickets created after"
-msgstr ""
+msgstr "申請單建立起始日"
 
 #: html/Tools/Reports/CreatedByDates.html:88
 msgid "Tickets created before"
-msgstr ""
+msgstr "申請單建立截止日"
 
 #: NOT FOUND IN SOURCE
 msgid "Tickets from %1"
@@ -7333,11 +7378,11 @@ msgstr "%1 的申請單"
 
 #: html/Tools/Reports/ResolvedByDates.html:87
 msgid "Tickets resolved after"
-msgstr ""
+msgstr "申請單解決起始日"
 
 #: html/Tools/Reports/ResolvedByDates.html:89
 msgid "Tickets resolved before"
-msgstr ""
+msgstr "申請單解決截止日"
 
 #: html/Approvals/Elements/ShowDependency:48
 msgid "Tickets which depend on this approval:"
@@ -7345,6 +7390,9 @@ msgstr "批准之後，可接續處理："
 
 #: html/Search/Elements/PickBasics:134 html/Ticket/Create.html:183 html/Ticket/Elements/EditBasics:72
 msgid "Time Estimated"
+msgstr "預計時間"
+
+msgid "TimeEstimated"
 msgstr "預計時間"
 
 #: html/Search/Elements/PickBasics:135 html/Ticket/Create.html:196 html/Ticket/Elements/EditBasics:85
@@ -7377,7 +7425,19 @@ msgstr "已處理時間"
 
 #: html/Search/Elements/EditFormat:74
 msgid "Title"
-msgstr ""
+msgstr "標題"
+
+msgid "QueueName"
+msgstr "表單名稱"
+
+msgid "OwnerName"
+msgstr "承辦人名稱"
+
+msgid "<blank>"
+msgstr "<留空>"
+
+msgid "NEWLINE"
+msgstr "(換列)"
 
 #: NOT FOUND IN SOURCE
 msgid "To generate a diff of this commit:"
@@ -7398,7 +7458,7 @@ msgstr "待辦事項"
 
 #: lib/RT/Ticket_Overlay.pm:1170
 msgid "Told"
-msgstr "告知日期"
+msgstr "告知日"
 
 #: html/Admin/Elements/Tabs:68 html/Admin/index.html:88 html/Elements/Tabs:74 html/Tools/index.html:46 html/Tools/index.html:49
 msgid "Tools"
@@ -7484,8 +7544,8 @@ msgid "Unknown ContentEncoding %1"
 msgstr "不可解的內容文字編碼方式 %1"
 
 #: html/Search/Build.html:455 lib/RT/Report/Tickets.pm:410
-msgid "Unknown field: $key"
-msgstr ""
+msgid "Unknown field: %1"
+msgstr "未知的欄位：%1"
 
 #: html/Elements/SelectResultsPerPage:58
 msgid "Unlimited"
@@ -7802,7 +7862,7 @@ msgstr "星期三"
 
 #: html/Tools/MyDay.html:75
 msgid "What I did today"
-msgstr ""
+msgstr "今日工作一覽"
 
 #: etc/initialdata:521
 msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
@@ -7918,7 +7978,7 @@ msgstr "您可以按右方的「下載」鍵來取得。"
 
 #: html/Prefs/Search.html:56
 msgid "You can also edit the predefined search itself"
-msgstr ""
+msgstr "您也可以直接編輯預先定義的搜尋方式"
 
 #: lib/RT/Ticket_Overlay.pm:3025
 msgid "You can only reassign tickets that you own or that are unowned"
@@ -7926,7 +7986,7 @@ msgstr "祇能重新指派您所承辦或是沒有承辦人的申請單"
 
 #: lib/RT/Ticket_Overlay.pm:3021
 msgid "You can only take tickets that are unowned"
-msgstr ""
+msgstr "您祇能受理尚無承辦人的申請單"
 
 #: NOT FOUND IN SOURCE
 msgid "You don't have permission to view that ticket.\\n"
@@ -7997,6 +8057,9 @@ msgstr "郵遞區號"
 msgid "[no subject]"
 msgstr "[沒有標題]"
 
+msgid "[none]"
+msgstr "[無]"
+
 #: NOT FOUND IN SOURCE
 msgid "ago"
 msgstr "過期"
@@ -8024,7 +8087,7 @@ msgstr "權限同 %1"
 
 #: html/Search/Results.html:83
 msgid "chart"
-msgstr ""
+msgstr "圖表"
 
 #: html/SelfService/Closed.html:49
 msgid "closed"
@@ -8273,7 +8336,7 @@ msgstr "延宕"
 #: html/Search/Results.html:89
 #. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle'))
 msgid "style: %1"
-msgstr ""
+msgstr "樣式：%1"
 
 #: html/Prefs/MyRT.html:93
 msgid "summary rows"
@@ -8346,3 +8409,18 @@ msgstr "年"
 
 msgid "Press 'Esc' to close this window."
 msgstr "按 'Esc' 鍵可關閉本視窗。"
+
+msgid "HasMember"
+msgstr "擁有成員"
+
+msgid "LinkedTo"
+msgstr "連結至"
+
+msgid "Watcher"
+msgstr "視察員"
+
+msgid "(displaying new and open tickets for %1)"
+msgstr "(顯示 %1 名下新建立及開啟中的申請單)"
+
+msgid "Reports"
+msgstr "報表"
