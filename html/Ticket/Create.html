@@ -340,6 +340,9 @@ if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
         unless ( RT::Crypt::GnuPG::DrySign( $address ) ) {
             push @cannot_sign_as, $address;
             $checks_failure = 1;
+        } else {
+            RT::Crypt::GnuPG::UseKeyForSigning( $ARGS{'SignUsing'} )
+                if $ARGS{'SignUsing'};
         }
     }
 
