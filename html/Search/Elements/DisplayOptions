@@ -64,7 +64,7 @@
 <td class="value">
 <select name="OrderBy">
 % if ($o > 0) {
-<option value="">[none]</option>
+<option value=""><&|/l&>~[none~]</&></option>
 % }
 % foreach my $field (sort keys %fields) {
 %    next unless $field;

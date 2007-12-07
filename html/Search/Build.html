@@ -458,7 +458,7 @@ my $ParseQuery = sub {
                 $val = "'$val'";
             }
 
-            push @$actions, [ loc("Unknown field: $key"), -1 ] unless $class;
+            push @$actions, [ loc("Unknown field: [_1]", $key), -1 ] unless $class;
 
             $want = PAREN | AGGREG;
         }

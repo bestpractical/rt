@@ -69,9 +69,9 @@ while (my $queue = $queues->Next) {
 }
 
 if ($Title) {
-$Title = loc ("RT Self Service") . " / " . $Title;
+$Title = loc("RT Self Service") . " / " . $Title;
 } else {
-$Title = loc ("RT Self Service");
+$Title = loc("RT Self Service");
 
 }
 my ($tab);
