@@ -608,7 +608,7 @@ msgstr "<%$field%>"
 #: html/Elements/CreateTicket:47
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgid "<input type=\"submit\" class=\"button\" value=\"提出申請單\" />&nbsp;%1"
+msgstr "<input type=\"submit\" class=\"button\" value=\"提出申請單\" />&nbsp;%1"
 
 #: docs/design_docs/string-extraction-guide.txt:54 lib/RT/StyleGuide.pod:787
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
@@ -8421,6 +8421,3 @@ msgstr "視察員"
 
 msgid "(displaying new and open tickets for %1)"
 msgstr "(顯示 %1 名下新建立及開啟中的申請單)"
-
-msgid "Reports"
-msgstr "報表"
