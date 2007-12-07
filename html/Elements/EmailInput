@@ -483,7 +483,7 @@ div.inline .autocomplete .hidden_value,
 <div id="<% $div %>" class="autocomplete"></div>
 <script type="text/javascript">
 <!--//--><![CDATA[//><!--
-new Ajax.Autocompleter("<% $id %>", "<% $div %>", "<%$RT::WebPath%>/Helpers/EmailAutocomplete", {paramName: 'Value'});
+new Ajax.Autocompleter('<% $id %>', '<% $div %>', '<%$RT::WebPath%>/Helpers/EmailAutocomplete.html', {paramName: 'Value'});
 var popup = document.getElementById('<% $popup %>');
 popup.innerHTML = '...';
 popup.style.visibility = 'visible';
