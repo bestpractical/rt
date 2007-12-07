@@ -123,12 +123,9 @@
 </td></tr>
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-<tr><td>&nbsp;</td><td><table>
-<td><% loc('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
-<td><% loc('Encrypt')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
-</table></td></tr>
+<tr><td>&nbsp;</td><td>
+<& /Elements/GnuPG/SignEncryptWidget, %ARGS, QueueObj => $TicketObj->QueueObj &>
+</td></tr>
 % }
 
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
@@ -256,7 +253,8 @@ if ( $ARGS{'SubmitTicket'} ) {
 
     # check to see if we have a good passphrase
     if ( $ARGS{'Sign'} ) {
-        my $address = $ARGS{'UpdateType'} eq "private"
+        my $address = $ARGS{'SignUsing'};
+        $address ||= $ARGS{'UpdateType'} eq "private"
             ? ( $TicketObj->QueueObj->CommentAddress
                 || RT->Config->Get('CommentAddress') )
             : ( $TicketObj->QueueObj->CorrespondAddress
@@ -264,6 +262,9 @@ if ( $ARGS{'SubmitTicket'} ) {
         unless ( RT::Crypt::GnuPG::DrySign( $address ) ) {
             push @cannot_sign_as, $address;
             $checks_failure = 1;
+        } else {
+            RT::Crypt::GnuPG::UseKeyForSigning( $ARGS{'SignUsing'} )
+                if $ARGS{'SignUsing'}
         }
     }
 
