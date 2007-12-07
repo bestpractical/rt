@@ -1594,10 +1594,17 @@ sub UseKeyForEncryption {
     return ();
 } }
 
+=head2 UseKeyForSigning
+
+Returns or sets identifier of the key that should be used for signing.
+
+Returns the current value when called without arguments.
+
+Sets new value when called with one argument and unsets if it's undef.
+
+=cut
+
 { my $key;
-# no args -> get
-# one arg -> set
-# undef -> clear
 sub UseKeyForSigning {
     if ( @_ ) {
         $key = $_[0];
@@ -2047,15 +2054,22 @@ sub ImportKey {
     return %res;
 }
 
-# signs the input message, to make sure we have a useable passphrase
-# the first argument MUST be the email address of the signer
-# returns a true value if all went well
+=head2 KEY
+
+Signs a small message with the key, to make sure the key exists and 
+we have a useable passphrase. The first argument MUST be a key identifier
+of the signer: either email address, key id or finger print.
+
+Returns a true value if all went well.
+
+=cut
+
 sub DrySign {
     my $from = shift;
 
     my $mime = MIME::Entity->build(
         Type    => "text/plain",
-        From    => $from,
+        From    => 'nobody@localhost',
         To      => 'nobody@localhost',
         Subject => "dry sign",
         Data    => ['t'],
