@@ -15,7 +15,6 @@ my @res;
 
 my %seen;
 foreach my $address ( grep $_ && !$seen{ lc $_ }++, @Addresses ) {
-    $RT::Logger->crit( $address );
     my %keys = RT::Crypt::GnuPG::GetKeysForSigning( $address );
     next unless $keys{'info'};
     push @res, $address, $keys{'info'};
