@@ -150,12 +150,12 @@ msgstr "%1 - 將更新狀態輸出到 STDOUT"
 #: bin/rt-crontool:253
 #. ("--template-id")
 msgid "%1 - Specify id of the template you want to use"
-msgstr ""
+msgstr "%1 - 指定欲使用的範本編號"
 
 #: bin/rt-crontool:256
 #. ("--transaction")
 msgid "%1 - Specify if you want to use either 'first' or 'last' tarnsaction"
-msgstr ""
+msgstr "%1 - 指定欲使用的更動為 'first' (第一項) 或 'last' (最後一項)"
 
 #: bin/rt-crontool:247
 #. ("--action")
@@ -175,7 +175,7 @@ msgstr "%1 - 指定欲使用的查詢模組"
 #: bin/rt-crontool:259
 #. ("--transaction-type")
 msgid "%1 - Specify the type of a transaction you want to use"
-msgstr ""
+msgstr "%1 - 指定欲使用的更動類別"
 
 #: html/Elements/Footer:56
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2006', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
@@ -571,7 +571,7 @@ msgstr "(未命名)"
 
 #: html/Ticket/Elements/Reminders:133
 msgid "(yyyy/mm/dd)"
-msgstr ""
+msgstr "(yyyy/mm/dd)"
 
 #: NOT FOUND IN SOURCE
 msgid "*"
@@ -579,11 +579,11 @@ msgstr "★"
 
 #: html/Elements/EditCustomFieldSelect:57
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: bin/rt-crontool:95
 msgid "--transaction argument could be only 'first' or 'last'"
-msgstr ""
+msgstr "--transaction 的值僅能為 'first' 或 'last'"
 
 #: NOT FOUND IN SOURCE
 msgid ":"
@@ -653,7 +653,7 @@ msgstr "ACLEquivalence"
 
 #: html/Search/Elements/SelectAndOr:46
 msgid "AND"
-msgstr ""
+msgstr "AND"
 
 #: NOT FOUND IN SOURCE
 msgid "Aborting to avoid unintended ticket modifications.\\n"
@@ -690,7 +690,7 @@ msgstr "動作執行完畢"
 
 #: bin/rt-crontool:171
 msgid "Action committed.\\n"
-msgstr ""
+msgstr "動作執行完畢。\\n"
 
 #: lib/RT/Scrip_Overlay.pm:168
 msgid "Action is mandatory argument"
@@ -1032,7 +1032,7 @@ msgstr "數額"
 
 #: html/Search/Elements/EditQuery:56
 msgid "And/Or"
-msgstr ""
+msgstr "AND/OR"
 
 #: NOT FOUND IN SOURCE
 msgid "Any Condition"
@@ -1380,7 +1380,7 @@ msgstr "不能整合進已整合過的申請單。這個錯誤不該發生。"
 #: html/Widgets/SavedSearch:63
 #. (loc($self->{SearchType}))
 msgid "Can't save %1"
-msgstr ""
+msgstr "無法儲存 %1"
 
 #: html/Search/Build.html:290
 msgid "Can't save this search"
@@ -1481,7 +1481,7 @@ msgstr "全部清除"
 
 #: html/Helpers/CalPopup.html:51
 msgid "Close window"
-msgstr ""
+msgstr "關閉視窗"
 
 #: html/Ticket/Elements/ShowDates:68
 msgid "Closed"
@@ -1501,15 +1501,15 @@ msgstr "執行程式碼"
 
 #: lib/RT/CustomField_Overlay.pm:89
 msgid "Combobox: Select or enter multiple values"
-msgstr ""
+msgstr "下拉文字框：選擇或鍵入多重項目"
 
 #: lib/RT/CustomField_Overlay.pm:90
 msgid "Combobox: Select or enter one value"
-msgstr ""
+msgstr "下拉文字框：選擇或鍵入單一項目"
 
 #: lib/RT/CustomField_Overlay.pm:91
 msgid "Combobox: Select or enter up to %1 values"
-msgstr ""
+msgstr "下拉文字框：選擇或鍵入最多 %1 個項目"
 
 #: NOT FOUND IN SOURCE
 msgid "Command not understood!\\n"
@@ -1585,7 +1585,7 @@ msgstr "條件"
 
 #: lib/RT/Scrip_Overlay.pm:184
 msgid "Condition is mandatory argument"
-msgstr ""
+msgstr "條件是必填欄位"
 
 #: bin/rt-crontool:151
 msgid "Condition matches..."
@@ -1661,7 +1661,7 @@ msgstr "未紀錄申請單回覆"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. "
-msgstr "不能新增自訂欄位的值 "
+msgstr "不能新增自訂欄位的值。"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. %1 "
@@ -1669,16 +1669,16 @@ msgstr "不能新增自訂欄位的值。%1 "
 
 #: lib/RT/Record.pm:1707
 msgid "Could not add new custom field value. "
-msgstr ""
+msgstr "不能新增自訂欄位的值。"
 
 #: lib/RT/Record.pm:1660
 #. (, $value_msg)
 msgid "Could not add new custom field value. %1 "
-msgstr ""
+msgstr "不能新增自訂欄位的值。%1 "
 
 #: lib/RT/Ticket_Overlay.pm:3048 lib/RT/Ticket_Overlay.pm:3056 lib/RT/Ticket_Overlay.pm:3073
 msgid "Could not change owner. "
-msgstr "不能更改承辦人。 "
+msgstr "不能更改承辦人。"
 
 #: html/Admin/CustomFields/Modify.html:161
 #. ($msg)
@@ -1688,7 +1688,7 @@ msgstr "無法新增自訂欄位"
 #: html/Admin/Elements/EditCustomField:113
 #. ($msg)
 msgid "Could not create CustomField: %1"
-msgstr ""
+msgstr "無法新增自訂欄位：%1"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not create Scrip"
@@ -1758,11 +1758,11 @@ msgstr "無法載入群組"
 #: lib/RT/SavedSearch.pm:119
 #. ($privacy)
 msgid "Could not load object for %1"
-msgstr ""
+msgstr "無法為 %1 載入物件"
 
 #: lib/RT/SavedSearch.pm:197
 msgid "Could not load search attribute"
-msgstr ""
+msgstr "無法載入查詢屬性"
 
 #: lib/RT/Queue_Overlay.pm:761
 #. ($args{'Type'})
@@ -1789,7 +1789,7 @@ msgstr "無法設定使用者資訊"
 
 #: lib/RT/Transaction_Overlay.pm:159
 msgid "Couldn't add attachment"
-msgstr ""
+msgstr "無法新增附件"
 
 #: lib/RT/Group_Overlay.pm:1003
 msgid "Couldn't add member to group"
@@ -2904,7 +2904,7 @@ msgstr "鍵入申請單可鏈結到的申請單編號或網址。項目之間請
 
 #: lib/RT/CustomField_Overlay.pm:66
 msgid "Enter up to %1 values"
-msgstr "鍵入最多 %1 個值"
+msgstr "鍵入最多 %1 個項目"
 
 #: NOT FOUND IN SOURCE
 msgid "EntryBoolean"
@@ -3020,7 +3020,7 @@ msgstr "備註"
 
 #: lib/RT/SavedSearch.pm:177
 msgid "Failed to create search attribute"
-msgstr "搜尋屬性建立失敗"
+msgstr "查詢屬性建立失敗"
 
 #: lib/RT/User_Overlay.pm:376
 msgid "Failed to find 'Privileged' users pseudogroup."
@@ -5812,7 +5812,7 @@ msgstr ""
 
 #: html/Admin/CustomFields/Modify.html:106
 msgid "RT can make this custom field's values into hyperlinks to another service."
-msgstr ""
+msgstr "RT 可將此自訂欄位的值視為連往其他網站的超鏈結"
 
 #: NOT FOUND IN SOURCE
 msgid "RT couldn't authenticate you"
@@ -6420,7 +6420,7 @@ msgstr "選擇表單"
 
 #: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
-msgstr ""
+msgstr "為您新的申請單選擇一個表單"
 
 #: NOT FOUND IN SOURCE
 msgid "Select a queue to link to"
