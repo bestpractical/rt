@@ -409,7 +409,7 @@ sub _ParseQuery {
                 $val = "'$val'";
             }
 
-            push @actions, [ $self->CurrentUser->loc("Unknown field: $key"), -1 ] unless $class;
+            push @actions, [ $self->CurrentUser->loc("Unknown field: [_1]", $key), -1 ] unless $class;
 
             $want = PAREN | AGGREG;
         }

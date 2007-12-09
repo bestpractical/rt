@@ -136,7 +136,7 @@
        Description =>
          'Create new tickets based on this scrip\'s template',             # loc
        ExecModule => 'CreateTickets', },
-    { Name        => 'Open Tickets',
+    { Name        => 'Open Tickets',                                      # loc
       Description => 'Open tickets on correspondence',                    # loc
       ExecModule  => 'AutoOpen' },
 );
