@@ -67,11 +67,11 @@
 </tr>
 
 <tr><td align="right">
-<&|/l&>Match Field</&>: 
+<&|/l&>Field</&>: 
 </td>
 <td>
 <& SELF:Select,
-    Name => 'Field',
+    Name    => 'Field',
     Options => [RT::Extension::RuleManager::FieldOptions],
     Default => ($Create ? '' : $RuleObj->Field),
 &>
@@ -79,7 +79,7 @@
 </tr>
 
 <tr><td align="right">
-<&|/l&>Match Pattern</&>: 
+<&|/l&>Match</&>: 
 </td>
 <td><input name="Pattern" value="<% ($Create) ? "" : $RuleObj->Pattern %>" /></td>
 </tr>
@@ -89,7 +89,7 @@
 </td>
 <td>
 <& SELF:Select,
-    Name => 'Handler',
+    Name    => 'Handler',
     Options => [RT::Extension::RuleManager::HandlerOptions],
     Default => ($Create ? '' : $RuleObj->Handler),
     Refresh => 1,

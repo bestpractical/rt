@@ -127,9 +127,17 @@ sub UpdateRecordObject {
     RT::Extension::RuleManager->_save($self->{_root}) if $updated;
 }
 
-sub FormattedArgument {
+sub PrettyArgument {
     my $self = shift;
     ($self->Handler =~ /:$/) ? $self->Argument : '';
+}
+
+sub PrettyPattern {
+    my $self = shift;
+    my $pat = $self->Pattern;
+    return '*' if $pat eq '';
+    return "*$pat*" unless $pat =~ /[*?]/;
+    return $pat;
 }
 
 BEGIN {

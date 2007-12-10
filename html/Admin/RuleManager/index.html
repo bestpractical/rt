@@ -70,8 +70,8 @@
 <li>
 <a href="Modify.html?id=<%$rule->id%>"><% length($rule->Name) ? $rule->Name : '(#'.$rule->Id.')' %></a>
 <br />
-<% $rule->Field %> matches <tt>/<% $rule->Pattern %>/</tt><br />
-= <% $rule->Handler %> <% $rule->FormattedArgument %>
+<% $rule->Field %> matches &lt;<tt><% $rule->PrettyPattern %></tt>&gt;<br />
+= <% $rule->Handler %> <% $rule->PrettyArgument %>
 % if ($rule->Final) {
 <br />
 + <em><&|/l&>Stop processing the rules after this one.</&></em>
