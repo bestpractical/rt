@@ -50,7 +50,7 @@
     current_subtab => 'Admin/RuleManager/',
     Title => loc('All Rules') &>
 
-<pre>
+<!--
 - List rules by order, with move up/down buttons as well as deletion.
 - Clicking on a rule brings Modify.html with the usual controls:
     - Match
@@ -59,15 +59,24 @@
     - Argument
     - StopAfterProcessingIfMatched
 - Auto-vivify the action/rule/template combination?
-</pre>
+-->
 
-<p><&|/l&>Select a rule</&>:</p>
+<h2><&|/l&>Select a rule</&>:</h2>
 <ul>
 %if (@$rules == 0) {
 <li><em><&|/l&>No rules found.</&></em></li>
 % }
 %for my $rule (@$rules) {
-<li><a href="Modify.html?id=<%$rule->id%>"><%$rule->Name%></a></li>
+<li>
+<a href="Modify.html?id=<%$rule->id%>"><% length($rule->Name) ? $rule->Name : '(#'.$rule->Id.')' %></a>
+<br />
+<% $rule->Field %> matches <tt>/<% $rule->Pattern %>/</tt><br />
+= <% $rule->Handler %> <% $rule->FormattedArgument %>
+% if ($rule->Final) {
+<br />
++ <em><&|/l&>Stop processing the rules after this one.</&></em>
+% }
+</li>
 %}
 </ul>
 <%INIT>

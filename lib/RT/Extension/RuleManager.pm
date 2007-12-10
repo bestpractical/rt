@@ -5,6 +5,17 @@ use RT::Template;
 use YAML::Syck '1.00';
 use constant RuleManagerTemplate => 'Rule Manager Template';
 use constant RuleClass => 'RT::Extension::RuleManager::Rule';
+use constant FieldOptions => (
+    'Subject', # loc
+    'Sender',  # loc
+    'Body',    # loc
+);
+use constant HandlerOptions => (
+    'Send no autoreply',                    # loc
+    'Send the autoreply in this template:', # loc
+    "Set the ticket's owner as this user:", # loc
+    'Move the ticket to this queue:',       # loc
+);
 
 sub create {
     my $self = shift;
@@ -99,7 +110,7 @@ sub _template {
 
 package RT::Extension::RuleManager::Rule;
 
-use constant Fields => qw( Name Field Pattern Handler Argument );
+use constant Fields => qw( Name Field Pattern Handler Argument Final );
 
 sub id { $_[0]{_pos}+1 }
 sub Id { $_[0]{_pos}+1 }
@@ -114,6 +125,11 @@ sub UpdateRecordObject {
         $self->{$field} = $args->{$field};
     }
     RT::Extension::RuleManager->_save($self->{_root}) if $updated;
+}
+
+sub FormattedArgument {
+    my $self = shift;
+    ($self->Handler =~ /:$/) ? $self->Argument : '';
 }
 
 BEGIN {

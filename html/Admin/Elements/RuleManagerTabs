@@ -55,7 +55,7 @@ my $tabs;
 if ($id) {
     $tabs->{'R'} = {
         title     => loc('Rule #[_1]', $id),
-        path      => "Admin/Users/Modify.html?id=".$id,
+        path      => "Admin/RuleManager/Modify.html?id=".$id,
     };
 }
 if (
@@ -78,7 +78,7 @@ foreach my $tab ( sort keys %{$tabs->{'this'}->{'subtabs'}} ) {
         $tabs->{'this'}->{'subtabs'}->{$tab}->{"current_subtab"} = $current_subtab; 
     }                                                                           
 }   
-  $current_tab = "Admin/Users/Modify.html?id=".$id if $id;
+  $current_tab = "Admin/RuleManager/Modify.html?id=".$id if $id;
 </%INIT>
 <%ARGS>
 $RuleObj => undef

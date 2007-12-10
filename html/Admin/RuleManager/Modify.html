@@ -66,6 +66,54 @@
 <td><input name="Name" value="<% ($Create) ? "" : $RuleObj->Name %>" /></td>
 </tr>
 
+<tr><td align="right">
+<&|/l&>Match Field</&>: 
+</td>
+<td>
+<& SELF:Select,
+    Name => 'Field',
+    Options => [RT::Extension::RuleManager::FieldOptions],
+    Default => ($Create ? '' : $RuleObj->Field),
+&>
+</td>
+</tr>
+
+<tr><td align="right">
+<&|/l&>Match Pattern</&>: 
+</td>
+<td><input name="Pattern" value="<% ($Create) ? "" : $RuleObj->Pattern %>" /></td>
+</tr>
+
+<tr><td align="right">
+<&|/l&>Action</&>: 
+</td>
+<td>
+<& SELF:Select,
+    Name => 'Handler',
+    Options => [RT::Extension::RuleManager::HandlerOptions],
+    Default => ($Create ? '' : $RuleObj->Handler),
+    Refresh => 1,
+&>
+</td>
+</tr>
+
+% if (!$Create and $RuleObj->Handler =~ /:$/) {
+<tr><td align="right">
+<&|/l&>Argument</&>: 
+</td>
+<td><input name="Argument" value="<% ($Create) ? "" : $RuleObj->Argument %>" /></td>
+</tr>
+% }
+
+<tr><td align="right">
+<&|/l&>After action</&>: 
+</td><td>
+<label style="font-weight: normal">
+<input type="checkbox" name="Final" value="1" <% $Create ? '' : $RuleObj->Final ? 'checked="checked"' : '' |n %> />
+<&|/l&>Stop processing the rules after this one.</&>
+</label>
+</tr>
+
 </table>
 <& /Elements/Submit, Label => loc('Save Changes') &>
 </form>
@@ -92,12 +140,16 @@ else {
                 || RT::Extension::RuleManager->named($Name)
                 || Abort("Couldn't load rule '$Name'");
     }
+    else {
+        Abort("Couldn't load rule ''");
+    }
     $title = loc('Editing Rule #[_1]', $RuleObj->id);
     
     $current_tab = 'Admin/RuleManager/Modify.html?id='.$RuleObj->id;
 }
 
 if ($RuleObj and $RuleObj->Id) {
+    $ARGS{Final} = '' unless $ARGS{Final};
     $RuleObj->UpdateRecordObject(\%ARGS);
 }
 </%INIT>
@@ -109,3 +161,17 @@ $result => undef
 $Name => undef
 $Create => undef
 </%ARGS>
+
+<%METHOD Select>
+<select name="<% $Name %>" <% ($Refresh ? 'onchange="this.form.submit()"' : '') |n %>>
+% foreach my $val (@$Options) {
+<option value="<% $val %>" <% ($Default eq $val) ? 'selected="selected"' : '' |n %>><% loc($val) %></option>
+% }
+</select>
+<%ARGS>
+$Name
+$Options
+$Default => ''
+$Refresh => 0
+</%ARGS>
+</%METHOD>
