@@ -53,9 +53,9 @@
 <%INIT>
 my $tabs;
 if ($id) {
-    $tabs->{'this'} = {
-        title => eval { $RuleObj->Name },
-        path => "Admin/Users/Modify.html?id=".$id,
+    $tabs->{'R'} = {
+        title     => loc('Rule #[_1]', $id),
+        path      => "Admin/Users/Modify.html?id=".$id,
     };
 }
 if (

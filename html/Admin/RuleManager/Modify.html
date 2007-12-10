@@ -46,16 +46,14 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/RuleTabs, id => $RuleObj->id, 
+<& /Admin/Elements/RuleManagerTabs, id => $RuleObj ? $RuleObj->Id : 0,
     RuleObj => $RuleObj,
     current_tab => $current_tab, 
     Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
-
-
 <form action="<%$RT::WebPath%>/Admin/RuleManager/Modify.html" method="post">
-%if ($Create ) { 
+% if ($Create) {
 <input type="hidden" class="hidden" name="id" value="new" />
 % } else {
 <input type="hidden" class="hidden" name="id" value="<%$RuleObj->Id%>" />
@@ -83,7 +81,8 @@ my ($title, @results);
 if ($Create) {
     $current_tab = 'Admin/RuleManager/Modify.html?Create=1';
     $title = loc("Create a rule");
-} else {
+}
+else {
     if ($id eq 'new') {
         $RuleObj = RT::Extension::RuleManager->create(Name => $Name);
         push @results, loc('Rule created.');
@@ -93,11 +92,13 @@ if ($Create) {
                 || RT::Extension::RuleManager->named($Name)
                 || Abort("Couldn't load rule '$Name'");
     }
-    $title = loc('Editing Rule [_1]', $RuleObj->Name);
+    $title = loc('Editing Rule #[_1]', $RuleObj->id);
     
     $current_tab = 'Admin/RuleManager/Modify.html?id='.$RuleObj->id;
 }
-if ($RuleObj->Id) {
+
+if ($RuleObj and $RuleObj->Id) {
+    $RuleObj->UpdateRecordObject(\%ARGS);
 }
 </%INIT>
 
