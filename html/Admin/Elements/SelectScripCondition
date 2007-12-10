@@ -60,7 +60,7 @@
 <%INIT>
 my $ScripConditions = RT::ScripConditions->new($session{'CurrentUser'});
 $ScripConditions->UnLimit;
-
+$ScripConditions->OrderBy(FIELD => 'Name');
 
 
 </%INIT>
