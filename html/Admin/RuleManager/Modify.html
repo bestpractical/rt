@@ -57,6 +57,7 @@
 <input type="hidden" class="hidden" name="id" value="new" />
 % } else {
 <input type="hidden" class="hidden" name="id" value="<%$RuleObj->Id%>" />
+<input type="hidden" class="hidden" name="do_update" value="1" />
 % }
 
 <table>
@@ -159,19 +160,11 @@ else {
     $current_tab = 'Admin/RuleManager/Modify.html?id='.$RuleObj->id;
 }
 
-if ($RuleObj and $RuleObj->Id) {
+if ($RuleObj and $RuleObj->Id and $do_update) {
     $ARGS{Final} = '' unless $ARGS{Final};
     push @results, loc('Rule saved.') if $RuleObj->UpdateRecordObject(\%ARGS);
 }
 </%INIT>
-
-
-<%ARGS>
-$id => undef
-$result => undef
-$Name => undef
-$Create => undef
-</%ARGS>
 
 <%METHOD Select>
 <select name="<% $Name %>" <% ($Refresh ? 'onchange="this.form.submit()"' : '') |n %>>
@@ -186,3 +179,11 @@ $Default => ''
 $Refresh => 0
 </%ARGS>
 </%METHOD>
+
+<%ARGS>
+$id => undef
+$result => undef
+$Name => undef
+$Create => undef
+$do_update => 0
+</%ARGS>

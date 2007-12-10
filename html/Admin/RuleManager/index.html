@@ -72,11 +72,11 @@
 </td><td>
 <a href="Modify.html?id=<%$rule->id%>"><% length($rule->Name) ? $rule->Name : '(#'.$rule->Id.')' %></a>
 <br />
-<tt>?</tt> <strong><% $rule->Field %></strong> matches <tt><strong><% $rule->PrettyPattern %></strong></tt><br />
+<tt>&gt;</tt> <strong><% $rule->Field %></strong> matches <strong><% $rule->PrettyPattern %></strong><br />
 <tt>=</tt> <% $rule->Handler %> <strong><% $rule->PrettyArgument %></strong>
 % if ($rule->Final) {
 <br />
-<tt>+</tt> <&|/l&>Stop processing the rules after this one.</&>
+<tt>+</tt> <em><&|/l&>Stop processing the rules after this one.</&></em>
 % }
 </td>
 <td style="white-space: nowrap" width="1"
