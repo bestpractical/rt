@@ -121,15 +121,46 @@ sub UpdateRecordObject {
     my $updated;
     foreach my $field (Fields) {
         exists $args->{$field} or next;
-        $updated = 1;
+        $updated ||= ($self->{$field} ne $args->{$field});
         $self->{$field} = $args->{$field};
     }
     RT::Extension::RuleManager->_save($self->{_root}) if $updated;
+    return $updated;
 }
 
 sub PrettyArgument {
     my $self = shift;
-    ($self->Handler =~ /:$/) ? $self->Argument : '';
+    if ($self->Handler =~ /(\w+):$/) {
+        if ($1 eq 'template') {
+            my ($first_line, $rest) = split(/[\r\n]+/, $self->Argument, 2);
+            chomp $first_line;
+            if (length($first_line) > 40) {
+                return substr($first_line, 0, 40) . '...';
+            }
+            elsif ($rest =~ /\S/) {
+                return "$first_line...";
+            }
+            else {
+                return $first_line;
+            }
+        }
+        elsif ($1 eq 'user') {
+            my $user = RT::User->new($RT::SystemUser);
+            $user->Load($self->Argument);
+            return $user->Name;
+        }
+        elsif ($1 eq 'queue') {
+            my $queue = RT::Queue->new($RT::SystemUser);
+            $queue->Load($self->Argument);
+            return $queue->Name;
+        }
+        else {
+            return $self->Argument;
+        }
+    }
+    else {
+        '';
+    }
 }
 
 sub PrettyPattern {

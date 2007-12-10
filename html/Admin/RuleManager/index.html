@@ -62,23 +62,38 @@
 -->
 
 <h2><&|/l&>Select a rule</&>:</h2>
-<ul>
 %if (@$rules == 0) {
 <li><em><&|/l&>No rules found.</&></em></li>
-% }
+% } else {
+<table border=0 cellpadding=0 cellspacing=0>
 %for my $rule (@$rules) {
-<li>
+<tr valign="top"><td>
+<% $rule->Id %>.
+</td><td>
 <a href="Modify.html?id=<%$rule->id%>"><% length($rule->Name) ? $rule->Name : '(#'.$rule->Id.')' %></a>
 <br />
-<% $rule->Field %> matches &lt;<tt><% $rule->PrettyPattern %></tt>&gt;<br />
-= <% $rule->Handler %> <% $rule->PrettyArgument %>
+<tt>?</tt> <strong><% $rule->Field %></strong> matches <tt><strong><% $rule->PrettyPattern %></strong></tt><br />
+<tt>=</tt> <% $rule->Handler %> <strong><% $rule->PrettyArgument %></strong>
 % if ($rule->Final) {
 <br />
-+ <em><&|/l&>Stop processing the rules after this one.</&></em>
+<tt>+</tt> <&|/l&>Stop processing the rules after this one.</&>
 % }
-</li>
+</td>
+<td style="white-space: nowrap" width="1"
+% if ($rule->Id > 1) {
+>[<a href="#"><&|/l&>Move up</&></a>]</td
+% }
+>
+<td style="white-space: nowrap" width="1"
+% if ($rule->Id < @$rules) {
+>[<a href="#"><&|/l&>Move down</&></a>]</td
+% }
+>
+<td style="white-space: nowrap" width="1">[<a href="#"><&|/l&>Delete</&></a>]</td>
+</tr>
 %}
-</ul>
+% }
+</td></tr></table>
 <%INIT>
 require RT::Extension::RuleManager;
 my $rules = RT::Extension::RuleManager->rules;

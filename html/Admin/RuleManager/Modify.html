@@ -72,7 +72,7 @@
 <td>
 <& SELF:Select,
     Name    => 'Field',
-    Options => [RT::Extension::RuleManager::FieldOptions],
+    Options => [RT::Extension::RuleManager::FieldOptions()],
     Default => ($Create ? '' : $RuleObj->Field),
 &>
 </td>
@@ -90,18 +90,29 @@
 <td>
 <& SELF:Select,
     Name    => 'Handler',
-    Options => [RT::Extension::RuleManager::HandlerOptions],
+    Options => [RT::Extension::RuleManager::HandlerOptions()],
     Default => ($Create ? '' : $RuleObj->Handler),
     Refresh => 1,
 &>
 </td>
 </tr>
 
-% if (!$Create and $RuleObj->Handler =~ /:$/) {
+% if (!$Create and $RuleObj->Handler =~ /(\w+):$/) {
+%     my $default = ($Create) ? '' : $RuleObj->Argument ;
 <tr><td align="right">
 <&|/l&>Argument</&>: 
 </td>
-<td><input name="Argument" value="<% ($Create) ? "" : $RuleObj->Argument %>" /></td>
+<td>
+% if ($1 eq 'template') {
+<textarea rows=10 cols=80 name="Argument"><% $default %></textarea>
+% } elsif ($1 eq 'queue') {
+<& /Elements/SelectQueue, Name => 'Argument', Default => $default, ShowNullOption => 0 &>
+% } elsif ($1 eq 'user') {
+<& /Elements/SelectOwner, Name => 'Argument', Default => $default, DefaultValue => 0 &>
+% } else {
+<input name="Argument" value="<% $default %>" />
+% }
+</td>
 </tr>
 % }
 
@@ -150,7 +161,7 @@ else {
 
 if ($RuleObj and $RuleObj->Id) {
     $ARGS{Final} = '' unless $ARGS{Final};
-    $RuleObj->UpdateRecordObject(\%ARGS);
+    push @results, loc('Rule saved.') if $RuleObj->UpdateRecordObject(\%ARGS);
 }
 </%INIT>
 
