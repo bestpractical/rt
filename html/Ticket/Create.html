@@ -259,13 +259,10 @@ my $ValidCFs = $m->comp(
 );
 
 if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-    foreach ( qw(Sign Encrypt) ) {
-        $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
-            Name => $_,
-            DefaultValue => $QueueObj->$_,
-            Arguments => \%ARGS,
-        );
-    }
+    $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+        QueueObj => $QueueObj,
+        Arguments => \%ARGS,
+    );
 }
 
 # if no due date has been set explicitly, then use the

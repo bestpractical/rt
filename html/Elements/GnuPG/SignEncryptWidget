@@ -18,3 +18,21 @@ push @signers, ($ARGS{'UpdateType'}||'') eq "private"
     : ( $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') );
 push @signers, $session{'CurrentUser'}->EmailAddress;
 </%INIT>
+
+<%METHOD Process>
+<%ARGS>
+$QueueObj
+$Arguments => {}
+</%ARGS>
+<%INIT>
+return unless RT->Config->Get('GnuPG')->{'Enable'};
+
+foreach ( qw(Sign Encrypt) ) {
+    $Arguments->{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
+        Name => $_,
+        DefaultValue => $QueueObj->$_,
+        Arguments => $Arguments,
+    );
+}
+</%INIT>
+</%METHOD>

@@ -175,13 +175,10 @@ if ($DefaultStatus eq 'resolved') {
 }
 
 if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-    foreach ( qw(Sign Encrypt) ) {
-        $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
-            Name => $_,
-            DefaultValue => $TicketObj->QueueObj->$_,
-            Arguments => \%ARGS,
-        );
-    }
+    $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+        QueueObj => $TicketObj->QueueObj,
+        Arguments => \%ARGS,
+    );
 }
 
 # Things needed in the template - we'll do the processing here, just
