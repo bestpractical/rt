@@ -57,10 +57,7 @@
 <input type="hidden" class="hidden" name="id" value="new" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 
-<& /Elements/GnuPG/SignEncryptWidget:ShowIssues,
-    self => $gnupg_widget,
-    QueueObj => $QueueObj,
-&>
+<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <div id="Ticket-Create-basics">
 <a name="basics"></a>

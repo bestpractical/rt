@@ -60,10 +60,7 @@
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
 
-<& /Elements/GnuPG/SignEncryptWidget:ShowIssues,
-    self => $gnupg_widget,
-    TicketObj => $TicketObj,
-&>
+<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <table border="0">
 
