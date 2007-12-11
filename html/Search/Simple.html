@@ -51,6 +51,8 @@
     Title => $title
 &>
 
+<& /Elements/Callback, _CallbackName => 'PreForm', %ARGS &>
+
 <div id="SimpleSearchForm">
 <form action="Simple.html" method="get">
 
@@ -64,6 +66,11 @@
 <div align="center">
 <input name="q" size="60" /><input type="submit" class="button" value="<&|/l&>Search</&>" />
 </div>
+
+</form>
+
+<& /Elements/Callback, _CallbackName => 'PostForm', %ARGS &>
+
 </div>
 
 <%INIT>
@@ -78,8 +85,15 @@ if ($q) {
     if ($q =~ /^(\d+)$/) {
         RT::Interface::Web::Redirect($RT::WebURL."/Ticket/Display.html?id=".$q);
     }
-    my $search  = RT::Search::Googleish->new(Argument   => $q,
-                                             TicketsObj => $tickets);
+
+    my %args = (
+        Argument   => $q,
+        TicketsObj => $tickets,
+    );
+
+    $m->comp('/Elements/Callback', %ARGS, _CallbackName => 'SearchArgs', args => \%args);
+
+    my $search = RT::Search::Googleish->new(%args);
 
     $m->comp( "Results.html", Query => $search->QueryToSQL() );
     $m->comp( "/Elements/Footer" );
