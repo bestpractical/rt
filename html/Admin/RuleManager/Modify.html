@@ -138,6 +138,8 @@ my $current_tab;
 my $RuleObj;
 my ($title, @results);
 
+$Create = 1 if not defined $id;
+
 if ($Create) {
     $current_tab = 'Admin/RuleManager/Modify.html?Create=1';
     $title = loc("Create a rule");

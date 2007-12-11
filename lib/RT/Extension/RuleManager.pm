@@ -85,6 +85,22 @@ sub rules {
     return $rules;
 }
 
+sub _init_action {
+    # This initializes the RT::Action we care about.
+    # XXX - Override the "Autoreply" scrip by default?
+
+    my $action = RT::ScripAction->new($RT::SystemUser);
+    $action->LoadByCol( ExecModule => 'RuleManager' );
+    if (!$action->Id) {
+        $action->Create(
+            Name        => 'Run Rule Manager',                                           # loc
+            Description => 'Execute simple rules defined in the Rule Manager interface', # loc
+            ExecModule  => 'RuleManager',
+        );
+    }
+    return $action;
+}
+
 sub _load {
     my $self = shift;
     return Load($self->_template->Content);
@@ -93,6 +109,9 @@ sub _load {
 sub _save {
     my $self = shift;
     my $rules = shift;
+
+    $self->_init_action;
+
     my @to_save;
     foreach my $rule (@$rules) {
         my %this = %$rule;
@@ -100,23 +119,57 @@ sub _save {
         delete $this{_root};
         push @to_save, \%this;
     }
+
     return $self->_template->SetContent(Dump(\@to_save));
 }
 
 # Find our own, special RT::Template.  If one does not exist, create it.
 sub _template {
     my $self = shift;
-    my $template = RT::Template->new($RT::SystemUser);
-    $template->Load(RuleManagerTemplate);
-    if (!$template->Id) {
-        $template->Create(
+    my $rule_manager_template = RT::Template->new($RT::SystemUser);
+    $rule_manager_template->Load(RuleManagerTemplate);
+    if (!$rule_manager_template->Id) {
+        my $autoreply_template = RT::Template->new($RT::SystemUser);
+        $autoreply_template->Load('Autoreply');
+        $rule_manager_template->Create(
             Name        => RuleManagerTemplate,
             Description => RuleManagerTemplate,
-            Content     => "--- []\n",
+            Content     => Dump([{
+                Name        => 'Default Autoreply',
+                Field       => 'Subject',
+                Pattern     => '',
+                Handler     => 'Send the autoreply in this template:',
+                Argument    => $autoreply_template->Content,
+                Final       => ''
+            }]),
             Queue       => 0,
         );
+
+        my $rule_manager_action = $self->_init_action;
+
+        my $autoreply_action = RT::ScripAction->new($RT::SystemUser);
+        $autoreply_action->Load('Autoreply To Requestors');
+
+        if ($autoreply_action->Id and $autoreply_template->Id and $rule_manager_action->Id) {
+            # Now usurp all Scrip settings to reset the ScripAction to ours.
+            my $scrips = RT::Scrips->new($RT::SystemUser);
+            $scrips->Limit(
+                FIELD   => 'Template',
+                VALUE   => $autoreply_template->Id,
+            );
+            $scrips->Limit(
+                FIELD   => 'ScripAction',
+                VALUE   => $autoreply_action->Id,
+            );
+
+            while (my $scrip = $scrips->Next) {
+                $scrip->SetDescription('Default Autoreply via Rule Manager');
+                $scrip->SetScripAction($rule_manager_action->Id);
+                $scrip->SetTemplate($rule_manager_template->Id);
+            }
+        }
     }
-    return $template;
+    return $rule_manager_template;
 }
 
 package RT::Extension::RuleManager::Rule;
