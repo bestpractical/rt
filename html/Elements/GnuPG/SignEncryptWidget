@@ -93,7 +93,7 @@ if ( $self->{'Sign'} ) {
         : ( $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') );
 
     unless ( RT::Crypt::GnuPG::DrySign( $address ) ) {
-        $self->{'GnuPGCanNotSignAs'} = [ $address ];
+        push @{ $self->{'GnuPGCanNotSignAs'} ||= [] }, $address;
         $checks_failure = 1;
     } else {
         RT::Crypt::GnuPG::UseKeyForSigning( $self->{'SignUsing'} )
@@ -138,7 +138,7 @@ if ( $self->{'Encrypt'} ) {
     );
 
     my ($status, @issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
-    $self->{'GnuPGRecipientsKeyIssues'} = \@issues;
+    push @{ $self->{'GnuPGRecipientsKeyIssues'} ||= [] }, @issues;
     $checks_failure = 1 unless $status;
 }
 
