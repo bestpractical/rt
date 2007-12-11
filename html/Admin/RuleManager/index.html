@@ -73,7 +73,12 @@
 <a href="Modify.html?id=<%$rule->id%>"><% length($rule->Name) ? $rule->Name : '(#'.$rule->Id.')' %></a>
 <br />
 <tt>&gt;</tt> <strong><% $rule->Field %></strong> matches <strong><% $rule->PrettyPattern %></strong><br />
-<tt>=</tt> <% $rule->Handler %> <strong><% $rule->PrettyArgument %></strong>
+<tt>=</tt> <% $rule->Handler %>
+% if (length(my $arg = $rule->PrettyArgument)) {
+<strong><% $rule->PrettyArgument %></strong>
+% } else {
+<em>(<&|/l&>none</&>)</em>
+% }
 % if ($rule->Final) {
 <br />
 <tt>+</tt> <em><&|/l&>Stop processing the rules after this one.</&></em>
@@ -81,20 +86,26 @@
 </td>
 <td style="white-space: nowrap" width="1"
 % if ($rule->Id > 1) {
->[<a href="#"><&|/l&>Move up</&></a>]</td
+>[<a href="index.html?Raise=<% $rule->Id %>"><&|/l&>Move up</&></a>]</td
 % }
 >
 <td style="white-space: nowrap" width="1"
 % if ($rule->Id < @$rules) {
->[<a href="#"><&|/l&>Move down</&></a>]</td
+>[<a href="index.html?Raise=<% $rule->Id+1 %>"><&|/l&>Move down</&></a>]</td
 % }
 >
-<td style="white-space: nowrap" width="1">[<a href="#"><&|/l&>Delete</&></a>]</td>
+<td style="white-space: nowrap" width="1">[<a href="index.html?Delete=<% $rule->Id %>" onclick="return confirm('<&|/l&>Really delete this rule?</&>')"><&|/l&>Delete</&></a>]</td>
 </tr>
 %}
 % }
 </td></tr></table>
 <%INIT>
 require RT::Extension::RuleManager;
+RT::Extension::RuleManager->raise($Raise) if $Raise;
+RT::Extension::RuleManager->delete($Delete) if $Delete;
 my $rules = RT::Extension::RuleManager->rules;
 </%INIT>
+<%ARGS>
+$Raise => undef
+$Delete => undef
+</%ARGS>

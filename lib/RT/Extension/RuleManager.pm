@@ -51,6 +51,17 @@ sub raise {
     @{$rules}[$id-1, $id-2] = @{$rules}[$id-2, $id-1];
     $rules->[$id-1]{_pos} = $id-1;
     $rules->[$id-2]{_pos} = $id-2;
+    $self->_save($rules);
+    return $id;
+}
+
+sub delete {
+    my $self  = shift;
+    my $id    = shift;
+    my $rules = $self->rules;
+    return undef if $id <= 0 or $id > @$rules;
+    splice @$rules, $id-1, 1;
+    $self->_save($rules);
     return $id;
 }
 
