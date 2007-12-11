@@ -1,22 +1,19 @@
 <select name="<% $Name %>">
-% while ( my ($address, $keys) = splice @res, 0, 2 ) {
-% foreach my $key ( @$keys ) {
-<option value="<% $key->{'Key'} %>"><% $address %></option>
-% } }
+<option value=""><% loc("Queue's key") %></option>
+% foreach my $key ( @keys ) {
+<option value="<% $key->{'Key'} %>"><% $key->{'Key'} %></option>
+% }
 </select>
 <%ARGS>
 $Name => 'SignUsing',
-@Addresses => ();
+$User => undef,
 </%ARGS>
 <%INIT>
 return unless RT->Config->Get('GnuPG')->{'Enable'};
 
-my @res;
-
-my %seen;
-foreach my $address ( grep $_ && !$seen{ lc $_ }++, @Addresses ) {
-    my %keys = RT::Crypt::GnuPG::GetKeysForSigning( $address );
-    next unless $keys{'info'};
-    push @res, $address, $keys{'info'};
+my @keys;
+if ( my $address = $User->EmailAddress ) {
+    my %res = RT::Crypt::GnuPG::GetKeysForSigning( $address );
+    push @keys, @{ $res{'info'} } if $res{'info'};
 }
 </%INIT>

@@ -1,26 +1,16 @@
 <table>
 <td><% loc('Sign')%></td>
 <td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $self->{'Sign'} &>
-using <& SelectKeyForSigning, Addresses => \@signers &>
+using <& SelectKeyForSigning, User => $session{'CurrentUser'}->UserObj &>
 </td>
 <td><% loc('Encrypt')%></td>
 <td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $self->{'Encrypt'} &></td>
 </table>
 <%ARGS>
 $self => undef,
-$TicketObj => undef,
-$QueueObj => undef,
 </%ARGS>
 <%INIT>
 return unless $self;
-
-$QueueObj ||= $TicketObj->QueueObj if $TicketObj;
-
-my @signers;
-push @signers, ($self->{'UpdateType'}||'') eq "private"
-    ? ( $QueueObj->CommentAddress || RT->Config->Get('CommentAddress') )
-    : ( $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') );
-push @signers, $session{'CurrentUser'}->EmailAddress;
 </%INIT>
 
 <%METHOD new>
