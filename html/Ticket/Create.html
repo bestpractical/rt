@@ -57,7 +57,10 @@
 <input type="hidden" class="hidden" name="id" value="new" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 
-<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
+<& /Elements/GnuPG/SignEncryptWidget:ShowIssues,
+    self => $gnupg_widget,
+    QueueObj => $QueueObj,
+&>
 
 <div id="Ticket-Create-basics">
 <a name="basics"></a>
@@ -150,9 +153,9 @@
 </td>
 </tr>
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+% if ( $gnupg_widget ) {
 <tr><td>&nbsp;</td><td colspan="5">
-<& /Elements/GnuPG/SignEncryptWidget, %ARGS, QueueObj => $QueueObj &>
+<& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
 </td></tr>
 % }
 
@@ -308,45 +311,16 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 }
 
 my $checks_failure = 0;
-my @cannot_sign_as;
-my @gnupg_keys_issues;
 
-if (RT->Config->Get('GnuPG')->{'Enable'}) {
-    require RT::Crypt::GnuPG;
-}
+my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
 
 if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
-
-    # check to see if we have a good passphrase
-    if ( $ARGS{'Sign'} ) {
-        my $address = $ARGS{'SignUsing'}
-            || $QueueObj->CorrespondAddress
-            || RT->Config->Get('CorrespondAddress');
-        unless ( RT::Crypt::GnuPG::DrySign( $address ) ) {
-            push @cannot_sign_as, $address;
-            $checks_failure = 1;
-        } else {
-            RT::Crypt::GnuPG::UseKeyForSigning( $ARGS{'SignUsing'} )
-                if $ARGS{'SignUsing'};
-        }
-    }
-
-    if ( $ARGS{'Encrypt'} ) {
-        my @recipients = $m->comp(
-            '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
-            %ARGS
-        );
-
-        RT::Crypt::GnuPG::UseKeyForEncryption(
-            map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
-            grep $ARGS{$_} && /^UseKey-/,
-            keys %ARGS
-        );
-
-        my $status;
-        ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
-        $checks_failure = 1 unless $status;
-    }
+    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+        self      => $gnupg_widget,
+        Operation => 'Create',
+        QueueObj  => $QueueObj,
+    );
+    $checks_failure = 1 unless $status;
 }
 
 

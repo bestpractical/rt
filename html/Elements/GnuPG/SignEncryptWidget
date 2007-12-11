@@ -1,23 +1,54 @@
 <table>
 <td><% loc('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $self->{'Sign'} &>
 using <& /Elements/SelectKeyForSigning, Addresses => \@signers &>
 </td>
 <td><% loc('Encrypt')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
+<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $self->{'Encrypt'} &></td>
 </table>
 <%ARGS>
-$QueueObj
+$self => undef,
+$TicketObj => undef,
+$QueueObj => undef,
 </%ARGS>
 <%INIT>
-return unless RT->Config->Get('GnuPG')->{'Enable'};
+return unless $self;
+
+$QueueObj ||= $TicketObj->QueueObj if $TicketObj;
 
 my @signers;
-push @signers, ($ARGS{'UpdateType'}||'') eq "private"
+push @signers, ($self->{'UpdateType'}||'') eq "private"
     ? ( $QueueObj->CommentAddress || RT->Config->Get('CommentAddress') )
     : ( $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') );
 push @signers, $session{'CurrentUser'}->EmailAddress;
 </%INIT>
+
+<%METHOD new>
+<%ARGS>
+$Arguments => {}
+</%ARGS>
+<%INIT>
+return undef unless RT->Config->Get('GnuPG')->{'Enable'};
+
+require RT::Crypt::GnuPG;
+return { %$Arguments };
+</%INIT>
+</%METHOD>
+
+<%METHOD ShowIssues>
+<%ARGS>
+$self => undef,
+</%ARGS>
+<%INIT>
+return unless $self;
+
+return $m->comp( '/Elements/GnuPGKeyIssues',
+    Issues => $self->{'GnuPGRecipientsKeyIssues'} || [],
+    SignAddresses => $self->{'GnuPGCanNotSignAs'} || [],
+);
+</%INIT>
+</%METHOD>
+
 
 <%METHOD Process>
 <%ARGS>
@@ -34,5 +65,80 @@ foreach ( qw(Sign Encrypt) ) {
         Arguments => $Arguments,
     );
 }
+</%INIT>
+</%METHOD>
+
+<%METHOD Check>
+<%ARGS>
+$self      => undef
+$Operation => 'Update'
+$TicketObj => undef
+$QueueObj  => undef
+</%ARGS>
+<%INIT>
+return 1 unless $self;
+
+my $checks_failure = 0;
+
+if ( $self->{'Sign'} ) {
+    $QueueObj ||= $TicketObj->QueueObj
+        if $TicketObj;
+
+    my $address = $self->{'SignUsing'};
+    $address ||= $self->{'UpdateType'} eq "private"
+        ? ( $QueueObj->CommentAddress || RT->Config->Get('CommentAddress') )
+        : ( $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') );
+
+    unless ( RT::Crypt::GnuPG::DrySign( $address ) ) {
+        $self->{'GnuPGCanNotSignAs'} = [ $address ];
+        $checks_failure = 1;
+    } else {
+        RT::Crypt::GnuPG::UseKeyForSigning( $self->{'SignUsing'} )
+            if $self->{'SignUsing'};
+    }
+}
+
+if ( $self->{'Encrypt'} ) {
+
+    my @recipients;
+
+    if ( $Operation eq 'Update' ) {
+        # skip any email addresses that we won't be sending mail to
+        my %squelch = $m->comp(
+            '/Ticket/Elements/PreviewScrips:SquelchRecipients',
+            %$self,
+            TicketObj => $TicketObj
+        );
+
+        @recipients = $m->comp(
+            '/Ticket/Elements/PreviewScrips:GetRecipients',
+            %$self, TicketObj => $TicketObj
+        );
+    }
+    elsif ( $Operation eq 'Create' ) {
+        @recipients = $m->comp(
+            '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
+            %$self,
+        );
+    }
+    else {
+        $RT::Logger->crit('Incorrect operation: '. $Operation );
+    }
+
+    my %seen;
+    @recipients = grep !$seen{ lc $_ }++, @recipients;
+
+    RT::Crypt::GnuPG::UseKeyForEncryption(
+        map { (/^UseKey-(.*)$/)[0] => $self->{ $_ } }
+        grep $self->{ $_ } && /^UseKey-/,
+        keys %$self
+    );
+
+    my ($status, @issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
+    $self->{'GnuPGRecipientsKeyIssues'} = \@issues;
+    $checks_failure = 1 unless $status;
+}
+
+return $checks_failure ? 0 : 1;
 </%INIT>
 </%METHOD>
