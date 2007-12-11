@@ -45,96 +45,51 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Action::RulesManager;
-require RT::Action::SendEmail;
+package RT::Action::RuleManager;
+use RT::Extension::RuleManager;
+require RT::Action::Generic;
 
 use strict;
 use vars qw/@ISA/;
-@ISA = qw(RT::Action::SendEmail);
+@ISA = qw(RT::Action::Generic);
 
-=head2 Prepare
+# {{{ sub Describe 
+sub Describe  {
+    my $self = shift;
+    return(ref $self);
+}
+# }}}
 
-Set up the relevant recipients, then call our parent.
-
-=cut
-
-
+# Evaluate all conditions from first to last.
 sub Prepare {
     my $self = shift;
-    $self->SetRecipients();
-    $self->SUPER::Prepare();
+    my $rules = RT::Extension::RuleManager->rules;
+    my @matched;
+    foreach my $rule (@$rules) {
+        next unless $self->MatchRule($rule);
+        push @matched, $rule;
+        last if $rule->Final;
+    }
+    $self->{Matched} = \@matched;
+    return 0+@matched;
 }
 
-# {{{ sub SetRecipients
-
-=head2 SetRecipients
-
-Sets the recipients of this message to this ticket's Requestor.
-
-=cut
-
-
-sub SetRecipients {
-    my $self=shift;
-
-    push(@{$self->{'To'}}, $self->TicketObj->Requestors->MemberEmailAddresses);
-    
-    return(1);
+sub MatchRule {
+    # ...compile the Match using globlike syntax...
+    # ...then compare it against TransactionObj fields...
 }
 
-# }}}
-
-
-# {{{ sub SetReturnAddress 
-
-=head2 SetReturnAddress
-
-Set this message\'s return address to the apropriate queue address
-
-=cut
-
-sub SetReturnAddress {
+sub Commit {
     my $self = shift;
-    my %args = ( is_comment => 0,
-		 @_
-	       );
-    
-    my $replyto;
-    if ($args{'is_comment'}) { 
-	$replyto = $self->TicketObj->QueueObj->CommentAddress || 
-		     $RT::CommentAddress;
+    foreach my $rule (@{$self->{Matched} || []}) {
+        # Run a rule depending on the handler.
+        # (this may involve creating other RT::Action::* objects and delegate to them.)
     }
-    else {
-	$replyto = $self->TicketObj->QueueObj->CorrespondAddress ||
-		     $RT::CorrespondAddress;
-    }
-    
-    unless ($self->TemplateObj->MIMEObj->head->get('From')) {
-	if ($RT::UseFriendlyFromLine) {
-	    my $friendly_name = $self->TicketObj->QueueObj->Description ||
-		    $self->TicketObj->QueueObj->Name;
-	    $friendly_name =~ s/"/\\"/g;
-	    $self->SetHeader( 'From',
-		        sprintf($RT::FriendlyFromLineFormat, 
-                $self->MIMEEncodeString( $friendly_name, $RT::EmailOutputEncoding ), $replyto),
-	    );
-	}
-	else {
-	    $self->SetHeader( 'From', $replyto );
-	}
-    }
-    
-    unless ($self->TemplateObj->MIMEObj->head->get('Reply-To')) {
-	$self->SetHeader('Reply-To', "$replyto");
-    }
-    
 }
-  
-# }}}
 
-eval "require RT::Action::Autoreply_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Autoreply_Vendor.pm});
-eval "require RT::Action::Autoreply_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Autoreply_Local.pm});
+eval "require RT::Action::RuleManager_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RuleManager_Vendor.pm});
+eval "require RT::Action::RuleManager_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/RuleManager_Local.pm});
 
 1;
