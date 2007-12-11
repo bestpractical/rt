@@ -74,6 +74,16 @@ use strict;
 use base qw(RT::Search::Generic);
 
 
+# sub _Init {{{
+sub _Init {
+    my $self = shift;
+    my %args = @_;
+
+    $self->{'Queues'} = delete($args{'Queues'}) || [];
+    $self->SUPER::_Init(%args);
+}
+# }}}
+
 # {{{ sub Describe 
 sub Describe  {
   my $self = shift;
@@ -139,6 +149,13 @@ sub QueryToSQL {
             $key =~ s/['\\].*//g;
             push @tql_clauses, "Subject LIKE '$key'";
         }
+    }
+
+    # restrict to any queues requested by the caller
+    for my $queue (@{ $self->{'Queues'} }) {
+        my $QueueObj = RT::Queue->new($self->TicketsObj->CurrentUser);
+        $QueueObj->Load($queue) or next;
+        push @queue_clauses, "Queue = '" . $QueueObj->Name . "'";
     }
 
     push @tql_clauses, join( " OR ", sort @id_clauses );
