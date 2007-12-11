@@ -201,8 +201,10 @@ selected="selected"
 ><% $self->{_item_map}{$_} %></option>
 % }
 </select>
+% unless ($ARGS{'NoArrows'}) {
  <input name="moveup" type="submit" class="button" value=" &uarr; " />
  <input name="movedown" type="submit" class="button" value=" &darr; " />
+% }
  <input name="remove" type="submit" class="button" value="<&|/l&>Delete</&>" />
 
 % my $caption = "";
