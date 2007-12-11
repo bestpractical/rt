@@ -180,13 +180,6 @@ if ($DefaultStatus eq 'resolved') {
     $title = loc("Update ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject);
 }
 
-if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-    $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
-        QueueObj => $TicketObj->QueueObj,
-        Arguments => \%ARGS,
-    );
-}
-
 # Things needed in the template - we'll do the processing here, just
 # for the convenience:
 
@@ -247,7 +240,10 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 my @results;
 
 my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
-
+$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+    self => $gnupg_widget,
+    TicketObj => $TicketObj,
+);
 if ( $ARGS{'SubmitTicket'} ) {
     my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
         self      => $gnupg_widget,

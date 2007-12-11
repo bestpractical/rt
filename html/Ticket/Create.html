@@ -261,13 +261,6 @@ my $ValidCFs = $m->comp(
     ARGSRef => \%ARGS
 );
 
-if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-    $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
-        QueueObj => $QueueObj,
-        Arguments => \%ARGS,
-    );
-}
-
 # if no due date has been set explicitly, then use the
 # queue's default if it exists
 if ($QueueObj->DefaultDueIn && !$ARGS{'Due'}) {
@@ -313,6 +306,11 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 my $checks_failure = 0;
 
 my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+    self      => $gnupg_widget,
+    QueueObj  => $QueueObj,
+);
+
 
 if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
     my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',

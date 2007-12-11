@@ -52,17 +52,20 @@ return $m->comp( '/Elements/GnuPGKeyIssues',
 
 <%METHOD Process>
 <%ARGS>
-$QueueObj
-$Arguments => {}
+$self => undef
+$QueueObj => undef
+$TicketObj => undef
 </%ARGS>
 <%INIT>
-return unless RT->Config->Get('GnuPG')->{'Enable'};
+return unless $self;
+
+$QueueObj ||= $TicketObj->QueueObj if $TicketObj;
 
 foreach ( qw(Sign Encrypt) ) {
-    $Arguments->{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
+    $self->{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
         Name => $_,
         DefaultValue => $QueueObj->$_,
-        Arguments => $Arguments,
+        Arguments => $self,
     );
 }
 </%INIT>
