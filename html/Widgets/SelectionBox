@@ -146,6 +146,10 @@ else {
 	}
     }
 
+    if ($ARGS{clear}) {
+        $current = [];
+    }
+
     $self->{Current} = $current;
 }
 
@@ -206,6 +210,9 @@ selected="selected"
  <input name="movedown" type="submit" class="button" value=" &darr; " />
 % }
  <input name="remove" type="submit" class="button" value="<&|/l&>Delete</&>" />
+% if ($ARGS{'Clear'}) {
+ <input name="clear" type="submit" class="button" value="<&|/l&>Clear</&>" />
+% }
 
 % my $caption = "";
 % unless ($self->{'AutoSave'}) {
