@@ -1,7 +1,7 @@
 <table>
 <td><% loc('Sign')%></td>
 <td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $self->{'Sign'} &>
-using <& /Elements/SelectKeyForSigning, Addresses => \@signers &>
+using <& SelectKeyForSigning, Addresses => \@signers &>
 </td>
 <td><% loc('Encrypt')%></td>
 <td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $self->{'Encrypt'} &></td>
