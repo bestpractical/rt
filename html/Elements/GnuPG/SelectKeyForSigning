@@ -1,9 +1,11 @@
+% if ( $user_key ) {
 <select name="<% $Name %>">
 <option value=""><% loc("Queue's key") %></option>
-% foreach my $key ( @keys ) {
-<option value="<% $key->{'Key'} %>"><% $key->{'Key'} %></option>
-% }
+<option value="<% $user_key %>"><% $user_key %></option>
 </select>
+% } else {
+<% loc("Queue's key") %>
+% }
 <%ARGS>
 $Name => 'SignUsing',
 $User => undef,
@@ -11,9 +13,5 @@ $User => undef,
 <%INIT>
 return unless RT->Config->Get('GnuPG')->{'Enable'};
 
-my @keys;
-if ( my $address = $User->EmailAddress ) {
-    my %res = RT::Crypt::GnuPG::GetKeysForSigning( $address );
-    push @keys, @{ $res{'info'} } if $res{'info'};
-}
+my $user_key = $User->PrivateKey;
 </%INIT>
