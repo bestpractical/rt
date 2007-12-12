@@ -1772,7 +1772,7 @@ sub GetKeysInfo {
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $method = $type eq 'private'? 'list_secret_keys': 'list_public_keys';
-        my $pid = _safe_run_child { $gnupg->$method( handles => $handles, command_args => [ $email ]  ) };
+        my $pid = _safe_run_child { $gnupg->$method( handles => $handles, $email? (command_args => $email) : () ) };
         close $handle{'input'};
         waitpid $pid, 0;
     };
