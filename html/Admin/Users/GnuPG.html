@@ -1,0 +1,28 @@
+<& /Admin/Elements/Header, Title => $title  &>
+<& /Admin/Elements/UserTabs, 
+    id          => $id, 
+    UserObj     => $UserObj,
+    current_tab => 'Admin/Users/GnuPG.html?id='. $id,
+    Title       => $title,
+&>
+
+<& /Elements/ListActions, actions => \@results &>
+
+% if ( my $email = $UserObj->EmailAddress ) {
+<& /Admin/Elements/ShowKeyInfo, EmailAddress => $email &>
+% }
+
+<%ARGS>
+$id => undef
+</%ARGS>
+<%INIT>
+return unless RT->Config->Get('GnuPG')->{'Enable'};
+
+my @results;
+
+my $UserObj = RT::User->new( $session{'CurrentUser'} );
+$UserObj->Load( $id );
+
+my $title = loc("User's GnuPG keys");
+
+</%INIT>
