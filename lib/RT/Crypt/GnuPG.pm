@@ -1644,7 +1644,7 @@ sub GetKeysForEncryption {
 
 sub GetKeysForSigning {
     my $key_id = shift;
-    my %res = GetKeysInfo( $key_id, 'private' );
+    my %res = GetKeysInfo( $key_id, 'public' );
     return %res if $res{'exit_code'};
     return %res unless $res{'info'};
 
