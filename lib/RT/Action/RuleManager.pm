@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 package RT::Action::RuleManager;
 use RT::Extension::RuleManager;
-require RT::Action::Generic;
+require RT::Action::Autoreply;
 
 use strict;
 use vars qw/@ISA/;
-@ISA = qw(RT::Action::Generic);
+@ISA = qw(RT::Action::Autoreply);
 
 # {{{ sub Describe 
 sub Describe  {
@@ -70,21 +70,83 @@ sub Prepare {
         push @matched, $rule;
         last if $rule->Final;
     }
-    $self->{Matched} = \@matched;
-    return 0+@matched;
+
+    if (@matched) {
+        $self->{Matched} = \@matched;
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 
 sub MatchRule {
-    # ...compile the Match using globlike syntax...
-    # ...then compare it against TransactionObj fields...
+    my $self = shift;
+    my $rule = shift;
+
+    my $pattern = $rule->PrettyPattern;
+    return 1 if $pattern eq '*';
+
+    my $field = $rule->Field;
+    my $val;
+    if ($self->TransactionObj->can($field)) {
+        $val = $self->TransactionObj->$field;
+    }
+    elsif (my $att = $self->TransactionObj->Attachments->First) {
+        if ($att->can($field)) {
+            $val = $att->$field;
+        }
+        else {
+            $val = $att->GetHeader($field);
+        }
+    }
+    else {
+        return undef;
+    }
+
+    $pattern = quotemeta($pattern);
+    $pattern =~ s/\\\*/.*/;
+    $pattern =~ s/\\\?/./;
+
+    return($val =~ /^$pattern$/);
 }
 
 sub Commit {
     my $self = shift;
     foreach my $rule (@{$self->{Matched} || []}) {
-        # Run a rule depending on the handler.
-        # (this may involve creating other RT::Action::* objects and delegate to them.)
+        my $handler = $rule->Handler;
+        if ($handler eq 'Send no autoreply') {
+            next; # Do nothing.
+        }
+        elsif ($handler eq "Set the ticket's owner as this user:") {
+            $self->TicketObj->SetOwner($rule->Argument);
+        }
+        elsif ($handler eq 'Move the ticket to this queue:') {
+            $self->TicketObj->SetQueue($rule->Argument);
+        }
+        elsif ($handler eq 'Send the autoreply in this template:') {
+            local $self->{TemplateObj} = bless {
+                user    => $self->CurrentUser,
+                fetched => { content => 1, queue => 1 },
+                values  => {
+                    queue   => 0,
+                    content => $rule->Argument,
+                },
+            } => 'RT::Template';
+
+            $self->SUPER::Prepare;
+            $self->SUPER::Commit(@_);
+        }
+        else {
+            $RT::Logger->error("Unknown handler: $handler");
+            next;
+        }
     }
+}
+
+sub TemplateObj {
+    my $self = shift;
+    $self->{TemplateObj};
 }
 
 eval "require RT::Action::RuleManager_Vendor";

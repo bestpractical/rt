@@ -7,7 +7,7 @@ use constant RuleManagerTemplate => 'Rule Manager Template';
 use constant RuleClass => 'RT::Extension::RuleManager::Rule';
 use constant FieldOptions => (
     'Subject', # loc
-    'Sender',  # loc
+    'From',    # loc
     'Body',    # loc
 );
 use constant HandlerOptions => (
@@ -103,6 +103,7 @@ sub _init_action {
 
 sub _load {
     my $self = shift;
+    local $YAML::Syck::ImplicitUnicode = 1;
     return Load($self->_template->Content);
 }
 
@@ -120,6 +121,7 @@ sub _save {
         push @to_save, \%this;
     }
 
+    local $YAML::Syck::ImplicitUnicode = 1;
     return $self->_template->SetContent(Dump(\@to_save));
 }
 
@@ -129,6 +131,8 @@ sub _template {
     my $rule_manager_template = RT::Template->new($RT::SystemUser);
     $rule_manager_template->Load(RuleManagerTemplate);
     if (!$rule_manager_template->Id) {
+        local $YAML::Syck::ImplicitUnicode = 1;
+
         my $autoreply_template = RT::Template->new($RT::SystemUser);
         $autoreply_template->Load('Autoreply');
         $rule_manager_template->Create(
