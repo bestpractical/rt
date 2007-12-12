@@ -1654,6 +1654,42 @@ sub PreferredKey
     return $prefkey;
 }
 
+sub PrivateKey {
+    my $self = shift;
+
+    my $key = $self->FirstAttribute('PrivateKey') or return undef;
+    return $key->Content;
+}
+
+sub SetPrivateKey {
+    my $self = shift;
+    my $key = shift;
+    # XXX: ACL
+    unless ( $key ) {
+        my ($status, $msg) = $self->DeleteAttribute('PrivateKey');
+        unless ( $status ) {
+            $RT::Logger->error( "Couldn't delete attribute: $msg" );
+            return ($status, $self->loc("Couldn't unset private key"));
+        }
+        return ($status, $self->loc("Unset private key"));
+    }
+
+    # check that it's really private key
+    {
+        my %tmp = RT::Crypt::GnuPG::GetKeysForSigning( $key );
+        return (0, $self->loc("No such key or it's not suitable for signing"))
+            if $tmp{'exit_code'} || !$tmp{'info'};
+    }
+
+    my ($status, $msg) = $self->SetAttribute(
+        Name => 'PrivateKey',
+        Content => $key,
+    );
+    return ($status, $self->loc("Couldn't set private key"))    
+        unless $status;
+    return ($status, $self->loc("Unset private key"));
+}
+
 sub BasicColumns {
     (
     [ Name => 'User Id' ],
