@@ -175,7 +175,8 @@ sub Prepare {
         }
         else {
             $part->head->mime_attr( "Content-Type" => 'text/plain' )
-                unless RT::I18N::IsTextualContentType($part->mime_type);
+                unless $part->head->mime_attr('Content-Type')
+                   and RT::I18N::IsTextualContentType($part->mime_type);
             $part->head->mime_attr( "Content-Type.charset" => 'utf-8' );
         }
     }
