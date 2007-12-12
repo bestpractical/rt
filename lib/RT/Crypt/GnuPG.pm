@@ -1623,7 +1623,7 @@ also listed.
 
 sub GetKeysForEncryption {
     my $key_id = shift;
-    my %res = GetKeysInfo( $key_id, 'public' );
+    my %res = GetKeysInfo( $key_id, 'public', @_ );
     return %res if $res{'exit_code'};
     return %res unless $res{'info'};
 
@@ -1644,7 +1644,7 @@ sub GetKeysForEncryption {
 
 sub GetKeysForSigning {
     my $key_id = shift;
-    my %res = GetKeysInfo( $key_id, 'public' );
+    my %res = GetKeysInfo( $key_id, 'public', @_ );
     return %res if $res{'exit_code'};
     return %res unless $res{'info'};
 
@@ -1729,11 +1729,11 @@ sub CheckRecipients {
 }
 
 sub GetPublicKeyInfo {
-    return GetKeyInfo(shift, 'public');
+    return GetKeyInfo( shift, 'public', @_ );
 }
 
 sub GetPrivateKeyInfo {
-    return GetKeyInfo(shift, 'private');
+    return GetKeyInfo( shift, 'private', @_ );
 }
 
 sub GetKeyInfo {
@@ -1745,6 +1745,11 @@ sub GetKeyInfo {
 sub GetKeysInfo {
     my $email = shift;
     my $type = shift || 'public';
+    my $force = shift;
+
+    unless ( $email ) {
+        return (exit_code => 0) unless $force;
+    }
 
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');

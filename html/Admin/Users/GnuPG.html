@@ -21,7 +21,7 @@
     Name         => 'PrivateKey',
     Description  => loc('Private Key'),
     Values       => [ map $_->{'Key'}, @{ $keys_meta{'info'} } ],
-    CurrentValue => $private_key,
+    CurrentValue => $UserObj->PrivateKey,
     DefaultLabel => loc('No private key'),
 &>
 
@@ -47,7 +47,7 @@ unless ( $UserObj->id ) {
 $id = $ARGS{'id'} = $UserObj->id;
 
 my $email = $UserObj->EmailAddress;
-my %keys_meta = RT::Crypt::GnuPG::GetKeysForSigning( $email );
+my %keys_meta = RT::Crypt::GnuPG::GetKeysForSigning( $email, 'force' );
 
 $ARGS{'PrivateKey'} = $m->comp('/Widgets/Form/Select:Process',
     Name      => 'PrivateKey',
@@ -59,8 +59,6 @@ if ( $Update ) {
     my ($status, $msg) = $UserObj->SetPrivateKey( $ARGS{'PrivateKey'} );
     push @results, $msg;
 }
-
-my $private_key = $UserObj->PrivateKey;
 
 my $title = loc("User's GnuPG keys");
 
