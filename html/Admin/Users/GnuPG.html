@@ -8,20 +8,59 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-% if ( my $email = $UserObj->EmailAddress ) {
+% if ( $email ) {
 <& /Admin/Elements/ShowKeyInfo, EmailAddress => $email &>
+% } else {
+<h2><% loc("User has empty email address") %></h2>
 % }
 
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Users/GnuPG.html" method="post" enctype="multipart/form-data">
+<input type="hidden" class="hidden" name="id" value="<% $UserObj->Id %>" />
+
+<& /Widgets/Form/Select,
+    Name         => 'PrivateKey',
+    Description  => loc('Private Key'),
+    Values       => [ map $_->{'Key'}, @{ $keys_meta{'info'} } ],
+    CurrentValue => $private_key,
+    DefaultLabel => loc('No private key'),
+&>
+
+<& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+</form>
+
 <%ARGS>
-$id => undef
+$id         => undef
+$Update     => undef
 </%ARGS>
 <%INIT>
 return unless RT->Config->Get('GnuPG')->{'Enable'};
+
+require RT::Crypt::GnuPG;
 
 my @results;
 
 my $UserObj = RT::User->new( $session{'CurrentUser'} );
 $UserObj->Load( $id );
+unless ( $UserObj->id ) {
+    Abort( loc("Couldn't load user #[_1]", $id) );
+}
+$id = $ARGS{'id'} = $UserObj->id;
+
+my $email = $UserObj->EmailAddress;
+my %keys_meta = RT::Crypt::GnuPG::GetKeysForSigning( $email );
+
+$ARGS{'PrivateKey'} = $m->comp('/Widgets/Form/Select:Process',
+    Name      => 'PrivateKey',
+    Arguments => \%ARGS,
+    Default   => 1,
+);
+
+if ( $Update ) {
+    my ($status, $msg) = $UserObj->SetPrivateKey( $ARGS{'PrivateKey'} );
+    push @results, $msg;
+}
+
+my $private_key = $UserObj->PrivateKey;
 
 my $title = loc("User's GnuPG keys");
 
