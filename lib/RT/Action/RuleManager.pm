@@ -105,8 +105,8 @@ sub MatchRule {
     }
 
     $pattern = quotemeta($pattern);
-    $pattern =~ s/\\\*/.*/;
-    $pattern =~ s/\\\?/./;
+    $pattern =~ s/\\\*/.*/g;
+    $pattern =~ s/\\\?/./g;
 
     return($val =~ /^$pattern$/);
 }
