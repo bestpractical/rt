@@ -172,7 +172,7 @@ sub DeleteEntry {
         }
     }
     return (0, "No entry found") unless $found;
-    $self->_DoSearch();
+    $self->RedoSearch;
     return (1, $self->loc('Attribute Deleted'));
 }
 
