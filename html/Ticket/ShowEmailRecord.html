@@ -63,11 +63,13 @@ $Transaction => undef
 
 </%init>
 <& /Elements/Header, ShowBar => 0 &>
-<pre style="padding: 2em;">
-<%$AttachmentObj->Headers%>
+% my @queue = $AttachmentObj;
+% while (my $att = shift(@queue)) {
+<pre style="padding: 2em;"><%$att->Headers%>
 
-<%$AttachmentObj->Content%>
-</pre>
+<%$att->Content%></pre><hr>
+%     unshift @queue, @{$att->Children->ItemsArrayRef||[]};
+% }
 </body>
 </html>
 %$m->abort;
