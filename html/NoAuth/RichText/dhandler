@@ -1,0 +1,30 @@
+<%INIT>
+use File::Basename;
+my $arg = $m->dhandler_arg;
+my $file = dirname($m->current_comp->source_file) .'/FCKeditor/'.$arg;
+return $m->decline unless -f $file && -r _;
+
+&RT::Interface::Web::StaticFileHeaders();
+
+my $suffix = $1 if $file =~ /([^.]+)$/;
+
+my $type = {qw(
+    xml     text/xml
+    html    text/html
+    js      application/javascript
+    gif     imgae/gif
+    jpg     imgae/jpeg
+    png     imgae/png
+)}->{$suffix} || 'application/octet-stream';
+
+$r->content_type($type);
+open my $fh, '<:utf8', $file or die "couldn't open file: $!";
+binmode($fh);
+{
+    local $/ = \16384;
+    $m->out($_) while (<$fh>);
+    $m->flush_buffer;
+}
+close $fh;
+$m->abort;
+</%INIT>
