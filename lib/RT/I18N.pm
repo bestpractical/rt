@@ -303,7 +303,7 @@ sub DecodeMIMEWordsToEncoding {
     my $str = shift;
     my $enc = shift;
 
-    @_ = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gc;
+    @_ = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
     return ($str) unless (@_);
 
     # add everything that hasn't matched to the end of the latest
