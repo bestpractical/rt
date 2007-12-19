@@ -330,7 +330,6 @@ sub restore_rights {
 
 sub set_rights {
     my $self = shift;
-    my @list = ref $_[0]? @_: @_? { @_ }: ();
 
     require RT::ACL;
     my $acl = RT::ACL->new( $RT::SystemUser );
@@ -342,7 +341,14 @@ sub set_rights {
         }
         $ace->Delete;
     }
+    return $self->add_rights( @_ );
+}
 
+sub add_rights {
+    my $self = shift;
+    my @list = ref $_[0]? @_: @_? { @_ }: ();
+
+    require RT::ACL;
     foreach my $e (@list) {
         my $principal = delete $e->{'Principal'};
         unless ( ref $principal ) {
