@@ -494,7 +494,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
         table2 => 'Transactions',
         column2 => 'id',
     );
-    $attachments->limit( alias => $txn_alias, column => 'ObjectType', value => 'RT::Model::Ticket' );
+    $attachments->limit( alias => $txn_alias, column => 'object_type', value => 'RT::Model::Ticket' );
     $attachments->limit( alias => $txn_alias, column => 'object_id', value => $id );
     is ($attachments->count, 1, 'Found only one gif attached to the ticket');
     my $attachment = $attachments->first;
@@ -741,7 +741,7 @@ my $ace = RT::Model::ACE->new(current_user => RT->system_user);
 $ace->load( $ace_id );
 $ace->delete;
 my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
-$acl->limit( column => 'Rightname', value => 'ReplyToTicket' );
+$acl->limit( column => 'right_name', value => 'ReplyToTicket' );
 $acl->LimitToObject( RT->system );
 while( my $ace = $acl->next ) {
 	$ace->delete;

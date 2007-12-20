@@ -1,5 +1,5 @@
-alter Table Transactions ADD Column (ObjectType varchar(64) not null);
-update Transactions set ObjectType = 'RT::Model::Ticket';
+alter Table Transactions ADD Column (object_type varchar(64) not null);
+update Transactions set object_type = 'RT::Model::Ticket';
 alter table Transactions drop column EffectiveTicket;
 alter table Transactions add column ReferenceType varchar(255) NULL;
 alter table Transactions add column OldReference integer NULL;      
@@ -7,15 +7,15 @@ alter table Transactions add column NewReference integer NULL;
 alter table Transactions drop index transactions1;            
 alter table Transactions change Ticket object_id integer NOT NULL DEFAULT 0  ;
 
-CREATE INDEX Transactions1 ON Transactions (ObjectType, object_id);
+CREATE INDEX Transactions1 ON Transactions (object_type, object_id);
 
 alter table TicketCustomFieldValues rename ObjectCustomFieldValues;
 
 alter table ObjectCustomFieldValues  change Ticket object_id integer NOT NULL DEFAULT 0  ;
 
-alter table ObjectCustomFieldValues add column ObjectType varchar(255) not null;
+alter table ObjectCustomFieldValues add column object_type varchar(255) not null;
 
-update ObjectCustomFieldValues set ObjectType = 'RT::Model::Ticket';
+update ObjectCustomFieldValues set object_type = 'RT::Model::Ticket';
 
 alter table ObjectCustomFieldValues add column Current bool default 1;  
 
@@ -31,7 +31,7 @@ alter table ObjectCustomFieldValues add column ContentEncoding varchar(80) NULL;
 
 alter table ObjectCustomFieldValues add index ObjectCustomFieldValues1 (Content); 
 
-alter table ObjectCustomFieldValues add index ObjectCustomFieldValues2 (CustomField,ObjectType,object_id); 
+alter table ObjectCustomFieldValues add index ObjectCustomFieldValues2 (CustomField,object_type,object_id); 
 
 
 CREATE TABLE ObjectCustomFields (

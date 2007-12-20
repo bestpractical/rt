@@ -71,7 +71,7 @@ my $tickets = $attachments->new_alias('Tickets');
                         column2 => 'id' );
     
     $attachments->limit( alias => $transactions,
-                         column => 'ObjectType',
+                         column => 'object_type',
                         value => 'RT::Model::Ticket');
 if ($Tickets) {
     while ($Ticket = $Tickets->next) {

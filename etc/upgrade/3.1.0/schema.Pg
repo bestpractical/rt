@@ -8,7 +8,7 @@ CREATE TABLE Attributes (
   Description varchar(255) NULL  ,
   Content text,
   ContentType varchar(16),
-  ObjectType varchar(64),
+  object_type varchar(64),
   object_id integer, 
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
@@ -19,7 +19,7 @@ CREATE TABLE Attributes (
 );
 
 CREATE INDEX Attributes1 on Attributes(name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, object_id);
+CREATE INDEX Attributes2 on Attributes(object_type, object_id);
 
 -- }}}
 

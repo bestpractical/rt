@@ -67,7 +67,7 @@ if ( $Ticket->current_user_has_right('ShowTicket') ) {
                         column2 => 'id' );
 
     $attachments->limit( alias => $transactions,
-                         column => 'ObjectType',
+                         column => 'object_type',
                         value => 'RT::Model::Ticket');
 
 

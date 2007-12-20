@@ -302,8 +302,7 @@ and C<$RT::Nobody>.
 sub InitSystemObjects {
 
     #RT's "nobody user" is a genuine database user. its ID lives here.
-    $Nobody = new RT::CurrentUser;
-    $Nobody->load_by_name('Nobody');
+    $Nobody = RT::CurrentUser->new(name => 'Nobody');
     Carp::confess "Could not load 'Nobody' User. This usually indicates a corrupt or missing RT database" unless $Nobody->id;
 
 

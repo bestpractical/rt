@@ -78,8 +78,8 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column principal_type => max_length is 25, type is 'varchar(25)', default is '';
     column principal_id => type is 'int(11)', default is '0';
-    column Rightname => max_length is 25, type is 'varchar(25)', default is '';
-    column ObjectType => max_length is 25, type is 'varchar(25)', default is '';
+    column right_name => max_length is 25, type is 'varchar(25)', default is '';
+    column object_type => max_length is 25, type is 'varchar(25)', default is '';
     column object_id      => type is 'int(11)', default is '0';
     column DelegatedBy   => type is 'int(11)', default is '0';
     column DelegatedFrom => type is 'int(11)', default is '0';
@@ -129,7 +129,7 @@ Load an ACE by specifying a paramhash with the following fields:
 
               principal_id => undef,
               principal_type => undef,
-	      Rightname => undef,
+	      right_name => undef,
 
         And either:
 
@@ -137,7 +137,7 @@ Load an ACE by specifying a paramhash with the following fields:
 
             OR
 
-	      ObjectType => undef,
+	      object_type => undef,
 	      object_id => undef
 
 =cut
@@ -146,10 +146,10 @@ sub load_by_values {
     my $self = shift;
     my %args = ( principal_id   => undef,
                  principal_type => undef,
-                 Rightname     => undef,
+                 right_name     => undef,
                  Object    => undef,
                  object_id    => undef,
-                 ObjectType    => undef,
+                 object_type    => undef,
                  @_ );
 
     my $princ_obj;
@@ -170,8 +170,8 @@ sub load_by_values {
 
     $self->load_by_cols( principal_id   => $princ_obj->id,
                        principal_type => $args{'principal_type'},
-                       Rightname     => $args{'Rightname'},
-                       ObjectType    => $object_type,
+                       right_name     => $args{'right_name'},
+                       object_type    => $object_type,
                        object_id      => $object_id);
 
     #If we couldn't load it.
@@ -194,7 +194,7 @@ PARAMS is a parameter hash with the following elements:
 
    principal_id => The id of an RT::Model::Principal object
    principal_type => "User" "Group" or any Role type
-   Rightname => the name of a right. in any case
+   right_name => the name of a right. in any case
    DelegatedBy => The Principal->id of the user delegating the right
    DelegatedFrom => The id of the ACE which this new ACE is delegated from
 
@@ -206,7 +206,7 @@ PARAMS is a parameter hash with the following elements:
 
         OR
 
-   ObjectType => the type of the object in question (ref ($object))
+   object_type => the type of the object in question (ref ($object))
    object_id => the id of the object in question $object->id
 
 
@@ -222,20 +222,20 @@ sub create {
     my %args = (
         principal_id   => undef,
         principal_type => undef,
-        Rightname     => undef,
+        right_name     => undef,
         Object        => undef,
         @_
     );
 
-    unless ( $args{'Rightname'} ) {
+    unless ( $args{'right_name'} ) {
         return ( 0, $self->loc('No right specified') );
     }
 
     #if we haven't specified any sort of right, we're talking about a global right
-    if (!defined $args{'Object'} && !defined $args{'object_id'} && !defined $args{'ObjectType'}) {
+    if (!defined $args{'Object'} && !defined $args{'object_id'} && !defined $args{'object_type'}) {
         $args{'Object'} = RT->system;
     }
-    ($args{'Object'}, $args{'ObjectType'}, $args{'object_id'}) = $self->_ParseObjectArg( %args );
+    ($args{'Object'}, $args{'object_type'}, $args{'object_id'}) = $self->_ParseObjectArg( %args );
     unless( $args{'Object'} ) {
 	return ( 0, $self->loc("System error. Right not granted.") );
     }
@@ -272,17 +272,17 @@ sub create {
     # }}}
 
     # {{{ canonicalize_ and check the right name
-    my $canonic_name = $self->canonicalize_Rightname( $args{'Rightname'} );
+    my $canonic_name = $self->canonicalize_right_name( $args{'right_name'} );
     unless ( $canonic_name ) {
-        return ( 0, $self->loc("Invalid right. Couldn't canonicalize_ right '$args{'Rightname'}'") );
+        return ( 0, $self->loc("Invalid right. Couldn't canonicalize_ right '$args{'right_name'}'") );
     }
-    $args{'Rightname'} = $canonic_name;
+    $args{'right_name'} = $canonic_name;
 
-    #check if it's a valid Rightname
+    #check if it's a valid right_name
     if ( $args{'Object'}->can('AvailableRights') ) {
-        unless ( exists $args{'Object'}->AvailableRights->{ $args{'Rightname'} } ) {
+        unless ( exists $args{'Object'}->AvailableRights->{ $args{'right_name'} } ) {
             $RT::Logger->warning(
-                "Couldn't validate right name '$args{'Rightname'}'"
+                "Couldn't validate right name '$args{'right_name'}'"
                 ." for object of ". ref( $args{'Object'} ) ." class"
             );
             return ( 0, $self->loc('Invalid right') );
@@ -293,8 +293,8 @@ sub create {
     # Make sure the right doesn't already exist.
     $self->load_by_cols( principal_id   => $princ_obj->id,
                        principal_type => $args{'principal_type'},
-                       Rightname     => $args{'Rightname'},
-                       ObjectType    => $args{'ObjectType'},
+                       right_name     => $args{'right_name'},
+                       object_type    => $args{'object_type'},
                        object_id      => $args{'object_id'},
                        DelegatedBy   => 0,
                        DelegatedFrom => 0 );
@@ -304,8 +304,8 @@ sub create {
 
     my $id = $self->SUPER::create( principal_id   => $princ_obj->id,
                                    principal_type => $args{'principal_type'},
-                                   Rightname     => $args{'Rightname'},
-                                   ObjectType    => ref( $args{'Object'} ),
+                                   right_name     => $args{'right_name'},
+                                   object_type    => ref( $args{'Object'} ),
                                    object_id      => $args{'Object'}->id,
                                    DelegatedBy   => 0,
                                    DelegatedFrom => 0 );
@@ -392,8 +392,8 @@ sub Delegate {
     # Make sure the right doesn't already exist.
     $delegated_ace->load_by_cols( principal_id   => $princ_obj->id,
                                 principal_type => 'Group',
-                                Rightname     => $self->__value('Rightname'),
-                                ObjectType    => $self->__value('ObjectType'),
+                                right_name     => $self->__value('right_name'),
+                                object_type    => $self->__value('object_type'),
                                 object_id      => $self->__value('object_id'),
                                 DelegatedBy => $self->current_user->principal_id,
                                 DelegatedFrom => $self->id );
@@ -403,8 +403,8 @@ sub Delegate {
     my $id = $delegated_ace->SUPER::create(
         principal_id   => $princ_obj->id,
         principal_type => 'Group',          # do we want to hardcode this?
-        Rightname     => $self->__value('Rightname'),
-        ObjectType    => $self->__value('ObjectType'),
+        right_name     => $self->__value('right_name'),
+        object_type    => $self->__value('object_type'),
         object_id      => $self->__value('object_id'),
         DelegatedBy   => $self->current_user->principal_id,
         DelegatedFrom => $self->id );
@@ -486,8 +486,8 @@ sub _delete {
 
     # If we're revoking delegation rights (see above), we may need to
     # revoke all rights delegated by the recipient.
-    if ($val and ($self->Rightname() eq 'DelegateRights' or
-		  $self->Rightname() eq 'SuperUser')) {
+    if ($val and ($self->right_name() eq 'DelegateRights' or
+		  $self->right_name() eq 'SuperUser')) {
 	$val = $self->principal_object->_CleanupInvalidDelegations( InsideTransaction => 1 );
     }
 
@@ -545,16 +545,16 @@ sub _bootstrap_create {
 
 # }}}
 
-# {{{ sub canonicalize_Rightname
+# {{{ sub canonicalize_right_name
 
-=head2 canonicalize_Rightname <RIGHT>
+=head2 canonicalize_right_name <RIGHT>
 
 Takes a queue or system right name in any case and returns it in
 the correct case. If it's not found, will return undef.
 
 =cut
 
-sub canonicalize_Rightname {
+sub canonicalize_right_name {
     my $self  = shift;
     return $LOWERCASERIGHTnameS{ lc shift };
 }
@@ -582,9 +582,9 @@ sub Object {
 
     my $appliesto_obj;
 
-    if ($self->__value('ObjectType') && $OBJECT_TYPES{$self->__value('ObjectType')} ) {
-        $appliesto_obj =  $self->__value('ObjectType')->new;
-        unless (ref( $appliesto_obj) eq $self->__value('ObjectType')) {
+    if ($self->__value('object_type') && $OBJECT_TYPES{$self->__value('object_type')} ) {
+        $appliesto_obj =  $self->__value('object_type')->new;
+        unless (ref( $appliesto_obj) eq $self->__value('object_type')) {
             return undef;
         }
         $appliesto_obj->load( $self->__value('object_id') );
@@ -593,7 +593,7 @@ sub Object {
     else {
         $RT::Logger->warning( "$self -> Object called for an object "
                               . "of an unknown type:"
-                              . $self->__value('ObjectType') );
+                              . $self->__value('object_type') );
         return (undef);
     }
 }
@@ -709,13 +709,13 @@ sub _ParseObjectArg {
     my %args = (
         Object     => undef,
         object_id   => undef,
-        ObjectType => undef,
+        object_type => undef,
         @_
     );
 
-    if ( $args{'Object'} && ( $args{'object_id'} || $args{'ObjectType'} ) ) {
+    if ( $args{'Object'} && ( $args{'object_id'} || $args{'object_type'} ) ) {
         $RT::Logger->crit(
-            "Method called with an ObjectType or an object_id and Object args"
+            "Method called with an object_type or an object_id and Object args"
         );
         return ();
     } elsif ( $args{'Object'} && !UNIVERSAL::can( $args{'Object'}, 'id' ) ) {
@@ -724,8 +724,8 @@ sub _ParseObjectArg {
     } elsif ( $args{'Object'} ) {
         my $obj = $args{'Object'};
         return ( $obj, ref $obj, $obj->id );
-    } elsif ( $args{'ObjectType'} ) {
-        my $obj = $args{'ObjectType'}->new;
+    } elsif ( $args{'object_type'} ) {
+        my $obj = $args{'object_type'}->new;
         $obj->load( $args{'object_id'} );
         return ( $obj, ref $obj, $obj->id );
     } else {

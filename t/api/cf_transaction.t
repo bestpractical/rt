@@ -37,7 +37,7 @@ my $trans = RT::Model::Transaction->new(current_user => RT->system_user);
 $trans->load($transid);
 
 is($trans->object_id,$id);
-is ($trans->ObjectType, 'RT::Model::Ticket');
+is ($trans->object_type, 'RT::Model::Ticket');
 is ($trans->Type, 'Create');
 my $txncfs = $trans->CustomFields;
 is ($txncfs->count, 1, "We have one custom field");

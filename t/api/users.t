@@ -27,7 +27,7 @@ bless $RTxSysObj, 'RTx::System';
 *RTx::System::Id = sub { 1; };
 *RTx::System::id = *RTx::System::Id;
 my $ace = RT::Model::ACE->new(current_user => RT->system_user);
-($id, $msg) = $ace->RT::Record::create( principal_id => $group->id, principal_type => 'Group', Rightname => 'RTxUserRight', ObjectType => 'RTx::System', object_id  => 1 );
+($id, $msg) = $ace->RT::Record::create( principal_id => $group->id, principal_type => 'Group', right_name => 'RTxUserRight', object_type => 'RTx::System', object_id  => 1 );
 ok ($id, "ACL for RTxSysObj Created");
 
 my $RTxObj = {};
@@ -48,7 +48,7 @@ $users->WhoHaveRight(Right => 'RTxUserRight', Object => $RTxObj, EquivObjects =>
 is($users->count, 1, "RTxUserRight found for RTxObj using EquivObjects");
 
 $ace = RT::Model::ACE->new(current_user => RT->system_user);
-($id, $msg) = $ace->RT::Record::create( principal_id => $group->id, principal_type => 'Group', Rightname => 'RTxUserRight', ObjectType => 'RTx::System::Record', object_id => 5 );
+($id, $msg) = $ace->RT::Record::create( principal_id => $group->id, principal_type => 'Group', right_name => 'RTxUserRight', object_type => 'RTx::System::Record', object_id => 5 );
 ok ($id, "ACL for RTxObj Created");
 
 my $RTxObj2 = {};

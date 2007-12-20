@@ -295,7 +295,7 @@ sub _joinACL
     my $acl = $self->new_alias('ACL');
     $self->limit(
         alias    => $acl,
-        column    => 'Rightname',
+        column    => 'right_name',
         operator => ( $args{Right} ? '=' : 'IS NOT' ),
         value => $args{Right} || 'NULL',
         entry_aggregator => 'OR'
@@ -303,7 +303,7 @@ sub _joinACL
     if ( $args{'IncludeSuperusers'} and $args{'Right'} ) {
         $self->limit(
             alias           => $acl,
-            column           => 'Rightname',
+            column           => 'right_name',
             operator        => '=',
             value           => 'SuperUser',
             entry_aggregator => 'OR'
@@ -358,8 +358,8 @@ sub WhoHaveRight {
         @_
     );
 
-    if ( defined $args{'ObjectType'} || defined $args{'object_id'} ) {
-        $RT::Logger->crit( "WhoHaveRight called with the Obsolete object_id/ObjectType API");
+    if ( defined $args{'object_type'} || defined $args{'object_id'} ) {
+        $RT::Logger->crit( "WhoHaveRight called with the Obsolete object_id/object_type API");
         return (undef);
     }
 
@@ -416,7 +416,7 @@ sub WhoHaveRoleRight
             $role_clause   .= " AND $groups.Instance = '$id'" if $id;
             push @role_clauses, "($role_clause)";
 
-            my $object_clause = "$acl.ObjectType = '$type'";
+            my $object_clause = "$acl.object_type = '$type'";
             $object_clause   .= " AND $acl.object_id = $id" if $id;
             push @object_clauses, "($object_clause)";
         }
@@ -425,7 +425,7 @@ sub WhoHaveRoleRight
         $check_objects = join ' OR ', @object_clauses;
     } else {
         if( !$args{'IncludeSystemRights'} ) {
-            $check_objects = "($acl.ObjectType != 'RT::System')";
+            $check_objects = "($acl.object_type != 'RT::System')";
         }
     }
 
@@ -488,7 +488,7 @@ sub WhoHaveGroupRight
             my $id;
             $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
 
-            my $object_clause = "$acl.ObjectType = '$type'";
+            my $object_clause = "$acl.object_type = '$type'";
             $object_clause   .= " AND $acl.object_id   = $id" if $id;
             push @object_clauses, "($object_clause)";
         }
@@ -496,7 +496,7 @@ sub WhoHaveGroupRight
         $check_objects = join ' OR ', @object_clauses;
     } else {
         if( !$args{'IncludeSystemRights'} ) {
-            $check_objects = "($acl.ObjectType != 'RT::System')";
+            $check_objects = "($acl.object_type != 'RT::System')";
         }
     }
     $self->_add_subclause( "WhichObject", "($check_objects)" );

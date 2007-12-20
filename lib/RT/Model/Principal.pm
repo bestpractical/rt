@@ -181,7 +181,7 @@ sub GrantRight {
 
     # If it's a user, we really want to grant the right to their 
     # user equivalence group
-        return ( $ace->create(Rightname => $args{'Right'},
+        return ( $ace->create(right_name => $args{'Right'},
                           Object => $args{'Object'},
                           principal_type =>  $type,
                           principal_id => $self->id
@@ -191,7 +191,7 @@ sub GrantRight {
 
 # {{{ RevokeRight
 
-=head2 RevokeRight { Right => "Rightname", Object => "object" }
+=head2 RevokeRight { Right => "right_name", Object => "object" }
 
 Delete a right that a user has 
 
@@ -212,7 +212,7 @@ sub RevokeRight {
     );
 
     #if we haven't specified any sort of right, we're talking about a global right
-    if (!defined $args{'Object'} && !defined $args{'object_id'} && !defined $args{'ObjectType'}) {
+    if (!defined $args{'Object'} && !defined $args{'object_id'} && !defined $args{'object_type'}) {
         $args{'Object'} = RT->system;
     }
     #ACL check handled in ACE.pm
@@ -220,7 +220,7 @@ sub RevokeRight {
 
     my $ace = RT::Model::ACE->new;
     $ace->load_by_values(
-        Rightname     => $args{'Right'},
+        right_name     => $args{'Right'},
         Object    => $args{'Object'},
         principal_type => $type,
         principal_id   => $self->id
@@ -424,7 +424,7 @@ sub _has_right
             $role_clause   .= " AND Groups.Instance = '$id'" if $id;
             push @role_clauses, "($role_clause)";
 
-            my $object_clause = "ACL.ObjectType = '$type'";
+            my $object_clause = "ACL.object_type = '$type'";
             $object_clause   .= " AND ACL.object_id = $id" if $id;
             push @object_clauses, "($object_clause)";
         }
@@ -437,7 +437,7 @@ sub _has_right
       "SELECT ACL.id from ACL, Groups, Principals, CachedGroupMembers WHERE  " .
 
       # Only find superuser or rights with the name $right
-      "(ACL.Rightname = 'SuperUser' OR  ACL.Rightname = '$right') "
+      "(ACL.right_name = 'SuperUser' OR  ACL.right_name = '$right') "
 
       # Never find disabled groups.
       . "AND ( Principals.disabled = 0 OR Principals.disabled IS NULL) " 

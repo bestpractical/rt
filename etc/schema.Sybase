@@ -166,15 +166,15 @@ CREATE TABLE rt3.ACL (
   principal_type varchar(25) NOT NULL, #"User" "Group", "Owner", "Cc" "AdminCc", "Requestor", "Requestor" 
 
   principal_id integer NOT NULL  , #Foreign key to principals
-  Rightname varchar(25) NOT NULL  ,
-  ObjectType varchar(25) NOT NULL  ,
+  right_name varchar(25) NOT NULL  ,
+  object_type varchar(25) NOT NULL  ,
   object_id integer NOT NULL ,
   DelegatedBy integer NOT NULL , #foreign key to principals with a userid
   DelegatedFrom integer NOT NULL , #foreign key to ACL
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX  ACL1 on ACL(Rightname, ObjectType, object_id,principal_type,principal_id);
+CREATE INDEX  ACL1 on ACL(right_name, object_type, object_id,principal_type,principal_id);
 
 # }}}
 
@@ -415,7 +415,7 @@ CREATE TABLE rt3.Attributes (
   Description varchar(255) NULL  ,
   Content text,
   ContentType varchar(16),
-  ObjectType varchar(64),
+  object_type varchar(64),
   object_id integer, # foreign key to anything
   Creator integer NOT NULL   ,
   Created DATETIME NULL  ,
@@ -425,7 +425,7 @@ CREATE TABLE rt3.Attributes (
 ) ;
 
 CREATE INDEX Attributes1 on Attributes(name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, object_id);
+CREATE INDEX Attributes2 on Attributes(object_type, object_id);
 
 # }}}
 

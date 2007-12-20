@@ -95,7 +95,7 @@ sub LimitToObject {
         return undef;
     }
     $self->limit(
-        column           => 'ObjectType',
+        column           => 'object_type',
         operator        => '=',
         value           => ref($obj),
         entry_aggregator => 'OR'
@@ -131,7 +131,7 @@ sub LimitNotObject {
     {
         return undef;
     }
-    $self->limit( column => 'ObjectType',
+    $self->limit( column => 'object_type',
 		  operator => '!=',
 		  value => ref($obj),
 		  entry_aggregator => 'OR',
@@ -326,7 +326,7 @@ sub _build_hash {
     my $self = shift;
 
     while (my $entry = $self->next) {
-       my $hashkey = $entry->__value('ObjectType'). "-" .  $entry->__value('object_id'). "-" .  $entry->__value('Rightname'). "-" .  $entry->__value('principal_id'). "-" .  $entry->__value('principal_type');
+       my $hashkey = $entry->__value('object_type'). "-" .  $entry->__value('object_id'). "-" .  $entry->__value('right_name'). "-" .  $entry->__value('principal_id'). "-" .  $entry->__value('principal_type');
 
         $self->{'as_hash'}->{"$hashkey"} =1;
 
@@ -345,7 +345,7 @@ sub HasEntry {
     my $self = shift;
     my %args = ( RightScope => undef,
                  RightAppliesTo => undef,
-                 Rightname => undef,
+                 right_name => undef,
                  principal_id => undef,
                  principal_type => undef,
                  @_ );
@@ -355,7 +355,7 @@ sub HasEntry {
 
     if ($self->{'as_hash'}->{ $args{'RightScope'} . "-" .
 			      $args{'RightAppliesTo'} . "-" . 
-			      $args{'Rightname'} . "-" .
+			      $args{'right_name'} . "-" .
 			      $args{'principal_id'} . "-" .
 			      $args{'principal_type'}
                             } == 1) {

@@ -274,8 +274,8 @@ sub InsertInitialData {
     $superuser_ace->_bootstrap_create(
         principal_id   => ACLEquivGroupId( $current_user->id ),
         principal_type => 'Group',
-        Rightname     => 'SuperUser',
-        ObjectType    => 'RT::System',
+        right_name     => 'SuperUser',
+        object_type    => 'RT::System',
         object_id      => 1,
     );
 

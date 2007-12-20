@@ -124,7 +124,7 @@ sub WriteDownTransaction {
     my %args = ( Object => undef, @_ );
 
     my $props = $self->_MakeHash( $args{'Object'} );
-    $props->{'Object'} = delete $props->{'ObjectType'};
+    $props->{'Object'} = delete $props->{'object_type'};
     $props->{'Object'} .= '-'. delete $props->{'object_id'}
         if $props->{'object_id'};
     return 1 if $skip_refs_to{ $props->{'Object'} };

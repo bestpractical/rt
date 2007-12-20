@@ -183,7 +183,7 @@ CREATE SEQUENCE transactions_id_seq;
 
 CREATE TABLE Transactions (
   id INTEGER DEFAULT nextval('transactions_id_seq'),
-  ObjectType varchar(255) NOT NULL  ,
+  object_type varchar(255) NOT NULL  ,
   object_id integer NOT NULL DEFAULT 0  ,
   TimeTaken integer NOT NULL DEFAULT 0  ,
   Type varchar(20) NULL  ,
@@ -200,7 +200,7 @@ CREATE TABLE Transactions (
   PRIMARY KEY (id)
 
 );
-CREATE INDEX Transactions1 ON Transactions (ObjectType, object_id);
+CREATE INDEX Transactions1 ON Transactions (object_type, object_id);
 
 -- }}}
 
@@ -251,8 +251,8 @@ CREATE TABLE ACL (
   principal_type varchar(25) NOT NULL, 
 
   principal_id integer NOT NULL  , 
-  Rightname varchar(25) NOT NULL  ,
-  ObjectType varchar(25) NOT NULL  ,
+  right_name varchar(25) NOT NULL  ,
+  object_type varchar(25) NOT NULL  ,
   object_id integer NOT NULL DEFAULT 0,
   DelegatedBy integer NOT NULL DEFAULT 0, 
   DelegatedFrom integer NOT NULL DEFAULT 0, 
@@ -260,7 +260,7 @@ CREATE TABLE ACL (
 
 );
 
-CREATE INDEX  ACL1 on ACL(Rightname, ObjectType, object_id,principal_type,principal_id);
+CREATE INDEX  ACL1 on ACL(right_name, object_type, object_id,principal_type,principal_id);
 
 
 -- }}}
@@ -489,7 +489,7 @@ CREATE SEQUENCE objectcustomfieldvalues_id_s;
 CREATE TABLE ObjectCustomFieldValues (
   id INTEGER DEFAULT nextval('objectcustomfieldvalues_id_s'),
   CustomField int NOT NULL  ,
-  ObjectType varchar(255) NULL  ,
+  object_type varchar(255) NULL  ,
   object_id int NOT NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
@@ -507,8 +507,8 @@ CREATE TABLE ObjectCustomFieldValues (
 
 );
 
-CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (CustomField,ObjectType,object_id,Content); 
-CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,object_id); 
+CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (CustomField,object_type,object_id,Content); 
+CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,object_type,object_id); 
 
 -- }}}
 
@@ -604,7 +604,7 @@ CREATE TABLE Attributes (
   Description varchar(255) NULL  ,
   Content text,
   ContentType varchar(16),
-  ObjectType varchar(64),
+  object_type varchar(64),
   object_id integer, 
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
@@ -615,7 +615,7 @@ CREATE TABLE Attributes (
 );
 
 CREATE INDEX Attributes1 on Attributes(name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, object_id);
+CREATE INDEX Attributes2 on Attributes(object_type, object_id);
 
 -- }}}
 

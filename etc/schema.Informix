@@ -103,7 +103,7 @@ CREATE TABLE ScripConditions (
 
 CREATE TABLE Transactions (
   	id 			SERIAL,
-  	ObjectType 		VARCHAR(255),
+  	object_type 		VARCHAR(255),
   	object_id 		INTEGER DEFAULT 0 NOT NULL,
   	TimeTaken 		INTEGER DEFAULT 0 NOT NULL,
   	Type 			VARCHAR(20),
@@ -118,7 +118,7 @@ CREATE TABLE Transactions (
   	Created 		DATETIME YEAR TO SECOND,
         PRIMARY KEY (id)
 );
-CREATE INDEX Transactions1 ON Transactions (ObjectType, object_id);
+CREATE INDEX Transactions1 ON Transactions (object_type, object_id);
 
 
 CREATE TABLE Scrips (
@@ -146,14 +146,14 @@ CREATE TABLE ACL (
 	id 		SERIAL,
 	principal_type 	VARCHAR(25) NOT NULL,
 	principal_id 	INTEGER NOT NULL,
-	Rightname	VARCHAR(25) NOT NULL,
-	ObjectType	VARCHAR(25) NOT NULL,
+	right_name	VARCHAR(25) NOT NULL,
+	object_type	VARCHAR(25) NOT NULL,
 	object_id	INTEGER DEFAULT 0 NOT NULL,
 	DelegatedBy	INTEGER DEFAULT 0 NOT NULL,
 	DelegatedFrom	INTEGER DEFAULT 0 NOT NULL,
         PRIMARY KEY (id)
 );
-CREATE INDEX ACL1 ON ACL(Rightname, ObjectType, object_id, principal_type, principal_id);
+CREATE INDEX ACL1 ON ACL(right_name, object_type, object_id, principal_type, principal_id);
 
 
 CREATE TABLE GroupMembers (
@@ -342,7 +342,7 @@ CREATE TABLE Attributes (
 	Description 		VARCHAR(255) DEFAULT NULL,
   	Content 	BYTE,
 	ContentType	VARCHAR(16),
-	ObjectType	VARCHAR(25) NOT NULL,
+	object_type	VARCHAR(25) NOT NULL,
 	object_id	INTEGER DEFAULT 0 NOT NULL,
 	Creator 	INTEGER DEFAULT 0 NOT NULL,
   	Created 	DATETIME YEAR TO SECOND,
@@ -352,7 +352,7 @@ CREATE TABLE Attributes (
 ); 
 
 CREATE INDEX Attributes1 on Attributes(name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, object_id);
+CREATE INDEX Attributes2 on Attributes(object_type, object_id);
 
 
 CREATE TABLE sessions (

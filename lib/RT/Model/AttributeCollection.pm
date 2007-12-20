@@ -192,7 +192,7 @@ sub LimitToObject {
     unless (defined($obj) && ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id) {
     return undef;
     }
-    $self->limit(column => 'ObjectType', operator=> '=', value => ref($obj), entry_aggregator => 'OR');
+    $self->limit(column => 'object_type', operator=> '=', value => ref($obj), entry_aggregator => 'OR');
     $self->limit(column => 'object_id', operator=> '=', value => $obj->id, entry_aggregator => 'OR', quote_value => 0);
 
 }

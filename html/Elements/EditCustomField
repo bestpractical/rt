@@ -57,7 +57,7 @@ unless ( $Type ) {
 my $Values;
 if ( $Object && $Object->id ) {
     $Values = $Object->CustomFieldValues( $CustomField->id );
-    $Values->columns( qw( id CustomField ObjectType object_id disabled Content ContentType ContentEncoding ) );
+    $Values->columns( qw( id CustomField object_type object_id disabled Content ContentType ContentEncoding ) );
     $namePrefix ||= join('-', 'Object', ref($Object), $Object->id, 'CustomField', '');
 } elsif (not $Default) {
     my %TOP = $m->request_args;

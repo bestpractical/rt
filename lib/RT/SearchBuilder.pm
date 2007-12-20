@@ -155,7 +155,7 @@ sub LimitAttribute {
 
     $self->limit(
 	$clause	   => $alias,
-	column      => 'ObjectType',
+	column      => 'object_type',
 	operator   => '=',
 	value      => $type,
     );
@@ -239,7 +239,7 @@ sub LimitCustomField {
     ) if ($args{'customfield'});
     $self->limit(
 	alias      => $alias,
-	column      => 'ObjectType',
+	column      => 'object_type',
 	operator   => '=',
 	value      => $self->_SingularClass,
     );

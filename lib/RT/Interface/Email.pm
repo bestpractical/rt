@@ -365,7 +365,7 @@ sub SendEmail {
     }
 
     if ( $args{'Transaction'} && !$args{'Ticket'}
-        && $args{'Transaction'}->ObjectType eq 'RT::Model::Ticket' )
+        && $args{'Transaction'}->object_type eq 'RT::Model::Ticket' )
     {
         $args{'Ticket'} = $args{'Transaction'}->Object;
     }

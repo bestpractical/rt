@@ -84,6 +84,9 @@ $class =~ s/^(.*):://g;
 return $class;
 }
 
+
+sub current_user_can { 1} # For now, we're using RT's auth, not jifty's
+
 sub __set {
     my $self = shift;
     my %args = (@_);
@@ -117,7 +120,7 @@ sub delete {
     } 
 }
 
-=head2 ObjectTypeStr
+=head2 object_typeStr
 
 Returns a string which is this object's type.  The type is the class,
 without the "RT::" prefix.
@@ -125,7 +128,7 @@ without the "RT::" prefix.
 
 =cut
 
-sub ObjectTypeStr {
+sub object_typeStr {
     my $self = shift;
     if (ref($self) =~ /^.*::(\w+)$/) {
 	return $self->loc($1);
@@ -253,8 +256,6 @@ If this object's table has any of the following atetributes defined as
 sub create {
     my $self    = shift;
     my %attribs = (@_);
-    if (ref($self) eq 'RT::Model::Queue') {
-    }
     foreach my $key ( keys %attribs ) {
         my $method = $self->can("validate_$key");
         if ($method) { 
@@ -275,7 +276,7 @@ sub create {
     my $now = RT::Date->new( current_user =>  $self->current_user );
     $now->set( Format => 'unix', value => time );
 
-    my $id = $self->SUPER::create(%attribs);
+    my ($id) = $self->SUPER::create(%attribs);
     if ( UNIVERSAL::isa( $id, 'Class::ReturnValue' ) ) {
         if ( $id->errno ) {
             if (wantarray) {
@@ -511,7 +512,6 @@ It takes no options. Arguably, this is a bug
 
 sub _setLastUpdated {
     my $self = shift;
-    use RT::Date;
     my $now = new RT::Date( current_user => $self->current_user );
     $now->set_to_now();
 
@@ -1250,7 +1250,7 @@ sub _NewTransaction {
     my $trans = RT::Model::Transaction->new();
     my ( $transaction, $msg ) = $trans->create(
 	object_id  => $self->id,
-	ObjectType => ref($self),
+	object_type => ref($self),
         TimeTaken => $args{'TimeTaken'},
         Type      => $args{'Type'},
         Data      => $args{'Data'},
@@ -1304,7 +1304,7 @@ sub Transactions {
         value => $self->id,
     );
     $transactions->limit(
-        column => 'ObjectType',
+        column => 'object_type',
         value => ref($self),
     );
 

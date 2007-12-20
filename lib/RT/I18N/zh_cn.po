@@ -62,7 +62,7 @@ msgid "%*(%1,unresolved ticket)"
 msgstr "%*(%1) 件尚未解决的申请单"
 
 #: lib/RT/URI/fsck_com_rt.pm:256
-#. ($self->ObjectType, $self->Object->id)
+#. ($self->object_type, $self->Object->id)
 msgid "%1 #%2"
 msgstr "%1 #%2"
 
@@ -323,7 +323,7 @@ msgid "%1 result(s) found"
 msgstr "找到 %1 项结果"
 
 #: html/User/Elements/DelegateRights:97
-#. (loc($ObjectType =~ /^RT::(.*)$/))
+#. (loc($object_type =~ /^RT::(.*)$/))
 msgid "%1 rights"
 msgstr "%1权限"
 
@@ -5033,7 +5033,7 @@ msgid "Object deleted"
 msgstr ""
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
-#. ($ObjectType)
+#. ($object_type)
 #. ($LookupType)
 msgid "Object of type %1 cannot take custom fields"
 msgstr "自订字段不适用于类别为 %1 的对象"

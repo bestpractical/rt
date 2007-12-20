@@ -101,7 +101,7 @@ ok(
 
 $ace = RT::Model::ACE->new($u1);
 ( $ret, $msg ) = $ace->load_by_values(
-    Rightname     => 'ShowConfigTab',
+    right_name     => 'ShowConfigTab',
     Object        => RT->system,
     principal_type => 'Group',
     principal_id   => $g2->principal_id
@@ -176,7 +176,7 @@ ok( not( $u1->principal_object->has_right(
     "Test personal group 1 lacks global DelegateRights after joining g1" );
 $ace = RT::Model::ACE->new($u1);
 ( $ret, $msg ) = $ace->load_by_values(
-    Rightname     => 'AdminGroup',
+    right_name     => 'AdminGroup',
     Object        => $pg1,
     principal_type => 'Group',
     principal_id   => $g2->principal_id
@@ -240,7 +240,7 @@ ok( $ret, "Add test user 1 to g1: $msg" );
 ok( $ret, "Add test user 1 to g2: $msg" );
 $ace = RT::Model::ACE->new($u1);
 ( $ret, $msg ) = $ace->load_by_values(
-    Rightname     => 'AdminGroup',
+    right_name     => 'AdminGroup',
     Object        => $pg1,
     principal_type => 'Group',
     principal_id   => $g2->principal_id
@@ -313,7 +313,7 @@ ok( $ret, "Add test user 1 to g2: $msg" );
 
 $ace = RT::Model::ACE->new($u1);
 ( $ret, $msg ) = $ace->load_by_values(
-    Rightname     => 'ShowConfigTab',
+    right_name     => 'ShowConfigTab',
     Object        => RT->system,
     principal_type => 'Group',
     principal_id   => $g2->principal_id
@@ -359,7 +359,7 @@ ok( $ret, "Grant ShowConfigTab to g2: $msg" );
 ok( $ret, "Add test user 1 to g1: $msg" );
 $ace = RT::Model::ACE->new($u1);
 ( $ret, $msg ) = $ace->load_by_values(
-    Rightname     => 'DelegateRights',
+    right_name     => 'DelegateRights',
     Object        => RT->system,
     principal_type => 'Group',
     principal_id   => $g1->principal_id
@@ -374,7 +374,7 @@ ok( $ret, "Add test user 2 to pg1: $msg" );
 ok( $ret, "Add test user 2 to g2: $msg" );
 $ace = RT::Model::ACE->new($u2);
 ( $ret, $msg ) = $ace->load_by_values(
-    Rightname     => 'ShowConfigTab',
+    right_name     => 'ShowConfigTab',
     Object        => RT->system,
     principal_type => 'Group',
     principal_id   => $g2->principal_id
@@ -401,7 +401,7 @@ ok( not ($pg2->principal_object->has_right(Right  => 'ShowConfigTab',
 ok( $ret, "Add u1 to g1: $msg" );
 $ace = RT::Model::ACE->new($u1);
 ( $ret, $msg ) = $ace->load_by_values(
-    Rightname     => 'DelegateRights',
+    right_name     => 'DelegateRights',
     Object        => RT->system,
     principal_type => 'Group',
     principal_id   => $g1->principal_id
@@ -411,7 +411,7 @@ ok( $ret, "Look up ACE to be delegated: $msg" );
 ok( $ret, "Delegate DelegateRights to pg1: $msg" );
 $ace = RT::Model::ACE->new($u2);
 ( $ret, $msg ) = $ace->load_by_values(
-    Rightname     => 'ShowConfigTab',
+    right_name     => 'ShowConfigTab',
     Object        => RT->system,
     principal_type => 'Group',
     principal_id   => $g2->principal_id

@@ -1,6 +1,6 @@
-alter Table Transactions ADD Column ObjectType varchar(64);
-update Transactions set ObjectType = 'RT::Model::Ticket';
-ALTER TABLE Transactions ALTER COLUMN ObjectType SET NOT NULL;
+alter Table Transactions ADD Column object_type varchar(64);
+update Transactions set object_type = 'RT::Model::Ticket';
+ALTER TABLE Transactions ALTER COLUMN object_type SET NOT NULL;
 alter table Transactions drop column EffectiveTicket;
 alter table Transactions add column ReferenceType varchar(255) NULL;
 alter table Transactions add column OldReference integer NULL;      
@@ -9,17 +9,17 @@ drop index transactions1;
 alter table Transactions rename column Ticket to object_id;
 
 
-CREATE INDEX Transactions1 ON Transactions (ObjectType, object_id);
+CREATE INDEX Transactions1 ON Transactions (object_type, object_id);
 
 alter table TicketCustomFieldValues rename to ObjectCustomFieldValues;
 
 alter table ObjectCustomFieldValues  rename column Ticket to object_id;
 
-alter table objectcustomfieldvalues add column ObjectType varchar(255);
+alter table objectcustomfieldvalues add column object_type varchar(255);
 
-update objectcustomfieldvalues set ObjectType = 'RT::Model::Ticket';
+update objectcustomfieldvalues set object_type = 'RT::Model::Ticket';
 
-ALTER TABLE objectcustomfieldvalues ALTER COLUMN ObjectType SET NOT NULL;
+ALTER TABLE objectcustomfieldvalues ALTER COLUMN object_type SET NOT NULL;
 
 alter table objectcustomfieldvalues add column Current int;
 
@@ -33,9 +33,9 @@ alter table objectcustomfieldvalues add column ContentType varchar(80) NULL;
 
 alter table objectcustomfieldvalues add column ContentEncoding varchar(80) NULL;
 
-create index ObjectCustomFieldValues1 on objectcustomfieldvalues (CustomField,ObjectType,object_id,Content); 
+create index ObjectCustomFieldValues1 on objectcustomfieldvalues (CustomField,object_type,object_id,Content); 
 
-create index ObjectCustomFieldValues2  on objectcustomfieldvalues (CustomField,ObjectType,object_id); 
+create index ObjectCustomFieldValues2  on objectcustomfieldvalues (CustomField,object_type,object_id); 
 
 
 CREATE SEQUENCE objectcustomfields_id_s;

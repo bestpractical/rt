@@ -604,7 +604,7 @@ sub _TransDateLimit {
         );
         $sb->SUPER::limit(
             alias           => $sb->{_sql_transalias},
-            column           => 'ObjectType',
+            column           => 'object_type',
             value           => 'RT::Model::Ticket',
             entry_aggregator => 'AND',
         );
@@ -716,7 +716,7 @@ sub _TransLimit {
         );
         $self->SUPER::limit(
             alias           => $self->{_sql_transalias},
-            column           => 'ObjectType',
+            column           => 'object_type',
             value           => 'RT::Model::Ticket',
             entry_aggregator => 'AND',
         );
@@ -1274,7 +1274,7 @@ sub _CustomFieldjoin {
     }
     $self->SUPER::limit(
         leftjoin        => $TicketCFs,
-        column           => 'ObjectType',
+        column           => 'object_type',
         value           => 'RT::Model::Ticket',
         entry_aggregator => 'AND'
     );

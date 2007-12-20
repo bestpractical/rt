@@ -208,7 +208,7 @@ is ($t->OwnerObj->name, 'root' , "Root owns the ticket");
 my $txns = RT::Model::TransactionCollection->new(current_user => RT->system_user);
 $txns->order_by(column => 'id', order => 'DESC');
 $txns->limit(column => 'object_id', value => '1');
-$txns->limit(column => 'ObjectType', value => 'RT::Model::Ticket');
+$txns->limit(column => 'object_type', value => 'RT::Model::Ticket');
 $txns->limit(column => 'Type', operator => '!=',  value => 'EmailRecord');
 
 my $give  = $txns->first;

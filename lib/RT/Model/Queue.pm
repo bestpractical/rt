@@ -454,7 +454,7 @@ sub validate_name {
     my $self = shift;
     my $name = shift;
 
-    my $tempqueue = new RT::Model::Queue(RT->system_user);
+    my $tempqueue = RT::Model::Queue->new( current_user => RT->system_user);
     $tempqueue->load($name);
 
     #If this queue exists, return undef

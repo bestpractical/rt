@@ -61,7 +61,7 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 column        object_id => max_length is 11,  type is 'int(11)', default is '0';
 column        name => max_length is 200,  type is 'varchar(200)', default is '';
-column        ObjectType => max_length is 200,  type is 'varchar(200)', default is '';
+column        object_type => max_length is 200,  type is 'varchar(200)', default is '';
 column        Description => max_length is 255,  type is 'varchar(255)', default is '';
 column        ContentType => max_length is 255,  type is 'varchar(255)', default is '';
 column        Content =>   type is 'blob', default is '';
@@ -99,7 +99,7 @@ our $PERSONAL_ACL_MAP = {
 
 };
 
-=head2 LookupObjectRight { ObjectType => undef, object_id => undef, name => undef, Right => { create, update, delete, display } }
+=head2 LookupObjectRight { object_type => undef, object_id => undef, name => undef, Right => { create, update, delete, display } }
 
 Returns the right that the user needs to have on this attribute's object to perform the related attribute operation. Returns "allow" if the right is otherwise unspecified.
 
@@ -107,14 +107,14 @@ Returns the right that the user needs to have on this attribute's object to perf
 
 sub LookupObjectRight { 
     my $self = shift;
-    my %args = ( ObjectType => undef,
+    my %args = ( object_type => undef,
                  object_id => undef,
                  Right => undef,
                  name => undef,
                  @_);
 
     # if it's an attribute on oneself, check the personal acl map
-    if (($args{'ObjectType'} eq 'RT::Model::User') && ($args{'object_id'} eq $self->current_user->id)) {
+    if (($args{'object_type'} eq 'RT::Model::User') && ($args{'object_id'} eq $self->current_user->id)) {
     return('allow') unless ($PERSONAL_ACL_MAP->{$args{'name'}});
     return('allow') unless ($PERSONAL_ACL_MAP->{$args{'name'}}->{$args{'Right'}});
     return($PERSONAL_ACL_MAP->{$args{'name'}}->{$args{'Right'}}); 
@@ -138,10 +138,10 @@ Create takes a hash of values and creates a row in the database:
   varchar(200) 'name'.
   varchar(255) 'Content'.
   varchar(16) 'ContentType',
-  varchar(64) 'ObjectType'.
+  varchar(64) 'object_type'.
   int(11) 'object_id'.
 
-You may pass a C<Object> instead of C<ObjectType> and C<object_id>.
+You may pass a C<Object> instead of C<object_type> and C<object_id>.
 
 =cut
 
@@ -159,7 +159,7 @@ sub create {
 		  @_);
 
     if ($args{Object} and UNIVERSAL::can($args{Object}, 'Id')) {
-	    $args{ObjectType} = ref($args{Object});
+	    $args{object_type} = ref($args{Object});
 	    $args{object_id} = $args{Object}->id;
     } else {
         return(0, $self->loc("Required parameter '[_1]' not specified", 'Object'));
@@ -171,7 +171,7 @@ sub create {
     my $object_right = $self->LookupObjectRight(
         Right      => 'create',
         object_id   => $args{'object_id'},
-        ObjectType => $args{'ObjectType'},
+        object_type => $args{'object_type'},
         name       => $args{'name'}
     );
     if ($object_right eq 'deny') { 
@@ -201,7 +201,7 @@ sub create {
                          Content => $args{'Content'},
                          ContentType => $args{'ContentType'},
                          Description => $args{'Description'},
-                         ObjectType => $args{'ObjectType'},
+                         object_type => $args{'object_type'},
                          object_id => $args{'object_id'},
 );
 
@@ -227,7 +227,7 @@ sub load_by_nameAndObject {
     return (
 	$self->load_by_cols(
 	    name => $args{'name'},
-	    ObjectType => ref($args{'Object'}),
+	    object_type => ref($args{'Object'}),
 	    object_id => $args{'Object'}->id,
 	)
     );
@@ -375,7 +375,7 @@ sub set_SubValues {
 
 sub Object {
     my $self = shift;
-    my $object_type = $self->__value('ObjectType');
+    my $object_type = $self->__value('object_type');
     my $object;
     eval { $object = $object_type->new };
     unless(UNIVERSAL::isa($object, $object_type)) {
@@ -435,7 +435,7 @@ sub current_user_has_right {
     my $object_right = $self->LookupObjectRight(
         Right      => $right,
         object_id   => $self->__value('object_id'),
-        ObjectType => $self->__value('ObjectType'),
+        object_type => $self->__value('object_type'),
         name       => $self->__value('name')
     );
    

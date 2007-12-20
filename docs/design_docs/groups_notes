@@ -14,7 +14,7 @@ CREATE TABLE Groups (
 CREATE TABLE ACL (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Principal integer NULL  , #Foreign key to principals
-  Rightname varchar(25) NULL  ,
+  right_name varchar(25) NULL  ,
   RightDomain varchar(25) NULL  ,
   RightInstance integer NULL  ,
   PRIMARY KEY (id)

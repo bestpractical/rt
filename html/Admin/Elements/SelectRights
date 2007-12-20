@@ -56,9 +56,9 @@
 % } else {
 <i>(<&|/l&>Check box to revoke right</&>)</i> <br />
 % while (my $right = $ACLObj->next()) {
-% if ($right->Rightname) {
-% $current_rights{$right->Rightname} = 1;
-<input type="checkbox" class="checkbox" value="<% $right->Rightname %>" name="RevokeRight-<%$ACLDesc%>" /> <% loc($right->Rightname) %><br />
+% if ($right->right_name) {
+% $current_rights{$right->right_name} = 1;
+<input type="checkbox" class="checkbox" value="<% $right->right_name %>" name="RevokeRight-<%$ACLDesc%>" /> <% loc($right->right_name) %><br />
 % }
 %  }
 % }
@@ -98,7 +98,7 @@
 
     $ACLObj->LimitToObject( $Object);
     $ACLObj->LimitToPrincipal( Id => $principal_id);
-    $ACLObj->order_by(column=>'Rightname'); 
+    $ACLObj->order_by(column=>'right_name'); 
 
     if (ref($Object) && UNIVERSAL::can($Object, 'AvailableRights')) { 
         %Rights = %{$Object->AvailableRights};

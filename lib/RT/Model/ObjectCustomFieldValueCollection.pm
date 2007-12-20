@@ -84,7 +84,7 @@ sub LimitToObject {
     my $self = shift;
     my $object = shift;
     $self->limit(
-        column => 'ObjectType',
+        column => 'object_type',
         value => ref($object),
     );
     return $self->limit(

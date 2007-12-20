@@ -53,9 +53,9 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post">
-<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, ObjectType => 'RT::System' &>
-<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, ObjectType => 'RT::Model::Queue' &>
-<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, ObjectType => 'RT::Model::Group' &>
+<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, object_type => 'RT::System' &>
+<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, object_type => 'RT::Model::Queue' &>
+<& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, object_type => 'RT::Model::Group' &>
 
 <& /Elements/Submit, Label => loc('Modify Rights') &>
 </form>
@@ -102,6 +102,6 @@ $acl->LimitToPrincipal(Id => Jifty->web->current_user->principal_id,
                        );
 
 while(my $right = $acl->next) {
-       push @{$objects->{$right->ObjectType}{$right->object_id}},$right;
+       push @{$objects->{$right->object_type}{$right->object_id}},$right;
 }
 </%INIT>

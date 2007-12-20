@@ -75,11 +75,11 @@ sub LocalURIPrefix {
     return ($prefix);
 }
 
-=head2 ObjectType
+=head2 object_type
 
 =cut
 
-sub ObjectType {
+sub object_type {
     my $self = shift;
     my $object = shift || $self->Object;
 
@@ -104,7 +104,7 @@ Returns the RT URI for a local RT::Record object
 sub URIForObject {
     my $self = shift;
     my $obj = shift;
-    return ($self->LocalURIPrefix ."/". $self->ObjectType($obj) ."/". $obj->id);
+    return ($self->LocalURIPrefix ."/". $self->object_type($obj) ."/". $obj->id);
 }
 
 
@@ -212,7 +212,7 @@ Otherwise, return its URI
 
 sub HREF {
     my $self = shift;
-    if ($self->IsLocal && $self->Object && ($self->ObjectType eq 'ticket')) {
+    if ($self->IsLocal && $self->Object && ($self->object_type eq 'ticket')) {
         return ( RT->Config->Get('WebURL') . "Ticket/Display.html?id=".$self->Object->id);
     }   
     else {
@@ -229,7 +229,7 @@ Returns either a localized string 'ticket #23' or the full URI if the object is 
 sub AsString {
     my $self = shift;
     if ($self->IsLocal && $self->Object) {
-	    return $self->loc("[_1] #[_2]", $self->ObjectType, $self->Object->id);
+	    return $self->loc("[_1] #[_2]", $self->object_type, $self->Object->id);
     }
     else {
 	    return $self->URI;

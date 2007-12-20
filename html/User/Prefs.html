@@ -241,7 +241,7 @@ my  ($code, $msg) = $user_object->set_privileged($privileged);
 
 
 #TODO: make this report errors properly
-if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$user_object->Ispassword($Pass1))) {
+if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$user_object->is_password($Pass1))) {
     my ($code, $msg);
     ($code, $msg) = $user_object->set_password($Pass1);
     push @results, loc('password: [_1]', loc_fuzzy($msg));

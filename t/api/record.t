@@ -18,8 +18,8 @@ ok (require RT::Record);
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 my $group = RT::Model::Group->new(current_user => RT->system_user);
-is($ticket->ObjectTypeStr, 'Ticket', "Ticket returns correct typestring");
-is($group->ObjectTypeStr, 'Group', "Group returns correct typestring");
+is($ticket->object_typeStr, 'Ticket', "Ticket returns correct typestring");
+is($group->object_typeStr, 'Group', "Group returns correct typestring");
 
 
 }

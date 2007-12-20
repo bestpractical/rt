@@ -53,7 +53,7 @@ msgstr "$1"
 msgid "$prefix %1"
 msgstr "$præfiks %1"
 
-#. ($self->ObjectType, $self->Object->id)
+#. ($self->object_type, $self->Object->id)
 #: lib/RT/URI/fsck_com_rt.pm:256
 msgid "%1 #%2"
 msgstr "%1 #%2"
@@ -304,7 +304,7 @@ msgstr "%1 ikke vist"
 msgid "%1 objects"
 msgstr "%1 objekter"
 
-#. (loc($ObjectType =~ /^RT::(.*)$/))
+#. (loc($object_type =~ /^RT::(.*)$/))
 #: html/User/Elements/DelegateRights:97
 msgid "%1 rights"
 msgstr "%1 rettigheder"
@@ -4099,7 +4099,7 @@ msgid "Object deleted"
 msgstr "Objekt slettet"
 
 #. ($LookupType)
-#. ($ObjectType)
+#. ($object_type)
 #: html/Admin/CustomFields/Objects.html:72
 #: html/Admin/Elements/ObjectCustomFields:63
 msgid "Object of type %1 cannot take custom fields"

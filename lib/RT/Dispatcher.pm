@@ -34,9 +34,6 @@ before qr/(.*)/ => run {
     my $path = $1;
 # This code canonicalize_s time inputs in hours into minutes
 # If it's a noauth file, don't ask for auth.
-if ( $path !~ RT->Config->Get('WebNoAuthRegex') && $path ne '/login' && !Jifty->web->current_user->id ) {
-    tangent('/login');
-}
 
     # Set the proper encoding for the current language handle
     content_type("text/html; charset=utf-8");

@@ -111,7 +111,7 @@ sub LimitToTicket {
             column2 => 'id'
         );
         $self->limit(
-            column => 'ObjectType',
+            column => 'object_type',
             value => 'RT::Model::Ticket',
         );
     }

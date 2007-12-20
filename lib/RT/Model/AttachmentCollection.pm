@@ -187,7 +187,7 @@ sub LimitByTicket {
     $self->limit(
         entry_aggregator => 'AND',
         alias           => $transactions,
-        column           => 'ObjectType',
+        column           => 'object_type',
         value           => 'RT::Model::Ticket',
     );
 

@@ -54,7 +54,7 @@ ok( $ret, "Add test user 1 to g1: $msg" );
 
 $ace = RT::Model::ACE->new($u1);
 ( $ret, $msg ) = $ace->load_by_values(
-    Rightname     => 'ShowConfigTab',
+    right_name     => 'ShowConfigTab',
     Object        => RT->system,
     principal_type => 'Group',
     principal_id   => $g1->principal_id

@@ -106,7 +106,7 @@ CREATE SEQUENCE TRANSACTIONS_seq;
 CREATE TABLE Transactions (
   	id 			NUMBER(11,0) 
 		CONSTRAINT Transactions_Key PRIMARY KEY,
-  	ObjectType 		VARCHAR2(255),
+  	object_type 		VARCHAR2(255),
   	object_id		NUMBER(11,0) DEFAULT 0 NOT NULL,
   	TimeTaken 		NUMBER(11,0) DEFAULT 0 NOT NULL,
   	Type 			VARCHAR2(20),
@@ -120,7 +120,7 @@ CREATE TABLE Transactions (
   	Creator 		NUMBER(11,0) DEFAULT 0 NOT NULL,
   	Created 		DATE
 );
-CREATE INDEX Transactions1 ON Transactions (ObjectType, object_id);
+CREATE INDEX Transactions1 ON Transactions (object_type, object_id);
 
 
 CREATE SEQUENCE SCRIPS_seq;
@@ -151,13 +151,13 @@ CREATE TABLE ACL (
 		CONSTRAINT ACL_Key PRIMARY KEY,
 	principal_type 	VARCHAR2(25) NOT NULL,
 	principal_id 	NUMBER(11,0) NOT NULL,
-	Rightname	VARCHAR2(25) NOT NULL,
-	ObjectType	VARCHAR2(25) NOT NULL,
+	right_name	VARCHAR2(25) NOT NULL,
+	object_type	VARCHAR2(25) NOT NULL,
 	object_id	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	DelegatedBy	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	DelegatedFrom	NUMBER(11,0) DEFAULT 0 NOT NULL
 );
-CREATE INDEX ACL1 ON ACL(Rightname, ObjectType, object_id, principal_type, principal_id);
+CREATE INDEX ACL1 ON ACL(right_name, object_type, object_id, principal_type, principal_id);
 
 
 CREATE SEQUENCE GROUPMEMBERS_seq;
@@ -317,7 +317,7 @@ CREATE TABLE ObjectCustomFieldValues (
 	id		NUMBER(11,0) 
 		CONSTRAINT ObjectCustomFieldValues_Key PRIMARY KEY,
 	CustomField	NUMBER(11,0) NOT NULL,
-	ObjectType	VARCHAR2(25) NOT NULL,
+	object_type	VARCHAR2(25) NOT NULL,
 	object_id	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	SortOrder	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Content		VARCHAR2(255),
@@ -332,7 +332,7 @@ CREATE TABLE ObjectCustomFieldValues (
 );
 
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
-CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,object_id); 
+CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,object_type,object_id); 
 
 CREATE SEQUENCE customfields_seq;
 CREATE TABLE CustomFields (
@@ -377,7 +377,7 @@ CREATE TABLE Attributes (
 	Description 		VARCHAR2(255),
   	Content 	CLOB,
     ContentType VARCHAR(16),
-	ObjectType	VARCHAR2(25) NOT NULL,
+	object_type	VARCHAR2(25) NOT NULL,
 	object_id	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Creator 		NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Created 		DATE,
@@ -386,7 +386,7 @@ CREATE TABLE Attributes (
 );
 
 CREATE INDEX Attributes1 on Attributes(name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, object_id);
+CREATE INDEX Attributes2 on Attributes(object_type, object_id);
 
 
 CREATE TABLE sessions (

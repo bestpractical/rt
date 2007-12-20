@@ -4,7 +4,7 @@ CREATE TABLE Attributes (
 	Description 		VARCHAR(255) DEFAULT NULL,
   	Content 	BYTE,
 	ContentType	VARCHAR(16),
-	ObjectType	VARCHAR(25) NOT NULL,
+	object_type	VARCHAR(25) NOT NULL,
 	object_id	INTEGER DEFAULT 0 NOT NULL,
 	Creator 	INTEGER DEFAULT 0 NOT NULL,
   	Created 	DATETIME YEAR TO SECOND,
@@ -14,4 +14,4 @@ CREATE TABLE Attributes (
 ); 
 
 CREATE INDEX Attributes1 on Attributes(name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, object_id);
+CREATE INDEX Attributes2 on Attributes(object_type, object_id);

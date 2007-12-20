@@ -61,15 +61,15 @@ $id ? (
 <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object &>
 <%INIT>
 # XXX TODO: Validate here?
-#$ObjectType =~ /^RT::(Queue|User|Group)$/
-#    or Abort(loc("Object of type [_1] cannot take custom fields", $ObjectType));
+#$object_type =~ /^RT::(Queue|User|Group)$/
+#    or Abort(loc("Object of type [_1] cannot take custom fields", $object_type));
 
 
 
 my $Type = $1;
 my $Types = $Type.'s';
 my $ObjectTabs;
-my $Object = $ObjectType->new(Jifty->web->current_user);
+my $Object = $object_type->new(Jifty->web->current_user);
 
 
 my $QualifiedType;
@@ -106,6 +106,6 @@ $sub_type_url = "SubType=$SubType" if $SubType;
 </%INIT>
 <%ARGS>
 $id => undef
-$ObjectType
+$object_type
 $SubType => undef
 </%ARGS>

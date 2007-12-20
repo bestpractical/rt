@@ -44,7 +44,7 @@ msgid "$prefix %1"
 msgstr "$Awalan %1"
 
 #: lib/RT/URI/fsck_com_rt.pm:256
-#. ($self->ObjectType, $self->Object->id)
+#. ($self->object_type, $self->Object->id)
 msgid "%1 #%2"
 msgstr "%1 #%2"
 
@@ -245,7 +245,7 @@ msgid "%1 objects"
 msgstr "%1 objek"
 
 #: html/User/Elements/DelegateRights:97
-#. (loc($ObjectType =~ /^RT::(.*)$/))
+#. (loc($object_type =~ /^RT::(.*)$/))
 msgid "%1 rights"
 msgstr "hak-hak %1"
 
@@ -3279,7 +3279,7 @@ msgid "Object deleted"
 msgstr "Objek sudah dihapus"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
-#. ($ObjectType)
+#. ($object_type)
 #. ($LookupType)
 msgid "Object of type %1 cannot take custom fields"
 msgstr "Tipe Objek %1 tidak dapat mengambil kolom kustom"

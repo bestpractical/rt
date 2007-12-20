@@ -54,7 +54,7 @@
     Title => $title
     &>
 
-    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object, ObjectType => 'RT::Model::Queue' &>
+    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object, object_type => 'RT::Model::Queue' &>
 <%INIT>
 my $Object = RT::Model::Queue->new( Jifty->web->current_user );
 

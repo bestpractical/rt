@@ -254,9 +254,8 @@ sub Authenticate {
     return ($password eq $auth_digest);
 }
 
-eval "require RT::CurrentUser_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/CurrentUser_Vendor.pm});
-eval "require RT::CurrentUser_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/CurrentUser_Local.pm});
+sub has_right {
+    shift->user_object->has_right(@_);
+}
 
 1;

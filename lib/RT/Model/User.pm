@@ -35,7 +35,6 @@ sub table {'Users'}
 
 use Jifty::DBI::Record schema {
     column        name  => max_length is 200,      type is 'varchar(200)', default is '';
-    column        password  => max_length is 40,      type is 'varchar(40)', default is '';
     column        comments  =>        type is 'blob', default is '';
     column        Signature  =>       type is 'blob', default is '';
     column        email  => max_length is 120,      type is 'varchar(120)', default is '';
@@ -116,22 +115,12 @@ sub create {
     delete $args{'privileged'};
 
 
-    if ($args{'Cryptedpassword'} ) {
-        $args{'password'} = $args{'Cryptedpassword'};
-        delete $args{'Cryptedpassword'};
-    }
     elsif ( !$args{'password'} ) {
         $args{'password'} = '*NO-PASSWORD*';
     }
     elsif ( length( $args{'password'} ) < RT->Config->Get('MinimumpasswordLength') ) {
         return ( 0, $self->loc("password needs to be at least [_1] characters long",RT->Config->Get('MinimumpasswordLength')) );
     }
-
-    else {
-        $args{'password'} = $self->_Generatepassword($args{'password'});
-    }
-
-    #TODO Specify some sensible defaults.
 
     unless ( $args{'name'} ) {
         return ( 0, $self->loc("Must specify 'name' attribute") );
@@ -639,8 +628,7 @@ sub set_Randompassword {
 
     my $min = ( RT->Config->Get('MinimumpasswordLength') > 6 ?  RT->Config->Get('MinimumpasswordLength') : 6);
     my $max = ( RT->Config->Get('MinimumpasswordLength') > 8 ?  RT->Config->Get('MinimumpasswordLength') : 8);
-
-    my $pass = $self->GenerateRandompassword( $min, $max) ;
+    my $pass =    Text::Password::Pronounceable->generate($min => $max);
 
     # If we have "notify user on 
 
@@ -656,236 +644,6 @@ sub set_Randompassword {
 
 # }}}
 
-# {{{ sub Resetpassword
-
-=head2 Resetpassword
-
-Returns status, [ERROR or new password].  Resets this user\'s password to
-a randomly generated pronouncable password and emails them, using a 
-global template called "RT_passwordChange", which can be overridden
-with global templates "RT_passwordChange_privileged" or "RT_passwordChange_Nonprivileged" 
-for privileged and Non-privileged users respectively.
-
-=cut
-
-sub Resetpassword {
-    my $self = shift;
-
-    unless ( $self->current_user_can_modify('password') ) {
-        return ( 0, $self->loc("Permission Denied") );
-    }
-    my ( $status, $pass ) = $self->set_Randompassword();
-
-    unless ($status) {
-        return ( 0, "$pass" );
-    }
-
-    my $ret = RT::Interface::Email::SendEmailUsingTemplate(
-        To        => $self->email,
-        Template  => 'passwordChange',
-        Arguments => {
-            Newpassword => $pass,
-        },
-        );
-
-    if ($ret) {
-        return ( 1, $self->loc('New password notification sent') );
-    }
-    else {
-        return ( 0, $self->loc('Notification could not be sent') );
-    }
-
-}
-
-# }}}
-
-# {{{ sub GenerateRandompassword
-
-=head2 GenerateRandompassword MIN_LEN and MAX_LEN
-
-Returns a random password between MIN_LEN and MAX_LEN characters long.
-
-=cut
-
-sub GenerateRandompassword {
-    my $self       = shift;
-    my $min_length = shift;
-    my $max_length = shift;
-
-    #This code derived from mpw.pl, a bit of code with a sordid history
-    # Its notes: 
-
-    # Perl cleaned up a bit by Jesse Vincent 1/14/2001.
-    # Converted to perl from C by Marc Horowitz, 1/20/2000.
-    # Converted to C from Multics PL/I by Bill Sommerfeld, 4/21/86.
-    # Original PL/I version provided by Jerry Saltzer.
-
-    my ( $frequency, $start_freq, $total_sum, $row_sums );
-
-    #When munging characters, we need to know where to start counting letters from
-    my $a = ord('a');
-
-    # frequency of English digraphs (from D Edwards 1/27/66) 
-    $frequency = [
-        [
-            4, 20, 28, 52, 2,  11,  28, 4,  32, 4, 6, 62, 23, 167,
-            2, 14, 0,  83, 76, 127, 7,  25, 8,  1, 9, 1
-        ],    # aa - az
-        [
-            13, 0, 0, 0,  55, 0, 0,  0, 8, 2, 0,  22, 0, 0,
-            11, 0, 0, 15, 4,  2, 13, 0, 0, 0, 15, 0
-        ],    # ba - bz
-        [
-            32, 0, 7, 1,  69, 0,  0,  33, 17, 0, 10, 9, 1, 0,
-            50, 3, 0, 10, 0,  28, 11, 0,  0,  0, 3,  0
-        ],    # ca - cz
-        [
-            40, 16, 9, 5,  65, 18, 3,  9, 56, 0, 1, 4, 15, 6,
-            16, 4,  0, 21, 18, 53, 19, 5, 15, 0, 3, 0
-        ],    # da - dz
-        [
-            84, 20, 55, 125, 51, 40, 19, 16,  50,  1,
-            4,  55, 54, 146, 35, 37, 6,  191, 149, 65,
-            9,  26, 21, 12,  5,  0
-        ],    # ea - ez
-        [
-            19, 3, 5, 1,  19, 21, 1, 3, 30, 2, 0, 11, 1, 0,
-            51, 0, 0, 26, 8,  47, 6, 3, 3,  0, 2, 0
-        ],    # fa - fz
-        [
-            20, 4, 3, 2,  35, 1,  3, 15, 18, 0, 0, 5, 1, 4,
-            21, 1, 1, 20, 9,  21, 9, 0,  5,  0, 1, 0
-        ],    # ga - gz
-        [
-            101, 1, 3, 0, 270, 5,  1, 6, 57, 0, 0, 0, 3, 2,
-            44,  1, 0, 3, 10,  18, 6, 0, 5,  0, 3, 0
-        ],    # ha - hz
-        [
-            40, 7,  51, 23, 25, 9,   11, 3,  0, 0, 2, 38, 25, 202,
-            56, 12, 1,  46, 79, 117, 1,  22, 0, 4, 0, 3
-        ],    # ia - iz
-        [
-            3, 0, 0, 0, 5, 0, 0, 0, 1, 0, 0, 0, 0, 0,
-            4, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0
-        ],    # ja - jz
-        [
-            1, 0, 0, 0, 11, 0, 0, 0, 13, 0, 0, 0, 0, 2,
-            0, 0, 0, 0, 6,  2, 1, 0, 2,  0, 1, 0
-        ],    # ka - kz
-        [
-            44, 2, 5, 12, 62, 7,  5, 2, 42, 1, 1,  53, 2, 2,
-            25, 1, 1, 2,  16, 23, 9, 0, 1,  0, 33, 0
-        ],    # la - lz
-        [
-            52, 14, 1, 0, 64, 0, 0, 3, 37, 0, 0, 0, 7, 1,
-            17, 18, 1, 2, 12, 3, 8, 0, 1,  0, 2, 0
-        ],    # ma - mz
-        [
-            42, 10, 47, 122, 63, 19, 106, 12, 30, 1,
-            6,  6,  9,  7,   54, 7,  1,   7,  44, 124,
-            6,  1,  15, 0,   12, 0
-        ],    # na - nz
-        [
-            7,  12, 14, 17, 5,  95, 3,  5,  14, 0, 0, 19, 41, 134,
-            13, 23, 0,  91, 23, 42, 55, 16, 28, 0, 4, 1
-        ],    # oa - oz
-        [
-            19, 1, 0, 0,  37, 0, 0, 4, 8, 0, 0, 15, 1, 0,
-            27, 9, 0, 33, 14, 7, 6, 0, 0, 0, 0, 0
-        ],    # pa - pz
-        [
-            0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0
-        ],    # qa - qz
-        [
-            83, 8, 16, 23, 169, 4,  8, 8,  77, 1, 10, 5, 26, 16,
-            60, 4, 0,  24, 37,  55, 6, 11, 4,  0, 28, 0
-        ],    # ra - rz
-        [
-            65, 9,  17, 9, 73, 13,  1,  47, 75, 3, 0, 7, 11, 12,
-            56, 17, 6,  9, 48, 116, 35, 1,  28, 0, 4, 0
-        ],    # sa - sz
-        [
-            57, 22, 3,  1, 76, 5, 2, 330, 126, 1,
-            0,  14, 10, 6, 79, 7, 0, 49,  50,  56,
-            21, 2,  27, 0, 24, 0
-        ],    # ta - tz
-        [
-            11, 5,  9, 6,  9,  1,  6, 0, 9, 0, 1, 19, 5, 31,
-            1,  15, 0, 47, 39, 31, 0, 3, 0, 0, 0, 0
-        ],    # ua - uz
-        [
-            7, 0, 0, 0, 72, 0, 0, 0, 28, 0, 0, 0, 0, 0,
-            5, 0, 0, 0, 0,  0, 0, 0, 0,  0, 3, 0
-        ],    # va - vz
-        [
-            36, 1, 1, 0, 38, 0, 0, 33, 36, 0, 0, 4, 1, 8,
-            15, 0, 0, 0, 4,  2, 0, 0,  1,  0, 0, 0
-        ],    # wa - wz
-        [
-            1, 0, 2, 0, 0, 1, 0, 0, 3, 0, 0, 0, 0, 0,
-            1, 5, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0
-        ],    # xa - xz
-        [
-            14, 5, 4, 2, 7,  12, 12, 6, 10, 0, 0, 3, 7, 5,
-            17, 3, 0, 4, 16, 30, 0,  0, 5,  0, 0, 0
-        ],    # ya - yz
-        [
-            1, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-        ]
-    ];    # za - zz
-
-    #We need to know the totals for each row 
-    $row_sums = [
-        map {
-            my $sum = 0;
-            map { $sum += $_ } @$_;
-            $sum;
-          } @$frequency
-    ];
-
-    #Frequency with which a given letter starts a word.
-    $start_freq = [
-        1299, 425, 725, 271, 375, 470, 93, 223, 1009, 24,
-        20,   355, 379, 319, 823, 618, 21, 317, 962,  1991,
-        271,  104, 516, 6,   16,  14
-    ];
-
-    $total_sum = 0;
-    map { $total_sum += $_ } @$start_freq;
-
-    my $length = $min_length + int( rand( $max_length - $min_length ) );
-
-    my $char = $self->_GenerateRandomNextChar( $total_sum, $start_freq );
-    my @word = ( $char + $a );
-    for ( 2 .. $length ) {
-        $char =
-          $self->_GenerateRandomNextChar( $row_sums->[$char],
-            $frequency->[$char] );
-        push ( @word, $char + $a );
-    }
-
-    #Return the password
-    return pack( "C*", @word );
-
-}
-
-#A private helper function for Randompassword
-# Takes a row summary and a frequency chart for the next character to be searched
-sub _GenerateRandomNextChar {
-    my $self = shift;
-    my ( $all, $freq ) = @_;
-    my ( $pos, $i );
-
-    for ( $pos = int( rand($all) ), $i = 0 ;
-        $pos >= $freq->[$i] ;
-        $pos -= $freq->[$i], $i++ )
-    {
-    }
-
-    return ($i);
-}
 
 # }}}
 
@@ -914,7 +672,6 @@ sub set_password {
     }
     else {
         my $new = !$self->has_password;
-        $password = $self->_Generatepassword($password);
         my ( $val, $msg ) = $self->_set(column => 'password', value=> $password);
         if ($val) {
             return ( 1, $self->loc("password set") ) if $new;
@@ -927,38 +684,6 @@ sub set_password {
 
 }
 
-=head2 _Generatepassword PASSWORD
-
-returns an MD5 hash of the password passed in, in hexadecimal encoding.
-
-=cut
-
-sub _Generatepassword {
-    my $self = shift;
-    my $password = shift;
-
-    my $md5 = Digest::MD5->new();
-    $md5->add(encode_utf8($password));
-    return ($md5->hexdigest);
-
-}
-
-=head2 _GeneratepasswordBase64 PASSWORD
-
-returns an MD5 hash of the password passed in, in base64 encoding
-(obsoleted now).
-
-=cut
-
-sub _GeneratepasswordBase64 {
-    my $self = shift;
-    my $password = shift;
-
-    my $md5 = Digest::MD5->new();
-    $md5->add(encode_utf8($password));
-    return ($md5->b64digest);
-
-}
 
 # }}}
 
@@ -979,55 +704,6 @@ sub has_password {
     return 1;
 }
 
-
-# {{{ sub Ispassword 
-
-=head2 Ispassword
-
-Returns true if the passed in value is this user's password.
-Returns undef otherwise.
-
-=cut
-
-sub Ispassword {
-    my $self  = shift;
-    my $value = shift;
-
-    #TODO there isn't any apparent way to legitimately ACL this
-
-    # RT does not allow null passwords 
-    if ( ( !defined($value) ) or ( $value eq '' ) ) {
-        return (undef);
-    }
-
-   if ( $self->principal_object->disabled ) {
-        $RT::Logger->info(
-            "disabled user " . $self->name . " tried to log in" );
-        return (undef);
-    }
-
-    unless ($self->has_password) {
-        return(undef);
-     }
-
-    # generate an md5 password 
-    if ($self->_Generatepassword($value) eq $self->__value('password')) {
-        return(1);
-    }
-
-    #  if it's a historical password we say ok.
-    if ($self->__value('password') eq crypt($value, $self->__value('password'))
-        or $self->_GeneratepasswordBase64($value) eq $self->__value('password'))
-    {
-        # ...but upgrade the legacy password inplace.
-        $self->set(column => password, value => $self->_Generatepassword($value) );
-        return(1);
-    }
-
-    # no password check has succeeded. get out
-
-    return (undef);
-}
 
 # }}}
 
@@ -1203,8 +879,6 @@ Shim around principal_object->has_right. See RT::Model::Principal
 
 sub has_right {
     my $self = shift;
-    warn "skipping acl check";
-    return 1;
     return  $self->principal_object->has_right(@_);
 
 }
@@ -1450,7 +1124,7 @@ sub _CleanupInvalidDelegations {
     $deleg_acl->LimitToPrincipal(Type => 'User',
                  Id => $self->principal_id,
                  IncludeGroupMembership => 1);
-    $deleg_acl->limit( column => 'Rightname',
+    $deleg_acl->limit( column => 'right_name',
                operator => '=',
                value => 'DelegateRights' );
     my @allowed_deleg_objects = map {$_->Object()}
@@ -1566,7 +1240,7 @@ sub _value {
     }
 
     #If the user has the admin users right, return the field
-    elsif ($self->current_user &&  $self->current_user->has_right(Right =>'AdminUsers', Object => RT->system) ) {
+    elsif ($self->current_user->user_object &&  $self->current_user->user_object->has_right(Right =>'AdminUsers', Object => RT->system) ) {
         return ( $self->SUPER::_value($field) );
     }
     else {

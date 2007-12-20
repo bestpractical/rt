@@ -5,7 +5,7 @@ CREATE TABLE Attributes (
   Description varchar(255) NULL  ,
   Content LONGTEXT NULL  ,
   ContentType varchar(16),
-  ObjectType varchar(25) NOT NULL  ,
+  object_type varchar(25) NOT NULL  ,
   object_id INTEGER default 0,
   Creator integer NULL  ,
   Created DATETIME NULL  ,
@@ -15,7 +15,7 @@ CREATE TABLE Attributes (
 ) ;
 
 CREATE INDEX Attributes1 on Attributes(name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, object_id);
+CREATE INDEX Attributes2 on Attributes(object_type, object_id);
 
 --- }}}
 

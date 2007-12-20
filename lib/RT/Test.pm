@@ -186,7 +186,7 @@ sub store_rights {
 
     require RT::ACL;
     my $acl = RT::ACL->new(current_user => RT->system_user );
-    $acl->limit( column => 'Rightname', operator => '!=', value => 'SuperUser' );
+    $acl->limit( column => 'right_name', operator => '!=', value => 'SuperUser' );
 
     my @res;
     while ( my $ace = $acl->next ) {
@@ -222,7 +222,7 @@ sub set_rights {
 
     require RT::Model::ACECollection;
     my $acl = RT::Model::ACECollection->new(current_user => RT->system_user );
-    $acl->limit( column => 'Rightname', operator => '!=', value => 'SuperUser' );
+    $acl->limit( column => 'right_name', operator => '!=', value => 'SuperUser' );
     while ( my $ace = $acl->next ) {
         my $obj = $ace->principal_object->Object;
         if ( $obj->isa('RT::Model::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {

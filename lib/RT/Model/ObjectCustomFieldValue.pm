@@ -69,7 +69,7 @@ use Jifty::DBI::Record schema {
     column Content =>  type is 'varchar(255)', max_length is 255, default is '';
     column ContentEncoding =>  type is 'varchar(80)', max_length is 80, default is '';
     column LastUpdated =>  type is 'datetime',  default is '';
-    column ObjectType =>  type is 'varchar(255)', max_length is 255, default is '';
+    column object_type =>  type is 'varchar(255)', max_length is 255, default is '';
 
 };
 
@@ -87,7 +87,7 @@ sub create {
     my $self = shift;
     my %args = (
         CustomField     => 0,
-        ObjectType      => '',
+        object_type      => '',
         object_id        => 0,
         disabled        => 0,
         Content         => '',
@@ -114,7 +114,7 @@ sub create {
 
     return $self->SUPER::create(
         CustomField     => $args{'CustomField'},
-        ObjectType      => $args{'ObjectType'},
+        object_type      => $args{'object_type'},
         object_id        => $args{'object_id'},
         disabled        => $args{'disabled'},
         Content         => $args{'Content'},
@@ -153,7 +153,7 @@ sub loadByTicketContentAndCustomField {
     return $self->load_by_cols(
         Content => $args{'Content'},
         CustomField => $args{'CustomField'},
-        ObjectType => 'RT::Model::Ticket',
+        object_type => 'RT::Model::Ticket',
         object_id => $args{'Ticket'},
         disabled => 0
     );
@@ -173,7 +173,7 @@ sub loadByObjectContentAndCustomField {
     return $self->load_by_cols(
         Content => $args{'Content'},
         CustomField => $args{'CustomField'},
-        ObjectType => ref($obj),
+        object_type => ref($obj),
         object_id => $obj->id,
         disabled => 0
     );
@@ -205,7 +205,7 @@ Returns the object this value applies to
 
 sub Object {
     my $self  = shift;
-    my $Object = $self->__value('ObjectType')->new;
+    my $Object = $self->__value('object_type')->new;
     $Object->load_by_id( $self->__value('object_id') );
     return $Object;
 }

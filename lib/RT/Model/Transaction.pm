@@ -23,7 +23,7 @@ use base qw/RT::Record/;
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
-    column ObjectType => max_length is 64, type is 'varchar(64)', default is '';
+    column object_type => max_length is 64, type is 'varchar(64)', default is '';
     column object_id   => max_length is 11, type is 'int(11)',     default is '0';
     column TimeTaken  => max_length is 11, type is 'int(11)',     default is '0';
     column Type       => max_length is 20, type is 'varchar(20)', default is '';
@@ -43,19 +43,19 @@ use Jifty::DBI::Record schema {
 
 
 
-=head2 ObjectType
+=head2 object_type
 
-Returns the current value of ObjectType. 
-(In the database, ObjectType is stored as varchar(64).)
-
-
-
-=head2 SetObjectType value
+Returns the current value of object_type. 
+(In the database, object_type is stored as varchar(64).)
 
 
-Set ObjectType to value. 
+
+=head2 Setobject_type value
+
+
+Set object_type to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ObjectType will be stored as a varchar(64).)
+(In the database, object_type will be stored as a varchar(64).)
 
 
 =cut
@@ -302,7 +302,7 @@ sub create {
         MIMEObj        => undef,
         ActivateScrips => 1,
         CommitScrips => 1,
-	ObjectType => 'RT::Model::Ticket',
+	object_type => 'RT::Model::Ticket',
 	object_id => 0,
 	ReferenceType => undef,
         OldReference       => undef,
@@ -314,7 +314,7 @@ sub create {
     $args{object_id} ||= $args{Ticket};
 
     #if we didn't specify a ticket, we need to bail
-    unless ( $args{'object_id'} && $args{'ObjectType'}) {
+    unless ( $args{'object_id'} && $args{'object_type'}) {
         return ( 0, $self->loc( "Transaction->create couldn't, as you didn't specify an object type and id"));
     }
 
@@ -328,7 +328,7 @@ sub create {
         OldValue  => $args{'OldValue'},
         NewValue  => $args{'NewValue'},
         Created   => $args{'Created'},
-	ObjectType => $args{'ObjectType'},
+	object_type => $args{'object_type'},
 	object_id => $args{'object_id'},
 	ReferenceType => $args{'ReferenceType'},
 	OldReference => $args{'OldReference'},
@@ -353,7 +353,7 @@ sub create {
 
     #Provide a way to turn off scrips if we need to
         $RT::Logger->debug('About to think about scrips for transaction #' .$self->id);
-    if ( $args{'ActivateScrips'} and $args{'ObjectType'} eq 'RT::Model::Ticket' ) {
+    if ( $args{'ActivateScrips'} and $args{'object_type'} eq 'RT::Model::Ticket' ) {
        $self->{'scrips'} = RT::Model::ScripCollection->new(current_user => RT->system_user);
 
         $RT::Logger->debug('About to prepare scrips for transaction #' .$self->id); 
@@ -727,7 +727,7 @@ sub BriefDescription {
         return $self->loc("No transaction type specified");
     }
 
-    my $obj_type = $self->FriendlyObjectType;
+    my $obj_type = $self->Friendlyobject_type;
 
     if ( $type eq 'Create' ) {
         return ( $self->loc( "[_1] Created", $obj_type ) );
@@ -1004,7 +1004,7 @@ Returns false otherwise
 
 sub IsInbound {
     my $self = shift;
-    $self->ObjectType eq 'RT::Model::Ticket' or return undef;
+    $self->object_type eq 'RT::Model::Ticket' or return undef;
     return ( $self->TicketObj->IsRequestor( $self->CreatorObj->principal_id ) );
 }
 
@@ -1036,7 +1036,7 @@ sub _value {
     my $field = shift;
 
     #if the field is public, return it.
-    if ( $field eq 'ObjectType') {
+    if ( $field eq 'object_type') {
         return $self->SUPER::_value( $field );
     }
 
@@ -1105,7 +1105,7 @@ sub current_user_can_see {
         return 0 unless $cf->current_user_has_right('SeeCustomField');
     }
     #if they ain't got rights to see, don't let em
-    elsif ( $self->__value('ObjectType') eq "RT::Model::Ticket" ) {
+    elsif ( $self->__value('object_type') eq "RT::Model::Ticket" ) {
         unless ( $self->current_user_has_right('ShowTicket') ) {
             return 0;
         }
@@ -1156,14 +1156,14 @@ sub NewValue {
 
 sub Object {
     my $self  = shift;
-    my $Object = $self->__value('ObjectType')->new;
+    my $Object = $self->__value('object_type')->new;
     $Object->load($self->__value('object_id'));
     return $Object;
 }
 
-sub FriendlyObjectType {
+sub Friendlyobject_type {
     my $self = shift;
-    my $type = $self->ObjectType or return undef;
+    my $type = $self->object_type or return undef;
     $type =~ s/^RT::Model:://;
     return $self->loc($type);
 }

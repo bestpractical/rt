@@ -139,7 +139,7 @@ sub __DependsOn
 
 # Transactions
     $objs = RT::Model::TransactionCollection->new;
-    $objs->limit( column => 'ObjectType', value => ref $self );
+    $objs->limit( column => 'object_type', value => ref $self );
     $objs->limit( column => 'object_id', value => $self->id );
     push( @$list, $objs );
 

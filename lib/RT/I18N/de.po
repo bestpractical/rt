@@ -52,7 +52,7 @@ msgid "$prefix %1"
 msgstr "$prefix %1"
 
 #: lib/RT/URI/fsck_com_rt.pm:256
-#. ($self->ObjectType, $self->Object->id)
+#. ($self->object_type, $self->Object->id)
 msgid "%1 #%2"
 msgstr "%1 #%2"
 
@@ -268,7 +268,7 @@ msgid "%1 objects"
 msgstr "%1 Objekte"
 
 #: html/User/Elements/DelegateRights:97
-#. (loc($ObjectType =~ /^RT::(.*)$/))
+#. (loc($object_type =~ /^RT::(.*)$/))
 msgid "%1 rights"
 msgstr "%1 Rechte"
 
@@ -3256,7 +3256,7 @@ msgid "Object deleted"
 msgstr "Objekt gelöscht"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
-#. ($ObjectType)
+#. ($object_type)
 #. ($LookupType)
 msgid "Object of type %1 cannot take custom fields"
 msgstr "Objekt vom Typ %1 kann keine benutzerdefinierten Felder haben"

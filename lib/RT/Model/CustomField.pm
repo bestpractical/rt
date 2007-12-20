@@ -123,11 +123,11 @@ our %FieldTypes = (
 
 our %FRIENDLY_OBJECT_TYPES =  ();
 
-RT::Model::CustomField->_ForObjectType( 'RT::Model::Queue-RT::Model::Ticket' => "Tickets", );    #loc
-RT::Model::CustomField->_ForObjectType(
+RT::Model::CustomField->_Forobject_type( 'RT::Model::Queue-RT::Model::Ticket' => "Tickets", );    #loc
+RT::Model::CustomField->_Forobject_type(
     'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' => "Ticket Transactions", );    #loc
-RT::Model::CustomField->_ForObjectType( 'RT::Model::User'  => "Users", );                           #loc
-RT::Model::CustomField->_ForObjectType( 'RT::Model::Group' => "Groups", );                          #loc
+RT::Model::CustomField->_Forobject_type( 'RT::Model::User'  => "Users", );                           #loc
+RT::Model::CustomField->_Forobject_type( 'RT::Model::Group' => "Groups", );                          #loc
 
 our $RIGHTS = {
     SeeCustomField            => 'See custom fields',       # loc_pair
@@ -805,7 +805,7 @@ sub LookupTypes {
     return keys %FRIENDLY_OBJECT_TYPES;
 }
 
-my @FriendlyObjectTypes = (
+my @Friendlyobject_types = (
     "[_1] objects",            # loc
     "[_1]'s [_2] objects",        # loc
     "[_1]'s [_2]'s [_3] objects",   # loc
@@ -826,7 +826,7 @@ sub FriendlyLookupType {
       grep { defined and length }
       split( /-/, $lookup )
       or return;
-    return ( $self->loc( $FriendlyObjectTypes[$#types], @types ) );
+    return ( $self->loc( $Friendlyobject_types[$#types], @types ) );
 }
 
 
@@ -961,7 +961,7 @@ sub AddValueForObject {
     }
     my $newval = RT::Model::ObjectCustomFieldValue->new;
     my $val    = $newval->create(
-        ObjectType   => ref($obj),
+        object_type   => ref($obj),
         object_id     => $obj->id,
         Content      => $args{'Content'},
         LargeContent => $args{'LargeContent'},
@@ -1106,7 +1106,7 @@ sub ValuesForObject {
 }
 
 
-=head2 _ForObjectType PATH friendly_name
+=head2 _Forobject_type PATH friendly_name
 
 Tell RT that a certain object accepts custom fields
 
@@ -1121,7 +1121,7 @@ This is a class method.
 
 =cut
 
-sub _ForObjectType {
+sub _Forobject_type {
     my $self = shift;
     my $path = shift;
     my $friendly_name = shift;
