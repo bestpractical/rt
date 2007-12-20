@@ -51,7 +51,7 @@ use strict;
 use warnings FATAL => 'all';
 use base qw(RT::Shredder::Plugin::Base::Search);
 
-=head1 NAME
+=head1 name
 
 RT::Shredder::Plugin::Users - search plugin for wiping users.
 
@@ -117,7 +117,7 @@ sub TestArgs
     if( $args{'replace_relations'} ) {
         my $uid = $args{'replace_relations'};
         # XXX: it's possible that system_user is not available
-        my $user = RT::Model::User->new( RT->system_user );
+        my $user = RT::Model::User->new(current_user => RT->system_user );
         $user->load( $uid );
         unless( $user->id ) {
             return (0, "Couldn't load user '$uid'" );
@@ -131,10 +131,10 @@ sub Run
 {
     my $self = shift;
     my %args = ( Shredder => undef, @_ );
-    my $objs = RT::Model::UserCollection->new( RT->system_user );
+    my $objs = RT::Model::UserCollection->new(current_user => RT->system_user );
     # XXX: we want preload only things we need, but later while
     # logging we need all data, TODO envestigate this
-    # $objs->columns(qw(id Name EmailAddress Lang Timezone
+    # $objs->columns(qw(id name email Lang Timezone
     #                   Creator Created LastUpdated LastUpdatedBy));
     if( my $s = $self->{'opt'}{'status'} ) {
         if( $s eq 'any' ) {
@@ -143,7 +143,7 @@ sub Run
             $objs->{'find_disabled_rows'} = 1;
             $objs->limit(
                 alias => $objs->PrincipalsAlias,
-                column    => 'Disabled',
+                column    => 'disabled',
                 operator => '!=',
                 value    => '0',
             );
@@ -152,13 +152,13 @@ sub Run
         }
     }
     if( $self->{'opt'}{'email'} ) {
-        $objs->limit( column => 'EmailAddress',
+        $objs->limit( column => 'email',
                   operator => 'MATCHES',
                   value => $self->{'opt'}{'email'},
                 );
     }
     if( $self->{'opt'}{'name'} ) {
-        $objs->limit( column => 'Name',
+        $objs->limit( column => 'name',
                   operator => 'MATCHES',
                   value => $self->{'opt'}{'name'},
                 );
@@ -217,7 +217,7 @@ sub FilterWithoutTickets {
 
 sub _WithoutTickets {
     my ($self, $user) = @_;
-    my $tickets = RT::Model::TicketCollection->new( RT->system_user );
+    my $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user );
     $tickets->from_sql( 'Watcher.id = '. $user->id );
     # HACK: we may use Count method which counts all records
     # that match condtion, but we really want to know only that

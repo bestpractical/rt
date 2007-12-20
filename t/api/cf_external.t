@@ -7,22 +7,22 @@ use RT::Test; use Test::More tests => 12;
 
 sub new (*) {
     my $class = shift;
-    return $class->new(RT->system_user);
+    return $class->new(current_user => RT->system_user);
 }
 
 use constant VALUES_CLASS => 'RT::Model::CustomFieldValueCollection::Groups';
 use_ok(VALUES_CLASS);
-my $q = new( RT::Model::Queue );
+my $q = new(current_user => RT::Model::Queue );
 isa_ok( $q, 'RT::Model::Queue' );
-my ($qid) = $q->create( Name => "CF-External-". $$ );
+my ($qid) = $q->create( name => "CF-External-". $$ );
 ok( $qid, "Created queue" );
-my %arg = ( Name        => $q->Name,
+my %arg = ( name        => $q->name,
             Type        => 'Select',
             Queue       => $q->id,
             MaxValues   => 1,
             ValuesClass => VALUES_CLASS );
 
-my $cf = new( RT::Model::CustomField );
+my $cf = new(current_user => RT::Model::CustomField );
 isa_ok( $cf, 'RT::Model::CustomField' );
 
 {
@@ -34,8 +34,8 @@ isa_ok( $cf, 'RT::Model::CustomField' );
 
 {
     # create at least on group for the tests
-    my $group = RT::Model::Group->new( RT->system_user );
-    my ($ret, $msg) = $group->create_userDefinedGroup( Name => $q->Name );
+    my $group = RT::Model::Group->new(current_user => RT->system_user );
+    my ($ret, $msg) = $group->create_userDefinedGroup( name => $q->name );
     ok $ret, 'Created group' or diag "error: $msg";
 }
 
@@ -46,7 +46,7 @@ isa_ok( $cf, 'RT::Model::CustomField' );
     my ($failure, $count) = (0, 0);
     while( my $value = $values->next ) {
         $count++;
-        $failure = 1 unless $value->Name;
+        $failure = 1 unless $value->name;
     }
     ok( !$failure, "all values have name" );
     is( $values->count, $count, "count is correct" );

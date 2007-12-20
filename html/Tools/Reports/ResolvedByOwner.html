@@ -50,8 +50,8 @@ $Queue => undef
 </%args>
 <%init>
 my $title = loc("Resolved tickets, grouped by owner");
-my $q = RT::Model::Queue->new($session{'CurrentUser'});
-$q->load_by_cols(Name => $Queue);
+my $q = RT::Model::Queue->new(Jifty->web->current_user);
+$q->load_by_cols(name => $Queue);
 </%init>
 <& /Elements/Header, Title => $title &>
 <& /Tools/Reports/Elements/Tabs, current_tab => '/Tools/Reports/ResolvedByOwner.html', Title => $title &>
@@ -65,6 +65,6 @@ $q->load_by_cols(Name => $Queue);
 
 <hr>
 
-<&|/l&>Queue</&>: <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $q->id &>
+<&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'Queue', namedValues => 1, Default => $q->id &>
 <& /Elements/Submit&>
 </form>

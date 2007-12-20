@@ -25,10 +25,10 @@ CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId);
 
 CREATE TABLE Queues (
 	id 			SERIAL,
-	Name 			VARCHAR(200) DEFAULT '' NOT NULL,
+	name 			VARCHAR(200) DEFAULT '' NOT NULL,
 	Description 		VARCHAR(255) DEFAULT NULL,
 	CorrespondAddress 	VARCHAR(120) DEFAULT NULL,
-	CommentAddress 		VARCHAR(120) DEFAULT NULL,
+	commentAddress 		VARCHAR(120) DEFAULT NULL,
 	InitialPriority 	INTEGER DEFAULT 0 NOT NULL,
 	FinalPriority 		INTEGER DEFAULT 0 NOT NULL,
 	DefaultDueIn 		INTEGER DEFAULT 0 NOT NULL,
@@ -36,11 +36,11 @@ CREATE TABLE Queues (
 	Created 		DATETIME YEAR TO SECOND,
 	LastUpdatedBy 		INTEGER DEFAULT 0 NOT NULL,
 	LastUpdated		DATETIME YEAR TO SECOND,
-	Disabled 		INTEGER DEFAULT 0 NOT NULL,
+	disabled 		INTEGER DEFAULT 0 NOT NULL,
         PRIMARY KEY (id)
 );
-CREATE UNIQUE INDEX Queues1 ON Queues (Name);
-CREATE INDEX Queues2 ON Queues (Disabled);
+CREATE UNIQUE INDEX Queues1 ON Queues (name);
+CREATE INDEX Queues2 ON Queues (disabled);
 
 
 CREATE TABLE Links (
@@ -64,17 +64,17 @@ CREATE INDEX Links4 ON Links(Type,LocalBase);
 
 CREATE TABLE Principals (
 	id		SERIAL,
-	PrincipalType	VARCHAR(16) DEFAULT '' NOT NULL,
-	ObjectId	INTEGER DEFAULT 0,
-	Disabled	INTEGER DEFAULT 0 NOT NULL,
+	principal_type	VARCHAR(16) DEFAULT '' NOT NULL,
+	object_id	INTEGER DEFAULT 0,
+	disabled	INTEGER DEFAULT 0 NOT NULL,
         PRIMARY KEY (id)
 );
-CREATE INDEX Principals2 ON Principals (ObjectId);
+CREATE INDEX Principals2 ON Principals (object_id);
 
 
 CREATE TABLE Groups (
 	id 		SERIAL,
-	Name 		VARCHAR(200) DEFAULT NULL,
+	name 		VARCHAR(200) DEFAULT NULL,
 	Description 	VARCHAR(255) DEFAULT NULL,
 	Domain		VARCHAR(64) DEFAULT '',
 	Type		VARCHAR(64) DEFAULT '',
@@ -88,7 +88,7 @@ CREATE INDEX Groups2 ON Groups (Type, Instance, Domain);
 
 CREATE TABLE ScripConditions (
  	id			SERIAL,
-	Name 			VARCHAR(200),
+	name 			VARCHAR(200),
 	Description 		VARCHAR(255),
 	ExecModule		VARCHAR(60),
 	Argument		VARCHAR(255),
@@ -104,7 +104,7 @@ CREATE TABLE ScripConditions (
 CREATE TABLE Transactions (
   	id 			SERIAL,
   	ObjectType 		VARCHAR(255),
-  	ObjectId 		INTEGER DEFAULT 0 NOT NULL,
+  	object_id 		INTEGER DEFAULT 0 NOT NULL,
   	TimeTaken 		INTEGER DEFAULT 0 NOT NULL,
   	Type 			VARCHAR(20),
   	Field 			VARCHAR(40),
@@ -118,7 +118,7 @@ CREATE TABLE Transactions (
   	Created 		DATETIME YEAR TO SECOND,
         PRIMARY KEY (id)
 );
-CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
+CREATE INDEX Transactions1 ON Transactions (ObjectType, object_id);
 
 
 CREATE TABLE Scrips (
@@ -144,16 +144,16 @@ CREATE TABLE Scrips (
 
 CREATE TABLE ACL (
 	id 		SERIAL,
-	PrincipalType 	VARCHAR(25) NOT NULL,
-	PrincipalId 	INTEGER NOT NULL,
-	RightName	VARCHAR(25) NOT NULL,
+	principal_type 	VARCHAR(25) NOT NULL,
+	principal_id 	INTEGER NOT NULL,
+	Rightname	VARCHAR(25) NOT NULL,
 	ObjectType	VARCHAR(25) NOT NULL,
-	ObjectId	INTEGER DEFAULT 0 NOT NULL,
+	object_id	INTEGER DEFAULT 0 NOT NULL,
 	DelegatedBy	INTEGER DEFAULT 0 NOT NULL,
 	DelegatedFrom	INTEGER DEFAULT 0 NOT NULL,
         PRIMARY KEY (id)
 );
-CREATE INDEX ACL1 ON ACL(RightName, ObjectType, ObjectId, PrincipalType, PrincipalId);
+CREATE INDEX ACL1 ON ACL(Rightname, ObjectType, object_id, principal_type, principal_id);
 
 
 CREATE TABLE GroupMembers (
@@ -171,31 +171,31 @@ CREATE TABLE CachedGroupMembers (
 	MemberId	INTEGER DEFAULT 0,
 	Via		INTEGER DEFAULT 0,
 	ImmediateParentId	INTEGER DEFAULT 0,
-	Disabled	INTEGER DEFAULT 0 NOT NULL,
+	disabled	INTEGER DEFAULT 0 NOT NULL,
         PRIMARY KEY (id)
 );
-CREATE INDEX DisGrouMem ON CachedGroupMembers (GroupId, MemberId, Disabled);
+CREATE INDEX DisGrouMem ON CachedGroupMembers (GroupId, MemberId, disabled);
 CREATE INDEX GrouMem ON CachedGroupMembers (GroupId, MemberId);
 
 
 CREATE TABLE Users (
   	id 			SERIAL,
-  	Name 			VARCHAR(200) NOT NULL,
-  	Password 		VARCHAR(40),
-  	Comments 		BYTE,
+  	name 			VARCHAR(200) NOT NULL,
+  	password 		VARCHAR(40),
+  	comments 		BYTE,
   	Signature 		BYTE,
-  	EmailAddress 		VARCHAR(120),
-  	FreeFormContactInfo 	BYTE,
-	Organization		VARCHAR(200),
-  	RealName 		VARCHAR(120),
-  	NickName 		VARCHAR(16),
+  	email 		VARCHAR(120),
+  	freeform_contact_info 	BYTE,
+	organization		VARCHAR(200),
+  	real_name 		VARCHAR(120),
+  	nickname 		VARCHAR(16),
   	Lang 			VARCHAR(16),
-	EmailEncoding		VARCHAR(16),
-	WebEncoding		VARCHAR(16),
+	email_encoding		VARCHAR(16),
+	web_encoding		VARCHAR(16),
 	ExternalContactInfoId	VARCHAR(100),
 	ContactInfoSystem	VARCHAR(30),
 	ExternalAuthId 		VARCHAR(100),
-	AuthSystem		VARCHAR(30),
+	auth_system		VARCHAR(30),
 	Gecos			VARCHAR(16),
   	HomePhone 		VARCHAR(30),
   	WorkPhone 		VARCHAR(30),
@@ -215,10 +215,10 @@ CREATE TABLE Users (
   	LastUpdated 		DATETIME YEAR TO SECOND,
         PRIMARY KEY (id)
 );
--- CREATE UNIQUE INDEX Users1 ON Users (Name);
-CREATE INDEX Users2 ON Users (Name);
-CREATE INDEX Users3 ON Users (id, EmailAddress);
-CREATE INDEX Users4 ON Users (EmailAddress);
+-- CREATE UNIQUE INDEX Users1 ON Users (name);
+CREATE INDEX Users2 ON Users (name);
+CREATE INDEX Users3 ON Users (id, email);
+CREATE INDEX Users4 ON Users (email);
 
 
 CREATE TABLE Tickets (
@@ -234,11 +234,11 @@ CREATE TABLE Tickets (
   	FinalPriority 		INTEGER DEFAULT 0 NOT NULL,
   	Priority 		INTEGER DEFAULT 0 NOT NULL,
 	TimeEstimated		INTEGER DEFAULT 0 NOT NULL,
-  	TimeWorked 		INTEGER DEFAULT 0 NOT NULL,
+  	time_worked 		INTEGER DEFAULT 0 NOT NULL,
   	Status 			VARCHAR(10), 		
-	TimeLeft 		INTEGER DEFAULT 0 NOT NULL,
+	time_left 		INTEGER DEFAULT 0 NOT NULL,
   	Told 			DATETIME YEAR TO SECOND,
-	Starts			DATETIME YEAR TO SECOND,
+	starts			DATETIME YEAR TO SECOND,
 	Started			DATETIME YEAR TO SECOND,
   	Due 			DATETIME YEAR TO SECOND,
 	Resolved		DATETIME YEAR TO SECOND,
@@ -246,7 +246,7 @@ CREATE TABLE Tickets (
   	LastUpdated 		DATETIME YEAR TO SECOND,
 	Creator 		INTEGER DEFAULT 0 NOT NULL,
   	Created 		DATETIME YEAR TO SECOND,
-  	Disabled 		INTEGER DEFAULT 0 NOT NULL,
+  	disabled 		INTEGER DEFAULT 0 NOT NULL,
         PRIMARY KEY (id)
 );
 CREATE INDEX Tickets1 ON Tickets (Queue, Status);
@@ -259,7 +259,7 @@ CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type);
 
 CREATE TABLE ScripActions (
   id		SERIAL,
-  Name		VARCHAR(200),
+  name		VARCHAR(200),
   Description	VARCHAR(255),
   ExecModule	VARCHAR(60),
   Argument	VARCHAR(255),
@@ -274,7 +274,7 @@ CREATE TABLE ScripActions (
 CREATE TABLE Templates (
   	id 		SERIAL,
 	Queue 		INTEGER DEFAULT 0 NOT NULL,
-	Name		VARCHAR(200) NOT NULL,
+	name		VARCHAR(200) NOT NULL,
 	Description	VARCHAR(255),
 	Type		VARCHAR(16),
   	Language 	VARCHAR(16), 
@@ -305,7 +305,7 @@ CREATE INDEX TicketCustomFieldValues2 ON TicketCustomFieldValues (CustomField,Ti
 
 CREATE TABLE CustomFields (
 	id		SERIAL,
-	Name		VARCHAR(200),
+	name		VARCHAR(200),
 	Type		VARCHAR(200),
 	MaxValues	INTEGER DEFAULT 0 NOT NULL,
 	Pattern		VARCHAR(255),
@@ -316,7 +316,7 @@ CREATE TABLE CustomFields (
 	Created		DATETIME YEAR TO SECOND,
 	LastUpdatedBy	INTEGER DEFAULT 0 NOT NULL,
 	LastUpdated	DATETIME YEAR TO SECOND,
-	Disabled	SMALLINT DEFAULT 0 NOT NULL,
+	disabled	SMALLINT DEFAULT 0 NOT NULL,
         PRIMARY KEY (id)
 );
 
@@ -324,7 +324,7 @@ CREATE TABLE CustomFields (
 CREATE TABLE CustomFieldValues (
 	id		SERIAL,
 	CustomField	INTEGER NOT NULL,
-	Name		VARCHAR(200),
+	name		VARCHAR(200),
 	Description	VARCHAR(255),
 	SortOrder	INTEGER DEFAULT 0 NOT NULL,
 	Creator		INTEGER DEFAULT 0 NOT NULL,
@@ -338,12 +338,12 @@ CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
 
 CREATE TABLE Attributes (
   	id 		SERIAL,
-	Name 			VARCHAR(255) DEFAULT '' NOT NULL,
+	name 			VARCHAR(255) DEFAULT '' NOT NULL,
 	Description 		VARCHAR(255) DEFAULT NULL,
   	Content 	BYTE,
 	ContentType	VARCHAR(16),
 	ObjectType	VARCHAR(25) NOT NULL,
-	ObjectId	INTEGER DEFAULT 0 NOT NULL,
+	object_id	INTEGER DEFAULT 0 NOT NULL,
 	Creator 	INTEGER DEFAULT 0 NOT NULL,
   	Created 	DATETIME YEAR TO SECOND,
 	LastUpdatedBy	INTEGER DEFAULT 0 NOT NULL,
@@ -351,8 +351,8 @@ CREATE TABLE Attributes (
         PRIMARY KEY (id)
 ); 
 
-CREATE INDEX Attributes1 on Attributes(Name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
+CREATE INDEX Attributes1 on Attributes(name);
+CREATE INDEX Attributes2 on Attributes(ObjectType, object_id);
 
 
 CREATE TABLE sessions (

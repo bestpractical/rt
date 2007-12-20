@@ -50,12 +50,12 @@
     Ticket => $TicketObj, 
     Title=> $title &>
     
-% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $TicketObj);
+% $m->callback(Callbackname => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Update.html" name="TicketUpdate"
     method="post" enctype="multipart/form-data">
-% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
+% $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
@@ -66,27 +66,27 @@
 
 <tr><td align="right"><&|/l&>Status</&>:</td>
 <td>
-<& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)), Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
+<& /Elements/SelectStatus, name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)), Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
 <&|/l&>Owner</&>:  
 <& /Elements/SelectOwner,
-     Name         => "Owner",
+     name         => "Owner",
      TicketObj    => $TicketObj,
      QueueObj     => $TicketObj->QueueObj,
-     DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name),
+     DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->name),
      Default      => $ARGS{'Owner'}
  &>
-<&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}||'' %>" /> 
-<& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked'&>
+<&|/l&>Worked</&>: <input size="4" name="Updatetime_worked" value="<% $ARGS{Updatetime_worked}||'' %>" /> 
+<& /Elements/SelectTimeUnits, name => 'Updatetime_worked'&>
 </td></tr>
 % my $skip;
-% $m->callback( %ARGS, CallbackName => 'BeforeUpdateType', skip => \$skip );
+% $m->callback( %ARGS, Callbackname => 'BeforeUpdateType', skip => \$skip );
 % if (!$skip) {
 <input type="hidden" class="hidden" name="id" value="<%$TicketObj->id%>" /><br />
 % }
 <tr><td align="right"><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
-% if ($CanComment) {
-<option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? "SELECTED" : !$ARGS{'UpdateType'}&&$CommentDefault%>><&|/l&>Comments (Not sent to requestors)</&></option>
+% if ($Cancomment) {
+<option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? "SELECTED" : !$ARGS{'UpdateType'}&&$commentDefault%>><&|/l&>comments (Not sent to requestors)</&></option>
 % }
 % if ($CanRespond) {
 <option value="response" <% ($ARGS{'UpdateType'} && $ARGS{'UpdateType'} eq "response") ? "SELECTED" : !$ARGS{'UpdateType'}&&$ResponseDefault%>><&|/l&>Reply to requestors</&></option>
@@ -101,8 +101,8 @@
 % if (my $TxnCFs = $TicketObj->TransactionCustomFields) {
 %    while (my $CF = $TxnCFs->next()) {
 <tr>
-<td align="right"><% $CF->Name %>:</td>
-<td><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
+<td align="right"><% $CF->name %>:</td>
+<td><& /Elements/EditCustomField, CustomField => $CF, namePrefix =>
     "Object-RT::Model::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
 </tr>
 %    } # end if while
@@ -125,22 +125,22 @@
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <tr><td>&nbsp;</td><td><table>
 <td><% loc('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
+<td><& /Widgets/Form/Boolean:InputOnly, name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
 <td><% loc('Encrypt')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
+<td><& /Widgets/Form/Boolean:InputOnly, name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
 </table></td></tr>
 % }
 
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
-% $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
+% $m->callback( %ARGS, Callbackname => 'BeforeMessageBox' );
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
 % my $temp = $ARGS{'QuoteTransaction'};
 % delete $ARGS{'QuoteTransaction'};
-<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS&>
+<& /Elements/MessageBox, name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS&>
 % $ARGS{'QuoteTransaction'} = $temp;
 % } else {
-<& /Elements/MessageBox, Name=>"UpdateContent", %ARGS &>
+<& /Elements/MessageBox, name=>"UpdateContent", %ARGS &>
 % }
 </td></tr>
 </table>
@@ -148,20 +148,20 @@
 
 
 
-<& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket' &>
+<& /Elements/Submit, Label => loc('Update Ticket'), name => 'SubmitTicket' &>
 % if ($TicketObj->current_user_has_right('ShowOutgoingEmail')) {
 <& /Ticket/Elements/PreviewScrips, TicketObj => $TicketObj, %ARGS &>
 % }
 </form>
 <%INIT>
 my $CanRespond = 0;
-my $CanComment = 0;
+my $Cancomment = 0;
 my $checks_failure = 0;
 my $title;
 
 my $TicketObj = load_ticket($id);
 
-$m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
+$m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, Callbackname => 'Initial' );
 
 unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
@@ -180,7 +180,7 @@ if ($DefaultStatus eq 'resolved') {
 if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
     foreach ( qw(Sign Encrypt) ) {
         $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
-            Name => $_,
+            name => $_,
             DefaultValue => $TicketObj->QueueObj->$_,
             Arguments => \%ARGS,
         );
@@ -190,12 +190,12 @@ if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 # Things needed in the template - we'll do the processing here, just
 # for the convenience:
 
-my ($CommentDefault, $ResponseDefault);
+my ($commentDefault, $ResponseDefault);
 if ($Action ne 'Respond') {
-   $CommentDefault = "SELECTED"; 
+   $commentDefault = "SELECTED"; 
     $ResponseDefault = "";
 } else {
-    $CommentDefault = ""; 
+    $commentDefault = ""; 
     $ResponseDefault = "SELECTED";
 }
 
@@ -204,7 +204,7 @@ if ($Action ne 'Respond') {
 $CanRespond = 1 if ( $TicketObj->current_user_has_right('ReplyToTicket') or
                      $TicketObj->current_user_has_right('ModifyTicket') ); 
 
-$CanComment = 1 if ( $TicketObj->current_user_has_right('CommentOnTicket') or
+$Cancomment = 1 if ( $TicketObj->current_user_has_right('commentOnTicket') or
                      $TicketObj->current_user_has_right('ModifyTicket') ); 
 
 
@@ -230,7 +230,7 @@ if ($ARGS{'Attach'}) {            # attachment?
     my $attachment = MakeMIMEEntity(
         Filename             => $subject,
         Body                => "",
-        AttachmentFieldName => 'Attach'
+        AttachmentFieldname => 'Attach'
     );
 
     $session{'Attachments'} = { %{$session{'Attachments'} || {}},
@@ -257,8 +257,8 @@ if ( $ARGS{'SubmitTicket'} ) {
     # check to see if we have a good passphrase
     if ( $ARGS{'Sign'} ) {
         my $address = $ARGS{'UpdateType'} eq "private"
-            ? ( $TicketObj->QueueObj->CommentAddress
-                || RT->Config->Get('CommentAddress') )
+            ? ( $TicketObj->QueueObj->commentAddress
+                || RT->Config->Get('commentAddress') )
             : ( $TicketObj->QueueObj->CorrespondAddress
                 || RT->Config->Get('CorrespondAddress') );
         unless ( RT::Crypt::GnuPG::DrySign($address, "x") ) {
@@ -274,7 +274,7 @@ if ( $ARGS{'SubmitTicket'} ) {
                         '/Ticket/Elements/PreviewScrips:SquelchRecipients',
                         %ARGS, TicketObj => $TicketObj
                     );
-        my %seen = map { lc($_) => 1 } @{ $squelch{'EmailAddresses'} };
+        my %seen = map { lc($_) => 1 } @{ $squelch{'emailes'} };
 
         my @recipients = grep {!$seen{lc $_}} $m->comp(
             '/Ticket/Elements/PreviewScrips:GetRecipients',
@@ -293,7 +293,7 @@ if ( $ARGS{'SubmitTicket'} ) {
 }
 
 if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
-    $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'BeforeDisplay' );
+    $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, Callbackname => 'BeforeDisplay' );
     return $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
 }
 

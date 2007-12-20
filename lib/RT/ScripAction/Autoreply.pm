@@ -77,7 +77,7 @@ Sets the recipients of this message to this ticket's Requestor.
 sub set_Recipients {
     my $self=shift;
 
-    push(@{$self->{'To'}}, $self->TicketObj->Requestors->MemberEmailAddresses);
+    push(@{$self->{'To'}}, $self->TicketObj->Requestors->Memberemailes);
     
     return(1);
 }
@@ -101,8 +101,8 @@ sub set_ReturnAddress {
     
     my $replyto;
     if ($args{'is_comment'}) { 
-	$replyto = $self->TicketObj->QueueObj->CommentAddress || 
-		     RT->Config->Get('CommentAddress');
+	$replyto = $self->TicketObj->QueueObj->commentAddress || 
+		     RT->Config->Get('commentAddress');
     }
     else {
 	$replyto = $self->TicketObj->QueueObj->CorrespondAddress ||
@@ -112,7 +112,7 @@ sub set_ReturnAddress {
     unless ($self->TemplateObj->MIMEObj->head->get('From')) {
 	if (RT->Config->Get('UseFriendlyFromLine')) {
 	    my $friendly_name = $self->TicketObj->QueueObj->Description ||
-		    $self->TicketObj->QueueObj->Name;
+		    $self->TicketObj->QueueObj->name;
 	    $friendly_name =~ s/"/\\"/g;
 	    $self->set_Header( 'From',
 		        sprintf(RT->Config->Get('FriendlyFromLineFormat'), 

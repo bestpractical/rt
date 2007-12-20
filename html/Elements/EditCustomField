@@ -57,12 +57,12 @@ unless ( $Type ) {
 my $Values;
 if ( $Object && $Object->id ) {
     $Values = $Object->CustomFieldValues( $CustomField->id );
-    $Values->columns( qw( id CustomField ObjectType ObjectId Disabled Content ContentType ContentEncoding ) );
-    $NamePrefix ||= join('-', 'Object', ref($Object), $Object->id, 'CustomField', '');
+    $Values->columns( qw( id CustomField ObjectType object_id disabled Content ContentType ContentEncoding ) );
+    $namePrefix ||= join('-', 'Object', ref($Object), $Object->id, 'CustomField', '');
 } elsif (not $Default) {
     my %TOP = $m->request_args;
-    $Default = $TOP{ $NamePrefix .$CustomField->id . '-Values' }
-            || $TOP{ $NamePrefix .$CustomField->id . '-Value' };
+    $Default = $TOP{ $namePrefix .$CustomField->id . '-Values' }
+            || $TOP{ $namePrefix .$CustomField->id . '-Value' };
 }
 
 my $MaxValues = $CustomField->MaxValues;
@@ -74,10 +74,10 @@ if ($MaxValues == 1 && $Values) {
 }
 # The "Magic" hidden input causes RT to know that we were trying to edit the field, even if 
 # we don't see a value later, since browsers aren't compelled to submit empty form fields
-$m->out("\n".'<input type="hidden" class="hidden" name="'.$NamePrefix.$CustomField->id.'-Values-Magic" value="1" />'."\n");
+$m->out("\n".'<input type="hidden" class="hidden" name="'.$namePrefix.$CustomField->id.'-Values-Magic" value="1" />'."\n");
 
 my $EditComponent = "EditCustomField$Type";
-$m->callback( CallbackName => 'EditComponentName', Name => \$EditComponent, CustomField => $CustomField, Object => $Object );
+$m->callback( Callbackname => 'EditComponentname', name => \$EditComponent, CustomField => $CustomField, Object => $Object );
 $EditComponent = "EditCustomField$Type" unless $m->comp_exists($EditComponent);
 
 return $m->comp(
@@ -90,14 +90,14 @@ return $m->comp(
     Values => $Values,
     MaxValues => $MaxValues,
     Multiple => ($MaxValues != 1),
-    NamePrefix => $NamePrefix,
+    namePrefix => $namePrefix,
     CustomField => $CustomField,
 );
 </%INIT>
 <%ARGS>
 $Object      => undef
 $CustomField => undef
-$NamePrefix  => undef
+$namePrefix  => undef
 $Rows        => 5
 $Cols        => 15
 $Default     => undef

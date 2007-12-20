@@ -69,14 +69,14 @@
 % if ( $issue->{'User'} ) {
 User <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $issue->{'User'}->id %>"><&/Elements/ShowUser, User => $issue->{'User'} &></a> has a problem.
 % } else {
-There is a problem with key(s) for address <% $issue->{'EmailAddress'} %>, but there is no user in the DB for this address.
+There is a problem with key(s) for address <% $issue->{'email'} %>, but there is no user in the DB for this address.
 % }
 <% $issue->{'Message'} %>
 <br />
 Select a key you want to use for encryption:
 <& /Elements/SelectKey,
-    Name         => 'UseKey-'. $issue->{'EmailAddress'},
-    EmailAddress => $issue->{'EmailAddress'},
+    name         => 'UseKey-'. $issue->{'email'},
+    email => $issue->{'email'},
     Default      => ( $issue->{'User'}? $issue->{'User'}->PreferredKey : undef ),
 &>
 </li>

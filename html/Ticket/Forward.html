@@ -51,11 +51,11 @@
     Title  => $Title,
 &>
 
-% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
+% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Forward.html" name="ForwardMessage" method="post">
-% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
+% $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<% $id %>" /><br />
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} %>" />
 
@@ -75,8 +75,8 @@
 
 </table>
 
-<& /Elements/Submit, Label => loc('Forward Message and Return'), Name => 'ForwardAndReturn' &>
-<& /Elements/Submit, Label => loc('Forward Message'), Name => 'Forward' &>
+<& /Elements/Submit, Label => loc('Forward Message and Return'), name => 'ForwardAndReturn' &>
+<& /Elements/Submit, Label => loc('Forward Message'), name => 'Forward' &>
 </form>
 <%INIT>
 my $TicketObj = load_ticket($id);
@@ -85,7 +85,7 @@ $id = $ARGS{'id'} = $TicketObj->id;
 Abort( loc("Permission denied") )
     unless $TicketObj->current_user_has_right('ForwardMessage');
 
-my $txn = RT::Transaction->new( $session{'CurrentUser'} );
+my $txn = RT::Transaction->new( Jifty->web->current_user );
 $txn->load( $QuoteTransaction );
 Abort( loc("Couldn't load transaction #[_1]", $QuoteTransaction) )
     unless $txn->id;

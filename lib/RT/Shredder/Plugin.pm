@@ -51,7 +51,7 @@ use strict;
 use warnings FATAL => 'all';
 use File::Spec ();
 
-=head1 NAME
+=head1 name
 
 RT::Shredder::Plugin - interface to access shredder plugins
 
@@ -162,7 +162,7 @@ is C<false> value.
 sub load_by_name
 {
     my $self = shift;
-    my $name = shift or return (0, "Name not specified");
+    my $name = shift or return (0, "name not specified");
 
     local $@;
     my $plugin = "RT::Shredder::Plugin::$name";

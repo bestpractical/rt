@@ -53,7 +53,7 @@ $ChartStyle => 'bars'
 </%args>
 <%init>
 use RT::Report::Tickets;
-my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
+my $tix = RT::Report::Tickets->new( Jifty->web->current_user );
 $tix->from_sql( $Query );
 my $count_name = $tix->column( function => 'COUNT', column => 'id' );
 $tix->group_by( column => $PrimaryGroupBy );
@@ -68,9 +68,9 @@ my $class = $class{ $PrimaryGroupBy };
 my (@keys, @values);
 while ( my $entry = $tix->next ) {
     if ($class) {
-        my $q = $class->new( $session{'CurrentUser'} );
+        my $q = $class->new( Jifty->web->current_user );
         $q->load( $entry->__value( $value_name ) );
-        push @keys, $q->Name;
+        push @keys, $q->name;
     }
     else {
         push @keys, $entry->__value( $value_name );

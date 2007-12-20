@@ -62,7 +62,7 @@
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
       <td class="value"><& /Elements/SelectOwner,
-          Name         => 'Owner',
+          name         => 'Owner',
           QueueObj     => $TicketObj->QueueObj,
           TicketObj    => $TicketObj,
           Default      => $TicketObj->OwnerObj->id,
@@ -75,21 +75,21 @@
       <td class="value">
         <input name="TimeEstimated" 
             value="<% $TicketObj->TimeEstimated || '' |h%>" size="5" />
-        <& /Elements/SelectTimeUnits, Name =>'TimeEstimated' &>
+        <& /Elements/SelectTimeUnits, name =>'TimeEstimated' &>
       </td>
     </tr>
   <tr>
     <td class="label"><&|/l&>Time Worked</&>:</td>
     <td class="value">
-      <input name="TimeWorked" value="<% $TicketObj->TimeWorked || '' |h%>" size="5" />
-      <& /Elements/SelectTimeUnits, Name =>'TimeWorked' &>
+      <input name="time_worked" value="<% $TicketObj->time_worked || '' |h%>" size="5" />
+      <& /Elements/SelectTimeUnits, name =>'time_worked' &>
     </td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Time Left</&>:</td>
     <td class="value">
-        <input name="TimeLeft" value="<%$TicketObj->TimeLeft || ''|h%>" size="5" />
-        <& /Elements/SelectTimeUnits, Name =>'TimeLeft' &>
+        <input name="time_left" value="<%$TicketObj->time_left || ''|h%>" size="5" />
+        <& /Elements/SelectTimeUnits, name =>'time_left' &>
       </td>
     </tr>
 
@@ -107,13 +107,13 @@
 
 
 
-% $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS );
+% $m->callback( Callbackname => 'EndOfList', TicketObj => $TicketObj, %ARGS );
 </table>
 
 <%INIT>
 #It's hard to do this inline, so we'll preload the html of the selectstatus in here.
-my $SelectStatus = $m->scomp("/Elements/SelectStatus", Name => 'Status', DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)));
-my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$TicketObj->QueueObj->id);
+my $SelectStatus = $m->scomp("/Elements/SelectStatus", name => 'Status', DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)));
+my $SelectQueue = $m->scomp("/Elements/SelectQueue", name => 'Queue', Default =>$TicketObj->QueueObj->id);
 
 </%INIT>
 <%ARGS>

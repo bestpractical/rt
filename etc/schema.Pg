@@ -46,10 +46,10 @@ CREATE SEQUENCE queues_id_seq;
 
 CREATE TABLE Queues (
   id INTEGER DEFAULT nextval('queues_id_seq'),
-  Name varchar(200) NOT NULL  ,
+  name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
   CorrespondAddress varchar(120) NULL  ,
-  CommentAddress varchar(120) NULL  ,
+  commentAddress varchar(120) NULL  ,
   InitialPriority integer NOT NULL DEFAULT 0  ,
   FinalPriority integer NOT NULL DEFAULT 0  ,
   DefaultDueIn integer NOT NULL DEFAULT 0  ,
@@ -57,11 +57,11 @@ CREATE TABLE Queues (
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated TIMESTAMP NULL  ,
-  Disabled integer NOT NULL DEFAULT 0 ,
+  disabled integer NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 
 );
-CREATE UNIQUE INDEX Queues1 ON Queues (Name) ;
+CREATE UNIQUE INDEX Queues1 ON Queues (name) ;
 
 -- }}}
 
@@ -106,14 +106,14 @@ CREATE SEQUENCE principals_id_seq;
 
 CREATE TABLE Principals (
         id INTEGER DEFAULT nextval('principals_id_seq') not null,
-        PrincipalType VARCHAR(16) not null,
-        ObjectId integer, 
-        Disabled integer NOT NULL DEFAULT 0 ,
+        principal_type VARCHAR(16) not null,
+        object_id integer, 
+        disabled integer NOT NULL DEFAULT 0 ,
         PRIMARY KEY (id)
 
 );
 
-CREATE INDEX Principals2 ON Principals (ObjectId);
+CREATE INDEX Principals2 ON Principals (object_id);
 
 
 -- }}}
@@ -130,7 +130,7 @@ CREATE SEQUENCE groups_id_seq;
 
 CREATE TABLE Groups (
   id INTEGER DEFAULT nextval('groups_id_seq'),
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   Domain varchar(64),
   Type varchar(64),
@@ -138,7 +138,7 @@ CREATE TABLE Groups (
   PRIMARY KEY (id)
 
 );
-CREATE UNIQUE INDEX Groups1 ON Groups (Domain,Instance,Type,id, Name);
+CREATE UNIQUE INDEX Groups1 ON Groups (Domain,Instance,Type,id, name);
 CREATE INDEX Groups2 On Groups  (Type, Instance, Domain);
 
 
@@ -156,7 +156,7 @@ CREATE SEQUENCE scripconditions_id_seq;
 
 CREATE TABLE ScripConditions (
   id INTEGER DEFAULT nextval('scripconditions_id_seq'),
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
@@ -184,7 +184,7 @@ CREATE SEQUENCE transactions_id_seq;
 CREATE TABLE Transactions (
   id INTEGER DEFAULT nextval('transactions_id_seq'),
   ObjectType varchar(255) NOT NULL  ,
-  ObjectId integer NOT NULL DEFAULT 0  ,
+  object_id integer NOT NULL DEFAULT 0  ,
   TimeTaken integer NOT NULL DEFAULT 0  ,
   Type varchar(20) NULL  ,
   Field varchar(40) NULL  ,
@@ -200,7 +200,7 @@ CREATE TABLE Transactions (
   PRIMARY KEY (id)
 
 );
-CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
+CREATE INDEX Transactions1 ON Transactions (ObjectType, object_id);
 
 -- }}}
 
@@ -248,19 +248,19 @@ CREATE SEQUENCE acl_id_seq;
 
 CREATE TABLE ACL (
   id INTEGER DEFAULT nextval('acl_id_seq'),
-  PrincipalType varchar(25) NOT NULL, 
+  principal_type varchar(25) NOT NULL, 
 
-  PrincipalId integer NOT NULL  , 
-  RightName varchar(25) NOT NULL  ,
+  principal_id integer NOT NULL  , 
+  Rightname varchar(25) NOT NULL  ,
   ObjectType varchar(25) NOT NULL  ,
-  ObjectId integer NOT NULL DEFAULT 0,
+  object_id integer NOT NULL DEFAULT 0,
   DelegatedBy integer NOT NULL DEFAULT 0, 
   DelegatedFrom integer NOT NULL DEFAULT 0, 
   PRIMARY KEY (id)
 
 );
 
-CREATE INDEX  ACL1 on ACL(RightName, ObjectType, ObjectId,PrincipalType,PrincipalId);
+CREATE INDEX  ACL1 on ACL(Rightname, ObjectType, object_id,principal_type,principal_id);
 
 
 -- }}}
@@ -301,14 +301,14 @@ CREATE TABLE CachedGroupMembers (
         MemberId int, 
         Via int, 
         ImmediateParentId int, 
-        Disabled integer NOT NULL DEFAULT 0 , 
+        disabled integer NOT NULL DEFAULT 0 , 
         PRIMARY KEY (id)
 
 );
 
 CREATE INDEX CachedGroupMembers2 on CachedGroupMembers (MemberId);
 CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (GroupId);
-CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled); 
+CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,disabled); 
 
 -- }}}
 
@@ -324,22 +324,22 @@ CREATE SEQUENCE users_id_seq;
 
 CREATE TABLE Users (
   id INTEGER DEFAULT nextval('users_id_seq'),
-  Name varchar(200) NOT NULL  ,
-  Password varchar(40) NULL  ,
-  Comments text NULL  ,
+  name varchar(200) NOT NULL  ,
+  password varchar(40) NULL  ,
+  comments text NULL  ,
   Signature text NULL  ,
-  EmailAddress varchar(120) NULL  ,
-  FreeformContactInfo text NULL  ,
-  Organization varchar(200) NULL  ,
-  RealName varchar(120) NULL  ,
-  NickName varchar(16) NULL  ,
+  email varchar(120) NULL  ,
+  freeform_contact_info text NULL  ,
+  organization varchar(200) NULL  ,
+  real_name varchar(120) NULL  ,
+  nickname varchar(16) NULL  ,
   Lang varchar(16) NULL  ,
-  EmailEncoding varchar(16) NULL  ,
-  WebEncoding varchar(16) NULL  ,
+  email_encoding varchar(16) NULL  ,
+  web_encoding varchar(16) NULL  ,
   ExternalContactInfoId varchar(100) NULL  ,
   ContactInfoSystem varchar(30) NULL  ,
   ExternalAuthId varchar(100) NULL  ,
-  AuthSystem varchar(30) NULL  ,
+  auth_system varchar(30) NULL  ,
   Gecos varchar(16) NULL  ,
   HomePhone varchar(30) NULL  ,
   WorkPhone varchar(30) NULL  ,
@@ -363,10 +363,10 @@ CREATE TABLE Users (
 );
 
 
-CREATE UNIQUE INDEX Users1 ON Users (Name) ;
-CREATE INDEX Users2 ON Users (Name);
-CREATE INDEX Users3 ON Users (id, EmailAddress);
-CREATE INDEX Users4 ON Users (EmailAddress);
+CREATE UNIQUE INDEX Users1 ON Users (name) ;
+CREATE INDEX Users2 ON Users (name);
+CREATE INDEX Users3 ON Users (id, email);
+CREATE INDEX Users4 ON Users (email);
 
 
 -- }}}
@@ -394,11 +394,11 @@ CREATE TABLE Tickets (
   FinalPriority integer NOT NULL DEFAULT 0  ,
   Priority integer NOT NULL DEFAULT 0  ,
   TimeEstimated integer NOT NULL DEFAULT 0  ,
-  TimeWorked integer NOT NULL DEFAULT 0  ,
+  time_worked integer NOT NULL DEFAULT 0  ,
   Status varchar(10) NULL  ,
-  TimeLeft integer NOT NULL DEFAULT 0  ,
+  time_left integer NOT NULL DEFAULT 0  ,
   Told TIMESTAMP NULL  ,
-  Starts TIMESTAMP NULL  ,
+  starts TIMESTAMP NULL  ,
   Started TIMESTAMP NULL  ,
   Due TIMESTAMP NULL  ,
   Resolved TIMESTAMP NULL  ,
@@ -408,7 +408,7 @@ CREATE TABLE Tickets (
   LastUpdated TIMESTAMP NULL  ,
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
-  Disabled integer NOT NULL DEFAULT 0 ,
+  disabled integer NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 
 );
@@ -433,7 +433,7 @@ CREATE SEQUENCE scripactions_id_seq;
 
 CREATE TABLE ScripActions (
   id INTEGER DEFAULT nextval('scripactions_id_seq'),
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
@@ -460,7 +460,7 @@ CREATE SEQUENCE templates_id_seq;
 CREATE TABLE Templates (
   id INTEGER DEFAULT nextval('templates_id_seq'),
   Queue integer NOT NULL DEFAULT 0 ,
-  Name varchar(200) NOT NULL  ,
+  name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
   Type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
@@ -490,7 +490,7 @@ CREATE TABLE ObjectCustomFieldValues (
   id INTEGER DEFAULT nextval('objectcustomfieldvalues_id_s'),
   CustomField int NOT NULL  ,
   ObjectType varchar(255) NULL  ,
-  ObjectId int NOT NULL  ,
+  object_id int NOT NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
   Content varchar(255) NULL  ,
@@ -502,13 +502,13 @@ CREATE TABLE ObjectCustomFieldValues (
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated TIMESTAMP NULL  ,
-  Disabled integer NOT NULL DEFAULT 0 ,
+  disabled integer NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 
 );
 
-CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId,Content); 
-CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
+CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (CustomField,ObjectType,object_id,Content); 
+CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,object_id); 
 
 -- }}}
 
@@ -524,7 +524,7 @@ CREATE SEQUENCE customfields_id_seq;
 
 CREATE TABLE CustomFields (
   id INTEGER DEFAULT nextval('customfields_id_seq'),
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Type varchar(200) NULL  ,
   MaxValues integer NOT NULL DEFAULT 0  ,
   Repeated integer NOT NULL DEFAULT 0 , 
@@ -537,7 +537,7 @@ CREATE TABLE CustomFields (
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated TIMESTAMP NULL  ,
-  Disabled integer NOT NULL DEFAULT 0 ,
+  disabled integer NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 
 );
@@ -551,7 +551,7 @@ CREATE SEQUENCE objectcustomfields_id_s;
 CREATE TABLE ObjectCustomFields (
   id INTEGER DEFAULT nextval('objectcustomfields_id_s'),
   CustomField integer NOT NULL,
-  ObjectId integer NOT NULL,
+  object_id integer NOT NULL,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
@@ -577,7 +577,7 @@ CREATE SEQUENCE customfieldvalues_id_seq;
 CREATE TABLE CustomFieldValues (
   id INTEGER DEFAULT nextval('customfieldvalues_id_seq'),
   CustomField int NOT NULL  ,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
@@ -600,12 +600,12 @@ CREATE SEQUENCE attributes_id_seq;
 
 CREATE TABLE Attributes (
   id INTEGER DEFAULT nextval('attributes_id_seq'),
-  Name varchar(255) NOT NULL  ,
+  name varchar(255) NOT NULL  ,
   Description varchar(255) NULL  ,
   Content text,
   ContentType varchar(16),
   ObjectType varchar(64),
-  ObjectId integer, 
+  object_id integer, 
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
@@ -614,8 +614,8 @@ CREATE TABLE Attributes (
 
 );
 
-CREATE INDEX Attributes1 on Attributes(Name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
+CREATE INDEX Attributes1 on Attributes(name);
+CREATE INDEX Attributes2 on Attributes(ObjectType, object_id);
 
 -- }}}
 

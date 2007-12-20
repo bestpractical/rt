@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Name
+$name
 $Attr => undef
 </%ARGS>
 <%ONCE>
@@ -59,12 +59,12 @@ our $TEMPLATE_COLUMN_MAP = {
     },
 };
 
-foreach my $col(qw(Name Description)) {
+foreach my $col(qw(name Description)) {
     $TEMPLATE_COLUMN_MAP->{ $col } = { attribute => $col, value => sub { return $_[0]->$col() } };
 }
 
 </%ONCE>
 <%INIT>
-$m->callback( COLUMN_MAP => $TEMPLATE_COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
-return GetColumnMapEntry( Map => $TEMPLATE_COLUMN_MAP, Name => $Name, Attribute => $Attr );
+$m->callback( COLUMN_MAP => $TEMPLATE_COLUMN_MAP, Callbackname => 'ColumnMap', CallbackOnce => 1 );
+return GetColumnMapEntry( Map => $TEMPLATE_COLUMN_MAP, name => $name, Attribute => $Attr );
 </%INIT>

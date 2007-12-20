@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%init>
- my $hand = ($session{'CurrentUser'} ||= RT::CurrentUser->new)->LanguageHandle;
+ my $hand = (Jifty->web->current_user || RT::CurrentUser->new)->LanguageHandle;
  $m->print($hand->maketext($m->content,@_));
  return(1);
 </%init>

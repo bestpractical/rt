@@ -52,7 +52,7 @@
 
 my @lines = (
     {
-        Name => 'id',
+        name => 'id',
         Field => loc('id'),
         Op => {
             Type => 'component',
@@ -61,7 +61,7 @@ my @lines = (
         Value => { Type => 'text', Size => 5 }
     },
     {
-        Name => 'Attachment',
+        name => 'Attachment',
         Field => {
             Type => 'component',
             Path => '/Elements/SelectAttachmentField',
@@ -79,7 +79,7 @@ my @lines = (
         Value => { Type => 'text', Size => 20 },
     },
     {
-        Name => 'Queue',
+        name => 'Queue',
         Field => loc('Queue'),
         Op => {
             Type => 'component',
@@ -89,11 +89,11 @@ my @lines = (
         Value => {
             Type => 'component',
             Path => '/Elements/SelectQueue',
-            Arguments => { NamedValues => 1, CheckQueueRight => 'ShowTicket' },
+            Arguments => { namedValues => 1, CheckQueueRight => 'ShowTicket' },
         },
     },
     {
-        Name => 'Status',
+        name => 'Status',
         Field => loc('Status'),
         Op => {
             Type => 'component',
@@ -107,7 +107,7 @@ my @lines = (
         },
     },
     {
-        Name => 'Actor',
+        name => 'Actor',
         Field => {
             Type    => 'select',
             Options => [
@@ -124,11 +124,11 @@ my @lines = (
         Value => {
             Type => 'component',
             Path => '/Elements/SelectOwner',
-            Arguments => { ValueAttribute => 'Name' },
+            Arguments => { ValueAttribute => 'name' },
         },
     },
     {
-        Name => 'Watcher',
+        name => 'Watcher',
         Field => {
             Type => 'component',
             Path => 'SelectPersonType',
@@ -141,7 +141,7 @@ my @lines = (
         Value => { Type => 'text', Size => 20 }
     },
     {
-        Name => 'Date',
+        name => 'Date',
         Field => {
             Type => 'component',
             Path => '/Elements/SelectDateType',
@@ -157,13 +157,13 @@ my @lines = (
         },
     },
     {
-        Name => 'Time',
+        name => 'Time',
         Field => {
             Type    => 'select',
             Options => [
-                TimeWorked => loc('Time Worked'),
+                time_worked => loc('Time Worked'),
                 TimeEstimated => loc('Time Estimated'),
-                TimeLeft => loc('Time Left'),
+                time_left => loc('Time Left'),
             ],
         },
         Op => {
@@ -179,7 +179,7 @@ my @lines = (
         ],
     },
     {
-        Name => 'Priority',
+        name => 'Priority',
         Field => {
             Type    => 'select',
             Options => [
@@ -195,7 +195,7 @@ my @lines = (
         Value => { Type => 'text', Size => 5 }
     },
     {
-        Name => 'Links',
+        name => 'Links',
         Field => { Type => 'component', Path => 'SelectLinks' },
         Op => {
             Type => 'component',

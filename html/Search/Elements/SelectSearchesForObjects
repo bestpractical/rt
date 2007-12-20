@@ -47,18 +47,18 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 @Objects => undef
-$Name => undef
+$name => undef
 $SearchType => 'Ticket',
 </%args>
-<select name="<%$Name%>">
+<select name="<%$name%>">
 % foreach my $object (@Objects) {
-% if (ref($object) eq 'RT::Model::User' && $object->id == $session{'CurrentUser'}->id) {
+% if (ref($object) eq 'RT::Model::User' && $object->id == Jifty->web->current_user->id) {
 <option value=""><&|/l&>My saved searches</&></option>
 % } else {
 <option value=""></option>
-<option value=""><&|/l, $object->Name&>[_1]'s saved searches</&></option>
+<option value=""><&|/l, $object->name&>[_1]'s saved searches</&></option>
 % }
-% my @searches = $object->attributes->Named('SavedSearch');
+% my @searches = $object->attributes->named('SavedSearch');
 % foreach my $search (@searches) { 
 %     # Skip it if it is not of search type we want.
 %     next if ($search->SubValue('SearchType')

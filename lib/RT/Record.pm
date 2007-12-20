@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Record - Base class for RT record objects
 
@@ -77,23 +77,12 @@ use base qw(RT::Base);
 
 # {{{ sub _init 
 
-sub new {
-    my $class = shift;
-    my $self = $class->SUPER::new(handle => Jifty->handle, current_user => $_[0]);
-    $self->current_user(@_) if (UNIVERSAL::isa($_[0], "RT::Model::User") || UNIVERSAL::isa($_[0],'RT::CurrentUser'));
-    $self->_init(@_);
-    return $self;
-}
-
-sub current_user_can {1}
-
 sub table { my $class = shift; 
 
 $class = ref($class) || $class;
 $class =~ s/^(.*):://g;
 return $class;
 }
-sub _init{}
 
 sub __set {
     my $self = shift;
@@ -110,22 +99,6 @@ sub __set {
 
 }
 
-sub Id {
-    shift->id(@_);
-}
-# }}}
-
-# {{{ _PrimaryKeys
-
-=head2 _PrimaryKeys
-
-The primary keys for RT classes is 'id'
-
-=cut
-
-sub _PrimaryKeys { return ['id'] }
-
-# }}}
 
 =head2 Delete
 
@@ -171,7 +144,7 @@ sub attributes {
     my $self = shift;
     
     unless ($self->{'attributes'}) {
-        $self->{'attributes'} = RT::Model::AttributeCollection->new( $self->current_user);     
+        $self->{'attributes'} = RT::Model::AttributeCollection->new;     
        $self->{'attributes'}->LimitToObject($self); 
     }
     return ($self->{'attributes'}); 
@@ -179,7 +152,7 @@ sub attributes {
 }
 
 
-=head2 add_attribute { Name, Description, Content }
+=head2 add_attribute { name, Description, Content }
 
 Adds a new attribute for this object.
 
@@ -187,15 +160,15 @@ Adds a new attribute for this object.
 
 sub add_attribute {
     my $self = shift;
-    my %args = ( Name        => undef,
+    my %args = ( name        => undef,
                  Description => undef,
                  Content     => undef,
                  @_ );
 
-    my $attr = RT::Model::Attribute->new( $self->current_user );
+    my $attr = RT::Model::Attribute->new;
     my ( $id, $msg ) = $attr->create( 
                                       Object    => $self,
-                                      Name        => $args{'Name'},
+                                      name        => $args{'name'},
                                       Description => $args{'Description'},
                                       Content     => $args{'Content'} );
 
@@ -207,20 +180,20 @@ sub add_attribute {
 }
 
 
-=head2 set_attribute { Name, Description, Content }
+=head2 set_attribute { name, Description, Content }
 
-Like add_attribute, but replaces all existing attributes with the same Name.
+Like add_attribute, but replaces all existing attributes with the same name.
 
 =cut
 
 sub set_attribute {
     my $self = shift;
-    my %args = ( Name        => undef,
+    my %args = ( name        => undef,
                  Description => undef,
                  Content     => undef,
                  @_ );
 
-    my @AttributeObjs = $self->attributes->Named( $args{'Name'} )
+    my @AttributeObjs = $self->attributes->named( $args{'name'} )
         or return $self->add_attribute( %args );
 
     my $AttributeObj = pop( @AttributeObjs );
@@ -233,7 +206,7 @@ sub set_attribute {
     return 1;
 }
 
-=head2 delete_attribute NAME
+=head2 delete_attribute name
 
 Deletes all attributes with the matching name for this object.
 
@@ -242,10 +215,10 @@ Deletes all attributes with the matching name for this object.
 sub delete_attribute {
     my $self = shift;
     my $name = shift;
-    return $self->attributes->delete_entry( Name => $name );
+    return $self->attributes->delete_entry( name => $name );
 }
 
-=head2 first_attribute NAME
+=head2 first_attribute name
 
 Returns the first attribute with the matching name for this object (as an
 L<RT::Model::Attribute> object), or C<undef> if no such attributes exist.
@@ -259,7 +232,7 @@ made well-defined in the future.
 sub first_attribute {
     my $self = shift;
     my $name = shift;
-    return ($self->attributes->Named( $name ))[0];
+    return ($self->attributes->named( $name ))[0];
 }
 
 
@@ -268,7 +241,7 @@ sub first_attribute {
 =head2  Create PARAMHASH
 
 Takes a PARAMHASH of Column -> Value pairs.
-If any Column has a Validate$PARAMNAME subroutine defined and the 
+If any Column has a Validate$PARAMname subroutine defined and the 
 value provided doesn't pass validation, this routine returns
 an error.
 
@@ -566,7 +539,7 @@ sub CreatorObj {
     my $self = shift;
     unless ( exists $self->{'CreatorObj'} ) {
 
-        $self->{'CreatorObj'} = RT::Model::User->new( $self->current_user );
+        $self->{'CreatorObj'} = RT::Model::User->new;
         $self->{'CreatorObj'}->load( $self->Creator );
     }
     return ( $self->{'CreatorObj'} );
@@ -585,7 +558,7 @@ sub CreatorObj {
 sub LastUpdatedByObj {
     my $self = shift;
     unless ( exists $self->{LastUpdatedByObj} ) {
-        $self->{'LastUpdatedByObj'} = RT::Model::User->new( $self->current_user );
+        $self->{'LastUpdatedByObj'} = RT::Model::User->new;
         $self->{'LastUpdatedByObj'}->load( $self->LastUpdatedBy );
     }
     return $self->{'LastUpdatedByObj'};
@@ -603,19 +576,19 @@ Returns this record's URI
 
 sub URI {
     my $self = shift;
-    my $uri = RT::URI::fsck_com_rt->new($self->current_user);
+    my $uri = RT::URI::fsck_com_rt->new;
     return($uri->URIForObject($self));
 }
 
 # }}}
 
-=head2 ValidateName NAME
+=head2 Validatename name
 
-Validate the name of the record we're creating. Mostly, just make sure it's not a numeric ID, which is invalid for Name
+Validate the name of the record we're creating. Mostly, just make sure it's not a numeric ID, which is invalid for name
 
 =cut
 
-sub validate_Name {
+sub validate_name {
     my $self = shift;
     my $value = shift;
     if ($value && $value=~ /^\d+$/) {
@@ -801,11 +774,11 @@ sub Update {
         # the object.
 
         # This is in an eval block because $object might not exist.
-        # and might not have a Name method. 
+        # and might not have a name method. 
         # If it fails, we don't care
         eval {
             my $object = $attribute . "Obj";
-            next if ($self->can($object) && $self->$object->Name eq $value);
+            next if ($self->can($object) && $self->$object->name eq $value);
         };
         next if ( $value eq ( $self->$attribute()|| '' ) );
         my $method = "set_$attribute";
@@ -814,7 +787,7 @@ sub Update {
 
         # Default to $id, but use name if we can get it.
         my $label = $self->id;
-        $label = $self->Name if (UNIVERSAL::can($self,'Name'));
+        $label = $self->name if (UNIVERSAL::can($self,'name'));
         push @results, $self->loc( "$prefix [_1]", $label ) . ': '. $msg;
 
 =for loc
@@ -972,7 +945,7 @@ RT::Model::Queue->ActiveStatusArray
 
 sub unresolved_dependencies {
     my $self = shift;
-    my $deps = RT::Model::TicketCollection->new($self->current_user);
+    my $deps = RT::Model::TicketCollection->new;
 
     my @live_statuses = RT::Model::Queue->ActiveStatusArray();
     foreach my $status (@live_statuses) {
@@ -1071,7 +1044,7 @@ sub _Links {
     my $type  = shift || "";
 
     unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} = RT::Model::LinkCollection->new( $self->current_user );
+        $self->{"$field$type"} = RT::Model::LinkCollection->new;
             # at least to myself
             $self->{"$field$type"}->limit( column => $field,
                                            value => $self->URI,
@@ -1132,7 +1105,7 @@ sub _AddLink {
 
     # {{{ Check if the link already exists - we don't want duplicates
     use RT::Model::Link;
-    my $old_link = RT::Model::Link->new( $self->current_user );
+    my $old_link = RT::Model::Link->new;
     $old_link->loadByParams( Base   => $args{'Base'},
                              Type   => $args{'Type'},
                              Target => $args{'Target'} );
@@ -1145,7 +1118,7 @@ sub _AddLink {
 
 
     # Storing the link in the DB.
-    my $link = RT::Model::Link->new( $self->current_user );
+    my $link = RT::Model::Link->new;
     my ($linkid, $linkmsg) = $link->create( Target => $args{Target},
                                   Base   => $args{Base},
                                   Type   => $args{Type} );
@@ -1274,10 +1247,9 @@ sub _NewTransaction {
 	$new_ref = $new_ref->id if ref($new_ref);
     }
 
-    require RT::Model::Transaction;
-    my $trans = new RT::Model::Transaction( $self->current_user );
+    my $trans = RT::Model::Transaction->new();
     my ( $transaction, $msg ) = $trans->create(
-	ObjectId  => $self->id,
+	object_id  => $self->id,
 	ObjectType => ref($self),
         TimeTaken => $args{'TimeTaken'},
         Type      => $args{'Type'},
@@ -1324,11 +1296,11 @@ sub Transactions {
     my $self = shift;
 
     use RT::Model::TransactionCollection;
-    my $transactions = RT::Model::TransactionCollection->new( $self->current_user );
+    my $transactions = RT::Model::TransactionCollection->new;
 
     #If the user has no rights, return an empty object
     $transactions->limit(
-        column => 'ObjectId',
+        column => 'object_id',
         value => $self->id,
     );
     $transactions->limit(
@@ -1346,11 +1318,11 @@ sub Transactions {
 
 sub CustomFields {
     my $self = shift;
-    my $cfs  = RT::Model::CustomFieldCollection->new( $self->current_user );
+    my $cfs  = RT::Model::CustomFieldCollection->new;
 
     # XXX handle multiple types properly
     $cfs->LimitToLookupType( $self->CustomFieldLookupType );
-    $cfs->LimitToGlobalOrObjectId(
+    $cfs->LimitToGlobalOrobject_id(
         $self->_LookupId( $self->CustomFieldLookupType ) );
 
     return $cfs;
@@ -1524,7 +1496,7 @@ sub _AddCustomFieldValue {
             return ( 0, $self->loc( "Could not add new custom field value: [_1]", $value_msg ) );
         }
 
-        my $new_value = RT::Model::ObjectCustomFieldValue->new( $self->current_user );
+        my $new_value = RT::Model::ObjectCustomFieldValue->new;
         $new_value->load( $new_value_id );
 
         # now that adding the new value was successful, delete the old one
@@ -1545,14 +1517,14 @@ sub _AddCustomFieldValue {
 
         my $new_content = $new_value->Content;
         unless ( defined $old_content && length $old_content ) {
-            return ( $new_value_id, $self->loc( "[_1] [_2] added", $cf->Name, $new_content ));
+            return ( $new_value_id, $self->loc( "[_1] [_2] added", $cf->name, $new_content ));
         }
         elsif ( !defined $new_content || !length $new_content ) {
             return ( $new_value_id,
-                $self->loc( "[_1] [_2] deleted", $cf->Name, $old_content ) );
+                $self->loc( "[_1] [_2] deleted", $cf->name, $old_content ) );
         }
         else {
-            return ( $new_value_id, $self->loc( "[_1] [_2] changed to [_3]", $cf->Name, $old_content, $new_content));
+            return ( $new_value_id, $self->loc( "[_1] [_2] changed to [_3]", $cf->name, $old_content, $new_content));
         }
 
     }
@@ -1580,7 +1552,7 @@ sub _AddCustomFieldValue {
                 return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $msg ) );
             }
         }
-        return ( $new_value_id, $self->loc( "[_1] added as a value for [_2]", $args{'Value'}, $cf->Name ) );
+        return ( $new_value_id, $self->loc( "[_1] added as a value for [_2]", $args{'Value'}, $cf->name ) );
     }
 }
 
@@ -1636,7 +1608,7 @@ sub delete_custom_field_value {
         $TransactionId,
         $self->loc(
             "[_1] is no longer a value for custom field [_2]",
-            $TransactionObj->OldValue, $cf->Name
+            $TransactionObj->OldValue, $cf->name
         )
     );
 }
@@ -1667,7 +1639,7 @@ sub first_custom_field_value {
 =head2 CustomFieldValues column
 
 Return a ObjectCustomFieldValues object of all values of the CustomField whose 
-id or Name is column for this record.
+id or name is column for this record.
 
 Returns an RT::Model::ObjectCustomFieldValueCollection object
 
@@ -1683,12 +1655,12 @@ sub CustomFieldValues {
         # we were asked to search on a custom field we couldn't find
         unless ( $cf->id ) {
             $RT::Logger->warning("Couldn't load custom field by '$field' identifier");
-            return RT::Model::ObjectCustomFieldValueCollection->new( $self->current_user );
+            return RT::Model::ObjectCustomFieldValueCollection->new;
         }
         return ( $cf->ValuesForObject($self) );
     }
     # we're not limiting to a specific custom field;
-    my $ocfs = RT::Model::ObjectCustomFieldValueCollection->new( $self->current_user );
+    my $ocfs = RT::Model::ObjectCustomFieldValueCollection->new;
     $ocfs->LimitToObject( $self );
     return $ocfs;
 }
@@ -1708,19 +1680,19 @@ sub load_custom_field_by_identifier {
     unless (defined $field) {
         Carp::confess;
     }
-    my $cf = RT::Model::CustomField->new($self->current_user);
+    my $cf = RT::Model::CustomField->new;
 
     if ( UNIVERSAL::isa( $field, "RT::Model::CustomField" ) ) {
         $cf->load_by_id( $field->id );
     }
     elsif ($field =~ /^\d+$/) {
-        $cf = RT::Model::CustomField->new($self->current_user);
+        $cf = RT::Model::CustomField->new;
         $cf->load_by_id($field);
     } else {
 
         my $cfs = $self->CustomFields($self->current_user);
-        $cfs->limit(column => 'Name', value => $field, case_sensitive => 0);
-        $cf = $cfs->first || RT::Model::CustomField->new($self->current_user);
+        $cfs->limit(column => 'name', value => $field, case_sensitive => 0);
+        $cf = $cfs->first || RT::Model::CustomField->new;
     }
     return $cf;
 }

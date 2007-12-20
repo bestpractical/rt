@@ -12,71 +12,71 @@ use RT;
 # validate that when merging two tickets, the comments from both tickets
 # are integrated into the new ticket
 {
-    my $queue = RT::Model::Queue->new(RT->system_user);
-    my ($id,$msg) = $queue->create(Name => 'MergeTest-'.rand(25));
+    my $queue = RT::Model::Queue->new(current_user => RT->system_user);
+    my ($id,$msg) = $queue->create(name => 'MergeTest-'.rand(25));
     ok ($id,$msg);
 
-    my $t1 = RT::Model::Ticket->new(RT->system_user);
-    my ($tid,$transid, $t1msg) =$t1->create ( Queue => $queue->Name, Subject => 'Merge test. orig');
+    my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
+    my ($tid,$transid, $t1msg) =$t1->create ( Queue => $queue->name, Subject => 'Merge test. orig');
     ok ($tid, $t1msg);
-    ($id, $msg) = $t1->Comment(Content => 'This is a Comment on the original');
+    ($id, $msg) = $t1->comment(Content => 'This is a comment on the original');
     ok($id,$msg);
 
     my $txns = $t1->Transactions;
-    my $Comments = 0;
+    my $comments = 0;
     while (my $txn = $txns->next) {
-    $Comments++ if ($txn->Type eq 'Comment');
+    $comments++ if ($txn->Type eq 'comment');
     }
-    is($Comments,1, "our first ticket has only one Comment");
+    is($comments,1, "our first ticket has only one comment");
 
-    my $t2 = RT::Model::Ticket->new(RT->system_user);
-    my ($t2id,$t2transid, $t2msg) =$t2->create ( Queue => $queue->Name, Subject => 'Merge test. duplicate');
+    my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
+    my ($t2id,$t2transid, $t2msg) =$t2->create ( Queue => $queue->name, Subject => 'Merge test. duplicate');
     ok ($t2id, $t2msg);
 
 
 
-    ($id, $msg) = $t2->Comment(Content => 'This is a commet on the duplicate');
+    ($id, $msg) = $t2->comment(Content => 'This is a commet on the duplicate');
     ok($id,$msg);
 
 
     $txns = $t2->Transactions;
-     $Comments = 0;
+     $comments = 0;
     while (my $txn = $txns->next) {
-        $Comments++ if ($txn->Type eq 'Comment');
+        $comments++ if ($txn->Type eq 'comment');
     }
-    is($Comments,1, "our second ticket has only one Comment");
+    is($comments,1, "our second ticket has only one comment");
 
-    ($id, $msg) = $t1->Comment(Content => 'This is a second  Comment on the original');
+    ($id, $msg) = $t1->comment(Content => 'This is a second  comment on the original');
     ok($id,$msg);
 
     $txns = $t1->Transactions;
-    $Comments = 0;
+    $comments = 0;
     while (my $txn = $txns->next) {
-        $Comments++ if ($txn->Type eq 'Comment');
+        $comments++ if ($txn->Type eq 'comment');
     }
-    is($Comments,2, "our first ticket now has two Comments");
+    is($comments,2, "our first ticket now has two comments");
 
     ($id,$msg) = $t2->MergeInto($t1->id);
     ok($id,$msg);
     $txns = $t1->Transactions;
-    $Comments = 0;
+    $comments = 0;
     while (my $txn = $txns->next) {
-        $Comments++ if ($txn->Type eq 'Comment');
+        $comments++ if ($txn->Type eq 'comment');
     }
-    is($Comments,3, "our first ticket now has three Comments - we merged safely");
+    is($comments,3, "our first ticket now has three comments - we merged safely");
 }
 
 # when you try to merge duplicate links on postgres, eveyrything goes to hell due to referential integrity constraints.
 {
-    my $t = RT::Model::Ticket->new(RT->system_user);
+    my $t = RT::Model::Ticket->new(current_user => RT->system_user);
     $t->create(Subject => 'Main', Queue => 'general');
 
     ok ($t->id);
-    my $t2 = RT::Model::Ticket->new(RT->system_user);
+    my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
     $t2->create(Subject => 'Second', Queue => 'general');
     ok ($t2->id);
 
-    my $t3 = RT::Model::Ticket->new(RT->system_user);
+    my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
     $t3->create(Subject => 'Third', Queue => 'general');
 
     ok ($t3->id);

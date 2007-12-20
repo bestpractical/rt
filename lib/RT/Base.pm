@@ -54,7 +54,7 @@ use vars qw(@EXPORT);
 
 @EXPORT=qw(loc CurrentUser);
 
-=head1 NAME
+=head1 name
 
 RT::Base
 

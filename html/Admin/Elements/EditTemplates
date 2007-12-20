@@ -18,7 +18,7 @@
     Format        => $Format,
     Collection    => $Templates,
     AllowSorting  => 1,
-    PassArguments => [qw(Format Rows Page Order order_by FindDisabledQueues)],
+    PassArguments => [qw(Format Rows Page Order order_by FinddisabledQueues)],
 &>
 % }
 
@@ -28,13 +28,13 @@
 <%INIT>
 my $dir_path = $m->request_comp->dir_path;
 $Format ||= qq{'<a href="__WebPath__$dir_path/Template.html?Queue=$id&Template=__id__">__id__</a>/TITLE:#'}
-    .qq{,'<a href="__WebPath__$dir_path/Template.html?Queue=$id&Template=__id__">__Name__</a>/TITLE:Name'}
+    .qq{,'<a href="__WebPath__$dir_path/Template.html?Queue=$id&Template=__id__">__name__</a>/TITLE:name'}
     .qq{,'__Description__'};
 
-my $QueueObj = RT::Model::Queue->new( $session{'CurrentUser'} );
+my $QueueObj = RT::Model::Queue->new( Jifty->web->current_user );
 $QueueObj->load( $id ) if $id;
 
-my $Templates = RT::Model::TemplateCollection->new($session{'CurrentUser'});
+my $Templates = RT::Model::TemplateCollection->new(Jifty->web->current_user);
 if ( $QueueObj->id ) {
     $Templates->LimitToQueue( $id );
 }
@@ -55,7 +55,7 @@ foreach my $key (keys %ARGS) {
 }
 
 foreach my $id( @DeleteTemplates ) {
-    my $TemplateObj = RT::Model::Template->new( $session{'CurrentUser'} );
+    my $TemplateObj = RT::Model::Template->new( Jifty->web->current_user );
     $TemplateObj->load( $id );
     unless ( $TemplateObj->id ) {
         push @actions, loc("Couldn't load template #[_1]", $id);

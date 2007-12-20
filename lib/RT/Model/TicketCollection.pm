@@ -56,7 +56,7 @@
 # - ClearRestrictions and Reinitialization is messy and unclear.  The
 # only good way to do it is to create a new RT::Model::TicketCollection object.
 
-=head1 NAME
+=head1 name
 
   RT::Model::TicketCollection - A collection of Ticket objects
 
@@ -100,8 +100,8 @@ our %FIELD_METADATA = (
     InitialPriority => [ 'INT', ],
     FinalPriority   => [ 'INT', ],
     Priority        => [ 'INT', ],
-    TimeLeft        => [ 'INT', ],
-    TimeWorked      => [ 'INT', ],
+    time_left        => [ 'INT', ],
+    time_worked      => [ 'INT', ],
     TimeEstimated   => [ 'INT', ],
 
     Linked          => [ 'LINK' ],
@@ -115,7 +115,7 @@ our %FIELD_METADATA = (
     DependedOnBy    => [ 'LINK' => From => 'DependsOn', ],
     ReferredToBy    => [ 'LINK' => From => 'RefersTo', ],
     Told             => [ 'DATE'            => 'Told', ],
-    Starts           => [ 'DATE'            => 'Starts', ],
+    starts           => [ 'DATE'            => 'starts', ],
     Started          => [ 'DATE'            => 'Started', ],
     Due              => [ 'DATE'            => 'Due', ],
     Resolved         => [ 'DATE'            => 'Resolved', ],
@@ -206,9 +206,9 @@ sub can_bundle { return \%can_bundle }
 
 our @SORTcolumns = qw(id Status
     Queue Subject
-    Owner Created Due Starts Started
+    Owner Created Due starts Started
     Told
-    Resolved LastUpdated Priority TimeWorked TimeLeft);
+    Resolved LastUpdated Priority time_worked time_left);
 
 =head2 SortFields
 
@@ -300,7 +300,7 @@ sub _EnumLimit {
 =head2 _IntLimit
 
 Handle fields where the values are limited to integers.  (For example,
-Priority, TimeWorked.)
+Priority, time_worked.)
 
 Meta Data:
   None
@@ -600,7 +600,7 @@ sub _TransDateLimit {
             alias1 => 'main',
             column1 => 'id',
             table2 => 'Transactions',
-            column2 => 'ObjectId',
+            column2 => 'object_id',
         );
         $sb->SUPER::limit(
             alias           => $sb->{_sql_transalias},
@@ -712,7 +712,7 @@ sub _TransLimit {
             alias1 => 'main',
             column1 => 'id',
             table2 => 'Transactions',
-            column2 => 'ObjectId',
+            column2 => 'object_id',
         );
         $self->SUPER::limit(
             alias           => $self->{_sql_transalias},
@@ -791,10 +791,10 @@ sub _WatcherLimit {
     my $type = $meta->[1] || '';
 
     # Owner was ENUM field, so "Owner = 'xxx'" allowed user to
-    # search by id and Name at the same time, this is workaround
+    # search by id and name at the same time, this is workaround
     # to preserve backward compatibility
     if ( $field eq 'Owner' && !$rest{subkey} && $op =~ /^!?=$/ ) {
-        my $o = RT::Model::User->new( $self->current_user );
+        my $o = RT::Model::User->new;
         $o->load( $value );
         $self->_sql_limit(
             column    => 'Owner',
@@ -804,7 +804,7 @@ sub _WatcherLimit {
         );
         return;
     }
-    $rest{subkey} ||= 'EmailAddress';
+    $rest{subkey} ||= 'email';
 
     my $groups = $self->_RoleGroupsjoin( Type => $type );
 
@@ -834,7 +834,7 @@ sub _WatcherLimit {
         # "X = 'Y'" matches more then one user so we try to fetch two records and
         # do the right thing when there is only one exist and semi-working solution
         # otherwise.
-        my $users_obj = RT::Model::UserCollection->new( $self->current_user );
+        my $users_obj = RT::Model::UserCollection->new;
         $users_obj->limit(
             column         => $rest{subkey},
             operator      => $op,
@@ -1054,7 +1054,7 @@ WHERE (
     (main.Type = 'ticket')
 ) AND (
     (
-	(Users_3.EmailAddress = '22')
+	(Users_3.email = '22')
 	    AND
 	(Groups_1.Domain = 'RT::Model::Ticket-Role')
 	    AND
@@ -1177,12 +1177,12 @@ sub _CustomFieldDecipher {
 
     my $cfid;
     if ( $queue ) {
-        my $q = RT::Model::Queue->new( $self->current_user );
+        my $q = RT::Model::Queue->new;
         $q->load( $queue );
 
         my $cf;
         if ( $q->id ) {
-            # $queue = $q->Name; # should we normalize the queue?
+            # $queue = $q->name; # should we normalize the queue?
             $cf = $q->CustomField( $field );
         }
         else {
@@ -1192,7 +1192,7 @@ sub _CustomFieldDecipher {
 
         if ( $cf and my $id = $cf->id ) {
             $cfid = $cf->id;
-            $field = $cf->Name;
+            $field = $cf->name;
         }
     } else {
         $queue = 0;
@@ -1224,7 +1224,7 @@ sub _CustomFieldjoin {
             alias1 => 'main',
             column1 => 'id',
             table2 => 'ObjectCustomFieldValues',
-            column2 => 'ObjectId',
+            column2 => 'object_id',
         );
         $self->SUPER::limit(
             leftjoin        => $TicketCFs,
@@ -1238,13 +1238,13 @@ sub _CustomFieldjoin {
             type => 'left',
             column1     => 'Queue',
             table2     => 'ObjectCustomFields',
-            column2     => 'ObjectId',
+            column2     => 'object_id',
             entry_aggregator => 'OR',
         );
 
         $self->SUPER::limit(
             leftjoin        => $ocfalias,
-            column           => 'ObjectId',
+            column           => 'object_id',
             value           => '0',
         );
 
@@ -1266,7 +1266,7 @@ sub _CustomFieldjoin {
         );
         $self->SUPER::limit(
             leftjoin        => $TicketCFs,
-            column           => 'ObjectId',
+            column           => 'object_id',
             value           => 'main.id',
             quote_value      => 0,
             entry_aggregator => 'AND',
@@ -1280,7 +1280,7 @@ sub _CustomFieldjoin {
     );
     $self->SUPER::limit(
         leftjoin        => $TicketCFs,
-        column           => 'Disabled',
+        column           => 'disabled',
         operator        => '=',
         value           => '0',
         entry_aggregator => 'AND'
@@ -1326,7 +1326,7 @@ sub _CustomFieldLimit {
     if ( $CFs && !$cfid ) {
         $self->SUPER::limit(
             alias           => $CFs,
-            column           => 'Name',
+            column           => 'name',
             value           => $field,
             entry_aggregator => 'AND',
         );
@@ -1417,7 +1417,7 @@ sub order_by {
            );
            $self->SUPER::limit(
                leftjoin => $CFvs,
-               column => 'Name',
+               column => 'name',
                quote_value => 0,
                value => $TicketCFs . ".Content",
                entry_aggregator => 'AND'
@@ -1569,7 +1569,7 @@ sub ThawLimits {
 
 LimitQueue takes a paramhash with the fields operator and value.
 operator is one of = or !=. (It defaults to =).
-value is a queue id or Name.
+value is a queue id or name.
 
 
 =cut
@@ -1830,21 +1830,21 @@ sub LimitFinalPriority {
 
 # }}}
 
-# {{{ sub LimitTimeWorked
+# {{{ sub Limittime_worked
 
-=head2 LimitTimeWorked
+=head2 Limittime_worked
 
 Takes a paramhash with the fields operator and value.
 operator is one of =, >, < or !=.
-value is a value to match the ticket's TimeWorked attribute
+value is a value to match the ticket's time_worked attribute
 
 =cut
 
-sub LimitTimeWorked {
+sub Limittime_worked {
     my $self = shift;
     my %args = (@_);
     $self->limit(
-        column       => 'TimeWorked',
+        column       => 'time_worked',
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
@@ -1855,21 +1855,21 @@ sub LimitTimeWorked {
 
 # }}}
 
-# {{{ sub LimitTimeLeft
+# {{{ sub Limittime_left
 
-=head2 LimitTimeLeft
+=head2 Limittime_left
 
 Takes a paramhash with the fields operator and value.
 operator is one of =, >, < or !=.
-value is a value to match the ticket's TimeLeft attribute
+value is a value to match the ticket's time_left attribute
 
 =cut
 
-sub LimitTimeLeft {
+sub Limittime_left {
     my $self = shift;
     my %args = (@_);
     $self->limit(
-        column       => 'TimeLeft',
+        column       => 'time_left',
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
@@ -1988,7 +1988,7 @@ sub LimitOwner {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
-            $self->loc('Owner'), $args{'operator'}, $owner->Name(), ),
+            $self->loc('Owner'), $args{'operator'}, $owner->name(), ),
     );
 
 }
@@ -2227,7 +2227,7 @@ Takes a paramhash with the fields column operator and value.
 
 operator is one of > or <
 value is a date and time in ISO format in GMT
-column is one of Starts, Started, Told, Created, Resolved, LastUpdated
+column is one of starts, Started, Told, Created, Resolved, LastUpdated
 
 There are also helper functions of the form Limitcolumn that eliminate
 the need to pass in a column argument.
@@ -2268,9 +2268,9 @@ sub LimitDue {
 
 }
 
-sub LimitStarts {
+sub Limitstarts {
     my $self = shift;
-    $self->LimitDate( column => 'Starts', @_ );
+    $self->LimitDate( column => 'starts', @_ );
 
 }
 
@@ -2367,13 +2367,13 @@ sub LimitCustomField {
     );
 
     warn "Limiting to a cf";
-    my $CF = RT::Model::CustomField->new( $self->current_user );
+    my $CF = RT::Model::CustomField->new;
     if ( $args{customfield} =~ /^\d+$/ ) {
         $CF->load( $args{customfield} );
     }
     else {
         $CF->load_by_name_and_queue(
-            Name  => $args{customfield},
+            name  => $args{customfield},
             Queue => $args{queue}
         );
         $args{customfield} = $CF->id;
@@ -2382,24 +2382,24 @@ sub LimitCustomField {
     #If we are looking to compare with a null value.
     if ( $args{'operator'} =~ /^is$/i ) {
         $args{'description'}
-            ||= $self->loc( "Custom field [_1] has no value.", $CF->Name );
+            ||= $self->loc( "Custom field [_1] has no value.", $CF->name );
     }
     elsif ( $args{'operator'} =~ /^is not$/i ) {
         $args{'description'}
-            ||= $self->loc( "Custom field [_1] has a value.", $CF->Name );
+            ||= $self->loc( "Custom field [_1] has a value.", $CF->name );
     }
 
     # if we're not looking to compare with a null value
     else {
         $args{'description'} ||= $self->loc( "Custom field [_1] [_2] [_3]",
-            $CF->Name, $args{operator}, $args{value} );
+            $CF->name, $args{operator}, $args{value} );
     }
 
     my $q = "";
     if ( $CF->Queue ) {
         my $qo = new RT::Model::Queue( $self->current_user );
         $qo->load( $CF->Queue );
-        $q = $qo->Name;
+        $q = $qo->name;
     }
 
     my @rest;
@@ -2412,8 +2412,8 @@ sub LimitCustomField {
         column => "CF."
             . (
               $q
-            ? $q . ".{" . $CF->Name . "}"
-            : $CF->Name
+            ? $q . ".{" . $CF->name . "}"
+            : $CF->name
             ),
         operator    => $args{operator},
         customfield => 1,

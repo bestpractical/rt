@@ -72,7 +72,7 @@
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
 % }
-<& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session {'tickets_refresh_interval'} &>
+<& /Elements/Refresh, name => 'TicketsRefreshInterval', Default => $session {'tickets_refresh_interval'} &>
 <input type="submit" class="button" value="<&|/l&>Go!</&>" />
 </form>
 </div>
@@ -87,11 +87,11 @@
     RSSFeedURL => $RSSFeedURL,
     ShortQueryString => $ShortQueryString,
 &>
-% $m->callback( QueryString => $QueryString, CallbackName => 'SearchActions' );
+% $m->callback( QueryString => $QueryString, Callbackname => 'SearchActions' );
 </div>
 <%INIT>
 # Read from user preferences
-my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+my $prefs = Jifty->web->current_user->user_object->Preferences("SearchDisplay") || {};
 
 # These variables are what define a search_hash; this is also
 # where we give sane defaults.
@@ -114,7 +114,7 @@ if ( !defined($Rows) ) {
 
 my ($title, $ticketcount);
 $session{'i'}++;
-$session{'tickets'} = RT::Model::TicketCollection->new($session{'CurrentUser'}) ;
+$session{'tickets'} = RT::Model::TicketCollection->new(Jifty->web->current_user) ;
 $session{'tickets'}->from_sql($Query) if ($Query);
 
 if ($order_by =~ /\|/) {

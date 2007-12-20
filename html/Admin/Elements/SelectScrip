@@ -45,20 +45,20 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$name%>">
 <option value="" 
 <% $Default eq undef ? 'SELECTED' : '' %>
 >-</option>
 %while  (my $Scrip = $Scrips->next) {
 <option value="<% $Scrip->id %>"
 <% $Scrip->id == $Default ?'SELECTED' :'' %>
-><% loc($Scrip->Name) %>
+><% loc($Scrip->name) %>
 </option>
 %}
 </select>
 
 <%INIT>
-my $Scrips = RT::Model::ScripCollection->new($session{'CurrentUser'});
+my $Scrips = RT::Model::ScripCollection->new(Jifty->web->current_user);
 $Scrips->find_all_rows;
 
 
@@ -67,6 +67,6 @@ $Scrips->find_all_rows;
 <%ARGS>
 
 $Default => undef
-$Name => 'Scrip'
+$name => 'Scrip'
 
 </%ARGS>

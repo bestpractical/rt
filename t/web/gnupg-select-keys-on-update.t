@@ -29,9 +29,9 @@ diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'};
 RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my $queue = RT::Test->load_or_create_queue(
-    Name              => 'Regression',
+    name              => 'Regression',
     CorrespondAddress => 'rt-recipient@example.com',
-    CommentAddress    => 'rt-recipient@example.com',
+    commentAddress    => 'rt-recipient@example.com',
 );
 ok $queue && $queue->id, 'loaded or created queue';
 

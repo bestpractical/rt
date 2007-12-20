@@ -86,7 +86,7 @@ BEGIN {
 
 use RT::Interface::Web;
 use RT::Interface::Web::Handler;
-$Handler = RT::Interface::Web::Handler->new(RT->Config->Get('MasonParameters'));
+$Handler = RT::Interface::Web::Handler->new(current_user => RT->Config->Get('MasonParameters'));
 
 if ($ENV{'MOD_PERL'} && !RT->Config->Get('DevelMode')) {
     # Under static_source, we need to purge the component cache

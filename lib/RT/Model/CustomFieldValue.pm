@@ -64,15 +64,15 @@ use Jifty::DBI::Record schema {
     column CustomField =>  type is 'int(11)', max_length is 11, default is '0';
     column Created =>  type is 'datetime',  default is '';
     column LastUpdated =>  type is 'datetime',  default is '';
-    column Name =>  type is 'varchar(200)', max_length is 200, default is '';
+    column name =>  type is 'varchar(200)', max_length is 200, default is '';
     column Description =>  type is 'varchar(255)', max_length is 255, default is '';
 
 };
 
 
-=head2 ValidateName
+=head2 Validatename
 
-Override the default ValidateName method that stops custom field values
+Override the default Validatename method that stops custom field values
 from being integers.
 
 =cut
@@ -81,7 +81,7 @@ sub create {
     my $self = shift;
     my %args = (
         CustomField => 0,
-        Name        => '',
+        name        => '',
         Description => '',
         SortOrder   => 0,
         Category    => '',
@@ -90,7 +90,7 @@ sub create {
 
     my $cf_id = ref $args{'CustomField'}? $args{'CustomField'}->id: $args{'CustomField'};
 
-    my $cf = RT::Model::CustomField->new( $self->current_user );
+    my $cf = RT::Model::CustomField->new;
     $cf->load( $cf_id );
     unless ( $cf->id ) {
         return (0, $self->loc("Couldn't load Custom Field #[_1]", $cf_id));
@@ -101,7 +101,7 @@ sub create {
 
     my ($id, $msg) = $self->SUPER::create(
         CustomField => $cf_id,
-        map { $_ => $args{$_} } qw(Name Description SortOrder)
+        map { $_ => $args{$_} } qw(name Description SortOrder)
     );
     return ($id, $msg) unless $id;
 
@@ -127,7 +127,7 @@ sub set_Category {
     my $category = shift;
     if ( defined $category && length $category ) {
         return $self->set_attribute(
-            Name    => 'Category',
+            name    => 'Category',
             Content => $category,
         );
     }
@@ -141,7 +141,7 @@ sub set_Category {
     }
 }
 
-sub validate_Name {
+sub validate_name {
     return defined $_[1] && length $_[1];
 };
 

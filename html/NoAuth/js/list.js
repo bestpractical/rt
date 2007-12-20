@@ -59,8 +59,8 @@ Class("list").define({
      else {
 	 var doc	= this.xml.responseXML;
 	 var nNode	= null;
-	 if(doc.childNodes[0].nodeName=="parseerror") alert("Parse Error.");
-	 doc		= doc.getElementsByTagName("list")[0];
+	 if(doc.childNodes[0].nodename=="parseerror") alert("Parse Error.");
+	 doc		= doc.getElementsByTagname("list")[0];
 	 for(i=0;i<doc.childNodes.length;i++) {
 	     if(doc.childNodes[i].childNodes.length>0) {
 		 nNode	= document.createElement("option");
@@ -77,16 +77,16 @@ Class("list").define({
      this.sels		= new Array();
      var i			= 0;
      for(i=0;i<src.childNodes.length;i++) {
-	 if(src.childNodes[i].nodeName=="select" || src.childNodes[i].nodeName=="SELECT") {
+	 if(src.childNodes[i].nodename=="select" || src.childNodes[i].nodename=="SELECT") {
 	     this.sels.push(src.childNodes[i]);
 	 } 
 
-	 if((src.childNodes[i].nodeName=="input" || src.childNodes[i].nodeName=="INPUT")
+	 if((src.childNodes[i].nodename=="input" || src.childNodes[i].nodename=="INPUT")
 	    && (src.childNodes[i].name=="fromjs")) {
 	     src.childNodes[i].value = 1;
 	 }
 
-	 if((src.childNodes[i].nodeName=="input" || src.childNodes[i].nodeName=="INPUT")
+	 if((src.childNodes[i].nodename=="input" || src.childNodes[i].nodename=="INPUT")
 	    && (src.childNodes[i].type=="submit" || src.childNodes[i].type=="SUBMIT")) {
 
 	     if (src.childNodes[i].name.indexOf("Save") < 0) {
@@ -108,7 +108,7 @@ Class("list").define({
 	 } 
      }
      if (esrc) {
-	 this.xml	= (window.navigator.appName!="Microsoft Internet Explorer"
+	 this.xml	= (window.navigator.appname!="Microsoft Internet Explorer"
 			   ?new XMLHttpRequest():new ActiveXObject("Microsoft.XMLHTTP"));
 	 this.xml.open("GET", esrc);
 	 this.xml.send("");

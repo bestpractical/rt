@@ -56,7 +56,7 @@ my $tabs;
 if ( $GroupObj and $GroupObj->id ) {
 $tabs->{"this"} = { class => "currentnav",                                                           
                     path  => "Admin/Groups/Modify.html?id=" . $GroupObj->id,
-                    title => $GroupObj->Name,
+                    title => $GroupObj->name,
                     current_subtab => $current_subtab,
         subtabs => {
         C => { title => loc('Basics'),

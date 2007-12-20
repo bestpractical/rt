@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$name%>">
 % foreach my $stage (@stages) {
 <option value="<%$stage%>"
 <% ($stage eq $Default) && 'SELECTED' %>
@@ -59,9 +59,9 @@ if ( !defined $Default || $Default eq '') {
 }
 my @stages = 'TransactionCreate';
 push @stages, 'TransactionBatch' if RT->Config->Get('UseTransactionBatch');
-push @stages, 'Disabled';
+push @stages, 'disabled';
 </%INIT>
 <%ARGS>
 $Default => 'TransactionCreate'
-$Name => 'Stage'
+$name => 'Stage'
 </%ARGS>

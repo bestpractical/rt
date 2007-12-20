@@ -46,10 +46,10 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$Name => 'ChartType'
+$name => 'ChartType'
 $Default => 'bar'
 </%args>
-<select name="<%$Name%>">
+<select name="<%$name%>">
 % foreach my $option qw(bar pie) {
 <option value="<%$option%>" <% $option eq $Default ? 'SELECTED' : '' %>><%loc($option)%></option>
 % }

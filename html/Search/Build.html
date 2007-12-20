@@ -95,9 +95,9 @@
 <div id="pick-criteria">
     <& Elements/PickCriteria, query => $query{'Query'}, cfqueues => $queues &>
 </div>
-<& /Elements/Submit,  Label => loc('Add these terms'), Name => 'AddClause'&>
+<& /Elements/Submit,  Label => loc('Add these terms'), name => 'AddClause'&>
 
-<& /Elements/Submit, Label => loc('Add these terms and Search'), Name => 'DoSearch'&>
+<& /Elements/Submit, Label => loc('Add these terms and Search'), name => 'DoSearch'&>
 
 
 
@@ -108,7 +108,7 @@
     CurrentFormat    => $CurrentFormat,
 &>
 
-<& /Elements/Submit, Label => loc('Add and Search'), Name => 'DoSearch'&>
+<& /Elements/Submit, Label => loc('Add and Search'), name => 'DoSearch'&>
 
 </form>
 
@@ -143,7 +143,7 @@ if ( $NewQuery ) {
 { # Attempt to load what we can from the session and preferences, set defaults
 
     my $current = $session{'CurrentSearchHash'};
-    my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+    my $prefs = Jifty->web->current_user->user_object->Preferences("SearchDisplay") || {};
     my $default = { Query => '', Format => '', order_by => 'id', Order => 'ASC', rows_per_page => 50 };
 
     for( qw(Query Format order_by Order rows_per_page) ) {
@@ -167,7 +167,7 @@ my $ParseQuery = sub {
     my ($string, $results) = @_;
 
     my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-    @$results = $tree->ParseSQL( Query => $string, CurrentUser => $session{'CurrentUser'} );
+    @$results = $tree->ParseSQL( Query => $string, CurrentUser => Jifty->web->current_user );
 
     return $tree;
 };

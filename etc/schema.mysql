@@ -23,10 +23,10 @@ CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
 # {{{ Queues
 CREATE TABLE Queues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(200) NOT NULL  ,
+  name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
   CorrespondAddress varchar(120) NULL  ,
-  CommentAddress varchar(120) NULL  ,
+  commentAddress varchar(120) NULL  ,
   InitialPriority integer NOT NULL DEFAULT 0  ,
   FinalPriority integer NOT NULL DEFAULT 0  ,
   DefaultDueIn integer NOT NULL DEFAULT 0  ,
@@ -34,11 +34,11 @@ CREATE TABLE Queues (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
-  Disabled int2 NOT NULL DEFAULT 0 ,
+  disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
-CREATE UNIQUE INDEX Queues1 ON Queues (Name) ;
-CREATE INDEX Queues2 ON Queues (Disabled) ;
+CREATE UNIQUE INDEX Queues1 ON Queues (name) ;
+CREATE INDEX Queues2 ON Queues (disabled) ;
 
 # }}}
 
@@ -68,13 +68,13 @@ CREATE INDEX Links4 ON Links (Type,LocalBase);
 
 CREATE TABLE Principals (
         id INTEGER  AUTO_INCREMENT not null,
-        PrincipalType VARCHAR(16) not null,
-        ObjectId integer, # foreign key to Users or Groups, depending
-        Disabled int2 NOT NULL DEFAULT 0 ,
+        principal_type VARCHAR(16) not null,
+        object_id integer, # foreign key to Users or Groups, depending
+        disabled int2 NOT NULL DEFAULT 0 ,
         PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE INDEX Principals2 ON Principals (ObjectId);
+CREATE INDEX Principals2 ON Principals (object_id);
 
 # }}}
 
@@ -82,7 +82,7 @@ CREATE INDEX Principals2 ON Principals (ObjectId);
 
 CREATE TABLE Groups (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   Domain varchar(64),
   Type varchar(64),
@@ -99,7 +99,7 @@ CREATE INDEX Groups2 On Groups (Type, Instance);
 
 CREATE TABLE ScripConditions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
@@ -118,7 +118,7 @@ CREATE TABLE ScripConditions (
 CREATE TABLE Transactions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   ObjectType varchar(64) NOT NULL,
-  ObjectId integer NOT NULL DEFAULT 0  ,
+  object_id integer NOT NULL DEFAULT 0  ,
   TimeTaken integer NOT NULL DEFAULT 0  ,
   Type varchar(20) NULL  ,
   Field varchar(40) NULL  ,
@@ -133,7 +133,7 @@ CREATE TABLE Transactions (
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
-CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
+CREATE INDEX Transactions1 ON Transactions (ObjectType, object_id);
 
 # }}}
 
@@ -164,18 +164,18 @@ CREATE TABLE Scrips (
 # {{{ ACL
 CREATE TABLE ACL (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  PrincipalType varchar(25) NOT NULL, #"User" "Group", "Owner", "Cc" "AdminCc", "Requestor", "Requestor" 
+  principal_type varchar(25) NOT NULL, #"User" "Group", "Owner", "Cc" "AdminCc", "Requestor", "Requestor" 
 
-  PrincipalId integer NOT NULL  , #Foreign key to principals
-  RightName varchar(25) NOT NULL  ,
+  principal_id integer NOT NULL  , #Foreign key to principals
+  Rightname varchar(25) NOT NULL  ,
   ObjectType varchar(25) NOT NULL  ,
-  ObjectId integer NOT NULL default 0,
+  object_id integer NOT NULL default 0,
   DelegatedBy integer NOT NULL default 0, #foreign key to principals with a userid
   DelegatedFrom integer NOT NULL default 0, #foreign key to ACL
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE INDEX  ACL1 on ACL(RightName, ObjectType, ObjectId,PrincipalType,PrincipalId);
+CREATE INDEX  ACL1 on ACL(Rightname, ObjectType, object_id,principal_type,principal_id);
 
 # }}}
 
@@ -202,7 +202,7 @@ create table CachedGroupMembers (
         ImmediateParentId int, #foreign key to prinicpals.         
                                # this points to the group that the member is
                                # a member of, for ease of deletes.
-        Disabled int2 NOT NULL DEFAULT 0 , # if this cached group member is a member of this group by way of a disabled
+        disabled int2 NOT NULL DEFAULT 0 , # if this cached group member is a member of this group by way of a disabled
                                            # group or this group is disabled, this will be set to 1
                                            # this allows us to not find members of disabled subgroups when listing off
                                            # group members recursively.
@@ -210,7 +210,7 @@ create table CachedGroupMembers (
         PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
+CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,disabled);
 
 # }}}
 
@@ -218,22 +218,22 @@ CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
 
 CREATE TABLE Users (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(200) NOT NULL  ,
-  Password varchar(40) NULL  ,
-  Comments blob NULL  ,
+  name varchar(200) NOT NULL  ,
+  password varchar(40) NULL  ,
+  comments blob NULL  ,
   Signature blob NULL  ,
-  EmailAddress varchar(120) NULL  ,
-  FreeformContactInfo blob NULL  ,
-  Organization varchar(200) NULL  ,
-  RealName varchar(120) NULL  ,
-  NickName varchar(16) NULL  ,
+  email varchar(120) NULL  ,
+  freeform_contact_info blob NULL  ,
+  organization varchar(200) NULL  ,
+  real_name varchar(120) NULL  ,
+  nickname varchar(16) NULL  ,
   Lang varchar(16) NULL  ,
-  EmailEncoding varchar(16) NULL  ,
-  WebEncoding varchar(16) NULL  ,
+  email_encoding varchar(16) NULL  ,
+  web_encoding varchar(16) NULL  ,
   ExternalContactInfoId varchar(100) NULL  ,
   ContactInfoSystem varchar(30) NULL  ,
   ExternalAuthId varchar(100) NULL  ,
-  AuthSystem varchar(30) NULL  ,
+  auth_system varchar(30) NULL  ,
   Gecos varchar(16) NULL  ,
   HomePhone varchar(30) NULL  ,
   WorkPhone varchar(30) NULL  ,
@@ -256,8 +256,8 @@ CREATE TABLE Users (
 ) TYPE=InnoDB;
 
 
-CREATE UNIQUE INDEX Users1 ON Users (Name) ;
-CREATE INDEX Users4 ON Users (EmailAddress);
+CREATE UNIQUE INDEX Users1 ON Users (name) ;
+CREATE INDEX Users4 ON Users (email);
 
 
 # }}}
@@ -277,11 +277,11 @@ CREATE TABLE Tickets (
   FinalPriority integer NOT NULL DEFAULT 0  ,
   Priority integer NOT NULL DEFAULT 0  ,
   TimeEstimated integer NOT NULL DEFAULT 0  ,
-  TimeWorked integer NOT NULL DEFAULT 0  ,
+  time_worked integer NOT NULL DEFAULT 0  ,
   Status varchar(10) NULL  ,
-  TimeLeft integer NOT NULL DEFAULT 0  ,
+  time_left integer NOT NULL DEFAULT 0  ,
   Told DATETIME NULL  ,
-  Starts DATETIME NULL  ,
+  starts DATETIME NULL  ,
   Started DATETIME NULL  ,
   Due DATETIME NULL  ,
   Resolved DATETIME NULL  ,
@@ -291,7 +291,7 @@ CREATE TABLE Tickets (
   LastUpdated DATETIME NULL  ,
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
-  Disabled int2 NOT NULL DEFAULT 0 ,
+  disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
@@ -305,7 +305,7 @@ CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type) ;
 
 CREATE TABLE ScripActions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
@@ -323,7 +323,7 @@ CREATE TABLE ScripActions (
 CREATE TABLE Templates (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Queue integer NOT NULL DEFAULT 0 ,
-  Name varchar(200) NOT NULL  ,
+  name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
   Type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
@@ -344,7 +344,7 @@ CREATE TABLE ObjectCustomFieldValues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
   ObjectType varchar(255) NOT NULL,	    # Final target of the Object
-  ObjectId int NOT NULL  ,		    # New -- Replaces Ticket
+  object_id int NOT NULL  ,		    # New -- Replaces Ticket
   SortOrder integer NOT NULL DEFAULT 0  ,   # New -- ordering for multiple values
 
   Content varchar(255) NULL  ,
@@ -356,12 +356,12 @@ CREATE TABLE ObjectCustomFieldValues (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
-  Disabled int2 NOT NULL DEFAULT 0 ,        # New -- whether the value was current
+  disabled int2 NOT NULL DEFAULT 0 ,        # New -- whether the value was current
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
-CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
+CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,object_id); 
 
 # }}}
 
@@ -369,7 +369,7 @@ CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,Ob
 
 CREATE TABLE CustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Type varchar(200) NULL  ,	# Changed -- 'Single' and 'Multiple' is moved out
   MaxValues integer,		# New -- was 'Single'(1) and 'Multiple'(0)
   Pattern TEXT NULL  ,	# New -- Must validate against this
@@ -382,7 +382,7 @@ CREATE TABLE CustomFields (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
-  Disabled int2 NOT NULL DEFAULT 0 ,
+  disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
@@ -393,7 +393,7 @@ CREATE TABLE CustomFields (
 CREATE TABLE ObjectCustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
-  ObjectId integer NOT NULL,
+  object_id integer NOT NULL,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
@@ -410,7 +410,7 @@ CREATE TABLE ObjectCustomFields (
 CREATE TABLE CustomFieldValues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
@@ -430,12 +430,12 @@ CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
 
 CREATE TABLE Attributes (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(255) NULL  ,
+  name varchar(255) NULL  ,
   Description varchar(255) NULL  ,
   Content text,
   ContentType varchar(16),
   ObjectType varchar(64),
-  ObjectId integer, # foreign key to anything
+  object_id integer, # foreign key to anything
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
@@ -443,8 +443,8 @@ CREATE TABLE Attributes (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE INDEX Attributes1 on Attributes(Name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
+CREATE INDEX Attributes1 on Attributes(name);
+CREATE INDEX Attributes2 on Attributes(ObjectType, object_id);
 
 # }}}
 

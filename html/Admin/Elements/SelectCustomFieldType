@@ -45,16 +45,16 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME ="<%$Name%>">
+<select name ="<%$name%>">
 %for my $option ($cf->TypeComposites) {
 <option value="<%$option%>" <%$option eq $Default && "SELECTED"%>><% $cf->FriendlyTypeComposite($option) %></option>
 %}
 </select>
 <%INIT>
-my $cf = RT::Model::CustomField->new($session{'CurrentUser'});
+my $cf = RT::Model::CustomField->new(Jifty->web->current_user);
 
 </%INIT>
 <%ARGS>
 $Default=>undef
-$Name => 'TypeComposite'
+$name => 'TypeComposite'
 </%ARGS>

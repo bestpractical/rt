@@ -72,9 +72,9 @@ msgstr "%1 %2 %3"
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%2 %1 %3 %4:%5:%6 %7"
 
-#. ($cf->Name, $new_value->Content)
+#. ($cf->name, $new_value->Content)
 #. ($field, $self->NewValue)
-#. ($self->Field, $principal->Object->Name)
+#. ($self->Field, $principal->Object->name)
 #: lib/RT/Record.pm:1685
 #: lib/RT/Transaction_Overlay.pm:647
 #: lib/RT/Transaction_Overlay.pm:690
@@ -86,23 +86,23 @@ msgstr "%1 %2 tilføjet"
 msgid "%1 %2 ago"
 msgstr "%1 %2 siden"
 
-#. ($cf->Name, $old_content,                $new_value->Content)
+#. ($cf->name, $old_content,                $new_value->Content)
 #. ($field, $self->OldValue, $self->NewValue)
 #: lib/RT/Record.pm:1692
 #: lib/RT/Transaction_Overlay.pm:654
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 ændret til %3"
 
-#. ($cf->Name, $old_value->Content)
+#. ($cf->name, $old_value->Content)
 #. ($field, $self->OldValue)
-#. ($self->Field, $principal->Object->Name)
+#. ($self->Field, $principal->Object->name)
 #: lib/RT/Record.pm:1689
 #: lib/RT/Transaction_Overlay.pm:650
 #: lib/RT/Transaction_Overlay.pm:696
 msgid "%1 %2 deleted"
 msgstr "%1 %2 slettet"
 
-#. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
+#. (loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
 #: html/Admin/Elements/EditScrips:65
 #: html/Admin/Elements/ListGlobalScrips:63
 #: html/Ticket/Elements/PreviewScrips:103
@@ -113,14 +113,14 @@ msgstr "%1 %2 med skabelon %3"
 msgid "%1 (%2) %3 this ticket\\n"
 msgstr "%1 (%2) %3 denne sag\\n"
 
-#. ($rev->CreatedAsString, $size, $rev->CreatorObj->Name)
+#. ($rev->CreatedAsString, $size, $rev->CreatorObj->name)
 #: html/Ticket/Elements/ShowAttachments:72
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) af %3"
 
 #. (loc($Ticket->Status()))
 #. (loc($TicketObj->Status))
-#. ($TicketObj->OwnerObj->Name())
+#. ($TicketObj->OwnerObj->name())
 #. (loc($DefaultStatus))
 #: html/SelfService/Update.html:60
 #: html/Ticket/Elements/EditBasics:108
@@ -188,7 +188,7 @@ msgstr "%1 RT %2 Copyright 1996-%3 %4."
 msgid "%1 ScripAction loaded"
 msgstr "%1 Scrip-handling indlæst"
 
-#. ($args{'Value'}, $cf->Name)
+#. ($args{'Value'}, $cf->name)
 #: lib/RT/Record.pm:1722
 msgid "%1 added as a value for %2"
 msgstr "%1 tilføjet som en værdi til %2"
@@ -208,14 +208,14 @@ msgstr "et %1 alias skal tilknyttes et sagsnummer (fra %2) %3"
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 er tilsyneladende et lokalt objekt, men eksisterer ikke i databasen"
 
-#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
-#. ($self->BriefDescription , $self->CreatorObj->Name)
+#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->name)
+#. ($self->BriefDescription , $self->CreatorObj->name)
 #: html/Ticket/Elements/ShowDates:73
 #: lib/RT/Transaction_Overlay.pm:531
 msgid "%1 by %2"
 msgstr "%1 af %2"
 
-#. ($self->Field , $q1->Name , $q2->Name)
+#. ($self->Field , $q1->name , $q2->name)
 #. ($self->Field, $t2->AsString, $t1->AsString)
 #. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 #: lib/RT/Transaction_Overlay.pm:788
@@ -269,7 +269,7 @@ msgstr "De %1 højest prioriterede sager, jeg har rekvireret"
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 er et værktøj, der arbejder med sager fra et bestemt planlægningsværktøj som f.eks. cron."
 
-#. ($principal->Object->Name, $args{'Type'})
+#. ($principal->Object->name, $args{'Type'})
 #: lib/RT/Queue_Overlay.pm:863
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 er ikke længere en %2 til denne kø."
@@ -338,8 +338,8 @@ msgstr "%1's %2 objekter"
 msgid "%1's %2's %3 objects"
 msgstr "%1's %2's %3 objekter"
 
-#. ($Object->Name)
-#. ($object->Name)
+#. ($Object->name)
+#. ($object->name)
 #: html/Search/Elements/SearchPrivacy:52
 #: html/Search/Elements/SelectSearchObject:55
 #: html/Search/Elements/SelectSearchesForObjects:57
@@ -403,7 +403,7 @@ msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Indtast sagsnummer eller URL'er, adskilt af mellemrum)"
 
 #. ($RT::CorrespondAddress)
-#. ($RT::CommentAddress)
+#. ($RT::commentAddress)
 #: html/Admin/Queues/Modify.html:75
 #: html/Admin/Queues/Modify.html:81
 msgid "(If left blank, will default to %1)"
@@ -748,7 +748,7 @@ msgid "Admin Cc"
 msgstr "Admin Cc"
 
 #: etc/initialdata:295
-msgid "Admin Comment"
+msgid "Admin comment"
 msgstr "Admin kommentar"
 
 #: etc/initialdata:274
@@ -788,7 +788,7 @@ msgid "AdminCc"
 msgstr "AdminCc"
 
 #: NOT FOUND IN SOURCE
-msgid "AdminComment"
+msgid "Admincomment"
 msgstr "AdminKommentar"
 
 #: NOT FOUND IN SOURCE
@@ -994,8 +994,8 @@ msgid "Aug."
 msgstr "Aug."
 
 #: NOT FOUND IN SOURCE
-msgid "AuthSystem"
-msgstr "AuthSystem"
+msgid "auth_system"
+msgstr "auth_system"
 
 #: etc/initialdata:221
 msgid "Autoreply"
@@ -1238,49 +1238,49 @@ msgstr "Kommando ikke forstået!\\n"
 
 #: html/Ticket/Elements/ShowTransaction:190
 #: html/Ticket/Elements/Tabs:185
-msgid "Comment"
+msgid "comment"
 msgstr "Kommentar"
 
 #: html/Admin/Queues/Modify.html:79
-msgid "Comment Address"
+msgid "comment Address"
 msgstr "Kommentar - adresse"
 
 #: NOT FOUND IN SOURCE
-msgid "Comment not recorded"
+msgid "comment not recorded"
 msgstr "Kommentar ikke gemt"
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "Comment on tickets"
+msgid "comment on tickets"
 msgstr "Kommentar på sager"
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "CommentOnTicket"
+msgid "commentOnTicket"
 msgstr "KommentarPåSag"
 
 #: NOT FOUND IN SOURCE
-msgid "Comments"
+msgid "comments"
 msgstr "Kommentarer"
 
 #: html/Ticket/ModifyAll.html:91
 #: html/Ticket/Update.html:75
-msgid "Comments (Not sent to requestors)"
+msgid "comments (Not sent to requestors)"
 msgstr "Kommentarer (ikke sendt til rekvirenter)"
 
 #: html/Search/Bulk.html:128
-msgid "Comments (not sent to requestors)"
+msgid "comments (not sent to requestors)"
 msgstr "Kommentarer (ikke sendt til rekvirenter)"
 
 #: NOT FOUND IN SOURCE
-msgid "Comments about %1"
+msgid "comments about %1"
 msgstr "Kommentarer om %1"
 
 #: html/Admin/Users/Modify.html:225
 #: html/Ticket/Elements/ShowRequestor:67
-msgid "Comments about this user"
+msgid "comments about this user"
 msgstr "Kommentarer om denne bruger"
 
 #: lib/RT/Transaction_Overlay.pm:634
-msgid "Comments added"
+msgid "comments added"
 msgstr "Kommentarer tilføjet"
 
 #: lib/RT/Action/Generic.pm:175
@@ -1623,7 +1623,7 @@ msgstr "Opret sager"
 msgid "Create a CustomField"
 msgstr "Opret et ekstrafelt"
 
-#. ($QueueObj->Name())
+#. ($QueueObj->name())
 #: html/Admin/Queues/CustomField.html:69
 msgid "Create a CustomField for queue %1"
 msgstr "Opret et ekstrafelt til kø %1"
@@ -1685,7 +1685,7 @@ msgstr "Opret en kø med ved navn"
 msgid "Create a request"
 msgstr "Opret en sag"
 
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 #: html/Admin/Queues/Scrip.html:89
 msgid "Create a scrip for queue %1"
 msgstr "Opret en scrip for kø %1"
@@ -1746,7 +1746,7 @@ msgstr "OpretSag"
 msgid "Created"
 msgstr "Oprettet"
 
-#. ($CustomFieldObj->Name())
+#. ($CustomFieldObj->name())
 #: html/Admin/CustomFields/Modify.html:163
 #: html/Admin/Elements/EditCustomField:117
 msgid "Created CustomField %1"
@@ -1832,12 +1832,12 @@ msgstr "Ekstra betingelse"
 msgid "Custom field %1 %2 %3"
 msgstr "Ekstrafelt %1 %2 %3"
 
-#. ($CF->Name)
+#. ($CF->name)
 #: lib/RT/TicketCollection_Overlay.pm:2424
 msgid "Custom field %1 has a value."
 msgstr "Ekstrafelt %1 har en værdi."
 
-#. ($CF->Name)
+#. ($CF->name)
 #: lib/RT/TicketCollection_Overlay.pm:2420
 msgid "Custom field %1 has no value."
 msgstr "Ekstrafelt %1 har ingen værdi."
@@ -1849,7 +1849,7 @@ msgid "Custom field %1 not found"
 msgstr "Ekstrafelt %1 ikke fundet"
 
 #. ($cf)
-#. ($obj->Name)
+#. ($obj->name)
 #: lib/RT/Report/Tickets.pm:118
 #: lib/RT/Report/Tickets.pm:121
 msgid "Custom field '%1'"
@@ -1863,7 +1863,7 @@ msgstr "Ekstrafelt slettet"
 msgid "Custom field not found"
 msgstr "Ekstrafelt ikke fundet"
 
-#. ($args{'Content'}, $self->Name)
+#. ($args{'Content'}, $self->name)
 #: lib/RT/CustomField_Overlay.pm:1157
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Ekstrafeltværdi %1 kunne ikke findes til ekstrafelt %2"
@@ -2177,7 +2177,7 @@ msgstr "Rediger"
 msgid "Edit Custom Fields"
 msgstr "Rediger ekstrafelter"
 
-#. ($Object->Name)
+#. ($Object->name)
 #: html/Admin/Elements/ObjectCustomFields:92
 #: html/Admin/Queues/CustomFields.html:64
 #: html/Admin/Users/CustomFields.html:64
@@ -2210,7 +2210,7 @@ msgstr "Rediger søgning"
 msgid "Edit Search"
 msgstr "Rediger søgning"
 
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 #: html/Admin/Queues/Templates.html:63
 msgid "Edit Templates for queue %1"
 msgstr "Rediger skabeloner for kø %1"
@@ -2236,7 +2236,7 @@ msgstr "Rediger skabeloner for %1"
 msgid "EditSavedSearches"
 msgstr "RedigerGemteSøgninger"
 
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 #: html/Admin/Queues/Modify.html:140
 msgid "Editing Configuration for queue %1"
 msgstr "Redigerer konfiguration for kø %1"
@@ -2245,18 +2245,18 @@ msgstr "Redigerer konfiguration for kø %1"
 msgid "Editing Configuration for user %1"
 msgstr "Redigerer konfiguration for bruger %1"
 
-#. ($CustomFieldObj->Name())
+#. ($CustomFieldObj->name())
 #: html/Admin/CustomFields/Modify.html:167
 #: html/Admin/Elements/EditCustomField:120
 msgid "Editing CustomField %1"
 msgstr "Redigerer ekstrafelt %1"
 
-#. ($Group->Name)
+#. ($Group->name)
 #: html/Admin/Groups/Members.html:53
 msgid "Editing membership for group %1"
 msgstr "Redigerer medlemskab for gruppe %1"
 
-#. ($Group->Name)
+#. ($Group->name)
 #: html/User/Groups/Members.html:150
 msgid "Editing membership for personal group %1"
 msgstr "Redigerer medlemskab for personlig gruppe %1"
@@ -2283,11 +2283,11 @@ msgid "Email address in use"
 msgstr "E-mail-adresse i brug"
 
 #: NOT FOUND IN SOURCE
-msgid "EmailAddress"
+msgid "email"
 msgstr "E-mailAdresse"
 
 #: NOT FOUND IN SOURCE
-msgid "EmailEncoding"
+msgid "email_encoding"
 msgstr "E-mailKodning"
 
 #: html/Admin/CustomFields/Modify.html:98
@@ -2414,7 +2414,7 @@ msgid "Failed to create search attribute"
 msgstr "Kunne ikke oprette søgeegenskab"
 
 #: lib/RT/User_Overlay.pm:376
-msgid "Failed to find 'Privileged' users pseudogroup."
+msgid "Failed to find 'privileged' users pseudogroup."
 msgstr "Kunne ikke finde 'privilegerede' brugeres pseudogruppe."
 
 #: lib/RT/User_Overlay.pm:383
@@ -2551,7 +2551,7 @@ msgid "Freeform"
 msgstr "Frihånd"
 
 #: NOT FOUND IN SOURCE
-msgid "FreeformContactInfo"
+msgid "freeform_contact_info"
 msgstr "FrihåndKontaktInfo"
 
 #: NOT FOUND IN SOURCE
@@ -2579,7 +2579,7 @@ msgstr "Hent skabelon fra fil"
 msgid "Getting the current user from a pgp sig\\n"
 msgstr "Henter den aktuelle bruger fra en PGP-signatur\\n"
 
-#. ($New->Name)
+#. ($New->name)
 #: lib/RT/Transaction_Overlay.pm:684
 msgid "Given to %1"
 msgstr "Givet til %1"
@@ -2606,7 +2606,7 @@ msgstr "Global ekstrafelt-konfiguration"
 msgid "Global portlet %1 saved."
 msgstr "Global portlet %1 gemt."
 
-#. (loc($Template->Name))
+#. (loc($Template->name))
 #: html/Admin/Elements/SelectTemplate:59
 msgid "Global template: %1"
 msgstr "Global skabelon: %1"
@@ -2736,12 +2736,12 @@ msgstr "Hej, %1"
 msgid "History"
 msgstr "Historik"
 
-#. ($GroupObj->Name)
+#. ($GroupObj->name)
 #: html/Admin/Groups/History.html:62
 msgid "History of the group %1"
 msgstr "Historik for gruppen %1"
 
-#. ($UserObj->Name)
+#. ($user_object->name)
 #: html/Admin/Users/History.html:62
 msgid "History of the user %1"
 msgstr "Historik for brugeren %1"
@@ -3090,7 +3090,7 @@ msgstr "IndlæsGemtSøgning"
 msgid "Loaded perl modules"
 msgstr "Indlæste Perl-moduler"
 
-#. ($self->Name)
+#. ($self->name)
 #: lib/RT/SavedSearch.pm:111
 msgid "Loaded search %1"
 msgstr "Søgning %1 indlæst"
@@ -3108,7 +3108,7 @@ msgstr ""
 "Mappe til logfiler %1 kunne ikke findes eller skrives til.\\n"
 " RT kan ikke køre."
 
-#. ("<span>".$session{'CurrentUser'}->Name."</span>")
+#. ("<span>".Jifty->web->current_user->name."</span>")
 #: html/Elements/Header:91
 msgid "Logged in as %1"
 msgstr "Logget ind som %1"
@@ -3150,7 +3150,7 @@ msgid "Make date Started"
 msgstr "Sæt startdato"
 
 #: html/Search/Bulk.html:108
-msgid "Make date Starts"
+msgid "Make date starts"
 msgstr "Sæt datostart"
 
 #: html/Search/Bulk.html:112
@@ -3246,7 +3246,7 @@ msgstr "Medlemskab af %1 slettet"
 msgid "Memberships"
 msgstr "Medlemskaber"
 
-#. ($UserObj->Name)
+#. ($user_object->name)
 #: html/Admin/Users/Memberships.html:60
 msgid "Memberships of the user %1"
 msgstr "Medlemskaber for brugeren %1"
@@ -3371,7 +3371,7 @@ msgstr "Rediger skabelon %1"
 msgid "Modify User Rights"
 msgstr "Rediger brugerrettigheder"
 
-#. ($QueueObj->Name())
+#. ($QueueObj->name())
 #: html/Admin/Queues/CustomField.html:66
 msgid "Modify a CustomField for queue %1"
 msgstr "Rediger et ekstrafelt for kø %1"
@@ -3380,7 +3380,7 @@ msgstr "Rediger et ekstrafelt for kø %1"
 msgid "Modify a CustomField which applies to all queues"
 msgstr "Rediger et ekstrafelt, der gælder for alle køer"
 
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 #: html/Admin/Queues/Scrip.html:82
 msgid "Modify a scrip for queue %1"
 msgstr "Rediger et scrip for kø %1"
@@ -3389,7 +3389,7 @@ msgstr "Rediger et scrip for kø %1"
 msgid "Modify a scrip which applies to all queues"
 msgstr "Rediger et scrip, der gælder for alle køer"
 
-#. ($CF->Name)
+#. ($CF->name)
 #: html/Admin/CustomFields/Objects.html:90
 msgid "Modify associated objects for %1"
 msgstr "Rediger tilhørende objekter til %1"
@@ -3439,19 +3439,19 @@ msgstr "Rediger globale brugerrettigheder."
 msgid "Modify group metadata or delete group"
 msgstr "Rediger gruppemetadata eller slet gruppe"
 
-#. ($CustomFieldObj->Name)
+#. ($CustomFieldObj->name)
 #: html/Admin/CustomFields/GroupRights.html:164
 msgid "Modify group rights for custom field %1"
 msgstr "Rediger grupperettigheder for ekstrafelter %1"
 
-#. ($GroupObj->Name)
+#. ($GroupObj->name)
 #: html/Admin/Groups/GroupRights.html:46
 #: html/Admin/Groups/GroupRights.html:50
 #: html/Admin/Groups/GroupRights.html:56
 msgid "Modify group rights for group %1"
 msgstr "Rediger grupperettigheder for gruppe %1"
 
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 #: html/Admin/Queues/GroupRights.html:46
 #: html/Admin/Queues/GroupRights.html:50
 msgid "Modify group rights for queue %1"
@@ -3465,7 +3465,7 @@ msgstr "Rediger medlemskabsliste for denne gruppe"
 msgid "Modify one's own RT account"
 msgstr "Rediger din egen RT-konto"
 
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 #: html/Admin/Queues/People.html:46
 #: html/Admin/Queues/People.html:50
 msgid "Modify people related to queue %1"
@@ -3479,7 +3479,7 @@ msgstr "Rediger personer, der tilhører kø %1"
 msgid "Modify people related to ticket #%1"
 msgstr "Rediger personer, der tilhører sag #%1"
 
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 #: html/Admin/Queues/Scrips.html:67
 msgid "Modify scrips for queue %1"
 msgstr "Rediger scrips for kø %1"
@@ -3490,7 +3490,7 @@ msgstr "Rediger scrips for kø %1"
 msgid "Modify scrips which apply to all queues"
 msgstr "Rediger scrips, der gælder for alle køer"
 
-#. (loc($TemplateObj->Name()))
+#. (loc($TemplateObj->name()))
 #. ($TemplateObj->id)
 #: html/Admin/Global/Template.html:102
 #: html/Admin/Global/Template.html:46
@@ -3507,7 +3507,7 @@ msgstr "Rediger skabeloner, der gælder for alle køer"
 msgid "Modify the default \"RT at a glance\" view"
 msgstr "Tilpas standardvisningen af  \"RT set fra oven\""
 
-#. ($Group->Name)
+#. ($Group->name)
 #: html/Admin/Groups/Modify.html:119
 #: html/User/Groups/Modify.html:107
 msgid "Modify the group %1"
@@ -3517,7 +3517,7 @@ msgstr "Rediger gruppen %1"
 msgid "Modify the queue watchers"
 msgstr "Rediger observatører for køen"
 
-#. ($UserObj->Name)
+#. ($user_object->name)
 #: html/Admin/Users/Modify.html:309
 msgid "Modify the user %1"
 msgstr "Rediger brugeren %1"
@@ -3538,19 +3538,19 @@ msgstr "Rediger sag #%1"
 msgid "Modify tickets"
 msgstr "Rediger sager"
 
-#. ($CustomFieldObj->Name)
+#. ($CustomFieldObj->name)
 #: html/Admin/CustomFields/UserRights.html:157
 msgid "Modify user rights for custom field %1"
 msgstr "Rediger brugerrettigheder for ekstrafelter %1"
 
-#. ($GroupObj->Name)
+#. ($GroupObj->name)
 #: html/Admin/Groups/UserRights.html:46
 #: html/Admin/Groups/UserRights.html:50
 #: html/Admin/Groups/UserRights.html:56
 msgid "Modify user rights for group %1"
 msgstr "Rediger brugerrettigheder for gruppe %1"
 
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 #: html/Admin/Queues/UserRights.html:46
 #: html/Admin/Queues/UserRights.html:50
 msgid "Modify user rights for queue %1"
@@ -3614,7 +3614,7 @@ msgid "Multiple"
 msgstr "Flere"
 
 #: lib/RT/User_Overlay.pm:226
-msgid "Must specify 'Name' attribute"
+msgid "Must specify 'name' attribute"
 msgstr "Egenskab 'Navn' skal angives"
 
 #. ($friendly_status)
@@ -3649,11 +3649,11 @@ msgstr "Mine gemte søgninger"
 #: html/Admin/Groups/Modify.html:65
 #: html/Search/Bulk.html:157
 #: html/User/Groups/Modify.html:65
-msgid "Name"
+msgid "name"
 msgstr "Navn"
 
 #: lib/RT/User_Overlay.pm:233
-msgid "Name in use"
+msgid "name in use"
 msgstr "Navn i brug"
 
 #: NOT FOUND IN SOURCE
@@ -3674,7 +3674,7 @@ msgstr "Nye referencer"
 
 #: html/Admin/Users/Modify.html:119
 #: html/User/Prefs.html:109
-msgid "New Password"
+msgid "New password"
 msgstr "Ny adgangskode"
 
 #: etc/initialdata:332
@@ -3781,12 +3781,12 @@ msgid "Next page"
 msgstr "Næste side"
 
 #: NOT FOUND IN SOURCE
-msgid "NickName"
+msgid "nickname"
 msgstr "KaldeNavn"
 
 #: html/Admin/Users/Modify.html:84
 #: html/User/Prefs.html:72
-msgid "Nickname"
+msgid "nickname"
 msgstr "Kaldenavn"
 
 #: html/Admin/CustomFields/UserRights.html:145
@@ -3886,7 +3886,7 @@ msgstr "Ingen adgangskode sat"
 msgid "No permission to create queues"
 msgstr "Ingen adgang til at oprette køer"
 
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 #: lib/RT/Ticket_Overlay.pm:420
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Ingen adgang til at oprette sager i denne kø '%1'"
@@ -4009,7 +4009,7 @@ msgid "Notify AdminCcs"
 msgstr "Giv besked til AdminCc'ere"
 
 #: etc/initialdata:97
-msgid "Notify AdminCcs as Comment"
+msgid "Notify AdminCcs as comment"
 msgstr "Giv besked til AdminCc'ere som kommentar"
 
 #: etc/initialdata:93
@@ -4019,7 +4019,7 @@ msgstr "Giv besked til Cc'ere"
 
 #: etc/initialdata:89
 #: etc/upgrade/3.1.17/content:2
-msgid "Notify Ccs as Comment"
+msgid "Notify Ccs as comment"
 msgstr "Giv besked til Cc'ere som kommentarer"
 
 #: etc/initialdata:128
@@ -4027,7 +4027,7 @@ msgid "Notify Other Recipients"
 msgstr "Giv besked til andre modtagere"
 
 #: etc/initialdata:124
-msgid "Notify Other Recipients as Comment"
+msgid "Notify Other Recipients as comment"
 msgstr "Giv besked til andre modtagere som kommentar"
 
 #: etc/initialdata:85
@@ -4035,7 +4035,7 @@ msgid "Notify Owner"
 msgstr "Giv besked til ejer"
 
 #: etc/initialdata:81
-msgid "Notify Owner as Comment"
+msgid "Notify Owner as comment"
 msgstr "Giv besked til ejer som kommentar"
 
 #: etc/initialdata:376
@@ -4063,7 +4063,7 @@ msgid "Notify Requestors and Ccs"
 msgstr "Giv besked til rekvirenter og Cc'ere"
 
 #: etc/initialdata:106
-msgid "Notify Requestors and Ccs as Comment"
+msgid "Notify Requestors and Ccs as comment"
 msgstr "Giv besked til rekvirenter og Cc'ere som kommentar"
 
 #: etc/initialdata:120
@@ -4071,7 +4071,7 @@ msgid "Notify Requestors, Ccs and AdminCcs"
 msgstr "Giv besked til rekvirenter, Cc'ere og AdminCc'ere"
 
 #: etc/initialdata:116
-msgid "Notify Requestors, Ccs and AdminCcs as Comment"
+msgid "Notify Requestors, Ccs and AdminCcs as comment"
 msgstr "Giv besked til rekvirenter, Cc'ere og AdminCc'ere som kommentar"
 
 #: lib/RT/Date.pm:451
@@ -4129,13 +4129,13 @@ msgstr "Off-line dataoverførsel"
 msgid "On"
 msgstr "Ved"
 
-#. ($self->CreatedAsString(), $self->CreatorObj->Name())
+#. ($self->CreatedAsString(), $self->CreatorObj->name())
 #: lib/RT/Transaction_Overlay.pm:326
 msgid "On %1, %2 wrote:"
 msgstr "På %1, skrev %2:"
 
 #: etc/initialdata:163
-msgid "On Comment"
+msgid "On comment"
 msgstr "Ved kommentar"
 
 #: etc/initialdata:156
@@ -4231,7 +4231,7 @@ msgstr "Sortering"
 
 #: html/Admin/Users/Modify.html:141
 #: html/User/Prefs.html:129
-msgid "Organization"
+msgid "organization"
 msgstr "Organisation"
 
 #. ($approving->id, $approving->Subject)
@@ -4282,7 +4282,7 @@ msgstr "Ejer ændret fra %1 til %2"
 msgid "Owner could not be set."
 msgstr "Ejer kunne ikke defineres."
 
-#. ($Old->Name , $New->Name)
+#. ($Old->name , $New->name)
 #: lib/RT/Transaction_Overlay.pm:672
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Ejer tvungent ændret fra %1 til %2"
@@ -4319,47 +4319,47 @@ msgstr "Forældre"
 
 #: html/Elements/Login:95
 #: html/User/Prefs.html:105
-msgid "Password"
+msgid "password"
 msgstr "Adgangskode"
 
 #: html/NoAuth/Reminder.html:46
-msgid "Password Reminder"
+msgid "password Reminder"
 msgstr "Adgangskodepåmindelse"
 
 #: lib/RT/Transaction_Overlay.pm:781
 #: lib/RT/User_Overlay.pm:1045
-msgid "Password changed"
+msgid "password changed"
 msgstr "Adgangskode ændret"
 
-#. ($RT::MinimumPasswordLength)
+#. ($RT::MinimumpasswordLength)
 #: lib/RT/User_Overlay.pm:1037
 #: lib/RT/User_Overlay.pm:214
-msgid "Password needs to be at least %1 characters long"
+msgid "password needs to be at least %1 characters long"
 msgstr "Adgangskode skal være på mindst %1 karakterer"
 
 #: lib/RT/User_Overlay.pm:1044
-msgid "Password set"
+msgid "password set"
 msgstr "Adgangskode sat"
 
 #: NOT FOUND IN SOURCE
-msgid "Password too short"
+msgid "password too short"
 msgstr "Adgangskode for kort"
 
 #. (loc_fuzzy($msg))
 #: html/User/Prefs.html:240
-msgid "Password: %1"
+msgid "password: %1"
 msgstr "Adgangskode: %1"
 
 #: lib/RT/User_Overlay.pm:1030
-msgid "Password: Permission Denied"
+msgid "password: Permission Denied"
 msgstr "Adgangskode: Adgang afvist"
 
 #: html/Admin/Users/Modify.html:364
-msgid "Passwords do not match."
+msgid "passwords do not match."
 msgstr "Adgangskoder stemmer ikke overens."
 
 #: html/User/Prefs.html:242
-msgid "Passwords do not match. Your password has not been changed"
+msgid "passwords do not match. Your password has not been changed"
 msgstr "Adgangskoder stemmer ikke overens. Din adgangskode er ikke blevet ændret."
 
 #: html/Ticket/Elements/ShowSummary:62
@@ -4507,7 +4507,7 @@ msgstr "Placeholder"
 msgid "Preferences"
 msgstr "Præferencer"
 
-#. ($pane, $UserObj->Name)
+#. ($pane, $user_object->name)
 #: html/Admin/Users/MyRT.html:75
 msgid "Preferences %1 for user %2 ."
 msgstr "Præferencer %1 for bruger %2 ."
@@ -4542,7 +4542,7 @@ msgstr "Forrige side"
 msgid "Pri"
 msgstr "Pri"
 
-#. ($args{'PrincipalId'})
+#. ($args{'principal_id'})
 #: lib/RT/ACE_Overlay.pm:157
 #: lib/RT/ACE_Overlay.pm:239
 #: lib/RT/ACE_Overlay.pm:569
@@ -4566,17 +4566,17 @@ msgid "Privacy:"
 msgstr "Privat:"
 
 #: etc/initialdata:25
-msgid "Privileged"
+msgid "privileged"
 msgstr "Privilegeret"
 
 #. (loc_fuzzy($msg))
 #: html/Admin/Users/Modify.html:342
 #: html/User/Prefs.html:231
-msgid "Privileged status: %1"
+msgid "privileged status: %1"
 msgstr "Privilegeret status: %1"
 
 #: html/Admin/Users/index.html:102
-msgid "Privileged users"
+msgid "privileged users"
 msgstr "Privilegerede brugere"
 
 #: NOT FOUND IN SOURCE
@@ -4631,7 +4631,7 @@ msgid "Queue '%1' not found\\n"
 msgstr "Kø '%1' ikke fundet\\n"
 
 #: html/Admin/Queues/Modify.html:64
-msgid "Queue Name"
+msgid "Queue name"
 msgstr "Navn på kø"
 
 #: NOT FOUND IN SOURCE
@@ -4765,7 +4765,7 @@ msgstr "RT variable faktorer"
 msgid "RT at a glance"
 msgstr "Request Tracker - hurtigt overblik"
 
-#. ($UserObj->Name)
+#. ($user_object->name)
 #: html/Admin/Users/MyRT.html:30
 msgid "RT at a glance for the user %1"
 msgstr "Request Tracker - hurtigt overblik for bruger %1"
@@ -4839,11 +4839,11 @@ msgstr "RT's e-mail-kommandotilstand kræver PGP-verificering. Enten har du ikke
 
 #: html/Admin/Users/Modify.html:79
 #: html/User/Prefs.html:69
-msgid "Real Name"
+msgid "Real name"
 msgstr "Fulde navn"
 
 #: NOT FOUND IN SOURCE
-msgid "RealName"
+msgid "real_name"
 msgstr "FuldeNavn"
 
 #. ($value)
@@ -5058,7 +5058,7 @@ msgstr "Resultater pr. side"
 
 #: html/Admin/Users/Modify.html:126
 #: html/User/Prefs.html:116
-msgid "Retype Password"
+msgid "Retype password"
 msgstr "Gentag adgangskoden"
 
 #: html/Search/Elements/EditSearches:61
@@ -5539,7 +5539,7 @@ msgid "ShowTicket"
 msgstr "VisSag"
 
 #: lib/RT/Queue_Overlay.pm:104
-msgid "ShowTicketComments"
+msgid "ShowTicketcomments"
 msgstr "VisSagKommentarer"
 
 #: lib/RT/Queue_Overlay.pm:107
@@ -5610,7 +5610,7 @@ msgstr "Sat i bero"
 
 #: NOT FOUND IN SOURCE
 msgid "Start page"
-msgstr "Startside"
+msgstr "startside"
 
 #: html/Elements/SelectDateType:48
 #: html/Ticket/Elements/EditDates:53
@@ -5626,15 +5626,15 @@ msgstr "Startdato '%1' kunne ikke fortolkes"
 #: html/Ticket/Create.html:208
 #: html/Ticket/Elements/EditDates:48
 #: html/Ticket/Elements/ShowDates:52
-msgid "Starts"
+msgid "starts"
 msgstr "Starter"
 
 #: NOT FOUND IN SOURCE
-msgid "Starts By"
+msgid "starts By"
 msgstr "Starter den"
 
 #: NOT FOUND IN SOURCE
-msgid "Starts date '%1' could not be parsed"
+msgid "starts date '%1' could not be parsed"
 msgstr "Startdato '%1' kunne ikke fortolkes"
 
 #: html/Admin/Users/Modify.html:162
@@ -5677,7 +5677,7 @@ msgstr "Stjæl sager"
 msgid "StealTicket"
 msgstr "StjælSag"
 
-#. ($Old->Name)
+#. ($Old->name)
 #: lib/RT/Transaction_Overlay.pm:678
 msgid "Stolen from %1"
 msgstr "Stjålet fra %1"
@@ -5977,7 +5977,7 @@ msgstr "Sagens ejer"
 msgid "The requestor of a ticket"
 msgstr "Sagens rekvirent"
 
-#: html/Admin/Elements/EditUserComments:47
+#: html/Admin/Elements/EditUsercomments:47
 msgid "These comments aren't generally visible to the user"
 msgstr "Disse kommentarer er normalt ikke synlige for brugeren"
 
@@ -6044,7 +6044,7 @@ msgstr "Sag #%1: %2"
 msgid "Ticket %1"
 msgstr "Sag %1"
 
-#. ($self->id, $QueueObj->Name)
+#. ($self->id, $QueueObj->name)
 #: lib/RT/Ticket_Overlay.pm:755
 #: lib/RT/Ticket_Overlay.pm:775
 msgid "Ticket %1 created in queue '%2'"
@@ -6210,7 +6210,7 @@ msgid "Time worked"
 msgstr "Tid brugt"
 
 #: lib/RT/Ticket_Overlay.pm:1167
-msgid "TimeWorked"
+msgid "time_worked"
 msgstr "TidBrugt"
 
 #: html/Search/Elements/EditFormat:74
@@ -6468,7 +6468,7 @@ msgid "User %1 %2: %3\\n"
 msgstr "Bruger %1 %2: %3\\n"
 
 #: NOT FOUND IN SOURCE
-msgid "User %1 Password: %2\\n"
+msgid "User %1 password: %2\\n"
 msgstr "Bruger %1 adgangskode: %2\\n"
 
 #. ($args{'Owner'})
@@ -6603,7 +6603,7 @@ msgid "Watchers"
 msgstr "Observatører"
 
 #: NOT FOUND IN SOURCE
-msgid "WebEncoding"
+msgid "web_encoding"
 msgstr "WebKodning"
 
 #: lib/RT/Date.pm:419
@@ -6773,7 +6773,7 @@ msgstr "tillad oprettelse af gemte søgninger"
 msgid "allow loading of saved searches"
 msgstr "tillad indlæsning af gemte søgninger"
 
-#. ($right->PrincipalObj->Object->SelfDescription)
+#. ($right->principal_object->Object->SelfDescription)
 #: html/User/Elements/DelegateRights:80
 msgid "as granted to %1"
 msgstr "som givet til %1"
@@ -6881,12 +6881,12 @@ msgstr "filnavn"
 msgid "greater than"
 msgstr "større end"
 
-#. ($self->Name)
+#. ($self->name)
 #: lib/RT/Group_Overlay.pm:214
 msgid "group '%1'"
 msgstr "gruppe '%1'"
 
-#. ($m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query))
+#. ($m->scomp('Elements/SelectGroupBy', name => 'PrimaryGroupBy', Query => $Query))
 #: html/Search/Results.html:88
 msgid "grouped by %1"
 msgstr "fordelt pr. %1"
@@ -6979,12 +6979,12 @@ msgstr "tilbud"
 msgid "open"
 msgstr "åben"
 
-#. ($self->Name, $user->Name)
+#. ($self->name, $user->name)
 #: lib/RT/Group_Overlay.pm:219
 msgid "personal group '%1' for user '%2'"
 msgstr "personlig gruppe '%1' for bruger '%2'"
 
-#. ($queue->Name, $self->Type)
+#. ($queue->name, $self->Type)
 #: lib/RT/Group_Overlay.pm:227
 msgid "queue %1 %2"
 msgstr "kø %1 %2"
@@ -7013,7 +7013,7 @@ msgstr "regneark"
 msgid "stalled"
 msgstr "sat i bero"
 
-#. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle'))
+#. ($m->scomp('Elements/SelectChartType', name => 'ChartStyle'))
 #: html/Search/Results.html:89
 msgid "style: %1"
 msgstr "stil: %1"
@@ -7055,7 +7055,7 @@ msgstr "ubeskrevet gruppe %1"
 msgid "undescripbed group %1"
 msgstr "ubeskrevet gruppe %1"
 
-#. ($user->Object->Name)
+#. ($user->Object->name)
 #: lib/RT/Group_Overlay.pm:211
 msgid "user %1"
 msgstr "bruger %1"

@@ -45,18 +45,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$name%>">
 % foreach my $field (@sortfields) {
 <option value="<%$field%>" <% $field eq $Default && 'SELECTED'%>><% loc($field) %></option>
 % }
 </select>
 
 <%INIT>
-my $tickets = new RT::Model::TicketCollection($session{'CurrentUser'});
+my $tickets = new RT::Model::TicketCollection(Jifty->web->current_user);
 my @sortfields = $tickets->SortFields();
 
 </%INIT>
 <%ARGS>
-$Name => 'SortTicketsBy'
+$name => 'SortTicketsBy'
 $Default => 'id'
 </%ARGS>

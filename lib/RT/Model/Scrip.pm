@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::Scrip - an RT Scrip object
 
@@ -133,7 +133,7 @@ sub create {
         $args{'Queue'} = 0;    # avoid undef sneaking in
     }
     else {
-        my $QueueObj = RT::Model::Queue->new( $self->current_user );
+        my $QueueObj = RT::Model::Queue->new;
         $QueueObj->load( $args{'Queue'} );
         unless ( $QueueObj->id ) {
             return ( 0, $self->loc('Invalid queue') );
@@ -149,7 +149,7 @@ sub create {
     require RT::Model::ScripAction;
     return ( 0, $self->loc("Action is mandatory argument") )
         unless $args{'ScripAction'};
-    my $action = RT::Model::ScripAction->new( $self->current_user );
+    my $action = RT::Model::ScripAction->new;
     $action->load( $args{'ScripAction'} );
     return ( 0, $self->loc( "Action '[_1]' not found", $args{'ScripAction'} ) ) 
         unless $action->id;
@@ -157,7 +157,7 @@ sub create {
     require RT::Model::Template;
     return ( 0, $self->loc("Template is mandatory argument") )
         unless $args{'Template'};
-    my $template = RT::Model::Template->new( $self->current_user );
+    my $template = RT::Model::Template->new;
     $template->load( $args{'Template'} );
     return ( 0, $self->loc( "Template '[_1]' not found", $args{'Template'} ) )
         unless $template->id;
@@ -165,7 +165,7 @@ sub create {
     require RT::Model::ScripCondition;
     return ( 0, $self->loc("Condition is mandatory argument") )
         unless $args{'ScripCondition'};
-    my $condition = RT::Model::ScripCondition->new( $self->current_user );
+    my $condition = RT::Model::ScripCondition->new;
     $condition->load( $args{'ScripCondition'} );
     return ( 0, $self->loc( "Condition '[_1]' not found", $args{'ScripCondition'} ) )
         unless $condition->id;
@@ -224,7 +224,7 @@ sub QueueObj {
 
     if ( !$self->{'QueueObj'} ) {
         require RT::Model::Queue;
-        $self->{'QueueObj'} = RT::Model::Queue->new( $self->current_user );
+        $self->{'QueueObj'} = RT::Model::Queue->new;
         $self->{'QueueObj'}->load( $self->__value('Queue') );
     }
     return ( $self->{'QueueObj'} );
@@ -246,7 +246,7 @@ sub ActionObj {
     unless ( defined $self->{'ScripActionObj'} ) {
         require RT::Model::ScripAction;
 
-        $self->{'ScripActionObj'} = RT::Model::ScripAction->new( $self->current_user );
+        $self->{'ScripActionObj'} = RT::Model::ScripAction->new;
 
         #TODO: why are we loading Actions with templates like this.
         # two separate methods might make more sense
@@ -268,7 +268,7 @@ Retuns an L<RT::Model::ScripCondition> object with this Scrip's IsApplicable
 sub ConditionObj {
     my $self = shift;
 
-    my $res = RT::Model::ScripCondition->new( $self->current_user );
+    my $res = RT::Model::ScripCondition->new;
     $res->load( $self->ScripCondition );
     return $res;
 }
@@ -288,7 +288,7 @@ sub TemplateObj {
 
     unless ( defined $self->{'TemplateObj'} ) {
         require RT::Model::Template;
-        $self->{'TemplateObj'} = RT::Model::Template->new( $self->current_user );
+        $self->{'TemplateObj'} = RT::Model::Template->new;
         $self->{'TemplateObj'}->load( $self->Template );
     }
     return ( $self->{'TemplateObj'} );
@@ -545,7 +545,7 @@ calls has_right.
 sub current_user_has_right {
     my $self  = shift;
     my $right = shift;
-    return ( $self->has_right( Principal => $self->current_user->UserObj,
+    return ( $self->has_right( Principal => $self->current_user->user_object,
                               Right     => $right ) );
 
 }

@@ -65,7 +65,7 @@ sub create_users {
     $domain = $ARGS{'subdomain'} . ".$domain" if $ARGS{'subdomain'};
 
     foreach my $user (@usernames) {
-	my $user_obj = RT::Model::User->new(RT->system_user);
+	my $user_obj = RT::Model::User->new(current_user => RT->system_user);
 	$user_obj->load($user);
 	if ($user_obj->id() && !$anon) {
 	    # Use this user; assume we know what we're doing.  Don't
@@ -76,11 +76,11 @@ sub create_users {
 	    # of the list.
 	    append(@users, $lorem->words(1));
 	} else {
-	    $user_obj->create(Name => $user,
-			      Password => $user."pass",
-			      EmailAddress => $user.'@'.$domain,
-			      RealName => "$user ipsum",
-			      Privileged => $ARGS{'privileged'},
+	    $user_obj->create(name => $user,
+			      password => $user."pass",
+			      email => $user.'@'.$domain,
+			      real_name => "$user ipsum",
+			      privileged => $ARGS{'privileged'},
 			      );
 	    push(@users_returned, $user_obj);
 	}
@@ -97,7 +97,7 @@ sub create_users {
 	    unless ($group_obj->id()) {
 		# Create it.
 		$group_obj->create_userDefinedGroup(
-				Name => $group,
+				name => $group,
 				Description => "lorem defined group $group",
 						   );
 	    }

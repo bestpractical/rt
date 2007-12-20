@@ -94,26 +94,26 @@ sub mailsent_ok {
 
 sub load_or_create_user {
     my $self = shift;
-    my %args = ( Privileged => 1, Disabled => 0, @_ );
+    my %args = ( privileged => 1, disabled => 0, @_ );
 
      my $MemberOf = delete $args{'MemberOf'};
      $MemberOf = [ $MemberOf ] if defined $MemberOf && !ref $MemberOf;
      $MemberOf ||= [];
 
-    my $obj = RT::Model::User->new( RT->system_user );
-    if ( $args{'Name'} ) {
-        $obj->load_by_cols( Name => $args{'Name'} );
-    } elsif ( $args{'EmailAddress'} ) {
-        $obj->load_by_cols( EmailAddress => $args{'EmailAddress'} );
+    my $obj = RT::Model::User->new(current_user => RT->system_user );
+    if ( $args{'name'} ) {
+        $obj->load_by_cols( name => $args{'name'} );
+    } elsif ( $args{'email'} ) {
+        $obj->load_by_cols( email => $args{'email'} );
     } else {
-        die "Name or EmailAddress is required";
+        die "name or email is required";
     }
     if ( $obj->id ) {
         # cool
-        $obj->set_Privileged( $args{'Privileged'} || 0 )
-            if ($args{'Privileged'}||0) != ($obj->Privileged||0);
-        $obj->set_Disabled( $args{'Disabled'} || 0 )
-            if ($args{'Disabled'}||0) != ($obj->Disabled||0);
+        $obj->set_privileged( $args{'privileged'} || 0 )
+            if ($args{'privileged'}||0) != ($obj->privileged||0);
+        $obj->set_disabled( $args{'disabled'} || 0 )
+            if ($args{'disabled'}||0) != ($obj->disabled||0);
     } else {
         my ($val, $msg) = $obj->create( %args );
         die "$msg" unless $val;
@@ -122,7 +122,7 @@ sub load_or_create_user {
     # clean group membership
     {
         require RT::Model::GroupMemberCollection;
-        my $gms = RT::Model::GroupMemberCollection->new( RT->system_user );
+        my $gms = RT::Model::GroupMemberCollection->new(current_user => RT->system_user );
         my $groups_alias = $gms->join(
             column1 => 'GroupId', table2 => 'Groups', column2 => 'id',
         );
@@ -135,7 +135,7 @@ sub load_or_create_user {
 
     # add new user to groups
     foreach ( @$MemberOf ) {
-        my $group = RT::Model::Group->new( RT::system_user() );
+        my $group = RT::Model::Group->new(current_user => RT::system_user() );
         $group->loadUserDefinedGroup( $_ );
         die "couldn't load group '$_'" unless $group->id;
         $group->AddMember( $obj->id );
@@ -150,18 +150,18 @@ sub load_or_create_user {
 
 sub load_or_create_queue {
     my $self = shift;
-    my %args = ( Disabled => 0, @_ );
-    my $obj = RT::Model::Queue->new( RT->system_user );
-    if ( $args{'Name'} ) {
-        $obj->load_by_cols( Name => $args{'Name'} );
+    my %args = ( disabled => 0, @_ );
+    my $obj = RT::Model::Queue->new(current_user => RT->system_user );
+    if ( $args{'name'} ) {
+        $obj->load_by_cols( name => $args{'name'} );
     } else {
-        die "Name is required";
+        die "name is required";
     }
     unless ( $obj->id ) {
         my ($val, $msg) = $obj->create( %args );
         die "$msg" unless $val;
     } else {
-        my @fields = qw(CorrespondAddress CommentAddress);
+        my @fields = qw(CorrespondAddress commentAddress);
         foreach my $field ( @fields ) {
             next unless exists $args{ $field };
             next if $args{ $field } eq $obj->$field;
@@ -181,16 +181,16 @@ sub store_rights {
 
     require RT::ACE;
     # fake construction
-    RT::ACE->new( RT->system_user );
+    RT::ACE->new(current_user => RT->system_user );
     my @fields = keys %{ RT::ACE->_ClassAccessible };
 
     require RT::ACL;
-    my $acl = RT::ACL->new( RT->system_user );
-    $acl->limit( column => 'RightName', operator => '!=', value => 'SuperUser' );
+    my $acl = RT::ACL->new(current_user => RT->system_user );
+    $acl->limit( column => 'Rightname', operator => '!=', value => 'SuperUser' );
 
     my @res;
     while ( my $ace = $acl->next ) {
-        my $obj = $ace->PrincipalObj->Object;
+        my $obj = $ace->principal_object->Object;
         if ( $obj->isa('RT::Model::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {
             next;
         }
@@ -208,7 +208,7 @@ sub restore_rights {
     my $self = shift;
     my @entries = @_;
     foreach my $entry ( @entries ) {
-        my $ace = RT::Model::ACE->new( RT->system_user );
+        my $ace = RT::Model::ACE->new(current_user => RT->system_user );
         my ($status, $msg) = $ace->RT::Record::create( %$entry );
         unless ( $status ) {
             diag "couldn't create a record: $msg";
@@ -221,10 +221,10 @@ sub set_rights {
     my @list = ref $_[0]? @_: @_? { @_ }: ();
 
     require RT::Model::ACECollection;
-    my $acl = RT::Model::ACECollection->new( RT->system_user );
-    $acl->limit( column => 'RightName', operator => '!=', value => 'SuperUser' );
+    my $acl = RT::Model::ACECollection->new(current_user => RT->system_user );
+    $acl->limit( column => 'Rightname', operator => '!=', value => 'SuperUser' );
     while ( my $ace = $acl->next ) {
-        my $obj = $ace->PrincipalObj->Object;
+        my $obj = $ace->principal_object->Object;
         if ( $obj->isa('RT::Model::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {
             next;
         }
@@ -235,15 +235,15 @@ sub set_rights {
         my $principal = delete $e->{'Principal'};
         unless ( ref $principal ) {
             if ( $principal =~ /^(everyone|(?:un)?privileged)$/i ) {
-                $principal = RT::Model::Group->new( RT->system_user );
+                $principal = RT::Model::Group->new(current_user => RT->system_user );
                 $principal->load_system_internal_group($1);
             } else {
                 die "principal is not an object, but also is not name of a system group";
             }
         }
         unless ( $principal->isa('RT::Principal') ) {
-            if ( $principal->can('PrincipalObj') ) {
-                $principal = $principal->PrincipalObj;
+            if ( $principal->can('principal_object') ) {
+                $principal = $principal->principal_object;
             }
         }
         my @rights = ref $e->{'Right'}? @{ $e->{'Right'} }: ($e->{'Right'});

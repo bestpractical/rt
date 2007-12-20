@@ -48,7 +48,7 @@
 % if (!@keys) {
 <% loc("No usable keys.") %>
 % } else {
-<select name="<% $Name %>">
+<select name="<% $name %>">
 %     foreach my $key (@keys) {
 <option value="<% $key->{'Fingerprint'} %>"><% $key->{'Fingerprint'} %> <% loc("(trust: [_1])", $key->{'TrustTerse'}) %></option>
 %     }
@@ -59,7 +59,7 @@
 require RT::Crypt::GnuPG;
 my $d;
 
-my %res = RT::Crypt::GnuPG::GetKeysForEncryption($EmailAddress);
+my %res = RT::Crypt::GnuPG::GetKeysForEncryption($email);
 # move the preferred key to the top of the list
 my @keys = map {
                $_->{'Fingerprint'} eq ( $Default || '' )
@@ -74,8 +74,8 @@ unshift @keys, $d if defined $d;
 
 </%INIT>
 <%ARGS>
-$Name         => 'PreferredKey'
-$EmailAddress => undef
+$name         => 'PreferredKey'
+$email => undef
 $Default      => undef
 </%ARGS>
 

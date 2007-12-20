@@ -48,7 +48,7 @@ use strict;
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::ScripAction - RT Action object
 
@@ -78,7 +78,7 @@ use base qw/RT::Record/;
 sub table {'ScripActions'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-        column Name => type is 'text';
+        column name => type is 'text';
         column Description => type is 'text';
         column ExecModule => type is 'text';
         column Argument => type is 'text';
@@ -113,7 +113,7 @@ sub delete  {
 
 =head2 Load IDENTIFIER
 
-Loads an action by its Name.
+Loads an action by its name.
 
 Returns: Id, Error Message
 
@@ -131,7 +131,7 @@ sub load  {
 	$self->SUPER::load($identifier);
     }
     else {
-	$self->load_by_cols('Name', $identifier);
+	$self->load_by_cols('name', $identifier);
 	
     }
 
@@ -194,15 +194,15 @@ sub TemplateObj {
     my $self = shift;
     return undef unless $self->{Template};
     if ( !$self->{'TemplateObj'} ) {
-        $self->{'TemplateObj'} = RT::Model::Template->new( $self->current_user );
+        $self->{'TemplateObj'} = RT::Model::Template->new;
         $self->{'TemplateObj'}->load_by_id( $self->{'Template'} );
 
         if ( ( $self->{'TemplateObj'}->__value('Queue') == 0 )
             && $self->{'_TicketObj'} ) {
-            my $tmptemplate = RT::Model::Template->new( $self->current_user );
+            my $tmptemplate = RT::Model::Template->new;
             my ( $ok, $err ) = $tmptemplate->loadQueueTemplate(
                 Queue => $self->{'_TicketObj'}->QueueObj->id,
-                Name  => $self->{'TemplateObj'}->Name);
+                name  => $self->{'TemplateObj'}->name);
 
             if ( $tmptemplate->id ) {
                 # found the queue-specific template with the same name

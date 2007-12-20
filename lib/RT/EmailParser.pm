@@ -59,7 +59,7 @@ use MIME::Head;
 use MIME::Parser;
 use File::Temp qw/tempdir/;
 
-=head1 NAME
+=head1 name
 
   RT::EmailParser - helper functions for parsing parts from incoming
   email messages
@@ -304,11 +304,11 @@ sub ParseCcAddressesFromHead {
 
     foreach my $AddrObj ( @ToObjs, @CcObjs ) {
         my $Address = $AddrObj->address;
-        my $user = RT::Model::User->new(RT->system_user);
-        $Address = $user->CanonicalizeEmailAddress($Address);
-        next if ( lc $args{'CurrentUser'}->EmailAddress   eq lc $Address );
+        my $user = RT::Model::User->new(current_user => RT->system_user);
+        $Address = $user->canonicalize_email($Address);
+        next if ( lc $args{'CurrentUser'}->email   eq lc $Address );
         next if ( lc $args{'QueueObj'}->CorrespondAddress eq lc $Address );
-        next if ( lc $args{'QueueObj'}->CommentAddress    eq lc $Address );
+        next if ( lc $args{'QueueObj'}->commentAddress    eq lc $Address );
         next if ( $self->IsRTAddress($Address) );
 
         push ( @Addresses, $Address );
@@ -384,12 +384,12 @@ sub ParseAddressFromHeader {
         return ( undef, undef );
     }
 
-    my $Name = ( $AddrObj->phrase || $AddrObj->comment || $AddrObj->address );
+    my $name = ( $AddrObj->phrase || $AddrObj->comment || $AddrObj->address );
 
     #Lets take the from and load a user object.
     my $Address = $AddrObj->address;
 
-    return ( $Address, $Name );
+    return ( $Address, $name );
 }
 
 
@@ -448,10 +448,10 @@ sub CullRTAddresses {
 # LookupExternalUserInfo is a site-definable method for synchronizing
 # incoming users with an external data source. 
 #
-# This routine takes a tuple of EmailAddress and FriendlyName
-#   EmailAddress is the user's email address, ususally taken from
+# This routine takes a tuple of email and friendly_name
+#   email is the user's email address, ususally taken from
 #       an email message's From: header.
-#   FriendlyName is a freeform string, ususally taken from the "comment" 
+#   friendly_name is a freeform string, ususally taken from the "comment" 
 #       portion of an email message's From: header.
 #
 # If you define an AutoRejectRequest template, RT will use this   
@@ -463,10 +463,10 @@ sub CullRTAddresses {
  LookupExternalUserInfo is a site-definable method for synchronizing
  incoming users with an external data source. 
 
- This routine takes a tuple of EmailAddress and FriendlyName
-    EmailAddress is the user's email address, ususally taken from
+ This routine takes a tuple of email and friendly_name
+    email is the user's email address, ususally taken from
         an email message's From: header.
-    FriendlyName is a freeform string, ususally taken from the "comment" 
+    friendly_name is a freeform string, ususally taken from the "comment" 
         portion of an email message's From: header.
 
  It returns (FoundInExternalDatabase, ParamHash);
@@ -478,26 +478,26 @@ sub CullRTAddresses {
    following fields. These fields are used to populate RT's users 
    database when the user is created.
 
-    EmailAddress is the email address that RT should use for this user.  
-    Name is the 'Name' attribute RT should use for this user. 
-         'Name' is used for things like access control and user lookups.
-    RealName is what RT should display as the user's name when displaying 
+    email is the email address that RT should use for this user.  
+    name is the 'name' attribute RT should use for this user. 
+         'name' is used for things like access control and user lookups.
+    real_name is what RT should display as the user's name when displaying 
          'friendly' names
 
 =cut
 
 sub LookupExternalUserInfo {
   my $self = shift;
-  my $EmailAddress = shift;
-  my $RealName = shift;
+  my $email = shift;
+  my $real_name = shift;
 
   my $FoundInExternalDatabase = 1;
   my %params;
 
-  #Name is the RT username you want to use for this user.
-  $params{'Name'} = $EmailAddress;
-  $params{'EmailAddress'} = $EmailAddress;
-  $params{'RealName'} = $RealName;
+  #name is the RT username you want to use for this user.
+  $params{'name'} = $email;
+  $params{'email'} = $email;
+  $params{'real_name'} = $real_name;
 
   # See RT's contributed code for examples.
   # http://www.fsck.com/pub/rt/contrib/

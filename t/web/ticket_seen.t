@@ -6,16 +6,16 @@ use warnings;
 use RT::Test; use Test::More tests => 16;
 
 
-my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
+my $queue = RT::Test->load_or_create_queue( name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
 
 my $user_a = RT::Test->load_or_create_user(
-    Name => 'user_a', Password => 'password',
+    name => 'user_a', password => 'password',
 );
 ok $user_a && $user_a->id, 'loaded or created user';
 
 my $user_b = RT::Test->load_or_create_user(
-    Name => 'user_b', Password => 'password',
+    name => 'user_b', password => 'password',
 );
 ok $user_b && $user_b->id, 'loaded or created user';
 

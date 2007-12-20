@@ -45,14 +45,14 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME ="<%$Name%>">
+<select name ="<%$name%>">
 <option value="&lt;"><%$Before%></option>
 <option value="="><%$On%></option>
 <option value="&gt;"><%$After%></option>
 </select>
 
 <%ARGS>
-$Name => undef
+$name => undef
 $Default => undef
 $Before => loc('Before')
 $On => 	loc('On')

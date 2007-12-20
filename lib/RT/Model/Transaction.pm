@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-=head1 NAME
+=head1 name
 
 RT::Model::Transaction
 
@@ -24,7 +24,7 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
     column ObjectType => max_length is 64, type is 'varchar(64)', default is '';
-    column ObjectId   => max_length is 11, type is 'int(11)',     default is '0';
+    column object_id   => max_length is 11, type is 'int(11)',     default is '0';
     column TimeTaken  => max_length is 11, type is 'int(11)',     default is '0';
     column Type       => max_length is 20, type is 'varchar(20)', default is '';
     column Field     => max_length is 40, type is 'varchar(40)', default is '';
@@ -61,19 +61,19 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 ObjectId
+=head2 object_id
 
-Returns the current value of ObjectId. 
-(In the database, ObjectId is stored as int(11).)
-
-
-
-=head2 SetObjectId value
+Returns the current value of object_id. 
+(In the database, object_id is stored as int(11).)
 
 
-Set ObjectId to value. 
+
+=head2 Setobject_id value
+
+
+Set object_id to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ObjectId will be stored as a int(11).)
+(In the database, object_id will be stored as a int(11).)
 
 
 =cut
@@ -303,7 +303,7 @@ sub create {
         ActivateScrips => 1,
         CommitScrips => 1,
 	ObjectType => 'RT::Model::Ticket',
-	ObjectId => 0,
+	object_id => 0,
 	ReferenceType => undef,
         OldReference       => undef,
         NewReference       => undef,
@@ -311,10 +311,10 @@ sub create {
     );
 
 
-    $args{ObjectId} ||= $args{Ticket};
+    $args{object_id} ||= $args{Ticket};
 
     #if we didn't specify a ticket, we need to bail
-    unless ( $args{'ObjectId'} && $args{'ObjectType'}) {
+    unless ( $args{'object_id'} && $args{'ObjectType'}) {
         return ( 0, $self->loc( "Transaction->create couldn't, as you didn't specify an object type and id"));
     }
 
@@ -329,7 +329,7 @@ sub create {
         NewValue  => $args{'NewValue'},
         Created   => $args{'Created'},
 	ObjectType => $args{'ObjectType'},
-	ObjectId => $args{'ObjectId'},
+	object_id => $args{'object_id'},
 	ReferenceType => $args{'ReferenceType'},
 	OldReference => $args{'OldReference'},
 	NewReference => $args{'NewReference'},
@@ -354,13 +354,13 @@ sub create {
     #Provide a way to turn off scrips if we need to
         $RT::Logger->debug('About to think about scrips for transaction #' .$self->id);
     if ( $args{'ActivateScrips'} and $args{'ObjectType'} eq 'RT::Model::Ticket' ) {
-       $self->{'scrips'} = RT::Model::ScripCollection->new(RT->system_user);
+       $self->{'scrips'} = RT::Model::ScripCollection->new(current_user => RT->system_user);
 
         $RT::Logger->debug('About to prepare scrips for transaction #' .$self->id); 
         $self->{'scrips'}->prepare(
             Stage       => 'TransactionCreate',
             Type        => $args{'Type'},
-            Ticket      => $args{'ObjectId'},
+            Ticket      => $args{'object_id'},
             Transaction => $self->id,
         );
         if ($args{'CommitScrips'} ) {
@@ -515,7 +515,7 @@ sub Content {
         }
 
         $content =~ s/^/> /gm;
-        $content = $self->loc("On [_1], [_2] wrote:", $self->CreatedAsString, $self->CreatorObj->Name)
+        $content = $self->loc("On [_1], [_2] wrote:", $self->CreatedAsString, $self->CreatorObj->name)
           . "\n$content\n\n";
     }
 
@@ -630,7 +630,7 @@ sub Attachments {
         return $self->{'attachments'};
     }
 
-    $self->{'attachments'} = RT::Model::AttachmentCollection->new( $self->current_user );
+    $self->{'attachments'} = RT::Model::AttachmentCollection->new;
 
     unless ( $self->current_user_can_see ) {
         $self->{'attachments'}->limit(column => 'id', value => '0');
@@ -668,7 +668,7 @@ sub _Attach {
         return ( 0, $self->loc("[_1]: no attachment specified", $self) );
     }
 
-    my $Attachment = RT::Model::Attachment->new( $self->current_user );
+    my $Attachment = RT::Model::Attachment->new;
     my ($id, $msg) = $Attachment->create(
         TransactionId => $self->id,
         Attachment    => $MIMEObject
@@ -701,7 +701,7 @@ sub Description {
         return ( $self->loc("No transaction type specified"));
     }
 
-    return $self->loc("[_1] by [_2]", $self->BriefDescription , $self->CreatorObj->Name );
+    return $self->loc("[_1] by [_2]", $self->BriefDescription , $self->CreatorObj->name );
 }
 
 # }}}
@@ -779,7 +779,7 @@ sub BriefDescription {
 }
 
 %_BriefDescriptions = (
-    CommentEmailRecord => sub {
+    commentEmailRecord => sub {
         my $self = shift;
         return $self->loc("Outgoing email about a comment recorded");
     },
@@ -791,18 +791,18 @@ sub BriefDescription {
         my $self = shift;
         return $self->loc("Correspondence added");
     },
-    Comment => sub {
+    comment => sub {
         my $self = shift;
-        return $self->loc("Comments added");
+        return $self->loc("comments added");
     },
     CustomField => sub {
         my $self = shift;
         my $field = $self->loc('CustomField');
 
         if ( $self->Field ) {
-            my $cf = RT::Model::CustomField->new( $self->current_user );
+            my $cf = RT::Model::CustomField->new;
             $cf->load( $self->Field );
-            $field = $cf->Name();
+            $field = $cf->name();
         }
 
         if ( ! defined $self->OldValue || $self->OldValue eq '' ) {
@@ -826,36 +826,36 @@ sub BriefDescription {
     },
     Force => sub {
         my $self = shift;
-        my $Old = RT::Model::User->new( $self->current_user );
+        my $Old = RT::Model::User->new;
         $Old->load( $self->OldValue );
-        my $New = RT::Model::User->new( $self->current_user );
+        my $New = RT::Model::User->new;
         $New->load( $self->NewValue );
 
-        return $self->loc("Owner forcibly changed from [_1] to [_2]" , $Old->Name , $New->Name);
+        return $self->loc("Owner forcibly changed from [_1] to [_2]" , $Old->name , $New->name);
     },
     Steal => sub {
         my $self = shift;
-        my $Old = RT::Model::User->new( $self->current_user );
+        my $Old = RT::Model::User->new;
         $Old->load( $self->OldValue );
-        return $self->loc("Stolen from [_1]",  $Old->Name);
+        return $self->loc("Stolen from [_1]",  $Old->name);
     },
     Give => sub {
         my $self = shift;
-        my $New = RT::Model::User->new( $self->current_user );
+        my $New = RT::Model::User->new;
         $New->load( $self->NewValue );
-        return $self->loc( "Given to [_1]",  $New->Name );
+        return $self->loc( "Given to [_1]",  $New->name );
     },
     AddWatcher => sub {
         my $self = shift;
-        my $principal = RT::Model::Principal->new($self->current_user);
+        my $principal = RT::Model::Principal->new;
         $principal->load($self->NewValue);
-        return $self->loc( "[_1] [_2] added", $self->Field, $principal->Object->Name);
+        return $self->loc( "[_1] [_2] added", $self->Field, $principal->Object->name);
     },
     DelWatcher => sub {
         my $self = shift;
-        my $principal = RT::Model::Principal->new($self->current_user);
+        my $principal = RT::Model::Principal->new;
         $principal->load($self->OldValue);
-        return $self->loc( "[_1] [_2] deleted", $self->Field, $principal->Object->Name);
+        return $self->loc( "[_1] [_2] deleted", $self->Field, $principal->Object->name);
     },
     Subject => sub {
         my $self = shift;
@@ -865,7 +865,7 @@ sub BriefDescription {
         my $self = shift;
         my $value;
         if ( $self->NewValue ) {
-            my $URI = RT::URI->new( $self->current_user );
+            my $URI = RT::URI->new;
             $URI->FromURI( $self->NewValue );
             if ( $URI->Resolver ) {
                 $value = $URI->Resolver->AsString;
@@ -904,7 +904,7 @@ sub BriefDescription {
         my $self = shift;
         my $value;
         if ( $self->OldValue ) {
-            my $URI = RT::URI->new( $self->current_user );
+            my $URI = RT::URI->new;
             $URI->FromURI( $self->OldValue );
             if ( $URI->Resolver ) {
                 $value = $URI->Resolver->AsString;
@@ -939,19 +939,19 @@ sub BriefDescription {
     },
     Set => sub {
         my $self = shift;
-        if ( $self->Field eq 'Password' ) {
-            return $self->loc('Password changed');
+        if ( $self->Field eq 'password' ) {
+            return $self->loc('password changed');
         }
         elsif ( $self->Field eq 'Queue' ) {
             my $q1 = new RT::Model::Queue( $self->current_user );
             $q1->load( $self->OldValue );
             my $q2 = new RT::Model::Queue( $self->current_user );
             $q2->load( $self->NewValue );
-            return $self->loc("[_1] changed from [_2] to [_3]", $self->Field , $q1->Name , $q2->Name);
+            return $self->loc("[_1] changed from [_2] to [_3]", $self->Field , $q1->name , $q2->name);
         }
 
         # Write the date/time change at local time:
-        elsif ($self->Field =~  /Due|Starts|Started|Told/) {
+        elsif ($self->Field =~  /Due|starts|Started|Told/) {
             my $t1 = new RT::Date($self->current_user);
             $t1->set(Format => 'ISO', value => $self->NewValue);
             my $t2 = new RT::Date($self->current_user);
@@ -968,20 +968,20 @@ sub BriefDescription {
     },
     AddReminder => sub {
         my $self = shift;
-        my $ticket = RT::Model::Ticket->new($self->current_user);
+        my $ticket = RT::Model::Ticket->new;
         $ticket->load($self->NewValue);
         return $self->loc("Reminder '[_1]' added", $ticket->Subject);
     },
     OpenReminder => sub {
         my $self = shift;
-        my $ticket = RT::Model::Ticket->new($self->current_user);
+        my $ticket = RT::Model::Ticket->new;
         $ticket->load($self->NewValue);
         return $self->loc("Reminder '[_1]' reopened", $ticket->Subject);
     
     },
     ResolveReminder => sub {
         my $self = shift;
-        my $ticket = RT::Model::Ticket->new($self->current_user);
+        my $ticket = RT::Model::Ticket->new;
         $ticket->load($self->NewValue);
         return $self->loc("Reminder '[_1]' completed", $ticket->Subject);
     
@@ -1005,7 +1005,7 @@ Returns false otherwise
 sub IsInbound {
     my $self = shift;
     $self->ObjectType eq 'RT::Model::Ticket' or return undef;
-    return ( $self->TicketObj->IsRequestor( $self->CreatorObj->PrincipalId ) );
+    return ( $self->TicketObj->IsRequestor( $self->CreatorObj->principal_id ) );
 }
 
 # }}}
@@ -1082,13 +1082,13 @@ sub current_user_can_see {
 
     # If it's a comment, we need to be extra special careful
     my $type = $self->__value('Type');
-    if ( $type eq 'Comment' ) {
-        unless ( $self->current_user_has_right('ShowTicketComments') ) {
+    if ( $type eq 'comment' ) {
+        unless ( $self->current_user_has_right('ShowTicketcomments') ) {
             return 0;
         }
     }
-    elsif ( $type eq 'CommentEmailRecord' ) {
-        unless ( $self->current_user_has_right('ShowTicketComments')
+    elsif ( $type eq 'commentEmailRecord' ) {
+        unless ( $self->current_user_has_right('ShowTicketcomments')
             && $self->current_user_has_right('ShowOutgoingEmail') ) {
             return 0;
         }
@@ -1100,7 +1100,7 @@ sub current_user_can_see {
     }
     # Make sure the user can see the custom field before showing that it changed
     elsif ( $type eq 'CustomField' and my $cf_id = $self->__value('Field') ) {
-        my $cf = RT::Model::CustomField->new( $self->current_user );
+        my $cf = RT::Model::CustomField->new;
         $cf->load( $cf_id );
         return 0 unless $cf->current_user_has_right('SeeCustomField');
     }
@@ -1118,7 +1118,7 @@ sub current_user_can_see {
 
 sub Ticket {
     my $self = shift;
-    return $self->ObjectId;
+    return $self->object_id;
 }
 
 sub TicketObj {
@@ -1131,7 +1131,7 @@ sub OldValue {
     if ( my $type = $self->__value('ReferenceType')
          and my $id = $self->__value('OldReference') )
     {
-        my $Object = $type->new($self->current_user);
+        my $Object = $type->new;
         $Object->load( $id );
         return $Object->Content;
     }
@@ -1145,7 +1145,7 @@ sub NewValue {
     if ( my $type = $self->__value('ReferenceType')
          and my $id = $self->__value('NewReference') )
     {
-        my $Object = $type->new($self->current_user);
+        my $Object = $type->new;
         $Object->load( $id );
         return $Object->Content;
     }
@@ -1156,8 +1156,8 @@ sub NewValue {
 
 sub Object {
     my $self  = shift;
-    my $Object = $self->__value('ObjectType')->new($self->current_user);
-    $Object->load($self->__value('ObjectId'));
+    my $Object = $self->__value('ObjectType')->new;
+    $Object->load($self->__value('object_id'));
     return $Object;
 }
 
@@ -1238,10 +1238,10 @@ sub CustomFieldValues {
         # XXX: $field could be undef when we want fetch values for all CFs
         #      do we want to cover this situation somehow here?
         unless ( defined $field && $field =~ /^\d+$/o ) {
-            my $CFs = RT::Model::CustomFieldCollection->new( $self->current_user );
-            $CFs->limit( column => 'Name', value => $field );
+            my $CFs = RT::Model::CustomFieldCollection->new;
+            $CFs->limit( column => 'name', value => $field );
             $CFs->LimitToLookupType($self->CustomFieldLookupType);
-            $CFs->LimitToGlobalOrObjectId($self->Object->QueueObj->id);
+            $CFs->LimitToGlobalOrobject_id($self->Object->QueueObj->id);
             $field = $CFs->first->id if $CFs->first;
         }
     }

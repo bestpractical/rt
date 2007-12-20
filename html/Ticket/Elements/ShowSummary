@@ -71,7 +71,7 @@
         <br />
 	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 
-% $m->callback( %ARGS, CallbackName => 'LeftColumn' );
+% $m->callback( %ARGS, Callbackname => 'LeftColumn' );
 	</td>
 	<td valign="top" width="50%" class="boxcontainer">
 	  <&|/Widgets/TitleBox, title => loc("Reminders"),
@@ -99,7 +99,7 @@
 		class => 'ticket-info-links' &>
 	        <& /Elements/ShowLinks, Ticket => $Ticket &>
           </&>
-% $m->callback( %ARGS, CallbackName => 'RightColumn' );
+% $m->callback( %ARGS, Callbackname => 'RightColumn' );
 
 	</td>
       </tr>

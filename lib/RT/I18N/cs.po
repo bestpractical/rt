@@ -70,9 +70,9 @@ msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %3.%2.%7 %4:%5:%6"
 
 #: lib/RT/Record.pm:1685 lib/RT/Transaction_Overlay.pm:647 lib/RT/Transaction_Overlay.pm:690
-#. ($cf->Name, $new_value->Content)
+#. ($cf->name, $new_value->Content)
 #. ($field, $self->NewValue)
-#. ($self->Field, $principal->Object->Name)
+#. ($self->Field, $principal->Object->name)
 msgid "%1 %2 added"
 msgstr "%1 %2 přidán"
 
@@ -82,20 +82,20 @@ msgid "%1 %2 ago"
 msgstr "- %1 %2"
 
 #: lib/RT/Record.pm:1692 lib/RT/Transaction_Overlay.pm:654
-#. ($cf->Name, $old_content,                $new_value->Content)
+#. ($cf->name, $old_content,                $new_value->Content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 změněno na %3"
 
 #: lib/RT/Record.pm:1689 lib/RT/Transaction_Overlay.pm:650 lib/RT/Transaction_Overlay.pm:696
-#. ($cf->Name, $old_value->Content)
+#. ($cf->name, $old_value->Content)
 #. ($field, $self->OldValue)
-#. ($self->Field, $principal->Object->Name)
+#. ($self->Field, $principal->Object->name)
 msgid "%1 %2 deleted"
 msgstr "%1 %2 smazán"
 
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:63 html/Ticket/Elements/PreviewScrips:103
-#. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
+#. (loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 se vzorem %3"
 
@@ -104,7 +104,7 @@ msgid "%1 (%2) %3 this ticket\\n"
 msgstr "%1 (%2) %3 tento požadavek\\n"
 
 #: html/Ticket/Elements/ShowAttachments:72
-#. ($rev->CreatedAsString, $size, $rev->CreatorObj->Name)
+#. ($rev->CreatedAsString, $size, $rev->CreatorObj->name)
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) vytvořil %3"
 
@@ -112,7 +112,7 @@ msgstr "%1 (%2) vytvořil %3"
 #. (loc($DefaultStatus))
 #. (loc($Ticket->Status()))
 #. (loc($TicketObj->Status))
-#. ($TicketObj->OwnerObj->Name())
+#. ($TicketObj->OwnerObj->name())
 msgid "%1 (Unchanged)"
 msgstr "%1 (Nezměněn)"
 
@@ -173,7 +173,7 @@ msgid "%1 ScripAction loaded"
 msgstr "ScripAction %1 nahrána"
 
 #: lib/RT/Record.pm:1722
-#. ($args{'Value'}, $cf->Name)
+#. ($args{'Value'}, $cf->name)
 msgid "%1 added as a value for %2"
 msgstr "%1 přidáno jako hodnota pro %2"
 
@@ -192,13 +192,13 @@ msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 vypadá jako lokální objekt, ale není v databázi"
 
 #: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm:531
-#. ($self->BriefDescription , $self->CreatorObj->Name)
-#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
+#. ($self->BriefDescription , $self->CreatorObj->name)
+#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->name)
 msgid "%1 by %2"
 msgstr "%1 uživatelem %2"
 
 #: lib/RT/Transaction_Overlay.pm:788 lib/RT/Transaction_Overlay.pm:797 lib/RT/Transaction_Overlay.pm:800
-#. ($self->Field , $q1->Name , $q2->Name)
+#. ($self->Field , $q1->name , $q2->name)
 #. ($self->Field, $t2->AsString, $t1->AsString)
 #. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 msgid "%1 changed from %2 to %3"
@@ -246,7 +246,7 @@ msgid "%1 is a tool to act on tickets from an external scheduling tool, such as 
 msgstr "%1 je nástroj zpracující požadavky z vnějšího plánovacího nástroje jako je cron"
 
 #: lib/RT/Queue_Overlay.pm:863
-#. ($principal->Object->Name, $args{'Type'})
+#. ($principal->Object->name, $args{'Type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 již není %2 této fronty."
 
@@ -314,8 +314,8 @@ msgid "%1's %2's %3 objects"
 msgstr ""
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:57
-#. ($object->Name)
-#. ($Object->Name)
+#. ($object->name)
+#. ($Object->name)
 msgid "%1's saved searches"
 msgstr "Uložené dotazy patřící %1"
 
@@ -370,7 +370,7 @@ msgstr "(Zadejte identifikátory či URL požadavku, oddělené mezerami)"
 
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::CorrespondAddress)
-#. ($RT::CommentAddress)
+#. ($RT::commentAddress)
 msgid "(If left blank, will default to %1)"
 msgstr "(Pro prázdné pole se použije %1)"
 
@@ -684,7 +684,7 @@ msgid "Admin Cc"
 msgstr "Admin Cc"
 
 #: etc/initialdata:295
-msgid "Admin Comment"
+msgid "Admin comment"
 msgstr "Administrativní komentář"
 
 #: etc/initialdata:274
@@ -720,8 +720,8 @@ msgid "AdminCc"
 msgstr "AdminCc"
 
 #: NOT FOUND IN SOURCE
-msgid "AdminComment"
-msgstr "AdminComment"
+msgid "Admincomment"
+msgstr "Admincomment"
 
 #: NOT FOUND IN SOURCE
 msgid "AdminCorrespondence"
@@ -914,8 +914,8 @@ msgid "Aug."
 msgstr "srp"
 
 #: NOT FOUND IN SOURCE
-msgid "AuthSystem"
-msgstr "AuthSystem"
+msgid "auth_system"
+msgstr "auth_system"
 
 #: etc/initialdata:221
 msgid "Autoreply"
@@ -1121,47 +1121,47 @@ msgid "Command not understood!\\n"
 msgstr "Neznámý příkaz!\\n"
 
 #: html/Ticket/Elements/ShowTransaction:190 html/Ticket/Elements/Tabs:185
-msgid "Comment"
+msgid "comment"
 msgstr "Komentovat"
 
 #: html/Admin/Queues/Modify.html:79
-msgid "Comment Address"
+msgid "comment Address"
 msgstr "Adresa pro komentáře"
 
 #: NOT FOUND IN SOURCE
-msgid "Comment not recorded"
+msgid "comment not recorded"
 msgstr "Komentář nezaznamenán"
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "Comment on tickets"
+msgid "comment on tickets"
 msgstr "Komentovat požadavky"
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "CommentOnTicket"
+msgid "commentOnTicket"
 msgstr "Komentovat požadavky"
 
 #: NOT FOUND IN SOURCE
-msgid "Comments"
+msgid "comments"
 msgstr "Poznámky"
 
 #: html/Ticket/ModifyAll.html:91 html/Ticket/Update.html:75
-msgid "Comments (Not sent to requestors)"
+msgid "comments (Not sent to requestors)"
 msgstr "Komentář (Neposílá se žadatelům)"
 
 #: html/Search/Bulk.html:128
-msgid "Comments (not sent to requestors)"
+msgid "comments (not sent to requestors)"
 msgstr "Komentář (nepošle se žadatelům)"
 
 #: NOT FOUND IN SOURCE
-msgid "Comments about %1"
+msgid "comments about %1"
 msgstr "Poznámky o %1"
 
 #: html/Admin/Users/Modify.html:225 html/Ticket/Elements/ShowRequestor:67
-msgid "Comments about this user"
+msgid "comments about this user"
 msgstr "Poznámky o tomto uživateli"
 
 #: lib/RT/Transaction_Overlay.pm:634
-msgid "Comments added"
+msgid "comments added"
 msgstr "Komentáře přidány"
 
 #: lib/RT/Action/Generic.pm:175
@@ -1469,7 +1469,7 @@ msgid "Create a CustomField"
 msgstr "Vytvořit uživatelskou položku"
 
 #: html/Admin/Queues/CustomField.html:69
-#. ($QueueObj->Name())
+#. ($QueueObj->name())
 msgid "Create a CustomField for queue %1"
 msgstr "Vytvoření uživatelské položky pro frontu %1"
 
@@ -1526,7 +1526,7 @@ msgid "Create a request"
 msgstr "Vytvořit požadavek"
 
 #: html/Admin/Queues/Scrip.html:89
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Create a scrip for queue %1"
 msgstr "Vytvořit scrips pro frontu %1"
 
@@ -1583,7 +1583,7 @@ msgid "Created"
 msgstr "Vytvořeno"
 
 #: html/Admin/CustomFields/Modify.html:163 html/Admin/Elements/EditCustomField:117
-#. ($CustomFieldObj->Name())
+#. ($CustomFieldObj->name())
 msgid "Created CustomField %1"
 msgstr "Uživatelská položka %1 vytvořena"
 
@@ -1661,12 +1661,12 @@ msgid "Custom field %1 %2 %3"
 msgstr "Uživatelská položka %1 %2 %3"
 
 #: lib/RT/TicketCollection_Overlay.pm:2424
-#. ($CF->Name)
+#. ($CF->name)
 msgid "Custom field %1 has a value."
 msgstr "Uživatelská položka %1 má hodnotu."
 
 #: lib/RT/TicketCollection_Overlay.pm:2420
-#. ($CF->Name)
+#. ($CF->name)
 msgid "Custom field %1 has no value."
 msgstr "Uživatelská položka %1 nemá hodnotu."
 
@@ -1677,7 +1677,7 @@ msgstr "Uživatelská položka %1 nenalezena"
 
 #: lib/RT/Report/Tickets.pm:118 lib/RT/Report/Tickets.pm:121
 #. ($cf)
-#. ($obj->Name)
+#. ($obj->name)
 msgid "Custom field '%1'"
 msgstr "Uživatelská položka '%1'"
 
@@ -1690,7 +1690,7 @@ msgid "Custom field not found"
 msgstr "Uživatelská položka nenalezena"
 
 #: lib/RT/CustomField_Overlay.pm:1157
-#. ($args{'Content'}, $self->Name)
+#. ($args{'Content'}, $self->name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Hodnota %1 nemůže být nalezena v uživatelské položce %2"
 
@@ -1944,7 +1944,7 @@ msgid "Edit Custom Fields"
 msgstr "Upravit uživatelské položky"
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
-#. ($Object->Name)
+#. ($Object->name)
 msgid "Edit Custom Fields for %1"
 msgstr "Upravit uživatelské položky pro %1"
 
@@ -1973,7 +1973,7 @@ msgid "Edit Search"
 msgstr "Úprava dotazu"
 
 #: html/Admin/Queues/Templates.html:63
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Edit Templates for queue %1"
 msgstr "Upravit vzory pro frontu %1"
 
@@ -1994,7 +1994,7 @@ msgid "EditSavedSearches"
 msgstr "Upravovat uložené dotazy"
 
 #: html/Admin/Queues/Modify.html:140
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Editing Configuration for queue %1"
 msgstr "Úprava konfigurace pro frontu %1"
 
@@ -2003,17 +2003,17 @@ msgid "Editing Configuration for user %1"
 msgstr "Úprava konfigurace pro uživatele %1"
 
 #: html/Admin/CustomFields/Modify.html:167 html/Admin/Elements/EditCustomField:120
-#. ($CustomFieldObj->Name())
+#. ($CustomFieldObj->name())
 msgid "Editing CustomField %1"
 msgstr "Úprava uživatelské položky %1"
 
 #: html/Admin/Groups/Members.html:53
-#. ($Group->Name)
+#. ($Group->name)
 msgid "Editing membership for group %1"
 msgstr "Úprava členství ve skupině %1"
 
 #: html/User/Groups/Members.html:150
-#. ($Group->Name)
+#. ($Group->name)
 msgid "Editing membership for personal group %1"
 msgstr "Úprava členství ve vlastní skupině %1"
 
@@ -2034,11 +2034,11 @@ msgid "Email address in use"
 msgstr "Emailová adresa je použita"
 
 #: NOT FOUND IN SOURCE
-msgid "EmailAddress"
+msgid "email"
 msgstr "Emailová adresa"
 
 #: NOT FOUND IN SOURCE
-msgid "EmailEncoding"
+msgid "email_encoding"
 msgstr "Kódování emailu"
 
 #: html/Admin/CustomFields/Modify.html:98 html/Admin/Elements/EditCustomField:72
@@ -2152,7 +2152,7 @@ msgid "Failed to create search attribute"
 msgstr "Nelze vytvořit atribut dotazu"
 
 #: lib/RT/User_Overlay.pm:376
-msgid "Failed to find 'Privileged' users pseudogroup."
+msgid "Failed to find 'privileged' users pseudogroup."
 msgstr "Nenalezena pseudoskupina uživatelů 'Privilegovaný'."
 
 #: lib/RT/User_Overlay.pm:383
@@ -2275,7 +2275,7 @@ msgid "Found Object"
 msgstr "Nalezen objekt"
 
 #: NOT FOUND IN SOURCE
-msgid "FreeformContactInfo"
+msgid "freeform_contact_info"
 msgstr "Kontaktní údaje ve volné podobě"
 
 #: NOT FOUND IN SOURCE
@@ -2299,7 +2299,7 @@ msgid "Get template from file"
 msgstr "Vzít vzor ze souboru"
 
 #: lib/RT/Transaction_Overlay.pm:684
-#. ($New->Name)
+#. ($New->name)
 msgid "Given to %1"
 msgstr "Předáno %1"
 
@@ -2321,7 +2321,7 @@ msgid "Global portlet %1 saved."
 msgstr "Globální portlet %1 uložen."
 
 #: html/Admin/Elements/SelectTemplate:59
-#. (loc($Template->Name))
+#. (loc($Template->name))
 msgid "Global template: %1"
 msgstr "Globální vzor: %1"
 
@@ -2416,12 +2416,12 @@ msgid "History"
 msgstr "Historie"
 
 #: html/Admin/Groups/History.html:62
-#. ($GroupObj->Name)
+#. ($GroupObj->name)
 msgid "History of the group %1"
 msgstr "Historie skupiny %1"
 
 #: html/Admin/Users/History.html:62
-#. ($UserObj->Name)
+#. ($user_object->name)
 msgid "History of the user %1"
 msgstr "Historie uživatele %1"
 
@@ -2744,7 +2744,7 @@ msgid "Loaded perl modules"
 msgstr "Načtené perlovské moduly"
 
 #: lib/RT/SavedSearch.pm:111
-#. ($self->Name)
+#. ($self->name)
 msgid "Loaded search %1"
 msgstr "Načtený dotaz %1"
 
@@ -2757,7 +2757,7 @@ msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
 msgstr "Logovací adresář %1 nenalezen nebo do ňeho nemůže být zapisováno.\\ RT nemůže běžet."
 
 #: html/Elements/Header:91
-#. ("<span>".$session{'CurrentUser'}->Name."</span>")
+#. ("<span>".Jifty->web->current_user->name."</span>")
 msgid "Logged in as %1"
 msgstr "Přihlášen jako %1"
 
@@ -2794,7 +2794,7 @@ msgid "Make date Started"
 msgstr "Nastavit datum, kdy začal"
 
 #: html/Search/Bulk.html:108
-msgid "Make date Starts"
+msgid "Make date starts"
 msgstr "Nastavit datum, kdy začne"
 
 #: html/Search/Bulk.html:112
@@ -2890,7 +2890,7 @@ msgid "Memberships"
 msgstr "Členství"
 
 #: html/Admin/Users/Memberships.html:60
-#. ($UserObj->Name)
+#. ($user_object->name)
 msgid "Memberships of the user %1"
 msgstr "Členství uživatele %1"
 
@@ -3006,7 +3006,7 @@ msgid "Modify User Rights"
 msgstr "Upravit práva uživatelů"
 
 #: html/Admin/Queues/CustomField.html:66
-#. ($QueueObj->Name())
+#. ($QueueObj->name())
 msgid "Modify a CustomField for queue %1"
 msgstr "Upravovat uživatelskou položku pro frontu %1"
 
@@ -3015,7 +3015,7 @@ msgid "Modify a CustomField which applies to all queues"
 msgstr "Upravovat uživatelskou položku pro všechny fronty"
 
 #: html/Admin/Queues/Scrip.html:82
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify a scrip for queue %1"
 msgstr "Upravovat scrip pro frontu %1"
 
@@ -3024,7 +3024,7 @@ msgid "Modify a scrip which applies to all queues"
 msgstr "Upravovat scrip platný pro všechny fronty"
 
 #: html/Admin/CustomFields/Objects.html:90
-#. ($CF->Name)
+#. ($CF->name)
 msgid "Modify associated objects for %1"
 msgstr "Upravovat přiřazené objekty k %1"
 
@@ -3067,17 +3067,17 @@ msgid "Modify group metadata or delete group"
 msgstr "Upravovat metadata skupiny nebo smazat skupinu"
 
 #: html/Admin/CustomFields/GroupRights.html:164
-#. ($CustomFieldObj->Name)
+#. ($CustomFieldObj->name)
 msgid "Modify group rights for custom field %1"
 msgstr "Úprava skupinových práv pro uživatelskou položku %1"
 
 #: html/Admin/Groups/GroupRights.html:46 html/Admin/Groups/GroupRights.html:50 html/Admin/Groups/GroupRights.html:56
-#. ($GroupObj->Name)
+#. ($GroupObj->name)
 msgid "Modify group rights for group %1"
 msgstr "Úprava skupinových práv pro %1"
 
 #: html/Admin/Queues/GroupRights.html:46 html/Admin/Queues/GroupRights.html:50
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify group rights for queue %1"
 msgstr "Úprava skupinových práv pro frontu %1"
 
@@ -3090,7 +3090,7 @@ msgid "Modify one's own RT account"
 msgstr "Upravovat vlastní RT účet"
 
 #: html/Admin/Queues/People.html:46 html/Admin/Queues/People.html:50
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify people related to queue %1"
 msgstr "Úprava uživatelů fronty %1"
 
@@ -3101,7 +3101,7 @@ msgid "Modify people related to ticket #%1"
 msgstr "Úprava uživatelů souvisejících s požadavkem #%1"
 
 #: html/Admin/Queues/Scrips.html:67
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify scrips for queue %1"
 msgstr "Úprava scripů pro frontu %1"
 
@@ -3110,7 +3110,7 @@ msgid "Modify scrips which apply to all queues"
 msgstr "Úprava scripů platných ve všech frontách"
 
 #: html/Admin/Global/Template.html:102 html/Admin/Global/Template.html:46 html/Admin/Global/Template.html:51 html/Admin/Queues/Template.html:99
-#. (loc($TemplateObj->Name()))
+#. (loc($TemplateObj->name()))
 #. ($TemplateObj->id)
 msgid "Modify template %1"
 msgstr "Úprava vzoru %1"
@@ -3124,7 +3124,7 @@ msgid "Modify the default \"RT at a glance\" view"
 msgstr "Úprava výchozího vzhledu stránky \"Přehled RT\""
 
 #: html/Admin/Groups/Modify.html:119 html/User/Groups/Modify.html:107
-#. ($Group->Name)
+#. ($Group->name)
 msgid "Modify the group %1"
 msgstr "Úprava skupiny %1"
 
@@ -3133,7 +3133,7 @@ msgid "Modify the queue watchers"
 msgstr "Upravovat pozorovatele fronty"
 
 #: html/Admin/Users/Modify.html:309
-#. ($UserObj->Name)
+#. ($user_object->name)
 msgid "Modify the user %1"
 msgstr "Úprava uživatele %1"
 
@@ -3152,17 +3152,17 @@ msgid "Modify tickets"
 msgstr "Upravovat požadavky"
 
 #: html/Admin/CustomFields/UserRights.html:157
-#. ($CustomFieldObj->Name)
+#. ($CustomFieldObj->name)
 msgid "Modify user rights for custom field %1"
 msgstr "Upravit práva uživatelů k uživatelské položce %1"
 
 #: html/Admin/Groups/UserRights.html:46 html/Admin/Groups/UserRights.html:50 html/Admin/Groups/UserRights.html:56
-#. ($GroupObj->Name)
+#. ($GroupObj->name)
 msgid "Modify user rights for group %1"
 msgstr "Úprava práv uživatelů ke skupině %1"
 
 #: html/Admin/Queues/UserRights.html:46 html/Admin/Queues/UserRights.html:50
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify user rights for queue %1"
 msgstr "Úprava práv uživatelů k frontě %1"
 
@@ -3224,7 +3224,7 @@ msgid "Multiple"
 msgstr "Vícenásobná"
 
 #: lib/RT/User_Overlay.pm:226
-msgid "Must specify 'Name' attribute"
+msgid "Must specify 'name' attribute"
 msgstr "Nutno zadat atribut 'Jméno'"
 
 #: html/SelfService/Elements/MyRequests:57
@@ -3249,11 +3249,11 @@ msgid "My saved searches"
 msgstr "Mé uložené dotazy"
 
 #: html/Admin/CustomFields/Modify.html:58 html/Admin/Elements/AddCustomFieldValue:53 html/Admin/Elements/EditCustomField:55 html/Admin/Elements/EditCustomFieldValues:55 html/Admin/Elements/ModifyTemplate:49 html/Admin/Groups/Modify.html:65 html/Search/Bulk.html:157 html/User/Groups/Modify.html:65
-msgid "Name"
+msgid "name"
 msgstr "Jméno"
 
 #: lib/RT/User_Overlay.pm:233
-msgid "Name in use"
+msgid "name in use"
 msgstr "Jméno je použito"
 
 #: NOT FOUND IN SOURCE
@@ -3273,7 +3273,7 @@ msgid "New Links"
 msgstr "Nové vazby"
 
 #: html/Admin/Users/Modify.html:119 html/User/Prefs.html:109
-msgid "New Password"
+msgid "New password"
 msgstr "Nové heslo"
 
 #: etc/initialdata:332
@@ -3369,11 +3369,11 @@ msgid "Next page"
 msgstr "Další stránka"
 
 #: NOT FOUND IN SOURCE
-msgid "NickName"
+msgid "nickname"
 msgstr "Přezdívka"
 
 #: html/Admin/Users/Modify.html:84 html/User/Prefs.html:72
-msgid "Nickname"
+msgid "nickname"
 msgstr "Přezdívka"
 
 #: html/Admin/CustomFields/UserRights.html:145
@@ -3462,7 +3462,7 @@ msgid "No permission to create queues"
 msgstr "Nedostatek práv k vytváření front"
 
 #: lib/RT/Ticket_Overlay.pm:420
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Nedostatek práv k vytváření požadavků ve frontě '%1'"
 
@@ -3579,7 +3579,7 @@ msgid "Notify AdminCcs"
 msgstr "Zaslat všem AdminCc"
 
 #: etc/initialdata:97
-msgid "Notify AdminCcs as Comment"
+msgid "Notify AdminCcs as comment"
 msgstr "Zaslat všem AdminCc jako komentář"
 
 #: etc/initialdata:93 etc/upgrade/3.1.17/content:6
@@ -3587,7 +3587,7 @@ msgid "Notify Ccs"
 msgstr "Upozornit všechny Cc"
 
 #: etc/initialdata:89 etc/upgrade/3.1.17/content:2
-msgid "Notify Ccs as Comment"
+msgid "Notify Ccs as comment"
 msgstr "Upozornit všechny Cc jako komentář"
 
 #: etc/initialdata:128
@@ -3595,7 +3595,7 @@ msgid "Notify Other Recipients"
 msgstr "Zaslat ostatním příjemcům"
 
 #: etc/initialdata:124
-msgid "Notify Other Recipients as Comment"
+msgid "Notify Other Recipients as comment"
 msgstr "Zaslat ostatním příjemcům jako komentář"
 
 #: etc/initialdata:85
@@ -3603,7 +3603,7 @@ msgid "Notify Owner"
 msgstr "Zaslat vlastníkovi"
 
 #: etc/initialdata:81
-msgid "Notify Owner as Comment"
+msgid "Notify Owner as comment"
 msgstr "Zaslat vlastníkovi jako komentář"
 
 #: etc/initialdata:376
@@ -3631,7 +3631,7 @@ msgid "Notify Requestors and Ccs"
 msgstr "Zaslat žadatelům a všem Cc"
 
 #: etc/initialdata:106
-msgid "Notify Requestors and Ccs as Comment"
+msgid "Notify Requestors and Ccs as comment"
 msgstr "Zaslat žadatelům a všem Cc jako komentář"
 
 #: etc/initialdata:120
@@ -3639,7 +3639,7 @@ msgid "Notify Requestors, Ccs and AdminCcs"
 msgstr "Zaslat žadatelům, všem Cc a všem AdminCc"
 
 #: etc/initialdata:116
-msgid "Notify Requestors, Ccs and AdminCcs as Comment"
+msgid "Notify Requestors, Ccs and AdminCcs as comment"
 msgstr "Zaslat žadatelům, včem Cc a včem AdminCc jako komentář"
 
 #: lib/RT/Date.pm:451
@@ -3697,12 +3697,12 @@ msgid "On"
 msgstr "Dne"
 
 #: lib/RT/Transaction_Overlay.pm:326
-#. ($self->CreatedAsString(), $self->CreatorObj->Name())
+#. ($self->CreatedAsString(), $self->CreatorObj->name())
 msgid "On %1, %2 wrote:"
 msgstr "Dne %1, %2 napsal(a):"
 
 #: etc/initialdata:163
-msgid "On Comment"
+msgid "On comment"
 msgstr "Při komentáři"
 
 #: etc/initialdata:156
@@ -3796,7 +3796,7 @@ msgid "Ordering and sorting"
 msgstr "Řazení a třídění"
 
 #: html/Admin/Users/Modify.html:141 html/User/Prefs.html:129
-msgid "Organization"
+msgid "organization"
 msgstr "Organizace"
 
 #: html/Approvals/Elements/Approve:53
@@ -3837,7 +3837,7 @@ msgid "Owner could not be set."
 msgstr "Vlastník nemůže být nastaven."
 
 #: lib/RT/Transaction_Overlay.pm:672
-#. ($Old->Name , $New->Name)
+#. ($Old->name , $New->name)
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Vlastník nuceně změněn z %1 na %2"
 
@@ -3863,45 +3863,45 @@ msgid "Parents"
 msgstr "Rodiče"
 
 #: html/Elements/Login:95 html/User/Prefs.html:105
-msgid "Password"
+msgid "password"
 msgstr "Heslo"
 
 #: html/NoAuth/Reminder.html:46
-msgid "Password Reminder"
+msgid "password Reminder"
 msgstr "Připomínač hesel"
 
 #: lib/RT/Transaction_Overlay.pm:781 lib/RT/User_Overlay.pm:1045
-msgid "Password changed"
+msgid "password changed"
 msgstr "Heslo změněno"
 
 #: lib/RT/User_Overlay.pm:1037 lib/RT/User_Overlay.pm:214
-#. ($RT::MinimumPasswordLength)
-msgid "Password needs to be at least %1 characters long"
+#. ($RT::MinimumpasswordLength)
+msgid "password needs to be at least %1 characters long"
 msgstr "Heslo musí být dlouhé nejméně %1 %quant(%1,znak,znaky,znaků)"
 
 #: lib/RT/User_Overlay.pm:1044
-msgid "Password set"
+msgid "password set"
 msgstr "Heslo je nastaveno"
 
 #: NOT FOUND IN SOURCE
-msgid "Password too short"
+msgid "password too short"
 msgstr "Heslo je příliš krátké"
 
 #: html/User/Prefs.html:240
 #. (loc_fuzzy($msg))
-msgid "Password: %1"
+msgid "password: %1"
 msgstr "Heslo: %1"
 
 #: lib/RT/User_Overlay.pm:1030
-msgid "Password: Permission Denied"
+msgid "password: Permission Denied"
 msgstr "Heslo: Přístup odmítnut"
 
 #: html/Admin/Users/Modify.html:364
-msgid "Passwords do not match."
+msgid "passwords do not match."
 msgstr "Hesla nesouhlasí."
 
 #: html/User/Prefs.html:242
-msgid "Passwords do not match. Your password has not been changed"
+msgid "passwords do not match. Your password has not been changed"
 msgstr "Hesla nesouhlasí. Vaše heslo nebylo změněno"
 
 #: html/Ticket/Elements/ShowSummary:62 html/Ticket/Elements/Tabs:119 html/Ticket/ModifyAll.html:72
@@ -3953,7 +3953,7 @@ msgid "Preferences"
 msgstr "Nastavení"
 
 #: html/Admin/Users/MyRT.html:75
-#. ($pane, $UserObj->Name)
+#. ($pane, $user_object->name)
 msgid "Preferences %1 for user %2 ."
 msgstr "Nastavení %1 uživatele %2."
 
@@ -3987,7 +3987,7 @@ msgid "Pri"
 msgstr "Pri"
 
 #: lib/RT/ACE_Overlay.pm:157 lib/RT/ACE_Overlay.pm:239 lib/RT/ACE_Overlay.pm:569
-#. ($args{'PrincipalId'})
+#. ($args{'principal_id'})
 msgid "Principal %1 not found."
 msgstr "Uživatel %1 nenalezen."
 
@@ -4004,16 +4004,16 @@ msgid "Privacy:"
 msgstr "Vlastní:"
 
 #: etc/initialdata:25
-msgid "Privileged"
+msgid "privileged"
 msgstr "Privilegovaný"
 
 #: html/Admin/Users/Modify.html:342 html/User/Prefs.html:231
 #. (loc_fuzzy($msg))
-msgid "Privileged status: %1"
+msgid "privileged status: %1"
 msgstr "Privilegovaný stav: %1"
 
 #: html/Admin/Users/index.html:102
-msgid "Privileged users"
+msgid "privileged users"
 msgstr "Privilegovaní uživatelé"
 
 #: etc/initialdata:23 etc/initialdata:29 etc/initialdata:35 etc/initialdata:59
@@ -4047,7 +4047,7 @@ msgid "Queue '%1' not found\\n"
 msgstr "Fronta '%1' nenalezena\\n"
 
 #: html/Admin/Queues/Modify.html:64
-msgid "Queue Name"
+msgid "Queue name"
 msgstr "Název fronty"
 
 #: NOT FOUND IN SOURCE
@@ -4160,7 +4160,7 @@ msgid "RT at a glance"
 msgstr "Přehled RT"
 
 #: html/Admin/Users/MyRT.html:30
-#. ($UserObj->Name)
+#. ($user_object->name)
 msgid "RT at a glance for the user %1"
 msgstr "Přehled RT pro uživatele %1"
 
@@ -4230,11 +4230,11 @@ msgid "RT's email command mode requires PGP authentication.  Either you didn't s
 msgstr "Emailový příkazový režim RT vyžaduje PGP autentizaci. Nepodepsal jste vaši zprávu nebo váš podpis nemůže být ověřen."
 
 #: html/Admin/Users/Modify.html:79 html/User/Prefs.html:69
-msgid "Real Name"
+msgid "Real name"
 msgstr "Skutečné jméno"
 
 #: NOT FOUND IN SOURCE
-msgid "RealName"
+msgid "real_name"
 msgstr "Skutečné jméno"
 
 #: lib/RT/Transaction_Overlay.pm:725
@@ -4422,7 +4422,7 @@ msgid "Results per page"
 msgstr "Výsledků na stránku"
 
 #: html/Admin/Users/Modify.html:126 html/User/Prefs.html:116
-msgid "Retype Password"
+msgid "Retype password"
 msgstr "Zopakujte heslo"
 
 #: html/Search/Elements/EditSearches:61
@@ -4857,7 +4857,7 @@ msgid "ShowTicket"
 msgstr "Zobrazit požadavek"
 
 #: lib/RT/Queue_Overlay.pm:104
-msgid "ShowTicketComments"
+msgid "ShowTicketcomments"
 msgstr "Zobrazit komentáře požadavku"
 
 #: lib/RT/Queue_Overlay.pm:107
@@ -4937,15 +4937,15 @@ msgid "Started date '%1' could not be parsed"
 msgstr "Datum započetí '%1' nemůže být rozpoznáno"
 
 #: html/Elements/SelectDateType:52 html/Ticket/Create.html:208 html/Ticket/Elements/EditDates:48 html/Ticket/Elements/ShowDates:52
-msgid "Starts"
+msgid "starts"
 msgstr "Začíná"
 
 #: NOT FOUND IN SOURCE
-msgid "Starts By"
+msgid "starts By"
 msgstr "Začíná"
 
 #: NOT FOUND IN SOURCE
-msgid "Starts date '%1' could not be parsed"
+msgid "starts date '%1' could not be parsed"
 msgstr "Datum začínání '%1' nemůže být rozpoznáno"
 
 #: html/Admin/Users/Modify.html:162 html/User/Prefs.html:145
@@ -4981,7 +4981,7 @@ msgid "StealTicket"
 msgstr "Převzít požadavek"
 
 #: lib/RT/Transaction_Overlay.pm:678
-#. ($Old->Name)
+#. ($Old->name)
 msgid "Stolen from %1"
 msgstr "Převzato od %1"
 
@@ -5231,7 +5231,7 @@ msgstr "Vlastník požadavku"
 msgid "The requestor of a ticket"
 msgstr "Žadatel požadavku"
 
-#: html/Admin/Elements/EditUserComments:47
+#: html/Admin/Elements/EditUsercomments:47
 msgid "These comments aren't generally visible to the user"
 msgstr "Tyto komentáře nejsou běžně viditelné uživateli"
 
@@ -5294,7 +5294,7 @@ msgid "Ticket %1"
 msgstr "Požadavek %1"
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
-#. ($self->id, $QueueObj->Name)
+#. ($self->id, $QueueObj->name)
 msgid "Ticket %1 created in queue '%2'"
 msgstr "Požadavek %1 vytvořen ve frontě '%2'"
 
@@ -5442,7 +5442,7 @@ msgid "Time worked"
 msgstr "Čas práce"
 
 #: lib/RT/Ticket_Overlay.pm:1167
-msgid "TimeWorked"
+msgid "time_worked"
 msgstr "Čas práce"
 
 #: html/Search/Elements/EditFormat:74
@@ -5676,7 +5676,7 @@ msgid "User %1 %2: %3\\n"
 msgstr "Uživatel %1 %2: %3\\n"
 
 #: NOT FOUND IN SOURCE
-msgid "User %1 Password: %2\\n"
+msgid "User %1 password: %2\\n"
 msgstr "Heslo uživatele %1: %2\\n"
 
 #: lib/RT/Ticket_Overlay.pm:506
@@ -5779,7 +5779,7 @@ msgid "Watchers"
 msgstr "Pozorovatelé"
 
 #: NOT FOUND IN SOURCE
-msgid "WebEncoding"
+msgid "web_encoding"
 msgstr "Kódování WWW"
 
 #: lib/RT/Date.pm:419
@@ -5949,7 +5949,7 @@ msgid "allow loading of saved searches"
 msgstr "umožnit načítání uložených dotazů"
 
 #: html/User/Elements/DelegateRights:80
-#. ($right->PrincipalObj->Object->SelfDescription)
+#. ($right->principal_object->Object->SelfDescription)
 msgid "as granted to %1"
 msgstr "jak je dovoleno %1"
 
@@ -6038,12 +6038,12 @@ msgid "greater than"
 msgstr "větší než"
 
 #: lib/RT/Group_Overlay.pm:214
-#. ($self->Name)
+#. ($self->name)
 msgid "group '%1'"
 msgstr "skupina '%1'"
 
 #: html/Search/Results.html:88
-#. ($m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query))
+#. ($m->scomp('Elements/SelectGroupBy', name => 'PrimaryGroupBy', Query => $Query))
 msgid "grouped by %1"
 msgstr "seskupit podle %1"
 
@@ -6112,12 +6112,12 @@ msgid "open"
 msgstr "otevřený"
 
 #: lib/RT/Group_Overlay.pm:219
-#. ($self->Name, $user->Name)
+#. ($self->name, $user->name)
 msgid "personal group '%1' for user '%2'"
 msgstr "vlastní skupina '%1' pro uživatele '%2'"
 
 #: lib/RT/Group_Overlay.pm:227
-#. ($queue->Name, $self->Type)
+#. ($queue->name, $self->Type)
 msgid "queue %1 %2"
 msgstr "fronta %1 %2"
 
@@ -6146,7 +6146,7 @@ msgid "stalled"
 msgstr "odložený"
 
 #: html/Search/Results.html:89
-#. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle'))
+#. ($m->scomp('Elements/SelectChartType', name => 'ChartStyle'))
 msgid "style: %1"
 msgstr "styl: %1"
 
@@ -6183,7 +6183,7 @@ msgid "undescripbed group %1"
 msgstr "nepopsaná skupina %1"
 
 #: lib/RT/Group_Overlay.pm:211
-#. ($user->Object->Name)
+#. ($user->Object->name)
 msgid "user %1"
 msgstr "uživatel %1"
 

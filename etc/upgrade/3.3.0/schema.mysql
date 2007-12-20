@@ -5,13 +5,13 @@ alter table Transactions add column ReferenceType varchar(255) NULL;
 alter table Transactions add column OldReference integer NULL;      
 alter table Transactions add column NewReference integer NULL;
 alter table Transactions drop index transactions1;            
-alter table Transactions change Ticket ObjectId integer NOT NULL DEFAULT 0  ;
+alter table Transactions change Ticket object_id integer NOT NULL DEFAULT 0  ;
 
-CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
+CREATE INDEX Transactions1 ON Transactions (ObjectType, object_id);
 
 alter table TicketCustomFieldValues rename ObjectCustomFieldValues;
 
-alter table ObjectCustomFieldValues  change Ticket ObjectId integer NOT NULL DEFAULT 0  ;
+alter table ObjectCustomFieldValues  change Ticket object_id integer NOT NULL DEFAULT 0  ;
 
 alter table ObjectCustomFieldValues add column ObjectType varchar(255) not null;
 
@@ -31,13 +31,13 @@ alter table ObjectCustomFieldValues add column ContentEncoding varchar(80) NULL;
 
 alter table ObjectCustomFieldValues add index ObjectCustomFieldValues1 (Content); 
 
-alter table ObjectCustomFieldValues add index ObjectCustomFieldValues2 (CustomField,ObjectType,ObjectId); 
+alter table ObjectCustomFieldValues add index ObjectCustomFieldValues2 (CustomField,ObjectType,object_id); 
 
 
 CREATE TABLE ObjectCustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
-  ObjectId integer NOT NULL,
+  object_id integer NOT NULL,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
@@ -48,7 +48,7 @@ CREATE TABLE ObjectCustomFields (
 ) TYPE=InnoDB;
 
 
-INSERT into ObjectCustomFields (id, CustomField, ObjectId, SortOrder, Creator, LastUpdatedBy) SELECT  null, id, Queue, SortOrder, Creator, LastUpdatedBy from CustomFields;
+INSERT into ObjectCustomFields (id, CustomField, object_id, SortOrder, Creator, LastUpdatedBy) SELECT  null, id, Queue, SortOrder, Creator, LastUpdatedBy from CustomFields;
 
 alter table CustomFields add column LookupType varchar(255) NOT NULL;
 alter table CustomFields add column Repeated int2 NOT NULL DEFAULT 0 ;

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-  <select name="<%$Name%>">
+  <select name="<%$name%>">
     <option value="1" <%$SingleDefault%>><&|/l&>Single</&></option>
     <option value="0" <%$MultipleDefault%>><&|/l&>Multiple</&></option>
   </select>	
@@ -62,6 +62,6 @@ elsif ($Default == 0 ) {
 
 </%INIT>
 <%ARGS>
-$Name => 'Single'
+$name => 'Single'
 $Default => 1
 </%ARGS>

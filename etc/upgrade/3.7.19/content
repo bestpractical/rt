@@ -24,10 +24,10 @@ sub add_description_to_all_scrips {
 
 sub gen_scrip_description {
     my $scrip = shift;
-    my $condition = $scrip->ConditionObj->Name
+    my $condition = $scrip->ConditionObj->name
         || $scrip->ConditionObj->Description
         || ('On Condition #'. $scrip->Condition);
-    my $action = $scrip->ActionObj->Name
+    my $action = $scrip->ActionObj->name
         || $scrip->ActionObj->Description
         || ('Run Action #'. $scrip->Action);
     return join ' ', $condition, $action;

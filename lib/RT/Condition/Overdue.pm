@@ -48,7 +48,7 @@
  
 
 
-=head1 NAME
+=head1 name
 
 RT::Condition::Overdue
 

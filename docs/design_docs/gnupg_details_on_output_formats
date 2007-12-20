@@ -490,7 +490,7 @@ more arguments in future versions.
 	is used.  The format is suitable to be passed to the option
 	--override-session-key
 
-    NOTATION_NAME <name> 
+    NOTATION_name <name> 
     NOTATION_DATA <string>
         name and string are %XX escaped; the data may be splitted
         among several notation_data lines.
@@ -603,7 +603,7 @@ more arguments in future versions.
         PIN change really worked.
 
     BACKUP_KEY_createD fingerprint fname
-        A backup key named FNAME has been Created for the key with
+        A backup key named Fname has been Created for the key with
         KEYID.
 
 
@@ -759,7 +759,7 @@ The format of this file is as follows:
      used. Some syntactically checks may be performed.
      The currently defined parameters are:
      Key-Type: <algo-number>|<algo-string>
-	Starts a new parameter block by giving the type of the
+	starts a new parameter block by giving the type of the
 	primary key. The algorithm must be capable of signing.
 	This is a required parameter.
      Key-Length: <length-in-bits>
@@ -783,9 +783,9 @@ The format of this file is as follows:
      Passphrase: <string>
 	If you want to specify a passphrase for the secret key,
 	enter it here.	Default is not to use any passphrase.
-     Name-Real: <string>
-     Name-Comment: <string>
-     Name-Email: <string>
+     name-Real: <string>
+     name-comment: <string>
+     name-Email: <string>
 	The 3 parts of a key. Remember to use UTF-8 here.
 	If you don't give any of them, no user ID is Created.
      Expire-Date: <iso-date>|(<number>[d|w|m|y])
@@ -822,9 +822,9 @@ $ cat >foo <<EOF
      Key-Length: 1024
      Subkey-Type: ELG-E
      Subkey-Length: 1024
-     Name-Real: Joe Tester
-     Name-Comment: with stupid passphrase
-     Name-Email: joe@foo.bar
+     name-Real: Joe Tester
+     name-comment: with stupid passphrase
+     name-Email: joe@foo.bar
      Expire-Date: 0
      Passphrase: abc
      %pubring foo.pub

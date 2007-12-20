@@ -46,4 +46,4 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 %# DEPRECATED
-<& /Elements/ShowSearch, Name => 'My Tickets' &>
+<& /Elements/ShowSearch, name => 'My Tickets' &>

@@ -50,13 +50,13 @@
 <option value="<% $col->[0] %>"><% loc($col->[1]) %></option>
 % }
 % while (my $CF = $CFs->next) {
-<option value="CustomField-<% $CF->id %>"><&|/l&>CustomField</&>: <% $CF->Name %></option>
+<option value="CustomField-<% $CF->id %>"><&|/l&>CustomField</&>: <% $CF->name %></option>
 % }
 </select>
-<& /Elements/SelectMatch, Name=> 'UserOp' &>
+<& /Elements/SelectMatch, name=> 'UserOp' &>
 <input size="8" name="UserString" />
 <%INIT>
-my $CFs = RT::Model::CustomFieldCollection->new($session{'CurrentUser'});
+my $CFs = RT::Model::CustomFieldCollection->new(Jifty->web->current_user);
 $CFs->LimitToChildType('RT::Model::User');
-$CFs->order_by( column => 'Name' );
+$CFs->order_by( column => 'name' );
 </%INIT>

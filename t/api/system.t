@@ -9,7 +9,7 @@ use RT;
 
 {
 
-my $s = RT::System->new(RT->system_user);
+my $s = RT::System->new(current_user => RT->system_user);
 my $rights = $s->AvailableRights;
 ok ($rights, "Rights defined");
 ok ($rights->{'AdminUsers'},"AdminUsers right found");

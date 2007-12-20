@@ -54,11 +54,11 @@
 my $tabs;
 
 if ($id) {
-    my $cf = RT::Model::CustomField->new( $session{'CurrentUser'} );
+    my $cf = RT::Model::CustomField->new( Jifty->web->current_user );
     $cf->load($id);
     $tabs = {
         this => {
-            title => $cf->Name,
+            title => $cf->name,
             path  => "Admin/CustomFields/Modify.html?id=" . $id,
             current_subtab => $current_tab,
 
@@ -88,7 +88,7 @@ if ($id) {
     }
 }
 
-if ($session{'CurrentUser'}->has_right( Object => RT->system, Right => 'AdminCustomField')) {
+if (Jifty->web->current_user->has_right( Object => RT->system, Right => 'AdminCustomField')) {
   $tabs->{"A"} = { title => loc('Select custom field'),
                         path => "Admin/CustomFields/",
                            };

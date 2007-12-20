@@ -48,7 +48,7 @@
 <%DOC>
 see docs/using_forms_widgets.pod
 </%DOC>
-<div id="form-box-<% lc $Name %>">
+<div id="form-box-<% lc $name %>">
 <span class="description"><% $Description %></span>:\
 <& SELF:InputOnly, %ARGS &>
 % if ( $Default ) {
@@ -58,7 +58,7 @@ see docs/using_forms_widgets.pod
 <%INIT>
 </%INIT>
 <%ARGS>
-$Name
+$name
 
 $Description  => undef,
 
@@ -70,16 +70,16 @@ $DefaultLabel   => loc( 'Leaving this empty will default to the system default o
 </%ARGS>
 
 <%METHOD InputOnly>
-<input type="text" name="<% $Name %>" value="<% $CurrentValue || '' %>" />\
+<input type="text" name="<% $name %>" value="<% $CurrentValue || '' %>" />\
 <%ARGS>
-$Name
+$name
 $CurrentValue => '',
 </%ARGS>
 </%METHOD>
 
 <%METHOD Process>
 <%ARGS>
-$Name
+$name
 
 $Arguments    => {},
 
@@ -87,7 +87,7 @@ $Default      => 0,
 $DefaultValue => '',
 </%ARGS>
 <%INIT>
-my $value = $Arguments->{ $Name };
+my $value = $Arguments->{ $name };
 if ( !defined $value || $value eq '' ) {
     return $DefaultValue unless $Default;
     return undef;

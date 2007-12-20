@@ -57,10 +57,10 @@ sub limit_to_custom_field {
     $self->limit( column => 'CustomField', value => $id );
 }
 
-sub LimitToObjectId {
+sub LimitToobject_id {
     my $self = shift;
     my $id = shift || 0;
-    $self->limit( column => 'ObjectId', value => $id );
+    $self->limit( column => 'object_id', value => $id );
 }
 
 sub LimitToLookupType {
@@ -108,7 +108,7 @@ sub _do_search {
     my $self = shift;
     if ($self->{'_cfs_alias'}) {
     $self->limit( alias           => $self->{'_cfs_alias'},
-                 column           => 'Disabled',
+                 column           => 'disabled',
                  operator        => '!=',
                  value           =>  1);
     }

@@ -40,7 +40,7 @@ our $MasonSessionDir = '/home/jesse/svk/3.999-DANGEROUS/var/session_data';
 
 
 
-=head1 NAME
+=head1 name
 
 RT - Request Tracker
 
@@ -203,7 +203,7 @@ sub InitLogging {
 
         if ( $Config->Get('LogToFile') ) {
             my ($filename, $logdir) = (
-                $Config->Get('LogToFileNamed') || 'rt.log',
+                $Config->Get('LogToFilenamed') || 'rt.log',
                 $Config->Get('LogDir') || File::Spec->catdir( $VarPath, 'log' ),
             );
             if ( $filename =~ m![/\\]! ) { # looks like an absolute path.

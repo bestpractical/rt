@@ -79,7 +79,7 @@ $show = sub {
     $m->out( '</pre>' );
 };
 
-my $AttachmentObj = new RT::Model::Attachment($session{'CurrentUser'});
+my $AttachmentObj = new RT::Model::Attachment(Jifty->web->current_user);
 $AttachmentObj->load($Attachment) || Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));
 unless ( $AttachmentObj->id ) {
     Abort(loc("Attachment '[_1]' could not be loaded", $Attachment));

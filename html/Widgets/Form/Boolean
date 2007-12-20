@@ -48,18 +48,18 @@
 <%DOC>
 see docs/using_forms_widgets.pod
 </%DOC>
-<div id="form-box-<% lc $Name %>">
+<div id="form-box-<% lc $name %>">
 <span class="description"><% $Description %></span>:\
 <& SELF:InputOnly, %ARGS &>
 </div>
 <%ARGS>
-$Name         => undef,
+$name         => undef,
 $Description  => undef,
 </%ARGS>
 
 <%METHOD InputOnly>
 <%ARGS>
-$Name         => undef,
+$name         => undef,
 
 $Default        => 0,
 $DefaultValue   => 0,
@@ -68,28 +68,28 @@ $DefaultLabel   => loc( 'Use system default ([_1])', $DefaultValue? loc('Yes'): 
 $CurrentValue => undef,
 </%ARGS>
 % unless ( $Default ) {
-<input type="hidden" name="<% $Name %>" value="0" />\
-<input type="checkbox" name="<% $Name %>" value="1"<% $CurrentValue? ' checked="checked"': '' |n %> />\
+<input type="hidden" name="<% $name %>" value="0" />\
+<input type="checkbox" name="<% $name %>" value="1"<% $CurrentValue? ' checked="checked"': '' |n %> />\
 % } else {
-<input type="radio" name="<% $Name %>" value="1"<% $CurrentValue? ' checked="checked"': '' |n %> />\
+<input type="radio" name="<% $name %>" value="1"<% $CurrentValue? ' checked="checked"': '' |n %> />\
 <% loc('Yes') %>
-<input type="radio" name="<% $Name %>" value="0"<% defined $CurrentValue && !$CurrentValue? ' checked="checked"': '' |n %> />\
+<input type="radio" name="<% $name %>" value="0"<% defined $CurrentValue && !$CurrentValue? ' checked="checked"': '' |n %> />\
 <% loc('No') %>
-<input type="radio" name="<% $Name %>" value="__empty_value__"<% !defined $CurrentValue? ' checked="checked"': '' |n %> />\
+<input type="radio" name="<% $name %>" value="__empty_value__"<% !defined $CurrentValue? ' checked="checked"': '' |n %> />\
 <% $DefaultLabel %>
 % }
 </%METHOD>
 
 <%METHOD Process>
 <%ARGS>
-$Name
+$name
 $Arguments    => {},
 
 $Default      => 0,
 $DefaultValue => 0,
 </%ARGS>
 <%INIT>
-my $value = $Arguments->{ $Name };
+my $value = $Arguments->{ $name };
 if ( $Default ) {
     return undef if !defined $value || $value eq '__empty_value__';
     return $value? 1: 0;

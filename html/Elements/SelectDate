@@ -46,9 +46,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <script type="text/javascript"><!--
-    onLoadHook('createCalendarLink("<% $Name %>");');
+    onLoadHook('createCalendarLink("<% $name %>");');
 --></script>
-<input type="text" id="<% $Name %>" name="<% $Name %>" value="<% $Default %>" size="<% $Size %>" />
+<input type="text" id="<% $name %>" name="<% $name %>" value="<% $Default %>" size="<% $Size %>" />
 <%init>
 unless ((defined $Default) or 
 	($current <= 0)) {
@@ -59,8 +59,8 @@ unless ((defined $Default) or
                            $hour,$min);   
 }
 
-unless ($Name) {
-	$Name = $menu_prefix. "_Date";
+unless ($name) {
+	$name = $menu_prefix. "_Date";
 }
 </%init>
 
@@ -70,6 +70,6 @@ $ShowTime => undef
 $menu_prefix=>''
 $current=>time
 $Default => ''
-$Name => undef
+$name => undef
 $Size => 16
 </%args>

@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::GroupCollection - a collection of RT::Model::Group objects
 
@@ -91,7 +91,7 @@ sub _init {
   my @result = $self->SUPER::_init(@_);
 
   $self->order_by( alias => 'main',
-		  column => 'Name',
+		  column => 'name',
 		  order => 'ASC');
 
   # XXX: this code should be generalized
@@ -106,7 +106,7 @@ sub _init {
   # only match principals with type 'Group' this could speed up
   # searches in some DBs.
   $self->limit( alias => $self->{'princalias'},
-                column => 'PrincipalType',
+                column => 'principal_type',
                 value => 'Group',
               );
 
@@ -238,7 +238,7 @@ sub LimitToRolesForSystem {
 
 # }}}
 
-=head2 WithMember {PrincipalId => PRINCIPAL_ID, Recursively => undef}
+=head2 WithMember {principal_id => PRINCIPAL_ID, Recursively => undef}
 
 Limits the set of groups returned to groups which have
 Principal PRINCIPAL_ID as a member
@@ -249,7 +249,7 @@ Principal PRINCIPAL_ID as a member
 
 sub WithMember {
     my $self = shift;
-    my %args = ( PrincipalId => undef,
+    my %args = ( principal_id => undef,
                  Recursively => undef,
                  @_);
     my $members;
@@ -262,14 +262,14 @@ sub WithMember {
     $self->join(alias1 => 'main', column1 => 'id',
                 alias2 => $members, column2 => 'GroupId');
 
-    $self->limit(alias => $members, column => 'MemberId', operator => '=', value => $args{'PrincipalId'});
+    $self->limit(alias => $members, column => 'MemberId', operator => '=', value => $args{'principal_id'});
 }
 
 
-=head2 WithRight { Right => RIGHTNAME, Object => RT::Record, IncludeSystemRights => 1, IncludeSuperusers => 0, EquivObjects => [ ] }
+=head2 WithRight { Right => RIGHTname, Object => RT::Record, IncludeSystemRights => 1, IncludeSuperusers => 0, EquivObjects => [ ] }
 
 
-Find all groups which have RIGHTNAME for RT::Record. Optionally include global rights and superusers. By default, include the global rights, but not the superusers.
+Find all groups which have RIGHTname for RT::Record. Optionally include global rights and superusers. By default, include the global rights, but not the superusers.
 
 
 
@@ -325,7 +325,7 @@ sub _joinGroupMembersForGroupRights {
         return $self->RT::Model::UserCollection::_joinGroupMembersForGroupRights( %args );
     }
     $self->limit( alias => $args{'ACLAlias'},
-                  column => 'PrincipalId',
+                  column => 'principal_id',
                   value => "main.id",
                   quote_value => 0,
                 );
@@ -347,14 +347,14 @@ sub LimitToEnabled {
     my $self = shift;
     
     $self->limit( alias => $self->PrincipalsAlias,
-		          column => 'Disabled',
+		          column => 'disabled',
 		          value => '0',
 		          operator => '=',
                 );
 }
 # }}}
 
-# {{{ sub LimitToDisabled
+# {{{ sub LimitTodisabled
 
 =head2 LimitToDeleted
 
@@ -367,7 +367,7 @@ sub LimitToDeleted {
     
     $self->{'find_disabled_rows'} = 1;
     $self->limit( alias => $self->PrincipalsAlias,
-                  column => 'Disabled',
+                  column => 'disabled',
                   operator => '=',
                   value => 1,
                 );

@@ -1,7 +1,7 @@
 
 @Templates = (
     {  Queue       => 0,
-       Name        => "Error: public key",    # loc
+       name        => "Error: public key",    # loc
        Description =>
          "Inform user that he has problems with public key and couldn't recieve encrypted content", # loc
        Content => q{Subject: We have no your public key or it's wrong
@@ -10,7 +10,7 @@ You received this message as we have no your public PGP key or we have a problem
 }
     },
     {  Queue       => 0,
-       Name        => "Error to RT owner: public key",    # loc
+       name        => "Error to RT owner: public key",    # loc
        Description =>
          "Inform RT owner that user(s) have problems with public keys", # loc
        Content => q{Subject: Some users have problems with public keys
@@ -23,7 +23,7 @@ You received this message as RT has problems with public keys of the following u
 }}
     },
     {  Queue       => 0,
-       Name        => "Error: no private key",    # loc
+       name        => "Error: no private key",    # loc
        Description =>
          "Inform user that we received an encrypted email and we have no private keys to decrypt", # loc
        Content => q{Subject: we received message we cannot decrypt
@@ -35,7 +35,7 @@ Please, check that you encrypt messages with correct keys
 or contact the system administrator.}
     },
     {  Queue       => 0,
-       Name        => "Error: bad GnuPG data",    # loc
+       name        => "Error: bad GnuPG data",    # loc
        Description =>
          "Inform user that a message he sent has invalid GnuPG data", # loc
        Content => q{Subject: We received a message we cannot handle

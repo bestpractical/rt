@@ -14,7 +14,7 @@ Encrypted messages encrypted for rt-recipient@example.com.
 
 Messages signed using rt-test@example.com key.
 
-Name of a file may contain the following parts separated by dash:
+name of a file may contain the following parts separated by dash:
 * signed
 * encrypted
 * MIME - RFC format
@@ -42,7 +42,7 @@ Encrypted messages encrypted for rt-recipient@example.com.
 
 Messages signed using rt-test@example.com key.
 
-Name of a file may contain the following parts separated by dash:
+name of a file may contain the following parts separated by dash:
 * signed
 * encrypted
 * MIME - RFC format

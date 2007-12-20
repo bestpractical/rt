@@ -50,18 +50,18 @@
 %}
 <%INIT>
 my ($user);
-my $users = new RT::Model::UserCollection($session{'CurrentUser'});
+my $users = new RT::Model::UserCollection(Jifty->web->current_user);
 $users->limit(column => 'id',
               value => RT->system_user->id,
               operator => '!=' );
 
 if (defined $IdLike) {
-$users->limit(column => 'Name',
+$users->limit(column => 'name',
               value => $IdLike,
               operator => 'LIKE' );
 }
 if (defined $EmailLike) {
-$users->limit(column => 'EmailAddress',
+$users->limit(column => 'email',
               value => $EmailLike,
               operator => 'LIKE');
 

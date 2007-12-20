@@ -119,7 +119,7 @@
 <h3><&|/l&>New Links</&></h3>
 % if (ref($Object) eq 'RT::Model::Ticket') {
 <i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&>
-% $m->callback( CallbackName => 'ExtraLinkInstructions' );
+% $m->callback( Callbackname => 'ExtraLinkInstructions' );
 </i><br />
 % } elsif (ref($Object) eq 'RT::Model::Queue') {
 <i><&|/l&>Enter queues or URIs to link queues to. Separate multiple entries with spaces.</&>

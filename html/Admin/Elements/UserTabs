@@ -53,7 +53,7 @@
 <%INIT>
 my $tabs;
 if ($id) {
-$tabs->{'this'} = { title => eval { $UserObj->Name },
+$tabs->{'this'} = { title => eval { $user_object->name },
 
 		path => "Admin/Users/Modify.html?id=".$id,
 subtabs => {
@@ -76,7 +76,7 @@ subtabs => {
 	}
 }
 }
-if ($session{'CurrentUser'}->has_right( Object => RT->system, Right => 'AdminUsers')) {
+if (Jifty->web->current_user->has_right( Object => RT->system, Right => 'AdminUsers')) {
   $tabs->{"A"} = { title => loc('Select user'),
   		     	path => "Admin/Users/",
 			   };
@@ -104,7 +104,7 @@ $tabs->{'this'}->{"current_subtab"} = $current_tab;
 $current_tab = "Admin/Users/Modify.html?id=".$id if $id;
 </%INIT>
 <%ARGS>
-$UserObj => undef
+$user_object => undef
 $id => undef
 $current_tab => undef
 $subtabs => undef

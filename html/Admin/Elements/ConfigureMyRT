@@ -59,7 +59,7 @@ for my $pane (@$panes) {
     push @panes, $m->comp(
         '/Widgets/SelectionBox:new',
         Action    => $Action,
-        Name      => $pane,
+        name      => $pane,
         Available => $items,
         AutoSave  => 1,
         OnSubmit  => sub {

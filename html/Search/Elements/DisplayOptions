@@ -96,7 +96,7 @@ selected
 <&|/l&>Rows per page</&>:
 </td><td class="value">
 <& /Elements/SelectResultsPerPage, 
-    Name => "rows_per_page", 
+    name => "rows_per_page", 
     Default => $rows_per_page &>
 </td>
 </tr>
@@ -107,11 +107,11 @@ selected
 </&>
 
 <%INIT>
-my $tickets = new RT::Model::TicketCollection($session{'CurrentUser'});
+my $tickets = new RT::Model::TicketCollection(Jifty->web->current_user);
 my %fields = %{$tickets->columns};
 map { $fields{$_}->[0] =~ /^(?:ENUM|INT|DATE|STRING)$/ || delete $fields{$_} } keys %fields;
 delete $fields{'EffectiveId'};
-$fields{ $_ . '.EmailAddress' } = 1 foreach( qw(Requestor Cc AdminCc) );
+$fields{ $_ . '.email' } = 1 foreach( qw(Requestor Cc AdminCc) );
 
 # Add all available CustomFields to the list of sortable columns.
 my @cfs = grep /^CustomField/, @{$ARGS{AvailableColumns}};

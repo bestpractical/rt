@@ -45,12 +45,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$name%>">
 <option value="Subject"><&|/l&>Subject</&></option>
 <option value="Content"><&|/l&>Content</&></option>
 <option value="ContentType"><&|/l&>Content-Type</&></option>
 <option value="Filename"><&|/l&>Filename</&></option>
 </select>
 <%ARGS>
-$Name => 'AttachmentField'
+$name => 'AttachmentField'
 </%ARGS>

@@ -81,7 +81,7 @@ BEGIN {
 
 }
 
-=head1 NAME
+=head1 name
 
   RT::Interface::Email - helper functions for parsing email sent to RT
 
@@ -393,7 +393,7 @@ sub SendEmail {
 
     unless ( $args{'Entity'}->head->get('Date') ) {
         require RT::Date;
-        my $date = RT::Date->new( RT->system_user );
+        my $date = RT::Date->new(current_user => RT->system_user );
         $date->set_to_now;
         $args{'Entity'}->head->set( 'Date', $date->RFC2822( Timezone => 'server' ) );
     }
@@ -413,7 +413,7 @@ sub SendEmail {
              my $prefix = RT->Config->Get('VERPPrefix') and
              my $domain = RT->Config->Get('VERPDomain') )
         {
-            my $from = $args{'Transaction'}->CreatorObj->EmailAddress;
+            my $from = $args{'Transaction'}->CreatorObj->email;
             $from =~ s/@/=/g;
             $from =~ s/\s//g;
             $args .= " -f $prefix$from\@$domain";
@@ -485,7 +485,7 @@ sub PrepareEmailUsingTemplate {
         @_
     );
 
-    my $template = RT::Model::Template->new( RT->system_user );
+    my $template = RT::Model::Template->new(current_user => RT->system_user );
     $template->loadGlobalTemplate( $args{'Template'} );
     unless ( $template->id ) {
         return (undef, "Couldn't load template '". $args{'Template'} ."'");
@@ -588,7 +588,7 @@ sub ForwardTransaction {
     );
     $attachments->limit(
         column => 'ContentType',
-        operator => 'NOT STARTSWITH',
+        operator => 'NOT starts_with',
         value => 'multipart/',
     );
     $attachments->limit(
@@ -618,7 +618,7 @@ sub ForwardTransaction {
         $RT::Logger->warning("Couldn't generate email using template 'Forward'");
 
         my $description = 'This is forward of transaction #'
-            . $txn->id ." of a ticket #". $txn->ObjectId;
+            . $txn->id ." of a ticket #". $txn->object_id;
         $mail = MIME::Entity->build(
             Type => 'text/plain',
             Data => $description,
@@ -638,10 +638,10 @@ sub ForwardTransaction {
     my $from;
     my $subject = $txn->Subject || $txn->Object->Subject;
     if ( RT->Config->Get('ForwardFromUser') ) {
-        $from = $txn->current_user->UserObj->EmailAddress;
+        $from = $txn->current_user->user_object->email;
     } else {
         # XXX: what if want to forward txn of other object than ticket?
-        $subject = AddSubjectTag( $subject, $txn->ObjectId );
+        $subject = AddSubjectTag( $subject, $txn->object_id );
         $from = $txn->Object->QueueObj->CorrespondAddress
             || RT->Config->Get('CorrespondAddress');
     }
@@ -763,17 +763,17 @@ sub SignEncrypt {
 
 
 sub create_user {
-    my ( $Username, $Address, $Name, $ErrorsTo, $entity ) = @_;
+    my ( $Username, $Address, $name, $ErrorsTo, $entity ) = @_;
 
-    my $NewUser = RT::Model::User->new( RT->system_user );
+    my $NewUser = RT::Model::User->new(current_user => RT->system_user );
 
     my ( $Val, $Message ) = $NewUser->create(
-        Name => ( $Username || $Address ),
-        EmailAddress => $Address,
-        RealName     => $Name,
-        Password     => undef,
-        Privileged   => 0,
-        Comments     => 'AutoCreated on ticket submission',
+        name => ( $Username || $Address ),
+        email => $Address,
+        real_name     => $name,
+        password     => undef,
+        privileged   => 0,
+        comments     => 'AutoCreated on ticket submission',
     );
 
     unless ($Val) {
@@ -845,10 +845,10 @@ sub ParseCcAddressesFromHead {
 
     my @res;
     foreach my $address ( @recipients ) {
-        $address = $args{'CurrentUser'}->UserObj->CanonicalizeEmailAddress( $address );
-        next if lc $args{'CurrentUser'}->EmailAddress   eq $address;
+        $address = $args{'CurrentUser'}->user_object->canonicalize_email( $address );
+        next if lc $args{'CurrentUser'}->email   eq $address;
         next if lc $args{'QueueObj'}->CorrespondAddress eq $address;
-        next if lc $args{'QueueObj'}->CommentAddress    eq $address;
+        next if lc $args{'QueueObj'}->commentAddress    eq $address;
         next if IsRTAddress( $address );
 
         push @res, $address;
@@ -923,12 +923,12 @@ sub ParseAddressFromHeader {
         return ( undef, undef );
     }
 
-    my $Name = ( $AddrObj->phrase || $AddrObj->comment || $AddrObj->address );
+    my $name = ( $AddrObj->phrase || $AddrObj->comment || $AddrObj->address );
 
     #Lets take the from and load a user object.
     my $Address = $AddrObj->address;
 
-    return ( $Address, $Name );
+    return ( $Address, $name );
 }
 
 =head2 delete_recipients_from_head HEAD RECIPIENTS
@@ -1138,7 +1138,7 @@ sub Gateway {
     my $ErrorsTo = ParseErrorsToAddressFromHead( $head );
 
     my $MessageId = $head->get('Message-ID')
-        || "<no-message-id-". time . rand(2000) .'@'. RT->Config->Get('Organization') .'>';
+        || "<no-message-id-". time . rand(2000) .'@'. RT->Config->Get('organization') .'>';
 
     #Pull apart the subject line
     my $Subject = $head->get('Subject') || '';
@@ -1162,7 +1162,7 @@ sub Gateway {
 
     $args{'ticket'} ||= ParseTicketId( $Subject );
 
-    $SystemTicket = RT::Model::Ticket->new( RT->system_user );
+    $SystemTicket = RT::Model::Ticket->new(current_user => RT->system_user );
     $SystemTicket->load( $args{'ticket'} ) if ( $args{'ticket'} ) ;
     if ( $SystemTicket->id ) {
         $Right = 'ReplyToTicket';
@@ -1171,7 +1171,7 @@ sub Gateway {
     }
 
     #Set up a queue object
-    my $SystemQueueObj = RT::Model::Queue->new( RT->system_user );
+    my $SystemQueueObj = RT::Model::Queue->new(current_user => RT->system_user );
     $SystemQueueObj->load( $args{'queue'} );
 
     # We can safely have no queue of we have a known-good ticket
@@ -1520,7 +1520,7 @@ sub _HandleMachineGeneratedMail {
         # allow us to squelch ALL outbound messages. This way we
         # can punt the logic of "what to do when we get a bounce"
         # to the scrip. We might want to notify nobody. Or just
-        # the RT Owner. Or maybe all Privileged watchers.
+        # the RT Owner. Or maybe all privileged watchers.
         my ( $Sender, $junk ) = ParseSenderAddressFromHead($head);
         $head->add( 'RT-Squelch-Replies-To',    $Sender );
         $head->add( 'RT-DetectedAutoGenerated', 'true' );

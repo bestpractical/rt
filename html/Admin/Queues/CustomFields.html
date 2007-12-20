@@ -56,14 +56,14 @@
 
     <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object, ObjectType => 'RT::Model::Queue' &>
 <%INIT>
-my $Object = RT::Model::Queue->new( $session{'CurrentUser'} );
+my $Object = RT::Model::Queue->new( Jifty->web->current_user );
 
 $Object->load($id) || Abort( loc( "Couldn't load object [_1]", $id ) );
 my $FriendlySubTypes =
-  RT::Model::CustomField->new( $session{'CurrentUser'} )
+  RT::Model::CustomField->new( Jifty->web->current_user )
   ->FriendlyLookupType( $Object->CustomFieldLookupType );
 
-my $title = loc( 'Edit Custom Fields for [_1]', $Object->Name );
+my $title = loc( 'Edit Custom Fields for [_1]', $Object->name );
 
 </%INIT>
 <%ARGS>

@@ -75,10 +75,10 @@ sub rewrite_rtconfig
     config_set( '$DatabaseRTHost'     , 'localhost' );
     config_set( '$DatabasePort'       , '' );
     config_set( '$DatabaseUser'       , 'rt_user' );
-    config_set( '$DatabasePassword'   , 'rt_pass' );
+    config_set( '$Databasepassword'   , 'rt_pass' );
     config_set( '$DatabaseRequireSSL' , undef );
     # database file name
-    config_set( '$DatabaseName'       , db_name() );
+    config_set( '$Databasename'       , db_name() );
 
     # generic logging
     config_set( '$LogToSyslog'    , undef );
@@ -87,7 +87,7 @@ sub rewrite_rtconfig
     # logging to standalone file
     config_set( '$LogToFile'      , 'debug' );
     my $fname = File::Spec->catfile(create_tmpdir(), test_name() .".log");
-    config_set( '$LogToFileNamed' , $fname );
+    config_set( '$LogToFilenamed' , $fname );
 }
 
 =head3 config_set
@@ -125,7 +125,7 @@ sub _init_db
 {
 
 
-    foreach ( qw(Type Host Port Name User Password) ) {
+    foreach ( qw(Type Host Port name User password) ) {
         $ENV{ "RT_DB_". uc $_ } = RT->Config->Get("Database$_");
     }
     my $cmd =  "$^X sbin/rt-setup-database --action init";
@@ -276,7 +276,7 @@ sub __cp_db
 
 Returns DB dump as complex hash structure:
     {
-    TableName => {
+    Tablename => {
         #id => {
             lc_field => 'value',
         }
@@ -293,8 +293,8 @@ sub dump_sqlite
     my $dbh = shift;
     my %args = ( CleanDates => 1, @_ );
 
-    my $old_fhkn = $dbh->{'FetchHashKeyName'};
-    $dbh->{'FetchHashKeyName'} = 'NAME_lc';
+    my $old_fhkn = $dbh->{'FetchHashKeyname'};
+    $dbh->{'FetchHashKeyname'} = 'name_lc';
 
     my $sth = $dbh->table_info( '', '', '%', 'TABLE' ) || die $DBI::err;
     my @tables = keys %{$sth->fetchall_hashref( 'table_name' )};
@@ -307,7 +307,7 @@ sub dump_sqlite
         die $DBI::err if $DBI::err;
     }
 
-    $dbh->{'FetchHashKeyName'} = $old_fhkn;
+    $dbh->{'FetchHashKeyname'} = $old_fhkn;
     return $res;
 }
 

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME ="<%$Name%>">
+<select name ="<%$name%>">
 %if ($DefaultValue) {
 <option <% !$Default && "SELECTED" %> value=""><%$DefaultLabel%></option>
 %}
@@ -55,11 +55,11 @@
 % }
 </select>
 <%ONCE>
-my $queue = new RT::Model::Queue($session{'CurrentUser'});
+my $queue = new RT::Model::Queue(Jifty->web->current_user);
 my @status = $queue->StatusArray();
 </%ONCE>
 <%ARGS>
-$Name => undef
+$name => undef
 $Default => ''
 $SkipDeleted => 0
 $DefaultValue => 1

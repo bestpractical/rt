@@ -68,17 +68,17 @@ expect_like(qr/Ticket \d+ Created/, "Created the ticket");
 # {{{ test queue manipulation
 
 # creating queues
-expect_send("create -t queue set Name='NewQueue$$'", 'Creating a queue...');
+expect_send("create -t queue set name='NewQueue$$'", 'Creating a queue...');
 expect_like(qr/Queue \d+ Created/, 'Created the queue');
 expect_handle->before() =~ /Queue (\d+) Created/;
 my $queue_id = $1;
 ok($queue_id, "Got queue id=$queue_id");
 # updating users
-expect_send("edit queue/$queue_id set Name='EditedQueue$$'", 'Editing the queue');
+expect_send("edit queue/$queue_id set name='EditedQueue$$'", 'Editing the queue');
 expect_like(qr/Queue $queue_id updated/, 'Edited the queue');
 expect_send("show queue/$queue_id", 'Showing the queue...');
 expect_like(qr/id: queue\/$queue_id/, 'Saw the queue');
-expect_like(qr/Name: EditedQueue$$/, 'Saw the modification');
+expect_like(qr/name: EditedQueue$$/, 'Saw the modification');
 TODO: { 
     todo_skip "Listing non-ticket items doesn't work", 2;
     expect_send("list -t queue 'id > 0'", 'Listing the queues...');
@@ -89,12 +89,12 @@ TODO: {
 
 
 # Set up a custom field for editing tests
-my $cf = RT::Model::CustomField->new(RT->system_user);
-my ($val,$msg) = $cf->create(Name => 'MyCF'.$$, Type => 'FreeformSingle', Queue => $queue_id);
+my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
+my ($val,$msg) = $cf->create(name => 'MyCF'.$$, Type => 'FreeformSingle', Queue => $queue_id);
 ok($val,$msg);
 
-my $othercf = RT::Model::CustomField->new(RT->system_user);
-($val,$msg) = $othercf->create(Name => 'My CF'.$$, Type => 'FreeformSingle', Queue => $queue_id);
+my $othercf = RT::Model::CustomField->new(current_user => RT->system_user);
+($val,$msg) = $othercf->create(name => 'My CF'.$$, Type => 'FreeformSingle', Queue => $queue_id);
 ok($val,$msg);
 
 
@@ -217,17 +217,17 @@ expect_like(qr/ContentType: $attachment_type/, 'Got the attachment');
 # {{{ test user manipulation
 
 # creating users
-expect_send("create -t user set Name='NewUser$$' EmailAddress='fbar$$\@example.com'", 'Creating a user...');
+expect_send("create -t user set name='NewUser$$' email='fbar$$\@example.com'", 'Creating a user...');
 expect_like(qr/User \d+ Created/, 'Created the user');
 expect_handle->before() =~ /User (\d+) Created/;
 my $user_id = $1;
 ok($user_id, "Got user id=$user_id");
 # updating users
-expect_send("edit user/$user_id set Name='EditedUser$$'", 'Editing the user');
+expect_send("edit user/$user_id set name='EditedUser$$'", 'Editing the user');
 expect_like(qr/User $user_id updated/, 'Edited the user');
 expect_send("show user/$user_id", 'Showing the user...');
 expect_like(qr/id: user\/$user_id/, 'Saw the user');
-expect_like(qr/Name: EditedUser$$/, 'Saw the modification');
+expect_like(qr/name: EditedUser$$/, 'Saw the modification');
 TODO: { 
     todo_skip "Listing non-ticket items doesn't work", 2;
     expect_send("list -t user 'id > 0'", 'Listing the users...');
@@ -241,17 +241,17 @@ TODO: {
 TODO: {
 todo_skip "Group manipulation doesn't work right now", 8;
 # creating groups
-expect_send("create -t group set Name='NewGroup$$'", 'Creating a group...');
+expect_send("create -t group set name='NewGroup$$'", 'Creating a group...');
 expect_like(qr/Group \d+ Created/, 'Created the group');
 expect_handle->before() =~ /Group (\d+) Created/;
 my $group_id = $1;
 ok($group_id, "Got group id=$group_id");
 # updating groups
-expect_send("edit group/$group_id set Name='EditedGroup$$'", 'Editing the group');
+expect_send("edit group/$group_id set name='EditedGroup$$'", 'Editing the group');
 expect_like(qr/Group $group_id updated/, 'Edited the group');
 expect_send("show group/$group_id", 'Showing the group...');
 expect_like(qr/id: group\/$group_id/, 'Saw the group');
-expect_like(qr/Name: EditedGroup$$/, 'Saw the modification');
+expect_like(qr/name: EditedGroup$$/, 'Saw the modification');
 TODO: { 
     local $TODO = "Listing non-ticket items doesn't work";
     expect_send("list -t group 'id > 0'", 'Listing the groups...');
@@ -266,17 +266,17 @@ todo_skip "Custom field manipulation not yet implemented", 8;
 # {{{ test custom field manipulation
 
 # creating custom fields
-expect_send("create -t custom_field set Name='NewCF$$'", 'Creating a custom field...');
+expect_send("create -t custom_field set name='NewCF$$'", 'Creating a custom field...');
 expect_like(qr/Custom Field \d+ Created/, 'Created the custom field');
 expect_handle->before() =~ /Custom Field (\d+) Created/;
 my $cf_id = $1;
 ok($cf_id, "Got custom field id=$cf_id");
 # updating custom fields
-expect_send("edit cf/$cf_id set Name='EditedCF$$'", 'Editing the custom field');
+expect_send("edit cf/$cf_id set name='EditedCF$$'", 'Editing the custom field');
 expect_like(qr/Custom field $cf_id updated/, 'Edited the custom field');
 expect_send("show cf/$cf_id", 'Showing the queue...');
 expect_like(qr/id: custom_field\/$cf_id/, 'Saw the custom field');
-expect_like(qr/Name: EditedCF$$/, 'Saw the modification');
+expect_like(qr/name: EditedCF$$/, 'Saw the modification');
 TODO: { 
     todo_skip "Listing non-ticket items doesn't work", 2;
     expect_send("list -t custom_field 'id > 0'", 'Listing the CFs...');
@@ -310,26 +310,26 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     # create a user; give them privileges to take and steal
     ### TODO: implement 'grant' in the CLI tool; use that here instead.
     ###       this breaks the abstraction barrier, like, a lot.
-    my $steal_user = RT::Model::User->new(RT->system_user);
-    my ($steal_user_id, $msg) = $steal_user->create( Name => "fooser$$",
-                                          EmailAddress => "fooser$$\@localhost",
-                                          Privileged => 1,
-                                          Password => 'foobar',
+    my $steal_user = RT::Model::User->new(current_user => RT->system_user);
+    my ($steal_user_id, $msg) = $steal_user->create( name => "fooser$$",
+                                          email => "fooser$$\@localhost",
+                                          privileged => 1,
+                                          password => 'foobar',
                                         );
     ok($steal_user_id, "Created the user? $msg");
-    my $steal_queue = RT::Model::Queue->new(RT->system_user);
+    my $steal_queue = RT::Model::Queue->new(current_user => RT->system_user);
     my $steal_queue_id;
-    ($steal_queue_id, $msg) = $steal_queue->create( Name => "Steal$$" );
+    ($steal_queue_id, $msg) = $steal_queue->create( name => "Steal$$" );
     ok($steal_queue_id, "Got the queue? $msg");
     ok($steal_queue->id, "queue obj has id");
     my $status;
-    ($status, $msg) = $steal_user->PrincipalObj->GrantRight( Right => 'ShowTicket', Object => $steal_queue );
+    ($status, $msg) = $steal_user->principal_object->GrantRight( Right => 'ShowTicket', Object => $steal_queue );
     ok($status, "Gave 'ShowTicket' to our user? $msg");
-    ($status, $msg) = $steal_user->PrincipalObj->GrantRight( Right => 'OwnTicket', Object => $steal_queue );
+    ($status, $msg) = $steal_user->principal_object->GrantRight( Right => 'OwnTicket', Object => $steal_queue );
     ok($status, "Gave 'OwnTicket' to our user? $msg");
-    ($status, $msg) = $steal_user->PrincipalObj->GrantRight( Right => 'StealTicket', Object => $steal_queue );
+    ($status, $msg) = $steal_user->principal_object->GrantRight( Right => 'StealTicket', Object => $steal_queue );
     ok($status, "Gave 'StealTicket' to our user? $msg");
-    ($status, $msg) = $steal_user->PrincipalObj->GrantRight( Right => 'TakeTicket', Object => $steal_queue );
+    ($status, $msg) = $steal_user->principal_object->GrantRight( Right => 'TakeTicket', Object => $steal_queue );
     ok($status, "Gave 'TakeTicket' to our user? $msg");
 
     # create a ticket to take/steal

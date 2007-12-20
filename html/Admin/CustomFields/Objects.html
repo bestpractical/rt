@@ -67,7 +67,7 @@
 </form>
 
 <%INIT>
-my $CF = RT::Model::CustomField->new($session{'CurrentUser'});
+my $CF = RT::Model::CustomField->new(Jifty->web->current_user);
 $CF->load($id) if ($id);
 
 unless ($CF->id) {  Abort(loc("Could not load CustomField [_1]"), $id)};
@@ -91,24 +91,24 @@ $CollectionClass = $Class.'Collection';
 }
 
 
-my $title = loc('Modify associated objects for [_1]', $CF->Name);
+my $title = loc('Modify associated objects for [_1]', $CF->name);
 
-my $Objects = $CollectionClass->new($session{'CurrentUser'});
+my $Objects = $CollectionClass->new(Jifty->web->current_user);
 my (@results);
 my (@AssignedObjs, @UnassignedObjs);
 
 $Objects->find_all_rows;
-$Objects->order_by( column => 'Name' );
+$Objects->order_by( column => 'name' );
 
 
 my $ObjectCFs;
-$ObjectCFs = RT::Model::ObjectCustomFieldCollection->new($session{'CurrentUser'});
+$ObjectCFs = RT::Model::ObjectCustomFieldCollection->new(Jifty->web->current_user);
 $ObjectCFs->find_all_rows;
 $ObjectCFs->limit_to_custom_field($id);
 
 my %seen;
 while (my $OCF = $ObjectCFs->next) {
-    $seen{$OCF->ObjectId}++;
+    $seen{$OCF->object_id}++;
 }
 
 while (my $obj = $Objects->next) { 
@@ -144,6 +144,6 @@ while (my $obj = $Objects->next) {
 </%INIT>
 <%ARGS>
 $id => undef
-$FindDisabledObjects => 0
+$FinddisabledObjects => 0
 $UpdateObjs => 0
 </%ARGS>

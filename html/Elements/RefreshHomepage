@@ -46,6 +46,6 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <form method="get" action="<%RT->Config->Get('WebPath') . $m->request_comp->path %>">
-<& /Elements/Refresh, Name => 'HomeRefreshInterval', Default => $session {'home_refresh_interval'} &>
+<& /Elements/Refresh, name => 'HomeRefreshInterval', Default => $session {'home_refresh_interval'} &>
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div>
 </form>

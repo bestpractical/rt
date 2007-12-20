@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Name => undef
+$name => undef
 $Attr => undef
 </%ARGS>
 
@@ -75,15 +75,15 @@ my $LinkCallback = sub {
 };
 
 $TICKET_COLUMN_MAP = {
-    QueueName => {
+    Queuename => {
         attribute => 'Queue',
         title     => 'Queue',
-        value     => sub { return $_[0]->QueueObj->Name }
+        value     => sub { return $_[0]->QueueObj->name }
     },
-    OwnerName => {
+    Ownername => {
         title     => 'Owner',
         attribute => 'Owner',
-        value     => sub { return $_[0]->OwnerObj->Name }
+        value     => sub { return $_[0]->OwnerObj->name }
     },
     Status => {
         attribute => 'Status',
@@ -137,15 +137,15 @@ $TICKET_COLUMN_MAP = {
         attribute => 'Type',
         value     => sub { return $_[0]->Type }
     },
-    TimeWorked => {
-        attribute => 'TimeWorked',
+    time_worked => {
+        attribute => 'time_worked',
         title => 'Time Worked',
-        value     => sub { return $_[0]->TimeWorked }
+        value     => sub { return $_[0]->time_worked }
     },
-    TimeLeft => {
-        attribute => 'TimeLeft',
+    time_left => {
+        attribute => 'time_left',
         title     => 'Time Left',
-        value     => sub { return $_[0]->TimeLeft }
+        value     => sub { return $_[0]->time_left }
     },
     TimeEstimated => {
         attribute => 'TimeEstimated',
@@ -153,21 +153,21 @@ $TICKET_COLUMN_MAP = {
         value     => sub { return $_[0]->TimeEstimated }
     },
     Requestors => {
-        attribute => 'Requestor.EmailAddress',
-        value => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
+        attribute => 'Requestor.email',
+        value => sub { return $_[0]->Requestors->MemberemailesAsString }
     },
     Cc => {
-        attribute => 'Cc.EmailAddress',
-        value => sub { return $_[0]->Cc->MemberEmailAddressesAsString }
+        attribute => 'Cc.email',
+        value => sub { return $_[0]->Cc->MemberemailesAsString }
     },
     AdminCc => {
-        attribute => 'AdminCc.EmailAddress',
-        value => sub { return $_[0]->AdminCc->MemberEmailAddressesAsString }
+        attribute => 'AdminCc.email',
+        value => sub { return $_[0]->AdminCc->MemberemailesAsString }
     },
-    StartsRelative => {
-        title     => 'Starts',
-        attribute => 'Starts',
-        value     => sub { return $_[0]->StartsObj->AgeAsString }
+    startsRelative => {
+        title     => 'starts',
+        attribute => 'starts',
+        value     => sub { return $_[0]->startsObj->AgeAsString }
     },
     StartedRelative => {
         title     => 'Started',
@@ -196,9 +196,9 @@ $TICKET_COLUMN_MAP = {
         attribute => 'Resolved',
         value     => sub { return $_[0]->ResolvedObj->AgeAsString }
     },
-    Starts => {
-        attribute => 'Starts',
-        value     => sub { return $_[0]->StartsObj->AsString }
+    starts => {
+        attribute => 'starts',
+        value     => sub { return $_[0]->startsObj->AsString }
     },
     Started => {
         attribute => 'Started',
@@ -227,10 +227,10 @@ $TICKET_COLUMN_MAP = {
     },
     KeyRequestors => {
         title     => 'Requestors',
-        attribute => 'Requestor.EmailAddress',
+        attribute => 'Requestor.email',
         value => sub {
             my $t = shift;
-            my @requestors = $t->Requestors->MemberEmailAddresses;
+            my @requestors = $t->Requestors->Memberemailes;
             for my $email (@requestors)
             {
                 my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
@@ -244,13 +244,13 @@ $TICKET_COLUMN_MAP = {
             return join ', ', @requestors;
         }
     },
-    KeyOwnerName => {
+    KeyOwnername => {
         title     => 'Owner',
         attribute => 'Owner',
         value     => sub {
             my $t = shift;
-            my $name = $t->OwnerObj->Name;
-            my %key = RT::Crypt::GnuPG::GetKeyInfo($t->OwnerObj->EmailAddress);
+            my $name = $t->OwnerObj->name;
+            my %key = RT::Crypt::GnuPG::GetKeyInfo($t->OwnerObj->email);
             if (!defined $key{'info'}) {
                 $name .= loc(" (no pubkey!)");
             }
@@ -307,18 +307,18 @@ $TICKET_COLUMN_MAP = {
 
 $TICKET_COLUMN_MAP->{'CF'} = $TICKET_COLUMN_MAP->{'CustomField'};
 
-# if no GPG support, then KeyOwnerName and KeyRequestors fall back to the regular
+# if no GPG support, then KeyOwnername and KeyRequestors fall back to the regular
 # versions
 if (RT->Config->Get('GnuPG')->{'Enable'}) {
     require RT::Crypt::GnuPG;
 }
 else {
-    $TICKET_COLUMN_MAP->{KeyOwnerName} = $TICKET_COLUMN_MAP->{OwnerName};
+    $TICKET_COLUMN_MAP->{KeyOwnername} = $TICKET_COLUMN_MAP->{Ownername};
     $TICKET_COLUMN_MAP->{KeyRequestors} = $TICKET_COLUMN_MAP->{Requestors};
 }
 </%ONCE>
 <%init>
-$m->callback( COLUMN_MAP => $TICKET_COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
-$m->callback( COLUMN_MAP => $TICKET_COLUMN_MAP, CallbackName => 'ColumnMap' );
-return GetColumnMapEntry( Map => $TICKET_COLUMN_MAP, Name => $Name, Attribute => $Attr );
+$m->callback( COLUMN_MAP => $TICKET_COLUMN_MAP, Callbackname => 'Once', CallbackOnce => 1 );
+$m->callback( COLUMN_MAP => $TICKET_COLUMN_MAP, Callbackname => 'ColumnMap' );
+return GetColumnMapEntry( Map => $TICKET_COLUMN_MAP, name => $name, Attribute => $Attr );
 </%init>

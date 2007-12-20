@@ -90,7 +90,7 @@ foreach my $column ( @Format ) {
             $ColumnMap->{ $col } = $m->comp(
                 "/Elements/ColumnMap",
                 Class => $Class,
-                Name  => $col,
+                name  => $col,
                 Attr  => 'value'
             );
         }

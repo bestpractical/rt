@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::AttributeCollection - collection of RT::Model::Attribute objects
 
@@ -80,7 +80,7 @@ sub _build_access_table {
     my $self = shift;
     delete $self->{'attr'};
     while (my $attr = $self->next) {
-        push @{$self->{'attr'}->{$attr->Name}}, $attr;
+        push @{$self->{'attr'}->{$attr->name}}, $attr;
     }
 }
 
@@ -89,18 +89,18 @@ sub _attr_hash {
     my $self = shift;
     $self->_do_search if ($self->{'must_redo_search'});
     unless ($self->{'attr'}) {
-        $self->{'attr'}->{'__none'} = RT::Model::Attribute->new($self->current_user);
+        $self->{'attr'}->{'__none'} = RT::Model::Attribute->new;
     }
     return ($self->{'attr'});
 }
 
-=head2 Names
+=head2 names
 
-Returns a list of the Names of all attributes for this object. 
+Returns a list of the names of all attributes for this object. 
 
 =cut
 
-sub Names {
+sub names {
     my $self = shift;
     my @keys =  keys %{$self->_attr_hash};
     return(@keys);
@@ -108,13 +108,13 @@ sub Names {
 
 }
 
-=head2 Named STRING
+=head2 named STRING
 
 Returns an array of all the RT::Model::Attribute objects with the name STRING
 
 =cut
 
-sub Named {
+sub named {
     my $self = shift;
     my $name = shift;
     my @attributes; 
@@ -136,12 +136,12 @@ sub WithId {
     my $self = shift;
     my $id = shift;
 
-    my $attr = RT::Model::Attribute->new($self->current_user);
+    my $attr = RT::Model::Attribute->new;
     $attr->load_by_cols( id => $id );
     return($attr);
 }
 
-=head2 delete_entry { Name =>   Content => , id => }
+=head2 delete_entry { name =>   Content => , id => }
 
 Deletes attributes with
     the matching name 
@@ -156,13 +156,13 @@ the matching name.
 sub delete_entry {
     my $self = shift;
     my %args = (
-        Name    => undef,
+        name    => undef,
         Content => undef,
         id      => undef,
         @_
     );
     my $found = 0;
-    foreach my $attr ( $self->Named( $args{'Name'} ) ) {
+    foreach my $attr ( $self->named( $args{'name'} ) ) {
         if ( ( !defined $args{'id'} and !defined $args{'Content'} )
              or ( defined $args{'id'} and $attr->id eq $args{'id'} )
              or ( defined $args{'Content'} and $attr->Content eq $args{'Content'} ) )
@@ -193,7 +193,7 @@ sub LimitToObject {
     return undef;
     }
     $self->limit(column => 'ObjectType', operator=> '=', value => ref($obj), entry_aggregator => 'OR');
-    $self->limit(column => 'ObjectId', operator=> '=', value => $obj->id, entry_aggregator => 'OR', quote_value => 0);
+    $self->limit(column => 'object_id', operator=> '=', value => $obj->id, entry_aggregator => 'OR', quote_value => 0);
 
 }
 

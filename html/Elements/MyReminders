@@ -57,7 +57,7 @@
 <tr class="<%$i%2 ? 'evenline' : 'oddline'%>"><td><a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$ticket->id%>"><%$reminder->Subject%></a><br />
 <blockquote>
 #<%$ticket->id%>: <%$ticket->Subject%><br />
-<%$reminder->OwnerObj->Name %>  <%$reminder->DueObj->Unix >0 ? '&bull; '.$reminder->DueObj->AgeAsString : '' |n %>
+<%$reminder->OwnerObj->name %>  <%$reminder->DueObj->Unix >0 ? '&bull; '.$reminder->DueObj->AgeAsString : '' |n %>
 </blockquote>
 </td>
 </tr>
@@ -66,8 +66,8 @@
 </&>
 
 <%init>
-my $reminders = RT::Model::TicketCollection->new($session{'CurrentUser'});
-$reminders->from_sql('(Owner = "Nobody" OR Owner = "'.$session{'CurrentUser'}->Name.'")' .
+my $reminders = RT::Model::TicketCollection->new(Jifty->web->current_user);
+$reminders->from_sql('(Owner = "Nobody" OR Owner = "'.Jifty->web->current_user->name.'")' .
     ' AND Type = "reminder" AND (Status = "new" OR Status = "open") AND Due > "1970-01-01"'); 
 $reminders->order_by(column => 'Due', order => 'DESC');
 </%init>

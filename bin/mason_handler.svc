@@ -46,7 +46,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
 mason_handler.svc - Win32 IIS Service handler for RT
 
@@ -117,7 +117,7 @@ BEGIN {
 	    'HKEY_LOCAL_MACHINE\Software\FASTCGI\.html\\'
 	}->{'BindPath'} = $ENV{'FCGI_SOCKET_PATH'};
 
-	Win32::Service::StartService(Win32::NodeName, 'W3SVC');
+	Win32::Service::startservice(Win32::Nodename, 'W3SVC');
     };
     
     if ($ARGV[0] eq '--deinstall') {
@@ -165,7 +165,7 @@ BEGIN {
 	require Win32::Daemon;
 
 	my $PrevState = Win32::Daemon::SERVICE_START_PENDING();
-	Win32::Daemon::StartService() or die $^E;
+	Win32::Daemon::startservice() or die $^E;
 
 	while ( 1 ) {
 	    my $State = Win32::Daemon::State();

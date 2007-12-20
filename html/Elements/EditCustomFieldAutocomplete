@@ -69,7 +69,7 @@ new Ajax.Autocompleter(
 % }
 </script>
 <%INIT>
-my $name = $NamePrefix . $CustomField->id;
+my $name = $namePrefix . $CustomField->id;
 if ( $Default && !$Multiple ) {
     $Default =~ s/\s*\r*\n\s*/ /g;
 }
@@ -82,7 +82,7 @@ if ( $Multiple and $Values ) {
 </%INIT>
 <%ARGS>
 $CustomField => undef
-$NamePrefix  => undef
+$namePrefix  => undef
 $Default     => undef
 $Values      => undef
 $Multiple    => undef

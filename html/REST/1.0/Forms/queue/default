@@ -56,8 +56,8 @@ $changes => {}
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
-my $queue = new RT::Model::Queue( $session{CurrentUser} ) ;
-my @fields = qw(Name Description CorrespondAddress CommentAddress
+my $queue = new RT::Model::Queue( Jifty->web->current_user ) ;
+my @fields = qw(name Description CorrespondAddress commentAddress
                 InitialPriority FinalPriority DefaultDueIn);
 my %fields = map { lc $_ => $_ } @fields;
 
@@ -70,13 +70,13 @@ if ($id ne 'new') {
 else {
     if (keys %data == 0) {
         return [
-            "# Required: Name",
+            "# Required: name",
             [ "id", @fields ],
             {
                 id => 'queue/new',
-                Name => '<queue name>',
+                name => '<queue name>',
                 Description => "",
-                CommentAddress => "",
+                commentAddress => "",
                 CorrespondAddress => "",
                 InitialPriority => "",
                 FinalPriority => "",
@@ -95,7 +95,7 @@ else {
             }
         }
 
-        if ($v{Name} eq '<queue name>') {
+        if ($v{name} eq '<queue name>') {
             my %o = keys %$changes;
             delete @o{"id", @fields};
             return [

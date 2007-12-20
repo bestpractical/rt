@@ -55,10 +55,10 @@
 % my $i;
 % for my $queue (@queues) {
 %   $i++;
-%   my $queue_cond = "Queue = '$queue->{Name}' AND ";
+%   my $queue_cond = "Queue = '$queue->{name}' AND ";
 %   my $all_q = $queue_cond . "(Status = 'open' OR Status = 'new' OR Status = 'stalled')";
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<td><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $all_q |u,n %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a></td>
+<td><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $all_q |u,n %>" title="<% $queue->{Description} %>"><% $queue->{name} %></a></td>
 %   for my $condition (@$conditions) {
 %       $Tickets->from_sql( "Queue = $queue->{id} AND ". $condition->{cond} );
 <td align="right"><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $queue_cond.$condition->{cond} |u,n %>"><% $Tickets->count %></a></td>
@@ -73,15 +73,15 @@ if ($cache && exists $session{$cache}) {
     @queues = @{$session{$cache}};
 }
 else {
-    my $Queues = RT::Model::QueueCollection->new($session{'CurrentUser'});
+    my $Queues = RT::Model::QueueCollection->new(Jifty->web->current_user);
     $Queues->find_all_rows();
     @queues = grep $queue_filter->($_), @{$Queues->items_array_ref};
 
-    $m->callback( CallbackName => 'Filter', Queues => \@queues );
+    $m->callback( Callbackname => 'Filter', Queues => \@queues );
 
     @queues = map { {
         id          => $_->id,
-        Name        => $_->Name,
+        name        => $_->name,
         Description => $_->Description,
     } } grep $_, @queues;
 
@@ -89,7 +89,7 @@ else {
 }
 
 
-my $Tickets = RT::Model::TicketCollection->new($session{'CurrentUser'});
+my $Tickets = RT::Model::TicketCollection->new(Jifty->web->current_user);
 </%INIT>
 <%ARGS>
 $cache => undef

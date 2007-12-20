@@ -71,12 +71,12 @@ my $title = loc("Search for tickets");
 use RT::Search::Googleish;
 
 if ($q) {
-    my $tickets = new RT::Model::TicketCollection( $session{'CurrentUser'} );
+    my $tickets = new RT::Model::TicketCollection( Jifty->web->current_user );
     if ($q =~ /^(\d+)$/) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."/Ticket/Display.html?id=".$q);
     }
 
-    $m->callback( %ARGS, query => \$q, CallbackName => 'ModifyQuery' );
+    $m->callback( %ARGS, query => \$q, Callbackname => 'ModifyQuery' );
 
     if ($q =~ /^(\d+)$/) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."/Ticket/Display.html?id=".$q);

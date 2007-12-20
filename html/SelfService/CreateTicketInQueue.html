@@ -53,11 +53,11 @@
 % while (my $queue = $queues->next) {    
 % next unless $queue->current_user_has_right('CreateTicket');
 
-<dt><a href="<%RT->Config->Get('WebPath')%>/SelfService/Create.html?Queue=<%$queue->id%>"><%$queue->Name%></a></dt>
+<dt><a href="<%RT->Config->Get('WebPath')%>/SelfService/Create.html?Queue=<%$queue->id%>"><%$queue->name%></a></dt>
 <dd><%$queue->Description%></dd>
 % }
 </dl>
 <%init>
-my $queues = RT::Model::QueueCollection->new($session{'CurrentUser'});
+my $queues = RT::Model::QueueCollection->new(Jifty->web->current_user);
 $queues->find_all_rows;
 </%init>

@@ -56,7 +56,7 @@
 %my @ids;
 %while ( my $Group = $Groups->next) {
 %    push @ids, $Group->id;
-<li><a href="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><br />
+<li><a href="Modify.html?id=<%$Group->id%>"><%$Group->name || loc('(empty)')%></a><br />
 %}
 </ul>
 %if (my $ids = join(',', @ids)) {
@@ -64,7 +64,7 @@
 %}
 <br /><br />
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
-<input type="checkbox" class="checkbox" name="FindDisabledGroups" value="1" /> <&|/l&>Include disabled groups in listing.</&>
+<input type="checkbox" class="checkbox" name="FinddisabledGroups" value="1" /> <&|/l&>Include disabled groups in listing.</&>
 <br />
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
@@ -75,12 +75,12 @@
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
 <%INIT>
-my $Groups = RT::Model::GroupCollection->new($session{'CurrentUser'});
+my $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
 $Groups->LimitToUserDefinedGroups();
 my $title = loc('Select a group');
 my $caption;
 
-if ($FindDisabledGroups) {
+if ($FinddisabledGroups) {
     $Groups->FindAllRows();
 }
 
@@ -108,6 +108,6 @@ else {
 <%ARGS>
 $GroupString => '' unless defined $GroupString
 $GroupOp => '='
-$GroupField => 'Name'
-$FindDisabledGroups => 0
+$GroupField => 'name'
+$FinddisabledGroups => 0
 </%ARGS>

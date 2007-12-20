@@ -50,7 +50,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-(displaying new and open tickets for <%$session{'CurrentUser'}->Name%>)
+(displaying new and open tickets for <%Jifty->web->current_user->name%>)
 <form method="post" action="MyDay.html">
 <table width="100%" cellpadding="0" cellspacing="0">
 % while ( my $Ticket = $Tickets->next()) {
@@ -62,12 +62,12 @@
 <tr <%$class|n%>><td colspan="2"><h2><a
 href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->id%>"><%$Ticket->id%>:
 <%$Ticket->Subject%></a></h2></td></tr>
-<tr <%$class|n%>><td><span class="label">Worked:</span><input size="3" name="UpdateTimeWorked-<%$Ticket->id%>" /> minutes
+<tr <%$class|n%>><td><span class="label">Worked:</span><input size="3" name="Updatetime_worked-<%$Ticket->id%>" /> minutes
 </td>
-<td rowspan="2"><span class="label">Comments:<br /></span><textarea name="UpdateContent-<%$Ticket->id%>" rows="5"
+<td rowspan="2"><span class="label">comments:<br /></span><textarea name="UpdateContent-<%$Ticket->id%>" rows="5"
 cols="60"></textarea></td></tr>
 <tr <%$class|n%>>
-<td><span class="label">Status:</span> <& /Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->id, 
+<td><span class="label">Status:</span> <& /Elements/SelectStatus, name=> 'UpdateStatus-'.$Ticket->id, 
 				  DefaultLabel => loc("[_1] (Unchanged)",loc($Ticket->Status())) &></td>
                   </tr>
 
@@ -87,13 +87,13 @@ foreach my $arg ( keys %ARGS ) {
     my $ticket = load_ticket($id);
     next unless ( $ticket->id );
     if ( my $content = $ARGS{'UpdateContent-'.$id} ) {
-        my ( $val, $msg ) = $ticket->Comment(
+        my ( $val, $msg ) = $ticket->comment(
             Content   => $content,
-            TimeTaken => $ARGS{ 'UpdateTimeWorked-' . $id }
+            TimeTaken => $ARGS{ 'Updatetime_worked-' . $id }
         );
         push @results, loc( "Ticket [_1]: [_2]", $id, $msg );
-    } elsif ( my $worked = $ARGS{ 'UpdateTimeWorked-' . $id } ) {
-        my ( $val, $msg ) = $ticket->set_TimeWorked( $worked + $ticket->TimeWorked );
+    } elsif ( my $worked = $ARGS{ 'Updatetime_worked-' . $id } ) {
+        my ( $val, $msg ) = $ticket->set_time_worked( $worked + $ticket->time_worked );
             push @results, loc( "Ticket [_1]: [_2]", $id, $msg );
     }
 
@@ -107,8 +107,8 @@ foreach my $arg ( keys %ARGS ) {
 
 }
 
-my $Tickets = RT::Model::TicketCollection->new($session{'CurrentUser'});
-$Tickets->LimitOwner(value => $session{'CurrentUser'}->id);
+my $Tickets = RT::Model::TicketCollection->new(Jifty->web->current_user);
+$Tickets->LimitOwner(value => Jifty->web->current_user->id);
 $Tickets->LimitStatus( value => 'open' );
 $Tickets->LimitStatus ( value => 'new');
 $Tickets->order_by ( column => 'Priority', order => 'DESC');

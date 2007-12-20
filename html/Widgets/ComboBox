@@ -48,20 +48,20 @@
 <nobr>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/combobox.js"></script>
 
-<span id="<% $Name %>_Container" class="combobox">
-<input name="<% $Name %>" id="<% $Name %>" class="combo-text" value="<% $Default || '' %>" type="text" <% $Size ? "size='$Size'" : '' |n %> autocomplete="off" />
-<br style="display: none" /><span id="<% $Name %>_Button" class="combo-button"></span></span><select name="List-<% $Name %>" id="<% $Name %>_List" class="combo-list" onchange="ComboBox_SimpleAttach(this, this.form['<% $Name %>']); " rows="<% $Rows %>">
+<span id="<% $name %>_Container" class="combobox">
+<input name="<% $name %>" id="<% $name %>" class="combo-text" value="<% $Default || '' %>" type="text" <% $Size ? "size='$Size'" : '' |n %> autocomplete="off" />
+<br style="display: none" /><span id="<% $name %>_Button" class="combo-button"></span></span><select name="List-<% $name %>" id="<% $name %>_List" class="combo-list" onchange="ComboBox_SimpleAttach(this, this.form['<% $name %>']); " rows="<% $Rows %>">
 <option style="display: none" value="">-</option>
 % foreach my $value (@Values) {
         <option value="<%$value%>"><% $value%></option>
 % }
 </select>
 <script language="javascript"><!--
-ComboBox_InitWith('<% $Name %>');
+ComboBox_InitWith('<% $name %>');
 //--></script>
 </nobr>
 <%ARGS>
-$Name
+$name
 $Size    => undef
 $Rows    => 5
 $Default => ''

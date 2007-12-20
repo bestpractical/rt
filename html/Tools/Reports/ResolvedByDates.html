@@ -52,9 +52,9 @@ $ResolvedAfter => undef
 </%args>
 <%init>
 my $title = loc("Resolved tickets in period, grouped by owner");
-my $q = RT::Model::Queue->new($session{'CurrentUser'});
-my $before = RT::Date->new($session{'CurrentUser'});
-my $after = RT::Date->new($session{'CurrentUser'});
+my $q = RT::Model::Queue->new(Jifty->web->current_user);
+my $before = RT::Date->new(Jifty->web->current_user);
+my $after = RT::Date->new(Jifty->web->current_user);
 my $query = '';
 
 
@@ -68,7 +68,7 @@ if ($ResolvedBefore) {
 }
 
 
-$q->load_by_cols(Name => $Queue);
+$q->load_by_cols(name => $Queue);
 </%init>
 <& /Elements/Header, Title => $title &>
 <& /Tools/Reports/Elements/Tabs, current_tab => 'Tools/Reports/ResolvedByDates.html', Title => $title &>
@@ -85,7 +85,7 @@ $q->load_by_cols(Name => $Queue);
 
 <hr>
 
-<br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $q->id &>
+<br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'Queue', namedValues => 1, Default => $q->id &>
 <br /><&|/l&>Tickets resolved after</&>: 
 <input size="20" name="ResolvedAfter" value="<%$ResolvedAfter || ''%>" />
 <br /><&|/l&>Tickets resolved before</&>: 

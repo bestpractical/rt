@@ -76,18 +76,18 @@ sub table {'ACL'}
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column PrincipalType => max_length is 25, type is 'varchar(25)', default is '';
-    column PrincipalId => type is 'int(11)', default is '0';
-    column RightName => max_length is 25, type is 'varchar(25)', default is '';
+    column principal_type => max_length is 25, type is 'varchar(25)', default is '';
+    column principal_id => type is 'int(11)', default is '0';
+    column Rightname => max_length is 25, type is 'varchar(25)', default is '';
     column ObjectType => max_length is 25, type is 'varchar(25)', default is '';
-    column ObjectId      => type is 'int(11)', default is '0';
+    column object_id      => type is 'int(11)', default is '0';
     column DelegatedBy   => type is 'int(11)', default is '0';
     column DelegatedFrom => type is 'int(11)', default is '0';
 };
 
 
 use vars qw (
-  %LOWERCASERIGHTNAMES
+  %LOWERCASERIGHTnameS
   %OBJECT_TYPES
   %TICKET_METAPRINCIPALS
 );
@@ -127,9 +127,9 @@ use vars qw (
 
 Load an ACE by specifying a paramhash with the following fields:
 
-              PrincipalId => undef,
-              PrincipalType => undef,
-	      RightName => undef,
+              principal_id => undef,
+              principal_type => undef,
+	      Rightname => undef,
 
         And either:
 
@@ -138,28 +138,28 @@ Load an ACE by specifying a paramhash with the following fields:
             OR
 
 	      ObjectType => undef,
-	      ObjectId => undef
+	      object_id => undef
 
 =cut
 
 sub load_by_values {
     my $self = shift;
-    my %args = ( PrincipalId   => undef,
-                 PrincipalType => undef,
-                 RightName     => undef,
+    my %args = ( principal_id   => undef,
+                 principal_type => undef,
+                 Rightname     => undef,
                  Object    => undef,
-                 ObjectId    => undef,
+                 object_id    => undef,
                  ObjectType    => undef,
                  @_ );
 
     my $princ_obj;
-    ( $princ_obj, $args{'PrincipalType'} ) =
-      $self->_CanonicalizePrincipal( $args{'PrincipalId'},
-                                     $args{'PrincipalType'} );
+    ( $princ_obj, $args{'principal_type'} ) =
+      $self->_canonicalize_Principal( $args{'principal_id'},
+                                     $args{'principal_type'} );
 
     unless ( $princ_obj->id ) {
         return ( 0,
-                 $self->loc( 'Principal [_1] not found.', $args{'PrincipalId'} )
+                 $self->loc( 'Principal [_1] not found.', $args{'principal_id'} )
         );
     }
 
@@ -168,11 +168,11 @@ sub load_by_values {
 	return ( 0, $self->loc("System error. Right not granted.") );
     }
 
-    $self->load_by_cols( PrincipalId   => $princ_obj->id,
-                       PrincipalType => $args{'PrincipalType'},
-                       RightName     => $args{'RightName'},
+    $self->load_by_cols( principal_id   => $princ_obj->id,
+                       principal_type => $args{'principal_type'},
+                       Rightname     => $args{'Rightname'},
                        ObjectType    => $object_type,
-                       ObjectId      => $object_id);
+                       object_id      => $object_id);
 
     #If we couldn't load it.
     unless ( $self->id ) {
@@ -192,9 +192,9 @@ sub load_by_values {
 
 PARAMS is a parameter hash with the following elements:
 
-   PrincipalId => The id of an RT::Model::Principal object
-   PrincipalType => "User" "Group" or any Role type
-   RightName => the name of a right. in any case
+   principal_id => The id of an RT::Model::Principal object
+   principal_type => "User" "Group" or any Role type
+   Rightname => the name of a right. in any case
    DelegatedBy => The Principal->id of the user delegating the right
    DelegatedFrom => The id of the ACE which this new ACE is delegated from
 
@@ -207,7 +207,7 @@ PARAMS is a parameter hash with the following elements:
         OR
 
    ObjectType => the type of the object in question (ref ($object))
-   ObjectId => the id of the object in question $object->id
+   object_id => the id of the object in question $object->id
 
 
 
@@ -220,35 +220,35 @@ PARAMS is a parameter hash with the following elements:
 sub create {
     my $self = shift;
     my %args = (
-        PrincipalId   => undef,
-        PrincipalType => undef,
-        RightName     => undef,
+        principal_id   => undef,
+        principal_type => undef,
+        Rightname     => undef,
         Object        => undef,
         @_
     );
 
-    unless ( $args{'RightName'} ) {
+    unless ( $args{'Rightname'} ) {
         return ( 0, $self->loc('No right specified') );
     }
 
     #if we haven't specified any sort of right, we're talking about a global right
-    if (!defined $args{'Object'} && !defined $args{'ObjectId'} && !defined $args{'ObjectType'}) {
+    if (!defined $args{'Object'} && !defined $args{'object_id'} && !defined $args{'ObjectType'}) {
         $args{'Object'} = RT->system;
     }
-    ($args{'Object'}, $args{'ObjectType'}, $args{'ObjectId'}) = $self->_ParseObjectArg( %args );
+    ($args{'Object'}, $args{'ObjectType'}, $args{'object_id'}) = $self->_ParseObjectArg( %args );
     unless( $args{'Object'} ) {
 	return ( 0, $self->loc("System error. Right not granted.") );
     }
 
     # {{{ Validate the principal
     my $princ_obj;
-    ( $princ_obj, $args{'PrincipalType'} ) =
-      $self->_CanonicalizePrincipal( $args{'PrincipalId'},
-                                     $args{'PrincipalType'} );
+    ( $princ_obj, $args{'principal_type'} ) =
+      $self->_canonicalize_Principal( $args{'principal_id'},
+                                     $args{'principal_type'} );
 
     unless ( $princ_obj->id ) {
         return ( 0,
-                 $self->loc( 'Principal [_1] not found.', $args{'PrincipalId'} )
+                 $self->loc( 'Principal [_1] not found.', $args{'principal_id'} )
         );
     }
 
@@ -271,18 +271,18 @@ sub create {
     }
     # }}}
 
-    # {{{ Canonicalize and check the right name
-    my $canonic_name = $self->CanonicalizeRightName( $args{'RightName'} );
+    # {{{ canonicalize_ and check the right name
+    my $canonic_name = $self->canonicalize_Rightname( $args{'Rightname'} );
     unless ( $canonic_name ) {
-        return ( 0, $self->loc("Invalid right. Couldn't canonicalize right '$args{'RightName'}'") );
+        return ( 0, $self->loc("Invalid right. Couldn't canonicalize_ right '$args{'Rightname'}'") );
     }
-    $args{'RightName'} = $canonic_name;
+    $args{'Rightname'} = $canonic_name;
 
-    #check if it's a valid RightName
+    #check if it's a valid Rightname
     if ( $args{'Object'}->can('AvailableRights') ) {
-        unless ( exists $args{'Object'}->AvailableRights->{ $args{'RightName'} } ) {
+        unless ( exists $args{'Object'}->AvailableRights->{ $args{'Rightname'} } ) {
             $RT::Logger->warning(
-                "Couldn't validate right name '$args{'RightName'}'"
+                "Couldn't validate right name '$args{'Rightname'}'"
                 ." for object of ". ref( $args{'Object'} ) ." class"
             );
             return ( 0, $self->loc('Invalid right') );
@@ -291,22 +291,22 @@ sub create {
     # }}}
 
     # Make sure the right doesn't already exist.
-    $self->load_by_cols( PrincipalId   => $princ_obj->id,
-                       PrincipalType => $args{'PrincipalType'},
-                       RightName     => $args{'RightName'},
+    $self->load_by_cols( principal_id   => $princ_obj->id,
+                       principal_type => $args{'principal_type'},
+                       Rightname     => $args{'Rightname'},
                        ObjectType    => $args{'ObjectType'},
-                       ObjectId      => $args{'ObjectId'},
+                       object_id      => $args{'object_id'},
                        DelegatedBy   => 0,
                        DelegatedFrom => 0 );
     if ( $self->id ) {
         return ( 0, $self->loc('That principal already has that right') );
     }
 
-    my $id = $self->SUPER::create( PrincipalId   => $princ_obj->id,
-                                   PrincipalType => $args{'PrincipalType'},
-                                   RightName     => $args{'RightName'},
+    my $id = $self->SUPER::create( principal_id   => $princ_obj->id,
+                                   principal_type => $args{'principal_type'},
+                                   Rightname     => $args{'Rightname'},
                                    ObjectType    => ref( $args{'Object'} ),
-                                   ObjectId      => $args{'Object'}->id,
+                                   object_id      => $args{'Object'}->id,
                                    DelegatedBy   => 0,
                                    DelegatedFrom => 0 );
 
@@ -328,7 +328,7 @@ sub create {
 =head2 Delegate <PARAMS>
 
 This routine delegates the current ACE to a principal specified by the
-B<PrincipalId>  parameter.
+B<principal_id>  parameter.
 
 Returns an error if the current user doesn't have the right to be delegated
 or doesn't have the right to delegate rights.
@@ -340,20 +340,20 @@ Always returns a tuple of (ReturnValue, Message)
 
 sub Delegate {
     my $self = shift;
-    my %args = ( PrincipalId => undef,
+    my %args = ( principal_id => undef,
                  @_ );
 
     unless ( $self->id ) {
         return ( 0, $self->loc("Right not loaded.") );
     }
     my $princ_obj;
-    ( $princ_obj, $args{'PrincipalType'} ) =
-      $self->_CanonicalizePrincipal( $args{'PrincipalId'},
-                                     $args{'PrincipalType'} );
+    ( $princ_obj, $args{'principal_type'} ) =
+      $self->_canonicalize_Principal( $args{'principal_id'},
+                                     $args{'principal_type'} );
 
     unless ( $princ_obj->id ) {
         return ( 0,
-                 $self->loc( 'Principal [_1] not found.', $args{'PrincipalId'} )
+                 $self->loc( 'Principal [_1] not found.', $args{'principal_id'} )
         );
     }
 
@@ -367,11 +367,11 @@ sub Delegate {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    unless ( $self->PrincipalObj->IsGroup ) {
+    unless ( $self->principal_object->IsGroup ) {
         return ( 0, $self->loc("System Error") );
     }
-    unless ( $self->PrincipalObj->Object->has_member_recursively(
-                                                $self->current_user->PrincipalObj
+    unless ( $self->principal_object->Object->has_member_recursively(
+                                                $self->current_user->principal_object
              )
       ) {
         return ( 0, $self->loc("Permission Denied") );
@@ -379,7 +379,7 @@ sub Delegate {
 
     # }}}
 
-    my $concurrency_check = RT::Model::ACE->new(RT->system_user);
+    my $concurrency_check = RT::Model::ACE->new(current_user => RT->system_user);
     $concurrency_check->load( $self->id );
     unless ( $concurrency_check->id ) {
         $RT::Logger->crit(
@@ -387,26 +387,26 @@ sub Delegate {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $delegated_ace = RT::Model::ACE->new( $self->current_user );
+    my $delegated_ace = RT::Model::ACE->new;
 
     # Make sure the right doesn't already exist.
-    $delegated_ace->load_by_cols( PrincipalId   => $princ_obj->id,
-                                PrincipalType => 'Group',
-                                RightName     => $self->__value('RightName'),
+    $delegated_ace->load_by_cols( principal_id   => $princ_obj->id,
+                                principal_type => 'Group',
+                                Rightname     => $self->__value('Rightname'),
                                 ObjectType    => $self->__value('ObjectType'),
-                                ObjectId      => $self->__value('ObjectId'),
-                                DelegatedBy => $self->current_user->PrincipalId,
+                                object_id      => $self->__value('object_id'),
+                                DelegatedBy => $self->current_user->principal_id,
                                 DelegatedFrom => $self->id );
     if ( $delegated_ace->id ) {
         return ( 0, $self->loc('That principal already has that right') );
     }
     my $id = $delegated_ace->SUPER::create(
-        PrincipalId   => $princ_obj->id,
-        PrincipalType => 'Group',          # do we want to hardcode this?
-        RightName     => $self->__value('RightName'),
+        principal_id   => $princ_obj->id,
+        principal_type => 'Group',          # do we want to hardcode this?
+        Rightname     => $self->__value('Rightname'),
         ObjectType    => $self->__value('ObjectType'),
-        ObjectId      => $self->__value('ObjectId'),
-        DelegatedBy   => $self->current_user->PrincipalId,
+        object_id      => $self->__value('object_id'),
+        DelegatedBy   => $self->current_user->principal_id,
         DelegatedFrom => $self->id );
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
@@ -447,7 +447,7 @@ sub delete {
     unless (
          (    $self->current_user->has_right(Right => 'ModifyACL', Object => $self->Object)
            && $self->__value('DelegatedBy') == 0 )
-         || ( $self->__value('DelegatedBy') == $self->current_user->PrincipalId )
+         || ( $self->__value('DelegatedBy') == $self->current_user->principal_id )
       ) {
         return ( 0, $self->loc('Permission Denied') );
     }
@@ -464,7 +464,7 @@ sub _delete {
 
     Jifty->handle->begin_transaction() unless $InsideTransaction;
 
-    my $delegated_from_this = RT::Model::ACECollection->new(RT->system_user);
+    my $delegated_from_this = RT::Model::ACECollection->new(current_user => RT->system_user);
     $delegated_from_this->limit( column    => 'DelegatedFrom',
                                  operator => '=',
                                  value    => $self->id );
@@ -486,9 +486,9 @@ sub _delete {
 
     # If we're revoking delegation rights (see above), we may need to
     # revoke all rights delegated by the recipient.
-    if ($val and ($self->RightName() eq 'DelegateRights' or
-		  $self->RightName() eq 'SuperUser')) {
-	$val = $self->PrincipalObj->_CleanupInvalidDelegations( InsideTransaction => 1 );
+    if ($val and ($self->Rightname() eq 'DelegateRights' or
+		  $self->Rightname() eq 'SuperUser')) {
+	$val = $self->principal_object->_CleanupInvalidDelegations( InsideTransaction => 1 );
     }
 
     if ($val) {
@@ -524,11 +524,11 @@ sub _bootstrap_create {
 
     # When bootstrapping, make sure we get the _right_ users
     if ( $args{'UserId'} ) {
-        my $user = RT::Model::User->new( $self->current_user );
+        my $user = RT::Model::User->new;
         $user->load( $args{'UserId'} );
         delete $args{'UserId'};
-        $args{'PrincipalId'}   = $user->PrincipalId;
-        $args{'PrincipalType'} = 'User';
+        $args{'principal_id'}   = $user->principal_id;
+        $args{'principal_type'} = 'User';
     }
 
     my $id = $self->SUPER::create(%args);
@@ -545,18 +545,18 @@ sub _bootstrap_create {
 
 # }}}
 
-# {{{ sub CanonicalizeRightName
+# {{{ sub canonicalize_Rightname
 
-=head2 CanonicalizeRightName <RIGHT>
+=head2 canonicalize_Rightname <RIGHT>
 
 Takes a queue or system right name in any case and returns it in
 the correct case. If it's not found, will return undef.
 
 =cut
 
-sub CanonicalizeRightName {
+sub canonicalize_Rightname {
     my $self  = shift;
-    return $LOWERCASERIGHTNAMES{ lc shift };
+    return $LOWERCASERIGHTnameS{ lc shift };
 }
 
 # }}}
@@ -583,11 +583,11 @@ sub Object {
     my $appliesto_obj;
 
     if ($self->__value('ObjectType') && $OBJECT_TYPES{$self->__value('ObjectType')} ) {
-        $appliesto_obj =  $self->__value('ObjectType')->new($self->current_user);
+        $appliesto_obj =  $self->__value('ObjectType')->new;
         unless (ref( $appliesto_obj) eq $self->__value('ObjectType')) {
             return undef;
         }
-        $appliesto_obj->load( $self->__value('ObjectId') );
+        $appliesto_obj->load( $self->__value('object_id') );
         return ($appliesto_obj);
      }
     else {
@@ -600,22 +600,22 @@ sub Object {
 
 # }}}
 
-# {{{ sub PrincipalObj
+# {{{ sub principal_object
 
-=head2 PrincipalObj
+=head2 principal_object
 
 Returns the RT::Model::Principal object for this ACE. 
 
 =cut
 
-sub PrincipalObj {
+sub principal_object {
     my $self = shift;
 
-    my $princ_obj = RT::Model::Principal->new( $self->current_user );
-    $princ_obj->load( $self->__value('PrincipalId') );
+    my $princ_obj = RT::Model::Principal->new;
+    $princ_obj->load( $self->__value('principal_id') );
 
     unless ( $princ_obj->id ) {
-        $RT::Logger->err( "ACE " . $self->id . " couldn't load its principal object - " .$self->__value('PrincipalId') );
+        $RT::Logger->err( "ACE " . $self->id . " couldn't load its principal object - " .$self->__value('principal_id') );
     }
     return ($princ_obj);
 
@@ -639,12 +639,12 @@ sub _set {
 sub _value {
     my $self = shift;
 
-    if ( $self->__value('DelegatedBy') eq $self->current_user->PrincipalId ) {
+    if ( $self->__value('DelegatedBy') eq $self->current_user->principal_id ) {
         return ( $self->__value(@_) );
     }
-    elsif ( $self->PrincipalObj->IsGroup
-            && $self->PrincipalObj->Object->has_member_recursively(
-                                                $self->current_user->PrincipalObj
+    elsif ( $self->principal_object->IsGroup
+            && $self->principal_object->Object->has_member_recursively(
+                                                $self->current_user->principal_object
             )
       ) {
         return ( $self->__value(@_) );
@@ -662,23 +662,23 @@ sub _value {
 
 # }}}
 
-# {{{ _CanonicalizePrincipal 
+# {{{ _canonicalize_Principal 
 
-=head2 _CanonicalizePrincipal (PrincipalId, PrincipalType)
+=head2 _canonicalize_Principal (principal_id, principal_type)
 
 Takes a principal id and an optional principal type.
 
 If the principal is a user, resolves it to the proper acl equivalence group.
-Returns a tuple of  (RT::Model::Principal, PrincipalType)  for the principal we really want to work with
+Returns a tuple of  (RT::Model::Principal, principal_type)  for the principal we really want to work with
 
 =cut
 
-sub _CanonicalizePrincipal {
+sub _canonicalize_Principal {
     my $self       = shift;
     my $princ_id   = shift;
     my $princ_type = shift || 'Group';
 
-    my $princ_obj = RT::Model::Principal->new(RT->system_user);
+    my $princ_obj = RT::Model::Principal->new(current_user => RT->system_user);
     $princ_obj->load($princ_id);
 
     unless ( $princ_obj->id ) {
@@ -691,13 +691,13 @@ sub _CanonicalizePrincipal {
     # Rights never get granted to users. they get granted to their 
     # ACL equivalence groups
     if ( $princ_type eq 'User' ) {
-        my $equiv_group = RT::Model::Group->new( $self->current_user );
+        my $equiv_group = RT::Model::Group->new;
         $equiv_group->load_acl_equivalence_group($princ_obj);
         unless ( $equiv_group->id ) {
             $RT::Logger->crit( "No ACL equiv group for princ " . $princ_obj->id );
-            return ( RT::Model::Principal->new(RT->system_user), undef );
+            return ( RT::Model::Principal->new(current_user => RT->system_user), undef );
         }
-        $princ_obj  = $equiv_group->PrincipalObj();
+        $princ_obj  = $equiv_group->principal_object();
         $princ_type = 'Group';
 
     }
@@ -708,14 +708,14 @@ sub _ParseObjectArg {
     my $self = shift;
     my %args = (
         Object     => undef,
-        ObjectId   => undef,
+        object_id   => undef,
         ObjectType => undef,
         @_
     );
 
-    if ( $args{'Object'} && ( $args{'ObjectId'} || $args{'ObjectType'} ) ) {
+    if ( $args{'Object'} && ( $args{'object_id'} || $args{'ObjectType'} ) ) {
         $RT::Logger->crit(
-            "Method called with an ObjectType or an ObjectId and Object args"
+            "Method called with an ObjectType or an object_id and Object args"
         );
         return ();
     } elsif ( $args{'Object'} && !UNIVERSAL::can( $args{'Object'}, 'id' ) ) {
@@ -725,8 +725,8 @@ sub _ParseObjectArg {
         my $obj = $args{'Object'};
         return ( $obj, ref $obj, $obj->id );
     } elsif ( $args{'ObjectType'} ) {
-        my $obj = $args{'ObjectType'}->new( $self->current_user );
-        $obj->load( $args{'ObjectId'} );
+        my $obj = $args{'ObjectType'}->new;
+        $obj->load( $args{'object_id'} );
         return ( $obj, ref $obj, $obj->id );
     } else {
         Carp::confess;

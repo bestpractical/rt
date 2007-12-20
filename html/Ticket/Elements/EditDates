@@ -47,9 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
   <tr>
-    <td class="label"><&|/l&>Starts</&>:</td>
-    <td class="entry"><& /Elements/SelectDate, menu_prefix => 'Starts', current => 0 &> 
-        (<% $TicketObj->StartsObj->AsString %>)</td>
+    <td class="label"><&|/l&>starts</&>:</td>
+    <td class="entry"><& /Elements/SelectDate, menu_prefix => 'starts', current => 0 &> 
+        (<% $TicketObj->startsObj->AsString %>)</td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Started</&>:</td>

@@ -88,7 +88,7 @@ sub LimitToObject {
         value => ref($object),
     );
     return $self->limit(
-        column => 'ObjectId',
+        column => 'object_id',
         value => $object->id,
     );
 

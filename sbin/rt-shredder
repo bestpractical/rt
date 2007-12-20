@@ -46,7 +46,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
 rt-shredder - Script which wipe out tickets from RT DB
 
@@ -140,7 +140,7 @@ my $shredder = new RT::Shredder;
             exit 0 unless prompt_yN( "Do you want to proceed?" );
         }
 	} else {
-        print "SQL dump file is '". $plugin->FileName ."'\n";
+        print "SQL dump file is '". $plugin->Filename ."'\n";
     }
 }
 

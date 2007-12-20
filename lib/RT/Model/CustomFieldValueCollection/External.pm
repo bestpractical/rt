@@ -52,7 +52,7 @@ use warnings;
 
 use base qw(RT::Model::CustomFieldValueCollection);
 
-=head1 NAME
+=head1 name
 
 RT::Model::CustomFieldValueCollection::External - Pull possible values for a custom
 field from an arbitrary external data source.
@@ -119,7 +119,7 @@ sub limit {
 
 sub __BuildLimitCheck {
     my ($self, %args) = (@_);
-    return undef unless $args{'column'} =~ /^(?:Name|Description)$/;
+    return undef unless $args{'column'} =~ /^(?:name|Description)$/;
 
     $args{'operator'} ||= '=';
     my $quoted_value = $args{'value'};

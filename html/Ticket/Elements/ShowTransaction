@@ -54,9 +54,9 @@
     </td>
     <td class="date"><% $transdate|n %></td>
 % my $desc = $Transaction->BriefDescription;
-% $m->callback( text => \$desc, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyDisplay' );
+% $m->callback( text => \$desc, Transaction => $Transaction, %ARGS, Callbackname => 'ModifyDisplay' );
     <td class="description">
-      <% $Transaction->CreatorObj->Name %> - <% $TicketString %> <% $desc %>
+      <% $Transaction->CreatorObj->name %> - <% $TicketString %> <% $desc %>
     </td>
     <td class="time-taken"><% $TimeTaken %></td>
     <td class="actions"><% $titlebar_commands |n %></td>
@@ -99,7 +99,7 @@ $WarnUnsigned => undef
 my %class = (
     Create     => 'message',
     Correspond => 'message',
-    Comment    => 'message',
+    comment    => 'message',
 
     AddWatcher => 'people',
     DelWatcher => 'people',
@@ -127,7 +127,7 @@ unless ( $type_class ) {
         $type_class = 'people';
     }
     elsif ( $type =~ /^(Status|Set|Told)$/ ) {
-        if ( $field =~ /^(Told|Starts|Started|Due)$/ ) {
+        if ( $field =~ /^(Told|starts|Started|Due)$/ ) {
             $type_class = 'dates';
         }
         else {
@@ -192,14 +192,14 @@ else {
               . loc('Reply')
               . "</a>]&nbsp;";
         }
-        if ( $can_modify || $Transaction->TicketObj->current_user_has_right('CommentOnTicket') ) {
+        if ( $can_modify || $Transaction->TicketObj->current_user_has_right('commentOnTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath."?id="
               . $Transaction->Ticket
               . "&QuoteTransaction="
               . $Transaction->id
-              . "&Action=Comment\">"
-              . loc('Comment') . "</a>]";
+              . "&Action=comment\">"
+              . loc('comment') . "</a>]";
         }
         if ( $Transaction->TicketObj->current_user_has_right('ForwardMessage') ) {
             $titlebar_commands .=

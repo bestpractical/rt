@@ -53,20 +53,20 @@
     subtabs => $subtabs, 
     Title => $title &>
 
-% if (!$QueueObj->Disabled) { # Global scrips does not apply to disabled queues
+% if (!$QueueObj->disabled) { # Global scrips does not apply to disabled queues
 <h2><&|/l&>Scrips which apply to all queues</&></h2>
 <& /Admin/Elements/ListGlobalScrips &>
 <br /> 
 % }
 <& /Admin/Elements/EditScrips, title => $title, %ARGS &>
 <%init>
-my $QueueObj = new RT::Model::Queue($session{'CurrentUser'});
+my $QueueObj = new RT::Model::Queue(Jifty->web->current_user);
 $QueueObj->load($id);
 
 my $title;
 
 if ($QueueObj->id) {
-    $title = loc("Modify scrips for queue [_1]", $QueueObj->Name);
+    $title = loc("Modify scrips for queue [_1]", $QueueObj->name);
 } else {
     Abort(loc("Queue [_1] not found",$id));
 }

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
-my $attachments = RT::Model::AttachmentCollection->new( $session{'CurrentUser'} );
+my $attachments = RT::Model::AttachmentCollection->new( Jifty->web->current_user );
 
 $attachments->columns( qw(id Content ContentType TransactionId ContentEncoding));
 
@@ -62,7 +62,7 @@ if ( $Ticket->current_user_has_right('ShowTicket') ) {
 
 
     $attachments->join( alias1 => $transactions,
-                        column1 => 'ObjectId',
+                        column1 => 'object_id',
                         alias2 => $tickets,
                         column2 => 'id' );
 
@@ -75,12 +75,12 @@ if ( $Ticket->current_user_has_right('ShowTicket') ) {
                          column => 'EffectiveId',
                          value => $Ticket->id() );
     # if the user may not see comments do not return them
-    unless ( $Ticket->current_user_has_right('ShowTicketComments') ) {
-        $attachments->limit( alias    => $transactions, column    => 'Type', operator => '!=', value    => "Comment" );
+    unless ( $Ticket->current_user_has_right('ShowTicketcomments') ) {
+        $attachments->limit( alias    => $transactions, column    => 'Type', operator => '!=', value    => "comment" );
     }
 
     $attachments->limit ( column => 'ContentType', operator => '=', value => 'text/plain');
-    $attachments->limit ( column => 'ContentType', operator => 'STARTSWITH', value => 'message/');
+    $attachments->limit ( column => 'ContentType', operator => 'starts_with', value => 'message/');
     $attachments->limit ( column => 'ContentType', operator => '=', value => 'text');
     $attachments->limit ( column => 'Filename', operator => 'IS', value => 'NULL')
         if RT->Config->Get('SuppressInlineTextFiles', $Ticket->current_user );

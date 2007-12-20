@@ -1,4 +1,4 @@
-=head1 NAME
+=head1 name
 
 RT::StyleGuide - RT Style Guide
 
@@ -111,7 +111,7 @@ This way, perl can use the version strings in greater-than and
 less-than comparisons.
 
 
-=head2 Comments
+=head2 comments
 
 All code should be self-documenting as much as possible.  Only include
 necessary comments.  Use names like "$ticket_count", so you don't need to
@@ -251,7 +251,7 @@ In all other cases, the method needs to take named parameters, usually
 using a C<%args> hash to store them:
 
         my $self = shift;
-        my %args = ( Name => undef,
+        my %args = ( name => undef,
                      Description => undef,
                      @_ );
 
@@ -367,7 +367,7 @@ the database server.  None of these needs to be capitalized.
 =back
 
 
-=head2 Names
+=head2 names
 
 Don't use single-character variables, except as iterator variables.
 
@@ -400,7 +400,7 @@ or the data type in the name.
 	$comment     = $comments->[0]; # right
 
 Make the name descriptive.  Don't use variables like "$sc" when you
-could call it "$story_count".  See L<"Comments">.
+could call it "$story_count".  See L<"comments">.
 
 There are several variables in RT that are used throughout the code,
 that you should use in your code.  Do not use these variable names for
@@ -885,13 +885,13 @@ the C<Id> of the same-named C<Template> table.
 
 =item Otherwise, always use the C<Id> suffix
 
-For example, the C<ObjectId> field in the C<ACL> table can refer
+For example, the C<object_id> field in the C<ACL> table can refer
 to any object, so it has the C<Id> suffix.
 
 =back
 
 There are some legacy fields that did not follow this rule, namely
-C<ACL.PrincipalId>, C<GroupMembers.GroupId> and C<Attachments.TransactionId>,
+C<ACL.principal_id>, C<GroupMembers.GroupId> and C<Attachments.TransactionId>,
 but new tables are expected to be consistent.
 
 =head1 TO DO

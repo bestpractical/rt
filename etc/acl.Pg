@@ -49,7 +49,7 @@ sub acl {
     );
 
     my $db_user = RT->Config->Get('DatabaseUser');
-    my $db_pass = RT->Config->Get('DatabasePassword');
+    my $db_pass = RT->Config->Get('Databasepassword');
 
     # if there's already an rt_user, use it.
     my @row = $dbh->selectrow_array( "SELECT usename FROM pg_user WHERE usename = '$db_user'" );

@@ -113,8 +113,8 @@ Prohibit Ticket Operation:
               -> Rule: xxx
 
 isa_ok( $Approval->Type, 'RT::Model::Ticket' );
-is( $Approval->Workflow->Name, 'W' );
-is( $Approval->Stage->Name, 'Approval' );
+is( $Approval->Workflow->name, 'W' );
+is( $Approval->Stage->name, 'Approval' );
 
 [Queue: A]
   -> Workflow: W

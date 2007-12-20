@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::SavedSearch - an API for saving and retrieving search form values.
 
@@ -103,7 +103,7 @@ sub load {
 	    $self->{'Id'} = $self->{'Attribute'}->id;
 	    $self->{'Privacy'} = $privacy;
 	    $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
-	    return (1, $self->loc("Loaded search [_1]", $self->Name));
+	    return (1, $self->loc("Loaded search [_1]", $self->name));
 	} else {
 	    $RT::Logger->error("Could not load attribute " . $id
 			       . " for object " . $privacy);
@@ -124,7 +124,7 @@ group object, and loads the resulting search.  Returns a tuple of status
 and message, where status is true on success.  Defaults are:
   Privacy:      undef
   Type:         Ticket
-  Name:         "new search"
+  name:         "new search"
   SearchParams: (empty hash)
 
 =cut
@@ -133,12 +133,12 @@ sub Save {
     my $self = shift;
     my %args = ('Privacy' => 'RT::Model::User-' . $self->current_user->id,
 		'Type' => 'Ticket',
-		'Name' => 'new search',
+		'name' => 'new search',
 		'SearchParams' => {},
 		@_);
     my $privacy = $args{'Privacy'};
     my $type = $args{'Type'};
-    my $name = $args{'Name'};
+    my $name = $args{'name'};
     my %params = %{$args{'SearchParams'}};
 
     $params{'SearchType'} = $type;
@@ -156,7 +156,7 @@ sub Save {
     }
 
     my ( $att_id, $att_msg ) = $object->add_attribute(
-        'Name'        => 'SavedSearch',
+        'name'        => 'SavedSearch',
         'Description' => $name,
         'Content'     => \%params
     );
@@ -176,15 +176,15 @@ sub Save {
 =head2 Update
 
 Updates the parameters of an existing search.  Takes the arguments
-"Name" and "SearchParams"; SearchParams should be a hashref containing
-the new parameters of the search.  If Name is not specified, the name
+"name" and "SearchParams"; SearchParams should be a hashref containing
+the new parameters of the search.  If name is not specified, the name
 will not be changed.
 
 =cut
 
 sub Update {
     my $self = shift;
-    my %args = ('Name' => '',
+    my %args = ('name' => '',
 		'SearchParams' => {},
 		@_);
     
@@ -192,8 +192,8 @@ sub Update {
     return(0, $self->loc("Could not load search attribute"))
 	unless $self->{'Attribute'}->id;
     my ($status, $msg) = $self->{'Attribute'}->set_SubValues(%{$args{'SearchParams'}});
-    if ($status && $args{'Name'}) {
-	($status, $msg) = $self->{'Attribute'}->set_Description($args{'Name'});
+    if ($status && $args{'name'}) {
+	($status, $msg) = $self->{'Attribute'}->set_Description($args{'name'});
     }
     return ($status, $self->loc("Search update: [_1]", $msg));
 }
@@ -219,13 +219,13 @@ sub delete {
 
 ### Accessor methods
 
-=head2 Name
+=head2 name
 
 Returns the name of the search.
 
 =cut
 
-sub Name {
+sub name {
     my $self = shift;
     return unless ref($self->{'Attribute'}) eq 'RT::Model::Attribute';
     return $self->{'Attribute'}->Description();
@@ -284,15 +284,15 @@ sub Type {
 sub _load_privacy_object {
     my ($self, $obj_type, $obj_id) = @_;
     if ( $obj_type eq 'RT::Model::User' && $obj_id == $self->current_user->id)  {
-        return $self->current_user->UserObj;
+        return $self->current_user->user_object;
     }
     elsif ($obj_type eq 'RT::Model::Group') {
-        my $group = RT::Model::Group->new($self->current_user);
+        my $group = RT::Model::Group->new;
         $group->load($obj_id);
         return $group;
     }
     elsif ($obj_type eq 'RT::System') {
-        return RT::System->new($self->current_user);
+        return RT::System->new;
     }
 
     $RT::Logger->error("Tried to load a search belonging to an $obj_type, which is neither a user nor a group");
@@ -319,13 +319,13 @@ sub _GetObject {
     # user, or of a group object of which the current user is not a member.
 
     if ($obj_type eq 'RT::Model::User' 
-	&& $object->id != $self->current_user->UserObj->id()) {
+	&& $object->id != $self->current_user->user_object->id()) {
 	$RT::Logger->debug("Permission denied for user other than self");
 	return undef;
     }
     if ($obj_type eq 'RT::Model::Group' &&
-	!$object->has_member_recursively($self->current_user->PrincipalObj)) {
-	$RT::Logger->debug("Permission denied, ".$self->current_user->Name.
+	!$object->has_member_recursively($self->current_user->principal_object)) {
+	$RT::Logger->debug("Permission denied, ".$self->current_user->name.
 			   " is not a member of group");
 	return undef;
     }

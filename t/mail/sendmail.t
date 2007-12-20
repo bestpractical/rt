@@ -13,9 +13,9 @@ my @_outgoing_messages;
 my @scrips_fired;
 
 #Were not testing acls here.
-my $everyone = RT::Model::Group->new(RT->system_user);
+my $everyone = RT::Model::Group->new(current_user => RT->system_user);
 $everyone->load_system_internal_group('Everyone');
-$everyone->PrincipalObj->GrantRight( Right =>'SuperUser' );
+$everyone->principal_object->GrantRight( Right =>'SuperUser' );
 
 
 is (__PACKAGE__, 'main', "We're operating in the main package");
@@ -51,7 +51,7 @@ use RT::Interface::Email;
 my %args =        (message => $content, queue => 1, action => 'correspond');
 my ($status, $msg) = RT::Interface::Email::Gateway(\%args);
 ok($status, "successfuly used Email::Gateway interface") or diag("error: $msg");
-my $tickets = RT::Model::TicketCollection->new(RT->system_user);
+my $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
 my $tick= $tickets->first();
@@ -78,10 +78,10 @@ Foob!');
                                   
 use Data::Dumper;
 
-my $ticket = RT::Model::Ticket->new(RT->system_user);
+my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 my  ($id,  undef, $create_msg ) = $ticket->create(Requestor => ['root@localhost'], Queue => 'general', Subject => 'I18NTest', MIMEObj => $parser->Entity);
 ok ($id,$create_msg);
-$tickets = RT::Model::TicketCollection->new(RT->system_user);
+$tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
  $tick = $tickets->first();
@@ -112,7 +112,7 @@ use RT::Interface::Email;
                            
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Model::TicketCollection->new(RT->system_user);
+ $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
  $tick = $tickets->first();
@@ -131,7 +131,7 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 # If we correspond, does it do the right thing to the outbound messages?
 
 $parser->ParseMIMEEntityFromScalar($content);
-  ($id, $msg) = $tick->Comment(MIMEObj => $parser->Entity);
+  ($id, $msg) = $tick->comment(MIMEObj => $parser->Entity);
 ok ($id, $msg);
 
 $parser->ParseMIMEEntityFromScalar($content);
@@ -154,7 +154,7 @@ use RT::Interface::Email;
                                   
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
-$tickets = RT::Model::TicketCollection->new(RT->system_user);
+$tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
  $tick = $tickets->first();
@@ -174,7 +174,7 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 # If we correspond, does it do the right thing to the outbound messages?
 
 $parser->ParseMIMEEntityFromScalar($content);
- ($id, $msg) = $tick->Comment(MIMEObj => $parser->Entity);
+ ($id, $msg) = $tick->comment(MIMEObj => $parser->Entity);
 ok ($id, $msg);
 
 $parser->ParseMIMEEntityFromScalar($content);
@@ -195,7 +195,7 @@ sub utf8_redef_sendmessage {
         my $MIME = shift;
 
         my $scrip = $self->ScripObj->id;
-        ok(1, $self->ScripObj->ConditionObj->Name . " ".$self->ScripObj->ActionObj->Name);
+        ok(1, $self->ScripObj->ConditionObj->name . " ".$self->ScripObj->ActionObj->name);
         main::_fired_scrip($self->ScripObj);
         $MIME->make_singlepart;
         main::is( ref($MIME) , \'MIME::Entity\',
@@ -222,7 +222,7 @@ sub iso8859_redef_sendmessage {
         my $MIME = shift;
 
         my $scrip = $self->ScripObj->id;
-        ok(1, $self->ScripObj->ConditionObj->Name . " ".$self->ScripObj->ActionObj->Name);
+        ok(1, $self->ScripObj->ConditionObj->name . " ".$self->ScripObj->ActionObj->name);
         main::_fired_scrip($self->ScripObj);
         $MIME->make_singlepart;
         main::is( ref($MIME) , \'MIME::Entity\',
@@ -255,7 +255,7 @@ $parser->ParseMIMEEntityFromScalar($content);
     %args = (message => $content, queue => 1, action => 'correspond');
     RT::Interface::Email::Gateway(\%args);
     # TODO: following 5 lines should replaced by get_latest_ticket_ok()
-    $tickets = RT::Model::TicketCollection->new(RT->system_user);
+    $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
     $tickets->order_by({column => 'id', order => 'DESC'});
     $tickets->limit(column => 'id' ,operator => '>', value => '0');
     $tick = $tickets->first();
@@ -281,7 +281,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Model::TicketCollection->new(RT->system_user);
+ $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
  $tick = $tickets->first();
@@ -296,7 +296,7 @@ sub text_html_umlauts_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::SendMessage { 
                 my $self = shift;
                 my $MIME = shift;
-                return (1) unless ($self->ScripObj->ActionObj->Name eq "Notify AdminCcs" );
+                return (1) unless ($self->ScripObj->ActionObj->name eq "Notify AdminCcs" );
                 is ($MIME->parts, 2, "generated correspondence mime entityis composed of three parts");
                 is ($MIME->head->mime_type , "multipart/mixed", "The first part is a multipart mixed". $MIME->head->mime_type);
                 is ($MIME->parts(0)->head->mime_type , "text/plain", "The second part is a plain");
@@ -318,7 +318,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Model::TicketCollection->new(RT->system_user);
+ $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
  $tick = $tickets->first();
@@ -333,7 +333,7 @@ sub text_html_russian_redef_sendmessage {
                 my $self = shift; 
                 my $MIME = shift; 
                 use Data::Dumper;
-                return (1) unless ($self->ScripObj->ActionObj->Name eq "Notify AdminCcs" );
+                return (1) unless ($self->ScripObj->ActionObj->name eq "Notify AdminCcs" );
                 ok (is $MIME->parts, 2, "generated correspondence mime entityis composed of three parts");
                 is ($MIME->head->mime_type , "multipart/mixed", "The first part is a multipart mixed". $MIME->head->mime_type);
                 is ($MIME->parts(0)->head->mime_type , "text/plain", "The second part is a plain");
@@ -360,7 +360,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 &text_plain_russian_redef_sendmessage;
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Model::TicketCollection->new(RT->system_user);
+ $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
 $tick= $tickets->first();
@@ -374,7 +374,7 @@ sub text_plain_russian_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::SendMessage { 
                 my $self = shift; 
                 my $MIME = shift; 
-                return (1) unless ($self->ScripObj->ActionObj->Name eq "Notify AdminCcs" );
+                return (1) unless ($self->ScripObj->ActionObj->name eq "Notify AdminCcs" );
                 is ($MIME->head->mime_type , "text/plain", "The only part is text/plain ");
                  my $subject  = $MIME->head->get("subject");
                 chomp($subject);
@@ -402,7 +402,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 &text_plain_nested_redef_sendmessage;
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Model::TicketCollection->new(RT->system_user);
+ $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
 $tick= $tickets->first();
@@ -415,7 +415,7 @@ sub text_plain_nested_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::SendMessage { 
                 my $self = shift; 
                 my $MIME = shift; 
-                return (1) unless ($self->ScripObj->ActionObj->Name eq "Notify AdminCcs" );
+                return (1) unless ($self->ScripObj->ActionObj->name eq "Notify AdminCcs" );
                 is ($MIME->head->mime_type , "multipart/mixed", "It is a mixed multipart");
                  my $subject  =  $MIME->head->get("subject");
                  $subject  = MIME::Base64::decode_base64( $subject);
@@ -442,7 +442,7 @@ $parser->ParseMIMEEntityFromScalar($content);
     local *RT::ScripAction::SendEmail::SendMessage = sub { return 1};
     %args =        (message => $content, queue => 1, action => 'correspond');
     RT::Interface::Email::Gateway(\%args);
-    $tickets = RT::Model::TicketCollection->new(RT->system_user);
+    $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
     $tickets->order_by({column => 'id', order => 'DESC'});
     $tickets->limit(column => 'id' ,operator => '>', value => '0');
     $tick= $tickets->first();
@@ -467,7 +467,7 @@ no warnings qw/redefine/;
 local *RT::ScripAction::SendEmail::SendMessage = sub { return 1};
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Model::TicketCollection->new(RT->system_user);
+ $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
 $tick= $tickets->first();
@@ -491,7 +491,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
- $tickets = RT::Model::TicketCollection->new(RT->system_user);
+ $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
 $tick= $tickets->first();
@@ -531,5 +531,5 @@ diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
 
 
 # Don't taint the environment
-$everyone->PrincipalObj->RevokeRight(Right =>'SuperUser');
+$everyone->principal_object->RevokeRight(Right =>'SuperUser');
 1;

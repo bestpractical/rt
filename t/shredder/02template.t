@@ -13,9 +13,9 @@ plan tests => 7;
 diag 'global template' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
-    my $template = RT::Model::Template->new( RT->system_user );
+    my $template = RT::Model::Template->new(current_user => RT->system_user );
     my ($id, $msg) = $template->create(
-        Name => 'my template',
+        name => 'my template',
         Content => "\nsome content",
     );
     ok($id, 'Created template') or diag "error: $msg";
@@ -29,9 +29,9 @@ diag 'global template' if $ENV{'TEST_VERBOSE'};
 diag 'local template' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
-    my $template = RT::Model::Template->new( RT->system_user );
+    my $template = RT::Model::Template->new(current_user => RT->system_user );
     my ($id, $msg) = $template->create(
-        Name => 'my template',
+        name => 'my template',
         Queue => 'General',
         Content => "\nsome content",
     );
@@ -46,15 +46,15 @@ diag 'local template' if $ENV{'TEST_VERBOSE'};
 diag 'template used in scrip' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
-    my $template = RT::Model::Template->new( RT->system_user );
+    my $template = RT::Model::Template->new(current_user => RT->system_user );
     my ($id, $msg) = $template->create(
-        Name => 'my template',
+        name => 'my template',
         Queue => 'General',
         Content => "\nsome content",
     );
     ok($id, 'Created template') or diag "error: $msg";
 
-    my $scrip = RT::Model::Scrip->new( RT->system_user );
+    my $scrip = RT::Model::Scrip->new(current_user => RT->system_user );
     ($id, $msg) = $scrip->create(
         Description    => 'my scrip',
         Queue          => 'General',

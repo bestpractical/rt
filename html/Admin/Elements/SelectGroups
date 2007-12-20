@@ -45,18 +45,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select multiple name="<%$Name%>"  size="10">
+<select multiple name="<%$name%>"  size="10">
 %while (my $group = $groups->next) {
-<option value="<%$group->id%>"><%$group->Name%>
+<option value="<%$group->id%>"><%$group->name%>
 %}
 </select>
 
 <%INIT>
-my $groups = new RT::Model::GroupCollection($session{'CurrentUser'});
+my $groups = new RT::Model::GroupCollection(Jifty->web->current_user);
 $groups->limit(column => 'Domain', operator => '=', value => $Domain);
 
 </%INIT>
 <%ARGS>
-$Name => 'groups'
+$name => 'groups'
 $Domain => 'UserDefined';
 </%ARGS>

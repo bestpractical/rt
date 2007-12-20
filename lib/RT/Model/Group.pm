@@ -4,7 +4,7 @@ use strict;
 
 package RT::Model::Group;
 
-=head1 NAME
+=head1 name
 
   RT::Model::Group - RT\'s group object
 
@@ -27,7 +27,7 @@ use Jifty::DBI::Schema;
 use base qw/RT::Record/;
 
 use Jifty::DBI::Record schema {
-    column Name        => type is 'varchar(200)';
+    column name        => type is 'varchar(200)';
     column Description => type is 'text';
     column Domain      => type is 'varchar(64)';
     column Type        => type is 'varchar(64)';
@@ -67,7 +67,7 @@ $RT::Model::ACE::OBJECT_TYPES{'RT::Model::Group'} = 1;
 # stuff the rights into a hash of rights that can exist.
 
 foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::Model::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+    $RT::Model::ACE::LOWERCASERIGHTnameS{ lc $right } = $right;
 }
 
 
@@ -94,25 +94,25 @@ Returns a user-readable description of what this group is for and what it's name
 sub SelfDescription {
 	my $self = shift;
 	if ($self->Domain eq 'ACLEquivalence') {
-		my $user = RT::Model::Principal->new($self->current_user);
+		my $user = RT::Model::Principal->new;
 		$user->load($self->Instance);
-		return $self->loc("user [_1]",$user->Object->Name);
+		return $self->loc("user [_1]",$user->Object->name);
 	}
 	elsif ($self->Domain eq 'UserDefined') {
-		return $self->loc("group '[_1]'",$self->Name);
+		return $self->loc("group '[_1]'",$self->name);
 	}
 	elsif ($self->Domain eq 'Personal') {
-		my $user = RT::Model::User->new($self->current_user);
+		my $user = RT::Model::User->new;
 		$user->load($self->Instance);
-		return $self->loc("personal group '[_1]' for user '[_2]'",$self->Name, $user->Name);
+		return $self->loc("personal group '[_1]' for user '[_2]'",$self->name, $user->name);
 	}
 	elsif ($self->Domain eq 'RT::System-Role') {
 		return $self->loc("system [_1]",$self->Type);
 	}
 	elsif ($self->Domain eq 'RT::Model::Queue-Role') {
-		my $queue = RT::Model::Queue->new($self->current_user);
+		my $queue = RT::Model::Queue->new;
 		$queue->load($self->Instance);
-		return $self->loc("queue [_1] [_2]",$queue->Name, $self->Type);
+		return $self->loc("queue [_1] [_2]",$queue->name, $self->Type);
 	}
 	elsif ($self->Domain eq 'RT::Model::Ticket-Role') {
 		return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Type);
@@ -155,7 +155,7 @@ sub load {
 
 # {{{ sub loadUserDefinedGroup 
 
-=head2 LoadUserDefinedGroup NAME
+=head2 LoadUserDefinedGroup name
 
 Loads a system group from the database. The only argument is
 the group's name.
@@ -168,7 +168,7 @@ sub loadUserDefinedGroup {
     my $identifier = shift;
 
         $self->load_by_cols( "Domain" => 'UserDefined',
-                           "Name" => $identifier );
+                           "name" => $identifier );
 }
 
 # }}}
@@ -201,7 +201,7 @@ sub load_acl_equivalence_group {
 
 # {{{ sub loadPersonalGroup 
 
-=head2 LoadPersonalGroup {Name => NAME, User => USERID}
+=head2 LoadPersonalGroup {name => name, User => USERID}
 
 Loads a personal group from the database. 
 
@@ -209,21 +209,21 @@ Loads a personal group from the database.
 
 sub loadPersonalGroup {
     my $self       = shift;
-    my %args =  (   Name => undef,
+    my %args =  (   name => undef,
                     User => undef,
                     @_);
 
         $self->load_by_cols( "Domain" => 'Personal',
                            "Instance" => $args{'User'},
                            "Type" => '',
-                           "Name" => $args{'Name'} );
+                           "name" => $args{'name'} );
 }
 
 # }}}
 
 # {{{ sub load_system_internal_group 
 
-=head2 load_system_internal_group NAME
+=head2 load_system_internal_group name
 
 Loads a Pseudo group from the database. The only argument is
 the group's name.
@@ -339,7 +339,7 @@ sub create {
 
 =head2 _create
 
-Takes a paramhash with named arguments: Name, Description.
+Takes a paramhash with named arguments: name, Description.
 
 Returns a tuple of (Id, Message).  If id is 0, the create failed
 
@@ -348,7 +348,7 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 sub _create {
     my $self = shift;
     my %args = (
-        Name        => undef,
+        name        => undef,
         Description => undef,
         Domain      => undef,
         Type        => undef,
@@ -360,17 +360,17 @@ sub _create {
     Jifty->handle->begin_transaction() unless ($args{'InsideTransaction'});
     # Groups deal with principal ids, rather than user ids.
     # When creating this group, set up a principal Id for it.
-    my $principal    = RT::Model::Principal->new( $self->current_user );
+    my $principal    = RT::Model::Principal->new;
     my ($principal_id,$msg) = $principal->create(
-        PrincipalType => 'Group',
-        ObjectId      => '0'
+        principal_type => 'Group',
+        object_id      => '0'
     );
-    $principal->__set(column => 'ObjectId', value => $principal_id);
+    $principal->__set(column => 'object_id', value => $principal_id);
 
 
     $self->SUPER::create(
         id          => $principal_id,
-        Name        => $args{'Name'},
+        name        => $args{'name'},
         Description => $args{'Description'},
         Type        => $args{'Type'},
         Domain      => $args{'Domain'},
@@ -395,8 +395,8 @@ sub _create {
 
     # in the ordinary case, this would fail badly because it would recurse and add all the members of this group as 
     # cached members. thankfully, we're creating the group now...so it has no members.
-    my $cgm = RT::Model::CachedGroupMember->new($self->current_user);
-    $cgm->create(Group =>$self->PrincipalObj, Member => $self->PrincipalObj, ImmediateParent => $self->PrincipalObj);
+    my $cgm = RT::Model::CachedGroupMember->new;
+    $cgm->create(Group =>$self->principal_object, Member => $self->principal_object, ImmediateParent => $self->principal_object);
 
 
     if ( $args{'_RecordTransaction'} ) {
@@ -412,7 +412,7 @@ sub _create {
 
 # {{{ create_userDefinedGroup
 
-=head2 create_userDefinedGroup { Name => "name", Description => "Description"}
+=head2 create_userDefinedGroup { name => "name", Description => "Description"}
 
 A helper subroutine which creates a system group 
 
@@ -424,7 +424,7 @@ sub create_userDefinedGroup {
     my $self = shift;
 
     unless ( $self->current_user_has_right('AdminGroup') ) {
-        $RT::Logger->warning( $self->current_user->Name
+        $RT::Logger->warning( $self->current_user->name
               . " Tried to create a group without permission." );
         return ( 0, $self->loc('Permission Denied') );
     }
@@ -451,7 +451,7 @@ sub _createACLEquivalenceGroup {
     my $princ = shift;
       my ($id,$msg) = $self->_create( Domain => 'ACLEquivalence', 
                            Type => 'UserEquiv',
-                           Name => 'User '. $princ->Object->id,
+                           name => 'User '. $princ->Object->id,
                            Description => 'ACL equiv. for user '.$princ->Object->id,
                            Instance => $princ->id,
                            InsideTransaction => 1);
@@ -463,8 +463,8 @@ sub _createACLEquivalenceGroup {
     
        # We use stashuser so we don't get transactions inside transactions
        # and so we bypass all sorts of cruft we don't need
-       my $aclstash = RT::Model::GroupMember->new($self->current_user);
-       my ($stash_id, $add_msg) = $aclstash->_StashUser(Group => $self->PrincipalObj, Member => $princ);
+       my $aclstash = RT::Model::GroupMember->new;
+       my ($stash_id, $add_msg) = $aclstash->_StashUser(Group => $self->principal_object, Member => $princ);
 
       unless ($stash_id) {
         $RT::Logger->crit("Couldn't add the user to his own acl equivalence group:".$add_msg);
@@ -479,11 +479,11 @@ sub _createACLEquivalenceGroup {
 
 # {{{ CreatePersonalGroup
 
-=head2 CreatePersonalGroup { PrincipalId => PRINCIPAL_ID, Name => "name", Description => "Description"}
+=head2 CreatePersonalGroup { principal_id => PRINCIPAL_ID, name => "name", Description => "Description"}
 
 A helper subroutine which creates a personal group. Generally,
 personal groups are used for ACL delegation and adding to ticket roles
-PrincipalId defaults to the current user's principal id.
+principal_id defaults to the current user's principal id.
 
 Returns a tuple of (Id, Message).  If id is 0, the create failed
 
@@ -492,15 +492,15 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 sub createPersonalGroup {
     my $self = shift;
     my %args = (
-        Name        => undef,
+        name        => undef,
         Description => undef,
-        PrincipalId => $self->current_user->PrincipalId,
+        principal_id => $self->current_user->principal_id,
         @_
     );
-    if ( $self->current_user->PrincipalId == $args{'PrincipalId'} ) {
+    if ( $self->current_user->principal_id == $args{'principal_id'} ) {
 
         unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
-            $RT::Logger->warning( $self->current_user->Name
+            $RT::Logger->warning( $self->current_user->name
                   . " Tried to create a group without permission." );
             return ( 0, $self->loc('Permission Denied') );
         }
@@ -508,7 +508,7 @@ sub createPersonalGroup {
     }
     else {
         unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-            $RT::Logger->warning( $self->current_user->Name
+            $RT::Logger->warning( $self->current_user->name
                   . " Tried to create a group without permission." );
             return ( 0, $self->loc('Permission Denied') );
         }
@@ -519,8 +519,8 @@ sub createPersonalGroup {
         $self->_create(
             Domain      => 'Personal',
             Type        => '',
-            Instance    => $args{'PrincipalId'},
-            Name        => $args{'Name'},
+            Instance    => $args{'principal_id'},
+            name        => $args{'name'},
             Description => $args{'Description'}
         )
     );
@@ -591,7 +591,7 @@ sub delete {
 
 # }}}
 
-=head2 SetDisabled BOOL
+=head2 Setdisabled BOOL
 
 If passed a positive value, this group will be disabled. No rights it commutes or grants will be honored.
 It will not appear in most group listings.
@@ -602,11 +602,11 @@ This routine finds all the cached group members that are members of this group  
 
  # }}}
 
- sub set_Disabled {
+ sub set_disabled {
      my $self = shift;
      my $val = shift;
     if ($self->Domain eq 'Personal') {
-   		if ($self->current_user->PrincipalId == $self->Instance) {
+   		if ($self->current_user->principal_id == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
         		return ( 0, $self->loc('Permission Denied') );
     		}
@@ -622,7 +622,7 @@ This routine finds all the cached group members that are members of this group  
     }
     }
     Jifty->handle->begin_transaction();
-    $self->PrincipalObj->set_Disabled($val);
+    $self->principal_object->set_disabled($val);
 
 
 
@@ -636,7 +636,7 @@ This routine finds all the cached group members that are members of this group  
     # a member of A, will delete C as a member of A without touching
     # C as a member of B
 
-    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new( $self->current_user );
+    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new;
 
     $cached_submembers->limit( column    => 'ImmediateParentId', operator => '=', value    => $self->id);
 
@@ -647,7 +647,7 @@ This routine finds all the cached group members that are members of this group  
 
 
     while ( my $item = $cached_submembers->next() ) {
-        my $del_err = $item->set_Disabled($val);
+        my $del_err = $item->set_disabled($val);
         unless ($del_err) {
             Jifty->handle->rollback();
             $RT::Logger->warning("Couldn't disable cached group submember ".$item->id);
@@ -664,9 +664,9 @@ This routine finds all the cached group members that are members of this group  
 
 
 
-sub Disabled {
+sub disabled {
     my $self = shift;
-    $self->PrincipalObj->Disabled(@_);
+    $self->principal_object->disabled(@_);
 }
 
 
@@ -681,11 +681,11 @@ including all members of subgroups.
 
 sub DeepMembersObj {
     my $self = shift;
-    my $members_obj = RT::Model::CachedGroupMemberCollection->new( $self->current_user );
+    my $members_obj = RT::Model::CachedGroupMemberCollection->new;
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-    $members_obj->LimitToMembersOfGroup( $self->PrincipalId );
+    $members_obj->LimitToMembersOfGroup( $self->principal_id );
 
     return ( $members_obj );
 
@@ -707,7 +707,7 @@ sub MembersObj {
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-    $members_obj->LimitToMembersOfGroup( $self->PrincipalId );
+    $members_obj->LimitToMembersOfGroup( $self->principal_id );
 
     return ( $members_obj );
 
@@ -732,7 +732,7 @@ sub GroupMembersObj {
     my $self = shift;
     my %args = ( Recursively => 1, @_ );
 
-    my $groups = RT::Model::GroupCollection->new( $self->current_user );
+    my $groups = RT::Model::GroupCollection->new;
     my $members_table = $args{'Recursively'}?
         'CachedGroupMembers': 'GroupMembers';
 
@@ -744,11 +744,11 @@ sub GroupMembersObj {
     $groups->limit(
         alias    => $members_alias,
         column    => 'GroupId',
-        value    => $self->PrincipalId,
+        value    => $self->principal_id,
     );
     $groups->limit(
         alias => $members_alias,
-        column => 'Disabled',
+        column => 'disabled',
         value => 0,
     ) if $args{'Recursively'};
 
@@ -777,7 +777,7 @@ sub UserMembersObj {
     my $members_table = $args{'Recursively'}?
         'CachedGroupMembers': 'GroupMembers';
 
-    my $users = RT::Model::UserCollection->new($self->current_user);
+    my $users = RT::Model::UserCollection->new;
     my $members_alias = $users->new_alias( $members_table );
     $users->join(
         alias1 => $members_alias,           column1 => 'MemberId',
@@ -786,11 +786,11 @@ sub UserMembersObj {
     $users->limit(
         alias => $members_alias,
         column => 'GroupId',
-        value => $self->PrincipalId,
+        value => $self->principal_id,
     );
     $users->limit(
         alias => $members_alias,
-        column => 'Disabled',
+        column => 'disabled',
         value => 0,
     ) if $args{'Recursively'};
 
@@ -799,31 +799,31 @@ sub UserMembersObj {
 
 # }}}
 
-# {{{ MemberEmailAddresses
+# {{{ Memberemailes
 
-=head2 MemberEmailAddresses
+=head2 Memberemailes
 
 Returns an array of the email addresses of all of this group's members
 
 
 =cut
 
-sub MemberEmailAddresses {
+sub Memberemailes {
     my $self = shift;
 
     my %addresses;
     my $members = $self->UserMembersObj();
     while (my $member = $members->next) {
-        $addresses{$member->EmailAddress} = 1;
+        $addresses{$member->email} = 1;
     }
     return(sort keys %addresses);
 }
 
 # }}}
 
-# {{{ MemberEmailAddressesAsString
+# {{{ MemberemailesAsString
 
-=head2 MemberEmailAddressesAsString
+=head2 MemberemailesAsString
 
 Returns a comma delimited string of the email addresses of all users 
 who are members of this group.
@@ -831,9 +831,9 @@ who are members of this group.
 =cut
 
 
-sub MemberEmailAddressesAsString {
+sub MemberemailesAsString {
     my $self = shift;
-    return (join(', ', $self->MemberEmailAddresses));
+    return (join(', ', $self->Memberemailes));
 }
 
 # }}}
@@ -855,7 +855,7 @@ sub AddMember {
 
 
     if ($self->Domain eq 'Personal') {
-   		if ($self->current_user->PrincipalId == $self->Instance) {
+   		if ($self->current_user->principal_id == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
         		return ( 0, $self->loc('Permission Denied') );
     		}
@@ -870,7 +870,7 @@ sub AddMember {
     # We should only allow membership changes if the user has the right 
     # to modify group membership or the user is the principal in question
     # and the user has the right to modify his own membership
-    unless ( ($new_member == $self->current_user->PrincipalId &&
+    unless ( ($new_member == $self->current_user->principal_id &&
 	      $self->current_user_has_right('ModifyOwnMembership') ) ||
 	      $self->current_user_has_right('AdminGroupMembership') ) {
         #User has no permission to be doing this
@@ -878,7 +878,7 @@ sub AddMember {
     }
 
   	} 
-    $self->_AddMember(PrincipalId => $new_member);
+    $self->_AddMember(principal_id => $new_member);
 }
 
 # A helper subroutine for AddMember that bypasses the ACL checks
@@ -887,14 +887,14 @@ sub AddMember {
 # In the dim future, this will all get factored out and life
 # will get better	
 
-# takes a paramhash of { PrincipalId => undef, InsideTransaction }
+# takes a paramhash of { principal_id => undef, InsideTransaction }
 
 sub _AddMember {
     my $self = shift;
-    my %args = ( PrincipalId => undef,
+    my %args = ( principal_id => undef,
                  InsideTransaction => undef,
                  @_);
-    my $new_member = $args{'PrincipalId'};
+    my $new_member = $args{'principal_id'};
     unless ($self->id) {
         $RT::Logger->crit("Attempting to add a member to a group which wasn't loaded. 'oops'");
         return(0, $self->loc("Group not found"));
@@ -905,7 +905,7 @@ sub _AddMember {
     }
 
 
-    my $new_member_obj = RT::Model::Principal->new( $self->current_user );
+    my $new_member_obj = RT::Model::Principal->new;
     $new_member_obj->load($new_member);
 
 
@@ -920,16 +920,16 @@ sub _AddMember {
         return ( 0, $self->loc("Group already has member") );
     }
     if ( $new_member_obj->IsGroup &&
-         $new_member_obj->Object->has_member_recursively($self->PrincipalObj) ) {
+         $new_member_obj->Object->has_member_recursively($self->principal_object) ) {
 
         #This group can't be made to be a member of itself
         return ( 0, $self->loc("Groups can't be members of their members"));
     }
 
-    my $member_object = RT::Model::GroupMember->new( $self->current_user );
+    my $member_object = RT::Model::GroupMember->new;
     my $id = $member_object->create(
         Member => $new_member_obj,
-        Group => $self->PrincipalObj,
+        Group => $self->principal_object,
         InsideTransaction => $args{'InsideTransaction'}
     );
     if ($id) {
@@ -968,9 +968,9 @@ sub has_member {
         return(undef);
     }
 
-    my $member_obj = RT::Model::GroupMember->new( $self->current_user );
+    my $member_obj = RT::Model::GroupMember->new;
     $member_obj->load_by_cols( MemberId => $principal->id, 
-                             GroupId => $self->PrincipalId );
+                             GroupId => $self->principal_id );
 
     #If we have a member object
     if ( defined $member_obj->id ) {
@@ -1007,10 +1007,10 @@ sub has_member_recursively {
                           "isn't an RT::Model::Principal. It's $principal");
         return(undef);
     }
-    my $member_obj = RT::Model::CachedGroupMember->new( $self->current_user );
+    my $member_obj = RT::Model::CachedGroupMember->new;
     $member_obj->load_by_cols( MemberId => $principal->id,
-                             GroupId => $self->PrincipalId ,
-                             Disabled => 0
+                             GroupId => $self->principal_id ,
+                             disabled => 0
                              );
 
     #If we have a member object
@@ -1048,7 +1048,7 @@ sub delete_member {
     # and the user has the right to modify his own membership
 
     if ($self->Domain eq 'Personal') {
-   		if ($self->current_user->PrincipalId == $self->Instance) {
+   		if ($self->current_user->principal_id == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
         		return ( 0, $self->loc('Permission Denied') );
     		}
@@ -1059,7 +1059,7 @@ sub delete_member {
     	}
 	}
 	else {
-    unless ( (($member_id == $self->current_user->PrincipalId) &&
+    unless ( (($member_id == $self->current_user->principal_id) &&
 	      $self->current_user_has_right('ModifyOwnMembership') ) ||
 	      $self->current_user_has_right('AdminGroupMembership') ) {
         #User has no permission to be doing this
@@ -1079,10 +1079,10 @@ sub _delete_member {
     my $self = shift;
     my $member_id = shift;
 
-    my $member_obj =  RT::Model::GroupMember->new( $self->current_user );
+    my $member_obj =  RT::Model::GroupMember->new;
     
     $member_obj->load_by_cols( MemberId  => $member_id,
-                             GroupId => $self->PrincipalId);
+                             GroupId => $self->principal_id);
 
 
     #If we couldn't load it, return undef.
@@ -1171,7 +1171,7 @@ sub _set {
     );
 
 	if ($self->Domain eq 'Personal') {
-   		if ($self->current_user->PrincipalId == $self->Instance) {
+   		if ($self->current_user->principal_id == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
         		return ( 0, $self->loc('Permission Denied') );
     		}
@@ -1217,7 +1217,7 @@ sub _set {
 
 
 
-=head2 current_user_has_right RIGHTNAME
+=head2 current_user_has_right RIGHTname
 
 Returns true if the current user has the specified right for this group.
 
@@ -1253,40 +1253,40 @@ sub current_user_has_right {
 
 # {{{ Principal related routines
 
-=head2 PrincipalObj
+=head2 principal_object
 
 Returns the principal object for this user. returns an empty RT::Model::Principal
 if there's no principal object matching this user. 
-The response is cached. PrincipalObj should never ever change.
+The response is cached. principal_object should never ever change.
 
 
 =cut
 
 
-sub PrincipalObj {
+sub principal_object {
     my $self = shift;
-     unless ( defined $self->{'PrincipalObj'} &&
-              defined $self->{'PrincipalObj'}->ObjectId &&
-              ($self->{'PrincipalObj'}->ObjectId == $self->Id) &&
-             (defined $self->{'PrincipalObj'}->PrincipalType && 
-                 $self->{'PrincipalObj'}->PrincipalType eq 'Group')) {
+     unless ( defined $self->{'principal_object'} &&
+              defined $self->{'principal_object'}->object_id &&
+              ($self->{'principal_object'}->object_id == $self->id) &&
+             (defined $self->{'principal_object'}->principal_type && 
+                 $self->{'principal_object'}->principal_type eq 'Group')) {
 
 
-            $self->{'PrincipalObj'} = RT::Model::Principal->new($self->current_user);
-            $self->{'PrincipalObj'}->load_by_cols('ObjectId' => $self->id,
-                                                'PrincipalType' => 'Group') ;
+            $self->{'principal_object'} = RT::Model::Principal->new;
+            $self->{'principal_object'}->load_by_cols('object_id' => $self->id,
+                                                'principal_type' => 'Group') ;
             }
-    return($self->{'PrincipalObj'});
+    return($self->{'principal_object'});
 }
 
 
-=head2 PrincipalId  
+=head2 principal_id  
 
-Returns this user's PrincipalId
+Returns this user's principal_id
 
 =cut
 
-sub PrincipalId {
+sub principal_id {
     my $self = shift;
     return $self->id;
 }
@@ -1295,7 +1295,7 @@ sub PrincipalId {
 
 sub BasicColumns {
     (
-	[ Name => 'Name' ],
+	[ name => 'name' ],
 	[ Description => 'Description' ],
     );
 }

@@ -60,7 +60,7 @@ use RT::EmailParser;
 use RT::Interface::Email;
 use Mail::Address;
 
-=head1 NAME
+=head1 name
 
 RT::ScripAction::SendEmail - An Action which users can use to send mail 
 or can subclassed for more specialized mail sending behavior. 
@@ -313,7 +313,7 @@ sub AddAttachments {
 
     $MIMEObj->head->delete('RT-Attach-Message');
 
-    my $attachments = RT::Model::AttachmentCollection->new(RT->system_user);
+    my $attachments = RT::Model::AttachmentCollection->new(current_user => RT->system_user);
     $attachments->limit(
         column => 'TransactionId',
         value => $self->TransactionObj->id
@@ -417,7 +417,7 @@ sub AddTicket {
     my $tid = shift;
 
     # XXX: we need a current user here, but who is current user?
-    my $attachs = RT::Model::AttachmentCollection->new( RT->system_user );
+    my $attachs = RT::Model::AttachmentCollection->new(current_user => RT->system_user );
     my $txn_alias = $attachs->TransactionAlias;
     $attachs->limit( alias => $txn_alias, column => 'Type', value => 'Create' );
     $attachs->limit( alias => $txn_alias, column => 'Type', value => 'Correspond' );
@@ -478,8 +478,8 @@ sub RecordOutgoingMailTransaction {
     # XXX: TODO -> Record attachments as references to things in the attachments table, maybe.
 
     my $type;
-    if ($self->TransactionObj->Type eq 'Comment') {
-        $type = 'CommentEmailRecord';
+    if ($self->TransactionObj->Type eq 'comment') {
+        $type = 'commentEmailRecord';
     } else {
         $type = 'EmailRecord';
     }
@@ -524,11 +524,11 @@ sub set_RTSpecialHeaders {
 
       # If there is one, and we can parse it, then base our Message-ID on it
       if ($msgid 
-          and $msgid =~ s/<(rt-.*?-\d+-\d+)\.(\d+)-\d+-\d+\@\QRT->Config->Get('Organization')\E>$/
+          and $msgid =~ s/<(rt-.*?-\d+-\d+)\.(\d+)-\d+-\d+\@\QRT->Config->Get('organization')\E>$/
                          "<$1." . $self->TicketObj->id
                           . "-" . $self->ScripObj->id
                           . "-" . $self->ScripActionObj->{_Message_ID}
-                          . "@" . RT->Config->Get('Organization') . ">"/eg
+                          . "@" . RT->Config->Get('organization') . ">"/eg
           and $2 == $self->TicketObj->id) {
         $self->set_Header( "Message-ID" => $msgid );
       } else {
@@ -541,7 +541,7 @@ sub set_RTSpecialHeaders {
             . $self->TicketObj->id . "-"
             . $self->ScripObj->id . "-"  # Scrip
             . $self->ScripActionObj->{_Message_ID} . "@"  # Email sent
-            . RT->Config->Get('Organization')
+            . RT->Config->Get('organization')
             . ">" );
       }
     }
@@ -557,7 +557,7 @@ sub set_RTSpecialHeaders {
 
     # XXX, TODO: use /ShowUser/ShowUserEntry(or something like that) when it would be 
     #            refactored into user's method.
-    if (my $email = $self->TransactionObj->CreatorObj->EmailAddress) {
+    if (my $email = $self->TransactionObj->CreatorObj->email) {
       $self->set_Header( 'RT-Originator', $email );
     }
 
@@ -634,11 +634,11 @@ sub RemoveInappropriateRecipients {
                 foreach my $type (@types) {
 
                     foreach my $addr ( @{ $self->{$type} } ) {
-                        my $user = RT::Model::User->new(RT->system_user);
+                        my $user = RT::Model::User->new(current_user => RT->system_user);
                         $user->load_by_email($addr);
                         @{ $self->{$type} } =
                           grep ( !/^\Q$addr\E$/, @{ $self->{$type} } )
-                          if ( !$user->Privileged );
+                          if ( !$user->privileged );
 
                     }
                 }
@@ -688,8 +688,8 @@ sub set_ReturnAddress {
     my $replyto;
 
     if ( $args{'is_comment'} ) {
-        $replyto = $self->TicketObj->QueueObj->CommentAddress
-          || RT->Config->Get('CommentAddress');
+        $replyto = $self->TicketObj->QueueObj->commentAddress
+          || RT->Config->Get('commentAddress');
     }
     else {
         $replyto = $self->TicketObj->QueueObj->CorrespondAddress
@@ -698,7 +698,7 @@ sub set_ReturnAddress {
 
     unless ( $self->TemplateObj->MIMEObj->head->get('From') ) {
         if (RT->Config->Get('UseFriendlyFromLine')) {
-            my $friendly_name = $self->TransactionObj->CreatorObj->FriendlyName;
+            my $friendly_name = $self->TransactionObj->CreatorObj->friendly_name;
             if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
                 $friendly_name = $1;
             }
@@ -821,7 +821,7 @@ sub set_ReferencesHeaders {
     # the RT Web UI, and hence we want to *not* append its Message-ID
     # to the References and In-Reply-To.  OR it came from an outside
     # source, and we should treat it as per the RFC
-    my $org = RT->Config->Get('Organization');
+    my $org = RT->Config->Get('organization');
     if ( "@msgid" =~ /<(rt-.*?-\d+-\d+)\.(\d+)-0-0\@\Q$org\E>/) {
 
       # Make all references which are internal be to version which we
@@ -831,7 +831,7 @@ sub set_ReferencesHeaders {
           "<$1." . $self->TicketObj->id .
              "-" . $self->ScripObj->id .
              "-" . $self->ScripActionObj->{_Message_ID} .
-             "@" . RT->Config->Get('Organization') . ">"/eg
+             "@" . RT->Config->Get('organization') . ">"/eg
       }
 
       # In reply to whatever the internal message was in reply to
@@ -876,7 +876,7 @@ Returns a fake Message-ID: header for the ticket to allow a base level of thread
 sub PseudoReference {
 
     my $self = shift;
-    my $pseudo_ref =  '<RT-Ticket-'.$self->TicketObj->id .'@'.RT->Config->Get('Organization') .'>';
+    my $pseudo_ref =  '<RT-Ticket-'.$self->TicketObj->id .'@'.RT->Config->Get('organization') .'>';
     return $pseudo_ref;
 }
 
@@ -961,7 +961,7 @@ Jesse Vincent <jesse@bestpractical.com> and Tobias Brox <tobix@cpan.org>
 
 =head1 SEE ALSO
 
-L<RT::ScripAction::Notify>, L<RT::ScripAction::NotifyAsComment> and L<RT::ScripAction::Autoreply>
+L<RT::ScripAction::Notify>, L<RT::ScripAction::NotifyAscomment> and L<RT::ScripAction::Autoreply>
 
 =cut
 

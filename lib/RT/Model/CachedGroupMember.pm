@@ -12,7 +12,7 @@ use Jifty::DBI::Record schema {
         column MemberId => type is 'integer';
         column Via => type is 'integer';
         column ImmediateParentId => type is 'integer';
-    column Disabled      => type is 'integer', default is '0';
+    column disabled      => type is 'integer', default is '0';
 
 };
 
@@ -20,7 +20,7 @@ use Jifty::DBI::Record schema {
 
 
 
-=head1 NAME
+=head1 name
 
   RT::Model::CachedGroupMember
 
@@ -66,7 +66,7 @@ sub create {
                  Member          => '',
                  ImmediateParent => '',
                  Via             => '0',
-                 Disabled        => '0',
+                 disabled        => '0',
                  @_ );
 
     unless (    $args{'Member'}
@@ -88,15 +88,15 @@ sub create {
     }
 
     # If the parent group for this group member is disabled, it's disabled too, along with all its children
-    if ( $args{'ImmediateParent'}->Disabled ) {
-        $args{'Disabled'} = $args{'ImmediateParent'}->Disabled;
+    if ( $args{'ImmediateParent'}->disabled ) {
+        $args{'disabled'} = $args{'ImmediateParent'}->disabled;
     }
 
     my $id = $self->SUPER::create(
                               GroupId           => $args{'Group'}->id,
                               MemberId          => $args{'Member'}->id,
                               ImmediateParentId => $args{'ImmediateParent'}->id,
-                              Disabled          => $args{'Disabled'},
+                              disabled          => $args{'disabled'},
                               Via               => $args{'Via'}, );
 
     unless ($id) {
@@ -124,12 +124,12 @@ sub create {
         my $GroupMembers = $args{'Member'}->Object->MembersObj();
         while ( my $member = $GroupMembers->next() ) {
             my $cached_member =
-              RT::Model::CachedGroupMember->new( $self->current_user );
+              RT::Model::CachedGroupMember->new;
             my $c_id = $cached_member->create(
                                              Group  => $args{'Group'},
                                              Member => $member->MemberObj,
                                              ImmediateParent => $args{'Member'},
-                                             Disabled => $args{'Disabled'},
+                                             disabled => $args{'disabled'},
                                              Via      => $id );
             unless ($c_id) {
                 return (undef);    #percolate the error upwards.
@@ -161,7 +161,7 @@ sub delete {
     
     my $member = $self->MemberObj();
     if ( $member->IsGroup ) {
-        my $deletable = RT::Model::CachedGroupMemberCollection->new( $self->current_user );
+        my $deletable = RT::Model::CachedGroupMemberCollection->new;
 
         $deletable->limit( column    => 'id',
                            operator => '!=',
@@ -197,13 +197,13 @@ sub delete {
 
 
         #   Find all ACEs granted to $self->GroupId
-        my $acl = RT::Model::ACECollection->new(RT->system_user);
+        my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
         $acl->LimitToPrincipal( Id => $self->GroupId );
 
 
         while ( my $this_ace = $acl->next() ) {
             #       Find all ACEs which $self-MemberObj has delegated from $this_ace
-            my $delegations = RT::Model::ACECollection->new(RT->system_user);
+            my $delegations = RT::Model::ACECollection->new(current_user => RT->system_user);
             $delegations->DelegatedFrom( Id => $this_ace->id );
             $delegations->DelegatedBy( Id => $self->MemberId );
 
@@ -223,55 +223,55 @@ sub delete {
 
 # }}}
 
-# {{{ SetDisabled
+# {{{ Setdisabled
 
-=head2 SetDisabled
+=head2 Setdisabled
 
-SetDisableds the current CachedGroupMember from the group it's in and cascades 
-the SetDisabled to all submembers. This routine could be completely excised if
-mysql supported foreign keys with cascading SetDisableds.
+Setdisableds the current CachedGroupMember from the group it's in and cascades 
+the Setdisabled to all submembers. This routine could be completely excised if
+mysql supported foreign keys with cascading Setdisableds.
 
 =cut 
 
-sub set_Disabled {
+sub set_disabled {
     my $self = shift;
     my $val = shift;
  
     # if it's already disabled, we're good.
-    return (1) if ( $self->__value('Disabled') == $val);
-    my $err = $self->_set(column => 'Disabled', value  => $val);
+    return (1) if ( $self->__value('disabled') == $val);
+    my $err = $self->_set(column => 'disabled', value  => $val);
     my ($retval, $msg) = $err->as_array();
     unless ($retval) {
-        $RT::Logger->error( "Couldn't SetDisabled CachedGroupMember " . $self->id .": $msg");
+        $RT::Logger->error( "Couldn't Setdisabled CachedGroupMember " . $self->id .": $msg");
         return ($err);
     }
     
     my $member = $self->MemberObj();
     if ( $member->IsGroup ) {
-        my $deletable = RT::Model::CachedGroupMemberCollection->new( $self->current_user );
+        my $deletable = RT::Model::CachedGroupMemberCollection->new;
 
         $deletable->limit( column    => 'Via', operator => '=', value    => $self->id );
         $deletable->limit( column    => 'id', operator => '!=', value    => $self->id );
 
         while ( my $kid = $deletable->next ) {
-            my $kid_err = $kid->set_Disabled($val );
+            my $kid_err = $kid->set_disabled($val );
             unless ($kid_err) {
-                $RT::Logger->error( "Couldn't SetDisabled CachedGroupMember " . $kid->id );
+                $RT::Logger->error( "Couldn't Setdisabled CachedGroupMember " . $kid->id );
                 return ($kid_err);
             }
         }
     }
 
     # Unless $self->GroupObj still has the member recursively $self->MemberObj
-    # (Since we SetDisabledd the database row above, $self no longer counts)
+    # (Since we Setdisabledd the database row above, $self no longer counts)
     unless ( $self->GroupObj->Object->has_member_recursively( $self->MemberObj ) ) {
         #   Find all ACEs granted to $self->GroupId
-        my $acl = RT::Model::ACECollection->new(RT->system_user);
+        my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
         $acl->LimitToPrincipal( Id => $self->GroupId );
 
         while ( my $this_ace = $acl->next() ) {
             #       Find all ACEs which $self-MemberObj has delegated from $this_ace
-            my $delegations = RT::Model::ACECollection->new(RT->system_user);
+            my $delegations = RT::Model::ACECollection->new(current_user => RT->system_user);
             $delegations->DelegatedFrom( Id => $this_ace->id );
             $delegations->DelegatedBy( Id => $self->MemberId );
 
@@ -301,7 +301,7 @@ Returns the RT::Model::Principal object for this group Group
 
 sub GroupObj {
     my $self      = shift;
-    my $principal = RT::Model::Principal->new( $self->current_user );
+    my $principal = RT::Model::Principal->new;
     $principal->load( $self->GroupId );
     return ($principal);
 }
@@ -318,7 +318,7 @@ Returns the RT::Model::Principal object for this group ImmediateParent
 
 sub ImmediateParentObj {
     my $self      = shift;
-    my $principal = RT::Model::Principal->new( $self->current_user );
+    my $principal = RT::Model::Principal->new;
     $principal->load( $self->ImmediateParentId );
     return ($principal);
 }
@@ -335,7 +335,7 @@ Returns the RT::Model::Principal object for this group member
 
 sub MemberObj {
     my $self      = shift;
-    my $principal = RT::Model::Principal->new( $self->current_user );
+    my $principal = RT::Model::Principal->new;
     $principal->load( $self->MemberId );
     return ($principal);
 }

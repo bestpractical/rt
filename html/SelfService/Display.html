@@ -95,7 +95,7 @@ my ( $field, @results );
 # to deal
 my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
 
-my $Ticket = new RT::Model::Ticket( $session{'CurrentUser'} );
+my $Ticket = new RT::Model::Ticket( Jifty->web->current_user );
 
 # store the uploaded attachment in session
 if ( $ARGS{'Attach'} ) {    # attachment?
@@ -112,7 +112,7 @@ if ( $ARGS{'Attach'} ) {    # attachment?
     my $attachment = MakeMIMEEntity(
         Subject             => $subject,
         Body                => "",
-        AttachmentFieldName => 'Attach'
+        AttachmentFieldname => 'Attach'
     );
 
     $session{'Attachments'} =
@@ -124,7 +124,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     # {{{ Create a new ticket
 
-    my $Queue = new RT::Model::Queue( $session{'CurrentUser'} );
+    my $Queue = new RT::Model::Queue( Jifty->web->current_user );
     unless ( $Queue->load( $ARGS{'Queue'} ) ) {
         $m->comp( 'Error.html', Why => loc('Queue not found') );
         $m->abort;
@@ -180,7 +180,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         || ( defined $ARGS{'UpdateContent'}
             && $ARGS{'UpdateContent'} ne ''
             && $ARGS{'UpdateContent'} ne "-- \n"
-            . $session{'CurrentUser'}->UserObj->Signature )
+            . Jifty->web->current_user->user_object->Signature )
       )
     {
         $ARGS{UpdateAttachments} = $session{'Attachments'};

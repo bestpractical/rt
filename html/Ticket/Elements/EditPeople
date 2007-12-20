@@ -61,10 +61,10 @@
 <& AddWatchers, Ticket => $Ticket, UserString => $UserString,
         UserOp => $UserOp, UserField => $UserField,
 	GroupString => $GroupString, GroupOp => $GroupOp,
-	GroupField => $GroupField, PrivilegedOnly => $PrivilegedOnly &> 
+	GroupField => $GroupField, privilegedOnly => $privilegedOnly &> 
 </td><td valign="top">
 <h3><&|/l&>Owner</&></h3>
-<&|/l&>Owner</&>: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->id, DefaultValue => 0&>
+<&|/l&>Owner</&>: <& /Elements/SelectOwner, name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->id, DefaultValue => 0&>
 <h3><&|/l&>Current watchers</&></h3>
 <&|/l&>(Check box to delete)</&><br />
 
@@ -88,6 +88,6 @@ $UserString => undef
 $GroupField => undef
 $GroupOp => undef
 $GroupString => undef
-$PrivilegedOnly => undef
+$privilegedOnly => undef
 $Ticket => undef
 </%ARGS>

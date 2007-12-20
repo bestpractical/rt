@@ -51,7 +51,7 @@
 
 <tr>
 <th><&|/l&>Sort</&></th>
-<th><&|/l&>Name</&></th>
+<th><&|/l&>name</&></th>
 <th><&|/l&>Description</&></th>
 % if ( $CustomField->Type ne 'Combobox' ) {
 <th><&|/l&>Category</&></th>
@@ -61,7 +61,7 @@
 % my $paramtag = "CustomField-". $CustomField->id ."-Value-new";
 <tr>
 <td><input type="text" size="3"  name="<% $paramtag %>-SortOrder"   /></td>
-<td><input type="text" size="30" name="<% $paramtag %>-Name"        /></td>
+<td><input type="text" size="30" name="<% $paramtag %>-name"        /></td>
 <td><input type="text" size="50" name="<% $paramtag %>-Description" /></td>
 % if ( $CustomField->Type ne 'Combobox' ) {
 <td><input type="text" size="10" name="<% $paramtag %>-Category"    /></td>

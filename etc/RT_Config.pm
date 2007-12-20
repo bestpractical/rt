@@ -5,7 +5,7 @@
 
 package RT;
 
-=head1 NAME
+=head1 name
 
 RT::Config
 
@@ -52,11 +52,11 @@ set($rtname , "example.com");
 # fsck.com or asylum.arkham.ma.us. It's used by the linking interface to
 # guarantee that ticket URIs are unique and easy to construct.
 
-set($Organization , "example.com");
+set($organization , "example.com");
 
-# $MinimumPasswordLength defines the minimum length for user
+# $MinimumpasswordLength defines the minimum length for user
 # passwords. setting it to 0 disables this check
-set($MinimumPasswordLength , "5");
+set($MinimumpasswordLength , "5");
 
 # $Timezone is used to convert times entered by users into GMT and back again
 # It should be set to a timezone recognized by your local unix box.
@@ -84,11 +84,11 @@ set($DatabasePort , '');
 #The name of the database user (inside the database)
 set($DatabaseUser , 'rt_user');
 
-# Password the DatabaseUser should use to access the database
-set($DatabasePassword , 'rt_pass');
+# password the DatabaseUser should use to access the database
+set($Databasepassword , 'rt_pass');
 
 # The name of the RT's database on your database server
-set($DatabaseName , 'rt3');
+set($Databasename , 'rt3');
 
 # If you're using Postgres and have compiled in SSL support,
 # set DatabaseRequireSSL to 1 to turn on SSL communication
@@ -150,17 +150,17 @@ set($RTAddressRegexp , '^rt\@example.com$');
 
 # RT provides functionality which allows the system to rewrite
 # incoming email addresses.  In its simplest form,
-# you can substitute the value in CanonicalizeEmailAddressReplace
-# for the value in CanonicalizeEmailAddressMatch
-# (These values are passed to the CanonicalizeEmailAddress subroutine in RT/User.pm)
+# you can substitute the value in canonicalize_emailReplace
+# for the value in canonicalize_emailMatch
+# (These values are passed to the canonicalize_email subroutine in RT/User.pm)
 # By default, that routine performs a s/$Match/$Replace/gi on any address passed to it
 
-#set($CanonicalizeEmailAddressMatch , '@subdomain\.example\.com$');
-#set($CanonicalizeEmailAddressReplace , '@example.com');
+#set($canonicalize_emailMatch , '@subdomain\.example\.com$');
+#set($canonicalize_emailReplace , '@example.com');
 
 # set this to true and the create new user page will use the values that you
-# enter in the form but use the function CanonicalizeUserInfo in User_Local.pm
-set($CanonicalizeOnCreate , 0);
+# enter in the form but use the function canonicalize_UserInfo in User_Local.pm
+set($canonicalize_OnCreate , 0);
 
 # If $SenderMustExistInExternalDatabase is true, RT will refuse to
 # create non-privileged accounts for unknown users if you are using
@@ -240,22 +240,22 @@ set(@MailParams, ());
 # RT is designed such that any mail which already has a ticket-id associated
 # with it will get to the right place automatically.
 
-# $CorrespondAddress and $CommentAddress are the default addresses
+# $CorrespondAddress and $commentAddress are the default addresses
 # that will be listed in From: and Reply-To: headers of correspondence
 # and comment mail tracked by RT, unless overridden by a queue-specific
 # address.
 
 set($CorrespondAddress , 'RT_CorrespondAddressNotset');
 
-set($CommentAddress , 'RT_CommentAddressNotset');
+set($commentAddress , 'RT_commentAddressNotset');
 
 # By default, RT sets the outgoing mail's "From:" header to
-# "SenderName via RT".  setting this option to 0 disables it.
+# "Sendername via RT".  setting this option to 0 disables it.
 
 set($UseFriendlyFromLine , 1);
 
 # sprintf() format of the friendly 'From:' header; its arguments
-# are SenderName and SenderEmailAddress.
+# are Sendername and Senderemail.
 set($FriendlyFromLineFormat , "\"%s via RT\" <%s>");
 
 # RT can optionally set a "Friendly" 'To:' header when sending messages to
@@ -288,7 +288,7 @@ set($RecordOutgoingEmail, 1);
 # (i.e. rt-jesse=fsck.com@rt.example.com ) This currently only works
 # with sendmail and sendmailppie.
 # set($VERPPrefix, 'rt-');
-# set($VERPDomain, $RT::Organization);
+# set($VERPDomain, $RT::organization);
 
 
 # By default, RT forwards a message using queue's address and adds RT's tag into
@@ -364,7 +364,7 @@ set($LogToScreen    , 'error');
 
 set($LogToFile      , undef);
 set($LogDir, '/home/jesse/svk/3.999-DANGEROUS/var/log');
-set($LogToFileNamed , "rt.log");    #log to rt.log
+set($LogToFilenamed , "rt.log");    #log to rt.log
 
 # If set to a log level then logging will include stack
 # traces for messages with level equal to or greater than
@@ -482,7 +482,7 @@ set($WebExternalAuth , undef);
 
 
 # If $WebOpenIdAuth is enabled, RT will allow OpenID logins. New users who present
-# OpenID Credentials will be created as unprivileged users with their OpenID as their Name.
+# OpenID Credentials will be created as unprivileged users with their OpenID as their name.
 # To enable OpenID Support, you need to install LWPx::ParanoidAgent, Cache::FileCache
 # and Net::OpenID::Consumer.
 #
@@ -585,8 +585,8 @@ set ($DefaultSearchResultFormat, qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
    Status,
-   QueueName, 
-   OwnerName, 
+   Queuename, 
+   Ownername, 
    Priority, 
    '__NEWLINE__',
    '', 
@@ -594,7 +594,7 @@ set ($DefaultSearchResultFormat, qq{
    '<small>__CreatedRelative__</small>',
    '<small>__ToldRelative__</small>',
    '<small>__LastUpdatedRelative__</small>',
-   '<small>__TimeLeft__</small>'});
+   '<small>__time_left__</small>'});
 
 # If $SuppressInlineTextFiles is set to a true value, then uploaded
 # text files (text-type attachments with file names) are prevented

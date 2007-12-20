@@ -91,7 +91,7 @@ while ( my $Transaction = $Transactions->next ) {
         %ARGS,
         Transaction   => $Transaction,
         skip          => \$skip,
-        CallbackName  => 'SkipTransaction',
+        Callbackname  => 'SkipTransaction',
     );
     next if $skip;
 
@@ -128,7 +128,7 @@ $m->flush_buffer();
 % }
 </div>
 <%INIT>
-my $Transactions = new RT::Model::TransactionCollection($session{'CurrentUser'});
+my $Transactions = new RT::Model::TransactionCollection(Jifty->web->current_user);
 if ($Tickets) {
     while (my $t = $Tickets->next) {
         $Transactions->LimitToTicket($t->id);
@@ -138,7 +138,7 @@ if ($Tickets) {
 }
 
 
-my $OldestFirst = RT->Config->Get( 'OldestTransactionsFirst', $session{'CurrentUser'} );
+my $OldestFirst = RT->Config->Get( 'OldestTransactionsFirst', Jifty->web->current_user );
 $OldestFirst = $OldestFirst? 'ASC': 'DESC';
 $Transactions->order_by( { column => 'Created',
                               order => $OldestFirst },

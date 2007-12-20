@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$name%>">
 <option value="-1"
 %unless ($Default) {
  selected
@@ -64,6 +64,6 @@ selected
 my @refreshevery = qw(120 300 600 1200 3600 7200);
 </%INIT>
 <%ARGS>
-$Name => undef
+$name => undef
 $Default => 0
 </%ARGS>

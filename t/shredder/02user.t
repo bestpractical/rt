@@ -12,17 +12,17 @@ plan tests => 8;
 
 create_savepoint('clean');
 
-my $queue = RT::Model::Queue->new( RT->system_user );
+my $queue = RT::Model::Queue->new(current_user => RT->system_user );
 my ($qid) = $queue->load( 'General' );
 ok( $qid, "loaded queue" );
 
-my $ticket = RT::Model::Ticket->new( RT->system_user );
+my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 my ($tid) = $ticket->create( Queue => $qid, Subject => 'test' );
 ok( $tid, "ticket Created" );
 
 create_savepoint('bucreate'); # berfore user create
-my $user = RT::Model::User->new( RT->system_user );
-my ($uid, $msg) = $user->create( Name => 'new user', Privileged => 1, Disabled => 0 );
+my $user = RT::Model::User->new(current_user => RT->system_user );
+my ($uid, $msg) = $user->create( name => 'new user', privileged => 1, disabled => 0 );
 ok( $uid, "Created new user" ) or diag "error: $msg";
 is( $user->id, $uid, "id is correct" );
 # HACK: set ticket props to enable VARIABLE dependencies
@@ -47,7 +47,7 @@ create_savepoint('aucreate'); # after user create
 
 {
     restore_savepoint('aucreate');
-    my $user = RT::Model::User->new( RT->system_user );
+    my $user = RT::Model::User->new(current_user => RT->system_user );
     $user->load($uid);
     ok($user->id, "loaded user after restore");
     my $shredder = shredder_new();

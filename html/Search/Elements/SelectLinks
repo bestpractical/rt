@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$name%>">
 % foreach (@fields) {
 <option value="<%$_%>"><&|/l&><%$_%></&></option>
 % }
 </select>
 <%ARGS>
-$Name => 'LinksField'
+$name => 'LinksField'
 </%ARGS>
 
 <%INIT>

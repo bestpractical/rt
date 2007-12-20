@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::ACECollection - collection of RT ACE objects
 
@@ -101,7 +101,7 @@ sub LimitToObject {
         entry_aggregator => 'OR'
     );
     $self->limit(
-        column           => 'ObjectId',
+        column           => 'object_id',
         operator        => '=',
         value           => $obj->id,
         entry_aggregator => 'OR',
@@ -137,7 +137,7 @@ sub LimitNotObject {
 		  entry_aggregator => 'OR',
 		  subclause => $obj->id
 		);
-    $self->limit( column => 'ObjectId',
+    $self->limit( column => 'object_id',
 		  operator => '!=',
 		  value => $obj->id,
 		  entry_aggregator => 'OR',
@@ -152,7 +152,7 @@ sub LimitNotObject {
 
 =head2 LimitToPrincipal { Type => undef, Id => undef, IncludeGroupMembership => undef }
 
-Limit the ACL to the principal with PrincipalId Id and PrincipalType Type
+Limit the ACL to the principal with principal_id Id and principal_type Type
 
 Id is not optional.
 Type is.
@@ -171,7 +171,7 @@ sub LimitToPrincipal {
     if ( $args{'IncludeGroupMembership'} ) {
         my $cgm = $self->new_alias('CachedGroupMembers');
         $self->join( alias1 => 'main',
-                     column1 => 'PrincipalId',
+                     column1 => 'principal_id',
                      alias2 => $cgm,
                      column2 => 'GroupId' );
         $self->limit( alias           => $cgm,
@@ -182,7 +182,7 @@ sub LimitToPrincipal {
     }
     else {
         if ( defined $args{'Type'} ) {
-            $self->limit( column           => 'PrincipalType',
+            $self->limit( column           => 'principal_type',
                           operator        => '=',
                           value           => $args{'Type'},
                           entry_aggregator => 'OR' );
@@ -191,14 +191,14 @@ sub LimitToPrincipal {
     # to their ACL equivalence group. The machinations we're going through
     # lead me to start to suspect that we really want users and groups
     # to just be the same table. or _maybe_ that we want an object db.
-    my $princ = RT::Model::Principal->new(RT->system_user);
+    my $princ = RT::Model::Principal->new(current_user => RT->system_user);
     $princ->load($args{'Id'});
-    if ($princ->PrincipalType eq 'User') {
-    my $group = RT::Model::Group->new(RT->system_user);
+    if ($princ->principal_type eq 'User') {
+    my $group = RT::Model::Group->new(current_user => RT->system_user);
         $group->load_acl_equivalence_group($princ);
-        $args{'Id'} = $group->PrincipalId;
+        $args{'Id'} = $group->principal_id;
     }
-        $self->limit( column           => 'PrincipalId',
+        $self->limit( column           => 'principal_id',
                       operator        => '=',
                       value           => $args{'Id'},
                       entry_aggregator => 'OR' );
@@ -326,7 +326,7 @@ sub _build_hash {
     my $self = shift;
 
     while (my $entry = $self->next) {
-       my $hashkey = $entry->__value('ObjectType'). "-" .  $entry->__value('ObjectId'). "-" .  $entry->__value('RightName'). "-" .  $entry->__value('PrincipalId'). "-" .  $entry->__value('PrincipalType');
+       my $hashkey = $entry->__value('ObjectType'). "-" .  $entry->__value('object_id'). "-" .  $entry->__value('Rightname'). "-" .  $entry->__value('principal_id'). "-" .  $entry->__value('principal_type');
 
         $self->{'as_hash'}->{"$hashkey"} =1;
 
@@ -345,9 +345,9 @@ sub HasEntry {
     my $self = shift;
     my %args = ( RightScope => undef,
                  RightAppliesTo => undef,
-                 RightName => undef,
-                 PrincipalId => undef,
-                 PrincipalType => undef,
+                 Rightname => undef,
+                 principal_id => undef,
+                 principal_type => undef,
                  @_ );
 
     #if we haven't done the search yet, do it now.
@@ -355,9 +355,9 @@ sub HasEntry {
 
     if ($self->{'as_hash'}->{ $args{'RightScope'} . "-" .
 			      $args{'RightAppliesTo'} . "-" . 
-			      $args{'RightName'} . "-" .
-			      $args{'PrincipalId'} . "-" .
-			      $args{'PrincipalType'}
+			      $args{'Rightname'} . "-" .
+			      $args{'principal_id'} . "-" .
+			      $args{'principal_type'}
                             } == 1) {
 	return(1);
     }

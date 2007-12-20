@@ -53,7 +53,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%RT->Config->Get('WebPath')%>/User/Prefs.html" method="post">
-<input type="hidden" class="hidden" name="id" value="<%$UserObj->id%>" />
+<input type="hidden" class="hidden" name="id" value="<%$user_object->id%>" />
 
 <table width="100%" border="0">
 <tr>
@@ -61,22 +61,22 @@
 <td valign="top" class="boxcontainer">
 <&| /Widgets/TitleBox, title => loc('Identity'), id => "user-prefs-identity" &>
 
-<input type="hidden" class="hidden" name="Name" value="<%$UserObj->Name%>" />
+<input type="hidden" class="hidden" name="name" value="<%$user_object->name%>" />
 <table cellspacing="0" cellpadding="0">
   <tr>
     <td class="label"><&|/l&>Email</&>: </td>
-    <td class="value"><input name="EmailAddress" value="<%$UserObj->EmailAddress%>" /></td>
+    <td class="value"><input name="email" value="<%$user_object->email%>" /></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Real Name</&>:</td>
-    <td class="value"><input name="RealName" value="<%$UserObj->RealName%>" /></td>  </tr>
+    <td class="label"><&|/l&>Real name</&>:</td>
+    <td class="value"><input name="real_name" value="<%$user_object->real_name%>" /></td>  </tr>
   <tr>
-    <td class="label"><&|/l&>Nickname</&>:</td>
-    <td class="value"><input name="NickName" value="<%$UserObj->NickName || ''%>" /></td>
+    <td class="label"><&|/l&>nickname</&>:</td>
+    <td class="value"><input name="nickname" value="<%$user_object->nickname || ''%>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Language</&>:</td>
-    <td class="value"><& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang &></td>
+    <td class="value"><& /Elements/SelectLang, name => 'Lang', Default => $user_object->Lang &></td>
   </tr>
 </table>
 </&>
@@ -84,38 +84,38 @@
 <table cellspacing="0" cellpadding="0">
   <tr>
     <td class="label"><&|/l&>Residence</&>:</td>
-    <td class="value"><input name="HomePhone" value="<%$UserObj->HomePhone || ''%>" size="13" /></td>
+    <td class="value"><input name="HomePhone" value="<%$user_object->HomePhone || ''%>" size="13" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Work</&>:</td>
-    <td class="value"><input name="WorkPhone" value="<%$UserObj->WorkPhone || ''%>" size="13" /></td>
+    <td class="value"><input name="WorkPhone" value="<%$user_object->WorkPhone || ''%>" size="13" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Mobile</&>:</td>
-    <td class="value"><input name="MobilePhone" value="<%$UserObj->MobilePhone || ''%>" size="13" /></td>
+    <td class="value"><input name="MobilePhone" value="<%$user_object->MobilePhone || ''%>" size="13" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Pager</&>:</td>
-    <td class="value"><input name="PagerPhone" value="<%$UserObj->PagerPhone || ''%>" size="13" /></td>
+    <td class="value"><input name="PagerPhone" value="<%$user_object->PagerPhone || ''%>" size="13" /></td>
   </tr>
 </table>
 </&>
-% $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormLeftColumn' );
+% $m->callback( %ARGS, user_object => $user_object, Callbackname => 'FormLeftColumn' );
 </td>
 <td valign="top" class="boxcontainer">
 % unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
-<&| /Widgets/TitleBox, title => loc('Password'), id => "user-prefs-password" &>
+<&| /Widgets/TitleBox, title => loc('password'), id => "user-prefs-password" &>
 <table>
 <tr>
 <td class="label">
-<&|/l&>New Password</&>:
+<&|/l&>New password</&>:
 </td>
 <td class="value">
 <input type="password" name="Pass1" autocomplete="off"/>
 </td>
 </tr>
 <tr><td class="label">
-<&|/l&>Retype Password</&>:
+<&|/l&>Retype password</&>:
 </td>
 <td class="value">
 <input type="password" name="Pass2" autocomplete="off" />
@@ -128,36 +128,36 @@
 <&| /Widgets/TitleBox, title => loc('Location'), id => "user-prefs-location" &>
 <table cellspacing="0" cellpadding="0">
   <tr>
-    <td class="label"><&|/l&>Organization</&>:</td>
-    <td class="value"><input name="Organization" value="<%$UserObj->Organization || ''%>" /></td>
+    <td class="label"><&|/l&>organization</&>:</td>
+    <td class="value"><input name="organization" value="<%$user_object->organization || ''%>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Address1</&>:</td>
-    <td class="value"><input name="Address1" value="<%$UserObj->Address1 || ''%>" /></td>
+    <td class="value"><input name="Address1" value="<%$user_object->Address1 || ''%>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Address2</&>:</td>
-    <td class="value"><input name="Address2" value="<%$UserObj->Address2 || ''%>" /></td>
+    <td class="value"><input name="Address2" value="<%$user_object->Address2 || ''%>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>City</&>:</td>
-    <td><input name="City" value="<%$UserObj->City || ''%>" size="14" /></td>
+    <td><input name="City" value="<%$user_object->City || ''%>" size="14" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>State</&>:</td>
-    <td class="value"><input name="State" value="<%$UserObj->State || ''%>" size="3" /></td>
+    <td class="value"><input name="State" value="<%$user_object->State || ''%>" size="3" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Zip</&>:</td>
-    <td class="value"><input name="Zip" value="<%$UserObj->Zip || ''%>" size="9" /></td>
+    <td class="value"><input name="Zip" value="<%$user_object->Zip || ''%>" size="9" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Country</&>:</td>
-    <td class="value"><input name="Country" value="<%$UserObj->Country || ''%>" /></td>
+    <td class="value"><input name="Country" value="<%$user_object->Country || ''%>" /></td>
   </tr>
 </table>
 </&>
-% $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormRightColumn' );
+% $m->callback( %ARGS, user_object => $user_object, Callbackname => 'FormRightColumn' );
 </td>
 </tr>
 
@@ -167,11 +167,11 @@
 
 
 <td colspan="2" valign="top" class="boxcontainer">
-%if ($UserObj->Privileged) {
+%if ($user_object->privileged) {
 <br />
 <&| /Widgets/TitleBox, title => loc('Signature') &>
 <textarea cols="80" rows="5" name="Signature" class="signature" wrap="hard">
-<%$UserObj->Signature || ''%></textarea>
+<%$user_object->Signature || ''%></textarea>
 </&>
 % }
 
@@ -181,7 +181,7 @@
 
 </table>
 
-% $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormEnd' );
+% $m->callback( %ARGS, user_object => $user_object, Callbackname => 'FormEnd' );
 
 <& /Elements/Submit, Label => loc('Save Preferences') &>
 </form>
@@ -189,14 +189,14 @@
 
 <%INIT>
 
-my $UserObj = new RT::Model::User($session{'CurrentUser'});
-my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled, $result, @results);
+my $user_object = new RT::Model::User(Jifty->web->current_user);
+my ($title, $privilegedChecked, $EnabledChecked, $disabled, $result, @results);
 
 my ($val, $msg);
 
 
-	$UserObj->load($id) || $UserObj->load($Name) || Abort("Couldn't load user '$Name'");
-	$val = $UserObj->id();
+	$user_object->load($id) || $user_object->load($name) || Abort("Couldn't load user '$name'");
+	$val = $user_object->id();
     
 
 
@@ -204,49 +204,49 @@ my ($val, $msg);
 
 
 # If we have a user to modify, lets try. 
-if ($UserObj->id) {
+if ($user_object->id) {
     
-    my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo 
-		    Organization RealName NickName Lang EmailEncoding WebEncoding 
+    my @fields = qw(name comments Signature email freeform_contact_info 
+		    organization real_name nickname Lang email_encoding web_encoding 
 		    ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
-		    AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
+		    auth_system HomePhone WorkPhone MobilePhone PagerPhone Address1
 		Address2 City State Zip Country Lang
 		   );
 
     $m->callback(
-        CallbackName => 'UpdateLogic',
+        Callbackname => 'UpdateLogic',
         fields       => \@fields,
         results      => \@results,
-        UserObj      => $UserObj,
+        user_object      => $user_object,
         ARGSRef      => \%ARGS,
     );
     
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
-					    Object => $UserObj,
+					    Object => $user_object,
 					    ARGSRef => \%ARGS );
     if ($Lang) {
-	$session{'CurrentUser'}->LanguageHandle($Lang);
-	$session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
+	Jifty->web->current_user->LanguageHandle($Lang);
+	Jifty->web->current_user = Jifty->web->current_user; # force writeback
     }
 
     push (@results,@fieldresults);
 
 
-# {{{ Deal with special fields: Privileged, Enabled, and Password
-if  ( ($SetPrivileged) and ( $Privileged != $UserObj->Privileged) ) {
-my  ($code, $msg) = $UserObj->set_Privileged($Privileged);
-     push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
+# {{{ Deal with special fields: privileged, Enabled, and password
+if  ( ($Setprivileged) and ( $privileged != $user_object->privileged) ) {
+my  ($code, $msg) = $user_object->set_privileged($privileged);
+     push @results, loc('privileged status: [_1]', loc_fuzzy($msg));
 }
 
 
 
 #TODO: make this report errors properly
-if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->IsPassword($Pass1))) {
+if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$user_object->Ispassword($Pass1))) {
     my ($code, $msg);
-    ($code, $msg) = $UserObj->set_Password($Pass1);
-    push @results, loc('Password: [_1]', loc_fuzzy($msg));
+    ($code, $msg) = $user_object->set_password($Pass1);
+    push @results, loc('password: [_1]', loc_fuzzy($msg));
 } elsif ( $Pass1 && ($Pass1 ne $Pass2)) {
-    push @results, loc("Passwords do not match. Your password has not been changed");
+    push @results, loc("passwords do not match. Your password has not been changed");
 }
 
 # }}}
@@ -257,27 +257,27 @@ if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->I
 
 
 <%ARGS>
-$id => $session{'CurrentUser'}->id
-$Name  => undef
-$Comments  => undef
+$id => Jifty->web->current_user->id
+$name  => undef
+$comments  => undef
 $Signature  => undef
-$EmailAddress  => undef
-$FreeformContactInfo => undef
-$Organization  => undef
-$RealName  => undef
-$NickName  => undef
-$Privileged => undef
-$SetPrivileged => undef
+$email  => undef
+$freeform_contact_info => undef
+$organization  => undef
+$real_name  => undef
+$nickname  => undef
+$privileged => undef
+$Setprivileged => undef
 $Enabled => undef
 $SetEnabled => undef
 $Lang  => undef
-$EmailEncoding  => undef
-$WebEncoding => undef
+$email_encoding  => undef
+$web_encoding => undef
 $ExternalContactInfoId  => undef
 $ContactInfoSystem  => undef
 $Gecos => undef
 $ExternalAuthId  => undef
-$AuthSystem  => undef
+$auth_system  => undef
 $HomePhone => undef
 $WorkPhone  => undef
 $MobilePhone  => undef

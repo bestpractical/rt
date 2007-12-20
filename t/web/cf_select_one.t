@@ -22,7 +22,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
     $m->submit_form(
         form_name => "ModifyCustomField",
         fields => {
-            Name          => $cf_name,
+            name          => $cf_name,
             TypeComposite => 'Select-1',
             LookupType    => 'RT::Model::Queue-RT::Model::Ticket',
         },
@@ -38,7 +38,7 @@ diag "add 'qwe', 'ASD' and '0' as values to the CF" if $ENV{'TEST_VERBOSE'};
         $m->submit_form(
             form_name => "ModifyCustomField",
             fields => {
-                "CustomField-". $cfid ."-Value-new-Name" => $value,
+                "CustomField-". $cfid ."-Value-new-name" => $value,
             },
             button => 'Update',
         );
@@ -46,7 +46,7 @@ diag "add 'qwe', 'ASD' and '0' as values to the CF" if $ENV{'TEST_VERBOSE'};
     }
 }
 
-my $queue = RT::Test->load_or_create_queue( Name => 'General' );
+my $queue = RT::Test->load_or_create_queue( name => 'General' );
 ok $queue && $queue->id, 'loaded or Created queue';
 
 diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
@@ -69,7 +69,7 @@ my $tid;
 diag "create a ticket using API with 'asd'(not 'ASD') as value of the CF"
     if $ENV{'TEST_VERBOSE'};
 {
-    my $ticket = RT::Model::Ticket->new( RT->system_user );
+    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     my ($txnid, $msg);
     ($tid, $txnid, $msg) = $ticket->create(
         Subject => 'test',
@@ -102,7 +102,7 @@ diag "check that values of the CF are case insensetive(asd vs. ASD)"
     $value = $m->form_number(3)->value("Object-RT::Model::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, 'asd', 'the same value is still selected';
 
-    my $ticket = RT::Model::Ticket->new( RT->system_user );
+    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->load( $tid );
     ok $ticket->id, 'loaded the ticket';
     is lc $ticket->first_custom_field_value( $cf_name ),
@@ -127,7 +127,7 @@ diag "check that 0 is ok value of the CF"
     $value = $m->form_number(3)->value("Object-RT::Model::Ticket-$tid-CustomField-$cfid-Values");
     is lc $value, '0', 'new value is selected';
 
-    my $ticket = RT::Model::Ticket->new( RT->system_user );
+    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->load( $tid );
     ok $ticket->id, 'loaded the ticket';
     is lc $ticket->first_custom_field_value( $cf_name ),
@@ -151,7 +151,7 @@ diag "check that we can set empty value when the current is 0"
     $value = $m->form_number(3)->value("Object-RT::Model::Ticket-$tid-CustomField-$cfid-Values");
     is $value, '', '(no value) is selected';
 
-    my $ticket = RT::Model::Ticket->new( RT->system_user );
+    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->load( $tid );
     ok $ticket->id, 'loaded the ticket';
     is $ticket->first_custom_field_value( $cf_name ),

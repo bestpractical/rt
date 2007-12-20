@@ -55,7 +55,7 @@ if ( $actions[0] eq 'init' ) {
 }
 
 # set options from environment
-foreach my $key(qw(Type Host Name User Password)) {
+foreach my $key(qw(Type Host name User password)) {
     next unless exists $ENV{ 'RT_DB_'. uc $key };
     print "Using Database$key from RT_DB_". uc($key) ." environment variable.\n";
     RT->Config->set( "Database$key", $ENV{ 'RT_DB_'. uc $key });
@@ -63,14 +63,14 @@ foreach my $key(qw(Type Host Name User Password)) {
 
 my $db_type = RT->Config->Get('DatabaseType') || '';
 my $db_host = RT->Config->Get('DatabaseHost') || '';
-my $db_name = RT->Config->Get('DatabaseName') || '';
+my $db_name = RT->Config->Get('Databasename') || '';
 my $db_user = RT->Config->Get('DatabaseUser') || '';
-my $db_pass = RT->Config->Get('DatabasePassword') || '';
+my $db_pass = RT->Config->Get('Databasepassword') || '';
 
 
 if ( $db_type eq 'SQLite' && !File::Spec->file_name_is_absolute($db_name) ) {
     $db_name = File::Spec->catfile($RT::VarPath, $db_name);
-    RT->Config->set( DatabaseName => $db_name );
+    RT->Config->set( Databasename => $db_name );
 }
 
 my $dba_user = $args{'dba'} || $ENV{'RT_DBA_USER'} || $db_user || '';
@@ -82,7 +82,7 @@ if ( !$args{force} && ( !defined $dba_pass || $args{'prompt-for-dba-password'} )
 }
 
 print "Working with:\n"
-    ."Type:\t$db_type\nHost:\t$db_host\nName:\t$db_name\n"
+    ."Type:\t$db_type\nHost:\t$db_host\nname:\t$db_name\n"
     ."User:\t$db_user\nDBA:\t$dba_user\n";
 
 foreach my $action ( @actions ) {

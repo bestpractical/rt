@@ -50,7 +50,7 @@ package RT::Shredder::Plugin::Base;
 use strict;
 use warnings FATAL => 'all';
 
-=head1 NAME
+=head1 name
 
 RT::Shredder::Plugin::Base - base class for Shredder plugins.
 

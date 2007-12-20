@@ -49,7 +49,7 @@
 % while( my $value = $values->next ) {
 % my $desc = $value->Description || '';
 % $desc = '<span class="informal"> ('. $m->interp->apply_escapes( $desc,  'h' ) .')</span>' if $desc;
-<li><% $value->Name %><% $desc |n %></li>
+<li><% $value->name %><% $desc |n %></li>
 % }
 </ul>
 % $m->abort;
@@ -61,11 +61,11 @@ while( my($k, $v) = each %ARGS ) {
     last;
 }
 $m->abort unless $CustomField;
-my $CustomFieldObj = RT::Model::CustomField->new( $session{'CurrentUser'} );
+my $CustomFieldObj = RT::Model::CustomField->new( Jifty->web->current_user );
 $CustomFieldObj->load( $CustomField );
 my $values = $CustomFieldObj->Values;
 $values->limit(
-    column           => 'Name',
+    column           => 'name',
     operator        => 'LIKE',
     value           => $Value,
     subclause       => 'autcomplete',

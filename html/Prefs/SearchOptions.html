@@ -61,7 +61,7 @@
             order_by => $order_by, 
             Order => $Order &>
 
-<& /Elements/Submit, Name => 'SavePreferences', Label => loc('Save Changes') &>
+<& /Elements/Submit, name => 'SavePreferences', Label => loc('Save Changes') &>
 </form>
 <%INIT>
 
@@ -72,7 +72,7 @@ $order_by = join '|', grep defined && /\S/, (ref $order_by)? @{$order_by}: $orde
 $Order       = (ref $Order   ? join('|',grep {/\S/} @{$Order})   : $Order);
 $order_by     = (ref $order_by ? join('|',grep {/\S/} @{$order_by}) : $order_by);
 if ($ARGS{'SavePreferences'}) {
-    $session{'CurrentUser'}->UserObj->set_Preferences("SearchDisplay",
+    Jifty->web->current_user->user_object->set_Preferences("SearchDisplay",
     {
        Format      => $Format,
        Order       => $Order,
@@ -84,7 +84,7 @@ if ($ARGS{'SavePreferences'}) {
 # }}}
 
 # Read from user preferences
-my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+my $prefs = Jifty->web->current_user->user_object->Preferences("SearchDisplay") || {};
 
 $Format      ||= $prefs->{'Format'};
 $Order       ||= ($prefs->{'Order'} || 'ASC');

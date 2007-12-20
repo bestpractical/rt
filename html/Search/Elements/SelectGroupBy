@@ -46,11 +46,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$Name => 'GroupBy'
+$name => 'GroupBy'
 $Default => 'Status'
 $Query   => ''
 </%args>
-<select name="<% $Name %>">
+<select name="<% $name %>">
 % while (@options) {
 % my ($text, $value) = (shift @options, shift @options);
 <option value="<% $value %>" <% $value eq $Default ? 'selected' : '' %>><% loc($text) %></option>
@@ -58,6 +58,6 @@ $Query   => ''
 </select>
 <%init>
 use RT::Report::Tickets;
-my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
+my $report = RT::Report::Tickets->new( Jifty->web->current_user );
 my @options = $report->Groupings( Query => $Query );
 </%init>

@@ -66,17 +66,17 @@ my @results;
 
 if ($NewPass1) {
     if ($NewPass1 ne $NewPass2) {
-	push (@results, "Passwords did not match.");
+	push (@results, "passwords did not match.");
     }	
     else {
-	my ($val, $msg)=$session{'CurrentUser'}->UserObj->set_Password($NewPass1);
-	push (@results, "Password: ".$msg);
+	my ($val, $msg)=Jifty->web->current_user->user_object->set_password($NewPass1);
+	push (@results, "password: ".$msg);
     }	
 }
 if ($Signature) {
     $Signature =~ s/(\r\n|\r)/\n/g;
-    if ($Signature ne $session{'CurrentUser'}->UserObj->Signature) {
-	my ($val, $msg)=$session{'CurrentUser'}->UserObj->set_Signature($Signature);
+    if ($Signature ne Jifty->web->current_user->user_object->Signature) {
+	my ($val, $msg)=Jifty->web->current_user->user_object->set_Signature($Signature);
 	push (@results, "Signature: ".$msg);
     }
 }

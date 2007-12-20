@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::TransactionCollection - a collection of RT Transaction objects
 
@@ -106,7 +106,7 @@ sub LimitToTicket {
         $self->{'tickets_table'} ||= $self->new_alias('Tickets');
         $self->join(
             alias1 => 'main',
-            column1 => 'ObjectId',
+            column1 => 'object_id',
             alias2 => $self->{'tickets_table'},
             column2 => 'id'
         );

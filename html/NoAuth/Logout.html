@@ -61,13 +61,13 @@
 % $m->abort();
 
 <%INIT>
-$m->callback( %ARGS, CallbackName => 'BeforeSessionDelete' );
+$m->callback( %ARGS, Callbackname => 'BeforeSessionDelete' );
 
 if (defined %session) {
     tied(%session)->delete;
 }
 
-$m->callback( %ARGS, CallbackName => 'AfterSessionDelete' );
+$m->callback( %ARGS, Callbackname => 'AfterSessionDelete' );
 </%INIT>
 
 <%ARGS>

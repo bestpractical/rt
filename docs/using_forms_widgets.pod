@@ -12,13 +12,13 @@ with minimum of required text labels.
 
 So you show a widget with:
     <& /Widgets/Form/Integer,
-        Name => 'NameOfInputElement',
+        name => 'nameOfInputElement',
         Description => 'Input integer',
     &>
 
 You can show only C<input> box using:
     <& /Widgets/Form/Integer:InputOnly,
-        Name => 'NameOfInputElement',
+        name => 'nameOfInputElement',
     &>
 
 In such a simple case you even can avoid processing. Yeah, most probably
@@ -33,10 +33,10 @@ Processing is required when you use L<extended features|/Extendent features>,
 such as Default, Multiple or Alternative.
 
 To process arguments of a request you have to do the following:
-    $ARGS{'NameOfInputElement'} = $m->comp(
+    $ARGS{'nameOfInputElement'} = $m->comp(
         '/Widgets/Form/Integer:Process',
         Arguments => \%ARGS,
-        Name      => 'NameOfInputElement',
+        name      => 'nameOfInputElement',
     );
 
 The method returns processed value in canonical form. For different widgets

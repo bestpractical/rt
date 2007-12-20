@@ -45,21 +45,21 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( Name => $Name, CustomField => $CustomField );
+% $m->callback( name => $name, CustomField => $CustomField );
 % if ($CustomField->Type =~ /Select/i) {
 % my $values = $CustomField->Values;
-<select name="<%$Name%>">
+<select name="<%$name%>">
 <option value="" selected>-</option>
 <option value="NULL"><&|/l&>(no value)</&></option>
 % while (my $value = $values->next) {
-<option value="<%$value->Name%>"><%$value->Name%></option>
+<option value="<%$value->name%>"><%$value->name%></option>
 % }
 </select>
 % }
 % else {
-<input name="<%$Name%>" size="20" />
+<input name="<%$name%>" size="20" />
 % }
 <%args>
-$Name => undef
+$name => undef
 $CustomField =>undef
 </%args>

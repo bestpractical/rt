@@ -6,14 +6,14 @@ alter table Transactions add column ReferenceType varchar(255) NULL;
 alter table Transactions add column OldReference integer NULL;      
 alter table Transactions add column NewReference integer NULL;
 drop index transactions1;            
-alter table Transactions rename column Ticket to ObjectId;
+alter table Transactions rename column Ticket to object_id;
 
 
-CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
+CREATE INDEX Transactions1 ON Transactions (ObjectType, object_id);
 
 alter table TicketCustomFieldValues rename to ObjectCustomFieldValues;
 
-alter table ObjectCustomFieldValues  rename column Ticket to ObjectId;
+alter table ObjectCustomFieldValues  rename column Ticket to object_id;
 
 alter table objectcustomfieldvalues add column ObjectType varchar(255);
 
@@ -33,9 +33,9 @@ alter table objectcustomfieldvalues add column ContentType varchar(80) NULL;
 
 alter table objectcustomfieldvalues add column ContentEncoding varchar(80) NULL;
 
-create index ObjectCustomFieldValues1 on objectcustomfieldvalues (CustomField,ObjectType,ObjectId,Content); 
+create index ObjectCustomFieldValues1 on objectcustomfieldvalues (CustomField,ObjectType,object_id,Content); 
 
-create index ObjectCustomFieldValues2  on objectcustomfieldvalues (CustomField,ObjectType,ObjectId); 
+create index ObjectCustomFieldValues2  on objectcustomfieldvalues (CustomField,ObjectType,object_id); 
 
 
 CREATE SEQUENCE objectcustomfields_id_s;
@@ -43,7 +43,7 @@ CREATE SEQUENCE objectcustomfields_id_s;
 CREATE TABLE ObjectCustomFields (
   id INTEGER DEFAULT nextval('objectcustomfields_id_s'),
   CustomField integer NOT NULL,
-  ObjectId integer NOT NULL,
+  object_id integer NOT NULL,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
@@ -55,7 +55,7 @@ CREATE TABLE ObjectCustomFields (
 );
 
 
-INSERT into ObjectCustomFields (CustomField, ObjectId, SortOrder, Creator, LastUpdatedBy) SELECT  id, Queue, SortOrder, Creator, LastUpdatedBy from CustomFields;
+INSERT into ObjectCustomFields (CustomField, object_id, SortOrder, Creator, LastUpdatedBy) SELECT  id, Queue, SortOrder, Creator, LastUpdatedBy from CustomFields;
 
 alter table CustomFields add column LookupType varchar(255);
 alter table CustomFields add column Repeated int2;

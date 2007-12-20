@@ -51,7 +51,7 @@
 ## interface to RT
 
 
-=head1 NAME
+=head1 name
 
 RT::Interface::Web
 
@@ -109,9 +109,9 @@ sub EscapeURI {
 
 # }}}
 
-# {{{ WebCanonicalizeInfo
+# {{{ Webcanonicalize_Info
 
-=head2 WebCanonicalizeInfo();
+=head2 Webcanonicalize_Info();
 
 Different web servers set different environmental varibles. This
 function must return something suitable for REMOTE_USER. By default,
@@ -119,7 +119,7 @@ just downcase $ENV{'REMOTE_USER'}
 
 =cut
 
-sub WebCanonicalizeInfo {
+sub Webcanonicalize_Info {
     return $ENV{'REMOTE_USER'}? lc $ENV{'REMOTE_USER'}: $ENV{'REMOTE_USER'};
 }
 
@@ -138,14 +138,14 @@ sub WebExternalAutoInfo {
 
     my %user_info;
 
-    $user_info{'Privileged'} = 1;
+    $user_info{'privileged'} = 1;
 
     if ($^O !~ /^(?:riscos|MacOS|MSWin32|dos|os2)$/) {
         # Populate fields with information from Unix /etc/passwd
 
-        my ($comments, $realname) = (getpwnam($user))[5, 6];
-        $user_info{'Comments'} = $comments if defined $comments;
-        $user_info{'RealName'} = $realname if defined $realname;
+        my ($comments, $real_name) = (getpwnam($user))[5, 6];
+        $user_info{'comments'} = $comments if defined $comments;
+        $user_info{'real_name'} = $real_name if defined $real_name;
     }
     elsif ($^O eq 'MSWin32' and eval 'use Net::AdminMisc; 1') {
         # Populate fields with information from NT domain controller
@@ -173,7 +173,7 @@ sub Redirect {
     my $redir_to = shift;
     untie $HTML::Mason::Commands::session;
     my $uri = URI->new($redir_to);
-    my $server_uri = URI->new( RT->Config->Get('WebURL') );
+    my $server_uri = URI->new(current_user => RT->Config->Get('WebURL') );
 
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,
@@ -199,7 +199,7 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 =cut
 
 sub StaticFileHeaders {
-    my $date = RT::Date->new( RT->system_user );
+    my $date = RT::Date->new(current_user => RT->system_user );
 
     # Expire things in a month.
     $date->set( value => time + 30*24*60*60 );
@@ -220,8 +220,8 @@ use vars qw/$r $m %session/;
 
 =head2 loc ARRAY
 
-loc is a nice clean global routine which calls $session{'CurrentUser'}->loc()
-with whatever it's called with. If there is no $session{'CurrentUser'}, 
+loc is a nice clean global routine which calls Jifty->web->current_user->loc()
+with whatever it's called with. If there is no Jifty->web->current_user, 
 it creates a temporary user, so we have something to get a localisation handle
 through
 
@@ -229,11 +229,11 @@ through
 
 sub loc {
 
-    if ($session{'CurrentUser'} && 
-        UNIVERSAL::can($session{'CurrentUser'}, 'loc')){
-        return($session{'CurrentUser'}->loc(@_));
+    if (Jifty->web->current_user && 
+        UNIVERSAL::can(Jifty->web->current_user, 'loc')){
+        return(Jifty->web->current_user->loc(@_));
     }
-    elsif ( my $u = RT::CurrentUser->new(RT->system_user->id)  ) {
+    elsif ( my $u = RT::CurrentUser->new(current_user => RT->system_user->id)  ) {
         return ($u->loc(@_));
     }
     else {
@@ -260,12 +260,12 @@ inside the lexicon file.
 sub loc_fuzzy {
     my $msg  = shift;
     
-    if ($session{'CurrentUser'} && 
-        UNIVERSAL::can($session{'CurrentUser'}, 'loc')){
-        return($session{'CurrentUser'}->loc_fuzzy($msg));
+    if (Jifty->web->current_user && 
+        UNIVERSAL::can(Jifty->web->current_user, 'loc')){
+        return(Jifty->web->current_user->loc_fuzzy($msg));
     }
     else  {
-        my $u = RT::CurrentUser->new(RT->system_user->id);
+        my $u = RT::CurrentUser->new(current_user => RT->system_user->id);
         return ($u->loc_fuzzy($msg));
     }
 }
@@ -304,9 +304,9 @@ sub CreateTicket {
 
     my (@Actions);
 
-    my $Ticket = new RT::Model::Ticket( $session{'CurrentUser'} );
+    my $Ticket = new RT::Model::Ticket( Jifty->web->current_user );
 
-    my $Queue = new RT::Model::Queue( $session{'CurrentUser'} );
+    my $Queue = new RT::Model::Queue( Jifty->web->current_user );
     unless ( $Queue->load( $ARGS{'Queue'} ) ) {
         Abort('Queue not found');
     }
@@ -315,10 +315,10 @@ sub CreateTicket {
         Abort('You have no permission to create tickets in that queue.');
     }
 
-    my $due = new RT::Date( $session{'CurrentUser'} );
+    my $due = new RT::Date( Jifty->web->current_user );
     $due->set( Format => 'unknown', value => $ARGS{'Due'} );
-    my $starts = new RT::Date( $session{'CurrentUser'} );
-    $starts->set( Format => 'unknown', value => $ARGS{'Starts'} );
+    my $starts = new RT::Date( Jifty->web->current_user );
+    $starts->set( Format => 'unknown', value => $ARGS{'starts'} );
 
     my $MIMEObj = MakeMIMEEntity(
         Subject             => $ARGS{'Subject'},
@@ -357,13 +357,13 @@ sub CreateTicket {
         AdminCc         => $ARGS{'AdminCc'},
         InitialPriority => $ARGS{'InitialPriority'},
         FinalPriority   => $ARGS{'FinalPriority'},
-        TimeLeft        => $ARGS{'TimeLeft'},
+        time_left        => $ARGS{'time_left'},
         TimeEstimated   => $ARGS{'TimeEstimated'},
-        TimeWorked      => $ARGS{'TimeWorked'},
+        time_worked      => $ARGS{'time_worked'},
         Subject         => $ARGS{'Subject'},
         Status          => $ARGS{'Status'},
         Due             => $due->ISO,
-        Starts          => $starts->ISO,
+        starts          => $starts->ISO,
         MIMEObj         => $MIMEObj
     );
 
@@ -399,7 +399,7 @@ sub CreateTicket {
         elsif ( $arg =~ /^Object-RT::Model::Ticket--CustomField-(\d+)(.*?)$/ ) {
             my $cfid = $1;
 
-            my $cf = RT::Model::CustomField->new( $session{'CurrentUser'} );
+            my $cf = RT::Model::CustomField->new( Jifty->web->current_user );
             $cf->load( $cfid );
             unless ( $cf->id ) {
                 $RT::Logger->error( "Couldn't load custom field #". $cfid );
@@ -487,7 +487,7 @@ sub load_ticket {
         Abort("No ticket specified");
     }
 
-    my $Ticket = RT::Model::Ticket->new( $session{'CurrentUser'} );
+    my $Ticket = RT::Model::Ticket->new( Jifty->web->current_user );
     $Ticket->load($id);
     unless ( $Ticket->id ) {
         Abort("Could not load ticket $id");
@@ -527,7 +527,7 @@ sub ProcessUpdateMessage {
     }
 
     #Make the update content have no 'weird' newlines in it
-    return () unless    $args{ARGSRef}->{'UpdateTimeWorked'}
+    return () unless    $args{ARGSRef}->{'Updatetime_worked'}
                      || $args{ARGSRef}->{'UpdateAttachments'}
                      || $args{ARGSRef}->{'UpdateContent'};
 
@@ -536,10 +536,10 @@ sub ProcessUpdateMessage {
     # skip updates if the content contains only user's signature
     # and we don't update other fields
     if ( $args{'SkipSignatureOnly'} ) {
-        my $sig = $args{'TicketObj'}->current_user->UserObj->Signature || '';
+        my $sig = $args{'TicketObj'}->current_user->user_object->Signature || '';
         $sig =~ s/^\s*|\s*$//g;
         if ( $args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ ) {
-            return () unless $args{ARGSRef}->{'UpdateTimeWorked'} ||
+            return () unless $args{ARGSRef}->{'Updatetime_worked'} ||
                              $args{ARGSRef}->{'UpdateAttachments'};
 
             # we have to create transaction, but we don't create attachment
@@ -566,9 +566,9 @@ sub ProcessUpdateMessage {
           . $args{'TicketObj'}->id . "-"
           . "0" . "-"  # Scrip
           . "0" . "@"  # Email sent
-              . RT->Config->Get('Organization')
+              . RT->Config->Get('organization')
           . ">" );
-    my $old_txn = RT::Model::Transaction->new( $session{'CurrentUser'} );
+    my $old_txn = RT::Model::Transaction->new( Jifty->web->current_user );
     if ( $args{ARGSRef}->{'QuoteTransaction'} ) {
         $old_txn->load( $args{ARGSRef}->{'QuoteTransaction'} );
     }
@@ -612,7 +612,7 @@ sub ProcessUpdateMessage {
             Sign         => $args{ARGSRef}->{'Sign'},
             Encrypt      => $args{ARGSRef}->{'Encrypt'},
             MIMEObj      => $Message,
-            TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'});
+            TimeTaken    => $args{ARGSRef}->{'Updatetime_worked'});
 
 
     unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
@@ -631,7 +631,7 @@ sub ProcessUpdateMessage {
 
     my @results;
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
-        my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(%message_args);
+        my ( $Transaction, $Description, $Object ) = $args{TicketObj}->comment(%message_args);
         push( @results, $Description );
         $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
     }
@@ -657,7 +657,7 @@ sub ProcessUpdateMessage {
 
 =head2 MakeMIMEEntity PARAMHASH
 
-Takes a paramhash Subject, Body and AttachmentFieldName.
+Takes a paramhash Subject, Body and AttachmentFieldname.
 
   Returns a MIME::Entity.
 
@@ -671,7 +671,7 @@ sub MakeMIMEEntity {
         From                => undef,
         Cc                  => undef,
         Body                => undef,
-        AttachmentFieldName => undef,
+        AttachmentFieldname => undef,
         @_,
     );
     my $Message = MIME::Entity->build(
@@ -696,11 +696,11 @@ sub MakeMIMEEntity {
         );
     }
 
-    if ( $args{'AttachmentFieldName'} ) {
+    if ( $args{'AttachmentFieldname'} ) {
 
         my $cgi_object = Jifty->handler->cgi;
 
-        if ( my $filehandle = $cgi_object->upload( $args{'AttachmentFieldName'} ) ) {
+        if ( my $filehandle = $cgi_object->upload( $args{'AttachmentFieldname'} ) ) {
 
             my (@content,$buffer);
             while ( my $bytesread = read( $filehandle, $buffer, 4096 ) ) {
@@ -761,7 +761,7 @@ sub ProcessSearchQuery {
     else {
 
         # Init a new search
-        $session{'tickets'} = RT::Model::TicketCollection->new( $session{'CurrentUser'} );
+        $session{'tickets'} = RT::Model::TicketCollection->new( Jifty->web->current_user );
     }
 
     #Import a bookmarked search if we have one
@@ -968,7 +968,7 @@ Returns an ISO date and time in GMT
 sub ParseDateToISO {
     my $date = shift;
 
-    my $date_obj = RT::Date->new($session{'CurrentUser'});
+    my $date_obj = RT::Date->new(Jifty->web->current_user);
     $date_obj->set(
         Format => 'unknown',
         Value  => $date
@@ -1001,14 +1001,14 @@ sub ProcessACLChanges {
         @rights = grep $_, @rights;
         next unless @rights;
 
-        my $principal = RT::Model::Principal->new( $session{'CurrentUser'} );
+        my $principal = RT::Model::Principal->new( Jifty->web->current_user );
         $principal->load( $principal_id );
 
         my $obj;
         if ($object_type eq 'RT::System') {
             $obj = RT->system;
         } elsif ($RT::Model::ACE::OBJECT_TYPES{$object_type}) {
-            $obj = $object_type->new($session{'CurrentUser'});
+            $obj = $object_type->new(Jifty->web->current_user);
             $obj->load($object_id);
             unless( $obj->id ) {
                 $RT::Logger->error("couldn't load $object_type #$object_id");
@@ -1075,7 +1075,7 @@ sub ProcessCustomFieldUpdates {
     my $Object  = $args{'CustomFieldObj'};
     my $ARGSRef = $args{'ARGSRef'};
 
-    my @attribs = qw(Name Type Description Queue SortOrder);
+    my @attribs = qw(name Type Description Queue SortOrder);
     my @results = UpdateRecordObject(
         AttributesRef => \@attribs,
         Object        => $Object,
@@ -1083,9 +1083,9 @@ sub ProcessCustomFieldUpdates {
     );
 
     my $prefix = "CustomField-" . $Object->id;
-    if ( $ARGSRef->{ "$prefix-AddValue-Name" } ) {
+    if ( $ARGSRef->{ "$prefix-AddValue-name" } ) {
         my ( $addval, $addmsg ) = $Object->AddValue(
-            Name        => $ARGSRef->{ "$prefix-AddValue-Name" },
+            name        => $ARGSRef->{ "$prefix-AddValue-name" },
             Description => $ARGSRef->{ "$prefix-AddValue-Description" },
             SortOrder   => $ARGSRef->{ "$prefix-AddValue-SortOrder" },
         );
@@ -1143,8 +1143,8 @@ sub ProcessTicketBasics {
       FinalPriority
       Priority
       TimeEstimated
-      TimeWorked
-      TimeLeft
+      time_worked
+      time_left
       Type
       Status
       Queue
@@ -1152,7 +1152,7 @@ sub ProcessTicketBasics {
 
 
     if ( $ARGSRef->{'Queue'} and ( $ARGSRef->{'Queue'} !~ /^(\d+)$/ ) ) {
-        my $tempqueue = RT::Model::Queue->new(RT->system_user);
+        my $tempqueue = RT::Model::Queue->new(current_user => RT->system_user);
         $tempqueue->load( $ARGSRef->{'Queue'} );
         if ( $tempqueue->id ) {
             $ARGSRef->{'Queue'} = $tempqueue->id;
@@ -1230,7 +1230,7 @@ sub ProcessObjectCustomFieldUpdates {
     foreach my $class ( keys %custom_fields_to_mod ) {
         foreach my $id ( keys %{$custom_fields_to_mod{$class}} ) {
             my $Object = $args{'Object'};
-            $Object = $class->new( $session{'CurrentUser'} )
+            $Object = $class->new( Jifty->web->current_user )
                 unless $Object && ref $Object eq $class;
 
             $Object->load( $id ) unless ($Object->id || 0) == $id;
@@ -1240,7 +1240,7 @@ sub ProcessObjectCustomFieldUpdates {
             }
 
             foreach my $cf ( keys %{ $custom_fields_to_mod{ $class }{ $id } } ) {
-                my $CustomFieldObj = RT::Model::CustomField->new( $session{'CurrentUser'} );
+                my $CustomFieldObj = RT::Model::CustomField->new( Jifty->web->current_user );
                 $CustomFieldObj->load_by_id( $cf );
                 unless ( $CustomFieldObj->id ) {
                     $RT::Logger->warning("Couldn't load custom field #$id");
@@ -1389,7 +1389,7 @@ sub _ProcessObjectCustomFieldUpdates {
         else {
             push ( @results,
                 loc("User asked for an unknown update type for custom field [_1] for [_2] object #[_3]",
-                $cf->Name, ref $args{'Object'}, $args{'Object'}->id )
+                $cf->name, ref $args{'Object'}, $args{'Object'}->id )
             );
         }
     }
@@ -1422,7 +1422,7 @@ sub ProcessTicketWatchers {
         # Delete deletable watchers
         if ( $key =~ /^Ticket-DeleteWatcher-Type-(.*)-Principal-(\d+)$/ ) {
             my ( $code, $msg ) = $Ticket->deleteWatcher(
-                PrincipalId => $2,
+                principal_id => $2,
                 Type        => $1
             );
             push @results, $msg;
@@ -1468,7 +1468,7 @@ sub ProcessTicketWatchers {
 
                 my ( $code, $msg ) = $Ticket->AddWatcher(
                     Type        => $value,
-                    PrincipalId => $principal_id
+                    principal_id => $principal_id
                 );
                 push @results, $msg;
             }
@@ -1504,7 +1504,7 @@ sub ProcessTicketDates {
     my @date_fields = qw(
       Told
       Resolved
-      Starts
+      starts
       Started
       Due
     );
@@ -1516,7 +1516,7 @@ sub ProcessTicketDates {
     
         my ( $code, $msg );
 
-        my $DateObj = RT::Date->new( $session{'CurrentUser'} );
+        my $DateObj = RT::Date->new( Jifty->web->current_user );
         $DateObj->set(
             Format => 'unknown',
             Value  => $ARGSRef->{ $field . '_Date' }
@@ -1559,7 +1559,7 @@ sub ProcessTicketLinks {
 
     #Merge if we need to
     if ( $ARGSRef->{ $Ticket->id . "-MergeInto" } ) {
-         $ARGSRef->{ $Ticket->Id . "-MergeInto" } =~ s/\s+//g;
+         $ARGSRef->{ $Ticket->id . "-MergeInto" } =~ s/\s+//g;
         my ( $val, $msg ) =
           $Ticket->MergeInto( $ARGSRef->{ $Ticket->id . "-MergeInto" } );
         push @results, $msg;
@@ -1654,13 +1654,13 @@ sub _UploadedFile {
 }
 
 sub GetColumnMapEntry {
-    my %args = ( Map => {}, Name => '', Attribute => undef, @_ );
+    my %args = ( Map => {}, name => '', Attribute => undef, @_ );
     # deal with the simplest thing first
-    if ( $args{'Map'}{ $args{'Name'} } ) {
-        return $args{'Map'}{ $args{'Name'} }{ $args{'Attribute'} };
+    if ( $args{'Map'}{ $args{'name'} } ) {
+        return $args{'Map'}{ $args{'name'} }{ $args{'Attribute'} };
     }
     # complex things
-    elsif ( my ($mainkey, $subkey) = $args{'Name'} =~ /^(.*?)\.{(.+)}$/ ) {
+    elsif ( my ($mainkey, $subkey) = $args{'name'} =~ /^(.*?)\.{(.+)}$/ ) {
         return undef unless $args{'Map'}->{ $mainkey };
         return $args{'Map'}{ $mainkey }{ $args{'Attribute'} }
             unless ref $args{'Map'}{ $mainkey }{ $args{'Attribute'} } eq 'CODE';
@@ -1678,7 +1678,7 @@ Instantiate container object for saving searches.
 
 sub _load_container_object {
     my ($obj_type, $obj_id) = @_;
-    return RT::SavedSearch->new($session{'CurrentUser'})->_load_privacy_object($obj_type, $obj_id);
+    return RT::SavedSearch->new(Jifty->web->current_user)->_load_privacy_object($obj_type, $obj_id);
 }
 
 =head2 _parse_saved_search ( $arg );

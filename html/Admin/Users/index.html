@@ -57,7 +57,7 @@
 % } else {
 
 <& /Elements/CollectionList,
-    order_by => 'Name',
+    order_by => 'name',
     Order => 'ASC',
     Rows  => 100,
     BaseURL => RT->Config->Get('WebPath') .'/Admin/Users/index.html?',
@@ -65,7 +65,7 @@
     Format => $Format,
     Collection => $users,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order order_by UserString UserOp UserField IdLike EmailLike FindDisabledUsers)],
+    PassArguments => [qw(Format Rows Page Order order_by UserString UserOp UserField IdLike EmailLike FinddisabledUsers)],
 &>
 
 % my $ids = join ',', map $_->id, @{ $users->items_array_ref };
@@ -85,7 +85,7 @@
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
 <&|/l&>Find people whose</&> <& /Elements/SelectUsers &><br />
-<input type="checkbox" class="checkbox" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
+<input type="checkbox" class="checkbox" name="FinddisabledUsers" value="1" <% $FinddisabledUsers? 'checked="checked"': '' %> />
 <&|/l&>Include disabled users in search.</&>
 <br />
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
@@ -93,8 +93,8 @@
 
 <%INIT>
 my $caption;
-my $users = RT::Model::UserCollection->new( $session{'CurrentUser'} );
-$users->{'find_disabled_rows'} = 1 if $FindDisabledUsers;
+my $users = RT::Model::UserCollection->new( Jifty->web->current_user );
+$users->{'find_disabled_rows'} = 1 if $FinddisabledUsers;
 
 if ( defined($UserString) && length $UserString ) {
     $caption = loc("Users matching search criteria");
@@ -114,13 +114,13 @@ if ( defined($UserString) && length $UserString ) {
     }
 }
 else {
-    $caption = loc("Privileged users");
-    $users->LimitToPrivileged;
+    $caption = loc("privileged users");
+    $users->LimitToprivileged;
 }
 
 $Format ||= q{'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__id__</a>/TITLE:#'}
-    .q{,'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-    .q{,__RealName__, __EmailAddress__};
+    .q{,'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__name__</a>/TITLE:name'}
+    .q{,__real_name__, __email__};
 
 </%INIT>
 <%ARGS>
@@ -128,9 +128,9 @@ $Format => undef,
 
 $UserString => undef
 $UserOp => '='
-$UserField => 'Name'
+$UserField => 'name'
 $IdLike => undef
 $EmailLike => undef
 
-$FindDisabledUsers => 0
+$FinddisabledUsers => 0
 </%ARGS>

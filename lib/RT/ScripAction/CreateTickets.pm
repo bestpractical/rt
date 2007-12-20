@@ -55,7 +55,7 @@ use vars qw/@ISA/;
 
 use MIME::Entity;
 
-=head1 NAME
+=head1 name
 
  RT::ScripAction::CreateTickets
 
@@ -129,14 +129,14 @@ A convoluted example
    # of which the creator of this ticket is a member
     my $name = "HR";
    
-    my $groups = RT::Model::GroupCollection->new(RT->system_user);
+    my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
     $groups->LimitToUserDefinedGroups();
-    $groups->limit(column => "Name", operator => "=", value => "$name");
+    $groups->limit(column => "name", operator => "=", value => "$name");
     $groups->WithMember($TransactionObj->CreatorObj->id);
  
     my $groupid = $groups->first->id;
  
-    my $adminccs = RT::Model::UserCollection->new(RT->system_user);
+    my $adminccs = RT::Model::UserCollection->new(current_user => RT->system_user);
     $adminccs->WhoHaveRight(
 	Right => "AdminGroup",
 	Object =>$groups->first,
@@ -147,7 +147,7 @@ A convoluted example
  
      my @admins;
      while (my $admin = $adminccs->next) {
-         push (@admins, $admin->EmailAddress); 
+         push (@admins, $admin->email); 
      }
  }
  Queue: ___Approvals
@@ -177,7 +177,7 @@ A convoluted example
 A complete list of acceptable fields for this beastie:
 
 
-    *  Queue           => Name or id# of a queue
+    *  Queue           => name or id# of a queue
        Subject         => A text string
      ! Status          => A valid status. defaults to 'new'
        Due             => Dates can be specified in seconds since the epoch
@@ -186,7 +186,7 @@ A complete list of acceptable fields for this beastie:
                         
                           
                           
-       Starts          => 
+       starts          => 
        Started         => 
        Resolved        => 
        Owner           => Username or id of an RT user who can and should own 
@@ -194,9 +194,9 @@ A complete list of acceptable fields for this beastie:
    +   Requestor       => Email address
    +   Cc              => Email address 
    +   AdminCc         => Email address 
-       TimeWorked      => 
+       time_worked      => 
        TimeEstimated   => 
-       TimeLeft        => 
+       time_left        => 
        InitialPriority => 
        FinalPriority   => 
        Type            => 
@@ -433,12 +433,12 @@ sub UpdateByTemplate {
             FinalPriority
             Priority
             TimeEstimated
-            TimeWorked
-            TimeLeft
+            time_worked
+            time_left
             Status
             Queue
             Due
-            Starts
+            starts
             Started
             Resolved
         );
@@ -491,10 +491,10 @@ sub UpdateByTemplate {
         next unless $ticketargs->{'MIMEObj'};
         if ( $ticketargs->{'UpdateType'} =~ /^(private|comment)$/i ) {
             my ( $Transaction, $Description, $Object )
-                = $T::Tickets{$template_id}->Comment(
+                = $T::Tickets{$template_id}->comment(
                 BccMessageTo => $ticketargs->{'Bcc'},
                 MIMEObj      => $ticketargs->{'MIMEObj'},
-                TimeTaken    => $ticketargs->{'TimeWorked'}
+                TimeTaken    => $ticketargs->{'time_worked'}
                 );
             push( @results,
                 $T::Tickets{$template_id}
@@ -506,7 +506,7 @@ sub UpdateByTemplate {
                 = $T::Tickets{$template_id}->Correspond(
                 BccMessageTo => $ticketargs->{'Bcc'},
                 MIMEObj      => $ticketargs->{'MIMEObj'},
-                TimeTaken    => $ticketargs->{'TimeWorked'}
+                TimeTaken    => $ticketargs->{'time_worked'}
                 );
             push( @results,
                 $T::Tickets{$template_id}
@@ -677,7 +677,7 @@ sub ParseLines {
         }
     }
 
-    my $TicketObj ||= RT::Model::Ticket->new( $self->current_user );
+    my $TicketObj ||= RT::Model::Ticket->new;
 
     my %args;
     my %original_tags;
@@ -723,7 +723,7 @@ sub ParseLines {
     }
 
     foreach my $date qw(due starts started resolved) {
-        my $dateobj = RT::Date->new( $self->current_user );
+        my $dateobj = RT::Date->new;
         next unless $args{$date};
         if ( $args{$date} =~ /^\d+$/ ) {
             $dateobj->set( Format => 'unix', value => $args{$date} );
@@ -738,7 +738,7 @@ sub ParseLines {
         $args{$date} = $dateobj->ISO;
     }
 
-    $args{'requestor'} ||= $self->TicketObj->Requestors->MemberEmailAddresses
+    $args{'requestor'} ||= $self->TicketObj->Requestors->Memberemailes
         if $self->TicketObj;
 
     $args{'type'} ||= 'ticket';
@@ -748,16 +748,16 @@ sub ParseLines {
         Subject         => $args{'subject'},
         Status          => $args{'status'} || 'new',
         Due             => $args{'due'},
-        Starts          => $args{'starts'},
+        starts          => $args{'starts'},
         Started         => $args{'started'},
         Resolved        => $args{'resolved'},
         Owner           => $args{'owner'},
         Requestor       => $args{'requestor'},
         Cc              => $args{'cc'},
         AdminCc         => $args{'admincc'},
-        TimeWorked      => $args{'timeworked'},
+        time_worked      => $args{'time_worked'},
         TimeEstimated   => $args{'timeestimated'},
-        TimeLeft        => $args{'timeleft'},
+        time_left        => $args{'time_left'},
         InitialPriority => $args{'initialpriority'} || 0,
         FinalPriority   => $args{'finalpriority'} || 0,
         Type            => $args{'type'},
@@ -779,12 +779,12 @@ sub ParseLines {
         if ( $orig_tag =~ /^customfield-?(\d+)$/i ) {
             $ticketargs{ "CustomField-" . $1 } = $args{$tag};
         } elsif ( $orig_tag =~ /^(?:customfield|cf)-?(.*)$/i ) {
-            my $cf = RT::Model::CustomField->new( $self->current_user );
-            $cf->load_by_name( Name => $1, Queue => $ticketargs{Queue} );
+            my $cf = RT::Model::CustomField->new;
+            $cf->load_by_name( name => $1, Queue => $ticketargs{Queue} );
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
         } elsif ($orig_tag) {
-            my $cf = RT::Model::CustomField->new( $self->current_user );
-            $cf->load_by_name( Name => $orig_tag, Queue => $ticketargs{Queue} );
+            my $cf = RT::Model::CustomField->new;
+            $cf->load_by_name( name => $orig_tag, Queue => $ticketargs{Queue} );
             next unless ($cf->id) ;
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
 
@@ -959,23 +959,23 @@ sub GetUpdateTemplate {
     my $t    = shift;
 
     my $string;
-    $string .= "Queue: " . $t->QueueObj->Name . "\n";
+    $string .= "Queue: " . $t->QueueObj->name . "\n";
     $string .= "Subject: " . $t->Subject . "\n";
     $string .= "Status: " . $t->Status . "\n";
     $string .= "UpdateType: correspond\n";
     $string .= "Content: \n";
     $string .= "ENDOFCONTENT\n";
     $string .= "Due: " . $t->DueObj->AsString . "\n";
-    $string .= "Starts: " . $t->StartsObj->AsString . "\n";
+    $string .= "starts: " . $t->startsObj->AsString . "\n";
     $string .= "Started: " . $t->StartedObj->AsString . "\n";
     $string .= "Resolved: " . $t->ResolvedObj->AsString . "\n";
-    $string .= "Owner: " . $t->OwnerObj->Name . "\n";
+    $string .= "Owner: " . $t->OwnerObj->name . "\n";
     $string .= "Requestor: " . $t->RequestorAddresses . "\n";
     $string .= "Cc: " . $t->CcAddresses . "\n";
     $string .= "AdminCc: " . $t->AdminCcAddresses . "\n";
-    $string .= "TimeWorked: " . $t->TimeWorked . "\n";
+    $string .= "time_worked: " . $t->time_worked . "\n";
     $string .= "TimeEstimated: " . $t->TimeEstimated . "\n";
-    $string .= "TimeLeft: " . $t->TimeLeft . "\n";
+    $string .= "time_left: " . $t->time_left . "\n";
     $string .= "InitialPriority: " . $t->Priority . "\n";
     $string .= "FinalPriority: " . $t->FinalPriority . "\n";
 
@@ -1017,16 +1017,16 @@ sub GetBaseTemplate {
     $string .= "Subject: " . $t->Subject . "\n";
     $string .= "Status: " . $t->Status . "\n";
     $string .= "Due: " . $t->DueObj->Unix . "\n";
-    $string .= "Starts: " . $t->StartsObj->Unix . "\n";
+    $string .= "starts: " . $t->startsObj->Unix . "\n";
     $string .= "Started: " . $t->StartedObj->Unix . "\n";
     $string .= "Resolved: " . $t->ResolvedObj->Unix . "\n";
     $string .= "Owner: " . $t->Owner . "\n";
     $string .= "Requestor: " . $t->RequestorAddresses . "\n";
     $string .= "Cc: " . $t->CcAddresses . "\n";
     $string .= "AdminCc: " . $t->AdminCcAddresses . "\n";
-    $string .= "TimeWorked: " . $t->TimeWorked . "\n";
+    $string .= "time_worked: " . $t->time_worked . "\n";
     $string .= "TimeEstimated: " . $t->TimeEstimated . "\n";
-    $string .= "TimeLeft: " . $t->TimeLeft . "\n";
+    $string .= "time_left: " . $t->time_left . "\n";
     $string .= "InitialPriority: " . $t->Priority . "\n";
     $string .= "FinalPriority: " . $t->FinalPriority . "\n";
 
@@ -1044,16 +1044,16 @@ sub GetCreateTemplate {
     $string .= "Content: \n";
     $string .= "ENDOFCONTENT\n";
     $string .= "Due: \n";
-    $string .= "Starts: \n";
+    $string .= "starts: \n";
     $string .= "Started: \n";
     $string .= "Resolved: \n";
     $string .= "Owner: \n";
     $string .= "Requestor: \n";
     $string .= "Cc: \n";
     $string .= "AdminCc:\n";
-    $string .= "TimeWorked: \n";
+    $string .= "time_worked: \n";
     $string .= "TimeEstimated: \n";
-    $string .= "TimeLeft: \n";
+    $string .= "time_left: \n";
     $string .= "InitialPriority: \n";
     $string .= "FinalPriority: \n";
 
@@ -1096,10 +1096,10 @@ sub UpdateWatchers {
                 push @new, $_;
             } else {
                 # It doesn't look like an email address.  Try to load it.
-                my $user = RT::Model::User->new($self->current_user);
+                my $user = RT::Model::User->new;
                 $user->load($_);
                 if ($user->id) {
-                    push @new, $user->EmailAddress;
+                    push @new, $user->email;
                 } else {
                     push @new, $_;
                 }
@@ -1144,7 +1144,7 @@ sub UpdateCustomFields {
         next unless $arg =~ /^CustomField-(\d+)$/;
         my $cf = $1;
 
-        my $CustomFieldObj = RT::Model::CustomField->new($self->current_user);
+        my $CustomFieldObj = RT::Model::CustomField->new;
         $CustomFieldObj->load_by_id($cf);
 
         my @values;

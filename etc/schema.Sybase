@@ -24,10 +24,10 @@ CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
 # {{{ Queues
 CREATE TABLE rt3.Queues (
   id numeric(38,0) identity,
-  Name varchar(200) NOT NULL  ,
+  name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
   CorrespondAddress varchar(120) NULL  ,
-  CommentAddress varchar(120) NULL  ,
+  commentAddress varchar(120) NULL  ,
   InitialPriority integer NOT NULL   ,
   FinalPriority integer NOT NULL   ,
   DefaultDueIn integer NOT NULL   ,
@@ -35,11 +35,11 @@ CREATE TABLE rt3.Queues (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL   ,
   LastUpdated DATETIME NULL  ,
-  Disabled numeric(1) NOT NULL  ,
+  disabled numeric(1) NOT NULL  ,
   PRIMARY KEY (id)
 ) ;
-CREATE UNIQUE INDEX Queues1 ON Queues (Name) ;
-CREATE INDEX Queues2 ON Queues (Disabled) ;
+CREATE UNIQUE INDEX Queues1 ON Queues (name) ;
+CREATE INDEX Queues2 ON Queues (disabled) ;
 
 # }}}
 
@@ -70,12 +70,12 @@ CREATE INDEX Links4 ON Links(Type,LocalBase);
 
 CREATE TABLE rt3.Principals (
       id numeric(38,0) identity,
-        PrincipalType VARCHAR(16) not null,
-        ObjectId integer,         Disabled numeric(1) NOT NULL  ,
+        principal_type VARCHAR(16) not null,
+        object_id integer,         disabled numeric(1) NOT NULL  ,
         PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX Principals2 ON Principals (ObjectId);
+CREATE INDEX Principals2 ON Principals (object_id);
 
 # }}}
 
@@ -83,7 +83,7 @@ CREATE INDEX Principals2 ON Principals (ObjectId);
 
 CREATE TABLE rt3.Groups (
   id numeric(38,0) identity,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   Domain varchar(64),
   Type varchar(64),
@@ -100,7 +100,7 @@ CREATE INDEX Groups2 On Groups  (Type, Instance, Domain);
 
 CREATE TABLE rt3.ScripConditions (
   id numeric(38,0) identity,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
@@ -163,18 +163,18 @@ CREATE TABLE rt3.Scrips (
 # {{{ ACL
 CREATE TABLE rt3.ACL (
   id numeric(38,0) identity,
-  PrincipalType varchar(25) NOT NULL, #"User" "Group", "Owner", "Cc" "AdminCc", "Requestor", "Requestor" 
+  principal_type varchar(25) NOT NULL, #"User" "Group", "Owner", "Cc" "AdminCc", "Requestor", "Requestor" 
 
-  PrincipalId integer NOT NULL  , #Foreign key to principals
-  RightName varchar(25) NOT NULL  ,
+  principal_id integer NOT NULL  , #Foreign key to principals
+  Rightname varchar(25) NOT NULL  ,
   ObjectType varchar(25) NOT NULL  ,
-  ObjectId integer NOT NULL ,
+  object_id integer NOT NULL ,
   DelegatedBy integer NOT NULL , #foreign key to principals with a userid
   DelegatedFrom integer NOT NULL , #foreign key to ACL
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX  ACL1 on ACL(RightName, ObjectType, ObjectId,PrincipalType,PrincipalId);
+CREATE INDEX  ACL1 on ACL(Rightname, ObjectType, object_id,principal_type,principal_id);
 
 # }}}
 
@@ -201,7 +201,7 @@ CREATE TABLE rt3.CachedGroupMembers (
         ImmediateParentId int, #foreign key to prinicpals.         
                                # this points to the group that the member is
                                # a member of, for ease of deletes.
-        Disabled numeric(1) NOT NULL  , # if this cached group member is a member of this group by way of a disabled
+        disabled numeric(1) NOT NULL  , # if this cached group member is a member of this group by way of a disabled
                                            # group or this group is disabled, this will be set to 1
                                            # this allows us to not find members of disabled subgroups when listing off
                                            # group members recursively.
@@ -209,7 +209,7 @@ CREATE TABLE rt3.CachedGroupMembers (
         PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
+CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,disabled);
 CREATE INDEX GrouMem  on CachedGroupMembers (GroupId,MemberId);
 
 # }}}
@@ -218,22 +218,22 @@ CREATE INDEX GrouMem  on CachedGroupMembers (GroupId,MemberId);
 
 CREATE TABLE rt3.Users (
   id numeric(38,0) identity,
-  Name varchar(200) NOT NULL  ,
-  Password varchar(40) NULL  ,
-  Comments text NULL  ,
+  name varchar(200) NOT NULL  ,
+  password varchar(40) NULL  ,
+  comments text NULL  ,
   Signature text NULL  ,
-  EmailAddress varchar(120) NULL  ,
-  FreeformContactInfo text NULL  ,
-  Organization varchar(200) NULL  ,
-  RealName varchar(120) NULL  ,
-  NickName varchar(16) NULL  ,
+  email varchar(120) NULL  ,
+  freeform_contact_info text NULL  ,
+  organization varchar(200) NULL  ,
+  real_name varchar(120) NULL  ,
+  nickname varchar(16) NULL  ,
   Lang varchar(16) NULL  ,
-  EmailEncoding varchar(16) NULL  ,
-  WebEncoding varchar(16) NULL  ,
+  email_encoding varchar(16) NULL  ,
+  web_encoding varchar(16) NULL  ,
   ExternalContactInfoId varchar(100) NULL  ,
   ContactInfoSystem varchar(30) NULL  ,
   ExternalAuthId varchar(100) NULL  ,
-  AuthSystem varchar(30) NULL  ,
+  auth_system varchar(30) NULL  ,
   Gecos varchar(16) NULL  ,
   HomePhone varchar(30) NULL  ,
   WorkPhone varchar(30) NULL  ,
@@ -256,10 +256,10 @@ CREATE TABLE rt3.Users (
 ) ;
 
 
-CREATE UNIQUE INDEX Users1 ON Users (Name) ;
-CREATE INDEX Users2 ON Users (Name);
-CREATE INDEX Users3 ON Users (id, EmailAddress);
-CREATE INDEX Users4 ON Users (EmailAddress);
+CREATE UNIQUE INDEX Users1 ON Users (name) ;
+CREATE INDEX Users2 ON Users (name);
+CREATE INDEX Users3 ON Users (id, email);
+CREATE INDEX Users4 ON Users (email);
 
 
 # }}}
@@ -279,11 +279,11 @@ CREATE TABLE rt3.Tickets (
   FinalPriority integer NOT NULL   ,
   Priority integer NOT NULL   ,
   TimeEstimated integer NOT NULL   ,
-  TimeWorked integer NOT NULL   ,
+  time_worked integer NOT NULL   ,
   Status varchar(10) NULL  ,
-  TimeLeft integer NOT NULL   ,
+  time_left integer NOT NULL   ,
   Told DATETIME NULL  ,
-  Starts DATETIME NULL  ,
+  starts DATETIME NULL  ,
   Started DATETIME NULL  ,
   Due DATETIME NULL  ,
   Resolved DATETIME NULL  ,
@@ -293,7 +293,7 @@ CREATE TABLE rt3.Tickets (
   LastUpdated DATETIME NULL  ,
   Creator integer NOT NULL   ,
   Created DATETIME NULL  ,
-  Disabled numeric(1) NOT NULL  ,
+  disabled numeric(1) NOT NULL  ,
   PRIMARY KEY (id)
 ) ;
 
@@ -310,7 +310,7 @@ CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type) ;
 
 CREATE TABLE rt3.ScripActions (
   id numeric(38,0) identity,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
@@ -328,7 +328,7 @@ CREATE TABLE rt3.ScripActions (
 CREATE TABLE rt3.Templates (
   id numeric(38,0) identity,
   Queue integer NOT NULL  ,
-  Name varchar(200) NOT NULL  ,
+  name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
   Type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
@@ -367,7 +367,7 @@ CREATE INDEX TicketCustomFieldValues2 ON TicketCustomFieldValues (CustomField,Ti
 
 CREATE TABLE rt3.CustomFields (
   id numeric(38,0) identity,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Type varchar(200) NULL  ,
   Queue integer NOT NULL  ,
   Description varchar(255) NULL  ,
@@ -377,11 +377,11 @@ CREATE TABLE rt3.CustomFields (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL   ,
   LastUpdated DATETIME NULL  ,
-  Disabled numeric(1) NOT NULL  ,
+  disabled numeric(1) NOT NULL  ,
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX CustomFields1 on CustomFields (Disabled, Queue);
+CREATE INDEX CustomFields1 on CustomFields (disabled, Queue);
 
 
 # }}}
@@ -391,7 +391,7 @@ CREATE INDEX CustomFields1 on CustomFields (Disabled, Queue);
 CREATE TABLE rt3.CustomFieldValues (
   id numeric(38,0) identity,
   CustomField int NOT NULL  ,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL   ,
 
@@ -411,12 +411,12 @@ CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
 
 CREATE TABLE rt3.Attributes (
   id numeric(38,0) identity,
-  Name varchar(255) NULL  ,
+  name varchar(255) NULL  ,
   Description varchar(255) NULL  ,
   Content text,
   ContentType varchar(16),
   ObjectType varchar(64),
-  ObjectId integer, # foreign key to anything
+  object_id integer, # foreign key to anything
   Creator integer NOT NULL   ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL   ,
@@ -424,8 +424,8 @@ CREATE TABLE rt3.Attributes (
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX Attributes1 on Attributes(Name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
+CREATE INDEX Attributes1 on Attributes(name);
+CREATE INDEX Attributes2 on Attributes(ObjectType, object_id);
 
 # }}}
 

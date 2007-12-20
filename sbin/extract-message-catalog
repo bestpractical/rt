@@ -151,7 +151,7 @@ sub extract_strings_from_code {
         push @{ $FILECAT->{$str} }, [ $filename, $line, $vars ];
     }
 
-    # Comment-based mark: "..." # loc
+    # comment-based mark: "..." # loc
     $line = 1;
     pos($_) = 0;
     while (m/\G.*?($RE{delimited}{-delim=>q{'"}}{-keep})[\}\)\],]*\s*\#\s*loc\s*$/smg) {
@@ -161,7 +161,7 @@ sub extract_strings_from_code {
 	push @{ $FILECAT->{$str} }, [ $filename, $line, '' ];
     }
 
-    # Comment-based pair mark: "..." => "..." # loc_pair
+    # comment-based pair mark: "..." => "..." # loc_pair
     $line = 1;
     pos($_) = 0;
     while (m/\G.*?(\w+)\s*=>\s*($RE{delimited}{-delim=>q{'"}}{-keep})[\}\)\],]*\s*\#\s*loc_pair\s*$/smg) {

@@ -56,13 +56,13 @@
 <& /Admin/Elements/EditTemplates, title => $title, %ARGS &>
 
 <%INIT>
-my $QueueObj = new RT::Model::Queue($session{'CurrentUser'});
+my $QueueObj = new RT::Model::Queue(Jifty->web->current_user);
 $QueueObj->load($id);
 
 my ($title, $current_subtab);
 
 if ($QueueObj->id) {
-    $title = loc("Edit Templates for queue [_1]", $QueueObj->Name);
+    $title = loc("Edit Templates for queue [_1]", $QueueObj->name);
 } else {
     Abort(loc("Queue [_1] not found",$id));
 }

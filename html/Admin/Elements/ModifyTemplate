@@ -48,10 +48,10 @@
 <table>
 <tr>
 <td align="right">
-<&|/l&>Name</&>:
+<&|/l&>name</&>:
 </td>
 <td>
-<input name="Name" value="<%$Name%>" size="20" /><br />
+<input name="name" value="<%$name%>" size="20" /><br />
 </td>
 </tr>
 <tr>
@@ -78,7 +78,7 @@
 </%INIT>
 
 <%ARGS>
-$Name => undef
+$name => undef
 $Description => undef
 $Content => undef
 </%ARGS>

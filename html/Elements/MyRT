@@ -64,10 +64,10 @@
 # XXX: we don't use this, but should.
 my %allowed_components = map {$_ => 1} @{RT->Config->Get('HomepageComponents')};
 
-my $user = $session{'CurrentUser'}->UserObj;
+my $user = Jifty->web->current_user->user_object;
 $Portlets ||= $session{'my_rt_portlets'};
 unless ( $Portlets ) {
-    my ($default_portlets) = RT::System->new($session{'CurrentUser'})->attributes->Named('HomepageSettings');
+    my ($default_portlets) = RT::System->new(Jifty->web->current_user)->attributes->named('HomepageSettings');
     $Portlets = $session{'my_rt_portlets'} = $user->Preferences(
         HomepageSettings => $default_portlets? $default_portlets->Content: {},
     );
@@ -90,7 +90,7 @@ my $show_cb = sub {
         # XXX: security check etc.
         $m->comp( $name, %{ $entry->{arguments} || {} } );
     } elsif ( $type eq 'system' ) {
-        $m->comp( '/Elements/ShowSearch', Name => $name, Override => { Rows => $Rows } );
+        $m->comp( '/Elements/ShowSearch', name => $name, Override => { Rows => $Rows } );
     } elsif ( $type eq 'saved' ) {
         $m->comp( '/Elements/ShowSearch', SavedSearch => $name, Override => { Rows => $Rows } );
     } else {

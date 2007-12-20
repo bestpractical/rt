@@ -56,9 +56,9 @@
 % } else {
 <i>(<&|/l&>Check box to revoke right</&>)</i> <br />
 % while (my $right = $ACLObj->next()) {
-% if ($right->RightName) {
-% $current_rights{$right->RightName} = 1;
-<input type="checkbox" class="checkbox" value="<% $right->RightName %>" name="RevokeRight-<%$ACLDesc%>" /> <% loc($right->RightName) %><br />
+% if ($right->Rightname) {
+% $current_rights{$right->Rightname} = 1;
+<input type="checkbox" class="checkbox" value="<% $right->Rightname %>" name="RevokeRight-<%$ACLDesc%>" /> <% loc($right->Rightname) %><br />
 % }
 %  }
 % }
@@ -83,22 +83,22 @@
     # to their ACL equivalence group. The machinations we're going through
     # lead me to start to suspect that we really want users and groups
     # to just be the same table. or _maybe_ that we want an object db.
-    my $princ = RT::Model::Principal->new(RT->system_user);
-    $princ->load($PrincipalId);
-    if ($princ->PrincipalType eq 'User') {
-    my $group = RT::Model::Group->new(RT->system_user);
+    my $princ = RT::Model::Principal->new(current_user => RT->system_user);
+    $princ->load($principal_id);
+    if ($princ->principal_type eq 'User') {
+    my $group = RT::Model::Group->new(current_user => RT->system_user);
         $group->load_acl_equivalence_group($princ);
-        $PrincipalId = $group->PrincipalId;
+        $principal_id = $group->principal_id;
     }
 
 
-    my $ACLObj = new RT::Model::ACECollection($session{'CurrentUser'});
-    my $ACE = new RT::Model::ACE($session{'CurrentUser'});
+    my $ACLObj = new RT::Model::ACECollection(Jifty->web->current_user);
+    my $ACE = new RT::Model::ACE(Jifty->web->current_user);
 
 
     $ACLObj->LimitToObject( $Object);
-    $ACLObj->LimitToPrincipal( Id => $PrincipalId);
-    $ACLObj->order_by(column=>'RightName'); 
+    $ACLObj->LimitToPrincipal( Id => $principal_id);
+    $ACLObj->order_by(column=>'Rightname'); 
 
     if (ref($Object) && UNIVERSAL::can($Object, 'AvailableRights')) { 
         %Rights = %{$Object->AvailableRights};
@@ -108,11 +108,11 @@
                 %Rights = ( loc('System Error') => loc("No rights found") );
         }
         
-    $ACLDesc = "$PrincipalId-".ref($Object)."-".$Object->id;
+    $ACLDesc = "$principal_id-".ref($Object)."-".$Object->id;
 </%INIT>
     
 <%ARGS>
-$PrincipalType => undef
-$PrincipalId => undef
+$principal_type => undef
+$principal_id => undef
 $Object =>undef
 </%ARGS>

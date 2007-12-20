@@ -52,7 +52,7 @@ use warnings FATAL => 'all';
 
 use base qw(RT::Shredder::Plugin::Base);
 
-=head1 NAME
+=head1 name
 
 RT::Shredder::Plugin::Base - base class for Shredder plugins.
 

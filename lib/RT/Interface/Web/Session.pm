@@ -51,7 +51,7 @@ use strict;
 
 use RT::CurrentUser;
 
-=head1 NAME
+=head1 name
 
 RT::Interface::Web::Session - RT web session class
 
@@ -245,8 +245,8 @@ sub ClearByUser {
             $RT::Logger->debug("skipped session '$id', couldn't load: $@");
             next;
         }
-        if( $session{'CurrentUser'} && $session{'CurrentUser'}->id ) {
-            unless( $seen{ $session{'CurrentUser'}->id }++ ) {
+        if( Jifty->web->current_user && Jifty->web->current_user->id ) {
+            unless( $seen{ Jifty->web->current_user->id }++ ) {
                 $RT::Logger->debug("skipped session '$id', first user's session");
                 next;
             }

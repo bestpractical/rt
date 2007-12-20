@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::Queue - an RT Queue object
 
@@ -84,10 +84,10 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
 
-column        Name => max_length is 200,  type is 'varchar(200)',  default is '';
+column        name => max_length is 200,  type is 'varchar(200)',  default is '';
 column        Description => max_length is 255,  type is 'varchar(255)',  default is '';
 column        CorrespondAddress => max_length is 120,  type is 'varchar(120)',  default is '';
-column        CommentAddress => max_length is 120,  type is 'varchar(120)',  default is '';
+column        commentAddress => max_length is 120,  type is 'varchar(120)',  default is '';
 column        InitialPriority => max_length is 11,  type is 'int(11)',  default is '0';
 column        FinalPriority => max_length is 11,  type is 'int(11)',  default is '0';
 column        DefaultDueIn => max_length is 11,  type is 'int(11)',  default is '0';
@@ -95,7 +95,7 @@ column        Creator => max_length is 11,  type is 'int(11)',  default is '0';
 column        Created =>   type is 'datetime',  default is '';
 column        LastUpdatedBy => max_length is 11,  type is 'int(11)',  default is '0';
 column        LastUpdated =>   type is 'datetime',  default is '';
-column        Disabled => max_length is 6,  type is 'smallint(6)',  default is '0';
+column        disabled => max_length is 6,  type is 'smallint(6)',  default is '0';
 };
 our @DEFAULT_ACTIVE_STATUS = qw(new open stalled);
 our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);  
@@ -122,14 +122,14 @@ our $RIGHTS = {
     ShowScrips   => 'Display Scrips for this queue',                  # loc_pair
 
     ShowTicket         => 'See ticket summaries',                    # loc_pair
-    ShowTicketComments => 'See ticket private commentary',           # loc_pair
+    ShowTicketcomments => 'See ticket private commentary',           # loc_pair
     ShowOutgoingEmail => 'See exact outgoing email messages and their recipeients',           # loc_pair
 
     Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',   # loc_pair
     WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',        # loc_pair
     CreateTicket    => 'Create tickets in this queue',                # loc_pair
     ReplyToTicket   => 'Reply to tickets',                            # loc_pair
-    CommentOnTicket => 'Comment on tickets',                          # loc_pair
+    commentOnTicket => 'comment on tickets',                          # loc_pair
     OwnTicket       => 'Own tickets',                                 # loc_pair
     ModifyTicket    => 'Modify tickets',                              # loc_pair
     DeleteTicket    => 'Delete tickets',                              # loc_pair
@@ -147,7 +147,7 @@ $RT::Model::ACE::OBJECT_TYPES{'RT::Model::Queue'} = 1;
 # stuff the rights into a hash of rights that can exist.
 
 foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::Model::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+    $RT::Model::ACE::LOWERCASERIGHTnameS{ lc $right } = $right;
 }
     
 
@@ -320,10 +320,10 @@ sub IsInactiveStatus {
 
 Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
-  Name (required)
+  name (required)
   Description
   CorrespondAddress
-  CommentAddress
+  commentAddress
   InitialPriority
   FinalPriority
   DefaultDueIn
@@ -336,10 +336,10 @@ If you pass the ACL check, it creates the queue and returns its queue id.
 sub create {
     my $self = shift;
     my %args = (
-        Name              => undef,
+        name              => undef,
         CorrespondAddress => '',
         Description       => '',
-        CommentAddress    => '',
+        commentAddress    => '',
         InitialPriority   => 0,
         FinalPriority     => 0,
         DefaultDueIn      => 0,
@@ -354,7 +354,7 @@ sub create {
         return ( 0, $self->loc("No permission to create queues") );
     }
 
-    unless ( $self->validate_Name( $args{'Name'} ) ) {
+    unless ( $self->validate_name( $args{'name'} ) ) {
         return ( 0, $self->loc('Queue already exists') );
     }
 
@@ -401,9 +401,9 @@ sub delete {
 
 # }}}
 
-# {{{ sub set_Disabled
+# {{{ sub set_disabled
 
-=head2 SetDisabled
+=head2 Setdisabled
 
 Takes a boolean.
 1 will cause this queue to no longer be available for tickets.
@@ -417,7 +417,7 @@ Takes a boolean.
 
 =head2 Load
 
-Takes either a numerical id or a textual Name and loads the specified queue.
+Takes either a numerical id or a textual name and loads the specified queue.
 
 =cut
 
@@ -432,7 +432,7 @@ sub load {
         $self->load_by_cols( id => $identifier);
     }
     else {
-        $self->load_by_cols( Name => $identifier );
+        $self->load_by_cols( name => $identifier );
     }
 
     return ( $self->id );
@@ -441,16 +441,16 @@ sub load {
 
 # }}}
 
-# {{{ sub validate_Name
+# {{{ sub validate_name
 
-=head2 ValidateName NAME
+=head2 Validatename name
 
 Takes a queue name. Returns true if it's an ok name for
 a new queue. Returns undef if there's already a queue by that name.
 
 =cut
 
-sub validate_Name {
+sub validate_name {
     my $self = shift;
     my $name = shift;
 
@@ -458,13 +458,13 @@ sub validate_Name {
     $tempqueue->load($name);
 
     #If this queue exists, return undef
-    if ( $tempqueue->Name() && $tempqueue->id != $self->id)  {
+    if ( $tempqueue->name() && $tempqueue->id != $self->id)  {
         return (undef);
     }
 
     #If the queue doesn't exist, return 1
     else {
-        return ($self->SUPER::validate_Name($name));
+        return ($self->SUPER::validate_name($name));
     }
 
 }
@@ -492,7 +492,7 @@ sub set_Sign {
         unless $self->current_user_has_right('AdminQueue');
 
     my ($status, $msg) = $self->set_attribute(
-        Name        => 'Sign',
+        name        => 'Sign',
         Description => 'Sign outgoing messages by default',
         Content     => $value,
     );
@@ -518,7 +518,7 @@ sub set_Encrypt {
         unless $self->current_user_has_right('AdminQueue');
 
     my ($status, $msg) = $self->set_attribute(
-        Name        => 'Encrypt',
+        name        => 'Encrypt',
         Description => 'Encrypt outgoing messages by default',
         Content     => $value,
     );
@@ -538,7 +538,7 @@ Returns an RT::Model::TemplateCollection object of all of this queue's templates
 sub Templates {
     my $self = shift;
 
-    my $templates = RT::Model::TemplateCollection->new( $self->current_user );
+    my $templates = RT::Model::TemplateCollection->new;
 
     if ( $self->current_user_has_right('ShowTemplate') ) {
         $templates->LimitToQueue( $self->id );
@@ -553,17 +553,17 @@ sub Templates {
 
 # {{{  CustomField
 
-=head2 CustomField NAME
+=head2 CustomField name
 
-Load the queue-specific custom field named NAME
+Load the queue-specific custom field named name
 
 =cut
 
 sub CustomField {
     my $self = shift;
     my $name = shift;
-    my $cf = RT::Model::CustomField->new($self->current_user);
-    $cf->load_by_name_and_queue(Name => $name, Queue => $self->id); 
+    my $cf = RT::Model::CustomField->new;
+    $cf->load_by_name_and_queue(name => $name, Queue => $self->id); 
     return ($cf);
 }
 
@@ -580,9 +580,9 @@ queue-specific B<ticket> custom fields.
 sub TicketCustomFields {
     my $self = shift;
 
-    my $cfs = RT::Model::CustomFieldCollection->new( $self->current_user );
+    my $cfs = RT::Model::CustomFieldCollection->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-	$cfs->LimitToGlobalOrObjectId( $self->id );
+	$cfs->LimitToGlobalOrobject_id( $self->id );
 	$cfs->LimitToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
     }
     return ($cfs);
@@ -602,9 +602,9 @@ queue-specific B<transaction> custom fields.
 sub TicketTransactionCustomFields {
     my $self = shift;
 
-    my $cfs = RT::Model::CustomFieldCollection->new( $self->current_user );
+    my $cfs = RT::Model::CustomFieldCollection->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-	$cfs->LimitToGlobalOrObjectId( $self->id );
+	$cfs->LimitToGlobalOrobject_id( $self->id );
 	$cfs->LimitToLookupType( 'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' );
     }
     return ($cfs);
@@ -638,7 +638,7 @@ sub _createQueueGroups {
     my @types = qw(Cc AdminCc Requestor Owner);
 
     foreach my $type (@types) {
-        my $type_obj = RT::Model::Group->new($self->current_user);
+        my $type_obj = RT::Model::Group->new;
         my ($id, $msg) = $type_obj->createRoleGroup(Instance => $self->id, 
                                                      Type => $type,
                                                      Domain => 'RT::Model::Queue-Role');
@@ -677,15 +677,15 @@ sub AddWatcher {
     my $self = shift;
     my %args = (
         Type  => undef,
-        PrincipalId => undef,
+        principal_id => undef,
         Email => undef,
         @_
     );
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( defined $args{'PrincipalId'} && 
-            $self->current_user->PrincipalId  eq $args{'PrincipalId'}) {
+    if ( defined $args{'principal_id'} && 
+            $self->current_user->principal_id  eq $args{'principal_id'}) {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
         if ( defined $args{'Type'} && ($args{'Type'} eq 'AdminCc') ) {
@@ -731,46 +731,46 @@ sub _AddWatcher {
     my %args = (
         Type   => undef,
         Silent => undef,
-        PrincipalId => undef,
+        principal_id => undef,
         Email => undef,
         @_
     );
 
 
-    my $principal = RT::Model::Principal->new($self->current_user);
-    if ($args{'PrincipalId'}) {
-        $principal->load($args{'PrincipalId'});
+    my $principal = RT::Model::Principal->new;
+    if ($args{'principal_id'}) {
+        $principal->load($args{'principal_id'});
     }
     elsif ($args{'Email'}) {
 
-        my $user = RT::Model::User->new($self->current_user);
+        my $user = RT::Model::User->new;
         $user->load_by_email($args{'Email'});
 
         unless ($user->id) {
             $user->load($args{'Email'});
         }
         if ($user->id) { # If the user exists
-            $principal->load($user->PrincipalId);
+            $principal->load($user->principal_id);
         } else {
 
         # if the user doesn't exist, we need to create a new user
-             my $new_user = RT::Model::User->new(RT->system_user);
+             my $new_user = RT::Model::User->new(current_user => RT->system_user);
 
-            my ( $Address, $Name ) =  
+            my ( $Address, $name ) =  
                RT::Interface::Email::ParseAddressFromHeader($args{'Email'});
 
             my ( $Val, $Message ) = $new_user->create(
-                Name => $Address,
-                EmailAddress => $Address,
-                RealName     => $Name,
-                Privileged   => 0,
-                Comments     => 'AutoCreated when added as a watcher');
+                name => $Address,
+                email => $Address,
+                real_name     => $name,
+                privileged   => 0,
+                comments     => 'AutoCreated when added as a watcher');
             unless ($Val) {
                 $RT::Logger->error("Failed to create user ".$args{'Email'} .": " .$Message);
                 # Deal with the race condition of two account creations at once
                 $new_user->load_by_email($args{'Email'});
             }
-            $principal->load($new_user->PrincipalId);
+            $principal->load($new_user->principal_id);
         }
     }
     # If we can't find this watcher, we need to bail.
@@ -779,7 +779,7 @@ sub _AddWatcher {
     }
 
 
-    my $group = RT::Model::Group->new($self->current_user);
+    my $group = RT::Model::Group->new;
     $group->loadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
@@ -791,7 +791,7 @@ sub _AddWatcher {
     }
 
 
-    my ($m_id, $m_msg) = $group->_AddMember(PrincipalId => $principal->id);
+    my ($m_id, $m_msg) = $group->_AddMember(principal_id => $principal->id);
     unless ($m_id) {
         $RT::Logger->error("Failed to add ".$principal->id." as a member of group ".$group->id."\n".$m_msg);
 
@@ -804,7 +804,7 @@ sub _AddWatcher {
 
 # {{{ sub deleteWatcher
 
-=head2 DeleteWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
+=head2 DeleteWatcher { Type => TYPE, principal_id => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
 
 
 Deletes a queue  watcher.  Takes two arguments:
@@ -813,7 +813,7 @@ Type  (one of Requestor,Cc,AdminCc)
 
 and one of
 
-PrincipalId (an RT::Model::Principal Id of the watcher you want to remove)
+principal_id (an RT::Model::Principal Id of the watcher you want to remove)
     OR
 Email (the email address of an existing wathcer)
 
@@ -825,21 +825,21 @@ sub deleteWatcher {
     my $self = shift;
 
     my %args = ( Type => undef,
-                 PrincipalId => undef,
+                 principal_id => undef,
                  @_ );
 
-    unless ($args{'PrincipalId'} ) {
+    unless ($args{'principal_id'} ) {
         return(0, $self->loc("No principal specified"));
     }
-    my $principal = RT::Model::Principal->new($self->current_user);
-    $principal->load($args{'PrincipalId'});
+    my $principal = RT::Model::Principal->new;
+    $principal->load($args{'principal_id'});
 
     # If we can't find this watcher, we need to bail.
     unless ($principal->id) {
         return(0, $self->loc("Could not find that principal"));
     }
 
-    my $group = RT::Model::Group->new($self->current_user);
+    my $group = RT::Model::Group->new;
     $group->loadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
@@ -847,7 +847,7 @@ sub deleteWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->current_user->PrincipalId  eq $args{'PrincipalId'}) {
+    if ( $self->current_user->principal_id  eq $args{'principal_id'}) {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyQueue', bail
   if ( $args{'Type'} eq 'AdminCc' ) {
@@ -897,7 +897,7 @@ sub deleteWatcher {
         return ( 0,    $self->loc('Could not remove that principal as a [_1] for this queue', $args{'Type'}) );
     }
 
-    return ( 1, $self->loc("[_1] is no longer a [_2] for this queue.", $principal->Object->Name, $args{'Type'} ));
+    return ( 1, $self->loc("[_1] is no longer a [_2] for this queue.", $principal->Object->name, $args{'Type'} ));
 }
 
 # }}}
@@ -917,7 +917,7 @@ sub AdminCcAddresses {
         return undef;
     }   
     
-    return ( $self->AdminCc->MemberEmailAddressesAsString )
+    return ( $self->AdminCc->MemberemailesAsString )
     
 }   
 
@@ -938,7 +938,7 @@ sub CcAddresses {
         return undef;
     }
 
-    return ( $self->Cc->MemberEmailAddressesAsString);
+    return ( $self->Cc->MemberemailesAsString);
 
 }
 # }}}
@@ -957,7 +957,7 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub Cc {
     my $self = shift;
 
-    my $group = RT::Model::Group->new($self->current_user);
+    my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
         $group->loadQueueRoleGroup(Type => 'Cc', Queue => $self->id);
     }
@@ -980,7 +980,7 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub AdminCc {
     my $self = shift;
 
-    my $group = RT::Model::Group->new($self->current_user);
+    my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
         $group->loadQueueRoleGroup(Type => 'AdminCc', Queue => $self->id);
     }
@@ -995,13 +995,13 @@ sub AdminCc {
 # {{{ sub IsWatcher
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 
-=head2 IsWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID }
+=head2 IsWatcher { Type => TYPE, principal_id => PRINCIPAL_ID }
 
-Takes a param hash with the attributes Type and PrincipalId
+Takes a param hash with the attributes Type and principal_id
 
 Type is one of Requestor, Cc, AdminCc and Owner
 
-PrincipalId is an RT::Model::Principal id 
+principal_id is an RT::Model::Principal id 
 
 Returns true if that principal is a member of the group Type for this queue
 
@@ -1012,17 +1012,17 @@ sub IsWatcher {
     my $self = shift;
 
     my %args = ( Type  => 'Cc',
-        PrincipalId    => undef,
+        principal_id    => undef,
         @_
     );
 
     # Load the relevant group. 
-    my $group = RT::Model::Group->new($self->current_user);
+    my $group = RT::Model::Group->new;
     $group->loadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
     # Ask if it has the member in question
 
-    my $principal = RT::Model::Principal->new($self->current_user);
-    $principal->load($args{'PrincipalId'});
+    my $principal = RT::Model::Principal->new;
+    $principal->load($args{'principal_id'});
     unless ($principal->id) {
         return (undef);
     }
@@ -1047,7 +1047,7 @@ sub IsCc {
     my $self = shift;
     my $cc   = shift;
 
-    return ( $self->IsWatcher( Type => 'Cc', PrincipalId => $cc ) );
+    return ( $self->IsWatcher( Type => 'Cc', principal_id => $cc ) );
 
 }
 
@@ -1066,7 +1066,7 @@ sub IsAdminCc {
     my $self   = shift;
     my $person = shift;
 
-    return ( $self->IsWatcher( Type => 'AdminCc', PrincipalId => $person ) );
+    return ( $self->IsWatcher( Type => 'AdminCc', principal_id => $person ) );
 
 }
 

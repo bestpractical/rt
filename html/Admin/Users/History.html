@@ -48,20 +48,20 @@
 <& /Admin/Elements/Header, Title => $title  &>
 <& /Admin/Elements/UserTabs, 
     id => $id, 
-    UserObj => $UserObj,
+    user_object => $user_object,
     current_tab => $current_tab, 
     Title => $title &>
 
 <& /Ticket/Elements/ShowHistory,
-    Ticket => $UserObj,
+    Ticket => $user_object,
     ShowDisplayModes => 0,
 &>
 
 <%INIT>
 my $current_tab = 'Admin/Users/History.html?id='.$id;
-my $UserObj = new RT::Model::User($session{'CurrentUser'});
-$UserObj->load($id) || Abort("Couldn't load user '$id'");
-my $title = loc("History of the user [_1]", $UserObj->Name);
+my $user_object = new RT::Model::User(Jifty->web->current_user);
+$user_object->load($id) || Abort("Couldn't load user '$id'");
+my $title = loc("History of the user [_1]", $user_object->name);
 </%INIT>
 <%ARGS>
 $id => ''

@@ -90,11 +90,11 @@ column        InitialPriority => max_length is 11,      type is 'int(11)', defau
 column        FinalPriority => max_length is 11,      type is 'int(11)', default is '0';
 column        Priority => max_length is 11,      type is 'int(11)', default is '0';
 column        TimeEstimated => max_length is 11,      type is 'int(11)', default is '0';
-column        TimeWorked => max_length is 11,      type is 'int(11)', default is '0';
+column        time_worked => max_length is 11,      type is 'int(11)', default is '0';
 column        Status => max_length is 10,      type is 'varchar(10)', default is '';
-column        TimeLeft => max_length is 11,      type is 'int(11)', default is '0';
+column        time_left => max_length is 11,      type is 'int(11)', default is '0';
 column        Told =>       type is 'datetime', default is '';
-column        Starts =>       type is 'datetime', default is '';
+column        starts =>       type is 'datetime', default is '';
 column        Started =>       type is 'datetime', default is '';
 column        Due =>       type is 'datetime', default is '';
 column        Resolved =>       type is 'datetime', default is '';
@@ -102,7 +102,7 @@ column        LastUpdatedBy =>  max_length is 11,      type is 'int(11)', defaul
 column        LastUpdated =>         type is 'datetime', default is '';
 column        Creator =>  max_length is 11,      type is 'int(11)', default is '0';
 column        Created =>         type is 'datetime', default is '';
-column        Disabled => max_length is 6,      type is 'smallint(6)', default is '0';
+column        disabled => max_length is 6,      type is 'smallint(6)', default is '0';
 };
 
 use RT::Model::Queue;
@@ -260,10 +260,10 @@ sub loadByURI {
 Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
   id 
-  Queue  - Either a Queue object or a Queue Name
-  Requestor -  A reference to a list of  email addresses or RT user Names
-  Cc  - A reference to a list of  email addresses or Names
-  AdminCc  - A reference to a  list of  email addresses or Names
+  Queue  - Either a Queue object or a Queue name
+  Requestor -  A reference to a list of  email addresses or RT user names
+  Cc  - A reference to a list of  email addresses or names
+  AdminCc  - A reference to a  list of  email addresses or names
   Type -- The ticket\'s type. ignore this for now
   Owner -- This ticket\'s owner. either an RT::Model::User object or this user\'s id
   Subject -- A string describing the subject of the ticket
@@ -272,9 +272,9 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   FinalPriority -- an integer from 0 to 99
   Status -- any valid status (Defined in RT::Model::Queue)
   TimeEstimated -- an integer. estimated time for this task in minutes
-  TimeWorked -- an integer. time worked so far in minutes
-  TimeLeft -- an integer. time remaining in minutes
-  Starts -- an ISO date describing the ticket\'s start date and time in GMT
+  time_worked -- an integer. time worked so far in minutes
+  time_left -- an integer. time remaining in minutes
+  starts -- an ISO date describing the ticket\'s start date and time in GMT
   Due -- an ISO date describing the ticket\'s due date and time in GMT
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
   CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
@@ -313,11 +313,11 @@ sub create {
         FinalPriority      => undef,
         Priority           => undef,
         Status             => 'new',
-        TimeWorked         => "0",
-        TimeLeft           => 0,
+        time_worked         => "0",
+        time_left           => 0,
         TimeEstimated      => 0,
         Due                => undef,
-        Starts             => undef,
+        starts             => undef,
         Started            => undef,
         Resolved           => undef,
         MIMEObj            => undef,
@@ -328,7 +328,7 @@ sub create {
 
     my ($ErrStr, @non_fatal_errors);
 
-    my $QueueObj = RT::Model::Queue->new( RT->system_user );
+    my $QueueObj = RT::Model::Queue->new(current_user => RT->system_user );
     if ( ref $args{'Queue'} && $args{'Queue'}->isa( 'RT::Model::Queue') ) {
         $QueueObj->load( $args{'Queue'}->id );
     }
@@ -355,7 +355,7 @@ sub create {
     {
         return (
             0, 0,
-            $self->loc( "No permission to create tickets in the queue '[_1]'", $QueueObj->Name));
+            $self->loc( "No permission to create tickets in the queue '[_1]'", $QueueObj->name));
     }
 
     unless ( $QueueObj->IsValidStatus( $args{'Status'} ) ) {
@@ -393,9 +393,9 @@ sub create {
         $Due->AddDays( $due_in );
     }
 
-    my $Starts = new RT::Date( $self->current_user );
-    if ( defined $args{'Starts'} ) {
-        $Starts->set( Format => 'ISO', value => $args{'Starts'} );
+    my $starts = new RT::Date( $self->current_user );
+    if ( defined $args{'starts'} ) {
+        $starts->set( Format => 'ISO', value => $args{'starts'} );
     }
 
     my $Started = new RT::Date( $self->current_user );
@@ -425,8 +425,8 @@ sub create {
     # {{{ Dealing with time fields
 
     $args{'TimeEstimated'} = 0 unless defined $args{'TimeEstimated'};
-    $args{'TimeWorked'}    = 0 unless defined $args{'TimeWorked'};
-    $args{'TimeLeft'}      = 0 unless defined $args{'TimeLeft'};
+    $args{'time_worked'}    = 0 unless defined $args{'time_worked'};
+    $args{'time_left'}      = 0 unless defined $args{'time_left'};
 
     # }}}
 
@@ -445,7 +445,7 @@ sub create {
 
     #If we've been handed something else, try to load the user.
     elsif ( $args{'Owner'} ) {
-        $Owner = RT::Model::User->new( $self->current_user );
+        $Owner = RT::Model::User->new;
         $Owner->load( $args{'Owner'} );
         unless ( $Owner->id ) {
             push @non_fatal_errors,
@@ -487,7 +487,7 @@ sub create {
             } else {
                 my @addresses = Mail::Address->parse( $watcher );
                 foreach my $address( @addresses ) {
-                    my $user = RT::Model::User->new( RT->system_user );
+                    my $user = RT::Model::User->new(current_user => RT->system_user );
                     my ($uid, $msg) = $user->load_or_create_by_email( $address );
                     unless ( $uid ) {
                         push @non_fatal_errors,
@@ -510,11 +510,11 @@ sub create {
         FinalPriority   => $args{'FinalPriority'},
         Priority        => $args{'Priority'},
         Status          => $args{'Status'},
-        TimeWorked      => $args{'TimeWorked'},
+        time_worked      => $args{'time_worked'},
         TimeEstimated   => $args{'TimeEstimated'},
-        TimeLeft        => $args{'TimeLeft'},
+        time_left        => $args{'time_left'},
         Type            => $args{'Type'},
-        Starts          => $Starts->ISO,
+        starts          => $starts->ISO,
         Started         => $Started->ISO,
         Resolved        => $Resolved->ISO,
         Due             => $Due->ISO
@@ -527,14 +527,14 @@ sub create {
 
     # Delete null integer parameters
     foreach my $attr
-        qw(TimeWorked TimeLeft TimeEstimated InitialPriority FinalPriority)
+        qw(time_worked time_left TimeEstimated InitialPriority FinalPriority)
     {
         delete $params{$attr}
           unless ( exists $params{$attr} && $params{$attr} );
     }
 
     # Delete the time worked if we're counting it in the transaction
-    delete $params{'TimeWorked'} if $args{'_RecordTransaction'};
+    delete $params{'time_worked'} if $args{'_RecordTransaction'};
 
     my ($id,$ticket_message) = $self->SUPER::create( %params );
     unless ($id) {
@@ -573,7 +573,7 @@ sub create {
     # We denormalize it into the Ticket table too because doing otherwise would
     # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
     ($val,$msg) = $self->OwnerGroup->_AddMember(
-        PrincipalId       => $Owner->PrincipalId,
+        principal_id       => $Owner->principal_id,
         InsideTransaction => 1
     ) unless $DeferOwner;
 
@@ -591,7 +591,7 @@ sub create {
 
             my ($val, $msg) = $self->$method(
                 Type   => $type,
-                PrincipalId => $watcher,
+                principal_id => $watcher,
                 Silent => 1,
             );
             push @non_fatal_errors, $self->loc("Couldn't set [_1] watcher: [_2]", $type, $msg)
@@ -677,8 +677,8 @@ sub create {
     if (  $DeferOwner ) { 
             if (!$DeferOwner->has_right( Object => $self, Right  => 'OwnTicket')) {
     
-        $RT::Logger->warning( "User " . $Owner->Name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $QueueObj->Name ); 
-        push @non_fatal_errors, $self->loc( "Owner '[_1]' does not have rights to own this ticket.", $Owner->Name);
+        $RT::Logger->warning( "User " . $Owner->name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $QueueObj->name ); 
+        push @non_fatal_errors, $self->loc( "Owner '[_1]' does not have rights to own this ticket.", $Owner->name);
 
     } else {
         $Owner = $DeferOwner;
@@ -686,7 +686,7 @@ sub create {
 
     }
         $self->OwnerGroup->_AddMember(
-            PrincipalId       => $Owner->PrincipalId,
+            principal_id       => $Owner->principal_id,
             InsideTransaction => 1
         );
     }
@@ -696,7 +696,7 @@ sub create {
         # {{{ Add a transaction for the create
         my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
             Type         => "Create",
-            TimeTaken    => $args{'TimeWorked'},
+            TimeTaken    => $args{'time_worked'},
             MIMEObj      => $args{'MIMEObj'},
             CommitScrips => !$args{'DryRun'},
         );
@@ -704,8 +704,8 @@ sub create {
 
             $TransObj->UpdateCustomFields(ARGSRef => \%args);
 
-            $RT::Logger->info( "Ticket " . $self->id . " created in queue '" . $QueueObj->Name . "' by " . $self->current_user->Name );
-            $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->id, $QueueObj->Name );
+            $RT::Logger->info( "Ticket " . $self->id . " created in queue '" . $QueueObj->name . "' by " . $self->current_user->name );
+            $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->id, $QueueObj->name );
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
         }
         else {
@@ -729,7 +729,7 @@ sub create {
 
         # Not going to record a transaction
         Jifty->handle->commit();
-        $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->id, $QueueObj->Name );
+        $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->id, $QueueObj->name );
         $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
         return ( $self->id, 0, $ErrStr );
 
@@ -782,7 +782,7 @@ sub _Parse822HeadersForAttributes {
     }
 
     foreach my $date qw(due starts started resolved) {
-        my $dateobj = RT::Date->new(RT->system_user);
+        my $dateobj = RT::Date->new(current_user => RT->system_user);
         if ( defined ($args{$date}) and $args{$date} =~ /^\d+$/ ) {
             $dateobj->set( Format => 'unix', value => $args{$date} );
         }
@@ -829,7 +829,7 @@ sub Import {
         InitialPriority => undef,
         FinalPriority   => undef,
         Status          => 'new',
-        TimeWorked      => "0",
+        time_worked      => "0",
         Due             => undef,
         Created         => undef,
         Updated         => undef,
@@ -839,11 +839,11 @@ sub Import {
     );
 
     if ( ( defined( $args{'Queue'} ) ) && ( !ref( $args{'Queue'} ) ) ) {
-        $QueueObj = RT::Model::Queue->new(RT->system_user);
+        $QueueObj = RT::Model::Queue->new(current_user => RT->system_user);
         $QueueObj->load( $args{'Queue'} );
     }
     elsif ( ref( $args{'Queue'} ) eq 'RT::Model::Queue' ) {
-        $QueueObj = RT::Model::Queue->new(RT->system_user);
+        $QueueObj = RT::Model::Queue->new(current_user => RT->system_user);
         $QueueObj->load( $args{'Queue'}->id );
     }
     else {
@@ -866,7 +866,7 @@ sub Import {
     {
         return ( 0,
             $self->loc("No permission to create tickets in the queue '[_1]'"
-              , $QueueObj->Name));
+              , $QueueObj->name));
     }
 
     # {{{ Deal with setting the owner
@@ -901,12 +901,12 @@ sub Import {
     {
 
         $RT::Logger->warning( "$self user "
-              . $Owner->Name . "("
+              . $Owner->name . "("
               . $Owner->id
               . ") was proposed "
               . "as a ticket owner but has no rights to own "
               . "tickets in '"
-              . $QueueObj->Name . "'\n" );
+              . $QueueObj->name . "'\n" );
 
         $Owner = undef;
     }
@@ -914,7 +914,7 @@ sub Import {
     #If we haven't been handed a valid owner, make it nobody.
     unless ( defined($Owner) ) {
         $Owner = new RT::Model::User( $self->current_user );
-        $Owner->load( $RT::Nobody->UserObj->id );
+        $Owner->load( $RT::Nobody->user_object->id );
     }
 
     # }}}
@@ -940,7 +940,7 @@ sub Import {
         FinalPriority   => $args{'FinalPriority'},    # loc
         Priority        => $args{'InitialPriority'},    # loc
         Status          => $args{'Status'},        # loc
-        TimeWorked      => $args{'TimeWorked'},        # loc
+        time_worked      => $args{'time_worked'},        # loc
         Type            => $args{'Type'},        # loc
         Created         => $args{'Created'},        # loc
         Told            => $args{'Told'},        # loc
@@ -970,7 +970,7 @@ sub Import {
             "Couldn't create ticket groups for ticket " . $self->id );
     }
 
-    $self->OwnerGroup->_AddMember( PrincipalId => $Owner->PrincipalId );
+    $self->OwnerGroup->_AddMember( principal_id => $Owner->principal_id );
 
     my $watcher;
     foreach $watcher ( @{ $args{'Cc'} } ) {
@@ -1013,7 +1013,7 @@ sub _CreateTicket_groups {
     my @types = qw(Requestor Owner Cc AdminCc);
 
     foreach my $type (@types) {
-        my $type_obj = RT::Model::Group->new($self->current_user);
+        my $type_obj = RT::Model::Group->new;
         my ($id, $msg) = $type_obj->createRoleGroup(Domain => 'RT::Model::Ticket-Role',
                                                        Instance => $self->id, 
                                                        Type => $type);
@@ -1039,7 +1039,7 @@ A constructor which returns an RT::Model::Group object containing the owner of t
 
 sub OwnerGroup {
     my $self = shift;
-    my $owner_obj = RT::Model::Group->new($self->current_user);
+    my $owner_obj = RT::Model::Group->new;
     $owner_obj->load_ticket_role_group( Ticket => $self->id,  Type => 'Owner');
     return ($owner_obj);
 }
@@ -1068,7 +1068,7 @@ sub AddWatcher {
     my $self = shift;
     my %args = (
         Type  => undef,
-        PrincipalId => undef,
+        principal_id => undef,
         Email => undef,
         @_
     );
@@ -1082,17 +1082,17 @@ sub AddWatcher {
         return (0, $self->loc("Couldn't parse address from '[_1] string", $args{'Email'} ))
             unless $addr;
 
-        if ( lc $self->current_user->UserObj->EmailAddress
-            eq lc RT::Model::User->CanonicalizeEmailAddress( $addr->address ) )
+        if ( lc $self->current_user->user_object->email
+            eq lc RT::Model::User->canonicalize_email( $addr->address ) )
         {
-            $args{'PrincipalId'} = $self->current_user->id;
+            $args{'principal_id'} = $self->current_user->id;
             delete $args{'Email'};
         }
     }
 
     # If the watcher isn't the current user then the current user has no right
     # bail
-    unless ( $args{'PrincipalId'} && $self->current_user->id == $args{'PrincipalId'} ) {
+    unless ( $args{'principal_id'} && $self->current_user->id == $args{'principal_id'} ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
@@ -1124,20 +1124,20 @@ sub _AddWatcher {
     my %args = (
         Type   => undef,
         Silent => undef,
-        PrincipalId => undef,
+        principal_id => undef,
         Email => undef,
         @_
     );
 
 
-    my $principal = RT::Model::Principal->new($self->current_user);
+    my $principal = RT::Model::Principal->new;
     if ($args{'Email'}) {
-        my $user = RT::Model::User->new(RT->system_user);
+        my $user = RT::Model::User->new(current_user => RT->system_user);
         my ($pid, $msg) = $user->load_or_create_by_email( $args{'Email'} );
-        $args{'PrincipalId'} = $pid if $pid; 
+        $args{'principal_id'} = $pid if $pid; 
     }
-    if ($args{'PrincipalId'}) {
-        $principal->load($args{'PrincipalId'});
+    if ($args{'principal_id'}) {
+        $principal->load($args{'principal_id'});
     } 
 
  
@@ -1148,7 +1148,7 @@ sub _AddWatcher {
     }
 
 
-    my $group = RT::Model::Group->new($self->current_user);
+    my $group = RT::Model::Group->new;
     $group->load_ticket_role_group(Type => $args{'Type'}, Ticket => $self->id);
     unless ($group->id) {
         return(0,$self->loc("Group not found"));
@@ -1160,7 +1160,7 @@ sub _AddWatcher {
     }
 
 
-    my ( $m_id, $m_msg ) = $group->_AddMember( PrincipalId => $principal->id,
+    my ( $m_id, $m_msg ) = $group->_AddMember( principal_id => $principal->id,
                                                InsideTransaction => 1 );
     unless ($m_id) {
         $RT::Logger->error("Failed to add ".$principal->id." as a member of group ".$group->id."\n".$m_msg);
@@ -1184,7 +1184,7 @@ sub _AddWatcher {
 
 # {{{ sub deleteWatcher
 
-=head2 DeleteWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
+=head2 DeleteWatcher { Type => TYPE, principal_id => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
 
 
 Deletes a Ticket watcher.  Takes two arguments:
@@ -1193,7 +1193,7 @@ Type  (one of Requestor,Cc,AdminCc)
 
 and one of
 
-PrincipalId (an RT::Model::Principal Id of the watcher you want to remove)
+principal_id (an RT::Model::Principal Id of the watcher you want to remove)
     OR
 Email (the email address of an existing wathcer)
 
@@ -1205,20 +1205,20 @@ sub deleteWatcher {
     my $self = shift;
 
     my %args = ( Type        => undef,
-                 PrincipalId => undef,
+                 principal_id => undef,
                  Email       => undef,
                  @_ );
 
-    unless ( $args{'PrincipalId'} || $args{'Email'} ) {
+    unless ( $args{'principal_id'} || $args{'Email'} ) {
         return ( 0, $self->loc("No principal specified") );
     }
-    my $principal = RT::Model::Principal->new( $self->current_user );
-    if ( $args{'PrincipalId'} ) {
+    my $principal = RT::Model::Principal->new;
+    if ( $args{'principal_id'} ) {
 
-        $principal->load( $args{'PrincipalId'} );
+        $principal->load( $args{'principal_id'} );
     }
     else {
-        my $user = RT::Model::User->new( $self->current_user );
+        my $user = RT::Model::User->new;
         $user->load_by_email( $args{'Email'} );
         $principal->load( $user->id );
     }
@@ -1228,7 +1228,7 @@ sub deleteWatcher {
         return ( 0, $self->loc("Could not find that principal") );
     }
 
-    my $group = RT::Model::Group->new( $self->current_user );
+    my $group = RT::Model::Group->new;
     $group->load_ticket_role_group( Type => $args{'Type'}, Ticket => $self->id );
     unless ( $group->id ) {
         return ( 0, $self->loc("Group not found") );
@@ -1236,7 +1236,7 @@ sub deleteWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->current_user->PrincipalId == $principal->id ) {
+    if ( $self->current_user->principal_id == $principal->id ) {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
@@ -1303,7 +1303,7 @@ sub deleteWatcher {
 
     return ( 1,
              $self->loc( "[_1] is no longer a [_2] for this ticket.",
-                         $principal->Object->Name,
+                         $principal->Object->name,
                          $args{'Type'} ) );
 }
 
@@ -1329,15 +1329,15 @@ sub SquelchMailTo {
             return undef;
         }
         my $attr = shift;
-        $self->add_attribute( Name => 'SquelchMailTo', Content => $attr )
+        $self->add_attribute( name => 'SquelchMailTo', Content => $attr )
           unless grep { $_->Content eq $attr }
-          $self->attributes->Named('SquelchMailTo');
+          $self->attributes->named('SquelchMailTo');
 
     }
     unless ( $self->current_user_has_right('ShowTicket') ) {
         return undef;
     }
-    my @attributes = $self->attributes->Named('SquelchMailTo');
+    my @attributes = $self->attributes->named('SquelchMailTo');
     return (@attributes);
 }
 
@@ -1358,7 +1358,7 @@ sub UnsquelchMailTo {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my ($val, $msg) = $self->attributes->delete_entry ( Name => 'SquelchMailTo', Content => $address);
+    my ($val, $msg) = $self->attributes->delete_entry ( name => 'SquelchMailTo', Content => $address);
     return ($val, $msg);
 }
 
@@ -1378,7 +1378,7 @@ sub RequestorAddresses {
         return undef;
     }
 
-    return ( $self->Requestors->MemberEmailAddressesAsString );
+    return ( $self->Requestors->MemberemailesAsString );
 }
 
 
@@ -1395,7 +1395,7 @@ sub AdminCcAddresses {
         return undef;
     }
 
-    return ( $self->AdminCc->MemberEmailAddressesAsString )
+    return ( $self->AdminCc->MemberemailesAsString )
 
 }
 
@@ -1411,7 +1411,7 @@ sub CcAddresses {
     unless ( $self->current_user_has_right('ShowTicket') ) {
         return undef;
     }
-    return ( $self->Cc->MemberEmailAddressesAsString);
+    return ( $self->Cc->MemberemailesAsString);
 
 }
 
@@ -1431,7 +1431,7 @@ Returns this ticket's Requestors as an RT::Model::Group object
 sub Requestors {
     my $self = shift;
 
-    my $group = RT::Model::Group->new($self->current_user);
+    my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('ShowTicket') ) {
         $group->load_ticket_role_group(Type => 'Requestor', Ticket => $self->id);
     }
@@ -1454,7 +1454,7 @@ If the user doesn't have "ShowTicket" permission, returns an empty group
 sub Cc {
     my $self = shift;
 
-    my $group = RT::Model::Group->new($self->current_user);
+    my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('ShowTicket') ) {
         $group->load_ticket_role_group(Type => 'Cc', Ticket => $self->id);
     }
@@ -1476,7 +1476,7 @@ If the user doesn't have "ShowTicket" permission, returns an empty group
 
 sub AdminCc {
     my $self = shift;
-    my $group = RT::Model::Group->new($self->current_user);
+    my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('ShowTicket') ) {
         $group->load_ticket_role_group(Type => 'AdminCc', Ticket => $self->id);
     }
@@ -1493,13 +1493,13 @@ sub AdminCc {
 # {{{ sub IsWatcher
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 
-=head2 IsWatcher { Type => TYPE, PrincipalId => PRINCIPAL_ID, Email => EMAIL }
+=head2 IsWatcher { Type => TYPE, principal_id => PRINCIPAL_ID, Email => EMAIL }
 
-Takes a param hash with the attributes Type and either PrincipalId or Email
+Takes a param hash with the attributes Type and either principal_id or Email
 
 Type is one of Requestor, Cc, AdminCc and Owner
 
-PrincipalId is an RT::Model::Principal id, and Email is an email address.
+principal_id is an RT::Model::Principal id, and Email is an email address.
 
 Returns true if the specified principal (or the one corresponding to the
 specified address) is a member of the group Type for this ticket.
@@ -1512,30 +1512,30 @@ sub IsWatcher {
     my $self = shift;
 
     my %args = ( Type  => 'Requestor',
-        PrincipalId    => undef,
+        principal_id    => undef,
         Email          => undef,
         @_
     );
 
     # Load the relevant group. 
-    my $group = RT::Model::Group->new($self->current_user);
+    my $group = RT::Model::Group->new;
     $group->load_ticket_role_group(Type => $args{'Type'}, Ticket => $self->id);
 
     # Find the relevant principal.
-    my $principal = RT::Model::Principal->new($self->current_user);
-    if (!$args{PrincipalId} && $args{Email}) {
+    my $principal = RT::Model::Principal->new;
+    if (!$args{principal_id} && $args{Email}) {
         # Look up the specified user.
-        my $user = RT::Model::User->new($self->current_user);
+        my $user = RT::Model::User->new;
         $user->load_by_email($args{Email});
         if ($user->id) {
-            $args{PrincipalId} = $user->PrincipalId;
+            $args{principal_id} = $user->principal_id;
         }
         else {
             # A non-existent user can't be a group member.
             return 0;
         }
     }
-    $principal->load($args{'PrincipalId'});
+    $principal->load($args{'principal_id'});
 
     # Ask if it has the member in question
     return ($group->has_member($principal));
@@ -1557,7 +1557,7 @@ sub IsRequestor {
     my $self   = shift;
     my $person = shift;
 
-    return ( $self->IsWatcher( Type => 'Requestor', PrincipalId => $person ) );
+    return ( $self->IsWatcher( Type => 'Requestor', principal_id => $person ) );
 
 };
 
@@ -1577,7 +1577,7 @@ sub IsCc {
     my $self = shift;
     my $cc   = shift;
 
-    return ( $self->IsWatcher( Type => 'Cc', PrincipalId => $cc ) );
+    return ( $self->IsWatcher( Type => 'Cc', principal_id => $cc ) );
 
 }
 
@@ -1596,7 +1596,7 @@ sub IsAdminCc {
     my $self   = shift;
     my $person = shift;
 
-    return ( $self->IsWatcher( Type => 'AdminCc', PrincipalId => $person ) );
+    return ( $self->IsWatcher( Type => 'AdminCc', principal_id => $person ) );
 
 }
 
@@ -1642,7 +1642,7 @@ sub IsOwner {
 
 =head2 TransactionAddresses
 
-Returns a composite hashref of the results of L<RT::Model::Transaction/Addresses> for all this ticket's Create, Comment or Correspond transactions.
+Returns a composite hashref of the results of L<RT::Model::Transaction/Addresses> for all this ticket's Create, comment or Correspond transactions.
 The keys are C<To>, C<Cc> and C<Bcc>. The values are lists of C<Mail::Address> objects.
 
 NOTE: For performance reasons, this method might want to skip transactions and go straight for attachments. But to make that work right, we're going to need to go and walk around the access control in Attachment.pm's sub _value.
@@ -1655,7 +1655,7 @@ sub TransactionAddresses {
     my $txns = $self->Transactions;
 
     my %addresses = ();
-    foreach my $type (qw(Create Comment Correspond)) {
+    foreach my $type (qw(Create comment Correspond)) {
     $txns->limit(column => 'Type', operator => '=', value => $type , entry_aggregator => 'OR', case_sensitive => 1);
         }
 
@@ -1690,7 +1690,7 @@ sub validate_Queue {
         return (1);
     }
 
-    my $QueueObj = RT::Model::Queue->new( $self->current_user );
+    my $QueueObj = RT::Model::Queue->new;
     my $id       = $QueueObj->load($Value);
 
     if ($id) {
@@ -1714,7 +1714,7 @@ sub set_Queue {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my $NewQueueObj = RT::Model::Queue->new( $self->current_user );
+    my $NewQueueObj = RT::Model::Queue->new;
     $NewQueueObj->load($NewQueue);
 
     unless ( $NewQueueObj->id() ) {
@@ -1741,7 +1741,7 @@ sub set_Queue {
         )
       )
     {
-        my $clone = RT::Model::Ticket->new( RT->system_user );
+        my $clone = RT::Model::Ticket->new(current_user => RT->system_user );
         $clone->load( $self->id );
         unless ( $clone->id ) {
             return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->id) );
@@ -1766,7 +1766,7 @@ Takes nothing. returns this ticket's queue object
 sub QueueObj {
     my $self = shift;
 
-    my $queue_obj = RT::Model::Queue->new( $self->current_user );
+    my $queue_obj = RT::Model::Queue->new;
 
     #We call __value so that we can avoid the ACL decision and some deep recursion
     my ($result) = $queue_obj->load( $self->__value('Queue') );
@@ -1903,20 +1903,20 @@ sub StartedObj {
 
 # }}}
 
-# {{{ sub StartsObj
+# {{{ sub startsObj
 
-=head2 StartsObj
+=head2 startsObj
 
   Returns an RT::Date object which contains this ticket's 
-'Starts' time.
+'starts' time.
 
 =cut
 
-sub StartsObj {
+sub startsObj {
     my $self = shift;
 
     my $time = new RT::Date( $self->current_user );
-    $time->set( Format => 'sql', value => $self->Starts );
+    $time->set( Format => 'sql', value => $self->starts );
     return $time;
 }
 
@@ -1963,17 +1963,17 @@ sub ToldAsString {
 
 # }}}
 
-# {{{ sub TimeWorkedAsString
+# {{{ sub time_workedAsString
 
-=head2 TimeWorkedAsString
+=head2 time_workedAsString
 
 Returns the amount of time worked on this ticket as a Text String
 
 =cut
 
-sub TimeWorkedAsString {
+sub time_workedAsString {
     my $self = shift;
-    return "0" unless $self->TimeWorked;
+    return "0" unless $self->time_worked;
 
     #This is not really a date object, but if we diff a number of seconds 
     #vs the epoch, we'll get a nice description of time worked.
@@ -1983,7 +1983,7 @@ sub TimeWorkedAsString {
     #return the  #of minutes worked turned into seconds and written as
     # a simple text string
 
-    return ( $worked->DurationAsString( $self->TimeWorked * 60 ) );
+    return ( $worked->DurationAsString( $self->time_worked * 60 ) );
 }
 
 # }}}
@@ -1992,11 +1992,11 @@ sub TimeWorkedAsString {
 
 # {{{ Routines dealing with correspondence/comments
 
-# {{{ sub Comment
+# {{{ sub comment
 
-=head2 Comment
+=head2 comment
 
-Comment on this ticket.
+comment on this ticket.
 Takes a hashref with the following attributes:
 If MIMEObj is undefined, Content will be used to build a MIME::Entity for this
 commentl
@@ -2011,7 +2011,7 @@ Returns: Transaction id, Error Message, Transaction Object
 
 =cut
 
-sub Comment {
+sub comment {
     my $self = shift;
 
     my %args = ( CcMessageTo  => undef,
@@ -2022,11 +2022,11 @@ sub Comment {
                  DryRun     => 0, 
                  @_ );
 
-    unless (    ( $self->current_user_has_right('CommentOnTicket') )
+    unless (    ( $self->current_user_has_right('commentOnTicket') )
              or ( $self->current_user_has_right('ModifyTicket') ) ) {
         return ( 0, $self->loc("Permission Denied"), undef );
     }
-    $args{'NoteType'} = 'Comment';
+    $args{'NoteType'} = 'comment';
 
     if ($args{'DryRun'}) {
         Jifty->handle->begin_transaction();
@@ -2142,11 +2142,11 @@ sub _RecordNote {
     # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and
     # RT-Send-Bcc: headers
 
-    # XXX: 'CcMessageTo' is EmailAddress line, so most probably here is bug
-    # as CanonicalizeEmailAddress expect only one address at a time
+    # XXX: 'CcMessageTo' is email line, so most probably here is bug
+    # as canonicalize_email expect only one address at a time
     foreach my $field (qw(Cc Bcc)) {
         $args{'MIMEObj'}->head->add(
-            "RT-Send-$field" => RT::Model::User->CanonicalizeEmailAddress( $args{ $field .'MessageTo' } )
+            "RT-Send-$field" => RT::Model::User->canonicalize_email( $args{ $field .'MessageTo' } )
         ) if defined $args{ $field . 'MessageTo' };
     }
 
@@ -2160,7 +2160,7 @@ sub _RecordNote {
     # If this is from an external source, we need to come up with its
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
-    my $org = RT->Config->Get('Organization');
+    my $org = RT->Config->Get('organization');
     
     
     
@@ -2305,7 +2305,7 @@ sub delete_link {
         $direction = 'Base';
     } 
 
-    my $remote_uri = RT::URI->new( $self->current_user );
+    my $remote_uri = RT::URI->new;
     $remote_uri->FromURI( $remote_link );
 
     unless ( $args{ 'Silent'. $direction } ) {
@@ -2392,7 +2392,7 @@ sub __GetTicketFromURI {
 
     # If the other URI is an RT::Model::Ticket, we want to make sure the user
     # can modify it too...
-    my $uri_obj = RT::URI->new( $self->current_user );
+    my $uri_obj = RT::URI->new;
     $uri_obj->FromURI( $args{'URI'} );
 
     unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
@@ -2436,7 +2436,7 @@ sub _AddLink {
         $direction    = 'Target';
     }
 
-    my $remote_uri = RT::URI->new( $self->current_user );
+    my $remote_uri = RT::URI->new;
     $remote_uri->FromURI( $remote_link );
 
     unless ( $args{ 'Silent'. $direction } ) {
@@ -2487,7 +2487,7 @@ sub MergeInto {
     }
 
     # Load up the new ticket.
-    my $MergeInto = RT::Model::Ticket->new(RT->system_user);
+    my $MergeInto = RT::Model::Ticket->new(current_user => RT->system_user);
     $MergeInto->load($ticket_id);
 
     # make sure it exists.
@@ -2549,7 +2549,7 @@ sub MergeInto {
             $link->delete;
         } else {
             # First, make sure the link doesn't already exist. then move it over.
-            my $tmp = RT::Model::Link->new(RT->system_user);
+            my $tmp = RT::Model::Link->new(current_user => RT->system_user);
             $tmp->load_by_cols(Base => $link->Base, Type => $link->Type, LocalTarget => $MergeInto->id);
             if ($tmp->id)   {
                     $link->delete;
@@ -2573,7 +2573,7 @@ sub MergeInto {
             $link->delete;
         } else {
             # First, make sure the link doesn't already exist. then move it over.
-            my $tmp = RT::Model::Link->new(RT->system_user);
+            my $tmp = RT::Model::Link->new(current_user => RT->system_user);
             $tmp->load_by_cols(Target => $link->Target, Type => $link->Type, LocalBase => $MergeInto->id);
             if ($tmp->id)   {
                     $link->delete;
@@ -2587,7 +2587,7 @@ sub MergeInto {
     }
 
     # Update time fields
-    foreach my $type qw(TimeEstimated TimeWorked TimeLeft) {
+    foreach my $type qw(TimeEstimated time_worked time_left) {
 
         my $mutator = "set_$type";
         $MergeInto->$mutator(
@@ -2606,7 +2606,7 @@ sub MergeInto {
            my ($val, $msg) =  $MergeInto->_AddWatcher(
                 Type        => $addwatcher_type,
                 Silent => 1,
-                PrincipalId => $watcher->MemberId
+                principal_id => $watcher->MemberId
             );
             unless ($val) {
                 $RT::Logger->warning($msg);
@@ -2681,7 +2681,7 @@ Returns the owner's email address
 
 sub OwnerAsString {
     my $self = shift;
-    return ( $self->OwnerObj->EmailAddress );
+    return ( $self->OwnerObj->email );
 
 }
 
@@ -2692,7 +2692,7 @@ sub OwnerAsString {
 =head2 SetOwner
 
 Takes two arguments:
-     the Id or Name of the owner 
+     the Id or name of the owner 
 and  (optionally) the type of the SetOwner Transaction. It defaults
 to 'Give'.  'Steal' is also a valid option.
 
@@ -2711,7 +2711,7 @@ sub set_Owner {
 
     my $OldOwnerObj = $self->OwnerObj;
 
-    my $NewOwnerObj = RT::Model::User->new( $self->current_user );
+    my $NewOwnerObj = RT::Model::User->new;
     $NewOwnerObj->load( $NewOwner );
     unless ( $NewOwnerObj->id ) {
         Jifty->handle->rollback();
@@ -2784,7 +2784,7 @@ sub set_Owner {
         return ( 0, $self->loc("Could not change owner. ") . $del_id );
     }
     my ( $add_id, $add_msg ) = $self->OwnerGroup->_AddMember(
-                                       PrincipalId => $NewOwnerObj->PrincipalId,
+                                       principal_id => $NewOwnerObj->principal_id,
                                        InsideTransaction => 1 );
     unless ($add_id) {
         Jifty->handle->rollback();
@@ -2818,7 +2818,7 @@ sub set_Owner {
 
     if ( $val ) {
         $msg = $self->loc( "Owner changed from [_1] to [_2]",
-                           $OldOwnerObj->Name, $NewOwnerObj->Name );
+                           $OldOwnerObj->name, $NewOwnerObj->name );
     }
     else {
         Jifty->handle->rollback();
@@ -2857,7 +2857,7 @@ Convenience method to set the owner to 'nobody' if the current user is the owner
 
 sub Untake {
     my $self = shift;
-    return ( $self->set_Owner( $RT::Nobody->UserObj->id, 'Untake' ) );
+    return ( $self->set_Owner( $RT::Nobody->user_object->id, 'Untake' ) );
 }
 
 # }}}
@@ -2956,7 +2956,7 @@ sub set_Status {
     unless ( $self->validate_Status( $args{'Status'} ) ) { return ( 0, $self->loc("'[_1]' is an invalid value for status", $args{'Status'}) ); }
 
 
-    my $now = RT::Date->new( $self->current_user );
+    my $now = RT::Date->new;
     $now->set_to_now();
 
     #If we're changing the status from new, record that we've started
@@ -3133,7 +3133,7 @@ sub SeenUpTo {
     return if $attr && $attr->Content gt $self->LastUpdated;
 
     my $txns = $self->Transactions;
-    $txns->limit( column => 'Type', value => 'Comment' );
+    $txns->limit( column => 'Type', value => 'comment' );
     $txns->limit( column => 'Type', value => 'Correspond' );
     $txns->limit( column => 'Creator', operator => '!=', value => $uid );
     $txns->limit(
@@ -3178,7 +3178,7 @@ sub DESTROY {
     return unless @$batch;
 
     require RT::Model::ScripCollection;
-    RT::Model::ScripCollection->new(RT->system_user)->Apply(
+    RT::Model::ScripCollection->new(current_user => RT->system_user)->Apply(
     Stage        => 'TransactionBatch',
     TicketObj    => $self,
     TransactionObj    => $batch->[0],
@@ -3204,12 +3204,12 @@ sub _OverlayAccessible {
           Priority        => { 'read' => 1,  'write' => 1 },
           Status          => { 'read' => 1,  'write' => 1 },
           TimeEstimated      => { 'read' => 1,  'write' => 1 },
-          TimeWorked      => { 'read' => 1,  'write' => 1 },
-          TimeLeft        => { 'read' => 1,  'write' => 1 },
+          time_worked      => { 'read' => 1,  'write' => 1 },
+          time_left        => { 'read' => 1,  'write' => 1 },
           Told            => { 'read' => 1,  'write' => 1 },
           Resolved        => { 'read' => 1 },
           Type            => { 'read' => 1 },
-          Starts        => { 'read' => 1, 'write' => 1 },
+          starts        => { 'read' => 1, 'write' => 1 },
           Started       => { 'read' => 1, 'write' => 1 },
           Due           => { 'read' => 1, 'write' => 1 },
           Creator       => { 'read' => 1, 'auto'  => 1 },
@@ -3324,7 +3324,7 @@ sub _value {
 
 =head2 _UpdateTimeTaken
 
-This routine will increment the timeworked counter. it should
+This routine will increment the time_worked counter. it should
 only be called from _NewTransaction 
 
 =cut
@@ -3334,10 +3334,10 @@ sub _UpdateTimeTaken {
     my $Minutes = shift;
     my ($Total);
 
-    $Total = $self->SUPER::_value("TimeWorked");
+    $Total = $self->SUPER::_value("time_worked");
     $Total = ( $Total || 0 ) + ( $Minutes || 0 );
     $self->SUPER::_set(
-        column => "TimeWorked",
+        column => "time_worked",
         value => $Total
     );
 
@@ -3363,7 +3363,7 @@ sub current_user_has_right {
     my $self  = shift;
     my $right = shift;
 
-    return $self->current_user->PrincipalObj->has_right(
+    return $self->current_user->principal_object->has_right(
         Object => $self,
         Right  => $right,
     )
@@ -3421,7 +3421,7 @@ sub Reminders {
     my $self = shift;
     
     unless ($self->{'__reminders'}) {
-        $self->{'__reminders'} = RT::Reminders->new($self->current_user);
+        $self->{'__reminders'} = RT::Reminders->new;
         $self->{'__reminders'}->Ticket($self->id);
     }
     return $self->{'__reminders'};
@@ -3441,25 +3441,25 @@ sub Reminders {
 sub Transactions {
     my $self = shift;
 
-    my $transactions = RT::Model::TransactionCollection->new( $self->current_user );
+    my $transactions = RT::Model::TransactionCollection->new;
 
     #If the user has no rights, return an empty object
     if ( $self->current_user_has_right('ShowTicket') ) {
         $transactions->LimitToTicket($self->id);
 
         # if the user may not see comments do not return them
-        unless ( $self->current_user_has_right('ShowTicketComments') ) {
+        unless ( $self->current_user_has_right('ShowTicketcomments') ) {
             $transactions->limit(
                 subclause => 'acl',
                 column    => 'Type',
                 operator => '!=',
-                value    => "Comment"
+                value    => "comment"
             );
             $transactions->limit(
                 subclause => 'acl',
                 column    => 'Type',
                 operator => '!=',
-                value    => "CommentEmailRecord",
+                value    => "commentEmailRecord",
                 entry_aggregator => 'AND'
             );
 
@@ -3502,14 +3502,14 @@ sub CustomFieldValues {
     my $self  = shift;
     my $field = shift;
     if ( $field and $field !~ /^\d+$/ ) {
-        my $cf = RT::Model::CustomField->new( $self->current_user );
-        $cf->load_by_name_and_queue( Name => $field, Queue => $self->Queue );
+        my $cf = RT::Model::CustomField->new;
+        $cf->load_by_name_and_queue( name => $field, Queue => $self->Queue );
         unless ( $cf->id ) {
-            $cf->load_by_name_and_queue( Name => $field, Queue => 0 );
+            $cf->load_by_name_and_queue( name => $field, Queue => 0 );
         }
         unless ( $cf->id ) {
             # If we didn't find a valid cfid, give up.
-            return RT::Model::CustomFieldValueCollection->new($self->current_user);
+            return RT::Model::CustomFieldValueCollection->new;
         }
     }
     return $self->SUPER::CustomFieldValues($field);

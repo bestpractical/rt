@@ -62,12 +62,12 @@ sub ExternalValues {
 
     my @res;
     my $i = 0;
-    my $groups = RT::Model::GroupCollection->new( $self->current_user );
+    my $groups = RT::Model::GroupCollection->new;
     $groups->LimitToUserDefinedGroups;
-    $groups->order_by( { column => 'Name' } );
+    $groups->order_by( { column => 'name' } );
     while( my $group = $groups->next ) {
         push @res, {
-            name        => $group->Name,
+            name        => $group->name,
             description => $group->Description,
             sortorder   => $i++,
         };

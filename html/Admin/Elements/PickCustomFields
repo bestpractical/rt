@@ -60,8 +60,8 @@
 %   }
   <td valign="top">
     <a href="<% RT->Config->Get('WebPath') %>/Admin/CustomFields/Modify.html?id=<%$CustomFieldObj->id()%>">
-% if ($CustomFieldObj->Name) {
-<b><%$CustomFieldObj->Name%></b>
+% if ($CustomFieldObj->name) {
+<b><%$CustomFieldObj->name%></b>
 % } else {
 <i>(<&|/l&>no name</&>)</i>
 % }

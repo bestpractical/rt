@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::CurrentUser - an RT object representing the current user
 
@@ -62,7 +62,7 @@
     my $current_user = RT::CurrentUser->new( $address || $name || $id );
 
     # manipulation
-    $current_user->UserObj->set_Name('new_name');
+    $current_user->user_object->set_name('new_name');
 
 
 =head1 DESCRIPTION
@@ -92,32 +92,7 @@ use RT::I18N;
 use strict;
 use warnings;
 
-use base qw/RT::Model::User Jifty::CurrentUser/;
-
-#The basic idea here is that $self->current_user is always supposed
-# to be a CurrentUser object. but that's hard to do when we're trying to load
-# the CurrentUser object
-sub new {
-    my $self = shift->SUPER::new(@_);
-    my $User = shift;
-
-
-    if ( defined $User ) {
-
-        if ( UNIVERSAL::isa( $User, 'RT::Model::User' ) ) {
-            $self->load_by_id( $User->id );
-        }
-        elsif ( ref $User ) {
-            $RT::Logger->crit(
-                "RT::CurrentUser->new() called with a bogus argument: $User");
-        }
-        else {
-            $self->load( $User );
-        }
-    }
-
-    return $self;
-}
+use base qw/Jifty::CurrentUser/;
 
 =head2 Create, Delete and Set*
 
@@ -145,24 +120,6 @@ sub _set {
     return (0, $self->loc('Permission Denied'));
 }
 
-=head2 UserObj
-
-Returns the L<RT::Model::User> object associated with this CurrentUser object.
-
-=cut
-
-sub UserObj {
-    my $self = shift;
-
-    my $user = RT::Model::User->new( $self );
-    unless ( $user->load_by_id( $self->id ) ) {
-        $RT::Logger->error(
-            $self->loc("Couldn't load [_1] from the users database.\n", $self->id)
-        );
-    }
-    return $user;
-}
-
 
 =head2 LoadByGecos
 
@@ -173,19 +130,19 @@ Takes a unix username as its only argument.
 
 sub loadByGecos  {
     my $self = shift;
-    return $self->load_by_cols( "Gecos", shift );
+    return $self->new( "Gecos", shift );
 }
 
 =head2 load_by_name
 
 Loads a User into this CurrentUser object.
-Takes a Name.
+Takes a name.
 
 =cut
 
 sub load_by_name {
     my $self = shift;
-    return $self->load_by_cols( "Name", shift );
+    return $self->new( "name", shift );
 }
 
 =head2 LanguageHandle
@@ -283,8 +240,8 @@ sub Authenticate {
     require Digest::SHA1;
     require MIME::Base64;
 
-    my $username = $self->UserObj->Name or return;
-    my $server_pass = $self->UserObj->__value('Password') or return;
+    my $username = $self->user_object->name or return;
+    my $server_pass = $self->user_object->__value('password') or return;
     my $auth_digest = MIME::Base64::encode_base64(Digest::SHA1::sha1(
         $nonce .
         $Created .

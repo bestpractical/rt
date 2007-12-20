@@ -45,21 +45,21 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc('Modify group rights for group [_1]', $GroupObj->Name) &>
+<& /Admin/Elements/Header, Title => loc('Modify group rights for group [_1]', $GroupObj->name) &>
 <& /Admin/Elements/GroupTabs, 
     GroupObj => $GroupObj, 
     current_tab => 'Admin/Groups/GroupRights.html?id='.$id, 
-    Title => loc('Modify group rights for group [_1]', $GroupObj->Name) &>
+    Title => loc('Modify group rights for group [_1]', $GroupObj->name) &>
 <& /Elements/ListActions, actions => \@results &>
 
   <form method="post" action="GroupRights.html">
     <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>" />
       
-<&| /Widgets/TitleBox, title => loc('Modify group rights for group [_1]', $GroupObj->Name) &>
+<&| /Widgets/TitleBox, title => loc('Modify group rights for group [_1]', $GroupObj->name) &>
       
 <h1><&|/l&>System groups</&></h1>
 <table>
-% $Groups = RT::Model::GroupCollection->new($session{'CurrentUser'});
+% $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
 % $Groups->LimitToSystemInternalGroups();
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
@@ -67,8 +67,8 @@
 	    <% loc($Group->Type) %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
-        PrincipalType => 'Group',
+	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+        principal_type => 'Group',
         Object => $GroupObj  &>
 	  </td>
 	</tr>
@@ -76,16 +76,16 @@
 </table>
 <h1><&|/l&>User defined groups</&></h1>
 <table>
-% $Groups = RT::Model::GroupCollection->new($session{'CurrentUser'});
+% $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
 % $Groups->LimitToUserDefinedGroups();    
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
-	    <% $Group->Name %>
+	    <% $Group->name %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
-        PrincipalType => 'Group',
+	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+        principal_type => 'Group',
         Object => $GroupObj  &>
 	  </td>
 	</tr>
@@ -107,7 +107,7 @@ if (!defined $id) {
     Abort(loc("No Group defined"));
 }
 
-my $GroupObj = RT::Model::Group->new($session{'CurrentUser'});
+my $GroupObj = RT::Model::Group->new(Jifty->web->current_user);
 $GroupObj->load($id) || Abort(loc("Couldn't load group [_1]",$id));
 
 my $Groups;

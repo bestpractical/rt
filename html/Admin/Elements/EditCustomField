@@ -54,9 +54,9 @@
 
 <table width="100%" border="0">
 <tr><td align="right">
-<&|/l&>Name</&>:
+<&|/l&>name</&>:
 </td><td>
-<input name="Name" value="<%$CustomFieldObj->Name%>" size="20" />
+<input name="name" value="<%$CustomFieldObj->name%>" size="20" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Description</&>:
@@ -66,7 +66,7 @@
 <tr><td align="right">
 <&|/l&>Type</&>:
 </td><td>
-<& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
+<& /Admin/Elements/SelectCustomFieldType, name => "Type", Default => $CustomFieldObj->Type &>
 </td></tr>
 <tr><td>
 </td><td>
@@ -90,7 +90,7 @@
 
 <%INIT>
 
-my $CustomFieldObj = RT::Model::CustomField->new($session{'CurrentUser'});
+my $CustomFieldObj = RT::Model::CustomField->new(Jifty->web->current_user);
 my $EnabledChecked = "CHECKED";
 my (@results);
 
@@ -101,7 +101,7 @@ if (! $CustomField ) {
 
     if ($CustomField eq 'new') {
       my ($val, $msg) =  $CustomFieldObj->create(Queue => $Queue, 
-                                                 Name => $Name, 
+                                                 name => $name, 
                                                  Type => $Type,
                                                  Description => $Description,
 						 );
@@ -116,10 +116,10 @@ if (! $CustomField ) {
       }
       push @results, $msg;
       $CustomFieldObj->set_SortOrder($CustomFieldObj->id);
-      $title = loc('Created CustomField [_1]', $CustomFieldObj->Name()); 
+      $title = loc('Created CustomField [_1]', $CustomFieldObj->name()); 
     } else {
       $CustomFieldObj->load($CustomField) || Abort(loc('No CustomField'));
-      $title = loc('Editing CustomField [_1]', $CustomFieldObj->Name()); 
+      $title = loc('Editing CustomField [_1]', $CustomFieldObj->name()); 
 
       my @aresults = ProcessCustomFieldUpdates ( 
                         CustomFieldObj => $CustomFieldObj,
@@ -131,14 +131,14 @@ if (! $CustomField ) {
 $id = $CustomFieldObj->id;
 
   #we're asking about enabled on the web page but really care about disabled.
-  my $Disabled = ($Enabled ? 0 : 1);
+  my $disabled = ($Enabled ? 0 : 1);
 
-  if  ( ($SetEnabled) and ( $Disabled != $CustomFieldObj->Disabled) ) { 
-      my  ($code, $msg) = $CustomFieldObj->set_Disabled($Disabled);
+  if  ( ($SetEnabled) and ( $disabled != $CustomFieldObj->disabled) ) { 
+      my  ($code, $msg) = $CustomFieldObj->set_disabled($disabled);
       push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
   }
   
-  if ($CustomFieldObj->Disabled()) {
+  if ($CustomFieldObj->disabled()) {
       $EnabledChecked ="";
   }
 
@@ -153,7 +153,7 @@ $Queue => undef
 $CustomField => undef
 $Type => undef
 $Description => undef
-$Name => undef
+$name => undef
 $SetEnabled => undef
 $Enabled => undef
 </%ARGS>

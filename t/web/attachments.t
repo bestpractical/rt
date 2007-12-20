@@ -12,7 +12,7 @@ ok $m->login, 'logged in';
 my $queue_name = 'General';
 my $qid;
 {
-    $m->content =~ /<SELECT\s+NAME\s*="Queue"\s*>.*?<OPTION\s+value="(\d+)".*?>\s*\Q$queue_name\E\s*<\/OPTION>/msig;
+    $m->content =~ /<SELECT\s+name\s*="Queue"\s*>.*?<OPTION\s+value="(\d+)".*?>\s*\Q$queue_name\E\s*<\/OPTION>/msig;
     ok( $qid = $1, "found id of the '$queue_name' queue");
 }
 

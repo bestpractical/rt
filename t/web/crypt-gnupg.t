@@ -11,14 +11,14 @@ RT::Test->set_mail_catcher;
 
 RT->Config->set( LogToScreen => 'debug' );
 RT->Config->set( LogStackTraces => 'error' );
-RT->Config->set( CommentAddress => 'general@example.com');
+RT->Config->set( commentAddress => 'general@example.com');
 RT->Config->set( CorrespondAddress => 'general@example.com');
 RT->Config->set( DefaultSearchResultFormat => qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-   'OO-__OwnerName__-O',
+   'OO-__Ownername__-O',
    'OR-__Requestors__-O',
-   'KO-__KeyOwnerName__-K',
+   'KO-__KeyOwnername__-K',
    'KR-__KeyRequestors__-K',
    Status});
 
@@ -46,12 +46,12 @@ RT::Test->import_gnupg_key('general@example.com', 'secret');
 RT::Test->import_gnupg_key('general@example.com.2', 'public');
 RT::Test->import_gnupg_key('general@example.com.2', 'secret');
 
-ok(my $user = RT::Model::User->new(RT->system_user));
+ok(my $user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
-$user->set_EmailAddress('recipient@example.com');
+$user->set_email('recipient@example.com');
 
 my $queue = RT::Test->load_or_create_queue(
-    Name              => 'General',
+    name              => 'General',
     CorrespondAddress => 'general@example.com',
 );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -87,7 +87,7 @@ $m->get($baseurl); # ensure that the mail has been processed
 my @mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
 
-$user->set_EmailAddress('general@example.com');
+$user->set_email('general@example.com');
 for my $mail (@mail) {
     unlike $mail, qr/Some content/, "outgoing mail was encrypted";
 
@@ -109,7 +109,7 @@ MAIL
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( RT->system_user );
+    my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -177,7 +177,7 @@ MAIL
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( RT->system_user );
+    my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -248,7 +248,7 @@ MAIL
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( RT->system_user );
+    my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -314,7 +314,7 @@ MAIL
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( RT->system_user );
+    my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -350,18 +350,18 @@ sub strip_headers
     return $mail;
 }
 
-# now test the OwnerNameKey and RequestorsKey fields
+# now test the OwnernameKey and RequestorsKey fields
 
-my $nokey = RT::Test->load_or_create_user(Name => 'nokey', EmailAddress => 'nokey@example.com');
-$nokey->PrincipalObj->GrantRight(Right => 'CreateTicket');
-$nokey->PrincipalObj->GrantRight(Right => 'OwnTicket');
+my $nokey = RT::Test->load_or_create_user(name => 'nokey', email => 'nokey@example.com');
+$nokey->principal_object->GrantRight(Right => 'CreateTicket');
+$nokey->principal_object->GrantRight(Right => 'OwnTicket');
 
-my $tick = RT::Model::Ticket->new( RT->system_user );
+my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
 $tick->create(Subject => 'owner lacks pubkey', Queue => 'general',
               Owner => $nokey);
 ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
 
-$tick = RT::Model::Ticket->new( RT->system_user );
+$tick = RT::Model::Ticket->new(current_user => RT->system_user );
 $tick->create(Subject => 'owner has pubkey', Queue => 'general',
               Owner => 'root');
 ok($id = $tick->id, 'created ticket for owner-with-pubkey');
@@ -378,7 +378,7 @@ MAIL
 is ($status >> 8, 0, "The mail gateway exited normally");
 ok ($id, "got id of a newly created ticket - $id");
 
-$tick = RT::Model::Ticket->new( RT->system_user );
+$tick = RT::Model::Ticket->new(current_user => RT->system_user );
 $tick->load( $id );
 ok ($tick->id, "loaded ticket #$id");
 
@@ -424,16 +424,16 @@ my $content = $m->content;
 $content =~ s/&#40;/(/g;
 $content =~ s/&#41;/)/g;
 
-like($content, qr/OO-Nobody-O/, "original OwnerName untouched");
-like($content, qr/OO-nokey-O/, "original OwnerName untouched");
-like($content, qr/OO-root-O/, "original OwnerName untouched");
+like($content, qr/OO-Nobody-O/, "original Ownername untouched");
+like($content, qr/OO-nokey-O/, "original Ownername untouched");
+like($content, qr/OO-root-O/, "original Ownername untouched");
 
 like($content, qr/OR-recipient\@example.com-O/, "original Requestors untouched");
 like($content, qr/OR-nokey\@example.com-O/, "original Requestors untouched");
 
-like($content, qr/KO-root-K/, "KeyOwnerName does not issue no-pubkey warning for recipient");
-like($content, qr/KO-nokey \(no pubkey!\)-K/, "KeyOwnerName issues no-pubkey warning for root");
-like($content, qr/KO-Nobody \(no pubkey!\)-K/, "KeyOwnerName issues no-pubkey warning for nobody");
+like($content, qr/KO-root-K/, "KeyOwnername does not issue no-pubkey warning for recipient");
+like($content, qr/KO-nokey \(no pubkey!\)-K/, "KeyOwnername issues no-pubkey warning for root");
+like($content, qr/KO-Nobody \(no pubkey!\)-K/, "KeyOwnername issues no-pubkey warning for nobody");
 
 like($content, qr/KR-recipient\@example.com-K/, "KeyRequestors does not issue no-pubkey warning for recipient\@example.com");
 like($content, qr/KR-general\@example.com-K/, "KeyRequestors does not issue no-pubkey warning for general\@example.com");

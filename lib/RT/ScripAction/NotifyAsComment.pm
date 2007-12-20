@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::ScripAction::NotifyAsComment;
+package RT::ScripAction::NotifyAscomment;
 require RT::ScripAction::Notify;
 
 use strict;

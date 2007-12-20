@@ -107,7 +107,7 @@ exit(0);
 
 __END__
 
-=head1 NAME
+=head1 name
 
 rt-clean-sessions - clean old and duplicate RT sessions
 

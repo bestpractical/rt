@@ -70,7 +70,7 @@ Returns the prefix for a local URI.
 sub LocalURIPrefix {
     my $self = shift;
     
-    my $prefix = $self->Scheme. "://". RT->Config->Get('Organization');
+    my $prefix = $self->Scheme. "://". RT->Config->Get('organization');
 
     return ($prefix);
 }
@@ -120,7 +120,7 @@ sub ParseURI {
     my $uri  = shift;
 
     if ( $uri =~ /^\d+$/ ) {
-        my $ticket = RT::Model::Ticket->new( $self->current_user );
+        my $ticket = RT::Model::Ticket->new;
         $ticket->load( $uri );
         $self->{'uri'} = $ticket->URI;
         $self->{'object'} = $ticket;
@@ -142,7 +142,7 @@ sub ParseURI {
             # We can instantiate any RT::Record subtype. but not anything else
 
             if ( UNIVERSAL::isa( $type, 'RT::Record' ) ) {
-                my $record = $type->new( $self->current_user );
+                my $record = $type->new;
                 $record->load($id);
 
                 if ( $record->id ) {

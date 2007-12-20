@@ -13,8 +13,8 @@ plan tests => 16;
 diag 'simple queue' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
-    my $queue = RT::Model::Queue->new( RT->system_user );
-    my ($id, $msg) = $queue->create( Name => 'my queue' );
+    my $queue = RT::Model::Queue->new(current_user => RT->system_user );
+    my ($id, $msg) = $queue->create( name => 'my queue' );
     ok($id, 'Created queue') or diag "error: $msg";
 
 	my $shredder = shredder_new();
@@ -26,11 +26,11 @@ diag 'simple queue' if $ENV{'TEST_VERBOSE'};
 diag 'queue with scrip' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
-    my $queue = RT::Model::Queue->new( RT->system_user );
-    my ($id, $msg) = $queue->create( Name => 'my queue' );
+    my $queue = RT::Model::Queue->new(current_user => RT->system_user );
+    my ($id, $msg) = $queue->create( name => 'my queue' );
     ok($id, 'Created queue') or diag "error: $msg";
 
-    my $scrip = RT::Model::Scrip->new( RT->system_user );
+    my $scrip = RT::Model::Scrip->new(current_user => RT->system_user );
     ($id, $msg) = $scrip->create(
         Description    => 'my scrip',
         Queue          => $queue->id,
@@ -49,13 +49,13 @@ diag 'queue with scrip' if $ENV{'TEST_VERBOSE'};
 diag 'queue with template' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
-    my $queue = RT::Model::Queue->new( RT->system_user );
-    my ($id, $msg) = $queue->create( Name => 'my queue' );
+    my $queue = RT::Model::Queue->new(current_user => RT->system_user );
+    my ($id, $msg) = $queue->create( name => 'my queue' );
     ok($id, 'Created queue') or diag "error: $msg";
 
-    my $template = RT::Model::Template->new( RT->system_user );
+    my $template = RT::Model::Template->new(current_user => RT->system_user );
     ($id, $msg) = $template->create(
-        Name => 'my template',
+        name => 'my template',
         Queue => $queue->id,
         Content => "\nsome content",
     );
@@ -70,15 +70,15 @@ diag 'queue with template' if $ENV{'TEST_VERBOSE'};
 diag 'queue with a right granted' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
-    my $queue = RT::Model::Queue->new( RT->system_user );
-    my ($id, $msg) = $queue->create( Name => 'my queue' );
+    my $queue = RT::Model::Queue->new(current_user => RT->system_user );
+    my ($id, $msg) = $queue->create( name => 'my queue' );
     ok($id, 'Created queue') or diag "error: $msg";
 
-    my $group = RT::Model::Group->new( RT->system_user );
+    my $group = RT::Model::Group->new(current_user => RT->system_user );
     $group->load_system_internal_group('Everyone');
     ok($group->id, 'loaded group');
 
-    ($id, $msg) = $group->PrincipalObj->GrantRight(
+    ($id, $msg) = $group->principal_object->GrantRight(
         Right  => 'CreateTicket',
         Object => $queue,
     );
@@ -94,18 +94,18 @@ diag 'queue with a watcher' if $ENV{'TEST_VERBOSE'};
 {
 # XXX, FIXME: if uncomment these lines then we'll get 'Bizarre...'
 #	create_savepoint('clean');
-    my $group = RT::Model::Group->new( RT->system_user );
-    my ($id, $msg) = $group->create_userDefinedGroup(Name => 'my group');
+    my $group = RT::Model::Group->new(current_user => RT->system_user );
+    my ($id, $msg) = $group->create_userDefinedGroup(name => 'my group');
     ok($id, 'Created group') or diag "error: $msg";
 
 	create_savepoint('bqcreate');
-    my $queue = RT::Model::Queue->new( RT->system_user );
-    ($id, $msg) = $queue->create( Name => 'my queue' );
+    my $queue = RT::Model::Queue->new(current_user => RT->system_user );
+    ($id, $msg) = $queue->create( name => 'my queue' );
     ok($id, 'Created queue') or diag "error: $msg";
 
     ($id, $msg) = $queue->AddWatcher(
         Type   => 'Cc',
-        PrincipalId => $group->id,
+        principal_id => $group->id,
     );
     ok($id, 'added watcher') or diag "error: $msg";
 

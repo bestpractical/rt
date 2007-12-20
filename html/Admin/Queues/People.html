@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Modify people related to queue [_1]', $QueueObj->Name) &>
+<& /Elements/Header, Title => loc('Modify people related to queue [_1]', $QueueObj->name) &>
 <& /Admin/Elements/QueueTabs, id => $id, 
     QueueObj => $QueueObj,                                                      
     current_tab => $current_tab, 
-    Title => loc('Modify people related to queue [_1]', $QueueObj->Name) &>
+    Title => loc('Modify people related to queue [_1]', $QueueObj->name) &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -97,7 +97,7 @@
 % while (my $u = $Users->next ) {
 <li><& /Elements/SelectWatcherType,
     Scope => 'queue',
-    Name => "Queue-AddWatcher-Principal-". $u->PrincipalId,
+    name => "Queue-AddWatcher-Principal-". $u->principal_id,
 &>
 <& /Elements/ShowUser, User => $u &></li>
 % }
@@ -113,8 +113,8 @@
 % } elsif ($Groups) {
 <ul>
 % while (my $g = $Groups->next ) {
-<li><&/Elements/SelectWatcherType, Scope=>'queue', Name =>
-"Queue-AddWatcher-Principal-".$g->PrincipalId &> <%$g->Name%>
+<li><&/Elements/SelectWatcherType, Scope=>'queue', name =>
+"Queue-AddWatcher-Principal-".$g->principal_id &> <%$g->name%>
 (<%$g->Description%>)
 % }
 </ul>
@@ -142,7 +142,7 @@ my ($field, @results, $User, $Users, $Groups, $watcher, $user_msg, $group_msg);
 
 
 
-my $QueueObj = new RT::Model::Queue($session{'CurrentUser'});
+my $QueueObj = new RT::Model::Queue(Jifty->web->current_user);
 $QueueObj->load($id) || Abort(loc("Couldn't load queue", $id));
 # }}}
 
@@ -153,7 +153,7 @@ foreach my $key (keys %ARGS) {
 
     if (($key =~ /^Queue-$id-DeleteWatcher-Type-(.*?)-Principal-(\d*)$/)) {;
 	    my ($code, $msg) = $QueueObj->deleteWatcher(Type => $1,
-                                                    PrincipalId => $2);
+                                                    principal_id => $2);
 	    push @results, $msg;
     }
 }
@@ -166,7 +166,7 @@ foreach my  $key (keys %ARGS) {
 	 ($key =~ /^Queue-AddWatcher-Principal-(\d*)$/) ) {
 	$RT::Logger->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
 	my ($code, $msg) = $QueueObj->AddWatcher(Type => $ARGS{$key},
-				                             PrincipalId => $1);
+				                             principal_id => $1);
 	push @results, $msg;
     }
 }
@@ -179,7 +179,7 @@ if (!length $ARGS{'UserString'}) {
 $user_msg = loc("No principals selected.");
  }
 else {
-    $Users = new RT::Model::UserCollection($session{'CurrentUser'});
+    $Users = new RT::Model::UserCollection(Jifty->web->current_user);
     $Users->limit(column => $ARGS{'UserField'},
                  value => $ARGS{'UserString'},
                  operator => $ARGS{'UserOp'});
@@ -189,7 +189,7 @@ if (!length $ARGS{'GroupString'}) {
 $group_msg = loc("No principals selected.");
  }
 else {
-$Groups = new RT::Model::GroupCollection($session{'CurrentUser'});
+$Groups = new RT::Model::GroupCollection(Jifty->web->current_user);
 $Groups->limit(column => 'Domain', operator => '=', value => 'UserDefined');
 $Groups->limit(column => $ARGS{'GroupField'},
 		value => $ARGS{'GroupString'},
@@ -200,10 +200,10 @@ $current_tab = 'Admin/Queues/People.html?id='.$QueueObj->id;
 </%INIT>
 
 <%ARGS>
-$UserField => 'Name'
+$UserField => 'name'
 $UserOp => '='
 $UserString => undef
-$GroupField => 'Name'
+$GroupField => 'name'
 $GroupOp => '='
 $GroupString => undef
 $Type => undef

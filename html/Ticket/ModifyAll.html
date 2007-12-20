@@ -51,11 +51,11 @@
     current_tab => "Ticket/ModifyAll.html?id=".$Ticket->id, 
     Title => loc("Ticket #[_1] Jumbo update: [_2]", $Ticket->id, $Ticket->Subject) &>
 
-% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
+% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="ModifyAll.html" enctype="multipart/form-data">
-% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
+% $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->id) &>
@@ -90,8 +90,8 @@
     <td class="label"><&|/l&>Update Type</&>:</td>
     <td class="entry">
       <select name="UpdateType">
-% if ($CanComment) {
-        <option value="private" ><&|/l&>Comments (Not sent to requestors)</&></option>
+% if ($Cancomment) {
+        <option value="private" ><&|/l&>comments (Not sent to requestors)</&></option>
 % }
 % if ($CanRespond) {
         <option value="response"><&|/l&>Reply to requestors</&></option>
@@ -106,10 +106,10 @@
 % if (my $TxnCFs = $Ticket->TransactionCustomFields) {
 %    while (my $CF = $TxnCFs->next()) {
 <tr>
-<td class="label"><% $CF->Name %>:</td>
+<td class="label"><% $CF->name %>:</td>
 <td class="entry"><& /Elements/EditCustomField, 
     CustomField => $CF, 
-    NamePrefix => "Object-RT::Model::Transaction--CustomField-"
+    namePrefix => "Object-RT::Model::Transaction--CustomField-"
     &><em><% $CF->FriendlyType %></em>
 </td></tr>
 %    } # end if while
@@ -120,7 +120,7 @@
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Content</&>:</td>
-    <td class="entry"><& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &></td>
+    <td class="entry"><& /Elements/MessageBox, name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &></td>
   </tr>
 </table>
 </&>
@@ -138,13 +138,13 @@
 my $Ticket = load_ticket($id);
 
 my $CanRespond = 0;
-my $CanComment = 0;
+my $Cancomment = 0;
 
 
 $CanRespond = 1 if ( $Ticket->current_user_has_right('ReplyToTicket') or
                      $Ticket->current_user_has_right('ModifyTicket') ); 
 
-$CanComment = 1 if ( $Ticket->current_user_has_right('CommentOnTicket') or
+$Cancomment = 1 if ( $Ticket->current_user_has_right('commentOnTicket') or
                      $Ticket->current_user_has_right('ModifyTicket') );
 
 
@@ -177,7 +177,7 @@ unless ($OnlySearchForPeople) {
         my $attachment = MakeMIMEEntity(
            Subject             => $subject,
            Body                => "",
-           AttachmentFieldName => 'UpdateAttachment'
+           AttachmentFieldname => 'UpdateAttachment'
         );
         delete $ARGS{'UpdateAttachment'};
         $ARGS{'UpdateAttachments'}->{ $subject } = $attachment;

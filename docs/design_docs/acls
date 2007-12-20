@@ -8,37 +8,37 @@ What rights does user baz have for object bar
 
 
 if ($args{'ObjectType'} eq 'Ticket') {
-     $or_check_ticket_roles = " OR ( Groups.Domain = 'TicketRole' AND Groups.Instance = '".$args{'ObjectId'}."') ";
+     $or_check_ticket_roles = " OR ( Groups.Domain = 'TicketRole' AND Groups.Instance = '".$args{'object_id'}."') ";
      # If we're looking at ticket rights, we also want to look at the associated queue rights.
      # this is a little bit hacky, but basically, now that we've done the ticket roles magic, we load the queue object
      # and ask all the rest of our questions about the queue.
-     my $tick = RT::Model::Ticket->new(RT->system_user);
-     $tick->load($args{'ObjectId'});
+     my $tick = RT::Model::Ticket->new(current_user => RT->system_user);
+     $tick->load($args{'object_id'});
      $args{'ObjectType'} = 'Queue';
-     $args{'ObjectId'} = $tick->QueueObj->id();
+     $args{'object_id'} = $tick->QueueObj->id();
 
 }
 if ($args{'ObjectType'} eq 'Queue') {
-     $or_check_roles = " OR ( ( (Groups.Domain = 'QueueRole' AND Groups.Instance = '".$args{'ObjectId'}."') $or_check_ticket_roles ) 
-                            AND Groups.Type = ACL.PrincipalType AND Groups.Id = Principals.ObjectId AND Principals.PrincipalType = 'Group') ";
+     $or_check_roles = " OR ( ( (Groups.Domain = 'QueueRole' AND Groups.Instance = '".$args{'object_id'}."') $or_check_ticket_roles ) 
+                            AND Groups.Type = ACL.principal_type AND Groups.Id = Principals.object_id AND Principals.principal_type = 'Group') ";
 }
 
 if (defined $args{'ObjectType'} ) {
-     $or_look_at_object_rights = " OR (ACL.ObjectType = '".$args{'ObjectType'}."'  AND ACL.ObjectId = '".$args{'ObjectId'}."') ";
+     $or_look_at_object_rights = " OR (ACL.ObjectType = '".$args{'ObjectType'}."'  AND ACL.object_id = '".$args{'object_id'}."') ";
 
 }
 
 my $query = "SELECT Users.*  from ACL, Groups, Users, Principals, Principals UserPrinc, CachedGroupMembers  WHERE  
-        Users.id = UserPrinc.ObjectId AND UserPrinc.PrincipalType = 'User' AND
+        Users.id = UserPrinc.object_id AND UserPrinc.principal_type = 'User' AND
         Principals.Id = CachedGroupMembers.GroupId AND 
-        CachedGroupMembers.MemberId = UserPrinc.ObjectId AND 
-        UserPrinc.PrincipalType = 'User'  AND
-        (ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') AND
+        CachedGroupMembers.MemberId = UserPrinc.object_id AND 
+        UserPrinc.principal_type = 'User'  AND
+        (ACL.Rightname = 'SuperUser' OR  ACL.Rightname = '$right') AND
         (ACL.ObjectType = 'System' $or_look_at_object_rights) AND 
         (
-                (ACL.PrincipalId = Principals.Id AND 
-                 Principals.ObjectId = Groups.Id AND 
-                 ACL.PrincipalType = 'Group' AND 
+                (ACL.principal_id = Principals.Id AND 
+                 Principals.object_id = Groups.Id AND 
+                 ACL.principal_type = 'Group' AND 
                  (Groups.Domain = 'SystemInternal' OR Groups.Domain = 'UserDefined' OR Groups.Domain = 'ACLEquivalence')
                 ) 
            $or_check_roles

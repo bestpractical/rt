@@ -53,8 +53,8 @@ $id
 <%perl>
 use RT::Model::UserCollection;
 
-my $field = "Name";
-$field = "EmailAddress" if $id =~ /\@/;
+my $field = "name";
+$field = "email" if $id =~ /\@/;
 
 my $users = new RT::Model::UserCollection ;
 $users->limit(column => $field, operator => '=', value => $id);

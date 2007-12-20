@@ -55,7 +55,7 @@
 my $tabs;
 if ( $GroupObj and $GroupObj->id ) {
     $tabs->{"this"} = {
-        title   => $GroupObj->Name,
+        title   => $GroupObj->name,
         path    => "User/Groups/Modify.html?id=" . $GroupObj->id,
         subtabs => {
             Basics => { title => loc('Basics'),

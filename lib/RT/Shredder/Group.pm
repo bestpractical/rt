@@ -72,7 +72,7 @@ sub __DependsOn
     if( $self->Domain eq 'ACLEquivalence' ) {
         # delete user entry after ACL equiv group
         # in other case we will get deep recursion
-        my $objs = RT::Model::User->new($self->current_user);
+        my $objs = RT::Model::User->new;
         $objs->load( $self->Instance );
         $deps->_PushDependency(
                 BaseObject => $self,
@@ -86,19 +86,19 @@ sub __DependsOn
     $deps->_PushDependency(
             BaseObject => $self,
             Flags => DEPENDS_ON | WIPE_AFTER,
-            TargetObject => $self->PrincipalObj,
+            TargetObject => $self->principal_object,
             Shredder => $args{'Shredder'}
         );
 
 # Group members records
-    my $objs = RT::Model::GroupMemberCollection->new( $self->current_user );
-    $objs->LimitToMembersOfGroup( $self->PrincipalId );
+    my $objs = RT::Model::GroupMemberCollection->new;
+    $objs->LimitToMembersOfGroup( $self->principal_id );
     push( @$list, $objs );
 
 # Group member records group belongs to
-    $objs = RT::Model::GroupMemberCollection->new( $self->current_user );
+    $objs = RT::Model::GroupMemberCollection->new;
     $objs->limit(
-            value => $self->PrincipalId,
+            value => $self->principal_id,
             column => 'MemberId',
             entry_aggregator => 'OR',
             quote_value => 0
@@ -109,9 +109,9 @@ sub __DependsOn
     push( @$list, $self->DeepMembersObj );
 
 # Cached group member records group belongs to
-    $objs = RT::Model::GroupMemberCollection->new( $self->current_user );
+    $objs = RT::Model::GroupMemberCollection->new;
     $objs->limit(
-            value => $self->PrincipalId,
+            value => $self->principal_id,
             column => 'MemberId',
             entry_aggregator => 'OR',
             quote_value => 0
@@ -140,7 +140,7 @@ sub __Relates
 
 # Equivalence group id inconsistent without User
     if( $self->Domain eq 'ACLEquivalence' ) {
-        my $obj = RT::Model::User->new($self->current_user);
+        my $obj = RT::Model::User->new;
         $obj->load( $self->Instance );
         if( $obj->id ) {
             push( @$list, $obj );
@@ -153,7 +153,7 @@ sub __Relates
     }
 
 # Principal
-    my $obj = $self->PrincipalObj;
+    my $obj = $self->principal_object;
     if( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {

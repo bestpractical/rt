@@ -47,13 +47,13 @@
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
 my $rows = 10;
-my $has_right_adminusers = $session{'CurrentUser'}->has_right(Object => RT->system, Right => 'AdminUsers');
+my $has_right_adminusers = Jifty->web->current_user->has_right(Object => RT->system, Right => 'AdminUsers');
 my $people = $Ticket->Requestors->UserMembersObj;
 while ( my $requestor = $people->next ) {
-    next if $requestor->Privileged;
+    next if $requestor->privileged;
     my $name = $m->scomp('/Elements/ShowUser', User => $requestor);
 
-    my $tickets = RT::Model::TicketCollection->new( $session{'CurrentUser'} );
+    my $tickets = RT::Model::TicketCollection->new( Jifty->web->current_user );
     $tickets->from_sql( "Requestor.id = ". $requestor->id ." AND (Status = 'open' OR Status = 'new')" );
     $tickets->rows_per_page( $rows );
     $tickets->order_by( column => 'Priority', order => 'DESC' );
@@ -65,10 +65,10 @@ while ( my $requestor = $people->next ) {
 &>
 
 %# Additional information about this user.  Empty by default.
-% $m->callback( requestor => $requestor, %ARGS, CallbackName => 'AboutThisUser' );
+% $m->callback( requestor => $requestor, %ARGS, Callbackname => 'AboutThisUser' );
 
-<&|/l&>Comments about this user</&>:<br />
-<b><% ($requestor->Comments || loc("No comment entered about this user")) %></b><br />
+<&|/l&>comments about this user</&>:<br />
+<b><% ($requestor->comments || loc("No comment entered about this user")) %></b><br />
 
 <&|/l, $rows &>This user's [_1] highest priority tickets</&>:<br />
 <ul>
@@ -79,7 +79,7 @@ while ( my $requestor = $people->next ) {
 
 <&|/l&>Groups this user belongs to</&>:<br />
 
-<& /Elements/ShowMemberships, UserObj => $requestor &>
+<& /Elements/ShowMemberships, user_object => $requestor &>
 
 </&>
 

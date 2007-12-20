@@ -64,7 +64,7 @@
 
 % for my $pane ( @panes ) {
 <&|/Widgets/TitleBox,
-    title => loc('RT at a glance') .': '. loc( $pane->{Name} ),
+    title => loc('RT at a glance') .': '. loc( $pane->{name} ),
     bodyclass => ""
 &>
 <& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &>
@@ -82,7 +82,7 @@
 <%INIT>
 my @results;
 my $title = loc("Customize").' '.loc("RT at a glance");
-my $user = $session{'CurrentUser'}->UserObj;
+my $user = Jifty->web->current_user->user_object;
 
 if ( $ARGS{'UpdateSummaryRows'} ) {
     unless ( $ARGS{SummaryRows} && int $ARGS{SummaryRows} > 0 ) {
@@ -102,7 +102,7 @@ if ($ARGS{Reset}) {
 }
 
 unless (exists $session{'my_rt_portlets'}) {
-    my ($default_portlets) = RT::System->new($session{'CurrentUser'})->attributes->Named('HomepageSettings');
+    my ($default_portlets) = RT::System->new(Jifty->web->current_user)->attributes->named('HomepageSettings');
     my $portlets = $default_portlets ? $default_portlets->Content : {};
     $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $portlets);
 }
@@ -111,11 +111,11 @@ my $portlets = $session{'my_rt_portlets'};
 my %seen;
 my @items = map ["component-$_", $_], grep !$seen{$_}++, @{RT->Config->Get('HomepageComponents')};
 
-my $sys = RT::System->new($session{'CurrentUser'});
+my $sys = RT::System->new(Jifty->web->current_user);
 my @objs = ($sys);
 
-push @objs, RT::SavedSearches->new($session{'CurrentUser'}  )->_PrivacyObjects
-    if $session{'CurrentUser'}->has_right( Right  => 'LoadSavedSearch',
+push @objs, RT::SavedSearches->new(Jifty->web->current_user  )->_PrivacyObjects
+    if Jifty->web->current_user->has_right( Right  => 'LoadSavedSearch',
                                           Object => RT->system );
 
 my @sys_searches;

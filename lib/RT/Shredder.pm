@@ -51,7 +51,7 @@ use strict;
 use warnings;
 
 
-=head1 NAME
+=head1 name
 
 RT::Shredder - Permanently wipeout data from RT
 
@@ -175,7 +175,7 @@ example from L</SYNOPSIS>:
 
   use RT::Shredder;
   RT::Shredder::Init( force => 1 );
-  my $deleted = RT::Model::TicketCollection->new( RT->system_user );
+  my $deleted = RT::Model::TicketCollection->new(current_user => RT->system_user );
   $deleted->{'allow_deleted_search'} = 1;
   $deleted->LimitQueue( value => 'general' );
   $deleted->LimitStatus( value => 'deleted' );
@@ -351,7 +351,7 @@ sub CastObjectsToRecords
         $class = 'RT::'. $class unless $class =~ /^RTx?::/i;
         eval "require $class";
         die "Couldn't load '$class' module" if $@;
-        my $obj = $class->new( RT->system_user );
+        my $obj = $class->new(current_user => RT->system_user );
         die "Couldn't construct new '$class' object" unless $obj;
         $obj->load( $id );
         unless ( $obj->id ) {
@@ -618,16 +618,16 @@ sub validate_Relations
 
 =head3 Data storage and backups
 
-=head4 GetFileName( FileName => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )
+=head4 GetFilename( Filename => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )
 
-Takes desired C<FileName> and flag C<FromStorage> then translate file name to absolute
+Takes desired C<Filename> and flag C<FromStorage> then translate file name to absolute
 path by next rules:
 
-* Default value of the C<FileName> option is C<< <ISO DATETIME>-XXXX.sql >>;
+* Default value of the C<Filename> option is C<< <ISO DATETIME>-XXXX.sql >>;
 
-* if C<FileName> has C<XXXX> (exactly four uppercase C<X> letters) then it would be changed with digits from 0000 to 9999 range, with first one free value;
+* if C<Filename> has C<XXXX> (exactly four uppercase C<X> letters) then it would be changed with digits from 0000 to 9999 range, with first one free value;
 
-* if C<FileName> has C<%T> then it would be replaced with the current date and time in the C<YYYY-MM-DDTHH:MM:SS> format. Note that using C<%t> may still generate not unique names, using C<XXXX> recomended.
+* if C<Filename> has C<%T> then it would be replaced with the current date and time in the C<YYYY-MM-DDTHH:MM:SS> format. Note that using C<%t> may still generate not unique names, using C<XXXX> recomended.
 
 * if C<FromStorage> argument is true (default behaviour) then result path would always be relative to C<StoragePath>;
 
@@ -637,32 +637,32 @@ Returns an absolute path of the file.
 
 Examples:
     # file from storage with default name format
-    my $fname = $shredder->GetFileName;
+    my $fname = $shredder->GetFilename;
 
     # file from storage with custom name format
-    my $fname = $shredder->GetFileName( FileName => 'shredder-XXXX.backup' );
+    my $fname = $shredder->GetFilename( Filename => 'shredder-XXXX.backup' );
 
     # file with path relative to the current dir
-    my $fname = $shredder->GetFileName(
+    my $fname = $shredder->GetFilename(
         FromStorage => 0,
-        FileName => 'backups/shredder.sql',
+        Filename => 'backups/shredder.sql',
     );
 
     # file with absolute path
-    my $fname = $shredder->GetFileName(
+    my $fname = $shredder->GetFilename(
         FromStorage => 0,
-        FileName => '/var/backups/shredder-XXXX.sql'
+        Filename => '/var/backups/shredder-XXXX.sql'
     );
 
 =cut
 
-sub GetFileName
+sub GetFilename
 {
     my $self = shift;
-    my %args = ( FileName => '', FromStorage => 1, @_ );
+    my %args = ( Filename => '', FromStorage => 1, @_ );
 
     # default value
-    my $file = $args{'FileName'} || '%t-XXXX.sql';
+    my $file = $args{'Filename'} || '%t-XXXX.sql';
     if( $file =~ /\%t/i ) {
         require POSIX;
         my $date_time = POSIX::strftime( "%Y%m%dT%H%M%S", gmtime );
@@ -716,7 +716,7 @@ sub GetFileName
 Returns an absolute path to the storage dir.  See
 L<CONFIGURATION/$ShredderStoragePath>.
 
-See also description of the L</GetFileName> method.
+See also description of the L</GetFilename> method.
 
 =cut
 
@@ -729,13 +729,13 @@ sub StoragePath
 my %active_dump_state = ();
 sub AddDumpPlugin {
     my $self = shift;
-    my %args = ( Object => undef, Name => 'SQLDump', Arguments => undef, @_ );
+    my %args = ( Object => undef, name => 'SQLDump', Arguments => undef, @_ );
 
     my $plugin = $args{'Object'};
     unless ( $plugin ) {
         require RT::Shredder::Plugin;
         $plugin = RT::Shredder::Plugin->new;
-        my( $status, $msg ) = $plugin->load_by_name( $args{'Name'} );
+        my( $status, $msg ) = $plugin->load_by_name( $args{'name'} );
         die "Couldn't load dump plugin: $msg\n" unless $status;
     }
     die "Plugin is not of correct type" unless lc $plugin->Type eq 'dump';

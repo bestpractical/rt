@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<input type="checkbox" class="checkbox" name="<%$Name%>" value="1" <%$IsChecked%> />
+<input type="checkbox" class="checkbox" name="<%$name%>" value="1" <%$IsChecked%> />
 
 <%ARGS>
-$Name => undef
+$name => undef
 $Default => undef
 $True => undef
 $False => undef

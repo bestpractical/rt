@@ -61,7 +61,7 @@ sub table {'CustomFields'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
      
-column        Name => max_length is 200,      type is 'varchar(200)', default is '';
+column        name => max_length is 200,      type is 'varchar(200)', default is '';
 column        Type => max_length is 200,      type is 'varchar(200)', default is '';
 column        MaxValues => max_length is 11,      type is 'int(11)', default is '0';
 column        Pattern =>       type is 'longtext', default is '';
@@ -73,7 +73,7 @@ column        Creator => max_length is 11,      type is 'int(11)', default is '0
 column        Created =>       type is 'datetime', default is '';
 column        LastUpdatedBy => max_length is 11,      type is 'int(11)', default is '0';
 column        LastUpdated =>       type is 'datetime', default is '';
-column        Disabled => max_length is 6,      type is 'smallint(6)', default is '0';
+column        disabled => max_length is 6,      type is 'smallint(6)', default is '0';
     };
 
 
@@ -139,7 +139,7 @@ our $RIGHTS = {
 $RT::Model::ACE::OBJECT_TYPES{'RT::Model::CustomField'} = 1;
 
 foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::Model::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+    $RT::Model::ACE::LOWERCASERIGHTnameS{ lc $right } = $right;
 }
 
 sub AvailableRights {
@@ -147,7 +147,7 @@ sub AvailableRights {
     return $RIGHTS;
 }
 
-=head1 NAME
+=head1 name
 
   RT::Model::CustomField_Overlay - overlay for RT::Model::CustomField
 
@@ -159,7 +159,7 @@ sub AvailableRights {
 
 Create takes a hash of values and creates a row in the database:
 
-  varchar(200) 'Name'.
+  varchar(200) 'name'.
   varchar(200) 'Type'.
   int(11) 'MaxValues'.
   varchar(255) 'Pattern'.
@@ -167,7 +167,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(255) 'Description'.
   int(11) 'SortOrder'.
   varchar(255) 'LookupType'.
-  smallint(6) 'Disabled'.
+  smallint(6) 'disabled'.
 
 C<LookupType> is generally the result of either
 C<RT::Model::Ticket->CustomFieldLookupType> or C<RT::Model::Transaction->CustomFieldLookupType>.
@@ -177,12 +177,12 @@ C<RT::Model::Ticket->CustomFieldLookupType> or C<RT::Model::Transaction->CustomF
 sub create {
     my $self = shift;
     my %args = (
-        Name        => '',
+        name        => '',
         Type        => '',
         MaxValues   => 0,
         Pattern     => '',
         Description => '',
-        Disabled    => 0,
+        disabled    => 0,
         LookupType  => '',
         Repeated    => 0,
         @_,
@@ -210,7 +210,7 @@ sub create {
         $args{'LookupType'} = 'RT::Model::Queue-RT::Model::Ticket';
     }
     else {
-        my $queue = RT::Model::Queue->new($self->current_user);
+        my $queue = RT::Model::Queue->new;
         $queue->load($args{'Queue'});
         unless ($queue->id) {
             return (0, $self->loc("Queue not found"));
@@ -226,12 +226,12 @@ sub create {
     return (0, $self->loc("Invalid pattern: [_1]", $msg)) unless $ok;
 
     (my $rv, $msg) = $self->SUPER::create(
-        Name        => $args{'Name'},
+        name        => $args{'name'},
         Type        => $args{'Type'},
         MaxValues   => $args{'MaxValues'},
         Pattern     => $args{'Pattern'},
         Description => $args{'Description'},
-        Disabled    => $args{'Disabled'},
+        disabled    => $args{'disabled'},
         LookupType  => $args{'LookupType'},
         Repeated    => $args{'Repeated'},
     );
@@ -243,16 +243,16 @@ sub create {
     return ($rv, $msg) unless exists $args{'Queue'};
 
     # Compat code -- create a new ObjectCustomField mapping
-    my $OCF = RT::Model::ObjectCustomField->new( $self->current_user );
+    my $OCF = RT::Model::ObjectCustomField->new;
     $OCF->create(
         CustomField => $self->id,
-        ObjectId => $args{'Queue'},
+        object_id => $args{'Queue'},
     );
 
     return ($rv, $msg);
 }
 
-=head2 Load ID/NAME
+=head2 Load ID/name
 
 Load a custom field.  If the value handed in is an integer, load by custom field ID. Otherwise, Load by name.
 
@@ -265,16 +265,16 @@ sub load {
     if ( $id =~ /^\d+$/ ) {
         return $self->SUPER::load( $id );
     } else {
-        return $self->load_by_name( Name => $id );
+        return $self->load_by_name( name => $id );
     }
 }
 
 
 # {{{ sub load_by_name
 
-=head2 load_by_name (Queue => QUEUEID, Name => NAME)
+=head2 load_by_name (Queue => QUEUEID, name => name)
 
-Loads the Custom field named NAME.
+Loads the Custom field named name.
 
 If a Queue parameter is specified, only look for ticket custom fields tied to that Queue.
 
@@ -287,7 +287,7 @@ BUG/TODO, this won't let you specify that you only want user or group CFs.
 =cut
 
 # Compatibility for API change after 3.0 beta 1
-*LoadNameAndQueue = \&load_by_name;
+*LoadnameAndQueue = \&load_by_name;
 # Change after 3.4 beta.
 *load_by_name_and_queue = \&load_by_name;
 
@@ -295,22 +295,22 @@ sub load_by_name {
     my $self = shift;
     my %args = (
         Queue => undef,
-        Name  => undef,
+        name  => undef,
         @_,
     );
 
     # if we're looking for a queue by name, make it a number
     if ( defined $args{'Queue'} && $args{'Queue'} =~ /\D/ ) {
-        my $QueueObj = RT::Model::Queue->new( $self->current_user );
+        my $QueueObj = RT::Model::Queue->new;
         $QueueObj->load( $args{'Queue'} );
         $args{'Queue'} = $QueueObj->id;
     }
 
     # XXX - really naive implementation.  Slow. - not really. still just one query
 
-    my $CFs = RT::Model::CustomFieldCollection->new( $self->current_user );
-    Carp::cluck unless ($args{'Name'});
-    $CFs->limit( column => 'Name', value => $args{'Name'}, case_sensitive => 0);
+    my $CFs = RT::Model::CustomFieldCollection->new;
+    Carp::cluck unless ($args{'name'});
+    $CFs->limit( column => 'name', value => $args{'name'}, case_sensitive => 0);
     # Don't limit to queue if queue is 0.  Trying to do so breaks
     # RT::Model::Group type CFs.
     if ( defined $args{'Queue'} ) {
@@ -350,7 +350,7 @@ sub Values {
 
     my $class = $self->ValuesClass || 'RT::Model::CustomFieldValueCollection';
     eval "require $class" or die "$@";
-    my $cf_values = $class->new( $self->current_user );
+    my $cf_values = $class->new;
     # if the user has no rights, return an empty object
     if ( $self->id && $self->current_user_has_right( 'SeeCustomField') ) {
         $cf_values->limit_to_custom_field( $self->id );
@@ -362,7 +362,7 @@ sub Values {
 
 =head3 AddValue HASH
 
-Create a new value for this CustomField.  Takes a paramhash containing the elements Name, Description and SortOrder
+Create a new value for this CustomField.  Takes a paramhash containing the elements name, Description and SortOrder
 
 
 =cut
@@ -376,11 +376,11 @@ sub AddValue {
     }
 
     # allow zero value
-    if ( !defined $args{'Name'} || $args{'Name'} eq '' ) {
+    if ( !defined $args{'name'} || $args{'name'} eq '' ) {
         return (0, $self->loc("Can't add a custom field value without a name"));
     }
 
-    my $newval = RT::Model::CustomFieldValue->new( $self->current_user );
+    my $newval = RT::Model::CustomFieldValue->new;
     return $newval->create( %args, CustomField => $self->id );
 }
 
@@ -404,7 +404,7 @@ sub deleteValue {
         return (0, $self->loc('Permission Denied'));
     }
 
-    my $val_to_del = RT::Model::CustomFieldValue->new( $self->current_user );
+    my $val_to_del = RT::Model::CustomFieldValue->new;
     $val_to_del->load( $id );
     unless ( $val_to_del->id ) {
         return (0, $self->loc("Couldn't find that value"));
@@ -437,7 +437,7 @@ sub validate_Queue {
     # 0 means "Global" null would _not_ be ok.
     return 1 if $id eq '0';
 
-    my $q = RT::Model::Queue->new( RT->system_user );
+    my $q = RT::Model::Queue->new(current_user => RT->system_user );
     $q->load( $id );
     return undef unless $q->id;
     return 1;
@@ -508,7 +508,7 @@ sub set_ValuesClass {
     if( $class eq 'RT::Model::CustomFieldValueCollection' ) {
         return $self->delete_attribute( 'ValuesClass' );
     }
-    return $self->set_attribute( Name => 'ValuesClass', Content => $class );
+    return $self->set_attribute( name => 'ValuesClass', Content => $class );
 }
 
 
@@ -711,9 +711,9 @@ sub _value {
 }
 
 # }}}
-# {{{ sub set_Disabled
+# {{{ sub set_disabled
 
-=head2 SetDisabled
+=head2 Setdisabled
 
 Takes a boolean.
 1 will cause this custom field to no longer be avaialble for objects.
@@ -763,7 +763,7 @@ sub set_LookupType {
     my $lookup = shift;
     if ( $lookup ne $self->LookupType ) {
         # Okay... We need to invalidate our existing relationships
-        my $ObjectCustomFields = RT::Model::ObjectCustomFieldCollection->new($self->current_user);
+        my $ObjectCustomFields = RT::Model::ObjectCustomFieldCollection->new;
         $ObjectCustomFields->limit_to_custom_field($self->id);
         $_->delete foreach @{$ObjectCustomFields->items_array_ref};
     }
@@ -852,13 +852,13 @@ sub AddToObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $ObjectCF = RT::Model::ObjectCustomField->new( $self->current_user );
-    $ObjectCF->load_by_cols( ObjectId => $id, CustomField => $self->id );
+    my $ObjectCF = RT::Model::ObjectCustomField->new;
+    $ObjectCF->load_by_cols( object_id => $id, CustomField => $self->id );
     if ( $ObjectCF->id ) {
         return ( 0, $self->loc("That is already the current value") );
     }
     my ( $oid, $msg ) =
-      $ObjectCF->create( ObjectId => $id, CustomField => $self->id );
+      $ObjectCF->create( object_id => $id, CustomField => $self->id );
 
     return ( $oid, $msg );
 }
@@ -886,8 +886,8 @@ sub RemoveFromObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $ObjectCF = RT::Model::ObjectCustomField->new( $self->current_user );
-    $ObjectCF->load_by_cols( ObjectId => $id, CustomField => $self->id );
+    my $ObjectCF = RT::Model::ObjectCustomField->new;
+    $ObjectCF->load_by_cols( object_id => $id, CustomField => $self->id );
     unless ( $ObjectCF->id ) {
         return ( 0, $self->loc("This custom field does not apply to that object") );
     }
@@ -959,10 +959,10 @@ sub AddValueForObject {
             $extra_values--;
         }
     }
-    my $newval = RT::Model::ObjectCustomFieldValue->new( $self->current_user );
+    my $newval = RT::Model::ObjectCustomFieldValue->new;
     my $val    = $newval->create(
         ObjectType   => ref($obj),
-        ObjectId     => $obj->id,
+        object_id     => $obj->id,
         Content      => $args{'Content'},
         LargeContent => $args{'LargeContent'},
         ContentType  => $args{'ContentType'},
@@ -1047,7 +1047,7 @@ sub deleteValueForObject {
         return (0, $self->loc('Permission Denied'));
     }
 
-    my $oldval = RT::Model::ObjectCustomFieldValue->new($self->current_user);
+    my $oldval = RT::Model::ObjectCustomFieldValue->new;
 
     if (my $id = $args{'Id'}) {
         $oldval->load($id);
@@ -1063,7 +1063,7 @@ sub deleteValueForObject {
 
     # check to make sure we found it
     unless ($oldval->id) {
-        return(0, $self->loc("Custom field value [_1] could not be found for custom field [_2]", $args{'Content'}, $self->Name));
+        return(0, $self->loc("Custom field value [_1] could not be found for custom field [_2]", $args{'Content'}, $self->name));
     }
 
     # for single-value fields, we need to validate that empty string is a valid value for it
@@ -1106,7 +1106,7 @@ sub ValuesForObject {
 }
 
 
-=head2 _ForObjectType PATH FRIENDLYNAME
+=head2 _ForObjectType PATH friendly_name
 
 Tell RT that a certain object accepts custom fields
 
@@ -1169,9 +1169,9 @@ sub LinkValueTo {
 }
 
 
-=head2 _URLTemplate  NAME [value]
+=head2 _URLTemplate  name [value]
 
-With one argument, returns the _URLTemplate named C<NAME>, but only if
+With one argument, returns the _URLTemplate named C<name>, but only if
 the current user has the right to see this custom field.
 
 With two arguments, attemptes to set the relevant template value.
@@ -1189,14 +1189,14 @@ sub _URLTemplate {
         unless ( $self->current_user_has_right('AdminCustomField') ) {
             return ( 0, $self->loc('Permission Denied') );
         }
-        $self->set_attribute( Name => $template_name, Content => $value );
+        $self->set_attribute( name => $template_name, Content => $value );
         return ( 1, $self->loc('Updated') );
     } else {
         unless ( $self->id && $self->current_user_has_right('SeeCustomField') ) {
             return (undef);
         }
 
-        my @attr = $self->attributes->Named($template_name);
+        my @attr = $self->attributes->named($template_name);
         my $attr = shift @attr;
 
         if ($attr) { return $attr->Content }

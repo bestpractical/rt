@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" wrap="<% $Wrap %>" name="<% $Name %>">\
+<textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" wrap="<% $Wrap %>" name="<% $name %>">\
 % $m->callback( %ARGS );
 <% $Default || '' %><% $message %><% $signature %></textarea>
 <%INIT>
@@ -53,23 +53,23 @@
 my $message = '';
 
 if ( $QuoteTransaction ) {
-    my $transaction = RT::Model::Transaction->new( $session{'CurrentUser'} );
+    my $transaction = RT::Model::Transaction->new( Jifty->web->current_user );
     $transaction->load( $QuoteTransaction );
     $message = $transaction->Content( Quote => 1 );
 }
 
 my $signature = '';
-if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signature ) {
+if ( $IncludeSignature and my $text = Jifty->web->current_user->user_object->Signature ) {
 	$signature = "-- \n". $text;
 }
 
 </%INIT>
 <%ARGS>
 $QuoteTransaction => undef
-$Name             => 'Content'
+$name             => 'Content'
 $Default          => ''
-$Width            => RT->Config->Get('MessageBoxWidth', $session{'CurrentUser'} ) || 72
-$Height           => RT->Config->Get('MessageBoxHeight', $session{'CurrentUser'} ) || 15
+$Width            => RT->Config->Get('MessageBoxWidth', Jifty->web->current_user ) || 72
+$Height           => RT->Config->Get('MessageBoxHeight', Jifty->web->current_user ) || 15
 $Wrap             => RT->Config->Get('MessageBoxWrap') || 'HARD'
 $IncludeSignature => 1
 </%ARGS>

@@ -54,7 +54,7 @@ use vars qw/@ISA/;
 use RT::URI::base;
 use Carp;
 
-=head1 NAME
+=head1 name
 
 RT::URI
 
@@ -145,7 +145,7 @@ sub FromURI {
     
     unless ($self->Resolver->ParseURI($uri)) {
         $RT::Logger->warning("Resolver ".ref($self->Resolver)." could not parse $uri");
-        $self->{resolver} = RT::URI::base->new( $self->current_user ); # clear resolver
+        $self->{resolver} = RT::URI::base->new; # clear resolver
     	return (undef);
     }
 
@@ -176,7 +176,7 @@ sub _GetResolver {
     if ($class->can('new') ){ 
         $self->{'resolver'} =$class->new(current_user => $self->current_user)
     } else {
-        $self->{'resolver'} = RT::URI::base->new($self->current_user); 
+        $self->{'resolver'} = RT::URI::base->new; 
     }
 
 }

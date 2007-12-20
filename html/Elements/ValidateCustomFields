@@ -49,7 +49,7 @@
 my ($valid, @res) = (1, ());
 $CustomFields->goto_first_item;
 while ( my $CF = $CustomFields->next ) {
-    my $field = $NamePrefix . $CF->id . "-Value";
+    my $field = $namePrefix . $CF->id . "-Value";
 
     my $value;
     if ($ARGSRef->{"${field}s-Magic"} and exists $ARGSRef->{"${field}s"}) {
@@ -96,5 +96,5 @@ return wantarray? ($valid, @res): $valid;
 <%ARGS>
 $CustomFields
 $ARGSRef
-$NamePrefix => "Object-RT::Model::Ticket--CustomField-"
+$namePrefix => "Object-RT::Model::Ticket--CustomField-"
 </%ARGS>

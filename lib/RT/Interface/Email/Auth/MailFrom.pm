@@ -61,7 +61,7 @@ sub GetCurrentUser {
 
 
     # We don't need to do any external lookups
-    my ( $Address, $Name ) = ParseSenderAddressFromHead( $args{'Message'}->head );
+    my ( $Address, $name ) = ParseSenderAddressFromHead( $args{'Message'}->head );
     unless ( $Address ) {
         $RT::Logger->error("Couldn't find sender's address");
         return ( $args{'CurrentUser'}, -1 );
@@ -76,14 +76,14 @@ sub GetCurrentUser {
     }
 
     # If the user can't be loaded, we may need to create one. Figure out the acl situation.
-    my $unpriv = RT::Model::Group->new( RT->system_user );
+    my $unpriv = RT::Model::Group->new(current_user => RT->system_user );
     $unpriv->load_system_internal_group('Unprivileged');
     unless ( $unpriv->id ) {
         $RT::Logger->crit("Couldn't find the 'Unprivileged' internal group");
         return ( $args{'CurrentUser'}, -1 );
     }
 
-    my $everyone = RT::Model::Group->new( RT->system_user );
+    my $everyone = RT::Model::Group->new(current_user => RT->system_user );
     $everyone->load_system_internal_group('Everyone');
     unless ( $everyone->id ) {
         $RT::Logger->crit("Couldn't find the 'Everyone' internal group");
@@ -95,15 +95,15 @@ sub GetCurrentUser {
     # but before we do that, we need to make sure that the Created user would have the right
     # to do what we're doing.
     if ( $args{'Ticket'} && $args{'Ticket'}->id ) {
-        my $qname = $args{'Queue'}->Name;
+        my $qname = $args{'Queue'}->name;
         # We have a ticket. that means we're commenting or corresponding
         if ( $args{'Action'} =~ /^comment$/i ) {
 
             # check to see whether "Everyone" or "Unprivileged users" can comment on tickets
-            unless ( $everyone->PrincipalObj->has_right( Object => $args{'Queue'},
-                                                        Right => 'CommentOnTicket' )
-                     || $unpriv->PrincipalObj->has_right( Object => $args{'Queue'},
-                                                         Right => 'CommentOnTicket' ) )
+            unless ( $everyone->principal_object->has_right( Object => $args{'Queue'},
+                                                        Right => 'commentOnTicket' )
+                     || $unpriv->principal_object->has_right( Object => $args{'Queue'},
+                                                         Right => 'commentOnTicket' ) )
             {
                 $RT::Logger->debug("Unprivileged users have no right to comment on ticket in queue '$qname'");
                 return ( $args{'CurrentUser'}, 0 );
@@ -112,9 +112,9 @@ sub GetCurrentUser {
         elsif ( $args{'Action'} =~ /^correspond$/i ) {
 
             # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
-            unless ( $everyone->PrincipalObj->has_right( Object => $args{'Queue'},
+            unless ( $everyone->principal_object->has_right( Object => $args{'Queue'},
                                                         Right  => 'ReplyToTicket' )
-                     || $unpriv->PrincipalObj->has_right( Object => $args{'Queue'},
+                     || $unpriv->principal_object->has_right( Object => $args{'Queue'},
                                                          Right  => 'ReplyToTicket' ) )
             {
                 $RT::Logger->debug("Unprivileged users have no right to reply to ticket in queue '$qname'");
@@ -124,9 +124,9 @@ sub GetCurrentUser {
         elsif ( $args{'Action'} =~ /^take$/i ) {
 
             # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
-            unless ( $everyone->PrincipalObj->has_right( Object => $args{'Queue'},
+            unless ( $everyone->principal_object->has_right( Object => $args{'Queue'},
                                                         Right  => 'OwnTicket' )
-                     || $unpriv->PrincipalObj->has_right( Object => $args{'Queue'},
+                     || $unpriv->principal_object->has_right( Object => $args{'Queue'},
                                                          Right  => 'OwnTicket' ) )
             {
                 $RT::Logger->debug("Unprivileged users have no right to own ticket in queue '$qname'");
@@ -137,9 +137,9 @@ sub GetCurrentUser {
         elsif ( $args{'Action'} =~ /^resolve$/i ) {
 
             # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
-            unless ( $everyone->PrincipalObj->has_right( Object => $args{'Queue'},
+            unless ( $everyone->principal_object->has_right( Object => $args{'Queue'},
                                                         Right  => 'ModifyTicket' )
-                     || $unpriv->PrincipalObj->has_right( Object => $args{'Queue'},
+                     || $unpriv->principal_object->has_right( Object => $args{'Queue'},
                                                          Right  => 'ModifyTicket' ) )
             {
                 $RT::Logger->debug("Unprivileged users have no right to resolve ticket in queue '$qname'");
@@ -155,12 +155,12 @@ sub GetCurrentUser {
 
     # We're creating a ticket
     elsif ( $args{'Queue'} && $args{'Queue'}->id ) {
-        my $qname = $args{'Queue'}->Name;
+        my $qname = $args{'Queue'}->name;
 
         # check to see whether "Everybody" or "Unprivileged users" can create tickets in this queue
-        unless ( $everyone->PrincipalObj->has_right( Object => $args{'Queue'},
+        unless ( $everyone->principal_object->has_right( Object => $args{'Queue'},
                                                     Right  => 'CreateTicket' )
-                 || $unpriv->PrincipalObj->has_right( Object => $args{'Queue'},
+                 || $unpriv->principal_object->has_right( Object => $args{'Queue'},
                                                      Right  => 'ModifyTicket' ) )
         {
             $RT::Logger->debug("Unprivileged users have no right to create ticket in queue '$qname'");
@@ -168,7 +168,7 @@ sub GetCurrentUser {
         }
     }
 
-    $CurrentUser = create_user( undef, $Address, $Name, $Address, $args{'Message'} );
+    $CurrentUser = create_user( undef, $Address, $name, $Address, $args{'Message'} );
 
     return ( $CurrentUser, 1 );
 }

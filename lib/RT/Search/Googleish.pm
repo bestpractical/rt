@@ -46,7 +46,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Search::Googlish
 
@@ -111,15 +111,15 @@ sub QueryToSQL {
         elsif ( $Queue = RT::Model::Queue->new( $self->TicketsObj->current_user )
             and $Queue->load($key) )
         {
-            push @queue_clauses, "Queue = '" . $Queue->Name . "'";
+            push @queue_clauses, "Queue = '" . $Queue->name . "'";
         }
 
         # Is there a owner named $key?
         elsif ( $User = RT::Model::User->new( $self->TicketsObj->current_user )
             and $User->load($key)
-            and $User->Privileged )
+            and $User->privileged )
         {
-            push @owner_clauses, "Owner = '" . $User->Name . "'";
+            push @owner_clauses, "Owner = '" . $User->name . "'";
         }
 
         elsif ($key =~ /^fulltext:(.*?)$/i) {

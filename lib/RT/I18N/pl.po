@@ -67,9 +67,9 @@ msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %3 %2 %7, %4:%5:%6"
 
 #: lib/RT/Record.pm:1685 lib/RT/Transaction_Overlay.pm:647 lib/RT/Transaction_Overlay.pm:690
-#. ($cf->Name, $new_value->Content)
+#. ($cf->name, $new_value->Content)
 #. ($field, $self->NewValue)
-#. ($self->Field, $principal->Object->Name)
+#. ($self->Field, $principal->Object->name)
 msgid "%1 %2 added"
 msgstr "%1 %2 zostały dodane"
 
@@ -79,15 +79,15 @@ msgid "%1 %2 ago"
 msgstr "przed %1 %2"
 
 #: lib/RT/Record.pm:1692 lib/RT/Transaction_Overlay.pm:654
-#. ($cf->Name, $old_content,                $new_value->Content)
+#. ($cf->name, $old_content,                $new_value->Content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 zostało zamienione na %3"
 
 #: lib/RT/Record.pm:1689 lib/RT/Transaction_Overlay.pm:650 lib/RT/Transaction_Overlay.pm:696
-#. ($cf->Name, $old_value->Content)
+#. ($cf->name, $old_value->Content)
 #. ($field, $self->OldValue)
-#. ($self->Field, $principal->Object->Name)
+#. ($self->Field, $principal->Object->name)
 msgid "%1 %2 deleted"
 msgstr "%1 %2 zostało usunięte"
 
@@ -96,7 +96,7 @@ msgid "%1 %2 of group %3"
 msgstr "%1 %2 z groupy %3"
 
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:63 html/Ticket/Elements/PreviewScrips:103
-#. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
+#. (loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 wg szablonu %3"
 
@@ -105,7 +105,7 @@ msgid "%1 (%2) %3 this ticket\\n"
 msgstr "%1 (%2) %3 tego zgłoszenia\\n"
 
 #: html/Ticket/Elements/ShowAttachments:72
-#. ($rev->CreatedAsString, $size, $rev->CreatorObj->Name)
+#. ($rev->CreatedAsString, $size, $rev->CreatorObj->name)
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) przez %3"
 
@@ -113,7 +113,7 @@ msgstr "%1 (%2) przez %3"
 #. (loc($DefaultStatus))
 #. (loc($Ticket->Status()))
 #. (loc($TicketObj->Status))
-#. ($TicketObj->OwnerObj->Name())
+#. ($TicketObj->OwnerObj->name())
 msgid "%1 (Unchanged)"
 msgstr "%1 (Niezmienione)"
 
@@ -174,7 +174,7 @@ msgid "%1 ScripAction loaded"
 msgstr "Skrypt %1 został załadowany"
 
 #: lib/RT/Record.pm:1722
-#. ($args{'Value'}, $cf->Name)
+#. ($args{'Value'}, $cf->name)
 msgid "%1 added as a value for %2"
 msgstr "dodano %1 jako wartość dla %2"
 
@@ -197,13 +197,13 @@ msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "Wydaje się, że %1 to obiekt lokalny, ale nie udało się wyszukać go w bazie danych"
 
 #: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm:531
-#. ($self->BriefDescription , $self->CreatorObj->Name)
-#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
+#. ($self->BriefDescription , $self->CreatorObj->name)
+#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->name)
 msgid "%1 by %2"
 msgstr "%1 przez %2"
 
 #: lib/RT/Transaction_Overlay.pm:788 lib/RT/Transaction_Overlay.pm:797 lib/RT/Transaction_Overlay.pm:800
-#. ($self->Field , $q1->Name , $q2->Name)
+#. ($self->Field , $q1->name , $q2->name)
 #. ($self->Field, $t2->AsString, $t1->AsString)
 #. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 msgid "%1 changed from %2 to %3"
@@ -256,7 +256,7 @@ msgid "%1 is a tool to act on tickets from an external scheduling tool, such as 
 msgstr "%1 jest narzędziem umożliwiającym obsługę zgłoszeń z zewnętrznej aplikacji do sporządzania wykazów, takiej jak cron."
 
 #: lib/RT/Queue_Overlay.pm:863
-#. ($principal->Object->Name, $args{'Type'})
+#. ($principal->Object->name, $args{'Type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 nie jest już %2 dla tej kolejki"
 
@@ -336,8 +336,8 @@ msgid "%1's %2's %3 objects"
 msgstr ""
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:57
-#. ($object->Name)
-#. ($Object->Name)
+#. ($object->name)
+#. ($Object->name)
 msgid "%1's saved searches"
 msgstr "Zapisane zapytania %1"
 
@@ -404,7 +404,7 @@ msgstr "(Wprowadź numery lub adresy URL zgłoszeń, oddzielone spacjami)"
 
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::CorrespondAddress)
-#. ($RT::CommentAddress)
+#. ($RT::commentAddress)
 msgid "(If left blank, will default to %1)"
 msgstr "(Jeśli pozostawisz puste, domyślnie zostanie ustawione na %1)"
 
@@ -738,7 +738,7 @@ msgid "Admin Cc"
 msgstr "Admin Cc"
 
 #: etc/initialdata:295
-msgid "Admin Comment"
+msgid "Admin comment"
 msgstr "Administracja komentarzami"
 
 #: etc/initialdata:274
@@ -774,8 +774,8 @@ msgid "AdminCc"
 msgstr "AdminCc"
 
 #: NOT FOUND IN SOURCE
-msgid "AdminComment"
-msgstr "AdminComment"
+msgid "Admincomment"
+msgstr "Admincomment"
 
 #: NOT FOUND IN SOURCE
 msgid "AdminCorrespondence"
@@ -1012,8 +1012,8 @@ msgid "August"
 msgstr "Sierpień"
 
 #: NOT FOUND IN SOURCE
-msgid "AuthSystem"
-msgstr "AuthSystem"
+msgid "auth_system"
+msgstr "auth_system"
 
 #: etc/initialdata:221
 msgid "Autoreply"
@@ -1195,7 +1195,7 @@ msgid "Class"
 msgstr "Klasa"
 
 #: NOT FOUND IN SOURCE
-msgid "Class Name"
+msgid "Class name"
 msgstr "Nazwa klasy"
 
 #: NOT FOUND IN SOURCE
@@ -1247,47 +1247,47 @@ msgid "Command not understood!\\n"
 msgstr "Niezrozumiałe polecenie!\\n"
 
 #: html/Ticket/Elements/ShowTransaction:190 html/Ticket/Elements/Tabs:185
-msgid "Comment"
+msgid "comment"
 msgstr "Komentuj"
 
 #: html/Admin/Queues/Modify.html:79
-msgid "Comment Address"
+msgid "comment Address"
 msgstr "Adres komentarza"
 
 #: NOT FOUND IN SOURCE
-msgid "Comment not recorded"
+msgid "comment not recorded"
 msgstr "Komentarz nie został zapisany"
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "Comment on tickets"
+msgid "comment on tickets"
 msgstr "Komentarz do zgłoszeń"
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "CommentOnTicket"
-msgstr "CommentOnTicket"
+msgid "commentOnTicket"
+msgstr "commentOnTicket"
 
 #: NOT FOUND IN SOURCE
-msgid "Comments"
+msgid "comments"
 msgstr "Komentarze"
 
 #: html/Ticket/ModifyAll.html:91 html/Ticket/Update.html:75
-msgid "Comments (Not sent to requestors)"
+msgid "comments (Not sent to requestors)"
 msgstr "Komentarze (które nie zostaną wysłane zgłaszającym)"
 
 #: html/Search/Bulk.html:128
-msgid "Comments (not sent to requestors)"
+msgid "comments (not sent to requestors)"
 msgstr "Komentarze (które nie zostały wysłane zgłaszającym)"
 
 #: NOT FOUND IN SOURCE
-msgid "Comments about %1"
+msgid "comments about %1"
 msgstr "Komentarze dotyczące %1"
 
 #: html/Admin/Users/Modify.html:225 html/Ticket/Elements/ShowRequestor:67
-msgid "Comments about this user"
+msgid "comments about this user"
 msgstr "Uwagi dotyczące użytkownika"
 
 #: lib/RT/Transaction_Overlay.pm:634
-msgid "Comments added"
+msgid "comments added"
 msgstr "Komentarze zostały dodane"
 
 #: lib/RT/Action/Generic.pm:175
@@ -1599,7 +1599,7 @@ msgid "Create a CustomField"
 msgstr "Utwórz pole definiowane przez użytkownika"
 
 #: html/Admin/Queues/CustomField.html:69
-#. ($QueueObj->Name())
+#. ($QueueObj->name())
 msgid "Create a CustomField for queue %1"
 msgstr "Utwórz pole dla kolejki %1"
 
@@ -1660,7 +1660,7 @@ msgid "Create a request"
 msgstr "Utwórz zgłoszenie"
 
 #: html/Admin/Queues/Scrip.html:89
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Create a scrip for queue %1"
 msgstr "Utwórz skrypt dla kolejki %1"
 
@@ -1725,7 +1725,7 @@ msgid "Created"
 msgstr "Zarejestrowane"
 
 #: html/Admin/CustomFields/Modify.html:163 html/Admin/Elements/EditCustomField:117
-#. ($CustomFieldObj->Name())
+#. ($CustomFieldObj->name())
 msgid "Created CustomField %1"
 msgstr "Pole %1 zostało utworzone"
 
@@ -1815,12 +1815,12 @@ msgid "Custom field %1 %2 %3"
 msgstr "Pole definiowane przez użytkownika %1 %2 %3"
 
 #: lib/RT/TicketCollection_Overlay.pm:2424
-#. ($CF->Name)
+#. ($CF->name)
 msgid "Custom field %1 has a value."
 msgstr "Pole %1 definiowane przez użytkownika ma wartość."
 
 #: lib/RT/TicketCollection_Overlay.pm:2420
-#. ($CF->Name)
+#. ($CF->name)
 msgid "Custom field %1 has no value."
 msgstr "Brak wartości w polu %1 definiowanym przez użytkownika."
 
@@ -1831,7 +1831,7 @@ msgstr "Nie udało się wyszukać pola %1 definiowanego przez użytkownika"
 
 #: lib/RT/Report/Tickets.pm:118 lib/RT/Report/Tickets.pm:121
 #. ($cf)
-#. ($obj->Name)
+#. ($obj->name)
 msgid "Custom field '%1'"
 msgstr ""
 
@@ -1844,7 +1844,7 @@ msgid "Custom field not found"
 msgstr "Nie udało się wyszukać pola definiowanego przez użytkownika"
 
 #: lib/RT/CustomField_Overlay.pm:1157
-#. ($args{'Content'}, $self->Name)
+#. ($args{'Content'}, $self->name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Nie udało się wyszukać wartości %1 dla pola %2"
 
@@ -2126,7 +2126,7 @@ msgid "Edit Custom Fields"
 msgstr ""
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
-#. ($Object->Name)
+#. ($Object->name)
 msgid "Edit Custom Fields for %1"
 msgstr "Edytuj pola dla kolejki %1"
 
@@ -2163,7 +2163,7 @@ msgid "Edit Search"
 msgstr ""
 
 #: html/Admin/Queues/Templates.html:63
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Edit Templates for queue %1"
 msgstr "Edytuj szablony kolejki %1"
 
@@ -2192,7 +2192,7 @@ msgid "Editing Configuration for Class %1"
 msgstr "Edytuj konfigurację klasy %1"
 
 #: html/Admin/Queues/Modify.html:140
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Editing Configuration for queue %1"
 msgstr "Edytuj konfigurację kolejki %1"
 
@@ -2201,17 +2201,17 @@ msgid "Editing Configuration for user %1"
 msgstr "Edytuj konfigurację użytkownika %1"
 
 #: html/Admin/CustomFields/Modify.html:167 html/Admin/Elements/EditCustomField:120
-#. ($CustomFieldObj->Name())
+#. ($CustomFieldObj->name())
 msgid "Editing CustomField %1"
 msgstr "Edytuj pole %1"
 
 #: html/Admin/Groups/Members.html:53
-#. ($Group->Name)
+#. ($Group->name)
 msgid "Editing membership for group %1"
 msgstr "Edytuj listę członków grupy %1"
 
 #: html/User/Groups/Members.html:150
-#. ($Group->Name)
+#. ($Group->name)
 msgid "Editing membership for personal group %1"
 msgstr "Edytuj listę członków prywatnej grupy %1"
 
@@ -2232,11 +2232,11 @@ msgid "Email address in use"
 msgstr "Używany adres e-mail "
 
 #: NOT FOUND IN SOURCE
-msgid "EmailAddress"
+msgid "email"
 msgstr "adres e-mail"
 
 #: NOT FOUND IN SOURCE
-msgid "EmailEncoding"
+msgid "email_encoding"
 msgstr "kodowanie e-maila"
 
 #: NOT FOUND IN SOURCE
@@ -2382,7 +2382,7 @@ msgid "Failed to create search attribute"
 msgstr ""
 
 #: lib/RT/User_Overlay.pm:376
-msgid "Failed to find 'Privileged' users pseudogroup."
+msgid "Failed to find 'privileged' users pseudogroup."
 msgstr "Nie udało się wyszukać członków grupy 'Uprawnieni'"
 
 #: lib/RT/User_Overlay.pm:383
@@ -2514,8 +2514,8 @@ msgid "Freeform"
 msgstr "FormulaireLibre"
 
 #: NOT FOUND IN SOURCE
-msgid "FreeformContactInfo"
-msgstr "FreeformContactInfo"
+msgid "freeform_contact_info"
+msgstr "freeform_contact_info"
 
 #: NOT FOUND IN SOURCE
 msgid "FreeformMultiple"
@@ -2542,7 +2542,7 @@ msgid "Getting the current user from a pgp sig\\n"
 msgstr "Uzyskanie aktualnego użytkownika na podstawie podpisu pgp\\n"
 
 #: lib/RT/Transaction_Overlay.pm:684
-#. ($New->Name)
+#. ($New->name)
 msgid "Given to %1"
 msgstr "Nadany dla %1"
 
@@ -2568,7 +2568,7 @@ msgid "Global portlet %1 saved."
 msgstr ""
 
 #: html/Admin/Elements/SelectTemplate:59
-#. (loc($Template->Name))
+#. (loc($Template->name))
 msgid "Global template: %1"
 msgstr "Szablon globalny: %1"
 
@@ -2671,12 +2671,12 @@ msgid "History for article #%1"
 msgstr "Historia artykułu #%1"
 
 #: html/Admin/Groups/History.html:62
-#. ($GroupObj->Name)
+#. ($GroupObj->name)
 msgid "History of the group %1"
 msgstr "Historique du groupe %1"
 
 #: html/Admin/Users/History.html:62
-#. ($UserObj->Name)
+#. ($user_object->name)
 msgid "History of the user %1"
 msgstr "Historique de l'utilisateur %1"
 
@@ -3030,7 +3030,7 @@ msgid "Loaded perl modules"
 msgstr "Załadowane moduły PERL"
 
 #: lib/RT/SavedSearch.pm:111
-#. ($self->Name)
+#. ($self->name)
 msgid "Loaded search %1"
 msgstr ""
 
@@ -3043,7 +3043,7 @@ msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
 msgstr "Ścieżka logowania %1 nie została odnaleziona lub nie mógła być zapisana.\\n Nie udało się uruchomić RT"
 
 #: html/Elements/Header:91
-#. ("<span>".$session{'CurrentUser'}->Name."</span>")
+#. ("<span>".Jifty->web->current_user->name."</span>")
 msgid "Logged in as %1"
 msgstr "Zalogowano jako %1"
 
@@ -3080,7 +3080,7 @@ msgid "Make date Started"
 msgstr "Wprowadź datę rozpoczęcia realizacji"
 
 #: html/Search/Bulk.html:108
-msgid "Make date Starts"
+msgid "Make date starts"
 msgstr "Wprowadź datę rozpoczęcia realizacji"
 
 #: html/Search/Bulk.html:112
@@ -3188,7 +3188,7 @@ msgid "Memberships"
 msgstr "Affiliations"
 
 #: html/Admin/Users/Memberships.html:60
-#. ($UserObj->Name)
+#. ($user_object->name)
 msgid "Memberships of the user %1"
 msgstr "Affiliations de l'utilisateur %1"
 
@@ -3312,7 +3312,7 @@ msgid "Modify User Rights"
 msgstr "Zmodyfikuj uprawnienia użytkowników"
 
 #: html/Admin/Queues/CustomField.html:66
-#. ($QueueObj->Name())
+#. ($QueueObj->name())
 msgid "Modify a CustomField for queue %1"
 msgstr "Modyfikuj pole dla kolejki %1"
 
@@ -3321,7 +3321,7 @@ msgid "Modify a CustomField which applies to all queues"
 msgstr "Modyfikuj pole, które dotyczy wszystkich kolejek"
 
 #: html/Admin/Queues/Scrip.html:82
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify a scrip for queue %1"
 msgstr "Modyfikuj skrypt dla kolejki %1"
 
@@ -3334,7 +3334,7 @@ msgid "Modify article #%1"
 msgstr "Modyfikuj artykuł #%1"
 
 #: html/Admin/CustomFields/Objects.html:90
-#. ($CF->Name)
+#. ($CF->name)
 msgid "Modify associated objects for %1"
 msgstr ""
 
@@ -3385,17 +3385,17 @@ msgid "Modify group metadata or delete group"
 msgstr "Modyfikuj grupowe dane pośrednie lub usuń grupę"
 
 #: html/Admin/CustomFields/GroupRights.html:164
-#. ($CustomFieldObj->Name)
+#. ($CustomFieldObj->name)
 msgid "Modify group rights for custom field %1"
 msgstr "Modyfikuj uprawnienia grupowe dla pola %1"
 
 #: html/Admin/Groups/GroupRights.html:46 html/Admin/Groups/GroupRights.html:50 html/Admin/Groups/GroupRights.html:56
-#. ($GroupObj->Name)
+#. ($GroupObj->name)
 msgid "Modify group rights for group %1"
 msgstr "Modyfikuj uprawnienia grupowe dla grupy %1"
 
 #: html/Admin/Queues/GroupRights.html:46 html/Admin/Queues/GroupRights.html:50
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify group rights for queue %1"
 msgstr "Modyfikuj uprawnienia grupowe dla kolejki %1"
 
@@ -3408,7 +3408,7 @@ msgid "Modify one's own RT account"
 msgstr "Modyfikuj konto w RT"
 
 #: html/Admin/Queues/People.html:46 html/Admin/Queues/People.html:50
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify people related to queue %1"
 msgstr "Modyfikuj użytkowników powiązanych z kolejką %1"
 
@@ -3419,7 +3419,7 @@ msgid "Modify people related to ticket #%1"
 msgstr "Modyfikuj użytkowników powiązanych ze zgłoszeniem %1"
 
 #: html/Admin/Queues/Scrips.html:67
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify scrips for queue %1"
 msgstr "Modyfikuj skrypty dla kolejki %1"
 
@@ -3428,7 +3428,7 @@ msgid "Modify scrips which apply to all queues"
 msgstr "Modyfikuj skrypty, które dotyczą wszystkich kolejek"
 
 #: html/Admin/Global/Template.html:102 html/Admin/Global/Template.html:46 html/Admin/Global/Template.html:51 html/Admin/Queues/Template.html:99
-#. (loc($TemplateObj->Name()))
+#. (loc($TemplateObj->name()))
 #. ($TemplateObj->id)
 msgid "Modify template %1"
 msgstr "Edytuj szablon %1"
@@ -3442,7 +3442,7 @@ msgid "Modify the default \"RT at a glance\" view"
 msgstr ""
 
 #: html/Admin/Groups/Modify.html:119 html/User/Groups/Modify.html:107
-#. ($Group->Name)
+#. ($Group->name)
 msgid "Modify the group %1"
 msgstr "Modyfikuj grupę %1"
 
@@ -3451,7 +3451,7 @@ msgid "Modify the queue watchers"
 msgstr "Modyfikuj obserwatorów kolejki"
 
 #: html/Admin/Users/Modify.html:309
-#. ($UserObj->Name)
+#. ($user_object->name)
 msgid "Modify the user %1"
 msgstr "Modyfikuj użytkownika %1"
 
@@ -3470,17 +3470,17 @@ msgid "Modify tickets"
 msgstr "Modyfikuj zgłoszenia"
 
 #: html/Admin/CustomFields/UserRights.html:157
-#. ($CustomFieldObj->Name)
+#. ($CustomFieldObj->name)
 msgid "Modify user rights for custom field %1"
 msgstr ""
 
 #: html/Admin/Groups/UserRights.html:46 html/Admin/Groups/UserRights.html:50 html/Admin/Groups/UserRights.html:56
-#. ($GroupObj->Name)
+#. ($GroupObj->name)
 msgid "Modify user rights for group %1"
 msgstr "Modyfikuj uprawnienia użytkowników dla grupy %1"
 
 #: html/Admin/Queues/UserRights.html:46 html/Admin/Queues/UserRights.html:50
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify user rights for queue %1"
 msgstr "Modyfikuj uprawnienia użytkowników dla kolejki %1"
 
@@ -3542,7 +3542,7 @@ msgid "Multiple"
 msgstr "Wielokrotny"
 
 #: lib/RT/User_Overlay.pm:226
-msgid "Must specify 'Name' attribute"
+msgid "Must specify 'name' attribute"
 msgstr "Należy określić atrybut 'Nazwa'"
 
 #: html/SelfService/Elements/MyRequests:57
@@ -3567,15 +3567,15 @@ msgid "My saved searches"
 msgstr "Moje zapytania"
 
 #: html/Admin/CustomFields/Modify.html:58 html/Admin/Elements/AddCustomFieldValue:53 html/Admin/Elements/EditCustomField:55 html/Admin/Elements/EditCustomFieldValues:55 html/Admin/Elements/ModifyTemplate:49 html/Admin/Groups/Modify.html:65 html/Search/Bulk.html:157 html/User/Groups/Modify.html:65
-msgid "Name"
+msgid "name"
 msgstr "Nazwa"
 
 #: lib/RT/User_Overlay.pm:233
-msgid "Name in use"
+msgid "name in use"
 msgstr "Używana nazwa"
 
 #: NOT FOUND IN SOURCE
-msgid "Name matches"
+msgid "name matches"
 msgstr "Nazwa zgadza się z"
 
 #: NOT FOUND IN SOURCE
@@ -3599,7 +3599,7 @@ msgid "New Links"
 msgstr "Nowe powiązania"
 
 #: html/Admin/Users/Modify.html:119 html/User/Prefs.html:109
-msgid "New Password"
+msgid "New password"
 msgstr "Nowe hasło"
 
 #: etc/initialdata:332
@@ -3703,11 +3703,11 @@ msgid "Next page"
 msgstr "Następna strona"
 
 #: NOT FOUND IN SOURCE
-msgid "NickName"
+msgid "nickname"
 msgstr "Pseudonim"
 
 #: html/Admin/Users/Modify.html:84 html/User/Prefs.html:72
-msgid "Nickname"
+msgid "nickname"
 msgstr "Pseudonim"
 
 #: NOT FOUND IN SOURCE
@@ -3800,7 +3800,7 @@ msgid "No permission to create queues"
 msgstr "Brak uprawnień do tworzenia kolejek"
 
 #: lib/RT/Ticket_Overlay.pm:420
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Brak uprawnień do tworzenia zgłoszeń w kolejce '%1'"
 
@@ -3917,7 +3917,7 @@ msgid "Notify AdminCcs"
 msgstr "Wyślij powiadomienie do osób o uprawnieniach AdminCc"
 
 #: etc/initialdata:97
-msgid "Notify AdminCcs as Comment"
+msgid "Notify AdminCcs as comment"
 msgstr "Wyślij powiadomienie do osób o uprawnieniach AdminCc jako komentarz"
 
 #: etc/initialdata:93 etc/upgrade/3.1.17/content:6
@@ -3925,7 +3925,7 @@ msgid "Notify Ccs"
 msgstr "Wyślij powiadomienia do osób o uprawnieniach Cc"
 
 #: etc/initialdata:89 etc/upgrade/3.1.17/content:2
-msgid "Notify Ccs as Comment"
+msgid "Notify Ccs as comment"
 msgstr "Wyślij powiadomienia do osób o uprawnieniach Cc jako komentarz"
 
 #: etc/initialdata:128
@@ -3933,7 +3933,7 @@ msgid "Notify Other Recipients"
 msgstr "Wyślij powiadomienie do innych odbiorców"
 
 #: etc/initialdata:124
-msgid "Notify Other Recipients as Comment"
+msgid "Notify Other Recipients as comment"
 msgstr "Wyślij powiadomienie do innych odbiorców jako komentarz"
 
 #: etc/initialdata:85
@@ -3941,7 +3941,7 @@ msgid "Notify Owner"
 msgstr "Wyślij powiadomienie do właściciela"
 
 #: etc/initialdata:81
-msgid "Notify Owner as Comment"
+msgid "Notify Owner as comment"
 msgstr "Wyślij powiadomienie do właściciela jako komentarz"
 
 #: etc/initialdata:376
@@ -3969,7 +3969,7 @@ msgid "Notify Requestors and Ccs"
 msgstr "Wyślij powiadomienie do zgłaszających i osób o uprawnieniach Cc"
 
 #: etc/initialdata:106
-msgid "Notify Requestors and Ccs as Comment"
+msgid "Notify Requestors and Ccs as comment"
 msgstr "Wyślij powiadomienie do zgłaszających i osób o uprawnieniach Cc jako komentarz"
 
 #: etc/initialdata:120
@@ -3977,7 +3977,7 @@ msgid "Notify Requestors, Ccs and AdminCcs"
 msgstr "Wyślij powiadomienie do zgłaszających oraz osób o uprawnieniach Cc i AdminCc"
 
 #: etc/initialdata:116
-msgid "Notify Requestors, Ccs and AdminCcs as Comment"
+msgid "Notify Requestors, Ccs and AdminCcs as comment"
 msgstr "Wyślij powiadomienie do zgłaszających oraz osób o uprawnieniach Cc i  AdminCC jako komentarz"
 
 #: lib/RT/Date.pm:451
@@ -4043,12 +4043,12 @@ msgid "On"
 msgstr "dnia"
 
 #: lib/RT/Transaction_Overlay.pm:326
-#. ($self->CreatedAsString(), $self->CreatorObj->Name())
+#. ($self->CreatedAsString(), $self->CreatorObj->name())
 msgid "On %1, %2 wrote:"
 msgstr ""
 
 #: etc/initialdata:163
-msgid "On Comment"
+msgid "On comment"
 msgstr "w przypadku komentarza"
 
 #: etc/initialdata:156
@@ -4142,7 +4142,7 @@ msgid "Ordering and sorting"
 msgstr "Porządkowanie i sortowanie"
 
 #: html/Admin/Users/Modify.html:141 html/User/Prefs.html:129
-msgid "Organization"
+msgid "organization"
 msgstr "Firma"
 
 #: html/Approvals/Elements/Approve:53
@@ -4187,7 +4187,7 @@ msgid "Owner could not be set."
 msgstr "Właściciel nie mógł być ustanowiony."
 
 #: lib/RT/Transaction_Overlay.pm:672
-#. ($Old->Name , $New->Name)
+#. ($Old->name , $New->name)
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Wymuszono zmianę właściciela z %1 na %2"
 
@@ -4213,45 +4213,45 @@ msgid "Parents"
 msgstr "Zgłoszenia nadrzędne"
 
 #: html/Elements/Login:95 html/User/Prefs.html:105
-msgid "Password"
+msgid "password"
 msgstr "Hasło"
 
 #: html/NoAuth/Reminder.html:46
-msgid "Password Reminder"
+msgid "password Reminder"
 msgstr "Przypomnienie o haśle"
 
 #: lib/RT/Transaction_Overlay.pm:781 lib/RT/User_Overlay.pm:1045
-msgid "Password changed"
+msgid "password changed"
 msgstr ""
 
 #: lib/RT/User_Overlay.pm:1037 lib/RT/User_Overlay.pm:214
-#. ($RT::MinimumPasswordLength)
-msgid "Password needs to be at least %1 characters long"
+#. ($RT::MinimumpasswordLength)
+msgid "password needs to be at least %1 characters long"
 msgstr ""
 
 #: lib/RT/User_Overlay.pm:1044
-msgid "Password set"
+msgid "password set"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Password too short"
+msgid "password too short"
 msgstr "Hasło jest zbyt krótkie"
 
 #: html/User/Prefs.html:240
 #. (loc_fuzzy($msg))
-msgid "Password: %1"
+msgid "password: %1"
 msgstr "Hasło: %1"
 
 #: lib/RT/User_Overlay.pm:1030
-msgid "Password: Permission Denied"
+msgid "password: Permission Denied"
 msgstr ""
 
 #: html/Admin/Users/Modify.html:364
-msgid "Passwords do not match."
+msgid "passwords do not match."
 msgstr "Hasła są różne."
 
 #: html/User/Prefs.html:242
-msgid "Passwords do not match. Your password has not been changed"
+msgid "passwords do not match. Your password has not been changed"
 msgstr "Hasła są różne. Twoje hasło nie zostało zmienione."
 
 #: html/Ticket/Elements/ShowSummary:62 html/Ticket/Elements/Tabs:119 html/Ticket/ModifyAll.html:72
@@ -4303,7 +4303,7 @@ msgid "Preferences"
 msgstr "Właściwości"
 
 #: html/Admin/Users/MyRT.html:75
-#. ($pane, $UserObj->Name)
+#. ($pane, $user_object->name)
 msgid "Preferences %1 for user %2 ."
 msgstr ""
 
@@ -4337,7 +4337,7 @@ msgid "Pri"
 msgstr "Poprzedni"
 
 #: lib/RT/ACE_Overlay.pm:157 lib/RT/ACE_Overlay.pm:239 lib/RT/ACE_Overlay.pm:569
-#. ($args{'PrincipalId'})
+#. ($args{'principal_id'})
 msgid "Principal %1 not found."
 msgstr "Nie udało się wyszukać zarządzającego %1."
 
@@ -4354,16 +4354,16 @@ msgid "Privacy:"
 msgstr "Prywatne:"
 
 #: etc/initialdata:25
-msgid "Privileged"
+msgid "privileged"
 msgstr "Uprawnieni"
 
 #: html/Admin/Users/Modify.html:342 html/User/Prefs.html:231
 #. (loc_fuzzy($msg))
-msgid "Privileged status: %1"
+msgid "privileged status: %1"
 msgstr "Uprawniony status: %1"
 
 #: html/Admin/Users/index.html:102
-msgid "Privileged users"
+msgid "privileged users"
 msgstr "Uprawnieni użytkownicy"
 
 #: NOT FOUND IN SOURCE
@@ -4401,7 +4401,7 @@ msgid "Queue '%1' not found\\n"
 msgstr "Nie udało się wyszukać kolejki '%1 '\\n"
 
 #: html/Admin/Queues/Modify.html:64
-msgid "Queue Name"
+msgid "Queue name"
 msgstr "Nazwa kolejki"
 
 #: NOT FOUND IN SOURCE
@@ -4518,7 +4518,7 @@ msgid "RT at a glance"
 msgstr "RT - przegląd podstawowych informacji"
 
 #: html/Admin/Users/MyRT.html:30
-#. ($UserObj->Name)
+#. ($user_object->name)
 msgid "RT at a glance for the user %1"
 msgstr ""
 
@@ -4592,12 +4592,12 @@ msgid "RTFM Error"
 msgstr "Błąd RTFM"
 
 #: html/Admin/Users/Modify.html:79 html/User/Prefs.html:69
-msgid "Real Name"
+msgid "Real name"
 msgstr "Imię i nazwisko"
 
 #: NOT FOUND IN SOURCE
-msgid "RealName"
-msgstr "RealName"
+msgid "real_name"
+msgstr "real_name"
 
 #: lib/RT/Transaction_Overlay.pm:725
 #. ($value)
@@ -4796,7 +4796,7 @@ msgid "Results per page"
 msgstr "Wyniki - liczba na stronę"
 
 #: html/Admin/Users/Modify.html:126 html/User/Prefs.html:116
-msgid "Retype Password"
+msgid "Retype password"
 msgstr "Wpisz ponownie hasło"
 
 #: html/Search/Elements/EditSearches:61
@@ -5264,8 +5264,8 @@ msgid "ShowTicket"
 msgstr "ShowTicket"
 
 #: lib/RT/Queue_Overlay.pm:104
-msgid "ShowTicketComments"
-msgstr "ShowTicketComments"
+msgid "ShowTicketcomments"
+msgstr "ShowTicketcomments"
 
 #: lib/RT/Queue_Overlay.pm:107
 msgid "Sign up as a ticket Requestor or ticket or queue Cc"
@@ -5348,15 +5348,15 @@ msgid "Started date '%1' could not be parsed"
 msgstr "Data rozpoczęcia realizacji '%1' nie może być rozpoznana"
 
 #: html/Elements/SelectDateType:52 html/Ticket/Create.html:208 html/Ticket/Elements/EditDates:48 html/Ticket/Elements/ShowDates:52
-msgid "Starts"
+msgid "starts"
 msgstr "Początek realizacji"
 
 #: NOT FOUND IN SOURCE
-msgid "Starts By"
+msgid "starts By"
 msgstr "Początek realizacji od"
 
 #: NOT FOUND IN SOURCE
-msgid "Starts date '%1' could not be parsed"
+msgid "starts date '%1' could not be parsed"
 msgstr "Data rozpoczęcia realizacji '%1' nie może być rozpoznana"
 
 #: html/Admin/Users/Modify.html:162 html/User/Prefs.html:145
@@ -5392,7 +5392,7 @@ msgid "StealTicket"
 msgstr "PrzejecieZgloszen"
 
 #: lib/RT/Transaction_Overlay.pm:678
-#. ($Old->Name)
+#. ($Old->name)
 msgid "Stolen from %1"
 msgstr "Przejęte od %1"
 
@@ -5666,7 +5666,7 @@ msgstr "Właściciel zgłoszenia"
 msgid "The requestor of a ticket"
 msgstr "Zgłaszający"
 
-#: html/Admin/Elements/EditUserComments:47
+#: html/Admin/Elements/EditUsercomments:47
 msgid "These comments aren't generally visible to the user"
 msgstr "Te komentarze nie są generalnie widoczne dla użytkownika"
 
@@ -5733,7 +5733,7 @@ msgid "Ticket %1"
 msgstr "Zgłoszenie %1"
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
-#. ($self->id, $QueueObj->Name)
+#. ($self->id, $QueueObj->name)
 msgid "Ticket %1 created in queue '%2'"
 msgstr "Zgłoszenie %1 zostało utworzone w kolejce '%2'"
 
@@ -5881,11 +5881,11 @@ msgid "Time worked"
 msgstr "Czas realizacji"
 
 #: NOT FOUND IN SOURCE
-msgid "TimeLeft"
+msgid "time_left"
 msgstr "PozostałyCzas"
 
 #: lib/RT/Ticket_Overlay.pm:1167
-msgid "TimeWorked"
+msgid "time_worked"
 msgstr "Czas realizacji"
 
 #: html/Search/Elements/EditFormat:74
@@ -6131,7 +6131,7 @@ msgid "User %1 %2: %3\\n"
 msgstr "Użytkownik %1 %2: %3 \\n"
 
 #: NOT FOUND IN SOURCE
-msgid "User %1 Password: %2\\n"
+msgid "User %1 password: %2\\n"
 msgstr "Hasło użytkownika %1: %2\\n"
 
 #: lib/RT/Ticket_Overlay.pm:506
@@ -6242,7 +6242,7 @@ msgid "Watchers"
 msgstr "Obserwatorzy"
 
 #: NOT FOUND IN SOURCE
-msgid "WebEncoding"
+msgid "web_encoding"
 msgstr "Web-kodowanie"
 
 #: lib/RT/Date.pm:419
@@ -6435,7 +6435,7 @@ msgid "and not"
 msgstr "i nie"
 
 #: html/User/Elements/DelegateRights:80
-#. ($right->PrincipalObj->Object->SelfDescription)
+#. ($right->principal_object->Object->SelfDescription)
 msgid "as granted to %1"
 msgstr "tak jak przydzielone dla %1"
 
@@ -6532,12 +6532,12 @@ msgid "greater than"
 msgstr "większy od"
 
 #: lib/RT/Group_Overlay.pm:214
-#. ($self->Name)
+#. ($self->name)
 msgid "group '%1'"
 msgstr "grupy '%1'"
 
 #: html/Search/Results.html:88
-#. ($m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query))
+#. ($m->scomp('Elements/SelectGroupBy', name => 'PrimaryGroupBy', Query => $Query))
 msgid "grouped by %1"
 msgstr ""
 
@@ -6614,12 +6614,12 @@ msgid "open"
 msgstr "otwarte"
 
 #: lib/RT/Group_Overlay.pm:219
-#. ($self->Name, $user->Name)
+#. ($self->name, $user->name)
 msgid "personal group '%1' for user '%2'"
 msgstr "prywatna grupa '%1' użytkownika '%2'"
 
 #: lib/RT/Group_Overlay.pm:227
-#. ($queue->Name, $self->Type)
+#. ($queue->name, $self->Type)
 msgid "queue %1 %2"
 msgstr "kolejka %1 %2"
 
@@ -6648,7 +6648,7 @@ msgid "stalled"
 msgstr "zamrożone"
 
 #: html/Search/Results.html:89
-#. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle'))
+#. ($m->scomp('Elements/SelectChartType', name => 'ChartStyle'))
 msgid "style: %1"
 msgstr ""
 
@@ -6697,7 +6697,7 @@ msgid "undescripbed group %1"
 msgstr "nieopisana grupa %1"
 
 #: lib/RT/Group_Overlay.pm:211
-#. ($user->Object->Name)
+#. ($user->Object->name)
 msgid "user %1"
 msgstr "użytkownika %1"
 

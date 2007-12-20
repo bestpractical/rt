@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::ScripCollection - a collection of RT Scrip objects
 
@@ -285,7 +285,7 @@ sub _setupSourceObjects {
         $self->{'TicketObj'}->current_user( $self->current_user );
     }
     else {
-        $self->{'TicketObj'} = RT::Model::Ticket->new( $self->current_user );
+        $self->{'TicketObj'} = RT::Model::Ticket->new;
         $self->{'TicketObj'}->load( $args{'Ticket'} )
           || $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}\n");
     }
@@ -294,7 +294,7 @@ sub _setupSourceObjects {
         $self->{'TransactionObj'}->current_user( $self->current_user );
     }
     else {
-        $self->{'TransactionObj'} = RT::Model::Transaction->new( $self->current_user );
+        $self->{'TransactionObj'} = RT::Model::Transaction->new;
         $self->{'TransactionObj'}->load( $args{'Transaction'} )
           || $RT::Logger->err( "$self couldn't load transaction $args{'Transaction'}\n");
     }

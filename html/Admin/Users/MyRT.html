@@ -48,7 +48,7 @@
 <& /Admin/Elements/Header, Title => $title  &>
 <& /Admin/Elements/UserTabs, 
     id => $id, 
-    UserObj => $UserObj,
+    user_object => $user_object,
     current_tab => $current_tab, 
     Title => $title &>
 
@@ -65,7 +65,7 @@
 <br />
 
 % for my $pane (@panes) {
-<&|/Widgets/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
+<&|/Widgets/TitleBox, title => loc('RT at a glance').': '.loc($pane->{name}), bodyclass => "" &>
 <& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &></&>
 <br />
 % }
@@ -73,26 +73,26 @@
 <%init>
 my $current_tab;
 $current_tab = 'Admin/Users/MyRT.html?id='.$id if ($id);
-my $UserObj = new RT::Model::User($session{'CurrentUser'});
-$UserObj->load($id) || Abort("Couldn't load user '$id'");
-my $title = loc("RT at a glance for the user [_1]", $UserObj->Name);
+my $user_object = new RT::Model::User(Jifty->web->current_user);
+$user_object->load($id) || Abort("Couldn't load user '$id'");
+my $title = loc("RT at a glance for the user [_1]", $user_object->name);
 
 if ($ARGS{Reset}) {
-    $UserObj->set_Preferences('HomepageSettings', {});
+    $user_object->set_Preferences('HomepageSettings', {});
 }
 
-my ($default_portlets) = RT::System->new($session{'CurrentUser'})->attributes->Named('HomepageSettings');
-my $portlets  = $UserObj->Preferences('HomepageSettings', $default_portlets ? $default_portlets->Content  : {});
+my ($default_portlets) = RT::System->new(Jifty->web->current_user)->attributes->named('HomepageSettings');
+my $portlets  = $user_object->Preferences('HomepageSettings', $default_portlets ? $default_portlets->Content  : {});
 
 my %allowed_components = map {$_ => 1} @{ RT->Config->Get('HomepageComponents') };
 
 my @items;
 push @items, map {["component-$_", $_]} sort keys %allowed_components;
 
-my $sys = RT::System->new( RT::CurrentUser->new($UserObj) );
+my $sys = RT::System->new(current_user => RT::CurrentUser->new($user_object) );
 my @objs = ($sys);
 
-push @objs, RT::SavedSearches->new( RT::CurrentUser->new( $UserObj ) )->_PrivacyObjects;
+push @objs, RT::SavedSearches->new(current_user => RT::CurrentUser->new( $user_object ) )->_PrivacyObjects;
 my @actions;
 
 for my $object (@objs) {
@@ -119,8 +119,8 @@ my @panes = $m->comp(
     current_portlets => $portlets,
     OnSave => sub {
         my ( $conf, $pane ) = @_;
-        $UserObj->set_Preferences( 'HomepageSettings', $conf );
-        push @actions, loc( 'Preferences [_1] for user [_2] .', $pane, $UserObj->Name );
+        $user_object->set_Preferences( 'HomepageSettings', $conf );
+        push @actions, loc( 'Preferences [_1] for user [_2] .', $pane, $user_object->name );
     }
 );
 

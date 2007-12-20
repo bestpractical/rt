@@ -13,11 +13,11 @@ plan tests => 3;
 create_savepoint();
 
 use RT::Model::TicketCollection;
-my $ticket = RT::Model::Ticket->new( RT->system_user );
+my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 my ($id,undef,$cmsg) = $ticket->create( Subject => 'test', Queue => 1 );
 ok( $id, "Created new ticket $cmsg " );
 
-$ticket = RT::Model::Ticket->new( RT->system_user );
+$ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 my ($status, $msg) = $ticket->load( $id );
 ok( $id, "load ticket" ) or diag( "error: $msg" );
 

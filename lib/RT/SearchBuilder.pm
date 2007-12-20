@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::SearchBuilder - a baseclass for RT collection objects
 
@@ -70,41 +70,8 @@ use base qw/RT::Base/;
 use base qw/Jifty::DBI::Collection/;
 use UNIVERSAL::require;
 
-sub new {
-    my $self = shift->SUPER::new();
-    $self->_set_current_user(@_) if ($_[0]);
-    $self->_init();
-    return $self;
-}
-
 sub _handle {
     return Jifty->handle
-}
-
-sub current_user {
-    shift->{'user'};
-}
-
-
-# {{{ sub _init 
-sub _set_current_user  {
-    my $self = shift;
-
-    my %args; 
-    if ( @_ %2 ) {
-        $args{'current_user'} =  shift @_ if (@_);
-    } else {
-        %args = (@_);
-    }
-    $self->{'user'} = $args{'current_user'};
-    
-    unless(defined($self->current_user)) {
-	use Carp;
-	Carp::confess("$self was Created without a CurrentUser" . join(',',@_));
-	$RT::Logger->err("$self was Created without a CurrentUser");
-	return(0);
-    }
-    $self->SUPER::_init( 'handle' => Jifty->handle, current_user => $self->current_user);
 }
 
 =head2 LimitToEnabled
@@ -116,7 +83,7 @@ Only find items that haven't been disabled
 sub LimitToEnabled {
     my $self = shift;
     
-    $self->limit( column => 'Disabled',
+    $self->limit( column => 'disabled',
 		  value => '0',
 		  operator => '=' );
 }
@@ -131,7 +98,7 @@ sub LimitToDeleted {
     my $self = shift;
     
     $self->{'find_disabled_rows'} = 1;
-    $self->limit( column => 'Disabled',
+    $self->limit( column => 'disabled',
 		  operator => '=',
 		  value => '1'
 		);
@@ -139,7 +106,7 @@ sub LimitToDeleted {
 
 =head2 LimitAttribute PARAMHASH
 
-Takes NAME, operator and value to find records that has the
+Takes name, operator and value to find records that has the
 matching Attribute.
 
 If EMPTY is set, also select rows with an empty string as
@@ -180,7 +147,7 @@ sub LimitAttribute {
 	alias1 => $args{alias} || 'main',
 	column1 => 'id',
 	table2 => 'Attributes',
-	column2 => 'ObjectId'
+	column2 => 'object_id'
     );
 
     my $type = ref($self);
@@ -194,10 +161,10 @@ sub LimitAttribute {
     );
     $self->limit(
 	$clause	   => $alias,
-	column      => 'Name',
+	column      => 'name',
 	operator   => '=',
-	value      => $args{NAME},
-    ) if exists $args{NAME};
+	value      => $args{name},
+    ) if exists $args{name};
 
     return unless exists $args{value};
 
@@ -262,7 +229,7 @@ sub LimitCustomField {
 	alias1     => 'main',
 	column1     => 'id',
 	table2     => 'ObjectCustomFieldValues',
-	column2     => 'ObjectId'
+	column2     => 'object_id'
     );
     $self->limit(
 	alias      => $alias,
@@ -316,7 +283,7 @@ sub limit {
 =head2 items_order_by
 
 If it has a SortOrder attribute, sort the array by SortOrder.
-Otherwise, if it has a "Name" attribute, sort alphabetically by Name
+Otherwise, if it has a "name" attribute, sort alphabetically by name
 Otherwise, just give up and return it in the order it came from the
 db.
 
@@ -329,8 +296,8 @@ sub items_order_by {
     if ($self->new_item()->can('SortOrder')) {
         $items = [ sort { $a->SortOrder <=> $b->SortOrder } @{$items} ];
     }
-    elsif ($self->new_item()->can('Name')) {
-        $items = [ sort { lc($a->Name) cmp lc($b->Name) } @{$items} ];
+    elsif ($self->new_item()->can('name')) {
+        $items = [ sort { lc($a->name) cmp lc($b->name) } @{$items} ];
     }
 
     return $items;
@@ -356,16 +323,6 @@ sub items_array_ref {
 }
 
 # }}}
-
-sub new_item {
-    my $self  = shift;
-    my $class = $self->record_class();
-
-    die "Jifty::DBI::Collection needs to be subclassed; override new_item\n"
-        unless $class;
-    $class->require();
-    return $class->new( $self->current_user);
-}
 
 1;
 

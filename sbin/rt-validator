@@ -46,7 +46,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
 rtx-validator - Script that allow validate rt database
 
@@ -133,7 +133,7 @@ sub load_object
 	$class = 'RT::'. $class;
 	eval "require $class";
 	die "Couldn't load '$class' module" if $@;
-	my $obj = $class->new( RT->system_user );
+	my $obj = $class->new(current_user => RT->system_user );
 	die "Couldn't construct new '$class' object" unless $obj;
 	$obj->load( $id );
 	die "Couldn't load '$class' object by id '$id'" unless $obj->id;

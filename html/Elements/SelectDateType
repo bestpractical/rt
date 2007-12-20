@@ -45,16 +45,16 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$name%>">
 <option value="Created"><&|/l&>Created</&></option>
 <option value="Started"><&|/l&>Started</&></option>
 <option value="Resolved"><&|/l&>Resolved</&></option>
 <option value="Told"><&|/l&>Last Contacted</&></option>
 <option value="LastUpdated"><&|/l&>Last Updated</&></option>
-<option value="Starts"><&|/l&>Starts</&></option>
+<option value="starts"><&|/l&>starts</&></option>
 <option value="Due"><&|/l&>Due</&></option>
 <option value="Updated"><&|/l&>Updated</&></option>
 </select>
 <%ARGS>
-$Name => 'DateType'
+$name => 'DateType'
 </%ARGS>

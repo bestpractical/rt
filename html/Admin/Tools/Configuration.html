@@ -48,7 +48,7 @@
 <%init>
 require  Module::Versions::Report;
 my $title = loc('System Configuration');
-unless ($session{'CurrentUser'}->has_right( Object=> RT->system, Right => 'SuperUser')) {
+unless (Jifty->web->current_user->has_right( Object=> RT->system, Right => 'SuperUser')) {
  Abort(loc('This feature is only available to system administrators'));
 } 
 
@@ -76,8 +76,8 @@ unless ($session{'CurrentUser'}->has_right( Object=> RT->system, Right => 'Super
 % next unless defined $val;
 <tr><td><% $key %></td>
 <td>
-% if ( $key =~ /Password(?!Length)/i ) { 
-<em>Password not printed</em>
+% if ( $key =~ /password(?!Length)/i ) { 
+<em>password not printed</em>
 % } elsif ( !ref $val ) {
 <% $val %>
 % } elsif ( ref $val eq 'ARRAY' ) {
@@ -99,8 +99,8 @@ unless ($session{'CurrentUser'}->has_right( Object=> RT->system, Right => 'Super
 % next if !${'RT::'.$key} || ref ${'RT::'.$key} || $config_opt{ $key };
 <tr><td>RT::<% $key %></td>
 <td>
-% if ( $key =~ /Password(?!Length)/i ) { 
-<em>Password not printed</em>
+% if ( $key =~ /password(?!Length)/i ) { 
+<em>password not printed</em>
 % } else {
 <% ${'RT::'.$key} %>
 % }

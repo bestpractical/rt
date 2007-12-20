@@ -46,11 +46,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 %while ( $queue = $queues->next) {
-<a href="Modify.html?id=<%$queue->id%>"><%$queue->id%>: <%$queue->Name%></a><br />
+<a href="Modify.html?id=<%$queue->id%>"><%$queue->id%>: <%$queue->name%></a><br />
 %}
 <%INIT>
 my ($queue);
-my $queues = new RT::Model::QueueCollection($session{'CurrentUser'});
+my $queues = new RT::Model::QueueCollection(Jifty->web->current_user);
 $queues->find_all_rows;
 </%INIT>
 <%ARGS>

@@ -18,41 +18,41 @@ my($ret,$msg);
 
 # ---- Create a queue to test with.
 my $queue = "CFSortQueue-$$";
-my $queue_obj = RT::Model::Queue->new( RT->system_user );
+my $queue_obj = RT::Model::Queue->new(current_user => RT->system_user );
 ($ret, $msg) = $queue_obj->create(
-    Name => $queue,
+    name => $queue,
     Description => 'queue for custom field sort testing'
 );
 ok($ret, "$queue test queue creation. $msg");
 
 # ---- Create some custom fields.  We're not currently using all of
 # them to test with, but the more the merrier.
-my $cfO = RT::Model::CustomField->new(RT->system_user);
-my $cfA = RT::Model::CustomField->new(RT->system_user);
-my $cfB = RT::Model::CustomField->new(RT->system_user);
-my $cfC = RT::Model::CustomField->new(RT->system_user);
+my $cfO = RT::Model::CustomField->new(current_user => RT->system_user);
+my $cfA = RT::Model::CustomField->new(current_user => RT->system_user);
+my $cfB = RT::Model::CustomField->new(current_user => RT->system_user);
+my $cfC = RT::Model::CustomField->new(current_user => RT->system_user);
 
-($ret, $msg) = $cfO->create( Name => 'Order',
+($ret, $msg) = $cfO->create( name => 'Order',
                              Queue => 0,
                              SortOrder => 1,
                              Description => q{Something to compare results for, since we can't guarantee ticket ID},
                              Type=> 'FreeformSingle');
 ok($ret, "Custom Field Order Created");
 
-($ret, $msg) = $cfA->create( Name => 'Alpha',
+($ret, $msg) = $cfA->create( name => 'Alpha',
                              Queue => $queue_obj->id,
                              SortOrder => 1,
                              Description => 'A Testing custom field',
                              Type=> 'FreeformSingle');
 ok($ret, "Custom Field Alpha Created");
 
-($ret, $msg) = $cfB->create( Name => 'Beta',
+($ret, $msg) = $cfB->create( name => 'Beta',
                              Queue => $queue_obj->id,
                              Description => 'A Testing custom field',
                              Type=> 'FreeformSingle');
 ok($ret, "Custom Field Beta Created");
 
-($ret, $msg) = $cfC->create( Name => 'Charlie',
+($ret, $msg) = $cfC->create( name => 'Charlie',
                              Queue => $queue_obj->id,
                              Description => 'A Testing custom field',
                              Type=> 'FreeformSingle');
@@ -60,7 +60,7 @@ ok($ret, "Custom Field Charlie Created");
 
 # ----- Create some tickets to test with.  Assign them some values to
 # make it easy to sort with.
-my $t1 = RT::Model::Ticket->new(RT->system_user);
+my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
 $t1->create( Queue => $queue_obj->id,
              Subject => 'One',
            );
@@ -69,7 +69,7 @@ $t1->AddCustomFieldValue(Field => $cfA->id,  value => '2');
 $t1->AddCustomFieldValue(Field => $cfB->id,  value => '1');
 $t1->AddCustomFieldValue(Field => $cfC->id,  value => 'BBB');
 
-my $t2 = RT::Model::Ticket->new(RT->system_user);
+my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
 $t2->create( Queue => $queue_obj->id,
              Subject => 'Two',
            );
@@ -131,7 +131,7 @@ check_order( $tx, 2, 1);
 }
 
 # Add a new ticket, to test sorting on multiple columns.
-my $t3 = RT::Model::Ticket->new(RT->system_user);
+my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
 $t3->create( Queue => $queue_obj->id,
              Subject => 'Three',
            );

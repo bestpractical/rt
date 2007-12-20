@@ -103,7 +103,7 @@ Autocompleter.Base.prototype = {
     else
       this.options = options || {};
 
-    this.options.paramName    = this.options.paramName || this.element.name;
+    this.options.paramname    = this.options.paramname || this.element.name;
     this.options.tokens       = this.options.tokens || [];
     this.options.frequency    = this.options.frequency || 0.4;
     this.options.minChars     = this.options.minChars || 1;
@@ -242,8 +242,8 @@ Autocompleter.Base.prototype = {
     if(this.entryCount > 0) {
       for (var i = 0; i < this.entryCount; i++)
         this.index==i ? 
-          Element.addClassName(this.getEntry(i),"selected") : 
-          Element.removeClassName(this.getEntry(i),"selected");
+          Element.addClassname(this.getEntry(i),"selected") : 
+          Element.removeClassname(this.getEntry(i),"selected");
         
       if(this.hasFocus) { 
         this.show();
@@ -287,7 +287,7 @@ Autocompleter.Base.prototype = {
     }
     var value = '';
     if (this.options.select) {
-      var nodes = document.getElementsByClassName(this.options.select, selectedElement) || [];
+      var nodes = document.getElementsByClassname(this.options.select, selectedElement) || [];
       if(nodes.length>0) value = Element.collectTextNodes(nodes[0], this.options.select);
     } else
       value = Element.collectTextNodesIgnoreClass(selectedElement, 'informal');
@@ -387,7 +387,7 @@ Object.extend(Object.extend(Ajax.Autocompleter.prototype, Autocompleter.Base.pro
   },
 
   getUpdatedChoices: function() {
-    entry = encodeURIComponent(this.options.paramName) + '=' + 
+    entry = encodeURIComponent(this.options.paramname) + '=' + 
       encodeURIComponent(this.getToken());
 
     this.options.parameters = this.options.callback ?
@@ -522,7 +522,7 @@ Ajax.InPlaceEditor.prototype = {
     this.element = $(element);
 
     this.options = Object.extend({
-      paramName: "value",
+      paramname: "value",
       okButton: true,
       okText: "ok",
       cancelLink: true,
@@ -542,9 +542,9 @@ Ajax.InPlaceEditor.prototype = {
       },
       handleLineBreaks: true,
       loadingText: 'Loading...',
-      savingClassName: 'inplaceeditor-saving',
-      loadingClassName: 'inplaceeditor-loading',
-      formClassName: 'inplaceeditor-form',
+      savingClassname: 'inplaceeditor-saving',
+      loadingClassname: 'inplaceeditor-loading',
+      formClassname: 'inplaceeditor-form',
       highlightcolor: Ajax.InPlaceEditor.defaultHighlightColor,
       highlightendcolor: "#FFFFFF",
       externalControl: null,
@@ -605,7 +605,7 @@ Ajax.InPlaceEditor.prototype = {
   createForm: function() {
     this.form = document.createElement("form");
     this.form.id = this.options.formId;
-    Element.addClassName(this.form, this.options.formClassName)
+    Element.addClassname(this.form, this.options.formClassname)
     this.form.onsubmit = this.onSubmit.bind(this);
 
     this.createEditField();
@@ -619,7 +619,7 @@ Ajax.InPlaceEditor.prototype = {
       okButton = document.createElement("input");
       okButton.type = "submit";
       okButton.value = this.options.okText;
-      okButton.className = 'editor_ok_button';
+      okButton.classname = 'editor_ok_button';
       this.form.appendChild(okButton);
     }
 
@@ -628,7 +628,7 @@ Ajax.InPlaceEditor.prototype = {
       cancelLink.href = "#";
       cancelLink.appendChild(document.createTextNode(this.options.cancelText));
       cancelLink.onclick = this.onclickCancel.bind(this);
-      cancelLink.className = 'editor_cancel';      
+      cancelLink.classname = 'editor_cancel';      
       this.form.appendChild(cancelLink);
     }
   },
@@ -654,10 +654,10 @@ Ajax.InPlaceEditor.prototype = {
       var textField = document.createElement("input");
       textField.obj = this;
       textField.type = "text";
-      textField.name = this.options.paramName;
+      textField.name = this.options.paramname;
       textField.value = text;
       textField.style.backgroundColor = this.options.highlightcolor;
-      textField.className = 'editor_field';
+      textField.classname = 'editor_field';
       var size = this.options.size || this.options.cols || 0;
       if (size != 0) textField.size = size;
       if (this.options.submitOnBlur)
@@ -667,11 +667,11 @@ Ajax.InPlaceEditor.prototype = {
       this.options.textarea = true;
       var textArea = document.createElement("textarea");
       textArea.obj = this;
-      textArea.name = this.options.paramName;
+      textArea.name = this.options.paramname;
       textArea.value = this.convertHTMLLineBreaks(text);
       textArea.rows = this.options.rows;
       textArea.cols = this.options.cols || 40;
-      textArea.className = 'editor_field';      
+      textArea.classname = 'editor_field';      
       if (this.options.submitOnBlur)
         textArea.onblur = this.onSubmit.bind(this);
       this.editField = textArea;
@@ -686,7 +686,7 @@ Ajax.InPlaceEditor.prototype = {
     return this.element.innerHTML;
   },
   loadExternalText: function() {
-    Element.addClassName(this.form, this.options.loadingClassName);
+    Element.addClassname(this.form, this.options.loadingClassname);
     this.editField.disabled = true;
     new Ajax.Request(
       this.options.loadTextURL,
@@ -697,7 +697,7 @@ Ajax.InPlaceEditor.prototype = {
     );
   },
   onLoadedExternalText: function(transport) {
-    Element.removeClassName(this.form, this.options.loadingClassName);
+    Element.removeClassname(this.form, this.options.loadingClassname);
     this.editField.disabled = false;
     this.editField.value = transport.responseText.stripTags();
     Field.scrollFreeActivate(this.editField);
@@ -760,7 +760,7 @@ Ajax.InPlaceEditor.prototype = {
   showSaving: function() {
     this.oldInnerHTML = this.element.innerHTML;
     this.element.innerHTML = this.options.savingText;
-    Element.addClassName(this.element, this.options.savingClassName);
+    Element.addClassname(this.element, this.options.savingClassname);
     this.element.style.backgroundColor = this.originalBackground;
     Element.show(this.element);
   },
@@ -776,13 +776,13 @@ Ajax.InPlaceEditor.prototype = {
     if (this.effect) {
       this.effect.cancel();
     }
-    Element.addClassName(this.element, this.options.hoverClassName)
+    Element.addClassname(this.element, this.options.hoverClassname)
   },
   leaveHover: function() {
     if (this.options.backgroundColor) {
       this.element.style.backgroundColor = this.oldBackground;
     }
-    Element.removeClassName(this.element, this.options.hoverClassName)
+    Element.removeClassname(this.element, this.options.hoverClassname)
     if (this.saving) return;
     this.effect = new Effect.Highlight(this.element, {
       startcolor: this.options.highlightcolor,
@@ -791,7 +791,7 @@ Ajax.InPlaceEditor.prototype = {
     });
   },
   leaveEditMode: function() {
-    Element.removeClassName(this.element, this.options.savingClassName);
+    Element.removeClassname(this.element, this.options.savingClassname);
     this.removeForm();
     this.leaveHover();
     this.element.style.backgroundColor = this.originalBackground;

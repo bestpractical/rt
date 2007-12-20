@@ -57,14 +57,14 @@
 <table>
   <tr id="CF-<%$CustomField->id%>-EditRow">
     <td class="labeltop">
-      <b><%$CustomField->Name%></b><br />
+      <b><%$CustomField->name%></b><br />
       <i><%$CustomField->FriendlyType%></i>
     </td>
     <td class="entry">
       <& /Elements/EditCustomField, 
           Object => $TicketObj,
           CustomField => $CustomField,
-          NamePrefix => $NamePrefix,
+          namePrefix => $namePrefix,
           Default => $m->notes('Field-' . $CustomField->id),
       &>
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->id)) {
@@ -93,17 +93,17 @@ my $CustomFields;
 
 if ($TicketObj) {
     $CustomFields = $TicketObj->CustomFields();
-    $NamePrefix .= "Object-RT::Model::Ticket-".$TicketObj->id."-CustomField-";
+    $namePrefix .= "Object-RT::Model::Ticket-".$TicketObj->id."-CustomField-";
 } else {
     $CustomFields = $QueueObj->TicketCustomFields();
-    $NamePrefix .= "Object-RT::Model::Ticket--CustomField-";
+    $namePrefix .= "Object-RT::Model::Ticket--CustomField-";
 }
 
-$m->callback( CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
+$m->callback( Callbackname => 'MassageCustomFields', CustomFields => $CustomFields );
 
 </%INIT>
 <%ARGS>
-$NamePrefix => ''
+$namePrefix => ''
 $TicketObj => undef
 $QueueObj => undef
 </%ARGS>

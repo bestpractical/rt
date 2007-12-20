@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$name%>">
 %if ($DefaultValue) {
 <option <% !$Default ? "SELECTED" : '' %> value=""><%$DefaultLabel%></option>
 %}
@@ -56,8 +56,8 @@
 <option <% ( $User->id == $Default) ? "SELECTED" : ''%>
 %if ($ValueAttribute eq 'id') {
     value="<%$User->id%>"
-%} elsif ($ValueAttribute eq 'Name') {
-    value="<%$User->Name%>"
+%} elsif ($ValueAttribute eq 'name') {
+    value="<%$User->name%>"
 %}
 ><& /Elements/ShowUser, User => $User &></option>
 %}
@@ -76,16 +76,16 @@ elsif ($cfqueues) {
 }
 else {
     # Let's check rights on an empty queue object. that will do a search for any queue.
-    my $queue = RT::Model::Queue->new($session{'CurrentUser'});
+    my $queue = RT::Model::Queue->new(Jifty->web->current_user);
 	      push( @objects, $queue );
 }
 
 my %user_uniq_hash;
 
-$m->callback( %ARGS, objects => \@objects, CallbackName => 'UpdateObjectList');
+$m->callback( %ARGS, objects => \@objects, Callbackname => 'UpdateObjectList');
 
 foreach my $object (@objects) {
-	my $Users = RT::Model::UserCollection->new(current_user => $session{'CurrentUser'});
+	my $Users = RT::Model::UserCollection->new(current_user => Jifty->web->current_user);
         $Users->WhoHaveRight(Right => 'OwnTicket', Object => $object, IncludeSystemRights => 1, IncludeSuperusers => 0); 
         while (my $User = $Users->next()) {
                 next if ($User->id == $RT::Nobody->id); # skip nobody here, so we can make them first later
@@ -93,17 +93,17 @@ foreach my $object (@objects) {
         }
 }
 
-my @users = sort { uc($a->Name) cmp uc($b->Name) } values %user_uniq_hash; 
+my @users = sort { uc($a->name) cmp uc($b->name) } values %user_uniq_hash; 
 unshift(@users, $RT::Nobody);
 
-$m->callback( %ARGS, objects => \@objects, CallbackName => 'UpdateObjectList');
+$m->callback( %ARGS, objects => \@objects, Callbackname => 'UpdateObjectList');
 
 
 </%INIT>
 
 <%ARGS>
 $QueueObj => undef
-$Name => undef
+$name => undef
 $Default => 0
 $User => undef
 $TicketObj => undef

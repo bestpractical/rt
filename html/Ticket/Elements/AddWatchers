@@ -55,7 +55,7 @@
 <&|/l&>Username</&>
 </td></tr>
 % while (my $u = $Users->next ) {
-<tr><td><&/Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-". $u->PrincipalId &></td><td><& '/Elements/ShowUser', User => $u &></td></tr>
+<tr><td><&/Elements/SelectWatcherType, name => "Ticket-AddWatcher-Principal-". $u->principal_id &></td><td><& '/Elements/ShowUser', User => $u &></td></tr>
 % }
 % }
 
@@ -66,7 +66,7 @@
 <&|/l&>Group</&>
 </td></tr>
 % while (my $g = $Groups->next ) {
-<tr><td><&/Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-".$g->PrincipalId, Scope => 'queue' &></td><td><%$g->Name%> (<%$g->Description%>)</td></tr>
+<tr><td><&/Elements/SelectWatcherType, name => "Ticket-AddWatcher-Principal-".$g->principal_id, Scope => 'queue' &></td><td><%$g->name%> (<%$g->Description%>)</td></tr>
 % }
 % }
 
@@ -76,17 +76,17 @@
 <&|/l&>Email</&>
 </td></tr>
 <tr><td>
-<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail1" &>
+<&/Elements/SelectWatcherType, name => "WatcherTypeEmail1" &>
 </td><td>
 <input name="WatcherAddressEmail1" size="15" />
 </td></tr>
 <tr><td>
-<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail2" &> 
+<&/Elements/SelectWatcherType, name => "WatcherTypeEmail2" &> 
 </td><td>
 <input name="WatcherAddressEmail2" size="15" />
 </td></tr>
 <tr><td>
-<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail3" &>
+<&/Elements/SelectWatcherType, name => "WatcherTypeEmail3" &>
 </td><td>
 <input name="WatcherAddressEmail3" size="15" />
 </td></tr>
@@ -96,13 +96,13 @@
 my ($Users, $Groups);
 
 if ($UserString) {
-    $Users = RT::Model::UserCollection->new($session{'CurrentUser'});
+    $Users = RT::Model::UserCollection->new(Jifty->web->current_user);
     $Users->limit(column => $UserField, value => $UserString, operator => $UserOp);
-    $Users->LimitToPrivileged if $PrivilegedOnly;
+    $Users->LimitToprivileged if $privilegedOnly;
      }
 
 if ($GroupString) {
-    $Groups = RT::Model::GroupCollection->new($session{'CurrentUser'});
+    $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
     $Groups->limit(column => 'Domain', operator => '=', value => 'UserDefined');
     $Groups->limit(column => $GroupField, value => $GroupString, operator => $GroupOp);
      }
@@ -110,11 +110,11 @@ if ($GroupString) {
 </%INIT>
 
 <%ARGS>
-$UserField => 'Name'
+$UserField => 'name'
 $UserOp => '='
 $UserString => undef
-$GroupField => 'Name'
+$GroupField => 'name'
 $GroupOp => '='
 $GroupString => undef
-$PrivilegedOnly => undef
+$privilegedOnly => undef
 </%ARGS>

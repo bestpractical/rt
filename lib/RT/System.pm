@@ -1,5 +1,5 @@
 
-=head1 NAME 
+=head1 name 
 
 RT::System
 
@@ -50,7 +50,7 @@ $RIGHTS = {
 $RT::Model::ACE::OBJECT_TYPES{'RT::System'} = 1;
 
 foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::Model::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
+    $RT::Model::ACE::LOWERCASERIGHTnameS{ lc $right } = $right;
 }
 
 
@@ -69,9 +69,9 @@ those rights globally.
 sub AvailableRights {
     my $self = shift;
 
-    my $queue = RT::Model::Queue->new(RT->system_user);
-    my $group = RT::Model::Group->new(RT->system_user);
-    my $cf    = RT::Model::CustomField->new(RT->system_user);
+    my $queue = RT::Model::Queue->new(current_user => RT->system_user);
+    my $group = RT::Model::Group->new(current_user => RT->system_user);
+    my $cf    = RT::Model::CustomField->new(current_user => RT->system_user);
 
     my $qr = $queue->AvailableRights();
     my $gr = $group->AvailableRights();
@@ -94,7 +94,7 @@ Returns RT::System's id. It's 1.
 *Id = \&id;
 sub id { return (1); }
 sub load { return (1); }
-sub Name { return 'RT System'; }
+sub name { return 'RT System'; }
 sub __set { 0 }
 sub __value { 0 }
 sub create { 0 }

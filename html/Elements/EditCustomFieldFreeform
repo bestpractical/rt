@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% my $name = $NamePrefix . $CustomField->id . '-Value';
+% my $name = $namePrefix . $CustomField->id . '-Value';
 % if ($Multiple) {
 <textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$name%>s" id="<%$name%>s" ><% $Default || '' %></textarea>
 % } else {
@@ -64,7 +64,7 @@ if ($Multiple and $Values) {
 <%ARGS>
 $Object => undef
 $CustomField => undef
-$NamePrefix => undef
+$namePrefix => undef
 $Default => undef
 $Values => undef
 $Multiple => undef

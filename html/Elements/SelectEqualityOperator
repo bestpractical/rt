@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME ="<%$Name%>">
+<select name ="<%$name%>">
 % while (my $option = shift @Options) {
 % my $value = shift @Values;
 <option value="<%$value%>"
@@ -57,7 +57,7 @@ selected
 </select>
 
 <%ARGS>
-$Name => undef
+$name => undef
 @Options => (loc('less than'), loc('equal to'), loc('greater than'), loc('not equal to'))
 @Values => qw(< = > !=)
 $Default =>'' 

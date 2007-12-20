@@ -71,7 +71,7 @@ sub new {
 
 Method replaces deprecated component C<Element/Callback>.
 
-Takes hash with optional C<CallbackPage>, C<CallbackName>
+Takes hash with optional C<CallbackPage>, C<Callbackname>
 and C<CallabckOnce> arguments, other arguments are passed
 throught to callback components.
 
@@ -82,9 +82,9 @@ throught to callback components.
 Page path relative to the root, leading slash is mandatory.
 By default is equal to path of the caller component.
 
-=item CallbackName
+=item Callbackname
 
-Name of the callback. C<Default> is used unless specified.
+name of the callback. C<Default> is used unless specified.
 
 =item CallbackOnce
 
@@ -95,7 +95,7 @@ structures.
 =back
 
 Searches for callback components in
-F<< /Callbacks/<any dir>/CallbackPage/CallbackName >>, for
+F<< /Callbacks/<any dir>/CallbackPage/Callbackname >>, for
 example F</Callbacks/MyExtension/autohandler/Default> would
 be called as default callback for F</autohandler>.
 
@@ -109,7 +109,7 @@ my %called = ();
 sub callback {
     my ($self, %args) = @_;
 
-    my $name = delete $args{'CallbackName'} || 'Default';
+    my $name = delete $args{'Callbackname'} || 'Default';
     my $page = delete $args{'CallbackPage'} || $self->callers(0)->path;
     unless ( $page ) {
         $RT::Logger->error("Coulnd't get a page name for callbacks");

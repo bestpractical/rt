@@ -157,7 +157,7 @@
 </div>
 </div>
 <div id="body">
-% $m->callback( %ARGS, CallbackName => 'BeforeBody' );
+% $m->callback( %ARGS, Callbackname => 'BeforeBody' );
 % $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
 
 <%INIT>
@@ -170,7 +170,7 @@ if ( defined $current_toptab ) {
 
 my ($menu_depth, $almost_last, $page_tabs);
 
-if (RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} ) ne '3.4-compat') {
+if (RT->Config->Get( 'WebDefaultStylesheet', Jifty->web->current_user ) ne '3.4-compat') {
     ($menu_depth, $almost_last) = @{ $m->comp('.menu_recurse', data => $toptabs, current => $current_toptab ) };
 
     if (defined $almost_last->{subtabs} and %{$almost_last->{subtabs}}) {

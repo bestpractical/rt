@@ -59,8 +59,8 @@ sub table {'Attributes'}
 use base 'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-column        ObjectId => max_length is 11,  type is 'int(11)', default is '0';
-column        Name => max_length is 200,  type is 'varchar(200)', default is '';
+column        object_id => max_length is 11,  type is 'int(11)', default is '0';
+column        name => max_length is 200,  type is 'varchar(200)', default is '';
 column        ObjectType => max_length is 200,  type is 'varchar(200)', default is '';
 column        Description => max_length is 255,  type is 'varchar(255)', default is '';
 column        ContentType => max_length is 255,  type is 'varchar(255)', default is '';
@@ -70,7 +70,7 @@ column        Content =>   type is 'blob', default is '';
  
 
 
-=head1 NAME
+=head1 name
 
   RT::Model::Attribute 
 
@@ -99,7 +99,7 @@ our $PERSONAL_ACL_MAP = {
 
 };
 
-=head2 LookupObjectRight { ObjectType => undef, ObjectId => undef, Name => undef, Right => { create, update, delete, display } }
+=head2 LookupObjectRight { ObjectType => undef, object_id => undef, name => undef, Right => { create, update, delete, display } }
 
 Returns the right that the user needs to have on this attribute's object to perform the related attribute operation. Returns "allow" if the right is otherwise unspecified.
 
@@ -108,23 +108,23 @@ Returns the right that the user needs to have on this attribute's object to perf
 sub LookupObjectRight { 
     my $self = shift;
     my %args = ( ObjectType => undef,
-                 ObjectId => undef,
+                 object_id => undef,
                  Right => undef,
-                 Name => undef,
+                 name => undef,
                  @_);
 
     # if it's an attribute on oneself, check the personal acl map
-    if (($args{'ObjectType'} eq 'RT::Model::User') && ($args{'ObjectId'} eq $self->current_user->id)) {
-    return('allow') unless ($PERSONAL_ACL_MAP->{$args{'Name'}});
-    return('allow') unless ($PERSONAL_ACL_MAP->{$args{'Name'}}->{$args{'Right'}});
-    return($PERSONAL_ACL_MAP->{$args{'Name'}}->{$args{'Right'}}); 
+    if (($args{'ObjectType'} eq 'RT::Model::User') && ($args{'object_id'} eq $self->current_user->id)) {
+    return('allow') unless ($PERSONAL_ACL_MAP->{$args{'name'}});
+    return('allow') unless ($PERSONAL_ACL_MAP->{$args{'name'}}->{$args{'Right'}});
+    return($PERSONAL_ACL_MAP->{$args{'name'}}->{$args{'Right'}}); 
 
     }
    # otherwise check the main ACL map
     else {
-    return('allow') unless ($ACL_MAP->{$args{'Name'}});
-    return('allow') unless ($ACL_MAP->{$args{'Name'}}->{$args{'Right'}});
-    return($ACL_MAP->{$args{'Name'}}->{$args{'Right'}}); 
+    return('allow') unless ($ACL_MAP->{$args{'name'}});
+    return('allow') unless ($ACL_MAP->{$args{'name'}}->{$args{'Right'}});
+    return($ACL_MAP->{$args{'name'}}->{$args{'Right'}}); 
     }
 }
 
@@ -135,13 +135,13 @@ sub LookupObjectRight {
 
 Create takes a hash of values and creates a row in the database:
 
-  varchar(200) 'Name'.
+  varchar(200) 'name'.
   varchar(255) 'Content'.
   varchar(16) 'ContentType',
   varchar(64) 'ObjectType'.
-  int(11) 'ObjectId'.
+  int(11) 'object_id'.
 
-You may pass a C<Object> instead of C<ObjectType> and C<ObjectId>.
+You may pass a C<Object> instead of C<ObjectType> and C<object_id>.
 
 =cut
 
@@ -151,7 +151,7 @@ You may pass a C<Object> instead of C<ObjectType> and C<ObjectId>.
 sub create {
     my $self = shift;
     my %args = ( 
-                Name => '',
+                name => '',
                 Description => '',
                 Content => '',
                 ContentType => '',
@@ -160,7 +160,7 @@ sub create {
 
     if ($args{Object} and UNIVERSAL::can($args{Object}, 'Id')) {
 	    $args{ObjectType} = ref($args{Object});
-	    $args{ObjectId} = $args{Object}->id;
+	    $args{object_id} = $args{Object}->id;
     } else {
         return(0, $self->loc("Required parameter '[_1]' not specified", 'Object'));
 
@@ -170,9 +170,9 @@ sub create {
     # object_right is the right that the user has to have on the object for them to have $right on this attribute
     my $object_right = $self->LookupObjectRight(
         Right      => 'create',
-        ObjectId   => $args{'ObjectId'},
+        object_id   => $args{'object_id'},
         ObjectType => $args{'ObjectType'},
-        Name       => $args{'Name'}
+        name       => $args{'name'}
     );
     if ($object_right eq 'deny') { 
         return (0, $self->loc('Permission Denied'));
@@ -197,12 +197,12 @@ sub create {
 
     
     $self->SUPER::create(
-                         Name => $args{'Name'},
+                         name => $args{'name'},
                          Content => $args{'Content'},
                          ContentType => $args{'ContentType'},
                          Description => $args{'Description'},
                          ObjectType => $args{'ObjectType'},
-                         ObjectId => $args{'ObjectId'},
+                         object_id => $args{'object_id'},
 );
 
 }
@@ -210,9 +210,9 @@ sub create {
 
 # {{{ sub load_by_nameAndObject
 
-=head2  load_by_nameAndObject (Object => OBJECT, Name => NAME)
+=head2  load_by_nameAndObject (Object => OBJECT, name => name)
 
-Loads the Attribute named NAME for Object OBJECT.
+Loads the Attribute named name for Object OBJECT.
 
 =cut
 
@@ -220,15 +220,15 @@ sub load_by_nameAndObject {
     my $self = shift;
     my %args = (
         Object => undef,
-        Name  => undef,
+        name  => undef,
         @_,
     );
 
     return (
 	$self->load_by_cols(
-	    Name => $args{'Name'},
+	    name => $args{'name'},
 	    ObjectType => ref($args{'Object'}),
-	    ObjectId => $args{'Object'}->id,
+	    object_id => $args{'Object'}->id,
 	)
     );
 
@@ -319,9 +319,9 @@ sub SubValue {
     return($values->{$key});
 }
 
-=head2 DeleteSubValue NAME
+=head2 DeleteSubValue name
 
-Deletes the subvalue with the key NAME
+Deletes the subvalue with the key name
 
 =cut
 
@@ -377,12 +377,12 @@ sub Object {
     my $self = shift;
     my $object_type = $self->__value('ObjectType');
     my $object;
-    eval { $object = $object_type->new($self->current_user) };
+    eval { $object = $object_type->new };
     unless(UNIVERSAL::isa($object, $object_type)) {
         $RT::Logger->error("Attribute ".$self->id." has a bogus object type - $object_type (".$@.")");
         return(undef);
      }
-    $object->load($self->__value('ObjectId'));
+    $object->load($self->__value('object_id'));
 
     return($object);
 
@@ -434,9 +434,9 @@ sub current_user_has_right {
     # object_right is the right that the user has to have on the object for them to have $right on this attribute
     my $object_right = $self->LookupObjectRight(
         Right      => $right,
-        ObjectId   => $self->__value('ObjectId'),
+        object_id   => $self->__value('object_id'),
         ObjectType => $self->__value('ObjectType'),
-        Name       => $self->__value('Name')
+        name       => $self->__value('name')
     );
    
     return (1) if ($object_right eq 'allow');

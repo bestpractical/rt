@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME ="<%$Name%>">
+<select name ="<%$name%>">
 % if ($AllowNull) {
 <option value="">-</option>
 % }
@@ -67,5 +67,5 @@ else {
 $AllowNull => 1
 $Default=>undef
 $Scope => 'ticket'
-$Name => 'WatcherType'
+$name => 'WatcherType'
 </%ARGS>

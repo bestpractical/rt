@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::AttachmentCollection - a collection of RT::Model::Attachment objects
 
@@ -196,7 +196,7 @@ sub LimitByTicket {
         entry_aggregator => 'AND',
         alias           => $tickets,
         column           => 'id',
-        value           => $transactions . '.ObjectId',
+        value           => $transactions . '.object_id',
         quote_value      => 0,
     );
     $self->limit(
@@ -211,7 +211,7 @@ sub LimitByTicket {
 # {{{ sub new_item 
 sub new_item  {
   my $self = shift;
-  return RT::Model::Attachment->new( $self->current_user );
+  return RT::Model::Attachment->new;
 }
 # }}}
 
@@ -223,8 +223,8 @@ sub Next {
     return $Attachment unless $Attachment;
 
     my $txn = $Attachment->TransactionObj;
-    if ( $txn->__value('Type') eq 'Comment' ) {
-        return $Attachment if $txn->current_user_has_right('ShowTicketComments');
+    if ( $txn->__value('Type') eq 'comment' ) {
+        return $Attachment if $txn->current_user_has_right('ShowTicketcomments');
     } elsif ( $txn->current_user_has_right('ShowTicket') ) {
         return $Attachment;
     }

@@ -1132,16 +1132,16 @@ if (Prototype.BrowserFeatures.XPath) {
   };
 }
 
-document.getElementsByClassName = function(className, parentElement) {
+document.getElementsByClassname = function(classname, parentElement) {
   if (Prototype.BrowserFeatures.XPath) {
-    var q = ".//*[contains(concat(' ', @class, ' '), ' " + className + " ')]";
+    var q = ".//*[contains(concat(' ', @class, ' '), ' " + classname + " ')]";
     return document._getElementsByXPath(q, parentElement);
   } else {
-    var children = ($(parentElement) || document.body).getElementsByTagName('*');
+    var children = ($(parentElement) || document.body).getElementsByTagname('*');
     var elements = [], child;
     for (var i = 0, length = children.length; i < length; i++) {
       child = children[i];
-      if (Element.hasClassName(child, className))
+      if (Element.hasClassname(child, classname))
         elements.push(Element.extend(child));
     }
     return elements;
@@ -1156,12 +1156,12 @@ if (!window.Element)
 Element.extend = function(element) {
   if (!element || _nativeExtensions || element.nodeType == 3) return element;
 
-  if (!element._extended && element.tagName && element != window) {
+  if (!element._extended && element.tagname && element != window) {
     var methods = Object.clone(Element.Methods), cache = Element.extend.cache;
 
-    if (element.tagName == 'FORM')
+    if (element.tagname == 'FORM')
       Object.extend(methods, Form.Methods);
-    if (['INPUT', 'TEXTAREA', 'SELECT'].include(element.tagName))
+    if (['INPUT', 'TEXTAREA', 'SELECT'].include(element.tagname))
       Object.extend(methods, Form.Element.Methods);
 
     Object.extend(methods, Element.Methods.Simulated);
@@ -1236,8 +1236,8 @@ Element.Methods = {
 
   inspect: function(element) {
     element = $(element);
-    var result = '<' + element.tagName.toLowerCase();
-    $H({'id': 'id', 'className': 'class'}).each(function(pair) {
+    var result = '<' + element.tagname.toLowerCase();
+    $H({'id': 'id', 'classname': 'class'}).each(function(pair) {
       var property = pair.first(), attribute = pair.last();
       var value = (element[property] || '').toString();
       if (value) result += ' ' + attribute + '=' + value.inspect(true);
@@ -1259,7 +1259,7 @@ Element.Methods = {
   },
 
   descendants: function(element) {
-    return $A($(element).getElementsByTagName('*'));
+    return $A($(element).getElementsByTagname('*'));
   },
 
   immediateDescendants: function(element) {
@@ -1309,8 +1309,8 @@ Element.Methods = {
     return Selector.findChildElements(element, args);
   },
 
-  getElementsByClassName: function(element, className) {
-    return document.getElementsByClassName(className, element);
+  getElementsByClassname: function(element, classname) {
+    return document.getElementsByClassname(classname, element);
   },
 
   readAttribute: function(element, name) {
@@ -1333,35 +1333,35 @@ Element.Methods = {
     return $(element).getDimensions().width;
   },
 
-  classNames: function(element) {
-    return new Element.ClassNames(element);
+  classnames: function(element) {
+    return new Element.Classnames(element);
   },
 
-  hasClassName: function(element, className) {
+  hasClassname: function(element, classname) {
     if (!(element = $(element))) return;
-    var elementClassName = element.className;
-    if (elementClassName.length == 0) return false;
-    if (elementClassName == className ||
-        elementClassName.match(new RegExp("(^|\\s)" + className + "(\\s|$)")))
+    var elementClassname = element.classname;
+    if (elementClassname.length == 0) return false;
+    if (elementClassname == classname ||
+        elementClassname.match(new RegExp("(^|\\s)" + classname + "(\\s|$)")))
       return true;
     return false;
   },
 
-  addClassName: function(element, className) {
+  addClassname: function(element, classname) {
     if (!(element = $(element))) return;
-    Element.classNames(element).add(className);
+    Element.classnames(element).add(classname);
     return element;
   },
 
-  removeClassName: function(element, className) {
+  removeClassname: function(element, classname) {
     if (!(element = $(element))) return;
-    Element.classNames(element).remove(className);
+    Element.classnames(element).remove(classname);
     return element;
   },
 
-  toggleClassName: function(element, className) {
+  toggleClassname: function(element, classname) {
     if (!(element = $(element))) return;
-    Element.classNames(element)[element.hasClassName(className) ? 'remove' : 'add'](className);
+    Element.classnames(element)[element.hasClassname(classname) ? 'remove' : 'add'](classname);
     return element;
   },
 
@@ -1588,10 +1588,10 @@ if (document.all && !window.opera){
   Element.Methods.update = function(element, html) {
     element = $(element);
     html = typeof html == 'undefined' ? '' : html.toString();
-    var tagName = element.tagName.toUpperCase();
-    if (['THEAD','TBODY','TR','TD'].include(tagName)) {
+    var tagname = element.tagname.toUpperCase();
+    if (['THEAD','TBODY','TR','TD'].include(tagname)) {
       var div = document.createElement('div');
-      switch (tagName) {
+      switch (tagname) {
         case 'THEAD':
         case 'TBODY':
           div.innerHTML = '<table><tbody>' +  html.stripScripts() + '</tbody></table>';
@@ -1626,9 +1626,9 @@ var _nativeExtensions = false;
 
 if(/Konqueror|Safari|KHTML/.test(navigator.userAgent))
   ['', 'Form', 'Input', 'TextArea', 'Select'].each(function(tag) {
-    var className = 'HTML' + tag + 'Element';
-    if(window[className]) return;
-    var klass = window[className] = {};
+    var classname = 'HTML' + tag + 'Element';
+    if(window[classname]) return;
+    var klass = window[classname] = {};
     klass.prototype = document.createElement(tag ? tag.toLowerCase() : 'div').__proto__;
   });
 
@@ -1674,8 +1674,8 @@ Abstract.Insertion.prototype = {
       try {
         this.element.insertAdjacentHTML(this.adjacency, this.content);
       } catch (e) {
-        var tagName = this.element.tagName.toUpperCase();
-        if (['TBODY', 'TR'].include(tagName)) {
+        var tagname = this.element.tagname.toUpperCase();
+        if (['TBODY', 'TR'].include(tagname)) {
           this.insertContent(this.contentFromAnonymousTable());
         } else {
           throw e;
@@ -1756,30 +1756,30 @@ Insertion.After.prototype = Object.extend(new Abstract.Insertion('afterEnd'), {
 
 /*--------------------------------------------------------------------------*/
 
-Element.ClassNames = Class.create();
-Element.ClassNames.prototype = {
+Element.Classnames = Class.create();
+Element.Classnames.prototype = {
   initialize: function(element) {
     this.element = $(element);
   },
 
   _each: function(iterator) {
-    this.element.className.split(/\s+/).select(function(name) {
+    this.element.classname.split(/\s+/).select(function(name) {
       return name.length > 0;
     })._each(iterator);
   },
 
-  set: function(className) {
-    this.element.className = className;
+  set: function(classname) {
+    this.element.classname = classname;
   },
 
-  add: function(classNameToAdd) {
-    if (this.include(classNameToAdd)) return;
-    this.set($A(this).concat(classNameToAdd).join(' '));
+  add: function(classnameToAdd) {
+    if (this.include(classnameToAdd)) return;
+    this.set($A(this).concat(classnameToAdd).join(' '));
   },
 
-  remove: function(classNameToRemove) {
-    if (!this.include(classNameToRemove)) return;
-    this.set($A(this).without(classNameToRemove).join(' '));
+  remove: function(classnameToRemove) {
+    if (!this.include(classnameToRemove)) return;
+    this.set($A(this).without(classnameToRemove).join(' '));
   },
 
   toString: function() {
@@ -1787,11 +1787,11 @@ Element.ClassNames.prototype = {
   }
 };
 
-Object.extend(Element.ClassNames.prototype, Enumerable);
+Object.extend(Element.Classnames.prototype, Enumerable);
 var Selector = Class.create();
 Selector.prototype = {
   initialize: function(expression) {
-    this.params = {classNames: []};
+    this.params = {classnames: []};
     this.expression = expression.toString().strip();
     this.parseExpression();
     this.compileMatcher();
@@ -1815,9 +1815,9 @@ Selector.prototype = {
       modifier = match[1], clause = match[2], rest = match[3];
       switch (modifier) {
         case '#':       params.id = clause; break;
-        case '.':       params.classNames.push(clause); break;
+        case '.':       params.classnames.push(clause); break;
         case '':
-        case undefined: params.tagName = clause.toUpperCase(); break;
+        case undefined: params.tagname = clause.toUpperCase(); break;
         default:        abort(expr.inspect());
       }
       expr = rest;
@@ -1833,11 +1833,11 @@ Selector.prototype = {
       conditions.push('true');
     if (clause = params.id)
       conditions.push('element.readAttribute("id") == ' + clause.inspect());
-    if (clause = params.tagName)
-      conditions.push('element.tagName.toUpperCase() == ' + clause.inspect());
-    if ((clause = params.classNames).length > 0)
+    if (clause = params.tagname)
+      conditions.push('element.tagname.toUpperCase() == ' + clause.inspect());
+    if ((clause = params.classnames).length > 0)
       for (var i = 0, length = clause.length; i < length; i++)
-        conditions.push('element.hasClassName(' + clause[i].inspect() + ')');
+        conditions.push('element.hasClassname(' + clause[i].inspect() + ')');
     if (clause = params.attributes) {
       clause.each(function(attribute) {
         var value = 'element.readAttribute(' + attribute.name.inspect() + ')';
@@ -1863,7 +1863,7 @@ Selector.prototype = {
   },
 
   compileMatcher: function() {
-    this.match = new Function('element', 'if (!element.tagName) return false; \
+    this.match = new Function('element', 'if (!element.tagname) return false; \
       element = $(element); \
       return ' + this.buildMatchExpression());
   },
@@ -1876,7 +1876,7 @@ Selector.prototype = {
         if (!scope || Element.childOf(element, scope))
           return [element];
 
-    scope = (scope || document).getElementsByTagName(this.params.tagName || '*');
+    scope = (scope || document).getElementsByTagname(this.params.tagname || '*');
 
     var results = [];
     for (var i = 0, length = scope.length; i < length; i++)
@@ -1948,24 +1948,24 @@ Form.Methods = {
   },
 
   getElements: function(form) {
-    return $A($(form).getElementsByTagName('*')).inject([],
+    return $A($(form).getElementsByTagname('*')).inject([],
       function(elements, child) {
-        if (Form.Element.Serializers[child.tagName.toLowerCase()])
+        if (Form.Element.Serializers[child.tagname.toLowerCase()])
           elements.push(Element.extend(child));
         return elements;
       }
     );
   },
 
-  getInputs: function(form, typeName, name) {
+  getInputs: function(form, typename, name) {
     form = $(form);
-    var inputs = form.getElementsByTagName('input');
+    var inputs = form.getElementsByTagname('input');
 
-    if (!typeName && !name) return $A(inputs).map(Element.extend);
+    if (!typename && !name) return $A(inputs).map(Element.extend);
 
     for (var i = 0, matchingInputs = [], length = inputs.length; i < length; i++) {
       var input = inputs[i];
-      if ((typeName && input.type != typeName) || (name && input.name != name))
+      if ((typename && input.type != typename) || (name && input.name != name))
         continue;
       matchingInputs.push(Element.extend(input));
     }
@@ -1993,7 +1993,7 @@ Form.Methods = {
   findFirstElement: function(form) {
     return $(form).getElements().find(function(element) {
       return element.type != 'hidden' && !element.disabled &&
-        ['input', 'select', 'textarea'].include(element.tagName.toLowerCase());
+        ['input', 'select', 'textarea'].include(element.tagname.toLowerCase());
     });
   },
 
@@ -2036,7 +2036,7 @@ Form.Element.Methods = {
 
   getValue: function(element) {
     element = $(element);
-    var method = element.tagName.toLowerCase();
+    var method = element.tagname.toLowerCase();
     return Form.Element.Serializers[method](element);
   },
 
@@ -2052,7 +2052,7 @@ Form.Element.Methods = {
   activate: function(element) {
     element = $(element);
     element.focus();
-    if (element.select && ( element.tagName.toLowerCase() != 'input' ||
+    if (element.select && ( element.tagname.toLowerCase() != 'input' ||
       !['button', 'reset', 'submit'].include(element.type) ) )
       element.select();
     return element;
@@ -2175,7 +2175,7 @@ Abstract.EventObserver.prototype = {
     this.callback = callback;
 
     this.lastValue = this.getValue();
-    if (this.element.tagName.toLowerCase() == 'form')
+    if (this.element.tagname.toLowerCase() == 'form')
       this.registerFormCallbacks();
     else
       this.registerCallback(this.element);
@@ -2269,12 +2269,12 @@ Object.extend(Event, {
     }
   },
 
-  // find the first node with the given tagName, starting from the
+  // find the first node with the given tagname, starting from the
   // node the event was triggered on; traverses the DOM upwards
-  findElement: function(event, tagName) {
+  findElement: function(event, tagname) {
     var element = Event.element(event);
-    while (element.parentNode && (!element.tagName ||
-        (element.tagName.toUpperCase() != tagName.toUpperCase())))
+    while (element.parentNode && (!element.tagname ||
+        (element.tagname.toUpperCase() != tagname.toUpperCase())))
       element = element.parentNode;
     return element;
   },
@@ -2381,7 +2381,7 @@ var Position = {
       valueL += element.offsetLeft || 0;
       element = element.offsetParent;
       if (element) {
-        if(element.tagName=='BODY') break;
+        if(element.tagname=='BODY') break;
         var p = Element.getStyle(element, 'position');
         if (p == 'relative' || p == 'absolute') break;
       }
@@ -2454,7 +2454,7 @@ var Position = {
 
     element = forElement;
     do {
-      if (!window.opera || element.tagName=='BODY') {
+      if (!window.opera || element.tagname=='BODY') {
         valueT -= element.scrollTop  || 0;
         valueL -= element.scrollLeft || 0;
       }

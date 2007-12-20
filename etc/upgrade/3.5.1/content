@@ -1,21 +1,21 @@
 @Attributes = (
-    { Name => 'Search - My Tickets',
+    { name => 'Search - My Tickets',
       Description => '[_1] highest priority tickets I own',
       Content     =>
-      { Format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#', '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject', Priority, QueueName, ExtendedStatus},
+      { Format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#', '<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject', Priority, Queuename, ExtendedStatus},
         Query   => " Owner = '__CurrentUser__' AND ( Status = 'new' OR Status = 'open')",
         order_by => 'Priority',
         Order   => 'DESC' },
     },
-    { Name => 'Search - Unowned Tickets',
+    { name => 'Search - Unowned Tickets',
       Description => '[_1] newest unowned tickets',
       Content     =>
-      { Format => "'<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', QueueName, ExtendedStatus, CreatedRelative, '<A HREF=\"__WebPath__/Ticket/Display.html?Action=Take&id=__id__\">__loc(Take)__</a>/TITLE:&nbsp;' ",
+      { Format => "'<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', Queuename, ExtendedStatus, CreatedRelative, '<A HREF=\"__WebPath__/Ticket/Display.html?Action=Take&id=__id__\">__loc(Take)__</a>/TITLE:&nbsp;' ",
         Query   => " Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
         order_by => 'Created',
         Order   => 'DESC' },
     },
-    { Name => 'HomepageSettings',
+    { name => 'HomepageSettings',
       Description => 'HomepageSettings',
       Content =>
       { 'body' =>

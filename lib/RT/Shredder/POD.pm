@@ -66,7 +66,7 @@ sub plugin_cli
     local @Pod::PlainText::ISA = ('Pod::Select', @Pod::PlainText::ISA);
     my $parser = new Pod::PlainText;
     $parser->select('SYNOPSIS', 'ARGUMENTS', 'USAGE');
-    $parser->add_selection('NAME') unless $no_name;
+    $parser->add_selection('name') unless $no_name;
     $parser->parse_from_file( $file, $out_fh );
 }
 
@@ -76,7 +76,7 @@ sub shredder_cli
     use Pod::PlainText;
     local @Pod::PlainText::ISA = ('Pod::Select', @Pod::PlainText::ISA);
     my $parser = new Pod::PlainText;
-    $parser->select('NAME', 'SYNOPSIS', 'USAGE', 'OPTIONS');
+    $parser->select('name', 'SYNOPSIS', 'USAGE', 'OPTIONS');
     $parser->parse_from_file( $file, $out_fh );
 }
 

@@ -71,7 +71,7 @@ my $HOME = eval{(getpwuid($<))[7]}
 my %config = (
     (
         debug   => 0,
-        user    => eval{(getpwuid($<))[0]} || $ENV{USER} || $ENV{USERNAME},
+        user    => eval{(getpwuid($<))[0]} || $ENV{USER} || $ENV{USERname},
         passwd  => undef,
         server  => 'http://localhost/',
         query   => undef,
@@ -632,14 +632,14 @@ sub comment {
 
     my $form = [
         "",
-        [ "Ticket", "Action", "Cc", "Bcc", "Attachment", "TimeWorked", "Text" ],
+        [ "Ticket", "Action", "Cc", "Bcc", "Attachment", "time_worked", "Text" ],
         {
             Ticket     => $id,
             Action     => $action,
             Cc         => [ @cc ],
             Bcc        => [ @bcc ],
             Attachment => [ @files ],
-            TimeWorked => $wtime || '',
+            time_worked => $wtime || '',
             Text       => $msg || '',
             Status => ''
         }
@@ -1279,7 +1279,7 @@ sub read_passwd {
         die "No password specified (and Term::ReadKey not installed).\n";
     }
 
-    print "Password: ";
+    print "password: ";
     Term::ReadKey::ReadMode('noecho');
     chomp(my $passwd = Term::ReadKey::ReadLine(0));
     Term::ReadKey::ReadMode('restore');
@@ -1868,7 +1868,7 @@ Text:
         -c <addrs>      A comma-separated list of Cc addresses.
         -b <addrs>      A comma-separated list of Bcc addresses.
         -w <time>       Specify the time spent working on this ticket.
-        -e              Starts an editor before the submission, even if
+        -e              starts an editor before the submission, even if
                         arguments from the command line were sufficient.
 
     Examples:

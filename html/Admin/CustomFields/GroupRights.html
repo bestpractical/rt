@@ -59,7 +59,7 @@
       
 <h1><&|/l&>System groups</&></h1>
 <table>
-% my $Groups = RT::Model::GroupCollection->new($session{'CurrentUser'});
+% my $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
 % $Groups->LimitToSystemInternalGroups();
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
@@ -67,7 +67,7 @@
 	    <% loc($Group->Type) %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
+	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
         Object => $CustomFieldObj  &>
 	  </td>
 	</tr>
@@ -75,15 +75,15 @@
 </table>
 <h1><&|/l&>User defined groups</&></h1>
 <table>
-% $Groups = RT::Model::GroupCollection->new($session{'CurrentUser'});
+% $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
 % $Groups->LimitToUserDefinedGroups();    
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
-	    <% $Group->Name %>
+	    <% $Group->name %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
+	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
         Object => $CustomFieldObj  &>
 	  </td>
 	</tr>
@@ -100,10 +100,10 @@ if (!defined $id) {
     $m->comp("/Elements/Error", Why => loc("No CustomField defined"));
 }
 
-my $CustomFieldObj = RT::Model::CustomField->new($session{'CurrentUser'});
+my $CustomFieldObj = RT::Model::CustomField->new(Jifty->web->current_user);
 $CustomFieldObj->load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load CustomField [_1]",$id));
 
-my $title = loc('Modify group rights for custom field [_1]', $CustomFieldObj->Name);
+my $title = loc('Modify group rights for custom field [_1]', $CustomFieldObj->name);
 
 my @results = ProcessACLChanges( \%ARGS );
 

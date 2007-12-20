@@ -53,7 +53,7 @@
 
 <%INIT>
 my $tabs;
-$Searches ||= [$m->comp("/Search/Elements/SearchesForObject", Object => RT::System->new($session{'CurrentUser'}))];
+$Searches ||= [$m->comp("/Search/Elements/SearchesForObject", Object => RT::System->new(Jifty->web->current_user))];
 
 $tabs->{a} = {
     title => loc('Quick search'),

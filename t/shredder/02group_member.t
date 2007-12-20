@@ -13,13 +13,13 @@ plan tests => 22;
 ### nested membership check
 {
 	create_savepoint('clean');
-	my $pgroup = RT::Model::Group->new( RT->system_user );
-	my ($pgid) = $pgroup->create_userDefinedGroup( Name => 'Parent group' );
+	my $pgroup = RT::Model::Group->new(current_user => RT->system_user );
+	my ($pgid) = $pgroup->create_userDefinedGroup( name => 'Parent group' );
 	ok( $pgid, "Created parent group" );
 	is( $pgroup->id, $pgid, "id is correct" );
 	
-	my $cgroup = RT::Model::Group->new( RT->system_user );
-	my ($cgid) = $cgroup->create_userDefinedGroup( Name => 'Child group' );
+	my $cgroup = RT::Model::Group->new(current_user => RT->system_user );
+	my ($cgid) = $cgroup->create_userDefinedGroup( name => 'Child group' );
 	ok( $cgid, "Created child group" );
 	is( $cgroup->id, $cgid, "id is correct" );
 	
@@ -27,9 +27,9 @@ plan tests => 22;
 	ok( $status, "added child group to parent") or diag "error: $msg";
 	
 	create_savepoint('bucreate'); # before user create
-	my $user = RT::Model::User->new(  RT->system_user );
+	my $user = RT::Model::User->new(current_user => RT->system_user );
 	my $uid;
-	($uid, $msg) = $user->create( Name => 'new user', Privileged => 1, Disabled => 0 );
+	($uid, $msg) = $user->create( name => 'new user', privileged => 1, disabled => 0 );
 	ok( $uid, "Created new user $msg " ) or diag "error: $msg";
 	is( $user->id, $uid, "id is correct" );
 	
@@ -60,8 +60,8 @@ plan tests => 22;
 {
 	restore_savepoint('clean');
 
-	my $user = RT::Model::User->new( RT->system_user );
-	my ($uid, $msg) = $user->create( Name => 'new user', Privileged => 1, Disabled => 0 );
+	my $user = RT::Model::User->new(current_user => RT->system_user );
+	my ($uid, $msg) = $user->create( name => 'new user', privileged => 1, disabled => 0 );
 	ok( $uid, "Created new user" ) or diag "error: $msg";
 	is( $user->id, $uid, "id is correct" );
 
@@ -70,13 +70,13 @@ plan tests => 22;
 	$queue->load('General');
 	ok( $queue->id, "queue loaded succesfully" );
 
-	$user->PrincipalObj->GrantRight( Right => 'OwnTicket', Object => $queue );
+	$user->principal_object->GrantRight( Right => 'OwnTicket', Object => $queue );
 
 	use RT::Model::TicketCollection;
-	my $ticket = RT::Model::Ticket->new( RT->system_user );
+	my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 	my ($id) = $ticket->create( Subject => 'test', Queue => $queue->id );
 	ok( $id, "Created new ticket" );
-	$ticket = RT::Model::Ticket->new( RT->system_user );
+	$ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 	my $status;
 	($status, $msg) = $ticket->load( $id );
 	ok( $id, "load ticket" ) or diag( "error: $msg" );
@@ -89,7 +89,7 @@ plan tests => 22;
 	$shredder->PutObjects( Objects => $member );
 	$shredder->WipeoutAll();
 
-	$ticket = RT::Model::Ticket->new( RT->system_user );
+	$ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 	($status, $msg) = $ticket->load( $id );
 	ok( $id, "load ticket" ) or diag( "error: $msg" );
 	is( $ticket->Owner, $RT::Nobody->id, "owner switched back to nobody" );

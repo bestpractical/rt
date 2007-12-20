@@ -55,9 +55,9 @@ return \%ARGS;
 
 <%init>
 my @actions;
-my @Objects = RT::SavedSearches->new( $session{'CurrentUser'} )->_PrivacyObjects;
-push @Objects, RT::System->new($session{'CurrentUser'})
-    if $session{'CurrentUser'}->has_right( Object=> RT->system,
+my @Objects = RT::SavedSearches->new( Jifty->web->current_user )->_PrivacyObjects;
+push @Objects, RT::System->new(Jifty->web->current_user)
+    if Jifty->web->current_user->has_right( Object=> RT->system,
                                           Right => 'SuperUser');
 $self->{SearchId} ||= 'new';
 my $SearchParams = { map { $_ => $args->{$_} } @{$self->{SearchFields}} };
@@ -95,10 +95,10 @@ if ( $args->{Save} ) {
     }
     else {
         # new saved search
-        my $saved_search = RT::SavedSearch->new( $session{'CurrentUser'} );
+        my $saved_search = RT::SavedSearch->new( Jifty->web->current_user );
         my ( $ok, $search_msg ) = $saved_search->Save(
             Privacy      => $args->{'Owner'},
-            Name         => $args->{'Description'},
+            name         => $args->{'Description'},
             Type         => $self->{'SearchType'},
             SearchParams => $SearchParams
         );
@@ -134,7 +134,7 @@ $args
 
 <%method show>
 <form method="post" action="<% $Action %>" name="SaveSearch">
-<& /Search/Elements/EditSearches, Name => 'Owner', Type => $self->{SearchType}, AllowCopy => 0,
+<& /Search/Elements/EditSearches, name => 'Owner', Type => $self->{SearchType}, AllowCopy => 0,
    CurrentSearch => $self->{CurrentSearch}, SearchId => $self->{SearchId}, Title => $Title  &><br />
 % for my $field (@{$self->{SearchFields}}) {
 <input type="hidden" class="hidden" name="<%$field%>" value="<%$ARGS{$field} || ''%>" />

@@ -76,9 +76,9 @@ unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
 
     # If it's text
     if (   $message->ContentType =~ m{^(text|message)}i
-        && !( $message->Filename && RT->Config->Get('SuppressInlineTextFiles', $session{'CurrentUser'} ) )
-        && (   !RT->Config->Get( 'MaxInlineBody', $session{'CurrentUser'} )
-            || $size <= RT->Config->Get('MaxInlineBody', $session{'CurrentUser'} ) ) )
+        && !( $message->Filename && RT->Config->Get('SuppressInlineTextFiles', Jifty->web->current_user ) )
+        && (   !RT->Config->Get( 'MaxInlineBody', Jifty->web->current_user )
+            || $size <= RT->Config->Get('MaxInlineBody', Jifty->web->current_user ) ) )
     {
 
         if (

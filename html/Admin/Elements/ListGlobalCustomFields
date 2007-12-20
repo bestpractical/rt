@@ -48,7 +48,7 @@
 %   my $count = 0;
 %   while (my $CustomFieldObj = $CustomFields->next) { 
 %   $count++;
-<font size="-1"><%$CustomFieldObj->id%>/<% loc($CustomFieldObj->Type) %>/<%$CustomFieldObj->Name%>: <%$CustomFieldObj->Description%></font>
+<font size="-1"><%$CustomFieldObj->id%>/<% loc($CustomFieldObj->Type) %>/<%$CustomFieldObj->name%>: <%$CustomFieldObj->Description%></font>
 <br />
 %   }
 %   if (!$count) {
@@ -56,6 +56,6 @@
 %   }
 
 <%init>
-my $CustomFields = new RT::Model::CustomFieldCollection ($session{'CurrentUser'});
+my $CustomFields = new RT::Model::CustomFieldCollection (Jifty->web->current_user);
 $CustomFields->LimitToGlobal();
 </%INIT>

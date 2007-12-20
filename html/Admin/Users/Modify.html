@@ -48,7 +48,7 @@
 <& /Admin/Elements/Header, Title => $title  &>
 <& /Admin/Elements/UserTabs, 
     id => $id, 
-    UserObj => $UserObj,
+    user_object => $user_object,
     current_tab => $current_tab, 
     Title => $title &>
 
@@ -58,7 +58,7 @@
 %if ($Create) {
 <input type="hidden" class="hidden" name="id" value="new" />
 % } else {
-<input type="hidden" class="hidden" name="id" value="<%$UserObj->id%>" />
+<input type="hidden" class="hidden" name="id" value="<%$user_object->id%>" />
 % }
 <table width="100%" border="0">
 <tr>
@@ -70,37 +70,37 @@
 <tr><td align="right">
 <&|/l&>Username</&>:
 </td><td>
-<input name="Name" value="<%$UserObj->Name%>" /> <strong><&|/l&>(required)</&></strong>
+<input name="name" value="<%$user_object->name%>" /> <strong><&|/l&>(required)</&></strong>
 </td></tr>
 <tr><td align="right">
 <&|/l&>Email</&>:
 </td><td>
-<input name="EmailAddress" value="<%$UserObj->EmailAddress%>" />
+<input name="email" value="<%$user_object->email%>" />
 </td></tr>
 <tr><td align="right">
-<&|/l&>Real Name</&>: 
+<&|/l&>Real name</&>: 
 </td><td>
-<input name="RealName" value="<%$UserObj->RealName%>" />
+<input name="real_name" value="<%$user_object->real_name%>" />
 </td></tr>
 <tr><td align="right">
-<&|/l&>Nickname</&>: 
+<&|/l&>nickname</&>: 
 </td><td>
-<input name="NickName" value="<%$UserObj->NickName%>" />
+<input name="nickname" value="<%$user_object->nickname%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Unix login</&>: 
 </td><td>
-<input name="Gecos" value="<%$UserObj->Gecos%>" />
+<input name="Gecos" value="<%$user_object->Gecos%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Language</&>: 
 </td><td>
-<& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang &>
+<& /Elements/SelectLang, name => 'Lang', Default => $user_object->Lang &>
 </td></tr>
 <tr><td align="right">
 <&|/l&>Extra info</&>: 
 </td><td>
-<textarea name="FreeformContactInfo" cols="20" rows="5"><%$UserObj->FreeformContactInfo%></textarea>
+<textarea name="freeform_contact_info" cols="20" rows="5"><%$user_object->freeform_contact_info%></textarea>
 </td></tr>
 </table>
 </&>
@@ -111,21 +111,21 @@
 <&|/l&>Let this user access RT</&><br />
 
 
-<input type="hidden" class="hidden" name="SetPrivileged" value="1" />
-<input type="checkbox" class="checkbox" name="Privileged" value="1" <%$PrivilegedChecked%> /> <&|/l&>Let this user be granted rights</&><br />
+<input type="hidden" class="hidden" name="Setprivileged" value="1" />
+<input type="checkbox" class="checkbox" name="privileged" value="1" <%$privilegedChecked%> /> <&|/l&>Let this user be granted rights</&><br />
 		    
 % unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
 <table>
 <tr>
 <td align="right">
-<&|/l&>New Password</&>:
+<&|/l&>New password</&>:
 </td>
 <td align="left">
 <input type="password" name="Pass1" autocomplete="off" />
 </td>
 </tr>
 <tr><td align="right">
-<&|/l&>Retype Password</&>:
+<&|/l&>Retype password</&>:
 </td>
 <td>
 <input type="password" name="Pass2" autocomplete="off" />
@@ -140,41 +140,41 @@
 <&| /Widgets/TitleBox, title => loc('Location') &>
 <table>
 <tr><td align="right">
-<&|/l&>Organization</&>: 
+<&|/l&>organization</&>: 
 </td><td>
-<input name="Organization" value="<%$UserObj->Organization%>" />
+<input name="organization" value="<%$user_object->organization%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Address1</&>: 
 </td><td>
-<input name="Address1" value="<%$UserObj->Address1%>" />
+<input name="Address1" value="<%$user_object->Address1%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Address2</&>: 
 </td><td>
-<input name="Address2" value="<%$UserObj->Address2%>" />
+<input name="Address2" value="<%$user_object->Address2%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>City</&>: 
 </td><td>
-<input name="City" value="<%$UserObj->City%>" size="14" />
+<input name="City" value="<%$user_object->City%>" size="14" />
 
 </td></tr>
 <tr><td align="right">
 <&|/l&>State</&>: 
 </td><td>
-<input name="State" value="<%$UserObj->State%>" size="3" />
+<input name="State" value="<%$user_object->State%>" size="3" />
 
 </td></tr>
 <tr><td align="right">
 <&|/l&>Zip</&>: 
 </td><td>
-<input name="Zip" value="<%$UserObj->Zip%>" size="9" />
+<input name="Zip" value="<%$user_object->Zip%>" size="9" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Country</&>: 
 </td><td>
-<input name="Country" value="<%$UserObj->Country%>" />
+<input name="Country" value="<%$user_object->Country%>" />
 </td></tr>
 </table>
 </&>
@@ -184,37 +184,37 @@
 <tr><td align="right">
 <&|/l&>Residence</&>: 
 </td><td>
-<input name="HomePhone" value="<%$UserObj->HomePhone%>" size="13" /><br />
+<input name="HomePhone" value="<%$user_object->HomePhone%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Work</&>: 
 </td><td>
-<input name="WorkPhone" value="<%$UserObj->WorkPhone%>" size="13" /><br />
+<input name="WorkPhone" value="<%$user_object->WorkPhone%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Mobile</&>: 
 </td><td>
-<input name="MobilePhone" value="<%$UserObj->MobilePhone%>" size="13" /><br />
+<input name="MobilePhone" value="<%$user_object->MobilePhone%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Pager</&>: 
 </td><td>
-<input name="PagerPhone" value="<%$UserObj->PagerPhone%>" size="13" /><br />
+<input name="PagerPhone" value="<%$user_object->PagerPhone%>" size="13" /><br />
 </td>
 </table>
 </&>
 <br />
 <&| /Widgets/TitleBox, title => loc('Custom Fields') &>
 <table>
-% my $CFs = $UserObj->CustomFields;
+% my $CFs = $user_object->CustomFields;
 % while (my $CF = $CFs->next) {
 <tr valign="top"><td align="right">
-<% $CF->Name %>:
+<% $CF->name %>:
 </td><td>
-% if ($UserObj->id) {
-<& /Elements/EditCustomField, %ARGS, Object => $UserObj, CustomField => $CF &>
+% if ($user_object->id) {
+<& /Elements/EditCustomField, %ARGS, Object => $user_object, CustomField => $CF &>
 % } else {
-<& /Elements/EditCustomField, %ARGS, NamePrefix => 'Object-RT::Model::User-new-CustomField-', CustomField => $CF &>
+<& /Elements/EditCustomField, %ARGS, namePrefix => 'Object-RT::Model::User-new-CustomField-', CustomField => $CF &>
 % }
 </td></tr>
 % }
@@ -224,18 +224,18 @@
 </&>
 <tr>
 <td colspan="2">
-<&| /Widgets/TitleBox, title => loc('Comments about this user') &>
-<textarea class="comments" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments%></textarea>
+<&| /Widgets/TitleBox, title => loc('comments about this user') &>
+<textarea class="comments" name="comments" cols="80" rows="5" wrap="virtual"><%$user_object->comments%></textarea>
 </&>
-%if (!$Create && $UserObj->Privileged) {
+%if (!$Create && $user_object->privileged) {
 <br />
 <&| /Widgets/TitleBox, title => loc('Signature') &>
-<textarea class="signature" cols="80" rows="5" name="Signature" wrap="hard"><%$UserObj->Signature%></textarea>
+<textarea class="signature" cols="80" rows="5" name="Signature" wrap="hard"><%$user_object->Signature%></textarea>
 </&>
 % }
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} && (my $email = $UserObj->EmailAddress )) {
-<& /Admin/Elements/ShowKeyInfo, EmailAddress => $email &>
+% if ( RT->Config->Get('GnuPG')->{'Enable'} && (my $email = $user_object->email )) {
+<& /Admin/Elements/ShowKeyInfo, email => $email &>
 % }
 
 </td>
@@ -248,8 +248,8 @@
 <%INIT>
 
 my $current_tab;
-my $UserObj = new RT::Model::User($session{'CurrentUser'});
-my ($title, $PrivilegedChecked, $EnabledChecked, $Disabled, $result, @results);
+my $user_object = new RT::Model::User(Jifty->web->current_user);
+my ($title, $privilegedChecked, $EnabledChecked, $disabled, $result, @results);
 
 my ($val, $msg);
 
@@ -262,25 +262,25 @@ else {
     if ($id =~ /^\d+$/) { 
         $current_tab = 'Admin/Users/Modify.html?id='.$id;
     } elsif ($id eq 'new') {
-	( $val, $msg ) = $UserObj->create(
-	    Name                  => $Name,
-	    EmailAddress          => $ARGS{'EmailAddress'},
-	    Name                  => $ARGS{'Name'},
-	    Comments              => $ARGS{'Comments'},
+	( $val, $msg ) = $user_object->create(
+	    name                  => $name,
+	    email          => $ARGS{'email'},
+	    name                  => $ARGS{'name'},
+	    comments              => $ARGS{'comments'},
 	    Signature             => $ARGS{'Signature'},
-	    EmailAddress          => $ARGS{'EmailAddress'},
-	    FreeformContactInfo   => $ARGS{'FreeformContactInfo'},
-	    Organization          => $ARGS{'Organization'},
-	    RealName              => $ARGS{'RealName'},
-	    NickName              => $ARGS{'NickName'},
+	    email          => $ARGS{'email'},
+	    freeform_contact_info   => $ARGS{'freeform_contact_info'},
+	    organization          => $ARGS{'organization'},
+	    real_name              => $ARGS{'real_name'},
+	    nickname              => $ARGS{'nickname'},
 	    Lang                  => $ARGS{'Lang'},
-	    EmailEncoding         => $ARGS{'EmailEncoding'},
-	    WebEncoding           => $ARGS{'WebEncoding'},
+	    email_encoding         => $ARGS{'email_encoding'},
+	    web_encoding           => $ARGS{'web_encoding'},
 	    ExternalContactInfoId => $ARGS{'ExternalContactInfoId'},
 	    ContactInfoSystem     => $ARGS{'ContactInfoSystem'},
 	    Gecos                 => $ARGS{'Gecos'},
 	    ExternalAuthId        => $ARGS{'ExternalAuthId'},
-	    AuthSystem            => $ARGS{'AuthSystem'},
+	    auth_system            => $ARGS{'auth_system'},
 	    HomePhone             => $ARGS{'HomePhone'},
 	    WorkPhone             => $ARGS{'WorkPhone'},
 	    MobilePhone           => $ARGS{'MobilePhone'},
@@ -291,8 +291,8 @@ else {
 	    State                 => $ARGS{'State'},
 	    Zip                   => $ARGS{'Zip'},
 	    Country               => $ARGS{'Country'},
-	    Privileged           => $ARGS{'Privileged'},
-	    Disabled            => ($ARGS{'Enabled'} ? 0 : 1)
+	    privileged           => $ARGS{'privileged'},
+	    disabled            => ($ARGS{'Enabled'} ? 0 : 1)
 	);
 
 	if ($val) {
@@ -303,17 +303,17 @@ else {
             $ARGS{'Object-RT::Model::User-'.$val.'-CustomField-'.$1} = delete $ARGS{$key};
             }
         }
-        push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
+        push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $user_object );
 	} else {
 		push @results, loc('User could not be Created: [_1]', $msg);
 	}
     } else {
-	    $UserObj->load($id) || $UserObj->load($Name) || Abort("Couldn't load user '$Name'");
-        $val = $UserObj->id();
+	    $user_object->load($id) || $user_object->load($name) || Abort("Couldn't load user '$name'");
+        $val = $user_object->id();
     }
 
     if ($val) {
-	$title = loc("Modify the user [_1]", $UserObj->Name);
+	$title = loc("Modify the user [_1]", $user_object->name);
     }
 
     # If the create failed
@@ -327,33 +327,33 @@ else {
 
 
 # If we have a user to modify, lets try. 
-if ($UserObj->id && $id ne 'new') {
+if ($user_object->id && $id ne 'new') {
 
-    my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo 
-		    Organization RealName NickName Lang EmailEncoding WebEncoding 
+    my @fields = qw(name comments Signature email freeform_contact_info 
+		    organization real_name nickname Lang email_encoding web_encoding 
 		    ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
-		    AuthSystem HomePhone WorkPhone MobilePhone PagerPhone Address1
+		    auth_system HomePhone WorkPhone MobilePhone PagerPhone Address1
 		    Address2 City State Zip Country 
 		   );
 
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
-					    Object => $UserObj,
+					    Object => $user_object,
 					    ARGSRef => \%ARGS );
     push (@results,@fieldresults);
-    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $user_object );
 
 
-    # {{{ Deal with special fields: Privileged, Enabled
-    if  ( $SetPrivileged and $Privileged != $UserObj->Privileged ) {
-         my ($code, $msg) = $UserObj->set_Privileged($Privileged);
-         push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
+    # {{{ Deal with special fields: privileged, Enabled
+    if  ( $Setprivileged and $privileged != $user_object->privileged ) {
+         my ($code, $msg) = $user_object->set_privileged($privileged);
+         push @results, loc('privileged status: [_1]', loc_fuzzy($msg));
     }
 
     #we're asking about enabled on the web page but really care about disabled.
-    $Disabled = $Enabled ? 0 : 1;
+    $disabled = $Enabled ? 0 : 1;
 
-    if  ( ($SetEnabled) and ( $Disabled != $UserObj->Disabled) ) { 
-        my  ($code, $msg) = $UserObj->set_Disabled($Disabled);
+    if  ( ($SetEnabled) and ( $disabled != $user_object->disabled) ) { 
+        my  ($code, $msg) = $user_object->set_disabled($disabled);
         push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
     }
 
@@ -361,16 +361,16 @@ if ($UserObj->id && $id ne 'new') {
     # }}}
 }
 
-if ( $UserObj->id ) {
+if ( $user_object->id ) {
     my $password_not_set;
-    # Deal with Password field
+    # Deal with password field
     if ( !$Pass1 and !$Pass2 ) {
 	$password_not_set = 1;
     } elsif ( $Pass1 ne $Pass2 ) {
 	$password_not_set = 1;
-        push @results, loc("Passwords do not match.");
-    } elsif ( $Pass1 eq $Pass2 and !$UserObj->IsPassword($Pass1) ) {
-        my ($code, $msg) = $UserObj->set_Password($Pass1);
+        push @results, loc("passwords do not match.");
+    } elsif ( $Pass1 eq $Pass2 and !$user_object->Ispassword($Pass1) ) {
+        my ($code, $msg) = $user_object->set_password($Pass1);
         push @results, loc_fuzzy($msg);
 	$password_not_set = 1 unless $code;
     }
@@ -381,43 +381,43 @@ if ( $UserObj->id ) {
 
 
 # Do some setup for the ui
-unless ( $UserObj->id && $UserObj->Disabled ) {
+unless ( $user_object->id && $user_object->disabled ) {
     $EnabledChecked ="CHECKED";
 }
 
-if (!$Create && $UserObj->Privileged()) {  
-    $PrivilegedChecked = "CHECKED";
+if (!$Create && $user_object->privileged()) {  
+    $privilegedChecked = "CHECKED";
 }
 
 # set the id, so the the menu will have the right info, this needs to
 # be done here to avoid creating and then modifying a user
-$id = $UserObj->id;
+$id = $user_object->id;
 
 </%INIT>
 
 
 <%ARGS>
 $id => undef
-$Name  => undef
-$Comments  => undef
+$name  => undef
+$comments  => undef
 $Signature  => undef
-$EmailAddress  => undef
-$FreeformContactInfo => undef
-$Organization  => undef
-$RealName  => undef
-$NickName  => undef
-$Privileged => undef
-$SetPrivileged => undef
+$email  => undef
+$freeform_contact_info => undef
+$organization  => undef
+$real_name  => undef
+$nickname  => undef
+$privileged => undef
+$Setprivileged => undef
 $Enabled => undef
 $SetEnabled => undef
 $Lang  => undef
-$EmailEncoding  => undef
-$WebEncoding => undef
+$email_encoding  => undef
+$web_encoding => undef
 $ExternalContactInfoId  => undef
 $ContactInfoSystem  => undef
 $Gecos => undef
 $ExternalAuthId  => undef
-$AuthSystem  => undef
+$auth_system  => undef
 $HomePhone => undef
 $WorkPhone  => undef
 $MobilePhone  => undef

@@ -47,9 +47,9 @@ $m->submit_form( form_number => 3,
 		 fields      => { CorrespondAddress => 'general@example.com' } );
 $m->content_like(qr/general\@example.com.* - never/, 'has key info.');
 
-ok(my $user = RT::Model::User->new(RT->system_user));
+ok(my $user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
-$user->set_EmailAddress('recipient@example.com');
+$user->set_email('recipient@example.com');
 
 # test simple mail.  supposedly this should fail when
 # 1. the queue requires signature
@@ -324,11 +324,11 @@ is(@mail, 1, 'caught outgoing mail.');
 }
 
 sub get_latest_ticket_ok {
-    my $tickets = RT::Model::TicketCollection->new(RT->system_user);
+    my $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
     $tickets->order_by( column => 'id', order => 'DESC' );
     $tickets->limit( column => 'id', operator => '>', value => '0' );
     my $tick = $tickets->first();
-    ok( $tick->Id, "found ticket " . $tick->Id );
+    ok( $tick->id, "found ticket " . $tick->id );
     return $tick;
 }
 

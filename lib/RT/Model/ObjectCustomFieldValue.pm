@@ -60,9 +60,9 @@ use Jifty::DBI::Record schema {
     column ContentType =>  type is 'varchar(80)', max_length is 80, default is '';
     column LargeContent =>  type is 'longtext',  default is '';
     column Creator =>  type is 'int(11)', max_length is 11, default is '0';
-    column ObjectId =>  type is 'int(11)', max_length is 11, default is '0';
+    column object_id =>  type is 'int(11)', max_length is 11, default is '0';
     column LastUpdatedBy =>  type is 'int(11)', max_length is 11, default is '0';
-    column Disabled =>  type is 'smallint(6)', max_length is 6, default is '0';
+    column disabled =>  type is 'smallint(6)', max_length is 6, default is '0';
     column SortOrder =>  type is 'int(11)', max_length is 11, default is '0';
     column Created =>  type is 'datetime',  default is '';
     column CustomField =>  type is 'int(11)', max_length is 11, default is '0';
@@ -77,7 +77,7 @@ sub CustomFieldObj {
 
     my $self = shift;
     unless ($self->{cf}){
-    $self->{cf} = RT::Model::CustomField->new($self->current_user);
+    $self->{cf} = RT::Model::CustomField->new;
     $self->{cf}->load($self->CustomField);
 }
     return $self->{cf};
@@ -88,8 +88,8 @@ sub create {
     my %args = (
         CustomField     => 0,
         ObjectType      => '',
-        ObjectId        => 0,
-        Disabled        => 0,
+        object_id        => 0,
+        disabled        => 0,
         Content         => '',
         LargeContent    => undef,
         ContentType     => '',
@@ -115,8 +115,8 @@ sub create {
     return $self->SUPER::create(
         CustomField     => $args{'CustomField'},
         ObjectType      => $args{'ObjectType'},
-        ObjectId        => $args{'ObjectId'},
-        Disabled        => $args{'Disabled'},
+        object_id        => $args{'object_id'},
+        disabled        => $args{'disabled'},
         Content         => $args{'Content'},
         LargeContent    => $args{'LargeContent'},
         ContentType     => $args{'ContentType'},
@@ -154,8 +154,8 @@ sub loadByTicketContentAndCustomField {
         Content => $args{'Content'},
         CustomField => $args{'CustomField'},
         ObjectType => 'RT::Model::Ticket',
-        ObjectId => $args{'Ticket'},
-        Disabled => 0
+        object_id => $args{'Ticket'},
+        disabled => 0
     );
 }
 
@@ -174,8 +174,8 @@ sub loadByObjectContentAndCustomField {
         Content => $args{'Content'},
         CustomField => $args{'CustomField'},
         ObjectType => ref($obj),
-        ObjectId => $obj->id,
-        Disabled => 0
+        object_id => $obj->id,
+        disabled => 0
     );
 }
 
@@ -205,8 +205,8 @@ Returns the object this value applies to
 
 sub Object {
     my $self  = shift;
-    my $Object = $self->__value('ObjectType')->new( $self->current_user );
-    $Object->load_by_id( $self->__value('ObjectId') );
+    my $Object = $self->__value('ObjectType')->new;
+    $Object->load_by_id( $self->__value('object_id') );
     return $Object;
 }
 
@@ -220,7 +220,7 @@ Disable this value. Used to remove "current" values from records while leaving t
 
 sub delete {
     my $self = shift;
-    return $self->set_Disabled(1);
+    return $self->set_disabled(1);
 }
 
 =head2 _FillInTemplateURL URL
@@ -250,7 +250,7 @@ sub _FillInTemplateURL {
 
     my $url = shift;
 
-    $url =~ s/__id__/@{[$self->ObjectId]}/g;
+    $url =~ s/__id__/@{[$self->object_id]}/g;
     $url =~ s/__CustomField__/@{[$self->Content]}/g;
 
     return $url;

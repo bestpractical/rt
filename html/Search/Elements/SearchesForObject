@@ -54,10 +54,10 @@ $Object => undef
 my @result;
 while (my $search = $Object->attributes->next) {
     my $desc;
-    if ($search->Name eq 'SavedSearch') {
+    if ($search->name eq 'SavedSearch') {
 	push @result, [$search->Description, $search];
     }
-    elsif ($search->Name =~ m/^Search - (.*)/) {
+    elsif ($search->name =~ m/^Search - (.*)/) {
 	push @result, [$1, $search];
     }
 }

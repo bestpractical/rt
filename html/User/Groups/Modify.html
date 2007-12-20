@@ -64,9 +64,9 @@
 % }
 <table>
 <tr><td align="right">
-<&|/l&>Name</&>:
+<&|/l&>name</&>:
 </td>
-<td><input name="Name" value="<%$Group->Name%>" /></td>
+<td><input name="name" value="<%$Group->name%>" /></td>
 </tr><tr>
 <td align="right">
 <&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description%>" size="60" /></td>
@@ -81,9 +81,9 @@
 <%INIT>
 
 my $current_tab;
-my  ($title, @results, $Disabled, $EnabledChecked);
+my  ($title, @results, $disabled, $EnabledChecked);
 
-my $Group = RT::Model::Group->new($session{'CurrentUser'});
+my $Group = RT::Model::Group->new(Jifty->web->current_user);
 
 if ($Create) {
     $current_tab = 'User/Groups/Modify.html?Create=1';
@@ -93,8 +93,8 @@ else {
     if ( defined ($id) && $id eq 'new' ) {
 
         my ( $id, $msg ) = $Group->createPersonalGroup(
-                             Name        => "$Name",
-                             PrincipalId => $session{'CurrentUser'}->PrincipalId
+                             name        => "$name",
+                             principal_id => Jifty->web->current_user->principal_id
         );
         unless ($id) {
             Abort( loc("Could not create group") );
@@ -106,7 +106,7 @@ else {
     }
 
     if ($id) {
-        $title = loc( "Modify the group [_1]", $Group->Name );
+        $title = loc( "Modify the group [_1]", $Group->name );
 
     }
 
@@ -121,7 +121,7 @@ else {
 
 if ($id) {
     
-    my @fields = qw(Description Name );
+    my @fields = qw(Description name );
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
 					    Object => $Group,
 					    ARGSRef => \%ARGS );
@@ -130,17 +130,17 @@ if ($id) {
 
 #we're asking about enabled on the web page but really care about disabled.
 if ($Enabled == 1) {
-    $Disabled = 0;
+    $disabled = 0;
 }	
 else {
-    $Disabled = 1;
+    $disabled = 1;
 }
-if  ( ($SetEnabled) and ( $Disabled != $Group->Disabled) ) { 
-    my  ($code, $msg) = $Group->set_Disabled($Disabled);
+if  ( ($SetEnabled) and ( $disabled != $Group->disabled) ) { 
+    my  ($code, $msg) = $Group->set_disabled($disabled);
     push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
 }
 
-unless ($Group->Disabled()) {
+unless ($Group->disabled()) {
     $EnabledChecked ="CHECKED";
 }
 
@@ -149,7 +149,7 @@ unless ($Group->Disabled()) {
 
 <%ARGS>
 $Create => undef
-$Name => undef
+$name => undef
 $Description => undef
 $SetEnabled => undef
 $Enabled => undef

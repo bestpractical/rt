@@ -51,7 +51,7 @@ use strict;
 use warnings FATAL => 'all';
 use base qw(RT::Shredder::Plugin::Base::Search);
 
-=head1 NAME
+=head1 name
 
 RT::Shredder::Plugin::Tickets - search plugin for wiping tickets.
 
@@ -91,7 +91,7 @@ sub TestArgs
     my %args = @_;
     my $queue;
     if( $args{'query'} ) {
-        my $objs = RT::Model::TicketCollection->new( RT->system_user );
+        my $objs = RT::Model::TicketCollection->new(current_user => RT->system_user );
         $objs->{'allow_deleted_search'} = 1;
         my ($status, $msg) = $objs->from_sql( $args{'query'} );
         return( 0, "Bad query argument, error: $msg" ) unless $status;
@@ -137,7 +137,7 @@ sub GetLinked
     if ( $self->{'opt'}{'apply_query_to_linked'} ) {
         $query .= " AND ( ". $self->{'opt'}{'query'} ." )";
     }
-    my $objs = RT::Model::TicketCollection->new( RT->system_user );
+    my $objs = RT::Model::TicketCollection->new(current_user => RT->system_user );
     $objs->{'allow_deleted_search'} = 1;
     $objs->from_sql( $query );
     $self->FetchNext( $objs, 1 );

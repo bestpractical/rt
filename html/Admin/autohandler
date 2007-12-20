@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%init>
-$m->call_next(%ARGS) if $session{'CurrentUser'}->UserObj->has_right(
+$m->call_next(%ARGS) if Jifty->web->current_user->user_object->has_right(
     Right => 'ShowConfigTab',
     Object => RT->system,
 );

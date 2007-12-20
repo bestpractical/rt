@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::LinkCollection - A collection of Link objects
 
@@ -84,7 +84,7 @@ sub limit  {
     if (  ( $args{'operator'} eq '=') and
 	  ( $args{'column'}  eq 'Base') or ($args{'column'} eq 'Target')
        ) {
-	  my $dummy = RT::URI->new($self->current_user);
+	  my $dummy = RT::URI->new;
 	   $dummy->FromURI($args{'value'});
 	   # $uri = $dummy->URI;
     }

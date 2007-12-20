@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::ScripCondition - RT scrip conditional
 
@@ -78,7 +78,7 @@ use base qw/RT::Record/;
 sub table {'ScripConditions'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column Name                 => type is 'text';
+    column name                 => type is 'text';
     column Description          => type is 'text';
     column ExecModule           => type is 'text';
     column Argument             => type is 'text';
@@ -141,7 +141,7 @@ sub load  {
 	return ($self->SUPER::load_by_id($identifier));
     }
     else {
-	return ($self->load_by_cols('Name', $identifier));
+	return ($self->load_by_cols('name', $identifier));
     }
 }
 # }}}

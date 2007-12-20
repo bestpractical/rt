@@ -81,14 +81,14 @@ my $basetabs = {     A => { title => loc('Homepage'),
                          },
                  };
 
-if ($session{'CurrentUser'}->has_right( Right => 'ShowConfigTab', 
+if (Jifty->web->current_user->has_right( Right => 'ShowConfigTab', 
 				       Object => RT->system )) {
     $basetabs->{E} = { title => loc('Configuration'),
                        path => 'Admin/',
 		     };
 }
 
-if ($session{'CurrentUser'}->has_right( Right => 'ModifySelf', 
+if (Jifty->web->current_user->has_right( Right => 'ModifySelf', 
 				       Object => RT->system )) {
     $basetabs->{K} = { title => loc('Preferences'),
                        path => 'User/Prefs.html'

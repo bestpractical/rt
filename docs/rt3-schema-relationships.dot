@@ -14,7 +14,7 @@ edge [
 "Records" [shape = record, fontsize = 18, label = "(Any RT::Record)" ];
 "Records" -> "Principals" [label = "Creator -> id"];
 "ACL" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"ACL" -> "Principals" [label="PrincipalId -> id"];
+"ACL" -> "Principals" [label="principal_id -> id"];
 "ACL" -> "Principals" [label="DelegatedBy -> id"];
 "ACL" -> "ACL" [label="DelegatedFrom -> id"];
 
@@ -47,7 +47,7 @@ edge [
 "Principals" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
 "Attributes" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"Attributes" -> "Records" [label="ObjectId -> id"];
+"Attributes" -> "Records" [label="object_id -> id"];
 
 "Queues" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
@@ -66,11 +66,11 @@ edge [
 
 "ObjectCustomFields" [shape = record, fontsize = 18, label = "<col0> \N " ];
 "ObjectCustomFields" -> "CustomFields" [label="CustomField -> id"];
-"ObjectCustomFields" -> "Records" [label="ObjectId -> id"];
+"ObjectCustomFields" -> "Records" [label="object_id -> id"];
 
 "ObjectCustomFieldValues" [shape = record, fontsize = 18, label = "<col0> \N " ];
 "ObjectCustomFieldValues" -> "CustomFields" [label="CustomField -> id"];
-"ObjectCustomFieldValues" -> "Records" [label="ObjectId -> id"];
+"ObjectCustomFieldValues" -> "Records" [label="object_id -> id"];
 
 "Tickets" [shape = record, fontsize = 18, label = "<col0> \N " ];
 "Tickets" -> "Tickets" [label="EffectiveId -> id"];
@@ -79,7 +79,7 @@ edge [
 "Tickets" -> "Queues" [label="Queue -> id"];
 
 "Transactions" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"Transactions" -> "Records" [label="ObjectId -> id"];
+"Transactions" -> "Records" [label="object_id -> id"];
 
 "Users" [shape = record, fontsize = 18, label = "<col0> \N " ];
 

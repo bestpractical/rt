@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::SavedSearches - a pseudo-collection for SavedSearch objects.
 
@@ -102,9 +102,9 @@ sub LimitToPrivacy {
 
     if ($object) {
 	$self->{'objects'} = [];
-	my @search_atts = $object->attributes->Named('SavedSearch');
+	my @search_atts = $object->attributes->named('SavedSearch');
 	foreach my $att (@search_atts) {
-	    my $search = RT::SavedSearch->new($self->current_user);
+	    my $search = RT::SavedSearch->new;
 	    $search->load($privacy, $att->id);
 	    next if $type && $search->Type ne $type;
 	    push(@{$self->{'objects'}}, $search);
@@ -154,7 +154,7 @@ sub _GetObject {
     my $self = shift;
     my $privacy = shift;
 
-    return RT::SavedSearch->new($self->current_user)->_GetObject($privacy);
+    return RT::SavedSearch->new->_GetObject($privacy);
 }
 
 ### Internal methods
@@ -166,12 +166,12 @@ sub _PrivacyObjects {
     my $CurrentUser = $self->current_user;
 
     Carp::confess unless ($self->current_user);
-    my $groups = RT::Model::GroupCollection->new($self->current_user);
+    my $groups = RT::Model::GroupCollection->new;
     $groups->LimitToUserDefinedGroups;
-    $groups->WithMember( PrincipalId => $self->current_user->id,
+    $groups->WithMember( principal_id => $self->current_user->id,
                          Recursively => 1 );
 
-    return ( $CurrentUser->UserObj, @{ $groups->items_array_ref() } );
+    return ( $CurrentUser->user_object, @{ $groups->items_array_ref() } );
 }
 
 1;

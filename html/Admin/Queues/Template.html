@@ -63,7 +63,7 @@
 
 %# hang onto the queue id
 <input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
-<& /Admin/Elements/ModifyTemplate, Name => $TemplateObj->Name, Description =>
+<& /Admin/Elements/ModifyTemplate, name => $TemplateObj->name, Description =>
 $TemplateObj->Description, Content => $TemplateObj->Content &> 
 <& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
 </form>
@@ -71,7 +71,7 @@ $TemplateObj->Description, Content => $TemplateObj->Content &>
 
 <%INIT>
 
-my $TemplateObj = new RT::Model::Template($session{'CurrentUser'});
+my $TemplateObj = new RT::Model::Template(Jifty->web->current_user);
 my  ($title, @results, $current_subtab);
 
 my $subtabs = {
@@ -91,14 +91,14 @@ if ($Create) {
 
 else {
   if ($Template eq 'new') {
-      my ($val, $msg) =  $TemplateObj->create(Queue => $Queue, Name => $Name);
+      my ($val, $msg) =  $TemplateObj->create(Queue => $Queue, name => $name);
       Abort(loc("Could not create template: [_1]", $msg)) unless ($val);
      push @results, $msg;
     }
     else {
        $TemplateObj->load($Template) || Abort(loc('No Template'));
     }
-     $title = loc('Modify template [_1]', loc($TemplateObj->Name())); 
+     $title = loc('Modify template [_1]', loc($TemplateObj->name())); 
   
     
 }
@@ -107,7 +107,7 @@ if ($TemplateObj->id()) {
   $Queue = $TemplateObj->Queue;
   $QueueObj = $TemplateObj->QueueObj;
 
-  my @attribs = qw( Description Content Queue Name);
+  my @attribs = qw( Description Content Queue name);
   my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
 				     Object => $TemplateObj, 
 				     ARGSRef => \%ARGS);
@@ -117,7 +117,7 @@ if ($TemplateObj->id()) {
 			};
   push @results, @aresults;
 } else {
-  $QueueObj = RT::Model::Queue->new($session{'CurrentUser'});
+  $QueueObj = RT::Model::Queue->new(Jifty->web->current_user);
   $QueueObj->load($Queue);
 }
 
@@ -126,5 +126,5 @@ if ($TemplateObj->id()) {
 $Queue => ''
 $Template => ''
 $Create => undef
-$Name => undef
+$name => undef
 </%ARGS>

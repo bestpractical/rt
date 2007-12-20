@@ -56,7 +56,7 @@
 <& /Admin/Elements/EditCustomField, title => $title, %ARGS &>
 
 <%INIT>
-my $QueueObj = new RT::Model::Queue($session{'CurrentUser'});
+my $QueueObj = new RT::Model::Queue(Jifty->web->current_user);
 $QueueObj->load($Queue);
 
 my ($title, $current_subtab);
@@ -65,10 +65,10 @@ unless($QueueObj->id) {
     Abort(loc("Queue [_1] not found", $Queue));
 }
 if ($CustomField) {
-    $title = loc('Modify a CustomField for queue [_1]', $QueueObj->Name()); 
+    $title = loc('Modify a CustomField for queue [_1]', $QueueObj->name()); 
 }else {
     $current_subtab = "Admin/Queues/CustomField.html?create=1&Queue=".$QueueObj->id;
-    $title = loc('Create a CustomField for queue [_1]', $QueueObj->Name()); 
+    $title = loc('Create a CustomField for queue [_1]', $QueueObj->name()); 
 }
 
 my $subtabs = {

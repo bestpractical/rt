@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::CustomFieldCollection - a collection of RT CustomField objects
 
@@ -94,7 +94,7 @@ Limits the set of custom fields found to global custom fields or those tied to t
 sub LimitToGlobalOrQueue {
     my $self = shift;
     my $queue = shift;
-    $self->LimitToGlobalOrObjectId( $queue );
+    $self->LimitToGlobalOrobject_id( $queue );
     $self->LimitToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
 }
 
@@ -116,7 +116,7 @@ sub LimitToQueue  {
  
   $self->limit (alias => $self->_OCFAlias,
                 entry_aggregator => 'OR',
-		column => 'ObjectId',
+		column => 'object_id',
 		value => "$queue")
       if defined $queue;
   $self->LimitToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
@@ -139,7 +139,7 @@ sub LimitToGlobal  {
  
   $self->limit (alias => $self->_OCFAlias,
                 entry_aggregator => 'OR',
-		column => 'ObjectId',
+		column => 'object_id',
 		value => 0);
   $self->LimitToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
 }
@@ -151,7 +151,7 @@ sub LimitToGlobal  {
 =head2 _do_search
 
 A subclass of Jifty::DBI::_do_search that makes sure that 
- _Disabled rows never get seen unless we're explicitly trying to see 
+ _disabled rows never get seen unless we're explicitly trying to see 
 them.
 
 =cut
@@ -222,17 +222,17 @@ sub LimitToParentType  {
     my $lookup = shift;
  
     $self->limit( column => 'LookupType', value => "$lookup" );
-    $self->limit( column => 'LookupType', STARTSWITH => "$lookup" );
+    $self->limit( column => 'LookupType', starts_with => "$lookup" );
 }
 
-sub LimitToGlobalOrObjectId {
+sub LimitToGlobalOrobject_id {
     my $self = shift;
     my $global_only = 1;
 
 
     foreach my $id (@_) {
 	$self->limit( alias           => $self->_OCFAlias,
-		    column           => 'ObjectId',
+		    column           => 'object_id',
 		    operator        => '=',
 		    value           => $id || 0,
 		    entry_aggregator => 'OR' );
@@ -240,13 +240,13 @@ sub LimitToGlobalOrObjectId {
     }
 
     $self->limit( alias           => $self->_OCFAlias,
-                 column           => 'ObjectId',
+                 column           => 'object_id',
                  operator        => '=',
                  value           => 0,
                  entry_aggregator => 'OR' ) unless $global_only;
 
     $self->order_by(
-	{ alias => $self->_OCFAlias, column => 'ObjectId', order => 'DESC' },
+	{ alias => $self->_OCFAlias, column => 'object_id', order => 'DESC' },
 	{ alias => $self->_OCFAlias, column => 'SortOrder' },
     );
     

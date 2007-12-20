@@ -176,7 +176,7 @@ sub TransactionObj {
     my $self = shift;
 
     unless ( $self->{_TransactionObj} ) {
-        $self->{_TransactionObj} = RT::Model::Transaction->new( $self->current_user );
+        $self->{_TransactionObj} = RT::Model::Transaction->new;
         $self->{_TransactionObj}->load( $self->TransactionId );
     }
 
@@ -199,7 +199,7 @@ sub ParentObj {
     my $self = shift;
     return undef unless $self->Parent;
 
-    my $parent = RT::Model::Attachment->new( $self->current_user );
+    my $parent = RT::Model::Attachment->new;
     $parent->load_by_id( $self->Parent );
     return $parent;
 }
@@ -215,7 +215,7 @@ C<Parent>.
 sub Children {
     my $self = shift;
     
-    my $kids = RT::Model::AttachmentCollection->new( $self->current_user );
+    my $kids = RT::Model::AttachmentCollection->new;
     $kids->ChildrenOf( $self->id );
     return($kids);
 }
@@ -347,7 +347,7 @@ sub Quote {
 
 	$body =~ s/^/> /gm;
 
-	$body = '[' . $self->TransactionObj->CreatorObj->Name() . ' - ' . $self->TransactionObj->CreatedAsString()
+	$body = '[' . $self->TransactionObj->CreatorObj->name() . ' - ' . $self->TransactionObj->CreatedAsString()
 	            . "]:\n\n"
    	        . $body . "\n\n";
 
@@ -397,17 +397,17 @@ sub Addresses {
     my $self = shift;
 
     my %data = ();
-    my $current_user_address = lc $self->current_user->EmailAddress;
+    my $current_user_address = lc $self->current_user->email;
     my $correspond = lc $self->TransactionObj->TicketObj->QueueObj->CorrespondAddress;
-    my $comment = lc $self->TransactionObj->TicketObj->QueueObj->CommentAddress;
+    my $comment = lc $self->TransactionObj->TicketObj->QueueObj->commentAddress;
     foreach my $hdr (qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {
         my @Addresses;
         my $line      = $self->GetHeader($hdr);
         
         foreach my $AddrObj ( Mail::Address->parse( $line )) {
             my $address = $AddrObj->address;
-            my $user    = RT::Model::User->new(RT->system_user);
-            $address = lc $user->CanonicalizeEmailAddress($address);
+            my $user    = RT::Model::User->new(current_user => RT->system_user);
+            $address = lc $user->canonicalize_email($address);
             next if ( $current_user_address eq $address );
             next if ( $comment              eq $address );
             next if ( $correspond           eq $address );

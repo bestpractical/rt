@@ -50,7 +50,7 @@
 %# (perhaps by tweaking the .display style?)
 %       my $selected = 0;
 %       my @category;
-%       my $id = $NamePrefix . $CustomField->id;
+%       my $id = $namePrefix . $CustomField->id;
 %       my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, CategoryRef => \@category);
 %       if (@category) {
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/cascaded.js"></script>
@@ -74,7 +74,7 @@
 <%ARGS>
 $Object => undef
 $CustomField => undef
-$NamePrefix => undef
+$namePrefix => undef
 $Default => undef
 $Values => undef
 $Multiple => 0
@@ -87,7 +87,7 @@ $Rows => undef
 % my $CFVs = $CustomField->Values;
 % my @levels;
 % while ( my $value = $CFVs->next ) {
-%       my $name = $value->Name;
+%       my $name = $value->name;
 %       my $category = $value->Category || '';
 %       my $level = (split /:/, $category, 2)[0] || '';
 %       while (@levels) {

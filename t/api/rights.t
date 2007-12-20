@@ -63,8 +63,8 @@ use RT::Model::Ticket;
 
 
 # clear all global right
-my $acl = RT::Model::ACECollection->new(RT->system_user);
-$acl->limit( column => 'RightName', operator => '!=', value => 'SuperUser' );
+my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
+$acl->limit( column => 'Rightname', operator => '!=', value => 'SuperUser' );
 $acl->LimitToObject( RT->system );
 while( my $ace = $acl->next ) {
 	$ace->delete;
@@ -72,36 +72,36 @@ while( my $ace = $acl->next ) {
 
 my $rand_name = "rights". int rand($$);
 # create new queue to be shure we don't mess with rights
-my $queue = RT::Model::Queue->new(RT->system_user);
-my ($queue_id) = $queue->create( Name => $rand_name);
+my $queue = RT::Model::Queue->new(current_user => RT->system_user);
+my ($queue_id) = $queue->create( name => $rand_name);
 ok( $queue_id, 'queue Created for rights tests' );
 
 # new privileged user to check rights
-my $user = RT::Model::User->new( RT->system_user );
-my ($user_id) = $user->create( Name => $rand_name,
-			   EmailAddress => $rand_name .'@localhost',
-			   Privileged => 1,
-			   Password => 'qwe123',
+my $user = RT::Model::User->new(current_user => RT->system_user );
+my ($user_id) = $user->create( name => $rand_name,
+			   email => $rand_name .'@localhost',
+			   privileged => 1,
+			   password => 'qwe123',
 			 );
 ok( !$user->has_right( Right => 'OwnTicket', Object => $queue ), "user can't own ticket" );
 ok( !$user->has_right( Right => 'ReplyToTicket', Object => $queue ), "user can't reply to ticket" );
 
-my $group = RT::Model::Group->new( RT->system_user );
+my $group = RT::Model::Group->new(current_user => RT->system_user );
 ok( $group->loadQueueRoleGroup( Queue => $queue_id, Type=> 'Owner' ), "load queue owners role group" );
-my $ace = RT::Model::ACE->new( RT->system_user );
-my ($ace_id, $msg) = $group->PrincipalObj->GrantRight( Right => 'ReplyToTicket', Object => $queue );
+my $ace = RT::Model::ACE->new(current_user => RT->system_user );
+my ($ace_id, $msg) = $group->principal_object->GrantRight( Right => 'ReplyToTicket', Object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right: $msg" );
-ok( $group->PrincipalObj->has_right( Right => 'ReplyToTicket', Object => $queue ), "role group can reply to ticket" );
+ok( $group->principal_object->has_right( Right => 'ReplyToTicket', Object => $queue ), "role group can reply to ticket" );
 ok( !$user->has_right( Right => 'ReplyToTicket', Object => $queue ), "user can't reply to ticket" );
 
 # new ticket
-my $ticket = RT::Model::Ticket->new(RT->system_user);
+my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($ticket_id) = $ticket->create( Queue => $queue_id, Subject => 'test');
 ok( $ticket_id, 'new ticket Created' );
 is( $ticket->Owner, $RT::Nobody->id, 'owner of the new ticket is nobody' );
 
 my $status;
-($status, $msg) = $user->PrincipalObj->GrantRight( Object => $queue, Right => 'OwnTicket' );
+($status, $msg) = $user->principal_object->GrantRight( Object => $queue, Right => 'OwnTicket' );
 ok( $status, "successfuly granted right: $msg" );
 ok( $user->has_right( Right => 'OwnTicket', Object => $queue ), "user can own ticket" );
 
@@ -112,18 +112,18 @@ is( $ticket->Owner, $user_id, "set correct owner" );
 ok( $user->has_right( Right => 'ReplyToTicket', Object => $ticket ), "user is owner and can reply to ticket" );
 
 # Testing of EquivObjects
-$group = RT::Model::Group->new( RT->system_user );
+$group = RT::Model::Group->new(current_user => RT->system_user );
 ok( $group->loadQueueRoleGroup( Queue => $queue_id, Type=> 'AdminCc' ), "load queue AdminCc role group" );
-$ace = RT::Model::ACE->new( RT->system_user );
-($ace_id, $msg) = $group->PrincipalObj->GrantRight( Right => 'ModifyTicket', Object => $queue );
+$ace = RT::Model::ACE->new(current_user => RT->system_user );
+($ace_id, $msg) = $group->principal_object->GrantRight( Right => 'ModifyTicket', Object => $queue );
 ok( $ace_id, "Granted queue AdminCc role group with ModifyTicket right: $msg" );
-ok( $group->PrincipalObj->has_right( Right => 'ModifyTicket', Object => $queue ), "role group can modify ticket" );
+ok( $group->principal_object->has_right( Right => 'ModifyTicket', Object => $queue ), "role group can modify ticket" );
 ok( !$user->has_right( Right => 'ModifyTicket', Object => $ticket ), "user is not AdminCc and can't modify ticket" );
-($status, $msg) = $ticket->AddWatcher(Type => 'AdminCc', PrincipalId => $user->PrincipalId);
+($status, $msg) = $ticket->AddWatcher(Type => 'AdminCc', principal_id => $user->principal_id);
 ok( $status, "successfuly added user as AdminCc");
 ok( $user->has_right( Right => 'ModifyTicket', Object => $ticket ), "user is AdminCc and can modify ticket" );
 
-my $ticket2 = RT::Model::Ticket->new(RT->system_user);
+my $ticket2 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($ticket2_id) = $ticket2->create( Queue => $queue_id, Subject => 'test2');
 ok( $ticket2_id, 'new ticket Created' );
 ok( !$user->has_right( Right => 'ModifyTicket', Object => $ticket2 ), "user is not AdminCc and can't modify ticket2" );

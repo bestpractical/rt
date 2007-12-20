@@ -56,14 +56,14 @@
 <form method="post" action="Quicksearch.html" name="Preferences">
 <ul>
 % for my $queue (@queues) {
-<li><input type="checkbox" class="checkbox" name="Want-<%$queue->Name%>" value="1"
-% unless ($unwanted->{$queue->Name}) {
+<li><input type="checkbox" class="checkbox" name="Want-<%$queue->name%>" value="1"
+% unless ($unwanted->{$queue->name}) {
 checked
 % }
-/><%$queue->Name%>: <%$queue->Description%></li>
+/><%$queue->name%>: <%$queue->Description%></li>
 % }
 </ul>
-<& /Elements/Submit, Caption => loc("Save Changes"), Label => loc('Save'), Name => 'Save'&>
+<& /Elements/Submit, Caption => loc("Save Changes"), Label => loc('Save'), name => 'Save'&>
 
 </form>
 
@@ -71,19 +71,19 @@ checked
 my @actions;
 my $title = loc("Customize").' '.loc("Quick search");
 # The queue list is not loaded from cache, so it might be a bit inconsistent
-my $user = $session{'CurrentUser'}->UserObj;
+my $user = Jifty->web->current_user->user_object;
 my $unwanted = $user->Preferences('QuickSearch', {});
-my $Queues = RT::Model::QueueCollection->new($session{'CurrentUser'});
+my $Queues = RT::Model::QueueCollection->new(Jifty->web->current_user);
 $Queues->find_all_rows;
 my @queues = grep {$_->current_user_has_right('ShowTicket')} @{$Queues->items_array_ref};
 
 if ($ARGS{'Save'}) {
     for my $queue (@queues) {
-        if ($ARGS{"Want-".$queue->Name}) {
-	    delete $unwanted->{$queue->Name};
+        if ($ARGS{"Want-".$queue->name}) {
+	    delete $unwanted->{$queue->name};
 	}
         else {
-	    ++$unwanted->{$queue->Name};
+	    ++$unwanted->{$queue->name};
         }
     }
 

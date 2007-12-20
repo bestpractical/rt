@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Date - a simple Object Oriented date.
 
@@ -867,7 +867,7 @@ sub Timezone {
 
     my $tz;
     if( $context eq 'user' ) {
-        $tz = $self->current_user->UserObj->Timezone;
+        $tz = $self->current_user->user_object->Timezone;
     } elsif( $context eq 'server') {
         $tz = RT->Config->Get('Timezone');
     } else {

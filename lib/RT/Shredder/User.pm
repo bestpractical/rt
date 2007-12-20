@@ -91,19 +91,19 @@ sub __DependsOn
     $deps->_PushDependency(
             BaseObject => $self,
             Flags => DEPENDS_ON | WIPE_AFTER,
-            TargetObject => $self->PrincipalObj,
+            TargetObject => $self->principal_object,
             Shredder => $args{'Shredder'}
         );
 
 # ACL equivalence group
 # don't use load_acl_equivalence_group cause it may not exists any more
-    my $objs = RT::Model::GroupCollection->new( $self->current_user );
+    my $objs = RT::Model::GroupCollection->new;
     $objs->limit( column => 'Domain', value => 'ACLEquivalence' );
     $objs->limit( column => 'Instance', value => $self->id );
     push( @$list, $objs );
 
 # Cleanup user's membership
-    $objs = RT::Model::GroupMemberCollection->new( $self->current_user );
+    $objs = RT::Model::GroupMemberCollection->new;
     $objs->limit( column => 'MemberId', value => $self->id );
     push( @$list, $objs );
 
@@ -120,7 +120,7 @@ sub __DependsOn
     foreach( @OBJECTS ) {
         my $class = "RT::Model::$_";
         foreach my $method ( qw(Creator LastUpdatedBy) ) {
-            my $objs = $class->new( $self->current_user );
+            my $objs = $class->new;
             next unless $objs->new_item->can($method);
             $objs->limit( column => $method, value => $self->id );
             push @var_objs, $objs;
@@ -148,7 +148,7 @@ sub __Relates
     my $list = [];
 
 # Principal
-    my $obj = $self->PrincipalObj;
+    my $obj = $self->principal_object;
     if( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {
@@ -158,8 +158,8 @@ sub __Relates
         $rec->{'Description'} = "Have no related ACL equivalence Group object";
     }
 
-    $obj = RT::Model::Group->new( RT->system_user );
-    $obj->load_acl_equivalence_group( $self->PrincipalObj );
+    $obj = RT::Model::Group->new(current_user => RT->system_user );
+    $obj->load_acl_equivalence_group( $self->principal_object );
     if( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {
@@ -181,7 +181,7 @@ sub __Relates
 sub BeforeWipeout
 {
     my $self = shift;
-    if( $self->Name =~ /^(RT_System|Nobody)$/ ) {
+    if( $self->name =~ /^(RT_System|Nobody)$/ ) {
         RT::Shredder::Exception::Info->throw('SystemObject');
     }
     return $self->SUPER::BeforeWipeout( @_ );

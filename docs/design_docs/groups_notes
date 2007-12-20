@@ -1,20 +1,20 @@
 CREATE TABLE Prinicpals (
         id int auto_increment 
-        PrincipalType VARCHAR(16) not_null,
-        PrincipalId int # foreign key to Users or Groups, depending
+        principal_type VARCHAR(16) not_null,
+        principal_id int # foreign key to Users or Groups, depending
 )
 
 CREATE TABLE Groups (
         id int auto_increment,
         Domain varchar(255), 
         Instance varchar(16),
-        Name varchar(255),
+        name varchar(255),
         Description varchar(255),
 );
 CREATE TABLE ACL (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Principal integer NULL  , #Foreign key to principals
-  RightName varchar(25) NULL  ,
+  Rightname varchar(25) NULL  ,
   RightDomain varchar(25) NULL  ,
   RightInstance integer NULL  ,
   PRIMARY KEY (id)
@@ -55,14 +55,14 @@ Groups
       
 Domain          Queues
 Instance        <queueid#>
-Name            AdminCc, Cc
+name            AdminCc, Cc
 
 /Queues/1/AdminCc
 /Queues/3/Cc
 
 Domain          Tickets
 Instance        <#n>
-Name            Owner, Requestor, Cc, AdminCc
+name            Owner, Requestor, Cc, AdminCc
 
 /Tickets/1/Owner
 /Tickets/1/Requestor
@@ -80,7 +80,7 @@ Instance        <userid>
 
 
 Domain          System
-Name            Admins, AdminManagers
+name            Admins, AdminManagers
 
 /System/Administrators
 /System/Blah

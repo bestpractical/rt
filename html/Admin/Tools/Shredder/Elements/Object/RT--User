@@ -49,5 +49,5 @@
 $Object => undef
 </%ARGS>
 <a href="<% RT->Config->Get('WebBaseURL') %>/Admin/Users/Modify.html?id=<% $Object->id %>">
-User(id:<% $Object->id %>, Name: <% $Object->Name %>)
+User(id:<% $Object->id %>, name: <% $Object->name %>)
 </a>

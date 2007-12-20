@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 $ARGS{'CallbackPage'} = delete $ARGS{'Page'} || $m->callers(1)->path;
-$ARGS{'CallbackName'} = delete $ARGS{'_CallbackName'};
+$ARGS{'Callbackname'} = delete $ARGS{'_Callbackname'};
 $RT::Logger->debug("$ARGS{'CallbackPage'} calls old style callback, use \$m->callback");
 return $m->callback( %ARGS );
 </%INIT>

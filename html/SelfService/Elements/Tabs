@@ -54,7 +54,7 @@
 &>
 <a name="skipnav" id="skipnav" accesskey="8"></a>
 <%INIT>
-my $queues = RT::Model::QueueCollection->new($session{'CurrentUser'});
+my $queues = RT::Model::QueueCollection->new(Jifty->web->current_user);
 $queues->find_all_rows;
 
 my $queue_count = 0;
@@ -92,7 +92,7 @@ if ($queue_count > 1) {
                        };
 }
 
-if ($session{'CurrentUser'}->has_right( Right => 'ModifySelf',
+if (Jifty->web->current_user->has_right( Right => 'ModifySelf',
 				       Object => RT->system )) {
 	$tabs->{Z} = { title => loc('Preferences'),
 		       path => 'SelfService/Prefs.html'

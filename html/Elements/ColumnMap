@@ -1,6 +1,6 @@
 <%ARGS>
 $Class => 'RT__Model__Ticket'
-$Name
+$name
 $Attr  => undef
 </%ARGS>
 <%ONCE>
@@ -26,7 +26,7 @@ my $COLUMN_MAP = {
     CreatedBy => {
         attribute => 'CreatedBy',
         title => 'Created By',
-        value     => sub { return $_[0]->CreatorObj->Name }
+        value     => sub { return $_[0]->CreatorObj->name }
     },
     LastUpdated => {
         attribute => 'LastUpdated',
@@ -41,7 +41,7 @@ my $COLUMN_MAP = {
     LastUpdatedBy => {
         attribute => 'LastUpdatedBy',
         title     => 'Last Updated By',
-        value     => sub { return $_[0]->LastUpdatedByObj->Name }
+        value     => sub { return $_[0]->LastUpdatedByObj->name }
     },
 
 
@@ -87,12 +87,12 @@ my $COLUMN_MAP = {
 
 </%ONCE>
 <%INIT>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'Once', CallbackOnce => 1 );
 $m->callback( COLUMN_MAP => $COLUMN_MAP );
 
 # first deal with class specific things
-my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, Name => $Name );
+my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, name => $name );
 return $class_map if defined $class_map;
-return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
+return GetColumnMapEntry( Map => $COLUMN_MAP, name => $name, Attribute => $Attr );
 
 </%INIT>

@@ -69,7 +69,7 @@ sub __DependsOn
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-    my $objs = RT::Model::CachedGroupMemberCollection->new( $self->current_user );
+    my $objs = RT::Model::CachedGroupMemberCollection->new;
     $objs->limit( column => 'MemberId', value => $self->MemberId );
     $objs->limit( column => 'ImmediateParentId', value => $self->GroupId );
     push( @$list, $objs );

@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME ="<%$Name%>">
+<select name ="<%$name%>">
 <option value="<%$TrueVal%>" <%$TrueDefault%>><%$True%></option>
 <option value="<%$FalseVal%>" <%$FalseDefault%>><%$False%></option>
 </select>
 
 <%ARGS>
-$Name => undef
+$name => undef
 $True => loc("is")
 $Default => 'true'
 $TrueVal => 1

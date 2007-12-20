@@ -57,7 +57,7 @@ use RT::Shredder::Exceptions;
 
 =head2 _AsString
 
-Returns string in format ClassName-ObjectId.
+Returns string in format Classname-object_id.
 
 =cut
 
@@ -138,9 +138,9 @@ sub __DependsOn
     push( @$list, $objs );
 
 # Transactions
-    $objs = RT::Model::TransactionCollection->new( $self->current_user );
+    $objs = RT::Model::TransactionCollection->new;
     $objs->limit( column => 'ObjectType', value => ref $self );
-    $objs->limit( column => 'ObjectId', value => $self->id );
+    $objs->limit( column => 'object_id', value => $self->id );
     push( @$list, $objs );
 
 # Links
@@ -156,7 +156,7 @@ sub __DependsOn
     }
 
 # ACE records
-    $objs = RT::Model::ACECollection->new( $self->current_user );
+    $objs = RT::Model::ACECollection->new;
     $objs->LimitToObject( $self );
     push( @$list, $objs );
 
@@ -181,7 +181,7 @@ sub __Relates
     my $list = [];
 
     if( $self->can('Creator')) {
-        my $obj = RT::Model::Principal->new( $self->current_user );
+        my $obj = RT::Model::Principal->new;
         $obj->load( $self->Creator );
 
         if( $obj && defined $obj->id ) {
@@ -196,7 +196,7 @@ sub __Relates
     }
 
     if( $self->can( 'LastUpdatedBy') ) {
-        my $obj = RT::Model::Principal->new( $self->current_user );
+        my $obj = RT::Model::Principal->new;
         $obj->load( $self->LastUpdatedBy );
 
         if( $obj && defined $obj->id ) {

@@ -17,7 +17,7 @@ Content-Transfer-Encoding: 8bit
 -----BEGIN PGP MESSAGE-----
 Charset: UTF-8
 Version: GnuPG v1.4.7 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
 hQIOA076g5OuwfIOEAgAn0IWP59DHAWRYz8MG09D5vp+V3rfVdwv8ud2hp/jAUDZ
 ogXobK3KkUH5CIDaohqgrxobAtU9D7XhxO1ti6G9ana7+u2GiTIQmC7F1THSipNJ

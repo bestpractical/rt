@@ -74,18 +74,18 @@
 </&>
 
 <%ARGS>
-$EmailAddress
+$email
 $Type => 'public'
 </%ARGS>
 <%INIT>
 require RT::Crypt::GnuPG;
-my %res = RT::Crypt::GnuPG::GetKeyInfo( $EmailAddress, $Type );
+my %res = RT::Crypt::GnuPG::GetKeyInfo( $email, $Type );
 
 my $title;
 unless ( $Type eq 'private' ) {
-    $title = loc('GnuPG public key(s) for [_1]', $EmailAddress);
+    $title = loc('GnuPG public key(s) for [_1]', $email);
 } else {
-    $title = loc('GnuPG private key(s) for [_1]', $EmailAddress);
+    $title = loc('GnuPG private key(s) for [_1]', $email);
 }
 
 </%INIT>

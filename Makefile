@@ -356,7 +356,7 @@ test:
 	prove -l $(TEST_FILES)
 
 regression-install: config-install
-	$(PERL) -pi -e 's/Set\(\$$DatabaseName.*\);/Set\(\$$DatabaseName, "rt3regression"\);/' $(DESTDIR)/$(CONFIG_FILE)
+	$(PERL) -pi -e 's/Set\(\$$Databasename.*\);/Set\(\$$Databasename, "rt3regression"\);/' $(DESTDIR)/$(CONFIG_FILE)
 
 # {{{ database-installation
 

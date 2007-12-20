@@ -24,10 +24,10 @@ CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
 --- {{{ Queues
 CREATE TABLE Queues (
   id INTEGER PRIMARY KEY  ,
-  Name varchar(200) NOT NULL  ,
+  name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
   CorrespondAddress varchar(120) NULL  ,
-  CommentAddress varchar(120) NULL  ,
+  commentAddress varchar(120) NULL  ,
   InitialPriority integer NULL  ,
   FinalPriority integer NULL  ,
   DefaultDueIn integer NULL  ,
@@ -35,10 +35,10 @@ CREATE TABLE Queues (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  ,
-  Disabled int2 NOT NULL DEFAULT 0 
+  disabled int2 NOT NULL DEFAULT 0 
  
 ) ;
-CREATE UNIQUE INDEX Queues1 ON Queues (Name) ;
+CREATE UNIQUE INDEX Queues1 ON Queues (name) ;
 
 --- }}}
 
@@ -66,9 +66,9 @@ CREATE INDEX Links4 ON Links(Type,LocalBase);
 
 CREATE TABLE Principals (
         id INTEGER PRIMARY KEY,
-        PrincipalType VARCHAR(16) not null,
-        ObjectId integer,
-        Disabled int2 NOT NULL DEFAULT 0 
+        principal_type VARCHAR(16) not null,
+        object_id integer,
+        disabled int2 NOT NULL DEFAULT 0 
         
 ) ;
 
@@ -78,7 +78,7 @@ CREATE TABLE Principals (
 
 CREATE TABLE Groups (
   id INTEGER ,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   Domain varchar(64),
   Type varchar(64),
@@ -86,7 +86,7 @@ CREATE TABLE Groups (
   
 ) ;
 
-CREATE UNIQUE INDEX Groups1 ON Groups (Name,Domain,Type,Instance) ;
+CREATE UNIQUE INDEX Groups1 ON Groups (name,Domain,Type,Instance) ;
 
 --- }}}
 
@@ -94,7 +94,7 @@ CREATE UNIQUE INDEX Groups1 ON Groups (Name,Domain,Type,Instance) ;
 
 CREATE TABLE ScripConditions (
   id INTEGER PRIMARY KEY  ,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
@@ -113,7 +113,7 @@ CREATE TABLE ScripConditions (
 CREATE TABLE Transactions (
   id INTEGER PRIMARY KEY  ,
   ObjectType varchar(255) NULL  ,
-  ObjectId integer NULL  ,
+  object_id integer NULL  ,
   TimeTaken integer NULL  ,
   Type varchar(20) NULL  ,
   Field varchar(40) NULL  ,
@@ -128,7 +128,7 @@ CREATE TABLE Transactions (
   Created DATETIME NULL  
   
 ) ;
-CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
+CREATE INDEX Transactions1 ON Transactions (ObjectType, object_id);
 
 --- }}}
 
@@ -159,12 +159,12 @@ CREATE TABLE Scrips (
 --- {{{ ACL
 CREATE TABLE ACL (
   id INTEGER PRIMARY KEY  ,
-  PrincipalType varchar(25) NOT NULL,
+  principal_type varchar(25) NOT NULL,
 
-  PrincipalId INTEGER,
-  RightName varchar(25) NOT NULL  ,
+  principal_id INTEGER,
+  Rightname varchar(25) NOT NULL  ,
   ObjectType varchar(25) NOT NULL  ,
-  ObjectId INTEGER default 0,
+  object_id INTEGER default 0,
   DelegatedBy integer NOT NULL default 0, 
   DelegatedFrom integer NOT NULL default 0
   
@@ -192,7 +192,7 @@ create table CachedGroupMembers (
         MemberId int, 
         Via int, 
         ImmediateParentId int,
-        Disabled int2 NOT NULL DEFAULT 0  # if this cached group member is a member of this group by way of a disabled
+        disabled int2 NOT NULL DEFAULT 0  # if this cached group member is a member of this group by way of a disabled
                                            # group or this group is disabled, this will be set to 1
                                            # this allows us to not find members of disabled subgroups when listing off
                                            # group members recursively.
@@ -207,22 +207,22 @@ create table CachedGroupMembers (
 
 CREATE TABLE Users (
   id INTEGER ,
-  Name varchar(200) NOT NULL  ,
-  Password varchar(40) NULL  ,
-  Comments blob NULL  ,
+  name varchar(200) NOT NULL  ,
+  password varchar(40) NULL  ,
+  comments blob NULL  ,
   Signature blob NULL  ,
-  EmailAddress varchar(120) NULL  ,
-  FreeformContactInfo blob NULL  ,
-  Organization varchar(200) NULL  ,
-  RealName varchar(120) NULL  ,
-  NickName varchar(16) NULL  ,
+  email varchar(120) NULL  ,
+  freeform_contact_info blob NULL  ,
+  organization varchar(200) NULL  ,
+  real_name varchar(120) NULL  ,
+  nickname varchar(16) NULL  ,
   Lang varchar(16) NULL  ,
-  EmailEncoding varchar(16) NULL  ,
-  WebEncoding varchar(16) NULL  ,
+  email_encoding varchar(16) NULL  ,
+  web_encoding varchar(16) NULL  ,
   ExternalContactInfoId varchar(100) NULL  ,
   ContactInfoSystem varchar(30) NULL  ,
   ExternalAuthId varchar(100) NULL  ,
-  AuthSystem varchar(30) NULL  ,
+  auth_system varchar(30) NULL  ,
   Gecos varchar(16) NULL  ,
   HomePhone varchar(30) NULL  ,
   WorkPhone varchar(30) NULL  ,
@@ -245,10 +245,10 @@ CREATE TABLE Users (
 ) ;
 
 
-CREATE UNIQUE INDEX Users1 ON Users (Name) ;
-CREATE INDEX Users2 ON Users (Name);
-CREATE INDEX Users3 ON Users (id, EmailAddress);
-CREATE INDEX Users4 ON Users (EmailAddress);
+CREATE UNIQUE INDEX Users1 ON Users (name) ;
+CREATE INDEX Users2 ON Users (name);
+CREATE INDEX Users3 ON Users (id, email);
+CREATE INDEX Users4 ON Users (email);
 
 
 --- }}}
@@ -268,11 +268,11 @@ CREATE TABLE Tickets (
   FinalPriority integer NULL  ,
   Priority integer NULL  ,
   TimeEstimated integer NULL  ,
-  TimeWorked integer NULL  ,
+  time_worked integer NULL  ,
   Status varchar(10) NULL  ,
-  TimeLeft integer NULL  ,
+  time_left integer NULL  ,
   Told DATETIME NULL  ,
-  Starts DATETIME NULL  ,
+  starts DATETIME NULL  ,
   Started DATETIME NULL  ,
   Due DATETIME NULL  ,
   Resolved DATETIME NULL  ,
@@ -282,7 +282,7 @@ CREATE TABLE Tickets (
   LastUpdated DATETIME NULL  ,
   Creator integer NULL  ,
   Created DATETIME NULL  ,
-  Disabled int2 NOT NULL DEFAULT 0
+  disabled int2 NOT NULL DEFAULT 0
   
 ) ;
 
@@ -298,7 +298,7 @@ CREATE INDEX Tickets5 ON Tickets (id, EffectiveId) ;
 
 CREATE TABLE ScripActions (
   id INTEGER PRIMARY KEY  ,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
@@ -316,7 +316,7 @@ CREATE TABLE ScripActions (
 CREATE TABLE Templates (
   id INTEGER PRIMARY KEY  ,
   Queue integer NOT NULL DEFAULT 0 ,
-  Name varchar(200) NOT NULL  ,
+  name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
   Type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
@@ -339,7 +339,7 @@ CREATE TABLE ObjectCustomFieldValues (
   id INTEGER NOT NULL  ,
   CustomField int NOT NULL  ,
   ObjectType varchar(255) NOT NULL,	    # Final target of the Object
-  ObjectId int NOT NULL  ,		    # New -- Replaces Ticket
+  object_id int NOT NULL  ,		    # New -- Replaces Ticket
   SortOrder integer NOT NULL DEFAULT 0  ,
 
   Content varchar(255) NULL  ,
@@ -351,12 +351,12 @@ CREATE TABLE ObjectCustomFieldValues (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
-  Disabled int2 NOT NULL DEFAULT 0 ,
+  disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 ) ;
 
 CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
-CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
+CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,object_id); 
 
 # }}}
 
@@ -364,7 +364,7 @@ CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,Ob
 
 CREATE TABLE CustomFields (
   id INTEGER NOT NULL  ,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Type varchar(200) NULL  ,	# Changed -- 'Single' and 'Multiple' is moved out
   MaxValues integer,		# New -- was 'Single'(1) and 'Multiple'(0)
   Pattern varchar(65536) NULL  ,	# New -- Must validate against this
@@ -377,7 +377,7 @@ CREATE TABLE CustomFields (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
-  Disabled int2 NOT NULL DEFAULT 0 ,
+  disabled int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 ) ;
 
@@ -388,7 +388,7 @@ CREATE TABLE CustomFields (
 CREATE TABLE ObjectCustomFields (
   id INTEGER NOT NULL  ,
   CustomField int NOT NULL  ,
-  ObjectId integer NOT NULL,
+  object_id integer NOT NULL,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
@@ -405,7 +405,7 @@ CREATE TABLE ObjectCustomFields (
 CREATE TABLE CustomFieldValues (
   id INTEGER NOT NULL  ,
   CustomField int NOT NULL  ,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
@@ -423,20 +423,20 @@ CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
 --- {{{ Attributes
 CREATE TABLE Attributes (
   id INTEGER PRIMARY KEY  ,
-  Name varchar(255) NOT NULL  ,
+  name varchar(255) NOT NULL  ,
   Description varchar(255) NULL  ,
   Content LONGTEXT NULL  ,
   ContentType varchar(16),
   ObjectType varchar(25) NOT NULL  ,
-  ObjectId INTEGER default 0,
+  object_id INTEGER default 0,
   Creator integer NULL  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,
   LastUpdated DATETIME NULL  
  
 ) ;
-CREATE INDEX Attributes1 on Attributes(Name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
+CREATE INDEX Attributes1 on Attributes(name);
+CREATE INDEX Attributes2 on Attributes(ObjectType, object_id);
 
 --- }}}
 

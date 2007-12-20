@@ -17,7 +17,7 @@ my ($baseurl, $agent) = RT::Test->started_ok;
 $agent->cookie_jar($cookie_jar);
 
 # create a regression queue if it doesn't exist
-my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
+my $queue = RT::Test->load_or_create_queue( name => 'Regression' );
 ok $queue && $queue->id, 'loaded or Created queue';
 
 my $url = $agent->rt_base_url;
@@ -199,13 +199,13 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
 
 # create a custom field with nonascii name and try to add a condition
 {
-    my $cf = RT::Model::CustomField->new( RT->system_user );
-    $cf->load_by_name( Name => "\x{442}", Queue => 0 );
+    my $cf = RT::Model::CustomField->new(current_user => RT->system_user );
+    $cf->load_by_name( name => "\x{442}", Queue => 0 );
     if ( $cf->id ) {
         is($cf->Type, 'Freeform', 'loaded and type is correct');
     } else {
         my ($return, $msg) = $cf->create(
-            Name => "\x{442}",
+            name => "\x{442}",
             Queue => 0,
             Type => 'Freeform',
         );

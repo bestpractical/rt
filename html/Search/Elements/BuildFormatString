@@ -67,17 +67,17 @@ $CurrentDisplayColumns => undef
 
 # All the things we can display in the format string by default
 my @fields = qw(
-    id QueueName Subject
+    id Queuename Subject
     Status ExtendedStatus UpdateStatus
     Type
 
-    OwnerName Requestors Cc AdminCc CreatedBy LastUpdatedBy
+    Ownername Requestors Cc AdminCc CreatedBy LastUpdatedBy
 
     Priority InitialPriority FinalPriority
 
-    TimeWorked TimeLeft TimeEstimated
+    time_worked time_left TimeEstimated
 
-    Starts      StartsRelative
+    starts      startsRelative
     Started     StartedRelative
     Created     CreatedRelative
     LastUpdated LastUpdatedRelative
@@ -95,12 +95,12 @@ my @fields = qw(
 
 </%ONCE>
 <%init>
-$m->callback( CallbackOnce => 1, CallbackName => 'SetFieldsOnce', Fields => \@fields );
+$m->callback( CallbackOnce => 1, Callbackname => 'SetFieldsOnce', Fields => \@fields );
 
-my $CustomFields = RT::Model::CustomFieldCollection->new( $session{'CurrentUser'});
+my $CustomFields = RT::Model::CustomFieldCollection->new( Jifty->web->current_user);
 foreach my $id (keys %cfqueues) {
     # Gotta load up the $queue object, since queues get stored by name now. my $id
-    my $queue = RT::Model::Queue->new($session{'CurrentUser'});
+    my $queue = RT::Model::Queue->new(Jifty->web->current_user);
     $queue->load($id);
     unless ($queue->id) {
         # XXX TODO: This ancient code dates from a former developer
@@ -114,7 +114,7 @@ foreach my $id (keys %cfqueues) {
 $CustomFields->LimitToGlobal;
 
 while ( my $CustomField = $CustomFields->next ) {
-    push @fields, "CustomField.{" . $CustomField->Name . "}";
+    push @fields, "CustomField.{" . $CustomField->name . "}";
 }
 
 $m->callback( Fields => \@fields, ARGSRef => \%ARGS );

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME ="<%$Name%>">
+<select name ="<%$name%>">
 <option value="LIKE" <%$LikeDefault%>><%$Like%></option>
 <option value="NOT LIKE" <%$NotLikeDefault%>><%$NotLike%></option>
 <option value="=" <%$TrueDefault%>><%$True%></option>
@@ -53,7 +53,7 @@
 </select>
 
 <%ARGS>
-$Name => undef
+$name => undef
 $Like => loc('contains')
 $NotLike => loc("doesn't contain")
 $True => loc('is')

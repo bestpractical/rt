@@ -1,7 +1,7 @@
 
 @Templates = (
     {  Queue       => 0,
-       Name        => "Forward",    # loc
+       name        => "Forward",    # loc
        Description => "Heading of a forwarded message", # loc
        Content => q{
 

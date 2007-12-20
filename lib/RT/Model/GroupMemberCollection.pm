@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::GroupMemberCollection - a collection of RT::Model::GroupMember objects
 
@@ -87,7 +87,7 @@ sub LimitToUsers {
                  alias2 => $principals, column2 =>'id');
 
     $self->limit(       alias => $principals,
-                         column => 'PrincipalType',
+                         column => 'principal_type',
                          value => 'User',
                          entry_aggregator => 'OR',
                          );
@@ -114,7 +114,7 @@ sub LimitToGroups {
                  alias2 => $principals, column2 =>'id');
 
     $self->limit(       alias => $principals,
-                         column => 'PrincipalType',
+                         column => 'principal_type',
                          value => 'Group',
                          entry_aggregator => 'OR',
                          );

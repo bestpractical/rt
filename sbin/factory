@@ -174,8 +174,8 @@ foreach my $table (@tables) {
 
     my %requirements;
 
-    my $CollectionClassName = $namespace . "::" . $tableplural;
-    my $RecordClassName     = $namespace . "::" . $tablesingle;
+    my $CollectionClassname = $namespace . "::" . $tableplural;
+    my $RecordClassname     = $namespace . "::" . $tablesingle;
 
     my $path = $namespace;
     $path =~ s/::/\//g;
@@ -195,7 +195,7 @@ foreach my $table (@tables) {
 
     my $introspection = $dbh->prepare("SELECT * from $table where id is null");
     $introspection->execute();
-    my @names =@{ $introspection->{'NAME'}};
+    my @names =@{ $introspection->{'name'}};
     my @types = @{$introspection->{'TYPE'}};
     my @is_blob = @{$introspection->{'mysql_is_blob'}};
     my @is_num = @{$introspection->{'mysql_is_num'}};
@@ -324,13 +324,13 @@ $CreateOutParams);
 
       "
 
-=head1 NAME
+=head1 name
 
-  $CollectionClassName -- Class Description
+  $CollectionClassname -- Class Description
  
 =head1 SYNOPSIS
 
-  use $CollectionClassName
+  use $CollectionClassname
 
 =head1 DESCRIPTION
 
@@ -339,10 +339,10 @@ $CreateOutParams);
 
 =cut
 
-package $CollectionClassName;
+package $CollectionClassname;
 
 use $CollectionBaseclass;
-use $RecordClassName;
+use $RecordClassname;
 
 use vars qw( \@ISA );
 \@ISA= qw($CollectionBaseclass);
@@ -377,21 +377,21 @@ sub _Init {
 
 =head2 new_item
 
-Returns an empty new $RecordClassName item
+Returns an empty new $RecordClassname item
 
 =cut
 
 sub new_item {
     my \$self = shift;
-    return($RecordClassName->new(\$self->current_user));
+    return($RecordClassname->new(\$self->current_user));
 }
-" . MagicImport($CollectionClassName);
+" . MagicImport($CollectionClassname);
 
     my $RecordClassHeader = $Attribution . "
 
-=head1 NAME
+=head1 name
 
-$RecordClassName
+$RecordClassname
 
 
 =head1 SYNOPSIS
@@ -402,7 +402,7 @@ $RecordClassName
 
 =cut
 
-package $RecordClassName;
+package $RecordClassname;
 use $RecordBaseclass; 
 ";
 
@@ -444,7 +444,7 @@ $ClassAccessible
  }
 };
 
-" . MagicImport($RecordClassName);
+" . MagicImport($RecordClassname);
 
     print "About to make $RecordClassPath, $CollectionClassPath\n";
     `mkdir -p $path`;

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME ="<%$Name%>">
+<select name ="<%$name%>">
 % if ($AllowNull) {
 <option value="">-</option>
 % }
@@ -55,7 +55,7 @@
 %   next;
 %  }
 %  foreach my $subtype (@subtypes) {
-<option value="<%"$option.$subtype"%>" <%$option eq $Default && $subtype eq 'EmailAddress' && "SELECTED"%> ><% loc($option) %> <% loc($subtype) %></option>
+<option value="<%"$option.$subtype"%>" <%$option eq $Default && $subtype eq 'email' && "SELECTED"%> ><% loc($option) %> <% loc($subtype) %></option>
 %  }
 % }
 </select>
@@ -72,7 +72,7 @@ else {
    @types = qw(Requestor Cc AdminCc Watcher Owner);
 }
 
-my @subtypes = qw(EmailAddress Name RealName Nickname Organization Address1 Address2 WorkPhone HomePhone MobilePhone PagerPhone);
+my @subtypes = qw(email name real_name nickname organization Address1 Address2 WorkPhone HomePhone MobilePhone PagerPhone);
 
 </%INIT>
 <%ARGS>
@@ -80,5 +80,5 @@ $AllowNull => 1
 $Suffix => ''
 $Default=>undef
 $Scope => 'ticket'
-$Name => 'WatcherType'
+$name => 'WatcherType'
 </%ARGS>

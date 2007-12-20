@@ -73,7 +73,7 @@ sub __DependsOn
     push( @$list, $self->Values );
 
 # Ticket custom field values
-    my $objs = RT::Model::ObjectCustomFieldValueCollection->new( $self->current_user );
+    my $objs = RT::Model::ObjectCustomFieldValueCollection->new;
     $objs->limit_to_custom_field( $self->id );
     push( @$list, $objs );
 

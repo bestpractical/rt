@@ -67,7 +67,7 @@ BEGIN {
 		      &GetCurrentUser &GetMessageContent &debug &loc);
 }
 
-=head1 NAME
+=head1 name
 
   RT::Interface::CLI - helper functions for creating a commandline RT interface
 
@@ -140,7 +140,7 @@ sub GetCurrentUser  {
     
     #Instantiate a user object
     
-    my $Gecos= ($^O eq 'MSWin32') ? Win32::LoginName() : (getpwuid($<))[0];
+    my $Gecos= ($^O eq 'MSWin32') ? Win32::Loginname() : (getpwuid($<))[0];
 
     #If the current user is 0, then RT will assume that the User object
     #is that of the currentuser.

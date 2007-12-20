@@ -57,7 +57,7 @@
 </td>
 <td class="value">
     <input type="hidden" class="hidden" name="Queue" value="<%$queue_obj->id || ''%>" />
-    <strong><%$queue_obj->Name || ''%></strong> (<%$queue_obj->Description || ''%>)
+    <strong><%$queue_obj->name || ''%></strong> (<%$queue_obj->Description || ''%>)
 </td>
 </tr>
 <tr>
@@ -65,7 +65,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value">
-    <input name="Requestors" value="<%$session{'CurrentUser'}->EmailAddress%>" size="20" />
+    <input name="Requestors" value="<%Jifty->web->current_user->email%>" size="20" />
 </td>
 </tr>
 <tr>
@@ -112,6 +112,6 @@
 $Queue => undef
 </%args>
 <%init>
-my $queue_obj = RT::Model::Queue->new($session{'CurrentUser'});
+my $queue_obj = RT::Model::Queue->new(Jifty->web->current_user);
 $queue_obj->load($Queue);
 </%init>

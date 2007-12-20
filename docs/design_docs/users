@@ -6,7 +6,7 @@ requestor's email.
 
 additionally, eventually, users will need to be deleted. RT doesn't
 want any user deleted. Instead, there will be a flag in the user's
-entry in the users table called 'Disabled.'  Disabled users will
+entry in the users table called 'disabled.'  disabled users will
 not be able to be granted rights.
 
 	The process of disabling a user should remove their acls and

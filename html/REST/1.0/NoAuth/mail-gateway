@@ -56,7 +56,7 @@ $ticket => undef
 <%init>
 require Encode;
 Encode::_utf8_off($ARGS{message});
-$m->callback( %ARGS, CallbackName => 'Pre' );
+$m->callback( %ARGS, Callbackname => 'Pre' );
 use RT::Interface::Email ();    # It's an exporter, but we don't care
 $r->content_type('text/plain; charset=utf-8');
 $m->error_format('text');
@@ -65,12 +65,12 @@ if ( $status == 1 ) {
   $m->out('ok');
   if ( $Ticket &&  $Ticket->id ) {
     $m->out( 'Ticket: '  . ($Ticket->id             || '') );
-    $m->out( 'Queue: '   . ($Ticket->QueueObj->Name || '') );
-    $m->out( 'Owner: '   . ($Ticket->OwnerObj->Name || '') );
+    $m->out( 'Queue: '   . ($Ticket->QueueObj->name || '') );
+    $m->out( 'Owner: '   . ($Ticket->OwnerObj->name || '') );
     $m->out( 'Status: '  . ($Ticket->Status         || '') );
     $m->out( 'Subject: ' . ($Ticket->Subject        || '') );
     $m->out(
-      'Requestor: ' . ($Ticket->Requestors->MemberEmailAddressesAsString || '') );
+      'Requestor: ' . ($Ticket->Requestors->MemberemailesAsString || '') );
   }
 }
 else {

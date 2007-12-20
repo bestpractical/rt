@@ -11,12 +11,12 @@ use_ok('RT');
 use_ok('RT::Model::TransactionCollection');
 
 
-my $q = RT::Model::Queue->new(RT->system_user);
-my ($id,$msg) = $q->create( Name => 'TxnCFTest'.$$);
+my $q = RT::Model::Queue->new(current_user => RT->system_user);
+my ($id,$msg) = $q->create( name => 'TxnCFTest'.$$);
 ok($id,$msg);
 
-my $cf = RT::Model::CustomField->new(RT->system_user);
-($id,$msg) = $cf->create(Name => 'Txnfreeform-'.$$, Type => 'Freeform', MaxValues => '0', LookupType => RT::Model::Transaction->CustomFieldLookupType );
+my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
+($id,$msg) = $cf->create(name => 'Txnfreeform-'.$$, Type => 'Freeform', MaxValues => '0', LookupType => RT::Model::Transaction->CustomFieldLookupType );
 
 ok($id,$msg);
 
@@ -25,7 +25,7 @@ ok($id,$msg);
 ok($id,$msg);
 
 
-my $ticket = RT::Model::Ticket->new(RT->system_user);
+my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 
 my $transid;
 ($id,$transid, $msg) = $ticket->create(Queue => $q->id,
@@ -33,10 +33,10 @@ my $transid;
             );
 ok($id,$msg);
 
-my $trans = RT::Model::Transaction->new(RT->system_user);
+my $trans = RT::Model::Transaction->new(current_user => RT->system_user);
 $trans->load($transid);
 
-is($trans->ObjectId,$id);
+is($trans->object_id,$id);
 is ($trans->ObjectType, 'RT::Model::Ticket');
 is ($trans->Type, 'Create');
 my $txncfs = $trans->CustomFields;

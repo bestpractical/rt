@@ -45,23 +45,23 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$name%>">
 % if ($AllowNull) {
 <option value="">-</option>
 % }
 %while (my $group = $groups->next) {
-<option value="<%$group->id%>" <%$group->id eq $Default && "SELECTED"%>><%$group->Name%></option>
+<option value="<%$group->id%>" <%$group->id eq $Default && "SELECTED"%>><%$group->name%></option>
 %}
 </select>
 
 <%INIT>
-my $groups = new RT::Model::GroupCollection($session{'CurrentUser'});
+my $groups = new RT::Model::GroupCollection(Jifty->web->current_user);
 $groups->limit(column => 'Domain', operator => '=', value => $Domain);
 
 </%INIT>
 <%ARGS>
 $AllowNull => 1
 $Default=> ''
-$Name => 'Group'
+$name => 'Group'
 $Domain => 'UserDefined';
 </%ARGS>

@@ -52,7 +52,7 @@ use warnings;
 package RT::Config;
 use File::Spec ();
 
-=head1 NAME
+=head1 name
 
     RT::Config - RT's config
 
@@ -87,8 +87,8 @@ to customize your RT instance. In this file you can override any option
 listed in core config file.
 
 RT extensions could also provide thier config files. Extensions should
-use F<< <NAME>_Config.pm >> and F<< <NAME>_SiteConfig.pm >> names for
-config files, where <NAME> is extension name.
+use F<< <name>_Config.pm >> and F<< <name>_SiteConfig.pm >> names for
+config files, where <name> is extension name.
 
 B<NOTE>: All options from RT's config and extensions' configs are saved
 in one place and thus extension could override RT's options, but it is not
@@ -380,7 +380,7 @@ sub Get {
 
     my $res;
     if ( $user && $META{ $name }->{'Overridable'} ) {
-        $user = $user->UserObj if $user->isa('RT::CurrentUser');
+        $user = $user->user_object if $user->isa('RT::CurrentUser');
         my $prefs = $user->Preferences( RT->system );
         $res = $prefs->{ $name } if $prefs;
     }
@@ -451,7 +451,7 @@ sub set_from_config
     my $opt = $args{'Option'};
 
     my $type;
-    my $name = $self->__GetNameByRef( $opt );
+    my $name = $self->__GetnameByRef( $opt );
     if( $name ) {
         $type = ref $opt;
         $name =~ s/.*:://;
@@ -472,13 +472,13 @@ sub set_from_config
 }
 
 { my $last_pack = '';
-sub __GetNameByRef
+sub __GetnameByRef
 {
     my $self = shift;
     my $ref = shift;
     my $pack = shift;
     if ( !$pack && $last_pack ) {
-        my $tmp = $self->__GetNameByRef( $ref, $last_pack );
+        my $tmp = $self->__GetnameByRef( $ref, $last_pack );
         return $tmp if $tmp;
     }
     $pack ||= 'main::';
@@ -500,7 +500,7 @@ sub __GetNameByRef
         # if entry has trailing '::' then
         # it is link to other name space
         if ( $k =~ /::$/ ) {
-            $name = $self->__GetNameByRef($ref, $k);
+            $name = $self->__GetnameByRef($ref, $k);
             return $name if $name;
         }
 

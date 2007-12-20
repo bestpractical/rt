@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::QueueCollection - a collection of RT::Model::Queue objects
 
@@ -76,7 +76,7 @@ sub _init {
 
   # By default, order by name
   $self->order_by( alias => 'main',
-		  column => 'Name',
+		  column => 'name',
 		  order => 'ASC');
 
   return ($self->SUPER::_init(@_));
@@ -87,7 +87,7 @@ sub _init {
 
 =head2 _do_search
 
-  A subclass of Jifty::DBI::_do_search that makes sure that _Disabled rows never get seen unless
+  A subclass of Jifty::DBI::_do_search that makes sure that _disabled rows never get seen unless
 we're explicitly trying to see them.
 
 =cut

@@ -50,7 +50,7 @@ package RT::URI::base;
 use strict;
 use base qw(RT::Base);
 
-=head1 NAME
+=head1 name
 
 RT::URI::base
 

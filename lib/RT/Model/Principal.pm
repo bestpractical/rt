@@ -64,9 +64,9 @@ use base qw/RT::Record/;
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
-    column PrincipalType => type is 'text';
-    column ObjectId      => type is 'integer';
-    column Disabled      => type is 'integer', default is '0';
+    column principal_type => type is 'text';
+    column object_id      => type is 'integer';
+    column disabled      => type is 'integer', default is '0';
 
 };
 
@@ -87,8 +87,8 @@ Returns undef, otherwise
 
 sub IsGroup {
     my $self = shift;
-    if ( defined $self->PrincipalType && 
-            $self->PrincipalType eq 'Group' ) {
+    if ( defined $self->principal_type && 
+            $self->principal_type eq 'Group' ) {
         return 1;
     }
     return undef;
@@ -107,7 +107,7 @@ Returns undef, otherwise
 
 sub IsUser {
     my $self = shift;
-    if ($self->PrincipalType eq 'User') {
+    if ($self->principal_type eq 'User') {
         return(1);
     }
     else {
@@ -130,15 +130,15 @@ sub Object {
 
     unless ( $self->{'object'} ) {
         if ( $self->IsUser ) {
-           $self->{'object'} = RT::Model::User->new($self->current_user);
+           $self->{'object'} = RT::Model::User->new;
         }
         elsif ( $self->IsGroup ) {
-            $self->{'object'}  = RT::Model::Group->new($self->current_user);
+            $self->{'object'}  = RT::Model::Group->new;
         }
         else { 
             return(undef);
         }
-        $self->{'object'}->load( $self->ObjectId() );
+        $self->{'object'}->load( $self->object_id() );
     }
     return ($self->{'object'});
 
@@ -150,7 +150,7 @@ sub Object {
 
 # {{{ GrantRight 
 
-=head2 GrantRight  { Right => RIGHTNAME, Object => undef }
+=head2 GrantRight  { Right => RIGHTname, Object => undef }
 
 A helper function which calls RT::Model::ACE->create
 
@@ -174,24 +174,24 @@ sub GrantRight {
 
 
     #ACL check handled in ACE.pm
-    my $ace = RT::Model::ACE->new( $self->current_user );
+    my $ace = RT::Model::ACE->new;
 
 
-    my $type = $self->_GetPrincipalTypeForACL();
+    my $type = $self->_Getprincipal_typeForACL();
 
     # If it's a user, we really want to grant the right to their 
     # user equivalence group
-        return ( $ace->create(RightName => $args{'Right'},
+        return ( $ace->create(Rightname => $args{'Right'},
                           Object => $args{'Object'},
-                          PrincipalType =>  $type,
-                          PrincipalId => $self->id
+                          principal_type =>  $type,
+                          principal_id => $self->id
                           ) );
 }
 # }}}
 
 # {{{ RevokeRight
 
-=head2 RevokeRight { Right => "RightName", Object => "object" }
+=head2 RevokeRight { Right => "Rightname", Object => "object" }
 
 Delete a right that a user has 
 
@@ -212,18 +212,18 @@ sub RevokeRight {
     );
 
     #if we haven't specified any sort of right, we're talking about a global right
-    if (!defined $args{'Object'} && !defined $args{'ObjectId'} && !defined $args{'ObjectType'}) {
+    if (!defined $args{'Object'} && !defined $args{'object_id'} && !defined $args{'ObjectType'}) {
         $args{'Object'} = RT->system;
     }
     #ACL check handled in ACE.pm
-    my $type = $self->_GetPrincipalTypeForACL();
+    my $type = $self->_Getprincipal_typeForACL();
 
-    my $ace = RT::Model::ACE->new( $self->current_user );
+    my $ace = RT::Model::ACE->new;
     $ace->load_by_values(
-        RightName     => $args{'Right'},
+        Rightname     => $args{'Right'},
         Object    => $args{'Object'},
-        PrincipalType => $type,
-        PrincipalId   => $self->id
+        principal_type => $type,
+        principal_id   => $self->id
     );
 
     unless ( $ace->id ) {
@@ -312,8 +312,8 @@ sub has_right {
 
     $args{EquivObjects} = [ @{ $args{EquivObjects} } ] if $args{EquivObjects};
 
-    if ( $self->Disabled ) {
-        $RT::Logger->error( "Disabled User #"
+    if ( $self->disabled ) {
+        $RT::Logger->error( "disabled User #"
               . $self->id
               . " failed access check for "
               . $args{'Right'} );
@@ -425,7 +425,7 @@ sub _has_right
             push @role_clauses, "($role_clause)";
 
             my $object_clause = "ACL.ObjectType = '$type'";
-            $object_clause   .= " AND ACL.ObjectId = $id" if $id;
+            $object_clause   .= " AND ACL.object_id = $id" if $id;
             push @object_clauses, "($object_clause)";
         }
 
@@ -437,15 +437,15 @@ sub _has_right
       "SELECT ACL.id from ACL, Groups, Principals, CachedGroupMembers WHERE  " .
 
       # Only find superuser or rights with the name $right
-      "(ACL.RightName = 'SuperUser' OR  ACL.RightName = '$right') "
+      "(ACL.Rightname = 'SuperUser' OR  ACL.Rightname = '$right') "
 
       # Never find disabled groups.
-      . "AND ( Principals.Disabled = 0 OR Principals.Disabled IS NULL) " 
-      . "AND (CachedGroupMembers.Disabled = 0 OR CachedGroupMembers.Disabled IS NULL )" 
+      . "AND ( Principals.disabled = 0 OR Principals.disabled IS NULL) " 
+      . "AND (CachedGroupMembers.disabled = 0 OR CachedGroupMembers.disabled IS NULL )" 
 
       # We always grant rights to Groups
       . "AND Principals.id = Groups.id "
-      . "AND Principals.PrincipalType = 'Group' "
+      . "AND Principals.principal_type = 'Group' "
 
       # See if the principal is a member of the group recursively or _is the rightholder_
       # never find recursively disabled group members
@@ -461,9 +461,9 @@ sub _has_right
     my $groups_query = $query_base
       # limit the result set to groups of types ACLEquivalence (user),
       # UserDefined, SystemInternal and Personal. All this we do
-      # via (ACL.PrincipalType = 'Group') condition
-      . "AND ACL.PrincipalId = Principals.id "
-      . "AND ACL.PrincipalType = 'Group' ";
+      # via (ACL.principal_type = 'Group') condition
+      . "AND ACL.principal_id = Principals.id "
+      . "AND ACL.principal_type = 'Group' ";
 
     $self->_handle->apply_limits( \$groups_query, 1 ); #only return one result
     my $hitcount = $self->_handle->fetch_result($groups_query);
@@ -471,7 +471,7 @@ sub _has_right
 
     # The roles query does the query based on roles
     my $roles_query = $query_base
-      . "AND ACL.PrincipalType = Groups.Type "
+      . "AND ACL.principal_type = Groups.Type "
       . "AND ($check_roles) ";
     $self->_handle->apply_limits( \$roles_query, 1 ); #only return one result
 
@@ -507,23 +507,23 @@ sub invalidate_acl_cache {
 # }}}
 
 
-# {{{ _GetPrincipalTypeForACL
+# {{{ _Getprincipal_typeForACL
 
-=head2 _GetPrincipalTypeForACL
+=head2 _Getprincipal_typeForACL
 
 Gets the principal type. if it's a user, it's a user. if it's a role group and it has a Type, 
 return that. if it has no type, return group.
 
 =cut
 
-sub _GetPrincipalTypeForACL {
+sub _Getprincipal_typeForACL {
     my $self = shift;
     my $type;    
-    if ($self->PrincipalType eq 'Group' && $self->Object->Domain =~ /Role$/) {
+    if ($self->principal_type eq 'Group' && $self->Object->Domain =~ /Role$/) {
         $type = $self->Object->Type;
     }
     else {
-        $type = $self->PrincipalType;
+        $type = $self->principal_type;
     }
 
     return($type);

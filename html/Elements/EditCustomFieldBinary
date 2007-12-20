@@ -47,15 +47,15 @@
 %# END BPS TAGGED BLOCK }}}
 % while ( $Values and my $value = $Values->next ) {
 %# XXX - let user download the file(s) here?
-<input type="checkbox" class="checkbox" name="<%$NamePrefix%><%$CustomField->id%>-DeleteValueIds" value="<% $value->id %>" /><a href="<%RT->Config->Get('WebPath')%>/Download/CustomFieldValue/<% $value->id %>/<% $value->Content %>"><% $value->Content %></a><br />
+<input type="checkbox" class="checkbox" name="<%$namePrefix%><%$CustomField->id%>-DeleteValueIds" value="<% $value->id %>" /><a href="<%RT->Config->Get('WebPath')%>/Download/CustomFieldValue/<% $value->id %>/<% $value->Content %>"><% $value->Content %></a><br />
 % }
 % if (!$MaxValues || !$Values || $Values->count < $MaxValues) {
-<input type="file" name="<% $NamePrefix %><% $CustomField->id %>-Upload" />
+<input type="file" name="<% $namePrefix %><% $CustomField->id %>-Upload" />
 % }
 <%ARGS>
 $Object => undef
 $CustomField => undef
-$NamePrefix => undef
+$namePrefix => undef
 $Default => undef
 $Values => undef
 $MaxValues => undef

@@ -58,7 +58,7 @@
 % }
 
 <link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>/favicon.png" type="image/png" />
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/<% RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} ) %>/main.css" type="text/css" media="all" />
+<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/<% RT->Config->Get( 'WebDefaultStylesheet', Jifty->web->current_user ) %>/main.css" type="text/css" media="all" />
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/print.css" type="text/css" media="print" />
 
 % if ( $RSSAutoDiscovery ) {
@@ -78,27 +78,27 @@
 % }
 --></script>
 
-% $m->callback( %ARGS, CallbackName => 'Head' );
+% $m->callback( %ARGS, Callbackname => 'Head' );
 
 </head>
   <body<% $id && qq[ id="comp-$id"] |n %>>
 
-% if ($ShowBar && $session{'CurrentUser'}) {
+% if ($ShowBar && Jifty->web->current_user) {
 <& /Elements/Logo, %ARGS &>
 
 <div id="quickbar">
   <div id="quick-personal">
     <span class="hide"><a href="#skipnav"><&|/l&>Skip Menu</&></a> | </span>
-% if ($session{'CurrentUser'}->Name) {
-    <&|/l, "<span>".$session{'CurrentUser'}->Name."</span>" &>Logged in as [_1]</&>
-%     if ( $session{'CurrentUser'}->has_right( Right => 'ModifySelf', Object => RT->system ) ) {
+% if (Jifty->web->current_user->name) {
+    <&|/l, "<span>".Jifty->web->current_user->name."</span>" &>Logged in as [_1]</&>
+%     if ( Jifty->web->current_user->has_right( Right => 'ModifySelf', Object => RT->system ) ) {
     | <a href="<%RT->Config->Get('WebPath')%><%$Prefs%>"><&|/l&>Preferences</&></a>
 %     }
 % } else {
     <&|/l&>Not logged in.</&>
 % }
 % $m->callback( %ARGS );
-% unless (!$session{'CurrentUser'}->Name
+% unless (!Jifty->web->current_user->name
 %         or (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth'))) {
     | <a  href="<%RT->Config->Get('WebPath')%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
 % }

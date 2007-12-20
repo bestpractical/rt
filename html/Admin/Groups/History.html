@@ -59,9 +59,9 @@
 
 <%INIT>
 my $current_tab = 'Admin/Groups/History.html?id='.$id;
-my $GroupObj = new RT::Model::Group($session{'CurrentUser'});
+my $GroupObj = new RT::Model::Group(Jifty->web->current_user);
 $GroupObj->load($id) || Abort("Couldn't load group '$id'");
-my $title = loc("History of the group [_1]", $GroupObj->Name);
+my $title = loc("History of the group [_1]", $GroupObj->name);
 </%INIT>
 <%ARGS>
 $id => '' unless defined $id

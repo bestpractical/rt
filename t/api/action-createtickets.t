@@ -16,8 +16,8 @@ use_ok('RT::Model::ScripAction');
 use_ok('RT::Model::ScripCondition');
 use_ok('RT::Model::Ticket');
 
-my $approvalsq = RT::Model::Queue->new(RT->system_user);
-$approvalsq->create(Name => 'Approvals');
+my $approvalsq = RT::Model::Queue->new(current_user => RT->system_user);
+$approvalsq->create(name => 'Approvals');
 ok ($approvalsq->id, "Created Approvals test queue");
 
 
@@ -47,16 +47,16 @@ ENDOFCONTENT
 
 like ($approvals , qr/Content/, "Read in the approvals template");
 
-my $apptemp = RT::Model::Template->new(RT->system_user);
-$apptemp->create( Content => $approvals, Name => "Approvals", Queue => "0");
+my $apptemp = RT::Model::Template->new(current_user => RT->system_user);
+$apptemp->create( Content => $approvals, name => "Approvals", Queue => "0");
 
 ok ($apptemp->id);
 
-my $q = RT::Model::Queue->new(RT->system_user);
-$q->create(Name => 'WorkflowTest');
+my $q = RT::Model::Queue->new(current_user => RT->system_user);
+$q->create(name => 'WorkflowTest');
 ok ($q->id, "Created workflow test queue");
 
-my $scrip = RT::Model::Scrip->new(RT->system_user);
+my $scrip = RT::Model::Scrip->new(current_user => RT->system_user);
 my ($sval, $smsg) =$scrip->create( ScripCondition => 'On Transaction',
                 ScripAction => 'Create Tickets',
                 Template => 'Approvals',
@@ -67,7 +67,7 @@ ok ($scrip->TemplateObj->id, "Created the scrip template");
 ok ($scrip->ConditionObj->id, "Created the scrip condition");
 ok ($scrip->ActionObj->id, "Created the scrip action");
 
-my $t = RT::Model::Ticket->new(RT->system_user);
+my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 my($tid, $ttrans, $tmsg) = $t->create(Subject => "Sample workflow test",
            Owner => "root",
            Queue => $q->id);

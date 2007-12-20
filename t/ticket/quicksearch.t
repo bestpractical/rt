@@ -10,12 +10,12 @@ use_ok('RT');
 
 
 
-my $q = RT::Model::Queue->new(RT->system_user);
+my $q = RT::Model::Queue->new(current_user => RT->system_user);
 my $queue = 'SearchTests-'.$$;
-$q->create(Name => $queue);
+$q->create(name => $queue);
 ok ($q->id, "Created the queue");
 
-my $t1 = RT::Model::Ticket->new(RT->system_user);
+my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ( $id, undef, $msg ) = $t1->create(
     Queue      => $q->id,
     Subject    => 'SearchTest1',
@@ -24,7 +24,7 @@ my ( $id, undef, $msg ) = $t1->create(
 ok( $id, $msg );
 
 use_ok("RT::Search::Googleish");
-my $tickets = RT::Model::TicketCollection->new(RT->system_user);
+my $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 my $quick = RT::Search::Googleish->new(Argument => "",
                                  TicketsObj => $tickets);
 my @tests = (

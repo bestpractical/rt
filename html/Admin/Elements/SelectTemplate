@@ -45,20 +45,20 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$name%>">
 <option value="" 
 <% defined($Default) && $Default eq 'none' && 'SELECTED' %>
 >-</option>
 %while  (my $Template = $PrimaryTemplates->next) {
 <option value="<%$Template->id%>"
 <% ($Template->id == $Default) && 'SELECTED' %>
-><% loc($Template->Name) %>
+><% loc($Template->name) %>
 </option>
 %}
 %while  (my $Template = $OtherTemplates->next) {
 <option value="<%$Template->id%>"
 <% defined($Default) && ($Template->id == $Default)  && 'SELECTED'%>
-><&|/l, loc($Template->Name) &>Global template: [_1]</&>
+><&|/l, loc($Template->name) &>Global template: [_1]</&>
 </option>
 %}
 </select>
@@ -66,12 +66,12 @@
 <%INIT>
 
 
-my $PrimaryTemplates = RT::Model::TemplateCollection->new($session{'CurrentUser'});
+my $PrimaryTemplates = RT::Model::TemplateCollection->new(Jifty->web->current_user);
 if ($Queue != 0) {
 $PrimaryTemplates->LimitToQueue($Queue);
 }
 
-my $OtherTemplates = RT::Model::TemplateCollection->new($session{'CurrentUser'});
+my $OtherTemplates = RT::Model::TemplateCollection->new(Jifty->web->current_user);
 $OtherTemplates->LimitToGlobal($DefaultQueue);
 
 </%INIT>
@@ -80,6 +80,6 @@ $OtherTemplates->LimitToGlobal($DefaultQueue);
 $Queue => undef
 $Default => 'none'
 $DefaultQueue => undef
-$Name => 'Template'
+$name => 'Template'
 
 </%ARGS>

@@ -69,13 +69,13 @@ $id ? (
 my $Type = $1;
 my $Types = $Type.'s';
 my $ObjectTabs;
-my $Object = $ObjectType->new($session{'CurrentUser'});
+my $Object = $ObjectType->new(Jifty->web->current_user);
 
 
 my $QualifiedType;
 my $FriendlySubTypes;
 if (defined $SubType && $SubType =~/^RT::(.*)$/)  {
-    $FriendlySubTypes = RT::Model::CustomField->new($session{'CurrentUser'})->FriendlyLookupType($Object->CustomFieldLookupType);
+    $FriendlySubTypes = RT::Model::CustomField->new(Jifty->web->current_user)->FriendlyLookupType($Object->CustomFieldLookupType);
    $QualifiedType = "$Type-$1"; 
 } else {
     $QualifiedType = $Type;
@@ -91,7 +91,7 @@ if ($id) {
 
 my $title; 
 if ($id) {
-$title =  loc('Edit Custom Fields for [_1]', $Object->Name);
+$title =  loc('Edit Custom Fields for [_1]', $Object->name);
 }
 elsif ($SubType) {
 

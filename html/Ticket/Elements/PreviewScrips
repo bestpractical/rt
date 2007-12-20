@@ -52,7 +52,7 @@ $TicketObj => undef
 <%init>
 my %squelch = $m->comp('SELF:SquelchRecipients', %ARGS);
 my $Object = $squelch{'Object'};
-my @non_recipients = @{ $squelch{'EmailAddresses'} };
+my @non_recipients = @{ $squelch{'emailes'} };
 
 </%init>
 <h2><&|/l&>This message will be sent to...</&></h2>
@@ -63,7 +63,7 @@ my @non_recipients = @{ $squelch{'EmailAddresses'} };
 % foreach my $scrip (@{$Object->Scrips->prepared}) {
 % next unless $scrip->ActionObj->Action->isa('RT::ScripAction::SendEmail');
 <b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
-<&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name)&>[_1] [_2] with template [_3]</&>
+<&|/l, loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name)&>[_1] [_2] with template [_3]</&>
 <br />
 %foreach my $type qw(To Cc Bcc) {
 %my @addresses =  $scrip->ActionObj->Action->$type();
@@ -120,7 +120,7 @@ if (($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq 'response' ) || ($ARGS{'Acti
     $action = 'Correspond';
 }
 else {
-    $action = 'Comment';
+    $action = 'comment';
 }
 
 my $Message = MakeMIMEEntity(
@@ -132,7 +132,7 @@ my ( $Transaction, $Description, $Object ) = $TicketObj->$action(
     CcMessageTo  => $ARGS{'UpdateCc'},
     BccMessageTo => $ARGS{'UpdateBcc'},
     MIMEObj      => $Message,
-    TimeTaken    => $ARGS{'UpdateTimeWorked'},
+    TimeTaken    => $ARGS{'Updatetime_worked'},
     DryRun       => 1
 );
 unless ( $Transaction ) {
@@ -140,7 +140,7 @@ unless ( $Transaction ) {
 }
 
 
-return (Object => $Object, EmailAddresses => [$TicketObj->SquelchMailTo]);
+return (Object => $Object, emailes => [$TicketObj->SquelchMailTo]);
 </%INIT>
 </%METHOD>
 
@@ -156,7 +156,7 @@ if ( ( $ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq 'response' )
     $action = 'Correspond';
 }
 else {
-    $action = 'Comment';
+    $action = 'comment';
 }
 
 my $Message = MakeMIMEEntity(
@@ -168,7 +168,7 @@ my ( $id, $msg, $txn ) = $TicketObj->$action(
     CcMessageTo  => $ARGS{'UpdateCc'},
     BccMessageTo => $ARGS{'UpdateBcc'},
     MIMEObj      => $Message,
-    TimeTaken    => $ARGS{'UpdateTimeWorked'},
+    TimeTaken    => $ARGS{'Updatetime_worked'},
     DryRun       => 1
 );
 unless ( $id && $txn ) {
@@ -198,7 +198,7 @@ my $Message = MakeMIMEEntity(
     Body    => $ARGS{'Content'},
 );
 
-my $TicketObj = RT::Model::Ticket->new( $session{'CurrentUser'} );
+my $TicketObj = RT::Model::Ticket->new( Jifty->web->current_user );
 my ( $id, $txn, $msg ) = $TicketObj->create(
     Type            => $ARGS{'Type'} || 'ticket',
     Queue           => $ARGS{'Queue'},
@@ -208,9 +208,9 @@ my ( $id, $txn, $msg ) = $TicketObj->create(
     AdminCc         => $ARGS{'AdminCc'},
     InitialPriority => $ARGS{'InitialPriority'},
     FinalPriority   => $ARGS{'FinalPriority'},
-    TimeLeft        => $ARGS{'TimeLeft'},
+    time_left        => $ARGS{'time_left'},
     TimeEstimated   => $ARGS{'TimeEstimated'},
-    TimeWorked      => $ARGS{'TimeWorked'},
+    time_worked      => $ARGS{'time_worked'},
     Subject         => $ARGS{'Subject'},
     Status          => $ARGS{'Status'},
     MIMEObj      => $Message,

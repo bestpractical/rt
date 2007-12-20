@@ -66,8 +66,8 @@ sub TestArgs
     my $self = shift;
     my %args = @_;
     $args{'from_storage'} = 1 unless defined $args{'from_storage'};
-    my $file = $args{'file_name'} = RT::Shredder->GetFileName(
-        FileName    => $args{'file_name'},
+    my $file = $args{'file_name'} = RT::Shredder->GetFilename(
+        Filename    => $args{'file_name'},
         FromStorage => delete $args{'from_storage'},
     );
     open $args{'file_handle'}, ">:raw", $file
@@ -76,7 +76,7 @@ sub TestArgs
     return $self->SUPER::TestArgs( %args );
 }
 
-sub FileName   { return $_[0]->{'opt'}{'file_name'}   }
+sub Filename   { return $_[0]->{'opt'}{'file_name'}   }
 sub FileHandle { return $_[0]->{'opt'}{'file_handle'} }
 
 sub Run

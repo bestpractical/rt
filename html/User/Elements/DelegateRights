@@ -53,39 +53,39 @@ unless ($ObjectType eq 'RT::System') {
 my $object_obj = @{$objects->{$ObjectType}{$object}}[0]->Object;
 
 </%perl>
-<h3><% $object_obj->Name %></h3>
+<h3><% $object_obj->name %></h3>
 % }
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
 <tr>
         <th width="15%"><&|/l&>Personal groups:</&></th>
 % while (my $pg = $personalgroups->next) {
-<th><%$pg->Name%></th>
+<th><%$pg->name%></th>
 % }
 </tr>
 <%perl>
 my $i;
 foreach my $right (@{$objects->{$ObjectType}{$object}}) {
-my $delegations = RT::Model::ACECollection->new($session{'CurrentUser'});
-$delegations->DelegatedBy( Id => $session{'CurrentUser'}->PrincipalId);
+my $delegations = RT::Model::ACECollection->new(Jifty->web->current_user);
+$delegations->DelegatedBy( Id => Jifty->web->current_user->principal_id);
 $delegations->DelegatedFrom ( Id => $right->id);
 
 my $del_hash = {};
 while ( my $delegation = $delegations->next) {
-        $del_hash->{$delegation->PrincipalId} = $delegation;
+        $del_hash->{$delegation->principal_id} = $delegation;
 }
 </%perl>
 % $i++;
 %
 <tr class="<%($i%2) && 'oddline'%>">
 <td>
-<% loc($right->RightName) %><br />
-<div align="right"><font size="-2" color="#999999"><&|/l, $right->PrincipalObj->Object->SelfDescription &>as granted to [_1]</&></font></div>
+<% loc($right->Rightname) %><br />
+<div align="right"><font size="-2" color="#999999"><&|/l, $right->principal_object->Object->SelfDescription &>as granted to [_1]</&></font></div>
        </td>
 % while (my $pg = $personalgroups->next) {
 <td align="center">
-        <input name="Delegate-ACE-<% $right->id %>-to-<% $pg->PrincipalId%>" type="checkbox" value="1" <%$ del_hash->{$pg->PrincipalId} && 'CHECKED' %> />
-% if ( $del_hash->{$pg->PrincipalId}) {
-<input type="hidden" class="hidden" name="Delegate-Existing-ACE-<% $right->id %>-to-<% $pg->PrincipalId%>-as-<%$del_hash->{$pg->PrincipalId}->id%>" />
+        <input name="Delegate-ACE-<% $right->id %>-to-<% $pg->principal_id%>" type="checkbox" value="1" <%$ del_hash->{$pg->principal_id} && 'CHECKED' %> />
+% if ( $del_hash->{$pg->principal_id}) {
+<input type="hidden" class="hidden" name="Delegate-Existing-ACE-<% $right->id %>-to-<% $pg->principal_id%>-as-<%$del_hash->{$pg->principal_id}->id%>" />
 % }
 </td>
 % }

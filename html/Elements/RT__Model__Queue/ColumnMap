@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Name => undef
+$name => undef
 $Attr => undef
 </%ARGS>
 <%ONCE>
@@ -57,16 +57,16 @@ our $QUEUE_COLUMN_MAP = {
         align     => 'right',
         value     => sub { return $_[0]->id },
     },
-    Disabled => {
+    disabled => {
         title     => \'&nbsp;',
-        attribute => 'Disabled',
-        value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
+        attribute => 'disabled',
+        value     => sub { return $_[0]->disabled? $_[0]->loc('disabled'): $_[0]->loc('Enabled') },
     },
     Priority => {
         value     => sub { return $_[0]->InitialPriority .'-'. $_[0]->FinalPriority },
     },
     Address  => {
-        value     => sub { return ($_[0]->CorrespondAddress||'-') .'/'. ($_[0]->CommentAddress||'-') },
+        value     => sub { return ($_[0]->CorrespondAddress||'-') .'/'. ($_[0]->commentAddress||'-') },
     },
 
     (map {
@@ -76,7 +76,7 @@ our $QUEUE_COLUMN_MAP = {
     } qw(WebPath WebBaseURL WebURL)),
 
 };
-foreach my $col(qw(Name Description CorrespondAddress CommentAddress InitialPriority FinalPriority DefaultDueIn)) {
+foreach my $col(qw(name Description CorrespondAddress commentAddress InitialPriority FinalPriority DefaultDueIn)) {
     $QUEUE_COLUMN_MAP->{$col} = { attribute => $col, value => sub { return $_[0]->$col() } };
 }
 
@@ -91,7 +91,7 @@ our $ColumnMap = sub {
 
 </%ONCE>
 <%INIT>
-$m->callback( COLUMN_MAP => $QUEUE_COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
-return GetColumnMapEntry( Map => $QUEUE_COLUMN_MAP, Name => $Name, Attribute => $Attr );
+$m->callback( COLUMN_MAP => $QUEUE_COLUMN_MAP, Callbackname => 'ColumnMap', CallbackOnce => 1 );
+return GetColumnMapEntry( Map => $QUEUE_COLUMN_MAP, name => $name, Attribute => $Attr );
 </%INIT>
 

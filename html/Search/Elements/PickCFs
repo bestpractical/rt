@@ -49,10 +49,10 @@
 <& ConditionRow, Condition => $_ &>
 % }
 <%INIT>
-my $CustomFields = RT::Model::CustomFieldCollection->new( $session{'CurrentUser'});
+my $CustomFields = RT::Model::CustomFieldCollection->new( Jifty->web->current_user);
 foreach my $id (keys %cfqueues) {
     # Gotta load up the $queue object, since queues get stored by name now. my $id
-    my $queue = RT::Model::Queue->new($session{'CurrentUser'});
+    my $queue = RT::Model::Queue->new(Jifty->web->current_user);
     $queue->load($id);
     unless ($queue->id) {
         # XXX TODO: This ancient code dates from a former developer
@@ -64,7 +64,7 @@ foreach my $id (keys %cfqueues) {
 }
 $CustomFields->LimitToGlobal;
 $m->callback(
-    CallbackName => 'MassageCustomFields',
+    Callbackname => 'MassageCustomFields',
     CustomFields => $CustomFields,
 );
 
@@ -72,8 +72,8 @@ $m->callback(
 my @lines;
 while ( my $CustomField = $CustomFields->next ) {
     my %line;
-    $line{'Name'} = "'CF.{" . $CustomField->Name . "}'";
-    $line{'Field'} = $CustomField->Name;
+    $line{'name'} = "'CF.{" . $CustomField->name . "}'";
+    $line{'Field'} = $CustomField->name;
     $line{'Op'} = {
         Type => 'component',
         Path => '/Elements/SelectCustomFieldOperator',

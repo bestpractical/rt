@@ -43,7 +43,7 @@ diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
     is( $status[0]->{'Status'}, 'DONE', 'good passphrase');
     is( $status[1]->{'Operation'}, 'Sign', 'operation is correct');
     is( $status[1]->{'Status'}, 'DONE', 'done');
-    is( $status[1]->{'User'}->{'EmailAddress'}, 'rt@example.com', 'correct email');
+    is( $status[1]->{'User'}->{'email'}, 'rt@example.com', 'correct email');
 
     ok( $entity->is_multipart, 'signed message is multipart' );
     is( $entity->parts, 2, 'two parts' );

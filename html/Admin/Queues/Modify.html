@@ -59,8 +59,8 @@
 <input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->id %>" />
 
 <table>
-<tr><td align="right"><&|/l&>Queue Name</&>:</td>
-<td colspan="3"><input name="Name" value="<% ($Create) ? "" : $QueueObj->Name %>" /></td>
+<tr><td align="right"><&|/l&>Queue name</&>:</td>
+<td colspan="3"><input name="name" value="<% ($Create) ? "" : $QueueObj->name %>" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Description</&>:</td>
@@ -70,9 +70,9 @@
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
 <td><input name="CorrespondAddress" value="<% ($Create) ? "" : $QueueObj->CorrespondAddress %>" />
 <br /><span><em><&|/l , RT->Config->Get('CorrespondAddress')&>(If left blank, will default to [_1])</&></em></span></td>
-<td align="right"><&|/l&>Comment Address</&>:</td>
-<td><input name="CommentAddress" value="<% ($Create) ? "" : $QueueObj->CommentAddress %>" />
-<br /><span><em><&|/l , RT->Config->Get('CommentAddress')&>(If left blank, will default to [_1])</&></em></span></td>
+<td align="right"><&|/l&>comment Address</&>:</td>
+<td><input name="commentAddress" value="<% ($Create) ? "" : $QueueObj->commentAddress %>" />
+<br /><span><em><&|/l , RT->Config->Get('commentAddress')&>(If left blank, will default to [_1])</&></em></span></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Priority starts at</&>:</td>
@@ -100,10 +100,10 @@
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 % if ( my $email = $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') ) {
-<tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &></td></tr>
+<tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, Type => 'private', email => $email &></td></tr>
 % }
-% if ( my $email = $QueueObj->CommentAddress || RT->Config->Get('CommentAddress') ) {
-<tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &></td></tr>
+% if ( my $email = $QueueObj->commentAddress || RT->Config->Get('commentAddress') ) {
+<tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, Type => 'private', email => $email &></td></tr>
 % }
 % }
 
@@ -114,8 +114,8 @@
 
 
 <%INIT>
-my ($title, $current_tab, @results, $Disabled, $EnabledChecked);
-my $QueueObj = RT::Model::Queue->new( $session{'CurrentUser'} );
+my ($title, $current_tab, @results, $disabled, $EnabledChecked);
+my $QueueObj = RT::Model::Queue->new( Jifty->web->current_user );
 $QueueObj->load( $id ) if !$id || $id eq 'new';
 
 $EnabledChecked = "checked";
@@ -125,28 +125,28 @@ if ($Create) {
     $title = loc("Create a queue");
 } else {
     if ( defined $id && $id eq 'new' ) {
-        my ($val, $msg) = $QueueObj->create( Name => $Name );
+        my ($val, $msg) = $QueueObj->create( name => $name );
         Abort("$msg") unless $val;
         delete $session{'create_in_queues'};
 		push @results, $msg;
     }
     else {
-        $QueueObj->load($id) || $QueueObj->load($Name) || Abort(loc("Couldn't load queue '[_1]'", $Name));
+        $QueueObj->load($id) || $QueueObj->load($name) || Abort(loc("Couldn't load queue '[_1]'", $name));
     }
-    $title = loc('Editing Configuration for queue [_1]', $QueueObj->Name);
+    $title = loc('Editing Configuration for queue [_1]', $QueueObj->name);
     
     $current_tab = 'Admin/Queues/Modify.html?id='.$QueueObj->id;
 }
 if ( $QueueObj->id ) {
     delete $session{'create_in_queues'};
-    my @attribs= qw(Description CorrespondAddress CommentAddress Name
-        InitialPriority FinalPriority DefaultDueIn Sign Encrypt Disabled);
+    my @attribs= qw(Description CorrespondAddress commentAddress name
+        InitialPriority FinalPriority DefaultDueIn Sign Encrypt disabled);
 
     # we're asking about enabled on the web page but really care about disabled
     if ( $SetEnabled ) {
-        $Disabled = $ARGS{'Disabled'} = $Enabled? 0: 1;
+        $disabled = $ARGS{'disabled'} = $Enabled? 0: 1;
         $ARGS{$_} = 0 foreach grep !defined $ARGS{$_} || !length $ARGS{$_},
-            qw(Sign Encrypt Disabled);
+            qw(Sign Encrypt disabled);
     }
 
     push @results, UpdateRecordObject(
@@ -155,16 +155,16 @@ if ( $QueueObj->id ) {
         ARGSRef => \%ARGS
     );
 
-    $Disabled = $ARGS{'Disabled'} = $Enabled? 0: 1;
+    $disabled = $ARGS{'disabled'} = $Enabled? 0: 1;
 
-    $EnabledChecked = "" if $QueueObj->Disabled;
+    $EnabledChecked = "" if $QueueObj->disabled;
 
     my @linkresults;
     $m->callback(
         results      => \@linkresults,
         RecordObj    => $QueueObj,
         ARGSRef      => \%ARGS, 
-        CallbackName => 'ProcessLinks'
+        Callbackname => 'ProcessLinks'
     );
     push @results, @linkresults;
 }
@@ -174,11 +174,11 @@ if ( $QueueObj->id ) {
 <%ARGS>
 $id => undef
 $result => undef
-$Name => undef
+$name => undef
 $Create => undef
 $Description => undef
 $CorrespondAddress => undef
-$CommentAddress => undef
+$commentAddress => undef
 $InitialPriority => undef
 $FinalPriority => undef
 $DefaultDueIn => undef

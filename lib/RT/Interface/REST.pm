@@ -280,7 +280,7 @@ sub vsplit {
 
 1;
 
-=head1 NAME
+=head1 name
 
   RT::Interface::REST - helper functions for the REST interface.
 

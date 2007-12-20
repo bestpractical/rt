@@ -58,7 +58,7 @@
 <tr>
 <td class="label"><&|/l&>Aggregator</&>:</td>
 <td class="operator">&nbsp;</td>
-<td class="value"><& SelectAndOr, Name => "AndOr" &></td>
+<td class="value"><& SelectAndOr, name => "AndOr" &></td>
 </tr>
 
 </table>

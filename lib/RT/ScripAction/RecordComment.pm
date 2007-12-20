@@ -45,21 +45,21 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::ScripAction::RecordComment;
+package RT::ScripAction::Recordcomment;
 require RT::ScripAction::Generic;
 use strict;
 use vars qw/@ISA/;
 @ISA = qw(RT::ScripAction::Generic);
 
-=head1 NAME
+=head1 name
 
-RT::ScripAction::RecordComment - An Action which can be used from an
+RT::ScripAction::Recordcomment - An Action which can be used from an
 external tool, or in any situation where a ticket transaction has not
 been started, to make a comment on the ticket.
 
 =head1 SYNOPSIS
 
-my $action_obj = RT::ScripAction::RecordComment->new('TicketObj'   => $ticket_obj,
+my $action_obj = RT::ScripAction::Recordcomment->new('TicketObj'   => $ticket_obj,
 						'TemplateObj' => $template_obj,
 						);
 my $result = $action_obj->prepare();
@@ -70,7 +70,7 @@ $action_obj->commit() if $result;
 =head2 Prepare
 
 Check for the existence of a Transaction.  If a Transaction already
-exists, and is of type "Comment" or "Correspond", abort because that
+exists, and is of type "comment" or "Correspond", abort because that
 will give us a loop.
 
 =cut
@@ -79,7 +79,7 @@ will give us a loop.
 sub prepare {
     my $self = shift;
     if (defined $self->{'TransactionObj'} &&
-	$self->{'TransactionObj'}->Type =~ /^(Comment|Correspond)$/) {
+	$self->{'TransactionObj'}->Type =~ /^(comment|Correspond)$/) {
 	return undef;
     }
     return 1;
@@ -87,9 +87,9 @@ sub prepare {
 
 =head2 Commit
 
-Create a Transaction by calling the ticket's Comment method on our
+Create a Transaction by calling the ticket's comment method on our
 parsed Template, which may have an RT-Send-Cc or RT-Send-Bcc header.
-The Transaction will be of type Comment.  This Transaction can then be
+The Transaction will be of type comment.  This Transaction can then be
 used by the scrips that actually send the email.
 
 =cut
@@ -106,7 +106,7 @@ sub createTransaction {
 	TicketObj => $self->{'TicketObj'});
     return undef unless $result;
     
-    my ($trans, $desc, $transaction) = $self->{'TicketObj'}->Comment(
+    my ($trans, $desc, $transaction) = $self->{'TicketObj'}->comment(
 	MIMEObj => $self->TemplateObj->MIMEObj);
     $self->{'TransactionObj'} = $transaction;
 }

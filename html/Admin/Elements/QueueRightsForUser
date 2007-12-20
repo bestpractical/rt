@@ -48,17 +48,17 @@
 <ul>
 %while(my $ACE = $ACL->next) {
 
-<li><checkbox name="delete_ace_<%$ACE->id%>" value="1"> <% loc($ACE->RightName) %> (<%$ACE->UserObj->RealName%>)
+<li><checkbox name="delete_ace_<%$ACE->id%>" value="1"> <% loc($ACE->Rightname) %> (<%$ACE->user_object->real_name%>)
 
 %}
 </ul>
 
 <%INIT>
-my $ACL = new RT::Model::ACECollection($session{'CurrentUser'});
+my $ACL = new RT::Model::ACECollection(Jifty->web->current_user);
 $ACL->LimitToQueue($QueueObj->id);
-$ACL->LimitPrincipalToUser($PrincipalId);
+$ACL->LimitPrincipalToUser($principal_id);
 </%INIT>
 <%ARGS>
-$PrincipalId => undef
+$principal_id => undef
 $QueueObj => undef
 </%ARGS>

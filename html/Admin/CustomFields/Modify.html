@@ -58,15 +58,15 @@
 
 <table>
 
-<tr><td class="label"><&|/l&>Name</&></td>
-<td><input name="Name" value="<% $CustomFieldObj->Name || '' %>" size="20" /></td></tr>
+<tr><td class="label"><&|/l&>name</&></td>
+<td><input name="name" value="<% $CustomFieldObj->name || '' %>" size="20" /></td></tr>
 
 <tr><td class="label"><&|/l&>Description</&></td>
 <td><input name="Description" value="<% $CustomFieldObj->Description || '' %>" size="80" /></td></tr>
 
 <tr><td class="label"><&|/l&>Type</&></td>
 <td><& /Admin/Elements/SelectCustomFieldType, 
-        Name => "TypeComposite", 
+        name => "TypeComposite", 
         Default => $CustomFieldObj->TypeComposite, &>
 </td></tr>
 
@@ -78,13 +78,13 @@
 
 <tr><td class="label"><&|/l&>Applies to</&></td>
 <td><& /Admin/Elements/SelectCustomFieldLookupType, 
-        Name => "LookupType", 
+        name => "LookupType", 
         Default => $CustomFieldObj->LookupType, &>
 </td></tr>
 
 <tr><td class="label"><&|/l&>Validation</&></td>
 <td><& /Widgets/ComboBox,
-    Name    => 'Pattern',
+    name    => 'Pattern',
     Default => $CustomFieldObj->Pattern,
     Size    => 20,
     Values  => [
@@ -127,13 +127,13 @@
 </div>
 % }
 
-<& /Elements/Submit, Name => 'Update', Label => $id eq 'new'? loc('Create'): loc('Save Changes') &>
+<& /Elements/Submit, name => 'Update', Label => $id eq 'new'? loc('Create'): loc('Save Changes') &>
 
 </form>
 <%INIT>
-my ($title, @results, $Disabled);
+my ($title, @results, $disabled);
 
-my $CustomFieldObj = RT::Model::CustomField->new( $session{'CurrentUser'} );
+my $CustomFieldObj = RT::Model::CustomField->new( Jifty->web->current_user );
 my $current_tab = 'Admin/CustomFields/Modify.html';
 
 unless ( $id ) {
@@ -144,7 +144,7 @@ unless ( $id ) {
 else {
     if ( $id eq 'new' ) {
         my ( $val, $msg ) = $CustomFieldObj->create(
-            Name          => $Name,
+            name          => $name,
             TypeComposite => $TypeComposite,
             LookupType    => $LookupType,
             Description   => $Description,
@@ -152,10 +152,10 @@ else {
         );
         $m->comp( "/Elements/Error", Why => loc( "Could not create CustomField", $msg ) ) unless $val;
         push @results, $msg;
-        $title = loc( 'Created CustomField [_1]', $CustomFieldObj->Name );
+        $title = loc( 'Created CustomField [_1]', $CustomFieldObj->name );
     } else {
         $CustomFieldObj->load( $id ) || $m->comp("/Elements/Error", Why => loc('No CustomField') );
-        $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->Name );
+        $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->name );
     }
     $current_tab .= "?id=$id";
 }
@@ -163,9 +163,9 @@ else {
 if ( $ARGS{'Update'} && $id ne 'new' ) {
 
     #we're asking about enabled on the web page but really care about disabled.
-    $ARGS{'Disabled'} = $Disabled = $Enabled? 0 : 1;
+    $ARGS{'disabled'} = $disabled = $Enabled? 0 : 1;
 
-    my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue);
+    my @attribs = qw(disabled Pattern name TypeComposite LookupType Description LinkValueTo IncludeContentForValue);
     push @results, UpdateRecordObject(
         AttributesRef => \@attribs,
         Object        => $CustomFieldObj,
@@ -184,7 +184,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     # Update any existing values
     my $values = $CustomFieldObj->ValuesObj;
     while ( my $value = $values->next ) {
-        foreach my $attr qw(Name Description SortOrder Category) {
+        foreach my $attr qw(name Description SortOrder Category) {
             my $param = "$paramtag-". $value->id ."-". $attr;
             next unless exists $ARGS{$param};
             next if ($value->$attr()||'') eq ($ARGS{$param}||'');
@@ -196,10 +196,10 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     }
 
     # Add any new values
-    if ( defined $ARGS{ $paramtag ."-new-Name" } && length $ARGS{ $paramtag ."-new-Name" } ) {
+    if ( defined $ARGS{ $paramtag ."-new-name" } && length $ARGS{ $paramtag ."-new-name" } ) {
         my ($id, $msg) = $CustomFieldObj->AddValue(
             map { $_ => $ARGS{ $paramtag ."-new-$_" } }
-                qw( Name Description SortOrder Category )
+                qw( name Description SortOrder Category )
         );
         push (@results, $msg);
     }
@@ -208,7 +208,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
 $id = $CustomFieldObj->id if $CustomFieldObj->id;
 
 my $EnabledChecked = "checked";
-$EnabledChecked = '' if $CustomFieldObj->Disabled;
+$EnabledChecked = '' if $CustomFieldObj->disabled;
 
 </%INIT>
 <%ARGS>
@@ -219,7 +219,7 @@ $MaxValues => undef
 $SortOrder => undef
 $Description => undef
 $Pattern => undef
-$Name => undef
+$name => undef
 $SetEnabled => undef
 $Enabled => 0
 $ValuesClass => 'RT::Model::CustomFieldValueCollection'

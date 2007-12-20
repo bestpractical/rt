@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select multiple name="<% $Name %>"  size="10">
+<select multiple name="<% $name %>"  size="10">
 % while ( my $user = $users->next ) {
 <option value="<% $user->id %>">\
 <& /Elements/ShowUser, User => $user &>\
@@ -54,13 +54,13 @@
 </select>
 
 <%INIT>
-my $users = new RT::Model::UserCollection($session{'CurrentUser'});
+my $users = new RT::Model::UserCollection(Jifty->web->current_user);
 
 $users->limit(column => 'id', value => RT->system_user->id, operator => '!=' );
 $users->limit(column => 'id', value => $RT::Nobody->id, operator => '!=' );
-$users->LimitToPrivileged();
+$users->LimitToprivileged();
 
 </%INIT>
 <%ARGS>
-$Name => 'Users'
+$name => 'Users'
 </%ARGS>

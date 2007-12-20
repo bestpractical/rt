@@ -48,18 +48,18 @@
 <& /Admin/Elements/Header, Title => $title  &>
 <& /Admin/Elements/UserTabs, 
     id => $id, 
-    UserObj => $UserObj,
+    user_object => $user_object,
     current_tab => $current_tab, 
     Title => $title &>
 
 <h2><&|/l&>Groups</&></h2>
 
-<& /Elements/ShowMemberships, UserObj => $UserObj &>
+<& /Elements/ShowMemberships, user_object => $user_object &>
 
 <%INIT>
-my $UserObj = RT::Model::User->new($session{'CurrentUser'});
-$UserObj->load($id) || Abort("Couldn't load user '$id'");
-my $title = loc("Memberships of the user [_1]", $UserObj->Name);
+my $user_object = RT::Model::User->new(Jifty->web->current_user);
+$user_object->load($id) || Abort("Couldn't load user '$id'");
+my $title = loc("Memberships of the user [_1]", $user_object->name);
 my $current_tab = 'Admin/Users/Memberships.html?id='.$id;
 </%INIT>
 <%ARGS>

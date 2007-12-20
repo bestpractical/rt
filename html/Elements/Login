@@ -66,7 +66,7 @@ my $form_action = defined $goto             ? $goto
                 ;
 </%INIT>
 
-% $m->callback( %ARGS, CallbackName => 'Header' );
+% $m->callback( %ARGS, Callbackname => 'Header' );
 <& /Elements/Header, Title => loc('Login'), Focus => 'user' &>
 
 
@@ -81,7 +81,7 @@ my $form_action = defined $goto             ? $goto
 </&>
 % }
 
-% $m->callback( %ARGS, CallbackName => 'BeforeForm' );
+% $m->callback( %ARGS, Callbackname => 'BeforeForm' );
 
 <div id="login-box">
 <&| /Widgets/TitleBox, title => loc('Login'), titleright => $RT::VERSION, hideable => 0 &>
@@ -95,41 +95,21 @@ my $form_action = defined $goto             ? $goto
 </div>
 
 <div class="input-row">
-    <span class="label"><&|/l&>Password</&>:</span>
+    <span class="label"><&|/l&>password</&>:</span>
     <span class="input"><input type="password" name="pass" autocomplete="off" /></span>
 </div>
 
 <div class="button-row">
-    <span class="input"><input type="submit" class="button" value="<&|/l&>Login</&>" /></span>
+    <span class="input">
+    <% Jifty->web->form->return(label =>'Login') %>
+    </span>
 </div>
 
-%# Give callbacks a chance to add more control elements
-% $m->callback( %ARGS );
-
-% # From mason 1.0.1 forward, this doesn't work. in fact, it breaks things.
-% # But on Mason 1.15 it's fixed again, so we still use it.
-% # The code below iterates through everything in the passed in arguments
-% # Preserving all the old parameters
-% # This would be easier, except mason is 'smart' and calls multiple values
-% # arrays rather than multiple hash keys
-% my $key; my $val;
-% foreach $key (keys %ARGS) {
-%  if (($key ne 'user') and ($key ne 'pass')) {
-% 	if (ref($ARGS{$key}) =~ /ARRAY/) {
-% 		foreach $val (@{$ARGS{$key}}) {
-<input type="hidden" class="hidden" name="<%$key %>" value="<% $val %>" />
-% 		}
-% 	}
-%	else {
-<input type="hidden" class="hidden" name="<% $key %>" value="<% $ARGS{$key} %>" />
-% 	}
-%  }
-% }
 </form>
 % }
 </&>
 </div><!-- #login-box -->
-% $m->callback( %ARGS, CallbackName => 'AfterForm' );
+% $m->callback( %ARGS, Callbackname => 'AfterForm' );
 <& /Elements/Footer, Menu => 0 &>
 <%ARGS>
 $user => ""

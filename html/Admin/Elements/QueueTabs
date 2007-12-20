@@ -55,7 +55,7 @@
 my $tabs;
 if ($id) {
   $tabs->{'this'}  = {
-                title => $QueueObj->Name,
+                title => $QueueObj->name,
   		     	path => "Admin/Queues/Modify.html?id=".$id,
                     current_subtab => $current_tab,     
                 subtabs => {
@@ -90,7 +90,7 @@ if ($id) {
         }
         };
 }
-if ($session{'CurrentUser'}->has_right( Object => RT->system, Right => 'AdminQueue')) {
+if (Jifty->web->current_user->has_right( Object => RT->system, Right => 'AdminQueue')) {
   $tabs->{"A"} = { title => loc('Select queue'),
   		     	path => "Admin/Queues/",
 			   };

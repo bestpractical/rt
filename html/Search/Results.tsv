@@ -51,7 +51,7 @@ $Order => 'ASC'
 </%ARGS>
 <%INIT>
 
-my $Tickets = RT::Model::TicketCollection->new( $session{'CurrentUser'} );
+my $Tickets = RT::Model::TicketCollection->new( Jifty->web->current_user );
 $Tickets->from_sql( $ARGS{'Query'} );
 if ( $order_by =~ /\|/ ) {
 
@@ -69,8 +69,8 @@ else {
 my @rows;
 my %known_cfs;
 
-my @attrs = qw( id QueueObj->Name Subject Status TimeEstimated TimeWorked TimeLeft Priority FinalPriority OwnerObj->Name 
-                Requestors->MemberEmailAddressesAsString Cc->MemberEmailAddressesAsString AdminCc->MemberEmailAddressesAsString
+my @attrs = qw( id QueueObj->name Subject Status TimeEstimated time_worked time_left Priority FinalPriority OwnerObj->name 
+                Requestors->MemberemailesAsString Cc->MemberemailesAsString AdminCc->MemberemailesAsString
                 DueObj->ISO ToldObj->ISO CreatedObj->ISO ResolvedObj->ISO LastUpdatedObj->ISO);
 
 $r->content_type('application/vnd.ms-excel');
@@ -88,7 +88,7 @@ while ( my $Ticket = $Tickets->next()) {
 
     my $cfs = $Ticket->QueueObj->TicketCustomFields();
     while (my $cf = $cfs->next) {
-        $known_cfs{$cf->id} = $cf->Name;
+        $known_cfs{$cf->id} = $cf->name;
         my @content;
         my $values = $Ticket->CustomFieldValues($cf->id);
         while (my $value = $values->next) {
@@ -103,8 +103,8 @@ while ( my $Ticket = $Tickets->next()) {
     my @header;
     foreach my $attr (@attrs) {
         my $label = $attr;
-        $label =~ s'Obj-.(?:AsString|Name|ISO)''g;
-        $label =~ s'-\>MemberEmailAddressesAsString''g;
+        $label =~ s'Obj-.(?:AsString|name|ISO)''g;
+        $label =~ s'-\>MemberemailesAsString''g;
 	push @header, $label;
     }
     foreach my $id (sort keys %known_cfs) {

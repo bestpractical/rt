@@ -62,7 +62,7 @@
 <i>(<&|/l, $scrip->id&>Scrip #[_1]</&>)</i>
 % }
 </a><br />
-<small><&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name) &>[_1] [_2] with template [_3]</&></small>
+<small><&|/l, loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name) &>[_1] [_2] with template [_3]</&></small>
 </li>
 %   }
 
@@ -71,6 +71,6 @@
 % }
 
 <%init>
-my $Scrips = new RT::Model::ScripCollection ($session{'CurrentUser'});
+my $Scrips = new RT::Model::ScripCollection (Jifty->web->current_user);
 $Scrips->LimitToGlobal();
 </%INIT>

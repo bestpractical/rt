@@ -9,12 +9,12 @@ use RT;
 
 # {{{ test scrip ordering based on description
 
-my $scrip_queue = RT::Model::Queue->new(RT->system_user);
-my ($queue_id, $msg) = $scrip_queue->create( Name => "ScripOrdering-$$", 
+my $scrip_queue = RT::Model::Queue->new(current_user => RT->system_user);
+my ($queue_id, $msg) = $scrip_queue->create( name => "ScripOrdering-$$", 
     Description => 'Test scrip ordering by description' );
 ok($queue_id, "Created scrip-ordering test queue? ".$msg);
 
-my $priority_ten_scrip = RT::Model::Scrip->new(RT->system_user);
+my $priority_ten_scrip = RT::Model::Scrip->new(current_user => RT->system_user);
 (my $id, $msg) = $priority_ten_scrip->create( 
     Description => "10 set priority $$",
     Queue => $queue_id, 
@@ -27,7 +27,7 @@ my $priority_ten_scrip = RT::Model::Scrip->new(RT->system_user);
 );
 ok($id, "Created priority-10 scrip? ".$msg);
 
-my $priority_five_scrip = RT::Model::Scrip->new(RT->system_user);
+my $priority_five_scrip = RT::Model::Scrip->new(current_user => RT->system_user);
 ($id, $msg) = $priority_ten_scrip->create( 
     Description => "05 set priority $$",
     Queue => $queue_id, 
@@ -40,7 +40,7 @@ my $priority_five_scrip = RT::Model::Scrip->new(RT->system_user);
 );
 ok($id, "Created priority-5 scrip? ".$msg);
 
-my $ticket = RT::Model::Ticket->new(RT->system_user);
+my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 ($id, $msg) = $ticket->create( 
     Queue => $queue_id, 
     Requestor => 'order@example.com',

@@ -10,7 +10,7 @@ my $url = $m->rt_base_url;
 
 
 
-my $t = RT::Model::Ticket->new(RT->system_user);
+my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 $t->create(Subject => 'for custom search'.$$, Queue => 'general',
 	   Owner => 'root', Requestor => 'customsearch@localhost');
 ok(my $id = $t->id, 'Created ticket for custom search');

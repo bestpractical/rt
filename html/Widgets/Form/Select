@@ -48,20 +48,20 @@
 <%DOC>
 see docs/using_forms_widgets.pod
 </%DOC>
-<div id="form-box-<% lc $Name %>">
+<div id="form-box-<% lc $name %>">
 % if ( $Description ) {
 <% $Description %>:\
 % }
 <& SELF:InputOnly, %ARGS &>
 </div>
 <%ARGS>
-$Name
+$name
 $Description      => undef,
 </%ARGS>
 
 <%METHOD InputOnly>
 <%ARGS>
-$Name
+$name
 $Description      => undef,
 
 @Values           => (),
@@ -78,7 +78,7 @@ $AlternativeLabel => loc('other...'),
 
 $Multiple         => 0,
 </%ARGS>
-<select name="<% $Name %>">
+<select name="<% $name %>">
 
 % if ( $Default ) {
 % my $selected = '';
@@ -100,14 +100,14 @@ $Multiple         => 0,
 
 </select>
 % if ( $Alternative ) {
-<input type="text" class="alternative" name="Alternative-<% $Name %>" value="<% join ', ', @CurrentValue %>" />
+<input type="text" class="alternative" name="Alternative-<% $name %>" value="<% join ', ', @CurrentValue %>" />
 % }
 <%INIT>
 my %CurrentValue = map {$_ => 1} grep defined, @CurrentValue;
 if ( $ValuesCallback ) {
     my $values = $ValuesCallback->(
-        CurrentUser => $session{'CurrentUser'},
-        Name        => $Name,
+        CurrentUser => Jifty->web->current_user,
+        name        => $name,
     );
     if ( ref $values eq 'ARRAY' ) {
         @Values = @$values;
@@ -121,7 +121,7 @@ if ( $ValuesCallback ) {
 
 <%METHOD Process>
 <%ARGS>
-$Name
+$name
 
 $Arguments        => {},
 
@@ -135,7 +135,7 @@ $Alternative      => 0,
 $Multiple         => 0,
 </%ARGS>
 <%INIT>
-my $value = $Arguments->{ $Name };
+my $value = $Arguments->{ $name };
 if( !defined $value || $value eq '__empty_value__' ) {
     return undef if $Default;
     return [ @DefaultValue ] if $Multiple;
@@ -144,7 +144,7 @@ if( !defined $value || $value eq '__empty_value__' ) {
 $value = [$value] unless ref $value;
 
 if ( $Alternative ) {
-    my $alt = $Arguments->{ "Alternative-". $Name };
+    my $alt = $Arguments->{ "Alternative-". $name };
     if( $Multiple ) {
         push @$value, split /\s*,\s*/, $alt;
     } else {

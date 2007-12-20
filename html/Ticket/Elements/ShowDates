@@ -51,8 +51,8 @@
     <td class="value date Created"><% $Ticket->CreatedObj->AsString %></td>
   </tr>
   <tr>
-    <td class="label date starts"><&|/l&>Starts</&>:</td>
-    <td class="value date starts"><% $Ticket->StartsObj->AsString %></td>
+    <td class="label date starts"><&|/l&>starts</&>:</td>
+    <td class="value date starts"><% $Ticket->startsObj->AsString %></td>
   </tr>
   <tr>
     <td class="label date started"><&|/l&>Started</&>:</td>
@@ -72,7 +72,7 @@
   </tr>
   <tr>
     <td class="label date updated"><&|/l&>Updated</&>:</td>
-% my $UpdatedString = $Ticket->LastUpdated ? loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name) : loc("Never");
+% my $UpdatedString = $Ticket->LastUpdated ? loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->name) : loc("Never");
 % if ($UpdatedLink) {
     <td class="value date updated"><A HREF="#lasttrans"><% $UpdatedString | h %></a></td>
 % } else {

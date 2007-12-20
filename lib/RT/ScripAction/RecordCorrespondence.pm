@@ -51,7 +51,7 @@ use strict;
 use vars qw/@ISA/;
 @ISA = qw(RT::ScripAction::Generic);
 
-=head1 NAME
+=head1 name
 
 RT::ScripAction::RecordCorrespondence - An Action which can be used from an
 external tool, or in any situation where a ticket transaction has not
@@ -71,7 +71,7 @@ $action_obj->commit() if $result;
 =head2 Prepare
 
 Check for the existence of a Transaction.  If a Transaction already
-exists, and is of type "Comment" or "Correspond", abort because that
+exists, and is of type "comment" or "Correspond", abort because that
 will give us a loop.
 
 =cut
@@ -80,7 +80,7 @@ will give us a loop.
 sub prepare {
     my $self = shift;
     if (defined $self->{'TransactionObj'} &&
-	$self->{'TransactionObj'}->Type =~ /^(Comment|Correspond)$/) {
+	$self->{'TransactionObj'}->Type =~ /^(comment|Correspond)$/) {
 	return undef;
     }
     return 1;

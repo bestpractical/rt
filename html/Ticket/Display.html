@@ -52,12 +52,12 @@
     current_tab => 'Ticket/Display.html?id='.$TicketObj->id,
     Title => loc("#[_1]: [_2]", $TicketObj->id, $TicketObj->Subject) &>
 
-% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@Actions, ARGSRef => \%ARGS, Ticket => $TicketObj);
+% $m->callback(Callbackname => 'BeforeActionList', %ARGS, Actions => \@Actions, ARGSRef => \%ARGS, Ticket => $TicketObj);
 
 <& /Elements/ListActions, actions => \@Actions &>
 <& Elements/ShowUpdateStatus, Ticket => $TicketObj &>
 
-% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'BeforeShowSummary' );
+% $m->callback( %ARGS, Ticket => $TicketObj, Callbackname => 'BeforeShowSummary' );
 <div class="summary">
 <&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
 <& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
@@ -65,7 +65,7 @@
 </div>
 <br />
 
-% $m->callback( Ticket => $TicketObj, %ARGS, CallbackName => 'BeforeShowHistory' );
+% $m->callback( Ticket => $TicketObj, %ARGS, Callbackname => 'BeforeShowHistory' );
 
 <& /Ticket/Elements/ShowHistory , 
       Ticket => $TicketObj, 
@@ -76,7 +76,7 @@
       AttachmentContent => $attachment_content
 &> 
 
-% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'AfterShowHistory' );
+% $m->callback( %ARGS, Ticket => $TicketObj, Callbackname => 'AfterShowHistory' );
 
 <%ARGS>
 $id => undef
@@ -87,7 +87,7 @@ $Collapsed => undef
 
 <%INIT>
 
-$m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
+$m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, Callbackname => 'Initial' );
 
 my (@Actions, $Tickets);  
 
@@ -99,7 +99,7 @@ unless ($id || $TicketObj) {
 if ($ARGS{'id'} eq 'new') {
     # {{{ Create a new ticket
 
-    my $Queue = new RT::Model::Queue( $session{'CurrentUser'} );
+    my $Queue = new RT::Model::Queue( Jifty->web->current_user );
     $Queue->load($ARGS{'Queue'});
     unless ( $Queue->id ) {
         Abort('Queue not found');
@@ -120,7 +120,7 @@ if ($ARGS{'id'} eq 'new') {
 } else { 
     $TicketObj ||= load_ticket($ARGS{'id'});
 
-    $m->callback( CallbackName => 'BeforeProcessArguments',
+    $m->callback( Callbackname => 'BeforeProcessArguments',
         TicketObj => $TicketObj, Tickets => $Tickets,
         ActionsRef => \@Actions, ARGSRef => \%ARGS );
     if ( defined $ARGS{'Action'} ) {
@@ -131,14 +131,14 @@ if ($ARGS{'id'} eq 'new') {
         }
     }
 
-    $m->callback(CallbackName => 'ProcessArguments', 
+    $m->callback(Callbackname => 'ProcessArguments', 
             Ticket => $TicketObj, 
             ARGSRef => \%ARGS, 
             Actions => \@Actions);
     
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
-    my $signature = $session{'CurrentUser'}->UserObj->Signature || '';
-    if ( $ARGS{'UpdateTimeWorked'} || (
+    my $signature = Jifty->web->current_user->user_object->Signature || '';
+    if ( $ARGS{'Updatetime_worked'} || (
         defined $ARGS{'UpdateContent'}
         && $ARGS{'UpdateContent'} ne ''
         && $ARGS{'UpdateContent'} ne "-- \n" . $signature ))
@@ -162,7 +162,7 @@ if ($ARGS{'id'} eq 'new') {
     }
     if ( $ARGS{'MarkAsSeen'} ) {
         $TicketObj->set_attribute(
-            Name => 'User-'. $TicketObj->current_user->id .'-SeenUpTo',
+            name => 'User-'. $TicketObj->current_user->id .'-SeenUpTo',
             Content => $TicketObj->LastUpdated,
         );
         push @Actions, loc('Marked all messages as seen');
@@ -170,7 +170,7 @@ if ($ARGS{'id'} eq 'new') {
 }
 
 $m->callback(
-    CallbackName => 'BeforeDisplay',
+    Callbackname => 'BeforeDisplay',
     TicketObj => \$TicketObj,
     Tickets => \$Tickets,
     Actions => \@Actions,

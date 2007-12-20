@@ -62,7 +62,7 @@
 <&|/l&>Default Queue</&>:
 </td>
 <td>
-<& /Elements/SelectQueue, Name => "qname", NamedValues => 1 &>
+<& /Elements/SelectQueue, name => "qname", namedValues => 1 &>
 <em><&|/l&>If no queue is specified, create tickets in this queue.</&></em>
 </td>
 </tr>
@@ -91,7 +91,7 @@
 </td>
 </tr>
 </table>
-<& /Elements/Submit, Name => 'UpdateTickets', Label => loc('Upload'), Caption => loc("Upload your changes"), color => "#993333" &>
+<& /Elements/Submit, name => 'UpdateTickets', Label => loc('Upload'), Caption => loc("Upload your changes"), color => "#993333" &>
 
 </form>
 <%args>
@@ -103,7 +103,7 @@ $string => undef
 
 my @results;
 use RT::ScripAction::CreateTickets;
-my $action = RT::ScripAction::CreateTickets->new(CurrentUser => $session{'CurrentUser'});
+my $action = RT::ScripAction::CreateTickets->new(CurrentUser => Jifty->web->current_user);
 ;
 if ($ARGS{'Parse'} && $ARGS{'Template'}) {
     $string = "";
@@ -137,7 +137,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
     push @results, $action->UpdateByTemplate();
 } else {
     if ($ARGS{'Query'}) {
-	my $Tickets = RT::Model::TicketCollection->new($session{'CurrentUser'});
+	my $Tickets = RT::Model::TicketCollection->new(Jifty->web->current_user);
 	$Tickets->from_sql($ARGS{'Query'});
 	
 	while (my $t = $Tickets->next) {

@@ -56,7 +56,7 @@ use LWP::MediaTypes;
 use RT::Interface::REST;
 use File::Temp qw(tempfile);
 
-my $ticket = new RT::Model::Ticket($session{CurrentUser});
+my $ticket = new RT::Model::Ticket(Jifty->web->current_user);
 my $object = $r->path_info;
 my $status = "200 Ok";
 my $output;
@@ -90,7 +90,7 @@ if ($k->{Ticket} && $object ne $k->{Ticket}) {
 }
 
 ($action = $k->{Action}) =~ s/^(.)(.*)$/\U$1\L$2\E/;
-unless ($action =~ /^(?:Comment|Correspond)$/) {
+unless ($action =~ /^(?:comment|Correspond)$/) {
     $output = "Invalid action: `$action'.\n";
     $status = "400 Bad Request";
     goto OUTPUT;
@@ -148,8 +148,8 @@ unless ($ticket->id) {
     goto OUTPUT;
 }
 unless ($ticket->current_user_has_right('ModifyTicket') ||
-        ($action eq "Comment" &&
-         $ticket->current_user_has_right("CommentOnTicket")) ||
+        ($action eq "comment" &&
+         $ticket->current_user_has_right("commentOnTicket")) ||
         ($action eq "Correspond" &&
          $ticket->current_user_has_right("ReplyToTicket")))
 {
@@ -163,7 +163,7 @@ my $bcc = join ", ", @{ vsplit($k->{Bcc}) };
 my ($n, $s) = $ticket->$action(MIMEObj => $ent,
                                CcMessageTo => $cc,
                                BccMessageTo => $bcc,
-                               TimeTaken => $k->{TimeWorked} || 0);
+                               TimeTaken => $k->{time_worked} || 0);
 $output = $s;
 if ($k->{Status}) {
    my  ($status_n, $status_s) = $ticket->set_Status($k->{'Status'} );   

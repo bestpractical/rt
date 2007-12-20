@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::UserCollection - Collection of RT::Model::User objects
 
@@ -75,7 +75,7 @@ sub _init {
     my @result =          $self->SUPER::_init(@_);
     # By default, order by name
     $self->order_by( alias => 'main',
-                    column => 'Name',
+                    column => 'name',
                         order => 'ASC' );
 
     $self->{'princalias'} = $self->new_alias('Principals');
@@ -86,7 +86,7 @@ sub _init {
                  alias2 => $self->{'princalias'},
                  column2 => 'id' );
     $self->limit( alias => $self->{'princalias'},
-                  column => 'PrincipalType',
+                  column => 'principal_type',
                   value => 'User',
                 );
 
@@ -113,7 +113,7 @@ sub PrincipalsAlias {
 
 =head2 _do_search
 
-  A subclass of Jifty::DBI::_do_search that makes sure that _Disabled rows never get seen unless
+  A subclass of Jifty::DBI::_do_search that makes sure that _disabled rows never get seen unless
 we're explicitly trying to see them.
 
 =cut
@@ -143,7 +143,7 @@ sub LimitToEnabled {
     my $self = shift;
 
     $self->limit( alias    => $self->PrincipalsAlias,
-                  column    => 'Disabled',
+                  column    => 'disabled',
                   value    => '0',
                   operator => '=' );
 }
@@ -162,7 +162,7 @@ that email address
 sub LimitToEmail {
     my $self = shift;
     my $addr = shift;
-    $self->limit( column => 'EmailAddress', value => "$addr" );
+    $self->limit( column => 'email', value => "$addr" );
 }
 
 # }}}
@@ -198,23 +198,23 @@ sub MemberOfGroup {
 
 # }}}
 
-# {{{ LimitToPrivileged
+# {{{ LimitToprivileged
 
-=head2 LimitToPrivileged
+=head2 LimitToprivileged
 
 Limits to users who can be made members of ACLs and groups
 
 =cut
 
-sub LimitToPrivileged {
+sub LimitToprivileged {
     my $self = shift;
 
-    my $priv = RT::Model::Group->new( $self->current_user );
-    $priv->load_system_internal_group('Privileged');
+    my $priv = RT::Model::Group->new;
+    $priv->load_system_internal_group('privileged');
     unless ( $priv->id ) {
         $RT::Logger->crit("Couldn't find a privileged users group");
     }
-    $self->MemberOfGroup( $priv->PrincipalId );
+    $self->MemberOfGroup( $priv->principal_id );
 }
 
 # }}}
@@ -295,7 +295,7 @@ sub _joinACL
     my $acl = $self->new_alias('ACL');
     $self->limit(
         alias    => $acl,
-        column    => 'RightName',
+        column    => 'Rightname',
         operator => ( $args{Right} ? '=' : 'IS NOT' ),
         value => $args{Right} || 'NULL',
         entry_aggregator => 'OR'
@@ -303,7 +303,7 @@ sub _joinACL
     if ( $args{'IncludeSuperusers'} and $args{'Right'} ) {
         $self->limit(
             alias           => $acl,
-            column           => 'RightName',
+            column           => 'Rightname',
             operator        => '=',
             value           => 'SuperUser',
             entry_aggregator => 'OR'
@@ -358,8 +358,8 @@ sub WhoHaveRight {
         @_
     );
 
-    if ( defined $args{'ObjectType'} || defined $args{'ObjectId'} ) {
-        $RT::Logger->crit( "WhoHaveRight called with the Obsolete ObjectId/ObjectType API");
+    if ( defined $args{'ObjectType'} || defined $args{'object_id'} ) {
+        $RT::Logger->crit( "WhoHaveRight called with the Obsolete object_id/ObjectType API");
         return (undef);
     }
 
@@ -417,7 +417,7 @@ sub WhoHaveRoleRight
             push @role_clauses, "($role_clause)";
 
             my $object_clause = "$acl.ObjectType = '$type'";
-            $object_clause   .= " AND $acl.ObjectId = $id" if $id;
+            $object_clause   .= " AND $acl.object_id = $id" if $id;
             push @object_clauses, "($object_clause)";
         }
 
@@ -433,7 +433,7 @@ sub WhoHaveRoleRight
     $self->_add_subclause( "WhichRole", "($check_roles)" );
 
     $self->limit( alias => $acl,
-                  column => 'PrincipalType',
+                  column => 'principal_type',
                   value => "$groups.Type",
                   quote_value => 0,
                 );
@@ -454,7 +454,7 @@ sub _joinGroupMembersForGroupRights
     my %args = (@_);
     my $group_members = $self->_joinGroupMembers( %args );
     $self->limit( alias => $args{'ACLAlias'},
-                  column => 'PrincipalId',
+                  column => 'principal_id',
                   value => "$group_members.GroupId",
                   quote_value => 0,
                 );
@@ -489,7 +489,7 @@ sub WhoHaveGroupRight
             $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
 
             my $object_clause = "$acl.ObjectType = '$type'";
-            $object_clause   .= " AND $acl.ObjectId   = $id" if $id;
+            $object_clause   .= " AND $acl.object_id   = $id" if $id;
             push @object_clauses, "($object_clause)";
         }
 
@@ -504,7 +504,7 @@ sub WhoHaveGroupRight
     $self->_joinGroupMembersForGroupRights( %args, ACLAlias => $acl );
     # Find only members of groups that have the right.
     $self->limit( alias => $acl,
-                  column => 'PrincipalType',
+                  column => 'principal_type',
                   value => 'Group',
                 );
     
@@ -532,7 +532,7 @@ sub WhoBelongToGroups {
 
     # Unprivileged users can't be granted real system rights.
     # is this really the right thing to be saying?
-    $self->LimitToPrivileged();
+    $self->LimitToprivileged();
 
     my $group_members = $self->_joinGroupMembers( %args );
 

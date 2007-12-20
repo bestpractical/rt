@@ -53,7 +53,7 @@ my %documents;
 
 # We force the cache of ticket transactions to get populated up front. otherwise, the 
 # code that looks at attachments will look at each one in turn.
-my $attachments = RT::Model::AttachmentCollection->new( $session{'CurrentUser'} );
+my $attachments = RT::Model::AttachmentCollection->new( Jifty->web->current_user );
 
 $attachments->columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId Created));
 
@@ -66,7 +66,7 @@ $attachments->join( alias1 => 'main',
 my $tickets = $attachments->new_alias('Tickets');
 
   $attachments->join( alias1 => $transactions,                         
-                        column1 => 'ObjectId',
+                        column1 => 'object_id',
                         alias2 => $tickets,
                         column2 => 'id' );
     

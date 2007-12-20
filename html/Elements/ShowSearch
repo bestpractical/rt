@@ -54,7 +54,7 @@
 </&>
 <%init>
 my $search;
-my $user = $session{'CurrentUser'}->UserObj;
+my $user = Jifty->web->current_user->user_object;
 my $SearchArg;
 my $customize;
 my $query_display_component = '/Elements/TicketList';
@@ -80,14 +80,14 @@ if ($SavedSearch) {
             LoadSavedSearch => $SavedSearch );
     }
 } else {
-    ($search) = RT::System->new( $session{'CurrentUser'} ) ->attributes->Named( 'Search - ' . $Name );
+    ($search) = RT::System->new( Jifty->web->current_user ) ->attributes->named( 'Search - ' . $name );
     unless ( $search && $search->id ) {
-        my (@custom_searches) = RT::System->new( $session{'CurrentUser'} )->attributes->Named('SavedSearch');
+        my (@custom_searches) = RT::System->new( Jifty->web->current_user )->attributes->named('SavedSearch');
         foreach my $custom (@custom_searches) {
-            if ($custom->Description eq $Name) { $search = $custom; last }
+            if ($custom->Description eq $name) { $search = $custom; last }
         }
         unless ($search && $search->id) {
-            $m->out("Predefined search $Name not found");
+            $m->out("Predefined search $name not found");
             return;
         }
     }
@@ -105,13 +105,13 @@ $ProcessedSearchArg = { %$SearchArg, %Override } if keys %Override;
 
 $m->callback(
     %ARGS,
-    CallbackName  => 'ModifySearch',
+    Callbackname  => 'ModifySearch',
     OriginalSearch => $SearchArg,
     Search         => $ProcessedSearchArg,
 );
 
 foreach ( $SearchArg, $ProcessedSearchArg ) {
-    $_->{'Query'}  =~ s/__CurrentUser__/$session{'CurrentUser'}->id/ge;
+    $_->{'Query'}  =~ s/__CurrentUser__/Jifty->web->current_user->id/ge;
     $_->{'Format'} =~ s/__(Web(?:Path|Base|BaseURL))__/scalar RT->Config->Get($1)/ge;
     $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
 }
@@ -120,7 +120,7 @@ my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 
 </%init>
 <%ARGS>
-$Name        => undef
+$name        => undef
 $SavedSearch => undef
 %Override    => ()
 </%ARGS>

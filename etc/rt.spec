@@ -1,6 +1,6 @@
 Summary: rt Request Tracker
 
-Name: rt
+name: rt
 Version: 2.0.9pre5
 Release: 1
 Group: Applications/Web

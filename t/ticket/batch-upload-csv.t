@@ -9,11 +9,11 @@ use_ok('RT::ScripAction::CreateTickets');
 
 my $QUEUE = 'uploadtest-'.$$;
 
-my $queue_obj = RT::Model::Queue->new(RT->system_user);
-$queue_obj->create(Name => $QUEUE);
+my $queue_obj = RT::Model::Queue->new(current_user => RT->system_user);
+$queue_obj->create(name => $QUEUE);
 
-my $cf = RT::Model::CustomField->new(RT->system_user);
-my ($val,$msg)  = $cf->create(Name => 'Work Package-'.$$, Type => 'Freeform', LookupType => RT::Model::Ticket->CustomFieldLookupType, MaxValues => 1);
+my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
+my ($val,$msg)  = $cf->create(name => 'Work Package-'.$$, Type => 'Freeform', LookupType => RT::Model::Ticket->CustomFieldLookupType, MaxValues => 1);
 ok($cf->id);
 ok($val,$msg);
 ($val, $msg) = $cf->AddToObject($queue_obj);
@@ -22,7 +22,7 @@ ok($queue_obj->TicketCustomFields()->count, "We have a custom field, at least");
 
 
 my $data = <<EOF;
-id,Queue,Subject,Status,Requestor,@{[$cf->Name]}
+id,Queue,Subject,Status,Requestor,@{[$cf->name]}
 create-1,$QUEUE,hi,new,root,2.0
 create-2,$QUEUE,hello,new,root,3.0
 EOF
@@ -33,7 +33,7 @@ ok ($action->current_user->id , "WE have a current user");
 $action->Parse(Content => $data);
 my @results = $action->createByTemplate();
 
-my $tix = RT::Model::TicketCollection->new(RT->system_user);
+my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql ("Queue = '". $QUEUE."'");
 $tix->order_by( column => 'id', order => 'ASC' );
 is($tix->count, 2, '2 tickets');

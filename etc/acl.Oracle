@@ -1,7 +1,7 @@
 
 sub acl {
     my $db_user = RT->Config->Get('DatabaseUser');
-    my $db_pass = RT->Config->Get('DatabasePassword');
+    my $db_pass = RT->Config->Get('Databasepassword');
 
     return (
         "CREATE USER $db_name IDENTIFIED BY $db_pass"

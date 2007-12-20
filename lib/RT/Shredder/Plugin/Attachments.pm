@@ -51,7 +51,7 @@ use strict;
 use warnings FATAL => 'all';
 use base qw(RT::Shredder::Plugin::Base::Search);
 
-=head1 NAME
+=head1 name
 
 RT::Shredder::Plugin::Attachments - search plugin for wiping attachments.
 

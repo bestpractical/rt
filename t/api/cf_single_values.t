@@ -8,23 +8,23 @@ use RT;
 
 
 
-my $q = RT::Model::Queue->new(RT->system_user);
-my ($id,$msg) =$q->create(Name => "CF-Single-".$$);
+my $q = RT::Model::Queue->new(current_user => RT->system_user);
+my ($id,$msg) =$q->create(name => "CF-Single-".$$);
 ok($id,$msg);
 
-my $cf = RT::Model::CustomField->new(RT->system_user);
-($id,$msg) = $cf->create(Name => 'Single-'.$$, Type => 'Select', MaxValues => '1', Queue => $q->id);
-ok($id,$msg);
-
-
-($id,$msg) =$cf->AddValue(Name => 'First');
-ok($id,$msg);
-
-($id,$msg) =$cf->AddValue(Name => 'Second');
+my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
+($id,$msg) = $cf->create(name => 'Single-'.$$, Type => 'Select', MaxValues => '1', Queue => $q->id);
 ok($id,$msg);
 
 
-my $t = RT::Model::Ticket->new(RT->system_user);
+($id,$msg) =$cf->AddValue(name => 'First');
+ok($id,$msg);
+
+($id,$msg) =$cf->AddValue(name => 'Second');
+ok($id,$msg);
+
+
+my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 ($id,undef,$msg) = $t->create(Queue => $q->id,
           Subject => 'CF Test');
 

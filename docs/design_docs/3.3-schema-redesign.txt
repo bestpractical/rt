@@ -4,7 +4,7 @@
 
 TABLE CustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(200) NULL  ,
+  name varchar(200) NULL  ,
   Type varchar(200) NULL  ,                 -- Changed: see MaxValues below
   MaxValues integer,                        -- New: 1 = Single, 0 = Multiple
   Pattern varchar(255) NULL  ,              -- New: regex to validate against
@@ -18,7 +18,7 @@ TABLE CustomFields (
 TABLE ObjectCustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,               -- CustomField ID
-  ObjectId integer NOT NULL,                -- Final id of toplevel parent, or 
+  object_id integer NOT NULL,                -- Final id of toplevel parent, or 
                                             -- the object itself if ParentType
                                             -- is empty; 0 means global as usual
   SortOrder integer NOT NULL DEFAULT 0  ,   -- this is used to sort the CFs
@@ -29,20 +29,20 @@ TABLE ObjectCustomFieldValues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
   ObjectType varchar(255) NOT NULL,         -- Final target of the Object
-  ObjectId int NOT NULL  ,                  -- New: replaces the "Ticket" field
+  object_id int NOT NULL  ,                  -- New: replaces the "Ticket" field
   SortOrder integer NOT NULL DEFAULT 0  ,   -- New: for Repeated fields
 
   Content varchar(255) NULL  ,
   LargeContent LONGTEXT NULL,               -- New: data longer than 255 bytes
   ContentType varchar(80) NULL,             -- New: MIME type of LargeContent
   ContentEncoding varchar(80) NULL  ,       -- New: for binary LargeContent
-  Disabled int2 NOT NULL DEFAULT 0 ,        -- New: whether this is deleted
+  disabled int2 NOT NULL DEFAULT 0 ,        -- New: whether this is deleted
 )
 
 TABLE Transactions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   ObjectType varchar(255) NULL,             -- Final target of the Object
-  ObjectId integer NOT NULL DEFAULT 0  ,    -- New: replaces the "Ticket" field
+  object_id integer NOT NULL DEFAULT 0  ,    -- New: replaces the "Ticket" field
   TimeTaken integer NOT NULL DEFAULT 0  ,
   Type varchar(20) NULL  ,
   Field varchar(40) NULL  ,

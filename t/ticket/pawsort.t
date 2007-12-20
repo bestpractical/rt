@@ -21,26 +21,26 @@ my($ret,$msg);
 
 # ---- Create a queue to test with.
 my $queue = "PAWSortQueue-$$";
-my $queue_obj = RT::Model::Queue->new(RT->system_user);
-($ret, $msg) = $queue_obj->create(Name => $queue,
+my $queue_obj = RT::Model::Queue->new(current_user => RT->system_user);
+($ret, $msg) = $queue_obj->create(name => $queue,
                                   Description => 'queue for custom field sort testing');
 ok($ret, "$queue test queue creation. $msg");
 
 
 # ---- Create some users
 
-my $me = RT::Model::User->new(RT->system_user);
-($ret, $msg) = $me->create(Name => "Me$$", EmailAddress => $$.'create-me-1@example.com');
-($ret, $msg) = $me->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'OwnTicket');
-($ret, $msg) = $me->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'SeeQueue');
-($ret, $msg) = $me->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'ShowTicket');
-my $you = RT::Model::User->new(RT->system_user);
-($ret, $msg) = $you->create(Name => "You$$", EmailAddress => $$.'create-you-1@example.com');
-($ret, $msg) = $you->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'OwnTicket');
-($ret, $msg) = $you->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'SeeQueue');
-($ret, $msg) = $you->PrincipalObj->GrantRight(Object =>$queue_obj, Right => 'ShowTicket');
+my $me = RT::Model::User->new(current_user => RT->system_user);
+($ret, $msg) = $me->create(name => "Me$$", email => $$.'create-me-1@example.com');
+($ret, $msg) = $me->principal_object->GrantRight(Object =>$queue_obj, Right => 'OwnTicket');
+($ret, $msg) = $me->principal_object->GrantRight(Object =>$queue_obj, Right => 'SeeQueue');
+($ret, $msg) = $me->principal_object->GrantRight(Object =>$queue_obj, Right => 'ShowTicket');
+my $you = RT::Model::User->new(current_user => RT->system_user);
+($ret, $msg) = $you->create(name => "You$$", email => $$.'create-you-1@example.com');
+($ret, $msg) = $you->principal_object->GrantRight(Object =>$queue_obj, Right => 'OwnTicket');
+($ret, $msg) = $you->principal_object->GrantRight(Object =>$queue_obj, Right => 'SeeQueue');
+($ret, $msg) = $you->principal_object->GrantRight(Object =>$queue_obj, Right => 'ShowTicket');
 
-my $nobody = RT::Model::User->new(RT->system_user);
+my $nobody = RT::Model::User->new(current_user => RT->system_user);
 $nobody->load('nobody');
 
 
@@ -56,7 +56,7 @@ my @tickets = (
                [qw[6 55], $nobody],
               );
 for (@tickets) {
-  my $t = RT::Model::Ticket->new(RT->system_user);
+  my $t = RT::Model::Ticket->new(current_user => RT->system_user);
   $t->create( Queue => $queue_obj->id,
               Subject => $_->[0],
               Owner => $_->[2]->id,

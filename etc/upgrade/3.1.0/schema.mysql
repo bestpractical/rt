@@ -2,12 +2,12 @@
 
 CREATE TABLE Attributes (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Name varchar(255) NULL  ,
+  name varchar(255) NULL  ,
   Description varchar(255) NULL  ,
   Content text,
   ContentType varchar(16),
   ObjectType varchar(64),
-  ObjectId integer, # foreign key to anything
+  object_id integer, # foreign key to anything
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
@@ -15,7 +15,7 @@ CREATE TABLE Attributes (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE INDEX Attributes1 on Attributes(Name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
+CREATE INDEX Attributes1 on Attributes(name);
+CREATE INDEX Attributes2 on Attributes(ObjectType, object_id);
 
 # }}}

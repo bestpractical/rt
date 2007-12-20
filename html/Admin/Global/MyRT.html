@@ -56,7 +56,7 @@
 <& /Elements/ListActions, actions => \@actions &>
 <br />
 % for my $pane (@panes) {
-<&|/Widgets/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
+<&|/Widgets/TitleBox, title => loc('RT at a glance').': '.loc($pane->{name}), bodyclass => "" &>
 <& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &></&>
 <br />
 % }
@@ -64,7 +64,7 @@
 my @actions;
 
 my @items = map { [ "component-$_", $_ ] } sort @{ RT->Config->Get('HomepageComponents') };
-my $sys = RT::System->new( $session{'CurrentUser'} );
+my $sys = RT::System->new( Jifty->web->current_user );
 # XXX: put this in savedsearches_to_portlet_items
 for ( $m->comp( "/Search/Elements/SearchesForObject",
                 Object => $sys )) {
@@ -81,7 +81,7 @@ for ( $m->comp( "/Search/Elements/SearchesForObject",
     }
 }
 
-my ($default_portlets) = $sys->attributes->Named('HomepageSettings');
+my ($default_portlets) = $sys->attributes->named('HomepageSettings');
 
 my @panes = $m->comp(
     '/Admin/Elements/ConfigureMyRT',

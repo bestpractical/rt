@@ -49,7 +49,7 @@ package RT::Shredder::Constants;
 
 use base qw(Exporter);
 
-=head1 NAME
+=head1 name
 
 RT::Shredder::Constants -  RT::Shredder constants that is used to mark state of RT objects.
 

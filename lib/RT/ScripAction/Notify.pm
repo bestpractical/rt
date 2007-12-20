@@ -98,19 +98,19 @@ sub set_Recipients {
     }
 
     if ( $arg =~ /\bRequestor\b/ ) {
-        push @To, $ticket->Requestors->MemberEmailAddresses;
+        push @To, $ticket->Requestors->Memberemailes;
     }
 
     if ( $arg =~ /\bCc\b/ ) {
 
         #If we have a To, make the Ccs, Ccs, otherwise, promote them to To
         if (@To) {
-            push ( @Cc, $ticket->Cc->MemberEmailAddresses );
-            push ( @Cc, $ticket->QueueObj->Cc->MemberEmailAddresses  );
+            push ( @Cc, $ticket->Cc->Memberemailes );
+            push ( @Cc, $ticket->QueueObj->Cc->Memberemailes  );
         }
         else {
-            push ( @Cc, $ticket->Cc->MemberEmailAddresses  );
-            push ( @To, $ticket->QueueObj->Cc->MemberEmailAddresses  );
+            push ( @Cc, $ticket->Cc->Memberemailes  );
+            push ( @To, $ticket->QueueObj->Cc->Memberemailes  );
         }
     }
 
@@ -118,16 +118,16 @@ sub set_Recipients {
         # If we're not sending to Ccs or requestors,
         # then the Owner can be the To.
         if (@To) {
-            push ( @Bcc, $ticket->OwnerObj->EmailAddress );
+            push ( @Bcc, $ticket->OwnerObj->email );
         }
         else {
-            push ( @To, $ticket->OwnerObj->EmailAddress );
+            push ( @To, $ticket->OwnerObj->email );
         }
 
     }
     if ( $arg =~ /\bAdminCc\b/ ) {
-        push ( @Bcc, $ticket->AdminCc->MemberEmailAddresses  );
-        push ( @Bcc, $ticket->QueueObj->AdminCc->MemberEmailAddresses  );
+        push ( @Bcc, $ticket->AdminCc->Memberemailes  );
+        push ( @Bcc, $ticket->QueueObj->AdminCc->Memberemailes  );
     }
 
     if ( RT->Config->Get('UseFriendlyToLine') ) {
@@ -137,7 +137,7 @@ sub set_Recipients {
         }
     }
 
-    my $creator = $self->TransactionObj->CreatorObj->EmailAddress() ||'' ;
+    my $creator = $self->TransactionObj->CreatorObj->email() ||'' ;
 
     #Strip the sender out of the To, Cc and AdminCc and set the 
     # recipients fields used to build the message by the superclass.

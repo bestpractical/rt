@@ -60,26 +60,26 @@
 
 <tr><td align="right"><&|/l&>Condition</&>:</td><td>
 <& /Admin/Elements/SelectScripCondition,
-    Name => "Scrip-$id-ScripCondition",
+    name => "Scrip-$id-ScripCondition",
     Default => $ARGS{"Scrip-$id-ScripCondition"} || $scrip->ConditionObj->id,
 &></td></tr>
 
 <tr><td align="right"><&|/l&>Action</&>:</td><td>
 <& /Admin/Elements/SelectScripAction,
-    Name => "Scrip-$id-ScripAction",
+    name => "Scrip-$id-ScripAction",
     Default => $ARGS{"Scrip-$id-ScripAction"} || $scrip->ActionObj->id,
 &></td></tr>
 
 <tr><td align="right"><&|/l&>Template</&>:</td><td>
 <& /Admin/Elements/SelectTemplate,
-    Name => "Scrip-$id-Template",
+    name => "Scrip-$id-Template",
     Default => $ARGS{"Scrip-$id-Template"} || $scrip->TemplateObj->id,
     Queue => $Queue,
 &></td></tr>
 
 <tr><td align="right"><&|/l&>Stage</&>:</td><td>
 <& /Admin/Elements/SelectStage,
-    Name => "Scrip-$id-Stage",
+    name => "Scrip-$id-Stage",
     Default => $ARGS{"Scrip-$id-Stage"} || $scrip->Stage,
 &></td></tr>
 
@@ -132,7 +132,7 @@
 <%init>
 
 my (@actions, $SubmitLabel);
-my $scrip = RT::Model::Scrip->new( $session{'CurrentUser'} );
+my $scrip = RT::Model::Scrip->new( Jifty->web->current_user );
 
 if ( $id ) {
     $scrip->load( $id );
@@ -165,7 +165,7 @@ $Queue => undef
 <%INIT>
 return ($id) unless $id;
 
-my $scrip = RT::Model::Scrip->new( $session{'CurrentUser'} );
+my $scrip = RT::Model::Scrip->new( Jifty->web->current_user );
 if ( $id eq 'new' ) {
     return $scrip->create(
         Queue                  => $Queue,

@@ -11,25 +11,25 @@ use RT;
 {
 
 use_ok ('RT::Model::Queue');
-ok(my $testqueue = RT::Model::Queue->new(RT->system_user));
-ok($testqueue->create( Name => 'ticket tests'));
+ok(my $testqueue = RT::Model::Queue->new(current_user => RT->system_user));
+ok($testqueue->create( name => 'ticket tests'));
 isnt($testqueue->id , 0);
 use_ok('RT::Model::CustomField');
-ok(my $testcf = RT::Model::CustomField->new(RT->system_user));
-my ($ret, $cmsg) = $testcf->create( Name => 'selectmulti',
+ok(my $testcf = RT::Model::CustomField->new(current_user => RT->system_user));
+my ($ret, $cmsg) = $testcf->create( name => 'selectmulti',
                     Queue => $testqueue->id,
                                Type => 'SelectMultiple');
 ok($ret,"Created the custom field - ".$cmsg);
-($ret,$cmsg) = $testcf->AddValue ( Name => 'Value1',
+($ret,$cmsg) = $testcf->AddValue ( name => 'Value1',
                         SortOrder => '1',
                         Description => 'A testing value');
 
 ok($ret, "Added a value - ".$cmsg);
 
-ok($testcf->AddValue ( Name => 'Value2',
+ok($testcf->AddValue ( name => 'Value2',
                         SortOrder => '2',
                         Description => 'Another testing value'));
-ok($testcf->AddValue ( Name => 'Value3',
+ok($testcf->AddValue ( name => 'Value3',
                         SortOrder => '3',
                         Description => 'Yet Another testing value'));
                        
@@ -37,10 +37,10 @@ is($testcf->Values->count , 3);
 
 use_ok('RT::Model::Ticket');
 
-my $u = RT::Model::User->new(RT->system_user);
+my $u = RT::Model::User->new(current_user => RT->system_user);
 $u->load("root");
 ok ($u->id, "Found the root user");
-ok(my $t = RT::Model::Ticket->new(RT->system_user));
+ok(my $t = RT::Model::Ticket->new(current_user => RT->system_user));
 ok(my ($id, $msg) = $t->create( Queue => $testqueue->id,
                Subject => 'Testing',
                Owner => $u->id
@@ -59,13 +59,13 @@ ok(my ($cfdv, $cfdm) = $t->delete_custom_field_value(Field => $testcf->id,
 isnt ($cfdv , 0, "Deleted a custom field value: $cfdm");
 is($t->CustomFieldValues($testcf->id)->count , 0);
 
-ok(my $t2 = RT::Model::Ticket->new(RT->system_user));
+ok(my $t2 = RT::Model::Ticket->new(current_user => RT->system_user));
 ok($t2->load($id));
 is($t2->Subject, 'Testing');
 is($t2->QueueObj->id, $testqueue->id);
 is($t2->OwnerObj->id, $u->id);
 
-my $t3 = RT::Model::Ticket->new(RT->system_user);
+my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($id3, $msg3) = $t3->create( Queue => $testqueue->id,
                                 Subject => 'Testing',
                                 Owner => $u->id);
@@ -89,7 +89,7 @@ ok(require RT::Model::Ticket, "Loading the RT::Model::Ticket library");
 
 }
 {
-my $t = RT::Model::Ticket->new(RT->system_user);
+my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 
 ok( $t->create(Queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy => 'http://www.cpan.org', RefersTo => 'http://fsck.com', Subject => 'This is a subject'), "Ticket Created");
 
@@ -99,7 +99,7 @@ like ($t->ReferredToBy->first->Base , qr/cpan.org/, "Got referredtoby");
 is ($t->ResolvedObj->Unix, 0, "It hasn't been resolved - ". $t->ResolvedObj->Unix);
 
 
-my $ticket = RT::Model::Ticket->new(RT->system_user);
+my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 my $msg;
 ($id, $msg) = $ticket->create(Subject => "Foo",
                 Owner => $RT::Nobody->id,
@@ -108,40 +108,40 @@ my $msg;
                 Queue => '1'
                 );
 ok ($id, "Ticket $id was Created");
-ok(my $group = RT::Model::Group->new(RT->system_user));
+ok(my $group = RT::Model::Group->new(current_user => RT->system_user));
 ok($group->load_ticket_role_group(Ticket => $id, Type=> 'Requestor'));
 ok ($group->id, "Found the requestors object for this ticket");
 
-ok(my $jesse = RT::Model::User->new(RT->system_user), "Creating a jesse rt::user");
+ok(my $jesse = RT::Model::User->new(current_user => RT->system_user), "Creating a jesse rt::user");
 $jesse->load_by_email('jesse@example.com');
 ok($jesse->id,  "Found the jesse rt user");
 
 
-ok ($ticket->IsWatcher(Type => 'Requestor', PrincipalId => $jesse->PrincipalId), "The ticket actually has jesse at fsck.com as a requestor");
+ok ($ticket->IsWatcher(Type => 'Requestor', principal_id => $jesse->principal_id), "The ticket actually has jesse at fsck.com as a requestor");
 ok (my ($add_id, $add_msg) = $ticket->AddWatcher(Type => 'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
 ok ($add_id, "Add succeeded: ($add_msg)");
-ok(my $bob = RT::Model::User->new(RT->system_user), "Creating a bob rt::user");
+ok(my $bob = RT::Model::User->new(current_user => RT->system_user), "Creating a bob rt::user");
 $bob->load_by_email('bob@fsck.com');
 ok($bob->id,  "Found the bob rt user");
-ok ($ticket->IsWatcher(Type => 'Requestor', PrincipalId => $bob->PrincipalId), "The ticket actually has bob at fsck.com as a requestor");;
+ok ($ticket->IsWatcher(Type => 'Requestor', principal_id => $bob->principal_id), "The ticket actually has bob at fsck.com as a requestor");;
 ok ( ($add_id, $add_msg) = $ticket->deleteWatcher(Type =>'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
-ok (!$ticket->IsWatcher(Type => 'Requestor', Principal => $bob->PrincipalId), "The ticket no longer has bob at fsck.com as a requestor");;
+ok (!$ticket->IsWatcher(Type => 'Requestor', Principal => $bob->principal_id), "The ticket no longer has bob at fsck.com as a requestor");;
 
 
-$group = RT::Model::Group->new(RT->system_user);
+$group = RT::Model::Group->new(current_user => RT->system_user);
 ok($group->load_ticket_role_group(Ticket => $id, Type=> 'Cc'));
 ok ($group->id, "Found the cc object for this ticket");
-$group = RT::Model::Group->new(RT->system_user);
+$group = RT::Model::Group->new(current_user => RT->system_user);
 ok($group->load_ticket_role_group(Ticket => $id, Type=> 'AdminCc'));
 ok ($group->id, "Found the AdminCc object for this ticket");
-$group = RT::Model::Group->new(RT->system_user);
+$group = RT::Model::Group->new(current_user => RT->system_user);
 ok($group->load_ticket_role_group(Ticket => $id, Type=> 'Owner'));
 ok ($group->id, "Found the Owner object for this ticket");
-ok($group->has_member($RT::Nobody->UserObj->PrincipalObj), "the owner group has the member 'RT_System'");
+ok($group->has_member($RT::Nobody->user_object->principal_object), "the owner group has the member 'RT_System'");
 
 
 
-$t = RT::Model::Ticket->new(RT->system_user);
+$t = RT::Model::Ticket->new(current_user => RT->system_user);
 ok($t->create(Queue => 'general', Subject => 'SquelchTest'));
 
 is(scalar $t->SquelchMailTo, 0, "The ticket has no squelched recipients");
@@ -150,14 +150,14 @@ my @returned = $t->SquelchMailTo('nobody@example.com');
 
 is($#returned, 0, "The ticket has one squelched recipients");
 
-my @names = $t->attributes->Names;
+my @names = $t->attributes->names;
 is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
 @returned = $t->SquelchMailTo('nobody@example.com');
 
 
 is($#returned, 0, "The ticket has one squelched recipients");
 
-@names = $t->attributes->Names;
+@names = $t->attributes->names;
 is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
 
 my $ret;
@@ -169,16 +169,16 @@ is($#returned, -1, "The ticket has no squelched recipients". join(',',@returned)
 
 
 
-my $t1 = RT::Model::Ticket->new(RT->system_user);
+my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
 $t1->create ( Subject => 'Merge test 1', Queue => 'general', Requestor => 'merge1@example.com');
 my $t1id = $t1->id;
-my $t2 = RT::Model::Ticket->new(RT->system_user);
+my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
 $t2->create ( Subject => 'Merge test 2', Queue => 'general', Requestor => 'merge2@example.com');
 my $t2id = $t2->id;
 my $val;
 ($msg, $val) = $t1->MergeInto($t2->id);
 ok ($msg,$val);
-$t1 = RT::Model::Ticket->new(RT->system_user);
+$t1 = RT::Model::Ticket->new(current_user => RT->system_user);
 is ($t1->id, undef, "ok. we've got a blank ticket1");
 $t1->load($t1id);
 
@@ -194,20 +194,20 @@ is ($t1->Requestors->MembersObj->count, 2);
 
 {
 
-my $root = RT::Model::User->new(RT->system_user);
+my $root = RT::Model::User->new(current_user => RT->system_user);
 $root->load('root');
 ok ($root->id, "Loaded the root user");
-my $t = RT::Model::Ticket->new(RT->system_user);
+my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 $t->load(1);
 my ($val,$msg) = $t->Steal;
 ok($val,$msg);
 is ($t->OwnerObj->id, RT->system_user->id , "system_user owns the ticket");
  ($val,$msg) =$t->set_Owner('root');
 ok($val,$msg);
-is ($t->OwnerObj->Name, 'root' , "Root owns the ticket");
-my $txns = RT::Model::TransactionCollection->new(RT->system_user);
+is ($t->OwnerObj->name, 'root' , "Root owns the ticket");
+my $txns = RT::Model::TransactionCollection->new(current_user => RT->system_user);
 $txns->order_by(column => 'id', order => 'DESC');
-$txns->limit(column => 'ObjectId', value => '1');
+$txns->limit(column => 'object_id', value => '1');
 $txns->limit(column => 'ObjectType', value => 'RT::Model::Ticket');
 $txns->limit(column => 'Type', operator => '!=',  value => 'EmailRecord');
 
@@ -223,7 +223,7 @@ is($give->OldValue , RT->system_user->id , "Stolen by the systemuser");
 
 {
 
-my $tt = RT::Model::Ticket->new(RT->system_user);
+my $tt = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($id, $tid, $msg)= $tt->create(Queue => 'general',
             Subject => 'test');
 ok($id, $msg);

@@ -56,7 +56,7 @@ $fields => undef
 <%INIT>
 my $output = "";
 my $status = "200 Ok";
-my $tickets = new RT::Model::TicketCollection($session{CurrentUser});
+my $tickets = new RT::Model::TicketCollection(Jifty->web->current_user);
 
 # Parse and validate any field specifications.
 my $field  = '[a-zA-Z][a-zA-Z0-9_-]*';

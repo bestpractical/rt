@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$name%>">
 %foreach my $order (@orders) {
 <option value="<%$order%>" <%$order eq $Default && 'SELECTED' %>>
 <% shift @order_names %>
@@ -60,6 +60,6 @@ my @order_names = (loc('Ascending'), loc('Descending'));
 </%INIT>
 
 <%ARGS>
-$Name => 'SortOrder'
+$name => 'SortOrder'
 $Default => 'ASC'
 </%ARGS>

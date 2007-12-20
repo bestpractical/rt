@@ -60,7 +60,7 @@
 <& $meta->{'Widget'},
     Default      => 1,
     %{ $localize_meta->( $meta->{'WidgetArguments'} ) },
-    Name         => $option,
+    name         => $option,
     DefaultValue => scalar RT->Config->Get( $option ),
     CurrentValue => $preferences->{ $option },
 &>
@@ -70,27 +70,27 @@
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <&|/Widgets/TitleBox, title => loc( 'Cryptography' ) &>
-Preferred key: <& /Elements/SelectKey, EmailAddress => $UserObj->EmailAddress, Default => $UserObj->PreferredKey &>
+Preferred key: <& /Elements/SelectKey, email => $user_object->email, Default => $user_object->PreferredKey &>
 </&>
 % }
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <&|/Widgets/TitleBox, title => loc( 'Cryptography' ) &>
-Preferred key: <& /Elements/SelectKey, EmailAddress => $UserObj->EmailAddress, Default => $UserObj->PreferredKey &>
+Preferred key: <& /Elements/SelectKey, email => $user_object->email, Default => $user_object->PreferredKey &>
 </&>
 % }
 
-<& /Elements/Submit, Name => 'Update', Label => loc('Save changes') &>
+<& /Elements/Submit, name => 'Update', Label => loc('Save changes') &>
 </form>
 <%INIT>
 my @results;
 my $title = loc("Other preferences");
 
-my $UserObj = $session{'CurrentUser'}->UserObj;
-my $preferences = $UserObj->Preferences( RT->system );
+my $user_object = Jifty->web->current_user->user_object;
+my $preferences = $user_object->Preferences( RT->system );
 
-if ((defined $PreferredKey) && $PreferredKey ne $UserObj->first_attribute('PreferredKey')) {
-    my ($code, $msg) = $UserObj->set_attribute(Name => 'PreferredKey', Content => $PreferredKey);
+if ((defined $PreferredKey) && $PreferredKey ne $user_object->first_attribute('PreferredKey')) {
+    my ($code, $msg) = $user_object->set_attribute(name => 'PreferredKey', Content => $PreferredKey);
     push @results, loc('Preferred Key: [_1]', loc_fuzzy($msg));
 }
 
@@ -101,7 +101,7 @@ if ( $Update ) {
             Arguments    => \%ARGS,
             Default      => 1,
             %{ $meta->{'WidgetArguments'} },
-            Name         => $option,
+            name         => $option,
             DefaultValue => scalar RT->Config->Get( $option ),
         );
         if ( defined $value ) {
@@ -110,7 +110,7 @@ if ( $Update ) {
             delete $preferences->{ $option };
         }
     }
-    $UserObj->set_Preferences( RT->system, $preferences );
+    $user_object->set_Preferences( RT->system, $preferences );
 }
 my $localize_meta = sub {
     my %meta = %{ shift() };

@@ -61,8 +61,8 @@
 %   }
   <td valign="top">
     <label for="<% $id %>">
-% if ($Object->Name) {
-    <b><%$Object->Name%></b><br />
+% if ($Object->name) {
+    <b><%$Object->name%></b><br />
 % } else {
     <i>(<%loc("no name")%>)</i><br />
 % }

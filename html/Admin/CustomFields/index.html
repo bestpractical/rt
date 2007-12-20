@@ -66,7 +66,7 @@
 %    }
 %    
 <li>
-<a href="Modify.html?id=<% $CustomFieldObj->id %>"><% $CustomFieldObj->Name %>: <% $CustomFieldObj->Description %></a>
+<a href="Modify.html?id=<% $CustomFieldObj->id %>"><% $CustomFieldObj->name %>: <% $CustomFieldObj->Description %></a>
 </li>
 % }
 % if ($prev_lookup) {
@@ -82,7 +82,7 @@
 % }
 </select>
 <br />
-<input type="checkbox" class="checkbox" name="ShowDisabled" value="1" <% $ShowDisabled && 'checked' %> />
+<input type="checkbox" class="checkbox" name="Showdisabled" value="1" <% $Showdisabled && 'checked' %> />
 <&|/l&>Include disabled custom fields in listing.</&>
 <br />
 
@@ -91,7 +91,7 @@
 
 <%args>
 $Type => ''
-$ShowDisabled => 0
+$Showdisabled => 0
 </%args>
 <%INIT>
 $Type ||= $ARGS{'type'} || '';
@@ -100,9 +100,9 @@ if ( !$Type && $ARGS{'type'} ) {
     $RT::Logger->warning("'type' argument is deprecated use 'Type' instead");
 }
 
-my $CustomFields = RT::Model::CustomFieldCollection->new($session{'CurrentUser'});
+my $CustomFields = RT::Model::CustomFieldCollection->new(Jifty->web->current_user);
 $CustomFields->find_all_rows;
-$CustomFields->{'find_disabled_rows'} = 1 if $ShowDisabled;
+$CustomFields->{'find_disabled_rows'} = 1 if $Showdisabled;
 $CustomFields->LimitToLookupType( $Type ) if $Type;
-$CustomFields->order_by( { column => 'LookupType' }, { column => 'Name' } );
+$CustomFields->order_by( { column => 'LookupType' }, { column => 'name' } );
 </%INIT>

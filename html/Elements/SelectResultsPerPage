@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 %# TODO: Better default handling
 
-<select name="<% $Name %>">
+<select name="<% $name %>">
 % foreach my $value ( @values ) {
 <option value="<% $value %>" <% $value == $Default? 'selected': '' %>>
 <% shift @labels %>
@@ -62,7 +62,7 @@ $Default = 50 unless defined $Default;
 </%INIT>
 <%ARGS>
 
-$Name => undef
+$name => undef
 $Default => 50
 
 </%ARGS>

@@ -125,8 +125,8 @@ sub WriteDownTransaction {
 
     my $props = $self->_MakeHash( $args{'Object'} );
     $props->{'Object'} = delete $props->{'ObjectType'};
-    $props->{'Object'} .= '-'. delete $props->{'ObjectId'}
-        if $props->{'ObjectId'};
+    $props->{'Object'} .= '-'. delete $props->{'object_id'}
+        if $props->{'object_id'};
     return 1 if $skip_refs_to{ $props->{'Object'} };
 
     delete $props->{$_} foreach grep
@@ -139,10 +139,10 @@ sub WriteDownScrip {
     my $self = shift;
     my %args = ( Object => undef, @_ );
     my $props = $self->_MakeHash( $args{'Object'} );
-    $props->{'Action'} = $args{'Object'}->ActionObj->Name;
-    $props->{'Condition'} = $args{'Object'}->ConditionObj->Name;
-    $props->{'Template'} = $args{'Object'}->TemplateObj->Name;
-    $props->{'Queue'} = $args{'Object'}->QueueObj->Name || 'global';
+    $props->{'Action'} = $args{'Object'}->ActionObj->name;
+    $props->{'Condition'} = $args{'Object'}->ConditionObj->name;
+    $props->{'Template'} = $args{'Object'}->TemplateObj->name;
+    $props->{'Queue'} = $args{'Object'}->QueueObj->name || 'global';
 
     return $self->_WriteDownHash( $args{'Object'}, $props );
 }
@@ -153,7 +153,7 @@ sub _MakeHash {
     foreach (grep exists $hash->{$_}, qw(Creator LastUpdatedBy)) {
         my $method = $_ .'Obj';
         my $u = $obj->$method();
-        $hash->{ $_ } = $u->EmailAddress || $u->Name || $u->_AsString;
+        $hash->{ $_ } = $u->email || $u->name || $u->_AsString;
     }
     return $hash;
 }

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % if ( $Show ne 'Groups' ) {
 <b><&|/l&>Users</&></b>
-<select multiple name="<% $Name %>Users" size="10">
+<select multiple name="<% $name %>Users" size="10">
 % while ( my $user = $users->next ) {
 % next if $SkipUsers->{ $user->id };
 <option value="User-<% $user->id %>"><& /Elements/ShowUser, User => $user &></option>
@@ -58,16 +58,16 @@
 
 % if ( $Show ne 'Users' ) {
 <b><&|/l&>Groups</&></b>
-<select multiple name="<% $Name %>Groups" size="10">
+<select multiple name="<% $name %>Groups" size="10">
 % while ( my $group = $groups->next ) {
 % next if $SkipGroups->{ $group->id };
-<option value="Group-<% $group->id %>"><% $group->Name %></option>
+<option value="Group-<% $group->id %>"><% $group->name %></option>
 % }
 </select>
 % }
 
 <%INIT>
-my $users = new RT::Model::UserCollection($session{'CurrentUser'});
+my $users = new RT::Model::UserCollection(Jifty->web->current_user);
 
 $users->limit(
     column           => 'id',
@@ -81,9 +81,9 @@ $users->limit(
     operator        => '!=',
     entry_aggregator => 'AND'
 );
-$users->LimitToPrivileged();
+$users->LimitToprivileged();
 
-my $groups = new RT::Model::GroupCollection($session{'CurrentUser'});
+my $groups = new RT::Model::GroupCollection(Jifty->web->current_user);
 
 # self-recursive group membership considered harmful!
 $groups->limit(column => 'id', value => $Group->id, operator => '!=' );
@@ -92,7 +92,7 @@ $groups->limit(column => 'Domain', operator => '=', value => 'UserDefined');
 
 </%INIT>
 <%ARGS>
-$Name => 'Users'
+$name => 'Users'
 $Show => 'All'
 $Group
 $SkipUsers => {}

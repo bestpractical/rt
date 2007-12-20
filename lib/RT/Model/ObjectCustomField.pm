@@ -59,7 +59,7 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column CustomField =>  type is 'int(11)', max_length is 11, default is '0';
     column Creator =>  type is 'int(11)', max_length is 11, default is '0';
-    column ObjectId =>  type is 'int(11)', max_length is 11, default is '0';
+    column object_id =>  type is 'int(11)', max_length is 11, default is '0';
     column LastUpdatedBy =>  type is 'int(11)', max_length is 11, default is '0';
     column SortOrder =>  type is 'int(11)', max_length is 11, default is '0';
     column Created =>  type is 'datetime',  default is '';
@@ -74,7 +74,7 @@ sub create {
     my $self = shift;
     my %args = (
         CustomField => 0,
-        ObjectId    => 0,
+        object_id    => 0,
         SortOrder   => undef,
         @_
     );
@@ -87,8 +87,8 @@ sub create {
 
     #XXX: Where is ACL check for 'AssignCustomFields'?
 
-    my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new($self->current_user);
-    $ObjectCFs->LimitToObjectId( $args{'ObjectId'} );
+    my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new;
+    $ObjectCFs->LimitToobject_id( $args{'object_id'} );
     $ObjectCFs->limit_to_custom_field( $cf->id );
     $ObjectCFs->LimitToLookupType( $cf->LookupType );
     if ( my $first = $ObjectCFs->first ) {
@@ -97,8 +97,8 @@ sub create {
     }
 
     unless ( defined $args{'SortOrder'} ) {
-        my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new( RT->system_user );
-        $ObjectCFs->LimitToObjectId( $args{'ObjectId'} );
+        my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new(current_user => RT->system_user );
+        $ObjectCFs->LimitToobject_id( $args{'object_id'} );
         $ObjectCFs->LimitToLookupType( $cf->LookupType );
         $ObjectCFs->order_by( column => 'SortOrder', order => 'DESC' );
         if ( my $first = $ObjectCFs->first ) {
@@ -110,7 +110,7 @@ sub create {
 
     return $self->SUPER::create(
         CustomField => $args{'CustomField'},
-        ObjectId    => $args{'ObjectId'},
+        object_id    => $args{'object_id'},
         SortOrder   => $args{'SortOrder'},
     );
 }
@@ -118,8 +118,8 @@ sub create {
 sub delete {
     my $self = shift;
 
-    my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new($self->current_user);
-    $ObjectCFs->LimitToObjectId($self->ObjectId);
+    my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new;
+    $ObjectCFs->LimitToobject_id($self->object_id);
     $ObjectCFs->LimitToLookupType($self->CustomFieldObj->LookupType);
 
     # Move everything below us up
@@ -136,7 +136,7 @@ sub delete {
 sub CustomFieldObj {
     my $self = shift;
     my $id = shift || $self->CustomField;
-    my $CF = RT::Model::CustomField->new( $self->current_user );
+    my $CF = RT::Model::CustomField->new;
     $CF->load( $id );
     return $CF;
 }

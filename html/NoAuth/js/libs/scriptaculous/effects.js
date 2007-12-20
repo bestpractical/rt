@@ -81,11 +81,11 @@ Element.collectTextNodes = function(element) {
   }).flatten().join('');
 }
 
-Element.collectTextNodesIgnoreClass = function(element, className) {  
+Element.collectTextNodesIgnoreClass = function(element, classname) {  
   return $A($(element).childNodes).collect( function(node) {
     return (node.nodeType==3 ? node.nodeValue : 
-      ((node.hasChildNodes() && !Element.hasClassName(node,className)) ? 
-        Element.collectTextNodesIgnoreClass(node, className) : ''));
+      ((node.hasChildNodes() && !Element.hasClassname(node,classname)) ? 
+        Element.collectTextNodesIgnoreClass(node, classname) : ''));
   }).flatten().join('');
 }
 
@@ -279,13 +279,13 @@ Object.extend(Object.extend(Effect.ScopedQueue.prototype, Enumerable), {
 
 Effect.Queues = {
   instances: $H(),
-  get: function(queueName) {
-    if(typeof queueName != 'string') return queueName;
+  get: function(queuename) {
+    if(typeof queuename != 'string') return queuename;
     
-    if(!this.instances[queueName])
-      this.instances[queueName] = new Effect.ScopedQueue();
+    if(!this.instances[queuename])
+      this.instances[queuename] = new Effect.ScopedQueue();
       
-    return this.instances[queueName];
+    return this.instances[queuename];
   }
 }
 Effect.Queue = Effect.Queues.get('global');
@@ -356,9 +356,9 @@ Effect.Base.prototype = {
         'global' : this.options.queue.scope).remove(this);
     this.state = 'finished';
   },
-  event: function(eventName) {
-    if(this.options[eventName + 'Internal']) this.options[eventName + 'Internal'](this);
-    if(this.options[eventName]) this.options[eventName](this);
+  event: function(eventname) {
+    if(this.options[eventname + 'Internal']) this.options[eventname + 'Internal'](this);
+    if(this.options[eventname]) this.options[eventname](this);
   },
   inspect: function() {
     var data = $H();
@@ -997,7 +997,7 @@ Object.extend(Object.extend(Effect.Morph.prototype, Effect.Base.prototype), {
         });
         this.style = cssText.parseStyle();
         options.afterFinishInternal = function(effect){
-          effect.element.addClassName(effect.options.style);
+          effect.element.addClassname(effect.options.style);
           effect.transforms.each(function(transform) {
             if(transform.style != 'opacity')
               effect.element.style[transform.style.camelize()] = '';

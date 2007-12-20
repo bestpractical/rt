@@ -52,7 +52,7 @@ use warnings;
 
 use base qw/Tree::Simple/;
 
-=head1 NAME
+=head1 name
 
   RT::Interface::Web::QueryBuilder::Tree - subclass of Tree::Simple used in Query Builder
 

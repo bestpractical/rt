@@ -54,7 +54,7 @@ if ($arg =~ /^(\d+)\//) {
 else {
     Abort("Corrupted customfieldvalue URL.");
 }
-my $OCFV = RT::Model::ObjectCustomFieldValue->new($session{'CurrentUser'});
+my $OCFV = RT::Model::ObjectCustomFieldValue->new(Jifty->web->current_user);
 $OCFV->load($id) || Abort("OCFV '$id' could not be loaded");
 
 unless ($OCFV->id) {

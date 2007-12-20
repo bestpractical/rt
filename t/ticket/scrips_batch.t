@@ -9,7 +9,7 @@ use warnings;
 use_ok('RT');
 use_ok('RT::Model::Ticket');
 
-my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
+my $queue = RT::Test->load_or_create_queue( name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
 
 RT->Config->set( UseTransactionBatch => 1 );
@@ -21,7 +21,7 @@ my $sid;
 {
     $m->follow_link_ok(  text => 'Configuration'  );
     $m->follow_link_ok(  text => 'Queues'  );
-    $m->follow_link_ok(  text => $queue->Name  );
+    $m->follow_link_ok(  text => $queue->name  );
     $m->follow_link_ok(  text => 'Scrips'  );
     $m->follow_link_ok(  text => 'New scrip'  );
     $m->form_number(3);
@@ -75,7 +75,7 @@ END
     $m->field( "UpdateContent" => 'resolve it' );
     $m->click('SubmitTicket');
 
-    is_deeply parse_handle($tmp_fh), ['Comment', 'Status'], 'Comment + Resolve';
+    is_deeply parse_handle($tmp_fh), ['comment', 'Status'], 'comment + Resolve';
 }
 
 sub value_name {

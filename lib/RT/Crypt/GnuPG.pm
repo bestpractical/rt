@@ -54,7 +54,7 @@ use IO::Handle;
 use GnuPG::Interface;
 use RT::EmailParser ();
 
-=head1 NAME
+=head1 name
 
 RT::Crypt::GnuPG - encrypt/decrypt and sign/verify email messages with the GNU Privacy Guard (GPG)
 
@@ -1389,8 +1389,8 @@ sub ParseStatus {
             }
             $res{'Message'} = ucfirst( lc( $res{'Status'} eq 'DONE'? 'GOOD': $res{'Status'} ) ) .' passphrase';
             $res{'User'} = ( $user_hint{ $res{'MainKey'} } ||= {} ) if $res{'MainKey'};
-            if ( exists $res{'User'}->{'EmailAddress'} ) {
-                $res{'Message'} .= ' for '. $res{'User'}->{'EmailAddress'};
+            if ( exists $res{'User'}->{'email'} ) {
+                $res{'Message'} .= ' for '. $res{'User'}->{'email'};
             } else {
                 $res{'Message'} .= " for '0x$key_id'";
             }
@@ -1521,7 +1521,7 @@ sub ParseStatus {
                 KeyFingerprint => $props[5],
                 User           => $user_hint{ $latest_user_main_key },
             };
-            $res[-1]->{Message} .= ' by '. $user_hint{ $latest_user_main_key }->{'EmailAddress'}
+            $res[-1]->{Message} .= ' by '. $user_hint{ $latest_user_main_key }->{'email'}
                 if $user_hint{ $latest_user_main_key };
         }
         elsif ( $keyword eq 'INV_RECP' ) {
@@ -1563,7 +1563,7 @@ sub _ParseUserHint {
     return (
         MainKey      => $main_key_id,
         String       => $user_str,
-        EmailAddress => (map $_->address, Mail::Address->parse( $user_str ))[0],
+        email => (map $_->address, Mail::Address->parse( $user_str ))[0],
     );
 }
 
@@ -1655,7 +1655,7 @@ sub CheckRecipients {
 
             $status = 0;
             my %issue = (
-                EmailAddress => $address,
+                email => $address,
                 $user? (User => $user) : (),
                 Keys => undef,
             );
@@ -1671,7 +1671,7 @@ sub CheckRecipients {
         # classify errors
         $status = 0;
         my %issue = (
-            EmailAddress => $address,
+            email => $address,
             $user? (User => $user) : (),
             Keys => undef,
         );
@@ -1904,7 +1904,7 @@ sub _ParseDate {
     return $value unless $value;
 
     require RT::Date;
-    my $obj = RT::Date->new( RT->system_user );
+    my $obj = RT::Date->new(current_user => RT->system_user );
     # unix time
     if ( $value =~ /^\d+$/ ) {
         $obj->set( value => $value );

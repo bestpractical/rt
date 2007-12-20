@@ -10,11 +10,11 @@ use RT;
 ok (require RT::Model::Scrip);
 
 
-my $q = RT::Model::Queue->new(RT->system_user);
-$q->create(Name => 'ScripTest');
+my $q = RT::Model::Queue->new(current_user => RT->system_user);
+$q->create(name => 'ScripTest');
 ok($q->id, "Created a scriptest queue");
 
-my $s1 = RT::Model::Scrip->new(RT->system_user);
+my $s1 = RT::Model::Scrip->new(current_user => RT->system_user);
 my ($val, $msg) =$s1->create( Queue => $q->id,
              ScripAction => 'User Defined',
              ScripCondition => 'User Defined',
@@ -25,7 +25,7 @@ my ($val, $msg) =$s1->create( Queue => $q->id,
     );
 ok($val,$msg);
 
-my $ticket = RT::Model::Ticket->new(RT->system_user);
+my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($tv,$ttv,$tm) = $ticket->create(Queue => $q->id,
                                     Subject => "hair on fire",
                                     );
@@ -34,7 +34,7 @@ ok($tv, $tm);
 is ($ticket->Priority , '87', "Ticket priority is set right");
 
 
-my $ticket2 = RT::Model::Ticket->new(RT->system_user);
+my $ticket2 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($t2v,$t2tv,$t2m) = $ticket2->create(Queue => $q->id,
                                     Subject => "hair in water",
                                     );

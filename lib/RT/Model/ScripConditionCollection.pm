@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-=head1 NAME
+=head1 name
 
   RT::Model::ScripConditionCollection - Collection of Action objects
 
@@ -100,7 +100,7 @@ sub LimitToType  {
 # {{{ sub new_item 
 sub new_item  {
   my $self = shift;
-  return(RT::Model::ScripCondition->new($self->current_user));
+  return(RT::Model::ScripCondition->new);
 }
 # }}}
 

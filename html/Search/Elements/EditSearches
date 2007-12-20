@@ -48,13 +48,13 @@
 <&| /Widgets/TitleBox, title => loc($Title)&>
 
 %# Hide all the save functionality if the user shouldn't see it.
-% if ($session{'CurrentUser'}->has_right( Right => 'CreateSavedSearch',
+% if (Jifty->web->current_user->has_right( Right => 'CreateSavedSearch',
 %                                        Object=> RT->system )) {
 <&|/l&>Privacy:</&>
 % if ( $Object && $Object->id ) {
 <& SearchPrivacy, Object => $Object->Object &>
 % } else {
-<& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@Objects &>
+<& SelectSearchObject, name => 'SavedSearchOwner', Objects => \@Objects &>
 % }
 <br />
 <&|/l&>Description</&>:
@@ -77,13 +77,13 @@
 <br />
 <hr />
 <&|/l&>load saved search:</&>
-<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>
+<& SelectSearchesForObjects, name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>
 <input type="submit" value="<% loc('Load') %>" class="button" />
 
 </&>
 
 <%INIT>
-return unless $session{'CurrentUser'}->has_right(
+return unless Jifty->web->current_user->has_right(
     Right  => 'LoadSavedSearch',
     Object => RT->system,
 );
@@ -96,9 +96,9 @@ my $Dirty = $m->comp(
 );
 
 use RT::SavedSearches;
-my @Objects = RT::SavedSearches->new($session{'CurrentUser'})->_PrivacyObjects;
-push @Objects, RT::System->new( $session{'CurrentUser'} )
-    if $session{'CurrentUser'}->has_right( Object=> RT->system,
+my @Objects = RT::SavedSearches->new(Jifty->web->current_user)->_PrivacyObjects;
+push @Objects, RT::System->new( Jifty->web->current_user )
+    if Jifty->web->current_user->has_right( Object=> RT->system,
                                           Right => 'SuperUser' );
 
 </%INIT>
@@ -143,7 +143,7 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
     my ($container, $id) = _parse_saved_search( $SavedSearch->{'Id'} );
     if ( $container && $container->id ) {
         # We have the object the entry is an attribute on; delete the entry...
-        $container->attributes->delete_entry( Name => 'SavedSearch', id => $id );
+        $container->attributes->delete_entry( name => 'SavedSearch', id => $id );
     }
     $SavedSearch->{'Id'}          = 'new';
     $SavedSearch->{'Object'}      = undef;
@@ -182,7 +182,7 @@ my $desc = $SavedSearch->{'Description'};
 if ( $obj && $obj->id ) {
     # permission check
     if ($obj->Object->isa('RT::System')) {
-        unless ($session{'CurrentUser'}->has_right( Object=> RT->system, Right => 'SuperUser')) {
+        unless (Jifty->web->current_user->has_right( Object=> RT->system, Right => 'SuperUser')) {
             push @results, [ loc("No permission to save system-wide searches"), 0 ];
             return @results;
         }
@@ -192,20 +192,20 @@ if ( $obj && $obj->id ) {
     $obj->set_Description( $desc );
 }
 elsif ( $id eq 'new' ) {
-    my $saved_search = RT::SavedSearch->new( $session{'CurrentUser'} );
+    my $saved_search = RT::SavedSearch->new( Jifty->web->current_user );
     my ($status, $msg) = $saved_search->Save(
         Privacy      => $ARGS{'SavedSearchOwner'},
-        Name         => $desc,
+        name         => $desc,
         SearchParams => $Query,
     );
 
     if ( $status ) {
         $SavedSearch->{'Object'} =
-            $session{'CurrentUser'}->UserObj->attributes->WithId( $saved_search->id );
+            Jifty->web->current_user->user_object->attributes->WithId( $saved_search->id );
         # Build new SearchId
         $SavedSearch->{'Id'} =
-                ref( $session{'CurrentUser'}->UserObj ) . '-'
-                    . $session{'CurrentUser'}->UserObj->id
+                ref( Jifty->web->current_user->user_object ) . '-'
+                    . Jifty->web->current_user->user_object->id
                     . '-SavedSearch-'
                     . $SavedSearch->{'Object'}->id;
     }

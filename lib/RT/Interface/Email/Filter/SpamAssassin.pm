@@ -71,7 +71,7 @@ sub GetCurrentUser {
 
 }
 
-=head1 NAME
+=head1 name
 
 RT::Interface::Email::Filter::SpamAssassin - Spam filter for RT
 

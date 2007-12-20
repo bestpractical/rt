@@ -58,28 +58,28 @@
 <em><&|/l&>No queues matching search criteria found.</&></em>
 % } else {
 <& /Elements/CollectionList,
-    order_by => 'Name',
+    order_by => 'name',
     Order => 'ASC',
     BaseURL => RT->Config->Get('WebPath') .'/Admin/Queues/index.html?',
     %ARGS,
     Format => $Format,
     Collection => $queues,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order order_by FindDisabledQueues)],
+    PassArguments => [qw(Format Rows Page Order order_by FinddisabledQueues)],
 &>
 % }
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Queues/index.html">
-<input type="checkbox" class="checkbox" name="FindDisabledQueues" value="1" <% $FindDisabledQueues? 'checked': '' %> />
+<input type="checkbox" class="checkbox" name="FinddisabledQueues" value="1" <% $FinddisabledQueues? 'checked': '' %> />
 <&|/l&>Include disabled queues in listing.</&>
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
 
 <%INIT>
 my ($queue, $caption);
-my $queues = new RT::Model::QueueCollection($session{'CurrentUser'});
+my $queues = new RT::Model::QueueCollection(Jifty->web->current_user);
 $queues->find_all_rows();
 
-if ($FindDisabledQueues) {
+if ($FinddisabledQueues) {
     $caption = loc("All Queues");
     $queues->{'find_disabled_rows'} = 1;
 } else {
@@ -87,11 +87,11 @@ if ($FindDisabledQueues) {
 }
 
 $Format ||= q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</a>/TITLE:#'}
-    .q{,'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-    .q{,__Description__,__Address__,__Priority__,__DefaultDueIn__,__Disabled__};
+    .q{,'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__name__</a>/TITLE:name'}
+    .q{,__Description__,__Address__,__Priority__,__DefaultDueIn__,__disabled__};
 
 </%INIT>
 <%ARGS>
-$FindDisabledQueues => 0
+$FinddisabledQueues => 0
 $Format             => undef
 </%ARGS>

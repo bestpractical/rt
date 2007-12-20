@@ -54,7 +54,7 @@
 % my $Groups = $Group->GroupMembersObj( Recursively => $Recursively );
 % $Groups->LimitToUserDefinedGroups;
 % while (my $group = $Groups->next) {
-<&|/l&>Group</&>: <% $group->Name %><br />
+<&|/l&>Group</&>: <% $group->name %><br />
 % }
 
 <%ARGS>

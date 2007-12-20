@@ -1,6 +1,6 @@
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org> 
 
-=head1 NAME
+=head1 name
 
   RT::Model::Template - RT's template object
 
@@ -33,7 +33,7 @@ use base qw'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 column        Queue => max_length is 11,  type is 'int(11)', default is '0';
-column        Name => max_length is 200,  type is 'varchar(200)', default is '';
+column        name => max_length is 200,  type is 'varchar(200)', default is '';
 column        Description => max_length is 255,  type is 'varchar(255)', default is '';
 column        Type => max_length is 16,  type is 'varchar(16)', default is '';
 column        Language => max_length is 16,  type is 'varchar(16)', default is '';
@@ -97,7 +97,7 @@ sub load {
     return undef unless $identifier;
 
     if ( $identifier =~ /\D/ ) {
-        return $self->load_by_cols( 'Name', $identifier );
+        return $self->load_by_cols( 'name', $identifier );
     }
     return $self->load_by_id( $identifier );
 }
@@ -106,9 +106,9 @@ sub load {
 
 # {{{ sub loadGlobalTemplate
 
-=head2 LoadGlobalTemplate NAME
+=head2 LoadGlobalTemplate name
 
-Load the global template with the name NAME
+Load the global template with the name name
 
 =cut
 
@@ -116,16 +116,16 @@ sub loadGlobalTemplate {
     my $self = shift;
     my $id   = shift;
 
-    return ( $self->loadQueueTemplate( Queue => 0, Name => $id ) );
+    return ( $self->loadQueueTemplate( Queue => 0, name => $id ) );
 }
 
 # }}}
 
 # {{{ sub loadQueueTemplate
 
-=head2  LoadQueueTemplate (Queue => QUEUEID, Name => NAME)
+=head2  LoadQueueTemplate (Queue => QUEUEID, name => name)
 
-Loads the Queue template named NAME for Queue QUEUE.
+Loads the Queue template named name for Queue QUEUE.
 
 =cut
 
@@ -133,11 +133,11 @@ sub loadQueueTemplate {
     my $self = shift;
     my %args = (
         Queue => undef,
-        Name  => undef,
+        name  => undef,
         @_
     );
 
-    return ( $self->load_by_cols( Name => $args{'Name'}, Queue => $args{'Queue'} ) );
+    return ( $self->load_by_cols( name => $args{'name'}, Queue => $args{'Queue'} ) );
 
 }
 
@@ -147,8 +147,8 @@ sub loadQueueTemplate {
 
 =head2 Create
 
-Takes a paramhash of Content, Queue, Name and Description.
-Name should be a unique string identifying this Template.
+Takes a paramhash of Content, Queue, name and Description.
+name should be a unique string identifying this Template.
 Description and Content should be the template's title and content.
 Queue should be 0 for a global template and the queue # for a queue-specific 
 template.
@@ -166,7 +166,7 @@ sub create {
         Queue       => 0,
         Description => '[no description]',
         Type        => 'Action', #By default, template are 'Action' templates
-        Name        => undef,
+        name        => undef,
         @_
     );
 
@@ -190,7 +190,7 @@ sub create {
         Content     => $args{'Content'},
         Queue       => $args{'Queue'},
         Description => $args{'Description'},
-        Name        => $args{'Name'},
+        name        => $args{'name'},
     );
 
     return ($result);
@@ -355,7 +355,7 @@ sub _ParseContent {
         $args{ $key } = \$val;
     }
 
-    $args{'Requestor'} = eval { $args{'Ticket'}->Requestors->UserMembersObj->first->Name };
+    $args{'Requestor'} = eval { $args{'Ticket'}->Requestors->UserMembersObj->first->name };
     $args{'rtname'}    = RT->Config->Get('rtname');
     if ( $args{'Ticket'} ) {
         $args{'loc'} = sub { $args{'Ticket'}->loc(@_) };
@@ -401,7 +401,7 @@ sub current_user_has_queue_right {
 
 sub QueueObj {
     my $self = shift;
-    my $q = RT::Model::Queue->new($self->current_user);
+    my $q = RT::Model::Queue->new;
     $q->load($self->__value('Queue'));
     return $q;
 }

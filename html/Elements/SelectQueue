@@ -46,19 +46,19 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ($Lite) {
-%     my $d = new RT::Model::Queue($session{'CurrentUser'});
+%     my $d = new RT::Model::Queue(Jifty->web->current_user);
 %     $d->load($Default);
-<input name="<%$Name%>" size="25" value="<%$d->Name%>" />
+<input name="<%$name%>" size="25" value="<%$d->name%>" />
 % }
 % else {
-<select name="<%$Name%>">
+<select name="<%$name%>">
 %     if ($ShowNullOption) {
   <option value="">-</option>
 %     }
 %     for my $queue (@{$session{$cache_key}}) {
-  <option value="<% ($NamedValues ? $queue->{Name} : $queue->{Id}) %>" 
+  <option value="<% ($namedValues ? $queue->{name} : $queue->{Id}) %>" 
   <% ($queue->{Id} eq ($Default || '') ? 'selected="selected"' : '') |n %>>
-    <%$queue->{Name}%>
+    <%$queue->{name}%>
 %             if ($Verbose and $queue->{Description}) {
     (<%$queue->{Description}%>)
 %             }
@@ -70,26 +70,26 @@
 $CheckQueueRight => 'CreateTicket'
 $ShowNullOption => 1
 $ShowAllQueues => 1
-$Name => undef
+$name => undef
 $Verbose => undef
-$NamedValues => 0
+$namedValues => 0
 $Default => 0
 $Lite => 0
 </%args>
 <%init>
 my $cache_key = "SelectQueue---"
-                . $session{'CurrentUser'}->id
+                . Jifty->web->current_user->id
                 . "---$CheckQueueRight---$ShowAllQueues";
 
 if (not defined $session{$cache_key} and not $Lite) {
-    my $q = new RT::Model::QueueCollection($session{'CurrentUser'});
+    my $q = new RT::Model::QueueCollection(Jifty->web->current_user);
     $q->find_all_rows;
     
     while (my $queue = $q->next) {
         if ($ShowAllQueues || $queue->current_user_has_right($CheckQueueRight)) {
             push @{$session{$cache_key}}, {
                 Id          => $queue->id,
-                Name        => $queue->Name,
+                name        => $queue->name,
                 Description => $queue->Description,
             };
         }

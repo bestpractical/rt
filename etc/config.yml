@@ -2,50 +2,33 @@
 framework: 
   AdminMode: 1
   ApplicationClass: RT
-  ApplicationName: RT
+  Applicationname: RT
   ApplicationUUID: EAFC6FF2-5E8D-11DC-9FAD-91A9684ED971
   ConfigFileVersion: 2
   Database: 
     CheckSchema: 0
-    Database: rt3
+    Database: rt4
     Driver: mysql
     Host: localhost
-    Password: ''
+    password: ''
     RecordBaseClass: Jifty::DBI::Record::Cachable
     User: root
     Version: 0.0.1
   DevelMode: 1
   L10N: 
     PoDir: share/po
-  LogLevel: WARN
+  LogLevel: DEBUG
   Mailer: Sendmail
   MailerArgs: []
 
   Plugins: 
-    - 
-      LetMe: {}
-
-    - 
-      SkeletonApp: {}
-
-    - 
-      REST: {}
-
-    - 
-      Halo: {}
-
-    - 
-      ErrorTemplates: {}
-
-    - 
-      OnlineDocs: {}
-
-    - 
-      CompressedCSSandJS: {}
-
-    - 
-      AdminUI: {}
-
+    - LetMe: {}
+    - SkeletonApp: {}
+    - REST: {}
+    - ErrorTemplates: {}
+    - CompressedCSSandJS: {}
+    - User: {}
+    - Authentication::Password: {}
   PubSub: 
     Backend: Memcached
     Enable: ~

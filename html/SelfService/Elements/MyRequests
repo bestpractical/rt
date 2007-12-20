@@ -56,7 +56,7 @@
 </&>
 
 <%INIT>
-my $id = $session{'CurrentUser'}->id;
+my $id = Jifty->web->current_user->id;
 my $Query = "( "
     . join( ' OR ', map "$_.id = $id", @roles )
     . ")";
@@ -72,7 +72,7 @@ my @Format = qq{
    '<B><A HREF="}. RT->Config->Get('WebPath') .qq{/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
    Status,
    Requestors,
-   OwnerName};
+   Ownername};
 </%INIT>
 <%ARGS>
 $friendly_status => loc('open')

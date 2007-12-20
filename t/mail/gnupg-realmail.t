@@ -36,13 +36,13 @@ $m->content_like(qr/rt-recipient\@example.com.* - never/, 'has key info.');
 diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
 my $everyone;
 {
-    $everyone = RT::Model::Group->new( RT->system_user );
+    $everyone = RT::Model::Group->new(current_user => RT->system_user );
     $everyone->load_system_internal_group('Everyone');
     ok $everyone->id, "loaded 'everyone' group";
 }
 
 RT::Test->set_rights(
-    Principal => $everyone->PrincipalObj,
+    Principal => $everyone->principal_object,
     Right => ['CreateTicket'],
 );
 
@@ -85,7 +85,7 @@ sub email_ok {
     is ($status >> 8, 0, "$eid: The mail gateway exited normally");
     ok ($id, "$eid: got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( RT->system_user );
+    my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
     $tick->load( $id );
     ok ($tick->id, "$eid: loaded ticket #$id");
 
@@ -138,12 +138,12 @@ sub email_ok {
         # signed messages should sign each attachment too
         if ($usage =~ /signed/) {
             my $sig = pop @attachments;
-            ok ($sig->Id, "$eid: loaded attachment.sig object");
+            ok ($sig->id, "$eid: loaded attachment.sig object");
             my $acontent = $sig->Content;
         }
 
         my ($a) = grep $_->Filename, @attachments;
-        ok ($a && $a->Id, "$eid: found attachment with filename");
+        ok ($a && $a->id, "$eid: found attachment with filename");
 
         my $acontent = $a->Content;
         if ($attachment =~ /binary/)

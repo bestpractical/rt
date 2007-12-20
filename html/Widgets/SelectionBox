@@ -55,7 +55,7 @@
 %# <%init>:
 %# my $sel = $m->comp ('/Widgets/SelectionBox:new',
 %#		  Action => me.html',
-%#		  Name => 'my-selection',
+%#		  name => 'my-selection',
 %#		  Available => \@items,
 %#                # you can do things with @{$sel->{Current}} in the 
 %#                # OnSubmit callback
@@ -91,14 +91,14 @@ return \%ARGS;
 
 <%method process>
 <%init>
-unless ($ARGS{$self->{Name}.'-Submit'}) {
+unless ($ARGS{$self->{name}.'-Submit'}) {
     # init
     $self->{Current} = $self->{Selected};
     $self->{Selected} = [];
     return;
 }
 
-$self->{Selected} = $ARGS{$self->{Name}.'-Selected'};
+$self->{Selected} = $ARGS{$self->{name}.'-Selected'};
 if ($self->{Selected} && !ref($self->{Selected})) {
     $self->{Selected} = [$self->{Selected}];
 }
@@ -107,14 +107,14 @@ if ($ARGS{fromjs}) {
     $self->{Current} = $self->{Selected};
 }
 else {
-    my $current = $self->{Current} = $ARGS{$self->{Name}.'-Current'};
+    my $current = $self->{Current} = $ARGS{$self->{name}.'-Current'};
     ++$self->{Modified};
     if ($current && !ref ($current)) {
 	$current = [$current];
     }
 
     if ($ARGS{add}) {
-	my $choosed = $ARGS{$self->{Name}.'-Available'};
+	my $choosed = $ARGS{$self->{name}.'-Available'};
 	for my $add (ref($choosed) ? @$choosed : $choosed) {
 	    next if grep { $_ eq $add } @$current;
 	    push @$current, $add;
@@ -122,7 +122,7 @@ else {
     }
 
     if ($ARGS{remove}) {
-	my $choosed = $ARGS{$self->{Name}.'-Selected'};
+	my $choosed = $ARGS{$self->{name}.'-Selected'};
 	for my $del (ref($choosed) ? @$choosed : $choosed) {
 	    @$current = map { $_ eq $del ? () : $_ } @$current;
 	}
@@ -130,7 +130,7 @@ else {
 
     if ($ARGS{moveup} or $ARGS{movedown}) {
 	my $offset = $ARGS{moveup} ? 1 : 0;
-	my $choosed = $ARGS{$self->{Name}.'-Selected'};
+	my $choosed = $ARGS{$self->{name}.'-Selected'};
 	$choosed = [$choosed] unless ref ($choosed);
 	my $canmove = 0; # not in the cornor
 	for my $i ($ARGS{moveup} ? 0..$#{$current} : reverse 0..$#{$current}) {
@@ -151,7 +151,7 @@ else {
 
 @{$self->{Current}} = grep { exists $self->{_item_map}{$_} } @{$self->{Current}};
 
-if ($self->{AutoSave} or $ARGS{$self->{Name}.'-Save'}) {
+if ($self->{AutoSave} or $ARGS{$self->{name}.'-Save'}) {
     $self->{OnSubmit}->($self);
     delete $self->{Modified};
 }
@@ -165,7 +165,7 @@ $self => undef
 
 <%method current>
 % for (@{$self->{Current}}) {
-<input type="hidden" class="hidden" name="<% $self->{Name} %>-Current" value="<%$_%>" />
+<input type="hidden" class="hidden" name="<% $self->{name} %>-Current" value="<%$_%>" />
 % }
 <%INIT>
 </%INIT>
@@ -181,7 +181,7 @@ $self => undef
 onsubmit="list_<% $name %>.selectAll();"
 % }
 >
-<input type="hidden" class="hidden" name="<% $self->{Name} %>-Submit" value="1" />
+<input type="hidden" class="hidden" name="<% $self->{name} %>-Submit" value="1" />
 <& SelectionBox:current, self => $self &>
 <input type="hidden" class="hidden" name="fromjs" value="0" />
 <&|/l&>Available</&>:
@@ -210,7 +210,7 @@ selected="selected"
 % if ($self->{Modified}) {
 % $caption = loc('Selections modified. Please save your changes');
 % }
-<& /Elements/Submit, Caption => loc($caption), Label => loc('Save'), Name => $name.'-Save' &>
+<& /Elements/Submit, Caption => loc($caption), Label => loc('Save'), name => $name.'-Save' &>
 % }
 </form>
 
@@ -227,7 +227,7 @@ $size => 10
 $nojs => 0
 </%ARGS>
 <%INIT>
-my $name = $self->{Name};
+my $name = $self->{name};
 my %selected = map {$_ => 1} @{$self->{Selected}};
 </%INIT>
 

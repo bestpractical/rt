@@ -76,7 +76,7 @@ function hideshow(id) { return toggleVisibility( id ) }
 function toggleVisibility(id) {
     var e = $(id);
 
-    if ( e.className.match( /\bhidden\b/ ) )
+    if ( e.classname.match( /\bhidden\b/ ) )
         show(e);
     else
         hide(e);
@@ -101,14 +101,14 @@ function switchVisibility(id1, id2) {
 
 function addClass(id, value) {
     var e = $(id);
-    if ( e.className.match( new RegExp('\b'+ value +'\b') ) )
+    if ( e.classname.match( new RegExp('\b'+ value +'\b') ) )
         return;
-    e.className += e.className? ' '+value : value;
+    e.classname += e.classname? ' '+value : value;
 }
 
 function delClass(id, value) {
     var e = $(id);
-    e.className = e.className.replace( new RegExp('\\s?\\b'+ value +'\\b', 'g'), '' );
+    e.classname = e.classname.replace( new RegExp('\\s?\\b'+ value +'\\b', 'g'), '' );
 }
 
 /* Rollups */
@@ -117,7 +117,7 @@ function rollup(id) {
     var e   = $(id);
     var e2  = e.parentNode;
     
-    if (e.className.match(/\bhidden\b/)) {
+    if (e.classname.match(/\bhidden\b/)) {
         set_rollup_state(e,e2,'shown');
         createCookie(id,1,365);
     }
@@ -239,7 +239,7 @@ function addEvent(obj, sType, fn) {
 }
 
 function setCheckbox(form, name, val) {
-    var myfield = form.getElementsByTagName('input');
+    var myfield = form.getElementsByTagname('input');
     for ( var i = 0; i < myfield.length; i++ ) {
         if ( name && myfield[i].name != name ) continue;
         if ( myfield[i].type != 'checkbox' ) continue;

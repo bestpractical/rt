@@ -34,10 +34,10 @@ RT->Config->Get('TransactionTypes')
    - used by all UIs to create menues of possible (user) actions (one TransactionType is a user action)
 
 The UIs should call sth like
-$Ticket->AddTransaction($TransactionName), which should be equivalent
-with i.e.  $Ticket->Correspond when $TransactionName is 'Correspond'
+$Ticket->AddTransaction($Transactionname), which should be equivalent
+with i.e.  $Ticket->Correspond when $Transactionname is 'Correspond'
 (AUTOLOAD should call the do-sub if exists
-RT->Config->Get('TransactionTypes')->{$TransactionName})
+RT->Config->Get('TransactionTypes')->{$Transactionname})
 
 The RT::Model::Ticket::AddTransaction will create a new transaction of the
 right TransactionClass (maybe via a sub

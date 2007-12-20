@@ -59,9 +59,9 @@ msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%3 %2 %7 %1, %4:%5:%6"
 
 #: lib/RT/Record.pm:1685 lib/RT/Transaction_Overlay.pm:647 lib/RT/Transaction_Overlay.pm:690
-#. ($cf->Name, $new_value->Content)
+#. ($cf->name, $new_value->Content)
 #. ($field, $self->NewValue)
-#. ($self->Field, $principal->Object->Name)
+#. ($self->Field, $principal->Object->name)
 msgid "%1 %2 added"
 msgstr "%1 %2 eklendi"
 
@@ -71,25 +71,25 @@ msgid "%1 %2 ago"
 msgstr "%1 %2 önce"
 
 #: lib/RT/Record.pm:1692 lib/RT/Transaction_Overlay.pm:654
-#. ($cf->Name, $old_content,                $new_value->Content)
+#. ($cf->name, $old_content,                $new_value->Content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
 msgstr "%1: %2 değeri %3 olarak değiştirildi"
 
 #: lib/RT/Record.pm:1689 lib/RT/Transaction_Overlay.pm:650 lib/RT/Transaction_Overlay.pm:696
-#. ($cf->Name, $old_value->Content)
+#. ($cf->name, $old_value->Content)
 #. ($field, $self->OldValue)
-#. ($self->Field, $principal->Object->Name)
+#. ($self->Field, $principal->Object->name)
 msgid "%1 %2 deleted"
 msgstr "%1 %2 silindi"
 
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:63 html/Ticket/Elements/PreviewScrips:103
-#. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
+#. (loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 ile şablon %3"
 
 #: html/Ticket/Elements/ShowAttachments:72
-#. ($rev->CreatedAsString, $size, $rev->CreatorObj->Name)
+#. ($rev->CreatedAsString, $size, $rev->CreatorObj->name)
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) oluşturan: %3"
 
@@ -97,7 +97,7 @@ msgstr "%1 (%2) oluşturan: %3"
 #. (loc($DefaultStatus))
 #. (loc($Ticket->Status()))
 #. (loc($TicketObj->Status))
-#. ($TicketObj->OwnerObj->Name())
+#. ($TicketObj->OwnerObj->name())
 msgid "%1 (Unchanged)"
 msgstr "%1 (Değişmemiş)"
 
@@ -154,7 +154,7 @@ msgid "%1 ScripAction loaded"
 msgstr "ScriptAction %1 yüklendi"
 
 #: lib/RT/Record.pm:1722
-#. ($args{'Value'}, $cf->Name)
+#. ($args{'Value'}, $cf->name)
 msgid "%1 added as a value for %2"
 msgstr "%1, %2 için bir değer olarak eklendi"
 
@@ -165,13 +165,13 @@ msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 yerel bir nesne olarak gözüküyor, fakat veritabanında mevcut değil"
 
 #: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm:531
-#. ($self->BriefDescription , $self->CreatorObj->Name)
-#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
+#. ($self->BriefDescription , $self->CreatorObj->name)
+#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->name)
 msgid "%1 by %2"
 msgstr "%1 - %2"
 
 #: lib/RT/Transaction_Overlay.pm:788 lib/RT/Transaction_Overlay.pm:797 lib/RT/Transaction_Overlay.pm:800
-#. ($self->Field , $q1->Name , $q2->Name)
+#. ($self->Field , $q1->name , $q2->name)
 #. ($self->Field, $t2->AsString, $t1->AsString)
 #. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 msgid "%1 changed from %2 to %3"
@@ -211,7 +211,7 @@ msgid "%1 is a tool to act on tickets from an external scheduling tool, such as 
 msgstr "%1, biletlere dışarıdan müdahale edebilen bir araçtır (cron gibi)"
 
 #: lib/RT/Queue_Overlay.pm:863
-#. ($principal->Object->Name, $args{'Type'})
+#. ($principal->Object->name, $args{'Type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1, artık bu kuyruk için %2 değil."
 
@@ -248,8 +248,8 @@ msgid "%1's %2's %3 objects"
 msgstr "%1 ve %2 için %3 nesne"
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:57
-#. ($object->Name)
-#. ($Object->Name)
+#. ($object->name)
+#. ($Object->name)
 msgid "%1's saved searches"
 msgstr "%1 için kaydedilmiş aramalar"
 
@@ -296,7 +296,7 @@ msgstr "(Boşluklarla ayrılmış olarak, bilet numaralarını veya URL' lerini 
 
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::CorrespondAddress)
-#. ($RT::CommentAddress)
+#. ($RT::commentAddress)
 msgid "(If left blank, will default to %1)"
 msgstr "(Boş bırakılırsa, varsayılan olarak %1 değerini alacaktır)"
 
@@ -554,7 +554,7 @@ msgid "Admin Cc"
 msgstr "Yönetici Karbon Kopya"
 
 #: etc/initialdata:295
-msgid "Admin Comment"
+msgid "Admin comment"
 msgstr "Yönetici Yorumu"
 
 #: etc/initialdata:274
@@ -892,35 +892,35 @@ msgid "Combobox: Select or enter up to %1 values"
 msgstr "Seçim kutusu: 1-%1 arası değer seçin veya girin"
 
 #: html/Ticket/Elements/ShowTransaction:190 html/Ticket/Elements/Tabs:185
-msgid "Comment"
+msgid "comment"
 msgstr "Yorum"
 
 #: html/Admin/Queues/Modify.html:79
-msgid "Comment Address"
+msgid "comment Address"
 msgstr "Yorum Adresi"
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "Comment on tickets"
+msgid "comment on tickets"
 msgstr "Biletler üzerine yorum yap"
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "CommentOnTicket"
+msgid "commentOnTicket"
 msgstr ""
 
 #: html/Ticket/ModifyAll.html:91 html/Ticket/Update.html:75
-msgid "Comments (Not sent to requestors)"
+msgid "comments (Not sent to requestors)"
 msgstr "Yorumlar (istekçilere gönderilmedi)"
 
 #: html/Search/Bulk.html:128
-msgid "Comments (not sent to requestors)"
+msgid "comments (not sent to requestors)"
 msgstr "Yorumlar (istekçilere gönderilmedi)"
 
 #: html/Admin/Users/Modify.html:225 html/Ticket/Elements/ShowRequestor:67
-msgid "Comments about this user"
+msgid "comments about this user"
 msgstr "Bu kullanıcı hakkındaki yorumlar"
 
 #: lib/RT/Transaction_Overlay.pm:634
-msgid "Comments added"
+msgid "comments added"
 msgstr "Yorumlar eklendi"
 
 #: lib/RT/Action/Generic.pm:175
@@ -1156,7 +1156,7 @@ msgid "Create a CustomField"
 msgstr "Özel Bölüm Oluştur"
 
 #: html/Admin/Queues/CustomField.html:69
-#. ($QueueObj->Name())
+#. ($QueueObj->name())
 msgid "Create a CustomField for queue %1"
 msgstr "%1 kuyruğu için özel bir bölüm oluştur"
 
@@ -1182,7 +1182,7 @@ msgid "Create a queue"
 msgstr "Yeni bir kuyruk oluştur"
 
 #: html/Admin/Queues/Scrip.html:89
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Create a scrip for queue %1"
 msgstr "%1 kuyruğu için yeni bir senet oluştur"
 
@@ -1235,7 +1235,7 @@ msgid "Created"
 msgstr "Oluşturuldu"
 
 #: html/Admin/CustomFields/Modify.html:163 html/Admin/Elements/EditCustomField:117
-#. ($CustomFieldObj->Name())
+#. ($CustomFieldObj->name())
 msgid "Created CustomField %1"
 msgstr "Özel bölüm %1 oluşturuldu"
 
@@ -1297,12 +1297,12 @@ msgid "Custom condition"
 msgstr "Özel durum"
 
 #: lib/RT/TicketCollection_Overlay.pm:2424
-#. ($CF->Name)
+#. ($CF->name)
 msgid "Custom field %1 has a value."
 msgstr "Özel bölüm %1, bir değere sahip"
 
 #: lib/RT/TicketCollection_Overlay.pm:2420
-#. ($CF->Name)
+#. ($CF->name)
 msgid "Custom field %1 has no value."
 msgstr "Özel bölüm %1, bir değere sahip değil"
 
@@ -1313,12 +1313,12 @@ msgstr "Özel bölüm %1, bulunamadı"
 
 #: lib/RT/Report/Tickets.pm:118 lib/RT/Report/Tickets.pm:121
 #. ($cf)
-#. ($obj->Name)
+#. ($obj->name)
 msgid "Custom field '%1'"
 msgstr "Özel bölüm '%1'"
 
 #: lib/RT/CustomField_Overlay.pm:1157
-#. ($args{'Content'}, $self->Name)
+#. ($args{'Content'}, $self->name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Özel bölüm %2 için, özel bölüm değeri %1 bulunamıyor"
 
@@ -1544,7 +1544,7 @@ msgid "Edit Custom Fields"
 msgstr "Özel Bölümleri Düzenle"
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
-#. ($Object->Name)
+#. ($Object->name)
 msgid "Edit Custom Fields for %1"
 msgstr "%1 için özel bölümleri düzenle"
 
@@ -1573,7 +1573,7 @@ msgid "Edit Search"
 msgstr "Aramayı Düzenle"
 
 #: html/Admin/Queues/Templates.html:63
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Edit Templates for queue %1"
 msgstr "%1 kuyruğundaki şablonları düzenle"
 
@@ -1590,22 +1590,22 @@ msgid "EditSavedSearches"
 msgstr "KaydedilmişAramalarıDüzenle"
 
 #: html/Admin/Queues/Modify.html:140
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Editing Configuration for queue %1"
 msgstr "%1 kuyruğunun ayarları düzenleniyor"
 
 #: html/Admin/CustomFields/Modify.html:167 html/Admin/Elements/EditCustomField:120
-#. ($CustomFieldObj->Name())
+#. ($CustomFieldObj->name())
 msgid "Editing CustomField %1"
 msgstr "Özel bölüm %1 düzenleniyor"
 
 #: html/Admin/Groups/Members.html:53
-#. ($Group->Name)
+#. ($Group->name)
 msgid "Editing membership for group %1"
 msgstr "%1 grubu için üyelik düzenleniyor"
 
 #: html/User/Groups/Members.html:150
-#. ($Group->Name)
+#. ($Group->name)
 msgid "Editing membership for personal group %1"
 msgstr "Özel grup %1 için üyelik düzenleniyor"
 
@@ -1716,7 +1716,7 @@ msgid "Failed to create search attribute"
 msgstr "Arama özniteliği oluşturulamadı"
 
 #: lib/RT/User_Overlay.pm:376
-msgid "Failed to find 'Privileged' users pseudogroup."
+msgid "Failed to find 'privileged' users pseudogroup."
 msgstr "'Ayrıcalıklı' sahte kullanıcı grubu bulunamadı"
 
 #: lib/RT/User_Overlay.pm:383
@@ -1831,7 +1831,7 @@ msgid "Get template from file"
 msgstr "Dosyadan şablon al"
 
 #: lib/RT/Transaction_Overlay.pm:684
-#. ($New->Name)
+#. ($New->name)
 msgid "Given to %1"
 msgstr "Verilen: %1"
 
@@ -1853,7 +1853,7 @@ msgid "Global portlet %1 saved."
 msgstr "Küresel portlet %1 kaydedildi"
 
 #: html/Admin/Elements/SelectTemplate:59
-#. (loc($Template->Name))
+#. (loc($Template->name))
 msgid "Global template: %1"
 msgstr "Küresel şablon: %1"
 
@@ -1928,12 +1928,12 @@ msgid "History"
 msgstr "Geçmiş"
 
 #: html/Admin/Groups/History.html:62
-#. ($GroupObj->Name)
+#. ($GroupObj->name)
 msgid "History of the group %1"
 msgstr "%1 grubunun geçmişi"
 
 #: html/Admin/Users/History.html:62
-#. ($UserObj->Name)
+#. ($user_object->name)
 msgid "History of the user %1"
 msgstr "%1 üyesinin geçmişi"
 
@@ -2215,7 +2215,7 @@ msgid "Loaded perl modules"
 msgstr "Yüklenmiş Perl modülleri"
 
 #: lib/RT/SavedSearch.pm:111
-#. ($self->Name)
+#. ($self->name)
 msgid "Loaded search %1"
 msgstr "Yüklenmiş arama %1"
 
@@ -2224,7 +2224,7 @@ msgid "Location"
 msgstr "Konum"
 
 #: html/Elements/Header:91
-#. ("<span>".$session{'CurrentUser'}->Name."</span>")
+#. ("<span>".Jifty->web->current_user->name."</span>")
 msgid "Logged in as %1"
 msgstr "%1 olarak giriş yapıldı"
 
@@ -2261,7 +2261,7 @@ msgid "Make date Started"
 msgstr "Yapma tarihi Başladı"
 
 #: html/Search/Bulk.html:108
-msgid "Make date Starts"
+msgid "Make date starts"
 msgstr "Yapma tarihi Başlangıcı"
 
 #: html/Search/Bulk.html:112
@@ -2357,7 +2357,7 @@ msgid "Memberships"
 msgstr "Üyelikler"
 
 #: html/Admin/Users/Memberships.html:60
-#. ($UserObj->Name)
+#. ($user_object->name)
 msgid "Memberships of the user %1"
 msgstr "%1 üyesinin üyelikleri"
 
@@ -2457,12 +2457,12 @@ msgid "Modify User Rights"
 msgstr "Kullanıcı haklarını değiştir"
 
 #: html/Admin/Queues/CustomField.html:66
-#. ($QueueObj->Name())
+#. ($QueueObj->name())
 msgid "Modify a CustomField for queue %1"
 msgstr "%1 kuyruğu için bir ÖzelAlanı değiştir"
 
 #: html/Admin/Queues/Scrip.html:82
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify a scrip for queue %1"
 msgstr "%1 kuyruğu için bir senet değiştir"
 
@@ -2471,7 +2471,7 @@ msgid "Modify a scrip which applies to all queues"
 msgstr "Bütün kuyruklara etki eden bir senedi değiştir"
 
 #: html/Admin/CustomFields/Objects.html:90
-#. ($CF->Name)
+#. ($CF->name)
 msgid "Modify associated objects for %1"
 msgstr "%1 için, ilişkili nesneleri değiştir"
 
@@ -2510,17 +2510,17 @@ msgid "Modify group metadata or delete group"
 msgstr "Grup mal bilgisini değiştir veya grubu sil"
 
 #: html/Admin/CustomFields/GroupRights.html:164
-#. ($CustomFieldObj->Name)
+#. ($CustomFieldObj->name)
 msgid "Modify group rights for custom field %1"
 msgstr "Özel alan %1 için grup izinlerini değiştir"
 
 #: html/Admin/Groups/GroupRights.html:46 html/Admin/Groups/GroupRights.html:50 html/Admin/Groups/GroupRights.html:56
-#. ($GroupObj->Name)
+#. ($GroupObj->name)
 msgid "Modify group rights for group %1"
 msgstr "%1 grubu için, grup izinlerini değiştir."
 
 #: html/Admin/Queues/GroupRights.html:46 html/Admin/Queues/GroupRights.html:50
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify group rights for queue %1"
 msgstr "%1 kuyruğu için, grup izinlerini değiştir."
 
@@ -2533,7 +2533,7 @@ msgid "Modify one's own RT account"
 msgstr "Kişinin kendi RT hesabını değiştir"
 
 #: html/Admin/Queues/People.html:46 html/Admin/Queues/People.html:50
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify people related to queue %1"
 msgstr "%1 ile ilişkili kişileri değiştir"
 
@@ -2544,7 +2544,7 @@ msgid "Modify people related to ticket #%1"
 msgstr "%1 bileti ile ilişkili kişileri değiştir"
 
 #: html/Admin/Queues/Scrips.html:67
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify scrips for queue %1"
 msgstr "%1 kuyruğu için senetleri değiştir"
 
@@ -2553,7 +2553,7 @@ msgid "Modify scrips which apply to all queues"
 msgstr "Bütn kuyruklara etki eden senetleri değiştir"
 
 #: html/Admin/Global/Template.html:102 html/Admin/Global/Template.html:46 html/Admin/Global/Template.html:51 html/Admin/Queues/Template.html:99
-#. (loc($TemplateObj->Name()))
+#. (loc($TemplateObj->name()))
 #. ($TemplateObj->id)
 msgid "Modify template %1"
 msgstr "%1 şablonunu değiştir"
@@ -2567,7 +2567,7 @@ msgid "Modify the default \"RT at a glance\" view"
 msgstr "Varsayılan \"Bir bakışta RT\" görünümünü değiştir"
 
 #: html/Admin/Groups/Modify.html:119 html/User/Groups/Modify.html:107
-#. ($Group->Name)
+#. ($Group->name)
 msgid "Modify the group %1"
 msgstr "%1 grubunu değiştir"
 
@@ -2576,7 +2576,7 @@ msgid "Modify the queue watchers"
 msgstr "Kuyruk gözcülerini değiştir"
 
 #: html/Admin/Users/Modify.html:309
-#. ($UserObj->Name)
+#. ($user_object->name)
 msgid "Modify the user %1"
 msgstr "%1 kullanıcısını değiştir"
 
@@ -2595,17 +2595,17 @@ msgid "Modify tickets"
 msgstr "Biletleri değiştir"
 
 #: html/Admin/CustomFields/UserRights.html:157
-#. ($CustomFieldObj->Name)
+#. ($CustomFieldObj->name)
 msgid "Modify user rights for custom field %1"
 msgstr "Özel alan %1 için kullanıcı haklarını değiştir"
 
 #: html/Admin/Groups/UserRights.html:46 html/Admin/Groups/UserRights.html:50 html/Admin/Groups/UserRights.html:56
-#. ($GroupObj->Name)
+#. ($GroupObj->name)
 msgid "Modify user rights for group %1"
 msgstr "%1 grubu için kullanıcı haklarını değiştir"
 
 #: html/Admin/Queues/UserRights.html:46 html/Admin/Queues/UserRights.html:50
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "Modify user rights for queue %1"
 msgstr "%1 kuyruğu için kullanıcı haklarını değiştir"
 
@@ -2663,7 +2663,7 @@ msgid "Multiple"
 msgstr "Çoklu"
 
 #: lib/RT/User_Overlay.pm:226
-msgid "Must specify 'Name' attribute"
+msgid "Must specify 'name' attribute"
 msgstr "'Ad' özniteliği belirtilmeli"
 
 #: html/SelfService/Elements/MyRequests:57
@@ -2684,11 +2684,11 @@ msgid "My saved searches"
 msgstr "Benim kaydedilmiş aramalarım"
 
 #: html/Admin/CustomFields/Modify.html:58 html/Admin/Elements/AddCustomFieldValue:53 html/Admin/Elements/EditCustomField:55 html/Admin/Elements/EditCustomFieldValues:55 html/Admin/Elements/ModifyTemplate:49 html/Admin/Groups/Modify.html:65 html/Search/Bulk.html:157 html/User/Groups/Modify.html:65
-msgid "Name"
+msgid "name"
 msgstr "Ad"
 
 #: lib/RT/User_Overlay.pm:233
-msgid "Name in use"
+msgid "name in use"
 msgstr "Kullanımdaki ad"
 
 #: html/Ticket/Elements/ShowDates:73
@@ -2700,7 +2700,7 @@ msgid "New Links"
 msgstr "Yeni bağlantılar"
 
 #: html/Admin/Users/Modify.html:119 html/User/Prefs.html:109
-msgid "New Password"
+msgid "New password"
 msgstr "Yeni parola"
 
 #: etc/initialdata:332
@@ -2776,7 +2776,7 @@ msgid "Next Page"
 msgstr "Sonraki Sayfa"
 
 #: html/Admin/Users/Modify.html:84 html/User/Prefs.html:72
-msgid "Nickname"
+msgid "nickname"
 msgstr "Rumuz"
 
 #: html/Admin/CustomFields/UserRights.html:145
@@ -2849,7 +2849,7 @@ msgid "No permission to create queues"
 msgstr "Kuyruk oluşturmak için gerekli yetki yok"
 
 #: lib/RT/Ticket_Overlay.pm:420
-#. ($QueueObj->Name)
+#. ($QueueObj->name)
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "%1 kuyruğunda bilet oluşturmak için gerekli yetki yok"
 
@@ -2950,7 +2950,7 @@ msgid "Notify AdminCcs"
 msgstr "Yönetici Kk' ları bildir"
 
 #: etc/initialdata:97
-msgid "Notify AdminCcs as Comment"
+msgid "Notify AdminCcs as comment"
 msgstr "Yönetici Kk' ları yorum olarak bildir"
 
 #: etc/initialdata:93 etc/upgrade/3.1.17/content:6
@@ -2958,7 +2958,7 @@ msgid "Notify Ccs"
 msgstr "Kk' ları bildir"
 
 #: etc/initialdata:89 etc/upgrade/3.1.17/content:2
-msgid "Notify Ccs as Comment"
+msgid "Notify Ccs as comment"
 msgstr "Kk' ları yorum olarak bildir"
 
 #: etc/initialdata:128
@@ -2966,7 +2966,7 @@ msgid "Notify Other Recipients"
 msgstr "Diğer alıcıları uyar"
 
 #: etc/initialdata:124
-msgid "Notify Other Recipients as Comment"
+msgid "Notify Other Recipients as comment"
 msgstr "Diğer alıcıları yorum olarak uyar"
 
 #: etc/initialdata:85
@@ -2974,7 +2974,7 @@ msgid "Notify Owner"
 msgstr "Sahibi uyar"
 
 #: etc/initialdata:81
-msgid "Notify Owner as Comment"
+msgid "Notify Owner as comment"
 msgstr "Sahibi yorum olarak uyar"
 
 #: etc/initialdata:376
@@ -3002,7 +3002,7 @@ msgid "Notify Requestors and Ccs"
 msgstr "İstekçileri ve Kk' ları uyar"
 
 #: etc/initialdata:106
-msgid "Notify Requestors and Ccs as Comment"
+msgid "Notify Requestors and Ccs as comment"
 msgstr "İstekçileri ve Kk' ları yorum olarak uyar"
 
 #: etc/initialdata:120
@@ -3010,7 +3010,7 @@ msgid "Notify Requestors, Ccs and AdminCcs"
 msgstr "İstekçileri, Kk' ları ve Yönetici Kk' ları uyar"
 
 #: etc/initialdata:116
-msgid "Notify Requestors, Ccs and AdminCcs as Comment"
+msgid "Notify Requestors, Ccs and AdminCcs as comment"
 msgstr "İstekçileri, Kk' ları ve Yönetici Kk' ları yorum olarak uyar"
 
 #: lib/RT/Date.pm:451
@@ -3068,12 +3068,12 @@ msgid "On"
 msgstr "Tarih:"
 
 #: lib/RT/Transaction_Overlay.pm:326
-#. ($self->CreatedAsString(), $self->CreatorObj->Name())
+#. ($self->CreatedAsString(), $self->CreatorObj->name())
 msgid "On %1, %2 wrote:"
 msgstr "%1 tarihinde, %2 yazdı:"
 
 #: etc/initialdata:163
-msgid "On Comment"
+msgid "On comment"
 msgstr "Yorumda"
 
 #: etc/initialdata:156
@@ -3147,7 +3147,7 @@ msgid "Order by"
 msgstr "Sıralama:"
 
 #: html/Admin/Users/Modify.html:141 html/User/Prefs.html:129
-msgid "Organization"
+msgid "organization"
 msgstr "Kurum"
 
 #: html/Approvals/Elements/Approve:53
@@ -3184,7 +3184,7 @@ msgid "Owner could not be set."
 msgstr "Sahip atanamıyor"
 
 #: lib/RT/Transaction_Overlay.pm:672
-#. ($Old->Name , $New->Name)
+#. ($Old->name , $New->name)
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Sahip, zorla %1 den %2 ye değiştirildi"
 
@@ -3202,41 +3202,41 @@ msgid "Parents"
 msgstr "Ana bölüm"
 
 #: html/Elements/Login:95 html/User/Prefs.html:105
-msgid "Password"
+msgid "password"
 msgstr "Parola"
 
 #: html/NoAuth/Reminder.html:46
-msgid "Password Reminder"
+msgid "password Reminder"
 msgstr "Parola Hatırlatıcı"
 
 #: lib/RT/Transaction_Overlay.pm:781 lib/RT/User_Overlay.pm:1045
-msgid "Password changed"
+msgid "password changed"
 msgstr "Parola değişti"
 
 #: lib/RT/User_Overlay.pm:1037 lib/RT/User_Overlay.pm:214
-#. ($RT::MinimumPasswordLength)
-msgid "Password needs to be at least %1 characters long"
+#. ($RT::MinimumpasswordLength)
+msgid "password needs to be at least %1 characters long"
 msgstr "Parola en az %1 karakter uzunluğunda olmalı"
 
 #: lib/RT/User_Overlay.pm:1044
-msgid "Password set"
+msgid "password set"
 msgstr "Parola atandı"
 
 #: html/User/Prefs.html:240
 #. (loc_fuzzy($msg))
-msgid "Password: %1"
+msgid "password: %1"
 msgstr "Parola: %1"
 
 #: lib/RT/User_Overlay.pm:1030
-msgid "Password: Permission Denied"
+msgid "password: Permission Denied"
 msgstr "Parola: İzin Reddedildi"
 
 #: html/Admin/Users/Modify.html:364
-msgid "Passwords do not match."
+msgid "passwords do not match."
 msgstr "Parolalar eşleşmiyor"
 
 #: html/User/Prefs.html:242
-msgid "Passwords do not match. Your password has not been changed"
+msgid "passwords do not match. Your password has not been changed"
 msgstr "Parolalar eşleşmiyor. Parolanız değişmedi"
 
 #: html/Ticket/Elements/ShowSummary:62 html/Ticket/Elements/Tabs:119 html/Ticket/ModifyAll.html:72
@@ -3284,7 +3284,7 @@ msgid "Preferences"
 msgstr "Tercihler"
 
 #: html/Admin/Users/MyRT.html:75
-#. ($pane, $UserObj->Name)
+#. ($pane, $user_object->name)
 msgid "Preferences %1 for user %2 ."
 msgstr "%2 kullanıcısı için %1 tercihleri"
 
@@ -3306,7 +3306,7 @@ msgid "Previous Page"
 msgstr "Önceki sayfa"
 
 #: lib/RT/ACE_Overlay.pm:157 lib/RT/ACE_Overlay.pm:239 lib/RT/ACE_Overlay.pm:569
-#. ($args{'PrincipalId'})
+#. ($args{'principal_id'})
 msgid "Principal %1 not found."
 msgstr "%1 yetkilisi bulunamadı"
 
@@ -3323,16 +3323,16 @@ msgid "Privacy:"
 msgstr "Gizlilik:"
 
 #: etc/initialdata:25
-msgid "Privileged"
+msgid "privileged"
 msgstr "Ayrıcalıklı"
 
 #: html/Admin/Users/Modify.html:342 html/User/Prefs.html:231
 #. (loc_fuzzy($msg))
-msgid "Privileged status: %1"
+msgid "privileged status: %1"
 msgstr "Ayrıcalık durumu: &1"
 
 #: html/Admin/Users/index.html:102
-msgid "Privileged users"
+msgid "privileged users"
 msgstr "Ayrıcalıklı kullanıcılar"
 
 #: etc/initialdata:23 etc/initialdata:29 etc/initialdata:35 etc/initialdata:59
@@ -3358,7 +3358,7 @@ msgid "Queue %1 not found"
 msgstr "%1 kuyruğu bulunamadı"
 
 #: html/Admin/Queues/Modify.html:64
-msgid "Queue Name"
+msgid "Queue name"
 msgstr "Kuyruk adı"
 
 #: lib/RT/Queue_Overlay.pm:365
@@ -3427,7 +3427,7 @@ msgid "RT at a glance"
 msgstr "Bir bakışta RT"
 
 #: html/Admin/Users/MyRT.html:30
-#. ($UserObj->Name)
+#. ($user_object->name)
 msgid "RT at a glance for the user %1"
 msgstr "%1 kullanıcısı için bir bakışta RT"
 
@@ -3457,7 +3457,7 @@ msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the rec
 msgstr "RT, <tt>__id__</tt> ve <tt>__CustomField__</tt> değerlerini, kayıt numarası ve özel alan değeri ile değiştirecektir"
 
 #: html/Admin/Users/Modify.html:79 html/User/Prefs.html:69
-msgid "Real Name"
+msgid "Real name"
 msgstr "Gerçek Ad"
 
 #: lib/RT/Transaction_Overlay.pm:725
@@ -3621,7 +3621,7 @@ msgid "Results"
 msgstr "Sonuçlar"
 
 #: html/Admin/Users/Modify.html:126 html/User/Prefs.html:116
-msgid "Retype Password"
+msgid "Retype password"
 msgstr "Parolayı tekrar yazın"
 
 #: html/Search/Elements/EditSearches:61
@@ -4016,7 +4016,7 @@ msgid "ShowTicket"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:104
-msgid "ShowTicketComments"
+msgid "ShowTicketcomments"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:107
@@ -4068,7 +4068,7 @@ msgid "Started"
 msgstr "Başlangıcı"
 
 #: html/Elements/SelectDateType:52 html/Ticket/Create.html:208 html/Ticket/Elements/EditDates:48 html/Ticket/Elements/ShowDates:52
-msgid "Starts"
+msgid "starts"
 msgstr "Başlayacak"
 
 #: html/Admin/Users/Modify.html:162 html/User/Prefs.html:145
@@ -4096,7 +4096,7 @@ msgid "StealTicket"
 msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:678
-#. ($Old->Name)
+#. ($Old->name)
 msgid "Stolen from %1"
 msgstr "%1 den çalındı"
 
@@ -4318,7 +4318,7 @@ msgstr "Bir biletin sahibi"
 msgid "The requestor of a ticket"
 msgstr "Bir biletin istekçisi"
 
-#: html/Admin/Elements/EditUserComments:47
+#: html/Admin/Elements/EditUsercomments:47
 msgid "These comments aren't generally visible to the user"
 msgstr "Bu yorumlar, genellikle kullanıcıya görünür değillerdir"
 
@@ -4369,7 +4369,7 @@ msgid "Ticket %1"
 msgstr "Bilet %1"
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
-#. ($self->id, $QueueObj->Name)
+#. ($self->id, $QueueObj->name)
 msgid "Ticket %1 created in queue '%2'"
 msgstr "Bilet %1, '%2' kuyruğunda oluşturuldu"
 
@@ -4469,7 +4469,7 @@ msgid "Time worked"
 msgstr "Çalışılan süre"
 
 #: lib/RT/Ticket_Overlay.pm:1167
-msgid "TimeWorked"
+msgid "time_worked"
 msgstr "ÇalışılanSüre"
 
 #: html/Search/Elements/EditFormat:74
@@ -4867,7 +4867,7 @@ msgid "allow loading of saved searches"
 msgstr "kaydedilmiş aramaların yüklenmesine izin ver"
 
 #: html/User/Elements/DelegateRights:80
-#. ($right->PrincipalObj->Object->SelfDescription)
+#. ($right->principal_object->Object->SelfDescription)
 msgid "as granted to %1"
 msgstr "%1' e verildi"
 
@@ -4932,12 +4932,12 @@ msgid "greater than"
 msgstr "büyüktür"
 
 #: lib/RT/Group_Overlay.pm:214
-#. ($self->Name)
+#. ($self->name)
 msgid "group '%1'"
 msgstr "grup %1"
 
 #: html/Search/Results.html:88
-#. ($m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query))
+#. ($m->scomp('Elements/SelectGroupBy', name => 'PrimaryGroupBy', Query => $Query))
 msgid "grouped by %1"
 msgstr "%1 ile gruplanmış"
 
@@ -4998,12 +4998,12 @@ msgid "open"
 msgstr "açık"
 
 #: lib/RT/Group_Overlay.pm:219
-#. ($self->Name, $user->Name)
+#. ($self->name, $user->name)
 msgid "personal group '%1' for user '%2'"
 msgstr "'%2' kullanıcısı için, kişisel grup '%1'"
 
 #: lib/RT/Group_Overlay.pm:227
-#. ($queue->Name, $self->Type)
+#. ($queue->name, $self->Type)
 msgid "queue %1 %2"
 msgstr "kuyruk %1 %2"
 
@@ -5032,7 +5032,7 @@ msgid "stalled"
 msgstr "savsaklandı"
 
 #: html/Search/Results.html:89
-#. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle'))
+#. ($m->scomp('Elements/SelectChartType', name => 'ChartStyle'))
 msgid "style: %1"
 msgstr "biçem: %1"
 
@@ -5065,7 +5065,7 @@ msgid "undescribed group %1"
 msgstr "betimlenmemiş grup %1"
 
 #: lib/RT/Group_Overlay.pm:211
-#. ($user->Object->Name)
+#. ($user->Object->name)
 msgid "user %1"
 msgstr "kullanıcı %1"
 

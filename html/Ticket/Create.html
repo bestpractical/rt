@@ -55,7 +55,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <form action="<% RT->Config->Get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 <input type="hidden" class="hidden" name="id" value="new" />
-% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
+% $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
 
 <& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
 
@@ -64,19 +64,19 @@
 <&| /Widgets/TitleBox, title => loc("Create a new ticket") &>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td class="label"><&|/l&>Queue</&>:</td>
-<td class="value"><% $QueueObj->Name %>
-<input type="hidden" class="hidden" name="Queue" value="<%$QueueObj->Name%>" />
+<td class="value"><% $QueueObj->name %>
+<input type="hidden" class="hidden" name="Queue" value="<%$QueueObj->name%>" />
 </td>
 <td class="label"><&|/l&>Status</&>:
 </td>
 <td class="value">
-<& /Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}||'new', DefaultValue => 0 &>
+<& /Elements/SelectStatus, name => "Status", Default => $ARGS{Status}||'new', DefaultValue => 0 &>
 </td>
 <td class="label">
 <&|/l&>Owner</&>:
 </td>
 <td class="value">
-<& /Elements/SelectOwner, Name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}||$RT::Nobody->id, DefaultValue => 0 &>
+<& /Elements/SelectOwner, name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}||$RT::Nobody->id, DefaultValue => 0 &>
 </td>
 </tr>
 <tr>
@@ -84,7 +84,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value" colspan="5">
-    <input name="Requestors" value="<% ($ARGS{Requestors}) || $session{'CurrentUser'}->EmailAddress %>" size="40" />
+    <input name="Requestors" value="<% ($ARGS{Requestors}) || Jifty->web->current_user->email %>" size="40" />
 </td>
 </tr>
 <tr>
@@ -121,8 +121,8 @@
 % if ($TxnCFs->count) {
 % while (my $CF = $TxnCFs->next()) {
 <tr>
-<td align="right"><% $CF->Name %>:</td>
-<td><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
+<td align="right"><% $CF->name %>:</td>
+<td><& /Elements/EditCustomField, CustomField => $CF, namePrefix =>
     "Object-RT::Model::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
 </td></tr>
 % }
@@ -153,9 +153,9 @@
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <tr>
 <td><% loc('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
+<td><& /Widgets/Form/Boolean:InputOnly, name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
 <td><% loc('Encrypt')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
+<td><& /Widgets/Form/Boolean:InputOnly, name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
 <td colspan="2">&nbsp;</td>
 </tr>
 % }
@@ -192,19 +192,19 @@
 <tr><td align="right"><&|/l&>Time Estimated</&>:</td>
 <td>
 <input size="3" name="TimeEstimated" value="<%$ARGS{TimeEstimated} || ''%>" />
-<& /Elements/SelectTimeUnits, Name =>'TimeEstimated' &>
+<& /Elements/SelectTimeUnits, name =>'TimeEstimated' &>
 
 </td></tr>
 <tr><td align="right"><&|/l&>Time Worked</&>:</td>
 <td>
-<input size="3" name="TimeWorked" value="<%$ARGS{TimeWorked} || ''%>" />
-<& /Elements/SelectTimeUnits, Name =>'TimeWorked' &>
+<input size="3" name="time_worked" value="<%$ARGS{time_worked} || ''%>" />
+<& /Elements/SelectTimeUnits, name =>'time_worked' &>
 
 </td></tr>
 <tr>
 <td align="right"><&|/l&>Time Left</&>:</td>
-<td><input size="3" name="TimeLeft" value="<%$ARGS{TimeLeft} || ''%>" />
-<& /Elements/SelectTimeUnits, Name =>'TimeLeft' &>
+<td><input size="3" name="time_left" value="<%$ARGS{time_left} || ''%>" />
+<& /Elements/SelectTimeUnits, name =>'time_left' &>
 </td></tr>
 </table>
 </&>
@@ -214,8 +214,8 @@
 		 color => "#663366" &>
 
 <table>
-<tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || '' &></td></tr>
-<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || '' &></td></tr>
+<tr><td class="label"><&|/l&>starts</&>:</td><td><& /Elements/SelectDate, name => "starts", Default => $ARGS{starts} || '' &></td></tr>
+<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, name => "Due", Default => $ARGS{Due} || '' &></td></tr>
 </table>
 </&>
 <br />
@@ -248,7 +248,7 @@
 <%INIT>
 
 my @results;
-my $QueueObj = new RT::Model::Queue($session{'CurrentUser'});
+my $QueueObj = new RT::Model::Queue(Jifty->web->current_user);
 $QueueObj->load($Queue) || Abort(loc("Queue could not be loaded."));
 
 $m->callback( QueueObj => $QueueObj, ARGSRef => \%ARGS );
@@ -265,7 +265,7 @@ my $ValidCFs = $m->comp(
 if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
     foreach ( qw(Sign Encrypt) ) {
         $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
-            Name => $_,
+            name => $_,
             DefaultValue => $QueueObj->$_,
             Arguments => \%ARGS,
         );
@@ -275,7 +275,7 @@ if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 # if no due date has been set explicitly, then use the
 # queue's default if it exists
 if ($QueueObj->DefaultDueIn && !$ARGS{'Due'}) {
-    my $default_due = RT::Date->new($session{'CurrentUser'});
+    my $default_due = RT::Date->new(Jifty->web->current_user);
     $default_due->set_to_now();
     $default_due->AddDays($QueueObj->DefaultDueIn);
     $ARGS{'Due'} = $default_due->ISO();
@@ -301,7 +301,7 @@ if ($ARGS{'Attach'}) {			# attachment?
     my $attachment = MakeMIMEEntity(
         Subject             => $subject,
         Body                => "",
-        AttachmentFieldName => 'Attach'
+        AttachmentFieldname => 'Attach'
     );
 
     $session{'Attachments'} = { %{$session{'Attachments'} || {}},
@@ -363,7 +363,7 @@ if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} e
         # Invalid CFs
         while (my $CF = $CFs->next) {
             my $msg = $m->notes('InvalidField-' . $CF->id) or next;
-            push @results, $CF->Name . ': ' . $msg;
+            push @results, $CF->name . ': ' . $msg;
         }
     }
 }

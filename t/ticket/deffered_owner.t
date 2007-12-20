@@ -9,24 +9,24 @@ use_ok('RT::Model::Ticket');
 
 
 my $tester = RT::Test->load_or_create_user(
-    EmailAddress => 'tester@localhost',
+    email => 'tester@localhost',
 );
 ok $tester && $tester->id, 'loaded or Created user';
 
-my $queue = RT::Test->load_or_create_queue( Name => 'General' );
+my $queue = RT::Test->load_or_create_queue( name => 'General' );
 ok $queue && $queue->id, 'loaded or Created queue';
 
-my $owner_role_group = RT::Model::Group->new( RT->system_user );
+my $owner_role_group = RT::Model::Group->new(current_user => RT->system_user );
 $owner_role_group->loadQueueRoleGroup( Type => 'Owner', Queue => $queue->id );
 ok $owner_role_group->id, 'loaded owners role group of the queue';
 
 diag "check that defering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
 {
     RT::Test->set_rights(
-        { Principal => $tester->PrincipalObj,
+        { Principal => $tester->principal_object,
           Right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket)],
         },
-        { Principal => $owner_role_group->PrincipalObj,
+        { Principal => $owner_role_group->principal_object,
           Object => $queue,
           Right => [qw(ModifyTicket)],
         },
@@ -48,7 +48,7 @@ diag "check that previous trick doesn't work without sufficient rights"
     if $ENV{'TEST_VERBOSE'};
 {
     RT::Test->set_rights(
-        { Principal => $tester->PrincipalObj,
+        { Principal => $tester->principal_object,
           Right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket)],
         },
     );
@@ -69,10 +69,10 @@ diag "check that previous trick doesn't work without sufficient rights"
 diag "check that defering owner really works" if $ENV{'TEST_VERBOSE'};
 {
     RT::Test->set_rights(
-        { Principal => $tester->PrincipalObj,
+        { Principal => $tester->principal_object,
           Right => [qw(SeeQueue ShowTicket CreateTicket)],
         },
-        { Principal => $queue->Cc->PrincipalObj,
+        { Principal => $queue->Cc->principal_object,
           Object => $queue,
           Right => [qw(OwnTicket TakeTicket)],
         },
@@ -93,7 +93,7 @@ diag "check that defering owner really works" if $ENV{'TEST_VERBOSE'};
 diag "check that defering doesn't work without correct rights" if $ENV{'TEST_VERBOSE'};
 {
     RT::Test->set_rights(
-        { Principal => $tester->PrincipalObj,
+        { Principal => $tester->principal_object,
           Right => [qw(SeeQueue ShowTicket CreateTicket)],
         },
     );

@@ -60,7 +60,7 @@ use File::Temp qw(tempfile);
 $RT::Logger->debug("Got ticket id=$id for comment");
 $RT::Logger->debug("Got args @{[keys(%changes)]}.");
 
-my $ticket = new RT::Model::Ticket( $session{CurrentUser} );
+my $ticket = new RT::Model::Ticket( Jifty->web->current_user );
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 
 # http://.../REST/1.0/ticket/1/comment
@@ -73,7 +73,7 @@ if (!$ticket->id) {
 
 my $action;
 ($action = $changes{Action}) =~ s/^(.)(.*)$/\U$1\L$2\E/;
-unless ($action =~ /^(?:Comment|Correspond)$/) {
+unless ($action =~ /^(?:comment|Correspond)$/) {
     $e = 1;
     $c = "# Invalid action: `$action'.";
     goto OUTPUT;
@@ -125,8 +125,8 @@ foreach my $att (@atts) {
 }
 
 unless ($ticket->current_user_has_right('ModifyTicket') ||
-        ($action eq "Comment" &&
-         $ticket->current_user_has_right("CommentOnTicket")) ||
+        ($action eq "comment" &&
+         $ticket->current_user_has_right("commentOnTicket")) ||
         ($action eq "Correspond" &&
          $ticket->current_user_has_right("ReplyToTicket")))
 {
@@ -140,7 +140,7 @@ my $bcc = join ", ", @{ vsplit($changes{Bcc}) };
 my ($n, $s) = $ticket->$action(MIMEObj => $ent,
                                CcMessageTo => $cc,
                                BccMessageTo => $bcc,
-                               TimeTaken => $changes{TimeWorked} || 0);
+                               TimeTaken => $changes{time_worked} || 0);
 $c = "# ".$s;
 if ($changes{Status}) {
    my  ($status_n, $status_s) = $ticket->set_Status($changes{'Status'} );   

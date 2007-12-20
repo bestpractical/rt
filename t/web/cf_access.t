@@ -22,7 +22,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
         fields => {
             TypeComposite => 'Image-0',
             LookupType => 'RT::Model::Queue-RT::Model::Ticket',
-            Name => 'img',
+            name => 'img',
             Description => 'img',
         },
     );
@@ -56,13 +56,13 @@ my ( $cf, $cfid, $tid );
     $m->content_like( qr/Object Created/, 'TCF added to the queue' );
 }
 
-my $tester = RT::Test->load_or_create_user( Name => 'tester', Password => '123456' );
+my $tester = RT::Test->load_or_create_user( name => 'tester', password => '123456' );
 RT::Test->set_rights(
-    { Principal => $tester->PrincipalObj,
+    { Principal => $tester->principal_object,
       Right => [qw(SeeQueue ShowTicket CreateTicket)],
     },
 );
-ok $m->login( $tester->Name, 123456), 'logged in';
+ok $m->login( $tester->name, 123456), 'logged in';
 
 diag "check that we have no the CF on the create"
     ." ticket page when user has no SeeCustomField right"
@@ -90,7 +90,7 @@ diag "check that we have no the CF on the create"
 }
 
 RT::Test->set_rights(
-    { Principal => $tester->PrincipalObj,
+    { Principal => $tester->principal_object,
       Right => [qw(SeeQueue ShowTicket CreateTicket SeeCustomField)],
     },
 );
@@ -124,7 +124,7 @@ diag "check that we have no the CF on the create"
 }
 
 RT::Test->set_rights(
-    { Principal => $tester->PrincipalObj,
+    { Principal => $tester->principal_object,
       Right => [qw(SeeQueue ShowTicket CreateTicket SeeCustomField ModifyCustomField)],
     },
 );

@@ -56,12 +56,12 @@ $changes => {}
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
-my $user = new RT::Model::User( $session{CurrentUser} ) ;
-my @fields = qw(RealName NickName Gecos Organization Address1 Address2 City
+my $user = new RT::Model::User( Jifty->web->current_user ) ;
+my @fields = qw(real_name nickname Gecos organization Address1 Address2 City
                 State Zip Country HomePhone WorkPhone MobilePhone PagerPhone
-                FreeformContactInfo Comments Signature Lang EmailEncoding
-                WebEncoding ExternalContactInfoId ContactInfoSystem
-                ExternalAuthId AuthSystem);
+                freeform_contact_info comments Signature Lang email_encoding
+                web_encoding ExternalContactInfoId ContactInfoSystem
+                ExternalAuthId auth_system);
 my %fields = map { lc $_ => $_ } @fields;
 
 if ($id ne 'new') {
@@ -73,15 +73,15 @@ if ($id ne 'new') {
 else {
     if ( keys %data == 0) {
         return [
-            "# Required: Name, EmailAddress",
-            [ qw(id Name EmailAddress Organization Password Comments) ],
+            "# Required: name, email",
+            [ qw(id name email organization password comments) ],
             {
                 id => "user/new",
-                Name => "",
-                EmailAddress => "",
-                Organization => "",
-                Password => "",
-                Comments => ""
+                name => "",
+                email => "",
+                organization => "",
+                password => "",
+                comments => ""
             },
             0
         ];
@@ -89,10 +89,10 @@ else {
     else {
         my %v;
         my %create = %fields;
-        $create{name}         = "Name";
-        $create{password}     = "Password";
-        $create{emailaddress} = "EmailAddress";
-        $create{contactinfo}  = "FreeformContactInfo";
+        $create{name}         = "name";
+        $create{password}     = "password";
+        $create{email} = "email";
+        $create{contactinfo}  = "freeform_contact_info";
         # Do any fields need to be excluded here?
 
         foreach my $k (keys %data) {
@@ -117,15 +117,15 @@ if (keys %data == 0) {
     my @data;
 
     push @data, [ id => "user/".$user->id ];
-    push @data, [ Name => $user->Name ];
-    push @data, [ Password => '********' ];
-    push @data, [ EmailAddress => $user->EmailAddress ];
+    push @data, [ name => $user->name ];
+    push @data, [ password => '********' ];
+    push @data, [ email => $user->email ];
 
     foreach my $key (@fields) {
         my $val = $user->$key;
 
         if ( (defined ($format) && $format eq 'l') || (defined $val && $val ne '')) {
-            $key = "ContactInfo" if $key eq 'FreeformContactInfo';
+            $key = "ContactInfo" if $key eq 'freeform_contact_info';
             push @data, [ $key => $val ];
         }
     }
@@ -142,16 +142,16 @@ else {
         $key = lc $key;
         $n = 1;
 
-        if ($key eq 'name' || $key eq 'emailaddress' ||
+        if ($key eq 'name' || $key eq 'email' ||
             $key eq 'contactinfo' || exists $fields{$key})
         {
             if (exists $fields{$key}) {
                 $key = $fields{$key};
             }
             else {
-                $key = "FreeformContactInfo" if $key eq 'contactinfo';
-                $key = "EmailAddress" if $key eq 'emailaddress';
-                $key = "Name" if $key eq 'name';
+                $key = "freeform_contact_info" if $key eq 'contactinfo';
+                $key = "email" if $key eq 'email';
+                $key = "name" if $key eq 'name';
             }
             $set = "set_$key";
 
@@ -159,7 +159,7 @@ else {
             ($n, $s) = $user->$set($val);
         }
         elsif ($key eq 'password') {
-            ($n, $s) = $user->set_Password($val) unless $val =~ /^\**$/;
+            ($n, $s) = $user->set_password($val) unless $val =~ /^\**$/;
         }
         elsif ($key ne 'id') {
             $n = 0;

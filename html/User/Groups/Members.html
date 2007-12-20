@@ -68,7 +68,7 @@
 
 <tr>
 <td valign="top">
-<& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers", Group => $Group &>
+<& /Admin/Elements/SelectNewGroupMembers, name => "AddMembers", Group => $Group &>
 </td>
 <td valign="top">
 
@@ -93,7 +93,7 @@
 % $GroupMembers->LimitToGroups();
 % while (my $member = $GroupMembers->next()) {
 <li><input type="checkbox" class="checkbox" name="delete_member-<%$member->MemberId%>" value="1" />
-<%$member->MemberObj->Object->Name%>
+<%$member->MemberObj->Object->name%>
 % }
 % }
 </ul>
@@ -106,7 +106,7 @@
 
 <%INIT>
 
-my $Group = new RT::Model::Group($session{'CurrentUser'});
+my $Group = new RT::Model::Group(Jifty->web->current_user);
 $Group->load($id) ;
 
 unless ($Group->id) {
@@ -134,22 +134,22 @@ foreach my $member (@AddMembersUsers, @AddMembersGroups) {
     my $principal;
 
     if ($member =~ /^Group-(\d+)$/) {
-        $principal = RT::Model::Group->new($session{'CurrentUser'});
+        $principal = RT::Model::Group->new(Jifty->web->current_user);
         $principal->load($1);
     } elsif ($member =~ /^User-(\d+)$/) {
-        $principal = RT::Model::User->new($session{'CurrentUser'});
+        $principal = RT::Model::User->new(Jifty->web->current_user);
         $principal->load($1);
     } else {
         next;
     }
 
 
-    my ($val, $msg) = $Group->AddMember($principal->PrincipalId);
+    my ($val, $msg) = $Group->AddMember($principal->principal_id);
     push (@results, $msg);
 }
 
 
-my $title = loc('Editing membership for personal group [_1]', $Group->Name);
+my $title = loc('Editing membership for personal group [_1]', $Group->name);
 
 </%INIT>
 

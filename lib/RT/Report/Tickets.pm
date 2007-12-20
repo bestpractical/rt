@@ -75,9 +75,9 @@ sub Groupings {
         StartedDaily
         StartedMonthly
         StartedAnnually
-        StartsDaily
-        StartsMonthly
-        StartsAnnually
+        startsDaily
+        startsMonthly
+        startsAnnually
     );
 
     @fields = map {$_, $_} @fields;
@@ -91,9 +91,9 @@ sub Groupings {
     }
 
     if ( $queues ) {
-        my $CustomFields = RT::Model::CustomFieldCollection->new( $self->current_user );
+        my $CustomFields = RT::Model::CustomFieldCollection->new;
         foreach my $id (keys %$queues) {
-            my $queue = RT::Model::Queue->new( $self->current_user );
+            my $queue = RT::Model::Queue->new;
             $queue->load($id);
             unless ($queue->id) {
                 # XXX TODO: This ancient code dates from a former developer
@@ -105,7 +105,7 @@ sub Groupings {
         }
         $CustomFields->LimitToGlobal;
         while ( my $CustomField = $CustomFields->next ) {
-            push @fields, "Custom field '". $CustomField->Name ."'", "CF.{". $CustomField->id ."}";
+            push @fields, "Custom field '". $CustomField->name ."'", "CF.{". $CustomField->id ."}";
         }
     }
     return @fields;
@@ -117,9 +117,9 @@ sub Label {
     if ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {
         my $cf = $1;
         return $self->current_user->loc( "Custom field '[_1]'", $cf ) if $cf =~ /\D/;
-        my $obj = RT::Model::CustomField->new( $self->current_user );
+        my $obj = RT::Model::CustomField->new;
         $obj->load( $cf );
-        return $self->current_user->loc( "Custom field '[_1]'", $obj->Name );
+        return $self->current_user->loc( "Custom field '[_1]'", $obj->name );
     }
     return $self->current_user->loc($field);
 }
@@ -184,7 +184,7 @@ sub _FieldToFunction {
         }
     } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) { #XXX: use CFDecipher method
         my $cf_name = $1;
-        my $cf = RT::Model::CustomField->new( $self->current_user );
+        my $cf = RT::Model::CustomField->new;
         $cf->load($cf_name);
         unless ( $cf->id ) {
             $RT::Logger->error("Couldn't load CustomField #$cf_name");
@@ -220,7 +220,7 @@ sub Next {
 
 sub new_item {
     my $self = shift;
-    return RT::Report::Tickets::Entry->new(RT->system_user); # $self->current_user);
+    return RT::Report::Tickets::Entry->new(current_user => RT->system_user); # $self->current_user);
 }
 
 
@@ -236,7 +236,7 @@ sub AddEmptyRows {
     if ( $self->{'_group_by_field'} eq 'Status' ) {
         my %has = map { $_->__value('Status') => 1 } @{ $self->items_array_ref || [] };
 
-        foreach my $status ( grep !$has{$_}, RT::Model::Queue->new($self->current_user)->StatusArray ) {
+        foreach my $status ( grep !$has{$_}, RT::Model::Queue->new->StatusArray ) {
 
             my $record = $self->new_item;
             $record->load_from_hash( {

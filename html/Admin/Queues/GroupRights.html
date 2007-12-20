@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc('Modify group rights for queue [_1]', $QueueObj->Name) &>
+<& /Admin/Elements/Header, Title => loc('Modify group rights for queue [_1]', $QueueObj->name) &>
 <& /Admin/Elements/QueueTabs, id => $id, 
     QueueObj => $QueueObj,                                                      
     current_tab => $current_tab, 
-    Title => loc('Modify group rights for queue [_1]', $QueueObj->Name) &>
+    Title => loc('Modify group rights for queue [_1]', $QueueObj->name) &>
 <& /Elements/ListActions, actions => \@results &>
 
   <form method="post" action="GroupRights.html">
@@ -59,7 +59,7 @@
 <h1><&|/l&>System groups</&></h1>
 <table>
 % $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
-% $Groups = RT::Model::GroupCollection->new($session{'CurrentUser'});
+% $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
 % $Groups->LimitToSystemInternalGroups();
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
@@ -67,7 +67,7 @@
 	    <% loc($Group->Type) %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
+	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
         Object => $QueueObj  &>
 	  </td>
 	</tr>
@@ -75,7 +75,7 @@
 </table>
 <h1><&|/l&>Roles</&></h1>
 <table>
-% $Groups = RT::Model::GroupCollection->new($session{'CurrentUser'});
+% $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
 % $Groups->LimitToRolesForQueue($QueueObj->id);
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
@@ -83,7 +83,7 @@
 	    <% loc($Group->Type) %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
+	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
         Object => $QueueObj  &>
 	  </td>
 	</tr>
@@ -91,15 +91,15 @@
 </table>
 <h1><&|/l&>User defined groups</&></h1>
 <table>
-% $Groups = RT::Model::GroupCollection->new($session{'CurrentUser'});
+% $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
 % $Groups->LimitToUserDefinedGroups();    
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
-	    <% $Group->Name %>
+	    <% $Group->name %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, PrincipalId => $Group->PrincipalId,
+	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
         Object => $QueueObj  &>
 	  </td>
 	</tr>
@@ -120,7 +120,7 @@ if (!defined $id) {
     Abort(loc("No Queue defined"));
 }
 
-my $QueueObj = RT::Model::Queue->new($session{'CurrentUser'});
+my $QueueObj = RT::Model::Queue->new(Jifty->web->current_user);
 $QueueObj->load($id) || Abort(loc("Couldn't load queue [_1]",$id));
 
 my $Groups;

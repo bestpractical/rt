@@ -53,12 +53,12 @@
     Title => $title
 &>
 <& /Elements/ListActions, actions => \@actions &>
-% if ($session{'CurrentUser'}->has_right( Object=> RT->system, Right => 'SuperUser')) {
+% if (Jifty->web->current_user->has_right( Object=> RT->system, Right => 'SuperUser')) {
 <p>
   <&|/l&>You can also edit the predefined search itself</&>:
   <a href="<% RT->Config->Get('WebPath').'/Search/Build.html?'.
 	  $m->comp('/Elements/QueryString',
-		   LoadSavedSearch => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->Name %></a>
+		   LoadSavedSearch => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->name %></a>
 </p>
 % }
 
@@ -68,7 +68,7 @@
 
 <& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
    AvailableColumns => $AvailableColumns, CurrentFormat => $CurrentFormat &>
-<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), Name => 'Save'&>
+<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), name => 'Save'&>
 
 </form>
 
@@ -83,10 +83,10 @@ my ($class, $id) = ( $ARGS{name} =~ m/^(.*)-(\d+)$/ );
 Abort('No search specified')
     unless defined $class and $class eq 'RT::Model::Attribute';
 
-my $search = $class->new ($session{'CurrentUser'});
+my $search = $class->new (Jifty->web->current_user);
 $search->load_by_id ($id);
 $title .= loc ($search->Description, loc ('"N"'));
-my $user = $session{'CurrentUser'}->UserObj;
+my $user = Jifty->web->current_user->user_object;
 my $SearchArg = $user->Preferences($search, $search->Content);
 $ARGS{Order}       = (ref $ARGS{Order}   ? join('|',grep {/\S/} @{$ARGS{Order}})   : $ARGS{Order});
 $ARGS{order_by}     = (ref $ARGS{order_by} ? join('|',grep {/\S/} @{$ARGS{order_by}}) : $ARGS{order_by});
