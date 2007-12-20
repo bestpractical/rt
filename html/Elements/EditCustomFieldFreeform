@@ -52,13 +52,11 @@
 <input name="<%$name%>" id="<%$name%>" size="<%$Cols%>" value="<%$Default ? $Default : ''%>" />
 % }
 <%INIT>
-if ($Multiple and $Values) {
-  $Default = '';
-  while (my $value = $Values->Next ) {
-    $Default .= $value->Content."\n";
-  }
-} else {
-  $Default =~ s/\s*\n\s*/ /g if $Default;
+if ( $Multiple and $Values ) {
+    $Default = join "\n", map $_->Content, @{ $Values->ItemsArrayRef };
+}
+unless ( $Multiple ) {
+    $Default =~ s/\s*\n+\s*/ /g if $Default;
 }
 </%INIT>
 <%ARGS>
