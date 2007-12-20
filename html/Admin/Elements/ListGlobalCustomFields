@@ -56,6 +56,6 @@
 %   }
 
 <%init>
-my $CustomFields = new RT::Model::CustomFieldCollection (Jifty->web->current_user);
+my $CustomFields = RT::Model::CustomFieldCollection->new();
 $CustomFields->LimitToGlobal();
 </%INIT>

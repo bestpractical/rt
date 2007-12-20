@@ -60,7 +60,7 @@ use File::Spec ();
 
     # get config object
     use RT::Config;
-    my $config = new RT::Config;
+    my $config = RT::Config->new;
     $config->load_configs;
 
     # get or set option

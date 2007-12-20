@@ -85,7 +85,7 @@ $id = $ARGS{'id'} = $TicketObj->id;
 Abort( loc("Permission denied") )
     unless $TicketObj->current_user_has_right('ForwardMessage');
 
-my $txn = RT::Transaction->new( Jifty->web->current_user );
+my $txn = RT::Transaction->new();
 $txn->load( $QuoteTransaction );
 Abort( loc("Couldn't load transaction #[_1]", $QuoteTransaction) )
     unless $txn->id;

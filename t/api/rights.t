@@ -98,7 +98,7 @@ ok( !$user->has_right( Right => 'ReplyToTicket', Object => $queue ), "user can't
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($ticket_id) = $ticket->create( Queue => $queue_id, Subject => 'test');
 ok( $ticket_id, 'new ticket Created' );
-is( $ticket->Owner, $RT::Nobody->id, 'owner of the new ticket is nobody' );
+is( $ticket->Owner, RT->nobody->id, 'owner of the new ticket is nobody' );
 
 my $status;
 ($status, $msg) = $user->principal_object->GrantRight( Object => $queue, Right => 'OwnTicket' );

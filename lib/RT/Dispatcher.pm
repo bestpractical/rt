@@ -30,13 +30,17 @@ if ( int RT->Config->Get('AutoLogoff') ) {
 
 };
 
+before qr'/(?!login)' => run {
+    tangent '/login' unless (Jifty->web->current_user->id);
+};
+
 before qr/(.*)/ => run {
     my $path = $1;
 # This code canonicalize_s time inputs in hours into minutes
 # If it's a noauth file, don't ask for auth.
 
     # Set the proper encoding for the current language handle
-    content_type("text/html; charset=utf-8");
+#    content_type("text/html; charset=utf-8");
 
     return;
     # XXX TODO 4.0 implmeent self service smarts

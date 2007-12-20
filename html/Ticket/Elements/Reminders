@@ -83,7 +83,7 @@ if ( $request_args->{'update-reminders'} ) {
 }
 
 if ( $request_args->{'NewReminder-Subject'} ) {
-    my $due_obj = RT::Date->new( Jifty->web->current_user );
+    my $due_obj = RT::Date->new();
     my $date    = Time::ParseDate::parsedate(
         $request_args->{'NewReminder-Due'},
         UK            => RT->Config->Get('DateDayBeforeMonth'),

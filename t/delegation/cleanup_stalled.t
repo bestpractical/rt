@@ -80,7 +80,7 @@ clear_acls_and_groups();
 ok( $ret, "Grant DelegateRights to g1: $msg" );
 ( $ret, $msg ) = $g2->principal_object->GrantRight( Right => 'ShowConfigTab' );
 ok( $ret, "Grant ShowConfigTab to g2: $msg" );
-( $ret, $msg ) = $g1->AddMember( $u1->principal_id );
+( $ret, $msg ) = $g1->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g1: $msg" );
 ok(
     $u1->principal_object->has_right(
@@ -89,7 +89,7 @@ ok(
     ),
     "test user 1 has DelegateRights after joining g1"
 );
-( $ret, $msg ) = $g2->AddMember( $u1->principal_id );
+( $ret, $msg ) = $g2->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g2: $msg" );
 ok(
     $u1->principal_object->has_right(
@@ -132,7 +132,7 @@ ok(
 # Basic case: u has global DelegateRights through g1 and ShowConfigTab
 # through g2; then DelegateRights revoked from g1.
 
-( $ret, $msg ) = $g1->AddMember( $u1->principal_id );
+( $ret, $msg ) = $g1->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g1: $msg" );
 ( $ret, $msg ) = $ace->Delegate( principal_id => $pg1->principal_id );
 ok( $ret, "Delegate ShowConfigTab to pg1: $msg" );
@@ -162,9 +162,9 @@ ok( $ret, "Grant DelegateRights on pg1 to g1: $msg" );
 ( $ret, $msg ) = $g2->principal_object->GrantRight( Right => 'AdminGroup',
 					        Object => $pg1);
 ok( $ret, "Grant AdminGroup on pg1 to g2: $msg" );
-( $ret, $msg ) = $g1->AddMember( $u1->principal_id );
+( $ret, $msg ) = $g1->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g1: $msg" );
-( $ret, $msg ) = $g2->AddMember( $u1->principal_id );
+( $ret, $msg ) = $g2->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g2: $msg" );
 ok( $u1->principal_object->has_right(
         Right  => 'DelegateRights',
@@ -234,9 +234,9 @@ ok( $ret, "Grant AdminGroup on pg1 to g2: $msg" );
 ( $ret, $msg ) = $u1->principal_object->GrantRight( Right => 'DelegateRights',
 					       Object => RT->system);
 ok( $ret, "Grant DelegateRights to user: $msg" );
-( $ret, $msg ) = $g1->AddMember( $u1->principal_id );
+( $ret, $msg ) = $g1->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g1: $msg" );
-( $ret, $msg ) = $g2->AddMember( $u1->principal_id );
+( $ret, $msg ) = $g2->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g2: $msg" );
 $ace = RT::Model::ACE->new($u1);
 ( $ret, $msg ) = $ace->load_by_values(
@@ -266,7 +266,7 @@ ok( not ($pg1->principal_object->has_right(Right  => 'AdminGroup',
 # DelegateRights on g2 revoked from u (delegation should remain), and
 # u removed from g1 (delegation should not remain).
 
-( $ret, $msg ) = $g1->AddMember( $u1->principal_id );
+( $ret, $msg ) = $g1->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g1: $msg" );
 ( $ret, $msg ) = $u1->principal_object->GrantRight( Right => 'DelegateRights',
 					       Object => RT->system);
@@ -304,11 +304,11 @@ clear_acls_and_groups();
 ok( $ret, "Grant DelegateRights to g1: $msg" );
 ( $ret, $msg ) = $g2->principal_object->GrantRight( Right => 'ShowConfigTab' );
 ok( $ret, "Grant ShowConfigTab to g2: $msg" );
-( $ret, $msg ) = $g1->AddMember( $g3->principal_id );
+( $ret, $msg ) = $g1->add_member( $g3->principal_id );
 ok( $ret, "Add g3 to g1: $msg" );
-( $ret, $msg ) = $g3->AddMember( $u1->principal_id );
+( $ret, $msg ) = $g3->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g3: $msg" );
-( $ret, $msg ) = $g2->AddMember( $u1->principal_id );
+( $ret, $msg ) = $g2->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g2: $msg" );
 
 $ace = RT::Model::ACE->new($u1);
@@ -332,7 +332,7 @@ ok( not ($pg1->principal_object->has_right(Right  => 'ShowConfigTab',
 # through g1 via g3, and ShowConfigTab via g2; then DelegateRights
 # revoked from g1.
 
-( $ret, $msg ) = $g1->AddMember( $g3->principal_id );
+( $ret, $msg ) = $g1->add_member( $g3->principal_id );
 ok( $ret, "Add g3 to g1: $msg" );
 ( $ret, $msg ) = $ace->Delegate( principal_id => $pg1->principal_id );
 ok( $ret, "Delegate ShowConfigTab to pg1: $msg" );
@@ -355,7 +355,7 @@ clear_acls_and_groups();
 ok( $ret, "Grant DelegateRights to g1: $msg" );
 ( $ret, $msg ) = $g2->principal_object->GrantRight( Right => 'ShowConfigTab' );
 ok( $ret, "Grant ShowConfigTab to g2: $msg" );
-( $ret, $msg ) = $g1->AddMember( $u1->principal_id );
+( $ret, $msg ) = $g1->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g1: $msg" );
 $ace = RT::Model::ACE->new($u1);
 ( $ret, $msg ) = $ace->load_by_values(
@@ -368,9 +368,9 @@ ok( $ret, "Look up ACE to be delegated: $msg" );
 ( $ret, $msg ) = $ace->Delegate( principal_id => $pg1->principal_id );
 ok( $ret, "Delegate DelegateRights to pg1: $msg" );
 
-( $ret, $msg ) = $pg1->AddMember( $u2->principal_id );
+( $ret, $msg ) = $pg1->add_member( $u2->principal_id );
 ok( $ret, "Add test user 2 to pg1: $msg" );
-( $ret, $msg ) = $g2->AddMember( $u2->principal_id );
+( $ret, $msg ) = $g2->add_member( $u2->principal_id );
 ok( $ret, "Add test user 2 to g2: $msg" );
 $ace = RT::Model::ACE->new($u2);
 ( $ret, $msg ) = $ace->load_by_values(
@@ -397,7 +397,7 @@ ok( not ($pg2->principal_object->has_right(Right  => 'ShowConfigTab',
 # via pg1 and ShowConfigTab via g2; then DelegateRights revoked from
 # g1.
 
-( $ret, $msg ) = $g1->AddMember( $u1->principal_id );
+( $ret, $msg ) = $g1->add_member( $u1->principal_id );
 ok( $ret, "Add u1 to g1: $msg" );
 $ace = RT::Model::ACE->new($u1);
 ( $ret, $msg ) = $ace->load_by_values(

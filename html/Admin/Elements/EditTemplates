@@ -31,10 +31,10 @@ $Format ||= qq{'<a href="__WebPath__$dir_path/Template.html?Queue=$id&Template=_
     .qq{,'<a href="__WebPath__$dir_path/Template.html?Queue=$id&Template=__id__">__name__</a>/TITLE:name'}
     .qq{,'__Description__'};
 
-my $QueueObj = RT::Model::Queue->new( Jifty->web->current_user );
+my $QueueObj = RT::Model::Queue->new();
 $QueueObj->load( $id ) if $id;
 
-my $Templates = RT::Model::TemplateCollection->new(Jifty->web->current_user);
+my $Templates = RT::Model::TemplateCollection->new();
 if ( $QueueObj->id ) {
     $Templates->LimitToQueue( $id );
 }
@@ -55,7 +55,7 @@ foreach my $key (keys %ARGS) {
 }
 
 foreach my $id( @DeleteTemplates ) {
-    my $TemplateObj = RT::Model::Template->new( Jifty->web->current_user );
+    my $TemplateObj = RT::Model::Template->new();
     $TemplateObj->load( $id );
     unless ( $TemplateObj->id ) {
         push @actions, loc("Couldn't load template #[_1]", $id);

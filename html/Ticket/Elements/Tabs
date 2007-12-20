@@ -165,7 +165,7 @@ if ( $can{'ModifyTicket'} ) {
 
 
  if ( $Ticket->current_user_has_right('OwnTicket') ) {
-     if ( $Ticket->OwnerObj->id == $RT::Nobody->id ) {
+     if ( $Ticket->OwnerObj->id == RT->nobody->id ) {
          $actions->{'B'} = {
              path => "Ticket/Display.html?Action=Take&id=" . $id,
              title => loc('Take'),

@@ -67,7 +67,7 @@ sub GetCurrentUser {
         return ( $args{'CurrentUser'}, -1 );
     }
 
-    my $CurrentUser = new RT::CurrentUser;
+    my $CurrentUser = RT::CurrentUser->new;
     $CurrentUser->load_by_email( $Address );
     $CurrentUser->load_by_name( $Address ) unless $CurrentUser->id;
     if ( $CurrentUser->id ) {

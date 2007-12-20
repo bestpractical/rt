@@ -65,7 +65,7 @@ my $object_obj = @{$objects->{$object_type}{$object}}[0]->Object;
 <%perl>
 my $i;
 foreach my $right (@{$objects->{$object_type}{$object}}) {
-my $delegations = RT::Model::ACECollection->new(Jifty->web->current_user);
+my $delegations = RT::Model::ACECollection->new();
 $delegations->DelegatedBy( Id => Jifty->web->current_user->principal_id);
 $delegations->DelegatedFrom ( Id => $right->id);
 

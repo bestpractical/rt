@@ -71,7 +71,7 @@ $TemplateObj->Description, Content => $TemplateObj->Content &>
 
 <%INIT>
 
-my $TemplateObj = new RT::Model::Template(Jifty->web->current_user);
+my $TemplateObj = RT::Model::Template->new();
 my  ($title, @results, $current_subtab);
 
 my $subtabs = {
@@ -117,7 +117,7 @@ if ($TemplateObj->id()) {
 			};
   push @results, @aresults;
 } else {
-  $QueueObj = RT::Model::Queue->new(Jifty->web->current_user);
+  $QueueObj = RT::Model::Queue->new();
   $QueueObj->load($Queue);
 }
 

@@ -55,7 +55,7 @@
 % }
 </select>
 <%ONCE>
-my $queue = new RT::Model::Queue(Jifty->web->current_user);
+my $queue = RT::Model::Queue->new();
 my @status = $queue->StatusArray();
 </%ONCE>
 <%ARGS>

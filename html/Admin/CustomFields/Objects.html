@@ -67,7 +67,7 @@
 </form>
 
 <%INIT>
-my $CF = RT::Model::CustomField->new(Jifty->web->current_user);
+my $CF = RT::Model::CustomField->new();
 $CF->load($id) if ($id);
 
 unless ($CF->id) {  Abort(loc("Could not load CustomField [_1]"), $id)};
@@ -93,7 +93,7 @@ $CollectionClass = $Class.'Collection';
 
 my $title = loc('Modify associated objects for [_1]', $CF->name);
 
-my $Objects = $CollectionClass->new(Jifty->web->current_user);
+my $Objects = $CollectionClass->new();
 my (@results);
 my (@AssignedObjs, @UnassignedObjs);
 
@@ -102,7 +102,7 @@ $Objects->order_by( column => 'name' );
 
 
 my $ObjectCFs;
-$ObjectCFs = RT::Model::ObjectCustomFieldCollection->new(Jifty->web->current_user);
+$ObjectCFs = RT::Model::ObjectCustomFieldCollection->new();
 $ObjectCFs->find_all_rows;
 $ObjectCFs->limit_to_custom_field($id);
 

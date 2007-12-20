@@ -76,7 +76,7 @@
 <&|/l&>Owner</&>:
 </td>
 <td class="value">
-<& /Elements/SelectOwner, name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}||$RT::Nobody->id, DefaultValue => 0 &>
+    <& /Elements/SelectOwner, name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}|| RT->nobody->id, DefaultValue => 0 &>
 </td>
 </tr>
 <tr>
@@ -84,7 +84,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value" colspan="5">
-    <input name="Requestors" value="<% ($ARGS{Requestors}) || Jifty->web->current_user->email %>" size="40" />
+    <input name="Requestors" value="<% ($ARGS{Requestors}) || Jifty->web->current_user->user_object->email %>" size="40" />
 </td>
 </tr>
 <tr>
@@ -248,7 +248,7 @@
 <%INIT>
 
 my @results;
-my $QueueObj = new RT::Model::Queue(Jifty->web->current_user);
+my $QueueObj = RT::Model::Queue->new();
 $QueueObj->load($Queue) || Abort(loc("Queue could not be loaded."));
 
 $m->callback( QueueObj => $QueueObj, ARGSRef => \%ARGS );
@@ -275,7 +275,7 @@ if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 # if no due date has been set explicitly, then use the
 # queue's default if it exists
 if ($QueueObj->DefaultDueIn && !$ARGS{'Due'}) {
-    my $default_due = RT::Date->new(Jifty->web->current_user);
+    my $default_due = RT::Date->new();
     $default_due->set_to_now();
     $default_due->AddDays($QueueObj->DefaultDueIn);
     $ARGS{'Due'} = $default_due->ISO();

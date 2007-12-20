@@ -67,7 +67,7 @@
 
 
 <%INIT>
-my $CustomFields = RT::Model::CustomFieldCollection->new(Jifty->web->current_user);
+my $CustomFields = RT::Model::CustomFieldCollection->new();
 my @results;
 my (@GlobalCFs, @UnassignedCFs);
 
@@ -85,7 +85,7 @@ $CustomFields->order_by( column => 'name' );
 
 
 my ($GlobalCFs, $ObjectCFs);
-$ObjectCFs = RT::Model::ObjectCustomFieldCollection->new(Jifty->web->current_user);
+$ObjectCFs = RT::Model::ObjectCustomFieldCollection->new();
 $ObjectCFs->find_all_rows;
 $ObjectCFs->LimitToobject_id($id);
 $ObjectCFs->LimitToLookupType($lookup);
@@ -106,7 +106,7 @@ if (grep $_ > 1, values %SortOrders) {
 
 # {{{ deal with moving sortorder of custom fields
 if ($CustomField and $Move) {
-    my $SourceObj = RT::Model::ObjectCustomField->new(Jifty->web->current_user);
+    my $SourceObj = RT::Model::ObjectCustomField->new();
     $SourceObj->load_by_cols( object_id => $id, CustomField => $CustomField );
 
     my $TargetObj;
@@ -145,7 +145,7 @@ if ($CustomField and $Move) {
 # }}}
 
 if ($id) {
-    $GlobalCFs = RT::Model::ObjectCustomFieldCollection->new(Jifty->web->current_user);
+    $GlobalCFs = RT::Model::ObjectCustomFieldCollection->new();
     $GlobalCFs->LimitToobject_id(0);
     $GlobalCFs->LimitToLookupType($lookup);
 }
@@ -186,7 +186,7 @@ while (my $cf = $CustomFields->next) {
 }
 
 # redo search...
-$ObjectCFs = RT::Model::ObjectCustomFieldCollection->new(Jifty->web->current_user);
+$ObjectCFs = RT::Model::ObjectCustomFieldCollection->new();
 $ObjectCFs->find_all_rows;
 $ObjectCFs->LimitToobject_id($id);
 $ObjectCFs->LimitToLookupType($lookup);

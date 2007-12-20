@@ -147,7 +147,7 @@ ok($group->id, "Created a new group Ok");
 ok(my ($gv,$gm) = $group->principal_object->GrantRight( Object => $q, Right => 'ModifyTicket'),"Granted the group the right to modify tickets");
 ok($gv,"Grant succeeed - $gm");
 # Add the user to the group
-ok( my ($aid, $amsg) = $group->AddMember($new_user->principal_id), "Added the member to the group");
+ok( my ($aid, $amsg) = $group->add_member($new_user->principal_id), "Added the member to the group");
 ok ($aid, "Member added to group: $amsg");
 # Make sure the user does have the right to modify tickets in the queue
 ok ($new_user->has_right( Object => $new_tick, Right => 'ModifyTicket'), "User can modify the ticket with group membership");
@@ -179,11 +179,11 @@ my $subgroup = RT::Model::Group->new(current_user => RT->system_user);
 $subgroup->create_userDefinedGroup(name => 'Subgrouptest'.$$);
 ok($subgroup->id, "Created a new group ".$subgroup->id."Ok");
 #Add the subgroup as a subgroup of the group
-my ($said, $samsg) =  $group->AddMember($subgroup->principal_id);
+my ($said, $samsg) =  $group->add_member($subgroup->principal_id);
 ok ($said, "Added the subgroup as a member of the group");
 # Add the user to a subgroup of the group
 
-my ($usaid, $usamsg) =  $subgroup->AddMember($new_user->principal_id);
+my ($usaid, $usamsg) =  $subgroup->add_member($new_user->principal_id);
 ok($usaid,"Added the user ".$new_user->id."to the subgroup");
 # Make sure the user does have the right to modify tickets in the queue
 ok ($new_user->has_right( Object => $new_tick2, Right => 'ModifyTicket'), "User can modify the ticket with subgroup membership");

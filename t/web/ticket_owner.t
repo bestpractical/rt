@@ -38,7 +38,7 @@ diag "current user has no right to own, nobody selected as owner on create";
 
     $agent_a->content_like(qr/Create a new ticket/i, 'opened create ticket page');
     my $form = $agent_a->form_name('TicketCreate');
-    is $form->value('Owner'), $RT::Nobody->id, 'correct owner selected';
+    is $form->value('Owner'), RT->nobody->id, 'correct owner selected';
     ok !grep($_ == $user_a->id, $form->find_input('Owner')->possible_values),
         'user A can not own tickets';
     $agent_a->submit;
@@ -49,7 +49,7 @@ diag "current user has no right to own, nobody selected as owner on create";
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->load( $id );
     ok $ticket->id, 'loaded the ticket';
-    is $ticket->Owner, $RT::Nobody->id, 'correct owner';
+    is $ticket->Owner, RT->nobody->id, 'correct owner';
 }
 
 diag "user can chose owner of a new ticket";
@@ -61,7 +61,7 @@ diag "user can chose owner of a new ticket";
 
     $agent_a->content_like(qr/Create a new ticket/i, 'opened create ticket page');
     my $form = $agent_a->form_name('TicketCreate');
-    is $form->value('Owner'), $RT::Nobody->id, 'correct owner selected';
+    is $form->value('Owner'), RT->nobody->id, 'correct owner selected';
 
     ok grep($_ == $user_b->id,  $form->find_input('Owner')->possible_values),
         'user B is listed as potential owner';
@@ -100,7 +100,7 @@ diag "user A can not change owner after create";
         $agent->follow_link_ok(text => 'Basics');
         my $form = $agent->form_number(3);
         is $form->value('Owner'), $user_b->id, 'correct owner selected';
-        $agent->select('Owner', $RT::Nobody->id);
+        $agent->select('Owner', RT->nobody->id);
         $agent->submit;
 
         $agent->content_like(
@@ -156,7 +156,7 @@ diag "Couldn't take without coresponding right";
         Subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->Owner, $RT::Nobody->id, 'correct owner';
+    is $ticket->Owner, RT->nobody->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Take' ))[0],
@@ -195,7 +195,7 @@ diag "TakeTicket require OwnTicket to work";
         Subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->Owner, $RT::Nobody->id, 'correct owner';
+    is $ticket->Owner, RT->nobody->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Take' ))[0],
@@ -217,7 +217,7 @@ diag "TakeTicket+OwnTicket work";
         Subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->Owner, $RT::Nobody->id, 'correct owner';
+    is $ticket->Owner, RT->nobody->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Steal' ))[0],
@@ -306,7 +306,7 @@ diag "StealTicket+OwnTicket don't work when owner is nobody";
         Subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->Owner, $RT::Nobody->id, 'correct owner';
+    is $ticket->Owner, RT->nobody->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Steal' ))[0],
@@ -328,7 +328,7 @@ diag "no Steal link when owner nobody";
         Subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->Owner, $RT::Nobody->id, 'correct owner';
+    is $ticket->Owner, RT->nobody->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Steal' ))[0],

@@ -102,7 +102,7 @@ is ($t->ResolvedObj->Unix, 0, "It hasn't been resolved - ". $t->ResolvedObj->Uni
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 my $msg;
 ($id, $msg) = $ticket->create(Subject => "Foo",
-                Owner => $RT::Nobody->id,
+                Owner => RT->nobody->id,
                 Status => 'open',
                 Requestor => ['jesse@example.com'],
                 Queue => '1'
@@ -137,7 +137,7 @@ ok ($group->id, "Found the AdminCc object for this ticket");
 $group = RT::Model::Group->new(current_user => RT->system_user);
 ok($group->load_ticket_role_group(Ticket => $id, Type=> 'Owner'));
 ok ($group->id, "Found the Owner object for this ticket");
-ok($group->has_member($RT::Nobody->user_object->principal_object), "the owner group has the member 'RT_System'");
+ok($group->has_member(RT->nobody->user_object->principal_object), "the owner group has the member 'RT_System'");
 
 
 

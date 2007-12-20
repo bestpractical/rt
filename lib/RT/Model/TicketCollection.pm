@@ -54,7 +54,7 @@
 # Known Issues: FIXME!
 
 # - ClearRestrictions and Reinitialization is messy and unclear.  The
-# only good way to do it is to create a new RT::Model::TicketCollection object.
+# only good way to do it is to create a RT::Model::TicketCollection->new object.
 
 =head1 name
 
@@ -64,7 +64,7 @@
 =head1 SYNOPSIS
 
   use RT::Model::TicketCollection;
-  my $tickets = new RT::Model::TicketCollection($CurrentUser);
+  my $tickets = RT::Model::TicketCollection->new($CurrentUser);
 
 =head1 description
 
@@ -285,7 +285,7 @@ sub _EnumLimit {
     my $meta = $FIELD_METADATA{$field};
     if ( defined $meta->[1] && defined $value && $value !~ /^\d+$/ ) {
         my $class = "RT::Model::" . $meta->[1];
-        my $o     = $class->new( $sb->current_user );
+        my $o     = $class->new();
         $o->load($value);
         $value = $o->id;
     }
@@ -509,7 +509,7 @@ sub _DateLimit {
     die "Incorrect Meta Data for $field"
         unless ( defined $meta->[1] );
 
-    my $date = RT::Date->new( $sb->current_user );
+    my $date = RT::Date->new();
     $date->set( Format => 'unknown', value => $value );
 
     if ( $op eq "=" ) {
@@ -610,7 +610,7 @@ sub _TransDateLimit {
         );
     }
 
-    my $date = RT::Date->new( $sb->current_user );
+    my $date = RT::Date->new();
     $date->set( Format => 'unknown', value => $value );
 
     $sb->open_paren;
@@ -1442,7 +1442,7 @@ sub order_by {
            push @res, { %$row, column => "Owner=$ownerId", order => $order } ;
 
            # Unowned Tickets 0 1 0
-           my $nobodyId = $RT::Nobody->id;
+           my $nobodyId = RT->nobody->id;
            push @res, { %$row, column => "Owner=$nobodyId", order => $order } ;
 
            push @res, { %$row, column => "Priority", order => $order } ;
@@ -1584,7 +1584,7 @@ sub LimitQueue {
 
     #TODO  value should also take queue objects
     if ( defined $args{'value'} && $args{'value'} !~ /^\d+$/ ) {
-        my $queue = new RT::Model::Queue( $self->current_user );
+        my $queue = RT::Model::Queue->new();
         $queue->load( $args{'value'} );
         $args{'value'} = $queue->id;
     }
@@ -1979,7 +1979,7 @@ sub LimitOwner {
         @_
     );
 
-    my $owner = new RT::Model::User( $self->current_user );
+    my $owner = RT::Model::User->new();
     $owner->load( $args{'value'} );
 
     # FIXME: check for a valid $owner
@@ -2397,7 +2397,7 @@ sub LimitCustomField {
 
     my $q = "";
     if ( $CF->Queue ) {
-        my $qo = new RT::Model::Queue( $self->current_user );
+        my $qo = RT::Model::Queue->new();
         $qo->load( $CF->Queue );
         $q = $qo->name;
     }

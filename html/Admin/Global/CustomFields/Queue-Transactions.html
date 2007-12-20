@@ -54,5 +54,5 @@
     <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object_type => 'RT::Model::Queue', Object=> $object, SubType => 'RT::Model::Ticket-RT::Model::Transaction' &>
 <%INIT>
   my $title = loc( 'Edit Custom Fields for tickets in all queues');
-  my $object = RT::Model::Queue->new(Jifty->web->current_user);
+  my $object = RT::Model::Queue->new();
 </%INIT>

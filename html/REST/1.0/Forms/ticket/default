@@ -59,7 +59,7 @@ use MIME::Entity;
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data   = %$changes;
-my $ticket = new RT::Model::Ticket( Jifty->web->current_user ) ;
+my $ticket = RT::Model::Ticket->new() ;
 my @dates  = qw(Created starts Started Due Resolved Told LastUpdated);
 my @people = qw(Requestors Cc AdminCc);
 my @create = qw(Queue Requestor Subject Cc AdminCc Owner Status Priority
@@ -89,9 +89,9 @@ else {
     if (!keys(%data)) {
         # GET ticket/new: Return a suitable default form.
         # We get defaults from queue/1 (XXX: What if it isn't there?).
-        my $due = new RT::Date( Jifty->web->current_user ) ;
-        my $queue = new RT::Model::Queue( Jifty->web->current_user ) ;
-        my $starts = new RT::Date( Jifty->web->current_user ) ;
+        my $due = RT::Date->new() ;
+        my $queue = RT::Model::Queue->new() ;
+        my $starts = RT::Date->new() ;
         $queue->load(1);
         $due->set_to_now;
         $due->AddDays($queue->DefaultDueIn) if $queue->DefaultDueIn;
@@ -196,14 +196,14 @@ if (!keys(%data)) {
         push @data, [ $key => [ $ticket->$key->Memberemailes ] ];
     }
 
-    $time = new RT::Date ( Jifty->web->current_user );
+    $time = RT::Date->new();
     foreach $key (@dates) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
         $time->set(Format => 'sql', value => $ticket->$key);
         push @data, [ $key => $time->AsString ];
     }
 
-    $time = new RT::Date ( Jifty->web->current_user );
+    $time = RT::Date->new();
     foreach $key (qw(TimeEstimated time_worked time_left)) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
         $val = $ticket->$key || 0;
@@ -263,7 +263,7 @@ else {
             $key = $dates{$key};
             $set = "set_$key";
 
-            my $time = new RT::Date( Jifty->web->current_user ) ;
+            my $time = RT::Date->new() ;
             $time->set(Format => 'sql', value => $ticket->$key);
             next if ($val =~ /^not set$/i || $val eq $time->AsString);
             ($n, $s) = $ticket->$set($val);

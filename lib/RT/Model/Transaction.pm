@@ -442,7 +442,7 @@ sub Message {
     
     if ( !defined( $self->{'message'} ) ) {
 
-        $self->{'message'} = new RT::Model::AttachmentCollection( $self->current_user );
+        $self->{'message'} = RT::Model::AttachmentCollection->new();
         $self->{'message'}->limit(
             column => 'TransactionId',
             value => $self->id
@@ -943,18 +943,18 @@ sub BriefDescription {
             return $self->loc('password changed');
         }
         elsif ( $self->Field eq 'Queue' ) {
-            my $q1 = new RT::Model::Queue( $self->current_user );
+            my $q1 = RT::Model::Queue->new();
             $q1->load( $self->OldValue );
-            my $q2 = new RT::Model::Queue( $self->current_user );
+            my $q2 = RT::Model::Queue->new();
             $q2->load( $self->NewValue );
             return $self->loc("[_1] changed from [_2] to [_3]", $self->Field , $q1->name , $q2->name);
         }
 
         # Write the date/time change at local time:
         elsif ($self->Field =~  /Due|starts|Started|Told/) {
-            my $t1 = new RT::Date($self->current_user);
+            my $t1 = RT::Date->new();
             $t1->set(Format => 'ISO', value => $self->NewValue);
-            my $t2 = new RT::Date($self->current_user);
+            my $t2 = RT::Date->new();
             $t2->set(Format => 'ISO', value => $self->OldValue);
             return $self->loc( "[_1] changed from [_2] to [_3]", $self->Field, $t2->AsString, $t1->AsString );
         }

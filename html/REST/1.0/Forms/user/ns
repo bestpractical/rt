@@ -56,7 +56,7 @@ use RT::Model::UserCollection;
 my $field = "name";
 $field = "email" if $id =~ /\@/;
 
-my $users = new RT::Model::UserCollection ;
+my $users = RT::Model::UserCollection->new ;
 $users->limit(column => $field, operator => '=', value => $id);
 if ($users->count == 0) {
     return (0, "No user named $id exists.");

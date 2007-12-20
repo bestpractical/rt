@@ -73,7 +73,7 @@ my $title = loc("Customize").' '.loc("Quick search");
 # The queue list is not loaded from cache, so it might be a bit inconsistent
 my $user = Jifty->web->current_user->user_object;
 my $unwanted = $user->Preferences('QuickSearch', {});
-my $Queues = RT::Model::QueueCollection->new(Jifty->web->current_user);
+my $Queues = RT::Model::QueueCollection->new();
 $Queues->find_all_rows;
 my @queues = grep {$_->current_user_has_right('ShowTicket')} @{$Queues->items_array_ref};
 

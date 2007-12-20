@@ -59,7 +59,7 @@
       
 <h1><&|/l&>System groups</&></h1>
 <table>
-% my $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
+% my $Groups = RT::Model::GroupCollection->new();
 % $Groups->LimitToSystemInternalGroups();
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
@@ -75,7 +75,7 @@
 </table>
 <h1><&|/l&>User defined groups</&></h1>
 <table>
-% $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
+% $Groups = RT::Model::GroupCollection->new();
 % $Groups->LimitToUserDefinedGroups();    
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
@@ -100,7 +100,7 @@ if (!defined $id) {
     $m->comp("/Elements/Error", Why => loc("No CustomField defined"));
 }
 
-my $CustomFieldObj = RT::Model::CustomField->new(Jifty->web->current_user);
+my $CustomFieldObj = RT::Model::CustomField->new();
 $CustomFieldObj->load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load CustomField [_1]",$id));
 
 my $title = loc('Modify group rights for custom field [_1]', $CustomFieldObj->name);

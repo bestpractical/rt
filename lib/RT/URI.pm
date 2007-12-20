@@ -74,7 +74,7 @@ by RT::Model::Link objects.
 
 =head2 new
 
-Create a new RT::URI object.
+Create a RT::URI->new object.
 
 =cut
 

@@ -73,15 +73,15 @@
 </&>
 
 <%init>
-my $tickets = RT::Model::TicketCollection->new( Jifty->web->current_user );
+my $tickets = RT::Model::TicketCollection->new();
 $tickets->LimitOwner( value => Jifty->web->current_user->id );
 
 # also consider AdminCcs as potential approvers.
-my $group_tickets = RT::Model::TicketCollection->new( Jifty->web->current_user );
+my $group_tickets = RT::Model::TicketCollection->new();
 $group_tickets->LimitWatcher( value => Jifty->web->current_user->user_object->email, type => 'AdminCc' );
 
-my $Created_before = RT::Date->new( Jifty->web->current_user );
-my $Created_after = RT::Date->new( Jifty->web->current_user );
+my $Created_before = RT::Date->new();
+my $Created_after = RT::Date->new();
 
 foreach ($tickets, $group_tickets) {
     $_->limit( column      => 'Type', value => 'approval' );

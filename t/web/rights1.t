@@ -93,7 +93,7 @@ my $group_obj = RT::Model::Group->new(current_user => RT->system_user);
 ok($ret, "SelectOwner test group creation. $msg");
 
 # Add our customer to the customer group, and give it queue rights.
-($ret, $msg) = $group_obj->AddMember($user_obj->principal_object->id());
+($ret, $msg) = $group_obj->add_member($user_obj->principal_object->id());
 ok($ret, "Added customer to its group. $msg");
 ($grantid,$grantmsg) =$group_obj->principal_object->GrantRight(Right => 'OwnTicket',
 				     Object => $queue_obj);

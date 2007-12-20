@@ -96,13 +96,13 @@
 my ($Users, $Groups);
 
 if ($UserString) {
-    $Users = RT::Model::UserCollection->new(Jifty->web->current_user);
+    $Users = RT::Model::UserCollection->new();
     $Users->limit(column => $UserField, value => $UserString, operator => $UserOp);
     $Users->LimitToprivileged if $privilegedOnly;
      }
 
 if ($GroupString) {
-    $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
+    $Groups = RT::Model::GroupCollection->new();
     $Groups->limit(column => 'Domain', operator => '=', value => 'UserDefined');
     $Groups->limit(column => $GroupField, value => $GroupString, operator => $GroupOp);
      }

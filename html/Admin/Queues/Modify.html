@@ -115,7 +115,7 @@
 
 <%INIT>
 my ($title, $current_tab, @results, $disabled, $EnabledChecked);
-my $QueueObj = RT::Model::Queue->new( Jifty->web->current_user );
+my $QueueObj = RT::Model::Queue->new();
 $QueueObj->load( $id ) if !$id || $id eq 'new';
 
 $EnabledChecked = "checked";

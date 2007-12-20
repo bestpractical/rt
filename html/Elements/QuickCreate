@@ -58,7 +58,7 @@
 <&|/l&>Owner</&>:<br />
 <select type="select" name="Owner">  
 <option value="<%Jifty->web->current_user->id%>" selected><%Jifty->web->current_user->name %></option>
-<option value="<%$RT::Nobody->id%>"><%loc('Nobody')%></option>
+<option value="<%RT->nobody->id%>"><%loc('Nobody')%></option>
 </select>
 </td>
 </tr>

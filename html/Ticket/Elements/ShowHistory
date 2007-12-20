@@ -128,7 +128,7 @@ $m->flush_buffer();
 % }
 </div>
 <%INIT>
-my $Transactions = new RT::Model::TransactionCollection(Jifty->web->current_user);
+my $Transactions = RT::Model::TransactionCollection->new();
 if ($Tickets) {
     while (my $t = $Tickets->next) {
         $Transactions->LimitToTicket($t->id);

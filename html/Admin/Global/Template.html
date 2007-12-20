@@ -73,7 +73,7 @@
 
 <%INIT>
 
-my $TemplateObj = new RT::Model::Template(Jifty->web->current_user);
+my $TemplateObj = RT::Model::Template->new();
 my  ($title, @results, $current_subtab);
 
 my $subtabs = {

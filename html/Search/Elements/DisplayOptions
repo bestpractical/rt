@@ -107,7 +107,7 @@ selected
 </&>
 
 <%INIT>
-my $tickets = new RT::Model::TicketCollection(Jifty->web->current_user);
+my $tickets = RT::Model::TicketCollection->new();
 my %fields = %{$tickets->columns};
 map { $fields{$_}->[0] =~ /^(?:ENUM|INT|DATE|STRING)$/ || delete $fields{$_} } keys %fields;
 delete $fields{'EffectiveId'};

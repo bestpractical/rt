@@ -112,11 +112,11 @@ sub __DependsOn
 
                 my $group_member = $args{'BaseObject'};
 
-                if( $group_member->MemberObj->id == $RT::Nobody->id ) {
+                if( $group_member->MemberObj->id == RT->nobody->id ) {
                     RT::Shredder::Exception->throw( "Couldn't delete Nobody from owners role group" );
                 }
 
-                my( $status, $msg ) = $group->AddMember( $RT::Nobody->id );
+                my( $status, $msg ) = $group->add_member( RT->nobody->id );
                 RT::Shredder::Exception->throw( $msg ) unless $status;
 
                 my $ticket = RT::Model::Ticket->new( $group->current_user );
@@ -124,7 +124,7 @@ sub __DependsOn
                 RT::Shredder::Exception->throw( "Couldn't load ticket" ) unless $ticket->id;
 
                 ( $status, $msg ) = $ticket->_set( column => 'Owner',
-                                   value => $RT::Nobody->id,
+                                   value => RT->nobody->id,
                                  );
                 RT::Shredder::Exception->throw( $msg ) unless $status;
 

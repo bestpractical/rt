@@ -96,8 +96,8 @@ my $Dirty = $m->comp(
 );
 
 use RT::SavedSearches;
-my @Objects = RT::SavedSearches->new(Jifty->web->current_user)->_PrivacyObjects;
-push @Objects, RT::System->new( Jifty->web->current_user )
+my @Objects = RT::SavedSearches->new()->_PrivacyObjects;
+push @Objects, RT::System->new()
     if Jifty->web->current_user->has_right( Object=> RT->system,
                                           Right => 'SuperUser' );
 
@@ -192,7 +192,7 @@ if ( $obj && $obj->id ) {
     $obj->set_Description( $desc );
 }
 elsif ( $id eq 'new' ) {
-    my $saved_search = RT::SavedSearch->new( Jifty->web->current_user );
+    my $saved_search = RT::SavedSearch->new();
     my ($status, $msg) = $saved_search->Save(
         Privacy      => $ARGS{'SavedSearchOwner'},
         name         => $desc,

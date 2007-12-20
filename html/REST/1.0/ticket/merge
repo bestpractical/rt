@@ -56,7 +56,7 @@ use RT::Interface::REST;
 
 my $output;
 my $status = "200 Ok";
-my $ticket = new RT::Model::Ticket(Jifty->web->current_user);
+my $ticket = RT::Model::Ticket->new();
 my $object = $r->path_info;
 
 # http://.../REST/1.0/ticket/merge/1

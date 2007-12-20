@@ -80,10 +80,10 @@
 <%init>
 my (@actions);
 
-my $Scrips = RT::Model::ScripCollection->new(Jifty->web->current_user);
+my $Scrips = RT::Model::ScripCollection->new();
 
 
-my $QueueObj = RT::Model::Queue->new(Jifty->web->current_user);
+my $QueueObj = RT::Model::Queue->new();
 if ($id)  {
         $QueueObj->load($id);                        
 }
@@ -104,7 +104,7 @@ foreach my $key (keys %ARGS) {
   # {{{ if we're trying to delete the scrip
   if ($key =~ /^DeleteScrip-(\d+)/) {
     my $id = $1;
-    my $scrip = new RT::Model::Scrip(Jifty->web->current_user);
+    my $scrip = RT::Model::Scrip->new();
     $scrip->load($id);
     my ($retval, $msg) = $scrip->delete;
     if ($retval) {

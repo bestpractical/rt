@@ -48,11 +48,10 @@
 package RT::Base;
 use Carp;
 use Scalar::Util;
+use base qw/Jifty::Object/;
 
 use strict;
-use vars qw(@EXPORT);
 
-@EXPORT=qw(loc CurrentUser);
 
 =head1 name
 
@@ -67,91 +66,9 @@ RT::Base
 
 =cut
 
-# {{{ sub CurrentUser 
-
-=head2 CurrentUser
-
-If called with an argument, sets the current user to that user object.
-This will affect ACL decisions, etc. The argument can be either
-L<RT::CurrentUser> or L<RT::Model::User> object.
-
-Returns the current user object of L<RT::CurrentUser> class.
-
-=cut
-
-sub current_user {
-    my $self = shift;
-    if (UNIVERSAL::isa($_[0], 'RT::CurrentUser')) {
-        $self->{'user'} = shift @_;
-
-    } elsif( @_) {
-        my %args = @_;
-        if ($args{'current_user'}) {
-            $self->{'user'} = $args{'current_user'};
-        }
-
-    }
-    return $self->{'user'};
-
-
-}
-
-# }}}
-
-sub OriginalUser {
-    my $self = shift;
-
-    if (@_) {
-        $self->{'original_user'} = shift;
-        Scalar::Util::weaken($self->{'original_user'})
-            if (ref($self->{'original_user'}) && $self->{'original_user'} == $self );
-    }
-    return ( $self->{'original_user'} || $self->{'user'} );
-}
-
-
-=head2 loc LOC_STRING
-
-l is a method which takes a loc string
-to this object's CurrentUser->LanguageHandle for localization. 
-
-you call it like this:
-
-    $self->loc("I have [quant,_1,concrete mixer].", 6);
-
-In english, this would return:
-    I have 6 concrete mixers.
-
-
-=cut
-
-sub loc {
-    my $self = shift;
-    if (my $user = $self->OriginalUser) {
-        return $user->loc(@_);
-    }
-    elsif ($self->current_user) {
-        return $self->current_user->loc(@_);
-
-    }
-    elsif(RT->system_user) {
-        return RT->system_user->loc(@_);
-    }
-    else {
-        return(@_);
-    }
-}
-
-sub loc_fuzzy {
-    my $self = shift;
-    if (my $user = $self->OriginalUser) {
-        return $user->loc_fuzzy(@_);
-    }
-    else {
-        use Carp;
-        Carp::confess("No currentuser");
-        return ("Critical error:$self has no CurrentUser", $self);
-    }
+sub loc { 
+    shift;
+    _(@_);
 }
 
 1;

@@ -800,8 +800,7 @@ sub create_user {
     }
 
     #Load the new user object
-    my $CurrentUser = new RT::CurrentUser;
-    $CurrentUser->load_by_email( $Address );
+    my $CurrentUser = RT::CurrentUser->new( email => $Address );
 
     unless ( $CurrentUser->id ) {
         $RT::Logger->warning(

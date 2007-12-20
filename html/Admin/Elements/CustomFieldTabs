@@ -54,7 +54,7 @@
 my $tabs;
 
 if ($id) {
-    my $cf = RT::Model::CustomField->new( Jifty->web->current_user );
+    my $cf = RT::Model::CustomField->new();
     $cf->load($id);
     $tabs = {
         this => {

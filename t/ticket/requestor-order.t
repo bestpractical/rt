@@ -105,7 +105,7 @@ sub check_emails_order
     ($gid, $msg) = $g->create_userDefinedGroup(name => '20-sort-by-requestor.t-'.rand(200));
     ok($gid, "Created group") or diag("error: $msg");
 
-    ($id, $msg) = $t->Requestors->AddMember( $gid );
+    ($id, $msg) = $t->Requestors->add_member( $gid );
     ok($id, "added group to requestors group") or diag("error: $msg");
 }
 

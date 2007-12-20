@@ -80,9 +80,9 @@ if ($SavedSearch) {
             LoadSavedSearch => $SavedSearch );
     }
 } else {
-    ($search) = RT::System->new( Jifty->web->current_user ) ->attributes->named( 'Search - ' . $name );
+    ($search) = RT::System->new() ->attributes->named( 'Search - ' . $name );
     unless ( $search && $search->id ) {
-        my (@custom_searches) = RT::System->new( Jifty->web->current_user )->attributes->named('SavedSearch');
+        my (@custom_searches) = RT::System->new()->attributes->named('SavedSearch');
         foreach my $custom (@custom_searches) {
             if ($custom->Description eq $name) { $search = $custom; last }
         }

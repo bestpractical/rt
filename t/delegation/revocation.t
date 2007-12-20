@@ -49,7 +49,7 @@ clear_acls_and_groups();
 ok( $ret, "Grant DelegateRights to u1: $msg" );
 ( $ret, $msg ) = $g1->principal_object->GrantRight( Right => 'ShowConfigTab' );
 ok( $ret, "Grant ShowConfigTab to g1: $msg" );
-( $ret, $msg ) = $g1->AddMember( $u1->principal_id );
+( $ret, $msg ) = $g1->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g1: $msg" );
 
 $ace = RT::Model::ACE->new($u1);
@@ -81,7 +81,7 @@ ok( not( $pg2->principal_object->has_right( Right  => 'ShowConfigTab',
 				       Object => RT->system )),
     "Test personal group 2 lacks ShowConfigTab after user removed from g1" );
 
-( $ret, $msg ) = $g1->AddMember( $u1->principal_id );
+( $ret, $msg ) = $g1->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g1: $msg" );
 ( $ret, $msg ) = $ace->Delegate( principal_id => $pg1->principal_id );
 ok( $ret, "Delegate ShowConfigTab to pg1: $msg" );

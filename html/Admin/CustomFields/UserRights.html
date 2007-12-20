@@ -59,7 +59,7 @@ Title => $title, &>
         
 %	while (my $Member = $Users->next()) {
 % my $user_object = $Member->MemberObj->Object();
-% my $group = RT::Model::Group->new(Jifty->web->current_user);
+% my $group = RT::Model::Group->new();
 % $group->load_acl_equivalence_group($Member->MemberObj);
   <tr align="right"> 
 	<td valign="top"><& /Elements/ShowUser, User => $user_object &></td>
@@ -88,11 +88,11 @@ if (!defined $id) {
     $m->comp("/Elements/Error", Why => loc("No Class defined"));
 }
 
-my $CustomFieldObj = RT::Model::CustomField->new(Jifty->web->current_user);
+my $CustomFieldObj = RT::Model::CustomField->new();
 $CustomFieldObj->load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load Class [_1]",$id));
 
 # Find out which users we want to display ACL selects for
-my $privileged = RT::Model::Group->new(Jifty->web->current_user);
+my $privileged = RT::Model::Group->new();
 $privileged->load_system_internal_group('privileged');
 my $Users = $privileged->MembersObj();
 

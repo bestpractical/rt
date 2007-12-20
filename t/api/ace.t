@@ -59,7 +59,7 @@ ok($user_a->has_right( Object => RT->system, Right => 'AdminOwnPersonalGroups') 
 my $a_delegates = RT::Model::Group->new( $user_a);
 $a_delegates->createPersonalGroup(name => 'Delegates');
 ok( $a_delegates->id   ,"user a creates a personal group 'Delegates'");
-ok( $a_delegates->AddMember($user_b->principal_id)   ,"user a adds user b to personal group 'delegates'");
+ok( $a_delegates->add_member($user_b->principal_id)   ,"user a adds user b to personal group 'delegates'");
 
 ok( !$user_b->has_right(Right => 'OwnTicket', Object => $q)    ,"user b does not have the right to OwnTicket' in queue 'DelegationTest'");
 ok(  $user_a->has_right(Right => 'OwnTicket', Object => $q)  ,"user a has the right to 'OwnTicket' in queue 'DelegationTest'");
@@ -98,7 +98,7 @@ ok ($delegated_ace->id, "Found the delegated ACE");
 
 ok(    $a_delegates->delete_member($user_b->principal_id)  ,"user a removes b from pg 'delegates'");
 ok(  !$user_b->has_right(Right => 'OwnTicket', Object => $q)  ,"user b does not have the right to own tickets in queue 'DelegationTest'");
-ok(  $a_delegates->AddMember($user_b->principal_id)    ,"user a adds user b to personal group 'delegates'");
+ok(  $a_delegates->add_member($user_b->principal_id)    ,"user a adds user b to personal group 'delegates'");
 ok(   $user_b->has_right(Right => 'OwnTicket', Object=> $q) ,"user b has the right to own tickets in queue 'DelegationTest'");
 ok(   $delegated_ace->delete ,"user a revokes pg 'delegates' right to 'OwnTickets' in queue 'DelegationTest'");
 ok( ! $user_b->has_right(Right => 'OwnTicket', Object => $q)   ,"user b does not have the right to own tickets in queue 'DelegationTest'");
@@ -137,25 +137,25 @@ ok( $val   ,"create a group del1 - $msg");
 my $del2 = RT::Model::Group->new(current_user => RT->system_user);
 ($val, $msg) = $del2->create_userDefinedGroup(name => 'Del2');
 ok( $val   ,"create a group del2 - $msg");
-($val, $msg) = $del1->AddMember($del2->principal_id);
+($val, $msg) = $del1->add_member($del2->principal_id);
 ok( $val,"make del2 a member of del1 - $msg");
 
 my $del2a = RT::Model::Group->new(current_user => RT->system_user);
 ($val, $msg) = $del2a->create_userDefinedGroup(name => 'Del2a');
 ok( $val   ,"create a group del2a - $msg");
-($val, $msg) = $del2->AddMember($del2a->principal_id);  
+($val, $msg) = $del2->add_member($del2a->principal_id);  
 ok($val    ,"make del2a a member of del2 - $msg");
 
 my $del2b = RT::Model::Group->new(current_user => RT->system_user);
 ($val, $msg) = $del2b->create_userDefinedGroup(name => 'Del2b');
 ok( $val   ,"create a group del2b - $msg");
-($val, $msg) = $del2->AddMember($del2b->principal_id);  
+($val, $msg) = $del2->add_member($del2b->principal_id);  
 ok($val    ,"make del2b a member of del2 - $msg");
 
-($val, $msg) = $del2->AddMember($user_a->principal_id) ;
+($val, $msg) = $del2->add_member($user_a->principal_id) ;
 ok($val,"make 'user a' a member of del2 - $msg");
 
-($val, $msg) = $del2b->AddMember($user_a->principal_id) ;
+($val, $msg) = $del2b->add_member($user_a->principal_id) ;
 ok($val,"make 'user a' a member of del2b - $msg");
 
 # }}}
@@ -192,7 +192,7 @@ ok(  !$user_a->has_right(Right => 'OwnTicket', Object => $q)  ,"user a does not 
 ok(  !$user_b->has_right(Right => 'OwnTicket', Object => $q)  ,"user b does not have the right to own tickets in queue 'DelegationTest' ");
 # }}}
 
-($val, $msg) = $del2->AddMember($user_a->principal_id);
+($val, $msg) = $del2->add_member($user_a->principal_id);
 ok( $val   ,"make user a a member of group del2 - $msg");
 
 ($val, $msg) = $del2->principal_object->GrantRight(Object=>$q, Right => 'OwnTicket');

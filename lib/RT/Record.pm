@@ -369,7 +369,7 @@ sub load_by_cols {
 
 sub LastUpdatedObj {
     my $self = shift;
-    my $obj  = new RT::Date( $self->current_user );
+    my $obj  = RT::Date->new();
 
     $obj->set( Format => 'sql', value => $self->LastUpdated );
     return $obj;
@@ -381,7 +381,7 @@ sub LastUpdatedObj {
 
 sub CreatedObj {
     my $self = shift;
-    my $obj  = new RT::Date( $self->current_user );
+    my $obj  = RT::Date->new();
 
     $obj->set( Format => 'sql', value => $self->Created );
 
@@ -512,7 +512,7 @@ It takes no options. Arguably, this is a bug
 
 sub _setLastUpdated {
     my $self = shift;
-    my $now = new RT::Date( current_user => $self->current_user );
+    my $now = RT::Date->new( current_user => $self->current_user );
     $now->set_to_now();
 
         my ( $msg, $val ) = $self->__set(
@@ -1180,7 +1180,7 @@ sub _delete_link {
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
-    my $link = new RT::Model::Link( $self->current_user );
+    my $link = RT::Model::Link->new();
     $RT::Logger->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} . "\n" );
 
 
@@ -1212,7 +1212,7 @@ sub _delete_link {
 
 =head2 _NewTransaction  PARAMHASH
 
-Private function to create a new RT::Model::Transaction object for this ticket update
+Private function to create a RT::Model::Transaction->new object for this ticket update
 
 =cut
 

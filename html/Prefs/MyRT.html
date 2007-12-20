@@ -102,7 +102,7 @@ if ($ARGS{Reset}) {
 }
 
 unless (exists $session{'my_rt_portlets'}) {
-    my ($default_portlets) = RT::System->new(Jifty->web->current_user)->attributes->named('HomepageSettings');
+    my ($default_portlets) = RT::System->new()->attributes->named('HomepageSettings');
     my $portlets = $default_portlets ? $default_portlets->Content : {};
     $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $portlets);
 }
@@ -111,10 +111,10 @@ my $portlets = $session{'my_rt_portlets'};
 my %seen;
 my @items = map ["component-$_", $_], grep !$seen{$_}++, @{RT->Config->Get('HomepageComponents')};
 
-my $sys = RT::System->new(Jifty->web->current_user);
+my $sys = RT::System->new();
 my @objs = ($sys);
 
-push @objs, RT::SavedSearches->new(Jifty->web->current_user  )->_PrivacyObjects
+push @objs, RT::SavedSearches->new()->_PrivacyObjects
     if Jifty->web->current_user->has_right( Right  => 'LoadSavedSearch',
                                           Object => RT->system );
 

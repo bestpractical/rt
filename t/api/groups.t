@@ -46,7 +46,7 @@ my $g = RT::Model::Group->new(current_user => RT->system_user);
 ($id, $msg) = $g->create_userDefinedGroup(name => 'Membertests');
 ok ($id, $msg);
 
-my ($aid, $amsg) =$g->AddMember($u->id);
+my ($aid, $amsg) =$g->add_member($u->id);
 ok ($aid, $amsg);
 ok($g->has_member($u->principal_object),"G has member u");
 

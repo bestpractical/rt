@@ -603,7 +603,7 @@ use RT::Model::Ticket;
 my $tick = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($id) = $tick->create( Queue => 'ext-mailgate', Subject => 'test');
 ok( $id, 'new ticket Created' );
-is( $tick->Owner, $RT::Nobody->id, 'owner of the new ticket is nobody' );
+is( $tick->Owner, RT->nobody->id, 'owner of the new ticket is nobody' );
 
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
@@ -624,9 +624,9 @@ is( $tick->OwnerObj->email, 'root@localhost', 'successfuly take ticket via email
 is( $tick->Transactions->count, 2, 'no superfluous transactions');
 
 my $status;
-($status, $msg) = $tick->set_Owner( $RT::Nobody->id, 'Force' );
+($status, $msg) = $tick->set_Owner( RT->nobody->id, 'Force' );
 ok( $status, 'successfuly changed owner: '. ($msg||'') );
-is( $tick->Owner, $RT::Nobody->id, 'set owner back to nobody');
+is( $tick->Owner, RT->nobody->id, 'set owner back to nobody');
 
 
 $! = 0;

@@ -337,7 +337,7 @@ sub InsertData {
                         print "(Error: couldn't load group to add member)";
                         next;
                     }
-                    my ( $return, $msg ) = $parent->AddMember( $new_entry->id );
+                    my ( $return, $msg ) = $parent->add_member( $new_entry->id );
                     #print "(Error: $msg)" unless ($return);
                     #print $return. ".";
                 }

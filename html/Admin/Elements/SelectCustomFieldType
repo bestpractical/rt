@@ -51,7 +51,7 @@
 %}
 </select>
 <%INIT>
-my $cf = RT::Model::CustomField->new(Jifty->web->current_user);
+my $cf = RT::Model::CustomField->new();
 
 </%INIT>
 <%ARGS>

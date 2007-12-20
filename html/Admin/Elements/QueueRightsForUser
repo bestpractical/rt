@@ -54,7 +54,7 @@
 </ul>
 
 <%INIT>
-my $ACL = new RT::Model::ACECollection(Jifty->web->current_user);
+my $ACL = RT::Model::ACECollection->new();
 $ACL->LimitToQueue($QueueObj->id);
 $ACL->LimitPrincipalToUser($principal_id);
 </%INIT>

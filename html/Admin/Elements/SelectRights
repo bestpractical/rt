@@ -92,8 +92,8 @@
     }
 
 
-    my $ACLObj = new RT::Model::ACECollection(Jifty->web->current_user);
-    my $ACE = new RT::Model::ACE(Jifty->web->current_user);
+    my $ACLObj = RT::Model::ACECollection->new();
+    my $ACE = RT::Model::ACE->new();
 
 
     $ACLObj->LimitToObject( $Object);

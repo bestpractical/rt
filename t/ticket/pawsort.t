@@ -78,8 +78,8 @@ sub check_order {
 
 # The real tests start here
 
-my $cme = new RT::CurrentUser( $me );
-my $metx = new RT::Model::TicketCollection( $cme );
+my $cme = RT::CurrentUser->new( $me );
+my $metx = RT::Model::TicketCollection->new( $cme );
 # Make sure we can sort in both directions on a queue specific field.
 $metx->from_sql(qq[queue="$queue"] );
 $metx->order_by( {column => "Custom.Ownership", order => 'ASC'} );
@@ -92,8 +92,8 @@ check_order( $metx, reverse qw[2 1 6 5 4 3]);
 
 
 
-my $cyou = new RT::CurrentUser( $you );
-my $youtx = new RT::Model::TicketCollection( $cyou );
+my $cyou = RT::CurrentUser->new( $you );
+my $youtx = RT::Model::TicketCollection->new( $cyou );
 # Make sure we can sort in both directions on a queue specific field.
 $youtx->from_sql(qq[queue="$queue"] );
 $youtx->order_by({ column => "Custom.Ownership", order => 'ASC'} );

@@ -76,7 +76,7 @@
 
 <%INIT>
 my ($queue, $caption);
-my $queues = new RT::Model::QueueCollection(Jifty->web->current_user);
+my $queues = RT::Model::QueueCollection->new();
 $queues->find_all_rows();
 
 if ($FinddisabledQueues) {

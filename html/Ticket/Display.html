@@ -99,7 +99,7 @@ unless ($id || $TicketObj) {
 if ($ARGS{'id'} eq 'new') {
     # {{{ Create a new ticket
 
-    my $Queue = new RT::Model::Queue( Jifty->web->current_user );
+    my $Queue = RT::Model::Queue->new();
     $Queue->load($ARGS{'Queue'});
     unless ( $Queue->id ) {
         Abort('Queue not found');

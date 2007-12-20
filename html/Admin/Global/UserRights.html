@@ -58,7 +58,7 @@
 
 % while ( my $Member = $Users->next ) {
 % my $user_object = $Member->MemberObj->Object;
-% my $group = RT::Model::Group->new(Jifty->web->current_user);
+% my $group = RT::Model::Group->new();
 % $group->load_acl_equivalence_group( $Member->MemberObj );
   <tr align="right">
 	<td valign="top"><& /Elements/ShowUser, User => $user_object &></td>
@@ -83,7 +83,7 @@
 
 
 # Find out which users we want to display ACL selects for
-my $privileged = RT::Model::Group->new(Jifty->web->current_user);
+my $privileged = RT::Model::Group->new();
 $privileged->load_system_internal_group('privileged');
 my $Users = $privileged->MembersObj();
 

@@ -67,7 +67,7 @@ if ($ChartStyle eq 'pie') {
 }
 
 use RT::Report::Tickets;
-my $tix = RT::Report::Tickets->new( Jifty->web->current_user );
+my $tix = RT::Report::Tickets->new();
 $tix->from_sql( $Query );
 my $count_name = $tix->Column( FUNCTION => 'COUNT', column => 'id' );
 $tix->GroupBy( column => $PrimaryGroupBy );
@@ -92,7 +92,7 @@ my $class = $class{ $PrimaryGroupBy };
 
 while ( my $entry = $tix->next ) {
     if ( $class ) {
-        my $q = $class->new( Jifty->web->current_user );
+        my $q = $class->new();
         $q->load( $entry->__value( $value_name ) );
         push @keys, $q->name;
     }

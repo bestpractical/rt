@@ -110,7 +110,7 @@ sub create {
         }
 
         foreach my $part ( $Attachment->parts ) {
-            my $SubAttachment = new RT::Model::Attachment( $self->current_user );
+            my $SubAttachment = RT::Model::Attachment->new();
             my ($id) = $SubAttachment->create(
                 TransactionId => $args{'TransactionId'},
                 Parent        => $id,
@@ -397,7 +397,7 @@ sub Addresses {
     my $self = shift;
 
     my %data = ();
-    my $current_user_address = lc $self->current_user->email;
+    my $current_user_address = lc $self->current_user->user_object->email;
     my $correspond = lc $self->TransactionObj->TicketObj->QueueObj->CorrespondAddress;
     my $comment = lc $self->TransactionObj->TicketObj->QueueObj->commentAddress;
     foreach my $hdr (qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {

@@ -85,6 +85,7 @@ sub create {
         privileged => 0,
         disabled => 0,
         email => '',
+        email_confirmed => 1,
         _RecordTransaction => 1,
         @_    # get the real argumentlist
     );
@@ -115,9 +116,10 @@ sub create {
     delete $args{'privileged'};
 
 
-    elsif ( !$args{'password'} ) {
+    if ( !$args{'password'} ) {
         $args{'password'} = '*NO-PASSWORD*';
     }
+    
     elsif ( length( $args{'password'} ) < RT->Config->Get('MinimumpasswordLength') ) {
         return ( 0, $self->loc("password needs to be at least [_1] characters long",RT->Config->Get('MinimumpasswordLength')) );
     }
@@ -170,7 +172,7 @@ sub create {
     }
 
     my $aclstash = RT::Model::Group->new;
-    my $stash_id = $aclstash->_createACLEquivalenceGroup($principal);
+    my $stash_id = $aclstash->_createacl_equivalence_group($principal);
 
     unless ($stash_id) {
         Jifty->handle->rollback();
@@ -188,7 +190,7 @@ sub create {
     }
 
 
-    my ($everyone_id, $everyone_msg) = $everyone->_AddMember( InsideTransaction => 1, principal_id => $self->principal_id);
+    my ($everyone_id, $everyone_msg) = $everyone->_add_member( InsideTransaction => 1, principal_id => $self->principal_id);
     unless ($everyone_id) {
         $RT::Logger->crit("Could not add user to Everyone group on user creation.");
         $RT::Logger->crit($everyone_msg);
@@ -211,7 +213,7 @@ sub create {
     }
 
 
-    my ($ac_id, $ac_msg) = $access_class->_AddMember( InsideTransaction => 1, principal_id => $self->principal_id);  
+    my ($ac_id, $ac_msg) = $access_class->_add_member( InsideTransaction => 1, principal_id => $self->principal_id);  
 
     unless ($ac_id) {
         $RT::Logger->crit("Could not add user to privileged or Unprivileged group on user creation. Aborted");
@@ -283,7 +285,7 @@ sub set_privileged {
             $RT::Logger->crit("User ".$self->id." is neither privileged nor ".
                 "unprivileged. something is drastically wrong.");
         }
-        my ($status, $msg) = $priv->_AddMember( InsideTransaction => 1, principal_id => $self->principal_id);  
+        my ($status, $msg) = $priv->_add_member( InsideTransaction => 1, principal_id => $self->principal_id);  
         if ($status) {
             return (1, $self->loc("That user is now privileged"));
         } else {
@@ -304,7 +306,7 @@ sub set_privileged {
             $RT::Logger->crit("User ".$self->id." is neither privileged nor ".
                 "unprivileged. something is drastically wrong.");
         }
-        my ($status, $msg) = $unpriv->_AddMember( InsideTransaction => 1, principal_id => $self->principal_id);  
+        my ($status, $msg) = $unpriv->_add_member( InsideTransaction => 1, principal_id => $self->principal_id);  
         if ($status) {
             return (1, $self->loc("That user is now unprivileged"));
         } else {
@@ -376,7 +378,7 @@ sub _bootstrap_create {
     
     my $aclstash = RT::Model::Group->new;
 
-    my $stash_id  = $aclstash->_createACLEquivalenceGroup($principal);
+    my $stash_id  = $aclstash->_createacl_equivalence_group($principal);
 
     unless ($stash_id) {
         Jifty->handle->rollback();
@@ -1170,7 +1172,7 @@ sub _set {
     # Nobody is allowed to futz with RT_System or Nobody 
 
     if ( ($self->id == RT->system_user->id )  || 
-         ($self->id == $RT::Nobody->id)) {
+         ($self->id == RT->nobody->id)) {
         return ( 0, $self->loc("Can not modify system users") );
     }
     unless ( $self->current_user_can_modify( $args{'column'} ) ) {

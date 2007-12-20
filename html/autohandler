@@ -12,6 +12,7 @@ foreach my $field ( keys %ARGS ) {
     delete $ARGS{$field};
 }
 
+$m->call_next();
 </%INIT>
 <%ARGS>
 $user => undef

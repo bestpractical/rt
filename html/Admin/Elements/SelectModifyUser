@@ -50,7 +50,7 @@
 %}
 <%INIT>
 my ($user);
-my $users = new RT::Model::UserCollection(Jifty->web->current_user);
+my $users = RT::Model::UserCollection->new();
 $users->limit(column => 'id',
               value => RT->system_user->id,
               operator => '!=' );

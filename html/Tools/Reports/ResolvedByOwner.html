@@ -50,7 +50,7 @@ $Queue => undef
 </%args>
 <%init>
 my $title = loc("Resolved tickets, grouped by owner");
-my $q = RT::Model::Queue->new(Jifty->web->current_user);
+my $q = RT::Model::Queue->new();
 $q->load_by_cols(name => $Queue);
 </%init>
 <& /Elements/Header, Title => $title &>

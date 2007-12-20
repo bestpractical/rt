@@ -64,7 +64,7 @@
 my @actions;
 
 my @items = map { [ "component-$_", $_ ] } sort @{ RT->Config->Get('HomepageComponents') };
-my $sys = RT::System->new( Jifty->web->current_user );
+my $sys = RT::System->new();
 # XXX: put this in savedsearches_to_portlet_items
 for ( $m->comp( "/Search/Elements/SearchesForObject",
                 Object => $sys )) {

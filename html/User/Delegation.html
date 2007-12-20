@@ -68,7 +68,7 @@ foreach $arg (keys %ARGS) {
        my $principal = $2;
        my $delegation = $3;
        unless ($ARGS{"Delegate-ACE-$1-to-$2"}) {
-            my $ace_to_del = RT::Model::ACE->new(Jifty->web->current_user);
+            my $ace_to_del = RT::Model::ACE->new();
             $ace_to_del->load($delegation);
             my ($delval, $delmsg) = $ace_to_del->delete();
             push (@results, $delmsg);
@@ -81,7 +81,7 @@ foreach $arg (keys %ARGS) {
     my $principal = $2;
     # if we already delegate it, we just don't care
     next if (grep /^Delegate-Existing-ACE-$parent-to-$principal-/, keys %ARGS);
-    my $ace = RT::Model::ACE->new(Jifty->web->current_user);
+    my $ace = RT::Model::ACE->new();
     $ace->load($1);
     unless ($ace->id) {
         push (@results, loc('Right not found'));
@@ -91,11 +91,11 @@ foreach $arg (keys %ARGS) {
     push (@results, $delmsg);
 }
 
-my $personalgroups = RT::Model::GroupCollection->new(Jifty->web->current_user);
+my $personalgroups = RT::Model::GroupCollection->new();
 $personalgroups->LimitToPersonalGroupsFor(Jifty->web->current_user->principal_id);
 
 my $objects;
-my $acl = RT::Model::ACECollection->new (Jifty->web->current_user);
+my $acl = RT::Model::ACECollection->new();
 $acl->ExcludeDelegatedRights();
 $acl->LimitToPrincipal(Id => Jifty->web->current_user->principal_id, 
                        IncludeGroupMembership => 1

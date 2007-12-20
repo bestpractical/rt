@@ -9,7 +9,7 @@ use RT::CurrentUser;
 use strict;
 use warnings;
 use File::Spec ();
-use vars qw($Config $System $system_user $Nobody $Handle $Logger);
+use vars qw($Config $System $system_user $nobody $Handle $Logger);
 our $VERSION = '3.7.14';
 
 
@@ -295,15 +295,15 @@ EOF
 =head2 InitSystemObjects
 
 Initializes system objects: C<RT->system>, C<RT->system_user>
-and C<$RT::Nobody>.
+and C<RT->nobody>.
 
 =cut
 
 sub InitSystemObjects {
 
     #RT's "nobody user" is a genuine database user. its ID lives here.
-    $Nobody = RT::CurrentUser->new(name => 'Nobody');
-    Carp::confess "Could not load 'Nobody' User. This usually indicates a corrupt or missing RT database" unless $Nobody->id;
+    $nobody = RT::CurrentUser->new(name => 'Nobody');
+    Carp::confess "Could not load 'Nobody' User. This usually indicates a corrupt or missing RT database" unless $nobody->id;
 
 
     $System = RT::System->new();
@@ -359,8 +359,7 @@ L</InitSystemObjects>.
 sub system_user { 
     
     unless ($system_user) { 
-        $system_user = new RT::CurrentUser;
-    $system_user->load_by_name('RT_System');
+        $system_user = RT::CurrentUser->new(name => 'RT_System');
     }
     
     return $system_user }
@@ -373,7 +372,7 @@ also L</InitSystemObjects>.
 
 =cut
 
-sub Nobody { return $Nobody }
+sub nobody { return $nobody }
 
 =head1 BUGS
 

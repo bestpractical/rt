@@ -58,7 +58,7 @@
 </select>
 
 <%INIT>
-my $ScripConditions = RT::Model::ScripConditionCollection->new(Jifty->web->current_user);
+my $ScripConditions = RT::Model::ScripConditionCollection->new();
 $ScripConditions->find_all_rows;
 
 

@@ -52,9 +52,9 @@ $ResolvedAfter => undef
 </%args>
 <%init>
 my $title = loc("Resolved tickets in period, grouped by owner");
-my $q = RT::Model::Queue->new(Jifty->web->current_user);
-my $before = RT::Date->new(Jifty->web->current_user);
-my $after = RT::Date->new(Jifty->web->current_user);
+my $q = RT::Model::Queue->new();
+my $before = RT::Date->new();
+my $after = RT::Date->new();
 my $query = '';
 
 

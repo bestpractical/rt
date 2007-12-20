@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
-my $attachments = RT::Model::AttachmentCollection->new( Jifty->web->current_user );
+my $attachments = RT::Model::AttachmentCollection->new();
 
 $attachments->columns( qw(id Content ContentType TransactionId ContentEncoding));
 

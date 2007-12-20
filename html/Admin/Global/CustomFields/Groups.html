@@ -54,5 +54,5 @@
     <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object_type => 'RT::Model::Group', Object=> $object &>
 <%INIT>
   my $title = loc( 'Edit Custom Fields for all groups');
-  my $object = RT::Model::Group->new(Jifty->web->current_user);
+  my $object = RT::Model::Group->new();
 </%INIT>

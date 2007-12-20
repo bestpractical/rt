@@ -73,7 +73,7 @@
 <%init>
 my $current_tab;
 $current_tab = 'Admin/Users/MyRT.html?id='.$id if ($id);
-my $user_object = new RT::Model::User(Jifty->web->current_user);
+my $user_object = RT::Model::User->new();
 $user_object->load($id) || Abort("Couldn't load user '$id'");
 my $title = loc("RT at a glance for the user [_1]", $user_object->name);
 
@@ -81,7 +81,7 @@ if ($ARGS{Reset}) {
     $user_object->set_Preferences('HomepageSettings', {});
 }
 
-my ($default_portlets) = RT::System->new(Jifty->web->current_user)->attributes->named('HomepageSettings');
+my ($default_portlets) = RT::System->new()->attributes->named('HomepageSettings');
 my $portlets  = $user_object->Preferences('HomepageSettings', $default_portlets ? $default_portlets->Content  : {});
 
 my %allowed_components = map {$_ => 1} @{ RT->Config->Get('HomepageComponents') };

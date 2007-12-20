@@ -53,7 +53,7 @@ use strict;
 =head1 SYNOPSIS
 
   use RT::Model::Ticket;
-  my $ticket = new RT::Model::Ticket($CurrentUser);
+  my $ticket = RT::Model::Ticket->new($CurrentUser);
   $ticket->load($ticket_id);
 
 =head1 DESCRIPTION
@@ -384,7 +384,7 @@ sub create {
     # than assuming it's in ISO format.
 
     #Set the due date. if we didn't get fed one, use the queue default due in
-    my $Due = new RT::Date( $self->current_user );
+    my $Due = RT::Date->new();
     if ( defined $args{'Due'} ) {
         $Due->set( Format => 'ISO', value => $args{'Due'} );
     }
@@ -393,12 +393,12 @@ sub create {
         $Due->AddDays( $due_in );
     }
 
-    my $starts = new RT::Date( $self->current_user );
+    my $starts = RT::Date->new();
     if ( defined $args{'starts'} ) {
         $starts->set( Format => 'ISO', value => $args{'starts'} );
     }
 
-    my $Started = new RT::Date( $self->current_user );
+    my $Started = RT::Date->new();
     if ( defined $args{'Started'} ) {
         $Started->set( Format => 'ISO', value => $args{'Started'} );
     }
@@ -406,7 +406,7 @@ sub create {
         $Started->set_to_now;
     }
 
-    my $Resolved = new RT::Date( $self->current_user );
+    my $Resolved = RT::Date->new();
     if ( defined $args{'Resolved'} ) {
         $Resolved->set( Format => 'ISO', value => $args{'Resolved'} );
     }
@@ -459,7 +459,7 @@ sub create {
     #to own a ticket, scream about it and make them not the owner
    
     my $DeferOwner;  
-    if ( $Owner && $Owner->id != $RT::Nobody->id 
+    if ( $Owner && $Owner->id != RT->nobody->id 
         && !$Owner->has_right( Object => $QueueObj, Right  => 'OwnTicket' ) )
     {
         $DeferOwner = $Owner;
@@ -470,8 +470,8 @@ sub create {
 
     #If we haven't been handed a valid owner, make it nobody.
     unless ( defined($Owner) && $Owner->id ) {
-        $Owner = new RT::Model::User( $self->current_user );
-        $Owner->load( $RT::Nobody->id );
+        $Owner = RT::Model::User->new();
+        $Owner->load( RT->nobody->id );
     }
 
     # }}}
@@ -572,7 +572,7 @@ sub create {
     # Set the owner in the Groups table
     # We denormalize it into the Ticket table too because doing otherwise would
     # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
-    ($val,$msg) = $self->OwnerGroup->_AddMember(
+    ($val,$msg) = $self->OwnerGroup->_add_member(
         principal_id       => $Owner->principal_id,
         InsideTransaction => 1
     ) unless $DeferOwner;
@@ -685,7 +685,7 @@ sub create {
         $self->__set(column => 'Owner', value => $Owner->id);
 
     }
-        $self->OwnerGroup->_AddMember(
+        $self->OwnerGroup->_add_member(
             principal_id       => $Owner->principal_id,
             InsideTransaction => 1
         );
@@ -824,7 +824,7 @@ sub Import {
         Queue           => undef,
         Requestor       => undef,
         Type            => 'ticket',
-        Owner           => $RT::Nobody->id,
+        Owner           => RT->nobody->id,
         Subject         => '[no subject]',
         InitialPriority => undef,
         FinalPriority   => undef,
@@ -878,10 +878,10 @@ sub Import {
             $Owner = $args{'Owner'};
         }
         else {
-            $Owner = new RT::Model::User( $self->current_user );
+            $Owner = RT::Model::User->new();
             $Owner->load( $args{'Owner'} );
             if ( !defined( $Owner->id ) ) {
-                $Owner->load( $RT::Nobody->id );
+                $Owner->load( RT->nobody->id );
             }
         }
     }
@@ -890,7 +890,7 @@ sub Import {
     #to own a ticket, scream about it and make them not the owner
     if (
         ( defined($Owner) )
-        and ( $Owner->id != $RT::Nobody->id )
+        and ( $Owner->id != RT->nobody->id )
         and (
             !$Owner->has_right(
                 Object => $QueueObj,
@@ -913,8 +913,8 @@ sub Import {
 
     #If we haven't been handed a valid owner, make it nobody.
     unless ( defined($Owner) ) {
-        $Owner = new RT::Model::User( $self->current_user );
-        $Owner->load( $RT::Nobody->user_object->id );
+        $Owner = RT::Model::User->new();
+        $Owner->load( RT->nobody->user_object->id );
     }
 
     # }}}
@@ -970,7 +970,7 @@ sub Import {
             "Couldn't create ticket groups for ticket " . $self->id );
     }
 
-    $self->OwnerGroup->_AddMember( principal_id => $Owner->principal_id );
+    $self->OwnerGroup->_add_member( principal_id => $Owner->principal_id );
 
     my $watcher;
     foreach $watcher ( @{ $args{'Cc'} } ) {
@@ -1160,7 +1160,7 @@ sub _AddWatcher {
     }
 
 
-    my ( $m_id, $m_msg ) = $group->_AddMember( principal_id => $principal->id,
+    my ( $m_id, $m_msg ) = $group->_add_member( principal_id => $principal->id,
                                                InsideTransaction => 1 );
     unless ($m_id) {
         $RT::Logger->error("Failed to add ".$principal->id." as a member of group ".$group->id."\n".$m_msg);
@@ -1746,7 +1746,7 @@ sub set_Queue {
         unless ( $clone->id ) {
             return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->id) );
         }
-        my ($status, $msg) = $clone->set_Owner( $RT::Nobody->id, 'Force' );
+        my ($status, $msg) = $clone->set_Owner( RT->nobody->id, 'Force' );
         $RT::Logger->error("Couldn't set owner on queue change: $msg") unless $status;
     }
 
@@ -1790,7 +1790,7 @@ sub QueueObj {
 sub DueObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->current_user );
+    my $time = RT::Date->new();
 
     # -1 is RT::Date slang for never
     if ( my $due = $self->Due ) {
@@ -1831,7 +1831,7 @@ sub DueAsString {
 sub ResolvedObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->current_user );
+    my $time = RT::Date->new();
     $time->set( Format => 'sql', value => $self->Resolved );
     return $time;
 }
@@ -1858,7 +1858,7 @@ sub set_Started {
     }
 
     #We create a date object to catch date weirdness
-    my $time_obj = new RT::Date( $self->current_user() );
+    my $time_obj = RT::Date->new( $self->current_user() );
     if ( $time ) {
         $time_obj->set( Format => 'ISO', value => $time );
     }
@@ -1872,7 +1872,7 @@ sub set_Started {
     #We need $TicketAsSystem, in case the current user doesn't have
     #ShowTicket
     #
-    my $TicketAsSystem = new RT::Model::Ticket(RT->system_user);
+    my $TicketAsSystem = RT::Model::Ticket->new(RT->system_user);
     $TicketAsSystem->load( $self->id );
     if ( $TicketAsSystem->Status eq 'new' ) {
         $TicketAsSystem->Open();
@@ -1896,7 +1896,7 @@ sub set_Started {
 sub StartedObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->current_user );
+    my $time = RT::Date->new();
     $time->set( Format => 'sql', value => $self->Started );
     return $time;
 }
@@ -1915,7 +1915,7 @@ sub StartedObj {
 sub startsObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->current_user );
+    my $time = RT::Date->new();
     $time->set( Format => 'sql', value => $self->starts );
     return $time;
 }
@@ -1934,7 +1934,7 @@ sub startsObj {
 sub ToldObj {
     my $self = shift;
 
-    my $time = new RT::Date( $self->current_user );
+    my $time = RT::Date->new();
     $time->set( Format => 'sql', value => $self->Told );
     return $time;
 }
@@ -1978,7 +1978,7 @@ sub time_workedAsString {
     #This is not really a date object, but if we diff a number of seconds 
     #vs the epoch, we'll get a nice description of time worked.
 
-    my $worked = new RT::Date( $self->current_user );
+    my $worked = RT::Date->new();
 
     #return the  #of minutes worked turned into seconds and written as
     # a simple text string
@@ -2212,10 +2212,10 @@ sub _Links {
 
     unless ( $self->{"$field$type"} ) {
         $self->{"$field$type"} =
-          new RT::Model::LinkCollection( current_user => $self->current_user );
+          RT::Model::LinkCollection->new( current_user => $self->current_user );
         if ( $self->current_user_has_right('ShowTicket') ) {
             # Maybe this ticket is a merged ticket
-            my $Tickets = new RT::Model::TicketCollection( $self->current_user );
+            my $Tickets = RT::Model::TicketCollection->new();
             # at least to myself
             $self->{"$field$type"}->limit( column => $field,
                                            value => $self->URI,
@@ -2616,7 +2616,7 @@ sub MergeInto {
     }
 
     #find all of the tickets that were merged into this ticket. 
-    my $old_mergees = new RT::Model::TicketCollection( $self->current_user );
+    my $old_mergees = RT::Model::TicketCollection->new();
     $old_mergees->limit(
         column    => 'EffectiveId',
         operator => '=',
@@ -2662,7 +2662,7 @@ sub OwnerObj {
     #get deep recursion. if we need ACLs here, we need
     #an equiv without ACLs
 
-    my $owner = new RT::Model::User( $self->current_user );
+    my $owner = RT::Model::User->new();
     $owner->load( $self->__value('Owner') );
 
     #Return the owner object
@@ -2722,7 +2722,7 @@ sub set_Owner {
     # must have ModifyTicket rights
     # or TakeTicket/StealTicket and $NewOwner is self
     # see if it's a take
-    if ( $OldOwnerObj->id == $RT::Nobody->id ) {
+    if ( $OldOwnerObj->id == RT->nobody->id ) {
         unless (    $self->current_user_has_right('ModifyTicket')
                  || $self->current_user_has_right('TakeTicket') ) {
             Jifty->handle->rollback();
@@ -2731,7 +2731,7 @@ sub set_Owner {
     }
 
     # see if it's a steal
-    elsif (    $OldOwnerObj->id != $RT::Nobody->id
+    elsif (    $OldOwnerObj->id != RT->nobody->id
             && $OldOwnerObj->id != $self->current_user->id ) {
 
         unless (    $self->current_user_has_right('ModifyTicket')
@@ -2750,7 +2750,7 @@ sub set_Owner {
     # If we're not stealing and the ticket has an owner and it's not
     # the current user
     if ( $Type ne 'Steal' and $Type ne 'Force'
-         and $OldOwnerObj->id != $RT::Nobody->id
+         and $OldOwnerObj->id != RT->nobody->id
          and $OldOwnerObj->id != $self->current_user->id )
     {
         Jifty->handle->rollback();
@@ -2783,7 +2783,7 @@ sub set_Owner {
         Jifty->handle->rollback();
         return ( 0, $self->loc("Could not change owner. ") . $del_id );
     }
-    my ( $add_id, $add_msg ) = $self->OwnerGroup->_AddMember(
+    my ( $add_id, $add_msg ) = $self->OwnerGroup->_add_member(
                                        principal_id => $NewOwnerObj->principal_id,
                                        InsideTransaction => 1 );
     unless ($add_id) {
@@ -2857,7 +2857,7 @@ Convenience method to set the owner to 'nobody' if the current user is the owner
 
 sub Untake {
     my $self = shift;
-    return ( $self->set_Owner( $RT::Nobody->user_object->id, 'Untake' ) );
+    return ( $self->set_Owner( RT->nobody->user_object->id, 'Untake' ) );
 }
 
 # }}}
@@ -3088,7 +3088,7 @@ sub set_Told {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-    my $datetold = new RT::Date( $self->current_user );
+    my $datetold = RT::Date->new();
     if ($told) {
         $datetold->set( Format => 'iso',
                         value  => $told );
@@ -3112,7 +3112,7 @@ Updates the told without a transaction or acl check. Useful when we're sending r
 sub _setTold {
     my $self = shift;
 
-    my $now = new RT::Date( $self->current_user );
+    my $now = RT::Date->new();
     $now->set_to_now();
 
     #use __set to get no ACLs ;)

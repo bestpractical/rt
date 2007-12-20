@@ -57,7 +57,7 @@
       
 <h1><&|/l&>System groups</&></h1>
 <table>
-% $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
+% $Groups = RT::Model::GroupCollection->new();
 % $Groups->LimitToSystemInternalGroups();
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
@@ -73,7 +73,7 @@
 </table>
 <h1><&|/l&>Roles</&></h1>
 <table>
-% $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
+% $Groups = RT::Model::GroupCollection->new();
 % $Groups->LimitToRolesForSystem();
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
@@ -89,7 +89,7 @@
 </table>
 <h1><&|/l&>User defined groups</&></h1>
 <table>
-% $Groups = RT::Model::GroupCollection->new(Jifty->web->current_user);
+% $Groups = RT::Model::GroupCollection->new();
 % $Groups->LimitToUserDefinedGroups();    
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 

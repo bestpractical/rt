@@ -71,6 +71,6 @@
 % }
 
 <%init>
-my $Scrips = new RT::Model::ScripCollection (Jifty->web->current_user);
+my $Scrips = RT::Model::ScripCollection->new();
 $Scrips->LimitToGlobal();
 </%INIT>

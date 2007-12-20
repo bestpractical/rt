@@ -10,7 +10,7 @@ BEGIN { require "t/shredder/utils.pl"; }
 plan tests => 4;
 
 use_ok('RT::Shredder::Plugin');
-my $plugin_obj = new RT::Shredder::Plugin;
+my $plugin_obj = RT::Shredder::Plugin->new;
 isa_ok($plugin_obj, 'RT::Shredder::Plugin');
 my ($status, $msg) = $plugin_obj->load_by_name('Summary');
 ok($status, 'loaded summary plugin') or diag "error: $msg";

@@ -67,7 +67,7 @@
 % }
 
 <%INIT>
-my $users = new RT::Model::UserCollection(Jifty->web->current_user);
+my $users = RT::Model::UserCollection->new();
 
 $users->limit(
     column           => 'id',
@@ -77,13 +77,13 @@ $users->limit(
 );
 $users->limit(
     column           => 'id',
-    value           => $RT::Nobody->id,
+    value           => RT->nobody->id,
     operator        => '!=',
     entry_aggregator => 'AND'
 );
 $users->LimitToprivileged();
 
-my $groups = new RT::Model::GroupCollection(Jifty->web->current_user);
+my $groups = RT::Model::GroupCollection->new();
 
 # self-recursive group membership considered harmful!
 $groups->limit(column => 'id', value => $Group->id, operator => '!=' );

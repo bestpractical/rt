@@ -48,7 +48,7 @@
 =head1 SYNOPSIS
 
   use RT::Model::ACE;
-  my $ace = new RT::Model::ACE($CurrentUser);
+  my $ace = RT::Model::ACE->new($CurrentUser);
 
 
 =head1 DESCRIPTION

@@ -57,7 +57,7 @@
 <& /Elements/ShowMemberships, user_object => $user_object &>
 
 <%INIT>
-my $user_object = RT::Model::User->new(Jifty->web->current_user);
+my $user_object = RT::Model::User->new();
 $user_object->load($id) || Abort("Couldn't load user '$id'");
 my $title = loc("Memberships of the user [_1]", $user_object->name);
 my $current_tab = 'Admin/Users/Memberships.html?id='.$id;

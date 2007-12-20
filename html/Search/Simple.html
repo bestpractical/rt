@@ -71,7 +71,7 @@ my $title = loc("Search for tickets");
 use RT::Search::Googleish;
 
 if ($q) {
-    my $tickets = new RT::Model::TicketCollection( Jifty->web->current_user );
+    my $tickets = RT::Model::TicketCollection->new();
     if ($q =~ /^(\d+)$/) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."/Ticket/Display.html?id=".$q);
     }

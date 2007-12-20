@@ -60,7 +60,7 @@
 % $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
 %	while (my $Member = $Users->next()) {
 % my $user_object = $Member->MemberObj->Object();
-% my $group = RT::Model::Group->new(Jifty->web->current_user);
+% my $group = RT::Model::Group->new();
 % $group->load_acl_equivalence_group($Member->MemberObj);
   <tr align="right"> 
 	<td valign="top"><& /Elements/ShowUser, User => $user_object &></td>
@@ -89,11 +89,11 @@ if (!defined $id) {
     Abort(loc("No Queue defined"));
 }
 
-my $QueueObj = RT::Model::Queue->new(Jifty->web->current_user);
+my $QueueObj = RT::Model::Queue->new();
 $QueueObj->load($id) || Abort(loc("Couldn't load queue [_1]",$id));
 
 # Find out which users we want to display ACL selects for
-my $privileged = RT::Model::Group->new(Jifty->web->current_user);
+my $privileged = RT::Model::Group->new();
 $privileged->load_system_internal_group('privileged');
 my $Users = $privileged->MembersObj();
 

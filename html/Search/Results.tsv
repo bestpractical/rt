@@ -51,7 +51,7 @@ $Order => 'ASC'
 </%ARGS>
 <%INIT>
 
-my $Tickets = RT::Model::TicketCollection->new( Jifty->web->current_user );
+my $Tickets = RT::Model::TicketCollection->new();
 $Tickets->from_sql( $ARGS{'Query'} );
 if ( $order_by =~ /\|/ ) {
 

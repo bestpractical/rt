@@ -173,7 +173,7 @@ sub Redirect {
     my $redir_to = shift;
     untie $HTML::Mason::Commands::session;
     my $uri = URI->new($redir_to);
-    my $server_uri = URI->new(current_user => RT->Config->Get('WebURL') );
+    my $server_uri = URI->new(RT->Config->Get('WebURL') );
 
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,
@@ -304,9 +304,9 @@ sub CreateTicket {
 
     my (@Actions);
 
-    my $Ticket = new RT::Model::Ticket( Jifty->web->current_user );
+    my $Ticket = RT::Model::Ticket->new();
 
-    my $Queue = new RT::Model::Queue( Jifty->web->current_user );
+    my $Queue = RT::Model::Queue->new();
     unless ( $Queue->load( $ARGS{'Queue'} ) ) {
         Abort('Queue not found');
     }
@@ -315,9 +315,9 @@ sub CreateTicket {
         Abort('You have no permission to create tickets in that queue.');
     }
 
-    my $due = new RT::Date( Jifty->web->current_user );
+    my $due = RT::Date->new();
     $due->set( Format => 'unknown', value => $ARGS{'Due'} );
-    my $starts = new RT::Date( Jifty->web->current_user );
+    my $starts = RT::Date->new();
     $starts->set( Format => 'unknown', value => $ARGS{'starts'} );
 
     my $MIMEObj = MakeMIMEEntity(
@@ -399,7 +399,7 @@ sub CreateTicket {
         elsif ( $arg =~ /^Object-RT::Model::Ticket--CustomField-(\d+)(.*?)$/ ) {
             my $cfid = $1;
 
-            my $cf = RT::Model::CustomField->new( Jifty->web->current_user );
+            my $cf = RT::Model::CustomField->new( );
             $cf->load( $cfid );
             unless ( $cf->id ) {
                 $RT::Logger->error( "Couldn't load custom field #". $cfid );
@@ -487,7 +487,7 @@ sub load_ticket {
         Abort("No ticket specified");
     }
 
-    my $Ticket = RT::Model::Ticket->new( Jifty->web->current_user );
+    my $Ticket = RT::Model::Ticket->new( );
     $Ticket->load($id);
     unless ( $Ticket->id ) {
         Abort("Could not load ticket $id");
@@ -568,7 +568,7 @@ sub ProcessUpdateMessage {
           . "0" . "@"  # Email sent
               . RT->Config->Get('organization')
           . ">" );
-    my $old_txn = RT::Model::Transaction->new( Jifty->web->current_user );
+    my $old_txn = RT::Model::Transaction->new();
     if ( $args{ARGSRef}->{'QuoteTransaction'} ) {
         $old_txn->load( $args{ARGSRef}->{'QuoteTransaction'} );
     }
@@ -761,7 +761,7 @@ sub ProcessSearchQuery {
     else {
 
         # Init a new search
-        $session{'tickets'} = RT::Model::TicketCollection->new( Jifty->web->current_user );
+        $session{'tickets'} = RT::Model::TicketCollection->new( );
     }
 
     #Import a bookmarked search if we have one
@@ -968,7 +968,7 @@ Returns an ISO date and time in GMT
 sub ParseDateToISO {
     my $date = shift;
 
-    my $date_obj = RT::Date->new(Jifty->web->current_user);
+    my $date_obj = RT::Date->new();
     $date_obj->set(
         Format => 'unknown',
         Value  => $date
@@ -1001,14 +1001,14 @@ sub ProcessACLChanges {
         @rights = grep $_, @rights;
         next unless @rights;
 
-        my $principal = RT::Model::Principal->new( Jifty->web->current_user );
+        my $principal = RT::Model::Principal->new( );
         $principal->load( $principal_id );
 
         my $obj;
         if ($object_type eq 'RT::System') {
             $obj = RT->system;
         } elsif ($RT::Model::ACE::OBJECT_TYPES{$object_type}) {
-            $obj = $object_type->new(Jifty->web->current_user);
+            $obj = $object_type->new();
             $obj->load($object_id);
             unless( $obj->id ) {
                 $RT::Logger->error("couldn't load $object_type #$object_id");
@@ -1230,7 +1230,7 @@ sub ProcessObjectCustomFieldUpdates {
     foreach my $class ( keys %custom_fields_to_mod ) {
         foreach my $id ( keys %{$custom_fields_to_mod{$class}} ) {
             my $Object = $args{'Object'};
-            $Object = $class->new( Jifty->web->current_user )
+            $Object = $class->new()
                 unless $Object && ref $Object eq $class;
 
             $Object->load( $id ) unless ($Object->id || 0) == $id;
@@ -1240,7 +1240,7 @@ sub ProcessObjectCustomFieldUpdates {
             }
 
             foreach my $cf ( keys %{ $custom_fields_to_mod{ $class }{ $id } } ) {
-                my $CustomFieldObj = RT::Model::CustomField->new( Jifty->web->current_user );
+                my $CustomFieldObj = RT::Model::CustomField->new();
                 $CustomFieldObj->load_by_id( $cf );
                 unless ( $CustomFieldObj->id ) {
                     $RT::Logger->warning("Couldn't load custom field #$id");
@@ -1516,7 +1516,7 @@ sub ProcessTicketDates {
     
         my ( $code, $msg );
 
-        my $DateObj = RT::Date->new( Jifty->web->current_user );
+        my $DateObj = RT::Date->new();
         $DateObj->set(
             Format => 'unknown',
             Value  => $ARGSRef->{ $field . '_Date' }
@@ -1678,7 +1678,7 @@ Instantiate container object for saving searches.
 
 sub _load_container_object {
     my ($obj_type, $obj_id) = @_;
-    return RT::SavedSearch->new(Jifty->web->current_user)->_load_privacy_object($obj_type, $obj_id);
+    return RT::SavedSearch->new()->_load_privacy_object($obj_type, $obj_id);
 }
 
 =head2 _parse_saved_search ( $arg );

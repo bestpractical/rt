@@ -68,6 +68,6 @@ $Plugin => ''
 </div>
 <%ONCE>
 use RT::Shredder::Plugin;
-my $plugin_obj = new RT::Shredder::Plugin;
+my $plugin_obj = RT::Shredder::Plugin->new;
 my %plugins = $plugin_obj->List('Search');
 </%ONCE>

@@ -58,6 +58,6 @@ $Query   => ''
 </select>
 <%init>
 use RT::Report::Tickets;
-my $report = RT::Report::Tickets->new( Jifty->web->current_user );
+my $report = RT::Report::Tickets->new();
 my @options = $report->Groupings( Query => $Query );
 </%init>

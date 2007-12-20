@@ -248,7 +248,7 @@
 <%INIT>
 
 my $current_tab;
-my $user_object = new RT::Model::User(Jifty->web->current_user);
+my $user_object = RT::Model::User->new();
 my ($title, $privilegedChecked, $EnabledChecked, $disabled, $result, @results);
 
 my ($val, $msg);

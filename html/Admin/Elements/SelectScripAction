@@ -58,7 +58,7 @@
 </select>
 
 <%INIT>
-my $ScripActions = RT::Model::ScripActionCollection->new(Jifty->web->current_user);
+my $ScripActions = RT::Model::ScripActionCollection->new();
 $ScripActions->find_all_rows;
 
 

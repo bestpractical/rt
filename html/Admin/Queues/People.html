@@ -142,7 +142,7 @@ my ($field, @results, $User, $Users, $Groups, $watcher, $user_msg, $group_msg);
 
 
 
-my $QueueObj = new RT::Model::Queue(Jifty->web->current_user);
+my $QueueObj = RT::Model::Queue->new();
 $QueueObj->load($id) || Abort(loc("Couldn't load queue", $id));
 # }}}
 
@@ -179,7 +179,7 @@ if (!length $ARGS{'UserString'}) {
 $user_msg = loc("No principals selected.");
  }
 else {
-    $Users = new RT::Model::UserCollection(Jifty->web->current_user);
+    $Users = RT::Model::UserCollection->new();
     $Users->limit(column => $ARGS{'UserField'},
                  value => $ARGS{'UserString'},
                  operator => $ARGS{'UserOp'});
@@ -189,7 +189,7 @@ if (!length $ARGS{'GroupString'}) {
 $group_msg = loc("No principals selected.");
  }
 else {
-$Groups = new RT::Model::GroupCollection(Jifty->web->current_user);
+$Groups = RT::Model::GroupCollection->new();
 $Groups->limit(column => 'Domain', operator => '=', value => 'UserDefined');
 $Groups->limit(column => $ARGS{'GroupField'},
 		value => $ARGS{'GroupString'},

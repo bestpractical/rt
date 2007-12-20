@@ -54,7 +54,7 @@
     use RT::CurrentUser;
 
     # laod
-    my $current_user = new RT::CurrentUser;
+    my $current_user = RT::CurrentUser->new;
     $current_user->load(...);
     # or
     my $current_user = RT::CurrentUser->new( $user_obj );
@@ -163,8 +163,8 @@ sub LanguageHandle {
             || ( $self->id || 0 ) == RT->system_user->id ) {
             @_ = qw(en-US);
         }
-        elsif ( $self->id && $self->Lang ) {
-            push @_, $self->Lang;
+        elsif ( $self->id && $self->user_object->lang ) {
+            push @_, $self->user_object->lang;
         }
 
         $self->{'LangHandle'} = RT::I18N->get_handle(@_);
@@ -255,7 +255,11 @@ sub Authenticate {
 }
 
 sub has_right {
-    shift->user_object->has_right(@_);
+    my $self = shift;
+    Carp::cluck unless ($self->user_object);
+    $self->user_object->has_right(@_);
 }
 
+sub name { shift->user_object->name }
+sub principal_object { shift->user_object->principal_object }
 1;

@@ -399,6 +399,8 @@ sub _has_right
         @_
     );
 
+    return 1 if $self->id == RT->system_user->id;
+
     my $right = $args{'Right'};
     my @objects = @{ $args{'EquivObjects'} };
 

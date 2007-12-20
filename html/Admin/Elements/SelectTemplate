@@ -66,12 +66,12 @@
 <%INIT>
 
 
-my $PrimaryTemplates = RT::Model::TemplateCollection->new(Jifty->web->current_user);
+my $PrimaryTemplates = RT::Model::TemplateCollection->new();
 if ($Queue != 0) {
 $PrimaryTemplates->LimitToQueue($Queue);
 }
 
-my $OtherTemplates = RT::Model::TemplateCollection->new(Jifty->web->current_user);
+my $OtherTemplates = RT::Model::TemplateCollection->new();
 $OtherTemplates->LimitToGlobal($DefaultQueue);
 
 </%INIT>

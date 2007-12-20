@@ -76,7 +76,7 @@ use File::Temp qw/tempdir/;
 
 =head2 new
 
-Returns a new RT::EmailParser object
+Returns a RT::EmailParser->new object
 
 =cut
 

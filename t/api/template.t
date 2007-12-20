@@ -24,7 +24,7 @@ ok(require RT::Model::Template);
 
 my $t = RT::Model::Template->new(current_user => RT->system_user);
 $t->create(name => "Foo", Queue => 1);
-my $t2 = RT::Model::Template->new($RT::Nobody);
+my $t2 = RT::Model::Template->new(RT->nobody);
 $t2->load($t->id);
 ok($t2->QueueObj->id, "Got the template's queue objet");
 

@@ -55,8 +55,8 @@ return \%ARGS;
 
 <%init>
 my @actions;
-my @Objects = RT::SavedSearches->new( Jifty->web->current_user )->_PrivacyObjects;
-push @Objects, RT::System->new(Jifty->web->current_user)
+my @Objects = RT::SavedSearches->new()->_PrivacyObjects;
+push @Objects, RT::System->new()
     if Jifty->web->current_user->has_right( Object=> RT->system,
                                           Right => 'SuperUser');
 $self->{SearchId} ||= 'new';
@@ -95,7 +95,7 @@ if ( $args->{Save} ) {
     }
     else {
         # new saved search
-        my $saved_search = RT::SavedSearch->new( Jifty->web->current_user );
+        my $saved_search = RT::SavedSearch->new();
         my ( $ok, $search_msg ) = $saved_search->Save(
             Privacy      => $args->{'Owner'},
             name         => $args->{'Description'},

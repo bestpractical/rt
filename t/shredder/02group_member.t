@@ -23,7 +23,7 @@ plan tests => 22;
 	ok( $cgid, "Created child group" );
 	is( $cgroup->id, $cgid, "id is correct" );
 	
-	my ($status, $msg) = $pgroup->AddMember( $cgroup->id );
+	my ($status, $msg) = $pgroup->add_member( $cgroup->id );
 	ok( $status, "added child group to parent") or diag "error: $msg";
 	
 	create_savepoint('bucreate'); # before user create
@@ -34,7 +34,7 @@ plan tests => 22;
 	is( $user->id, $uid, "id is correct" );
 	
 	create_savepoint('buadd'); # before group add
-	($status, $msg) = $cgroup->AddMember( $user->id );
+	($status, $msg) = $cgroup->add_member( $user->id );
 	ok( $status, "added user to child group") or diag "error: $msg";
 	
 	my $members = RT::Model::GroupMemberCollection->new( current_user => RT->system_user );
@@ -66,7 +66,7 @@ plan tests => 22;
 	is( $user->id, $uid, "id is correct" );
 
 	use RT::Model::Queue;
-	my $queue = new RT::Model::Queue( RT->system_user );
+	my $queue = RT::Model::Queue->new( RT->system_user );
 	$queue->load('General');
 	ok( $queue->id, "queue loaded succesfully" );
 
@@ -92,8 +92,8 @@ plan tests => 22;
 	$ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 	($status, $msg) = $ticket->load( $id );
 	ok( $id, "load ticket" ) or diag( "error: $msg" );
-	is( $ticket->Owner, $RT::Nobody->id, "owner switched back to nobody" );
-	is( $ticket->OwnerGroup->MembersObj->first->MemberId, $RT::Nobody->id, "and owner role group member is nobody");
+	is( $ticket->Owner, RT->nobody->id, "owner switched back to nobody" );
+	is( $ticket->OwnerGroup->MembersObj->first->MemberId, RT->nobody->id, "and owner role group member is nobody");
 }
 
 

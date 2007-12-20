@@ -111,14 +111,6 @@ sub LimitToGlobal  {
 }
 # }}}
 
-# {{{ sub new_item 
-sub new_item  {
-  my $self = shift;
-  
-  return(new RT::Model::Scrip($self->current_user));
-}
-# }}}
-
 
 =head2 next
 

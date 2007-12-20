@@ -52,7 +52,7 @@
 =head1 SYNOPSIS
 
   use RT::Model::LinkCollection;
-  my $links = new RT::Model::LinkCollection($CurrentUser);
+  my $links = RT::Model::LinkCollection->new($CurrentUser);
 
 =head1 DESCRIPTION
 

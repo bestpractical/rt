@@ -198,7 +198,7 @@ my $Message = MakeMIMEEntity(
     Body    => $ARGS{'Content'},
 );
 
-my $TicketObj = RT::Model::Ticket->new( Jifty->web->current_user );
+my $TicketObj = RT::Model::Ticket->new();
 my ( $id, $txn, $msg ) = $TicketObj->create(
     Type            => $ARGS{'Type'} || 'ticket',
     Queue           => $ARGS{'Queue'},

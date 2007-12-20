@@ -11,7 +11,7 @@ package RT::Model::Group;
 =head1 SYNOPSIS
 
 use RT::Model::Group;
-my $group = new RT::Model::Group($CurrentUser);
+my $group = RT::Model::Group->new($CurrentUser);
 
 =head1 DESCRIPTION
 
@@ -434,9 +434,9 @@ sub create_userDefinedGroup {
 
 # }}}
 
-# {{{ CcreateACLEquivalenceGroup
+# {{{ Ccreateacl_equivalence_group
 
-=head2 _createACLEquivalenceGroup { Principal }
+=head2 _createacl_equivalence_group { Principal }
 
 A helper subroutine which creates a group containing only 
 an individual user. This gets used by the ACL system to check rights.
@@ -446,7 +446,7 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 
 =cut
 
-sub _createACLEquivalenceGroup { 
+sub _createacl_equivalence_group { 
     my $self = shift;
     my $princ = shift;
       my ($id,$msg) = $self->_create( Domain => 'ACLEquivalence', 
@@ -838,17 +838,17 @@ sub MemberemailesAsString {
 
 # }}}
 
-# {{{ AddMember
+# {{{ add_member
 
-=head2 AddMember PRINCIPAL_ID
+=head2 add_member PRINCIPAL_ID
 
-AddMember adds a principal to this group.  It takes a single principal id.
+add_member adds a principal to this group.  It takes a single principal id.
 Returns a two value array. the first value is true on successful 
 addition or 0 on failure.  The second value is a textual status msg.
 
 =cut
 
-sub AddMember {
+sub add_member {
     my $self       = shift;
     my $new_member = shift;
 
@@ -878,10 +878,10 @@ sub AddMember {
     }
 
   	} 
-    $self->_AddMember(principal_id => $new_member);
+    $self->_add_member(principal_id => $new_member);
 }
 
-# A helper subroutine for AddMember that bypasses the ACL checks
+# A helper subroutine for add_member that bypasses the ACL checks
 # this should _ONLY_ ever be called from Ticket/Queue AddWatcher
 # when we want to deal with groups according to queue rights
 # In the dim future, this will all get factored out and life
@@ -889,7 +889,7 @@ sub AddMember {
 
 # takes a paramhash of { principal_id => undef, InsideTransaction }
 
-sub _AddMember {
+sub _add_member {
     my $self = shift;
     my %args = ( principal_id => undef,
                  InsideTransaction => undef,
@@ -901,7 +901,7 @@ sub _AddMember {
     }
 
     unless ($new_member =~ /^\d+$/) {
-        $RT::Logger->crit("_AddMember called with a parameter that's not an integer.");
+        $RT::Logger->crit("_add_member called with a parameter that's not an integer.");
     }
 
 

@@ -138,7 +138,7 @@ sub load_or_create_user {
         my $group = RT::Model::Group->new(current_user => RT::system_user() );
         $group->loadUserDefinedGroup( $_ );
         die "couldn't load group '$_'" unless $group->id;
-        $group->AddMember( $obj->id );
+        $group->add_member( $obj->id );
     }
 
     return $obj;
@@ -191,7 +191,7 @@ sub store_rights {
     my @res;
     while ( my $ace = $acl->next ) {
         my $obj = $ace->principal_object->Object;
-        if ( $obj->isa('RT::Model::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {
+        if ( $obj->isa('RT::Model::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == RT->nobody->id ) {
             next;
         }
 
@@ -225,7 +225,7 @@ sub set_rights {
     $acl->limit( column => 'right_name', operator => '!=', value => 'SuperUser' );
     while ( my $ace = $acl->next ) {
         my $obj = $ace->principal_object->Object;
-        if ( $obj->isa('RT::Model::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == $RT::Nobody->id ) {
+        if ( $obj->isa('RT::Model::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == RT->nobody->id ) {
             next;
         }
         $ace->delete;

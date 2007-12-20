@@ -277,7 +277,7 @@ sub Init
 
   my $shredder = RT::Shredder->new(%options);
 
-Construct a new RT::Shredder object.
+Construct a RT::Shredder->new object.
 
 There currently are no %options.
 

@@ -56,7 +56,7 @@ $changes => {}
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
-my $queue = new RT::Model::Queue( Jifty->web->current_user ) ;
+my $queue = RT::Model::Queue->new() ;
 my @fields = qw(name Description CorrespondAddress commentAddress
                 InitialPriority FinalPriority DefaultDueIn);
 my %fields = map { lc $_ => $_ } @fields;

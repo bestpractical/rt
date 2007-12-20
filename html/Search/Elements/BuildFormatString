@@ -97,10 +97,10 @@ my @fields = qw(
 <%init>
 $m->callback( CallbackOnce => 1, Callbackname => 'SetFieldsOnce', Fields => \@fields );
 
-my $CustomFields = RT::Model::CustomFieldCollection->new( Jifty->web->current_user);
+my $CustomFields = RT::Model::CustomFieldCollection->new();
 foreach my $id (keys %cfqueues) {
     # Gotta load up the $queue object, since queues get stored by name now. my $id
-    my $queue = RT::Model::Queue->new(Jifty->web->current_user);
+    my $queue = RT::Model::Queue->new();
     $queue->load($id);
     unless ($queue->id) {
         # XXX TODO: This ancient code dates from a former developer

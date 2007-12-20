@@ -52,7 +52,7 @@
 =head1 SYNOPSIS
 
   use RT::Model::AttributeCollection;
-my $Attributes = new RT::Model::AttributeCollection($CurrentUser);
+my $Attributes = RT::Model::AttributeCollection->new($CurrentUser);
 
 =head1 DESCRIPTION
 

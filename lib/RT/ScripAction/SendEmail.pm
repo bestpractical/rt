@@ -473,7 +473,7 @@ sub RecordOutgoingMailTransaction {
 
     RT::I18N::set_mime_entity_to_encoding( $MIMEObj, 'utf-8', 'mime_words_ok' );
 
-    my $transaction = RT::Model::Transaction->new($self->TransactionObj->current_user);
+    my $transaction = RT::Model::Transaction->new(current_user => $self->TransactionObj->current_user);
 
     # XXX: TODO -> Record attachments as references to things in the attachments table, maybe.
 

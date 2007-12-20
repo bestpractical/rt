@@ -56,7 +56,7 @@
 <& /Elements/SelectMatch, name=> 'GroupOp' &>
 <input size="8" name="GroupString" />
 <%INIT>
-my $CFs = RT::Model::CustomFieldCollection->new(Jifty->web->current_user);
+my $CFs = RT::Model::CustomFieldCollection->new();
 $CFs->LimitToChildType('RT::Model::Group');
 $CFs->order_by( column => 'name' );
 </%INIT>

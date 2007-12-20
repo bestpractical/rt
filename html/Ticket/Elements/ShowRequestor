@@ -53,7 +53,7 @@ while ( my $requestor = $people->next ) {
     next if $requestor->privileged;
     my $name = $m->scomp('/Elements/ShowUser', User => $requestor);
 
-    my $tickets = RT::Model::TicketCollection->new( Jifty->web->current_user );
+    my $tickets = RT::Model::TicketCollection->new();
     $tickets->from_sql( "Requestor.id = ". $requestor->id ." AND (Status = 'open' OR Status = 'new')" );
     $tickets->rows_per_page( $rows );
     $tickets->order_by( column => 'Priority', order => 'DESC' );

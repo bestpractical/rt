@@ -102,7 +102,7 @@ sub create_users {
 						   );
 	    }
 	    foreach (@users_returned) {
-		$group_obj->AddMember($_->id);
+		$group_obj->add_member($_->id);
 	    }
 	}
     }

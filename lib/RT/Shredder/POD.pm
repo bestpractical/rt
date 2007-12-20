@@ -54,7 +54,7 @@ use Pod::Select;
 sub plugin_html
 {
     my ($file, $out_fh) = @_;
-    my $parser = new RT::Shredder::POD::HTML;
+    my $parser = RT::Shredder::POD::HTML->new;
     $parser->select('ARGUMENTS', 'USAGE');
     $parser->parse_from_file( $file, $out_fh );
 }

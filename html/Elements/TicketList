@@ -113,7 +113,7 @@ my $next = $m->comp(
 % }
 <%INIT>
 unless ($Collection) {
-        $Collection = RT::Model::TicketCollection->new( Jifty->web->current_user );
+        $Collection = RT::Model::TicketCollection->new();
         $Collection->from_sql( $Query );
 }
 

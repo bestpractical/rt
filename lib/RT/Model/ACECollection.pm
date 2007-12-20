@@ -52,7 +52,7 @@
 =head1 SYNOPSIS
 
   use RT::Model::ACECollection;
-my $ACL = new RT::Model::ACECollection($CurrentUser);
+my $ACL = RT::Model::ACECollection->new($CurrentUser);
 
 =head1 DESCRIPTION
 

@@ -115,11 +115,10 @@ Object constructor takes one argument C<RT::CurrentUser> object.
 =cut
 
 sub new {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
-    bless ($self, $class);
-    $self->current_user(@_);
+    my $class = shift;
+    my $self = {};
+    bless $self => $class;
+    $self->_get_current_user(@_);
     $self->Unix(0);
     return $self;
 }
@@ -863,6 +862,8 @@ sub Timezone {
     my $self = shift;
     my $context = lc(shift);
 
+    warn "My current user is ".$self->current_user;
+
     $context = 'utc' unless $context =~ /^(?:utc|server|user)$/i;
 
     my $tz;
@@ -879,9 +880,5 @@ sub Timezone {
 }
 
 
-eval "require RT::Date_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Date_Vendor.pm});
-eval "require RT::Date_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Date_Local.pm});
 
 1;

@@ -133,7 +133,7 @@
 <%INIT>
 my ($title, @results, $disabled);
 
-my $CustomFieldObj = RT::Model::CustomField->new( Jifty->web->current_user );
+my $CustomFieldObj = RT::Model::CustomField->new();
 my $current_tab = 'Admin/CustomFields/Modify.html';
 
 unless ( $id ) {

@@ -12,7 +12,7 @@ plan tests => 7 + 3 * @PLUGINS;
 
 use_ok('RT::Shredder::Plugin');
 {
-    my $plugin = new RT::Shredder::Plugin;
+    my $plugin = RT::Shredder::Plugin->new;
     isa_ok($plugin, 'RT::Shredder::Plugin');
     my %plugins = $plugin->List;
     cmp_deeply( [sort keys %plugins], [@PLUGINS], "correct plugins" );
@@ -23,7 +23,7 @@ use_ok('RT::Shredder::Plugin');
 }
 { # reblessing on load_by_name
     foreach (@PLUGINS) {
-        my $plugin = new RT::Shredder::Plugin;
+        my $plugin = RT::Shredder::Plugin->new;
         isa_ok($plugin, 'RT::Shredder::Plugin');
         my ($status, $msg) = $plugin->load_by_name( $_ );
         ok($status, "loaded plugin by name") or diag("error: $msg");
@@ -31,7 +31,7 @@ use_ok('RT::Shredder::Plugin');
     }
 }
 { # error checking in load_by_name
-    my $plugin = new RT::Shredder::Plugin;
+    my $plugin = RT::Shredder::Plugin->new;
     isa_ok($plugin, 'RT::Shredder::Plugin');
     my ($status, $msg) = $plugin->load_by_name;
     ok(!$status, "not loaded plugin - empty name");
