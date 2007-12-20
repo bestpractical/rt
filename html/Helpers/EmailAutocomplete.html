@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <body>
 <ul>
-% while (my $addr = $users->next) {
+% while (my $addr = $users->Next) {
 %   my $email = $addr->EmailAddress or next;
 %   my $name = $addr->Name;
 %   undef $name if $name eq $email;
