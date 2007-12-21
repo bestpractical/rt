@@ -59,10 +59,10 @@
 % if ($scrip->Description) {
 <%   $scrip->Description %> 
 % } else {
-<i>(<&|/l, $scrip->id&>Scrip #[_1]</&>)</i>
+<i>(<&|/l, $scrip->id&>Scrip #%1</&>)</i>
 % }
 </a><br />
-<small><&|/l, loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name) &>[_1] [_2] with template [_3]</&></small>
+<small><&|/l, loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name) &>%1 %2 with template %3</&></small>
 </li>
 %   }
 

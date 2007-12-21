@@ -261,7 +261,7 @@ sub create {
         if ($method) { 
         unless (  $method->($self, $attribs{$key} ) ) {
             if (wantarray) {
-                return ( 0, $self->loc('Invalid value for [_1]', $key) );
+                return ( 0, $self->loc('Invalid value for %1', $key) );
             }
             else {
                 return (0);
@@ -281,7 +281,7 @@ sub create {
         if ( $id->errno ) {
             if (wantarray) {
                 return ( 0,
-                    $self->loc( "Internal Error: [_1]", $id->{error_message} ) );
+                    $self->loc( "Internal Error: %1", $id->{error_message} ) );
             }
             else {
                 return (0);
@@ -486,7 +486,7 @@ sub _set {
     if ($status) {
         $msg =
           $self->loc(
-            "[_1] changed from [_2] to [_3]",
+            "%1 changed from %2 to %3",
             $args{'column'},
             ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),
             '"' . ($self->__value( $args{'column'}) ||'weird undefined value'). '"' 
@@ -708,7 +708,7 @@ sub _DecodeLOB {
         $Content = MIME::QuotedPrint::decode($Content);
     }
     elsif ( $ContentEncoding && $ContentEncoding ne 'none' ) {
-        return ( $self->loc( "Unknown ContentEncoding [_1]", $ContentEncoding ) );
+        return ( $self->loc( "Unknown ContentEncoding %1", $ContentEncoding ) );
     }
     if ( $ContentType eq 'text/plain' ) {
        $Content = Encode::decode_utf8($Content) unless Encode::is_utf8($Content);
@@ -788,21 +788,21 @@ sub Update {
         # Default to $id, but use name if we can get it.
         my $label = $self->id;
         $label = $self->name if (UNIVERSAL::can($self,'name'));
-        push @results, $self->loc( "$prefix [_1]", $label ) . ': '. $msg;
+        push @results, $self->loc( "$prefix %1", $label ) . ': '. $msg;
 
 =for loc
 
-                                   "[_1] could not be set to [_2].",       # loc
+                                   "%1 could not be set to %2.",       # loc
                                    "That is already the current value",    # loc
                                    "No value sent to _set!\n",             # loc
-                                   "Illegal value for [_1]",               # loc
+                                   "Illegal value for %1",               # loc
                                    "The new value has been set.",          # loc
                                    "No column specified",                  # loc
                                    "Immutable field",                      # loc
                                    "Nonexistant field?",                   # loc
                                    "Invalid data",                         # loc
                                    "Couldn't find row",                    # loc
-                                   "Missing a primary key?: [_1]",         # loc
+                                   "Missing a primary key?: %1",         # loc
                                    "Found Object",                         # loc
 
 =cut
@@ -1131,7 +1131,7 @@ sub _AddLink {
     my $TransString =
       "Record $args{'Base'} $args{Type} record $args{'Target'}.";
 
-    return ( $linkid, $self->loc( "Link Created ([_1])", $TransString ) );
+    return ( $linkid, $self->loc( "Link Created (%1)", $TransString ) );
 }
 
 # }}}
@@ -1192,7 +1192,7 @@ sub _delete_link {
         $link->delete();
 
         my $TransString = "Record $args{'Base'} no longer $args{Type} record $args{'Target'}.";
-        return ( 1, $self->loc("Link deleted ([_1])", $TransString));
+        return ( 1, $self->loc("Link deleted (%1)", $TransString));
     }
 
     #if it's not a link we can find
@@ -1402,7 +1402,7 @@ sub _AddCustomFieldValue {
     }
     my $cf = $self->load_custom_field_by_identifier($args{'Field'});
     unless ( $cf->id ) {
-        return ( 0, $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
+        return ( 0, $self->loc( "Custom field %1 not found", $args{'Field'} ) );
     }
 
     my $OCFs = $self->CustomFields;
@@ -1411,7 +1411,7 @@ sub _AddCustomFieldValue {
         return (
             0,
             $self->loc(
-                "Custom field [_1] does not apply to this object",
+                "Custom field %1 does not apply to this object",
                 $args{'Field'}
             )
         );
@@ -1493,7 +1493,7 @@ sub _AddCustomFieldValue {
         );
 
         unless ( $new_value_id ) {
-            return ( 0, $self->loc( "Could not add new custom field value: [_1]", $value_msg ) );
+            return ( 0, $self->loc( "Could not add new custom field value: %1", $value_msg ) );
         }
 
         my $new_value = RT::Model::ObjectCustomFieldValue->new;
@@ -1517,14 +1517,14 @@ sub _AddCustomFieldValue {
 
         my $new_content = $new_value->Content;
         unless ( defined $old_content && length $old_content ) {
-            return ( $new_value_id, $self->loc( "[_1] [_2] added", $cf->name, $new_content ));
+            return ( $new_value_id, $self->loc( "%1 %2 added", $cf->name, $new_content ));
         }
         elsif ( !defined $new_content || !length $new_content ) {
             return ( $new_value_id,
-                $self->loc( "[_1] [_2] deleted", $cf->name, $old_content ) );
+                $self->loc( "%1 %2 deleted", $cf->name, $old_content ) );
         }
         else {
-            return ( $new_value_id, $self->loc( "[_1] [_2] changed to [_3]", $cf->name, $old_content, $new_content));
+            return ( $new_value_id, $self->loc( "%1 %2 changed to %3", $cf->name, $old_content, $new_content));
         }
 
     }
@@ -1539,7 +1539,7 @@ sub _AddCustomFieldValue {
         );
 
         unless ( $new_value_id ) {
-            return ( 0, $self->loc( "Could not add new custom field value: [_1]", $msg ) );
+            return ( 0, $self->loc( "Could not add new custom field value: %1", $msg ) );
         }
         if ( $args{'RecordTransaction'} ) {
             my ( $tid, $msg ) = $self->_NewTransaction(
@@ -1549,10 +1549,10 @@ sub _AddCustomFieldValue {
                 ReferenceType => 'RT::Model::ObjectCustomFieldValue',
             );
             unless ( $tid ) {
-                return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $msg ) );
+                return ( 0, $self->loc( "Couldn't create a transaction: %1", $msg ) );
             }
         }
-        return ( $new_value_id, $self->loc( "[_1] added as a value for [_2]", $args{'Value'}, $cf->name ) );
+        return ( $new_value_id, $self->loc( "%1 added as a value for %2", $args{'Value'}, $cf->name ) );
     }
 }
 
@@ -1582,7 +1582,7 @@ sub delete_custom_field_value {
 
     my $cf = $self->load_custom_field_by_identifier($args{'Field'});
     unless ( $cf->id ) {
-        return ( 0, $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
+        return ( 0, $self->loc( "Custom field %1 not found", $args{'Field'} ) );
     }
 
     my ( $val, $msg ) = $cf->deleteValueForObject(
@@ -1601,13 +1601,13 @@ sub delete_custom_field_value {
         ReferenceType => 'RT::Model::ObjectCustomFieldValue',
     );
     unless ($TransactionId) {
-        return ( 0, $self->loc( "Couldn't create a transaction: [_1]", $Msg ) );
+        return ( 0, $self->loc( "Couldn't create a transaction: %1", $Msg ) );
     }
 
     return (
         $TransactionId,
         $self->loc(
-            "[_1] is no longer a value for custom field [_2]",
+            "%1 is no longer a value for custom field %2",
             $TransactionObj->OldValue, $cf->name
         )
     );

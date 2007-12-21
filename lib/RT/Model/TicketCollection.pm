@@ -1475,7 +1475,7 @@ sub limit {
         @_
     );
     $args{'description'} = $self->loc(
-        "[_1] [_2] [_3]",  $args{'column'},
+        "%1 %2 %3",  $args{'column'},
         $args{'operator'}, $args{'value'}
         )
         if ( !defined $args{'description'} );
@@ -2074,7 +2074,7 @@ sub LimitLinkedTo {
         target      => $args{'target'},
         type => $args{'type'},
         description => $self->loc(
-            "Tickets [_1] by [_2]",
+            "Tickets %1 by %2",
             $self->loc( $args{'type'} ),
             $args{'target'}
         ),
@@ -2119,7 +2119,7 @@ sub LimitLinkedFrom {
         base        => $args{'base'},
         type => $type,
         description => $self->loc(
-            "Tickets [_1] [_2]",
+            "Tickets %1 %2",
             $self->loc( $args{'type'} ),
             $args{'base'},
         ),
@@ -2382,16 +2382,16 @@ sub LimitCustomField {
     #If we are looking to compare with a null value.
     if ( $args{'operator'} =~ /^is$/i ) {
         $args{'description'}
-            ||= $self->loc( "Custom field [_1] has no value.", $CF->name );
+            ||= $self->loc( "Custom field %1 has no value.", $CF->name );
     }
     elsif ( $args{'operator'} =~ /^is not$/i ) {
         $args{'description'}
-            ||= $self->loc( "Custom field [_1] has a value.", $CF->name );
+            ||= $self->loc( "Custom field %1 has a value.", $CF->name );
     }
 
     # if we're not looking to compare with a null value
     else {
-        $args{'description'} ||= $self->loc( "Custom field [_1] [_2] [_3]",
+        $args{'description'} ||= $self->loc( "Custom field %1 %2 %3",
             $CF->name, $args{operator}, $args{value} );
     }
 

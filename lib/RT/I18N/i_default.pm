@@ -70,10 +70,10 @@ would be straightforward to define Whatever::i_default's as a subclass
 of Whatever::en, but for every case where a key gets you a string
 (as opposed to a coderef) from %Whatever::en::Lexicon and
 %Whatever::fr::Lexicon, you could make %Whatever::i_default::Lexicon 
-be the concatenation of them both.  So: "file '[_1]' not found.\n" and
-"fichier '[_1]' non trouve\n" could make for an
+be the concatenation of them both.  So: "file '%1' not found.\n" and
+"fichier '%1' non trouve\n" could make for an
 %Whatever::i_default::Lexicon entry of
-"file '[_1]' not found\nfichier '[_1]' non trouve.\n".
+"file '%1' not found\nfichier '%1' non trouve.\n".
 
 There may be entries, however, where that is undesirable.
 And in any case, it's not feasable once you have an _AUTO lexicon

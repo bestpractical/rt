@@ -83,7 +83,7 @@ while ( my $record = $Collection->next ) {
 % if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
 <hr>
 % my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
-<&|/l, $Page, int($TotalFound/$Rows)+$oddRows&>Page [_1] of [_2]</&>
+<&|/l, $Page, int($TotalFound/$Rows)+$oddRows&>Page %1 of %2</&>
 
 <%PERL>
 my %query_args = map { $_ => $ARGS{$_} } @PassArguments;

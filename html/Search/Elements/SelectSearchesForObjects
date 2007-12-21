@@ -56,7 +56,7 @@ $SearchType => 'Ticket',
 <option value=""><&|/l&>My saved searches</&></option>
 % } else {
 <option value=""></option>
-<option value=""><&|/l, $object->name&>[_1]'s saved searches</&></option>
+<option value=""><&|/l, $object->name&>%1's saved searches</&></option>
 % }
 % my @searches = $object->attributes->named('SavedSearch');
 % foreach my $search (@searches) { 

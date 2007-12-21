@@ -121,7 +121,7 @@ sub create {
     }
     
     elsif ( length( $args{'password'} ) < RT->Config->Get('MinimumpasswordLength') ) {
-        return ( 0, $self->loc("password needs to be at least [_1] characters long",RT->Config->Get('MinimumpasswordLength')) );
+        return ( 0, $self->loc("password needs to be at least %1 characters long",RT->Config->Get('MinimumpasswordLength')) );
     }
 
     unless ( $args{'name'} ) {
@@ -670,7 +670,7 @@ sub set_password {
         return ( 0, $self->loc("No password set") );
     }
     elsif ( length($password) < RT->Config->Get('MinimumpasswordLength') ) {
-        return ( 0, $self->loc("password needs to be at least [_1] characters long", RT->Config->Get('MinimumpasswordLength')) );
+        return ( 0, $self->loc("password needs to be at least %1 characters long", RT->Config->Get('MinimumpasswordLength')) );
     }
     else {
         my $new = !$self->has_password;

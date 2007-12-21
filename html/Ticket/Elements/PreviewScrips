@@ -62,8 +62,8 @@ my @non_recipients = @{ $squelch{'emailes'} };
 
 % foreach my $scrip (@{$Object->Scrips->prepared}) {
 % next unless $scrip->ActionObj->Action->isa('RT::ScripAction::SendEmail');
-<b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
-<&|/l, loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name)&>[_1] [_2] with template [_3]</&>
+<b><% $scrip->Description || loc('Scrip #%1',$scrip->id) %></b><br />
+<&|/l, loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name)&>%1 %2 with template %3</&>
 <br />
 %foreach my $type qw(To Cc Bcc) {
 %my @addresses =  $scrip->ActionObj->Action->$type();

@@ -229,7 +229,7 @@ Returns either a localized string 'ticket #23' or the full URI if the object is 
 sub AsString {
     my $self = shift;
     if ($self->IsLocal && $self->Object) {
-	    return $self->loc("[_1] #[_2]", $self->object_type, $self->Object->id);
+	    return $self->loc("%1 #%2", $self->object_type, $self->Object->id);
     }
     else {
 	    return $self->URI;

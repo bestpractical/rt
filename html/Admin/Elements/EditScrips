@@ -64,7 +64,7 @@
 </td>
 <td>
 <a href="Scrip.html?id=<%$scrip->id%>&Queue=<%$id%>"><% $scrip->Description || "<i>(".loc('no value').")</i>" |n %></a><br />
-<small><&|/l, loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name) &>[_1] [_2] with template [_3]</&></small>
+<small><&|/l, loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name) &>%1 %2 with template %3</&></small>
 </td>
 </tr>
 %   }

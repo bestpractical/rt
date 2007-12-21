@@ -103,7 +103,7 @@ sub load {
 	    $self->{'Id'} = $self->{'Attribute'}->id;
 	    $self->{'Privacy'} = $privacy;
 	    $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
-	    return (1, $self->loc("Loaded search [_1]", $self->name));
+	    return (1, $self->loc("Loaded search %1", $self->name));
 	} else {
 	    $RT::Logger->error("Could not load attribute " . $id
 			       . " for object " . $privacy);
@@ -111,7 +111,7 @@ sub load {
 	}
     } else {
 	$RT::Logger->warning("Could not load object $privacy when loading search");
-	return (0, $self->loc("Could not load object for [_1]", $privacy));
+	return (0, $self->loc("Could not load object for %1", $privacy));
     }
 
 }
@@ -144,7 +144,7 @@ sub Save {
     $params{'SearchType'} = $type;
     my $object = $self->_GetObject($privacy);
 
-    return (0, $self->loc("Failed to load object for [_1]", $privacy))
+    return (0, $self->loc("Failed to load object for %1", $privacy))
         unless $object;
 
     if ( $object->isa('RT::System') ) {
@@ -165,7 +165,7 @@ sub Save {
         $self->{'Id'}        = $att_id;
         $self->{'Privacy'}   = $privacy;
         $self->{'Type'}      = $type;
-        return ( 1, $self->loc( "Saved search [_1]", $name ) );
+        return ( 1, $self->loc( "Saved search %1", $name ) );
     }
     else {
         $RT::Logger->error("SavedSearch save failure: $att_msg");
@@ -195,7 +195,7 @@ sub Update {
     if ($status && $args{'name'}) {
 	($status, $msg) = $self->{'Attribute'}->set_Description($args{'name'});
     }
-    return ($status, $self->loc("Search update: [_1]", $msg));
+    return ($status, $self->loc("Search update: %1", $msg));
 }
 
 =head2 Delete
@@ -212,7 +212,7 @@ sub delete {
     if ($status) {
 	return (1, $self->loc("Deleted search"));
     } else {
-	return (0, $self->loc("Delete failed: [_1]", $msg));
+	return (0, $self->loc("Delete failed: %1", $msg));
     }
 }
 	

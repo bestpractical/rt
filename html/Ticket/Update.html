@@ -66,13 +66,13 @@
 
 <tr><td align="right"><&|/l&>Status</&>:</td>
 <td>
-<& /Elements/SelectStatus, name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($TicketObj->Status)), Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
+<& /Elements/SelectStatus, name=>"Status", DefaultLabel => loc("%1 (Unchanged)", loc($TicketObj->Status)), Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
 <&|/l&>Owner</&>:  
 <& /Elements/SelectOwner,
      name         => "Owner",
      TicketObj    => $TicketObj,
      QueueObj     => $TicketObj->QueueObj,
-     DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->name),
+     DefaultLabel => loc("%1 (Unchanged)", $TicketObj->OwnerObj->name),
      Default      => $ARGS{'Owner'}
  &>
 <&|/l&>Worked</&>: <input size="4" name="Updatetime_worked" value="<% $ARGS{Updatetime_worked}||'' %>" /> 
@@ -172,9 +172,9 @@ if ($DefaultStatus =~ '^new$'){
 }
 
 if ($DefaultStatus eq 'resolved') {
-    $title = loc("Resolve ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject);
+    $title = loc("Resolve ticket #%1 (%2)", $TicketObj->id, $TicketObj->Subject);
 } else {
-    $title = loc("Update ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject);
+    $title = loc("Update ticket #%1 (%2)", $TicketObj->id, $TicketObj->Subject);
 }
 
 if ( RT->Config->Get('GnuPG')->{'Enable'} ) {

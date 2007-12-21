@@ -258,7 +258,7 @@ sub OriginalContent {
     } elsif ( $self->ContentEncoding eq 'quoted-printable' ) {
         return MIME::QuotedPrint::decode($self->_value('Content', decode_utf8 => 0));
     } else {
-        return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
+        return( $self->loc("Unknown ContentEncoding %1", $self->ContentEncoding));
     }
 
     # please, comment this code //ruz

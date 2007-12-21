@@ -344,10 +344,10 @@ sub DurationAsString {
     }
 
     if ( $negative ) {
-        return $self->loc( "[_1] [_2] ago", $s, $time_unit );
+        return $self->loc( "%1 %2 ago", $s, $time_unit );
     }
     else {
-        return $self->loc( "[_1] [_2]", $s, $time_unit );
+        return $self->loc( "%1 %2", $s, $time_unit );
     }
 }
 
@@ -567,13 +567,13 @@ sub DefaultFormat
     ($mday, $hour, $min, $sec) = map { sprintf "%02d", $_ } ($mday, $hour, $min, $sec);
 
     if( $args{'Date'} && !$args{'Time'} ) {
-        return $self->loc('[_1] [_2] [_3] [_4]',
+        return $self->loc('%1 %2 %3 %4',
                           $wday,$mon,$mday,$year);
     } elsif( !$args{'Date'} && $args{'Time'} ) {
-        return $self->loc('[_1]:[_2]:[_3]',
+        return $self->loc('%1:%2:%3',
                           $hour,$min,$sec);
     } else {
-        return $self->loc('[_1] [_2] [_3] [_4]:[_5]:[_6] [_7]',
+        return $self->loc('%1 %2 %3 %4:%5:%6 %7',
                           $wday,$mon,$mday,$hour,$min,$sec,$year);
     }
 }
@@ -862,7 +862,6 @@ sub Timezone {
     my $self = shift;
     my $context = lc(shift);
 
-    warn "My current user is ".$self->current_user;
 
     $context = 'utc' unless $context =~ /^(?:utc|server|user)$/i;
 

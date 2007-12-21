@@ -58,13 +58,13 @@ foreach my $id( @DeleteTemplates ) {
     my $TemplateObj = RT::Model::Template->new();
     $TemplateObj->load( $id );
     unless ( $TemplateObj->id ) {
-        push @actions, loc("Couldn't load template #[_1]", $id);
+        push @actions, loc("Couldn't load template #%1", $id);
         next;
     }
 
     my ($retval, $msg) = $TemplateObj->delete;
     if ( $retval ) {
-        push @actions, loc("Template #[_1] deleted", $id);
+        push @actions, loc("Template #%1 deleted", $id);
     }
     else {
         push @actions, $msg;

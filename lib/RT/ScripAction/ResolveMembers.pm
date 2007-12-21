@@ -62,7 +62,7 @@ use vars qw/@ISA/;
 # {{{ sub Describe 
 sub Describe  {
   my $self = shift;
-  return $self->loc("[_1] will resolve all members of a resolved group ticket.", ref $self);
+  return $self->loc("%1 will resolve all members of a resolved group ticket.", ref $self);
 }
 # }}}
 

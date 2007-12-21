@@ -83,9 +83,9 @@ my %res = RT::Crypt::GnuPG::GetKeyInfo( $email, $Type );
 
 my $title;
 unless ( $Type eq 'private' ) {
-    $title = loc('GnuPG public key(s) for [_1]', $email);
+    $title = loc('GnuPG public key(s) for %1', $email);
 } else {
-    $title = loc('GnuPG private key(s) for [_1]', $email);
+    $title = loc('GnuPG private key(s) for %1', $email);
 }
 
 </%INIT>

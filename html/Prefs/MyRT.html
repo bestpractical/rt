@@ -86,12 +86,12 @@ my $user = Jifty->web->current_user->user_object;
 
 if ( $ARGS{'UpdateSummaryRows'} ) {
     unless ( $ARGS{SummaryRows} && int $ARGS{SummaryRows} > 0 ) {
-        push @results, loc ("Illegal '[_1]' preference value.", loc('summary rows'));
+        push @results, loc ("Illegal '%1' preference value.", loc('summary rows'));
         $ARGS{SummaryRows} = 0;
     }
     else {
         $user->set_Preferences( 'SummaryRows', int $ARGS{SummaryRows} );
-        push @results, loc ('Preferences saved for [_1].', loc('summary rows'));
+        push @results, loc ('Preferences saved for %1.', loc('summary rows'));
     }
 }
 $ARGS{'SummaryRows'} ||= $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
@@ -145,7 +145,7 @@ my @panes = $m->comp(
     OnSave => sub {
         my ( $conf, $pane ) = @_;
         $user->set_Preferences( 'HomepageSettings', $conf );
-        push @results, loc( 'Preferences saved for [_1].', $pane );
+        push @results, loc( 'Preferences saved for %1.', $pane );
         delete $session{'my_rt_portlets'};
     }
 );

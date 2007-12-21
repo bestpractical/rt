@@ -101,9 +101,9 @@ if (!defined $id) {
 }
 
 my $CustomFieldObj = RT::Model::CustomField->new();
-$CustomFieldObj->load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load CustomField [_1]",$id));
+$CustomFieldObj->load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load CustomField %1",$id));
 
-my $title = loc('Modify group rights for custom field [_1]', $CustomFieldObj->name);
+my $title = loc('Modify group rights for custom field %1', $CustomFieldObj->name);
 
 my @results = ProcessACLChanges( \%ARGS );
 

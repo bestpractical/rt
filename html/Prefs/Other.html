@@ -91,7 +91,7 @@ my $preferences = $user_object->Preferences( RT->system );
 
 if ((defined $PreferredKey) && $PreferredKey ne $user_object->first_attribute('PreferredKey')) {
     my ($code, $msg) = $user_object->set_attribute(name => 'PreferredKey', Content => $PreferredKey);
-    push @results, loc('Preferred Key: [_1]', loc_fuzzy($msg));
+    push @results, loc('Preferred Key: %1', loc_fuzzy($msg));
 }
 
 if ( $Update ) {

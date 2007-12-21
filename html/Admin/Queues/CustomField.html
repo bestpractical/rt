@@ -62,13 +62,13 @@ $QueueObj->load($Queue);
 my ($title, $current_subtab);
 
 unless($QueueObj->id) {
-    Abort(loc("Queue [_1] not found", $Queue));
+    Abort(loc("Queue %1 not found", $Queue));
 }
 if ($CustomField) {
-    $title = loc('Modify a CustomField for queue [_1]', $QueueObj->name()); 
+    $title = loc('Modify a CustomField for queue %1', $QueueObj->name()); 
 }else {
     $current_subtab = "Admin/Queues/CustomField.html?create=1&Queue=".$QueueObj->id;
-    $title = loc('Create a CustomField for queue [_1]', $QueueObj->name()); 
+    $title = loc('Create a CustomField for queue %1', $QueueObj->name()); 
 }
 
 my $subtabs = {

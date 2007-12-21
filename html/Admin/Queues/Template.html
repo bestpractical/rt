@@ -92,13 +92,13 @@ if ($Create) {
 else {
   if ($Template eq 'new') {
       my ($val, $msg) =  $TemplateObj->create(Queue => $Queue, name => $name);
-      Abort(loc("Could not create template: [_1]", $msg)) unless ($val);
+      Abort(loc("Could not create template: %1", $msg)) unless ($val);
      push @results, $msg;
     }
     else {
        $TemplateObj->load($Template) || Abort(loc('No Template'));
     }
-     $title = loc('Modify template [_1]', loc($TemplateObj->name())); 
+     $title = loc('Modify template %1', loc($TemplateObj->name())); 
   
     
 }
@@ -112,7 +112,7 @@ if ($TemplateObj->id()) {
 				     Object => $TemplateObj, 
 				     ARGSRef => \%ARGS);
   $current_subtab = "Admin/Queues/Template.html?Queue=$Queue&Template=".$TemplateObj->id();
-  $subtabs->{"C"} = { title => loc('Template #[_1]', $TemplateObj->id()),
+  $subtabs->{"C"} = { title => loc('Template #%1', $TemplateObj->id()),
   		     	path => "Admin/Queues/Template.html?Queue=$Queue&Template=".$TemplateObj->id(),
 			};
   push @results, @aresults;

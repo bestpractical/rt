@@ -69,10 +69,10 @@
 
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
 <td><input name="CorrespondAddress" value="<% ($Create) ? "" : $QueueObj->CorrespondAddress %>" />
-<br /><span><em><&|/l , RT->Config->Get('CorrespondAddress')&>(If left blank, will default to [_1])</&></em></span></td>
+<br /><span><em><&|/l , RT->Config->Get('CorrespondAddress')&>(If left blank, will default to %1)</&></em></span></td>
 <td align="right"><&|/l&>comment Address</&>:</td>
 <td><input name="commentAddress" value="<% ($Create) ? "" : $QueueObj->commentAddress %>" />
-<br /><span><em><&|/l , RT->Config->Get('commentAddress')&>(If left blank, will default to [_1])</&></em></span></td>
+<br /><span><em><&|/l , RT->Config->Get('commentAddress')&>(If left blank, will default to %1)</&></em></span></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Priority starts at</&>:</td>
@@ -131,9 +131,9 @@ if ($Create) {
 		push @results, $msg;
     }
     else {
-        $QueueObj->load($id) || $QueueObj->load($name) || Abort(loc("Couldn't load queue '[_1]'", $name));
+        $QueueObj->load($id) || $QueueObj->load($name) || Abort(loc("Couldn't load queue '%1'", $name));
     }
-    $title = loc('Editing Configuration for queue [_1]', $QueueObj->name);
+    $title = loc('Editing Configuration for queue %1', $QueueObj->name);
     
     $current_tab = 'Admin/Queues/Modify.html?id='.$QueueObj->id;
 }

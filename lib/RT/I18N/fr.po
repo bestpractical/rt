@@ -4379,8 +4379,8 @@ msgid "This message will be sent to..."
 msgstr "Ce message va être envoyé à..."
 
 #: bin/rt-crontool:266
-msgid "This ticket [_1] [_2] ([_3])\\n"
-msgstr "Ce ticket [_1] [_2] ([_3])\\n "
+msgid "This ticket %1 %2 (%3)\\n"
+msgstr "Ce ticket %1 %2 (%3)\\n "
 
 #: bin/rt-crontool:214
 msgid "This tool allows the user to run arbitrary perl modules from within RT."

@@ -67,8 +67,8 @@ $ShortQueryString => undef
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>" />
 % }
-<&|/l, $m->scomp('SelectGroupBy', name => 'PrimaryGroupBy', Query => $Query) &>grouped by [_1]</&>
-<&|/l, $m->scomp('SelectChartType', name => 'ChartStyle') &>style: [_1]</&>
+<&|/l, $m->scomp('SelectGroupBy', name => 'PrimaryGroupBy', Query => $Query) &>grouped by %1</&>
+<&|/l, $m->scomp('SelectChartType', name => 'ChartStyle') &>style: %1</&>
 <input type="submit" class="button" value="<%loc('Go')%>" />
 </form>
 

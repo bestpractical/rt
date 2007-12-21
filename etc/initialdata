@@ -588,9 +588,9 @@ while (my $o = $t->next) {
 
 foreach my $obj ($self->TicketObj->AllDependedOnBy( Type => 'ticket' )) {
     $obj->comment(
-	Content => $self->loc( "Your request has been approved by [_1]. Other approvals may still be pending.", # loc
+	Content => $self->loc( "Your request has been approved by %1. Other approvals may still be pending.", # loc
 	    $self->TransactionObj->CreatorObj->name,
-	) . "\n" . $self->loc( "Approver's notes: [_1]", # loc
+	) . "\n" . $self->loc( "Approver's notes: %1", # loc
 	    $note
 	),
     );
@@ -680,7 +680,7 @@ return 0; # ignore $passed;
 
 @Attributes = (
     { name => 'Search - My Tickets',
-      Description => '[_1] highest priority tickets I own', # loc
+      Description => '%1 highest priority tickets I own', # loc
       Content     =>
       { Format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                  . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
@@ -691,7 +691,7 @@ return 0; # ignore $passed;
       },
     },
     { name => 'Search - Unowned Tickets',
-      Description => '[_1] newest unowned tickets', # loc
+      Description => '%1 newest unowned tickets', # loc
       Content     =>
 # 'Take' #loc
       { Format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}

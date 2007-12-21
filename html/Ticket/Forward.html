@@ -87,7 +87,7 @@ Abort( loc("Permission denied") )
 
 my $txn = RT::Transaction->new();
 $txn->load( $QuoteTransaction );
-Abort( loc("Couldn't load transaction #[_1]", $QuoteTransaction) )
+Abort( loc("Couldn't load transaction #%1", $QuoteTransaction) )
     unless $txn->id;
 
 my @results;

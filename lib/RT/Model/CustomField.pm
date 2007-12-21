@@ -81,42 +81,42 @@ our %FieldTypes = (
     Select => [
         'Select multiple values',    # loc
         'Select one value',        # loc
-        'Select up to [_1] values',    # loc
+        'Select up to %1 values',    # loc
     ],
     Freeform => [
         'Enter multiple values',    # loc
         'Enter one value',        # loc
-        'Enter up to [_1] values',    # loc
+        'Enter up to %1 values',    # loc
     ],
     Text => [
         'Fill in multiple text areas',    # loc
         'Fill in one text area',    # loc
-        'Fill in up to [_1] text areas',# loc
+        'Fill in up to %1 text areas',# loc
     ],
     Wikitext => [
         'Fill in multiple wikitext areas',    # loc
         'Fill in one wikitext area',    # loc
-        'Fill in up to [_1] wikitext areas',# loc
+        'Fill in up to %1 wikitext areas',# loc
     ],
     Image => [
         'Upload multiple images',    # loc
         'Upload one image',        # loc
-        'Upload up to [_1] images',    # loc
+        'Upload up to %1 images',    # loc
     ],
     Binary => [
         'Upload multiple files',    # loc
         'Upload one file',        # loc
-        'Upload up to [_1] files',    # loc
+        'Upload up to %1 files',    # loc
     ],
     Combobox => [
         'Combobox: Select or enter multiple values',    # loc
         'Combobox: Select or enter one value',        # loc
-        'Combobox: Select or enter up to [_1] values',    # loc
+        'Combobox: Select or enter up to %1 values',    # loc
     ],
     Autocomplete => [
         'Enter multiple values with autocompletion',    # loc
         'Enter one value with autocompletion',            # loc
-        'Enter up to [_1] values with autocompletion',    # loc
+        'Enter up to %1 values with autocompletion',    # loc
     ],
 );
 
@@ -223,7 +223,7 @@ sub create {
     }
 
     my ($ok, $msg) = $self->_IsValidRegex( $args{'Pattern'} );
-    return (0, $self->loc("Invalid pattern: [_1]", $msg)) unless $ok;
+    return (0, $self->loc("Invalid pattern: %1", $msg)) unless $ok;
 
     (my $rv, $msg) = $self->SUPER::create(
         name        => $args{'name'},
@@ -593,7 +593,7 @@ sub set_Pattern {
         return $self->set(column => 'Pattern', value => $regex);
     }
     else {
-        return (0, $self->loc("Invalid pattern: [_1]", $msg));
+        return (0, $self->loc("Invalid pattern: %1", $msg));
     }
 }
 
@@ -746,7 +746,7 @@ sub set_TypeComposite {
         return ($status, $msg) unless $status;
     }
     return 1, $self->loc(
-        "Type changed from '[_1]' to '[_2]'",
+        "Type changed from '%1' to '%2'",
         $self->FriendlyTypeComposite( $old ),
         $self->FriendlyTypeComposite( $composite ),
     );
@@ -806,9 +806,9 @@ sub LookupTypes {
 }
 
 my @Friendlyobject_types = (
-    "[_1] objects",            # loc
-    "[_1]'s [_2] objects",        # loc
-    "[_1]'s [_2]'s [_3] objects",   # loc
+    "%1 objects",            # loc
+    "%1's %2 objects",        # loc
+    "%1's %2's %3 objects",   # loc
 );
 
 =head2 FriendlyTypeLookup
@@ -932,7 +932,7 @@ sub AddValueForObject {
     }
 
     unless ( $self->MatchPattern($args{'Content'} || '' ) ) {
-        return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
+        return ( 0, $self->loc('Input must match %1', $self->FriendlyPattern) );
     }
 
     Jifty->handle->begin_transaction;
@@ -1063,12 +1063,12 @@ sub deleteValueForObject {
 
     # check to make sure we found it
     unless ($oldval->id) {
-        return(0, $self->loc("Custom field value [_1] could not be found for custom field [_2]", $args{'Content'}, $self->name));
+        return(0, $self->loc("Custom field value %1 could not be found for custom field %2", $args{'Content'}, $self->name));
     }
 
     # for single-value fields, we need to validate that empty string is a valid value for it
     if ( $self->SingleValue and not $self->MatchPattern( '' ) ) {
-        return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
+        return ( 0, $self->loc('Input must match %1', $self->FriendlyPattern) );
     }
 
     # delete it

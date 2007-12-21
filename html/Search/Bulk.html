@@ -358,7 +358,7 @@ while ( my $Ticket = $Tickets->next ) {
     );
 
     @tempresults =
-      map { loc( "Ticket [_1]: [_2]", $Ticket->id, $_ ) } @tempresults;
+      map { loc( "Ticket %1: %2", $Ticket->id, $_ ) } @tempresults;
 
     @results = ( @results, @tempresults );
 }

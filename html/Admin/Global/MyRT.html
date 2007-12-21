@@ -92,7 +92,7 @@ my @panes = $m->comp(
     OnSave => sub {
         my ( $conf, $pane ) = @_;
 	$default_portlets->set_content( $conf );
-        push @actions, loc( 'Global portlet [_1] saved.', $pane );
+        push @actions, loc( 'Global portlet %1 saved.', $pane );
     }
 );
 

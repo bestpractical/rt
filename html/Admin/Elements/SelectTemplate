@@ -58,7 +58,7 @@
 %while  (my $Template = $OtherTemplates->next) {
 <option value="<%$Template->id%>"
 <% defined($Default) && ($Template->id == $Default)  && 'SELECTED'%>
-><&|/l, loc($Template->name) &>Global template: [_1]</&>
+><&|/l, loc($Template->name) &>Global template: %1</&>
 </option>
 %}
 </select>

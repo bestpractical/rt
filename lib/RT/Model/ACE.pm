@@ -159,7 +159,7 @@ sub load_by_values {
 
     unless ( $princ_obj->id ) {
         return ( 0,
-                 $self->loc( 'Principal [_1] not found.', $args{'principal_id'} )
+                 $self->loc( 'Principal %1 not found.', $args{'principal_id'} )
         );
     }
 
@@ -248,7 +248,7 @@ sub create {
 
     unless ( $princ_obj->id ) {
         return ( 0,
-                 $self->loc( 'Principal [_1] not found.', $args{'principal_id'} )
+                 $self->loc( 'Principal %1 not found.', $args{'principal_id'} )
         );
     }
 
@@ -353,7 +353,7 @@ sub Delegate {
 
     unless ( $princ_obj->id ) {
         return ( 0,
-                 $self->loc( 'Principal [_1] not found.', $args{'principal_id'} )
+                 $self->loc( 'Principal %1 not found.', $args{'principal_id'} )
         );
     }
 

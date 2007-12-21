@@ -787,7 +787,7 @@ sub _AddWatcher {
 
     if ( $group->has_member( $principal)) {
 
-        return ( 0, $self->loc('That principal is already a [_1] for this queue', $args{'Type'}) );
+        return ( 0, $self->loc('That principal is already a %1 for this queue', $args{'Type'}) );
     }
 
 
@@ -795,9 +795,9 @@ sub _AddWatcher {
     unless ($m_id) {
         $RT::Logger->error("Failed to add ".$principal->id." as a member of group ".$group->id."\n".$m_msg);
 
-        return ( 0, $self->loc('Could not make that principal a [_1] for this queue', $args{'Type'}) );
+        return ( 0, $self->loc('Could not make that principal a %1 for this queue', $args{'Type'}) );
     }
-    return ( 1, $self->loc('Added principal as a [_1] for this queue', $args{'Type'}) );
+    return ( 1, $self->loc('Added principal as a %1 for this queue', $args{'Type'}) );
 }
 
 # }}}
@@ -886,7 +886,7 @@ sub deleteWatcher {
 
     unless ( $group->has_member($principal)) {
         return ( 0,
-        $self->loc('That principal is not a [_1] for this queue', $args{'Type'}) );
+        $self->loc('That principal is not a %1 for this queue', $args{'Type'}) );
     }
 
     my ($m_id, $m_msg) = $group->_delete_member($principal->id);
@@ -894,10 +894,10 @@ sub deleteWatcher {
         $RT::Logger->error("Failed to delete ".$principal->id.
                            " as a member of group ".$group->id."\n".$m_msg);
 
-        return ( 0,    $self->loc('Could not remove that principal as a [_1] for this queue', $args{'Type'}) );
+        return ( 0,    $self->loc('Could not remove that principal as a %1 for this queue', $args{'Type'}) );
     }
 
-    return ( 1, $self->loc("[_1] is no longer a [_2] for this queue.", $principal->Object->name, $args{'Type'} ));
+    return ( 1, $self->loc("%1 is no longer a %2 for this queue.", $principal->Object->name, $args{'Type'} ));
 }
 
 # }}}

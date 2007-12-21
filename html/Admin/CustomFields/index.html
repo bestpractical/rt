@@ -59,7 +59,7 @@
 %        if ($prev_lookup) {
 </ul>
 %        }
-<h2><% loc("Custom Fields for [_1]", $lookup) %></h2>
+<h2><% loc("Custom Fields for %1", $lookup) %></h2>
 <ul>
 %        $prev_lookup = $lookup;
 %        push @types, [$lookup, $CustomFieldObj->LookupType];

@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Modify people related to queue [_1]', $QueueObj->name) &>
+<& /Elements/Header, Title => loc('Modify people related to queue %1', $QueueObj->name) &>
 <& /Admin/Elements/QueueTabs, id => $id, 
     QueueObj => $QueueObj,                                                      
     current_tab => $current_tab, 
-    Title => loc('Modify people related to queue [_1]', $QueueObj->name) &>
+    Title => loc('Modify people related to queue %1', $QueueObj->name) &>
 
 <& /Elements/ListActions, actions => \@results &>
 

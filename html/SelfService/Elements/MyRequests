@@ -76,7 +76,7 @@ my @Format = qq{
 </%INIT>
 <%ARGS>
 $friendly_status => loc('open')
-$title => loc("My [_1] tickets", $friendly_status)
+$title => loc("My %1 tickets", $friendly_status)
 @roles => ('Watcher')
 @status => ('open', 'new', 'stalled')
 $BaseURL => undef

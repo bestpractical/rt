@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Ticket History # [_1] [_2]", $Ticket->id, $Ticket->Subject) &>
+<& /Elements/Header, Title => loc("Ticket History # %1 %2", $Ticket->id, $Ticket->Subject) &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $Ticket, current_tab => 'Ticket/History.html?id='.$Ticket->id, 
-    Title => loc("Ticket History # [_1] [_2]", $Ticket->id, $Ticket->Subject) &>
+    Title => loc("Ticket History # %1 %2", $Ticket->id, $Ticket->Subject) &>
 
 % $m->callback(Callbackname => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
 

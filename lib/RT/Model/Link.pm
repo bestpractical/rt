@@ -110,7 +110,7 @@ sub create {
     $base->FromURI( $args{'Base'} );
 
     unless ( $base->Resolver && $base->Scheme ) {
-	my $msg = $self->loc("Couldn't resolve base '[_1]' into a URI.", 
+	my $msg = $self->loc("Couldn't resolve base '%1' into a URI.", 
 			     $args{'Base'});
         $RT::Logger->warning( "$self $msg\n" );
 
@@ -125,7 +125,7 @@ sub create {
     $target->FromURI( $args{'Target'} );
 
     unless ( $target->Resolver ) {
-	my $msg = $self->loc("Couldn't resolve target '[_1]' into a URI.", 
+	my $msg = $self->loc("Couldn't resolve target '%1' into a URI.", 
 			     $args{'Target'});
         $RT::Logger->warning( "$self $msg\n" );
 
@@ -144,14 +144,14 @@ sub create {
 
     if ( $base->IsLocal ) {
         unless (UNIVERSAL::can($base->Object, 'Id')) {
-            return (undef, $self->loc("[_1] appears to be a local object, but can't be found in the database", $args{'Base'}));
+            return (undef, $self->loc("%1 appears to be a local object, but can't be found in the database", $args{'Base'}));
         
         }
         $base_id = $base->Object->id;
     }
     if ( $target->IsLocal ) {
         unless (UNIVERSAL::can($target->Object, 'Id')) {
-            return (undef, $self->loc("[_1] appears to be a local object, but can't be found in the database", $args{'Target'}));
+            return (undef, $self->loc("%1 appears to be a local object, but can't be found in the database", $args{'Target'}));
         
         }
         $target_id = $target->Object->id;

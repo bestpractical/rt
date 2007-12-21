@@ -66,9 +66,9 @@ $QueueObj->load($id);
 my $title;
 
 if ($QueueObj->id) {
-    $title = loc("Modify scrips for queue [_1]", $QueueObj->name);
+    $title = loc("Modify scrips for queue %1", $QueueObj->name);
 } else {
-    Abort(loc("Queue [_1] not found",$id));
+    Abort(loc("Queue %1 not found",$id));
 }
 
 my $subtabs = {

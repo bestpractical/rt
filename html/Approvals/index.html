@@ -72,9 +72,9 @@ foreach my $arg ( keys %ARGS ) {
 
         my ( $notesval, $notesmsg ) = $ticket->Correspond( MIMEObj => $notes );
         if ($notesval) {
-                push ( @actions, loc("Approval #[_1]: Notes recorded",$ticket->id ));
+                push ( @actions, loc("Approval #%1: Notes recorded",$ticket->id ));
         } else {
-                push ( @actions, loc("Approval #[_1]: Notes not recorded due to a system error",$ticket->id ));
+                push ( @actions, loc("Approval #%1: Notes not recorded due to a system error",$ticket->id ));
         }
     }
 
@@ -85,6 +85,6 @@ foreach my $arg ( keys %ARGS ) {
     elsif ( $ARGS{$arg} eq 'approve' ) {
          ( $val, $msg ) = $ticket->set_Status('resolved');
     }
-    push ( @actions, loc("Approval #[_1]: [_2]",$ticket->id, $msg )) if ($msg);
+    push ( @actions, loc("Approval #%1: %2",$ticket->id, $msg )) if ($msg);
 }
 </%init>

@@ -152,10 +152,10 @@ else {
         );
         $m->comp( "/Elements/Error", Why => loc( "Could not create CustomField", $msg ) ) unless $val;
         push @results, $msg;
-        $title = loc( 'Created CustomField [_1]', $CustomFieldObj->name );
+        $title = loc( 'Created CustomField %1', $CustomFieldObj->name );
     } else {
         $CustomFieldObj->load( $id ) || $m->comp("/Elements/Error", Why => loc('No CustomField') );
-        $title = loc( 'Editing CustomField [_1]', $CustomFieldObj->name );
+        $title = loc( 'Editing CustomField %1', $CustomFieldObj->name );
     }
     $current_tab .= "?id=$id";
 }

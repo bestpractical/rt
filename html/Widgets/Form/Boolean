@@ -63,7 +63,7 @@ $name         => undef,
 
 $Default        => 0,
 $DefaultValue   => 0,
-$DefaultLabel   => loc( 'Use system default ([_1])', $DefaultValue? loc('Yes'): loc('No') ),
+$DefaultLabel   => loc( 'Use system default (%1)', $DefaultValue? loc('Yes'): loc('No') ),
 
 $CurrentValue => undef,
 </%ARGS>

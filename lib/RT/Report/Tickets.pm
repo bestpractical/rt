@@ -116,10 +116,10 @@ sub Label {
     my $field = shift;
     if ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {
         my $cf = $1;
-        return $self->current_user->loc( "Custom field '[_1]'", $cf ) if $cf =~ /\D/;
+        return $self->current_user->loc( "Custom field '%1'", $cf ) if $cf =~ /\D/;
         my $obj = RT::Model::CustomField->new;
         $obj->load( $cf );
-        return $self->current_user->loc( "Custom field '[_1]'", $obj->name );
+        return $self->current_user->loc( "Custom field '%1'", $obj->name );
     }
     return $self->current_user->loc($field);
 }

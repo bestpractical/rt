@@ -137,7 +137,7 @@ my $scrip = RT::Model::Scrip->new();
 if ( $id ) {
     $scrip->load( $id );
     unless ( $id = $scrip->id ) {
-        push @actions, loc("Couldn't load scrip #[_1]", $id);
+        push @actions, loc("Couldn't load scrip #%1", $id);
     }
     $SubmitLabel = loc('Update');
 }
@@ -181,7 +181,7 @@ if ( $id eq 'new' ) {
 }
 else {
     $scrip->load( $id );
-    return (undef, loc("Couldn't load scrip #[_1]", $id))
+    return (undef, loc("Couldn't load scrip #%1", $id))
         unless $scrip->id;
 
     my @attribs = qw(Queue ScripAction ScripCondition Template Stage

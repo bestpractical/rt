@@ -229,17 +229,7 @@ through
 
 sub loc {
 
-    if (Jifty->web->current_user && 
-        UNIVERSAL::can(Jifty->web->current_user, 'loc')){
-        return(Jifty->web->current_user->loc(@_));
-    }
-    elsif ( my $u = RT::CurrentUser->new(current_user => RT->system_user->id)  ) {
-        return ($u->loc(@_));
-    }
-    else {
-        # pathetic case -- system_user is gone.
-        return $_[0];
-    }
+ return    _(@_);
 }
 
 # }}}
@@ -1017,7 +1007,7 @@ sub ProcessACLChanges {
         } else {
             $RT::Logger->error("object type '$object_type' is incorrect");
             push (@results, loc("System Error"). ': '.
-                            loc("Rights could not be granted for [_1]", $object_type));
+                            loc("Rights could not be granted for %1", $object_type));
             next;
         }
 
@@ -1388,7 +1378,7 @@ sub _ProcessObjectCustomFieldUpdates {
         }
         else {
             push ( @results,
-                loc("User asked for an unknown update type for custom field [_1] for [_2] object #[_3]",
+                loc("User asked for an unknown update type for custom field %1 for %2 object #%3",
                 $cf->name, ref $args{'Object'}, $args{'Object'}->id )
             );
         }
@@ -1588,7 +1578,7 @@ sub ProcessRecordLinks {
             my $target = $3;
 
             push @results,
-                loc( "Trying to delete: Base: [_1] Target: [_2] Type: [_3]",
+                loc( "Trying to delete: Base: %1 Target: %2 Type: %3",
                                               $base,       $target,   $type );
             my ( $val, $msg ) = $Record->delete_link( Base   => $base,
                                                      Type   => $type,

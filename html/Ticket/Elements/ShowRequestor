@@ -61,7 +61,7 @@ while ( my $requestor = $people->next ) {
 
 <&| /Widgets/TitleBox,
     title_href => $has_right_adminusers? RT->Config->Get('WebPath')."/Admin/Users/Modify.html?id=".$requestor->id: undef,
-    title_raw => loc("More about [_1]", $name),
+    title_raw => loc("More about %1", $name),
 &>
 
 %# Additional information about this user.  Empty by default.
@@ -70,7 +70,7 @@ while ( my $requestor = $people->next ) {
 <&|/l&>comments about this user</&>:<br />
 <b><% ($requestor->comments || loc("No comment entered about this user")) %></b><br />
 
-<&|/l, $rows &>This user's [_1] highest priority tickets</&>:<br />
+<&|/l, $rows &>This user's %1 highest priority tickets</&>:<br />
 <ul>
 %while (my $w=$tickets->next) {
 <li><a href="<%RT->Config->Get('WebPath')%><%$DisplayPath%>?id=<%$w->id%>"><%$w->id%>: <%$w->Subject%></a> (<%$w->Status%>)

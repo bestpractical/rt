@@ -151,7 +151,7 @@ sub create {
         unless $args{'ScripAction'};
     my $action = RT::Model::ScripAction->new;
     $action->load( $args{'ScripAction'} );
-    return ( 0, $self->loc( "Action '[_1]' not found", $args{'ScripAction'} ) ) 
+    return ( 0, $self->loc( "Action '%1' not found", $args{'ScripAction'} ) ) 
         unless $action->id;
 
     require RT::Model::Template;
@@ -159,7 +159,7 @@ sub create {
         unless $args{'Template'};
     my $template = RT::Model::Template->new;
     $template->load( $args{'Template'} );
-    return ( 0, $self->loc( "Template '[_1]' not found", $args{'Template'} ) )
+    return ( 0, $self->loc( "Template '%1' not found", $args{'Template'} ) )
         unless $template->id;
 
     require RT::Model::ScripCondition;
@@ -167,7 +167,7 @@ sub create {
         unless $args{'ScripCondition'};
     my $condition = RT::Model::ScripCondition->new;
     $condition->load( $args{'ScripCondition'} );
-    return ( 0, $self->loc( "Condition '[_1]' not found", $args{'ScripCondition'} ) )
+    return ( 0, $self->loc( "Condition '%1' not found", $args{'ScripCondition'} ) )
         unless $condition->id;
 
     my ( $id, $msg ) = $self->SUPER::create(

@@ -90,7 +90,7 @@
   <div id="quick-personal">
     <span class="hide"><a href="#skipnav"><&|/l&>Skip Menu</&></a> | </span>
 % if (Jifty->web->current_user->name) {
-    <&|/l, "<span>".Jifty->web->current_user->name."</span>" &>Logged in as [_1]</&>
+    <&|/l, "<span>".Jifty->web->current_user->name."</span>" &>Logged in as %1</&>
 %     if ( Jifty->web->current_user->has_right( Right => 'ModifySelf', Object => RT->system ) ) {
     | <a href="<%RT->Config->Get('WebPath')%><%$Prefs%>"><&|/l&>Preferences</&></a>
 %     }

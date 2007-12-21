@@ -162,7 +162,7 @@ sub create {
 	    $args{object_type} = ref($args{Object});
 	    $args{object_id} = $args{Object}->id;
     } else {
-        return(0, $self->loc("Required parameter '[_1]' not specified", 'Object'));
+        return(0, $self->loc("Required parameter '%1' not specified", 'Object'));
 
     }
    

@@ -51,7 +51,7 @@
     alt="<% loc("Best Practical Solutions, LLC corporate logo") %>"
     width="177" height="33" /></a>
 % if ( $Showname ) {
-    <span class="rtname"><% $name || loc("RT for [_1]", RT->Config->Get('rtname')) %></span>
+    <span class="rtname"><% $name || loc("RT for %1", RT->Config->Get('rtname')) %></span>
 % }
 </div>
 <%INIT>

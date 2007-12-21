@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => loc('#[_1]: [_2]', $Ticket->id, $Ticket->Subject) &>
+<& /SelfService/Elements/Header, Title => loc('#%1: %2', $Ticket->id, $Ticket->Subject) &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -158,7 +158,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     else {
         unless ( $Ticket->load( $id[0] ) ) {
             $m->comp( 'Error.html',
-                Why => loc( "Couldn't load ticket '[_1]'", $id ) );
+                Why => loc( "Couldn't load ticket '%1'", $id ) );
             $m->abort();
         }
 

@@ -45,17 +45,17 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc('Modify user rights for group [_1]', $GroupObj->name) &>
+<& /Admin/Elements/Header, Title => loc('Modify user rights for group %1', $GroupObj->name) &>
 <& /Admin/Elements/GroupTabs, 
     GroupObj => $GroupObj, 
     current_tab => 'Admin/Groups/UserRights.html?id='.$id, 
-    Title => loc('Modify user rights for group [_1]', $GroupObj->name) &>  
+    Title => loc('Modify user rights for group %1', $GroupObj->name) &>  
 <& /Elements/ListActions, actions => \@results &>
 
   <form method="post" action="UserRights.html">
     <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>" />
       
-<&| /Widgets/TitleBox, title => loc('Modify user rights for group [_1]', $GroupObj->name) &>
+<&| /Widgets/TitleBox, title => loc('Modify user rights for group %1', $GroupObj->name) &>
 <table>
 % while ( my $Member = $Users->next ) {
 % my $user_object = $Member->MemberObj->Object;
@@ -91,7 +91,7 @@ if (!defined $id) {
 }
 
 my $GroupObj = RT::Model::Group->new();
-$GroupObj->load($id) || Abort(loc("Couldn't load group [_1]",$id));
+$GroupObj->load($id) || Abort(loc("Couldn't load group %1",$id));
 
 # Find out which users we want to display ACL selects for
 my $privileged = RT::Model::Group->new();

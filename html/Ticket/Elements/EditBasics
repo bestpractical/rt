@@ -112,7 +112,7 @@
 
 <%INIT>
 #It's hard to do this inline, so we'll preload the html of the selectstatus in here.
-my $SelectStatus = $m->scomp("/Elements/SelectStatus", name => 'Status', DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)));
+my $SelectStatus = $m->scomp("/Elements/SelectStatus", name => 'Status', DefaultLabel => loc("%1 (Unchanged)",loc($TicketObj->Status)));
 my $SelectQueue = $m->scomp("/Elements/SelectQueue", name => 'Queue', Default =>$TicketObj->QueueObj->id);
 
 </%INIT>

@@ -82,7 +82,7 @@ while ( my $record = $Collection->next ) {
 % my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
 % my $pages = int($TotalFound/$Rows)+$oddRows;
 % $pages = 1 if $pages < 1;
-<&|/l, $Page, $pages &>Page [_1] of [_2]</&>
+<&|/l, $Page, $pages &>Page %1 of %2</&>
 
 <%perl>
 my $prev = $m->comp(

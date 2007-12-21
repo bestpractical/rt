@@ -147,7 +147,7 @@ foreach my $run ( @runs ) {
                 }
             }
             else {
-                push @messages, loc( "Public key '0x[_1]' is required to verify signature", $line->{'Key'} );
+                push @messages, loc( "Public key '0x%1' is required to verify signature", $line->{'Key'} );
             }
         }
         elsif ( $line->{'Operation'} eq 'PassphraseCheck' ) {

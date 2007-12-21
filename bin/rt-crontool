@@ -133,7 +133,7 @@ while ( my $ticket = $tickets->next() ) {
     print $ticket->id() . ": " if ($verbose);
 
     my $transaction = get_transaction($ticket);
-    print loc("Using transaction #[_1]...", $transaction->id)
+    print loc("Using transaction #%1...", $transaction->id)
         if $verbose && $transaction;
 
     # perform some more advanced check
@@ -205,7 +205,7 @@ sub load_module {
     my $modname = shift;
     eval "require $modname";
     if ($@) {
-        die loc( "Failed to load module [_1]. ([_2])", $modname, $@ );
+        die loc( "Failed to load module %1. (%2)", $modname, $@ );
     }
 
 }
@@ -228,40 +228,40 @@ sub loc {
 
 sub help {
 
-    print loc( "[_1] is a tool to act on tickets from an external scheduling tool, such as cron.", $0 )
+    print loc( "%1 is a tool to act on tickets from an external scheduling tool, such as cron.", $0 )
       . "\n";
     print loc("It takes several arguments:") . "\n\n";
 
     print "	"
-      . loc( "[_1] - Specify the search module you want to use", "--search" )
+      . loc( "%1 - Specify the search module you want to use", "--search" )
       . "\n";
     print "	"
-      . loc( "[_1] - An argument to pass to [_2]", "--search-argument", "--search" )
+      . loc( "%1 - An argument to pass to %2", "--search-argument", "--search" )
       . "\n";
 
     print "	"
-      . loc( "[_1] - Specify the condition module you want to use", "--condition" )
+      . loc( "%1 - Specify the condition module you want to use", "--condition" )
       . "\n";
     print "	"
-      . loc( "[_1] - An argument to pass to [_2]", "--condition-argument", "--condition" )
+      . loc( "%1 - An argument to pass to %2", "--condition-argument", "--condition" )
       . "\n";
     print "	"
-      . loc( "[_1] - Specify the action module you want to use", "--action" )
+      . loc( "%1 - Specify the action module you want to use", "--action" )
       . "\n";
     print "	"
-      . loc( "[_1] - An argument to pass to [_2]", "--action-argument", "--action" )
+      . loc( "%1 - An argument to pass to %2", "--action-argument", "--action" )
       . "\n";
     print "	"
-      . loc( "[_1] - Specify id of the template you want to use", "--template-id" )
+      . loc( "%1 - Specify id of the template you want to use", "--template-id" )
       . "\n";
     print "	"
-      . loc( "[_1] - Specify if you want to use either 'first' or 'last' transaction", "--transaction" )
+      . loc( "%1 - Specify if you want to use either 'first' or 'last' transaction", "--transaction" )
       . "\n";
     print "	"
-      . loc( "[_1] - Specify the type of a transaction you want to use", "--transaction-type" )
+      . loc( "%1 - Specify the type of a transaction you want to use", "--transaction-type" )
       . "\n";
     print "	"
-      . loc( "[_1] - Output status updates to STDOUT", "--verbose" ) . "\n";
+      . loc( "%1 - Output status updates to STDOUT", "--verbose" ) . "\n";
     print "\n";
     print "\n";
     print loc("Security:")."\n";

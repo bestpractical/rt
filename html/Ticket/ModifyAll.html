@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Ticket #[_1] Jumbo update: [_2]", $Ticket->id, $Ticket->Subject) &>
+<& /Elements/Header, Title => loc("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->Subject) &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $Ticket, 
     current_tab => "Ticket/ModifyAll.html?id=".$Ticket->id, 
-    Title => loc("Ticket #[_1] Jumbo update: [_2]", $Ticket->id, $Ticket->Subject) &>
+    Title => loc("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->Subject) &>
 
 % $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
@@ -58,7 +58,7 @@
 % $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 
-<&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->id) &>
+<&| /Widgets/TitleBox, title => loc('Modify ticket # %1', $Ticket->id) &>
 <& Elements/EditBasics, TicketObj => $Ticket &>
 <& Elements/EditCustomFields, TicketObj => $Ticket &>
 </&>

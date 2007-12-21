@@ -93,7 +93,7 @@ sub create {
     my $cf = RT::Model::CustomField->new;
     $cf->load( $cf_id );
     unless ( $cf->id ) {
-        return (0, $self->loc("Couldn't load Custom Field #[_1]", $cf_id));
+        return (0, $self->loc("Couldn't load Custom Field #%1", $cf_id));
     }
     unless ( $cf->current_user_has_right('AdminCustomField') ) {
         return (0, $self->loc('Permission denied'));

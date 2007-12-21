@@ -96,32 +96,32 @@ sub SelfDescription {
 	if ($self->Domain eq 'ACLEquivalence') {
 		my $user = RT::Model::Principal->new;
 		$user->load($self->Instance);
-		return $self->loc("user [_1]",$user->Object->name);
+		return $self->loc("user %1",$user->Object->name);
 	}
 	elsif ($self->Domain eq 'UserDefined') {
-		return $self->loc("group '[_1]'",$self->name);
+		return $self->loc("group '%1'",$self->name);
 	}
 	elsif ($self->Domain eq 'Personal') {
 		my $user = RT::Model::User->new;
 		$user->load($self->Instance);
-		return $self->loc("personal group '[_1]' for user '[_2]'",$self->name, $user->name);
+		return $self->loc("personal group '%1' for user '%2'",$self->name, $user->name);
 	}
 	elsif ($self->Domain eq 'RT::System-Role') {
-		return $self->loc("system [_1]",$self->Type);
+		return $self->loc("system %1",$self->Type);
 	}
 	elsif ($self->Domain eq 'RT::Model::Queue-Role') {
 		my $queue = RT::Model::Queue->new;
 		$queue->load($self->Instance);
-		return $self->loc("queue [_1] [_2]",$queue->name, $self->Type);
+		return $self->loc("queue %1 %2",$queue->name, $self->Type);
 	}
 	elsif ($self->Domain eq 'RT::Model::Ticket-Role') {
-		return $self->loc("ticket #[_1] [_2]",$self->Instance, $self->Type);
+		return $self->loc("ticket #%1 %2",$self->Instance, $self->Type);
 	}
 	elsif ($self->Domain eq 'SystemInternal') {
-		return $self->loc("system group '[_1]'",$self->Type);
+		return $self->loc("system group '%1'",$self->Type);
 	}
 	else {
-		return $self->loc("undescribed group [_1]",$self->id);
+		return $self->loc("undescribed group %1",$self->id);
 	}
 }
 

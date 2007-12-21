@@ -66,7 +66,7 @@ $CurrentValue => '',
 
 $Default        => 0,
 $DefaultValue   => 0,
-$DefaultLabel   => loc( 'Leaving this empty will default to the system default of [_1]', $DefaultValue ),
+$DefaultLabel   => loc( 'Leaving this empty will default to the system default of %1', $DefaultValue ),
 </%ARGS>
 
 <%METHOD InputOnly>

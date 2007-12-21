@@ -45,17 +45,17 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc('Modify group rights for group [_1]', $GroupObj->name) &>
+<& /Admin/Elements/Header, Title => loc('Modify group rights for group %1', $GroupObj->name) &>
 <& /Admin/Elements/GroupTabs, 
     GroupObj => $GroupObj, 
     current_tab => 'Admin/Groups/GroupRights.html?id='.$id, 
-    Title => loc('Modify group rights for group [_1]', $GroupObj->name) &>
+    Title => loc('Modify group rights for group %1', $GroupObj->name) &>
 <& /Elements/ListActions, actions => \@results &>
 
   <form method="post" action="GroupRights.html">
     <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>" />
       
-<&| /Widgets/TitleBox, title => loc('Modify group rights for group [_1]', $GroupObj->name) &>
+<&| /Widgets/TitleBox, title => loc('Modify group rights for group %1', $GroupObj->name) &>
       
 <h1><&|/l&>System groups</&></h1>
 <table>
@@ -108,7 +108,7 @@ if (!defined $id) {
 }
 
 my $GroupObj = RT::Model::Group->new();
-$GroupObj->load($id) || Abort(loc("Couldn't load group [_1]",$id));
+$GroupObj->load($id) || Abort(loc("Couldn't load group %1",$id));
 
 my $Groups;
     

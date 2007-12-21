@@ -70,10 +70,10 @@
 my $CF = RT::Model::CustomField->new();
 $CF->load($id) if ($id);
 
-unless ($CF->id) {  Abort(loc("Could not load CustomField [_1]"), $id)};
+unless ($CF->id) {  Abort(loc("Could not load CustomField %1"), $id)};
 my $LookupType = $CF->LookupType || '';
 $LookupType =~ /^(.*?)-/ ||
-     Abort(loc("Object of type [_1] cannot take custom fields", $LookupType));
+     Abort(loc("Object of type %1 cannot take custom fields", $LookupType));
 
 my $Class = $1;
 my $CollectionClass;
@@ -87,11 +87,11 @@ $CollectionClass = $Class.'Collection';
     $CollectionClass = $Class.'s';
 
 } else {
-    Abort(loc("Can't find a collection class for '[_1]'", $Class));
+    Abort(loc("Can't find a collection class for '%1'", $Class));
 }
 
 
-my $title = loc('Modify associated objects for [_1]', $CF->name);
+my $title = loc('Modify associated objects for %1', $CF->name);
 
 my $Objects = $CollectionClass->new();
 my (@results);

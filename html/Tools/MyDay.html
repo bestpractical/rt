@@ -68,7 +68,7 @@ href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->id%>"><%$
 cols="60"></textarea></td></tr>
 <tr <%$class|n%>>
 <td><span class="label">Status:</span> <& /Elements/SelectStatus, name=> 'UpdateStatus-'.$Ticket->id, 
-				  DefaultLabel => loc("[_1] (Unchanged)",loc($Ticket->Status())) &></td>
+				  DefaultLabel => loc("%1 (Unchanged)",loc($Ticket->Status())) &></td>
                   </tr>
 
 % }
@@ -91,16 +91,16 @@ foreach my $arg ( keys %ARGS ) {
             Content   => $content,
             TimeTaken => $ARGS{ 'Updatetime_worked-' . $id }
         );
-        push @results, loc( "Ticket [_1]: [_2]", $id, $msg );
+        push @results, loc( "Ticket %1: %2", $id, $msg );
     } elsif ( my $worked = $ARGS{ 'Updatetime_worked-' . $id } ) {
         my ( $val, $msg ) = $ticket->set_time_worked( $worked + $ticket->time_worked );
-            push @results, loc( "Ticket [_1]: [_2]", $id, $msg );
+            push @results, loc( "Ticket %1: %2", $id, $msg );
     }
 
     if ( my $status = $ARGS{ 'UpdateStatus-' . $id } ) {
         if ( $status ne $ticket->Status ) {
             my ( $val, $msg ) = $ticket->set_Status($status);
-            push @results, loc( "Ticket [_1]: [_2]", $id, $msg );
+            push @results, loc( "Ticket %1: %2", $id, $msg );
 
         }
     }

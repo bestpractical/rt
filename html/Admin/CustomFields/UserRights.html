@@ -89,14 +89,14 @@ if (!defined $id) {
 }
 
 my $CustomFieldObj = RT::Model::CustomField->new();
-$CustomFieldObj->load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load Class [_1]",$id));
+$CustomFieldObj->load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load Class %1",$id));
 
 # Find out which users we want to display ACL selects for
 my $privileged = RT::Model::Group->new();
 $privileged->load_system_internal_group('privileged');
 my $Users = $privileged->MembersObj();
 
-my $title = loc('Modify user rights for custom field [_1]', $CustomFieldObj->name);
+my $title = loc('Modify user rights for custom field %1', $CustomFieldObj->name);
   
 # }}}
     

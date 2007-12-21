@@ -108,7 +108,7 @@ else {
 	my ($create_id, $create_msg) = $Group->create_userDefinedGroup(name =>
     "$name");
         unless ($create_id) {
-            Abort (loc("Group could not be Created: [_1]", $create_msg));
+            Abort (loc("Group could not be Created: %1", $create_msg));
      }
 	$id = $Group->id;
     }
@@ -118,7 +118,7 @@ else {
 
 
     if ($id) {
-	$title = loc("Modify the group [_1]", $Group->name);
+	$title = loc("Modify the group %1", $Group->name);
 
     }	
 
@@ -149,7 +149,7 @@ else {
 }
 if  ( ($SetEnabled) and ( $disabled != $Group->disabled) ) { 
     my  ($code, $msg) = $Group->set_disabled($disabled);
-    push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
+    push @results, loc('Enabled status %1', loc_fuzzy($msg));
 }
 
 unless ($Group->disabled()) {

@@ -305,7 +305,7 @@ else {
         }
         push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $user_object );
 	} else {
-		push @results, loc('User could not be Created: [_1]', $msg);
+		push @results, loc('User could not be Created: %1', $msg);
 	}
     } else {
 	    $user_object->load($id) || $user_object->load($name) || Abort("Couldn't load user '$name'");
@@ -313,7 +313,7 @@ else {
     }
 
     if ($val) {
-	$title = loc("Modify the user [_1]", $user_object->name);
+	$title = loc("Modify the user %1", $user_object->name);
     }
 
     # If the create failed
@@ -346,7 +346,7 @@ if ($user_object->id && $id ne 'new') {
     # {{{ Deal with special fields: privileged, Enabled
     if  ( $Setprivileged and $privileged != $user_object->privileged ) {
          my ($code, $msg) = $user_object->set_privileged($privileged);
-         push @results, loc('privileged status: [_1]', loc_fuzzy($msg));
+         push @results, loc('privileged status: %1', loc_fuzzy($msg));
     }
 
     #we're asking about enabled on the web page but really care about disabled.
@@ -354,7 +354,7 @@ if ($user_object->id && $id ne 'new') {
 
     if  ( ($SetEnabled) and ( $disabled != $user_object->disabled) ) { 
         my  ($code, $msg) = $user_object->set_disabled($disabled);
-        push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
+        push @results, loc('Enabled status %1', loc_fuzzy($msg));
     }
 
 

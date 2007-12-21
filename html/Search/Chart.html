@@ -55,7 +55,7 @@ $Description => undef
 <%init>
 $ARGS{SecondaryGroupBy} ||= '';
 
-my $title = loc( "Search results grouped by [_1]", $PrimaryGroupBy );
+my $title = loc( "Search results grouped by %1", $PrimaryGroupBy );
 
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',

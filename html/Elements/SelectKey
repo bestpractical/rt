@@ -50,7 +50,7 @@
 % } else {
 <select name="<% $name %>">
 %     foreach my $key (@keys) {
-<option value="<% $key->{'Fingerprint'} %>"><% $key->{'Fingerprint'} %> <% loc("(trust: [_1])", $key->{'TrustTerse'}) %></option>
+<option value="<% $key->{'Fingerprint'} %>"><% $key->{'Fingerprint'} %> <% loc("(trust: %1)", $key->{'TrustTerse'}) %></option>
 %     }
 </select>
 % }

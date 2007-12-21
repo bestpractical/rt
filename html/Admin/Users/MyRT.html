@@ -75,7 +75,7 @@ my $current_tab;
 $current_tab = 'Admin/Users/MyRT.html?id='.$id if ($id);
 my $user_object = RT::Model::User->new();
 $user_object->load($id) || Abort("Couldn't load user '$id'");
-my $title = loc("RT at a glance for the user [_1]", $user_object->name);
+my $title = loc("RT at a glance for the user %1", $user_object->name);
 
 if ($ARGS{Reset}) {
     $user_object->set_Preferences('HomepageSettings', {});
@@ -120,7 +120,7 @@ my @panes = $m->comp(
     OnSave => sub {
         my ( $conf, $pane ) = @_;
         $user_object->set_Preferences( 'HomepageSettings', $conf );
-        push @actions, loc( 'Preferences [_1] for user [_2] .', $pane, $user_object->name );
+        push @actions, loc( 'Preferences %1 for user %2 .', $pane, $user_object->name );
     }
 );
 

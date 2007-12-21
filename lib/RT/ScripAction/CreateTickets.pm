@@ -374,7 +374,7 @@ sub createByTemplate {
         foreach my $res ( split( '\n', $msg ) ) {
             push @results,
                 $T::Tickets{$template_id}
-                ->loc( "Ticket [_1]", $T::Tickets{$template_id}->id ) . ': '
+                ->loc( "Ticket %1", $T::Tickets{$template_id}->id ) . ': '
                 . $res;
         }
         if ( !$id ) {
@@ -449,7 +449,7 @@ sub UpdateByTemplate {
 
         unless ( $loaded ) {
             $RT::Logger->error("Couldn't update ticket $template_id: " . $msg);
-            push @results, $self->loc( "Couldn't load ticket '[_1]'", $id );
+            push @results, $self->loc( "Couldn't load ticket '%1'", $id );
             next;
         }
 
@@ -498,7 +498,7 @@ sub UpdateByTemplate {
                 );
             push( @results,
                 $T::Tickets{$template_id}
-                    ->loc( "Ticket [_1]", $T::Tickets{$template_id}->id )
+                    ->loc( "Ticket %1", $T::Tickets{$template_id}->id )
                     . ': '
                     . $Description );
         } elsif ( $ticketargs->{'UpdateType'} =~ /^(public|response|correspond)$/i ) {
@@ -510,7 +510,7 @@ sub UpdateByTemplate {
                 );
             push( @results,
                 $T::Tickets{$template_id}
-                    ->loc( "Ticket [_1]", $T::Tickets{$template_id}->id )
+                    ->loc( "Ticket %1", $T::Tickets{$template_id}->id )
                     . ': '
                     . $Description );
         } else {
@@ -1119,7 +1119,7 @@ sub UpdateWatchers {
             );
 
             push @results,
-                $ticket->loc( "Ticket [_1]", $ticket->id ) . ': ' . $msg;
+                $ticket->loc( "Ticket %1", $ticket->id ) . ': ' . $msg;
         }
 
         foreach (@delete) {
@@ -1128,7 +1128,7 @@ sub UpdateWatchers {
                 Email => $_
             );
             push @results,
-                $ticket->loc( "Ticket [_1]", $ticket->id ) . ': ' . $msg;
+                $ticket->loc( "Ticket %1", $ticket->id ) . ': ' . $msg;
         }
     }
     return @results;

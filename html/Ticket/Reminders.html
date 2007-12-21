@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Reminder ticket #[_1]", $Ticket->id) &>
+<& /Elements/Header, Title => loc("Reminder ticket #%1", $Ticket->id) &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $Ticket, 
     current_tab => "Ticket/Reminders.html?id=".$Ticket->id, 
-    Title => loc("Reminders for ticket #[_1]", $Ticket->id) &>
+    Title => loc("Reminders for ticket #%1", $Ticket->id) &>
     
 % $m->callback(Callbackname => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
     

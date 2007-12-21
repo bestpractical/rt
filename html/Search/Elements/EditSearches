@@ -151,7 +151,7 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
 elsif ( $ARGS{'SavedSearchCopy'} ) {
     $SavedSearch->{'Id'}          = 'new';
     $SavedSearch->{'Object'}      = undef;
-    $SavedSearch->{'Description'} = loc( "[_1] copy", $SavedSearch->{'Description'} );
+    $SavedSearch->{'Description'} = loc( "%1 copy", $SavedSearch->{'Description'} );
 }
 
 if ( $SavedSearch->{'Id'} && $SavedSearch->{'Id'} ne 'new'

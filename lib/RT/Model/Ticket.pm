@@ -355,7 +355,7 @@ sub create {
     {
         return (
             0, 0,
-            $self->loc( "No permission to create tickets in the queue '[_1]'", $QueueObj->name));
+            $self->loc( "No permission to create tickets in the queue '%1'", $QueueObj->name));
     }
 
     unless ( $QueueObj->IsValidStatus( $args{'Status'} ) ) {
@@ -450,7 +450,7 @@ sub create {
         unless ( $Owner->id ) {
             push @non_fatal_errors,
                 $self->loc("Owner could not be set.") . " "
-              . $self->loc( "User '[_1]' could not be found.", $args{'Owner'} );
+              . $self->loc( "User '%1' could not be found.", $args{'Owner'} );
             $Owner = undef;
         }
     }
@@ -491,7 +491,7 @@ sub create {
                     my ($uid, $msg) = $user->load_or_create_by_email( $address );
                     unless ( $uid ) {
                         push @non_fatal_errors,
-                            $self->loc("Couldn't load or create user: [_1]", $msg);
+                            $self->loc("Couldn't load or create user: %1", $msg);
                     } else {
                         push @{ $args{$type} }, $user->id;
                     }
@@ -594,7 +594,7 @@ sub create {
                 principal_id => $watcher,
                 Silent => 1,
             );
-            push @non_fatal_errors, $self->loc("Couldn't set [_1] watcher: [_2]", $type, $msg)
+            push @non_fatal_errors, $self->loc("Couldn't set %1 watcher: %2", $type, $msg)
                 unless $val;
         }
     }
@@ -678,7 +678,7 @@ sub create {
             if (!$DeferOwner->has_right( Object => $self, Right  => 'OwnTicket')) {
     
         $RT::Logger->warning( "User " . $Owner->name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $QueueObj->name ); 
-        push @non_fatal_errors, $self->loc( "Owner '[_1]' does not have rights to own this ticket.", $Owner->name);
+        push @non_fatal_errors, $self->loc( "Owner '%1' does not have rights to own this ticket.", $Owner->name);
 
     } else {
         $Owner = $DeferOwner;
@@ -705,7 +705,7 @@ sub create {
             $TransObj->UpdateCustomFields(ARGSRef => \%args);
 
             $RT::Logger->info( "Ticket " . $self->id . " created in queue '" . $QueueObj->name . "' by " . $self->current_user->name );
-            $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->id, $QueueObj->name );
+            $ErrStr = $self->loc( "Ticket %1 created in queue '%2'", $self->id, $QueueObj->name );
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
         }
         else {
@@ -729,7 +729,7 @@ sub create {
 
         # Not going to record a transaction
         Jifty->handle->commit();
-        $ErrStr = $self->loc( "Ticket [_1] created in queue '[_2]'", $self->id, $QueueObj->name );
+        $ErrStr = $self->loc( "Ticket %1 created in queue '%2'", $self->id, $QueueObj->name );
         $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
         return ( $self->id, 0, $ErrStr );
 
@@ -865,7 +865,7 @@ sub Import {
       )
     {
         return ( 0,
-            $self->loc("No permission to create tickets in the queue '[_1]'"
+            $self->loc("No permission to create tickets in the queue '%1'"
               , $QueueObj->name));
     }
 
@@ -920,7 +920,7 @@ sub Import {
     # }}}
 
     unless ( $self->validate_Status( $args{'Status'} ) ) {
-        return ( 0, $self->loc("'[_1]' is an invalid value for status", $args{'Status'}) );
+        return ( 0, $self->loc("'%1' is an invalid value for status", $args{'Status'}) );
     }
 
     # If we're coming in with an id, set that now.
@@ -1079,7 +1079,7 @@ sub AddWatcher {
 
     if ( $args{'Email'} ) {
         my ($addr) = Mail::Address->parse( $args{'Email'} );
-        return (0, $self->loc("Couldn't parse address from '[_1] string", $args{'Email'} ))
+        return (0, $self->loc("Couldn't parse address from '%1 string", $args{'Email'} ))
             unless $addr;
 
         if ( lc $self->current_user->user_object->email
@@ -1156,7 +1156,7 @@ sub _AddWatcher {
 
     if ( $group->has_member( $principal)) {
 
-        return ( 0, $self->loc('That principal is already a [_1] for this ticket', $self->loc($args{'Type'})) );
+        return ( 0, $self->loc('That principal is already a %1 for this ticket', $self->loc($args{'Type'})) );
     }
 
 
@@ -1165,7 +1165,7 @@ sub _AddWatcher {
     unless ($m_id) {
         $RT::Logger->error("Failed to add ".$principal->id." as a member of group ".$group->id."\n".$m_msg);
 
-        return ( 0, $self->loc('Could not make that principal a [_1] for this ticket', $self->loc($args{'Type'})) );
+        return ( 0, $self->loc('Could not make that principal a %1 for this ticket', $self->loc($args{'Type'})) );
     }
 
     unless ( $args{'Silent'} ) {
@@ -1176,7 +1176,7 @@ sub _AddWatcher {
         );
     }
 
-        return ( 1, $self->loc('Added principal as a [_1] for this ticket', $self->loc($args{'Type'})) );
+        return ( 1, $self->loc('Added principal as a %1 for this ticket', $self->loc($args{'Type'})) );
 }
 
 # }}}
@@ -1277,7 +1277,7 @@ sub deleteWatcher {
 
     unless ( $group->has_member($principal) ) {
         return ( 0,
-                 $self->loc( 'That principal is not a [_1] for this ticket',
+                 $self->loc( 'That principal is not a %1 for this ticket',
                              $args{'Type'} ) );
     }
 
@@ -1291,7 +1291,7 @@ sub deleteWatcher {
 
         return (0,
                 $self->loc(
-                    'Could not remove that principal as a [_1] for this ticket',
+                    'Could not remove that principal as a %1 for this ticket',
                     $args{'Type'} ) );
     }
 
@@ -1302,7 +1302,7 @@ sub deleteWatcher {
     }
 
     return ( 1,
-             $self->loc( "[_1] is no longer a [_2] for this ticket.",
+             $self->loc( "%1 is no longer a %2 for this ticket.",
                          $principal->Object->name,
                          $args{'Type'} ) );
 }
@@ -1744,7 +1744,7 @@ sub set_Queue {
         my $clone = RT::Model::Ticket->new(current_user => RT->system_user );
         $clone->load( $self->id );
         unless ( $clone->id ) {
-            return ( 0, $self->loc("Couldn't load copy of ticket #[_1].", $self->id) );
+            return ( 0, $self->loc("Couldn't load copy of ticket #%1.", $self->id) );
         }
         my ($status, $msg) = $clone->set_Owner( RT->nobody->id, 'Force' );
         $RT::Logger->error("Couldn't set owner on queue change: $msg") unless $status;
@@ -2396,7 +2396,7 @@ sub __GetTicketFromURI {
     $uri_obj->FromURI( $args{'URI'} );
 
     unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
-        my $msg = $self->loc( "Couldn't resolve '[_1]' into a URI.", $args{'URI'} );
+        my $msg = $self->loc( "Couldn't resolve '%1' into a URI.", $args{'URI'} );
         $RT::Logger->warning( "$msg\n" );
         return( 0, $msg );
     }
@@ -2528,7 +2528,7 @@ sub MergeInto {
             Jifty->handle->rollback();
             $RT::Logger->error(
                 $self->loc(
-                    "[_1] couldn't set status to resolved. RT's Database may be inconsistent.",
+                    "%1 couldn't set status to resolved. RT's Database may be inconsistent.",
                     $self
                 )
             );
@@ -2817,7 +2817,7 @@ sub set_Owner {
     );
 
     if ( $val ) {
-        $msg = $self->loc( "Owner changed from [_1] to [_2]",
+        $msg = $self->loc( "Owner changed from %1 to %2",
                            $OldOwnerObj->name, $NewOwnerObj->name );
     }
     else {
@@ -2953,7 +2953,7 @@ sub set_Status {
     }
 
 
-    unless ( $self->validate_Status( $args{'Status'} ) ) { return ( 0, $self->loc("'[_1]' is an invalid value for status", $args{'Status'}) ); }
+    unless ( $self->validate_Status( $args{'Status'} ) ) { return ( 0, $self->loc("'%1' is an invalid value for status", $args{'Status'}) ); }
 
 
     my $now = RT::Date->new;

@@ -235,7 +235,7 @@ if ($user_object->id) {
 # {{{ Deal with special fields: privileged, Enabled, and password
 if  ( ($Setprivileged) and ( $privileged != $user_object->privileged) ) {
 my  ($code, $msg) = $user_object->set_privileged($privileged);
-     push @results, loc('privileged status: [_1]', loc_fuzzy($msg));
+     push @results, loc('privileged status: %1', loc_fuzzy($msg));
 }
 
 
@@ -244,7 +244,7 @@ my  ($code, $msg) = $user_object->set_privileged($privileged);
 if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$user_object->is_password($Pass1))) {
     my ($code, $msg);
     ($code, $msg) = $user_object->set_password($Pass1);
-    push @results, loc('password: [_1]', loc_fuzzy($msg));
+    push @results, loc('password: %1', loc_fuzzy($msg));
 } elsif ( $Pass1 && ($Pass1 ne $Pass2)) {
     push @results, loc("passwords do not match. Your password has not been changed");
 }

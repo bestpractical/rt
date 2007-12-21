@@ -66,7 +66,7 @@ $FILECAT = {};
 # extract all strings and stuff them into $FILECAT
 File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, '.' );
 
-# ensure proper escaping and [_1] => %1 transformation
+# ensure proper escaping and %1 => %1 transformation
 foreach my $str ( sort keys %{$FILECAT} ) {
     my $entry = $FILECAT->{$str};
     my $oldstr = $str;
