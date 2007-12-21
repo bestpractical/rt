@@ -81,17 +81,17 @@
 <tr><td>
 <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail1" &>
 </td><td>
-<input name="WatcherAddressEmail1" size="15" />
+<& /Elements/EmailInput, Name => 'WatcherAddressEmail1', Size => '20' &>
 </td></tr>
 <tr><td>
 <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail2" &> 
 </td><td>
-<input name="WatcherAddressEmail2" size="15" />
+<& /Elements/EmailInput, Name => 'WatcherAddressEmail2', Size => '20' &>
 </td></tr>
 <tr><td>
 <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail3" &>
 </td><td>
-<input name="WatcherAddressEmail3" size="15" />
+<& /Elements/EmailInput, Name => 'WatcherAddressEmail3', Size => '20' &>
 </td></tr>
 </table>
 
