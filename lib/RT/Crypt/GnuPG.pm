@@ -1644,23 +1644,7 @@ sub GetKeysForEncryption {
 
 sub GetKeysForSigning {
     my $key_id = shift;
-    my %res = GetKeysInfo( $key_id, 'public', @_ );
-    return %res if $res{'exit_code'};
-    return %res unless $res{'info'};
-
-    foreach my $key ( splice @{ $res{'info'} } ) {
-        # skip disabled keys
-        next if $key->{'Capabilities'} =~ /D/;
-        # skip keys not suitable for signing
-        next unless $key->{'Capabilities'} =~ /s/i;
-        # skip disabled, expired, revoke and keys with no trust,
-        # but leave keys with unknown trust level
-        next if $key->{'TrustLevel'} < 0;
-
-        push @{ $res{'info'} }, $key;
-    }
-    delete $res{'info'} unless @{ $res{'info'} };
-    return %res;
+    return GetKeysInfo( $key_id, 'private', @_ );
 }
 
 sub CheckRecipients {
