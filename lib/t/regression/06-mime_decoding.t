@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 use_ok("RT");
 
@@ -48,6 +48,16 @@ diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
     is(
         RT::I18N::DecodeMIMEWordsToUTF8($str),
         qq{Subject: Re: [XXXXXX#269] [Comment] Frage zu XXXXXX--xxxxxx / Xxxxxüxxxxxxxxxx},
+        "right decoding"
+    );
+}
+
+diag q{newline and encoded file name} if $ENV{TEST_VERBOSE};
+{
+    my $str = qq{application/vnd.ms-powerpoint;\n\tname="=?ISO-8859-1?Q?Main_presentation.ppt?="};
+    is(
+        RT::I18N::DecodeMIMEWordsToUTF8($str),
+        qq{application/vnd.ms-powerpoint;\tname="Main presentation.ppt"},
         "right decoding"
     );
 }

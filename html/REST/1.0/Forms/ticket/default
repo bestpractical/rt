@@ -207,7 +207,7 @@ if (!keys(%data)) {
     foreach $key (qw(TimeEstimated TimeWorked TimeLeft)) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
         $val = $ticket->$key || 0;
-        $val = $time->DurationAsString($val*60) if $val;
+        $val = "$val minutes" if $val;
         push @data, [ $key => $val ];
     }
 
