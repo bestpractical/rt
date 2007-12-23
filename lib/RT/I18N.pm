@@ -90,40 +90,6 @@ Initializes the lexicons used for localization.
 =cut
 
 sub Init {
-    require File::Glob;
-
-    my @lang = RT->Config->Get('LexiconLanguages');
-    @lang = ('*') unless @lang;
-
-    # load default functions
-    require substr(__FILE__, 0, -3) . '/i_default.pm';
-
-    # Load language-specific functions
-    foreach my $file ( File::Glob::bsd_glob(substr(__FILE__, 0, -3) . "/*.pm") ) {
-        unless ( $file =~ /^([-\w\s\.\/\\~:]+)$/ ) {
-            warn("$file is tainted. not loading");
-            next;
-        }
-        $file = $1;
-
-        my ($lang) = ($file =~ /([^\\\/]+?)\.pm$/);
-        next unless grep $_ eq '*' || $_ eq $lang, @lang;
-        require $file;
-    }
-
-    # Acquire all .po files and iterate them into lexicons
-    Locale::Maketext::Lexicon->import({
-        _decode => 1,
-        map {
-            $_ => [
-                Gettext => (substr(__FILE__, 0, -3) . "/$_.po"),
-                Gettext => "$RT::LocalLexiconPath/*/$_.po",
-                Gettext => "$RT::LocalLexiconPath/$_.po",
-            ],
-        } @lang
-    });
-
-    return 1;
 }
 
 =head2 encoding
@@ -462,11 +428,6 @@ sub set_mime_ehead_to_encoding {
 
 }
 # }}}
-
-eval "require RT::I18N_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/I18N_Vendor.pm});
-eval "require RT::I18N_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/I18N_Local.pm});
 
 1;  # End of module.
 
