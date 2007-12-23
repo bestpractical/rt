@@ -260,6 +260,12 @@ sub has_right {
     $self->user_object->has_right(@_);
 }
 
+
+sub superuser {
+   my $self = shift;
+    return RT->system_user;
+}
+
 sub name { shift->user_object->name }
 sub principal_object { shift->user_object->principal_object }
 1;

@@ -51,7 +51,7 @@
 #
 
 
-PERL			= 	/opt/local/bin/perl
+PERL			= 	perl
 
 CONFIG_FILE_PATH	=	/home/jesse/svk/3.999-DANGEROUS/etc
 CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_Config.pm

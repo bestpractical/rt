@@ -601,26 +601,6 @@ sub validate_name {
 
 
 
-sub __value {
-    my $self  = shift;
-    my $field = shift;
-    my %args = ( decode_utf8 => 1, @_ );
-
-    unless ( $field ) {
-        Carp::cluck;
-        $RT::Logger->error("__value called with undef field");
-    }
-
-    my $value = $self->SUPER::__value( $field );
-    if( $args{'decode_utf8'} ) {
-        return Encode::decode_utf8( $value ) unless Encode::is_utf8( $value );
-    } else {
-        return Encode::encode_utf8( $value ) if Encode::is_utf8( $value );
-    }
-    return $value;
-}
-
-
 =head2 _EncodeLOB BODY MIME_TYPE
 
 Takes a potentially large attachment. Returns (ContentEncoding, EncodedBody) based on system configuration and selected database

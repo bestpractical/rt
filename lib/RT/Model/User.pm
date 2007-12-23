@@ -34,39 +34,66 @@ use Jifty::DBI::Schema;
 sub table {'Users'}
 
 use Jifty::DBI::Record schema {
-    column        name  => max_length is 200,      type is 'varchar(200)', default is '';
-    column        comments  =>        type is 'blob', default is '';
-    column        Signature  =>       type is 'blob', default is '';
-    column        email  => max_length is 120,      type is 'varchar(120)', default is '';
-    column        freeform_contact_info  =>       type is 'blob', default is '';
-    column        organization  =>, max_length is 200,      type is 'varchar(200)', default is '';
-    column        real_name  => max_length is 120,      type is 'varchar(120)', default is '';
-    column        nickname  => max_length is 16,      type is 'varchar(16)', default is '';
-    column        lang  => max_length is 16,      type is 'varchar(16)', default is '';
-    column        email_encoding  => max_length is 16,      type is 'varchar(16)', default is '';
-    column        web_encoding  => max_length is 16,      type is 'varchar(16)', default is '';
-    column        ExternalContactInfoId  => max_length is 100,      type is 'varchar(100)', default is '';
-    column        ContactInfoSystem  => max_length is 30,      type is 'varchar(30)', default is '';
-    column        ExternalAuthId  => max_length is 100,      type is 'varchar(100)', default is '';
-    column        auth_system  => max_length is 30,      type is 'varchar(30)', default is '';
-    column        Gecos  => max_length is 16,      type is 'varchar(16)', default is '';
-    column        HomePhone  => max_length is 30,      type is 'varchar(30)', default is '';
-    column        WorkPhone  => max_length is 30,      type is 'varchar(30)', default is '';
-    column        MobilePhone  => max_length is 30,      type is 'varchar(30)', default is '';
-    column        PagerPhone  => max_length is 30,      type is 'varchar(30)', default is '';
-    column        Address1  => max_length is 200,      type is 'varchar(200)', default is '';
-    column        Address2  => max_length is 200,      type is 'varchar(200)', default is '';
-    column        City  => max_length is 100,      type is 'varchar(100)', default is '';
-    column        State  => max_length is 100,      type is 'varchar(100)', default is '';
-    column        Zip  => max_length is 16,      type is 'varchar(16)', default is '';
-    column        Country  => max_length is 50,      type is 'varchar(50)', default is '';
-    column        Timezone  => max_length is 50,      type is 'varchar(50)', default is '';
-    column        PGPKey  =>        type is 'text';
+    column comments  => type is 'blob', default is '';
+    column Signature => type is 'blob', default is '';
+    column email => max_length is 120, type is 'varchar(120)', default is '';
+    column freeform_contact_info => type is 'blob', default is '';
+    column
+        organization =>,
+        max_length is 200, type is 'varchar(200)', default is '';
+    column
+        real_name => max_length is 120,
+        type is 'varchar(120)', default is '';
+    column nickname => max_length is 16, type is 'varchar(16)', default is '';
+    column lang     => max_length is 16, type is 'varchar(16)', default is '';
+    column
+        email_encoding => max_length is 16,
+        type is 'varchar(16)', default is '';
+    column
+        web_encoding => max_length is 16,
+        type is 'varchar(16)', default is '';
+    column
+        ExternalContactInfoId => max_length is 100,
+        type is 'varchar(100)', default is '';
+    column
+        ContactInfoSystem => max_length is 30,
+        type is 'varchar(30)', default is '';
+    column
+        ExternalAuthId => max_length is 100,
+        type is 'varchar(100)', default is '';
+    column
+        auth_system => max_length is 30,
+        type is 'varchar(30)', default is '';
+    column Gecos => max_length is 16, type is 'varchar(16)', default is '';
+    column
+        HomePhone => max_length is 30,
+        type is 'varchar(30)', default is '';
+    column
+        WorkPhone => max_length is 30,
+        type is 'varchar(30)', default is '';
+    column
+        MobilePhone => max_length is 30,
+        type is 'varchar(30)', default is '';
+    column
+        PagerPhone => max_length is 30,
+        type is 'varchar(30)', default is '';
+    column
+        Address1 => max_length is 200,
+        type is 'varchar(200)', default is '';
+    column
+        Address2 => max_length is 200,
+        type is 'varchar(200)', default is '';
+    column City  => max_length is 100, type is 'varchar(100)', default is '';
+    column State => max_length is 100, type is 'varchar(100)', default is '';
+    column Zip   => max_length is 16,  type is 'varchar(16)',  default is '';
+    column Country  => max_length is 50, type is 'varchar(50)', default is '';
+    column Timezone => max_length is 50, type is 'varchar(50)', default is '';
+    column PGPKey   => type is 'text';
 
 };
- 
-  use Jifty::Plugin::User::Mixin::Model::User; # name, email, email_confirmed
-  use Jifty::Plugin::Authentication::Password::Mixin::Model::User;
+
+use Jifty::Plugin::User::Mixin::Model::User; # name, email, email_confirmed
+use Jifty::Plugin::Authentication::Password::Mixin::Model::User;
 
 
 
@@ -658,7 +685,7 @@ to that string.
 
 =cut
 
-sub set_password {
+sub before_set_password {
     my $self     = shift;
     my $password = shift;
 

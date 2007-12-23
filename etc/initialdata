@@ -12,6 +12,7 @@
        real_name     => 'Enoch Root',
        password     => 'password',
        email => "root\@localhost",
+       email_confirmed => 1,
        comments     => 'SuperUser',
        privileged   => '1', } );
 
