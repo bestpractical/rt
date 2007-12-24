@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use RT::Test; use Test::More tests => 20;
+use RT::Test; use Test::More tests => 19;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
@@ -22,19 +22,19 @@ is ($agent->{'status'}, 200, "Loaded a page");
 # {{{ test a login
 
 # follow the link marked "Login"
+#
+my $username = 'root@localhost';
+my $password = "password";
 
-ok($agent->{form}->find_input('user'));
+            my $moniker = $agent->moniker_for('RT::Action::Login');
 
-ok($agent->{form}->find_input('pass'));
-ok ($agent->{'content'} =~ /username:/i);
-$agent->field( 'user' => 'root' );
-$agent->field( 'pass' => 'password' );
-# the field isn't named, so we have to click link 0
-$agent->click(0);
+ok($moniker, "Found the moniker $moniker");
+
+    ok( $agent->fill_in_action($moniker
+            , email => $username, password => $password), "Filled in the login box");
+$agent->submit();
 is($agent->{'status'}, 200, "Fetched the page ok");
-ok( $agent->{'content'} =~ /Logout/i, "Found a logout link");
-
-
+ok( $agent->content =~ /Logout/i, "Found a logout link");
 $agent->get($url."Ticket/Create.html?Queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);

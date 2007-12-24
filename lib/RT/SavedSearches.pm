@@ -76,7 +76,7 @@ sub new  {
     my $class = ref($proto) || $proto;
     my $self  = {};
     bless ($self, $class);
-    $self->current_user(@_);
+    $self->_get_current_user();
     $self->{'idx'} = 0;
     $self->{'objects'} = [];
     return $self;
@@ -165,7 +165,6 @@ sub _PrivacyObjects {
     my $self        = shift;
     my $CurrentUser = $self->current_user;
 
-    Carp::confess unless ($self->current_user);
     my $groups = RT::Model::GroupCollection->new;
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember( principal_id => $self->current_user->id,
