@@ -65,4 +65,9 @@ after qr/.*/ => run {
     RT::Interface::Web::Handler::CleanupRequest()
 };
 
+
+# Backward compatibility with old RT URLs
+
+before '/NoAuth/Logout.html' => run { redirect '/logout' };
+
 1;
