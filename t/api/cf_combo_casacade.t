@@ -13,17 +13,17 @@ sub new {
     return $class->new(current_user => RT->system_user);
 }
 
-my $q = new( RT::Model::Queue);
+my $q = new( 'RT::Model::Queue');
 works($q->create(name => "CF-Pattern-".$$));
 
-my $cf = new(RT::Model::CustomField);
+my $cf = new('RT::Model::CustomField');
 my @cf_args = (name => $q->name, Type => 'Combobox', Queue => $q->id);
 
 works($cf->create(@cf_args));
 
 # Set some CFVs with Category markers
 
-my $t = new( RT::Model::Ticket);
+my $t = new( 'RT::Model::Ticket');
 my ($id,undef,$msg) = $t->create(Queue => $q->id, Subject => 'CF Test');
 works($id,$msg);
 

@@ -55,7 +55,7 @@ my %actions = (
     },
     url => sub {
         my %args = @_;
-        my $result = qq{[<a target="new" href="$args{value}">}. loc('Open URL') .qq{</a>]};
+        my $result = qq{[<a target="new" href="$args{value}">}. _('Open URL') .qq{</a>]};
         return $args{value} . qq{ <span class="clickylink">$result</span>};
     },
     url_overwrite => sub {

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="UserField">
 % foreach my $col (RT::Model::User->BasicColumns) {
-<option value="<% $col->[0] %>"><% loc($col->[1]) %></option>
+<option value="<% $col->[0] %>"><% _($col->[1]) %></option>
 % }
 % while (my $CF = $CFs->next) {
 <option value="CustomField-<% $CF->id %>"><&|/l&>CustomField</&>: <% $CF->name %></option>

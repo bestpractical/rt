@@ -63,7 +63,7 @@ $name         => undef,
 
 $Default        => 0,
 $DefaultValue   => 0,
-$DefaultLabel   => loc( 'Use system default (%1)', $DefaultValue? loc('Yes'): loc('No') ),
+$DefaultLabel   => _( 'Use system default (%1)', $DefaultValue? loc('Yes'): loc('No') ),
 
 $CurrentValue => undef,
 </%ARGS>
@@ -72,9 +72,9 @@ $CurrentValue => undef,
 <input type="checkbox" name="<% $name %>" value="1"<% $CurrentValue? ' checked="checked"': '' |n %> />\
 % } else {
 <input type="radio" name="<% $name %>" value="1"<% $CurrentValue? ' checked="checked"': '' |n %> />\
-<% loc('Yes') %>
+<% _('Yes') %>
 <input type="radio" name="<% $name %>" value="0"<% defined $CurrentValue && !$CurrentValue? ' checked="checked"': '' |n %> />\
-<% loc('No') %>
+<% _('No') %>
 <input type="radio" name="<% $name %>" value="__empty_value__"<% !defined $CurrentValue? ' checked="checked"': '' |n %> />\
 <% $DefaultLabel %>
 % }

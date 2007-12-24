@@ -128,7 +128,7 @@ sub create {
         unless ( $self->current_user->has_right( Object => RT->system,
                                                Right  => 'ModifyScrips' ) )
         {
-            return ( 0, $self->loc('Permission Denied') );
+            return ( 0, _('Permission Denied') );
         }
         $args{'Queue'} = 0;    # avoid undef sneaking in
     }
@@ -136,10 +136,10 @@ sub create {
         my $QueueObj = RT::Model::Queue->new;
         $QueueObj->load( $args{'Queue'} );
         unless ( $QueueObj->id ) {
-            return ( 0, $self->loc('Invalid queue') );
+            return ( 0, _('Invalid queue') );
         }
         unless ( $QueueObj->current_user_has_right('ModifyScrips') ) {
-            return ( 0, $self->loc('Permission Denied') );
+            return ( 0, _('Permission Denied') );
         }
         $args{'Queue'} = $QueueObj->id;
     }
@@ -147,27 +147,27 @@ sub create {
     #TODO +++ validate input
 
     require RT::Model::ScripAction;
-    return ( 0, $self->loc("Action is mandatory argument") )
+    return ( 0, _("Action is mandatory argument") )
         unless $args{'ScripAction'};
     my $action = RT::Model::ScripAction->new;
     $action->load( $args{'ScripAction'} );
-    return ( 0, $self->loc( "Action '%1' not found", $args{'ScripAction'} ) ) 
+    return ( 0, _( "Action '%1' not found", $args{'ScripAction'} ) ) 
         unless $action->id;
 
     require RT::Model::Template;
-    return ( 0, $self->loc("Template is mandatory argument") )
+    return ( 0, _("Template is mandatory argument") )
         unless $args{'Template'};
     my $template = RT::Model::Template->new;
     $template->load( $args{'Template'} );
-    return ( 0, $self->loc( "Template '%1' not found", $args{'Template'} ) )
+    return ( 0, _( "Template '%1' not found", $args{'Template'} ) )
         unless $template->id;
 
     require RT::Model::ScripCondition;
-    return ( 0, $self->loc("Condition is mandatory argument") )
+    return ( 0, _("Condition is mandatory argument") )
         unless $args{'ScripCondition'};
     my $condition = RT::Model::ScripCondition->new;
     $condition->load( $args{'ScripCondition'} );
-    return ( 0, $self->loc( "Condition '%1' not found", $args{'ScripCondition'} ) )
+    return ( 0, _( "Condition '%1' not found", $args{'ScripCondition'} ) )
         unless $condition->id;
 
     my ( $id, $msg ) = $self->SUPER::create(
@@ -182,7 +182,7 @@ sub create {
         CustomIsApplicableCode => $args{'CustomIsApplicableCode'},
     );
     if ( $id ) {
-        return ( $id, $self->loc('Scrip Created') );
+        return ( $id, _('Scrip Created') );
     }
     else {
         return ( $id, $msg );
@@ -203,7 +203,7 @@ sub delete {
     my $self = shift;
 
     unless ( $self->current_user_has_right('ModifyScrips') ) {
-        return ( 0, $self->loc('Permission Denied') );
+        return ( 0, _('Permission Denied') );
     }
 
     return ( $self->SUPER::delete(@_) );
@@ -509,7 +509,7 @@ sub _set {
     unless ( $self->current_user_has_right('ModifyScrips') ) {
         $RT::Logger->debug(
                  "CurrentUser can't modify Scrips for " . $self->Queue . "\n" );
-        return ( 0, $self->loc('Permission Denied') );
+        return ( 0, _('Permission Denied') );
     }
     return $self->__set(@_);
 }

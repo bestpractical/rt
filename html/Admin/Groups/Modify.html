@@ -87,7 +87,7 @@
 </tr>
 % $m->callback( %ARGS, GroupObj => $Group, results => \@results );
 </table>
-<& /Elements/Submit, Label => loc('Save Changes'), Reset => 1 &>
+<& /Elements/Submit, Label => _('Save Changes'), Reset => 1 &>
 </form>
 <%INIT>
 
@@ -98,7 +98,7 @@ my $Group = RT::Model::Group->new();
 
 if ($Create) {
     $current_tab = 'Admin/Groups/Modify.html?Create=1';
-    $title = loc("Create a new group");
+    $title = _("Create a new group");
 } 
 
 else {
@@ -108,7 +108,7 @@ else {
 	my ($create_id, $create_msg) = $Group->create_userDefinedGroup(name =>
     "$name");
         unless ($create_id) {
-            Abort (loc("Group could not be Created: %1", $create_msg));
+            Abort (_("Group could not be Created: %1", $create_msg));
      }
 	$id = $Group->id;
     }
@@ -118,13 +118,13 @@ else {
 
 
     if ($id) {
-	$title = loc("Modify the group %1", $Group->name);
+	$title = _("Modify the group %1", $Group->name);
 
     }	
 
     # If the create failed
     else {
-	$title = loc("Create a new group");
+	$title = _("Create a new group");
 	$Create = 1;
     }    
     
@@ -149,7 +149,7 @@ else {
 }
 if  ( ($SetEnabled) and ( $disabled != $Group->disabled) ) { 
     my  ($code, $msg) = $Group->set_disabled($disabled);
-    push @results, loc('Enabled status %1', loc_fuzzy($msg));
+    push @results, _('Enabled status %1', _($msg));
 }
 
 unless ($Group->disabled()) {

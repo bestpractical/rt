@@ -65,11 +65,11 @@
 <br />
 <textarea name="Format" rows="8" cols="72"><% $Format %></textarea>
 <br />
-<& /Elements/Submit, Label => loc("Apply"), Reset => 1, Caption => loc("Apply your changes")&>
+<& /Elements/Submit, Label => _("Apply"), Reset => 1, Caption => loc("Apply your changes")&>
 </form>
 
 <%INIT>
-my $title = loc("Edit Query");
+my $title = _("Edit Query");
 $Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
 my $QueryString = $m->comp('/Elements/QueryString',
                            Query   => $Query,

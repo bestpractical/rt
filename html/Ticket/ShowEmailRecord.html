@@ -59,7 +59,7 @@ my $show_content = sub {
     my $href = RT->Config->Get('WebPath') .'/Ticket/Attachment/'
         . $attach->TransactionId .'/'. $attach->id .'/'
         . $m->interp->apply_escapes( $attach->Filename, 'u' );
-    $m->out( '<a href="'. $href  .'">'. loc('download') .'</a>' );
+    $m->out( '<a href="'. $href  .'">'. _('download') .'</a>' );
 };
 
 my $show;
@@ -80,12 +80,12 @@ $show = sub {
 };
 
 my $AttachmentObj = RT::Model::Attachment->new();
-$AttachmentObj->load($Attachment) || Abort(loc("Attachment '%1' could not be loaded", $Attachment));
+$AttachmentObj->load($Attachment) || Abort(_("Attachment '%1' could not be loaded", $Attachment));
 unless ( $AttachmentObj->id ) {
-    Abort(loc("Attachment '%1' could not be loaded", $Attachment));
+    Abort(_("Attachment '%1' could not be loaded", $Attachment));
 }
 unless ($AttachmentObj->TransactionId() == $Transaction ) {
-    Abort(loc("Attachment '%1' could not be loaded", $Attachment));
+    Abort(_("Attachment '%1' could not be loaded", $Attachment));
 }
 
 </%INIT>

@@ -62,8 +62,8 @@ $m->abort();
 <%args>
 $Code => undef
 $Details => ''
-$Title => loc("RT Error")
-$Why => loc("the calling component did not specify why")
+$Title => _("RT Error")
+$Why => _("the calling component did not specify why")
 </%args>
 
 <%INIT>

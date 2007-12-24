@@ -59,42 +59,42 @@ if ($id) {
   		     	path => "Admin/Queues/Modify.html?id=".$id,
                     current_subtab => $current_tab,     
                 subtabs => {
-		 C => { title => loc('Basics'),
+		 C => { title => _('Basics'),
   		     	path => "Admin/Queues/Modify.html?id=".$id,
 			   },
-		 D => { title => loc('Watchers'),
+		 D => { title => _('Watchers'),
 		 	path => "Admin/Queues/People.html?id=".$id,
 		      },
 
-		 E => { title => loc('Scrips'),
+		 E => { title => _('Scrips'),
 			     path => "Admin/Queues/Scrips.html?id=".$id,
 			   },
-		 F => { title => loc('Templates'),
+		 F => { title => _('Templates'),
 				path => "Admin/Queues/Templates.html?id=".$id,
 			      },
 
-                 G1 => { title => loc('Ticket Custom Fields'),
+                 G1 => { title => _('Ticket Custom Fields'),
                         path => 'Admin/Queues/CustomFields.html?SubType=RT::Model::Ticket&id='.$id,
                         },
 
-                 G2 => { title => loc('Transaction Custom Fields'),
+                 G2 => { title => _('Transaction Custom Fields'),
                         path => 'Admin/Queues/CustomFields.html?SubType=RT::Model::Ticket-RT::Model::Transaction&id='.$id,
                         },
 
-		 H => { title => loc('Group Rights'),
+		 H => { title => _('Group Rights'),
 			  path => "Admin/Queues/GroupRights.html?id=".$id,
 			},	
-		 I => { title => loc('User Rights'),
+		 I => { title => _('User Rights'),
 			  path => "Admin/Queues/UserRights.html?id=".$id,
 			}
         }
         };
 }
 if (Jifty->web->current_user->has_right( Object => RT->system, Right => 'AdminQueue')) {
-  $tabs->{"A"} = { title => loc('Select queue'),
+  $tabs->{"A"} = { title => _('Select queue'),
   		     	path => "Admin/Queues/",
 			   };
-  $tabs->{"B"} = { title => loc('New queue'),
+  $tabs->{"B"} = { title => _('New queue'),
   		     	path => "Admin/Queues/Modify.html?Create=1",
 		 separator => 1, };
 }

@@ -46,11 +46,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if (!@keys) {
-<% loc("No usable keys.") %>
+<% _("No usable keys.") %>
 % } else {
 <select name="<% $name %>">
 %     foreach my $key (@keys) {
-<option value="<% $key->{'Fingerprint'} %>"><% $key->{'Fingerprint'} %> <% loc("(trust: %1)", $key->{'TrustTerse'}) %></option>
+<option value="<% $key->{'Fingerprint'} %>"><% $key->{'Fingerprint'} %> <% _("(trust: %1)", $key->{'TrustTerse'}) %></option>
 %     }
 </select>
 % }

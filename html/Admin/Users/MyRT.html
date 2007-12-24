@@ -59,13 +59,13 @@
 <form method="post" action="MyRT.html">
 <input type="hidden" name="id" value="<% $id %>" />
 <input type="hidden" name="Reset" value="1" />
-<input type="submit" class="button" value="<%loc('Reset to default')%>">
+<input type="submit" class="button" value="<%_('Reset to default')%>">
 </form>
 
 <br />
 
 % for my $pane (@panes) {
-<&|/Widgets/TitleBox, title => loc('RT at a glance').': '.loc($pane->{name}), bodyclass => "" &>
+<&|/Widgets/TitleBox, title => _('RT at a glance').': '.loc($pane->{name}), bodyclass => "" &>
 <& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &></&>
 <br />
 % }
@@ -75,7 +75,7 @@ my $current_tab;
 $current_tab = 'Admin/Users/MyRT.html?id='.$id if ($id);
 my $user_object = RT::Model::User->new();
 $user_object->load($id) || Abort("Couldn't load user '$id'");
-my $title = loc("RT at a glance for the user %1", $user_object->name);
+my $title = _("RT at a glance for the user %1", $user_object->name);
 
 if ($ARGS{Reset}) {
     $user_object->set_Preferences('HomepageSettings', {});
@@ -106,7 +106,7 @@ for my $object (@objs) {
             my $oid = ref($object).'-'.$object->id.'-SavedSearch-'.$search->id;
             my $type = ($SearchType eq 'Ticket')
                 ? 'Saved Search' : $SearchType; # loc
-            push @items, ["saved-$oid", loc($type).": $desc"];
+            push @items, ["saved-$oid", _($type).": $desc"];
         }
     }
 }
@@ -120,7 +120,7 @@ my @panes = $m->comp(
     OnSave => sub {
         my ( $conf, $pane ) = @_;
         $user_object->set_Preferences( 'HomepageSettings', $conf );
-        push @actions, loc( 'Preferences %1 for user %2 .', $pane, $user_object->name );
+        push @actions, _( 'Preferences %1 for user %2 .', $pane, $user_object->name );
     }
 );
 

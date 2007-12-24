@@ -92,7 +92,7 @@ msgid "%1 %2 deleted"
 msgstr "%1 %2 gelöscht"
 
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:63 html/Ticket/Elements/PreviewScrips:103
-#. (loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
+#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 mit der Vorlage %3"
 
@@ -102,9 +102,9 @@ msgid "%1 (%2) by %3"
 msgstr "%1 (%2) von %3"
 
 #: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:108 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:66
-#. (loc($DefaultStatus))
-#. (loc($Ticket->Status()))
-#. (loc($TicketObj->Status))
+#. (_($DefaultStatus))
+#. (_($Ticket->Status()))
+#. (_($TicketObj->Status))
 #. ($TicketObj->OwnerObj->name())
 msgid "%1 (Unchanged)"
 msgstr "%1 (Unverändert)"
@@ -190,7 +190,7 @@ msgstr "%1 von %2"
 #: lib/RT/Transaction_Overlay.pm:788 lib/RT/Transaction_Overlay.pm:797 lib/RT/Transaction_Overlay.pm:800
 #. ($self->Field , $q1->name , $q2->name)
 #. ($self->Field, $t2->AsString, $t1->AsString)
-#. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
+#. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : _("(no value)")) , "'". $self->NewValue."'")
 msgid "%1 changed from %2 to %3"
 msgstr "%1 von %2 in %3 geändert"
 
@@ -268,7 +268,7 @@ msgid "%1 objects"
 msgstr "%1 Objekte"
 
 #: html/User/Elements/DelegateRights:97
-#. (loc($object_type =~ /^RT::(.*)$/))
+#. (_($object_type =~ /^RT::(.*)$/))
 msgid "%1 rights"
 msgstr "%1 Rechte"
 
@@ -579,7 +579,7 @@ msgid "Added principal as a %1 for this queue"
 msgstr "Rolle wurde als %1 für diesen Bereich hinzugefügt"
 
 #: lib/RT/Ticket_Overlay.pm:1455
-#. ($self->loc($args{'Type'}))
+#. (_($args{'Type'}))
 #: lib/RT/Ticket_Overlay.pm:1417
 #: lib/RT/Ticket_Overlay.pm:1417
 #: lib/RT/Ticket_Overlay.pm:1417
@@ -868,7 +868,7 @@ msgid "Can't link a ticket to itself"
 msgstr "Kann kein Anfrage auf sich selbst verweisen lassen!"
 
 #: html/Widgets/SavedSearch:63
-#. (loc($self->{SearchType}))
+#. (_($self->{SearchType}))
 msgid "Can't save %1"
 msgstr ""
 
@@ -1127,7 +1127,7 @@ msgid "Could not make that principal a %1 for this queue"
 msgstr "Konnte diese Rolle nicht zu einen %1 dieses Bereichs machen"
 
 #: lib/RT/Ticket_Overlay.pm:1444
-#. ($self->loc($args{'Type'}))
+#. (_($args{'Type'}))
 #: lib/RT/Ticket_Overlay.pm:1406
 #: lib/RT/Ticket_Overlay.pm:1406
 #: lib/RT/Ticket_Overlay.pm:1406
@@ -1802,12 +1802,12 @@ msgid "Enabled Queues"
 msgstr "Aktivierte Bereiche"
 
 #: html/Admin/Elements/EditCustomField:136 html/Admin/Groups/Modify.html:150 html/Admin/Users/Modify.html:350 html/User/Groups/Modify.html:138
-#. (loc_fuzzy($msg))
+#. (_($msg))
 msgid "Enabled status %1"
 msgstr "Status aktiviert: %1"
 
 #: html/Admin/CustomFields/Modify.html:185 html/Admin/Queues/Modify.html:162
-#. (loc_fuzzy($msg))
+#. (_($msg))
 msgid "Enabled status: %1"
 msgstr "Status aktiviert: %1"
 
@@ -2032,7 +2032,7 @@ msgid "Global portlet %1 saved."
 msgstr ""
 
 #: html/Admin/Elements/SelectTemplate:59
-#. (loc($Template->name))
+#. (_($Template->name))
 msgid "Global template: %1"
 msgstr "Globale Vorlage: %1"
 
@@ -2624,12 +2624,12 @@ msgid "Modify Access Control List"
 msgstr "Ändere Zugriffskontrollliste (ACL)"
 
 #: html/Admin/Elements/ObjectCustomFields:96
-#. (loc(lc($FriendlySubTypes)), loc(lc($Types)))
+#. (_(lc($FriendlySubTypes)), loc(lc($Types)))
 msgid "Modify Custom Fields which apply to %1 for all %2"
 msgstr "Alle benutzerdefinierten Felder %2, die zu %1 gehören, ändern"
 
 #: html/Admin/Elements/ObjectCustomFields:98
-#. (loc(lc($Types)))
+#. (_(lc($Types)))
 msgid "Modify Custom Fields which apply to all %1"
 msgstr "Alle benutzerdefinierten Felder, die zu %1 gehören, ändern"
 
@@ -2754,7 +2754,7 @@ msgid "Modify scrips which apply to all queues"
 msgstr "Ändere auf alle Bereiche angewandte Scrips"
 
 #: html/Admin/Global/Template.html:102 html/Admin/Global/Template.html:46 html/Admin/Global/Template.html:51 html/Admin/Queues/Template.html:99
-#. (loc($TemplateObj->name()))
+#. (_($TemplateObj->name()))
 #. ($TemplateObj->id)
 msgid "Modify template %1"
 msgstr "Ändere Vorlage %1"
@@ -3449,7 +3449,7 @@ msgid "password too short"
 msgstr "Passwort ist zu kurz"
 
 #: html/User/Prefs.html:240
-#. (loc_fuzzy($msg))
+#. (_($msg))
 msgid "password: %1"
 msgstr "Passwort: %1"
 
@@ -3553,7 +3553,7 @@ msgid "privileged"
 msgstr "Privilegiert"
 
 #: html/Admin/Users/Modify.html:342 html/User/Prefs.html:231
-#. (loc_fuzzy($msg))
+#. (_($msg))
 msgid "privileged status: %1"
 msgstr "Privilegierungsstatus: %1"
 
@@ -4513,7 +4513,7 @@ msgid "That principal is already a %1 for this queue"
 msgstr "Diese Rolle ist bereits ein %1 dieses Bereichs"
 
 #: lib/RT/Ticket_Overlay.pm:1435
-#. ($self->loc($args{'Type'}))
+#. (_($args{'Type'}))
 #: lib/RT/Ticket_Overlay.pm:1397
 #: lib/RT/Ticket_Overlay.pm:1397
 #: lib/RT/Ticket_Overlay.pm:1397

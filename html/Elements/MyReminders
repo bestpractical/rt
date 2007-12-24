@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 %# DEPRECATED
 <&|/Widgets/TitleBox,
-    title => loc("Reminders") &>
+    title => _("Reminders") &>
 <table width="100%">
 % my $i =0;
 % while (my $reminder = $reminders->next) {

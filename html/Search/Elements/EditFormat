@@ -58,7 +58,7 @@
 
 <td valign="top"><select size="6" name="SelectDisplayColumns" multiple>
 % foreach my $field ( @$AvailableColumns) {
-<option value="<% $field %>"><% loc($field) %></option>
+<option value="<% $field %>"><% _($field) %></option>
 % }
 </select></td>
 
@@ -89,14 +89,14 @@
 <select size="4" name="CurrentDisplayColumns">
 % my $i=0;
 % foreach my $field ( @$CurrentFormat ) {
-<option value="<% $i++ %>><% $field->{Column} %>"><% loc( $field->{Column} ) %></option>
+<option value="<% $i++ %>><% $field->{Column} %>"><% _( $field->{Column} ) %></option>
 % }
 </select>
 <br />
 <center>
 <input type="submit" class="button" name="ColUp" value=" &uarr; " />
 <input type="submit" class="button" name="ColDown" value=" &darr; " />
-<input type="submit" class="button" name="RemoveCol" value="<%loc('Delete')%>" />
+<input type="submit" class="button" name="RemoveCol" value="<%_('Delete')%>" />
 </center>
 </td>
 

@@ -78,7 +78,7 @@ $r->content_type('application/rss+xml');
           link        => RT->Config->Get('WebURL')."/Ticket/Display.html?id=".$Ticket->id,
           description => $Ticket->Transactions->first->Content,
           dc => {
-            subject  => ($Ticket->Subject  || loc('No subject')),
+            subject  => ($Ticket->Subject  || _('No subject')),
             creator  => $creator_str,
           },
         );

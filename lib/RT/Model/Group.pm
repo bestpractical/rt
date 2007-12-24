@@ -96,32 +96,32 @@ sub SelfDescription {
 	if ($self->Domain eq 'ACLEquivalence') {
 		my $user = RT::Model::Principal->new;
 		$user->load($self->Instance);
-		return $self->loc("user %1",$user->Object->name);
+		return _("user %1",$user->Object->name);
 	}
 	elsif ($self->Domain eq 'UserDefined') {
-		return $self->loc("group '%1'",$self->name);
+		return _("group '%1'",$self->name);
 	}
 	elsif ($self->Domain eq 'Personal') {
 		my $user = RT::Model::User->new;
 		$user->load($self->Instance);
-		return $self->loc("personal group '%1' for user '%2'",$self->name, $user->name);
+		return _("personal group '%1' for user '%2'",$self->name, $user->name);
 	}
 	elsif ($self->Domain eq 'RT::System-Role') {
-		return $self->loc("system %1",$self->Type);
+		return _("system %1",$self->Type);
 	}
 	elsif ($self->Domain eq 'RT::Model::Queue-Role') {
 		my $queue = RT::Model::Queue->new;
 		$queue->load($self->Instance);
-		return $self->loc("queue %1 %2",$queue->name, $self->Type);
+		return _("queue %1 %2",$queue->name, $self->Type);
 	}
 	elsif ($self->Domain eq 'RT::Model::Ticket-Role') {
-		return $self->loc("ticket #%1 %2",$self->Instance, $self->Type);
+		return _("ticket #%1 %2",$self->Instance, $self->Type);
 	}
 	elsif ($self->Domain eq 'SystemInternal') {
-		return $self->loc("system group '%1'",$self->Type);
+		return _("system group '%1'",$self->Type);
 	}
 	else {
-		return $self->loc("undescribed group %1",$self->id);
+		return _("undescribed group %1",$self->id);
 	}
 }
 
@@ -330,7 +330,7 @@ Create_____ routines.
 sub create {
     my $self = shift;
     $RT::Logger->crit("Someone called RT::Model::Group->create. this method does not exist. someone's being evil");
-    return(0,$self->loc('Permission Denied'));
+    return(0,_('Permission Denied'));
 }
 
 # }}}
@@ -378,14 +378,14 @@ sub _create {
     );
     my $id = $self->id;
     unless ($id) {
-        return ( 0, $self->loc('Could not create group') );
+        return ( 0, _('Could not create group') );
     }
 
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         Jifty->handle->rollback() unless ($args{'InsideTransaction'});
         $RT::Logger->crit( "Couldn't create a Principal on new user create. Strange things are afoot at the circle K" );
-        return ( 0, $self->loc('Could not create group') );
+        return ( 0, _('Could not create group') );
     }
 
     # Now we make the group a member of itself as a cached group member
@@ -405,7 +405,7 @@ sub _create {
 
     Jifty->handle->commit() unless ($args{'InsideTransaction'});
 
-    return ( $id, $self->loc("Group Created") );
+    return ( $id, _("Group Created") );
 }
 
 # }}}
@@ -426,7 +426,7 @@ sub create_userDefinedGroup {
     unless ( $self->current_user_has_right('AdminGroup') ) {
         $RT::Logger->warning( $self->current_user->name
               . " Tried to create a group without permission." );
-        return ( 0, $self->loc('Permission Denied') );
+        return ( 0, _('Permission Denied') );
     }
 
     return($self->_create( Domain => 'UserDefined', Type => '', Instance => '', @_));
@@ -502,7 +502,7 @@ sub createPersonalGroup {
         unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
             $RT::Logger->warning( $self->current_user->name
                   . " Tried to create a group without permission." );
-            return ( 0, $self->loc('Permission Denied') );
+            return ( 0, _('Permission Denied') );
         }
 
     }
@@ -510,7 +510,7 @@ sub createPersonalGroup {
         unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
             $RT::Logger->warning( $self->current_user->name
                   . " Tried to create a group without permission." );
-            return ( 0, $self->loc('Permission Denied') );
+            return ( 0, _('Permission Denied') );
         }
 
     }
@@ -550,7 +550,7 @@ sub createRoleGroup {
                  Domain   => undef,
                  @_ );
     unless ( $args{'Type'} =~ /^(?:Cc|AdminCc|Requestor|Owner)$/ ) {
-        return ( 0, $self->loc("Invalid Group Type") );
+        return ( 0, _("Invalid Group Type") );
     }
 
 
@@ -608,17 +608,17 @@ This routine finds all the cached group members that are members of this group  
     if ($self->Domain eq 'Personal') {
    		if ($self->current_user->id == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
-        		return ( 0, $self->loc('Permission Denied') );
+        		return ( 0, _('Permission Denied') );
     		}
     	} else {
         	unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-   	    		 return ( 0, $self->loc('Permission Denied') );
+   	    		 return ( 0, _('Permission Denied') );
     		}
     	}
 	}
 	else {
         unless ( $self->current_user_has_right('AdminGroup') ) {
-                 return (0, $self->loc('Permission Denied'));
+                 return (0, _('Permission Denied'));
     }
     }
     Jifty->handle->begin_transaction();
@@ -656,7 +656,7 @@ This routine finds all the cached group members that are members of this group  
     }
 
     Jifty->handle->commit();
-    return (1, $self->loc("Succeeded"));
+    return (1, _("Succeeded"));
 
 }
 
@@ -857,11 +857,11 @@ sub add_member {
     if ($self->Domain eq 'Personal') {
    		if ($self->current_user->id == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
-        		return ( 0, $self->loc('Permission Denied') );
+        		return ( 0, _('Permission Denied') );
     		}
     	} else {
         	unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-   	    		 return ( 0, $self->loc('Permission Denied') );
+   	    		 return ( 0, _('Permission Denied') );
     		}
     	}
 	}
@@ -874,7 +874,7 @@ sub add_member {
 	      $self->current_user_has_right('ModifyOwnMembership') ) ||
 	      $self->current_user_has_right('AdminGroupMembership') ) {
         #User has no permission to be doing this
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
   	} 
@@ -897,7 +897,7 @@ sub _add_member {
     my $new_member = $args{'principal_id'};
     unless ($self->id) {
         $RT::Logger->crit("Attempting to add a member to a group which wasn't loaded. 'oops'");
-        return(0, $self->loc("Group not found"));
+        return(0, _("Group not found"));
     }
 
     unless ($new_member =~ /^\d+$/) {
@@ -911,19 +911,19 @@ sub _add_member {
 
     unless ( $new_member_obj->id ) {
         $RT::Logger->debug("Couldn't find that principal");
-        return ( 0, $self->loc("Couldn't find that principal") );
+        return ( 0, _("Couldn't find that principal") );
     }
 
     if ( $self->has_member( $new_member_obj ) ) {
 
         #User is already a member of this group. no need to add it
-        return ( 0, $self->loc("Group already has member") );
+        return ( 0, _("Group already has member") );
     }
     if ( $new_member_obj->IsGroup &&
          $new_member_obj->Object->has_member_recursively($self->principal_object) ) {
 
         #This group can't be made to be a member of itself
-        return ( 0, $self->loc("Groups can't be members of their members"));
+        return ( 0, _("Groups can't be members of their members"));
     }
 
     my $member_object = RT::Model::GroupMember->new;
@@ -933,10 +933,10 @@ sub _add_member {
         InsideTransaction => $args{'InsideTransaction'}
     );
     if ($id) {
-        return ( 1, $self->loc("Member added") );
+        return ( 1, _("Member added") );
     }
     else {
-        return(0, $self->loc("Couldn't add member to group"));
+        return(0, _("Couldn't add member to group"));
     }
 }
 # }}}
@@ -1050,11 +1050,11 @@ sub delete_member {
     if ($self->Domain eq 'Personal') {
    		if ($self->current_user->id == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
-        		return ( 0, $self->loc('Permission Denied') );
+        		return ( 0, _('Permission Denied') );
     		}
     	} else {
         	unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-   	    		 return ( 0, $self->loc('Permission Denied') );
+   	    		 return ( 0, _('Permission Denied') );
     		}
     	}
 	}
@@ -1063,7 +1063,7 @@ sub delete_member {
 	      $self->current_user_has_right('ModifyOwnMembership') ) ||
 	      $self->current_user_has_right('AdminGroupMembership') ) {
         #User has no permission to be doing this
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 	}
     $self->_delete_member($member_id);
@@ -1088,18 +1088,18 @@ sub _delete_member {
     #If we couldn't load it, return undef.
     unless ( $member_obj->id() ) {
         $RT::Logger->debug("Group has no member with that id");
-        return ( 0,$self->loc( "Group has no such member" ));
+        return ( 0,_( "Group has no such member" ));
     }
 
     #Now that we've checked ACLs and sanity, delete the groupmember
     my $val = $member_obj->delete();
 
     if ($val) {
-        return ( $val, $self->loc("Member deleted") );
+        return ( $val, _("Member deleted") );
     }
     else {
         $RT::Logger->debug("Failed to delete group ".$self->id." member ". $member_id);
-        return ( 0, $self->loc("Member not deleted" ));
+        return ( 0, _("Member not deleted" ));
     }
 }
 
@@ -1173,17 +1173,17 @@ sub _set {
 	if ($self->Domain eq 'Personal') {
    		if ($self->current_user->id == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
-        		return ( 0, $self->loc('Permission Denied') );
+        		return ( 0, _('Permission Denied') );
     		}
     	} else {
         	unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-   	    		 return ( 0, $self->loc('Permission Denied') );
+   	    		 return ( 0, _('Permission Denied') );
     		}
     	}
 	}
 	else {
     	unless ( $self->current_user_has_right('AdminGroup') ) {
-        	return ( 0, $self->loc('Permission Denied') );
+        	return ( 0, _('Permission Denied') );
     	}
 	}
 

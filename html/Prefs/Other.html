@@ -54,7 +54,7 @@
 
 <form method="post" action="Other.html">
 % foreach my $section( RT->Config->Sections ) {
-<&|/Widgets/TitleBox, title => loc( $section ) &>
+<&|/Widgets/TitleBox, title => _( $section ) &>
 % foreach my $option( RT->Config->Options( Section => $section ) ) {
 % my $meta = RT->Config->Meta( $option );
 <& $meta->{'Widget'},
@@ -69,29 +69,29 @@
 % }
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-<&|/Widgets/TitleBox, title => loc( 'Cryptography' ) &>
+<&|/Widgets/TitleBox, title => _( 'Cryptography' ) &>
 Preferred key: <& /Elements/SelectKey, email => $user_object->email, Default => $user_object->PreferredKey &>
 </&>
 % }
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-<&|/Widgets/TitleBox, title => loc( 'Cryptography' ) &>
+<&|/Widgets/TitleBox, title => _( 'Cryptography' ) &>
 Preferred key: <& /Elements/SelectKey, email => $user_object->email, Default => $user_object->PreferredKey &>
 </&>
 % }
 
-<& /Elements/Submit, name => 'Update', Label => loc('Save changes') &>
+<& /Elements/Submit, name => 'Update', Label => _('Save changes') &>
 </form>
 <%INIT>
 my @results;
-my $title = loc("Other preferences");
+my $title = _("Other preferences");
 
 my $user_object = Jifty->web->current_user->user_object;
 my $preferences = $user_object->Preferences( RT->system );
 
 if ((defined $PreferredKey) && $PreferredKey ne $user_object->first_attribute('PreferredKey')) {
     my ($code, $msg) = $user_object->set_attribute(name => 'PreferredKey', Content => $PreferredKey);
-    push @results, loc('Preferred Key: %1', loc_fuzzy($msg));
+    push @results, _('Preferred Key: %1', _($msg));
 }
 
 if ( $Update ) {
@@ -114,10 +114,10 @@ if ( $Update ) {
 }
 my $localize_meta = sub {
     my %meta = %{ shift() };
-    $meta{'Description'} = loc( $meta{'Description'} ) if $meta{'Description'};
+    $meta{'Description'} = _( $meta{'Description'} ) if $meta{'Description'};
     if ( $meta{'ValuesLabel'} ) {
         while (my ($k, $v) = each %{ $meta{'ValuesLabel'} } ) {
-            $meta{'ValuesLabel'}->{$k} = loc( $meta{'ValuesLabel'}->{$k} );
+            $meta{'ValuesLabel'}->{$k} = _( $meta{'ValuesLabel'}->{$k} );
         }
     }
     return \%meta;

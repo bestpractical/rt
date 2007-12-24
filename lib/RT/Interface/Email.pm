@@ -565,7 +565,7 @@ sub ForwardTransaction {
     if ( $main_content->Parent ) {
         # main content is not top most entity, we shouldn't loose
         # From/To/Cc headers that are on a top part
-        my $attachments = RT::Model::AttachmentCollection->new( $txn->current_user );
+        my $attachments = RT::Model::AttachmentCollection->new(current_user=> $txn->current_user );
         $attachments->columns(qw(id Parent TransactionId Headers));
         $attachments->limit( column => 'TransactionId', value => $txn->id );
         $attachments->limit( column => 'Parent', value => 0 );
@@ -579,7 +579,7 @@ sub ForwardTransaction {
         }
     }
 
-    my $attachments = RT::Model::AttachmentCollection->new( $txn->current_user );
+    my $attachments = RT::Model::AttachmentCollection->new( current_user => $txn->current_user );
     $attachments->limit( column => 'TransactionId', value => $txn->id );
     $attachments->limit(
         column => 'id',
@@ -652,8 +652,8 @@ sub ForwardTransaction {
         # never sign if we forward from User
         ? SendEmail( Entity => $mail, Transaction => $txn, Sign => 0 )
         : SendEmail( Entity => $mail, Transaction => $txn );
-    return (0, $txn->loc("Couldn't send email")) unless $status;
-    return (1, $txn->loc("Send email successfully"));
+    return (0, $txn->_("Couldn't send email")) unless $status;
+    return (1, $txn->_("Send email successfully"));
 }
 
 =head2 SignEncrypt Entity => undef, Sign => 0, Encrypt => 0
@@ -1269,7 +1269,7 @@ sub Gateway {
     # if plugin's updated SystemTicket then update arguments
     $args{'ticket'} = $SystemTicket->id if $SystemTicket && $SystemTicket->id;
 
-    my $Ticket = RT::Model::Ticket->new($CurrentUser);
+    my $Ticket = RT::Model::Ticket->new( current_user => $CurrentUser);
 
     if ( !$args{'ticket'} && grep /^(comment|correspond)$/, @actions )
     {

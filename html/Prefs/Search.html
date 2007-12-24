@@ -68,13 +68,13 @@
 
 <& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
    AvailableColumns => $AvailableColumns, CurrentFormat => $CurrentFormat &>
-<& /Elements/Submit, Caption => loc("Save"), Label => loc('Save'), name => 'Save'&>
+<& /Elements/Submit, Caption => _("Save"), Label => loc('Save'), name => 'Save'&>
 
 </form>
 
 <%INIT>
 my @actions;
-my $title = loc("Customize").' ';
+my $title = _("Customize").' ';
 
 my @fields = qw(Format Order order_by rows_per_page);
 $ARGS{name} ||= '';

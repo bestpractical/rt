@@ -55,7 +55,7 @@
 
 <%INIT>
 my @orders = qw (ASC DESC);
-my @order_names = (loc('Ascending'), loc('Descending'));
+my @order_names = (_('Ascending'), loc('Descending'));
 
 </%INIT>
 

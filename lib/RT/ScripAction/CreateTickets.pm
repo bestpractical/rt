@@ -375,8 +375,7 @@ sub createByTemplate {
 
         foreach my $res ( split( '\n', $msg ) ) {
             push @results,
-                $T::Tickets{$template_id}
-                ->loc( "Ticket %1", $T::Tickets{$template_id}->id ) . ': '
+                _( "Ticket %1", $T::Tickets{$template_id}->id ) . ': '
                 . $res;
         }
         if ( !$id ) {
@@ -451,7 +450,7 @@ sub UpdateByTemplate {
 
         unless ( $loaded ) {
             $RT::Logger->error("Couldn't update ticket $template_id: " . $msg);
-            push @results, $self->loc( "Couldn't load ticket '%1'", $id );
+            push @results, _( "Couldn't load ticket '%1'", $id );
             next;
         }
 
@@ -481,7 +480,7 @@ sub UpdateByTemplate {
 
         if ( $ticketargs->{'Owner'} ) {
             ($id, $msg) = $T::Tickets{$template_id}->set_Owner($ticketargs->{'Owner'}, "Force");
-            push @results, $msg unless $msg eq $self->loc("That user already owns that ticket");
+            push @results, $msg unless $msg eq _("That user already owns that ticket");
         }
 
         push @results,
@@ -500,7 +499,7 @@ sub UpdateByTemplate {
                 );
             push( @results,
                 $T::Tickets{$template_id}
-                    ->loc( "Ticket %1", $T::Tickets{$template_id}->id )
+                    ->_( "Ticket %1", $T::Tickets{$template_id}->id )
                     . ': '
                     . $Description );
         } elsif ( $ticketargs->{'UpdateType'} =~ /^(public|response|correspond)$/i ) {
@@ -512,16 +511,16 @@ sub UpdateByTemplate {
                 );
             push( @results,
                 $T::Tickets{$template_id}
-                    ->loc( "Ticket %1", $T::Tickets{$template_id}->id )
+                    ->_( "Ticket %1", $T::Tickets{$template_id}->id )
                     . ': '
                     . $Description );
         } else {
             push(
                 @results,
-                $T::Tickets{$template_id}->loc(
+                $T::Tickets{$template_id}->_(
                     "Update type was neither correspondence nor comment.")
                     . " "
-                    . $T::Tickets{$template_id}->loc("Update not recorded.")
+                    . $T::Tickets{$template_id}->_("Update not recorded.")
             );
         }
     }
@@ -1121,7 +1120,7 @@ sub UpdateWatchers {
             );
 
             push @results,
-                $ticket->loc( "Ticket %1", $ticket->id ) . ': ' . $msg;
+                $ticket->_( "Ticket %1", $ticket->id ) . ': ' . $msg;
         }
 
         foreach (@delete) {
@@ -1130,7 +1129,7 @@ sub UpdateWatchers {
                 Email => $_
             );
             push @results,
-                $ticket->loc( "Ticket %1", $ticket->id ) . ': ' . $msg;
+                $ticket->_( "Ticket %1", $ticket->id ) . ': ' . $msg;
         }
     }
     return @results;

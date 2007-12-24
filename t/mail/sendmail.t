@@ -41,7 +41,7 @@ sub count_attachs { return first_txn($_[0])->Attachments->count }
 # instrument SendEmail to pass us what it's about to send.
 # create a regular ticket
 
-my $parser = RT::EmailParser->new();
+my $parser = RT::EmailParser->new(current_user => RT->system_user);
 
 
 # Let's test to make sure a multipart/report is processed correctly

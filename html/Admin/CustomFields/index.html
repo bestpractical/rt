@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc('Select a Custom Field') &>
+<& /Admin/Elements/Header, Title => _('Select a Custom Field') &>
 <& /Admin/Elements/CustomFieldTabs,
     current_tab => 'Admin/CustomFields/', 
-    Title => loc('Select a Custom Field') &>
+    Title => _('Select a Custom Field') &>
 
 % my @types;
 % my $prev_lookup = '';
@@ -59,7 +59,7 @@
 %        if ($prev_lookup) {
 </ul>
 %        }
-<h2><% loc("Custom Fields for %1", $lookup) %></h2>
+<h2><% _("Custom Fields for %1", $lookup) %></h2>
 <ul>
 %        $prev_lookup = $lookup;
 %        push @types, [$lookup, $CustomFieldObj->LookupType];
@@ -76,7 +76,7 @@
 <form action="<%RT->Config->Get('WebPath')%>/Admin/CustomFields/index.html" method="get">
 <&|/l&>Only show custom fields for:</&>
 <select name="Type">
-<option value="" <% !$Type && 'selected'%> ><% loc('(any)') %></option>
+<option value="" <% !$Type && 'selected'%> ><% _('(any)') %></option>
 % for (@types) {
 <option value="<% $_->[1] %>" <% $_->[1] eq $Type && 'selected'%> ><% $_->[0] %></option>
 % }
@@ -86,7 +86,7 @@
 <&|/l&>Include disabled custom fields in listing.</&>
 <br />
 
-<input type="submit" value="<% loc('Go') %>" />
+<input type="submit" value="<% _('Go') %>" />
 </form>
 
 <%args>

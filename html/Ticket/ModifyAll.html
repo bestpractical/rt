@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->Subject) &>
+<& /Elements/Header, Title => _("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->Subject) &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $Ticket, 
     current_tab => "Ticket/ModifyAll.html?id=".$Ticket->id, 
-    Title => loc("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->Subject) &>
+    Title => _("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->Subject) &>
 
 % $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
@@ -58,33 +58,33 @@
 % $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 
-<&| /Widgets/TitleBox, title => loc('Modify ticket # %1', $Ticket->id) &>
+<&| /Widgets/TitleBox, title => _('Modify ticket # %1', $Ticket->id) &>
 <& Elements/EditBasics, TicketObj => $Ticket &>
 <& Elements/EditCustomFields, TicketObj => $Ticket &>
 </&>
 
 <br />
 
-<&| /Widgets/TitleBox, title => loc('Dates') &>
+<&| /Widgets/TitleBox, title => _('Dates') &>
 <& Elements/EditDates, TicketObj => $Ticket &>
 </&>
 
 <br />
 
 
-<&| /Widgets/TitleBox, title => loc('People') &>
+<&| /Widgets/TitleBox, title => _('People') &>
 <& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
 </&>
 
 <br />
 
-<&| /Widgets/TitleBox, title => loc('Links') &>
+<&| /Widgets/TitleBox, title => _('Links') &>
 <& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
 </&>
 
 <br />
 
-<&| /Widgets/TitleBox, title => loc('Update ticket') &>
+<&| /Widgets/TitleBox, title => _('Update ticket') &>
 <table>
   <tr>
     <td class="label"><&|/l&>Update Type</&>:</td>
@@ -127,8 +127,8 @@
   
 
 <& /Elements/Submit, 
-    Label => loc('Save Changes'), 
-    Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
+    Label => _('Save Changes'), 
+    Caption => _("If you've updated anything above, be sure to"), color => "#333399" &>
 </form>
 
 <%INIT>

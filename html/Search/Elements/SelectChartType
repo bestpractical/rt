@@ -51,6 +51,6 @@ $Default => 'bar'
 </%args>
 <select name="<%$name%>">
 % foreach my $option qw(bar pie) {
-<option value="<%$option%>" <% $option eq $Default ? 'SELECTED' : '' %>><%loc($option)%></option>
+<option value="<%$option%>" <% $option eq $Default ? 'SELECTED' : '' %>><%_($option)%></option>
 % }
 </select>

@@ -54,15 +54,15 @@
 <%INIT>
 my $tabs = {
     a => {
-        title => loc('Offline'),
+        title => _('Offline'),
         path  => 'Tools/Offline.html',
     },
     b => {
-        title => loc('Reports'),
+        title => _('Reports'),
         path  => 'Tools/Reports/index.html',
     },
     c => {
-        title => loc('My Day'),
+        title => _('My Day'),
         path  => 'Tools/MyDay.html',
     },
 };

@@ -10,7 +10,7 @@
     { name => 'Search - Unowned Tickets',
       Description => '%1 newest unowned tickets',
       Content     =>
-      { Format => "'<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', Queuename, ExtendedStatus, CreatedRelative, '<A HREF=\"__WebPath__/Ticket/Display.html?Action=Take&id=__id__\">__loc(Take)__</a>/TITLE:&nbsp;' ",
+      { Format => "'<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject', Queuename, ExtendedStatus, CreatedRelative, '<A HREF=\"__WebPath__/Ticket/Display.html?Action=Take&id=__id__\">___(Take)__</a>/TITLE:&nbsp;' ",
         Query   => " Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
         order_by => 'Created',
         Order   => 'DESC' },

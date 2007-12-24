@@ -52,22 +52,22 @@
     Title => $Title &>
 
 <%INIT>
-  my $tabs = { a => { title => loc('About me'),
+  my $tabs = { a => { title => _('About me'),
 			  path => 'User/Prefs.html',
 			},
-	       g => { title => loc('Personal Groups'),
+	       g => { title => _('Personal Groups'),
 			   path => 'User/Groups/',
 			 },
-	       h => { title => loc('Delegation'),
+	       h => { title => _('Delegation'),
 			   path => 'User/Delegation.html',
 			 },
-	       f => { title => loc('Search options'),
+	       f => { title => _('Search options'),
 			   path => 'Prefs/SearchOptions.html',
 			 },
-	       r => { title => loc('RT at a glance'),
+	       r => { title => _('RT at a glance'),
 			   path => 'Prefs/MyRT.html',
 			 },
-	       t => { title => loc('Other'),
+	       t => { title => _('Other'),
 			   path => 'Prefs/Other.html',
 			 },
 	     };

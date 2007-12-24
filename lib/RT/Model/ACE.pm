@@ -159,13 +159,13 @@ sub load_by_values {
 
     unless ( $princ_obj->id ) {
         return ( 0,
-                 $self->loc( 'Principal %1 not found.', $args{'principal_id'} )
+                 _( 'Principal %1 not found.', $args{'principal_id'} )
         );
     }
 
     my ($object, $object_type, $object_id) = $self->_ParseObjectArg( %args );
     unless( $object ) {
-	return ( 0, $self->loc("System error. Right not granted.") );
+	return ( 0, _("System error. Right not granted.") );
     }
 
     $self->load_by_cols( principal_id   => $princ_obj->id,
@@ -176,11 +176,11 @@ sub load_by_values {
 
     #If we couldn't load it.
     unless ( $self->id ) {
-        return ( 0, $self->loc("ACE not found") );
+        return ( 0, _("ACE not found") );
     }
 
     # if we could
-    return ( $self->id, $self->loc("Right Loaded") );
+    return ( $self->id, _("Right Loaded") );
 
 }
 
@@ -228,7 +228,7 @@ sub create {
     );
 
     unless ( $args{'right_name'} ) {
-        return ( 0, $self->loc('No right specified') );
+        return ( 0, _('No right specified') );
     }
 
     #if we haven't specified any sort of right, we're talking about a global right
@@ -237,7 +237,7 @@ sub create {
     }
     ($args{'Object'}, $args{'object_type'}, $args{'object_id'}) = $self->_ParseObjectArg( %args );
     unless( $args{'Object'} ) {
-	return ( 0, $self->loc("System error. Right not granted.") );
+	return ( 0, _("System error. Right not granted.") );
     }
 
     # {{{ Validate the principal
@@ -248,7 +248,7 @@ sub create {
 
     unless ( $princ_obj->id ) {
         return ( 0,
-                 $self->loc( 'Principal %1 not found.', $args{'principal_id'} )
+                 _( 'Principal %1 not found.', $args{'principal_id'} )
         );
     }
 
@@ -260,13 +260,13 @@ sub create {
         unless ( $self->current_user->has_right( Object => $args{'Object'},
                                                   Right => 'AdminGroup' )
           ) {
-            return ( 0, $self->loc('Permission Denied') );
+            return ( 0, _('Permission Denied') );
         }
     }
 
     else {
         unless ( $self->current_user->has_right( Object => $args{'Object'}, Right => 'ModifyACL' )) {
-            return ( 0, $self->loc('Permission Denied') );
+            return ( 0, _('Permission Denied') );
         }
     }
     # }}}
@@ -274,7 +274,7 @@ sub create {
     # {{{ canonicalize_ and check the right name
     my $canonic_name = $self->canonicalize_right_name( $args{'right_name'} );
     unless ( $canonic_name ) {
-        return ( 0, $self->loc("Invalid right. Couldn't canonicalize_ right '$args{'right_name'}'") );
+        return ( 0, _("Invalid right. Couldn't canonicalize_ right '$args{'right_name'}'") );
     }
     $args{'right_name'} = $canonic_name;
 
@@ -285,7 +285,7 @@ sub create {
                 "Couldn't validate right name '$args{'right_name'}'"
                 ." for object of ". ref( $args{'Object'} ) ." class"
             );
-            return ( 0, $self->loc('Invalid right') );
+            return ( 0, _('Invalid right') );
         }
     }
     # }}}
@@ -299,7 +299,7 @@ sub create {
                        DelegatedBy   => 0,
                        DelegatedFrom => 0 );
     if ( $self->id ) {
-        return ( 0, $self->loc('That principal already has that right') );
+        return ( 0, _('That principal already has that right') );
     }
 
     my $id = $self->SUPER::create( principal_id   => $princ_obj->id,
@@ -314,10 +314,10 @@ sub create {
     RT::Model::Principal->invalidate_acl_cache();
 
     if ( $id ) {
-        return ( $id, $self->loc('Right Granted') );
+        return ( $id, _('Right Granted') );
     }
     else {
-        return ( 0, $self->loc('System error. Right not granted.') );
+        return ( 0, _('System error. Right not granted.') );
     }
 }
 
@@ -344,7 +344,7 @@ sub Delegate {
                  @_ );
 
     unless ( $self->id ) {
-        return ( 0, $self->loc("Right not loaded.") );
+        return ( 0, _("Right not loaded.") );
     }
     my $princ_obj;
     ( $princ_obj, $args{'principal_type'} ) =
@@ -353,7 +353,7 @@ sub Delegate {
 
     unless ( $princ_obj->id ) {
         return ( 0,
-                 $self->loc( 'Principal %1 not found.', $args{'principal_id'} )
+                 _( 'Principal %1 not found.', $args{'principal_id'} )
         );
     }
 
@@ -364,17 +364,17 @@ sub Delegate {
     # First, we check to se if the user is delegating rights and
     # they have the permission to
     unless ( $self->current_user->has_right(Right => 'DelegateRights', Object => $self->Object) ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     unless ( $self->principal_object->IsGroup ) {
-        return ( 0, $self->loc("System Error") );
+        return ( 0, _("System Error") );
     }
     unless ( $self->principal_object->Object->has_member_recursively(
                                                 $self->current_user->principal_object
              )
       ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     # }}}
@@ -384,7 +384,7 @@ sub Delegate {
     unless ( $concurrency_check->id ) {
         $RT::Logger->crit(
                    "Trying to delegate a right which had already been deleted");
-        return ( 0, $self->loc('Permission Denied') );
+        return ( 0, _('Permission Denied') );
     }
 
     my $delegated_ace = RT::Model::ACE->new;
@@ -398,7 +398,7 @@ sub Delegate {
                                 DelegatedBy => $self->current_user->id,
                                 DelegatedFrom => $self->id );
     if ( $delegated_ace->id ) {
-        return ( 0, $self->loc('That principal already has that right') );
+        return ( 0, _('That principal already has that right') );
     }
     my $id = $delegated_ace->SUPER::create(
         principal_id   => $princ_obj->id,
@@ -414,10 +414,10 @@ sub Delegate {
     RT::Model::Principal->invalidate_acl_cache();
 
     if ( $id > 0 ) {
-        return ( $id, $self->loc('Right Delegated') );
+        return ( $id, _('Right Delegated') );
     }
     else {
-        return ( 0, $self->loc('System error. Right not delegated.') );
+        return ( 0, _('System error. Right not delegated.') );
     }
 }
 
@@ -439,7 +439,7 @@ sub delete {
     my $self = shift;
 
     unless ( $self->id ) {
-        return ( 0, $self->loc('Right not loaded.') );
+        return ( 0, _('Right not loaded.') );
     }
 
     # A user can delete an ACE if the current user has the right to modify it and it's not a delegated ACE
@@ -449,7 +449,7 @@ sub delete {
            && $self->__value('DelegatedBy') == 0 )
          || ( $self->__value('DelegatedBy') == $self->current_user->id )
       ) {
-        return ( 0, $self->loc('Permission Denied') );
+        return ( 0, _('Permission Denied') );
     }
     $self->_delete(@_);
 }
@@ -479,7 +479,7 @@ sub _delete {
 
     unless ($delete_succeeded) {
         Jifty->handle->rollback() unless $InsideTransaction;
-        return ( 0, $self->loc('Right could not be revoked') );
+        return ( 0, _('Right could not be revoked') );
     }
 
     my ( $val, $msg ) = $self->SUPER::delete(@_);
@@ -496,11 +496,11 @@ sub _delete {
 	# TODO what about the groups key cache?
 	RT::Model::Principal->invalidate_acl_cache();
         Jifty->handle->commit() unless $InsideTransaction;
-        return ( $val, $self->loc('Right revoked') );
+        return ( $val, _('Right revoked') );
     }
 
     Jifty->handle->rollback() unless $InsideTransaction;
-    return ( 0, $self->loc('Right could not be revoked') );
+    return ( 0, _('Right could not be revoked') );
 }
 
 # }}}
@@ -629,7 +629,7 @@ sub principal_object {
 
 sub _set {
     my $self = shift;
-    return ( 0, $self->loc("ACEs can only be Created and deleted.") );
+    return ( 0, _("ACEs can only be Created and deleted.") );
 }
 
 # }}}

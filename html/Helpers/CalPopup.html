@@ -90,11 +90,11 @@ use Calendar::Simple;
 my @today = localtime(time());
 
 my @weekdays;
-push @weekdays, loc($_)
+push @weekdays, _($_)
   for qw(Sun Mon Tue Wed Thu Fri Sat);
 
 my @months;
-push @months, loc($_)
+push @months, _($_)
   for qw(January February March April May June July August
          September October November December);
 

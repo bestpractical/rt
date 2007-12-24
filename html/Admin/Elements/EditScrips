@@ -63,8 +63,8 @@
 <input type="checkbox" class="checkbox" name="DeleteScrip-<%$scrip->id%>" value="1" />
 </td>
 <td>
-<a href="Scrip.html?id=<%$scrip->id%>&Queue=<%$id%>"><% $scrip->Description || "<i>(".loc('no value').")</i>" |n %></a><br />
-<small><&|/l, loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name) &>%1 %2 with template %3</&></small>
+<a href="Scrip.html?id=<%$scrip->id%>&Queue=<%$id%>"><% $scrip->Description || "<i>("._('no value').")</i>" |n %></a><br />
+<small><&|/l, _($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name) &>%1 %2 with template %3</&></small>
 </td>
 </tr>
 %   }
@@ -73,8 +73,8 @@
 
 % }
 <& /Elements/Submit, 
-	Caption => loc("Delete selected scrips"), 
-	Label => loc("Delete") &>
+	Caption => _("Delete selected scrips"), 
+	Label => _("Delete") &>
 </form>
 
 <%init>
@@ -108,7 +108,7 @@ foreach my $key (keys %ARGS) {
     $scrip->load($id);
     my ($retval, $msg) = $scrip->delete;
     if ($retval) {
-      push @actions, loc("Scrip deleted");
+      push @actions, _("Scrip deleted");
     }
     else {
       push @actions, $msg;

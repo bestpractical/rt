@@ -51,7 +51,7 @@ sub _set {
     my $self = shift;
     
     unless ( $self->current_user_has_queue_right('ModifyTemplate') ) {
-        return ( 0, $self->loc('Permission Denied') );
+        return ( 0, _('Permission Denied') );
     }
     return $self->SUPER::_set( @_ );
 }
@@ -172,16 +172,16 @@ sub create {
 
     unless ( $args{'Queue'} ) {
         unless ( $self->current_user->has_right(Right =>'ModifyTemplate', Object => RT->system) ) {
-            return ( undef, $self->loc('Permission denied') );
+            return ( undef, _('Permission denied') );
         }
         $args{'Queue'} = 0;
     }
     else {
         my $QueueObj =  RT::Model::Queue->new( current_user => $self->current_user );
-        $QueueObj->load( $args{'Queue'} ) || return ( undef, $self->loc('Invalid queue') );
+        $QueueObj->load( $args{'Queue'} ) || return ( undef, _('Invalid queue') );
     
         unless ( $QueueObj->current_user_has_right('ModifyTemplate') ) {
-            return ( undef, $self->loc('Permission denied') );
+            return ( undef, _('Permission denied') );
         }
         $args{'Queue'} = $QueueObj->id;
     }
@@ -211,7 +211,7 @@ sub delete {
     my $self = shift;
 
     unless ( $self->current_user_has_queue_right('ModifyTemplate') ) {
-        return ( 0, $self->loc('Permission Denied') );
+        return ( 0, _('Permission Denied') );
     }
 
     return ( $self->SUPER::delete(@_) );
@@ -314,7 +314,7 @@ an error message.
     # Unfold all headers
     $self->{'MIMEObj'}->head->unfold;
 
-    return ( 1, $self->loc("Template parsed") );
+    return ( 1, _("Template parsed") );
 
 }
 
@@ -335,7 +335,7 @@ sub _ParseContent {
 
     my $content = $self->Content;
     unless ( defined $content ) {
-        return ( undef, $self->loc("Permissions denied") );
+        return ( undef, _("Permissions denied") );
     }
 
     # We need to untaint the content of the template, since we'll be working
@@ -358,9 +358,9 @@ sub _ParseContent {
     $args{'Requestor'} = eval { $args{'Ticket'}->Requestors->UserMembersObj->first->name };
     $args{'rtname'}    = RT->Config->Get('rtname');
     if ( $args{'Ticket'} ) {
-        $args{'loc'} = sub { $args{'Ticket'}->loc(@_) };
+        $args{'loc'} = sub { $args{'Ticket'}->_(@_) };
     } else {
-        $args{'loc'} = sub { $self->loc(@_) };
+        $args{'loc'} = sub { _(@_) };
     }
 
     my $is_broken = 0;
@@ -374,7 +374,7 @@ sub _ParseContent {
             return undef;
         }, 
     );
-    return ( undef, $self->loc('Template parsing error') ) if $is_broken;
+    return ( undef, _('Template parsing error') ) if $is_broken;
 
     # MIME::Parser has problems dealing with high-bit utf8 data.
     Encode::_utf8_off($retval);

@@ -174,7 +174,7 @@ sub delete_entry {
     }
     return (0, "No entry found") unless $found;
     $self->_do_search();
-    return (1, $self->loc('Attribute Deleted'));
+    return (1, _('Attribute Deleted'));
 }
 
 

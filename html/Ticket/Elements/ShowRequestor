@@ -61,14 +61,14 @@ while ( my $requestor = $people->next ) {
 
 <&| /Widgets/TitleBox,
     title_href => $has_right_adminusers? RT->Config->Get('WebPath')."/Admin/Users/Modify.html?id=".$requestor->id: undef,
-    title_raw => loc("More about %1", $name),
+    title_raw => _("More about %1", $name),
 &>
 
 %# Additional information about this user.  Empty by default.
 % $m->callback( requestor => $requestor, %ARGS, Callbackname => 'AboutThisUser' );
 
 <&|/l&>comments about this user</&>:<br />
-<b><% ($requestor->comments || loc("No comment entered about this user")) %></b><br />
+<b><% ($requestor->comments || _("No comment entered about this user")) %></b><br />
 
 <&|/l, $rows &>This user's %1 highest priority tickets</&>:<br />
 <ul>

@@ -58,9 +58,9 @@ foreach my $message ( grep $_->__value('Parent') == $Parent, @$Attachments ) {
     if ( $size ) {
 </%PERL>
 <div class="downloadattachment">
-<a href="<% $AttachPath %>/<% $Transaction->id %>/<% $message->id %>/<% ($message->Filename ||'')| u%>"><&|/l&>Download</&> <% $message->Filename || loc('(untitled)') %></a>
+<a href="<% $AttachPath %>/<% $Transaction->id %>/<% $message->id %>/<% ($message->Filename ||'')| u%>"><&|/l&>Download</&> <% $message->Filename || _('(untitled)') %></a>
 % if ( $DownloadableHeaders && !$message->Filename && $message->ContentType =~ /text/  ) {
- / <a href="<% $AttachPath %>/WithHeaders/<% $message->id %>"><% loc('with headers') %></a>
+ / <a href="<% $AttachPath %>/WithHeaders/<% $message->id %>"><% _('with headers') %></a>
 % }
 <br/>
 <span class="downloadcontenttype"><% $message->ContentType %> <% $size_to_str->( $size ) %></span>
@@ -140,7 +140,7 @@ unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
     }
     elsif ( $message->ContentLength > 0 ) {
         $m->out(
-            loc( 'Message body not shown because it is too large or is not plain text.' )
+            _( 'Message body not shown because it is too large or is not plain text.' )
         );
     }
 }
@@ -190,13 +190,13 @@ my $size_to_str = sub {
     my $size = shift;
     # show a download link
     if ( $size > 1024*1024 ) {
-        $size = loc( "%1b", int( $size / 1024 / 102.4 ) / 10 );
+        $size = _( "%1b", int( $size / 1024 / 102.4 ) / 10 );
     }
     elsif ( $size > 1024 ) {
-        $size = loc( "%1k", int( $size / 102.4 ) / 10 );
+        $size = _( "%1k", int( $size / 102.4 ) / 10 );
     }
     else {
-        $size = loc( "%1b", $size );
+        $size = _( "%1b", $size );
     }
     return $size;
 };

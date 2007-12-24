@@ -64,33 +64,33 @@ my $basetopactions = {
 	B => { html => $m->scomp('/Elements/SimpleSearch') 
 		}
 	};
-my $basetabs = {     A => { title => loc('Homepage'),
+my $basetabs = {     A => { title => _('Homepage'),
                            path => '',
                          },
-                    Ab => { title => loc('Simple Search'),
+                    Ab => { title => _('Simple Search'),
                         path => 'Search/Simple.html'
                          },
-                    B => { title => loc('Tickets'),
+                    B => { title => _('Tickets'),
                         path => 'Search/Build.html'
                       },
-                    C => { title => loc('Tools'),
+                    C => { title => _('Tools'),
                            path => 'Tools/index.html'
                          },
-                    P => { title => loc('Approval'),
+                    P => { title => _('Approval'),
                            path => 'Approvals/'
                          },
                  };
 
 if (Jifty->web->current_user->has_right( Right => 'ShowConfigTab', 
 				       Object => RT->system )) {
-    $basetabs->{E} = { title => loc('Configuration'),
+    $basetabs->{E} = { title => _('Configuration'),
                        path => 'Admin/',
 		     };
 }
 
 if (Jifty->web->current_user->has_right( Right => 'ModifySelf', 
 				       Object => RT->system )) {
-    $basetabs->{K} = { title => loc('Preferences'),
+    $basetabs->{K} = { title => _('Preferences'),
                        path => 'User/Prefs.html'
 		     };
 }

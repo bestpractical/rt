@@ -105,19 +105,19 @@ and log an error.
 sub create {
     my $self = shift;
     $RT::Logger->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
-    return (0, $self->loc('Permission Denied'));
+    return (0, _('Permission Denied'));
 }
 
 sub delete {
     my $self = shift;
     $RT::Logger->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
-    return (0, $self->loc('Permission Denied'));
+    return (0, _('Permission Denied'));
 }
 
 sub _set {
     my $self = shift;
     $RT::Logger->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
-    return (0, $self->loc('Permission Denied'));
+    return (0, _('Permission Denied'));
 }
 
 
@@ -143,63 +143,6 @@ Takes a name.
 sub load_by_name {
     my $self = shift;
     return $self->new( "name", shift );
-}
-
-=head2 LanguageHandle
-
-Returns this current user's langauge handle. Should take a Language
-specification. but currently doesn't
-
-=cut 
-
-sub LanguageHandle {
-    my $self = shift;
-    if (   !defined $self->{'langHandle'}
-        || !UNIVERSAL::can( $self->{'langHandle'}, 'maketext' )
-        || @_ )
-    {
-        if (   !RT->system_user
-            || !RT->system_user->id
-            || ( $self->id || 0 ) == RT->system_user->id ) {
-            @_ = qw(en-US);
-        }
-        elsif ( $self->id && $self->user_object->lang ) {
-            push @_, $self->user_object->lang;
-        }
-
-        $self->{'langHandle'} = RT::I18N->get_handle(@_);
-    }
-
-    # Fall back to english.
-    unless ( $self->{'langHandle'} ) {
-        die "We couldn't get a dictionary. Ne mogu naidti slovar. No puedo encontrar dictionario.";
-    }
-    return $self->{'langHandle'};
-}
-
-sub loc {
-    my $self = shift;
-    return '' if !defined $_[0] || $_[0] eq '';
-
-    my $handle = $self->LanguageHandle;
-
-    if (@_ == 1) {
-        # pre-scan the lexicon hashes to return _AUTO keys verbatim,
-        # to keep locstrings containing '[' and '~' from tripping over Maketext
-        return $_[0] unless grep exists $_->{$_[0]}, @{ $handle->_lex_refs };
-    }
-
-    return $handle->maketext(@_);
-}
-
-sub loc_fuzzy {
-    my $self = shift;
-    return '' if !defined $_[0] || $_[0] eq '';
-
-    # XXX: work around perl's deficiency when matching utf8 data
-    return $_[0] if Encode::is_utf8($_[0]);
-
-    return $self->LanguageHandle->maketext_fuzzy( @_ );
 }
 
 =head2 CurrentUser

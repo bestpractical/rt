@@ -162,7 +162,7 @@ sub create {
 	    $args{object_type} = ref($args{Object});
 	    $args{object_id} = $args{Object}->id;
     } else {
-        return(0, $self->loc("Required parameter '%1' not specified", 'Object'));
+        return(0, _("Required parameter '%1' not specified", 'Object'));
 
     }
    
@@ -175,7 +175,7 @@ sub create {
         name       => $args{'name'}
     );
     if ($object_right eq 'deny') { 
-        return (0, $self->loc('Permission Denied'));
+        return (0, _('Permission Denied'));
     } 
     elsif ($object_right eq 'allow') {
         # do nothing, we're ok
@@ -183,7 +183,7 @@ sub create {
 
 
     elsif (!$self->current_user->has_right( Object => $args{Object}, Right => $object_right)) {
-        return (0, $self->loc('Permission Denied'));
+        return (0, _('Permission Denied'));
     }
 
    
@@ -392,7 +392,7 @@ sub Object {
 sub delete {
     my $self = shift;
     unless ($self->current_user_has_right('delete')) {
-        return (0,$self->loc('Permission Denied'));
+        return (0,_('Permission Denied'));
     }
     return($self->SUPER::delete(@_));
 }
@@ -401,7 +401,7 @@ sub delete {
 sub _value {
     my $self = shift;
     unless ($self->current_user_has_right('display')) {
-        return (0,$self->loc('Permission Denied'));
+        return (0,_('Permission Denied'));
     }
 
     return($self->SUPER::_value(@_));
@@ -414,7 +414,7 @@ sub _set {
     my $self = shift;
     unless ($self->current_user_has_right('modify')) {
 
-        return (0,$self->loc('Permission Denied'));
+        return (0,_('Permission Denied'));
     }
     return($self->SUPER::_set(@_));
 

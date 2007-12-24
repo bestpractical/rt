@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title=>loc("Preferences") &>
+<& /Elements/Header, Title=>_("Preferences") &>
 <& /User/Elements/Tabs, 
     current_tab => 'User/Prefs.html', 
-    Title=>loc("Preferences") &>
+    Title=>_("Preferences") &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -59,7 +59,7 @@
 <tr>
 
 <td valign="top" class="boxcontainer">
-<&| /Widgets/TitleBox, title => loc('Identity'), id => "user-prefs-identity" &>
+<&| /Widgets/TitleBox, title => _('Identity'), id => "user-prefs-identity" &>
 
 <input type="hidden" class="hidden" name="name" value="<%$user_object->name%>" />
 <table cellspacing="0" cellpadding="0">
@@ -76,11 +76,11 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>Language</&>:</td>
-    <td class="value"><& /Elements/Selectlang, name => 'lang', Default => $user_object->lang &></td>
+    <td class="value"><& /Elements/SelectLang, name => 'lang', Default => $user_object->lang &></td>
   </tr>
 </table>
 </&>
-<&| /Widgets/TitleBox, title => loc('Phone numbers'), id => "user-prefs-phone" &>
+<&| /Widgets/TitleBox, title => _('Phone numbers'), id => "user-prefs-phone" &>
 <table cellspacing="0" cellpadding="0">
   <tr>
     <td class="label"><&|/l&>Residence</&>:</td>
@@ -104,7 +104,7 @@
 </td>
 <td valign="top" class="boxcontainer">
 % unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
-<&| /Widgets/TitleBox, title => loc('password'), id => "user-prefs-password" &>
+<&| /Widgets/TitleBox, title => _('password'), id => "user-prefs-password" &>
 <table>
 <tr>
 <td class="label">
@@ -125,7 +125,7 @@
 </&>
 % }
 
-<&| /Widgets/TitleBox, title => loc('Location'), id => "user-prefs-location" &>
+<&| /Widgets/TitleBox, title => _('Location'), id => "user-prefs-location" &>
 <table cellspacing="0" cellpadding="0">
   <tr>
     <td class="label"><&|/l&>organization</&>:</td>
@@ -169,7 +169,7 @@
 <td colspan="2" valign="top" class="boxcontainer">
 %if ($user_object->privileged) {
 <br />
-<&| /Widgets/TitleBox, title => loc('Signature') &>
+<&| /Widgets/TitleBox, title => _('Signature') &>
 <textarea cols="80" rows="5" name="Signature" class="signature" wrap="hard">
 <%$user_object->Signature || ''%></textarea>
 </&>
@@ -183,7 +183,7 @@
 
 % $m->callback( %ARGS, user_object => $user_object, Callbackname => 'FormEnd' );
 
-<& /Elements/Submit, Label => loc('Save Preferences') &>
+<& /Elements/Submit, Label => _('Save Preferences') &>
 </form>
 
 
@@ -230,7 +230,7 @@ if ($user_object->id) {
 # {{{ Deal with special fields: privileged, Enabled, and password
 if  ( ($Setprivileged) and ( $privileged != $user_object->privileged) ) {
 my  ($code, $msg) = $user_object->set_privileged($privileged);
-     push @results, loc('privileged status: %1', loc_fuzzy($msg));
+     push @results, _('privileged status: %1', _($msg));
 }
 
 
@@ -239,9 +239,9 @@ my  ($code, $msg) = $user_object->set_privileged($privileged);
 if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$user_object->is_password($Pass1))) {
     my ($code, $msg);
     ($code, $msg) = $user_object->set_password($Pass1);
-    push @results, loc('password: %1', loc_fuzzy($msg));
+    push @results, _('password: %1', _($msg));
 } elsif ( $Pass1 && ($Pass1 ne $Pass2)) {
-    push @results, loc("passwords do not match. Your password has not been changed");
+    push @results, _("passwords do not match. Your password has not been changed");
 }
 
 # }}}

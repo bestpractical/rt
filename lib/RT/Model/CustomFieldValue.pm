@@ -93,10 +93,10 @@ sub create {
     my $cf = RT::Model::CustomField->new;
     $cf->load( $cf_id );
     unless ( $cf->id ) {
-        return (0, $self->loc("Couldn't load Custom Field #%1", $cf_id));
+        return (0, _("Couldn't load Custom Field #%1", $cf_id));
     }
     unless ( $cf->current_user_has_right('AdminCustomField') ) {
-        return (0, $self->loc('Permission denied'));
+        return (0, _('Permission denied'));
     }
 
     my ($id, $msg) = $self->SUPER::create(
@@ -137,7 +137,7 @@ sub set_Category {
             $RT::Logger->warning("Couldn't delete atribute: $msg");
         }
         # return true even if there was no category
-        return (1, $self->loc('Category unset'));
+        return (1, _('Category unset'));
     }
 }
 

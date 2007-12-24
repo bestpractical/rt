@@ -46,9 +46,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
-    title => loc($search->Description, $ProcessedSearchArg->{'Rows'}),
+    title => _($search->Description, $ProcessedSearchArg->{'Rows'}),
     title_href => $query_link_url.$QueryString,
-    titleright => $customize ? loc('Edit') : '',
+    titleright => $customize ? _('Edit') : '',
     titleright_href => $customize &>
 <& $query_display_component, %$ProcessedSearchArg, ShowNavigation => 0 &>
 </&>
@@ -113,7 +113,7 @@ $m->callback(
 foreach ( $SearchArg, $ProcessedSearchArg ) {
     $_->{'Query'}  =~ s/__CurrentUser__/Jifty->web->current_user->id/ge;
     $_->{'Format'} =~ s/__(Web(?:Path|Base|BaseURL))__/scalar RT->Config->Get($1)/ge;
-    $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
+    $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/_("$1")/ge;
 }
 
 my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );

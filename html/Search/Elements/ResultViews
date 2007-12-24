@@ -69,7 +69,7 @@ $ShortQueryString => undef
 % }
 <&|/l, $m->scomp('SelectGroupBy', name => 'PrimaryGroupBy', Query => $Query) &>grouped by %1</&>
 <&|/l, $m->scomp('SelectChartType', name => 'ChartStyle') &>style: %1</&>
-<input type="submit" class="button" value="<%loc('Go')%>" />
+<input type="submit" class="button" value="<%_('Go')%>" />
 </form>
 
 <%PERL>

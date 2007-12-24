@@ -93,7 +93,7 @@ BEGIN {
   #Get the current user all loaded
   my $CurrentUser = GetCurrentUser();
 
-  print loc('Hello!'); # Synonym of $CuurentUser->loc('Hello!');
+  print _('Hello!'); # Synonym of $CuurentUser->loc('Hello!');
 
 =head1 DESCRIPTION
 
@@ -161,13 +161,13 @@ sub GetCurrentUser  {
 
 =head2 loc
 
-  Synonym of $CurrentUser->loc().
+  Synonym of $CurrentUser->_().
 
 =cut
 
 sub loc {
     die "No current user yet" unless $CurrentUser ||= RT::CurrentUser->new;
-    return $CurrentUser->loc(@_);
+    return $CurrentUser->_(@_);
 }
 # }}}
 

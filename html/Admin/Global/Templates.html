@@ -56,15 +56,15 @@
 <%init>
 
 my $subtabs = {
-		 A => { title => loc('Select template'),
+		 A => { title => _('Select template'),
   		     	path => "Admin/Global/Templates.html"
 			   },
-		 B => { title => loc('New template'),
+		 B => { title => _('New template'),
   		     	path => "Admin/Global/Template.html?Create=1&Queue=0",
 			separator => 1,
 			   }
 	      };
-my $title = loc("Modify templates which apply to all queues");
+my $title = _("Modify templates which apply to all queues");
 
 my (@actions);
 

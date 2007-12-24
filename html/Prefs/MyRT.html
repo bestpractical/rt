@@ -57,41 +57,41 @@
 
 <form method="post" action="MyRT.html">
 <input type="hidden" name="Reset" value="1" />
-<input type="submit" class="button" value="<% loc('Reset to default') %>">
+<input type="submit" class="button" value="<% _('Reset to default') %>">
 </form>
 
 <br />
 
 % for my $pane ( @panes ) {
 <&|/Widgets/TitleBox,
-    title => loc('RT at a glance') .': '. loc( $pane->{name} ),
+    title => _('RT at a glance') .': '. loc( $pane->{name} ),
     bodyclass => ""
 &>
 <& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &>
 </&>
 % }
 
-<&|/Widgets/TitleBox, title => loc('Options'), bodyclass => "" &>
+<&|/Widgets/TitleBox, title => _('Options'), bodyclass => "" &>
 <form method="post" action="MyRT.html">
 <&|/l&>Rows per box</&>:
 <input name="SummaryRows" value="<% $ARGS{SummaryRows} %>" />
-<input type="submit" class="button" name="UpdateSummaryRows" value="<% loc('Save') %>" />
+<input type="submit" class="button" name="UpdateSummaryRows" value="<% _('Save') %>" />
 </form>
 </&>
 
 <%INIT>
 my @results;
-my $title = loc("Customize").' '.loc("RT at a glance");
+my $title = _("Customize").' '.loc("RT at a glance");
 my $user = Jifty->web->current_user->user_object;
 
 if ( $ARGS{'UpdateSummaryRows'} ) {
     unless ( $ARGS{SummaryRows} && int $ARGS{SummaryRows} > 0 ) {
-        push @results, loc ("Illegal '%1' preference value.", loc('summary rows'));
+        push @results, loc ("Illegal '%1' preference value.", _('summary rows'));
         $ARGS{SummaryRows} = 0;
     }
     else {
         $user->set_Preferences( 'SummaryRows', int $ARGS{SummaryRows} );
-        push @results, loc ('Preferences saved for %1.', loc('summary rows'));
+        push @results, loc ('Preferences saved for %1.', _('summary rows'));
     }
 }
 $ARGS{'SummaryRows'} ||= $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
@@ -131,7 +131,7 @@ for my $object (@objs) {
             my $oid = ref($object).'-'.$object->id.'-SavedSearch-'.$search->id;
             my $type = ($SearchType eq 'Ticket')
                 ? 'Saved Search' : $SearchType; # loc
-            push @items, ["saved-$oid", loc($type).": $desc"];
+            push @items, ["saved-$oid", _($type).": $desc"];
         }
     }
 }
@@ -145,7 +145,7 @@ my @panes = $m->comp(
     OnSave => sub {
         my ( $conf, $pane ) = @_;
         $user->set_Preferences( 'HomepageSettings', $conf );
-        push @results, loc( 'Preferences saved for %1.', $pane );
+        push @results, _( 'Preferences saved for %1.', $pane );
         delete $session{'my_rt_portlets'};
     }
 );

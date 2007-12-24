@@ -100,7 +100,7 @@ while ( my $entry = $tix->next ) {
         push @keys, $entry->__value($value_name);
     }
 
-    $keys[-1] ||= loc('(no value)');
+    $keys[-1] ||= _('(no value)');
     if ($chart_class eq 'GD::Graph::pie') {
         $keys[-1] .= " - ". $entry->__value( $count_name );
     }
@@ -115,7 +115,7 @@ if ( $PrimaryGroupBy =~ /(Daily|Monthly|Annually)$/ ) {
     $re = qr{1970-01} if $PrimaryGroupBy =~ /Monthly$/;
     $re = qr{1970} if $PrimaryGroupBy =~ /Annually$/;
     foreach (@keys) {
-        s/^$re/loc('Not Set')/e;
+        s/^$re/_('Not Set')/e;
     }   
 }
 

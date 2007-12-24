@@ -53,24 +53,24 @@
 <%INIT>
   my $tabs = {
                 
-               A => { title => loc('Scrips'),
+               A => { title => _('Scrips'),
                            path => 'Admin/Global/Scrips.html',
                          },
-               B => { title => loc('Templates'),
+               B => { title => _('Templates'),
                         path => 'Admin/Global/Templates.html',
                       },
               
-                F => { title => loc('Custom Fields'),
+                F => { title => _('Custom Fields'),
                         path => 'Admin/Global/CustomFields/index.html',
                         },
 
-                G => { title => loc('Group Rights'),
+                G => { title => _('Group Rights'),
                                 path => 'Admin/Global/GroupRights.html',
                       },
-                H => { title => loc('User Rights'),
+                H => { title => _('User Rights'),
                                 path => 'Admin/Global/UserRights.html',
                       },
-                I => { title => loc('RT at a glance'),
+                I => { title => _('RT at a glance'),
                                 path => 'Admin/Global/MyRT.html',
                       },
 

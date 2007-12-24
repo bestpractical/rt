@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('Add Criteria')&>
+<&| /Widgets/TitleBox, title => _('Add Criteria')&>
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 

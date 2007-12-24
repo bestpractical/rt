@@ -46,8 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="<% $name %>">
-<option value="minutes" selected><% loc('Minutes') %></option>
-<option value="hours"><% loc('Hours') %></option>
+<option value="minutes" selected><% _('Minutes') %></option>
+<option value="hours"><% _('Hours') %></option>
 </select>
 <%INIT>
 $name .= '-TimeUnits' unless $name =~ /-TimeUnits$/io;

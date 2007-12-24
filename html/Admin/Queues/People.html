@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Modify people related to queue %1', $QueueObj->name) &>
+<& /Elements/Header, Title => _('Modify people related to queue %1', $QueueObj->name) &>
 <& /Admin/Elements/QueueTabs, id => $id, 
     QueueObj => $QueueObj,                                                      
     current_tab => $current_tab, 
-    Title => loc('Modify people related to queue %1', $QueueObj->name) &>
+    Title => _('Modify people related to queue %1', $QueueObj->name) &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -127,7 +127,7 @@
 
 
 
-<& /Elements/Submit, Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), Reset => 1 &>
+<& /Elements/Submit, Label => _('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), Reset => 1 &>
 </form>
 
 <%INIT>
@@ -143,7 +143,7 @@ my ($field, @results, $User, $Users, $Groups, $watcher, $user_msg, $group_msg);
 
 
 my $QueueObj = RT::Model::Queue->new();
-$QueueObj->load($id) || Abort(loc("Couldn't load queue", $id));
+$QueueObj->load($id) || Abort(_("Couldn't load queue", $id));
 # }}}
 
 # {{{ Delete deletable watchers
@@ -176,7 +176,7 @@ foreach my  $key (keys %ARGS) {
  
 
 if (!length $ARGS{'UserString'}) {
-$user_msg = loc("No principals selected.");
+$user_msg = _("No principals selected.");
  }
 else {
     $Users = RT::Model::UserCollection->new();
@@ -186,7 +186,7 @@ else {
      }
 
 if (!length $ARGS{'GroupString'}) {
-$group_msg = loc("No principals selected.");
+$group_msg = _("No principals selected.");
  }
 else {
 $Groups = RT::Model::GroupCollection->new();

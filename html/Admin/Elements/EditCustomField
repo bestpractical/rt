@@ -83,7 +83,7 @@
 <& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
 </font>
 % }
-<&/Elements/Submit, Label => loc('Create') &>
+<&/Elements/Submit, Label => _('Create') &>
 </form>
 
 
@@ -95,7 +95,7 @@ my $EnabledChecked = "CHECKED";
 my (@results);
 
 if (! $CustomField ) { 
-  $title = loc("Create a CustomField");
+  $title = _("Create a CustomField");
   $id = 'new';
 } else {
 
@@ -112,14 +112,14 @@ if (! $CustomField ) {
       #  off in the files that use this component.)
       unless ($val) {
 	  $m->clear_buffer;
-	  Abort(loc("Could not create CustomField: %1", $msg));
+	  Abort(_("Could not create CustomField: %1", $msg));
       }
       push @results, $msg;
       $CustomFieldObj->set_SortOrder($CustomFieldObj->id);
-      $title = loc('Created CustomField %1', $CustomFieldObj->name()); 
+      $title = _('Created CustomField %1', $CustomFieldObj->name()); 
     } else {
-      $CustomFieldObj->load($CustomField) || Abort(loc('No CustomField'));
-      $title = loc('Editing CustomField %1', $CustomFieldObj->name()); 
+      $CustomFieldObj->load($CustomField) || Abort(_('No CustomField'));
+      $title = _('Editing CustomField %1', $CustomFieldObj->name()); 
 
       my @aresults = ProcessCustomFieldUpdates ( 
                         CustomFieldObj => $CustomFieldObj,
@@ -135,7 +135,7 @@ $id = $CustomFieldObj->id;
 
   if  ( ($SetEnabled) and ( $disabled != $CustomFieldObj->disabled) ) { 
       my  ($code, $msg) = $CustomFieldObj->set_disabled($disabled);
-      push @results, loc('Enabled status %1', loc_fuzzy($msg));
+      push @results, _('Enabled status %1', _($msg));
   }
   
   if ($CustomFieldObj->disabled()) {

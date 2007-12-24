@@ -49,7 +49,7 @@
 % if ($URI->IsLocal) {
 % my $member = $URI->Object;
 % if (UNIVERSAL::isa($member, "RT::Model::Ticket")) {
-<%$member->id%>: (<%$member->OwnerObj->name%>) <%$member->Subject%> [<% loc($member->Status) %>]
+<%$member->id%>: (<%$member->OwnerObj->name%>) <%$member->Subject%> [<% _($member->Status) %>]
 % } elsif ( UNIVERSAL::can($member, 'name')) {
 <%$URI->Resolver->AsString%>: <%$member->name%>
 % } else {

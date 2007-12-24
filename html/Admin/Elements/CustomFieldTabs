@@ -64,14 +64,14 @@ if ($id) {
 
             subtabs => {
 
-                C => { title => loc('Basics'),
+                C => { title => _('Basics'),
                        path  => "Admin/CustomFields/Modify.html?id=" . $id,
                 },
-                F => { title => loc('Group Rights'),
+                F => { title => _('Group Rights'),
                        path  => "Admin/CustomFields/GroupRights.html?id="
                          . $id, },
                 G => {
-                    title => loc('User Rights'),
+                    title => _('User Rights'),
                     path => "Admin/CustomFields/UserRights.html?id=" . $id,
                 },
 
@@ -82,17 +82,17 @@ if ($id) {
 
     if ($cf->LookupType =~ /^RT::Model::Queue/io) {
 	$tabs->{'this'}->{subtabs}->{D} = {
-	title => loc('Applies to'),
+	title => _('Applies to'),
 	    path  => "Admin/CustomFields/Objects.html?id=" . $id,
 	};
     }
 }
 
 if (Jifty->web->current_user->has_right( Object => RT->system, Right => 'AdminCustomField')) {
-  $tabs->{"A"} = { title => loc('Select custom field'),
+  $tabs->{"A"} = { title => _('Select custom field'),
                         path => "Admin/CustomFields/",
                            };
-  $tabs->{"B"} = { title => loc('New custom field'),
+  $tabs->{"B"} = { title => _('New custom field'),
                         path => "Admin/CustomFields/Modify.html?Create=1",
                         separator => 1,
                            };

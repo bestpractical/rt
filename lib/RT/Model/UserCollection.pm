@@ -180,7 +180,7 @@ sub MemberOfGroup {
     my $self  = shift;
     my $group = shift;
 
-    return $self->loc("No group specified") if ( !defined $group );
+    return _("No group specified") if ( !defined $group );
 
     my $groupalias = $self->new_alias('CachedGroupMembers');
 

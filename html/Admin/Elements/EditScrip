@@ -51,7 +51,7 @@
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 <input type="hidden" class="hidden" name="Queue" value="<% $Queue %>" />
 
-<&| /Widgets/TitleBox, title => loc('Scrip Fields') &>
+<&| /Widgets/TitleBox, title => _('Scrip Fields') &>
 <table>
 
 <tr><td align="right"><&|/l&>Description</&>:</td><td>
@@ -88,11 +88,11 @@
 
 <& /Elements/Submit,
     Label => $SubmitLabel,
-    Caption => loc("Be sure to save your changes"),
+    Caption => _("Be sure to save your changes"),
     Reset => 1,
 &><br />
 
-<&| /Widgets/TitleBox, title => loc('User Defined conditions and actions') &>
+<&| /Widgets/TitleBox, title => _('User Defined conditions and actions') &>
 <table>
 <tr><td colspan="2">
 <i><&|/l&>(Use these fields when you choose 'User Defined' for a condition or action)</&></i>
@@ -123,7 +123,7 @@
 </&>
 
 <& /Elements/Submit,
-    Caption => loc("Be sure to save your changes"),
+    Caption => _("Be sure to save your changes"),
     Label => $SubmitLabel,
     Reset => 1,
 &>
@@ -137,14 +137,14 @@ my $scrip = RT::Model::Scrip->new();
 if ( $id ) {
     $scrip->load( $id );
     unless ( $id = $scrip->id ) {
-        push @actions, loc("Couldn't load scrip #%1", $id);
+        push @actions, _("Couldn't load scrip #%1", $id);
     }
-    $SubmitLabel = loc('Update');
+    $SubmitLabel = _('Update');
 }
 
 unless ( $id ) {
     $id = 'new';
-    $SubmitLabel = loc('Create');
+    $SubmitLabel = _('Create');
 }
 
 my $min_lines = 10;
@@ -181,7 +181,7 @@ if ( $id eq 'new' ) {
 }
 else {
     $scrip->load( $id );
-    return (undef, loc("Couldn't load scrip #%1", $id))
+    return (undef, _("Couldn't load scrip #%1", $id))
         unless $scrip->id;
 
     my @attribs = qw(Queue ScripAction ScripCondition Template Stage

@@ -49,7 +49,7 @@
 % foreach my $stage (@stages) {
 <option value="<%$stage%>"
 <% ($stage eq $Default) && 'SELECTED' %>
-><% loc($stage) %>
+><% _($stage) %>
 </option>
 % }
 </select>

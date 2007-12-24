@@ -54,10 +54,10 @@
 
 <%INIT>
     my $tabs = {
-        A => { title => loc('System Configuration'),
+        A => { title => _('System Configuration'),
                path => 'Admin/Tools/Configuration.html',
         },
-        E => { title => loc('Shredder'),
+        E => { title => _('Shredder'),
                path  => 'Admin/Tools/Shredder',
         },
     };

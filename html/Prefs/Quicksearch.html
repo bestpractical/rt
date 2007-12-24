@@ -63,13 +63,13 @@ checked
 /><%$queue->name%>: <%$queue->Description%></li>
 % }
 </ul>
-<& /Elements/Submit, Caption => loc("Save Changes"), Label => loc('Save'), name => 'Save'&>
+<& /Elements/Submit, Caption => _("Save Changes"), Label => loc('Save'), name => 'Save'&>
 
 </form>
 
 <%INIT>
 my @actions;
-my $title = loc("Customize").' '.loc("Quick search");
+my $title = _("Customize").' '.loc("Quick search");
 # The queue list is not loaded from cache, so it might be a bit inconsistent
 my $user = Jifty->web->current_user->user_object;
 my $unwanted = $user->Preferences('QuickSearch', {});

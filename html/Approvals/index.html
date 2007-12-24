@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("My approvals") &>
-<& /Approvals/Elements/Tabs, Title => loc("My approvals") &>
+<& /Elements/Header, Title => _("My approvals") &>
+<& /Approvals/Elements/Tabs, Title => _("My approvals") &>
 
 <& /Elements/ListActions, actions => \@actions &>
 <form method="post">
 <& Elements/PendingMyApproval, %ARGS &>
-<& /Elements/Submit, Label => loc('Show Approvals') &>
+<& /Elements/Submit, Label => _('Show Approvals') &>
 </form>
 <%init>
 
@@ -72,9 +72,9 @@ foreach my $arg ( keys %ARGS ) {
 
         my ( $notesval, $notesmsg ) = $ticket->Correspond( MIMEObj => $notes );
         if ($notesval) {
-                push ( @actions, loc("Approval #%1: Notes recorded",$ticket->id ));
+                push ( @actions, _("Approval #%1: Notes recorded",$ticket->id ));
         } else {
-                push ( @actions, loc("Approval #%1: Notes not recorded due to a system error",$ticket->id ));
+                push ( @actions, _("Approval #%1: Notes not recorded due to a system error",$ticket->id ));
         }
     }
 
@@ -85,6 +85,6 @@ foreach my $arg ( keys %ARGS ) {
     elsif ( $ARGS{$arg} eq 'approve' ) {
          ( $val, $msg ) = $ticket->set_Status('resolved');
     }
-    push ( @actions, loc("Approval #%1: %2",$ticket->id, $msg )) if ($msg);
+    push ( @actions, _("Approval #%1: %2",$ticket->id, $msg )) if ($msg);
 }
 </%init>

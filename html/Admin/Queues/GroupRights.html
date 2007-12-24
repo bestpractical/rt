@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc('Modify group rights for queue %1', $QueueObj->name) &>
+<& /Admin/Elements/Header, Title => _('Modify group rights for queue %1', $QueueObj->name) &>
 <& /Admin/Elements/QueueTabs, id => $id, 
     QueueObj => $QueueObj,                                                      
     current_tab => $current_tab, 
-    Title => loc('Modify group rights for queue %1', $QueueObj->name) &>
+    Title => _('Modify group rights for queue %1', $QueueObj->name) &>
 <& /Elements/ListActions, actions => \@results &>
 
   <form method="post" action="GroupRights.html">
@@ -64,7 +64,7 @@
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
-	    <% loc($Group->Type) %>
+	    <% _($Group->Type) %>
 		  </td>
 	  <td>
 	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
@@ -80,7 +80,7 @@
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
-	    <% loc($Group->Type) %>
+	    <% _($Group->Type) %>
 		  </td>
 	  <td>
 	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
@@ -106,7 +106,7 @@
 % }
 </table>
             
-      <& /Elements/Submit, Label => loc('Modify Group Rights'), Reset => 1 &>
+      <& /Elements/Submit, Label => _('Modify Group Rights'), Reset => 1 &>
       
   </form>
   
@@ -117,11 +117,11 @@
 
 
 if (!defined $id) {
-    Abort(loc("No Queue defined"));
+    Abort(_("No Queue defined"));
 }
 
 my $QueueObj = RT::Model::Queue->new();
-$QueueObj->load($id) || Abort(loc("Couldn't load queue %1",$id));
+$QueueObj->load($id) || Abort(_("Couldn't load queue %1",$id));
 
 my $Groups;
 my $current_tab;

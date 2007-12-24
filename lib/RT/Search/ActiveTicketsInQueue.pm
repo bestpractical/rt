@@ -71,7 +71,7 @@ use base qw(RT::Search::Generic);
 # {{{ sub Describe 
 sub Describe  {
   my $self = shift;
-  return ($self->loc("No description for %1", ref $self));
+  return (_("No description for %1", ref $self));
 }
 # }}}
 

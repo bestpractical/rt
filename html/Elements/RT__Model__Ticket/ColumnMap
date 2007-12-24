@@ -87,11 +87,11 @@ $TICKET_COLUMN_MAP = {
     },
     Status => {
         attribute => 'Status',
-        value     => sub { return loc($_[0]->Status) }
+        value     => sub { return _($_[0]->Status) }
     },
     Subject => {
         attribute => 'Subject',
-        value => sub { return $_[0]->Subject || "(" . loc('No subject') . ")" }
+        value => sub { return $_[0]->Subject || "(" . _('No subject') . ")" }
     },
     ExtendedStatus => {
         title     => 'Status',
@@ -103,14 +103,14 @@ $TICKET_COLUMN_MAP = {
                 if (   $Ticket->has_unresolved_dependencies( Type => 'approval' )
                     or $Ticket->has_unresolved_dependencies( Type => 'code' ) )
                 {
-                    return \'<em>', loc('(pending approval)'), \'</em>';
+                    return \'<em>', _('(pending approval)'), \'</em>';
                 }
                 else {
-                    return \'<em>', loc('(pending other Collection)'), \'</em>';
+                    return \'<em>', _('(pending other Collection)'), \'</em>';
                 }
             }
             else {
-                return loc( $Ticket->Status );
+                return _( $Ticket->Status );
             }
 
           }
@@ -217,12 +217,12 @@ $TICKET_COLUMN_MAP = {
         value     => sub { return $_[0]->ResolvedObj->AsString }
     },
     UpdateStatus => {
-        title => loc('New messages'),
+        title => _('New messages'),
         value => sub {
-            my $txn = $_[0]->SeenUpTo or return $_[0]->loc('No');
+            my $txn = $_[0]->SeenUpTo or return $_[0]->_('No');
             return \('<a href="'. RT->Config->Get('WebPath') .'/Ticket/Display.html?id='
                 . $_[0]->id .'#txn-'. $txn->id .'">'),
-                $_[0]->loc('New'), \'</a>';
+                $_[0]->_('New'), \'</a>';
         },
     },
     KeyRequestors => {
@@ -235,10 +235,10 @@ $TICKET_COLUMN_MAP = {
             {
                 my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
                 if (!defined $key{'info'}) {
-                    $email .= loc(" (no pubkey!)");
+                    $email .= _(" (no pubkey!)");
                 }
                 elsif ($key{'info'}{'TrustLevel'} == 0) {
-                    $email .= loc(" (untrusted!)");
+                    $email .= _(" (untrusted!)");
                 }
             }
             return join ', ', @requestors;
@@ -252,10 +252,10 @@ $TICKET_COLUMN_MAP = {
             my $name = $t->OwnerObj->name;
             my %key = RT::Crypt::GnuPG::GetKeyInfo($t->OwnerObj->email);
             if (!defined $key{'info'}) {
-                $name .= loc(" (no pubkey!)");
+                $name .= _(" (no pubkey!)");
             }
             elsif ($key{'info'}{'TrustLevel'} == 0) {
-                $name .= loc(" (untrusted!)");
+                $name .= _(" (untrusted!)");
             }
 
             return $name;
@@ -278,7 +278,7 @@ $TICKET_COLUMN_MAP = {
     },
     '_CHECKBOX' => {
         attribute => 'checkbox',
-        title => loc('Update'),
+        title => _('Update'),
         align     => 'right',
         value     => sub { return \('<input type="checkbox" class="checkbox" name="UpdateTicket'.$_[0]->id.'" value="1" checked />') }
     },

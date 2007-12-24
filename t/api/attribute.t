@@ -7,7 +7,7 @@ plan tests => 7;
 
 
 my $user = RT->system_user;
-my ($id, $msg) =  $user->add_attribute(name => 'SavedSearch', Content => { Query => 'Foo'} );
+my ($id, $msg) =  $user->user_object->add_attribute(name => 'SavedSearch', Content => { Query => 'Foo'} );
 ok ($id, $msg);
 my $attr = RT::Model::Attribute->new(current_user => RT->system_user);
 $attr->load($id);

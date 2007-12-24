@@ -220,7 +220,7 @@ use vars qw/$r $m %session/;
 
 =head2 loc ARRAY
 
-loc is a nice clean global routine which calls Jifty->web->current_user->loc()
+loc is a nice clean global routine which calls Jifty->web->current_user->_()
 with whatever it's called with. If there is no Jifty->web->current_user, 
 it creates a temporary user, so we have something to get a localisation handle
 through
@@ -230,34 +230,6 @@ through
 sub loc {
 
  return    _(@_);
-}
-
-# }}}
-
-
-# {{{ loc_fuzzy
-
-=head2 loc_fuzzy STRING
-
-loc_fuzzy is for handling localizations of messages that may already
-contain interpolated variables, typically returned from libraries
-outside RT's control.  It takes the message string and extracts the
-variable array automatically by matching against the candidate entries
-inside the lexicon file.
-
-=cut
-
-sub loc_fuzzy {
-    my $msg  = shift;
-    
-    if (Jifty->web->current_user && 
-        UNIVERSAL::can(Jifty->web->current_user, 'loc')){
-        return(Jifty->web->current_user->loc_fuzzy($msg));
-    }
-    else  {
-        my $u = RT::CurrentUser->new(current_user => RT->system_user->id);
-        return ($u->loc_fuzzy($msg));
-    }
 }
 
 # }}}
@@ -634,8 +606,8 @@ sub ProcessUpdateMessage {
     else {
         push(
             @results,
-            loc("Update type was neither correspondence nor comment.") . " "
-              . loc("Update not recorded.")
+            _("Update type was neither correspondence nor comment.") . " "
+              . _("Update not recorded.")
         );
     }
     return @results;
@@ -1006,8 +978,8 @@ sub ProcessACLChanges {
             }
         } else {
             $RT::Logger->error("object type '$object_type' is incorrect");
-            push (@results, loc("System Error"). ': '.
-                            loc("Rights could not be granted for %1", $object_type));
+            push (@results, _("System Error"). ': '.
+                            _("Rights could not be granted for %1", $object_type));
             next;
         }
 
@@ -1378,7 +1350,7 @@ sub _ProcessObjectCustomFieldUpdates {
         }
         else {
             push ( @results,
-                loc("User asked for an unknown update type for custom field %1 for %2 object #%3",
+                _("User asked for an unknown update type for custom field %1 for %2 object #%3",
                 $cf->name, ref $args{'Object'}, $args{'Object'}->id )
             );
         }
@@ -1578,7 +1550,7 @@ sub ProcessRecordLinks {
             my $target = $3;
 
             push @results,
-                loc( "Trying to delete: Base: %1 Target: %2 Type: %3",
+                _( "Trying to delete: Base: %1 Target: %2 Type: %3",
                                               $base,       $target,   $type );
             my ( $val, $msg ) = $Record->delete_link( Base   => $base,
                                                      Type   => $type,

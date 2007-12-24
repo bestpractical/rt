@@ -5,14 +5,14 @@ use strict;
 use RT::Test; use Test::More tests => 12;
 
 
-sub new (*) {
+sub new {
     my $class = shift;
     return $class->new(current_user => RT->system_user);
 }
 
 use constant VALUES_CLASS => 'RT::Model::CustomFieldValueCollection::Groups';
 use_ok(VALUES_CLASS);
-my $q = new(current_user => RT::Model::Queue );
+my $q = new('RT::Model::Queue' );
 isa_ok( $q, 'RT::Model::Queue' );
 my ($qid) = $q->create( name => "CF-External-". $$ );
 ok( $qid, "Created queue" );
@@ -22,7 +22,7 @@ my %arg = ( name        => $q->name,
             MaxValues   => 1,
             ValuesClass => VALUES_CLASS );
 
-my $cf = new(current_user => RT::Model::CustomField );
+my $cf = new('RT::Model::CustomField' );
 isa_ok( $cf, 'RT::Model::CustomField' );
 
 {

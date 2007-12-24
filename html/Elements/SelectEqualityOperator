@@ -58,7 +58,7 @@ selected
 
 <%ARGS>
 $name => undef
-@Options => (loc('less than'), loc('equal to'), loc('greater than'), loc('not equal to'))
+@Options => (_('less than'), loc('equal to'), loc('greater than'), loc('not equal to'))
 @Values => qw(< = > !=)
 $Default =>'' 
 </%ARGS>

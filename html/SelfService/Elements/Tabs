@@ -74,27 +74,27 @@ $Title = loc ("RT Self Service");
 
 }
 my ($tab);
-my $tabs = { A  => { title => loc('Open tickets'),
+my $tabs = { A  => { title => _('Open tickets'),
                         path => 'SelfService/',
                       },
-             B => { title => loc('Closed tickets'),
+             B => { title => _('Closed tickets'),
                          path => 'SelfService/Closed.html',
                        }
            };
 
 if ($queue_count > 1) {
-        $tabs->{C} = { title => loc('New ticket'),
+        $tabs->{C} = { title => _('New ticket'),
                        path => 'SelfService/CreateTicketInQueue.html'
                        };
 } else {
-        $tabs->{C} = { title => loc('New ticket'),
+        $tabs->{C} = { title => _('New ticket'),
                        path => 'SelfService/Create.html?Queue=' . $queue_id
                        };
 }
 
 if (Jifty->web->current_user->has_right( Right => 'ModifySelf',
 				       Object => RT->system )) {
-	$tabs->{Z} = { title => loc('Preferences'),
+	$tabs->{Z} = { title => _('Preferences'),
 		       path => 'SelfService/Prefs.html'
 		       };
 }

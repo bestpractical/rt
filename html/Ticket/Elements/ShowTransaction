@@ -169,7 +169,7 @@ if ( $type =~ /EmailRecord$/ ) {
       . $Transaction->id
       . "&Attachment="
       . ( $Attachments->[0] && $Attachments->[0]->id )
-      . '">' . loc('Show') . "</a>]&nbsp;";
+      . '">' . _('Show') . "</a>]&nbsp;";
     $ShowBody = 0;
 }
 
@@ -189,7 +189,7 @@ else {
               . "?id=" . $Transaction->Ticket
               . "&QuoteTransaction=" . $Transaction->id
               . "&Action=Respond\">"
-              . loc('Reply')
+              . _('Reply')
               . "</a>]&nbsp;";
         }
         if ( $can_modify || $Transaction->TicketObj->current_user_has_right('commentOnTicket') ) {
@@ -199,14 +199,14 @@ else {
               . "&QuoteTransaction="
               . $Transaction->id
               . "&Action=comment\">"
-              . loc('comment') . "</a>]";
+              . _('comment') . "</a>]";
         }
         if ( $Transaction->TicketObj->current_user_has_right('ForwardMessage') ) {
             $titlebar_commands .=
                 "[<a href=\"". $ForwardPath
               . "?id=". $Transaction->Ticket
               . "&QuoteTransaction=". $Transaction->id
-              . "\">". loc('Forward') . "</a>]";
+              . "\">". _('Forward') . "</a>]";
         }
     }
 }

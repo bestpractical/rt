@@ -72,7 +72,7 @@ RT::Init();
 my $CurrentUser = GetCurrentUser();
 
 unless ( $CurrentUser->id ) {
-    print loc("No RT user found. Please consult your RT administrator.\n");
+    print _("No RT user found. Please consult your RT administrator.\n");
     exit(1);
 }
 
@@ -94,7 +94,7 @@ help() if $help or not $search or not $action;
 
 $transaction ||= 'first';
 unless ( $transaction =~ /^(first|last)$/i ) {
-    print STDERR loc("--transaction argument could be only 'first' or 'last'");
+    print STDERR _("--transaction argument could be only 'first' or 'last'");
     exit 1;
 }
 $transaction = lc($transaction) eq 'first'? 'ASC': 'DESC';
@@ -133,7 +133,7 @@ while ( my $ticket = $tickets->next() ) {
     print $ticket->id() . ": " if ($verbose);
 
     my $transaction = get_transaction($ticket);
-    print loc("Using transaction #%1...", $transaction->id)
+    print _("Using transaction #%1...", $transaction->id)
         if $verbose && $transaction;
 
     # perform some more advanced check
@@ -150,7 +150,7 @@ while ( my $ticket = $tickets->next() ) {
         # if the condition doesn't apply, get out of here
 
         next unless ( $condition_obj->IsApplicable );
-        print loc("Condition matches...") if ($verbose);
+        print _("Condition matches...") if ($verbose);
     }
 
     #prepare our action
@@ -166,11 +166,11 @@ while ( my $ticket = $tickets->next() ) {
 
     #if our preparation, move onto the next ticket
     next unless ( $action_obj->prepare );
-    print loc("Action prepared...") if ($verbose);
+    print _("Action prepared...") if ($verbose);
 
     #commit our action.
     next unless ( $action_obj->commit );
-    print loc("Action committed.\n") if ($verbose);
+    print _("Action committed.\n") if ($verbose);
 }
 
 =head2 get_transaction
@@ -205,7 +205,7 @@ sub load_module {
     my $modname = shift;
     eval "require $modname";
     if ($@) {
-        die loc( "Failed to load module %1. (%2)", $modname, $@ );
+        die _( "Failed to load module %1. (%2)", $modname, $@ );
     }
 
 }
@@ -221,59 +221,59 @@ Localize this string, with the current user's currentuser object
 =cut
 
 sub loc {
-    $CurrentUser->loc(@_);
+    $CurrentUser->_(@_);
 }
 
 # }}}
 
 sub help {
 
-    print loc( "%1 is a tool to act on tickets from an external scheduling tool, such as cron.", $0 )
+    print _( "%1 is a tool to act on tickets from an external scheduling tool, such as cron.", $0 )
       . "\n";
-    print loc("It takes several arguments:") . "\n\n";
+    print _("It takes several arguments:") . "\n\n";
 
     print "	"
-      . loc( "%1 - Specify the search module you want to use", "--search" )
+      . _( "%1 - Specify the search module you want to use", "--search" )
       . "\n";
     print "	"
-      . loc( "%1 - An argument to pass to %2", "--search-argument", "--search" )
+      . _( "%1 - An argument to pass to %2", "--search-argument", "--search" )
       . "\n";
 
     print "	"
-      . loc( "%1 - Specify the condition module you want to use", "--condition" )
+      . _( "%1 - Specify the condition module you want to use", "--condition" )
       . "\n";
     print "	"
-      . loc( "%1 - An argument to pass to %2", "--condition-argument", "--condition" )
+      . _( "%1 - An argument to pass to %2", "--condition-argument", "--condition" )
       . "\n";
     print "	"
-      . loc( "%1 - Specify the action module you want to use", "--action" )
+      . _( "%1 - Specify the action module you want to use", "--action" )
       . "\n";
     print "	"
-      . loc( "%1 - An argument to pass to %2", "--action-argument", "--action" )
+      . _( "%1 - An argument to pass to %2", "--action-argument", "--action" )
       . "\n";
     print "	"
-      . loc( "%1 - Specify id of the template you want to use", "--template-id" )
+      . _( "%1 - Specify id of the template you want to use", "--template-id" )
       . "\n";
     print "	"
-      . loc( "%1 - Specify if you want to use either 'first' or 'last' transaction", "--transaction" )
+      . _( "%1 - Specify if you want to use either 'first' or 'last' transaction", "--transaction" )
       . "\n";
     print "	"
-      . loc( "%1 - Specify the type of a transaction you want to use", "--transaction-type" )
+      . _( "%1 - Specify the type of a transaction you want to use", "--transaction-type" )
       . "\n";
     print "	"
-      . loc( "%1 - Output status updates to STDOUT", "--verbose" ) . "\n";
+      . _( "%1 - Output status updates to STDOUT", "--verbose" ) . "\n";
     print "\n";
     print "\n";
-    print loc("Security:")."\n";
-    print loc("This tool allows the user to run arbitrary perl modules from within RT.")." ". 
-        loc("If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT.")." ".
-        loc("It is incredibly important that nonprivileged users not be allowed to run this tool."). " " . 
-        loc("It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool.")."\n";
+    print _("Security:")."\n";
+    print _("This tool allows the user to run arbitrary perl modules from within RT.")." ". 
+        _("If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT.")." ".
+        _("It is incredibly important that nonprivileged users not be allowed to run this tool."). " " . 
+        _("It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool.")."\n";
     print "\n";
-    print loc("Example:");
+    print _("Example:");
     print "\n";
     print " "
-      . loc( "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
+      . _( "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
       )
       . "\n\n";
 
@@ -284,7 +284,7 @@ sub help {
     print "  --verbose\n";
 
     print "\n";
-    print loc("Escalate tickets"). "\n";
+    print _("Escalate tickets"). "\n";
     print " bin/rt-crontool \\\n";
     print "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
     print "  --action RT::ScripAction::EscalatePriority\n";

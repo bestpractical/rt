@@ -70,14 +70,16 @@ Create a new URI handler
 
 =cut
 
+
 sub new {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
-    bless( $self, $class );
-    $self->current_user(@_);
-    return ($self);
+    my $class = shift;
+    my $self = {};
+    bless $self => ref($class) || $class;
+    $self->_get_current_user(@_);
+    return $self;
+
 }
+
 
 sub ParseObject  {
     my $self = shift;

@@ -60,7 +60,7 @@
 <& ObjectCheckBox, Object => $o &>
 % }
 </div>
-<& /Elements/Submit, name => 'Wipeout', Label => loc('Wipeout') &>
+<& /Elements/Submit, name => 'Wipeout', Label => _('Wipeout') &>
 % }
 </div>
 <%INIT>

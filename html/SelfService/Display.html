@@ -45,14 +45,14 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => loc('#%1: %2', $Ticket->id, $Ticket->Subject) &>
+<& /SelfService/Elements/Header, Title => _('#%1: %2', $Ticket->id, $Ticket->Subject) &>
 
 <& /Elements/ListActions, actions => \@results &>
 
   <table width="100%" class="ticketsummary" >
       <tr>
         <td valign="top" width="50%" class="boxcontainer">
-          <&| /Widgets/TitleBox, title => loc('The Basics'), 
+          <&| /Widgets/TitleBox, title => _('The Basics'), 
                 title_class=> 'inverse',  
                 color => "#993333" &>
                 <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
@@ -60,7 +60,7 @@
           </&>
 </td>
         <td valign="top" width="50%" class="boxcontainer">
-          <&| /Widgets/TitleBox, title => loc("Dates"),
+          <&| /Widgets/TitleBox, title => _("Dates"),
                 title_class=> 'inverse',
                  color => "#663366" &>
           <& /Ticket/Elements/ShowDates, Ticket => $Ticket, UpdatedLink => 0 &>
@@ -126,14 +126,14 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     my $Queue = RT::Model::Queue->new();
     unless ( $Queue->load( $ARGS{'Queue'} ) ) {
-        $m->comp( 'Error.html', Why => loc('Queue not found') );
+        $m->comp( 'Error.html', Why => _('Queue not found') );
         $m->abort;
     }
 
     unless ( $Queue->current_user_has_right('CreateTicket') ) {
         $m->comp( 'Error.html',
             Why =>
-              loc('You have no permission to create tickets in that queue.') );
+              _('You have no permission to create tickets in that queue.') );
         $m->abort;
     }
 
@@ -158,7 +158,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     else {
         unless ( $Ticket->load( $id[0] ) ) {
             $m->comp( 'Error.html',
-                Why => loc( "Couldn't load ticket '%1'", $id ) );
+                Why => _( "Couldn't load ticket '%1'", $id ) );
             $m->abort();
         }
 
@@ -206,7 +206,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     unless ( $Ticket->current_user_has_right('ShowTicket') ) {
         $m->comp( 'Error.html',
-            Why => loc("No permission to display that ticket") );
+            Why => _("No permission to display that ticket") );
         # XXX: Why abort? then we loose footer //ruz
         $m->abort();
     }

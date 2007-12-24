@@ -76,7 +76,7 @@
 <input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this group)</&><br />
 </tr>
 </table>
-<& /Elements/Submit, Label => loc('Save Changes'), Reset => 1 &>
+<& /Elements/Submit, Label => _('Save Changes'), Reset => 1 &>
 </form>
 <%INIT>
 
@@ -87,7 +87,7 @@ my $Group = RT::Model::Group->new();
 
 if ($Create) {
     $current_tab = 'User/Groups/Modify.html?Create=1';
-    $title = loc("Create a new personal group");
+    $title = _("Create a new personal group");
 } 
 else {
     if ( defined ($id) && $id eq 'new' ) {
@@ -97,22 +97,22 @@ else {
                              principal_id => Jifty->web->current_user->id
         );
         unless ($id) {
-            Abort( loc("Could not create group") );
+            Abort( _("Could not create group") );
         }
         $id = $Group->id;
     }
     else {
-        $Group->load($id) || Abort( loc('Could not load group') );
+        $Group->load($id) || Abort( _('Could not load group') );
     }
 
     if ($id) {
-        $title = loc( "Modify the group %1", $Group->name );
+        $title = _( "Modify the group %1", $Group->name );
 
     }
 
     # If the create failed
     else {
-        $title  = loc("Create a new personal group");
+        $title  = _("Create a new personal group");
         $Create = 1;
     }
 
@@ -137,7 +137,7 @@ else {
 }
 if  ( ($SetEnabled) and ( $disabled != $Group->disabled) ) { 
     my  ($code, $msg) = $Group->set_disabled($disabled);
-    push @results, loc('Enabled status %1', loc_fuzzy($msg));
+    push @results, _('Enabled status %1', _($msg));
 }
 
 unless ($Group->disabled()) {

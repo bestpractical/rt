@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Search Preferences") &>
+<& /Elements/Header, Title => _("Search Preferences") &>
 <& /User/Elements/Tabs, 
     current_tab => "Prefs/SearchOptions.html",
-    Title => loc("Search Preferences")
+    Title => _("Search Preferences")
 &>
 
 <form method="post" action="SearchOptions.html">
@@ -61,7 +61,7 @@
             order_by => $order_by, 
             Order => $Order &>
 
-<& /Elements/Submit, name => 'SavePreferences', Label => loc('Save Changes') &>
+<& /Elements/Submit, name => 'SavePreferences', Label => _('Save Changes') &>
 </form>
 <%INIT>
 

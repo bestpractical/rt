@@ -95,7 +95,7 @@ use RT::URI;
 =head2 Create PARAMHASH
 
 Create a new link object. Takes 'Base', 'Target' and 'Type'.
-Returns undef on failure or a Link Id on success.
+Returns undef on failure or a Link id on success.
 
 =cut
 
@@ -110,7 +110,7 @@ sub create {
     $base->FromURI( $args{'Base'} );
 
     unless ( $base->Resolver && $base->Scheme ) {
-	my $msg = $self->loc("Couldn't resolve base '%1' into a URI.", 
+	my $msg = _("Couldn't resolve base '%1' into a URI.", 
 			     $args{'Base'});
         $RT::Logger->warning( "$self $msg\n" );
 
@@ -125,7 +125,7 @@ sub create {
     $target->FromURI( $args{'Target'} );
 
     unless ( $target->Resolver ) {
-	my $msg = $self->loc("Couldn't resolve target '%1' into a URI.", 
+	my $msg = _("Couldn't resolve target '%1' into a URI.", 
 			     $args{'Target'});
         $RT::Logger->warning( "$self $msg\n" );
 
@@ -143,15 +143,15 @@ sub create {
 
 
     if ( $base->IsLocal ) {
-        unless (UNIVERSAL::can($base->Object, 'Id')) {
-            return (undef, $self->loc("%1 appears to be a local object, but can't be found in the database", $args{'Base'}));
+        unless (UNIVERSAL::can($base->Object, 'id')) {
+            return (undef, _("%1 appears to be a local object, but can't be found in the database", $args{'Base'}));
         
         }
         $base_id = $base->Object->id;
     }
     if ( $target->IsLocal ) {
-        unless (UNIVERSAL::can($target->Object, 'Id')) {
-            return (undef, $self->loc("%1 appears to be a local object, but can't be found in the database", $args{'Target'}));
+        unless (UNIVERSAL::can($target->Object, 'id')) {
+            return (undef, _("%1 appears to be a local object, but can't be found in the database", $args{'Target'}));
         
         }
         $target_id = $target->Object->id;
@@ -159,7 +159,7 @@ sub create {
 
     # {{{ We don't want references to ourself
     if ( $base->URI eq $target->URI ) {
-        return ( 0, $self->loc("Can't link a ticket to itself") );
+        return ( 0, _("Can't link a ticket to itself") );
     }
 
     # }}}
@@ -202,7 +202,7 @@ sub loadByParams {
     $target->FromURI( $args{'Target'} );
     
     unless ($base->Resolver && $target->Resolver) {
-        return ( 0, $self->loc("Couldn't load link") );
+        return ( 0, _("Couldn't load link") );
     }
 
 
@@ -211,7 +211,7 @@ sub loadByParams {
                                           Target => $target->URI );
 
     unless ($id) {
-        return ( 0, $self->loc("Couldn't load link") );
+        return ( 0, _("Couldn't load link") );
     }
 }
 
@@ -233,12 +233,12 @@ sub load {
 
 
     if ( $identifier !~ /^\d+$/ ) {
-        return ( 0, $self->loc("That's not a numerical id") );
+        return ( 0, _("That's not a numerical id") );
     }
     else {
         my ( $id, $msg ) = $self->load_by_id($identifier);
         unless ( $self->id ) {
-            return ( 0, $self->loc("Couldn't load link") );
+            return ( 0, _("Couldn't load link") );
         }
         return ( $id, $msg );
     }

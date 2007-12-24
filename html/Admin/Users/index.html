@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc('Select a user') &>
+<& /Admin/Elements/Header, Title => _('Select a user') &>
 <& /Admin/Elements/UserTabs, current_tab => 'Admin/Users/', 
     current_subtab => 'Admin/Users/',
-    Title => loc('Select a user') &>
+    Title => _('Select a user') &>
 
 <h1><% $caption %></h1>
 <p><&|/l&>Select a user</&>:</p>
@@ -97,7 +97,7 @@ my $users = RT::Model::UserCollection->new();
 $users->{'find_disabled_rows'} = 1 if $FinddisabledUsers;
 
 if ( defined($UserString) && length $UserString ) {
-    $caption = loc("Users matching search criteria");
+    $caption = _("Users matching search criteria");
     if ( $UserField =~ /^CustomField-(\d+)/ ) {
         $users->LimitCustomField(
             customfield => $1,
@@ -114,7 +114,7 @@ if ( defined($UserString) && length $UserString ) {
     }
 }
 else {
-    $caption = loc("privileged users");
+    $caption = _("privileged users");
     $users->LimitToprivileged;
 }
 

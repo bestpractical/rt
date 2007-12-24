@@ -52,7 +52,7 @@
 %while  (my $ScripAction = $ScripActions->next) {
 <option value="<%$ScripAction->id%>"
 <% defined $Default && $ScripAction->id == $Default ? 'SELECTED' : '' %>
-><% loc($ScripAction->name) %>
+><% _($ScripAction->name) %>
 </option>
 %}
 </select>

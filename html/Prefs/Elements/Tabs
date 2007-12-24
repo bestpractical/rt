@@ -56,7 +56,7 @@ my $tabs;
 $Searches ||= [$m->comp("/Search/Elements/SearchesForObject", Object => RT::System->new())];
 
 $tabs->{a} = {
-    title => loc('Quick search'),
+    title => _('Quick search'),
 	path => 'Prefs/Quicksearch.html',
 };
 

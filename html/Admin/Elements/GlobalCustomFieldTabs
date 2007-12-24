@@ -54,22 +54,22 @@
 
   my $tabs = {
                 
-               A => { title => loc('Users'),
-                           text => loc('Modify scrips which apply to all queues'),
+               A => { title => _('Users'),
+                           text => _('Modify scrips which apply to all queues'),
                            path => 'Admin/Global/CustomFields/Users.html',
                          },
-               B => { title => loc('Groups'),
-                        text => loc('Edit system templates'),
+               B => { title => _('Groups'),
+                        text => _('Edit system templates'),
                         path => 'Admin/Global/CustomFields/Groups.html',
                       },
               
-                F => { title => loc('Tickets'),
-                text => loc('Modify global custom fields'),
+                F => { title => _('Tickets'),
+                text => _('Modify global custom fields'),
                         path => 'Admin/Global/CustomFields/Queue-Tickets.html',
                         },
 
-                        G => { title => loc('Ticket Transactions'),
-                                text => loc('Modify global group rights'),
+                        G => { title => _('Ticket Transactions'),
+                                text => _('Modify global group rights'),
                                 path => 'Admin/Global/CustomFields/Queue-Transactions.html',
                       },
  

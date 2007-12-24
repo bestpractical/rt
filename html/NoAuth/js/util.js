@@ -200,7 +200,7 @@ function createCalendarLink(input) {
             return false;
         }
         
-        var text = document.createTextNode('<% loc("Choose a date") %>');
+        var text = document.createTextNode('<% _("Choose a date") %>');
         link.appendChild(text);
 
         var space = document.createTextNode(' ');

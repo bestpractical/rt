@@ -127,7 +127,7 @@ sub extract_strings_from_code {
         push @{ $FILECAT->{$str} }, [ $filename, $line, $vars ];
     }
 
-    # Localization function: loc(...)
+    # Localization function: _(...)
     $line = 1;
     pos($_) = 0;
     while (m/\G.*?\bloc$RE{balanced}{-parens=>'()'}{-keep}/sg) {

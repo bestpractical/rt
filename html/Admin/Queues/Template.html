@@ -65,7 +65,7 @@
 <input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
 <& /Admin/Elements/ModifyTemplate, name => $TemplateObj->name, Description =>
 $TemplateObj->Description, Content => $TemplateObj->Content &> 
-<& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
+<& /Elements/Submit, Label => _('Create'), Reset => 1 &>
 </form>
 
 
@@ -75,30 +75,30 @@ my $TemplateObj = RT::Model::Template->new();
 my  ($title, @results, $current_subtab);
 
 my $subtabs = {
-		 A => { title => loc('Select template'),
+		 A => { title => _('Select template'),
   		     	path => "Admin/Queues/Templates.html?id=$Queue"
 			   },
-		 B => { title => loc('New template'),
+		 B => { title => _('New template'),
   		     	path => "Admin/Queues/Template.html?Create=1&Queue=$Queue",
 			separator => 1,
 			   }
 	      };
 
 if ($Create) {
-  $title = loc("Create a template");
+  $title = _("Create a template");
   $current_subtab = "Admin/Queues/Template.html?Create=1&Queue=".$Queue;
 }
 
 else {
   if ($Template eq 'new') {
       my ($val, $msg) =  $TemplateObj->create(Queue => $Queue, name => $name);
-      Abort(loc("Could not create template: %1", $msg)) unless ($val);
+      Abort(_("Could not create template: %1", $msg)) unless ($val);
      push @results, $msg;
     }
     else {
-       $TemplateObj->load($Template) || Abort(loc('No Template'));
+       $TemplateObj->load($Template) || Abort(_('No Template'));
     }
-     $title = loc('Modify template %1', loc($TemplateObj->name())); 
+     $title = _('Modify template %1', loc($TemplateObj->name())); 
   
     
 }
@@ -112,7 +112,7 @@ if ($TemplateObj->id()) {
 				     Object => $TemplateObj, 
 				     ARGSRef => \%ARGS);
   $current_subtab = "Admin/Queues/Template.html?Queue=$Queue&Template=".$TemplateObj->id();
-  $subtabs->{"C"} = { title => loc('Template #%1', $TemplateObj->id()),
+  $subtabs->{"C"} = { title => _('Template #%1', $TemplateObj->id()),
   		     	path => "Admin/Queues/Template.html?Queue=$Queue&Template=".$TemplateObj->id(),
 			};
   push @results, @aresults;

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('Results') &>
+<&| /Widgets/TitleBox, title => _('Results') &>
   <ul class="action-results">
 % foreach my $action (@actions) {
     <li><%$action%></li>

@@ -79,7 +79,7 @@ foreach my $f (@headers) {
 }
 
 if ( $Localize ) {
-    $_->{'Tag'} = loc($_->{'Tag'}) foreach @headers;
+    $_->{'Tag'} = _($_->{'Tag'}) foreach @headers;
 }
 </%INIT>
 <%ARGS>

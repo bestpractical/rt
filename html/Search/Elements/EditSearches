@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc($Title)&>
+<&| /Widgets/TitleBox, title => _($Title)&>
 
 %# Hide all the save functionality if the user shouldn't see it.
 % if (Jifty->web->current_user->has_right( Right => 'CreateSavedSearch',
@@ -63,22 +63,22 @@
 <nobr>
 % if ($Id ne 'new') {
 % if ($Dirty) {
-<input type="submit" class="button" name="SavedSearchRevert" value="<%loc('Revert')%>" />
+<input type="submit" class="button" name="SavedSearchRevert" value="<%_('Revert')%>" />
 % }
-<input type="submit" class="button" name="SavedSearchDelete" value="<%loc('Delete')%>" />
+<input type="submit" class="button" name="SavedSearchDelete" value="<%_('Delete')%>" />
 % if ( $AllowCopy ) {
-<input type="submit" class="button" name="SavedSearchCopy"   value="<%loc('Copy')%>" />
+<input type="submit" class="button" name="SavedSearchCopy"   value="<%_('Copy')%>" />
 % }
 </nobr>
 
 % }
-<input type="submit" name="SavedSearchSave" value="<%loc('Save')%>" class="button" />
+<input type="submit" name="SavedSearchSave" value="<%_('Save')%>" class="button" />
 % }
 <br />
 <hr />
 <&|/l&>load saved search:</&>
 <& SelectSearchesForObjects, name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>
-<input type="submit" value="<% loc('Load') %>" class="button" />
+<input type="submit" value="<% _('Load') %>" class="button" />
 
 </&>
 
@@ -151,7 +151,7 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
 elsif ( $ARGS{'SavedSearchCopy'} ) {
     $SavedSearch->{'Id'}          = 'new';
     $SavedSearch->{'Object'}      = undef;
-    $SavedSearch->{'Description'} = loc( "%1 copy", $SavedSearch->{'Description'} );
+    $SavedSearch->{'Description'} = _( "%1 copy", $SavedSearch->{'Description'} );
 }
 
 if ( $SavedSearch->{'Id'} && $SavedSearch->{'Id'} ne 'new'
@@ -183,7 +183,7 @@ if ( $obj && $obj->id ) {
     # permission check
     if ($obj->Object->isa('RT::System')) {
         unless (Jifty->web->current_user->has_right( Object=> RT->system, Right => 'SuperUser')) {
-            push @results, [ loc("No permission to save system-wide searches"), 0 ];
+            push @results, [ _("No permission to save system-wide searches"), 0 ];
             return @results;
         }
     }
@@ -210,11 +210,11 @@ elsif ( $id eq 'new' ) {
                     . $SavedSearch->{'Object'}->id;
     }
     else {
-        push @results, [ loc("Can't find a saved search to work with").': '.loc($msg), 0 ];
+        push @results, [ _("Can't find a saved search to work with").': '.loc($msg), 0 ];
     }
 }
 else {
-    push @results, [ loc("Can't save this search"), 0 ];
+    push @results, [ _("Can't save this search"), 0 ];
 }
 
 return @results;

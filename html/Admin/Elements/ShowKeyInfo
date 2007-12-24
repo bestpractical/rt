@@ -47,25 +47,25 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => $title &>
 % if ( $res{'exit_code'} || !keys %{ $res{'info'} } ) {
-<% loc('No keys for this address') %>
+<% _('No keys for this address') %>
 % } else {
 <table>
 
 % unless ( $Type eq 'private' ) {
-<tr><th><% loc('Trust') %>:</th>  <td><% loc( $res{'info'}{'Trust'} ) %></td></tr>
+<tr><th><% _('Trust') %>:</th>  <td><% loc( $res{'info'}{'Trust'} ) %></td></tr>
 % }
 
-<tr><th><% loc('Created') %>:</th>
-<td><% $res{'info'}{'Created'}? $res{'info'}{'Created'}->AsString( Time => 0 ): loc('never') %></td></tr>
+<tr><th><% _('Created') %>:</th>
+<td><% $res{'info'}{'Created'}? $res{'info'}{'Created'}->AsString( Time => 0 ): _('never') %></td></tr>
 
-<tr><th><% loc('Expire') %>:</th>
-<td><% $res{'info'}{'Expire'}? $res{'info'}{'Expire'}->AsString( Time => 0 ): loc('never') %></td></tr>
+<tr><th><% _('Expire') %>:</th>
+<td><% $res{'info'}{'Expire'}? $res{'info'}{'Expire'}->AsString( Time => 0 ): _('never') %></td></tr>
 
 % foreach my $uinfo( @{ $res{'info'}{'User'} } ) {
-<tr><th><% loc('User (Created - expire)') %>:</th>
+<tr><th><% _('User (Created - expire)') %>:</th>
 <td><% $uinfo->{'String'} %>\
-(<% $uinfo->{'Created'}? $uinfo->{'Created'}->AsString( Time => 0 ): loc('never') %> - \
-<% $uinfo->{'Expire'}? $uinfo->{'Expire'}->AsString( Time => 0 ): loc('never') %>)
+(<% $uinfo->{'Created'}? $uinfo->{'Created'}->AsString( Time => 0 ): _('never') %> - \
+<% $uinfo->{'Expire'}? $uinfo->{'Expire'}->AsString( Time => 0 ): _('never') %>)
 </td></tr>
 % }
 
@@ -83,9 +83,9 @@ my %res = RT::Crypt::GnuPG::GetKeyInfo( $email, $Type );
 
 my $title;
 unless ( $Type eq 'private' ) {
-    $title = loc('GnuPG public key(s) for %1', $email);
+    $title = _('GnuPG public key(s) for %1', $email);
 } else {
-    $title = loc('GnuPG private key(s) for %1', $email);
+    $title = _('GnuPG private key(s) for %1', $email);
 }
 
 </%INIT>

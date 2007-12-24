@@ -75,8 +75,8 @@ my @Format = qq{
    Ownername};
 </%INIT>
 <%ARGS>
-$friendly_status => loc('open')
-$title => loc("My %1 tickets", $friendly_status)
+$friendly_status => _('open')
+$title => _("My %1 tickets", $friendly_status)
 @roles => ('Watcher')
 @status => ('open', 'new', 'stalled')
 $BaseURL => undef

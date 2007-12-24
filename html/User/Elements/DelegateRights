@@ -78,7 +78,7 @@ while ( my $delegation = $delegations->next) {
 %
 <tr class="<%($i%2) && 'oddline'%>">
 <td>
-<% loc($right->right_name) %><br />
+<% _($right->right_name) %><br />
 <div align="right"><font size="-2" color="#999999"><&|/l, $right->principal_object->Object->SelfDescription &>as granted to %1</&></font></div>
        </td>
 % while (my $pg = $personalgroups->next) {
@@ -96,7 +96,7 @@ while ( my $delegation = $delegations->next) {
 % }
 <%init>
 
-my $sectionheading = loc("%1 rights", loc($object_type =~ /^RT::(.*)$/));
+my $sectionheading = _("%1 rights", loc($object_type =~ /^RT::(.*)$/));
 # 'System' # loc
 # 'Group'  # loc
 # 'Queue'  # loc

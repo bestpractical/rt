@@ -60,17 +60,17 @@
 my $QueueObj = RT::Model::Queue->new();
 $QueueObj->load( $Queue );
 unless( $QueueObj->id ) {
-    Abort(loc("Queue %1 not found", $id));
+    Abort(_("Queue %1 not found", $id));
 }
 
 my ($title, $current_subtab);
 my $subtabs = {
     A => {
-        title => loc('Select scrip'),
+        title => _('Select scrip'),
         path  => "Admin/Queues/Scrips.html?id=".$QueueObj->id,
     },
     B => {
-        title => loc('New scrip'),
+        title => _('New scrip'),
         path => "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id,
         separator => 1,
     },
@@ -81,14 +81,14 @@ my $scrip = RT::Model::Scrip->new();
 
 if ( $id ) {
     $current_subtab = "Admin/Queues/Scrip.html?id=$id&Queue=". $QueueObj->id;
-    $title = loc("Modify a scrip for queue %1", $QueueObj->name);
+    $title = _("Modify a scrip for queue %1", $QueueObj->name);
     $subtabs->{"C"} = {
-        title => loc("Scrip #%1",$id),
+        title => _("Scrip #%1",$id),
         path  => "Admin/Queues/Scrip.html?id=$id&Queue=".$QueueObj->id
     };
 } else {
     $current_subtab = "Admin/Queues/Scrip.html?create=1&Queue=".$QueueObj->id;
-    $title = loc("Create a scrip for queue %1", $QueueObj->name);
+    $title = _("Create a scrip for queue %1", $QueueObj->name);
 }
 
 

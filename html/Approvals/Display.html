@@ -64,7 +64,7 @@
 <%init>
 my $Ticket = load_ticket($id);
 
-my $title = loc("Approval #%1: %2", $Ticket->id, $Ticket->Subject);
+my $title = _("Approval #%1: %2", $Ticket->id, $Ticket->Subject);
 
 </%init>
 <%ARGS>

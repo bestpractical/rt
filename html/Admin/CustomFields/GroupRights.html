@@ -64,7 +64,7 @@
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
-	    <% loc($Group->Type) %>
+	    <% _($Group->Type) %>
 		  </td>
 	  <td>
 	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
@@ -90,20 +90,20 @@
 % }
 </table>
             
-      <& /Elements/Submit, Caption => loc("Be sure to save your changes"), Reset => 1 &>
+      <& /Elements/Submit, Caption => _("Be sure to save your changes"), Reset => 1 &>
       
   </form>
   
 <%INIT>
 
 if (!defined $id) {
-    $m->comp("/Elements/Error", Why => loc("No CustomField defined"));
+    $m->comp("/Elements/Error", Why => _("No CustomField defined"));
 }
 
 my $CustomFieldObj = RT::Model::CustomField->new();
-$CustomFieldObj->load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load CustomField %1",$id));
+$CustomFieldObj->load($id) || $m->comp("/Elements/Error", Why => _("Couldn't load CustomField %1",$id));
 
-my $title = loc('Modify group rights for custom field %1', $CustomFieldObj->name);
+my $title = _('Modify group rights for custom field %1', $CustomFieldObj->name);
 
 my @results = ProcessACLChanges( \%ARGS );
 

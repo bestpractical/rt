@@ -64,7 +64,7 @@ $Wipeout => ''
 <& Elements/DumpFileLink, File => $dump_file &>
 <& Elements/SelectPlugin, Plugin => $Plugin, %ARGS &>
 <div id="shredder-submit-button" class="<% $Plugin? '': 'hidden' %>">
-<& /Elements/Submit, name => 'Search', Label => loc('Search') &>
+<& /Elements/Submit, name => 'Search', Label => _('Search') &>
 </div>
 </div>
 <br />
@@ -75,7 +75,7 @@ $Wipeout => ''
 <%INIT>
 
 require RT::Shredder;
-my $title = loc('Shredder');
+my $title = _('Shredder');
 my %messages = ( Errors => [], Success => [] );
 my ($plugin_obj, @objs);
 

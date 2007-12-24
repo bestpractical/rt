@@ -108,7 +108,7 @@
 % }
 
 </table>
-<& /Elements/Submit, Label => loc('Save Changes') &>
+<& /Elements/Submit, Label => _('Save Changes') &>
 </form>
 
 
@@ -122,7 +122,7 @@ $EnabledChecked = "checked";
 
 if ($Create) {
     $current_tab = 'Admin/Queues/Modify.html?Create=1';
-    $title = loc("Create a queue");
+    $title = _("Create a queue");
 } else {
     if ( defined $id && $id eq 'new' ) {
         my ($val, $msg) = $QueueObj->create( name => $name );
@@ -131,9 +131,9 @@ if ($Create) {
 		push @results, $msg;
     }
     else {
-        $QueueObj->load($id) || $QueueObj->load($name) || Abort(loc("Couldn't load queue '%1'", $name));
+        $QueueObj->load($id) || $QueueObj->load($name) || Abort(_("Couldn't load queue '%1'", $name));
     }
-    $title = loc('Editing Configuration for queue %1', $QueueObj->name);
+    $title = _('Editing Configuration for queue %1', $QueueObj->name);
     
     $current_tab = 'Admin/Queues/Modify.html?id='.$QueueObj->id;
 }

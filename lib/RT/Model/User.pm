@@ -123,12 +123,12 @@ sub create {
     #Check the ACL
     Carp::confess unless($self->current_user);
     unless ( $self->current_user->user_object->has_right(Right => 'AdminUsers', Object => RT->system) ) {
-        return ( 0, $self->loc('No permission to create users') );
+        return ( 0, _('No permission to create users') );
     }
 
 
     unless ($self->canonicalize_UserInfo(\%args)) {
-        return ( 0, $self->loc("Could not set user info") );
+        return ( 0, _("Could not set user info") );
     }
 
     $args{'email'} = $self->canonicalize_email($args{'email'});
@@ -148,20 +148,20 @@ sub create {
     }
     
     elsif ( length( $args{'password'} ) < RT->Config->Get('MinimumpasswordLength') ) {
-        return ( 0, $self->loc("password needs to be at least %1 characters long",RT->Config->Get('MinimumpasswordLength')) );
+        return ( 0, _("password needs to be at least %1 characters long",RT->Config->Get('MinimumpasswordLength')) );
     }
 
     unless ( $args{'name'} ) {
-        return ( 0, $self->loc("Must specify 'name' attribute") );
+        return ( 0, _("Must specify 'name' attribute") );
     }
 
     #SANITY CHECK THE name AND ABORT IF IT'S TAKEN
     if (RT->system_user) {   #This only works if RT::system_user has been defined
         my $TempUser = RT::Model::User->new(current_user => RT->system_user);
         $TempUser->load( $args{'name'} );
-        return ( 0, $self->loc('name in use') ) if ( $TempUser->id );
+        return ( 0, _('name in use') ) if ( $TempUser->id );
 
-        return ( 0, $self->loc('Email address in use') )
+        return ( 0, _('Email address in use') )
           unless ( $self->validate_email( $args{'email'} ) );
     }
     else {
@@ -181,7 +181,7 @@ sub create {
         Jifty->handle->rollback();
         $RT::Logger->crit("Couldn't create a Principal on new user create.");
         $RT::Logger->crit("Strange things are afoot at the circle K");
-        return ( 0, $self->loc('Could not create user') );
+        return ( 0, _('Could not create user') );
     }
 
     $principal->__set(column => 'object_id', value => $principal_id);
@@ -195,7 +195,7 @@ sub create {
         Jifty->handle->rollback();
         $RT::Logger->error("Could not create a new user - " .join('-', %args));
 
-        return ( 0, $self->loc('Could not create user') );
+        return ( 0, _('Could not create user') );
     }
 
     my $aclstash = RT::Model::Group->new;
@@ -204,7 +204,7 @@ sub create {
     unless ($stash_id) {
         Jifty->handle->rollback();
         $RT::Logger->crit("Couldn't stash the user in groupmembers");
-        return ( 0, $self->loc('Could not create user') );
+        return ( 0, _('Could not create user') );
     }
 
 
@@ -213,7 +213,7 @@ sub create {
     unless ($everyone->id) {
         $RT::Logger->crit("Could not load Everyone group on user creation.");
         Jifty->handle->rollback();
-        return ( 0, $self->loc('Could not create user') );
+        return ( 0, _('Could not create user') );
     }
 
 
@@ -222,7 +222,7 @@ sub create {
         $RT::Logger->crit("Could not add user to Everyone group on user creation.");
         $RT::Logger->crit($everyone_msg);
         Jifty->handle->rollback();
-        return ( 0, $self->loc('Could not create user') );
+        return ( 0, _('Could not create user') );
     }
 
 
@@ -236,7 +236,7 @@ sub create {
     unless ($access_class->id) {
         $RT::Logger->crit("Could not load privileged or Unprivileged group on user creation");
         Jifty->handle->rollback();
-        return ( 0, $self->loc('Could not create user') );
+        return ( 0, _('Could not create user') );
     }
 
 
@@ -246,7 +246,7 @@ sub create {
         $RT::Logger->crit("Could not add user to privileged or Unprivileged group on user creation. Aborted");
         $RT::Logger->crit($ac_msg);
         Jifty->handle->rollback();
-        return ( 0, $self->loc('Could not create user') );
+        return ( 0, _('Could not create user') );
     }
 
 
@@ -256,7 +256,7 @@ sub create {
 
     Jifty->handle->commit;
 
-    return ( $id, $self->loc('User Created') );
+    return ( $id, _('User Created') );
 }
 
 # }}}
@@ -281,27 +281,27 @@ sub set_privileged {
 
     #Check the ACL
     unless ( $self->current_user->has_right(Right => 'AdminUsers', Object => RT->system) ) {
-        return ( 0, $self->loc('Permission Denied') );
+        return ( 0, _('Permission Denied') );
     }
     my $priv = RT::Model::Group->new;
     $priv->load_system_internal_group('privileged');
    
     unless ($priv->id) {
         $RT::Logger->crit("Could not find privileged pseudogroup");
-        return(0,$self->loc("Failed to find 'privileged' users pseudogroup."));
+        return(0,_("Failed to find 'privileged' users pseudogroup."));
     }
 
     my $unpriv = RT::Model::Group->new;
     $unpriv->load_system_internal_group('Unprivileged');
     unless ($unpriv->id) {
         $RT::Logger->crit("Could not find unprivileged pseudogroup");
-        return(0,$self->loc("Failed to find 'Unprivileged' users pseudogroup"));
+        return(0,_("Failed to find 'Unprivileged' users pseudogroup"));
     }
 
     if ($val) {
         if ($priv->has_member($self->principal_object)) {
             #$RT::Logger->debug("That user is already privileged");
-            return (0,$self->loc("That user is already privileged"));
+            return (0,_("That user is already privileged"));
         }
         if ($unpriv->has_member($self->principal_object)) {
             $unpriv->_delete_member($self->principal_id);
@@ -314,7 +314,7 @@ sub set_privileged {
         }
         my ($status, $msg) = $priv->_add_member( InsideTransaction => 1, principal_id => $self->principal_id);  
         if ($status) {
-            return (1, $self->loc("That user is now privileged"));
+            return (1, _("That user is now privileged"));
         } else {
             return (0, $msg);
         }
@@ -322,7 +322,7 @@ sub set_privileged {
     else {
         if ($unpriv->has_member($self->principal_object)) {
             #$RT::Logger->debug("That user is already unprivileged");
-            return (0,$self->loc("That user is already unprivileged"));
+            return (0,_("That user is already unprivileged"));
         }
         if ($priv->has_member($self->principal_object)) {
             $priv->_delete_member( $self->principal_id);
@@ -335,7 +335,7 @@ sub set_privileged {
         }
         my ($status, $msg) = $unpriv->_add_member( InsideTransaction => 1, principal_id => $self->principal_id);  
         if ($status) {
-            return (1, $self->loc("That user is now unprivileged"));
+            return (1, _("That user is now unprivileged"));
         } else {
             return (0, $msg);
         }
@@ -410,7 +410,7 @@ sub _bootstrap_create {
     unless ($stash_id) {
         Jifty->handle->rollback();
         $RT::Logger->crit("Couldn't stash the user in groupmembers");
-        return ( 0, $self->loc('Could not create user') );
+        return ( 0, _('Could not create user') );
     }
 
                                     
@@ -426,7 +426,7 @@ sub _bootstrap_create {
 sub delete {
     my $self = shift;
 
-    return ( 0, $self->loc('Deleting this object would violate referential integrity') );
+    return ( 0, _('Deleting this object would violate referential integrity') );
 
 }
 
@@ -513,7 +513,7 @@ sub load_or_create_by_email {
 
     $self->load_by_email( $email );
     $self->load( $email ) unless $self->id;
-    $message = $self->loc('User loaded');
+    $message = _('User loaded');
 
     unless( $self->id ) {
         my $val;
@@ -533,7 +533,7 @@ sub load_or_create_by_email {
             }
             if ( $self->id ) {
                 $RT::Logger->error("Recovered from creation failure due to race condition");
-                $message = $self->loc("User loaded");
+                $message = _("User loaded");
             }
             else {
                 $RT::Logger->crit("Failed to create user ". $email .": " .$message);
@@ -651,7 +651,7 @@ sub set_Randompassword {
     my $self = shift;
 
     unless ( $self->current_user_can_modify('password') ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
 
@@ -690,14 +690,14 @@ sub before_set_password {
     my $password = shift;
 
     unless ( $self->current_user_can_modify('password') ) {
-        return ( 0, $self->loc('password: Permission Denied') );
+        return ( 0, _('password: Permission Denied') );
     }
 
     if ( !$password ) {
-        return ( 0, $self->loc("No password set") );
+        return ( 0, _("No password set") );
     }
     elsif ( length($password) < RT->Config->Get('MinimumpasswordLength') ) {
-        return ( 0, $self->loc("password needs to be at least %1 characters long", RT->Config->Get('MinimumpasswordLength')) );
+        return ( 0, _("password needs to be at least %1 characters long", RT->Config->Get('MinimumpasswordLength')) );
     }
             return ( 1, "ok");
 
@@ -744,7 +744,7 @@ user will fail. The user will appear in no user listings.
 sub set_disabled {
     my $self = shift;
     unless ( $self->current_user->has_right(Right => 'AdminUsers', Object => RT->system) ) {
-        return (0, $self->loc('Permission Denied'));
+        return (0, _('Permission Denied'));
     }
     return $self->principal_object->set_disabled(@_);
 }
@@ -1190,10 +1190,10 @@ sub _set {
 
     if ( ($self->id == RT->system_user->id )  || 
          ($self->id == RT->nobody->id)) {
-        return ( 0, $self->loc("Can not modify system users") );
+        return ( 0, _("Can not modify system users") );
     }
     unless ( $self->current_user_can_modify( $args{'column'} ) ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     my $Old = $self->SUPER::_value($args{'column'});

@@ -68,14 +68,15 @@
 # 
 # 
 # END LICENSE BLOCK
+
+use warnings;
+use strict;
 package RT::URI::t;
 
 use RT::Model::Ticket;
 use RT::URI::base;
 
-use strict;
-use vars qw(@ISA);
-@ISA = qw/RT::URI::fsck_com_rt/;
+use base qw/RT::URI::fsck_com_rt/;
 
 my $scheme = "t";
 

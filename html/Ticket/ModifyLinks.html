@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Link ticket #%1", $Ticket->id) &>
+<& /Elements/Header, Title => _("Link ticket #%1", $Ticket->id) &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $Ticket, 
     current_tab => "Ticket/ModifyLinks.html?id=".$Ticket->id, 
-    Title => loc("Link ticket #%1", $Ticket->id) &>
+    Title => _("Link ticket #%1", $Ticket->id) &>
 
 % $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
@@ -57,10 +57,10 @@
 <form action="ModifyLinks.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 % $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
-<&| /Widgets/TitleBox, title => loc('Edit Links') &>
+<&| /Widgets/TitleBox, title => _('Edit Links') &>
 <& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
 </&>
-<& /Elements/Submit, Label => loc('Save Changes') &>
+<& /Elements/Submit, Label => _('Save Changes') &>
 </form>
 
 

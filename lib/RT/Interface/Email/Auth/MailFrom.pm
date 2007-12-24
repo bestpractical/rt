@@ -68,8 +68,8 @@ sub GetCurrentUser {
     }
 
     my $CurrentUser = RT::CurrentUser->new;
-    $CurrentUser->load_by_email( $Address );
-    $CurrentUser->load_by_name( $Address ) unless $CurrentUser->id;
+    $CurrentUser->new( email =>  $Address );
+    $CurrentUser->new( name => $Address ) unless $CurrentUser->id;
     if ( $CurrentUser->id ) {
         $RT::Logger->debug("Mail from user #". $CurrentUser->id ." ($Address)" );
         return ( $CurrentUser, 1 );

@@ -47,9 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <%init>
 require  Module::Versions::Report;
-my $title = loc('System Configuration');
+my $title = _('System Configuration');
 unless (Jifty->web->current_user->has_right( Object=> RT->system, Right => 'SuperUser')) {
- Abort(loc('This feature is only available to system administrators'));
+ Abort(_('This feature is only available to system administrators'));
 } 
 
 

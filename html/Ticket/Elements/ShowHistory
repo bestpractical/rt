@@ -52,7 +52,7 @@
 <%perl>
 if ($ShowDisplayModes or $ShowTitle) {
     my $title = $ShowTitle
-                    ? loc('History')
+                    ? _('History')
                     : '&nbsp;';
 
     my $titleright;
@@ -63,15 +63,15 @@ if ($ShowDisplayModes or $ShowTitle) {
         if ($ShowHeaders) {
             $titleright .= qq{<a href="$URIFile?id=} .
                            $Ticket->id.qq{">} .
-                           loc("Brief headers") .
+                           _("Brief headers") .
                            qq{</a> &mdash; };
-            $titleright .= q[<span class="selected">] . loc("Full headers") . "</span>";
+            $titleright .= q[<span class="selected">] . _("Full headers") . "</span>";
         }
         else {
-            $titleright .= q[<span class="selected">] . loc("Brief headers") . "</span> &mdash; ";
+            $titleright .= q[<span class="selected">] . _("Brief headers") . "</span> &mdash; ";
             $titleright .= qq{<a href="$URIFile?ShowHeaders=1;id=} .
                            $Ticket->id.qq{">} .
-                           loc("Full headers") .
+                           _("Full headers") .
                            qq{</a>};
         }
     }

@@ -57,19 +57,19 @@ $tabs->{'this'} = { title => eval { $user_object->name },
 
 		path => "Admin/Users/Modify.html?id=".$id,
 subtabs => {
-	       Basics => { title => loc('Basics'),
+	       Basics => { title => _('Basics'),
 				path => "Admin/Users/Modify.html?id=".$id
 			},
-	       Memberships => { title => loc('Memberships'),
+	       Memberships => { title => _('Memberships'),
 			   path => "Admin/Users/Memberships.html?id=".$id
 			 },
-	       History => { title => loc('History'),
+	       History => { title => _('History'),
 			   path => "Admin/Users/History.html?id=".$id
 			 },
-	       'MyRT' => { title => loc('RT at a glance'),
+	       'MyRT' => { title => _('RT at a glance'),
 			   path => "Admin/Users/MyRT.html?id=".$id
 			 },
-#	       Scrips => { title => loc('Rights'),
+#	       Scrips => { title => _('Rights'),
 #			   path => "Admin/Users/Rights.html?id=".$id
 #			 }
 	       
@@ -77,10 +77,10 @@ subtabs => {
 }
 }
 if (Jifty->web->current_user->has_right( Object => RT->system, Right => 'AdminUsers')) {
-  $tabs->{"A"} = { title => loc('Select user'),
+  $tabs->{"A"} = { title => _('Select user'),
   		     	path => "Admin/Users/",
 			   };
-  $tabs->{"B"} = { title => loc('New user'),
+  $tabs->{"B"} = { title => _('New user'),
   		     	path => "Admin/Users/Modify.html?Create=1",
 		separator => 1,
 	};

@@ -62,15 +62,15 @@ $QueueObj->load($id);
 my ($title, $current_subtab);
 
 if ($QueueObj->id) {
-    $title = loc("Edit Templates for queue %1", $QueueObj->name);
+    $title = _("Edit Templates for queue %1", $QueueObj->name);
 } else {
-    Abort(loc("Queue %1 not found",$id));
+    Abort(_("Queue %1 not found",$id));
 }
 my $subtabs = {
-	 A => { title => loc('Select template'),
+	 A => { title => _('Select template'),
 	     	path => "Admin/Queues/Templates.html?id=".$id,
 		   },
-	 B => { title => loc('New template'),
+	 B => { title => _('New template'),
 	     	path => "Admin/Queues/Template.html?Create=1&Queue=".$id,
 		   }
 	      };

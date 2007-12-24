@@ -46,11 +46,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, 
-    Title => loc("#%1: %2", $TicketObj->id, $TicketObj->Subject) &>
+    Title => _("#%1: %2", $TicketObj->id, $TicketObj->Subject) &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $TicketObj, 
     current_tab => 'Ticket/Display.html?id='.$TicketObj->id,
-    Title => loc("#%1: %2", $TicketObj->id, $TicketObj->Subject) &>
+    Title => _("#%1: %2", $TicketObj->id, $TicketObj->Subject) &>
 
 % $m->callback(Callbackname => 'BeforeActionList', %ARGS, Actions => \@Actions, ARGSRef => \%ARGS, Ticket => $TicketObj);
 
@@ -59,7 +59,7 @@
 
 % $m->callback( %ARGS, Ticket => $TicketObj, Callbackname => 'BeforeShowSummary' );
 <div class="summary">
-<&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
+<&| /Widgets/TitleBox, title => _('Ticket metadata') &>
 <& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
 </&>
 </div>
@@ -165,7 +165,7 @@ if ($ARGS{'id'} eq 'new') {
             name => 'User-'. $TicketObj->current_user->id .'-SeenUpTo',
             Content => $TicketObj->LastUpdated,
         );
-        push @Actions, loc('Marked all messages as seen');
+        push @Actions, _('Marked all messages as seen');
     }
 }
 

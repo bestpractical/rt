@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Modify ticket #%1', $TicketObj->id) &>
+<& /Elements/Header, Title => _('Modify ticket #%1', $TicketObj->id) &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $TicketObj, current_subtab => "Ticket/Modify.html?id=".$TicketObj->id, 
-    Title => loc('Modify ticket #%1', $TicketObj->id) &>
+    Title => _('Modify ticket #%1', $TicketObj->id) &>
 
 % $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
 
@@ -57,12 +57,12 @@
 % $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
 
-<&| /Widgets/TitleBox, title => loc('Modify ticket #%1',$TicketObj->id) &>
+<&| /Widgets/TitleBox, title => _('Modify ticket #%1',$TicketObj->id) &>
 <& Elements/EditBasics, TicketObj => $TicketObj &>
 <& Elements/EditCustomFields, TicketObj => $TicketObj &>
 </&>
 
-<& /Elements/Submit, Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
+<& /Elements/Submit, Label => _('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
 </form>
 <%INIT>
   

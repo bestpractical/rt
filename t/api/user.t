@@ -8,19 +8,12 @@ use RT;
 
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok(require RT::Model::User);
 
-
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 # Make sure we can create a user
 
@@ -103,7 +96,7 @@ is($u->principal_object->principal_type, 'User' , "Principal 1 is a user, not a 
 my $root = RT::Model::User->new(current_user => RT->system_user);
 $root->load('root');
 ok($root->id, "Found the root user");
-my $rootq = RT::Model::Queue->new($root);
+my $rootq = RT::Model::Queue->new(current_user => RT::CurrentUser->new( id => $root->id));
 $rootq->load(1);
 ok($rootq->id, "Loaded the first queue");
 
@@ -114,7 +107,7 @@ my ($id, $msg) = $new_user->create(name => 'ACLTest'.$$);
 
 ok ($id, "Created a new user for acl test $msg");
 
-my $q = RT::Model::Queue->new($new_user);
+my $q = RT::Model::Queue->new( current_user => RT::CurrentUser->new( id => $new_user->id));
 $q->load(1);
 ok($q->id, "Loaded the first queue");
 

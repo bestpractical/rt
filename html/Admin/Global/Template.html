@@ -45,12 +45,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc("Modify template %1", $TemplateObj->id)  &>
+<& /Admin/Elements/Header, Title => _("Modify template %1", $TemplateObj->id)  &>
 <& /Admin/Elements/SystemTabs, 
     current_tab => 'Admin/Global/Templates.html', 
     current_subtab => $current_subtab, 
     subtabs => $subtabs, 
-    Title => loc("Modify template %1", $TemplateObj->id) &>
+    Title => _("Modify template %1", $TemplateObj->id) &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -66,7 +66,7 @@
 
 <& /Admin/Elements/ModifyTemplate, name => $TemplateObj->name, Description => $TemplateObj->Description, Content => $TemplateObj->Content &>
 
-<& /Elements/Submit, Label => loc('Save Changes'), Reset => 1 &>
+<& /Elements/Submit, Label => _('Save Changes'), Reset => 1 &>
 </form>
 
 
@@ -77,10 +77,10 @@ my $TemplateObj = RT::Model::Template->new();
 my  ($title, @results, $current_subtab);
 
 my $subtabs = {
-		 A => { title => loc('Select template'),
+		 A => { title => _('Select template'),
   		     	path => "Admin/Global/Templates.html"
 			   },
-		 B => { title => loc('New template'),
+		 B => { title => _('New template'),
   		     	path => "Admin/Global/Template.html?Create=1&Queue=0",
 			separator => 1,
 			   }
@@ -89,19 +89,19 @@ my $subtabs = {
 
 if ($Create) {
   $current_subtab = "Admin/Global/Template.html?Create=1&Queue=0";
-  $title = loc("Create a template");
+  $title = _("Create a template");
 }
 
 else {
   if (defined ($Template) && $Template eq 'new') {
       my ($val, $msg) =  $TemplateObj->create(Queue => $Queue, name => $name);
-      Abort(loc("Could not create template: %1", $msg)) unless ($val);
+      Abort(_("Could not create template: %1", $msg)) unless ($val);
      push @results, $msg;
     }
     else {
-       $TemplateObj->load($Template) || Abort(loc('No Template'));
+       $TemplateObj->load($Template) || Abort(_('No Template'));
     }
-      $title = loc('Modify template %1', loc($TemplateObj->name())); 
+      $title = _('Modify template %1', loc($TemplateObj->name())); 
   
     
 }
@@ -111,7 +111,7 @@ if ($TemplateObj->id()) {
 				     Object => $TemplateObj, 
 				     ARGSRef => \%ARGS);
   $current_subtab = "Admin/Global/Template.html?Queue=0&Template=".$TemplateObj->id();
-  $subtabs->{"C"} = { title => loc('Template #%1', $TemplateObj->id()),
+  $subtabs->{"C"} = { title => _('Template #%1', $TemplateObj->id()),
   		     	path => "Admin/Global/Template.html?Queue=0&Template=".$TemplateObj->id(),
 			};
   push @results, @aresults;

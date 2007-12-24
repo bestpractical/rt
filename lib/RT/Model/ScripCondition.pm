@@ -117,7 +117,7 @@ No API available for deleting things just yet.
 
 sub delete  {
     my $self = shift;
-    return(0, $self->loc('Unimplemented'));
+    return(0, _('Unimplemented'));
 }
 # }}}
 

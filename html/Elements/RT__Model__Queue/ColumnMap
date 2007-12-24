@@ -60,7 +60,7 @@ our $QUEUE_COLUMN_MAP = {
     disabled => {
         title     => \'&nbsp;',
         attribute => 'disabled',
-        value     => sub { return $_[0]->disabled? $_[0]->loc('disabled'): $_[0]->loc('Enabled') },
+        value     => sub { return $_[0]->disabled? $_[0]->_('disabled'): $_[0]->loc('Enabled') },
     },
     Priority => {
         value     => sub { return $_[0]->InitialPriority .'-'. $_[0]->FinalPriority },

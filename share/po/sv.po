@@ -90,7 +90,7 @@ msgstr "%1 %2 ändrat till %3"
 msgid "%1 %2 deleted"
 msgstr "%1 %2 raderad"
 
-#. (loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
+#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
 #: html/Admin/Elements/EditScrips:65
 #: html/Admin/Elements/ListGlobalScrips:63
 #: html/Ticket/Elements/PreviewScrips:103
@@ -102,10 +102,10 @@ msgstr "%1 %2 med mall %3"
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) av %3"
 
-#. (loc($Ticket->Status()))
-#. (loc($TicketObj->Status))
+#. (_($Ticket->Status()))
+#. (_($TicketObj->Status))
 #. ($TicketObj->OwnerObj->name())
-#. (loc($DefaultStatus))
+#. (_($DefaultStatus))
 #: html/SelfService/Update.html:60
 #: html/Ticket/Elements/EditBasics:108
 #: html/Ticket/Update.html:61
@@ -189,7 +189,7 @@ msgstr "%1 av %2"
 
 #. ($self->Field , $q1->name , $q2->name)
 #. ($self->Field, $t2->AsString, $t1->AsString)
-#. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
+#. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : _("(no value)")) , "'". $self->NewValue."'")
 #: lib/RT/Transaction_Overlay.pm:788
 #: lib/RT/Transaction_Overlay.pm:797
 #: lib/RT/Transaction_Overlay.pm:800
@@ -248,7 +248,7 @@ msgstr "%1 nyaste ärenden som inte tillhör någon"
 msgid "%1 objects"
 msgstr "%1 objekt"
 
-#. (loc($object_type =~ /^RT::(.*)$/))
+#. (_($object_type =~ /^RT::(.*)$/))
 #: html/User/Elements/DelegateRights:97
 msgid "%1 rights"
 msgstr "%1 rättigheter"
@@ -584,7 +584,7 @@ msgstr "Lägg till, radera och modifiera extrafältvärden för objekt"
 msgid "Added principal as a %1 for this queue"
 msgstr "Tillagd principal som en %1 för denna kö"
 
-#. ($self->loc($args{'Type'}))
+#. (_($args{'Type'}))
 #: lib/RT/Ticket_Overlay.pm:1455
 msgid "Added principal as a %1 for this ticket"
 msgstr "Tillagd principal som en %1 för detta ärende"
@@ -883,7 +883,7 @@ msgstr "Kan inte hitta en sparad sökning att arbeta med"
 msgid "Can't link a ticket to itself"
 msgstr "Kan inte länka ett ärende till sig själv"
 
-#. (loc($self->{SearchType}))
+#. (_($self->{SearchType}))
 #: html/Widgets/SavedSearch:63
 msgid "Can't save %1"
 msgstr "kan inte spara %1"
@@ -1154,7 +1154,7 @@ msgstr "Går ej att läsa in sökattribut"
 msgid "Could not make that principal a %1 for this queue"
 msgstr "Går ej att göra denna principal %1 för denna kö"
 
-#. ($self->loc($args{'Type'}))
+#. (_($args{'Type'}))
 #: lib/RT/Ticket_Overlay.pm:1444
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Går ej att göra denna principal %1 för detta ärende"
@@ -1842,7 +1842,7 @@ msgstr "Aktiverad (Bortval av denna box deaktiverar denna kö)"
 msgid "Enabled Queues"
 msgstr "Aktiverade köer"
 
-#. (loc_fuzzy($msg))
+#. (_($msg))
 #: html/Admin/Elements/EditCustomField:136
 #: html/Admin/Groups/Modify.html:150
 #: html/Admin/Users/Modify.html:350
@@ -1850,7 +1850,7 @@ msgstr "Aktiverade köer"
 msgid "Enabled status %1"
 msgstr "Aktiverad status %1"
 
-#. (loc_fuzzy($msg))
+#. (_($msg))
 #: html/Admin/CustomFields/Modify.html:185
 #: html/Admin/Queues/Modify.html:162
 msgid "Enabled status: %1"
@@ -2076,7 +2076,7 @@ msgstr "Global extrafältkonfiguration"
 msgid "Global portlet %1 saved."
 msgstr "Global portlet %1 sparad."
 
-#. (loc($Template->name))
+#. (_($Template->name))
 #: html/Admin/Elements/SelectTemplate:59
 msgid "Global template: %1"
 msgstr "Global mall: %1"
@@ -2714,12 +2714,12 @@ msgstr "Mobil"
 msgid "Modify Access Control List"
 msgstr "Modifiera Tillgångskontrollista"
 
-#. (loc(lc($FriendlySubTypes)), loc(lc($Types)))
+#. (_(lc($FriendlySubTypes)), loc(lc($Types)))
 #: html/Admin/Elements/ObjectCustomFields:96
 msgid "Modify Custom Fields which apply to %1 for all %2"
 msgstr "Modifiera extrafält som gäller för %1 för alla %2"
 
-#. (loc(lc($Types)))
+#. (_(lc($Types)))
 #: html/Admin/Elements/ObjectCustomFields:98
 msgid "Modify Custom Fields which apply to all %1"
 msgstr "Modifiera extrafält som gäller för alla %1"
@@ -2864,7 +2864,7 @@ msgstr "Modifiera scrips för kö %1"
 msgid "Modify scrips which apply to all queues"
 msgstr "Modifiera scrips som gäller för alla köer"
 
-#. (loc($TemplateObj->name()))
+#. (_($TemplateObj->name()))
 #. ($TemplateObj->id)
 #: html/Admin/Global/Template.html:102
 #: html/Admin/Global/Template.html:46
@@ -3603,7 +3603,7 @@ msgstr "Lösenord måste vara minst %1 tecken långt"
 msgid "password set"
 msgstr "Lösenord har satts"
 
-#. (loc_fuzzy($msg))
+#. (_($msg))
 #: html/User/Prefs.html:240
 msgid "password: %1"
 msgstr "Lösenord: %1"
@@ -3811,7 +3811,7 @@ msgstr "Privat:"
 msgid "privileged"
 msgstr "Privilegierad"
 
-#. (loc_fuzzy($msg))
+#. (_($msg))
 #: html/Admin/Users/Modify.html:342
 #: html/User/Prefs.html:231
 msgid "privileged status: %1"
@@ -4898,7 +4898,7 @@ msgstr "Principalen har redan den rättigheten"
 msgid "That principal is already a %1 for this queue"
 msgstr "Principalen är redan en %1 för denna kö"
 
-#. ($self->loc($args{'Type'}))
+#. (_($args{'Type'}))
 #: lib/RT/Ticket_Overlay.pm:1435
 msgid "That principal is already a %1 for this ticket"
 msgstr "Principalen är redan en %1 för detta ärende"

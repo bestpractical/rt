@@ -189,7 +189,7 @@ sub create {
     );
 
     unless ( $self->current_user->has_right(Object => RT->system, Right => 'AdminCustomField') ) {
-        return (0, $self->loc('Permission Denied'));
+        return (0, _('Permission Denied'));
     }
 
     if ( $args{TypeComposite} ) {
@@ -205,7 +205,7 @@ sub create {
     }
     elsif (  ! $args{'Queue'} ) {
         unless ( $self->current_user->has_right( Object => RT->system, Right => 'AssignCustomFields') ) {
-            return ( 0, $self->loc('Permission Denied') );
+            return ( 0, _('Permission Denied') );
         }
         $args{'LookupType'} = 'RT::Model::Queue-RT::Model::Ticket';
     }
@@ -213,17 +213,17 @@ sub create {
         my $queue = RT::Model::Queue->new;
         $queue->load($args{'Queue'});
         unless ($queue->id) {
-            return (0, $self->loc("Queue not found"));
+            return (0, _("Queue not found"));
         }
         unless ( $queue->current_user_has_right('AssignCustomFields') ) {
-            return ( 0, $self->loc('Permission Denied') );
+            return ( 0, _('Permission Denied') );
         }
         $args{'LookupType'} = 'RT::Model::Queue-RT::Model::Ticket';
         $args{'Queue'} = $queue->id;
     }
 
     my ($ok, $msg) = $self->_IsValidRegex( $args{'Pattern'} );
-    return (0, $self->loc("Invalid pattern: %1", $msg)) unless $ok;
+    return (0, _("Invalid pattern: %1", $msg)) unless $ok;
 
     (my $rv, $msg) = $self->SUPER::create(
         name        => $args{'name'},
@@ -322,7 +322,7 @@ sub load_by_name {
 
     # We only want one entry.
     $CFs->rows_per_page(1);
-    return (0, $self->loc("Not found")) unless my $first = $CFs->first;
+    return (0, _("Not found")) unless my $first = $CFs->first;
     return $self->load_by_id( $first->id );
 }
 
@@ -372,12 +372,12 @@ sub AddValue {
     my %args = @_;
 
     unless ($self->current_user_has_right('AdminCustomField')) {
-        return (0, $self->loc('Permission Denied'));
+        return (0, _('Permission Denied'));
     }
 
     # allow zero value
     if ( !defined $args{'name'} || $args{'name'} eq '' ) {
-        return (0, $self->loc("Can't add a custom field value without a name"));
+        return (0, _("Can't add a custom field value without a name"));
     }
 
     my $newval = RT::Model::CustomFieldValue->new;
@@ -401,23 +401,23 @@ sub deleteValue {
     my $self = shift;
     my $id = shift;
     unless ( $self->current_user_has_right('AdminCustomField') ) {
-        return (0, $self->loc('Permission Denied'));
+        return (0, _('Permission Denied'));
     }
 
     my $val_to_del = RT::Model::CustomFieldValue->new;
     $val_to_del->load( $id );
     unless ( $val_to_del->id ) {
-        return (0, $self->loc("Couldn't find that value"));
+        return (0, _("Couldn't find that value"));
     }
     unless ( $val_to_del->CustomField == $self->id ) {
-        return (0, $self->loc("That is not a value for this custom field"));
+        return (0, _("That is not a value for this custom field"));
     }
 
     my $retval = $val_to_del->delete;
     unless ( $retval ) {
-        return (0, $self->loc("Custom field value could not be deleted"));
+        return (0, _("Custom field value could not be deleted"));
     }
-    return ($retval, $self->loc("Custom field value deleted"));
+    return ($retval, _("Custom field value deleted"));
 }
 
 # }}}
@@ -527,10 +527,10 @@ sub FriendlyType {
     $max = 0 unless $max;
 
     if (my $friendly_type = $FieldTypes{$type}[ $max && $max>2 ? 2 : $max]) {
-        return ( $self->loc( $friendly_type, $max ) );
+        return ( _( $friendly_type, $max ) );
     }
     else {
-        return ( $self->loc( $type ) );
+        return ( _( $type ) );
     }
 }
 
@@ -593,7 +593,7 @@ sub set_Pattern {
         return $self->set(column => 'Pattern', value => $regex);
     }
     else {
-        return (0, $self->loc("Invalid pattern: %1", $msg));
+        return (0, _("Invalid pattern: %1", $msg));
     }
 }
 
@@ -678,7 +678,7 @@ sub _set {
     my $self = shift;
 
     unless ( $self->current_user_has_right('AdminCustomField') ) {
-        return ( 0, $self->loc('Permission Denied') );
+        return ( 0, _('Permission Denied') );
     }
     return $self->SUPER::_set( @_ );
 
@@ -745,7 +745,7 @@ sub set_TypeComposite {
         my ($status, $msg) = $self->set_MaxValues( $max_values );
         return ($status, $msg) unless $status;
     }
-    return 1, $self->loc(
+    return 1, _(
         "Type changed from '%1' to '%2'",
         $self->FriendlyTypeComposite( $old ),
         $self->FriendlyTypeComposite( $composite ),
@@ -819,14 +819,14 @@ sub FriendlyLookupType {
     my $self = shift;
     my $lookup = shift || $self->LookupType;
    
-    return ($self->loc( $FRIENDLY_OBJECT_TYPES{$lookup} ))
+    return (_( $FRIENDLY_OBJECT_TYPES{$lookup} ))
                      if (defined  $FRIENDLY_OBJECT_TYPES{$lookup} );
 
-    my @types = map { s/^RT::// ? $self->loc($_) : $_ }
+    my @types = map { s/^RT::// ? _($_) : $_ }
       grep { defined and length }
       split( /-/, $lookup )
       or return;
-    return ( $self->loc( $Friendlyobject_types[$#types], @types ) );
+    return ( _( $Friendlyobject_types[$#types], @types ) );
 }
 
 
@@ -845,17 +845,17 @@ sub AddToObject {
     my $id = $object->id || 0;
 
     unless (index($self->LookupType, ref($object)) == 0) {
-        return ( 0, $self->loc('Lookup type mismatch') );
+        return ( 0, _('Lookup type mismatch') );
     }
 
     unless ( $object->current_user_has_right('AssignCustomFields') ) {
-        return ( 0, $self->loc('Permission Denied') );
+        return ( 0, _('Permission Denied') );
     }
 
     my $ObjectCF = RT::Model::ObjectCustomField->new;
     $ObjectCF->load_by_cols( object_id => $id, CustomField => $self->id );
     if ( $ObjectCF->id ) {
-        return ( 0, $self->loc("That is already the current value") );
+        return ( 0, _("That is already the current value") );
     }
     my ( $oid, $msg ) =
       $ObjectCF->create( object_id => $id, CustomField => $self->id );
@@ -879,17 +879,17 @@ sub RemoveFromObject {
     my $id = $object->id || 0;
 
     unless (index($self->LookupType, ref($object)) == 0) {
-        return ( 0, $self->loc('Object type mismatch') );
+        return ( 0, _('Object type mismatch') );
     }
 
     unless ( $object->current_user_has_right('AssignCustomFields') ) {
-        return ( 0, $self->loc('Permission Denied') );
+        return ( 0, _('Permission Denied') );
     }
 
     my $ObjectCF = RT::Model::ObjectCustomField->new;
     $ObjectCF->load_by_cols( object_id => $id, CustomField => $self->id );
     unless ( $ObjectCF->id ) {
-        return ( 0, $self->loc("This custom field does not apply to that object") );
+        return ( 0, _("This custom field does not apply to that object") );
     }
     # XXX: Delete doesn't return anything
     my ( $oid, $msg ) = $ObjectCF->delete;
@@ -925,14 +925,14 @@ sub AddValueForObject {
         ContentType  => undef,
         @_
     );
-    my $obj = $args{'Object'} or return ( 0, $self->loc('Invalid object') );
+    my $obj = $args{'Object'} or return ( 0, _('Invalid object') );
 
     unless ( $self->current_user_has_right('ModifyCustomField') ) {
-        return ( 0, $self->loc('Permission Denied') );
+        return ( 0, _('Permission Denied') );
     }
 
     unless ( $self->MatchPattern($args{'Content'} || '' ) ) {
-        return ( 0, $self->loc('Input must match %1', $self->FriendlyPattern) );
+        return ( 0, _('Input must match %1', $self->FriendlyPattern) );
     }
 
     Jifty->handle->begin_transaction;
@@ -971,7 +971,7 @@ sub AddValueForObject {
 
     unless ($val) {
         Jifty->handle->rollback();
-        return ($val, $self->loc("Couldn't create record"));
+        return ($val, _("Couldn't create record"));
     }
 
     Jifty->handle->commit();
@@ -1015,7 +1015,7 @@ sub FriendlyPattern {
 
     return '' unless length $regex;
     if ( $regex =~ /\(\?#([^)]*)\)/ ) {
-        return '[' . $self->loc($1) . ']';
+        return '[' . _($1) . ']';
     }
     else {
         return $regex;
@@ -1044,7 +1044,7 @@ sub deleteValueForObject {
 
 
     unless ($self->current_user_has_right('ModifyCustomField')) {
-        return (0, $self->loc('Permission Denied'));
+        return (0, _('Permission Denied'));
     }
 
     my $oldval = RT::Model::ObjectCustomFieldValue->new;
@@ -1063,21 +1063,21 @@ sub deleteValueForObject {
 
     # check to make sure we found it
     unless ($oldval->id) {
-        return(0, $self->loc("Custom field value %1 could not be found for custom field %2", $args{'Content'}, $self->name));
+        return(0, _("Custom field value %1 could not be found for custom field %2", $args{'Content'}, $self->name));
     }
 
     # for single-value fields, we need to validate that empty string is a valid value for it
     if ( $self->SingleValue and not $self->MatchPattern( '' ) ) {
-        return ( 0, $self->loc('Input must match %1', $self->FriendlyPattern) );
+        return ( 0, _('Input must match %1', $self->FriendlyPattern) );
     }
 
     # delete it
 
     my $ret = $oldval->delete();
     unless ($ret) {
-        return(0, $self->loc("Custom field value could not be found"));
+        return(0, _("Custom field value could not be found"));
     }
-    return($oldval->id, $self->loc("Custom field value deleted"));
+    return($oldval->id, _("Custom field value deleted"));
 }
 
 
@@ -1187,10 +1187,10 @@ sub _URLTemplate {
 
         my $value = shift;
         unless ( $self->current_user_has_right('AdminCustomField') ) {
-            return ( 0, $self->loc('Permission Denied') );
+            return ( 0, _('Permission Denied') );
         }
         $self->set_attribute( name => $template_name, Content => $value );
-        return ( 1, $self->loc('Updated') );
+        return ( 1, _('Updated') );
     } else {
         unless ( $self->id && $self->current_user_has_right('SeeCustomField') ) {
             return (undef);

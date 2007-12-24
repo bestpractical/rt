@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc("RT at a glance") &>
+<& /Admin/Elements/Header, Title => _("RT at a glance") &>
 <& /Admin/Elements/SystemTabs,
     current_tab => 'Admin/Global/MyRT.html',
-    Title => loc("RT at a glance"),
+    Title => _("RT at a glance"),
 &>
 
 <& /Widgets/SelectionBox:header, nojs => 1 &>
@@ -56,7 +56,7 @@
 <& /Elements/ListActions, actions => \@actions &>
 <br />
 % for my $pane (@panes) {
-<&|/Widgets/TitleBox, title => loc('RT at a glance').': '.loc($pane->{name}), bodyclass => "" &>
+<&|/Widgets/TitleBox, title => _('RT at a glance').': '.loc($pane->{name}), bodyclass => "" &>
 <& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &></&>
 <br />
 % }
@@ -77,7 +77,7 @@ for ( $m->comp( "/Search/Elements/SearchesForObject",
         my $type =
             ( $SearchType eq 'Ticket' )
             ? 'Saved Search' : $SearchType;    # loc
-        push @items, [ "saved-$oid", loc($type) . ": $desc" ];
+        push @items, [ "saved-$oid", _($type) . ": $desc" ];
     }
 }
 
@@ -92,7 +92,7 @@ my @panes = $m->comp(
     OnSave => sub {
         my ( $conf, $pane ) = @_;
 	$default_portlets->set_content( $conf );
-        push @actions, loc( 'Global portlet %1 saved.', $pane );
+        push @actions, _( 'Global portlet %1 saved.', $pane );
     }
 );
 

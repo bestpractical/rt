@@ -53,7 +53,7 @@
 my @lines = (
     {
         name => 'id',
-        Field => loc('id'),
+        Field => _('id'),
         Op => {
             Type => 'component',
             Path => '/Elements/SelectEqualityOperator',
@@ -70,8 +70,8 @@ my @lines = (
             Type => 'component',
             Path => '/Elements/SelectBoolean',
             Arguments => {
-			    True => loc("matches"), 
-			    False => loc("does not match"), 
+			    True => _("matches"), 
+			    False => _("does not match"), 
 			    TrueVal => 'LIKE',
 			    FalseVal => 'NOT LIKE',
             },
@@ -80,7 +80,7 @@ my @lines = (
     },
     {
         name => 'Queue',
-        Field => loc('Queue'),
+        Field => _('Queue'),
         Op => {
             Type => 'component',
             Path => '/Elements/SelectBoolean',
@@ -94,7 +94,7 @@ my @lines = (
     },
     {
         name => 'Status',
-        Field => loc('Status'),
+        Field => _('Status'),
         Op => {
             Type => 'component',
             Path => '/Elements/SelectBoolean',
@@ -111,9 +111,9 @@ my @lines = (
         Field => {
             Type    => 'select',
             Options => [
-                Owner => loc('Owner'),
-                Creator => loc('Creator'),
-                LastUpdatedBy => loc('Last updated by'),
+                Owner => _('Owner'),
+                Creator => _('Creator'),
+                LastUpdatedBy => _('Last updated by'),
             ],
         },
         Op => {
@@ -161,9 +161,9 @@ my @lines = (
         Field => {
             Type    => 'select',
             Options => [
-                time_worked => loc('Time Worked'),
-                TimeEstimated => loc('Time Estimated'),
-                time_left => loc('Time Left'),
+                time_worked => _('Time Worked'),
+                TimeEstimated => _('Time Estimated'),
+                time_left => _('Time Left'),
             ],
         },
         Op => {
@@ -183,9 +183,9 @@ my @lines = (
         Field => {
             Type    => 'select',
             Options => [
-                Priority => loc('Priority'),
-                InitialPriority => loc('Initial Priority'),
-                FinalPriority => loc('Final Priority'),
+                Priority => _('Priority'),
+                InitialPriority => _('Initial Priority'),
+                FinalPriority => _('Final Priority'),
             ],
         },
         Op => {

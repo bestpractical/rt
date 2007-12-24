@@ -96,7 +96,7 @@ my $print_value = sub {
     if ( $cf->IncludeContentForValue ) {
        my $vid = $value->id;
        $m->out(   '<div class="object_cf_value_include" id="object_cf_value_'. $vid .'">' );
-       $m->print( loc("See also:") );
+       $m->print( _("See also:") );
        $m->out(   '<a href="'. $value->IncludeContentForValue .'">' );
        $m->print( $value->IncludeContentForValue );
        $m->out(   qq{</a></div>\n} );

@@ -67,7 +67,7 @@ my $form_action = defined $goto             ? $goto
 </%INIT>
 
 % $m->callback( %ARGS, Callbackname => 'Header' );
-<& /Elements/Header, Title => loc('Login'), Focus => 'user' &>
+<& /Elements/Header, Title => _('Login'), Focus => 'user' &>
 
 
 %# End of div#quickbar from /Elements/Header
@@ -76,7 +76,7 @@ my $form_action = defined $goto             ? $goto
 <div id="body" class="login-body">
 
 % if ($Error) {
-<&| "/Widgets/TitleBox", title => loc('Error'), hideable => 0  &>
+<&| "/Widgets/TitleBox", title => _('Error'), hideable => 0  &>
 <% $Error %>
 </&>
 % }
@@ -84,7 +84,7 @@ my $form_action = defined $goto             ? $goto
 % $m->callback( %ARGS, Callbackname => 'BeforeForm' );
 
 <div id="login-box">
-<&| /Widgets/TitleBox, title => loc('Login'), titleright => $RT::VERSION, hideable => 0 &>
+<&| /Widgets/TitleBox, title => _('Login'), titleright => $RT::VERSION, hideable => 0 &>
 
 % unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
 <form id="login" name="login" method="post" action="<% $form_action %>">

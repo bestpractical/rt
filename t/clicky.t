@@ -21,7 +21,7 @@ use_ok('MIME::Entity');
 my $CurrentUser = RT->system_user;
 
 my $queue = RT::Model::Queue->new($CurrentUser);
-$queue->load('General') || Abort(loc("Queue could not be loaded."));
+$queue->load('General') || Abort(_("Queue could not be loaded."));
 
 my $message = MIME::Entity->build(
     Subject => 'test',

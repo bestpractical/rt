@@ -58,7 +58,7 @@
 %   }
 % }
 
-<&| /Widgets/TitleBox, title => loc("Search for approvals") &>
+<&| /Widgets/TitleBox, title => _("Search for approvals") &>
 <input type="checkbox" class="checkbox" value="1" name="ShowPending"
         <%((!$ARGS{'ShowRejected'} && !$ARGS{'ShowResolved'}) ||
          $ARGS{'ShowPending'})

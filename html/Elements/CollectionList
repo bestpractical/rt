@@ -156,7 +156,7 @@ $DisplayFormat => undef
 $Rows          => undef
 $Page          => 1
 
-$Title         => loc('Ticket Search')
+$Title         => _('Ticket Search')
 $BaseURL       => undef
 @PassArguments => qw(Query Format Rows Page Order order_by)
 

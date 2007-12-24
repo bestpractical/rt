@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc('RT Administration') &>
-<& /Admin/Elements/Tabs, Title => loc('RT Administration') &>
+<& /Admin/Elements/Header, Title => _('RT Administration') &>
+<& /Admin/Elements/Tabs, Title => _('RT Administration') &>
 
 <ul>
 %    foreach my $key (sort keys %$tabs) {
@@ -61,35 +61,35 @@
 
 my $tabs = {
     A => {
-        title       => loc('Users'),
+        title       => _('Users'),
         path        => 'Admin/Users/index.html',
-        description => loc('Manage users and passwords'),
+        description => _('Manage users and passwords'),
     },
     B => {
-        title => loc('Groups'),
+        title => _('Groups'),
         path  => 'Admin/Groups/index.html',
-        description => loc('Manage groups and group membership'),
+        description => _('Manage groups and group membership'),
     },
     C => {
-        title       => loc('Queues'),
+        title       => _('Queues'),
         path        => 'Admin/Queues/index.html',
-        description => loc('Manage queues and queue-specific properties'),
+        description => _('Manage queues and queue-specific properties'),
     },
     D => {
-        'title'     => loc('Custom Fields'),
-        description => loc('Manage custom fields and custom field values'),
+        'title'     => _('Custom Fields'),
+        description => _('Manage custom fields and custom field values'),
           path      => 'Admin/CustomFields/index.html',
     },
     E => {
-        'title'     => loc('Global'),
+        'title'     => _('Global'),
         path        => 'Admin/Global/index.html',
         description =>
-          loc('Manage properties and configuration which apply to all queues'),
+          _('Manage properties and configuration which apply to all queues'),
     },
     F => {
-        'title'     => loc('Tools'),
+        'title'     => _('Tools'),
         path        => 'Admin/Tools/index.html',
-        description => loc('Use other RT administrative tools')
+        description => _('Use other RT administrative tools')
     },
 };
 

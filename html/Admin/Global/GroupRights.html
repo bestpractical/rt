@@ -45,15 +45,15 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc('Modify global group rights') &>
+<& /Admin/Elements/Header, Title => _('Modify global group rights') &>
 <& /Admin/Elements/SystemTabs, 
     current_tab => 'Admin/Global/GroupRights.html', 
-    Title => loc('Modify global group rights') &>  
+    Title => _('Modify global group rights') &>  
 <& /Elements/ListActions, actions => \@results &>
 
   <form method="post" action="GroupRights.html">
       
-<&| /Widgets/TitleBox, title => loc('Modify global group rights.')&>
+<&| /Widgets/TitleBox, title => _('Modify global group rights.')&>
       
 <h1><&|/l&>System groups</&></h1>
 <table>
@@ -62,7 +62,7 @@
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
-	    <% loc($Group->Type) %>
+	    <% _($Group->Type) %>
 		  </td>
 	  <td>
 	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
@@ -78,7 +78,7 @@
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
-	    <% loc($Group->Type) %>
+	    <% _($Group->Type) %>
 		  </td>
 	  <td>
 	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
@@ -105,7 +105,7 @@
 </table>
             
       </&>
-      <& /Elements/Submit, Label => loc('Modify Group Rights'), Reset => 1 &>
+      <& /Elements/Submit, Label => _('Modify Group Rights'), Reset => 1 &>
       
   </form>
   

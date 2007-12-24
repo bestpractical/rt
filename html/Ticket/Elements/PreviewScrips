@@ -62,14 +62,14 @@ my @non_recipients = @{ $squelch{'emailes'} };
 
 % foreach my $scrip (@{$Object->Scrips->prepared}) {
 % next unless $scrip->ActionObj->Action->isa('RT::ScripAction::SendEmail');
-<b><% $scrip->Description || loc('Scrip #%1',$scrip->id) %></b><br />
-<&|/l, loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name)&>%1 %2 with template %3</&>
+<b><% $scrip->Description || _('Scrip #%1',$scrip->id) %></b><br />
+<&|/l, _($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name)&>%1 %2 with template %3</&>
 <br />
 %foreach my $type qw(To Cc Bcc) {
 %my @addresses =  $scrip->ActionObj->Action->$type();
 <ul>
 %foreach my $addr (@addresses) {
-<li> <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-SquelchMailTo" value="<%$addr->address%>" /> <%$addr->address%>
+<li> <b><%_($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-SquelchMailTo" value="<%$addr->address%>" /> <%$addr->address%>
 % }
 </ul>
 % }
@@ -91,7 +91,7 @@ my @non_recipients = @{ $squelch{'emailes'} };
 <% $recipient->Content %>
 % }
 </ul>
-<& /Elements/Submit, Value => 'UpdatePreview', Label => loc('Save changes')&>
+<& /Elements/Submit, Value => 'UpdatePreview', Label => _('Save changes')&>
 
 <%METHOD SquelchRecipients>
 <%ARGS>

@@ -46,11 +46,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header,
-    Title => loc("Create a new ticket"),
+    Title => _("Create a new ticket"),
     onload => "hide(document.getElementById('Ticket-Create-details'));" &>
 <& /Elements/Tabs, 
     current_toptab => "Ticket/Create.html", 
-    Title => loc("Create a new ticket"),
+    Title => _("Create a new ticket"),
     actions => $actions &>
 <& /Elements/ListActions, actions => \@results &>
 <form action="<% RT->Config->Get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
@@ -61,7 +61,7 @@
 
 <div id="Ticket-Create-basics">
 <a name="basics"></a>
-<&| /Widgets/TitleBox, title => loc("Create a new ticket") &>
+<&| /Widgets/TitleBox, title => _("Create a new ticket") &>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td class="label"><&|/l&>Queue</&>:</td>
 <td class="value"><% $QueueObj->name %>
@@ -152,9 +152,9 @@
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <tr>
-<td><% loc('Sign')%></td>
+<td><% _('Sign')%></td>
 <td><& /Widgets/Form/Boolean:InputOnly, name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
-<td><% loc('Encrypt')%></td>
+<td><% _('Encrypt')%></td>
 <td><& /Widgets/Form/Boolean:InputOnly, name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
 <td colspan="2">&nbsp;</td>
 </tr>
@@ -174,7 +174,7 @@
 </tr>
 </table>
 </&>
-<& /Elements/Submit, Label => loc("Create")&>
+<& /Elements/Submit, Label => _("Create")&>
 </div>
 
 <div id="Ticket-Create-details">
@@ -183,7 +183,7 @@
 <tr>
 <td width="50%" valign="top">
 
-	  <&| /Widgets/TitleBox, title => loc('The Basics'), 
+	  <&| /Widgets/TitleBox, title => _('The Basics'), 
 		title_class=> 'inverse',  
 		color => "#993333" &>
 <table border="0">
@@ -209,7 +209,7 @@
 </table>
 </&>
 <br />
-<&|/Widgets/TitleBox, title => loc("Dates"),
+<&|/Widgets/TitleBox, title => _("Dates"),
 		title_class=> 'inverse',  
 		 color => "#663366" &>
 
@@ -222,7 +222,7 @@
 </td>
 
 <td valign="top">
-<&| /Widgets/TitleBox, title => loc('Links'), title_class=> 'inverse' &>
+<&| /Widgets/TitleBox, title => _('Links'), title_class=> 'inverse' &>
 
 <em><&|/l&>(Enter ticket ids or URLs, separated with spaces)</&></em>
 <table border="0">
@@ -241,7 +241,7 @@
 </td>
 </tr>
 </table>
-<& /Elements/Submit, Label => loc("Create") &>
+<& /Elements/Submit, Label => _("Create") &>
 </div>
 </form>
 
@@ -249,7 +249,7 @@
 
 my @results;
 my $QueueObj = RT::Model::Queue->new();
-$QueueObj->load($Queue) || Abort(loc("Queue could not be loaded."));
+$QueueObj->load($Queue) || Abort(_("Queue could not be loaded."));
 
 $m->callback( QueueObj => $QueueObj, ARGSRef => \%ARGS );
 
@@ -370,10 +370,10 @@ if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} e
 
 my $actions = {
     A => {
-        html => q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Show basics') . q[</a>],
+        html => q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . _('Show basics') . q[</a>],
     },
     B => {
-        html => q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . loc('Show details') . q[</a>],
+        html => q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . _('Show details') . q[</a>],
     },
 };
 </%INIT>

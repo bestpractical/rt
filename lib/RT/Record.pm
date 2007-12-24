@@ -113,10 +113,10 @@ sub delete {
     my $self = shift;
     my ($rv) = $self->SUPER::delete;
     if ($rv) {
-        return ($rv, $self->loc("Object deleted"));
+        return ($rv, _("Object deleted"));
     } else {
 
-        return(0, $self->loc("Object could not be deleted"))
+        return(0, _("Object could not be deleted"))
     } 
 }
 
@@ -131,9 +131,9 @@ without the "RT::" prefix.
 sub object_typeStr {
     my $self = shift;
     if (ref($self) =~ /^.*::(\w+)$/) {
-	return $self->loc($1);
+	return _($1);
     } else {
-	return $self->loc(ref($self));
+	return _(ref($self));
     }
 }
 
@@ -261,7 +261,7 @@ sub create {
         if ($method) { 
         unless (  $method->($self, $attribs{$key} ) ) {
             if (wantarray) {
-                return ( 0, $self->loc('Invalid value for %1', $key) );
+                return ( 0, _('Invalid value for %1', $key) );
             }
             else {
                 return (0);
@@ -281,7 +281,7 @@ sub create {
         if ( $id->errno ) {
             if (wantarray) {
                 return ( 0,
-                    $self->loc( "Internal Error: %1", $id->{error_message} ) );
+                    _( "Internal Error: %1", $id->{error_message} ) );
             }
             else {
                 return (0);
@@ -295,7 +295,7 @@ sub create {
 
    unless ($id) { 
     if (wantarray) {
-        return ( $id, $self->loc('Object could not be Created') );
+        return ( $id, _('Object could not be Created') );
     }
     else {
         return ($id);
@@ -313,7 +313,7 @@ sub create {
 
 
     if (wantarray) {
-        return ( $id, $self->loc('Object Created') );
+        return ( $id, _('Object Created') );
     }
     else {
         return ($id);
@@ -485,15 +485,15 @@ sub _set {
     # we want to change the standard "success" message
     if ($status) {
         $msg =
-          $self->loc(
+          _(
             "%1 changed from %2 to %3",
             $args{'column'},
-            ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),
+            ( $old_val ? "'$old_val'" : _("(no value)") ),
             '"' . ($self->__value( $args{'column'}) ||'weird undefined value'). '"' 
           );
       } else {
 
-          $msg = $self->current_user->loc_fuzzy($msg);
+          $msg = _($msg);
     }
     return wantarray ? ($status, $msg) : $ret;     
 
@@ -688,7 +688,7 @@ sub _DecodeLOB {
         $Content = MIME::QuotedPrint::decode($Content);
     }
     elsif ( $ContentEncoding && $ContentEncoding ne 'none' ) {
-        return ( $self->loc( "Unknown ContentEncoding %1", $ContentEncoding ) );
+        return ( _( "Unknown ContentEncoding %1", $ContentEncoding ) );
     }
     if ( $ContentType eq 'text/plain' ) {
        $Content = Encode::decode_utf8($Content) unless Encode::is_utf8($Content);
@@ -768,7 +768,7 @@ sub Update {
         # Default to $id, but use name if we can get it.
         my $label = $self->id;
         $label = $self->name if (UNIVERSAL::can($self,'name'));
-        push @results, $self->loc( "$prefix %1", $label ) . ': '. $msg;
+        push @results, _( "$prefix %1", $label ) . ': '. $msg;
 
 =for loc
 
@@ -1067,7 +1067,7 @@ sub _AddLink {
 
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug( "$self tried to create a link. both base and target were specified\n" );
-        return ( 0, $self->loc("Can't specifiy both base and target") );
+        return ( 0, _("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
@@ -1080,7 +1080,7 @@ sub _AddLink {
         $direction    = 'Base';
     }
     else {
-        return ( 0, $self->loc('Either base or target must be specified') );
+        return ( 0, _('Either base or target must be specified') );
     }
 
     # {{{ Check if the link already exists - we don't want duplicates
@@ -1091,7 +1091,7 @@ sub _AddLink {
                              Target => $args{'Target'} );
     if ( $old_link->id ) {
         $RT::Logger->debug("$self Somebody tried to duplicate a link");
-        return ( $old_link->id, $self->loc("Link already exists"), 1 );
+        return ( $old_link->id, _("Link already exists"), 1 );
     }
 
     # }}}
@@ -1105,13 +1105,13 @@ sub _AddLink {
 
     unless ($linkid) {
         $RT::Logger->error("Link could not be Created: ".$linkmsg);
-        return ( 0, $self->loc("Link could not be Created") );
+        return ( 0, _("Link could not be Created") );
     }
 
     my $TransString =
       "Record $args{'Base'} $args{Type} record $args{'Target'}.";
 
-    return ( $linkid, $self->loc( "Link Created (%1)", $TransString ) );
+    return ( $linkid, _( "Link Created (%1)", $TransString ) );
 }
 
 # }}}
@@ -1143,7 +1143,7 @@ sub _delete_link {
 
     if ( $args{'Base'} and $args{'Target'} ) {
         $RT::Logger->debug("$self ->_delete_link. got both Base and Target\n");
-        return ( 0, $self->loc("Can't specifiy both base and target") );
+        return ( 0, _("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
         $args{'Target'} = $self->URI();
@@ -1157,7 +1157,7 @@ sub _delete_link {
     }
     else {
         $RT::Logger->error("Base or Target must be specified\n");
-        return ( 0, $self->loc('Either base or target must be specified') );
+        return ( 0, _('Either base or target must be specified') );
     }
 
     my $link = RT::Model::Link->new();
@@ -1172,13 +1172,13 @@ sub _delete_link {
         $link->delete();
 
         my $TransString = "Record $args{'Base'} no longer $args{Type} record $args{'Target'}.";
-        return ( 1, $self->loc("Link deleted (%1)", $TransString));
+        return ( 1, _("Link deleted (%1)", $TransString));
     }
 
     #if it's not a link we can find
     else {
         $RT::Logger->debug("Couldn't find that link\n");
-        return ( 0, $self->loc("Link not found") );
+        return ( 0, _("Link not found") );
     }
 }
 
@@ -1382,7 +1382,7 @@ sub _AddCustomFieldValue {
     }
     my $cf = $self->load_custom_field_by_identifier($args{'Field'});
     unless ( $cf->id ) {
-        return ( 0, $self->loc( "Custom field %1 not found", $args{'Field'} ) );
+        return ( 0, _( "Custom field %1 not found", $args{'Field'} ) );
     }
 
     my $OCFs = $self->CustomFields;
@@ -1390,7 +1390,7 @@ sub _AddCustomFieldValue {
     unless ( $OCFs->count ) {
         return (
             0,
-            $self->loc(
+            _(
                 "Custom field %1 does not apply to this object",
                 $args{'Field'}
             )
@@ -1403,7 +1403,7 @@ sub _AddCustomFieldValue {
     }
 
 
-    if ($cf->can('validate_Value')) { unless ( $cf->validate_Value( $args{'Value'} ) ) { return ( 0, $self->loc("Invalid value for custom field") ); } }
+    if ($cf->can('validate_Value')) { unless ( $cf->validate_Value( $args{'Value'} ) ) { return ( 0, _("Invalid value for custom field") ); } }
     # If the custom field only accepts a certain # of values, delete the existing
     # value and record a "changed from foo to bar" transaction
     unless ( $cf->unlimitedValues ) {
@@ -1473,7 +1473,7 @@ sub _AddCustomFieldValue {
         );
 
         unless ( $new_value_id ) {
-            return ( 0, $self->loc( "Could not add new custom field value: %1", $value_msg ) );
+            return ( 0, _( "Could not add new custom field value: %1", $value_msg ) );
         }
 
         my $new_value = RT::Model::ObjectCustomFieldValue->new;
@@ -1497,14 +1497,14 @@ sub _AddCustomFieldValue {
 
         my $new_content = $new_value->Content;
         unless ( defined $old_content && length $old_content ) {
-            return ( $new_value_id, $self->loc( "%1 %2 added", $cf->name, $new_content ));
+            return ( $new_value_id, _( "%1 %2 added", $cf->name, $new_content ));
         }
         elsif ( !defined $new_content || !length $new_content ) {
             return ( $new_value_id,
-                $self->loc( "%1 %2 deleted", $cf->name, $old_content ) );
+                _( "%1 %2 deleted", $cf->name, $old_content ) );
         }
         else {
-            return ( $new_value_id, $self->loc( "%1 %2 changed to %3", $cf->name, $old_content, $new_content));
+            return ( $new_value_id, _( "%1 %2 changed to %3", $cf->name, $old_content, $new_content));
         }
 
     }
@@ -1519,7 +1519,7 @@ sub _AddCustomFieldValue {
         );
 
         unless ( $new_value_id ) {
-            return ( 0, $self->loc( "Could not add new custom field value: %1", $msg ) );
+            return ( 0, _( "Could not add new custom field value: %1", $msg ) );
         }
         if ( $args{'RecordTransaction'} ) {
             my ( $tid, $msg ) = $self->_NewTransaction(
@@ -1529,10 +1529,10 @@ sub _AddCustomFieldValue {
                 ReferenceType => 'RT::Model::ObjectCustomFieldValue',
             );
             unless ( $tid ) {
-                return ( 0, $self->loc( "Couldn't create a transaction: %1", $msg ) );
+                return ( 0, _( "Couldn't create a transaction: %1", $msg ) );
             }
         }
-        return ( $new_value_id, $self->loc( "%1 added as a value for %2", $args{'Value'}, $cf->name ) );
+        return ( $new_value_id, _( "%1 added as a value for %2", $args{'Value'}, $cf->name ) );
     }
 }
 
@@ -1562,7 +1562,7 @@ sub delete_custom_field_value {
 
     my $cf = $self->load_custom_field_by_identifier($args{'Field'});
     unless ( $cf->id ) {
-        return ( 0, $self->loc( "Custom field %1 not found", $args{'Field'} ) );
+        return ( 0, _( "Custom field %1 not found", $args{'Field'} ) );
     }
 
     my ( $val, $msg ) = $cf->deleteValueForObject(
@@ -1581,12 +1581,12 @@ sub delete_custom_field_value {
         ReferenceType => 'RT::Model::ObjectCustomFieldValue',
     );
     unless ($TransactionId) {
-        return ( 0, $self->loc( "Couldn't create a transaction: %1", $Msg ) );
+        return ( 0, _( "Couldn't create a transaction: %1", $Msg ) );
     }
 
     return (
         $TransactionId,
-        $self->loc(
+        _(
             "%1 is no longer a value for custom field %2",
             $TransactionObj->OldValue, $cf->name
         )

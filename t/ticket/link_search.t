@@ -1,8 +1,7 @@
 #!/usr/bin/perl -w
-
-use RT::Test; use Test::More tests => 63;
+use warnings;
 use strict;
-use RT;
+use RT::Test; use Test::More tests => 63;
 
 # Load the config file
 
@@ -14,7 +13,7 @@ use RT;
 my $CurrentUser = RT->system_user;
 
 my $queue = RT::Model::Queue->new(current_user => $CurrentUser);
-$queue->load('General') || Abort(loc("Queue could not be loaded."));
+$queue->load('General') || Abort(_("Queue could not be loaded."));
 
 my $child_ticket = RT::Model::Ticket->new(current_user =>  $CurrentUser );
 my ($childid) = $child_ticket->create(
@@ -30,7 +29,6 @@ my ($parentid) = $parent_ticket->create(
     Queue => $queue->id,
 );
 ok($parentid, "We Created a parent ticket");
-
 
 my $Collection = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $Collection->limit_member_of( $parentid );

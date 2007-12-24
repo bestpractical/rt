@@ -52,22 +52,22 @@
     Title => $Title &>
 
 <%INIT>
-  my $tabs = { A => { title => loc('Users'),
+  my $tabs = { A => { title => _('Users'),
 			  path => 'Admin/Users/',
 			},
-	       B => { title => loc('Groups'),
+	       B => { title => _('Groups'),
 			   path => 'Admin/Groups/',
 			 },
-	       C => { title => loc('Queues'),
+	       C => { title => _('Queues'),
 			   path => 'Admin/Queues/',
 			 },
-	       D => { 'title' => loc('Custom Fields'),
+	       D => { 'title' => _('Custom Fields'),
 			   path => 'Admin/CustomFields/',
 			 },
-	       E => { 'title' => loc('Global'),
+	       E => { 'title' => _('Global'),
 			   path => 'Admin/Global/',
 			 },
-	       F => { 'title' => loc('Tools'),
+	       F => { 'title' => _('Tools'),
 			   path => 'Admin/Tools/',
 			 },
 	     };

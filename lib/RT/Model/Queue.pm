@@ -100,12 +100,12 @@ column        disabled => max_length is 6,  type is 'smallint(6)',  default is '
 our @DEFAULT_ACTIVE_STATUS = qw(new open stalled);
 our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);  
 
-# $self->loc('new'); # For the string extractor to get a string to localize
-# $self->loc('open'); # For the string extractor to get a string to localize
-# $self->loc('stalled'); # For the string extractor to get a string to localize
-# $self->loc('resolved'); # For the string extractor to get a string to localize
-# $self->loc('rejected'); # For the string extractor to get a string to localize
-# $self->loc('deleted'); # For the string extractor to get a string to localize
+# _('new'); # For the string extractor to get a string to localize
+# _('open'); # For the string extractor to get a string to localize
+# _('stalled'); # For the string extractor to get a string to localize
+# _('resolved'); # For the string extractor to get a string to localize
+# _('rejected'); # For the string extractor to get a string to localize
+# _('deleted'); # For the string extractor to get a string to localize
 
 
 our $RIGHTS = {
@@ -160,7 +160,7 @@ sub AddLink {
                  @_ );
 
     unless ( $self->current_user_has_right('ModifyQueue') ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     return $self->SUPER::_AddLink(%args);
@@ -178,7 +178,7 @@ sub delete_link {
     #check acls
     unless ( $self->current_user_has_right('ModifyQueue') ) {
         $RT::Logger->debug("No permission to delete links\n");
-        return ( 0, $self->loc('Permission Denied'))
+        return ( 0, _('Permission Denied'))
     }
 
     return $self->SUPER::_delete_link(%args);
@@ -351,11 +351,11 @@ sub create {
 
     unless ( $self->current_user->has_right(Right => 'AdminQueue', Object => RT->system) )
     {    #Check them ACLs
-        return ( 0, $self->loc("No permission to create queues") );
+        return ( 0, _("No permission to create queues") );
     }
 
     unless ( $self->validate_name( $args{'name'} ) ) {
-        return ( 0, $self->loc('Queue already exists') );
+        return ( 0, _('Queue already exists') );
     }
 
     my %attrs = map {$_ => 1} $self->readable_attributes;
@@ -365,13 +365,13 @@ sub create {
     my $id = $self->SUPER::create( map { $_ => $args{$_} } grep exists $args{$_}, keys %attrs );
     unless ($id) {
         Jifty->handle->rollback();
-        return ( 0, $self->loc('Queue could not be Created') );
+        return ( 0, _('Queue could not be Created') );
     }
 
     my $create_ret = $self->_createQueueGroups();
     unless ($create_ret) {
         Jifty->handle->rollback();
-        return ( 0, $self->loc('Queue could not be Created') );
+        return ( 0, _('Queue could not be Created') );
     }
     Jifty->handle->commit;
 
@@ -386,7 +386,7 @@ sub create {
             unless $status;
     }
 
-    return ( $id, $self->loc("Queue Created") );
+    return ( $id, _("Queue Created") );
 }
 
 # }}}
@@ -396,7 +396,7 @@ sub create {
 sub delete {
     my $self = shift;
     return ( 0,
-        $self->loc('Deleting this object would break referential integrity') );
+        _('Deleting this object would break referential integrity') );
 }
 
 # }}}
@@ -488,7 +488,7 @@ sub set_Sign {
     my $self = shift;
     my $value = shift;
 
-    return ( 0, $self->loc('Permission Denied') )
+    return ( 0, _('Permission Denied') )
         unless $self->current_user_has_right('AdminQueue');
 
     my ($status, $msg) = $self->set_attribute(
@@ -497,8 +497,8 @@ sub set_Sign {
         Content     => $value,
     );
     return ($status, $msg) unless $status;
-    return ($status, $self->loc('Signing enabled')) if $value;
-    return ($status, $self->loc('Signing disabled'));
+    return ($status, _('Signing enabled')) if $value;
+    return ($status, _('Signing disabled'));
 }
 
 sub Encrypt {
@@ -514,7 +514,7 @@ sub set_Encrypt {
     my $self = shift;
     my $value = shift;
 
-    return ( 0, $self->loc('Permission Denied') )
+    return ( 0, _('Permission Denied') )
         unless $self->current_user_has_right('AdminQueue');
 
     my ($status, $msg) = $self->set_attribute(
@@ -523,8 +523,8 @@ sub set_Encrypt {
         Content     => $value,
     );
     return ($status, $msg) unless $status;
-    return ($status, $self->loc('Encrypting enabled')) if $value;
-    return ($status, $self->loc('Encrypting disabled'));
+    return ($status, _('Encrypting enabled')) if $value;
+    return ($status, _('Encrypting disabled'));
 }
 
 # {{{ sub Templates
@@ -691,7 +691,7 @@ sub AddWatcher {
         if ( defined $args{'Type'} && ($args{'Type'} eq 'AdminCc') ) {
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
                 or $self->current_user_has_right('WatchAsAdminCc') ) {
-                return ( 0, $self->loc('Permission Denied'))
+                return ( 0, _('Permission Denied'))
             }
         }
 
@@ -701,12 +701,12 @@ sub AddWatcher {
 
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
                 or $self->current_user_has_right('Watch') ) {
-                return ( 0, $self->loc('Permission Denied'))
+                return ( 0, _('Permission Denied'))
             }
         }
      else {
             $RT::Logger->warning( "$self -> AddWatcher got passed a bogus type");
-            return ( 0, $self->loc('Error in parameters to Queue->AddWatcher') );
+            return ( 0, _('Error in parameters to Queue->AddWatcher') );
         }
     }
 
@@ -715,7 +715,7 @@ sub AddWatcher {
     # bail
     else {
         unless ( $self->current_user_has_right('ModifyQueueWatchers') ) {
-            return ( 0, $self->loc("Permission Denied") );
+            return ( 0, _("Permission Denied") );
         }
     }
 
@@ -775,19 +775,19 @@ sub _AddWatcher {
     }
     # If we can't find this watcher, we need to bail.
     unless ($principal->id) {
-        return(0, $self->loc("Could not find or create that user"));
+        return(0, _("Could not find or create that user"));
     }
 
 
     my $group = RT::Model::Group->new;
     $group->loadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
     unless ($group->id) {
-        return(0,$self->loc("Group not found"));
+        return(0,_("Group not found"));
     }
 
     if ( $group->has_member( $principal)) {
 
-        return ( 0, $self->loc('That principal is already a %1 for this queue', $args{'Type'}) );
+        return ( 0, _('That principal is already a %1 for this queue', $args{'Type'}) );
     }
 
 
@@ -795,9 +795,9 @@ sub _AddWatcher {
     unless ($m_id) {
         $RT::Logger->error("Failed to add ".$principal->id." as a member of group ".$group->id."\n".$m_msg);
 
-        return ( 0, $self->loc('Could not make that principal a %1 for this queue', $args{'Type'}) );
+        return ( 0, _('Could not make that principal a %1 for this queue', $args{'Type'}) );
     }
-    return ( 1, $self->loc('Added principal as a %1 for this queue', $args{'Type'}) );
+    return ( 1, _('Added principal as a %1 for this queue', $args{'Type'}) );
 }
 
 # }}}
@@ -829,20 +829,20 @@ sub deleteWatcher {
                  @_ );
 
     unless ($args{'principal_id'} ) {
-        return(0, $self->loc("No principal specified"));
+        return(0, _("No principal specified"));
     }
     my $principal = RT::Model::Principal->new;
     $principal->load($args{'principal_id'});
 
     # If we can't find this watcher, we need to bail.
     unless ($principal->id) {
-        return(0, $self->loc("Could not find that principal"));
+        return(0, _("Could not find that principal"));
     }
 
     my $group = RT::Model::Group->new;
     $group->loadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
     unless ($group->id) {
-        return(0,$self->loc("Group not found"));
+        return(0,_("Group not found"));
     }
 
     # {{{ Check ACLS
@@ -853,7 +853,7 @@ sub deleteWatcher {
   if ( $args{'Type'} eq 'AdminCc' ) {
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
                 or $self->current_user_has_right('WatchAsAdminCc') ) {
-                return ( 0, $self->loc('Permission Denied'))
+                return ( 0, _('Permission Denied'))
             }
         }
 
@@ -862,12 +862,12 @@ sub deleteWatcher {
         elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
                 or $self->current_user_has_right('Watch') ) {
-                return ( 0, $self->loc('Permission Denied'))
+                return ( 0, _('Permission Denied'))
             }
         }
         else {
             $RT::Logger->warning( "$self -> DeleteWatcher got passed a bogus type");
-            return ( 0, $self->loc('Error in parameters to Queue->deleteWatcher') );
+            return ( 0, _('Error in parameters to Queue->deleteWatcher') );
         }
     }
 
@@ -875,7 +875,7 @@ sub deleteWatcher {
     # and the current user  doesn't have 'ModifyQueueWathcers' bail
     else {
         unless ( $self->current_user_has_right('ModifyQueueWatchers') ) {
-            return ( 0, $self->loc("Permission Denied") );
+            return ( 0, _("Permission Denied") );
         }
     }
 
@@ -886,7 +886,7 @@ sub deleteWatcher {
 
     unless ( $group->has_member($principal)) {
         return ( 0,
-        $self->loc('That principal is not a %1 for this queue', $args{'Type'}) );
+        _('That principal is not a %1 for this queue', $args{'Type'}) );
     }
 
     my ($m_id, $m_msg) = $group->_delete_member($principal->id);
@@ -894,10 +894,10 @@ sub deleteWatcher {
         $RT::Logger->error("Failed to delete ".$principal->id.
                            " as a member of group ".$group->id."\n".$m_msg);
 
-        return ( 0,    $self->loc('Could not remove that principal as a %1 for this queue', $args{'Type'}) );
+        return ( 0,    _('Could not remove that principal as a %1 for this queue', $args{'Type'}) );
     }
 
-    return ( 1, $self->loc("%1 is no longer a %2 for this queue.", $principal->Object->name, $args{'Type'} ));
+    return ( 1, _("%1 is no longer a %2 for this queue.", $principal->Object->name, $args{'Type'} ));
 }
 
 # }}}
@@ -1088,7 +1088,7 @@ sub _set {
     my $self = shift;
 
     unless ( $self->current_user_has_right('AdminQueue') ) {
-        return ( 0, $self->loc('Permission Denied') );
+        return ( 0, _('Permission Denied') );
     }
     return ( $self->SUPER::_set(@_) );
 }

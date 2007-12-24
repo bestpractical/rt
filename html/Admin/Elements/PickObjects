@@ -64,7 +64,7 @@
 % if ($Object->name) {
     <b><%$Object->name%></b><br />
 % } else {
-    <i>(<%loc("no name")%>)</i><br />
+    <i>(<%_("no name")%>)</i><br />
 % }
     <%$Object->can('Description') ? ($Object->Description||'') : '' %>
     </label>

@@ -71,10 +71,10 @@ $ValuesCallback   => undef,
 
 $Default            => 1,
 @DefaultValue       => (),
-$DefaultLabel       => loc('Use system default (%1)', join ', ', @DefaultValue),
+$DefaultLabel       => _('Use system default (%1)', join ', ', @DefaultValue),
 
 $Alternative      => 0,
-$AlternativeLabel => loc('other...'),
+$AlternativeLabel => _('other...'),
 
 $Multiple         => 0,
 </%ARGS>

@@ -76,7 +76,7 @@ Returns a localized string describing the module's function.
 # {{{ sub Describe 
 sub Describe  {
     my $self = shift;
-    return ($self->loc("TicketSQL search module", ref $self));
+    return (_("TicketSQL search module", ref $self));
 }
 # }}}
 

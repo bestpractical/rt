@@ -46,9 +46,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, tabs => $tabs );
-<& /Admin/Elements/Header, Title => loc('Admin/Global configuration') &>
+<& /Admin/Elements/Header, Title => _('Admin/Global configuration') &>
 <& /Admin/Elements/SystemTabs, 
-    Title => loc('Admin/Global configuration') &>
+    Title => _('Admin/Global configuration') &>
 
 <ul>
 % foreach my $key (sort keys %$tabs) {
@@ -61,30 +61,30 @@
 <%INIT>
   my $tabs = {
                 
-               A => { title => loc('Scrips'),
-                           text => loc('Modify scrips which apply to all queues'),
+               A => { title => _('Scrips'),
+                           text => _('Modify scrips which apply to all queues'),
                            path => 'Scrips.html',
                          },
-               B => { title => loc('Templates'),
-                        text => loc('Edit system templates'),
+               B => { title => _('Templates'),
+                        text => _('Edit system templates'),
                         path => 'Templates.html',
                       },
               
-                F => { title => loc('Custom Fields'),
-                text => loc('Modify global custom fields'),
+                F => { title => _('Custom Fields'),
+                text => _('Modify global custom fields'),
                         path => 'CustomFields/index.html',
                         },
 
-                G => { title => loc('Group Rights'),
-                                text => loc('Modify global group rights'),
+                G => { title => _('Group Rights'),
+                                text => _('Modify global group rights'),
                                 path => 'GroupRights.html',
                       },
-                H => { title => loc('User Rights'),
-                                text => loc('Modify global user rights'),
+                H => { title => _('User Rights'),
+                                text => _('Modify global user rights'),
                                 path => 'UserRights.html',
                       },
-                I => { title => loc('RT at a glance'),
-                                text => loc('Modify the default "RT at a glance" view'),
+                I => { title => _('RT at a glance'),
+                                text => _('Modify the default "RT at a glance" view'),
                                 path => 'MyRT.html',
                       },
 

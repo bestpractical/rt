@@ -53,14 +53,14 @@
 <&|/l&>Personal groups</&>:<br />
 <ul>
 %while ( my $Group = $Groups->next) {
-<li><a href="Modify.html?id=<%$Group->id%>"><%$Group->name || loc('(empty)')%></a><br />
+<li><a href="Modify.html?id=<%$Group->id%>"><%$Group->name || _('(empty)')%></a><br />
 %}
 </ul>
 
 <%INIT>
 my $Groups = RT::Model::GroupCollection->new();
 $Groups->LimitToPersonalGroupsFor(Jifty->web->current_user->id);
-my $title = loc('Personal groups');
+my $title = _('Personal groups');
 
 </%INIT>
 <%ARGS>

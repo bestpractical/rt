@@ -45,17 +45,15 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::URI::fsck_com_rt;
 
+
+use warnings;
+use strict;
+package RT::URI::fsck_com_rt;
 use RT::Model::Ticket;
 
-use RT::URI::base;
 
-use strict;
-use vars qw(@ISA);
-@ISA = qw/RT::URI::base/;
-
-
+use base  qw/RT::URI::base/;
 
 
 =head2 LocalURIPrefix  
@@ -229,7 +227,7 @@ Returns either a localized string 'ticket #23' or the full URI if the object is 
 sub AsString {
     my $self = shift;
     if ($self->IsLocal && $self->Object) {
-	    return $self->loc("%1 #%2", $self->object_type, $self->Object->id);
+	    return _("%1 #%2", $self->object_type, $self->Object->id);
     }
     else {
 	    return $self->URI;

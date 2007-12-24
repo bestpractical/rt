@@ -51,7 +51,7 @@ $CreatedBefore => undef
 $CreatedAfter => undef
 </%args>
 <%init>
-my $title = loc("Created tickets in period, grouped by status");
+my $title = _("Created tickets in period, grouped by status");
 my $q = RT::Model::Queue->new();
 my $before = RT::Date->new();
 my $after = RT::Date->new();

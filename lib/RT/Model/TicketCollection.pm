@@ -1474,7 +1474,7 @@ sub limit {
         description => undef,
         @_
     );
-    $args{'description'} = $self->loc(
+    $args{'description'} = _(
         "%1 %2 %3",  $args{'column'},
         $args{'operator'}, $args{'value'}
         )
@@ -1599,7 +1599,7 @@ sub LimitQueue {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join(
-            ' ', $self->loc('Queue'), $args{'operator'}, $args{'value'},
+            ' ', _('Queue'), $args{'operator'}, $args{'value'},
         ),
     );
 
@@ -1633,8 +1633,8 @@ sub LimitStatus {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
-            $self->loc('Status'), $args{'operator'},
-            $self->loc( $args{'value'} ) ),
+            _('Status'), $args{'operator'},
+            _( $args{'value'} ) ),
     );
 }
 
@@ -1687,7 +1687,7 @@ sub LimitType {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
-            $self->loc('Type'), $args{'operator'}, $args{'Limit'}, ),
+            _('Type'), $args{'operator'}, $args{'Limit'}, ),
     );
 }
 
@@ -1715,7 +1715,7 @@ sub LimitSubject {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
-            $self->loc('Subject'), $args{'operator'}, $args{'value'}, ),
+            _('Subject'), $args{'operator'}, $args{'value'}, ),
     );
 }
 
@@ -1748,7 +1748,7 @@ sub LimitId {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description =>
-            join( ' ', $self->loc('Id'), $args{'operator'}, $args{'value'}, ),
+            join( ' ', _('Id'), $args{'operator'}, $args{'value'}, ),
     );
 }
 
@@ -1772,7 +1772,7 @@ sub LimitPriority {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
-            $self->loc('Priority'),
+            _('Priority'),
             $args{'operator'}, $args{'value'}, ),
     );
 }
@@ -1798,7 +1798,7 @@ sub LimitInitialPriority {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
-            $self->loc('Initial Priority'), $args{'operator'},
+            _('Initial Priority'), $args{'operator'},
             $args{'value'}, ),
     );
 }
@@ -1823,7 +1823,7 @@ sub LimitFinalPriority {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
-            $self->loc('Final Priority'), $args{'operator'},
+            _('Final Priority'), $args{'operator'},
             $args{'value'}, ),
     );
 }
@@ -1848,7 +1848,7 @@ sub Limittime_worked {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
-            $self->loc('Time worked'),
+            _('Time worked'),
             $args{'operator'}, $args{'value'}, ),
     );
 }
@@ -1873,7 +1873,7 @@ sub Limittime_left {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
-            $self->loc('Time left'),
+            _('Time left'),
             $args{'operator'}, $args{'value'}, ),
     );
 }
@@ -1902,7 +1902,7 @@ sub LimitContent {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
-            $self->loc('Ticket content'), $args{'operator'},
+            _('Ticket content'), $args{'operator'},
             $args{'value'}, ),
     );
 }
@@ -1927,7 +1927,7 @@ sub LimitFilename {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
-            $self->loc('Attachment filename'), $args{'operator'},
+            _('Attachment filename'), $args{'operator'},
             $args{'value'}, ),
     );
 }
@@ -1951,7 +1951,7 @@ sub LimitContentType {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
-            $self->loc('Ticket content type'), $args{'operator'},
+            _('Ticket content type'), $args{'operator'},
             $args{'value'}, ),
     );
 }
@@ -1988,7 +1988,7 @@ sub LimitOwner {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
-            $self->loc('Owner'), $args{'operator'}, $owner->name(), ),
+            _('Owner'), $args{'operator'}, $owner->name(), ),
     );
 
 }
@@ -2033,7 +2033,7 @@ sub LimitWatcher {
         operator    => $args{'operator'},
         type => $args{'type'},
         description => join( ' ',
-            $self->loc($watcher_type),
+            _($watcher_type),
             $args{'operator'}, $args{'value'}, ),
     );
 }
@@ -2073,9 +2073,9 @@ sub LimitLinkedTo {
         base        => undef,
         target      => $args{'target'},
         type => $args{'type'},
-        description => $self->loc(
+        description => _(
             "Tickets %1 by %2",
-            $self->loc( $args{'type'} ),
+            _( $args{'type'} ),
             $args{'target'}
         ),
         operator    => $args{'operator'},
@@ -2118,9 +2118,9 @@ sub LimitLinkedFrom {
         target      => undef,
         base        => $args{'base'},
         type => $type,
-        description => $self->loc(
+        description => _(
             "Tickets %1 %2",
-            $self->loc( $args{'type'} ),
+            _( $args{'type'} ),
             $args{'base'},
         ),
         operator    => $args{'operator'},
@@ -2382,16 +2382,16 @@ sub LimitCustomField {
     #If we are looking to compare with a null value.
     if ( $args{'operator'} =~ /^is$/i ) {
         $args{'description'}
-            ||= $self->loc( "Custom field %1 has no value.", $CF->name );
+            ||= _( "Custom field %1 has no value.", $CF->name );
     }
     elsif ( $args{'operator'} =~ /^is not$/i ) {
         $args{'description'}
-            ||= $self->loc( "Custom field %1 has a value.", $CF->name );
+            ||= _( "Custom field %1 has a value.", $CF->name );
     }
 
     # if we're not looking to compare with a null value
     else {
-        $args{'description'} ||= $self->loc( "Custom field %1 %2 %3",
+        $args{'description'} ||= _( "Custom field %1 %2 %3",
             $CF->name, $args{operator}, $args{value} );
     }
 
@@ -3105,7 +3105,7 @@ sub from_sql {
     }
     $self->_initSQL();
 
-    return (1, $self->loc("No Query")) unless $query;
+    return (1, _("No Query")) unless $query;
 
     $self->{_sql_query} = $query;
     eval { $self->_parser( $query ); };
@@ -3152,7 +3152,7 @@ sub from_sql {
     $self->{'must_redo_search'} = 1;
     $self->{'RecalcTicketLimits'} = 0;                                           
 
-    return (1, $self->loc("Valid Query"));
+    return (1, _("Valid Query"));
 }
 
 =head2 Query

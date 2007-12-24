@@ -62,7 +62,7 @@ $id ? (
 <%INIT>
 # XXX TODO: Validate here?
 #$object_type =~ /^RT::(Queue|User|Group)$/
-#    or Abort(loc("Object of type %1 cannot take custom fields", $object_type));
+#    or Abort(_("Object of type %1 cannot take custom fields", $object_type));
 
 
 
@@ -82,7 +82,7 @@ if (defined $SubType && $SubType =~/^RT::(.*)$/)  {
 }
 
 if ($id) { 
-    $Object->load($id) || Abort(loc("Couldn't load object %1", $id));
+    $Object->load($id) || Abort(_("Couldn't load object %1", $id));
     $ObjectTabs = "/Admin/Elements/${Type}Tabs";
 } else {
     $ObjectTabs = "/Admin/Elements/GlobalCustomFieldTabs";
@@ -91,13 +91,13 @@ if ($id) {
 
 my $title; 
 if ($id) {
-$title =  loc('Edit Custom Fields for %1', $Object->name);
+$title =  _('Edit Custom Fields for %1', $Object->name);
 }
 elsif ($SubType) {
 
-    $title=   loc("Modify Custom Fields which apply to %1 for all %2", loc(lc($FriendlySubTypes)), loc(lc($Types)));
+    $title=   _("Modify Custom Fields which apply to %1 for all %2", loc(lc($FriendlySubTypes)), loc(lc($Types)));
 } else {
- $title =loc("Modify Custom Fields which apply to all %1", loc(lc($Types)));
+ $title =_("Modify Custom Fields which apply to all %1", loc(lc($Types)));
 
 }
 my $sub_type_url;

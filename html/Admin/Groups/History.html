@@ -61,7 +61,7 @@
 my $current_tab = 'Admin/Groups/History.html?id='.$id;
 my $GroupObj = RT::Model::Group->new();
 $GroupObj->load($id) || Abort("Couldn't load group '$id'");
-my $title = loc("History of the group %1", $GroupObj->name);
+my $title = _("History of the group %1", $GroupObj->name);
 </%INIT>
 <%ARGS>
 $id => '' unless defined $id

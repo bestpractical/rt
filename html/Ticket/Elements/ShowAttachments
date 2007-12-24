@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if (keys %documents) {
-<&| /Widgets/TitleBox, title => loc('Attachments'), 
+<&| /Widgets/TitleBox, title => _('Attachments'), 
         title_class=> 'inverse',  
         color => "#336699" &>
 

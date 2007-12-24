@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc("Admin queues") &>
+<& /Admin/Elements/Header, Title => _("Admin queues") &>
 <& /Admin/Elements/QueueTabs, current_tab => 'Admin/Queues/', 
     current_subtab => 'Admin/Queues/', 
-    Title => loc("Admin queues") &>
+    Title => _("Admin queues") &>
 
 
 
@@ -80,10 +80,10 @@ my $queues = RT::Model::QueueCollection->new();
 $queues->find_all_rows();
 
 if ($FinddisabledQueues) {
-    $caption = loc("All Queues");
+    $caption = _("All Queues");
     $queues->{'find_disabled_rows'} = 1;
 } else {
-    $caption = loc("Enabled Queues");
+    $caption = _("Enabled Queues");
 }
 
 $Format ||= q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</a>/TITLE:#'}

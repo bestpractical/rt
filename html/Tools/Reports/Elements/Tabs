@@ -54,15 +54,15 @@
 <%INIT>
 my $tabs = {
     a => {
-        title => loc('Resolved by owner'),
+        title => _('Resolved by owner'),
         path  => 'Tools/Reports/ResolvedByOwner.html',
     },
     b => {
-        title => loc('Resolved in date range'),
+        title => _('Resolved in date range'),
         path  => 'Tools/Reports/ResolvedByDates.html',
     },
     c => {
-        title => loc('Created in a date range'),
+        title => _('Created in a date range'),
         path  => 'Tools/Reports/CreatedByDates.html',
     },
 };

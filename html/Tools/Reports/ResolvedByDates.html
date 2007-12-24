@@ -51,7 +51,7 @@ $ResolvedBefore => undef
 $ResolvedAfter => undef
 </%args>
 <%init>
-my $title = loc("Resolved tickets in period, grouped by owner");
+my $title = _("Resolved tickets in period, grouped by owner");
 my $q = RT::Model::Queue->new();
 my $before = RT::Date->new();
 my $after = RT::Date->new();

@@ -56,15 +56,15 @@
 <%init>
 
 my $subtabs = {
-		 A => { title => loc('Select scrip'),
+		 A => { title => _('Select scrip'),
   		     	path => "Admin/Global/Scrips.html",
 			   },
-		 B => { title => loc('New scrip'),
+		 B => { title => _('New scrip'),
   		     	path => "Admin/Global/Scrip.html?create=1&Queue=0",
 			separator => 1,
 			   }
 	      };
-my $title = loc("Modify scrips which apply to all queues");
+my $title = _("Modify scrips which apply to all queues");
 
 my (@actions);
 

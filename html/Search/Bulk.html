@@ -74,7 +74,7 @@
 
 <hr>
 
-<& /Elements/Submit, Label => loc('Update'), CheckAll => 1, ClearAll => 1 &>
+<& /Elements/Submit, Label => _('Update'), CheckAll => 1, ClearAll => 1 &>
 <br />
 <&|/Widgets/TitleBox, title => $title &>
 <table>
@@ -123,7 +123,7 @@
 </tr>
 </table>
 </&>
-<&| /Widgets/TitleBox, title => loc('Add comments or replies to selected tickets') &>
+<&| /Widgets/TitleBox, title => _('Add comments or replies to selected tickets') &>
 <table>
 <tr><td align="right"><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
@@ -148,7 +148,7 @@
  </table>
 
 </&>
-<&|/Widgets/TitleBox, title => loc('Edit Custom Fields'), color => "#336633"&>
+<&|/Widgets/TitleBox, title => _('Edit Custom Fields'), color => "#336633"&>
 <%perl>
 my $cfs = RT::Model::CustomFieldCollection->new();
 $cfs->LimitToGlobal();
@@ -187,19 +187,19 @@ $cfs->LimitToQueue($_) for keys %$seen_queues;
 </table>
 </&>
 
-<&|/Widgets/TitleBox, title => loc('Edit Links'), color => "#336633"&>
+<&|/Widgets/TitleBox, title => _('Edit Links'), color => "#336633"&>
 <em><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&></em><br />
 <& /Ticket/Elements/BulkLinks &>
 </&>
 
-<& /Elements/Submit, Label => loc('Update') &>
+<& /Elements/Submit, Label => _('Update') &>
 
 
 </form>
 
 
 <%INIT>
-my $title = loc("Update multiple tickets");
+my $title = _("Update multiple tickets");
 
 # Iterate through the ARGS hash and remove anything with a null value.
 map ( $ARGS{$_} =~ /^$/ && ( delete $ARGS{$_} ), keys %ARGS );
@@ -231,7 +231,7 @@ else {
 $Page = 1 unless $Page && $Page > 0; # workaround problems with Page = '' or undef
 $Tickets->set_page_info(per_page => $Rows, current_page => $Page);
 
-Abort( loc("No search to operate on.") ) unless ($Tickets);
+Abort( _("No search to operate on.") ) unless ($Tickets);
 
 # build up a list of all custom fields for tickets that we're displaying, so
 # we can display sane edit widgets.
@@ -358,7 +358,7 @@ while ( my $Ticket = $Tickets->next ) {
     );
 
     @tempresults =
-      map { loc( "Ticket %1: %2", $Ticket->id, $_ ) } @tempresults;
+      map { _( "Ticket %1: %2", $Ticket->id, $_ ) } @tempresults;
 
     @results = ( @results, @tempresults );
 }

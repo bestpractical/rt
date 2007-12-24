@@ -45,19 +45,19 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => loc('Preferences') &>
+<& /SelfService/Elements/Header, Title => _('Preferences') &>
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post">
 
 % unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
-<&| /Widgets/TitleBox, title => loc('Change password')  &>
+<&| /Widgets/TitleBox, title => _('Change password')  &>
 <&|/l&>New password</&>: <input type="password" name="NewPass1" size="16" autocomplete="off" />
 <&|/l&>Confirm</&>: <input type="password" name="NewPass2" size="16" autocomplete="off" />
 </&>
 <br />
 % }
-<& /Elements/Submit, Label => loc('Save Changes') &>
+<& /Elements/Submit, Label => _('Save Changes') &>
 	  </form>
 
 

@@ -169,7 +169,7 @@ sub GrantRight {
 
 
     unless ($args{'Right'}) {
-        return(0, $self->loc("Invalid Right"));
+        return(0, _("Invalid Right"));
     }
 
 
@@ -227,7 +227,7 @@ sub RevokeRight {
     );
 
     unless ( $ace->id ) {
-        return ( 0, $self->loc("ACE not found") );
+        return ( 0, _("ACE not found") );
     }
     return ( $ace->delete );
 }

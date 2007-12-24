@@ -1,4 +1,4 @@
-<& /Elements/Header, Title=>loc("RT at a glance"), Refresh => $session{'home_refresh_interval'} &>
+<& /Elements/Header, Title=>_("RT at a glance"), Refresh => $session{'home_refresh_interval'} &>
 <!--
 % $m->out('--'.'>');
 % if (0) {
@@ -74,7 +74,7 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Tabs, 
     current_toptab => '', 
-    Title=>loc("RT at a glance"),
+    Title=>_("RT at a glance"),
     actions => $actions,
     &>
 <& /Elements/ListActions, actions => \@results &>    
@@ -106,7 +106,7 @@ if ($ARGS{'HomeRefreshInterval'}) {
 my $actions;
 if (Jifty->web->current_user->has_right(Right => 'ModifySelf', Object => RT->system)) {
     $actions = {
-        A => { title => loc('Edit'),
+        A => { title => _('Edit'),
                path  => 'Prefs/MyRT.html',
              },
     };

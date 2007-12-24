@@ -45,17 +45,17 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc('Modify user rights for group %1', $GroupObj->name) &>
+<& /Admin/Elements/Header, Title => _('Modify user rights for group %1', $GroupObj->name) &>
 <& /Admin/Elements/GroupTabs, 
     GroupObj => $GroupObj, 
     current_tab => 'Admin/Groups/UserRights.html?id='.$id, 
-    Title => loc('Modify user rights for group %1', $GroupObj->name) &>  
+    Title => _('Modify user rights for group %1', $GroupObj->name) &>  
 <& /Elements/ListActions, actions => \@results &>
 
   <form method="post" action="UserRights.html">
     <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>" />
       
-<&| /Widgets/TitleBox, title => loc('Modify user rights for group %1', $GroupObj->name) &>
+<&| /Widgets/TitleBox, title => _('Modify user rights for group %1', $GroupObj->name) &>
 <table>
 % while ( my $Member = $Users->next ) {
 % my $user_object = $Member->MemberObj->Object;
@@ -71,7 +71,7 @@
 </table>
 </&>
 
-<& /Elements/Submit, Label => loc('Modify User Rights'), Reset => 1 &>
+<& /Elements/Submit, Label => _('Modify User Rights'), Reset => 1 &>
 
 </form>
 
@@ -87,11 +87,11 @@
 
 
 if (!defined $id) {
-    Abort(loc("No Group defined"));
+    Abort(_("No Group defined"));
 }
 
 my $GroupObj = RT::Model::Group->new();
-$GroupObj->load($id) || Abort(loc("Couldn't load group %1",$id));
+$GroupObj->load($id) || Abort(_("Couldn't load group %1",$id));
 
 # Find out which users we want to display ACL selects for
 my $privileged = RT::Model::Group->new();

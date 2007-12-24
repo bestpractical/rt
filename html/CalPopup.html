@@ -87,12 +87,12 @@ function updateParent(strItem) {
 use Calendar::Simple;
 my @today = localtime(time());
 
-my @weekdays = (loc('Sun'), loc('Mon'), loc('Tue'), loc('Wed'), loc('Thu'), 
-		loc('Fri'), loc('Sat'));
-my @months = (loc('January'), loc('February'), loc('March'), loc('April'), 
-	      loc('May'), loc('June'), loc('July'), loc('August'), 
-	      loc('September'), loc('October'), loc('November'), 
-              loc('December'));
+my @weekdays = (_('Sun'), loc('Mon'), loc('Tue'), loc('Wed'), loc('Thu'), 
+		_('Fri'), loc('Sat'));
+my @months = (_('January'), loc('February'), loc('March'), loc('April'), 
+	      _('May'), loc('June'), loc('July'), loc('August'), 
+	      _('September'), loc('October'), loc('November'), 
+              _('December'));
 
 unless ($DisplayedYear) {
               $DisplayedMonth = $today[4];

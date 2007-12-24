@@ -147,27 +147,27 @@ foreach my $run ( @runs ) {
                 }
             }
             else {
-                push @messages, loc( "Public key '0x%1' is required to verify signature", $line->{'Key'} );
+                push @messages, _( "Public key '0x%1' is required to verify signature", $line->{'Key'} );
             }
         }
         elsif ( $line->{'Operation'} eq 'PassphraseCheck' ) {
             next if $line->{'Status'} eq 'DONE';
-            push @messages, loc( $line->{'Message'} );
+            push @messages, _( $line->{'Message'} );
         }
         elsif ( $line->{'Operation'} eq 'Decrypt' ) {
-            push @messages, loc( $line->{'Message'} );
+            push @messages, _( $line->{'Message'} );
         }
         elsif ( $line->{'Operation'} eq 'Verify' ) {
-            push @messages, loc( $line->{'Message'} );
+            push @messages, _( $line->{'Message'} );
         }
         else {
             next if $line->{'Status'} eq 'DONE';
-            push @messages, loc( $line->{'Message'} );
+            push @messages, _( $line->{'Message'} );
         }
     }
 }
 
-push @messages, loc('Warning! This is NOT signed!')
+push @messages, _('Warning! This is NOT signed!')
     if $needs_unsigned_warning;
 return unless @messages;
 

@@ -53,7 +53,7 @@ $Query   => ''
 <select name="<% $name %>">
 % while (@options) {
 % my ($text, $value) = (shift @options, shift @options);
-<option value="<% $value %>" <% $value eq $Default ? 'selected' : '' %>><% loc($text) %></option>
+<option value="<% $value %>" <% $value eq $Default ? 'selected' : '' %>><% _($text) %></option>
 % }
 </select>
 <%init>

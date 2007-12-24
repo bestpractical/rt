@@ -75,7 +75,7 @@ while ( my $entry = $tix->next ) {
     else {
         push @keys, $entry->__value( $value_name );
     }
-    $keys[-1] ||= loc('(no value)');
+    $keys[-1] ||= _('(no value)');
     push @values, $entry->__value( $count_name );
 }
 
@@ -87,7 +87,7 @@ if ( $PrimaryGroupBy =~ /(Daily|Monthly|Annually)$/ ) {
     $re = qr{1970-01} if $PrimaryGroupBy =~ /Monthly$/;
     $re = qr{1970} if $PrimaryGroupBy =~ /Annually$/;
     foreach (@keys) {
-        s/^$re/loc('Not Set')/e;
+        s/^$re/_('Not Set')/e;
     }
 }
 
@@ -100,7 +100,7 @@ my @sorted_values = map { $data{$_}} @sorted_keys;
 my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 </%init>
 
-<% loc('Query:') %>&nbsp;<% $Query %><br />
+<% _('Query:') %>&nbsp;<% $Query %><br />
 
 <img src="<%RT->Config->Get('WebPath')%>/Search/Chart?<%$query_string|n%>" /><br />
 
@@ -129,7 +129,7 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 %$i++;
 <tr class="<%$i%2 ? 'evenline' : 'oddline' %>">
 <td class="label collection-as-table">
-<%loc('Total')%>
+<%_('Total')%>
 </td>
 <td class="value collection-as-table">
 <%$total||''%>

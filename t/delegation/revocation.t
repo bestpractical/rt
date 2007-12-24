@@ -52,7 +52,7 @@ ok( $ret, "Grant ShowConfigTab to g1: $msg" );
 ( $ret, $msg ) = $g1->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g1: $msg" );
 
-$ace = RT::Model::ACE->new($u1);
+$ace = RT::Model::ACE->new(current_user => RT::CurrentUser->new( id => $u1->id) );
 ( $ret, $msg ) = $ace->load_by_values(
     right_name     => 'ShowConfigTab',
     Object        => RT->system,

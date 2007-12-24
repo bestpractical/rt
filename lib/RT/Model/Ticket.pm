@@ -342,7 +342,7 @@ sub create {
     #Can't create a ticket without a queue.
     unless ( $QueueObj->id ) {
         $RT::Logger->debug("$self No valid queue given for ticket creation.");
-        return ( 0, 0, $self->loc('Could not create ticket. Queue not set') );
+        return ( 0, 0, _('Could not create ticket. Queue not set') );
     }
 
     #Now that we have a queue, Check the ACLS
@@ -355,11 +355,11 @@ sub create {
     {
         return (
             0, 0,
-            $self->loc( "No permission to create tickets in the queue '%1'", $QueueObj->name));
+            _( "No permission to create tickets in the queue '%1'", $QueueObj->name));
     }
 
     unless ( $QueueObj->IsValidStatus( $args{'Status'} ) ) {
-        return ( 0, 0, $self->loc('Invalid value for status') );
+        return ( 0, 0, _('Invalid value for status') );
     }
 
     #Since we have a queue, we can set queue defaults
@@ -438,7 +438,7 @@ sub create {
             $Owner = $args{'Owner'};
         } else {
             $RT::Logger->error('passed not loaded owner object');
-            push @non_fatal_errors, $self->loc("Invalid owner object");
+            push @non_fatal_errors, _("Invalid owner object");
             $Owner = undef;
         }
     }
@@ -449,8 +449,8 @@ sub create {
         $Owner->load( $args{'Owner'} );
         unless ( $Owner->id ) {
             push @non_fatal_errors,
-                $self->loc("Owner could not be set.") . " "
-              . $self->loc( "User '%1' could not be found.", $args{'Owner'} );
+                _("Owner could not be set.") . " "
+              . _( "User '%1' could not be found.", $args{'Owner'} );
             $Owner = undef;
         }
     }
@@ -491,7 +491,7 @@ sub create {
                     my ($uid, $msg) = $user->load_or_create_by_email( $address );
                     unless ( $uid ) {
                         push @non_fatal_errors,
-                            $self->loc("Couldn't load or create user: %1", $msg);
+                            _("Couldn't load or create user: %1", $msg);
                     } else {
                         push @{ $args{$type} }, $user->id;
                     }
@@ -541,7 +541,7 @@ sub create {
         $RT::Logger->crit( "Couldn't create a ticket: " . $ticket_message );
         Jifty->handle->rollback();
         return ( 0, 0,
-            $self->loc("Ticket could not be created due to an internal error")
+            _("Ticket could not be created due to an internal error")
         );
     }
 
@@ -554,7 +554,7 @@ sub create {
         $RT::Logger->crit("Couldn't set EffectiveId: $msg\n");
         Jifty->handle->rollback;
         return ( 0, 0,
-            $self->loc("Ticket could not be created due to an internal error")
+            _("Ticket could not be created due to an internal error")
         );
     }
 
@@ -565,7 +565,7 @@ sub create {
               . ". aborting Ticket creation." );
         Jifty->handle->rollback();
         return ( 0, 0,
-            $self->loc("Ticket could not be created due to an internal error")
+            _("Ticket could not be created due to an internal error")
         );
     }
 
@@ -594,7 +594,7 @@ sub create {
                 principal_id => $watcher,
                 Silent => 1,
             );
-            push @non_fatal_errors, $self->loc("Couldn't set %1 watcher: %2", $type, $msg)
+            push @non_fatal_errors, _("Couldn't set %1 watcher: %2", $type, $msg)
                 unless $val;
         }
     }
@@ -653,8 +653,9 @@ sub create {
                     push @non_fatal_errors, $msg;
                     next;
                 }
+
                 if ( $obj && !$obj->current_user_has_right('ModifyTicket') ) {
-                    push @non_fatal_errors, $self->loc('Linking. Permission denied');
+                    push @non_fatal_errors, _('Linking. Permission denied');
                     next;
                 }
             }
@@ -678,7 +679,7 @@ sub create {
             if (!$DeferOwner->has_right( Object => $self, Right  => 'OwnTicket')) {
     
         $RT::Logger->warning( "User " . $Owner->name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $QueueObj->name ); 
-        push @non_fatal_errors, $self->loc( "Owner '%1' does not have rights to own this ticket.", $Owner->name);
+        push @non_fatal_errors, _( "Owner '%1' does not have rights to own this ticket.", $Owner->name);
 
     } else {
         $Owner = $DeferOwner;
@@ -705,7 +706,7 @@ sub create {
             $TransObj->UpdateCustomFields(ARGSRef => \%args);
 
             $RT::Logger->info( "Ticket " . $self->id . " created in queue '" . $QueueObj->name . "' by " . $self->current_user->name );
-            $ErrStr = $self->loc( "Ticket %1 created in queue '%2'", $self->id, $QueueObj->name );
+            $ErrStr = _( "Ticket %1 created in queue '%2'", $self->id, $QueueObj->name );
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
         }
         else {
@@ -713,7 +714,7 @@ sub create {
 
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
             $RT::Logger->error("Ticket couldn't be created: $ErrStr");
-            return ( 0, 0, $self->loc( "Ticket could not be created due to an internal error"));
+            return ( 0, 0, _( "Ticket could not be created due to an internal error"));
         }
          if ( $args{'DryRun'} ) {
                  Jifty->handle->rollback();
@@ -729,7 +730,7 @@ sub create {
 
         # Not going to record a transaction
         Jifty->handle->commit();
-        $ErrStr = $self->loc( "Ticket %1 created in queue '%2'", $self->id, $QueueObj->name );
+        $ErrStr = _( "Ticket %1 created in queue '%2'", $self->id, $QueueObj->name );
         $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
         return ( $self->id, 0, $ErrStr );
 
@@ -853,7 +854,7 @@ sub Import {
     #Can't create a ticket without a queue.
     unless ( defined($QueueObj) and $QueueObj->id ) {
         $RT::Logger->debug("$self No queue given for ticket creation.");
-        return ( 0, $self->loc('Could not create ticket. Queue not set') );
+        return ( 0, _('Could not create ticket. Queue not set') );
     }
 
     #Now that we have a queue, Check the ACLS
@@ -865,7 +866,7 @@ sub Import {
       )
     {
         return ( 0,
-            $self->loc("No permission to create tickets in the queue '%1'"
+            _("No permission to create tickets in the queue '%1'"
               , $QueueObj->name));
     }
 
@@ -920,7 +921,7 @@ sub Import {
     # }}}
 
     unless ( $self->validate_Status( $args{'Status'} ) ) {
-        return ( 0, $self->loc("'%1' is an invalid value for status", $args{'Status'}) );
+        return ( 0, _("'%1' is an invalid value for status", $args{'Status'}) );
     }
 
     # If we're coming in with an id, set that now.
@@ -1079,7 +1080,7 @@ sub AddWatcher {
 
     if ( $args{'Email'} ) {
         my ($addr) = Mail::Address->parse( $args{'Email'} );
-        return (0, $self->loc("Couldn't parse address from '%1 string", $args{'Email'} ))
+        return (0, _("Couldn't parse address from '%1 string", $args{'Email'} ))
             unless $addr;
 
         if ( lc $self->current_user->user_object->email
@@ -1093,25 +1094,25 @@ sub AddWatcher {
     # If the watcher isn't the current user then the current user has no right
     # bail
     unless ( $args{'principal_id'} && $self->current_user->id == $args{'principal_id'} ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     #  If it's an AdminCc and they don't have 'WatchAsAdminCc', bail
     if ( $args{'Type'} eq 'AdminCc' ) {
         unless ( $self->current_user_has_right('WatchAsAdminCc') ) {
-            return ( 0, $self->loc('Permission Denied') );
+            return ( 0, _('Permission Denied') );
         }
     }
 
     #  If it's a Requestor or Cc and they don't have 'Watch', bail
     elsif ( $args{'Type'} eq 'Cc' || $args{'Type'} eq 'Requestor' ) {
         unless ( $self->current_user_has_right('Watch') ) {
-            return ( 0, $self->loc('Permission Denied') );
+            return ( 0, _('Permission Denied') );
         }
     }
     else {
         $RT::Logger->warning( "AddWatcher got passed a bogus type");
-        return ( 0, $self->loc('Error in parameters to Ticket->AddWatcher') );
+        return ( 0, _('Error in parameters to Ticket->AddWatcher') );
     }
 
     return $self->_AddWatcher( %args );
@@ -1144,19 +1145,19 @@ sub _AddWatcher {
     # If we can't find this watcher, we need to bail.
     unless ($principal->id) {
             $RT::Logger->error("Could not load create a user with the email address '".$args{'Email'}. "' to add as a watcher for ticket ".$self->id);
-        return(0, $self->loc("Could not find or create that user"));
+        return(0, _("Could not find or create that user"));
     }
 
 
     my $group = RT::Model::Group->new;
     $group->load_ticket_role_group(Type => $args{'Type'}, Ticket => $self->id);
     unless ($group->id) {
-        return(0,$self->loc("Group not found"));
+        return(0,_("Group not found"));
     }
 
     if ( $group->has_member( $principal)) {
 
-        return ( 0, $self->loc('That principal is already a %1 for this ticket', $self->loc($args{'Type'})) );
+        return ( 0, _('That principal is already a %1 for this ticket', _($args{'Type'})) );
     }
 
 
@@ -1165,7 +1166,7 @@ sub _AddWatcher {
     unless ($m_id) {
         $RT::Logger->error("Failed to add ".$principal->id." as a member of group ".$group->id."\n".$m_msg);
 
-        return ( 0, $self->loc('Could not make that principal a %1 for this ticket', $self->loc($args{'Type'})) );
+        return ( 0, _('Could not make that principal a %1 for this ticket', _($args{'Type'})) );
     }
 
     unless ( $args{'Silent'} ) {
@@ -1176,7 +1177,7 @@ sub _AddWatcher {
         );
     }
 
-        return ( 1, $self->loc('Added principal as a %1 for this ticket', $self->loc($args{'Type'})) );
+        return ( 1, _('Added principal as a %1 for this ticket', _($args{'Type'})) );
 }
 
 # }}}
@@ -1210,7 +1211,7 @@ sub deleteWatcher {
                  @_ );
 
     unless ( $args{'principal_id'} || $args{'Email'} ) {
-        return ( 0, $self->loc("No principal specified") );
+        return ( 0, _("No principal specified") );
     }
     my $principal = RT::Model::Principal->new;
     if ( $args{'principal_id'} ) {
@@ -1225,13 +1226,13 @@ sub deleteWatcher {
 
     # If we can't find this watcher, we need to bail.
     unless ( $principal->id ) {
-        return ( 0, $self->loc("Could not find that principal") );
+        return ( 0, _("Could not find that principal") );
     }
 
     my $group = RT::Model::Group->new;
     $group->load_ticket_role_group( Type => $args{'Type'}, Ticket => $self->id );
     unless ( $group->id ) {
-        return ( 0, $self->loc("Group not found") );
+        return ( 0, _("Group not found") );
     }
 
     # {{{ Check ACLS
@@ -1243,7 +1244,7 @@ sub deleteWatcher {
         if ( $args{'Type'} eq 'AdminCc' ) {
             unless (    $self->current_user_has_right('ModifyTicket')
                      or $self->current_user_has_right('WatchAsAdminCc') ) {
-                return ( 0, $self->loc('Permission Denied') );
+                return ( 0, _('Permission Denied') );
             }
         }
 
@@ -1253,13 +1254,13 @@ sub deleteWatcher {
         {
             unless (    $self->current_user_has_right('ModifyTicket')
                      or $self->current_user_has_right('Watch') ) {
-                return ( 0, $self->loc('Permission Denied') );
+                return ( 0, _('Permission Denied') );
             }
         }
         else {
             $RT::Logger->warning("$self -> DeleteWatcher got passed a bogus type");
             return ( 0,
-                     $self->loc('Error in parameters to Ticket->deleteWatcher') );
+                     _('Error in parameters to Ticket->deleteWatcher') );
         }
     }
 
@@ -1267,7 +1268,7 @@ sub deleteWatcher {
     # and the current user  doesn't have 'ModifyTicket' bail
     else {
         unless ( $self->current_user_has_right('ModifyTicket') ) {
-            return ( 0, $self->loc("Permission Denied") );
+            return ( 0, _("Permission Denied") );
         }
     }
 
@@ -1277,7 +1278,7 @@ sub deleteWatcher {
 
     unless ( $group->has_member($principal) ) {
         return ( 0,
-                 $self->loc( 'That principal is not a %1 for this ticket',
+                 _( 'That principal is not a %1 for this ticket',
                              $args{'Type'} ) );
     }
 
@@ -1290,7 +1291,7 @@ sub deleteWatcher {
                             . $m_msg );
 
         return (0,
-                $self->loc(
+                _(
                     'Could not remove that principal as a %1 for this ticket',
                     $args{'Type'} ) );
     }
@@ -1302,7 +1303,7 @@ sub deleteWatcher {
     }
 
     return ( 1,
-             $self->loc( "%1 is no longer a %2 for this ticket.",
+             _( "%1 is no longer a %2 for this ticket.",
                          $principal->Object->name,
                          $args{'Type'} ) );
 }
@@ -1355,7 +1356,7 @@ sub UnsquelchMailTo {
 
     my $address = shift;
     unless ( $self->current_user_has_right('ModifyTicket') ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     my ($val, $msg) = $self->attributes->delete_entry ( name => 'SquelchMailTo', Content => $address);
@@ -1711,18 +1712,18 @@ sub set_Queue {
 
     #Redundant. ACL gets checked in _set;
     unless ( $self->current_user_has_right('ModifyTicket') ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     my $NewQueueObj = RT::Model::Queue->new;
     $NewQueueObj->load($NewQueue);
 
     unless ( $NewQueueObj->id() ) {
-        return ( 0, $self->loc("That queue does not exist") );
+        return ( 0, _("That queue does not exist") );
     }
 
     if ( $NewQueueObj->id == $self->QueueObj->id ) {
-        return ( 0, $self->loc('That is the same value') );
+        return ( 0, _('That is the same value') );
     }
     unless (
         $self->current_user->has_right(
@@ -1731,7 +1732,7 @@ sub set_Queue {
         )
       )
     {
-        return ( 0, $self->loc("You may not create requests in that queue.") );
+        return ( 0, _("You may not create requests in that queue.") );
     }
 
     unless (
@@ -1744,7 +1745,7 @@ sub set_Queue {
         my $clone = RT::Model::Ticket->new(current_user => RT->system_user );
         $clone->load( $self->id );
         unless ( $clone->id ) {
-            return ( 0, $self->loc("Couldn't load copy of ticket #%1.", $self->id) );
+            return ( 0, _("Couldn't load copy of ticket #%1.", $self->id) );
         }
         my ($status, $msg) = $clone->set_Owner( RT->nobody->id, 'Force' );
         $RT::Logger->error("Couldn't set owner on queue change: $msg") unless $status;
@@ -1854,7 +1855,7 @@ sub set_Started {
     my $time = shift || 0;
 
     unless ( $self->current_user_has_right('ModifyTicket') ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     #We create a date object to catch date weirdness
@@ -2024,7 +2025,7 @@ sub comment {
 
     unless (    ( $self->current_user_has_right('commentOnTicket') )
              or ( $self->current_user_has_right('ModifyTicket') ) ) {
-        return ( 0, $self->loc("Permission Denied"), undef );
+        return ( 0, _("Permission Denied"), undef );
     }
     $args{'NoteType'} = 'comment';
 
@@ -2074,7 +2075,7 @@ sub Correspond {
 
     unless (    ( $self->current_user_has_right('ReplyToTicket') )
              or ( $self->current_user_has_right('ModifyTicket') ) ) {
-        return ( 0, $self->loc("Permission Denied"), undef );
+        return ( 0, _("Permission Denied"), undef );
     }
 
     $args{'NoteType'} = 'Correspond'; 
@@ -2125,7 +2126,7 @@ sub _RecordNote {
     );
 
     unless ( $args{'MIMEObj'} || $args{'Content'} ) {
-        return ( 0, $self->loc("No message attached"), undef );
+        return ( 0, _("No message attached"), undef );
     }
 
     unless ( $args{'MIMEObj'} ) {
@@ -2190,10 +2191,10 @@ sub _RecordNote {
 
     unless ($Trans) {
         $RT::Logger->err("$self couldn't init a transaction $msg");
-        return ( $Trans, $self->loc("Message could not be recorded"), undef );
+        return ( $Trans, _("Message could not be recorded"), undef );
     }
 
-    return ( $Trans, $self->loc("Message recorded"), $TransObj );
+    return ( $Trans, _("Message recorded"), $TransObj );
 }
 
 # }}}
@@ -2266,14 +2267,14 @@ sub delete_link {
 
     unless ( $args{'Target'} || $args{'Base'} ) {
         $RT::Logger->error("Base or Target must be specified\n");
-        return ( 0, $self->loc('Either base or target must be specified') );
+        return ( 0, _('Either base or target must be specified') );
     }
 
     #check acls
     my $right = 0;
     $right++ if $self->current_user_has_right('ModifyTicket');
     if ( !$right && RT->Config->Get( 'StrictLinkACL' ) ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     # If the other URI is an RT::Model::Ticket, we want to make sure the user
@@ -2286,7 +2287,7 @@ sub delete_link {
     if ( ( !RT->Config->Get( 'StrictLinkACL' ) && $right == 0 ) ||
          ( RT->Config->Get( 'StrictLinkACL' ) && $right < 2 ) )
     {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     my ($val, $Msg) = $self->SUPER::_delete_link(%args);
@@ -2361,13 +2362,13 @@ sub AddLink {
 
     unless ( $args{'Target'} || $args{'Base'} ) {
         $RT::Logger->error("Base or Target must be specified\n");
-        return ( 0, $self->loc('Either base or target must be specified') );
+        return ( 0, _('Either base or target must be specified') );
     }
 
     my $right = 0;
     $right++ if $self->current_user_has_right('ModifyTicket');
     if ( !$right && RT->Config->Get( 'StrictLinkACL' ) ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     # If the other URI is an RT::Model::Ticket, we want to make sure the user
@@ -2380,7 +2381,7 @@ sub AddLink {
     if ( ( !RT->Config->Get( 'StrictLinkACL' ) && $right == 0 ) ||
          ( RT->Config->Get( 'StrictLinkACL' ) && $right < 2 ) )
     {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     return $self->_AddLink(%args);
@@ -2396,7 +2397,7 @@ sub __GetTicketFromURI {
     $uri_obj->FromURI( $args{'URI'} );
 
     unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
-        my $msg = $self->loc( "Couldn't resolve '%1' into a URI.", $args{'URI'} );
+        my $msg = _( "Couldn't resolve '%1' into a URI.", $args{'URI'} );
         $RT::Logger->warning( "$msg\n" );
         return( 0, $msg );
     }
@@ -2483,7 +2484,7 @@ sub MergeInto {
     my $ticket_id = shift;
 
     unless ( $self->current_user_has_right('ModifyTicket') ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     # Load up the new ticket.
@@ -2492,12 +2493,12 @@ sub MergeInto {
 
     # make sure it exists.
     unless ( $MergeInto->id ) {
-        return ( 0, $self->loc("New ticket doesn't exist") );
+        return ( 0, _("New ticket doesn't exist") );
     }
 
     # Make sure the current user can modify the new ticket.
     unless ( $MergeInto->current_user_has_right('ModifyTicket') ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     Jifty->handle->begin_transaction();
@@ -2515,7 +2516,7 @@ sub MergeInto {
 
     unless ($id_val) {
         Jifty->handle->rollback();
-        return ( 0, $self->loc("Merge failed. Couldn't set EffectiveId") );
+        return ( 0, _("Merge failed. Couldn't set EffectiveId") );
     }
 
 
@@ -2527,12 +2528,12 @@ sub MergeInto {
         unless ($status_val) {
             Jifty->handle->rollback();
             $RT::Logger->error(
-                $self->loc(
+                _(
                     "%1 couldn't set status to resolved. RT's Database may be inconsistent.",
                     $self
                 )
             );
-            return ( 0, $self->loc("Merge failed. Couldn't set Status") );
+            return ( 0, _("Merge failed. Couldn't set Status") );
         }
     }
 
@@ -2637,7 +2638,7 @@ sub MergeInto {
     $MergeInto->_setLastUpdated;    
 
     Jifty->handle->commit();
-    return ( 1, $self->loc("Merge Successful") );
+    return ( 1, _("Merge Successful") );
 }
 
 # }}}
@@ -2715,7 +2716,7 @@ sub set_Owner {
     $NewOwnerObj->load( $NewOwner );
     unless ( $NewOwnerObj->id ) {
         Jifty->handle->rollback();
-        return ( 0, $self->loc("That user does not exist") );
+        return ( 0, _("That user does not exist") );
     }
 
 
@@ -2726,7 +2727,7 @@ sub set_Owner {
         unless (    $self->current_user_has_right('ModifyTicket')
                  || $self->current_user_has_right('TakeTicket') ) {
             Jifty->handle->rollback();
-            return ( 0, $self->loc("Permission Denied") );
+            return ( 0, _("Permission Denied") );
         }
     }
 
@@ -2737,13 +2738,13 @@ sub set_Owner {
         unless (    $self->current_user_has_right('ModifyTicket')
                  || $self->current_user_has_right('StealTicket') ) {
             Jifty->handle->rollback();
-            return ( 0, $self->loc("Permission Denied") );
+            return ( 0, _("Permission Denied") );
         }
     }
     else {
         unless ( $self->current_user_has_right('ModifyTicket') ) {
             Jifty->handle->rollback();
-            return ( 0, $self->loc("Permission Denied") );
+            return ( 0, _("Permission Denied") );
         }
     }
 
@@ -2754,25 +2755,25 @@ sub set_Owner {
          and $OldOwnerObj->id != $self->current_user->id )
     {
         Jifty->handle->rollback();
-        return ( 0, $self->loc("You can only take tickets that are unowned") )
+        return ( 0, _("You can only take tickets that are unowned") )
             if $NewOwnerObj->id == $self->current_user->id;
         return (
             0,
-            $self->loc("You can only reassign tickets that you own or that are unowned" )
+            _("You can only reassign tickets that you own or that are unowned" )
         );
     }
 
     #If we've specified a new owner and that user can't modify the ticket
     elsif ( !$NewOwnerObj->has_right( Right => 'OwnTicket', Object => $self ) ) {
         Jifty->handle->rollback();
-        return ( 0, $self->loc("That user may not own tickets in that queue") );
+        return ( 0, _("That user may not own tickets in that queue") );
     }
 
     # If the ticket has an owner and it's the new owner, we don't need
     # To do anything
     elsif ( $NewOwnerObj->id == $OldOwnerObj->id ) {
         Jifty->handle->rollback();
-        return ( 0, $self->loc("That user already owns that ticket") );
+        return ( 0, _("That user already owns that ticket") );
     }
 
     # Delete the owner in the owner group, then add a new one
@@ -2781,14 +2782,14 @@ sub set_Owner {
     my ( $del_id, ) = $self->OwnerGroup->MembersObj->first->delete();
     unless ($del_id) {
         Jifty->handle->rollback();
-        return ( 0, $self->loc("Could not change owner. ") . $del_id );
+        return ( 0, _("Could not change owner. ") . $del_id );
     }
     my ( $add_id, $add_msg ) = $self->OwnerGroup->_add_member(
                                        principal_id => $NewOwnerObj->principal_id,
                                        InsideTransaction => 1 );
     unless ($add_id) {
         Jifty->handle->rollback();
-        return ( 0, $self->loc("Could not change owner. ") . $add_msg );
+        return ( 0, _("Could not change owner. ") . $add_msg );
     }
 
     # We call set twice with slightly different arguments, so
@@ -2805,7 +2806,7 @@ sub set_Owner {
 
     if  (ref($return) and !$return) {
         Jifty->handle->rollback;
-        return ( 0, $self->loc("Could not change owner. ") . $return );
+        return ( 0, _("Could not change owner. ") . $return );
     }
 
    my ($val, $msg) = $self->_NewTransaction(
@@ -2817,7 +2818,7 @@ sub set_Owner {
     );
 
     if ( $val ) {
-        $msg = $self->loc( "Owner changed from %1 to %2",
+        $msg = _( "Owner changed from %1 to %2",
                            $OldOwnerObj->name, $NewOwnerObj->name );
     }
     else {
@@ -2875,7 +2876,7 @@ sub Steal {
     my $self = shift;
 
     if ( $self->IsOwner( $self->current_user ) ) {
-        return ( 0, $self->loc("You already own this ticket") );
+        return ( 0, _("You already own this ticket") );
     }
     else {
         return ( $self->set_Owner( $self->current_user->id, 'Steal' ) );
@@ -2940,20 +2941,20 @@ sub set_Status {
     #Check ACL
     if ( $args{Status} eq 'deleted') {
             unless ($self->current_user_has_right('DeleteTicket')) {
-            return ( 0, $self->loc('Permission Denied') );
+            return ( 0, _('Permission Denied') );
        }
     } else {
             unless ($self->current_user_has_right('ModifyTicket')) {
-            return ( 0, $self->loc('Permission Denied') );
+            return ( 0, _('Permission Denied') );
        }
     }
 
     if (!$args{Force} && ($args{'Status'} eq 'resolved') && $self->has_unresolved_dependencies) {
-        return (0, $self->loc('That ticket has unresolved dependencies'));
+        return (0, _('That ticket has unresolved dependencies'));
     }
 
 
-    unless ( $self->validate_Status( $args{'Status'} ) ) { return ( 0, $self->loc("'%1' is an invalid value for status", $args{'Status'}) ); }
+    unless ( $self->validate_Status( $args{'Status'} ) ) { return ( 0, _("'%1' is an invalid value for status", $args{'Status'}) ); }
 
 
     my $now = RT::Date->new;
@@ -3085,7 +3086,7 @@ sub set_Told {
     my $timetaken = shift || 0;
 
     unless ( $self->current_user_has_right('ModifyTicket') ) {
-        return ( 0, $self->loc("Permission Denied") );
+        return ( 0, _("Permission Denied") );
     }
 
     my $datetold = RT::Date->new();
@@ -3238,13 +3239,13 @@ sub _set {
 
     if ($args{'CheckACL'}) {
       unless ( $self->current_user_has_right('ModifyTicket')) {
-          return ( 0, $self->loc("Permission Denied"));
+          return ( 0, _("Permission Denied"));
       }
    }
 
     unless ($args{'UpdateTicket'} || $args{'RecordTransaction'}) {
         $RT::Logger->error("Ticket->_set called without a mandate to record an update or update the ticket");
-        return(0, $self->loc("Internal Error"));
+        return(0, _("Internal Error"));
     }
 
     #if the user is trying to modify the record
@@ -3255,7 +3256,7 @@ sub _set {
    
     if ($Old && $args{'value'} && $Old eq $args{'value'}) {
 
-        return (0, $self->loc("That is already the current value"));
+        return (0, _("That is already the current value"));
     }
     my ($return);
     if ( $args{'UpdateTicket'}  ) {

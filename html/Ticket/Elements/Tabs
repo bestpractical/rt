@@ -80,10 +80,10 @@ if ( defined $session{'tickets'} ) {
                 $searchtabs->{'_a'} = {
                             class => "nav",
                             path => "Ticket/Display.html?id=" . $item_map->{first},
-                            title => '<< ' . loc('First') };
+                            title => '<< ' . _('First') };
                 $searchtabs->{"_b"} = { class => "nav",
                             path => "Ticket/Display.html?id=" . $item_map->{$Ticket->id}->{prev},
-                                  title => '< ' . loc('Prev') };
+                                  title => '< ' . _('Prev') };
        } 
 
 
@@ -91,11 +91,11 @@ if ( defined $session{'tickets'} ) {
         if ($item_map->{$Ticket->id}->{next}) {
             $searchtabs->{'d'} = { class => "nav",
                             path => "Ticket/Display.html?id=" . $item_map->{$Ticket->id}->{next},
-                             title => loc('Next') . ' >' };
+                             title => _('Next') . ' >' };
             $searchtabs->{'e'} = {
                            class => "nav",
                            path => "Ticket/Display.html?id=" . $item_map->{last},
-                           title => loc('Last') . ' >>' };
+                           title => _('Last') . ' >>' };
         }
 }
 
@@ -107,24 +107,24 @@ $tabs->{"this"} = { class => "currentnav",
                     current_subtab => $current_subtab };
 
 my $ticket_page_tabs = {
-    _A => { title => loc('Display'),
+    _A => { title => _('Display'),
             path  => "Ticket/Display.html?id=" . $id, },
 
-    _Ab => { title => loc('History'),
+    _Ab => { title => _('History'),
              path  => "Ticket/History.html?id=" . $id, },
-    _B => { title => loc('Basics'),
+    _B => { title => _('Basics'),
             path  => "Ticket/Modify.html?id=" . $id, },
 
-    _C => { title => loc('Dates'),
+    _C => { title => _('Dates'),
             path  => "Ticket/ModifyDates.html?id=" . $id, },
     _D =>
-      { title => loc('People'), path => "Ticket/ModifyPeople.html?id=" . $id, },
-    _E => { title => loc('Links'),
+      { title => _('People'), path => "Ticket/ModifyPeople.html?id=" . $id, },
+    _E => { title => _('Links'),
             path  => "Ticket/ModifyLinks.html?id=" . $id, },
-    _F => { title => loc('Reminders'),
+    _F => { title => _('Reminders'),
             path  => "Ticket/Reminders.html?id=" . $id,
             separator => 1, },
-    _X => { title => loc('Jumbo'),
+    _X => { title => _('Jumbo'),
             path  => "Ticket/ModifyAll.html?id=" . $id, 
  },
 
@@ -146,7 +146,7 @@ my %can = (
 
 if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('ReplyToTicket') ) {
     $actions->{'F'} = {
-        title => loc('Reply'),
+        title => _('Reply'),
         path  => "Ticket/Update.html?Action=Respond&id=" . $id,
     };
 }
@@ -155,11 +155,11 @@ if ( $can{'ModifyTicket'} ) {
     if ( $Ticket->Status ne 'resolved' ) {
         $actions->{'G'} = {
             path => "Ticket/Update.html?Action=comment&DefaultStatus=resolved&id=" . $id,
-            title => loc('Resolve') };
+            title => _('Resolve') };
     }
     if ( $Ticket->Status ne 'open' ) {
         $actions->{'A'} = { path => "Ticket/Display.html?Status=open&id=" . $id,
-                            title => loc('Open it') };
+                            title => _('Open it') };
     }
 }
 
@@ -168,13 +168,13 @@ if ( $can{'ModifyTicket'} ) {
      if ( $Ticket->OwnerObj->id == RT->nobody->id ) {
          $actions->{'B'} = {
              path => "Ticket/Display.html?Action=Take&id=" . $id,
-             title => loc('Take'),
+             title => _('Take'),
          } if $can{'ModifyTicket'} or $Ticket->current_user_has_right('TakeTicket');
      }
      elsif ( $Ticket->OwnerObj->id != Jifty->web->current_user->id ) {
          $actions->{'C'} = {
              path => "Ticket/Display.html?Action=Steal&id=" . $id,
-             title => loc('Steal'),
+             title => _('Steal'),
          } if $can{'ModifyTicket'} or $Ticket->current_user_has_right('StealTicket');
      }
 
@@ -183,7 +183,7 @@ if ( $can{'ModifyTicket'} ) {
 
 if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('commentOnTicket') ) {
     $actions->{'E'} = {
-        title => loc('comment'),
+        title => _('comment'),
         path  => "Ticket/Update.html?Action=comment&id=" . $id,
     };
 }
@@ -211,21 +211,21 @@ $args= "?" . $m->comp(
 $args ||= '';
 
 $tabs->{"f"} = { path      => "Search/Build.html?NewQuery=1",
-                 title     => loc('New Search')};
+                 title     => _('New Search')};
 $tabs->{"g"} = { path      => "Search/Build.html$args",
-                 title     => loc('Edit Search')};
+                 title     => _('Edit Search')};
 $tabs->{"h"} = { path      => "Search/Edit.html$args",
-                 title     => loc('Advanced'),
+                 title     => _('Advanced'),
                  separator => 1 };
 if ($args) {
   $tabs->{"i"} = { path      => "Search/Results.html$args",
-                   title     => loc('Show Results'),
+                   title     => _('Show Results'),
                    };
   if ($current_tab =~  "Search/Results.html") {
     $current_tab = "Search/Results.html$args";
   }
   $tabs->{"j"} = { path      => "Search/Bulk.html$args",
-                   title     => loc('Bulk Update'),
+                   title     => _('Bulk Update'),
                    };
   if ($current_tab =~  "Search/Bulk.html") {
     $current_tab = "Search/Bulk.html$args";

@@ -95,9 +95,9 @@
 <div id="pick-criteria">
     <& Elements/PickCriteria, query => $query{'Query'}, cfqueues => $queues &>
 </div>
-<& /Elements/Submit,  Label => loc('Add these terms'), name => 'AddClause'&>
+<& /Elements/Submit,  Label => _('Add these terms'), name => 'AddClause'&>
 
-<& /Elements/Submit, Label => loc('Add these terms and Search'), name => 'DoSearch'&>
+<& /Elements/Submit, Label => _('Add these terms and Search'), name => 'DoSearch'&>
 
 
 
@@ -108,7 +108,7 @@
     CurrentFormat    => $CurrentFormat,
 &>
 
-<& /Elements/Submit, Label => loc('Add and Search'), name => 'DoSearch'&>
+<& /Elements/Submit, Label => _('Add and Search'), name => 'DoSearch'&>
 
 </form>
 
@@ -116,7 +116,7 @@
 use RT::Interface::Web::QueryBuilder;
 use RT::Interface::Web::QueryBuilder::Tree;
 
-my $title = loc("Query Builder");
+my $title = _("Query Builder");
 
 my %query;
 for( qw(Query Format order_by Order rows_per_page) ) {

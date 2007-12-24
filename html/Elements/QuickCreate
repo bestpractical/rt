@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <div class="quick-create">
-<&| /Widgets/TitleBox, title => loc('Quick ticket creation') &>
+<&| /Widgets/TitleBox, title => _('Quick ticket creation') &>
 <form method="post" action="<%RT->Config->Get('WebPath')%>/index.html">
 <input type="hidden" class="hidden" name="QuickCreate" value="1" />
 <table>
@@ -58,13 +58,13 @@
 <&|/l&>Owner</&>:<br />
 <select type="select" name="Owner">  
 <option value="<%Jifty->web->current_user->id%>" selected><%Jifty->web->current_user->name %></option>
-<option value="<%RT->nobody->id%>"><%loc('Nobody')%></option>
+<option value="<%RT->nobody->id%>"><%_('Nobody')%></option>
 </select>
 </td>
 </tr>
 %#<tr><td colspan="3"><textarea cols="50" rows="3"></textarea></td></tr>
 </table>
-<div align="right"><input type="submit" class="button" value="<%loc('Create')%>" /></div>
+<div align="right"><input type="submit" class="button" value="<%_('Create')%>" /></div>
 </form>
 </&>
 </div>

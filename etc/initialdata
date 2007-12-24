@@ -532,7 +532,7 @@ foreach my $link (@{ $links->items_array_ref }) {
     if ($obj->QueueObj->IsActiveStatus($obj->Status)) {
 	if ($obj->Type eq 'ticket') {
 	    $obj->comment(
-		Content	=> $self->loc("Your request was rejected."),
+		Content	=> _("Your request was rejected."),
 	    );
 	    $obj->set_Status(
 		Status	=> 'rejected',
@@ -589,9 +589,9 @@ while (my $o = $t->next) {
 
 foreach my $obj ($self->TicketObj->AllDependedOnBy( Type => 'ticket' )) {
     $obj->comment(
-	Content => $self->loc( "Your request has been approved by %1. Other approvals may still be pending.", # loc
+	Content => _( "Your request has been approved by %1. Other approvals may still be pending.", # loc
 	    $self->TransactionObj->CreatorObj->name,
-	) . "\n" . $self->loc( "Approver's notes: %1", # loc
+	) . "\n" . _( "Approver's notes: %1", # loc
 	    $note
 	),
     );
@@ -627,7 +627,7 @@ while (my $link = $links->next) {
 
     if ($obj->Type eq 'ticket') {
 	$obj->comment(
-	    Content	=> $self->loc("Your request has been approved."),
+	    Content	=> _("Your request has been approved."),
 	);
 	$T::Approval  = $Ticket;    # so we can access it inside templates
 	$self->{TicketObj} = $obj;  # we want the original id in the token line
@@ -698,7 +698,7 @@ return 0; # ignore $passed;
       { Format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                  . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
                  . q{Queuename, ExtendedStatus, CreatedRelative, }
-                 . q{'<A HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">__loc(Take)__</a>/TITLE:NBSP'},
+                 . q{'<A HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">___(Take)__</a>/TITLE:NBSP'},
         Query   => " Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
         order_by => 'Created',
         Order   => 'DESC'

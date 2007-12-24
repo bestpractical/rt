@@ -73,7 +73,7 @@ my (@GlobalCFs, @UnassignedCFs);
 
 my $id = $Object->id;
 if ($id and !$Object->current_user_has_right('AssignCustomFields')) {
-    $m->out('<p><i>', loc('(No custom fields)'), '</i></p>');
+    $m->out('<p><i>', _('(No custom fields)'), '</i></p>');
     return;
 }
 

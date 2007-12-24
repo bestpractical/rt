@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& NewListActions, actions => $actions &>
-<&|/Widgets/TitleBox, title => join(': ', grep defined, loc("Current search"), $Description) &>
+<&|/Widgets/TitleBox, title => join(': ', grep defined, _("Current search"), $Description) &>
 
 <select size="10" name="clauses" style="width: 100%" multiple>
 % $m->out($optionlist);
@@ -89,8 +89,8 @@ if ( $ARGS{'Up'} || $ARGS{'Down'} ) {
             $newindex++ if $ARGS{'Down'};
             $newindex-- if $ARGS{'Up'};
             if ( $newindex < 0 || $newindex >= $parent->getChildCount ) {
-                push( @results, [ loc("error: can't move up"), -1 ] ) if $ARGS{'Up'};
-                push( @results, [ loc("error: can't move down"), -1 ] ) if $ARGS{'Down'};
+                push( @results, [ _("error: can't move up"), -1 ] ) if $ARGS{'Up'};
+                push( @results, [ _("error: can't move down"), -1 ] ) if $ARGS{'Down'};
                 next;
             }
 
@@ -99,7 +99,7 @@ if ( $ARGS{'Up'} || $ARGS{'Down'} ) {
         }
     }
     else {
-        push( @results, [ loc("error: nothing to move"), -1 ] );
+        push( @results, [ _("error: nothing to move"), -1 ] );
     }
 }
 elsif ( $ARGS{"Left"} ) {
@@ -107,13 +107,13 @@ elsif ( $ARGS{"Left"} ) {
         foreach my $value (@$Selected) {
             my $parent = $value->getParent;
             if( $value->isRoot || $parent->isRoot ) {
-                push( @results, [ loc("error: can't move left"), -1 ] );
+                push( @results, [ _("error: can't move left"), -1 ] );
                 next;
             }
 
             my $grandparent = $parent->getParent;
             if( $grandparent->isRoot ) {
-                push( @results, [ loc("error: can't move left"), -1 ] );
+                push( @results, [ _("error: can't move left"), -1 ] );
                 next;
             }
             
@@ -126,7 +126,7 @@ elsif ( $ARGS{"Left"} ) {
         }
     }
     else {
-        push( @results, [ loc("error: nothing to move"), -1 ] );
+        push( @results, [ _("error: nothing to move"), -1 ] );
     }
 }
 elsif ( $ARGS{"Right"} ) {
@@ -147,7 +147,7 @@ elsif ( $ARGS{"Right"} ) {
         }
     }
     else {
-        push( @results, [ loc("error: nothing to move"), -1 ] );
+        push( @results, [ _("error: nothing to move"), -1 ] );
     }
 }
 elsif ( $ARGS{"DeleteClause"} ) {
@@ -182,7 +182,7 @@ elsif ( $ARGS{"DeleteClause"} ) {
         @$Selected = ();
     }
     else {
-        push( @results, [ loc("error: nothing to delete"), -1 ] );
+        push( @results, [ _("error: nothing to delete"), -1 ] );
     }
 }
 elsif ( $ARGS{"Toggle"} ) {
@@ -202,7 +202,7 @@ elsif ( $ARGS{"Toggle"} ) {
         }
     }
     else {
-        push( @results, [ loc("error: nothing to toggle"), -1 ] );
+        push( @results, [ _("error: nothing to toggle"), -1 ] );
     }
 }
 

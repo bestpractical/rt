@@ -45,11 +45,11 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::URI;;
 
+use warnings;
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Base);
+package RT::URI;
+use base qw(RT::Base);
 
 use RT::URI::base;
 use Carp;
@@ -84,9 +84,7 @@ sub new {
     my $class = ref($proto) || $proto;
     my $self  = {};
     bless( $self, $class );
-
-    $self->current_user(@_);
-
+    $self->_get_current_user(@_);
     return ($self);
 }
 

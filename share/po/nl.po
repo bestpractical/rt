@@ -94,7 +94,7 @@ msgid "%1 %2 deleted"
 msgstr "%1 %2 verwijderd"
 
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:63 html/Ticket/Elements/PreviewScrips:103
-#. (loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
+#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 met sjabloon %3"
 
@@ -108,9 +108,9 @@ msgid "%1 (%2) by %3"
 msgstr ""
 
 #: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:108 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:66
-#. (loc($DefaultStatus))
-#. (loc($Ticket->Status()))
-#. (loc($TicketObj->Status))
+#. (_($DefaultStatus))
+#. (_($Ticket->Status()))
+#. (_($TicketObj->Status))
 #. ($TicketObj->OwnerObj->name())
 msgid "%1 (Unchanged)"
 msgstr ""
@@ -199,7 +199,7 @@ msgstr "%1 door %2"
 #: lib/RT/Transaction_Overlay.pm:788 lib/RT/Transaction_Overlay.pm:797 lib/RT/Transaction_Overlay.pm:800
 #. ($self->Field , $q1->name , $q2->name)
 #. ($self->Field, $t2->AsString, $t1->AsString)
-#. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
+#. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : _("(no value)")) , "'". $self->NewValue."'")
 msgid "%1 changed from %2 to %3"
 msgstr "%1 veranderd van %2 naar %3"
 
@@ -283,7 +283,7 @@ msgid "%1 objects"
 msgstr "%1 objecten"
 
 #: html/User/Elements/DelegateRights:97
-#. (loc($object_type =~ /^RT::(.*)$/))
+#. (_($object_type =~ /^RT::(.*)$/))
 msgid "%1 rights"
 msgstr "%1 rechten"
 
@@ -654,7 +654,7 @@ msgid "Added principal as a %1 for this queue"
 msgstr "Hoofd toegevoegd als %1 voor deze rij"
 
 #: lib/RT/Ticket_Overlay.pm:1455
-#. ($self->loc($args{'Type'}))
+#. (_($args{'Type'}))
 msgid "Added principal as a %1 for this ticket"
 msgstr "Hoofd toegevoegd als %1 voor dit ticket"
 
@@ -1022,7 +1022,7 @@ msgid "Can't merge into a merged ticket. You should never get this error"
 msgstr "Kan niet samenvoegen met een reeds samengevoegd ticket. U zou deze boodschap nooit mogen krijgen"
 
 #: html/Widgets/SavedSearch:63
-#. (loc($self->{SearchType}))
+#. (_($self->{SearchType}))
 msgid "Can't save %1"
 msgstr ""
 
@@ -1318,7 +1318,7 @@ msgid "Could not make that principal a %1 for this queue"
 msgstr "Kon dat hoofd geen %1 maken voor deze rij"
 
 #: lib/RT/Ticket_Overlay.pm:1444
-#. ($self->loc($args{'Type'}))
+#. (_($args{'Type'}))
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Kon dat hoofd geen %1 maken voor dit ticket"
 
@@ -2081,12 +2081,12 @@ msgid "Enabled Queues"
 msgstr "Actieve Rijen"
 
 #: html/Admin/Elements/EditCustomField:136 html/Admin/Groups/Modify.html:150 html/Admin/Users/Modify.html:350 html/User/Groups/Modify.html:138
-#. (loc_fuzzy($msg))
+#. (_($msg))
 msgid "Enabled status %1"
 msgstr "Actieve status %1"
 
 #: html/Admin/CustomFields/Modify.html:185 html/Admin/Queues/Modify.html:162
-#. (loc_fuzzy($msg))
+#. (_($msg))
 msgid "Enabled status: %1"
 msgstr ""
 
@@ -2340,7 +2340,7 @@ msgid "Global portlet %1 saved."
 msgstr ""
 
 #: html/Admin/Elements/SelectTemplate:59
-#. (loc($Template->name))
+#. (_($Template->name))
 msgid "Global template: %1"
 msgstr "Globaal sjabloon: %1"
 
@@ -2998,12 +2998,12 @@ msgid "Modify Custom Field %1"
 msgstr "Wijzig Specifiek Veld %1"
 
 #: html/Admin/Elements/ObjectCustomFields:96
-#. (loc(lc($FriendlySubTypes)), loc(lc($Types)))
+#. (_(lc($FriendlySubTypes)), loc(lc($Types)))
 msgid "Modify Custom Fields which apply to %1 for all %2"
 msgstr ""
 
 #: html/Admin/Elements/ObjectCustomFields:98
-#. (loc(lc($Types)))
+#. (_(lc($Types)))
 msgid "Modify Custom Fields which apply to all %1"
 msgstr ""
 
@@ -3136,7 +3136,7 @@ msgid "Modify scrips which apply to all queues"
 msgstr "Wijzig scrips welke betrekking hebben op alle rijen"
 
 #: html/Admin/Global/Template.html:102 html/Admin/Global/Template.html:46 html/Admin/Global/Template.html:51 html/Admin/Queues/Template.html:99
-#. (loc($TemplateObj->name()))
+#. (_($TemplateObj->name()))
 #. ($TemplateObj->id)
 msgid "Modify template %1"
 msgstr "Wijzig sjabloon %1"
@@ -3914,7 +3914,7 @@ msgid "password too short"
 msgstr "Wachtwoord te kort"
 
 #: html/User/Prefs.html:240
-#. (loc_fuzzy($msg))
+#. (_($msg))
 msgid "password: %1"
 msgstr "Wachtwoord: %1"
 
@@ -4034,7 +4034,7 @@ msgid "privileged"
 msgstr "Gerechtigd"
 
 #: html/Admin/Users/Modify.html:342 html/User/Prefs.html:231
-#. (loc_fuzzy($msg))
+#. (_($msg))
 msgid "privileged status: %1"
 msgstr "Gerechtigde status: %1"
 
@@ -5180,7 +5180,7 @@ msgid "That principal is already a %1 for this queue"
 msgstr "Dat hoofd is reeds een %1 voor deze rij"
 
 #: lib/RT/Ticket_Overlay.pm:1435
-#. ($self->loc($args{'Type'}))
+#. (_($args{'Type'}))
 msgid "That principal is already a %1 for this ticket"
 msgstr "Dat hoofd is reeds een %1 voor dit ticket"
 

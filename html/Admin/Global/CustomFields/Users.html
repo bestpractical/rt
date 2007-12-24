@@ -53,6 +53,6 @@
     &>
     <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object_type => 'RT::Model::User', Object=> $object &>
 <%INIT>
-  my $title = loc( 'Edit Custom Fields for all users');
+  my $title = _( 'Edit Custom Fields for all users');
   my $object = RT::Model::User->new();
 </%INIT>

@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => loc('Error') &>
-<h2 class="title"><%loc('Error')%></h2>
+<& /SelfService/Elements/Header, Title => _('Error') &>
+<h2 class="title"><%_('Error')%></h2>
 <&| /Widgets/TitleBox, title => $Title &>
 <%$Why%>
 <br />
@@ -61,8 +61,8 @@
 <%args>
 $Code => undef
 $Details => undef
-$Title => loc("RT Error")
-$Why => loc("the calling component did not specify why")
+$Title => _("RT Error")
+$Why => _("the calling component did not specify why")
 </%args>
 
 <%INIT>

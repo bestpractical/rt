@@ -62,15 +62,15 @@ while (my $link = $approving->next()) {
     my $dep  = $m->scomp('ShowDependency', Ticket => $link->BaseObj, _seen => $_seen);
 
     if ($type eq 'approval') {
-	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("Approval #%1: %2", $link->BaseObj->id, $link->BaseObj->Subject));
+	$head .= $m->scomp('/Widgets/TitleBoxStart', title => _("Approval #%1: %2", $link->BaseObj->id, $link->BaseObj->Subject));
 	$text .= $head;
 	$text .= $m->scomp('/Ticket/Elements/ShowCustomFields', Ticket => $link->BaseObj);
     } elsif ($type eq 'ticket') {
-	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("Ticket #%1: %2", $link->BaseObj->id, $link->BaseObj->Subject));
+	$head .= $m->scomp('/Widgets/TitleBoxStart', title => _("Ticket #%1: %2", $link->BaseObj->id, $link->BaseObj->Subject));
 	$text .= $head;
 	$text .= $m->scomp('/Ticket/Elements/ShowSummary', Ticket => $link->BaseObj);
     } else {
-	$head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("#%1: %2", $link->BaseObj->id, $link->BaseObj->Subject));
+	$head .= $m->scomp('/Widgets/TitleBoxStart', title => _("#%1: %2", $link->BaseObj->id, $link->BaseObj->Subject));
 	$text .= $head;
     }
 

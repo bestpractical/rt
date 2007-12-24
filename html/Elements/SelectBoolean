@@ -52,11 +52,11 @@
 
 <%ARGS>
 $name => undef
-$True => loc("is")
+$True => _("is")
 $Default => 'true'
 $TrueVal => 1
 $FalseVal => 0
-$False => loc("isn't")
+$False => _("isn't")
 </%ARGS>
 
 <%INIT>

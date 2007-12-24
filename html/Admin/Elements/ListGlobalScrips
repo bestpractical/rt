@@ -62,7 +62,7 @@
 <i>(<&|/l, $scrip->id&>Scrip #%1</&>)</i>
 % }
 </a><br />
-<small><&|/l, loc($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name) &>%1 %2 with template %3</&></small>
+<small><&|/l, _($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name) &>%1 %2 with template %3</&></small>
 </li>
 %   }
 

@@ -59,24 +59,24 @@ $tabs->{"this"} = { class => "currentnav",
                     title => $GroupObj->name,
                     current_subtab => $current_subtab,
         subtabs => {
-        C => { title => loc('Basics'),
+        C => { title => _('Basics'),
                path  => "Admin/Groups/Modify.html?id=" . $GroupObj->id },
 
-        D => { title => loc('Members'),
+        D => { title => _('Members'),
                path  => "Admin/Groups/Members.html?id=" . $GroupObj->id },
 
-        F => { title => loc('Group Rights'),
+        F => { title => _('Group Rights'),
                path  => "Admin/Groups/GroupRights.html?id=" . $GroupObj->id, },
-        G => { title => loc('User Rights'),
+        G => { title => _('User Rights'),
                path  => "Admin/Groups/UserRights.html?id=" . $GroupObj->id, },
-        H => { title => loc('History'),
+        H => { title => _('History'),
                path  => "Admin/Groups/History.html?id=" . $GroupObj->id },
     }
 }
 }
-$tabs->{"A"} = { title => loc('Select group'),
+$tabs->{"A"} = { title => _('Select group'),
                  path  => "Admin/Groups/", };
-$tabs->{"B"} = { title     => loc('New group'),
+$tabs->{"B"} = { title     => _('New group'),
                  path      => "Admin/Groups/Modify.html?Create=1",
 		 separator => 1, };
 

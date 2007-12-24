@@ -103,15 +103,15 @@ sub load {
 	    $self->{'Id'} = $self->{'Attribute'}->id;
 	    $self->{'Privacy'} = $privacy;
 	    $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
-	    return (1, $self->loc("Loaded search %1", $self->name));
+	    return (1, _("Loaded search %1", $self->name));
 	} else {
 	    $RT::Logger->error("Could not load attribute " . $id
 			       . " for object " . $privacy);
-	    return (0, $self->loc("Search attribute load failure"));
+	    return (0, _("Search attribute load failure"));
 	}
     } else {
 	$RT::Logger->warning("Could not load object $privacy when loading search");
-	return (0, $self->loc("Could not load object for %1", $privacy));
+	return (0, _("Could not load object for %1", $privacy));
     }
 
 }
@@ -144,11 +144,11 @@ sub Save {
     $params{'SearchType'} = $type;
     my $object = $self->_GetObject($privacy);
 
-    return (0, $self->loc("Failed to load object for %1", $privacy))
+    return (0, _("Failed to load object for %1", $privacy))
         unless $object;
 
     if ( $object->isa('RT::System') ) {
-        return ( 0, $self->loc("No permission to save system-wide searches") )
+        return ( 0, _("No permission to save system-wide searches") )
             unless $self->current_user->has_right(
             Object => RT->system,
             Right  => 'SuperUser'
@@ -165,11 +165,11 @@ sub Save {
         $self->{'Id'}        = $att_id;
         $self->{'Privacy'}   = $privacy;
         $self->{'Type'}      = $type;
-        return ( 1, $self->loc( "Saved search %1", $name ) );
+        return ( 1, _( "Saved search %1", $name ) );
     }
     else {
         $RT::Logger->error("SavedSearch save failure: $att_msg");
-        return ( 0, $self->loc("Failed to create search attribute") );
+        return ( 0, _("Failed to create search attribute") );
     }
 }
 
@@ -188,14 +188,14 @@ sub Update {
 		'SearchParams' => {},
 		@_);
     
-    return(0, $self->loc("No search loaded")) unless $self->id;
-    return(0, $self->loc("Could not load search attribute"))
+    return(0, _("No search loaded")) unless $self->id;
+    return(0, _("Could not load search attribute"))
 	unless $self->{'Attribute'}->id;
     my ($status, $msg) = $self->{'Attribute'}->set_SubValues(%{$args{'SearchParams'}});
     if ($status && $args{'name'}) {
 	($status, $msg) = $self->{'Attribute'}->set_Description($args{'name'});
     }
-    return ($status, $self->loc("Search update: %1", $msg));
+    return ($status, _("Search update: %1", $msg));
 }
 
 =head2 Delete
@@ -210,9 +210,9 @@ sub delete {
 
     my ($status, $msg) = $self->{'Attribute'}->delete;
     if ($status) {
-	return (1, $self->loc("Deleted search"));
+	return (1, _("Deleted search"));
     } else {
-	return (0, $self->loc("Delete failed: %1", $msg));
+	return (0, _("Delete failed: %1", $msg));
     }
 }
 	

@@ -58,11 +58,11 @@ if ( $GroupObj and $GroupObj->id ) {
         title   => $GroupObj->name,
         path    => "User/Groups/Modify.html?id=" . $GroupObj->id,
         subtabs => {
-            Basics => { title => loc('Basics'),
+            Basics => { title => _('Basics'),
                         path  => "User/Groups/Modify.html?id=" . $GroupObj->id
             },
 
-            Members => { title => loc('Members'),
+            Members => { title => _('Members'),
                          path  => "User/Groups/Members.html?id=" . $GroupObj->id
             },
 
@@ -70,9 +70,9 @@ if ( $GroupObj and $GroupObj->id ) {
         $tabs->{'this'}->{'current_subtab'} = $current_subtab;
          $current_subtab = "User/Groups/Modify.html?id=" . $GroupObj->id,
 }
-$tabs->{"A"} = { title => loc('Select group'),
+$tabs->{"A"} = { title => _('Select group'),
                  path  => "User/Groups/index.html" };
-$tabs->{"B"} = { title     => loc('New group'),
+$tabs->{"B"} = { title     => _('New group'),
                  path      => "User/Groups/Modify.html?Create=1",
                  separator => 1 };
 

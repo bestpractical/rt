@@ -77,8 +77,8 @@ while ( my $CustomField = $CustomFields->next ) {
     $line{'Op'} = {
         Type => 'component',
         Path => '/Elements/SelectCustomFieldOperator',
-        Arguments => { True => loc("is"),
-                       False => loc("isn't"),
+        Arguments => { True => _("is"),
+                       False => _("isn't"),
                        TrueVal=> '=',
                        FalseVal => '!=',
                      },
