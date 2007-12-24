@@ -66,7 +66,7 @@ plan tests => 22;
 	is( $user->id, $uid, "id is correct" );
 
 	use RT::Model::Queue;
-	my $queue = RT::Model::Queue->new( RT->system_user );
+	my $queue = RT::Model::Queue->new( current_user => RT->system_user );
 	$queue->load('General');
 	ok( $queue->id, "queue loaded succesfully" );
 

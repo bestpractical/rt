@@ -293,11 +293,11 @@ sub dump_sqlite
     my $dbh = shift;
     my %args = ( CleanDates => 1, @_ );
 
-    my $old_fhkn = $dbh->{'FetchHashKeyname'};
-    $dbh->{'FetchHashKeyname'} = 'name_lc';
+    my $old_fhkn = $dbh->{'FetchHashKeyName'};
+    $dbh->{'FetchHashKeyName'} = 'NAME_lc';
 
     my $sth = $dbh->table_info( '', '', '%', 'TABLE' ) || die $DBI::err;
-    my @tables = keys %{$sth->fetchall_hashref( 'TABLE_NAME' )};
+    my @tables = keys %{$sth->fetchall_hashref( 'table_name' )};
 
     my $res = {};
     foreach my $t( @tables ) {
@@ -307,7 +307,7 @@ sub dump_sqlite
         die $DBI::err if $DBI::err;
     }
 
-    $dbh->{'FetchHashKeyname'} = $old_fhkn;
+    $dbh->{'FetchHashKeyName'} = $old_fhkn;
     return $res;
 }
 

@@ -75,9 +75,10 @@
 
 =cut
 
+use strict;
+use warnings;
 package RT::Model::TicketCollection;
 use base qw/RT::SearchBuilder/;
-use strict;
 no warnings qw(redefine);
 
 use RT::Model::CustomFieldCollection;
@@ -2448,7 +2449,6 @@ sub _nextIndex {
 # {{{ sub _init
 sub _init {
     my $self = shift;
-    $self->{'table'}                   = "Tickets";
     $self->{'RecalcTicketLimits'}      = 1;
     $self->{'looking_at_effective_id'} = 0;
     $self->{'looking_at_type'}         = 0;

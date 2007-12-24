@@ -6,20 +6,11 @@ plan tests => 28;
 
 
 
-{
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 ok (require RT::Model::GroupCollection);
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
-}
-
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 # next had bugs
 # Groups->limit( column => 'id', operator => '!=', value => xx );
@@ -95,16 +86,16 @@ is ($RTxGroup->id, $id, "group loaded");
 
 my $RTxSysObj = {};
 bless $RTxSysObj, 'RTx::System';
-*RTx::System::Id = sub { 1; };
-*RTx::System::id = *RTx::System::Id;
+*RTx::System::id = sub { 1; };
+*RTx::System::id = *RTx::System::id;
 my $ace = RT::Model::ACE->new(current_user => RT->system_user);
 ($id, $msg) = $ace->RT::Record::create( principal_id => $RTxGroup->id, principal_type => 'Group', right_name => 'RTxGroupRight', object_type => 'RTx::System', object_id  => 1);
 ok ($id, "ACL for RTxSysObj Created");
 
 my $RTxObj = {};
 bless $RTxObj, 'RTx::System::Record';
-*RTx::System::Record::Id = sub { 4; };
-*RTx::System::Record::id = *RTx::System::Record::Id;
+*RTx::System::Record::id = sub { 4; };
+*RTx::System::Record::id = *RTx::System::Record::id;
 
 $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
 $groups->WithRight(Right => 'RTxGroupRight', Object => $RTxSysObj);
@@ -125,7 +116,7 @@ ok ($id, "ACL for RTxObj Created");
 
 my $RTxObj2 = {};
 bless $RTxObj2, 'RTx::System::Record';
-*RTx::System::Record::Id = sub { 5; };
+*RTx::System::Record::id = sub { 5; };
 
 $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
 $groups->WithRight(Right => 'RTxGroupRight', Object => $RTxObj2);

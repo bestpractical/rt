@@ -358,8 +358,8 @@ L</InitSystemObjects>.
 
 sub system_user { 
        my $system_user = RT::CurrentUser->new(name => 'RT_System');
-        $system_user->is_superuser(1);
-    return $system_user;
+       $system_user->is_superuser(1);
+      return $system_user;
 
 }
 

@@ -36,7 +36,7 @@ sub table {'Users'}
 use Jifty::DBI::Record schema {
     column comments  => type is 'blob', default is '';
     column Signature => type is 'blob', default is '';
-    column email => max_length is 120, type is 'varchar(120)', default is '';
+    #column email => max_length is 120, type is 'varchar(120)', default is '';
     column freeform_contact_info => type is 'blob', default is '';
     column
         organization =>,

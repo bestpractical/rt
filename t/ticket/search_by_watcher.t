@@ -143,7 +143,7 @@ run_tests();
 # owner is special watcher because reference is duplicated in two places,
 # owner was an ENUM field now it's WATCHERFIELD, but should support old
 # style ENUM searches for backward compatibility
-my $nobody = RT::Nobody();
+my $nobody = RT->nobody();
 {
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
     $tix->from_sql("Queue = '$queue' AND Owner = '". $nobody->id ."'");

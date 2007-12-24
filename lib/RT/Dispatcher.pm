@@ -30,8 +30,11 @@ if ( int RT->Config->Get('AutoLogoff') ) {
 
 };
 
-before qr'/(?!login)' => run {
-    tangent '/login' unless (Jifty->web->current_user->id);
+# XXX TODO XXX SECURITY RISK - this regex is WRONG AND UNSAFE
+before qr'/(?!login)$' => run {
+    my $path = $1;
+    warn "my path is $path";
+    tangent '/login' unless (Jifty->web->current_user->id || $path =~ /NoAuth/);
 };
 
 before qr/(.*)/ => run {

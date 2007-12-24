@@ -67,9 +67,10 @@ sub GetCurrentUser {
         return ( $args{'CurrentUser'}, -1 );
     }
 
-    my $CurrentUser = RT::CurrentUser->new;
-    $CurrentUser->new( email =>  $Address );
-    $CurrentUser->new( name => $Address ) unless $CurrentUser->id;
+    my $CurrentUser = RT::CurrentUser->new(email => $Address);
+    unless ($CurrentUser->id ) {
+        $CurrentUser = RT::CurrentUser->new( name => $Address ) 
+    }
     if ( $CurrentUser->id ) {
         $RT::Logger->debug("Mail from user #". $CurrentUser->id ." ($Address)" );
         return ( $CurrentUser, 1 );
@@ -172,10 +173,5 @@ sub GetCurrentUser {
 
     return ( $CurrentUser, 1 );
 }
-
-eval "require RT::Interface::Email::Auth::MailFrom_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Email/Auth/MailFrom_Vendor.pm});
-eval "require RT::Interface::Email::Auth::MailFrom_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Email/Auth/MailFrom_Local.pm});
 
 1;

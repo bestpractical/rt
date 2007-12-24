@@ -67,7 +67,7 @@ use RT::Base;
 
 use strict;
 use base qw/RT::Base/;
-use base qw/Jifty::DBI::Collection/;
+use base qw/Jifty::Collection/;
 use UNIVERSAL::require;
 
 sub _handle {
