@@ -382,7 +382,8 @@ sub SignEncrypt {
 
     my $entity = $args{'Entity'};
     if ( $args{'Sign'} && !defined $args{'Signer'} ) {
-        $args{'Signer'} = (Mail::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
+        $args{'Signer'} = UseKeyForSigning()
+            || (Mail::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
     }
     if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
         my %seen;
@@ -428,7 +429,7 @@ sub SignEncryptRFC3156 {
 
     my $entity = $args{'Entity'};
 
-    # handling passphrase in GnupGOptions
+    # handling passphrase in GnuPGOptions
     $args{'Passphrase'} = delete $opt{'passphrase'}
         if !defined $args{'Passphrase'};
 
@@ -770,7 +771,6 @@ sub _SignEncryptAttachmentInline {
     $entity->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
 
     return %res;
-
 }
 
 sub FindProtectedParts {
@@ -1594,6 +1594,24 @@ sub UseKeyForEncryption {
     return ();
 } }
 
+=head2 UseKeyForSigning
+
+Returns or sets identifier of the key that should be used for signing.
+
+Returns the current value when called without arguments.
+
+Sets new value when called with one argument and unsets if it's undef.
+
+=cut
+
+{ my $key;
+sub UseKeyForSigning {
+    if ( @_ ) {
+        $key = $_[0];
+    }
+    return $key;
+} }
+
 =head2 GetKeysForEncryption
 
 Takes identifier and returns keys suitable for encryption.
@@ -1605,14 +1623,11 @@ also listed.
 
 sub GetKeysForEncryption {
     my $key_id = shift;
-    my %res = GetKeysInfo( $key_id, 'public' );
+    my %res = GetKeysInfo( $key_id, 'public', @_ );
     return %res if $res{'exit_code'};
     return %res unless $res{'info'};
 
-    my @keys = @{ $res{'info'} };
-    $res{'info'} = [];
-
-    foreach my $key ( @keys ) {
+    foreach my $key ( splice @{ $res{'info'} } ) {
         # skip disabled keys
         next if $key->{'Capabilities'} =~ /D/;
         # skip keys not suitable for encryption
@@ -1625,6 +1640,11 @@ sub GetKeysForEncryption {
     }
     delete $res{'info'} unless @{ $res{'info'} };
     return %res;
+}
+
+sub GetKeysForSigning {
+    my $key_id = shift;
+    return GetKeysInfo( $key_id, 'private', @_ );
 }
 
 sub CheckRecipients {
@@ -1693,11 +1713,11 @@ sub CheckRecipients {
 }
 
 sub GetPublicKeyInfo {
-    return GetKeyInfo(shift, 'public');
+    return GetKeyInfo( shift, 'public', @_ );
 }
 
 sub GetPrivateKeyInfo {
-    return GetKeyInfo(shift, 'private');
+    return GetKeyInfo( shift, 'private', @_ );
 }
 
 sub GetKeyInfo {
@@ -1709,6 +1729,11 @@ sub GetKeyInfo {
 sub GetKeysInfo {
     my $email = shift;
     my $type = shift || 'public';
+    my $force = shift;
+
+    unless ( $email ) {
+        return (exit_code => 0) unless $force;
+    }
 
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
@@ -1736,7 +1761,7 @@ sub GetKeysInfo {
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $method = $type eq 'private'? 'list_secret_keys': 'list_public_keys';
-        my $pid = _safe_run_child { $gnupg->$method( handles => $handles, command_args => [ $email ]  ) };
+        my $pid = _safe_run_child { $gnupg->$method( handles => $handles, $email? (command_args => $email) : () ) };
         close $handle{'input'};
         waitpid $pid, 0;
     };
@@ -2018,19 +2043,25 @@ sub ImportKey {
     return %res;
 }
 
-# signs the input message, to make sure we have a useable passphrase
-# the first argument MUST be the email address of the signer
-# returns a true value if all went well
+=head2 KEY
+
+Signs a small message with the key, to make sure the key exists and 
+we have a useable passphrase. The first argument MUST be a key identifier
+of the signer: either email address, key id or finger print.
+
+Returns a true value if all went well.
+
+=cut
+
 sub DrySign {
     my $from = shift;
-    my @message = @_;
 
     my $mime = MIME::Entity->build(
-        Type    => "multipart/mixed",
-        From    => $from,
+        Type    => "text/plain",
+        From    => 'nobody@localhost',
         To      => 'nobody@localhost',
-        Subject => "dry run",
-        Data    => \@message,
+        Subject => "dry sign",
+        Data    => ['t'],
     );
 
     my %res = SignEncrypt(

@@ -1105,20 +1105,20 @@ sub PrincipalObj {
     my $self = shift;
 
     unless ( $self->id ) {
-        $RT::Logger->error('User not found');
-        return;
+        $RT::Logger->error("Couldn't get principal for not loaded object");
+        return undef;
     }
 
-    unless ( $self->{'PrincipalObj'} ) {
-        my $obj = RT::Principal->new( $self->CurrentUser );
-        $obj->LoadById( $self->id );
-        unless ( $obj->id && $obj->PrincipalType eq 'User' ) {
-            $RT::Logger->crit( 'Wrong principal for user #'. $self->id );
-        } else {
-            $self->{'PrincipalObj'} = $obj;
-        }
+    my $obj = RT::Principal->new( $self->CurrentUser );
+    $obj->LoadById( $self->id );
+    unless ( $obj->id ) {
+        $RT::Logger->crit( 'No principal for user #'. $self->id );
+        return undef;
+    } elsif ( $obj->PrincipalType ne 'User' ) {
+        $RT::Logger->crit( 'User #'. $self->id .' has principal of '. $obj->PrincipalType .' type' );
+        return undef;
     }
-    return $self->{'PrincipalObj'};
+    return $obj;
 }
 
 
@@ -1652,6 +1652,42 @@ sub PreferredKey
 
     $self->SetAttribute(Name => 'PreferredKey', Content => $prefkey);
     return $prefkey;
+}
+
+sub PrivateKey {
+    my $self = shift;
+
+    my $key = $self->FirstAttribute('PrivateKey') or return undef;
+    return $key->Content;
+}
+
+sub SetPrivateKey {
+    my $self = shift;
+    my $key = shift;
+    # XXX: ACL
+    unless ( $key ) {
+        my ($status, $msg) = $self->DeleteAttribute('PrivateKey');
+        unless ( $status ) {
+            $RT::Logger->error( "Couldn't delete attribute: $msg" );
+            return ($status, $self->loc("Couldn't unset private key"));
+        }
+        return ($status, $self->loc("Unset private key"));
+    }
+
+    # check that it's really private key
+    {
+        my %tmp = RT::Crypt::GnuPG::GetKeysForSigning( $key );
+        return (0, $self->loc("No such key or it's not suitable for signing"))
+            if $tmp{'exit_code'} || !$tmp{'info'};
+    }
+
+    my ($status, $msg) = $self->SetAttribute(
+        Name => 'PrivateKey',
+        Content => $key,
+    );
+    return ($status, $self->loc("Couldn't set private key"))    
+        unless $status;
+    return ($status, $self->loc("Unset private key"));
 }
 
 sub BasicColumns {

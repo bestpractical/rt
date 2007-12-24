@@ -57,7 +57,7 @@
 <input type="hidden" class="hidden" name="id" value="new" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 
-<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
+<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <div id="Ticket-Create-basics">
 <a name="basics"></a>
@@ -150,14 +150,10 @@
 </td>
 </tr>
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-<tr>
-<td><% loc('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
-<td><% loc('Encrypt')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
-<td colspan="2">&nbsp;</td>
-</tr>
+% if ( $gnupg_widget ) {
+<tr><td>&nbsp;</td><td colspan="5">
+<& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
+</td></tr>
 % }
 
 <tr>
@@ -262,16 +258,6 @@ my $ValidCFs = $m->comp(
     ARGSRef => \%ARGS
 );
 
-if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-    foreach ( qw(Sign Encrypt) ) {
-        $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
-            Name => $_,
-            DefaultValue => $QueueObj->$_,
-            Arguments => \%ARGS,
-        );
-    }
-}
-
 # if no due date has been set explicitly, then use the
 # queue's default if it exists
 if ($QueueObj->DefaultDueIn && !$ARGS{'Due'}) {
@@ -315,41 +301,21 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 }
 
 my $checks_failure = 0;
-my @cannot_sign_as;
-my @gnupg_keys_issues;
 
-if (RT->Config->Get('GnuPG')->{'Enable'}) {
-    require RT::Crypt::GnuPG;
-}
+my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+    self      => $gnupg_widget,
+    QueueObj  => $QueueObj,
+);
+
 
 if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
-
-    # check to see if we have a good passphrase
-    if ( $ARGS{'Sign'} ) {
-        my $address = $QueueObj->CorrespondAddress
-            || RT->Config->Get('CorrespondAddress');
-        unless ( RT::Crypt::GnuPG::DrySign($address, "x") ) {
-            push @cannot_sign_as, $address;
-            $checks_failure = 1;
-        }
-    }
-
-    if ( $ARGS{'Encrypt'} ) {
-        my @recipients = $m->comp(
-            '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
-            %ARGS
-        );
-
-        RT::Crypt::GnuPG::UseKeyForEncryption(
-            map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
-            grep $ARGS{$_} && /^UseKey-/,
-            keys %ARGS
-        );
-
-        my $status;
-        ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
-        $checks_failure = 1 unless $status;
-    }
+    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+        self      => $gnupg_widget,
+        Operation => 'Create',
+        QueueObj  => $QueueObj,
+    );
+    $checks_failure = 1 unless $status;
 }
 
 

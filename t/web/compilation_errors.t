@@ -2,7 +2,7 @@
 
 use strict;
 use Test::More;
-plan tests => 387;
+plan tests => 391;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;

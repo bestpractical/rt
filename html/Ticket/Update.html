@@ -60,7 +60,7 @@
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
 
-<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
+<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <table border="0">
 
@@ -122,13 +122,13 @@
 <tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" /><input type="hidden" class="hidden" name="UpdateAttach" value="1" />
 </td></tr>
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-<tr><td>&nbsp;</td><td><table>
-<td><% loc('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
-<td><% loc('Encrypt')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
-</table></td></tr>
+% if ( $gnupg_widget ) {
+<tr><td>&nbsp;</td><td>
+<& /Elements/GnuPG/SignEncryptWidget,
+    self => $gnupg_widget,
+    TicketObj => $TicketObj,
+&>
+</td></tr>
 % }
 
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
@@ -175,16 +175,6 @@ if ($DefaultStatus eq 'resolved') {
     $title = loc("Resolve ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject);
 } else {
     $title = loc("Update ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject);
-}
-
-if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-    foreach ( qw(Sign Encrypt) ) {
-        $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
-            Name => $_,
-            DefaultValue => $TicketObj->QueueObj->$_,
-            Arguments => \%ARGS,
-        );
-    }
 }
 
 # Things needed in the template - we'll do the processing here, just
@@ -245,51 +235,18 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 # }}}
 
 my @results;
-my @cannot_sign_as;
-my @gnupg_keys_issues;
 
-if (RT->Config->Get('GnuPG')->{'Enable'}) {
-    require RT::Crypt::GnuPG;
-}
-
+my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+    self => $gnupg_widget,
+    TicketObj => $TicketObj,
+);
 if ( $ARGS{'SubmitTicket'} ) {
-
-    # check to see if we have a good passphrase
-    if ( $ARGS{'Sign'} ) {
-        my $address = $ARGS{'UpdateType'} eq "private"
-            ? ( $TicketObj->QueueObj->CommentAddress
-                || RT->Config->Get('CommentAddress') )
-            : ( $TicketObj->QueueObj->CorrespondAddress
-                || RT->Config->Get('CorrespondAddress') );
-        unless ( RT::Crypt::GnuPG::DrySign($address, "x") ) {
-            push @cannot_sign_as, $address;
-            $checks_failure = 1;
-        }
-    }
-
-    if ( $ARGS{'Encrypt'} ) {
-
-        # skip any email addresses that we won't be sending mail to
-        my %squelch = $m->comp(
-                        '/Ticket/Elements/PreviewScrips:SquelchRecipients',
-                        %ARGS, TicketObj => $TicketObj
-                    );
-        my %seen = map { lc($_) => 1 } @{ $squelch{'EmailAddresses'} };
-
-        my @recipients = grep {!$seen{lc $_}} $m->comp(
-            '/Ticket/Elements/PreviewScrips:GetRecipients',
-            %ARGS, TicketObj => $TicketObj
-        );
-
-        RT::Crypt::GnuPG::UseKeyForEncryption(
-            map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
-            grep $ARGS{$_} && /^UseKey-/,
-            keys %ARGS
-        );
-        my $status;
-        ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
-        $checks_failure = 1 unless $status;
-    }
+    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+        self      => $gnupg_widget,
+        TicketObj => $TicketObj,
+    );
+    $checks_failure = 1 unless $status;
 }
 
 if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {

@@ -172,7 +172,10 @@ sub DeleteEntry {
         }
     }
     return (0, "No entry found") unless $found;
-    $self->_DoSearch();
+    $self->RedoSearch;
+    # XXX: above string must work but because of bug in DBIx::SB it doesn't,
+    # to reproduce delete string below and run t/api/attribute-tests.t
+    $self->_DoSearch;
     return (1, $self->loc('Attribute Deleted'));
 }
 

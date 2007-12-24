@@ -213,6 +213,7 @@ sub CleanupRequest {
     if (RT->Config->Get('GnuPG')->{'Enable'}) {
         require RT::Crypt::GnuPG;
         RT::Crypt::GnuPG::UseKeyForEncryption();
+        RT::Crypt::GnuPG::UseKeyForSigning( undef );
     }
 }
 # }}}
