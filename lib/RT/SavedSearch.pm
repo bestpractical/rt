@@ -77,9 +77,9 @@ sub new  {
     my $proto = shift;
     my $class = ref($proto) || $proto;
     my $self  = {};
-    $self->{'Id'} = 0;
+    $self->{'id'} = 0;
     bless ($self, $class);
-    $self->current_user(@_);
+    $self->_get_current_user();
     return $self;
 }
 

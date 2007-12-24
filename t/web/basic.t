@@ -23,7 +23,7 @@ is ($agent->{'status'}, 200, "Loaded a page");
 
 # follow the link marked "Login"
 #
-my $username = 'root@localhost';
+my $username = 'root';
 my $password = "password";
 
             my $moniker = $agent->moniker_for('RT::Action::Login');

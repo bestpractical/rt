@@ -29,16 +29,15 @@ sub login {
 
     my $url = $self->rt_base_url;
 
+    $self->get($url."/logout");
     $self->get($url);
-    Test::More::diag( "error: status is ". $self->status )
-        unless $self->status == 200;
-    if ( $self->content =~ qr/Logout/i ) {
-        $self->follow_link( text => 'Logout' );
-    }
 
-    $self->get($url . "?user=$user;pass=$pass");
+    my $moniker = $self->moniker_for('RT::Action::Login');
+
+    $self->fill_in_action( $moniker, email => $user, password => $pass );
+    $self->submit();
     unless ( $self->status == 200 ) {
-        Test::More::diag( "error: status is ". $self->status );
+        Test::More::diag( "error: status is " . $self->status );
         return 0;
     }
     unless ( $self->content =~ qr/Logout/i ) {

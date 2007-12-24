@@ -81,7 +81,7 @@
       Argument    => 'Requestor' },
     { name        => 'Notify Owner as comment',              # loc
       Description => 'Sends mail to the owner',              # loc
-      ExecModule  => 'NotifyAscomment',
+      ExecModule  => 'NotifyAsComment',
       Argument    => 'Owner' },
     { name        => 'Notify Owner',                         # loc
       Description => 'Sends mail to the owner',              # loc
@@ -89,7 +89,7 @@
       Argument    => 'Owner' },
     { name        => 'Notify Ccs as comment',              # loc
       Description => 'Sends mail to the Ccs as a comment', # loc
-      ExecModule  => 'NotifyAscomment',
+      ExecModule  => 'NotifyAsComment',
       Argument    => 'Cc' },
     { name        => 'Notify Ccs',                                   # loc
       Description => 'Sends mail to the Ccs',                        # loc
@@ -97,7 +97,7 @@
       Argument    => 'Cc' },
     { name        => 'Notify AdminCcs as comment',                        # loc
       Description => 'Sends mail to the administrative Ccs as a comment', # loc
-      ExecModule  => 'NotifyAscomment',
+      ExecModule  => 'NotifyAsComment',
       Argument    => 'AdminCc' },
     { name        => 'Notify AdminCcs',                                   # loc
       Description => 'Sends mail to the administrative Ccs',              # loc
@@ -106,7 +106,7 @@
 
     { name        => 'Notify Requestors and Ccs as comment',              # loc
       Description => 'Send mail to requestors and Ccs as a comment',      # loc
-      ExecModule  => 'NotifyAscomment',
+      ExecModule  => 'NotifyAsComment',
       Argument    => 'Requestor,Cc' },
 
     { name        => 'Notify Requestors and Ccs',                         # loc
@@ -116,7 +116,7 @@
 
     { name        => 'Notify Requestors, Ccs and AdminCcs as comment',    # loc
       Description => 'Send mail to all watchers as a "comment"',          # loc
-      ExecModule  => 'NotifyAscomment',
+      ExecModule  => 'NotifyAsComment',
       Argument    => 'All' },
     { name        => 'Notify Requestors, Ccs and AdminCcs',               # loc
       Description => 'Send mail to all watchers',                         # loc
@@ -124,7 +124,7 @@
       Argument    => 'All' },
     { name        => 'Notify Other Recipients as comment',                # loc
       Description => 'Sends mail to explicitly listed Ccs and Bccs',      # loc
-      ExecModule  => 'NotifyAscomment',
+      ExecModule  => 'NotifyAsComment',
       Argument    => 'OtherRecipients' },
     { name        => 'Notify Other Recipients',                           # loc
       Description => 'Sends mail to explicitly listed Ccs and Bccs',      # loc

@@ -699,17 +699,7 @@ sub before_set_password {
     elsif ( length($password) < RT->Config->Get('MinimumpasswordLength') ) {
         return ( 0, $self->loc("password needs to be at least %1 characters long", RT->Config->Get('MinimumpasswordLength')) );
     }
-    else {
-        my $new = !$self->has_password;
-        my ( $val, $msg ) = $self->_set(column => 'password', value=> $password);
-        if ($val) {
-            return ( 1, $self->loc("password set") ) if $new;
-            return ( 1, $self->loc("password changed") );
-        }
-        else {
-            return ( $val, $msg );
-        }
-    }
+            return ( 1, "ok");
 
 }
 

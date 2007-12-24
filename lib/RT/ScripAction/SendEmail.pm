@@ -961,7 +961,7 @@ Jesse Vincent <jesse@bestpractical.com> and Tobias Brox <tobix@cpan.org>
 
 =head1 SEE ALSO
 
-L<RT::ScripAction::Notify>, L<RT::ScripAction::NotifyAscomment> and L<RT::ScripAction::Autoreply>
+L<RT::ScripAction::Notify>, L<RT::ScripAction::NotifyAsComment> and L<RT::ScripAction::Autoreply>
 
 =cut
 

@@ -158,7 +158,7 @@ sub create {
                 Object => undef,
 		  @_);
 
-    if ($args{Object} and UNIVERSAL::can($args{Object}, 'Id')) {
+    if ($args{Object} and UNIVERSAL::can($args{Object}, 'id')) {
 	    $args{object_type} = ref($args{Object});
 	    $args{object_id} = $args{Object}->id;
     } else {

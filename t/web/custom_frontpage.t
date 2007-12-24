@@ -18,7 +18,7 @@ $user_obj->principal_object->GrantRight(Right => 'EditSavedSearch');
 $user_obj->principal_object->GrantRight(Right => 'CreateSavedSearch');
 $user_obj->principal_object->GrantRight(Right => 'ModifySelf');
 
-ok $m->login( customer => 'customer' ), "logged in";
+ok $m->login( 'customer' => 'customer' ), "logged in";
 
 $m->get ( $url."Search/Build.html");
 

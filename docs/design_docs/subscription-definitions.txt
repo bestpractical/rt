@@ -4,14 +4,14 @@ NEW SCRIP NOTES
 RT Actions:
 
 
-   EmailOwnerAscomment
+   EmailOwnerAsComment
 	Send mail to the ticket owner from the queue's comment address
 	
-   EmailOwnerOrAdminWatchersAscomment
+   EmailOwnerOrAdminWatchersAsComment
 	Send mail to the ticket owner, or if there is no owner, the ticket's admin watchers
 	from the queue's comment addresses
 
-   EmailAdminWatchersAscomment
+   EmailAdminWatchersAsComment
 	Send mail to the ticket's adminstrative watchers from the queue's comment address
 
 
