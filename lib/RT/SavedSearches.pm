@@ -76,7 +76,7 @@ sub new  {
     my $class = ref($proto) || $proto;
     my $self  = {};
     bless ($self, $class);
-    $self->_get_current_user();
+    $self->_get_current_user(@_);
     $self->{'idx'} = 0;
     $self->{'objects'} = [];
     return $self;

@@ -56,7 +56,7 @@
         <option value="<%$value%>"><% $value%></option>
 % }
 </select>
-<script language="javascript"><!--
+<script Language="javascript"><!--
 ComboBox_InitWith('<% $name %>');
 //--></script>
 </nobr>

@@ -79,7 +79,7 @@ sub new  {
     my $self  = {};
     $self->{'id'} = 0;
     bless ($self, $class);
-    $self->_get_current_user();
+    $self->_get_current_user(@_);
     return $self;
 }
 
@@ -283,7 +283,7 @@ sub Type {
 
 sub _load_privacy_object {
     my ($self, $obj_type, $obj_id) = @_;
-    if ( $obj_type eq 'RT::Model::User' && $obj_id == $self->current_user->id)  {
+    if ( $obj_type eq 'RT::Model::User' && $obj_id == $self->current_user->id )  {
         return $self->current_user->user_object;
     }
     elsif ($obj_type eq 'RT::Model::Group') {
@@ -295,7 +295,7 @@ sub _load_privacy_object {
         return RT::System->new;
     }
 
-    $RT::Logger->error("Tried to load a search belonging to an $obj_type, which is neither a user nor a group");
+    $RT::Logger->error("Tried to load a search belonging to an $obj_type ($obj_id), which is neither a user nor a group");
     return undef;
 }
 
@@ -303,39 +303,34 @@ sub _load_privacy_object {
 #  have been passed.
 
 sub _GetObject {
-    my $self = shift;
+    my $self    = shift;
     my $privacy = shift;
 
-    my ($obj_type, $obj_id) = split(/\-/, $privacy);
+    warn "Checking on privacy for $privacy";
 
-    my $object = $self->_load_privacy_object($obj_type, $obj_id);
+    my ( $obj_type, $obj_id ) = split( /\-/, $privacy );
 
-    unless (ref($object) eq $obj_type) {
-	$RT::Logger->error("Could not load object of type $obj_type with ID $obj_id");
-	return undef;
+    my $object = $self->_load_privacy_object( $obj_type, $obj_id );
+
+    unless ( ref($object) eq $obj_type ) {
+        $RT::Logger->error( "Could not load object of type $obj_type with ID $obj_id I AM ".$self->current_user->id);
+        return undef;
     }
 
     # Do not allow the loading of a user object other than the current
     # user, or of a group object of which the current user is not a member.
 
-    if ($obj_type eq 'RT::Model::User' 
-	&& $object->id != $self->current_user->user_object->id()) {
-	$RT::Logger->debug("Permission denied for user other than self");
-	return undef;
+    if (   $obj_type eq 'RT::Model::User' && $object->id != $self->current_user->user_object->id() ) {
+        $RT::Logger->debug("Permission denied for user other than self");
+        return undef;
     }
-    if ($obj_type eq 'RT::Model::Group' &&
-	!$object->has_member_recursively($self->current_user->principal_object)) {
-	$RT::Logger->debug("Permission denied, ".$self->current_user->name.
-			   " is not a member of group");
-	return undef;
+    if ($obj_type eq 'RT::Model::Group'
+        && !$object->has_member_recursively( $self->current_user->principal_object)) {
+        $RT::Logger->debug( "Permission denied, " . $self->current_user->name . " is not a member of group" );
+        return undef;
     }
 
     return $object;
 }
-
-eval "require RT::SavedSearch_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SavedSearch_Vendor.pm});
-eval "require RT::SavedSearch_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/SavedSearch_Local.pm});
 
 1;

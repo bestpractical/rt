@@ -1236,7 +1236,7 @@ sub deleteWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->current_user->principal_id == $principal->id ) {
+    if ( $self->current_user->id == $principal->id ) {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail

@@ -45,7 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::ScripAction::Recordcomment;
+package RT::ScripAction::RecordComment;
 require RT::ScripAction::Generic;
 use strict;
 use vars qw/@ISA/;
@@ -53,13 +53,13 @@ use vars qw/@ISA/;
 
 =head1 name
 
-RT::ScripAction::Recordcomment - An Action which can be used from an
+RT::ScripAction::RecordComment - An Action which can be used from an
 external tool, or in any situation where a ticket transaction has not
 been started, to make a comment on the ticket.
 
 =head1 SYNOPSIS
 
-my $action_obj = RT::ScripAction::Recordcomment->new('TicketObj'   => $ticket_obj,
+my $action_obj = RT::ScripAction::RecordComment->new('TicketObj'   => $ticket_obj,
 						'TemplateObj' => $template_obj,
 						);
 my $result = $action_obj->prepare();

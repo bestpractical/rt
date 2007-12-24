@@ -117,7 +117,7 @@ Object constructor takes one argument C<RT::CurrentUser> object.
 sub new {
     my $class = shift;
     my $self = {};
-    bless $self => $class;
+    bless $self => ref($class) || $class;
     $self->_get_current_user(@_);
     $self->Unix(0);
     return $self;
@@ -316,38 +316,38 @@ sub DurationAsString {
 
     if ( $duration < $MINUTE ) {
         $s         = $duration;
-        $time_unit = $self->loc("sec");
+        $time_unit = _("sec");
     }
     elsif ( $duration < ( 2 * $HOUR ) ) {
         $s         = int( $duration / $MINUTE + 0.5 );
-        $time_unit = $self->loc("min");
+        $time_unit = _("min");
     }
     elsif ( $duration < ( 2 * $DAY ) ) {
         $s         = int( $duration / $HOUR + 0.5 );
-        $time_unit = $self->loc("hours");
+        $time_unit = _("hours");
     }
     elsif ( $duration < ( 2 * $WEEK ) ) {
         $s         = int( $duration / $DAY + 0.5 );
-        $time_unit = $self->loc("days");
+        $time_unit = _("days");
     }
     elsif ( $duration < ( 2 * $MONTH ) ) {
         $s         = int( $duration / $WEEK + 0.5 );
-        $time_unit = $self->loc("weeks");
+        $time_unit = _("weeks");
     }
     elsif ( $duration < $YEAR ) {
         $s         = int( $duration / $MONTH + 0.5 );
-        $time_unit = $self->loc("months");
+        $time_unit = _("months");
     }
     else {
         $s         = int( $duration / $YEAR + 0.5 );
-        $time_unit = $self->loc("years");
+        $time_unit = _("years");
     }
 
     if ( $negative ) {
-        return $self->loc( "%1 %2 ago", $s, $time_unit );
+        return _( "%1 %2 ago", $s, $time_unit );
     }
     else {
-        return $self->loc( "%1 %2", $s, $time_unit );
+        return _( "%1 %2", $s, $time_unit );
     }
 }
 
@@ -377,7 +377,7 @@ sub AsString {
     my $self = shift;
     my %args = (@_);
 
-    return $self->loc("Not set") unless $self->Unix > 0;
+    return _("Not set") unless $self->Unix > 0;
 
     my $format = RT->Config->Get( 'DateTimeFormat', $self->current_user ) || 'DefaultFormat';
     $format = { Format => $format } unless ref $format;
@@ -398,7 +398,7 @@ sub GetWeekday {
     my $self = shift;
     my $dow = shift;
     
-    return $self->loc("$DAYS_OF_WEEK[$dow].") if $DAYS_OF_WEEK[$dow];
+    return _("$DAYS_OF_WEEK[$dow].") if $DAYS_OF_WEEK[$dow];
     return '';
 }
 
@@ -413,7 +413,7 @@ sub GetMonth {
     my $self = shift;
     my $mon = shift;
 
-    return $self->loc("$MONTHS[$mon].") if $MONTHS[$mon];
+    return _("$MONTHS[$mon].") if $MONTHS[$mon];
     return '';
 }
 
@@ -567,13 +567,13 @@ sub DefaultFormat
     ($mday, $hour, $min, $sec) = map { sprintf "%02d", $_ } ($mday, $hour, $min, $sec);
 
     if( $args{'Date'} && !$args{'Time'} ) {
-        return $self->loc('%1 %2 %3 %4',
+        return _('%1 %2 %3 %4',
                           $wday,$mon,$mday,$year);
     } elsif( !$args{'Date'} && $args{'Time'} ) {
-        return $self->loc('%1:%2:%3',
+        return _('%1:%2:%3',
                           $hour,$min,$sec);
     } else {
-        return $self->loc('%1 %2 %3 %4:%5:%6 %7',
+        return _('%1 %2 %3 %4:%5:%6 %7',
                           $wday,$mon,$mday,$hour,$min,$sec,$year);
     }
 }

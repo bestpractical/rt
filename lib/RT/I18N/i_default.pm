@@ -86,17 +86,17 @@ RFC 2277 says:
 4.5.  Default Language
 
    When human-readable text must be presented in a context where the
-   sender has no knowledge of the recipient's language preferences (such
-   as login failures or E-mailed warnings, or prior to language
+   sender has no knowledge of the recipient's Language preferences (such
+   as login failures or E-mailed warnings, or prior to Language
    negotiation), text SHOULD be presented in Default Language.
 
    Default Language is assigned the tag "i-default" according to the
-   procedures of RFC 1766. It is not a specific language, but rather
-   identifies the condition where the language preferences of the user
+   procedures of RFC 1766. It is not a specific Language, but rather
+   identifies the condition where the Language preferences of the user
    cannot be established.
 
    Messages in Default Language MUST be understandable by an English-
-   speaking person, since English is the language which, worldwide, the
+   speaking person, since English is the Language which, worldwide, the
    greatest number of people will be able to get adequate help in
    interpreting when working with computers.
 
@@ -105,6 +105,6 @@ RFC 2277 says:
    situations.
 
    In many cases, using only English text is reasonable; in some cases,
-   the English text may be augumented by text in other languages.
+   the English text may be augumented by text in other Languages.
 
 

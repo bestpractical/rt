@@ -94,7 +94,7 @@ else {
 
         my ( $id, $msg ) = $Group->createPersonalGroup(
                              name        => "$name",
-                             principal_id => Jifty->web->current_user->principal_id
+                             principal_id => Jifty->web->current_user->id
         );
         unless ($id) {
             Abort( loc("Could not create group") );

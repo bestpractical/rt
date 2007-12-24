@@ -2,7 +2,7 @@
 
 use strict;
 use RT::Test; use Test::More;
-plan tests => 387;
+plan tests => 382;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
@@ -21,21 +21,8 @@ my $url = $agent->rt_base_url;
 diag "Base URL is '$url'" if $ENV{TEST_VERBOSE};
 $agent->get($url);
 
-is ($agent->{'status'}, 200, "Loaded a page");
-
 # {{{ test a login
-
-# follow the link marked "Login"
-
-ok($agent->{form}->find_input('user'));
-
-ok($agent->{form}->find_input('pass'));
-like ($agent->{'content'} , qr/username:/i);
-$agent->field( 'user' => 'root' );
-$agent->field( 'pass' => 'password' );
-# the field isn't named, so we have to click link 0
-$agent->click(0);
-is($agent->{'status'}, 200, "Fetched the page ok");
+$agent->login(root => 'password');
 like( $agent->{'content'} , qr/Logout/i, "Found a logout link");
 
 
@@ -43,7 +30,7 @@ use File::Find;
 find ( \&wanted , 'html/');
 
 sub wanted {
-        -f  && /\.html$/ && $_ !~ /Logout.html$/ && test_get($File::Find::name);
+        -f  && /\.html$/ && test_get($File::Find::name);
 }       
 
 sub test_get {

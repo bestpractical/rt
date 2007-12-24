@@ -17,7 +17,7 @@ ok($ret, 'record test user creation');
 ok($ret,$msg);
 ($ret,$msg) =$user_obj->principal_object->GrantRight(Right => 'SuperUser');
 ok($ret,$msg);
-my $CurrentUser = RT::CurrentUser->new('tara');
+my $CurrentUser = RT::CurrentUser->new(name => 'tara');
 is($user_obj->name,'tara');
 is ($user_obj->id, $CurrentUser->id);
 
@@ -60,11 +60,13 @@ ok($id, 'record test ticket creation 2');
 
 # First test the search.
 
-ok(require RT::Search::FromSQL, "Search::FromSQL loaded");
-my $ticketsqlstr = "Requestor.email = '" . $CurrentUser->email .
-    "' AND Priority > '20'";
-my $search = RT::Search::FromSQL->new(Argument => $ticketsqlstr, TicketsObj => RT::Model::TicketCollection->new(current_user => RT->system_user),
-				      );
+ok( require RT::Search::FromSQL, "Search::FromSQL loaded" );
+my $ticketsqlstr
+    = "Requestor.email = '" . $CurrentUser->email . "' AND Priority > '20'";
+my $search = RT::Search::FromSQL->new(
+    Argument => $ticketsqlstr,
+    TicketsObj => RT::Model::TicketCollection->new( current_user => RT->system_user ),
+);
 is(ref($search), 'RT::Search::FromSQL', "search Created");
 ok($search->prepare(), "from_sql search run");
 my $counter = 0;
@@ -76,11 +78,11 @@ is ($counter, 1, "from_sql search results 2");
 
 # Right.  Now test the actions.
 
-ok(require RT::ScripAction::Recordcomment);
+ok(require RT::ScripAction::RecordComment);
 ok(require RT::ScripAction::RecordCorrespondence);
 
 my ($comment_act, $correspond_act);
-ok($comment_act = RT::ScripAction::Recordcomment->new(TicketObj => $ticket1, TemplateObj => $template_obj, CurrentUser => $CurrentUser), "Recordcomment Created");
+ok($comment_act = RT::ScripAction::RecordComment->new(TicketObj => $ticket1, TemplateObj => $template_obj, CurrentUser => $CurrentUser), "RecordComment Created");
 ok($correspond_act = RT::ScripAction::RecordCorrespondence->new(TicketObj => $ticket2, TemplateObj => $template_obj, CurrentUser => $CurrentUser), "RecordCorrespondence Created");
 ok($comment_act->prepare(), "comment prepared");
 ok($correspond_act->prepare(), "Correspond prepared");
@@ -89,7 +91,7 @@ ok($correspond_act->commit(), "Correspondence committed");
 
 # Now test for loop suppression.
 my ($trans, $desc, $transaction) = $ticket2->comment(MIMEObj => $template_obj->MIMEObj);
-my $bogus_action = RT::ScripAction::Recordcomment->new(TicketObj => $ticket1, TemplateObj => $template_obj, TransactionObj => $transaction, CurrentUser => $CurrentUser);
+my $bogus_action = RT::ScripAction::RecordComment->new(TicketObj => $ticket1, TemplateObj => $template_obj, TransactionObj => $transaction, CurrentUser => $CurrentUser);
 ok(!$bogus_action->prepare(), "comment aborted to prevent loop");
 
 1;

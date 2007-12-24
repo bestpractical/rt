@@ -39,7 +39,7 @@ before qr/(.*)/ => run {
 # This code canonicalize_s time inputs in hours into minutes
 # If it's a noauth file, don't ask for auth.
 
-    # Set the proper encoding for the current language handle
+    # Set the proper encoding for the current Language handle
 #    content_type("text/html; charset=utf-8");
 
     return;

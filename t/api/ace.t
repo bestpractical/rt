@@ -5,28 +5,14 @@ use warnings;
 use RT::Test; 
 use Test::More tests => 76;
 
-
-{
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
-
 ok(require RT::Model::ACE);
 
-
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
-}
-
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $Queue = RT::Model::Queue->new(current_user => RT->system_user);
 
 is ($Queue->AvailableRights->{'DeleteTicket'} , 'Delete tickets', "Found the delete ticket right");
 is (RT::System->AvailableRights->{'SuperUser'},  'Do anything and everything', "Found the superuser right");
-
-
 
 }
 
@@ -56,7 +42,7 @@ ok($val, $msg);
 
 ok($user_a->has_right( Object => RT->system, Right => 'AdminOwnPersonalGroups')    ,"user a has the right 'AdminOwnPersonalGroups' directly");
 
-my $a_delegates = RT::Model::Group->new( $user_a);
+my $a_delegates = RT::Model::Group->new( current_user => $user_a);
 $a_delegates->createPersonalGroup(name => 'Delegates');
 ok( $a_delegates->id   ,"user a creates a personal group 'Delegates'");
 ok( $a_delegates->add_member($user_b->principal_id)   ,"user a adds user b to personal group 'delegates'");
@@ -66,11 +52,11 @@ ok(  $user_a->has_right(Right => 'OwnTicket', Object => $q)  ,"user a has the ri
 ok(!$user_a->has_right( Object => RT->system, Right => 'DelegateRights')    ,"user a does not have the right 'delegate rights'");
 
 
-my $own_ticket_ace = RT::Model::ACE->new($user_a);
-my $user_a_equiv_group = RT::Model::Group->new($user_a);
+my $own_ticket_ace = RT::Model::ACE->new(current_user => $user_a);
+my $user_a_equiv_group = RT::Model::Group->new(current_user => $user_a);
 $user_a_equiv_group->load_acl_equivalence_group($user_a->principal_object);
 ok ($user_a_equiv_group->id, "Loaded the user A acl equivalence group");
-my $user_b_equiv_group = RT::Model::Group->new($user_b);
+my $user_b_equiv_group = RT::Model::Group->new(current_user => $user_b);
 $user_b_equiv_group->load_acl_equivalence_group($user_b->principal_object);
 ok ($user_b_equiv_group->id, "Loaded the user B acl equivalence group");
 $own_ticket_ace->load_by_values( principal_type => 'Group', principal_id => $user_a_equiv_group->principal_id, Object=>$q, right_name => 'OwnTicket');
@@ -91,7 +77,7 @@ ok($user_a->has_right( Object => RT->system, Right => 'DelegateRights') ,"user a
 
 ok( $val    ,"user a tries and succeeds to delegate the right 'ownticket' in queue 'DelegationTest' to personal group 'delegates' - $msg");
 ok(  $user_b->has_right(Right => 'OwnTicket', Object => $q)  ,"user b has the right to own tickets in queue 'DelegationTest'");
-my $delegated_ace = RT::Model::ACE->new($user_a);
+my $delegated_ace = RT::Model::ACE->new(current_user => $user_a);
 $delegated_ace->load_by_values ( Object => $q, right_name => 'OwnTicket', principal_type => 'Group',
 principal_id => $a_delegates->principal_id, DelegatedBy => $user_a->principal_id, DelegatedFrom => $own_ticket_ace->id);
 ok ($delegated_ace->id, "Found the delegated ACE");
@@ -167,7 +153,7 @@ ok( $val   ,"grant del1  the right to 'OwnTicket' in queue 'DelegationTest' - $m
 
 ok(  $user_a->has_right(Right => 'OwnTicket', Object => $q)  ,"make sure that user a can own tickets in queue 'DelegationTest'");
 
-my $group_ace= RT::Model::ACE->new($user_a);
+my $group_ace= RT::Model::ACE->new(current_user => $user_a);
 $group_ace->load_by_values( principal_type => 'Group', principal_id => $del1->principal_id, Object => $q, right_name => 'OwnTicket');
 
 ok ($group_ace->id, "Found the ACE we want to test with for now");
@@ -198,7 +184,7 @@ ok( $val   ,"make user a a member of group del2 - $msg");
 ($val, $msg) = $del2->principal_object->GrantRight(Object=>$q, Right => 'OwnTicket');
 ok($val, "grant the right 'own tickets' in queue 'DelegationTest' to group del2 - $msg");
 
-my $del2_right = RT::Model::ACE->new($user_a);
+my $del2_right = RT::Model::ACE->new(current_user => $user_a);
 $del2_right->load_by_values( principal_id => $del2->principal_id, principal_type => 'Group', Object => $q, right_name => 'OwnTicket');
 ok ($del2_right->id, "Found the right");
 
@@ -218,7 +204,7 @@ ok(  !$user_b->has_right(Right => 'OwnTicket', Object => $q)   ,"user b does not
 ok($val, "grant the right 'own tickets' in queue 'DelegationTest' to group del2 - $msg");
 
 
-$group_ace= RT::Model::ACE->new($user_a);
+$group_ace= RT::Model::ACE->new(current_user => $user_a);
 $group_ace->load_by_values( principal_type => 'Group', principal_id => $del1->principal_id, Object=>$q, right_name => 'OwnTicket');
 
 ok ($group_ace->id, "Found the ACE we want to test with for now");

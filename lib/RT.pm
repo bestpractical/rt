@@ -9,7 +9,7 @@ use RT::CurrentUser;
 use strict;
 use warnings;
 use File::Spec ();
-use vars qw($Config $System $system_user $nobody $Handle $Logger);
+use vars qw($Config $System $nobody $Handle $Logger);
 our $VERSION = '3.7.14';
 
 
@@ -357,12 +357,11 @@ L</InitSystemObjects>.
 =cut
 
 sub system_user { 
-    
-    unless ($system_user) { 
-        $system_user = RT::CurrentUser->new(name => 'RT_System');
-    }
-    
-    return $system_user }
+       my $system_user = RT::CurrentUser->new(name => 'RT_System');
+        $system_user->is_superuser(1);
+    return $system_user;
+
+}
 
 =head2 Nobody
 

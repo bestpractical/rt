@@ -2645,7 +2645,7 @@ msgid "Keyword"
 msgstr "Avainsana"
 
 #: NOT FOUND IN SOURCE
-msgid "Lang"
+msgid "lang"
 msgstr "Kieli"
 
 #: html/Admin/Users/Modify.html:94 html/User/Prefs.html:76

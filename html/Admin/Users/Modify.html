@@ -95,7 +95,7 @@
 <tr><td align="right">
 <&|/l&>Language</&>: 
 </td><td>
-<& /Elements/SelectLang, name => 'Lang', Default => $user_object->Lang &>
+<& /Elements/Selectlang, name => 'lang', Default => $user_object->lang &>
 </td></tr>
 <tr><td align="right">
 <&|/l&>Extra info</&>: 
@@ -273,7 +273,7 @@ else {
 	    organization          => $ARGS{'organization'},
 	    real_name              => $ARGS{'real_name'},
 	    nickname              => $ARGS{'nickname'},
-	    Lang                  => $ARGS{'Lang'},
+	    lang                  => $ARGS{'lang'},
 	    email_encoding         => $ARGS{'email_encoding'},
 	    web_encoding           => $ARGS{'web_encoding'},
 	    ExternalContactInfoId => $ARGS{'ExternalContactInfoId'},
@@ -330,7 +330,7 @@ else {
 if ($user_object->id && $id ne 'new') {
 
     my @fields = qw(name comments Signature email freeform_contact_info 
-		    organization real_name nickname Lang email_encoding web_encoding 
+		    organization real_name nickname lang email_encoding web_encoding 
 		    ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
 		    auth_system HomePhone WorkPhone MobilePhone PagerPhone Address1
 		    Address2 City State Zip Country 
@@ -410,7 +410,7 @@ $privileged => undef
 $Setprivileged => undef
 $Enabled => undef
 $SetEnabled => undef
-$Lang  => undef
+$lang  => undef
 $email_encoding  => undef
 $web_encoding => undef
 $ExternalContactInfoId  => undef

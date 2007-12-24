@@ -134,7 +134,7 @@ sub Run
     my $objs = RT::Model::UserCollection->new(current_user => RT->system_user );
     # XXX: we want preload only things we need, but later while
     # logging we need all data, TODO envestigate this
-    # $objs->columns(qw(id name email Lang Timezone
+    # $objs->columns(qw(id name email lang Timezone
     #                   Creator Created LastUpdated LastUpdatedBy));
     if( my $s = $self->{'opt'}{'status'} ) {
         if( $s eq 'any' ) {

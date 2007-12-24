@@ -76,7 +76,7 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>Language</&>:</td>
-    <td class="value"><& /Elements/SelectLang, name => 'Lang', Default => $user_object->Lang &></td>
+    <td class="value"><& /Elements/Selectlang, name => 'lang', Default => $user_object->lang &></td>
   </tr>
 </table>
 </&>
@@ -207,10 +207,10 @@ my ($val, $msg);
 if ($user_object->id) {
     
     my @fields = qw(name comments Signature email freeform_contact_info 
-		    organization real_name nickname Lang email_encoding web_encoding 
+		    organization real_name nickname lang email_encoding web_encoding 
 		    ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
 		    auth_system HomePhone WorkPhone MobilePhone PagerPhone Address1
-		Address2 City State Zip Country Lang
+		Address2 City State Zip Country lang
 		   );
 
     $m->callback(
@@ -224,11 +224,6 @@ if ($user_object->id) {
     my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
 					    Object => $user_object,
 					    ARGSRef => \%ARGS );
-    if ($Lang) {
-	Jifty->web->current_user->LanguageHandle($Lang);
-	Jifty->web->current_user = Jifty->web->current_user; # force writeback
-    }
-
     push (@results,@fieldresults);
 
 
@@ -270,7 +265,7 @@ $privileged => undef
 $Setprivileged => undef
 $Enabled => undef
 $SetEnabled => undef
-$Lang  => undef
+$lang  => undef
 $email_encoding  => undef
 $web_encoding => undef
 $ExternalContactInfoId  => undef

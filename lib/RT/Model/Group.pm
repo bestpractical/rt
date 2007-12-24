@@ -494,10 +494,10 @@ sub createPersonalGroup {
     my %args = (
         name        => undef,
         Description => undef,
-        principal_id => $self->current_user->principal_id,
+        principal_id => $self->current_user->id,
         @_
     );
-    if ( $self->current_user->principal_id == $args{'principal_id'} ) {
+    if ( $self->current_user->id == $args{'principal_id'} ) {
 
         unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
             $RT::Logger->warning( $self->current_user->name
@@ -606,7 +606,7 @@ This routine finds all the cached group members that are members of this group  
      my $self = shift;
      my $val = shift;
     if ($self->Domain eq 'Personal') {
-   		if ($self->current_user->principal_id == $self->Instance) {
+   		if ($self->current_user->id == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
         		return ( 0, $self->loc('Permission Denied') );
     		}
@@ -685,7 +685,7 @@ sub DeepMembersObj {
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-    $members_obj->LimitToMembersOfGroup( $self->principal_id );
+    $members_obj->LimitToMembersOfGroup( $self->id );
 
     return ( $members_obj );
 
@@ -707,7 +707,7 @@ sub MembersObj {
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-    $members_obj->LimitToMembersOfGroup( $self->principal_id );
+    $members_obj->LimitToMembersOfGroup( $self->id );
 
     return ( $members_obj );
 
@@ -744,7 +744,7 @@ sub GroupMembersObj {
     $groups->limit(
         alias    => $members_alias,
         column    => 'GroupId',
-        value    => $self->principal_id,
+        value    => $self->id,
     );
     $groups->limit(
         alias => $members_alias,
@@ -786,7 +786,7 @@ sub UserMembersObj {
     $users->limit(
         alias => $members_alias,
         column => 'GroupId',
-        value => $self->principal_id,
+        value => $self->id,
     );
     $users->limit(
         alias => $members_alias,
@@ -855,7 +855,7 @@ sub add_member {
 
 
     if ($self->Domain eq 'Personal') {
-   		if ($self->current_user->principal_id == $self->Instance) {
+   		if ($self->current_user->id == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
         		return ( 0, $self->loc('Permission Denied') );
     		}
@@ -870,7 +870,7 @@ sub add_member {
     # We should only allow membership changes if the user has the right 
     # to modify group membership or the user is the principal in question
     # and the user has the right to modify his own membership
-    unless ( ($new_member == $self->current_user->principal_id &&
+    unless ( ($new_member == $self->current_user->user_object->id &&
 	      $self->current_user_has_right('ModifyOwnMembership') ) ||
 	      $self->current_user_has_right('AdminGroupMembership') ) {
         #User has no permission to be doing this
@@ -970,7 +970,7 @@ sub has_member {
 
     my $member_obj = RT::Model::GroupMember->new;
     $member_obj->load_by_cols( MemberId => $principal->id, 
-                             GroupId => $self->principal_id );
+                             GroupId => $self->id );
 
     #If we have a member object
     if ( defined $member_obj->id ) {
@@ -1009,7 +1009,7 @@ sub has_member_recursively {
     }
     my $member_obj = RT::Model::CachedGroupMember->new;
     $member_obj->load_by_cols( MemberId => $principal->id,
-                             GroupId => $self->principal_id ,
+                             GroupId => $self->id ,
                              disabled => 0
                              );
 
@@ -1048,7 +1048,7 @@ sub delete_member {
     # and the user has the right to modify his own membership
 
     if ($self->Domain eq 'Personal') {
-   		if ($self->current_user->principal_id == $self->Instance) {
+   		if ($self->current_user->id == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
         		return ( 0, $self->loc('Permission Denied') );
     		}
@@ -1059,7 +1059,7 @@ sub delete_member {
     	}
 	}
 	else {
-    unless ( (($member_id == $self->current_user->principal_id) &&
+    unless ( (($member_id == $self->current_user->id) &&
 	      $self->current_user_has_right('ModifyOwnMembership') ) ||
 	      $self->current_user_has_right('AdminGroupMembership') ) {
         #User has no permission to be doing this
@@ -1082,7 +1082,7 @@ sub _delete_member {
     my $member_obj =  RT::Model::GroupMember->new;
     
     $member_obj->load_by_cols( MemberId  => $member_id,
-                             GroupId => $self->principal_id);
+                             GroupId => $self->id);
 
 
     #If we couldn't load it, return undef.
@@ -1171,7 +1171,7 @@ sub _set {
     );
 
 	if ($self->Domain eq 'Personal') {
-   		if ($self->current_user->principal_id == $self->Instance) {
+   		if ($self->current_user->id == $self->Instance) {
     		unless ( $self->current_user_has_right('AdminOwnPersonalGroups')) {
         		return ( 0, $self->loc('Permission Denied') );
     		}

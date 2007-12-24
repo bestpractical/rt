@@ -685,7 +685,7 @@ sub AddWatcher {
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
     if ( defined $args{'principal_id'} && 
-            $self->current_user->principal_id  eq $args{'principal_id'}) {
+            $self->current_user->id  eq $args{'principal_id'}) {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
         if ( defined $args{'Type'} && ($args{'Type'} eq 'AdminCc') ) {
@@ -847,7 +847,7 @@ sub deleteWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->current_user->principal_id  eq $args{'principal_id'}) {
+    if ( $self->current_user->id  eq $args{'principal_id'}) {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyQueue', bail
   if ( $args{'Type'} eq 'AdminCc' ) {

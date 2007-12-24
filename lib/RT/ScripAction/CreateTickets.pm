@@ -45,13 +45,15 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::ScripAction::CreateTickets;
-require RT::ScripAction::Generic;
+
 
 use strict;
 use warnings;
-use vars qw/@ISA/;
-@ISA = qw(RT::ScripAction::Generic);
+
+package RT::ScripAction::CreateTickets;
+require RT::ScripAction::Generic;
+
+use base qw(RT::ScripAction::Generic);
 
 use MIME::Entity;
 

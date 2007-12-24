@@ -2,7 +2,7 @@
 use strict;
 use HTTP::Cookies;
 
-use RT::Test; use Test::More tests => 37;
+use RT::Test; use Test::More tests => 31;
 
 my ($baseurl, $agent) = RT::Test->started_ok;
 
@@ -29,7 +29,7 @@ $agent->cookie_jar($cookie_jar);
 
 no warnings 'once';
 # get the top page
-login($agent, $user_obj);
+$agent->login($user_obj->name => 'customer');
 
 # Test for absence of Configure and Preferences tabs.
 ok(!$agent->find_link( url => "$RT::WebPath/Admin/",
@@ -110,28 +110,4 @@ ok($agent->form_name('BuildQuery'), "Yep, form is still there");
 my $input = $agent->current_form->find_input('ValueOfActor');
 ok(grep(/customer-$$/, $input->value_names()), "Found self in the actor listing");
 
-sub login {
-    my $agent = shift;
-
-    my $url = $baseurl;
-    $agent->get($url);
-    is( $agent->{'status'}, 200,
-        "Loaded a page - ".$baseurl);
-
-    # {{{ test a login
-
-    # follow the link marked "Login"
-
-    ok( $agent->{form}->find_input('user') );
-
-    ok( $agent->{form}->find_input('pass') );
-    like( $agent->{'content'} , qr/username:/i );
-    $agent->field( 'user' => $user_obj->name );
-    $agent->field( 'pass' => 'customer' );
-
-    # the field isn't named, so we have to click link 0
-    $agent->click(0);
-    is( $agent->{'status'}, 200, "Fetched the page ok" );
-    like( $agent->{'content'} , qr/Logout/i, "Found a logout link" );
-}
 1;

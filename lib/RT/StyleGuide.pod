@@ -76,7 +76,7 @@ modules, should be written in POD, where appropriate. From there, they
 can be translated to many formats with the various pod2* translators. 
 Read the perlpod manpage before writing any POD, because although POD is
 not difficult, it is not what most people are used to.  It is not a
-regular markup language; it is just a way to make easy documentation
+regular markup Language; it is just a way to make easy documentation
 for translating to other formats.  Read, and understand, the perlpod
 manpage, and ask us or someone else who knows if you have any questions.
 
@@ -348,7 +348,7 @@ To specify a specific release, use "RT 3.0.12"
 =item function vs. sub(routine) vs. method
 
 Just because it is the Perl Way (not necessarily right for all
-languages, but the documented terminology in the perl documentation),
+Languages, but the documented terminology in the perl documentation),
 "method" should be used only to refer to a subroutine that are object
 methods or class methods; that is, these are functions that are used
 with OOP that always take either an object or a class as the first

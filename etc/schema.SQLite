@@ -216,7 +216,7 @@ CREATE TABLE Users (
   organization varchar(200) NULL  ,
   real_name varchar(120) NULL  ,
   nickname varchar(16) NULL  ,
-  Lang varchar(16) NULL  ,
+  lang varchar(16) NULL  ,
   email_encoding varchar(16) NULL  ,
   web_encoding varchar(16) NULL  ,
   ExternalContactInfoId varchar(100) NULL  ,

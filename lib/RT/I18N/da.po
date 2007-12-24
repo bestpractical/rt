@@ -2970,7 +2970,7 @@ msgid "Keyword"
 msgstr "Nøgleord"
 
 #: NOT FOUND IN SOURCE
-msgid "Lang"
+msgid "lang"
 msgstr "Sprog"
 
 #: html/Admin/Users/Modify.html:94

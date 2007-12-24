@@ -3803,7 +3803,7 @@ msgid "LabelURL"
 msgstr "链接卷标"
 
 #: NOT FOUND IN SOURCE
-msgid "Lang"
+msgid "lang"
 msgstr "使用语言"
 
 #: html/Admin/Users/Modify.html:94 html/User/Prefs.html:76

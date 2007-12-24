@@ -1660,17 +1660,17 @@ sub load_custom_field_by_identifier {
     unless (defined $field) {
         Carp::confess;
     }
-    my $cf = RT::Model::CustomField->new;
+    my $cf = RT::Model::CustomField->new();
 
     if ( UNIVERSAL::isa( $field, "RT::Model::CustomField" ) ) {
         $cf->load_by_id( $field->id );
     }
     elsif ($field =~ /^\d+$/) {
-        $cf = RT::Model::CustomField->new;
+        $cf = RT::Model::CustomField->new();
         $cf->load_by_id($field);
     } else {
 
-        my $cfs = $self->CustomFields($self->current_user);
+        my $cfs = $self->CustomFields();
         $cfs->limit(column => 'name', value => $field, case_sensitive => 0);
         $cf = $cfs->first || RT::Model::CustomField->new;
     }
@@ -1691,9 +1691,6 @@ sub WikiBase {
     return RT->Config->Get('WebPath'). "/index.html?q=";
 }
 
-sub DESTROY {}
 sub Table { warn(" deprecated Table call discarded")}
-use vars qw/$AUTOLOAD/;
-sub AUTOLOAD { Carp::cluck $AUTOLOAD . " not found"}
 
 1;

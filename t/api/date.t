@@ -25,15 +25,15 @@ my $current_user;
     my $user = RT::Model::User->new(current_user => RT->system_user);
     my($uid, $msg) = $user->create(
         name       => "date_api". rand(200),
-        Lang       => 'en',
+        lang       => 'en',
         privileged => 1,
     );
     ok($uid, "user was Created") or diag("error: $msg");
-    $current_user = RT::CurrentUser->new($user);
+    $current_user = RT::CurrentUser->new(id => $user->id);
 }
 
 {
-    my $date = RT::Date->new( $current_user );
+    my $date = RT::Date->new(current_user => $current_user );
     is($date->Timezone, 'UTC', "dropped all timzones to UTC");
     is($date->Timezone('user'), 'UTC', "dropped all timzones to UTC");
     is($date->Timezone('server'), 'UTC', "dropped all timzones to UTC");
@@ -184,14 +184,14 @@ my $current_user;
 
 { # positive timezone
     $current_user->user_object->__set( column => 'Timezone', value => 'Europe/Moscow');
-    my $date = RT::Date->new( $current_user );
+    my $date = RT::Date->new( current_user => $current_user );
     $date->set( Format => 'ISO', Timezone => 'utc', value => '2005-01-01 15:10:00' );
     is($date->ISO( Timezone => 'user' ), '2005-01-01 18:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-01-01T18:10:00+03:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Sat, 1 Jan 2005 18:10:00 +0300', "RFC2822");
 
     # DST
-    $date = RT::Date->new( $current_user );
+    $date = RT::Date->new(current_user =>  $current_user );
     $date->set( Format => 'ISO', Timezone => 'utc', value => '2005-07-01 15:10:00' );
     is($date->ISO( Timezone => 'user' ), '2005-07-01 19:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-07-01T19:10:00+04:00', "W3C DTF");
@@ -200,14 +200,14 @@ my $current_user;
 
 { # negative timezone
     $current_user->user_object->__set( column => 'Timezone', value => 'America/New_York');
-    my $date = RT::Date->new( $current_user );
+    my $date = RT::Date->new( current_user => $current_user );
     $date->set( Format => 'ISO', Timezone => 'utc', value => '2005-01-01 15:10:00' );
     is($date->ISO( Timezone => 'user' ), '2005-01-01 10:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-01-01T10:10:00-05:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Sat, 1 Jan 2005 10:10:00 -0500', "RFC2822");
 
     # DST
-    $date = RT::Date->new( $current_user );
+    $date = RT::Date->new( current_user =>  $current_user );
     $date->set( Format => 'ISO', Timezone => 'utc', value => '2005-07-01 15:10:00' );
     is($date->ISO( Timezone => 'user' ), '2005-07-01 11:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-07-01T11:10:00-04:00', "W3C DTF");
@@ -293,7 +293,7 @@ my $year = (localtime(time))[5] + 1900;
     is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
     $current_user->user_object->__set( column => 'Timezone', value => 'Europe/Moscow');
-    $date = RT::Date->new( $current_user );
+    $date = RT::Date->new( current_user => $current_user );
     $date->set(Format => 'datemanip', value => '2005-11-28 15:10:00');
     is($date->ISO, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
 }
@@ -315,7 +315,7 @@ my $year = (localtime(time))[5] + 1900;
     is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
     $current_user->user_object->__set( column => 'Timezone', value => 'Europe/Moscow');
-    $date = RT::Date->new( $current_user );
+    $date = RT::Date->new( current_user => $current_user );
     $date->set(Format => 'unknown', value => '2005-11-28 15:10:00');
     is($date->ISO, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
     $date->set(Format => 'unknown', value => '2005-11-28 15:10:00', Timezone => 'server' );
@@ -342,7 +342,7 @@ my $year = (localtime(time))[5] + 1900;
     is($date->ISO, '2005-11-27 21:00:00', "server context");
 
     $current_user->user_object->__set( column => 'Timezone', value => 'Europe/Moscow');
-    $date = RT::Date->new( $current_user );
+    $date = RT::Date->new(current_user =>  $current_user );
     $date->set(Format => 'ISO', value => '2005-11-28 15:10:00');
     $date->set_ToMidnight;
     is($date->ISO, '2005-11-28 00:00:00', "default is utc");
@@ -407,7 +407,7 @@ my $year = (localtime(time))[5] + 1900;
 
 {
     $current_user->user_object->__set( column => 'Timezone', value => '');
-    my $date = RT::Date->new( $current_user );
+    my $date = RT::Date->new(current_user =>  $current_user );
     is($date->AsString, "Not set", "AsString returns 'Not set'");
 
     RT->Config->set( DateTimeFormat => '');

@@ -395,7 +395,7 @@ sub Delegate {
                                 right_name     => $self->__value('right_name'),
                                 object_type    => $self->__value('object_type'),
                                 object_id      => $self->__value('object_id'),
-                                DelegatedBy => $self->current_user->principal_id,
+                                DelegatedBy => $self->current_user->id,
                                 DelegatedFrom => $self->id );
     if ( $delegated_ace->id ) {
         return ( 0, $self->loc('That principal already has that right') );
@@ -406,7 +406,7 @@ sub Delegate {
         right_name     => $self->__value('right_name'),
         object_type    => $self->__value('object_type'),
         object_id      => $self->__value('object_id'),
-        DelegatedBy   => $self->current_user->principal_id,
+        DelegatedBy   => $self->current_user->id,
         DelegatedFrom => $self->id );
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
@@ -447,7 +447,7 @@ sub delete {
     unless (
          (    $self->current_user->has_right(Right => 'ModifyACL', Object => $self->Object)
            && $self->__value('DelegatedBy') == 0 )
-         || ( $self->__value('DelegatedBy') == $self->current_user->principal_id )
+         || ( $self->__value('DelegatedBy') == $self->current_user->id )
       ) {
         return ( 0, $self->loc('Permission Denied') );
     }
@@ -639,7 +639,7 @@ sub _set {
 sub _value {
     my $self = shift;
 
-    if ( $self->__value('DelegatedBy') eq $self->current_user->principal_id ) {
+    if ( $self->__value('DelegatedBy') eq $self->current_user->id ) {
         return ( $self->__value(@_) );
     }
     elsif ( $self->principal_object->IsGroup

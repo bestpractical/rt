@@ -34,7 +34,7 @@ ok $agent_b->login('user_b', 'password'), 'logged in as user B';
 diag "create a ticket for testing";
 my $tid;
 {
-    my $ticket = RT::Model::Ticket->new( $user_a );
+    my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id =>$user_a->id) );
     my ($txn, $msg);
     ($tid, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
@@ -47,7 +47,7 @@ my $tid;
 
 diag "user B adds a message, we check that user A see notification and can clear it";
 {
-    my $ticket = RT::Model::Ticket->new( $user_b );
+    my $ticket = RT::Model::Ticket->new( current_user => RT::CurrentUser->new(id =>$user_b) );
     $ticket->load( $tid );
     ok $ticket->id, 'loaded the ticket';
 

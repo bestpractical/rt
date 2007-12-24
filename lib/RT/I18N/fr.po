@@ -2145,7 +2145,7 @@ msgstr "Jun."
 
 #: html/Admin/Users/Modify.html:94 html/User/Prefs.html:76
 msgid "Language"
-msgstr "Langue"
+msgstr "langue"
 
 #: html/Search/Elements/EditFormat:79
 msgid "Large"

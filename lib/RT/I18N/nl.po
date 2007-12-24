@@ -2651,7 +2651,7 @@ msgid "Keyword"
 msgstr "Sleutelwoord"
 
 #: NOT FOUND IN SOURCE
-msgid "Lang"
+msgid "lang"
 msgstr "Taal"
 
 #: html/Admin/Users/Modify.html:94 html/User/Prefs.html:76

@@ -2305,7 +2305,7 @@ msgid "Jun."
 msgstr "Jun."
 
 #: NOT FOUND IN SOURCE
-msgid "Lang"
+msgid "lang"
 msgstr "Bhs"
 
 #: html/Admin/Users/Modify.html:94 html/User/Prefs.html:76

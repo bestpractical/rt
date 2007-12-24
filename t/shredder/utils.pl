@@ -297,7 +297,7 @@ sub dump_sqlite
     $dbh->{'FetchHashKeyname'} = 'name_lc';
 
     my $sth = $dbh->table_info( '', '', '%', 'TABLE' ) || die $DBI::err;
-    my @tables = keys %{$sth->fetchall_hashref( 'table_name' )};
+    my @tables = keys %{$sth->fetchall_hashref( 'TABLE_NAME' )};
 
     my $res = {};
     foreach my $t( @tables ) {

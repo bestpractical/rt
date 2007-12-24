@@ -189,7 +189,7 @@ CREATE TABLE Users (
 	organization		VARCHAR(200),
   	real_name 		VARCHAR(120),
   	nickname 		VARCHAR(16),
-  	Lang 			VARCHAR(16),
+  	lang 			VARCHAR(16),
 	email_encoding		VARCHAR(16),
 	web_encoding		VARCHAR(16),
 	ExternalContactInfoId	VARCHAR(100),

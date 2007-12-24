@@ -1640,7 +1640,7 @@ sub CheckRecipients {
             # good, one suitable and trusted key 
             next;
         }
-        my $user = RT::Model::User->new( $RT::system_user );
+        my $user = RT::Model::User->new( current_user => RT->system_user );
         $user->load_by_email( $address );
         # it's possible that we have no User record with the email
         $user = undef unless $user->id;

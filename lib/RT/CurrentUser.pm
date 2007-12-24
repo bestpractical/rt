@@ -147,15 +147,15 @@ sub load_by_name {
 
 =head2 LanguageHandle
 
-Returns this current user's langauge handle. Should take a language
+Returns this current user's langauge handle. Should take a Language
 specification. but currently doesn't
 
 =cut 
 
 sub LanguageHandle {
     my $self = shift;
-    if (   !defined $self->{'LangHandle'}
-        || !UNIVERSAL::can( $self->{'LangHandle'}, 'maketext' )
+    if (   !defined $self->{'langHandle'}
+        || !UNIVERSAL::can( $self->{'langHandle'}, 'maketext' )
         || @_ )
     {
         if (   !RT->system_user
@@ -167,14 +167,14 @@ sub LanguageHandle {
             push @_, $self->user_object->lang;
         }
 
-        $self->{'LangHandle'} = RT::I18N->get_handle(@_);
+        $self->{'langHandle'} = RT::I18N->get_handle(@_);
     }
 
     # Fall back to english.
-    unless ( $self->{'LangHandle'} ) {
+    unless ( $self->{'langHandle'} ) {
         die "We couldn't get a dictionary. Ne mogu naidti slovar. No puedo encontrar dictionario.";
     }
-    return $self->{'LangHandle'};
+    return $self->{'langHandle'};
 }
 
 sub loc {
@@ -256,7 +256,7 @@ sub Authenticate {
 
 sub has_right {
     my $self = shift;
-    Carp::cluck unless ($self->user_object);
+    return 1 if ($self->is_superuser);
     $self->user_object->has_right(@_);
 }
 
@@ -266,6 +266,9 @@ sub superuser {
     return RT->system_user;
 }
 
+sub email { shift->user_object->email }
 sub name { shift->user_object->name }
-sub principal_object { shift->user_object->principal_object }
+sub principal_object { my $self = shift;
+    Carp::confess unless ($self->user_object); 
+    return $self->user_object->principal_object }
 1;

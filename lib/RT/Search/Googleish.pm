@@ -99,7 +99,7 @@ sub QueryToSQL {
 
         # Is there a status with this name?
         elsif (
-            $Queue = RT::Model::Queue->new( $self->TicketsObj->current_user )
+            $Queue = RT::Model::Queue->new( current_user => $self->TicketsObj->current_user )
             and $Queue->IsValidStatus($key)
           )
         {
@@ -108,14 +108,14 @@ sub QueryToSQL {
 
         # Is there a owner named $key?
         # Is there a queue named $key?
-        elsif ( $Queue = RT::Model::Queue->new( $self->TicketsObj->current_user )
+        elsif ( $Queue = RT::Model::Queue->new( current_user => $self->TicketsObj->current_user )
             and $Queue->load($key) )
         {
             push @queue_clauses, "Queue = '" . $Queue->name . "'";
         }
 
         # Is there a owner named $key?
-        elsif ( $User = RT::Model::User->new( $self->TicketsObj->current_user )
+        elsif ( $User = RT::Model::User->new( current_user => $self->TicketsObj->current_user )
             and $User->load($key)
             and $User->privileged )
         {
@@ -157,10 +157,5 @@ sub prepare  {
   return(1);
 }
 # }}}
-
-eval "require RT::Search::Googleish_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Googleish_Vendor.pm});
-eval "require RT::Search::Googleish_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Googleish_Local.pm});
 
 1;

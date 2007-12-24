@@ -628,7 +628,7 @@ set(@Active_MakeClicky, qw());
 
 # {{{ RT UTF-8 settings
 
-# An array that contains languages supported by RT's internationalization
+# An array that contains Languages supported by RT's internationalization
 # interface.  Defaults to all *.po lexicons; setting it to qw(en ja) will make
 # RT bilingual instead of multilingual, but will save some memory.
 

@@ -92,12 +92,12 @@ foreach $arg (keys %ARGS) {
 }
 
 my $personalgroups = RT::Model::GroupCollection->new();
-$personalgroups->LimitToPersonalGroupsFor(Jifty->web->current_user->principal_id);
+$personalgroups->LimitToPersonalGroupsFor(Jifty->web->current_user->id);
 
 my $objects;
 my $acl = RT::Model::ACECollection->new();
 $acl->ExcludeDelegatedRights();
-$acl->LimitToPrincipal(Id => Jifty->web->current_user->principal_id, 
+$acl->LimitToPrincipal(Id => Jifty->web->current_user->id, 
                        IncludeGroupMembership => 1
                        );
 

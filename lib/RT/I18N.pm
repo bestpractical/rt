@@ -64,7 +64,7 @@ use Encode;
 use MIME::Entity;
 use MIME::Head;
 
-# I decree that this project's first language is English.
+# I decree that this project's first Language is English.
 
 our %Lexicon = (
    'TEST_STRING' => 'Concrete Mixer',

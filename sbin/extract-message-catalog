@@ -81,7 +81,7 @@ foreach my $str ( sort keys %{$FILECAT} ) {
     $FILECAT->{$str} = $entry;
 }
 
-# update all language dictionaries
+# update all Language dictionaries
 foreach my $dict (@ARGV) {
     $dict = "lib/RT/I18N/$dict.po" unless -f $dict or $dict =~ m!/!;
 

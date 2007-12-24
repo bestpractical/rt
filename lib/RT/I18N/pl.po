@@ -2907,7 +2907,7 @@ msgid "Keyword"
 msgstr "Słowo kluczowe"
 
 #: NOT FOUND IN SOURCE
-msgid "Lang"
+msgid "lang"
 msgstr "Język"
 
 #: html/Admin/Users/Modify.html:94 html/User/Prefs.html:76

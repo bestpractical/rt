@@ -83,7 +83,7 @@ ok $agent_b->login('user_b', 'password'), 'logged in as user B';
 
 diag "user A can not change owner after create";
 {
-    my $ticket = RT::Model::Ticket->new( $user_a );
+    my $ticket = RT::Model::Ticket->new( current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Owner => $user_b->id,
@@ -121,7 +121,7 @@ diag "even owner(user B) can not change owner";
 
 diag "on reply correct owner is selected";
 {
-    my $ticket = RT::Model::Ticket->new( $user_a );
+    my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Owner => $user_b->id,
@@ -150,7 +150,7 @@ ok( RT::Test->set_rights(
 
 diag "Couldn't take without coresponding right";
 {
-    my $ticket = RT::Model::Ticket->new( $user_a );
+    my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Subject => 'test',
@@ -167,7 +167,7 @@ diag "Couldn't take without coresponding right";
 
 diag "Couldn't steal without coresponding right";
 {
-    my $ticket = RT::Model::Ticket->new( $user_a );
+    my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Owner => $user_b->id,
@@ -189,7 +189,7 @@ ok( RT::Test->set_rights(
 
 diag "TakeTicket require OwnTicket to work";
 {
-    my $ticket = RT::Model::Ticket->new( $user_a );
+    my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Subject => 'test',
@@ -211,7 +211,7 @@ ok( RT::Test->set_rights(
 
 diag "TakeTicket+OwnTicket work";
 {
-    my $ticket = RT::Model::Ticket->new( $user_a );
+    my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Subject => 'test',
@@ -232,7 +232,7 @@ diag "TakeTicket+OwnTicket work";
 
 diag "TakeTicket+OwnTicket don't work when owner is not nobody";
 {
-    my $ticket = RT::Model::Ticket->new( $user_a );
+    my $ticket = RT::Model::Ticket->new( current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Owner => $user_b->id,
@@ -255,7 +255,7 @@ ok( RT::Test->set_rights(
 
 diag "StealTicket require OwnTicket to work";
 {
-    my $ticket = RT::Model::Ticket->new( $user_a );
+    my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Owner => $user_b->id,
@@ -278,7 +278,7 @@ ok( RT::Test->set_rights(
 
 diag "StealTicket+OwnTicket work";
 {
-    my $ticket = RT::Model::Ticket->new( $user_a );
+    my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Owner => $user_b->id,
@@ -300,7 +300,7 @@ diag "StealTicket+OwnTicket work";
 
 diag "StealTicket+OwnTicket don't work when owner is nobody";
 {
-    my $ticket = RT::Model::Ticket->new( $user_a );
+    my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Subject => 'test',
@@ -322,7 +322,7 @@ ok( RT::Test->set_rights(
 
 diag "no Steal link when owner nobody";
 {
-    my $ticket = RT::Model::Ticket->new( $user_a );
+    my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Subject => 'test',
@@ -339,7 +339,7 @@ diag "no Steal link when owner nobody";
 
 diag "no Take link when owner is not nobody";
 {
-    my $ticket = RT::Model::Ticket->new( $user_a );
+    my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Owner => $user_b->id,

@@ -59,7 +59,7 @@
 
 <%INIT>
 my $Groups = RT::Model::GroupCollection->new();
-$Groups->LimitToPersonalGroupsFor(Jifty->web->current_user->principal_id());
+$Groups->LimitToPersonalGroupsFor(Jifty->web->current_user->id);
 my $title = loc('Personal groups');
 
 </%INIT>
