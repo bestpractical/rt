@@ -148,7 +148,7 @@ sub attributes {
     
     unless ($self->{'attributes'}) {
         $self->{'attributes'} = RT::Model::AttributeCollection->new;     
-       $self->{'attributes'}->LimitToObject($self); 
+       $self->{'attributes'}->limit_to_object($self); 
     }
     return ($self->{'attributes'}); 
 
@@ -1641,7 +1641,7 @@ sub CustomFieldValues {
     }
     # we're not limiting to a specific custom field;
     my $ocfs = RT::Model::ObjectCustomFieldValueCollection->new;
-    $ocfs->LimitToObject( $self );
+    $ocfs->limit_to_object( $self );
     return $ocfs;
 }
 

@@ -45,7 +45,7 @@ ok $m->login, 'logged in';
 
 diag "check that signing doesn't work if there is no key";
 {
-    unlink "t/mailbox";
+    RT::Test->fetch_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
@@ -71,7 +71,7 @@ diag "check that signing doesn't work if there is no key";
 
 diag "check that things don't work if there is no key";
 {
-    unlink "t/mailbox";
+    RT::Test->fetch_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
@@ -106,7 +106,7 @@ my $fpr1 = '';
 
 diag "check that things still doesn't work if key is not trusted";
 {
-    unlink "t/mailbox";
+    RT::Test->fetch_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
@@ -153,7 +153,7 @@ my $fpr2 = '';
 
 diag "check that things still doesn't work if two keys are not trusted";
 {
-    unlink "t/mailbox";
+    RT::Test->fetch_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
@@ -198,7 +198,7 @@ diag "check that things still doesn't work if two keys are not trusted";
 
 diag "check that we see key selector even if only one key is trusted but there are more keys";
 {
-    unlink "t/mailbox";
+    RT::Test->fetch_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
@@ -225,7 +225,7 @@ diag "check that we see key selector even if only one key is trusted but there a
 
 diag "check that key selector works and we can select trusted key";
 {
-    unlink "t/mailbox";
+    RT::Test->fetch_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
@@ -257,7 +257,7 @@ diag "check that key selector works and we can select trusted key";
 
 diag "check encrypting of attachments";
 {
-    unlink "t/mailbox";
+    RT::Test->fetch_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);

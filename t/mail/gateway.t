@@ -507,7 +507,8 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     # Grab the binary attachment via the web ui
     my $ua = new LWP::UserAgent;
     my $full_url = "$url/Ticket/Attachment/". $attachment->TransactionId
-        ."/". $attachment->id. "/bplogo.gif?&user=root&pass=password";
+        ."/". $attachment->id. "/bplogo.gif";
+        $ua->login();
     my $r = $ua->get( $full_url );
 
     # Verify that the downloaded attachment is the same as what we uploaded.
@@ -742,7 +743,7 @@ $ace->load( $ace_id );
 $ace->delete;
 my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
 $acl->limit( column => 'right_name', value => 'ReplyToTicket' );
-$acl->LimitToObject( RT->system );
+$acl->limit_to_object( RT->system );
 while( my $ace = $acl->next ) {
 	$ace->delete;
 }

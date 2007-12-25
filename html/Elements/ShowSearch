@@ -62,7 +62,7 @@ my $query_link_url = 'Search/Results.html';
 
 if ($SavedSearch) {
     my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
-    $search = $container_object->attributes->WithId($search_id);
+    $search = $container_object->attributes->with_id($search_id);
     unless ( $search->id && ref( $SearchArg = $search->Content ) eq 'HASH' ) {
         $m->out("Saved Search $SavedSearch not found");
         return;

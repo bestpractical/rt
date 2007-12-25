@@ -65,7 +65,7 @@ use RT::Model::Ticket;
 # clear all global right
 my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
 $acl->limit( column => 'right_name', operator => '!=', value => 'SuperUser' );
-$acl->LimitToObject( RT->system );
+$acl->limit_to_object( RT->system );
 while( my $ace = $acl->next ) {
 	$ace->delete;
 }

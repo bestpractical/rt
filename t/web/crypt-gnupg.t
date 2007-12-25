@@ -26,7 +26,6 @@ use File::Spec ();
 use Cwd;
 use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
-
 use_ok('RT::Crypt::GnuPG');
 
 RT->Config->set( 'GnuPG',
@@ -70,7 +69,7 @@ $m->form_with_fields('Sign', 'Encrypt');
 $m->field(Encrypt => 1);
 $m->submit;
 
-unlink "t/mailbox";
+RT::Test->fetch_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
@@ -86,7 +85,6 @@ $m->get($baseurl); # ensure that the mail has been processed
 
 my @mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
-
 $user->set_email('general@example.com');
 for my $mail (@mail) {
     unlike $mail, qr/Some content/, "outgoing mail was encrypted";
@@ -140,7 +138,7 @@ $m->field(Encrypt => undef);
 $m->field(Sign => 1);
 $m->submit;
 
-unlink "t/mailbox";
+RT::Test->fetch_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
@@ -212,7 +210,7 @@ $m->field(Encrypt => 1);
 $m->field(Sign => 1);
 $m->submit;
 
-unlink "t/mailbox";
+RT::Test->fetch_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
@@ -277,7 +275,7 @@ MAIL
     like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
 }
 
-unlink "t/mailbox";
+RT::Test->fetch_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
@@ -406,7 +404,7 @@ $m->form_number(3);
 $m->select("PreferredKey" => $key2);
 $m->submit;
 
-ok($user = RT::Model::User->new($RT::system_user));
+ok($user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
 is($user->PreferredKey, $key2, "preferred key is set correctly to the new value");
 

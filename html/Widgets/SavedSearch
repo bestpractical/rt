@@ -63,7 +63,7 @@ $self->{SearchId} ||= 'new';
 my $SearchParams = { map { $_ => $args->{$_} } @{$self->{SearchFields}} };
 
 if ( my ( $container_object, $search_id ) = _parse_saved_search( $args->{'LoadSavedSearch'} ) ) {
-    my $search = $container_object->attributes->WithId($search_id);
+    my $search = $container_object->attributes->with_id($search_id);
     # We have a $search and now; import the others
     $self->{SearchId} = $args->{'LoadSavedSearch'};
     $self->{CurrentSearch}{Object} = $search;

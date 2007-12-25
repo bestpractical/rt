@@ -98,9 +98,9 @@ sub load {
     my $object = $self->_GetObject($privacy);
 
     if ($object) {
-	$self->{'Attribute'} = $object->attributes->WithId($id);
+	$self->{'Attribute'} = $object->attributes->with_id($id);
 	if ($self->{'Attribute'}->id) {
-	    $self->{'Id'} = $self->{'Attribute'}->id;
+	    $self->{'id'} = $self->{'Attribute'}->id;
 	    $self->{'Privacy'} = $privacy;
 	    $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
 	    return (1, _("Loaded search %1", $self->name));
@@ -161,8 +161,8 @@ sub Save {
         'Content'     => \%params
     );
     if ($att_id) {
-        $self->{'Attribute'} = $object->attributes->WithId($att_id);
-        $self->{'Id'}        = $att_id;
+        $self->{'Attribute'} = $object->attributes->with_id($att_id);
+        $self->{'id'}        = $att_id;
         $self->{'Privacy'}   = $privacy;
         $self->{'Type'}      = $type;
         return ( 1, _( "Saved search %1", $name ) );
@@ -244,7 +244,7 @@ sub GetParameter {
     return $self->{'Attribute'}->SubValue($param);
 }
 
-=head2 Id
+=head2 id
 
 Returns the numerical id of this search.
 
@@ -252,7 +252,7 @@ Returns the numerical id of this search.
 
 sub id {
      my $self = shift;
-     return $self->{'Id'};
+     return $self->{'id'};
 }
 
 =head2 Privacy
@@ -306,7 +306,6 @@ sub _GetObject {
     my $self    = shift;
     my $privacy = shift;
 
-    warn "Checking on privacy for $privacy";
 
     my ( $obj_type, $obj_id ) = split( /\-/, $privacy );
 

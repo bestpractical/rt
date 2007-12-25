@@ -50,7 +50,7 @@ $RIGHTS = {
 $RT::Model::ACE::OBJECT_TYPES{'RT::System'} = 1;
 
 foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::Model::ACE::LOWERCASERIGHTnameS{ lc $right } = $right;
+    $RT::Model::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
 }
 
 

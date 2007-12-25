@@ -166,16 +166,24 @@ $genericsearch->Save(name => 'generic search',
 		     SearchParams => {'Query' => "Queue = 'General'"});
 
 my $ticketsearches = RT::SavedSearches->new(current_user => $curruser);
-$ticketsearches->LimitToPrivacy('RT::Model::User-'.$curruser->id, 'Ticket');
+$ticketsearches->limit_to_privacy('RT::Model::User-'.$curruser->id, 'Ticket');
 is($ticketsearches->count, 1, "Found searchuser's ticket searches");
 
 my $allsearches = RT::SavedSearches->new(current_user => $curruser);
-$allsearches->LimitToPrivacy('RT::Model::User-'.$curruser->id);
+$allsearches->limit_to_privacy('RT::Model::User-'.$curruser->id);
 is($allsearches->count, 2, "Found all searchuser's searches");
 
 # Delete a search.
 ($ret, $msg) = $genericsearch->delete;
-ok($ret, "Deleted genericsearch");
-$allsearches->LimitToPrivacy('RT::Model::User-'.$curruser->id);
+ok($ret, "Deleted genericsearch ".$msg);
+
+
+
+$allsearches = RT::SavedSearches->new(current_user => $curruser);
+$allsearches->limit_to_privacy('RT::Model::User-'.$curruser->id);
 is($allsearches->count, 1, "Found all searchuser's searches after deletion");
+
+while (my $search = $allsearches->next) {
+    diag($search->id, $search->name);
+}
 

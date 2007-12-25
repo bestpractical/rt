@@ -72,15 +72,15 @@ sub limit_to_custom_field {
 
 # }}}
 
-# {{{ sub LimitToObject
+# {{{ sub limit_to_object
 
-=head2 LimitToObject OBJECT
+=head2 limit_to_object OBJECT
 
 Limits the returned set to values for the given OBJECT
 
 =cut
 
-sub LimitToObject {
+sub limit_to_object {
     my $self = shift;
     my $object = shift;
     $self->limit(

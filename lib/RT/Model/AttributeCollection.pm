@@ -124,7 +124,7 @@ sub named {
     return (@attributes);   
 }
 
-=head2 WithId ID
+=head2 with_id ID
 
 Returns the RT::Model::Attribute objects with the id ID
 
@@ -132,7 +132,7 @@ XXX TODO XXX THIS NEEDS A BETTER ACL CHECK
 
 =cut
 
-sub WithId {
+sub with_id {
     my $self = shift;
     my $id = shift;
 
@@ -178,15 +178,15 @@ sub delete_entry {
 }
 
 
-# {{{ LimitToObject 
+# {{{ limit_to_object 
 
-=head2 LimitToObject $object
+=head2 limit_to_object $object
 
 Limit the Attributes to rights for the object $object. It needs to be an RT::Record class.
 
 =cut
 
-sub LimitToObject {
+sub limit_to_object {
     my $self = shift;
     my $obj = shift;
     unless (defined($obj) && ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id) {

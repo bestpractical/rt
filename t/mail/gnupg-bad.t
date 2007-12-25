@@ -21,7 +21,7 @@ RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
-$m->get( $baseurl."?user=root;pass=password" );
+$m->login;
 $m->content_like(qr/Logout/, 'we did log in');
 $m->get( $baseurl.'/Admin/Queues/');
 $m->follow_link_ok( {text => 'General'} );

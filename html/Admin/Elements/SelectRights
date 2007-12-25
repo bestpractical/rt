@@ -96,7 +96,7 @@
     my $ACE = RT::Model::ACE->new();
 
 
-    $ACLObj->LimitToObject( $Object);
+    $ACLObj->limit_to_object( $Object);
     $ACLObj->LimitToPrincipal( Id => $principal_id);
     $ACLObj->order_by(column=>'right_name'); 
 

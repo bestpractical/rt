@@ -87,7 +87,7 @@ use Jifty::DBI::Record schema {
 
 
 use vars qw (
-  %LOWERCASERIGHTnameS
+  %LOWERCASERIGHTNAMES
   %OBJECT_TYPES
   %TICKET_METAPRINCIPALS
 );
@@ -556,7 +556,8 @@ the correct case. If it's not found, will return undef.
 
 sub canonicalize_right_name {
     my $self  = shift;
-    return $LOWERCASERIGHTnameS{ lc shift };
+    my $right = shift;
+    return $LOWERCASERIGHTNAMES{ lc $right } || $right;
 }
 
 # }}}

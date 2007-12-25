@@ -82,7 +82,7 @@ sub new  {
     return $self;
 }
 
-=head2 LimitToPrivacy
+=head2 limit_to_privacy
 
 Takes two argumets: a privacy string, of the format "<class>-<id>", as
 produced by RT::SavedSearch::Privacy(); and a type string, as produced
@@ -93,7 +93,7 @@ user/group will be loaded.  Repeated calls to the same object should DTRT.
 
 =cut
 
-sub LimitToPrivacy {
+sub limit_to_privacy {
     my $self = shift;
     my $privacy = shift;
     my $type = shift;
@@ -122,7 +122,7 @@ Returns the next object in the collection.
 
 =cut
 
-sub Next {
+sub next {
     my $self = shift;
     my $search = $self->{'objects'}->[$self->{'idx'}];
     if ($search) {

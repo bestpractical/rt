@@ -95,7 +95,7 @@ ok ($id,$msg);
 ($id,$msg) = $u1->principal_object->GrantRight ( Object => $q1, Right => 'CreateTicket');
 ok ($id,$msg);
 
-my $creator = RT::CurrentUser->new($u1->id);
+my $creator = RT::CurrentUser->new(id => $u1->id);
 
 diag('Create tickets without rights to link') if $ENV{'TEST_VERBOSE'};
 {
@@ -103,7 +103,7 @@ diag('Create tickets without rights to link') if $ENV{'TEST_VERBOSE'};
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
     my ($id,$tid,$msg) = $parent->create( Subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
-    my $child = RT::Model::Ticket->new( $creator );
+    my $child = RT::Model::Ticket->new( current_user =>  $creator );
     ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
     ok($id,$msg);
     $child->current_user( RT->system_user );
@@ -118,7 +118,7 @@ diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VER
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
     my ($id,$tid,$msg) = $parent->create( Subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
-    my $child = RT::Model::Ticket->new( $creator );
+    my $child = RT::Model::Ticket->new( current_user => $creator );
     ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
     ok($id,$msg);
     $child->current_user( RT->system_user );
@@ -138,7 +138,7 @@ diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
     my ($id,$tid,$msg) = $parent->create( Subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
-    my $child = RT::Model::Ticket->new( $creator );
+    my $child = RT::Model::Ticket->new( current_user => $creator);
     ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id );
     ok($id,$msg);
     ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
@@ -156,7 +156,7 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
     my ($id,$tid,$msg) = $parent->create( Subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
-    my $child = RT::Model::Ticket->new( $creator );
+    my $child = RT::Model::Ticket->new( current_user => $creator );
     ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id );
     ok($id,$msg);
     ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
@@ -189,7 +189,7 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
 }
 
 my $tid;
-my $ticket = RT::Model::Ticket->new( $creator);
+my $ticket = RT::Model::Ticket->new( current_user => $creator);
 ok($ticket->isa('RT::Model::Ticket'));
 ($id,$tid, $msg) = $ticket->create(Subject => 'Link test 1', Queue => $q1->id);
 ok ($id,$msg);

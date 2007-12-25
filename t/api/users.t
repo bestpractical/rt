@@ -32,8 +32,8 @@ ok ($id, "ACL for RTxSysObj Created");
 
 my $RTxObj = {};
 bless $RTxObj, 'RTx::System::Record';
-*RTx::System::Record::Id = sub { 4; };
-*RTx::System::Record::id = *RTx::System::Record::Id;
+*RTx::System::Record::id = sub { 4; };
+*RTx::System::Record::id = *RTx::System::Record::id;
 
 $users = RT::Model::UserCollection->new(current_user => RT->system_user);
 $users->WhoHaveRight(Right => 'RTxUserRight', Object => $RTxSysObj);

@@ -10,7 +10,7 @@ use IPC::Run3 'run3';
 my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
 
 # catch any outgoing emails
-unlink "t/mailbox";
+RT::Test->fetch_caught_mails;
 
 sub capture_mail {
     my $MIME = shift;
@@ -39,7 +39,7 @@ RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 my ($baseurl, $m) = RT::Test->started_ok;
 
 # configure key for General queue
-$m->get( $baseurl."?user=root;pass=password" );
+$m->login();
 $m->content_like(qr/Logout/, 'we did log in');
 $m->get( $baseurl.'/Admin/Queues/');
 $m->follow_link_ok( {text => 'General'} );

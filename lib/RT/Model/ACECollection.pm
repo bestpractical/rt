@@ -76,15 +76,15 @@ Hand out the next ACE that was found
 =cut
 
 
-# {{{ LimitToObject 
+# {{{ limit_to_object 
 
-=head2 LimitToObject $object
+=head2 limit_to_object $object
 
 Limit the ACL to rights for the object $object. It needs to be an RT::Record class.
 
 =cut
 
-sub LimitToObject {
+sub limit_to_object {
     my $self = shift;
     my $obj  = shift;
     unless ( defined($obj)

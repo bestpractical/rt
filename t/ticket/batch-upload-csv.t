@@ -27,7 +27,7 @@ create-1,$QUEUE,hi,new,root,2.0
 create-2,$QUEUE,hello,new,root,3.0
 EOF
 
-my $action = RT::ScripAction::CreateTickets->new(CurrentUser => RT::CurrentUser->new('root'));
+my $action = RT::ScripAction::CreateTickets->new(current_user => RT::CurrentUser->new(name => 'root'));
 ok ($action->current_user->id , "WE have a current user");
  
 $action->Parse(Content => $data);

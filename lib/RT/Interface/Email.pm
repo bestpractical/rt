@@ -1333,7 +1333,7 @@ sub Gateway {
 
         #   If the action is comment, add a comment.
         if ( $action =~ /^(?:comment|correspond)$/i ) {
-            my $method = ucfirst lc $action;
+            my $method = lc $action;
             my ( $status, $msg ) = $Ticket->$method( MIMEObj => $Message );
             unless ($status) {
 

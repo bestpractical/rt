@@ -131,7 +131,7 @@ if ( $ARGS{'SavedSearchRevert'} ) {
 
 if ( $ARGS{'SavedSearchLoad'} ) {
     my ($container, $id ) = _parse_saved_search ($ARGS{'SavedSearchLoad'});
-    my $search = $container->attributes->WithId( $id );
+    my $search = $container->attributes->with_id( $id );
 
     $SavedSearch->{'Id'}          = $ARGS{'SavedSearchLoad'};
     $SavedSearch->{'Object'}      = $search;
@@ -158,7 +158,7 @@ if ( $SavedSearch->{'Id'} && $SavedSearch->{'Id'} ne 'new'
      && !$SavedSearch->{'Object'} )
 {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
-    $SavedSearch->{'Object'} = $container->attributes->WithId( $id );
+    $SavedSearch->{'Object'} = $container->attributes->with_id( $id );
     $SavedSearch->{'Description'} ||= $SavedSearch->{'Object'}->Description;
 }
 
@@ -201,7 +201,7 @@ elsif ( $id eq 'new' ) {
 
     if ( $status ) {
         $SavedSearch->{'Object'} =
-            Jifty->web->current_user->user_object->attributes->WithId( $saved_search->id );
+            Jifty->web->current_user->user_object->attributes->with_id( $saved_search->id );
         # Build new SearchId
         $SavedSearch->{'Id'} =
                 ref( Jifty->web->current_user->user_object ) . '-'

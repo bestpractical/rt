@@ -248,7 +248,7 @@ sub create_a_ticket {
     my %args = (@_);
 
     # cleanup mail catcher's storage
-    unlink "t/mailbox";
+    RT::Test->fetch_caught_mails;
 
     $m->goto_create_ticket( $queue );
     $m->form_name('TicketCreate');
@@ -280,7 +280,7 @@ sub update_ticket {
     my %args = (@_);
 
     # cleanup mail catcher's storage
-    unlink "t/mailbox";
+    RT::Test->fetch_caught_mails;
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );

@@ -157,7 +157,7 @@ sub __DependsOn
 
 # ACE records
     $objs = RT::Model::ACECollection->new;
-    $objs->LimitToObject( $self );
+    $objs->limit_to_object( $self );
     push( @$list, $objs );
 
     $deps->_PushDependencies(

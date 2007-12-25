@@ -139,7 +139,7 @@ our $RIGHTS = {
 $RT::Model::ACE::OBJECT_TYPES{'RT::Model::CustomField'} = 1;
 
 foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::Model::ACE::LOWERCASERIGHTnameS{ lc $right } = $right;
+    $RT::Model::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
 }
 
 sub AvailableRights {
@@ -1100,7 +1100,7 @@ sub ValuesForObject {
     
     $values->limit_to_custom_field($self->id);
     $values->LimitToEnabled();
-    $values->LimitToObject($object);
+    $values->limit_to_object($object);
 
     return ($values);
 }

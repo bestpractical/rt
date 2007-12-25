@@ -67,7 +67,7 @@ $RT::Model::ACE::OBJECT_TYPES{'RT::Model::Group'} = 1;
 # stuff the rights into a hash of rights that can exist.
 
 foreach my $right ( keys %{$RIGHTS} ) {
-    $RT::Model::ACE::LOWERCASERIGHTnameS{ lc $right } = $right;
+    $RT::Model::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
 }
 
 
