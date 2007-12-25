@@ -5852,7 +5852,7 @@ msgstr "Модуль поиска TicketSQL"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:64 html/Admin/Global/CustomFields/index.html:75 html/Elements/Tabs:71 html/Search/Elements/Chart:109 lib/RT/CustomField_Overlay.pm:1206
 msgid "Tickets"
-msgstr "Расширенный поиск"
+msgstr "Заявки"
 
 #: NOT FOUND IN SOURCE
 msgid "Tickets %1 %2"
@@ -5909,10 +5909,6 @@ msgstr "Время генерации страницы"
 #: lib/RT/Tickets_Overlay.pm:1866
 msgid "Time worked"
 msgstr "Время в работе"
-
-#: NOT FOUND IN SOURCE
-msgid "TimeLeft"
-msgstr "Осталось времени"
 
 #: lib/RT/Ticket_Overlay.pm:1167
 msgid "TimeWorked"

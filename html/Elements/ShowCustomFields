@@ -59,7 +59,9 @@
 % } else {
 <ul>
 % while ( my $Value = $Values->Next ) {
-<li><% $print_value->( $CustomField, $Value ) |n %></li>
+<li>
+% $print_value->( $CustomField, $Value );
+</li>
 % }
 </ul>
 % }

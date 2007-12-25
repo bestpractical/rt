@@ -40,10 +40,8 @@ We hope to add any significant changes at the bottom of the document.
 
 =head2 Perl Version
 
-We code everything to perl 5.6.1. Some features require advanced unicode
-features in perl 5.8.0. It is acceptable that unicode features work only for 
-US-ASCII on perl 5.6.1. 
-
+We code everything to perl 5.8.3 or higher.  Complete unicode support
+requires bugfixes found in 5.8.3.
 
 =head2 Documentation
 

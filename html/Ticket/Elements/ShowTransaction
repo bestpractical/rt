@@ -162,8 +162,6 @@ my @DisplayHeaders=qw ( _all);
 if ( $type =~ /EmailRecord$/ ) {
     @DisplayHeaders = qw(To Cc Bcc);
 
-    my $aid = 
-
     $titlebar_commands .=
         "[<a target=\"_blank\" href=\"$EmailRecordPath?id="
       . $Transaction->Ticket

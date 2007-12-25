@@ -812,6 +812,8 @@ sub _WatcherLimit {
     $self->_OpenParen;
     if ( $op =~ /^IS(?: NOT)?$/ ) {
         my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
+        # to avoid joining the table Users into the query, we just join GM
+        # and make sure we don't match records where group is member of itself
         $self->SUPER::Limit(
             LEFTJOIN   => $group_members,
             FIELD      => 'GroupId',
@@ -912,16 +914,26 @@ sub _WatcherLimit {
             );
         }
 
-        $self->_SQLLimit(
-            ALIAS         => $users,
-            FIELD         => $rest{SUBKEY},
-            VALUE         => $value,
-            OPERATOR      => $op,
-            CASESENSITIVE => 0,
+        # we join users table without adding some join condition between tables,
+        # the only conditions we have are conditions on the table iteslf,
+        # for example Users.EmailAddress = 'x'. We should add this condition to
+        # the top level of the query and bundle it with another similar conditions,
+        # for example "Users.EmailAddress = 'x' OR Users.EmailAddress = 'Y'".
+        # To achive this goal we use own SUBCLAUSE for conditions on the users table.
+        $self->SUPER::Limit(
             %rest,
+            SUBCLAUSE       => '_sql_u_watchers_'. $users,
+            ALIAS           => $users,
+            FIELD           => $rest{'SUBKEY'},
+            VALUE           => $value,
+            OPERATOR        => $op,
+            CASESENSITIVE   => 0,
         );
+        # A condition which ties Users and Groups (role groups) is a left join condition
+        # of CachedGroupMembers table. To get correct results of the query we check
+        # if there are matches in CGM table or not using 'cgm.id IS NOT NULL'.
         $self->_SQLLimit(
-            ENTRYAGGREGATOR => 'AND',
+            %rest,
             ALIAS           => $group_members,
             FIELD           => 'id',
             OPERATOR        => 'IS NOT',
@@ -1850,7 +1862,7 @@ sub LimitTimeWorked {
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
         DESCRIPTION => join( ' ',
-            $self->loc('Time worked'),
+            $self->loc('Time Worked'),
             $args{'OPERATOR'}, $args{'VALUE'}, ),
     );
 }
@@ -1875,7 +1887,7 @@ sub LimitTimeLeft {
         VALUE       => $args{'VALUE'},
         OPERATOR    => $args{'OPERATOR'},
         DESCRIPTION => join( ' ',
-            $self->loc('Time left'),
+            $self->loc('Time Left'),
             $args{'OPERATOR'}, $args{'VALUE'}, ),
     );
 }
