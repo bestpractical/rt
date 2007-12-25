@@ -84,6 +84,8 @@ no warnings qw(redefine);
 use RT::Model::CustomFieldCollection;
 use Jifty::DBI::Collection::Unique;
 
+# Override jifty default
+sub implicit_clauses {}
 # Configuration Tables:
 
 # FIELD_METADATA is a mapping of searchable Field name, to Type, and other
@@ -241,6 +243,7 @@ sub clean_slate {
         _sql_u_watchers_aliases
     );
 }
+
 
 =head1 Limit Helper Routines
 
@@ -1379,7 +1382,6 @@ sub order_by {
     my $clause;
     my @res   = ();
     my $order = 0;
-
     foreach my $row (@args) {
         if ( $row->{alias} || $row->{column} !~ /\./ ) {
             push @res, $row;
@@ -1395,7 +1397,7 @@ sub order_by {
                     = $users = ( $self->_Watcherjoin( $meta->[1] ) )[2];
             }
             push @res, { %$row, alias => $users, column => $subkey };
-       } elsif ( defined $meta->[0] && $meta->[0] =~ /customfield/i ) {
+       } elsif ( defined $meta->[0] && $meta->[0] =~ /CUSTOMFIELD/i ) {
            my ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $subkey );
            my $cfkey = $cfid ? $cfid : "$queue.$field";
            my ($TicketCFs, $CFs) = $self->_CustomFieldjoin( $cfkey, $cfid, $field );
@@ -1430,8 +1432,7 @@ sub order_by {
            # PAW logic is "reversed"
            my $order = "ASC";
            if (exists $row->{order} ) {
-               my $o = $row->{order};
-               delete $row->{order};
+               my $o = delete $row->{order};
                $order = "DESC" if $o =~ /asc/i;
            }
 

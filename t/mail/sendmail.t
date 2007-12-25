@@ -83,6 +83,7 @@ my  ($id,  undef, $create_msg ) = $ticket->create(Requestor => ['root@localhost'
 ok ($id,$create_msg);
 $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
+
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
  $tick = $tickets->first();
 ok ($tick->id, "found ticket ".$tick->id);

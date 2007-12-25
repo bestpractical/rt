@@ -2043,9 +2043,8 @@ sub comment {
 }
 # }}}
 
-# {{{ sub Correspond
 
-=head2 Correspond
+=head2 correspond
 
 Correspond on this ticket.
 Takes a hashref with the following attributes:
@@ -2064,7 +2063,7 @@ Returns: Transaction id, Error Message, Transaction Object
 
 =cut
 
-sub Correspond {
+sub correspond {
     my $self = shift;
     my %args = ( CcMessageTo  => undef,
                  BccMessageTo => undef,
