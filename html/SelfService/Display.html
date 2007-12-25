@@ -189,6 +189,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         ARGSRef   => \%ARGS,
         TicketObj => $Ticket
     );
+            delete $session{'Attachments'};
 
     # delete temporary storage entry to make WebUI clean
     unless ( keys %{ $session{'Attachments'} } and $ARGS{'UpdateAttach'} ) {

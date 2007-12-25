@@ -64,8 +64,8 @@
 <&| /Widgets/TitleBox, title => loc("Create a new ticket") &>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td class="label"><&|/l&>Queue</&>:</td>
-<td class="value"><% $QueueObj->Name %>
-<input type="hidden" class="hidden" name="Queue" value="<%$QueueObj->Name%>" />
+<td class="value"><& Elements/ShowQueue, QueueObj => $QueueObj &>
+<input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->Name %>" />
 </td>
 <td class="label"><&|/l&>Status</&>:
 </td>
@@ -243,6 +243,78 @@
 
 <%INIT>
 
+my $CloneTicketObj;
+if ( $CloneTicket ) {
+    $CloneTicketObj = RT::Ticket->new( $session{CurrentUser} );
+    $CloneTicketObj->Load($CloneTicket) or Abort(loc("Ticket could not be loaded"));
+    
+    my $clone = {
+        Requestors       => join( ',', $CloneTicketObj->RequestorAddresses ),
+        Cc               => join( ',', $CloneTicketObj->CcAddresses),
+        AdminCc          => join( ',', $CloneTicketObj->AdminCcAddresses),
+        InitialPriority => $CloneTicketObj->Priority, 
+    };
+    
+    $clone->{$_} = $CloneTicketObj->$_() 
+        for qw/Owner Subject FinalPriority TimeEstimated TimeWorked 
+                Status TimeLeft Starts Started Due Resolved/;
+    
+        my $members = $CloneTicketObj->Members;
+        my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
+        while ( my $member = $members->Next ) {
+            push @members, $member->LocalBase;
+        }
+        $clone->{'MemberOf-new'} = join ' ', @members;
+    
+        my $members_of = $CloneTicketObj->MemberOf;
+        while ( my $member_of = $members_of->Next ) {
+            push @members_of, $member_of->LocalTarget;
+        }
+        $clone->{'new-MemberOf'} = join ' ', @members_of;
+        
+        my $refers = $CloneTicketObj->RefersTo;
+        while ( my $refer = $refers->Next ) {
+            push @refers, $refer->LocalTarget;
+        }
+        $clone->{'new-RefersTo'} = join ' ', @refers;
+    
+        my $refers_by = $CloneTicketObj->ReferredToBy;
+        while ( my $refer_by = $refers_by->Next ) {
+            push @refers_by, $refer_by->LocalBase;
+        }
+        $clone->{'RefersTo-new'} = join ' ', @refers_by;
+    
+        my $depends = $CloneTicketObj->DependsOn;
+        while ( my $depend = $depends->Next ) {
+            push @depends, $depend->LocalTarget;
+        }
+        $clone->{'new-DependsOn'} = join ' ', @depends;
+    
+        my $depends_by = $CloneTicketObj->DependedOnBy;
+        while ( my $depend_by = $depends_by->Next ) {
+            push @depends_by, $depend_by->LocalBase;
+        }
+        $clone->{'DependsOn-new'} = join ' ', @depends_by;
+    
+    
+    
+    my $cfs = $CloneTicketObj->QueueObj->TicketCustomFields();
+    while ( my $cf = $cfs->Next ) {
+        my $cf_id = $cf->id;
+        my $cf_values = $CloneTicketObj->CustomFieldValues( $cf->id );
+        my @cf_values;
+        while ( my $cf_value = $cf_values->Next ) {
+            push @cf_values, $cf_value->Content;
+        }
+        $clone->{"Object-RT::Ticket--CustomField-$cf_id-Value"} 
+            = join "\n", @cf_values;
+    }
+    
+    for ( keys %$clone ) {
+        $ARGS{$_} = $clone->{$_} if not defined $ARGS{$_};
+    }
+
+}
 my @results;
 my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($Queue) || Abort(loc("Queue could not be loaded."));
@@ -350,4 +422,5 @@ $DependedOnBy => undef
 $MemberOf => undef
 $QuoteTransaction => undef
 $Queue => undef
+$CloneTicket => undef
 </%ARGS>

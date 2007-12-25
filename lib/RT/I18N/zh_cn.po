@@ -1,9 +1,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 3.5.x\n"
-"PO-Revision-Date: 2005-10-03 14:28-0400\n"
-"Last-Translator: Autrijus Tang <autrijus@autrijus.org>\n"
+"Project-Id-Version: RT 3.6.x\n"
+"PO-Revision-Date: 2007-12-09 13:05+0800\n"
+"Last-Translator: Audrey Tang <cpan@audreyt.org>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -12,17 +12,17 @@ msgstr ""
 #: html/Widgets/SavedSearch:70
 #. ($self->{CurrentSearch}{Object}->Description)
 msgid " %1 deleted."
-msgstr ""
+msgstr " 已删除 %1。"
 
 #: html/Widgets/SavedSearch:47
 #. ($self->{CurrentSearch}{Description}, $args->{Description})
 msgid " %1 renamed to %2."
-msgstr ""
+msgstr " %1 已更名为 %2。"
 
 #: html/Widgets/SavedSearch:60
 #. ($args->{Description})
 msgid " %1 saved."
-msgstr ""
+msgstr " %1 已储存。"
 
 #: NOT FOUND IN SOURCE
 msgid "#"
@@ -42,7 +42,7 @@ msgstr "#%1: %2"
 
 #: html/Elements/ShowSearch:105
 msgid "$1"
-msgstr ""
+msgstr "$1"
 
 #: lib/RT/Record.pm:940
 #. ($label)
@@ -150,12 +150,12 @@ msgstr "%1 - 将更新状态输出到 STDOUT"
 #: bin/rt-crontool:253
 #. ("--template-id")
 msgid "%1 - Specify id of the template you want to use"
-msgstr ""
+msgstr "%1 - 指定欲使用的模板编号"
 
 #: bin/rt-crontool:256
 #. ("--transaction")
 msgid "%1 - Specify if you want to use either 'first' or 'last' tarnsaction"
-msgstr ""
+msgstr "%1 - 指定欲使用的更动为 'first' (第一项) 或 'last' (最后一项)"
 
 #: bin/rt-crontool:247
 #. ("--action")
@@ -175,7 +175,7 @@ msgstr "%1 - 指定欲使用的查询模块"
 #: bin/rt-crontool:259
 #. ("--transaction-type")
 msgid "%1 - Specify the type of a transaction you want to use"
-msgstr ""
+msgstr "%1 - 指定欲使用的更动类别"
 
 #: html/Elements/Footer:56
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2006', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
@@ -364,7 +364,7 @@ msgstr "%1 内的 %2 的 %3 对象"
 #. ($object->Name)
 #. ($Object->Name)
 msgid "%1's saved searches"
-msgstr "%1 已储存的查询"
+msgstr "%1 的预存查询"
 
 #: lib/RT/Transaction_Overlay.pm:481
 #. ($self)
@@ -384,7 +384,7 @@ msgstr "%1k 字节"
 #: html/Ticket/Elements/ShowTime:49
 #. (sprintf("%.1f",$minutes / 60))
 msgid "%quant(%1,hour)"
-msgstr ""
+msgstr "%1 小时"
 
 #: NOT FOUND IN SOURCE
 msgid "%quant(%1,result) found"
@@ -471,7 +471,7 @@ msgstr "(送出本份更新的密件副本给名单上以逗号隔开的电子�
 
 #: html/Ticket/Update.html:90
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
-msgstr ""
+msgstr "(送出本份更新的密件副本给名单上以逗号隔开的电子邮件地址。这<strong>不会</strong>更改后续的收件者名单。)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)"
@@ -479,7 +479,7 @@ msgstr "(送出本份更新的副本给名单上以逗号隔开的管理员电�
 
 #: html/Ticket/Create.html:103
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
+msgstr "(送出本份更新的副本给名单上以逗号隔开的管理员电子邮件地址。这<strong>将会</strong>更改后续的收件者名单。)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
@@ -491,7 +491,7 @@ msgstr "(送出本份更新的副本给名单上以逗号隔开的电子邮件�
 
 #: html/Ticket/Update.html:86
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
-msgstr ""
+msgstr "(送出本份更新的副本给名单上以逗号隔开的电子邮件地址。这<strong>不会</strong>更改后续的收件者名单。)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
@@ -499,7 +499,7 @@ msgstr "(送出本份更新的副本给名单上以逗号隔开的电子邮件�
 
 #: html/Ticket/Create.html:93
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
+msgstr "(送出本份更新的副本给名单上以逗号隔开的电子邮件地址。这<strong>将会</strong>更改后续的收件者名单。)"
 
 #: html/Admin/Elements/EditScrip:96
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
@@ -507,7 +507,7 @@ msgstr "(当条件或动作设为‘使用者自订’时，请填入这些字�
 
 #: html/Ticket/Elements/EditWatchers:60 html/Ticket/Elements/ShowUserEntry:53
 msgid "(Will not be sent email)"
-msgstr ""
+msgstr "(不会收到邮件)"
 
 #: NOT FOUND IN SOURCE
 msgid "(default delegate)"
@@ -571,7 +571,7 @@ msgstr "(未命名)"
 
 #: html/Ticket/Elements/Reminders:133
 msgid "(yyyy/mm/dd)"
-msgstr ""
+msgstr "(yyyy/mm/dd)"
 
 #: NOT FOUND IN SOURCE
 msgid "*"
@@ -579,11 +579,11 @@ msgstr "★"
 
 #: html/Elements/EditCustomFieldSelect:57
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: bin/rt-crontool:95
 msgid "--transaction argument could be only 'first' or 'last'"
-msgstr ""
+msgstr "--transaction 的值仅能为 'first' 或 'last'"
 
 #: NOT FOUND IN SOURCE
 msgid ":"
@@ -608,7 +608,7 @@ msgstr "<%$field%>"
 #: html/Elements/CreateTicket:47
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr ""
+msgstr "<input type=\"submit\" class=\"button\" value=\"提出申请单\" />&nbsp;%1"
 
 #: docs/design_docs/string-extraction-guide.txt:54 lib/RT/StyleGuide.pod:787
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
@@ -621,7 +621,7 @@ msgstr "空白模板"
 
 #: html/Admin/Users/Modify.html:371
 msgid "A password was not set, so user won't be able to login."
-msgstr ""
+msgstr "口令没有设定，因此该使用者将无法登入。"
 
 #: NOT FOUND IN SOURCE
 msgid "ACE Deleted"
@@ -653,7 +653,7 @@ msgstr "ACLEquivalence"
 
 #: html/Search/Elements/SelectAndOr:46
 msgid "AND"
-msgstr ""
+msgstr "AND"
 
 #: NOT FOUND IN SOURCE
 msgid "Aborting to avoid unintended ticket modifications.\\n"
@@ -690,11 +690,11 @@ msgstr "动作执行完毕"
 
 #: bin/rt-crontool:171
 msgid "Action committed.\\n"
-msgstr ""
+msgstr "动作执行完毕。\\n"
 
 #: lib/RT/Scrip_Overlay.pm:168
 msgid "Action is mandatory argument"
-msgstr ""
+msgstr "动作为必填字段"
 
 #: bin/rt-crontool:167
 msgid "Action prepared..."
@@ -718,7 +718,7 @@ msgstr "新增副本收件人"
 
 #: html/Search/Elements/EditFormat:49
 msgid "Add Columns"
-msgstr ""
+msgstr "新增字段"
 
 #: html/Search/Elements/PickCriteria:46
 msgid "Add Criteria"
@@ -774,7 +774,7 @@ msgstr "新增查询条件"
 
 #: html/Search/Build.html:109 html/Search/Build.html:94
 msgid "Add and Search"
-msgstr ""
+msgstr "新增并开始查询"
 
 #: html/Search/Bulk.html:124
 msgid "Add comments or replies to selected tickets"
@@ -790,15 +790,15 @@ msgstr "新增视察员"
 
 #: html/Search/Build.html:85
 msgid "Add these terms to your search"
-msgstr ""
+msgstr "将这些条件加进查询内"
 
 #: html/Search/Bulk.html:158
 msgid "Add values"
-msgstr ""
+msgstr "新增值"
 
 #: lib/RT/CustomField_Overlay.pm:108
 msgid "Add, delete and modify custom field values for objects"
-msgstr ""
+msgstr "新增、删除及修改对象的自订字段值"
 
 #: NOT FOUND IN SOURCE
 msgid "AddNextState"
@@ -881,6 +881,18 @@ msgstr "管理所有代理人群组"
 #: etc/initialdata:56 html/Ticket/Elements/ShowPeople:60 lib/RT/ACE_Overlay.pm:113
 msgid "AdminCc"
 msgstr "管理员副本"
+
+msgid "AdminCc.EmailAddress"
+msgstr "管理员副本: 电子邮件信箱"
+
+msgid "Cc.EmailAddress"
+msgstr "副本: 电子邮件信箱"
+
+msgid "Requestor.EmailAddress"
+msgstr "申请人: 电子邮件信箱"
+
+msgid "Custom.Ownership"
+msgstr "自订: 承办状态"
 
 #: NOT FOUND IN SOURCE
 msgid "AdminComment"
@@ -968,7 +980,7 @@ msgstr "经历时间"
 
 #: html/Search/Elements/PickCriteria:52
 msgid "Aggregator"
-msgstr ""
+msgstr "结合方式"
 
 #: NOT FOUND IN SOURCE
 msgid "Alias"
@@ -1020,7 +1032,7 @@ msgstr "数额"
 
 #: html/Search/Elements/EditQuery:56
 msgid "And/Or"
-msgstr ""
+msgstr "AND/OR"
 
 #: NOT FOUND IN SOURCE
 msgid "Any Condition"
@@ -1137,7 +1149,7 @@ msgstr "您确定要删除？"
 
 #: html/Search/Elements/DisplayOptions:81
 msgid "Asc"
-msgstr ""
+msgstr "递增"
 
 #: html/Elements/SelectSortOrder:56
 msgid "Ascending"
@@ -1226,7 +1238,7 @@ msgstr "自动对申请人回复"
 
 #: html/Widgets/SelectionBox:185
 msgid "Available"
-msgstr ""
+msgstr "可用"
 
 #: NOT FOUND IN SOURCE
 msgid "Available Columns"
@@ -1290,7 +1302,7 @@ msgstr "起始日"
 
 #: html/Elements/Logo:47
 msgid "Best Practical Solutions, LLC corporate logo"
-msgstr ""
+msgstr "Best Practical Solutions, LLC 公司识别图案"
 
 #: NOT FOUND IN SOURCE
 msgid "Binary"
@@ -1306,7 +1318,7 @@ msgstr "空白模板"
 
 #: html/Search/Elements/EditFormat:84
 msgid "Bold"
-msgstr ""
+msgstr "粗体"
 
 #: NOT FOUND IN SOURCE
 msgid "Bookmarkable URL for this search"
@@ -1322,11 +1334,11 @@ msgstr "精简标头档"
 
 #: html/Ticket/Elements/Tabs:227
 msgid "Bulk Update"
-msgstr ""
+msgstr "整批更新"
 
 #: NOT FOUND IN SOURCE
 msgid "Bulk ticket update"
-msgstr "更新整批申请单"
+msgstr "整批更新申请单"
 
 #: NOT FOUND IN SOURCE
 msgid "Business Unit"
@@ -1351,11 +1363,11 @@ msgstr "不能新增没有名称的自订字段值"
 #: html/Admin/CustomFields/Objects.html:86
 #. ($Class)
 msgid "Can't find a collection class for '%1'"
-msgstr ""
+msgstr "找不到‘%1’的集合类别"
 
 #: html/Search/Build.html:286
 msgid "Can't find a saved search to work with"
-msgstr "找不到已储存的查询"
+msgstr "找不到预存查询"
 
 #: lib/RT/Link_Overlay.pm:159
 msgid "Can't link a ticket to itself"
@@ -1368,7 +1380,7 @@ msgstr "不能整合进已整合过的申请单。这个错误不该发生。"
 #: html/Widgets/SavedSearch:63
 #. (loc($self->{SearchType}))
 msgid "Can't save %1"
-msgstr ""
+msgstr "无法储存 %1"
 
 #: html/Search/Build.html:290
 msgid "Can't save this search"
@@ -1453,7 +1465,7 @@ msgstr "中英文"
 
 #: html/NoAuth/js/util.js:201
 msgid "Choose a date"
-msgstr ""
+msgstr "选择日期"
 
 #: html/Admin/Users/Modify.html:156 html/User/Prefs.html:141
 msgid "City"
@@ -1469,7 +1481,7 @@ msgstr "全部清除"
 
 #: html/Helpers/CalPopup.html:51
 msgid "Close window"
-msgstr ""
+msgstr "关闭窗口"
 
 #: html/Ticket/Elements/ShowDates:68
 msgid "Closed"
@@ -1489,15 +1501,15 @@ msgstr "执行程序码"
 
 #: lib/RT/CustomField_Overlay.pm:89
 msgid "Combobox: Select or enter multiple values"
-msgstr ""
+msgstr "下拉文字框：选择或键入多重项目"
 
 #: lib/RT/CustomField_Overlay.pm:90
 msgid "Combobox: Select or enter one value"
-msgstr ""
+msgstr "下拉文字框：选择或键入单一项目"
 
 #: lib/RT/CustomField_Overlay.pm:91
 msgid "Combobox: Select or enter up to %1 values"
-msgstr ""
+msgstr "下拉文字框：选择或键入最多 %1 个项目"
 
 #: NOT FOUND IN SOURCE
 msgid "Command not understood!\\n"
@@ -1573,7 +1585,7 @@ msgstr "条件"
 
 #: lib/RT/Scrip_Overlay.pm:184
 msgid "Condition is mandatory argument"
-msgstr ""
+msgstr "条件是必填字段"
 
 #: bin/rt-crontool:151
 msgid "Condition matches..."
@@ -1649,7 +1661,7 @@ msgstr "未纪录申请单回复"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. "
-msgstr "不能新增自订字段的值 "
+msgstr "不能新增自订字段的值。"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. %1 "
@@ -1657,16 +1669,16 @@ msgstr "不能新增自订字段的值。%1 "
 
 #: lib/RT/Record.pm:1707
 msgid "Could not add new custom field value. "
-msgstr ""
+msgstr "不能新增自订字段的值。"
 
 #: lib/RT/Record.pm:1660
 #. (, $value_msg)
 msgid "Could not add new custom field value. %1 "
-msgstr ""
+msgstr "不能新增自订字段的值。%1 "
 
 #: lib/RT/Ticket_Overlay.pm:3048 lib/RT/Ticket_Overlay.pm:3056 lib/RT/Ticket_Overlay.pm:3073
 msgid "Could not change owner. "
-msgstr "不能更改承办人。 "
+msgstr "不能更改承办人。"
 
 #: html/Admin/CustomFields/Modify.html:161
 #. ($msg)
@@ -1676,7 +1688,7 @@ msgstr "无法新增自订字段"
 #: html/Admin/Elements/EditCustomField:113
 #. ($msg)
 msgid "Could not create CustomField: %1"
-msgstr ""
+msgstr "无法新增自订字段：%1"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not create Scrip"
@@ -1746,11 +1758,11 @@ msgstr "无法加载群组"
 #: lib/RT/SavedSearch.pm:119
 #. ($privacy)
 msgid "Could not load object for %1"
-msgstr ""
+msgstr "无法为 %1 加载对象"
 
 #: lib/RT/SavedSearch.pm:197
 msgid "Could not load search attribute"
-msgstr ""
+msgstr "无法加载查询属性"
 
 #: lib/RT/Queue_Overlay.pm:761
 #. ($args{'Type'})
@@ -1777,7 +1789,7 @@ msgstr "无法设定使用者信息"
 
 #: lib/RT/Transaction_Overlay.pm:159
 msgid "Couldn't add attachment"
-msgstr ""
+msgstr "无法新增附件"
 
 #: lib/RT/Group_Overlay.pm:1003
 msgid "Couldn't add member to group"
@@ -1846,7 +1858,7 @@ msgstr "无法加载手续。"
 #: lib/RT/Ticket_Overlay.pm:2016
 #. ($self->Id)
 msgid "Couldn't load copy of ticket #%1."
-msgstr ""
+msgstr "无法加载申请单 %1 的复本。"
 
 #: html/Admin/Groups/GroupRights.html:109 html/Admin/Groups/UserRights.html:96
 #. ($id)
@@ -1879,7 +1891,7 @@ msgstr "无法加载手续"
 #: html/Admin/Elements/EditScrip:126 html/Admin/Elements/EditScrip:167
 #. ($id)
 msgid "Couldn't load scrip #%1"
-msgstr ""
+msgstr "无法加载手续 %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Couldn't load template"
@@ -1897,7 +1909,7 @@ msgstr "无法加载申请单 '%1'"
 #: lib/RT/Ticket_Overlay.pm:2643
 #. ($args{'URI'})
 msgid "Couldn't resolve '%1' into a URI."
-msgstr ""
+msgstr "无法将‘%1’解读为网址"
 
 #: html/Admin/Users/Modify.html:173 html/User/Prefs.html:153
 msgid "Country"
@@ -2051,7 +2063,7 @@ msgstr "新增、删除及更改使用者"
 
 #: lib/RT/System.pm:87
 msgid "CreateSavedSearch"
-msgstr ""
+msgstr "新增预存查询"
 
 #: lib/RT/Queue_Overlay.pm:109
 msgid "CreateTicket"
@@ -2068,7 +2080,7 @@ msgstr "自订字段 %1 新增成功"
 
 #: html/Tools/Reports/Elements/Tabs:63
 msgid "Created in a date range"
-msgstr ""
+msgstr "在指定日期内建立"
 
 #: NOT FOUND IN SOURCE
 msgid "Created template %1"
@@ -2076,7 +2088,7 @@ msgstr "模板 %1 新增成功"
 
 #: html/Tools/Reports/CreatedByDates.html:52
 msgid "Created tickets in period, grouped by status"
-msgstr ""
+msgstr "在指定日期内建立的申请单，依状态分组"
 
 #: NOT FOUND IN SOURCE
 msgid "Created workflow %1"
@@ -2136,7 +2148,7 @@ msgstr "现有权限"
 
 #: html/Search/Elements/EditQuery:47
 msgid "Current search"
-msgstr ""
+msgstr "现有查询条件"
 
 #: NOT FOUND IN SOURCE
 msgid "Current search criteria"
@@ -2202,7 +2214,7 @@ msgstr "找不到自订字段 %1"
 #. ($cf)
 #. ($obj->Name)
 msgid "Custom field '%1'"
-msgstr ""
+msgstr "自订字段‘%1’"
 
 #: NOT FOUND IN SOURCE
 msgid "Custom field deleted"
@@ -2239,7 +2251,7 @@ msgstr "自订字段"
 
 #: html/Prefs/MyRT.html:78 html/Prefs/Quicksearch.html:70 html/Prefs/Search.html:75
 msgid "Customize"
-msgstr ""
+msgstr "自订"
 
 #: NOT FOUND IN SOURCE
 msgid "Data error"
@@ -2404,7 +2416,7 @@ msgstr "删除模板"
 #: lib/RT/SavedSearch.pm:220
 #. ($msg)
 msgid "Delete failed: %1"
-msgstr ""
+msgstr "删除失败：%1"
 
 #: html/Admin/Elements/EditScrips:74
 msgid "Delete selected scrips"
@@ -2416,7 +2428,7 @@ msgstr "删除申请单"
 
 #: html/Search/Bulk.html:159
 msgid "Delete values"
-msgstr ""
+msgstr "删除值"
 
 #: lib/RT/Queue_Overlay.pm:114
 msgid "DeleteTicket"
@@ -2424,7 +2436,7 @@ msgstr "删除申请单"
 
 #: lib/RT/SavedSearch.pm:218
 msgid "Deleted search"
-msgstr ""
+msgstr "已删除的搜寻"
 
 #: NOT FOUND IN SOURCE
 msgid "Deleting this object could break referential integrity"
@@ -2520,7 +2532,7 @@ msgstr "需先处理"
 
 #: html/Search/Elements/DisplayOptions:86
 msgid "Desc"
-msgstr ""
+msgstr "递减"
 
 #: html/Elements/SelectSortOrder:56
 msgid "Descending"
@@ -2588,7 +2600,7 @@ msgstr "显示模式"
 
 #: lib/RT/Group_Overlay.pm:168
 msgid "Display saved searches for this group"
-msgstr "显示此群组已储存的查询"
+msgstr "显示此群组的预存查询"
 
 #: NOT FOUND IN SOURCE
 msgid "Display ticket #%1"
@@ -2656,7 +2668,7 @@ msgstr "编辑前置条件"
 
 #: html/Search/Bulk.html:149
 msgid "Edit Custom Fields"
-msgstr ""
+msgstr "编辑自订字段"
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
 #. ($Object->Name)
@@ -2665,11 +2677,11 @@ msgstr "编辑 %1 的自订字段"
 
 #: html/Admin/Global/CustomFields/Groups.html:54
 msgid "Edit Custom Fields for all groups"
-msgstr ""
+msgstr "编辑适用于所有群组的自订字段"
 
 #: html/Admin/Global/CustomFields/Users.html:54
 msgid "Edit Custom Fields for all users"
-msgstr ""
+msgstr "编辑适用于所有使用者的自订字段"
 
 #: NOT FOUND IN SOURCE
 msgid "Edit Custom Fields for queue %1"
@@ -2677,7 +2689,7 @@ msgstr "编辑表单 %1 的自订字段"
 
 #: html/Admin/Global/CustomFields/Queue-Tickets.html:54 html/Admin/Global/CustomFields/Queue-Transactions.html:54
 msgid "Edit Custom Fields for tickets in all queues"
-msgstr ""
+msgstr "编辑适用于所有表单内申请单的自订字段"
 
 #: html/Search/Bulk.html:188 html/Ticket/ModifyLinks.html:57
 msgid "Edit Links"
@@ -2689,7 +2701,7 @@ msgstr "编辑查询"
 
 #: html/Ticket/Elements/Tabs:214
 msgid "Edit Search"
-msgstr ""
+msgstr "编辑查询"
 
 #: NOT FOUND IN SOURCE
 msgid "Edit Subgroups"
@@ -2710,7 +2722,7 @@ msgstr "编辑关键词"
 
 #: lib/RT/Group_Overlay.pm:167
 msgid "Edit saved searches for this group"
-msgstr "编辑此群组已储存的查询"
+msgstr "编辑此群组的预存查询"
 
 #: NOT FOUND IN SOURCE
 msgid "Edit scrips"
@@ -2734,7 +2746,7 @@ msgstr "编辑 %1 的流程"
 
 #: lib/RT/Group_Overlay.pm:167
 msgid "EditSavedSearches"
-msgstr "编辑已储存的查询"
+msgstr "编辑预存查询"
 
 #: html/Admin/Queues/Modify.html:140
 #. ($QueueObj->Name)
@@ -2892,7 +2904,7 @@ msgstr "键入申请单可链接到的申请单编号或网址。项目之间请
 
 #: lib/RT/CustomField_Overlay.pm:66
 msgid "Enter up to %1 values"
-msgstr "键入最多 %1 个值"
+msgstr "键入最多 %1 个项目"
 
 #: NOT FOUND IN SOURCE
 msgid "EntryBoolean"
@@ -3008,7 +3020,7 @@ msgstr "备注"
 
 #: lib/RT/SavedSearch.pm:177
 msgid "Failed to create search attribute"
-msgstr ""
+msgstr "查询属性建立失败"
 
 #: lib/RT/User_Overlay.pm:376
 msgid "Failed to find 'Privileged' users pseudogroup."
@@ -3021,12 +3033,12 @@ msgstr "找不到‘非内部成员’虚拟群组的使用者。"
 #: bin/rt-crontool:206
 #. ($modname, $@)
 msgid "Failed to load module %1. (%2)"
-msgstr "无法加载模块 %1. (%2)"
+msgstr "无法加载模块 %1。(%2)"
 
 #: lib/RT/SavedSearch.pm:152
 #. ($privacy)
 msgid "Failed to load object for %1"
-msgstr ""
+msgstr "无法为 %1 加载对象。"
 
 #: NOT FOUND IN SOURCE
 msgid "Feb"
@@ -3070,7 +3082,7 @@ msgstr "填入多个文字框"
 
 #: lib/RT/CustomField_Overlay.pm:74
 msgid "Fill in multiple wikitext areas"
-msgstr ""
+msgstr "填入多个 Wiki 文字框"
 
 #: lib/RT/CustomField_Overlay.pm:70
 msgid "Fill in one text area"
@@ -3078,11 +3090,11 @@ msgstr "填入一个文字框"
 
 #: lib/RT/CustomField_Overlay.pm:75
 msgid "Fill in one wikitext area"
-msgstr ""
+msgstr "填入一个 Wiki 文字框"
 
 #: html/Admin/CustomFields/Modify.html:107 html/Admin/CustomFields/Modify.html:118
 msgid "Fill in this field with a URL."
-msgstr ""
+msgstr "填入一个网址"
 
 #: lib/RT/CustomField_Overlay.pm:71
 msgid "Fill in up to %1 text areas"
@@ -3090,7 +3102,7 @@ msgstr "填入最多 %1 个文字框"
 
 #: lib/RT/CustomField_Overlay.pm:76
 msgid "Fill in up to %1 wikitext areas"
-msgstr ""
+msgstr "填入最多 %1 个 Wiki 文字框"
 
 #: NOT FOUND IN SOURCE
 msgid "Filter"
@@ -3190,7 +3202,7 @@ msgstr "电子表单作业区"
 
 #: html/Search/Elements/EditFormat:52
 msgid "Format"
-msgstr ""
+msgstr "格式"
 
 #: html/Search/Results.html:145
 #. ($ticketcount)
@@ -3304,12 +3316,12 @@ msgstr "全域设定"
 
 #: html/Admin/Global/CustomFields/index.html:59
 msgid "Global custom field configuration"
-msgstr ""
+msgstr "全域自订字段设定"
 
 #: html/Admin/Global/MyRT.html:48
 #. ($pane)
 msgid "Global portlet %1 saved."
-msgstr ""
+msgstr "成功储存全域入口组件 %1。"
 
 #: html/Admin/Elements/SelectTemplate:59
 #. (loc($Template->Name))
@@ -3530,7 +3542,7 @@ msgstr "住宿费"
 
 #: html/Elements/SelectTimeUnits:48
 msgid "Hours"
-msgstr ""
+msgstr "小时"
 
 #: lib/RT/Base.pm:119
 #. (6)
@@ -3539,7 +3551,7 @@ msgstr "我有 %quant(%1,份固体搅拌器)。"
 
 #: html/Search/Build.html:460 lib/RT/Report/Tickets.pm:415
 msgid "I'm lost"
-msgstr ""
+msgstr "我昏了"
 
 #: NOT FOUND IN SOURCE
 msgid "ID Number"
@@ -3611,15 +3623,15 @@ msgstr "列出停用的使用者"
 
 #: html/Admin/CustomFields/Modify.html:113
 msgid "Include page"
-msgstr ""
+msgstr "引入页面"
 
 #: html/Search/Build.html:486 lib/RT/Report/Tickets.pm:441
 msgid "Incomplete Query"
-msgstr ""
+msgstr "不完整的查询"
 
 #: html/Search/Build.html:483 lib/RT/Report/Tickets.pm:438
 msgid "Incomplete query"
-msgstr ""
+msgstr "不完整的查询"
 
 #: NOT FOUND IN SOURCE
 msgid "Indirect Employee"
@@ -3641,7 +3653,7 @@ msgstr "输入错误"
 #. ($self->FriendlyPattern)
 #. ($CF->FriendlyPattern)
 msgid "Input must match %1"
-msgstr ""
+msgstr "输入必须符合 %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Interest noted"
@@ -3679,7 +3691,7 @@ msgstr "错误的承办人。改为预设承办人‘nobody’。"
 #: lib/RT/CustomField_Overlay.pm:207 lib/RT/CustomField_Overlay.pm:678
 #. ($msg)
 msgid "Invalid pattern: %1"
-msgstr ""
+msgstr "不合理的样式：%1"
 
 #: lib/RT/Scrip_Overlay.pm:157 lib/RT/Template_Overlay.pm:244
 msgid "Invalid queue"
@@ -3720,7 +3732,7 @@ msgstr "它接受下列参数："
 
 #: html/Search/Elements/EditFormat:85
 msgid "Italic"
-msgstr ""
+msgstr "斜体"
 
 #: NOT FOUND IN SOURCE
 msgid "Item Name"
@@ -3812,7 +3824,7 @@ msgstr "语言"
 
 #: html/Search/Elements/EditFormat:79
 msgid "Large"
-msgstr ""
+msgstr "大"
 
 #: html/Ticket/Elements/Tabs:96
 msgid "Last"
@@ -3864,7 +3876,7 @@ msgstr "限制表单为 %1 到 %2"
 
 #: html/Search/Elements/EditFormat:68
 msgid "Link"
-msgstr ""
+msgstr "链接"
 
 #: NOT FOUND IN SOURCE
 msgid "Link a Queue"
@@ -3903,11 +3915,11 @@ msgstr "链接申请单 %1"
 
 #: html/Admin/CustomFields/Modify.html:102
 msgid "Link values to"
-msgstr ""
+msgstr "将值连结至"
 
 #: lib/RT/Ticket_Overlay.pm:700
 msgid "Linking. Permission denied"
-msgstr ""
+msgstr "连结中。权限不足"
 
 #: html/Ticket/Create.html:216 html/Ticket/Elements/ShowSummary:89 html/Ticket/Elements/Tabs:120 html/Ticket/ModifyAll.html:78
 msgid "Links"
@@ -3923,11 +3935,11 @@ msgstr "加载"
 
 #: html/Search/Elements/EditSearches:73
 msgid "Load saved search:"
-msgstr "加载已储存的查询："
+msgstr "加载预存查询："
 
 #: lib/RT/System.pm:86
 msgid "LoadSavedSearch"
-msgstr ""
+msgstr "加载预存查询"
 
 #: html/Admin/Tools/Configuration.html:64
 msgid "Loaded perl modules"
@@ -3936,7 +3948,7 @@ msgstr "已加载的 Perl 模块"
 #: lib/RT/SavedSearch.pm:111
 #. ($self->Name)
 msgid "Loaded search %1"
-msgstr ""
+msgstr "已加载查询 %1"
 
 #: html/Admin/Users/Modify.html:138 html/User/Prefs.html:126
 msgid "Location"
@@ -4017,7 +4029,7 @@ msgstr "新增主题"
 
 #: lib/RT/Group_Overlay.pm:169
 msgid "Make this group visible to user"
-msgstr ""
+msgstr "让此群组能被使用者看见"
 
 #: NOT FOUND IN SOURCE
 msgid "Male"
@@ -4142,7 +4154,7 @@ msgstr "整合失败。无法设定 EffectiveId"
 
 #: lib/RT/Ticket_Overlay.pm:2788
 msgid "Merge failed. Couldn't set Status"
-msgstr ""
+msgstr "整合失败。无法设定 Status"
 
 #: html/Elements/EditLinks:131 html/Ticket/Elements/BulkLinks:48
 msgid "Merge into"
@@ -4175,7 +4187,7 @@ msgstr "此申请单的相关讯息不会寄送给..."
 
 #: html/Elements/SelectTimeUnits:47
 msgid "Minutes"
-msgstr ""
+msgstr "分钟"
 
 #: NOT FOUND IN SOURCE
 msgid "Misc. Expense"
@@ -4183,7 +4195,7 @@ msgstr "杂费"
 
 #: html/Search/Build.html:490 lib/RT/Report/Tickets.pm:445
 msgid "Mismatched parentheses"
-msgstr ""
+msgstr "未对齐的括号"
 
 #: lib/RT/Record.pm:954
 msgid "Missing a primary key?: %1"
@@ -4208,7 +4220,7 @@ msgstr "更改权限控制清单"
 #: html/Admin/Elements/ObjectCustomFields:96
 #. (loc(lc($FriendlySubTypes)), loc(lc($Types)))
 msgid "Modify Custom Fields which apply to %1 for all %2"
-msgstr ""
+msgstr "更改适用于 %1 内所有 %2 的自订字段"
 
 #: html/Admin/Elements/ObjectCustomFields:98
 #. (loc(lc($Types)))
@@ -4294,7 +4306,7 @@ msgstr "更改申请单 # %1 的日期"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:65 html/Admin/Global/index.html:72
 msgid "Modify global custom fields"
-msgstr ""
+msgstr "更改全域自订字段"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:70 html/Admin/Global/GroupRights.html:46 html/Admin/Global/GroupRights.html:49 html/Admin/Global/index.html:77
 msgid "Modify global group rights"
@@ -4383,7 +4395,7 @@ msgstr "更改适用于所有表单的模板"
 
 #: html/Admin/Global/index.html:85
 msgid "Modify the default \"RT at a glance\" view"
-msgstr ""
+msgstr "更改预设的‘RT 一览’检视"
 
 #: html/Admin/Groups/Modify.html:119 html/User/Groups/Modify.html:107
 #. ($Group->Name)
@@ -4446,7 +4458,7 @@ msgstr "更改权限清单"
 
 #: lib/RT/CustomField_Overlay.pm:108
 msgid "ModifyCustomField"
-msgstr ""
+msgstr "更改自订字段"
 
 #: lib/RT/Group_Overlay.pm:166
 msgid "ModifyOwnMembership"
@@ -4528,7 +4540,7 @@ msgstr "表单签核"
 
 #: html/Tools/Elements/Tabs:63
 msgid "My Day"
-msgstr ""
+msgstr "今日事"
 
 #: NOT FOUND IN SOURCE
 msgid "My Requests"
@@ -4544,7 +4556,7 @@ msgstr "表单签核"
 
 #: html/Search/Elements/SearchPrivacy:50 html/Search/Elements/SelectSearchObject:53 html/Search/Elements/SelectSearchesForObjects:54
 msgid "My saved searches"
-msgstr "我已储存的查询"
+msgstr "我的预存查询"
 
 #: html/Admin/CustomFields/Modify.html:58 html/Admin/Elements/AddCustomFieldValue:53 html/Admin/Elements/EditCustomField:55 html/Admin/Elements/EditCustomFieldValues:55 html/Admin/Elements/ModifyTemplate:49 html/Admin/Groups/Modify.html:65 html/Search/Bulk.html:157 html/User/Groups/Modify.html:65
 msgid "Name"
@@ -4620,7 +4632,7 @@ msgstr "新增表单"
 
 #: html/Ticket/Elements/Reminders:118
 msgid "New reminder:"
-msgstr ""
+msgstr "新增提醒项目："
 
 #: NOT FOUND IN SOURCE
 msgid "New request"
@@ -4802,7 +4814,7 @@ msgstr "没有显示该申请单的权限"
 
 #: lib/RT/SavedSearch.pm:156
 msgid "No permission to save system-wide searches"
-msgstr ""
+msgstr "没有储存全域预存查询的权限"
 
 #: html/SelfService/Update.html:117
 msgid "No permission to view update ticket"
@@ -4834,7 +4846,7 @@ msgstr "没有选定权限"
 
 #: lib/RT/SavedSearch.pm:196
 msgid "No search loaded"
-msgstr ""
+msgstr "尚未加载查询"
 
 #: html/Search/Bulk.html:232
 msgid "No search to operate on."
@@ -4882,7 +4894,7 @@ msgstr "一般用户群组"
 
 #: html/Search/Chart:71 html/Search/Elements/Chart:88
 msgid "Not Set"
-msgstr ""
+msgstr "未设定"
 
 #: NOT FOUND IN SOURCE
 msgid "Not configured to fetch the content from a %1 in %2"
@@ -5014,7 +5026,7 @@ msgstr "确定"
 
 #: html/Search/Elements/SelectAndOr:47
 msgid "OR"
-msgstr ""
+msgstr "OR"
 
 #: lib/RT/Record.pm:322
 msgid "Object could not be created"
@@ -5022,7 +5034,7 @@ msgstr "无法新增对象"
 
 #: lib/RT/Record.pm:123
 msgid "Object could not be deleted"
-msgstr ""
+msgstr "无法删除对象"
 
 #: lib/RT/Record.pm:341
 msgid "Object created"
@@ -5030,7 +5042,7 @@ msgstr "对象新增完毕"
 
 #: lib/RT/Record.pm:120
 msgid "Object deleted"
-msgstr ""
+msgstr "对象删除完毕"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($ObjectType)
@@ -5081,7 +5093,7 @@ msgstr "等于"
 #: lib/RT/Transaction_Overlay.pm:326
 #. ($self->CreatedAsString(), $self->CreatorObj->Name())
 msgid "On %1, %2 wrote:"
-msgstr ""
+msgstr "在 %1 时，%2 写到："
 
 #: NOT FOUND IN SOURCE
 msgid "On Change"
@@ -5135,7 +5147,7 @@ msgstr "仅显示 %1 之前新增的申请单"
 
 #: html/Admin/CustomFields/index.html:75
 msgid "Only show custom fields for:"
-msgstr ""
+msgstr "仅显示适用于下列项目的自订字段："
 
 #: NOT FOUND IN SOURCE
 msgid "Open"
@@ -5143,7 +5155,7 @@ msgstr "开启"
 
 #: html/SelfService/index.html:46
 msgid "Open Tickets"
-msgstr ""
+msgstr "开启申请单"
 
 #: html/Ticket/Elements/Tabs:160
 msgid "Open it"
@@ -5183,7 +5195,7 @@ msgstr "选项名称"
 
 #: html/Prefs/MyRT.html:70
 msgid "Options"
-msgstr ""
+msgstr "选项"
 
 #: html/Search/Elements/DisplayOptions:59
 msgid "Order by"
@@ -5318,16 +5330,16 @@ msgstr "口令提示"
 
 #: lib/RT/Transaction_Overlay.pm:781 lib/RT/User_Overlay.pm:1045
 msgid "Password changed"
-msgstr ""
+msgstr "口令更改完毕"
 
 #: lib/RT/User_Overlay.pm:1037 lib/RT/User_Overlay.pm:214
 #. ($RT::MinimumPasswordLength)
 msgid "Password needs to be at least %1 characters long"
-msgstr ""
+msgstr "口令长度至少必须为 %1 个字元"
 
 #: lib/RT/User_Overlay.pm:1044
 msgid "Password set"
-msgstr ""
+msgstr "口令已设定"
 
 #: NOT FOUND IN SOURCE
 msgid "Password too short"
@@ -5340,7 +5352,7 @@ msgstr "口令：%1"
 
 #: lib/RT/User_Overlay.pm:1030
 msgid "Password: Permission Denied"
-msgstr ""
+msgstr "口令：权限不足"
 
 #: html/Admin/Users/Modify.html:364
 msgid "Passwords do not match."
@@ -5384,11 +5396,11 @@ msgstr "权限设定"
 
 #: lib/RT/Template_Overlay.pm:238 lib/RT/Template_Overlay.pm:247
 msgid "Permission denied"
-msgstr ""
+msgstr "权限不足"
 
 #: lib/RT/Template_Overlay.pm:372
 msgid "Permissions denied"
-msgstr ""
+msgstr "权限不足"
 
 #: NOT FOUND IN SOURCE
 msgid "Permitted Queues:"
@@ -5521,12 +5533,12 @@ msgstr "偏好"
 #: html/Admin/Users/MyRT.html:75
 #. ($pane, $UserObj->Name)
 msgid "Preferences %1 for user %2 ."
-msgstr ""
+msgstr "使用者 %2 的 %1 偏好。"
 
 #: html/Prefs/MyRT.html:141
 #. ($pane)
 msgid "Preferences saved for %1."
-msgstr ""
+msgstr "成功储存 %1 的偏好。"
 
 #: NOT FOUND IN SOURCE
 msgid "Prefs"
@@ -5628,7 +5640,7 @@ msgstr "建立查询"
 
 #: html/Search/Elements/Chart:101
 msgid "Query:"
-msgstr ""
+msgstr "查询："
 
 #: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:62 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:85 html/Tools/Reports/ResolvedByDates.html:86 html/Tools/Reports/ResolvedByOwner.html:66 html/User/Elements/DelegateRights:101 lib/RT/Tickets_Overlay.pm:1617
 msgid "Queue"
@@ -5702,11 +5714,11 @@ msgstr "表单"
 
 #: html/Elements/MyAdminQueues:46
 msgid "Queues I administer"
-msgstr ""
+msgstr "由我管理的表单"
 
 #: html/Elements/MySupportQueues:46
 msgid "Queues I'm an AdminCc for"
-msgstr ""
+msgstr "管理员副本有我的表单"
 
 #: NOT FOUND IN SOURCE
 msgid "Quick Search"
@@ -5778,8 +5790,8 @@ msgid "RT Recieved mail (%1) from itself."
 msgstr "RT 收到从自己寄出的邮件 (%1)。"
 
 #: NOT FOUND IN SOURCE
-msgid "RT Self Service / Closed Tickets"
-msgstr "RT 自助服务/已解决的申请单"
+msgid "RT Self Service"
+msgstr "RT 自助服务"
 
 #: html/Admin/Tools/Configuration.html:73
 msgid "RT Variables"
@@ -5792,15 +5804,15 @@ msgstr "RT 一览"
 #: html/Admin/Users/MyRT.html:30
 #. ($UserObj->Name)
 msgid "RT at a glance for the user %1"
-msgstr ""
+msgstr "使用者 %1 的 RT 一览"
 
 #: html/Admin/CustomFields/Modify.html:117
 msgid "RT can include content from another web service when showing this custom field."
-msgstr ""
+msgstr "RT 可于显示此自订字段时引入其它网站的内容"
 
 #: html/Admin/CustomFields/Modify.html:106
 msgid "RT can make this custom field's values into hyperlinks to another service."
-msgstr ""
+msgstr "RT 可将此自订字段的值视为连往其它网站的超链接"
 
 #: NOT FOUND IN SOURCE
 msgid "RT couldn't authenticate you"
@@ -5816,7 +5828,7 @@ msgstr "RT 找不到表单：%1"
 
 #: html/Elements/SetupSessionCookie:100
 msgid "RT couldn't store your session."
-msgstr ""
+msgstr "RT 无法储存您的登入阶段。"
 
 #: NOT FOUND IN SOURCE
 msgid "RT couldn't validate this PGP signature. \\n"
@@ -5845,7 +5857,7 @@ msgstr "RT 认为这可能是退信"
 
 #: html/Search/Simple.html:58
 msgid "RT will look for anything else you enter in ticket subjects."
-msgstr ""
+msgstr "RT 会在申请单主旨内搜寻将您键入的任何其它字样"
 
 #: NOT FOUND IN SOURCE
 msgid "RT will process this message as if it were unsigned.\\n"
@@ -5853,7 +5865,7 @@ msgstr "RT 以未签章方式处理这封邮件。\\n"
 
 #: html/Admin/CustomFields/Modify.html:108 html/Admin/CustomFields/Modify.html:119
 msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
-msgstr ""
+msgstr "RT 会将 <tt>__id__</tt> 及 <tt>__CustomField__</tt> 置换成纪录编号及自订字段"
 
 #: NOT FOUND IN SOURCE
 msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
@@ -5943,31 +5955,31 @@ msgstr "每 %1 分钟更新页面"
 #: lib/RT/Transaction_Overlay.pm:811
 #. ($ticket->Subject)
 msgid "Reminder '%1' added"
-msgstr ""
+msgstr "已建立提醒项目‘%1’"
 
 #: lib/RT/Transaction_Overlay.pm:824
 #. ($ticket->Subject)
 msgid "Reminder '%1' completed"
-msgstr ""
+msgstr "已完成提醒项目‘%1’"
 
 #: lib/RT/Transaction_Overlay.pm:817
 #. ($ticket->Subject)
 msgid "Reminder '%1' reopened"
-msgstr ""
+msgstr "已重新开启提醒项目‘%1’"
 
 #: html/Ticket/Reminders.html:46
 #. ($Ticket->Id)
 msgid "Reminder ticket #%1"
-msgstr ""
+msgstr "提醒项目 #%1"
 
 #: html/Elements/MyReminders:48 html/Ticket/Elements/ShowSummary:75 html/Ticket/Elements/Tabs:122 html/Ticket/Reminders.html:52
 msgid "Reminders"
-msgstr ""
+msgstr "提醒项目"
 
 #: html/Ticket/Reminders.html:50
 #. ($Ticket->Id)
 msgid "Reminders for ticket #%1"
-msgstr ""
+msgstr "申请单 #%1 的提醒项目"
 
 #: NOT FOUND IN SOURCE
 msgid "Remove"
@@ -6015,7 +6027,7 @@ msgstr "到职日期"
 
 #: html/Tools/Elements/Tabs:59 html/Tools/Reports/index.html:46 html/Tools/Reports/index.html:47
 msgid "Reports"
-msgstr ""
+msgstr "报表"
 
 #: etc/initialdata:44 lib/RT/ACE_Overlay.pm:111
 msgid "Requestor"
@@ -6064,7 +6076,7 @@ msgstr "重设"
 
 #: html/Admin/Users/MyRT.html:15 html/Prefs/MyRT.html:60
 msgid "Reset to default"
-msgstr ""
+msgstr "重设为预设值"
 
 #: html/Admin/Users/Modify.html:183 html/User/Prefs.html:84
 msgid "Residence"
@@ -6089,19 +6101,19 @@ msgstr "已解决"
 
 #: html/Tools/Reports/Elements/Tabs:55
 msgid "Resolved by owner"
-msgstr ""
+msgstr "已由承办人解决"
 
 #: html/Tools/Reports/Elements/Tabs:59
 msgid "Resolved in date range"
-msgstr ""
+msgstr "已在指定日期内解决"
 
 #: html/Tools/Reports/ResolvedByDates.html:52
 msgid "Resolved tickets in period, grouped by owner"
-msgstr ""
+msgstr "已在指定日期内内解决，依承办人分组"
 
 #: html/Tools/Reports/ResolvedByOwner.html:50
 msgid "Resolved tickets, grouped by owner"
-msgstr ""
+msgstr "已解决的申请单，依承办人分组"
 
 #: NOT FOUND IN SOURCE
 msgid "Response to requestors"
@@ -6191,7 +6203,7 @@ msgstr "交由系统管理员签核"
 
 #: html/Prefs/MyRT.html:72
 msgid "Rows per box"
-msgstr ""
+msgstr "每格笔数"
 
 #: html/Search/Elements/DisplayOptions:93
 msgid "Rows per page"
@@ -6240,11 +6252,11 @@ msgstr "储存更改"
 #: lib/RT/SavedSearch.pm:173
 #. ($name)
 msgid "Saved search %1"
-msgstr ""
+msgstr "成功储存查询：%1"
 
 #: NOT FOUND IN SOURCE
 msgid "Saved searches"
-msgstr "已储存的查询"
+msgstr "预存查询"
 
 #: html/Admin/Elements/ListGlobalScrips:60 html/Admin/Global/Scrip.html:77 html/Admin/Queues/Scrip.html:84
 #. ($scrip->Id)
@@ -6302,11 +6314,11 @@ msgstr "查询条件"
 
 #: html/Prefs/SearchOptions.html:47 html/Prefs/SearchOptions.html:50
 msgid "Search Preferences"
-msgstr ""
+msgstr "搜寻偏好"
 
 #: lib/RT/SavedSearch.pm:115
 msgid "Search attribute load failure"
-msgstr ""
+msgstr "搜寻属性加载失败"
 
 #: html/Approvals/Elements/PendingMyApproval:59
 msgid "Search for approvals"
@@ -6314,25 +6326,25 @@ msgstr "签核单查询"
 
 #: html/Search/Simple.html:67
 msgid "Search for tickets"
-msgstr ""
+msgstr "申请单查询"
 
 #: html/Search/Simple.html:55
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>. RT will look for anything else you enter in ticket bodies and attachments."
-msgstr ""
+msgstr "搜寻申请单。请键入<strong>编号</strong>、<strong>表单名称</strong>、承办人的<strong>使用者名称</strong>、或申请人的<strong>电子邮件地址</strong>。以上格式之外的文字，则会在申请单内文及附件内检索。"
 
 #: html/User/Elements/Tabs:62
 msgid "Search options"
-msgstr ""
+msgstr "搜寻选项"
 
 #: html/Search/Chart.html:56
 #. ($PrimaryGroupBy)
 msgid "Search results grouped by %1"
-msgstr ""
+msgstr "搜寻结果，依 %1 分组"
 
 #: lib/RT/SavedSearch.pm:203
 #. ($msg)
 msgid "Search update: %1"
-msgstr ""
+msgstr "更新查询：%1"
 
 #: NOT FOUND IN SOURCE
 msgid "Searches can't be associated with that kind of object"
@@ -6340,7 +6352,7 @@ msgstr "不能对此类对象进行查询"
 
 #: html/Search/Simple.html:57
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
-msgstr ""
+msgstr "对所有申请单的全文进行检索，可能会需要很久的时间。但如果您真的有需要，可键入 <b>fulltext:<i>文字</i></b> 来搜寻申请单的所有纪录。"
 
 #: NOT FOUND IN SOURCE
 msgid "Second-"
@@ -6356,7 +6368,7 @@ msgstr "安全性："
 
 #: html/Elements/ShowCustomFields:98
 msgid "See also:"
-msgstr ""
+msgstr "参见："
 
 #: lib/RT/CustomField_Overlay.pm:105
 msgid "See custom fields"
@@ -6380,7 +6392,7 @@ msgstr "查阅自订字段"
 
 #: lib/RT/Group_Overlay.pm:169
 msgid "SeeGroup"
-msgstr ""
+msgstr "查阅群组"
 
 #: lib/RT/Queue_Overlay.pm:91
 msgid "SeeQueue"
@@ -6408,7 +6420,7 @@ msgstr "选择表单"
 
 #: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
-msgstr ""
+msgstr "为您新的申请单选择一个表单"
 
 #: NOT FOUND IN SOURCE
 msgid "Select a queue to link to"
@@ -6424,19 +6436,19 @@ msgstr "选择自订字段"
 
 #: html/Admin/Global/CustomFields/index.html:70
 msgid "Select custom fields for all user groups"
-msgstr ""
+msgstr "选择适用于所有使用者群组的自订字段"
 
 #: html/Admin/Global/CustomFields/index.html:65
 msgid "Select custom fields for all users"
-msgstr ""
+msgstr "选择适用于所有使用者的自订字段"
 
 #: html/Admin/Global/CustomFields/index.html:76
 msgid "Select custom fields for tickets in all queues"
-msgstr ""
+msgstr "选择适用于所有表单内申请单的自订字段"
 
 #: html/Admin/Global/CustomFields/index.html:83
 msgid "Select custom fields for transactions on tickets in all queues"
-msgstr ""
+msgstr "选择适用于所有表单内申请单之更动的自订字段"
 
 #: html/Admin/Elements/GroupTabs:75 html/User/Elements/GroupTabs:71
 msgid "Select group"
@@ -6456,7 +6468,7 @@ msgstr "选择表单"
 
 #: html/Prefs/Quicksearch.html:53
 msgid "Select queues to be displayed on the \"RT at a glance\" page"
-msgstr ""
+msgstr "选择要在‘RT 一览’页面显示的表单"
 
 #: html/Admin/Global/Scrip.html:59 html/Admin/Global/Scrips.html:57 html/Admin/Queues/Scrip.html:67 html/Admin/Queues/Scrips.html:73
 msgid "Select scrip"
@@ -6500,11 +6512,11 @@ msgstr "已选取的对象"
 
 #: NOT FOUND IN SOURCE
 msgid "Selected users:"
-msgstr "新增对象："
+msgstr "已选取的使用者："
 
 #: html/Widgets/SelectionBox:209
 msgid "Selections modified. Please save your changes"
-msgstr ""
+msgstr "选取的项目已更改。请储存您的更动"
 
 #: NOT FOUND IN SOURCE
 msgid "Self Service"
@@ -6628,7 +6640,7 @@ msgstr "显示权限清单"
 
 #: lib/RT/System.pm:85
 msgid "ShowConfigTab"
-msgstr ""
+msgstr "显示设定页签"
 
 #: lib/RT/Queue_Overlay.pm:106
 msgid "ShowOutgoingEmail"
@@ -6636,7 +6648,7 @@ msgstr "显示寄送邮件"
 
 #: lib/RT/Group_Overlay.pm:168
 msgid "ShowSavedSearches"
-msgstr "显示已储存的查询"
+msgstr "显示预存查询"
 
 #: lib/RT/Queue_Overlay.pm:102
 msgid "ShowScrips"
@@ -6672,7 +6684,7 @@ msgstr "使用者：%1"
 
 #: html/Elements/Tabs:68
 msgid "Simple Search"
-msgstr ""
+msgstr "简易查询"
 
 #: html/Admin/Elements/SelectSingleOrMultiple:47
 msgid "Single"
@@ -6680,7 +6692,7 @@ msgstr "单一"
 
 #: html/Search/Elements/EditFormat:75
 msgid "Size"
-msgstr ""
+msgstr "大小"
 
 #: html/Elements/Header:89
 msgid "Skip Menu"
@@ -6688,11 +6700,11 @@ msgstr "略过选单"
 
 #: html/Search/Elements/EditFormat:78
 msgid "Small"
-msgstr ""
+msgstr "小"
 
 #: html/Admin/CustomFields/Modify.html:120
 msgid "Some browsers may only load content from the same domain as your RT server."
-msgstr ""
+msgstr "某些浏览器只允许加载和 RT 服务器同一个网域的内容。"
 
 #: html/Admin/Elements/AddCustomFieldValue:49 html/Admin/Elements/EditCustomFieldValues:54
 msgid "Sort"
@@ -6742,6 +6754,33 @@ msgstr "无法解读起始日期 '%1"
 msgid "Starts"
 msgstr "应起始日"
 
+msgid "StartsRelative"
+msgstr "应起始日(相对值)"
+
+msgid "StartedRelative"
+msgstr "实际起始日(相对值)"
+
+msgid "CreatedRelative"
+msgstr "实际新增日(相对值)"
+
+msgid "LastUpdatedRelative"
+msgstr "上次更新(相对值)"
+
+msgid "ToldRelative"
+msgstr "告知日(相对值)"
+
+msgid "DueRelative"
+msgstr "到期日(相对值)"
+
+msgid "ResolvedRelative"
+msgstr "解决日(相对值)"
+
+msgid "ReferredToBy"
+msgstr "被参考"
+
+msgid "DependedOnBy"
+msgstr "可接续处理"
+
 #: NOT FOUND IN SOURCE
 msgid "Starts By"
 msgstr "应起始日"
@@ -6757,6 +6796,9 @@ msgstr "州"
 #: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/Tickets_Overlay.pm:1651
 msgid "Status"
 msgstr "现况"
+
+msgid "ExtendedStatus"
+msgstr "额外现况"
 
 #: etc/initialdata:309
 msgid "Status Change"
@@ -6793,7 +6835,7 @@ msgstr "承办人从 %1 强制更换 "
 
 #: html/Search/Elements/EditFormat:81
 msgid "Style"
-msgstr ""
+msgstr "样式"
 
 #: NOT FOUND IN SOURCE
 msgid "Subgroup"
@@ -6871,7 +6913,7 @@ msgstr "系统错误。设定权限失败。"
 #: lib/RT/Transaction_Overlay.pm:224 lib/RT/Transaction_Overlay.pm:230
 #. ($msg)
 msgid "System Error: %1"
-msgstr ""
+msgstr "系统错误：%1"
 
 #: NOT FOUND IN SOURCE
 msgid "System Rights"
@@ -6960,7 +7002,7 @@ msgstr "模板已删除"
 
 #: lib/RT/Scrip_Overlay.pm:176
 msgid "Template is mandatory argument"
-msgstr ""
+msgstr "模板是必填字段"
 
 #: lib/RT/Scrip_Overlay.pm:180
 msgid "Template not found"
@@ -6976,7 +7018,7 @@ msgstr "模板剖析完毕"
 
 #: lib/RT/Template_Overlay.pm:391
 msgid "Template parsing error"
-msgstr ""
+msgstr "模板剖析错误"
 
 #: html/Admin/Elements/QueueTabs:70 html/Admin/Elements/SystemTabs:57 html/Admin/Global/index.html:66
 msgid "Templates"
@@ -7297,7 +7339,7 @@ msgstr "申请单视察员"
 #: lib/RT/Search/FromSQL.pm:82
 #. (ref $self)
 msgid "TicketSQL search module"
-msgstr ""
+msgstr "TicketSQL 查询模块"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:64 html/Admin/Global/CustomFields/index.html:75 html/Elements/Tabs:71 html/Search/Elements/Chart:109 lib/RT/CustomField_Overlay.pm:1206
 msgid "Tickets"
@@ -7319,13 +7361,16 @@ msgstr "待处理的申请单"
 msgid "Tickets I requested"
 msgstr "送出的申请单"
 
+msgid "CreatedBy"
+msgstr "建立人"
+
 #: html/Tools/Reports/CreatedByDates.html:86
 msgid "Tickets created after"
-msgstr ""
+msgstr "申请单建立起始日"
 
 #: html/Tools/Reports/CreatedByDates.html:88
 msgid "Tickets created before"
-msgstr ""
+msgstr "申请单建立截止日"
 
 #: NOT FOUND IN SOURCE
 msgid "Tickets from %1"
@@ -7333,11 +7378,11 @@ msgstr "%1 的申请单"
 
 #: html/Tools/Reports/ResolvedByDates.html:87
 msgid "Tickets resolved after"
-msgstr ""
+msgstr "申请单解决起始日"
 
 #: html/Tools/Reports/ResolvedByDates.html:89
 msgid "Tickets resolved before"
-msgstr ""
+msgstr "申请单解决截止日"
 
 #: html/Approvals/Elements/ShowDependency:48
 msgid "Tickets which depend on this approval:"
@@ -7345,6 +7390,9 @@ msgstr "批准之后，可接续处理："
 
 #: html/Search/Elements/PickBasics:134 html/Ticket/Create.html:183 html/Ticket/Elements/EditBasics:72
 msgid "Time Estimated"
+msgstr "预计时间"
+
+msgid "TimeEstimated"
 msgstr "预计时间"
 
 #: html/Search/Elements/PickBasics:135 html/Ticket/Create.html:196 html/Ticket/Elements/EditBasics:85
@@ -7377,7 +7425,19 @@ msgstr "已处理时间"
 
 #: html/Search/Elements/EditFormat:74
 msgid "Title"
-msgstr ""
+msgstr "标题"
+
+msgid "QueueName"
+msgstr "表单名称"
+
+msgid "OwnerName"
+msgstr "承办人名称"
+
+msgid "<blank>"
+msgstr "<留空>"
+
+msgid "NEWLINE"
+msgstr "(换列)"
 
 #: NOT FOUND IN SOURCE
 msgid "To generate a diff of this commit:"
@@ -7398,7 +7458,7 @@ msgstr "待办事项"
 
 #: lib/RT/Ticket_Overlay.pm:1170
 msgid "Told"
-msgstr "告知日期"
+msgstr "告知日"
 
 #: html/Admin/Elements/Tabs:68 html/Admin/index.html:88 html/Elements/Tabs:74 html/Tools/index.html:46 html/Tools/index.html:49
 msgid "Tools"
@@ -7484,8 +7544,8 @@ msgid "Unknown ContentEncoding %1"
 msgstr "不可解的内容文字编码方式 %1"
 
 #: html/Search/Build.html:455 lib/RT/Report/Tickets.pm:410
-msgid "Unknown field: $key"
-msgstr ""
+msgid "Unknown field: %1"
+msgstr "未知的字段：%1"
 
 #: html/Elements/SelectResultsPerPage:58
 msgid "Unlimited"
@@ -7627,7 +7687,7 @@ msgstr "上载您的更动"
 
 #: html/Admin/index.html:90
 msgid "Use other RT administrative tools"
-msgstr ""
+msgstr "使用其它的 RT 管理工具"
 
 #: NOT FOUND IN SOURCE
 msgid "User"
@@ -7750,7 +7810,7 @@ msgstr "符合查询条件的使用者"
 #: bin/rt-crontool:134
 #. ($transaction->id)
 msgid "Using transaction #%1..."
-msgstr ""
+msgstr "使用更动 #%1..."
 
 #: lib/RT/Tickets_Overlay_SQL.pm:528
 msgid "Valid Query"
@@ -7758,7 +7818,7 @@ msgstr "合理的查询"
 
 #: html/Admin/CustomFields/Modify.html:80
 msgid "Validation"
-msgstr ""
+msgstr "验证"
 
 #: NOT FOUND IN SOURCE
 msgid "ValueOfQueue"
@@ -7802,7 +7862,7 @@ msgstr "星期三"
 
 #: html/Tools/MyDay.html:75
 msgid "What I did today"
-msgstr ""
+msgstr "今日工作一览"
 
 #: etc/initialdata:521
 msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
@@ -7918,7 +7978,7 @@ msgstr "您可以按右方的‘下载’键来取得。"
 
 #: html/Prefs/Search.html:56
 msgid "You can also edit the predefined search itself"
-msgstr ""
+msgstr "您也可以直接编辑预先定义的搜寻方式"
 
 #: lib/RT/Ticket_Overlay.pm:3025
 msgid "You can only reassign tickets that you own or that are unowned"
@@ -7926,7 +7986,7 @@ msgstr "祇能重新指派您所承办或是没有承办人的申请单"
 
 #: lib/RT/Ticket_Overlay.pm:3021
 msgid "You can only take tickets that are unowned"
-msgstr ""
+msgstr "您祇能受理尚无承办人的申请单"
 
 #: NOT FOUND IN SOURCE
 msgid "You don't have permission to view that ticket.\\n"
@@ -7997,6 +8057,9 @@ msgstr "邮政编码"
 msgid "[no subject]"
 msgstr "[没有标题]"
 
+msgid "[none]"
+msgstr "[无]"
+
 #: NOT FOUND IN SOURCE
 msgid "ago"
 msgstr "过期"
@@ -8007,11 +8070,11 @@ msgstr "急讯"
 
 #: lib/RT/System.pm:87
 msgid "allow creation of saved searches"
-msgstr ""
+msgstr "允许建立预存查询"
 
 #: lib/RT/System.pm:86
 msgid "allow loading of saved searches"
-msgstr ""
+msgstr "允许加载预存查询"
 
 #: NOT FOUND IN SOURCE
 msgid "approving"
@@ -8024,7 +8087,7 @@ msgstr "权限同 %1"
 
 #: html/Search/Results.html:83
 msgid "chart"
-msgstr ""
+msgstr "图表"
 
 #: html/SelfService/Closed.html:49
 msgid "closed"
@@ -8100,27 +8163,27 @@ msgstr "错误"
 
 #: html/Search/Build.html:547
 msgid "error: can't move down"
-msgstr ""
+msgstr "错误：无法下移"
 
 #: html/Search/Build.html:569
 msgid "error: can't move left"
-msgstr ""
+msgstr "错误：无法左移"
 
 #: html/Search/Build.html:528
 msgid "error: can't move up"
-msgstr ""
+msgstr "错误：无法上移"
 
 #: html/Search/Build.html:612
 msgid "error: nothing to delete"
-msgstr ""
+msgstr "错误：没有可删除的对象"
 
 #: html/Search/Build.html:533 html/Search/Build.html:552 html/Search/Build.html:574 html/Search/Build.html:603
 msgid "error: nothing to move"
-msgstr ""
+msgstr "错误：没有可移动的对象"
 
 #: html/Search/Build.html:630
 msgid "error: nothing to toggle"
-msgstr ""
+msgstr "错误：没有可切换的对象"
 
 #: NOT FOUND IN SOURCE
 msgid "false"
@@ -8142,7 +8205,7 @@ msgstr "群组 '%1'"
 #: html/Search/Results.html:88
 #. ($m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query))
 msgid "grouped by %1"
-msgstr ""
+msgstr "依 %1 分组"
 
 #: lib/RT/Date.pm:342
 msgid "hours"
@@ -8260,7 +8323,7 @@ msgstr "秒"
 
 #: lib/RT/System.pm:85
 msgid "show Configuration tab"
-msgstr ""
+msgstr "显示设定页签"
 
 #: html/Search/Results.html:80
 msgid "spreadsheet"
@@ -8273,11 +8336,11 @@ msgstr "延宕"
 #: html/Search/Results.html:89
 #. ($m->scomp('Elements/SelectChartType', Name => 'ChartStyle'))
 msgid "style: %1"
-msgstr ""
+msgstr "样式：%1"
 
 #: html/Prefs/MyRT.html:93
 msgid "summary rows"
-msgstr ""
+msgstr "加总列"
 
 #: lib/RT/Group_Overlay.pm:222
 #. ($self->Type)
@@ -8344,3 +8407,17 @@ msgstr "模板：%1"
 msgid "years"
 msgstr "年"
 
+msgid "Press 'Esc' to close this window."
+msgstr "按 'Esc' 键可关闭本窗口。"
+
+msgid "HasMember"
+msgstr "拥有成员"
+
+msgid "LinkedTo"
+msgstr "连结至"
+
+msgid "Watcher"
+msgstr "视察员"
+
+msgid "(displaying new and open tickets for %1)"
+msgstr "(显示 %1 名下新建立及开启中的申请单)"

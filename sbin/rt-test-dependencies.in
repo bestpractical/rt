@@ -195,7 +195,7 @@ DBI 1.37
 Class::ReturnValue 0.40
 GnuPG::Interface
 PerlIO::eol
-DBIx::SearchBuilder 1.48
+DBIx::SearchBuilder 1.50
 Text::Template
 File::Spec 0.8
 HTML::Entities 
@@ -222,6 +222,7 @@ Cache::Simple::TimedExpiry
 UNIVERSAL::require
 Calendar::Simple
 Encode 2.13
+CSS::Squish 0.06
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
@@ -236,6 +237,7 @@ GD
 GD::Graph
 GD::Text
 Text::WikiFormat 0.76
+CSS::Squish 0.06
 .
 
 $deps{'STANDALONE'} = [ text_to_hash( << '.') ];

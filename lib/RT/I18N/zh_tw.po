@@ -1,9 +1,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 3.5.x\n"
-"PO-Revision-Date: 2005-10-03 13:54-0400\n"
-"Last-Translator: Autrijus Tang <autrijus@autrijus.org>\n"
+"Project-Id-Version: RT 3.6.x\n"
+"PO-Revision-Date: 2007-12-09 13:05+0800\n"
+"Last-Translator: Audrey Tang <cpan@audreyt.org>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -42,7 +42,7 @@ msgstr "#%1: %2"
 
 #: html/Elements/ShowSearch:105
 msgid "$1"
-msgstr ""
+msgstr "$1"
 
 #: lib/RT/Record.pm:940
 #. ($label)
@@ -150,12 +150,12 @@ msgstr "%1 - 將更新狀態輸出到 STDOUT"
 #: bin/rt-crontool:253
 #. ("--template-id")
 msgid "%1 - Specify id of the template you want to use"
-msgstr ""
+msgstr "%1 - 指定欲使用的範本編號"
 
 #: bin/rt-crontool:256
 #. ("--transaction")
 msgid "%1 - Specify if you want to use either 'first' or 'last' tarnsaction"
-msgstr ""
+msgstr "%1 - 指定欲使用的更動為 'first' (第一項) 或 'last' (最後一項)"
 
 #: bin/rt-crontool:247
 #. ("--action")
@@ -175,7 +175,7 @@ msgstr "%1 - 指定欲使用的查詢模組"
 #: bin/rt-crontool:259
 #. ("--transaction-type")
 msgid "%1 - Specify the type of a transaction you want to use"
-msgstr ""
+msgstr "%1 - 指定欲使用的更動類別"
 
 #: html/Elements/Footer:56
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2006', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
@@ -571,7 +571,7 @@ msgstr "(未命名)"
 
 #: html/Ticket/Elements/Reminders:133
 msgid "(yyyy/mm/dd)"
-msgstr ""
+msgstr "(yyyy/mm/dd)"
 
 #: NOT FOUND IN SOURCE
 msgid "*"
@@ -579,11 +579,11 @@ msgstr "★"
 
 #: html/Elements/EditCustomFieldSelect:57
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: bin/rt-crontool:95
 msgid "--transaction argument could be only 'first' or 'last'"
-msgstr ""
+msgstr "--transaction 的值僅能為 'first' 或 'last'"
 
 #: NOT FOUND IN SOURCE
 msgid ":"
@@ -608,7 +608,7 @@ msgstr "<%$field%>"
 #: html/Elements/CreateTicket:47
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr ""
+msgstr "<input type=\"submit\" class=\"button\" value=\"提出申請單\" />&nbsp;%1"
 
 #: docs/design_docs/string-extraction-guide.txt:54 lib/RT/StyleGuide.pod:787
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
@@ -653,7 +653,7 @@ msgstr "ACLEquivalence"
 
 #: html/Search/Elements/SelectAndOr:46
 msgid "AND"
-msgstr ""
+msgstr "AND"
 
 #: NOT FOUND IN SOURCE
 msgid "Aborting to avoid unintended ticket modifications.\\n"
@@ -690,7 +690,7 @@ msgstr "動作執行完畢"
 
 #: bin/rt-crontool:171
 msgid "Action committed.\\n"
-msgstr ""
+msgstr "動作執行完畢。\\n"
 
 #: lib/RT/Scrip_Overlay.pm:168
 msgid "Action is mandatory argument"
@@ -1020,7 +1020,7 @@ msgstr "數額"
 
 #: html/Search/Elements/EditQuery:56
 msgid "And/Or"
-msgstr ""
+msgstr "AND/OR"
 
 #: NOT FOUND IN SOURCE
 msgid "Any Condition"
@@ -1368,7 +1368,7 @@ msgstr "不能整合進已整合過的申請單。這個錯誤不該發生。"
 #: html/Widgets/SavedSearch:63
 #. (loc($self->{SearchType}))
 msgid "Can't save %1"
-msgstr ""
+msgstr "無法儲存 %1"
 
 #: html/Search/Build.html:290
 msgid "Can't save this search"
@@ -1469,7 +1469,7 @@ msgstr "全部清除"
 
 #: html/Helpers/CalPopup.html:51
 msgid "Close window"
-msgstr ""
+msgstr "關閉視窗"
 
 #: html/Ticket/Elements/ShowDates:68
 msgid "Closed"
@@ -1489,15 +1489,15 @@ msgstr "執行程式碼"
 
 #: lib/RT/CustomField_Overlay.pm:89
 msgid "Combobox: Select or enter multiple values"
-msgstr ""
+msgstr "下拉文字框：選擇或鍵入多重項目"
 
 #: lib/RT/CustomField_Overlay.pm:90
 msgid "Combobox: Select or enter one value"
-msgstr ""
+msgstr "下拉文字框：選擇或鍵入單一項目"
 
 #: lib/RT/CustomField_Overlay.pm:91
 msgid "Combobox: Select or enter up to %1 values"
-msgstr ""
+msgstr "下拉文字框：選擇或鍵入最多 %1 個項目"
 
 #: NOT FOUND IN SOURCE
 msgid "Command not understood!\\n"
@@ -1573,7 +1573,7 @@ msgstr "條件"
 
 #: lib/RT/Scrip_Overlay.pm:184
 msgid "Condition is mandatory argument"
-msgstr ""
+msgstr "條件是必填欄位"
 
 #: bin/rt-crontool:151
 msgid "Condition matches..."
@@ -1649,7 +1649,7 @@ msgstr "未紀錄申請單回覆"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. "
-msgstr "不能新增自訂欄位的值 "
+msgstr "不能新增自訂欄位的值。"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. %1 "
@@ -1657,16 +1657,16 @@ msgstr "不能新增自訂欄位的值。%1 "
 
 #: lib/RT/Record.pm:1707
 msgid "Could not add new custom field value. "
-msgstr ""
+msgstr "不能新增自訂欄位的值。"
 
 #: lib/RT/Record.pm:1660
 #. (, $value_msg)
 msgid "Could not add new custom field value. %1 "
-msgstr ""
+msgstr "不能新增自訂欄位的值。%1 "
 
 #: lib/RT/Ticket_Overlay.pm:3048 lib/RT/Ticket_Overlay.pm:3056 lib/RT/Ticket_Overlay.pm:3073
 msgid "Could not change owner. "
-msgstr "不能更改承辦人。 "
+msgstr "不能更改承辦人。"
 
 #: html/Admin/CustomFields/Modify.html:161
 #. ($msg)
@@ -1676,7 +1676,7 @@ msgstr "無法新增自訂欄位"
 #: html/Admin/Elements/EditCustomField:113
 #. ($msg)
 msgid "Could not create CustomField: %1"
-msgstr ""
+msgstr "無法新增自訂欄位：%1"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not create Scrip"
@@ -1746,11 +1746,11 @@ msgstr "無法載入群組"
 #: lib/RT/SavedSearch.pm:119
 #. ($privacy)
 msgid "Could not load object for %1"
-msgstr ""
+msgstr "無法為 %1 載入物件"
 
 #: lib/RT/SavedSearch.pm:197
 msgid "Could not load search attribute"
-msgstr ""
+msgstr "無法載入查詢屬性"
 
 #: lib/RT/Queue_Overlay.pm:761
 #. ($args{'Type'})
@@ -1777,7 +1777,7 @@ msgstr "無法設定使用者資訊"
 
 #: lib/RT/Transaction_Overlay.pm:159
 msgid "Couldn't add attachment"
-msgstr ""
+msgstr "無法新增附件"
 
 #: lib/RT/Group_Overlay.pm:1003
 msgid "Couldn't add member to group"
@@ -2892,7 +2892,7 @@ msgstr "鍵入申請單可鏈結到的申請單編號或網址。項目之間請
 
 #: lib/RT/CustomField_Overlay.pm:66
 msgid "Enter up to %1 values"
-msgstr "鍵入最多 %1 個值"
+msgstr "鍵入最多 %1 個項目"
 
 #: NOT FOUND IN SOURCE
 msgid "EntryBoolean"
@@ -3008,7 +3008,7 @@ msgstr "備註"
 
 #: lib/RT/SavedSearch.pm:177
 msgid "Failed to create search attribute"
-msgstr ""
+msgstr "查詢屬性建立失敗"
 
 #: lib/RT/User_Overlay.pm:376
 msgid "Failed to find 'Privileged' users pseudogroup."
@@ -4183,7 +4183,7 @@ msgstr "雜費"
 
 #: html/Search/Build.html:490 lib/RT/Report/Tickets.pm:445
 msgid "Mismatched parentheses"
-msgstr ""
+msgstr "未對齊的括號"
 
 #: lib/RT/Record.pm:954
 msgid "Missing a primary key?: %1"
@@ -4208,7 +4208,7 @@ msgstr "更改權限控制清單"
 #: html/Admin/Elements/ObjectCustomFields:96
 #. (loc(lc($FriendlySubTypes)), loc(lc($Types)))
 msgid "Modify Custom Fields which apply to %1 for all %2"
-msgstr ""
+msgstr "更改適用於 %1 內所有 %2 的自訂欄位"
 
 #: html/Admin/Elements/ObjectCustomFields:98
 #. (loc(lc($Types)))
@@ -4294,7 +4294,7 @@ msgstr "更改申請單 # %1 的日期"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:65 html/Admin/Global/index.html:72
 msgid "Modify global custom fields"
-msgstr ""
+msgstr "更改全域自訂欄位"
 
 #: html/Admin/Elements/GlobalCustomFieldTabs:70 html/Admin/Global/GroupRights.html:46 html/Admin/Global/GroupRights.html:49 html/Admin/Global/index.html:77
 msgid "Modify global group rights"
@@ -4383,7 +4383,7 @@ msgstr "更改適用於所有表單的範本"
 
 #: html/Admin/Global/index.html:85
 msgid "Modify the default \"RT at a glance\" view"
-msgstr ""
+msgstr "更改預設的「RT 一覽」檢視"
 
 #: html/Admin/Groups/Modify.html:119 html/User/Groups/Modify.html:107
 #. ($Group->Name)
@@ -4446,7 +4446,7 @@ msgstr "更改權限清單"
 
 #: lib/RT/CustomField_Overlay.pm:108
 msgid "ModifyCustomField"
-msgstr ""
+msgstr "更改自訂欄位"
 
 #: lib/RT/Group_Overlay.pm:166
 msgid "ModifyOwnMembership"
@@ -4802,7 +4802,7 @@ msgstr "沒有顯示該申請單的權限"
 
 #: lib/RT/SavedSearch.pm:156
 msgid "No permission to save system-wide searches"
-msgstr ""
+msgstr "沒有儲存全域預存查詢的權限"
 
 #: html/SelfService/Update.html:117
 msgid "No permission to view update ticket"
@@ -4834,7 +4834,7 @@ msgstr "沒有選定權限"
 
 #: lib/RT/SavedSearch.pm:196
 msgid "No search loaded"
-msgstr ""
+msgstr "尚未載入查詢"
 
 #: html/Search/Bulk.html:232
 msgid "No search to operate on."
@@ -5014,7 +5014,7 @@ msgstr "確定"
 
 #: html/Search/Elements/SelectAndOr:47
 msgid "OR"
-msgstr ""
+msgstr "OR"
 
 #: lib/RT/Record.pm:322
 msgid "Object could not be created"
@@ -5081,7 +5081,7 @@ msgstr "等於"
 #: lib/RT/Transaction_Overlay.pm:326
 #. ($self->CreatedAsString(), $self->CreatorObj->Name())
 msgid "On %1, %2 wrote:"
-msgstr ""
+msgstr "在 %1 時，%2 寫到："
 
 #: NOT FOUND IN SOURCE
 msgid "On Change"
@@ -5323,11 +5323,11 @@ msgstr ""
 #: lib/RT/User_Overlay.pm:1037 lib/RT/User_Overlay.pm:214
 #. ($RT::MinimumPasswordLength)
 msgid "Password needs to be at least %1 characters long"
-msgstr ""
+msgstr "密碼長度至少必須為 %1 個字元"
 
 #: lib/RT/User_Overlay.pm:1044
 msgid "Password set"
-msgstr ""
+msgstr "密碼已設定"
 
 #: NOT FOUND IN SOURCE
 msgid "Password too short"
@@ -5521,12 +5521,12 @@ msgstr "偏好"
 #: html/Admin/Users/MyRT.html:75
 #. ($pane, $UserObj->Name)
 msgid "Preferences %1 for user %2 ."
-msgstr ""
+msgstr "使用者 %2 的 %1 偏好。"
 
 #: html/Prefs/MyRT.html:141
 #. ($pane)
 msgid "Preferences saved for %1."
-msgstr ""
+msgstr "成功儲存 %1 的偏好。"
 
 #: NOT FOUND IN SOURCE
 msgid "Prefs"
@@ -5792,15 +5792,15 @@ msgstr "RT 一覽"
 #: html/Admin/Users/MyRT.html:30
 #. ($UserObj->Name)
 msgid "RT at a glance for the user %1"
-msgstr ""
+msgstr "使用者 %1 的 RT 一覽"
 
 #: html/Admin/CustomFields/Modify.html:117
 msgid "RT can include content from another web service when showing this custom field."
-msgstr ""
+msgstr "RT 可於顯示此自訂欄位時引入其他網站的內容"
 
 #: html/Admin/CustomFields/Modify.html:106
 msgid "RT can make this custom field's values into hyperlinks to another service."
-msgstr ""
+msgstr "RT 可將此自訂欄位的值視為連往其他網站的超鏈結"
 
 #: NOT FOUND IN SOURCE
 msgid "RT couldn't authenticate you"
@@ -5845,7 +5845,7 @@ msgstr "RT 認為這可能是退信"
 
 #: html/Search/Simple.html:58
 msgid "RT will look for anything else you enter in ticket subjects."
-msgstr ""
+msgstr "RT 會在申請單主旨內搜尋將您鍵入的任何其他字樣"
 
 #: NOT FOUND IN SOURCE
 msgid "RT will process this message as if it were unsigned.\\n"
@@ -5853,7 +5853,7 @@ msgstr "RT 以未簽章方式處理這封郵件。\\n"
 
 #: html/Admin/CustomFields/Modify.html:108 html/Admin/CustomFields/Modify.html:119
 msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
-msgstr ""
+msgstr "RT 會將 <tt>__id__</tt> 及 <tt>__CustomField__</tt> 置換成紀錄編號及自訂欄位"
 
 #: NOT FOUND IN SOURCE
 msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
@@ -5943,22 +5943,22 @@ msgstr "每 %1 分鐘更新頁面"
 #: lib/RT/Transaction_Overlay.pm:811
 #. ($ticket->Subject)
 msgid "Reminder '%1' added"
-msgstr ""
+msgstr "已建立提醒項目「%1」"
 
 #: lib/RT/Transaction_Overlay.pm:824
 #. ($ticket->Subject)
 msgid "Reminder '%1' completed"
-msgstr ""
+msgstr "已完成提醒項目「%1」"
 
 #: lib/RT/Transaction_Overlay.pm:817
 #. ($ticket->Subject)
 msgid "Reminder '%1' reopened"
-msgstr ""
+msgstr "已重新開啟提醒項目「%1」"
 
 #: html/Ticket/Reminders.html:46
 #. ($Ticket->Id)
 msgid "Reminder ticket #%1"
-msgstr ""
+msgstr "提醒項目 #%1"
 
 #: html/Elements/MyReminders:48 html/Ticket/Elements/ShowSummary:75 html/Ticket/Elements/Tabs:122 html/Ticket/Reminders.html:52
 msgid "Reminders"
@@ -5967,7 +5967,7 @@ msgstr ""
 #: html/Ticket/Reminders.html:50
 #. ($Ticket->Id)
 msgid "Reminders for ticket #%1"
-msgstr ""
+msgstr "申請單 #%1 的提醒項目"
 
 #: NOT FOUND IN SOURCE
 msgid "Remove"
@@ -6306,7 +6306,7 @@ msgstr ""
 
 #: lib/RT/SavedSearch.pm:115
 msgid "Search attribute load failure"
-msgstr ""
+msgstr "搜尋屬性載入失敗"
 
 #: html/Approvals/Elements/PendingMyApproval:59
 msgid "Search for approvals"
@@ -6318,7 +6318,7 @@ msgstr ""
 
 #: html/Search/Simple.html:55
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>. RT will look for anything else you enter in ticket bodies and attachments."
-msgstr ""
+msgstr "搜尋申請單。請鍵入<strong>編號</strong>、<strong>表單名稱</strong>、承辦人的<strong>使用者名稱</strong>、或申請人的<strong>電子郵件地址</strong>。以上格式之外的文字，則會在申請單內文及附件內檢索。"
 
 #: html/User/Elements/Tabs:62
 msgid "Search options"
@@ -6327,12 +6327,12 @@ msgstr ""
 #: html/Search/Chart.html:56
 #. ($PrimaryGroupBy)
 msgid "Search results grouped by %1"
-msgstr ""
+msgstr "搜尋結果，依 %1 分組"
 
 #: lib/RT/SavedSearch.pm:203
 #. ($msg)
 msgid "Search update: %1"
-msgstr ""
+msgstr "更新查詢：%1"
 
 #: NOT FOUND IN SOURCE
 msgid "Searches can't be associated with that kind of object"
@@ -6340,7 +6340,7 @@ msgstr "不能對此類物件進行查詢"
 
 #: html/Search/Simple.html:57
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
-msgstr ""
+msgstr "對所有申請單的全文進行檢索，可能會需要很久的時間。但如果您真的有需要，可鍵入 <b>fulltext:<i>文字</i></b> 來搜尋申請單的所有紀錄。"
 
 #: NOT FOUND IN SOURCE
 msgid "Second-"
@@ -6408,7 +6408,7 @@ msgstr "選擇表單"
 
 #: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
-msgstr ""
+msgstr "為您新的申請單選擇一個表單"
 
 #: NOT FOUND IN SOURCE
 msgid "Select a queue to link to"
@@ -6424,19 +6424,19 @@ msgstr "選擇自訂欄位"
 
 #: html/Admin/Global/CustomFields/index.html:70
 msgid "Select custom fields for all user groups"
-msgstr ""
+msgstr "選擇適用於所有使用者群組的自訂欄位"
 
 #: html/Admin/Global/CustomFields/index.html:65
 msgid "Select custom fields for all users"
-msgstr ""
+msgstr "選擇適用於所有使用者的自訂欄位"
 
 #: html/Admin/Global/CustomFields/index.html:76
 msgid "Select custom fields for tickets in all queues"
-msgstr ""
+msgstr "選擇適用於所有表單內申請單的自訂欄位"
 
 #: html/Admin/Global/CustomFields/index.html:83
 msgid "Select custom fields for transactions on tickets in all queues"
-msgstr ""
+msgstr "選擇適用於所有表單內申請單之更動的自訂欄位"
 
 #: html/Admin/Elements/GroupTabs:75 html/User/Elements/GroupTabs:71
 msgid "Select group"
@@ -6500,11 +6500,11 @@ msgstr "已選取的物件"
 
 #: NOT FOUND IN SOURCE
 msgid "Selected users:"
-msgstr "新增對象："
+msgstr "已選取的使用者："
 
 #: html/Widgets/SelectionBox:209
 msgid "Selections modified. Please save your changes"
-msgstr ""
+msgstr "選取的項目已更改。請儲存您的更動"
 
 #: NOT FOUND IN SOURCE
 msgid "Self Service"
@@ -6692,7 +6692,7 @@ msgstr ""
 
 #: html/Admin/CustomFields/Modify.html:120
 msgid "Some browsers may only load content from the same domain as your RT server."
-msgstr ""
+msgstr "某些瀏覽器只允許載入和 RT 伺服器同一個網域的內容。"
 
 #: html/Admin/Elements/AddCustomFieldValue:49 html/Admin/Elements/EditCustomFieldValues:54
 msgid "Sort"
@@ -7750,7 +7750,7 @@ msgstr "符合查詢條件的使用者"
 #: bin/rt-crontool:134
 #. ($transaction->id)
 msgid "Using transaction #%1..."
-msgstr ""
+msgstr "使用更動 #%1..."
 
 #: lib/RT/Tickets_Overlay_SQL.pm:528
 msgid "Valid Query"
@@ -7758,7 +7758,7 @@ msgstr "合理的查詢"
 
 #: html/Admin/CustomFields/Modify.html:80
 msgid "Validation"
-msgstr ""
+msgstr "驗證"
 
 #: NOT FOUND IN SOURCE
 msgid "ValueOfQueue"
@@ -8007,11 +8007,11 @@ msgstr "急訊"
 
 #: lib/RT/System.pm:87
 msgid "allow creation of saved searches"
-msgstr ""
+msgstr "允許建立預存查詢"
 
 #: lib/RT/System.pm:86
 msgid "allow loading of saved searches"
-msgstr ""
+msgstr "允許載入預存查詢"
 
 #: NOT FOUND IN SOURCE
 msgid "approving"
@@ -8100,27 +8100,27 @@ msgstr "錯誤"
 
 #: html/Search/Build.html:547
 msgid "error: can't move down"
-msgstr ""
+msgstr "錯誤：無法下移"
 
 #: html/Search/Build.html:569
 msgid "error: can't move left"
-msgstr ""
+msgstr "錯誤：無法左移"
 
 #: html/Search/Build.html:528
 msgid "error: can't move up"
-msgstr ""
+msgstr "錯誤：無法上移"
 
 #: html/Search/Build.html:612
 msgid "error: nothing to delete"
-msgstr ""
+msgstr "錯誤：沒有可刪除的對象"
 
 #: html/Search/Build.html:533 html/Search/Build.html:552 html/Search/Build.html:574 html/Search/Build.html:603
 msgid "error: nothing to move"
-msgstr ""
+msgstr "錯誤：沒有可移動的對象"
 
 #: html/Search/Build.html:630
 msgid "error: nothing to toggle"
-msgstr ""
+msgstr "錯誤：沒有可切換的對象"
 
 #: NOT FOUND IN SOURCE
 msgid "false"
@@ -8142,7 +8142,7 @@ msgstr "群組 '%1'"
 #: html/Search/Results.html:88
 #. ($m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query))
 msgid "grouped by %1"
-msgstr ""
+msgstr "依 %1 分組"
 
 #: lib/RT/Date.pm:342
 msgid "hours"
@@ -8260,7 +8260,7 @@ msgstr "秒"
 
 #: lib/RT/System.pm:85
 msgid "show Configuration tab"
-msgstr ""
+msgstr "顯示設定頁籤"
 
 #: html/Search/Results.html:80
 msgid "spreadsheet"
@@ -8277,7 +8277,7 @@ msgstr ""
 
 #: html/Prefs/MyRT.html:93
 msgid "summary rows"
-msgstr ""
+msgstr "加總列"
 
 #: lib/RT/Group_Overlay.pm:222
 #. ($self->Type)
@@ -8344,3 +8344,17 @@ msgstr "範本：%1"
 msgid "years"
 msgstr "年"
 
+msgid "Press 'Esc' to close this window."
+msgstr "按 'Esc' 鍵可關閉本視窗。"
+
+msgid "HasMember"
+msgstr "擁有成員"
+
+msgid "LinkedTo"
+msgstr "連結至"
+
+msgid "Watcher"
+msgstr "視察員"
+
+msgid "(displaying new and open tickets for %1)"
+msgstr "(顯示 %1 名下新建立及開啟中的申請單)"

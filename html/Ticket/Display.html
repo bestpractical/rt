@@ -76,7 +76,11 @@
       AttachmentContent => $attachment_content
 &> 
 
-% $m->callback( %ARGS, Ticket => $TicketObj, CallbackName => 'AfterShowHistory' );
+% $m->callback( %ARGS,
+%     Ticket       => $TicketObj,
+%     current_tab  => 'Ticket/Display.html?id=' . $TicketObj->id,
+%     CallbackName => 'AfterShowHistory',
+% );
 
 <%ARGS>
 $id => undef

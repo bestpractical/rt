@@ -1,0 +1,9 @@
+<% $QueueObj->Name %>
+<%ARGS>
+$QueueObj
+</%ARGS>
+<%INIT>
+my $value = $QueueObj->Name;
+$value = '#'. $QueueObj->id
+    unless defined $value && length $value;
+</%INIT>

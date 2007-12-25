@@ -201,13 +201,18 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 sub StaticFileHeaders {
     my $date = RT::Date->new( $RT::SystemUser );
 
+    # make cache public
+    $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'max-age=259200, public';
+
     # Expire things in a month.
     $date->Set( Value => time + 30*24*60*60 );
     $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->RFC2616;
 
+    # if we set 'Last-Modified' then browser request a comp using 'If-Modified-Since'
+    # request, but we don't handle it and generate full reply again
     # Last modified at server start time
-    $date->Set( Value => $^T );
-    $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
+    # $date->Set( Value => $^T );
+    # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
 }
 
 
@@ -325,6 +330,7 @@ sub CreateTicket {
         From                => $ARGS{'From'},
         Cc                  => $ARGS{'Cc'},
         Body                => $ARGS{'Content'},
+        Type                => $ARGS{'ContentType'},
     );
 
     if ( $ARGS{'Attachments'} ) {
@@ -555,6 +561,7 @@ sub ProcessUpdateMessage {
     my $Message = MakeMIMEEntity(
         Subject => $args{ARGSRef}->{'UpdateSubject'},
         Body    => $args{ARGSRef}->{'UpdateContent'},
+        Type    => $args{ARGSRef}->{'UpdateContentType'},
     );
 
     $Message->head->add( 'Message-ID' => 
@@ -659,6 +666,8 @@ sub ProcessUpdateMessage {
 
 Takes a paramhash Subject, Body and AttachmentFieldName.
 
+Also takes Form, Cc and Type as optional paramhash keys.
+
   Returns a MIME::Entity.
 
 =cut
@@ -672,6 +681,7 @@ sub MakeMIMEEntity {
         Cc                  => undef,
         Body                => undef,
         AttachmentFieldName => undef,
+        Type                => undef,
         @_,
     );
     my $Message = MIME::Entity->build(
@@ -690,7 +700,7 @@ sub MakeMIMEEntity {
         no utf8;
         use bytes;
         $Message->attach(
-            Type    => 'text/plain',
+            Type    => $args{'Type'} || 'text/plain',
             Charset => 'UTF-8',
             Data    => $args{'Body'},
         );
@@ -1264,6 +1274,7 @@ sub _ProcessObjectCustomFieldUpdates {
 
     my @results;
     foreach my $arg ( keys %{ $args{'ARGS'} } ) {
+        next if $arg =~ /Category$/;
 
         # since http won't pass in a form element with a null value, we need
         # to fake it

@@ -574,6 +574,8 @@ L<DBIx::SearchBuilder>
 
 =cut
 
+eval "require RT_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT_Vendor.pm});
 eval "require RT_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT_Local.pm});
 

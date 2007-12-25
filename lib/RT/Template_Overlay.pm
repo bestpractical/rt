@@ -285,7 +285,8 @@ imports the results into a L<MIME::Entity> so we can really use it. Use
 L</MIMEObj> method to get the L<MIME::Entity> object.
 
 Takes a hash containing Argument, TicketObj, and TransactionObj and other
-arguments that will be available in the template's code.
+arguments that will be available in the template's code. TicketObj and
+TransactionObj are not mandatory, but highly recommended.
 
 It returns a tuple of (val, message). If val is false, the message contains
 an error message.
@@ -365,7 +366,8 @@ sub _ParseContent {
 
     $args{'Ticket'} = delete $args{'TicketObj'} if $args{'TicketObj'};
     $args{'Transaction'} = delete $args{'TransactionObj'} if $args{'TransactionObj'};
-    $args{'Requestor'} = eval { $args{'Ticket'}->Requestors->UserMembersObj->First->Name };
+    $args{'Requestor'} = eval { $args{'Ticket'}->Requestors->UserMembersObj->First->Name }
+        if $args{'Ticket'};
     $args{'rtname'}    = RT->Config->Get('rtname');
     if ( $args{'Ticket'} ) {
         my $t = $args{'Ticket'}; # avoid memory leak

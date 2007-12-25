@@ -54,7 +54,7 @@
 % if ($Scrips->Count == 0 ) {
 <p><i><&|/l&>(No scrips)</&></i></p>
 % } else {
-<table>
+<table width="100%">
 <p><i><&|/l&>(Check box to delete)</&></i></p>
 
 %   while (my $scrip = $Scrips->Next ) {

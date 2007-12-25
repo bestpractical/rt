@@ -57,6 +57,7 @@ $Class     => 'RT__Ticket'
 </%ARGS>
 <%init>
 $m->out('<tr class="' . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >' . "\n" );
+use HTML::Entities;
 my $item;
 foreach my $column ( @Format ) {
     if ( defined $column->{title} && $column->{title} eq 'NEWLINE' ) {
@@ -73,8 +74,10 @@ foreach my $column ( @Format ) {
     }
 
     $item++;
-
-    $m->out('<td class="collection-as-table" ');
+    my $class = $column->{class}
+        ? encode_entities($column->{class}, q{'"&<>})
+        : 'collection-as-table';
+    $m->out(qq{<td class="$class" });
     $m->out( 'align="' . $column->{align} . '"' ) if $column->{align};
     $m->out( 'style="' . $column->{style} . '"' ) if $column->{style};
     $m->out('>');
