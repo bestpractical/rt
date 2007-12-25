@@ -58,7 +58,7 @@ use warnings;
 
 use RT::Test; use Test::More tests => 153;
 
-my ($baseurl, $m) = RT::Test->started_ok;
+my ($baseurl, $ua) = RT::Test->started_ok;
 
 use RT::Model::TicketCollection;
 
@@ -68,7 +68,7 @@ use LWP::UserAgent;
 
 # TODO: --extension queue
 
-my $url = $m->rt_base_url;
+my $url = $ua->rt_base_url;
 
 sub latest_ticket {
     my $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user );
@@ -505,7 +505,6 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     is ($acontent, $file, 'The attachment isn\'t screwed up in the database.');
 
     # Grab the binary attachment via the web ui
-    my $ua = new LWP::UserAgent;
     my $full_url = "$url/Ticket/Attachment/". $attachment->TransactionId
         ."/". $attachment->id. "/bplogo.gif";
         $ua->login();
