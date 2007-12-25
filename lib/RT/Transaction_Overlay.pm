@@ -283,7 +283,7 @@ missing, it defaults to the value of C<$RT::Transaction::PreferredContentType>.
 sub Content {
     my $self = shift;
     my %args = (
-        Type  => $PreferredContentType,
+        Type  => $PreferredContentType || 'text/plain',
         Quote => 0,
         Wrap  => 70,
         @_
