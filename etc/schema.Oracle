@@ -25,7 +25,7 @@ CREATE TABLE Queues (
 		CONSTRAINT Queues_Key PRIMARY KEY,
 	name 			VARCHAR2(200) CONSTRAINT Queues_name_Unique UNIQUE NOT NULL,
 	Description 		VARCHAR2(255),
-	CorrespondAddress 	VARCHAR2(120),
+	correspond_address 	VARCHAR2(120),
 	commentAddress 		VARCHAR2(120),
 	InitialPriority 	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	FinalPriority 		NUMBER(11,0) DEFAULT 0 NOT NULL,

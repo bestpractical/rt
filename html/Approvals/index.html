@@ -70,7 +70,7 @@ foreach my $arg ( keys %ARGS ) {
 	);
 	RT::I18N::set_mime_entity_to_utf8($notes); # convert text parts into utf-8
 
-        my ( $notesval, $notesmsg ) = $ticket->Correspond( MIMEObj => $notes );
+        my ( $notesval, $notesmsg ) = $ticket->correspond( MIMEObj => $notes );
         if ($notesval) {
                 push ( @actions, _("Approval #%1: Notes recorded",$ticket->id ));
         } else {

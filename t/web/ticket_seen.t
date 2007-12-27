@@ -51,7 +51,7 @@ diag "user B adds a message, we check that user A see notification and can clear
     $ticket->load( $tid );
     ok $ticket->id, 'loaded the ticket';
 
-    my ($status, $msg) = $ticket->Correspond( Content => 'bla-bla' );
+    my ($status, $msg) = $ticket->correspond( Content => 'bla-bla' );
     ok $status, 'added reply' or diag "error: $msg";
 
     $agent_a->goto_ticket($tid);

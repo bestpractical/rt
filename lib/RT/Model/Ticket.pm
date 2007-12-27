@@ -1379,7 +1379,7 @@ sub RequestorAddresses {
         return undef;
     }
 
-    return ( $self->Requestors->MemberemailesAsString );
+    return ( $self->Requestors->member_emailsAsString );
 }
 
 
@@ -1396,7 +1396,7 @@ sub AdminCcAddresses {
         return undef;
     }
 
-    return ( $self->AdminCc->MemberemailesAsString )
+    return ( $self->AdminCc->member_emailsAsString )
 
 }
 
@@ -1412,7 +1412,7 @@ sub CcAddresses {
     unless ( $self->current_user_has_right('ShowTicket') ) {
         return undef;
     }
-    return ( $self->Cc->MemberemailesAsString);
+    return ( $self->Cc->member_emailsAsString);
 
 }
 

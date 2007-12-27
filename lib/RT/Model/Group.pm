@@ -799,16 +799,16 @@ sub UserMembersObj {
 
 # }}}
 
-# {{{ Memberemailes
+# {{{ member_emails
 
-=head2 Memberemailes
+=head2 member_emails
 
 Returns an array of the email addresses of all of this group's members
 
 
 =cut
 
-sub Memberemailes {
+sub member_emails {
     my $self = shift;
 
     my %addresses;
@@ -821,9 +821,9 @@ sub Memberemailes {
 
 # }}}
 
-# {{{ MemberemailesAsString
+# {{{ member_emailsAsString
 
-=head2 MemberemailesAsString
+=head2 member_emailsAsString
 
 Returns a comma delimited string of the email addresses of all users 
 who are members of this group.
@@ -831,9 +831,9 @@ who are members of this group.
 =cut
 
 
-sub MemberemailesAsString {
+sub member_emailsAsString {
     my $self = shift;
-    return (join(', ', $self->Memberemailes));
+    return (join(', ', $self->member_emails));
 }
 
 # }}}

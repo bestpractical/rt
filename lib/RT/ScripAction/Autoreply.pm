@@ -45,11 +45,11 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::ScripAction::Autoreply;
 
 use strict;
 use warnings;
 
+package RT::ScripAction::Autoreply;
 use base qw(RT::ScripAction::SendEmail);
 
 =head2 Prepare
@@ -77,7 +77,7 @@ Sets the recipients of this message to this ticket's Requestor.
 sub set_Recipients {
     my $self=shift;
 
-    push(@{$self->{'To'}}, $self->TicketObj->Requestors->Memberemailes);
+    push(@{$self->{'To'}}, $self->TicketObj->Requestors->member_emails);
     
     return(1);
 }
@@ -105,8 +105,8 @@ sub set_ReturnAddress {
 		     RT->Config->Get('commentAddress');
     }
     else {
-	$replyto = $self->TicketObj->QueueObj->CorrespondAddress ||
-		     RT->Config->Get('CorrespondAddress');
+	$replyto = $self->TicketObj->QueueObj->correspond_address ||
+		     RT->Config->Get('correspond_address');
     }
     
     unless ($self->TemplateObj->MIMEObj->head->get('From')) {

@@ -17,7 +17,7 @@ if ($q->id != 0) {
 
 my ($id, $msg) = $q->create( name => 'Regression',
             Description => 'A regression test queue',
-            CorrespondAddress => 'correspond@a',
+            correspond_address => 'correspond@a',
             commentAddress => 'comment@a');
 
 isnt($id, 0, "Queue was Created sucessfully - $msg");
@@ -28,7 +28,7 @@ ok($q2->load($id));
 is($q2->id, $id, "Sucessfully loaded the queue again");
 is($q2->name, 'Regression');
 is($q2->Description, 'A regression test queue');
-is($q2->CorrespondAddress, 'correspond@a');
+is($q2->correspond_address, 'correspond@a');
 is($q2->commentAddress, 'comment@a');
 
 

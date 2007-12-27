@@ -322,7 +322,7 @@ msgstr "(Markera boxar för tillval av meddelande till registrerade mottagare)"
 msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Mata in ärende-ID:n eller URL, separerade med mellanrum)"
 
-#. ($RT::CorrespondAddress)
+#. ($RT::correspond_address)
 #. ($RT::commentAddress)
 #: html/Admin/Queues/Modify.html:75
 #: html/Admin/Queues/Modify.html:81

@@ -86,7 +86,7 @@ sub Groupings {
     if ( !$queues && $args{'Query'} ) {
         require RT::Interface::Web::QueryBuilder::Tree;
         my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-        $tree->ParseSQL( Query => $args{'Query'}, CurrentUser => $self->current_user );
+        $tree->ParseSQL( Query => $args{'Query'} );
         $queues = $tree->GetReferencedQueues;
     }
 

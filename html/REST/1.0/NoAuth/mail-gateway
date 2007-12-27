@@ -70,7 +70,7 @@ if ( $status == 1 ) {
     $m->out( 'Status: '  . ($Ticket->Status         || '') );
     $m->out( 'Subject: ' . ($Ticket->Subject        || '') );
     $m->out(
-      'Requestor: ' . ($Ticket->Requestors->MemberemailesAsString || '') );
+      'Requestor: ' . ($Ticket->Requestors->member_emailsAsString || '') );
   }
 }
 else {

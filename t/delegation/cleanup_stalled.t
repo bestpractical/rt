@@ -414,7 +414,7 @@ $ace = RT::Model::ACE->new(current_user => RT::CurrentUser->new( id => $u1->id))
 ok( $ret, "Look up ACE to be delegated: $msg" );
 ( $ret, $msg ) = $ace->Delegate( principal_id => $pg1->principal_id );
 ok( $ret, "Delegate DelegateRights to pg1: $msg" );
-$ace = RT::Model::ACE->new($u2);
+$ace = RT::Model::ACE->new(current_user => RT::CurrentUser->new( id => $u2));
 ( $ret, $msg ) = $ace->load_by_values(
     right_name     => 'ShowConfigTab',
     Object        => RT->system,

@@ -70,7 +70,7 @@ my @rows;
 my %known_cfs;
 
 my @attrs = qw( id QueueObj->name Subject Status TimeEstimated time_worked time_left Priority FinalPriority OwnerObj->name 
-                Requestors->MemberemailesAsString Cc->MemberemailesAsString AdminCc->MemberemailesAsString
+                Requestors->member_emailsAsString Cc->member_emailsAsString AdminCc->member_emailsAsString
                 DueObj->ISO ToldObj->ISO CreatedObj->ISO ResolvedObj->ISO LastUpdatedObj->ISO);
 
 $r->content_type('application/vnd.ms-excel');
@@ -104,7 +104,7 @@ while ( my $Ticket = $Tickets->next()) {
     foreach my $attr (@attrs) {
         my $label = $attr;
         $label =~ s'Obj-.(?:AsString|name|ISO)''g;
-        $label =~ s'-\>MemberemailesAsString''g;
+        $label =~ s'-\>member_emailsAsString''g;
 	push @header, $label;
     }
     foreach my $id (sort keys %known_cfs) {

@@ -32,7 +32,7 @@ RT::Test->import_gnupg_key('rt-test@example.com', 'public');
 
 my $queue = RT::Test->load_or_create_queue(
     name              => 'Regression',
-    CorrespondAddress => 'rt-recipient@example.com',
+    correspond_address => 'rt-recipient@example.com',
     commentAddress    => 'rt-recipient@example.com',
 );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -81,7 +81,7 @@ diag "check in read-only mode that queue's props influence create/update ticket 
     # to avoid encryption/signing during create
     set_queue_crypt_options();
 
-    my $ticket = RT::Model::Ticket->new( $RT::system_user );
+    my $ticket = RT::Model::Ticket->new( current_user =>RT->system_user );
     my ($id) = $ticket->create(
         Subject   => 'test',
         Queue     => $queue->id,
@@ -117,7 +117,7 @@ foreach my $queue_set ( @variants ) {
 
 my $tid;
 {
-    my $ticket = RT::Model::Ticket->new( $RT::system_user );
+    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     ($tid) = $ticket->create(
         Subject   => 'test',
         Queue     => $queue->id,
@@ -147,7 +147,7 @@ RT::Test->import_gnupg_key('rt-test@example.com');
 
 $queue = RT::Test->load_or_create_queue(
     name              => 'Regression',
-    CorrespondAddress => 'rt-test@example.com',
+    correspond_address => 'rt-test@example.com',
     commentAddress    => 'rt-test@example.com',
 );
 ok $queue && $queue->id, 'changed props of the queue';
@@ -157,7 +157,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'plain'} } ) {
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( $RT::system_user );
+    my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -178,7 +178,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed'} } ) {
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( $RT::system_user );
+    my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -202,7 +202,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'encrypted'} } ) {
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( $RT::system_user );
+    my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
@@ -225,7 +225,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed_encrypted'} } ) {
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
 
-    my $tick = RT::Model::Ticket->new( $RT::system_user );
+    my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 

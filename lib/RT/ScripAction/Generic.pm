@@ -73,6 +73,7 @@ sub new  {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
+  $self->_get_current_user(@_);
   $self->_init(@_);
   return $self;
 }
@@ -82,7 +83,6 @@ sub new  {
 sub _init  {
   my $self = shift;
   my %args = ( Argument => undef,
-               CurrentUser => undef,
                ScripActionObj => undef,
                ScripObj => undef,
                TemplateObj => undef,
@@ -93,7 +93,6 @@ sub _init  {
                @_ );
 
   $self->{'Argument'} = $args{'Argument'};
-  $self->current_user( $args{'CurrentUser'});
   $self->{'ScripActionObj'} = $args{'ScripActionObj'};
   $self->{'ScripObj'} = $args{'ScripObj'};
   $self->{'TemplateObj'} = $args{'TemplateObj'};
@@ -203,19 +202,5 @@ sub IsApplicable  {
 }
 # }}}
 
-# {{{ sub DESTROY
-sub DESTROY {
-    my $self = shift;
-
-    # We need to clean up all the references that might maybe get
-    # oddly circular
-    $self->{'ScripActionObj'} = undef;
-    $self->{'ScripObj'} = undef;
-    $self->{'TemplateObj'} =undef
-    $self->{'TicketObj'} = undef;
-    $self->{'TransactionObj'} = undef;
-}
-
-# }}}
 
 1;

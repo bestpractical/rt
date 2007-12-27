@@ -154,15 +154,15 @@ $TICKET_COLUMN_MAP = {
     },
     Requestors => {
         attribute => 'Requestor.email',
-        value => sub { return $_[0]->Requestors->MemberemailesAsString }
+        value => sub { return $_[0]->Requestors->member_emailsAsString }
     },
     Cc => {
         attribute => 'Cc.email',
-        value => sub { return $_[0]->Cc->MemberemailesAsString }
+        value => sub { return $_[0]->Cc->member_emailsAsString }
     },
     AdminCc => {
         attribute => 'AdminCc.email',
-        value => sub { return $_[0]->AdminCc->MemberemailesAsString }
+        value => sub { return $_[0]->AdminCc->member_emailsAsString }
     },
     startsRelative => {
         title     => 'starts',
@@ -230,7 +230,7 @@ $TICKET_COLUMN_MAP = {
         attribute => 'Requestor.email',
         value => sub {
             my $t = shift;
-            my @requestors = $t->Requestors->Memberemailes;
+            my @requestors = $t->Requestors->member_emails;
             for my $email (@requestors)
             {
                 my %key = RT::Crypt::GnuPG::GetKeyInfo($email);

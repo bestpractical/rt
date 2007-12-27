@@ -86,7 +86,7 @@ use Jifty::DBI::Record schema {
 
 column        name => max_length is 200,  type is 'varchar(200)',  default is '';
 column        Description => max_length is 255,  type is 'varchar(255)',  default is '';
-column        CorrespondAddress => max_length is 120,  type is 'varchar(120)',  default is '';
+column        correspond_address => max_length is 120,  type is 'varchar(120)',  default is '';
 column        commentAddress => max_length is 120,  type is 'varchar(120)',  default is '';
 column        InitialPriority => max_length is 11,  type is 'int(11)',  default is '0';
 column        FinalPriority => max_length is 11,  type is 'int(11)',  default is '0';
@@ -322,7 +322,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
   name (required)
   Description
-  CorrespondAddress
+  correspond_address
   commentAddress
   InitialPriority
   FinalPriority
@@ -337,7 +337,7 @@ sub create {
     my $self = shift;
     my %args = (
         name              => undef,
-        CorrespondAddress => '',
+        correspond_address => '',
         Description       => '',
         commentAddress    => '',
         InitialPriority   => 0,
@@ -917,7 +917,7 @@ sub AdminCcAddresses {
         return undef;
     }   
     
-    return ( $self->AdminCc->MemberemailesAsString )
+    return ( $self->AdminCc->member_emailsAsString )
     
 }   
 
@@ -938,7 +938,7 @@ sub CcAddresses {
         return undef;
     }
 
-    return ( $self->Cc->MemberemailesAsString);
+    return ( $self->Cc->member_emailsAsString);
 
 }
 # }}}

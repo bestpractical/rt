@@ -107,7 +107,7 @@ sub createTransaction {
 	TicketObj => $self->{'TicketObj'});
     return undef unless $result;
     
-    my ($trans, $desc, $transaction) = $self->{'TicketObj'}->Correspond(
+    my ($trans, $desc, $transaction) = $self->{'TicketObj'}->correspond(
 	MIMEObj => $self->TemplateObj->MIMEObj);
     $self->{'TransactionObj'} = $transaction;
 }

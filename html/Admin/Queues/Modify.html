@@ -68,8 +68,8 @@
 </tr>
 
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
-<td><input name="CorrespondAddress" value="<% ($Create) ? "" : $QueueObj->CorrespondAddress %>" />
-<br /><span><em><&|/l , RT->Config->Get('CorrespondAddress')&>(If left blank, will default to %1)</&></em></span></td>
+<td><input name="correspond_address" value="<% ($Create) ? "" : $QueueObj->correspond_address %>" />
+<br /><span><em><&|/l , RT->Config->Get('correspond_address')&>(If left blank, will default to %1)</&></em></span></td>
 <td align="right"><&|/l&>comment Address</&>:</td>
 <td><input name="commentAddress" value="<% ($Create) ? "" : $QueueObj->commentAddress %>" />
 <br /><span><em><&|/l , RT->Config->Get('commentAddress')&>(If left blank, will default to %1)</&></em></span></td>
@@ -99,7 +99,7 @@
 </td></tr>
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-% if ( my $email = $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') ) {
+% if ( my $email = $QueueObj->correspond_address || RT->Config->Get('correspond_address') ) {
 <tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, Type => 'private', email => $email &></td></tr>
 % }
 % if ( my $email = $QueueObj->commentAddress || RT->Config->Get('commentAddress') ) {
@@ -139,7 +139,7 @@ if ($Create) {
 }
 if ( $QueueObj->id ) {
     delete $session{'create_in_queues'};
-    my @attribs= qw(Description CorrespondAddress commentAddress name
+    my @attribs= qw(Description correspond_address commentAddress name
         InitialPriority FinalPriority DefaultDueIn Sign Encrypt disabled);
 
     # we're asking about enabled on the web page but really care about disabled
@@ -177,7 +177,7 @@ $result => undef
 $name => undef
 $Create => undef
 $Description => undef
-$CorrespondAddress => undef
+$correspond_address => undef
 $commentAddress => undef
 $InitialPriority => undef
 $FinalPriority => undef

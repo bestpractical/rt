@@ -259,8 +259,8 @@ if ( $ARGS{'SubmitTicket'} ) {
         my $address = $ARGS{'UpdateType'} eq "private"
             ? ( $TicketObj->QueueObj->commentAddress
                 || RT->Config->Get('commentAddress') )
-            : ( $TicketObj->QueueObj->CorrespondAddress
-                || RT->Config->Get('CorrespondAddress') );
+            : ( $TicketObj->QueueObj->correspond_address
+                || RT->Config->Get('correspond_address') );
         unless ( RT::Crypt::GnuPG::DrySign($address, "x") ) {
             push @cannot_sign_as, $address;
             $checks_failure = 1;

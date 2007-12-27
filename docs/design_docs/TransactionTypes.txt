@@ -35,7 +35,7 @@ RT->Config->Get('TransactionTypes')
 
 The UIs should call sth like
 $Ticket->AddTransaction($Transactionname), which should be equivalent
-with i.e.  $Ticket->Correspond when $Transactionname is 'Correspond'
+with i.e.  $Ticket->correspond when $Transactionname is 'Correspond'
 (AUTOLOAD should call the do-sub if exists
 RT->Config->Get('TransactionTypes')->{$Transactionname})
 

@@ -117,7 +117,7 @@ foreach my $address (@unsquelchto) {
 my $action;
 
 if (($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq 'response' ) || ($ARGS{'Action'} && $ARGS{'Action'} eq 'Respond' )) {
-    $action = 'Correspond';
+    $action = 'correspond';
 }
 else {
     $action = 'comment';

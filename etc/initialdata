@@ -62,7 +62,7 @@
 
 @Queues = ({ name              => 'General',
              Description       => 'The default queue',
-             CorrespondAddress => "",
+             correspond_address => "",
              commentAddress    => "", },
            { name        => '___Approvals',
              Description => 'A system-internal queue for the approvals system',
@@ -253,7 +253,7 @@ in the subject line of all future correspondence about this issue. To do so,
 you may reply to this message.
 
                         Thank you,
-                        {$Ticket->QueueObj->CorrespondAddress()}
+                        {$Ticket->QueueObj->correspond_address()}
 
 -------------------------------------------------------------------------
 {$Transaction->Content()}

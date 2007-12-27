@@ -504,7 +504,7 @@ sub UpdateByTemplate {
                     . $Description );
         } elsif ( $ticketargs->{'UpdateType'} =~ /^(public|response|correspond)$/i ) {
             my ( $Transaction, $Description, $Object )
-                = $T::Tickets{$template_id}->Correspond(
+                = $T::Tickets{$template_id}->correspond(
                 BccMessageTo => $ticketargs->{'Bcc'},
                 MIMEObj      => $ticketargs->{'MIMEObj'},
                 TimeTaken    => $ticketargs->{'time_worked'}
@@ -739,7 +739,7 @@ sub ParseLines {
         $args{$date} = $dateobj->ISO;
     }
 
-    $args{'requestor'} ||= $self->TicketObj->Requestors->Memberemailes
+    $args{'requestor'} ||= $self->TicketObj->Requestors->member_emails
         if $self->TicketObj;
 
     $args{'type'} ||= 'ticket';

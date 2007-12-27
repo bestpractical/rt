@@ -193,7 +193,7 @@ if (!keys(%data)) {
 
     foreach $key (@people) {
         next unless (!%$fields || (exists $fields->{lc $key}));
-        push @data, [ $key => [ $ticket->$key->Memberemailes ] ];
+        push @data, [ $key => [ $ticket->$key->member_emails ] ];
     }
 
     $time = RT::Date->new();
@@ -273,7 +273,7 @@ else {
             my ($p, @msgs);
 
             my %new  = map {$_=>1} @{ vsplit($val) };
-            my %old  = map {$_=>1} $ticket->$key->Memberemailes;
+            my %old  = map {$_=>1} $ticket->$key->member_emails;
             my $type = $key eq 'Requestors' ? 'Requestor' : $key;
 
             foreach $p (keys %old) {

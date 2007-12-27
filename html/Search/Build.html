@@ -167,7 +167,7 @@ my $ParseQuery = sub {
     my ($string, $results) = @_;
 
     my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-    @$results = $tree->ParseSQL( Query => $string, CurrentUser => Jifty->web->current_user );
+    @$results = $tree->ParseSQL( Query => $string );
 
     return $tree;
 };

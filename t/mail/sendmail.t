@@ -136,7 +136,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 ok ($id, $msg);
 
 $parser->ParseMIMEEntityFromScalar($content);
-($id, $msg) = $tick->Correspond(MIMEObj => $parser->Entity);
+($id, $msg) = $tick->correspond(MIMEObj => $parser->Entity);
 ok ($id, $msg);
 
 
@@ -179,7 +179,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 ok ($id, $msg);
 
 $parser->ParseMIMEEntityFromScalar($content);
-($id, $msg) = $tick->Correspond(MIMEObj => $parser->Entity);
+($id, $msg) = $tick->correspond(MIMEObj => $parser->Entity);
 ok ($id, $msg);
 
 

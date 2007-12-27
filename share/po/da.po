@@ -402,7 +402,7 @@ msgstr "(Markér for at tilvælge besked til de angivne modtagere)"
 msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Indtast sagsnummer eller URL'er, adskilt af mellemrum)"
 
-#. ($RT::CorrespondAddress)
+#. ($RT::correspond_address)
 #. ($RT::commentAddress)
 #: html/Admin/Queues/Modify.html:75
 #: html/Admin/Queues/Modify.html:81

@@ -96,7 +96,9 @@ use Jifty::Plugin::Authentication::Password::Mixin::Model::User;
 
 # XXX TODO, merging params should 'just work' but does not 
  __PACKAGE__->column('email')->writable(1);
-
+sub set_email { my $self = shift; my $addr = shift;
+    $self->__set(column => 'email', value => $addr);
+}
 
 
 # {{{ sub create 

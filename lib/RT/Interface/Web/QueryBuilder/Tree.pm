@@ -233,14 +233,13 @@ sub ParseSQL {
     my $self = shift;
     my %args = (
         Query => '',
-        CurrentUser => '', #XXX: Hack
         @_
     );
     my $string = $args{'Query'};
 
     my @results;
 
-    my %field = %{ RT::Model::TicketCollection->new( $args{'CurrentUser'} )->columns };
+    my %field = %{ RT::Model::TicketCollection->new()->columns };
     my %lcfield = map { ( lc($_) => $_ ) } keys %field;
 
     my $node =  $self;
@@ -262,7 +261,7 @@ sub ParseSQL {
             $key =~ s/^[^.]+/ $lcfield{ lc $main_key } /e;
         }
         unless( $class ) {
-            push @results, [ $args{'CurrentUser'}->_("Unknown field: $key"), -1 ]
+            push @results, [ _("Unknown field: $key"), -1 ]
         }
 
         $value = "'$value'" if $value =~ /[^0-9]/;

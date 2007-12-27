@@ -30,7 +30,7 @@ ok $m->login, 'we did log in';
 $m->get_ok( '/Admin/Queues/');
 $m->follow_link_ok( {text => 'General'} );
 $m->submit_form( form_number => 3,
-         fields      => { CorrespondAddress => 'rt-recipient@example.com' } );
+         fields      => { correspond_address => 'rt-recipient@example.com' } );
 $m->content_like(qr/rt-recipient\@example.com.* - never/, 'has key info.');
 
 diag "load Everyone group" if $ENV{'TEST_VERBOSE'};

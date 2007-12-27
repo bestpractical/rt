@@ -403,7 +403,7 @@ msgid "(Enter ticket ids or URLs, seperated with spaces)"
 msgstr "(Wprowadź numery lub adresy URL zgłoszeń, oddzielone spacjami)"
 
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
-#. ($RT::CorrespondAddress)
+#. ($RT::correspond_address)
 #. ($RT::commentAddress)
 msgid "(If left blank, will default to %1)"
 msgstr "(Jeśli pozostawisz puste, domyślnie zostanie ustawione na %1)"

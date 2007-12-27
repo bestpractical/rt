@@ -87,6 +87,7 @@ sub new  {
   my $class = ref($proto) || $proto;
   my $self  = {};
   bless ($self, $class);
+  $self->_get_current_user(@_);
   $self->_init(@_);
   return $self;
 }
@@ -101,7 +102,6 @@ sub _init  {
 	       TemplateObj => undef,
 	       Argument => undef,
 	       ApplicableTransTypes => undef,
-           CurrentUser => undef,
 	       @_ );
   
   $self->{'Argument'} = $args{'Argument'};
@@ -109,7 +109,6 @@ sub _init  {
   $self->{'TicketObj'} = $args{'TicketObj'};
   $self->{'TransactionObj'} = $args{'TransactionObj'};
   $self->{'ApplicableTransTypes'} = $args{'ApplicableTransTypes'};
-  $self->current_user($args{'CurrentUser'});
 }
 # }}}
 

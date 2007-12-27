@@ -428,7 +428,7 @@ msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(键入申请单编号或网址，以空白分隔)"
 
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
-#. ($RT::CorrespondAddress)
+#. ($RT::correspond_address)
 #. ($RT::commentAddress)
 msgid "(If left blank, will default to %1)"
 msgstr "(如果留白, 则预设为 %1)"

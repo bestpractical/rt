@@ -12,7 +12,7 @@ RT::Test->set_mail_catcher;
 RT->Config->set( LogToScreen => 'debug' );
 RT->Config->set( LogStackTraces => 'error' );
 RT->Config->set( commentAddress => 'general@example.com');
-RT->Config->set( CorrespondAddress => 'general@example.com');
+RT->Config->set( correspond_address => 'general@example.com');
 RT->Config->set( DefaultSearchResultFormat => qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
@@ -51,7 +51,7 @@ $user->set_email('recipient@example.com');
 
 my $queue = RT::Test->load_or_create_queue(
     name              => 'General',
-    CorrespondAddress => 'general@example.com',
+    correspond_address => 'general@example.com',
 );
 ok $queue && $queue->id, 'loaded or created queue';
 my $qid = $queue->id;
@@ -288,7 +288,6 @@ $m->submit;
 is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
-
 @mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
 for my $mail (@mail) {
@@ -349,7 +348,6 @@ sub strip_headers
 }
 
 # now test the OwnernameKey and RequestorsKey fields
-
 my $nokey = RT::Test->load_or_create_user(name => 'nokey', email => 'nokey@example.com');
 $nokey->principal_object->GrantRight(Right => 'CreateTicket');
 $nokey->principal_object->GrantRight(Right => 'OwnTicket');
@@ -363,7 +361,6 @@ $tick = RT::Model::Ticket->new(current_user => RT->system_user );
 $tick->create(Subject => 'owner has pubkey', Queue => 'general',
               Owner => 'root');
 ok($id = $tick->id, 'created ticket for owner-with-pubkey');
-
 my $mail = << "MAIL";
 Subject: Nokey requestor
 From: nokey\@example.com
@@ -375,11 +372,9 @@ MAIL
 ((my $status), $id) = RT::Test->send_via_mailgate($mail);
 is ($status >> 8, 0, "The mail gateway exited normally");
 ok ($id, "got id of a newly created ticket - $id");
-
 $tick = RT::Model::Ticket->new(current_user => RT->system_user );
 $tick->load( $id );
 ok ($tick->id, "loaded ticket #$id");
-
 is ($tick->Subject,
     "Nokey requestor",
     "Correct subject"
@@ -389,7 +384,7 @@ is ($tick->Subject,
 my $key1 = "EC1E81E7DC3DB42788FB0E4E9FA662C06DE22FC2";
 my $key2 = "75E156271DCCF02DDD4A7A8CDF651FA0632C4F50";
 
-ok($user = RT::Model::User->new($RT::system_user));
+ok($user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
 is($user->PreferredKey, $key1, "preferred key is set correctly");
 $m->get("$baseurl/Prefs/Other.html");

@@ -314,7 +314,7 @@ msgid "(If left blank, will default to %1"
 msgstr "(Jika ditinggalkan kosong, default akan diatur menjadi %1"
 
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
-#. ($RT::CorrespondAddress)
+#. ($RT::correspond_address)
 #. ($RT::commentAddress)
 msgid "(If left blank, will default to %1)"
 msgstr "(Jika ditinggalkan kosong, default akan menjadi %1)"

@@ -30,7 +30,7 @@ RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my $queue = RT::Test->load_or_create_queue(
     name              => 'Regression',
-    CorrespondAddress => 'rt-recipient@example.com',
+    correspond_address => 'rt-recipient@example.com',
     commentAddress    => 'rt-recipient@example.com',
 );
 ok $queue && $queue->id, 'loaded or created queue';

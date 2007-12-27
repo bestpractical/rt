@@ -692,8 +692,8 @@ sub set_ReturnAddress {
           || RT->Config->Get('commentAddress');
     }
     else {
-        $replyto = $self->TicketObj->QueueObj->CorrespondAddress
-          || RT->Config->Get('CorrespondAddress');
+        $replyto = $self->TicketObj->QueueObj->correspond_address
+          || RT->Config->Get('correspond_address');
     }
 
     unless ( $self->TemplateObj->MIMEObj->head->get('From') ) {

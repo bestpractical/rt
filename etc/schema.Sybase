@@ -26,7 +26,7 @@ CREATE TABLE rt3.Queues (
   id numeric(38,0) identity,
   name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
-  CorrespondAddress varchar(120) NULL  ,
+  correspond_address varchar(120) NULL  ,
   commentAddress varchar(120) NULL  ,
   InitialPriority integer NOT NULL   ,
   FinalPriority integer NOT NULL   ,

@@ -48,7 +48,7 @@ CREATE TABLE Queues (
   id INTEGER DEFAULT nextval('queues_id_seq'),
   name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
-  CorrespondAddress varchar(120) NULL  ,
+  correspond_address varchar(120) NULL  ,
   commentAddress varchar(120) NULL  ,
   InitialPriority integer NOT NULL DEFAULT 0  ,
   FinalPriority integer NOT NULL DEFAULT 0  ,

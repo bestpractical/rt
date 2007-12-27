@@ -307,7 +307,7 @@ sub ParseCcAddressesFromHead {
         my $user = RT::Model::User->new(current_user => RT->system_user);
         $Address = $user->canonicalize_email($Address);
         next if ( lc $args{'CurrentUser'}->email   eq lc $Address );
-        next if ( lc $args{'QueueObj'}->CorrespondAddress eq lc $Address );
+        next if ( lc $args{'QueueObj'}->correspond_address eq lc $Address );
         next if ( lc $args{'QueueObj'}->commentAddress    eq lc $Address );
         next if ( $self->IsRTAddress($Address) );
 

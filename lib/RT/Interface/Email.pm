@@ -230,7 +230,7 @@ Sends an error message. Takes a param hash:
 
 =over 4
 
-=item From - sender's address, by default is 'CorrespondAddress';
+=item From - sender's address, by default is 'correspond_address';
 
 =item To - reciepient, by default is 'OwnerEmail';
 
@@ -257,7 +257,7 @@ sub MailError {
     my %args = (
         To          => RT->Config->Get('OwnerEmail'),
         Bcc         => undef,
-        From        => RT->Config->Get('CorrespondAddress'),
+        From        => RT->Config->Get('correspond_address'),
         Subject     => 'There has been an error',
         Explanation => 'Unexplained error',
         MIMEObj     => undef,
@@ -498,7 +498,7 @@ sub PrepareEmailUsingTemplate {
     return $template;
 }
 
-=head2 SendEmailUsingTemplate Template => '', Arguments => {}, From => CorrespondAddress, To => '', Cc => '', Bcc => ''
+=head2 SendEmailUsingTemplate Template => '', Arguments => {}, From => correspond_address, To => '', Cc => '', Bcc => ''
 
 Sends email using a template, takes name of template, arguments for it and recipients.
 
@@ -511,7 +511,7 @@ sub SendEmailUsingTemplate {
           To => undef,
           Cc => undef,
           Bcc => undef,
-          From => RT->Config->Get('CorrespondAddress'),
+          From => RT->Config->Get('correspond_address'),
          InReplyTo => undef,
           @_
       );
@@ -642,8 +642,8 @@ sub ForwardTransaction {
     } else {
         # XXX: what if want to forward txn of other object than ticket?
         $subject = AddSubjectTag( $subject, $txn->object_id );
-        $from = $txn->Object->QueueObj->CorrespondAddress
-            || RT->Config->Get('CorrespondAddress');
+        $from = $txn->Object->QueueObj->correspond_address
+            || RT->Config->Get('correspond_address');
     }
     $mail->head->set( Subject => "Fwd: $subject" );
     $mail->head->set( From    => $from );
@@ -846,7 +846,7 @@ sub ParseCcAddressesFromHead {
     foreach my $address ( @recipients ) {
         $address = $args{'CurrentUser'}->user_object->canonicalize_email( $address );
         next if lc $args{'CurrentUser'}->email   eq $address;
-        next if lc $args{'QueueObj'}->CorrespondAddress eq $address;
+        next if lc $args{'QueueObj'}->correspond_address eq $address;
         next if lc $args{'QueueObj'}->commentAddress    eq $address;
         next if IsRTAddress( $address );
 

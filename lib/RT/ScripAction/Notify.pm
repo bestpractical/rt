@@ -98,19 +98,19 @@ sub set_Recipients {
     }
 
     if ( $arg =~ /\bRequestor\b/ ) {
-        push @To, $ticket->Requestors->Memberemailes;
+        push @To, $ticket->Requestors->member_emails;
     }
 
     if ( $arg =~ /\bCc\b/ ) {
 
         #If we have a To, make the Ccs, Ccs, otherwise, promote them to To
         if (@To) {
-            push ( @Cc, $ticket->Cc->Memberemailes );
-            push ( @Cc, $ticket->QueueObj->Cc->Memberemailes  );
+            push ( @Cc, $ticket->Cc->member_emails );
+            push ( @Cc, $ticket->QueueObj->Cc->member_emails  );
         }
         else {
-            push ( @Cc, $ticket->Cc->Memberemailes  );
-            push ( @To, $ticket->QueueObj->Cc->Memberemailes  );
+            push ( @Cc, $ticket->Cc->member_emails  );
+            push ( @To, $ticket->QueueObj->Cc->member_emails  );
         }
     }
 
@@ -126,8 +126,8 @@ sub set_Recipients {
 
     }
     if ( $arg =~ /\bAdminCc\b/ ) {
-        push ( @Bcc, $ticket->AdminCc->Memberemailes  );
-        push ( @Bcc, $ticket->QueueObj->AdminCc->Memberemailes  );
+        push ( @Bcc, $ticket->AdminCc->member_emails  );
+        push ( @Bcc, $ticket->QueueObj->AdminCc->member_emails  );
     }
 
     if ( RT->Config->Get('UseFriendlyToLine') ) {

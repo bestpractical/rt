@@ -31,13 +31,12 @@ if ( int RT->Config->Get('AutoLogoff') ) {
 };
 
 # XXX TODO XXX SECURITY RISK - this regex is WRONG AND UNSAFE
-before qr'/(?!login)$' => run {
-    my $path = $1 ||'';
-    tangent '/login' unless (Jifty->web->current_user->id || $path =~ /NoAuth/);
+before qr'^/(?!login)' => run {
+    tangent '/login' unless (Jifty->web->current_user->id  || Jifty->web->request->path =~ /NoAuth/i);
 };
 
 before qr/(.*)/ => run {
-    my $path = $1;
+    my $path =  Jifty->web->request->path;
 # This code canonicalize_s time inputs in hours into minutes
 # If it's a noauth file, don't ask for auth.
 

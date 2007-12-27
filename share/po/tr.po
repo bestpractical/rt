@@ -295,7 +295,7 @@ msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Boşluklarla ayrılmış olarak, bilet numaralarını veya URL' lerini girin)"
 
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
-#. ($RT::CorrespondAddress)
+#. ($RT::correspond_address)
 #. ($RT::commentAddress)
 msgid "(If left blank, will default to %1)"
 msgstr "(Boş bırakılırsa, varsayılan olarak %1 değerini alacaktır)"

@@ -599,7 +599,7 @@ sub ProcessUpdateMessage {
     }
     elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
         my ( $Transaction, $Description, $Object ) =
-        $args{TicketObj}->Correspond(%message_args);
+        $args{TicketObj}->correspond(%message_args);
         push( @results, $Description );
         $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
     }
