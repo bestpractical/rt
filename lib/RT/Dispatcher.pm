@@ -30,6 +30,18 @@ if ( int RT->Config->Get('AutoLogoff') ) {
 
 };
 
+
+before qr/.*/ => run {
+    Jifty->web->new_action(
+        moniker   => 'login',
+        class     => 'Login',
+        arguments => {
+            email    => Jifty->web->request->arguments->{'user'},
+            password => Jifty->web->request->arguments->{'pass'}
+        }
+        )->run if ( Jifty->web->request->arguments->{'user'} && Jifty->web->request->arguments->{'pass'} );
+};
+
 # XXX TODO XXX SECURITY RISK - this regex is WRONG AND UNSAFE
 before qr'^/(?!login)' => run {
     tangent '/login' unless (Jifty->web->current_user->id  || Jifty->web->request->path =~ /NoAuth/i);

@@ -72,8 +72,8 @@ if (!$ticket->id) {
 }
 
 my $action;
-($action = $changes{Action}) =~ s/^(.)(.*)$/\U$1\L$2\E/;
-unless ($action =~ /^(?:comment|Correspond)$/) {
+($action = lc $changes{Action}) =~ s/^(.)(.*)$/\U$1\L$2\E/;
+unless ($action =~ /^(?:comment|correspond)$/) {
     $e = 1;
     $c = "# Invalid action: `$action'.";
     goto OUTPUT;
@@ -127,7 +127,7 @@ foreach my $att (@atts) {
 unless ($ticket->current_user_has_right('ModifyTicket') ||
         ($action eq "comment" &&
          $ticket->current_user_has_right("commentOnTicket")) ||
-        ($action eq "Correspond" &&
+        ($action eq "correspond" &&
          $ticket->current_user_has_right("ReplyToTicket")))
 {
     $e = 1;
