@@ -72,7 +72,8 @@ if (!$ticket->id) {
 }
 
 my $action;
-($action = lc $changes{Action}) =~ s/^(.)(.*)$/\U$1\L$2\E/;
+($action =  $changes{Action}) =~ s/^(.)(.*)$/\U$1\L$2\E/;
+$action = lc $action;
 unless ($action =~ /^(?:comment|correspond)$/) {
     $e = 1;
     $c = "# Invalid action: `$action'.";

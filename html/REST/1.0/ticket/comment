@@ -89,8 +89,8 @@ if ($k->{Ticket} && $object ne $k->{Ticket}) {
     goto OUTPUT;
 }
 
-($action = $k->{Action}) =~ s/^(.)(.*)$/\U$1\L$2\E/;
-unless ($action =~ /^(?:comment|Correspond)$/) {
+($action = lc $k->{Action}) =~ s/^(.)(.*)$/\U$1\L$2\E/;
+unless ($action =~ /^(?:comment|correspond)$/) {
     $output = "Invalid action: `$action'.\n";
     $status = "400 Bad Request";
     goto OUTPUT;
