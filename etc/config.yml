@@ -7,7 +7,7 @@ framework:
   ConfigFileVersion: 2
   Database: 
     CheckSchema: 0
-    Database: rt4
+    Database: rt4twebcryptgnupgb686b56d
     Driver: mysql
     Host: localhost
     password: ''

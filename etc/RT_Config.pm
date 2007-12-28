@@ -88,7 +88,7 @@ set($DatabaseUser , 'rt_user');
 set($Databasepassword , 'rt_pass');
 
 # The name of the RT's database on your database server
-set($Databasename , 'rt3');
+set($Databasename , 'rt4');
 
 # If you're using Postgres and have compiled in SSL support,
 # set DatabaseRequireSSL to 1 to turn on SSL communication
@@ -351,7 +351,7 @@ set(%GnuPGOptions,
 # From lowest to highest priority, the levels are:
 #  debug info notice warning error critical alert emergency
 set($LogToSyslog    , 'debug');
-set($LogToScreen    , 'error');
+set($LogToScreen    , 'debug');
 
 # Logging to a standalone file is also possible, but note that the
 # file should needs to both exist and be writable by all direct users
@@ -362,7 +362,7 @@ set($LogToScreen    , 'error');
 # the direct API, Best Practical recommends using syslog instead of
 # direct file logging.
 
-set($LogToFile      , undef);
+set($LogToFile      , 'debug');
 set($LogDir, '/home/jesse/svk/3.999-DANGEROUS/var/log');
 set($LogToFilenamed , "rt.log");    #log to rt.log
 
