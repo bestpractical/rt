@@ -309,7 +309,6 @@ sub check_text_emails {
     my %args = %{ shift @_ };
     my @mail = @_;
 
-    Carp::confess unless scalar @mail;
     ok scalar @mail, "got some mail";
     for my $mail (@mail) {
         if ( $args{'Encrypt'} ) {

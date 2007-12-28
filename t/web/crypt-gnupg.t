@@ -148,6 +148,7 @@ ok(!$m->value('Encrypt', 2), "encrypt tick box is unchecked");
 ok($m->value('Sign', 2), "sign tick box is checked");
 $m->submit;
 is($m->status, 200, "request successful");
+
 $m->get($baseurl); # ensure that the mail has been processed
 
 @mail = RT::Test->fetch_caught_mails;
@@ -224,7 +225,6 @@ $m->get($baseurl); # ensure that the mail has been processed
 
 @mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
-exit;
 for my $mail (@mail) {
     unlike $mail, qr/Some other content/, "outgoing mail was encrypted";
 
