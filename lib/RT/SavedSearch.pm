@@ -210,9 +210,11 @@ sub delete {
 
     my ($status, $msg) = $self->{'Attribute'}->delete;
     if ($status) {
-	return (1, _("Deleted search"));
+        # we need to do_search to refresh current user's attributes
+        $self->current_user->user_object->attributes->_do_search;
+	    return (1, _("Deleted search"));
     } else {
-	return (0, _("Delete failed: %1", $msg));
+	    return (0, _("Delete failed: %1", $msg));
     }
 }
 	
