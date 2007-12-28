@@ -301,7 +301,7 @@ sub create {
         NewValue       => undef,
         MIMEObj        => undef,
         ActivateScrips => 1,
-        CommitScrips => 1,
+        commit_scrips => 1,
 	object_type => 'RT::Model::Ticket',
 	object_id => 0,
 	ReferenceType => undef,
@@ -363,10 +363,13 @@ sub create {
             Ticket      => $args{'object_id'},
             Transaction => $self->id,
         );
-        if ($args{'CommitScrips'} ) {
+        if ($args{'commit_scrips'} ) {
             $RT::Logger->debug('About to commit scrips for transaction #' .$self->id);
             $self->{'scrips'}->commit();
-        }
+        } else {
+            $RT::Logger->debug('Skipping commit of scrips for transaction #' .$self->id);
+
+        }            
     }
 
     return ( $id, _("Transaction Created") );

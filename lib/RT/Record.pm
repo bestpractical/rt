@@ -1210,7 +1210,7 @@ sub _NewTransaction {
         Field     => undef,
         MIMEObj   => undef,
         ActivateScrips => 1,
-        CommitScrips => 1,
+        commit_scrips => 1,
         @_
     );
 
@@ -1242,7 +1242,7 @@ sub _NewTransaction {
         ReferenceType => $ref_type,
         MIMEObj   => $args{'MIMEObj'},
         ActivateScrips => $args{'ActivateScrips'},
-        CommitScrips => $args{'CommitScrips'},
+        commit_scrips => $args{'commit_scrips'},
     );
 
 
@@ -1257,7 +1257,7 @@ sub _NewTransaction {
         $self->_UpdateTimeTaken( $args{'TimeTaken'} );
     }
     if ( RT->Config->Get('UseTransactionBatch') and $transaction ) {
-	    push @{$self->{_TransactionBatch}}, $trans if $args{'CommitScrips'};
+	    push @{$self->{_TransactionBatch}}, $trans if $args{'commit_scrips'};
     }
     return ( $transaction, $msg, $trans );
 }

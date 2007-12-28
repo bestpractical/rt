@@ -340,6 +340,7 @@ sub SendEmail {
         Transaction => undef,
         @_,
     );
+    $RT::Logger->warning("In send email for ".join(',',%args));
     foreach my $arg( qw(Entity Bounce) ) {
         next unless defined $args{ lc $arg };
 
@@ -400,6 +401,7 @@ sub SendEmail {
 
     my $mail_command = RT->Config->Get('MailCommand');
 
+    $RT::Logger->crit( "My mail command is $mail_command");
     # if it is a sub routine, we just return it;
     return $mail_command->($args{'Entity'}) if UNIVERSAL::isa( $mail_command, 'CODE' );
 

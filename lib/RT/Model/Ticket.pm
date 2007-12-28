@@ -699,7 +699,7 @@ sub create {
             Type         => "Create",
             TimeTaken    => $args{'time_worked'},
             MIMEObj      => $args{'MIMEObj'},
-            CommitScrips => !$args{'DryRun'},
+            commit_scrips => !$args{'DryRun'},
         );
         if ( $self->id && $Trans ) {
 
@@ -2031,7 +2031,7 @@ sub comment {
 
     if ($args{'DryRun'}) {
         Jifty->handle->begin_transaction();
-        $args{'CommitScrips'} = 0;
+        $args{'commit_scrips'} = 0;
     }
 
     my @results = $self->_RecordNote(%args);
@@ -2080,7 +2080,7 @@ sub correspond {
     $args{'NoteType'} = 'Correspond'; 
     if ($args{'DryRun'}) {
         Jifty->handle->begin_transaction();
-        $args{'CommitScrips'} = 0;
+        $args{'commit_scrips'} = 0;
     }
 
     my @results = $self->_RecordNote(%args);
@@ -2120,7 +2120,7 @@ sub _RecordNote {
         Content      => undef,
         NoteType     => 'Correspond',
         TimeTaken    => 0,
-        CommitScrips => 1,
+        commit_scrips => 1,
         @_
     );
 
@@ -2185,7 +2185,7 @@ sub _RecordNote {
              Data => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
              TimeTaken => $args{'TimeTaken'},
              MIMEObj   => $args{'MIMEObj'}, 
-             CommitScrips => $args{'CommitScrips'},
+             commit_scrips => $args{'commit_scrips'},
     );
 
     unless ($Trans) {
