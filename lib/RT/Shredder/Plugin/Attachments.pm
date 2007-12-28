@@ -122,7 +122,7 @@ sub Run
     if( $self->{'opt'}{'limit'} ) {
         Jifty->handle->apply_limits( \$query, $self->{'opt'}{'limit'} );
     }
-    my $sth = Jifty->handle->SimpleQuery( $query, @values );
+    my $sth = Jifty->handle->simple_query( $query, @values );
     return (0, "Internal error: '$sth'. Please send bug report.") unless $sth;
 
     my @objs;

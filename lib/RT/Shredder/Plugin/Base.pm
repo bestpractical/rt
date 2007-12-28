@@ -45,10 +45,13 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Shredder::Plugin::Base;
 
 use strict;
 use warnings FATAL => 'all';
+
+package RT::Shredder::Plugin::Base;
+use base qw/RT::Base/;
+
 
 =head1 name
 
@@ -67,6 +70,7 @@ sub new
 sub _init
 {
     my $self = shift;
+    $self->_get_current_user(@_);
     $self->{'opt'} = { @_ };
 }
 

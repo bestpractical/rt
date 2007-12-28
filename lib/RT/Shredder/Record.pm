@@ -79,7 +79,7 @@ sub _AsInsertQuery
     my $res = "INSERT INTO ". $dbh->quote_identifier( $self->table );
     my $values = $self->{'values'};
     $res .= "(". join( ",", map { $dbh->quote_identifier( $_ ) } sort keys %$values ) .")";
-    $res .= " valueS";
+    $res .= " VALUES";
     $res .= "(". join( ",", map { $dbh->quote( $values->{$_} ) } sort keys %$values ) .")";
     $res .= ";";
 
