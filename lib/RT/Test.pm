@@ -361,13 +361,15 @@ sub file_content {
     $path = File::Spec->catfile( @$path ) if ref $path;
 
     diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
-
+    my $content = '';
+    if (-f $path) {
     open my $fh, "<:raw", $path
         or do { warn "couldn't open file '$path': $!"; return '' };
-    my $content = do { local $/; <$fh> };
+    $content = do { local $/; <$fh> };
     close $fh;
-
+    
     unlink $path if $args{'unlink'};
+    }
 
     return $content;
 }
