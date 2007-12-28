@@ -123,11 +123,10 @@ Example:
 =cut
 
 use constant PAGE_SIZE => 100;
-my $page = 1;
 sub FetchNext {
     my ($self, $objs, $init) = @_;
     if ( $init ) {
-        $objs->set_page_info(per_page => PAGE_SIZE, current_page => $page++);
+        $objs->set_page_info(per_page => PAGE_SIZE, current_page => 1);
         return;
     }
 
