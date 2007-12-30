@@ -247,7 +247,7 @@ original encoding.
 sub OriginalContent {
     my $self = shift;
 
-    return $self->Content unless ($self->ContentType =~ qr{^(text/plain|message/rfc822)$}i);
+    return $self->Content unless RT::I18N::IsTextualContentType($self->ContentType);
     my $enc = $self->OriginalEncoding;
 
     my $content;
@@ -256,13 +256,15 @@ sub OriginalContent {
     } elsif ( $self->ContentEncoding eq 'base64' ) {
         $content = MIME::Base64::decode_base64($self->_value('Content', decode_utf8 => 0));
     } elsif ( $self->ContentEncoding eq 'quoted-printable' ) {
-        return MIME::QuotedPrint::decode($self->_value('Content', decode_utf8 => 0));
+        $content = MIME::QuotedPrint::decode($self->_value('Content', decode_utf8 => 0));
     } else {
         return( _("Unknown ContentEncoding %1", $self->ContentEncoding));
     }
 
-    # please, comment this code //ruz
-    # Encode::_utf8_on($content);
+    # Turn *off* the SvUTF8 bits here so decode_utf8 and from_to below can work.
+    local $@;
+    Encode::_utf8_off($content);
+
     if (!$enc || $enc eq '' ||  $enc eq 'utf8' || $enc eq 'utf-8') {
         # If we somehow fail to do the decode, at least push out the raw bits
         eval { return( Encode::decode_utf8($content)) } || return ($content);
@@ -302,7 +304,7 @@ sub ContentLength {
         use bytes;
         no warnings 'uninitialized';
         $len = length($self->Content);
-        $self->set_Header('Content-Length' => $len);
+        $self->set_header('Content-Length' => $len);
     }
     return $len;
 }
@@ -321,7 +323,7 @@ sub Quote {
 
     # TODO: Handle Multipart/Mixed (eventually fix the link in the
     # ShowHistory web template?)
-    if ($self->ContentType =~ m{^(text/plain|message)}i) {
+    if (RT::I18N::IsTextualContentType($self->ContentType)) {
 	$body=$self->Content;
 
 	# Do we need any preformatting (wrapping, that is) of the message?
@@ -514,7 +516,7 @@ Replace or add a Header to the attachment's headers.
 
 =cut
 
-sub set_Header {
+sub set_header {
     my $self = shift;
     my $tag = shift;
     my $newheader = '';

@@ -114,18 +114,18 @@ sub set_ReturnAddress {
 	    my $friendly_name = $self->TicketObj->QueueObj->Description ||
 		    $self->TicketObj->QueueObj->name;
 	    $friendly_name =~ s/"/\\"/g;
-	    $self->set_Header( 'From',
+	    $self->set_header( 'From',
 		        sprintf(RT->Config->Get('FriendlyFromLineFormat'), 
                 $self->MIMEEncodeString( $friendly_name, RT->Config->Get('EmailOutputEncoding') ), $replyto),
 	    );
 	}
 	else {
-	    $self->set_Header( 'From', $replyto );
+	    $self->set_header( 'From', $replyto );
 	}
     }
     
     unless ($self->TemplateObj->MIMEObj->head->get('Reply-To')) {
-	$self->set_Header('Reply-To', "$replyto");
+	$self->set_header('Reply-To', "$replyto");
     }
     
 }

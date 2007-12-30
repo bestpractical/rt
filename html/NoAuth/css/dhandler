@@ -1,0 +1,30 @@
+<%ONCE>
+my $squisher;
+</%ONCE>
+<%INIT>
+my $arg = $m->dhandler_arg;
+my $path;
+if ( $arg =~ m{^(.*)-squished(\.[^\.]+)$} ) {
+    $path = $m->current_comp->dir_path .'/'. $1 . $2;
+}
+else {
+    return $m->decline;
+}
+
+$squisher = new RT::CSS::Squish unless $squisher;
+$squisher->{'mason'} = $m;
+
+$m->out( $squisher->concatenate( $path ) );
+
+package RT::CSS::Squish;
+use CSS::Squish '0.06';
+use base qw(CSS::Squish);
+sub file_handle {
+    my $self = shift;
+    my $file = shift;
+    my $content = $self->{'mason'}->scomp($file);
+    open my $fh, '<', \$content or die "$!";
+    return $fh;
+}
+
+</%INIT>

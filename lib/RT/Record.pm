@@ -690,7 +690,7 @@ sub _DecodeLOB {
     elsif ( $ContentEncoding && $ContentEncoding ne 'none' ) {
         return ( _( "Unknown ContentEncoding %1", $ContentEncoding ) );
     }
-    if ( $ContentType eq 'text/plain' ) {
+    if ( RT::I18N::IsTextualContentType($ContentType) ) {
        $Content = Encode::decode_utf8($Content) unless Encode::is_utf8($Content);
     }
         return ($Content);
@@ -713,6 +713,21 @@ use vars '%LINKDIRMAP';
                    Target => 'MergedInto', },
 
 );
+
+=head2 Update  ARGSHASH
+
+Updates fields on an object for you using the proper set methods,
+skipping unchanged values.
+
+ ARGSRef => a hashref of attributes => value for the update
+ AttributesRef => an arrayref of keys in ARGSRef that should be updated
+ AttributePrefix => a prefix that should be added to the attributes in AttributesRef
+                    when looking up values in ARGSRef
+                    Bare attributes are tried before prefixed attributes
+
+Returns a list of localized results of the update
+
+=cut
 
 sub Update {
     my $self = shift;
@@ -847,7 +862,7 @@ sub RefersTo {
 
 =head2 ReferredToBy
 
-  This returns an RT::Model::LinkCollection object which shows all references for which this ticket is a target
+This returns an L<RT::Model::LinkCollection> object which shows all references for which this ticket is a target
 
 =cut
 
@@ -1007,9 +1022,14 @@ sub DependsOn {
 
 # {{{ sub _Links 
 
-=head2 Links DIRECTION TYPE 
+=head2 Links DIRECTION [TYPE]
 
-return links to/from this object. 
+Return links (L<RT::Model::LinkCollection>) to/from this object.
+
+DIRECTION is either 'Base' or 'Target'.
+
+TYPE is a type of links to return, it can be omitted to get
+links of any type.
 
 =cut
 

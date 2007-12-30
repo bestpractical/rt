@@ -265,7 +265,7 @@ Returns the current value of Created.
 sub table {'Transactions'}
 
 
-use vars qw( %_BriefDescriptions );
+use vars qw( %_BriefDescriptions $PreferredContentType );
 
 use RT::Model::AttachmentCollection;
 use RT::Model::ScripCollection;
@@ -462,18 +462,23 @@ sub Message {
 
 =head2 Content PARAMHASH
 
-If this transaction has attached mime objects, returns the first text/plain part.
-Otherwise, returns undef.
+If this transaction has attached mime objects, returns the body of the first
+textual part (as defined in RT::I18N::IsTextualContentType).  Otherwise,
+returns undef.
 
 Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message 
 at $args{'Wrap'}.  $args{'Wrap'} defaults to 70.
 
+If $args{'Type'} is set to C<text/html>, plain texts are upgraded to HTML.
+Otherwise, HTML texts are downgraded to plain text.  If $args{'Type'} is
+missing, it defaults to the value of C<$RT::Transaction::PreferredContentType>.
 
 =cut
 
 sub Content {
     my $self = shift;
     my %args = (
+        Type  => $PreferredContentType || 'text/plain',
         Quote => 0,
         Wrap  => 70,
         @_
@@ -484,10 +489,26 @@ sub Content {
         $content = $content_obj->Content ||'';
 
         if ( lc $content_obj->ContentType eq 'text/html' ) {
-            $content = HTML::FormatText->new(
-                leftmargin  => 0,
-                rightmargin => 78,
-            )->format( HTML::TreeBuilder->new_from_content( $content ) );
+            $content =~ s/<p>--\s+<br \/>.*?$//s if $args{'Quote'};
+
+            if ($args{Type} ne 'text/html') {
+                $content = HTML::FormatText->new(
+                    leftmargin  => 0,
+                    rightmargin => 78,
+                )->format(
+                    HTML::TreeBuilder->new_from_content( $content )
+                );
+            }
+	}
+        else {
+            $content =~ s/\n-- \n.*?$//s if $args{'Quote'};
+            if ($args{Type} eq 'text/html') {
+                # Extremely simple text->html converter
+                $content =~ s/&/&#38;/g;
+                $content =~ s/</&lt;/g;
+                $content =~ s/>/&gt;/g;
+                $content = "<pre>$content</pre>";
+            }
         }
     }
 
@@ -497,9 +518,6 @@ sub Content {
     }
 
     if ( $args{'Quote'} ) {
-
-        # Remove quoted signature.
-        $content =~ s/\n-- \n(.*?)$//s;
 
         # What's the longest line like?
         my $max = 0;
@@ -563,18 +581,17 @@ sub ContentObj {
     # Get the set of toplevel attachments to this transaction.
     return undef unless my $Attachment = $self->Attachments->first;
 
-    # If it's a message or a plain part, just return the
-    # body.
-    if ( $Attachment->ContentType =~ '^(?:text/plain$|text/html|message/)' ) {
+    # If it's a textual part, just return the body.
+    if ( RT::I18N::IsTextualContentType($Attachment->ContentType) ) {
         return ($Attachment);
     }
 
-    # If it's a multipart object, first try returning the first
-    # text/plain part.
+    # If it's a multipart object, first try returning the first part with preferred
+    # MIME type ('text/plain' by default).
 
     elsif ( $Attachment->ContentType =~ '^multipart/' ) {
         my $plain_parts = $Attachment->Children;
-        $plain_parts->ContentType( value => 'text/plain' );
+        $plain_parts->ContentType( value => ($PreferredContentType || 'text/plain') );
         $plain_parts->LimitNotEmpty;
 
         # If we actully found a part, return its content
@@ -582,11 +599,10 @@ sub ContentObj {
             return $first;
         }
 
-        # If that fails, return the first text/plain or message/... part
-        # which has some content.
+        # If that fails, return the first textual part which has some content.
         my $all_parts = $self->Attachments;
         while ( my $part = $all_parts->next ) {
-            next unless $part->ContentType =~ '^(text/plain$|message/)'
+            next unless RT::I18N::IsTextualContentType($part->ContentType)
                         && $part->Content;
             return $part;
         }

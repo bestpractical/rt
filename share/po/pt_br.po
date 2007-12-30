@@ -5522,7 +5522,7 @@ msgstr "O proprietário de um tíquete"
 msgid "The requestor of a ticket"
 msgstr "O requisitante de um tíquete"
 
-#: html/Admin/Elements/EditUsercomments:47
+#: html/Admin/Elements/EditUserComments:47
 msgid "These comments aren't generally visible to the user"
 msgstr "Estes comandos geralmente não estão visíveis para o usuário"
 

@@ -608,6 +608,13 @@ set($SuppressInlineTextFiles, undef);
 
 set($DontSearchFileAttachments, undef);
 
+# The GD module (which RT uses for graphs) uses a builtin font that doesn't
+# have full Unicode support. You can use a particular TrueType font by setting
+# $ChartFont to the absolute path of that font. Your GD library must have
+# support for TrueType fonts to use this option.
+
+set($ChartFont, undef);
+
 
 # MakeClicky detects various formats of data in headers and email
 # messages, and extends them with supporting links.  By default, RT

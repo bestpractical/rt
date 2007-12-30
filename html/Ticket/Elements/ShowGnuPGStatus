@@ -114,7 +114,7 @@ my $reverify_cb = sub {
 
         $top->DelHeader('X-RT-GnuPG-Status');
         $top->AddHeader(map { ('X-RT-GnuPG-Status' => $_->{'status'} ) } @res);
-        $top->set_Header('X-RT-Privacy' => 'PGP' );
+        $top->set_header('X-RT-Privacy' => 'PGP' );
         $top->DelHeader('X-RT-Incoming-Signature');
 
         my @status = RT::Crypt::GnuPG::ParseStatus( $res[0]->{'status'} );

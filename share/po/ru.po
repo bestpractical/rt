@@ -5688,7 +5688,7 @@ msgstr "Ответственный за заявку"
 msgid "The requestor of a ticket"
 msgstr "Автор заявки"
 
-#: html/Admin/Elements/EditUsercomments:47
+#: html/Admin/Elements/EditUserComments:47
 msgid "These comments aren't generally visible to the user"
 msgstr "Эти комментарии не показываются обыкновенному пользователю"
 

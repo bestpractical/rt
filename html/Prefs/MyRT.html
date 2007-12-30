@@ -86,12 +86,12 @@ my $user = Jifty->web->current_user->user_object;
 
 if ( $ARGS{'UpdateSummaryRows'} ) {
     unless ( $ARGS{SummaryRows} && int $ARGS{SummaryRows} > 0 ) {
-        push @results, loc ("Illegal '%1' preference value.", _('summary rows'));
+        push @results, _("Illegal '%1' preference value.", _('summary rows'));
         $ARGS{SummaryRows} = 0;
     }
     else {
         $user->set_Preferences( 'SummaryRows', int $ARGS{SummaryRows} );
-        push @results, loc ('Preferences saved for %1.', _('summary rows'));
+        push @results, _('Preferences saved for %1.', _('summary rows'));
     }
 }
 $ARGS{'SummaryRows'} ||= $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));

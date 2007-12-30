@@ -96,7 +96,7 @@ if ( $ARGS{'QuickCreate'} ) {
 
 
 if ( $ARGS{'q'} ) {
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
+    RT::Interface::Web::redirect(RT->Config->Get('WebURL')."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
 }
 
 if ($ARGS{'HomeRefreshInterval'}) {

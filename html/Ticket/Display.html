@@ -76,7 +76,11 @@
       AttachmentContent => $attachment_content
 &> 
 
-% $m->callback( %ARGS, Ticket => $TicketObj, Callbackname => 'AfterShowHistory' );
+% $m->callback( %ARGS,
+%     Ticket       => $TicketObj,
+%     current_tab  => 'Ticket/Display.html?id=' . $TicketObj->id,
+%     Callbackname => 'AfterShowHistory',
+% );
 
 <%ARGS>
 $id => undef
@@ -138,7 +142,7 @@ if ($ARGS{'id'} eq 'new') {
     
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
     my $signature = Jifty->web->current_user->user_object->Signature || '';
-    if ( $ARGS{'Updatetime_worked'} || (
+    if ( $ARGS{'UpdateTimeWorked'} || (
         defined $ARGS{'UpdateContent'}
         && $ARGS{'UpdateContent'} ne ''
         && $ARGS{'UpdateContent'} ne "-- \n" . $signature ))
@@ -186,7 +190,7 @@ if (@Actions) {
     push @{ $session{"Actions"} ||= [] }, @Actions;
     $session{'i'}++;
 
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') ."Ticket/Display.html?id=".$TicketObj->id);
+    RT::Interface::Web::redirect(RT->Config->Get('WebURL') ."Ticket/Display.html?id=".$TicketObj->id);
 } else {
     @Actions = @{ delete $session{"Actions"} || [] };
 }

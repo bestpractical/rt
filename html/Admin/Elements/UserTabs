@@ -69,13 +69,16 @@ subtabs => {
 	       'MyRT' => { title => _('RT at a glance'),
 			   path => "Admin/Users/MyRT.html?id=".$id
 			 },
-#	       Scrips => { title => _('Rights'),
-#			   path => "Admin/Users/Rights.html?id=".$id
-#			 }
-	       
 	}
+};
+    if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+        $tabs->{'this'}{'subtabs'}{'GnuPG'} = {
+            title => _('GnuPG'),
+            path  => "Admin/Users/GnuPG.html?id=".$id,
+        };
+    }
 }
-}
+
 if (Jifty->web->current_user->has_right( Object => RT->system, Right => 'AdminUsers')) {
   $tabs->{"A"} = { title => _('Select user'),
   		     	path => "Admin/Users/",

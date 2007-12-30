@@ -363,8 +363,7 @@ sub WhoHaveRight {
         return (undef);
     }
 
-    my $from_role = $self->clone;
-    $from_role->WhoHaveRoleRight( %args );
+    my @from_role = $self->clone->_WhoHaveRoleRightSplitted( %args );
 
     my $from_group = $self->clone;
     $from_group->WhoHaveGroupRight( %args );
@@ -372,8 +371,8 @@ sub WhoHaveRight {
     #XXX: DIRTY HACK
     use Jifty::DBI::Collection::Union;
     my $union = new Jifty::DBI::Collection::Union;
-    $union->add($from_role);
-    $union->add($from_group);
+    $union->add( $_ ) foreach @from_role;
+    $union->add( $from_group );
     %$self = %$union;
     bless $self, ref($union);
 
@@ -398,39 +397,48 @@ sub WhoHaveRoleRight
     my $groups = $self->_joinGroups( %args );
     my $acl = $self->_joinACL( %args );
 
-    my ($check_roles, $check_objects) = ('','');
-    
+    $self->limit( alias => $acl,
+                  column => 'principal_type',
+                  value => "$groups.Type",
+                  quote_value => 0,
+                );
+
+    # no system user
+    $self->limit( alias => $self->PrincipalsAlias,
+                  column => 'id',
+                  operator => '!=',
+                  value => RT->system_user->id
+                );
+
     my @objects = $self->_GetEquivObjects( %args );
-    if ( @objects ) {
-        my @role_clauses;
-        my @object_clauses;
-        foreach my $obj ( @objects ) {
-            my $type = ref($obj)? ref($obj): $obj;
-            my $id;
-            $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
-
-            my $role_clause = "$groups.Domain = '$type-Role'";
-            # XXX: Groups.Instance is VARCHAR in DB, we should quote value
-            # if we want mysql 4.0 use indexes here. we MUST convert that
-            # field to integer and drop this quotes.
-            $role_clause   .= " AND $groups.Instance = '$id'" if $id;
-            push @role_clauses, "($role_clause)";
-
-            my $object_clause = "$acl.object_type = '$type'";
-            $object_clause   .= " AND $acl.object_id = $id" if $id;
-            push @object_clauses, "($object_clause)";
+    unless ( @objects ) {
+        unless ( $args{'IncludeSystemRights'} ) {
+            $self->_add_subclause( WhichObjects => "($acl.object_type != 'RT::System')" );
         }
-
-        $check_roles .= join ' OR ', @role_clauses;
-        $check_objects = join ' OR ', @object_clauses;
-    } else {
-        if( !$args{'IncludeSystemRights'} ) {
-            $check_objects = "($acl.object_type != 'RT::System')";
-        }
+        return;
     }
 
-    $self->_add_subclause( "WhichObject", "($check_objects)" );
-    $self->_add_subclause( "WhichRole", "($check_roles)" );
+    my ($groups_clauses, $acl_clauses) = $self->_RoleClauses( $groups, $acl, @objects );
+    $self->_add_subclause( "WhichObject", "(". join( ' OR ', @$groups_clauses ) .")" );
+    $self->_add_subclause( "WhichRole", "(". join( ' OR ', @$acl_clauses ) .")" );
+
+    return;
+}
+
+sub _WhoHaveRoleRightSplitted {
+    my $self = shift;
+    my %args = (
+        Right                  => undef,
+        Object                 => undef,
+        IncludeSystemRights    => undef,
+        IncludeSuperusers      => undef,
+        IncludeSubgroupMembers => 1,
+        EquivObjects           => [ ],
+        @_
+    );
+
+    my $groups = $self->_joinGroups( %args );
+    my $acl = $self->_joinACL( %args );
 
     $self->limit( alias => $acl,
                   column => 'principal_type',
@@ -444,7 +452,53 @@ sub WhoHaveRoleRight
                   operator => '!=',
                   value => RT->system_user->id
                 );
-    return;
+
+    my @objects = $self->_GetEquivObjects( %args );
+    unless ( @objects ) {
+        unless ( $args{'IncludeSystemRights'} ) {
+            $self->_add_subclause( WhichObjects => "($acl.object_type != 'RT::System')" );
+        }
+        return $self;
+    }
+
+    my ($groups_clauses, $acl_clauses) = $self->_RoleClauses( $groups, $acl, @objects );
+    $self->_add_subclause( "WhichRole", "(". join( ' OR ', @$acl_clauses ) .")" );
+    
+    my @res;
+    foreach ( @$groups_clauses ) {
+        my $tmp = $self->clone;
+        $tmp->_add_subclause( WhichObject => $_ );
+        push @res, $tmp;
+    }
+
+    return @res;
+}
+
+sub _RoleClauses {
+    my $self = shift;
+    my $groups = shift;
+    my $acl = shift;
+    my @objects = @_;
+
+    my @groups_clauses;
+    my @acl_clauses;
+    foreach my $obj ( @objects ) {
+        my $type = ref($obj)? ref($obj): $obj;
+        my $id;
+        $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+
+        my $role_clause = "$groups.Domain = '$type-Role'";
+        # XXX: Groups.Instance is VARCHAR in DB, we should quote value
+        # if we want mysql 4.0 use indexes here. we MUST convert that
+        # field to integer and drop this quotes.
+        $role_clause   .= " AND $groups.Instance = '$id'" if $id;
+        push @groups_clauses, "($role_clause)";
+
+        my $object_clause = "$acl.object_type = '$type'";
+        $object_clause   .= " AND $acl.object_id = $id" if $id;
+        push @acl_clauses, "($object_clause)";
+    }
+    return (\@groups_clauses, \@acl_clauses);
 }
 
 # XXX: should be generalized

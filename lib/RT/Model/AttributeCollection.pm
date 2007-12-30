@@ -173,7 +173,10 @@ sub delete_entry {
         }
     }
     return (0, "No entry found") unless $found;
-    $self->_do_search();
+    $self->redo_search;
+    # XXX: above string must work but because of bug in DBIx::SB it doesn't,
+    # to reproduce delete string below and run t/api/attribute-tests.t
+    $self->_do_search;
     return (1, _('Attribute Deleted'));
 }
 

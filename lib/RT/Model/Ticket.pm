@@ -1684,15 +1684,15 @@ sub TransactionAddresses {
 
 sub validate_Queue {
     my $self  = shift;
-    my $Value = shift;
+    my $value = shift;
 
-    if ( !$Value ) {
+    if ( !$value ) {
         $RT::Logger->warning( " RT:::Queue::validate_Queue called with a null value. this isn't ok.");
         return (1);
     }
 
     my $QueueObj = RT::Model::Queue->new;
-    my $id       = $QueueObj->load($Value);
+    my $id       = $QueueObj->load($value);
 
     if ($id) {
         return (1);
@@ -2142,12 +2142,15 @@ sub _RecordNote {
     # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and
     # RT-Send-Bcc: headers
 
-    # XXX: 'CcMessageTo' is email line, so most probably here is bug
-    # as canonicalize_email expect only one address at a time
-    foreach my $field (qw(Cc Bcc)) {
-        $args{'MIMEObj'}->head->add(
-            "RT-Send-$field" => RT::Model::User->canonicalize_email( $args{ $field .'MessageTo' } )
-        ) if defined $args{ $field . 'MessageTo' };
+
+    foreach my $type (qw/Cc Bcc/) {
+        if ( defined $args{ $type . 'MessageTo' } ) {
+
+            my $addresses = join ', ', (
+                map { RT::Model::User->canonicalize_email( $_->address ) }
+                    Mail::Address->parse( $args{ $type . 'MessageTo' } ) );
+            $args{'MIMEObj'}->head->add( 'RT-Send-' . $type, $addresses );
+        }
     }
 
     foreach my $argument (qw(Encrypt Sign)) {

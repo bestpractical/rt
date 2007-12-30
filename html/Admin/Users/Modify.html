@@ -134,6 +134,7 @@
 </table>
 % }
 </&>
+<& /Elements/Callback, _Callbackname => 'LeftColumnBottom', user_object => $user_object, %ARGS &>
 </td>
 
 <td valign="top" class="boxcontainer">
@@ -201,6 +202,7 @@
 </td><td>
 <input name="PagerPhone" value="<%$user_object->PagerPhone%>" size="13" /><br />
 </td>
+</tr>
 </table>
 </&>
 <br />
@@ -218,10 +220,10 @@
 % }
 </td></tr>
 % }
-<tr>
-</tr>
 </table>
 </&>
+<& /Elements/Callback, _Callbackname => 'RightColumnBottom', user_object => $user_object, %ARGS &>
+</td></tr>
 <tr>
 <td colspan="2">
 <&| /Widgets/TitleBox, title => _('comments about this user') &>
@@ -232,10 +234,6 @@
 <&| /Widgets/TitleBox, title => _('Signature') &>
 <textarea class="signature" cols="80" rows="5" name="Signature" wrap="hard"><%$user_object->Signature%></textarea>
 </&>
-% }
-
-% if ( RT->Config->Get('GnuPG')->{'Enable'} && (my $email = $user_object->email )) {
-<& /Admin/Elements/ShowKeyInfo, email => $email &>
 % }
 
 </td>

@@ -310,7 +310,8 @@ sub has_right {
         return (undef);
     }
 
-    $args{EquivObjects} = [ @{ $args{EquivObjects} } ] if $args{EquivObjects};
+    $args{'EquivObjects'} = [ @{ $args{'EquivObjects'} } ]
+        if $args{'EquivObjects'};
 
     if ( $self->disabled ) {
         $RT::Logger->error( "disabled User #"
@@ -324,7 +325,7 @@ sub has_right {
         && UNIVERSAL::can( $args{'Object'}, 'id' )
         && $args{'Object'}->id ) {
 
-        push( @{ $args{'EquivObjects'} }, $args{Object} );
+        push @{ $args{'EquivObjects'} }, $args{'Object'};
     }
     else {
         $RT::Logger->crit("has_right called with no valid object");
@@ -339,47 +340,44 @@ sub has_right {
         # this is a little bit hacky, but basically, now that we've done
         # the ticket roles magic, we load the queue object
         # and ask all the rest of our questions about the queue.
-        push( @{ $args{'EquivObjects'} }, $args{'Object'}->ACLEquivalenceObjects);
+        unshift @{ $args{'EquivObjects'} }, $args{'Object'}->ACLEquivalenceObjects;
 
     }
+
+    unshift @{ $args{'EquivObjects'} }, RT->system
+        unless $self->can('_IsOverrideGlobalACL')
+               && $self->_IsOverrideGlobalACL( $args{'Object'} );
+
 
     # {{{ If we've cached a win or loss for this lookup say so
 
-    # {{{ Construct a hashkey to cache decisions in
-    my $hashkey = do {
-        no warnings 'uninitialized';
+    # Construct a hashkeys to cache decisions:
+    # 1) full_hashkey - key for any result and for full combination of uid, right and objects
+    # 2) short_hashkey - one key for each object to store positive results only, it applies
+    # only to direct group rights and partly to role rights
+    my $self_id = $self->id;
+    my $full_hashkey = join ";:;", $self_id, $args{'Right'};
+    foreach ( @{ $args{'EquivObjects'} } ) {
+        my $ref_id = _ReferenceId($_);
+        $full_hashkey .= ";:;$ref_id";
 
-        # We don't worry about the hash ordering, as this is only
-        # temporarily used; also if the key changes it would be
-        # invalidated anyway.
-        join(
-            ";:;",
-            $self->id,
-            map {
-                $_,    # the key of each arguments
-                  ( $_ eq 'EquivObjects' )    # for object arrayref...
-                  ? map( _ReferenceId($_), @{ $args{$_} } )    # calculate each
-                  : _ReferenceId( $args{$_} )    # otherwise just the value
-              } keys %args
-        );
-    };
-
-    # }}}
-
-    # Returns undef on cache miss
-    my $cached_answer = $_ACL_CACHE->fetch($hashkey);
-    if ( defined $cached_answer ) {
-        if ( $cached_answer == 1 ) {
-            return (1);
-        }
-        elsif ( $cached_answer == -1 ) {
-            return (undef);
-        }
+        my $short_hashkey = join ";:;", $self_id, $args{'Right'}, $ref_id;
+        my $cached_answer = $_ACL_CACHE->fetch($short_hashkey);
+        return $cached_answer > 0 if defined $cached_answer;
     }
 
-    my $hitcount = $self->_has_right( %args );
+    {
+        my $cached_answer = $_ACL_CACHE->fetch($full_hashkey);
+        return $cached_answer > 0 if defined $cached_answer;
+    }
 
-    $_ACL_CACHE->set( $hashkey => $hitcount? 1:-1 );
+
+    my ($hitcount, $via_obj) = $self->_has_right( %args );
+
+    $_ACL_CACHE->set( $full_hashkey => $hitcount? 1: -1 );
+    $_ACL_CACHE->set( "$self_id;:;$args{'Right'};:;$via_obj" => 1 )
+        if $via_obj && $hitcount;
+
     return ($hitcount);
 }
 
@@ -392,9 +390,27 @@ Low level has_right implementation, use has_right method instead.
 sub _has_right
 {
     my $self = shift;
+    {
+        my ($hit, @other) = $self->_HasGroupRight( @_ );
+        return ($hit, @other) if $hit;
+    }
+    {
+        my ($hit, @other) = $self->_HasRoleRight( @_ );
+        return ($hit, @other) if $hit;
+    }
+    return (0);
+}
+
+# this method handles role rights partly in situations
+# where user plays role X on an object and as well the right is
+# assigned to this role X of the object, for example right CommentOnTicket
+# is granted to Cc role of a queue and user is in cc list of the queue
+
+sub _HasGroupRight
+{
+    my $self = shift;
     my %args = (
         Right        => undef,
-        Object       => undef,
         EquivObjects => [],
         @_
     );
@@ -402,46 +418,72 @@ sub _has_right
     return 1 if $self->id == RT->system_user->id;
 
     my $right = $args{'Right'};
-    my @objects = @{ $args{'EquivObjects'} };
 
-    # If an object is defined, we want to look at rights for that object
+    my $query =
+      "SELECT ACL.id, ACL.object_type, ACL.object_id " .
+      "FROM ACL, Principals, CachedGroupMembers WHERE " .
 
-    push( @objects, 'RT::System' )
-      unless $self->can('_IsOverrideGlobalACL')
-             && $self->_IsOverrideGlobalACL( $args{Object} );
+      # Only find superuser or rights with the name $right
+      "(ACL.right_name = 'SuperUser' OR ACL.right_name = '$right') "
 
-    my ($check_roles, $check_objects) = ('','');
-    if( @objects ) {
-        my @role_clauses;
-        my @object_clauses;
-        foreach my $obj ( @objects ) {
-            my $type = ref($obj)? ref($obj): $obj;
-            my $id;
-            $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+      # Never find disabled groups.
+      . "AND Principals.id = ACL.principal_id "
+      . "AND Principals.principal_type = 'Group' "
+      . "AND Principals.disabled = 0 "
 
-            my $role_clause = "Groups.Domain = '$type-Role'";
-            # XXX: Groups.Instance is VARCHAR in DB, we should quote value
-            # if we want mysql 4.0 use indexes here. we MUST convert that
-            # field to integer and drop this quotes.
-            $role_clause   .= " AND Groups.Instance = '$id'" if $id;
-            push @role_clauses, "($role_clause)";
+      # See if the principal is a member of the group recursively or _is the rightholder_
+      # never find recursively disabled group members
+      # also, check to see if the right is being granted _directly_ to this principal,
+      #  as is the case when we want to look up group rights
+      . "AND CachedGroupMembers.GroupId  = ACL.principal_id "
+      . "AND CachedGroupMembers.GroupId  = Principals.id "
+      . "AND CachedGroupMembers.MemberId = ". $self->id ." "
+      . "AND CachedGroupMembers.disabled = 0 ";
+    my @clauses;
+    foreach my $obj ( @{ $args{'EquivObjects'} } ) {
+        my $type = ref( $obj ) || $obj;
+        my $clause = "ACL.object_type = '$type'";
 
-            my $object_clause = "ACL.object_type = '$type'";
-            $object_clause   .= " AND ACL.object_id = $id" if $id;
-            push @object_clauses, "($object_clause)";
-        }
-
-        $check_roles .= join ' OR ', @role_clauses;
-        $check_objects = join ' OR ', @object_clauses;
+        if ( ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id ) {
+            $clause .= " AND ACL.object_id = ". $obj->id;
+         }
+        push @clauses, "($clause)";
+    }
+    if ( @clauses ) {
+        $query .= " AND (". join( ' OR ', @clauses ) .")";
     }
 
-    my $query_base =
-      "SELECT ACL.id from ACL, Groups, Principals, CachedGroupMembers WHERE  " .
+
+    $self->_handle->apply_limits( \$query, 1 );
+    my ($hit, $obj, $id) = $self->_handle->fetch_result( $query );
+    return (0) unless $hit;
+
+    $obj .= "-$id" if $id;
+    return (1, $obj);
+}
+
+sub _HasRoleRight
+{
+    my $self = shift;
+    my %args = (
+        Right        => undef,
+        EquivObjects => [],
+        @_
+    );
+    my $right = $args{'Right'};
+
+    my $query =
+      "SELECT ACL.id " .
+      "FROM ACL, Groups, Principals, CachedGroupMembers WHERE " .
+
+
+
+
 
       # Only find superuser or rights with the name $right
       "(ACL.right_name = 'SuperUser' OR  ACL.right_name = '$right') "
 
-      # Never find disabled groups.
+      # Never find disabled things
       . "AND ( Principals.disabled = 0 OR Principals.disabled IS NULL) " 
       . "AND (CachedGroupMembers.disabled = 0 OR CachedGroupMembers.disabled IS NULL )" 
 
@@ -455,30 +497,39 @@ sub _has_right
       #  as is the case when we want to look up group rights
       . "AND Principals.id = CachedGroupMembers.GroupId "
       . "AND CachedGroupMembers.MemberId = ". $self->id ." "
+      . "AND ACL.principal_type = Groups.Type ";
 
-      # Make sure the rights apply to the entire system or to the object in question
-      . "AND ($check_objects) ";
+    my (@object_clauses);
+    foreach my $obj ( @{ $args{'EquivObjects'} } ) {
+        my $type = ref($obj)? ref($obj): $obj;
+        my $id;
+        $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
 
-    # The groups query does the query based on group membership and individual user rights
-    my $groups_query = $query_base
-      # limit the result set to groups of types ACLEquivalence (user),
-      # UserDefined, SystemInternal and Personal. All this we do
-      # via (ACL.principal_type = 'Group') condition
-      . "AND ACL.principal_id = Principals.id "
-      . "AND ACL.principal_type = 'Group' ";
+        my $object_clause = "ACL.object_type = '$type'";
+        $object_clause   .= " AND ACL.object_id = $id" if $id;
+        push @object_clauses, "($object_clause)";
+    }
+    # find ACLs that are related to our objects only
+    $query .= " AND (". join( ' OR ', @object_clauses ) .")";
 
-    $self->_handle->apply_limits( \$groups_query, 1 ); #only return one result
-    my $hitcount = $self->_handle->fetch_result($groups_query);
-    return 1 if $hitcount; # get out of here if success
+    # because of mysql bug in versions up to 5.0.45 we do one query per object
+    # each query should be faster on any DB as it uses indexes more effective
+    foreach my $obj ( @{ $args{'EquivObjects'} } ) {
+        my $type = ref($obj)? ref($obj): $obj;
+        my $id;
+        $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
 
-    # The roles query does the query based on roles
-    my $roles_query = $query_base
-      . "AND ACL.principal_type = Groups.Type "
-      . "AND ($check_roles) ";
-    $self->_handle->apply_limits( \$roles_query, 1 ); #only return one result
+        my $tmp = $query;
+        $tmp .= " AND Groups.Domain = '$type-Role'";
+        # XXX: Groups.Instance is VARCHAR in DB, we should quote value
+        # if we want mysql 4.0 use indexes here. we MUST convert that
+        # field to integer and drop this quotes.
+        $tmp .= " AND Groups.Instance = '$id'" if $id;
 
-    $hitcount = $self->_handle->fetch_result($roles_query);
-    return 1 if $hitcount; # get out of here if success
+        $self->_handle->apply_limits( \$tmp, 1 );
+        my ($hit) = $self->_handle->fetch_result( $tmp );
+        return (1) if $hit;
+    }
     return 0;
 }
 

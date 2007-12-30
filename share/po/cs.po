@@ -5231,7 +5231,7 @@ msgstr "Vlastník požadavku"
 msgid "The requestor of a ticket"
 msgstr "Žadatel požadavku"
 
-#: html/Admin/Elements/EditUsercomments:47
+#: html/Admin/Elements/EditUserComments:47
 msgid "These comments aren't generally visible to the user"
 msgstr "Tyto komentáře nejsou běžně viditelné uživateli"
 

@@ -4362,7 +4362,7 @@ msgstr "L'intervenant d'un ticket"
 msgid "The requestor of a ticket"
 msgstr "Le demandeur d'un ticket"
 
-#: html/Admin/Elements/EditUsercomments:47
+#: html/Admin/Elements/EditUserComments:47
 msgid "These comments aren't generally visible to the user"
 msgstr "Ces commentaires ne sont généralement pas accessibles par l'utilisateur"
 

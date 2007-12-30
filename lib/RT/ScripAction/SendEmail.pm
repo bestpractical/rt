@@ -173,32 +173,45 @@ sub prepare {
 
     # TODO: We should be pulling the recipients out of the template and shove them into To, Cc and Bcc
 
-    $self->set_Header( 'To', join ( ', ', @{ $self->{'To'} } ) )
+    $self->set_header( 'To', join ( ', ', @{ $self->{'To'} } ) )
       if ( ! $MIMEObj->head->get('To') &&  $self->{'To'} && @{ $self->{'To'} } );
-    $self->set_Header( 'Cc', join ( ', ', @{ $self->{'Cc'} } ) )
+    $self->set_header( 'Cc', join ( ', ', @{ $self->{'Cc'} } ) )
       if ( !$MIMEObj->head->get('Cc') && $self->{'Cc'} && @{ $self->{'Cc'} } );
-    $self->set_Header( 'Bcc', join ( ', ', @{ $self->{'Bcc'} } ) )
+    $self->set_header( 'Bcc', join ( ', ', @{ $self->{'Bcc'} } ) )
       if ( !$MIMEObj->head->get('Bcc') && $self->{'Bcc'} && @{ $self->{'Bcc'} } );
 
     # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
     # If we don't have any 'To' header (but do have other recipients), drop in
     # the pseudo-to header.
-    $self->set_Header( 'To', join ( ', ', @{ $self->{'PseudoTo'} } ) )
+    $self->set_header( 'To', join ( ', ', @{ $self->{'PseudoTo'} } ) )
         if $self->{'PseudoTo'} && @{ $self->{'PseudoTo'} } && !$MIMEObj->head->get('To') 
            && ( $MIMEObj->head->get('Cc') or $MIMEObj->head->get('Bcc') );
 
     # We should never have to set the MIME-Version header
-    $self->set_Header( 'MIME-Version', '1.0' );
-
-    # try to convert message body from utf-8 to RT->Config->Get('EmailOutputEncoding')
-    $self->set_Header( 'Content-Type', 'text/plain; charset="utf-8"' );
+    $self->set_header( 'MIME-Version', '1.0' );
 
     # fsck.com #5959: Since RT sends 8bit mail, we should say so.
-    $self->set_Header( 'Content-Transfer-Encoding','8bit');
+    $self->set_header( 'Content-Transfer-Encoding','8bit');
 
-    my $output_enc = RT->Config->Get('EmailOutputEncoding');
-    RT::I18N::set_mime_entity_to_encoding( $MIMEObj, $output_enc, 'mime_words_ok' );
-    $self->set_Header( 'Content-Type', 'text/plain; charset="'. $output_enc .'"' );
+    # For security reasons, we only send out textual mails.
+    my @parts = $MIMEObj;
+    while (my $part = shift @parts) {
+        if ($part->is_multipart) {
+            push @parts, $part->parts;
+        }
+        else {
+            $part->head->mime_attr( "Content-Type" => 'text/plain' )
+                unless RT::I18N::IsTextualContentType($part->mime_type);
+            $part->head->mime_attr( "Content-Type.charset" => 'utf-8' );
+        }
+    }
+
+
+    RT::I18N::set_mime_entity_to_encoding(
+        $MIMEObj,
+        RT->Config->Get('EmailOutputEncoding'),
+        'mime_words_ok',
+    );
 
     # Build up a MIME::Entity that looks like the original message.
     $self->AddAttachments if $MIMEObj->head->get('RT-Attach-Message');
@@ -262,8 +275,9 @@ TODO: Break this out to a separate module
 =cut
 
 sub SendMessage {
-    my $self    = shift;
-    my $MIMEObj = shift;
+    # DO NOT SHIFT @_ in this subroutine.  It breaks Hook::LexWrap's
+    # ability to pass @_ to a 'post' routine.
+    my ( $self, $MIMEObj ) = @_;
 
     my $msgid = $MIMEObj->head->get('Message-ID');
     chomp $msgid;
@@ -495,7 +509,12 @@ sub RecordOutgoingMailTransaction {
         ActivateScrips => 0
     );
 
-
+    if( $id ) {
+        $self->{'OutgoingMailTransaction'} = $id;
+    } else {
+        $RT::Logger->warning( "Could not record outgoing message transaction: $msg" );
+    }
+    return $id;
 }
 
 =head2 SetRTSpecialHeaders 
@@ -510,7 +529,7 @@ sub set_RTSpecialHeaders {
 
     $self->set_Subject();
     $self->set_SubjectToken();
-    $self->set_HeaderAsEncoding( 'Subject', RT->Config->Get('EmailOutputEncoding') )
+    $self->set_headerAsEncoding( 'Subject', RT->Config->Get('EmailOutputEncoding') )
       if (RT->Config->Get('EmailOutputEncoding'));
     $self->set_ReturnAddress();
     $self->set_ReferencesHeaders();
@@ -530,9 +549,9 @@ sub set_RTSpecialHeaders {
                           . "-" . $self->ScripActionObj->{_Message_ID}
                           . "@" . RT->Config->Get('organization') . ">"/eg
           and $2 == $self->TicketObj->id) {
-        $self->set_Header( "Message-ID" => $msgid );
+        $self->set_header( "Message-ID" => $msgid );
       } else {
-        $self->set_Header( 'Message-ID',
+        $self->set_header( 'Message-ID',
             "<rt-"
             . $RT::VERSION . "-"
             . $$ . "-"
@@ -546,19 +565,19 @@ sub set_RTSpecialHeaders {
       }
     }
 
-    $self->set_Header( 'Precedence', "bulk" )
+    $self->set_header( 'Precedence', "bulk" )
       unless ( $self->TemplateObj->MIMEObj->head->get("Precedence") );
 
-    $self->set_Header( 'X-RT-Loop-Prevention', RT->Config->Get('rtname') );
-    $self->set_Header( 'RT-Ticket',
+    $self->set_header( 'X-RT-Loop-Prevention', RT->Config->Get('rtname') );
+    $self->set_header( 'RT-Ticket',
         RT->Config->Get('rtname') . " #" . $self->TicketObj->id() );
-    $self->set_Header( 'Managed-by',
+    $self->set_header( 'Managed-by',
         "RT $RT::VERSION (http://www.bestpractical.com/rt/)" );
 
     # XXX, TODO: use /ShowUser/ShowUserEntry(or something like that) when it would be 
     #            refactored into user's method.
     if (my $email = $self->TransactionObj->CreatorObj->email) {
-      $self->set_Header( 'RT-Originator', $email );
+      $self->set_header( 'RT-Originator', $email );
     }
 
 }
@@ -704,7 +723,7 @@ sub set_ReturnAddress {
             }
 
             $friendly_name =~ s/"/\\"/g;
-            $self->set_Header(
+            $self->set_header(
                 'From',
                 sprintf(
                     RT->Config->Get('FriendlyFromLineFormat'),
@@ -715,12 +734,12 @@ sub set_ReturnAddress {
             );
         }
         else {
-            $self->set_Header( 'From', $replyto );
+            $self->set_header( 'From', $replyto );
         }
     }
 
     unless ( $self->TemplateObj->MIMEObj->head->get('Reply-To') ) {
-        $self->set_Header( 'Reply-To', "$replyto" );
+        $self->set_header( 'Reply-To', "$replyto" );
     }
 
 }
@@ -731,7 +750,7 @@ Set the column of the current MIME object into value.
 
 =cut
 
-sub set_Header {
+sub set_header {
     my $self  = shift;
     my $field = shift;
     my $val   = shift;
@@ -775,7 +794,7 @@ sub set_Subject {
     $subject =~ s/(\r\n|\n|\s)/ /gi;
 
     chomp $subject;
-    $self->set_Header( 'Subject', $subject );
+    $self->set_header( 'Subject', $subject );
 
 }
 
@@ -835,7 +854,7 @@ sub set_ReferencesHeaders {
       }
 
       # In reply to whatever the internal message was in reply to
-      $self->set_Header( 'In-Reply-To', join( " ",  ( @in_reply_to )));
+      $self->set_header( 'In-Reply-To', join( " ",  ( @in_reply_to )));
 
       # Default the references to whatever we're in reply to
       @references = @in_reply_to unless @references;
@@ -843,7 +862,7 @@ sub set_ReferencesHeaders {
       # References are unchanged from internal
     } else {
       # In reply to that message
-      $self->set_Header( 'In-Reply-To', join( " ",  ( @msgid )));
+      $self->set_header( 'In-Reply-To', join( " ",  ( @msgid )));
 
       # Default the references to whatever we're in reply to
       @references = @in_reply_to unless @references;
@@ -862,7 +881,7 @@ sub set_ReferencesHeaders {
     splice(@references, 4, -6) if ($#references >= 10);
 
     # Add on the references
-    $self->set_Header( 'References', join( " ",   @references) );
+    $self->set_header( 'References', join( " ",   @references) );
     $self->TemplateObj->MIMEObj->head->fold_length( 'References', 80 );
 
 }
@@ -887,7 +906,7 @@ This routine converts the field into specified charset encoding.
 
 =cut
 
-sub set_HeaderAsEncoding {
+sub set_headerAsEncoding {
     my $self = shift;
     my ( $field, $enc ) = ( shift, shift );
 
@@ -897,10 +916,6 @@ sub set_HeaderAsEncoding {
     }
 
     my $value = $self->TemplateObj->MIMEObj->head->get($field);
-
-    # don't bother if it's us-ascii
-
-    # See RT::I18N, 'NOTES:  Why Encode::_utf8_off before Encode::from_to'
 
     $value =  $self->MIMEEncodeString($value, $enc);
 
@@ -934,36 +949,37 @@ sub MIMEEncodeString {
     $max = int($max/3)*3;
 
     chomp $value;
+
+    if ( $max <= 0 ) {
+      # gives an error...
+      $RT::Logger->crit("Can't encode! Charset or encoding too big.\n");
+      return ($value);
+    }
+
     return ($value) unless $value =~ /[^\x20-\x7e]/;
 
     $value =~ s/\s*$//;
-    Encode::_utf8_off($value);
-    my $res = Encode::from_to( $value, "utf-8", $charset );
-   
-    if ($max > 0) {
-      # copy value and split in chuncks
-      my $str=$value;
-      my @chunks = unpack("a$max" x int(length($str)/$max 
-                                  + ((length($str) % $max) ? 1:0)), $str);
-      # encode an join chuncks
-      $value = join " ", 
-                     map encode_mimeword( $_, $encoding, $charset ), @chunks ;
-      return($value); 
-    } else {
-      # gives an error...
-      $RT::Logger->crit("Can't encode! Charset or encoding too big.\n");
+
+    # we need perl string to split thing char by char
+    Encode::_utf8_on($value) unless Encode::is_utf8( $value );
+
+    my ($tmp, @chunks) = ('', ());
+    while ( length $value ) {
+        my $char = substr($value, 0, 1, '');
+        my $octets = Encode::encode( $charset, $char );
+        if ( length($tmp) + length($octets) > $max ) {
+            push @chunks, $tmp;
+            $tmp = '';
+        }
+        $tmp .= $octets;
     }
+    push @chunks, $tmp if length $tmp;
+
+    # encode an join chuncks
+    $value = join "\n ",
+               map encode_mimeword( $_, $encoding, $charset ), @chunks ;
+    return($value); 
 }
-
-=head1 AUTHOR
-
-Jesse Vincent <jesse@bestpractical.com> and Tobias Brox <tobix@cpan.org>
-
-=head1 SEE ALSO
-
-L<RT::ScripAction::Notify>, L<RT::ScripAction::NotifyAsComment> and L<RT::ScripAction::Autoreply>
-
-=cut
 
 1;
 

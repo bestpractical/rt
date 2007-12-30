@@ -95,7 +95,7 @@ $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
   sub section {
     my $s = shift;
     $section = $s;
-    print "$s:\n";
+    print "$s:\n" unless $args{'list-deps'};
   }
 
   sub print_found {
@@ -103,34 +103,39 @@ $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
     my $test = shift;
     my $extra = shift;
 
-    if ($args{'v'} or not $test or $always_show_sections{$section}) {
-      print "\t$msg...";
-      print $test ? "found" : "MISSING";
-      print "\n";
-    }
+    unless ( $args{'list-deps'} ) {
+        if ( $args{'v'} or not $test or $always_show_sections{$section} ) {
+            print "\t$msg...";
+            print $test ? "found" : "MISSING";
+            print "\n";
+        }
 
-    print "\t\t$extra\n" if defined $extra;
+        print "\t\t$extra\n" if defined $extra;
+    }
   }
 }
 
 sub conclude {
     my %missing_by_type = @_;
 
-    unless( keys %missing_by_type ) {
-        print "\nEverything was found.\n";
-        return;
-    }
+    unless ( $args{'list-deps'} ) {
+        unless ( keys %missing_by_type ) {
+            print "\nEverything was found.\n";
+            return;
+        }
 
-    print "\nSOME DEPENDENCIES WERE MISSING.\n";
+        print "\nSOME DEPENDENCIES WERE MISSING.\n";
 
-    for my $type (keys %missing_by_type) {
-        my $missing =  $missing_by_type{$type};
+        for my $type ( keys %missing_by_type ) {
+            my $missing = $missing_by_type{$type};
 
-        print "$type missing dependencies:\n";
-        for my $name (keys %$missing) {
-            my $module  = $missing->{$name};
-            my $version = $module->{version};
-            print_found($name . ( $version ? " >= $version" : "" ), 0, $module->{error});
+            print "$type missing dependencies:\n";
+            for my $name ( keys %$missing ) {
+                my $module  = $missing->{$name};
+                my $version = $module->{version};
+                print_found( $name . ( $version ? " >= $version" : "" ),
+                    0, $module->{error} );
+            }
         }
     }
 }
@@ -200,13 +205,13 @@ Log::Dispatch 2.0
 Locale::Maketext 1.06
 Locale::Maketext::Lexicon 0.32
 Locale::Maketext::Fuzzy
-MIME::Entity 5.108
+MIME::Entity 5.419
 Mail::Mailer 1.57
 Net::SMTP
 Text::Wrapper 
 Time::ParseDate
 Time::HiRes 
-File::Temp
+File::Temp 0.18
 Text::Autoformat
 Text::Quoted 2.02
 Tree::Simple 1.04
@@ -218,6 +223,7 @@ Cache::Simple::TimedExpiry
 UNIVERSAL::require
 Calendar::Simple
 Encode 2.13
+CSS::Squish 0.06
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
@@ -232,6 +238,7 @@ GD
 GD::Graph
 GD::Text
 Text::WikiFormat 0.76
+CSS::Squish 0.06
 .
 
 $deps{'STANDALONE'} = [ text_to_hash( << '.') ];
@@ -369,15 +376,21 @@ sub test_dep {
     my $module = shift;
     my $version = shift;
 
-    eval "use $module $version ()";
-    if ($@) {
-        my $error = $@;
-        $error =~ s/\n(.*)$//s;
-        undef $error unless $error =~ /this is only/;
+    if ( $args{'list-deps'} ) {
+        print $module, ': ', $version || 0, "\n"; 
+    }
+    else {
+        eval "use $module $version ()";
+        if ($@) {
+            my $error = $@;
+            $error =~ s/\n(.*)$//s;
+            undef $error unless $error =~ /this is only/;
 
-        return(0, $error);
-    } else {
-        return 1;
+            return ( 0, $error );
+        }
+        else {
+            return 1;
+        }
     }
 }
 

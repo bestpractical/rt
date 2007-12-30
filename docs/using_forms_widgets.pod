@@ -64,7 +64,7 @@ When this option is activated then C<Process> method returns undef
 value if user selected default value. So for integer box it's empty
 string and so on.
 
-As well when you show a widget you should pass undef as C<CurrentValue>
+As well when you show a widget you should pass undef as C<current_value>
 to inform widget that the current value is default one.
 
 As all methods of a widget are consistent in this behaviour so you

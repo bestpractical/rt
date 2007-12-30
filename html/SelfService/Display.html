@@ -189,6 +189,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         ARGSRef   => \%ARGS,
         TicketObj => $Ticket
     );
+            delete $session{'Attachments'};
 
     # delete temporary storage entry to make WebUI clean
     unless ( keys %{ $session{'Attachments'} } and $ARGS{'UpdateAttach'} ) {
@@ -217,7 +218,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         # But we need to store Actions somewhere too, so we don't lose them.
         push @{ $session{"Actions"} ||= [] }, @results;
         $session{'i'}++;
-        RT::Interface::Web::Redirect(
+        RT::Interface::Web::redirect(
             RT->Config->Get('WebURL') ."SelfService/Display.html?id=". $Ticket->id
         );
     }

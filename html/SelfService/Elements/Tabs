@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<& /Elements/Callback, tabs => $tabs, %ARGS &>
 <& /Elements/PageLayout,
     current_toptab => $current_toptab,
     current_tab => $current_tab,
@@ -68,9 +69,9 @@ while (my $queue = $queues->next) {
 }
 
 if ($Title) {
-$Title = loc ("RT Self Service") . " / " . $Title;
+$Title = _("RT Self Service") . " / " . $Title;
 } else {
-$Title = loc ("RT Self Service");
+$Title = _("RT Self Service");
 
 }
 my ($tab);
@@ -79,7 +80,7 @@ my $tabs = { A  => { title => _('Open tickets'),
                       },
              B => { title => _('Closed tickets'),
                          path => 'SelfService/Closed.html',
-                       }
+                       },
            };
 
 if ($queue_count > 1) {

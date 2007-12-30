@@ -60,8 +60,8 @@
 <&|/l&>Description</&>:
 <input size="25" name="SavedSearchDescription" value="<% $Description %>" />
 
-<nobr>
 % if ($Id ne 'new') {
+<nobr>
 % if ($Dirty) {
 <input type="submit" class="button" name="SavedSearchRevert" value="<%_('Revert')%>" />
 % }
@@ -70,9 +70,8 @@
 <input type="submit" class="button" name="SavedSearchCopy"   value="<%_('Copy')%>" />
 % }
 </nobr>
-
 % }
-<input type="submit" name="SavedSearchSave" value="<%_('Save')%>" class="button" />
+<input type="submit" class="button" name="SavedSearchSave"   value="<%_('Save')%>" />
 % }
 <br />
 <hr />

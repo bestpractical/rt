@@ -49,6 +49,6 @@
 <& /Elements/QueueSummary,
    cache => 'my_admin_queues',
    queue_filter => sub { $_->current_user_has_right('AdminQueue') },
-   conditions => [ {cond => "Status = 'new'",  name => loc ('new')  },
-		   {cond => "Status = 'open'", name => loc ('open') }] &>
+   conditions => [ {cond => "Status = 'new'",  name => _('new')  },
+		   {cond => "Status = 'open'", name => _('open') }] &>
 </&>

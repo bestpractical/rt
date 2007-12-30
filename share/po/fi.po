@@ -5231,7 +5231,7 @@ msgstr "Tapauksen omistaja"
 msgid "The requestor of a ticket"
 msgstr "Tapauksen tilaaja"
 
-#: html/Admin/Elements/EditUsercomments:47
+#: html/Admin/Elements/EditUserComments:47
 msgid "These comments aren't generally visible to the user"
 msgstr "Nämä kommentit eivät ole yleisesti näkyvillä käyttäjälle"
 

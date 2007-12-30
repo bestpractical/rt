@@ -561,13 +561,13 @@ undef or ''. Returns false if it's in use.
 
 sub validate_email {
     my $self  = shift;
-    my $Value = shift;
+    my $value = shift;
 
     # if the email address is null, it's always valid
-    return (1) if ( !$Value || $Value eq "" );
+    return (1) if ( !$value || $value eq "" );
 
     my $TempUser = RT::Model::User->new(current_user => RT->system_user);
-    $TempUser->load_by_email($Value);
+    $TempUser->load_by_email($value);
 
     if ( $TempUser->id && ( !$self->id || $TempUser->id != $self->id ) )
     {    # if we found a user with that address
@@ -590,8 +590,8 @@ sub validate_email {
 canonicalize_email converts email addresses into canonical form.
 it takes one email address in and returns the proper canonical
 form. You can dump whatever your proper local config is in here.  Note
-that it may be called as a static method; in this case, $self may be
-undef.
+that it may be called as a static method; in this case the first argument
+is class name not an object.
 
 =cut
 
@@ -775,21 +775,20 @@ sub principal_object {
     my $self = shift;
 
     unless ( $self->id ) {
-        $RT::Logger->error('User not found');
-        return;
+        $RT::Logger->error("Couldn't get principal for not loaded object");
+        return undef;
     }
 
-    unless ( $self->{'principal_object'} ) {
-        my $obj = RT::Model::Principal->new;
-        $obj->load_by_id( $self->id );
-        unless ( $obj->id && $obj->principal_type eq 'User' ) {
-            Carp::cluck;
-            $RT::Logger->crit( 'Wrong principal for user #'. $self->id );
-        } else {
-            $self->{'principal_object'} = $obj;
-        }
+    my $obj = RT::Model::Principal->new;
+    $obj->load_by_id( $self->id );
+    unless ( $obj->id ) {
+        $RT::Logger->crit( 'No principal for user #'. $self->id );
+        return undef;
+    } elsif ( $obj->principal_type ne 'User' ) {
+        $RT::Logger->crit( 'User #'. $self->id .' has principal of '. $obj->principal_type .' type' );
+        return undef;
     }
-    return $self->{'principal_object'};
+    return $obj;
 }
 
 
@@ -1324,6 +1323,42 @@ sub PreferredKey
 
     $self->set_attribute(name => 'PreferredKey', Content => $prefkey);
     return $prefkey;
+}
+
+sub PrivateKey {
+    my $self = shift;
+
+    my $key = $self->first_attribute('PrivateKey') or return undef;
+    return $key->Content;
+}
+
+sub setPrivateKey {
+    my $self = shift;
+    my $key = shift;
+    # XXX: ACL
+    unless ( $key ) {
+        my ($status, $msg) = $self->delete_attribute('PrivateKey');
+        unless ( $status ) {
+            $RT::Logger->error( "Couldn't delete attribute: $msg" );
+            return ($status, _("Couldn't unset private key"));
+        }
+        return ($status, _("Unset private key"));
+    }
+
+    # check that it's really private key
+    {
+        my %tmp = RT::Crypt::GnuPG::GetKeysForSigning( $key );
+        return (0, _("No such key or it's not suitable for signing"))
+            if $tmp{'exit_code'} || !$tmp{'info'};
+    }
+
+    my ($status, $msg) = $self->setAttribute(
+        name => 'PrivateKey',
+        Content => $key,
+    );
+    return ($status, _("Couldn't set private key"))    
+        unless $status;
+    return ($status, _("Unset private key"));
 }
 
 sub BasicColumns {

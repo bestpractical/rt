@@ -62,7 +62,7 @@
     %{ $localize_meta->( $meta->{'WidgetArguments'} ) },
     name         => $option,
     DefaultValue => scalar RT->Config->Get( $option ),
-    CurrentValue => $preferences->{ $option },
+    current_value => $preferences->{ $option },
 &>
 % }
 </&>
@@ -70,7 +70,7 @@
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <&|/Widgets/TitleBox, title => _( 'Cryptography' ) &>
-Preferred key: <& /Elements/SelectKey, email => $user_object->email, Default => $user_object->PreferredKey &>
+Preferred key: <& /Elements/GnuPG/SelectKeyForEncryption, email => $user_object->email, Default => $user_object->PreferredKey &>
 </&>
 % }
 
@@ -115,9 +115,9 @@ if ( $Update ) {
 my $localize_meta = sub {
     my %meta = %{ shift() };
     $meta{'Description'} = _( $meta{'Description'} ) if $meta{'Description'};
-    if ( $meta{'ValuesLabel'} ) {
-        while (my ($k, $v) = each %{ $meta{'ValuesLabel'} } ) {
-            $meta{'ValuesLabel'}->{$k} = _( $meta{'ValuesLabel'}->{$k} );
+    if ( $meta{'values_label'} ) {
+        while (my ($k, $v) = each %{ $meta{'values_label'} } ) {
+            $meta{'values_label'}->{$k} = _( $meta{'values_label'}->{$k} );
         }
     }
     return \%meta;

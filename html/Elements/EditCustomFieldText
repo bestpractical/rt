@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% while ($Values and my $value = $Values->next ) {
+% while ($values and my $value = $values->next ) {
 <textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$namePrefix%><%$CustomField->id%>-Values"><% $value->Content %></textarea><br />
 % }
-% if (!$MaxValues or !$Values or $Values->count < $MaxValues) {
+% if (!$MaxValues or !$values or $values->count < $MaxValues) {
 <textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$namePrefix%><%$CustomField->id%>-Values"><% $Default %></textarea>
 % }
 <%INIT>
@@ -60,7 +60,7 @@ $Object => undef
 $CustomField => undef
 $namePrefix => ''
 $Default => undef
-$Values => undef
+$values => undef
 $MaxValues => undef
 $Cols
 $Rows

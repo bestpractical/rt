@@ -52,11 +52,11 @@ my $u7 = RT::Model::User->new(current_user => RT->system_user);
 ($id, $msg) = $u7->create(name => 'CreateTest7'.$$, email => '');
 ok ($id, $msg);
 
-TODO: { 
-    local $TODO = "XXX TODO RT4 - jifty::plugin::user doesn't let you change email addresses. that's busted";
 # Can we change the email address away from from "";
 ($id,$msg) = $u7->set_email('foo@bar'.$$);
 ok ($id, $msg);
+TODO: { 
+    local $TODO = "XXX TODO RT4 - jifty::plugin::user doesn't let you change email addresses. that's busted";
 # can we change the address back to "";  
 ($id,$msg) = $u7->set_email('');
 ok ($id, $msg);

@@ -5666,7 +5666,7 @@ msgstr "Właściciel zgłoszenia"
 msgid "The requestor of a ticket"
 msgstr "Zgłaszający"
 
-#: html/Admin/Elements/EditUsercomments:47
+#: html/Admin/Elements/EditUserComments:47
 msgid "These comments aren't generally visible to the user"
 msgstr "Te komentarze nie są generalnie widoczne dla użytkownika"
 

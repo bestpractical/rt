@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% while ($Values and my $value = $Values->next and $Multiple) {
+% while ($values and my $value = $values->next and $Multiple) {
 <input type="checkbox" class="checkbox" name="<%$namePrefix%><%$CustomField->id%>-DeleteValueIds" value="<% $value->id %>" /><% $value->Content %>
 <br />
 % }
-% (!$Multiple or !$MaxValues or !$Values or $Values->count < $MaxValues) or return;
+% (!$Multiple or !$MaxValues or !$values or $values->count < $MaxValues) or return;
 <& /Widgets/ComboBox,
     name    => $namePrefix . $CustomField->id . "-Value",
     Default => $Default,
@@ -61,7 +61,7 @@ $Object => undef
 $CustomField => undef
 $namePrefix => undef
 $Default => undef
-$Values => undef
+$values => undef
 $Multiple => 0
 $Rows => undef
 $MaxValues => undef

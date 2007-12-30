@@ -69,7 +69,7 @@ ok($agent->{'content'} !~ /Saved searches/i, "No saved searches box");
 ok($grantid,$grantmsg);
 $agent->reload();
 like($agent->{'content'} , qr/Load saved search/i, "Search loading box exists");
-ok($agent->{'content'} !~ /input\s+type=.submit.\s+name=.Save./i, 
+ok($agent->{'content'} !~ /input\s+type=['"]submit['"][^>]+name=['"]SavedSearchSave['"]/i, 
    "Still no saved searches box");
 
 ($grantid,$grantmsg) =$user_obj->principal_object->GrantRight(Right => 'CreateSavedSearch');
@@ -77,7 +77,7 @@ ok ($grantid,$grantmsg);
 $agent->reload();
 like($agent->{'content'} , qr/Load saved search/i, 
    "Search loading box still exists");
-like($agent->{'content'} , qr/input\s+type=.submit.\s+name=.Save./i, 
+like($agent->{'content'} , qr/input\s+type=['"]submit['"][^>]+name=['"]SavedSearchSave['"]/i, 
    "Saved searches box exists");
 
 # Create a group, and a queue, so we can test limited user visibility

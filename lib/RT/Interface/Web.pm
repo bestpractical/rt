@@ -159,7 +159,7 @@ sub WebExternalAutoInfo {
 
 
 
-=head2 Redirect URL
+=head2 redirect URL
 
 This routine ells the current user's browser to redirect to URL.  
 Additionally, it unties the user's currently active session, helping to avoid 
@@ -169,9 +169,8 @@ a cached DBI statement handle twice at the same time.
 =cut
 
 
-sub Redirect {
+sub redirect {
     my $redir_to = shift;
-    untie $HTML::Mason::Commands::session;
     my $uri = URI->new($redir_to);
     my $server_uri = URI->new(RT->Config->Get('WebURL') );
 
@@ -184,8 +183,7 @@ sub Redirect {
             $uri->port($ENV{'SERVER_PORT'});
         }
 
-    $HTML::Mason::Commands::m->redirect($uri->canonical);
-    $HTML::Mason::Commands::m->abort;
+    Jifty->web->_redirect($uri->canonical);
 }
 
 
@@ -201,13 +199,18 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 sub StaticFileHeaders {
     my $date = RT::Date->new(current_user => RT->system_user );
 
+    # make cache public
+    $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'max-age=259200, public';
+
     # Expire things in a month.
     $date->set( value => time + 30*24*60*60 );
     $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->RFC2616;
 
+    # if we set 'Last-Modified' then browser request a comp using 'If-Modified-Since'
+    # request, but we don't handle it and generate full reply again
     # Last modified at server start time
-    $date->set( value => $^T );
-    $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
+    # $date->set( value => $^T );
+    # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
 }
 
 
@@ -287,6 +290,7 @@ sub CreateTicket {
         From                => $ARGS{'From'},
         Cc                  => $ARGS{'Cc'},
         Body                => $ARGS{'Content'},
+        Type                => $ARGS{'ContentType'},
     );
 
     if ( $ARGS{'Attachments'} ) {
@@ -489,7 +493,7 @@ sub ProcessUpdateMessage {
     }
 
     #Make the update content have no 'weird' newlines in it
-    return () unless    $args{ARGSRef}->{'Updatetime_worked'}
+    return () unless    $args{ARGSRef}->{'UpdateTimeWorked'}
                      || $args{ARGSRef}->{'UpdateAttachments'}
                      || $args{ARGSRef}->{'UpdateContent'};
 
@@ -501,7 +505,7 @@ sub ProcessUpdateMessage {
         my $sig = $args{'TicketObj'}->current_user->user_object->Signature || '';
         $sig =~ s/^\s*|\s*$//g;
         if ( $args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ ) {
-            return () unless $args{ARGSRef}->{'Updatetime_worked'} ||
+            return () unless $args{ARGSRef}->{'UpdateTimeWorked'} ||
                              $args{ARGSRef}->{'UpdateAttachments'};
 
             # we have to create transaction, but we don't create attachment
@@ -517,6 +521,7 @@ sub ProcessUpdateMessage {
     my $Message = MakeMIMEEntity(
         Subject => $args{ARGSRef}->{'UpdateSubject'},
         Body    => $args{ARGSRef}->{'UpdateContent'},
+        Type    => $args{ARGSRef}->{'UpdateContentType'},
     );
 
     $Message->head->add( 'Message-ID' => 
@@ -574,7 +579,7 @@ sub ProcessUpdateMessage {
             Sign         => $args{ARGSRef}->{'Sign'},
             Encrypt      => $args{ARGSRef}->{'Encrypt'},
             MIMEObj      => $Message,
-            TimeTaken    => $args{ARGSRef}->{'Updatetime_worked'});
+            TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'});
 
 
     unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
@@ -621,6 +626,8 @@ sub ProcessUpdateMessage {
 
 Takes a paramhash Subject, Body and AttachmentFieldname.
 
+Also takes Form, Cc and Type as optional paramhash keys.
+
   Returns a MIME::Entity.
 
 =cut
@@ -634,6 +641,7 @@ sub MakeMIMEEntity {
         Cc                  => undef,
         Body                => undef,
         AttachmentFieldname => undef,
+        Type                => undef,
         @_,
     );
     my $Message = MIME::Entity->build(
@@ -652,7 +660,7 @@ sub MakeMIMEEntity {
         no utf8;
         use bytes;
         $Message->attach(
-            Type    => 'text/plain',
+            Type    => $args{'Type'} || 'text/plain',
             Charset => 'UTF-8',
             Data    => $args{'Body'},
         );
@@ -1227,6 +1235,7 @@ sub _ProcessObjectCustomFieldUpdates {
 
     my @results;
     foreach my $arg ( keys %{ $args{'ARGS'} } ) {
+        next if $arg =~ /Category$/;
 
         # since http won't pass in a form element with a null value, we need
         # to fake it

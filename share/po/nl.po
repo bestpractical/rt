@@ -5273,7 +5273,7 @@ msgstr "De eigenaar van een ticket"
 msgid "The requestor of a ticket"
 msgstr "De verzoeker van een ticket"
 
-#: html/Admin/Elements/EditUsercomments:47
+#: html/Admin/Elements/EditUserComments:47
 msgid "These comments aren't generally visible to the user"
 msgstr "Dit commentaar is gewoonlijk niet zichtbaar voor de gebruiker"
 

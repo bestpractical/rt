@@ -329,6 +329,7 @@ dirs:
 	mkdir -p $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
 	mkdir -p $(DESTDIR)/$(LOCAL_ETC_PATH)
 	mkdir -p $(DESTDIR)/$(LOCAL_LIB_PATH)
+	mkdir -p $(DESTDIR)/$(LOCAL_PLUGIN_PATH)
 	mkdir -p $(DESTDIR)/$(LOCAL_LEXICON_PATH)
 # }}}
 

@@ -77,13 +77,17 @@
 <tr valign="top"><td align="right">
 <% $CF->name %>:
 </td><td>
-<& /Elements/EditCustomField, CustomField => $CF, Object => $Group &>
+<& /Elements/EditCustomField, CustomField => $CF, 
+                              Object => $Group, 
+                              ($Create ? (namePrefix => 'Object-RT::Model::Group--CustomField-') 
+                                       : () )&>
 </td></tr>
 % }
 <tr>
 <td colspan="2">
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 <input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this group)</&><br />
+</td>
 </tr>
 % $m->callback( %ARGS, GroupObj => $Group, results => \@results );
 </table>

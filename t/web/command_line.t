@@ -2,7 +2,7 @@
 
 use strict;
 use Test::Expect;
-use RT::Test; use Test::More tests => 217;
+use RT::Test; use Test::More tests => 219;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 use RT::Model::User;
@@ -158,6 +158,8 @@ expect_like(qr/my CF$$:/i, 'Verified change');
 expect_send("edit ticket/$ticket_id set 'CF-my CF$$=value' ", 'Changing CF...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
 expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking new value');
+expect_like(qr/my CF$$: value/i, 'Verified change');
+expect_send("ls 'id = $ticket_id' -f 'CF-my CF$$'", 'Checking new value');
 expect_like(qr/my CF$$: value/i, 'Verified change');
 
 # ...

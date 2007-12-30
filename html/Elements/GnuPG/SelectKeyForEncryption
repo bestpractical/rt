@@ -45,12 +45,37 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => _('Open tickets') &>
-<& /SelfService/Elements/MyRequests,
-    BaseURL => RT->Config->Get('WebPath') ."/SelfService/?",
-	Page    => $Page,
-&>
+% if (!@keys) {
+<% _("No usable keys.") %>
+% } else {
+<select name="<% $name %>">
+%     foreach my $key (@keys) {
+<option value="<% $key->{'Fingerprint'} %>"><% $key->{'Fingerprint'} %> <% _("(trust: %1)", $key->{'TrustTerse'}) %></option>
+%     }
+</select>
+% }
 
+<%INIT>
+require RT::Crypt::GnuPG;
+my $d;
+
+my %res = RT::Crypt::GnuPG::GetKeysForEncryption($email);
+# move the preferred key to the top of the list
+my @keys = map {
+               $_->{'Fingerprint'} eq ( $Default || '' )
+                   ?  do { $d = $_; () }
+                   : $_
+           }
+           @{ $res{'info'} };
+
+@keys = sort { $b->{'TrustLevel'} <=> $a->{'TrustLevel'} } @keys;
+
+unshift @keys, $d if defined $d;
+
+</%INIT>
 <%ARGS>
-$Page => 1
+$name         => 'PreferredKey'
+$email => undef
+$Default      => undef
 </%ARGS>
+

@@ -65,17 +65,17 @@ $Default        => 0,
 $DefaultValue   => 0,
 $DefaultLabel   => _( 'Use system default (%1)', $DefaultValue? loc('Yes'): loc('No') ),
 
-$CurrentValue => undef,
+$current_value => undef,
 </%ARGS>
 % unless ( $Default ) {
 <input type="hidden" name="<% $name %>" value="0" />\
-<input type="checkbox" name="<% $name %>" value="1"<% $CurrentValue? ' checked="checked"': '' |n %> />\
+<input type="checkbox" name="<% $name %>" value="1"<% $current_value? ' checked="checked"': '' |n %> />\
 % } else {
-<input type="radio" name="<% $name %>" value="1"<% $CurrentValue? ' checked="checked"': '' |n %> />\
+<input type="radio" name="<% $name %>" value="1"<% $current_value? ' checked="checked"': '' |n %> />\
 <% _('Yes') %>
-<input type="radio" name="<% $name %>" value="0"<% defined $CurrentValue && !$CurrentValue? ' checked="checked"': '' |n %> />\
+<input type="radio" name="<% $name %>" value="0"<% defined $current_value && !$current_value? ' checked="checked"': '' |n %> />\
 <% _('No') %>
-<input type="radio" name="<% $name %>" value="__empty_value__"<% !defined $CurrentValue? ' checked="checked"': '' |n %> />\
+<input type="radio" name="<% $name %>" value="__empty_value__"<% !defined $current_value? ' checked="checked"': '' |n %> />\
 <% $DefaultLabel %>
 % }
 </%METHOD>

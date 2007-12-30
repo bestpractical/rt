@@ -330,10 +330,12 @@ sub _joinGroupMembersForGroupRights {
                   quote_value => 0,
                 );
 }
-sub _joinACL          { return (shift)->RT::Model::UserCollection::_joinACL( @_ ) }
-sub _GetEquivObjects  { return (shift)->RT::Model::UserCollection::_GetEquivObjects( @_ ) }
-sub WithGroupRight    { return (shift)->RT::Model::UserCollection::WhoHaveGroupRight( @_ ) }
-sub WithRoleRight     { return (shift)->RT::Model::UserCollection::WhoHaveRoleRight( @_ ) }
+sub _joinACL                  { return (shift)->RT::Model::UserCollection::_joinACL( @_ ) }
+sub _RoleClauses              { return (shift)->RT::Model::UserCollection::_RoleClauses( @_ ) }
+sub _WhoHaveRoleRightSplitted { return (shift)->RT::Model::UserCollection::_WhoHaveRoleRightSplitted( @_ ) }
+sub _GetEquivObjects          { return (shift)->RT::Model::UserCollection::_GetEquivObjects( @_ ) }
+sub WithGroupRight            { return (shift)->RT::Model::UserCollection::WhoHaveGroupRight( @_ ) }
+sub WithRoleRight             { return (shift)->RT::Model::UserCollection::WhoHaveRoleRight( @_ ) }
 
 # {{{ sub LimitToEnabled
 

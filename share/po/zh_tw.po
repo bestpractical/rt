@@ -7113,7 +7113,7 @@ msgstr "申請單的承辦人"
 msgid "The requestor of a ticket"
 msgstr "申請單的申請人"
 
-#: html/Admin/Elements/EditUsercomments:47
+#: html/Admin/Elements/EditUserComments:47
 msgid "These comments aren't generally visible to the user"
 msgstr "該使用者不會看見這些評論"
 

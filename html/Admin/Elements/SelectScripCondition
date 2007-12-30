@@ -60,7 +60,7 @@
 <%INIT>
 my $ScripConditions = RT::Model::ScripConditionCollection->new();
 $ScripConditions->find_all_rows;
-
+$ScripConditions->order_by(column => 'name');
 
 
 </%INIT>

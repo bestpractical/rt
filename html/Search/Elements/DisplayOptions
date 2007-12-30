@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => _("Display Columns") &>
-<table>
+<table width="100%">
 <tr>
 <td>
 <& EditFormat, %ARGS &>
@@ -65,7 +65,7 @@
 <td class="value">
 <select name="order_by">
 % if ($o > 0) {
-<option value="">[none]</option>
+<option value=""><&|/l&>~[none~]</&></option>
 % }
 % foreach my $field (sort keys %fields) {
 %    next unless $field;

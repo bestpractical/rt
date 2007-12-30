@@ -88,7 +88,7 @@ if ($ARGS{'Save'}) {
     }
 
     $user->set_Preferences('QuickSearch', $unwanted);
-    push @actions, loc ('Preferences saved.');
+    push @actions, _('Preferences saved.');
     # Let QueueSummary rebuild the cache
     delete $session{'quick_search_queues'};
 }

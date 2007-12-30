@@ -54,10 +54,10 @@
 </ul>
 % $m->abort;
 <%INIT>
-my ($CustomField, $Value);
+my ($CustomField, $value);
 while( my($k, $v) = each %ARGS ) {
     next unless $k =~ /^Object-.*?-\d*-CustomField-(\d+)-Values$/;
-    ($CustomField, $Value) = ($1, $v);
+    ($CustomField, $value) = ($1, $v);
     last;
 }
 $m->abort unless $CustomField;
@@ -67,14 +67,14 @@ my $values = $CustomFieldObj->Values;
 $values->limit(
     column           => 'name',
     operator        => 'LIKE',
-    value           => $Value,
+    value           => $value,
     subclause       => 'autcomplete',
 );
 $values->limit(
     entry_aggregator => 'OR',
     column           => 'Description',
     operator        => 'LIKE',
-    value           => $Value,
+    value           => $value,
     subclause       => 'autcomplete',
 );
 

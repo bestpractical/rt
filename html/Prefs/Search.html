@@ -85,7 +85,7 @@ Abort('No search specified')
 
 my $search = $class->new();
 $search->load_by_id ($id);
-$title .= loc ($search->Description, loc ('"N"'));
+$title .= _($search->Description, _('"N"'));
 my $user = Jifty->web->current_user->user_object;
 my $SearchArg = $user->Preferences($search, $search->Content);
 $ARGS{Order}       = (ref $ARGS{Order}   ? join('|',grep {/\S/} @{$ARGS{Order}})   : $ARGS{Order});
@@ -105,7 +105,7 @@ my ( $AvailableColumns, $CurrentFormat );
 if ($ARGS{'Save'}) {
     my $hash = {map { $_ => $ARGS{$_}} @fields};
     my $pref = $user->set_Preferences ($search, $hash);
-    push @actions, loc ('Preferences saved.');
+    push @actions, _('Preferences saved.');
 }
 
 </%INIT>

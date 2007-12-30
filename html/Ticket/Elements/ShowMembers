@@ -45,21 +45,20 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ($members->count) {
 <ul>
 % while (my $link = $members->next) {
-% my $member= $link->BaseObj;
-<li><a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$member->id%>"><%$member->id%></a>: <%$member->Subject%> [<%_($member->Status)%>]<br />
+<li><& /Elements/ShowLink, URI => $link->BaseURI &><br />
 % if ($depth < 8) {
-<&/Ticket/Elements/ShowMembers, Ticket => $member, depth => ($depth+1) &> 
+<& /Ticket/Elements/ShowMembers, Ticket => $link->BaseObj, depth => ($depth+1) &> 
 % }
+</li>
 % }
 </ul>
-% }
 
 <%INIT>
 
 my $members = $Ticket->Members;
+return unless $members->count;
 
 </%INIT>
 

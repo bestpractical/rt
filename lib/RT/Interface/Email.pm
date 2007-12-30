@@ -401,7 +401,6 @@ sub SendEmail {
 
     my $mail_command = RT->Config->Get('MailCommand');
 
-    $RT::Logger->crit( "My mail command is $mail_command");
     # if it is a sub routine, we just return it;
     return $mail_command->($args{'Entity'}) if UNIVERSAL::isa( $mail_command, 'CODE' );
 
@@ -445,6 +444,46 @@ sub SendEmail {
             return 0;
         }
     }
+    elsif ( $mail_command eq 'smtp' ) {
+        require Net::SMTP;
+        my $smtp = do { local $@; eval { Net::SMTP->new(
+            Host  => RT->Config->Get('SMTPServer'),
+            Debug => RT->Config->Get('SMTPDebug'),
+        ) } };
+        unless ( $smtp ) {
+            $RT::Logger->crit( "Could not connect to SMTP server.");
+            return 0;
+        }
+
+        # duplicate head as we want drop Bcc field
+        my $head = $args{'Entity'}->head->dup;
+        my @recipients = map $_->address, Mail::Address->parse(
+            map $head->get($_), qw(To Cc Bcc)
+        );
+        $head->delete('Bcc');
+
+        my $sender = RT->Config->Get('SMTPFrom')
+            || $args{'Entity'}->head->get('From');
+        chomp $sender;
+
+        my $status = $smtp->mail( $sender )
+            && $smtp->recipient( @recipients );
+
+        if ( $status ) {
+            $smtp->data;
+            my $fh = $smtp->tied_fh;
+            $head->print( $fh );
+            print $fh "\n";
+            $args{'Entity'}->print_body( $fh );
+            $smtp->dataend;
+        }
+        $smtp->quit;
+
+        unless ( $status ) {
+            $RT::Logger->crit( "$msgid: Could not send mail via SMTP." );
+            return 0;
+        }
+    }
     else {
         local ($ENV{'MAILADDRESS'}, $ENV{'PERL_MAILERS'});
 
@@ -452,11 +491,6 @@ sub SendEmail {
         if ( $mail_command eq 'sendmail' ) {
             $ENV{'PERL_MAILERS'} = RT->Config->Get('SendmailPath');
             push @mailer_args, split(/\s+/, RT->Config->Get('SendmailArguments'));
-        }
-        elsif ( $mail_command eq 'smtp' ) {
-            $ENV{'MAILADDRESS'} = RT->Config->Get('SMTPFrom') || $args{'Entity'}->head->get('From');
-            push @mailer_args, ( Server => RT->Config->Get('SMTPServer') );
-            push @mailer_args, ( Debug  => RT->Config->Get('SMTPDebug') );
         }
         else {
             push @mailer_args, RT->Config->Get('MailParams');

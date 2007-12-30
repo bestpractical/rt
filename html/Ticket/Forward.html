@@ -99,7 +99,7 @@ if ( $Forward || $ForwardAndReturn ) {
     if ( $ForwardAndReturn ) {
         $session{'i'}++;
         push @{ $session{"Actions"} ||= [] }, @results;
-        RT::Interface::Web::Redirect(
+        RT::Interface::Web::redirect(
             RT->Config->Get('WebURL') ."/Ticket/Display.html?id=". $id
         );
     }

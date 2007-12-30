@@ -62,7 +62,7 @@ $name
 
 $Description  => undef,
 
-$CurrentValue => '',
+$current_value => '',
 
 $Default        => 0,
 $DefaultValue   => 0,
@@ -70,10 +70,10 @@ $DefaultLabel   => _( 'Leaving this empty will default to the system default of 
 </%ARGS>
 
 <%METHOD InputOnly>
-<input type="text" name="<% $name %>" value="<% $CurrentValue || '' %>" />\
+<input type="text" name="<% $name %>" value="<% $current_value || '' %>" />\
 <%ARGS>
 $name
-$CurrentValue => '',
+$current_value => '',
 </%ARGS>
 </%METHOD>
 

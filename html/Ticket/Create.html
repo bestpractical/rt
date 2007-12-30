@@ -57,15 +57,15 @@
 <input type="hidden" class="hidden" name="id" value="new" />
 % $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
 
-<& /Elements/GnuPGKeyIssues, Issues => \@gnupg_keys_issues, SignAddresses => \@cannot_sign_as &>
+<& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <div id="Ticket-Create-basics">
 <a name="basics"></a>
 <&| /Widgets/TitleBox, title => _("Create a new ticket") &>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td class="label"><&|/l&>Queue</&>:</td>
-<td class="value"><% $QueueObj->name %>
-<input type="hidden" class="hidden" name="Queue" value="<%$QueueObj->name%>" />
+<td class="value"><& Elements/ShowQueue, QueueObj => $QueueObj &>
+<input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->name %>" />
 </td>
 <td class="label"><&|/l&>Status</&>:
 </td>
@@ -150,14 +150,10 @@
 </td>
 </tr>
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-<tr>
-<td><% _('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, name => 'Sign', CurrentValue => $ARGS{'Sign'} &></td>
-<td><% _('Encrypt')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, name => 'Encrypt', CurrentValue => $ARGS{'Encrypt'} &></td>
-<td colspan="2">&nbsp;</td>
-</tr>
+% if ( $gnupg_widget ) {
+<tr><td>&nbsp;</td><td colspan="5">
+<& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
+</td></tr>
 % }
 
 <tr>
@@ -247,6 +243,78 @@
 
 <%INIT>
 
+my $cloneTicketObj;
+if ( $cloneTicket ) {
+    $cloneTicketObj = RT::Model::Ticket->new();
+    $cloneTicketObj->Load($cloneTicket) or Abort(_("Ticket could not be loaded"));
+    
+    my $clone = {
+        Requestors       => join( ',', $cloneTicketObj->RequestorAddresses ),
+        Cc               => join( ',', $cloneTicketObj->CcAddresses),
+        AdminCc          => join( ',', $cloneTicketObj->AdminCcAddresses),
+        InitialPriority => $cloneTicketObj->Priority, 
+    };
+    
+    $clone->{$_} = $cloneTicketObj->$_() 
+        for qw/Owner Subject FinalPriority TimeEstimated TimeWorked 
+                Status TimeLeft Starts Started Due Resolved/;
+    
+        my $members = $cloneTicketObj->Members;
+        my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
+        while ( my $member = $members->next ) {
+            push @members, $member->LocalBase;
+        }
+        $clone->{'MemberOf-new'} = join ' ', @members;
+    
+        my $members_of = $cloneTicketObj->MemberOf;
+        while ( my $member_of = $members_of->next ) {
+            push @members_of, $member_of->LocalTarget;
+        }
+        $clone->{'new-MemberOf'} = join ' ', @members_of;
+        
+        my $refers = $cloneTicketObj->RefersTo;
+        while ( my $refer = $refers->next ) {
+            push @refers, $refer->LocalTarget;
+        }
+        $clone->{'new-RefersTo'} = join ' ', @refers;
+    
+        my $refers_by = $cloneTicketObj->ReferredToBy;
+        while ( my $refer_by = $refers_by->next ) {
+            push @refers_by, $refer_by->LocalBase;
+        }
+        $clone->{'RefersTo-new'} = join ' ', @refers_by;
+    
+        my $depends = $cloneTicketObj->DependsOn;
+        while ( my $depend = $depends->next ) {
+            push @depends, $depend->LocalTarget;
+        }
+        $clone->{'new-DependsOn'} = join ' ', @depends;
+    
+        my $depends_by = $cloneTicketObj->DependedOnBy;
+        while ( my $depend_by = $depends_by->next ) {
+            push @depends_by, $depend_by->LocalBase;
+        }
+        $clone->{'DependsOn-new'} = join ' ', @depends_by;
+    
+    
+    
+    my $cfs = $cloneTicketObj->QueueObj->TicketCustomFields();
+    while ( my $cf = $cfs->next ) {
+        my $cf_id = $cf->id;
+        my $cf_values = $cloneTicketObj->CustomFieldvalues( $cf->id );
+        my @cf_values;
+        while ( my $cf_value = $cf_values->next ) {
+            push @cf_values, $cf_value->Content;
+        }
+        $clone->{"Object-RT::Model::Ticket--CustomField-$cf_id-value"} 
+            = join "\n", @cf_values;
+    }
+    
+    for ( keys %$clone ) {
+        $ARGS{$_} = $clone->{$_} if not defined $ARGS{$_};
+    }
+
+}
 my @results;
 my $QueueObj = RT::Model::Queue->new();
 $QueueObj->load($Queue) || Abort(_("Queue could not be loaded."));
@@ -261,16 +329,6 @@ my $ValidCFs = $m->comp(
     CustomFields => $CFs,
     ARGSRef => \%ARGS
 );
-
-if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-    foreach ( qw(Sign Encrypt) ) {
-        $ARGS{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
-            name => $_,
-            DefaultValue => $QueueObj->$_,
-            Arguments => \%ARGS,
-        );
-    }
-}
 
 # if no due date has been set explicitly, then use the
 # queue's default if it exists
@@ -315,41 +373,21 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 }
 
 my $checks_failure = 0;
-my @cannot_sign_as;
-my @gnupg_keys_issues;
 
-if (RT->Config->Get('GnuPG')->{'Enable'}) {
-    require RT::Crypt::GnuPG;
-}
+my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
+    self      => $gnupg_widget,
+    QueueObj  => $QueueObj,
+);
+
 
 if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
-
-    # check to see if we have a good passphrase
-    if ( $ARGS{'Sign'} ) {
-        my $address = $QueueObj->correspond_address
-            || RT->Config->Get('correspond_address');
-        unless ( RT::Crypt::GnuPG::DrySign($address, "x") ) {
-            push @cannot_sign_as, $address;
-            $checks_failure = 1;
-        }
-    }
-
-    if ( $ARGS{'Encrypt'} ) {
-        my @recipients = $m->comp(
-            '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
-            %ARGS
-        );
-
-        RT::Crypt::GnuPG::UseKeyForEncryption(
-            map { (/^UseKey-(.*)$/)[0] => $ARGS{ $_ } }
-            grep $ARGS{$_} && /^UseKey-/,
-            keys %ARGS
-        );
-
-        my $status;
-        ($status, @gnupg_keys_issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
-        $checks_failure = 1 unless $status;
-    }
+    my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
+        self      => $gnupg_widget,
+        Operation => 'Create',
+        QueueObj  => $QueueObj,
+    );
+    $checks_failure = 1 unless $status;
 }
 
 
@@ -384,4 +422,5 @@ $DependedOnBy => undef
 $MemberOf => undef
 $QuoteTransaction => undef
 $Queue => undef
+$cloneTicket => undef
 </%ARGS>

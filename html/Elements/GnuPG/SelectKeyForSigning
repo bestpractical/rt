@@ -1,0 +1,17 @@
+% if ( $user_key ) {
+<select name="<% $name %>">
+<option value=""><% _("Queue's key") %></option>
+<option value="<% $user_key %>"><% $user_key %></option>
+</select>
+% } else {
+<% _("Queue's key") %>
+% }
+<%ARGS>
+$name => 'SignUsing',
+$User => undef,
+</%ARGS>
+<%INIT>
+return unless RT->Config->Get('GnuPG')->{'Enable'};
+
+my $user_key = $User->PrivateKey;
+</%INIT>

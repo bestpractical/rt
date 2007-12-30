@@ -76,7 +76,7 @@ $Object => undef
 $CustomField => undef
 $namePrefix => undef
 $Default => undef
-$Values => undef
+$values => undef
 $Multiple => 0
 $Rows => undef
 </%ARGS>
@@ -108,7 +108,7 @@ $Rows => undef
 %       }
         <option value="<% $name %>"
 %       if ( ( grep $_ eq $name, @Default )
-%            || ( $Values && $Values->HasEntry( $name ) ) )
+%            || ( $values && $values->HasEntry( $name ) ) )
 %       {
 %           $$SelectedRef = 1;
             selected
@@ -121,7 +121,7 @@ $Rows => undef
 <%ARGS>
 $CustomField => undef
 @Default => ()
-$Values => undef
+$values => undef
 $SelectedRef => undef
 $CategoryRef => undef
 </%ARGS>

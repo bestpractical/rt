@@ -218,7 +218,6 @@ sub restore_rights {
 
 sub set_rights {
     my $self = shift;
-    my @list = ref $_[0]? @_: @_? { @_ }: ();
 
     require RT::Model::ACECollection;
     my $acl = RT::Model::ACECollection->new(current_user => RT->system_user );
@@ -230,7 +229,14 @@ sub set_rights {
         }
         $ace->delete;
     }
+    return $self->add_rights( @_ );
+}
 
+sub add_rights {
+    my $self = shift;
+    my @list = ref $_[0]? @_: @_? { @_ }: ();
+
+    require RT::Model::ACECollection;
     foreach my $e (@list) {
         my $principal = delete $e->{'Principal'};
         unless ( ref $principal ) {

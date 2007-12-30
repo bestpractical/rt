@@ -73,9 +73,9 @@ my $name = $namePrefix . $CustomField->id;
 if ( $Default && !$Multiple ) {
     $Default =~ s/\s*\r*\n\s*/ /g;
 }
-if ( $Multiple and $Values ) {
+if ( $Multiple and $values ) {
     $Default = '';
-    while (my $value = $Values->next ) {
+    while (my $value = $values->next ) {
         $Default .= $value->Content ."\n";
     }
 }
@@ -84,7 +84,7 @@ if ( $Multiple and $Values ) {
 $CustomField => undef
 $namePrefix  => undef
 $Default     => undef
-$Values      => undef
+$values      => undef
 $Multiple    => undef
 $Rows        => undef
 $Cols        => undef

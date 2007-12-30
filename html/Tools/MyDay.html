@@ -50,7 +50,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-(displaying new and open tickets for <%Jifty->web->current_user->name%>)
+<&|/l, Jifty->web->current_user->name&>(displaying new and open tickets for %1)</&>
 <form method="post" action="MyDay.html">
 <table width="100%" cellpadding="0" cellspacing="0">
 % while ( my $Ticket = $Tickets->next()) {
@@ -62,13 +62,13 @@
 <tr <%$class|n%>><td colspan="2"><h2><a
 href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->id%>"><%$Ticket->id%>:
 <%$Ticket->Subject%></a></h2></td></tr>
-<tr <%$class|n%>><td><span class="label">Worked:</span><input size="3" name="Updatetime_worked-<%$Ticket->id%>" /> minutes
+<tr <%$class|n%>><td><span class="label"><&|/l&>Worked</&>:</span><input size="3" name="UpdateTimeWorked-<%$Ticket->id%>" /> <&|/l&>minutes</&>
 </td>
-<td rowspan="2"><span class="label">comments:<br /></span><textarea name="UpdateContent-<%$Ticket->id%>" rows="5"
+<td rowspan="2"><span class="label"><&|/l&>Comments</&>:<br /></span><textarea name="UpdateContent-<%$Ticket->id%>" rows="5"
 cols="60"></textarea></td></tr>
 <tr <%$class|n%>>
-<td><span class="label">Status:</span> <& /Elements/SelectStatus, name=> 'UpdateStatus-'.$Ticket->id, 
-				  DefaultLabel => _("%1 (Unchanged)",loc($Ticket->Status())) &></td>
+<td><span class="label"><&|/l&>Status</&>:</span> <& /Elements/SelectStatus, name=> 'UpdateStatus-'.$Ticket->id, 
+				  DefaultLabel => _("%1 (Unchanged)",_($Ticket->Status())) &></td>
                   </tr>
 
 % }
@@ -89,10 +89,10 @@ foreach my $arg ( keys %ARGS ) {
     if ( my $content = $ARGS{'UpdateContent-'.$id} ) {
         my ( $val, $msg ) = $ticket->comment(
             Content   => $content,
-            TimeTaken => $ARGS{ 'Updatetime_worked-' . $id }
+            TimeTaken => $ARGS{ 'UpdateTimeWorked-' . $id }
         );
         push @results, _( "Ticket %1: %2", $id, $msg );
-    } elsif ( my $worked = $ARGS{ 'Updatetime_worked-' . $id } ) {
+    } elsif ( my $worked = $ARGS{ 'UpdateTimeWorked-' . $id } ) {
         my ( $val, $msg ) = $ticket->set_time_worked( $worked + $ticket->time_worked );
             push @results, _( "Ticket %1: %2", $id, $msg );
     }

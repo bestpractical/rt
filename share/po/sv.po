@@ -4979,7 +4979,7 @@ msgstr "Ägaren till ett nytt ärende"
 msgid "The requestor of a ticket"
 msgstr "Rekvirenten till ett ärende"
 
-#: html/Admin/Elements/EditUsercomments:47
+#: html/Admin/Elements/EditUserComments:47
 msgid "These comments aren't generally visible to the user"
 msgstr "Dessa kommentarer är vanligtvis inte synliga för användaren"
 

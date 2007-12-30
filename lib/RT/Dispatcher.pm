@@ -62,12 +62,12 @@ unless ( Jifty->web->current_user->user_object && Jifty->web->current_user->user
 
     # if the user is trying to access a ticket, redirect them
     if (    $path =~ '^(/+)Ticket/Display.html' && get('id')) {
-        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=".get('id'));
+        RT::Interface::Web::redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=".get('id'));
     }
 
     # otherwise, drop the user at the SelfService default page
     elsif ( $path !~ '^(/+)SelfService/' ) {
-        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/" );
+        RT::Interface::Web::redirect( RT->Config->Get('WebURL') ."SelfService/" );
     }
 }
 

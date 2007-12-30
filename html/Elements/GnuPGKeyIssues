@@ -74,7 +74,7 @@ There is a problem with key(s) for address <% $issue->{'email'} %>, but there is
 <% $issue->{'Message'} %>
 <br />
 Select a key you want to use for encryption:
-<& /Elements/SelectKey,
+<& /Elements/GnuPG/SelectKeyForEncryption,
     name         => 'UseKey-'. $issue->{'email'},
     email => $issue->{'email'},
     Default      => ( $issue->{'User'}? $issue->{'User'}->PreferredKey : undef ),
