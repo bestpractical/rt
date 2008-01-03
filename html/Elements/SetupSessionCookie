@@ -76,11 +76,13 @@ if ( $session_class eq 'Apache::Session::File' ) {
     $session_properties = {
         Directory     => $RT::MasonSessionDir,
         LockDirectory => $RT::MasonSessionDir,
+        Transaction => 1
     };
 } else {
     $session_properties = {
         Handle     => $RT::Handle->dbh,
         LockHandle => $RT::Handle->dbh,
+        Transaction => 1
     };
 }
 
