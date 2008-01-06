@@ -49,7 +49,7 @@
 $tabs->{this}{subtabs}{RuleManager} = {
     title => loc('Rule Manager'),
     path => "Admin/RuleManager/?Queue=$id",
-} if $id
+} if $id;
 </%INIT>
 <%ARGS>
 $tabs

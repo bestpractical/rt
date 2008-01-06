@@ -46,22 +46,22 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => loc('Rule Manager') &>
-<& /Admin/Elements/RuleManagerTabs, current_tab => 'Admin/RuleManager/', 
-    current_subtab => 'Admin/RuleManager/',
-    Title => loc('All Rules') &>
+<& /Admin/Elements/RuleManagerTabs,
+    current_tab    => "Admin/RuleManager/?Queue=$Queue",
+    current_subtab => "Admin/RuleManager/?Queue=$Queue",
+    Title          => $title,
+    Queue          => $Queue
+&>
 
-<!--
-- List rules by order, with move up/down buttons as well as deletion.
-- Clicking on a rule brings Modify.html with the usual controls:
-    - Match
-    - Pattern
-    - Action
-    - Argument
-    - StopAfterProcessingIfMatched
-- Auto-vivify the action/rule/template combination?
--->
+<h2><&|/l&>Current Rules</&></h2>
+<& SELF:ShowRules, rules => $current_rules, Queue => $Queue, EffectiveQueue => $Queue &>
 
-<h2><&|/l&>Select a rule</&>:</h2>
+% if ($global_rules) {
+<h2><&|/l&>Rules which apply to all queues</&></h2>
+<& SELF:ShowRules, rules => $global_rules, Queue => $Queue, EffectiveQueue => 0 &>
+% }
+
+<%METHOD ShowRules>
 %if (@$rules == 0) {
 <li><em><&|/l&>No rules found.</&></em></li>
 % } else {
@@ -70,14 +70,16 @@
 <tr valign="top"><td>
 <% $rule->Id %>.
 </td><td>
-<a href="Modify.html?id=<%$rule->id%>"><% length($rule->Name) ? $rule->Name : '(#'.$rule->Id.')' %></a>
+<a href="Modify.html?Queue=<% $EffectiveQueue %>&id=<%$rule->id%>"><% length($rule->Name) ? $rule->Name : '(#'.$rule->Id.')' %></a>
 <br />
 <tt>&gt;</tt> <strong><% $rule->Field %></strong> matches <strong><% $rule->PrettyPattern %></strong><br />
 <tt>=</tt> <% $rule->Handler %>
-% if (length(my $arg = $rule->PrettyArgument)) {
+% if ($rule->Handler =~ /:$/) {
+%     if (length(my $arg = $rule->PrettyArgument)) {
 <strong><% $rule->PrettyArgument %></strong>
-% } else {
+%     } else {
 <em>(<&|/l&>none</&>)</em>
+%     }
 % }
 % if ($rule->Final) {
 <br />
@@ -86,26 +88,51 @@
 </td>
 <td style="white-space: nowrap" width="1"
 % if ($rule->Id > 1) {
->[<a href="index.html?Raise=<% $rule->Id %>"><&|/l&>Move up</&></a>]</td
+>[<a href="index.html?EffectiveQueue=<%$EffectiveQueue%>&Queue=<% $Queue %>&Raise=<% $rule->Id %>"><&|/l&>Move up</&></a>]</td
 % }
 >
 <td style="white-space: nowrap" width="1"
 % if ($rule->Id < @$rules) {
->[<a href="index.html?Raise=<% $rule->Id+1 %>"><&|/l&>Move down</&></a>]</td
+>[<a href="index.html?EffectiveQueue=<%$EffectiveQueue%>&Queue=<% $Queue %>&Raise=<% $rule->Id+1 %>"><&|/l&>Move down</&></a>]</td
 % }
 >
-<td style="white-space: nowrap" width="1">[<a href="index.html?Delete=<% $rule->Id %>" onclick="return confirm('<&|/l&>Really delete this rule?</&>')"><&|/l&>Delete</&></a>]</td>
+<td style="white-space: nowrap" width="1">[<a href="index.html?EffectiveQueue=<%$EffectiveQueue%>&Queue=<% $Queue %>&Delete=<% $rule->Id %>" onclick="return confirm('<&|/l&>Really delete this rule?</&>')"><&|/l&>Delete</&></a>]</td>
 </tr>
 %}
-% }
 </td></tr></table>
+% }
+<%ARGS>
+$rules
+$Queue
+$EffectiveQueue
+</%ARGS>
+</%METHOD>
+
+
+
 <%INIT>
 require RT::Extension::RuleManager;
-RT::Extension::RuleManager->raise($Raise) if $Raise;
-RT::Extension::RuleManager->delete($Delete) if $Delete;
-my $rules = RT::Extension::RuleManager->rules;
+my $rm = RT::Extension::RuleManager->new($Queue);
+RT::Extension::RuleManager->new($EffectiveQueue)->raise($Raise) if $Raise;
+RT::Extension::RuleManager->new($EffectiveQueue)->delete($Delete) if $Delete;
+
+my $current_rules = $rm->rules;
+my $global_rules;
+my $title;
+
+if ($Queue) {
+    my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+    $QueueObj->Load($Queue);
+    $title = loc("Manage rules for queue [_1]", $QueueObj->Name);
+    $global_rules = RT::Extension::RuleManager->new(0)->rules;
+}
+else {
+    $title = loc("Manage rules which applies to all queues");
+}
 </%INIT>
 <%ARGS>
-$Raise => undef
+$Raise  => undef
 $Delete => undef
+$Queue  => 0
+$EffectiveQueue => 0
 </%ARGS>

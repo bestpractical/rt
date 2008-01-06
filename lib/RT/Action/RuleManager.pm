@@ -60,12 +60,14 @@ sub Describe  {
 }
 # }}}
 
-# Evaluate all conditions from first to last.
+# Evaluate all rules from first to last, placing queue-specific rules before global ones.
 sub Prepare {
-    my $self = shift;
-    my $rules = RT::Extension::RuleManager->rules;
+    my $self         = shift;
+    my $queue_rules  = RT::Extension::RuleManager->new($self->TicketObj->QueueObj->Id)->rules;
+    my $global_rules = RT::Extension::RuleManager->new(0)->rules;
     my @matched;
-    foreach my $rule (@$rules) {
+
+    foreach my $rule (@$queue_rules, @$global_rules) {
         next unless $self->MatchRule($rule);
         push @matched, $rule;
         last if $rule->Final;

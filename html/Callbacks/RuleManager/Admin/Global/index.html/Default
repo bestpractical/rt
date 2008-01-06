@@ -48,7 +48,7 @@
 <%INIT>
 $tabs->{RuleManager} = {
     title => loc('Rule Manager'),
-    path => 'Admin/RuleManager/',
+    path => '../RuleManager/',
     text => loc('Manage global rules'),
 };
 </%INIT>

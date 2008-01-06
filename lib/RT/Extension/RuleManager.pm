@@ -17,6 +17,15 @@ use constant HandlerOptions => (
     'Move the ticket to this queue:',       # loc
 );
 
+sub new {
+    my $class = shift;
+    my $queue = shift || 0;
+    bless \$queue => $class;
+}
+
+# Queue ID of $self
+sub queue { ${$_[0]} }
+
 sub create {
     my $self = shift;
     my %args = @_;
@@ -27,8 +36,11 @@ sub create {
     } => RuleClass;
 
     my $rules = $self->rules;
-    $rec->{_root} = $rules;
-    $rec->{_pos} = 0+@$rules;
+
+    $rec->{_queue}  = $self->queue;
+    $rec->{_root}   = $rules;
+    $rec->{_pos}    = 0+@$rules;
+
     push @$rules, $rec;
     $self->_save($rules);
 
@@ -78,8 +90,9 @@ sub rules {
     my $self = shift;
     my $rules = $self->_load || [];
     for my $i (0..$#$rules) {
-        $rules->[$i]{_pos} = $i;
-        $rules->[$i]{_root} = $rules;
+        $rules->[$i]{_pos}   = $i;
+        $rules->[$i]{_root}  = $rules;
+        $rules->[$i]{_queue} = $self->queue;
         bless $rules->[$i] => RuleClass;
     }
     return $rules;
@@ -87,7 +100,6 @@ sub rules {
 
 sub _init_action {
     # This initializes the RT::Action we care about.
-    # XXX - Override the "Autoreply" scrip by default?
 
     my $action = RT::ScripAction->new($RT::SystemUser);
     $action->LoadByCol( ExecModule => 'RuleManager' );
@@ -118,6 +130,7 @@ sub _save {
         my %this = %$rule;
         delete $this{_pos};
         delete $this{_root};
+        delete $this{_queue};
         push @to_save, \%this;
     }
 
@@ -129,24 +142,32 @@ sub _save {
 sub _template {
     my $self = shift;
     my $rule_manager_template = RT::Template->new($RT::SystemUser);
-    $rule_manager_template->Load(RuleManagerTemplate);
+    $rule_manager_template->LoadQueueTemplate(
+        Name    => RuleManagerTemplate,
+        Queue   => $self->queue,
+    );
+
     if (!$rule_manager_template->Id) {
         local $YAML::Syck::ImplicitUnicode = 1;
 
         my $autoreply_template = RT::Template->new($RT::SystemUser);
-        $autoreply_template->Load('Autoreply');
+        $autoreply_template->LoadQueueTemplate(
+            Name    => 'Autoreply',
+            Queue   => $self->queue,
+        );
+
         $rule_manager_template->Create(
             Name        => RuleManagerTemplate,
             Description => RuleManagerTemplate,
-            Content     => Dump([{
+            Content     => $autoreply_template->Id ? Dump([{
                 Name        => 'Default Autoreply',
                 Field       => 'Subject',
                 Pattern     => '',
                 Handler     => 'Send the autoreply in this template:',
                 Argument    => $autoreply_template->Content,
                 Final       => ''
-            }]),
-            Queue       => 0,
+            }]) : '',
+            Queue       => $self->queue,
         );
 
         my $rule_manager_action = $self->_init_action;
@@ -192,7 +213,7 @@ sub UpdateRecordObject {
         $updated ||= ($self->{$field} ne $args->{$field});
         $self->{$field} = $args->{$field};
     }
-    RT::Extension::RuleManager->_save($self->{_root}) if $updated;
+    RT::Extension::RuleManager->new($self->{_queue})->_save($self->{_root}) if $updated;
     return $updated;
 }
 
@@ -247,7 +268,7 @@ BEGIN {
         sub Set$_ {
             return if \$_[0]{'$_'} eq \$_[1];
             \$_[0]{'$_'} = \$_[1];
-            RT::Extension::RuleManager->_save(\$_[0]{_root});
+            RT::Extension::RuleManager->new(\$_[0]{_queue})->_save(\$_[0]{_root});
         }
     ]} Fields;
 }

@@ -46,17 +46,22 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/RuleManagerTabs, id => $RuleObj ? $RuleObj->Id : 0,
-    RuleObj => $RuleObj,
-    current_tab => $current_tab, 
-    Title => $title &>
+<& /Admin/Elements/RuleManagerTabs,
+    id          => $RuleObj ? $RuleObj->Id : 0,
+    RuleObj     => $RuleObj,
+    current_tab => $current_tab,
+    Title       => $title,
+    Queue       => $Queue,
+&>
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%$RT::WebPath%>/Admin/RuleManager/Modify.html" method="post">
 % if ($Create) {
 <input type="hidden" class="hidden" name="id" value="new" />
+<input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
 % } else {
 <input type="hidden" class="hidden" name="id" value="<%$RuleObj->Id%>" />
+<input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
 <input type="hidden" class="hidden" name="do_update" value="1" />
 % }
 
@@ -73,7 +78,7 @@
 <td>
 <& SELF:Select,
     Name    => 'Field',
-    Options => [RT::Extension::RuleManager::FieldOptions()],
+    Options => [$rm->FieldOptions],
     Default => ($Create ? '' : $RuleObj->Field),
 &>
 </td>
@@ -91,7 +96,7 @@
 <td>
 <& SELF:Select,
     Name    => 'Handler',
-    Options => [RT::Extension::RuleManager::HandlerOptions()],
+    Options => [$rm->HandlerOptions],
     Default => ($Create ? '' : $RuleObj->Handler),
     Refresh => 1,
 &>
@@ -109,7 +114,7 @@
 % } elsif ($1 eq 'queue') {
 <& /Elements/SelectQueue, Name => 'Argument', Default => $default, ShowNullOption => 1 &>
 % } elsif ($1 eq 'user') {
-<& /Elements/SelectOwner, Name => 'Argument', Default => $default, DefaultValue => 1 &>
+<& /Elements/SelectOwner, Name => 'Argument', Default => $default, DefaultValue => 1, QueueObj => $QueueObj &>
 % } else {
 <input name="Argument" value="<% $default %>" />
 % }
@@ -136,30 +141,48 @@
 require RT::Extension::RuleManager;
 my $current_tab;
 my $RuleObj;
+my $QueueObj;
 my ($title, @results);
+my $rm = RT::Extension::RuleManager->new($Queue);
+
+if ($Queue) {
+    $QueueObj = RT::Queue->new($session{'CurrentUser'});
+    $QueueObj->Load($Queue);
+}
 
 $Create = 1 if not defined $id;
 
 if ($Create) {
-    $current_tab = 'Admin/RuleManager/Modify.html?Create=1';
-    $title = loc("Create a rule");
+    $current_tab = "Admin/RuleManager/Modify.html?Queue=$Queue&Create=1";
+    if ($Queue) {
+        $title = loc("Create a rule for queue [_1]", $QueueObj->Name);
+    }
+    else {
+        $title = loc("Create a rule for all queues");
+    }
 }
 else {
     if ($id eq 'new') {
-        $RuleObj = RT::Extension::RuleManager->create(%ARGS);
+        $RuleObj = $rm->create(%ARGS);
         push @results, loc('Rule created.');
     }
     elsif ($id =~ /^\d+$/) {
-        $RuleObj = RT::Extension::RuleManager->load($id)
-                || RT::Extension::RuleManager->named($Name)
+        $RuleObj = $rm->load($id)
+                || $rm->named($Name)
                 || Abort("Couldn't load rule '$Name'");
     }
     else {
         Abort("Couldn't load rule ''");
     }
-    $title = loc('Editing Rule #[_1]', $RuleObj->id);
+
+    if ($Queue) {
+        $title = loc('Editing Rule #[_1] for Queue [_2]', $RuleObj->id, $QueueObj->Name);
+    }
+    else {
+        $title = loc('Editing Global Rule #[_1]', $RuleObj->id);
+    }
     
-    $current_tab = 'Admin/RuleManager/Modify.html?id='.$RuleObj->id;
+    $current_tab = "Admin/RuleManager/Queue=$Queue&Modify.html?id=".$RuleObj->id;
 }
 
 if ($RuleObj and $RuleObj->Id and $do_update) {
@@ -183,9 +206,10 @@ $Refresh => 0
 </%METHOD>
 
 <%ARGS>
-$id => undef
-$result => undef
-$Name => undef
-$Create => undef
+$id        => undef
+$result    => undef
+$Name      => undef
+$Create    => undef
+$Queue     => 0
 $do_update => 0
 </%ARGS>

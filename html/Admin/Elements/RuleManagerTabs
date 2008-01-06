@@ -45,32 +45,46 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Tabs, 
-    subtabs => $tabs,
-    current_tab => 'Admin/RuleManager/', 
-    current_subtab => $current_tab, 
-    Title => $Title &>
+% if ($QueueObj) {
+<& /Admin/Elements/QueueTabs,
+    id             => $QueueObj->Id,
+    QueueObj       => $QueueObj,
+    current_tab    => "Admin/RuleManager/?Queue=$Queue",
+    current_subtab => $current_subtab,
+    subtabs        => $tabs,
+    Title          => $Title,
+&>
+% } else {
+<& /Admin/Elements/SystemTabs,
+    subtabs         => $tabs,
+    current_tab     => "Admin/RuleManager/?Queue=$Queue", 
+    current_subtab  => $current_tab, 
+    Title           => $Title,
+&>
+% }
+
 <%INIT>
 my $tabs;
 if ($id) {
     $tabs->{'R'} = {
         title     => loc('Rule #[_1]', $id),
-        path      => "Admin/RuleManager/Modify.html?id=".$id,
+        path      => "Admin/RuleManager/Modify.html?Queue=$Queue&id=$id",
     };
 }
 if (
     $session{'CurrentUser'}->HasRight(Right =>'ModifyTemplate', Object => $RT::System)
 ) {
   $tabs->{"A"} = { title => loc('Select rule'),
-  		     	path => "Admin/RuleManager/",
+  		     	path => "Admin/RuleManager/?Queue=$Queue",
 			   };
   $tabs->{"B"} = { title => loc('New rule'),
-  		     	path => "Admin/RuleManager/Modify.html?Create=1",
+  		     	path => "Admin/RuleManager/Modify.html?Queue=$Queue&Create=1",
 		separator => 1,
 	};
 }
-  # Now let callbacks add their extra tabs
-  $m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
+
+# Now let callbacks add their extra tabs
+$m->comp('/Elements/Callback', tabs => $tabs, %ARGS);
 
 foreach my $tab ( sort keys %{$tabs->{'this'}->{'subtabs'}} ) {  
     if ( $tabs->{'this'}->{'subtabs'}->{$tab}->{'path'} eq $current_tab ) {
@@ -78,13 +92,26 @@ foreach my $tab ( sort keys %{$tabs->{'this'}->{'subtabs'}} ) {
         $tabs->{'this'}->{'subtabs'}->{$tab}->{"current_subtab"} = $current_subtab; 
     }                                                                           
 }   
-  $current_tab = "Admin/RuleManager/Modify.html?id=".$id if $id;
+
+$current_tab = "Admin/RuleManager/Modify.html?Queue=$Queue&id=$id" if $id;
+
+
+my $QueueObj;
+if ($Queue) {
+    $QueueObj = RT::Queue->new($session{'CurrentUser'});
+    $QueueObj->Load($Queue);
+    unless ($QueueObj->id) {
+        Abort(loc("Queue [_1] not found", $Queue));
+    }
+}
+
 </%INIT>
 <%ARGS>
-$RuleObj => undef
-$id => undef
-$current_tab => undef
-$subtabs => undef
+$RuleObj        => undef
+$id             => undef
+$current_tab    => undef
+$subtabs        => undef
 $current_subtab => undef
-$Title => undef
+$Title          => undef
+$Queue          => undef
 </%ARGS>
