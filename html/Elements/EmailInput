@@ -485,7 +485,7 @@ div.inline .autocomplete .hidden_value,
 <!--//--><![CDATA[//><!--
 new Ajax.Autocompleter('<% $id %>', '<% $div %>', '<%$RT::WebPath%>/Helpers/EmailAutocomplete.html', {paramName: 'Value'});
 var popup = document.getElementById('<% $popup %>');
-popup.innerHTML = '...';
+popup.innerHTML = '<img style="vertical-align: middle; border: #0088CC double 3px" src="<%$RT::WebPath%>/NoAuth/images/nuvola/kuser.gif" height="16" width="16" border="0">';
 popup.style.visibility = 'visible';
 //--><!]]>
 </script>
