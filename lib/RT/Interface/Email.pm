@@ -396,12 +396,15 @@ sub ParseSenderAddressFromHead {
     my $head = shift;
 
     #Figure out who's sending this message.
-    my $From = $head->get('Reply-To')
-        || $head->get('From')
-        || $head->get('Sender');
-    return ( ParseAddressFromHeader($From) );
-}
+    foreach my $header ('Reply-To', 'From', 'Sender') {
+        my $From = $head->get($header);
+        my ($addr, $name) = ParseAddressFromHeader($From);
+        # only return if the address is not empty
+        return ($addr, $name) if $addr;
+    }
 
+    return (undef, undef);
+}
 # }}}
 
 # {{{ ParseErrorsToAdddressFromHead
