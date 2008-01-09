@@ -274,6 +274,8 @@ File::Find
 Test::Deep 0 # needed for shredder tests
 String::ShellQuote 0 # needed for gnupg-incoming.t
 Test::HTTP::Server::Simple
+Log::Dispatch::Perl
+Test::Warn
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];

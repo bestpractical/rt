@@ -91,6 +91,14 @@ Set( \$LogToScreen , "warning");
     }
 
     RT->Init;
+
+    my $screen_logger = $RT::Logger->remove( 'screen' );
+    require Log::Dispatch::Perl;
+    $RT::Logger->add( Log::Dispatch::Perl->new
+                      ( name      => 'rttest',
+                        min_level => $screen_logger->min_level,
+                        action => { error     => 'warn',
+                                    critical  => 'warn' } ) );
 }
 
 my $created_new_db;    # have we created new db? mainly for parallel testing

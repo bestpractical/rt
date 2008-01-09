@@ -1,10 +1,11 @@
 #!/usr/bin/perl
 
-use Test::More tests => 164;
+use Test::More tests => 165;
 
 use warnings; use strict;
 use RT::Test;
 use RT::User;
+use Test::Warn;
 
 use_ok('RT::Date');
 {
@@ -215,11 +216,13 @@ my $current_user;
     is($date->RFC2822( Timezone => 'user' ), 'Fri, 1 Jul 2005 11:10:00 -0400', "RFC2822");
 }
 
+warning_like
 { # bad format
     my $date = RT::Date->new($RT::SystemUser);
     $date->Set( Format => 'bad' );
     is($date->Unix, 0, "bad format");
-}
+} qr'Unknown Date format: bad';
+
 
 { # setting value via Unix method
     my $date = RT::Date->new($RT::SystemUser);
@@ -240,7 +243,9 @@ my $year = (localtime(time))[5] + 1900;
 
 { # set+ISO format
     my $date = RT::Date->new($RT::SystemUser);
-    $date->Set(Format => 'ISO', Value => 'weird date');
+    warning_like {
+        $date->Set(Format => 'ISO', Value => 'weird date');
+    } qr/Couldn't parse date 'weird date' as a ISO format/;
     is($date->Unix, 0, "date was wrong => unix == 0");
 
     # XXX: ISO format has more feature than we suport
