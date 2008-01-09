@@ -367,7 +367,7 @@ sub add_rights {
         my @rights = ref $e->{'Right'}? @{ $e->{'Right'} }: ($e->{'Right'});
         foreach my $right ( @rights ) {
             my ($status, $msg) = $principal->GrantRight( %$e, Right => $right );
-            $RT::Logger->warning($msg);
+            $RT::Logger->debug($msg);
         }
     }
     return 1;
