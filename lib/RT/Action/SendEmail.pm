@@ -845,12 +845,13 @@ sub SetReferencesHeaders {
 
       # Make all references which are internal be to version which we
       # have sent out
+
       for (@references, @in_reply_to) {
         s/<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>$/
           "<$1." . $self->TicketObj->id .
              "-" . $self->ScripObj->id .
              "-" . $self->ScripActionObj->{_Message_ID} .
-             "@" . RT->Config->Get('Organization') . ">"/eg
+             "@" . $org . ">"/eg
       }
 
       # In reply to whatever the internal message was in reply to
