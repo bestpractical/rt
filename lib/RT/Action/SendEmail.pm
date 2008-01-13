@@ -537,9 +537,10 @@ sub SetRTSpecialHeaders {
     unless ($self->TemplateObj->MIMEObj->head->get('Message-ID')) {
       # Get Message-ID for this txn
       my $msgid = "";
-      $msgid = $self->TransactionObj->Message->First->GetHeader("RT-Message-ID")
-        || $self->TransactionObj->Message->First->GetHeader("Message-ID")
-        if $self->TransactionObj->Message && $self->TransactionObj->Message->First;
+      if ( my $msg = $self->TransactionObj->Message->First ) {
+        $msgid = $msg->GetHeader("RT-Message-ID")
+            || $msg->GetHeader("Message-ID")
+      }
 
       # If there is one, and we can parse it, then base our Message-ID on it
       if ($msgid 
