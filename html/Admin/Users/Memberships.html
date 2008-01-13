@@ -80,7 +80,7 @@
     Rows    => 100,
     BaseURL => RT->Config->Get('WebPath') .'/Admin/Users/Memberships.html?',
     %ARGS,
-    DisplayFormat => "__CheckBox.{Add}__,$Format",
+    DisplayFormat => "__CheckBox.{Add}__,'__HasMemberRecursively.{$id}__/TITLE:Recursive',$Format",
     Format => $Format,
     Collection => $is_not_member,
     AllowSorting => 1,
