@@ -215,7 +215,7 @@ sub Delete {
 
     # Unless $self->GroupObj still has the member recursively $self->MemberObj
     # (Since we deleted the database row above, $self no longer counts)
-    unless ( $self->GroupObj->Object->HasMemberRecursively( $self->MemberObj ) ) {
+    unless ( $self->GroupObj->Object->HasMemberRecursively( $self->MemberId ) ) {
 
 
         #   Find all ACEs granted to $self->GroupId
@@ -286,7 +286,7 @@ sub SetDisabled {
 
     # Unless $self->GroupObj still has the member recursively $self->MemberObj
     # (Since we SetDisabledd the database row above, $self no longer counts)
-    unless ( $self->GroupObj->Object->HasMemberRecursively( $self->MemberObj ) ) {
+    unless ( $self->GroupObj->Object->HasMemberRecursively( $self->MemberId ) ) {
         #   Find all ACEs granted to $self->GroupId
         my $acl = RT::ACL->new($RT::SystemUser);
         $acl->LimitToPrincipal( Id => $self->GroupId );

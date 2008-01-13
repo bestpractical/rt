@@ -1498,7 +1498,6 @@ sub IsWatcher {
     $group->LoadTicketRoleGroup(Type => $args{'Type'}, Ticket => $self->id);
 
     # Find the relevant principal.
-    my $principal = RT::Principal->new($self->CurrentUser);
     if (!$args{PrincipalId} && $args{Email}) {
         # Look up the specified user.
         my $user = RT::User->new($self->CurrentUser);
@@ -1511,10 +1510,9 @@ sub IsWatcher {
             return 0;
         }
     }
-    $principal->Load($args{'PrincipalId'});
 
     # Ask if it has the member in question
-    return ($group->HasMember($principal));
+    return $group->HasMember( $args{'PrincipalId'} );
 }
 
 # }}}
