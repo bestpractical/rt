@@ -577,15 +577,8 @@ sub ProcessUpdateMessage {
         $old_txn = $args{TicketObj}->Transactions->First();
     }
 
-    if ( $old_txn->Message and my $msg = $old_txn->Message->First ) {
-        my @in_reply_to = split(/\s+/m, $msg->GetHeader('In-Reply-To') || '');  
-        my @references = split(/\s+/m, $msg->GetHeader('References') || '' );  
-        my @msgid = split(/\s+/m, $msg->GetHeader('Message-ID') || '');
-        #XXX: custom header should begin with X- otherwise is violation of the standard
-        my @rtmsgid = split(/\s+/m, $msg->GetHeader('RT-Message-ID') || ''); 
-
-        $Message->head->replace( 'In-Reply-To', join(' ', @rtmsgid ? @rtmsgid : @msgid));
-        $Message->head->replace( 'References', join(' ', @references, @msgid, @rtmsgid));
+    if ( my $msg = $old_txn->Message->First ) {
+        RT::Interface::Email::SetInReplyTo( Message => $Message, InReplyTo => $msg );
     }
 
     if ( $args{ARGSRef}->{'UpdateAttachments'} ) {
