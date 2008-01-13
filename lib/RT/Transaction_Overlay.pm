@@ -256,6 +256,8 @@ sub Message {
             VALUE => $self->Id
         );
         $self->{'message'}->ChildrenOf(0);
+    } else {
+        $self->{'message'}->GotoFirstItem;
     }
     return $self->{'message'};
 }
