@@ -204,8 +204,17 @@ sub LoadUserDefinedGroup {
     my $self       = shift;
     my $identifier = shift;
 
-        $self->LoadByCols( "Domain" => 'UserDefined',
-                           "Name" => $identifier );
+    if ( $identifier =~ /^\d+$/ ) {
+        return $self->LoadByCols(
+            Domain => 'UserDefined',
+            id     => $identifier,
+        );
+    } else {
+        return $self->LoadByCols(
+            Domain => 'UserDefined',
+            Name   => $identifier,
+        );
+    }
 }
 
 # }}}
