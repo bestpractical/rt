@@ -242,8 +242,6 @@ sub LimitToRolesForSystem {
 
 Limits the set of groups returned to groups which have
 Principal PRINCIPAL_ID as a member
-   
-
 
 =cut
 
@@ -265,6 +263,36 @@ sub WithMember {
     $self->Limit(ALIAS => $members, FIELD => 'MemberId', OPERATOR => '=', VALUE => $args{'PrincipalId'});
 }
 
+sub WithoutMember {
+    my $self = shift;
+    my %args = (
+        PrincipalId => undef,
+        Recursively => undef,
+        @_
+    );
+
+    my $members = $args{'Recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
+    my $members_alias = $self->Join(
+        TYPE   => 'LEFT',
+        FIELD1 => 'id',
+        TABLE2 => $members,
+        FIELD2 => 'GroupId',
+    );
+    $self->Limit(
+        LEFTJOIN => $members_alias,
+        ALIAS    => $members_alias,
+        FIELD    => 'MemberId',
+        OPERATOR => '=',
+        VALUE    => $args{'PrincipalId'},
+    );
+    $self->Limit(
+        ALIAS    => $members_alias,
+        FIELD    => 'MemberId',
+        OPERATOR => 'IS',
+        VALUE    => 'NULL',
+        QUOTEVALUE => 0,
+    );
+}
 
 =head2 WithRight { Right => RIGHTNAME, Object => RT::Record, IncludeSystemRights => 1, IncludeSuperusers => 0, EquivObjects => [ ] }
 
