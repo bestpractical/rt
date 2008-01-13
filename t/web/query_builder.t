@@ -35,6 +35,7 @@ sub getQueryFromForm {
     $q =~ s/^\s+//g;
     $q =~ s/\s+$//g;
     $q =~ s/\s+/ /g;
+    warn $q;
     return $q;
 }
 
@@ -49,7 +50,7 @@ diag "add the first condition" if $ENV{'TEST_VERBOSE'};
     ok $agent->form_name('BuildQuery'), "found the form once";
     $agent->field("ActorField", "Owner");
     $agent->field("ActorOp", "=");
-    $agent->field("ValueOfActor", "Nobody");
+    $agent->field("ValueOfActor", 'Nobody');
     $agent->submit;
     is getQueryFromForm, "Owner = 'Nobody'", 'correct query';
 }

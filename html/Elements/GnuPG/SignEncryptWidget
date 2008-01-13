@@ -79,7 +79,7 @@ if ( $self->{'Sign'} ) {
 
     my $address = $self->{'SignUsing'};
     $address ||= $self->{'UpdateType'} eq "private"
-        ? ( $QueueObj->commentAddress || RT->Config->Get('commentAddress') )
+        ? ( $QueueObj->comment_address || RT->Config->Get('comment_address') )
         : ( $QueueObj->correspond_address || RT->Config->Get('correspond_address') );
 
     unless ( RT::Crypt::GnuPG::DrySign( $address ) ) {

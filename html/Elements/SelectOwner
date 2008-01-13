@@ -54,9 +54,9 @@
 % $Default = 0 unless defined $Default && $Default =~ /^\d+$/;
 %foreach my $User ( @users)  {
 <option <% ( $User->id == $Default) ? "SELECTED" : ''%>
-%if ($valueAttribute eq 'id') {
+%if ($value_attribute eq 'id') {
     value="<%$User->id%>"
-%} elsif ($valueAttribute eq 'name') {
+%} elsif ($value_attribute eq 'name') {
     value="<%$User->name%>"
 %}
 ><& /Elements/ShowUser, User => $User &></option>
@@ -109,6 +109,6 @@ $User => undef
 $TicketObj => undef
 $DefaultValue => 1
 $DefaultLabel => "-"
-$valueAttribute => 'id'
+$value_attribute => 'id'
 $cfqueues => undef
 </%ARGS>

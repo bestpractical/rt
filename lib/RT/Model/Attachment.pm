@@ -401,7 +401,7 @@ sub Addresses {
     my %data = ();
     my $current_user_address = lc $self->current_user->user_object->email;
     my $correspond = lc $self->TransactionObj->TicketObj->QueueObj->correspond_address;
-    my $comment = lc $self->TransactionObj->TicketObj->QueueObj->commentAddress;
+    my $comment = lc $self->TransactionObj->TicketObj->QueueObj->comment_address;
     foreach my $hdr (qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {
         my @Addresses;
         my $line      = $self->GetHeader($hdr);

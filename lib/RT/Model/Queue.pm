@@ -87,7 +87,7 @@ use Jifty::DBI::Record schema {
 column        name => max_length is 200,  type is 'varchar(200)',  default is '';
 column        Description => max_length is 255,  type is 'varchar(255)',  default is '';
 column        correspond_address => max_length is 120,  type is 'varchar(120)',  default is '';
-column        commentAddress => max_length is 120,  type is 'varchar(120)',  default is '';
+column        comment_address => max_length is 120,  type is 'varchar(120)',  default is '';
 column        InitialPriority => max_length is 11,  type is 'int(11)',  default is '0';
 column        FinalPriority => max_length is 11,  type is 'int(11)',  default is '0';
 column        DefaultDueIn => max_length is 11,  type is 'int(11)',  default is '0';
@@ -323,7 +323,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   name (required)
   Description
   correspond_address
-  commentAddress
+  comment_address
   InitialPriority
   FinalPriority
   DefaultDueIn
@@ -339,7 +339,7 @@ sub create {
         name              => undef,
         correspond_address => '',
         Description       => '',
-        commentAddress    => '',
+        comment_address    => '',
         InitialPriority   => 0,
         FinalPriority     => 0,
         DefaultDueIn      => 0,

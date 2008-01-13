@@ -27,7 +27,7 @@ CREATE TABLE Queues (
   name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
   correspond_address varchar(120) NULL  ,
-  commentAddress varchar(120) NULL  ,
+  comment_address varchar(120) NULL  ,
   InitialPriority integer NULL  ,
   FinalPriority integer NULL  ,
   DefaultDueIn integer NULL  ,

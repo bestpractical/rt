@@ -429,7 +429,7 @@ msgstr "(鍵入申請單編號或網址，以空白分隔)"
 
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::correspond_address)
-#. ($RT::commentAddress)
+#. ($RT::comment_address)
 msgid "(If left blank, will default to %1)"
 msgstr "(如果留白, 則預設為 %1)"
 

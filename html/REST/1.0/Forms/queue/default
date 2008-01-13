@@ -57,7 +57,7 @@ my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
 my $queue = RT::Model::Queue->new() ;
-my @fields = qw(name Description correspond_address commentAddress
+my @fields = qw(name Description correspond_address comment_address
                 InitialPriority FinalPriority DefaultDueIn);
 my %fields = map { lc $_ => $_ } @fields;
 
@@ -76,7 +76,7 @@ else {
                 id => 'queue/new',
                 name => '<queue name>',
                 Description => "",
-                commentAddress => "",
+                comment_address => "",
                 correspond_address => "",
                 InitialPriority => "",
                 FinalPriority => "",

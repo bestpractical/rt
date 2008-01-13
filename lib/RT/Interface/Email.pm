@@ -883,7 +883,7 @@ sub ParseCcAddressesFromHead {
         $address = $args{'CurrentUser'}->user_object->canonicalize_email( $address );
         next if lc $args{'CurrentUser'}->email   eq $address;
         next if lc $args{'QueueObj'}->correspond_address eq $address;
-        next if lc $args{'QueueObj'}->commentAddress    eq $address;
+        next if lc $args{'QueueObj'}->comment_address    eq $address;
         next if IsRTAddress( $address );
 
         push @res, $address;

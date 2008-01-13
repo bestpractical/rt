@@ -309,7 +309,7 @@ msgstr "(Entrer le numéro du ticket ou son URL, séparés par des espaces)"
 
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::correspond_address)
-#. ($RT::commentAddress)
+#. ($RT::comment_address)
 msgid "(If left blank, will default to %1)"
 msgstr "(Si à laissé blanc, le défaut sera %1)"
 

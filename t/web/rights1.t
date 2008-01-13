@@ -30,7 +30,6 @@ $agent->cookie_jar($cookie_jar);
 no warnings 'once';
 # get the top page
 $agent->login($user_obj->name => 'customer');
-
 # Test for absence of Configure and Preferences tabs.
 ok(!$agent->find_link( url => "$RT::WebPath/Admin/",
 		       text => 'Configuration'), "No config tab" );
@@ -110,4 +109,5 @@ ok($agent->form_name('BuildQuery'), "Yep, form is still there");
 my $input = $agent->current_form->find_input('ValueOfActor');
 ok(grep(/customer-$$/, $input->value_names()), "Found self in the actor listing");
 
+die join(',',$input->value_names);
 1;

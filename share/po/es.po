@@ -394,7 +394,7 @@ msgstr "(Entrar ids o URLs de casos, separados por espacios)"
 
 #: html/Admin/Queues/Modify.html:75 html/Admin/Queues/Modify.html:81
 #. ($RT::correspond_address)
-#. ($RT::commentAddress)
+#. ($RT::comment_address)
 msgid "(If left blank, will default to %1)"
 msgstr "(Si se deja vacio, pasara por defecto a %1)"
 

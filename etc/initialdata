@@ -63,7 +63,7 @@
 @Queues = ({ name              => 'General',
              Description       => 'The default queue',
              correspond_address => "",
-             commentAddress    => "", },
+             comment_address    => "", },
            { name        => '___Approvals',
              Description => 'A system-internal queue for the approvals system',
              disabled    => 2, } );

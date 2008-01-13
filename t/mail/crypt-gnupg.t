@@ -37,6 +37,7 @@ diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
     my %res = RT::Crypt::GnuPG::SignEncrypt( Entity => $entity, Encrypt => 0, Passphrase => 'test' );
     ok( $entity, 'signed entity');
     ok( !$res{'logger'}, "log is here as well" );
+    warn $res{'logger'};
     my @status = RT::Crypt::GnuPG::ParseStatus( $res{'status'} );
     is( scalar @status, 2, 'two records: passphrase, signing');
     is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');

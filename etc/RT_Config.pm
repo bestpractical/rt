@@ -240,14 +240,14 @@ set(@MailParams, ());
 # RT is designed such that any mail which already has a ticket-id associated
 # with it will get to the right place automatically.
 
-# $correspond_address and $commentAddress are the default addresses
+# $correspond_address and $comment_address are the default addresses
 # that will be listed in From: and Reply-To: headers of correspondence
 # and comment mail tracked by RT, unless overridden by a queue-specific
 # address.
 
 set($correspond_address , 'RT_correspond_addressNotset');
 
-set($commentAddress , 'RT_commentAddressNotset');
+set($comment_address , 'RT_comment_addressNotset');
 
 # By default, RT sets the outgoing mail's "From:" header to
 # "Sendername via RT".  setting this option to 0 disables it.

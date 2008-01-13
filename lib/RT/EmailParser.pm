@@ -308,7 +308,7 @@ sub ParseCcAddressesFromHead {
         $Address = $user->canonicalize_email($Address);
         next if ( lc $args{'CurrentUser'}->email   eq lc $Address );
         next if ( lc $args{'QueueObj'}->correspond_address eq lc $Address );
-        next if ( lc $args{'QueueObj'}->commentAddress    eq lc $Address );
+        next if ( lc $args{'QueueObj'}->comment_address    eq lc $Address );
         next if ( $self->IsRTAddress($Address) );
 
         push ( @Addresses, $Address );

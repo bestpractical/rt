@@ -101,8 +101,8 @@ sub set_ReturnAddress {
     
     my $replyto;
     if ($args{'is_comment'}) { 
-	$replyto = $self->TicketObj->QueueObj->commentAddress || 
-		     RT->Config->Get('commentAddress');
+	$replyto = $self->TicketObj->QueueObj->comment_address || 
+		     RT->Config->Get('comment_address');
     }
     else {
 	$replyto = $self->TicketObj->QueueObj->correspond_address ||

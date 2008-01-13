@@ -403,7 +403,7 @@ msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Indtast sagsnummer eller URL'er, adskilt af mellemrum)"
 
 #. ($RT::correspond_address)
-#. ($RT::commentAddress)
+#. ($RT::comment_address)
 #: html/Admin/Queues/Modify.html:75
 #: html/Admin/Queues/Modify.html:81
 msgid "(If left blank, will default to %1)"

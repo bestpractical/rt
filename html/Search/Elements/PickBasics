@@ -124,7 +124,7 @@ my @lines = (
         Value => {
             Type => 'component',
             Path => '/Elements/SelectOwner',
-            Arguments => { ValueAttribute => 'name' },
+            Arguments => { value_attribute => 'name' },
         },
     },
     {

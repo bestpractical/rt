@@ -11,7 +11,7 @@ RT::Test->set_mail_catcher;
 
 RT->Config->set( LogToScreen => 'debug' );
 RT->Config->set( LogStackTraces => 'error' );
-RT->Config->set( commentAddress => 'general@example.com');
+RT->Config->set( comment_address => 'general@example.com');
 RT->Config->set( correspond_address => 'general@example.com');
 RT->Config->set( DefaultSearchResultFormat => qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
@@ -62,6 +62,7 @@ RT::Test->set_rights(
 );
 
 my ($baseurl, $m) = RT::Test->started_ok;
+diag($baseurl);
 ok $m->login, 'logged in';
 
 $m->get_ok("/Admin/Queues/Modify.html?id=$qid");
@@ -220,11 +221,11 @@ ok($m->value('Encrypt', 2), "encrypt tick box is checked");
 ok($m->value('Sign', 2), "sign tick box is checked");
 $m->submit;
 is($m->status, 200, "request successful");
-
 $m->get($baseurl); # ensure that the mail has been processed
 
 @mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
+die;
 for my $mail (@mail) {
     unlike $mail, qr/Some other content/, "outgoing mail was encrypted";
 

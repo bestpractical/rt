@@ -33,7 +33,7 @@ RT::Test->import_gnupg_key('rt-test@example.com', 'public');
 my $queue = RT::Test->load_or_create_queue(
     name              => 'Regression',
     correspond_address => 'rt-recipient@example.com',
-    commentAddress    => 'rt-recipient@example.com',
+    comment_address    => 'rt-recipient@example.com',
 );
 ok $queue && $queue->id, 'loaded or created queue';
 
@@ -148,7 +148,7 @@ RT::Test->import_gnupg_key('rt-test@example.com');
 $queue = RT::Test->load_or_create_queue(
     name              => 'Regression',
     correspond_address => 'rt-test@example.com',
-    commentAddress    => 'rt-test@example.com',
+    comment_address    => 'rt-test@example.com',
 );
 ok $queue && $queue->id, 'changed props of the queue';
 
