@@ -250,7 +250,7 @@ sub Message {
     
     unless ( defined $self->{'message'} ) {
 
-        $self->{'message'} = RT::Attachments->( $self->CurrentUser );
+        $self->{'message'} = RT::Attachments->new( $self->CurrentUser );
         $self->{'message'}->Limit(
             FIELD => 'TransactionId',
             VALUE => $self->Id
