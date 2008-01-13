@@ -564,17 +564,11 @@ sub ProcessUpdateMessage {
         Type    => $args{ARGSRef}->{'UpdateContentType'},
     );
 
-    $Message->head->add( 'Message-ID' => 
-          "<rt-"
-          . $RT::VERSION . "-"
-          . $$ . "-"
-          . CORE::time() . "-"
-          . int(rand(2000)) . "."
-          . $args{'TicketObj'}->id . "-"
-          . "0" . "-"  # Scrip
-          . "0" . "@"  # Email sent
-              . RT->Config->Get('Organization')
-          . ">" );
+    $Message->head->add(
+        'Message-ID' => RT::Interface::Email::GenMessageId(
+            Ticket => $args{'TicketObj'},
+        )
+    );
     my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
     if ( $args{ARGSRef}->{'QuoteTransaction'} ) {
         $old_txn->Load( $args{ARGSRef}->{'QuoteTransaction'} );
