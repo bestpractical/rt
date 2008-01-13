@@ -2138,22 +2138,11 @@ sub _RecordNote {
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
     my $org = RT->Config->Get('Organization');
-    
-    
-    
     my $msgid = $args{'MIMEObj'}->head->get('Message-ID');
     unless (defined $msgid && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/) {
-        $args{'MIMEObj'}->head->set( 'RT-Message-ID',
-            "<rt-"
-            . $RT::VERSION . "-"
-            . $$ . "-"
-            . CORE::time() . "-"
-            . int(rand(2000)) . '.'
-            . $self->id . "-"
-            . "0" . "-"  # Scrip
-            . "0" . "@"  # Email sent
-            . $org
-            . ">" );
+        $args{'MIMEObj'}->head->set(
+            'RT-Message-ID' => RT::Interface::Email::GenMessageId( Ticket => $self )
+        );
     }
 
     #Record the correspondence (write the transaction)
