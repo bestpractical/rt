@@ -135,7 +135,7 @@ $bob->LoadByEmail('bob@fsck.com');
 ok($bob->Id,  "Found the bob rt user");
 ok ($ticket->IsWatcher(Type => 'Requestor', PrincipalId => $bob->PrincipalId), "The ticket actually has bob at fsck.com as a requestor");;
 ok ( ($add_id, $add_msg) = $ticket->DeleteWatcher(Type =>'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
-ok (!$ticket->IsWatcher(Type => 'Requestor', Principal => $bob->PrincipalId), "The ticket no longer has bob at fsck.com as a requestor");;
+ok (!$ticket->IsWatcher(Type => 'Requestor', PrincipalId => $bob->PrincipalId), "The ticket no longer has bob at fsck.com as a requestor");;
 
 
 $group = RT::Group->new($RT::SystemUser);
