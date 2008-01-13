@@ -48,6 +48,6 @@
 <%INIT>
 $ARGS{'CallbackPage'} = delete $ARGS{'Page'} || $m->callers(1)->path;
 $ARGS{'Callbackname'} = delete $ARGS{'_Callbackname'};
-$RT::Logger->debug("$ARGS{'CallbackPage'} calls old style callback, use \$m->callback");
+Jifty->log->debug("$ARGS{'CallbackPage'} calls old style callback, use \$m->callback");
 return $m->callback( %ARGS );
 </%INIT>

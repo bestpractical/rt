@@ -112,7 +112,7 @@ sub callback {
     my $name = delete $args{'Callbackname'} || 'Default';
     my $page = delete $args{'CallbackPage'} || $self->callers(0)->path;
     unless ( $page ) {
-        $RT::Logger->error("Coulnd't get a page name for callbacks");
+        Jifty->log->error("Coulnd't get a page name for callbacks");
         return;
     }
 

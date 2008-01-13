@@ -30,7 +30,7 @@ $ENV{'RTUSER'} = 'root';
 #    - RTPASSWD
 $ENV{'RTPASSWD'} = 'password';
 #    - RTSERVER
-$RT::Logger->debug("Connecting to server at ". $RT::Test::server_url);
+Jifty->log->debug("Connecting to server at ". $RT::Test::server_url);
 $ENV{'RTSERVER'} = $RT::Test::server_url;
 $ENV{'RTSERVER'} =~ s/\/$//;
 

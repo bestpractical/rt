@@ -9,7 +9,7 @@ use RT::CurrentUser;
 use strict;
 use warnings;
 use File::Spec ();
-use vars qw($Config $System $nobody $Handle $Logger);
+use vars qw($Config $System $nobody $Handle );
 our $VERSION = '3.7.14';
 
 
@@ -69,10 +69,6 @@ have not been set already.
 
 =cut
 
-sub start {
-    shift->InitLogging;
-}
-
 sub load_config {
     require RT::Config;
     $Config = RT::Config->new();
@@ -95,7 +91,7 @@ sub Config {
 =head2 Init
 
 L<Connect to the database /connect_to_database>, L<initilizes system objects /InitSystemObjects>,
-L<preloads classes /InitClasses> and L<set up logging /InitLogging>.
+L<preloads classes /InitClasses> 
 
 =cut
 
@@ -104,153 +100,7 @@ sub Init {
 #    CheckPerlRequirements();
     #Get a database connection
     InitSystemObjects();
-    InitLogging(); 
     InitPlugins();
-}
-
-=head2 InitLogging
-
-Create the Logger object and set up signal handlers.
-
-=cut
-
-sub InitLogging {
-
-    # We have to set the record separator ($, man perlvar)
-    # or Log::Dispatch starts getting
-    # really pissy, as some other module we use unsets it.
-    $, = '';
-    use Log::Dispatch 1.6;
-
-    my %level_to_num = (
-        map( { $_ => } 0..7 ),
-        debug     => 0,
-        info      => 1,
-        notice    => 2,
-        warning   => 3,
-        error     => 4, 'err' => 4,
-        critical  => 5, crit  => 5,
-        alert     => 6, 
-        emergency => 7, emerg => 7,
-    );
-
-    unless ( $RT::Logger ) {
-
-        $RT::Logger = Log::Dispatch->new;
-
-        my $stack_from_level;
-        if ( $stack_from_level = RT->Config->Get('LogStackTraces') ) {
-            # if option has old style '\d'(true) value
-            $stack_from_level = 0 if $stack_from_level =~ /^\d+$/;
-            $stack_from_level = $level_to_num{ $stack_from_level } || 0;
-        } else {
-            $stack_from_level = 99; # don't log
-        }
-
-        my $simple_cb = sub {
-            # if this code throw any warning we can get segfault
-            no warnings;
-            my %p = @_;
-
-            # skip Log::* stack frames
-            my $frame = 0;
-            $frame++ while caller($frame) && caller($frame) =~ /^Log::/;
-            my ($package, $filename, $line) = caller($frame);
-
-            $p{'message'} =~ s/(?:\r*\n)+$//;
-            return "[". gmtime(time) ."] [". $p{'level'} ."]: "
-                . $p{'message'} ." ($filename:$line)\n";
-        };
-
-        my $syslog_cb = sub {
-            # if this code throw any warning we can get segfault
-            no warnings;
-            my %p = @_;
-
-            my $frame = 0; # stack frame index
-            # skip Log::* stack frames
-            $frame++ while caller($frame) && caller($frame) =~ /^Log::/;
-            my ($package, $filename, $line) = caller($frame);
-
-            # syswrite() cannot take utf8; turn it off here.
-            Encode::_utf8_off($p{message});
-
-            $p{message} =~ s/(?:\r*\n)+$//;
-            if ($p{level} eq 'debug') {
-                return "$p{message}\n";
-            } else {
-                return "$p{message} ($filename:$line)\n";
-            }
-        };
-
-        my $stack_cb = sub {
-            no warnings;
-            my %p = @_;
-            return $p{'message'} unless $level_to_num{ $p{'level'} } >= $stack_from_level;
-            
-            require Devel::StackTrace;
-            my $trace = Devel::StackTrace->new( ignore_class => [ 'Log::Dispatch', 'Log::Dispatch::Base' ] );
-            return $p{'message'} . $trace->as_string;
-
-            # skip calling of the Log::* subroutins
-            my $frame = 0;
-            $frame++ while caller($frame) && caller($frame) =~ /^Log::/;
-            $frame++ while caller($frame) && (caller($frame))[3] =~ /^Log::/;
-
-            $p{'message'} .= "\nStack trace:\n";
-            while( my ($package, $filename, $line, $sub) = caller($frame++) ) {
-                $p{'message'} .= "\t$sub(...) called at $filename:$line\n";
-            }
-            return $p{'message'};
-        };
-
-        if ( $Config->Get('LogToFile') ) {
-            my ($filename, $logdir) = (
-                $Config->Get('LogToFilenamed') || 'rt.log',
-                $Config->Get('LogDir') || File::Spec->catdir( $VarPath, 'log' ),
-            );
-            if ( $filename =~ m![/\\]! ) { # looks like an absolute path.
-                ($logdir) = $filename =~ m{^(.*[/\\])};
-            }
-            else {
-                $filename = File::Spec->catfile( $logdir, $filename );
-            }
-
-            unless ( -d $logdir && ( ( -f $filename && -w $filename ) || -w $logdir ) ) {
-                # localizing here would be hard when we don't have a current user yet
-                die "Log file '$filename' couldn't be written or Created.\n RT can't run.";
-            }
-
-            require Log::Dispatch::File;
-            $RT::Logger->add( Log::Dispatch::File->new
-                           ( name=>'file',
-                             min_level=> $Config->Get('LogToFile'),
-                             filename=> $filename,
-                             mode=>'append',
-                             callbacks => [ $simple_cb, $stack_cb ],
-                           ));
-        }
-        if ( $Config->Get('LogToScreen') ) {
-            require Log::Dispatch::Screen;
-            $RT::Logger->add( Log::Dispatch::Screen->new
-                         ( name => 'screen',
-                           min_level => $Config->Get('LogToScreen'),
-                           callbacks => [ $simple_cb, $stack_cb ],
-                           stderr => 1,
-                         ));
-        }
-        if ( $Config->Get('LogToSyslog') ) {
-            require Log::Dispatch::Syslog;
-            $RT::Logger->add(Log::Dispatch::Syslog->new
-                         ( name => 'syslog',
-                           ident => 'RT',
-                           min_level => $Config->Get('LogToSyslog'),
-                           callbacks => [ $syslog_cb, $stack_cb ],
-                           stderr => 1,
-                           $Config->Get('LogToSyslogConf'),
-                         ));
-        }
-    }
 }
 
 # Signal handlers
@@ -334,14 +184,6 @@ Returns the current L<database handle object RT::Handle>.
 
 sub DatabaseHandle { return $Handle }
 
-=head2 Logger
-
-Returns the logger. See also L</InitLogging>.
-
-=cut
-
-sub Logger { return $Logger }
-
 =head2 System
 
 Returns the current L<system object RT::System>. See also
@@ -405,7 +247,7 @@ sub InitPlugins {
         my $plugindir = $plugin;
         $plugindir =~ s/::/-/g;
         unless (-d $RT::LocalPluginPath."/$plugindir") {
-            $RT::Logger->crit("Plugin $plugindir not found in $RT::LocalPluginPath");
+            Jifty->log->fatal("Plugin $plugindir not found in $RT::LocalPluginPath");
         }
 
         # Splice the plugin's lib dir into @INC;

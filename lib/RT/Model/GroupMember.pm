@@ -67,19 +67,19 @@ sub create {
             UNIVERSAL::isa($args{'Group'}, 'RT::Model::Principal') &&
             $args{'Group'}->id ) {
 
-        $RT::Logger->warning("GroupMember::Create called with a bogus Group arg");
+        Jifty->log->warn("GroupMember::Create called with a bogus Group arg");
         return (undef);
     }
 
     unless($args{'Group'}->IsGroup) {
-        $RT::Logger->warning("Someone tried to add a member to a user instead of a group");
+        Jifty->log->warn("Someone tried to add a member to a user instead of a group");
         return (undef);
     }
 
     unless ($args{'Member'} && 
             UNIVERSAL::isa($args{'Member'}, 'RT::Model::Principal') &&
             $args{'Member'}->id) {
-        $RT::Logger->warning("GroupMember::Create called with a bogus Principal arg");
+        Jifty->log->warn("GroupMember::Create called with a bogus Principal arg");
         return (undef);
     }
 
@@ -98,11 +98,11 @@ sub create {
     if ($args{'Member'}->IsGroup) {
         my $member_object = $args{'Member'}->Object;
         if ($member_object->has_member_recursively($args{'Group'})) {
-            $RT::Logger->debug("Adding that group would create a loop");
+            Jifty->log->debug("Adding that group would create a loop");
             return(undef);
         }
         elsif ( $args{'Member'}->id == $args{'Group'}->id) {
-            $RT::Logger->debug("Can't add a group to itself");
+            Jifty->log->debug("Can't add a group to itself");
             return(undef);
         }
     }
@@ -150,7 +150,7 @@ sub create {
             Via             => $parent_member->id
         );
         unless ($other_cached_id) {
-            $RT::Logger->err( "Couldn't add " . $args{'Member'}
+            Jifty->log->err( "Couldn't add " . $args{'Member'}
                   . " as a submember of a supergroup" );
             Jifty->handle->rollback() unless ($args{'InsideTransaction'});
             return (undef);
@@ -277,14 +277,14 @@ sub delete {
         my ($del_err,$del_msg) = $item_to_del->delete();
         unless ($del_err) {
             Jifty->handle->rollback();
-            $RT::Logger->warning("Couldn't delete cached group submember ".$item_to_del->id);
+            Jifty->log->warn("Couldn't delete cached group submember ".$item_to_del->id);
             return (undef);
         }
     }
 
     my ($err, $msg) = $self->SUPER::delete();
     unless ($err) {
-            $RT::Logger->warning("Couldn't delete cached group submember ".$self->id);
+            Jifty->log->warn("Couldn't delete cached group submember ".$self->id);
         Jifty->handle->rollback();
         return (undef);
     }
@@ -294,7 +294,7 @@ sub delete {
     # remain.
     ($err,$msg) = $self->MemberObj->_CleanupInvalidDelegations(InsideTransaction => 1);
     unless ($err) {
-	$RT::Logger->warning("Unable to revoke delegated rights for principal ".$self->id);
+	Jifty->log->warn("Unable to revoke delegated rights for principal ".$self->id);
 	Jifty->handle->rollback();
 	return (undef);
     }

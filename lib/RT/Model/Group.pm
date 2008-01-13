@@ -146,7 +146,7 @@ sub load {
         $self->SUPER::load_by_id($identifier);
     }
     else {
-        $RT::Logger->crit("Group -> Load called with a bogus argument");
+        Jifty->log->fatal("Group -> Load called with a bogus argument");
         return undef;
     }
 }
@@ -329,7 +329,7 @@ Create_____ routines.
 
 sub create {
     my $self = shift;
-    $RT::Logger->crit("Someone called RT::Model::Group->create. this method does not exist. someone's being evil");
+    Jifty->log->fatal("Someone called RT::Model::Group->create. this method does not exist. someone's being evil");
     return(0,_('Permission Denied'));
 }
 
@@ -384,7 +384,7 @@ sub _create {
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         Jifty->handle->rollback() unless ($args{'InsideTransaction'});
-        $RT::Logger->crit( "Couldn't create a Principal on new user create. Strange things are afoot at the circle K" );
+        Jifty->log->fatal( "Couldn't create a Principal on new user create. Strange things are afoot at the circle K" );
         return ( 0, _('Could not create group') );
     }
 
@@ -424,7 +424,7 @@ sub create_userDefinedGroup {
     my $self = shift;
 
     unless ( $self->current_user_has_right('AdminGroup') ) {
-        $RT::Logger->warning( $self->current_user->name
+        Jifty->log->warn( $self->current_user->name
               . " Tried to create a group without permission." );
         return ( 0, _('Permission Denied') );
     }
@@ -457,7 +457,7 @@ sub _createacl_equivalence_group {
                            InsideTransaction => 1);
 
       unless ($id) {
-        $RT::Logger->crit("Couldn't create ACL equivalence group -- $msg");
+        Jifty->log->fatal("Couldn't create ACL equivalence group -- $msg");
         return undef;
       }
     
@@ -467,7 +467,7 @@ sub _createacl_equivalence_group {
        my ($stash_id, $add_msg) = $aclstash->_StashUser(Group => $self->principal_object, Member => $princ);
 
       unless ($stash_id) {
-        $RT::Logger->crit("Couldn't add the user to his own acl equivalence group:".$add_msg);
+        Jifty->log->fatal("Couldn't add the user to his own acl equivalence group:".$add_msg);
         # We call super delete so we don't get acl checked.
         $self->SUPER::delete();
         return(undef);
@@ -500,7 +500,7 @@ sub createPersonalGroup {
     if ( $self->current_user->id == $args{'principal_id'} ) {
 
         unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
-            $RT::Logger->warning( $self->current_user->name
+            Jifty->log->warn( $self->current_user->name
                   . " Tried to create a group without permission." );
             return ( 0, _('Permission Denied') );
         }
@@ -508,7 +508,7 @@ sub createPersonalGroup {
     }
     else {
         unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-            $RT::Logger->warning( $self->current_user->name
+            Jifty->log->warn( $self->current_user->name
                   . " Tried to create a group without permission." );
             return ( 0, _('Permission Denied') );
         }
@@ -577,7 +577,7 @@ sub delete {
         return ( 0, 'Permission Denied' );
     }
 
-    $RT::Logger->crit("Deleting groups violates referential integrity until we go through and fix this");
+    Jifty->log->fatal("Deleting groups violates referential integrity until we go through and fix this");
     # TODO XXX 
    
     # Remove the principal object
@@ -650,7 +650,7 @@ This routine finds all the cached group members that are members of this group  
         my $del_err = $item->set_disabled($val);
         unless ($del_err) {
             Jifty->handle->rollback();
-            $RT::Logger->warning("Couldn't disable cached group submember ".$item->id);
+            Jifty->log->warn("Couldn't disable cached group submember ".$item->id);
             return (undef);
         }
     }
@@ -896,12 +896,12 @@ sub _add_member {
                  @_);
     my $new_member = $args{'principal_id'};
     unless ($self->id) {
-        $RT::Logger->crit("Attempting to add a member to a group which wasn't loaded. 'oops'");
+        Jifty->log->fatal("Attempting to add a member to a group which wasn't loaded. 'oops'");
         return(0, _("Group not found"));
     }
 
     unless ($new_member =~ /^\d+$/) {
-        $RT::Logger->crit("_add_member called with a parameter that's not an integer.");
+        Jifty->log->fatal("_add_member called with a parameter that's not an integer.");
     }
 
 
@@ -910,7 +910,7 @@ sub _add_member {
 
 
     unless ( $new_member_obj->id ) {
-        $RT::Logger->debug("Couldn't find that principal");
+        Jifty->log->debug("Couldn't find that principal");
         return ( 0, _("Couldn't find that principal") );
     }
 
@@ -959,7 +959,7 @@ sub has_member {
 
 
     unless (UNIVERSAL::isa($principal,'RT::Model::Principal')) {
-        $RT::Logger->crit("Group::has_member was called with an argument that".
+        Jifty->log->fatal("Group::has_member was called with an argument that".
                           "isn't an RT::Model::Principal. It's $principal");
         return(undef);
     }
@@ -979,7 +979,7 @@ sub has_member {
 
     #If Load returns no objects, we have an undef id. 
     else {
-        #$RT::Logger->debug($self." does not contain principal ".$principal->id);
+        #Jifty->log->debug($self." does not contain principal ".$principal->id);
         return (undef);
     }
 }
@@ -1003,7 +1003,7 @@ sub has_member_recursively {
     my $principal = shift || '';
 
     unless (UNIVERSAL::isa($principal,'RT::Model::Principal')) {
-        $RT::Logger->crit("Group::has_member_recursively was called with an argument that".
+        Jifty->log->fatal("Group::has_member_recursively was called with an argument that".
                           "isn't an RT::Model::Principal. It's $principal");
         return(undef);
     }
@@ -1087,7 +1087,7 @@ sub _delete_member {
 
     #If we couldn't load it, return undef.
     unless ( $member_obj->id() ) {
-        $RT::Logger->debug("Group has no member with that id");
+        Jifty->log->debug("Group has no member with that id");
         return ( 0,_( "Group has no such member" ));
     }
 
@@ -1098,7 +1098,7 @@ sub _delete_member {
         return ( $val, _("Member deleted") );
     }
     else {
-        $RT::Logger->debug("Failed to delete group ".$self->id." member ". $member_id);
+        Jifty->log->debug("Failed to delete group ".$self->id." member ". $member_id);
         return ( 0, _("Member not deleted" ));
     }
 }
@@ -1133,7 +1133,7 @@ sub _CleanupInvalidDelegations {
 		  @_ );
 
     unless ( $self->id ) {
-	$RT::Logger->warning("Group not loaded.");
+	Jifty->log->warn("Group not loaded.");
 	return (undef);
     }
 

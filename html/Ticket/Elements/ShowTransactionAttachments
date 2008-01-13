@@ -118,7 +118,7 @@ unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
             elsif ( $message->ContentType =~ m{^(text|message)}i ) {
 
                 eval { require Text::Quoted;  $content = Text::Quoted::extract($content); };
-                if ($@) { $RT::Logger->warning( "Text::Quoted failed: $@" ) }
+                if ($@) { Jifty->log->warn( "Text::Quoted failed: $@" ) }
 
                 $m->comp(
                     'ShowMessageStanza',

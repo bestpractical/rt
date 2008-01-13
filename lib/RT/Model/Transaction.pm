@@ -345,18 +345,18 @@ sub create {
     if ( defined $args{'MIMEObj'} ) {
         my ($id, $msg) = $self->_Attach( $args{'MIMEObj'} );
         unless ( $id ) {
-            $RT::Logger->error("Couldn't add attachment: $msg");
+            Jifty->log->error("Couldn't add attachment: $msg");
             return ( 0, _("Couldn't add attachment") );
         }
     }
 
 
     #Provide a way to turn off scrips if we need to
-        $RT::Logger->debug('About to think about scrips for transaction #' .$self->id);
+        Jifty->log->debug('About to think about scrips for transaction #' .$self->id);
     if ( $args{'ActivateScrips'} and $args{'object_type'} eq 'RT::Model::Ticket' ) {
        $self->{'scrips'} = RT::Model::ScripCollection->new(current_user => RT->system_user);
 
-        $RT::Logger->debug('About to prepare scrips for transaction #' .$self->id); 
+        Jifty->log->debug('About to prepare scrips for transaction #' .$self->id); 
         $self->{'scrips'}->prepare(
             Stage       => 'TransactionCreate',
             Type        => $args{'Type'},
@@ -364,10 +364,10 @@ sub create {
             Transaction => $self->id,
         );
         if ($args{'commit_scrips'} ) {
-            $RT::Logger->debug('About to commit scrips for transaction #' .$self->id);
+            Jifty->log->debug('About to commit scrips for transaction #' .$self->id);
             $self->{'scrips'}->commit();
         } else {
-            $RT::Logger->debug('Skipping commit of scrips for transaction #' .$self->id);
+            Jifty->log->debug('Skipping commit of scrips for transaction #' .$self->id);
 
         }            
     }
@@ -683,7 +683,7 @@ sub _Attach {
     my $MIMEObject = shift;
 
     unless ( defined $MIMEObject ) {
-        $RT::Logger->error("We can't attach a mime object if you don't give us one.");
+        Jifty->log->error("We can't attach a mime object if you don't give us one.");
         return ( 0, _("%1: no attachment specified", $self) );
     }
 

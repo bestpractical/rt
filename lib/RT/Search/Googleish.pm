@@ -168,7 +168,7 @@ sub prepare  {
   my $self = shift;
   my $tql = $self->QueryToSQL($self->Argument);
 
-  $RT::Logger->crit($tql);
+  Jifty->log->fatal($tql);
 
   $self->TicketsObj->from_sql($tql);
   return(1);

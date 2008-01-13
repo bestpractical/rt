@@ -136,7 +136,7 @@ my ( $Transaction, $Description, $Object ) = $TicketObj->$action(
     DryRun       => 1
 );
 unless ( $Transaction ) {
-    $RT::Logger->error("Coulfn't fire '$action' action: $Description");
+    Jifty->log->error("Coulfn't fire '$action' action: $Description");
 }
 
 
@@ -172,7 +172,7 @@ my ( $id, $msg, $txn ) = $TicketObj->$action(
     DryRun       => 1
 );
 unless ( $id && $txn ) {
-    $RT::Logger->error("Couldn't fire '$action' action: $msg");
+    Jifty->log->error("Couldn't fire '$action' action: $msg");
     return ();
 }
 
@@ -217,7 +217,7 @@ my ( $id, $txn, $msg ) = $TicketObj->create(
     DryRun       => 1
 );
 unless ( $id && $txn ) {
-    $RT::Logger->error("Couldn't fire '$action' action: $msg");
+    Jifty->log->error("Couldn't fire '$action' action: $msg");
     return ();
 }
 

@@ -124,7 +124,7 @@ sub handler {
     my $status;
     eval { $status = $Handler->handle_request($r) };
     if ($@) {
-        $RT::Logger->crit($@);
+        Jifty->log->fatal($@);
     }
 
     undef(%session);

@@ -151,7 +151,7 @@ END
     }
     $code = "sub {$code}";
     my $cb = eval "$code";
-    $RT::Logger->error( "Couldn't build callback '$code': $@" ) if $@;
+    Jifty->log->error( "Couldn't build callback '$code': $@" ) if $@;
     return $cb;
 }
 
@@ -170,7 +170,7 @@ sub __BuildAggregatorsCheck {
 
     $code = "sub { my (\$sb,\$record) = (\@_); return $code }";
     my $cb = eval "$code";
-    $RT::Logger->error( "Couldn't build callback '$code': $@" ) if $@;
+    Jifty->log->error( "Couldn't build callback '$code': $@" ) if $@;
     return $cb;
 }
 

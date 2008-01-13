@@ -57,8 +57,8 @@ use LWP::MediaTypes;
 use RT::Interface::REST;
 use File::Temp qw(tempfile);
 
-$RT::Logger->debug("Got ticket id=$id for comment");
-$RT::Logger->debug("Got args @{[keys(%changes)]}.");
+Jifty->log->debug("Got ticket id=$id for comment");
+Jifty->log->debug("Got args @{[keys(%changes)]}.");
 
 my $ticket = RT::Model::Ticket->new();
 my ($c, $o, $k, $e) = ("", [], {}, 0);

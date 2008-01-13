@@ -180,7 +180,7 @@ $cfs->LimitToQueue($_) for keys %$seen_queues;
 <td><& /Elements/EditCustomFieldText, @add &></td>
 <td>&nbsp;</td>
 % } else {
-%   $RT::Logger->crit("Unknown CustomField type: " . $cf->Type);
+%   Jifty->log->fatal("Unknown CustomField type: " . $cf->Type);
 % }
 </tr>
 % }
@@ -309,7 +309,7 @@ while ( my $Ticket = $Tickets->next ) {
             $op = 'del';
         }
         else {
-            $RT::Logger->crit(
+            Jifty->log->fatal(
                 "Got an op that was neither add nor delete. can never happen"
                   . $list->[0] );
             last;

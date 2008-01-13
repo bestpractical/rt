@@ -307,7 +307,7 @@ an error message.
     $parser->ignore_errors(1);
     $self->{'MIMEObj'} = eval { $parser->parse_data($content) };
     if ( my $error = $@ || $parser->last_error ) {
-        $RT::Logger->error( "$error" );
+        Jifty->log->error( "$error" );
         return ( 0, $error );
     }
 
@@ -371,7 +371,7 @@ sub _ParseContent {
         HASH => \%args,
         BROKEN => sub {
             my (%args) = @_;
-            $RT::Logger->error("Template parsing error: $args{error}")
+            Jifty->log->error("Template parsing error: $args{error}")
                 unless $args{error} =~ /^Died at /; # ignore intentional die()
             $is_broken++;
             return undef;

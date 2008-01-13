@@ -93,7 +93,7 @@ sub GetCurrentUser {
     # _this_ queue. send rejecting mail otherwise.
 
     unless ( $status ) {
-        $RT::Logger->error("Had a problem during decrypting and verifying");
+        Jifty->log->error("Had a problem during decrypting and verifying");
         my $reject = HandleErrors( Message => $args{'Message'}, Result => \@res );
         return (0, 'rejected because of problems during decrypting and verifying')
             if $reject;
@@ -174,7 +174,7 @@ sub CheckNoPrivateKey {
                 @{ $action->{'EncryptedTo'} };
     }
 
-    $RT::Logger->error("Couldn't decrypt a message: have no private key");
+    Jifty->log->error("Couldn't decrypt a message: have no private key");
 
     my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
     my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
@@ -187,7 +187,7 @@ sub CheckNoPrivateKey {
         InReplyTo => $args{'Message'},
     );
     unless ( $status ) {
-        $RT::Logger->error("Couldn't send 'Error: no private key'");
+        Jifty->log->error("Couldn't send 'Error: no private key'");
     }
     return 0;
 }
@@ -200,7 +200,7 @@ sub CheckBadData {
         @{ $args{'Status'} };
     return 1 unless @bad_data_messages;
 
-    $RT::Logger->error("Couldn't process a message: ". join ', ', @bad_data_messages );
+    Jifty->log->error("Couldn't process a message: ". join ', ', @bad_data_messages );
 
     my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
     my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
@@ -213,7 +213,7 @@ sub CheckBadData {
         InReplyTo => $args{'Message'},
     );
     unless ( $status ) {
-        $RT::Logger->error("Couldn't send 'Error: bad GnuPG data'");
+        Jifty->log->error("Couldn't send 'Error: bad GnuPG data'");
     }
     return 0;
 }
@@ -226,15 +226,15 @@ sub VerifyDecrypt {
 
     my @res = RT::Crypt::GnuPG::VerifyDecrypt( %args );
     unless ( @res ) {
-        $RT::Logger->debug("No more encrypted/signed parts");
+        Jifty->log->debug("No more encrypted/signed parts");
         return 1;
     }
 
-    $RT::Logger->debug('Found GnuPG protected parts');
+    Jifty->log->debug('Found GnuPG protected parts');
 
     # return on any error
     if ( grep $_->{'exit_code'}, @res ) {
-        $RT::Logger->debug("Error during verify/decrypt operation");
+        Jifty->log->debug("Error during verify/decrypt operation");
         return (0, @res);
     }
 

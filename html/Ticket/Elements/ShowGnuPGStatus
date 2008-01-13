@@ -141,7 +141,7 @@ foreach my $run ( @runs ) {
             if ( $key{'info'} ) {
                 my ($status, $msg) = $reverify_cb->($Attachment);
                 unless ($status) {
-                    $RT::Logger->error($msg);
+                    Jifty->log->error($msg);
                 } else {
                     return $m->comp('SELF', %ARGS, Reverify => 0);
                 }

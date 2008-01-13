@@ -212,7 +212,7 @@ sub LimitToprivileged {
     my $priv = RT::Model::Group->new;
     $priv->load_system_internal_group('privileged');
     unless ( $priv->id ) {
-        $RT::Logger->crit("Couldn't find a privileged users group");
+        Jifty->log->fatal("Couldn't find a privileged users group");
     }
     $self->MemberOfGroup( $priv->principal_id );
 }
@@ -359,7 +359,7 @@ sub WhoHaveRight {
     );
 
     if ( defined $args{'object_type'} || defined $args{'object_id'} ) {
-        $RT::Logger->crit( "WhoHaveRight called with the Obsolete object_id/object_type API");
+        Jifty->log->fatal( "WhoHaveRight called with the Obsolete object_id/object_type API");
         return (undef);
     }
 

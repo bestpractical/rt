@@ -149,7 +149,7 @@ sub GetCurrentUser  {
     $CurrentUser->loadByGecos($Gecos);
     
     unless ($CurrentUser->id) {
-	$RT::Logger->debug("No user with a unix login of '$Gecos' was found. ");
+	Jifty->log->debug("No user with a unix login of '$Gecos' was found. ");
     }
 
     return($CurrentUser);
@@ -221,7 +221,7 @@ sub GetMessageContent {
     if ($edit) {	
 
 	unless ($ENV{'EDITOR'}) {
-	    $RT::Logger->crit('No $EDITOR variable defined'. "\n");
+	    Jifty->log->fatal('No $EDITOR variable defined'. "\n");
 	    return undef;
 	}
 	system ($ENV{'EDITOR'}, $filename);
@@ -244,7 +244,7 @@ sub debug {
     my $val = shift;
     my ($debug);
     if ($val) {
-	$RT::Logger->debug($val."\n");
+	Jifty->log->debug($val."\n");
 	if ($debug) {
 	    print STDERR "$val\n";
 	}

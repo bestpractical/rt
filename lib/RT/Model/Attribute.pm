@@ -251,7 +251,7 @@ sub _DeserializeContent {
     my $hashref;
     eval {$hashref  = thaw(decode_base64($content))} ; 
     if ($@) {
-        $RT::Logger->error("Deserialization of attribute ".$self->id. " failed");
+        Jifty->log->error("Deserialization of attribute ".$self->id. " failed");
     }
 
     return($hashref);
@@ -273,7 +273,7 @@ sub Content {
     if ($self->__value('ContentType') eq 'storable') {
         eval {$content = $self->_DeserializeContent($content); };
         if ($@) {
-            $RT::Logger->error("Deserialization of content for attribute ".$self->id. " failed. Attribute was: ".$content);
+            Jifty->log->error("Deserialization of content for attribute ".$self->id. " failed. Attribute was: ".$content);
         }
     } 
 
@@ -297,7 +297,7 @@ sub set_Content {
         # We eval the serialization because it will lose on a coderef.
         $content = eval { $self->_SerializeContent($content) };
         if ($@) {
-            $RT::Logger->error("Content couldn't be frozen: $@");
+            Jifty->log->error("Content couldn't be frozen: $@");
             return(0, "Content couldn't be frozen");
         }
     }
@@ -379,7 +379,7 @@ sub Object {
     my $object;
     eval { $object = $object_type->new };
     unless(UNIVERSAL::isa($object, $object_type)) {
-        $RT::Logger->error("Attribute ".$self->id." has a bogus object type - $object_type (".$@.")");
+        Jifty->log->error("Attribute ".$self->id." has a bogus object type - $object_type (".$@.")");
         return(undef);
      }
     $object->load($self->__value('object_id'));

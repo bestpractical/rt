@@ -72,7 +72,7 @@ sub create {
 
     # if we didn't specify a ticket, we need to bail
     unless ( $args{'TransactionId'} ) {
-        $RT::Logger->crit( "RT::Model::Attachment->create couldn't, as you didn't specify a transaction\n" );
+        Jifty->log->fatal( "RT::Model::Attachment->create couldn't, as you didn't specify a transaction\n" );
         return (0);
     }
 
@@ -106,7 +106,7 @@ sub create {
         );
 
         unless ($id) {
-            $RT::Logger->crit("Attachment insert failed - ". Jifty->handle->dbh->errstr);
+            Jifty->log->fatal("Attachment insert failed - ". Jifty->handle->dbh->errstr);
         }
 
         foreach my $part ( $Attachment->parts ) {
@@ -117,7 +117,7 @@ sub create {
                 Attachment    => $part,
             );
             unless ($id) {
-                $RT::Logger->crit("Attachment insert failed: ". Jifty->handle->dbh->errstr);
+                Jifty->log->fatal("Attachment insert failed: ". Jifty->handle->dbh->errstr);
             }
         }
         return ($id);
@@ -144,7 +144,7 @@ sub create {
         );
 
         unless ($id) {
-            $RT::Logger->crit("Attachment insert failed: ". Jifty->handle->dbh->errstr);
+            Jifty->log->fatal("Attachment insert failed: ". Jifty->handle->dbh->errstr);
         }
         return $id;
     }
@@ -181,7 +181,7 @@ sub TransactionObj {
     }
 
     unless ($self->{_TransactionObj}->id) {
-        $RT::Logger->crit(  "Attachment ". $self->id
+        Jifty->log->fatal(  "Attachment ". $self->id
                            ." can't find transaction ". $self->TransactionId
                            ." which it is ostensibly part of. That's bad");
     }
@@ -272,7 +272,7 @@ sub OriginalContent {
 
     eval { Encode::from_to($content, 'utf8' => $enc) } if $enc;
     if ($@) {
-        $RT::Logger->error("Could not convert attachment from assumed utf8 to '$enc' :".$@);
+        Jifty->log->error("Could not convert attachment from assumed utf8 to '$enc' :".$@);
     }
     return $content;
 }

@@ -323,7 +323,7 @@ sub Apply {
                  TransactionObj => undef,
                  @_ );
 
-    $RT::Logger->debug("Now applying scrip ".$self->id . " for transaction ".$args{'TransactionObj'}->id);
+    Jifty->log->debug("Now applying scrip ".$self->id . " for transaction ".$args{'TransactionObj'}->id);
 
     my $ApplicableTransactionObj = $self->IsApplicable( TicketObj      => $args{'TicketObj'},
                                                         TransactionObj => $args{'TransactionObj'} );
@@ -332,25 +332,25 @@ sub Apply {
     }
 
     if ( $ApplicableTransactionObj->id != $args{'TransactionObj'}->id ) {
-        $RT::Logger->debug("Found an applicable transaction ".$ApplicableTransactionObj->id . " in the same batch with transaction ".$args{'TransactionObj'}->id);
+        Jifty->log->debug("Found an applicable transaction ".$ApplicableTransactionObj->id . " in the same batch with transaction ".$args{'TransactionObj'}->id);
     }
 
     #If it's applicable, prepare and commit it
-    $RT::Logger->debug("Now preparing scrip ".$self->id . " for transaction ".$ApplicableTransactionObj->id);
+    Jifty->log->debug("Now preparing scrip ".$self->id . " for transaction ".$ApplicableTransactionObj->id);
     unless ( $self->prepare( TicketObj      => $args{'TicketObj'},
                              TransactionObj => $ApplicableTransactionObj )
       ) {
         return undef;
     }
 
-    $RT::Logger->debug("Now commiting scrip ".$self->id . " for transaction ".$ApplicableTransactionObj->id);
+    Jifty->log->debug("Now commiting scrip ".$self->id . " for transaction ".$ApplicableTransactionObj->id);
     unless ( $self->commit( TicketObj => $args{'TicketObj'},
                             TransactionObj => $ApplicableTransactionObj)
       ) {
         return undef;
     }
 
-    $RT::Logger->debug("We actually finished scrip ".$self->id . " for transaction ".$ApplicableTransactionObj->id);
+    Jifty->log->debug("We actually finished scrip ".$self->id . " for transaction ".$ApplicableTransactionObj->id);
     return (1);
 
 }
@@ -395,7 +395,7 @@ sub IsApplicable {
             @Transactions = @{ $args{'TicketObj'}->TransactionBatch || [] };
         }
 	else {
-	    $RT::Logger->error( "Unknown Scrip stage:" . $self->Stage );
+	    Jifty->log->error( "Unknown Scrip stage:" . $self->Stage );
 	    return (undef);
 	}
 	my $ConditionObj = $self->ConditionObj;
@@ -420,7 +420,7 @@ sub IsApplicable {
 
     if ($@) {
         die( "Scrip IsApplicable " . $self->id . " died. - " . $@ );
-        $RT::Logger->error( "Scrip IsApplicable " . $self->id . " died. - " . $@ );
+        Jifty->log->error( "Scrip IsApplicable " . $self->id . " died. - " . $@ );
         return (undef);
     }
 
@@ -452,7 +452,7 @@ sub prepare {
         $return = $self->ActionObj->prepare();
     };
     if (my $err = $@) {
-        $RT::Logger->error( "Scrip prepare " . $self->id . " died. - " . $err ." ".$self->ActionObj->ExecModule);
+        Jifty->log->error( "Scrip prepare " . $self->id . " died. - " . $err ." ".$self->ActionObj->ExecModule);
         return (undef);
     }
         return ($return);
@@ -484,7 +484,7 @@ sub commit {
     $args{'TicketObj'}->load( $args{'TicketObj'}->id );
 
     if ($@) {
-        $RT::Logger->error( "Scrip Commit " . $self->id . " died. - " . $@ );
+        Jifty->log->error( "Scrip Commit " . $self->id . " died. - " . $@ );
         return (undef);
     }
 
@@ -507,7 +507,7 @@ sub _set {
     my $self = shift;
 
     unless ( $self->current_user_has_right('ModifyScrips') ) {
-        $RT::Logger->debug(
+        Jifty->log->debug(
                  "CurrentUser can't modify Scrips for " . $self->Queue . "\n" );
         return ( 0, _('Permission Denied') );
     }
@@ -522,7 +522,7 @@ sub _value {
     my $self = shift;
 
     unless ( $self->current_user_has_right('ShowScrips') ) {
-        $RT::Logger->debug( "CurrentUser can't modify Scrips for "
+        Jifty->log->debug( "CurrentUser can't modify Scrips for "
                             . $self->__value('Queue')
                             . "\n" );
         return (undef);

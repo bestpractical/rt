@@ -155,7 +155,7 @@ sub commit {
    my ($val, $msg) = $self->TicketObj->set_Priority($self->{'prio'});
 
    unless ($val) {
-	$RT::Logger->debug($self . " $msg\n"); 
+	Jifty->log->debug($self . " $msg\n"); 
    }
 }
 

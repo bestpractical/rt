@@ -295,12 +295,12 @@ sub CreateTicket {
 
     if ( $ARGS{'Attachments'} ) {
         my $rv = $MIMEObj->make_multipart;
-        $RT::Logger->error("Couldn't make multipart message")
+        Jifty->log->error("Couldn't make multipart message")
             if !$rv || $rv !~ /^(?:DONE|ALREADY)$/;
 
         foreach ( values %{$ARGS{'Attachments'}} ) {
             unless ( $_ ) {
-                $RT::Logger->error("Couldn't add empty attachemnt");
+                Jifty->log->error("Couldn't add empty attachemnt");
                 next;
             }
             $MIMEObj->add_part($_);
@@ -368,7 +368,7 @@ sub CreateTicket {
             my $cf = RT::Model::CustomField->new( );
             $cf->load( $cfid );
             unless ( $cf->id ) {
-                $RT::Logger->error( "Couldn't load custom field #". $cfid );
+                Jifty->log->error( "Couldn't load custom field #". $cfid );
                 next;
             }
 
@@ -773,7 +773,7 @@ sub ProcessSearchQuery {
 
     # {{{ Set the query limit
     if ( defined $args{ARGS}->{'rows_per_page'} ) {
-        $RT::Logger->debug(
+        Jifty->log->debug(
             "limiting to " . $args{ARGS}->{'rows_per_page'} . " rows" );
 
         $session{'tickets_rows_per_page'} = $args{ARGS}->{'rows_per_page'};
@@ -981,11 +981,11 @@ sub ProcessACLChanges {
             $obj = $object_type->new();
             $obj->load($object_id);
             unless( $obj->id ) {
-                $RT::Logger->error("couldn't load $object_type #$object_id");
+                Jifty->log->error("couldn't load $object_type #$object_id");
                 next;
             }
         } else {
-            $RT::Logger->error("object type '$object_type' is incorrect");
+            Jifty->log->error("object type '$object_type' is incorrect");
             push (@results, _("System Error"). ': '.
                             _("Rights could not be granted for %1", $object_type));
             next;
@@ -1205,7 +1205,7 @@ sub ProcessObjectCustomFieldUpdates {
 
             $Object->load( $id ) unless ($Object->id || 0) == $id;
             unless ( $Object->id ) {
-                $RT::Logger->warning("Couldn't load object $class #$id");
+                Jifty->log->warn("Couldn't load object $class #$id");
                 next;
             }
 
@@ -1213,7 +1213,7 @@ sub ProcessObjectCustomFieldUpdates {
                 my $CustomFieldObj = RT::Model::CustomField->new();
                 $CustomFieldObj->load_by_id( $cf );
                 unless ( $CustomFieldObj->id ) {
-                    $RT::Logger->warning("Couldn't load custom field #$id");
+                    Jifty->log->warn("Couldn't load custom field #$id");
                     next;
                 }
                 push @results, _ProcessObjectCustomFieldUpdates(

@@ -72,19 +72,19 @@ sub create {
     unless (    $args{'Member'}
              && UNIVERSAL::isa( $args{'Member'}, 'RT::Model::Principal' )
              && $args{'Member'}->id ) {
-        $RT::Logger->debug("$self->create: bogus Member argument");
+        Jifty->log->debug("$self->create: bogus Member argument");
     }
 
     unless (    $args{'Group'}
              && UNIVERSAL::isa( $args{'Group'}, 'RT::Model::Principal' )
              && $args{'Group'}->id ) {
-        $RT::Logger->debug("$self->create: bogus Group argument");
+        Jifty->log->debug("$self->create: bogus Group argument");
     }
 
     unless (    $args{'ImmediateParent'}
              && UNIVERSAL::isa( $args{'ImmediateParent'}, 'RT::Model::Principal' )
              && $args{'ImmediateParent'}->id ) {
-        $RT::Logger->debug("$self->create: bogus ImmediateParent argument");
+        Jifty->log->debug("$self->create: bogus ImmediateParent argument");
     }
 
     # If the parent group for this group member is disabled, it's disabled too, along with all its children
@@ -100,7 +100,7 @@ sub create {
                               Via               => $args{'Via'}, );
 
     unless ($id) {
-        $RT::Logger->warning( "Couldn't create "
+        Jifty->log->warn( "Couldn't create "
                            . $args{'Member'}
                            . " as a cached member of "
                            . $args{'Group'}->id . " via "
@@ -110,7 +110,7 @@ sub create {
     if ( $self->__value('Via') == 0 ) {
         my ( $vid, $vmsg ) = $self->__set( column => 'Via', value => $id );
         unless ($vid) {
-            $RT::Logger->warning( "Due to a via error, couldn't create "
+            Jifty->log->warn( "Due to a via error, couldn't create "
                                . $args{'Member'}
                                . " as a cached member of "
                                . $args{'Group'}->id . " via "
@@ -173,7 +173,7 @@ sub delete {
         while ( my $kid = $deletable->next ) {
             my $kid_err = $kid->delete();
             unless ($kid_err) {
-                $RT::Logger->error(
+                Jifty->log->error(
                               "Couldn't delete CachedGroupMember " . $kid->id );
                 return (undef);
             }
@@ -181,7 +181,7 @@ sub delete {
     }
     my $err = $self->SUPER::delete();
     unless ($err) {
-        $RT::Logger->error( "Couldn't delete CachedGroupMember " . $self->id );
+        Jifty->log->error( "Couldn't delete CachedGroupMember " . $self->id );
         return (undef);
     }
 
@@ -212,7 +212,7 @@ sub delete {
                 # WHACK IT
                 my $del_ret = $delegation->_delete(InsideTransaction => 1);
                 unless ($del_ret) {
-                    $RT::Logger->crit("Couldn't delete an ACL delegation that we know exists ". $delegation->id);
+                    Jifty->log->fatal("Couldn't delete an ACL delegation that we know exists ". $delegation->id);
                     return(undef);
                 }
             }
@@ -242,7 +242,7 @@ sub set_disabled {
     my $err = $self->_set(column => 'disabled', value  => $val);
     my ($retval, $msg) = $err->as_array();
     unless ($retval) {
-        $RT::Logger->error( "Couldn't Setdisabled CachedGroupMember " . $self->id .": $msg");
+        Jifty->log->error( "Couldn't Setdisabled CachedGroupMember " . $self->id .": $msg");
         return ($err);
     }
     
@@ -256,7 +256,7 @@ sub set_disabled {
         while ( my $kid = $deletable->next ) {
             my $kid_err = $kid->set_disabled($val );
             unless ($kid_err) {
-                $RT::Logger->error( "Couldn't Setdisabled CachedGroupMember " . $kid->id );
+                Jifty->log->error( "Couldn't Setdisabled CachedGroupMember " . $kid->id );
                 return ($kid_err);
             }
         }
@@ -280,7 +280,7 @@ sub set_disabled {
                 # WHACK IT
                 my $del_ret = $delegation->_delete(InsideTransaction => 1);
                 unless ($del_ret) {
-                    $RT::Logger->crit("Couldn't delete an ACL delegation that we know exists ". $delegation->id);
+                    Jifty->log->fatal("Couldn't delete an ACL delegation that we know exists ". $delegation->id);
                     return(undef);
                 }
             }

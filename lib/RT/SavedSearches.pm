@@ -110,7 +110,7 @@ sub limit_to_privacy {
 	    push(@{$self->{'objects'}}, $search);
 	}
     } else {
-	$RT::Logger->error("Could not load object $privacy");
+	Jifty->log->error("Could not load object $privacy");
     }
 }
 

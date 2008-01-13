@@ -104,19 +104,19 @@ and log an error.
 
 sub create {
     my $self = shift;
-    $RT::Logger->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
+    Jifty->log->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
     return (0, _('Permission Denied'));
 }
 
 sub delete {
     my $self = shift;
-    $RT::Logger->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
+    Jifty->log->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
     return (0, _('Permission Denied'));
 }
 
 sub _set {
     my $self = shift;
-    $RT::Logger->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
+    Jifty->log->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
     return (0, _('Permission Denied'));
 }
 

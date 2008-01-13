@@ -64,7 +64,7 @@ sub prepare {
     my $self = shift;
     my $retval = eval $self->ScripObj->CustomPrepareCode;
     if ($@) {
-        $RT::Logger->error("Scrip ".$self->ScripObj->id. " Prepare failed: ".$@);
+        Jifty->log->error("Scrip ".$self->ScripObj->id. " Prepare failed: ".$@);
         return (undef);
     }
     return ($retval);
@@ -80,7 +80,7 @@ sub commit {
     my $self = shift;
     my $retval = eval $self->ScripObj->CustomCommitCode;
     if ($@) {
-        $RT::Logger->error("Scrip ".$self->ScripObj->id. " Commit failed: ".$@);
+        Jifty->log->error("Scrip ".$self->ScripObj->id. " Commit failed: ".$@);
         return (undef);
     }
     return ($retval);

@@ -626,7 +626,7 @@ sub _EncodeLOB {
             $ContentEncoding = 'base64';
 
             #cut the max attchment size by 25% (for mime-encoding overhead.
-            $RT::Logger->debug("Max size is $MaxSize\n");
+            Jifty->log->debug("Max size is $MaxSize\n");
             $MaxSize = $MaxSize * 3 / 4;
         # Some databases (postgres) can't handle non-utf8 data
         } elsif (  0 #   !Jifty->handle->binary_safe_blobs
@@ -650,7 +650,7 @@ sub _EncodeLOB {
             elsif (RT->Config->Get('DropLongAttachments')) {
 
                 # drop the attachment on the floor
-                $RT::Logger->info( "$self: Dropped an attachment of size "
+                Jifty->log->info( "$self: Dropped an attachment of size "
                                    . length($Body) . "\n"
                                    . "It started: " . substr( $Body, 0, 60 ) . "\n"
                                  );
@@ -1086,7 +1086,7 @@ sub _AddLink {
     my $direction;
 
     if ( $args{'Base'} and $args{'Target'} ) {
-        $RT::Logger->debug( "$self tried to create a link. both base and target were specified\n" );
+        Jifty->log->debug( "$self tried to create a link. both base and target were specified\n" );
         return ( 0, _("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
@@ -1110,7 +1110,7 @@ sub _AddLink {
                              Type   => $args{'Type'},
                              Target => $args{'Target'} );
     if ( $old_link->id ) {
-        $RT::Logger->debug("$self Somebody tried to duplicate a link");
+        Jifty->log->debug("$self Somebody tried to duplicate a link");
         return ( $old_link->id, _("Link already exists"), 1 );
     }
 
@@ -1124,7 +1124,7 @@ sub _AddLink {
                                   Type   => $args{Type} );
 
     unless ($linkid) {
-        $RT::Logger->error("Link could not be Created: ".$linkmsg);
+        Jifty->log->error("Link could not be Created: ".$linkmsg);
         return ( 0, _("Link could not be Created") );
     }
 
@@ -1162,7 +1162,7 @@ sub _delete_link {
     my $remote_link;
 
     if ( $args{'Base'} and $args{'Target'} ) {
-        $RT::Logger->debug("$self ->_delete_link. got both Base and Target\n");
+        Jifty->log->debug("$self ->_delete_link. got both Base and Target\n");
         return ( 0, _("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
@@ -1176,12 +1176,12 @@ sub _delete_link {
         $direction='Base';
     }
     else {
-        $RT::Logger->error("Base or Target must be specified\n");
+        Jifty->log->error("Base or Target must be specified\n");
         return ( 0, _('Either base or target must be specified') );
     }
 
     my $link = RT::Model::Link->new();
-    $RT::Logger->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} . "\n" );
+    Jifty->log->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} . "\n" );
 
 
     $link->loadByParams( Base=> $args{'Base'}, Type=> $args{'Type'}, Target=>  $args{'Target'} );
@@ -1197,7 +1197,7 @@ sub _delete_link {
 
     #if it's not a link we can find
     else {
-        $RT::Logger->debug("Couldn't find that link\n");
+        Jifty->log->debug("Couldn't find that link\n");
         return ( 0, _("Link not found") );
     }
 }
@@ -1240,7 +1240,7 @@ sub _NewTransaction {
     if ($old_ref or $new_ref) {
 	$ref_type ||= ref($old_ref) || ref($new_ref);
 	if (!$ref_type) {
-	    $RT::Logger->error("Reference type not specified for transaction");
+	    Jifty->log->error("Reference type not specified for transaction");
 	    return;
 	}
 	$old_ref = $old_ref->id if ref($old_ref);
@@ -1269,7 +1269,7 @@ sub _NewTransaction {
     # Rationalize the object since we may have done things to it during the caching.
     $self->load($self->id);
 
-    $RT::Logger->warning($msg) unless $transaction;
+    Jifty->log->warn($msg) unless $transaction;
 
     $self->_setLastUpdated;
 
@@ -1654,7 +1654,7 @@ sub CustomFieldValues {
 
         # we were asked to search on a custom field we couldn't find
         unless ( $cf->id ) {
-            $RT::Logger->warning("Couldn't load custom field by '$field' identifier");
+            Jifty->log->warn("Couldn't load custom field by '$field' identifier");
             return RT::Model::ObjectCustomFieldValueCollection->new;
         }
         return ( $cf->ValuesForObject($self) );

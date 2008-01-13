@@ -1202,7 +1202,7 @@ sub _CustomFieldDecipher {
             $cf = $q->CustomField( $field );
         }
         else {
-            $RT::Logger->warning("Queue '$queue' doesn't exists, parsed from '$string'");
+            Jifty->log->warn("Queue '$queue' doesn't exists, parsed from '$string'");
             $queue = 0;
         }
 
@@ -1569,7 +1569,7 @@ sub ThawLimits {
     @{$self}{ $self->_FreezeThawKeys }
         = eval { @{ Storable::thaw( MIME::Base64::base64_decode($in) ) }; };
 
-    $RT::Logger->error($@) if $@;
+    Jifty->log->error($@) if $@;
 
 }
 
@@ -2799,7 +2799,7 @@ sub _ProcessRestrictions {
         #  "Restrictions to Clauses Branch\n";
         my $clauseRef = eval { $self->_RestrictionsToClauses; };
         if ($@) {
-            $RT::Logger->error( "RestrictionsToClauses: " . $@ );
+            Jifty->log->error( "RestrictionsToClauses: " . $@ );
             $self->from_sql("");
         }
         else {
@@ -3123,7 +3123,7 @@ sub from_sql {
     $self->{_sql_query} = $query;
     eval { $self->_parser( $query ); };
     if ( $@ ) {
-        $RT::Logger->error( $@ );
+        Jifty->log->error( $@ );
         return (0, $@);
     }
 

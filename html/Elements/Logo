@@ -56,7 +56,7 @@
 </div>
 <%INIT>
 if ( exists $ARGS{'show_name'} ) {
-    $RT::Logger->warning('show_name argument was renamed, use Showname');
+    Jifty->log->warn('show_name argument was renamed, use Showname');
     $Showname = delete $ARGS{'show_name'};
 }
 </%INIT>

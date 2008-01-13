@@ -109,7 +109,7 @@ sub create {
         # $self would be loaded at this stage
         my ($status, $msg) = $self->set_Category( $args{'Category'} );
         unless ( $status ) {
-            $RT::Logger->error("Couldn't set category: $msg");
+            Jifty->log->error("Couldn't set category: $msg");
         }
     }
 
@@ -134,7 +134,7 @@ sub set_Category {
     else {
         my ($status, $msg) = $self->delete_attribute( 'Category' );
         unless ( $status ) {
-            $RT::Logger->warning("Couldn't delete atribute: $msg");
+            Jifty->log->warn("Couldn't delete atribute: $msg");
         }
         # return true even if there was no category
         return (1, _('Category unset'));

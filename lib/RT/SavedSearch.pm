@@ -105,12 +105,12 @@ sub load {
 	    $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
 	    return (1, _("Loaded search %1", $self->name));
 	} else {
-	    $RT::Logger->error("Could not load attribute " . $id
+	    Jifty->log->error("Could not load attribute " . $id
 			       . " for object " . $privacy);
 	    return (0, _("Search attribute load failure"));
 	}
     } else {
-	$RT::Logger->warning("Could not load object $privacy when loading search");
+	Jifty->log->warn("Could not load object $privacy when loading search");
 	return (0, _("Could not load object for %1", $privacy));
     }
 
@@ -168,7 +168,7 @@ sub Save {
         return ( 1, _( "Saved search %1", $name ) );
     }
     else {
-        $RT::Logger->error("SavedSearch save failure: $att_msg");
+        Jifty->log->error("SavedSearch save failure: $att_msg");
         return ( 0, _("Failed to create search attribute") );
     }
 }
@@ -297,7 +297,7 @@ sub _load_privacy_object {
         return RT::System->new;
     }
 
-    $RT::Logger->error("Tried to load a search belonging to an $obj_type ($obj_id), which is neither a user nor a group");
+    Jifty->log->error("Tried to load a search belonging to an $obj_type ($obj_id), which is neither a user nor a group");
     return undef;
 }
 
@@ -314,7 +314,7 @@ sub _GetObject {
     my $object = $self->_load_privacy_object( $obj_type, $obj_id );
 
     unless ( ref($object) eq $obj_type ) {
-        $RT::Logger->error( "Could not load object of type $obj_type with ID $obj_id I AM ".$self->current_user->id);
+        Jifty->log->error( "Could not load object of type $obj_type with ID $obj_id I AM ".$self->current_user->id);
         return undef;
     }
 
@@ -322,12 +322,12 @@ sub _GetObject {
     # user, or of a group object of which the current user is not a member.
 
     if (   $obj_type eq 'RT::Model::User' && $object->id != $self->current_user->user_object->id() ) {
-        $RT::Logger->debug("Permission denied for user other than self");
+        Jifty->log->debug("Permission denied for user other than self");
         return undef;
     }
     if ($obj_type eq 'RT::Model::Group'
         && !$object->has_member_recursively( $self->current_user->principal_object)) {
-        $RT::Logger->debug( "Permission denied, " . $self->current_user->name . " is not a member of group" );
+        Jifty->log->debug( "Permission denied, " . $self->current_user->name . " is not a member of group" );
         return undef;
     }
 

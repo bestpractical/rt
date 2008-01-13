@@ -63,7 +63,7 @@ sub GetCurrentUser {
     # We don't need to do any external lookups
     my ( $Address, $name ) = ParseSenderAddressFromHead( $args{'Message'}->head );
     unless ( $Address ) {
-        $RT::Logger->error("Couldn't find sender's address");
+        Jifty->log->error("Couldn't find sender's address");
         return ( $args{'CurrentUser'}, -1 );
     }
 
@@ -72,7 +72,7 @@ sub GetCurrentUser {
         $CurrentUser = RT::CurrentUser->new( name => $Address ) 
     }
     if ( $CurrentUser->id ) {
-        $RT::Logger->debug("Mail from user #". $CurrentUser->id ." ($Address)" );
+        Jifty->log->debug("Mail from user #". $CurrentUser->id ." ($Address)" );
         return ( $CurrentUser, 1 );
     }
 
@@ -80,18 +80,18 @@ sub GetCurrentUser {
     my $unpriv = RT::Model::Group->new(current_user => RT->system_user );
     $unpriv->load_system_internal_group('Unprivileged');
     unless ( $unpriv->id ) {
-        $RT::Logger->crit("Couldn't find the 'Unprivileged' internal group");
+        Jifty->log->fatal("Couldn't find the 'Unprivileged' internal group");
         return ( $args{'CurrentUser'}, -1 );
     }
 
     my $everyone = RT::Model::Group->new(current_user => RT->system_user );
     $everyone->load_system_internal_group('Everyone');
     unless ( $everyone->id ) {
-        $RT::Logger->crit("Couldn't find the 'Everyone' internal group");
+        Jifty->log->fatal("Couldn't find the 'Everyone' internal group");
         return ( $args{'CurrentUser'}, -1 );
     }
 
-    $RT::Logger->debug("Going to create user with address '$Address'" );
+    Jifty->log->debug("Going to create user with address '$Address'" );
 
     # but before we do that, we need to make sure that the Created user would have the right
     # to do what we're doing.
@@ -106,7 +106,7 @@ sub GetCurrentUser {
                      || $unpriv->principal_object->has_right( Object => $args{'Queue'},
                                                          Right => 'commentOnTicket' ) )
             {
-                $RT::Logger->debug("Unprivileged users have no right to comment on ticket in queue '$qname'");
+                Jifty->log->debug("Unprivileged users have no right to comment on ticket in queue '$qname'");
                 return ( $args{'CurrentUser'}, 0 );
             }
         }
@@ -118,7 +118,7 @@ sub GetCurrentUser {
                      || $unpriv->principal_object->has_right( Object => $args{'Queue'},
                                                          Right  => 'ReplyToTicket' ) )
             {
-                $RT::Logger->debug("Unprivileged users have no right to reply to ticket in queue '$qname'");
+                Jifty->log->debug("Unprivileged users have no right to reply to ticket in queue '$qname'");
                 return ( $args{'CurrentUser'}, 0 );
             }
         }
@@ -130,7 +130,7 @@ sub GetCurrentUser {
                      || $unpriv->principal_object->has_right( Object => $args{'Queue'},
                                                          Right  => 'OwnTicket' ) )
             {
-                $RT::Logger->debug("Unprivileged users have no right to own ticket in queue '$qname'");
+                Jifty->log->debug("Unprivileged users have no right to own ticket in queue '$qname'");
                 return ( $args{'CurrentUser'}, 0 );
             }
 
@@ -143,13 +143,13 @@ sub GetCurrentUser {
                      || $unpriv->principal_object->has_right( Object => $args{'Queue'},
                                                          Right  => 'ModifyTicket' ) )
             {
-                $RT::Logger->debug("Unprivileged users have no right to resolve ticket in queue '$qname'");
+                Jifty->log->debug("Unprivileged users have no right to resolve ticket in queue '$qname'");
                 return ( $args{'CurrentUser'}, 0 );
             }
 
         }
         else {
-            $RT::Logger->warning("Action '". ($args{'Action'}||'') ."' is unknown");
+            Jifty->log->warn("Action '". ($args{'Action'}||'') ."' is unknown");
             return ( $args{'CurrentUser'}, 0 );
         }
     }
@@ -164,7 +164,7 @@ sub GetCurrentUser {
                  || $unpriv->principal_object->has_right( Object => $args{'Queue'},
                                                      Right  => 'ModifyTicket' ) )
         {
-            $RT::Logger->debug("Unprivileged users have no right to create ticket in queue '$qname'");
+            Jifty->log->debug("Unprivileged users have no right to create ticket in queue '$qname'");
             return ( $args{'CurrentUser'}, 0 );
         }
     }

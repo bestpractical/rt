@@ -139,7 +139,7 @@ $args
 <%PERL>
 foreach my $field ( @{$self->{SearchFields}} ) {
     if ( ref($ARGS{$field}) && ref($ARGS{$field}) ne 'ARRAY' ) {
-        $RT::Logger->error("Couldn't store '$field'. it's reference to ". ref($ARGS{$field}) );
+        Jifty->log->error("Couldn't store '$field'. it's reference to ". ref($ARGS{$field}) );
         next;
     }
     foreach my $value ( grep defined, ref($ARGS{$field})? @{ $ARGS{$field} } : $ARGS{$field} ) {

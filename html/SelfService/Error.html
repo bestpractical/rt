@@ -67,5 +67,5 @@ $Why => _("the calling component did not specify why")
 
 <%INIT>
 $Details ||= "No details";
-$RT::Logger->error("WebRT: $Why ($Details)");
+Jifty->log->error("WebRT: $Why ($Details)");
 </%INIT>

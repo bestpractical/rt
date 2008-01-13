@@ -176,7 +176,7 @@ sub commit {
     my $self = shift;
     
     foreach my $scrip (@{$self->prepared}) {
-         $RT::Logger->debug(
+         Jifty->log->debug(
                "Committing scrip #". $scrip->id
                 ." on txn #". $self->{'TransactionObj'}->id
                  ." of ticket #". $self->{'TicketObj'}->id
@@ -279,7 +279,7 @@ sub _setupSourceObjects {
     else {
         $self->{'TicketObj'} = RT::Model::Ticket->new;
         $self->{'TicketObj'}->load( $args{'Ticket'} )
-          || $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}\n");
+          || Jifty->log->err("$self couldn't load ticket $args{'Ticket'}\n");
     }
 
     if ( ( $self->{'TransactionObj'} = $args{'TransactionObj'} ) ) {
@@ -288,7 +288,7 @@ sub _setupSourceObjects {
     else {
         $self->{'TransactionObj'} = RT::Model::Transaction->new;
         $self->{'TransactionObj'}->load( $args{'Transaction'} )
-          || $RT::Logger->err( "$self couldn't load transaction $args{'Transaction'}\n");
+          || Jifty->log->err( "$self couldn't load transaction $args{'Transaction'}\n");
     }
 } 
 
@@ -357,7 +357,7 @@ sub _FindScrips {
     # so just do search and get count from results
     $self->_do_search if $self->{'must_redo_search'};
 
-    $RT::Logger->debug(
+    Jifty->log->debug(
         "Found ". $self->count ." scrips for $args{'Stage'} stage"
         ." with applicable type(s) $args{'Type'}"
     );

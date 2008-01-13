@@ -115,7 +115,7 @@ if ( $self->{'Encrypt'} ) {
         );
     }
     else {
-        $RT::Logger->crit('Incorrect operation: '. $Operation );
+        Jifty->log->fatal('Incorrect operation: '. $Operation );
     }
 
     my %seen;

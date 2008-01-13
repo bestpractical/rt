@@ -273,11 +273,11 @@ patch or committing code to the repository.
 
 =head2 STDIN/STDOUT
 
-Always report errors using $RT::Logger. It's a Log::Dispatch object.
+Always report errors using Jifty->log. It's a Log::Dispatch object.
 Unlike message meant for the user, log messages are not to be
 internationalized.
 
-There are several different levels ($RT::Logger methods) of logging:
+There are several different levels (Jifty->log methods) of logging:
 
 =over 4
 
@@ -296,7 +296,7 @@ passwords, changing access control, superuser logins)
 
 Used for RT-generated failures during execution.
 
-=item crit
+=item fatal
 
 Should be used for messages when an action can not be completed due to some
 error condition beyond our control.
@@ -318,7 +318,7 @@ close(), mkdir(), or anything else that talks directly to the system.
 Perl built-in system calls return the error in $!; some functions in
 modules might return an error in $@ or some other way, so read the module's
 documentation if you don't know.  Always do something, even if it is
-just calling $RT::Logger->warning(), when the return value is not what you'd expect.
+just calling Jifty->log->warn(), when the return value is not what you'd expect.
 
 
 

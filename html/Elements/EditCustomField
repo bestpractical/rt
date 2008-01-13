@@ -50,7 +50,7 @@
 my $Type = $CustomField->Type;
 unless ( $Type ) {
     # if we can't see the type, all hell will break loose.
-    $RT::Logger->error( "Custom field #". $CustomField->id ." has empty type" );
+    Jifty->log->error( "Custom field #". $CustomField->id ." has empty type" );
     return;
 }
 

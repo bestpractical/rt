@@ -74,7 +74,7 @@ $error .= " ($Details)" if defined $Details && length $Details;
 use Encode ();
 Encode::_utf8_off($error);
 
-$RT::Logger->error($error);
+Jifty->log->error($error);
 
 if ( defined $session{'SessionType'} && $session{'SessionType'} eq 'REST' ) {
     $r->content_type('text/plain');

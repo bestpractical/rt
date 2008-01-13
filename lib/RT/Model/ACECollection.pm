@@ -311,9 +311,9 @@ sub Next {
 #values 
 sub _do_search {
     my $self = shift;
-   # $RT::Logger->debug("Now in ".$self."->_do_search");
+   # Jifty->log->debug("Now in ".$self."->_do_search");
     my $return = $self->SUPER::_do_search(@_);
-  #  $RT::Logger->debug("In $self ->_do_search. return from SUPER::_do_search was $return\n");
+  #  Jifty->log->debug("In $self ->_do_search. return from SUPER::_do_search was $return\n");
     $self->{'must_redo_search'}=0;
     $self->_is_limited(1);
     $self->_build_hash();

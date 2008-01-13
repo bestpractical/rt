@@ -355,7 +355,7 @@ sub CastObjectsToRecords
         die "Couldn't construct new '$class' object" unless $obj;
         $obj->load( $id );
         unless ( $obj->id ) {
-            $RT::Logger->error( "Couldn't load '$class' object with id '$id'" );
+            Jifty->log->error( "Couldn't load '$class' object with id '$id'" );
             RT::Shredder::Exception::Info->throw( 'CouldntLoadObject' );
         }
         die "Loaded object has different id" unless( $id eq $obj->id );

@@ -554,7 +554,7 @@ sub validate_Type {
     my $type = shift;
 
     if ( $type =~ s/(?:Single|Multiple)$// ) {
-        $RT::Logger->warning( "Prefix 'Single' and 'Multiple' to Type deprecated, use MaxValues instead at (". join(":",caller).")");
+        Jifty->log->warn( "Prefix 'Single' and 'Multiple' to Type deprecated, use MaxValues instead at (". join(":",caller).")");
     }
 
     if ( $FieldTypes{$type} ) {
@@ -570,7 +570,7 @@ sub set_Type {
     my $self = shift;
     my $type = shift;
     if ($type =~ s/(?:(Single)|Multiple)$//) {
-        $RT::Logger->warning("'Single' and 'Multiple' on SetType deprecated, use SetMaxValues instead at (". join(":",caller).")");
+        Jifty->log->warn("'Single' and 'Multiple' on SetType deprecated, use SetMaxValues instead at (". join(":",caller).")");
         $self->set_MaxValues($1 ? 1 : 0);
     }
     $self->_set(column =>'Type', value => $type);
@@ -701,7 +701,7 @@ sub _value {
 
     # we need to do the rights check
     unless ( $self->current_user_has_right('SeeCustomField') ) {
-        $RT::Logger->debug(
+        Jifty->log->debug(
             "Permission denied. User #". $self->current_user->id
             ." has no SeeCustomField right on CF #". $self->id
         );
@@ -950,7 +950,7 @@ sub AddValueForObject {
         while ($extra_values) {
             my $extra_item = $current_values->next;
             unless ( $extra_item->id ) {
-                $RT::Logger->crit( "We were just asked to delete "
+                Jifty->log->fatal( "We were just asked to delete "
                     ."a custom field value that doesn't exist!" );
                 Jifty->handle->rollback();
                 return (undef);

@@ -77,7 +77,7 @@ while ( my $cgi = CGI::Fast->new ) {
 
     eval { $Handler->handle_cgi_object($cgi); };
     if ($@) {
-        $RT::Logger->crit($@);
+        Jifty->log->fatal($@);
     }
     RT::Interface::Web::Handler->CleanupRequest(); 
 

@@ -66,7 +66,7 @@ sub IsApplicable {
     my $self = shift;
     my $retval = eval $self->ScripObj->CustomIsApplicableCode;
     if ($@) {
-        $RT::Logger->error("Scrip ".$self->ScripObj->id. " IsApplicable failed: ".$@);
+        Jifty->log->error("Scrip ".$self->ScripObj->id. " IsApplicable failed: ".$@);
         return (undef);
     }
     return ($retval);

@@ -72,7 +72,7 @@ sub IsApplicable {
     return 0 unless $queue->IsInactiveStatus( $txn->OldValue );
     return 0 unless $queue->IsActiveStatus( $txn->NewValue );
 
-    $RT::Logger->debug("Condition 'On Reopen' triggered "
+    Jifty->log->debug("Condition 'On Reopen' triggered "
         ."for ticket #". $self->TicketObj->id
         ." transaction #". $txn->id
     );

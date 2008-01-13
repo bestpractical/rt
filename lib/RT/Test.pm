@@ -31,7 +31,6 @@ sub _setup_config   {
     print $config qq{
 set( \$WebPort , $port);
 set( \$WebBaseURL , "http://localhost:\$WebPort");
-set( \$LogToScreen , "debug");
 };
     print $config $args{'config'} if $args{'config'};
     print $config "\n1;\n";
@@ -54,7 +53,7 @@ sub started_ok {
     require RT::Test::Web;
     if ( $existing_server ) {
         ok(1, "using existing server $existing_server");
-        RT::Logger->warning( $existing_server);
+        Jifty->log->warn( $existing_server);
         return ($existing_server, RT::Test::Web->new);
     }
         my $server = Jifty::Test->make_server;
@@ -255,7 +254,7 @@ sub add_rights {
         my @rights = ref $e->{'Right'}? @{ $e->{'Right'} }: ($e->{'Right'});
         foreach my $right ( @rights ) {
             my ($status, $msg) = $principal->GrantRight( %$e, Right => $right );
-            $RT::Logger->warning($msg) unless $status;
+            Jifty->log->warn($msg) unless $status;
         }
     }
     return 1;
@@ -429,9 +428,9 @@ sub lsign_gnupg_key {
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} ) if $res{'status'};
+    Jifty->log->warn( $res{'error'} ) if $res{'error'};
+    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
     }
@@ -497,9 +496,9 @@ sub trust_gnupg_key {
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} ) if $res{'status'};
+    Jifty->log->warn( $res{'error'} ) if $res{'error'};
+    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
     }

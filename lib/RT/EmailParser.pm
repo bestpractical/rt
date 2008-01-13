@@ -201,11 +201,11 @@ sub _ParseMIMEEntity {
 
     # TODO: XXX 3.0 we really need to wrap this in an eval { }
     unless ( $self->{'entity'} = $parser->$method($message) ) {
-        $RT::Logger->crit("Couldn't parse MIME stream and extract the submessages");
+        Jifty->log->fatal("Couldn't parse MIME stream and extract the submessages");
         # Try again, this time without extracting nested messages
         $parser->extract_nested_messages(0);
         unless ( $self->{'entity'} = $parser->$method($message) ) {
-            $RT::Logger->crit("couldn't parse MIME stream");
+            Jifty->log->fatal("couldn't parse MIME stream");
             return ( undef);
         }
     }
@@ -234,7 +234,7 @@ sub _DecodeBody {
     my $encoding = $entity->head->mime_encoding;
     my $decoder = new MIME::Decoder $encoding;
     unless ( $decoder ) {
-        $RT::Logger->error("Couldn't find decoder for '$encoding', switching to binary");
+        Jifty->log->error("Couldn't find decoder for '$encoding', switching to binary");
         $old->is_encoded(0);
         return;
     }
@@ -250,7 +250,7 @@ sub _DecodeBody {
     { 
         local $@;
         eval { $decoder->decode($source, $destination) };
-        $RT::Logger->error($@) if $@;
+        Jifty->log->error($@) if $@;
     }
     $source->close or die "can't close: $!";
     $destination->close or die "can't close: $!";

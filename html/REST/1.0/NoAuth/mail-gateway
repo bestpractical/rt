@@ -74,7 +74,7 @@ if ( $status == 1 ) {
   }
 }
 else {
-  $RT::Logger->error( "Could not record email: " . $error );
+  Jifty->log->error( "Could not record email: " . $error );
   if ( $status == -75 ) {
     $m->out( "temporary failure - " . $error );
   }

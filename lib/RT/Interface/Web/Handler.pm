@@ -193,7 +193,7 @@ sub CleanupRequest {
 
     if ( Jifty->handle->transaction_depth ) {
         Jifty->handle->force_rollback;
-        $RT::Logger->crit(
+        Jifty->log->fatal(
             "Transaction not committed. Usually indicates a software fault."
             . "Data loss may have occurred" );
     }

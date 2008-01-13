@@ -189,7 +189,7 @@ sub _ClearOldDB {
         die "couldn't execute query: ". $dbh->errstr unless defined $rows;
     }
 
-    $RT::Logger->info("successfuly deleted $rows sessions");
+    Jifty->log->info("successfuly deleted $rows sessions");
     return;
 }
 
@@ -206,7 +206,7 @@ sub _ClearOldDir {
         if( int $older_than ) {
             my $ctime = (stat(File::Spec->catfile($dir,$id)))[9];
             if( $ctime > $now - $older_than ) {
-                $RT::Logger->debug("skipped session '$id', isn't old");
+                Jifty->log->debug("skipped session '$id', isn't old");
                 next;
             }
         }
@@ -215,11 +215,11 @@ sub _ClearOldDir {
         local $@;
         eval { tie %session, $class, $id, $attrs };
         if( $@ ) {
-            $RT::Logger->debug("skipped session '$id', couldn't load: $@");
+            Jifty->log->debug("skipped session '$id', couldn't load: $@");
             next;
         }
         tied(%session)->delete;
-        $RT::Logger->info("successfuly deleted session '$id'");
+        Jifty->log->info("successfuly deleted session '$id'");
     }
     return;
 }
@@ -242,17 +242,17 @@ sub ClearByUser {
         local $@;
         eval { tie %session, $class, $id, $attrs };
         if( $@ ) {
-            $RT::Logger->debug("skipped session '$id', couldn't load: $@");
+            Jifty->log->debug("skipped session '$id', couldn't load: $@");
             next;
         }
         if( Jifty->web->current_user && Jifty->web->current_user->id ) {
             unless( $seen{ Jifty->web->current_user->id }++ ) {
-                $RT::Logger->debug("skipped session '$id', first user's session");
+                Jifty->log->debug("skipped session '$id', first user's session");
                 next;
             }
         }
         tied(%session)->delete;
-        $RT::Logger->info("successfuly deleted session '$id'");
+        Jifty->log->info("successfuly deleted session '$id'");
     }
 }
 

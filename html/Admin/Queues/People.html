@@ -164,7 +164,7 @@ foreach my  $key (keys %ARGS) {
     #They're in this order because otherwise $1 gets clobbered :/
     if ( ($ARGS{$key} =~ /^(AdminCc|Cc)$/) and
 	 ($key =~ /^Queue-AddWatcher-Principal-(\d*)$/) ) {
-	$RT::Logger->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
+	Jifty->log->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
 	my ($code, $msg) = $QueueObj->AddWatcher(Type => $ARGS{$key},
 				                             principal_id => $1);
 	push @results, $msg;

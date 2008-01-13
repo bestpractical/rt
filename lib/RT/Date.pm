@@ -180,7 +180,7 @@ sub set {
             $self->Unix(0) unless $self->Unix > 0;
         }
         else {
-            $RT::Logger->warning(
+            Jifty->log->warn(
                 "Couldn't parse date '$args{'value'}' as a $args{'Format'} format"
             );
             return $self->Unix(0);
@@ -200,14 +200,14 @@ sub set {
         # apply timezone offset
         $date -= ($self->Localtime( $args{Timezone}, $date ))[9];
 
-        $RT::Logger->debug(
+        Jifty->log->debug(
             "RT::Date used Time::ParseDate to make '$args{'value'}' $date\n"
         );
 
         return $self->set( Format => 'unix', value => $date);
     }
     else {
-        $RT::Logger->error(
+        Jifty->log->error(
             "Unknown Date format: $args{'Format'}\n"
         );
         return $self->Unix(0);

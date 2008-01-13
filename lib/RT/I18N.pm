@@ -192,7 +192,7 @@ sub set_mime_entity_to_encoding {
 
 	# {{{ Convert the body
 	eval {
-	    $RT::Logger->debug("Converting '$charset' to '$enc' for ". $head->mime_type . " - ". ($head->get('subject') || 'Subjectless message'));
+	    Jifty->log->debug("Converting '$charset' to '$enc' for ". $head->mime_type . " - ". ($head->get('subject') || 'Subjectless message'));
 
 	    # NOTE:: see the comments at the end of the sub.
 	    Encode::_utf8_off( $lines[$_] ) foreach ( 0 .. $#lines );
@@ -200,12 +200,12 @@ sub set_mime_entity_to_encoding {
 	};
 
 	if ($@) {
-	    $RT::Logger->error( "Encoding error: " . $@ . " defaulting to ISO-8859-1 -> UTF-8" );
+	    Jifty->log->error( "Encoding error: " . $@ . " defaulting to ISO-8859-1 -> UTF-8" );
 	    eval {
 		Encode::from_to( $lines[$_], 'iso-8859-1' => $enc ) foreach ( 0 .. $#lines );
 	    };
 	    if ($@) {
-		$RT::Logger->crit( "Totally failed to convert to utf-8: " . $@ . " I give up" );
+		Jifty->log->fatal( "Totally failed to convert to utf-8: " . $@ . " I give up" );
 	    }
 	}
 	# }}}
@@ -280,7 +280,7 @@ sub DecodeMIMEWordsToEncoding {
 	    use MIME::Base64;
 	    $enc_str = decode_base64($enc_str);
 	} else {
-	    $RT::Logger->warning("Incorrect encoding '$encoding' in '$str', "
+	    Jifty->log->warn("Incorrect encoding '$encoding' in '$str', "
             ."only Q(uoted-printable) and B(ase64) are supported");
 	}
 
@@ -373,7 +373,7 @@ sub _GuessCharset {
       if ( defined($decoder) ) {
 	if ( ref $decoder ) {
 	    $charset = $decoder->name;
-	    $RT::Logger->debug("Guessed encoding: $charset");
+	    Jifty->log->debug("Guessed encoding: $charset");
 	    return $charset;
 	}
 	elsif ($decoder =~ /(\S+ or .+)/) {
@@ -382,23 +382,23 @@ sub _GuessCharset {
 
 	    foreach my $suspect (RT->Config->Get('EmailInputEncodings')) {
 		next unless $matched{$suspect};
-		$RT::Logger->debug("Encode::Guess ambiguous ($decoder); using $suspect");
+		Jifty->log->debug("Encode::Guess ambiguous ($decoder); using $suspect");
 		$charset = $suspect;
 		last;
 	    }
 	}
 	else {
-	    $RT::Logger->warning("Encode::Guess failed: $decoder; fallback to $fallback");
+	    Jifty->log->warn("Encode::Guess failed: $decoder; fallback to $fallback");
 	}
       }
       else {
-	  $RT::Logger->warning("Encode::Guess failed: decoder is undefined; fallback to $fallback");
+	  Jifty->log->warn("Encode::Guess failed: decoder is undefined; fallback to $fallback");
       }
     }
     elsif ( @encodings && $@ ) {
-        $RT::Logger->error("You have set EmailInputEncodings, but we couldn't load Encode::Guess: $@");
+        Jifty->log->error("You have set EmailInputEncodings, but we couldn't load Encode::Guess: $@");
     } else {
-        $RT::Logger->warning("No EmailInputEncodings set, fallback to $fallback");
+        Jifty->log->warn("No EmailInputEncodings set, fallback to $fallback");
     }
 
     return ($charset || $fallback);
@@ -437,11 +437,11 @@ sub set_mime_ehead_to_encoding {
                     Encode::from_to( $value, $charset => $enc );
                 };
                 if ($@) {
-                    $RT::Logger->error( "Encoding error: " . $@
+                    Jifty->log->error( "Encoding error: " . $@
                                        . " defaulting to ISO-8859-1 -> UTF-8" );
                     eval { Encode::from_to( $value, 'iso-8859-1' => $enc ) };
                     if ($@) {
-                        $RT::Logger->crit( "Totally failed to convert to utf-8: " . $@ . " I give up" );
+                        Jifty->log->fatal( "Totally failed to convert to utf-8: " . $@ . " I give up" );
                     }
                 }
             }

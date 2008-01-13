@@ -470,9 +470,9 @@ sub SignEncryptRFC3156 {
             delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
             close $handle{$_};
         }
-        $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-        $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-        $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+        Jifty->log->debug( $res{'status'} ) if $res{'status'};
+        Jifty->log->warn( $res{'error'} ) if $res{'error'};
+        Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
         if ( $err || $res{'exit_code'} ) {
             $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
             return %res;
@@ -529,9 +529,9 @@ sub SignEncryptRFC3156 {
             delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
             close $handle{$_};
         }
-        $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-        $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-        $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+        Jifty->log->debug( $res{'status'} ) if $res{'status'};
+        Jifty->log->warn( $res{'error'} ) if $res{'error'};
+        Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
         if ( $@ || $? ) {
             $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
             return %res;
@@ -655,9 +655,9 @@ sub _SignEncryptTextInline {
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} ) if $res{'status'};
+    Jifty->log->warn( $res{'error'} ) if $res{'error'};
+    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
         return %res;
@@ -744,9 +744,9 @@ sub _SignEncryptAttachmentInline {
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} ) if $res{'status'};
+    Jifty->log->warn( $res{'error'} ) if $res{'error'};
+    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
         return %res;
@@ -781,13 +781,13 @@ sub FindProtectedParts {
     unless ( $entity->is_multipart ) {
         my $io = $entity->open('r');
         unless ( $io ) {
-            $RT::Logger->warning( "Entity of type ". $entity->effective_type ." has no body" );
+            Jifty->log->warn( "Entity of type ". $entity->effective_type ." has no body" );
             return ();
         }
         while ( defined($_ = $io->getline) ) {
             next unless /-----BEGIN PGP (SIGNED )?MESSAGE-----/;
             my $type = $1? 'signed': 'encrypted';
-            $RT::Logger->debug("Found $type inline part");
+            Jifty->log->debug("Found $type inline part");
             return {
                 Type    => $type,
                 Format  => 'Inline',
@@ -801,22 +801,22 @@ sub FindProtectedParts {
     # RFC3156, multipart/{signed,encrypted}
     if ( ( my $type = $entity->effective_type ) =~ /^multipart\/(?:encrypted|signed)$/ ) {
         unless ( $entity->parts == 2 ) {
-            $RT::Logger->error( "Encrypted or signed entity must has two subparts. Skipped" );
+            Jifty->log->error( "Encrypted or signed entity must has two subparts. Skipped" );
             return ();
         }
 
         my $protocol = $entity->head->mime_attr( 'Content-Type.protocol' );
         unless ( $protocol ) {
-            $RT::Logger->error( "Entity is '$type', but has no protocol defined. Skipped" );
+            Jifty->log->error( "Entity is '$type', but has no protocol defined. Skipped" );
             return ();
         }
 
         if ( $type eq 'multipart/encrypted' ) {
             unless ( $protocol eq 'application/pgp-encrypted' ) {
-                $RT::Logger->info( "Skipping protocol '$protocol', only 'application/pgp-encrypted' is supported" );
+                Jifty->log->info( "Skipping protocol '$protocol', only 'application/pgp-encrypted' is supported" );
                 return ();
             }
-            $RT::Logger->debug("Found encrypted according to RFC3156 part");
+            Jifty->log->debug("Found encrypted according to RFC3156 part");
             return {
                 Type    => 'encrypted',
                 Format  => 'RFC3156',
@@ -826,10 +826,10 @@ sub FindProtectedParts {
             };
         } else {
             unless ( $protocol eq 'application/pgp-signature' ) {
-                $RT::Logger->info( "Skipping protocol '$protocol', only 'application/pgp-signature' is supported" );
+                Jifty->log->info( "Skipping protocol '$protocol', only 'application/pgp-signature' is supported" );
                 return ();
             }
-            $RT::Logger->debug("Found signed according to RFC3156 part");
+            Jifty->log->debug("Found signed according to RFC3156 part");
             return {
                 Type      => 'signed',
                 Format    => 'RFC3156',
@@ -858,13 +858,13 @@ sub FindProtectedParts {
             grep $sig_part  ne  $entity->parts($_),
                 0 .. $entity->parts - 1;
         unless ( defined $data_part_idx ) {
-            $RT::Logger->error("Found $sig_name attachment, but didn't find $file_name");
+            Jifty->log->error("Found $sig_name attachment, but didn't find $file_name");
             next;
         }
         my $data_part_in = $entity->parts($data_part_idx);
 
         $skip{"$data_part_in"}++;
-        $RT::Logger->debug("Found signature in attachment '$sig_name' of attachment '$file_name'");
+        Jifty->log->debug("Found signature in attachment '$sig_name' of attachment '$file_name'");
         push @res, {
             Type      => 'signed',
             Format    => 'Attachment',
@@ -882,7 +882,7 @@ sub FindProtectedParts {
     foreach my $i ( @encrypted_indices ) {
         my $part = $entity->parts($i);
         $skip{"$part"}++;
-        $RT::Logger->debug("Found encrypted attachment '". $part->head->recommended_filename ."'");
+        Jifty->log->debug("Found encrypted attachment '". $part->head->recommended_filename ."'");
         push @res, {
             Type      => 'encrypted',
             Format    => 'Attachment',
@@ -984,9 +984,9 @@ sub VerifyAttachment {
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} ) if $res{'status'};
+    Jifty->log->warn( $res{'error'} ) if $res{'error'};
+    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $@ || $? ) {
         $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
     }
@@ -1033,9 +1033,9 @@ sub VerifyRFC3156 {
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} ) if $res{'status'};
+    Jifty->log->warn( $res{'error'} ) if $res{'error'};
+    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $@ || $? ) {
         $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
     }
@@ -1100,9 +1100,9 @@ sub DecryptRFC3156 {
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} ) if $res{'status'};
+    Jifty->log->warn( $res{'error'} ) if $res{'error'};
+    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
 
     # if the decryption is fine but the signature is bad, then without this
     # status check we lose the decrypted text
@@ -1181,9 +1181,9 @@ sub DecryptInline {
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} ) if $res{'status'};
+    Jifty->log->warn( $res{'error'} ) if $res{'error'};
+    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
 
     # if the decryption is fine but the signature is bad, then without this
     # status check we lose the decrypted text
@@ -1357,7 +1357,7 @@ sub ParseStatus {
             next;
         }
         unless ( $parse_keyword{ $keyword } ) {
-            $RT::Logger->warning("Skipped $keyword") unless $ignore_keyword{ $keyword };
+            Jifty->log->warn("Skipped $keyword") unless $ignore_keyword{ $keyword };
             next;
         }
 
@@ -1548,7 +1548,7 @@ sub ParseStatus {
             };
         }
         else {
-            $RT::Logger->warning("Keyword $keyword is unknown");
+            Jifty->log->warn("Keyword $keyword is unknown");
             next;
         }
         $res[-1]{'Keyword'} = $keyword if @res && !$res[-1]{'Keyword'};
@@ -1776,9 +1776,9 @@ sub GetKeysInfo {
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( "Tried to get $type key '$email'.\n". $res{'logger'} )
+    Jifty->log->debug( $res{'status'} ) if $res{'status'};
+    Jifty->log->warn( $res{'error'} ) if $res{'error'};
+    Jifty->log->error( "Tried to get $type key '$email'.\n". $res{'logger'} )
         if $res{'logger'} && $?;
     if ( $@ || $? ) {
         $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
@@ -1985,9 +1985,9 @@ sub DeleteKey {
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} ) if $res{'status'};
+    Jifty->log->warn( $res{'error'} ) if $res{'error'};
+    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
     }
@@ -2035,9 +2035,9 @@ sub ImportKey {
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} ) if $res{'status'};
+    Jifty->log->warn( $res{'error'} ) if $res{'error'};
+    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
     }

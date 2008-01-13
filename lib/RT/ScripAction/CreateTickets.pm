@@ -313,16 +313,16 @@ sub prepare {
     my $self = shift;
 
     unless ( $self->TemplateObj ) {
-        $RT::Logger->warning("No template object handed to $self\n");
+        Jifty->log->warn("No template object handed to $self\n");
     }
 
     unless ( $self->TransactionObj ) {
-        $RT::Logger->warning("No transaction object handed to $self\n");
+        Jifty->log->warn("No transaction object handed to $self\n");
 
     }
 
     unless ( $self->TicketObj ) {
-        $RT::Logger->warning("No ticket object handed to $self\n");
+        Jifty->log->warn("No ticket object handed to $self\n");
 
     }
 
@@ -342,7 +342,7 @@ sub createByTemplate {
     my $self = shift;
     my $top  = shift;
 
-    $RT::Logger->debug("In CreateByTemplate");
+    Jifty->log->debug("In CreateByTemplate");
 
     my @results;
 
@@ -357,7 +357,7 @@ sub createByTemplate {
     my $ticketargs;
     my ( @links, @postponed );
     foreach my $template_id ( @{ $self->{'CreateTickets'} } ) {
-        $RT::Logger->debug("Workflow: processing $template_id of $T::TOP")
+        Jifty->log->debug("Workflow: processing $template_id of $T::TOP")
             if $T::TOP;
 
         $T::ID    = $template_id;
@@ -387,11 +387,11 @@ sub createByTemplate {
                 $msg = "Couldn't create ticket $template_id " . $msg;
             }
 
-            $RT::Logger->error($msg);
+            Jifty->log->error($msg);
             next;
         }
 
-        $RT::Logger->debug("Assigned $template_id with $id");
+        Jifty->log->debug("Assigned $template_id with $id");
         $T::Tickets{$template_id}->set_OriginObj( $self->TicketObj )
             if $self->TicketObj
             && $T::Tickets{$template_id}->can('SetOriginObj');
@@ -417,7 +417,7 @@ sub UpdateByTemplate {
     my $ticketargs;
     my ( @links, @postponed );
     foreach my $template_id ( @{ $self->{'update_tickets'} } ) {
-        $RT::Logger->debug("Update Workflow: processing $template_id");
+        Jifty->log->debug("Update Workflow: processing $template_id");
 
         $T::ID    = $template_id;
         @T::AllID = @{ $self->{'update_tickets'} };
@@ -449,7 +449,7 @@ sub UpdateByTemplate {
         my ($loaded, $msg) = $T::Tickets{$template_id}->load_by_id($id);
 
         unless ( $loaded ) {
-            $RT::Logger->error("Couldn't update ticket $template_id: " . $msg);
+            Jifty->log->error("Couldn't update ticket $template_id: " . $msg);
             push @results, _( "Couldn't load ticket '%1'", $id );
             next;
         }
@@ -580,10 +580,10 @@ sub _ParseMultilineTemplate {
 
     my $template_id;
     my ( $queue, $requestor );
-        $RT::Logger->debug("Line: ===");
+        Jifty->log->debug("Line: ===");
         foreach my $line ( split( /\n/, $args{'Content'} ) ) {
             $line =~ s/\r$//;
-            $RT::Logger->debug("Line: $line");
+            Jifty->log->debug("Line: $line");
             if ( $line =~ /^===/ ) {
                 if ( $template_id && !$queue && $args{'Queue'} ) {
                     $self->{'templates'}->{$template_id}
@@ -598,15 +598,15 @@ sub _ParseMultilineTemplate {
             }
             if ( $line =~ /^===Create-Ticket: (.*)$/ ) {
                 $template_id = "create-$1";
-                $RT::Logger->debug("****  Create ticket: $template_id");
+                Jifty->log->debug("****  Create ticket: $template_id");
                 push @{ $self->{'CreateTickets'} }, $template_id;
             } elsif ( $line =~ /^===Update-Ticket: (.*)$/ ) {
                 $template_id = "update-$1";
-                $RT::Logger->debug("****  Update ticket: $template_id");
+                Jifty->log->debug("****  Update ticket: $template_id");
                 push @{ $self->{'update_tickets'} }, $template_id;
             } elsif ( $line =~ /^===Base-Ticket: (.*)$/ ) {
                 $template_id = "base-$1";
-                $RT::Logger->debug("****  Base ticket: $template_id");
+                Jifty->log->debug("****  Base ticket: $template_id");
                 push @{ $self->{'base_tickets'} }, $template_id;
             } elsif ( $line =~ /^===#.*$/ ) {    # a comment
                 next;
@@ -649,7 +649,7 @@ sub ParseLines {
 
     if ( $self->{'UsePerlTextTemplate'} ) {
 
-        $RT::Logger->debug(
+        Jifty->log->debug(
             "Workflow: evaluating\n$self->{templates}{$template_id}");
 
         my $template = Text::Template->new(
@@ -665,12 +665,12 @@ sub ParseLines {
             }
         );
 
-        $RT::Logger->debug("Workflow: yielding\n$content");
+        Jifty->log->debug("Workflow: yielding\n$content");
 
         if ($err) {
-            $RT::Logger->error( "Ticket creation failed: " . $err );
+            Jifty->log->error( "Ticket creation failed: " . $err );
             while ( my ( $k, $v ) = each %T::X ) {
-                $RT::Logger->debug(
+                Jifty->log->debug(
                     "Eliminating $template_id from ${k}'s parents.");
                 delete $v->{$template_id};
             }
@@ -1184,7 +1184,7 @@ sub PostProcess {
 
     while ( my $template_id = shift(@$links) ) {
         my $ticket = $T::Tickets{$template_id};
-        $RT::Logger->debug( "Handling links for " . $ticket->id );
+        Jifty->log->debug( "Handling links for " . $ticket->id );
         my %args = %{ shift(@$links) };
 
         foreach my $type ( keys %LINKTYPEMAP ) {
@@ -1195,22 +1195,22 @@ sub PostProcess {
                 next unless $link;
 
                 if ( $link =~ /^TOP$/i ) {
-                    $RT::Logger->debug( "Building $type link for $link: "
+                    Jifty->log->debug( "Building $type link for $link: "
                             . $T::Tickets{TOP}->id );
                     $link = $T::Tickets{TOP}->id;
 
                 } elsif ( $link !~ m/^\d+$/ ) {
                     my $key = "create-$link";
                     if ( !exists $T::Tickets{$key} ) {
-                        $RT::Logger->debug(
+                        Jifty->log->debug(
                             "Skipping $type link for $key (non-existent)");
                         next;
                     }
-                    $RT::Logger->debug( "Building $type link for $link: "
+                    Jifty->log->debug( "Building $type link for $link: "
                             . $T::Tickets{$key}->id );
                     $link = $T::Tickets{$key}->id;
                 } else {
-                    $RT::Logger->debug("Building $type link for $link");
+                    Jifty->log->debug("Building $type link for $link");
                 }
 
                 my ( $wval, $wmsg ) = $ticket->AddLink(
@@ -1219,7 +1219,7 @@ sub PostProcess {
                     Silent                        => 1
                 );
 
-                $RT::Logger->warning("AddLink thru $link failed: $wmsg")
+                Jifty->log->warn("AddLink thru $link failed: $wmsg")
                     unless $wval;
 
                 # push @non_fatal_errors, $wmsg unless ($wval);
@@ -1231,7 +1231,7 @@ sub PostProcess {
     # postponed actions -- Status only, currently
     while ( my $template_id = shift(@$postponed) ) {
         my $ticket = $T::Tickets{$template_id};
-        $RT::Logger->debug( "Handling postponed actions for " . $ticket->id );
+        Jifty->log->debug( "Handling postponed actions for " . $ticket->id );
         my %args = %{ shift(@$postponed) };
         $ticket->set_Status( $args{Status} ) if defined $args{Status};
     }

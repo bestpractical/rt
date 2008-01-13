@@ -281,7 +281,7 @@ sub create {
     #check if it's a valid right_name
     if ( $args{'Object'}->can('AvailableRights') ) {
         unless ( exists $args{'Object'}->AvailableRights->{ $args{'right_name'} } ) {
-            $RT::Logger->warning(
+            Jifty->log->warn(
                 "Couldn't validate right name '$args{'right_name'}'"
                 ." for object of ". ref( $args{'Object'} ) ." class"
             );
@@ -382,7 +382,7 @@ sub Delegate {
     my $concurrency_check = RT::Model::ACE->new(current_user => RT->system_user);
     $concurrency_check->load( $self->id );
     unless ( $concurrency_check->id ) {
-        $RT::Logger->crit(
+        Jifty->log->fatal(
                    "Trying to delegate a right which had already been deleted");
         return ( 0, _('Permission Denied') );
     }
@@ -537,7 +537,7 @@ sub _bootstrap_create {
         return ($id);
     }
     else {
-        $RT::Logger->err('System error. right not granted.');
+        Jifty->log->err('System error. right not granted.');
         return (undef);
     }
 
@@ -592,7 +592,7 @@ sub Object {
         return ($appliesto_obj);
      }
     else {
-        $RT::Logger->warning( "$self -> Object called for an object "
+        Jifty->log->warn( "$self -> Object called for an object "
                               . "of an unknown type:"
                               . $self->__value('object_type') );
         return (undef);
@@ -616,7 +616,7 @@ sub principal_object {
     $princ_obj->load( $self->__value('principal_id') );
 
     unless ( $princ_obj->id ) {
-        $RT::Logger->err( "ACE " . $self->id . " couldn't load its principal object - " .$self->__value('principal_id') );
+        Jifty->log->err( "ACE " . $self->id . " couldn't load its principal object - " .$self->__value('principal_id') );
     }
     return ($princ_obj);
 
@@ -684,8 +684,8 @@ sub _canonicalize_Principal {
 
     unless ( $princ_obj->id ) {
         use Carp;
-        $RT::Logger->crit(Carp::cluck);
-        $RT::Logger->crit("Can't load a principal for id $princ_id");
+        Jifty->log->fatal(Carp::cluck);
+        Jifty->log->fatal("Can't load a principal for id $princ_id");
         return ( $princ_obj, undef );
     }
 
@@ -695,7 +695,7 @@ sub _canonicalize_Principal {
         my $equiv_group = RT::Model::Group->new;
         $equiv_group->load_acl_equivalence_group($princ_obj);
         unless ( $equiv_group->id ) {
-            $RT::Logger->crit( "No ACL equiv group for princ " . $princ_obj->id );
+            Jifty->log->fatal( "No ACL equiv group for princ " . $princ_obj->id );
             return ( RT::Model::Principal->new(current_user => RT->system_user), undef );
         }
         $princ_obj  = $equiv_group->principal_object();
@@ -715,12 +715,12 @@ sub _ParseObjectArg {
     );
 
     if ( $args{'Object'} && ( $args{'object_id'} || $args{'object_type'} ) ) {
-        $RT::Logger->crit(
+        Jifty->log->fatal(
             "Method called with an object_type or an object_id and Object args"
         );
         return ();
     } elsif ( $args{'Object'} && !UNIVERSAL::can( $args{'Object'}, 'id' ) ) {
-        $RT::Logger->crit( "Method called called Object that has no id method");
+        Jifty->log->fatal( "Method called called Object that has no id method");
         return ();
     } elsif ( $args{'Object'} ) {
         my $obj = $args{'Object'};
@@ -731,7 +731,7 @@ sub _ParseObjectArg {
         return ( $obj, ref $obj, $obj->id );
     } else {
         Carp::confess;
-        $RT::Logger->crit("Method called with wrong args");
+        Jifty->log->fatal("Method called with wrong args");
         return ();
     }
 }

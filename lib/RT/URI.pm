@@ -134,7 +134,7 @@ sub FromURI {
 	$scheme = $1;
     }
     else {
-        $RT::Logger->warning("Could not determine a URI scheme for $uri");
+        Jifty->log->warn("Could not determine a URI scheme for $uri");
         return (undef);
     }
      
@@ -142,7 +142,7 @@ sub FromURI {
     $self->_GetResolver($scheme);
     
     unless ($self->Resolver->ParseURI($uri)) {
-        $RT::Logger->warning("Resolver ".ref($self->Resolver)." could not parse $uri");
+        Jifty->log->warn("Resolver ".ref($self->Resolver)." could not parse $uri");
         $self->{resolver} = RT::URI::base->new; # clear resolver
     	return (undef);
     }

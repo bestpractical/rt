@@ -204,20 +204,20 @@ sub load {
         my ($ticketid,$msg) = $self->load_by_id($id);
 
         unless ($self->id) {
-            $RT::Logger->crit("$self tried to load a bogus ticket: $id\n");
+            Jifty->log->fatal("$self tried to load a bogus ticket: $id\n");
             return (undef);
         }
     }
 
     #It's not a URI. It's not a numerical ticket ID. Punt!
     else {
-        $RT::Logger->warning("Tried to load a bogus ticket id: '$id'");
+        Jifty->log->warn("Tried to load a bogus ticket id: '$id'");
         return (undef);
     }
 
     #If we're merged, resolve the merge.
     if ( ( $self->EffectiveId ) and ( $self->EffectiveId != $self->id ) ) {
-        $RT::Logger->debug ("We found a merged ticket.". $self->id ."/".$self->EffectiveId);
+        Jifty->log->debug ("We found a merged ticket.". $self->id ."/".$self->EffectiveId);
         return ( $self->load( $self->EffectiveId ) );
     }
 
@@ -336,12 +336,12 @@ sub create {
         $QueueObj->load( $args{'Queue'} );
     }
     else {
-        $RT::Logger->debug( $args{'Queue'} . " not a recognised queue object." );
+        Jifty->log->debug( $args{'Queue'} . " not a recognised queue object." );
     }
 
     #Can't create a ticket without a queue.
     unless ( $QueueObj->id ) {
-        $RT::Logger->debug("$self No valid queue given for ticket creation.");
+        Jifty->log->debug("$self No valid queue given for ticket creation.");
         return ( 0, 0, _('Could not create ticket. Queue not set') );
     }
 
@@ -414,7 +414,7 @@ sub create {
     #If the status is an inactive status, set the resolved date
     elsif ( $QueueObj->IsInactiveStatus( $args{'Status'} ) )
     {
-        $RT::Logger->debug( "Got a ". $args{'Status'}
+        Jifty->log->debug( "Got a ". $args{'Status'}
             ."(inactive) ticket with undefined resolved date. Setting to now."
         );
         $Resolved->set_to_now;
@@ -437,7 +437,7 @@ sub create {
         if ( $args{'Owner'}->id ) {
             $Owner = $args{'Owner'};
         } else {
-            $RT::Logger->error('passed not loaded owner object');
+            Jifty->log->error('passed not loaded owner object');
             push @non_fatal_errors, _("Invalid owner object");
             $Owner = undef;
         }
@@ -464,7 +464,7 @@ sub create {
     {
         $DeferOwner = $Owner;
         $Owner = undef;
-        $RT::Logger->debug('going to defer setting owner');
+        Jifty->log->debug('going to defer setting owner');
 
     }
 
@@ -538,7 +538,7 @@ sub create {
 
     my ($id,$ticket_message) = $self->SUPER::create( %params );
     unless ($id) {
-        $RT::Logger->crit( "Couldn't create a ticket: " . $ticket_message );
+        Jifty->log->fatal( "Couldn't create a ticket: " . $ticket_message );
         Jifty->handle->rollback();
         return ( 0, 0,
             _("Ticket could not be created due to an internal error")
@@ -551,7 +551,7 @@ sub create {
         value => ( $args{'EffectiveId'} || $id )
     );
     unless ( $val ) {
-        $RT::Logger->crit("Couldn't set EffectiveId: $msg\n");
+        Jifty->log->fatal("Couldn't set EffectiveId: $msg\n");
         Jifty->handle->rollback;
         return ( 0, 0,
             _("Ticket could not be created due to an internal error")
@@ -560,7 +560,7 @@ sub create {
 
     my $create_groups_ret = $self->_CreateTicket_groups();
     unless ($create_groups_ret) {
-        $RT::Logger->crit( "Couldn't create ticket groups for ticket "
+        Jifty->log->fatal( "Couldn't create ticket groups for ticket "
               . $self->id
               . ". aborting Ticket creation." );
         Jifty->handle->rollback();
@@ -678,7 +678,7 @@ sub create {
     if (  $DeferOwner ) { 
             if (!$DeferOwner->has_right( Object => $self, Right  => 'OwnTicket')) {
     
-        $RT::Logger->warning( "User " . $Owner->name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $QueueObj->name ); 
+        Jifty->log->warn( "User " . $Owner->name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $QueueObj->name ); 
         push @non_fatal_errors, _( "Owner '%1' does not have rights to own this ticket.", $Owner->name);
 
     } else {
@@ -705,7 +705,7 @@ sub create {
 
             $TransObj->UpdateCustomFields(ARGSRef => \%args);
 
-            $RT::Logger->info( "Ticket " . $self->id . " created in queue '" . $QueueObj->name . "' by " . $self->current_user->name );
+            Jifty->log->info( "Ticket " . $self->id . " created in queue '" . $QueueObj->name . "' by " . $self->current_user->name );
             $ErrStr = _( "Ticket %1 created in queue '%2'", $self->id, $QueueObj->name );
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
         }
@@ -713,7 +713,7 @@ sub create {
             Jifty->handle->rollback();
 
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
-            $RT::Logger->error("Ticket couldn't be created: $ErrStr");
+            Jifty->log->error("Ticket couldn't be created: $ErrStr");
             return ( 0, 0, _( "Ticket could not be created due to an internal error"));
         }
          if ( $args{'DryRun'} ) {
@@ -848,12 +848,12 @@ sub Import {
         $QueueObj->load( $args{'Queue'}->id );
     }
     else {
-        $RT::Logger->debug( "$self " . $args{'Queue'} . " not a recognised queue object." );
+        Jifty->log->debug( "$self " . $args{'Queue'} . " not a recognised queue object." );
     }
 
     #Can't create a ticket without a queue.
     unless ( defined($QueueObj) and $QueueObj->id ) {
-        $RT::Logger->debug("$self No queue given for ticket creation.");
+        Jifty->log->debug("$self No queue given for ticket creation.");
         return ( 0, _('Could not create ticket. Queue not set') );
     }
 
@@ -901,7 +901,7 @@ sub Import {
       )
     {
 
-        $RT::Logger->warning( "$self user "
+        Jifty->log->warn( "$self user "
               . $Owner->name . "("
               . $Owner->id
               . ") was proposed "
@@ -960,14 +960,14 @@ sub Import {
           $self->__set( column => 'EffectiveId', value => $id );
 
         unless ($val) {
-            $RT::Logger->err(
+            Jifty->log->err(
                 $self . "->Import couldn't set EffectiveId: $msg\n" );
         }
     }
 
     my $create_groups_ret = $self->_CreateTicket_groups();
     unless ($create_groups_ret) {
-        $RT::Logger->crit(
+        Jifty->log->fatal(
             "Couldn't create ticket groups for ticket " . $self->id );
     }
 
@@ -1019,7 +1019,7 @@ sub _CreateTicket_groups {
                                                        Instance => $self->id, 
                                                        Type => $type);
         unless ($id) {
-            $RT::Logger->error("Couldn't create a ticket group of type '$type' for ticket ".
+            Jifty->log->error("Couldn't create a ticket group of type '$type' for ticket ".
                                $self->id.": ".$msg);     
             return(undef);
         }
@@ -1111,7 +1111,7 @@ sub AddWatcher {
         }
     }
     else {
-        $RT::Logger->warning( "AddWatcher got passed a bogus type");
+        Jifty->log->warn( "AddWatcher got passed a bogus type");
         return ( 0, _('Error in parameters to Ticket->AddWatcher') );
     }
 
@@ -1144,7 +1144,7 @@ sub _AddWatcher {
  
     # If we can't find this watcher, we need to bail.
     unless ($principal->id) {
-            $RT::Logger->error("Could not load create a user with the email address '".$args{'Email'}. "' to add as a watcher for ticket ".$self->id);
+            Jifty->log->error("Could not load create a user with the email address '".$args{'Email'}. "' to add as a watcher for ticket ".$self->id);
         return(0, _("Could not find or create that user"));
     }
 
@@ -1164,7 +1164,7 @@ sub _AddWatcher {
     my ( $m_id, $m_msg ) = $group->_add_member( principal_id => $principal->id,
                                                InsideTransaction => 1 );
     unless ($m_id) {
-        $RT::Logger->error("Failed to add ".$principal->id." as a member of group ".$group->id."\n".$m_msg);
+        Jifty->log->error("Failed to add ".$principal->id." as a member of group ".$group->id."\n".$m_msg);
 
         return ( 0, _('Could not make that principal a %1 for this ticket', _($args{'Type'})) );
     }
@@ -1258,7 +1258,7 @@ sub deleteWatcher {
             }
         }
         else {
-            $RT::Logger->warning("$self -> DeleteWatcher got passed a bogus type");
+            Jifty->log->warn("$self -> DeleteWatcher got passed a bogus type");
             return ( 0,
                      _('Error in parameters to Ticket->deleteWatcher') );
         }
@@ -1284,7 +1284,7 @@ sub deleteWatcher {
 
     my ( $m_id, $m_msg ) = $group->_delete_member( $principal->id );
     unless ($m_id) {
-        $RT::Logger->error( "Failed to delete "
+        Jifty->log->error( "Failed to delete "
                             . $principal->id
                             . " as a member of group "
                             . $group->id . "\n"
@@ -1687,7 +1687,7 @@ sub validate_Queue {
     my $value = shift;
 
     if ( !$value ) {
-        $RT::Logger->warning( " RT:::Queue::validate_Queue called with a null value. this isn't ok.");
+        Jifty->log->warn( " RT:::Queue::validate_Queue called with a null value. this isn't ok.");
         return (1);
     }
 
@@ -1748,7 +1748,7 @@ sub set_Queue {
             return ( 0, _("Couldn't load copy of ticket #%1.", $self->id) );
         }
         my ($status, $msg) = $clone->set_Owner( RT->nobody->id, 'Force' );
-        $RT::Logger->error("Couldn't set owner on queue change: $msg") unless $status;
+        Jifty->log->error("Couldn't set owner on queue change: $msg") unless $status;
     }
 
     return ( $self->_set( column => 'Queue', value => $NewQueueObj->id() ) );
@@ -2192,7 +2192,7 @@ sub _RecordNote {
     );
 
     unless ($Trans) {
-        $RT::Logger->err("$self couldn't init a transaction $msg");
+        Jifty->log->err("$self couldn't init a transaction $msg");
         return ( $Trans, _("Message could not be recorded"), undef );
     }
 
@@ -2268,7 +2268,7 @@ sub delete_link {
     );
 
     unless ( $args{'Target'} || $args{'Base'} ) {
-        $RT::Logger->error("Base or Target must be specified\n");
+        Jifty->log->error("Base or Target must be specified\n");
         return ( 0, _('Either base or target must be specified') );
     }
 
@@ -2318,7 +2318,7 @@ sub delete_link {
             OldValue  => $remote_uri->URI || $remote_link,
             TimeTaken => 0
         );
-        $RT::Logger->error("Couldn't create transaction: $Msg") unless $Trans;
+        Jifty->log->error("Couldn't create transaction: $Msg") unless $Trans;
     }
 
     if ( !$args{ 'Silent'. ( $direction eq 'Target'? 'Base': 'Target' ) } && $remote_uri->IsLocal ) {
@@ -2331,7 +2331,7 @@ sub delete_link {
             ActivateScrips => !RT->Config->Get('LinkTransactionsRun1Scrip'),
             TimeTaken      => 0,
         );
-        $RT::Logger->error("Couldn't create transaction: $Msg") unless $val;
+        Jifty->log->error("Couldn't create transaction: $Msg") unless $val;
     }
 
     return ( $val, $Msg );
@@ -2363,7 +2363,7 @@ sub AddLink {
                  @_ );
 
     unless ( $args{'Target'} || $args{'Base'} ) {
-        $RT::Logger->error("Base or Target must be specified\n");
+        Jifty->log->error("Base or Target must be specified\n");
         return ( 0, _('Either base or target must be specified') );
     }
 
@@ -2400,7 +2400,7 @@ sub __GetTicketFromURI {
 
     unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
         my $msg = _( "Couldn't resolve '%1' into a URI.", $args{'URI'} );
-        $RT::Logger->warning( "$msg\n" );
+        Jifty->log->warn( "$msg\n" );
         return( 0, $msg );
     }
     my $obj = $uri_obj->Resolver->Object;
@@ -2449,7 +2449,7 @@ sub _AddLink {
             NewValue  =>  $remote_uri->URI || $remote_link,
             TimeTaken => 0
         );
-        $RT::Logger->error("Couldn't create transaction: $Msg") unless $Trans;
+        Jifty->log->error("Couldn't create transaction: $Msg") unless $Trans;
     }
 
     if ( !$args{ 'Silent'. ( $direction eq 'Target'? 'Base': 'Target' ) } && $remote_uri->IsLocal ) {
@@ -2462,7 +2462,7 @@ sub _AddLink {
             ActivateScrips => !RT->Config->Get('LinkTransactionsRun1Scrip'),
             TimeTaken      => 0,
         );
-        $RT::Logger->error("Couldn't create transaction: $msg") unless $val;
+        Jifty->log->error("Couldn't create transaction: $msg") unless $val;
     }
 
     return ( $val, $msg );
@@ -2529,7 +2529,7 @@ sub MergeInto {
 
         unless ($status_val) {
             Jifty->handle->rollback();
-            $RT::Logger->error(
+            Jifty->log->error(
                 _(
                     "%1 couldn't set status to resolved. RT's Database may be inconsistent.",
                     $self
@@ -2612,7 +2612,7 @@ sub MergeInto {
                 principal_id => $watcher->MemberId
             );
             unless ($val) {
-                $RT::Logger->warning($msg);
+                Jifty->log->warn($msg);
             }
     }
 
@@ -3246,7 +3246,7 @@ sub _set {
    }
 
     unless ($args{'UpdateTicket'} || $args{'RecordTransaction'}) {
-        $RT::Logger->error("Ticket->_set called without a mandate to record an update or update the ticket");
+        Jifty->log->error("Ticket->_set called without a mandate to record an update or update the ticket");
         return(0, _("Internal Error"));
     }
 
@@ -3307,7 +3307,7 @@ sub _value {
     #if the column is public, return it.
     if (1 ) { # $self->_Accessible( $column, 'public' ) ) {
 
-        #$RT::Logger->debug("Skipping ACL check for $column\n");
+        #Jifty->log->debug("Skipping ACL check for $column\n");
         return ( $self->SUPER::_value($column) );
 
     }
@@ -3397,7 +3397,7 @@ sub has_right {
     unless ( ( defined $args{'Principal'} ) and ( ref( $args{'Principal'} ) ) )
     {
         Carp::cluck("Principal attrib undefined for Ticket::has_right");
-        $RT::Logger->crit("Principal attrib undefined for Ticket::has_right");
+        Jifty->log->fatal("Principal attrib undefined for Ticket::has_right");
         return(undef);
     }
 

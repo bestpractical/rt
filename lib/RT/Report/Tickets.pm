@@ -187,7 +187,7 @@ sub _FieldToFunction {
         my $cf = RT::Model::CustomField->new;
         $cf->load($cf_name);
         unless ( $cf->id ) {
-            $RT::Logger->error("Couldn't load CustomField #$cf_name");
+            Jifty->log->error("Couldn't load CustomField #$cf_name");
         } else {
             my ($ticket_cf_alias, $cf_alias) = $self->_CustomFieldjoin($cf->id, $cf->id, $cf_name);
             @args{qw(alias column)} = ($ticket_cf_alias, 'Content');

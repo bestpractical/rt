@@ -81,7 +81,7 @@ sub create {
 
     my $cf = $self->CustomFieldObj( $args{'CustomField'} );
     unless ( $cf->id ) {
-        $RT::Logger->error("Couldn't load '$args{'CustomField'}' custom field");
+        Jifty->log->error("Couldn't load '$args{'CustomField'}' custom field");
         return 0;
     }
 

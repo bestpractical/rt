@@ -261,7 +261,7 @@ and logs an internal error if the deletion fails (should not happen).
 sub _CleanupInvalidDelegations {
     my $self = shift;
     unless ( $self->id ) {
-	$RT::Logger->warning("Principal not loaded.");
+	Jifty->log->warn("Principal not loaded.");
 	return (undef);
     }
     return ($self->Object->_CleanupInvalidDelegations(@_));
@@ -306,7 +306,7 @@ sub has_right {
         @_,
     );
     unless ( $args{'Right'} ) {
-        $RT::Logger->crit("has_right called without a right");
+        Jifty->log->fatal("has_right called without a right");
         return (undef);
     }
 
@@ -314,7 +314,7 @@ sub has_right {
         if $args{'EquivObjects'};
 
     if ( $self->disabled ) {
-        $RT::Logger->error( "disabled User #"
+        Jifty->log->error( "disabled User #"
               . $self->id
               . " failed access check for "
               . $args{'Right'} );
@@ -328,7 +328,7 @@ sub has_right {
         push @{ $args{'EquivObjects'} }, $args{'Object'};
     }
     else {
-        $RT::Logger->crit("has_right called with no valid object");
+        Jifty->log->fatal("has_right called with no valid object");
         return (undef);
     }
 

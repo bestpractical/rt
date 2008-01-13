@@ -75,7 +75,7 @@ sub handle_request {
     Module::Refresh->refresh if RT->Config->Get('DevelMode');
 
     $self->SUPER::handle_request($cgi);
-    $RT::Logger->crit($@) if ($@);
+    Jifty->log->fatal($@) if ($@);
 
     RT::Interface::Web::Handler->CleanupRequest();
 

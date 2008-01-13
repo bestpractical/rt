@@ -116,8 +116,8 @@ sub init_db
 {
 
 
-    $SIG{__WARN__} = sub { $RT::Logger->warning( @_ ); warn @_ };
-    $SIG{__DIE__} = sub { $RT::Logger->crit( @_ ) unless $^S; Carp::confess @_ };
+    $SIG{__WARN__} = sub { Jifty->log->warn( @_ ); warn @_ };
+    $SIG{__DIE__} = sub { Jifty->log->fatal( @_ ) unless $^S; Carp::confess @_ };
 }
 
 use IPC::Open2;

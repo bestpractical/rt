@@ -394,7 +394,7 @@ if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
 if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
     if ( $ValidCFs && !$checks_failure ) {
         $m->comp('Display.html', %ARGS);
-        $RT::Logger->crit("After display call; error is $@");
+        Jifty->log->fatal("After display call; error is $@");
         $m->abort();
     }
     elsif ( !$ValidCFs ) {

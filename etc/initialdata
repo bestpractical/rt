@@ -644,7 +644,7 @@ while (my $link = $links->next) {
 	foreach my $TOP (@TOP) {
 	    local $@;
 	    $rv++ if eval $code;
-	    $RT::Logger->error("Cannot eval code: $@") if $@;
+	    Jifty->log->error("Cannot eval code: $@") if $@;
 	}
 
 	if ($rv or !@TOP) {

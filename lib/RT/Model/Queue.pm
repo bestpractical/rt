@@ -177,7 +177,7 @@ sub delete_link {
 
     #check acls
     unless ( $self->current_user_has_right('ModifyQueue') ) {
-        $RT::Logger->debug("No permission to delete links\n");
+        Jifty->log->debug("No permission to delete links\n");
         return ( 0, _('Permission Denied'))
     }
 
@@ -208,7 +208,7 @@ sub ActiveStatusArray {
     if (RT->Config->Get('ActiveStatus')) {
     	return (RT->Config->Get('ActiveStatus'))
     } else {
-        $RT::Logger->warning("RT::ActiveStatus undefined, falling back to deprecated defaults");
+        Jifty->log->warn("RT::ActiveStatus undefined, falling back to deprecated defaults");
         return (@DEFAULT_ACTIVE_STATUS);
     }
 }
@@ -228,7 +228,7 @@ sub InactiveStatusArray {
     if (RT->Config->Get('InactiveStatus')) {
     	return (RT->Config->Get('InactiveStatus'))
     } else {
-        $RT::Logger->warning("RT::InactiveStatus undefined, falling back to deprecated defaults");
+        Jifty->log->warn("RT::InactiveStatus undefined, falling back to deprecated defaults");
         return (@DEFAULT_INACTIVE_STATUS);
     }
 }
@@ -377,12 +377,12 @@ sub create {
 
     if ( defined $args{'Sign'} ) {
         my ($status, $msg) = $self->set_Sign( $args{'Sign'} );
-        $RT::Logger->error("Couldn't set attribute 'Sign': $msg")
+        Jifty->log->error("Couldn't set attribute 'Sign': $msg")
             unless $status;
     }
     if ( defined $args{'Encrypt'} ) {
         my ($status, $msg) = $self->set_Encrypt( $args{'Encrypt'} );
-        $RT::Logger->error("Couldn't set attribute 'Encrypt': $msg")
+        Jifty->log->error("Couldn't set attribute 'Encrypt': $msg")
             unless $status;
     }
 
@@ -643,7 +643,7 @@ sub _createQueueGroups {
                                                      Type => $type,
                                                      Domain => 'RT::Model::Queue-Role');
         unless ($id) {
-            $RT::Logger->error("Couldn't create a Queue group of type '$type' for ticket ".
+            Jifty->log->error("Couldn't create a Queue group of type '$type' for ticket ".
                                $self->id.": ".$msg);
             return(undef);
         }
@@ -705,7 +705,7 @@ sub AddWatcher {
             }
         }
      else {
-            $RT::Logger->warning( "$self -> AddWatcher got passed a bogus type");
+            Jifty->log->warn( "$self -> AddWatcher got passed a bogus type");
             return ( 0, _('Error in parameters to Queue->AddWatcher') );
         }
     }
@@ -766,7 +766,7 @@ sub _AddWatcher {
                 privileged   => 0,
                 comments     => 'AutoCreated when added as a watcher');
             unless ($Val) {
-                $RT::Logger->error("Failed to create user ".$args{'Email'} .": " .$Message);
+                Jifty->log->error("Failed to create user ".$args{'Email'} .": " .$Message);
                 # Deal with the race condition of two account creations at once
                 $new_user->load_by_email($args{'Email'});
             }
@@ -793,7 +793,7 @@ sub _AddWatcher {
 
     my ($m_id, $m_msg) = $group->_add_member(principal_id => $principal->id);
     unless ($m_id) {
-        $RT::Logger->error("Failed to add ".$principal->id." as a member of group ".$group->id."\n".$m_msg);
+        Jifty->log->error("Failed to add ".$principal->id." as a member of group ".$group->id."\n".$m_msg);
 
         return ( 0, _('Could not make that principal a %1 for this queue', $args{'Type'}) );
     }
@@ -866,7 +866,7 @@ sub deleteWatcher {
             }
         }
         else {
-            $RT::Logger->warning( "$self -> DeleteWatcher got passed a bogus type");
+            Jifty->log->warn( "$self -> DeleteWatcher got passed a bogus type");
             return ( 0, _('Error in parameters to Queue->deleteWatcher') );
         }
     }
@@ -891,7 +891,7 @@ sub deleteWatcher {
 
     my ($m_id, $m_msg) = $group->_delete_member($principal->id);
     unless ($m_id) {
-        $RT::Logger->error("Failed to delete ".$principal->id.
+        Jifty->log->error("Failed to delete ".$principal->id.
                            " as a member of group ".$group->id."\n".$m_msg);
 
         return ( 0,    _('Could not remove that principal as a %1 for this queue', $args{'Type'}) );
@@ -1155,7 +1155,7 @@ sub has_right {
     );
      my $principal = delete $args{'Principal'};
      unless ( $principal ) {
-         $RT::Logger->error("Principal undefined in Queue::has_right");
+         Jifty->log->error("Principal undefined in Queue::has_right");
         return undef;
      }
   

@@ -63,7 +63,7 @@ foreach my $class( 'RT::Model::CustomFieldValueCollection', RT->Config->Get('Cus
     local $@;
     eval "require $class";
     if( $@ ) {
-        $RT::Logger->crit("Couldn't load class '$class': $@");
+        Jifty->log->fatal("Couldn't load class '$class': $@");
         next;
     }
 

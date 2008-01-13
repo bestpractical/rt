@@ -7,7 +7,6 @@ use base qw/Jifty::Bootstrap/;
 
 sub run {
     my $self = shift;
-    RT::InitLogging();
     $self->InsertInitialData();
         $self->InsertData( $RT::EtcPath . "/initialdata" );
 }
@@ -580,5 +579,4 @@ sub ACLEquivGroupId {
     return ( $equiv_group->id );
 }
 
-1;
 1;

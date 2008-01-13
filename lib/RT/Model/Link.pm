@@ -112,7 +112,7 @@ sub create {
     unless ( $base->Resolver && $base->Scheme ) {
 	my $msg = _("Couldn't resolve base '%1' into a URI.", 
 			     $args{'Base'});
-        $RT::Logger->warning( "$self $msg\n" );
+        Jifty->log->warn( "$self $msg\n" );
 
 	if (wantarray) {
 	    return(undef, $msg);
@@ -127,7 +127,7 @@ sub create {
     unless ( $target->Resolver ) {
 	my $msg = _("Couldn't resolve target '%1' into a URI.", 
 			     $args{'Target'});
-        $RT::Logger->warning( "$self $msg\n" );
+        Jifty->log->warn( "$self $msg\n" );
 
 	if (wantarray) {
 	    return(undef, $msg);

@@ -99,7 +99,7 @@ sub create {
 
     if ( defined $args{'Content'} && length( $args{'Content'} ) > 255 ) {
         if ( defined $args{'LargeContent'} && length $args{'LargeContent'} ) {
-            $RT::Logger->error("Content is longer than 255 and LargeContent specified");
+            Jifty->log->error("Content is longer than 255 and LargeContent specified");
         }
         else {
             $args{'LargeContent'} = $args{'Content'};

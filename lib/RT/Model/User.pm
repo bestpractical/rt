@@ -169,7 +169,7 @@ sub create {
           unless ( $self->validate_email( $args{'email'} ) );
     }
     else {
-        $RT::Logger->warning( "$self couldn't check for pre-existing users");
+        Jifty->log->warn( "$self couldn't check for pre-existing users");
     }
 
 
@@ -183,8 +183,8 @@ sub create {
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         Jifty->handle->rollback();
-        $RT::Logger->crit("Couldn't create a Principal on new user create.");
-        $RT::Logger->crit("Strange things are afoot at the circle K");
+        Jifty->log->fatal("Couldn't create a Principal on new user create.");
+        Jifty->log->fatal("Strange things are afoot at the circle K");
         return ( 0, _('Could not create user') );
     }
 
@@ -197,7 +197,7 @@ sub create {
     #If the create failed.
     unless ($id) {
         Jifty->handle->rollback();
-        $RT::Logger->error("Could not create a new user - " .join('-', %args));
+        Jifty->log->error("Could not create a new user - " .join('-', %args));
 
         return ( 0, _('Could not create user') );
     }
@@ -207,7 +207,7 @@ sub create {
 
     unless ($stash_id) {
         Jifty->handle->rollback();
-        $RT::Logger->crit("Couldn't stash the user in groupmembers");
+        Jifty->log->fatal("Couldn't stash the user in groupmembers");
         return ( 0, _('Could not create user') );
     }
 
@@ -215,7 +215,7 @@ sub create {
     my $everyone = RT::Model::Group->new;
     $everyone->load_system_internal_group('Everyone');
     unless ($everyone->id) {
-        $RT::Logger->crit("Could not load Everyone group on user creation.");
+        Jifty->log->fatal("Could not load Everyone group on user creation.");
         Jifty->handle->rollback();
         return ( 0, _('Could not create user') );
     }
@@ -223,8 +223,8 @@ sub create {
 
     my ($everyone_id, $everyone_msg) = $everyone->_add_member( InsideTransaction => 1, principal_id => $self->principal_id);
     unless ($everyone_id) {
-        $RT::Logger->crit("Could not add user to Everyone group on user creation.");
-        $RT::Logger->crit($everyone_msg);
+        Jifty->log->fatal("Could not add user to Everyone group on user creation.");
+        Jifty->log->fatal($everyone_msg);
         Jifty->handle->rollback();
         return ( 0, _('Could not create user') );
     }
@@ -238,7 +238,7 @@ sub create {
     }
 
     unless ($access_class->id) {
-        $RT::Logger->crit("Could not load privileged or Unprivileged group on user creation");
+        Jifty->log->fatal("Could not load privileged or Unprivileged group on user creation");
         Jifty->handle->rollback();
         return ( 0, _('Could not create user') );
     }
@@ -247,8 +247,8 @@ sub create {
     my ($ac_id, $ac_msg) = $access_class->_add_member( InsideTransaction => 1, principal_id => $self->principal_id);  
 
     unless ($ac_id) {
-        $RT::Logger->crit("Could not add user to privileged or Unprivileged group on user creation. Aborted");
-        $RT::Logger->crit($ac_msg);
+        Jifty->log->fatal("Could not add user to privileged or Unprivileged group on user creation. Aborted");
+        Jifty->log->fatal($ac_msg);
         Jifty->handle->rollback();
         return ( 0, _('Could not create user') );
     }
@@ -291,20 +291,20 @@ sub set_privileged {
     $priv->load_system_internal_group('privileged');
    
     unless ($priv->id) {
-        $RT::Logger->crit("Could not find privileged pseudogroup");
+        Jifty->log->fatal("Could not find privileged pseudogroup");
         return(0,_("Failed to find 'privileged' users pseudogroup."));
     }
 
     my $unpriv = RT::Model::Group->new;
     $unpriv->load_system_internal_group('Unprivileged');
     unless ($unpriv->id) {
-        $RT::Logger->crit("Could not find unprivileged pseudogroup");
+        Jifty->log->fatal("Could not find unprivileged pseudogroup");
         return(0,_("Failed to find 'Unprivileged' users pseudogroup"));
     }
 
     if ($val) {
         if ($priv->has_member($self->principal_object)) {
-            #$RT::Logger->debug("That user is already privileged");
+            #Jifty->log->debug("That user is already privileged");
             return (0,_("That user is already privileged"));
         }
         if ($unpriv->has_member($self->principal_object)) {
@@ -313,7 +313,7 @@ sub set_privileged {
         # if we had layered transactions, life would be good
         # sadly, we have to just go ahead, even if something
         # bogus happened
-            $RT::Logger->crit("User ".$self->id." is neither privileged nor ".
+            Jifty->log->fatal("User ".$self->id." is neither privileged nor ".
                 "unprivileged. something is drastically wrong.");
         }
         my ($status, $msg) = $priv->_add_member( InsideTransaction => 1, principal_id => $self->principal_id);  
@@ -325,7 +325,7 @@ sub set_privileged {
     }
     else {
         if ($unpriv->has_member($self->principal_object)) {
-            #$RT::Logger->debug("That user is already unprivileged");
+            #Jifty->log->debug("That user is already unprivileged");
             return (0,_("That user is already unprivileged"));
         }
         if ($priv->has_member($self->principal_object)) {
@@ -334,7 +334,7 @@ sub set_privileged {
         # if we had layered transactions, life would be good
         # sadly, we have to just go ahead, even if something
         # bogus happened
-            $RT::Logger->crit("User ".$self->id." is neither privileged nor ".
+            Jifty->log->fatal("User ".$self->id." is neither privileged nor ".
                 "unprivileged. something is drastically wrong.");
         }
         my ($status, $msg) = $unpriv->_add_member( InsideTransaction => 1, principal_id => $self->principal_id);  
@@ -390,7 +390,7 @@ sub _bootstrap_create {
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         Jifty->handle->rollback();
-        $RT::Logger->crit("Couldn't create a Principal on new user create. Strange things are afoot at the circle K: $pmsg");
+        Jifty->log->fatal("Couldn't create a Principal on new user create. Strange things are afoot at the circle K: $pmsg");
         return ( 0, 'Could not create user' );
     }
     my ($val,$msg)=    $principal->__set(column => 'object_id', value => $principal_id);
@@ -413,7 +413,7 @@ sub _bootstrap_create {
 
     unless ($stash_id) {
         Jifty->handle->rollback();
-        $RT::Logger->crit("Couldn't stash the user in groupmembers");
+        Jifty->log->fatal("Couldn't stash the user in groupmembers");
         return ( 0, _('Could not create user') );
     }
 
@@ -485,7 +485,7 @@ sub load_by_email {
 
     $address = $self->canonicalize_email($address);
 
-    #$RT::Logger->debug("Trying to load an email address: $address\n");
+    #Jifty->log->debug("Trying to load an email address: $address\n");
     return $self->load_by_cols( "email", $address );
 }
 
@@ -536,11 +536,11 @@ sub load_or_create_by_email {
                 $self->load_by_email( $email );
             }
             if ( $self->id ) {
-                $RT::Logger->error("Recovered from creation failure due to race condition");
+                Jifty->log->error("Recovered from creation failure due to race condition");
                 $message = _("User loaded");
             }
             else {
-                $RT::Logger->crit("Failed to create user ". $email .": " .$message);
+                Jifty->log->fatal("Failed to create user ". $email .": " .$message);
             }
         }
     }
@@ -775,17 +775,17 @@ sub principal_object {
     my $self = shift;
 
     unless ( $self->id ) {
-        $RT::Logger->error("Couldn't get principal for not loaded object");
+        Jifty->log->error("Couldn't get principal for not loaded object");
         return undef;
     }
 
     my $obj = RT::Model::Principal->new;
     $obj->load_by_id( $self->id );
     unless ( $obj->id ) {
-        $RT::Logger->crit( 'No principal for user #'. $self->id );
+        Jifty->log->fatal( 'No principal for user #'. $self->id );
         return undef;
     } elsif ( $obj->principal_type ne 'User' ) {
-        $RT::Logger->crit( 'User #'. $self->id .' has principal of '. $obj->principal_type .' type' );
+        Jifty->log->fatal( 'User #'. $self->id .' has principal of '. $obj->principal_type .' type' );
         return undef;
     }
     return $obj;
@@ -1003,7 +1003,7 @@ sub Preferences {
         }
     }
     elsif (defined $default) {
-        $RT::Logger->error("Preferences $name for user".$self->id." is hash but default is not");
+        Jifty->log->error("Preferences $name for user".$self->id." is hash but default is not");
     }
     return $content;
 }
@@ -1050,7 +1050,7 @@ sub WatchedQueues {
     my $self = shift;
     my @roles = @_ || ('Cc', 'AdminCc');
 
-    $RT::Logger->debug('WatcheQueues got user ' . $self->name);
+    Jifty->log->debug('WatcheQueues got user ' . $self->name);
 
     my $watched_queues = RT::Model::QueueCollection->new;
 
@@ -1098,7 +1098,7 @@ sub WatchedQueues {
                             value => $self->principal_id,
                           );
 
-    $RT::Logger->debug("WatchedQueues got " . $watched_queues->count . " queues");
+    Jifty->log->debug("WatchedQueues got " . $watched_queues->count . " queues");
     
     return $watched_queues;
 
@@ -1132,7 +1132,7 @@ sub _CleanupInvalidDelegations {
           @_ );
 
     unless ( $self->id ) {
-    $RT::Logger->warning("User not loaded.");
+    Jifty->log->warn("User not loaded.");
     return (undef);
     }
 
@@ -1165,7 +1165,7 @@ sub _CleanupInvalidDelegations {
     my $ret = $ace->_delete(InsideTransaction => 1);
     unless ($ret) {
         Jifty->handle->rollback() unless $in_trans;
-        $RT::Logger->warning("Couldn't delete delegated ACL entry ".$ace->id);
+        Jifty->log->warn("Couldn't delete delegated ACL entry ".$ace->id);
         return (undef);
     }
     }
@@ -1339,7 +1339,7 @@ sub setPrivateKey {
     unless ( $key ) {
         my ($status, $msg) = $self->delete_attribute('PrivateKey');
         unless ( $status ) {
-            $RT::Logger->error( "Couldn't delete attribute: $msg" );
+            Jifty->log->error( "Couldn't delete attribute: $msg" );
             return ($status, _("Couldn't unset private key"));
         }
         return ($status, _("Unset private key"));

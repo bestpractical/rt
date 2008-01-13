@@ -246,7 +246,7 @@ add 'In-Reply-To' field to the error that points to this message.
 =item Attach - optional text that attached to the error as 'message/rfc822' part.
 
 =item LogLevel - log level under which we should write explanation message into the
-log, by default we log it as critical.
+log, by default we log it as errorical.
 
 =back
 
@@ -262,14 +262,12 @@ sub MailError {
         Explanation => 'Unexplained error',
         MIMEObj     => undef,
         Attach      => undef,
-        LogLevel    => 'crit',
+        LogLevel    => 'error',
         @_
     );
 
-    $RT::Logger->log(
-        level   => $args{'LogLevel'},
-        message => $args{'Explanation'}
-    ) if $args{'LogLevel'};
+    my $level = $args{'LogLevel'};
+    Jifty->log->$level( $args{'Explanation'}) if Jifty->log->can($level);
     # the colons are necessary to make ->build include non-standard headers
     my $entity = MIME::Entity->build(
         Type                   => "multipart/mixed",
@@ -340,16 +338,15 @@ sub SendEmail {
         Transaction => undef,
         @_,
     );
-    $RT::Logger->warning("In send email for ".join(',',%args));
     foreach my $arg( qw(Entity Bounce) ) {
         next unless defined $args{ lc $arg };
 
-        $RT::Logger->warning("'". lc($arg) ."' argument is deprecated, use '$arg' instead");
+        Jifty->log->warn("'". lc($arg) ."' argument is deprecated, use '$arg' instead");
         $args{ $arg } = delete $args{ lc $arg };
     }
 
     unless ( $args{'Entity'} ) {
-        $RT::Logger->crit( "Could not send mail without 'Entity' object" );
+        Jifty->log->fatal( "Could not send mail without 'Entity' object" );
         return 0;
     }
 
@@ -361,7 +358,7 @@ sub SendEmail {
         || $args{'Entity'}->head->get('Cc')
         || $args{'Entity'}->head->get('Bcc') )
     {
-        $RT::Logger->info( $msgid . " No recipients found. Not sending.\n" );
+        Jifty->log->info( $msgid . " No recipients found. Not sending.\n" );
         return -1;
     }
 
@@ -436,11 +433,11 @@ sub SendEmail {
                 # TODO: status parsing: core dump, exit on signal or EX_*
                 my $msg = "$msgid: `$path $args` exitted with code ". ($?>>8);
                 $msg = ", interrupted by signal ". ($?&127) if $?&127;
-                $RT::Logger->error( $msg );
+                Jifty->log->error( $msg );
             }
         };
         if ( $@ ) {
-            $RT::Logger->crit( "$msgid: Could not send mail with command `$path $args`: " . $@ );
+            Jifty->log->fatal( "$msgid: Could not send mail with command `$path $args`: " . $@ );
             return 0;
         }
     }
@@ -451,7 +448,7 @@ sub SendEmail {
             Debug => RT->Config->Get('SMTPDebug'),
         ) } };
         unless ( $smtp ) {
-            $RT::Logger->crit( "Could not connect to SMTP server.");
+            Jifty->log->fatal( "Could not connect to SMTP server.");
             return 0;
         }
 
@@ -480,7 +477,7 @@ sub SendEmail {
         $smtp->quit;
 
         unless ( $status ) {
-            $RT::Logger->crit( "$msgid: Could not send mail via SMTP." );
+            Jifty->log->fatal( "$msgid: Could not send mail via SMTP." );
             return 0;
         }
     }
@@ -497,7 +494,7 @@ sub SendEmail {
         }
 
         unless ( $args{'Entity'}->send( @mailer_args ) ) {
-            $RT::Logger->crit( "$msgid: Could not send mail." );
+            Jifty->log->fatal( "$msgid: Could not send mail." );
             return 0;
         }
     }
@@ -557,7 +554,7 @@ sub SendEmailUsingTemplate {
  
      my $mail = $template->MIMEObj;
      unless ( $mail ) {
-         $RT::Logger->info("Message is not sent as template #". $template->id ." is empty");
+         Jifty->log->info("Message is not sent as template #". $template->id ." is empty");
          return -1;
      }
   
@@ -648,10 +645,10 @@ sub ForwardTransaction {
     if ( $template ) {
         $mail = $template->MIMEObj;
     } else {
-        $RT::Logger->warning($msg);
+        Jifty->log->warn($msg);
     }
     unless ( $mail ) {
-        $RT::Logger->warning("Couldn't generate email using template 'Forward'");
+        Jifty->log->warn("Couldn't generate email using template 'Forward'");
 
         my $description = 'This is forward of transaction #'
             . $txn->id ." of a ticket #". $txn->object_id;
@@ -720,8 +717,8 @@ sub SignEncrypt {
     my $msgid = $args{'Entity'}->head->get('Message-ID') || '';
     chomp $msgid;
 
-    $RT::Logger->debug("$msgid Signing message") if $args{'Sign'};
-    $RT::Logger->debug("$msgid Encrypting message") if $args{'Encrypt'};
+    Jifty->log->debug("$msgid Signing message") if $args{'Sign'};
+    Jifty->log->debug("$msgid Encrypting message") if $args{'Encrypt'};
 
     require RT::Crypt::GnuPG;
     my %res = RT::Crypt::GnuPG::SignEncrypt( %args );
@@ -736,12 +733,12 @@ sub SignEncrypt {
         # Update, but at least throw an error here
         if (($line->{'Operation'}||'' eq 'PassphraseCheck')
             && $line->{'Status'} =~ /^(?:BAD|MISSING)$/ ) {
-            $RT::Logger->error( "$line->{'Status'} PASSPHRASE: $line->{'Message'}" );
+            Jifty->log->error( "$line->{'Status'} PASSPHRASE: $line->{'Message'}" );
             return 0;
         }
         next unless ($line->{'Operation'}||'') eq 'RecipientsCheck';
         next if $line->{'Status'} eq 'DONE';
-        $RT::Logger->error( $line->{'Message'} );
+        Jifty->log->error( $line->{'Message'} );
         push @bad_recipients, $line;
     }
     return 0 unless @bad_recipients;
@@ -760,7 +757,7 @@ sub SignEncrypt {
             },
         );
         unless ( $status ) {
-            $RT::Logger->error("Couldn't send 'Error: public key'");
+            Jifty->log->error("Couldn't send 'Error: public key'");
         }
     }
 
@@ -774,7 +771,7 @@ sub SignEncrypt {
         },
     );
     unless ( $status ) {
-        $RT::Logger->error("Couldn't send 'Error to RT owner: public key'");
+        Jifty->log->error("Couldn't send 'Error to RT owner: public key'");
     }
 
     delete_recipients_from_head(
@@ -786,7 +783,7 @@ sub SignEncrypt {
           || $args{'Entity'}->head->get('Cc')
           || $args{'Entity'}->head->get('Bcc') )
     {
-        $RT::Logger->debug("$msgid No recipients that have public key, not sending");
+        Jifty->log->debug("$msgid No recipients that have public key, not sending");
         return -1;
     }
 
@@ -830,7 +827,7 @@ sub create_user {
                 Explanation =>
                     "User creation failed in mailgateway: $Message",
                 MIMEObj  => $entity,
-                LogLevel => 'crit',
+                LogLevel => 'error',
             );
         }
     }
@@ -839,7 +836,7 @@ sub create_user {
     my $CurrentUser = RT::CurrentUser->new( email => $Address );
 
     unless ( $CurrentUser->id ) {
-        $RT::Logger->warning(
+        Jifty->log->warn(
             "Couldn't load user '$Address'." . "giving up" );
         MailError(
             To          => $ErrorsTo,
@@ -847,7 +844,7 @@ sub create_user {
             Explanation =>
                 "User  '$Address' could not be loaded in the mail gateway",
             MIMEObj  => $entity,
-            LogLevel => 'crit'
+            LogLevel => 'error'
         );
     }
 
@@ -996,7 +993,7 @@ sub ParseTicketId {
 
     if ( $Subject =~ s/\[$test_name\s+\#(\d+)\s*\]//i ) {
         my $id = $1;
-        $RT::Logger->debug("Found a ticket ID. It's $id");
+        Jifty->log->debug("Found a ticket ID. It's $id");
         return $id;
     } else {
         return undef;
@@ -1068,16 +1065,16 @@ sub _LoadPlugins {
             $Class = "RT::Interface::Email::" . $Class
                 unless $Class =~ /^RT::Interface::Email::/;
             $Class->require or
-                do { $RT::Logger->error("Couldn't load $Class: $@"); next };
+                do { Jifty->log->error("Couldn't load $Class: $@"); next };
 
             no strict 'refs';
             unless ( defined *{ $Class . "::GetCurrentUser" }{CODE} ) {
-                $RT::Logger->crit( "No GetCurrentUser code found in $Class module");
+                Jifty->log->fatal( "No GetCurrentUser code found in $Class module");
                 next;
             }
             push @res, $Class;
         } else {
-            $RT::Logger->crit( "$_ - is not class name or code reference");
+            Jifty->log->fatal( "$_ - is not class name or code reference");
         }
     }
     return @res;
@@ -1522,7 +1519,7 @@ sub _HandleMachineGeneratedMail {
 
     # Warn someone if it's a loop, before we drop it on the ground
     if ($IsALoop) {
-        $RT::Logger->crit("RT Received mail (".$args{MessageId}.") from itself.");
+        Jifty->log->fatal("RT Received mail (".$args{MessageId}.") from itself.");
 
         #Should we mail it to RTOwner?
         if ( RT->Config->Get('LoopsToRTOwner') ) {
