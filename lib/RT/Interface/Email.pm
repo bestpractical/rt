@@ -48,6 +48,8 @@
 package RT::Interface::Email;
 
 use strict;
+use warnings;
+
 use Mail::Address;
 use MIME::Entity;
 use RT::EmailParser;
@@ -189,8 +191,6 @@ sub CheckForBounce {
     return ( $ReturnPath =~ /<>/ );
 }
 
-
-
 =head2 IsRTAddress ADDRESS
 
 Takes a single parameter, an email address.
@@ -249,7 +249,6 @@ add 'In-Reply-To' field to the error that points to this message.
 log, by default we log it as critical.
 
 =back
-
 
 =cut
 
@@ -1134,7 +1133,6 @@ sub Gateway {
     my $Message = $parser->Entity();
     unless ($Message) {
         MailError(
-            To          => RT->Config->Get('OwnerEmail'),
             Subject     => "RT Bounce: Unparseable message",
             Explanation => "RT couldn't process the message below",
             Attach      => $args{'message'}
