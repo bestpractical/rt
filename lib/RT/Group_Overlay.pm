@@ -994,9 +994,9 @@ sub _AddMember {
 
 # {{{ HasMember
 
-=head2 HasMember RT::Principal
+=head2 HasMember RT::Principal|id
 
-Takes an RT::Principal object returns a GroupMember Id if that user is a 
+Takes an L<RT::Principal> object or its id returns a GroupMember Id if that user is a 
 member of this group.
 Returns undef if the user isn't a member of the group or if the current
 user doesn't have permission to find out. Arguably, it should differentiate
@@ -1006,31 +1006,30 @@ between ACL failure and non membership.
 
 sub HasMember {
     my $self    = shift;
-    my $principal = shift || '';
+    my $principal = shift;
 
-
-    unless (UNIVERSAL::isa($principal,'RT::Principal')) {
-        $RT::Logger->crit("Group::HasMember was called with an argument that".
-                          "isn't an RT::Principal. It's $principal");
+    my $id;
+    if ( UNIVERSAL::isa($principal,'RT::Principal') ) {
+        $id = $principal->id;
+    } elsif ( $principal =~ /^\d+$/ ) {
+        $id = $principal;
+    } else {
+        $RT::Logger->error("Group::HasMember was called with an argument that".
+                          " isn't an RT::Principal or id. It's $principal");
         return(undef);
     }
-
-    unless ($principal->Id) {
-        return(undef);
-    }
+    return undef unless $id;
 
     my $member_obj = RT::GroupMember->new( $self->CurrentUser );
-    $member_obj->LoadByCols( MemberId => $principal->id, 
-                             GroupId => $self->PrincipalId );
+    $member_obj->LoadByCols(
+        MemberId => $id, 
+        GroupId  => $self->PrincipalId
+    );
 
-    #If we have a member object
-    if ( defined $member_obj->id ) {
-        return ( $member_obj->id );
+    if ( my $member_id = $member_obj->id ) {
+        return $member_id;
     }
-
-    #If Load returns no objects, we have an undef id. 
     else {
-        #$RT::Logger->debug($self." does not contain principal ".$principal->id);
         return (undef);
     }
 }
@@ -1039,9 +1038,9 @@ sub HasMember {
 
 # {{{ HasMemberRecursively
 
-=head2 HasMemberRecursively RT::Principal
+=head2 HasMemberRecursively RT::Principal|id
 
-Takes an RT::Principal object and returns true if that user is a member of 
+Takes an L<RT::Principal> object or its id and returns true if that user is a member of 
 this group.
 Returns undef if the user isn't a member of the group or if the current
 user doesn't have permission to find out. Arguably, it should differentiate
@@ -1053,23 +1052,27 @@ sub HasMemberRecursively {
     my $self    = shift;
     my $principal = shift;
 
-    unless (UNIVERSAL::isa($principal,'RT::Principal')) {
-        $RT::Logger->crit("Group::HasMemberRecursively was called with an argument that".
-                          "isn't an RT::Principal. It's $principal");
+    my $id;
+    if ( UNIVERSAL::isa($principal,'RT::Principal') ) {
+        $id = $principal->id;
+    } elsif ( $principal =~ /^\d+$/ ) {
+        $id = $principal;
+    } else {
+        $RT::Logger->error("Group::HasMemberRecursively was called with an argument that".
+                          " isn't an RT::Principal or id. It's $principal");
         return(undef);
     }
+    return undef unless $id;
+
     my $member_obj = RT::CachedGroupMember->new( $self->CurrentUser );
-    $member_obj->LoadByCols( MemberId => $principal->Id,
-                             GroupId => $self->PrincipalId ,
-                             Disabled => 0
-                             );
+    $member_obj->LoadByCols(
+        MemberId => $id, 
+        GroupId  => $self->PrincipalId
+    );
 
-    #If we have a member object
-    if ( defined $member_obj->id ) {
-        return ( 1);
+    if ( my $member_id = $member_obj->id ) {
+        return $member_id;
     }
-
-    #If Load returns no objects, we have an undef id. 
     else {
         return (undef);
     }
