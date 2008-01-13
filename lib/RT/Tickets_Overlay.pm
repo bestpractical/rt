@@ -949,14 +949,6 @@ sub _RoleGroupsJoin {
     return $self->{'_sql_role_group_aliases'}{ $args{'Type'} }
         if $self->{'_sql_role_group_aliases'}{ $args{'Type'} } && !$args{'New'};
 
-    # XXX: this has been fixed in DBIx::SB-1.48
-    # XXX: if we change this from Join to NewAlias+Limit
-    # then Pg and mysql 5.x will complain because SB build wrong query.
-    # Query looks like "FROM (Tickets LEFT JOIN CGM ON(Groups.id = CGM.GroupId)), Groups"
-    # Pg doesn't like that fact that it doesn't know about Groups table yet when
-    # join CGM table into Tickets. Problem is in Join method which doesn't use
-    # ALIAS1 argument when build braces.
-
     # we always have watcher groups for ticket, so we use INNER join
     my $groups = $self->Join(
         ALIAS1          => 'main',
