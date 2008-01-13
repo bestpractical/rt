@@ -278,8 +278,8 @@ sub MailError {
         Subject                => $args{'Subject'},
         'Precedence:'             => 'bulk',
         'X-RT-Loop-Prevention:' => RT->Config->Get('rtname'),
-        'In-Reply-To:'          => $args{'MIMEObj'} ? $args{'MIMEObj'}->head->get('Message-Id') : undef
     );
+    SetInReplyTo( Message => $entity, InReplyTo => $args{'MIMEObj'} );
 
     $entity->attach( Data => $args{'Explanation'} . "\n" );
 
@@ -562,23 +562,7 @@ sub SendEmailUsingTemplate {
     $mail->head->set( $_ => $args{ $_ } )
         foreach grep defined $args{$_}, qw(To Cc Bcc From);
 
-    if ( $args{'InReplyTo'} ) {
-        my @id = $args{'InReplyTo'}->head->get('Message-ID');
-        my @in_reply_to = $args{'InReplyTo'}->head->get('In-Reply-To');
-        my @references = $args{'InReplyTo'}->head->get('References');
-
-        $mail->head->set( 'In-Reply-To' => join ' ', @id ) if @id;
-        my @new_references;
-        if ( @references ) {
-            @new_references = (@references, @id);
-        } else {
-            @new_references = (@in_reply_to, @id);
-        }
-        @new_references = splice @new_references, 4, -6
-            if @new_references > 10;
-
-        $mail->head->set( 'References' => join ' ', @new_references );
-    }
+    SetInReplyTo( Message => $mail, InReplyTo => $args{'InReplyTo'} );
 
     return SendEmail( Entity => $mail );
 }
@@ -1000,6 +984,44 @@ sub GenMessageId {
         . $ticket_id ."-". $scrip_id ."-". $sent ."@". $org .">" ;
 }
 
+sub SetInReplyTo {
+    my %args = (
+        Message   => undef,
+        InReplyTo => undef,
+        Ticket    => undef,
+        @_
+    );
+    return unless $args{'Message'} && $args{'InReplyTo'};
+
+    my $get_header = sub {
+        my @res;
+        if ( $args{'InReplyTo'}->isa('MIME::Entity') ) {
+            @res = $args{'InReplyTo'}->head->get( shift );
+        } else {
+            @res = $args{'InReplyTo'}->GetHeader( shift ) || '';
+        }
+        return grep length, map { split /\s+/m, $_ } grep defined, @res;
+    };
+
+    my @id = $get_header->('Message-ID');
+    #XXX: custom header should begin with X- otherwise is violation of the standard
+    my @rtid = $get_header->('RT-Message-ID');
+    my @references = $get_header->('References');
+    unless ( @references ) {
+        @references = $get_header->('In-Reply-To');
+    }
+    push @references, @id, @rtid;
+    if ( $args{'Ticket'} ) {
+        my $pseudo_ref =  '<RT-Ticket-'. $args{'Ticket'}->id .'@'. RT->Config->Get('Organization') .'>';
+        push @references, $pseudo_ref unless grep $_ eq $pseudo_ref, @references;
+    }
+    @references = splice @references, 4, -6
+        if @references > 10;
+
+    my $mail = $args{'Message'};
+    $mail->head->set( 'In-Reply-To' => join ' ', @rtid? (@rtid) : (@id) ) if @id || @rtid;
+    $mail->head->set( 'References' => join ' ', @references );
+}
 
 sub ParseTicketId {
     my $Subject = shift;
