@@ -57,6 +57,22 @@ my $COLUMN_MAP = {
         align     => 'right',
         value     => sub { return $_[0]->id },
     },
+    HasMember => {
+        title     => 'Member',
+        value     => sub {
+            my $group = $_[0];
+            my $uid   = $_[2] || return '';
+            return $group->HasMember( $uid )? $_[0]->loc('yes'): $_[0]->loc('no');
+        },
+    },
+    HasMemberRecursively => {
+        title     => 'Recursive member',
+        value     => sub {
+            my $group = $_[0];
+            my $uid   = $_[2] || return '';
+            return $group->HasMemberRecursively( $uid )? $_[0]->loc('yes'): $_[0]->loc('no');
+        },
+    },
 };
 
 foreach my $col( qw(Name Description) ) {
