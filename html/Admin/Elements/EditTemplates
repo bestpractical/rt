@@ -12,7 +12,6 @@
 <& /Elements/CollectionList,
     OrderBy       => 'id',
     Order         => 'ASC',
-    BaseURL       => 'Templates.html?',
     %ARGS,
     DisplayFormat => '__CheckBox.{DeleteTemplates}__,'. $Format,
     Format        => $Format,

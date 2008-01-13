@@ -157,7 +157,7 @@ $Rows          => undef
 $Page          => 1
 
 $Title         => loc('Ticket Search')
-$BaseURL       => undef
+$BaseURL       => RT->Config->Get('WebPath') . $m->request_comp->path .'?'
 @PassArguments => qw(Query Format Rows Page Order OrderBy)
 
 $AllowSorting   => 0

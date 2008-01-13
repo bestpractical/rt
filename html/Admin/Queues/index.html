@@ -60,7 +60,6 @@
 <& /Elements/CollectionList,
     OrderBy => 'Name',
     Order => 'ASC',
-    BaseURL => RT->Config->Get('WebPath') .'/Admin/Queues/index.html?',
     %ARGS,
     Format => $Format,
     Collection => $queues,
