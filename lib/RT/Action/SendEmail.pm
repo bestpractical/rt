@@ -551,17 +551,13 @@ sub SetRTSpecialHeaders {
           and $2 == $self->TicketObj->id) {
         $self->SetHeader( "Message-ID" => $msgid );
       } else {
-        $self->SetHeader( 'Message-ID',
-            "<rt-"
-            . $RT::VERSION . "-"
-            . $$ . "-"
-            . CORE::time() . "-"
-            . int(rand(2000)) . '.'
-            . $self->TicketObj->id . "-"
-            . $self->ScripObj->id . "-"  # Scrip
-            . $self->ScripActionObj->{_Message_ID} . "@"  # Email sent
-            . RT->Config->Get('Organization')
-            . ">" );
+        $self->SetHeader(
+            'Message-ID' => RT::Interface::Email::GenMessageId(
+                Ticket => $self->TicketObj,
+                Scrip => $self->ScripObj,
+                ScripAction => $self->ScripActionObj
+            ),
+        );
       }
     }
 
