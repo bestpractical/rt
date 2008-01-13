@@ -238,7 +238,7 @@ sub Delete {
 
 =head2 Message
 
-Returns the L<RT::Attachments> Object which contains the "top-level" object
+Returns the L<RT::Attachments> object which contains the "top-level" object
 attachment for this transaction.
 
 =cut
@@ -248,17 +248,16 @@ sub Message {
 
     # XXX: Where is ACL check?
     
-    if ( !defined( $self->{'message'} ) ) {
+    unless ( defined $self->{'message'} ) {
 
-        $self->{'message'} = new RT::Attachments( $self->CurrentUser );
+        $self->{'message'} = RT::Attachments->( $self->CurrentUser );
         $self->{'message'}->Limit(
             FIELD => 'TransactionId',
             VALUE => $self->Id
         );
-
         $self->{'message'}->ChildrenOf(0);
     }
-    return ( $self->{'message'} );
+    return $self->{'message'};
 }
 
 # }}}
@@ -440,7 +439,7 @@ sub Subject {
 
 =head2 Attachments
 
-  Returns all the RT::Attachment objects which are attached
+Returns all the RT::Attachment objects which are attached
 to this transaction. Takes an optional parameter, which is
 a ContentType that Attachments should be restricted to.
 
