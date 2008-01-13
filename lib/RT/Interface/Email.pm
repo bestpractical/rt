@@ -987,18 +987,18 @@ sub DeleteRecipientsFromHead {
 
 sub GenMessageId {
     my %args = (
-        Ticket => undef,
-        Scrip  => undef,
+        Ticket      => undef,
+        Scrip       => undef,
+        ScripAction => undef,
         @_
     );
     my $org = RT->Config->Get('Organization');
-    my $res =
-        "<rt-". $RT::VERSION ."-". $$ ."-". CORE::time() ."-". int(rand(2000)) .'.'
-        . (ref($args{'Ticket'})? $args{'Ticket'}->id : $args{'Ticket'} || 0) . "-" # ticket
-        . (ref($args{'Scrip'})?  $args{'Scrip'}->id  : $args{'Scrip'}  || 0) . "-" # scrip
-        . "0" # Email sent
-        . "@". $org . ">" ;
-    return $res;
+    my $ticket_id = ( ref $args{'Ticket'}? $args{'Ticket'}->id : $args{'Ticket'} ) || 0;
+    my $scrip_id = ( ref $args{'Scrip'}? $args{'Scrip'}->id : $args{'Scrip'} ) || 0;
+    my $sent = ( ref $args{'ScripAction'}? $args{'ScripAction'}->{'_Message_ID'} : 0 ) || 0;
+
+    return "<rt-". $RT::VERSION ."-". $$ ."-". CORE::time() ."-". int(rand(2000)) .'.'
+        . $ticket_id ."-". $scrip_id ."-". $sent ."@". $org .">" ;
 }
 
 
