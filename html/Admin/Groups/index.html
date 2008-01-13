@@ -49,20 +49,35 @@
 <& /Admin/Elements/GroupTabs, current_tab => 'Admin/Groups/',
     current_subtab => 'Admin/Groups/', 
     Title => $title &>
-<%$caption%>:<br /> <ul> 
-%if ($Groups->Count == 0) {
-<li> <em><&|/l&>No groups matching search criteria found.</&></em>
+<% $caption %>:<br />
+
+% unless ( $Groups->Count ) {
+<em><&|/l&>No groups matching search criteria found.</&></em>
+% } else {
+
+<& /Elements/CollectionList,
+    OrderBy => 'Name',
+    Order => 'ASC',
+    Rows  => 100,
+    BaseURL => RT->Config->Get('WebPath') .'/Admin/Groups/index.html?',
+    %ARGS,
+    Format => $Format,
+    Collection => $Groups,
+    AllowSorting => 1,
+    PassArguments => [qw(Format Rows Page Order OrderBy GroupString GroupOp GroupField FindDisabledGroups)],
+&>
+
+% my $ids = join ',', map $_->id, @{ $Groups->ItemsArrayRef };
+% if ( $ids ) {
+<div align="right"><em>
+(<a href="<% RT->Config->Get('WebPath') %>/Download/Tabular/Group/<% $ids %>/Groups.tsv">
+<&|/l&>Download as a tab-delimited file</&>
+</a>)</em></div>
 % }
-%my @ids;
-%while ( my $Group = $Groups->Next) {
-%    push @ids, $Group->Id;
-<li><a href="Modify.html?id=<%$Group->id%>"><%$Group->Name || loc('(empty)')%></a><br />
-%}
-</ul>
-%if (my $ids = join(',', @ids)) {
-<em>(<a href="<%RT->Config->Get('WebPath')%>/Download/Tabular/Group/<% $ids %>/Groups.tsv"><&|/l&>Download as a tab-delimited file</&></a>)</em><br />
-%}
+
 <br /><br />
+% }
+
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
 <input type="checkbox" class="checkbox" name="FindDisabledGroups" value="1" /> <&|/l&>Include disabled groups in listing.</&>
 <br />
@@ -104,8 +119,15 @@ if (length $GroupString) {
 else {
     $caption = loc("User-defined groups");
 }
+
+
+$Format ||= q{'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__id__</a>/TITLE:#'}
+    .q{,'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__Name__</a>/TITLE:Name'};
+
 </%INIT>
 <%ARGS>
+$Format => undef,
+
 $GroupString => '' unless defined $GroupString
 $GroupOp => '='
 $GroupField => 'Name'
