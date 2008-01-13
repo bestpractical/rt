@@ -279,6 +279,10 @@ sub _LoadConfig
                 Extension  => $is_ext,
             );
         };
+        local *Register = sub {
+            my ($type, $cb) = @_;
+            push @{ $RT::InitCallbacks{ $type } ||=[] }, $cb;
+        };
         local @INC = ($RT::LocalEtcPath, $RT::EtcPath, @INC);
         require $args{'File'};
     };
