@@ -81,7 +81,7 @@ sub __DependsOn
         $objs->limit(
             column    => 'Type',
             operator => '=',
-            value    => 'add_link',
+            value    => 'AddLink',
         );
         $objs->limit( column => 'new_value', value => $self->Target );
         while ( my ($k, $v) = each %$map ) {
@@ -98,7 +98,7 @@ sub __DependsOn
         $objs->limit(
             column    => 'Type',
             operator => '=',
-            value    => 'add_link',
+            value    => 'AddLink',
         );
         $objs->limit( column => 'new_value', value => $self->Base );
         while ( my ($k, $v) = each %$map ) {

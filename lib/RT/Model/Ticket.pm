@@ -2444,7 +2444,7 @@ sub _add_link {
 
     unless ( $args{ 'Silent'. $direction } ) {
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
-            Type      => 'add_link',
+            Type      => 'AddLink',
             Field     => $LINKDIRMAP{$args{'Type'}}->{$direction},
             new_value  =>  $remote_uri->URI || $remote_link,
             TimeTaken => 0
@@ -2455,7 +2455,7 @@ sub _add_link {
     if ( !$args{ 'Silent'. ( $direction eq 'Target'? 'Base': 'Target' ) } && $remote_uri->IsLocal ) {
         my $OtherObj = $remote_uri->Object;
         my ( $val, $msg ) = $OtherObj->_new_transaction(
-            Type           => 'add_link',
+            Type           => 'AddLink',
             Field          => $direction eq 'Target' ? $LINKDIRMAP{$args{'Type'}}->{Base}
                                             : $LINKDIRMAP{$args{'Type'}}->{Target},
             new_value       => $self->URI,

@@ -880,7 +880,7 @@ sub BriefDescription {
         my $self = shift;
         return _( "Subject changed to %1", $self->Data );
     },
-    add_link => sub {
+    AddLink => sub {
         my $self = shift;
         my $value;
         if ( $self->new_value ) {

@@ -111,7 +111,7 @@ my %class = (
     Steal      => 'people',
     Give       => 'people',
 
-    add_link    => 'links',
+    AddLink    => 'links',
     delete_link => 'links',
 );
 
