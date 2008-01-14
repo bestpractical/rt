@@ -72,5 +72,5 @@
 
 <%init>
 my $Scrips = RT::Model::ScripCollection->new();
-$Scrips->LimitToGlobal();
+$Scrips->limit_ToGlobal();
 </%INIT>

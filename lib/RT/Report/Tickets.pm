@@ -101,9 +101,9 @@ sub Groupings {
                 $id =~ s/^.'*(.*).'*$/$1/;
                 $queue->load($id);
             }
-            $CustomFields->LimitToQueue($queue->id);
+            $CustomFields->limit_ToQueue($queue->id);
         }
-        $CustomFields->LimitToGlobal;
+        $CustomFields->limit_ToGlobal;
         while ( my $CustomField = $CustomFields->next ) {
             push @fields, "Custom field '". $CustomField->name ."'", "CF.{". $CustomField->id ."}";
         }

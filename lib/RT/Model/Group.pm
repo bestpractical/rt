@@ -354,7 +354,7 @@ sub _create {
         Type        => undef,
         Instance    => '0',
         InsideTransaction => undef,
-        _RecordTransaction => 1,
+        _record_transaction => 1,
         @_
     );
     Jifty->handle->begin_transaction() unless ($args{'InsideTransaction'});
@@ -399,8 +399,8 @@ sub _create {
     $cgm->create(Group =>$self->principal_object, Member => $self->principal_object, ImmediateParent => $self->principal_object);
 
 
-    if ( $args{'_RecordTransaction'} ) {
-	$self->_NewTransaction( Type => "Create" );
+    if ( $args{'_record_transaction'} ) {
+	$self->_new_transaction( Type => "Create" );
     }
 
     Jifty->handle->commit() unless ($args{'InsideTransaction'});
@@ -685,7 +685,7 @@ sub DeepMembersObj {
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-    $members_obj->LimitToMembersOfGroup( $self->id );
+    $members_obj->limit_ToMembersOfGroup( $self->id );
 
     return ( $members_obj );
 
@@ -707,7 +707,7 @@ sub MembersObj {
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-    $members_obj->LimitToMembersOfGroup( $self->id );
+    $members_obj->limit_ToMembersOfGroup( $self->id );
 
     return ( $members_obj );
 
@@ -1141,7 +1141,7 @@ sub _CleanupInvalidDelegations {
 
     # TODO: Can this be unrolled such that the number of DB queries is constant rather than linear in exploded group size?
     my $members = $self->DeepMembersObj();
-    $members->LimitToUsers();
+    $members->limit_ToUsers();
     Jifty->handle->begin_transaction() unless $in_trans;
     while ( my $member = $members->next()) {
 	my $ret = $member->MemberObj->_CleanupInvalidDelegations(InsideTransaction => 1,
@@ -1166,7 +1166,7 @@ sub _set {
         column => undef,
         value => undef,
 	TransactionType   => 'Set',
-	RecordTransaction => 1,
+	record_transaction => 1,
         @_
     );
 
@@ -1196,13 +1196,13 @@ sub _set {
     # a transaction. instead, get out of here.
     if ( $ret == 0 ) { return ( 0, $msg ); }
 
-    if ( $args{'RecordTransaction'} == 1 ) {
+    if ( $args{'record_transaction'} == 1 ) {
 
-        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+        my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
                                                Type => $args{'TransactionType'},
                                                Field     => $args{'Field'},
-                                               NewValue  => $args{'Value'},
-                                               OldValue  => $Old,
+                                               new_value  => $args{'Value'},
+                                               old_value  => $Old,
                                                TimeTaken => $args{'TimeTaken'},
         );
         return ( $Trans, scalar $TransObj->Description );

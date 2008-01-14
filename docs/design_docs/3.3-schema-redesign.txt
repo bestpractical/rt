@@ -46,8 +46,8 @@ TABLE Transactions (
   TimeTaken integer NOT NULL DEFAULT 0  ,
   Type varchar(20) NULL  ,
   Field varchar(40) NULL  ,
-  OldValue varchar(255) NULL  ,
-  NewValue varchar(255) NULL  ,
+  old_value varchar(255) NULL  ,
+  new_value varchar(255) NULL  ,
   ReferenceType varchar(255) NULL,          -- NeW: Currently "RT::OCFV" only
   OldReference integer NULL  ,              -- New: Id of ReferenceType
   NewReference integer NULL  ,              -- New: Id of ReferenceType

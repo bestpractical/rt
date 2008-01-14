@@ -77,8 +77,8 @@ sub _init {
 }
 # }}}
 
-# {{{ sub LimitToType 
-sub LimitToType  {
+# {{{ sub limit_ToType 
+sub limit_ToType  {
   my $self = shift;
   my $type = shift;
   $self->limit (entry_aggregator => 'OR',

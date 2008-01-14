@@ -117,12 +117,12 @@ sub create {
         disabled => 0,
         email => '',
         email_confirmed => 1,
-        _RecordTransaction => 1,
+        _record_transaction => 1,
         @_    # get the real argumentlist
     );
 
     # remove the value so it does not cripple SUPER::Create
-    my $record_transaction = delete $args{'_RecordTransaction'};
+    my $record_transaction = delete $args{'_record_transaction'};
 
     #Check the ACL
     Carp::confess unless($self->current_user);
@@ -255,7 +255,7 @@ sub create {
 
 
     if ( $record_transaction ) {
-    $self->_NewTransaction( Type => "Create" );
+    $self->_new_transaction( Type => "Create" );
     }
 
     Jifty->handle->commit;
@@ -267,9 +267,9 @@ sub create {
 
 
 
-# {{{ Setprivileged
+# {{{ set_privileged
 
-=head2 Setprivileged BOOL
+=head2 set_privileged BOOL
 
 If passed a true value, makes this user a member of the "privileged"  PseudoGroup.
 Otherwise, makes this user a member of the "Unprivileged" pseudogroup. 
@@ -872,7 +872,7 @@ user is a member.
 sub OwnGroups {
     my $self = shift;
     my $groups = RT::Model::GroupCollection->new;
-    $groups->LimitToUserDefinedGroups;
+    $groups->limit_ToUserDefinedGroups;
     $groups->WithMember(principal_id => $self->id, 
             Recursively => 1);
     return $groups;
@@ -1069,7 +1069,7 @@ sub WatchedQueues {
                           );
     if (grep { $_ eq 'Cc' } @roles) {
         $watched_queues->limit(
-                                subclause => 'LimitToWatchers',
+                                subclause => 'limit_ToWatchers',
                                 alias => $group_alias,
                                 column => 'Type',
                                 value => 'Cc',
@@ -1078,7 +1078,7 @@ sub WatchedQueues {
     }
     if (grep { $_ eq 'AdminCc' } @roles) {
         $watched_queues->limit(
-                                subclause => 'LimitToWatchers',
+                                subclause => 'limit_ToWatchers',
                                 alias => $group_alias,
                                 column => 'Type',
                                 value => 'AdminCc',
@@ -1143,7 +1143,7 @@ sub _CleanupInvalidDelegations {
 
     # Look up all delegation rights currently posessed by this user.
     my $deleg_acl = RT::Model::ACECollection->new(current_user => RT->system_user);
-    $deleg_acl->LimitToPrincipal(Type => 'User',
+    $deleg_acl->limit_ToPrincipal(Type => 'User',
                  Id => $self->principal_id,
                  IncludeGroupMembership => 1);
     $deleg_acl->limit( column => 'right_name',
@@ -1157,7 +1157,7 @@ sub _CleanupInvalidDelegations {
     my $acl_to_del = RT::Model::ACECollection->new(current_user => RT->system_user);
     $acl_to_del->DelegatedBy(Id => $self->id);
     foreach (@allowed_deleg_objects) {
-    $acl_to_del->LimitNotObject($_);
+    $acl_to_del->limit_NotObject($_);
     }
 
     # Delete all disallowed delegations
@@ -1185,7 +1185,7 @@ sub _set {
         column => undef,
         value => undef,
     TransactionType   => 'Set',
-    RecordTransaction => 1,
+    record_transaction => 1,
         @_
     );
 
@@ -1208,13 +1208,13 @@ sub _set {
     # a transaction. instead, get out of here.
     if ( $ret == 0 ) { return ( 0, $msg ); }
 
-    if ( $args{'RecordTransaction'} == 1 ) {
+    if ( $args{'record_transaction'} == 1 ) {
 
-        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+        my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
                                                Type => $args{'TransactionType'},
                                                Field     => $args{'column'},
-                                               NewValue  => $args{'value'},
-                                               OldValue  => $Old,
+                                               new_value  => $args{'value'},
+                                               old_value  => $Old,
                                                TimeTaken => $args{'TimeTaken'},
         );
         return ( $Trans, scalar $TransObj->BriefDescription );

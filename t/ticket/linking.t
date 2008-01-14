@@ -47,8 +47,8 @@ my $commit_code = <<END;
 	\Jifty->log->debug("Data is \$data");
 	
 	open \$file, ">$filename" or die "couldn't open $filename";
-	if (\$self->TransactionObj->Type eq 'AddLink') {
-	    \Jifty->log->debug("AddLink");
+	if (\$self->TransactionObj->Type eq 'add_link') {
+	    \Jifty->log->debug("add_link");
 	    print \$file \$data+1, "\n";
 	}
 	elsif (\$self->TransactionObj->Type eq 'DeleteLink') {
@@ -141,7 +141,7 @@ diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
     my $child = RT::Model::Ticket->new( current_user => $creator);
     ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id );
     ok($id,$msg);
-    ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
+    ($id, $msg) = $child->add_link(Type => 'MemberOf', Target => $parent->id);
     ok(!$id, $msg);
     is(link_count($filename), undef, "scrips ok");
     $child->current_user( RT->system_user );
@@ -159,7 +159,7 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     my $child = RT::Model::Ticket->new( current_user => $creator );
     ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id );
     ok($id,$msg);
-    ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
+    ($id, $msg) = $child->add_link(Type => 'MemberOf', Target => $parent->id);
     ok($id, $msg);
     is(link_count($filename), 1, "scrips ok");
     $child->current_user( RT->system_user );
@@ -169,7 +169,7 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
 
     # turn off feature and try to delete link, we should fail
     RT->Config->set( StrictLinkACL => 1 );
-    ($id, $msg) = $child->AddLink(Type => 'MemberOf', Target => $parent->id);
+    ($id, $msg) = $child->add_link(Type => 'MemberOf', Target => $parent->id);
     ok(!$id, $msg);
     is(link_count($filename), 1, "scrips ok");
     $child->current_user( RT->system_user );
@@ -196,7 +196,7 @@ ok ($id,$msg);
 
 diag('try link to itself') if $ENV{'TEST_VERBOSE'};
 {
-    my ($id, $msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket->id);
+    my ($id, $msg) = $ticket->add_link(Type => 'RefersTo', Target => $ticket->id);
     ok(!$id, $msg);
     is(link_count($filename), 0, "scrips ok");
 }
@@ -204,7 +204,7 @@ diag('try link to itself') if $ENV{'TEST_VERBOSE'};
 my $ticket2 = RT::Model::Ticket->new(current_user => RT->system_user);
 ($id, $tid, $msg) = $ticket2->create(Subject => 'Link test 2', Queue => $q2->id);
 ok ($id, $msg);
-($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
+($id,$msg) =$ticket->add_link(Type => 'RefersTo', Target => $ticket2->id);
 ok(!$id,$msg);
 is(link_count($filename), 0, "scrips ok");
 
@@ -212,20 +212,20 @@ is(link_count($filename), 0, "scrips ok");
 ok ($id,$msg);
 ($id,$msg) = $u1->principal_object->GrantRight ( Object => $q2, Right => 'ModifyTicket');
 ok ($id,$msg);
-($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
+($id,$msg) = $ticket->add_link(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
-($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => -1);
+($id,$msg) = $ticket->add_link(Type => 'RefersTo', Target => -1);
 ok(!$id,$msg);
-($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
+($id,$msg) = $ticket->add_link(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 
 my $transactions = $ticket2->Transactions;
-$transactions->limit( column => 'Type', value => 'AddLink' );
+$transactions->limit( column => 'Type', value => 'add_link' );
 is( $transactions->count, 1, "Transaction found in other ticket" );
 is( $transactions->first->Field , 'ReferredToBy');
-is( $transactions->first->NewValue , $ticket->URI );
+is( $transactions->first->new_value , $ticket->URI );
 
 ($id,$msg) = $ticket->delete_link(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
@@ -234,11 +234,11 @@ $transactions = $ticket2->Transactions;
 $transactions->limit( column => 'Type', value => 'DeleteLink' );
 is( $transactions->count, 1, "Transaction found in other ticket" );
 is( $transactions->first->Field , 'ReferredToBy');
-is( $transactions->first->OldValue , $ticket->URI );
+is( $transactions->first->old_value , $ticket->URI );
 
 RT->Config->set( LinkTransactionsRun1Scrip => 0 );
 
-($id,$msg) =$ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id);
+($id,$msg) =$ticket->add_link(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
 is(link_count($filename), 2, "scrips ok");
 ($id,$msg) =$ticket->delete_link(Type => 'RefersTo', Target => $ticket2->id);
@@ -246,16 +246,16 @@ ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 
 # tests for silent behaviour
-($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id, Silent => 1);
+($id,$msg) = $ticket->add_link(Type => 'RefersTo', Target => $ticket2->id, Silent => 1);
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 {
     my $transactions = $ticket->Transactions;
-    $transactions->limit( column => 'Type', value => 'AddLink' );
+    $transactions->limit( column => 'Type', value => 'add_link' );
     is( $transactions->count, 2, "Still two txns on the base" );
 
     $transactions = $ticket2->Transactions;
-    $transactions->limit( column => 'Type', value => 'AddLink' );
+    $transactions->limit( column => 'Type', value => 'add_link' );
     is( $transactions->count, 2, "Still two txns on the target" );
 
 }
@@ -263,16 +263,16 @@ is(link_count($filename), 0, "scrips ok");
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 
-($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id, SilentBase => 1);
+($id,$msg) = $ticket->add_link(Type => 'RefersTo', Target => $ticket2->id, SilentBase => 1);
 ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 {
     my $transactions = $ticket->Transactions;
-    $transactions->limit( column => 'Type', value => 'AddLink' );
+    $transactions->limit( column => 'Type', value => 'add_link' );
     is( $transactions->count, 2, "still five txn on the base" );
 
     $transactions = $ticket2->Transactions;
-    $transactions->limit( column => 'Type', value => 'AddLink' );
+    $transactions->limit( column => 'Type', value => 'add_link' );
     is( $transactions->count, 3, "+1 txn on the target" );
 
 }
@@ -280,16 +280,16 @@ is(link_count($filename), 1, "scrips ok");
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 
-($id,$msg) = $ticket->AddLink(Type => 'RefersTo', Target => $ticket2->id, SilentTarget => 1);
+($id,$msg) = $ticket->add_link(Type => 'RefersTo', Target => $ticket2->id, SilentTarget => 1);
 ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 {
     my $transactions = $ticket->Transactions;
-    $transactions->limit( column => 'Type', value => 'AddLink' );
+    $transactions->limit( column => 'Type', value => 'add_link' );
     is( $transactions->count, 3, "+1 txn on the base" );
 
     $transactions = $ticket2->Transactions;
-    $transactions->limit( column => 'Type', value => 'AddLink' );
+    $transactions->limit( column => 'Type', value => 'add_link' );
     is( $transactions->count, 3, "three txns on the target" );
 }
 ($id,$msg) =$ticket->delete_link(Type => 'RefersTo', Target => $ticket2->id, SilentTarget => 1);

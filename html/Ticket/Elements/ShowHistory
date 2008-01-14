@@ -131,7 +131,7 @@ $m->flush_buffer();
 my $Transactions = RT::Model::TransactionCollection->new();
 if ($Tickets) {
     while (my $t = $Tickets->next) {
-        $Transactions->LimitToTicket($t->id);
+        $Transactions->limit_ToTicket($t->id);
     }
 } else {
     $Transactions = $Ticket->Transactions;

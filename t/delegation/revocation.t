@@ -112,7 +112,7 @@ sub clear_acls_and_groups {
     # Revoke all rights granted to our cast
     my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
     foreach (@principals) {
-	$acl->LimitToPrincipal(Type => $$_->principal_object->principal_type,
+	$acl->limit_ToPrincipal(Type => $$_->principal_object->principal_type,
 			       Id => $$_->principal_object->id);
     }
     while (my $ace = $acl->next()) {
@@ -122,7 +122,7 @@ sub clear_acls_and_groups {
     # Remove all group memberships
     my $members = RT::Model::GroupMemberCollection->new(current_user => RT->system_user);
     foreach (@groups) {
-	$members->LimitToMembersOfGroup( $$_->principal_id );
+	$members->limit_ToMembersOfGroup( $$_->principal_id );
     }
     while (my $member = $members->next()) {
 	$member->delete();

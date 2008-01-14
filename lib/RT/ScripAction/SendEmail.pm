@@ -333,7 +333,7 @@ sub AddAttachments {
         value => $self->TransactionObj->id
     );
     # Don't attach anything blank
-    $attachments->LimitNotEmpty;
+    $attachments->limit_NotEmpty;
     $attachments->order_by( column => 'id');
 
     # We want to make sure that we don't include the attachment that's
@@ -435,8 +435,8 @@ sub AddTicket {
     my $txn_alias = $attachs->TransactionAlias;
     $attachs->limit( alias => $txn_alias, column => 'Type', value => 'Create' );
     $attachs->limit( alias => $txn_alias, column => 'Type', value => 'Correspond' );
-    $attachs->LimitByTicket( $tid );
-    $attachs->LimitNotEmpty;
+    $attachs->limit_ByTicket( $tid );
+    $attachs->limit_NotEmpty;
     $attachs->order_by( column => 'Created' );
 
     my $ticket_mime = MIME::Entity->build(

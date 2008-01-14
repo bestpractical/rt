@@ -104,14 +104,14 @@ my %class = (
     comment    => 'message',
 
     AddWatcher => 'people',
-    DelWatcher => 'people',
+    del_watcher => 'people',
     Take       => 'people',
     Untake     => 'people',
     Force      => 'people',
     Steal      => 'people',
     Give       => 'people',
 
-    AddLink    => 'links',
+    add_link    => 'links',
     delete_link => 'links',
 );
 

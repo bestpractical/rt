@@ -76,7 +76,7 @@
 </form>
 <%INIT>
 my $Groups = RT::Model::GroupCollection->new();
-$Groups->LimitToUserDefinedGroups();
+$Groups->limit_ToUserDefinedGroups();
 my $title = _('Select a group');
 my $caption;
 
@@ -87,7 +87,7 @@ if ($FinddisabledGroups) {
 if (length $GroupString) {
     $caption = _("Groups matching search criteria");
     if ($GroupField =~ /^CustomField-(\d+)/) {
-	$Groups->LimitCustomField(
+	$Groups->limit_CustomField(
 	    customfield => $1,
 	    operator => $GroupOp,
 	    value => $GroupString,

@@ -73,9 +73,9 @@ my @fields = qw(
 
     Ownername Requestors Cc AdminCc CreatedBy LastUpdatedBy
 
-    Priority InitialPriority FinalPriority
+    Priority initial_priority final_priority
 
-    time_worked time_left TimeEstimated
+    time_worked time_left time_estimated
 
     starts      startsRelative
     Started     StartedRelative
@@ -109,9 +109,9 @@ foreach my $id (keys %cfqueues) {
         $queue->load($id);
     }
     $queue->load($id);
-    $CustomFields->LimitToQueue($queue->id);
+    $CustomFields->limit_ToQueue($queue->id);
 }
-$CustomFields->LimitToGlobal;
+$CustomFields->limit_ToGlobal;
 
 while ( my $CustomField = $CustomFields->next ) {
     push @fields, "CustomField.{" . $CustomField->name . "}";

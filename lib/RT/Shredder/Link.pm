@@ -70,7 +70,7 @@ sub __DependsOn
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-# AddLink transactions
+# add_link transactions
     my $map = RT::Model::Ticket->LINKTYPEMAP;
     my $link_meta = $map->{ $self->Type };
     unless ( $link_meta && $link_meta->{'Mode'} && $link_meta->{'Type'} ) {
@@ -81,9 +81,9 @@ sub __DependsOn
         $objs->limit(
             column    => 'Type',
             operator => '=',
-            value    => 'AddLink',
+            value    => 'add_link',
         );
-        $objs->limit( column => 'NewValue', value => $self->Target );
+        $objs->limit( column => 'new_value', value => $self->Target );
         while ( my ($k, $v) = each %$map ) {
             next unless $v->{'Type'} eq $link_meta->{'Type'};
             next unless $v->{'Mode'} eq $link_meta->{'Mode'};
@@ -98,9 +98,9 @@ sub __DependsOn
         $objs->limit(
             column    => 'Type',
             operator => '=',
-            value    => 'AddLink',
+            value    => 'add_link',
         );
-        $objs->limit( column => 'NewValue', value => $self->Base );
+        $objs->limit( column => 'new_value', value => $self->Base );
         while ( my ($k, $v) = each %$map ) {
             next unless $v->{'Type'} eq $link_meta->{'Type'};
             next unless $v->{'Mode'} eq $reverse{ $link_meta->{'Mode'} };

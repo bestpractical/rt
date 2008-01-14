@@ -62,7 +62,7 @@ msgstr "%1 %2 %3 %4:%5:%6 %7"
 
 #: lib/RT/Record.pm:1685 lib/RT/Transaction_Overlay.pm:647 lib/RT/Transaction_Overlay.pm:690
 #. ($cf->name, $new_value->Content)
-#. ($field, $self->NewValue)
+#. ($field, $self->new_value)
 #. ($self->Field, $principal->Object->name)
 msgid "%1 %2 added"
 msgstr ""
@@ -74,13 +74,13 @@ msgstr ""
 
 #: lib/RT/Record.pm:1692 lib/RT/Transaction_Overlay.pm:654
 #. ($cf->name, $old_content,                $new_value->Content)
-#. ($field, $self->OldValue, $self->NewValue)
+#. ($field, $self->old_value, $self->new_value)
 msgid "%1 %2 changed to %3"
 msgstr "%3に変更された%1 %2 "
 
 #: lib/RT/Record.pm:1689 lib/RT/Transaction_Overlay.pm:650 lib/RT/Transaction_Overlay.pm:696
 #. ($cf->name, $old_value->Content)
-#. ($field, $self->OldValue)
+#. ($field, $self->old_value)
 #. ($self->Field, $principal->Object->name)
 msgid "%1 %2 deleted"
 msgstr ""
@@ -191,7 +191,7 @@ msgstr "%1 (%2)"
 #: lib/RT/Transaction_Overlay.pm:788 lib/RT/Transaction_Overlay.pm:797 lib/RT/Transaction_Overlay.pm:800
 #. ($self->Field , $q1->name , $q2->name)
 #. ($self->Field, $t2->AsString, $t1->AsString)
-#. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : _("(no value)")) , "'". $self->NewValue."'")
+#. ($self->Field, ($self->old_value? "'".$self->old_value ."'" : _("(no value)")) , "'". $self->new_value."'")
 msgid "%1 changed from %2 to %3"
 msgstr "%1は%2から%3に変更されました"
 
@@ -2005,8 +2005,8 @@ msgid "Error in parameters to Queue->AddWatcher"
 msgstr "パラメーターのエラーQueue->AddWatcher"
 
 #: NOT FOUND IN SOURCE
-msgid "Error in parameters to Queue->DelWatcher"
-msgstr "パラメーターのエラーQueue->DelWatcher"
+msgid "Error in parameters to Queue->del_watcher"
+msgstr "パラメーターのエラーQueue->del_watcher"
 
 #: lib/RT/Queue_Overlay.pm:833
 msgid "Error in parameters to Queue->deleteWatcher"
@@ -2017,8 +2017,8 @@ msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "パラメーターのエラーTicket->AddWatcher"
 
 #: NOT FOUND IN SOURCE
-msgid "Error in parameters to Ticket->DelWatcher"
-msgstr "パラメーターのエラーTicket->DelWatcher"
+msgid "Error in parameters to Ticket->del_watcher"
+msgstr "パラメーターのエラーTicket->del_watcher"
 
 #: lib/RT/Ticket_Overlay.pm:1538
 msgid "Error in parameters to Ticket->deleteWatcher"
@@ -2119,7 +2119,7 @@ msgid "Final Priority"
 msgstr "最終優先順位"
 
 #: lib/RT/Ticket_Overlay.pm:1164
-msgid "FinalPriority"
+msgid "final_priority"
 msgstr ""
 
 #: html/Admin/Groups/index.html:72 html/Admin/Queues/People.html:82 html/Ticket/Elements/EditPeople:55
@@ -2412,7 +2412,7 @@ msgid "Initial Priority"
 msgstr "最初の優先権"
 
 #: lib/RT/Ticket_Overlay.pm:1163 lib/RT/Ticket_Overlay.pm:1165
-msgid "InitialPriority"
+msgid "initial_priority"
 msgstr ""
 
 #: lib/RT/ScripAction_Overlay.pm:133
@@ -2561,11 +2561,11 @@ msgid "Let this user be granted rights"
 msgstr "このユーザーの権利を認めます"
 
 #: NOT FOUND IN SOURCE
-msgid "Limiting owner to %1 %2"
+msgid "limit_ing owner to %1 %2"
 msgstr "担当者を%1 %2に制限します"
 
 #: NOT FOUND IN SOURCE
-msgid "Limiting queue to %1 %2"
+msgid "limit_ing queue to %1 %2"
 msgstr "キューを%1 %2に制限します"
 
 #: html/Search/Elements/EditFormat:68

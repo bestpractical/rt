@@ -196,13 +196,13 @@ function ComboBox_ListDisableBlur(e) {
 function ComboBox_ListItemSelect(e) {
     if( this.options.length > 0 ) {
         var text = this.Container.Text;
-        var oldValue = text.value;
-        var newValue = this.options[ this.selectedIndex ].text;
-        text.value = newValue;
+        var old_value = text.value;
+        var new_value = this.options[ this.selectedIndex ].text;
+        text.value = new_value;
         if ( typeof( text.createTextRange ) != "undefined" ) {
-            if (newValue != oldValue) {
+            if (new_value != old_value) {
                 var rNew = text.createTextRange();
-                rNew.moveStart('character', oldValue.length) ;
+                rNew.moveStart('character', old_value.length) ;
                 rNew.select();
             }
         }

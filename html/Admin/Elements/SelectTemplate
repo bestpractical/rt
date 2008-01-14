@@ -68,12 +68,12 @@
 
 my $PrimaryTemplates = RT::Model::TemplateCollection->new();
 if ($Queue != 0) {
-$PrimaryTemplates->LimitToQueue($Queue);
+$PrimaryTemplates->limit_ToQueue($Queue);
 $PrimaryTemplates->order_by(column => 'name');
 }
 
 my $OtherTemplates = RT::Model::TemplateCollection->new();
-$OtherTemplates->LimitToGlobal($DefaultQueue);
+$OtherTemplates->limit_ToGlobal($DefaultQueue);
 $OtherTemplates->order_by(column => 'name');
 
 </%INIT>

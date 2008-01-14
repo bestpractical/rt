@@ -183,12 +183,12 @@
 		title_class=> 'inverse',  
 		color => "#993333" &>
 <table border="0">
-<tr><td align="right"><&|/l&>Priority</&>:</td><td><input size="3" name="InitialPriority" value="<% $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority %>" /></td></tr>
-<tr><td align="right"><&|/l&>Final Priority</&>:</td><td><input size="3" name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>" /></td></tr>
+<tr><td align="right"><&|/l&>Priority</&>:</td><td><input size="3" name="initial_priority" value="<% $ARGS{initial_priority} ? $ARGS{initial_priority} : $QueueObj->initial_priority %>" /></td></tr>
+<tr><td align="right"><&|/l&>Final Priority</&>:</td><td><input size="3" name="final_priority" value="<% $ARGS{final_priority} ? $ARGS{final_priority} : $QueueObj->final_priority %>" /></td></tr>
 <tr><td align="right"><&|/l&>Time Estimated</&>:</td>
 <td>
-<input size="3" name="TimeEstimated" value="<%$ARGS{TimeEstimated} || ''%>" />
-<& /Elements/SelectTimeUnits, name =>'TimeEstimated' &>
+<input size="3" name="time_estimated" value="<%$ARGS{time_estimated} || ''%>" />
+<& /Elements/SelectTimeUnits, name =>'time_estimated' &>
 
 </td></tr>
 <tr><td align="right"><&|/l&>Time Worked</&>:</td>
@@ -252,11 +252,11 @@ if ( $cloneTicket ) {
         Requestors       => join( ',', $cloneTicketObj->RequestorAddresses ),
         Cc               => join( ',', $cloneTicketObj->CcAddresses),
         AdminCc          => join( ',', $cloneTicketObj->AdminCcAddresses),
-        InitialPriority => $cloneTicketObj->Priority, 
+        initial_priority => $cloneTicketObj->Priority, 
     };
     
     $clone->{$_} = $cloneTicketObj->$_() 
-        for qw/Owner Subject FinalPriority TimeEstimated TimeWorked 
+        for qw/Owner Subject final_priority time_estimated TimeWorked 
                 Status TimeLeft Starts Started Due Resolved/;
     
         my $members = $cloneTicketObj->Members;

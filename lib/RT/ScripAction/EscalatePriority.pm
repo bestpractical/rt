@@ -58,7 +58,7 @@ C<rt-crontool -h> for more details)
 
 EsclatePriority uses the following formula to change a ticket's priority:
 
-    Priority = Priority +  (( FinalPriority - Priority ) / ( DueDate-Today))
+    Priority = Priority +  (( final_priority - Priority ) / ( DueDate-Today))
 
 Unless the duedate is past, in which case priority gets bumped straight
 to final priority.
@@ -93,7 +93,7 @@ sub Describe  {
 sub prepare  {
     my $self = shift;
     
-    if ($self->TicketObj->Priority() == $self->TicketObj->FinalPriority()) {
+    if ($self->TicketObj->Priority() == $self->TicketObj->final_priority()) {
 	# no update necessary.
 	return 0;
     }
@@ -105,11 +105,11 @@ sub prepare  {
     # If we don't have a due date, adjust the priority by one
     # until we hit the final priority
     if ($due->Unix() < 1) {
-	if ( $self->TicketObj->Priority > $self->TicketObj->FinalPriority ){
+	if ( $self->TicketObj->Priority > $self->TicketObj->final_priority ){
 	    $self->{'prio'} = ($self->TicketObj->Priority - 1);
 	    return 1;
 	}
-	elsif ( $self->TicketObj->Priority < $self->TicketObj->FinalPriority ){
+	elsif ( $self->TicketObj->Priority < $self->TicketObj->final_priority ){
 	    $self->{'prio'} = ($self->TicketObj->Priority + 1);
 	    return 1;
 	}
@@ -132,7 +132,7 @@ sub prepare  {
 	    # final priority
 	    
 	    my $prio_delta = 
-	      $self->TicketObj->FinalPriority() - $self->TicketObj->Priority;
+	      $self->TicketObj->final_priority() - $self->TicketObj->Priority;
 	    
 	    my $inc_priority_by = int( $prio_delta / $diff_in_days );
 	    
@@ -142,7 +142,7 @@ sub prepare  {
 	}
 	#if $days is less than 1, set priority to final_priority
 	else {	
-	    $self->{'prio'} = $self->TicketObj->FinalPriority();
+	    $self->{'prio'} = $self->TicketObj->final_priority();
 	}
 
     }

@@ -79,10 +79,10 @@ sub Describe  {
 sub prepare  {
   my $self = shift;
 
-  $self->TicketsObj->LimitQueue(value => $self->Argument);
+  $self->TicketsObj->limit_Queue(value => $self->Argument);
 
   foreach my $status (RT::Model::Queue->ActiveStatusArray()) {
-        $self->TicketsObj->LimitStatus(value => $status);
+        $self->TicketsObj->limit_Status(value => $status);
   }
 
   return(1);

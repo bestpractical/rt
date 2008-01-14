@@ -146,7 +146,7 @@ ok( TicketB->Rules->HasEntry($ApprovalRule) )
 [Unassociated]
   - Rule FOO: OnAnything {
         CreateTicketIfNotBlocked StageFOO
-        AddLink DependedOnBy TOP to Stage1
+        add_link DependedOnBy TOP to Stage1
         AssignRule DoStage2 to Stage1
         AssignRule DoStage3 to Stage1
     }

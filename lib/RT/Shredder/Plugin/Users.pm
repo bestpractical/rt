@@ -148,7 +148,7 @@ sub Run
                 value    => '0',
             );
         } else {
-            $objs->LimitToEnabled;
+            $objs->limit_ToEnabled;
         }
     }
     if( $self->{'opt'}{'email'} ) {

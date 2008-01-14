@@ -86,7 +86,7 @@ sub _init   {
 }
 # }}}
 
-=head2 LimitToTicket TICKETID 
+=head2 limit_ToTicket TICKETID 
 
 Find only transactions for the ticket whose id is TICKETID.
 
@@ -98,7 +98,7 @@ Repeated calls to this method will intelligently limit down to that set of ticke
 =cut
 
 
-sub LimitToTicket {
+sub limit_ToTicket {
     my $self = shift;
     my $tid  = shift;
 

@@ -52,7 +52,7 @@
 <& /Elements/ShowUser, User => $user, Ticket => $Ticket &><br />
 % }
 % my $Groups = $Group->GroupMembersObj( Recursively => $Recursively );
-% $Groups->LimitToUserDefinedGroups;
+% $Groups->limit_ToUserDefinedGroups;
 % while (my $group = $Groups->next) {
 <&|/l&>Group</&>: <% $group->name %><br />
 % }

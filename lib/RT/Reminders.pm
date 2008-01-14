@@ -125,9 +125,9 @@ sub Add {
                        Queue => $self->TicketObj->Queue,
                    
                    );
-    $self->TicketObj->_NewTransaction(Type => 'AddReminder',
+    $self->TicketObj->_new_transaction(Type => 'AddReminder',
                                     column => 'RT::Model::Ticket',
-                                   NewValue => $reminder->id);
+                                   new_value => $reminder->id);
 
 
 }
@@ -138,9 +138,9 @@ sub Open {
     my $reminder = shift; 
 
     $reminder->set_Status('open');
-    $self->TicketObj->_NewTransaction(Type => 'OpenReminder',
+    $self->TicketObj->_new_transaction(Type => 'OpenReminder',
                                     column => 'RT::Model::Ticket',
-                                   NewValue => $reminder->id);
+                                   new_value => $reminder->id);
 }
 
 
@@ -148,9 +148,9 @@ sub Resolve {
     my $self = shift;
     my $reminder = shift;
     $reminder->set_Status('resolved');
-    $self->TicketObj->_NewTransaction(Type => 'ResolveReminder',
+    $self->TicketObj->_new_transaction(Type => 'ResolveReminder',
                                     column => 'RT::Model::Ticket',
-                                   NewValue => $reminder->id);
+                                   new_value => $reminder->id);
 }
 
     eval "require RT::Reminders_Vendor";

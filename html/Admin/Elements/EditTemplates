@@ -36,10 +36,10 @@ $QueueObj->load( $id ) if $id;
 
 my $Templates = RT::Model::TemplateCollection->new();
 if ( $QueueObj->id ) {
-    $Templates->LimitToQueue( $id );
+    $Templates->limit_ToQueue( $id );
 }
 else {
-    $Templates->LimitToGlobal;
+    $Templates->limit_ToGlobal;
 }
 
 # Now let callbacks add their extra limits

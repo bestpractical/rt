@@ -108,9 +108,9 @@ foreach my $arg ( keys %ARGS ) {
 }
 
 my $Tickets = RT::Model::TicketCollection->new();
-$Tickets->LimitOwner(value => Jifty->web->current_user->id);
-$Tickets->LimitStatus( value => 'open' );
-$Tickets->LimitStatus ( value => 'new');
+$Tickets->limit_Owner(value => Jifty->web->current_user->id);
+$Tickets->limit_Status( value => 'open' );
+$Tickets->limit_Status ( value => 'new');
 $Tickets->order_by ( column => 'Priority', order => 'DESC');
 
 

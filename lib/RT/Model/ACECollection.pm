@@ -112,16 +112,16 @@ sub limit_to_object {
 
 # }}}
 
-# {{{ LimitNotObject
+# {{{ limit_NotObject
 
-=head2 LimitNotObject $object
+=head2 limit_NotObject $object
 
 Limit the ACL to rights NOT on the object $object.  $object needs to be
 an RT::Record class.
 
 =cut
 
-sub LimitNotObject {
+sub limit_NotObject {
     my $self = shift;
     my $obj  = shift;
     unless ( defined($obj)
@@ -148,9 +148,9 @@ sub LimitNotObject {
 
 # }}}
 
-# {{{ LimitToPrincipal 
+# {{{ limit_ToPrincipal 
 
-=head2 LimitToPrincipal { Type => undef, Id => undef, IncludeGroupMembership => undef }
+=head2 limit_ToPrincipal { Type => undef, Id => undef, IncludeGroupMembership => undef }
 
 Limit the ACL to the principal with principal_id Id and principal_type Type
 
@@ -162,7 +162,7 @@ if IncludeGroupMembership => 1 is specified, ACEs which apply to the principal d
 
 =cut
 
-sub LimitToPrincipal {
+sub limit_ToPrincipal {
     my $self = shift;
     my %args = ( Type                               => undef,
                  Id                                 => undef,

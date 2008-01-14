@@ -134,7 +134,7 @@ sub create {
 
     # find things which have the current group as a member. 
     # $group is an RT::Model::Principal for the group.
-    $cgm->LimitToGroupsWithMember( $args{'Group'}->id );
+    $cgm->limit_ToGroupsWithMember( $args{'Group'}->id );
 
     while ( my $parent_member = $cgm->next ) {
         my $parent_id = $parent_member->MemberId;

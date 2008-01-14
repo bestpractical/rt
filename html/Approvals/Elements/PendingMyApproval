@@ -74,11 +74,11 @@
 
 <%init>
 my $tickets = RT::Model::TicketCollection->new();
-$tickets->LimitOwner( value => Jifty->web->current_user->id );
+$tickets->limit_Owner( value => Jifty->web->current_user->id );
 
 # also consider AdminCcs as potential approvers.
 my $group_tickets = RT::Model::TicketCollection->new();
-$group_tickets->LimitWatcher( value => Jifty->web->current_user->user_object->email, type => 'AdminCc' );
+$group_tickets->limit_Watcher( value => Jifty->web->current_user->user_object->email, type => 'AdminCc' );
 
 my $Created_before = RT::Date->new();
 my $Created_after = RT::Date->new();
@@ -87,24 +87,24 @@ foreach ($tickets, $group_tickets) {
     $_->limit( column      => 'Type', value => 'approval' );
 
     if ( $ARGS{'ShowResolved'} ) {
-	$_->LimitStatus( value => 'resolved' );
+	$_->limit_Status( value => 'resolved' );
     }
     if ( $ARGS{'ShowRejected'} ) {
-	$_->LimitStatus( value => 'rejected' );
+	$_->limit_Status( value => 'rejected' );
     }
     if ( $ARGS{'ShowPending'} || ( !$ARGS{'ShowRejected'} && !$ARGS{'Resolved'} ) ) {
-	$_->LimitStatus( value => 'open' );
-	$_->LimitStatus( value => 'new' );
-	$_->LimitStatus( value => 'stalled' );
+	$_->limit_Status( value => 'open' );
+	$_->limit_Status( value => 'new' );
+	$_->limit_Status( value => 'stalled' );
     }
 
     if ( $ARGS{'CreatedBefore'} ) {
 	$Created_before->set( Format => 'unknown', value => $ARGS{'CreatedBefore'} );
-	$_->LimitCreated( operator => "<=", value => $Created_before->ISO );
+	$_->limit_Created( operator => "<=", value => $Created_before->ISO );
     }
     if ( $ARGS{'CreatedAfter'} ) {
 	$Created_after->set( Format => 'unknown', value => $ARGS{'CreatedAfter'} );
-	$_->LimitCreated( operator => ">=", value => $Created_after->ISO );
+	$_->limit_Created( operator => ">=", value => $Created_after->ISO );
     }
 }
 

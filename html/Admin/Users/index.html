@@ -99,7 +99,7 @@ $users->{'find_disabled_rows'} = 1 if $FinddisabledUsers;
 if ( defined($UserString) && length $UserString ) {
     $caption = _("Users matching search criteria");
     if ( $UserField =~ /^CustomField-(\d+)/ ) {
-        $users->LimitCustomField(
+        $users->limit_CustomField(
             customfield => $1,
             operator => $UserOp,
             value => $UserString,
@@ -115,7 +115,7 @@ if ( defined($UserString) && length $UserString ) {
 }
 else {
     $caption = _("privileged users");
-    $users->LimitToprivileged;
+    $users->limit_Toprivileged;
 }
 
 $Format ||= q{'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__id__</a>/TITLE:#'}

@@ -84,16 +84,16 @@ sub _init {
 }
 # }}}
 
-# {{{ LimitToNotInQueue
+# {{{ limit_ToNotInQueue
 
-=head2 LimitToNotInQueue
+=head2 limit_ToNotInQueue
 
 Takes a queue id # and limits the returned set of templates to those which 
 aren't that queue's templates.
 
 =cut
 
-sub LimitToNotInQueue {
+sub limit_ToNotInQueue {
     my $self = shift;
     my $queue_id = shift;
     $self->limit(column => 'Queue',
@@ -103,16 +103,16 @@ sub LimitToNotInQueue {
 }
 # }}}
 
-# {{{ LimitToGlobal
+# {{{ limit_ToGlobal
 
-=head2 LimitToGlobal
+=head2 limit_ToGlobal
 
 Takes no arguments. Limits the returned set to "Global" templates
 which can be used with any queue.
 
 =cut
 
-sub LimitToGlobal {
+sub limit_ToGlobal {
     my $self = shift;
     my $queue_id = shift;
     $self->limit(column => 'Queue',
@@ -122,16 +122,16 @@ sub LimitToGlobal {
 }
 # }}}
 
-# {{{ LimitToQueue
+# {{{ limit_ToQueue
 
-=head2 LimitToQueue
+=head2 limit_ToQueue
 
 Takes a queue id # and limits the returned set of templates to that queue's
 templates
 
 =cut
 
-sub LimitToQueue {
+sub limit_ToQueue {
     my $self = shift;
     my $queue_id = shift;
     $self->limit(column => 'Queue',

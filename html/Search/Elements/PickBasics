@@ -162,7 +162,7 @@ my @lines = (
             Type    => 'select',
             Options => [
                 time_worked => _('Time Worked'),
-                TimeEstimated => _('Time Estimated'),
+                time_estimated => _('Time Estimated'),
                 time_left => _('Time Left'),
             ],
         },
@@ -184,8 +184,8 @@ my @lines = (
             Type    => 'select',
             Options => [
                 Priority => _('Priority'),
-                InitialPriority => _('Initial Priority'),
-                FinalPriority => _('Final Priority'),
+                initial_priority => _('Initial Priority'),
+                final_priority => _('Final Priority'),
             ],
         },
         Op => {

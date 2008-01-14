@@ -97,7 +97,7 @@ sub _do_search {
     
     #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
     unless($self->{'find_disabled_rows'}) {
-	$self->LimitToEnabled();
+	$self->limit_ToEnabled();
     }
     
     return($self->SUPER::_do_search(@_));

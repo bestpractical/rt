@@ -63,7 +63,7 @@ msgstr "%1 %7. %2 %3 %4:%5:%6"
 
 #: lib/RT/Record.pm:1685 lib/RT/Transaction_Overlay.pm:647 lib/RT/Transaction_Overlay.pm:690
 #. ($cf->name, $new_value->Content)
-#. ($field, $self->NewValue)
+#. ($field, $self->new_value)
 #. ($self->Field, $principal->Object->name)
 msgid "%1 %2 added"
 msgstr "[%1] mezõbe '%2' érték felvétele"
@@ -75,13 +75,13 @@ msgstr "%1 %2"
 
 #: lib/RT/Record.pm:1692 lib/RT/Transaction_Overlay.pm:654
 #. ($cf->name, $old_content,                $new_value->Content)
-#. ($field, $self->OldValue, $self->NewValue)
+#. ($field, $self->old_value, $self->new_value)
 msgid "%1 %2 changed to %3"
 msgstr "%1 változtatása: '%2' --> '%3'"
 
 #: lib/RT/Record.pm:1689 lib/RT/Transaction_Overlay.pm:650 lib/RT/Transaction_Overlay.pm:696
 #. ($cf->name, $old_value->Content)
-#. ($field, $self->OldValue)
+#. ($field, $self->old_value)
 #. ($self->Field, $principal->Object->name)
 msgid "%1 %2 deleted"
 msgstr "%1 %2 törölve"
@@ -177,7 +177,7 @@ msgstr "%1  (%2)"
 #: lib/RT/Transaction_Overlay.pm:788 lib/RT/Transaction_Overlay.pm:797 lib/RT/Transaction_Overlay.pm:800
 #. ($self->Field , $q1->name , $q2->name)
 #. ($self->Field, $t2->AsString, $t1->AsString)
-#. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : _("(no value)")) , "'". $self->NewValue."'")
+#. ($self->Field, ($self->old_value? "'".$self->old_value ."'" : _("(no value)")) , "'". $self->new_value."'")
 msgid "%1 changed from %2 to %3"
 msgstr "%1 változtatása: '%2' --> '%3'"
 
@@ -1707,7 +1707,7 @@ msgstr "Hiba a sor paraméterezésében ->AddWatcher"
 
 #: lib/RT/Queue_Overlay.pm:833
 msgid "Error in parameters to Queue->deleteWatcher"
-msgstr "Hiba a sor paraméterezésében->DelWatcher"
+msgstr "Hiba a sor paraméterezésében->del_watcher"
 
 #: lib/RT/Ticket_Overlay.pm:1372
 msgid "Error in parameters to Ticket->AddWatcher"
@@ -1715,7 +1715,7 @@ msgstr "Hiba a probléma paraméterezésében -> AddWatcher"
 
 #: lib/RT/Ticket_Overlay.pm:1538
 msgid "Error in parameters to Ticket->deleteWatcher"
-msgstr "Hiba a probléma paraméterezésében->DelWatcher"
+msgstr "Hiba a probléma paraméterezésében->del_watcher"
 
 #: bin/rt-crontool:285
 msgid "Escalate tickets"
@@ -1800,7 +1800,7 @@ msgid "Final Priority"
 msgstr "Végsõ prioritás"
 
 #: lib/RT/Ticket_Overlay.pm:1164
-msgid "FinalPriority"
+msgid "final_priority"
 msgstr ""
 
 #: html/Admin/Groups/index.html:72 html/Admin/Queues/People.html:82 html/Ticket/Elements/EditPeople:55
@@ -2050,7 +2050,7 @@ msgid "Initial Priority"
 msgstr "Kezdõ prioritás"
 
 #: lib/RT/Ticket_Overlay.pm:1163 lib/RT/Ticket_Overlay.pm:1165
-msgid "InitialPriority"
+msgid "initial_priority"
 msgstr ""
 
 #: lib/RT/ScripAction_Overlay.pm:133

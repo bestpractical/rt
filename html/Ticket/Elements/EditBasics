@@ -73,9 +73,9 @@
   <tr>
       <td class="label"><&|/l&>Time Estimated</&>:</td>
       <td class="value">
-        <input name="TimeEstimated" 
-            value="<% $TicketObj->TimeEstimated || '' |h%>" size="5" />
-        <& /Elements/SelectTimeUnits, name =>'TimeEstimated' &>
+        <input name="time_estimated" 
+            value="<% $TicketObj->time_estimated || '' |h%>" size="5" />
+        <& /Elements/SelectTimeUnits, name =>'time_estimated' &>
       </td>
     </tr>
   <tr>
@@ -101,8 +101,8 @@
 
   <tr>
       <td class="label"><&|/l&>Final Priority</&>:</td>
-      <td class="value"><input name="FinalPriority" 
-            value="<%$TicketObj->FinalPriority || '' |h%>" size="5" /></td>
+      <td class="value"><input name="final_priority" 
+            value="<%$TicketObj->final_priority || '' |h%>" size="5" /></td>
     </tr>
 
 

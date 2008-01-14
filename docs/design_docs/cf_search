@@ -7,7 +7,7 @@ find all tickets where:
                 doesn't have values (bing or bong) 
 
 
-LimitCustomFieldValues {
+limit_CustomFieldValues {
         my %args = ( CustomField => undef, 
                      ClauseId => 'CustomFields',
                      operator => undef,

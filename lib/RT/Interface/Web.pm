@@ -321,10 +321,10 @@ sub CreateTicket {
         Requestor       => $ARGS{'Requestors'},
         Cc              => $ARGS{'Cc'},
         AdminCc         => $ARGS{'AdminCc'},
-        InitialPriority => $ARGS{'InitialPriority'},
-        FinalPriority   => $ARGS{'FinalPriority'},
+        initial_priority => $ARGS{'initial_priority'},
+        final_priority   => $ARGS{'final_priority'},
         time_left        => $ARGS{'time_left'},
-        TimeEstimated   => $ARGS{'TimeEstimated'},
+        time_estimated   => $ARGS{'time_estimated'},
         time_worked      => $ARGS{'time_worked'},
         Subject         => $ARGS{'Subject'},
         Status          => $ARGS{'Status'},
@@ -783,7 +783,7 @@ sub ProcessSearchQuery {
     # }}}
     # {{{ Limit priority
     if ( $args{ARGS}->{'ValueOfPriority'} ne '' ) {
-        $session{'tickets'}->LimitPriority(
+        $session{'tickets'}->limit_Priority(
             value    => $args{ARGS}->{'ValueOfPriority'},
             operator => $args{ARGS}->{'PriorityOp'}
         );
@@ -792,7 +792,7 @@ sub ProcessSearchQuery {
     # }}}
     # {{{ Limit owner
     if ( $args{ARGS}->{'ValueOfOwner'} ne '' ) {
-        $session{'tickets'}->LimitOwner(
+        $session{'tickets'}->limit_Owner(
             value    => $args{ARGS}->{'ValueOfOwner'},
             operator => $args{ARGS}->{'OwnerOp'}
         );
@@ -801,7 +801,7 @@ sub ProcessSearchQuery {
     # }}}
     # {{{ Limit requestor email
      if ( $args{ARGS}->{'ValueOfWatcherRole'} ne '' ) {
-         $session{'tickets'}->LimitWatcher(
+         $session{'tickets'}->limit_Watcher(
              type => $args{ARGS}->{'WatcherRole'},
              value    => $args{ARGS}->{'ValueOfWatcherRole'},
              operator => $args{ARGS}->{'WatcherRoleOp'},
@@ -812,7 +812,7 @@ sub ProcessSearchQuery {
     # }}}
     # {{{ Limit Queue
     if ( $args{ARGS}->{'ValueOfQueue'} ne '' ) {
-        $session{'tickets'}->LimitQueue(
+        $session{'tickets'}->limit_Queue(
             value    => $args{ARGS}->{'ValueOfQueue'},
             operator => $args{ARGS}->{'QueueOp'}
         );
@@ -823,14 +823,14 @@ sub ProcessSearchQuery {
     if ( $args{ARGS}->{'ValueOfStatus'} ne '' ) {
         if ( ref( $args{ARGS}->{'ValueOfStatus'} ) ) {
             foreach my $value ( @{ $args{ARGS}->{'ValueOfStatus'} } ) {
-                $session{'tickets'}->LimitStatus(
+                $session{'tickets'}->limit_Status(
                     value    => $value,
                     operator => $args{ARGS}->{'StatusOp'},
                 );
             }
         }
         else {
-            $session{'tickets'}->LimitStatus(
+            $session{'tickets'}->limit_Status(
                 value    => $args{ARGS}->{'ValueOfStatus'},
                 operator => $args{ARGS}->{'StatusOp'},
             );
@@ -845,7 +845,7 @@ sub ProcessSearchQuery {
         if ($args{ARGS}->{'SubjectOp'} =~ /like/) {
             $val = "%".$val."%";
         }
-        $session{'tickets'}->LimitSubject(
+        $session{'tickets'}->limit_Subject(
             value    => $val,
             operator => $args{ARGS}->{'SubjectOp'},
         );
@@ -858,13 +858,13 @@ sub ProcessSearchQuery {
         $args{ARGS}->{'DateType'} =~ s/_Date$//;
 
         if ( $args{ARGS}->{'DateType'} eq 'Updated' ) {
-            $session{'tickets'}->LimitTransactionDate(
+            $session{'tickets'}->limit_TransactionDate(
                 value    => $date,
                 operator => $args{ARGS}->{'DateOp'},
             );
         }
         else {
-            $session{'tickets'}->LimitDate(
+            $session{'tickets'}->limit_Date(
                 column => $args{ARGS}->{'DateType'},
                 value => $date,
                 operator => $args{ARGS}->{'DateOp'},
@@ -911,7 +911,7 @@ sub ProcessSearchQuery {
                 $oper = 'IS'     if $oper eq '=';
                 $oper = 'IS NOT' if $oper eq '!=';
             }
-            $session{'tickets'}->LimitCustomField(
+            $session{'tickets'}->limit_CustomField(
                 customfield => $id,
                 operator    => $oper,
                 quote_value  => $quote,
@@ -1110,9 +1110,9 @@ sub ProcessTicketBasics {
     # {{{ Set basic fields 
     my @attribs = qw(
       Subject
-      FinalPriority
+      final_priority
       Priority
-      TimeEstimated
+      time_estimated
       time_worked
       time_left
       Type
@@ -1577,7 +1577,7 @@ sub ProcessRecordLinks {
         if ( $ARGSRef->{ $Record->id . "-$linktype" } ) {
             for my $luri ( split ( / /, $ARGSRef->{ $Record->id . "-$linktype" } ) ) {
                 $luri =~ s/\s*$//;    # Strip trailing whitespace
-                my ( $val, $msg ) = $Record->AddLink( Target => $luri,
+                my ( $val, $msg ) = $Record->add_link( Target => $luri,
                                                       Type   => $linktype );
                 push @results, $msg;
             }
@@ -1585,7 +1585,7 @@ sub ProcessRecordLinks {
         if ( $ARGSRef->{ "$linktype-" . $Record->id } ) {
 
             for my $luri ( split ( / /, $ARGSRef->{ "$linktype-" . $Record->id } ) ) {
-                my ( $val, $msg ) = $Record->AddLink( Base => $luri,
+                my ( $val, $msg ) = $Record->add_link( Base => $luri,
                                                       Type => $linktype );
 
                 push @results, $msg;

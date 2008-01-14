@@ -28,8 +28,8 @@ use Jifty::DBI::Record schema {
     column TimeTaken  => max_length is 11, type is 'int(11)',     default is '0';
     column Type       => max_length is 20, type is 'varchar(20)', default is '';
     column Field     => max_length is 40, type is 'varchar(40)', default is '';
-    column OldValue => max_length is 255, type is 'varchar(255)', default is '';
-    column NewValue => max_length is 255, type is 'varchar(255)', default is '';
+    column old_value => max_length is 255, type is 'varchar(255)', default is '';
+    column new_value => max_length is 255, type is 'varchar(255)', default is '';
     column ReferenceType => max_length is 255, type is 'varchar(255)', default is '';
     column OldReference => max_length is 11, type is 'int(11)', default is '';
     column NewReference => max_length is 11, type is 'int(11)', default is '';
@@ -133,37 +133,37 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 OldValue
+=head2 old_value
 
-Returns the current value of OldValue. 
-(In the database, OldValue is stored as varchar(255).)
-
-
-
-=head2 SetOldValue value
+Returns the current value of old_value. 
+(In the database, old_value is stored as varchar(255).)
 
 
-Set OldValue to value. 
+
+=head2 Setold_value value
+
+
+Set old_value to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, OldValue will be stored as a varchar(255).)
+(In the database, old_value will be stored as a varchar(255).)
 
 
 =cut
 
 
-=head2 NewValue
+=head2 new_value
 
-Returns the current value of NewValue. 
-(In the database, NewValue is stored as varchar(255).)
-
-
-
-=head2 SetNewValue value
+Returns the current value of new_value. 
+(In the database, new_value is stored as varchar(255).)
 
 
-Set NewValue to value. 
+
+=head2 Setnew_value value
+
+
+Set new_value to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, NewValue will be stored as a varchar(255).)
+(In the database, new_value will be stored as a varchar(255).)
 
 
 =cut
@@ -297,8 +297,8 @@ sub create {
         Type           => 'undefined',
         Data           => '',
         Field          => undef,
-        OldValue       => undef,
-        NewValue       => undef,
+        old_value       => undef,
+        new_value       => undef,
         MIMEObj        => undef,
         ActivateScrips => 1,
         commit_scrips => 1,
@@ -325,8 +325,8 @@ sub create {
         Type      => $args{'Type'},
         Data      => $args{'Data'},
         Field     => $args{'Field'},
-        OldValue  => $args{'OldValue'},
-        NewValue  => $args{'NewValue'},
+        old_value  => $args{'old_value'},
+        new_value  => $args{'new_value'},
         Created   => $args{'Created'},
 	object_type => $args{'object_type'},
 	object_id => $args{'object_id'},
@@ -592,7 +592,7 @@ sub ContentObj {
     elsif ( $Attachment->ContentType =~ '^multipart/' ) {
         my $plain_parts = $Attachment->Children;
         $plain_parts->ContentType( value => ($PreferredContentType || 'text/plain') );
-        $plain_parts->LimitNotEmpty;
+        $plain_parts->limit_NotEmpty;
 
         # If we actully found a part, return its content
         if ( my $first = $plain_parts->first ) {
@@ -753,15 +753,15 @@ sub BriefDescription {
     }
     elsif ( $type =~ /Status/ ) {
         if ( $self->Field eq 'Status' ) {
-            if ( $self->NewValue eq 'deleted' ) {
+            if ( $self->new_value eq 'deleted' ) {
                 return ( _( "%1 deleted", $obj_type ) );
             }
             else {
                 return (
                     _(
                         "Status changed from %1 to %2",
-                        "'" . _( $self->OldValue ) . "'",
-                        "'" . _( $self->NewValue ) . "'"
+                        "'" . _( $self->old_value ) . "'",
+                        "'" . _( $self->new_value ) . "'"
                     )
                 );
 
@@ -774,8 +774,8 @@ sub BriefDescription {
             _(
                 "%1 changed from %2 to %3",
                 $self->Field,
-                ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),
-                "'" . $self->NewValue . "'"
+                ( $self->old_value ? "'" . $self->old_value . "'" : $no_value ),
+                "'" . $self->new_value . "'"
             )
         );
     }
@@ -789,11 +789,11 @@ sub BriefDescription {
         $type,
         $self->Field,
         (
-            $self->OldValue
-            ? "'" . $self->OldValue . "'"
+            $self->old_value
+            ? "'" . $self->old_value . "'"
             : _("(no value)")
         ),
-        "'" . $self->NewValue . "'"
+        "'" . $self->new_value . "'"
     );
 }
 
@@ -824,15 +824,15 @@ sub BriefDescription {
             $field = $cf->name();
         }
 
-        if ( ! defined $self->OldValue || $self->OldValue eq '' ) {
-            return ( _("%1 %2 added", $field, $self->NewValue) );
+        if ( ! defined $self->old_value || $self->old_value eq '' ) {
+            return ( _("%1 %2 added", $field, $self->new_value) );
         }
-        elsif ( !defined $self->NewValue || $self->NewValue eq '' ) {
-            return ( _("%1 %2 deleted", $field, $self->OldValue) );
+        elsif ( !defined $self->new_value || $self->new_value eq '' ) {
+            return ( _("%1 %2 deleted", $field, $self->old_value) );
 
         }
         else {
-            return _("%1 %2 changed to %3", $field, $self->OldValue, $self->NewValue );
+            return _("%1 %2 changed to %3", $field, $self->old_value, $self->new_value );
         }
     },
     Untake => sub {
@@ -846,51 +846,51 @@ sub BriefDescription {
     Force => sub {
         my $self = shift;
         my $Old = RT::Model::User->new;
-        $Old->load( $self->OldValue );
+        $Old->load( $self->old_value );
         my $New = RT::Model::User->new;
-        $New->load( $self->NewValue );
+        $New->load( $self->new_value );
 
         return _("Owner forcibly changed from %1 to %2" , $Old->name , $New->name);
     },
     Steal => sub {
         my $self = shift;
         my $Old = RT::Model::User->new;
-        $Old->load( $self->OldValue );
+        $Old->load( $self->old_value );
         return _("Stolen from %1",  $Old->name);
     },
     Give => sub {
         my $self = shift;
         my $New = RT::Model::User->new;
-        $New->load( $self->NewValue );
+        $New->load( $self->new_value );
         return _( "Given to %1",  $New->name );
     },
     AddWatcher => sub {
         my $self = shift;
         my $principal = RT::Model::Principal->new;
-        $principal->load($self->NewValue);
+        $principal->load($self->new_value);
         return _( "%1 %2 added", $self->Field, $principal->Object->name);
     },
-    DelWatcher => sub {
+    del_watcher => sub {
         my $self = shift;
         my $principal = RT::Model::Principal->new;
-        $principal->load($self->OldValue);
+        $principal->load($self->old_value);
         return _( "%1 %2 deleted", $self->Field, $principal->Object->name);
     },
     Subject => sub {
         my $self = shift;
         return _( "Subject changed to %1", $self->Data );
     },
-    AddLink => sub {
+    add_link => sub {
         my $self = shift;
         my $value;
-        if ( $self->NewValue ) {
+        if ( $self->new_value ) {
             my $URI = RT::URI->new;
-            $URI->FromURI( $self->NewValue );
+            $URI->FromURI( $self->new_value );
             if ( $URI->Resolver ) {
                 $value = $URI->Resolver->AsString;
             }
             else {
-                $value = $self->NewValue;
+                $value = $self->new_value;
             }
             if ( $self->Field eq 'DependsOn' ) {
                 return _( "Dependency on %1 added", $value );
@@ -922,14 +922,14 @@ sub BriefDescription {
     delete_link => sub {
         my $self = shift;
         my $value;
-        if ( $self->OldValue ) {
+        if ( $self->old_value ) {
             my $URI = RT::URI->new;
-            $URI->FromURI( $self->OldValue );
+            $URI->FromURI( $self->old_value );
             if ( $URI->Resolver ) {
                 $value = $URI->Resolver->AsString;
             }
             else {
-                $value = $self->OldValue;
+                $value = $self->old_value;
             }
 
             if ( $self->Field eq 'DependsOn' ) {
@@ -963,22 +963,22 @@ sub BriefDescription {
         }
         elsif ( $self->Field eq 'Queue' ) {
             my $q1 = RT::Model::Queue->new();
-            $q1->load( $self->OldValue );
+            $q1->load( $self->old_value );
             my $q2 = RT::Model::Queue->new();
-            $q2->load( $self->NewValue );
+            $q2->load( $self->new_value );
             return _("%1 changed from %2 to %3", $self->Field , $q1->name , $q2->name);
         }
 
         # Write the date/time change at local time:
         elsif ($self->Field =~  /Due|starts|Started|Told/) {
             my $t1 = RT::Date->new();
-            $t1->set(Format => 'ISO', value => $self->NewValue);
+            $t1->set(Format => 'ISO', value => $self->new_value);
             my $t2 = RT::Date->new();
-            $t2->set(Format => 'ISO', value => $self->OldValue);
+            $t2->set(Format => 'ISO', value => $self->old_value);
             return _( "%1 changed from %2 to %3", $self->Field, $t2->AsString, $t1->AsString );
         }
         else {
-            return _( "%1 changed from %2 to %3", $self->Field, ($self->OldValue? "'".$self->OldValue ."'" : _("(no value)")) , "'". $self->NewValue."'" );
+            return _( "%1 changed from %2 to %3", $self->Field, ($self->old_value? "'".$self->old_value ."'" : _("(no value)")) , "'". $self->new_value."'" );
         }
     },
     PurgeTransaction => sub {
@@ -988,20 +988,20 @@ sub BriefDescription {
     AddReminder => sub {
         my $self = shift;
         my $ticket = RT::Model::Ticket->new;
-        $ticket->load($self->NewValue);
+        $ticket->load($self->new_value);
         return _("Reminder '%1' added", $ticket->Subject);
     },
     OpenReminder => sub {
         my $self = shift;
         my $ticket = RT::Model::Ticket->new;
-        $ticket->load($self->NewValue);
+        $ticket->load($self->new_value);
         return _("Reminder '%1' reopened", $ticket->Subject);
     
     },
     ResolveReminder => sub {
         my $self = shift;
         my $ticket = RT::Model::Ticket->new;
-        $ticket->load($self->NewValue);
+        $ticket->load($self->new_value);
         return _("Reminder '%1' completed", $ticket->Subject);
     
     
@@ -1145,7 +1145,7 @@ sub TicketObj {
     return $self->Object;
 }
 
-sub OldValue {
+sub old_value {
     my $self = shift;
     if ( my $type = $self->__value('ReferenceType')
          and my $id = $self->__value('OldReference') )
@@ -1155,11 +1155,11 @@ sub OldValue {
         return $Object->Content;
     }
     else {
-        return $self->__value('OldValue');
+        return $self->__value('old_value');
     }
 }
 
-sub NewValue {
+sub new_value {
     my $self = shift;
     if ( my $type = $self->__value('ReferenceType')
          and my $id = $self->__value('NewReference') )
@@ -1169,7 +1169,7 @@ sub NewValue {
         return $Object->Content;
     }
     else {
-        return $self->__value('NewValue');
+        return $self->__value('new_value');
     }
 }
 
@@ -1232,7 +1232,7 @@ sub UpdateCustomFields {
             $self->_AddCustomFieldValue(
                 Field             => $cfid,
                 Value             => $value,
-                RecordTransaction => 0,
+                record_transaction => 0,
             );
         }
     }
@@ -1259,8 +1259,8 @@ sub CustomFieldValues {
         unless ( defined $field && $field =~ /^\d+$/o ) {
             my $CFs = RT::Model::CustomFieldCollection->new;
             $CFs->limit( column => 'name', value => $field );
-            $CFs->LimitToLookupType($self->CustomFieldLookupType);
-            $CFs->LimitToGlobalOrobject_id($self->Object->QueueObj->id);
+            $CFs->limit_ToLookupType($self->CustomFieldLookupType);
+            $CFs->limit_ToGlobalOrobject_id($self->Object->QueueObj->id);
             $field = $CFs->first->id if $CFs->first;
         }
     }

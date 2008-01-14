@@ -112,12 +112,12 @@ sub limit {
     my %args = (@_);
     push @{ $self->{'__external_cf_limits'} ||= [] }, {
         %args,
-        CALLBACK => $self->__BuildLimitCheck( %args ),
+        CALLBACK => $self->__Buildlimit_Check( %args ),
     };
     return $self->SUPER::limit( %args );
 }
 
-sub __BuildLimitCheck {
+sub __Buildlimit_Check {
     my ($self, %args) = (@_);
     return undef unless $args{'column'} =~ /^(?:name|Description)$/;
 

@@ -69,7 +69,7 @@ else {
 my @rows;
 my %known_cfs;
 
-my @attrs = qw( id QueueObj->name Subject Status TimeEstimated time_worked time_left Priority FinalPriority OwnerObj->name 
+my @attrs = qw( id QueueObj->name Subject Status time_estimated time_worked time_left Priority final_priority OwnerObj->name 
                 Requestors->member_emailsAsString Cc->member_emailsAsString AdminCc->member_emailsAsString
                 DueObj->ISO ToldObj->ISO CreatedObj->ISO ResolvedObj->ISO LastUpdatedObj->ISO);
 

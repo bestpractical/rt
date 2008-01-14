@@ -20,7 +20,7 @@ ok ($id, "Created group #". $g->id) or diag("error: $msg");
 
 my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
 $groups->limit( column => 'id', operator => '!=', value => $g->id );
-$groups->LimitToUserDefinedGroups();
+$groups->limit_ToUserDefinedGroups();
 my $bug = grep $_->id == $g->id, @{$groups->items_array_ref};
 ok (!$bug, "didn't find group");
 
@@ -42,7 +42,7 @@ ok ($aid, $amsg);
 ok($g->has_member($u->principal_object),"G has member u");
 
 my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
-$groups->LimitToUserDefinedGroups();
+$groups->limit_ToUserDefinedGroups();
 $groups->WithMember(principal_id => $u->id);
 is ($groups->count , 1,"found the 1 group - " . $groups->count);
 is ($groups->first->id , $g->id, "it's the right one");

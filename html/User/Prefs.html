@@ -228,7 +228,7 @@ if ($user_object->id) {
 
 
 # {{{ Deal with special fields: privileged, Enabled, and password
-if  ( ($Setprivileged) and ( $privileged != $user_object->privileged) ) {
+if  ( ($set_privileged) and ( $privileged != $user_object->privileged) ) {
 my  ($code, $msg) = $user_object->set_privileged($privileged);
      push @results, _('privileged status: %1', _($msg));
 }
@@ -262,7 +262,7 @@ $organization  => undef
 $real_name  => undef
 $nickname  => undef
 $privileged => undef
-$Setprivileged => undef
+$set_privileged => undef
 $Enabled => undef
 $SetEnabled => undef
 $lang  => undef

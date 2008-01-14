@@ -944,7 +944,7 @@ sub unresolved_dependencies {
 
     my @live_statuses = RT::Model::Queue->ActiveStatusArray();
     foreach my $status (@live_statuses) {
-        $deps->LimitStatus(value => $status);
+        $deps->limit_Status(value => $status);
     }
     $deps->limit_depended_on_by($self->id);
 
@@ -1060,9 +1060,9 @@ sub _Links {
 
 # }}}
 
-# {{{ sub _AddLink
+# {{{ sub _add_link
 
-=head2 _AddLink
+=head2 _add_link
 
 Takes a paramhash of Type and one of Base or Target. Adds that link to this object.
 
@@ -1072,7 +1072,7 @@ Returns C<link id>, C<message> and C<exist> flag.
 =cut
 
 
-sub _AddLink {
+sub _add_link {
     my $self = shift;
     my %args = ( Target => '',
                  Base   => '',
@@ -1208,21 +1208,21 @@ sub _delete_link {
 
 # {{{ Routines dealing with transactions
 
-# {{{ sub _NewTransaction
+# {{{ sub _new_transaction
 
-=head2 _NewTransaction  PARAMHASH
+=head2 _new_transaction  PARAMHASH
 
 Private function to create a RT::Model::Transaction->new object for this ticket update
 
 =cut
 
-sub _NewTransaction {
+sub _new_transaction {
     my $self = shift;
     my %args = (
         TimeTaken => undef,
         Type      => undef,
-        OldValue  => undef,
-        NewValue  => undef,
+        old_value  => undef,
+        new_value  => undef,
         OldReference  => undef,
         NewReference  => undef,
         ReferenceType => undef,
@@ -1255,8 +1255,8 @@ sub _NewTransaction {
         Type      => $args{'Type'},
         Data      => $args{'Data'},
         Field     => $args{'Field'},
-        NewValue  => $args{'NewValue'},
-        OldValue  => $args{'OldValue'},
+        new_value  => $args{'new_value'},
+        old_value  => $args{'old_value'},
         NewReference  => $new_ref,
         OldReference  => $old_ref,
         ReferenceType => $ref_type,
@@ -1321,8 +1321,8 @@ sub CustomFields {
     my $cfs  = RT::Model::CustomFieldCollection->new;
 
     # XXX handle multiple types properly
-    $cfs->LimitToLookupType( $self->CustomFieldLookupType );
-    $cfs->LimitToGlobalOrobject_id(
+    $cfs->limit_ToLookupType( $self->CustomFieldLookupType );
+    $cfs->limit_ToGlobalOrobject_id(
         $self->_LookupId( $self->CustomFieldLookupType ) );
 
     return $cfs;
@@ -1383,7 +1383,7 @@ sub _AddCustomFieldValue {
         Value             => undef,
         LargeContent      => undef,
         ContentType       => undef,
-        RecordTransaction => 1,
+        record_transaction => 1,
         @_
     );
     if (!defined $args{'Field'}) {
@@ -1450,7 +1450,7 @@ sub _AddCustomFieldValue {
                         return ( 0, $msg );
                     }
                     my ( $TransactionId, $Msg, $TransactionObj ) =
-                      $self->_NewTransaction(
+                      $self->_new_transaction(
                         Type         => 'CustomField',
                         Field        => $cf->id,
                         OldReference => $value,
@@ -1505,9 +1505,9 @@ sub _AddCustomFieldValue {
             return ( 0, $msg ) unless $val;
         }
 
-        if ( $args{'RecordTransaction'} ) {
+        if ( $args{'record_transaction'} ) {
             my ( $TransactionId, $Msg, $TransactionObj ) =
-              $self->_NewTransaction(
+              $self->_new_transaction(
                 Type         => 'CustomField',
                 Field        => $cf->id,
                 OldReference => $old_value,
@@ -1541,8 +1541,8 @@ sub _AddCustomFieldValue {
         unless ( $new_value_id ) {
             return ( 0, _( "Could not add new custom field value: %1", $msg ) );
         }
-        if ( $args{'RecordTransaction'} ) {
-            my ( $tid, $msg ) = $self->_NewTransaction(
+        if ( $args{'record_transaction'} ) {
+            my ( $tid, $msg ) = $self->_new_transaction(
                 Type          => 'CustomField',
                 Field         => $cf->id,
                 NewReference  => $new_value_id,
@@ -1594,7 +1594,7 @@ sub delete_custom_field_value {
         return ( 0, $msg );
     }
 
-    my ( $TransactionId, $Msg, $TransactionObj ) = $self->_NewTransaction(
+    my ( $TransactionId, $Msg, $TransactionObj ) = $self->_new_transaction(
         Type          => 'CustomField',
         Field         => $cf->id,
         OldReference  => $val,
@@ -1608,7 +1608,7 @@ sub delete_custom_field_value {
         $TransactionId,
         _(
             "%1 is no longer a value for custom field %2",
-            $TransactionObj->OldValue, $cf->name
+            $TransactionObj->old_value, $cf->name
         )
     );
 }

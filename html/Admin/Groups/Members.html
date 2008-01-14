@@ -88,7 +88,7 @@
 <&|/l&>Groups</&>
 <ul>
 % my $GroupMembers = $Group->MembersObj;
-% $GroupMembers->LimitToGroups();
+% $GroupMembers->limit_ToGroups();
 % while ( my $member = $GroupMembers->next ) {
 % $GroupsSeen{ $member->MemberId } = 1 if $SkipSeenGroups;
 <li><input type="checkbox" class="checkbox" name="delete_member-<% $member->MemberId %>" value="1" />

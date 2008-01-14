@@ -83,26 +83,26 @@ sub _OCFAlias {
 }
 
 
-# {{{ sub LimitToGlobalOrQueue 
+# {{{ sub limit_ToGlobalOrQueue 
 
-=head2 LimitToGlobalOrQueue QUEUEID
+=head2 limit_ToGlobalOrQueue QUEUEID
 
 Limits the set of custom fields found to global custom fields or those tied to the queue with ID QUEUEID 
 
 =cut
 
-sub LimitToGlobalOrQueue {
+sub limit_ToGlobalOrQueue {
     my $self = shift;
     my $queue = shift;
-    $self->LimitToGlobalOrobject_id( $queue );
-    $self->LimitToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
+    $self->limit_ToGlobalOrobject_id( $queue );
+    $self->limit_ToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
 }
 
 # }}}
 
-# {{{ sub LimitToQueue 
+# {{{ sub limit_ToQueue 
 
-=head2 LimitToQueue QUEUEID
+=head2 limit_ToQueue QUEUEID
 
 Takes a queue id (numerical) as its only argument. Makes sure that 
 Scopes it pulls out apply to this queue (or another that you've selected with
@@ -110,7 +110,7 @@ another call to this method
 
 =cut
 
-sub LimitToQueue  {
+sub limit_ToQueue  {
    my $self = shift;
   my $queue = shift;
  
@@ -119,29 +119,29 @@ sub LimitToQueue  {
 		column => 'object_id',
 		value => "$queue")
       if defined $queue;
-  $self->LimitToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
+  $self->limit_ToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
 }
 # }}}
 
-# {{{ sub LimitToGlobal
+# {{{ sub limit_ToGlobal
 
-=head2 LimitToGlobal
+=head2 limit_ToGlobal
 
 Makes sure that 
 Scopes it pulls out apply to all queues (or another that you've selected with
-another call to this method or LimitToQueue
+another call to this method or limit_ToQueue
 
 =cut
 
 
-sub LimitToGlobal  {
+sub limit_ToGlobal  {
    my $self = shift;
  
   $self->limit (alias => $self->_OCFAlias,
                 entry_aggregator => 'OR',
 		column => 'object_id',
 		value => 0);
-  $self->LimitToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
+  $self->limit_ToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
 }
 # }}}
 
@@ -161,7 +161,7 @@ sub _do_search {
     
     #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
     unless($self->{'find_disabled_rows'}) {
-        $self->LimitToEnabled();
+        $self->limit_ToEnabled();
     }
     
     return($self->SUPER::_do_search(@_));
@@ -202,14 +202,14 @@ sub Next {
 }
 # }}}
 
-sub LimitToLookupType  {
+sub limit_ToLookupType  {
     my $self = shift;
     my $lookup = shift;
  
     $self->limit( column => 'LookupType', value => "$lookup" );
 }
 
-sub LimitToChildType  {
+sub limit_ToChildType  {
     my $self = shift;
     my $lookup = shift;
  
@@ -217,7 +217,7 @@ sub LimitToChildType  {
     $self->limit( column => 'LookupType', ENDSWITH => "$lookup" );
 }
 
-sub LimitToParentType  {
+sub limit_ToParentType  {
     my $self = shift;
     my $lookup = shift;
  
@@ -225,7 +225,7 @@ sub LimitToParentType  {
     $self->limit( column => 'LookupType', starts_with => "$lookup" );
 }
 
-sub LimitToGlobalOrobject_id {
+sub limit_ToGlobalOrobject_id {
     my $self = shift;
     my $global_only = 1;
 

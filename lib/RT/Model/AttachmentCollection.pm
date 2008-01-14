@@ -149,13 +149,13 @@ sub ChildrenOf  {
     );
 }
 
-=head2 LimitNotEmpty
+=head2 limit_NotEmpty
 
 Limit result set to attachments with not empty content.
 
 =cut
 
-sub LimitNotEmpty {
+sub limit_NotEmpty {
     my $self = shift;
     $self->limit(
         entry_aggregator => 'AND',
@@ -173,13 +173,13 @@ sub LimitNotEmpty {
     return;
 }
 
-=head2 LimitByTicket $ticket_id
+=head2 limit_ByTicket $ticket_id
 
 Limit result set to attachments of a ticket.
 
 =cut
 
-sub LimitByTicket {
+sub limit_ByTicket {
     my $self = shift;
     my $tid = shift;
 

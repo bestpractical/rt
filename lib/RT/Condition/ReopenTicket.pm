@@ -69,8 +69,8 @@ sub IsApplicable {
         ( $txn->Type eq "Set" && $txn->Field eq "Status" );
 
     my $queue = $self->TicketObj->QueueObj;
-    return 0 unless $queue->IsInactiveStatus( $txn->OldValue );
-    return 0 unless $queue->IsActiveStatus( $txn->NewValue );
+    return 0 unless $queue->IsInactiveStatus( $txn->old_value );
+    return 0 unless $queue->IsActiveStatus( $txn->new_value );
 
     Jifty->log->debug("Condition 'On Reopen' triggered "
         ."for ticket #". $self->TicketObj->id

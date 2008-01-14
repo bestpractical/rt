@@ -71,7 +71,7 @@ msgstr "%1 %2 %3 %4:%5:%6 %7"
 
 #: lib/RT/Record.pm:1685 lib/RT/Transaction_Overlay.pm:647 lib/RT/Transaction_Overlay.pm:690
 #. ($cf->name, $new_value->Content)
-#. ($field, $self->NewValue)
+#. ($field, $self->new_value)
 #. ($self->Field, $principal->Object->name)
 msgid "%1 %2 added"
 msgstr "Añadido %1 %2"
@@ -83,13 +83,13 @@ msgstr "Hace %1 %2"
 
 #: lib/RT/Record.pm:1692 lib/RT/Transaction_Overlay.pm:654
 #. ($cf->name, $old_content,                $new_value->Content)
-#. ($field, $self->OldValue, $self->NewValue)
+#. ($field, $self->old_value, $self->new_value)
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 ha cambiado a %3"
 
 #: lib/RT/Record.pm:1689 lib/RT/Transaction_Overlay.pm:650 lib/RT/Transaction_Overlay.pm:696
 #. ($cf->name, $old_value->Content)
-#. ($field, $self->OldValue)
+#. ($field, $self->old_value)
 #. ($self->Field, $principal->Object->name)
 msgid "%1 %2 deleted"
 msgstr "%1 %2 borrado"
@@ -204,7 +204,7 @@ msgstr "%1 por %2"
 #: lib/RT/Transaction_Overlay.pm:788 lib/RT/Transaction_Overlay.pm:797 lib/RT/Transaction_Overlay.pm:800
 #. ($self->Field , $q1->name , $q2->name)
 #. ($self->Field, $t2->AsString, $t1->AsString)
-#. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : _("(no value)")) , "'". $self->NewValue."'")
+#. ($self->Field, ($self->old_value? "'".$self->old_value ."'" : _("(no value)")) , "'". $self->new_value."'")
 msgid "%1 changed from %2 to %3"
 msgstr "%1 ha cambiado de %2 a %3"
 
@@ -2243,8 +2243,8 @@ msgid "Error in parameters to Queue->AddWatcher"
 msgstr "Error en los parámetros para Queue->AddWatcher"
 
 #: NOT FOUND IN SOURCE
-msgid "Error in parameters to Queue->DelWatcher"
-msgstr "Error en los parámetros para Queue->DelWatcher"
+msgid "Error in parameters to Queue->del_watcher"
+msgstr "Error en los parámetros para Queue->del_watcher"
 
 #: lib/RT/Queue_Overlay.pm:833
 msgid "Error in parameters to Queue->deleteWatcher"
@@ -2255,8 +2255,8 @@ msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Error en los parámetros para Queue->AddWatcher"
 
 #: NOT FOUND IN SOURCE
-msgid "Error in parameters to Ticket->DelWatcher"
-msgstr "Error en los parámetros para Queue->DelWatcher"
+msgid "Error in parameters to Ticket->del_watcher"
+msgstr "Error en los parámetros para Queue->del_watcher"
 
 #: lib/RT/Ticket_Overlay.pm:1538
 msgid "Error in parameters to Ticket->deleteWatcher"
@@ -2361,8 +2361,8 @@ msgid "Final Priority"
 msgstr "Prioridad Final"
 
 #: lib/RT/Ticket_Overlay.pm:1164
-msgid "FinalPriority"
-msgstr "FinalPriority"
+msgid "final_priority"
+msgstr "final_priority"
 
 #: NOT FOUND IN SOURCE
 msgid "Find group whose"
@@ -2682,8 +2682,8 @@ msgid "Initial Priority"
 msgstr "Prioridad inicial"
 
 #: lib/RT/Ticket_Overlay.pm:1163 lib/RT/Ticket_Overlay.pm:1165
-msgid "InitialPriority"
-msgstr "InitialPriority"
+msgid "initial_priority"
+msgstr "initial_priority"
 
 #: lib/RT/ScripAction_Overlay.pm:133
 msgid "Input error"
@@ -2863,12 +2863,12 @@ msgid "Let this user be granted rights"
 msgstr "Permitir que este usuario tenga privilegios adicionales"
 
 #: NOT FOUND IN SOURCE
-msgid "Limiting owner to %1 %2"
-msgstr "Limitando propietario a %1 %2"
+msgid "limit_ing owner to %1 %2"
+msgstr "limit_ando propietario a %1 %2"
 
 #: NOT FOUND IN SOURCE
-msgid "Limiting queue to %1 %2"
-msgstr "Limitando cola a %1 %2"
+msgid "limit_ing queue to %1 %2"
+msgstr "limit_ando cola a %1 %2"
 
 #: html/Search/Elements/EditFormat:68
 msgid "Link"

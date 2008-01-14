@@ -67,9 +67,9 @@ use strict;
 package RT::Model::CachedGroupMemberCollection;
 use base qw/RT::SearchBuilder/;
 
-# {{{ LimitToUsers
+# {{{ limit_ToUsers
 
-=head2 LimitToUsers
+=head2 limit_ToUsers
 
 Limits this search object to users who are members of this group
 This is really useful when you want to have your UI separate out
@@ -77,7 +77,7 @@ groups from users for display purposes
 
 =cut
 
-sub LimitToUsers {
+sub limit_ToUsers {
     my $self = shift;
 
     my $principals = $self->new_alias('Principals');
@@ -94,9 +94,9 @@ sub LimitToUsers {
 # }}}
 
 
-# {{{ LimitToGroups
+# {{{ limit_ToGroups
 
-=head2 LimitToGroups
+=head2 limit_ToGroups
 
 Limits this search object to Groups who are members of this group
 This is really useful when you want to have your UI separate out
@@ -104,7 +104,7 @@ groups from users for display purposes
 
 =cut
 
-sub LimitToGroups {
+sub limit_ToGroups {
     my $self = shift;
 
     my $principals = $self->new_alias('Principals');
@@ -120,9 +120,9 @@ sub LimitToGroups {
 
 # }}}
 
-# {{{ sub LimitToMembersOfGroup
+# {{{ sub limit_ToMembersOfGroup
 
-=head2 LimitToMembersOfGroup PRINCIPAL_ID
+=head2 limit_ToMembersOfGroup PRINCIPAL_ID
 
 Takes a Principal Id as its only argument. 
 Limits the current search principals which are _directly_ members
@@ -130,7 +130,7 @@ of the group which has PRINCIPAL_ID as its principal id.
 
 =cut
 
-sub LimitToMembersOfGroup {
+sub limit_ToMembersOfGroup {
     my $self = shift;
     my $group = shift;
 
@@ -143,9 +143,9 @@ sub LimitToMembersOfGroup {
 }
 # }}}
 
-# {{{ sub LimitToGroupsWithMember
+# {{{ sub limit_ToGroupsWithMember
 
-=head2 LimitToGroupsWithMember PRINCIPAL_ID
+=head2 limit_ToGroupsWithMember PRINCIPAL_ID
 
 Takes a Principal Id as its only argument. 
 Limits the current search to groups which contain PRINCIPAL_ID as a member  or submember.
@@ -153,7 +153,7 @@ This function gets used by GroupMember->create to populate subgroups
 
 =cut
 
-sub LimitToGroupsWithMember {
+sub limit_ToGroupsWithMember {
     my $self = shift;
     my $member = shift;
 

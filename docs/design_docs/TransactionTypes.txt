@@ -41,7 +41,7 @@ RT->Config->Get('TransactionTypes')->{$Transactionname})
 
 The RT::Model::Ticket::AddTransaction will create a new transaction of the
 right TransactionClass (maybe via a sub
-RT::Model::TransactionTypes::NewTransaction).  Then $Transaction->do is
+RT::Model::TransactionTypes::new_transaction).  Then $Transaction->do is
 called.
 
 TransactionType->do initializes a new object of the right TransactionClass, and 

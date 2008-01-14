@@ -294,11 +294,11 @@ Autocompleter.Base.prototype = {
     
     var lastTokenPos = this.findLastToken();
     if (lastTokenPos != -1) {
-      var newValue = this.element.value.substr(0, lastTokenPos + 1);
+      var new_value = this.element.value.substr(0, lastTokenPos + 1);
       var whitespace = this.element.value.substr(lastTokenPos + 1).match(/^\s+/);
       if (whitespace)
-        newValue += whitespace[0];
-      this.element.value = newValue + value;
+        new_value += whitespace[0];
+      this.element.value = new_value + value;
     } else {
       this.element.value = value;
     }

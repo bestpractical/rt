@@ -314,7 +314,7 @@ sub load_by_name {
     # Don't limit to queue if queue is 0.  Trying to do so breaks
     # RT::Model::Group type CFs.
     if ( defined $args{'Queue'} ) {
-        $CFs->LimitToQueue( $args{'Queue'} );
+        $CFs->limit_ToQueue( $args{'Queue'} );
     }
 
     # When loading by name, it's ok if they're disabled. That's not a big deal.
@@ -1099,7 +1099,7 @@ sub ValuesForObject {
     
     
     $values->limit_to_custom_field($self->id);
-    $values->LimitToEnabled();
+    $values->limit_ToEnabled();
     $values->limit_to_object($object);
 
     return ($values);

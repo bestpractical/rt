@@ -111,15 +111,15 @@ sub limit  {
 }
 # }}}
 
-# {{{ LimitRefersTo 
+# {{{ limit_RefersTo 
 
-=head2 LimitRefersTo URI
+=head2 limit_RefersTo URI
 
 find all things that refer to URI
 
 =cut
 
-sub LimitRefersTo {
+sub limit_RefersTo {
     my $self = shift;
     my $URI = shift;
 
@@ -128,15 +128,15 @@ sub LimitRefersTo {
 }
 
 # }}}
-# {{{ LimitReferredToBy
+# {{{ limit_ReferredToBy
 
-=head2 LimitReferredToBy URI
+=head2 limit_ReferredToBy URI
 
 find all things that URI refers to
 
 =cut
 
-sub LimitReferredToBy {
+sub limit_ReferredToBy {
     my $self = shift;
     my $URI = shift;
 

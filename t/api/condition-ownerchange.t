@@ -31,7 +31,7 @@ ok($val,$msg);
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($tv,$ttv,$tm) = $ticket->create(Queue => $q->id,
                                     Subject => "hair on fire",
-                                    InitialPriority => '20'
+                                    initial_priority => '20'
                                     );
 ok($tv, $tm);
 ok($ticket->set_Owner('root'));

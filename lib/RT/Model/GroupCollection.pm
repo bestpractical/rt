@@ -130,14 +130,14 @@ sub PrincipalsAlias {
 
 # {{{ LimiToSystemInternalGroups
 
-=head2 LimitToSystemInternalGroups
+=head2 limit_ToSystemInternalGroups
 
 Return only SystemInternal Groups, such as "privileged" "unprivileged" and "everyone" 
 
 =cut
 
 
-sub LimitToSystemInternalGroups {
+sub limit_ToSystemInternalGroups {
     my $self = shift;
     $self->limit(column => 'Domain', operator => '=', value => 'SystemInternal');
     # All system internal groups have the same instance. No reason to limit down further
@@ -149,14 +149,14 @@ sub LimitToSystemInternalGroups {
 
 # {{{ LimiToUserDefinedGroups
 
-=head2 LimitToUserDefined Groups
+=head2 limit_ToUserDefined Groups
 
 Return only UserDefined Groups
 
 =cut
 
 
-sub LimitToUserDefinedGroups {
+sub limit_ToUserDefinedGroups {
     my $self = shift;
     $self->limit(column => 'Domain', operator => '=', value => 'UserDefined');
     # All user-defined groups have the same instance. No reason to limit down further
@@ -168,7 +168,7 @@ sub LimitToUserDefinedGroups {
 
 # {{{ LimiToPersonalGroups
 
-=head2 LimitToPersonalGroupsFor PRINCIPAL_ID
+=head2 limit_ToPersonalGroupsFor PRINCIPAL_ID
 
 Return only Personal Groups for the user whose principal id 
 is PRINCIPAL_ID
@@ -176,7 +176,7 @@ is PRINCIPAL_ID
 =cut
 
 
-sub LimitToPersonalGroupsFor {
+sub limit_ToPersonalGroupsFor {
     my $self = shift;
     my $princ = shift;
 
@@ -189,15 +189,15 @@ sub LimitToPersonalGroupsFor {
 
 # }}}
 
-# {{{ LimitToRolesForQueue
+# {{{ limit_ToRolesForQueue
 
-=head2 LimitToRolesForQueue QUEUE_ID
+=head2 limit_ToRolesForQueue QUEUE_ID
 
 Limits the set of groups found to role groups for queue QUEUE_ID
 
 =cut
 
-sub LimitToRolesForQueue {
+sub limit_ToRolesForQueue {
     my $self = shift;
     my $queue = shift;
     $self->limit(column => 'Domain', operator => '=', value => 'RT::Model::Queue-Role');
@@ -206,15 +206,15 @@ sub LimitToRolesForQueue {
 
 # }}}
 
-# {{{ LimitToRolesForTicket
+# {{{ limit_ToRolesForTicket
 
-=head2 LimitToRolesForTicket Ticket_ID
+=head2 limit_ToRolesForTicket Ticket_ID
 
 Limits the set of groups found to role groups for Ticket Ticket_ID
 
 =cut
 
-sub LimitToRolesForTicket {
+sub limit_ToRolesForTicket {
     my $self = shift;
     my $Ticket = shift;
     $self->limit(column => 'Domain', operator => '=', value => 'RT::Model::Ticket-Role');
@@ -223,15 +223,15 @@ sub LimitToRolesForTicket {
 
 # }}}
 
-# {{{ LimitToRolesForSystem
+# {{{ limit_ToRolesForSystem
 
-=head2 LimitToRolesForSystem System_ID
+=head2 limit_ToRolesForSystem System_ID
 
 Limits the set of groups found to role groups for System System_ID
 
 =cut
 
-sub LimitToRolesForSystem {
+sub limit_ToRolesForSystem {
     my $self = shift;
     $self->limit(column => 'Domain', operator => '=', value => 'RT::System-Role');
 }
@@ -337,15 +337,15 @@ sub _GetEquivObjects          { return (shift)->RT::Model::UserCollection::_GetE
 sub WithGroupRight            { return (shift)->RT::Model::UserCollection::WhoHaveGroupRight( @_ ) }
 sub WithRoleRight             { return (shift)->RT::Model::UserCollection::WhoHaveRoleRight( @_ ) }
 
-# {{{ sub LimitToEnabled
+# {{{ sub limit_ToEnabled
 
-=head2 LimitToEnabled
+=head2 limit_ToEnabled
 
 Only find items that haven\'t been disabled
 
 =cut
 
-sub LimitToEnabled {
+sub limit_ToEnabled {
     my $self = shift;
     
     $self->limit( alias => $self->PrincipalsAlias,
@@ -356,15 +356,15 @@ sub LimitToEnabled {
 }
 # }}}
 
-# {{{ sub LimitTodisabled
+# {{{ sub limit_Todisabled
 
-=head2 LimitToDeleted
+=head2 limit_ToDeleted
 
 Only find items that have been deleted.
 
 =cut
 
-sub LimitToDeleted {
+sub limit_ToDeleted {
     my $self = shift;
     
     $self->{'find_disabled_rows'} = 1;
@@ -403,7 +403,7 @@ sub _do_search {
     
     #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
     unless($self->{'find_disabled_rows'}) {
-	$self->LimitToEnabled();
+	$self->limit_ToEnabled();
     }
     
     return($self->SUPER::_do_search(@_));

@@ -60,7 +60,7 @@
 <table>
 % $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
 % $Groups = RT::Model::GroupCollection->new();
-% $Groups->LimitToSystemInternalGroups();
+% $Groups->limit_ToSystemInternalGroups();
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
@@ -76,7 +76,7 @@
 <h1><&|/l&>Roles</&></h1>
 <table>
 % $Groups = RT::Model::GroupCollection->new();
-% $Groups->LimitToRolesForQueue($QueueObj->id);
+% $Groups->limit_ToRolesForQueue($QueueObj->id);
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
@@ -92,7 +92,7 @@
 <h1><&|/l&>User defined groups</&></h1>
 <table>
 % $Groups = RT::Model::GroupCollection->new();
-% $Groups->LimitToUserDefinedGroups();    
+% $Groups->limit_ToUserDefinedGroups();    
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">

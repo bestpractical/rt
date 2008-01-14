@@ -54,10 +54,10 @@
     <td class="label status"><&|/l&>Status</&>:</td>
     <td class="value status"><&|/l&><% $Ticket->Status%></&></td>
   </tr>
-% if ($Ticket->TimeEstimated) {
+% if ($Ticket->time_estimated) {
   <tr>
     <td class="label time estimated"><&|/l&>Estimated</&>:</td>
-    <td class="value time estimated"><& ShowTime, minutes => $Ticket->TimeEstimated &></td>
+    <td class="value time estimated"><& ShowTime, minutes => $Ticket->time_estimated &></td>
   </tr>
 % }
 % if ($Ticket->time_worked) {
@@ -74,7 +74,7 @@
 % }
   <tr>
     <td class="label priority"><&|/l&>Priority</&>:</td>
-    <td class="value priority"><%$Ticket->Priority||0%>/<%$Ticket->FinalPriority||0 %></td>
+    <td class="value priority"><%$Ticket->Priority||0%>/<%$Ticket->final_priority||0 %></td>
   </tr>
   <tr>
     <td class="label queue"><&|/l&>Queue</&>:</td>

@@ -81,7 +81,7 @@ $users->limit(
     operator        => '!=',
     entry_aggregator => 'AND'
 );
-$users->LimitToprivileged();
+$users->limit_Toprivileged();
 
 my $groups = RT::Model::GroupCollection->new();
 

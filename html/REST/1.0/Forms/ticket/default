@@ -63,10 +63,10 @@ my $ticket = RT::Model::Ticket->new() ;
 my @dates  = qw(Created starts Started Due Resolved Told LastUpdated);
 my @people = qw(Requestors Cc AdminCc);
 my @create = qw(Queue Requestor Subject Cc AdminCc Owner Status Priority
-                InitialPriority FinalPriority TimeEstimated time_worked
+                initial_priority final_priority time_estimated time_worked
                 time_left starts Started Due Resolved);
-my @simple = qw(Subject Status Priority disabled TimeEstimated time_worked
-                time_left InitialPriority FinalPriority);
+my @simple = qw(Subject Status Priority disabled time_estimated time_worked
+                time_left initial_priority final_priority);
 my %dates  = map {lc $_ => $_} @dates;
 my %people = map {lc $_ => $_} @people;
 my %create = map {lc $_ => $_} @create;
@@ -100,7 +100,7 @@ else {
         return [
             "# Required: id, Queue",
             [ qw(id Queue Requestor Subject Cc AdminCc Owner Status Priority
-                 InitialPriority FinalPriority TimeEstimated starts Due Text) ],
+                 initial_priority final_priority time_estimated starts Due Text) ],
             {
                 id               => "ticket/new",
                 Queue            => $queue->name,
@@ -110,10 +110,10 @@ else {
                 AdminCc          => [],
                 Owner            => "",
                 Status           => "new",
-                Priority         => $queue->InitialPriority,
-                InitialPriority  => $queue->InitialPriority,
-                FinalPriority    => $queue->FinalPriority,
-                TimeEstimated    => 0,
+                Priority         => $queue->initial_priority,
+                initial_priority  => $queue->initial_priority,
+                final_priority    => $queue->final_priority,
+                time_estimated    => 0,
                 starts           => $starts->ISO,
                 Due              => $due->ISO,
                 Text             => "",
@@ -186,7 +186,7 @@ if (!keys(%data)) {
     push @data, [ Creator => $ticket->CreatorObj->name ]
 	if (!%$fields || exists $fields->{lc 'Creator'});
 
-    foreach (qw(Subject Status Priority InitialPriority FinalPriority)) {
+    foreach (qw(Subject Status Priority initial_priority final_priority)) {
 	next unless (!%$fields || (exists $fields->{lc $_}));
         push @data, [$_ => $ticket->$_ ];
     }
@@ -204,7 +204,7 @@ if (!keys(%data)) {
     }
 
     $time = RT::Date->new();
-    foreach $key (qw(TimeEstimated time_worked time_left)) {
+    foreach $key (qw(time_estimated time_worked time_left)) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
         $val = $ticket->$key || 0;
         $val = "$val minutes" if $val;

@@ -74,13 +74,13 @@ sub _handle {
     return Jifty->handle
 }
 
-=head2 LimitToEnabled
+=head2 limit_ToEnabled
 
 Only find items that haven't been disabled
 
 =cut
 
-sub LimitToEnabled {
+sub limit_ToEnabled {
     my $self = shift;
     
     $self->limit( column => 'disabled',
@@ -88,13 +88,13 @@ sub LimitToEnabled {
 		  operator => '=' );
 }
 
-=head2 LimitToDeleted
+=head2 limit_ToDeleted
 
 Only find items that have been deleted.
 
 =cut
 
-sub LimitToDeleted {
+sub limit_ToDeleted {
     my $self = shift;
     
     $self->{'find_disabled_rows'} = 1;
@@ -104,7 +104,7 @@ sub LimitToDeleted {
 		);
 }
 
-=head2 LimitAttribute PARAMHASH
+=head2 limit_Attribute PARAMHASH
 
 Takes name, operator and value to find records that has the
 matching Attribute.
@@ -129,7 +129,7 @@ my %Negate = qw(
     IS NOT	IS
 );
 
-sub LimitAttribute {
+sub limit_Attribute {
     my ($self, %args) = @_;
     my $clause = 'alias';
     my $operator = ($args{operator} || '=');
@@ -194,7 +194,7 @@ sub LimitAttribute {
     ) if $args{NULL};
 }
 
-=head2 LimitCustomField
+=head2 limit_CustomField
 
 Takes a paramhash of key/value pairs with the following keys:
 
@@ -217,7 +217,7 @@ sub _SingularClass {
     return $class;
 }
 
-sub LimitCustomField {
+sub limit_CustomField {
     my $self = shift;
     my %args = ( value        => undef,
                  customfield  => undef,

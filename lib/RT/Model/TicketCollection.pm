@@ -100,12 +100,12 @@ our %FIELD_METADATA = (
     Owner           => [ 'WATCHERFIELD' => 'Owner', ],
     EffectiveId     => [ 'INT', ],
     id              => [ 'INT', ],
-    InitialPriority => [ 'INT', ],
-    FinalPriority   => [ 'INT', ],
+    initial_priority => [ 'INT', ],
+    final_priority   => [ 'INT', ],
     Priority        => [ 'INT', ],
     time_left        => [ 'INT', ],
     time_worked      => [ 'INT', ],
-    TimeEstimated   => [ 'INT', ],
+    time_estimated   => [ 'INT', ],
 
     Linked          => [ 'LINK' ],
     LinkedTo        => [ 'LINK' => 'To' ],
@@ -1475,7 +1475,7 @@ sub order_by {
 =head2 limit
 
 Takes a paramhash with the fields column, operator, value and description
-Generally best called from LimitFoo methods
+Generally best called from limit_Foo methods
 
 =cut
 
@@ -1577,18 +1577,18 @@ sub ThawLimits {
 
 # {{{ Limit by enum or foreign key
 
-# {{{ sub LimitQueue
+# {{{ sub limit_Queue
 
-=head2 LimitQueue
+=head2 limit_Queue
 
-LimitQueue takes a paramhash with the fields operator and value.
+limit_Queue takes a paramhash with the fields operator and value.
 operator is one of = or !=. (It defaults to =).
 value is a queue id or name.
 
 
 =cut
 
-sub LimitQueue {
+sub limit_Queue {
     my $self = shift;
     my %args = (
         value    => undef,
@@ -1621,9 +1621,9 @@ sub LimitQueue {
 
 # }}}
 
-# {{{ sub LimitStatus
+# {{{ sub limit_Status
 
-=head2 LimitStatus
+=head2 limit_Status
 
 Takes a paramhash with the fields operator and value.
 operator is one of = or !=.
@@ -1632,11 +1632,11 @@ value is a status.
 RT adds Status != 'deleted' until object has
 allow_deleted_search internal property set.
 $tickets->{'allow_deleted_search'} = 1;
-$tickets->LimitStatus( value => 'deleted' );
+$tickets->limit_Status( value => 'deleted' );
 
 =cut
 
-sub LimitStatus {
+sub limit_Status {
     my $self = shift;
     my %args = (
         operator => '=',
@@ -1671,15 +1671,15 @@ sub IgnoreType {
     # fact that we're already looking at type, so that the check in
     # Tickets_Overlay_SQL/from_sql goes down the right branch
 
-    #  $self->LimitType(value => '__any');
+    #  $self->limit_Type(value => '__any');
     $self->{looking_at_type} = 1;
 }
 
 # }}}
 
-# {{{ sub LimitType
+# {{{ sub limit_Type
 
-=head2 LimitType
+=head2 limit_Type
 
 Takes a paramhash with the fields operator and value.
 operator is one of = or !=, it defaults to "=".
@@ -1689,7 +1689,7 @@ value is a string to search for in the type of the ticket.
 
 =cut
 
-sub LimitType {
+sub limit_Type {
     my $self = shift;
     my %args = (
         operator => '=',
@@ -1711,9 +1711,9 @@ sub LimitType {
 
 # {{{ Limit by string field
 
-# {{{ sub LimitSubject
+# {{{ sub limit_Subject
 
-=head2 LimitSubject
+=head2 limit_Subject
 
 Takes a paramhash with the fields operator and value.
 operator is one of = or !=.
@@ -1721,7 +1721,7 @@ value is a string to search for in the subject of the ticket.
 
 =cut
 
-sub LimitSubject {
+sub limit_Subject {
     my $self = shift;
     my %args = (@_);
     $self->limit(
@@ -1740,9 +1740,9 @@ sub LimitSubject {
 # {{{ Limit based on ticket numerical attributes
 # Things that can be > < = !=
 
-# {{{ sub LimitId
+# {{{ sub limit_Id
 
-=head2 LimitId
+=head2 limit_Id
 
 Takes a paramhash with the fields operator and value.
 operator is one of =, >, < or !=.
@@ -1750,7 +1750,7 @@ value is a ticket Id to search for
 
 =cut
 
-sub LimitId {
+sub limit_Id {
     my $self = shift;
     my %args = (
         operator => '=',
@@ -1768,9 +1768,9 @@ sub LimitId {
 
 # }}}
 
-# {{{ sub LimitPriority
+# {{{ sub limit_Priority
 
-=head2 LimitPriority
+=head2 limit_Priority
 
 Takes a paramhash with the fields operator and value.
 operator is one of =, >, < or !=.
@@ -1778,7 +1778,7 @@ value is a value to match the ticket\'s priority against
 
 =cut
 
-sub LimitPriority {
+sub limit_Priority {
     my $self = shift;
     my %args = (@_);
     $self->limit(
@@ -1793,9 +1793,9 @@ sub LimitPriority {
 
 # }}}
 
-# {{{ sub LimitInitialPriority
+# {{{ sub limit_initial_priority
 
-=head2 LimitInitialPriority
+=head2 limit_initial_priority
 
 Takes a paramhash with the fields operator and value.
 operator is one of =, >, < or !=.
@@ -1804,11 +1804,11 @@ value is a value to match the ticket\'s initial priority against
 
 =cut
 
-sub LimitInitialPriority {
+sub limit_initial_priority {
     my $self = shift;
     my %args = (@_);
     $self->limit(
-        column       => 'InitialPriority',
+        column       => 'initial_priority',
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
@@ -1819,9 +1819,9 @@ sub LimitInitialPriority {
 
 # }}}
 
-# {{{ sub LimitFinalPriority
+# {{{ sub limit_final_priority
 
-=head2 LimitFinalPriority
+=head2 limit_final_priority
 
 Takes a paramhash with the fields operator and value.
 operator is one of =, >, < or !=.
@@ -1829,11 +1829,11 @@ value is a value to match the ticket\'s final priority against
 
 =cut
 
-sub LimitFinalPriority {
+sub limit_final_priority {
     my $self = shift;
     my %args = (@_);
     $self->limit(
-        column       => 'FinalPriority',
+        column       => 'final_priority',
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
@@ -1844,9 +1844,9 @@ sub LimitFinalPriority {
 
 # }}}
 
-# {{{ sub Limittime_worked
+# {{{ sub limit_time_worked
 
-=head2 Limittime_worked
+=head2 limit_time_worked
 
 Takes a paramhash with the fields operator and value.
 operator is one of =, >, < or !=.
@@ -1854,7 +1854,7 @@ value is a value to match the ticket's time_worked attribute
 
 =cut
 
-sub Limittime_worked {
+sub limit_time_worked {
     my $self = shift;
     my %args = (@_);
     $self->limit(
@@ -1869,9 +1869,9 @@ sub Limittime_worked {
 
 # }}}
 
-# {{{ sub Limittime_left
+# {{{ sub limit_time_left
 
-=head2 Limittime_left
+=head2 limit_time_left
 
 Takes a paramhash with the fields operator and value.
 operator is one of =, >, < or !=.
@@ -1879,7 +1879,7 @@ value is a value to match the ticket's time_left attribute
 
 =cut
 
-sub Limittime_left {
+sub limit_time_left {
     my $self = shift;
     my %args = (@_);
     $self->limit(
@@ -1896,11 +1896,11 @@ sub Limittime_left {
 
 # }}}
 
-# {{{ Limiting based on attachment attributes
+# {{{ limit_ing based on attachment attributes
 
-# {{{ sub LimitContent
+# {{{ sub limit_Content
 
-=head2 LimitContent
+=head2 limit_Content
 
 Takes a paramhash with the fields operator and value.
 operator is one of =, LIKE, NOT LIKE or !=.
@@ -1908,7 +1908,7 @@ value is a string to search for in the body of the ticket
 
 =cut
 
-sub LimitContent {
+sub limit_Content {
     my $self = shift;
     my %args = (@_);
     $self->limit(
@@ -1923,9 +1923,9 @@ sub LimitContent {
 
 # }}}
 
-# {{{ sub LimitFilename
+# {{{ sub limit_Filename
 
-=head2 LimitFilename
+=head2 limit_Filename
 
 Takes a paramhash with the fields operator and value.
 operator is one of =, LIKE, NOT LIKE or !=.
@@ -1933,7 +1933,7 @@ value is a string to search for in the body of the ticket
 
 =cut
 
-sub LimitFilename {
+sub limit_Filename {
     my $self = shift;
     my %args = (@_);
     $self->limit(
@@ -1947,9 +1947,9 @@ sub LimitFilename {
 }
 
 # }}}
-# {{{ sub LimitContentType
+# {{{ sub limit_ContentType
 
-=head2 LimitContentType
+=head2 limit_ContentType
 
 Takes a paramhash with the fields operator and value.
 operator is one of =, LIKE, NOT LIKE or !=.
@@ -1957,7 +1957,7 @@ value is a content type to search ticket attachments for
 
 =cut
 
-sub LimitContentType {
+sub limit_ContentType {
     my $self = shift;
     my %args = (@_);
     $self->limit(
@@ -1974,11 +1974,11 @@ sub LimitContentType {
 
 # }}}
 
-# {{{ Limiting based on people
+# {{{ limit_ing based on people
 
-# {{{ sub LimitOwner
+# {{{ sub limit_Owner
 
-=head2 LimitOwner
+=head2 limit_Owner
 
 Takes a paramhash with the fields operator and value.
 operator is one of = or !=.
@@ -1986,7 +1986,7 @@ value is a user id.
 
 =cut
 
-sub LimitOwner {
+sub limit_Owner {
     my $self = shift;
     my %args = (
         operator => '=',
@@ -2009,11 +2009,11 @@ sub LimitOwner {
 
 # }}}
 
-# {{{ Limiting watchers
+# {{{ limit_ing watchers
 
-# {{{ sub LimitWatcher
+# {{{ sub limit_Watcher
 
-=head2 LimitWatcher
+=head2 limit_Watcher
 
   Takes a paramhash with the fields operator, type and value.
   operator is one of =, LIKE, NOT LIKE or !=.
@@ -2023,7 +2023,7 @@ sub LimitOwner {
 
 =cut
 
-sub LimitWatcher {
+sub limit_Watcher {
     my $self = shift;
     my %args = (
         operator => '=',
@@ -2058,13 +2058,13 @@ sub LimitWatcher {
 
 # }}}
 
-# {{{ Limiting based on links
+# {{{ limit_ing based on links
 
-# {{{ LimitLinkedTo
+# {{{ limit_LinkedTo
 
-=head2 LimitLinkedTo
+=head2 limit_LinkedTo
 
-LimitLinkedTo takes a paramhash with two fields: type and target
+limit_LinkedTo takes a paramhash with two fields: type and target
 type limits the sort of link we want to search on
 
 type = { RefersTo, MemberOf, DependsOn }
@@ -2073,7 +2073,7 @@ target is the id or URI of the target of the link
 
 =cut
 
-sub LimitLinkedTo {
+sub limit_LinkedTo {
     my $self = shift;
     my %args = (
         target   => undef,
@@ -2098,11 +2098,11 @@ sub LimitLinkedTo {
 
 # }}}
 
-# {{{ LimitLinkedFrom
+# {{{ limit_LinkedFrom
 
-=head2 LimitLinkedFrom
+=head2 limit_LinkedFrom
 
-LimitLinkedFrom takes a paramhash with two fields: type and base
+limit_LinkedFrom takes a paramhash with two fields: type and base
 type limits the sort of link we want to search on
 
 
@@ -2110,7 +2110,7 @@ base is the id or URI of the base of the link
 
 =cut
 
-sub LimitLinkedFrom {
+sub limit_LinkedFrom {
     my $self = shift;
     my %args = (
         base     => undef,
@@ -2147,7 +2147,7 @@ sub LimitLinkedFrom {
 sub limit_member_of {
     my $self      = shift;
     my $ticket_id = shift;
-    return $self->LimitLinkedTo(
+    return $self->limit_LinkedTo(
         @_,
         target => $ticket_id,
         type => 'MemberOf',
@@ -2160,7 +2160,7 @@ sub limit_member_of {
 sub limit_has_member {
     my $self      = shift;
     my $ticket_id = shift;
-    return $self->LimitLinkedFrom(
+    return $self->limit_LinkedFrom(
         @_,
         base => "$ticket_id",
         type => 'has_member',
@@ -2170,12 +2170,12 @@ sub limit_has_member {
 
 # }}}
 
-# {{{ LimitDependsOn
+# {{{ limit_DependsOn
 
-sub LimitDependsOn {
+sub limit_DependsOn {
     my $self      = shift;
     my $ticket_id = shift;
-    return $self->LimitLinkedTo(
+    return $self->limit_LinkedTo(
         @_,
         target => $ticket_id,
         type => 'DependsOn',
@@ -2190,7 +2190,7 @@ sub LimitDependsOn {
 sub limit_depended_on_by {
     my $self      = shift;
     my $ticket_id = shift;
-    return $self->LimitLinkedFrom(
+    return $self->limit_LinkedFrom(
         @_,
         base => $ticket_id,
         type => 'DependentOn',
@@ -2200,12 +2200,12 @@ sub limit_depended_on_by {
 
 # }}}
 
-# {{{ LimitRefersTo
+# {{{ limit_RefersTo
 
-sub LimitRefersTo {
+sub limit_RefersTo {
     my $self      = shift;
     my $ticket_id = shift;
-    return $self->LimitLinkedTo(
+    return $self->limit_LinkedTo(
         @_,
         target => $ticket_id,
         type => 'RefersTo',
@@ -2215,12 +2215,12 @@ sub LimitRefersTo {
 
 # }}}
 
-# {{{ LimitReferredToBy
+# {{{ limit_ReferredToBy
 
-sub LimitReferredToBy {
+sub limit_ReferredToBy {
     my $self      = shift;
     my $ticket_id = shift;
-    return $self->LimitLinkedFrom(
+    return $self->limit_LinkedFrom(
         @_,
         base => $ticket_id,
         type => 'ReferredToBy',
@@ -2233,9 +2233,9 @@ sub LimitReferredToBy {
 
 # {{{ limit based on ticket date attribtes
 
-# {{{ sub LimitDate
+# {{{ sub limit_Date
 
-=head2 LimitDate (column => 'DateField', operator => $oper, value => $ISODate)
+=head2 limit_Date (column => 'DateField', operator => $oper, value => $ISODate)
 
 Takes a paramhash with the fields column operator and value.
 
@@ -2243,12 +2243,12 @@ operator is one of > or <
 value is a date and time in ISO format in GMT
 column is one of starts, Started, Told, Created, Resolved, LastUpdated
 
-There are also helper functions of the form Limitcolumn that eliminate
+There are also helper functions of the form limit_column that eliminate
 the need to pass in a column argument.
 
 =cut
 
-sub LimitDate {
+sub limit_Date {
     my $self = shift;
     my %args = (
         column    => undef,
@@ -2271,47 +2271,47 @@ sub LimitDate {
 
 # }}}
 
-sub LimitCreated {
+sub limit_Created {
     my $self = shift;
-    $self->LimitDate( column => 'Created', @_ );
+    $self->limit_Date( column => 'Created', @_ );
 }
 
-sub LimitDue {
+sub limit_Due {
     my $self = shift;
-    $self->LimitDate( column => 'Due', @_ );
-
-}
-
-sub Limitstarts {
-    my $self = shift;
-    $self->LimitDate( column => 'starts', @_ );
+    $self->limit_Date( column => 'Due', @_ );
 
 }
 
-sub LimitStarted {
+sub limit_starts {
     my $self = shift;
-    $self->LimitDate( column => 'Started', @_ );
+    $self->limit_Date( column => 'starts', @_ );
+
 }
 
-sub LimitResolved {
+sub limit_Started {
     my $self = shift;
-    $self->LimitDate( column => 'Resolved', @_ );
+    $self->limit_Date( column => 'Started', @_ );
 }
 
-sub LimitTold {
+sub limit_Resolved {
     my $self = shift;
-    $self->LimitDate( column => 'Told', @_ );
+    $self->limit_Date( column => 'Resolved', @_ );
 }
 
-sub LimitLastUpdated {
+sub limit_Told {
     my $self = shift;
-    $self->LimitDate( column => 'LastUpdated', @_ );
+    $self->limit_Date( column => 'Told', @_ );
+}
+
+sub limit_LastUpdated {
+    my $self = shift;
+    $self->limit_Date( column => 'LastUpdated', @_ );
 }
 
 #
-# {{{ sub LimitTransactionDate
+# {{{ sub limit_TransactionDate
 
-=head2 LimitTransactionDate (operator => $oper, value => $ISODate)
+=head2 limit_TransactionDate (operator => $oper, value => $ISODate)
 
 Takes a paramhash with the fields column operator and value.
 
@@ -2321,7 +2321,7 @@ value is a date and time in ISO format in GMT
 
 =cut
 
-sub LimitTransactionDate {
+sub limit_TransactionDate {
     my $self = shift;
     my %args = (
         column    => 'TransactionDate',
@@ -2350,9 +2350,9 @@ sub LimitTransactionDate {
 # }}}
 
 # {{{ Limit based on custom fields
-# {{{ sub LimitCustomField
+# {{{ sub limit_CustomField
 
-=head2 LimitCustomField
+=head2 limit_CustomField
 
 Takes a paramhash of key/value pairs with the following keys:
 
@@ -2368,7 +2368,7 @@ Takes a paramhash of key/value pairs with the following keys:
 
 =cut
 
-sub LimitCustomField {
+sub limit_CustomField {
     my $self = shift;
     my %args = (
         value       => undef,
@@ -2380,7 +2380,7 @@ sub LimitCustomField {
         @_
     );
 
-    warn "Limiting to a cf";
+    warn "limit_ing to a cf";
     my $CF = RT::Model::CustomField->new;
     if ( $args{customfield} =~ /^\d+$/ ) {
         $CF->load( $args{customfield} );
@@ -2420,7 +2420,7 @@ sub LimitCustomField {
     @rest = ( entry_aggregator => 'AND' )
         if ( $CF->Type eq 'SelectMultiple' );
 
-        warn "Limiting  ";
+        warn "limit_ing  ";
     $self->limit(
         value => $args{value},
         column => "CF."
@@ -3138,7 +3138,7 @@ sub from_sql {
     }
     # FIXME: Need to bring this logic back in
 
-    #      if ($self->_isLimited && (! $self->{'looking_at_effective_id'})) {
+    #      if ($self->_islimit_ed && (! $self->{'looking_at_effective_id'})) {
     #         $self->SUPER::limit( column => 'EffectiveId',
     #               operator => '=',
     #               quote_value => 0,
@@ -3202,7 +3202,7 @@ log level.  The general failure mode is to not display any tickets.
 
 Legacy Layer:
 
-   Legacy LimitFoo routines build up a RestrictionsHash
+   Legacy limit_Foo routines build up a RestrictionsHash
 
    _ProcessRestrictions converts the Restrictions to Clauses
    ([key,op,val,rest]).

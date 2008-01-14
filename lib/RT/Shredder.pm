@@ -177,8 +177,8 @@ example from L</SYNOPSIS>:
   RT::Shredder::Init( force => 1 );
   my $deleted = RT::Model::TicketCollection->new(current_user => RT->system_user );
   $deleted->{'allow_deleted_search'} = 1;
-  $deleted->LimitQueue( value => 'general' );
-  $deleted->LimitStatus( value => 'deleted' );
+  $deleted->limit_Queue( value => 'general' );
+  $deleted->limit_Status( value => 'deleted' );
   while( my $t = $deleted->next ) {
       $t->Wipeout;
   }

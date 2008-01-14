@@ -166,7 +166,7 @@ sub _PrivacyObjects {
     my $CurrentUser = $self->current_user;
 
     my $groups = RT::Model::GroupCollection->new;
-    $groups->LimitToUserDefinedGroups;
+    $groups->limit_ToUserDefinedGroups;
     $groups->WithMember( principal_id => $self->current_user->id,
                          Recursively => 1 );
 

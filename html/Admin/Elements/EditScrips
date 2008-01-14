@@ -89,10 +89,10 @@ if ($id)  {
 }
 
 if ($QueueObj->id) {                         
-	$Scrips->LimitToQueue($id);
+	$Scrips->limit_ToQueue($id);
 }                                            
 else {                                       
-        $Scrips->LimitToGlobal();
+        $Scrips->limit_ToGlobal();
 }                                           
 
 $Scrips->order_by( column => 'description' );

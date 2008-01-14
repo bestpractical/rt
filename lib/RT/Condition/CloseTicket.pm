@@ -69,8 +69,8 @@ sub IsApplicable {
         ( $txn->Type eq "Set" && $txn->Field eq "Status" );
 
     my $queue = $self->TicketObj->QueueObj;
-    return 0 unless $queue->IsActiveStatus( $txn->OldValue );
-    return 0 unless $queue->IsInactiveStatus( $txn->NewValue );
+    return 0 unless $queue->IsActiveStatus( $txn->old_value );
+    return 0 unless $queue->IsInactiveStatus( $txn->new_value );
 
     return 1;
 }

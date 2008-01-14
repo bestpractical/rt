@@ -198,7 +198,7 @@ sub delete {
 
         #   Find all ACEs granted to $self->GroupId
         my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
-        $acl->LimitToPrincipal( Id => $self->GroupId );
+        $acl->limit_ToPrincipal( Id => $self->GroupId );
 
 
         while ( my $this_ace = $acl->next() ) {
@@ -267,7 +267,7 @@ sub set_disabled {
     unless ( $self->GroupObj->Object->has_member_recursively( $self->MemberObj ) ) {
         #   Find all ACEs granted to $self->GroupId
         my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
-        $acl->LimitToPrincipal( Id => $self->GroupId );
+        $acl->limit_ToPrincipal( Id => $self->GroupId );
 
         while ( my $this_ace = $acl->next() ) {
             #       Find all ACEs which $self-MemberObj has delegated from $this_ace

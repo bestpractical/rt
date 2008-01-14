@@ -76,9 +76,9 @@
 </tr>
 
 <tr><td align="right"><&|/l&>Priority starts at</&>:</td>
-<td><input name="InitialPriority" value="<% ($Create) ? "" : $QueueObj->InitialPriority %>" /></td>
+<td><input name="initial_priority" value="<% ($Create) ? "" : $QueueObj->initial_priority %>" /></td>
 <td align="right"><&|/l&>Over time, priority moves toward</&>:</td>
-<td><input name="FinalPriority" value="<% ($Create) ? "" : $QueueObj->FinalPriority %>" /></td>
+<td><input name="final_priority" value="<% ($Create) ? "" : $QueueObj->final_priority %>" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Requests should be due in</&>:</td>
@@ -140,7 +140,7 @@ if ($Create) {
 if ( $QueueObj->id ) {
     delete $session{'create_in_queues'};
     my @attribs= qw(Description correspond_address comment_address name
-        InitialPriority FinalPriority DefaultDueIn Sign Encrypt disabled);
+        initial_priority final_priority DefaultDueIn Sign Encrypt disabled);
 
     # we're asking about enabled on the web page but really care about disabled
     if ( $SetEnabled ) {
@@ -179,8 +179,8 @@ $Create => undef
 $Description => undef
 $correspond_address => undef
 $comment_address => undef
-$InitialPriority => undef
-$FinalPriority => undef
+$initial_priority => undef
+$final_priority => undef
 $DefaultDueIn => undef
 $SetEnabled => undef
 $Enabled => undef

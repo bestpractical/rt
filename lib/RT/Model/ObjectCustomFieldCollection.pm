@@ -57,13 +57,13 @@ sub limit_to_custom_field {
     $self->limit( column => 'CustomField', value => $id );
 }
 
-sub LimitToobject_id {
+sub limit_Toobject_id {
     my $self = shift;
     my $id = shift || 0;
     $self->limit( column => 'object_id', value => $id );
 }
 
-sub LimitToLookupType {
+sub limit_ToLookupType {
     my $self = shift;
     my $lookup = shift;
 

@@ -85,7 +85,7 @@ if ( defined $arglist[0] && $arglist[0] eq 'type') {
 
 if ($type) {
     # Create, Set, Status, Correspond, comment, Give, Steal, Take, Told
-    # CustomField, AddLink, DeleteLink, AddWatcher, DelWatcher
+    # CustomField, add_link, DeleteLink, AddWatcher, del_watcher
     if ($args =~ /^links?$/) {
         $trans->limit(column => 'Type', operator => 'LIKE', value => '%Link');
     }
@@ -125,10 +125,10 @@ if ($tid) {
 	if (!%$fields || exists $fields->{lc 'Type'});
     push @data, [ Field    => $t->Field   ]
 	if (!%$fields || exists $fields->{lc 'Field'});
-    push @data, [ OldValue    => $t->OldValue   ]
-	if (!%$fields || exists $fields->{lc 'OldValue'});
-    push @data, [ NewValue    => $t->NewValue   ]
-	if (!%$fields || exists $fields->{lc 'NewValue'});
+    push @data, [ old_value    => $t->old_value   ]
+	if (!%$fields || exists $fields->{lc 'old_value'});
+    push @data, [ new_value    => $t->new_value   ]
+	if (!%$fields || exists $fields->{lc 'new_value'});
     push @data, [ Data    => $t->Data   ]
 	if (!%$fields || exists $fields->{lc 'Data'});
     push @data, [ Description    => $t->Description   ]

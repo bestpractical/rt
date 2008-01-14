@@ -81,7 +81,7 @@ sub __DependsOn
 
 # Scrips
     $objs = RT::Model::ScripCollection->new;
-    $objs->LimitToQueue( $self->id );
+    $objs->limit_ToQueue( $self->id );
     push( @$list, $objs );
 
 # Templates
@@ -90,7 +90,7 @@ sub __DependsOn
 
 # Custom Fields
     $objs = RT::Model::CustomFieldCollection->new;
-    $objs->LimitToQueue( $self->id );
+    $objs->limit_ToQueue( $self->id );
     push( @$list, $objs );
 
     $deps->_PushDependencies(

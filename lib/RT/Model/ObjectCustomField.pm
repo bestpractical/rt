@@ -88,9 +88,9 @@ sub create {
     #XXX: Where is ACL check for 'AssignCustomFields'?
 
     my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new;
-    $ObjectCFs->LimitToobject_id( $args{'object_id'} );
+    $ObjectCFs->limit_Toobject_id( $args{'object_id'} );
     $ObjectCFs->limit_to_custom_field( $cf->id );
-    $ObjectCFs->LimitToLookupType( $cf->LookupType );
+    $ObjectCFs->limit_ToLookupType( $cf->LookupType );
     if ( my $first = $ObjectCFs->first ) {
         $self->load( $first->id );
         return $first->id;
@@ -98,8 +98,8 @@ sub create {
 
     unless ( defined $args{'SortOrder'} ) {
         my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new(current_user => RT->system_user );
-        $ObjectCFs->LimitToobject_id( $args{'object_id'} );
-        $ObjectCFs->LimitToLookupType( $cf->LookupType );
+        $ObjectCFs->limit_Toobject_id( $args{'object_id'} );
+        $ObjectCFs->limit_ToLookupType( $cf->LookupType );
         $ObjectCFs->order_by( column => 'SortOrder', order => 'DESC' );
         if ( my $first = $ObjectCFs->first ) {
             $args{'SortOrder'} = $first->SortOrder + 1;
@@ -119,8 +119,8 @@ sub delete {
     my $self = shift;
 
     my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new;
-    $ObjectCFs->LimitToobject_id($self->object_id);
-    $ObjectCFs->LimitToLookupType($self->CustomFieldObj->LookupType);
+    $ObjectCFs->limit_Toobject_id($self->object_id);
+    $ObjectCFs->limit_ToLookupType($self->CustomFieldObj->LookupType);
 
     # Move everything below us up
     my $sort_order = $self->SortOrder;

@@ -151,8 +151,8 @@
 <&|/Widgets/TitleBox, title => _('Edit Custom Fields'), color => "#336633"&>
 <%perl>
 my $cfs = RT::Model::CustomFieldCollection->new();
-$cfs->LimitToGlobal();
-$cfs->LimitToQueue($_) for keys %$seen_queues;
+$cfs->limit_ToGlobal();
+$cfs->limit_ToQueue($_) for keys %$seen_queues;
 </%perl>
 <table>
 <tr>
@@ -364,8 +364,8 @@ while ( my $Ticket = $Tickets->next ) {
 }
 
 my $TxnCFs = RT::Model::CustomFieldCollection->new();
-$TxnCFs->LimitToLookupType( RT::Model::Transaction->CustomFieldLookupType );
-$TxnCFs->LimitToGlobalOrobject_id( sort keys %queues );
+$TxnCFs->limit_ToLookupType( RT::Model::Transaction->CustomFieldLookupType );
+$TxnCFs->limit_ToGlobalOrobject_id( sort keys %queues );
 
 </%INIT>
 <%args>

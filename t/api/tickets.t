@@ -11,7 +11,7 @@ use RT;
 
 ok (require RT::Model::TicketCollection);
 ok( my $testtickets = RT::Model::TicketCollection->new(current_user => RT->system_user ) );
-ok( $testtickets->LimitStatus( value => 'deleted' ) );
+ok( $testtickets->limit_Status( value => 'deleted' ) );
 # Should be zero until 'allow_deleted_search'
 is( $testtickets->count , 0 );
 
@@ -92,7 +92,7 @@ is ($tix4->count, 2);
     undef $main::_STDERR_;
 
 my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
-$t1->create(Queue => 'general', Subject => "LimitWatchers test", Requestors => \['requestor1@example.com']);
+$t1->create(Queue => 'general', Subject => "limit_Watchers test", Requestors => \['requestor1@example.com']);
 
 
     undef $main::_STDOUT_;

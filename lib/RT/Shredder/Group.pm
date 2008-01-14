@@ -92,7 +92,7 @@ sub __DependsOn
 
 # Group members records
     my $objs = RT::Model::GroupMemberCollection->new;
-    $objs->LimitToMembersOfGroup( $self->principal_id );
+    $objs->limit_ToMembersOfGroup( $self->principal_id );
     push( @$list, $objs );
 
 # Group member records group belongs to

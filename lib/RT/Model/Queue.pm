@@ -88,8 +88,8 @@ column        name => max_length is 200,  type is 'varchar(200)',  default is ''
 column        Description => max_length is 255,  type is 'varchar(255)',  default is '';
 column        correspond_address => max_length is 120,  type is 'varchar(120)',  default is '';
 column        comment_address => max_length is 120,  type is 'varchar(120)',  default is '';
-column        InitialPriority => max_length is 11,  type is 'int(11)',  default is '0';
-column        FinalPriority => max_length is 11,  type is 'int(11)',  default is '0';
+column        initial_priority => max_length is 11,  type is 'int(11)',  default is '0';
+column        final_priority => max_length is 11,  type is 'int(11)',  default is '0';
 column        DefaultDueIn => max_length is 11,  type is 'int(11)',  default is '0';
 column        Creator => max_length is 11,  type is 'int(11)',  default is '0';
 column        Created =>   type is 'datetime',  default is '';
@@ -151,7 +151,7 @@ foreach my $right ( keys %{$RIGHTS} ) {
 }
     
 
-sub AddLink {
+sub add_link {
     my $self = shift;
     my %args = ( Target => '',
                  Base   => '',
@@ -163,7 +163,7 @@ sub AddLink {
         return ( 0, _("Permission Denied") );
     }
 
-    return $self->SUPER::_AddLink(%args);
+    return $self->SUPER::_add_link(%args);
 }
 
 sub delete_link {
@@ -324,8 +324,8 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Description
   correspond_address
   comment_address
-  InitialPriority
-  FinalPriority
+  initial_priority
+  final_priority
   DefaultDueIn
  
 If you pass the ACL check, it creates the queue and returns its queue id.
@@ -340,8 +340,8 @@ sub create {
         correspond_address => '',
         Description       => '',
         comment_address    => '',
-        InitialPriority   => 0,
-        FinalPriority     => 0,
+        initial_priority   => 0,
+        final_priority     => 0,
         DefaultDueIn      => 0,
         Sign              => undef,
         Encrypt           => undef,
@@ -541,7 +541,7 @@ sub Templates {
     my $templates = RT::Model::TemplateCollection->new;
 
     if ( $self->current_user_has_right('ShowTemplate') ) {
-        $templates->LimitToQueue( $self->id );
+        $templates->limit_ToQueue( $self->id );
     }
 
     return ($templates);
@@ -582,8 +582,8 @@ sub TicketCustomFields {
 
     my $cfs = RT::Model::CustomFieldCollection->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-	$cfs->LimitToGlobalOrobject_id( $self->id );
-	$cfs->LimitToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
+	$cfs->limit_ToGlobalOrobject_id( $self->id );
+	$cfs->limit_ToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
     }
     return ($cfs);
 }
@@ -604,8 +604,8 @@ sub TicketTransactionCustomFields {
 
     my $cfs = RT::Model::CustomFieldCollection->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-	$cfs->LimitToGlobalOrobject_id( $self->id );
-	$cfs->LimitToLookupType( 'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' );
+	$cfs->limit_ToGlobalOrobject_id( $self->id );
+	$cfs->limit_ToLookupType( 'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' );
     }
     return ($cfs);
 }

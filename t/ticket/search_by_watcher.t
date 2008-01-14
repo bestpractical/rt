@@ -180,7 +180,7 @@ my $nobody = RT->nobody();
     $t->_set( column             => 'Type',
               value             => 'not a ticket',
               CheckACL          => 0,
-              RecordTransaction => 0,
+              record_transaction => 0,
             );
     $total--;
 

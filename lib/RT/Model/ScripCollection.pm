@@ -68,9 +68,9 @@ use strict;
 package RT::Model::ScripCollection;
 use base qw/RT::SearchBuilder/;
 
-# {{{ sub LimitToQueue 
+# {{{ sub limit_ToQueue 
 
-=head2 LimitToQueue
+=head2 limit_ToQueue
 
 Takes a queue id (numerical) as its only argument. Makes sure that 
 Scopes it pulls out apply to this queue (or another that you've selected with
@@ -78,7 +78,7 @@ another call to this method
 
 =cut
 
-sub LimitToQueue  {
+sub limit_ToQueue  {
    my $self = shift;
   my $queue = shift;
  
@@ -90,18 +90,18 @@ sub LimitToQueue  {
 }
 # }}}
 
-# {{{ sub LimitToGlobal
+# {{{ sub limit_ToGlobal
 
-=head2 LimitToGlobal
+=head2 limit_ToGlobal
 
 Makes sure that 
 Scopes it pulls out apply to all queues (or another that you've selected with
-another call to this method or LimitToQueue
+another call to this method or limit_ToQueue
 
 =cut
 
 
-sub LimitToGlobal  {
+sub limit_ToGlobal  {
    my $self = shift;
  
   $self->limit (entry_aggregator => 'OR',
@@ -313,9 +313,9 @@ sub _FindScrips {
                  @_ );
 
 
-    $self->LimitToQueue( $self->{'TicketObj'}->QueueObj->id )
+    $self->limit_ToQueue( $self->{'TicketObj'}->QueueObj->id )
       ;    #Limit it to  $Ticket->QueueObj->id
-    $self->LimitToGlobal();
+    $self->limit_ToGlobal();
       # or to "global"
 
     $self->limit( column => "Stage", value => $args{'Stage'} );

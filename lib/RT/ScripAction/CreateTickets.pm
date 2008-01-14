@@ -132,7 +132,7 @@ A convoluted example
     my $name = "HR";
    
     my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
-    $groups->LimitToUserDefinedGroups();
+    $groups->limit_ToUserDefinedGroups();
     $groups->limit(column => "name", operator => "=", value => "$name");
     $groups->WithMember($TransactionObj->CreatorObj->id);
  
@@ -197,10 +197,10 @@ A complete list of acceptable fields for this beastie:
    +   Cc              => Email address 
    +   AdminCc         => Email address 
        time_worked      => 
-       TimeEstimated   => 
+       time_estimated   => 
        time_left        => 
-       InitialPriority => 
-       FinalPriority   => 
+       initial_priority => 
+       final_priority   => 
        Type            => 
     +! DependsOn       => 
     +! DependedOnBy    =>
@@ -431,9 +431,9 @@ sub UpdateByTemplate {
 
         my @attribs = qw(
             Subject
-            FinalPriority
+            final_priority
             Priority
-            TimeEstimated
+            time_estimated
             time_worked
             time_left
             Status
@@ -757,10 +757,10 @@ sub ParseLines {
         Cc              => $args{'cc'},
         AdminCc         => $args{'admincc'},
         time_worked      => $args{'time_worked'},
-        TimeEstimated   => $args{'timeestimated'},
+        time_estimated   => $args{'time_estimated'},
         time_left        => $args{'time_left'},
-        InitialPriority => $args{'initialpriority'} || 0,
-        FinalPriority   => $args{'finalpriority'} || 0,
+        initial_priority => $args{'initial_priority'} || 0,
+        final_priority   => $args{'final_priority'} || 0,
         Type            => $args{'type'},
     );
 
@@ -975,10 +975,10 @@ sub GetUpdateTemplate {
     $string .= "Cc: " . $t->CcAddresses . "\n";
     $string .= "AdminCc: " . $t->AdminCcAddresses . "\n";
     $string .= "time_worked: " . $t->time_worked . "\n";
-    $string .= "TimeEstimated: " . $t->TimeEstimated . "\n";
+    $string .= "time_estimated: " . $t->time_estimated . "\n";
     $string .= "time_left: " . $t->time_left . "\n";
-    $string .= "InitialPriority: " . $t->Priority . "\n";
-    $string .= "FinalPriority: " . $t->FinalPriority . "\n";
+    $string .= "initial_priority: " . $t->Priority . "\n";
+    $string .= "final_priority: " . $t->final_priority . "\n";
 
     foreach my $type ( sort keys %LINKTYPEMAP ) {
 
@@ -1026,10 +1026,10 @@ sub GetBaseTemplate {
     $string .= "Cc: " . $t->CcAddresses . "\n";
     $string .= "AdminCc: " . $t->AdminCcAddresses . "\n";
     $string .= "time_worked: " . $t->time_worked . "\n";
-    $string .= "TimeEstimated: " . $t->TimeEstimated . "\n";
+    $string .= "time_estimated: " . $t->time_estimated . "\n";
     $string .= "time_left: " . $t->time_left . "\n";
-    $string .= "InitialPriority: " . $t->Priority . "\n";
-    $string .= "FinalPriority: " . $t->FinalPriority . "\n";
+    $string .= "initial_priority: " . $t->Priority . "\n";
+    $string .= "final_priority: " . $t->final_priority . "\n";
 
     return $string;
 }
@@ -1053,10 +1053,10 @@ sub GetCreateTemplate {
     $string .= "Cc: \n";
     $string .= "AdminCc:\n";
     $string .= "time_worked: \n";
-    $string .= "TimeEstimated: \n";
+    $string .= "time_estimated: \n";
     $string .= "time_left: \n";
-    $string .= "InitialPriority: \n";
-    $string .= "FinalPriority: \n";
+    $string .= "initial_priority: \n";
+    $string .= "final_priority: \n";
 
     foreach my $type ( keys %LINKTYPEMAP ) {
 
@@ -1213,13 +1213,13 @@ sub PostProcess {
                     Jifty->log->debug("Building $type link for $link");
                 }
 
-                my ( $wval, $wmsg ) = $ticket->AddLink(
+                my ( $wval, $wmsg ) = $ticket->add_link(
                     Type => $LINKTYPEMAP{$type}->{'Type'},
                     $LINKTYPEMAP{$type}->{'Mode'} => $link,
                     Silent                        => 1
                 );
 
-                Jifty->log->warn("AddLink thru $link failed: $wmsg")
+                Jifty->log->warn("add_link thru $link failed: $wmsg")
                     unless $wval;
 
                 # push @non_fatal_errors, $wmsg unless ($wval);

@@ -123,23 +123,23 @@ sub _do_search {
 
     #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
     unless ( $self->{'find_disabled_rows'} ) {
-        $self->LimitToEnabled();
+        $self->limit_ToEnabled();
     }
     return ( $self->SUPER::_do_search(@_) );
 
 }
 
 # }}}
-# {{{ sub LimitToEnabled
+# {{{ sub limit_ToEnabled
 
-=head2 LimitToEnabled
+=head2 limit_ToEnabled
 
 Only find items that haven\'t been disabled
 
 =cut
 
 # XXX: should be generalized
-sub LimitToEnabled {
+sub limit_ToEnabled {
     my $self = shift;
 
     $self->limit( alias    => $self->PrincipalsAlias,
@@ -150,16 +150,16 @@ sub LimitToEnabled {
 
 # }}}
 
-# {{{ LimitToEmail
+# {{{ limit_ToEmail
 
-=head2 LimitToEmail
+=head2 limit_ToEmail
 
 Takes one argument. an email address. limits the returned set to
 that email address
 
 =cut
 
-sub LimitToEmail {
+sub limit_ToEmail {
     my $self = shift;
     my $addr = shift;
     $self->limit( column => 'email', value => "$addr" );
@@ -198,15 +198,15 @@ sub MemberOfGroup {
 
 # }}}
 
-# {{{ LimitToprivileged
+# {{{ limit_Toprivileged
 
-=head2 LimitToprivileged
+=head2 limit_Toprivileged
 
 Limits to users who can be made members of ACLs and groups
 
 =cut
 
-sub LimitToprivileged {
+sub limit_Toprivileged {
     my $self = shift;
 
     my $priv = RT::Model::Group->new;
@@ -536,7 +536,7 @@ sub WhoBelongToGroups {
 
     # Unprivileged users can't be granted real system rights.
     # is this really the right thing to be saying?
-    $self->LimitToprivileged();
+    $self->limit_Toprivileged();
 
     my $group_members = $self->_joinGroupMembers( %args );
 

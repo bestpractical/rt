@@ -111,7 +111,7 @@
 <&|/l&>Let this user access RT</&><br />
 
 
-<input type="hidden" class="hidden" name="Setprivileged" value="1" />
+<input type="hidden" class="hidden" name="set_privileged" value="1" />
 <input type="checkbox" class="checkbox" name="privileged" value="1" <%$privilegedChecked%> /> <&|/l&>Let this user be granted rights</&><br />
 		    
 % unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
@@ -342,7 +342,7 @@ if ($user_object->id && $id ne 'new') {
 
 
     # {{{ Deal with special fields: privileged, Enabled
-    if  ( $Setprivileged and $privileged != $user_object->privileged ) {
+    if  ( $set_privileged and $privileged != $user_object->privileged ) {
          my ($code, $msg) = $user_object->set_privileged($privileged);
          push @results, _('privileged status: %1', _($msg));
     }
@@ -405,7 +405,7 @@ $organization  => undef
 $real_name  => undef
 $nickname  => undef
 $privileged => undef
-$Setprivileged => undef
+$set_privileged => undef
 $Enabled => undef
 $SetEnabled => undef
 $lang  => undef

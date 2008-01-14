@@ -126,7 +126,7 @@ if ($changes) {
             foreach my $u (keys %new) {
                 my $type = $lfields{$key}->{Type};
                 my $mode = $lfields{$key}->{Mode};
-                ($n, $s) = $ticket->AddLink(Type => $type, $mode => $u);
+                ($n, $s) = $ticket->add_link(Type => $type, $mode => $u);
                 goto SET;
             }
         }

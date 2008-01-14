@@ -86,10 +86,10 @@ column        IssueStatement => max_length is 11,      type is 'int(11)', defaul
 column        Resolution => max_length is 11,      type is 'int(11)', default is '0';
 column        Owner => max_length is 11,      type is 'int(11)', default is '0';
 column        Subject => max_length is 200,      type is 'varchar(200)', default is '';
-column        InitialPriority => max_length is 11,      type is 'int(11)', default is '0';
-column        FinalPriority => max_length is 11,      type is 'int(11)', default is '0';
+column        initial_priority => max_length is 11,      type is 'int(11)', default is '0';
+column        final_priority => max_length is 11,      type is 'int(11)', default is '0';
 column        Priority => max_length is 11,      type is 'int(11)', default is '0';
-column        TimeEstimated => max_length is 11,      type is 'int(11)', default is '0';
+column        time_estimated => max_length is 11,      type is 'int(11)', default is '0';
 column        time_worked => max_length is 11,      type is 'int(11)', default is '0';
 column        Status => max_length is 10,      type is 'varchar(10)', default is '';
 column        time_left => max_length is 11,      type is 'int(11)', default is '0';
@@ -268,10 +268,10 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Owner -- This ticket\'s owner. either an RT::Model::User object or this user\'s id
   Subject -- A string describing the subject of the ticket
   Priority -- an integer from 0 to 99
-  InitialPriority -- an integer from 0 to 99
-  FinalPriority -- an integer from 0 to 99
+  initial_priority -- an integer from 0 to 99
+  final_priority -- an integer from 0 to 99
   Status -- any valid status (Defined in RT::Model::Queue)
-  TimeEstimated -- an integer. estimated time for this task in minutes
+  time_estimated -- an integer. estimated time for this task in minutes
   time_worked -- an integer. time worked so far in minutes
   time_left -- an integer. time remaining in minutes
   starts -- an ISO date describing the ticket\'s start date and time in GMT
@@ -309,19 +309,19 @@ sub create {
         Type               => 'ticket',
         Owner              => undef,
         Subject            => '',
-        InitialPriority    => undef,
-        FinalPriority      => undef,
+        initial_priority    => undef,
+        final_priority      => undef,
         Priority           => undef,
         Status             => 'new',
         time_worked         => "0",
         time_left           => 0,
-        TimeEstimated      => 0,
+        time_estimated      => 0,
         Due                => undef,
         starts             => undef,
         Started            => undef,
         Resolved           => undef,
         MIMEObj            => undef,
-        _RecordTransaction => 1,
+        _record_transaction => 1,
         DryRun             => 0,
         @_
     );
@@ -366,17 +366,17 @@ sub create {
 
     #Initial Priority
     # If there's no queue default initial priority and it's not set, set it to 0
-    $args{'InitialPriority'} = $QueueObj->InitialPriority || 0
-        unless defined $args{'InitialPriority'};
+    $args{'initial_priority'} = $QueueObj->initial_priority || 0
+        unless defined $args{'initial_priority'};
 
     #Final priority
     # If there's no queue default final priority and it's not set, set it to 0
-    $args{'FinalPriority'} = $QueueObj->FinalPriority || 0
-        unless defined $args{'FinalPriority'};
+    $args{'final_priority'} = $QueueObj->final_priority || 0
+        unless defined $args{'final_priority'};
 
-    # Priority may have changed from InitialPriority, for the case
+    # Priority may have changed from initial_priority, for the case
     # where we're importing tickets (eg, from an older RT version.)
-    $args{'Priority'} = $args{'InitialPriority'}
+    $args{'Priority'} = $args{'initial_priority'}
         unless defined $args{'Priority'};
 
     # {{{ Dates
@@ -424,7 +424,7 @@ sub create {
 
     # {{{ Dealing with time fields
 
-    $args{'TimeEstimated'} = 0 unless defined $args{'TimeEstimated'};
+    $args{'time_estimated'} = 0 unless defined $args{'time_estimated'};
     $args{'time_worked'}    = 0 unless defined $args{'time_worked'};
     $args{'time_left'}      = 0 unless defined $args{'time_left'};
 
@@ -506,12 +506,12 @@ sub create {
         Queue           => $QueueObj->id,
         Owner           => $Owner->id,
         Subject         => $args{'Subject'},
-        InitialPriority => $args{'InitialPriority'},
-        FinalPriority   => $args{'FinalPriority'},
+        initial_priority => $args{'initial_priority'},
+        final_priority   => $args{'final_priority'},
         Priority        => $args{'Priority'},
         Status          => $args{'Status'},
         time_worked      => $args{'time_worked'},
-        TimeEstimated   => $args{'TimeEstimated'},
+        time_estimated   => $args{'time_estimated'},
         time_left        => $args{'time_left'},
         Type            => $args{'Type'},
         starts          => $starts->ISO,
@@ -527,14 +527,14 @@ sub create {
 
     # Delete null integer parameters
     foreach my $attr
-        qw(time_worked time_left TimeEstimated InitialPriority FinalPriority)
+        qw(time_worked time_left time_estimated initial_priority final_priority)
     {
         delete $params{$attr}
           unless ( exists $params{$attr} && $params{$attr} );
     }
 
     # Delete the time worked if we're counting it in the transaction
-    delete $params{'time_worked'} if $args{'_RecordTransaction'};
+    delete $params{'time_worked'} if $args{'_record_transaction'};
 
     my ($id,$ticket_message) = $self->SUPER::create( %params );
     unless ($id) {
@@ -619,7 +619,7 @@ sub create {
                     : (Value => $value)
                 ),
                 Field             => $cfid,
-                RecordTransaction => 0,
+                record_transaction => 0,
             );
             push @non_fatal_errors, $msg unless $status;
         }
@@ -646,7 +646,7 @@ sub create {
             ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
         {
             # Check rights on the other end of the link if we must
-            # then run _AddLink that doesn't check for ACLs
+            # then run _add_link that doesn't check for ACLs
             if ( RT->Config->Get( 'StrictLinkACL' ) ) {
                 my ($val, $msg, $obj) = $self->__GetTicketFromURI( URI => $link );
                 unless ( $val ) {
@@ -660,10 +660,10 @@ sub create {
                 }
             }
             
-            my ( $wval, $wmsg ) = $self->_AddLink(
+            my ( $wval, $wmsg ) = $self->_add_link(
                 Type                          => $LINKTYPEMAP{$type}->{'Type'},
                 $LINKTYPEMAP{$type}->{'Mode'} => $link,
-                Silent                        => !$args{'_RecordTransaction'},
+                Silent                        => !$args{'_record_transaction'},
                 'Silent'. ( $LINKTYPEMAP{$type}->{'Mode'} eq 'Base'? 'Target': 'Base' )
                                               => 1,
             );
@@ -692,10 +692,10 @@ sub create {
         );
     }
 
-    if ( $args{'_RecordTransaction'} ) {
+    if ( $args{'_record_transaction'} ) {
 
         # {{{ Add a transaction for the create
-        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+        my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             Type         => "Create",
             TimeTaken    => $args{'time_worked'},
             MIMEObj      => $args{'MIMEObj'},
@@ -827,8 +827,8 @@ sub Import {
         Type            => 'ticket',
         Owner           => RT->nobody->id,
         Subject         => '[no subject]',
-        InitialPriority => undef,
-        FinalPriority   => undef,
+        initial_priority => undef,
+        final_priority   => undef,
         Status          => 'new',
         time_worked      => "0",
         Due             => undef,
@@ -937,9 +937,9 @@ sub Import {
         Queue           => $QueueObj->id,
         Owner           => $Owner->id,
         Subject         => $args{'Subject'},        # loc
-        InitialPriority => $args{'InitialPriority'},    # loc
-        FinalPriority   => $args{'FinalPriority'},    # loc
-        Priority        => $args{'InitialPriority'},    # loc
+        initial_priority => $args{'initial_priority'},    # loc
+        final_priority   => $args{'final_priority'},    # loc
+        Priority        => $args{'initial_priority'},    # loc
         Status          => $args{'Status'},        # loc
         time_worked      => $args{'time_worked'},        # loc
         Type            => $args{'Type'},        # loc
@@ -1170,9 +1170,9 @@ sub _AddWatcher {
     }
 
     unless ( $args{'Silent'} ) {
-        $self->_NewTransaction(
+        $self->_new_transaction(
             Type     => 'AddWatcher',
-            NewValue => $principal->id,
+            new_value => $principal->id,
             Field    => $args{'Type'}
         );
     }
@@ -1297,8 +1297,8 @@ sub deleteWatcher {
     }
 
     unless ( $args{'Silent'} ) {
-        $self->_NewTransaction( Type     => 'DelWatcher',
-                                OldValue => $principal->id,
+        $self->_new_transaction( Type     => 'del_watcher',
+                                old_value => $principal->id,
                                 Field    => $args{'Type'} );
     }
 
@@ -2183,7 +2183,7 @@ sub _RecordNote {
     }
 
     #Record the correspondence (write the transaction)
-    my ( $Trans, $msg, $TransObj ) = $self->_NewTransaction(
+    my ( $Trans, $msg, $TransObj ) = $self->_new_transaction(
              Type => $args{'NoteType'},
              Data => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
              TimeTaken => $args{'TimeTaken'},
@@ -2312,10 +2312,10 @@ sub delete_link {
     $remote_uri->FromURI( $remote_link );
 
     unless ( $args{ 'Silent'. $direction } ) {
-        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+        my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             Type      => 'DeleteLink',
             Field     => $LINKDIRMAP{$args{'Type'}}->{$direction},
-            OldValue  => $remote_uri->URI || $remote_link,
+            old_value  => $remote_uri->URI || $remote_link,
             TimeTaken => 0
         );
         Jifty->log->error("Couldn't create transaction: $Msg") unless $Trans;
@@ -2323,11 +2323,11 @@ sub delete_link {
 
     if ( !$args{ 'Silent'. ( $direction eq 'Target'? 'Base': 'Target' ) } && $remote_uri->IsLocal ) {
         my $OtherObj = $remote_uri->Object;
-        my ( $val, $Msg ) = $OtherObj->_NewTransaction(
+        my ( $val, $Msg ) = $OtherObj->_new_transaction(
             Type           => 'DeleteLink',
             Field          => $direction eq 'Target' ? $LINKDIRMAP{$args{'Type'}}->{Base}
                                             : $LINKDIRMAP{$args{'Type'}}->{Target},
-            OldValue       => $self->URI,
+            old_value       => $self->URI,
             ActivateScrips => !RT->Config->Get('LinkTransactionsRun1Scrip'),
             TimeTaken      => 0,
         );
@@ -2339,9 +2339,9 @@ sub delete_link {
 
 # }}}
 
-# {{{ sub AddLink
+# {{{ sub add_link
 
-=head2 AddLink
+=head2 add_link
 
 Takes a paramhash of Type and one of Base or Target. Adds that link to this ticket.
 
@@ -2352,7 +2352,7 @@ both transactions are Created.
 
 =cut
 
-sub AddLink {
+sub add_link {
     my $self = shift;
     my %args = ( Target       => '',
                  Base         => '',
@@ -2386,7 +2386,7 @@ sub AddLink {
         return ( 0, _("Permission Denied") );
     }
 
-    return $self->_AddLink(%args);
+    return $self->_add_link(%args);
 }
 
 sub __GetTicketFromURI {
@@ -2410,13 +2410,13 @@ sub __GetTicketFromURI {
     return (1, 'Found ticket', $obj);
 }
 
-=head2 _AddLink  
+=head2 _add_link  
 
-Private non-acled variant of AddLink so that links can be added during create.
+Private non-acled variant of add_link so that links can be added during create.
 
 =cut
 
-sub _AddLink {
+sub _add_link {
     my $self = shift;
     my %args = ( Target       => '',
                  Base         => '',
@@ -2426,7 +2426,7 @@ sub _AddLink {
                  SilentTarget => undef,
                  @_ );
 
-    my ($val, $msg, $exist) = $self->SUPER::_AddLink(%args);
+    my ($val, $msg, $exist) = $self->SUPER::_add_link(%args);
     return ($val, $msg) if !$val || $exist;
     return ($val, $msg) if $args{'Silent'};
 
@@ -2443,10 +2443,10 @@ sub _AddLink {
     $remote_uri->FromURI( $remote_link );
 
     unless ( $args{ 'Silent'. $direction } ) {
-        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
-            Type      => 'AddLink',
+        my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
+            Type      => 'add_link',
             Field     => $LINKDIRMAP{$args{'Type'}}->{$direction},
-            NewValue  =>  $remote_uri->URI || $remote_link,
+            new_value  =>  $remote_uri->URI || $remote_link,
             TimeTaken => 0
         );
         Jifty->log->error("Couldn't create transaction: $Msg") unless $Trans;
@@ -2454,11 +2454,11 @@ sub _AddLink {
 
     if ( !$args{ 'Silent'. ( $direction eq 'Target'? 'Base': 'Target' ) } && $remote_uri->IsLocal ) {
         my $OtherObj = $remote_uri->Object;
-        my ( $val, $msg ) = $OtherObj->_NewTransaction(
-            Type           => 'AddLink',
+        my ( $val, $msg ) = $OtherObj->_new_transaction(
+            Type           => 'add_link',
             Field          => $direction eq 'Target' ? $LINKDIRMAP{$args{'Type'}}->{Base}
                                             : $LINKDIRMAP{$args{'Type'}}->{Target},
-            NewValue       => $self->URI,
+            new_value       => $self->URI,
             ActivateScrips => !RT->Config->Get('LinkTransactionsRun1Scrip'),
             TimeTaken      => 0,
         );
@@ -2590,7 +2590,7 @@ sub MergeInto {
     }
 
     # Update time fields
-    foreach my $type qw(TimeEstimated time_worked time_left) {
+    foreach my $type qw(time_estimated time_worked time_left) {
 
         my $mutator = "set_$type";
         $MergeInto->$mutator(
@@ -2635,7 +2635,7 @@ sub MergeInto {
     }
 
     #make a new link: this ticket is merged into that other ticket.
-    $self->AddLink( Type   => 'MergedInto', Target => $MergeInto->id());
+    $self->add_link( Type   => 'MergedInto', Target => $MergeInto->id());
 
     $MergeInto->_setLastUpdated;    
 
@@ -2800,7 +2800,7 @@ sub set_Owner {
     my ( $return ) = $self->_set(
                       column             => 'Owner',
                       value             => $NewOwnerObj->id,
-                      RecordTransaction => 0,
+                      record_transaction => 0,
                       TimeTaken         => 0,
                       TransactionType   => $Type,
                       CheckACL          => 0,                  # don't check acl
@@ -2811,11 +2811,11 @@ sub set_Owner {
         return ( 0, _("Could not change owner. ") . $return );
     }
 
-   my ($val, $msg) = $self->_NewTransaction(
+   my ($val, $msg) = $self->_new_transaction(
         Type      => $Type,
         Field     => 'Owner',
-        NewValue  => $NewOwnerObj->id,
-        OldValue  => $OldOwnerObj->id,
+        new_value  => $NewOwnerObj->id,
+        old_value  => $OldOwnerObj->id,
         TimeTaken => 0,
     );
 
@@ -2968,7 +2968,7 @@ sub set_Status {
         #Set the Started time to "now"
         $self->_set( column             => 'Started',
                      value             => $now->ISO,
-                     RecordTransaction => 0 );
+                     record_transaction => 0 );
     }
 
     #When we close a ticket, set the 'Resolved' attribute to now.
@@ -2976,7 +2976,7 @@ sub set_Status {
     if ( $self->QueueObj->IsInactiveStatus($args{Status}) ) {
         $self->_set( column             => 'Resolved',
                      value             => $now->ISO,
-                     RecordTransaction => 0 );
+                     record_transaction => 0 );
     }
 
     #Actually update the status
@@ -3202,11 +3202,11 @@ sub _OverlayAccessible {
           Requestors      => { 'read' => 1,  'write' => 1 },
           Owner           => { 'read' => 1,  'write' => 1 },
           Subject         => { 'read' => 1,  'write' => 1 },
-          InitialPriority => { 'read' => 1,  'write' => 1 },
-          FinalPriority   => { 'read' => 1,  'write' => 1 },
+          initial_priority => { 'read' => 1,  'write' => 1 },
+          final_priority   => { 'read' => 1,  'write' => 1 },
           Priority        => { 'read' => 1,  'write' => 1 },
           Status          => { 'read' => 1,  'write' => 1 },
-          TimeEstimated      => { 'read' => 1,  'write' => 1 },
+          time_estimated      => { 'read' => 1,  'write' => 1 },
           time_worked      => { 'read' => 1,  'write' => 1 },
           time_left        => { 'read' => 1,  'write' => 1 },
           Told            => { 'read' => 1,  'write' => 1 },
@@ -3233,7 +3233,7 @@ sub _set {
     my %args = ( column             => undef,
                  value             => undef,
                  TimeTaken         => 0,
-                 RecordTransaction => 1,
+                 record_transaction => 1,
                  UpdateTicket      => 1,
                  CheckACL          => 1,
                  TransactionType   => 'Set',
@@ -3245,7 +3245,7 @@ sub _set {
       }
    }
 
-    unless ($args{'UpdateTicket'} || $args{'RecordTransaction'}) {
+    unless ($args{'UpdateTicket'} || $args{'record_transaction'}) {
         Jifty->log->error("Ticket->_set called without a mandate to record an update or update the ticket");
         return(0, _("Internal Error"));
     }
@@ -3272,13 +3272,13 @@ sub _set {
             return ( $return ) ;
         }
     }
-    if ( $args{'RecordTransaction'} == 1 ) {
+    if ( $args{'record_transaction'} == 1 ) {
 
-        my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+        my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
                                                Type => $args{'TransactionType'},
                                                Field     => $args{'column'},
-                                               NewValue  => $args{'value'},
-                                               OldValue  => $Old,
+                                               new_value  => $args{'value'},
+                                               old_value  => $Old,
                                                TimeTaken => $args{'TimeTaken'},
         );
         return ( $Trans, scalar $TransObj->BriefDescription );
@@ -3328,7 +3328,7 @@ sub _value {
 =head2 _UpdateTimeTaken
 
 This routine will increment the time_worked counter. it should
-only be called from _NewTransaction 
+only be called from _new_transaction 
 
 =cut
 
@@ -3448,7 +3448,7 @@ sub Transactions {
 
     #If the user has no rights, return an empty object
     if ( $self->current_user_has_right('ShowTicket') ) {
-        $transactions->LimitToTicket($self->id);
+        $transactions->limit_ToTicket($self->id);
 
         # if the user may not see comments do not return them
         unless ( $self->current_user_has_right('ShowTicketcomments') ) {

@@ -215,8 +215,8 @@ my $give  = $txns->first;
 is($give->Type, 'Give');
 
 
-is($give-> NewValue , $root->id , "Stolen from root");
-is($give->OldValue , RT->system_user->id , "Stolen by the systemuser");
+is($give-> new_value , $root->id , "Stolen from root");
+is($give->old_value , RT->system_user->id , "Stolen by the systemuser");
 
 
 }

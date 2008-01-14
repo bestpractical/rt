@@ -119,15 +119,15 @@ $TICKET_COLUMN_MAP = {
         attribute => 'Priority',
         value     => sub { return $_[0]->Priority }
     },
-    InitialPriority => {
-        attribute => 'InitialPriority',
+    initial_priority => {
+        attribute => 'initial_priority',
         name => 'Initial Priority',
-        value     => sub { return $_[0]->InitialPriority }
+        value     => sub { return $_[0]->initial_priority }
     },
-    FinalPriority => {
-        attribute => 'FinalPriority',
+    final_priority => {
+        attribute => 'final_priority',
         name => 'Final Priority',
-        value     => sub { return $_[0]->FinalPriority }
+        value     => sub { return $_[0]->final_priority }
     },
     EffectiveId => {
         attribute => 'EffectiveId',
@@ -147,10 +147,10 @@ $TICKET_COLUMN_MAP = {
         title     => 'Time Left',
         value     => sub { return $_[0]->time_left }
     },
-    TimeEstimated => {
-        attribute => 'TimeEstimated',
+    time_estimated => {
+        attribute => 'time_estimated',
         title => 'Time Estimated',
-        value     => sub { return $_[0]->TimeEstimated }
+        value     => sub { return $_[0]->time_estimated }
     },
     Requestors => {
         attribute => 'Requestor.email',
