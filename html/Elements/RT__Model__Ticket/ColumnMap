@@ -78,7 +78,7 @@ $TICKET_COLUMN_MAP = {
     Queuename => {
         attribute => 'Queue',
         title     => 'Queue',
-        value     => sub { return $_[0]->QueueObj->name }
+        value     => sub { return $_[0]->queue_obj->name }
     },
     Ownername => {
         title     => 'Owner',
@@ -183,7 +183,7 @@ $TICKET_COLUMN_MAP = {
         title     => 'Due',
         attribute => 'Due',
         value     => sub { 
-            my $date = $_[0]->DueObj;
+            my $date = $_[0]->due_obj;
             if ( $date && $date->Unix > 0 && $date->Diff < 0 ) {
                 return (\'<span class="overdue">' , $date->AgeAsString , \'</span>');
             } else {
@@ -210,7 +210,7 @@ $TICKET_COLUMN_MAP = {
     },
     Due => {
         attribute => 'Due',
-        value     => sub { return $_[0]->DueObj->AsString }
+        value     => sub { return $_[0]->due_obj->AsString }
     },
     Resolved => {
         attribute => 'Resolved',

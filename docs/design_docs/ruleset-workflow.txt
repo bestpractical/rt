@@ -34,7 +34,7 @@ Note that "Scrips" are now called "Rules".
 
 === RuleAction "AquireMyLocks"
 
-  FOREACH $Scrip IN $TicketObj->Scrips
+  FOREACH $Scrip IN $ticket_obj->Scrips
     WHERE $Scrip.Action.Type == "TryCreateTicketWithRuleset"
        DO LockRuleset $Scrip.Action.Argument
 

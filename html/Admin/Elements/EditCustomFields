@@ -87,7 +87,7 @@ $CustomFields->order_by( column => 'name' );
 my ($GlobalCFs, $ObjectCFs);
 $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new();
 $ObjectCFs->find_all_rows;
-$ObjectCFs->limit_Toobject_id($id);
+$ObjectCFs->limit_to_object_id($id);
 $ObjectCFs->limit_ToLookupType($lookup);
 
 # Check sanity of SortOrders
@@ -146,7 +146,7 @@ if ($CustomField and $Move) {
 
 if ($id) {
     $GlobalCFs = RT::Model::ObjectCustomFieldCollection->new();
-    $GlobalCFs->limit_Toobject_id(0);
+    $GlobalCFs->limit_to_object_id(0);
     $GlobalCFs->limit_ToLookupType($lookup);
 }
 
@@ -188,7 +188,7 @@ while (my $cf = $CustomFields->next) {
 # redo search...
 $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new();
 $ObjectCFs->find_all_rows;
-$ObjectCFs->limit_Toobject_id($id);
+$ObjectCFs->limit_to_object_id($id);
 $ObjectCFs->limit_ToLookupType($lookup);
 
 </%INIT>

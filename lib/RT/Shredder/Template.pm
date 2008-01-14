@@ -74,7 +74,7 @@ sub __DependsOn
     push( @$list, $objs );
 
     $deps->_PushDependencies(
-        BaseObject => $self,
+        base_object => $self,
         Flags => DEPENDS_ON,
         TargetObjects => $list,
         Shredder => $args{'Shredder'},
@@ -95,7 +95,7 @@ sub __Relates
     my $list = [];
 
 # Queue
-    my $obj = $self->QueueObj;
+    my $obj = $self->queue_obj;
     if( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {
@@ -108,7 +108,7 @@ sub __Relates
 # TODO: Users(Creator, LastUpdatedBy)
 
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}

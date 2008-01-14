@@ -34,9 +34,9 @@ msgstr "#%1"
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
 #. ($Ticket->id, $Ticket->Subject)
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 #. ($ticket->id, $ticket->Subject)
-#. ($TicketObj->id, $TicketObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
@@ -110,7 +110,7 @@ msgid "%1 %2 of group %3"
 msgstr "%3 群组的 %1 %2"
 
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:63 html/Ticket/Elements/PreviewScrips:103
-#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
+#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->template_obj->name))
 msgid "%1 %2 with template %3"
 msgstr "条件：%1 | 动作：%2 | 模板：%3"
 
@@ -119,15 +119,15 @@ msgid "%1 (%2) %3 this ticket\\n"
 msgstr "%1 (%2) %3 这份申请单\\n"
 
 #: html/Ticket/Elements/ShowAttachments:72
-#. ($rev->CreatedAsString, $size, $rev->CreatorObj->name)
+#. ($rev->CreatedAsString, $size, $rev->creator_obj->name)
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) - %3"
 
 #: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:108 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:66
 #. (_($DefaultStatus))
 #. (_($Ticket->Status()))
-#. (_($TicketObj->Status))
-#. ($TicketObj->OwnerObj->name())
+#. (_($ticket_obj->Status))
+#. ($ticket_obj->OwnerObj->name())
 msgid "%1 (Unchanged)"
 msgstr "%1 (未更改)"
 
@@ -215,7 +215,7 @@ msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 看来是个本地对象，却不在数据库里"
 
 #: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm:531
-#. ($self->BriefDescription , $self->CreatorObj->name)
+#. ($self->BriefDescription , $self->creator_obj->name)
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->name)
 msgid "%1 by %2"
 msgstr "%1 (%2)"
@@ -1053,7 +1053,7 @@ msgstr "签核"
 #: html/Approvals/Display.html:65 html/Approvals/Elements/ShowDependency:63 html/Approvals/index.html:86
 #. ($Ticket->id, $Ticket->Subject)
 #. ($ticket->id, $msg)
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 msgid "Approval #%1: %2"
 msgstr "签核单 #%1：%2"
 
@@ -1924,7 +1924,7 @@ msgid "Create a CustomField"
 msgstr "新增自订字段"
 
 #: html/Admin/Queues/CustomField.html:69
-#. ($QueueObj->name())
+#. ($queue_obj->name())
 msgid "Create a CustomField for queue %1"
 msgstr "为 %1 表单新增自订字段"
 
@@ -1989,7 +1989,7 @@ msgid "Create a request"
 msgstr "提出申请"
 
 #: html/Admin/Queues/Scrip.html:89
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Create a scrip for queue %1"
 msgstr "为 %1 表单新增手续"
 
@@ -2696,7 +2696,7 @@ msgid "Edit Subgroups"
 msgstr "新增/维护子群组"
 
 #: html/Admin/Queues/Templates.html:63
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Edit Templates for queue %1"
 msgstr "编辑表单 %1 的模板"
 
@@ -2737,7 +2737,7 @@ msgid "EditSavedSearches"
 msgstr "编辑已储存的查询"
 
 #: html/Admin/Queues/Modify.html:140
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Editing Configuration for queue %1"
 msgstr "编辑表单 %1 的设定"
 
@@ -4256,7 +4256,7 @@ msgid "Modify Workflow"
 msgstr "更改流程"
 
 #: html/Admin/Queues/CustomField.html:66
-#. ($QueueObj->name())
+#. ($queue_obj->name())
 msgid "Modify a CustomField for queue %1"
 msgstr "更改 %1 表单内的自订字段"
 
@@ -4265,7 +4265,7 @@ msgid "Modify a CustomField which applies to all queues"
 msgstr "更改适用于所有表单的自订字段"
 
 #: html/Admin/Queues/Scrip.html:82
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify a scrip for queue %1"
 msgstr "更改 %1 表单内的手续"
 
@@ -4283,12 +4283,12 @@ msgid "Modify dates for # %1"
 msgstr "更改 # %1 的日期"
 
 #: html/Ticket/ModifyDates.html:46 html/Ticket/ModifyDates.html:50
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 msgid "Modify dates for #%1"
 msgstr "更改 #%1 的日期"
 
 #: html/Ticket/ModifyDates.html:57
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 msgid "Modify dates for ticket # %1"
 msgstr "更改申请单 # %1 的日期"
 
@@ -4339,7 +4339,7 @@ msgid "Modify group rights for group %1"
 msgstr "更改群组 %1 的群组权限"
 
 #: html/Admin/Queues/GroupRights.html:46 html/Admin/Queues/GroupRights.html:50
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify group rights for queue %1"
 msgstr "更改表单 %1 的群组权限"
 
@@ -4352,7 +4352,7 @@ msgid "Modify one's own RT account"
 msgstr "更改个人的帐号信息"
 
 #: html/Admin/Queues/People.html:46 html/Admin/Queues/People.html:50
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify people related to queue %1"
 msgstr "更改链接到表单 %1 的人员"
 
@@ -4363,7 +4363,7 @@ msgid "Modify people related to ticket #%1"
 msgstr "更改申请单 #%1 链接到的人员"
 
 #: html/Admin/Queues/Scrips.html:67
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify scrips for queue %1"
 msgstr "更改表单 %1 的手续"
 
@@ -4372,8 +4372,8 @@ msgid "Modify scrips which apply to all queues"
 msgstr "更改适用于所有表单的手续"
 
 #: html/Admin/Global/Template.html:102 html/Admin/Global/Template.html:46 html/Admin/Global/Template.html:51 html/Admin/Queues/Template.html:99
-#. (_($TemplateObj->name()))
-#. ($TemplateObj->id)
+#. (_($template_obj->name()))
+#. ($template_obj->id)
 msgid "Modify template %1"
 msgstr "更改模板 %1"
 
@@ -4405,7 +4405,7 @@ msgid "Modify ticket # %1"
 msgstr "更改申请单 # %1"
 
 #: html/Ticket/Modify.html:46 html/Ticket/Modify.html:49 html/Ticket/Modify.html:55
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 msgid "Modify ticket #%1"
 msgstr "更改申请单 # %1"
 
@@ -4424,7 +4424,7 @@ msgid "Modify user rights for group %1"
 msgstr "更改群组 %1 的使用者权限"
 
 #: html/Admin/Queues/UserRights.html:46 html/Admin/Queues/UserRights.html:50
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify user rights for queue %1"
 msgstr "更改表单 %1 的使用者权限"
 
@@ -4788,7 +4788,7 @@ msgid "No permission to create queues"
 msgstr "没有新增表单的权限"
 
 #: lib/RT/Ticket_Overlay.pm:420
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "没有在表单 '%1' 新增申请单的权限"
 
@@ -5079,7 +5079,7 @@ msgid "On"
 msgstr "等于"
 
 #: lib/RT/Transaction_Overlay.pm:326
-#. ($self->CreatedAsString(), $self->CreatorObj->name())
+#. ($self->CreatedAsString(), $self->creator_obj->name())
 msgid "On %1, %2 wrote:"
 msgstr ""
 
@@ -6079,7 +6079,7 @@ msgid "Resolve"
 msgstr "解决"
 
 #: html/Ticket/Update.html:156
-#. ($TicketObj->id, $TicketObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
 msgid "Resolve ticket #%1 (%2)"
 msgstr "解决申请单 #%1 (%2)"
 
@@ -6938,7 +6938,7 @@ msgid "Template"
 msgstr "模板"
 
 #: html/Admin/Global/Template.html:112 html/Admin/Queues/Template.html:113
-#. ($TemplateObj->id())
+#. ($template_obj->id())
 msgid "Template #%1"
 msgstr "模板 #%1"
 
@@ -7180,7 +7180,7 @@ msgid "Ticket #%1 Jumbo update: %2"
 msgstr "更新申请单 #%1 的全部信息：%2"
 
 #: html/Approvals/Elements/ShowDependency:67
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 msgid "Ticket #%1: %2"
 msgstr "申请单 #%1: %2"
 
@@ -7192,7 +7192,7 @@ msgid "Ticket %1"
 msgstr "申请单 %1"
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
-#. ($self->id, $QueueObj->name)
+#. ($self->id, $queue_obj->name)
 msgid "Ticket %1 created in queue '%2'"
 msgstr "申请单 #%1 成功新增于 '%2' 表单"
 
@@ -7434,7 +7434,7 @@ msgid "Transaction->create couldn't, as you didn't specify an object type and id
 msgstr "未指定对象类别及编号，无法新增更动"
 
 #: NOT FOUND IN SOURCE
-msgid "TransactionBatch"
+msgid "transaction_batch"
 msgstr "批次更动时"
 
 #: NOT FOUND IN SOURCE
@@ -7581,7 +7581,7 @@ msgid "Update ticket #%1"
 msgstr "更新申请单 #%1"
 
 #: html/Ticket/Update.html:158
-#. ($TicketObj->id, $TicketObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
 msgid "Update ticket #%1 (%2)"
 msgstr "更新申请单 #%1 (%2)"
 

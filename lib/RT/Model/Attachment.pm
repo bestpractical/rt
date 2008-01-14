@@ -166,26 +166,26 @@ sub Import {
     return ( $self->SUPER::create(%args) );
 }
 
-=head2 TransactionObj
+=head2 transaction_obj
 
 Returns the transaction object asscoiated with this attachment.
 
 =cut
 
-sub TransactionObj {
+sub transaction_obj {
     my $self = shift;
 
-    unless ( $self->{_TransactionObj} ) {
-        $self->{_TransactionObj} = RT::Model::Transaction->new;
-        $self->{_TransactionObj}->load( $self->TransactionId );
+    unless ( $self->{_transaction_obj} ) {
+        $self->{_transaction_obj} = RT::Model::Transaction->new;
+        $self->{_transaction_obj}->load( $self->TransactionId );
     }
 
-    unless ($self->{_TransactionObj}->id) {
+    unless ($self->{_transaction_obj}->id) {
         Jifty->log->fatal(  "Attachment ". $self->id
                            ." can't find transaction ". $self->TransactionId
                            ." which it is ostensibly part of. That's bad");
     }
-    return $self->{_TransactionObj};
+    return $self->{_transaction_obj};
 }
 
 =head2 ParentObj
@@ -297,7 +297,7 @@ Returns length of L</Content> in bytes.
 sub ContentLength {
     my $self = shift;
 
-    return undef unless $self->TransactionObj->current_user_can_see;
+    return undef unless $self->transaction_obj->current_user_can_see;
 
     my $len = $self->GetHeader('Content-Length');
     unless ( defined $len ) {
@@ -349,7 +349,7 @@ sub Quote {
 
 	$body =~ s/^/> /gm;
 
-	$body = '[' . $self->TransactionObj->CreatorObj->name() . ' - ' . $self->TransactionObj->CreatedAsString()
+	$body = '[' . $self->transaction_obj->creator_obj->name() . ' - ' . $self->transaction_obj->CreatedAsString()
 	            . "]:\n\n"
    	        . $body . "\n\n";
 
@@ -400,8 +400,8 @@ sub Addresses {
 
     my %data = ();
     my $current_user_address = lc $self->current_user->user_object->email;
-    my $correspond = lc $self->TransactionObj->TicketObj->QueueObj->correspond_address;
-    my $comment = lc $self->TransactionObj->TicketObj->QueueObj->comment_address;
+    my $correspond = lc $self->transaction_obj->ticket_obj->queue_obj->correspond_address;
+    my $comment = lc $self->transaction_obj->ticket_obj->queue_obj->comment_address;
     foreach my $hdr (qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {
         my @Addresses;
         my $line      = $self->GetHeader($hdr);
@@ -585,7 +585,7 @@ sub _value {
         return ( $self->__value( $field, @_ ) );
     }
 
-    return undef unless $self->TransactionObj->current_user_can_see;
+    return undef unless $self->transaction_obj->current_user_can_see;
     return $self->__value( $field, @_ );
 }
 

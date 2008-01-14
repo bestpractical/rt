@@ -1,9 +1,9 @@
-<% $QueueObj->name %>
+<% $queue_obj->name %>
 <%ARGS>
-$QueueObj
+$queue_obj
 </%ARGS>
 <%INIT>
-my $value = $QueueObj->name;
-$value = '#'. $QueueObj->id
+my $value = $queue_obj->name;
+$value = '#'. $queue_obj->id
     unless defined $value && length $value;
 </%INIT>

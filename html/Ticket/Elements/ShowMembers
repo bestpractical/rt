@@ -47,9 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <ul>
 % while (my $link = $members->next) {
-<li><& /Elements/ShowLink, URI => $link->BaseURI &><br />
+<li><& /Elements/ShowLink, URI => $link->base_uri &><br />
 % if ($depth < 8) {
-<& /Ticket/Elements/ShowMembers, Ticket => $link->BaseObj, depth => ($depth+1) &> 
+<& /Ticket/Elements/ShowMembers, Ticket => $link->base_obj, depth => ($depth+1) &> 
 % }
 </li>
 % }

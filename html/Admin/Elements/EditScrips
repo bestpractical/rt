@@ -64,7 +64,7 @@
 </td>
 <td>
 <a href="Scrip.html?id=<%$scrip->id%>&Queue=<%$id%>"><% $scrip->Description || "<i>("._('no value').")</i>" |n %></a><br />
-<small><&|/l, _($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name) &>%1 %2 with template %3</&></small>
+<small><&|/l, _($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->template_obj->name) &>%1 %2 with template %3</&></small>
 </td>
 </tr>
 %   }
@@ -83,12 +83,12 @@ my (@actions);
 my $Scrips = RT::Model::ScripCollection->new();
 
 
-my $QueueObj = RT::Model::Queue->new();
+my $queue_obj = RT::Model::Queue->new();
 if ($id)  {
-        $QueueObj->load($id);                        
+        $queue_obj->load($id);                        
 }
 
-if ($QueueObj->id) {                         
+if ($queue_obj->id) {                         
 	$Scrips->limit_ToQueue($id);
 }                                            
 else {                                       

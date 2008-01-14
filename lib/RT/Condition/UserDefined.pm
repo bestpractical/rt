@@ -64,9 +64,9 @@ This happens on every transaction. it's always applicable
 
 sub IsApplicable {
     my $self = shift;
-    my $retval = eval $self->ScripObj->CustomIsApplicableCode;
+    my $retval = eval $self->scrip_obj->CustomIsApplicableCode;
     if ($@) {
-        Jifty->log->error("Scrip ".$self->ScripObj->id. " IsApplicable failed: ".$@);
+        Jifty->log->error("Scrip ".$self->scrip_obj->id. " IsApplicable failed: ".$@);
         return (undef);
     }
     return ($retval);

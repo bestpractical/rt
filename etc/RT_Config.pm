@@ -700,7 +700,7 @@ set($StrictLinkACL, 1);
 # set $PreviewScripMessages to 1 if the scrips preview on the ticket
 # reply page should include the content of the messages to be sent.
 
-# set $UseTransactionBatch to 1 to execute transactions in batches,
+# set $Usetransaction_batch to 1 to execute transactions in batches,
 # such that a resolve and comment (for example) would happen
 # simultaneously, instead of as two transactions, unaware of each
 # others' existence.
@@ -734,7 +734,7 @@ set($DevelMode, '0');
 # {{{ Deprecated options
 
 # $AlwaysUseBase64 - Encode blobs as base64 in DB (?)
-# $TicketBaseURI - Base URI to tickets in this system; used when loading (?)
+# $Ticketbase_uri - Base URI to tickets in this system; used when loading (?)
 # $UseCodeTickets - This option is exists for backwards compatibility.  Don't use it.
 
 # }}}

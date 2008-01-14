@@ -241,7 +241,7 @@ my $seen_queues = {};
 while ( my $ticket = $Tickets->next ) {
     next if $seen_queues->{ $ticket->Queue }++;
 
-    my $custom_fields = $ticket->QueueObj->TicketCustomFields;
+    my $custom_fields = $ticket->queue_obj->TicketCustomFields;
     while ( my $field = $custom_fields->next ) {
         $fields->{ $field->id } = $field;
     }
@@ -266,29 +266,29 @@ while ( my $Ticket = $Tickets->next ) {
 
     #Update the links
     $ARGS{'id'} = $Ticket->id;
-    $queues{ $Ticket->QueueObj->id }++;
+    $queues{ $Ticket->queue_obj->id }++;
 
     my @updateresults, ProcessUpdateMessage(
-            TicketObj => $Ticket,
+            ticket_obj => $Ticket,
             ARGSRef   => \%ARGS,
         );
 
     #Update the basics.
     my @basicresults =
-      ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
+      ProcessTicketBasics( ticket_obj => $Ticket, ARGSRef => \%ARGS );
     my @dateresults =
-      ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS );
+      ProcessTicketDates( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 
     #Update the watchers
     my @watchresults =
-      ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
+      ProcessTicketWatchers( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 
     foreach my $type qw(MergeInto DependsOn MemberOf RefersTo) {
         $ARGS{ $Ticket->id . "-" . $type } = $ARGS{"Ticket-$type"};
         $ARGS{ $type . "-" . $Ticket->id } = $ARGS{"$type-Ticket"};
     }
     @linkresults =
-      ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
+      ProcessTicketLinks( ticket_obj => $Ticket, ARGSRef => \%ARGS );
     foreach my $type qw(MergeInto DependsOn MemberOf RefersTo) {
         delete $ARGS{ $type . "-" . $Ticket->id };
         delete $ARGS{ $Ticket->id . "-" . $type };

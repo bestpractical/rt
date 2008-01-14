@@ -111,7 +111,7 @@ is( $ticket->Owner, $user_id, "set correct owner" );
 
 ok( $user->has_right( Right => 'ReplyToTicket', Object => $ticket ), "user is owner and can reply to ticket" );
 
-# Testing of EquivObjects
+# Testing of equiv_objects
 $group = RT::Model::Group->new(current_user => RT->system_user );
 ok( $group->loadQueueRoleGroup( Queue => $queue_id, Type=> 'AdminCc' ), "load queue AdminCc role group" );
 $ace = RT::Model::ACE->new(current_user => RT->system_user );
@@ -128,16 +128,16 @@ my ($ticket2_id) = $ticket2->create( Queue => $queue_id, Subject => 'test2');
 ok( $ticket2_id, 'new ticket Created' );
 ok( !$user->has_right( Right => 'ModifyTicket', Object => $ticket2 ), "user is not AdminCc and can't modify ticket2" );
 
-# now we can finally test EquivObjects
+# now we can finally test equiv_objects
 my $equiv = [ $ticket ];
-ok( $user->has_right( Right => 'ModifyTicket', Object => $ticket2, EquivObjects => $equiv ), 
-    "user is not AdminCc but can modify ticket2 because of EquivObjects" );
+ok( $user->has_right( Right => 'ModifyTicket', Object => $ticket2, equiv_objects => $equiv ), 
+    "user is not AdminCc but can modify ticket2 because of equiv_objects" );
 
 # the first a third test below are the same, so they should both pass
 my $equiv2 = [];
-ok( !$user->has_right( Right => 'ModifyTicket', Object => $ticket2, EquivObjects => $equiv2 ), 
+ok( !$user->has_right( Right => 'ModifyTicket', Object => $ticket2, equiv_objects => $equiv2 ), 
     "user is not AdminCc and can't modify ticket2" );
-ok( $user->has_right( Right => 'ModifyTicket', Object => $ticket, EquivObjects => $equiv2 ), 
+ok( $user->has_right( Right => 'ModifyTicket', Object => $ticket, equiv_objects => $equiv2 ), 
     "user is AdminCc and can modify ticket" );
-ok( !$user->has_right( Right => 'ModifyTicket', Object => $ticket2, EquivObjects => $equiv2 ), 
+ok( !$user->has_right( Right => 'ModifyTicket', Object => $ticket2, equiv_objects => $equiv2 ), 
     "user is not AdminCc and can't modify ticket2 (same question different answer)" );

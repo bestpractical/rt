@@ -45,17 +45,17 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => _('Modify people related to queue %1', $QueueObj->name) &>
+<& /Elements/Header, Title => _('Modify people related to queue %1', $queue_obj->name) &>
 <& /Admin/Elements/QueueTabs, id => $id, 
-    QueueObj => $QueueObj,                                                      
+    queue_obj => $queue_obj,                                                      
     current_tab => $current_tab, 
-    Title => _('Modify people related to queue %1', $QueueObj->name) &>
+    Title => _('Modify people related to queue %1', $queue_obj->name) &>
 
 <& /Elements/ListActions, actions => \@results &>
 
  
 <form method="post" action="People.html">
-<input type="hidden" class="hidden" name="id" value="<%$QueueObj->id%>" />
+<input type="hidden" class="hidden" name="id" value="<%$queue_obj->id%>" />
 
 <table width="100%">
 <tr>
@@ -66,11 +66,11 @@
 
 <&|/l&>Cc</&>:
 
-<& /Admin/Elements/EditQueueWatchers, QueueObj => $QueueObj, Watchers => $QueueObj->Cc &>
+<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, Watchers => $queue_obj->Cc &>
 
 <&|/l&>Administrative Cc</&>:
 
-<& /Admin/Elements/EditQueueWatchers, QueueObj => $QueueObj, Watchers => $QueueObj->AdminCc &>
+<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, Watchers => $queue_obj->AdminCc &>
 
 
 </td>
@@ -142,17 +142,17 @@ my ($field, @results, $User, $Users, $Groups, $watcher, $user_msg, $group_msg);
 
 
 
-my $QueueObj = RT::Model::Queue->new();
-$QueueObj->load($id) || Abort(_("Couldn't load queue", $id));
+my $queue_obj = RT::Model::Queue->new();
+$queue_obj->load($id) || Abort(_("Couldn't load queue", $id));
 # }}}
 
 # {{{ Delete deletable watchers
 
 foreach my $key (keys %ARGS) {
-        my $id = $QueueObj->id;
+        my $id = $queue_obj->id;
 
     if (($key =~ /^Queue-$id-DeleteWatcher-Type-(.*?)-Principal-(\d*)$/)) {;
-	    my ($code, $msg) = $QueueObj->deleteWatcher(Type => $1,
+	    my ($code, $msg) = $queue_obj->deleteWatcher(Type => $1,
                                                     principal_id => $2);
 	    push @results, $msg;
     }
@@ -165,7 +165,7 @@ foreach my  $key (keys %ARGS) {
     if ( ($ARGS{$key} =~ /^(AdminCc|Cc)$/) and
 	 ($key =~ /^Queue-AddWatcher-Principal-(\d*)$/) ) {
 	Jifty->log->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
-	my ($code, $msg) = $QueueObj->AddWatcher(Type => $ARGS{$key},
+	my ($code, $msg) = $queue_obj->AddWatcher(Type => $ARGS{$key},
 				                             principal_id => $1);
 	push @results, $msg;
     }
@@ -196,7 +196,7 @@ $Groups->limit(column => $ARGS{'GroupField'},
 		operator => $ARGS{'GroupOp'});
      }
 
-$current_tab = 'Admin/Queues/People.html?id='.$QueueObj->id;
+$current_tab = 'Admin/Queues/People.html?id='.$queue_obj->id;
 </%INIT>
 
 <%ARGS>

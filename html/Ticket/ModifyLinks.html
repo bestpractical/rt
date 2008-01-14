@@ -71,8 +71,8 @@
 my $Ticket = load_ticket($id);
 
 my @results;  
-$m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS, Results => \@results );
-push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
+$m->callback( ticket_obj => $Ticket, ARGSRef => \%ARGS, Results => \@results );
+push @results, ProcessTicketLinks( ticket_obj => $Ticket, ARGSRef => \%ARGS );
     
 </%INIT>
       

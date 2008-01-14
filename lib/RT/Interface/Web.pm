@@ -467,7 +467,7 @@ sub load_ticket {
 
 =head2 ProcessUpdateMessage
 
-Takes paramhash with fields ARGSRef, TicketObj and SkipSignatureOnly.
+Takes paramhash with fields ARGSRef, ticket_obj and SkipSignatureOnly.
 
 Don't write message if it only contains current user's signature and
 SkipSignatureOnly argument is true. Function anyway adds attachments
@@ -481,7 +481,7 @@ sub ProcessUpdateMessage {
     #TODO document what else this takes.
     my %args = (
         ARGSRef   => undef,
-        TicketObj => undef,
+        ticket_obj => undef,
         SkipSignatureOnly => 1,
         @_
     );
@@ -502,7 +502,7 @@ sub ProcessUpdateMessage {
     # skip updates if the content contains only user's signature
     # and we don't update other fields
     if ( $args{'SkipSignatureOnly'} ) {
-        my $sig = $args{'TicketObj'}->current_user->user_object->Signature || '';
+        my $sig = $args{'ticket_obj'}->current_user->user_object->Signature || '';
         $sig =~ s/^\s*|\s*$//g;
         if ( $args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ ) {
             return () unless $args{ARGSRef}->{'UpdateTimeWorked'} ||
@@ -514,7 +514,7 @@ sub ProcessUpdateMessage {
         }
     }
 
-    if ( $args{ARGSRef}->{'UpdateSubject'} eq $args{'TicketObj'}->Subject ) {
+    if ( $args{ARGSRef}->{'UpdateSubject'} eq $args{'ticket_obj'}->Subject ) {
         $args{ARGSRef}->{'UpdateSubject'} = undef;
     }
 
@@ -530,7 +530,7 @@ sub ProcessUpdateMessage {
           . $$ . "-"
           . CORE::time() . "-"
           . int(rand(2000)) . "."
-          . $args{'TicketObj'}->id . "-"
+          . $args{'ticket_obj'}->id . "-"
           . "0" . "-"  # Scrip
           . "0" . "@"  # Email sent
               . RT->Config->Get('organization')
@@ -540,7 +540,7 @@ sub ProcessUpdateMessage {
         $old_txn->load( $args{ARGSRef}->{'QuoteTransaction'} );
     }
     else {
-        $old_txn = $args{TicketObj}->Transactions->first();
+        $old_txn = $args{ticket_obj}->Transactions->first();
     }
 
     if ( $old_txn->Message and my $msg = $old_txn->Message->first ) {
@@ -598,13 +598,13 @@ sub ProcessUpdateMessage {
 
     my @results;
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
-        my ( $Transaction, $Description, $Object ) = $args{TicketObj}->comment(%message_args);
+        my ( $Transaction, $Description, $Object ) = $args{ticket_obj}->comment(%message_args);
         push( @results, $Description );
         $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
     }
     elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
         my ( $Transaction, $Description, $Object ) =
-        $args{TicketObj}->correspond(%message_args);
+        $args{ticket_obj}->correspond(%message_args);
         push( @results, $Description );
         $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
     }
@@ -1090,7 +1090,7 @@ sub ProcessCustomFieldUpdates {
 
 # {{{ sub ProcessTicketBasics
 
-=head2 ProcessTicketBasics ( TicketObj => $Ticket, ARGSRef => \%ARGS );
+=head2 ProcessTicketBasics ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 
 Returns an array of results messages.
 
@@ -1099,12 +1099,12 @@ Returns an array of results messages.
 sub ProcessTicketBasics {
 
     my %args = (
-        TicketObj => undef,
+        ticket_obj => undef,
         ARGSRef   => undef,
         @_
     );
 
-    my $TicketObj = $args{'TicketObj'};
+    my $ticket_obj = $args{'ticket_obj'};
     my $ARGSRef   = $args{'ARGSRef'};
 
     # {{{ Set basic fields 
@@ -1136,12 +1136,12 @@ sub ProcessTicketBasics {
     
     my @results = UpdateRecordObject(
         AttributesRef => \@attribs,
-        Object        => $TicketObj,
+        Object        => $ticket_obj,
         ARGSRef       => $ARGSRef,
     );
 
     # We special case owner changing, so we can use ForceOwnerChange
-    if ( $ARGSRef->{'Owner'} && ( $TicketObj->Owner != $ARGSRef->{'Owner'} ) ) {
+    if ( $ARGSRef->{'Owner'} && ( $ticket_obj->Owner != $ARGSRef->{'Owner'} ) ) {
         my ($ChownType);
         if ( $ARGSRef->{'ForceOwnerChange'} ) {
             $ChownType = "Force";
@@ -1151,7 +1151,7 @@ sub ProcessTicketBasics {
         }
 
         my ( $val, $msg ) =
-            $TicketObj->set_Owner( $ARGSRef->{'Owner'}, $ChownType );
+            $ticket_obj->set_Owner( $ARGSRef->{'Owner'}, $ChownType );
         push ( @results, $msg );
     }
 
@@ -1164,7 +1164,7 @@ sub ProcessTicketBasics {
 
 sub ProcessTicketCustomFieldUpdates {
     my %args = @_;
-    $args{'Object'} = delete $args{'TicketObj'};
+    $args{'Object'} = delete $args{'ticket_obj'};
     my $ARGSRef = { %{ $args{'ARGSRef'} } };
 
     # Build up a list of objects that we want to work with
@@ -1369,7 +1369,7 @@ sub _ProcessObjectCustomFieldUpdates {
 
 # {{{ sub ProcessTicketWatchers
 
-=head2 ProcessTicketWatchers ( TicketObj => $Ticket, ARGSRef => \%ARGS );
+=head2 ProcessTicketWatchers ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 
 Returns an array of results messages.
 
@@ -1377,13 +1377,13 @@ Returns an array of results messages.
 
 sub ProcessTicketWatchers {
     my %args = (
-        TicketObj => undef,
+        ticket_obj => undef,
         ARGSRef   => undef,
         @_
     );
     my (@results);
 
-    my $Ticket  = $args{'TicketObj'};
+    my $Ticket  = $args{'ticket_obj'};
     my $ARGSRef = $args{'ARGSRef'};
 
     # Munge watchers
@@ -1453,7 +1453,7 @@ sub ProcessTicketWatchers {
 
 # {{{ sub ProcessTicketDates
 
-=head2 ProcessTicketDates ( TicketObj => $Ticket, ARGSRef => \%ARGS );
+=head2 ProcessTicketDates ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 
 Returns an array of results messages.
 
@@ -1461,12 +1461,12 @@ Returns an array of results messages.
 
 sub ProcessTicketDates {
     my %args = (
-        TicketObj => undef,
+        ticket_obj => undef,
         ARGSRef   => undef,
         @_
     );
 
-    my $Ticket  = $args{'TicketObj'};
+    my $Ticket  = $args{'ticket_obj'};
     my $ARGSRef = $args{'ARGSRef'};
 
     my (@results);
@@ -1511,18 +1511,18 @@ sub ProcessTicketDates {
 
 # {{{ sub ProcessTicketLinks
 
-=head2 ProcessTicketLinks ( TicketObj => $Ticket, ARGSRef => \%ARGS );
+=head2 ProcessTicketLinks ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 
 Returns an array of results messages.
 
 =cut
 
 sub ProcessTicketLinks {
-    my %args = ( TicketObj => undef,
+    my %args = ( ticket_obj => undef,
                  ARGSRef   => undef,
                  @_ );
 
-    my $Ticket  = $args{'TicketObj'};
+    my $Ticket  = $args{'ticket_obj'};
     my $ARGSRef = $args{'ARGSRef'};
 
 

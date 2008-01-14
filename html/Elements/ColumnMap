@@ -16,17 +16,17 @@ my $COLUMN_MAP = {
     Created => {
         attribute => 'Created',
         title     => 'Created',
-        value     => sub { return $_[0]->CreatedObj->AsString }
+        value     => sub { return $_[0]->created_obj->AsString }
     },
     CreatedRelative => {
         attribute => 'Created',
         title     => 'Created',
-        value     => sub { return $_[0]->CreatedObj->AgeAsString }
+        value     => sub { return $_[0]->created_obj->AgeAsString }
     },
     CreatedBy => {
         attribute => 'CreatedBy',
         title => 'Created By',
-        value     => sub { return $_[0]->CreatorObj->name }
+        value     => sub { return $_[0]->creator_obj->name }
     },
     LastUpdated => {
         attribute => 'LastUpdated',

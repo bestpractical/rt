@@ -106,8 +106,8 @@ $groups->WithRight(Right => 'RTxGroupRight', Object => $RTxObj);
 is($groups->count, 0, "RTxGroupRight not found for RTxObj");
 
 $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
-$groups->WithRight(Right => 'RTxGroupRight', Object => $RTxObj, EquivObjects => [ $RTxSysObj ]);
-is($groups->count, 1, "RTxGroupRight found for RTxObj using EquivObjects");
+$groups->WithRight(Right => 'RTxGroupRight', Object => $RTxObj, equiv_objects => [ $RTxSysObj ]);
+is($groups->count, 1, "RTxGroupRight found for RTxObj using equiv_objects");
 
 use RT::Model::ACE;
 $ace = RT::Model::ACE->new(current_user => RT->system_user);
@@ -123,7 +123,7 @@ $groups->WithRight(Right => 'RTxGroupRight', Object => $RTxObj2);
 is($groups->count, 1, "RTxGroupRight found for RTxObj2");
 
 $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
-$groups->WithRight(Right => 'RTxGroupRight', Object => $RTxObj2, EquivObjects => [ $RTxSysObj ]);
+$groups->WithRight(Right => 'RTxGroupRight', Object => $RTxObj2, equiv_objects => [ $RTxSysObj ]);
 is($groups->count, 1, "RTxGroupRight found for RTxObj2");
 
 

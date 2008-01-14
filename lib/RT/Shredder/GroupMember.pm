@@ -77,7 +77,7 @@ sub __DependsOn
     # XXX: right delegations should be cleaned here
 
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}
@@ -93,7 +93,7 @@ sub __DependsOn
 
     # we don't delete group, so we have to fix Ticket and Group
     $deps->_PushDependencies(
-                BaseObject => $self,
+                base_object => $self,
                 Flags => DEPENDS_ON | VARIABLE,
                 TargetObjects => $group,
                 Shredder => $args{'Shredder'}
@@ -110,7 +110,7 @@ sub __DependsOn
 
                 return if $group->MembersObj->count > 1;
 
-                my $group_member = $args{'BaseObject'};
+                my $group_member = $args{'base_object'};
 
                 if( $group_member->MemberObj->id == RT->nobody->id ) {
                     RT::Shredder::Exception->throw( "Couldn't delete Nobody from owners role group" );
@@ -171,7 +171,7 @@ sub __Relates
     }
 
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}

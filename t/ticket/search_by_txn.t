@@ -25,11 +25,11 @@ my ($id, $txnid, $txnobj) =  $ticket->comment( Content => 'A comment that happen
 
 isa_ok($txnobj, 'RT::Model::Transaction');
 
-ok($txnobj->CreatedObj->ISO);
+ok($txnobj->created_obj->ISO);
 my ( $sid,$smsg) = $txnobj->__set(column => 'Created', value => '2005-08-05 20:00:56');
 ok($sid,$smsg);
 is($txnobj->Created,'2005-08-05 20:00:56');
-is($txnobj->CreatedObj->ISO,'2005-08-05 20:00:56');
+is($txnobj->created_obj->ISO,'2005-08-05 20:00:56');
 
 $tix->from_sql(qq{Updated = "2005-08-05" AND Subject = "$SUBJECT"});
 is( $tix->count, 1);

@@ -63,7 +63,7 @@ my ($sval, $smsg) =$scrip->create( ScripCondition => 'On Transaction',
                 Queue => $q->id);
 ok ($sval, $smsg);
 ok ($scrip->id, "Created the scrip");
-ok ($scrip->TemplateObj->id, "Created the scrip template");
+ok ($scrip->template_obj->id, "Created the scrip template");
 ok ($scrip->ConditionObj->id, "Created the scrip condition");
 ok ($scrip->ActionObj->id, "Created the scrip action");
 
@@ -80,7 +80,7 @@ my $dependson= $deps->first->TargetObj;
 ok ($dependson->id, "It depends on a real ticket");
 unlike ($dependson->Subject, qr/{/, "The subject doesn't have braces in it. that means we're interpreting expressions");
 is ($t->ReferredToBy->count,1, "It's only referred to by one other ticket");
-is ($t->ReferredToBy->first->BaseObj->id,$t->DependsOn->first->TargetObj->id, "The same ticket that depends on it refers to it.");
+is ($t->ReferredToBy->first->base_obj->id,$t->DependsOn->first->TargetObj->id, "The same ticket that depends on it refers to it.");
 use RT::ScripAction::CreateTickets;
 my $action =  RT::ScripAction::CreateTickets->new( CurrentUser => RT->system_user);;
 

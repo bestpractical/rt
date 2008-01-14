@@ -153,10 +153,10 @@ forcing the scrips to run in ascending alphanumerical order.)
 sub Apply {
     my $self = shift;
 
-    my %args = ( TicketObj      => undef,
+    my %args = ( ticket_obj      => undef,
                  Ticket         => undef,
                  Transaction    => undef,
-                 TransactionObj => undef,
+                 transaction_obj => undef,
                  Stage          => undef,
                  Type           => undef,
                  @_ );
@@ -178,13 +178,13 @@ sub commit {
     foreach my $scrip (@{$self->prepared}) {
          Jifty->log->debug(
                "Committing scrip #". $scrip->id
-                ." on txn #". $self->{'TransactionObj'}->id
-                 ." of ticket #". $self->{'TicketObj'}->id
+                ." on txn #". $self->{'transaction_obj'}->id
+                 ." of ticket #". $self->{'ticket_obj'}->id
              );
 
 
-        $scrip->commit( TicketObj      => $self->{'TicketObj'},
-                        TransactionObj => $self->{'TransactionObj'} );
+        $scrip->commit( ticket_obj      => $self->{'ticket_obj'},
+                        transaction_obj => $self->{'transaction_obj'} );
     }
 }
 
@@ -198,18 +198,18 @@ in order of preparation, not execution
 
 sub prepare { 
     my $self = shift;
-    my %args = ( TicketObj      => undef,
+    my %args = ( ticket_obj      => undef,
                  Ticket         => undef,
                  Transaction    => undef,
-                 TransactionObj => undef,
+                 transaction_obj => undef,
                  Stage          => undef,
                  Type           => undef,
                  @_ );
 
     #We're really going to need a non-acled ticket for the scrips to work
-    $self->_setupSourceObjects( TicketObj      => $args{'TicketObj'},
+    $self->_setupSourceObjects( ticket_obj      => $args{'ticket_obj'},
                                 Ticket         => $args{'Ticket'},
-                                TransactionObj => $args{'TransactionObj'},
+                                transaction_obj => $args{'transaction_obj'},
                                 Transaction    => $args{'Transaction'} );
 
 
@@ -220,15 +220,15 @@ sub prepare {
     while ( my $scrip = $self->next() ) {
         next
           unless ( $scrip->IsApplicable(
-                                     TicketObj      => $self->{'TicketObj'},
-                                     TransactionObj => $self->{'TransactionObj'}
+                                     ticket_obj      => $self->{'ticket_obj'},
+                                     transaction_obj => $self->{'transaction_obj'}
                    ) );
 
 
         #If it's applicable, prepare and commit it
         next
-          unless ( $scrip->prepare( TicketObj      => $self->{'TicketObj'},
-                                    TransactionObj => $self->{'TransactionObj'}
+          unless ( $scrip->prepare( ticket_obj      => $self->{'ticket_obj'},
+                                    transaction_obj => $self->{'transaction_obj'}
                    ) );
         push @{$self->{'prepared_scrips'}}, $scrip;
 
@@ -253,7 +253,7 @@ sub prepared {
 
 # {{{ sup _setupSourceObjects
 
-=head2  _setupSourceObjects { TicketObj , Ticket, Transaction, TransactionObj }
+=head2  _setupSourceObjects { ticket_obj , Ticket, Transaction, transaction_obj }
 
 Setup a ticket and transaction for this Scrip collection to work with as it runs through the 
 relevant scrips.  (Also to figure out which scrips apply)
@@ -267,27 +267,27 @@ sub _setupSourceObjects {
 
     my $self = shift;
     my %args = ( 
-            TicketObj => undef,
+            ticket_obj => undef,
             Ticket => undef,
             Transaction => undef,
-            TransactionObj => undef,
+            transaction_obj => undef,
             @_ );
 
-    if ( ( $self->{'TicketObj'} = $args{'TicketObj'} ) ) {
-        $self->{'TicketObj'}->current_user( $self->current_user );
+    if ( ( $self->{'ticket_obj'} = $args{'ticket_obj'} ) ) {
+        $self->{'ticket_obj'}->current_user( $self->current_user );
     }
     else {
-        $self->{'TicketObj'} = RT::Model::Ticket->new;
-        $self->{'TicketObj'}->load( $args{'Ticket'} )
+        $self->{'ticket_obj'} = RT::Model::Ticket->new;
+        $self->{'ticket_obj'}->load( $args{'Ticket'} )
           || Jifty->log->err("$self couldn't load ticket $args{'Ticket'}\n");
     }
 
-    if ( ( $self->{'TransactionObj'} = $args{'TransactionObj'} ) ) {
-        $self->{'TransactionObj'}->current_user( $self->current_user );
+    if ( ( $self->{'transaction_obj'} = $args{'transaction_obj'} ) ) {
+        $self->{'transaction_obj'}->current_user( $self->current_user );
     }
     else {
-        $self->{'TransactionObj'} = RT::Model::Transaction->new;
-        $self->{'TransactionObj'}->load( $args{'Transaction'} )
+        $self->{'transaction_obj'} = RT::Model::Transaction->new;
+        $self->{'transaction_obj'}->load( $args{'Transaction'} )
           || Jifty->log->err( "$self couldn't load transaction $args{'Transaction'}\n");
     }
 } 
@@ -313,8 +313,8 @@ sub _FindScrips {
                  @_ );
 
 
-    $self->limit_ToQueue( $self->{'TicketObj'}->QueueObj->id )
-      ;    #Limit it to  $Ticket->QueueObj->id
+    $self->limit_ToQueue( $self->{'ticket_obj'}->queue_obj->id )
+      ;    #Limit it to  $Ticket->queue_obj->id
     $self->limit_ToGlobal();
       # or to "global"
 
@@ -330,7 +330,7 @@ sub _FindScrips {
     );
 
     #We only want things where the scrip applies to this sort of transaction
-    # TransactionBatch stage can define list of transaction
+    # transaction_batch stage can define list of transaction
     foreach( split /\s*,\s*/, ($args{'Type'} || '') ) {
 	$self->limit(
 	    alias           => $ConditionsAlias,

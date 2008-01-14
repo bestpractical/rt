@@ -139,10 +139,10 @@ while ( my $ticket = $tickets->next() ) {
     # perform some more advanced check
     if ($condition) {
         my $condition_obj = $condition->new(
-            TransactionObj => $transaction,
-            TicketObj      => $ticket,
-            ScripObj       => $void_scrip,
-            TemplateObj    => $template_obj,
+            transaction_obj => $transaction,
+            ticket_obj      => $ticket,
+            scrip_obj       => $void_scrip,
+            template_obj    => $template_obj,
             Argument       => $condition_arg,
             CurrentUser    => $CurrentUser,
         );
@@ -155,11 +155,11 @@ while ( my $ticket = $tickets->next() ) {
 
     #prepare our action
     my $action_obj = $action->new(
-        TicketObj      => $ticket,
-        TransactionObj => $transaction,
-        TemplateObj    => $template_obj,
+        ticket_obj      => $ticket,
+        transaction_obj => $transaction,
+        template_obj    => $template_obj,
         Argument       => $action_arg,
-        ScripObj       => $void_scrip,
+        scrip_obj       => $void_scrip,
         ScripActionObj => $void_scrip_action,
         CurrentUser    => $CurrentUser,
     );

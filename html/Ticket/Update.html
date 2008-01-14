@@ -47,10 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $TicketObj, 
+    Ticket => $ticket_obj, 
     Title=> $title &>
     
-% $m->callback(Callbackname => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $TicketObj);
+% $m->callback(Callbackname => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $ticket_obj);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Update.html" name="TicketUpdate"
@@ -66,13 +66,13 @@
 
 <tr><td align="right"><&|/l&>Status</&>:</td>
 <td>
-<& /Elements/SelectStatus, name=>"Status", DefaultLabel => _("%1 (Unchanged)", loc($TicketObj->Status)), Default => $ARGS{'Status'} || ($TicketObj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
+<& /Elements/SelectStatus, name=>"Status", DefaultLabel => _("%1 (Unchanged)", loc($ticket_obj->Status)), Default => $ARGS{'Status'} || ($ticket_obj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
 <&|/l&>Owner</&>:  
 <& /Elements/SelectOwner,
      name         => "Owner",
-     TicketObj    => $TicketObj,
-     QueueObj     => $TicketObj->QueueObj,
-     DefaultLabel => _("%1 (Unchanged)", $TicketObj->OwnerObj->name),
+     ticket_obj    => $ticket_obj,
+     queue_obj     => $ticket_obj->queue_obj,
+     DefaultLabel => _("%1 (Unchanged)", $ticket_obj->OwnerObj->name),
      Default      => $ARGS{'Owner'}
  &>
 <&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}||'' %>" /> 
@@ -81,7 +81,7 @@
 % my $skip;
 % $m->callback( %ARGS, Callbackname => 'BeforeUpdateType', skip => \$skip );
 % if (!$skip) {
-<input type="hidden" class="hidden" name="id" value="<%$TicketObj->id%>" /><br />
+<input type="hidden" class="hidden" name="id" value="<%$ticket_obj->id%>" /><br />
 % }
 <tr><td align="right"><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
@@ -93,12 +93,12 @@
 % }
 </select> 
 </td></tr>
-<tr><td align="right"><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject()%>" /></td></tr>
+<tr><td align="right"><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $ticket_obj->Subject()%>" /></td></tr>
 
-<& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $TicketObj &>
+<& /Ticket/Elements/UpdateCc, %ARGS, ticket_obj => $ticket_obj &>
 
 
-% if (my $TxnCFs = $TicketObj->TransactionCustomFields) {
+% if (my $TxnCFs = $ticket_obj->TransactionCustomFields) {
 %    while (my $CF = $TxnCFs->next()) {
 <tr>
 <td align="right"><% $CF->name %>:</td>
@@ -126,7 +126,7 @@
 <tr><td>&nbsp;</td><td>
 <& /Elements/GnuPG/SignEncryptWidget,
     self => $gnupg_widget,
-    TicketObj => $TicketObj,
+    ticket_obj => $ticket_obj,
 &>
 </td></tr>
 % }
@@ -149,8 +149,8 @@
 
 
 <& /Elements/Submit, Label => _('Update Ticket'), name => 'SubmitTicket' &>
-% if ($TicketObj->current_user_has_right('ShowOutgoingEmail')) {
-<& /Ticket/Elements/PreviewScrips, TicketObj => $TicketObj, %ARGS &>
+% if ($ticket_obj->current_user_has_right('ShowOutgoingEmail')) {
+<& /Ticket/Elements/PreviewScrips, ticket_obj => $ticket_obj, %ARGS &>
 % }
 </form>
 <%INIT>
@@ -159,12 +159,12 @@ my $Cancomment = 0;
 my $checks_failure = 0;
 my $title;
 
-my $TicketObj = load_ticket($id);
+my $ticket_obj = load_ticket($id);
 
-$m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, Callbackname => 'Initial' );
+$m->callback( Ticket => $ticket_obj, ARGSRef => \%ARGS, Callbackname => 'Initial' );
 
 unless($DefaultStatus){
-    $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
+    $DefaultStatus=($ARGS{'Status'} ||$ticket_obj->Status());
 }
 
 if ($DefaultStatus =~ '^new$'){
@@ -172,9 +172,9 @@ if ($DefaultStatus =~ '^new$'){
 }
 
 if ($DefaultStatus eq 'resolved') {
-    $title = _("Resolve ticket #%1 (%2)", $TicketObj->id, $TicketObj->Subject);
+    $title = _("Resolve ticket #%1 (%2)", $ticket_obj->id, $ticket_obj->Subject);
 } else {
-    $title = _("Update ticket #%1 (%2)", $TicketObj->id, $TicketObj->Subject);
+    $title = _("Update ticket #%1 (%2)", $ticket_obj->id, $ticket_obj->Subject);
 }
 
 # Things needed in the template - we'll do the processing here, just
@@ -191,11 +191,11 @@ if ($Action ne 'Respond') {
 
 
 
-$CanRespond = 1 if ( $TicketObj->current_user_has_right('ReplyToTicket') or
-                     $TicketObj->current_user_has_right('ModifyTicket') ); 
+$CanRespond = 1 if ( $ticket_obj->current_user_has_right('ReplyToTicket') or
+                     $ticket_obj->current_user_has_right('ModifyTicket') ); 
 
-$Cancomment = 1 if ( $TicketObj->current_user_has_right('commentOnTicket') or
-                     $TicketObj->current_user_has_right('ModifyTicket') ); 
+$Cancomment = 1 if ( $ticket_obj->current_user_has_right('commentOnTicket') or
+                     $ticket_obj->current_user_has_right('ModifyTicket') ); 
 
 
 # {{{ deal with deleting uploaded attachments
@@ -239,19 +239,19 @@ my @results;
 my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
     self => $gnupg_widget,
-    TicketObj => $TicketObj,
+    ticket_obj => $ticket_obj,
 );
 if ( $ARGS{'SubmitTicket'} ) {
     my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
         self      => $gnupg_widget,
-        TicketObj => $TicketObj,
+        ticket_obj => $ticket_obj,
     );
     $checks_failure = 1 unless $status;
 }
 
 if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
-    $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, Callbackname => 'BeforeDisplay' );
-    return $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
+    $m->callback( Ticket => $ticket_obj, ARGSRef => \%ARGS, Callbackname => 'BeforeDisplay' );
+    return $m->comp('Display.html', ticket_obj => $ticket_obj, %ARGS);
 }
 
 </%INIT>

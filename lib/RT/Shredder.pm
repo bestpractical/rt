@@ -523,7 +523,7 @@ sub ApplyResolvers
     }
     $_->(
         Shredder     => $self,
-        BaseObject   => $dep->BaseObject,
+        base_object   => $dep->base_object,
         TargetObject => $dep->TargetObject,
     ) foreach @resolvers;
 

@@ -55,7 +55,7 @@
 my $tabs;
 if ($id) {
   $tabs->{'this'}  = {
-                title => $QueueObj->name,
+                title => $queue_obj->name,
   		     	path => "Admin/Queues/Modify.html?id=".$id,
                     current_subtab => $current_tab,     
                 subtabs => {
@@ -111,7 +111,7 @@ foreach my $tab ( sort keys %{$tabs->{'this'}->{'subtabs'}} ) {
 </%INIT>
   
 <%ARGS>
-$QueueObj => undef
+$queue_obj => undef
 $id => undef
 $subtabs => undef
 $current_subtab => undef

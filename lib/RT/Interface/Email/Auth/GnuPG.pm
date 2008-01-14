@@ -182,7 +182,7 @@ sub CheckNoPrivateKey {
         Template  => 'Error: no private key',
         Arguments => {
             Message   => $args{'Message'},
-            TicketObj => $args{'Ticket'},
+            ticket_obj => $args{'Ticket'},
         },
         InReplyTo => $args{'Message'},
     );
@@ -208,7 +208,7 @@ sub CheckBadData {
         Template  => 'Error: bad GnuPG data',
         Arguments => {
             Messages  => [ @bad_data_messages ],
-            TicketObj => $args{'Ticket'},
+            ticket_obj => $args{'Ticket'},
         },
         InReplyTo => $args{'Message'},
     );

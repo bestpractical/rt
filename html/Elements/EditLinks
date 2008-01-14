@@ -60,7 +60,7 @@
     <td class="value">
 % while (my $link = $Object->DependsOn->next) {
       <input type="checkbox" class="checkbox" name="delete_link--<%$link->Type%>-<%$link->Target%>" value="1" />
-        <& ShowLink, URI => $link->TargetURI &><br />
+        <& ShowLink, URI => $link->target_uri &><br />
 % }
     </td>
   </tr>
@@ -69,7 +69,7 @@
     <td class="value">
 % while (my $link = $Object->DependedOnBy->next) {
       <input type="checkbox" class="checkbox" name="delete_link-<%$link->Base%>-<%$link->Type%>-" value="1" />
-        <& ShowLink, URI => $link->BaseURI &><br />
+        <& ShowLink, URI => $link->base_uri &><br />
 % }
     </td>
   </tr>
@@ -78,7 +78,7 @@
     <td class="value">
 % while (my $link = $Object->MemberOf->next) {
       <input type="checkbox" class="checkbox" name="delete_link--<%$link->Type%>-<%$link->Target%>" value="1" />
-        <& ShowLink, URI => $link->TargetURI &><br />
+        <& ShowLink, URI => $link->target_uri &><br />
 % }
     </td>
   </tr>
@@ -87,7 +87,7 @@
     <td class="value">
 % while (my $link = $Object->Members->next) {
       <input type="checkbox" class="checkbox" name="delete_link-<%$link->Base%>-<%$link->Type%>-" value="1" />
-        <& ShowLink, URI => $link->BaseURI &><br />
+        <& ShowLink, URI => $link->base_uri &><br />
 % }
     </td>
   </tr>
@@ -96,7 +96,7 @@
     <td class="value">
 % while (my $link = $Object->RefersTo->next) {
       <input type="checkbox" class="checkbox" name="delete_link--<%$link->Type%>-<%$link->Target%>" value="1" />
-        <& ShowLink, URI => $link->TargetURI &><br />
+        <& ShowLink, URI => $link->target_uri &><br />
 %}
     </td>
   </tr>
@@ -105,9 +105,9 @@
     <td class="value">
 % while (my $link = $Object->ReferredToBy->next) {
 % # Skip reminders
-% next if (UNIVERSAL::isa($link->BaseObj, 'RT::Model::Ticket')  && $link->BaseObj->Type eq 'reminder');
+% next if (UNIVERSAL::isa($link->base_obj, 'RT::Model::Ticket')  && $link->base_obj->Type eq 'reminder');
       <input type="checkbox" class="checkbox" name="delete_link-<%$link->Base%>-<%$link->Type%>-" value="1" />
-        <& ShowLink, URI => $link->BaseURI &><br />
+        <& ShowLink, URI => $link->base_uri &><br />
 % }
     </td>
   </tr>

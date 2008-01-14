@@ -27,9 +27,9 @@ msgstr ""
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
 #. ($Ticket->id, $Ticket->Subject)
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 #. ($ticket->id, $ticket->Subject)
-#. ($TicketObj->id, $TicketObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
@@ -92,20 +92,20 @@ msgid "%1 %2 deleted"
 msgstr "%1 %2 gelöscht"
 
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:63 html/Ticket/Elements/PreviewScrips:103
-#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
+#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->template_obj->name))
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 mit der Vorlage %3"
 
 #: html/Ticket/Elements/ShowAttachments:72
-#. ($rev->CreatedAsString, $size, $rev->CreatorObj->name)
+#. ($rev->CreatedAsString, $size, $rev->creator_obj->name)
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) von %3"
 
 #: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:108 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:66
 #. (_($DefaultStatus))
 #. (_($Ticket->Status()))
-#. (_($TicketObj->Status))
-#. ($TicketObj->OwnerObj->name())
+#. (_($ticket_obj->Status))
+#. ($ticket_obj->OwnerObj->name())
 msgid "%1 (Unchanged)"
 msgstr "%1 (Unverändert)"
 
@@ -182,7 +182,7 @@ msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 konnte nicht in der Datenbank gefunden werden obwohl es ein lokales Objekt zu sein scheint"
 
 #: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm:531
-#. ($self->BriefDescription , $self->CreatorObj->name)
+#. ($self->BriefDescription , $self->creator_obj->name)
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->name)
 msgid "%1 by %2"
 msgstr "%1 von %2"
@@ -695,7 +695,7 @@ msgstr "Freigabe"
 #: html/Approvals/Display.html:65 html/Approvals/Elements/ShowDependency:63 html/Approvals/index.html:86
 #. ($Ticket->id, $Ticket->Subject)
 #. ($ticket->id, $msg)
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 msgid "Approval #%1: %2"
 msgstr "Freigabe #%1: %2"
 
@@ -1276,7 +1276,7 @@ msgid "Create a CustomField"
 msgstr "Erstelle ein benutzerdefiniertes Feld"
 
 #: html/Admin/Queues/CustomField.html:69
-#. ($QueueObj->name())
+#. ($queue_obj->name())
 msgid "Create a CustomField for queue %1"
 msgstr "Erstelle ein benutzerdefiniertes Feld für den Bereich %1"
 
@@ -1301,7 +1301,7 @@ msgid "Create a queue"
 msgstr "Erstelle einen Bereich"
 
 #: html/Admin/Queues/Scrip.html:89
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Create a scrip for queue %1"
 msgstr "Erstelle ein Scrip für den Bereich %1"
 
@@ -1736,7 +1736,7 @@ msgid "Edit Search"
 msgstr "Suche editieren"
 
 #: html/Admin/Queues/Templates.html:63
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Edit Templates for queue %1"
 msgstr "Bearbeite Vorlagen für den Bereich %1"
 
@@ -1753,7 +1753,7 @@ msgid "EditSavedSearches"
 msgstr "GespeicherteSucheEditieren"
 
 #: html/Admin/Queues/Modify.html:140
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Editing Configuration for queue %1"
 msgstr "Bearbeite Konfiguration für den Bereich %1"
 
@@ -2658,12 +2658,12 @@ msgid "Modify User Rights"
 msgstr "Ändern der Benutzerrechte"
 
 #: html/Admin/Queues/CustomField.html:66
-#. ($QueueObj->name())
+#. ($queue_obj->name())
 msgid "Modify a CustomField for queue %1"
 msgstr "Ändere ein benutzerdefiniertes Feld für den Bereich %1"
 
 #: html/Admin/Queues/Scrip.html:82
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify a scrip for queue %1"
 msgstr "Ändere ein Scrip für den Bereich %1"
 
@@ -2677,12 +2677,12 @@ msgid "Modify associated objects for %1"
 msgstr "Ändern der assoziierte Objekte von %1"
 
 #: html/Ticket/ModifyDates.html:46 html/Ticket/ModifyDates.html:50
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 msgid "Modify dates for #%1"
 msgstr "Ändere Datumsangaben für #%1"
 
 #: html/Ticket/ModifyDates.html:57
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 msgid "Modify dates for ticket # %1"
 msgstr "Ändere Datumsangaben für Anfrage #%1"
 
@@ -2721,7 +2721,7 @@ msgid "Modify group rights for group %1"
 msgstr "Ändere die Gruppenrechte der Gruppe %1"
 
 #: html/Admin/Queues/GroupRights.html:46 html/Admin/Queues/GroupRights.html:50
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify group rights for queue %1"
 msgstr "Ändere Gruppenrechte für den Bereich %1"
 
@@ -2734,7 +2734,7 @@ msgid "Modify one's own RT account"
 msgstr "Ändert den eigenen RT-Zugang"
 
 #: html/Admin/Queues/People.html:46 html/Admin/Queues/People.html:50
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify people related to queue %1"
 msgstr "Ändere Personen im Zusammenhang mit diesem Bereich %1"
 
@@ -2745,7 +2745,7 @@ msgid "Modify people related to ticket #%1"
 msgstr "Ändere Personen der Anfragen #%1"
 
 #: html/Admin/Queues/Scrips.html:67
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify scrips for queue %1"
 msgstr "Ändere Scrips für den Bereich %1"
 
@@ -2754,8 +2754,8 @@ msgid "Modify scrips which apply to all queues"
 msgstr "Ändere auf alle Bereiche angewandte Scrips"
 
 #: html/Admin/Global/Template.html:102 html/Admin/Global/Template.html:46 html/Admin/Global/Template.html:51 html/Admin/Queues/Template.html:99
-#. (_($TemplateObj->name()))
-#. ($TemplateObj->id)
+#. (_($template_obj->name()))
+#. ($template_obj->id)
 msgid "Modify template %1"
 msgstr "Ändere Vorlage %1"
 
@@ -2787,7 +2787,7 @@ msgid "Modify ticket # %1"
 msgstr "Ändere Anfrage #%1"
 
 #: html/Ticket/Modify.html:46 html/Ticket/Modify.html:49 html/Ticket/Modify.html:55
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 msgid "Modify ticket #%1"
 msgstr "Ändere Anfrage #%1"
 
@@ -2806,7 +2806,7 @@ msgid "Modify user rights for group %1"
 msgstr "Ändere Benutzerrechte für die Gruppe %1"
 
 #: html/Admin/Queues/UserRights.html:46 html/Admin/Queues/UserRights.html:50
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify user rights for queue %1"
 msgstr "Ändere Benutzerrechte für den Bereich %1"
 
@@ -3067,7 +3067,7 @@ msgid "No permission to create queues"
 msgstr "Keine Erlaubnis Bereiche anzulegen"
 
 #: lib/RT/Ticket_Overlay.pm:420
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Kein Erlaubnis um Anfragen im Bereich '%1' anzulegen"
 
@@ -3286,7 +3286,7 @@ msgid "On"
 msgstr "am"
 
 #: lib/RT/Transaction_Overlay.pm:326
-#. ($self->CreatedAsString(), $self->CreatorObj->name())
+#. ($self->CreatedAsString(), $self->creator_obj->name())
 msgid "On %1, %2 wrote:"
 msgstr ""
 
@@ -3826,7 +3826,7 @@ msgid "Resolve"
 msgstr "Erledigen"
 
 #: html/Ticket/Update.html:156
-#. ($TicketObj->id, $TicketObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
 #: html/Ticket/Update.html:157
 #: html/Ticket/Update.html:157
 #: html/Ticket/Update.html:157
@@ -4459,7 +4459,7 @@ msgid "Template"
 msgstr "Vorlage"
 
 #: html/Admin/Global/Template.html:112 html/Admin/Queues/Template.html:113
-#. ($TemplateObj->id())
+#. ($template_obj->id())
 msgid "Template #%1"
 msgstr "Vorlage #%1"
 
@@ -4647,7 +4647,7 @@ msgid "Ticket #%1 Jumbo update: %2"
 msgstr "Anfrage #%1 Alles aktualisieren: %2"
 
 #: html/Approvals/Elements/ShowDependency:67
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 msgid "Ticket #%1: %2"
 msgstr "Anfrage #%1: %2"
 
@@ -4659,7 +4659,7 @@ msgid "Ticket %1"
 msgstr "Anfrage %1"
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
-#. ($self->id, $QueueObj->name)
+#. ($self->id, $queue_obj->name)
 msgid "Ticket %1 created in queue '%2'"
 msgstr "Anfrage %1 wurde im Bereich '%2' angelegt"
 
@@ -4905,7 +4905,7 @@ msgid "Update ticket #%1"
 msgstr "Aktualisiere Anfrage #%1"
 
 #: html/Ticket/Update.html:158
-#. ($TicketObj->id, $TicketObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
 #: html/Ticket/Update.html:159
 #: html/Ticket/Update.html:159
 #: html/Ticket/Update.html:159

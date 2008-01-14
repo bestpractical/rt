@@ -2543,7 +2543,7 @@ sub next {
         # of being revoked, it's ok if queue rights allow
         # ShowTicket.  It seems need another query, but we have
         # rights cache in Principal::has_right.
-        elsif ($Ticket->QueueObj->current_user_has_right('ShowTicket')
+        elsif ($Ticket->queue_obj->current_user_has_right('ShowTicket')
             || $Ticket->current_user_has_right('ShowTicket') )
         {
             return ($Ticket);
@@ -2557,7 +2557,7 @@ sub next {
         # of being revoked, it's ok if queue rights allow
         # ShowTicket.  It seems need another query, but we have
         # rights cache in Principal::has_right.
-        elsif ($Ticket->QueueObj->current_user_has_right('ShowTicket')
+        elsif ($Ticket->queue_obj->current_user_has_right('ShowTicket')
             || $Ticket->current_user_has_right('ShowTicket') )
         {
             return ($Ticket);

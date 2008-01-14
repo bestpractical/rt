@@ -71,7 +71,7 @@ sub __DependsOn
     my $objs = RT::Model::ScripCollection->new;
     $objs->limit( column => 'ScripCondition', value => $self->id );
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $objs,
             Shredder => $args{'Shredder'}

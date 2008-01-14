@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$TicketObj => undef
+$ticket_obj => undef
 
 </%args>
 <%init>
@@ -63,19 +63,19 @@ my @non_recipients = @{ $squelch{'emails'} };
 % foreach my $scrip (@{$Object->Scrips->prepared}) {
 % next unless $scrip->ActionObj->Action->isa('RT::ScripAction::SendEmail');
 <b><% $scrip->Description || _('Scrip #%1',$scrip->id) %></b><br />
-<&|/l, _($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name)&>%1 %2 with template %3</&>
+<&|/l, _($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->template_obj->name)&>%1 %2 with template %3</&>
 <br />
 %foreach my $type qw(To Cc Bcc) {
 %my @addresses =  $scrip->ActionObj->Action->$type();
 <ul>
 %foreach my $addr (@addresses) {
-<li> <b><%_($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-SquelchMailTo" value="<%$addr->address%>" /> <%$addr->address%>
+<li> <b><%_($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$ticket_obj->id%>-SquelchMailTo" value="<%$addr->address%>" /> <%$addr->address%>
 % }
 </ul>
 % }
 % if (RT->Config->Get('PreviewScripMessages')) {
 <textarea cols="80" rows="5">
-<%$scrip->ActionObj->TemplateObj->MIMEObj->as_string%>
+<%$scrip->ActionObj->template_obj->MIMEObj->as_string%>
 </textarea>
 % }
 % }
@@ -87,7 +87,7 @@ my @non_recipients = @{ $squelch{'emails'} };
 <br />
 <ul>
 % foreach my $recipient (@non_recipients) {
-<li><input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-UnsquelchMailTo" value="<%$recipient->Content%>" />
+<li><input type="checkbox" class="checkbox" name="Ticket-<%$ticket_obj->id%>-UnsquelchMailTo" value="<%$recipient->Content%>" />
 <% $recipient->Content %>
 % }
 </ul>
@@ -95,22 +95,22 @@ my @non_recipients = @{ $squelch{'emails'} };
 
 <%METHOD SquelchRecipients>
 <%ARGS>
-$TicketObj => undef
+$ticket_obj => undef
 </%ARGS>
 <%INIT>
-my $arg = 'Ticket-'.$TicketObj->id.'-SquelchMailTo';
+my $arg = 'Ticket-'.$ticket_obj->id.'-SquelchMailTo';
 my @squelchto = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
 
 foreach my $address (@squelchto) {
-        $TicketObj->SquelchMailTo($address) if ($address);
+        $ticket_obj->SquelchMailTo($address) if ($address);
 }
 
 
-$arg = 'Ticket-'.$TicketObj->id.'-UnsquelchMailTo';
+$arg = 'Ticket-'.$ticket_obj->id.'-UnsquelchMailTo';
 my @unsquelchto = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
 
 foreach my $address (@unsquelchto) {
-        $TicketObj->UnsquelchMailTo($address) if ($address);
+        $ticket_obj->UnsquelchMailTo($address) if ($address);
 }
 
 
@@ -128,7 +128,7 @@ my $Message = MakeMIMEEntity(
     Body    => $ARGS{'UpdateContent'},
 );
 
-my ( $Transaction, $Description, $Object ) = $TicketObj->$action(
+my ( $Transaction, $Description, $Object ) = $ticket_obj->$action(
     CcMessageTo  => $ARGS{'UpdateCc'},
     BccMessageTo => $ARGS{'UpdateBcc'},
     MIMEObj      => $Message,
@@ -140,13 +140,13 @@ unless ( $Transaction ) {
 }
 
 
-return (Object => $Object, emails => [$TicketObj->SquelchMailTo]);
+return (Object => $Object, emails => [$ticket_obj->SquelchMailTo]);
 </%INIT>
 </%METHOD>
 
 <%METHOD GetRecipients>
 <%ARGS>
-$TicketObj
+$ticket_obj
 </%ARGS>
 <%INIT>
 my $action;
@@ -164,7 +164,7 @@ my $Message = MakeMIMEEntity(
     Body    => $ARGS{'UpdateContent'},
 );
 
-my ( $id, $msg, $txn ) = $TicketObj->$action(
+my ( $id, $msg, $txn ) = $ticket_obj->$action(
     CcMessageTo  => $ARGS{'UpdateCc'},
     BccMessageTo => $ARGS{'UpdateBcc'},
     MIMEObj      => $Message,
@@ -198,8 +198,8 @@ my $Message = MakeMIMEEntity(
     Body    => $ARGS{'Content'},
 );
 
-my $TicketObj = RT::Model::Ticket->new();
-my ( $id, $txn, $msg ) = $TicketObj->create(
+my $ticket_obj = RT::Model::Ticket->new();
+my ( $id, $txn, $msg ) = $ticket_obj->create(
     Type            => $ARGS{'Type'} || 'ticket',
     Queue           => $ARGS{'Queue'},
     Owner           => $ARGS{'Owner'},

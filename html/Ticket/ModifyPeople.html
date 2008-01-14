@@ -68,12 +68,12 @@
 my (@results, @wresults);
 
 my $Ticket = load_ticket($id);
-$m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
+$m->callback( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 
 # if we're trying to search for watchers and nothing else
 unless ($OnlySearchForPeople or $OnlySearchForGroup) {
-    @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    @results = ProcessTicketBasics( ticket_obj => $Ticket, ARGSRef => \%ARGS);
+    @wresults = ProcessTicketWatchers( ticket_obj => $Ticket, ARGSRef => \%ARGS);
 }
 
 push @results, @wresults;

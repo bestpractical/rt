@@ -64,7 +64,7 @@ If the queue has changed.
 
 sub IsApplicable {
     my $self = shift;
-    if ($self->TransactionObj->Field eq 'Queue') {
+    if ($self->transaction_obj->Field eq 'Queue') {
 	    return(1);
     } 
     else {

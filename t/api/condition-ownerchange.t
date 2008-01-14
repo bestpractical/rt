@@ -21,7 +21,7 @@ my ($val, $msg) =$s1->create( Queue => $q->id,
              CustomIsApplicableCode => '',
              CustomPrepareCode => 'return 1',
              CustomCommitCode => '
-                    $self->TicketObj->set_Priority($self->TicketObj->Priority+1);
+                    $self->ticket_obj->set_Priority($self->ticket_obj->Priority+1);
                 return(1);
             ',
              Template => 'Blank'

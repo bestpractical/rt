@@ -75,7 +75,7 @@ sub new
 
 Put in objects into collection.
 Takes
-BaseObject - any supported object of RT::Record subclass;
+base_object - any supported object of RT::Record subclass;
 Flags - flags that describe relationship between target and base objects;
 TargetObjects - any of RT::SearchBuilder or RT::Record subclassed objects
 or array ref on list of this objects;
@@ -98,7 +98,7 @@ sub _PushDependency
 {
     my $self = shift;
     my %args = (
-            BaseObject => undef,
+            base_object => undef,
             Flags => undef,
             TargetObject => undef,
             Shredder => undef,
@@ -109,7 +109,7 @@ sub _PushDependency
 
     push @{ $self->{'list'} },
         RT::Shredder::Dependency->new(
-            BaseObject => $args{'BaseObject'},
+            base_object => $args{'base_object'},
             Flags => $args{'Flags'},
             TargetObject => $rec->{'Object'},
         );

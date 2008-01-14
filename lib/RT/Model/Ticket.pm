@@ -187,8 +187,8 @@ sub load {
     #TODO modify this routine to look at EffectiveId and do the recursive load
     # thing. be careful to cache all the interim tickets we try so we don't loop forever.
 
-    # FIXME: there is no TicketBaseURI option in config
-    my $base_uri = RT->Config->Get('TicketBaseURI') || '';
+    # FIXME: there is no Ticketbase_uri option in config
+    my $base_uri = RT->Config->Get('Ticketbase_uri') || '';
     #If it's a local URI, turn it into a ticket id
     if ( $base_uri && $id =~ /^$base_uri(\d+)$/ ) {
         $id = $1;
@@ -240,8 +240,8 @@ sub loadByURI {
     my $self = shift;
     my $uri  = shift;
 
-    # FIXME: there is no TicketBaseURI option in config
-    my $base_uri = RT->Config->Get('TicketBaseURI');
+    # FIXME: there is no Ticketbase_uri option in config
+    my $base_uri = RT->Config->Get('Ticketbase_uri');
     if ( $base_uri && $uri =~ /^$base_uri(\d+)$/ ) {
         my $id = $1;
         return $self->load($id);
@@ -328,19 +328,19 @@ sub create {
 
     my ($ErrStr, @non_fatal_errors);
 
-    my $QueueObj = RT::Model::Queue->new(current_user => RT->system_user );
+    my $queue_obj = RT::Model::Queue->new(current_user => RT->system_user );
     if ( ref $args{'Queue'} && $args{'Queue'}->isa( 'RT::Model::Queue') ) {
-        $QueueObj->load( $args{'Queue'}->id );
+        $queue_obj->load( $args{'Queue'}->id );
     }
     elsif ( $args{'Queue'} ) {
-        $QueueObj->load( $args{'Queue'} );
+        $queue_obj->load( $args{'Queue'} );
     }
     else {
         Jifty->log->debug( $args{'Queue'} . " not a recognised queue object." );
     }
 
     #Can't create a ticket without a queue.
-    unless ( $QueueObj->id ) {
+    unless ( $queue_obj->id ) {
         Jifty->log->debug("$self No valid queue given for ticket creation.");
         return ( 0, 0, _('Could not create ticket. Queue not set') );
     }
@@ -349,16 +349,16 @@ sub create {
     unless (
         $self->current_user->has_right(
             Right  => 'CreateTicket',
-            Object => $QueueObj
+            Object => $queue_obj
         )
       )
     {
         return (
             0, 0,
-            _( "No permission to create tickets in the queue '%1'", $QueueObj->name));
+            _( "No permission to create tickets in the queue '%1'", $queue_obj->name));
     }
 
-    unless ( $QueueObj->IsValidStatus( $args{'Status'} ) ) {
+    unless ( $queue_obj->IsValidStatus( $args{'Status'} ) ) {
         return ( 0, 0, _('Invalid value for status') );
     }
 
@@ -366,12 +366,12 @@ sub create {
 
     #Initial Priority
     # If there's no queue default initial priority and it's not set, set it to 0
-    $args{'initial_priority'} = $QueueObj->initial_priority || 0
+    $args{'initial_priority'} = $queue_obj->initial_priority || 0
         unless defined $args{'initial_priority'};
 
     #Final priority
     # If there's no queue default final priority and it's not set, set it to 0
-    $args{'final_priority'} = $QueueObj->final_priority || 0
+    $args{'final_priority'} = $queue_obj->final_priority || 0
         unless defined $args{'final_priority'};
 
     # Priority may have changed from initial_priority, for the case
@@ -388,7 +388,7 @@ sub create {
     if ( defined $args{'Due'} ) {
         $Due->set( Format => 'ISO', value => $args{'Due'} );
     }
-    elsif ( my $due_in = $QueueObj->DefaultDueIn ) {
+    elsif ( my $due_in = $queue_obj->DefaultDueIn ) {
         $Due->set_to_now;
         $Due->AddDays( $due_in );
     }
@@ -412,7 +412,7 @@ sub create {
     }
 
     #If the status is an inactive status, set the resolved date
-    elsif ( $QueueObj->IsInactiveStatus( $args{'Status'} ) )
+    elsif ( $queue_obj->IsInactiveStatus( $args{'Status'} ) )
     {
         Jifty->log->debug( "Got a ". $args{'Status'}
             ."(inactive) ticket with undefined resolved date. Setting to now."
@@ -460,7 +460,7 @@ sub create {
    
     my $DeferOwner;  
     if ( $Owner && $Owner->id != RT->nobody->id 
-        && !$Owner->has_right( Object => $QueueObj, Right  => 'OwnTicket' ) )
+        && !$Owner->has_right( Object => $queue_obj, Right  => 'OwnTicket' ) )
     {
         $DeferOwner = $Owner;
         $Owner = undef;
@@ -503,7 +503,7 @@ sub create {
     Jifty->handle->begin_transaction();
 
     my %params = (
-        Queue           => $QueueObj->id,
+        Queue           => $queue_obj->id,
         Owner           => $Owner->id,
         Subject         => $args{'Subject'},
         initial_priority => $args{'initial_priority'},
@@ -678,7 +678,7 @@ sub create {
     if (  $DeferOwner ) { 
             if (!$DeferOwner->has_right( Object => $self, Right  => 'OwnTicket')) {
     
-        Jifty->log->warn( "User " . $Owner->name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $QueueObj->name ); 
+        Jifty->log->warn( "User " . $Owner->name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $queue_obj->name ); 
         push @non_fatal_errors, _( "Owner '%1' does not have rights to own this ticket.", $Owner->name);
 
     } else {
@@ -705,8 +705,8 @@ sub create {
 
             $TransObj->UpdateCustomFields(ARGSRef => \%args);
 
-            Jifty->log->info( "Ticket " . $self->id . " created in queue '" . $QueueObj->name . "' by " . $self->current_user->name );
-            $ErrStr = _( "Ticket %1 created in queue '%2'", $self->id, $QueueObj->name );
+            Jifty->log->info( "Ticket " . $self->id . " created in queue '" . $queue_obj->name . "' by " . $self->current_user->name );
+            $ErrStr = _( "Ticket %1 created in queue '%2'", $self->id, $queue_obj->name );
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
         }
         else {
@@ -730,7 +730,7 @@ sub create {
 
         # Not going to record a transaction
         Jifty->handle->commit();
-        $ErrStr = _( "Ticket %1 created in queue '%2'", $self->id, $QueueObj->name );
+        $ErrStr = _( "Ticket %1 created in queue '%2'", $self->id, $queue_obj->name );
         $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
         return ( $self->id, 0, $ErrStr );
 
@@ -817,7 +817,7 @@ Returns: TICKETID
 
 sub Import {
     my $self = shift;
-    my ( $ErrStr, $QueueObj, $Owner );
+    my ( $ErrStr, $queue_obj, $Owner );
 
     my %args = (
         id              => undef,
@@ -840,19 +840,19 @@ sub Import {
     );
 
     if ( ( defined( $args{'Queue'} ) ) && ( !ref( $args{'Queue'} ) ) ) {
-        $QueueObj = RT::Model::Queue->new(current_user => RT->system_user);
-        $QueueObj->load( $args{'Queue'} );
+        $queue_obj = RT::Model::Queue->new(current_user => RT->system_user);
+        $queue_obj->load( $args{'Queue'} );
     }
     elsif ( ref( $args{'Queue'} ) eq 'RT::Model::Queue' ) {
-        $QueueObj = RT::Model::Queue->new(current_user => RT->system_user);
-        $QueueObj->load( $args{'Queue'}->id );
+        $queue_obj = RT::Model::Queue->new(current_user => RT->system_user);
+        $queue_obj->load( $args{'Queue'}->id );
     }
     else {
         Jifty->log->debug( "$self " . $args{'Queue'} . " not a recognised queue object." );
     }
 
     #Can't create a ticket without a queue.
-    unless ( defined($QueueObj) and $QueueObj->id ) {
+    unless ( defined($queue_obj) and $queue_obj->id ) {
         Jifty->log->debug("$self No queue given for ticket creation.");
         return ( 0, _('Could not create ticket. Queue not set') );
     }
@@ -861,13 +861,13 @@ sub Import {
     unless (
         $self->current_user->has_right(
             Right    => 'CreateTicket',
-            Object => $QueueObj
+            Object => $queue_obj
         )
       )
     {
         return ( 0,
             _("No permission to create tickets in the queue '%1'"
-              , $QueueObj->name));
+              , $queue_obj->name));
     }
 
     # {{{ Deal with setting the owner
@@ -894,7 +894,7 @@ sub Import {
         and ( $Owner->id != RT->nobody->id )
         and (
             !$Owner->has_right(
-                Object => $QueueObj,
+                Object => $queue_obj,
                 Right    => 'OwnTicket'
             )
         )
@@ -907,7 +907,7 @@ sub Import {
               . ") was proposed "
               . "as a ticket owner but has no rights to own "
               . "tickets in '"
-              . $QueueObj->name . "'\n" );
+              . $queue_obj->name . "'\n" );
 
         $Owner = undef;
     }
@@ -934,7 +934,7 @@ sub Import {
     my $id = $self->SUPER::create(
         id              => $args{'id'},
         EffectiveId     => $EffectiveId,
-        Queue           => $QueueObj->id,
+        Queue           => $queue_obj->id,
         Owner           => $Owner->id,
         Subject         => $args{'Subject'},        # loc
         initial_priority => $args{'initial_priority'},    # loc
@@ -1691,8 +1691,8 @@ sub validate_Queue {
         return (1);
     }
 
-    my $QueueObj = RT::Model::Queue->new;
-    my $id       = $QueueObj->load($value);
+    my $queue_obj = RT::Model::Queue->new;
+    my $id       = $queue_obj->load($value);
 
     if ($id) {
         return (1);
@@ -1715,20 +1715,20 @@ sub set_Queue {
         return ( 0, _("Permission Denied") );
     }
 
-    my $NewQueueObj = RT::Model::Queue->new;
-    $NewQueueObj->load($NewQueue);
+    my $Newqueue_obj = RT::Model::Queue->new;
+    $Newqueue_obj->load($NewQueue);
 
-    unless ( $NewQueueObj->id() ) {
+    unless ( $Newqueue_obj->id() ) {
         return ( 0, _("That queue does not exist") );
     }
 
-    if ( $NewQueueObj->id == $self->QueueObj->id ) {
+    if ( $Newqueue_obj->id == $self->queue_obj->id ) {
         return ( 0, _('That is the same value') );
     }
     unless (
         $self->current_user->has_right(
             Right    => 'CreateTicket',
-            Object => $NewQueueObj
+            Object => $Newqueue_obj
         )
       )
     {
@@ -1738,7 +1738,7 @@ sub set_Queue {
     unless (
         $self->OwnerObj->has_right(
             Right    => 'OwnTicket',
-            Object => $NewQueueObj
+            Object => $Newqueue_obj
         )
       )
     {
@@ -1751,20 +1751,20 @@ sub set_Queue {
         Jifty->log->error("Couldn't set owner on queue change: $msg") unless $status;
     }
 
-    return ( $self->_set( column => 'Queue', value => $NewQueueObj->id() ) );
+    return ( $self->_set( column => 'Queue', value => $Newqueue_obj->id() ) );
 }
 
 # }}}
 
-# {{{ sub QueueObj
+# {{{ sub queue_obj
 
-=head2 QueueObj
+=head2 queue_obj
 
 Takes nothing. returns this ticket's queue object
 
 =cut
 
-sub QueueObj {
+sub queue_obj {
     my $self = shift;
 
     my $queue_obj = RT::Model::Queue->new;
@@ -1780,15 +1780,15 @@ sub QueueObj {
 
 # {{{ Date printing routines
 
-# {{{ sub DueObj
+# {{{ sub due_obj
 
-=head2 DueObj
+=head2 due_obj
 
   Returns an RT::Date object containing this ticket's due date
 
 =cut
 
-sub DueObj {
+sub due_obj {
     my $self = shift;
 
     my $time = RT::Date->new();
@@ -1816,7 +1816,7 @@ Returns this ticket's due date as a human readable string
 
 sub DueAsString {
     my $self = shift;
-    return $self->DueObj->AsString();
+    return $self->due_obj->AsString();
 }
 
 # }}}
@@ -2005,7 +2005,7 @@ commentl
 MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content, DryRun
 
 If DryRun is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
-They will, however, be prepared and you'll be able to access them through the TransactionObj
+They will, however, be prepared and you'll be able to access them through the transaction_obj
 
 Returns: Transaction id, Error Message, Transaction Object
 (note the different order from Create()!)
@@ -2055,7 +2055,7 @@ MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content, DryRun
 if there's no MIMEObj, Content is used to build a MIME::Entity object
 
 If DryRun is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
-They will, however, be prepared and you'll be able to access them through the TransactionObj
+They will, however, be prepared and you'll be able to access them through the transaction_obj
 
 Returns: Transaction id, Error Message, Transaction Object
 (note the different order from Create()!)
@@ -2907,7 +2907,7 @@ sub validate_Status {
     my $status = shift;
 
     #Make sure the status passed in is valid
-    unless ( $self->QueueObj->IsValidStatus($status) ) {
+    unless ( $self->queue_obj->IsValidStatus($status) ) {
         return (undef);
     }
 
@@ -2973,7 +2973,7 @@ sub set_Status {
 
     #When we close a ticket, set the 'Resolved' attribute to now.
     # It's misnamed, but that's just historical.
-    if ( $self->QueueObj->IsInactiveStatus($args{Status}) ) {
+    if ( $self->queue_obj->IsInactiveStatus($args{Status}) ) {
         $self->_set( column             => 'Resolved',
                      value             => $now->ISO,
                      record_transaction => 0 );
@@ -3150,18 +3150,18 @@ sub SeenUpTo {
 
 # }}}
 
-=head2 TransactionBatch
+=head2 transaction_batch
 
   Returns an array reference of all transactions Created on this ticket during
   this ticket object's lifetime, or undef if there were none.
 
-  Only works when the C<UseTransactionBatch> config option is set to true.
+  Only works when the C<Usetransaction_batch> config option is set to true.
 
 =cut
 
-sub TransactionBatch {
+sub transaction_batch {
     my $self = shift;
-    return $self->{_TransactionBatch};
+    return $self->{_transaction_batch};
 }
 
 sub DESTROY {
@@ -3177,14 +3177,14 @@ sub DESTROY {
     # when an object's refcount is changed in its destructor.
     return if $self->{_Destroyed}++;
 
-    my $batch = $self->TransactionBatch or return;
+    my $batch = $self->transaction_batch or return;
     return unless @$batch;
 
     require RT::Model::ScripCollection;
     RT::Model::ScripCollection->new(current_user => RT->system_user)->Apply(
-    Stage        => 'TransactionBatch',
-    TicketObj    => $self,
-    TransactionObj    => $batch->[0],
+    Stage        => 'transaction_batch',
+    ticket_obj    => $self,
+    transaction_obj    => $batch->[0],
     Type        => join(',', (map { $_->Type } @{$batch}) )
     );
 }
@@ -3485,7 +3485,7 @@ sub Transactions {
 
 sub TransactionCustomFields {
     my $self = shift;
-    return $self->QueueObj->TicketTransactionCustomFields;
+    return $self->queue_obj->TicketTransactionCustomFields;
 }
 
 # }}}
@@ -3547,7 +3547,7 @@ This method is called from L<RT::Model::Principal/has_right>.
 
 sub ACLEquivalenceObjects {
     my $self = shift;
-    return $self->QueueObj;
+    return $self->queue_obj;
 
 }
 

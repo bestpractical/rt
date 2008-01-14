@@ -62,9 +62,9 @@ This happens on every transaction. it's always applicable
 
 sub prepare {
     my $self = shift;
-    my $retval = eval $self->ScripObj->CustomPrepareCode;
+    my $retval = eval $self->scrip_obj->CustomPrepareCode;
     if ($@) {
-        Jifty->log->error("Scrip ".$self->ScripObj->id. " Prepare failed: ".$@);
+        Jifty->log->error("Scrip ".$self->scrip_obj->id. " Prepare failed: ".$@);
         return (undef);
     }
     return ($retval);
@@ -78,9 +78,9 @@ This happens on every transaction. it's always applicable
 
 sub commit {
     my $self = shift;
-    my $retval = eval $self->ScripObj->CustomCommitCode;
+    my $retval = eval $self->scrip_obj->CustomCommitCode;
     if ($@) {
-        Jifty->log->error("Scrip ".$self->ScripObj->id. " Commit failed: ".$@);
+        Jifty->log->error("Scrip ".$self->scrip_obj->id. " Commit failed: ".$@);
         return (undef);
     }
     return ($retval);

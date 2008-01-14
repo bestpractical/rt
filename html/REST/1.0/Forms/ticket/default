@@ -179,11 +179,11 @@ if (!keys(%data)) {
     my ($time, $key, $val, @data);
 
     push @data, [ id    => "ticket/".$ticket->id   ];
-    push @data, [ Queue => $ticket->QueueObj->name ] 
+    push @data, [ Queue => $ticket->queue_obj->name ] 
 	if (!%$fields || exists $fields->{lc 'Queue'});
     push @data, [ Owner => $ticket->OwnerObj->name ]
 	if (!%$fields || exists $fields->{lc 'Owner'});
-    push @data, [ Creator => $ticket->CreatorObj->name ]
+    push @data, [ Creator => $ticket->creator_obj->name ]
 	if (!%$fields || exists $fields->{lc 'Creator'});
 
     foreach (qw(Subject Status Priority initial_priority final_priority)) {
@@ -212,7 +212,7 @@ if (!keys(%data)) {
     }
 
     # Display custom fields
-    my $CustomFields = $ticket->QueueObj->TicketCustomFields();
+    my $CustomFields = $ticket->queue_obj->TicketCustomFields();
     while (my $cf = $CustomFields->next()) {
 	next unless (!%$fields || (exists $fields->{"cf-".lc $cf->name}));
         my $vals = $ticket->CustomFieldValues($cf->id());
@@ -245,7 +245,7 @@ else {
         }
 
         if ($key =~ /^queue$/i) {
-            next if $val eq $ticket->QueueObj->name;
+            next if $val eq $ticket->queue_obj->name;
             ($n, $s) = $ticket->set_Queue($val);
         }
         elsif ($key =~ /^owner$/i) {

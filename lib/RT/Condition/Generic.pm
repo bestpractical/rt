@@ -53,9 +53,9 @@
 
     use RT::Condition::Generic;
     my $foo = RT::Condition::Generic->new( 
-		TransactionObj => $tr, 
-		TicketObj => $ti, 
-		ScripObj => $scr, 
+		transaction_obj => $tr, 
+		ticket_obj => $ti, 
+		scrip_obj => $scr, 
 		Argument => $arg, 
 		Type => $type);
 
@@ -96,18 +96,18 @@ sub new  {
 # {{{ sub _init 
 sub _init  {
   my $self = shift;
-  my %args = ( TransactionObj => undef,
-	       TicketObj => undef,
-	       ScripObj => undef,
-	       TemplateObj => undef,
+  my %args = ( transaction_obj => undef,
+	       ticket_obj => undef,
+	       scrip_obj => undef,
+	       template_obj => undef,
 	       Argument => undef,
 	       ApplicableTransTypes => undef,
 	       @_ );
   
   $self->{'Argument'} = $args{'Argument'};
-  $self->{'ScripObj'} = $args{'ScripObj'};
-  $self->{'TicketObj'} = $args{'TicketObj'};
-  $self->{'TransactionObj'} = $args{'TransactionObj'};
+  $self->{'scrip_obj'} = $args{'scrip_obj'};
+  $self->{'ticket_obj'} = $args{'ticket_obj'};
+  $self->{'transaction_obj'} = $args{'transaction_obj'};
   $self->{'ApplicableTransTypes'} = $args{'ApplicableTransTypes'};
 }
 # }}}
@@ -128,44 +128,44 @@ sub Argument  {
 }
 # }}}
 
-# {{{ sub TicketObj
+# {{{ sub ticket_obj
 
-=head2 TicketObj
+=head2 ticket_obj
 
 Return the ticket object we're talking about
 
 =cut
 
-sub TicketObj  {
+sub ticket_obj  {
   my $self = shift;
-  return($self->{'TicketObj'});
+  return($self->{'ticket_obj'});
 }
 # }}}
 
-# {{{ sub ScripObj
+# {{{ sub scrip_obj
 
-=head2 ScripObj
+=head2 scrip_obj
 
 Return the Scrip object we're talking about
 
 =cut
 
-sub ScripObj  {
+sub scrip_obj  {
   my $self = shift;
-  return($self->{'ScripObj'});
+  return($self->{'scrip_obj'});
 }
 # }}}
-# {{{ sub TransactionObj
+# {{{ sub transaction_obj
 
-=head2 TransactionObj
+=head2 transaction_obj
 
 Return the transaction object we're talking about
 
 =cut
 
-sub TransactionObj  {
+sub transaction_obj  {
   my $self = shift;
-  return($self->{'TransactionObj'});
+  return($self->{'transaction_obj'});
 }
 # }}}
 
@@ -214,10 +214,10 @@ sub DESTROY {
 
     # We need to clean up all the references that might maybe get
     # oddly circular
-    $self->{'TemplateObj'} =undef
-    $self->{'TicketObj'} = undef;
-    $self->{'TransactionObj'} = undef;
-    $self->{'ScripObj'} = undef;
+    $self->{'template_obj'} =undef
+    $self->{'ticket_obj'} = undef;
+    $self->{'transaction_obj'} = undef;
+    $self->{'scrip_obj'} = undef;
      
 }
 

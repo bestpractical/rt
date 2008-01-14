@@ -15,7 +15,7 @@ if ($args{'object_type'} eq 'Ticket') {
      my $tick = RT::Model::Ticket->new(current_user => RT->system_user);
      $tick->load($args{'object_id'});
      $args{'object_type'} = 'Queue';
-     $args{'object_id'} = $tick->QueueObj->id();
+     $args{'object_id'} = $tick->queue_obj->id();
 
 }
 if ($args{'object_type'} eq 'Queue') {

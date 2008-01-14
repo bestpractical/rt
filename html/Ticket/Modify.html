@@ -45,44 +45,44 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => _('Modify ticket #%1', $TicketObj->id) &>
+<& /Elements/Header, Title => _('Modify ticket #%1', $ticket_obj->id) &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $TicketObj, current_subtab => "Ticket/Modify.html?id=".$TicketObj->id, 
-    Title => _('Modify ticket #%1', $TicketObj->id) &>
+    Ticket => $ticket_obj, current_subtab => "Ticket/Modify.html?id=".$ticket_obj->id, 
+    Title => _('Modify ticket #%1', $ticket_obj->id) &>
 
-% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
+% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $ticket_obj);
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="Modify.html" enctype="multipart/form-data">
 % $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
-<input type="hidden" class="hidden" name="id" value="<% $TicketObj->id %>" />
+<input type="hidden" class="hidden" name="id" value="<% $ticket_obj->id %>" />
 
-<&| /Widgets/TitleBox, title => _('Modify ticket #%1',$TicketObj->id) &>
-<& Elements/EditBasics, TicketObj => $TicketObj &>
-<& Elements/EditCustomFields, TicketObj => $TicketObj &>
+<&| /Widgets/TitleBox, title => _('Modify ticket #%1',$ticket_obj->id) &>
+<& Elements/EditBasics, ticket_obj => $ticket_obj &>
+<& Elements/EditCustomFields, ticket_obj => $ticket_obj &>
 </&>
 
 <& /Elements/Submit, Label => _('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
 </form>
 <%INIT>
   
-my $TicketObj = load_ticket($id);
-my $CustomFields = $TicketObj->QueueObj->TicketCustomFields();
+my $ticket_obj = load_ticket($id);
+my $CustomFields = $ticket_obj->queue_obj->TicketCustomFields();
 
 # Now let callbacks have a chance at editing %ARGS
-$m->callback( TicketObj => $TicketObj, CustomFields => $CustomFields, ARGSRef => \%ARGS );
+$m->callback( ticket_obj => $ticket_obj, CustomFields => $CustomFields, ARGSRef => \%ARGS );
 
-my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
-my @cf_results = ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
+my @results = ProcessTicketBasics(ticket_obj => $ticket_obj, ARGSRef => \%ARGS);
+my @cf_results = ProcessObjectCustomFieldUpdates(Object => $ticket_obj, ARGSRef => \%ARGS);
 push (@results, @cf_results);
 
-# undef so that TransactionBatch scrips run and update the ticket
-$TicketObj = undef;
-$TicketObj = load_ticket($id);
+# undef so that transaction_batch scrips run and update the ticket
+$ticket_obj = undef;
+$ticket_obj = load_ticket($id);
 
 # TODO: display the results, even if we can't display the ticket
 
-unless ($TicketObj->current_user_has_right('ShowTicket')) {
+unless ($ticket_obj->current_user_has_right('ShowTicket')) {
     Abort("No permission to view ticket");
 } 
 

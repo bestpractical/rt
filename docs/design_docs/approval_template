@@ -3,7 +3,7 @@
      my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
    $groups->limit_ToUserDefinedGroups();
    $groups->limit(column => 'name', operator => '=', value => "$name");
-   $groups->WithMember($TransactionObj->CreatorObj->id);
+   $groups->WithMember($transaction_obj->creator_obj->id);
 
    my $groupid = $groups->first->id;
 

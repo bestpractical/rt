@@ -78,9 +78,9 @@
   </tr>
   <tr>
     <td class="label queue"><&|/l&>Queue</&>:</td>
-    <td class="value queue"><& ShowQueue, QueueObj => $Ticket->QueueObj &></td>
+    <td class="value queue"><& ShowQueue, queue_obj => $Ticket->queue_obj &></td>
   </tr>
-% $m->callback( %ARGS, Callbackname => 'EndOfList', TicketObj => $Ticket );
+% $m->callback( %ARGS, Callbackname => 'EndOfList', ticket_obj => $Ticket );
 </table>
 <%ARGS>
 $Ticket => undef

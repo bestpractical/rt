@@ -247,15 +247,15 @@ sub load {
 # }}}
 
 
-# {{{ TargetURI
+# {{{ target_uri
 
-=head2 TargetURI
+=head2 target_uri
 
 returns an RT::URI object for the "Target" of this link.
 
 =cut
 
-sub TargetURI {
+sub target_uri {
     my $self = shift;
     my $URI = RT::URI->new;
     $URI->FromURI($self->Target);
@@ -271,19 +271,19 @@ sub TargetURI {
 
 sub TargetObj {
     my $self = shift;
-    return $self->TargetURI->Object;
+    return $self->target_uri->Object;
 }
 # }}}
 
-# {{{ BaseURI
+# {{{ base_uri
 
-=head2 BaseURI
+=head2 base_uri
 
 returns an RT::URI object for the "Base" of this link.
 
 =cut
 
-sub BaseURI {
+sub base_uri {
     my $self = shift;
     my $URI = RT::URI->new;
     $URI->FromURI($self->Base);
@@ -291,15 +291,15 @@ sub BaseURI {
 }
 
 # }}}
-# {{{ sub BaseObj
+# {{{ sub base_obj
 
-=head2 BaseObj
+=head2 base_obj
 
 =cut
 
-sub BaseObj {
+sub base_obj {
   my $self = shift;
-  return $self->BaseURI->Object;
+  return $self->base_uri->Object;
 }
 # }}}
 

@@ -30,9 +30,9 @@ msgstr "#"
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
 #. ($Ticket->id, $Ticket->Subject)
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 #. ($ticket->id, $ticket->Subject)
-#. ($TicketObj->id, $TicketObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
 msgid "#%1: %2"
 msgstr ""
 
@@ -86,7 +86,7 @@ msgid "%1 %2 deleted"
 msgstr ""
 
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:63 html/Ticket/Elements/PreviewScrips:103
-#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
+#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->template_obj->name))
 msgid "%1 %2 with template %3"
 msgstr ""
 
@@ -95,15 +95,15 @@ msgid "%1 (%2) %3 this ticket\\n"
 msgstr "%1 (%2) %3 このチケット\\n"
 
 #: html/Ticket/Elements/ShowAttachments:72
-#. ($rev->CreatedAsString, $size, $rev->CreatorObj->name)
+#. ($rev->CreatedAsString, $size, $rev->creator_obj->name)
 msgid "%1 (%2) by %3"
 msgstr ""
 
 #: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:108 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:66
 #. (_($DefaultStatus))
 #. (_($Ticket->Status()))
-#. (_($TicketObj->Status))
-#. ($TicketObj->OwnerObj->name())
+#. (_($ticket_obj->Status))
+#. ($ticket_obj->OwnerObj->name())
 msgid "%1 (Unchanged)"
 msgstr ""
 
@@ -183,7 +183,7 @@ msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr ""
 
 #: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm:531
-#. ($self->BriefDescription , $self->CreatorObj->name)
+#. ($self->BriefDescription , $self->creator_obj->name)
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->name)
 msgid "%1 by %2"
 msgstr "%1 (%2)"
@@ -757,7 +757,7 @@ msgstr ""
 #: html/Approvals/Display.html:65 html/Approvals/Elements/ShowDependency:63 html/Approvals/index.html:86
 #. ($Ticket->id, $Ticket->Subject)
 #. ($ticket->id, $msg)
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 msgid "Approval #%1: %2"
 msgstr ""
 
@@ -1394,7 +1394,7 @@ msgid "Create a CustomField"
 msgstr "カスタムフィールドの作成"
 
 #: html/Admin/Queues/CustomField.html:69
-#. ($QueueObj->name())
+#. ($queue_obj->name())
 msgid "Create a CustomField for queue %1"
 msgstr ""
 
@@ -1443,7 +1443,7 @@ msgid "Create a request"
 msgstr "リクエストの作成"
 
 #: html/Admin/Queues/Scrip.html:89
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Create a scrip for queue %1"
 msgstr ""
 
@@ -1874,7 +1874,7 @@ msgid "Edit Search"
 msgstr ""
 
 #: html/Admin/Queues/Templates.html:63
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Edit Templates for queue %1"
 msgstr ""
 
@@ -1899,7 +1899,7 @@ msgid "EditSavedSearches"
 msgstr ""
 
 #: html/Admin/Queues/Modify.html:140
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Editing Configuration for queue %1"
 msgstr "キュー%1の設定を編集する"
 
@@ -2882,12 +2882,12 @@ msgid "Modify User Rights"
 msgstr ""
 
 #: html/Admin/Queues/CustomField.html:66
-#. ($QueueObj->name())
+#. ($queue_obj->name())
 msgid "Modify a CustomField for queue %1"
 msgstr ""
 
 #: html/Admin/Queues/Scrip.html:82
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify a scrip for queue %1"
 msgstr ""
 
@@ -2901,12 +2901,12 @@ msgid "Modify associated objects for %1"
 msgstr ""
 
 #: html/Ticket/ModifyDates.html:46 html/Ticket/ModifyDates.html:50
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 msgid "Modify dates for #%1"
 msgstr "#%1の期日を修正する"
 
 #: html/Ticket/ModifyDates.html:57
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 msgid "Modify dates for ticket # %1"
 msgstr "チケット#%1の期日を修正する"
 
@@ -2949,7 +2949,7 @@ msgid "Modify group rights for group %1"
 msgstr "%1のグループ権利を修正する"
 
 #: html/Admin/Queues/GroupRights.html:46 html/Admin/Queues/GroupRights.html:50
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify group rights for queue %1"
 msgstr "キュー%1のグループ権利を修正する"
 
@@ -2962,7 +2962,7 @@ msgid "Modify one's own RT account"
 msgstr ""
 
 #: html/Admin/Queues/People.html:46 html/Admin/Queues/People.html:50
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify people related to queue %1"
 msgstr "キュー%1に関係のある人々を修正する"
 
@@ -2973,7 +2973,7 @@ msgid "Modify people related to ticket #%1"
 msgstr "チケット#%1に関係のある人々を修正する"
 
 #: html/Admin/Queues/Scrips.html:67
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify scrips for queue %1"
 msgstr "キュー%1のスクリプトを修正する"
 
@@ -2982,8 +2982,8 @@ msgid "Modify scrips which apply to all queues"
 msgstr ""
 
 #: html/Admin/Global/Template.html:102 html/Admin/Global/Template.html:46 html/Admin/Global/Template.html:51 html/Admin/Queues/Template.html:99
-#. (_($TemplateObj->name()))
-#. ($TemplateObj->id)
+#. (_($template_obj->name()))
+#. ($template_obj->id)
 msgid "Modify template %1"
 msgstr "テンプレート%1を修正する"
 
@@ -3015,7 +3015,7 @@ msgid "Modify ticket # %1"
 msgstr "チケット#　%1を修正する"
 
 #: html/Ticket/Modify.html:46 html/Ticket/Modify.html:49 html/Ticket/Modify.html:55
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 msgid "Modify ticket #%1"
 msgstr "チケット#%1を修正する"
 
@@ -3034,7 +3034,7 @@ msgid "Modify user rights for group %1"
 msgstr "グループ%1のユーザー権利を修正する"
 
 #: html/Admin/Queues/UserRights.html:46 html/Admin/Queues/UserRights.html:50
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "Modify user rights for queue %1"
 msgstr "キュー%1のユーザー権利を修正する"
 
@@ -3318,7 +3318,7 @@ msgid "No permission to create queues"
 msgstr "キューを作成する許可がされていません"
 
 #: lib/RT/Ticket_Overlay.pm:420
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 msgid "No permission to create tickets in the queue '%1'"
 msgstr ""
 
@@ -3549,7 +3549,7 @@ msgid "On"
 msgstr "が以下である"
 
 #: lib/RT/Transaction_Overlay.pm:326
-#. ($self->CreatedAsString(), $self->CreatorObj->name())
+#. ($self->CreatedAsString(), $self->creator_obj->name())
 msgid "On %1, %2 wrote:"
 msgstr ""
 
@@ -4219,7 +4219,7 @@ msgid "Resolve"
 msgstr "解決済みにする"
 
 #: html/Ticket/Update.html:156
-#. ($TicketObj->id, $TicketObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
 msgid "Resolve ticket #%1 (%2)"
 msgstr ""
 
@@ -4884,7 +4884,7 @@ msgid "Template"
 msgstr "テンプレート"
 
 #: html/Admin/Global/Template.html:112 html/Admin/Queues/Template.html:113
-#. ($TemplateObj->id())
+#. ($template_obj->id())
 msgid "Template #%1"
 msgstr ""
 
@@ -5086,7 +5086,7 @@ msgid "Ticket #%1 Jumbo update: %2"
 msgstr "チケット　#%1　更新（総合ビュー）: %2"
 
 #: html/Approvals/Elements/ShowDependency:67
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 msgid "Ticket #%1: %2"
 msgstr ""
 
@@ -5098,7 +5098,7 @@ msgid "Ticket %1"
 msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:755 lib/RT/Ticket_Overlay.pm:775
-#. ($self->id, $QueueObj->name)
+#. ($self->id, $queue_obj->name)
 msgid "Ticket %1 created in queue '%2'"
 msgstr "チケット %1がキュー '%2'で作成されました"
 
@@ -5403,7 +5403,7 @@ msgid "Update ticket #%1"
 msgstr "アップデートチケット #%1"
 
 #: html/Ticket/Update.html:158
-#. ($TicketObj->id, $TicketObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
 msgid "Update ticket #%1 (%2)"
 msgstr ""
 

@@ -46,8 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/QueueTabs, id => $QueueObj->id, 
-    QueueObj => $QueueObj,
+<& /Admin/Elements/QueueTabs, id => $queue_obj->id, 
+    queue_obj => $queue_obj,
     current_tab => $current_tab, 
     Title => $title &>
 <& /Elements/ListActions, actions => \@results &>
@@ -56,53 +56,53 @@
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Queues/Modify.html" method="post">
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->id %>" />
+<input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $queue_obj->id %>" />
 
 <table>
 <tr><td align="right"><&|/l&>Queue name</&>:</td>
-<td colspan="3"><input name="name" value="<% ($Create) ? "" : $QueueObj->name %>" /></td>
+<td colspan="3"><input name="name" value="<% ($Create) ? "" : $queue_obj->name %>" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Description</&>:</td>
-<td colspan="3"><input name="Description" value="<% ($Create) ? "" : $QueueObj->Description %>" size="60" /></td>
+<td colspan="3"><input name="Description" value="<% ($Create) ? "" : $queue_obj->Description %>" size="60" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
-<td><input name="correspond_address" value="<% ($Create) ? "" : $QueueObj->correspond_address %>" />
+<td><input name="correspond_address" value="<% ($Create) ? "" : $queue_obj->correspond_address %>" />
 <br /><span><em><&|/l , RT->Config->Get('correspond_address')&>(If left blank, will default to %1)</&></em></span></td>
 <td align="right"><&|/l&>comment Address</&>:</td>
-<td><input name="comment_address" value="<% ($Create) ? "" : $QueueObj->comment_address %>" />
+<td><input name="comment_address" value="<% ($Create) ? "" : $queue_obj->comment_address %>" />
 <br /><span><em><&|/l , RT->Config->Get('comment_address')&>(If left blank, will default to %1)</&></em></span></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Priority starts at</&>:</td>
-<td><input name="initial_priority" value="<% ($Create) ? "" : $QueueObj->initial_priority %>" /></td>
+<td><input name="initial_priority" value="<% ($Create) ? "" : $queue_obj->initial_priority %>" /></td>
 <td align="right"><&|/l&>Over time, priority moves toward</&>:</td>
-<td><input name="final_priority" value="<% ($Create) ? "" : $QueueObj->final_priority %>" /></td>
+<td><input name="final_priority" value="<% ($Create) ? "" : $queue_obj->final_priority %>" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Requests should be due in</&>:</td>
-<td colspan="3"><input name="DefaultDueIn" value="<% ($Create) ? "" : $QueueObj->DefaultDueIn%>" /> <&|/l&>days</&>.</td>
+<td colspan="3"><input name="DefaultDueIn" value="<% ($Create) ? "" : $queue_obj->DefaultDueIn%>" /> <&|/l&>days</&>.</td>
 </tr>
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-<tr><td align="right"><input type="checkbox" class="checkbox" name="Sign" value="1" <% $QueueObj->Sign? 'checked': '' %> /></td>
+<tr><td align="right"><input type="checkbox" class="checkbox" name="Sign" value="1" <% $queue_obj->Sign? 'checked': '' %> /></td>
 <td><&|/l&>Sign by default</&></td>
-<td align="right"><input type="checkbox" class="checkbox" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked': '' %> /></td>
+<td align="right"><input type="checkbox" class="checkbox" name="Encrypt" value="1" <% $queue_obj->Encrypt? 'checked': '' %> /></td>
 <td><&|/l&>Encrypt by default</&></td>
 </tr>
 % }
 
 <tr><td align="right"><input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /></td>
 <td colspan="3"><&|/l&>Enabled (Unchecking this box disables this queue)</&><br />
-% $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
+% $m->callback( %ARGS, queue_obj => $queue_obj, results => \@results );
 </td></tr>
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-% if ( my $email = $QueueObj->correspond_address || RT->Config->Get('correspond_address') ) {
+% if ( my $email = $queue_obj->correspond_address || RT->Config->Get('correspond_address') ) {
 <tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, Type => 'private', email => $email &></td></tr>
 % }
-% if ( my $email = $QueueObj->comment_address || RT->Config->Get('comment_address') ) {
+% if ( my $email = $queue_obj->comment_address || RT->Config->Get('comment_address') ) {
 <tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, Type => 'private', email => $email &></td></tr>
 % }
 % }
@@ -115,8 +115,8 @@
 
 <%INIT>
 my ($title, $current_tab, @results, $disabled, $EnabledChecked);
-my $QueueObj = RT::Model::Queue->new();
-$QueueObj->load( $id ) if !$id || $id eq 'new';
+my $queue_obj = RT::Model::Queue->new();
+$queue_obj->load( $id ) if !$id || $id eq 'new';
 
 $EnabledChecked = "checked";
 
@@ -125,19 +125,19 @@ if ($Create) {
     $title = _("Create a queue");
 } else {
     if ( defined $id && $id eq 'new' ) {
-        my ($val, $msg) = $QueueObj->create( name => $name );
+        my ($val, $msg) = $queue_obj->create( name => $name );
         Abort("$msg") unless $val;
         delete $session{'create_in_queues'};
 		push @results, $msg;
     }
     else {
-        $QueueObj->load($id) || $QueueObj->load($name) || Abort(_("Couldn't load queue '%1'", $name));
+        $queue_obj->load($id) || $queue_obj->load($name) || Abort(_("Couldn't load queue '%1'", $name));
     }
-    $title = _('Editing Configuration for queue %1', $QueueObj->name);
+    $title = _('Editing Configuration for queue %1', $queue_obj->name);
     
-    $current_tab = 'Admin/Queues/Modify.html?id='.$QueueObj->id;
+    $current_tab = 'Admin/Queues/Modify.html?id='.$queue_obj->id;
 }
-if ( $QueueObj->id ) {
+if ( $queue_obj->id ) {
     delete $session{'create_in_queues'};
     my @attribs= qw(Description correspond_address comment_address name
         initial_priority final_priority DefaultDueIn Sign Encrypt disabled);
@@ -151,18 +151,18 @@ if ( $QueueObj->id ) {
 
     push @results, UpdateRecordObject(
         AttributesRef => \@attribs,
-        Object => $QueueObj, 
+        Object => $queue_obj, 
         ARGSRef => \%ARGS
     );
 
     $disabled = $ARGS{'disabled'} = $Enabled? 0: 1;
 
-    $EnabledChecked = "" if $QueueObj->disabled;
+    $EnabledChecked = "" if $queue_obj->disabled;
 
     my @linkresults;
     $m->callback(
         results      => \@linkresults,
-        RecordObj    => $QueueObj,
+        RecordObj    => $queue_obj,
         ARGSRef      => \%ARGS, 
         Callbackname => 'ProcessLinks'
     );

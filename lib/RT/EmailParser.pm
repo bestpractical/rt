@@ -280,7 +280,7 @@ sub _PostProcessNewEntity {
 
 =head2 ParseCcAddressesFromHead HASHREF
 
-Takes a hashref object containing QueueObj, Head and CurrentUser objects.
+Takes a hashref object containing queue_obj, Head and CurrentUser objects.
 Returns a list of all email addresses in the To and Cc 
 headers b<except> the current Queue\'s email addresses, the CurrentUser\'s 
 email address and anything that the RT->Config->Get('RTAddressRegexp') matches.
@@ -292,7 +292,7 @@ sub ParseCcAddressesFromHead {
     my $self = shift;
 
     my %args = (
-        QueueObj    => undef,
+        queue_obj    => undef,
         CurrentUser => undef,
         @_
     );
@@ -307,8 +307,8 @@ sub ParseCcAddressesFromHead {
         my $user = RT::Model::User->new(current_user => RT->system_user);
         $Address = $user->canonicalize_email($Address);
         next if ( lc $args{'CurrentUser'}->email   eq lc $Address );
-        next if ( lc $args{'QueueObj'}->correspond_address eq lc $Address );
-        next if ( lc $args{'QueueObj'}->comment_address    eq lc $Address );
+        next if ( lc $args{'queue_obj'}->correspond_address eq lc $Address );
+        next if ( lc $args{'queue_obj'}->comment_address    eq lc $Address );
         next if ( $self->IsRTAddress($Address) );
 
         push ( @Addresses, $Address );

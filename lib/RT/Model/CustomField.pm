@@ -301,9 +301,9 @@ sub load_by_name {
 
     # if we're looking for a queue by name, make it a number
     if ( defined $args{'Queue'} && $args{'Queue'} =~ /\D/ ) {
-        my $QueueObj = RT::Model::Queue->new;
-        $QueueObj->load( $args{'Queue'} );
-        $args{'Queue'} = $QueueObj->id;
+        my $queue_obj = RT::Model::Queue->new;
+        $queue_obj->load( $args{'Queue'} );
+        $args{'Queue'} = $queue_obj->id;
     }
 
     # XXX - really naive implementation.  Slow. - not really. still just one query
@@ -897,9 +897,9 @@ sub RemoveFromObject {
     return ( $oid, $msg );
 }
 
-# {{{ AddValueForObject
+# {{{ add_value_for_object
 
-=head2 AddValueForObject HASH
+=head2 add_value_for_object HASH
 
 Adds a custom field value for a record object of some kind. 
 Takes a param hash of 
@@ -916,7 +916,7 @@ Optional:
 
 =cut
 
-sub AddValueForObject {
+sub add_value_for_object {
     my $self = shift;
     my %args = (
         Object       => undef,
@@ -938,7 +938,7 @@ sub AddValueForObject {
     Jifty->handle->begin_transaction;
 
     if ( $self->MaxValues ) {
-        my $current_values = $self->ValuesForObject($obj);
+        my $current_values = $self->values_for_object($obj);
         my $extra_values = ( $current_values->count + 1 ) - $self->MaxValues;
 
         # (The +1 is for the new value we're adding)
@@ -1025,9 +1025,9 @@ sub FriendlyPattern {
 
 # }}}
 
-# {{{ DeleteValueForObject
+# {{{ delete_value_for_object
 
-=head2 DeleteValueForObject HASH
+=head2 delete_value_for_object HASH
 
 Deletes a custom field value for a ticket. Takes a param hash of Object and Content
 
@@ -1035,7 +1035,7 @@ Returns a tuple of (STATUS, MESSAGE). If the call succeeded, the STATUS is true.
 
 =cut
 
-sub deleteValueForObject {
+sub delete_value_for_object {
     my $self = shift;
     my %args = ( Object => undef,
                  Content => undef,
@@ -1081,13 +1081,13 @@ sub deleteValueForObject {
 }
 
 
-=head2 ValuesForObject OBJECT
+=head2 values_for_object OBJECT
 
 Return an L<RT::Model::ObjectCustomFieldValueCollection> object containing all of this custom field's values for OBJECT 
 
 =cut
 
-sub ValuesForObject {
+sub values_for_object {
     my $self = shift;
     my $object = shift;
 

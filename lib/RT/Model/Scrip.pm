@@ -133,15 +133,15 @@ sub create {
         $args{'Queue'} = 0;    # avoid undef sneaking in
     }
     else {
-        my $QueueObj = RT::Model::Queue->new;
-        $QueueObj->load( $args{'Queue'} );
-        unless ( $QueueObj->id ) {
+        my $queue_obj = RT::Model::Queue->new;
+        $queue_obj->load( $args{'Queue'} );
+        unless ( $queue_obj->id ) {
             return ( 0, _('Invalid queue') );
         }
-        unless ( $QueueObj->current_user_has_right('ModifyScrips') ) {
+        unless ( $queue_obj->current_user_has_right('ModifyScrips') ) {
             return ( 0, _('Permission Denied') );
         }
-        $args{'Queue'} = $QueueObj->id;
+        $args{'Queue'} = $queue_obj->id;
     }
 
     #TODO +++ validate input
@@ -211,23 +211,23 @@ sub delete {
 
 # }}}
 
-# {{{ sub QueueObj
+# {{{ sub queue_obj
 
-=head2 QueueObj
+=head2 queue_obj
 
 Retuns an RT::Model::Queue object with this Scrip\'s queue
 
 =cut
 
-sub QueueObj {
+sub queue_obj {
     my $self = shift;
 
-    if ( !$self->{'QueueObj'} ) {
+    if ( !$self->{'queue_obj'} ) {
         require RT::Model::Queue;
-        $self->{'QueueObj'} = RT::Model::Queue->new;
-        $self->{'QueueObj'}->load( $self->__value('Queue') );
+        $self->{'queue_obj'} = RT::Model::Queue->new;
+        $self->{'queue_obj'}->load( $self->__value('Queue') );
     }
-    return ( $self->{'QueueObj'} );
+    return ( $self->{'queue_obj'} );
 }
 
 # }}}
@@ -275,23 +275,23 @@ sub ConditionObj {
 
 # }}}
 
-# {{{ sub TemplateObj
+# {{{ sub template_obj
 
-=head2 TemplateObj
+=head2 template_obj
 
 Retuns an RT::Model::Template object with this Scrip\'s Template
 
 =cut
 
-sub TemplateObj {
+sub template_obj {
     my $self = shift;
 
-    unless ( defined $self->{'TemplateObj'} ) {
+    unless ( defined $self->{'template_obj'} ) {
         require RT::Model::Template;
-        $self->{'TemplateObj'} = RT::Model::Template->new;
-        $self->{'TemplateObj'}->load( $self->Template );
+        $self->{'template_obj'} = RT::Model::Template->new;
+        $self->{'template_obj'}->load( $self->Template );
     }
-    return ( $self->{'TemplateObj'} );
+    return ( $self->{'template_obj'} );
 }
 
 # }}}
@@ -300,7 +300,7 @@ sub TemplateObj {
 
 # {{{ sub Apply
 
-=head2 Apply { TicketObj => undef, TransactionObj => undef}
+=head2 Apply { ticket_obj => undef, transaction_obj => undef}
 
 This method instantiates the ScripCondition and ScripAction objects for a
 single execution of this scrip. it then calls the IsApplicable method of the 
@@ -319,38 +319,38 @@ should be loaded by the SuperUser role
 
 sub Apply {
     my $self = shift;
-    my %args = ( TicketObj      => undef,
-                 TransactionObj => undef,
+    my %args = ( ticket_obj      => undef,
+                 transaction_obj => undef,
                  @_ );
 
-    Jifty->log->debug("Now applying scrip ".$self->id . " for transaction ".$args{'TransactionObj'}->id);
+    Jifty->log->debug("Now applying scrip ".$self->id . " for transaction ".$args{'transaction_obj'}->id);
 
-    my $ApplicableTransactionObj = $self->IsApplicable( TicketObj      => $args{'TicketObj'},
-                                                        TransactionObj => $args{'TransactionObj'} );
-    unless ( $ApplicableTransactionObj ) {
+    my $Applicabletransaction_obj = $self->IsApplicable( ticket_obj      => $args{'ticket_obj'},
+                                                        transaction_obj => $args{'transaction_obj'} );
+    unless ( $Applicabletransaction_obj ) {
         return undef;
     }
 
-    if ( $ApplicableTransactionObj->id != $args{'TransactionObj'}->id ) {
-        Jifty->log->debug("Found an applicable transaction ".$ApplicableTransactionObj->id . " in the same batch with transaction ".$args{'TransactionObj'}->id);
+    if ( $Applicabletransaction_obj->id != $args{'transaction_obj'}->id ) {
+        Jifty->log->debug("Found an applicable transaction ".$Applicabletransaction_obj->id . " in the same batch with transaction ".$args{'transaction_obj'}->id);
     }
 
     #If it's applicable, prepare and commit it
-    Jifty->log->debug("Now preparing scrip ".$self->id . " for transaction ".$ApplicableTransactionObj->id);
-    unless ( $self->prepare( TicketObj      => $args{'TicketObj'},
-                             TransactionObj => $ApplicableTransactionObj )
+    Jifty->log->debug("Now preparing scrip ".$self->id . " for transaction ".$Applicabletransaction_obj->id);
+    unless ( $self->prepare( ticket_obj      => $args{'ticket_obj'},
+                             transaction_obj => $Applicabletransaction_obj )
       ) {
         return undef;
     }
 
-    Jifty->log->debug("Now commiting scrip ".$self->id . " for transaction ".$ApplicableTransactionObj->id);
-    unless ( $self->commit( TicketObj => $args{'TicketObj'},
-                            TransactionObj => $ApplicableTransactionObj)
+    Jifty->log->debug("Now commiting scrip ".$self->id . " for transaction ".$Applicabletransaction_obj->id);
+    unless ( $self->commit( ticket_obj => $args{'ticket_obj'},
+                            transaction_obj => $Applicabletransaction_obj)
       ) {
         return undef;
     }
 
-    Jifty->log->debug("We actually finished scrip ".$self->id . " for transaction ".$ApplicableTransactionObj->id);
+    Jifty->log->debug("We actually finished scrip ".$self->id . " for transaction ".$Applicabletransaction_obj->id);
     return (1);
 
 }
@@ -369,7 +369,7 @@ Otherwise, undef is returned.
 If the Scrip is in the TransactionCreate Stage (the usual case), only test
 the associated Transaction object to see if it is applicable.
 
-For Scrips in the TransactionBatch Stage, test all Transaction objects
+For Scrips in the transaction_batch Stage, test all Transaction objects
 Created during the Ticket object's lifetime, and returns the first one
 that is applicable.
 
@@ -377,8 +377,8 @@ that is applicable.
 
 sub IsApplicable {
     my $self = shift;
-    my %args = ( TicketObj      => undef,
-                 TransactionObj => undef,
+    my %args = ( ticket_obj      => undef,
+                 transaction_obj => undef,
                  @_ );
 
     my $return;
@@ -388,31 +388,31 @@ sub IsApplicable {
 
         if ( $self->Stage eq 'TransactionCreate') {
 	    # Only look at our current Transaction
-	    @Transactions = ( $args{'TransactionObj'} );
+	    @Transactions = ( $args{'transaction_obj'} );
         }
-        elsif ( $self->Stage eq 'TransactionBatch') {
+        elsif ( $self->Stage eq 'transaction_batch') {
 	    # Look at all Transactions in this Batch
-            @Transactions = @{ $args{'TicketObj'}->TransactionBatch || [] };
+            @Transactions = @{ $args{'ticket_obj'}->transaction_batch || [] };
         }
 	else {
 	    Jifty->log->error( "Unknown Scrip stage:" . $self->Stage );
 	    return (undef);
 	}
 	my $ConditionObj = $self->ConditionObj;
-	foreach my $TransactionObj ( @Transactions ) {
+	foreach my $transaction_obj ( @Transactions ) {
 	    # in TxnBatch stage we can select scrips that are not applicable to all txns
-	    my $txn_type = $TransactionObj->Type;
+	    my $txn_type = $transaction_obj->Type;
 	    next unless( $ConditionObj->ApplicableTransTypes =~ /(?:^|,)(?:Any|\Q$txn_type\E)(?:,|$)/i );
 	    # Load the scrip's Condition object
 	    $ConditionObj->loadCondition(
-		ScripObj       => $self,
-		TicketObj      => $args{'TicketObj'},
-		TransactionObj => $TransactionObj,
+		scrip_obj       => $self,
+		ticket_obj      => $args{'ticket_obj'},
+		transaction_obj => $transaction_obj,
 	    );
 
             if ( $ConditionObj->IsApplicable() ) {
 	        # We found an application Transaction -- return it
-                $return = $TransactionObj;
+                $return = $transaction_obj;
                 last;
             }
 	}
@@ -439,15 +439,15 @@ Calls the action object's prepare method
 
 sub prepare {
     my $self = shift;
-    my %args = ( TicketObj      => undef,
-                 TransactionObj => undef,
+    my %args = ( ticket_obj      => undef,
+                 transaction_obj => undef,
                  @_ );
 
     my $return;
     eval {
-        $self->ActionObj->loadAction( ScripObj       => $self,
-                                      TicketObj      => $args{'TicketObj'},
-                                      TransactionObj => $args{'TransactionObj'},
+        $self->ActionObj->loadAction( scrip_obj       => $self,
+                                      ticket_obj      => $args{'ticket_obj'},
+                                      transaction_obj => $args{'transaction_obj'},
         );
         $return = $self->ActionObj->prepare();
     };
@@ -470,8 +470,8 @@ Calls the action object's commit method
 
 sub commit {
     my $self = shift;
-    my %args = ( TicketObj      => undef,
-                 TransactionObj => undef,
+    my %args = ( ticket_obj      => undef,
+                 transaction_obj => undef,
                  @_ );
 
     my $return;
@@ -481,7 +481,7 @@ sub commit {
 
 #Searchbuilder caching isn't perfectly coherent. got to reload the ticket object, since it
 # may have changed
-    $args{'TicketObj'}->load( $args{'TicketObj'}->id );
+    $args{'ticket_obj'}->load( $args{'ticket_obj'}->id );
 
     if ($@) {
         Jifty->log->error( "Scrip Commit " . $self->id . " died. - " . $@ );
@@ -571,7 +571,7 @@ sub has_right {
     if ( $self->SUPER::_value('Queue') ) {
         return $args{'Principal'}->has_right(
             Right  => $args{'Right'},
-            Object => $self->QueueObj
+            Object => $self->queue_obj
         );
     }
     else {

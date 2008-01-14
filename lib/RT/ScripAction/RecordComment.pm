@@ -59,8 +59,8 @@ been started, to make a comment on the ticket.
 
 =head1 SYNOPSIS
 
-my $action_obj = RT::ScripAction::RecordComment->new('TicketObj'   => $ticket_obj,
-						'TemplateObj' => $template_obj,
+my $action_obj = RT::ScripAction::RecordComment->new('ticket_obj'   => $ticket_obj,
+						'template_obj' => $template_obj,
 						);
 my $result = $action_obj->prepare();
 $action_obj->commit() if $result;
@@ -78,8 +78,8 @@ will give us a loop.
 
 sub prepare {
     my $self = shift;
-    if (defined $self->{'TransactionObj'} &&
-	$self->{'TransactionObj'}->Type =~ /^(comment|Correspond)$/) {
+    if (defined $self->{'transaction_obj'} &&
+	$self->{'transaction_obj'}->Type =~ /^(comment|Correspond)$/) {
 	return undef;
     }
     return 1;
@@ -102,13 +102,13 @@ sub commit {
 sub createTransaction {
     my $self = shift;
 
-    my ($result, $msg) = $self->{'TemplateObj'}->Parse(
-	TicketObj => $self->{'TicketObj'});
+    my ($result, $msg) = $self->{'template_obj'}->Parse(
+	ticket_obj => $self->{'ticket_obj'});
     return undef unless $result;
     
-    my ($trans, $desc, $transaction) = $self->{'TicketObj'}->comment(
-	MIMEObj => $self->TemplateObj->MIMEObj);
-    $self->{'TransactionObj'} = $transaction;
+    my ($trans, $desc, $transaction) = $self->{'ticket_obj'}->comment(
+	MIMEObj => $self->template_obj->MIMEObj);
+    $self->{'transaction_obj'} = $transaction;
 }
     
 

@@ -141,8 +141,8 @@ sub WriteDownScrip {
     my $props = $self->_MakeHash( $args{'Object'} );
     $props->{'Action'} = $args{'Object'}->ActionObj->name;
     $props->{'Condition'} = $args{'Object'}->ConditionObj->name;
-    $props->{'Template'} = $args{'Object'}->TemplateObj->name;
-    $props->{'Queue'} = $args{'Object'}->QueueObj->name || 'global';
+    $props->{'Template'} = $args{'Object'}->template_obj->name;
+    $props->{'Queue'} = $args{'Object'}->queue_obj->name || 'global';
 
     return $self->_WriteDownHash( $args{'Object'}, $props );
 }

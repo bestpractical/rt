@@ -78,7 +78,7 @@ sub __DependsOn
     push( @$list, $objs );
 
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}
@@ -102,7 +102,7 @@ sub __Relates
 # Queue
 # Skip if it's global CF
     if( $self->Queue ) {
-        if( $self->QueueObj && $self->QueueObj->id ) {
+        if( $self->queue_obj && $self->queue_obj->id ) {
             push( @$list, $obj );
         } else {
             my $rec = $args{'Shredder'}->GetRecord( Object => $self );
@@ -113,7 +113,7 @@ sub __Relates
     }
 
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}

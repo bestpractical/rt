@@ -18,9 +18,9 @@ my $s1 = RT::Model::Scrip->new(current_user => RT->system_user);
 my ($val, $msg) =$s1->create( Queue => $q->id,
              ScripAction => 'User Defined',
              ScripCondition => 'User Defined',
-             CustomIsApplicableCode => 'if ($self->TicketObj->Subject =~ /fire/) { return (1);} else { return(0)}',
+             CustomIsApplicableCode => 'if ($self->ticket_obj->Subject =~ /fire/) { return (1);} else { return(0)}',
              CustomPrepareCode => 'return 1',
-             CustomCommitCode => '$self->TicketObj->__set(column =>"Priority", value => "87");',
+             CustomCommitCode => '$self->ticket_obj->__set(column =>"Priority", value => "87");',
              Template => 'Blank'
     );
 ok($val,$msg);

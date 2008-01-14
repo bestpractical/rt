@@ -68,7 +68,7 @@ $print_content->( \$para ) if length $para;
 %       $print_content->( \$Message );
 % }
 <%INIT>
-my $ticket = $Transaction ? $Transaction->TicketObj : undef;
+my $ticket = $Transaction ? $Transaction->ticket_obj : undef;
 
 my $print_content = sub {
     my $ref = shift;

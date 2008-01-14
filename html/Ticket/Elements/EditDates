@@ -49,11 +49,11 @@
   <tr>
     <td class="label"><&|/l&>starts</&>:</td>
     <td class="entry"><& /Elements/SelectDate, menu_prefix => 'starts', current => 0 &> 
-        (<% $TicketObj->startsObj->AsString %>)</td>
+        (<% $ticket_obj->startsObj->AsString %>)</td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Started</&>:</td>
-    <td class="entry"><& /Elements/SelectDate, menu_prefix => 'Started', current => 0 &> (<%$TicketObj->StartedObj->AsString %>)</td>
+    <td class="entry"><& /Elements/SelectDate, menu_prefix => 'Started', current => 0 &> (<%$ticket_obj->StartedObj->AsString %>)</td>
   </tr>
 
   <tr>
@@ -61,17 +61,17 @@
       <&|/l&>Last Contact</&>:
     </td>
     <td class="entry">
-      <& /Elements/SelectDate, menu_prefix => 'Told', current => 0 &> (<% $TicketObj->ToldObj->AsString %>)
+      <& /Elements/SelectDate, menu_prefix => 'Told', current => 0 &> (<% $ticket_obj->ToldObj->AsString %>)
     </td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Due</&>:</td>
     <td class="entry">
-      <& /Elements/SelectDate, menu_prefix => 'Due', current => 0 &> (<% $TicketObj->DueObj->AsString %>)
+      <& /Elements/SelectDate, menu_prefix => 'Due', current => 0 &> (<% $ticket_obj->due_obj->AsString %>)
     </td>
   </tr>
 </table>
 <%ARGS>
-$TicketObj => undef
+$ticket_obj => undef
 </%ARGS>
 

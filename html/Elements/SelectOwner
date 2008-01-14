@@ -65,11 +65,11 @@
 <%INIT>
 
 my @objects;
-if ($TicketObj) {
-        @objects = ($TicketObj);
+if ($ticket_obj) {
+        @objects = ($ticket_obj);
 }
-elsif ($QueueObj) {
-        @objects = ($QueueObj);
+elsif ($queue_obj) {
+        @objects = ($queue_obj);
 } 
 elsif ($cfqueues) {
 	@objects = keys %{$cfqueues};
@@ -102,11 +102,11 @@ $m->callback( %ARGS, objects => \@objects, Callbackname => 'UpdateObjectList');
 </%INIT>
 
 <%ARGS>
-$QueueObj => undef
+$queue_obj => undef
 $name => undef
 $Default => 0
 $User => undef
-$TicketObj => undef
+$ticket_obj => undef
 $DefaultValue => 1
 $DefaultLabel => "-"
 $value_attribute => 'id'

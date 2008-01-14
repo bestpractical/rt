@@ -134,7 +134,7 @@ A convoluted example
     my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
     $groups->limit_ToUserDefinedGroups();
     $groups->limit(column => "name", operator => "=", value => "$name");
-    $groups->WithMember($TransactionObj->CreatorObj->id);
+    $groups->WithMember($transaction_obj->creator_obj->id);
  
     my $groupid = $groups->first->id;
  
@@ -298,10 +298,10 @@ sub commit {
     my $self = shift;
 
     # Create all the tickets we care about
-    return (1) unless $self->TicketObj->Type eq 'ticket';
+    return (1) unless $self->ticket_obj->Type eq 'ticket';
 
-    $self->createByTemplate( $self->TicketObj );
-    $self->UpdateByTemplate( $self->TicketObj );
+    $self->createByTemplate( $self->ticket_obj );
+    $self->UpdateByTemplate( $self->ticket_obj );
     return (1);
 }
 
@@ -312,22 +312,22 @@ sub commit {
 sub prepare {
     my $self = shift;
 
-    unless ( $self->TemplateObj ) {
+    unless ( $self->template_obj ) {
         Jifty->log->warn("No template object handed to $self\n");
     }
 
-    unless ( $self->TransactionObj ) {
+    unless ( $self->transaction_obj ) {
         Jifty->log->warn("No transaction object handed to $self\n");
 
     }
 
-    unless ( $self->TicketObj ) {
+    unless ( $self->ticket_obj ) {
         Jifty->log->warn("No ticket object handed to $self\n");
 
     }
 
     $self->Parse(
-        Content        => $self->TemplateObj->Content,
+        Content        => $self->template_obj->Content,
         _ActiveContent => 1
     );
     return 1;
@@ -379,9 +379,9 @@ sub createByTemplate {
                 . $res;
         }
         if ( !$id ) {
-            if ( $self->TicketObj ) {
+            if ( $self->ticket_obj ) {
                 $msg = "Couldn't create related ticket $template_id for "
-                    . $self->TicketObj->id . " "
+                    . $self->ticket_obj->id . " "
                     . $msg;
             } else {
                 $msg = "Couldn't create ticket $template_id " . $msg;
@@ -392,8 +392,8 @@ sub createByTemplate {
         }
 
         Jifty->log->debug("Assigned $template_id with $id");
-        $T::Tickets{$template_id}->set_OriginObj( $self->TicketObj )
-            if $self->TicketObj
+        $T::Tickets{$template_id}->set_OriginObj( $self->ticket_obj )
+            if $self->ticket_obj
             && $T::Tickets{$template_id}->can('SetOriginObj');
 
     }
@@ -678,7 +678,7 @@ sub ParseLines {
         }
     }
 
-    my $TicketObj ||= RT::Model::Ticket->new;
+    my $ticket_obj ||= RT::Model::Ticket->new;
 
     my %args;
     my %original_tags;
@@ -739,8 +739,8 @@ sub ParseLines {
         $args{$date} = $dateobj->ISO;
     }
 
-    $args{'requestor'} ||= $self->TicketObj->Requestors->member_emails
-        if $self->TicketObj;
+    $args{'requestor'} ||= $self->ticket_obj->Requestors->member_emails
+        if $self->ticket_obj;
 
     $args{'type'} ||= 'ticket';
 
@@ -794,7 +794,7 @@ sub ParseLines {
 
     $self->GetDeferred( \%args, $template_id, $links, $postponed );
 
-    return $TicketObj, \%ticketargs;
+    return $ticket_obj, \%ticketargs;
 }
 
 
@@ -960,13 +960,13 @@ sub GetUpdateTemplate {
     my $t    = shift;
 
     my $string;
-    $string .= "Queue: " . $t->QueueObj->name . "\n";
+    $string .= "Queue: " . $t->queue_obj->name . "\n";
     $string .= "Subject: " . $t->Subject . "\n";
     $string .= "Status: " . $t->Status . "\n";
     $string .= "UpdateType: correspond\n";
     $string .= "Content: \n";
     $string .= "ENDOFCONTENT\n";
-    $string .= "Due: " . $t->DueObj->AsString . "\n";
+    $string .= "Due: " . $t->due_obj->AsString . "\n";
     $string .= "starts: " . $t->startsObj->AsString . "\n";
     $string .= "Started: " . $t->StartedObj->AsString . "\n";
     $string .= "Resolved: " . $t->ResolvedObj->AsString . "\n";
@@ -1017,7 +1017,7 @@ sub GetBaseTemplate {
     $string .= "Queue: " . $t->Queue . "\n";
     $string .= "Subject: " . $t->Subject . "\n";
     $string .= "Status: " . $t->Status . "\n";
-    $string .= "Due: " . $t->DueObj->Unix . "\n";
+    $string .= "Due: " . $t->due_obj->Unix . "\n";
     $string .= "starts: " . $t->startsObj->Unix . "\n";
     $string .= "Started: " . $t->StartedObj->Unix . "\n";
     $string .= "Resolved: " . $t->ResolvedObj->Unix . "\n";

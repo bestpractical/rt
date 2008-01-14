@@ -536,7 +536,7 @@ sub Content {
         }
 
         $content =~ s/^/> /gm;
-        $content = _("On %1, %2 wrote:", $self->CreatedAsString, $self->CreatorObj->name)
+        $content = _("On %1, %2 wrote:", $self->CreatedAsString, $self->creator_obj->name)
           . "\n$content\n\n";
     }
 
@@ -720,7 +720,7 @@ sub Description {
         return ( _("No transaction type specified"));
     }
 
-    return _("%1 by %2", $self->BriefDescription , $self->CreatorObj->name );
+    return _("%1 by %2", $self->BriefDescription , $self->creator_obj->name );
 }
 
 # }}}
@@ -1024,7 +1024,7 @@ Returns false otherwise
 sub IsInbound {
     my $self = shift;
     $self->object_type eq 'RT::Model::Ticket' or return undef;
-    return ( $self->TicketObj->IsRequestor( $self->CreatorObj->principal_id ) );
+    return ( $self->ticket_obj->IsRequestor( $self->creator_obj->principal_id ) );
 }
 
 # }}}
@@ -1140,7 +1140,7 @@ sub Ticket {
     return $self->object_id;
 }
 
-sub TicketObj {
+sub ticket_obj {
     my $self = shift;
     return $self->Object;
 }
@@ -1252,7 +1252,7 @@ sub CustomFieldValues {
     my $self  = shift;
     my $field = shift;
 
-    if ( UNIVERSAL::can( $self->Object, 'QueueObj' ) ) {
+    if ( UNIVERSAL::can( $self->Object, 'queue_obj' ) ) {
 
         # XXX: $field could be undef when we want fetch values for all CFs
         #      do we want to cover this situation somehow here?
@@ -1260,7 +1260,7 @@ sub CustomFieldValues {
             my $CFs = RT::Model::CustomFieldCollection->new;
             $CFs->limit( column => 'name', value => $field );
             $CFs->limit_ToLookupType($self->CustomFieldLookupType);
-            $CFs->limit_ToGlobalOrobject_id($self->Object->QueueObj->id);
+            $CFs->limit_ToGlobalOrobject_id($self->Object->queue_obj->id);
             $field = $CFs->first->id if $CFs->first;
         }
     }

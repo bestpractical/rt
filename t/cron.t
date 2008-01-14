@@ -82,8 +82,8 @@ ok(require RT::ScripAction::RecordComment);
 ok(require RT::ScripAction::RecordCorrespondence);
 
 my ($comment_act, $correspond_act);
-ok($comment_act = RT::ScripAction::RecordComment->new(TicketObj => $ticket1, TemplateObj => $template_obj, CurrentUser => $CurrentUser), "RecordComment Created");
-ok($correspond_act = RT::ScripAction::RecordCorrespondence->new(TicketObj => $ticket2, TemplateObj => $template_obj, CurrentUser => $CurrentUser), "RecordCorrespondence Created");
+ok($comment_act = RT::ScripAction::RecordComment->new(ticket_obj => $ticket1, template_obj => $template_obj, CurrentUser => $CurrentUser), "RecordComment Created");
+ok($correspond_act = RT::ScripAction::RecordCorrespondence->new(ticket_obj => $ticket2, template_obj => $template_obj, CurrentUser => $CurrentUser), "RecordCorrespondence Created");
 ok($comment_act->prepare(), "comment prepared");
 ok($correspond_act->prepare(), "Correspond prepared");
 ok($comment_act->commit(), "comment committed");
@@ -91,7 +91,7 @@ ok($correspond_act->commit(), "Correspondence committed");
 
 # Now test for loop suppression.
 my ($trans, $desc, $transaction) = $ticket2->comment(MIMEObj => $template_obj->MIMEObj);
-my $bogus_action = RT::ScripAction::RecordComment->new(TicketObj => $ticket1, TemplateObj => $template_obj, TransactionObj => $transaction, CurrentUser => $CurrentUser);
+my $bogus_action = RT::ScripAction::RecordComment->new(ticket_obj => $ticket1, template_obj => $template_obj, transaction_obj => $transaction, CurrentUser => $CurrentUser);
 ok(!$bogus_action->prepare(), "comment aborted to prevent loop");
 
 1;

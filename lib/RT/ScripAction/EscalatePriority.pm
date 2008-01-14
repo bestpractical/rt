@@ -93,24 +93,24 @@ sub Describe  {
 sub prepare  {
     my $self = shift;
     
-    if ($self->TicketObj->Priority() == $self->TicketObj->final_priority()) {
+    if ($self->ticket_obj->Priority() == $self->ticket_obj->final_priority()) {
 	# no update necessary.
 	return 0;
     }
    
     #compute the number of days until the ticket is due
-    my $due = $self->TicketObj->DueObj();
+    my $due = $self->ticket_obj->due_obj();
     
 
     # If we don't have a due date, adjust the priority by one
     # until we hit the final priority
     if ($due->Unix() < 1) {
-	if ( $self->TicketObj->Priority > $self->TicketObj->final_priority ){
-	    $self->{'prio'} = ($self->TicketObj->Priority - 1);
+	if ( $self->ticket_obj->Priority > $self->ticket_obj->final_priority ){
+	    $self->{'prio'} = ($self->ticket_obj->Priority - 1);
 	    return 1;
 	}
-	elsif ( $self->TicketObj->Priority < $self->TicketObj->final_priority ){
-	    $self->{'prio'} = ($self->TicketObj->Priority + 1);
+	elsif ( $self->ticket_obj->Priority < $self->ticket_obj->final_priority ){
+	    $self->{'prio'} = ($self->ticket_obj->Priority + 1);
 	    return 1;
 	}
 	# otherwise the priority is at the final priority. we don't need to
@@ -132,17 +132,17 @@ sub prepare  {
 	    # final priority
 	    
 	    my $prio_delta = 
-	      $self->TicketObj->final_priority() - $self->TicketObj->Priority;
+	      $self->ticket_obj->final_priority() - $self->ticket_obj->Priority;
 	    
 	    my $inc_priority_by = int( $prio_delta / $diff_in_days );
 	    
 	    #set the ticket's priority to that amount
-	    $self->{'prio'} = $self->TicketObj->Priority + $inc_priority_by;
+	    $self->{'prio'} = $self->ticket_obj->Priority + $inc_priority_by;
 	    
 	}
 	#if $days is less than 1, set priority to final_priority
 	else {	
-	    $self->{'prio'} = $self->TicketObj->final_priority();
+	    $self->{'prio'} = $self->ticket_obj->final_priority();
 	}
 
     }
@@ -152,7 +152,7 @@ sub prepare  {
 
 sub commit {
     my $self = shift;
-   my ($val, $msg) = $self->TicketObj->set_Priority($self->{'prio'});
+   my ($val, $msg) = $self->ticket_obj->set_Priority($self->{'prio'});
 
    unless ($val) {
 	Jifty->log->debug($self . " $msg\n"); 

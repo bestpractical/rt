@@ -227,7 +227,7 @@ uses these templates to send error messages to users or RT's owner. These
 templates have 'Error:' or 'Error to RT owner:' prefix in the name. You can 
 adjust the text of the messages using the web interface.
 
-Note that C<$TicketObj>, C<$TransactionObj> and other variable usually available
+Note that C<$ticket_obj>, C<$transaction_obj> and other variable usually available
 in RT's templates are not available in these templates, but each template
 used for errors reporting has set of available data structures you can use to
 build better messages. See default templates and descriptions below.

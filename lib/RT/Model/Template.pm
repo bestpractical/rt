@@ -106,7 +106,7 @@ sub load {
 
 # {{{ sub loadGlobalTemplate
 
-=head2 LoadGlobalTemplate name
+=head2 load_global_template name
 
 Load the global template with the name name
 
@@ -123,7 +123,7 @@ sub loadGlobalTemplate {
 
 # {{{ sub loadQueueTemplate
 
-=head2  LoadQueueTemplate (Queue => QUEUEID, name => name)
+=head2  load_queue_template (Queue => QUEUEID, name => name)
 
 Loads the Queue template named name for Queue QUEUE.
 
@@ -177,13 +177,13 @@ sub create {
         $args{'Queue'} = 0;
     }
     else {
-        my $QueueObj =  RT::Model::Queue->new( current_user => $self->current_user );
-        $QueueObj->load( $args{'Queue'} ) || return ( undef, _('Invalid queue') );
+        my $queue_obj =  RT::Model::Queue->new( current_user => $self->current_user );
+        $queue_obj->load( $args{'Queue'} ) || return ( undef, _('Invalid queue') );
     
-        unless ( $QueueObj->current_user_has_right('ModifyTemplate') ) {
+        unless ( $queue_obj->current_user_has_right('ModifyTemplate') ) {
             return ( undef, _('Permission denied') );
         }
-        $args{'Queue'} = $QueueObj->id;
+        $args{'Queue'} = $queue_obj->id;
     }
 
     my $result = $self->SUPER::create(
@@ -254,7 +254,7 @@ sub MIMEObj {
  This routine performs Text::Template parsing on the template and then
  imports the results into a MIME::Entity so we can really use it
 
- Takes a hash containing Argument, TicketObj, and TransactionObj.
+ Takes a hash containing Argument, ticket_obj, and transaction_obj.
 
  It returns a tuple of (val, message)
  If val is 0, the message contains an error message
@@ -267,7 +267,7 @@ This routine performs L<Text::Template> parsing on the template and then
 imports the results into a L<MIME::Entity> so we can really use it. Use
 L</MIMEObj> method to get the L<MIME::Entity> object.
  
-Takes a hash containing Argument, TicketObj, and TransactionObj and other
+Takes a hash containing Argument, ticket_obj, and transaction_obj and other
 arguments that will be available in the template's code.
      
 It returns a tuple of (val, message). If val is false, the message contains
@@ -328,8 +328,8 @@ sub _ParseContent {
     my $self = shift;
     my %args = (
         Argument       => undef,
-        TicketObj      => undef,
-        TransactionObj => undef,
+        ticket_obj      => undef,
+        transaction_obj => undef,
         @_
     );
 
@@ -346,8 +346,8 @@ sub _ParseContent {
         SOURCE => $content
     );
 
-    $args{'Ticket'} = delete $args{'TicketObj'} if $args{'TicketObj'};
-    $args{'Transaction'} = delete $args{'TransactionObj'} if $args{'TransactionObj'};
+    $args{'Ticket'} = delete $args{'ticket_obj'} if $args{'ticket_obj'};
+    $args{'Transaction'} = delete $args{'transaction_obj'} if $args{'transaction_obj'};
     $args{'Requestor'} = eval { $args{'Ticket'}->Requestors->UserMembersObj->first->name }
         if $args{'Ticket'};
     $args{'rtname'}    = RT->Config->Get('rtname');
@@ -396,13 +396,13 @@ Helper function to call the template's queue's current_user_has_queue_right with
 
 sub current_user_has_queue_right {
     my $self = shift;
-    return ( $self->QueueObj->current_user_has_right(@_) );
+    return ( $self->queue_obj->current_user_has_right(@_) );
 }
 
 # }}}
 
 
-sub QueueObj {
+sub queue_obj {
     my $self = shift;
     my $q = RT::Model::Queue->new;
     $q->load($self->__value('Queue'));

@@ -46,29 +46,29 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, 
-    Title => _("#%1: %2", $TicketObj->id, $TicketObj->Subject) &>
+    Title => _("#%1: %2", $ticket_obj->id, $ticket_obj->Subject) &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $TicketObj, 
-    current_tab => 'Ticket/Display.html?id='.$TicketObj->id,
-    Title => _("#%1: %2", $TicketObj->id, $TicketObj->Subject) &>
+    Ticket => $ticket_obj, 
+    current_tab => 'Ticket/Display.html?id='.$ticket_obj->id,
+    Title => _("#%1: %2", $ticket_obj->id, $ticket_obj->Subject) &>
 
-% $m->callback(Callbackname => 'BeforeActionList', %ARGS, Actions => \@Actions, ARGSRef => \%ARGS, Ticket => $TicketObj);
+% $m->callback(Callbackname => 'BeforeActionList', %ARGS, Actions => \@Actions, ARGSRef => \%ARGS, Ticket => $ticket_obj);
 
 <& /Elements/ListActions, actions => \@Actions &>
-<& Elements/ShowUpdateStatus, Ticket => $TicketObj &>
+<& Elements/ShowUpdateStatus, Ticket => $ticket_obj &>
 
-% $m->callback( %ARGS, Ticket => $TicketObj, Callbackname => 'BeforeShowSummary' );
+% $m->callback( %ARGS, Ticket => $ticket_obj, Callbackname => 'BeforeShowSummary' );
 <div class="summary">
 <&| /Widgets/TitleBox, title => _('Ticket metadata') &>
-<& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
+<& /Ticket/Elements/ShowSummary,  Ticket => $ticket_obj, Attachments => $attachments &>
 </&>
 </div>
 <br />
 
-% $m->callback( Ticket => $TicketObj, %ARGS, Callbackname => 'BeforeShowHistory' );
+% $m->callback( Ticket => $ticket_obj, %ARGS, Callbackname => 'BeforeShowHistory' );
 
 <& /Ticket/Elements/ShowHistory , 
-      Ticket => $TicketObj, 
+      Ticket => $ticket_obj, 
       Tickets => $Tickets, 
       Collapsed => $ARGS{'Collapsed'}, 
       ShowHeaders => $ARGS{'ShowHeaders'},
@@ -77,26 +77,26 @@
 &> 
 
 % $m->callback( %ARGS,
-%     Ticket       => $TicketObj,
-%     current_tab  => 'Ticket/Display.html?id=' . $TicketObj->id,
+%     Ticket       => $ticket_obj,
+%     current_tab  => 'Ticket/Display.html?id=' . $ticket_obj->id,
 %     Callbackname => 'AfterShowHistory',
 % );
 
 <%ARGS>
 $id => undef
-$TicketObj => undef
+$ticket_obj => undef
 $ShowHeaders => 0
 $Collapsed => undef
 </%ARGS>
 
 <%INIT>
 
-$m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, Callbackname => 'Initial' );
+$m->callback( ticket_obj => $ticket_obj, ARGSRef => \%ARGS, Callbackname => 'Initial' );
 
 my (@Actions, $Tickets);  
 
 
-unless ($id || $TicketObj) {
+unless ($id || $ticket_obj) {
     Abort('No ticket specified');
 }
 
@@ -113,30 +113,30 @@ if ($ARGS{'id'} eq 'new') {
         Abort('You have no permission to create tickets in that queue.');
     }
 
-    ($TicketObj, @Actions) = CreateTicket(
+    ($ticket_obj, @Actions) = CreateTicket(
         Attachments => delete $session{'Attachments'},
         %ARGS,
     );
-    unless ( $TicketObj->current_user_has_right('ShowTicket') ) {
-        Abort("No permission to view newly Created ticket #".$TicketObj->id.".");
+    unless ( $ticket_obj->current_user_has_right('ShowTicket') ) {
+        Abort("No permission to view newly Created ticket #".$ticket_obj->id.".");
     }
     # }}}
 } else { 
-    $TicketObj ||= load_ticket($ARGS{'id'});
+    $ticket_obj ||= load_ticket($ARGS{'id'});
 
     $m->callback( Callbackname => 'BeforeProcessArguments',
-        TicketObj => $TicketObj, Tickets => $Tickets,
+        ticket_obj => $ticket_obj, Tickets => $Tickets,
         ActionsRef => \@Actions, ARGSRef => \%ARGS );
     if ( defined $ARGS{'Action'} ) {
         if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
             my $action = $1;
-            my ($res, $msg) = $TicketObj->$action();
+            my ($res, $msg) = $ticket_obj->$action();
             push(@Actions, $msg);
         }
     }
 
     $m->callback(Callbackname => 'ProcessArguments', 
-            Ticket => $TicketObj, 
+            Ticket => $ticket_obj, 
             ARGSRef => \%ARGS, 
             Actions => \@Actions);
     
@@ -151,23 +151,23 @@ if ($ARGS{'id'} eq 'new') {
         push @Actions, ProcessUpdateMessage(
             ARGSRef   => \%ARGS,
             Actions   => \@Actions,
-            TicketObj => $TicketObj,
+            ticket_obj => $ticket_obj,
         );
         delete $session{'Attachments'};
     }
-    push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    push @Actions, ProcessTicketBasics(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
-    push @Actions, ProcessTicketLinks(    ARGSRef => \%ARGS, TicketObj => $TicketObj );
+    push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
+    push @Actions, ProcessTicketBasics(   ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
+    push @Actions, ProcessTicketLinks(    ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
 
     # XXX: we shouldn't block actions here if user has no right to see the ticket,
     # but we should allow him to see actions he has done
-    unless ($TicketObj->current_user_has_right('ShowTicket')) {
+    unless ($ticket_obj->current_user_has_right('ShowTicket')) {
         Abort("No permission to view ticket");
     }
     if ( $ARGS{'MarkAsSeen'} ) {
-        $TicketObj->set_attribute(
-            name => 'User-'. $TicketObj->current_user->id .'-SeenUpTo',
-            Content => $TicketObj->LastUpdated,
+        $ticket_obj->set_attribute(
+            name => 'User-'. $ticket_obj->current_user->id .'-SeenUpTo',
+            Content => $ticket_obj->LastUpdated,
         );
         push @Actions, _('Marked all messages as seen');
     }
@@ -175,7 +175,7 @@ if ($ARGS{'id'} eq 'new') {
 
 $m->callback(
     Callbackname => 'BeforeDisplay',
-    TicketObj => \$TicketObj,
+    ticket_obj => \$ticket_obj,
     Tickets => \$Tickets,
     Actions => \@Actions,
     ARGSRef => \%ARGS,
@@ -190,12 +190,12 @@ if (@Actions) {
     push @{ $session{"Actions"} ||= [] }, @Actions;
     $session{'i'}++;
 
-    RT::Interface::Web::redirect(RT->Config->Get('WebURL') ."Ticket/Display.html?id=".$TicketObj->id);
+    RT::Interface::Web::redirect(RT->Config->Get('WebURL') ."Ticket/Display.html?id=".$ticket_obj->id);
 } else {
     @Actions = @{ delete $session{"Actions"} || [] };
 }
 
-my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);
-my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $TicketObj);
+my $attachments = $m->comp('Elements/FindAttachments', Ticket => $ticket_obj, Tickets => $Tickets);
+my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $ticket_obj);
 
 </%INIT>

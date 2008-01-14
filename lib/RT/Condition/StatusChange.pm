@@ -65,8 +65,8 @@ the Status Obj
 
 sub IsApplicable {
     my $self = shift;
-    if (($self->TransactionObj->Field eq 'Status') and 
-    ($self->Argument eq $self->TransactionObj->new_value())) {
+    if (($self->transaction_obj->Field eq 'Status') and 
+    ($self->Argument eq $self->transaction_obj->new_value())) {
 	return(1);
     } 
     else {

@@ -64,8 +64,8 @@
 <&| /Widgets/TitleBox, title => _("Create a new ticket") &>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td class="label"><&|/l&>Queue</&>:</td>
-<td class="value"><& Elements/ShowQueue, QueueObj => $QueueObj &>
-<input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->name %>" />
+<td class="value"><& Elements/ShowQueue, queue_obj => $queue_obj &>
+<input type="hidden" class="hidden" name="Queue" value="<% $queue_obj->name %>" />
 </td>
 <td class="label"><&|/l&>Status</&>:
 </td>
@@ -76,7 +76,7 @@
 <&|/l&>Owner</&>:
 </td>
 <td class="value">
-    <& /Elements/SelectOwner, name => "Owner", QueueObj => $QueueObj, Default => $ARGS{Owner}|| RT->nobody->id, DefaultValue => 0 &>
+    <& /Elements/SelectOwner, name => "Owner", queue_obj => $queue_obj, Default => $ARGS{Owner}|| RT->nobody->id, DefaultValue => 0 &>
 </td>
 </tr>
 <tr>
@@ -115,7 +115,7 @@
 </tr>
 <tr>
 <td colspan="6">
-<& /Ticket/Elements/EditCustomFields, QueueObj => $QueueObj &>
+<& /Ticket/Elements/EditCustomFields, queue_obj => $queue_obj &>
 </td>
 </tr>
 % if ($TxnCFs->count) {
@@ -152,7 +152,7 @@
 
 % if ( $gnupg_widget ) {
 <tr><td>&nbsp;</td><td colspan="5">
-<& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &>
+<& /Elements/GnuPG/SignEncryptWidget, self => $gnupg_widget, queue_obj => $queue_obj &>
 </td></tr>
 % }
 
@@ -183,8 +183,8 @@
 		title_class=> 'inverse',  
 		color => "#993333" &>
 <table border="0">
-<tr><td align="right"><&|/l&>Priority</&>:</td><td><input size="3" name="initial_priority" value="<% $ARGS{initial_priority} ? $ARGS{initial_priority} : $QueueObj->initial_priority %>" /></td></tr>
-<tr><td align="right"><&|/l&>Final Priority</&>:</td><td><input size="3" name="final_priority" value="<% $ARGS{final_priority} ? $ARGS{final_priority} : $QueueObj->final_priority %>" /></td></tr>
+<tr><td align="right"><&|/l&>Priority</&>:</td><td><input size="3" name="initial_priority" value="<% $ARGS{initial_priority} ? $ARGS{initial_priority} : $queue_obj->initial_priority %>" /></td></tr>
+<tr><td align="right"><&|/l&>Final Priority</&>:</td><td><input size="3" name="final_priority" value="<% $ARGS{final_priority} ? $ARGS{final_priority} : $queue_obj->final_priority %>" /></td></tr>
 <tr><td align="right"><&|/l&>Time Estimated</&>:</td>
 <td>
 <input size="3" name="time_estimated" value="<%$ARGS{time_estimated} || ''%>" />
@@ -243,54 +243,54 @@
 
 <%INIT>
 
-my $cloneTicketObj;
+my $cloneticket_obj;
 if ( $cloneTicket ) {
-    $cloneTicketObj = RT::Model::Ticket->new();
-    $cloneTicketObj->Load($cloneTicket) or Abort(_("Ticket could not be loaded"));
+    $cloneticket_obj = RT::Model::Ticket->new();
+    $cloneticket_obj->Load($cloneTicket) or Abort(_("Ticket could not be loaded"));
     
     my $clone = {
-        Requestors       => join( ',', $cloneTicketObj->RequestorAddresses ),
-        Cc               => join( ',', $cloneTicketObj->CcAddresses),
-        AdminCc          => join( ',', $cloneTicketObj->AdminCcAddresses),
-        initial_priority => $cloneTicketObj->Priority, 
+        Requestors       => join( ',', $cloneticket_obj->RequestorAddresses ),
+        Cc               => join( ',', $cloneticket_obj->CcAddresses),
+        AdminCc          => join( ',', $cloneticket_obj->AdminCcAddresses),
+        initial_priority => $cloneticket_obj->Priority, 
     };
     
-    $clone->{$_} = $cloneTicketObj->$_() 
+    $clone->{$_} = $cloneticket_obj->$_() 
         for qw/Owner Subject final_priority time_estimated TimeWorked 
                 Status TimeLeft Starts Started Due Resolved/;
     
-        my $members = $cloneTicketObj->Members;
+        my $members = $cloneticket_obj->Members;
         my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
         while ( my $member = $members->next ) {
             push @members, $member->LocalBase;
         }
         $clone->{'MemberOf-new'} = join ' ', @members;
     
-        my $members_of = $cloneTicketObj->MemberOf;
+        my $members_of = $cloneticket_obj->MemberOf;
         while ( my $member_of = $members_of->next ) {
             push @members_of, $member_of->LocalTarget;
         }
         $clone->{'new-MemberOf'} = join ' ', @members_of;
         
-        my $refers = $cloneTicketObj->RefersTo;
+        my $refers = $cloneticket_obj->RefersTo;
         while ( my $refer = $refers->next ) {
             push @refers, $refer->LocalTarget;
         }
         $clone->{'new-RefersTo'} = join ' ', @refers;
     
-        my $refers_by = $cloneTicketObj->ReferredToBy;
+        my $refers_by = $cloneticket_obj->ReferredToBy;
         while ( my $refer_by = $refers_by->next ) {
             push @refers_by, $refer_by->LocalBase;
         }
         $clone->{'RefersTo-new'} = join ' ', @refers_by;
     
-        my $depends = $cloneTicketObj->DependsOn;
+        my $depends = $cloneticket_obj->DependsOn;
         while ( my $depend = $depends->next ) {
             push @depends, $depend->LocalTarget;
         }
         $clone->{'new-DependsOn'} = join ' ', @depends;
     
-        my $depends_by = $cloneTicketObj->DependedOnBy;
+        my $depends_by = $cloneticket_obj->DependedOnBy;
         while ( my $depend_by = $depends_by->next ) {
             push @depends_by, $depend_by->LocalBase;
         }
@@ -298,10 +298,10 @@ if ( $cloneTicket ) {
     
     
     
-    my $cfs = $cloneTicketObj->QueueObj->TicketCustomFields();
+    my $cfs = $cloneticket_obj->queue_obj->TicketCustomFields();
     while ( my $cf = $cfs->next ) {
         my $cf_id = $cf->id;
-        my $cf_values = $cloneTicketObj->CustomFieldvalues( $cf->id );
+        my $cf_values = $cloneticket_obj->CustomFieldvalues( $cf->id );
         my @cf_values;
         while ( my $cf_value = $cf_values->next ) {
             push @cf_values, $cf_value->Content;
@@ -316,13 +316,13 @@ if ( $cloneTicket ) {
 
 }
 my @results;
-my $QueueObj = RT::Model::Queue->new();
-$QueueObj->load($Queue) || Abort(_("Queue could not be loaded."));
+my $queue_obj = RT::Model::Queue->new();
+$queue_obj->load($Queue) || Abort(_("Queue could not be loaded."));
 
-$m->callback( QueueObj => $QueueObj, ARGSRef => \%ARGS );
+$m->callback( queue_obj => $queue_obj, ARGSRef => \%ARGS );
 
-my $CFs = $QueueObj->TicketCustomFields();
-my $TxnCFs = $QueueObj->TicketTransactionCustomFields();
+my $CFs = $queue_obj->TicketCustomFields();
+my $TxnCFs = $queue_obj->TicketTransactionCustomFields();
 
 my $ValidCFs = $m->comp(
     '/Elements/ValidateCustomFields',
@@ -332,10 +332,10 @@ my $ValidCFs = $m->comp(
 
 # if no due date has been set explicitly, then use the
 # queue's default if it exists
-if ($QueueObj->DefaultDueIn && !$ARGS{'Due'}) {
+if ($queue_obj->DefaultDueIn && !$ARGS{'Due'}) {
     my $default_due = RT::Date->new();
     $default_due->set_to_now();
-    $default_due->AddDays($QueueObj->DefaultDueIn);
+    $default_due->AddDays($queue_obj->DefaultDueIn);
     $ARGS{'Due'} = $default_due->ISO();
 }
 
@@ -377,7 +377,7 @@ my $checks_failure = 0;
 my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
     self      => $gnupg_widget,
-    QueueObj  => $QueueObj,
+    queue_obj  => $queue_obj,
 );
 
 
@@ -385,7 +385,7 @@ if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
     my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         Operation => 'Create',
-        QueueObj  => $QueueObj,
+        queue_obj  => $queue_obj,
     );
     $checks_failure = 1 unless $status;
 }

@@ -266,7 +266,7 @@ sub WithMember {
 }
 
 
-=head2 WithRight { Right => RIGHTname, Object => RT::Record, IncludeSystemRights => 1, IncludeSuperusers => 0, EquivObjects => [ ] }
+=head2 WithRight { Right => RIGHTname, Object => RT::Record, IncludeSystemRights => 1, IncludeSuperusers => 0, equiv_objects => [ ] }
 
 
 Find all groups which have RIGHTname for RT::Record. Optionally include global rights and superusers. By default, include the global rights, but not the superusers.
@@ -283,7 +283,7 @@ sub WithRight {
                  IncludeSystemRights    => 1,
                  IncludeSuperusers      => undef,
                  IncludeSubgroupMembers => 0,
-                 EquivObjects           => [ ],
+                 equiv_objects           => [ ],
                  @_ );
 
     my $from_role = $self->clone;
@@ -333,7 +333,7 @@ sub _joinGroupMembersForGroupRights {
 sub _joinACL                  { return (shift)->RT::Model::UserCollection::_joinACL( @_ ) }
 sub _RoleClauses              { return (shift)->RT::Model::UserCollection::_RoleClauses( @_ ) }
 sub _WhoHaveRoleRightSplitted { return (shift)->RT::Model::UserCollection::_WhoHaveRoleRightSplitted( @_ ) }
-sub _GetEquivObjects          { return (shift)->RT::Model::UserCollection::_GetEquivObjects( @_ ) }
+sub _Getequiv_objects          { return (shift)->RT::Model::UserCollection::_Getequiv_objects( @_ ) }
 sub WithGroupRight            { return (shift)->RT::Model::UserCollection::WhoHaveGroupRight( @_ ) }
 sub WithRoleRight             { return (shift)->RT::Model::UserCollection::WhoHaveRoleRight( @_ ) }
 

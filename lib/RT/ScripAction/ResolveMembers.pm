@@ -79,12 +79,12 @@ sub commit {
 
     my $Links=RT::Model::LinkCollection->new(current_user => RT->system_user);
     $Links->limit(column => 'Type', value => 'MemberOf');
-    $Links->limit(column => 'Target', value => $self->TicketObj->id);
+    $Links->limit(column => 'Target', value => $self->ticket_obj->id);
 
     while (my $Link=$Links->next()) {
 	# Todo: Try to deal with remote URIs as well
-	next unless $Link->BaseURI->IsLocal;
-	my $base=RT::Model::Ticket->new($self->TicketObj->current_user);
+	next unless $Link->base_uri->IsLocal;
+	my $base=RT::Model::Ticket->new($self->ticket_obj->current_user);
 	# Todo: Only work if Base is a plain ticket num:
 	$base->load($Link->Base);
 	# I'm afraid this might be a major bottleneck if ResolveGroupTicket is on.

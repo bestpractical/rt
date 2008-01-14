@@ -62,7 +62,7 @@
     </td>
     <td class="entry">
       <& /Elements/EditCustomField, 
-          Object => $TicketObj,
+          Object => $ticket_obj,
           CustomField => $CustomField,
           namePrefix => $namePrefix,
           Default => $m->notes('Field-' . $CustomField->id),
@@ -91,11 +91,11 @@
 <%INIT>
 my $CustomFields;
 
-if ($TicketObj) {
-    $CustomFields = $TicketObj->CustomFields();
-    $namePrefix .= "Object-RT::Model::Ticket-".$TicketObj->id."-CustomField-";
+if ($ticket_obj) {
+    $CustomFields = $ticket_obj->CustomFields();
+    $namePrefix .= "Object-RT::Model::Ticket-".$ticket_obj->id."-CustomField-";
 } else {
-    $CustomFields = $QueueObj->TicketCustomFields();
+    $CustomFields = $queue_obj->TicketCustomFields();
     $namePrefix .= "Object-RT::Model::Ticket--CustomField-";
 }
 
@@ -104,6 +104,6 @@ $m->callback( Callbackname => 'MassageCustomFields', CustomFields => $CustomFiel
 </%INIT>
 <%ARGS>
 $namePrefix => ''
-$TicketObj => undef
-$QueueObj => undef
+$ticket_obj => undef
+$queue_obj => undef
 </%ARGS>

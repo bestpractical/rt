@@ -59,14 +59,14 @@
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 
 <&| /Widgets/TitleBox, title => _('Modify ticket # %1', $Ticket->id) &>
-<& Elements/EditBasics, TicketObj => $Ticket &>
-<& Elements/EditCustomFields, TicketObj => $Ticket &>
+<& Elements/EditBasics, ticket_obj => $Ticket &>
+<& Elements/EditCustomFields, ticket_obj => $Ticket &>
 </&>
 
 <br />
 
 <&| /Widgets/TitleBox, title => _('Dates') &>
-<& Elements/EditDates, TicketObj => $Ticket &>
+<& Elements/EditDates, ticket_obj => $Ticket &>
 </&>
 
 <br />
@@ -148,7 +148,7 @@ $Cancomment = 1 if ( $Ticket->current_user_has_right('commentOnTicket') or
                      $Ticket->current_user_has_right('ModifyTicket') );
 
 
-$m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
+$m->callback( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 my (@wresults, @results,  @dresults, @lresults, @cf_results);
 
 unless ($OnlySearchForPeople) {
@@ -162,10 +162,10 @@ unless ($OnlySearchForPeople) {
 
     }
 
-    @wresults   = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    @wresults   = ProcessTicketWatchers( ticket_obj => $Ticket, ARGSRef => \%ARGS);
     @cf_results = ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS);
-    @dresults   = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    @lresults   = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    @dresults   = ProcessTicketDates( ticket_obj => $Ticket, ARGSRef => \%ARGS);
+    @lresults   = ProcessTicketLinks( ticket_obj => $Ticket, ARGSRef => \%ARGS);
 
     if ($ARGS{'UpdateAttachment'}) {
         my $subject = "$ARGS{'UpdateAttachment'}";
@@ -183,15 +183,15 @@ unless ($OnlySearchForPeople) {
         $ARGS{'UpdateAttachments'}->{ $subject } = $attachment;
     }
 
-    push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
-    push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
+    push @results, ProcessUpdateMessage( ticket_obj => $Ticket, ARGSRef=>\%ARGS );
+    push @results, ProcessTicketBasics( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 }
 push @results, @wresults;
 push @results, @dresults;
 push @results, @lresults;
 push @results, @cf_results;
 
-# undef so that TransactionBatch scrips run and update the ticket
+# undef so that transaction_batch scrips run and update the ticket
 $Ticket = undef;
 $Ticket = load_ticket($id);
 

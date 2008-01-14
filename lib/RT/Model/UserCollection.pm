@@ -221,7 +221,7 @@ sub limit_Toprivileged {
 
 # {{{ WhoHaveRight
 
-=head2 WhoHaveRight { Right => 'name', Object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, EquivObjects => [ ] }
+=head2 WhoHaveRight { Right => 'name', Object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, equiv_objects => [ ] }
 
 
 find all users who the right Right for this group, either individually
@@ -313,13 +313,13 @@ sub _joinACL
 }
 
 # XXX: should be generalized
-sub _GetEquivObjects
+sub _Getequiv_objects
 {
     my $self = shift;
     my %args = (
         Object                 => undef,
         IncludeSystemRights    => undef,
-        EquivObjects           => [ ],
+        equiv_objects           => [ ],
         @_
     );
     return () unless $args{'Object'};
@@ -341,7 +341,7 @@ sub _GetEquivObjects
     if( $args{'IncludeSystemRights'} ) {
         push @objects, 'RT::System';
     }
-    push @objects, @{ $args{'EquivObjects'} };
+    push @objects, @{ $args{'equiv_objects'} };
     return grep $_, @objects;
 }
 
@@ -354,7 +354,7 @@ sub WhoHaveRight {
         IncludeSystemRights    => undef,
         IncludeSuperusers      => undef,
         IncludeSubgroupMembers => 1,
-        EquivObjects           => [ ],
+        equiv_objects           => [ ],
         @_
     );
 
@@ -391,7 +391,7 @@ sub WhoHaveRoleRight
         IncludeSystemRights    => undef,
         IncludeSuperusers      => undef,
         IncludeSubgroupMembers => 1,
-        EquivObjects           => [ ],
+        equiv_objects           => [ ],
         @_
     );
 
@@ -401,7 +401,7 @@ sub WhoHaveRoleRight
     my ($check_roles, $check_objects) = ('','');
 
 
-    my @objects = $self->_GetEquivObjects( %args );
+    my @objects = $self->_Getequiv_objects( %args );
 
     if ( @objects ) {
             my @role_clauses;
@@ -474,7 +474,7 @@ sub WhoHaveGroupRight
         IncludeSystemRights    => undef,
         IncludeSuperusers      => undef,
         IncludeSubgroupMembers => 1,
-        EquivObjects           => [ ],
+        equiv_objects           => [ ],
         @_
     );
 
@@ -483,7 +483,7 @@ sub WhoHaveGroupRight
     my $acl = $self->_joinACL( %args );
 
     my ($check_objects) = ('');
-    my @objects = $self->_GetEquivObjects( %args );
+    my @objects = $self->_Getequiv_objects( %args );
 
     if ( @objects ) {
         my @object_clauses;

@@ -62,7 +62,7 @@ is($t->CustomFieldValues($testcf->id)->count , 0);
 ok(my $t2 = RT::Model::Ticket->new(current_user => RT->system_user));
 ok($t2->load($id));
 is($t2->Subject, 'Testing');
-is($t2->QueueObj->id, $testqueue->id);
+is($t2->queue_obj->id, $testqueue->id);
 is($t2->OwnerObj->id, $u->id);
 
 my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);

@@ -21,7 +21,7 @@ my $priority_ten_scrip = RT::Model::Scrip->new(current_user => RT->system_user);
     ScripCondition => 'On Create',
     ScripAction => 'User Defined', 
     CustomPrepareCode => 'Jifty->log->debug("Setting priority to 10..."); return 1;',
-    CustomCommitCode => '$self->TicketObj->set_Priority(10);',
+    CustomCommitCode => '$self->ticket_obj->set_Priority(10);',
     Template => 'Blank',
     Stage => 'TransactionCreate',
 );
@@ -34,7 +34,7 @@ my $priority_five_scrip = RT::Model::Scrip->new(current_user => RT->system_user)
     ScripCondition => 'On Create',
     ScripAction => 'User Defined', 
     CustomPrepareCode => 'Jifty->log->debug("Setting priority to 5..."); return 1;',
-    CustomCommitCode => '$self->TicketObj->set_Priority(5);', 
+    CustomCommitCode => '$self->ticket_obj->set_Priority(5);', 
     Template => 'Blank',
     Stage => 'TransactionCreate',
 );

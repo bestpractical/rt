@@ -69,7 +69,7 @@ sub __DependsOn
 
 
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}
@@ -89,7 +89,7 @@ sub __Relates
     my $list = [];
 
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}

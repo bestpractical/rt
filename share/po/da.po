@@ -32,8 +32,8 @@ msgstr "#"
 msgid "#%1"
 msgstr "#%1"
 
-#. ($TicketObj->id, $TicketObj->Subject)
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 #. ($ticket->id, $ticket->Subject)
 #. ($Ticket->id, $Ticket->Subject)
 #: html/Approvals/Elements/Approve:48
@@ -102,7 +102,7 @@ msgstr "%1 %2 ændret til %3"
 msgid "%1 %2 deleted"
 msgstr "%1 %2 slettet"
 
-#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
+#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->template_obj->name))
 #: html/Admin/Elements/EditScrips:65
 #: html/Admin/Elements/ListGlobalScrips:63
 #: html/Ticket/Elements/PreviewScrips:103
@@ -113,14 +113,14 @@ msgstr "%1 %2 med skabelon %3"
 msgid "%1 (%2) %3 this ticket\\n"
 msgstr "%1 (%2) %3 denne sag\\n"
 
-#. ($rev->CreatedAsString, $size, $rev->CreatorObj->name)
+#. ($rev->CreatedAsString, $size, $rev->creator_obj->name)
 #: html/Ticket/Elements/ShowAttachments:72
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) af %3"
 
 #. (_($Ticket->Status()))
-#. (_($TicketObj->Status))
-#. ($TicketObj->OwnerObj->name())
+#. (_($ticket_obj->Status))
+#. ($ticket_obj->OwnerObj->name())
 #. (_($DefaultStatus))
 #: html/SelfService/Update.html:60
 #: html/Ticket/Elements/EditBasics:108
@@ -209,7 +209,7 @@ msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 er tilsyneladende et lokalt objekt, men eksisterer ikke i databasen"
 
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->name)
-#. ($self->BriefDescription , $self->CreatorObj->name)
+#. ($self->BriefDescription , $self->creator_obj->name)
 #: html/Ticket/Elements/ShowDates:73
 #: lib/RT/Transaction_Overlay.pm:531
 msgid "%1 by %2"
@@ -887,7 +887,7 @@ msgstr "Godkendelse"
 
 #. ($ticket->id, $msg)
 #. ($Ticket->id, $Ticket->Subject)
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 #: html/Approvals/Display.html:65
 #: html/Approvals/Elements/ShowDependency:63
 #: html/Approvals/index.html:86
@@ -1623,7 +1623,7 @@ msgstr "Opret sager"
 msgid "Create a CustomField"
 msgstr "Opret et ekstrafelt"
 
-#. ($QueueObj->name())
+#. ($queue_obj->name())
 #: html/Admin/Queues/CustomField.html:69
 msgid "Create a CustomField for queue %1"
 msgstr "Opret et ekstrafelt til kø %1"
@@ -1685,7 +1685,7 @@ msgstr "Opret en kø med ved navn"
 msgid "Create a request"
 msgstr "Opret en sag"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/Scrip.html:89
 msgid "Create a scrip for queue %1"
 msgstr "Opret en scrip for kø %1"
@@ -2210,7 +2210,7 @@ msgstr "Rediger søgning"
 msgid "Edit Search"
 msgstr "Rediger søgning"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/Templates.html:63
 msgid "Edit Templates for queue %1"
 msgstr "Rediger skabeloner for kø %1"
@@ -2236,7 +2236,7 @@ msgstr "Rediger skabeloner for %1"
 msgid "EditSavedSearches"
 msgstr "RedigerGemteSøgninger"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/Modify.html:140
 msgid "Editing Configuration for queue %1"
 msgstr "Redigerer konfiguration for kø %1"
@@ -3371,7 +3371,7 @@ msgstr "Rediger skabelon %1"
 msgid "Modify User Rights"
 msgstr "Rediger brugerrettigheder"
 
-#. ($QueueObj->name())
+#. ($queue_obj->name())
 #: html/Admin/Queues/CustomField.html:66
 msgid "Modify a CustomField for queue %1"
 msgstr "Rediger et ekstrafelt for kø %1"
@@ -3380,7 +3380,7 @@ msgstr "Rediger et ekstrafelt for kø %1"
 msgid "Modify a CustomField which applies to all queues"
 msgstr "Rediger et ekstrafelt, der gælder for alle køer"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/Scrip.html:82
 msgid "Modify a scrip for queue %1"
 msgstr "Rediger et scrip for kø %1"
@@ -3394,13 +3394,13 @@ msgstr "Rediger et scrip, der gælder for alle køer"
 msgid "Modify associated objects for %1"
 msgstr "Rediger tilhørende objekter til %1"
 
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 #: html/Ticket/ModifyDates.html:46
 #: html/Ticket/ModifyDates.html:50
 msgid "Modify dates for #%1"
 msgstr "Rediger datoer for #%1"
 
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 #: html/Ticket/ModifyDates.html:57
 msgid "Modify dates for ticket # %1"
 msgstr "Rediger datoer for sag # %1"
@@ -3451,7 +3451,7 @@ msgstr "Rediger grupperettigheder for ekstrafelter %1"
 msgid "Modify group rights for group %1"
 msgstr "Rediger grupperettigheder for gruppe %1"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/GroupRights.html:46
 #: html/Admin/Queues/GroupRights.html:50
 msgid "Modify group rights for queue %1"
@@ -3465,7 +3465,7 @@ msgstr "Rediger medlemskabsliste for denne gruppe"
 msgid "Modify one's own RT account"
 msgstr "Rediger din egen RT-konto"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/People.html:46
 #: html/Admin/Queues/People.html:50
 msgid "Modify people related to queue %1"
@@ -3479,7 +3479,7 @@ msgstr "Rediger personer, der tilhører kø %1"
 msgid "Modify people related to ticket #%1"
 msgstr "Rediger personer, der tilhører sag #%1"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/Scrips.html:67
 msgid "Modify scrips for queue %1"
 msgstr "Rediger scrips for kø %1"
@@ -3490,8 +3490,8 @@ msgstr "Rediger scrips for kø %1"
 msgid "Modify scrips which apply to all queues"
 msgstr "Rediger scrips, der gælder for alle køer"
 
-#. (_($TemplateObj->name()))
-#. ($TemplateObj->id)
+#. (_($template_obj->name()))
+#. ($template_obj->id)
 #: html/Admin/Global/Template.html:102
 #: html/Admin/Global/Template.html:46
 #: html/Admin/Global/Template.html:51
@@ -3527,7 +3527,7 @@ msgstr "Rediger brugeren %1"
 msgid "Modify ticket # %1"
 msgstr "Rediger sag # %1"
 
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 #: html/Ticket/Modify.html:46
 #: html/Ticket/Modify.html:49
 #: html/Ticket/Modify.html:55
@@ -3550,7 +3550,7 @@ msgstr "Rediger brugerrettigheder for ekstrafelter %1"
 msgid "Modify user rights for group %1"
 msgstr "Rediger brugerrettigheder for gruppe %1"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/UserRights.html:46
 #: html/Admin/Queues/UserRights.html:50
 msgid "Modify user rights for queue %1"
@@ -3886,7 +3886,7 @@ msgstr "Ingen adgangskode sat"
 msgid "No permission to create queues"
 msgstr "Ingen adgang til at oprette køer"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: lib/RT/Ticket_Overlay.pm:420
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Ingen adgang til at oprette sager i denne kø '%1'"
@@ -4129,7 +4129,7 @@ msgstr "Off-line dataoverførsel"
 msgid "On"
 msgstr "Ved"
 
-#. ($self->CreatedAsString(), $self->CreatorObj->name())
+#. ($self->CreatedAsString(), $self->creator_obj->name())
 #: lib/RT/Transaction_Overlay.pm:326
 msgid "On %1, %2 wrote:"
 msgstr "På %1, skrev %2:"
@@ -5016,7 +5016,7 @@ msgstr "Hjemme"
 msgid "Resolve"
 msgstr "Løs"
 
-#. ($TicketObj->id, $TicketObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
 #: html/Ticket/Update.html:156
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Løs sag #%1 (%2)"
@@ -5809,7 +5809,7 @@ msgstr "Taget"
 msgid "Template"
 msgstr "Skabelon"
 
-#. ($TemplateObj->id())
+#. ($template_obj->id())
 #: html/Admin/Global/Template.html:112
 #: html/Admin/Queues/Template.html:113
 msgid "Template #%1"
@@ -6028,7 +6028,7 @@ msgstr "Sag # %1 %2"
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "Sag #%1 Jumbo-opdatering: %2"
 
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 #: html/Approvals/Elements/ShowDependency:67
 msgid "Ticket #%1: %2"
 msgstr "Sag #%1: %2"
@@ -6044,7 +6044,7 @@ msgstr "Sag #%1: %2"
 msgid "Ticket %1"
 msgstr "Sag %1"
 
-#. ($self->id, $QueueObj->name)
+#. ($self->id, $queue_obj->name)
 #: lib/RT/Ticket_Overlay.pm:755
 #: lib/RT/Ticket_Overlay.pm:775
 msgid "Ticket %1 created in queue '%2'"
@@ -6410,7 +6410,7 @@ msgstr "Opdater sag # %1"
 msgid "Update ticket #%1"
 msgstr "Opdater sag #%1"
 
-#. ($TicketObj->id, $TicketObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
 #: html/Ticket/Update.html:158
 msgid "Update ticket #%1 (%2)"
 msgstr "Opdater sag #%1 (%2)"

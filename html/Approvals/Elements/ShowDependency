@@ -55,32 +55,32 @@
 <%PERL>
 my %show;
 while (my $link = $approving->next()) {
-    next unless ($link->BaseURI->IsLocal());
-    my $text = '<a name="' . $link->BaseObj->id . '">';
+    next unless ($link->base_uri->IsLocal());
+    my $text = '<a name="' . $link->base_obj->id . '">';
     my $head = '';
-    my $type = $link->BaseObj->Type;
-    my $dep  = $m->scomp('ShowDependency', Ticket => $link->BaseObj, _seen => $_seen);
+    my $type = $link->base_obj->Type;
+    my $dep  = $m->scomp('ShowDependency', Ticket => $link->base_obj, _seen => $_seen);
 
     if ($type eq 'approval') {
-	$head .= $m->scomp('/Widgets/TitleBoxStart', title => _("Approval #%1: %2", $link->BaseObj->id, $link->BaseObj->Subject));
+	$head .= $m->scomp('/Widgets/TitleBoxStart', title => _("Approval #%1: %2", $link->base_obj->id, $link->base_obj->Subject));
 	$text .= $head;
-	$text .= $m->scomp('/Ticket/Elements/ShowCustomFields', Ticket => $link->BaseObj);
+	$text .= $m->scomp('/Ticket/Elements/ShowCustomFields', Ticket => $link->base_obj);
     } elsif ($type eq 'ticket') {
-	$head .= $m->scomp('/Widgets/TitleBoxStart', title => _("Ticket #%1: %2", $link->BaseObj->id, $link->BaseObj->Subject));
+	$head .= $m->scomp('/Widgets/TitleBoxStart', title => _("Ticket #%1: %2", $link->base_obj->id, $link->base_obj->Subject));
 	$text .= $head;
-	$text .= $m->scomp('/Ticket/Elements/ShowSummary', Ticket => $link->BaseObj);
+	$text .= $m->scomp('/Ticket/Elements/ShowSummary', Ticket => $link->base_obj);
     } else {
-	$head .= $m->scomp('/Widgets/TitleBoxStart', title => _("#%1: %2", $link->BaseObj->id, $link->BaseObj->Subject));
+	$head .= $m->scomp('/Widgets/TitleBoxStart', title => _("#%1: %2", $link->base_obj->id, $link->base_obj->Subject));
 	$text .= $head;
     }
 
-    $text .= $m->scomp('/Ticket/Elements/ShowHistory' , Ticket => $link->BaseObj, Collapsed => ($type ne 'ticket'), ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0);
+    $text .= $m->scomp('/Ticket/Elements/ShowHistory' , Ticket => $link->base_obj, Collapsed => ($type ne 'ticket'), ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0);
 
     $head .= $m->scomp('/Widgets/TitleBoxEnd');
     $text .= $m->scomp('/Widgets/TitleBoxEnd');
     $text .= $dep;
     $text .= '</a>';
-    $show{$link->BaseObj->id} = {
+    $show{$link->base_obj->id} = {
 	text => $text,
 	head => $head,
     };

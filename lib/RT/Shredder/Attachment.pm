@@ -82,7 +82,7 @@ sub __DependsOn
     push( @$list, $objs );
 
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}
@@ -114,7 +114,7 @@ sub __Relates
     }
 
 # Transaction
-    my $obj = $self->TransactionObj;
+    my $obj = $self->transaction_obj;
     if( defined $obj->id ) {
         push( @$list, $obj );
     } else {
@@ -125,7 +125,7 @@ sub __Relates
     }
 
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}

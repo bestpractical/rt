@@ -59,7 +59,7 @@
 % if ( $member->isa( 'RT::Model::User' ) ) { 
 <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $watcher->MemberId %>">
 <& /Elements/ShowUser, User => $member &></a>
-% if ($TicketObj and grep { $_->Content eq $member->email } $TicketObj->SquelchMailTo)  {
+% if ($ticket_obj and grep { $_->Content eq $member->email } $ticket_obj->SquelchMailTo)  {
 <b><&|/l&>(Will not be sent email)</&></b>
 % }
 
@@ -74,6 +74,6 @@
 my $Members = $Watchers->MembersObj;
 </%INIT>
 <%ARGS>
-$TicketObj => undef
+$ticket_obj => undef
 $Watchers => undef
 </%ARGS>

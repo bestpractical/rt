@@ -302,7 +302,7 @@ sub has_right {
     my %args = (
         Right        => undef,
         Object       => undef,
-        EquivObjects => undef,
+        equiv_objects => undef,
         @_,
     );
     unless ( $args{'Right'} ) {
@@ -310,8 +310,8 @@ sub has_right {
         return (undef);
     }
 
-    $args{'EquivObjects'} = [ @{ $args{'EquivObjects'} } ]
-        if $args{'EquivObjects'};
+    $args{'equiv_objects'} = [ @{ $args{'equiv_objects'} } ]
+        if $args{'equiv_objects'};
 
     if ( $self->disabled ) {
         Jifty->log->error( "disabled User #"
@@ -325,7 +325,7 @@ sub has_right {
         && UNIVERSAL::can( $args{'Object'}, 'id' )
         && $args{'Object'}->id ) {
 
-        push @{ $args{'EquivObjects'} }, $args{'Object'};
+        push @{ $args{'equiv_objects'} }, $args{'Object'};
     }
     else {
         Jifty->log->fatal("has_right called with no valid object");
@@ -340,11 +340,11 @@ sub has_right {
         # this is a little bit hacky, but basically, now that we've done
         # the ticket roles magic, we load the queue object
         # and ask all the rest of our questions about the queue.
-        unshift @{ $args{'EquivObjects'} }, $args{'Object'}->ACLEquivalenceObjects;
+        unshift @{ $args{'equiv_objects'} }, $args{'Object'}->ACLEquivalenceObjects;
 
     }
 
-    unshift @{ $args{'EquivObjects'} }, RT->system
+    unshift @{ $args{'equiv_objects'} }, RT->system
         unless $self->can('_IsOverrideGlobalACL')
                && $self->_IsOverrideGlobalACL( $args{'Object'} );
 
@@ -357,7 +357,7 @@ sub has_right {
     # only to direct group rights and partly to role rights
     my $self_id = $self->id;
     my $full_hashkey = join ";:;", $self_id, $args{'Right'};
-    foreach ( @{ $args{'EquivObjects'} } ) {
+    foreach ( @{ $args{'equiv_objects'} } ) {
         my $ref_id = _ReferenceId($_);
         $full_hashkey .= ";:;$ref_id";
 
@@ -411,7 +411,7 @@ sub _HasGroupRight
     my $self = shift;
     my %args = (
         Right        => undef,
-        EquivObjects => [],
+        equiv_objects => [],
         @_
     );
 
@@ -440,7 +440,7 @@ sub _HasGroupRight
       . "AND CachedGroupMembers.MemberId = ". $self->id ." "
       . "AND CachedGroupMembers.disabled = 0 ";
     my @clauses;
-    foreach my $obj ( @{ $args{'EquivObjects'} } ) {
+    foreach my $obj ( @{ $args{'equiv_objects'} } ) {
         my $type = ref( $obj ) || $obj;
         my $clause = "ACL.object_type = '$type'";
 
@@ -467,7 +467,7 @@ sub _HasRoleRight
     my $self = shift;
     my %args = (
         Right        => undef,
-        EquivObjects => [],
+        equiv_objects => [],
         @_
     );
     my $right = $args{'Right'};
@@ -500,7 +500,7 @@ sub _HasRoleRight
       . "AND ACL.principal_type = Groups.Type ";
 
     my (@object_clauses);
-    foreach my $obj ( @{ $args{'EquivObjects'} } ) {
+    foreach my $obj ( @{ $args{'equiv_objects'} } ) {
         my $type = ref($obj)? ref($obj): $obj;
         my $id;
         $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
@@ -514,7 +514,7 @@ sub _HasRoleRight
 
     # because of mysql bug in versions up to 5.0.45 we do one query per object
     # each query should be faster on any DB as it uses indexes more effective
-    foreach my $obj ( @{ $args{'EquivObjects'} } ) {
+    foreach my $obj ( @{ $args{'equiv_objects'} } ) {
         my $type = ref($obj)? ref($obj): $obj;
         my $id;
         $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;

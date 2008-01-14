@@ -149,17 +149,17 @@ sub load  {
 
 =head2 LoadAction HASH
 
-  Takes a hash consisting of TicketObj and TransactionObj.  Loads an RT::ScripAction:: module.
+  Takes a hash consisting of ticket_obj and transaction_obj.  Loads an RT::ScripAction:: module.
 
 =cut
 
 sub loadAction  {
     my $self = shift;
-    my %args = ( TransactionObj => undef,
-		 TicketObj => undef,
+    my %args = ( transaction_obj => undef,
+		 ticket_obj => undef,
 		 @_ );
 
-    $self->{_TicketObj} = $args{TicketObj};
+    $self->{_ticket_obj} = $args{ticket_obj};
     
     #TODO: Put this in an eval  
     $self->ExecModule =~ /^(\w+)$/;
@@ -171,17 +171,17 @@ sub loadAction  {
     $self->{'Action'}  = $type->new ( Argument => $self->Argument,
                                       CurrentUser => $self->current_user,
                                       ScripActionObj => $self, 
-                                      ScripObj => $args{'ScripObj'},
-                                      TemplateObj => $self->TemplateObj,
-                                      TicketObj => $args{'TicketObj'},
-                                      TransactionObj => $args{'TransactionObj'},
+                                      scrip_obj => $args{'scrip_obj'},
+                                      template_obj => $self->template_obj,
+                                      ticket_obj => $args{'ticket_obj'},
+                                      transaction_obj => $args{'transaction_obj'},
 				    );
 }
 # }}}
 
-# {{{ sub TemplateObj
+# {{{ sub template_obj
 
-=head2 TemplateObj
+=head2 template_obj
 
 Return this action's template object
 
@@ -190,29 +190,29 @@ TODO: Why are we not using the Scrip's template object?
 
 =cut
 
-sub TemplateObj {
+sub template_obj {
     my $self = shift;
     return undef unless $self->{Template};
-    if ( !$self->{'TemplateObj'} ) {
-        $self->{'TemplateObj'} = RT::Model::Template->new;
-        $self->{'TemplateObj'}->load_by_id( $self->{'Template'} );
+    if ( !$self->{'template_obj'} ) {
+        $self->{'template_obj'} = RT::Model::Template->new;
+        $self->{'template_obj'}->load_by_id( $self->{'Template'} );
 
-        if ( ( $self->{'TemplateObj'}->__value('Queue') == 0 )
-            && $self->{'_TicketObj'} ) {
+        if ( ( $self->{'template_obj'}->__value('Queue') == 0 )
+            && $self->{'_ticket_obj'} ) {
             my $tmptemplate = RT::Model::Template->new;
             my ( $ok, $err ) = $tmptemplate->loadQueueTemplate(
-                Queue => $self->{'_TicketObj'}->QueueObj->id,
-                name  => $self->{'TemplateObj'}->name);
+                Queue => $self->{'_ticket_obj'}->queue_obj->id,
+                name  => $self->{'template_obj'}->name);
 
             if ( $tmptemplate->id ) {
                 # found the queue-specific template with the same name
-                $self->{'TemplateObj'} = $tmptemplate;
+                $self->{'template_obj'} = $tmptemplate;
             }
         }
 
     }
 
-    return ( $self->{'TemplateObj'} );
+    return ( $self->{'template_obj'} );
 }
 # }}}
 
@@ -259,9 +259,9 @@ sub Action {
 # {{{ sub DESTROY
 sub DESTROY {
     my $self=shift;
-    $self->{'_TicketObj'} = undef;
+    $self->{'_ticket_obj'} = undef;
     $self->{'Action'} = undef;
-    $self->{'TemplateObj'} = undef;
+    $self->{'template_obj'} = undef;
 }
 # }}}
 

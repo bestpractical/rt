@@ -69,7 +69,7 @@ sub __DependsOn
 
 # Attachments
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $self->Attachments,
             Shredder => $args{'Shredder'}
@@ -90,7 +90,7 @@ sub __Relates
     my $list = [];
 
 # Ticket
-    my $obj = $self->TicketObj;
+    my $obj = $self->ticket_obj;
     if( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {
@@ -103,7 +103,7 @@ sub __Relates
 # TODO: Users(Creator, LastUpdatedBy)
 
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}

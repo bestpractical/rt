@@ -150,7 +150,7 @@ sub load  {
 
 =head2 LoadCondition  HASH
 
-takes a hash which has the following elements:  TransactionObj and TicketObj.
+takes a hash which has the following elements:  transaction_obj and ticket_obj.
 Loads the Condition module in question.
 
 =cut
@@ -158,8 +158,8 @@ Loads the Condition module in question.
 
 sub loadCondition  {
     my $self = shift;
-    my %args = ( TransactionObj => undef,
-		 TicketObj => undef,
+    my %args = ( transaction_obj => undef,
+		 ticket_obj => undef,
 		 @_ );
     
     #TODO: Put this in an eval  
@@ -170,9 +170,9 @@ sub loadCondition  {
     eval "require $type" || die "Require of $type failed.\n$@\n";
     
     $self->{'Condition'}  = $type->new ( 'ScripConditionObj' => $self, 
-					 'TicketObj' => $args{'TicketObj'},
-					 'ScripObj' => $args{'ScripObj'},
-					 'TransactionObj' => $args{'TransactionObj'},
+					 'ticket_obj' => $args{'ticket_obj'},
+					 'scrip_obj' => $args{'scrip_obj'},
+					 'transaction_obj' => $args{'transaction_obj'},
 					 'Argument' => $self->Argument,
 				     'ApplicableTransTypes' => $self->ApplicableTransTypes,
                      CurrentUser => $self->current_user 

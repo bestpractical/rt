@@ -45,19 +45,19 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => _('Modify user rights for queue %1', $QueueObj->name) &>
+<& /Admin/Elements/Header, Title => _('Modify user rights for queue %1', $queue_obj->name) &>
 <& /Admin/Elements/QueueTabs, id => $id,
-    QueueObj => $QueueObj,                                                      
+    queue_obj => $queue_obj,                                                      
     current_tab => $current_tab, 
-    Title => _('Modify user rights for queue %1', $QueueObj->name) &>
+    Title => _('Modify user rights for queue %1', $queue_obj->name) &>
 <& /Elements/ListActions, actions => \@results &>
 
   <form method="post" action="UserRights.html">
-    <input type="hidden" class="hidden" name="id" value="<% $QueueObj->id %>" />
+    <input type="hidden" class="hidden" name="id" value="<% $queue_obj->id %>" />
       
       
 <table>
-% $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
+% $m->callback( %ARGS, queue_obj => $queue_obj, results => \@results );
 %	while (my $Member = $Users->next()) {
 % my $user_object = $Member->MemberObj->Object();
 % my $group = RT::Model::Group->new();
@@ -66,7 +66,7 @@
 	<td valign="top"><& /Elements/ShowUser, User => $user_object &></td>
 	  <td>
 	    <& /Admin/Elements/SelectRights, principal_id=> $group->principal_id,
-        Object => $QueueObj  &>
+        Object => $queue_obj  &>
 	  </td>
 	</tr>
 % }
@@ -89,8 +89,8 @@ if (!defined $id) {
     Abort(_("No Queue defined"));
 }
 
-my $QueueObj = RT::Model::Queue->new();
-$QueueObj->load($id) || Abort(_("Couldn't load queue %1",$id));
+my $queue_obj = RT::Model::Queue->new();
+$queue_obj->load($id) || Abort(_("Couldn't load queue %1",$id));
 
 # Find out which users we want to display ACL selects for
 my $privileged = RT::Model::Group->new();
@@ -101,7 +101,7 @@ my $Users = $privileged->MembersObj();
   
 # }}}
 my $current_tab;
-$current_tab = 'Admin/Queues/UserRights.html?id='.$QueueObj->id;
+$current_tab = 'Admin/Queues/UserRights.html?id='.$queue_obj->id;
 </%INIT>
 
 <%ARGS>

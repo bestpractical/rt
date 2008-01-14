@@ -46,23 +46,23 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/QueueTabs, id => $QueueObj->id, 
+<& /Admin/Elements/QueueTabs, id => $queue_obj->id, 
     current_tab => 'Admin/Queues/Templates.html?id='.$id, 
     current_subtab => 'Admin/Queues/Templates.html?id='.$id, 
-        QueueObj => $QueueObj,
+        queue_obj => $queue_obj,
     subtabs => $subtabs, 
     Title => $title &>
 
 <& /Admin/Elements/EditTemplates, title => $title, %ARGS &>
 
 <%INIT>
-my $QueueObj = RT::Model::Queue->new();
-$QueueObj->load($id);
+my $queue_obj = RT::Model::Queue->new();
+$queue_obj->load($id);
 
 my ($title, $current_subtab);
 
-if ($QueueObj->id) {
-    $title = _("Edit Templates for queue %1", $QueueObj->name);
+if ($queue_obj->id) {
+    $title = _("Edit Templates for queue %1", $queue_obj->name);
 } else {
     Abort(_("Queue %1 not found",$id));
 }

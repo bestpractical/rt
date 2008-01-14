@@ -78,8 +78,8 @@ name="UpdateCc-<%$addr%>"
 </div>
 </td></tr>
 <%args>
-$TicketObj
+$ticket_obj
 </%args>
 <%init>
-my %txn_addresses = %{$TicketObj->TransactionAddresses;};
+my %txn_addresses = %{$ticket_obj->TransactionAddresses;};
 </%init>

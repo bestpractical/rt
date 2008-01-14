@@ -58,7 +58,7 @@ if ( !defined $Default || $Default eq '') {
     $Default = 'TransactionCreate';
 }
 my @stages = 'TransactionCreate';
-push @stages, 'TransactionBatch' if RT->Config->Get('UseTransactionBatch');
+push @stages, 'transaction_batch' if RT->Config->Get('Usetransaction_batch');
 push @stages, 'disabled';
 </%INIT>
 <%ARGS>

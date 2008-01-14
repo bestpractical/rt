@@ -381,7 +381,7 @@ sub SendEmail {
             if ( $attachment && defined $attachment->GetHeader("X-RT-$argument") ) {
                 $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
             } elsif ( $args{'Ticket'} ) {
-                $crypt{$argument} = $args{'Ticket'}->QueueObj->$argument();
+                $crypt{$argument} = $args{'Ticket'}->queue_obj->$argument();
             }
         }
 
@@ -411,7 +411,7 @@ sub SendEmail {
              my $prefix = RT->Config->Get('VERPPrefix') and
              my $domain = RT->Config->Get('VERPDomain') )
         {
-            my $from = $args{'Transaction'}->CreatorObj->email;
+            my $from = $args{'Transaction'}->creator_obj->email;
             $from =~ s/@/=/g;
             $from =~ s/\s//g;
             $args .= " -f $prefix$from\@$domain";
@@ -675,7 +675,7 @@ sub ForwardTransaction {
     } else {
         # XXX: what if want to forward txn of other object than ticket?
         $subject = AddSubjectTag( $subject, $txn->object_id );
-        $from = $txn->Object->QueueObj->correspond_address
+        $from = $txn->Object->queue_obj->correspond_address
             || RT->Config->Get('correspond_address');
     }
     $mail->head->set( Subject => "Fwd: $subject" );
@@ -752,8 +752,8 @@ sub SignEncrypt {
             Template  => 'Error: public key',
             Arguments => {
                 %$recipient,
-                TicketObj      => $args{'Ticket'},
-                TransactionObj => $args{'Transaction'},
+                ticket_obj      => $args{'Ticket'},
+                transaction_obj => $args{'Transaction'},
             },
         );
         unless ( $status ) {
@@ -766,8 +766,8 @@ sub SignEncrypt {
         Template  => 'Error to RT owner: public key',
         Arguments => {
             BadRecipients  => \@bad_recipients,
-            TicketObj      => $args{'Ticket'},
-            TransactionObj => $args{'Transaction'},
+            ticket_obj      => $args{'Ticket'},
+            transaction_obj => $args{'Transaction'},
         },
     );
     unless ( $status ) {
@@ -855,7 +855,7 @@ sub create_user {
 
 =head2 ParseCcAddressesFromHead HASH
 
-Takes a hash containing QueueObj, Head and CurrentUser objects.
+Takes a hash containing queue_obj, Head and CurrentUser objects.
 Returns a list of all email addresses in the To and Cc
 headers b<except> the current Queue\'s email addresses, the CurrentUser\'s
 email address  and anything that the configuration sub RT::IsRTAddress matches.
@@ -865,7 +865,7 @@ email address  and anything that the configuration sub RT::IsRTAddress matches.
 sub ParseCcAddressesFromHead {
     my %args = (
         Head        => undef,
-        QueueObj    => undef,
+        queue_obj    => undef,
         CurrentUser => undef,
         @_
     );
@@ -879,8 +879,8 @@ sub ParseCcAddressesFromHead {
     foreach my $address ( @recipients ) {
         $address = $args{'CurrentUser'}->user_object->canonicalize_email( $address );
         next if lc $args{'CurrentUser'}->email   eq $address;
-        next if lc $args{'QueueObj'}->correspond_address eq $address;
-        next if lc $args{'QueueObj'}->comment_address    eq $address;
+        next if lc $args{'queue_obj'}->correspond_address eq $address;
+        next if lc $args{'queue_obj'}->comment_address    eq $address;
         next if IsRTAddress( $address );
 
         push @res, $address;
@@ -1203,11 +1203,11 @@ sub Gateway {
     }
 
     #Set up a queue object
-    my $SystemQueueObj = RT::Model::Queue->new(current_user => RT->system_user );
-    $SystemQueueObj->load( $args{'queue'} );
+    my $Systemqueue_obj = RT::Model::Queue->new(current_user => RT->system_user );
+    $Systemqueue_obj->load( $args{'queue'} );
 
     # We can safely have no queue of we have a known-good ticket
-    unless ( $SystemTicket->id || $SystemQueueObj->id ) {
+    unless ( $SystemTicket->id || $Systemqueue_obj->id ) {
         return ( -75, "RT couldn't find the queue: " . $args{'queue'}, undef );
     }
     # Authentication Level ($AuthStat)
@@ -1242,7 +1242,7 @@ sub Gateway {
                 AuthLevel     => $AuthStat,
                 Action        => $action,
                 Ticket        => $SystemTicket,
-                Queue         => $SystemQueueObj
+                Queue         => $Systemqueue_obj
             );
 
 # You get the highest level of authentication you were assigned, unless you get the magic -1
@@ -1314,12 +1314,12 @@ sub Gateway {
             @Cc = ParseCcAddressesFromHead(
                 Head        => $head,
                 CurrentUser => $CurrentUser,
-                QueueObj    => $SystemQueueObj
+                queue_obj    => $Systemqueue_obj
             );
         }
 
         my ( $id, $Transaction, $ErrStr ) = $Ticket->create(
-            Queue     => $SystemQueueObj->id,
+            Queue     => $Systemqueue_obj->id,
             Subject   => $Subject,
             Requestor => \@Requestors,
             Cc        => \@Cc,

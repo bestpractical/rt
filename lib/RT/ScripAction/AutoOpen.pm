@@ -69,11 +69,11 @@ sub prepare {
     # if the ticket is already open or the ticket is new and the message is more mail from the
     # requestor, don't reopen it.
 
-    my $status = $self->TicketObj->Status;
+    my $status = $self->ticket_obj->Status;
     return undef if $status eq 'open';
-    return undef if $status eq 'new' && $self->TransactionObj->IsInbound;
+    return undef if $status eq 'new' && $self->transaction_obj->IsInbound;
 
-    if ( my $msg = $self->TransactionObj->Message->first ) {
+    if ( my $msg = $self->transaction_obj->Message->first ) {
         return undef if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
     }
 
@@ -83,9 +83,9 @@ sub prepare {
 sub commit {
     my $self = shift;
 
-    my $oldstatus = $self->TicketObj->Status;
-    $self->TicketObj->__set( column => 'Status', value => 'open' );
-    $self->TicketObj->_new_transaction(
+    my $oldstatus = $self->ticket_obj->Status;
+    $self->ticket_obj->__set( column => 'Status', value => 'open' );
+    $self->ticket_obj->_new_transaction(
         Type     => 'Status',
         Field    => 'Status',
         old_value => $oldstatus,

@@ -377,9 +377,9 @@ sub LastUpdatedObj {
 
 # }}}
 
-# {{{ CreatedObj
+# {{{ created_obj
 
-sub CreatedObj {
+sub created_obj {
     my $self = shift;
     my $obj  = RT::Date->new();
 
@@ -396,7 +396,7 @@ sub CreatedObj {
 #
 sub AgeAsString {
     my $self = shift;
-    return ( $self->CreatedObj->AgeAsString() );
+    return ( $self->created_obj->AgeAsString() );
 }
 
 # }}}
@@ -424,7 +424,7 @@ sub LastUpdatedAsString {
 #
 sub CreatedAsString {
     my $self = shift;
-    return ( $self->CreatedObj->AsString() );
+    return ( $self->created_obj->AsString() );
 }
 
 # }}}
@@ -527,22 +527,22 @@ sub _setLastUpdated {
 
 # }}}
 
-# {{{ sub CreatorObj 
+# {{{ sub creator_obj 
 
-=head2 CreatorObj
+=head2 creator_obj
 
 Returns an RT::Model::User object with the RT account of the creator of this row
 
 =cut
 
-sub CreatorObj {
+sub creator_obj {
     my $self = shift;
-    unless ( exists $self->{'CreatorObj'} ) {
+    unless ( exists $self->{'creator_obj'} ) {
 
-        $self->{'CreatorObj'} = RT::Model::User->new;
-        $self->{'CreatorObj'}->load( $self->Creator );
+        $self->{'creator_obj'} = RT::Model::User->new;
+        $self->{'creator_obj'}->load( $self->Creator );
     }
-    return ( $self->{'CreatorObj'} );
+    return ( $self->{'creator_obj'} );
 }
 
 # }}}
@@ -977,18 +977,18 @@ sub AllDependedOnBy {
     );
 
     while (my $link = $dep->next()) {
-	next unless ($link->BaseURI->IsLocal());
-	next if $args{_found}{$link->BaseObj->id};
+	next unless ($link->base_uri->IsLocal());
+	next if $args{_found}{$link->base_obj->id};
 
 	if (!$args{Type}) {
-	    $args{_found}{$link->BaseObj->id} = $link->BaseObj;
-	    $link->BaseObj->AllDependedOnBy( %args, _top => 0 );
+	    $args{_found}{$link->base_obj->id} = $link->base_obj;
+	    $link->base_obj->AllDependedOnBy( %args, _top => 0 );
 	}
-	elsif ($link->BaseObj->Type eq $args{Type}) {
-	    $args{_found}{$link->BaseObj->id} = $link->BaseObj;
+	elsif ($link->base_obj->Type eq $args{Type}) {
+	    $args{_found}{$link->base_obj->id} = $link->base_obj;
 	}
 	else {
-	    $link->BaseObj->AllDependedOnBy( %args, _top => 0 );
+	    $link->base_obj->AllDependedOnBy( %args, _top => 0 );
 	}
     }
 
@@ -1276,8 +1276,8 @@ sub _new_transaction {
     if ( defined $args{'TimeTaken'} and $self->can('_UpdateTimeTaken')) {
         $self->_UpdateTimeTaken( $args{'TimeTaken'} );
     }
-    if ( RT->Config->Get('UseTransactionBatch') and $transaction ) {
-	    push @{$self->{_TransactionBatch}}, $trans if $args{'commit_scrips'};
+    if ( RT->Config->Get('Usetransaction_batch') and $transaction ) {
+	    push @{$self->{_transaction_batch}}, $trans if $args{'commit_scrips'};
     }
     return ( $transaction, $msg, $trans );
 }
@@ -1337,7 +1337,10 @@ sub _LookupId {
 
     my $object = $self;
     foreach my $class (reverse @classes) {
-	my $method = "${class}Obj";
+            # Convert FooBar into foo_bar
+    $class =~ s/.([[:upper:]])/_$1/g;
+
+	my $method = lc($class)."_obj";
 	$object = $object->$method;
     }
 
@@ -1429,7 +1432,7 @@ sub _AddCustomFieldValue {
     unless ( $cf->unlimitedValues ) {
 
         # Load up a ObjectCustomFieldValues object for this custom field and this ticket
-        my $values = $cf->ValuesForObject($self);
+        my $values = $cf->values_for_object($self);
 
         # We need to whack any old values here.  In most cases, the custom field should
         # only have one value to delete.  In the pathalogical case, this custom field
@@ -1442,14 +1445,14 @@ sub _AddCustomFieldValue {
             while ( my $value = $values->next ) {
                 $i++;
                 if ( $i < $cf_values ) {
-                    my ( $val, $msg ) = $cf->deleteValueForObject(
+                    my ( $val, $msg ) = $cf->delete_value_for_object(
                         Object  => $self,
                         Content => $value->Content
                     );
                     unless ($val) {
                         return ( 0, $msg );
                     }
-                    my ( $TransactionId, $Msg, $TransactionObj ) =
+                    my ( $TransactionId, $Msg, $transaction_obj ) =
                       $self->_new_transaction(
                         Type         => 'CustomField',
                         Field        => $cf->id,
@@ -1485,7 +1488,7 @@ sub _AddCustomFieldValue {
             return $old_value->id if $is_the_same;
         }
 
-        my ( $new_value_id, $value_msg ) = $cf->AddValueForObject(
+        my ( $new_value_id, $value_msg ) = $cf->add_value_for_object(
             Object       => $self,
             Content      => $args{'Value'},
             LargeContent => $args{'LargeContent'},
@@ -1506,7 +1509,7 @@ sub _AddCustomFieldValue {
         }
 
         if ( $args{'record_transaction'} ) {
-            my ( $TransactionId, $Msg, $TransactionObj ) =
+            my ( $TransactionId, $Msg, $transaction_obj ) =
               $self->_new_transaction(
                 Type         => 'CustomField',
                 Field        => $cf->id,
@@ -1531,7 +1534,7 @@ sub _AddCustomFieldValue {
 
     # otherwise, just add a new value and record "new value added"
     else {
-        my ($new_value_id, $msg) = $cf->AddValueForObject(
+        my ($new_value_id, $msg) = $cf->add_value_for_object(
             Object       => $self,
             Content      => $args{'Value'},
             LargeContent => $args{'LargeContent'},
@@ -1585,7 +1588,7 @@ sub delete_custom_field_value {
         return ( 0, _( "Custom field %1 not found", $args{'Field'} ) );
     }
 
-    my ( $val, $msg ) = $cf->deleteValueForObject(
+    my ( $val, $msg ) = $cf->delete_value_for_object(
         Object  => $self,
         Id      => $args{'ValueId'},
         Content => $args{'Value'},
@@ -1594,7 +1597,7 @@ sub delete_custom_field_value {
         return ( 0, $msg );
     }
 
-    my ( $TransactionId, $Msg, $TransactionObj ) = $self->_new_transaction(
+    my ( $TransactionId, $Msg, $transaction_obj ) = $self->_new_transaction(
         Type          => 'CustomField',
         Field         => $cf->id,
         OldReference  => $val,
@@ -1608,7 +1611,7 @@ sub delete_custom_field_value {
         $TransactionId,
         _(
             "%1 is no longer a value for custom field %2",
-            $TransactionObj->old_value, $cf->name
+            $transaction_obj->old_value, $cf->name
         )
     );
 }
@@ -1657,7 +1660,7 @@ sub CustomFieldValues {
             Jifty->log->warn("Couldn't load custom field by '$field' identifier");
             return RT::Model::ObjectCustomFieldValueCollection->new;
         }
-        return ( $cf->ValuesForObject($self) );
+        return ( $cf->values_for_object($self) );
     }
     # we're not limiting to a specific custom field;
     my $ocfs = RT::Model::ObjectCustomFieldValueCollection->new;

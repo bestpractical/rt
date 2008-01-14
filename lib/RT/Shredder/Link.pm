@@ -76,8 +76,8 @@ sub __DependsOn
     unless ( $link_meta && $link_meta->{'Mode'} && $link_meta->{'Type'} ) {
         RT::Shredder::Exception->throw( 'Wrong link link_meta, no record for '. $self->Type );
     }
-    if ( $self->BaseURI->IsLocal ) {
-        my $objs = $self->BaseObj->Transactions;
+    if ( $self->base_uri->IsLocal ) {
+        my $objs = $self->base_obj->Transactions;
         $objs->limit(
             column    => 'Type',
             operator => '=',
@@ -93,7 +93,7 @@ sub __DependsOn
     }
 
     my %reverse = ( Base => 'Target', Target => 'Base' );
-    if ( $self->TargetURI->IsLocal ) {
+    if ( $self->target_uri->IsLocal ) {
         my $objs = $self->TargetObj->Transactions;
         $objs->limit(
             column    => 'Type',
@@ -110,7 +110,7 @@ sub __DependsOn
     }
 
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => DEPENDS_ON|WIPE_AFTER,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}

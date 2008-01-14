@@ -253,7 +253,7 @@ in the subject line of all future correspondence about this issue. To do so,
 you may reply to this message.
 
                         Thank you,
-                        {$Ticket->QueueObj->correspond_address()}
+                        {$Ticket->queue_obj->correspond_address()}
 
 -------------------------------------------------------------------------
 {$Transaction->Content()}
@@ -268,7 +268,7 @@ you may reply to this message.
 
 {$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
-       Queue: {$Ticket->QueueObj->name}
+       Queue: {$Ticket->queue_obj->name}
      Subject: {$Transaction->Subject || $Ticket->Subject || "(No subject given)"}
        Owner: {$Ticket->OwnerObj->name}
   Requestors: {$Ticket->RequestorAddresses}
@@ -509,10 +509,10 @@ Your new password is:
        Queue          => '___Approvals',
        ScripCondition => 'User Defined',
        CustomIsApplicableCode => q[
-	    $self->TicketObj->Type eq 'approval'	and
-	    $self->TransactionObj->Field eq 'Status'	and
-	    $self->TransactionObj->new_value eq 'open'   and
-	    eval { $T::Approving = ($self->TicketObj->AllDependedOnBy( Type => 'ticket' ))[0] }
+	    $self->ticket_obj->Type eq 'approval'	and
+	    $self->transaction_obj->Field eq 'Status'	and
+	    $self->transaction_obj->new_value eq 'open'   and
+	    eval { $T::Approving = ($self->ticket_obj->AllDependedOnBy( Type => 'ticket' ))[0] }
        ],
        ScripAction    => 'Notify Owner',
        Template       => 'New Pending Approval' },
@@ -522,14 +522,14 @@ Your new password is:
        ScripAction      => 'User Defined',
        CustomPrepareCode => q[
 # ------------------------------------------------------------------- #
-return(0) unless ( lc($self->TransactionObj->new_value) eq "rejected" or
-	           lc($self->TransactionObj->new_value) eq "deleted" );
+return(0) unless ( lc($self->transaction_obj->new_value) eq "rejected" or
+	           lc($self->transaction_obj->new_value) eq "deleted" );
 
 my $rejected = 0;
-my $links = $self->TicketObj->DependedOnBy;
+my $links = $self->ticket_obj->DependedOnBy;
 foreach my $link (@{ $links->items_array_ref }) {
-    my $obj = $link->BaseObj;
-    if ($obj->QueueObj->IsActiveStatus($obj->Status)) {
+    my $obj = $link->base_obj;
+    if ($obj->queue_obj->IsActiveStatus($obj->Status)) {
 	if ($obj->Type eq 'ticket') {
 	    $obj->comment(
 		Content	=> _("Your request was rejected."),
@@ -539,8 +539,8 @@ foreach my $link (@{ $links->items_array_ref }) {
 		Force	=> 1,
 	    );
 
-	    $T::Approval = $self->TicketObj; # so we can access it inside templates
-	    $self->{TicketObj} = $obj;  # we want the original id in the token line
+	    $T::Approval = $self->ticket_obj; # so we can access it inside templates
+	    $self->{ticket_obj} = $obj;  # we want the original id in the token line
 	    $rejected = 1;
 	}
 	else {
@@ -552,10 +552,10 @@ foreach my $link (@{ $links->items_array_ref }) {
     }
 }
 
-$links = $self->TicketObj->DependsOn;
+$links = $self->ticket_obj->DependsOn;
 foreach my $link (@{ $links->items_array_ref }) {
     my $obj = $link->TargetObj;
-    if ($obj->QueueObj->IsActiveStatus($obj->Status)) {
+    if ($obj->queue_obj->IsActiveStatus($obj->Status)) {
 	$obj->set_Status(
 	    Status	=> 'deleted',
 	    Force	=> 1,
@@ -578,25 +578,25 @@ return $rejected;
        ScripAction       => 'User Defined',
        CustomPrepareCode => q[
 # ------------------------------------------------------------------- #
-return(0) unless ($self->TicketObj->Type eq 'approval');
+return(0) unless ($self->ticket_obj->Type eq 'approval');
 
 my $note;
-my $t = $self->TicketObj->Transactions;
+my $t = $self->ticket_obj->Transactions;
 while (my $o = $t->next) {
     $note .= $o->Content . "\n" if $o->ContentObj
 	    and $o->Content !~ /Default Approval/;
 }
 
-foreach my $obj ($self->TicketObj->AllDependedOnBy( Type => 'ticket' )) {
+foreach my $obj ($self->ticket_obj->AllDependedOnBy( Type => 'ticket' )) {
     $obj->comment(
 	Content => _( "Your request has been approved by %1. Other approvals may still be pending.", # loc
-	    $self->TransactionObj->CreatorObj->name,
+	    $self->transaction_obj->creator_obj->name,
 	) . "\n" . _( "Approver's notes: %1", # loc
 	    $note
 	),
     );
-    $T::Approval = $self->TicketObj; # so we can access it inside templates
-    $self->{TicketObj} = $obj;  # we want the original id in the token line
+    $T::Approval = $self->ticket_obj; # so we can access it inside templates
+    $self->{ticket_obj} = $obj;  # we want the original id in the token line
 }
 
 # Now magically turn myself into a Requestor Notify object...
@@ -616,13 +616,13 @@ return 1;
 # ------------------------------------------------------------------- #
 # Find all the tickets that depend on this (that this is approving)
 
-my $Ticket = $self->TicketObj;
+my $Ticket = $self->ticket_obj;
 my @TOP    = $Ticket->AllDependedOnBy( Type => 'ticket' );
 my $links  = $Ticket->DependedOnBy;
 my $passed = 0;
 
 while (my $link = $links->next) {
-    my $obj = $link->BaseObj;
+    my $obj = $link->base_obj;
     next if ($obj->has_unresolved_dependencies( Type => 'approval' ));
 
     if ($obj->Type eq 'ticket') {
@@ -630,7 +630,7 @@ while (my $link = $links->next) {
 	    Content	=> _("Your request has been approved."),
 	);
 	$T::Approval  = $Ticket;    # so we can access it inside templates
-	$self->{TicketObj} = $obj;  # we want the original id in the token line
+	$self->{ticket_obj} = $obj;  # we want the original id in the token line
 	$passed = 1;
     }
     elsif ($obj->Type eq 'approval') {

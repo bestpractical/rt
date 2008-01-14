@@ -69,7 +69,7 @@ sub IsApplicable {
 
     my $cur = RT::Date->new( RT->system_user );
     $cur->set_to_now();
-    my $due = $self->TicketObj->DueObj;
+    my $due = $self->ticket_obj->due_obj;
     return (undef) if $due->Unix <= 0;
 
     my $diff = $due->Diff($cur);

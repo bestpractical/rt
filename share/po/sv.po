@@ -24,8 +24,8 @@ msgstr " %1 omdöpt till %2."
 msgid " %1 saved."
 msgstr " %1 sparad."
 
-#. ($TicketObj->id, $TicketObj->Subject)
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 #. ($ticket->id, $ticket->Subject)
 #. ($Ticket->id, $Ticket->Subject)
 #: html/Approvals/Elements/Approve:48
@@ -90,21 +90,21 @@ msgstr "%1 %2 ändrat till %3"
 msgid "%1 %2 deleted"
 msgstr "%1 %2 raderad"
 
-#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->TemplateObj->name))
+#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->template_obj->name))
 #: html/Admin/Elements/EditScrips:65
 #: html/Admin/Elements/ListGlobalScrips:63
 #: html/Ticket/Elements/PreviewScrips:103
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 med mall %3"
 
-#. ($rev->CreatedAsString, $size, $rev->CreatorObj->name)
+#. ($rev->CreatedAsString, $size, $rev->creator_obj->name)
 #: html/Ticket/Elements/ShowAttachments:72
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) av %3"
 
 #. (_($Ticket->Status()))
-#. (_($TicketObj->Status))
-#. ($TicketObj->OwnerObj->name())
+#. (_($ticket_obj->Status))
+#. ($ticket_obj->OwnerObj->name())
 #. (_($DefaultStatus))
 #: html/SelfService/Update.html:60
 #: html/Ticket/Elements/EditBasics:108
@@ -181,7 +181,7 @@ msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 tycks vara ett lokalt objekt men går inte att hitta i databasen"
 
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->name)
-#. ($self->BriefDescription , $self->CreatorObj->name)
+#. ($self->BriefDescription , $self->creator_obj->name)
 #: html/Ticket/Elements/ShowDates:73
 #: lib/RT/Transaction_Overlay.pm:531
 msgid "%1 by %2"
@@ -699,7 +699,7 @@ msgstr "Godkännande"
 
 #. ($ticket->id, $msg)
 #. ($Ticket->id, $Ticket->Subject)
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 #: html/Approvals/Display.html:65
 #: html/Approvals/Elements/ShowDependency:63
 #: html/Approvals/index.html:86
@@ -1285,7 +1285,7 @@ msgstr "Skapa Ärenden"
 msgid "Create a CustomField"
 msgstr "Skapa ett ExtraFält"
 
-#. ($QueueObj->name())
+#. ($queue_obj->name())
 #: html/Admin/Queues/CustomField.html:69
 msgid "Create a CustomField for queue %1"
 msgstr "Skapa ett ExtraFält för kö %1"
@@ -1315,7 +1315,7 @@ msgstr "Skapa en ny användare"
 msgid "Create a queue"
 msgstr "Skapa en kö"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/Scrip.html:89
 msgid "Create a scrip for queue %1"
 msgstr "Skapa en scrip för kö %1"
@@ -1768,7 +1768,7 @@ msgstr "Redigera söksträng"
 msgid "Edit Search"
 msgstr "Redigera sökning"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/Templates.html:63
 msgid "Edit Templates for queue %1"
 msgstr "Redigera mallar för kö %1"
@@ -1786,7 +1786,7 @@ msgstr "Redigera systemmallar"
 msgid "EditSavedSearches"
 msgstr "RedigeraSparadeSökningar"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/Modify.html:140
 msgid "Editing Configuration for queue %1"
 msgstr "Redigera konfiguration för kö %1"
@@ -2753,12 +2753,12 @@ msgstr "Modifiera scrips för denna kö"
 msgid "Modify User Rights"
 msgstr "Modifiera användarrättigheter"
 
-#. ($QueueObj->name())
+#. ($queue_obj->name())
 #: html/Admin/Queues/CustomField.html:66
 msgid "Modify a CustomField for queue %1"
 msgstr "Modifiera ett extrafält för kö %1"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/Scrip.html:82
 msgid "Modify a scrip for queue %1"
 msgstr "Modifiera ett scrip för kö %1"
@@ -2772,13 +2772,13 @@ msgstr "Modifiera ett scrip som gäller för alla köer"
 msgid "Modify associated objects for %1"
 msgstr "Modifiera objekt associerade med %1"
 
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 #: html/Ticket/ModifyDates.html:46
 #: html/Ticket/ModifyDates.html:50
 msgid "Modify dates for #%1"
 msgstr "Modifiera datum för #%1"
 
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 #: html/Ticket/ModifyDates.html:57
 msgid "Modify dates for ticket # %1"
 msgstr "Modifiera datum för ärende # %1"
@@ -2825,7 +2825,7 @@ msgstr "Modifiera grupprättigheter för extrafält %1"
 msgid "Modify group rights for group %1"
 msgstr "Modifiera grupprättigheter för grupp %1"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/GroupRights.html:46
 #: html/Admin/Queues/GroupRights.html:50
 msgid "Modify group rights for queue %1"
@@ -2839,7 +2839,7 @@ msgstr "Modifiera medlemskapslista för denna grupp"
 msgid "Modify one's own RT account"
 msgstr "Modifiera ens eget RT-konto"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/People.html:46
 #: html/Admin/Queues/People.html:50
 msgid "Modify people related to queue %1"
@@ -2853,7 +2853,7 @@ msgstr "Modifiera personer relaterade till kö %1"
 msgid "Modify people related to ticket #%1"
 msgstr "Modifiera personer relaterade till ärende #%1"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/Scrips.html:67
 msgid "Modify scrips for queue %1"
 msgstr "Modifiera scrips för kö %1"
@@ -2864,8 +2864,8 @@ msgstr "Modifiera scrips för kö %1"
 msgid "Modify scrips which apply to all queues"
 msgstr "Modifiera scrips som gäller för alla köer"
 
-#. (_($TemplateObj->name()))
-#. ($TemplateObj->id)
+#. (_($template_obj->name()))
+#. ($template_obj->id)
 #: html/Admin/Global/Template.html:102
 #: html/Admin/Global/Template.html:46
 #: html/Admin/Global/Template.html:51
@@ -2901,7 +2901,7 @@ msgstr "Modifiera användaren %1"
 msgid "Modify ticket # %1"
 msgstr "Modifiera ärende # %1"
 
-#. ($TicketObj->id)
+#. ($ticket_obj->id)
 #: html/Ticket/Modify.html:46
 #: html/Ticket/Modify.html:49
 #: html/Ticket/Modify.html:55
@@ -2924,7 +2924,7 @@ msgstr "Modifiera användarrättigheter för extrafält %1"
 msgid "Modify user rights for group %1"
 msgstr "Modifiera användarrättigheter för grupp %1"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: html/Admin/Queues/UserRights.html:46
 #: html/Admin/Queues/UserRights.html:50
 msgid "Modify user rights for queue %1"
@@ -3200,7 +3200,7 @@ msgstr "Inget lösenord satt"
 msgid "No permission to create queues"
 msgstr "Ingen tillåtelse att skapa köer"
 
-#. ($QueueObj->name)
+#. ($queue_obj->name)
 #: lib/RT/Ticket_Overlay.pm:420
 msgid "No permission to create tickets in the queue '%1'"
 msgstr "Ingen tillåtelse att skapa ärenden i kö '%1'"
@@ -3427,7 +3427,7 @@ msgstr "Offline upload"
 msgid "On"
 msgstr "Vid"
 
-#. ($self->CreatedAsString(), $self->CreatorObj->name())
+#. ($self->CreatedAsString(), $self->creator_obj->name())
 #: lib/RT/Transaction_Overlay.pm:326
 msgid "On %1, %2 wrote:"
 msgstr "Vid %1, skrev %2:"
@@ -4142,7 +4142,7 @@ msgstr "Hemma"
 msgid "Resolve"
 msgstr "Lös"
 
-#. ($TicketObj->id, $TicketObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
 #: html/Ticket/Update.html:156
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Lös ärende #%1 (%2)"
@@ -4843,7 +4843,7 @@ msgstr "Taget"
 msgid "Template"
 msgstr "Mall"
 
-#. ($TemplateObj->id())
+#. ($template_obj->id())
 #: html/Admin/Global/Template.html:112
 #: html/Admin/Queues/Template.html:113
 msgid "Template #%1"
@@ -5018,7 +5018,7 @@ msgstr "Tor."
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "Ärende #%1 Jumbo uppdatering: %2"
 
-#. ($link->BaseObj->id, $link->BaseObj->Subject)
+#. ($link->base_obj->id, $link->base_obj->Subject)
 #: html/Approvals/Elements/ShowDependency:67
 msgid "Ticket #%1: %2"
 msgstr "Ärende #%1: %2"
@@ -5034,7 +5034,7 @@ msgstr "Ärende #%1: %2"
 msgid "Ticket %1"
 msgstr "Ärende %1"
 
-#. ($self->id, $QueueObj->name)
+#. ($self->id, $queue_obj->name)
 #: lib/RT/Ticket_Overlay.pm:755
 #: lib/RT/Ticket_Overlay.pm:775
 msgid "Ticket %1 created in queue '%2'"
@@ -5300,7 +5300,7 @@ msgstr "Uppdatera ärende"
 msgid "Update ticket #%1"
 msgstr "Uppdatera ärende #%1"
 
-#. ($TicketObj->id, $TicketObj->Subject)
+#. ($ticket_obj->id, $ticket_obj->Subject)
 #: html/Ticket/Update.html:158
 msgid "Update ticket #%1 (%2)"
 msgstr "Uppdatera ärende #%1 (%2)"

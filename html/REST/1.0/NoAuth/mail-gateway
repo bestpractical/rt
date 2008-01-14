@@ -65,7 +65,7 @@ if ( $status == 1 ) {
   $m->out('ok');
   if ( $Ticket &&  $Ticket->id ) {
     $m->out( 'Ticket: '  . ($Ticket->id             || '') );
-    $m->out( 'Queue: '   . ($Ticket->QueueObj->name || '') );
+    $m->out( 'Queue: '   . ($Ticket->queue_obj->name || '') );
     $m->out( 'Owner: '   . ($Ticket->OwnerObj->name || '') );
     $m->out( 'Status: '  . ($Ticket->Status         || '') );
     $m->out( 'Subject: ' . ($Ticket->Subject        || '') );

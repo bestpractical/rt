@@ -89,7 +89,7 @@ sub __DependsOn
 
 # Principal
     $deps->_PushDependency(
-            BaseObject => $self,
+            base_object => $self,
             Flags => DEPENDS_ON | WIPE_AFTER,
             TargetObject => $self->principal_object,
             Shredder => $args{'Shredder'}
@@ -108,7 +108,7 @@ sub __DependsOn
     push( @$list, $objs );
 
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}
@@ -127,7 +127,7 @@ sub __DependsOn
         }
     }
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => DEPENDS_ON | VARIABLE,
             TargetObjects => \@var_objs,
             Shredder => $args{'Shredder'}
@@ -170,7 +170,7 @@ sub __Relates
     }
 
     $deps->_PushDependencies(
-            BaseObject => $self,
+            base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}

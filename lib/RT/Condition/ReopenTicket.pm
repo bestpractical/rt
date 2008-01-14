@@ -64,16 +64,16 @@ options.
 sub IsApplicable {
     my $self = shift;
 
-    my $txn = $self->TransactionObj;
+    my $txn = $self->transaction_obj;
     return 0 unless $txn->Type eq "Status" ||
         ( $txn->Type eq "Set" && $txn->Field eq "Status" );
 
-    my $queue = $self->TicketObj->QueueObj;
+    my $queue = $self->ticket_obj->queue_obj;
     return 0 unless $queue->IsInactiveStatus( $txn->old_value );
     return 0 unless $queue->IsActiveStatus( $txn->new_value );
 
     Jifty->log->debug("Condition 'On Reopen' triggered "
-        ."for ticket #". $self->TicketObj->id
+        ."for ticket #". $self->ticket_obj->id
         ." transaction #". $txn->id
     );
 

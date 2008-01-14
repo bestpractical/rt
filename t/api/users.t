@@ -44,8 +44,8 @@ $users->WhoHaveRight(Right => 'RTxUserRight', Object => $RTxObj);
 is($users->count, 0, "RTxUserRight not found for RTxObj");
 
 $users = RT::Model::UserCollection->new(current_user => RT->system_user);
-$users->WhoHaveRight(Right => 'RTxUserRight', Object => $RTxObj, EquivObjects => [ $RTxSysObj ]);
-is($users->count, 1, "RTxUserRight found for RTxObj using EquivObjects");
+$users->WhoHaveRight(Right => 'RTxUserRight', Object => $RTxObj, equiv_objects => [ $RTxSysObj ]);
+is($users->count, 1, "RTxUserRight found for RTxObj using equiv_objects");
 
 $ace = RT::Model::ACE->new(current_user => RT->system_user);
 ($id, $msg) = $ace->RT::Record::create( principal_id => $group->id, principal_type => 'Group', right_name => 'RTxUserRight', object_type => 'RTx::System::Record', object_id => 5 );
@@ -61,7 +61,7 @@ $users->WhoHaveRight(Right => 'RTxUserRight', Object => $RTxObj2);
 is($users->count, 1, "RTxUserRight found for RTxObj2");
 
 $users = RT::Model::UserCollection->new(current_user => RT->system_user);
-$users->WhoHaveRight(Right => 'RTxUserRight', Object => $RTxObj2, EquivObjects => [ $RTxSysObj ]);
+$users->WhoHaveRight(Right => 'RTxUserRight', Object => $RTxObj2, equiv_objects => [ $RTxSysObj ]);
 is($users->count, 1, "RTxUserRight found for RTxObj2");
 
 

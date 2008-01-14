@@ -45,20 +45,20 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => _('Modify dates for #%1', $TicketObj->id) &>
+<& /Elements/Header, Title => _('Modify dates for #%1', $ticket_obj->id) &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $TicketObj, 
-    current_tab => "Ticket/ModifyDates.html?id=".$TicketObj->id, 
-    Title => _('Modify dates for #%1', $TicketObj->id) &> 
+    Ticket => $ticket_obj, 
+    current_tab => "Ticket/ModifyDates.html?id=".$ticket_obj->id, 
+    Title => _('Modify dates for #%1', $ticket_obj->id) &> 
 
-% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
+% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $ticket_obj);
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="ModifyDates.html">
 % $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
-<input type="hidden" class="hidden" name="id" value="<%$TicketObj->id%>" />
-<&| /Widgets/TitleBox,title => _('Modify dates for ticket # %1', $TicketObj->id) &>
-<& Elements/EditDates, TicketObj => $TicketObj &>
+<input type="hidden" class="hidden" name="id" value="<%$ticket_obj->id%>" />
+<&| /Widgets/TitleBox,title => _('Modify dates for ticket # %1', $ticket_obj->id) &>
+<& Elements/EditDates, ticket_obj => $ticket_obj &>
 </&>
 <& /Elements/Submit, Label => _('Save Changes') &>
 </form>
@@ -66,9 +66,9 @@
 
 <%INIT>
 
-my $TicketObj = load_ticket($id);
-$m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS );
-my @results = ProcessTicketDates( TicketObj => $TicketObj, ARGSRef => \%ARGS);
+my $ticket_obj = load_ticket($id);
+$m->callback( ticket_obj => $ticket_obj, ARGSRef => \%ARGS );
+my @results = ProcessTicketDates( ticket_obj => $ticket_obj, ARGSRef => \%ARGS);
 
 </%INIT>
 

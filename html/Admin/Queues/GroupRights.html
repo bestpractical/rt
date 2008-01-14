@@ -45,20 +45,20 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => _('Modify group rights for queue %1', $QueueObj->name) &>
+<& /Admin/Elements/Header, Title => _('Modify group rights for queue %1', $queue_obj->name) &>
 <& /Admin/Elements/QueueTabs, id => $id, 
-    QueueObj => $QueueObj,                                                      
+    queue_obj => $queue_obj,                                                      
     current_tab => $current_tab, 
-    Title => _('Modify group rights for queue %1', $QueueObj->name) &>
+    Title => _('Modify group rights for queue %1', $queue_obj->name) &>
 <& /Elements/ListActions, actions => \@results &>
 
   <form method="post" action="GroupRights.html">
-    <input type="hidden" class="hidden" name="id" value="<% $QueueObj->id %>" />
+    <input type="hidden" class="hidden" name="id" value="<% $queue_obj->id %>" />
       
       
 <h1><&|/l&>System groups</&></h1>
 <table>
-% $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
+% $m->callback( %ARGS, queue_obj => $queue_obj, results => \@results );
 % $Groups = RT::Model::GroupCollection->new();
 % $Groups->limit_ToSystemInternalGroups();
 %	while (my $Group = $Groups->next()) {
@@ -68,7 +68,7 @@
 		  </td>
 	  <td>
 	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
-        Object => $QueueObj  &>
+        Object => $queue_obj  &>
 	  </td>
 	</tr>
 % }
@@ -76,7 +76,7 @@
 <h1><&|/l&>Roles</&></h1>
 <table>
 % $Groups = RT::Model::GroupCollection->new();
-% $Groups->limit_ToRolesForQueue($QueueObj->id);
+% $Groups->limit_ToRolesForQueue($queue_obj->id);
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
@@ -84,7 +84,7 @@
 		  </td>
 	  <td>
 	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
-        Object => $QueueObj  &>
+        Object => $queue_obj  &>
 	  </td>
 	</tr>
 % }
@@ -100,7 +100,7 @@
 		  </td>
 	  <td>
 	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
-        Object => $QueueObj  &>
+        Object => $queue_obj  &>
 	  </td>
 	</tr>
 % }
@@ -120,12 +120,12 @@ if (!defined $id) {
     Abort(_("No Queue defined"));
 }
 
-my $QueueObj = RT::Model::Queue->new();
-$QueueObj->load($id) || Abort(_("Couldn't load queue %1",$id));
+my $queue_obj = RT::Model::Queue->new();
+$queue_obj->load($id) || Abort(_("Couldn't load queue %1",$id));
 
 my $Groups;
 my $current_tab;
-$current_tab = 'Admin/Queues/GroupRights.html?id='.$QueueObj->id;
+$current_tab = 'Admin/Queues/GroupRights.html?id='.$queue_obj->id;
     
 </%INIT>
 

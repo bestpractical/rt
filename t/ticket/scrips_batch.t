@@ -12,7 +12,7 @@ use_ok('RT::Model::Ticket');
 my $queue = RT::Test->load_or_create_queue( name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
 
-RT->Config->set( UseTransactionBatch => 1 );
+RT->Config->set( Usetransaction_batch => 1 );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -29,7 +29,7 @@ my $sid;
     $m->select('Scrip-new-ScripCondition' => 'On Transaction');
     $m->select('Scrip-new-ScripAction' => 'User Defined');
     $m->select('Scrip-new-Template' => 'Global template: Blank');
-    $m->select('Scrip-new-Stage' => 'TransactionBatch');
+    $m->select('Scrip-new-Stage' => 'transaction_batch');
     $m->field('Scrip-new-CustomPrepareCode' => 'return 1;');
     $m->field('Scrip-new-CustomCommitCode' => 'return 1;');
     $m->submit;
@@ -42,7 +42,7 @@ my $sid;
     is value_name($form, "Scrip-$sid-ScripCondition"), 'On Transaction', 'correct condition';
     is value_name($form, "Scrip-$sid-ScripAction"), 'User Defined', 'correct action';
     is value_name($form, "Scrip-$sid-Template"), 'Global template: Blank', 'correct template';
-    is value_name($form, "Scrip-$sid-Stage"), 'TransactionBatch', 'correct stage';
+    is value_name($form, "Scrip-$sid-Stage"), 'transaction_batch', 'correct stage';
 
     use File::Temp qw(tempfile);
     my ($tmp_fh, $tmp_fn) = tempfile();
@@ -50,7 +50,7 @@ my $sid;
     my $code = <<END;
 open my \$fh, '>', '$tmp_fn' or die "Couldn't open '$tmp_fn':\$!";
 
-my \$batch = \$self->TicketObj->TransactionBatch;
+my \$batch = \$self->ticket_obj->transaction_batch;
 unless ( \$batch && \@\$batch ) {
     print \$fh "no batch\n";
     return 1;

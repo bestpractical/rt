@@ -148,9 +148,9 @@ sub QueryToSQL {
 
     # restrict to any queues requested by the caller
     for my $queue (@{ $self->{'Queues'} }) {
-        my $QueueObj = RT::Model::Queue->new(current_user => $self->TicketsObj->current_user);
-        $QueueObj->Load($queue) or next;
-        push @queue_clauses, "Queue = '" . $QueueObj->name . "'";
+        my $queue_obj = RT::Model::Queue->new(current_user => $self->TicketsObj->current_user);
+        $queue_obj->Load($queue) or next;
+        push @queue_clauses, "Queue = '" . $queue_obj->name . "'";
     }
 
     push @tql_clauses, join( " OR ", sort @id_clauses );

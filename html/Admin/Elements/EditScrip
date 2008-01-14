@@ -73,7 +73,7 @@
 <tr><td align="right"><&|/l&>Template</&>:</td><td>
 <& /Admin/Elements/SelectTemplate,
     name => "Scrip-$id-Template",
-    Default => $ARGS{"Scrip-$id-Template"} || $scrip->TemplateObj->id,
+    Default => $ARGS{"Scrip-$id-Template"} || $scrip->template_obj->id,
     Queue => $Queue,
 &></td></tr>
 

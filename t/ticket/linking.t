@@ -47,11 +47,11 @@ my $commit_code = <<END;
 	\Jifty->log->debug("Data is \$data");
 	
 	open \$file, ">$filename" or die "couldn't open $filename";
-	if (\$self->TransactionObj->Type eq 'add_link') {
+	if (\$self->transaction_obj->Type eq 'add_link') {
 	    \Jifty->log->debug("add_link");
 	    print \$file \$data+1, "\n";
 	}
-	elsif (\$self->TransactionObj->Type eq 'DeleteLink') {
+	elsif (\$self->transaction_obj->Type eq 'DeleteLink') {
 	    \Jifty->log->debug("delete_link");
 	    print \$file \$data-1, "\n";
 	}
@@ -77,7 +77,7 @@ my $scrip = RT::Model::Scrip->new(current_user => RT->system_user);
                           Template       => $template->id,
                           Stage          => 'TransactionCreate',
                           Queue          => 0,
-                  CustomIsApplicableCode => '$self->TransactionObj->Type =~ /(Add|Delete)Link/;',
+                  CustomIsApplicableCode => '$self->transaction_obj->Type =~ /(Add|Delete)Link/;',
                        CustomPrepareCode => '1;',
                        CustomCommitCode  => $commit_code,
                            );

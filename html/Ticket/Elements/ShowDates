@@ -48,7 +48,7 @@
 <table>
   <tr>
     <td class="label date Created"><&|/l&>Created</&>:</td>
-    <td class="value date Created"><% $Ticket->CreatedObj->AsString %></td>
+    <td class="value date Created"><% $Ticket->created_obj->AsString %></td>
   </tr>
   <tr>
     <td class="label date starts"><&|/l&>starts</&>:</td>
@@ -64,7 +64,7 @@
   </tr>
   <tr>
     <td class="label date due"><&|/l&>Due</&>:</td>
-    <td class="value date due"><% $Ticket->DueObj->AsString  %></td>
+    <td class="value date due"><% $Ticket->due_obj->AsString  %></td>
   </tr>
   <tr>
     <td class="label date resolved"><&|/l&>Closed</&>:</td>

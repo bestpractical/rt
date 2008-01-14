@@ -56,7 +56,7 @@
 % my $desc = $Transaction->BriefDescription;
 % $m->callback( text => \$desc, Transaction => $Transaction, %ARGS, Callbackname => 'ModifyDisplay' );
     <td class="description">
-      <% $Transaction->CreatorObj->name %> - <% $TicketString %> <% $desc %>
+      <% $Transaction->creator_obj->name %> - <% $TicketString %> <% $desc %>
     </td>
     <td class="time-taken"><% $TimeTaken %></td>
     <td class="actions"><% $titlebar_commands |n %></td>
@@ -182,8 +182,8 @@ else {
     }
 
     if ( $Attachments->[0] && $ShowTitleBarCommands ) {
-        my $can_modify = $Transaction->TicketObj->current_user_has_right('ModifyTicket');
-        if ( $can_modify || $Transaction->TicketObj->current_user_has_right('ReplyToTicket') ) {
+        my $can_modify = $Transaction->ticket_obj->current_user_has_right('ModifyTicket');
+        if ( $can_modify || $Transaction->ticket_obj->current_user_has_right('ReplyToTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath
               . "?id=" . $Transaction->Ticket
@@ -192,7 +192,7 @@ else {
               . _('Reply')
               . "</a>]&nbsp;";
         }
-        if ( $can_modify || $Transaction->TicketObj->current_user_has_right('commentOnTicket') ) {
+        if ( $can_modify || $Transaction->ticket_obj->current_user_has_right('commentOnTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath."?id="
               . $Transaction->Ticket
@@ -201,7 +201,7 @@ else {
               . "&Action=comment\">"
               . _('comment') . "</a>]";
         }
-        if ( $Transaction->TicketObj->current_user_has_right('ForwardMessage') ) {
+        if ( $Transaction->ticket_obj->current_user_has_right('ForwardMessage') ) {
             $titlebar_commands .=
                 "[<a href=\"". $ForwardPath
               . "?id=". $Transaction->Ticket

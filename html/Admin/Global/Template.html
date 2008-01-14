@@ -45,12 +45,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => _("Modify template %1", $TemplateObj->id)  &>
+<& /Admin/Elements/Header, Title => _("Modify template %1", $template_obj->id)  &>
 <& /Admin/Elements/SystemTabs, 
     current_tab => 'Admin/Global/Templates.html', 
     current_subtab => $current_subtab, 
     subtabs => $subtabs, 
-    Title => _("Modify template %1", $TemplateObj->id) &>
+    Title => _("Modify template %1", $template_obj->id) &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -58,13 +58,13 @@
 %if ($Create ) {
 <input type="hidden" class="hidden" name="Template" value="new" />
 % } else {
-<input type="hidden" class="hidden" name="Template" value="<%$TemplateObj->id%>" />
+<input type="hidden" class="hidden" name="Template" value="<%$template_obj->id%>" />
 % }
 
 %# hang onto the queue id
 <input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
 
-<& /Admin/Elements/ModifyTemplate, name => $TemplateObj->name, Description => $TemplateObj->Description, Content => $TemplateObj->Content &>
+<& /Admin/Elements/ModifyTemplate, name => $template_obj->name, Description => $template_obj->Description, Content => $template_obj->Content &>
 
 <& /Elements/Submit, Label => _('Save Changes'), Reset => 1 &>
 </form>
@@ -73,7 +73,7 @@
 
 <%INIT>
 
-my $TemplateObj = RT::Model::Template->new();
+my $template_obj = RT::Model::Template->new();
 my  ($title, @results, $current_subtab);
 
 my $subtabs = {
@@ -94,25 +94,25 @@ if ($Create) {
 
 else {
   if (defined ($Template) && $Template eq 'new') {
-      my ($val, $msg) =  $TemplateObj->create(Queue => $Queue, name => $name);
+      my ($val, $msg) =  $template_obj->create(Queue => $Queue, name => $name);
       Abort(_("Could not create template: %1", $msg)) unless ($val);
      push @results, $msg;
     }
     else {
-       $TemplateObj->load($Template) || Abort(_('No Template'));
+       $template_obj->load($Template) || Abort(_('No Template'));
     }
-      $title = _('Modify template %1', loc($TemplateObj->name())); 
+      $title = _('Modify template %1', loc($template_obj->name())); 
   
     
 }
-if ($TemplateObj->id()) {
+if ($template_obj->id()) {
   my @attribs = qw( Description Content Queue name);
   my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
-				     Object => $TemplateObj, 
+				     Object => $template_obj, 
 				     ARGSRef => \%ARGS);
-  $current_subtab = "Admin/Global/Template.html?Queue=0&Template=".$TemplateObj->id();
-  $subtabs->{"C"} = { title => _('Template #%1', $TemplateObj->id()),
-  		     	path => "Admin/Global/Template.html?Queue=0&Template=".$TemplateObj->id(),
+  $current_subtab = "Admin/Global/Template.html?Queue=0&Template=".$template_obj->id();
+  $subtabs->{"C"} = { title => _('Template #%1', $template_obj->id()),
+  		     	path => "Admin/Global/Template.html?Queue=0&Template=".$template_obj->id(),
 			};
   push @results, @aresults;
 }

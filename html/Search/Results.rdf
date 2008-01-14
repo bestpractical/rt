@@ -71,7 +71,7 @@ $r->content_type('application/rss+xml');
 
 
     while ( my $Ticket = $Tickets->next()) {
-        my $creator_str = $m->scomp('/Elements/ShowUser', User => $Ticket->CreatorObj);
+        my $creator_str = $m->scomp('/Elements/ShowUser', User => $Ticket->creator_obj);
         $creator_str =~ s/[\r\n]//g;
         $rss->add_item(
           title       =>  $Ticket->Subject,
