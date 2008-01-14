@@ -101,7 +101,7 @@ sub TestArgs
 sub set_Resolvers { return 1 }
 
 
-=head2 FetchNext $collection [, $init]
+=head2 fetch_next $collection [, $init]
 
 Returns next object in collection as method L<RT::SearchBuilder/Next>, but
 doesn't stop on page boundaries.
@@ -115,15 +115,15 @@ on the collection, but doesn't stop when reach page end.
 
 Example:
 
-    $plugin->FetchNext( $tickets, 'init' );
-    while( my $ticket = $plugin->FetchNext( $tickets ) ) {
+    $plugin->fetch_next( $tickets, 'init' );
+    while( my $ticket = $plugin->fetch_next( $tickets ) ) {
         ...
     }
 
 =cut
 
 use constant PAGE_SIZE => 100;
-sub FetchNext {
+sub fetch_next {
     my ($self, $objs, $init) = @_;
     if ( $init ) {
         $objs->set_page_info(per_page => PAGE_SIZE, current_page => 1);

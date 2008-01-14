@@ -74,34 +74,18 @@ sub _handle {
     return Jifty->handle
 }
 
-=head2 limit_ToEnabled
+=head2 limit_to_enabled
 
 Only find items that haven't been disabled
 
 =cut
 
-sub limit_ToEnabled {
+sub limit_to_enabled {
     my $self = shift;
     
     $self->limit( column => 'disabled',
 		  value => '0',
 		  operator => '=' );
-}
-
-=head2 limit_ToDeleted
-
-Only find items that have been deleted.
-
-=cut
-
-sub limit_ToDeleted {
-    my $self = shift;
-    
-    $self->{'find_disabled_rows'} = 1;
-    $self->limit( column => 'disabled',
-		  operator => '=',
-		  value => '1'
-		);
 }
 
 =head2 limit_Attribute PARAMHASH

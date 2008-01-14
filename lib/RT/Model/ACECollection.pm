@@ -69,7 +69,7 @@ package RT::Model::ACECollection;
 use base qw/RT::SearchBuilder/;
 
 
-=head2 Next
+=head2 next
 
 Hand out the next ACE that was found
 
@@ -275,11 +275,11 @@ sub DelegatedFrom {
 # }}}
 
 
-# {{{ sub Next 
-sub Next {
+# {{{ sub next 
+sub next {
     my $self = shift;
 
-    my $ACE = $self->SUPER::Next();
+    my $ACE = $self->SUPER::next();
     if ( ( defined($ACE) ) and ( ref($ACE) ) ) {
 
         if ( $self->current_user->has_right( Right  => 'ShowACL',

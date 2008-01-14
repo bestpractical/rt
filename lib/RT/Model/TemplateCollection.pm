@@ -158,19 +158,19 @@ sub new_item  {
 }
 # }}}
 
-# {{{ sub Next 
+# {{{ sub next 
 
-=head2 Next
+=head2 next
 
 Returns the next template that this user can see.
 
 =cut
   
-sub Next {
+sub next {
     my $self = shift;
     
     
-    my $templ = $self->SUPER::Next();
+    my $templ = $self->SUPER::next();
     if ((defined($templ)) and (ref($templ))) {
         
         # If it's part of a queue, and the user can read templates in

@@ -1099,7 +1099,7 @@ sub ValuesForObject {
     
     
     $values->limit_to_custom_field($self->id);
-    $values->limit_ToEnabled();
+    $values->limit_to_enabled();
     $values->limit_to_object($object);
 
     return ($values);

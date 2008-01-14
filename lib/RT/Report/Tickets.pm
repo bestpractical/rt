@@ -212,9 +212,9 @@ sub add_record {
 
 # Gotta skip over RT::Model::TicketCollection->next, since it does all sorts of crazy magic we 
 # don't want.
-sub Next {
+sub next {
     my $self = shift;
-    $self->RT::SearchBuilder::Next(@_);
+    $self->RT::SearchBuilder::next(@_);
 
 }
 

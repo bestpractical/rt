@@ -148,10 +148,10 @@ sub limit_ReferredToBy {
 
 
 # {{{ Next
-sub Next {
+sub next {
     my $self = shift;
  	
-    my $Link = $self->SUPER::Next();
+    my $Link = $self->SUPER::next();
     return $Link unless $Link && ref $Link;
 
     # Skip links to local objects thast are deleted

@@ -117,8 +117,8 @@ sub Run
     }
 
     my (@top, @linked, %seen);
-    $self->FetchNext($objs, 1);
-    while ( my $obj = $self->FetchNext( $objs ) ) {
+    $self->fetch_next($objs, 1);
+    while ( my $obj = $self->fetch_next( $objs ) ) {
         next if $seen{ $obj->id }++;
         push @linked, $self->GetLinked( Object => $obj, Seen => \%seen );
         push @top, $obj;
@@ -140,8 +140,8 @@ sub GetLinked
     my $objs = RT::Model::TicketCollection->new(current_user => RT->system_user );
     $objs->{'allow_deleted_search'} = 1;
     $objs->from_sql( $query );
-    $self->FetchNext( $objs, 1 );
-    while ( my $linked_obj = $self->FetchNext( $objs ) ) {
+    $self->fetch_next( $objs, 1 );
+    while ( my $linked_obj = $self->fetch_next( $objs ) ) {
         next if $arg{'Seen'}->{ $linked_obj->id }++;
         push @res, $self->GetLinked( %arg, Object => $linked_obj );
         push @res, $linked_obj;

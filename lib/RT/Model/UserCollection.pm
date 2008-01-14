@@ -123,23 +123,23 @@ sub _do_search {
 
     #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
     unless ( $self->{'find_disabled_rows'} ) {
-        $self->limit_ToEnabled();
+        $self->limit_to_enabled();
     }
     return ( $self->SUPER::_do_search(@_) );
 
 }
 
 # }}}
-# {{{ sub limit_ToEnabled
+# {{{ sub limit_to_enabled
 
-=head2 limit_ToEnabled
+=head2 limit_to_enabled
 
 Only find items that haven\'t been disabled
 
 =cut
 
 # XXX: should be generalized
-sub limit_ToEnabled {
+sub limit_to_enabled {
     my $self = shift;
 
     $self->limit( alias    => $self->PrincipalsAlias,

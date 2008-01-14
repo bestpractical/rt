@@ -215,11 +215,11 @@ sub new_item  {
 }
 # }}}
 
-# {{{ sub Next
-sub Next {
+# {{{ sub next
+sub next {
     my $self = shift;
 
-    my $Attachment = $self->SUPER::Next;
+    my $Attachment = $self->SUPER::next;
     return $Attachment unless $Attachment;
 
     my $txn = $Attachment->TransactionObj;

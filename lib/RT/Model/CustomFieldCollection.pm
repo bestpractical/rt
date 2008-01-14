@@ -161,7 +161,7 @@ sub _do_search {
     
     #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
     unless($self->{'find_disabled_rows'}) {
-        $self->limit_ToEnabled();
+        $self->limit_to_enabled();
     }
     
     return($self->SUPER::_do_search(@_));
@@ -170,19 +170,19 @@ sub _do_search {
 
 # }}}
 
-# {{{ sub Next 
+# {{{ sub next 
 
-=head2 Next
+=head2 next
 
 Returns the next custom field that this user can see.
 
 =cut
   
-sub Next {
+sub next {
     my $self = shift;
     
     
-    my $CF = $self->SUPER::Next();
+    my $CF = $self->SUPER::next();
     if ((defined($CF)) and (ref($CF))) {
 
 	if ($CF->current_user_has_right('SeeCustomField')) {

@@ -148,7 +148,7 @@ sub Run
                 value    => '0',
             );
         } else {
-            $objs->limit_ToEnabled;
+            $objs->limit_to_enabled;
         }
     }
     if( $self->{'opt'}{'email'} ) {
@@ -205,10 +205,10 @@ sub FilterWithoutTickets {
         @_,
     );
     my $users = $args{Objects};
-    $self->FetchNext( $users, 'init' );
+    $self->fetch_next( $users, 'init' );
 
     my @res;
-    while ( my $user = $self->FetchNext( $users ) ) {
+    while ( my $user = $self->fetch_next( $users ) ) {
         push @res, $user if $self->_WithoutTickets( $user );
         return (1, \@res) if $self->{'opt'}{'limit'} && @res >= $self->{'opt'}{'limit'};
     }

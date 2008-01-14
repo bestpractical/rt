@@ -337,15 +337,15 @@ sub _GetEquivObjects          { return (shift)->RT::Model::UserCollection::_GetE
 sub WithGroupRight            { return (shift)->RT::Model::UserCollection::WhoHaveGroupRight( @_ ) }
 sub WithRoleRight             { return (shift)->RT::Model::UserCollection::WhoHaveRoleRight( @_ ) }
 
-# {{{ sub limit_ToEnabled
+# {{{ sub limit_to_enabled
 
-=head2 limit_ToEnabled
+=head2 limit_to_enabled
 
 Only find items that haven\'t been disabled
 
 =cut
 
-sub limit_ToEnabled {
+sub limit_to_enabled {
     my $self = shift;
     
     $self->limit( alias => $self->PrincipalsAlias,
@@ -356,34 +356,15 @@ sub limit_ToEnabled {
 }
 # }}}
 
-# {{{ sub limit_Todisabled
 
-=head2 limit_ToDeleted
+# {{{ sub next
 
-Only find items that have been deleted.
-
-=cut
-
-sub limit_ToDeleted {
-    my $self = shift;
-    
-    $self->{'find_disabled_rows'} = 1;
-    $self->limit( alias => $self->PrincipalsAlias,
-                  column => 'disabled',
-                  operator => '=',
-                  value => 1,
-                );
-}
-# }}}
-
-# {{{ sub Next
-
-sub Next {
+sub next {
     my $self = shift;
 
     # Don't show groups which the user isn't allowed to see.
 
-    my $Group = $self->SUPER::Next();
+    my $Group = $self->SUPER::next();
     if ((defined($Group)) and (ref($Group))) {
 	unless ($Group->current_user_has_right('SeeGroup')) {
 	    return $self->next();
@@ -403,7 +384,7 @@ sub _do_search {
     
     #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
     unless($self->{'find_disabled_rows'}) {
-	$self->limit_ToEnabled();
+	$self->limit_to_enabled();
     }
     
     return($self->SUPER::_do_search(@_));

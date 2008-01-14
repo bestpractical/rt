@@ -126,11 +126,11 @@ sub limit_ToTicket {
 }
 
 
-# {{{ sub Next
-sub Next {
+# {{{ sub next
+sub next {
     my $self = shift;
  	
-    my $Transaction = $self->SUPER::Next();
+    my $Transaction = $self->SUPER::next();
     if ((defined($Transaction)) and (ref($Transaction))) {
     	# If the user can see the transaction's type, then they can 
 	#  see the transaction and we should hand it back.

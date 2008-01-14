@@ -116,7 +116,7 @@ sub limit_to_privacy {
 
 ### Accessor methods
 
-=head2 Next
+=head2 next
 
 Returns the next object in the collection.
 
