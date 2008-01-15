@@ -174,8 +174,11 @@ sub Prepare {
             push @parts, $part->parts;
         }
         else {
-            $part->head->mime_attr( "Content-Type" => 'text/plain' )
-                unless RT::I18N::IsTextualContentType($part->mime_type);
+            if ( RT::I18N::IsTextualContentType( $part->mime_type ) ) {
+                $part->head->mime_attr( "Content-Type" => $part->mime_type )
+            } else {
+                $part->head->mime_attr( "Content-Type" => 'text/plain' );
+            }
             $part->head->mime_attr( "Content-Type.charset" => 'utf-8' );
         }
     }
