@@ -97,7 +97,7 @@ msgstr "%1 %2 raderad"
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 med mall %3"
 
-#. ($rev->CreatedAsString, $size, $rev->creator_obj->name)
+#. ($rev->created_as_string, $size, $rev->creator_obj->name)
 #: html/Ticket/Elements/ShowAttachments:72
 msgid "%1 (%2) by %3"
 msgstr "%1 (%2) av %3"
@@ -180,7 +180,7 @@ msgstr "%1 tillagt som värde för %2"
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 tycks vara ett lokalt objekt men går inte att hitta i databasen"
 
-#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->name)
+#. ($Ticket->last_updated_as_string, $Ticket->LastUpdatedByObj->name)
 #. ($self->BriefDescription , $self->creator_obj->name)
 #: html/Ticket/Elements/ShowDates:73
 #: lib/RT/Transaction_Overlay.pm:531
@@ -3427,7 +3427,7 @@ msgstr "Offline upload"
 msgid "On"
 msgstr "Vid"
 
-#. ($self->CreatedAsString(), $self->creator_obj->name())
+#. ($self->created_as_string(), $self->creator_obj->name())
 #: lib/RT/Transaction_Overlay.pm:326
 msgid "On %1, %2 wrote:"
 msgstr "Vid %1, skrev %2:"

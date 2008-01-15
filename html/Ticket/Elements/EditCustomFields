@@ -92,7 +92,7 @@
 my $CustomFields;
 
 if ($ticket_obj) {
-    $CustomFields = $ticket_obj->CustomFields();
+    $CustomFields = $ticket_obj->custom_fields();
     $namePrefix .= "Object-RT::Model::Ticket-".$ticket_obj->id."-CustomField-";
 } else {
     $CustomFields = $queue_obj->TicketCustomFields();

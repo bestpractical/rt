@@ -11,13 +11,13 @@ allows it to load data from arbitrary external sources.
 =head2 Introduction into writing source of values
 
 For each type of data source that you want, you'll need to put a file
-in F</opt/rt3/local/lib/RT/CustomFieldValues/> (or equivilent if you
+in F</opt/rt3/local/lib/RT/custom_field_values/> (or equivilent if you
 installed RT someplace other than F</opt/rt3>). To get a sense of the
 code that you'll need to write, take a look at the code in 
-L</opt/rt3/lib/RT/CustomFieldValues/Groups.pm> for a simple example
+L</opt/rt3/lib/RT/custom_field_values/Groups.pm> for a simple example
 which just uses RT's API to pull in a list of RT's groups.
 
-Running C<perldoc /opt/rt3/lib/RT/CustomFieldValues/External.pm> will
+Running C<perldoc /opt/rt3/lib/RT/custom_field_values/External.pm> will
 show you the documentation for the API that needs to be fulfilled, by
 copying and editing the C<Groups> example is probably a fine place to
 start.
@@ -28,7 +28,7 @@ Later in this doc we'll describe the example a little bit more.
 
 After the custom code is written, you need to tell RT about its
 existence by adding something like following to your RT_SiteConfig.pm:
-Set(@CustomFieldValuesSources, "RT::Model::CustomFieldValueCollection::MySource");
+Set(@custom_field_valuesSources, "RT::Model::CustomFieldValueCollection::MySource");
 
 The value in quotes should be the name of the class that you Created.
 

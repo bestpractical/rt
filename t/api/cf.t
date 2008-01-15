@@ -30,63 +30,63 @@ $ticket->create(
 
 ok($ticket->id, "Created the ticket ok");
 
-my $cfs = $ticket->CustomFields;
+my $cfs = $ticket->custom_fields;
 is( $cfs->count, 0 );
 
 # Check that record has no any CF values yet {{{
-my $cfvs = $ticket->CustomFieldValues;
+my $cfvs = $ticket->custom_field_values;
 is( $cfvs->count, 0 );
 is( $ticket->first_custom_field_value, undef );
 
 my $local_cf1 = RT::Model::CustomField->new(current_user => RT->system_user );
 my ($status,$msg) = $local_cf1->create( name => 'RecordCustomFields1-'.$$, Type => 'SelectSingle', Queue => $queue->id );
 ok($status,$msg);
-($status,$msg)=$local_cf1->AddValue( name => 'RecordCustomFieldValues11' );
+($status,$msg)=$local_cf1->AddValue( name => 'Recordcustom_field_values11' );
 ok($status,$msg);
-($status,$msg)= $local_cf1->AddValue( name => 'RecordCustomFieldValues12' );
+($status,$msg)= $local_cf1->AddValue( name => 'Recordcustom_field_values12' );
 ok($status,$msg);
 
 my $local_cf2 = RT::Model::CustomField->new(current_user => RT->system_user );
 $local_cf2->create( name => 'RecordCustomFields2-'.$$, Type => 'SelectSingle', Queue => $queue->id );
-$local_cf2->AddValue( name => 'RecordCustomFieldValues21' );
-$local_cf2->AddValue( name => 'RecordCustomFieldValues22' );
+$local_cf2->AddValue( name => 'Recordcustom_field_values21' );
+$local_cf2->AddValue( name => 'Recordcustom_field_values22' );
 
 my $global_cf3 = RT::Model::CustomField->new(current_user => RT->system_user );
 $global_cf3->create( name => 'RecordCustomFields3-'.$$, Type => 'SelectSingle', Queue => 0 );
-$global_cf3->AddValue( name => 'RecordCustomFieldValues31' );
-$global_cf3->AddValue( name => 'RecordCustomFieldValues32' );
+$global_cf3->AddValue( name => 'Recordcustom_field_values31' );
+$global_cf3->AddValue( name => 'Recordcustom_field_values32' );
 
 my $local_cf4 = RT::Model::CustomField->new(current_user => RT->system_user );
 $local_cf4->create( name => 'RecordCustomFields4', Type => 'SelectSingle', Queue => $queue2->id );
-$local_cf4->AddValue( name => 'RecordCustomFieldValues41' );
-$local_cf4->AddValue( name => 'RecordCustomFieldValues42' );
+$local_cf4->AddValue( name => 'Recordcustom_field_values41' );
+$local_cf4->AddValue( name => 'Recordcustom_field_values42' );
 
 
 my @custom_fields = ($local_cf1, $local_cf2, $global_cf3);
 
 
-$cfs = $ticket->CustomFields;
+$cfs = $ticket->custom_fields;
 is( $cfs->count, 3 );
 
 # Check that record has no any CF values yet {{{
-$cfvs = $ticket->CustomFieldValues;
+$cfvs = $ticket->custom_field_values;
 is( $cfvs->count, 0 );
 is( $ticket->first_custom_field_value, undef );
 
 # CF with ID -1 shouldnt exist at all
-$cfvs = $ticket->CustomFieldValues( -1 );
+$cfvs = $ticket->custom_field_values( -1 );
 is( $cfvs->count, 0 );
 is( $ticket->first_custom_field_value( -1 ), undef );
 
-$cfvs = $ticket->CustomFieldValues( 'SomeUnexpedCustomFieldname' );
+$cfvs = $ticket->custom_field_values( 'SomeUnexpedCustomFieldname' );
 is( $cfvs->count, 0 );
 is( $ticket->first_custom_field_value( 'SomeUnexpedCustomFieldname' ), undef );
 
 for (@custom_fields) {
-	$cfvs = $ticket->CustomFieldValues( $_->id );
+	$cfvs = $ticket->custom_field_values( $_->id );
 	is( $cfvs->count, 0 );
 
-	$cfvs = $ticket->CustomFieldValues( $_->name );
+	$cfvs = $ticket->custom_field_values( $_->name );
 	is( $cfvs->count, 0 );
 	is( $ticket->first_custom_field_value( $_->id ), undef );
 	is( $ticket->first_custom_field_value( $_->name ), undef );
@@ -94,9 +94,9 @@ for (@custom_fields) {
 # }}}
 
 # try to add field value with fields that do not exist {{{
- ($status, $msg) = $ticket->AddCustomFieldValue( Field => -1 , value => 'foo' );
+ ($status, $msg) = $ticket->add_custom_field_value( Field => -1 , value => 'foo' );
 ok(!$status, "shouldn't add value" );
-($status, $msg) = $ticket->AddCustomFieldValue( Field => 'SomeUnexpedCustomFieldname' , value => 'foo' );
+($status, $msg) = $ticket->add_custom_field_value( Field => 'SomeUnexpedCustomFieldname' , value => 'foo' );
 ok(!$status, "shouldn't add value" );
 # }}}
 
@@ -105,13 +105,13 @@ SKIP: {
 
 	skip "TODO: We want fields that are not allowed to set unexpected values", 10;
 	for (@custom_fields) {
-		($status, $msg) = $ticket->AddCustomFieldValue( Field => $_ , value => 'SomeUnexpectedCFValue' );
+		($status, $msg) = $ticket->add_custom_field_value( Field => $_ , value => 'SomeUnexpectedCFValue' );
 		ok( !$status, 'value doesn\'t exist');
 	
-		($status, $msg) = $ticket->AddCustomFieldValue( Field => $_->id , value => 'SomeUnexpectedCFValue' );
+		($status, $msg) = $ticket->add_custom_field_value( Field => $_->id , value => 'SomeUnexpectedCFValue' );
 		ok( !$status, 'value doesn\'t exist');
 	
-		($status, $msg) = $ticket->AddCustomFieldValue( Field => $_->name , value => 'SomeUnexpectedCFValue' );
+		($status, $msg) = $ticket->add_custom_field_value( Field => $_->name , value => 'SomeUnexpectedCFValue' );
 		ok( !$status, 'value doesn\'t exist');
 	}
 	
@@ -133,18 +133,18 @@ for (@custom_fields) {
 my $test_add_delete_cycle = sub {
 	my $cb = shift;
 	for (@custom_fields) {
-		($status, $msg) = $ticket->AddCustomFieldValue( Field => $cb->($_) , value => 'Foo' );
+		($status, $msg) = $ticket->add_custom_field_value( Field => $cb->($_) , value => 'Foo' );
 		ok( $status, "message: $msg");
 	}
 	
 	# does it exist?
-	$cfvs = $ticket->CustomFieldValues;
+	$cfvs = $ticket->custom_field_values;
 	is( $cfvs->count, 3, "We found all three custom fields on our ticket" );
 	for (@custom_fields) {
-		$cfvs = $ticket->CustomFieldValues( $_->id );
+		$cfvs = $ticket->custom_field_values( $_->id );
 		is( $cfvs->count, 1 , "we found one custom field when searching by id");
 	
-		$cfvs = $ticket->CustomFieldValues( $_->name );
+		$cfvs = $ticket->custom_field_values( $_->name );
 		is( $cfvs->count, 1 , " We found one custom field when searching by name for " . $_->name);
 		is( $ticket->first_custom_field_value( $_->id ), 'Foo' , "first value by id is foo");
 		is( $ticket->first_custom_field_value( $_->name ), 'Foo' , "first value by name is foo");
@@ -152,16 +152,16 @@ my $test_add_delete_cycle = sub {
 	}
 	# because our CFs are SingleValue then new value addition should override
 	for (@custom_fields) {
-		($status, $msg) = $ticket->AddCustomFieldValue( Field => $_ , value => 'Bar' );
+		($status, $msg) = $ticket->add_custom_field_value( Field => $_ , value => 'Bar' );
 		ok( $status, "message: $msg");
 	}
-	$cfvs = $ticket->CustomFieldValues;
+	$cfvs = $ticket->custom_field_values;
 	is( $cfvs->count, 3 );
 	for (@custom_fields) {
-		$cfvs = $ticket->CustomFieldValues( $_->id );
+		$cfvs = $ticket->custom_field_values( $_->id );
 		is( $cfvs->count, 1 );
 	
-		$cfvs = $ticket->CustomFieldValues( $_->name );
+		$cfvs = $ticket->custom_field_values( $_->name );
 		is( $cfvs->count, 1 );
 		is( $ticket->first_custom_field_value( $_->id ), 'Bar' );
 		is( $ticket->first_custom_field_value( $_->name ), 'Bar' );
@@ -171,13 +171,13 @@ my $test_add_delete_cycle = sub {
 		($status, $msg) = $ticket->delete_custom_field_value( Field => $_ , Value => 'Bar' );
 		ok( $status, "Deleted a custom field value 'Bar' for field ".$_->id.": $msg");
 	}
-	$cfvs = $ticket->CustomFieldValues;
+	$cfvs = $ticket->custom_field_values;
 	is( $cfvs->count, 0, "The ticket (".$ticket->id.") no longer has any custom field values"  );
 	for (@custom_fields) {
-		$cfvs = $ticket->CustomFieldValues( $_->id );
+		$cfvs = $ticket->custom_field_values( $_->id );
 		is( $cfvs->count, 0,  $ticket->id." has no values for cf  ".$_->id );
 	
-		$cfvs = $ticket->CustomFieldValues( $_->name );
+		$cfvs = $ticket->custom_field_values( $_->name );
 		is( $cfvs->count, 0 , $ticket->id." has no values for cf  '".$_->name. "'" );
 		is( $ticket->first_custom_field_value( $_->id ), undef , "There is no first custom field value when loading by id" );
 		is( $ticket->first_custom_field_value( $_->name ), undef, "There is no first custom field value when loading by name" );
@@ -189,10 +189,10 @@ $test_add_delete_cycle->( sub { return $_[0]->id } );
 # lets test cycle via CF object reference
 $test_add_delete_cycle->( sub { return $_[0] } );
 
-$ticket->AddCustomFieldValue( Field => $local_cf2->id , value => 'Baz' );
-$ticket->AddCustomFieldValue( Field => $global_cf3->id , value => 'Baz' );
+$ticket->add_custom_field_value( Field => $local_cf2->id , value => 'Baz' );
+$ticket->add_custom_field_value( Field => $global_cf3->id , value => 'Baz' );
 # now if we ask for cf values on RecordCustomFields4 we should not get any
-$cfvs = $ticket->CustomFieldValues( 'RecordCustomFields4' );
+$cfvs = $ticket->custom_field_values( 'RecordCustomFields4' );
 is( $cfvs->count, 0, "No custom field values for non-Queue cf" );
 is( $ticket->first_custom_field_value( 'RecordCustomFields4' ), undef, "No first custom field value for non-Queue cf" );
 

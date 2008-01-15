@@ -9,24 +9,24 @@ DROP INDEX transactions1;
 ALTER TABLE Transactions rename column Ticket to object_id;
 CREATE INDEX Transactions1 ON Transactions (object_type, object_id);
 
-ALTER TABLE TicketCustomFieldValues rename to ObjectCustomFieldValues;
-ALTER TABLE ObjectCustomFieldValues  rename column Ticket to object_id;
-ALTER TABLE ObjectCustomFieldValues ADD object_type VARCHAR2(255);
-UPDATE ObjectCustomFieldValues set object_type = 'RT::Model::Ticket';
-ALTER TABLE ObjectCustomFieldValues MODIFY object_type NOT NULL;
-ALTER TABLE ObjectCustomFieldValues ADD disabled NUMBER(11,0);
-ALTER TABLE ObjectCustomFieldValues MODIFY disabled  default 0;  
-UPDATE ObjectCustomFieldValues SET disabled = 0;
-ALTER TABLE ObjectCustomFieldValues MODIFY disabled NOT NULL;
-ALTER TABLE ObjectCustomFieldValues ADD LargeContent CLOB NULL;
-ALTER TABLE ObjectCustomFieldValues ADD ContentType VARCHAR2(80) NULL;
-ALTER TABLE ObjectCustomFieldValues ADD ContentEncoding VARCHAR2(80) NULL;
-ALTER TABLE ObjectCustomFieldValues ADD SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL;
+ALTER TABLE Ticketcustom_field_values rename to Objectcustom_field_values;
+ALTER TABLE Objectcustom_field_values  rename column Ticket to object_id;
+ALTER TABLE Objectcustom_field_values ADD object_type VARCHAR2(255);
+UPDATE Objectcustom_field_values set object_type = 'RT::Model::Ticket';
+ALTER TABLE Objectcustom_field_values MODIFY object_type NOT NULL;
+ALTER TABLE Objectcustom_field_values ADD disabled NUMBER(11,0);
+ALTER TABLE Objectcustom_field_values MODIFY disabled  default 0;  
+UPDATE Objectcustom_field_values SET disabled = 0;
+ALTER TABLE Objectcustom_field_values MODIFY disabled NOT NULL;
+ALTER TABLE Objectcustom_field_values ADD LargeContent CLOB NULL;
+ALTER TABLE Objectcustom_field_values ADD ContentType VARCHAR2(80) NULL;
+ALTER TABLE Objectcustom_field_values ADD ContentEncoding VARCHAR2(80) NULL;
+ALTER TABLE Objectcustom_field_values ADD SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL;
 
 
 
-CREATE INDEX ObjectCustomFieldValues1 on ObjectCustomFieldValues (CustomField,object_type,object_id,Content); 
-CREATE INDEX ObjectCustomFieldValues2  on ObjectCustomFieldValues (CustomField,object_type,object_id); 
+CREATE INDEX Objectcustom_field_values1 on Objectcustom_field_values (CustomField,object_type,object_id,Content); 
+CREATE INDEX Objectcustom_field_values2  on Objectcustom_field_values (CustomField,object_type,object_id); 
 
 
 

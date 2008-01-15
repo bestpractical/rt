@@ -30,8 +30,8 @@ edge [
 
 "CustomFields" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
-"CustomFieldValues" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"CustomFieldValues" -> "CustomFields" [label="CustomField -> id"];
+"custom_field_values" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"custom_field_values" -> "CustomFields" [label="CustomField -> id"];
 
 "GroupMembers" [shape = record, fontsize = 18, label = "<col0> \N " ];
 "GroupMembers" -> "Groups" [label="GroupId -> id", weight=2];
@@ -68,9 +68,9 @@ edge [
 "ObjectCustomFields" -> "CustomFields" [label="CustomField -> id"];
 "ObjectCustomFields" -> "Records" [label="object_id -> id"];
 
-"ObjectCustomFieldValues" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"ObjectCustomFieldValues" -> "CustomFields" [label="CustomField -> id"];
-"ObjectCustomFieldValues" -> "Records" [label="object_id -> id"];
+"Objectcustom_field_values" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"Objectcustom_field_values" -> "CustomFields" [label="CustomField -> id"];
+"Objectcustom_field_values" -> "Records" [label="object_id -> id"];
 
 "Tickets" [shape = record, fontsize = 18, label = "<col0> \N " ];
 "Tickets" -> "Tickets" [label="EffectiveId -> id"];

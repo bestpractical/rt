@@ -93,7 +93,7 @@ my $reverify_cb = sub {
     }
 
     my $parser = RT::EmailParser->new();
-    $parser->SmartParseMIMEEntityFromScalar(
+    $parser->smart_parse_mime_entity_from_scalar(
         Message => $original->Content,
         Decode => 0,
         Exact => 1,

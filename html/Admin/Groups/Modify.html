@@ -72,7 +72,7 @@
 <td align="right">
 <&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description%>" size="60" /></td>
 </tr>
-% my $CFs = $Group->CustomFields;
+% my $CFs = $Group->custom_fields;
 % while (my $CF = $CFs->next) {
 <tr valign="top"><td align="right">
 <% $CF->name %>:

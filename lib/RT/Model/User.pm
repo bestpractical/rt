@@ -734,7 +734,7 @@ sub has_password {
 
 # {{{ sub set_disabled
 
-=head2 Sub Setdisabled
+=head2 sub Setdisabled
 
 Toggles the user's disabled flag.
 If this flag is
@@ -1361,7 +1361,7 @@ sub setPrivateKey {
     return ($status, _("Unset private key"));
 }
 
-sub BasicColumns {
+sub basic_columns {
     (
     [ name => 'User Id' ],
     [ email => 'Email' ],

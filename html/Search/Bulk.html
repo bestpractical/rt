@@ -332,7 +332,7 @@ while ( my $Ticket = $Tickets->next ) {
             @values = map { split( /\n/, $_ ) } @values
               unless ( $cf->SingleValue );
 
-            my $current_values = $Ticket->CustomFieldValues($cfid);
+            my $current_values = $Ticket->custom_field_values($cfid);
             foreach my $value (@values) {
                 if ( $op eq 'del' && $current_values->HasEntry($value) ) {
                     my ( $id, $msg ) = $Ticket->delete_custom_field_value(
@@ -343,7 +343,7 @@ while ( my $Ticket = $Tickets->next ) {
                 }
 
                 elsif ( $op eq 'add' && !$current_values->HasEntry($value) ) {
-                    my ( $id, $msg ) = $Ticket->AddCustomFieldValue(
+                    my ( $id, $msg ) = $Ticket->add_custom_field_value(
                         column => $cfid,
                         value => $value
                     );
@@ -364,7 +364,7 @@ while ( my $Ticket = $Tickets->next ) {
 }
 
 my $TxnCFs = RT::Model::CustomFieldCollection->new();
-$TxnCFs->limit_ToLookupType( RT::Model::Transaction->CustomFieldLookupType );
+$TxnCFs->limit_ToLookupType( RT::Model::Transaction->custom_field_lookup_type );
 $TxnCFs->limit_ToGlobalOrobject_id( sort keys %queues );
 
 </%INIT>

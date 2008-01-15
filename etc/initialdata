@@ -266,7 +266,7 @@ you may reply to this message.
        Content     => 'RT-Attach-Message: yes
 
 
-{$Transaction->CreatedAsString}: Request {$Ticket->id} was acted upon.
+{$Transaction->created_as_string}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
        Queue: {$Ticket->queue_obj->name}
      Subject: {$Transaction->Subject || $Ticket->Subject || "(No subject given)"}
@@ -512,7 +512,7 @@ Your new password is:
 	    $self->ticket_obj->Type eq 'approval'	and
 	    $self->transaction_obj->Field eq 'Status'	and
 	    $self->transaction_obj->new_value eq 'open'   and
-	    eval { $T::Approving = ($self->ticket_obj->AllDependedOnBy( Type => 'ticket' ))[0] }
+	    eval { $T::Approving = ($self->ticket_obj->all_depended_on_by( Type => 'ticket' ))[0] }
        ],
        ScripAction    => 'Notify Owner',
        Template       => 'New Pending Approval' },
@@ -587,7 +587,7 @@ while (my $o = $t->next) {
 	    and $o->Content !~ /Default Approval/;
 }
 
-foreach my $obj ($self->ticket_obj->AllDependedOnBy( Type => 'ticket' )) {
+foreach my $obj ($self->ticket_obj->all_depended_on_by( Type => 'ticket' )) {
     $obj->comment(
 	Content => _( "Your request has been approved by %1. Other approvals may still be pending.", # loc
 	    $self->transaction_obj->creator_obj->name,
@@ -617,7 +617,7 @@ return 1;
 # Find all the tickets that depend on this (that this is approving)
 
 my $Ticket = $self->ticket_obj;
-my @TOP    = $Ticket->AllDependedOnBy( Type => 'ticket' );
+my @TOP    = $Ticket->all_depended_on_by( Type => 'ticket' );
 my $links  = $Ticket->DependedOnBy;
 my $passed = 0;
 

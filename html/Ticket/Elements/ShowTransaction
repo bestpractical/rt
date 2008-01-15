@@ -69,7 +69,7 @@
         <& ShowGnuPGStatus, Attachment => $Attachments->[0], WarnUnsigned => $WarnUnsigned &>
 %   }
 % }
-% if ( $Transaction->CustomFieldValues->count ) {
+% if ( $Transaction->custom_field_values->count ) {
       <& /Elements/ShowCustomFields, Object => $Transaction &>
 % }
 % $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
@@ -118,7 +118,7 @@ my %class = (
 </%ONCE>
 <%INIT>
 
-my $transdate = $Transaction->CreatedAsString();
+my $transdate = $Transaction->created_as_string();
 $transdate =~ s/\s/&nbsp;/g;
 
 my ($type, $field) = ($Transaction->Type, $Transaction->Field || '');

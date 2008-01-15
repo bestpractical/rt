@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="GroupField">
-% foreach my $col (RT::Model::Group->BasicColumns) {
+% foreach my $col (RT::Model::Group->basic_columns) {
 <option value="<% $col->[0] %>"><% _($col->[1]) %></option>
 % }
 % while (my $CF = $CFs->next) {

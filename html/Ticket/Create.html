@@ -301,7 +301,7 @@ if ( $cloneTicket ) {
     my $cfs = $cloneticket_obj->queue_obj->TicketCustomFields();
     while ( my $cf = $cfs->next ) {
         my $cf_id = $cf->id;
-        my $cf_values = $cloneticket_obj->CustomFieldvalues( $cf->id );
+        my $cf_values = $cloneticket_obj->custom_field_values( $cf->id );
         my @cf_values;
         while ( my $cf_value = $cf_values->next ) {
             push @cf_values, $cf_value->Content;

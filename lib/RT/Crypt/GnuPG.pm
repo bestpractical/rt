@@ -1061,7 +1061,7 @@ sub DecryptRFC3156 {
 
     if ( $args{'Data'}->bodyhandle->is_encoded ) {
         require RT::EmailParser;
-        RT::EmailParser->_DecodeBody($args{'Data'});
+        RT::EmailParser->_decode_body($args{'Data'});
     }
 
     # handling passphrase in GnupGOptions
@@ -1116,7 +1116,7 @@ sub DecryptRFC3156 {
 
     seek $tmp_fh, 0, 0;
     my $parser =  RT::EmailParser->new;
-    my $decrypted = $parser->ParseMIMEEntityFromFileHandle( $tmp_fh, 0 );
+    my $decrypted = $parser->parse_mime_entity_from_filehandle( $tmp_fh, 0 );
 
     $decrypted->{'__store_link_to_object_to_avoid_early_cleanup'} = $parser;
     $args{'Top'}->parts( [] );
@@ -1142,7 +1142,7 @@ sub DecryptInline {
 
     if ( $args{'Data'}->bodyhandle->is_encoded ) {
         require RT::EmailParser;
-        RT::EmailParser->_DecodeBody($args{'Data'});
+        RT::EmailParser->_decode_body($args{'Data'});
     }
 
     # handling passphrase in GnupGOptions

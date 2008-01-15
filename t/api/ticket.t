@@ -47,17 +47,17 @@ ok(my ($id, $msg) = $t->create( Queue => $testqueue->id,
               ));
 isnt($id , 0);
 is ($t->OwnerObj->id , $u->id, "Root is the ticket owner");
-ok(my ($cfv, $cfm) =$t->AddCustomFieldValue(Field => $testcf->id,
+ok(my ($cfv, $cfm) =$t->add_custom_field_value(Field => $testcf->id,
                            Value => 'Value1'));
 isnt($cfv , 0, "Custom field creation didn't return an error: $cfm");
-is($t->CustomFieldValues($testcf->id)->count , 1);
-ok($t->CustomFieldValues($testcf->id)->first &&
-    $t->CustomFieldValues($testcf->id)->first->Content eq 'Value1', $t->CustomFieldValues($testcf->id)->first->Content . " (should be 'Value1')");;
+is($t->custom_field_values($testcf->id)->count , 1);
+ok($t->custom_field_values($testcf->id)->first &&
+    $t->custom_field_values($testcf->id)->first->Content eq 'Value1', $t->custom_field_values($testcf->id)->first->Content . " (should be 'Value1')");;
 
 ok(my ($cfdv, $cfdm) = $t->delete_custom_field_value(Field => $testcf->id,
                         Value => 'Value1'));
 isnt ($cfdv , 0, "Deleted a custom field value: $cfdm");
-is($t->CustomFieldValues($testcf->id)->count , 0);
+is($t->custom_field_values($testcf->id)->count , 0);
 
 ok(my $t2 = RT::Model::Ticket->new(current_user => RT->system_user));
 ok($t2->load($id));
@@ -69,18 +69,18 @@ my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($id3, $msg3) = $t3->create( Queue => $testqueue->id,
                                 Subject => 'Testing',
                                 Owner => $u->id);
-my ($cfv1, $cfm1) = $t->AddCustomFieldValue(Field => $testcf->id,
+my ($cfv1, $cfm1) = $t->add_custom_field_value(Field => $testcf->id,
  Value => 'Value1');
 isnt($cfv1 , 0, "Adding a custom field to ticket 1 is successful: $cfm");
-my ($cfv2, $cfm2) = $t3->AddCustomFieldValue(Field => $testcf->id,
+my ($cfv2, $cfm2) = $t3->add_custom_field_value(Field => $testcf->id,
  Value => 'Value2');
 isnt($cfv2 , 0, "Adding a custom field to ticket 2 is successful: $cfm");
-my ($cfv3, $cfm3) = $t->AddCustomFieldValue(Field => $testcf->id,
+my ($cfv3, $cfm3) = $t->add_custom_field_value(Field => $testcf->id,
  Value => 'Value3');
 isnt($cfv3 , 0, "Adding a custom field to ticket 1 is successful: $cfm");
-is($t->CustomFieldValues($testcf->id)->count , 2,
+is($t->custom_field_values($testcf->id)->count , 2,
    "This ticket has 2 custom field values");
-is($t3->CustomFieldValues($testcf->id)->count , 1,
+is($t3->custom_field_values($testcf->id)->count , 1,
    "This ticket has 1 custom field value");
 
 

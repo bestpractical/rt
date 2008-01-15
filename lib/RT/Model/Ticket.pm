@@ -613,7 +613,7 @@ sub create {
             next unless defined $value && length $value;
 
             # Allow passing in uploaded LargeContent etc by hash reference
-            my ($status, $msg) = $self->_AddCustomFieldValue(
+            my ($status, $msg) = $self->add_custom_field_value(
                 (UNIVERSAL::isa( $value => 'HASH' )
                     ? %$value
                     : (Value => $value)
@@ -2203,9 +2203,9 @@ sub _RecordNote {
 
 # }}}
 
-# {{{ sub _Links 
+# {{{ sub _links 
 
-sub _Links {
+sub _links {
     my $self = shift;
 
     #TODO: Field isn't the right thing here. but I ahave no idea what mnemonic ---
@@ -3490,18 +3490,18 @@ sub TransactionCustomFields {
 
 # }}}
 
-# {{{ sub CustomFieldValues
+# {{{ sub custom_field_values
 
-=head2 CustomFieldValues
+=head2 custom_field_values
 
 # Do name => id mapping (if needed) before falling back to
-# RT::Record's CustomFieldValues
+# RT::Record's custom_field_values
 
 See L<RT::Record>
 
 =cut
 
-sub CustomFieldValues {
+sub custom_field_values {
     my $self  = shift;
     my $field = shift;
     if ( $field and $field !~ /^\d+$/ ) {
@@ -3515,12 +3515,12 @@ sub CustomFieldValues {
             return RT::Model::CustomFieldValueCollection->new;
         }
     }
-    return $self->SUPER::CustomFieldValues($field);
+    return $self->SUPER::custom_field_values($field);
 }
 
 # }}}
 
-# {{{ sub CustomFieldLookupType
+# {{{ sub custom_field_lookup_type
 
 =head2 CustomFieldLookupType
 
@@ -3531,7 +3531,7 @@ RT::Model::CustomField->create() via the 'LookupType' hash key.
 
 # }}}
 
-sub CustomFieldLookupType {
+sub custom_field_lookup_type {
     "RT::Model::Queue-RT::Model::Ticket";
 }
 

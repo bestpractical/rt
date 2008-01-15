@@ -338,9 +338,9 @@ CREATE TABLE Templates (
 
 # }}}
 
-# {{{ ObjectCustomFieldValues 
+# {{{ Objectcustom_field_values 
 
-CREATE TABLE ObjectCustomFieldValues (
+CREATE TABLE Objectcustom_field_values (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
   object_type varchar(255) NOT NULL,	    # Final target of the Object
@@ -360,8 +360,8 @@ CREATE TABLE ObjectCustomFieldValues (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
-CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,object_type,object_id); 
+CREATE INDEX Objectcustom_field_values1 ON Objectcustom_field_values (Content); 
+CREATE INDEX Objectcustom_field_values2 ON Objectcustom_field_values (CustomField,object_type,object_id); 
 
 # }}}
 
@@ -405,9 +405,9 @@ CREATE TABLE ObjectCustomFields (
 
 # }}}
 
-# {{{ CustomFieldValues 
+# {{{ custom_field_values 
 
-CREATE TABLE CustomFieldValues (
+CREATE TABLE custom_field_values (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
   name varchar(200) NULL  ,
@@ -421,7 +421,7 @@ CREATE TABLE CustomFieldValues (
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
+CREATE INDEX custom_field_values1 ON custom_field_values (CustomField);
  
 # }}}
 

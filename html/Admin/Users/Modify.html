@@ -208,7 +208,7 @@
 <br />
 <&| /Widgets/TitleBox, title => _('Custom Fields') &>
 <table>
-% my $CFs = $user_object->CustomFields;
+% my $CFs = $user_object->custom_fields;
 % while (my $CF = $CFs->next) {
 <tr valign="top"><td align="right">
 <% $CF->name %>:

@@ -9,29 +9,29 @@ alter table Transactions change Ticket object_id integer NOT NULL DEFAULT 0  ;
 
 CREATE INDEX Transactions1 ON Transactions (object_type, object_id);
 
-alter table TicketCustomFieldValues rename ObjectCustomFieldValues;
+alter table Ticketcustom_field_values rename Objectcustom_field_values;
 
-alter table ObjectCustomFieldValues  change Ticket object_id integer NOT NULL DEFAULT 0  ;
+alter table Objectcustom_field_values  change Ticket object_id integer NOT NULL DEFAULT 0  ;
 
-alter table ObjectCustomFieldValues add column object_type varchar(255) not null;
+alter table Objectcustom_field_values add column object_type varchar(255) not null;
 
-update ObjectCustomFieldValues set object_type = 'RT::Model::Ticket';
+update Objectcustom_field_values set object_type = 'RT::Model::Ticket';
 
-alter table ObjectCustomFieldValues add column Current bool default 1;  
+alter table Objectcustom_field_values add column Current bool default 1;  
 
-alter table ObjectCustomFieldValues add column LargeContent LONGTEXT NULL;
+alter table Objectcustom_field_values add column LargeContent LONGTEXT NULL;
 
-alter table ObjectCustomFieldValues add column ContentType varchar(80) NULL;
+alter table Objectcustom_field_values add column ContentType varchar(80) NULL;
 
-alter table ObjectCustomFieldValues add column ContentEncoding varchar(80) NULL;
+alter table Objectcustom_field_values add column ContentEncoding varchar(80) NULL;
 
 # These could fail if there's no such index and there's no "drop index if exists" syntax
-#alter table ObjectCustomFieldValues drop index ticketcustomfieldvalues1;
-#alter table ObjectCustomFieldValues drop index ticketcustomfieldvalues2;
+#alter table Objectcustom_field_values drop index ticketcustomfieldvalues1;
+#alter table Objectcustom_field_values drop index ticketcustomfieldvalues2;
 
-alter table ObjectCustomFieldValues add index ObjectCustomFieldValues1 (Content); 
+alter table Objectcustom_field_values add index Objectcustom_field_values1 (Content); 
 
-alter table ObjectCustomFieldValues add index ObjectCustomFieldValues2 (CustomField,object_type,object_id); 
+alter table Objectcustom_field_values add index Objectcustom_field_values2 (CustomField,object_type,object_id); 
 
 
 CREATE TABLE ObjectCustomFields (

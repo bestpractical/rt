@@ -61,7 +61,7 @@ my $Object = RT::Model::User->new();
 $Object->load($id) || Abort( _( "Couldn't load object %1", $id ) );
 my $FriendlySubTypes =
   RT::Model::CustomField->new()
-  ->FriendlyLookupType( $Object->CustomFieldLookupType );
+  ->FriendlyLookupType( $Object->custom_field_lookup_type );
 
 my $title = _( 'Edit Custom Fields for %1', $Object->name );
 

@@ -55,7 +55,7 @@ package RT::Model::CustomFieldValue;
 
 no warnings qw/redefine/;
 use base qw/RT::Record/;
-sub table { 'CustomFieldValues' }
+sub table { 'custom_field_values' }
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column Creator =>  type is 'int(11)', max_length is 11, default is '0';

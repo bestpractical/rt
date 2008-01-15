@@ -215,7 +215,7 @@ if (!keys(%data)) {
     my $CustomFields = $ticket->queue_obj->TicketCustomFields();
     while (my $cf = $CustomFields->next()) {
 	next unless (!%$fields || (exists $fields->{"cf-".lc $cf->name}));
-        my $vals = $ticket->CustomFieldValues($cf->id());
+        my $vals = $ticket->custom_field_values($cf->id());
         my @out = ();
         while (my $v = $vals->next()) {
             push @out, $v->Content;
@@ -314,7 +314,7 @@ else {
                 $s = "Unknown custom field.";
             }
             else {
-                ($n, $s) = $ticket->AddCustomFieldValue(
+                ($n, $s) = $ticket->add_custom_field_value(
                              column => $cf, value => $val );
                 $s =~ s/^# // if defined $s;
             }

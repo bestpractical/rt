@@ -343,9 +343,9 @@ CREATE TABLE rt3.Templates (
 
 # }}}
 
-# {{{ TicketCustomFieldValues 
+# {{{ Ticketcustom_field_values 
 
-CREATE TABLE rt3.TicketCustomFieldValues (
+CREATE TABLE rt3.Ticketcustom_field_values (
   id numeric(38,0) identity,
   Ticket int NOT NULL  ,
   CustomField int NOT NULL  ,
@@ -358,8 +358,8 @@ CREATE TABLE rt3.TicketCustomFieldValues (
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX TicketCustomFieldValues1 ON TicketCustomFieldValues (CustomField,Ticket,Content); 
-CREATE INDEX TicketCustomFieldValues2 ON TicketCustomFieldValues (CustomField,Ticket); 
+CREATE INDEX Ticketcustom_field_values1 ON Ticketcustom_field_values (CustomField,Ticket,Content); 
+CREATE INDEX Ticketcustom_field_values2 ON Ticketcustom_field_values (CustomField,Ticket); 
 
 # }}}
 
@@ -386,9 +386,9 @@ CREATE INDEX CustomFields1 on CustomFields (disabled, Queue);
 
 # }}}
 
-# {{{ CustomFieldValues 
+# {{{ custom_field_values 
 
-CREATE TABLE rt3.CustomFieldValues (
+CREATE TABLE rt3.custom_field_values (
   id numeric(38,0) identity,
   CustomField int NOT NULL  ,
   name varchar(200) NULL  ,
@@ -402,7 +402,7 @@ CREATE TABLE rt3.CustomFieldValues (
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
+CREATE INDEX custom_field_values1 ON custom_field_values (CustomField);
  
 # }}}
 

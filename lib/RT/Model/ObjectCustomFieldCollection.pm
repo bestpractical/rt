@@ -98,7 +98,7 @@ sub HasEntryForCustomField {
     }  
 }
 
-sub CustomFields {
+sub custom_fields {
     my $self = shift;
     my %seen;
     map { $_->CustomFieldObj } @{$self->items_array_ref};

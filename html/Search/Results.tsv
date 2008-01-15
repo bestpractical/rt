@@ -90,7 +90,7 @@ while ( my $Ticket = $Tickets->next()) {
     while (my $cf = $cfs->next) {
         $known_cfs{$cf->id} = $cf->name;
         my @content;
-        my $values = $Ticket->CustomFieldValues($cf->id);
+        my $values = $Ticket->custom_field_values($cf->id);
         while (my $value = $values->next) {
             push @content, $value->Content;
         }

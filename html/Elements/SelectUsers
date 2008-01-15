@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="UserField">
-% foreach my $col (RT::Model::User->BasicColumns) {
+% foreach my $col (RT::Model::User->basic_columns) {
 <option value="<% $col->[0] %>"><% _($col->[1]) %></option>
 % }
 % while (my $CF = $CFs->next) {

@@ -64,26 +64,26 @@ my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
 $t1->create( Queue => $queue_obj->id,
              Subject => 'One',
            );
-$t1->AddCustomFieldValue(Field => $cfO->id,  value => '1');
-$t1->AddCustomFieldValue(Field => $cfA->id,  value => '2');
-$t1->AddCustomFieldValue(Field => $cfB->id,  value => '1');
-$t1->AddCustomFieldValue(Field => $cfC->id,  value => 'BBB');
+$t1->add_custom_field_value(Field => $cfO->id,  value => '1');
+$t1->add_custom_field_value(Field => $cfA->id,  value => '2');
+$t1->add_custom_field_value(Field => $cfB->id,  value => '1');
+$t1->add_custom_field_value(Field => $cfC->id,  value => 'BBB');
 
 my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
 $t2->create( Queue => $queue_obj->id,
              Subject => 'Two',
            );
-$t2->AddCustomFieldValue(Field => $cfO->id,  value => '2');
-$t2->AddCustomFieldValue(Field => $cfA->id,  value => '1');
-$t2->AddCustomFieldValue(Field => $cfB->id,  value => '2');
-$t2->AddCustomFieldValue(Field => $cfC->id,  value => 'AAA');
+$t2->add_custom_field_value(Field => $cfO->id,  value => '2');
+$t2->add_custom_field_value(Field => $cfA->id,  value => '1');
+$t2->add_custom_field_value(Field => $cfB->id,  value => '2');
+$t2->add_custom_field_value(Field => $cfC->id,  value => 'AAA');
 
 # helper
 sub check_order {
   my ($tx, @order) = @_;
   my @results;
   while (my $t = $tx->next) {
-    push @results, $t->CustomFieldValues($cfO->id)->first->Content;
+    push @results, $t->custom_field_values($cfO->id)->first->Content;
   }
   my $results = join (" ",@results);
   my $order = join(" ",@order);
@@ -135,10 +135,10 @@ my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
 $t3->create( Queue => $queue_obj->id,
              Subject => 'Three',
            );
-$t3->AddCustomFieldValue(Field => $cfO->id,  value => '3');
-$t3->AddCustomFieldValue(Field => $cfA->id,  value => '3');
-$t3->AddCustomFieldValue(Field => $cfB->id,  value => '2');
-$t3->AddCustomFieldValue(Field => $cfC->id,  value => 'AAA');
+$t3->add_custom_field_value(Field => $cfO->id,  value => '3');
+$t3->add_custom_field_value(Field => $cfA->id,  value => '3');
+$t3->add_custom_field_value(Field => $cfB->id,  value => '2');
+$t3->add_custom_field_value(Field => $cfC->id,  value => 'AAA');
 
 $tx = RT::Model::TicketCollection->new( current_user => RT->system_user );
 $tx->from_sql(qq[queue="$queue"] );

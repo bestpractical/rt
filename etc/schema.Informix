@@ -288,7 +288,7 @@ CREATE TABLE Templates (
 );
 
 
-CREATE TABLE TicketCustomFieldValues (
+CREATE TABLE Ticketcustom_field_values (
 	id		SERIAL,
 	Ticket		INTEGER NOT NULL,
 	CustomField	INTEGER NOT NULL,
@@ -300,8 +300,8 @@ CREATE TABLE TicketCustomFieldValues (
         PRIMARY KEY (id)
 );
 
-CREATE INDEX TicketCustomFieldValues1 ON TicketCustomFieldValues (CustomField,Ticket,Content); 
-CREATE INDEX TicketCustomFieldValues2 ON TicketCustomFieldValues (CustomField,Ticket); 
+CREATE INDEX Ticketcustom_field_values1 ON Ticketcustom_field_values (CustomField,Ticket,Content); 
+CREATE INDEX Ticketcustom_field_values2 ON Ticketcustom_field_values (CustomField,Ticket); 
 
 CREATE TABLE CustomFields (
 	id		SERIAL,
@@ -321,7 +321,7 @@ CREATE TABLE CustomFields (
 );
 
 
-CREATE TABLE CustomFieldValues (
+CREATE TABLE custom_field_values (
 	id		SERIAL,
 	CustomField	INTEGER NOT NULL,
 	name		VARCHAR(200),
@@ -334,7 +334,7 @@ CREATE TABLE CustomFieldValues (
         PRIMARY KEY (id)
 );
 
-CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
+CREATE INDEX custom_field_values1 ON custom_field_values (CustomField);
 
 CREATE TABLE Attributes (
   	id 		SERIAL,

@@ -89,13 +89,13 @@ sub new  {
 }
 
 
-=head2 SmartParseMIMEEntityFromScalar Message => SCALAR_REF [, Decode => BOOL, Exact => BOOL ] }
+=head2 smart_parse_mime_entity_from_scalar Message => SCALAR_REF [, Decode => BOOL, Exact => BOOL ] }
 
 Parse a message stored in a scalar from scalar_ref.
 
 =cut
 
-sub SmartParseMIMEEntityFromScalar {
+sub smart_parse_mime_entity_from_scalar {
     my $self = shift;
     my %args = ( Message => undef, Decode => 1, Exact => 0, @_ );
 
@@ -122,7 +122,7 @@ sub SmartParseMIMEEntityFromScalar {
 
                 # We have to trust the temp file's name -- untaint it
                 $temp_file =~ /(.*)/;
-                my $entity = $self->ParseMIMEEntityFromFile( $1, $args{'Decode'}, $args{'Exact'} );
+                my $entity = $self->parse_mime_entityFromFile( $1, $args{'Decode'}, $args{'Exact'} );
                 unlink($1);
                 return $entity;
             }
@@ -132,24 +132,24 @@ sub SmartParseMIMEEntityFromScalar {
     #If for some reason we weren't able to parse the message using a temp file
     # try it with a scalar
     if ( $@ || !$self->Entity ) {
-        return $self->ParseMIMEEntityFromScalar( $args{'Message'}, $args{'Decode'}, $args{'Exact'} );
+        return $self->parse_mime_entity_from_scalar( $args{'Message'}, $args{'Decode'}, $args{'Exact'} );
     }
 
 }
 
 
-=head2 ParseMIMEEntityFromSTDIN
+=head2 parse_mime_entity_from_stdin
 
 Parse a message from standard input
 
 =cut
 
-sub ParseMIMEEntityFromSTDIN {
+sub parse_mime_entity_from_stdin {
     my $self = shift;
-    return $self->ParseMIMEEntityFromFileHandle(\*STDIN, @_);
+    return $self->parse_mime_entity_from_filehandle(\*STDIN, @_);
 }
 
-=head2 ParseMIMEEntityFromScalar  $message
+=head2 parse_mime_entity_from_scalar  $message
 
 Takes either a scalar or a reference to a scalar which contains a stringified MIME message.
 Parses it.
@@ -159,35 +159,35 @@ Returns false if it loses.
 
 =cut
 
-sub ParseMIMEEntityFromScalar {
+sub parse_mime_entity_from_scalar {
     my $self = shift;
-    return $self->_ParseMIMEEntity( shift, 'parse_data', @_ );
+    return $self->_parse_mime_entity( shift, 'parse_data', @_ );
 }
 
-=head2 ParseMIMEEntityFromFilehandle *FH
+=head2 parse_mime_entity_from_filehandle *FH
 
 Parses a mime entity from a filehandle passed in as an argument
 
 =cut
 
-sub ParseMIMEEntityFromFileHandle {
+sub parse_mime_entity_from_filehandle {
     my $self = shift;
-    return $self->_ParseMIMEEntity( shift, 'parse', @_ );
+    return $self->_parse_mime_entity( shift, 'parse', @_ );
 }
 
-=head2 ParseMIMEEntityFromFile 
+=head2 parse_mime_entityFromFile 
 
 Parses a mime entity from a filename passed in as an argument
 
 =cut
 
-sub ParseMIMEEntityFromFile {
+sub parse_mime_entityFromFile {
     my $self = shift;
-    return $self->_ParseMIMEEntity( shift, 'parse_open', @_ );
+    return $self->_parse_mime_entity( shift, 'parse_open', @_ );
 }
 
 
-sub _ParseMIMEEntity {
+sub _parse_mime_entity {
     my $self = shift;
     my $message = shift;
     my $method = shift;
@@ -215,15 +215,15 @@ sub _ParseMIMEEntity {
     return $self->{'entity'};
 }
 
-sub _DecodeBodies {
+sub _decode_bodies {
     my $self = shift;
     return unless $self->{'entity'};
     
     my @parts = $self->{'entity'}->parts_DFS;
-    $self->_DecodeBody($_) foreach @parts;
+    $self->_decode_body($_) foreach @parts;
 }
 
-sub _DecodeBody {
+sub _decode_body {
     my $self = shift;
     my $entity = shift;
 

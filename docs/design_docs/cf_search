@@ -7,7 +7,7 @@ find all tickets where:
                 doesn't have values (bing or bong) 
 
 
-limit_CustomFieldValues {
+limit_custom_field_values {
         my %args = ( CustomField => undef, 
                      ClauseId => 'CustomFields',
                      operator => undef,
@@ -34,7 +34,7 @@ limit_CustomFieldValues {
             my $TicketCFs = $self->join( type => 'left',
                                                 alias1 => 'main',
                                                 column1 => 'id',
-                                                table2 => 'TicketCustomFieldValues',
+                                                table2 => 'Ticketcustom_field_values',
                                                 column2 => 'Ticket' );
 
             foreach my $value ( @{ $restriction->{'valueS'} } ) {

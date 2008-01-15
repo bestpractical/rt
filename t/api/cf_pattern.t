@@ -29,8 +29,8 @@ my ($id,undef,$msg) = $t->create(Queue => $q->id, Subject => 'CF Test');
 works($id,$msg);
 
 # OK, I'm thoroughly brain washed by HOP at this point now...
-sub cnt { $t->CustomFieldValues($cf->id)->count };
-sub add { $t->AddCustomFieldValue(Field => $cf->id, Value => $_[0]) };
+sub cnt { $t->custom_field_values($cf->id)->count };
+sub add { $t->add_custom_field_value(Field => $cf->id, Value => $_[0]) };
 sub del { $t->delete_custom_field_value(Field => $cf->id, Value => $_[0]) };
 
 is(cnt(), 0, "No values yet");

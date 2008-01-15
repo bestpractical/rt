@@ -54,7 +54,7 @@
 new Ajax.Autocompleter(
     "<% $name %>-Values",
     "<% $name %>-Choices",
-    "/Helpers/Autocomplete/CustomFieldValues",
+    "/Helpers/Autocomplete/custom_field_values",
     { tokens: [ '\n' ] }
 );
 % } else {
@@ -63,7 +63,7 @@ new Ajax.Autocompleter(
 new Ajax.Autocompleter(
     "<% $name %>-Value",
     "<% $name %>-Choices",
-    "/Helpers/Autocomplete/CustomFieldValues",
+    "/Helpers/Autocomplete/custom_field_values",
     {}
 );
 % }

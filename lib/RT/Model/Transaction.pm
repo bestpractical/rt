@@ -536,7 +536,7 @@ sub Content {
         }
 
         $content =~ s/^/> /gm;
-        $content = _("On %1, %2 wrote:", $self->CreatedAsString, $self->creator_obj->name)
+        $content = _("On %1, %2 wrote:", $self->created_as_string, $self->creator_obj->name)
           . "\n$content\n\n";
     }
 
@@ -1229,7 +1229,7 @@ sub UpdateCustomFields {
           my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
         {
             next unless length($value);
-            $self->_AddCustomFieldValue(
+            $self->add_custom_field_value(
                 Field             => $cfid,
                 Value             => $value,
                 record_transaction => 0,
@@ -1240,15 +1240,15 @@ sub UpdateCustomFields {
 
 
 
-=head2 CustomFieldValues
+=head2 custom_field_values
 
- Do name => id mapping (if needed) before falling back to RT::Record's CustomFieldValues
+ Do name => id mapping (if needed) before falling back to RT::Record's custom_field_values
 
  See L<RT::Record>
 
 =cut
 
-sub CustomFieldValues {
+sub custom_field_values {
     my $self  = shift;
     my $field = shift;
 
@@ -1259,17 +1259,17 @@ sub CustomFieldValues {
         unless ( defined $field && $field =~ /^\d+$/o ) {
             my $CFs = RT::Model::CustomFieldCollection->new;
             $CFs->limit( column => 'name', value => $field );
-            $CFs->limit_ToLookupType($self->CustomFieldLookupType);
+            $CFs->limit_ToLookupType($self->custom_field_lookup_type);
             $CFs->limit_ToGlobalOrobject_id($self->Object->queue_obj->id);
             $field = $CFs->first->id if $CFs->first;
         }
     }
-    return $self->SUPER::CustomFieldValues($field);
+    return $self->SUPER::custom_field_values($field);
 }
 
 # }}}
 
-# {{{ sub CustomFieldLookupType
+# {{{ sub custom_field_lookup_type
 
 =head2 CustomFieldLookupType
 
@@ -1280,7 +1280,7 @@ be passed to RT::Model::CustomField->create() via the 'LookupType' hash key.
 
 # }}}
 
-sub CustomFieldLookupType {
+sub custom_field_lookup_type {
     "RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction";
 }
 

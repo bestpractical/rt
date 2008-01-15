@@ -107,8 +107,8 @@ diag('Create tickets without rights to link') if $ENV{'TEST_VERBOSE'};
     ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
     ok($id,$msg);
     $child->current_user( RT->system_user );
-    is($child->_Links('Base')->count, 0, 'link was not Created, no permissions');
-    is($child->_Links('Target')->count, 0, 'link was not create, no permissions');
+    is($child->_links('Base')->count, 0, 'link was not Created, no permissions');
+    is($child->_links('Target')->count, 0, 'link was not create, no permissions');
 }
 
 diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VERBOSE'};
@@ -122,8 +122,8 @@ diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VER
     ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
     ok($id,$msg);
     $child->current_user( RT->system_user );
-    is($child->_Links('Base')->count, 1, 'link was Created');
-    is($child->_Links('Target')->count, 0, 'link was Created only one');
+    is($child->_links('Base')->count, 1, 'link was Created');
+    is($child->_links('Target')->count, 0, 'link was Created only one');
     # no scrip run on second ticket accroding to config option
     is(link_count($filename), undef, "scrips ok");
     RT->Config->set( StrictLinkACL => 1 );
@@ -145,8 +145,8 @@ diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
     ok(!$id, $msg);
     is(link_count($filename), undef, "scrips ok");
     $child->current_user( RT->system_user );
-    is($child->_Links('Base')->count, 0, 'link was not Created, no permissions');
-    is($child->_Links('Target')->count, 0, 'link was not create, no permissions');
+    is($child->_links('Base')->count, 0, 'link was not Created, no permissions');
+    is($child->_links('Target')->count, 0, 'link was not create, no permissions');
 }
 
 diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
@@ -163,8 +163,8 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     ok($id, $msg);
     is(link_count($filename), 1, "scrips ok");
     $child->current_user( RT->system_user );
-    is($child->_Links('Base')->count, 1, 'link was Created');
-    is($child->_Links('Target')->count, 0, 'link was Created only one');
+    is($child->_links('Base')->count, 1, 'link was Created');
+    is($child->_links('Target')->count, 0, 'link was Created only one');
     $child->current_user( $creator );
 
     # turn off feature and try to delete link, we should fail
@@ -173,8 +173,8 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     ok(!$id, $msg);
     is(link_count($filename), 1, "scrips ok");
     $child->current_user( RT->system_user );
-    $child->_Links('Base')->_do_count;
-    is($child->_Links('Base')->count, 1, 'link was not deleted');
+    $child->_links('Base')->_do_count;
+    is($child->_links('Base')->count, 1, 'link was not deleted');
     $child->current_user( $creator );
 
     # try to delete link, we should success as feature is active
@@ -183,8 +183,8 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     ok($id, $msg);
     is(link_count($filename), 0, "scrips ok");
     $child->current_user( RT->system_user );
-    $child->_Links('Base')->_do_count;
-    is($child->_Links('Base')->count, 0, 'link was deleted');
+    $child->_links('Base')->_do_count;
+    is($child->_links('Base')->count, 0, 'link was deleted');
     RT->Config->set( StrictLinkACL => 1 );
 }
 

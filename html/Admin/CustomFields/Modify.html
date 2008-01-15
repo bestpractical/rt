@@ -70,7 +70,7 @@
         Default => $CustomFieldObj->TypeComposite, &>
 </td></tr>
 
-% if ( $CustomFieldObj->id and $CustomFieldObj->IsSelectionType and RT->Config->Get('CustomFieldValuesSources') ) {
+% if ( $CustomFieldObj->id and $CustomFieldObj->IsSelectionType and RT->Config->Get('custom_field_valuesSources') ) {
 <tr><td class="label"><&|/l&>Field values source:</&></td><td>
 <& /Admin/Elements/EditCustomFieldValuesSource, CustomField => $CustomFieldObj &>
 </td></tr>

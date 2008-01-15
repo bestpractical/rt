@@ -71,7 +71,7 @@ if ($size) {
 
 <li><font size="-2">
 <a href="<%RT->Config->Get('WebPath')%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->id%>/<%$rev->Filename | u%>">
-<&|/l, $rev->CreatedAsString, $size, $rev->creator_obj->name &>%1 (%2) by %3</&>
+<&|/l, $rev->created_as_string, $size, $rev->creator_obj->name &>%1 (%2) by %3</&>
 </a>
 </font></li>
 % }

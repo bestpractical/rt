@@ -1165,7 +1165,7 @@ sub UpdateCustomFields {
 
         foreach my $value (@values) {
             next unless length($value);
-            my ( $val, $msg ) = $ticket->AddCustomFieldValue(
+            my ( $val, $msg ) = $ticket->add_custom_field_value(
                 column => $cf,
                 value => $value
             );

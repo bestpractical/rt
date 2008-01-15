@@ -170,7 +170,7 @@ Create takes a hash of values and creates a row in the database:
   smallint(6) 'disabled'.
 
 C<LookupType> is generally the result of either
-C<RT::Model::Ticket->CustomFieldLookupType> or C<RT::Model::Transaction->CustomFieldLookupType>.
+C<RT::Model::Ticket->custom_field_lookup_type> or C<RT::Model::Transaction->custom_field_lookup_type>.
 
 =cut
 

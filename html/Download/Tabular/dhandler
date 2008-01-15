@@ -57,7 +57,7 @@ else {
     Abort("Corrupted tabular URL.");
 }
 
-my @cols = $class->BasicColumns or return;
+my @cols = $class->basic_columns or return;
 
 #$r->content_type( 'application/octet-stream' );
 $r->content_type( 'text/plain' );

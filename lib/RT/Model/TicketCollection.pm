@@ -1239,7 +1239,7 @@ sub _CustomFieldjoin {
             type => 'left',
             alias1 => 'main',
             column1 => 'id',
-            table2 => 'ObjectCustomFieldValues',
+            table2 => 'Objectcustom_field_values',
             column2 => 'object_id',
         );
         $self->SUPER::limit(
@@ -1277,7 +1277,7 @@ sub _CustomFieldjoin {
             type => 'left',
             alias1 => $CFs,
             column1 => 'id',
-            table2 => 'ObjectCustomFieldValues',
+            table2 => 'Objectcustom_field_values',
             column2 => 'CustomField',
         );
         $self->SUPER::limit(
@@ -1427,7 +1427,7 @@ sub order_by {
                type => 'left',
                alias1 => $TicketCFs,
                column1 => 'CustomField',
-               table2 => 'CustomFieldValues',
+               table2 => 'custom_field_values',
                column2 => 'CustomField',
            );
            $self->SUPER::limit(

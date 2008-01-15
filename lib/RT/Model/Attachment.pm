@@ -126,7 +126,7 @@ sub create {
     #If it's not multipart
     else {
 
-        my ($ContentEncoding, $Body) = $self->_EncodeLOB(
+        my ($ContentEncoding, $Body) = $self->_encode_lob(
             $Attachment->bodyhandle->as_string,
             $Attachment->mime_type
         );
@@ -161,7 +161,7 @@ sub Import {
     my %args = ( ContentEncoding => 'none', @_ );
 
     ( $args{'ContentEncoding'}, $args{'Content'} ) =
-        $self->_EncodeLOB( $args{'Content'}, $args{'MimeType'} );
+        $self->_encode_lob( $args{'Content'}, $args{'MimeType'} );
 
     return ( $self->SUPER::create(%args) );
 }
@@ -229,7 +229,7 @@ before returning it.
 
 sub Content {
     my $self = shift;
-    return $self->_DecodeLOB(
+    return $self->_decode_lob(
         $self->ContentType,
         $self->ContentEncoding,
         $self->_value('Content', decode_utf8 => 0),
@@ -349,7 +349,7 @@ sub Quote {
 
 	$body =~ s/^/> /gm;
 
-	$body = '[' . $self->transaction_obj->creator_obj->name() . ' - ' . $self->transaction_obj->CreatedAsString()
+	$body = '[' . $self->transaction_obj->creator_obj->name() . ' - ' . $self->transaction_obj->created_as_string()
 	            . "]:\n\n"
    	        . $body . "\n\n";
 

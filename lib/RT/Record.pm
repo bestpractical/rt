@@ -128,7 +128,7 @@ without the "RT::" prefix.
 
 =cut
 
-sub object_typeStr {
+sub object_type_str {
     my $self = shift;
     if (ref($self) =~ /^.*::(\w+)$/) {
 	return _($1);
@@ -405,7 +405,7 @@ sub AgeAsString {
 
 # TODO this should be deprecated
 
-sub LastUpdatedAsString {
+sub last_updated_as_string {
     my $self = shift;
     if ( $self->LastUpdated ) {
         return ( $self->LastUpdatedObj->AsString() );
@@ -422,7 +422,7 @@ sub LastUpdatedAsString {
 #
 # TODO This should be deprecated 
 #
-sub CreatedAsString {
+sub created_as_string {
     my $self = shift;
     return ( $self->created_obj->AsString() );
 }
@@ -607,7 +607,7 @@ Takes a potentially large attachment. Returns (ContentEncoding, EncodedBody) bas
 
 =cut
 
-sub _EncodeLOB {
+sub _encode_lob {
         my $self = shift;
         my $Body = shift;
         my $MIMEType = shift;
@@ -675,7 +675,7 @@ sub _EncodeLOB {
 
 }
 
-sub _DecodeLOB {
+sub _decode_lob {
     my $self            = shift;
     my $ContentType     = shift || '';
     my $ContentEncoding = shift || 'none';
@@ -822,7 +822,7 @@ which are 'MembersOf' this ticket
 
 sub Members {
     my $self = shift;
-    return ( $self->_Links( 'Target', 'MemberOf' ) );
+    return ( $self->_links( 'Target', 'MemberOf' ) );
 }
 
 # }}}
@@ -838,7 +838,7 @@ ticket is a 'MemberOf'
 
 sub MemberOf {
     my $self = shift;
-    return ( $self->_Links( 'Base', 'MemberOf' ) );
+    return ( $self->_links( 'Base', 'MemberOf' ) );
 }
 
 # }}}
@@ -853,7 +853,7 @@ sub MemberOf {
 
 sub RefersTo {
     my $self = shift;
-    return ( $self->_Links( 'Base', 'RefersTo' ) );
+    return ( $self->_links( 'Base', 'RefersTo' ) );
 }
 
 # }}}
@@ -868,7 +868,7 @@ This returns an L<RT::Model::LinkCollection> object which shows all references f
 
 sub ReferredToBy {
     my $self = shift;
-    return ( $self->_Links( 'Target', 'RefersTo' ) );
+    return ( $self->_links( 'Target', 'RefersTo' ) );
 }
 
 # }}}
@@ -883,7 +883,7 @@ sub ReferredToBy {
 
 sub DependedOnBy {
     my $self = shift;
-    return ( $self->_Links( 'Target', 'DependsOn' ) );
+    return ( $self->_links( 'Target', 'DependsOn' ) );
 }
 
 # }}}
@@ -966,7 +966,7 @@ dependency search.
 
 =cut
 
-sub AllDependedOnBy {
+sub all_depended_on_by {
     my $self = shift;
     my $dep = $self->DependedOnBy;
     my %args = (
@@ -982,13 +982,13 @@ sub AllDependedOnBy {
 
 	if (!$args{Type}) {
 	    $args{_found}{$link->base_obj->id} = $link->base_obj;
-	    $link->base_obj->AllDependedOnBy( %args, _top => 0 );
+	    $link->base_obj->all_depended_on_by( %args, _top => 0 );
 	}
 	elsif ($link->base_obj->Type eq $args{Type}) {
 	    $args{_found}{$link->base_obj->id} = $link->base_obj;
 	}
 	else {
-	    $link->base_obj->AllDependedOnBy( %args, _top => 0 );
+	    $link->base_obj->all_depended_on_by( %args, _top => 0 );
 	}
     }
 
@@ -1012,7 +1012,7 @@ sub AllDependedOnBy {
 
 sub DependsOn {
     my $self = shift;
-    return ( $self->_Links( 'Base', 'DependsOn' ) );
+    return ( $self->_links( 'Base', 'DependsOn' ) );
 }
 
 # }}}
@@ -1020,7 +1020,7 @@ sub DependsOn {
 
 
 
-# {{{ sub _Links 
+# {{{ sub _links 
 
 =head2 Links DIRECTION [TYPE]
 
@@ -1035,7 +1035,7 @@ links of any type.
 
 *Links = \&_Links;
 
-sub _Links {
+sub _links {
     my $self = shift;
 
     #TODO: Field isn't the right thing here. but I ahave no idea what mnemonic ---
@@ -1316,14 +1316,14 @@ sub Transactions {
 #
 # {{{ Routines dealing with custom fields
 
-sub CustomFields {
+sub custom_fields {
     my $self = shift;
     my $cfs  = RT::Model::CustomFieldCollection->new;
 
     # XXX handle multiple types properly
-    $cfs->limit_ToLookupType( $self->CustomFieldLookupType );
+    $cfs->limit_ToLookupType( $self->custom_field_lookup_type );
     $cfs->limit_ToGlobalOrobject_id(
-        $self->_LookupId( $self->CustomFieldLookupType ) );
+        $self->_LookupId( $self->custom_field_lookup_type ) );
 
     return $cfs;
 }
@@ -1354,7 +1354,7 @@ Returns the path RT uses to figure out which custom fields apply to this object.
 
 =cut
 
-sub CustomFieldLookupType {
+sub custom_field_lookup_type {
     my $self = shift;
     return ref($self);
 }
@@ -1374,12 +1374,12 @@ $id is ID of Created L<ObjectCustomFieldValue> object.
 
 =cut
 
-sub AddCustomFieldValue {
+sub add_custom_field_value {
     my $self = shift;
-    $self->_AddCustomFieldValue(@_);
+    $self->add_custom_field_value(@_);
 }
 
-sub _AddCustomFieldValue {
+sub add_custom_field_value {
     my $self = shift;
     my %args = (
         Field             => undef,
@@ -1408,7 +1408,7 @@ sub _AddCustomFieldValue {
         return ( 0, _( "Custom field %1 not found", $args{'Field'} ) );
     }
 
-    my $OCFs = $self->CustomFields;
+    my $OCFs = $self->custom_fields;
     $OCFs->limit( column => 'id', value => $cf->id );
     unless ( $OCFs->count ) {
         return (
@@ -1431,7 +1431,7 @@ sub _AddCustomFieldValue {
     # value and record a "changed from foo to bar" transaction
     unless ( $cf->unlimitedValues ) {
 
-        # Load up a ObjectCustomFieldValues object for this custom field and this ticket
+        # Load up a Objectcustom_field_values object for this custom field and this ticket
         my $values = $cf->values_for_object($self);
 
         # We need to whack any old values here.  In most cases, the custom field should
@@ -1630,25 +1630,25 @@ Takes a field id or name
 sub first_custom_field_value {
     my $self = shift;
     my $field = shift;
-    my $values = $self->CustomFieldValues( $field );
+    my $values = $self->custom_field_values( $field );
     return undef unless my $first = $values->first;
     return $first->Content;
 }
 
 
 
-# {{{ CustomFieldValues
+# {{{ custom_field_values
 
-=head2 CustomFieldValues column
+=head2 custom_field_values column
 
-Return a ObjectCustomFieldValues object of all values of the CustomField whose 
+Return a Objectcustom_field_values object of all values of the CustomField whose 
 id or name is column for this record.
 
 Returns an RT::Model::ObjectCustomFieldValueCollection object
 
 =cut
 
-sub CustomFieldValues {
+sub custom_field_values {
     my $self  = shift;
     my $field = shift;
 
@@ -1693,7 +1693,7 @@ sub load_custom_field_by_identifier {
         $cf->load_by_id($field);
     } else {
 
-        my $cfs = $self->CustomFields();
+        my $cfs = $self->custom_fields();
         $cfs->limit(column => 'name', value => $field, case_sensitive => 0);
         $cf = $cfs->first || RT::Model::CustomField->new;
     }
@@ -1707,10 +1707,10 @@ sub load_custom_field_by_identifier {
 
 # }}}
 
-sub BasicColumns {
+sub basic_columns {
 }
 
-sub WikiBase {
+sub wiki_base {
     return RT->Config->Get('WebPath'). "/index.html?q=";
 }
 

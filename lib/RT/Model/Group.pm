@@ -1293,7 +1293,7 @@ sub principal_id {
 
 # }}}
 
-sub BasicColumns {
+sub basic_columns {
     (
 	[ name => 'name' ],
 	[ Description => 'Description' ],

@@ -24,8 +24,8 @@ TABLE ObjectCustomFields (
   SortOrder integer NOT NULL DEFAULT 0  ,   -- this is used to sort the CFs
 );
 
--- This table replaces TicketCustomFieldValues
-TABLE ObjectCustomFieldValues (
+-- This table replaces Ticketcustom_field_values
+TABLE Objectcustom_field_values (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
   object_type varchar(255) NOT NULL,         -- Final target of the Object

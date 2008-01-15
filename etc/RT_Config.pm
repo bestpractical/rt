@@ -705,7 +705,7 @@ set($StrictLinkACL, 1);
 # simultaneously, instead of as two transactions, unaware of each
 # others' existence.
 
-# set @CustomFieldValuesSources to a list of class names which extend
+# set @custom_field_valuesSources to a list of class names which extend
 # RT::Model::CustomFieldValueCollection::External.  This can be used to pull lists of
 # custom field values from external sources at runtime.
 

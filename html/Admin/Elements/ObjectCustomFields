@@ -75,7 +75,7 @@ my $Object = $object_type->new();
 my $QualifiedType;
 my $FriendlySubTypes;
 if (defined $SubType && $SubType =~/^RT::(.*)$/)  {
-    $FriendlySubTypes = RT::Model::CustomField->new()->FriendlyLookupType($Object->CustomFieldLookupType);
+    $FriendlySubTypes = RT::Model::CustomField->new()->FriendlyLookupType($Object->custom_field_lookup_type);
    $QualifiedType = "$Type-$1"; 
 } else {
     $QualifiedType = $Type;

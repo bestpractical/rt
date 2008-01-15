@@ -1033,7 +1033,7 @@ sub UpdateRecordObject {
 
 # }}}
 
-# {{{ Sub ProcessCustomFieldUpdates
+# {{{ sub ProcessCustomFieldUpdates
 
 sub ProcessCustomFieldUpdates {
     my %args = (
@@ -1271,7 +1271,7 @@ sub _ProcessObjectCustomFieldUpdates {
         
         if ( $arg eq 'AddValue' || $arg eq 'Value' ) {
             foreach my $value (@values) {
-                my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
+                my ( $val, $msg ) = $args{'Object'}->add_custom_field_value(
                     Field => $cf->id,
                     Value => $value
                 );
@@ -1280,7 +1280,7 @@ sub _ProcessObjectCustomFieldUpdates {
         }
         elsif ( $arg eq 'Upload' ) {
             my $value_hash = _UploadedFile( $args{'Prefix'} . $arg ) or next;
-            my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
+            my ( $val, $msg ) = $args{'Object'}->add_custom_field_value(
                 %$value_hash,
                 Field => $cf,
             );
@@ -1305,7 +1305,7 @@ sub _ProcessObjectCustomFieldUpdates {
             }
         }
         elsif ( $arg eq 'Values' && !$cf->Repeated ) {
-            my $cf_values = $args{'Object'}->CustomFieldValues( $cf->id );
+            my $cf_values = $args{'Object'}->custom_field_values( $cf->id );
 
             my %values_hash;
             foreach my $value ( @values ) {
@@ -1314,7 +1314,7 @@ sub _ProcessObjectCustomFieldUpdates {
                     next;
                 }
 
-                my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
+                my ( $val, $msg ) = $args{'Object'}->add_custom_field_value(
                     Field => $cf,
                     Value => $value
                 );
@@ -1334,7 +1334,7 @@ sub _ProcessObjectCustomFieldUpdates {
             }
         }
         elsif ( $arg eq 'Values' ) {
-            my $cf_values = $args{'Object'}->CustomFieldValues( $cf->id );
+            my $cf_values = $args{'Object'}->custom_field_values( $cf->id );
 
             # keep everything up to the point of difference, delete the rest
             my $delete_flag;
@@ -1350,7 +1350,7 @@ sub _ProcessObjectCustomFieldUpdates {
 
             # now add/replace extra things, if any
             foreach my $value ( @values ) {
-                my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
+                my ( $val, $msg ) = $args{'Object'}->add_custom_field_value(
                     Field => $cf,
                     Value => $value
                 );

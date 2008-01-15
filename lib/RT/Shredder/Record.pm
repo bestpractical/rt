@@ -129,7 +129,7 @@ sub __DependsOn
     my $list = [];
 
 # Object custom field values
-    my $objs = $self->CustomFieldValues;
+    my $objs = $self->custom_field_values;
     $objs->{'find_expired_rows'} = 1;
     push( @$list, $objs );
 
@@ -149,7 +149,7 @@ sub __DependsOn
         #      is linked to object that doesn't exist
         #      also, ->next skip links to deleted tickets :(
         foreach ( qw(Base Target) ) {
-            my $objs = $self->_Links( $_ );
+            my $objs = $self->_links( $_ );
             $objs->_do_search;
             push @$list, $objs->items_array_ref;
         }

@@ -29,11 +29,11 @@ my $t = RT::Model::Ticket->new(current_user => RT->system_user);
           Subject => 'CF Test');
 
 ok($id,$msg);
-is($t->CustomFieldValues($cf->id)->count, 0, "No values yet");
-$t->AddCustomFieldValue(Field => $cf->id, value => 'First');
-is($t->CustomFieldValues($cf->id)->count, 1, "One now");
+is($t->custom_field_values($cf->id)->count, 0, "No values yet");
+$t->add_custom_field_value(Field => $cf->id, value => 'First');
+is($t->custom_field_values($cf->id)->count, 1, "One now");
 
-$t->AddCustomFieldValue(Field => $cf->id, value => 'Second');
-is($t->CustomFieldValues($cf->id)->count, 1, "Still one");
+$t->add_custom_field_value(Field => $cf->id, value => 'Second');
+is($t->custom_field_values($cf->id)->count, 1, "Still one");
 
 1;

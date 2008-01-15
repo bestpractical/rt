@@ -104,7 +104,7 @@ msgid "%1 (%2) %3 this ticket\\n"
 msgstr "%1 (%2) %3 este tíquete\\n"
 
 #: html/Ticket/Elements/ShowAttachments:72
-#. ($rev->CreatedAsString, $size, $rev->creator_obj->name)
+#. ($rev->created_as_string, $size, $rev->creator_obj->name)
 msgid "%1 (%2) by %3"
 msgstr ""
 
@@ -197,7 +197,7 @@ msgstr "%1 parece ser um objeto local, mas não pode ser encontrado no banco de 
 
 #: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm:531
 #. ($self->BriefDescription , $self->creator_obj->name)
-#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->name)
+#. ($Ticket->last_updated_as_string, $Ticket->LastUpdatedByObj->name)
 msgid "%1 by %2"
 msgstr "%1 por %2"
 
@@ -3948,7 +3948,7 @@ msgid "On"
 msgstr "Em"
 
 #: lib/RT/Transaction_Overlay.pm:326
-#. ($self->CreatedAsString(), $self->creator_obj->name())
+#. ($self->created_as_string(), $self->creator_obj->name())
 msgid "On %1, %2 wrote:"
 msgstr ""
 

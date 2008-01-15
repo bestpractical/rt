@@ -313,9 +313,9 @@ CREATE TABLE ObjectCustomFields (
 
 
 CREATE SEQUENCE OBJECTcustomfieldvalueS_seq;
-CREATE TABLE ObjectCustomFieldValues (
+CREATE TABLE Objectcustom_field_values (
 	id		NUMBER(11,0) 
-		CONSTRAINT ObjectCustomFieldValues_Key PRIMARY KEY,
+		CONSTRAINT Objectcustom_field_values_Key PRIMARY KEY,
 	CustomField	NUMBER(11,0) NOT NULL,
 	object_type	VARCHAR2(25) NOT NULL,
 	object_id	NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -331,8 +331,8 @@ CREATE TABLE ObjectCustomFieldValues (
 	disabled	NUMBER(11,0) DEFAULT 0 NOT NULL
 );
 
-CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
-CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,object_type,object_id); 
+CREATE INDEX Objectcustom_field_values1 ON Objectcustom_field_values (Content); 
+CREATE INDEX Objectcustom_field_values2 ON Objectcustom_field_values (CustomField,object_type,object_id); 
 
 CREATE SEQUENCE customfields_seq;
 CREATE TABLE CustomFields (
@@ -355,9 +355,9 @@ CREATE TABLE CustomFields (
 
 
 CREATE SEQUENCE customfieldvalueS_seq;
-CREATE TABLE CustomFieldValues (
+CREATE TABLE custom_field_values (
 	id		NUMBER(11,0) 
-		CONSTRAINT CustomFieldValues_Key PRIMARY KEY,
+		CONSTRAINT custom_field_values_Key PRIMARY KEY,
 	CustomField	NUMBER(11,0),
 	name		VARCHAR2(200),
 	Description	VARCHAR2(255),
@@ -368,7 +368,7 @@ CREATE TABLE CustomFieldValues (
 	LastUpdated	DATE
 );
 
-CREATE INDEX CustomFieldValues1 ON CustomFieldValues (CustomField);
+CREATE INDEX custom_field_values1 ON custom_field_values (CustomField);
 
 CREATE SEQUENCE ATTRIBUTES_seq;
 CREATE TABLE Attributes (

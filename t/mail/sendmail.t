@@ -68,7 +68,7 @@ undef @scrips_fired;
 
 
 
-$parser->ParseMIMEEntityFromScalar('From: root@localhost
+$parser->parse_mime_entity_from_scalar('From: root@localhost
 To: rt@example.com
 Subject: This is a test of new ticket creation as an unknown user
 
@@ -105,7 +105,7 @@ $content =  RT::Test->file_content("$RT::BasePath/lib/t/data/new-ticket-from-iso
 
 
 
-$parser->ParseMIMEEntityFromScalar($content);
+$parser->parse_mime_entity_from_scalar($content);
 
 
 # be as much like the mail gateway as possible.
@@ -131,11 +131,11 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 
 # If we correspond, does it do the right thing to the outbound messages?
 
-$parser->ParseMIMEEntityFromScalar($content);
+$parser->parse_mime_entity_from_scalar($content);
   ($id, $msg) = $tick->comment(MIMEObj => $parser->Entity);
 ok ($id, $msg);
 
-$parser->ParseMIMEEntityFromScalar($content);
+$parser->parse_mime_entity_from_scalar($content);
 ($id, $msg) = $tick->correspond(MIMEObj => $parser->Entity);
 ok ($id, $msg);
 
@@ -174,11 +174,11 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 
 # If we correspond, does it do the right thing to the outbound messages?
 
-$parser->ParseMIMEEntityFromScalar($content);
+$parser->parse_mime_entity_from_scalar($content);
  ($id, $msg) = $tick->comment(MIMEObj => $parser->Entity);
 ok ($id, $msg);
 
-$parser->ParseMIMEEntityFromScalar($content);
+$parser->parse_mime_entity_from_scalar($content);
 ($id, $msg) = $tick->correspond(MIMEObj => $parser->Entity);
 ok ($id, $msg);
 
@@ -245,7 +245,7 @@ sub iso8859_redef_sendmessage {
 
  $content =  RT::Test->file_content("$RT::BasePath/lib/t/data/multipart-alternative-with-umlaut");
 
-$parser->ParseMIMEEntityFromScalar($content);
+$parser->parse_mime_entity_from_scalar($content);
 
 
 # be as much like the mail gateway as possible.
@@ -274,7 +274,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 
  $content =  RT::Test->file_content("$RT::BasePath/lib/t/data/text-html-with-umlaut");
 
-$parser->ParseMIMEEntityFromScalar($content);
+$parser->parse_mime_entity_from_scalar($content);
 
 
 # be as much like the mail gateway as possible.
@@ -311,7 +311,7 @@ sub text_html_umlauts_redef_sendmessage {
 
  $content =  RT::Test->file_content("$RT::BasePath/lib/t/data/text-html-in-russian");
 
-$parser->ParseMIMEEntityFromScalar($content);
+$parser->parse_mime_entity_from_scalar($content);
 
 
 # be as much like the mail gateway as possible.
@@ -354,7 +354,7 @@ RT->Config->set( EmailInputEncodings => 'koi8-r', RT->Config->Get('EmailInputEnc
 RT->Config->set( EmailOutputEncoding => 'koi8-r' );
  $content =  RT::Test->file_content("$RT::BasePath/lib/t/data/russian-subject-no-content-type");
 
-$parser->ParseMIMEEntityFromScalar($content);
+$parser->parse_mime_entity_from_scalar($content);
 
 
 # be as much like the mail gateway as possible.
@@ -396,7 +396,7 @@ RT->Config->set(EmailOutputEncoding => 'utf-8');
  $content =  RT::Test->file_content("$RT::BasePath/lib/t/data/nested-rfc-822");
 ok ($content, "Loaded nested-rfc-822 to test");
 
-$parser->ParseMIMEEntityFromScalar($content);
+$parser->parse_mime_entity_from_scalar($content);
 
 
 # be as much like the mail gateway as possible.
@@ -434,7 +434,7 @@ sub text_plain_nested_redef_sendmessage {
 
  $content =  RT::Test->file_content("$RT::BasePath/lib/t/data/notes-uuencoded");
 
-$parser->ParseMIMEEntityFromScalar($content);
+$parser->parse_mime_entity_from_scalar($content);
 
 
 # be as much like the mail gateway as possible.
@@ -459,7 +459,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 
  $content =  RT::Test->file_content("$RT::BasePath/lib/t/data/crashes-file-based-parser");
 
-$parser->ParseMIMEEntityFromScalar($content);
+$parser->parse_mime_entity_from_scalar($content);
 
 
 # be as much like the mail gateway as possible.
@@ -486,7 +486,7 @@ is (count_attachs($tick) , 5 , "Has three attachments");
 
  $content =  RT::Test->file_content("$RT::BasePath/lib/t/data/rt-send-cc");
 
-$parser->ParseMIMEEntityFromScalar($content);
+$parser->parse_mime_entity_from_scalar($content);
 
 
 

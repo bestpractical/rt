@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
 % while ( my $CustomField = $CustomFields->next ) {
-% my $values = $Object->CustomFieldValues( $CustomField->id );
+% my $values = $Object->custom_field_values( $CustomField->id );
 % my $count = $values->count;
   <tr id="CF-<%$CustomField->id%>-ShowRow">
     <td class="label"><% $CustomField->name %>:</td>
@@ -70,7 +70,7 @@
 % }
 </table>
 <%INIT>
-my $CustomFields = $Object->CustomFields;
+my $CustomFields = $Object->custom_fields;
 $m->callback( Callbackname => 'MassageCustomFields', CustomFields => $CustomFields );
 
 my $print_value = sub {

@@ -16,7 +16,7 @@ my ($id,$msg) = $q->create( name => 'TxnCFTest'.$$);
 ok($id,$msg);
 
 my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
-($id,$msg) = $cf->create(name => 'Txnfreeform-'.$$, Type => 'Freeform', MaxValues => '0', LookupType => RT::Model::Transaction->CustomFieldLookupType );
+($id,$msg) = $cf->create(name => 'Txnfreeform-'.$$, Type => 'Freeform', MaxValues => '0', LookupType => RT::Model::Transaction->custom_field_lookup_type );
 
 ok($id,$msg);
 
@@ -39,24 +39,24 @@ $trans->load($transid);
 is($trans->object_id,$id);
 is ($trans->object_type, 'RT::Model::Ticket');
 is ($trans->Type, 'Create');
-my $txncfs = $trans->CustomFields;
+my $txncfs = $trans->custom_fields;
 is ($txncfs->count, 1, "We have one custom field");
 my $txn_cf = $txncfs->first;
 is ($txn_cf->id, $cf->id, "It's the right custom field");
-my $values = $trans->CustomFieldValues($txn_cf->id);
+my $values = $trans->custom_field_values($txn_cf->id);
 is ($values->count, 0, "It has no values");
 
 # Old API
 my %cf_updates = ( 'CustomField-'.$cf->id => 'Testing');
 $trans->UpdateCustomFields( ARGSRef => \%cf_updates);
 
- $values = $trans->CustomFieldValues($txn_cf->id);
+ $values = $trans->custom_field_values($txn_cf->id);
 is ($values->count, 1, "It has one value");
 
 # New API
 
 $trans->UpdateCustomFields( 'CustomField-'.$cf->id => 'Test two');
- $values = $trans->CustomFieldValues($txn_cf->id);
+ $values = $trans->custom_field_values($txn_cf->id);
 is ($values->count, 2, "it has two values");
 
 # TODO ok(0, "Should updating custom field values remove old values?");
