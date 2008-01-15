@@ -15,6 +15,7 @@ use constant HandlerOptions => (
     'Send the autoreply in this template:', # loc
     "Set the ticket's owner as this user:", # loc
     'Move the ticket to this queue:',       # loc
+    'Change the ticket to this status:',    # loc
 );
 
 sub new {
@@ -242,6 +243,9 @@ sub PrettyArgument {
             my $queue = RT::Queue->new($RT::SystemUser);
             $queue->Load($self->Argument);
             return $queue->Name;
+        }
+        elsif ($1 eq 'status') {
+            return $self->Argument; # XXX - loc()
         }
         else {
             return $self->Argument;

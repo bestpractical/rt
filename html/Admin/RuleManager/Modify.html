@@ -115,6 +115,8 @@
 <& /Elements/SelectQueue, Name => 'Argument', Default => $default, ShowNullOption => 1 &>
 % } elsif ($1 eq 'user') {
 <& /Elements/SelectOwner, Name => 'Argument', Default => $default, DefaultValue => 1, QueueObj => $QueueObj &>
+% } elsif ($1 eq 'status') {
+<& /Elements/SelectStatus, Name => 'Argument', Default => $default, DefaultValue => 1 &>
 % } else {
 <input name="Argument" value="<% $default %>" />
 % }

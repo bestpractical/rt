@@ -126,6 +126,9 @@ sub Commit {
         elsif ($handler eq 'Move the ticket to this queue:') {
             $self->TicketObj->SetQueue($rule->Argument);
         }
+        elsif ($handler eq "Change the ticket to this status:") {
+            $self->TicketObj->SetStatus($rule->Argument);
+        }
         elsif ($handler eq 'Send the autoreply in this template:') {
             local $self->{TemplateObj} = bless {
                 user    => $self->CurrentUser,
