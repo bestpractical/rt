@@ -34,7 +34,7 @@ var FCKeditor = function( instanceName, width, height, toolbarSet, value )
 	this.Height			= height		|| '200' ;
 	this.ToolbarSet		= toolbarSet	|| 'Default' ;
 	this.Value			= value			|| '' ;
-	this.BasePath		= '/fckeditor/' ;
+	this.BasePath		= FCKeditor.BasePath ;
 	this.CheckBrowser	= true ;
 	this.DisplayErrors	= true ;
 
@@ -44,8 +44,23 @@ var FCKeditor = function( instanceName, width, height, toolbarSet, value )
 	this.OnError		= null ;	// function( source, errorNumber, errorDescription )
 }
 
-FCKeditor.prototype.Version			= '2.5' ;
-FCKeditor.prototype.VersionBuild	= '17352' ;
+/**
+ * This is the default BasePath used by all editor instances.
+ */
+FCKeditor.BasePath = '/fckeditor/' ;
+
+/**
+ * The minimum height used when replacing textareas.
+ */
+FCKeditor.MinHeight = 200 ;
+
+/**
+ * The minimum width used when replacing textareas.
+ */
+FCKeditor.MinWidth = 750 ;
+
+FCKeditor.prototype.Version			= '2.5.1' ;
+FCKeditor.prototype.VersionBuild	= '17566' ;
 
 FCKeditor.prototype.Create = function()
 {
@@ -184,6 +199,78 @@ FCKeditor.prototype._HTMLEncode = function( text )
 
 	return text ;
 }
+
+;(function()
+{
+	var textareaToEditor = function( textarea )
+	{
+		var editor = new FCKeditor( textarea.name ) ;
+		
+		editor.Width = Math.max( textarea.offsetWidth, FCKeditor.MinWidth ) ;
+		editor.Height = Math.max( textarea.offsetHeight, FCKeditor.MinHeight ) ;
+		
+		return editor ;
+	}
+	
+	/**
+	 * Replace all <textarea> elements available in the document with FCKeditor
+	 * instances.
+	 *
+	 *	// Replace all <textarea> elements in the page.
+	 *	FCKeditor.ReplaceAllTextareas() ;
+	 *
+	 *	// Replace all <textarea class="myClassName"> elements in the page.
+	 *	FCKeditor.ReplaceAllTextareas( 'myClassName' ) ;
+	 *
+	 *	// Selectively replace <textarea> elements, based on custom assertions.
+	 *	FCKeditor.ReplaceAllTextareas( function( textarea, editor )
+	 *		{
+	 *			// Custom code to evaluate the replace, returning false if it
+	 *			// must not be done.
+	 *			// It also passes the "editor" parameter, so the developer can
+	 *			// customize the instance.
+	 *		} ) ;
+	 */
+	FCKeditor.ReplaceAllTextareas = function()
+	{
+		var textareas = document.getElementsByTagName( 'textarea' ) ;
+
+		for ( var i = 0 ; i < textareas.length ; i++ )
+		{
+			var editor = null ;
+			var textarea = textareas[i] ;
+			var name = textarea.name ;
+
+			// The "name" attribute must exist.
+			if ( !name || name.length == 0 )
+				continue ;
+			
+			if ( typeof arguments[0] == 'string' )
+			{
+				// The textarea class name could be passed as the function
+				// parameter.
+
+				var classRegex = new RegExp( '(?:^| )' + arguments[0] + '(?:$| )' ) ;
+
+				if ( !classRegex.test( textarea.className ) )
+					continue ;
+			}
+			else if ( typeof arguments[0] == 'function' )
+			{
+				// An assertion function could be passed as the function parameter.
+				// It must explicitly return "false" to ignore a specific <textarea>.
+				editor = textareaToEditor( textarea ) ;
+				if ( arguments[0]( textarea, editor ) === false )
+					continue ;
+			}
+
+			if ( !editor )
+				editor = textareaToEditor( textarea ) ;
+
+			editor.ReplaceTextarea() ;
+		}
+	}
+})() ;
 
 function FCKeditor_IsCompatibleBrowser()
 {

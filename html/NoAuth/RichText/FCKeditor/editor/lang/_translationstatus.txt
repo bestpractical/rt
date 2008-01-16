@@ -27,7 +27,7 @@ bg.js      Found: 374   Missing: 38
 bn.js      Found: 381   Missing: 31
 bs.js      Found: 226   Missing: 186
 ca.js      Found: 412   Missing: 0
-cs.js      Found: 397   Missing: 15
+cs.js      Found: 412   Missing: 0
 da.js      Found: 382   Missing: 30
 de.js      Found: 412   Missing: 0
 el.js      Found: 397   Missing: 15
@@ -59,10 +59,10 @@ nb.js      Found: 396   Missing: 16
 nl.js      Found: 412   Missing: 0
 no.js      Found: 396   Missing: 16
 pl.js      Found: 412   Missing: 0
-pt-br.js   Found: 397   Missing: 15
+pt-br.js   Found: 412   Missing: 0
 pt.js      Found: 382   Missing: 30
 ro.js      Found: 411   Missing: 1
-ru.js      Found: 397   Missing: 15
+ru.js      Found: 412   Missing: 0
 sk.js      Found: 397   Missing: 15
 sl.js      Found: 412   Missing: 0
 sr-latn.js Found: 369   Missing: 43
