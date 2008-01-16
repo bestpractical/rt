@@ -52,7 +52,7 @@ use warnings;
 
 use File::Spec ();
 
-use vars qw($Config $System $SystemUser $Nobody $Handle $Logger %InitCallbacks);
+use vars qw($Config $System $SystemUser $Nobody $Handle $Logger);
 
 our $VERSION = '@RT_VERSION_MAJOR@.@RT_VERSION_MINOR@.@RT_VERSION_PATCH@';
 
@@ -143,8 +143,7 @@ sub Init {
     ConnectToDatabase();
     InitSystemObjects();
     InitClasses();
-    InitLogging();
-    $_->() foreach @{ $InitCallbacks{'Init'} || [] };
+    InitLogging(); 
     InitPlugins();
 }
 
@@ -419,7 +418,6 @@ sub InitClasses {
         RT::ObjectCustomFieldValue
         RT::Attribute
     );
-    $_->() foreach @{ $InitCallbacks{'InitClasses'} || [] };
 }
 
 =head2 InitSystemObjects
@@ -442,8 +440,6 @@ sub InitSystemObjects {
 
     require RT::System;
     $System = new RT::System;
-
-    $_->() foreach @{ $InitCallbacks{'InitSystemObjects'} || [] };
 }
 
 =head1 CLASS METHODS
