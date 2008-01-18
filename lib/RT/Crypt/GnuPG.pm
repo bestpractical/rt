@@ -248,7 +248,34 @@ key usage", "Key revoked", "Key expired", "No CRL known", "CRL too
 old", "Policy mismatch", "Not a secret key", "Key not trusted" or
 "No specific reason given".
 
-Due to limitations of GnuPG, it's impossible to encrypt to an untrusted key.
+Due to limitations of GnuPG, it's impossible to encrypt to an untrusted key,
+unless 'always trust' mode is enabled.
+
+In the 'Error: public key' template there are a few additional variables available:
+
+=over 4
+
+=item $Message - user friendly error message
+
+=item $Reason - short reason as listed above
+
+=item $Recipient - recipient's identification
+
+=item $AddressObj - L<Mail::Address> object containing recipient's email address
+
+=back
+
+A message can have several invalid recipients, to avoid sending many emails
+to the RT owner the system sends one message to the owner, grouped by
+recipient. In the 'Error to RT owner: public key' template a C<@BadRecipients>
+array is available where each element is a hash reference that describes one
+recipient using the same fields as described above. So it's something like:
+
+    @BadRecipients = (
+        { Message => '...', Reason => '...', Recipient => '...', ...},
+        { Message => '...', Reason => '...', Recipient => '...', ...},
+        ...
+    )
 
 =head3 Private key doesn't exist
 
