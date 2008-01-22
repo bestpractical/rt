@@ -57,10 +57,9 @@
       
 <table>
         
-%	while (my $Member = $Users->Next()) {
-% my $UserObj = $Member->MemberObj->Object();
+%	while (my $UserObj = $Users->Next()) {
 % my $group = RT::Group->new($session{'CurrentUser'});
-% $group->LoadACLEquivalenceGroup($Member->MemberObj);
+% $group->LoadACLEquivalenceGroup($UserObj);
   <tr align="right"> 
 	<td valign="top">
 	    <% $UserObj->Name %>
@@ -89,7 +88,8 @@
 # Find out which users we want to display ACL selects for
 my $Privileged = RT::Group->new($session{'CurrentUser'});
 $Privileged->LoadSystemInternalGroup('Privileged');
-my $Users = $Privileged->MembersObj();
+my $Users = $Privileged->UserMembersObj();
+$Users->OrderBy( FIELD => $UserOrderBy, ORDER => $UserOrder );
 
     
   
@@ -98,4 +98,6 @@ my $Users = $Privileged->MembersObj();
 </%INIT>
 
 <%ARGS>
+$UserOrderBy => 'Name'
+$UserOrder => 'ASC'
 </%ARGS>
