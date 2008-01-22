@@ -424,12 +424,12 @@ sub ContentAsMIME {
 
 =head2 Addresses
 
-Returns a hashref of all addresses related to this attachment.  
-The keys of the hash are C<From>,C<To>,C<Cc>, C<Bcc>, C<RT-Send-Cc> and C<RT-Send-Bcc>. The values are references to lists of Mail::Address objects.
-
+Returns a hashref of all addresses related to this attachment.
+The keys of the hash are C<From>, C<To>, C<Cc>, C<Bcc>, C<RT-Send-Cc>
+and C<RT-Send-Bcc>. The values are references to lists of
+L<Mail::Address> objects.
 
 =cut
-
 
 sub Addresses {
     my $self = shift;
@@ -444,8 +444,7 @@ sub Addresses {
         
         foreach my $AddrObj ( Mail::Address->parse( $line )) {
             my $address = $AddrObj->address;
-            my $user    = RT::User->new($RT::SystemUser);
-            $address = lc $user->CanonicalizeEmailAddress($address);
+            $address = lc RT::User->CanonicalizeEmailAddress($address);
             next if ( $current_user_address eq $address );
             next if ( $comment              eq $address );
             next if ( $correspond           eq $address );
@@ -542,7 +541,7 @@ sub AddHeader {
         $value = '' unless defined $value;
         $value =~ s/\s+$//s;
         $value =~ s/\r+\n/\n /g;
-	$newheader .= "$tag: $value\n";
+        $newheader .= "$tag: $value\n";
     }
     return $self->__Set( Field => 'Headers', Value => $newheader);
 }
