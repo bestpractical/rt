@@ -109,60 +109,7 @@ my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
 $CustomFieldObj->Load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load CustomField [_1]",$id));
 
 my $Groups;
-  
-  my ( $ACL, @results );
-
-    foreach my $arg (keys %ARGS) {
-        if ($arg =~ /GrantRight-(\d+)-(.*?)-(\d+)$/) {
-            my $principal_id = $1;
-            my $object_type = $2;
-            my $object_id = $3;
-            my $rights = $ARGS{$arg};
-
-            my $principal = RT::Principal->new($session{'CurrentUser'});
-            $principal->Load($principal_id);
-            my $obj;
-
-            if ($object_type eq 'RT::CustomField') {
-                $obj = RT::CustomField->new($session{'CurrentUser'});
-                $obj->Load($object_id);
-            } else {
-                push (@results, loc("System Error").
-                                loc("Rights could not be granted for [_1]", $object_type));
-                next;
-            }
-
-            my @rights = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
-            foreach my $right (@rights) {
-                next unless ($right);
-                my ($val, $msg) = $principal->GrantRight(Object => $obj, Right => $right);
-                push (@results, $msg);
-            }
-        }
-     elsif ($arg =~ /RevokeRight-(\d+)-(.*?)-(\d+)-(.*?)$/) {
-            my $principal_id = $1;
-            my $object_type = $2;
-            my $object_id = $3;
-            my $right = $4;
-
-            my $principal = RT::Principal->new($session{'CurrentUser'});
-            $principal->Load($principal_id);
-            next unless ($right);
-            my $obj;
-
-            if ($object_type eq 'RT::CustomField') {
-                $obj = RT::CustomField->new($session{'CurrentUser'});
-                $obj->Load($object_id);
-            } else {
-                push (@results, loc("System Error").
-                                loc("Rights could not be revoked for [_1]", $object_type));
-                next;
-            }
-            my ($val, $msg) = $principal->RevokeRight(Object => $obj, Right => $right);
-            push (@results, $msg);
-        }
-} 
-
+my @results = ProcessACLChanges(\%ARGS);   
 my $title = loc('Modify group rights for custom field [_1]', $CustomFieldObj->Name);
     
 </%INIT>
