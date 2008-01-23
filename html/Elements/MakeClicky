@@ -142,8 +142,11 @@ while ( $$content =~ /($regexp)/gsio ) {
         substr( $$content, $pos, $skipped_len ) = $plain;
         $pos += length($plain);
     }
-
-    my $plain = $handle->( %ARGS, value => $match );
+    my $plain = $handle->(
+        %ARGS, 
+        value => $match,
+        all_matches => [ $1, $2, $3, $4, $5, $6, $7, $8, $9 ],
+    );
     substr( $$content, $pos, length($match) ) = $plain;
     pos($$content) = ( $pos += length($plain) );
 
@@ -167,7 +170,7 @@ provides two formats:
    then 30 chars. This allow browser to wrap long URLs and avoid
    horizontal scrolling.
 
-To extend this with your own types od data, use the callback.
+To extend this with your own types of data, use the callback.
 It will be provided with:
 
  * 'types': An array reference of hash references.  Modify this array
@@ -186,5 +189,7 @@ It will be provided with:
  * 'handler': A reference to a subroutine reference; modify it if you
     have to. This can be used to add pre- or post-processing around
     all actions.
+
+Read more about writing new actions in docs/extending_clickable_links.pod
 
 </%doc>
