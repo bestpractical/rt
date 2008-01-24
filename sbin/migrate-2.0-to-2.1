@@ -1,10 +1,16 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 use RT;
 RT::LoadConfig;
 RT::Init;
 use RT::FM::CustomFieldCollection;
 use Data::Dumper;
+
+use strict;
+use warnings;
+
+my $cf_data;
+my @aces_to_delete;
 
 # find each rtfm custom field
 my $cfs = RT::FM::CustomFieldCollection->new($RT::SystemUser);
@@ -223,7 +229,7 @@ while ( my $txn = $txns->Next ) {
 	ActivateScrips => 0
       );
 
-        print " $txn_msg\n";
+        print " $transmsg\n";
 }
 
 #
