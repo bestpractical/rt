@@ -5,7 +5,7 @@ version_from('lib/RT/FM.pm');
 license('GPL version 2');
 requires(
     perl              => 5.008,
-    RT                => '3.4.2',
+    RT                => '3.004002',
     Text::WikiFormat  => 0,
     Tree::Simple      => 0,
     HTML::TreeBuilder => 0,

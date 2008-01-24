@@ -50,6 +50,7 @@ sub RTx {
 
     my $lib_path = File::Basename::dirname( $INC{'RT.pm'} );
     print "Using RT configuration from $INC{'RT.pm'}:\n";
+    unshift @INC, "$RT::LocalPath/lib" if $RT::LocalPath;
 
     $RT::LocalVarPath  ||= $RT::VarPath;
     $RT::LocalPoPath   ||= $RT::LocalLexiconPath;
@@ -171,6 +172,6 @@ sub RTxInit {
 
 __END__
 
-#line 238
+#line 239
 
-#line 259
+#line 260
