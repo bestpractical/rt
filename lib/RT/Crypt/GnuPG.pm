@@ -218,6 +218,10 @@ default. As an administrative user of RT, open 'Configuration' then 'Queues',
 and select a queue. On the page you can see information about the queue's keys 
 at the bottom and two checkboxes to choose default actions.
 
+As well, encryption is enabled for autoreplies and other notifications when
+an encypted message enters system via mailgate interface even if queue's
+option is disabled.
+
 =head2 Handling incoming messages
 
 To enable handling of encrypted and signed message in the RT you should add
