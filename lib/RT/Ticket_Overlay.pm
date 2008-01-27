@@ -1521,9 +1521,9 @@ sub IsWatcher {
 
 =head2 IsRequestor PRINCIPAL_ID
   
-  Takes an RT::Principal id
-  Returns true if the principal is a requestor of the current ticket.
+Takes an L<RT::Principal> id.
 
+Returns true if the principal is a requestor of the current ticket.
 
 =cut
 
