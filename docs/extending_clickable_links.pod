@@ -92,9 +92,28 @@ to add pre- or post-processing around all actions.
 
 =back
 
+=head2 Actions' arguments
+
+A hash is passed to action with two keys that always exist:
+
+=over 4
+
+=item value - full match of the regular expression, this block of text will be
+replaced with action's result.
+
+=item all_matches - array with all matches including groups defined in the
+regular expression, for example if your regexp is C<qr{ticket\s+#(\d+)}> then
+the first element will be full match ("ticket #XXX") the same as in 'value' key,
+but the second one element of the array will be id of a ticket (XXX), so you
+can avoid parsing value in the action. Only eight groups of your regexps are
+passed to actions.
+
+=back
+
 =head2 Custom MakeClicky action example
 
-Create a new file F</opt/rt3/local/html/MyCallbacks/Elements/MakeClicky/Default> with the content:
+Create a new file F</opt/rt3/local/html/MyCallbacks/Elements/MakeClicky/Default>
+with the content:
 
   <%ARGS>
   $types   => []
@@ -106,7 +125,7 @@ Create a new file F</opt/rt3/local/html/MyCallbacks/Elements/MakeClicky/Default>
   # action that takes ticket ID as argument and returns link to the ticket
   $actions->{'link_ticket'} = sub {
       my %args = @_;
-      my ($id) = ($args{'value'} =~ /(\d+)/);
+      my $id = $args{'all_matches'}[1];
       return qq{<a href="$web_path/Ticket/Display.html?id=$id">$args{value}</a>};
   };
   
@@ -115,7 +134,7 @@ Create a new file F</opt/rt3/local/html/MyCallbacks/Elements/MakeClicky/Default>
       # name, that should be used in config to activate action
       name   => 'short_ticket_link',
       # regular expression that matches text 'ticket #xxx'
-      regex  => qr{ticket\s+#\d+}i,
+      regex  => qr{ticket\s+#(\d+)}i,
       # name of the action that should be applied
       action => 'link_ticket',
   };
@@ -124,7 +143,7 @@ Create a new file F</opt/rt3/local/html/MyCallbacks/Elements/MakeClicky/Default>
 That's all. Add C<short_ticket_link> to C<@Active_MakeClicky> option in your C<RT_SiteConfig.pm>.
 Restart your server and create test ticket with 'ticket #1' text.
 
-=head3 Notes for custom clicky actions writers
+=head2 Notes for custom clicky actions writers
 
 Note that an action B<must escape> illegal HTML characters with entities and/or
 arguments in URLs.

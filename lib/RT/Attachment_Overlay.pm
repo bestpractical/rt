@@ -426,12 +426,12 @@ sub ContentAsMIME {
 
 =head2 Addresses
 
-Returns a hashref of all addresses related to this attachment.  
-The keys of the hash are C<From>,C<To>,C<Cc>, C<Bcc>, C<RT-Send-Cc> and C<RT-Send-Bcc>. The values are references to lists of Mail::Address objects.
-
+Returns a hashref of all addresses related to this attachment.
+The keys of the hash are C<From>, C<To>, C<Cc>, C<Bcc>, C<RT-Send-Cc>
+and C<RT-Send-Bcc>. The values are references to lists of
+L<Mail::Address> objects.
 
 =cut
-
 
 sub Addresses {
     my $self = shift;
@@ -446,8 +446,7 @@ sub Addresses {
         
         foreach my $AddrObj ( Mail::Address->parse( $line )) {
             my $address = $AddrObj->address;
-            my $user    = RT::User->new($RT::SystemUser);
-            $address = lc $user->CanonicalizeEmailAddress($address);
+            $address = lc RT::User->CanonicalizeEmailAddress($address);
             next if ( $current_user_address eq $address );
             next if ( $comment              eq $address );
             next if ( $correspond           eq $address );
@@ -544,7 +543,7 @@ sub AddHeader {
         $value = '' unless defined $value;
         $value =~ s/\s+$//s;
         $value =~ s/\r+\n/\n /g;
-	$newheader .= "$tag: $value\n";
+        $newheader .= "$tag: $value\n";
     }
     return $self->__Set( Field => 'Headers', Value => $newheader);
 }
@@ -607,6 +606,103 @@ sub _SplitHeaders {
     return(@headers);
 }
 
+
+sub Encrypt {
+    my $self = shift;
+
+    my $txn = $self->TransactionObj;
+    return (0, $self->loc('Permission Denied')) unless $txn->CurrentUserCanSee;
+    return (0, $self->loc('Permission Denied'))
+        unless $txn->TicketObj->CurrentUserHasRight('ModifyTicket');
+    return (0, $self->loc('GnuPG integration is disabled'))
+        unless RT->Config->Get('GnuPG')->{'Enable'};
+    return (0, $self->loc('Attachments encryption is disabled'))
+        unless RT->Config->Get('GnuPG')->{'AllowEncryptDataInDB'};
+
+    require RT::Crypt::GnuPG;
+
+    my $type = $self->ContentType;
+    if ( $type =~ /^x-application-rt\/gpg-encrypted/i ) {
+        return (1, $self->loc('Already encrypted'));
+    } elsif ( $type =~ /^multipart\//i ) {
+        return (1, $self->loc('No need to encrypt'));
+    } else {
+        $type = qq{x-application-rt\/gpg-encrypted; original-type="$type"};
+    }
+
+    my $queue = $txn->TicketObj->QueueObj;
+    my $encrypt_for;
+    foreach my $address ( grep $_,
+        $queue->CorrespondAddress,
+        $queue->CommentAddress,
+        RT->Config->Get('CorrespondAddress'),
+        RT->Config->Get('CommentAddress'),
+    ) {
+        my %res = RT::Crypt::GnuPG::GetKeysInfo( $address, 'private' );
+        next if $res{'exit_code'} || !$res{'info'};
+        %res = RT::Crypt::GnuPG::GetKeysForEncryption( $address );
+        next if $res{'exit_code'} || !$res{'info'};
+        $encrypt_for = $address;
+    }
+    unless ( $encrypt_for ) {
+        return (0, $self->loc('No key suitable for encryption'));
+    }
+
+    $self->__Set( Field => 'ContentType', Value => $type );
+    $self->SetHeader( 'Content-Type' => $type );
+
+    my $content = $self->Content;
+    my %res = RT::Crypt::GnuPG::SignEncryptContent(
+        Content => \$content,
+        Sign => 0,
+        Encrypt => 1,
+        Recipients => [ $encrypt_for ],
+    );
+    if ( $res{'exit_code'} ) {
+        return (0, $self->loc('GnuPG error. Contact with administrator'));
+    }
+
+    my ($status, $msg) = $self->__Set( Field => 'Content', Value => $content );
+    unless ( $status ) {
+        return ($status, $self->loc("Couldn't replace content with encrypted data: [_1]", $msg));
+    }
+    return (1, $self->loc('Successfuly encrypted data'));
+}
+
+sub Decrypt {
+    my $self = shift;
+
+    my $txn = $self->TransactionObj;
+    return (0, $self->loc('Permission Denied')) unless $txn->CurrentUserCanSee;
+    return (0, $self->loc('Permission Denied'))
+        unless $txn->TicketObj->CurrentUserHasRight('ModifyTicket');
+    return (0, $self->loc('GnuPG integration is disabled'))
+        unless RT->Config->Get('GnuPG')->{'Enable'};
+
+    require RT::Crypt::GnuPG;
+
+    my $type = $self->ContentType;
+    if ( $type =~ /^x-application-rt\/gpg-encrypted/i ) {
+        ($type) = ($type =~ /original-type="(.*)"/i);
+        $type ||= 'application/octeat-stream';
+    } else {
+        return (1, $self->loc('Is not encrypted'));
+    }
+    $self->__Set( Field => 'ContentType', Value => $type );
+    $self->SetHeader( 'Content-Type' => $type );
+
+    my $content = $self->Content;
+    my %res = RT::Crypt::GnuPG::DecryptContent( Content => \$content, );
+    if ( $res{'exit_code'} ) {
+        return (0, $self->loc('GnuPG error. Contact with administrator'));
+    }
+
+    my ($status, $msg) = $self->__Set( Field => 'Content', Value => $content );
+    unless ( $status ) {
+        return ($status, $self->loc("Couldn't replace content with decrypted data: [_1]", $msg));
+    }
+    return (1, $self->loc('Successfuly decrypted data'));
+}
 
 =head2 _Value
 

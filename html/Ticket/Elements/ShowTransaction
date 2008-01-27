@@ -89,6 +89,7 @@ $DisplayPath => RT->Config->Get('WebPath')."/Ticket/Display.html?id=".$Ticket->i
 $AttachPath => RT->Config->Get('WebPath')."/Ticket/Attachment"
 $UpdatePath => RT->Config->Get('WebPath')."/Ticket/Update.html"
 $ForwardPath => RT->Config->Get('WebPath')."/Ticket/Forward.html"
+$EncryptionPath => RT->Config->Get('WebPath')."/Ticket/GnuPG.html"
 $EmailRecordPath => RT->Config->Get('WebPath')."/Ticket/ShowEmailRecord.html"
 $Attachments => undef
 $AttachmentContent => undef
@@ -182,8 +183,9 @@ else {
     }
 
     if ( $Attachments->[0] && $ShowTitleBarCommands ) {
-        my $can_modify = $Transaction->TicketObj->CurrentUserHasRight('ModifyTicket');
-        if ( $can_modify || $Transaction->TicketObj->CurrentUserHasRight('ReplyToTicket') ) {
+        my $ticket = $Transaction->TicketObj;
+        my $can_modify = $ticket->CurrentUserHasRight('ModifyTicket');
+        if ( $can_modify || $ticket->CurrentUserHasRight('ReplyToTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath
               . "?id=" . $Transaction->Ticket
@@ -192,7 +194,7 @@ else {
               . loc('Reply')
               . "</a>]&nbsp;";
         }
-        if ( $can_modify || $Transaction->TicketObj->CurrentUserHasRight('CommentOnTicket') ) {
+        if ( $can_modify || $ticket->CurrentUserHasRight('CommentOnTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath."?id="
               . $Transaction->Ticket
@@ -201,12 +203,22 @@ else {
               . "&Action=Comment\">"
               . loc('Comment') . "</a>]";
         }
-        if ( $Transaction->TicketObj->CurrentUserHasRight('ForwardMessage') ) {
+        if ( $ticket->CurrentUserHasRight('ForwardMessage') ) {
             $titlebar_commands .=
                 "[<a href=\"". $ForwardPath
               . "?id=". $Transaction->Ticket
               . "&QuoteTransaction=". $Transaction->Id
               . "\">". loc('Forward') . "</a>]";
+        }
+        if ( $can_modify
+            && RT->Config->Get('GnuPG')->{'Enable'}
+            && RT->Config->Get('GnuPG')->{'AllowEncryptDataInDB'}
+            && $ticket->CurrentUserHasRight('ForwardMessage')
+        ) {
+            $titlebar_commands .=
+                "[<a href=\"". $EncryptionPath
+              . "?id=". $Transaction->Id
+              . "\">". loc('Ecnrypt/Decrypt') . "</a>]";
         }
     }
 }

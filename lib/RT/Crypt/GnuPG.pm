@@ -135,6 +135,13 @@ it well.
 
 =back
 
+=head3 Encrypting data in the database
+
+You can allow users to encrypt data in the database using
+option C<AllowEncryptDataInDB>. By default it's disabled.
+Users must have rights to see and modify tickets to use
+this feature.
+
 =head2 %GnuPGOptions
 
 Use this hash to set options of the 'gnupg' program. You can define almost any
@@ -211,6 +218,10 @@ default. As an administrative user of RT, open 'Configuration' then 'Queues',
 and select a queue. On the page you can see information about the queue's keys 
 at the bottom and two checkboxes to choose default actions.
 
+As well, encryption is enabled for autoreplies and other notifications when
+an encypted message enters system via mailgate interface even if queue's
+option is disabled.
+
 =head2 Handling incoming messages
 
 To enable handling of encrypted and signed message in the RT you should add
@@ -248,7 +259,34 @@ key usage", "Key revoked", "Key expired", "No CRL known", "CRL too
 old", "Policy mismatch", "Not a secret key", "Key not trusted" or
 "No specific reason given".
 
-Due to limitations of GnuPG, it's impossible to encrypt to an untrusted key.
+Due to limitations of GnuPG, it's impossible to encrypt to an untrusted key,
+unless 'always trust' mode is enabled.
+
+In the 'Error: public key' template there are a few additional variables available:
+
+=over 4
+
+=item $Message - user friendly error message
+
+=item $Reason - short reason as listed above
+
+=item $Recipient - recipient's identification
+
+=item $AddressObj - L<Mail::Address> object containing recipient's email address
+
+=back
+
+A message can have several invalid recipients, to avoid sending many emails
+to the RT owner the system sends one message to the owner, grouped by
+recipient. In the 'Error to RT owner: public key' template a C<@BadRecipients>
+array is available where each element is a hash reference that describes one
+recipient using the same fields as described above. So it's something like:
+
+    @BadRecipients = (
+        { Message => '...', Reason => '...', Recipient => '...', ...},
+        { Message => '...', Reason => '...', Recipient => '...', ...},
+        ...
+    )
 
 =head3 Private key doesn't exist
 
@@ -773,6 +811,103 @@ sub _SignEncryptAttachmentInline {
     return %res;
 }
 
+sub SignEncryptContent {
+    my %args = (
+        Content => undef,
+
+        Sign => 1,
+        Signer => undef,
+        Passphrase => undef,
+
+        Encrypt => 1,
+        Recipients => undef,
+
+        @_
+    );
+    return unless $args{'Sign'} || $args{'Encrypt'};
+
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPGOptions');
+    $opt{'digest-algo'} ||= 'SHA1';
+    $opt{'default_key'} = $args{'Signer'}
+        if $args{'Sign'} && $args{'Signer'};
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( %opt ),
+        armor => 1,
+        meta_interactive => 0,
+    );
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
+
+    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+    }
+
+    if ( $args{'Encrypt'} ) {
+        $gnupg->options->push_recipients( $_ ) foreach 
+            map UseKeyForEncryption($_) || $_,
+            @{ $args{'Recipients'} || [] };
+    }
+
+    my %res;
+
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    binmode $tmp_fh, ':raw';
+
+    my %handle;
+    my $handles = GnuPG::Handles->new(
+        stdin  => ($handle{'input'}  = new IO::Handle),
+        stdout => $tmp_fh,
+        stderr => ($handle{'error'}  = new IO::Handle),
+        logger => ($handle{'logger'} = new IO::Handle),
+        status => ($handle{'status'} = new IO::Handle),
+    );
+    $handles->options( 'stdout'  )->{'direct'} = 1;
+    $gnupg->passphrase( $args{'Passphrase'} ) if $args{'Sign'};
+
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        my $method = $args{'Sign'} && $args{'Encrypt'}
+            ? 'sign_and_encrypt'
+            : ($args{'Sign'}? 'clearsign': 'encrypt');
+        my $pid = _safe_run_child { $gnupg->$method( handles => $handles ) };
+        $handle{'input'}->print( ${ $args{'Content'} } );
+        close $handle{'input'};
+        waitpid $pid, 0;
+    };
+    $res{'exit_code'} = $?;
+    my $err = $@;
+
+    foreach ( qw(error logger status) ) {
+        $res{$_} = do { local $/; readline $handle{$_} };
+        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
+        close $handle{$_};
+    }
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    if ( $err || $res{'exit_code'} ) {
+        $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
+        return %res;
+    }
+
+    ${ $args{'Content'} } = '';
+    seek $tmp_fh, 0, 0;
+    while (1) {
+        my $status = read $tmp_fh, my $buf, 4*1024;
+        unless ( defined $status ) {
+            $RT::Logger->crit( "couldn't read message: $!" );
+        } elsif ( !$status ) {
+            last;
+        }
+        ${ $args{'Content'} } .= $buf;
+    }
+
+    return %res;
+}
+
 sub FindProtectedParts {
     my %args = ( Entity => undef, CheckBody => 1, @_ );
     my $entity = $args{'Entity'};
@@ -1214,6 +1349,86 @@ sub DecryptAttachment {
     $filename =~ s/\.pgp$//i;
     $args{'Data'}->head->mime_attr( $_ => $filename )
         foreach (qw(Content-Type.name Content-Disposition.filename));
+
+    return %res;
+}
+
+sub DecryptContent {
+    my %args = (
+        Content => undef,
+        Passphrase => undef,
+        @_
+    );
+
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPGOptions');
+    $opt{'digest-algo'} ||= 'SHA1';
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( %opt ),
+        meta_interactive => 0,
+    );
+
+    # handling passphrase in GnupGOptions
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
+
+    $args{'Passphrase'} = GetPassphrase()
+        unless defined $args{'Passphrase'};
+
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    binmode $tmp_fh, ':raw';
+
+    my %handle;
+    my $handles = GnuPG::Handles->new(
+        stdin  => ($handle{'input'}  = new IO::Handle),
+        stdout => $tmp_fh,
+        stderr => ($handle{'error'}  = new IO::Handle),
+        logger => ($handle{'logger'} = new IO::Handle),
+        status => ($handle{'status'} = new IO::Handle),
+    );
+    $handles->options( 'stdout' )->{'direct'} = 1;
+
+    my %res;
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        $gnupg->passphrase( $args{'Passphrase'} );
+        my $pid = _safe_run_child { $gnupg->decrypt( handles => $handles ) };
+        print { $handle{'input'} } ${ $args{'Content'} };
+        close $handle{'input'};
+
+        waitpid $pid, 0;
+    };
+    $res{'exit_code'} = $?;
+    foreach ( qw(error logger status) ) {
+        $res{$_} = do { local $/; readline $handle{$_} };
+        delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
+        close $handle{$_};
+    }
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+
+    # if the decryption is fine but the signature is bad, then without this
+    # status check we lose the decrypted text
+    # XXX: add argument to the function to control this check
+    if ( $res{'status'} !~ /DECRYPTION_OKAY/ ) {
+        if ( $@ || $? ) {
+            $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
+            return %res;
+        }
+    }
+
+    ${ $args{'Content'} } = '';
+    seek $tmp_fh, 0, 0;
+    while (1) {
+        my $status = read $tmp_fh, my $buf, 4*1024;
+        unless ( defined $status ) {
+            $RT::Logger->crit( "couldn't read message: $!" );
+        } elsif ( !$status ) {
+            last;
+        }
+        ${ $args{'Content'} } .= $buf;
+    }
 
     return %res;
 }
