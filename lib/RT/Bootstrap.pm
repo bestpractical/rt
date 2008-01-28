@@ -278,7 +278,7 @@ sub insert_initial_data {
 
     my $superuser_ace = RT::Model::ACE->new( current_user => $current_user );
     $superuser_ace->_bootstrap_create(
-        principal_id   => ACLEquivGroupId( $current_user->id ),
+        principal_id   => acl_equiv_group_id( $current_user->id ),
         principal_type => 'Group',
         right_name     => 'SuperUser',
         object_type    => 'RT::System',
@@ -638,7 +638,7 @@ sub insert_data {
     #print "Done setting up database content.\n";
 }
 
-=head2 ACLEquivGroupId
+=head2 acl_equiv_group_id
 
 Given a userid, return that user's acl equivalence group
 
