@@ -62,7 +62,7 @@ $Reverify     => 1
 my @runs;
 my $needs_unsigned_warning = $WarnUnsigned;
 
-foreach ( $Attachment->SplitHeaders ) {
+foreach ( $Attachment->split_headers ) {
     if ( s/^X-RT-GnuPG-Status:\s*//i ) {
         require RT::Crypt::GnuPG;
         push @runs, [ RT::Crypt::GnuPG::ParseStatus( $_ ) ];
@@ -112,15 +112,15 @@ my $reverify_cb = sub {
     elsif ( @res ) {
         require RT::Crypt::GnuPG;
 
-        $top->DelHeader('X-RT-GnuPG-Status');
-        $top->AddHeader(map { ('X-RT-GnuPG-Status' => $_->{'status'} ) } @res);
+        $top->del_header('X-RT-GnuPG-Status');
+        $top->add_header(map { ('X-RT-GnuPG-Status' => $_->{'status'} ) } @res);
         $top->set_header('X-RT-Privacy' => 'PGP' );
-        $top->DelHeader('X-RT-Incoming-Signature');
+        $top->del_header('X-RT-Incoming-Signature');
 
         my @status = RT::Crypt::GnuPG::ParseStatus( $res[0]->{'status'} );
         for ( @status ) {
             if ( $_->{'Operation'} eq 'Verify' && $_->{'Status'} eq 'DONE' ) {
-                $top->AddHeader( 'X-RT-Incoming-Signature' => $_->{'UserString'} );
+                $top->add_header( 'X-RT-Incoming-Signature' => $_->{'UserString'} );
                 $needs_unsigned_warning = 0;
             }
         }

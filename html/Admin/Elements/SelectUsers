@@ -58,7 +58,7 @@ my $users = RT::Model::UserCollection->new();
 
 $users->limit(column => 'id', value => RT->system_user->id, operator => '!=' );
 $users->limit(column => 'id', value => RT->nobody->id, operator => '!=' );
-$users->limit_Toprivileged();
+$users->limit_to_privileged();
 
 </%INIT>
 <%ARGS>

@@ -18,10 +18,10 @@
 <input type="hidden" class="hidden" name="id" value="<% $user_object->id %>" />
 
 <& /Widgets/Form/Select,
-    name         => 'PrivateKey',
+    name         => 'private_key',
     Description  => _('Private Key'),
     values       => [ map $_->{'Key'}, @{ $keys_meta{'info'} } ],
-    current_value => $user_object->PrivateKey,
+    current_value => $user_object->private_key,
     DefaultLabel => _('No private key'),
 &>
 
@@ -49,14 +49,14 @@ $id = $ARGS{'id'} = $user_object->id;
 my $email = $user_object->email;
 my %keys_meta = RT::Crypt::GnuPG::GetKeysForSigning( $email, 'force' );
 
-$ARGS{'PrivateKey'} = $m->comp('/Widgets/Form/Select:Process',
-    name      => 'PrivateKey',
+$ARGS{'private_key'} = $m->comp('/Widgets/Form/Select:Process',
+    name      => 'private_key',
     Arguments => \%ARGS,
     Default   => 1,
 );
 
 if ( $Update ) {
-    my ($status, $msg) = $user_object->setPrivateKey( $ARGS{'PrivateKey'} );
+    my ($status, $msg) = $user_object->set_private_key( $ARGS{'private_key'} );
     push @results, $msg;
 }
 

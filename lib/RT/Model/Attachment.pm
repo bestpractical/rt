@@ -236,7 +236,7 @@ sub Content {
     );
 }
 
-=head2 OriginalContent
+=head2 original_content
 
 Returns the attachment's content as octets before RT's mangling.
 Currently, this just means restoring text content back to its
@@ -244,11 +244,11 @@ original encoding.
 
 =cut
 
-sub OriginalContent {
+sub original_content {
     my $self = shift;
 
-    return $self->Content unless RT::I18N::IsTextualContentType($self->ContentType);
-    my $enc = $self->OriginalEncoding;
+    return $self->Content unless RT::I18N::is_textual_content_type($self->ContentType);
+    my $enc = $self->original_encoding;
 
     my $content;
     if ( !$self->ContentEncoding || $self->ContentEncoding eq 'none' ) {
@@ -277,29 +277,29 @@ sub OriginalContent {
     return $content;
 }
 
-=head2 OriginalEncoding
+=head2 original_encoding
 
 Returns the attachment's original encoding.
 
 =cut
 
-sub OriginalEncoding {
+sub original_encoding {
     my $self = shift;
-    return $self->GetHeader('X-RT-Original-Encoding');
+    return $self->get_header('X-RT-Original-Encoding');
 }
 
-=head2 ContentLength
+=head2 content_length
 
 Returns length of L</Content> in bytes.
 
 =cut
 
-sub ContentLength {
+sub content_length {
     my $self = shift;
 
     return undef unless $self->transaction_obj->current_user_can_see;
 
-    my $len = $self->GetHeader('Content-Length');
+    my $len = $self->get_header('Content-Length');
     unless ( defined $len ) {
         use bytes;
         no warnings 'uninitialized';
@@ -323,7 +323,7 @@ sub Quote {
 
     # TODO: Handle Multipart/Mixed (eventually fix the link in the
     # ShowHistory web template?)
-    if (RT::I18N::IsTextualContentType($self->ContentType)) {
+    if (RT::I18N::is_textual_content_type($self->ContentType)) {
 	$body=$self->Content;
 
 	# Do we need any preformatting (wrapping, that is) of the message?
@@ -364,22 +364,22 @@ sub Quote {
     return (\$body, $max);
 }
 
-=head2 ContentAsMIME
+=head2 content_as_mime
 
 Returns MIME entity built from this attachment.
 
 =cut
 
-sub ContentAsMIME {
+sub content_as_mime {
     my $self = shift;
 
     my $entity = new MIME::Entity;
     $entity->head->add( split /:/, $_, 2 )
-        foreach $self->SplitHeaders;
+        foreach $self->split_headers;
 
     use MIME::Body;
     $entity->bodyhandle(
-        MIME::Body::Scalar->new( $self->OriginalContent )
+        MIME::Body::Scalar->new( $self->original_content )
     );
 
     return $entity;
@@ -404,7 +404,7 @@ sub Addresses {
     my $comment = lc $self->transaction_obj->ticket_obj->queue_obj->comment_address;
     foreach my $hdr (qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {
         my @Addresses;
-        my $line      = $self->GetHeader($hdr);
+        my $line      = $self->get_header($hdr);
         
         foreach my $AddrObj ( Mail::Address->parse( $line )) {
             my $address = $AddrObj->address;
@@ -420,16 +420,16 @@ sub Addresses {
 	return \%data;
 }
 
-=head2 NiceHeaders
+=head2 nice_headers
 
 Returns a multi-line string of the To, From, Cc, Date and Subject headers.
 
 =cut
 
-sub NiceHeaders {
+sub nice_headers {
     my $self = shift;
     my $hdrs = "";
-    my @hdrs = $self->_SplitHeaders;
+    my @hdrs = $self->_split_headers;
     while (my $str = shift @hdrs) {
 	    next unless $str =~ /^(To|From|RT-Send-Cc|Cc|Bcc|Date|Subject):/i;
 	    $hdrs .= $str . "\n";
@@ -449,20 +449,20 @@ an abstraction barrier that makes it impossible to pass this data directly.
 =cut
 
 sub Headers {
-    return join("\n", $_[0]->SplitHeaders);
+    return join("\n", $_[0]->split_headers);
 }
 
-=head2 GetHeader $TAG
+=head2 get_header $TAG
 
 Returns the value of the header Tag as a string. This bypasses the weeding out
 done in Headers() above.
 
 =cut
 
-sub GetHeader {
+sub get_header {
     my $self = shift;
     my $tag = shift;
-    foreach my $line ($self->_SplitHeaders) {
+    foreach my $line ($self->_split_headers) {
         next unless $line =~ /^\Q$tag\E:\s+(.*)$/si;
 
         #if we find the header, return its value
@@ -472,31 +472,31 @@ sub GetHeader {
     # we found no header. return an empty string
     return undef;
 }
-=head DelHeader $TAG
+=head del_header $TAG
 
 Delete a field from the attachment's headers.
     
 =cut
     
-sub DelHeader {
+sub del_header {
     my $self = shift;
     my $tag = shift;
     
     my $newheader = '';
-    foreach my $line ($self->_SplitHeaders) {
+    foreach my $line ($self->_split_headers) {
         next if $line =~ /^\Q$tag\E:\s+(.*)$/is;
     $newheader .= "$line\n";
     }
     return $self->__set( field => 'Headers', value => $newheader);
 }
 
-=head AddHeader $TAG, $VALUE, ...
+=head add_header $TAG, $VALUE, ...
 
 Add one or many fields to the attachment's headers.
 
 =cut
 
-sub AddHeader {
+sub add_header {
     my $self = shift;
 
     my $newheader = $self->__value( 'Headers' );
@@ -520,7 +520,7 @@ sub set_header {
     my $tag = shift;
     my $newheader = '';
 
-    foreach my $line ($self->_SplitHeaders) {
+    foreach my $line ($self->_split_headers) {
         if (defined $tag and $line =~ /^\Q$tag\E:\s+(.*)$/i) {
 	    $newheader .= "$tag: $_[0]\n";
 	    undef $tag;
@@ -534,7 +534,7 @@ sub set_header {
     $self->__set( column => 'Headers', value => $newheader);
 }
 
-=head2 SplitHeaders
+=head2 split_headers
 
 Returns an array of this attachment object's headers, with one header 
 per array entry. Multiple lines are folded.
@@ -543,12 +543,12 @@ B<Never> returns C<RT-Send-Bcc> field.
 
 =cut
 
-sub SplitHeaders {
+sub split_headers {
     my $self = shift;
-    return (grep !/^RT-Send-Bcc/i, $self->_SplitHeaders(@_) );
+    return (grep !/^RT-Send-Bcc/i, $self->_split_headers(@_) );
 }
 
-=head2 _SplitHeaders
+=head2 _split_headers
 
 Returns an array of this attachment object's headers, with one header 
 per array entry. multiple lines are folded.
@@ -556,7 +556,7 @@ per array entry. multiple lines are folded.
 
 =cut
 
-sub _SplitHeaders {
+sub _split_headers {
     my $self = shift;
     my $headers = (shift || $self->_value('Headers'));
     my @headers;
@@ -601,7 +601,7 @@ sub Encrypt {
     ) {
         my %res = RT::Crypt::GnuPG::GetKeysInfo( $address, 'private' );
         next if $res{'exit_code'} || !$res{'info'};
-        %res = RT::Crypt::GnuPG::GetKeysForEncryption( $address );
+        %res = RT::Crypt::GnuPG::get_keys_for_encryption( $address );
         next if $res{'exit_code'} || !$res{'info'};
         $encrypt_for = $address;
     }
@@ -687,12 +687,5 @@ sub _value {
 
 # Transactions don't change. by adding this cache congif directiove,
 # we don't lose pathalogically on long tickets.
-sub _CacheConfig {
-    {
-        'cache_p'       => 1,
-        'fast_update_p' => 1,
-        'cache_for_sec' => 180,
-    }
-}
 
 1;

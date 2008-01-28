@@ -70,13 +70,13 @@
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <&|/Widgets/TitleBox, title => _( 'Cryptography' ) &>
-Preferred key: <& /Elements/GnuPG/SelectKeyForEncryption, email => $user_object->email, Default => $user_object->PreferredKey &>
+Preferred key: <& /Elements/GnuPG/SelectKeyForEncryption, email => $user_object->email, Default => $user_object->preferred_key &>
 </&>
 % }
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <&|/Widgets/TitleBox, title => _( 'Cryptography' ) &>
-Preferred key: <& /Elements/SelectKey, email => $user_object->email, Default => $user_object->PreferredKey &>
+Preferred key: <& /Elements/SelectKey, email => $user_object->email, Default => $user_object->preferred_key &>
 </&>
 % }
 
@@ -89,8 +89,8 @@ my $title = _("Other preferences");
 my $user_object = Jifty->web->current_user->user_object;
 my $preferences = $user_object->Preferences( RT->system );
 
-if ((defined $PreferredKey) && $PreferredKey ne $user_object->first_attribute('PreferredKey')) {
-    my ($code, $msg) = $user_object->set_attribute(name => 'PreferredKey', Content => $PreferredKey);
+if ((defined $preferred_key) && $preferred_key ne $user_object->first_attribute('preferred_key')) {
+    my ($code, $msg) = $user_object->set_attribute(name => 'preferred_key', Content => $preferred_key);
     push @results, _('Preferred Key: %1', _($msg));
 }
 
@@ -126,5 +126,5 @@ my $localize_meta = sub {
 <%ARGS>
 $Update => 0,
 $User   => undef,
-$PreferredKey => undef,
+$preferred_key => undef,
 </%ARGS>

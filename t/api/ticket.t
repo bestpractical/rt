@@ -124,7 +124,7 @@ ok(my $bob = RT::Model::User->new(current_user => RT->system_user), "Creating a 
 $bob->load_by_email('bob@fsck.com');
 ok($bob->id,  "Found the bob rt user");
 ok ($ticket->IsWatcher(Type => 'Requestor', principal_id => $bob->principal_id), "The ticket actually has bob at fsck.com as a requestor");;
-ok ( ($add_id, $add_msg) = $ticket->deleteWatcher(Type =>'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok ( ($add_id, $add_msg) = $ticket->delete_watcher(Type =>'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
 ok (!$ticket->IsWatcher(Type => 'Requestor', principal_id => $bob->principal_id), "The ticket no longer has bob at fsck.com as a requestor");;
 
 

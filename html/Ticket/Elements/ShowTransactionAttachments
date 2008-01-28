@@ -54,7 +54,7 @@ foreach my $message ( grep $_->__value('Parent') == $Parent, @$Attachments ) {
               DisplayHeaders => \@DisplayHeaders,
             );
 
-    my $size = $message->ContentLength;
+    my $size = $message->content_length;
     if ( $size ) {
 </%PERL>
 <div class="downloadattachment">
@@ -70,7 +70,7 @@ foreach my $message ( grep $_->__value('Parent') == $Parent, @$Attachments ) {
 <div class="messagebody">
 <%PERL>
 # {{{ if it has a content-disposition: attachment, don't show inline
-unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
+unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
 
     my $content;
 
@@ -138,7 +138,7 @@ unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
               . $message->id
               . '/" />' );
     }
-    elsif ( $message->ContentLength > 0 ) {
+    elsif ( $message->content_length > 0 ) {
         $m->out(
             _( 'Message body not shown because it is too large or is not plain text.' )
         );

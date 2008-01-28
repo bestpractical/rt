@@ -78,14 +78,14 @@ sub _init {
                     column => 'name',
                         order => 'ASC' );
 
-    $self->{'princalias'} = $self->new_alias('Principals');
+    $self->{'princ_alias'} =  $self->new_alias('Principals');
 
     # XXX: should be generalized
     $self->join( alias1 => 'main',
                  column1 => 'id',
-                 alias2 => $self->{'princalias'},
+                 alias2 => $self->principals_alias,
                  column2 => 'id' );
-    $self->limit( alias => $self->{'princalias'},
+    $self->limit( alias => $self->principals_alias,
                   column => 'principal_type',
                   value => 'User',
                 );
@@ -95,16 +95,16 @@ sub _init {
 
 # }}}
 
-=head2 PrincipalsAlias
+=head2 principals_alias
 
 Returns the string that represents this Users object's primary "Principals" alias.
 
 =cut
 
 # XXX: should be generalized
-sub PrincipalsAlias {
+sub principals_alias {
     my $self = shift;
-    return($self->{'princalias'});
+    return($self->{'princ_alias'});
 
 }
 
@@ -142,7 +142,7 @@ Only find items that haven\'t been disabled
 sub limit_to_enabled {
     my $self = shift;
 
-    $self->limit( alias    => $self->PrincipalsAlias,
+    $self->limit( alias    => $self->principals_alias,
                   column    => 'disabled',
                   value    => '0',
                   operator => '=' );
@@ -150,16 +150,16 @@ sub limit_to_enabled {
 
 # }}}
 
-# {{{ limit_ToEmail
+# {{{ limit_to_email
 
-=head2 limit_ToEmail
+=head2 limit_to_email
 
 Takes one argument. an email address. limits the returned set to
 that email address
 
 =cut
 
-sub limit_ToEmail {
+sub limit_to_email {
     my $self = shift;
     my $addr = shift;
     $self->limit( column => 'email', value => "$addr" );
@@ -167,16 +167,16 @@ sub limit_ToEmail {
 
 # }}}
 
-# {{{ MemberOfGroup
+# {{{ member_of_group
 
-=head2 MemberOfGroup PRINCIPAL_ID
+=head2 member_of_group PRINCIPAL_ID
 
 takes one argument, a group's principal id. Limits the returned set
 to members of a given group
 
 =cut
 
-sub MemberOfGroup {
+sub member_of_group {
     my $self  = shift;
     my $group = shift;
 
@@ -185,7 +185,7 @@ sub MemberOfGroup {
     my $groupalias = $self->new_alias('CachedGroupMembers');
 
     # join the principal to the groups table
-    $self->join( alias1 => $self->PrincipalsAlias,
+    $self->join( alias1 => $self->principals_alias,
                  column1 => 'id',
                  alias2 => $groupalias,
                  column2 => 'MemberId' );
@@ -198,15 +198,15 @@ sub MemberOfGroup {
 
 # }}}
 
-# {{{ limit_Toprivileged
+# {{{ limit_to_privileged
 
-=head2 limit_Toprivileged
+=head2 limit_to_privileged
 
 Limits to users who can be made members of ACLs and groups
 
 =cut
 
-sub limit_Toprivileged {
+sub limit_to_privileged {
     my $self = shift;
 
     my $priv = RT::Model::Group->new;
@@ -214,14 +214,14 @@ sub limit_Toprivileged {
     unless ( $priv->id ) {
         Jifty->log->fatal("Couldn't find a privileged users group");
     }
-    $self->MemberOfGroup( $priv->principal_id );
+    $self->member_of_group( $priv->principal_id );
 }
 
 # }}}
 
-# {{{ WhoHaveRight
+# {{{ who_have_right
 
-=head2 WhoHaveRight { Right => 'name', Object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, equiv_objects => [ ] }
+=head2 who_have_right { Right => 'name', Object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, equiv_objects => [ ] }
 
 
 find all users who the right Right for this group, either individually
@@ -232,7 +232,7 @@ If passed a queue object, with no id, it will find users who have that right for
 =cut
 
 # XXX: should be generalized
-sub _joinGroupMembers
+sub _join_group_members
 {
     my $self = shift;
     my %args = (
@@ -240,7 +240,7 @@ sub _joinGroupMembers
         @_
     );
 
-    my $principals = $self->PrincipalsAlias;
+    my $principals = $self->principals_alias;
 
     # The cachedgroupmembers table is used for unrolling group memberships
     # to allow fast lookups. if we bind to CachedGroupMembers, we'll find
@@ -265,12 +265,12 @@ sub _joinGroupMembers
 }
 
 # XXX: should be generalized
-sub _joinGroups
+sub _join_groups
 {
     my $self = shift;
     my %args = (@_);
 
-    my $group_members = $self->_joinGroupMembers( %args );
+    my $group_members = $self->_join_group_members( %args );
     my $groups = $self->new_alias('Groups');
     $self->join(
         alias1 => $groups,
@@ -283,7 +283,7 @@ sub _joinGroups
 }
 
 # XXX: should be generalized
-sub _joinACL
+sub _join_acl
 {
     my $self = shift;
     my %args = (
@@ -313,7 +313,7 @@ sub _joinACL
 }
 
 # XXX: should be generalized
-sub _Getequiv_objects
+sub _get_equiv_objects
 {
     my $self = shift;
     my %args = (
@@ -346,7 +346,7 @@ sub _Getequiv_objects
 }
 
 # XXX: should be generalized
-sub WhoHaveRight {
+sub who_have_right {
     my $self = shift;
     my %args = (
         Right                  => undef,
@@ -359,15 +359,15 @@ sub WhoHaveRight {
     );
 
     if ( defined $args{'object_type'} || defined $args{'object_id'} ) {
-        Jifty->log->fatal( "WhoHaveRight called with the Obsolete object_id/object_type API");
+        Jifty->log->fatal( "who_have_right called with the Obsolete object_id/object_type API");
         return (undef);
     }
 
     my $from_role = $self->clone;
-    $from_role->WhoHaveRoleRight(%args);
+    $from_role->who_have_role_right(%args);
 
     my $from_group = $self->clone;
-    $from_group->WhoHaveGroupRight( %args );
+    $from_group->who_have_group_right( %args );
 
     #XXX: DIRTY HACK
     use Jifty::DBI::Collection::Union;
@@ -382,7 +382,7 @@ sub WhoHaveRight {
 # }}}
 
 # XXX: should be generalized
-sub WhoHaveRoleRight
+sub who_have_role_right
 {
     my $self = shift;
     my %args = (
@@ -395,13 +395,13 @@ sub WhoHaveRoleRight
         @_
     );
 
-    my $groups = $self->_joinGroups( %args );
-    my $acl = $self->_joinACL( %args );
+    my $groups = $self->_join_groups( %args );
+    my $acl = $self->_join_acl( %args );
 
     my ($check_roles, $check_objects) = ('','');
 
 
-    my @objects = $self->_Getequiv_objects( %args );
+    my @objects = $self->_get_equiv_objects( %args );
 
     if ( @objects ) {
             my @role_clauses;
@@ -443,7 +443,7 @@ sub WhoHaveRoleRight
                 );
 
     # no system user
-    $self->limit( alias => $self->PrincipalsAlias,
+    $self->limit( alias => $self->principals_alias,
                   column => 'id',
                   operator => '!=',
                   value => RT->system_user->id
@@ -452,11 +452,11 @@ sub WhoHaveRoleRight
 }
 
 # XXX: should be generalized
-sub _joinGroupMembersForGroupRights
+sub _join_group_members_for_group_rights
 {
     my $self = shift;
     my %args = (@_);
-    my $group_members = $self->_joinGroupMembers( %args );
+    my $group_members = $self->_join_group_members( %args );
     $self->limit( alias => $args{'ACLAlias'},
                   column => 'principal_id',
                   value => "$group_members.GroupId",
@@ -465,7 +465,7 @@ sub _joinGroupMembersForGroupRights
 }
 
 # XXX: should be generalized
-sub WhoHaveGroupRight
+sub who_have_group_right
 {
     my $self = shift;
     my %args = (
@@ -480,10 +480,10 @@ sub WhoHaveGroupRight
 
     # Find only rows where the right granted is
     # the one we're looking up or _possibly_ superuser
-    my $acl = $self->_joinACL( %args );
+    my $acl = $self->_join_acl( %args );
 
     my ($check_objects) = ('');
-    my @objects = $self->_Getequiv_objects( %args );
+    my @objects = $self->_get_equiv_objects( %args );
 
     if ( @objects ) {
         my @object_clauses;
@@ -505,7 +505,7 @@ sub WhoHaveGroupRight
     }
     $self->_add_subclause( "WhichObject", "($check_objects)" );
     
-    $self->_joinGroupMembersForGroupRights( %args, ACLAlias => $acl );
+    $self->_join_group_members_for_group_rights( %args, ACLAlias => $acl );
     # Find only members of groups that have the right.
     $self->limit( alias => $acl,
                   column => 'principal_type',
@@ -513,7 +513,7 @@ sub WhoHaveGroupRight
                 );
     
     # no system user
-    $self->limit( alias => $self->PrincipalsAlias,
+    $self->limit( alias => $self->principals_alias,
                   column => 'id',
                   operator => '!=',
                   value => RT->system_user->id
@@ -521,14 +521,14 @@ sub WhoHaveGroupRight
     return;
 }
 
-# {{{ WhoBelongToGroups
+# {{{ who_belong_to_groups
 
-=head2 WhoBelongToGroups { Groups => ARRAYREF, IncludeSubgroupMembers => 1 }
+=head2 who_belong_to_groups { Groups => ARRAYREF, IncludeSubgroupMembers => 1 }
 
 =cut
 
 # XXX: should be generalized
-sub WhoBelongToGroups {
+sub who_belong_to_groups {
     my $self = shift;
     my %args = ( Groups                 => undef,
                  IncludeSubgroupMembers => 1,
@@ -536,9 +536,9 @@ sub WhoBelongToGroups {
 
     # Unprivileged users can't be granted real system rights.
     # is this really the right thing to be saying?
-    $self->limit_Toprivileged();
+    $self->limit_to_privileged();
 
-    my $group_members = $self->_joinGroupMembers( %args );
+    my $group_members = $self->_join_group_members( %args );
 
     foreach my $groupid (@{$args{'Groups'}}) {
         $self->limit( alias           => $group_members,

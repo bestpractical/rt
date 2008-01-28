@@ -139,7 +139,7 @@ A convoluted example
     my $groupid = $groups->first->id;
  
     my $adminccs = RT::Model::UserCollection->new(current_user => RT->system_user);
-    $adminccs->WhoHaveRight(
+    $adminccs->who_have_right(
 	Right => "AdminGroup",
 	Object =>$groups->first,
 	IncludeSystemRights => undef,
@@ -1124,7 +1124,7 @@ sub UpdateWatchers {
         }
 
         foreach (@delete) {
-            my ( $val, $msg ) = $ticket->deleteWatcher(
+            my ( $val, $msg ) = $ticket->delete_watcher(
                 Type  => $type,
                 Email => $_
             );

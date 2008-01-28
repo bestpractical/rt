@@ -119,9 +119,9 @@ sub set_mime_entity_to_utf8 {
 
 # }}}
 
-# {{{ IsTextualContentType
+# {{{ is_textual_content_type
 
-=head2 IsTextualContentType $type
+=head2 is_textual_content_type $type
 
 An utility function that determines whether $type is I<textual>, meaning
 that it can sensibly be converted to Unicode text.
@@ -135,7 +135,7 @@ Currently, it returns true iff $type matches this regular expression
 
 =cut
 
-sub IsTextualContentType {
+sub is_textual_content_type {
     my $type = shift;
     ($type =~ m{^(?:text/(?:plain|html)|message/rfc822)\b}i) ? 1 : 0;
 }
@@ -181,9 +181,9 @@ sub set_mime_entity_to_encoding {
 
     # If this is a textual entity, we'd need to preserve its original encoding
     $head->add( "X-RT-Original-Encoding" => $charset )
-	if $head->mime_attr('content-type.charset') or IsTextualContentType($head->mime_type);
+	if $head->mime_attr('content-type.charset') or is_textual_content_type($head->mime_type);
 
-    return unless IsTextualContentType($head->mime_type);
+    return unless is_textual_content_type($head->mime_type);
 
     my $body = $entity->bodyhandle;
 

@@ -120,11 +120,11 @@ MAIL
     my $txn = $tick->Transactions->first;
     my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
 
-    is( $msg->GetHeader('X-RT-Privacy'),
+    is( $msg->get_header('X-RT-Privacy'),
         'PGP',
         "RT's outgoing mail has crypto"
     );
-    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+    is( $msg->get_header('X-RT-Incoming-Encryption'),
         'Success',
         "RT's outgoing mail looks encrypted"
     );
@@ -188,15 +188,15 @@ MAIL
     my $txn = $tick->Transactions->first;
     my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
 
-    is( $msg->GetHeader('X-RT-Privacy'),
+    is( $msg->get_header('X-RT-Privacy'),
         'PGP',
         "RT's outgoing mail has crypto"
     );
-    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+    is( $msg->get_header('X-RT-Incoming-Encryption'),
         'Not encrypted',
         "RT's outgoing mail looks unencrypted"
     );
-    is( $msg->GetHeader('X-RT-Incoming-Signature'),
+    is( $msg->get_header('X-RT-Incoming-Signature'),
         'general <general@example.com>',
         "RT's outgoing mail looks signed"
     );
@@ -258,15 +258,15 @@ MAIL
     my $txn = $tick->Transactions->first;
     my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
 
-    is( $msg->GetHeader('X-RT-Privacy'),
+    is( $msg->get_header('X-RT-Privacy'),
         'PGP',
         "RT's outgoing mail has crypto"
     );
-    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+    is( $msg->get_header('X-RT-Incoming-Encryption'),
         'Success',
         "RT's outgoing mail looks encrypted"
     );
-    is( $msg->GetHeader('X-RT-Incoming-Signature'),
+    is( $msg->get_header('X-RT-Incoming-Signature'),
         'general <general@example.com>',
         "RT's outgoing mail looks signed"
     );
@@ -323,15 +323,15 @@ MAIL
     my $txn = $tick->Transactions->first;
     my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
 
-    is( $msg->GetHeader('X-RT-Privacy'),
+    is( $msg->get_header('X-RT-Privacy'),
         'PGP',
         "RT's outgoing mail has crypto"
     );
-    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+    is( $msg->get_header('X-RT-Incoming-Encryption'),
         'Not encrypted',
         "RT's outgoing mail looks unencrypted"
     );
-    is( $msg->GetHeader('X-RT-Incoming-Signature'),
+    is( $msg->get_header('X-RT-Incoming-Signature'),
         'general <general@example.com>',
         "RT's outgoing mail looks signed"
     );
@@ -349,8 +349,8 @@ sub strip_headers
 
 # now test the OwnernameKey and RequestorsKey fields
 my $nokey = RT::Test->load_or_create_user(name => 'nokey', email => 'nokey@example.com');
-$nokey->principal_object->GrantRight(Right => 'CreateTicket');
-$nokey->principal_object->GrantRight(Right => 'OwnTicket');
+$nokey->principal_object->grant_right(Right => 'CreateTicket');
+$nokey->principal_object->grant_right(Right => 'OwnTicket');
 
 my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
 $tick->create(Subject => 'owner lacks pubkey', Queue => 'general',
@@ -386,7 +386,7 @@ my $key2 = "75E156271DCCF02DDD4A7A8CDF651FA0632C4F50";
 
 ok($user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
-is($user->PreferredKey, $key1, "preferred key is set correctly");
+is($user->preferred_key, $key1, "preferred key is set correctly");
 $m->get("$baseurl/Prefs/Other.html");
 like($m->content, qr/Preferred key/, "preferred key option shows up in preference");
 
@@ -396,12 +396,12 @@ like($m->content, qr/$key2/, "second key shows up in preferences");
 like($m->content, qr/$key1.*?$key2/s, "first key shows up before the second");
 
 $m->form_number(3);
-$m->select("PreferredKey" => $key2);
+$m->select("preferred_key" => $key2);
 $m->submit;
 
 ok($user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
-is($user->PreferredKey, $key2, "preferred key is set correctly to the new value");
+is($user->preferred_key, $key2, "preferred key is set correctly to the new value");
 
 $m->get("$baseurl/Prefs/Other.html");
 like($m->content, qr/Preferred key/, "preferred key option shows up in preference");

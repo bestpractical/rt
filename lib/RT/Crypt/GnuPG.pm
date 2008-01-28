@@ -1828,7 +1828,7 @@ sub UseKeyForSigning {
     return $key;
 } }
 
-=head2 GetKeysForEncryption
+=head2 get_keys_for_encryption
 
 Takes identifier and returns keys suitable for encryption.
 
@@ -1837,7 +1837,7 @@ also listed.
 
 =cut
 
-sub GetKeysForEncryption {
+sub get_keys_for_encryption {
     my $key_id = shift;
     my %res = GetKeysInfo( $key_id, 'public', @_ );
     return %res if $res{'exit_code'};
@@ -1870,7 +1870,7 @@ sub CheckRecipients {
 
     my %seen;
     foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
-        my %res = GetKeysForEncryption( $address );
+        my %res = get_keys_for_encryption( $address );
         if ( $res{'info'} && @{ $res{'info'} } == 1 && $res{'info'}[0]{'TrustLevel'} > 0 ) {
             # good, one suitable and trusted key 
             next;
@@ -1900,7 +1900,7 @@ sub CheckRecipients {
         }
 
         my $prefered_key;
-        $prefered_key = $user->PreferredKey if $user;
+        $prefered_key = $user->preferred_key if $user;
         #XXX: prefered key is not yet implemented...
 
         # classify errors
@@ -1932,7 +1932,7 @@ sub GetPublicKeyInfo {
     return GetKeyInfo( shift, 'public', @_ );
 }
 
-sub GetPrivateKeyInfo {
+sub Getprivate_keyInfo {
     return GetKeyInfo( shift, 'private', @_ );
 }
 

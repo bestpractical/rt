@@ -114,14 +114,14 @@ sub _init {
 }
 # }}}
 
-=head2 PrincipalsAlias
+=head2 principals_alias
 
 Returns the string that represents this Users object's primary "Principals" alias.
 
 =cut
 
 # XXX: should be generalized, code duplication
-sub PrincipalsAlias {
+sub principals_alias {
     my $self = shift;
     return($self->{'princalias'});
 
@@ -333,24 +333,24 @@ sub WithRight {
 
 #XXX: methods are active aliases to Users class to prevent code duplication
 # should be generalized
-sub _joinGroups {
+sub _join_groups {
     my $self = shift;
     my %args = (@_);
     return 'main' unless $args{'IncludeSubgroupMembers'};
-    return $self->RT::Model::UserCollection::_joinGroups( %args );
+    return $self->RT::Model::UserCollection::_join_groups( %args );
 }
-sub _joinGroupMembers {
+sub _join_group_members {
     my $self = shift;
     my %args = (@_);
     return 'main' unless $args{'IncludeSubgroupMembers'};
-    return $self->RT::Model::UserCollection::_joinGroupMembers( %args );
+    return $self->RT::Model::UserCollection::_join_group_members( %args );
 }
-sub _joinGroupMembersForGroupRights {
+sub _join_group_members_for_group_rights {
     my $self = shift;
     my %args = (@_);
-    my $group_members = $self->_joinGroupMembers( %args );
+    my $group_members = $self->_join_group_members( %args );
     unless( $group_members eq 'main' ) {
-        return $self->RT::Model::UserCollection::_joinGroupMembersForGroupRights( %args );
+        return $self->RT::Model::UserCollection::_join_group_members_for_group_rights( %args );
     }
     $self->limit( alias => $args{'ACLAlias'},
                   column => 'principal_id',
@@ -358,12 +358,12 @@ sub _joinGroupMembersForGroupRights {
                   quote_value => 0,
                 );
 }
-sub _joinACL                  { return (shift)->RT::Model::UserCollection::_joinACL( @_ ) }
+sub _join_acl                  { return (shift)->RT::Model::UserCollection::_join_acl( @_ ) }
 sub _RoleClauses              { return (shift)->RT::Model::UserCollection::_RoleClauses( @_ ) }
-sub _WhoHaveRoleRightSplitted { return (shift)->RT::Model::UserCollection::_WhoHaveRoleRightSplitted( @_ ) }
-sub _Getequiv_objects          { return (shift)->RT::Model::UserCollection::_Getequiv_objects( @_ ) }
-sub WithGroupRight            { return (shift)->RT::Model::UserCollection::WhoHaveGroupRight( @_ ) }
-sub WithRoleRight             { return (shift)->RT::Model::UserCollection::WhoHaveRoleRight( @_ ) }
+sub _who_have_role_rightSplitted { return (shift)->RT::Model::UserCollection::_who_have_role_rightSplitted( @_ ) }
+sub _get_equiv_objects          { return (shift)->RT::Model::UserCollection::_get_equiv_objects( @_ ) }
+sub WithGroupRight            { return (shift)->RT::Model::UserCollection::who_have_group_right( @_ ) }
+sub WithRoleRight             { return (shift)->RT::Model::UserCollection::who_have_role_right( @_ ) }
 
 # {{{ sub limit_to_enabled
 
@@ -376,7 +376,7 @@ Only find items that haven\'t been disabled
 sub limit_to_enabled {
     my $self = shift;
     
-    $self->limit( alias => $self->PrincipalsAlias,
+    $self->limit( alias => $self->principals_alias,
 		          column => 'disabled',
 		          value => '0',
 		          operator => '=',

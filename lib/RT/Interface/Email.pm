@@ -377,8 +377,8 @@ sub SendEmail {
         foreach my $argument ( qw(Sign Encrypt) ) {
             next if defined $args{ $argument };
 
-            if ( $attachment && defined $attachment->GetHeader("X-RT-$argument") ) {
-                $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
+            if ( $attachment && defined $attachment->get_header("X-RT-$argument") ) {
+                $crypt{$argument} = $attachment->get_header("X-RT-$argument");
             } elsif ( $args{'Ticket'} ) {
                 $crypt{$argument} = $args{'Ticket'}->queue_obj->$argument();
             }
@@ -576,7 +576,7 @@ sub ForwardTransaction {
     my %args = ( To => '', Cc => '', Bcc => '', @_ );
 
     my $main_content = $txn->ContentObj;
-    my $entity = $main_content->ContentAsMIME;
+    my $entity = $main_content->content_as_mime;
 
     if ( $main_content->Parent ) {
         # main content is not top most entity, we shouldn't loose
@@ -590,7 +590,7 @@ sub ForwardTransaction {
         my $tmp = $attachments->first;
         if ( $tmp && $tmp->id ne $main_content->id ) {
             $entity->make_multipart;
-            $entity->head->add( split /:/, $_, 2 ) foreach $tmp->SplitHeaders;
+            $entity->head->add( split /:/, $_, 2 ) foreach $tmp->split_headers;
             $entity->make_singlepart;
         }
     }
@@ -614,7 +614,7 @@ sub ForwardTransaction {
     );
     while ( my $a = $attachments->next ) {
         $entity->make_multipart unless $entity->is_multipart;
-        $entity->add_part( $a->ContentAsMIME );
+        $entity->add_part( $a->content_as_mime );
     }
 
     my ($template, $msg) = PrepareEmailUsingTemplate(
@@ -997,7 +997,7 @@ sub SetInReplyTo {
         if ( $args{'InReplyTo'}->isa('MIME::Entity') ) {
             @res = $args{'InReplyTo'}->head->get( shift );
         } else {
-            @res = $args{'InReplyTo'}->GetHeader( shift ) || '';
+            @res = $args{'InReplyTo'}->get_header( shift ) || '';
         }
         return grep length, map { split /\s+/m, $_ } grep defined, @res;
     };

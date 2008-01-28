@@ -88,11 +88,11 @@ my $u1 = RT::Model::User->new(current_user => RT->system_user);
 ok ($id,$msg);
 
 # grant ShowTicket right to allow count transactions
-($id,$msg) = $u1->principal_object->GrantRight ( Object => $q1, Right => 'ShowTicket');
+($id,$msg) = $u1->principal_object->grant_right ( Object => $q1, Right => 'ShowTicket');
 ok ($id,$msg);
-($id,$msg) = $u1->principal_object->GrantRight ( Object => $q2, Right => 'ShowTicket');
+($id,$msg) = $u1->principal_object->grant_right ( Object => $q2, Right => 'ShowTicket');
 ok ($id,$msg);
-($id,$msg) = $u1->principal_object->GrantRight ( Object => $q1, Right => 'CreateTicket');
+($id,$msg) = $u1->principal_object->grant_right ( Object => $q1, Right => 'CreateTicket');
 ok ($id,$msg);
 
 my $creator = RT::CurrentUser->new(id => $u1->id);
@@ -129,7 +129,7 @@ diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VER
     RT->Config->set( StrictLinkACL => 1 );
 }
 
-($id,$msg) = $u1->principal_object->GrantRight ( Object => $q1, Right => 'ModifyTicket');
+($id,$msg) = $u1->principal_object->grant_right ( Object => $q1, Right => 'ModifyTicket');
 ok ($id,$msg);
 
 diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
@@ -208,9 +208,9 @@ ok ($id, $msg);
 ok(!$id,$msg);
 is(link_count($filename), 0, "scrips ok");
 
-($id,$msg) = $u1->principal_object->GrantRight ( Object => $q2, Right => 'CreateTicket');
+($id,$msg) = $u1->principal_object->grant_right ( Object => $q2, Right => 'CreateTicket');
 ok ($id,$msg);
-($id,$msg) = $u1->principal_object->GrantRight ( Object => $q2, Right => 'ModifyTicket');
+($id,$msg) = $u1->principal_object->grant_right ( Object => $q2, Right => 'ModifyTicket');
 ok ($id,$msg);
 ($id,$msg) = $ticket->add_link(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);

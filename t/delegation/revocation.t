@@ -45,9 +45,9 @@ ok( $ret, "Load / Create test personal group 2: $msg" );
 
 clear_acls_and_groups();
 
-( $ret, $msg ) = $u1->principal_object->GrantRight( Right => 'DelegateRights' );
+( $ret, $msg ) = $u1->principal_object->grant_right( Right => 'DelegateRights' );
 ok( $ret, "Grant DelegateRights to u1: $msg" );
-( $ret, $msg ) = $g1->principal_object->GrantRight( Right => 'ShowConfigTab' );
+( $ret, $msg ) = $g1->principal_object->grant_right( Right => 'ShowConfigTab' );
 ok( $ret, "Grant ShowConfigTab to g1: $msg" );
 ( $ret, $msg ) = $g1->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g1: $msg" );
@@ -94,7 +94,7 @@ ok(( $pg1->principal_object->has_right( Right  => 'ShowConfigTab',
 				   Object => RT->system )),
    "Test personal groups have ShowConfigTab right after delegation" );
 
-( $ret, $msg ) = $g1->principal_object->RevokeRight( Right => 'ShowConfigTab' );
+( $ret, $msg ) = $g1->principal_object->revoke_right( Right => 'ShowConfigTab' );
 ok( $ret, "Revoke ShowConfigTab from g1: $msg" );
 
 ok( not( $pg1->principal_object->has_right( Right  => 'ShowConfigTab',

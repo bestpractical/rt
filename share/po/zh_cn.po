@@ -2939,7 +2939,7 @@ msgid "Error in parameters to Queue->AddWatcher"
 msgstr "表单->新增视察员的参数有误"
 
 #: lib/RT/Queue_Overlay.pm:833
-msgid "Error in parameters to Queue->deleteWatcher"
+msgid "Error in parameters to Queue->delete_watcher"
 msgstr "表单->删除视察员的参数有误"
 
 #: lib/RT/Ticket_Overlay.pm:1372
@@ -2947,7 +2947,7 @@ msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "申请单->新增视察员的参数有误"
 
 #: lib/RT/Ticket_Overlay.pm:1538
-msgid "Error in parameters to Ticket->deleteWatcher"
+msgid "Error in parameters to Ticket->delete_watcher"
 msgstr "申请单->删除视察员的参数有误"
 
 #: bin/rt-crontool:285

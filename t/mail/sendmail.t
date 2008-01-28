@@ -15,7 +15,7 @@ my @scrips_fired;
 #Were not testing acls here.
 my $everyone = RT::Model::Group->new(current_user => RT->system_user);
 $everyone->load_system_internal_group('Everyone');
-$everyone->principal_object->GrantRight( Right =>'SuperUser' );
+$everyone->principal_object->grant_right( Right =>'SuperUser' );
 
 
 is (__PACKAGE__, 'main', "We're operating in the main package");
@@ -498,7 +498,7 @@ $tickets->limit(column => 'id' ,operator => '>', value => '0');
 $tick= $tickets->first();
 ok ($tick->id, "found ticket ".$tick->id);
 
-my $cc = first_attach($tick)->GetHeader('RT-Send-Cc');
+my $cc = first_attach($tick)->get_header('RT-Send-Cc');
 like ($cc , qr/test1/, "Found test 1");
 like ($cc , qr/test2/, "Found test 2");
 like ($cc , qr/test3/, "Found test 3");
@@ -532,5 +532,5 @@ diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
 
 
 # Don't taint the environment
-$everyone->principal_object->RevokeRight(Right =>'SuperUser');
+$everyone->principal_object->revoke_right(Right =>'SuperUser');
 1;

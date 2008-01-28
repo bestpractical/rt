@@ -1844,18 +1844,18 @@ msgstr "Fehler"
 msgid "Error in parameters to Queue->AddWatcher"
 msgstr "Fehler in den Parametern zu Queue->AddWatcher"
 
-# Queue->deleteWatcher ist ein Code-Teil, nicht übersetzen
+# Queue->delete_watcher ist ein Code-Teil, nicht übersetzen
 #: lib/RT/Queue_Overlay.pm:833
-msgid "Error in parameters to Queue->deleteWatcher"
-msgstr "Fehler in den Parametern zu Queue->deleteWatcher"
+msgid "Error in parameters to Queue->delete_watcher"
+msgstr "Fehler in den Parametern zu Queue->delete_watcher"
 
 #: lib/RT/Ticket_Overlay.pm:1372
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Fehler in den Parametern zu Ticket->AddWatcher"
 
 #: lib/RT/Ticket_Overlay.pm:1538
-msgid "Error in parameters to Ticket->deleteWatcher"
-msgstr "Fehler in den Parametern zu Ticket->deleteWatcher"
+msgid "Error in parameters to Ticket->delete_watcher"
+msgstr "Fehler in den Parametern zu Ticket->delete_watcher"
 
 #: bin/rt-crontool:285
 msgid "Escalate tickets"

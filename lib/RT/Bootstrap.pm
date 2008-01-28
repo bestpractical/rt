@@ -462,7 +462,7 @@ sub InsertData {
         }
 
             # Grant it
-            my ( $return, $msg ) = $princ->principal_object->GrantRight(
+            my ( $return, $msg ) = $princ->principal_object->grant_right(
                                                      Right => $item->{'Right'},
                                                      Object => $object );
 

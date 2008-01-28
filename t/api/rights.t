@@ -89,7 +89,7 @@ ok( !$user->has_right( Right => 'ReplyToTicket', Object => $queue ), "user can't
 my $group = RT::Model::Group->new(current_user => RT->system_user );
 ok( $group->loadQueueRoleGroup( Queue => $queue_id, Type=> 'Owner' ), "load queue owners role group" );
 my $ace = RT::Model::ACE->new(current_user => RT->system_user );
-my ($ace_id, $msg) = $group->principal_object->GrantRight( Right => 'ReplyToTicket', Object => $queue );
+my ($ace_id, $msg) = $group->principal_object->grant_right( Right => 'ReplyToTicket', Object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right: $msg" );
 ok( $group->principal_object->has_right( Right => 'ReplyToTicket', Object => $queue ), "role group can reply to ticket" );
 ok( !$user->has_right( Right => 'ReplyToTicket', Object => $queue ), "user can't reply to ticket" );
@@ -101,7 +101,7 @@ ok( $ticket_id, 'new ticket Created' );
 is( $ticket->Owner, RT->nobody->id, 'owner of the new ticket is nobody' );
 
 my $status;
-($status, $msg) = $user->principal_object->GrantRight( Object => $queue, Right => 'OwnTicket' );
+($status, $msg) = $user->principal_object->grant_right( Object => $queue, Right => 'OwnTicket' );
 ok( $status, "successfuly granted right: $msg" );
 ok( $user->has_right( Right => 'OwnTicket', Object => $queue ), "user can own ticket" );
 
@@ -115,7 +115,7 @@ ok( $user->has_right( Right => 'ReplyToTicket', Object => $ticket ), "user is ow
 $group = RT::Model::Group->new(current_user => RT->system_user );
 ok( $group->loadQueueRoleGroup( Queue => $queue_id, Type=> 'AdminCc' ), "load queue AdminCc role group" );
 $ace = RT::Model::ACE->new(current_user => RT->system_user );
-($ace_id, $msg) = $group->principal_object->GrantRight( Right => 'ModifyTicket', Object => $queue );
+($ace_id, $msg) = $group->principal_object->grant_right( Right => 'ModifyTicket', Object => $queue );
 ok( $ace_id, "Granted queue AdminCc role group with ModifyTicket right: $msg" );
 ok( $group->principal_object->has_right( Right => 'ModifyTicket', Object => $queue ), "role group can modify ticket" );
 ok( !$user->has_right( Right => 'ModifyTicket', Object => $ticket ), "user is not AdminCc and can't modify ticket" );

@@ -34,10 +34,10 @@ $q->create(name =>'DelegationTest');
 ok ($q->id, "Created a delegation test queue");
 
 #------ First, we test whether a user can delegate a right that's been granted to him personally 
-my ($val, $msg) = $user_a->principal_object->GrantRight(Object => RT->system, Right => 'AdminOwnPersonalGroups');
+my ($val, $msg) = $user_a->principal_object->grant_right(Object => RT->system, Right => 'AdminOwnPersonalGroups');
 ok($val, $msg);
 
-($val, $msg) = $user_a->principal_object->GrantRight(Object =>$q, Right => 'OwnTicket');
+($val, $msg) = $user_a->principal_object->grant_right(Object =>$q, Right => 'OwnTicket');
 ok($val, $msg);
 
 ok($user_a->has_right( Object => RT->system, Right => 'AdminOwnPersonalGroups')    ,"user a has the right 'AdminOwnPersonalGroups' directly");
@@ -68,7 +68,7 @@ ok ($own_ticket_ace->id, "Found the ACE we want to test with for now");
 ok( !$val ,"user a tries and fails to delegate the right 'ownticket' in queue 'DelegationTest' to personal group 'delegates' - $msg");
 
 
-($val, $msg) = $user_a->principal_object->GrantRight( Right => 'DelegateRights');
+($val, $msg) = $user_a->principal_object->grant_right( Right => 'DelegateRights');
 ok($val, "user a is granted the right to 'delegate rights' - $msg");
 
 ok($user_a->has_right( Object => RT->system, Right => 'DelegateRights') ,"user a has the right 'DeletgateRights'");
@@ -94,14 +94,14 @@ ok(  $val  ,"user a delegates pg 'delegates' right to 'OwnTickets' in queue 'Del
 
 ok( $user_b->has_right(Right => 'OwnTicket', Object => $q)    ,"user b has the right to own tickets in queue 'DelegationTest'");
 
-($val, $msg) = $user_a->principal_object->RevokeRight(Object=>$q, Right => 'OwnTicket');
+($val, $msg) = $user_a->principal_object->revoke_right(Object=>$q, Right => 'OwnTicket');
 ok($val, "Revoked user a's right to own tickets in queue 'DelegationTest". $msg);
 
 ok( !$user_a->has_right(Right => 'OwnTicket', Object => $q)    ,"user a does not have the right to own tickets in queue 'DelegationTest'");
 
  ok( !$user_b->has_right(Right => 'OwnTicket', Object => $q)   ,"user b does not have the right to own tickets in queue 'DelegationTest'");
 
-($val, $msg) = $user_a->principal_object->GrantRight(Object=>$q, Right => 'OwnTicket');
+($val, $msg) = $user_a->principal_object->grant_right(Object=>$q, Right => 'OwnTicket');
 ok($val, $msg);
 
  ok( $user_a->has_right(Right => 'OwnTicket', Object => $q)   ,"user a has the right to own tickets in queue 'DelegationTest'");
@@ -109,7 +109,7 @@ ok($val, $msg);
  ok(  !$user_b->has_right(Right => 'OwnTicket', Object => $q)  ,"user b does not have the right to own tickets in queue 'DelegationTest'");
 
 # {{{ get back to a known clean state 
-($val, $msg) = $user_a->principal_object->RevokeRight( Object => $q, Right => 'OwnTicket');
+($val, $msg) = $user_a->principal_object->revoke_right( Object => $q, Right => 'OwnTicket');
 ok($val, "Revoked user a's right to own tickets in queue 'DelegationTest -". $msg);
 ok( !$user_a->has_right(Right => 'OwnTicket', Object => $q)    ,"make sure that user a can't own tickets in queue 'DelegationTest'");
 # }}}
@@ -148,7 +148,7 @@ ok($val,"make 'user a' a member of del2b - $msg");
 
 # {{{ Grant a right to a group and make sure that a submember can delegate the right and that it does not get yanked
 # when a user is removed as a submember, when they're a submember through another path 
-($val, $msg) = $del1->principal_object->GrantRight( Object=> $q, Right => 'OwnTicket');
+($val, $msg) = $del1->principal_object->grant_right( Object=> $q, Right => 'OwnTicket');
 ok( $val   ,"grant del1  the right to 'OwnTicket' in queue 'DelegationTest' - $msg");
 
 ok(  $user_a->has_right(Right => 'OwnTicket', Object => $q)  ,"make sure that user a can own tickets in queue 'DelegationTest'");
@@ -181,7 +181,7 @@ ok(  !$user_b->has_right(Right => 'OwnTicket', Object => $q)  ,"user b does not 
 ($val, $msg) = $del2->add_member($user_a->principal_id);
 ok( $val   ,"make user a a member of group del2 - $msg");
 
-($val, $msg) = $del2->principal_object->GrantRight(Object=>$q, Right => 'OwnTicket');
+($val, $msg) = $del2->principal_object->grant_right(Object=>$q, Right => 'OwnTicket');
 ok($val, "grant the right 'own tickets' in queue 'DelegationTest' to group del2 - $msg");
 
 my $del2_right = RT::Model::ACE->new(current_user => $user_a);
@@ -195,12 +195,12 @@ ok( $val   ,"user a tries and succeeds to delegate the right 'ownticket' in queu
 ok( $user_b->has_right(Right => 'OwnTicket', Object => $q)   ,"user b has the right to own tickets in queue 'DelegationTest'");
 
 
-($val, $msg) = $del2->principal_object->RevokeRight(Object=>$q, Right => 'OwnTicket');
+($val, $msg) = $del2->principal_object->revoke_right(Object=>$q, Right => 'OwnTicket');
 ok($val, "revoke the right 'own tickets' in queue 'DelegationTest' to group del2 - $msg");
 ok(  $user_a->has_right(Right => 'OwnTicket', Object => $q)  ,"user a does has the right to own tickets in queue 'DelegationTest' via del1");
 ok(  !$user_b->has_right(Right => 'OwnTicket', Object => $q)   ,"user b does not have the right to own tickets in queue 'DelegationTest'");
 
-($val, $msg) = $del2->principal_object->GrantRight(Object=>$q, Right => 'OwnTicket');
+($val, $msg) = $del2->principal_object->grant_right(Object=>$q, Right => 'OwnTicket');
 ok($val, "grant the right 'own tickets' in queue 'DelegationTest' to group del2 - $msg");
 
 

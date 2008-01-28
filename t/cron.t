@@ -15,7 +15,7 @@ my ($ret, $msg) = $user_obj->load_or_create_by_email('tara@example.com');
 ok($ret, 'record test user creation');
 ($ret,$msg) =$user_obj->set_name('tara');
 ok($ret,$msg);
-($ret,$msg) =$user_obj->principal_object->GrantRight(Right => 'SuperUser');
+($ret,$msg) =$user_obj->principal_object->grant_right(Right => 'SuperUser');
 ok($ret,$msg);
 my $CurrentUser = RT::CurrentUser->new(name => 'tara');
 is($user_obj->name,'tara');

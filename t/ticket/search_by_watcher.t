@@ -193,7 +193,7 @@ my $nobody = RT->nobody();
     my $everyone = RT::Model::Group->new(current_user => RT->system_user );
     $everyone->load_system_internal_group('Everyone');
     ok($everyone->id, "loaded 'everyone' group");
-    my($id, $msg) = $everyone->principal_object->GrantRight( Right => 'OwnTicket',
+    my($id, $msg) = $everyone->principal_object->grant_right( Right => 'OwnTicket',
                                                          Object => $q
                                                        );
     ok($id, "granted OwnTicket right to Everyone on '$queue'") or diag("error: $msg");

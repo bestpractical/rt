@@ -142,7 +142,7 @@ sub Run
         } elsif( $s eq 'disabled' ) {
             $objs->{'find_disabled_rows'} = 1;
             $objs->limit(
-                alias => $objs->PrincipalsAlias,
+                alias => $objs->principals_alias,
                 column    => 'disabled',
                 operator => '!=',
                 value    => '0',

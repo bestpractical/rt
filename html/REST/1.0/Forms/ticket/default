@@ -278,7 +278,7 @@ else {
 
             foreach $p (keys %old) {
                 unless (exists $new{$p}) {
-                    ($s, $n) = $ticket->deleteWatcher(Type => $type,
+                    ($s, $n) = $ticket->delete_watcher(Type => $type,
                                                       Email => $p);
                     push @msgs, [ $s, $n ];
                 }

@@ -76,16 +76,16 @@ sub table {'Principals'}
 our $_ACL_CACHE;
 invalidate_acl_cache();
 
-# {{{ IsGroup
+# {{{ is_group
 
-=head2 IsGroup
+=head2 is_group
 
 Returns true if this principal is a group. 
 Returns undef, otherwise
 
 =cut
 
-sub IsGroup {
+sub is_group {
     my $self = shift;
     if ( defined $self->principal_type && 
             $self->principal_type eq 'Group' ) {
@@ -96,16 +96,16 @@ sub IsGroup {
 
 # }}}
 
-# {{{ IsUser
+# {{{ is_user
 
-=head2 IsUser 
+=head2 is_user 
 
 Returns true if this principal is a User. 
 Returns undef, otherwise
 
 =cut
 
-sub IsUser {
+sub is_user {
     my $self = shift;
     if ($self->principal_type eq 'User') {
         return(1);
@@ -129,10 +129,10 @@ sub Object {
     my $self = shift;
 
     unless ( $self->{'object'} ) {
-        if ( $self->IsUser ) {
+        if ( $self->is_user ) {
            $self->{'object'} = RT::Model::User->new;
         }
-        elsif ( $self->IsGroup ) {
+        elsif ( $self->is_group ) {
             $self->{'object'}  = RT::Model::Group->new;
         }
         else { 
@@ -148,9 +148,9 @@ sub Object {
 
 # {{{ ACL Related routines
 
-# {{{ GrantRight 
+# {{{ grant_right 
 
-=head2 GrantRight  { Right => RIGHTNAME, Object => undef }
+=head2 grant_right  { Right => RIGHTNAME, Object => undef }
 
 A helper function which calls RT::Model::ACE->create
 
@@ -161,7 +161,7 @@ A helper function which calls RT::Model::ACE->create
 
 =cut
 
-sub GrantRight {
+sub grant_right {
     my $self = shift;
     my %args = ( Right => undef,
                 Object => undef,
@@ -177,7 +177,7 @@ sub GrantRight {
     my $ace = RT::Model::ACE->new;
 
 
-    my $type = $self->_Getprincipal_typeForACL();
+    my $type = $self->_get_principal_type_for_acl();
 
     # If it's a user, we really want to grant the right to their 
     # user equivalence group
@@ -189,9 +189,9 @@ sub GrantRight {
 }
 # }}}
 
-# {{{ RevokeRight
+# {{{ revoke_right
 
-=head2 RevokeRight { Right => "right_name", Object => "object" }
+=head2 revoke_right { Right => "right_name", Object => "object" }
 
 Delete a right that a user has 
 
@@ -202,7 +202,7 @@ Delete a right that a user has
 
 =cut
 
-sub RevokeRight {
+sub revoke_right {
 
     my $self = shift;
     my %args = (
@@ -216,7 +216,7 @@ sub RevokeRight {
         $args{'Object'} = RT->system;
     }
     #ACL check handled in ACE.pm
-    my $type = $self->_Getprincipal_typeForACL();
+    my $type = $self->_get_principal_type_for_acl();
 
     my $ace = RT::Model::ACE->new;
     $ace->load_by_values(
@@ -234,9 +234,9 @@ sub RevokeRight {
 
 # }}}
 
-# {{{ sub _CleanupInvalidDelegations
+# {{{ sub _cleanup_invalid_delegations
 
-=head2 sub _CleanupInvalidDelegations { InsideTransaction => undef }
+=head2 sub _cleanup_invalid_delegations { InsideTransaction => undef }
 
 Revokes all ACE entries delegated by this principal which are
 inconsistent with this principal's current delegation rights.  Does
@@ -258,13 +258,13 @@ and logs an internal error if the deletion fails (should not happen).
 # This is currently just a stub for the methods of the same name in
 # RT::Model::User and RT::Model::Group.
 
-sub _CleanupInvalidDelegations {
+sub _cleanup_invalid_delegations {
     my $self = shift;
     unless ( $self->id ) {
 	Jifty->log->warn("Principal not loaded.");
 	return (undef);
     }
-    return ($self->Object->_CleanupInvalidDelegations(@_));
+    return ($self->Object->_cleanup_invalid_delegations(@_));
 }
 
 # }}}
@@ -358,7 +358,7 @@ sub has_right {
     my $self_id = $self->id;
     my $full_hashkey = join ";:;", $self_id, $args{'Right'};
     foreach ( @{ $args{'equiv_objects'} } ) {
-        my $ref_id = _ReferenceId($_);
+        my $ref_id = _reference_id($_);
         $full_hashkey .= ";:;$ref_id";
 
         my $short_hashkey = join ";:;", $self_id, $args{'Right'}, $ref_id;
@@ -391,11 +391,11 @@ sub _has_right
 {
     my $self = shift;
     {
-        my ($hit, @other) = $self->_HasGroupRight( @_ );
+        my ($hit, @other) = $self->_has_group_right( @_ );
         return ($hit, @other) if $hit;
     }
     {
-        my ($hit, @other) = $self->_HasRoleRight( @_ );
+        my ($hit, @other) = $self->_has_role_right( @_ );
         return ($hit, @other) if $hit;
     }
     return (0);
@@ -406,7 +406,7 @@ sub _has_right
 # assigned to this role X of the object, for example right CommentOnTicket
 # is granted to Cc role of a queue and user is in cc list of the queue
 
-sub _HasGroupRight
+sub _has_group_right
 {
     my $self = shift;
     my %args = (
@@ -462,7 +462,7 @@ sub _HasGroupRight
     return (1, $obj);
 }
 
-sub _HasRoleRight
+sub _has_role_right
 {
     my $self = shift;
     my %args = (
@@ -560,16 +560,16 @@ sub invalidate_acl_cache {
 # }}}
 
 
-# {{{ _Getprincipal_typeForACL
+# {{{ _get_principal_type_for_acl
 
-=head2 _Getprincipal_typeForACL
+=head2 _get_principal_type_for_acl
 
 Gets the principal type. if it's a user, it's a user. if it's a role group and it has a Type, 
 return that. if it has no type, return group.
 
 =cut
 
-sub _Getprincipal_typeForACL {
+sub _get_principal_type_for_acl {
     my $self = shift;
     my $type;    
     if ($self->principal_type eq 'Group' && $self->Object->Domain =~ /Role$/) {
@@ -584,9 +584,9 @@ sub _Getprincipal_typeForACL {
 
 # }}}
 
-# {{{ _ReferenceId
+# {{{ _reference_id
 
-=head2 _ReferenceId
+=head2 _reference_id
 
 Returns a list uniquely representing an object or normal scalar.
 
@@ -595,7 +595,7 @@ id() method, its class name and id are returned as a string separated by a "-".
 
 =cut
 
-sub _ReferenceId {
+sub _reference_id {
     my $scalar = shift;
 
     # just return the value for non-objects

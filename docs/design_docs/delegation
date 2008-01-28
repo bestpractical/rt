@@ -30,7 +30,7 @@ the group with id 'id'
 
 in users.pm
 
-=item WhoHaveRight { Right =>'somerightname', object_type => 'Group', object_id => 'GroupId' }
+=item who_have_right { Right =>'somerightname', object_type => 'Group', object_id => 'GroupId' }
 
 
         Finds all users who have the right 'somerightname' for the group

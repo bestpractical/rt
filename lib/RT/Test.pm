@@ -253,7 +253,7 @@ sub add_rights {
         }
         my @rights = ref $e->{'Right'}? @{ $e->{'Right'} }: ($e->{'Right'});
         foreach my $right ( @rights ) {
-            my ($status, $msg) = $principal->GrantRight( %$e, Right => $right );
+            my ($status, $msg) = $principal->grant_right( %$e, Right => $right );
             Jifty->log->warn($msg) unless $status;
         }
     }

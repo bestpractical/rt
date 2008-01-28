@@ -152,7 +152,7 @@ foreach my $key (keys %ARGS) {
         my $id = $queue_obj->id;
 
     if (($key =~ /^Queue-$id-DeleteWatcher-Type-(.*?)-Principal-(\d*)$/)) {;
-	    my ($code, $msg) = $queue_obj->deleteWatcher(Type => $1,
+	    my ($code, $msg) = $queue_obj->delete_watcher(Type => $1,
                                                     principal_id => $2);
 	    push @results, $msg;
     }

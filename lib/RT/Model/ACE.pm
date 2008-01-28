@@ -367,7 +367,7 @@ sub Delegate {
         return ( 0, _("Permission Denied") );
     }
 
-    unless ( $self->principal_object->IsGroup ) {
+    unless ( $self->principal_object->is_group ) {
         return ( 0, _("System Error") );
     }
     unless ( $self->principal_object->Object->has_member_recursively(
@@ -488,7 +488,7 @@ sub _delete {
     # revoke all rights delegated by the recipient.
     if ($val and ($self->right_name() eq 'DelegateRights' or
 		  $self->right_name() eq 'SuperUser')) {
-	$val = $self->principal_object->_CleanupInvalidDelegations( InsideTransaction => 1 );
+	$val = $self->principal_object->_cleanup_invalid_delegations( InsideTransaction => 1 );
     }
 
     if ($val) {
@@ -643,7 +643,7 @@ sub _value {
     if ( $self->__value('DelegatedBy') eq $self->current_user->id ) {
         return ( $self->__value(@_) );
     }
-    elsif ( $self->principal_object->IsGroup
+    elsif ( $self->principal_object->is_group
             && $self->principal_object->Object->has_member_recursively(
                                                 $self->current_user->principal_object
             )

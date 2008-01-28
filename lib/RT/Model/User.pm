@@ -807,9 +807,9 @@ sub principal_id {
 
 
 
-# {{{ sub HasGroupRight
+# {{{ sub has_group_right
 
-=head2 HasGroupRight
+=head2 has_group_right
 
 Takes a paramhash which can contain
 these items:
@@ -824,7 +824,7 @@ Returns undef if they don't.
 
 =cut
 
-sub HasGroupRight {
+sub has_group_right {
     my $self = shift;
     my %args = (
         GroupObj    => undef,
@@ -1105,9 +1105,9 @@ sub WatchedQueues {
 }
 
 
-# {{{ sub _CleanupInvalidDelegations
+# {{{ sub _cleanup_invalid_delegations
 
-=head2 _CleanupInvalidDelegations { InsideTransaction => undef }
+=head2 _cleanup_invalid_delegations { InsideTransaction => undef }
 
 Revokes all ACE entries delegated by this user which are inconsistent
 with their current delegation rights.  Does not perform permission
@@ -1121,12 +1121,12 @@ and logs an internal error if the deletion fails (should not happen).
 
 =cut
 
-# XXX Currently there is a _CleanupInvalidDelegations method in both
+# XXX Currently there is a _cleanup_invalid_delegations method in both
 # RT::Model::User and RT::Model::Group.  If the recursive cleanup call for groups is
 # ever unrolled and merged, this code will probably want to be
 # factored out into RT::Model::Principal.
 
-sub _CleanupInvalidDelegations {
+sub _cleanup_invalid_delegations {
     my $self = shift;
     my %args = ( InsideTransaction => undef,
           @_ );
@@ -1290,7 +1290,7 @@ sub friendly_name {
 
 # }}}
 
-=head2 PreferredKey
+=head2 preferred_key
 
 Returns the preferred key of the user. If none is set, then this will query
 GPG and set the preferred key to the maximally trusted key found (and then
@@ -1298,16 +1298,16 @@ return it). Returns C<undef> if no preferred key can be found.
 
 =cut
 
-sub PreferredKey
+sub preferred_key
 {
     my $self = shift;
     return undef unless RT->Config->Get('GnuPG')->{'Enable'};
-    my $prefkey = $self->first_attribute('PreferredKey');
+    my $prefkey = $self->first_attribute('preferred_key');
     return $prefkey->Content if $prefkey;
 
     # we don't have a preferred key for this user, so now we must query GPG
     require RT::Crypt::GnuPG;
-    my %res = RT::Crypt::GnuPG::GetKeysForEncryption($self->email);
+    my %res = RT::Crypt::GnuPG::get_keys_for_encryption($self->email);
     return undef unless defined $res{'info'};
     my @keys = @{ $res{'info'} };
     return undef if @keys == 0;
@@ -1321,23 +1321,23 @@ sub PreferredKey
         $prefkey = $keys[0]->{'Fingerprint'};
     }
 
-    $self->set_attribute(name => 'PreferredKey', Content => $prefkey);
+    $self->set_attribute(name => 'preferred_key', Content => $prefkey);
     return $prefkey;
 }
 
-sub PrivateKey {
+sub private_key {
     my $self = shift;
 
-    my $key = $self->first_attribute('PrivateKey') or return undef;
+    my $key = $self->first_attribute('private_key') or return undef;
     return $key->Content;
 }
 
-sub setPrivateKey {
+sub set_private_key {
     my $self = shift;
     my $key = shift;
     # XXX: ACL
     unless ( $key ) {
-        my ($status, $msg) = $self->delete_attribute('PrivateKey');
+        my ($status, $msg) = $self->delete_attribute('private_key');
         unless ( $status ) {
             Jifty->log->error( "Couldn't delete attribute: $msg" );
             return ($status, _("Couldn't unset private key"));
@@ -1353,7 +1353,7 @@ sub setPrivateKey {
     }
 
     my ($status, $msg) = $self->setAttribute(
-        name => 'PrivateKey',
+        name => 'private_key',
         Content => $key,
     );
     return ($status, _("Couldn't set private key"))    

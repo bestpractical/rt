@@ -114,7 +114,7 @@ if ( defined($UserString) && length $UserString ) {
 }
 else {
     $caption = _("privileged users");
-    $users->limit_Toprivileged;
+    $users->limit_to_privileged;
 }
 
 $Format ||= q{'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__id__</a>/TITLE:#'}

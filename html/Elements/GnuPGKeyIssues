@@ -77,7 +77,7 @@ Select a key you want to use for encryption:
 <& /Elements/GnuPG/SelectKeyForEncryption,
     name         => 'UseKey-'. $issue->{'email'},
     email => $issue->{'email'},
-    Default      => ( $issue->{'User'}? $issue->{'User'}->PreferredKey : undef ),
+    Default      => ( $issue->{'User'}? $issue->{'User'}->preferred_key : undef ),
 &>
 </li>
 % }

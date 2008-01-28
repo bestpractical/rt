@@ -98,11 +98,11 @@ sub email_ok {
     my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
 
     if ($usage =~ /encrypted/) {
-        is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+        is( $msg->get_header('X-RT-Incoming-Encryption'),
             'Success',
             "$eid: recorded incoming mail that is encrypted"
         );
-        is( $msg->GetHeader('X-RT-Privacy'),
+        is( $msg->get_header('X-RT-Privacy'),
             'PGP',
             "$eid: recorded incoming mail that is encrypted"
         );
@@ -112,7 +112,7 @@ sub email_ok {
         );
     }
     else {
-        is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+        is( $msg->get_header('X-RT-Incoming-Encryption'),
             'Not encrypted',
             "$eid: recorded incoming mail that is not encrypted"
         );
@@ -122,13 +122,13 @@ sub email_ok {
     }
 
     if ($usage =~ /signed/) {
-        is( $msg->GetHeader('X-RT-Incoming-Signature'),
+        is( $msg->get_header('X-RT-Incoming-Signature'),
             'RT Test <rt-test@example.com>',
             "$eid: recorded incoming mail that is signed"
         );
     }
     else {
-        is( $msg->GetHeader('X-RT-Incoming-Signature'),
+        is( $msg->get_header('X-RT-Incoming-Signature'),
             undef,
             "$eid: recorded incoming mail that is not signed"
         );

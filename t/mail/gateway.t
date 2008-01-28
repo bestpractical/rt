@@ -114,7 +114,7 @@ diag "revoke rights tests depend on" if $ENV{'TEST_VERBOSE'};
     ok ($everyone_group->id, "Found group 'everyone'");
 
     foreach( qw(CreateTicket ReplyToTicket commentOnTicket) ) {
-        $everyone_group->principal_object->RevokeRight(Right => $_);
+        $everyone_group->principal_object->revoke_right(Right => $_);
     }
 }
 
@@ -169,7 +169,7 @@ EOF
     isa_ok ($attachment, 'RT::Model::Attachment');
     # XXX: We eat all newlines in header, that's not what RFC's suggesting
     is (
-        $attachment->GetHeader('X-RT-Mail-Extension'),
+        $attachment->get_header('X-RT-Mail-Extension'),
         "bad value with newlines",
         'header is in place, without trailing newline char'
     );
@@ -202,7 +202,7 @@ EOF
     my $attachment = $txn->Attachments->first;
     isa_ok ($attachment, 'RT::Model::Attachment');
     is (
-        $attachment->GetHeader('X-RT-Mail-Extension'),
+        $attachment->get_header('X-RT-Mail-Extension'),
         'some-extension-arg',
         'header is in place'
     );
@@ -364,7 +364,7 @@ EOF
 
     my $attachment = $txn->Attachments->first;
     isa_ok ($attachment, 'RT::Model::Attachment');
-    is ($attachment->GetHeader('X-RT-Mail-Extension'), $id, 'header is in place');
+    is ($attachment->get_header('X-RT-Mail-Extension'), $id, 'header is in place');
 }
 
 diag "can another random comment on a ticket without being granted privs? answer should be no" if $ENV{'TEST_VERBOSE'};
@@ -449,7 +449,7 @@ EOF
 
     my $attachment = $txn->Attachments->first;
     isa_ok ($attachment, 'RT::Model::Attachment');
-    is ($attachment->GetHeader('X-RT-Mail-Extension'), 'comment', 'header is in place');
+    is ($attachment->get_header('X-RT-Mail-Extension'), 'comment', 'header is in place');
 }
 
 diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
@@ -606,7 +606,7 @@ EOF
 }
 
 
-my ($val,$msg) = $everyone_group->principal_object->RevokeRight(Right => 'CreateTicket');
+my ($val,$msg) = $everyone_group->principal_object->revoke_right(Right => 'CreateTicket');
 ok ($val, $msg);
 
 SKIP: {
@@ -723,7 +723,7 @@ Jifty::DBI::Record::Cachable->flush_cache;
 
 cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
 
-($status, $msg) = $user->principal_object->GrantRight( Object => $queue, Right => 'ReplyToTicket' );
+($status, $msg) = $user->principal_object->grant_right( Object => $queue, Right => 'ReplyToTicket' );
 ok( $status, "successfuly granted right: $msg" );
 my $ace_id = $status;
 ok( $user->has_right( Right => 'ReplyToTicket', Object => $tick ), "User can reply to ticket" );
@@ -776,12 +776,12 @@ ok( !$user->has_right( Right => 'ReplyToTicket', Object => $tick ), "User can't 
 my $group = RT::Model::Group->new(current_user => RT->system_user );
 ok( $group->loadQueueRoleGroup( Queue => $qid, Type=> 'Owner' ), "load queue owners role group" );
 $ace = RT::Model::ACE->new(current_user => RT->system_user );
-($ace_id, $msg) = $group->principal_object->GrantRight( Right => 'ReplyToTicket', Object => $queue );
+($ace_id, $msg) = $group->principal_object->grant_right( Right => 'ReplyToTicket', Object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right" );
 
-($status, $msg) = $user->principal_object->GrantRight( Object => $queue, Right => 'OwnTicket' );
+($status, $msg) = $user->principal_object->grant_right( Object => $queue, Right => 'OwnTicket' );
 ok( $status, "successfuly granted right: $msg" );
-($status, $msg) = $user->principal_object->GrantRight( Object => $queue, Right => 'TakeTicket' );
+($status, $msg) = $user->principal_object->grant_right( Object => $queue, Right => 'TakeTicket' );
 ok( $status, "successfuly granted right: $msg" );
 
 $! = 0;

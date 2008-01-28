@@ -89,10 +89,10 @@ sub set_Recipients {
     if ( $arg =~ /\bOtherRecipients\b/ ) {
         if ( my $attachment = $self->transaction_obj->Attachments->first ) {
             push @Cc, map { $_->address } Mail::Address->parse(
-                $attachment->GetHeader('RT-Send-Cc')
+                $attachment->get_header('RT-Send-Cc')
             );
             push @Bcc, map { $_->address } Mail::Address->parse(
-                $attachment->GetHeader('RT-Send-Bcc')
+                $attachment->get_header('RT-Send-Bcc')
             );
         }
     }

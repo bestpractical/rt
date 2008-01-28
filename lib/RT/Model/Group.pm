@@ -748,7 +748,7 @@ sub GroupMembersObj {
     my $members_alias = $groups->new_alias( $members_table );
     $groups->join(
         alias1 => $members_alias,           column1 => 'MemberId',
-        alias2 => $groups->PrincipalsAlias, column2 => 'id',
+        alias2 => $groups->principals_alias, column2 => 'id',
     );
     $groups->limit(
         alias    => $members_alias,
@@ -790,7 +790,7 @@ sub UserMembersObj {
     my $members_alias = $users->new_alias( $members_table );
     $users->join(
         alias1 => $members_alias,           column1 => 'MemberId',
-        alias2 => $users->PrincipalsAlias, column2 => 'id',
+        alias2 => $users->principals_alias, column2 => 'id',
     );
     $users->limit(
         alias => $members_alias,
@@ -928,7 +928,7 @@ sub _add_member {
         #User is already a member of this group. no need to add it
         return ( 0, _("Group already has member") );
     }
-    if ( $new_member_obj->IsGroup &&
+    if ( $new_member_obj->is_group &&
          $new_member_obj->Object->has_member_recursively($self->principal_object) ) {
 
         #This group can't be made to be a member of itself
@@ -1117,9 +1117,9 @@ sub _delete_member {
 
 # }}}
 
-# {{{ sub _CleanupInvalidDelegations
+# {{{ sub _cleanup_invalid_delegations
 
-=head2 _CleanupInvalidDelegations { InsideTransaction => undef }
+=head2 _cleanup_invalid_delegations { InsideTransaction => undef }
 
 Revokes all ACE entries delegated by members of this group which are
 inconsistent with their current delegation rights.  Does not perform
@@ -1134,12 +1134,12 @@ and logs an internal error if the deletion fails (should not happen).
 
 =cut
 
-# XXX Currently there is a _CleanupInvalidDelegations method in both
+# XXX Currently there is a _cleanup_invalid_delegations method in both
 # RT::Model::User and RT::Model::Group.  If the recursive cleanup call for groups is
 # ever unrolled and merged, this code will probably want to be
 # factored out into RT::Model::Principal.
 
-sub _CleanupInvalidDelegations {
+sub _cleanup_invalid_delegations {
     my $self = shift;
     my %args = ( InsideTransaction => undef,
 		  @_ );
@@ -1156,7 +1156,7 @@ sub _CleanupInvalidDelegations {
     $members->limit_ToUsers();
     Jifty->handle->begin_transaction() unless $in_trans;
     while ( my $member = $members->next()) {
-	my $ret = $member->MemberObj->_CleanupInvalidDelegations(InsideTransaction => 1,
+	my $ret = $member->MemberObj->_cleanup_invalid_delegations(InsideTransaction => 1,
 								 Object => $args{Object});
 	unless ($ret) {
 	    Jifty->handle->rollback() unless $in_trans;

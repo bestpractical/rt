@@ -1892,7 +1892,7 @@ msgid "Error in parameters to Queue->AddWatcher"
 msgstr "Fel i parametrar till Kö->LäggtillObservatör"
 
 #: lib/RT/Queue_Overlay.pm:833
-msgid "Error in parameters to Queue->deleteWatcher"
+msgid "Error in parameters to Queue->delete_watcher"
 msgstr "Fel i parametrar till Kö->RaderaObservatör"
 
 #: lib/RT/Ticket_Overlay.pm:1372
@@ -1900,7 +1900,7 @@ msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Fel i parametrar till Ärende->LäggtillObservatör"
 
 #: lib/RT/Ticket_Overlay.pm:1538
-msgid "Error in parameters to Ticket->deleteWatcher"
+msgid "Error in parameters to Ticket->delete_watcher"
 msgstr "Fel i parametrar till Ärende->RaderaObservatör"
 
 #: bin/rt-crontool:285

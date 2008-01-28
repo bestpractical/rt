@@ -464,7 +464,7 @@ sub Message {
 =head2 Content PARAMHASH
 
 If this transaction has attached mime objects, returns the body of the first
-textual part (as defined in RT::I18N::IsTextualContentType).  Otherwise,
+textual part (as defined in RT::I18N::is_textual_content_type).  Otherwise,
 returns undef.
 
 Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message 
@@ -583,7 +583,7 @@ sub ContentObj {
     return undef unless my $Attachment = $self->Attachments->first;
 
     # If it's a textual part, just return the body.
-    if ( RT::I18N::IsTextualContentType($Attachment->ContentType) ) {
+    if ( RT::I18N::is_textual_content_type($Attachment->ContentType) ) {
         return ($Attachment);
     }
 
@@ -603,7 +603,7 @@ sub ContentObj {
         # If that fails, return the first textual part which has some content.
         my $all_parts = $self->Attachments;
         while ( my $part = $all_parts->next ) {
-            next unless RT::I18N::IsTextualContentType($part->ContentType)
+            next unless RT::I18N::is_textual_content_type($part->ContentType)
                         && $part->Content;
             return $part;
         }

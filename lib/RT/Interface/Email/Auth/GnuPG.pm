@@ -145,9 +145,9 @@ sub HandleErrors {
     my %sent_once = ();
     foreach my $run ( @{ $args{'Result'} } ) {
         my @status = RT::Crypt::GnuPG::ParseStatus( $run->{'status'} );
-        unless ( $sent_once{'NoPrivateKey'} ) {
-            unless ( CheckNoPrivateKey( Message => $args{'Message'}, Status => \@status ) ) {
-                $sent_once{'NoPrivateKey'}++;
+        unless ( $sent_once{'Noprivate_key'} ) {
+            unless ( CheckNoprivate_key( Message => $args{'Message'}, Status => \@status ) ) {
+                $sent_once{'Noprivate_key'}++;
                 $reject = 1;
             }
         }
@@ -161,7 +161,7 @@ sub HandleErrors {
     return $reject;
 }
 
-sub CheckNoPrivateKey {
+sub CheckNoprivate_key {
     my %args = (Message => undef, Status => [], @_ );
     my @status = @{ $args{'Status'} };
 

@@ -2108,16 +2108,16 @@ msgid "Error in parameters to Queue->AddWatcher"
 msgstr "Chyba v parametrech do Queue->AddWatcher"
 
 #: lib/RT/Queue_Overlay.pm:833
-msgid "Error in parameters to Queue->deleteWatcher"
-msgstr "Chyba v parametrech do Queue->deleteWatcher"
+msgid "Error in parameters to Queue->delete_watcher"
+msgstr "Chyba v parametrech do Queue->delete_watcher"
 
 #: lib/RT/Ticket_Overlay.pm:1372
 msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Chyba v parametrech do Ticket->AddWatcher"
 
 #: lib/RT/Ticket_Overlay.pm:1538
-msgid "Error in parameters to Ticket->deleteWatcher"
-msgstr "Chyba v parametrech do Ticket->deleteWatcher"
+msgid "Error in parameters to Ticket->delete_watcher"
+msgstr "Chyba v parametrech do Ticket->delete_watcher"
 
 #: bin/rt-crontool:285
 msgid "Escalate tickets"

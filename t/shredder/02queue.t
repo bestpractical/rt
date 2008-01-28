@@ -78,7 +78,7 @@ diag 'queue with a right granted' if $ENV{'TEST_VERBOSE'};
     $group->load_system_internal_group('Everyone');
     ok($group->id, 'loaded group');
 
-    ($id, $msg) = $group->principal_object->GrantRight(
+    ($id, $msg) = $group->principal_object->grant_right(
         Right  => 'CreateTicket',
         Object => $queue,
     );

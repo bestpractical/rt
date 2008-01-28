@@ -945,7 +945,7 @@ sub ProcessACLChanges {
     my @results;
 
     foreach my $arg (keys %$ARGSref) {
-        next unless ( $arg =~ /^(GrantRight|RevokeRight)-(\d+)-(.+?)-(\d+)$/ );
+        next unless ( $arg =~ /^(grant_right|revoke_right)-(\d+)-(.+?)-(\d+)$/ );
 
         my ($method, $principal_id, $object_type, $object_id) = ($1, $2, $3, $4);
 
@@ -1379,7 +1379,7 @@ sub ProcessTicketWatchers {
 
         # Delete deletable watchers
         if ( $key =~ /^Ticket-DeleteWatcher-Type-(.*)-Principal-(\d+)$/ ) {
-            my ( $code, $msg ) = $Ticket->deleteWatcher(
+            my ( $code, $msg ) = $Ticket->delete_watcher(
                 principal_id => $2,
                 Type        => $1
             );
@@ -1388,7 +1388,7 @@ sub ProcessTicketWatchers {
 
         # Delete watchers in the simple style demanded by the bulk manipulator
         elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {
-            my ( $code, $msg ) = $Ticket->deleteWatcher(
+            my ( $code, $msg ) = $Ticket->delete_watcher(
                 Email => $ARGSRef->{$key},
                 Type  => $1
             );

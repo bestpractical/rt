@@ -1706,7 +1706,7 @@ msgid "Error in parameters to Queue->AddWatcher"
 msgstr "Hiba a sor paraméterezésében ->AddWatcher"
 
 #: lib/RT/Queue_Overlay.pm:833
-msgid "Error in parameters to Queue->deleteWatcher"
+msgid "Error in parameters to Queue->delete_watcher"
 msgstr "Hiba a sor paraméterezésében->del_watcher"
 
 #: lib/RT/Ticket_Overlay.pm:1372
@@ -1714,7 +1714,7 @@ msgid "Error in parameters to Ticket->AddWatcher"
 msgstr "Hiba a probléma paraméterezésében -> AddWatcher"
 
 #: lib/RT/Ticket_Overlay.pm:1538
-msgid "Error in parameters to Ticket->deleteWatcher"
+msgid "Error in parameters to Ticket->delete_watcher"
 msgstr "Hiba a probléma paraméterezésében->del_watcher"
 
 #: bin/rt-crontool:285

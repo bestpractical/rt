@@ -120,7 +120,7 @@ sub create {
         }
     }
 
-    if ( $args{'Member'}->IsGroup() ) {
+    if ( $args{'Member'}->is_group() ) {
         my $GroupMembers = $args{'Member'}->Object->MembersObj();
         while ( my $member = $GroupMembers->next() ) {
             my $cached_member =
@@ -160,7 +160,7 @@ sub delete {
 
     
     my $member = $self->MemberObj();
-    if ( $member->IsGroup ) {
+    if ( $member->is_group ) {
         my $deletable = RT::Model::CachedGroupMemberCollection->new;
 
         $deletable->limit( column    => 'id',
@@ -247,7 +247,7 @@ sub set_disabled {
     }
     
     my $member = $self->MemberObj();
-    if ( $member->IsGroup ) {
+    if ( $member->is_group ) {
         my $deletable = RT::Model::CachedGroupMemberCollection->new;
 
         $deletable->limit( column    => 'Via', operator => '=', value    => $self->id );

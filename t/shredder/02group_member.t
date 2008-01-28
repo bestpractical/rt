@@ -70,7 +70,7 @@ plan tests => 22;
 	$queue->load('General');
 	ok( $queue->id, "queue loaded succesfully" );
 
-	$user->principal_object->GrantRight( Right => 'OwnTicket', Object => $queue );
+	$user->principal_object->grant_right( Right => 'OwnTicket', Object => $queue );
 
 	use RT::Model::TicketCollection;
 	my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );

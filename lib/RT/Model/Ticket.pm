@@ -1183,7 +1183,7 @@ sub _AddWatcher {
 # }}}
 
 
-# {{{ sub deleteWatcher
+# {{{ sub delete_watcher
 
 =head2 DeleteWatcher { Type => TYPE, principal_id => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
 
@@ -1202,7 +1202,7 @@ Email (the email address of an existing wathcer)
 =cut
 
 
-sub deleteWatcher {
+sub delete_watcher {
     my $self = shift;
 
     my %args = ( Type        => undef,
@@ -1260,7 +1260,7 @@ sub deleteWatcher {
         else {
             Jifty->log->warn("$self -> DeleteWatcher got passed a bogus type");
             return ( 0,
-                     _('Error in parameters to Ticket->deleteWatcher') );
+                     _('Error in parameters to Ticket->delete_watcher') );
         }
     }
 

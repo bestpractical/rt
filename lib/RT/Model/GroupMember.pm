@@ -71,7 +71,7 @@ sub create {
         return (undef);
     }
 
-    unless($args{'Group'}->IsGroup) {
+    unless($args{'Group'}->is_group) {
         Jifty->log->warn("Someone tried to add a member to a user instead of a group");
         return (undef);
     }
@@ -95,7 +95,7 @@ sub create {
     # (and recurse infinitely)  Later, we can add code to check this in the 
     # cache and bail so we can support cycling directed graphs
 
-    if ($args{'Member'}->IsGroup) {
+    if ($args{'Member'}->is_group) {
         my $member_object = $args{'Member'}->Object;
         if ($member_object->has_member_recursively($args{'Group'})) {
             Jifty->log->debug("Adding that group would create a loop");
@@ -292,7 +292,7 @@ sub delete {
     # Since this deletion may have changed the former member's
     # delegation rights, we need to ensure that no invalid delegations
     # remain.
-    ($err,$msg) = $self->MemberObj->_CleanupInvalidDelegations(InsideTransaction => 1);
+    ($err,$msg) = $self->MemberObj->_cleanup_invalid_delegations(InsideTransaction => 1);
     unless ($err) {
 	Jifty->log->warn("Unable to revoke delegated rights for principal ".$self->id);
 	Jifty->handle->rollback();

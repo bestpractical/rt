@@ -98,7 +98,7 @@ my ($Users, $Groups);
 if ($UserString) {
     $Users = RT::Model::UserCollection->new();
     $Users->limit(column => $UserField, value => $UserString, operator => $UserOp);
-    $Users->limit_Toprivileged if $privilegedOnly;
+    $Users->limit_to_privileged if $privilegedOnly;
      }
 
 if ($GroupString) {

@@ -86,7 +86,7 @@ $m->callback( %ARGS, objects => \@objects, Callbackname => 'UpdateObjectList');
 
 foreach my $object (@objects) {
 	my $Users = RT::Model::UserCollection->new();
-        $Users->WhoHaveRight(Right => 'OwnTicket', Object => $object, IncludeSystemRights => 1, IncludeSuperusers => 0); 
+        $Users->who_have_right(Right => 'OwnTicket', Object => $object, IncludeSystemRights => 1, IncludeSuperusers => 0); 
         while (my $User = $Users->next()) {
                 next if ($User->id == RT->nobody->id); # skip nobody here, so we can make them first later
 	      $user_uniq_hash{$User->id()} = $User;

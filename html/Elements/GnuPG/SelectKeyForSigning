@@ -13,5 +13,5 @@ $User => undef,
 <%INIT>
 return unless RT->Config->Get('GnuPG')->{'Enable'};
 
-my $user_key = $User->PrivateKey;
+my $user_key = $User->private_key;
 </%INIT>

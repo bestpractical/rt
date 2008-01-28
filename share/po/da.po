@@ -2366,7 +2366,7 @@ msgid "Error in parameters to Queue->del_watcher"
 msgstr "Fejl i parametre til Kø->SletObservatør"
 
 #: lib/RT/Queue_Overlay.pm:833
-msgid "Error in parameters to Queue->deleteWatcher"
+msgid "Error in parameters to Queue->delete_watcher"
 msgstr "Fejl i parametre til Kø->SletObservatør"
 
 #: lib/RT/Ticket_Overlay.pm:1372
@@ -2378,7 +2378,7 @@ msgid "Error in parameters to Ticket->del_watcher"
 msgstr "Fejl i parametre til Sag->SletObservatør"
 
 #: lib/RT/Ticket_Overlay.pm:1538
-msgid "Error in parameters to Ticket->deleteWatcher"
+msgid "Error in parameters to Ticket->delete_watcher"
 msgstr "Fejl i parametre til Sag->SletObservatør"
 
 #: bin/rt-crontool:285

@@ -58,14 +58,14 @@
 % while (my $right = $ACLObj->next()) {
 % if ($right->right_name) {
 % $current_rights{$right->right_name} = 1;
-<input type="checkbox" class="checkbox" value="<% $right->right_name %>" name="RevokeRight-<%$ACLDesc%>" /> <% _($right->right_name) %><br />
+<input type="checkbox" class="checkbox" value="<% $right->right_name %>" name="revoke_right-<%$ACLDesc%>" /> <% _($right->right_name) %><br />
 % }
 %  }
 % }
 </td>
 <td valign="top">
 <h3><&|/l&>New rights</&></h3> 
-<select size="5"  multiple  name="GrantRight-<%$ACLDesc%>">
+<select size="5"  multiple  name="grant_right-<%$ACLDesc%>">
 % foreach $right (sort keys %Rights) {
 % next if $current_rights{$right};
       <option value="<%$right%>"  

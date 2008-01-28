@@ -57,7 +57,7 @@
 % foreach my $rev (@{$documents{$key}}) {
 
 <%PERL>
-my $size = $rev->ContentLength;
+my $size = $rev->content_length;
 
 if ($size) {
     if ($size > 1024) {

@@ -114,7 +114,7 @@ RT::Test->close_mailgate_ok($mail);
     my $txn = $tick->Transactions->first;
     my ($msg, $attach) = @{$txn->Attachments->items_array_ref};
 
-    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+    is( $msg->get_header('X-RT-Incoming-Encryption'),
         'Not encrypted',
         'recorded incoming mail that is encrypted'
     );
@@ -155,7 +155,7 @@ RT::Test->close_mailgate_ok($mail);
 
     my $txn = $tick->Transactions->first;
     my ($msg, $attach) = @{$txn->Attachments->items_array_ref};
-    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+    is( $msg->get_header('X-RT-Incoming-Encryption'),
         'Not encrypted',
         'recorded incoming mail that is encrypted'
     );
@@ -198,17 +198,17 @@ RT::Test->close_mailgate_ok($mail);
     my $txn = $tick->Transactions->first;
     my ($msg, $attach, $orig) = @{$txn->Attachments->items_array_ref};
 
-    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+    is( $msg->get_header('X-RT-Incoming-Encryption'),
         'Success',
         'recorded incoming mail that is encrypted'
     );
-    is( $msg->GetHeader('X-RT-Privacy'),
+    is( $msg->get_header('X-RT-Privacy'),
         'PGP',
         'recorded incoming mail that is encrypted'
     );
     like( $attach->Content, qr'orz');
 
-    is( $orig->GetHeader('Content-Type'), 'application/x-rt-original-message');
+    is( $orig->get_header('Content-Type'), 'application/x-rt-original-message');
     ok(index($orig->Content, $buf) != -1, 'found original msg');
 }
 
@@ -242,7 +242,7 @@ RT::Test->close_mailgate_ok($mail);
     my $txn = $tick->Transactions->first;
     my ($msg, $attach) = @{$txn->Attachments->items_array_ref};
     # XXX: in this case, which credential should we be using?
-    is( $msg->GetHeader('X-RT-Incoming-Signature'),
+    is( $msg->get_header('X-RT-Incoming-Signature'),
         'Test User <rt@example.com>',
         'recorded incoming mail signed by others'
     );

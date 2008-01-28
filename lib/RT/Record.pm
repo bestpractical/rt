@@ -690,7 +690,7 @@ sub _decode_lob {
     elsif ( $ContentEncoding && $ContentEncoding ne 'none' ) {
         return ( _( "Unknown ContentEncoding %1", $ContentEncoding ) );
     }
-    if ( RT::I18N::IsTextualContentType($ContentType) ) {
+    if ( RT::I18N::is_textual_content_type($ContentType) ) {
        $Content = Encode::decode_utf8($Content) unless Encode::is_utf8($Content);
     }
         return ($Content);

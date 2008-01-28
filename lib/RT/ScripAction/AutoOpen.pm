@@ -74,7 +74,7 @@ sub prepare {
     return undef if $status eq 'new' && $self->transaction_obj->IsInbound;
 
     if ( my $msg = $self->transaction_obj->Message->first ) {
-        return undef if ($msg->GetHeader('RT-Control') || '') =~ /\bno-autoopen\b/i;
+        return undef if ($msg->get_header('RT-Control') || '') =~ /\bno-autoopen\b/i;
     }
 
     return 1;
