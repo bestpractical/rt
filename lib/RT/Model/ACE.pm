@@ -393,7 +393,7 @@ sub delegate {
     unless (
         $self->current_user->has_right(
             Right  => 'DelegateRights',
-            Object => $self->Object
+            Object => $self->object
         )
         )
     {
@@ -485,7 +485,7 @@ sub delete {
     unless (
         (   $self->current_user->has_right(
                 Right  => 'ModifyACL',
-                Object => $self->Object
+                Object => $self->object
             )
             && $self->__value('DelegatedBy') == 0
         )
@@ -705,7 +705,7 @@ sub _value {
     } elsif (
         $self->current_user->has_right(
             Right  => 'ShowACL',
-            Object => $self->Object
+            Object => $self->object
         )
         )
     {

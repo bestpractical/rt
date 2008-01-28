@@ -191,7 +191,7 @@ sub delete {
         return (undef);
     }
 
-    unless ( $self->group_obj->Object ) {
+    unless ( $self->group_obj->object ) {
 
         warn "HEY! NO group object object!!!" . $self->__value('GroupId');
         warn YAML::Dump($self);
