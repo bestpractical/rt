@@ -954,7 +954,7 @@ sub add_value_for_object {
     }
 
     unless ( $self->match_pattern( $args{'Content'} || '' ) ) {
-        return ( 0, _( 'Input must match %1', $self->FriendlyPattern ) );
+        return ( 0, _( 'Input must match %1', $self->friendly_pattern ) );
     }
 
     Jifty->handle->begin_transaction;
@@ -1021,9 +1021,9 @@ sub match_pattern {
 
 # }}}
 
-# {{{ FriendlyPattern
+# {{{ friendly_pattern
 
-=head2 FriendlyPattern
+=head2 friendly_pattern
 
 Prettify the pattern of this custom field, by taking the text in C<(?#text)>
 and localizing it.
@@ -1093,7 +1093,7 @@ sub delete_value_for_object {
 
 # for single-value fields, we need to validate that empty string is a valid value for it
     if ( $self->single_value and not $self->match_pattern('') ) {
-        return ( 0, _( 'Input must match %1', $self->FriendlyPattern ) );
+        return ( 0, _( 'Input must match %1', $self->friendly_pattern ) );
     }
 
     # delete it

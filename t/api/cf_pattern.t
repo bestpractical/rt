@@ -19,7 +19,7 @@ my $q = new('RT::Model::Queue');
 works($q->create(name => "CF-Pattern-".$$));
 
 my $cf = new('RT::Model::CustomField');
-my @cf_args = (name => $q->name, Type => 'Freeform', Queue => $q->id, MaxValues => 1);
+my @cf_args = (name => $q->name, type => 'Freeform', Queue => $q->id, MaxValues => 1);
 
 fails($cf->create(@cf_args, Pattern => ')))bad!regex((('));
 works($cf->create(@cf_args, Pattern => 'good regex'));

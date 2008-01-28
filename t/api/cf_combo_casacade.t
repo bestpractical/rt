@@ -17,7 +17,7 @@ my $q = new( 'RT::Model::Queue');
 works($q->create(name => "CF-Pattern-".$$));
 
 my $cf = new('RT::Model::CustomField');
-my @cf_args = (name => $q->name, Type => 'Combobox', Queue => $q->id);
+my @cf_args = (name => $q->name, type => 'Combobox', Queue => $q->id);
 
 works($cf->create(@cf_args));
 
