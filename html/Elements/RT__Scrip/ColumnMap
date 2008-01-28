@@ -76,6 +76,14 @@ my $COLUMN_MAP = {
         title     => 'Template',
         value     => sub { return $_[0]->loc( $_[0]->TemplateObj->Name ) },
     },
+    AutoDescription => {
+        title     => 'Condition, Action and Template',
+        value     => sub { return $_[0]->loc( "[_1] [_2] with template [_3]",
+            $_[0]->loc($_[0]->ConditionObj->Name),
+            $_[0]->loc($_[0]->ActionObj->Name),
+            $_[0]->loc($_[0]->TemplateObj->Name),
+        ) },
+    },
 };
 
 foreach my $col( qw(Description Stage) ) {
