@@ -17,7 +17,7 @@ sub import {
     my %args  = @_;
     $class->SUPER::import(@_);
     $class->_setup_config(%args);
-    RT::InitSystemObjects();
+    RT::init_system_objects();
 }
 
 sub _setup_config {
