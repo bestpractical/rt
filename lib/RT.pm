@@ -96,8 +96,8 @@ sub init {
 
     #    CheckPerlRequirements();
     #Get a database connection
-    InitSystemObjects();
-    InitPlugins();
+    init_system_objects();
+    init_plugins();
 }
 
 # Signal handlers
