@@ -178,9 +178,9 @@ sub _get_resolver {
 
 # }}}
 
-# {{{ Scheme
+# {{{ scheme
 
-=head2 Scheme
+=head2 scheme
 
 Returns a local object id for this content.  You are expected to know
 what sort of object this is the id of
@@ -189,7 +189,7 @@ what sort of object this is the id of
 
 sub scheme {
     my $self = shift;
-    return ( $self->resolver->Scheme );
+    return ( $self->resolver->scheme );
 
 }
 

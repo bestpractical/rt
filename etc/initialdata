@@ -228,11 +228,11 @@
     { Queue       => '0',
       name        => 'Blank',                                             # loc
       Description => 'A blank template',                                  # loc
-      Content     => '', },
+      content     => '', },
     {  Queue       => '0',
        name        => 'Autoreply',                                         # loc
        Description => 'Default Autoresponse template',                     # loc
-       Content     => 'Subject: AutoReply: {$Ticket->Subject}
+       content     => 'Subject: AutoReply: {$Ticket->Subject}
 
 
 Greetings,
@@ -263,7 +263,7 @@ you may reply to this message.
     {  Queue       => '0',
        name        => 'Transaction',                     # loc
        Description => 'Default transaction template',    # loc
-       Content     => 'RT-Attach-Message: yes
+       content     => 'RT-Attach-Message: yes
 
 
 {$Transaction->created_as_string}: Request {$Ticket->id} was acted upon.
@@ -285,7 +285,7 @@ Transaction: {$Transaction->Description}
       Queue       => '0',
       name        => 'Admin Correspondence',                     # loc
       Description => 'Default admin correspondence template',    # loc
-      Content     => 'RT-Attach-Message: yes
+      content     => 'RT-Attach-Message: yes
 
 
 <URL: {RT->config->get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id} >
@@ -297,7 +297,7 @@ Transaction: {$Transaction->Description}
     {  Queue       => '0',
        name        => 'Correspondence',                          # loc
        Description => 'Default correspondence template',         # loc
-       Content     => 'RT-Attach-Message: yes
+       content     => 'RT-Attach-Message: yes
 
 {$Transaction->content()}
 '
@@ -306,7 +306,7 @@ Transaction: {$Transaction->Description}
     {  Queue       => '0',
        name        => 'Admin comment',                           # loc
        Description => 'Default admin comment template',          # loc
-       Content     =>
+       content     =>
 'Subject: [comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[comment\\]//g; $s =~ s/^Re//i; $s;}
 
 
@@ -320,7 +320,7 @@ This is a comment.  It is not sent to the Requestor(s):
     {  Queue       => '0',
        name        => 'Status Change',                                     # loc
        Description => 'Ticket status changed',                             # loc
-       Content     => 'Subject: Status Changed to: {$Transaction->new_value}
+       content     => 'Subject: Status Changed to: {$Transaction->new_value}
 
 
 {RT->config->get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id}
@@ -334,7 +334,7 @@ This is a comment.  It is not sent to the Requestor(s):
       Queue       => '0',
       name        => 'Resolved',                 # loc
       Description => 'Ticket Resolved',          # loc
-      Content     => 'Subject: Resolved: {$Ticket->Subject}
+      content     => 'Subject: Resolved: {$Ticket->Subject}
 
 According to our records, your request has been resolved. If you have any
 further questions or concerns, please respond to this message.
@@ -344,7 +344,7 @@ further questions or concerns, please respond to this message.
        name        => "New Pending Approval",    # loc
        Description =>
          "Notify Owners and AdminCcs of new items pending their approval", # loc
-       Content => 'Subject: New Pending Approval: {$Ticket->Subject}
+       content => 'Subject: New Pending Approval: {$Ticket->Subject}
 
 Greetings,
 
@@ -363,7 +363,7 @@ batch-process all your pending approvals.
        name        => "Approval Passed",    # loc
        Description =>
          "Notify Owner of their ticket has been approved by some approver", # loc
-       Content => 'Subject: Ticket Approved: {$Ticket->Subject}
+       content => 'Subject: Ticket Approved: {$Ticket->Subject}
 
 Greetings,
 
@@ -375,7 +375,7 @@ Other approvals may be pending.
        name        => "All Approvals Passed",    # loc
        Description =>
          "Notify Owner of their ticket has been approved by all approvers", # loc
-       Content => 'Subject: Ticket Approved: {$Ticket->Subject}
+       content => 'Subject: Ticket Approved: {$Ticket->Subject}
 
 Greetings,
 
@@ -386,7 +386,7 @@ Your ticket has been approved.  Its Owner may now start to act on it.
        name        => "Approval Rejected",    # loc
        Description =>
          "Notify Owner of their rejected ticket", # loc
-       Content => 'Subject: Ticket Rejected: {$Ticket->Subject}
+       content => 'Subject: Ticket Rejected: {$Ticket->Subject}
 
 Greetings,
 
@@ -396,7 +396,7 @@ Your ticket has been rejected by { eval { $Approval->owner_obj->name } }.
     {  Queue       => 0,
        name        => "Forward",    # loc
        Description => "Heading of a forwarded message", # loc
-       Content => q{
+       content => q{
 
 This is forward of transaction #{ $Transaction->id } of a ticket #{ $Ticket->id }
 }
@@ -405,7 +405,7 @@ This is forward of transaction #{ $Transaction->id } of a ticket #{ $Ticket->id 
        name        => "Error: public key",    # loc
        Description =>
          "Inform user that he has problems with public key and couldn't recieve encrypted content", # loc
-       Content => q{Subject: We have no your public key or it's wrong
+       content => q{Subject: We have no your public key or it's wrong
 
 You received this message as we have no your public PGP key or we have a problem with your key. Inform the administrator about the problem.
 }
@@ -414,7 +414,7 @@ You received this message as we have no your public PGP key or we have a problem
        name        => "Error to RT owner: public key",    # loc
        Description =>
          "Inform RT owner that user(s) have problems with public keys", # loc
-       Content => q{Subject: Some users have problems with public keys
+       content => q{Subject: Some users have problems with public keys
 
 You received this message as RT has problems with public keys of the following user:
 {
@@ -427,7 +427,7 @@ You received this message as RT has problems with public keys of the following u
        name        => "Error: no private key",    # loc
        Description =>
          "Inform user that we received an encrypted email and we have no private keys to decrypt", # loc
-       Content => q{Subject: we received message we cannot decrypt
+       content => q{Subject: we received message we cannot decrypt
 
 You sent an encrypted message with subject '{ $Message->head->get('Subject') }',
 but we have no private key it's encrypted to.
@@ -439,7 +439,7 @@ or contact the system administrator.}
        name        => "Error: bad GnuPG data",    # loc
        Description =>
          "Inform user that a message he sent has invalid GnuPG data", # loc
-       Content => q{Subject: We received a message we cannot handle
+       content => q{Subject: We received a message we cannot handle
 
 You sent us a message that we cannot handle due to corrupted GnuPG signature or encrypted block. we get the following error(s):
 { foreach my $msg ( @Messages ) {
@@ -451,7 +451,7 @@ You sent us a message that we cannot handle due to corrupted GnuPG signature or 
        name        => "passwordChange",    # loc
        Description =>
          "Inform user that his password has been reset", # loc
-       Content => q{Subject: [{RT->config->get('rtname')}] password reset
+       content => q{Subject: [{RT->config->get('rtname')}] password reset
 
 Greetings,
 

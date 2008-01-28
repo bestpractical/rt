@@ -66,7 +66,7 @@ Returns the prefix for a local URI.
 sub local_uri_prefix {
     my $self = shift;
 
-    my $prefix = $self->Scheme . "://" . RT->config->get('organization');
+    my $prefix = $self->scheme . "://" . RT->config->get('organization');
 
     return ($prefix);
 }
@@ -179,7 +179,7 @@ sub object {
 
 }
 
-=head2 Scheme
+=head2 scheme
 
 Return the URI scheme for RT records
 

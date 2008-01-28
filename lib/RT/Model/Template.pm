@@ -41,7 +41,7 @@ use Jifty::DBI::Record schema {
     column
         TranslationOf => max_length is 11,
         type is 'int(11)', default is '0';
-    column Content     => type is 'blob',     default is '';
+    column content     => type is 'blob',     default is '';
     column LastUpdated => type is 'datetime', default is '';
     column
         LastUpdatedBy => max_length is 11,
@@ -153,9 +153,9 @@ sub load_queue_template {
 
 =head2 Create
 
-Takes a paramhash of Content, Queue, name and Description.
+Takes a paramhash of content, Queue, name and Description.
 name should be a unique string identifying this Template.
-Description and Content should be the template's title and content.
+Description and content should be the template's title and content.
 Queue should be 0 for a global template and the queue # for a queue-specific 
 template.
 
@@ -168,7 +168,7 @@ unknown database failure.
 sub create {
     my $self = shift;
     my %args = (
-        Content     => undef,
+        content     => undef,
         Queue       => 0,
         Description => '[no description]',
         Type => 'Action',    #By default, template are 'Action' templates
@@ -200,7 +200,7 @@ sub create {
     }
 
     my $result = $self->SUPER::create(
-        Content     => $args{'Content'},
+        content     => $args{'content'},
         Queue       => $args{'Queue'},
         Description => $args{'Description'},
         name        => $args{'name'},
