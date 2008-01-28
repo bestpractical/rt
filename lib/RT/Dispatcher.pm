@@ -13,7 +13,7 @@ use RT::Interface::Web::Handler;
 RT::I18N->init();
 
 before qr/.*/ => run {
-    RT::InitSystemObjects();
+    RT::init_system_objects();
 
 };
 
@@ -89,7 +89,7 @@ before qr/(.*)/ => run {
 }
 
 after qr/.*/ => run {
-    RT::Interface::Web::Handler::CleanupRequest();
+    RT::Interface::Web::Handler::cleanup_request();
 };
 
 # Backward compatibility with old RT URLs
