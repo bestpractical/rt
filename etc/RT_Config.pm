@@ -313,6 +313,10 @@ set( %GnuPG,
 # set OutgoingMessagesFormat to 'inline' to use inline encryption and
 # signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
     OutgoingMessagesFormat => 'RFC', # Inline
+
+# If you want to allow people to encrypt attachments inside the DB then
+# set below option to true value
+    AllowEncryptDataInDB   => 0,
 );
 
 # Options of GnuPG program

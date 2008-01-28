@@ -218,8 +218,13 @@ sub prepare {
 
     $self->AddTickets;
 
-    return $result;
+    my $attachment = $self->transaction_obj->Attachments->first;
+    if ( $attachment && !( $attachment->GetHeader('X-RT-Encrypt') || $self->ticket_obj->queue_obj->Encrypt ) ) {
+        $attachment->set_header( 'X-RT-Encrypt' => 1 )
+            if $attachment->GetHeader("X-RT-Incoming-Encryption")||'' eq 'Success';
+    }
 
+    return $result;
 }
 
 =head2 To
@@ -537,9 +542,10 @@ sub set_RTSpecialHeaders {
     unless ($self->template_obj->MIMEObj->head->get('Message-ID')) {
       # Get Message-ID for this txn
       my $msgid = "";
-      $msgid = $self->transaction_obj->Message->first->GetHeader("RT-Message-ID")
-        || $self->transaction_obj->Message->first->GetHeader("Message-ID")
-        if $self->transaction_obj->Message && $self->transaction_obj->Message->first;
+      if ( my $msg = $self->transaction_obj->Message->first ) {
+        $msgid = $msg->GetHeader("RT-Message-ID")
+            || $msg->GetHeader("Message-ID")
+      }
 
       # If there is one, and we can parse it, then base our Message-ID on it
       if ($msgid 
@@ -551,17 +557,13 @@ sub set_RTSpecialHeaders {
           and $2 == $self->ticket_obj->id) {
         $self->set_header( "Message-ID" => $msgid );
       } else {
-        $self->set_header( 'Message-ID',
-            "<rt-"
-            . $RT::VERSION . "-"
-            . $$ . "-"
-            . CORE::time() . "-"
-            . int(rand(2000)) . '.'
-            . $self->ticket_obj->id . "-"
-            . $self->scrip_obj->id . "-"  # Scrip
-            . $self->ScripActionObj->{_Message_ID} . "@"  # Email sent
-            . RT->Config->Get('organization')
-            . ">" );
+        $self->set_header(
+            'Message-ID' => RT::Interface::Email::GenMessageId(
+                Ticket => $self->ticket_obj,
+                Scrip => $self->scrip_obj,
+                ScripAction => $self->ScripActionObj
+            ),
+        );
       }
     }
 
@@ -825,9 +827,7 @@ sub set_ReferencesHeaders {
     my $self = shift;
     my ( @in_reply_to, @references, @msgid );
 
-    my $attachments = $self->transaction_obj->Message;
-
-    if ( my $top = $attachments->first() ) {
+    if ( my $top = $self->transaction_obj->Message->first ) {
         @in_reply_to = split(/\s+/m, $top->GetHeader('In-Reply-To') || '');  
         @references = split(/\s+/m, $top->GetHeader('References') || '' );  
         @msgid = split(/\s+/m, $top->GetHeader('Message-ID') || ''); 
@@ -845,12 +845,13 @@ sub set_ReferencesHeaders {
 
       # Make all references which are internal be to version which we
       # have sent out
+
       for (@references, @in_reply_to) {
         s/<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>$/
           "<$1." . $self->ticket_obj->id .
              "-" . $self->scrip_obj->id .
              "-" . $self->ScripActionObj->{_Message_ID} .
-             "@" . RT->Config->Get('organization') . ">"/eg
+             "@" . $org . ">"/eg
       }
 
       # In reply to whatever the internal message was in reply to

@@ -232,7 +232,7 @@ sub __Wipeout
     my $self = shift;
     my $msg = $self->_AsString ." wiped out";
     $self->SUPER::delete;
-    Jifty->log->warn( $msg );
+    Jifty->log->debug( $msg );
     return;
 }
 

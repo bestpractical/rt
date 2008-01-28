@@ -21,7 +21,7 @@ In user.pm
 =item has_right  { Right => 'somerightname', object_type => 'Group', object_id => 'GroupId'
 
         Returns true if this user has the right 'somerightname' for
-the group with id 'Id'
+the group with id 'id'
 
 =cut
 

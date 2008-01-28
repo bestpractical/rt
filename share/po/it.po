@@ -2687,8 +2687,8 @@ msgid "I'm lost"
 msgstr "Mi sono perso..."
 
 #: html/Ticket/Elements/ShowBasics:48 lib/RT/TicketCollection_Overlay.pm:1766
-msgid "Id"
-msgstr "Id"
+msgid "id"
+msgstr "id"
 
 #: html/Admin/Users/Modify.html:65 html/User/Prefs.html:60
 msgid "Identity"

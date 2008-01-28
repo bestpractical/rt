@@ -150,7 +150,7 @@ sub Object {
 
 # {{{ GrantRight 
 
-=head2 GrantRight  { Right => RIGHTname, Object => undef }
+=head2 GrantRight  { Right => RIGHTNAME, Object => undef }
 
 A helper function which calls RT::Model::ACE->create
 
@@ -591,7 +591,7 @@ sub _Getprincipal_typeForACL {
 Returns a list uniquely representing an object or normal scalar.
 
 For scalars, its string value is returned; for objects that has an
-id() method, its class name and Id are returned as a string separated by a "-".
+id() method, its class name and id are returned as a string separated by a "-".
 
 =cut
 

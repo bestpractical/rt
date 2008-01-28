@@ -183,7 +183,7 @@ sub set {
             Jifty->log->warn(
                 "Couldn't parse date '$args{'value'}' as a $args{'Format'} format"
             );
-            return $self->Unix(0);
+            return $self->Unix(undef);
         }
     }
     elsif ( $args{'Format'} =~ /^unknown$/i ) {
@@ -207,10 +207,8 @@ sub set {
         return $self->set( Format => 'unix', value => $date);
     }
     else {
-        Jifty->log->error(
-            "Unknown Date format: $args{'Format'}\n"
-        );
-        return $self->Unix(0);
+        Jifty->log->debug( "Unknown date format: $args{'Format'}\n");
+        return $self->Unix(undef);
     }
 
     return $self->Unix;
@@ -467,7 +465,7 @@ Returns the number of seconds since the epoch
 
 sub Unix {
     my $self = shift; 
-    $self->{'time'} = int(shift || 0) if @_;
+    $self->{'time'} = shift if @_;
     return $self->{'time'};
 }
 

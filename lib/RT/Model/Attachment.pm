@@ -207,7 +207,7 @@ sub ParentObj {
 =head2 Children
 
 Returns an L<RT::Model::AttachmentCollection> object which is preloaded with
-all attachments objects with this attachment\'s Id as their
+all attachments objects with this attachment\'s id as their
 C<Parent>.
 
 =cut
@@ -388,12 +388,12 @@ sub ContentAsMIME {
 
 =head2 Addresses
 
-Returns a hashref of all addresses related to this attachment.  
-The keys of the hash are C<From>,C<To>,C<Cc>, C<Bcc>, C<RT-Send-Cc> and C<RT-Send-Bcc>. The values are references to lists of Mail::Address objects.
-
+Returns a hashref of all addresses related to this attachment.
+The keys of the hash are C<From>, C<To>, C<Cc>, C<Bcc>, C<RT-Send-Cc>
+and C<RT-Send-Bcc>. The values are references to lists of
+L<Mail::Address> objects.
 
 =cut
-
 
 sub Addresses {
     my $self = shift;
@@ -408,8 +408,7 @@ sub Addresses {
         
         foreach my $AddrObj ( Mail::Address->parse( $line )) {
             my $address = $AddrObj->address;
-            my $user    = RT::Model::User->new(current_user => RT->system_user);
-            $address = lc $user->canonicalize_email($address);
+            $address = lc RT::Model::User->canonicalize_email($address);
             next if ( $current_user_address eq $address );
             next if ( $comment              eq $address );
             next if ( $correspond           eq $address );
@@ -505,7 +504,7 @@ sub AddHeader {
         $value = '' unless defined $value;
         $value =~ s/\s+$//s;
         $value =~ s/\r+\n/\n /g;
-    $newheader .= "$tag: $value\n";
+        $newheader .= "$tag: $value\n";
     }
     return $self->__set( column => 'Headers', value => $newheader);
 }       
@@ -568,6 +567,103 @@ sub _SplitHeaders {
     return(@headers);
 }
 
+
+sub Encrypt {
+    my $self = shift;
+
+    my $txn = $self->transaction_obj;
+    return (0, _('Permission Denied')) unless $txn->current_userCanSee;
+    return (0, _('Permission Denied'))
+        unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
+    return (0, _('GnuPG integration is disabled'))
+        unless RT->Config->Get('GnuPG')->{'Enable'};
+    return (0, _('Attachments encryption is disabled'))
+        unless RT->Config->Get('GnuPG')->{'AllowEncryptDataInDB'};
+
+    require RT::Crypt::GnuPG;
+
+    my $type = $self->ContentType;
+    if ( $type =~ /^x-application-rt\/gpg-encrypted/i ) {
+        return (1, _('Already encrypted'));
+    } elsif ( $type =~ /^multipart\//i ) {
+        return (1, _('No need to encrypt'));
+    } else {
+        $type = qq{x-application-rt\/gpg-encrypted; original-type="$type"};
+    }
+
+    my $queue = $txn->ticket_obj->queue_obj;
+    my $encrypt_for;
+    foreach my $address ( grep $_,
+        $queue->CorrespondAddress,
+        $queue->CommentAddress,
+        RT->Config->Get('CorrespondAddress'),
+        RT->Config->Get('CommentAddress'),
+    ) {
+        my %res = RT::Crypt::GnuPG::GetKeysInfo( $address, 'private' );
+        next if $res{'exit_code'} || !$res{'info'};
+        %res = RT::Crypt::GnuPG::GetKeysForEncryption( $address );
+        next if $res{'exit_code'} || !$res{'info'};
+        $encrypt_for = $address;
+    }
+    unless ( $encrypt_for ) {
+        return (0, _('No key suitable for encryption'));
+    }
+
+    $self->__set( column => 'ContentType', value => $type );
+    $self->set_header( 'Content-Type' => $type );
+
+    my $content = $self->Content;
+    my %res = RT::Crypt::GnuPG::SignEncryptContent(
+        Content => \$content,
+        Sign => 0,
+        Encrypt => 1,
+        Recipients => [ $encrypt_for ],
+    );
+    if ( $res{'exit_code'} ) {
+        return (0, _('GnuPG error. Contact with administrator'));
+    }
+
+    my ($status, $msg) = $self->__set( column => 'Content', value => $content );
+    unless ( $status ) {
+        return ($status, _("Couldn't replace content with encrypted data: %1", $msg));
+    }
+    return (1, _('Successfuly encrypted data'));
+}
+
+sub Decrypt {
+    my $self = shift;
+
+    my $txn = $self->transaction_obj;
+    return (0, _('Permission Denied')) unless $txn->current_userCanSee;
+    return (0, _('Permission Denied'))
+        unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
+    return (0, _('GnuPG integration is disabled'))
+        unless RT->Config->Get('GnuPG')->{'Enable'};
+
+    require RT::Crypt::GnuPG;
+
+    my $type = $self->ContentType;
+    if ( $type =~ /^x-application-rt\/gpg-encrypted/i ) {
+        ($type) = ($type =~ /original-type="(.*)"/i);
+        $type ||= 'application/octeat-stream';
+    } else {
+        return (1, _('Is not encrypted'));
+    }
+    $self->__set( column => 'ContentType', value => $type );
+    $self->set_header( 'Content-Type' => $type );
+
+    my $content = $self->Content;
+    my %res = RT::Crypt::GnuPG::DecryptContent( Content => \$content, );
+    if ( $res{'exit_code'} ) {
+        return (0, _('GnuPG error. Contact with administrator'));
+    }
+
+    my ($status, $msg) = $self->__set( column => 'Content', value => $content );
+    unless ( $status ) {
+        return ($status, _("Couldn't replace content with decrypted data: %1", $msg));
+    }
+    return (1, _('Successfuly decrypted data'));
+}
 
 =head2 _value
 

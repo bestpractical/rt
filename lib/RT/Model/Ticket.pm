@@ -1194,7 +1194,7 @@ Type  (one of Requestor,Cc,AdminCc)
 
 and one of
 
-principal_id (an RT::Model::Principal Id of the watcher you want to remove)
+principal_id (an RT::Model::Principal id of the watcher you want to remove)
     OR
 Email (the email address of an existing wathcer)
 
@@ -1523,7 +1523,6 @@ sub IsWatcher {
     $group->load_ticket_role_group(Type => $args{'Type'}, Ticket => $self->id);
 
     # Find the relevant principal.
-    my $principal = RT::Model::Principal->new;
     if (!$args{principal_id} && $args{Email}) {
         # Look up the specified user.
         my $user = RT::Model::User->new;
@@ -1536,10 +1535,9 @@ sub IsWatcher {
             return 0;
         }
     }
-    $principal->load($args{'principal_id'});
 
     # Ask if it has the member in question
-    return ($group->has_member($principal));
+    return $group->has_member( $args{'principal_id'} );
 }
 
 # }}}
@@ -1548,9 +1546,9 @@ sub IsWatcher {
 
 =head2 IsRequestor PRINCIPAL_ID
   
-  Takes an RT::Model::Principal id
-  Returns true if the principal is a requestor of the current ticket.
+Takes an L<RT::Model::Principal> id.
 
+Returns true if the principal is a requestor of the current ticket.
 
 =cut
 
@@ -2164,22 +2162,11 @@ sub _RecordNote {
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
     my $org = RT->Config->Get('organization');
-    
-    
-    
     my $msgid = $args{'MIMEObj'}->head->get('Message-ID');
     unless (defined $msgid && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/) {
-        $args{'MIMEObj'}->head->set( 'RT-Message-ID',
-            "<rt-"
-            . $RT::VERSION . "-"
-            . $$ . "-"
-            . CORE::time() . "-"
-            . int(rand(2000)) . '.'
-            . $self->id . "-"
-            . "0" . "-"  # Scrip
-            . "0" . "@"  # Email sent
-            . $org
-            . ">" );
+        $args{'MIMEObj'}->head->set(
+            'RT-Message-ID' => RT::Interface::Email::GenMessageId( Ticket => $self )
+        );
     }
 
     #Record the correspondence (write the transaction)
@@ -2695,7 +2682,7 @@ sub OwnerAsString {
 =head2 SetOwner
 
 Takes two arguments:
-     the Id or name of the owner 
+     the id or name of the owner 
 and  (optionally) the type of the SetOwner Transaction. It defaults
 to 'Give'.  'Steal' is also a valid option.
 

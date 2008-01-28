@@ -150,9 +150,9 @@ sub limit_NotObject {
 
 # {{{ limit_ToPrincipal 
 
-=head2 limit_ToPrincipal { Type => undef, Id => undef, IncludeGroupMembership => undef }
+=head2 limit_ToPrincipal { Type => undef, id => undef, IncludeGroupMembership => undef }
 
-Limit the ACL to the principal with principal_id Id and principal_type Type
+Limit the ACL to the principal with principal_id id and principal_type Type
 
 Id is not optional.
 Type is.
@@ -165,7 +165,7 @@ if IncludeGroupMembership => 1 is specified, ACEs which apply to the principal d
 sub limit_ToPrincipal {
     my $self = shift;
     my %args = ( Type                               => undef,
-                 Id                                 => undef,
+                 id                                 => undef,
                  IncludeGroupMembership => undef,
                  @_ );
     if ( $args{'IncludeGroupMembership'} ) {
@@ -177,7 +177,7 @@ sub limit_ToPrincipal {
         $self->limit( alias           => $cgm,
                       column           => 'MemberId',
                       operator        => '=',
-                      value           => $args{'Id'},
+                      value           => $args{'id'},
                       entry_aggregator => 'OR' );
     }
     else {
@@ -192,15 +192,15 @@ sub limit_ToPrincipal {
     # lead me to start to suspect that we really want users and groups
     # to just be the same table. or _maybe_ that we want an object db.
     my $princ = RT::Model::Principal->new(current_user => RT->system_user);
-    $princ->load($args{'Id'});
+    $princ->load($args{'id'});
     if ($princ->principal_type eq 'User') {
     my $group = RT::Model::Group->new(current_user => RT->system_user);
         $group->load_acl_equivalence_group($princ);
-        $args{'Id'} = $group->principal_id;
+        $args{'id'} = $group->principal_id;
     }
         $self->limit( column           => 'principal_id',
                       operator        => '=',
-                      value           => $args{'Id'},
+                      value           => $args{'id'},
                       entry_aggregator => 'OR' );
     }
 }
@@ -226,9 +226,9 @@ sub ExcludeDelegatedRights {
 
 # {{{ DelegatedBy 
 
-=head2 DelegatedBy { Id => undef }
+=head2 DelegatedBy { id => undef }
 
-Limit the ACL to rights delegated by the principal whose Principal Id is
+Limit the ACL to rights delegated by the principal whose Principal id is
 B<Id>
 
 Id is not optional.
@@ -238,13 +238,13 @@ Id is not optional.
 sub DelegatedBy {
     my $self = shift;
     my %args = (
-        Id => undef,
+        id => undef,
         @_
     );
     $self->limit(
         column           => 'DelegatedBy',
         operator        => '=',
-        value           => $args{'Id'},
+        value           => $args{'id'},
         entry_aggregator => 'OR'
     );
 
@@ -254,10 +254,10 @@ sub DelegatedBy {
 
 # {{{ DelegatedFrom 
 
-=head2 DelegatedFrom { Id => undef }
+=head2 DelegatedFrom { id => undef }
 
-Limit the ACL to rights delegate from the ACE which has the Id specified 
-by the Id parameter.
+Limit the ACL to rights delegate from the ACE which has the id specified 
+by the id parameter.
 
 Id is not optional.
 
@@ -266,9 +266,9 @@ Id is not optional.
 sub DelegatedFrom {
     my $self = shift;
     my %args = (
-                 Id => undef,
+                 id => undef,
                  @_);
-    $self->limit(column => 'DelegatedFrom', operator=> '=', value => $args{'Id'}, entry_aggregator => 'OR');
+    $self->limit(column => 'DelegatedFrom', operator=> '=', value => $args{'id'}, entry_aggregator => 'OR');
 
 }
 

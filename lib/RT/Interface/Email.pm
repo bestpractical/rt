@@ -48,6 +48,8 @@
 package RT::Interface::Email;
 
 use strict;
+use warnings;
+
 use Mail::Address;
 use MIME::Entity;
 use RT::EmailParser;
@@ -189,8 +191,6 @@ sub CheckForBounce {
     return ( $ReturnPath =~ /<>/ );
 }
 
-
-
 =head2 IsRTAddress ADDRESS
 
 Takes a single parameter, an email address.
@@ -250,7 +250,6 @@ log, by default we log it as errorical.
 
 =back
 
-
 =cut
 
 sub MailError {
@@ -277,8 +276,8 @@ sub MailError {
         Subject                => $args{'Subject'},
         'Precedence:'             => 'bulk',
         'X-RT-Loop-Prevention:' => RT->Config->Get('rtname'),
-        'In-Reply-To:'          => $args{'MIMEObj'} ? $args{'MIMEObj'}->head->get('Message-Id') : undef
     );
+    SetInReplyTo( Message => $entity, InReplyTo => $args{'MIMEObj'} );
 
     $entity->attach( Data => $args{'Explanation'} . "\n" );
 
@@ -559,27 +558,11 @@ sub SendEmailUsingTemplate {
      }
   
      $mail->head->set( $_ => $args{ $_ } )
-         foreach grep defined $args{$_}, qw(To Cc Bcc);
- 
-     if ( $args{'InReplyTo'} ) {
-         my @id = $args{'InReplyTo'}->head->get('Message-ID');
-         my @in_reply_to = $args{'InReplyTo'}->head->get('In-Reply-To');
-         my @references = $args{'InReplyTo'}->head->get('References');
- 
-         $mail->head->set( 'In-Reply-To' => join ' ', @id ) if @id;
-         my @new_references;
-         if ( @references ) {
-             @new_references = (@references, @id);
-        } else {
-             @new_references = (@in_reply_to, @id);
-         }
-         @new_references = splice @new_references, 4, -6
-             if @new_references > 10;
- 
-         $mail->head->set( 'References' => join ' ', @new_references );
-     }
- 
-     return SendEmail( Entity => $mail );
+         foreach grep defined $args{$_}, qw(To Cc Bcc From);
+
+    SetInReplyTo( Message => $mail, InReplyTo => $args{'InReplyTo'} );
+
+    return SendEmail( Entity => $mail );
 }
 
 =head2 ForwardTransaction TRANSACTION, To => '', Cc => '', Bcc => ''
@@ -901,13 +884,15 @@ sub ParseSenderAddressFromHead {
     my $head = shift;
 
     #Figure out who's sending this message.
-    my $From = $head->get('Reply-To')
-        || $head->get('From')
-        || $head->get('Sender');
-    return ( ParseAddressFromHeader($From) );
+    foreach my $header ('Reply-To', 'From', 'Sender') {
+        my $addr_line = $head->get($header) || next;
+        my ($addr, $name) = ParseAddressFromHeader( $addr_line );
+        # only return if the address is not empty
+        return ($addr, $name) if $addr;
+    }
+
+    return (undef, undef);
 }
-
-
 
 =head2 ParseErrorsToAddressFromHead HEAD
 
@@ -982,7 +967,60 @@ sub delete_recipients_from_head {
     }
 }
 
+sub GenMessageId {
+    my %args = (
+        Ticket      => undef,
+        Scrip       => undef,
+        ScripAction => undef,
+        @_
+    );
+    my $org = RT->Config->Get('organization');
+    my $ticket_id = ( ref $args{'Ticket'}? $args{'Ticket'}->id : $args{'Ticket'} ) || 0;
+    my $scrip_id = ( ref $args{'Scrip'}? $args{'Scrip'}->id : $args{'Scrip'} ) || 0;
+    my $sent = ( ref $args{'ScripAction'}? $args{'ScripAction'}->{'_Message_ID'} : 0 ) || 0;
 
+    return "<rt-". $RT::VERSION ."-". $$ ."-". CORE::time() ."-". int(rand(2000)) .'.'
+        . $ticket_id ."-". $scrip_id ."-". $sent ."@". $org .">" ;
+}
+
+sub SetInReplyTo {
+    my %args = (
+        Message   => undef,
+        InReplyTo => undef,
+        Ticket    => undef,
+        @_
+    );
+    return unless $args{'Message'} && $args{'InReplyTo'};
+
+    my $get_header = sub {
+        my @res;
+        if ( $args{'InReplyTo'}->isa('MIME::Entity') ) {
+            @res = $args{'InReplyTo'}->head->get( shift );
+        } else {
+            @res = $args{'InReplyTo'}->GetHeader( shift ) || '';
+        }
+        return grep length, map { split /\s+/m, $_ } grep defined, @res;
+    };
+
+    my @id = $get_header->('Message-ID');
+    #XXX: custom header should begin with X- otherwise is violation of the standard
+    my @rtid = $get_header->('RT-Message-ID');
+    my @references = $get_header->('References');
+    unless ( @references ) {
+        @references = $get_header->('In-Reply-To');
+    }
+    push @references, @id, @rtid;
+    if ( $args{'Ticket'} ) {
+        my $pseudo_ref =  '<RT-Ticket-'. $args{'Ticket'}->id .'@'. RT->Config->Get('organization') .'>';
+        push @references, $pseudo_ref unless grep $_ eq $pseudo_ref, @references;
+    }
+    @references = splice @references, 4, -6
+        if @references > 10;
+
+    my $mail = $args{'Message'};
+    $mail->head->set( 'In-Reply-To' => join ' ', @rtid? (@rtid) : (@id) ) if @id || @rtid;
+    $mail->head->set( 'References' => join ' ', @references );
+}
 
 sub ParseTicketId {
     my $Subject = shift;
@@ -1116,7 +1154,6 @@ sub Gateway {
     my $Message = $parser->Entity();
     unless ($Message) {
         MailError(
-            To          => RT->Config->Get('OwnerEmail'),
             Subject     => "RT Bounce: Unparseable message",
             Explanation => "RT couldn't process the message below",
             Attach      => $args{'message'}

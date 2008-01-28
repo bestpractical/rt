@@ -57,7 +57,7 @@ use base qw/RT::SearchBuilder/;
 
 =head2 limit_to_custom_field column
 
-Limits the returned set to values for the custom field with Id column
+Limits the returned set to values for the custom field with id column
 
 =cut
   

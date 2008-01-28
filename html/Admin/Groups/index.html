@@ -49,28 +49,36 @@
 <& /Admin/Elements/GroupTabs, current_tab => 'Admin/Groups/',
     current_subtab => 'Admin/Groups/', 
     Title => $title &>
-<%$caption%>:<br /> <ul> 
-%if ($Groups->count == 0) {
-<li> <em><&|/l&>No groups matching search criteria found.</&></em>
+<% $caption %>:<br />
+
+% unless ( $Groups->count ) {
+<em><&|/l&>No groups matching search criteria found.</&></em>
+% } else {
+
+<& /Elements/CollectionList,
+    order_by => 'name',
+    Order => 'ASC',
+    Rows  => 100,
+    %ARGS,
+    Format => $Format,
+    Collection => $Groups,
+    AllowSorting => 1,
+    PassArguments => [qw(Format Rows Page Order order_by GroupString GroupOp Groupfield FinddisabledGroups)],
+&>
+
+% my $ids = join ',', map $_->id, @{ $Groups->ItemsArrayRef };
+% if ( $ids ) {
+<div align="right"><em>
+(<a href="<% RT->Config->Get('WebPath') %>/Download/Tabular/Group/<% $ids %>/Groups.tsv">
+<&|/l&>Download as a tab-delimited file</&>
+</a>)</em></div>
 % }
-%my @ids;
-%while ( my $Group = $Groups->next) {
-%    push @ids, $Group->id;
-<li><a href="Modify.html?id=<%$Group->id%>"><%$Group->name || _('(empty)')%></a><br />
-%}
-</ul>
-%if (my $ids = join(',', @ids)) {
-<em>(<a href="<%RT->Config->Get('WebPath')%>/Download/Tabular/Group/<% $ids %>/Groups.tsv"><&|/l&>Download as a tab-delimited file</&></a>)</em><br />
-%}
-<br /><br />
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
-<input type="checkbox" class="checkbox" name="FinddisabledGroups" value="1" /> <&|/l&>Include disabled groups in listing.</&>
-<br />
-<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
-</form>
 
 <br /><br />
+% }
+
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
+<input type="checkbox" class="checkbox" name="FinddisabledGroups" value="1" <% $FinddisabledGroups? 'checked="checked"': '' |n %> /> <&|/l&>Include disabled groups in listing.</&><br />
 <&|/l&>Find groups whose</&> <& /Elements/SelectGroups &><br />
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
@@ -104,8 +112,16 @@ if (length $GroupString) {
 else {
     $caption = _("User-defined groups");
 }
+
+
+$Format ||= q{'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__id__</a>/TITLE:#'}
+    .q{,'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__name__</a>/TITLE:name'}
+    .q{,'__Description__'};
+
 </%INIT>
 <%ARGS>
+$Format => undef,
+
 $GroupString => '' unless defined $GroupString
 $GroupOp => '='
 $GroupField => 'name'

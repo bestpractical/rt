@@ -242,8 +242,6 @@ sub limit_ToRolesForSystem {
 
 Limits the set of groups returned to groups which have
 Principal PRINCIPAL_ID as a member
-   
-
 
 =cut
 
@@ -265,11 +263,41 @@ sub WithMember {
     $self->limit(alias => $members, column => 'MemberId', operator => '=', value => $args{'principal_id'});
 }
 
+sub WithoutMember {
+    my $self = shift;
+    my %args = (
+        principal_id => undef,
+        Recursively => undef,
+        @_
+    );
 
-=head2 WithRight { Right => RIGHTname, Object => RT::Record, IncludeSystemRights => 1, IncludeSuperusers => 0, equiv_objects => [ ] }
+    my $members = $args{'Recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
+    my $members_alias = $self->join(
+        type   => 'LEFT',
+        column1 => 'id',
+        table2 => $members,
+        column2 => 'GroupId',
+    );
+    $self->limit(
+        left_join => $members_alias,
+        alias    => $members_alias,
+        column    => 'MemberId',
+        operator => '=',
+        value    => $args{'principal_id'},
+    );
+    $self->limit(
+        alias    => $members_alias,
+        column    => 'MemberId',
+        operator => 'IS',
+        value    => 'NULL',
+        quote_value => 0,
+    );
+}
+
+=head2 WithRight { Right => RIGHTNAME, Object => RT::Record, IncludeSystemRights => 1, IncludeSuperusers => 0, equiv_objects => [ ] }
 
 
-Find all groups which have RIGHTname for RT::Record. Optionally include global rights and superusers. By default, include the global rights, but not the superusers.
+Find all groups which have RIGHTNAME for RT::Record. Optionally include global rights and superusers. By default, include the global rights, but not the superusers.
 
 
 

@@ -1,0 +1,57 @@
+<& /Elements/Header, Title => $title &>
+<& /Ticket/Elements/Tabs,
+    Ticket => $txn->ticket_obj,
+    current_tab => 'Ticket/Encrypt.html?id='. $id,
+    Title => $title,
+&>
+
+% $m->callback( Callbackname => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS );
+<& /Elements/ListActions, actions => \@results &>
+<form method="post" action="<% RT->Config->Get('WebPath') . $m->request_comp->path %>?id=<% $id %>">
+<a href="<% RT->Config->Get('WebURL') %>/Ticket/Display.html?id=<% $txn->Ticket %>#txn-<% $id %>">
+<% _('Return back to the ticket') %>
+</a>
+<& /Elements/Submit,
+    Label => ($encrypted? _('Decrypt'): _('Encrypt')),
+    name  => ($encrypted? 'Decrypt': 'Encrypt'),
+&>
+</form>
+<%ARGS>
+$id => undef
+$Encrypt => 0
+$Decrypt => 0
+</%ARGS>
+<%INIT>
+my $txn = RT::Model::Transaction->new();
+$txn->load( $id );
+unless ( $txn->id ) {
+    Abort(_("Couldn't load transaction #%1", $id));
+}
+$id = $txn->id;
+
+my @results;
+
+my $encrypted = 0;
+
+my $attachments = $txn->Attachments;
+while ( my $attachment = $attachments->next ) {
+    next unless $attachment->ContentType =~ m{^x-application-rt/gpg-encrypted\b};
+    $encrypted = 1;
+    last;
+}
+$attachments->goto_first_item;
+
+if ( $Encrypt || $Decrypt ) {
+    my $done = 1;
+    while ( my $attachment = $attachments->next ) {
+        my ($status, $msg) = $Decrypt? $attachment->Decrypt : $attachment->Encrypt;
+        push @results, $msg;
+        unless ( $status ) {
+            $done = 0; last;
+        }
+    }
+    $encrypted = !$encrypted if $done;
+}
+
+my $title = _("Encrypt/Decrypt transaction #%1 of ticket #%2", $id, $txn->Ticket);
+</%INIT>

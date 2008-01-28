@@ -113,7 +113,7 @@ sub clear_acls_and_groups {
     my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
     foreach (@principals) {
 	$acl->limit_ToPrincipal(Type => $$_->principal_object->principal_type,
-			       Id => $$_->principal_object->id);
+			       id => $$_->principal_object->id);
     }
     while (my $ace = $acl->next()) {
 	$ace->delete();

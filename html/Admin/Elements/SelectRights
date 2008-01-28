@@ -97,7 +97,7 @@
 
 
     $ACLObj->limit_to_object( $Object);
-    $ACLObj->limit_ToPrincipal( Id => $principal_id);
+    $ACLObj->limit_ToPrincipal( id => $principal_id);
     $ACLObj->order_by(column=>'right_name'); 
 
     if (ref($Object) && UNIVERSAL::can($Object, 'AvailableRights')) { 

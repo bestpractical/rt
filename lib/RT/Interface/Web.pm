@@ -524,17 +524,11 @@ sub ProcessUpdateMessage {
         Type    => $args{ARGSRef}->{'UpdateContentType'},
     );
 
-    $Message->head->add( 'Message-ID' => 
-          "<rt-"
-          . $RT::VERSION . "-"
-          . $$ . "-"
-          . CORE::time() . "-"
-          . int(rand(2000)) . "."
-          . $args{'ticket_obj'}->id . "-"
-          . "0" . "-"  # Scrip
-          . "0" . "@"  # Email sent
-              . RT->Config->Get('organization')
-          . ">" );
+    $Message->head->add(
+        'Message-ID' => RT::Interface::Email::GenMessageId(
+            Ticket => $args{'ticket_obj'},
+        )
+    );
     my $old_txn = RT::Model::Transaction->new();
     if ( $args{ARGSRef}->{'QuoteTransaction'} ) {
         $old_txn->load( $args{ARGSRef}->{'QuoteTransaction'} );
@@ -543,15 +537,8 @@ sub ProcessUpdateMessage {
         $old_txn = $args{ticket_obj}->Transactions->first();
     }
 
-    if ( $old_txn->Message and my $msg = $old_txn->Message->first ) {
-        my @in_reply_to = split(/\s+/m, $msg->GetHeader('In-Reply-To') || '');  
-        my @references = split(/\s+/m, $msg->GetHeader('References') || '' );  
-        my @msgid = split(/\s+/m, $msg->GetHeader('Message-ID') || '');
-        #XXX: custom header should begin with X- otherwise is violation of the standard
-        my @rtmsgid = split(/\s+/m, $msg->GetHeader('RT-Message-ID') || ''); 
-
-        $Message->head->replace( 'In-Reply-To', join(' ', @rtmsgid ? @rtmsgid : @msgid));
-        $Message->head->replace( 'References', join(' ', @references, @msgid, @rtmsgid));
+    if ( my $msg = $old_txn->Message->first ) {
+        RT::Interface::Email::SetInReplyTo( Message => $Message, InReplyTo => $msg );
     }
 
     if ( $args{ARGSRef}->{'UpdateAttachments'} ) {

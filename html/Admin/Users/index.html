@@ -53,14 +53,13 @@
 <h1><% $caption %></h1>
 <p><&|/l&>Select a user</&>:</p>
 % unless ( $users->count ) {
-<li><em><&|/l&>No users matching search criteria found.</&></em></li>
+<em><&|/l&>No users matching search criteria found.</&></em>
 % } else {
 
 <& /Elements/CollectionList,
     order_by => 'name',
     Order => 'ASC',
     Rows  => 100,
-    BaseURL => RT->Config->Get('WebPath') .'/Admin/Users/index.html?',
     %ARGS,
     Format => $Format,
     Collection => $users,

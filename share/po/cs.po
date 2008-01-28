@@ -2452,7 +2452,7 @@ msgstr "Jsem ztracen"
 
 #msgstr "Mám [quant,_1,Míchačku na beton,Míchačky na beton,Míchaček na beton]."
 #: html/Ticket/Elements/ShowBasics:48 lib/RT/TicketCollection_Overlay.pm:1766
-msgid "Id"
+msgid "id"
 msgstr "Identifikátor"
 
 #: html/Admin/Users/Modify.html:65 html/User/Prefs.html:60

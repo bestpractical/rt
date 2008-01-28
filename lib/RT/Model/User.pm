@@ -175,7 +175,7 @@ sub create {
 
     Jifty->handle->begin_transaction();
     # Groups deal with principal ids, rather than user ids.
-    # When creating this user, set up a principal Id for it.
+    # When creating this user, set up a principal id for it.
     my $principal = RT::Model::Principal->new;
     my $principal_id = $principal->create(principal_type => 'User',
                                 disabled => $args{'disabled'},
@@ -384,7 +384,7 @@ sub _bootstrap_create {
     Jifty->handle->begin_transaction(); 
 
     # Groups deal with principal ids, rather than user ids.
-    # When creating this user, set up a principal Id for it.
+    # When creating this user, set up a principal id for it.
     my $principal = RT::Model::Principal->new(current_user => RT::CurrentUser->new(_bootstrap => 1));
     my ($principal_id , $pmsg) = $principal->create(  principal_type => 'User', object_id => '0', disabled => '0');
     # If we couldn't create a principal Id, get the fuck out.
@@ -1144,7 +1144,7 @@ sub _CleanupInvalidDelegations {
     # Look up all delegation rights currently posessed by this user.
     my $deleg_acl = RT::Model::ACECollection->new(current_user => RT->system_user);
     $deleg_acl->limit_ToPrincipal(Type => 'User',
-                 Id => $self->principal_id,
+                 id => $self->principal_id,
                  IncludeGroupMembership => 1);
     $deleg_acl->limit( column => 'right_name',
                operator => '=',

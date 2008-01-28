@@ -56,7 +56,7 @@ rt-mailgate - Mail interface to RT3.
 use strict;
 use warnings;
 
-use RT::Test; use Test::More tests => 153;
+use RT::Test; use Test::More tests => 159;
 
 my ($baseurl, $ua) = RT::Test->started_ok;
 
@@ -580,6 +580,29 @@ EOF
         $tick->Transactions->first->Content =~ $unistring,
         "It appears to be unicode - ". $tick->Transactions->first->Content
     );
+}
+
+diag "check that mailgate doesn't suffer from empty Reply-To:" if $ENV{'TEST_VERBOSE'};
+{
+    my $text = <<EOF;
+From: root\@localhost
+Reply-To: 
+To: rtemail\@@{[RT->Config->Get('rtname')]}
+Subject: test
+Content-Type: text/plain; charset="utf-8"
+ 
+test
+EOF
+    my ($status, $id) = RT::Test->send_via_mailgate($text);
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "created ticket");
+
+    my $tick = latest_ticket();
+    isa_ok ($tick, 'RT::Model::Ticket');
+    ok ($tick->id, "found ticket ". $tick->id);
+    is ($tick->id, $id, "correct ticket");
+
+    like $tick->RequestorAddresses, qr/root\@localhost/, 'correct requestor';
 }
 
 

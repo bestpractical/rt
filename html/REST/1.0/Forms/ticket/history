@@ -96,7 +96,7 @@ if ($type) {
         $trans->limit(column => 'Type', operator => '=', value => $type);
     }
 } elsif ($tid) {
-    $trans->limit(column => 'Id', operator => '=', value => $tid);
+    $trans->limit(column => 'id', operator => '=', value => $tid);
 }
 
 if ($tid) {

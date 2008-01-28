@@ -56,8 +56,8 @@
   <option value="">-</option>
 %     }
 %     for my $queue (@{$session{$cache_key}}) {
-  <option value="<% ($namedValues ? $queue->{name} : $queue->{Id}) %>" 
-  <% ($queue->{Id} eq ($Default || '') ? 'selected="selected"' : '') |n %>>
+  <option value="<% ($namedValues ? $queue->{name} : $queue->{id}) %>" 
+  <% ($queue->{id} eq ($Default || '') ? 'selected="selected"' : '') |n %>>
     <%$queue->{name}%>
 %             if ($Verbose and $queue->{Description}) {
     (<%$queue->{Description}%>)
@@ -88,7 +88,7 @@ if (not defined $session{$cache_key} and not $Lite) {
     while (my $queue = $q->next) {
         if ($ShowAllQueues || $queue->current_user_has_right($CheckQueueRight)) {
             push @{$session{$cache_key}}, {
-                Id          => $queue->id,
+                id          => $queue->id,
                 name        => $queue->name,
                 Description => $queue->Description,
             };

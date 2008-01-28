@@ -49,8 +49,8 @@ TABLE Transactions (
   old_value varchar(255) NULL  ,
   new_value varchar(255) NULL  ,
   ReferenceType varchar(255) NULL,          -- NeW: Currently "RT::OCFV" only
-  OldReference integer NULL  ,              -- New: Id of ReferenceType
-  NewReference integer NULL  ,              -- New: Id of ReferenceType
+  OldReference integer NULL  ,              -- New: id of ReferenceType
+  NewReference integer NULL  ,              -- New: id of ReferenceType
   Data varchar(255) NULL  ,
 )
 

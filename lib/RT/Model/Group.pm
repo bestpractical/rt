@@ -167,8 +167,17 @@ sub loadUserDefinedGroup {
     my $self       = shift;
     my $identifier = shift;
 
-        $self->load_by_cols( "Domain" => 'UserDefined',
-                           "name" => $identifier );
+    if ( $identifier =~ /^\d+$/ ) {
+        return $self->load_by_cols(
+            Domain => 'UserDefined',
+            id     => $identifier,
+        );
+    } else {
+        return $self->load_by_cols(
+            Domain => 'UserDefined',
+            name   => $identifier,
+        );
+    }
 }
 
 # }}}
@@ -359,7 +368,7 @@ sub _create {
     );
     Jifty->handle->begin_transaction() unless ($args{'InsideTransaction'});
     # Groups deal with principal ids, rather than user ids.
-    # When creating this group, set up a principal Id for it.
+    # When creating this group, set up a principal id for it.
     my $principal    = RT::Model::Principal->new;
     my ($principal_id,$msg) = $principal->create(
         principal_type => 'Group',
@@ -943,9 +952,9 @@ sub _add_member {
 
 # {{{ has_member
 
-=head2 has_member RT::Model::Principal
+=head2 has_member RT::Model::Principal|id
 
-Takes an RT::Model::Principal object returns a GroupMember Id if that user is a 
+Takes an L<RT::Model::Principal> object or its id returns a GroupMember id if that user is a 
 member of this group.
 Returns undef if the user isn't a member of the group or if the current
 user doesn't have permission to find out. Arguably, it should differentiate
@@ -957,29 +966,28 @@ sub has_member {
     my $self    = shift;
     my $principal = shift;
 
-
-    unless (UNIVERSAL::isa($principal,'RT::Model::Principal')) {
-        Jifty->log->fatal("Group::has_member was called with an argument that".
-                          "isn't an RT::Model::Principal. It's $principal");
+    my $id;
+    if ( UNIVERSAL::isa($principal,'RT::Model::Principal') ) {
+        $id = $principal->id;
+    } elsif ( $principal =~ /^\d+$/ ) {
+        $id = $principal;
+    } else {
+        Jifty->log->error("Group::has_member was called with an argument that".
+                          " isn't an RT::Model::Principal or id. It's $principal");
         return(undef);
     }
-
-    unless ($principal->id) {
-        return(undef);
-    }
+    return undef unless $id;
 
     my $member_obj = RT::Model::GroupMember->new;
-    $member_obj->load_by_cols( MemberId => $principal->id, 
-                             GroupId => $self->id );
+    $member_obj->load_by_cols(
+        MemberId => $id, 
+        GroupId  => $self->id
+    );
 
-    #If we have a member object
-    if ( defined $member_obj->id ) {
-        return ( $member_obj->id );
+    if ( my $member_id = $member_obj->id ) {
+        return $member_id;
     }
-
-    #If Load returns no objects, we have an undef id. 
     else {
-        #Jifty->log->debug($self." does not contain principal ".$principal->id);
         return (undef);
     }
 }
@@ -988,9 +996,9 @@ sub has_member {
 
 # {{{ has_member_recursively
 
-=head2 has_member_recursively RT::Model::Principal
+=head2 has_member_recursively RT::Model::Principal|id
 
-Takes an RT::Model::Principal object and returns true if that user is a member of 
+Takes an L<RT::Model::Principal> object or its id and returns true if that user is a member of 
 this group.
 Returns undef if the user isn't a member of the group or if the current
 user doesn't have permission to find out. Arguably, it should differentiate
@@ -1002,23 +1010,27 @@ sub has_member_recursively {
     my $self    = shift;
     my $principal = shift || '';
 
-    unless (UNIVERSAL::isa($principal,'RT::Model::Principal')) {
-        Jifty->log->fatal("Group::has_member_recursively was called with an argument that".
-                          "isn't an RT::Model::Principal. It's $principal");
+    my $id;
+    if ( UNIVERSAL::isa($principal,'RT::Model::Principal') ) {
+        $id = $principal->id;
+    } elsif ( $principal =~ /^\d+$/ ) {
+        $id = $principal;
+    } else {
+        Jifty->log->error("Group::has_member_recursively was called with an argument that".
+                          " isn't an RT::Model::Principal or id. It's $principal");
         return(undef);
     }
+    return undef unless $id;
+
     my $member_obj = RT::Model::CachedGroupMember->new;
-    $member_obj->load_by_cols( MemberId => $principal->id,
-                             GroupId => $self->id ,
-                             disabled => 0
-                             );
+    $member_obj->load_by_cols(
+        MemberId => $id, 
+        GroupId  => $self->id
+    );
 
-    #If we have a member object
-    if ( defined $member_obj->id ) {
-        return ( 1);
+    if ( my $member_id = $member_obj->id ) {
+        return $member_id;
     }
-
-    #If Load returns no objects, we have an undef id. 
     else {
         return (undef);
     }
@@ -1217,7 +1229,7 @@ sub _set {
 
 
 
-=head2 current_user_has_right RIGHTname
+=head2 current_user_has_right RIGHTNAME
 
 Returns true if the current user has the specified right for this group.
 

@@ -61,7 +61,7 @@ chomp $args;
 my @arglist = split('/', $args);
 my $tid = $id;
 
-$trans->limit(column => 'Id', operator => '=', value => $tid);
+$trans->limit(column => 'id', operator => '=', value => $tid);
 
 if ($tid) {
     my @data;

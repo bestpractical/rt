@@ -804,7 +804,7 @@ sub _AddWatcher {
 
 # {{{ sub deleteWatcher
 
-=head2 DeleteWatcher { Type => TYPE, principal_id => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
+=head2 DeleteWatcher { Type => TYPE, principal_id => PRINCIPAL_ID }
 
 
 Deletes a queue  watcher.  Takes two arguments:
@@ -813,7 +813,7 @@ Type  (one of Requestor,Cc,AdminCc)
 
 and one of
 
-principal_id (an RT::Model::Principal Id of the watcher you want to remove)
+principal_id (an RT::Model::Principal id of the watcher you want to remove)
     OR
 Email (the email address of an existing wathcer)
 
@@ -824,54 +824,61 @@ Email (the email address of an existing wathcer)
 sub deleteWatcher {
     my $self = shift;
 
-    my %args = ( Type => undef,
-                 principal_id => undef,
-                 @_ );
+    my %args = (
+        Type         => undef,
+        principal_id => undef,
+        @_
+    );
 
-    unless ($args{'principal_id'} ) {
-        return(0, _("No principal specified"));
+    unless ( $args{'principal_id'} ) {
+        return ( 0, _("No principal specified") );
     }
     my $principal = RT::Model::Principal->new;
-    $principal->load($args{'principal_id'});
+    $principal->load( $args{'principal_id'} );
 
     # If we can't find this watcher, we need to bail.
-    unless ($principal->id) {
-        return(0, _("Could not find that principal"));
+    unless ( $principal->id ) {
+        return ( 0, _("Could not find that principal") );
     }
 
     my $group = RT::Model::Group->new;
-    $group->loadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
-    unless ($group->id) {
-        return(0,_("Group not found"));
+    $group->loadQueueRoleGroup( Type => $args{'Type'}, Queue => $self->id );
+    unless ( $group->id ) {
+        return ( 0, _("Group not found") );
     }
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->current_user->id  eq $args{'principal_id'}) {
-        #  If it's an AdminCc and they don't have 
+    if ( $self->current_user->id eq $args{'principal_id'} ) {
+
+        #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyQueue', bail
-  if ( $args{'Type'} eq 'AdminCc' ) {
+        if ( $args{'Type'} eq 'AdminCc' ) {
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
-                or $self->current_user_has_right('WatchAsAdminCc') ) {
-                return ( 0, _('Permission Denied'))
+                or $self->current_user_has_right('WatchAsAdminCc') )
+            {
+                return ( 0, _('Permission Denied') );
             }
         }
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyQueue', bail
-        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
+        elsif (( $args{'Type'} eq 'Cc' )
+            or ( $args{'Type'} eq 'Requestor' ) )
+        {
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
-                or $self->current_user_has_right('Watch') ) {
-                return ( 0, _('Permission Denied'))
+                or $self->current_user_has_right('Watch') )
+            {
+                return ( 0, _('Permission Denied') );
             }
-        }
-        else {
-            Jifty->log->warn( "$self -> DeleteWatcher got passed a bogus type");
+        } else {
+            Jifty->log->warn(
+                "$self -> DeleteWatcher got passed a bogus type");
             return ( 0, _('Error in parameters to Queue->deleteWatcher') );
         }
     }
 
-    # If the watcher isn't the current user 
+    # If the watcher isn't the current user
     # and the current user  doesn't have 'ModifyQueueWathcers' bail
     else {
         unless ( $self->current_user_has_right('ModifyQueueWatchers') ) {
@@ -881,23 +888,36 @@ sub deleteWatcher {
 
     # }}}
 
-
     # see if this user is already a watcher.
 
-    unless ( $group->has_member($principal)) {
+    unless ( $group->has_member($principal) ) {
         return ( 0,
-        _('That principal is not a %1 for this queue', $args{'Type'}) );
+            _( 'That principal is not a %1 for this queue', $args{'Type'} ) );
     }
 
-    my ($m_id, $m_msg) = $group->_delete_member($principal->id);
+    my ( $m_id, $m_msg ) = $group->_delete_member( $principal->id );
     unless ($m_id) {
-        Jifty->log->error("Failed to delete ".$principal->id.
-                           " as a member of group ".$group->id."\n".$m_msg);
+        Jifty->log->error( "Failed to delete "
+                . $principal->id
+                . " as a member of group "
+                . $group->id . "\n"
+                . $m_msg );
 
-        return ( 0,    _('Could not remove that principal as a %1 for this queue', $args{'Type'}) );
+        return (
+            0,
+            _(  'Could not remove that principal as a %1 for this queue',
+                $args{'Type'}
+            )
+        );
     }
 
-    return ( 1, _("%1 is no longer a %2 for this queue.", $principal->Object->name, $args{'Type'} ));
+    return (
+        1,
+        _(  "%1 is no longer a %2 for this queue.",
+            $principal->Object->name,
+            $args{'Type'}
+        )
+    );
 }
 
 # }}}

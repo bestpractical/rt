@@ -2456,7 +2456,7 @@ msgid "I'm lost"
 msgstr ""
 
 #: html/Ticket/Elements/ShowBasics:48 lib/RT/TicketCollection_Overlay.pm:1766
-msgid "Id"
+msgid "id"
 msgstr "Numero"
 
 #: html/Admin/Users/Modify.html:65 html/User/Prefs.html:60

@@ -70,11 +70,11 @@
     current_tab => "Search/Build.html?".$QueryString, 
     Title => $title,
     %query,
-    SavedSearchId => $saved_search{'Id'},
+    SavedSearchId => $saved_search{'id'},
 &>
 
 <form method="post" action="Build.html" name="BuildQuery">
-<input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'Id'} %>" />
+<input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'id'} %>" />
 <input type="hidden" class="hidden" name="Query" value="<% $query{'Query'} %>" />
 <input type="hidden" class="hidden" name="Format" value="<% $query{'Format'} %>" />
 
@@ -131,7 +131,7 @@ if ( $NewQuery ) {
     # Wipe all data-carrying variables clear if we want a new
     # search, or we're deleting an old one..
     %query = ();
-    %saved_search = ( Id => 'new' );
+    %saved_search = ( id => 'new' );
 
     # ..then wipe the session out..
     delete $session{'CurrentSearchHash'};
@@ -282,7 +282,7 @@ push @actions, $m->comp( 'Elements/EditSearches:Save', %ARGS, Query => \%query, 
 
 $session{'CurrentSearchHash'} = {
     %query,
-    SearchId    => $saved_search{'Id'},
+    SearchId    => $saved_search{'id'},
     Object      => $saved_search{'Object'},
     Description => $saved_search{'Description'},
 };

@@ -1590,7 +1590,7 @@ sub delete_custom_field_value {
 
     my ( $val, $msg ) = $cf->delete_value_for_object(
         Object  => $self,
-        Id      => $args{'ValueId'},
+        id      => $args{'ValueId'},
         Content => $args{'Value'},
     );
     unless ($val) {

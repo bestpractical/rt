@@ -2,9 +2,8 @@
 use strict;
 use warnings;
 use RT::Test; use Test::More; 
-plan tests => 26;
+plan tests => 25;
 use RT;
-
 
 
 {
@@ -56,11 +55,9 @@ ok ($delval,"Deleting a cf value: $delmsg");
 {
 
 ok(my $cf = RT::Model::CustomField->new(current_user => RT->system_user));
-ok($cf->validate_Type('SelectSingle'));
-ok($cf->validate_Type('SelectMultiple'));
-ok(!$cf->validate_Type('SelectFooMultiple'));
-
-
+ ok($cf->validate_Type('Select'));
+ ok(!$cf->validate_Type('SelectFoo'));
+ 
 }
 
 1;

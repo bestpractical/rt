@@ -126,7 +126,7 @@ sub limit_ToGroups {
 
 =head2 limit_ToMembersOfGroup PRINCIPAL_ID
 
-Takes a Principal Id as its only argument. 
+Takes a Principal id as its only argument. 
 Limits the current search principals which are _directly_ members
 of the group which has PRINCIPAL_ID as its principal id.
 

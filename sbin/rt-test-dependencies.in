@@ -205,7 +205,7 @@ Log::Dispatch 2.0
 Locale::Maketext 1.06
 Locale::Maketext::Lexicon 0.32
 Locale::Maketext::Fuzzy
-MIME::Entity 5.419
+MIME::Entity 5.425
 Mail::Mailer 1.57
 Net::SMTP
 Text::Wrapper 
@@ -275,6 +275,8 @@ File::Find
 Test::Deep 0 # needed for shredder tests
 String::ShellQuote 0 # needed for gnupg-incoming.t
 Test::HTTP::Server::Simple
+Log::Dispatch::Perl
+Test::Warn
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];

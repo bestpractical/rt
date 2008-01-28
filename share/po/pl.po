@@ -270,7 +270,7 @@ msgstr "%1 nie jest już wartością pola %2"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 isn't a valid Queue id."
-msgstr "%1 nie jest aktualnie obowiązującym Id kolejki"
+msgstr "%1 nie jest aktualnie obowiązującym id kolejki"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 matches"
@@ -312,7 +312,7 @@ msgstr "%1 udało się"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 type unknown for $MessageId"
-msgstr "%1 to nieznany typ Id wiadomości ($MessageId)"
+msgstr "%1 to nieznany typ id wiadomości ($MessageId)"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 type unknown for %2"
@@ -2706,7 +2706,7 @@ msgid "I'm lost"
 msgstr ""
 
 #: html/Ticket/Elements/ShowBasics:48 lib/RT/TicketCollection_Overlay.pm:1766
-msgid "Id"
+msgid "id"
 msgstr "Nr "
 
 #: html/Admin/Users/Modify.html:65 html/User/Prefs.html:60

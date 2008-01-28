@@ -136,7 +136,7 @@ sub load  {
     }
 
     if (@_) {
-	# Set the template Id to the passed in template    
+	# Set the template id to the passed in template    
 	my $template = shift;
 	
 	$self->{'Template'} = $template;

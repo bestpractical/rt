@@ -45,52 +45,24 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => _("Admin queues") &>
-<& /Admin/Elements/QueueTabs, current_tab => 'Admin/Queues/', 
-    current_subtab => 'Admin/Queues/', 
-    Title => _("Admin queues") &>
-
-
-
-<h1><%$caption%></h1>
-<p><&|/l&>Select a queue</&>:</p>
-% unless ( $queues->count ) {
-<em><&|/l&>No queues matching search criteria found.</&></em>
-% } else {
-<& /Elements/CollectionList,
-    order_by => 'name',
-    Order => 'ASC',
-    %ARGS,
-    Format => $Format,
-    Collection => $queues,
-    AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order order_by FinddisabledQueues)],
-&>
+<%ONCE>
+my $HAS_DATETIME_TZ = do { local $@; eval { require DateTime::TimeZone; }; 1 };
+my @names;
+@names = DateTime::TimeZone->all_names if $HAS_DATETIME_TZ;
+</%ONCE>
+% unless ( $HAS_DATETIME_TZ && @names ) {
+<imput type="text" name="<% $name %>" value="<% $Default %>" />
 % }
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Queues/index.html">
-<input type="checkbox" class="checkbox" name="FinddisabledQueues" value="1" <% $FinddisabledQueues? 'checked': '' %> />
-<&|/l&>Include disabled queues in listing.</&>
-<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
-</form>
-
-<%INIT>
-my ($queue, $caption);
-my $queues = RT::Model::QueueCollection->new();
-$queues->find_all_rows();
-
-if ($FinddisabledQueues) {
-    $caption = _("All Queues");
-    $queues->{'find_disabled_rows'} = 1;
-} else {
-    $caption = _("Enabled Queues");
-}
-
-$Format ||= q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</a>/TITLE:#'}
-    .q{,'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__name__</a>/TITLE:name'}
-    .q{,__Description__,__Address__,__Priority__,__DefaultDueIn__,__disabled__};
-
-</%INIT>
+<select name="<% $name %>">
+% if ( $ShowNullOption ) {
+<option value=""><&|/l&>System Default</&></option>
+% }
+% foreach my $tz (@names) {
+<option value="<% $tz %>" <% ($Default||'') eq $tz? 'selected="selected"' :'' |n %> ><% $tz %></option>
+% }
+</select>
 <%ARGS>
-$FinddisabledQueues => 0
-$Format             => undef
+$ShowNullOption => 1
+$name => undef
+$Default => 0
 </%ARGS>

@@ -193,19 +193,19 @@ sub delete {
     }
     # Unless $self->GroupObj still has the member recursively $self->MemberObj
     # (Since we deleted the database row above, $self no longer counts)
-    unless ( $self->GroupObj->Object->has_member_recursively( $self->MemberObj ) ) {
+    unless ( $self->GroupObj->Object->has_member_recursively( $self->MemberId ) ) {
 
 
         #   Find all ACEs granted to $self->GroupId
         my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
-        $acl->limit_ToPrincipal( Id => $self->GroupId );
+        $acl->limit_ToPrincipal( id => $self->GroupId );
 
 
         while ( my $this_ace = $acl->next() ) {
             #       Find all ACEs which $self-MemberObj has delegated from $this_ace
             my $delegations = RT::Model::ACECollection->new(current_user => RT->system_user);
-            $delegations->DelegatedFrom( Id => $this_ace->id );
-            $delegations->DelegatedBy( Id => $self->MemberId );
+            $delegations->DelegatedFrom( id => $this_ace->id );
+            $delegations->DelegatedBy( id => $self->MemberId );
 
             # For each delegation 
             while ( my $delegation = $delegations->next ) {
@@ -264,16 +264,16 @@ sub set_disabled {
 
     # Unless $self->GroupObj still has the member recursively $self->MemberObj
     # (Since we Setdisabledd the database row above, $self no longer counts)
-    unless ( $self->GroupObj->Object->has_member_recursively( $self->MemberObj ) ) {
+    unless ( $self->GroupObj->Object->has_member_recursively( $self->MemberId ) ) {
         #   Find all ACEs granted to $self->GroupId
         my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
-        $acl->limit_ToPrincipal( Id => $self->GroupId );
+        $acl->limit_ToPrincipal( id => $self->GroupId );
 
         while ( my $this_ace = $acl->next() ) {
             #       Find all ACEs which $self-MemberObj has delegated from $this_ace
             my $delegations = RT::Model::ACECollection->new(current_user => RT->system_user);
-            $delegations->DelegatedFrom( Id => $this_ace->id );
-            $delegations->DelegatedBy( Id => $self->MemberId );
+            $delegations->DelegatedFrom( id => $this_ace->id );
+            $delegations->DelegatedBy( id => $self->MemberId );
 
             # For each delegation,  blow away the delegation
             while ( my $delegation = $delegations->next ) {

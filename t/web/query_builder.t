@@ -35,7 +35,6 @@ sub getQueryFromForm {
     $q =~ s/^\s+//g;
     $q =~ s/\s+$//g;
     $q =~ s/\s+/ /g;
-    warn $q;
     return $q;
 }
 

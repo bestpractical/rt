@@ -78,6 +78,10 @@
     <td class="label"><&|/l&>Language</&>:</td>
     <td class="value"><& /Elements/SelectLang, name => 'lang', Default => $user_object->lang &></td>
   </tr>
+  <tr>
+    <td class="label"><&|/l&>Timezone</&>:</td>
+    <td class="value"><& /Elements/SelectTimezone, name => 'Timezone', Default => $user_object->Timezone &></td>
+  </tr>
 </table>
 </&>
 <&| /Widgets/TitleBox, title => _('Phone numbers'), id => "user-prefs-phone" &>
@@ -210,7 +214,7 @@ if ($user_object->id) {
 		    organization real_name nickname lang email_encoding web_encoding 
 		    ExternalContactInfoId ContactInfoSystem Gecos ExternalAuthId 
 		    auth_system HomePhone WorkPhone MobilePhone PagerPhone Address1
-		Address2 City State Zip Country lang
+		Address2 City State Zip Country lang Timezone
 		   );
 
     $m->callback(

@@ -44,19 +44,19 @@ my $commit_code = <<END;
 	chomp \$data;
 	\$data += 0;
 	close \$file;
-	\Jifty->log->debug("Data is \$data");
+	Jifty->log->debug("Data is \$data");
 	
 	open \$file, ">$filename" or die "couldn't open $filename";
 	if (\$self->transaction_obj->Type eq 'AddLink') {
-	    \Jifty->log->debug("add_link");
+	    Jifty->log->debug("add_link");
 	    print \$file \$data+1, "\n";
 	}
 	elsif (\$self->transaction_obj->Type eq 'DeleteLink') {
-	    \Jifty->log->debug("delete_link");
+	    Jifty->log->debug("delete_link");
 	    print \$file \$data-1, "\n";
 	}
 	else {
-	    \Jifty->log->error("THIS SHOULDN'T HAPPEN");
+	    Jifty->log->error("THIS SHOULDN'T HAPPEN");
 	    print \$file "666\n";
 	}
 	close \$file;

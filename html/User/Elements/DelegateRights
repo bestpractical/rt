@@ -66,8 +66,8 @@ my $object_obj = @{$objects->{$object_type}{$object}}[0]->Object;
 my $i;
 foreach my $right (@{$objects->{$object_type}{$object}}) {
 my $delegations = RT::Model::ACECollection->new();
-$delegations->DelegatedBy( Id => Jifty->web->current_user->id);
-$delegations->DelegatedFrom ( Id => $right->id);
+$delegations->DelegatedBy( id => Jifty->web->current_user->id);
+$delegations->DelegatedFrom ( id => $right->id);
 
 my $del_hash = {};
 while ( my $delegation = $delegations->next) {

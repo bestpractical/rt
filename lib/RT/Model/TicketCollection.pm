@@ -952,14 +952,6 @@ sub _RoleGroupsjoin {
     return $self->{'_sql_role_group_aliases'}{ $args{'Type'} }
         if $self->{'_sql_role_group_aliases'}{ $args{'Type'} } && !$args{'New'};
 
-    # XXX: this has been fixed in DBIx::SB-1.48
-    # XXX: if we change this from join to new_alias+Limit
-    # then Pg and mysql 5.x will complain because SB build wrong query.
-    # Query looks like "FROM (Tickets left join CGM ON(Groups.id = CGM.GroupId)), Groups"
-    # Pg doesn't like that fact that it doesn't know about Groups table yet when
-    # join CGM table into Tickets. Problem is in join method which doesn't use
-    # alias1 argument when build braces.
-
     # we always have watcher groups for ticket, so we use INNER join
     my $groups = $self->join(
         alias1          => 'main',
@@ -1746,7 +1738,7 @@ sub limit_Subject {
 
 Takes a paramhash with the fields operator and value.
 operator is one of =, >, < or !=.
-value is a ticket Id to search for
+value is a ticket id to search for
 
 =cut
 
@@ -1762,7 +1754,7 @@ sub limit_Id {
         value       => $args{'value'},
         operator    => $args{'operator'},
         description =>
-            join( ' ', _('Id'), $args{'operator'}, $args{'value'}, ),
+            join( ' ', _('id'), $args{'operator'}, $args{'value'}, ),
     );
 }
 
@@ -2660,7 +2652,7 @@ sub ClearRestrictions {
 
 =head2 DeleteRestriction
 
-Takes the row Id of a restriction (From DescribeRestrictions' output, for example.
+Takes the row id of a restriction (From DescribeRestrictions' output, for example.
 Removes that restriction from the session's limits.
 
 =cut

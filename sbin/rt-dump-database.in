@@ -84,18 +84,18 @@ foreach my $class (@classes) {
         $objects->order_by(
             { column => 'LookupType' },
             { column => 'SortOrder' },
-            { column => 'Id' },
+            { column => 'id' },
         );
     }
     else {
-        $objects->order_by( column => 'Id' );
+        $objects->order_by( column => 'id' );
     }
 
     if ($LocalOnly) {
         next if $class eq 'ACL'; # XXX - would go into infinite loop - XXX
 	$objects->limit( column => 'LastUpdatedBy', operator => '!=', value => $system_userId )
 	    unless $class eq 'Groups';
-	$objects->limit( column => 'Id', operator => '!=', value => $system_userId )
+	$objects->limit( column => 'id', operator => '!=', value => $system_userId )
 	    if $class eq 'Users';
 	$objects->limit( column => 'Domain', operator => '=', value => 'UserDefined' )
 	    if $class eq 'Groups';
@@ -122,11 +122,11 @@ foreach my $class (@classes) {
 	delete $rv->{disabled} unless $rv->{disabled};
 
 	foreach my $record (map { /ACL/ ? 'ACE' : substr($_, 0, -1) } @classes) {
-	    foreach my $key (map "$record$_", ('', 'Id')) {
+	    foreach my $key (map "$record$_", ('', 'id')) {
 		next unless exists $rv->{$key};
 		my $id = $rv->{$key} or next;
 		my $obj = "RT::$record"->new(current_user => RT->system_user);
-		$obj->load_by_cols( Id => $id ) or next;
+		$obj->load_by_cols( id => $id ) or next;
 		$rv->{$key} = $obj->__value('name') || 0;
 	    }
 	}

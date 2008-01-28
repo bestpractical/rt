@@ -63,11 +63,11 @@ my @cols = $class->basic_columns or return;
 $r->content_type( 'text/plain' );
 $r->headers_out->{'Content-Disposition'} = "attachment; filename=$filename";
 $m->clear_buffer();
-$m->out(join("\t", "Id", map $_->[1], @cols), "\n");
+$m->out(join("\t", "id", map $_->[1], @cols), "\n");
 foreach my $id (@ids) {
     my $obj = $class->new;
     $obj->load($id) or next;
-    $m->out(join("\t", map $obj->$_, "Id", map $_->[0], @cols), "\n");
+    $m->out(join("\t", map $obj->$_, "id", map $_->[0], @cols), "\n");
 }
 $m->abort; 
 </%perl>

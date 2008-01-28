@@ -89,6 +89,7 @@ $DisplayPath => RT->Config->Get('WebPath')."/Ticket/Display.html?id=".$Ticket->i
 $AttachPath => RT->Config->Get('WebPath')."/Ticket/Attachment"
 $UpdatePath => RT->Config->Get('WebPath')."/Ticket/Update.html"
 $ForwardPath => RT->Config->Get('WebPath')."/Ticket/Forward.html"
+$EncryptionPath => RT->Config->Get('WebPath')."/Ticket/GnuPG.html"
 $EmailRecordPath => RT->Config->Get('WebPath')."/Ticket/ShowEmailRecord.html"
 $Attachments => undef
 $AttachmentContent => undef
@@ -152,7 +153,7 @@ $TimeTaken = $Transaction->TimeTaken . " min"
 
 unless ($Attachments) { 
     my $attachments = $Transaction->Attachments;
-    $attachments->columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId) );
+    $attachments->columns( qw( id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId) );
     $Attachments = $attachments->items_array_ref();
 }
 my $titlebar_commands = '&nbsp;';
@@ -182,8 +183,9 @@ else {
     }
 
     if ( $Attachments->[0] && $ShowTitleBarCommands ) {
-        my $can_modify = $Transaction->ticket_obj->current_user_has_right('ModifyTicket');
-        if ( $can_modify || $Transaction->ticket_obj->current_user_has_right('ReplyToTicket') ) {
+        my $ticket = $Transaction->ticket_obj;
+        my $can_modify = $ticket->current_user_has_right('ModifyTicket');
+        if ( $can_modify || $ticket->current_user_has_right('ReplyToTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath
               . "?id=" . $Transaction->Ticket
@@ -192,7 +194,7 @@ else {
               . _('Reply')
               . "</a>]&nbsp;";
         }
-        if ( $can_modify || $Transaction->ticket_obj->current_user_has_right('commentOnTicket') ) {
+        if ( $can_modify || $ticket->current_user_has_right('commentOnTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath."?id="
               . $Transaction->Ticket
@@ -201,12 +203,22 @@ else {
               . "&Action=comment\">"
               . _('comment') . "</a>]";
         }
-        if ( $Transaction->ticket_obj->current_user_has_right('ForwardMessage') ) {
+        if ( $ticket->current_user_has_right('ForwardMessage') ) {
             $titlebar_commands .=
                 "[<a href=\"". $ForwardPath
               . "?id=". $Transaction->Ticket
               . "&QuoteTransaction=". $Transaction->id
               . "\">". _('Forward') . "</a>]";
+        }
+        if ( $can_modify
+            && RT->Config->Get('GnuPG')->{'Enable'}
+            && RT->Config->Get('GnuPG')->{'AllowEncryptDataInDB'}
+            && $ticket->current_user_has_right('ForwardMessage')
+        ) {
+            $titlebar_commands .=
+                "[<a href=\"". $EncryptionPath
+              . "?id=". $Transaction->id
+              . "\">". _('Ecnrypt/Decrypt') . "</a>]";
         }
     }
 }

@@ -114,7 +114,7 @@ sub FromObject {
 =head2 FromURI <URI>
 
 Returns a local object id for this content. You are expected to know
-what sort of object this is the Id of
+what sort of object this is the id of
 
 Returns true if everything is ok, otherwise false
 
@@ -186,7 +186,7 @@ sub _GetResolver {
 =head2 Scheme
 
 Returns a local object id for this content.  You are expected to know
-what sort of object this is the Id of
+what sort of object this is the id of
 
 =cut
 
@@ -200,7 +200,7 @@ sub Scheme {
 
 =head2 URI
 
-Returns a local object id for this content.  You are expected to know what sort of object this is the Id 
+Returns a local object id for this content.  You are expected to know what sort of object this is the id 
 of 
 
 =cut

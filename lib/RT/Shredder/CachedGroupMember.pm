@@ -82,13 +82,13 @@ sub __DependsOn
     # if pricipal is not member anymore(could be via other groups) then proceed
     if( $self->GroupObj->Object->has_member_recursively( $self->MemberObj ) ) {
         my $acl = RT::Model::ACECollection->new;
-        $acl->limit_ToPrincipal( Id => $self->GroupId );
+        $acl->limit_ToPrincipal( id => $self->GroupId );
 
         # look into all rights that have group
         while( my $ace = $acl->next ) {
             my $delegations = RT::Model::ACECollection->new;
-            $delegations->DelegatedFrom( Id => $ace->id );
-            $delegations->DelegatedBy( Id => $self->MemberId );
+            $delegations->DelegatedFrom( id => $ace->id );
+            $delegations->DelegatedBy( id => $self->MemberId );
             push( @$list, $delegations );
         }
     }

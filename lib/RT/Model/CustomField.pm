@@ -541,7 +541,7 @@ sub FriendlyTypeComposite {
 }
 
 
-=head2 ValidateType TYPE
+=head2 validate_Type TYPE
 
 Takes a single string. returns true if that string is a value
 type of custom field
@@ -1039,7 +1039,7 @@ sub delete_value_for_object {
     my $self = shift;
     my %args = ( Object => undef,
                  Content => undef,
-                 Id => undef,
+                 id => undef,
              @_ );
 
 
@@ -1049,7 +1049,7 @@ sub delete_value_for_object {
 
     my $oldval = RT::Model::ObjectCustomFieldValue->new;
 
-    if (my $id = $args{'Id'}) {
+    if (my $id = $args{'id'}) {
         $oldval->load($id);
     }
     unless ($oldval->id) { 

@@ -52,16 +52,92 @@
     current_tab => $current_tab, 
     Title => $title &>
 
-<h2><&|/l&>Groups</&></h2>
+<& /Elements/ListActions, actions => \@results &>
 
-<& /Elements/ShowMemberships, user_object => $user_object &>
+<form method="post" action="">
+<input type="hidden" id="<% $id %>" />
+
+<h2><&|/l&>Groups the user is member of (check box to delete)</&></h2>
+
+<& /Elements/CollectionList,
+    order_by => 'name',
+    Order   => 'ASC',
+    Rows    => 0,
+    %ARGS,
+    DisplayFormat => "__CheckBox.{Delete}__,$Format",
+    Format => $Format,
+    Collection => $is_member,
+    AllowSorting => 1,
+    PassArguments => [qw(Format Rows Page Order order_by id)],
+&>
+
+<h2><&|/l&>Groups the user is not member of (check box to add)</&></h2>
+
+<& /Elements/CollectionList,
+    order_by => 'name',
+    Order   => 'ASC',
+    Rows    => 100,
+    %ARGS,
+    DisplayFormat => "__CheckBox.{Add}__,'__has_member_recursively.{$id}__/TITLE:Recursive',$Format",
+    Format => $Format,
+    Collection => $is_not_member,
+    AllowSorting => 1,
+    PassArguments => [qw(Format Rows Page Order order_by)],
+&>
+
+<& /Elements/Submit, Label => _('Update'), name => 'Update' &>
+
+</form>
 
 <%INIT>
 my $user_object = RT::Model::User->new();
-$user_object->load($id) || Abort("Couldn't load user '$id'");
+$user_object->load( $id ) || Abort("Couldn't load user '$id'");
+
 my $title = _("Memberships of the user %1", $user_object->name);
-my $current_tab = 'Admin/Users/Memberships.html?id='.$id;
+my $current_tab = 'Admin/Users/Memberships.html?id='. $id;
+
+my @results;
+if ( $Update ) {
+    foreach my $gid( @Add ) {
+        my $group = RT::Model::Group->new();
+        $group->load_user_defined_group( $gid );
+        unless ( $group->id ) {
+            push @results, _( "Couldn't load group #%1", $gid );
+            next;
+        }
+        my ($status, $msg) = $group->AddMember( $id );
+        push @results, $msg;
+    }
+    foreach my $gid( @Delete ) {
+        my $group = RT::Model::Group->new();
+        $group->load_user_defined_group( $gid );
+        unless ( $group->id ) {
+            push @results, _( "Couldn't load group #%1", $gid );
+            next;
+        }
+        my ($status, $msg) = $group->DeleteMember( $id );
+        push @results, $msg;
+    }
+}
+
+my $is_member = RT::Model::GroupCollection->new();
+$is_member->limitToUserDefinedGroups;
+$is_member->WithMember( principal_id => $user_object->id );
+
+my $is_not_member = RT::Model::GroupCollection->new();
+$is_not_member->limitToUserDefinedGroups;
+$is_not_member->WithoutMember( principal_id => $user_object->id );
+
+$Format ||= q{'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__id__</a>/TITLE:#'}
+    .q{,'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__name__</a>/TITLE:name'}
+    .q{,'__Description__'};
 </%INIT>
 <%ARGS>
-$id => undef
+$id     => undef
+
+$Update => 0,
+@Add    => (),
+@Delete => (),
+
+$Format => undef
 </%ARGS>
