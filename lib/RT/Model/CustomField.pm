@@ -63,7 +63,7 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
     column name => max_length is 200, type is 'varchar(200)', default is '';
-    column Type => max_length is 200, type is 'varchar(200)', default is '';
+    column type => max_length is 200, type is 'varchar(200)', default is '';
     column MaxValues => max_length is 11, type is 'int(11)', default is '0';
     column Pattern => type is 'longtext', default is '';
     column Repeated => max_length is 6, type is 'smallint(6)', default is '0';
@@ -169,7 +169,7 @@ sub available_rights {
 Create takes a hash of values and creates a row in the database:
 
   varchar(200) 'name'.
-  varchar(200) 'Type'.
+  varchar(200) 'type'.
   int(11) 'MaxValues'.
   varchar(255) 'Pattern'.
   smallint(6) 'Repeated'.
@@ -187,7 +187,7 @@ sub create {
     my $self = shift;
     my %args = (
         name        => '',
-        Type        => '',
+        type        => '',
         MaxValues   => 0,
         Pattern     => '',
         Description => '',
@@ -208,10 +208,10 @@ sub create {
     }
 
     if ( $args{TypeComposite} ) {
-        @args{ 'Type', 'MaxValues' } = split( /-/, $args{TypeComposite}, 2 );
-    } elsif ( $args{Type} =~ s/(?:(Single)|Multiple)$// ) {
+        @args{ 'type', 'MaxValues' } = split( /-/, $args{TypeComposite}, 2 );
+    } elsif ( $args{type} =~ s/(?:(Single)|Multiple)$// ) {
 
-        # old style Type string
+        # old style type string
         $args{'MaxValues'} = $1 ? 1 : 0;
     }
 
@@ -247,7 +247,7 @@ sub create {
 
     ( my $rv, $msg ) = $self->SUPER::create(
         name        => $args{'name'},
-        Type        => $args{'Type'},
+        type        => $args{'type'},
         MaxValues   => $args{'MaxValues'},
         Pattern     => $args{'Pattern'},
         Description => $args{'Description'},
@@ -265,7 +265,7 @@ sub create {
     # Compat code -- create a new ObjectCustomField mapping
     my $OCF = RT::Model::ObjectCustomField->new;
     $OCF->create(
-        CustomField => $self->id,
+        custom_field => $self->id,
         object_id   => $args{'Queue'},
     );
 
@@ -407,7 +407,7 @@ sub add_value {
     }
 
     my $newval = RT::Model::CustomFieldValue->new;
-    return $newval->create( %args, CustomField => $self->id );
+    return $newval->create( %args, custom_field => $self->id );
 }
 
 # }}}
@@ -577,7 +577,7 @@ sub validate_type {
 
     if ( $type =~ s/(?:Single|Multiple)$// ) {
         Jifty->log->warn(
-            "Prefix 'Single' and 'Multiple' to Type deprecated, use MaxValues instead at ("
+            "Prefix 'Single' and 'Multiple' to type deprecated, use MaxValues instead at ("
                 . join( ":", caller )
                 . ")" );
     }
@@ -599,7 +599,7 @@ sub set_type {
                 . ")" );
         $self->set_MaxValues( $1 ? 1 : 0 );
     }
-    $self->_set( column => 'Type', value => $type );
+    $self->_set( column => 'type', value => $type );
 }
 
 =head2 SetPattern STRING
@@ -771,7 +771,7 @@ sub set_type_composite {
     }
     return 1,
         _(
-        "Type changed from '%1' to '%2'",
+        "type changed from '%1' to '%2'",
         $self->friendly_type_composite($old),
         $self->friendly_type_composite($composite),
         );
@@ -876,12 +876,12 @@ sub add_to_object {
     }
 
     my $ObjectCF = RT::Model::ObjectCustomField->new;
-    $ObjectCF->load_by_cols( object_id => $id, CustomField => $self->id );
+    $ObjectCF->load_by_cols( object_id => $id, custom_field => $self->id );
     if ( $ObjectCF->id ) {
         return ( 0, _("That is already the current value") );
     }
     my ( $oid, $msg )
-        = $ObjectCF->create( object_id => $id, CustomField => $self->id );
+        = $ObjectCF->create( object_id => $id, custom_field => $self->id );
 
     return ( $oid, $msg );
 }
@@ -908,7 +908,7 @@ sub remove_from_object {
     }
 
     my $ObjectCF = RT::Model::ObjectCustomField->new;
-    $ObjectCF->load_by_cols( object_id => $id, CustomField => $self->id );
+    $ObjectCF->load_by_cols( object_id => $id, custom_field => $self->id );
     unless ( $ObjectCF->id ) {
         return ( 0, _("This custom field does not apply to that object") );
     }
@@ -988,7 +988,7 @@ sub add_value_for_object {
         Content      => $args{'Content'},
         LargeContent => $args{'LargeContent'},
         ContentType  => $args{'ContentType'},
-        CustomField  => $self->id
+        custom_field  => $self->id
     );
 
     unless ($val) {
@@ -1076,7 +1076,7 @@ sub delete_value_for_object {
         $oldval->load_by_object_content_and_custom_field(
             Object      => $args{'Object'},
             Content     => $args{'Content'},
-            CustomField => $self->id,
+            custom_field => $self->id,
         );
     }
 

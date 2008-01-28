@@ -78,7 +78,7 @@ sub ocf_alias {
             alias1  => 'main',
             column1 => 'id',
             alias2  => $self->ocf_alias,
-            column2 => 'CustomField'
+            column2 => 'custom_field'
         );
     }
     return ( $self->{_sql_ocfalias} );

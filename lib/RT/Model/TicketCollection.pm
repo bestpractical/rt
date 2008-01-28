@@ -1241,7 +1241,7 @@ sub _custom_field_join {
         );
         $self->SUPER::limit(
             leftjoin         => $TicketCFs,
-            column           => 'CustomField',
+            column           => 'custom_field',
             value            => $cfid,
             entry_aggregator => 'AND'
         );
@@ -1263,7 +1263,7 @@ sub _custom_field_join {
         $CFs = $self->{_sql_cf_alias}{$cfkey} = $self->join(
             type    => 'left',
             alias1  => $ocfalias,
-            column1 => 'CustomField',
+            column1 => 'custom_field',
             table2  => 'CustomFields',
             column2 => 'id',
         );
@@ -1273,7 +1273,7 @@ sub _custom_field_join {
             alias1  => $CFs,
             column1 => 'id',
             table2  => 'Objectcustom_field_values',
-            column2 => 'CustomField',
+            column2 => 'custom_field',
         );
         $self->SUPER::limit(
             leftjoin         => $TicketCFs,
@@ -1427,9 +1427,9 @@ sub order_by {
             my $CFvs = $self->join(
                 type    => 'left',
                 alias1  => $TicketCFs,
-                column1 => 'CustomField',
+                column1 => 'custom_field',
                 table2  => 'custom_field_values',
-                column2 => 'CustomField',
+                column2 => 'custom_field',
             );
             $self->SUPER::limit(
                 leftjoin         => $CFvs,

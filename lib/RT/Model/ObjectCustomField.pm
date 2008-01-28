@@ -57,7 +57,7 @@ use base qw/RT::Record/;
 sub table {'ObjectCustomFields'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column CustomField => type is 'int(11)', max_length is 11, default is '0';
+    column custom_field => type is 'int(11)', max_length is 11, default is '0';
     column Creator     => type is 'int(11)', max_length is 11, default is '0';
     column object_id   => type is 'int(11)', max_length is 11, default is '0';
     column
@@ -72,16 +72,16 @@ use Jifty::DBI::Record schema {
 sub create {
     my $self = shift;
     my %args = (
-        CustomField => 0,
+        custom_field => 0,
         object_id   => 0,
         SortOrder   => undef,
         @_
     );
 
-    my $cf = $self->custom_field_obj( $args{'CustomField'} );
+    my $cf = $self->custom_field_obj( $args{'custom_field'} );
     unless ( $cf->id ) {
         Jifty->log->error(
-            "Couldn't load '$args{'CustomField'}' custom field");
+            "Couldn't load '$args{'custom_field'}' custom field");
         return 0;
     }
 
@@ -110,7 +110,7 @@ sub create {
     }
 
     return $self->SUPER::create(
-        CustomField => $args{'CustomField'},
+        custom_field => $args{'custom_field'},
         object_id   => $args{'object_id'},
         SortOrder   => $args{'SortOrder'},
     );

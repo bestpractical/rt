@@ -63,7 +63,7 @@ use Jifty::DBI::Record schema {
         LastUpdatedBy => type is 'int(11)',
         max_length is 11, default is '0';
     column SortOrder   => type is 'int(11)', max_length is 11, default is '0';
-    column CustomField => type is 'int(11)', max_length is 11, default is '0';
+    column custom_field => type is 'int(11)', max_length is 11, default is '0';
     column Created     => type is 'datetime', default is '';
     column LastUpdated => type is 'datetime', default is '';
     column name => type is 'varchar(200)', max_length is 200, default is '';
@@ -83,7 +83,7 @@ from being integers.
 sub create {
     my $self = shift;
     my %args = (
-        CustomField => 0,
+        custom_field => 0,
         name        => '',
         Description => '',
         SortOrder   => 0,
@@ -92,9 +92,9 @@ sub create {
     );
 
     my $cf_id
-        = ref $args{'CustomField'}
-        ? $args{'CustomField'}->id
-        : $args{'CustomField'};
+        = ref $args{'custom_field'}
+        ? $args{'custom_field'}->id
+        : $args{'custom_field'};
 
     my $cf = RT::Model::CustomField->new;
     $cf->load($cf_id);
@@ -106,7 +106,7 @@ sub create {
     }
 
     my ( $id, $msg ) = $self->SUPER::create(
-        CustomField => $cf_id,
+        custom_field => $cf_id,
         map { $_ => $args{$_} } qw(name Description SortOrder)
     );
     return ( $id, $msg ) unless $id;

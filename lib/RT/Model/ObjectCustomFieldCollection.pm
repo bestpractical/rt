@@ -55,7 +55,7 @@ use base qw/RT::SearchBuilder/;
 sub limit_to_custom_field {
     my $self = shift;
     my $id   = shift;
-    $self->limit( column => 'CustomField', value => $id );
+    $self->limit( column => 'custom_field', value => $id );
 }
 
 sub limit_to_object_id {
@@ -70,7 +70,7 @@ sub limit_to_lookup_type {
 
     $self->{'_cfs_alias'} ||= $self->join(
         alias1  => 'main',
-        column1 => 'CustomField',
+        column1 => 'custom_field',
         table2  => 'CustomFields',
         column2 => 'id',
     );

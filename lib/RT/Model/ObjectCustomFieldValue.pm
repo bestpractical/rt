@@ -69,7 +69,7 @@ use Jifty::DBI::Record schema {
     column disabled => type is 'smallint(6)', max_length is 6, default is '0';
     column SortOrder => type is 'int(11)', max_length is 11, default is '0';
     column Created => type is 'datetime', default is '';
-    column CustomField => type is 'int(11)', max_length is 11, default is '0';
+    column custom_field => type is 'int(11)', max_length is 11, default is '0';
     column
         Content => type is 'varchar(255)',
         max_length is 255, default is '';
@@ -88,7 +88,7 @@ sub custom_field_obj {
     my $self = shift;
     unless ( $self->{cf} ) {
         $self->{cf} = RT::Model::CustomField->new;
-        $self->{cf}->load( $self->CustomField );
+        $self->{cf}->load( $self->custom_field );
     }
     return $self->{cf};
 }
@@ -96,7 +96,7 @@ sub custom_field_obj {
 sub create {
     my $self = shift;
     my %args = (
-        CustomField     => 0,
+        custom_field     => 0,
         object_type     => '',
         object_id       => 0,
         disabled        => 0,
@@ -123,7 +123,7 @@ sub create {
         if defined $args{'LargeContent'};
 
     return $self->SUPER::create(
-        CustomField     => $args{'CustomField'},
+        custom_field     => $args{'custom_field'},
         object_type     => $args{'object_type'},
         object_id       => $args{'object_id'},
         disabled        => $args{'disabled'},
@@ -140,9 +140,9 @@ sub large_content {
         $self->_value( 'LargeContent', decode_utf8 => 0 ) );
 }
 
-=head2 LoadByTicketContentAndCustomField { Ticket => TICKET, CustomField => customfield, Content => CONTENT }
+=head2 LoadByTicketContentAndCustomField { Ticket => TICKET, custom_field => customfield, Content => CONTENT }
 
-Loads a custom field value by Ticket, Content and which CustomField it's tied to
+Loads a custom field value by Ticket, Content and which custom_field it's tied to
 
 =cut
 
@@ -150,14 +150,14 @@ sub load_by_ticket_content_and_custom_field {
     my $self = shift;
     my %args = (
         Ticket      => undef,
-        CustomField => undef,
+        custom_field => undef,
         Content     => undef,
         @_
     );
 
     return $self->load_by_cols(
         Content     => $args{'Content'},
-        CustomField => $args{'CustomField'},
+        custom_field => $args{'custom_field'},
         object_type => 'RT::Model::Ticket',
         object_id   => $args{'Ticket'},
         disabled    => 0
@@ -168,7 +168,7 @@ sub load_by_object_content_and_custom_field {
     my $self = shift;
     my %args = (
         Object      => undef,
-        CustomField => undef,
+        custom_field => undef,
         Content     => undef,
         @_
     );
@@ -177,7 +177,7 @@ sub load_by_object_content_and_custom_field {
 
     return $self->load_by_cols(
         Content     => $args{'Content'},
-        CustomField => $args{'CustomField'},
+        custom_field => $args{'custom_field'},
         object_type => ref($obj),
         object_id   => $obj->id,
         disabled    => 0

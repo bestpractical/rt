@@ -65,7 +65,7 @@ sub limit_to_custom_field {
     my $self = shift;
     my $cf   = shift;
     return $self->limit(
-        column => 'CustomField',
+        column => 'custom_field',
         value  => $cf,
     );
 }
