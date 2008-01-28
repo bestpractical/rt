@@ -102,11 +102,11 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 
 <% _('Query:') %>&nbsp;<% $Query %><br />
 
-<img src="<%RT->Config->Get('WebPath')%>/Search/Chart?<%$query_string|n%>" /><br />
+<img src="<%RT->config->get('WebPath')%>/Search/Chart?<%$query_string|n%>" /><br />
 
 <table class="collection-as-table">
 <tr>
-<th class="collection-as-table"><% $tix->Label($PrimaryGroupBy) %>
+<th class="collection-as-table"><% $tix->label($PrimaryGroupBy) %>
 </th>
 <th class="collection-as-table"><&|/l&>Tickets</&>
 </th>

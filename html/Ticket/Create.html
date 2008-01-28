@@ -53,7 +53,7 @@
     Title => _("Create a new ticket"),
     actions => $actions &>
 <& /Elements/ListActions, actions => \@results &>
-<form action="<% RT->Config->Get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
+<form action="<% RT->config->get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 <input type="hidden" class="hidden" name="id" value="new" />
 % $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
 
@@ -123,7 +123,7 @@
 <tr>
 <td align="right"><% $CF->name %>:</td>
 <td><& /Elements/EditCustomField, CustomField => $CF, namePrefix =>
-    "Object-RT::Model::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
+    "Object-RT::Model::Transaction--CustomField-" &><em><% $CF->friendly_type %></em></td>
 </td></tr>
 % }
 % }
@@ -146,7 +146,7 @@
 </td>
 <td class="value" colspan="5">
 <input type="file" name="Attach" />
-<input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
+<input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>add More Files</&>" />
 </td>
 </tr>
 
@@ -158,7 +158,7 @@
 
 <tr>
 <td colspan="6">
-<&|/l&>Describe the issue below</&>:<br />
+<&|/l&>describe the issue below</&>:<br />
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0 &>
 % } else {
@@ -185,20 +185,20 @@
 <table border="0">
 <tr><td align="right"><&|/l&>Priority</&>:</td><td><input size="3" name="initial_priority" value="<% $ARGS{initial_priority} ? $ARGS{initial_priority} : $queue_obj->initial_priority %>" /></td></tr>
 <tr><td align="right"><&|/l&>Final Priority</&>:</td><td><input size="3" name="final_priority" value="<% $ARGS{final_priority} ? $ARGS{final_priority} : $queue_obj->final_priority %>" /></td></tr>
-<tr><td align="right"><&|/l&>Time Estimated</&>:</td>
+<tr><td align="right"><&|/l&>time Estimated</&>:</td>
 <td>
 <input size="3" name="time_estimated" value="<%$ARGS{time_estimated} || ''%>" />
 <& /Elements/SelectTimeUnits, name =>'time_estimated' &>
 
 </td></tr>
-<tr><td align="right"><&|/l&>Time Worked</&>:</td>
+<tr><td align="right"><&|/l&>time Worked</&>:</td>
 <td>
 <input size="3" name="time_worked" value="<%$ARGS{time_worked} || ''%>" />
 <& /Elements/SelectTimeUnits, name =>'time_worked' &>
 
 </td></tr>
 <tr>
-<td align="right"><&|/l&>Time Left</&>:</td>
+<td align="right"><&|/l&>time Left</&>:</td>
 <td><input size="3" name="time_left" value="<%$ARGS{time_left} || ''%>" />
 <& /Elements/SelectTimeUnits, name =>'time_left' &>
 </td></tr>
@@ -249,7 +249,7 @@ if ( $cloneTicket ) {
     $cloneticket_obj->Load($cloneTicket) or Abort(_("Ticket could not be loaded"));
     
     my $clone = {
-        Requestors       => join( ',', $cloneticket_obj->RequestorAddresses ),
+        Requestors       => join( ',', $cloneticket_obj->requestor_addresses ),
         Cc               => join( ',', $cloneticket_obj->CcAddresses),
         AdminCc          => join( ',', $cloneticket_obj->AdminCcAddresses),
         initial_priority => $cloneticket_obj->Priority, 
@@ -259,38 +259,38 @@ if ( $cloneTicket ) {
         for qw/Owner Subject final_priority time_estimated TimeWorked 
                 Status TimeLeft Starts Started Due Resolved/;
     
-        my $members = $cloneticket_obj->Members;
+        my $members = $cloneticket_obj->members;
         my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
         while ( my $member = $members->next ) {
             push @members, $member->LocalBase;
         }
         $clone->{'MemberOf-new'} = join ' ', @members;
     
-        my $members_of = $cloneticket_obj->MemberOf;
+        my $members_of = $cloneticket_obj->member_of;
         while ( my $member_of = $members_of->next ) {
             push @members_of, $member_of->LocalTarget;
         }
         $clone->{'new-MemberOf'} = join ' ', @members_of;
         
-        my $refers = $cloneticket_obj->RefersTo;
+        my $refers = $cloneticket_obj->refers_to;
         while ( my $refer = $refers->next ) {
             push @refers, $refer->LocalTarget;
         }
         $clone->{'new-RefersTo'} = join ' ', @refers;
     
-        my $refers_by = $cloneticket_obj->ReferredToBy;
+        my $refers_by = $cloneticket_obj->referred_to_by;
         while ( my $refer_by = $refers_by->next ) {
             push @refers_by, $refer_by->LocalBase;
         }
         $clone->{'RefersTo-new'} = join ' ', @refers_by;
     
-        my $depends = $cloneticket_obj->DependsOn;
+        my $depends = $cloneticket_obj->depends_on;
         while ( my $depend = $depends->next ) {
             push @depends, $depend->LocalTarget;
         }
         $clone->{'new-DependsOn'} = join ' ', @depends;
     
-        my $depends_by = $cloneticket_obj->DependedOnBy;
+        my $depends_by = $cloneticket_obj->depended_on_by;
         while ( my $depend_by = $depends_by->next ) {
             push @depends_by, $depend_by->LocalBase;
         }
@@ -298,13 +298,13 @@ if ( $cloneTicket ) {
     
     
     
-    my $cfs = $cloneticket_obj->queue_obj->TicketCustomFields();
+    my $cfs = $cloneticket_obj->queue_obj->ticket_custom_fields();
     while ( my $cf = $cfs->next ) {
         my $cf_id = $cf->id;
         my $cf_values = $cloneticket_obj->custom_field_values( $cf->id );
         my @cf_values;
         while ( my $cf_value = $cf_values->next ) {
-            push @cf_values, $cf_value->Content;
+            push @cf_values, $cf_value->content;
         }
         $clone->{"Object-RT::Model::Ticket--CustomField-$cf_id-value"} 
             = join "\n", @cf_values;
@@ -321,8 +321,8 @@ $queue_obj->load($Queue) || Abort(_("Queue could not be loaded."));
 
 $m->callback( queue_obj => $queue_obj, ARGSRef => \%ARGS );
 
-my $CFs = $queue_obj->TicketCustomFields();
-my $TxnCFs = $queue_obj->TicketTransactionCustomFields();
+my $CFs = $queue_obj->ticket_custom_fields();
+my $TxnCFs = $queue_obj->ticket_transaction_custom_fields();
 
 my $ValidCFs = $m->comp(
     '/Elements/ValidateCustomFields',
@@ -335,8 +335,8 @@ my $ValidCFs = $m->comp(
 if ($queue_obj->DefaultDueIn && !$ARGS{'Due'}) {
     my $default_due = RT::Date->new();
     $default_due->set_to_now();
-    $default_due->AddDays($queue_obj->DefaultDueIn);
-    $ARGS{'Due'} = $default_due->ISO();
+    $default_due->add_days($queue_obj->DefaultDueIn);
+    $ARGS{'Due'} = $default_due->iso();
 }
 
 # {{{ deal with deleting uploaded attachments

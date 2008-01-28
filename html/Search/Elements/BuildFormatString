@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Format => RT->Config->Get('DefaultSearchResultFormat')
+$Format => RT->config->get('DefaultSearchResultFormat')
 
 %cfqueues => ()
 
@@ -109,9 +109,9 @@ foreach my $id (keys %cfqueues) {
         $queue->load($id);
     }
     $queue->load($id);
-    $CustomFields->limit_ToQueue($queue->id);
+    $CustomFields->limit_to_queue($queue->id);
 }
-$CustomFields->limit_ToGlobal;
+$CustomFields->limit_to_global;
 
 while ( my $CustomField = $CustomFields->next ) {
     push @fields, "CustomField.{" . $CustomField->name . "}";
@@ -121,7 +121,7 @@ $m->callback( Fields => \@fields, ARGSRef => \%ARGS );
 
 my ( @seen);
 
-$Format ||= RT->Config->Get('DefaultSearchResultFormat');
+$Format ||= RT->config->get('DefaultSearchResultFormat');
 my @format = split( /,\s*/, $Format );
 foreach my $field (@format) {
     my %column = ();

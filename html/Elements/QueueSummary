@@ -58,10 +58,10 @@
 %   my $queue_cond = "Queue = '$queue->{name}' AND ";
 %   my $all_q = $queue_cond . "(Status = 'open' OR Status = 'new' OR Status = 'stalled')";
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<td><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $all_q |u,n %>" title="<% $queue->{Description} %>"><% $queue->{name} %></a></td>
+<td><a href="<% RT->config->get('WebPath') %>/Search/Results.html?Query=<% $all_q |u,n %>" title="<% $queue->{Description} %>"><% $queue->{name} %></a></td>
 %   for my $condition (@$conditions) {
 %       $Tickets->from_sql( "Queue = $queue->{id} AND ". $condition->{cond} );
-<td align="right"><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $queue_cond.$condition->{cond} |u,n %>"><% $Tickets->count %></a></td>
+<td align="right"><a href="<% RT->config->get('WebPath') %>/Search/Results.html?Query=<% $queue_cond.$condition->{cond} |u,n %>"><% $Tickets->count %></a></td>
 %   }
 </tr>
 % }
@@ -82,7 +82,7 @@ else {
     @queues = map { {
         id          => $_->id,
         name        => $_->name,
-        Description => $_->Description,
+        Description => $_->description,
     } } grep $_, @queues;
 
     $session{$cache} = \@queues if $cache;

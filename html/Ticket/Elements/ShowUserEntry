@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/ShowUser, %ARGS &>
-% if ($Ticket and grep { $_->Content eq $User->email } $Ticket->SquelchMailTo)  {
+% if ($Ticket and grep { $_->content eq $User->email } $Ticket->SquelchMailTo)  {
 <b><&|/l&>(Will not be sent email)</&></b>
 % }
 

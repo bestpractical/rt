@@ -16,19 +16,19 @@ use_ok('RT::Shredder::Plugin::Users');
     my $plugin = RT::Shredder::Plugin::Users->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Users');
 
-    is(lc $plugin->Type, 'search', 'correct type');
+    is(lc $plugin->type, 'search', 'correct type');
 
-    my @args = sort $plugin->SupportArgs;
+    my @args = sort $plugin->support_args;
     cmp_deeply(\@args, \@ARGS, "support all args");
 
-    my ($status, $msg) = $plugin->TestArgs( name => 'r??t*' );
+    my ($status, $msg) = $plugin->test_args( name => 'r??t*' );
     ok($status, "arg name = 'r??t*'") or diag("error: $msg");
 
     for (qw(any disabled enabled)) {
-        my ($status, $msg) = $plugin->TestArgs( status => $_ );
+        my ($status, $msg) = $plugin->test_args( status => $_ );
         ok($status, "arg status = '$_'") or diag("error: $msg");
     }
-    ($status, $msg) = $plugin->TestArgs( status => '!@#' );
+    ($status, $msg) = $plugin->test_args( status => '!@#' );
     ok(!$status, "bad 'status' arg value");
 }
 

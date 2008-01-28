@@ -70,7 +70,7 @@ sub __DependsOn
 
 # Group or User
 # Could be wiped allready
-    my $obj = $self->Object;
+    my $obj = $self->object;
     if( defined $obj->id ) {
         push( @$list, $obj );
     }
@@ -84,7 +84,7 @@ sub __DependsOn
            );
     push( @$list, $objs );
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $list,
@@ -104,17 +104,17 @@ sub __Relates
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-    my $obj = $self->Object;
+    my $obj = $self->object;
     if( defined $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+        my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
-        $rec->{'Description'} = "Have no related ". $self->Type ." #". $self->id ." object";
+        $rec->{'Description'} = "Have no related ". $self->type ." #". $self->id ." object";
     }
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,

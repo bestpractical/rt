@@ -121,13 +121,13 @@ sub create {
     }
 
     if ( $args{'Member'}->is_group() ) {
-        my $GroupMembers = $args{'Member'}->Object->MembersObj();
+        my $GroupMembers = $args{'Member'}->object->members_obj();
         while ( my $member = $GroupMembers->next() ) {
             my $cached_member =
               RT::Model::CachedGroupMember->new;
             my $c_id = $cached_member->create(
                                              Group  => $args{'Group'},
-                                             Member => $member->MemberObj,
+                                             Member => $member->member_obj,
                                              ImmediateParent => $args{'Member'},
                                              disabled => $args{'disabled'},
                                              Via      => $id );
@@ -159,7 +159,7 @@ sub delete {
     my $self = shift;
 
     
-    my $member = $self->MemberObj();
+    my $member = $self->member_obj();
     if ( $member->is_group ) {
         my $deletable = RT::Model::CachedGroupMemberCollection->new;
 
@@ -186,26 +186,26 @@ sub delete {
     }
 
 
-    unless ($self->GroupObj->Object) {
+    unless ($self->group_obj->Object) {
 
         warn "HEY! NO group object object!!!" . $self->__value('GroupId'); warn YAML::Dump($self); use YAML;
         return undef;
     }
-    # Unless $self->GroupObj still has the member recursively $self->MemberObj
+    # Unless $self->group_obj still has the member recursively $self->member_obj
     # (Since we deleted the database row above, $self no longer counts)
-    unless ( $self->GroupObj->Object->has_member_recursively( $self->MemberId ) ) {
+    unless ( $self->group_obj->object->has_member_recursively( $self->MemberId ) ) {
 
 
         #   Find all ACEs granted to $self->GroupId
         my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
-        $acl->limit_ToPrincipal( id => $self->GroupId );
+        $acl->limit_to_principal( id => $self->GroupId );
 
 
         while ( my $this_ace = $acl->next() ) {
             #       Find all ACEs which $self-MemberObj has delegated from $this_ace
             my $delegations = RT::Model::ACECollection->new(current_user => RT->system_user);
-            $delegations->DelegatedFrom( id => $this_ace->id );
-            $delegations->DelegatedBy( id => $self->MemberId );
+            $delegations->delegated_from( id => $this_ace->id );
+            $delegations->delegated_by( id => $self->MemberId );
 
             # For each delegation 
             while ( my $delegation = $delegations->next ) {
@@ -246,7 +246,7 @@ sub set_disabled {
         return ($err);
     }
     
-    my $member = $self->MemberObj();
+    my $member = $self->member_obj();
     if ( $member->is_group ) {
         my $deletable = RT::Model::CachedGroupMemberCollection->new;
 
@@ -262,18 +262,18 @@ sub set_disabled {
         }
     }
 
-    # Unless $self->GroupObj still has the member recursively $self->MemberObj
+    # Unless $self->group_obj still has the member recursively $self->member_obj
     # (Since we Setdisabledd the database row above, $self no longer counts)
-    unless ( $self->GroupObj->Object->has_member_recursively( $self->MemberId ) ) {
+    unless ( $self->group_obj->object->has_member_recursively( $self->MemberId ) ) {
         #   Find all ACEs granted to $self->GroupId
         my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
-        $acl->limit_ToPrincipal( id => $self->GroupId );
+        $acl->limit_to_principal( id => $self->GroupId );
 
         while ( my $this_ace = $acl->next() ) {
             #       Find all ACEs which $self-MemberObj has delegated from $this_ace
             my $delegations = RT::Model::ACECollection->new(current_user => RT->system_user);
-            $delegations->DelegatedFrom( id => $this_ace->id );
-            $delegations->DelegatedBy( id => $self->MemberId );
+            $delegations->delegated_from( id => $this_ace->id );
+            $delegations->delegated_by( id => $self->MemberId );
 
             # For each delegation,  blow away the delegation
             while ( my $delegation = $delegations->next ) {
@@ -299,7 +299,7 @@ Returns the RT::Model::Principal object for this group Group
 
 =cut
 
-sub GroupObj {
+sub group_obj {
     my $self      = shift;
     my $principal = RT::Model::Principal->new;
     $principal->load( $self->GroupId );
@@ -316,7 +316,7 @@ Returns the RT::Model::Principal object for this group ImmediateParent
 
 =cut
 
-sub ImmediateParentObj {
+sub immediate_parent_obj {
     my $self      = shift;
     my $principal = RT::Model::Principal->new;
     $principal->load( $self->ImmediateParentId );
@@ -333,7 +333,7 @@ Returns the RT::Model::Principal object for this group member
 
 =cut
 
-sub MemberObj {
+sub member_obj {
     my $self      = shift;
     my $principal = RT::Model::Principal->new;
     $principal->load( $self->MemberId );

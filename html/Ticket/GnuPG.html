@@ -7,8 +7,8 @@
 
 % $m->callback( Callbackname => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS );
 <& /Elements/ListActions, actions => \@results &>
-<form method="post" action="<% RT->Config->Get('WebPath') . $m->request_comp->path %>?id=<% $id %>">
-<a href="<% RT->Config->Get('WebURL') %>/Ticket/Display.html?id=<% $txn->Ticket %>#txn-<% $id %>">
+<form method="post" action="<% RT->config->get('WebPath') . $m->request_comp->path %>?id=<% $id %>">
+<a href="<% RT->config->get('WebURL') %>/Ticket/Display.html?id=<% $txn->ticket %>#txn-<% $id %>">
 <% _('Return back to the ticket') %>
 </a>
 <& /Elements/Submit,
@@ -33,9 +33,9 @@ my @results;
 
 my $encrypted = 0;
 
-my $attachments = $txn->Attachments;
+my $attachments = $txn->attachments;
 while ( my $attachment = $attachments->next ) {
-    next unless $attachment->ContentType =~ m{^x-application-rt/gpg-encrypted\b};
+    next unless $attachment->content_type =~ m{^x-application-rt/gpg-encrypted\b};
     $encrypted = 1;
     last;
 }
@@ -44,7 +44,7 @@ $attachments->goto_first_item;
 if ( $Encrypt || $Decrypt ) {
     my $done = 1;
     while ( my $attachment = $attachments->next ) {
-        my ($status, $msg) = $Decrypt? $attachment->Decrypt : $attachment->Encrypt;
+        my ($status, $msg) = $Decrypt? $attachment->decrypt : $attachment->encrypt;
         push @results, $msg;
         unless ( $status ) {
             $done = 0; last;

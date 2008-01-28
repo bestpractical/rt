@@ -123,11 +123,11 @@ our %FieldTypes = (
 
 our %FRIENDLY_OBJECT_TYPES =  ();
 
-RT::Model::CustomField->_Forobject_type( 'RT::Model::Queue-RT::Model::Ticket' => "Tickets", );    #loc
-RT::Model::CustomField->_Forobject_type(
+RT::Model::CustomField->_forobject_type( 'RT::Model::Queue-RT::Model::Ticket' => "Tickets", );    #loc
+RT::Model::CustomField->_forobject_type(
     'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' => "Ticket Transactions", );    #loc
-RT::Model::CustomField->_Forobject_type( 'RT::Model::User'  => "Users", );                           #loc
-RT::Model::CustomField->_Forobject_type( 'RT::Model::Group' => "Groups", );                          #loc
+RT::Model::CustomField->_forobject_type( 'RT::Model::User'  => "Users", );                           #loc
+RT::Model::CustomField->_forobject_type( 'RT::Model::Group' => "Groups", );                          #loc
 
 our $RIGHTS = {
     SeeCustomField            => 'See custom fields',       # loc_pair
@@ -142,7 +142,7 @@ foreach my $right ( keys %{$RIGHTS} ) {
     $RT::Model::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
 }
 
-sub AvailableRights {
+sub available_rights {
     my $self = shift;
     return $RIGHTS;
 }
@@ -222,7 +222,7 @@ sub create {
         $args{'Queue'} = $queue->id;
     }
 
-    my ($ok, $msg) = $self->_IsValidRegex( $args{'Pattern'} );
+    my ($ok, $msg) = $self->_is_valid_regex( $args{'Pattern'} );
     return (0, _("Invalid pattern: %1", $msg)) unless $ok;
 
     (my $rv, $msg) = $self->SUPER::create(
@@ -237,7 +237,7 @@ sub create {
     );
 
     if ( exists $args{'ValuesClass'} ) {
-        $self->set_ValuesClass( $args{'ValuesClass'} );
+        $self->set_values_class( $args{'ValuesClass'} );
     }
 
     return ($rv, $msg) unless exists $args{'Queue'};
@@ -314,7 +314,7 @@ sub load_by_name {
     # Don't limit to queue if queue is 0.  Trying to do so breaks
     # RT::Model::Group type CFs.
     if ( defined $args{'Queue'} ) {
-        $CFs->limit_ToQueue( $args{'Queue'} );
+        $CFs->limit_to_queue( $args{'Queue'} );
     }
 
     # When loading by name, it's ok if they're disabled. That's not a big deal.
@@ -345,10 +345,10 @@ of the C<ValuesClass> method.
 
 *ValuesObj = \&Values;
 
-sub Values {
+sub values {
     my $self = shift;
 
-    my $class = $self->ValuesClass || 'RT::Model::CustomFieldValueCollection';
+    my $class = $self->values_class || 'RT::Model::CustomFieldValueCollection';
     eval "require $class" or die "$@";
     my $cf_values = $class->new;
     # if the user has no rights, return an empty object
@@ -367,7 +367,7 @@ Create a new value for this CustomField.  Takes a paramhash containing the eleme
 
 =cut
 
-sub AddValue {
+sub add_value {
     my $self = shift;
     my %args = @_;
 
@@ -397,7 +397,7 @@ Does not remove this value for any article which has had it selected
 
 =cut
 
-sub deleteValue {
+sub delete_value {
     my $self = shift;
     my $id = shift;
     unless ( $self->current_user_has_right('AdminCustomField') ) {
@@ -409,7 +409,7 @@ sub deleteValue {
     unless ( $val_to_del->id ) {
         return (0, _("Couldn't find that value"));
     }
-    unless ( $val_to_del->CustomField == $self->id ) {
+    unless ( $val_to_del->custom_field == $self->id ) {
         return (0, _("That is not a value for this custom field"));
     }
 
@@ -429,7 +429,7 @@ Make sure that the queue specified is a valid queue name
 
 =cut
 
-sub validate_Queue {
+sub validate_queue {
     my $self = shift;
     my $id = shift || '';
 
@@ -452,7 +452,7 @@ Retuns an array of the types of CustomField that are supported
 
 =cut
 
-sub Types {
+sub types {
     return (keys %FieldTypes);
 }
 
@@ -467,9 +467,9 @@ to this Custom Field.
 
 =cut
 
-sub IsSelectionType {
+sub is_selection_type {
     my $self = shift;
-    my $type = @_? shift : $self->Type;
+    my $type = @_? shift : $self->type;
     return undef unless $type;
 
     $type =~ /(?:Select|Combobox|Autocomplete)/;
@@ -482,26 +482,26 @@ sub IsSelectionType {
 
 =cut
 
-sub IsExternalValues {
+sub is_external_values {
     my $self = shift;
-    my $selectable = $self->IsSelectionType( @_ );
+    my $selectable = $self->is_selection_type( @_ );
     return $selectable unless $selectable;
 
-    my $class = $self->ValuesClass;
+    my $class = $self->values_class;
     return 0 if $class eq 'RT::Model::CustomFieldValueCollection';
     return 1;
 }
 
-sub ValuesClass {
+sub values_class {
     my $self = shift;
-    return '' unless $self->IsSelectionType;
+    return '' unless $self->is_selection_type;
 
     my $class = $self->first_attribute( 'ValuesClass' );
-    $class = $class->Content if $class;
+    $class = $class->content if $class;
     return $class || 'RT::Model::CustomFieldValueCollection';
 }
 
-sub set_ValuesClass {
+sub set_values_class {
     my $self = shift;
     my $class = shift || 'RT::Model::CustomFieldValueCollection';
 
@@ -519,10 +519,10 @@ If a custom field type is specified as the parameter, the friendly type for that
 
 =cut
 
-sub FriendlyType {
+sub friendly_type {
     my $self = shift;
 
-    my $type = @_ ? shift : $self->Type;
+    my $type = @_ ? shift : $self->type;
     my $max  = @_ ? shift : $self->MaxValues;
     $max = 0 unless $max;
 
@@ -534,10 +534,10 @@ sub FriendlyType {
     }
 }
 
-sub FriendlyTypeComposite {
+sub friendly_type_composite {
     my $self = shift;
-    my $composite = shift || $self->TypeComposite;
-    return $self->FriendlyType(split(/-/, $composite, 2));
+    my $composite = shift || $self->type_composite;
+    return $self->friendly_type(split(/-/, $composite, 2));
 }
 
 
@@ -549,7 +549,7 @@ type of custom field
 
 =cut
 
-sub validate_Type {
+sub validate_type {
     my $self = shift;
     my $type = shift;
 
@@ -566,7 +566,7 @@ sub validate_Type {
 }
 
 
-sub set_Type {
+sub set_type {
     my $self = shift;
     my $type = shift;
     if ($type =~ s/(?:(Single)|Multiple)$//) {
@@ -584,11 +584,11 @@ is valid.
 
 =cut
 
-sub set_Pattern {
+sub set_pattern {
     my $self = shift;
     my $regex = shift;
 
-    my ($ok, $msg) = $self->_IsValidRegex($regex);
+    my ($ok, $msg) = $self->_is_valid_regex($regex);
     if ($ok) {
         return $self->set(column => 'Pattern', value => $regex);
     }
@@ -603,13 +603,13 @@ Tests if the string contains an invalid regex.
 
 =cut
 
-sub _IsValidRegex {
+sub _is_valid_regex {
     my $self  = shift;
     my $regex = shift or return (1, 'valid');
 
     local $^W; local $@;
-    local $SIG{__DIE__} = sub { 1 };
-    local $SIG{__WARN__} = sub { 1 };
+    local $SIG{__DIE__} = sub  { 1 };
+    local $SIG{__WARN__} = sub  { 1 };
 
     if (eval { qr/$regex/; 1 }) {
         return (1, 'valid');
@@ -630,7 +630,7 @@ Returns false if it accepts multiple values
 
 =cut
 
-sub SingleValue {
+sub single_value {
     my $self = shift;
     if ($self->MaxValues == 1) {
         return 1;
@@ -640,7 +640,7 @@ sub SingleValue {
     }
 }
 
-sub unlimitedValues {
+sub unlimited_values {
     my $self = shift;
     if ($self->MaxValues == 0) {
         return 1;
@@ -730,15 +730,15 @@ Set this custom field's type and maximum values as a composite value
 
 =cut
 
-sub set_TypeComposite {
+sub set_type_composite {
     my $self = shift;
     my $composite = shift;
 
-    my $old = $self->TypeComposite;
+    my $old = $self->type_composite;
 
     my ($type, $max_values) = split(/-/, $composite, 2);
-    if ( $type ne $self->Type ) {
-        my ($status, $msg) = $self->set_Type( $type );
+    if ( $type ne $self->type ) {
+        my ($status, $msg) = $self->set_type( $type );
         return ($status, $msg) unless $status;
     }
     if ( ($max_values || 0) != ($self->MaxValues || 0) ) {
@@ -747,8 +747,8 @@ sub set_TypeComposite {
     }
     return 1, _(
         "Type changed from '%1' to '%2'",
-        $self->FriendlyTypeComposite( $old ),
-        $self->FriendlyTypeComposite( $composite ),
+        $self->friendly_type_composite( $old ),
+        $self->friendly_type_composite( $composite ),
     );
 }
 
@@ -758,7 +758,7 @@ Autrijus: care to doc how LookupTypes work?
 
 =cut
 
-sub set_LookupType {
+sub set_lookup_type {
     my $self = shift;
     my $lookup = shift;
     if ( $lookup ne $self->LookupType ) {
@@ -777,9 +777,9 @@ Returns a composite value composed of this object's type and maximum values
 =cut
 
 
-sub TypeComposite {
+sub type_composite {
     my $self = shift;
-    return join '-', ($self->Type || ''), ($self->MaxValues || 0);
+    return join '-', ($self->type || ''), ($self->MaxValues || 0);
 }
 
 =head2 TypeComposites
@@ -788,9 +788,9 @@ Returns an array of all possible composite values for custom fields.
 
 =cut
 
-sub TypeComposites {
+sub type_composites {
     my $self = shift;
-    return grep !/(?:[Tt]ext|Combobox)-0/, map { ("$_-1", "$_-0") } $self->Types;
+    return grep !/(?:[Tt]ext|Combobox)-0/, map { ("$_-1", "$_-0") } $self->types;
 }
 
 =head2 LookupTypes
@@ -800,7 +800,7 @@ Returns an array of LookupTypes available
 =cut
 
 
-sub LookupTypes {
+sub lookup_types {
     my $self = shift;
     return keys %FRIENDLY_OBJECT_TYPES;
 }
@@ -815,7 +815,7 @@ my @Friendlyobject_types = (
 
 =cut
 
-sub FriendlyLookupType {
+sub friendly_lookup_type {
     my $self = shift;
     my $lookup = shift || $self->LookupType;
    
@@ -839,7 +839,7 @@ Takes an object
 =cut
 
 
-sub AddToObject {
+sub add_to_object {
     my $self  = shift;
     my $object = shift;
     my $id = $object->id || 0;
@@ -873,7 +873,7 @@ Takes an object
 =cut
 
 
-sub RemoveFromObject {
+sub remove_from_object {
     my $self = shift;
     my $object = shift;
     my $id = $object->id || 0;
@@ -931,7 +931,7 @@ sub add_value_for_object {
         return ( 0, _('Permission Denied') );
     }
 
-    unless ( $self->MatchPattern($args{'Content'} || '' ) ) {
+    unless ( $self->match_pattern($args{'Content'} || '' ) ) {
         return ( 0, _('Input must match %1', $self->FriendlyPattern) );
     }
 
@@ -990,7 +990,7 @@ and returns a boolean; returns true if the Pattern is empty.
 
 =cut
 
-sub MatchPattern {
+sub match_pattern {
     my $self = shift;
     my $regex = $self->Pattern or return 1;
 
@@ -1009,7 +1009,7 @@ and localizing it.
 
 =cut
 
-sub FriendlyPattern {
+sub friendly_pattern {
     my $self = shift;
     my $regex = $self->Pattern;
 
@@ -1053,7 +1053,7 @@ sub delete_value_for_object {
         $oldval->load($id);
     }
     unless ($oldval->id) { 
-        $oldval->loadByObjectContentAndCustomField(
+        $oldval->load_by_object_content_and_custom_field(
             Object => $args{'Object'}, 
             Content =>  $args{'Content'}, 
             CustomField => $self->id,
@@ -1067,7 +1067,7 @@ sub delete_value_for_object {
     }
 
     # for single-value fields, we need to validate that empty string is a valid value for it
-    if ( $self->SingleValue and not $self->MatchPattern( '' ) ) {
+    if ( $self->single_value and not $self->match_pattern( '' ) ) {
         return ( 0, _('Input must match %1', $self->FriendlyPattern) );
     }
 
@@ -1121,7 +1121,7 @@ This is a class method.
 
 =cut
 
-sub _Forobject_type {
+sub _forobject_type {
     my $self = shift;
     my $path = shift;
     my $friendly_name = shift;
@@ -1139,12 +1139,12 @@ as they display records with custom fields in RT.
 
 =cut
 
-sub set_IncludeContentForValue {
-    shift->IncludeContentForValue(@_);
+sub set_include_content_for_value {
+    shift->include_content_for_value(@_);
 }
-sub IncludeContentForValue{
+sub include_content_for_value {
     my $self = shift;
-    $self->_URLTemplate('IncludeContentForValue', @_);
+    $self->url_template('IncludeContentForValue', @_);
 }
 
 
@@ -1158,13 +1158,13 @@ browser as they display records with custom fields in RT.
 =cut
 
 
-sub set_LinkValueTo {
-    shift->LinkValueTo(@_);
+sub set_link_value_to {
+    shift->link_value_to(@_);
 }
 
-sub LinkValueTo {
+sub link_value_to {
     my $self = shift;
-    $self->_URLTemplate('LinkValueTo', @_);
+    $self->url_template('LinkValueTo', @_);
 
 }
 
@@ -1180,7 +1180,7 @@ With two arguments, attemptes to set the relevant template value.
 
 
 
-sub _URLTemplate {
+sub url_template {
     my $self          = shift;
     my $template_name = shift;
     if (@_) {
@@ -1199,7 +1199,7 @@ sub _URLTemplate {
         my @attr = $self->attributes->named($template_name);
         my $attr = shift @attr;
 
-        if ($attr) { return $attr->Content }
+        if ($attr) { return $attr->content }
 
     }
 }

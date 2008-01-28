@@ -72,12 +72,12 @@ sub __DependsOn
 
 # add_link transactions
     my $map = RT::Model::Ticket->LINKTYPEMAP;
-    my $link_meta = $map->{ $self->Type };
+    my $link_meta = $map->{ $self->type };
     unless ( $link_meta && $link_meta->{'Mode'} && $link_meta->{'Type'} ) {
-        RT::Shredder::Exception->throw( 'Wrong link link_meta, no record for '. $self->Type );
+        RT::Shredder::Exception->throw( 'Wrong link link_meta, no record for '. $self->type );
     }
-    if ( $self->base_uri->IsLocal ) {
-        my $objs = $self->base_obj->Transactions;
+    if ( $self->base_uri->is_local ) {
+        my $objs = $self->base_obj->transactions;
         $objs->limit(
             column    => 'Type',
             operator => '=',
@@ -93,8 +93,8 @@ sub __DependsOn
     }
 
     my %reverse = ( Base => 'Target', Target => 'Base' );
-    if ( $self->target_uri->IsLocal ) {
-        my $objs = $self->TargetObj->Transactions;
+    if ( $self->target_uri->is_local ) {
+        my $objs = $self->target_obj->transactions;
         $objs->limit(
             column    => 'Type',
             operator => '=',
@@ -109,7 +109,7 @@ sub __DependsOn
         push( @$list, $objs );
     }
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => DEPENDS_ON|WIPE_AFTER,
             TargetObjects => $list,

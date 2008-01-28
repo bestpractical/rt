@@ -75,7 +75,7 @@ kilobytes or megabytes.
 
 =cut
 
-sub SupportArgs { return $_[0]->SUPER::SupportArgs, qw(files_only file longer) }
+sub support_args { return $_[0]->SUPER::SupportArgs, qw(files_only file longer) }
 
 sub TestArgs
 {
@@ -86,7 +86,7 @@ sub TestArgs
         unless( $args{'file'} =~ /^[\w\. *?]+$/) {
             return( 0, "Files mask '$args{file}' has invalid characters" );
         }
-        $args{'file'} = $self->ConvertMaskToSQL( $args{'file'} );
+        $args{'file'} = $self->convert_mask_to_sql( $args{'file'} );
     }
     if( $args{'longer'} ) {
         unless( $args{'longer'} =~ /^\d+\s*[mk]?$/i ) {

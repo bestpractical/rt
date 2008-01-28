@@ -12,24 +12,24 @@ ok ($id, $msg);
 my $attr = RT::Model::Attribute->new(current_user => RT->system_user);
 $attr->load($id);
 is($attr->name , 'SavedSearch');
-$attr->set_SubValues( Format => 'baz');
+$attr->set_sub_values( Format => 'baz');
 
-my $format = $attr->SubValue('Format');
+my $format = $attr->sub_value('Format');
 is ($format , 'baz');
 
-$attr->set_SubValues( Format => 'bar');
-$format = $attr->SubValue('Format');
+$attr->set_sub_values( Format => 'bar');
+$format = $attr->sub_value('Format');
 is ($format , 'bar');
 
-$attr->deleteAllSubValues();
-$format = $attr->SubValue('Format');
+$attr->delete_all_sub_values();
+$format = $attr->sub_value('Format');
 is ($format, undef);
 
-$attr->set_SubValues(Format => 'This is a format');
+$attr->set_sub_values(Format => 'This is a format');
 
 my $attr2 = RT::Model::Attribute->new(current_user => RT->system_user);
 $attr2->load($id);
-is ($attr2->SubValue('Format'), 'This is a format');
+is ($attr2->sub_value('Format'), 'This is a format');
 $attr2->delete;
 my $attr3 = RT::Model::Attribute->new(current_user => RT->system_user);
 ($id) = $attr3->load($id);

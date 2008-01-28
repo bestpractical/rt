@@ -42,8 +42,8 @@ sub run_tests {
 
         my $good_tickets = 1;
         while ( my $ticket = $tix->next ) {
-            next if $test{$key}->{ $ticket->Subject };
-            diag $ticket->Subject ." ticket has been found when it's not expected";
+            next if $test{$key}->{ $ticket->subject };
+            diag $ticket->subject ." ticket has been found when it's not expected";
             $good_tickets = 0;
         }
         ok( $good_tickets, "all tickets are good with '$key'" ) or $error = 1;

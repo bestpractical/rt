@@ -12,7 +12,7 @@ use_ok('RT::Model::Ticket');
 my $queue = RT::Test->load_or_create_queue( name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
 
-RT->Config->set( Usetransaction_batch => 1 );
+RT->config->set( Usetransaction_batch => 1 );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -56,7 +56,7 @@ unless ( \$batch && \@\$batch ) {
     return 1;
 }
 foreach my \$txn ( \@\$batch ) {
-    print \$fh \$txn->Type ."\n";
+    print \$fh \$txn->type ."\n";
 }
 return 1;
 END

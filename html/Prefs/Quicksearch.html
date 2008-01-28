@@ -72,7 +72,7 @@ my @actions;
 my $title = _("Customize").' '.loc("Quick search");
 # The queue list is not loaded from cache, so it might be a bit inconsistent
 my $user = Jifty->web->current_user->user_object;
-my $unwanted = $user->Preferences('QuickSearch', {});
+my $unwanted = $user->preferences('QuickSearch', {});
 my $Queues = RT::Model::QueueCollection->new();
 $Queues->find_all_rows;
 my @queues = grep {$_->current_user_has_right('ShowTicket')} @{$Queues->items_array_ref};
@@ -87,7 +87,7 @@ if ($ARGS{'Save'}) {
         }
     }
 
-    $user->set_Preferences('QuickSearch', $unwanted);
+    $user->set_preferences('QuickSearch', $unwanted);
     push @actions, _('Preferences saved.');
     # Let QueueSummary rebuild the cache
     delete $session{'quick_search_queues'};

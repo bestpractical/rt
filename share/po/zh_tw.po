@@ -62,7 +62,7 @@ msgid "%*(%1,unresolved ticket)"
 msgstr "%*(%1) 件尚未解決的申請單"
 
 #: lib/RT/URI/fsck_com_rt.pm:256
-#. ($self->object_type, $self->Object->id)
+#. ($self->object_type, $self->object->id)
 msgid "%1 #%2"
 msgstr "%1 #%2"
 
@@ -76,14 +76,14 @@ msgid "%1 %2 %3"
 msgstr "%1 %2 %3"
 
 #: lib/RT/Date.pm:401
-#. ($self->GetWeekday($wday), $self->GetMonth($mon), map {sprintf "%02d", $_} ($mday, $hour, $min, $sec), ($year+1900))
+#. ($self->get_weekday($wday), $self->get_month($mon), map {sprintf "%02d", $_} ($mday, $hour, $min, $sec), ($year+1900))
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%7-%2-%3 %4:%5:%6 %1"
 
 #: lib/RT/Record.pm:1685 lib/RT/Transaction_Overlay.pm:647 lib/RT/Transaction_Overlay.pm:690
 #. ($cf->name, $new_value->Content)
 #. ($field, $self->new_value)
-#. ($self->Field, $principal->Object->name)
+#. ($self->Field, $principal->object->name)
 msgid "%1 %2 added"
 msgstr "%2 已新增為 %1"
 
@@ -101,7 +101,7 @@ msgstr "%1 已從 %2 改為 %3"
 #: lib/RT/Record.pm:1689 lib/RT/Transaction_Overlay.pm:650 lib/RT/Transaction_Overlay.pm:696
 #. ($cf->name, $old_value->Content)
 #. ($field, $self->old_value)
-#. ($self->Field, $principal->Object->name)
+#. ($self->Field, $principal->object->name)
 msgid "%1 %2 deleted"
 msgstr "%2 已自 %1 刪除"
 
@@ -110,7 +110,7 @@ msgid "%1 %2 of group %3"
 msgstr "%3 群組的 %1 %2"
 
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:63 html/Ticket/Elements/PreviewScrips:103
-#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->template_obj->name))
+#. (_($scrip->condition_obj->name), loc($scrip->action_obj->name), loc($scrip->template_obj->name))
 msgid "%1 %2 with template %3"
 msgstr "條件：%1 | 動作：%2 | 範本：%3"
 
@@ -127,7 +127,7 @@ msgstr "%1 (%2) - %3"
 #. (_($DefaultStatus))
 #. (_($Ticket->Status()))
 #. (_($ticket_obj->Status))
-#. ($ticket_obj->OwnerObj->name())
+#. ($ticket_obj->owner_obj->name())
 msgid "%1 (Unchanged)"
 msgstr "%1 (未更改)"
 
@@ -215,14 +215,14 @@ msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 看來是個本地物件，卻不在資料庫裡"
 
 #: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm:531
-#. ($self->BriefDescription , $self->creator_obj->name)
-#. ($Ticket->last_updated_as_string, $Ticket->LastUpdatedByObj->name)
+#. ($self->brief_description , $self->creator_obj->name)
+#. ($Ticket->last_updated_as_string, $Ticket->last_updated_by_obj->name)
 msgid "%1 by %2"
 msgstr "%1 (%2)"
 
 #: lib/RT/Transaction_Overlay.pm:788 lib/RT/Transaction_Overlay.pm:797 lib/RT/Transaction_Overlay.pm:800
 #. ($self->Field , $q1->name , $q2->name)
-#. ($self->Field, $t2->AsString, $t1->AsString)
+#. ($self->Field, $t2->as_string, $t1->AsString)
 #. ($self->Field, ($self->old_value? "'".$self->old_value ."'" : _("(no value)")) , "'". $self->new_value."'")
 msgid "%1 changed from %2 to %3"
 msgstr "%1 的值從 %2 改為 %3"
@@ -277,7 +277,7 @@ msgid "%1 is a tool to act on tickets from an external scheduling tool, such as 
 msgstr "%1 是從外部排程程式(如 cron)來對申請單進行操作的工具。"
 
 #: lib/RT/Queue_Overlay.pm:863
-#. ($principal->Object->name, $args{'Type'})
+#. ($principal->object->name, $args{'Type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 已不再是此表單的 %2。"
 
@@ -5124,12 +5124,12 @@ msgid "On Transaction"
 msgstr "發生更動時"
 
 #: html/Approvals/Elements/PendingMyApproval:70
-#. ("<input size='15' value='".( $Created_after->Unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
+#. ("<input size='15' value='".( $Created_after->unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
 msgid "Only show approvals for requests Created after %1"
 msgstr "僅顯示 %1 之後新增的申請單"
 
 #: html/Approvals/Elements/PendingMyApproval:68
-#. ("<input size='15' value='".($Created_before->Unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
+#. ("<input size='15' value='".($Created_before->unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
 msgid "Only show approvals for requests Created before %1"
 msgstr "僅顯示 %1 之前新增的申請單"
 
@@ -8018,7 +8018,7 @@ msgid "approving"
 msgstr "待簽核"
 
 #: html/User/Elements/DelegateRights:80
-#. ($right->principal_object->Object->SelfDescription)
+#. ($right->principal_object->object->SelfDescription)
 msgid "as granted to %1"
 msgstr "權限同 %1"
 
@@ -8324,7 +8324,7 @@ msgid "unresolved"
 msgstr "未處理"
 
 #: lib/RT/Group_Overlay.pm:211
-#. ($user->Object->name)
+#. ($user->object->name)
 msgid "user %1"
 msgstr "使用者 %1"
 

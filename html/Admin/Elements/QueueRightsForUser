@@ -55,7 +55,7 @@
 
 <%INIT>
 my $ACL = RT::Model::ACECollection->new();
-$ACL->limit_ToQueue($queue_obj->id);
+$ACL->limit_to_queue($queue_obj->id);
 $ACL->limit_PrincipalToUser($principal_id);
 </%INIT>
 <%ARGS>

@@ -73,13 +73,13 @@
 my $CustomFields = $Object->custom_fields;
 $m->callback( Callbackname => 'MassageCustomFields', CustomFields => $CustomFields );
 
-my $print_value = sub {
+my $print_value = sub  {
     my ($cf, $value) = @_;
-    my $linked = $cf->LinkValueTo;
+    my $linked = $cf->link_value_to;
     if ( $linked ) {
-        $m->out('<a href="'. $value->LinkValueTo .'" target="_new">');
+        $m->out('<a href="'. $value->link_value_to .'" target="_new">');
     }
-    my $comp = "ShowCustomField". $cf->Type;
+    my $comp = "ShowCustomField". $cf->type;
     $m->callback(
         Callbackname => 'ShowComponentname',
         name         => \$comp,
@@ -89,21 +89,21 @@ my $print_value = sub {
     if ( $m->comp_exists( $comp ) ) {
         $m->comp( $comp, Object => $value );
     } else {
-        $m->print( $value->Content );
+        $m->print( $value->content );
     }
     $m->out('</a>') if $linked;
 
     # This section automatically populates a div with the "IncludeContentForValue" for this custom
     # field if it's been defined
-    if ( $cf->IncludeContentForValue ) {
+    if ( $cf->include_content_for_value ) {
        my $vid = $value->id;
        $m->out(   '<div class="object_cf_value_include" id="object_cf_value_'. $vid .'">' );
        $m->print( _("See also:") );
-       $m->out(   '<a href="'. $value->IncludeContentForValue .'">' );
-       $m->print( $value->IncludeContentForValue );
+       $m->out(   '<a href="'. $value->include_content_for_value .'">' );
+       $m->print( $value->include_content_for_value );
        $m->out(   qq{</a></div>\n} );
        $m->out(   qq{<script><!--\nahah('} );
-       $m->print( $value->IncludeContentForValue );
+       $m->print( $value->include_content_for_value );
        $m->out(   qq{', 'object_cf_value_$vid');\n--></script>\n} );
     }
 };

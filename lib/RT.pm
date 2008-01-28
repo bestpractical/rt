@@ -79,10 +79,10 @@ sub load_config {
     # If the user does that, do what they mean.
     $RT::WebPath = '' if ($RT::WebPath eq '/');
 
-    RT::I18N->Init;
+    RT::I18N->init;
 }
 
-sub Config {
+sub config {
     my $self = shift; 
     return $RT::Config ;
 }
@@ -95,7 +95,7 @@ L<preloads classes /InitClasses>
 
 =cut
 
-sub Init {
+sub init {
 
 #    CheckPerlRequirements();
     #Get a database connection
@@ -111,7 +111,7 @@ sub Init {
 
 
 
-sub CheckPerlRequirements {
+sub check_perl_requirements {
     if ($^V < 5.008003) {
         die sprintf "RT requires Perl v5.8.3 or newer.  Your current Perl is v%vd\n", $^V; 
     }
@@ -152,7 +152,7 @@ and C<RT->nobody>.
 
 =cut
 
-sub InitSystemObjects {
+sub init_system_objects {
 
     #RT's "nobody user" is a genuine database user. its ID lives here.
     $nobody = RT::CurrentUser->new(name => 'Nobody');
@@ -182,7 +182,7 @@ Returns the current L<database handle object RT::Handle>.
 
 =cut
 
-sub DatabaseHandle { return $Handle }
+sub database_handle { return $Handle }
 
 =head2 System
 
@@ -226,9 +226,9 @@ You can define plugins by adding them to the @Plugins list in your RT_SiteConfig
 =cut
 
 our @PLUGINS = ();
-sub Plugins {
+sub plugins {
     my $self = shift;
-    @PLUGINS = $self->InitPlugins  unless (@PLUGINS);
+    @PLUGINS = $self->init_plugins  unless (@PLUGINS);
     return \@PLUGINS;
 }
 
@@ -238,11 +238,11 @@ Initialze all Plugins found in the RT configuration file, setting up their lib a
 
 =cut
 
-sub InitPlugins {
+sub init_plugins {
     my $self    = shift;
     my @plugins;
     use RT::Plugin;
-    foreach my $plugin (RT->Config->Get('Plugins')) {
+    foreach my $plugin (RT->config->get('Plugins')) {
         next unless $plugin;
         my $plugindir = $plugin;
         $plugindir =~ s/::/-/g;

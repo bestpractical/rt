@@ -24,17 +24,17 @@ sub capture_mail {
 }
 
 
-RT->Config->set( LogToScreen => 'debug' );
-RT->Config->set( 'GnuPG',
+RT->config->set( LogToScreen => 'debug' );
+RT->config->set( 'GnuPG',
                  Enable => 1,
                  OutgoingMessagesFormat => 'RFC' );
 
-RT->Config->set( 'GnuPGOptions',
+RT->config->set( 'GnuPGOptions',
                  homedir => $homedir,
                  'no-permission-warning' => undef);
-RT->Config->set( MailCommand => \&capture_mail);
+RT->config->set( MailCommand => \&capture_mail);
 
-RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -67,17 +67,17 @@ RT::Test->close_mailgate_ok($mail);
 
 {
     my $tick = get_latest_ticket_ok();
-    is( $tick->Subject,
+    is( $tick->subject,
         'This is a test of new ticket creation as root',
         "Created the ticket"
     );
-    my $txn = $tick->Transactions->first;
+    my $txn = $tick->transactions->first;
     like(
-        $txn->Attachments->first->Headers,
+        $txn->attachments->first->headers,
         qr/^X-RT-Incoming-Encryption: Not encrypted/m,
         'recorded incoming mail that is not encrypted'
     );
-    like( $txn->Attachments->first->Content, qr'Blah');
+    like( $txn->attachments->first->content, qr'Blah');
 }
 
 # test for signed mail
@@ -107,19 +107,19 @@ RT::Test->close_mailgate_ok($mail);
 
 {
     my $tick = get_latest_ticket_ok();
-    is( $tick->Subject, 'signed message for queue',
+    is( $tick->subject, 'signed message for queue',
         "Created the ticket"
     );
 
-    my $txn = $tick->Transactions->first;
-    my ($msg, $attach) = @{$txn->Attachments->items_array_ref};
+    my $txn = $tick->transactions->first;
+    my ($msg, $attach) = @{$txn->attachments->items_array_ref};
 
     is( $msg->get_header('X-RT-Incoming-Encryption'),
         'Not encrypted',
         'recorded incoming mail that is encrypted'
     );
     # test for some kind of PGP-Signed-By: Header
-    like( $attach->Content, qr'fnord');
+    like( $attach->content, qr'fnord');
 }
 
 # test for clear-signed mail
@@ -149,18 +149,18 @@ RT::Test->close_mailgate_ok($mail);
 
 {
     my $tick = get_latest_ticket_ok();
-    is( $tick->Subject, 'signed message for queue',
+    is( $tick->subject, 'signed message for queue',
         "Created the ticket"
     );
 
-    my $txn = $tick->Transactions->first;
-    my ($msg, $attach) = @{$txn->Attachments->items_array_ref};
+    my $txn = $tick->transactions->first;
+    my ($msg, $attach) = @{$txn->attachments->items_array_ref};
     is( $msg->get_header('X-RT-Incoming-Encryption'),
         'Not encrypted',
         'recorded incoming mail that is encrypted'
     );
     # test for some kind of PGP-Signed-By: Header
-    like( $attach->Content, qr'clearfnord');
+    like( $attach->content, qr'clearfnord');
 }
 
 # test for signed and encrypted mail
@@ -191,12 +191,12 @@ RT::Test->close_mailgate_ok($mail);
 
 {
     my $tick = get_latest_ticket_ok();
-    is( $tick->Subject, 'Encrypted message for queue',
+    is( $tick->subject, 'Encrypted message for queue',
         "Created the ticket"
     );
 
-    my $txn = $tick->Transactions->first;
-    my ($msg, $attach, $orig) = @{$txn->Attachments->items_array_ref};
+    my $txn = $tick->transactions->first;
+    my ($msg, $attach, $orig) = @{$txn->attachments->items_array_ref};
 
     is( $msg->get_header('X-RT-Incoming-Encryption'),
         'Success',
@@ -206,10 +206,10 @@ RT::Test->close_mailgate_ok($mail);
         'PGP',
         'recorded incoming mail that is encrypted'
     );
-    like( $attach->Content, qr'orz');
+    like( $attach->content, qr'orz');
 
     is( $orig->get_header('Content-Type'), 'application/x-rt-original-message');
-    ok(index($orig->Content, $buf) != -1, 'found original msg');
+    ok(index($orig->content, $buf) != -1, 'found original msg');
 }
 
 # test for signed mail by other key
@@ -239,8 +239,8 @@ RT::Test->close_mailgate_ok($mail);
 
 {
     my $tick = get_latest_ticket_ok();
-    my $txn = $tick->Transactions->first;
-    my ($msg, $attach) = @{$txn->Attachments->items_array_ref};
+    my $txn = $tick->transactions->first;
+    my ($msg, $attach) = @{$txn->attachments->items_array_ref};
     # XXX: in this case, which credential should we be using?
     is( $msg->get_header('X-RT-Incoming-Signature'),
         'Test User <rt@example.com>',
@@ -274,13 +274,13 @@ RT::Test->close_mailgate_ok($mail);
 
 {
     my $tick = get_latest_ticket_ok();
-    my $txn = $tick->Transactions->first;
-    my ($msg, $attach) = @{$txn->Attachments->items_array_ref};
+    my $txn = $tick->transactions->first;
+    my ($msg, $attach) = @{$txn->attachments->items_array_ref};
     
     TODO:
     {
         local $TODO = "this test requires keys associated with queues";
-        unlike( $attach->Content, qr'should not be there either');
+        unlike( $attach->content, qr'should not be there either');
     }
 }
 
@@ -318,9 +318,9 @@ is(@mail, 1, 'caught outgoing mail.');
 
 {
     my $tick = get_latest_ticket_ok();
-    my $txn = $tick->Transactions->first;
-    my ($msg, $attach) = @{$txn->Attachments->items_array_ref};
-    unlike( ($attach ? $attach->Content : ''), qr'really should not be there either');
+    my $txn = $tick->transactions->first;
+    my ($msg, $attach) = @{$txn->attachments->items_array_ref};
+    unlike( ($attach ? $attach->content : ''), qr'really should not be there either');
 }
 
 sub get_latest_ticket_ok {

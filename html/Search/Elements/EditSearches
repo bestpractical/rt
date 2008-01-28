@@ -52,7 +52,7 @@
 %                                        Object=> RT->system )) {
 <&|/l&>Privacy:</&>
 % if ( $Object && $Object->id ) {
-<& SearchPrivacy, Object => $Object->Object &>
+<& SearchPrivacy, Object => $Object->object &>
 % } else {
 <& SelectSearchObject, name => 'SavedSearchOwner', Objects => \@Objects &>
 % }
@@ -95,7 +95,7 @@ my $Dirty = $m->comp(
 );
 
 use RT::SavedSearches;
-my @Objects = RT::SavedSearches->new()->_PrivacyObjects;
+my @Objects = RT::SavedSearches->new()->_privacy_objects;
 push @Objects, RT::System->new()
     if Jifty->web->current_user->has_right( Object=> RT->system,
                                           Right => 'SuperUser' );
@@ -134,8 +134,8 @@ if ( $ARGS{'SavedSearchLoad'} ) {
 
     $SavedSearch->{'id'}          = $ARGS{'SavedSearchLoad'};
     $SavedSearch->{'Object'}      = $search;
-    $SavedSearch->{'Description'} = $search->Description;
-    $Query->{$_} = $search->SubValue($_) foreach @columns;
+    $SavedSearch->{'Description'} = $search->description;
+    $Query->{$_} = $search->sub_value($_) foreach @columns;
 }
 elsif ( $ARGS{'SavedSearchDelete'} ) {
     # We set $SearchId to 'new' above already, so peek into the %ARGS
@@ -158,7 +158,7 @@ if ( $SavedSearch->{'id'} && $SavedSearch->{'id'} ne 'new'
 {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
     $SavedSearch->{'Object'} = $container->attributes->with_id( $id );
-    $SavedSearch->{'Description'} ||= $SavedSearch->{'Object'}->Description;
+    $SavedSearch->{'Description'} ||= $SavedSearch->{'Object'}->description;
 }
 
 </%INIT>
@@ -180,19 +180,19 @@ my $desc = $SavedSearch->{'Description'};
 
 if ( $obj && $obj->id ) {
     # permission check
-    if ($obj->Object->isa('RT::System')) {
+    if ($obj->object->isa('RT::System')) {
         unless (Jifty->web->current_user->has_right( Object=> RT->system, Right => 'SuperUser')) {
             push @results, [ _("No permission to save system-wide searches"), 0 ];
             return @results;
         }
     }
 
-    $obj->set_SubValues( %$Query );
+    $obj->set_sub_values( %$Query );
     $obj->set_Description( $desc );
 }
 elsif ( $id eq 'new' ) {
     my $saved_search = RT::SavedSearch->new();
-    my ($status, $msg) = $saved_search->Save(
+    my ($status, $msg) = $saved_search->save(
         Privacy      => $ARGS{'SavedSearchOwner'},
         name         => $desc,
         SearchParams => $Query,
@@ -232,7 +232,7 @@ my $obj  = $SavedSearch->{'Object'};
 return 0 unless $obj && $obj->id;
 
 foreach( qw(Query Format order_by Order rows_per_page) ) {
-    return 1 if $obj->SubValue( $_ ) ne $Query->{$_};
+    return 1 if $obj->sub_value( $_ ) ne $Query->{$_};
 }
 
 return 0;

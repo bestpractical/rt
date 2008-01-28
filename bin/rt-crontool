@@ -126,7 +126,7 @@ my $search  = $search->new(
 $search->prepare();
 
 # TicketsFound is an RT::Model::TicketCollection object
-my $tickets = $search->TicketsObj;
+my $tickets = $search->tickets_obj;
 
 #for each ticket we've found
 while ( my $ticket = $tickets->next() ) {
@@ -149,7 +149,7 @@ while ( my $ticket = $tickets->next() ) {
 
         # if the condition doesn't apply, get out of here
 
-        next unless ( $condition_obj->IsApplicable );
+        next unless ( $condition_obj->is_applicable );
         print _("Condition matches...") if ($verbose);
     }
 
@@ -182,7 +182,7 @@ line arguments C<--transaction> and <--transaction-type>.
 
 sub get_transaction {
     my $ticket = shift;
-    my $txns = $ticket->Transactions;
+    my $txns = $ticket->transactions;
     $txns->order_by(
         { column => 'Created', order => $transaction },
         { column => 'id', order => $transaction },

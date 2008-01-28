@@ -77,7 +77,7 @@ foreach ( $Attachment->split_headers ) {
 
 return unless @runs or $needs_unsigned_warning;
 
-my $reverify_cb = sub {
+my $reverify_cb = sub  {
     my $top = shift;
 
     my $txn = $top->transaction_obj;
@@ -85,7 +85,7 @@ my $reverify_cb = sub {
         return (0, "Couldn't get transaction of attachment #". $top->id);
     }
 
-    my $attachments = $txn->Attachments->clone;
+    my $attachments = $txn->attachments->clone;
     $attachments->limit( column => 'ContentType', value => 'application/x-rt-original-message' );
     my $original = $attachments->first;
     unless ( $original ) {
@@ -94,11 +94,11 @@ my $reverify_cb = sub {
 
     my $parser = RT::EmailParser->new();
     $parser->smart_parse_mime_entity_from_scalar(
-        Message => $original->Content,
+        Message => $original->content,
         Decode => 0,
         Exact => 1,
     );
-    my $entity = $parser->Entity;
+    my $entity = $parser->entity;
     unless ( $entity ) {
         return (0, "Couldn't parse content of attachment #". $original->id);
     }

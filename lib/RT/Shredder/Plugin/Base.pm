@@ -98,7 +98,7 @@ See F<Todo> for more info.
 
 =cut
 
-sub Type { return '' }
+sub type { return '' }
 
 =head3 SupportArgs
 
@@ -110,7 +110,7 @@ classes B<must> support.
 
 =cut
 
-sub SupportArgs { return () }
+sub support_args { return () }
 
 =head3 HasSupportForArgs
 
@@ -126,7 +126,7 @@ sub HasSupportForArgs
     my @args = @_;
     my @unsupported = ();
     foreach my $a( @args ) {
-        push @unsupported, $a unless grep $_ eq $a, $self->SupportArgs;
+        push @unsupported, $a unless grep $_ eq $a, $self->support_args;
     }
     return( 1 ) unless @unsupported;
     return( 0, "Plugin doesn't support argument(s): @unsupported" ) if @unsupported;
@@ -169,7 +169,7 @@ case values of the arguments are not available.
 
 =cut
 
-sub Run { return (0, "This is abstract plugin, you couldn't use it directly") }
+sub run { return (0, "This is abstract plugin, you couldn't use it directly") }
 
 =head2 utils
 
@@ -180,7 +180,7 @@ return mask SQL chars.
 
 =cut
 
-sub ConvertMaskToSQL {
+sub convert_mask_to_sql {
     my $self = shift;
     my $mask = shift || '';
     $mask =~ s/\*/%/g;

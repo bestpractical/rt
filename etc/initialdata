@@ -239,15 +239,15 @@ Greetings,
 
 This message has been automatically generated in response to the
 creation of a trouble ticket regarding:
-	"{$Ticket->Subject()}", 
+	"{$Ticket->subject()}", 
 a summary of which appears below.
 
 There is no need to reply to this message right now.  Your ticket has been
-assigned an ID of [{RT->Config->Get(\'rtname\')} #{$Ticket->id()}].
+assigned an ID of [{RT->config->get(\'rtname\')} #{$Ticket->id()}].
 
 Please include the string:
 
-         [{RT->Config->Get(\'rtname\')} #{$Ticket->id}]
+         [{RT->config->get(\'rtname\')} #{$Ticket->id}]
 
 in the subject line of all future correspondence about this issue. To do so, 
 you may reply to this message.
@@ -256,7 +256,7 @@ you may reply to this message.
                         {$Ticket->queue_obj->correspond_address()}
 
 -------------------------------------------------------------------------
-{$Transaction->Content()}
+{$Transaction->content()}
 '
     },
 
@@ -269,14 +269,14 @@ you may reply to this message.
 {$Transaction->created_as_string}: Request {$Ticket->id} was acted upon.
 Transaction: {$Transaction->Description}
        Queue: {$Ticket->queue_obj->name}
-     Subject: {$Transaction->Subject || $Ticket->Subject || "(No subject given)"}
-       Owner: {$Ticket->OwnerObj->name}
+     Subject: {$Transaction->subject || $Ticket->subject || "(No subject given)"}
+       Owner: {$Ticket->owner_obj->name}
   Requestors: {$Ticket->RequestorAddresses}
       Status: {$Ticket->Status}
- Ticket <URL: {RT->Config->Get(\'WebURL\')}/Ticket/Display.html?id={$Ticket->id} >
+ Ticket <URL: {RT->config->get(\'WebURL\')}/Ticket/Display.html?id={$Ticket->id} >
 
 
-{$Transaction->Content()}
+{$Transaction->content()}
 '
     },
 
@@ -288,9 +288,9 @@ Transaction: {$Transaction->Description}
       Content     => 'RT-Attach-Message: yes
 
 
-<URL: {RT->Config->Get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id} >
+<URL: {RT->config->get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id} >
 
-{$Transaction->Content()}
+{$Transaction->content()}
 '
     },
 
@@ -299,7 +299,7 @@ Transaction: {$Transaction->Description}
        Description => 'Default correspondence template',         # loc
        Content     => 'RT-Attach-Message: yes
 
-{$Transaction->Content()}
+{$Transaction->content()}
 '
     },
 
@@ -310,10 +310,10 @@ Transaction: {$Transaction->Description}
 'Subject: [comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[comment\\]//g; $s =~ s/^Re//i; $s;}
 
 
-{RT->Config->Get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id}
+{RT->config->get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id}
 This is a comment.  It is not sent to the Requestor(s):
 
-{$Transaction->Content()}
+{$Transaction->content()}
 '
     },
 
@@ -323,9 +323,9 @@ This is a comment.  It is not sent to the Requestor(s):
        Content     => 'Subject: Status Changed to: {$Transaction->new_value}
 
 
-{RT->Config->Get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id}
+{RT->config->get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id}
 
-{$Transaction->Content()}
+{$Transaction->content()}
 '
     },
 
@@ -348,15 +348,15 @@ further questions or concerns, please respond to this message.
 
 Greetings,
 
-There is a new item pending your approval: "{$Ticket->Subject()}", 
+There is a new item pending your approval: "{$Ticket->subject()}", 
 a summary of which appears below.
 
-Please visit {RT->Config->Get(\'WebURL\')}Approvals/Display.html?id={$Ticket->id}
-to approve or reject this ticket, or {RT->Config->Get(\'WebURL\')}Approvals/ to
+Please visit {RT->config->get(\'WebURL\')}Approvals/Display.html?id={$Ticket->id}
+to approve or reject this ticket, or {RT->config->get(\'WebURL\')}Approvals/ to
 batch-process all your pending approvals.
 
 -------------------------------------------------------------------------
-{$Transaction->Content()}
+{$Transaction->content()}
 '
     },
     {  Queue       => '___Approvals',
@@ -367,7 +367,7 @@ batch-process all your pending approvals.
 
 Greetings,
 
-Your ticket has been approved by { eval { $Approval->OwnerObj->name } }.
+Your ticket has been approved by { eval { $Approval->owner_obj->name } }.
 Other approvals may be pending.
 '
     },
@@ -390,7 +390,7 @@ Your ticket has been approved.  Its Owner may now start to act on it.
 
 Greetings,
 
-Your ticket has been rejected by { eval { $Approval->OwnerObj->name } }.
+Your ticket has been rejected by { eval { $Approval->owner_obj->name } }.
 '
     },
     {  Queue       => 0,
@@ -451,11 +451,11 @@ You sent us a message that we cannot handle due to corrupted GnuPG signature or 
        name        => "passwordChange",    # loc
        Description =>
          "Inform user that his password has been reset", # loc
-       Content => q{Subject: [{RT->Config->Get('rtname')}] password reset
+       Content => q{Subject: [{RT->config->get('rtname')}] password reset
 
 Greetings,
 
-Someone at {$ENV{'REMOTE_ADDR'}} requested a password reset for you on {RT->Config->Get('WebURL')}
+Someone at {$ENV{'REMOTE_ADDR'}} requested a password reset for you on {RT->config->get('WebURL')}
 
 Your new password is:
   {$Newpassword}
@@ -509,7 +509,7 @@ Your new password is:
        Queue          => '___Approvals',
        ScripCondition => 'User Defined',
        CustomIsApplicableCode => q[
-	    $self->ticket_obj->Type eq 'approval'	and
+	    $self->ticket_obj->type eq 'approval'	and
 	    $self->transaction_obj->Field eq 'Status'	and
 	    $self->transaction_obj->new_value eq 'open'   and
 	    eval { $T::Approving = ($self->ticket_obj->all_depended_on_by( Type => 'ticket' ))[0] }
@@ -526,15 +526,15 @@ return(0) unless ( lc($self->transaction_obj->new_value) eq "rejected" or
 	           lc($self->transaction_obj->new_value) eq "deleted" );
 
 my $rejected = 0;
-my $links = $self->ticket_obj->DependedOnBy;
+my $links = $self->ticket_obj->depended_on_by;
 foreach my $link (@{ $links->items_array_ref }) {
     my $obj = $link->base_obj;
-    if ($obj->queue_obj->IsActiveStatus($obj->Status)) {
-	if ($obj->Type eq 'ticket') {
+    if ($obj->queue_obj->is_active_status($obj->Status)) {
+	if ($obj->type eq 'ticket') {
 	    $obj->comment(
 		Content	=> _("Your request was rejected."),
 	    );
-	    $obj->set_Status(
+	    $obj->set_status(
 		Status	=> 'rejected',
 		Force	=> 1,
 	    );
@@ -544,7 +544,7 @@ foreach my $link (@{ $links->items_array_ref }) {
 	    $rejected = 1;
 	}
 	else {
-	    $obj->set_Status(
+	    $obj->set_status(
 		Status	=> 'deleted',
 		Force	=> 1,
 	    );
@@ -552,11 +552,11 @@ foreach my $link (@{ $links->items_array_ref }) {
     }
 }
 
-$links = $self->ticket_obj->DependsOn;
+$links = $self->ticket_obj->depends_on;
 foreach my $link (@{ $links->items_array_ref }) {
-    my $obj = $link->TargetObj;
-    if ($obj->queue_obj->IsActiveStatus($obj->Status)) {
-	$obj->set_Status(
+    my $obj = $link->target_obj;
+    if ($obj->queue_obj->is_active_status($obj->Status)) {
+	$obj->set_status(
 	    Status	=> 'deleted',
 	    Force	=> 1,
 	);
@@ -578,13 +578,13 @@ return $rejected;
        ScripAction       => 'User Defined',
        CustomPrepareCode => q[
 # ------------------------------------------------------------------- #
-return(0) unless ($self->ticket_obj->Type eq 'approval');
+return(0) unless ($self->ticket_obj->type eq 'approval');
 
 my $note;
-my $t = $self->ticket_obj->Transactions;
+my $t = $self->ticket_obj->transactions;
 while (my $o = $t->next) {
-    $note .= $o->Content . "\n" if $o->ContentObj
-	    and $o->Content !~ /Default Approval/;
+    $note .= $o->content . "\n" if $o->content_obj
+	    and $o->content !~ /Default Approval/;
 }
 
 foreach my $obj ($self->ticket_obj->all_depended_on_by( Type => 'ticket' )) {
@@ -618,14 +618,14 @@ return 1;
 
 my $Ticket = $self->ticket_obj;
 my @TOP    = $Ticket->all_depended_on_by( Type => 'ticket' );
-my $links  = $Ticket->DependedOnBy;
+my $links  = $Ticket->depended_on_by;
 my $passed = 0;
 
 while (my $link = $links->next) {
     my $obj = $link->base_obj;
     next if ($obj->has_unresolved_dependencies( Type => 'approval' ));
 
-    if ($obj->Type eq 'ticket') {
+    if ($obj->type eq 'ticket') {
 	$obj->comment(
 	    Content	=> _("Your request has been approved."),
 	);
@@ -633,12 +633,12 @@ while (my $link = $links->next) {
 	$self->{ticket_obj} = $obj;  # we want the original id in the token line
 	$passed = 1;
     }
-    elsif ($obj->Type eq 'approval') {
-	$obj->set_Status( Status => 'open', Force => 1 );
+    elsif ($obj->type eq 'approval') {
+	$obj->set_status( Status => 'open', Force => 1 );
     }
-    elsif (RT->Config->Get('UseCodeTickets') and $obj->Type eq 'code') {
-        #XXX: RT->Config->Get('UseCodeTickets') used only once here!!!
-	my $code = $obj->Transactions->first->Content;
+    elsif (RT->config->get('UseCodeTickets') and $obj->type eq 'code') {
+        #XXX: RT->config->get('UseCodeTickets') used only once here!!!
+	my $code = $obj->transactions->first->content;
 	my $rv;
 
 	foreach my $TOP (@TOP) {
@@ -648,10 +648,10 @@ while (my $link = $links->next) {
 	}
 
 	if ($rv or !@TOP) {
-	    $obj->set_Status( Status	=> 'resolved', Force	=> 1,);
+	    $obj->set_status( Status	=> 'resolved', Force	=> 1,);
 	}
 	else {
-	    $obj->set_Status( Status	=> 'rejected', Force	=> 1,);
+	    $obj->set_status( Status	=> 'rejected', Force	=> 1,);
 	}
     }
 }

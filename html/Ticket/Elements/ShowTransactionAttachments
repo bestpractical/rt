@@ -58,12 +58,12 @@ foreach my $message ( grep $_->__value('Parent') == $Parent, @$Attachments ) {
     if ( $size ) {
 </%PERL>
 <div class="downloadattachment">
-<a href="<% $AttachPath %>/<% $Transaction->id %>/<% $message->id %>/<% ($message->Filename ||'')| u%>"><&|/l&>Download</&> <% $message->Filename || _('(untitled)') %></a>
-% if ( $DownloadableHeaders && !$message->Filename && $message->ContentType =~ /text/  ) {
+<a href="<% $AttachPath %>/<% $Transaction->id %>/<% $message->id %>/<% ($message->filename ||'')| u%>"><&|/l&>Download</&> <% $message->filename || _('(untitled)') %></a>
+% if ( $DownloadableHeaders && !$message->filename && $message->content_type =~ /text/  ) {
  / <a href="<% $AttachPath %>/WithHeaders/<% $message->id %>"><% _('with headers') %></a>
 % }
 <br/>
-<span class="downloadcontenttype"><% $message->ContentType %> <% $size_to_str->( $size ) %></span>
+<span class="downloadcontenttype"><% $message->content_type %> <% $size_to_str->( $size ) %></span>
 </div>
 %   }
 
@@ -75,10 +75,10 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
     my $content;
 
     # If it's text
-    if (   $message->ContentType =~ m{^(text|message)}i
-        && !( $message->Filename && RT->Config->Get('SuppressInlineTextFiles', Jifty->web->current_user ) )
-        && (   !RT->Config->Get( 'MaxInlineBody', Jifty->web->current_user )
-            || $size <= RT->Config->Get('MaxInlineBody', Jifty->web->current_user ) ) )
+    if (   $message->content_type =~ m{^(text|message)}i
+        && !( $message->filename && RT->config->get('SuppressInlineTextFiles', Jifty->web->current_user ) )
+        && (   !RT->config->get( 'MaxInlineBody', Jifty->web->current_user )
+            || $size <= RT->config->get('MaxInlineBody', Jifty->web->current_user ) ) )
     {
 
         if (
@@ -87,35 +87,35 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
             !$ParentObj
 
             # or its parent isn't a multipart alternative
-            || ( $ParentObj->ContentType !~ m{^multipart/alternative$}i )
+            || ( $ParentObj->content_type !~ m{^multipart/alternative$}i )
 
             # or it's of our prefered alterative type
             || (
                 (
-                    RT->Config->Get('PreferRichText')
-                    && ( $message->ContentType =~ m{^text/(?:html|enriched)$} )
+                    RT->config->get('PreferRichText')
+                    && ( $message->content_type =~ m{^text/(?:html|enriched)$} )
                 )
-                || ( !RT->Config->Get('PreferRichText')
-                    && ( $message->ContentType !~ m{^text/(?:html|enriched)$} )
+                || ( !RT->config->get('PreferRichText')
+                    && ( $message->content_type !~ m{^text/(?:html|enriched)$} )
                 )
             )
           )
         {
 
             if ( $AttachmentContent->{ $message->id } ) {
-                $content = $AttachmentContent->{ $message->id }->Content;
+                $content = $AttachmentContent->{ $message->id }->content;
             }
             else {
-                $content = $message->Content;
+                $content = $message->content;
             }
 
             # if it's a text/html clean the body and show it
-            if ( $message->ContentType =~ m{^text/(?:html|enriched)$}i ) {
+            if ( $message->content_type =~ m{^text/(?:html|enriched)$}i ) {
                 $m->out( $m->comp( '/Elements/ScrubHTML', Content => $content ) );
             }
 
             # if it's a text/plain show the body
-            elsif ( $message->ContentType =~ m{^(text|message)}i ) {
+            elsif ( $message->content_type =~ m{^(text|message)}i ) {
 
                 eval { require Text::Quoted;  $content = Text::Quoted::extract($content); };
                 if ($@) { Jifty->log->warn( "Text::Quoted failed: $@" ) }
@@ -131,7 +131,7 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
     }
 
     # if it's an image, show it as an image
-    elsif ( RT->Config->Get('ShowTransactionImages') and  $message->ContentType =~ /^image\//i ) {
+    elsif ( RT->config->get('ShowTransactionImages') and  $message->content_type =~ /^image\//i ) {
         $m->out('<img src="'
               . $AttachPath . '/'
               . $Transaction->id . '/'
@@ -166,9 +166,9 @@ $Collapsed => undef
 $DownloadableHeaders => 1
 $ShowTitleBarCommands => 1
 $RowNum => 1
-$AttachPath => RT->Config->Get('WebPath')."/Ticket/Attachment"
-$UpdatePath => RT->Config->Get('WebPath')."/Ticket/Update.html"
-$EmailRecordPath => RT->Config->Get('WebPath')."/Ticket/ShowEmailRecord.html"
+$AttachPath => RT->config->get('WebPath')."/Ticket/Attachment"
+$UpdatePath => RT->config->get('WebPath')."/Ticket/Update.html"
+$EmailRecordPath => RT->config->get('WebPath')."/Ticket/ShowEmailRecord.html"
 $Attachments => undef
 $AttachmentContent => {}
 $ShowBody => 1
@@ -177,7 +177,7 @@ $ParentObj => undef
 </%ARGS>
 <%INIT>
 my @DisplayHeaders=qw(_all);
-if ( $Transaction->Type =~ /EmailRecord$/ ) {
+if ( $Transaction->type =~ /EmailRecord$/ ) {
     @DisplayHeaders = qw(To Cc Bcc);
 }
 
@@ -186,7 +186,7 @@ elsif (!$ShowHeaders)  {
     @DisplayHeaders = qw(To From RT-Send-Cc Cc Bcc Date Subject);
 }
 
-my $size_to_str = sub {
+my $size_to_str = sub  {
     my $size = shift;
     # show a download link
     if ( $size > 1024*1024 ) {

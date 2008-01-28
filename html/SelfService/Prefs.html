@@ -50,7 +50,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <form method="post">
 
-% unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
+% unless (RT->config->get('WebExternalAuth') and !RT->config->get('WebFallbackToInternalAuth')) {
 <&| /Widgets/TitleBox, title => _('Change password')  &>
 <&|/l&>New password</&>: <input type="password" name="NewPass1" size="16" autocomplete="off" />
 <&|/l&>Confirm</&>: <input type="password" name="NewPass2" size="16" autocomplete="off" />

@@ -14,11 +14,11 @@ use_ok('RT::Shredder::Plugin');
 {
     my $plugin = RT::Shredder::Plugin->new;
     isa_ok($plugin, 'RT::Shredder::Plugin');
-    my %plugins = $plugin->List;
+    my %plugins = $plugin->list;
     cmp_deeply( [sort keys %plugins], [@PLUGINS], "correct plugins" );
 }
-{ # test ->List as class method
-    my %plugins = RT::Shredder::Plugin->List;
+{ # test ->list as class method
+    my %plugins = RT::Shredder::Plugin->list;
     cmp_deeply( [sort keys %plugins], [@PLUGINS], "correct plugins" );
 }
 { # reblessing on load_by_name

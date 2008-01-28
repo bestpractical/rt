@@ -68,11 +68,11 @@ if ( defined $session{'tickets'} ) {
         # we have to update session data if we get new ItemMap
         my $updatesession = 1 unless($session{'tickets'}->{'item_map'});
 
-        my $item_map = $session{'tickets'}->ItemMap;
+        my $item_map = $session{'tickets'}->item_map;
 
         if ($updatesession) {
                 $session{'i'}++;
-        $session{'tickets'}->PrepForSerialization();
+        $session{'tickets'}->prep_for_serialization();
         }
 
         # Don't display prev links if we're on the first ticket
@@ -165,13 +165,13 @@ if ( $can{'ModifyTicket'} ) {
 
 
  if ( $Ticket->current_user_has_right('OwnTicket') ) {
-     if ( $Ticket->OwnerObj->id == RT->nobody->id ) {
+     if ( $Ticket->owner_obj->id == RT->nobody->id ) {
          $actions->{'B'} = {
              path => "Ticket/Display.html?Action=Take&id=" . $id,
              title => _('Take'),
          } if $can{'ModifyTicket'} or $Ticket->current_user_has_right('TakeTicket');
      }
-     elsif ( $Ticket->OwnerObj->id != Jifty->web->current_user->id ) {
+     elsif ( $Ticket->owner_obj->id != Jifty->web->current_user->id ) {
          $actions->{'C'} = {
              path => "Ticket/Display.html?Action=Steal&id=" . $id,
              title => _('Steal'),

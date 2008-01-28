@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% my $approving = $Ticket->DependedOnBy();
+% my $approving = $Ticket->depended_on_by();
 % if ($approving->count) {
 <h3><&|/l&>Tickets which depend on this approval:</&></h3>
 
@@ -55,10 +55,10 @@
 <%PERL>
 my %show;
 while (my $link = $approving->next()) {
-    next unless ($link->base_uri->IsLocal());
+    next unless ($link->base_uri->is_local());
     my $text = '<a name="' . $link->base_obj->id . '">';
     my $head = '';
-    my $type = $link->base_obj->Type;
+    my $type = $link->base_obj->type;
     my $dep  = $m->scomp('ShowDependency', Ticket => $link->base_obj, _seen => $_seen);
 
     if ($type eq 'approval') {

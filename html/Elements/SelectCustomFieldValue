@@ -46,8 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( name => $name, CustomField => $CustomField );
-% if ($CustomField->Type =~ /Select/i) {
-% my $values = $CustomField->Values;
+% if ($CustomField->type =~ /Select/i) {
+% my $values = $CustomField->values;
 <select name="<%$name%>">
 <option value="" selected>-</option>
 <option value="NULL"><&|/l&>(no value)</&></option>

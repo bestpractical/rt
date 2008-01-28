@@ -69,8 +69,8 @@ use strict;
 use base qw(RT::Search::Generic);
 
 
-# sub _Init {{{
-sub _Init {
+# sub _init {{{
+sub _init {
     my $self = shift;
     my %args = @_;
 
@@ -80,16 +80,16 @@ sub _Init {
 # }}}
 
 # {{{ sub Describe 
-sub Describe  {
+sub describe {
   my $self = shift;
   return (_("No description for %1", ref $self));
 }
 # }}}
 
 # {{{ sub QueryToSQL
-sub QueryToSQL {
+sub query_to_sql {
     my $self     = shift;
-    my $query    = shift || $self->Argument;
+    my $query    = shift || $self->argument;
     my @keywords = split /\s+/, $query;
     my (
         @tql_clauses,  @owner_clauses, @queue_clauses,
@@ -109,8 +109,8 @@ sub QueryToSQL {
 
         # Is there a status with this name?
         elsif (
-            $Queue = RT::Model::Queue->new( current_user => $self->TicketsObj->current_user )
-            and $Queue->IsValidStatus($key)
+            $Queue = RT::Model::Queue->new( current_user => $self->tickets_obj->current_user )
+            and $Queue->is_valid_status($key)
           )
         {
             push @status_clauses, "Status = '" . $key . "'";
@@ -118,14 +118,14 @@ sub QueryToSQL {
 
         # Is there a owner named $key?
         # Is there a queue named $key?
-        elsif ( $Queue = RT::Model::Queue->new( current_user => $self->TicketsObj->current_user )
+        elsif ( $Queue = RT::Model::Queue->new( current_user => $self->tickets_obj->current_user )
             and $Queue->load($key) )
         {
             push @queue_clauses, "Queue = '" . $Queue->name . "'";
         }
 
         # Is there a owner named $key?
-        elsif ( $User = RT::Model::User->new( current_user => $self->TicketsObj->current_user )
+        elsif ( $User = RT::Model::User->new( current_user => $self->tickets_obj->current_user )
             and $User->load($key)
             and $User->privileged )
         {
@@ -148,7 +148,7 @@ sub QueryToSQL {
 
     # restrict to any queues requested by the caller
     for my $queue (@{ $self->{'Queues'} }) {
-        my $queue_obj = RT::Model::Queue->new(current_user => $self->TicketsObj->current_user);
+        my $queue_obj = RT::Model::Queue->new(current_user => $self->tickets_obj->current_user);
         $queue_obj->Load($queue) or next;
         push @queue_clauses, "Queue = '" . $queue_obj->name . "'";
     }
@@ -166,11 +166,11 @@ sub QueryToSQL {
 # {{{ sub prepare
 sub prepare  {
   my $self = shift;
-  my $tql = $self->QueryToSQL($self->Argument);
+  my $tql = $self->query_to_sql($self->Argument);
 
   Jifty->log->fatal($tql);
 
-  $self->TicketsObj->from_sql($tql);
+  $self->tickets_obj->from_sql($tql);
   return(1);
 }
 # }}}

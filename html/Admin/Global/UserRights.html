@@ -57,9 +57,9 @@
 <table>
 
 % while ( my $Member = $Users->next ) {
-% my $user_object = $Member->MemberObj->Object;
+% my $user_object = $Member->member_obj->object;
 % my $group = RT::Model::Group->new();
-% $group->load_acl_equivalence_group( $Member->MemberObj );
+% $group->load_acl_equivalence_group( $Member->member_obj );
   <tr align="right">
 	<td valign="top"><& /Elements/ShowUser, User => $user_object &></td>
 	<td><& /Admin/Elements/SelectRights,
@@ -85,7 +85,7 @@
 # Find out which users we want to display ACL selects for
 my $privileged = RT::Model::Group->new();
 $privileged->load_system_internal_group('privileged');
-my $Users = $privileged->MembersObj();
+my $Users = $privileged->members_obj();
 
     
   

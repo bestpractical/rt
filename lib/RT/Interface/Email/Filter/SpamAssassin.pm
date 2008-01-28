@@ -50,7 +50,7 @@ package RT::Interface::Email::Filter::SpamAssassin;
 use Mail::SpamAssassin;
 my $spamtest = Mail::SpamAssassin->new();
 
-sub GetCurrentUser {
+sub get_current_user {
     my %args = (
         Message     => undef,
         CurrentUser => undef,

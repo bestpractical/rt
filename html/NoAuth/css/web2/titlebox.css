@@ -135,7 +135,7 @@
   padding-top: 1em;
   width: 2em;
 
-  background: url(<%RT->Config->Get('WebImagesURL')%>/css/rollup-arrow.gif) no-repeat center center;
+  background: url(<%RT->config->get('WebImagesURL')%>/css/rollup-arrow.gif) no-repeat center center;
   
   margin: 0;
   text-indent: -9999px;
@@ -172,7 +172,7 @@ html>body .titlebox .titlebox-title .widget a {
 }
 
 .titlebox.rolled-up .titlebox-title .widget a {
-    background-image: url(<%RT->Config->Get('WebImagesURL')%>/css/rolldown-arrow.gif);
+    background-image: url(<%RT->config->get('WebImagesURL')%>/css/rolldown-arrow.gif);
 }
 
 #body .titlebox .titlebox-title :link,

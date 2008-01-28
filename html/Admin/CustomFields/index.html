@@ -54,7 +54,7 @@
 % my $prev_lookup = '';
 % while (my $CustomFieldObj = $CustomFields->next) {
 %    next unless $CustomFieldObj->current_user_has_right('AdminCustomField');
-%    my $lookup = $CustomFieldObj->FriendlyLookupType;
+%    my $lookup = $CustomFieldObj->friendly_lookup_type;
 %    if ($lookup ne $prev_lookup) {
 %        if ($prev_lookup) {
 </ul>
@@ -66,14 +66,14 @@
 %    }
 %    
 <li>
-<a href="Modify.html?id=<% $CustomFieldObj->id %>"><% $CustomFieldObj->name %>: <% $CustomFieldObj->Description %></a>
+<a href="Modify.html?id=<% $CustomFieldObj->id %>"><% $CustomFieldObj->name %>: <% $CustomFieldObj->description %></a>
 </li>
 % }
 % if ($prev_lookup) {
 </ul>
 % }
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/CustomFields/index.html" method="get">
+<form action="<%RT->config->get('WebPath')%>/Admin/CustomFields/index.html" method="get">
 <&|/l&>Only show custom fields for:</&>
 <select name="Type">
 <option value="" <% !$Type && 'selected'%> ><% _('(any)') %></option>
@@ -103,6 +103,6 @@ if ( !$Type && $ARGS{'type'} ) {
 my $CustomFields = RT::Model::CustomFieldCollection->new();
 $CustomFields->find_all_rows;
 $CustomFields->{'find_disabled_rows'} = 1 if $Showdisabled;
-$CustomFields->limit_ToLookupType( $Type ) if $Type;
+$CustomFields->limit_to_lookup_type( $Type ) if $Type;
 $CustomFields->order_by( { column => 'LookupType' }, { column => 'name' } );
 </%INIT>

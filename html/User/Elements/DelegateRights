@@ -50,7 +50,7 @@
 
 foreach my $object (keys %{$objects->{$object_type}}) {
 unless ($object_type eq 'RT::System') {
-my $object_obj = @{$objects->{$object_type}{$object}}[0]->Object;
+my $object_obj = @{$objects->{$object_type}{$object}}[0]->object;
 
 </%perl>
 <h3><% $object_obj->name %></h3>
@@ -66,8 +66,8 @@ my $object_obj = @{$objects->{$object_type}{$object}}[0]->Object;
 my $i;
 foreach my $right (@{$objects->{$object_type}{$object}}) {
 my $delegations = RT::Model::ACECollection->new();
-$delegations->DelegatedBy( id => Jifty->web->current_user->id);
-$delegations->DelegatedFrom ( id => $right->id);
+$delegations->delegated_by( id => Jifty->web->current_user->id);
+$delegations->delegated_from ( id => $right->id);
 
 my $del_hash = {};
 while ( my $delegation = $delegations->next) {
@@ -79,7 +79,7 @@ while ( my $delegation = $delegations->next) {
 <tr class="<%($i%2) && 'oddline'%>">
 <td>
 <% _($right->right_name) %><br />
-<div align="right"><font size="-2" color="#999999"><&|/l, $right->principal_object->Object->SelfDescription &>as granted to %1</&></font></div>
+<div align="right"><font size="-2" color="#999999"><&|/l, $right->principal_object->object->self_description &>as granted to %1</&></font></div>
        </td>
 % while (my $pg = $personalgroups->next) {
 <td align="center">

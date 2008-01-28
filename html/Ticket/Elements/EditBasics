@@ -65,13 +65,13 @@
           name         => 'Owner',
           queue_obj     => $ticket_obj->queue_obj,
           ticket_obj    => $ticket_obj,
-          Default      => $ticket_obj->OwnerObj->id,
+          Default      => $ticket_obj->owner_obj->id,
           DefaultValue => 0,
       &></td>
   </tr>
 
   <tr>
-      <td class="label"><&|/l&>Time Estimated</&>:</td>
+      <td class="label"><&|/l&>time Estimated</&>:</td>
       <td class="value">
         <input name="time_estimated" 
             value="<% $ticket_obj->time_estimated || '' |h%>" size="5" />
@@ -79,14 +79,14 @@
       </td>
     </tr>
   <tr>
-    <td class="label"><&|/l&>Time Worked</&>:</td>
+    <td class="label"><&|/l&>time Worked</&>:</td>
     <td class="value">
       <input name="time_worked" value="<% $ticket_obj->time_worked || '' |h%>" size="5" />
       <& /Elements/SelectTimeUnits, name =>'time_worked' &>
     </td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Time Left</&>:</td>
+    <td class="label"><&|/l&>time Left</&>:</td>
     <td class="value">
         <input name="time_left" value="<%$ticket_obj->time_left || ''|h%>" size="5" />
         <& /Elements/SelectTimeUnits, name =>'time_left' &>

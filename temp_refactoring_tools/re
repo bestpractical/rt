@@ -1,0 +1,6 @@
+#!/usr/bin/perl
+
+my $old = shift;
+my $new = shift;
+`find . -type f | xargs perl -pi -e's/sub\\s*$old(\\s|\$)*\{/sub $new {/gms'`;
+`find . -type f | xargs perl -pi -e's/>$old(\\s|\\(|-|,|;)/>$new\$1/g'`;

@@ -34,7 +34,7 @@ my ($tv,$ttv,$tm) = $ticket->create(Queue => $q->id,
                                     initial_priority => '20'
                                     );
 ok($tv, $tm);
-ok($ticket->set_Owner('root'));
+ok($ticket->set_owner('root'));
 is ($ticket->Priority , '21', "Ticket priority is set right");
 ok($ticket->Steal);
 is ($ticket->Priority , '22', "Ticket priority is set right");

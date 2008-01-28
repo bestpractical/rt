@@ -78,7 +78,7 @@ another call to this method
 
 =cut
 
-sub limit_ToQueue  {
+sub limit_to_queue {
    my $self = shift;
   my $queue = shift;
  
@@ -101,7 +101,7 @@ another call to this method or limit_ToQueue
 =cut
 
 
-sub limit_ToGlobal  {
+sub limit_to_global {
    my $self = shift;
  
   $self->limit (entry_aggregator => 'OR',
@@ -150,7 +150,7 @@ forcing the scrips to run in ascending alphanumerical order.)
 
 =cut
 
-sub Apply {
+sub apply {
     my $self = shift;
 
     my %args = ( ticket_obj      => undef,
@@ -207,19 +207,19 @@ sub prepare {
                  @_ );
 
     #We're really going to need a non-acled ticket for the scrips to work
-    $self->_setupSourceObjects( ticket_obj      => $args{'ticket_obj'},
+    $self->setup_source_objects( ticket_obj      => $args{'ticket_obj'},
                                 Ticket         => $args{'Ticket'},
                                 transaction_obj => $args{'transaction_obj'},
                                 Transaction    => $args{'Transaction'} );
 
 
-    $self->_FindScrips( Stage => $args{'Stage'}, Type => $args{'Type'} );
+    $self->_find_scrips( Stage => $args{'Stage'}, Type => $args{'Type'} );
 
     
     #Iterate through each script and check it's applicability.
     while ( my $scrip = $self->next() ) {
         next
-          unless ( $scrip->IsApplicable(
+          unless ( $scrip->is_applicable(
                                      ticket_obj      => $self->{'ticket_obj'},
                                      transaction_obj => $self->{'transaction_obj'}
                    ) );
@@ -263,7 +263,7 @@ Returns: nothing
 =cut
 
 
-sub _setupSourceObjects {
+sub setup_source_objects {
 
     my $self = shift;
     my %args = ( 
@@ -305,7 +305,7 @@ order.)
 
 =cut
 
-sub _FindScrips {
+sub _find_scrips {
     my $self = shift;
     my %args = (
                  Stage => undef,
@@ -313,9 +313,9 @@ sub _FindScrips {
                  @_ );
 
 
-    $self->limit_ToQueue( $self->{'ticket_obj'}->queue_obj->id )
+    $self->limit_to_queue( $self->{'ticket_obj'}->queue_obj->id )
       ;    #Limit it to  $Ticket->queue_obj->id
-    $self->limit_ToGlobal();
+    $self->limit_to_global();
       # or to "global"
 
     $self->limit( column => "Stage", value => $args{'Stage'} );

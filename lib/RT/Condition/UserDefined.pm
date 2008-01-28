@@ -62,7 +62,7 @@ This happens on every transaction. it's always applicable
 
 =cut
 
-sub IsApplicable {
+sub is_applicable {
     my $self = shift;
     my $retval = eval $self->scrip_obj->CustomIsApplicableCode;
     if ($@) {

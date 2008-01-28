@@ -52,12 +52,12 @@
 % my $i =0;
 % while (my $reminder = $reminders->next) {
 % $i++;
-% if ($reminder->RefersTo->first) {
-% my $ticket= $reminder->RefersTo->first->TargetObj;
-<tr class="<%$i%2 ? 'evenline' : 'oddline'%>"><td><a href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$ticket->id%>"><%$reminder->Subject%></a><br />
+% if ($reminder->refers_to->first) {
+% my $ticket= $reminder->refers_to->first->target_obj;
+<tr class="<%$i%2 ? 'evenline' : 'oddline'%>"><td><a href="<%RT->config->get('WebPath')%>/Ticket/Display.html?id=<%$ticket->id%>"><%$reminder->Subject%></a><br />
 <blockquote>
 #<%$ticket->id%>: <%$ticket->Subject%><br />
-<%$reminder->OwnerObj->name %>  <%$reminder->due_obj->Unix >0 ? '&bull; '.$reminder->due_obj->AgeAsString : '' |n %>
+<%$reminder->owner_obj->name %>  <%$reminder->due_obj->unix >0 ? '&bull; '.$reminder->due_obj->age_as_string : '' |n %>
 </blockquote>
 </td>
 </tr>

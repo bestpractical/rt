@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%><% $m->request_comp->path |n %>" method="post" name="EditCustomFields">
+<form action="<%RT->config->get('WebPath')%><% $m->request_comp->path |n %>" method="post" name="EditCustomFields">
 <input type="hidden" class="hidden" name="id" value="<% $Object->id || ''%>" />
 <input type="hidden" class="hidden" name="object_type" value="<% $object_type %>" />
 <input type="hidden" class="hidden" name="SubType" value="<% $SubType %>" />
@@ -80,7 +80,7 @@ if ($id and !$Object->current_user_has_right('AssignCustomFields')) {
 my $lookup = $object_type;
 $lookup .= "-$SubType" if $SubType;
 
-$CustomFields->limit_ToLookupType($lookup);
+$CustomFields->limit_to_lookup_type($lookup);
 $CustomFields->order_by( column => 'name' );
 
 
@@ -88,7 +88,7 @@ my ($GlobalCFs, $ObjectCFs);
 $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new();
 $ObjectCFs->find_all_rows;
 $ObjectCFs->limit_to_object_id($id);
-$ObjectCFs->limit_ToLookupType($lookup);
+$ObjectCFs->limit_to_lookup_type($lookup);
 
 # Check sanity of SortOrders
 my %SortOrders;
@@ -147,13 +147,13 @@ if ($CustomField and $Move) {
 if ($id) {
     $GlobalCFs = RT::Model::ObjectCustomFieldCollection->new();
     $GlobalCFs->limit_to_object_id(0);
-    $GlobalCFs->limit_ToLookupType($lookup);
+    $GlobalCFs->limit_to_lookup_type($lookup);
 }
 
 while (my $cf = $CustomFields->next) { 
     my $cf_id = $cf->id;
 
-    if ($GlobalCFs and $GlobalCFs->HasEntryForCustomField($cf_id)) {
+    if ($GlobalCFs and $GlobalCFs->has_entry_for_custom_field($cf_id)) {
 	push @GlobalCFs, $cf;
 	next;
     }
@@ -163,22 +163,22 @@ while (my $cf = $CustomFields->next) {
 	# no longer has
 	my $key = "Object-$id-CF-$cf_id";
 	if ($ARGS{$key}) {
-	    if (!$ObjectCFs->HasEntryForCustomField($cf_id)) {
-		my ($val, $msg) = $cf->AddToObject($Object);
+	    if (!$ObjectCFs->has_entry_for_custom_field($cf_id)) {
+		my ($val, $msg) = $cf->add_to_object($Object);
 		push (@results, $msg);
 		push @UnassignedCFs, $cf if !$val;
 	    }
 	}
 	else {
 	    push @UnassignedCFs, $cf;
-	    if ($ObjectCFs->HasEntryForCustomField($cf_id)) {
-		my ($val, $msg) = $cf->RemoveFromObject($Object);
+	    if ($ObjectCFs->has_entry_for_custom_field($cf_id)) {
+		my ($val, $msg) = $cf->remove_from_object($Object);
 		push (@results, $msg);
 		pop @UnassignedCFs if !$val;
 	    }
 	}
     }
-    elsif (!$ObjectCFs->HasEntryForCustomField($cf_id)) {
+    elsif (!$ObjectCFs->has_entry_for_custom_field($cf_id)) {
 	push @UnassignedCFs, $cf;
     }
         else {
@@ -189,7 +189,7 @@ while (my $cf = $CustomFields->next) {
 $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new();
 $ObjectCFs->find_all_rows;
 $ObjectCFs->limit_to_object_id($id);
-$ObjectCFs->limit_ToLookupType($lookup);
+$ObjectCFs->limit_to_lookup_type($lookup);
 
 </%INIT>
 <%ARGS>

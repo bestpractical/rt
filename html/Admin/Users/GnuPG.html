@@ -14,7 +14,7 @@
 <h2><% _("User has empty email address") %></h2>
 % }
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Users/GnuPG.html" method="post" enctype="multipart/form-data">
+<form action="<%RT->config->get('WebPath')%>/Admin/Users/GnuPG.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<% $user_object->id %>" />
 
 <& /Widgets/Form/Select,
@@ -33,7 +33,7 @@ $id         => undef
 $Update     => undef
 </%ARGS>
 <%INIT>
-return unless RT->Config->Get('GnuPG')->{'Enable'};
+return unless RT->config->get('GnuPG')->{'Enable'};
 
 require RT::Crypt::GnuPG;
 

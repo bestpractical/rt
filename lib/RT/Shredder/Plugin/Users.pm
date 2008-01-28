@@ -109,10 +109,10 @@ sub TestArgs
         $args{'status'} = 'disabled';
     }
     if( $args{'email'} ) {
-        $args{'email'} = $self->ConvertMaskToSQL( $args{'email'} );
+        $args{'email'} = $self->convert_mask_to_sql( $args{'email'} );
     }
     if( $args{'name'} ) {
-        $args{'name'} = $self->ConvertMaskToSQL( $args{'name'} );
+        $args{'name'} = $self->convert_mask_to_sql( $args{'name'} );
     }
     if( $args{'replace_relations'} ) {
         my $uid = $args{'replace_relations'};
@@ -165,7 +165,7 @@ sub Run
     }
 
     if( $self->{'opt'}{'no_tickets'} ) {
-        return $self->FilterWithoutTickets(
+        return $self->filter_without_tickets(
             Shredder => $args{'Shredder'},
             Objects  => $objs,
         );
@@ -184,7 +184,7 @@ sub set_Resolvers
 
     if( $self->{'opt'}{'replace_relations'} ) {
         my $uid = $self->{'opt'}{'replace_relations'};
-        my $resolver = sub {
+        my $resolver = sub  {
             my %args = (@_);
             my $t =    $args{'TargetObject'};
             foreach my $method ( qw(Creator LastUpdatedBy) ) {
@@ -192,12 +192,12 @@ sub set_Resolvers
                 $t->__set( column => $method, value => $uid );
             }
         };
-        $args{'Shredder'}->PutResolver( BaseClass => 'RT::Model::User', Code => $resolver );
+        $args{'Shredder'}->put_resolver( BaseClass => 'RT::Model::User', Code => $resolver );
     }
     return (1);
 }
 
-sub FilterWithoutTickets {
+sub filter_without_tickets {
     my $self = shift;
     my %args = (
         Shredder => undef,
@@ -209,13 +209,13 @@ sub FilterWithoutTickets {
 
     my @res;
     while ( my $user = $self->fetch_next( $users ) ) {
-        push @res, $user if $self->_WithoutTickets( $user );
+        push @res, $user if $self->_without_tickets( $user );
         return (1, \@res) if $self->{'opt'}{'limit'} && @res >= $self->{'opt'}{'limit'};
     }
     return (1, \@res);
 }
 
-sub _WithoutTickets {
+sub _without_tickets {
     my ($self, $user) = @_;
     my $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user );
     $tickets->from_sql( 'Watcher.id = '. $user->id );

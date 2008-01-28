@@ -74,7 +74,7 @@ use vars qw($Nobody $system_user $Handler $r);
 #This drags in RT's config.pm
 BEGIN {
     RT::load_config();
-    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
+    if (RT->config->get('DevelMode')) { require Module::Refresh; }
 }
 
 
@@ -86,9 +86,9 @@ BEGIN {
 
 use RT::Interface::Web;
 use RT::Interface::Web::Handler;
-$Handler = RT::Interface::Web::Handler->new(current_user => RT->Config->Get('MasonParameters'));
+$Handler = RT::Interface::Web::Handler->new(current_user => RT->config->get('MasonParameters'));
 
-if ($ENV{'MOD_PERL'} && !RT->Config->Get('DevelMode')) {
+if ($ENV{'MOD_PERL'} && !RT->config->get('DevelMode')) {
     # Under static_source, we need to purge the component cache
     # each time we restart, so newer components may be reloaded.
     #
@@ -116,7 +116,7 @@ sub handler {
         #$r->content_type !~ m!(^text/|\bxml\b)!i or return -1;
 #    }
 
-    Module::Refresh->refresh if RT->Config->Get('DevelMode');
+    Module::Refresh->refresh if RT->config->get('DevelMode');
 
     RT::Init();
 
@@ -129,7 +129,7 @@ sub handler {
 
     undef(%session);
 
-    RT::Interface::Web::Handler->CleanupRequest();
+    RT::Interface::Web::Handler->cleanup_request();
 
     return $status;
 }

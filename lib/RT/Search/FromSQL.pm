@@ -74,7 +74,7 @@ Returns a localized string describing the module's function.
 =cut
 
 # {{{ sub Describe 
-sub Describe  {
+sub describe {
     my $self = shift;
     return (_("TicketSQL search module", ref $self));
 }
@@ -92,7 +92,7 @@ is reduced to those tickets matching the SQL query.
 sub prepare  {
     my $self = shift;
 
-    $self->TicketsObj->from_sql($self->Argument);
+    $self->tickets_obj->from_sql($self->Argument);
     return(1);
 }
 # }}}

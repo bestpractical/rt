@@ -125,7 +125,7 @@ Returns the user or group associated with this principal
 
 =cut
 
-sub Object {
+sub object {
     my $self = shift;
 
     unless ( $self->{'object'} ) {
@@ -264,7 +264,7 @@ sub _cleanup_invalid_delegations {
 	Jifty->log->warn("Principal not loaded.");
 	return (undef);
     }
-    return ($self->Object->_cleanup_invalid_delegations(@_));
+    return ($self->object->_cleanup_invalid_delegations(@_));
 }
 
 # }}}
@@ -340,7 +340,7 @@ sub has_right {
         # this is a little bit hacky, but basically, now that we've done
         # the ticket roles magic, we load the queue object
         # and ask all the rest of our questions about the queue.
-        unshift @{ $args{'equiv_objects'} }, $args{'Object'}->ACLEquivalenceObjects;
+        unshift @{ $args{'equiv_objects'} }, $args{'Object'}->acl_equivalence_objects;
 
     }
 
@@ -551,7 +551,7 @@ Cleans out and reinitializes the user rights cache
 sub invalidate_acl_cache {
     $_ACL_CACHE = Cache::Simple::TimedExpiry->new();
     my $lifetime;
-    $lifetime = $RT::Config->Get('ACLCacheLifetime') if $RT::Config;
+    $lifetime = $RT::Config->get('ACLCacheLifetime') if $RT::Config;
     $_ACL_CACHE->expire_after( $lifetime || 60 );
 }
 
@@ -572,8 +572,8 @@ return that. if it has no type, return group.
 sub _get_principal_type_for_acl {
     my $self = shift;
     my $type;    
-    if ($self->principal_type eq 'Group' && $self->Object->Domain =~ /Role$/) {
-        $type = $self->Object->Type;
+    if ($self->principal_type eq 'Group' && $self->object->Domain =~ /Role$/) {
+        $type = $self->object->type;
     }
     else {
         $type = $self->principal_type;

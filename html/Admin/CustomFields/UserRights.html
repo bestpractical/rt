@@ -58,7 +58,7 @@ Title => $title, &>
 <table>
         
 %	while (my $Member = $Users->next()) {
-% my $user_object = $Member->MemberObj->Object();
+% my $user_object = $Member->member_obj->object();
 % my $group = RT::Model::Group->new();
 % $group->load_acl_equivalence_group($Member->MemberObj);
   <tr align="right"> 
@@ -94,7 +94,7 @@ $CustomFieldObj->load($id) || $m->comp("/Elements/Error", Why => _("Couldn't loa
 # Find out which users we want to display ACL selects for
 my $privileged = RT::Model::Group->new();
 $privileged->load_system_internal_group('privileged');
-my $Users = $privileged->MembersObj();
+my $Users = $privileged->members_obj();
 
 my $title = _('Modify user rights for custom field %1', $CustomFieldObj->name);
   

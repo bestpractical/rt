@@ -88,7 +88,7 @@ sub __DependsOn
     my $list = [];
 
 # Principal
-    $deps->_PushDependency(
+    $deps->_push_dependency(
             base_object => $self,
             Flags => DEPENDS_ON | WIPE_AFTER,
             TargetObject => $self->principal_object,
@@ -107,7 +107,7 @@ sub __DependsOn
     $objs->limit( column => 'MemberId', value => $self->id );
     push( @$list, $objs );
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $list,
@@ -126,7 +126,7 @@ sub __DependsOn
             push @var_objs, $objs;
         }
     }
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => DEPENDS_ON | VARIABLE,
             TargetObjects => \@var_objs,
@@ -152,7 +152,7 @@ sub __Relates
     if( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+        my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'} = "Have no related ACL equivalence Group object";
@@ -163,13 +163,13 @@ sub __Relates
     if( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+        my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'} = "Have no related Principal #". $self->id ." object";
     }
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,

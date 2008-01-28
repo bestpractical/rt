@@ -17,11 +17,11 @@ RT::InitSystemObjects();
 };
 
 before qr/.*/ => run {
-if ( int RT->Config->Get('AutoLogoff') ) {
+if ( int RT->config->get('AutoLogoff') ) {
     my $now = int(time/60);
     # XXX TODO 4.0 port this;
     my $last_update;
-    if ( $last_update && ($now - $last_update - RT->Config->Get('AutoLogoff')) > 0 ) {
+    if ( $last_update && ($now - $last_update - RT->config->get('AutoLogoff')) > 0 ) {
         # clean up sessions, but we should leave the session id
     }
 
@@ -62,12 +62,12 @@ unless ( Jifty->web->current_user->user_object && Jifty->web->current_user->user
 
     # if the user is trying to access a ticket, redirect them
     if (    $path =~ '^(/+)Ticket/Display.html' && get('id')) {
-        RT::Interface::Web::redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=".get('id'));
+        RT::Interface::Web::redirect( RT->config->get('WebURL') ."SelfService/Display.html?id=".get('id'));
     }
 
     # otherwise, drop the user at the SelfService default page
     elsif ( $path !~ '^(/+)SelfService/' ) {
-        RT::Interface::Web::redirect( RT->Config->Get('WebURL') ."SelfService/" );
+        RT::Interface::Web::redirect( RT->config->get('WebURL') ."SelfService/" );
     }
 }
 

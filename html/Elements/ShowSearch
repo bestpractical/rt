@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
-    title => _($search->Description, $ProcessedSearchArg->{'Rows'}),
+    title => _($search->description, $ProcessedSearchArg->{'Rows'}),
     title_href => $query_link_url.$QueryString,
     titleright => $customize ? _('Edit') : '',
     titleright_href => $customize &>
@@ -63,7 +63,7 @@ my $query_link_url = 'Search/Results.html';
 if ($SavedSearch) {
     my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
     $search = $container_object->attributes->with_id($search_id);
-    unless ( $search->id && ref( $SearchArg = $search->Content ) eq 'HASH' ) {
+    unless ( $search->id && ref( $SearchArg = $search->content ) eq 'HASH' ) {
         $m->out("Saved Search $SavedSearch not found");
         return;
     }
@@ -75,7 +75,7 @@ if ($SavedSearch) {
             = '/Search/Elements/' . $SearchArg->{SearchType};
         $query_link_url = "Search/$SearchArg->{SearchType}.html";
     } else {
-        $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
+        $customize = RT->config->get('WebPath') . '/Search/Build.html?'
             . $m->comp( '/Elements/QueryString',
             LoadSavedSearch => $SavedSearch );
     }
@@ -84,7 +84,7 @@ if ($SavedSearch) {
     unless ( $search && $search->id ) {
         my (@custom_searches) = RT::System->new()->attributes->named('SavedSearch');
         foreach my $custom (@custom_searches) {
-            if ($custom->Description eq $name) { $search = $custom; last }
+            if ($custom->description eq $name) { $search = $custom; last }
         }
         unless ($search && $search->id) {
             $m->out("Predefined search $name not found");
@@ -92,8 +92,8 @@ if ($SavedSearch) {
         }
     }
 
-    $SearchArg = $user->Preferences( $search, $search->Content );
-    $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
+    $SearchArg = $user->preferences( $search, $search->content );
+    $customize = RT->config->get('WebPath') . '/Prefs/Search.html?'
         . $m->comp( '/Elements/QueryString',
             name => ref($search) . '-' . $search->id );
 }
@@ -112,7 +112,7 @@ $m->callback(
 
 foreach ( $SearchArg, $ProcessedSearchArg ) {
     $_->{'Query'}  =~ s/__CurrentUser__/Jifty->web->current_user->id/ge;
-    $_->{'Format'} =~ s/__(Web(?:Path|Base|BaseURL))__/scalar RT->Config->Get($1)/ge;
+    $_->{'Format'} =~ s/__(Web(?:Path|Base|BaseURL))__/scalar RT->config->get($1)/ge;
     $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/_("$1")/ge;
 }
 

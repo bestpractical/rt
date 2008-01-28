@@ -49,16 +49,16 @@
 use Regexp::Common qw(URI);
 
 my %actions = (
-    default => sub {
+    default => sub  {
         my %args = @_;
         return $args{value};
     },
-    url => sub {
+    url => sub  {
         my %args = @_;
         my $result = qq{[<a target="new" href="$args{value}">}. _('Open URL') .qq{</a>]};
         return $args{value} . qq{ <span class="clickylink">$result</span>};
     },
-    url_overwrite => sub {
+    url_overwrite => sub  {
         my %args = @_;
         my $result = qq{<a target="new" href="$args{'value'}">};
         #XXX: use spaces here. &shy; <wbr> are not well supported :(
@@ -81,14 +81,14 @@ my @types = (
     },
 );
 
-my $handle = sub {
+my $handle = sub  {
     my %args = @_;
     for my $rec( @types ) {
         return $rec->{action}->( %args ) if $args{value} =~ $rec->{regex};
     }
 };
 
-my $escaper = sub {
+my $escaper = sub  {
     my $content = shift;
     RT::Interface::Web::escape_utf8( \$content );
     return $content;
@@ -107,14 +107,14 @@ $m->callback(
 
 # Filter
 my %active;
-$active{$_}++ for RT->Config->Get('Active_MakeClicky');
+$active{$_}++ for RT->config->get('Active_MakeClicky');
 @types = grep $active{$_->{name}}, @types;
 
 # Build up the whole match
 my $regexp = join "|", map $_->{regex}, @types;
 
 # Make sure we have a default
-$actions{default} ||= sub {};
+$actions{default} ||= sub  {};
 
 # Anchor the regexes and look up the actions
 foreach my $type ( @types ) {

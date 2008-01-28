@@ -59,7 +59,7 @@
 <table>
 % $m->callback( %ARGS, queue_obj => $queue_obj, results => \@results );
 %	while (my $Member = $Users->next()) {
-% my $user_object = $Member->MemberObj->Object();
+% my $user_object = $Member->member_obj->object();
 % my $group = RT::Model::Group->new();
 % $group->load_acl_equivalence_group($Member->MemberObj);
   <tr align="right"> 
@@ -95,7 +95,7 @@ $queue_obj->load($id) || Abort(_("Couldn't load queue %1",$id));
 # Find out which users we want to display ACL selects for
 my $privileged = RT::Model::Group->new();
 $privileged->load_system_internal_group('privileged');
-my $Users = $privileged->MembersObj();
+my $Users = $privileged->members_obj();
 
     
   

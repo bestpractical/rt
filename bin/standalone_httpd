@@ -53,12 +53,12 @@ BEGIN {
     use lib( "/home/jesse/svk/3.999-DANGEROUS/local/lib", "/home/jesse/svk/3.999-DANGEROUS/lib");
     use RT;
     RT::load_config();
-    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
+    if (RT->config->get('DevelMode')) { require Module::Refresh; }
 }
 
 RT::Init();
 
-my $port = shift @ARGV || RT->Config->Get('WebPort') || '8080';
+my $port = shift @ARGV || RT->config->get('WebPort') || '8080';
 use RT::Interface::Web::Standalone;
 my $server = RT::Interface::Web::Standalone->new;
 $server->port($port);

@@ -96,7 +96,7 @@ sub create {
     # cache and bail so we can support cycling directed graphs
 
     if ($args{'Member'}->is_group) {
-        my $member_object = $args{'Member'}->Object;
+        my $member_object = $args{'Member'}->object;
         if ($member_object->has_member_recursively($args{'Group'})) {
             Jifty->log->debug("Adding that group would create a loop");
             return(undef);
@@ -134,7 +134,7 @@ sub create {
 
     # find things which have the current group as a member. 
     # $group is an RT::Model::Principal for the group.
-    $cgm->limit_ToGroupsWithMember( $args{'Group'}->id );
+    $cgm->limit_to_groups_with_member( $args{'Group'}->id );
 
     while ( my $parent_member = $cgm->next ) {
         my $parent_id = $parent_member->MemberId;
@@ -145,8 +145,8 @@ sub create {
           RT::Model::CachedGroupMember->new;
         my $other_cached_id = $other_cached_member->create(
             Member          => $args{'Member'},
-                      Group => $parent_member->GroupObj,
-            ImmediateParent => $parent_member->MemberObj,
+                      Group => $parent_member->group_obj,
+            ImmediateParent => $parent_member->member_obj,
             Via             => $parent_member->id
         );
         unless ($other_cached_id) {
@@ -185,7 +185,7 @@ This routine expects to be called inside a transaction by RT::Model::User->creat
 
 =cut
 
-sub _StashUser {
+sub _stash_user {
     my $self = shift;
     my %args = (
         Group  => undef,
@@ -260,13 +260,13 @@ sub delete {
     $cached_submembers->limit(
         column    => 'MemberId',
         operator => '=',
-        value    => $self->MemberObj->id
+        value    => $self->member_obj->id
     );
 
     $cached_submembers->limit(
         column    => 'ImmediateParentId',
         operator => '=',
-        value    => $self->GroupObj->id
+        value    => $self->group_obj->id
     );
 
 
@@ -292,7 +292,7 @@ sub delete {
     # Since this deletion may have changed the former member's
     # delegation rights, we need to ensure that no invalid delegations
     # remain.
-    ($err,$msg) = $self->MemberObj->_cleanup_invalid_delegations(InsideTransaction => 1);
+    ($err,$msg) = $self->member_obj->_cleanup_invalid_delegations(InsideTransaction => 1);
     unless ($err) {
 	Jifty->log->warn("Unable to revoke delegated rights for principal ".$self->id);
 	Jifty->handle->rollback();
@@ -318,7 +318,7 @@ Returns an RT::Model::Principal object for the Principal specified by $self->pri
 
 =cut
 
-sub MemberObj {
+sub member_obj {
     my $self = shift;
     unless ( defined( $self->{'Member_obj'} ) ) {
         $self->{'Member_obj'} = RT::Model::Principal->new;
@@ -337,7 +337,7 @@ Returns an RT::Model::Principal object for the Group specified in $self->GroupId
 
 =cut
 
-sub GroupObj {
+sub group_obj {
     my $self = shift;
     unless ( defined( $self->{'Group_obj'} ) ) {
         $self->{'Group_obj'} = RT::Model::Principal->new;

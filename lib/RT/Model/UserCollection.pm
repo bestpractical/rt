@@ -332,7 +332,7 @@ sub _get_equiv_objects
 
         # XXX: This should be abstracted into object itself
         if( $args{'Object'}->id ) {
-            push @objects, $args{'Object'}->ACLEquivalenceObjects;
+            push @objects, $args{'Object'}->acl_equivalence_objects;
         } else {
             push @objects, 'RT::Model::Queue';
         }

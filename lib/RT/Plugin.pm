@@ -35,7 +35,7 @@ sub name {
     return $self->{name};
 }
 
-sub _BasePath {
+sub _base_path {
     my $self = shift;
     my $base = $self->{'name'};
     $base =~ s/::/-/g;
@@ -50,7 +50,7 @@ Returns the directory this plugin has installed its HTML::Mason templates into
 
 =cut
 
-sub ComponentRoot {
+sub component_root {
     my $self = shift;
 
     return $self->_BasePath."/html";
@@ -62,7 +62,7 @@ Returns the directory this plugin has installed its message catalogs into.
 
 =cut
 
-sub PoDir {
+sub po_dir {
     my $self = shift;
     return $self->_BasePath."/po";
 

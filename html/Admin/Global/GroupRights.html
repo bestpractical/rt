@@ -58,7 +58,7 @@
 <h1><&|/l&>System groups</&></h1>
 <table>
 % $Groups = RT::Model::GroupCollection->new();
-% $Groups->limit_ToSystemInternalGroups();
+% $Groups->limit_to_system_internal_groups();
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
@@ -74,7 +74,7 @@
 <h1><&|/l&>Roles</&></h1>
 <table>
 % $Groups = RT::Model::GroupCollection->new();
-% $Groups->limit_ToRolesForSystem();
+% $Groups->limit_to_roles_for_system();
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
@@ -90,7 +90,7 @@
 <h1><&|/l&>User defined groups</&></h1>
 <table>
 % $Groups = RT::Model::GroupCollection->new();
-% $Groups->limit_ToUserDefinedGroups();    
+% $Groups->limit_to_user_defined_groups();    
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">

@@ -64,7 +64,7 @@ sub setup_escapes {
 } 
 
 sub default_mason_config {
-    return RT->Config->Get('MasonParameters');
+    return RT->config->get('MasonParameters');
 } 
 
 sub handle_request {
@@ -72,12 +72,12 @@ sub handle_request {
     my $self = shift;
     my $cgi = shift;
 
-    Module::Refresh->refresh if RT->Config->Get('DevelMode');
+    Module::Refresh->refresh if RT->config->get('DevelMode');
 
     $self->SUPER::handle_request($cgi);
     Jifty->log->fatal($@) if ($@);
 
-    RT::Interface::Web::Handler->CleanupRequest();
+    RT::Interface::Web::Handler->cleanup_request();
 
 }
 

@@ -60,7 +60,7 @@ Calls SUPER::set_ReturnAddress.
 
 =cut
 
-sub set_ReturnAddress {
+sub set_return_address {
 	my $self = shift;
 	
 	# Tell RT::ScripAction::SendEmail that this should come 

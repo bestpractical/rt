@@ -105,7 +105,7 @@ Returns the right that the user needs to have on this attribute's object to perf
 
 =cut
 
-sub LookupObjectRight { 
+sub lookup_object_right { 
     my $self = shift;
     my %args = ( object_type => undef,
                  object_id => undef,
@@ -168,7 +168,7 @@ sub create {
    
     Carp::confess unless  $self->current_user;
     # object_right is the right that the user has to have on the object for them to have $right on this attribute
-    my $object_right = $self->LookupObjectRight(
+    my $object_right = $self->lookup_object_right(
         Right      => 'create',
         object_id   => $args{'object_id'},
         object_type => $args{'object_type'},
@@ -188,7 +188,7 @@ sub create {
 
    
     if (ref ($args{'Content'}) ) { 
-        eval  {$args{'Content'} = $self->_SerializeContent($args{'Content'}); };
+        eval  {$args{'Content'} = $self->_serialize_content($args{'Content'}); };
         if ($@) {
          return(0, $@);
         }
@@ -216,7 +216,7 @@ Loads the Attribute named name for Object OBJECT.
 
 =cut
 
-sub load_by_nameAndObject {
+sub load_by_name_and_object {
     my $self = shift;
     my %args = (
         Object => undef,
@@ -244,7 +244,7 @@ DeserializeContent returns this Attribute's "Content" as a hashref.
 
 =cut
 
-sub _DeserializeContent {
+sub _deserialize_content {
     my $self = shift;
     my $content = shift;
 
@@ -266,12 +266,12 @@ If it's data structure returns a ref to that data structure.
 
 =cut
 
-sub Content {
+sub content {
     my $self = shift;
     # Here we call _value to get the ACL check.
     my $content = $self->_value('Content');
     if ($self->__value('ContentType') eq 'storable') {
-        eval {$content = $self->_DeserializeContent($content); };
+        eval {$content = $self->_deserialize_content($content); };
         if ($@) {
             Jifty->log->error("Deserialization of content for attribute ".$self->id. " failed. Attribute was: ".$content);
         }
@@ -281,21 +281,21 @@ sub Content {
 
 }
 
-sub _SerializeContent {
+sub _serialize_content {
     my $self = shift;
     my $content = shift;
         return( encode_base64(nfreeze($content))); 
 }
 
 
-sub set_Content {
+sub set_content {
     my $self = shift;
     my $content = shift;
 
     # Call __value to avoid ACL check.
     if ( $self->__value('ContentType') eq 'storable' ) {
         # We eval the serialization because it will lose on a coderef.
-        $content = eval { $self->_SerializeContent($content) };
+        $content = eval { $self->_serialize_content($content) };
         if ($@) {
             Jifty->log->error("Content couldn't be frozen: $@");
             return(0, "Content couldn't be frozen");
@@ -311,10 +311,10 @@ Returns the subvalue for $key.
 
 =cut
 
-sub SubValue {
+sub sub_value {
     my $self = shift;
     my $key = shift;
-    my $values = $self->Content();
+    my $values = $self->content();
     return undef unless ref($values);
     return($values->{$key});
 }
@@ -325,12 +325,12 @@ Deletes the subvalue with the key name
 
 =cut
 
-sub deleteSubValue {
+sub delete_sub_value {
     my $self = shift;
     my $key = shift;
-    my %values = $self->Content();
+    my %values = $self->content();
     delete $values{$key};
-    $self->set_Content(%values);
+    $self->set_content(%values);
 
     
 
@@ -344,9 +344,9 @@ Deletes all subvalues for this attribute
 =cut
 
 
-sub deleteAllSubValues {
+sub delete_all_sub_values {
     my $self = shift; 
-    $self->set_Content({});
+    $self->set_content({});
 }
 
 =head2 SetSubValues  {  }
@@ -360,20 +360,20 @@ Returns a tuple of (status, message)
 =cut
 
 
-sub set_SubValues {
+sub set_sub_values {
    my $self = shift;
    my %args = (@_); 
-   my $values = ($self->Content() || {} );
+   my $values = ($self->content() || {} );
    foreach my $key (keys %args) {
     $values->{$key} = $args{$key};
    }
 
-   $self->set_Content($values);
+   $self->set_content($values);
 
 }
 
 
-sub Object {
+sub object {
     my $self = shift;
     my $object_type = $self->__value('object_type');
     my $object;
@@ -432,7 +432,7 @@ sub current_user_has_right {
     my $right = shift;
 
     # object_right is the right that the user has to have on the object for them to have $right on this attribute
-    my $object_right = $self->LookupObjectRight(
+    my $object_right = $self->lookup_object_right(
         Right      => $right,
         object_id   => $self->__value('object_id'),
         object_type => $self->__value('object_type'),
@@ -441,7 +441,7 @@ sub current_user_has_right {
    
     return (1) if ($object_right eq 'allow');
     return (0) if ($object_right eq 'deny');
-    return(1) if ($self->current_user->has_right( Object => $self->Object, Right => $object_right));
+    return(1) if ($self->current_user->has_right( Object => $self->object, Right => $object_right));
     return(0);
 
 }

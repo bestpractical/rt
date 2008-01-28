@@ -63,7 +63,7 @@ sub limit_to_object_id {
     $self->limit( column => 'object_id', value => $id );
 }
 
-sub limit_ToLookupType {
+sub limit_to_lookup_type {
     my $self = shift;
     my $lookup = shift;
 
@@ -81,11 +81,11 @@ sub limit_ToLookupType {
     );
 }
 
-sub HasEntryForCustomField {
+sub has_entry_for_custom_field {
     my $self = shift;
     my $id = shift;
 
-    my @items = grep {$_->CustomField == $id } @{$self->items_array_ref};
+    my @items = grep {$_->custom_field == $id } @{$self->items_array_ref};
 
     if ($#items > 1) {
 	die "$self HasEntry had a list with more than one of $id in it. this can never happen";
@@ -101,7 +101,7 @@ sub HasEntryForCustomField {
 sub custom_fields {
     my $self = shift;
     my %seen;
-    map { $_->CustomFieldObj } @{$self->items_array_ref};
+    map { $_->custom_field_obj } @{$self->items_array_ref};
 }
 
 sub _do_search {

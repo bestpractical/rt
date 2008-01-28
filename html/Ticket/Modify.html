@@ -67,7 +67,7 @@
 <%INIT>
   
 my $ticket_obj = load_ticket($id);
-my $CustomFields = $ticket_obj->queue_obj->TicketCustomFields();
+my $CustomFields = $ticket_obj->queue_obj->ticket_custom_fields();
 
 # Now let callbacks have a chance at editing %ARGS
 $m->callback( ticket_obj => $ticket_obj, CustomFields => $CustomFields, ARGSRef => \%ARGS );

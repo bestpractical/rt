@@ -50,7 +50,7 @@
     <td class="labeltop"><&|/l&>Depends on</&>:</td>
     <td class="value">
 <ul>
-% while (my $Link = $Ticket->DependsOn->next) {
+% while (my $Link = $Ticket->depends_on->next) {
 <li><& ShowLink, URI => $Link->target_uri &></li>
 % }
 </ul>
@@ -60,7 +60,7 @@
     <td class="labeltop"><&|/l&>Depended on by</&>:</td>
     <td class="value">
 <ul>
-% while (my $Link = $Ticket->DependedOnBy->next) {
+% while (my $Link = $Ticket->depended_on_by->next) {
 <li><& ShowLink, URI => $Link->base_uri &></li>
 % }
 </ul>
@@ -70,7 +70,7 @@
     <td class="labeltop"><&|/l&>Parents</&>:</td>
     <td class="value">
 <ul>
-% while (my $Link = $Ticket->MemberOf->next) {
+% while (my $Link = $Ticket->member_of->next) {
 <li><& ShowLink, URI => $Link->target_uri &></li>
 % }
 </ul>
@@ -84,7 +84,7 @@
     <td class="labeltop"><&|/l&>Refers to</&>:</td>
     <td class="value">
 <ul>
-% while (my $Link = $Ticket->RefersTo->next) {
+% while (my $Link = $Ticket->refers_to->next) {
 <li><& ShowLink, URI => $Link->target_uri &></li>
 % }
 </ul>
@@ -94,8 +94,8 @@
     <td class="labeltop"><&|/l&>Referred to by</&>:</td>
     <td class="value">
     <ul>
-% while (my $Link = $Ticket->ReferredToBy->next) {
-% next if (UNIVERSAL::isa($Link->base_obj, 'RT::Model::Ticket')  && $Link->base_obj->Type eq 'reminder');
+% while (my $Link = $Ticket->referred_to_by->next) {
+% next if (UNIVERSAL::isa($Link->base_obj, 'RT::Model::Ticket')  && $Link->base_obj->type eq 'reminder');
 <li><& ShowLink, URI => $Link->base_uri &></li>
 % }
 </ul>

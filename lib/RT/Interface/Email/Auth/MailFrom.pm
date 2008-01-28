@@ -50,7 +50,7 @@ use RT::Interface::Email qw(ParseSenderAddressFromHead create_user);
 
 # This is what the ordinary, non-enhanced gateway does at the moment.
 
-sub GetCurrentUser {
+sub get_current_user {
     my %args = ( Message     => undef,
                  CurrentUser => undef,
                  AuthLevel   => undef,

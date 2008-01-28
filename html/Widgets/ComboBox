@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <nobr>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/combobox.js"></script>
+<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/combobox.js"></script>
 
 <span id="<% $name %>_Container" class="combobox">
 <input name="<% $name %>" id="<% $name %>" class="combo-text" value="<% $Default || '' %>" type="text" <% $Size ? "size='$Size'" : '' |n %> autocomplete="off" />

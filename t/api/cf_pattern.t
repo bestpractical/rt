@@ -46,8 +46,8 @@ $cf->set_MaxValues(0);   # unlimited MaxValues
 works(del('here is a good regex'));
 is(cnt(), 0, "Multiple CF - Value deleted");
 
-fails($cf->set_Pattern('(?{ "insert evil code here" })'));
-works($cf->set_Pattern('(?!)')); # reject everything
+fails($cf->set_pattern('(?{ "insert evil code here" })'));
+works($cf->set_pattern('(?!)')); # reject everything
 fails(add(''));
 fails(add('...'));
 

@@ -71,23 +71,23 @@ sub __Relates
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-    my $obj = $self->CustomFieldObj;
+    my $obj = $self->custom_field_obj;
     if( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+        my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'} = "Have no related CustomField #". $self->id ." object";
     }
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}
         );
-    return $self->__Relates( %args );
+    return $self->__relates( %args );
 }
 
 1;

@@ -107,7 +107,7 @@ sub create {
 
     if ( defined $args{'Category'} && length $args{'Category'} ) {
         # $self would be loaded at this stage
-        my ($status, $msg) = $self->set_Category( $args{'Category'} );
+        my ($status, $msg) = $self->set_category( $args{'Category'} );
         unless ( $status ) {
             Jifty->log->error("Couldn't set category: $msg");
         }
@@ -116,13 +116,13 @@ sub create {
     return ($id, $msg);
 }
 
-sub Category {
+sub category {
     my $self = shift;
     my $attr = $self->first_attribute('Category') or return undef;
-    return $attr->Content;
+    return $attr->content;
 }
 
-sub set_Category {
+sub set_category {
     my $self = shift;
     my $category = shift;
     if ( defined $category && length $category ) {

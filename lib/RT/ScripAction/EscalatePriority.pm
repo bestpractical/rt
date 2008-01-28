@@ -82,7 +82,7 @@ use vars qw/@ISA/;
 #What does this type of Action does
 
 # {{{ sub Describe 
-sub Describe  {
+sub describe {
   my $self = shift;
   return (ref $self . " will move a ticket's priority toward its final priority.");
 }
@@ -104,7 +104,7 @@ sub prepare  {
 
     # If we don't have a due date, adjust the priority by one
     # until we hit the final priority
-    if ($due->Unix() < 1) {
+    if ($due->unix() < 1) {
 	if ( $self->ticket_obj->Priority > $self->ticket_obj->final_priority ){
 	    $self->{'prio'} = ($self->ticket_obj->Priority - 1);
 	    return 1;
@@ -122,7 +122,7 @@ sub prepare  {
 
     # we've got a due date. now there are other things we should do
     else { 
-	my $diff_in_seconds = $due->Diff(time());    
+	my $diff_in_seconds = $due->diff(time());    
 	my $diff_in_days = int( $diff_in_seconds / 86400);    
 	
 	#if we haven't hit the due date yet

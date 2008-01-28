@@ -10,17 +10,17 @@ use Digest::MD5 qw(md5_hex);
 use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
 
-RT->Config->set( LogToScreen => 'debug' );
-RT->Config->set( 'GnuPG',
+RT->config->set( LogToScreen => 'debug' );
+RT->config->set( 'GnuPG',
                  Enable => 1,
                  OutgoingMessagesFormat => 'RFC' );
 
-RT->Config->set( 'GnuPGOptions',
+RT->config->set( 'GnuPGOptions',
                  homedir => $homedir,
                  passphrase => 'rt-test',
                  'no-permission-warning' => undef);
 
-RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');
@@ -89,13 +89,13 @@ sub email_ok {
     $tick->load( $id );
     ok ($tick->id, "$eid: loaded ticket #$id");
 
-    is ($tick->Subject,
+    is ($tick->subject,
         "Test Email ID:$eid",
         "$eid: Created the ticket"
     );
 
-    my $txn = $tick->Transactions->first;
-    my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
+    my $txn = $tick->transactions->first;
+    my ($msg, @attachments) = @{$txn->attachments->items_array_ref};
 
     if ($usage =~ /encrypted/) {
         is( $msg->get_header('X-RT-Incoming-Encryption'),
@@ -107,7 +107,7 @@ sub email_ok {
             "$eid: recorded incoming mail that is encrypted"
         );
 
-        like( $attachments[0]->Content, qr/ID:$eid/,
+        like( $attachments[0]->content, qr/ID:$eid/,
                 "$eid: incoming mail did NOT have original body"
         );
     }
@@ -116,7 +116,7 @@ sub email_ok {
             'Not encrypted',
             "$eid: recorded incoming mail that is not encrypted"
         );
-        like( $msg->Content || $attachments[0]->Content, qr/ID:$eid/,
+        like( $msg->content || $attachments[0]->content, qr/ID:$eid/,
               "$eid: got original content"
         );
     }
@@ -139,13 +139,13 @@ sub email_ok {
         if ($usage =~ /signed/) {
             my $sig = pop @attachments;
             ok ($sig->id, "$eid: loaded attachment.sig object");
-            my $acontent = $sig->Content;
+            my $acontent = $sig->content;
         }
 
-        my ($a) = grep $_->Filename, @attachments;
+        my ($a) = grep $_->filename, @attachments;
         ok ($a && $a->id, "$eid: found attachment with filename");
 
-        my $acontent = $a->Content;
+        my $acontent = $a->content;
         if ($attachment =~ /binary/)
         {
             is(md5_hex($acontent), '1e35f1aa90c98ca2bab85c26ae3e1ba7', "$eid: The binary attachment's md5sum matches");

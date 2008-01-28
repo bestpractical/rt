@@ -79,19 +79,19 @@ sub set
 sub AsString
 {
     my $self = shift;
-    my $res = $self->base_object->_AsString;
-    $res .= " ". $self->FlagsAsString;
-    $res .= " ". $self->TargetObject->_AsString;
+    my $res = $self->base_object->_as_string;
+    $res .= " ". $self->flags_as_string;
+    $res .= " ". $self->target_object->_as_string;
     return $res;
 }
 
-sub Flags { return $_[0]->{'Flags'} }
+sub flags { return $_[0]->{'Flags'} }
 sub FlagsAsString
 {
     my $self = shift;
     my @res = ();
     foreach ( sort keys %FlagDescs ) {
-        if( $self->Flags() & $_ ) {
+        if( $self->flags() & $_ ) {
             push( @res, $FlagDescs{ $_ } );
         }
     }
@@ -101,11 +101,11 @@ sub FlagsAsString
 
 
 sub base_object { return $_[0]->{'base_object'} }
-sub TargetObject { return $_[0]->{'TargetObject'} }
-sub Object { return shift()->{ ({@_})->{Type}. "Object" } }
+sub target_object { return $_[0]->{'TargetObject'} }
+sub object { return shift()->{ ({@_})->{Type}. "Object" } }
 
-sub TargetClass { return ref $_[0]->{'TargetObject'} }
-sub BaseClass {    return ref $_[0]->{'base_object'} }
-sub Class { return ref shift()->Object( @_ ) }
+sub target_class { return ref $_[0]->{'TargetObject'} }
+sub base_class {    return ref $_[0]->{'base_object'} }
+sub class { return ref shift()->object( @_ ) }
 
 1;

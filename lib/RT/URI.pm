@@ -99,12 +99,12 @@ the local object
 
 =cut
 
-sub FromObject {
+sub from_object {
     my $self = shift;
     my $obj = shift;
 
     return undef unless  $obj->can('URI');
-    return $self->FromURI($obj->URI);
+    return $self->from_uri($obj->URI);
 }
 
 # }}}
@@ -120,7 +120,7 @@ Returns true if everything is ok, otherwise false
 
 =cut
 
-sub FromURI {
+sub from_uri {
     my $self = shift;
     my $uri = shift;    
 
@@ -139,9 +139,9 @@ sub FromURI {
     }
      
     # load up a resolver object for this scheme  
-    $self->_GetResolver($scheme);
+    $self->_get_resolver($scheme);
     
-    unless ($self->Resolver->ParseURI($uri)) {
+    unless ($self->resolver->parse_uri($uri)) {
         Jifty->log->warn("Resolver ".ref($self->Resolver)." could not parse $uri");
         $self->{resolver} = RT::URI::base->new; # clear resolver
     	return (undef);
@@ -162,7 +162,7 @@ Falls back to a null resolver. RT::URI::base.
 
 =cut
 
-sub _GetResolver {
+sub _get_resolver {
     my $self = shift;
     my $scheme = shift;
 
@@ -190,9 +190,9 @@ what sort of object this is the id of
 
 =cut
 
-sub Scheme {
+sub scheme {
     my $self = shift;
-    return ($self->Resolver->Scheme);
+    return ($self->resolver->Scheme);
 
 }
 # }}}
@@ -205,9 +205,9 @@ of
 
 =cut
 
-sub URI {
+sub uri {
     my $self = shift;
-    return ($self->Resolver->URI);
+    return ($self->resolver->URI);
 
 }
 # }}}
@@ -221,9 +221,9 @@ Returns a local object for this content. This will usually be an RT::Model::Tick
 =cut
 
 
-sub Object {   
+sub object {   
     my $self = shift;
-    return($self->Resolver->Object);
+    return($self->resolver->Object);
 
 }
 
@@ -238,9 +238,9 @@ Returns a local object for this content. This will usually be an RT::Model::Tick
 
 =cut
 
-sub IsLocal {
+sub is_local {
     my $self = shift;
-    return $self->Resolver->IsLocal;     
+    return $self->resolver->is_local;     
 }
 
 
@@ -252,9 +252,9 @@ sub IsLocal {
 =cut
 
 
-sub AsHREF {
+sub as_href {
     my $self = shift;
-    return $self->Resolver->HREF;
+    return $self->resolver->href;
 }
 
 =head Resolver
@@ -264,7 +264,7 @@ Returns this URI's URI resolver object
 =cut
 
 
-sub Resolver {
+sub resolver {
     my $self =shift;
     return ($self->{'resolver'});
 }

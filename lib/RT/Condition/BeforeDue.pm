@@ -55,14 +55,14 @@ use vars qw/@ISA/;
 @ISA = qw(RT::Condition::Generic);
 
 
-sub IsApplicable {
+sub is_applicable {
     my $self = shift;
 
     # Parse date string.  Format is "1d2h3m4s" for 1 day and 2 hours
     # and 3 minutes and 4 seconds.
     my %e;
     foreach (qw(d h m s)) {
-	my @vals = $self->Argument =~ m/(\d+)$_/;
+	my @vals = $self->argument =~ m/(\d+)$_/;
 	$e{$_} = pop @vals || 0;
     }
     my $elapse = $e{'d'} * 24*60*60 + $e{'h'} * 60*60 + $e{'m'} * 60 + $e{'s'};
@@ -70,9 +70,9 @@ sub IsApplicable {
     my $cur = RT::Date->new( RT->system_user );
     $cur->set_to_now();
     my $due = $self->ticket_obj->due_obj;
-    return (undef) if $due->Unix <= 0;
+    return (undef) if $due->unix <= 0;
 
-    my $diff = $due->Diff($cur);
+    my $diff = $due->diff($cur);
     if ( $diff >= 0 and $diff <= $elapse ) {
         return(1);
     } else {

@@ -57,7 +57,7 @@
 
 <%INIT>
 
-my $members = $Ticket->Members;
+my $members = $Ticket->members;
 return unless $members->count;
 
 </%INIT>

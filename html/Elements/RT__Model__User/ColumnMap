@@ -55,14 +55,14 @@ our $USER_COLUMN_MAP = {
         title     => '#',
         attribute => 'id',
         align     => 'right',
-        value     => sub { return $_[0]->id },
+        value     => sub  { return $_[0]->id },
     },
 };
 
 foreach my $col(qw(name real_name nickname email organization 
     HomePhone WorkPhone MobilePhone PagerPhone Address1 Address2 City State Zip Country))
 {
-    $USER_COLUMN_MAP->{ $col } = { attribute => $col, value => sub { return $_[0]->$col() } };
+    $USER_COLUMN_MAP->{ $col } = { attribute => $col, value => sub  { return $_[0]->$col() } };
 }
 
 </%ONCE>

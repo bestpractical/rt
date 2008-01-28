@@ -98,7 +98,7 @@ sub limit_to_privacy {
     my $privacy = shift;
     my $type = shift;
 
-    my $object = $self->_GetObject($privacy);
+    my $object = $self->_get_object($privacy);
 
     if ($object) {
 	$self->{'objects'} = [];
@@ -106,7 +106,7 @@ sub limit_to_privacy {
 	foreach my $att (@search_atts) {
 	    my $search = RT::SavedSearch->new;
 	    $search->load($privacy, $att->id);
-	    next if $type && $search->Type ne $type;
+	    next if $type && $search->type ne $type;
 	    push(@{$self->{'objects'}}, $search);
 	}
     } else {
@@ -150,24 +150,24 @@ sub count {
 # _GetObject: helper routine to load the correct object whose parameters
 #  have been passed.
 
-sub _GetObject {
+sub _get_object {
     my $self = shift;
     my $privacy = shift;
 
-    return RT::SavedSearch->new->_GetObject($privacy);
+    return RT::SavedSearch->new->_get_object($privacy);
 }
 
 ### Internal methods
 
 # _PrivacyObjects: returns a list of objects that can be used to load saved searches from.
 
-sub _PrivacyObjects {
+sub _privacy_objects {
     my $self        = shift;
     my $CurrentUser = $self->current_user;
 
     my $groups = RT::Model::GroupCollection->new;
-    $groups->limit_ToUserDefinedGroups;
-    $groups->WithMember( principal_id => $self->current_user->id,
+    $groups->limit_to_user_defined_groups;
+    $groups->with_member( principal_id => $self->current_user->id,
                          Recursively => 1 );
 
     return ( $CurrentUser->user_object, @{ $groups->items_array_ref() } );

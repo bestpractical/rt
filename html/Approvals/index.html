@@ -80,10 +80,10 @@ foreach my $arg ( keys %ARGS ) {
 
     my ($val, $msg);
     if ( $ARGS{$arg} eq 'deny' ) {
-         ( $val, $msg ) = $ticket->set_Status('rejected');
+         ( $val, $msg ) = $ticket->set_status('rejected');
     }
     elsif ( $ARGS{$arg} eq 'approve' ) {
-         ( $val, $msg ) = $ticket->set_Status('resolved');
+         ( $val, $msg ) = $ticket->set_status('resolved');
     }
     push ( @actions, _("Approval #%1: %2",$ticket->id, $msg )) if ($msg);
 }

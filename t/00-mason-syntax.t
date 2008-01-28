@@ -10,7 +10,7 @@ my $ok = 1;
 use File::Find;
 find( {
     no_chdir => 1,
-    wanted   => sub {
+    wanted   => sub  {
         return if /(?:\.(?:jpe?g|png|gif|rej)|\~)$/i;
         return if m{/\.[^/]+\.swp$}; # vim swap files
         if (m{/\.svn$}) {

@@ -60,7 +60,7 @@ RT::Shredder::Plugin - interface to access shredder plugins
   use RT::Shredder::Plugin;
 
   # get list of the plugins
-  my %plugins = RT::Shredder::Plugin->List;
+  my %plugins = RT::Shredder::Plugin->list;
 
   # load plugin by name
   my $plugin = RT::Shredder::Plugin->new;
@@ -72,7 +72,7 @@ RT::Shredder::Plugin - interface to access shredder plugins
 
   # load plugin by preformatted string
   my $plugin = RT::Shredder::Plugin->new;
-  my( $status, $msg ) = $plugin->loadByString( 'Tickets=status,deleted' );
+  my( $status, $msg ) = $plugin->load_by_string( 'Tickets=status,deleted' );
   unless( $status ) {
       print STDERR "Couldn't load plugin: $msg\n";
       exit(1);
@@ -137,7 +137,7 @@ sub List
             delete $res{ $name };
             next;
         }
-        next if lc $class->Type eq lc $type;
+        next if lc $class->type eq lc $type;
         delete $res{ $name };
     }
 
@@ -173,7 +173,7 @@ sub load_by_name
     return( 0, $@ ) if $@;
     return( 0, 'constructor returned empty object' ) unless $obj;
 
-    $self->Rebless( $obj );
+    $self->rebless( $obj );
     return( 1, "successfuly load plugin" );
 }
 
@@ -216,10 +216,10 @@ sub loadByString
         push @{ $args{$k} }, $v;
     }
 
-    ($status, $msg) = $self->HasSupportForArgs( keys %args );
+    ($status, $msg) = $self->has_support_for_args( keys %args );
     return( $status, $msg ) unless $status;
 
-    ($status, $msg) = $self->TestArgs( %args );
+    ($status, $msg) = $self->test_args( %args );
     return( $status, $msg ) unless $status;
 
     return( 1, "successfuly load plugin" );

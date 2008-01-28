@@ -52,13 +52,13 @@
     font-size: 1.4em;
     color: #eee;
     margin: 0;
-    background: #4282b5 url(<%RT->Config->Get('WebImagesURL')%>/css/cbr.gif) no-repeat bottom right;
+    background: #4282b5 url(<%RT->config->get('WebImagesURL')%>/css/cbr.gif) no-repeat bottom right;
 }
 
 #nav #system-menu {
     padding: 0 0.2em 0.2em 0.2em;
     margin-top: 0;
-/*    background: transparent url(<%RT->Config->Get('WebImagesURL')%>/css/ctr.gif) no-repeat top right; */
+/*    background: transparent url(<%RT->config->get('WebImagesURL')%>/css/ctr.gif) no-repeat top right; */
 }
 
 #nav ul {

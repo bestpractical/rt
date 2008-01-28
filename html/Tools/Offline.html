@@ -83,7 +83,7 @@
 </td>
 </tr>
 <tr><td class="label">
-<&|/l&>Get template from file</&>:
+<&|/l&>get template from file</&>:
 </td>
 <td>
 <input name="Template" type="file" value="foo" />
@@ -116,7 +116,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
 	    $template .= $buffer;
     }
     $template =~ s/\r\n/\n/gs;
-    $action->Parse(Content => $template, Queue => $qname, Requestor => $requestoraddress);
+    $action->parse(Content => $template, Queue => $qname, Requestor => $requestoraddress);
     foreach ( @{ $action->{'create_tickets'} } ) {
         my $id = $_;
         $id =~ s/^create\-//;
@@ -132,9 +132,9 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
 
 
 } elsif ($ARGS{'UpdateTickets'}) {
-    $action->Parse(Content => $ARGS{string}, Queue => $qname, Requestor=> $requestoraddress);
-    push @results, $action->createByTemplate();
-    push @results, $action->UpdateByTemplate();
+    $action->parse(Content => $ARGS{string}, Queue => $qname, Requestor=> $requestoraddress);
+    push @results, $action->create_by_template();
+    push @results, $action->update_by_template();
 } else {
     if ($ARGS{'Query'}) {
 	my $Tickets = RT::Model::TicketCollection->new();
@@ -142,7 +142,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
 	
 	while (my $t = $Tickets->next) {
 	    $string .= "===Update-Ticket: " . $t->id . "\n";
-	    $string .= $action->GetUpdateTemplate($t);
+	    $string .= $action->get_update_template($t);
 	    $string .= "" . "\n";
 	}
 	
@@ -153,13 +153,13 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
 	while (my $t = $Tickets->next) {
 	    $string .= "===# DO NOT EDIT #===\n";
 		$string .= "===Base-Ticket: " . $t->id . "\n";
-	    $string .= $action->GetBaseTemplate($t);
+	    $string .= $action->get_base_template($t);
 	    $string .= "===# DO NOT EDIT #===\n";
 		$string .= "" . "\n";
 	}
     } else {
 	$string .= "===Create-Ticket: ticket1\n";
-	$string .= $action->GetCreateTemplate();
+	$string .= $action->get_create_template();
     }
 }
 </%INIT>

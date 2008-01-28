@@ -77,11 +77,11 @@ Returns name of the class that is used as sessions storage.
 
 =cut
 
-sub Class {
+sub class {
     my $self = shift;
 
-    my $class = RT->Config->Get('WebSessionClass')
-             || $self->Backends->{RT->Config->Get('DatabaseType')}
+    my $class = RT->config->get('WebSessionClass')
+             || $self->backends->{RT->config->get('DatabaseType')}
              || 'Apache::Session::File';
     eval "require $class";
     die $@ if $@;
@@ -95,7 +95,7 @@ sessions class names as values.
 
 =cut
 
-sub Backends {
+sub backends {
     return {
         mysql => 'Apache::Session::MySQL',
         Pg    => 'Apache::Session::Postgres',
@@ -111,7 +111,7 @@ new session objects.
 
 sub attributes {
 
-    return $_[0]->Backends->{RT->Config->Get('DatabaseType')} ? {
+    return $_[0]->backends->{RT->config->get('DatabaseType')} ? {
             Handle     => Jifty->handle->dbh,
             LockHandle => Jifty->handle->dbh,
         } : {
@@ -126,22 +126,22 @@ Returns array ref with list of the session IDs.
 
 =cut
 
-sub Ids {
+sub ids {
     my $self = shift || __PACKAGE__;
     my $attributes = $self->attributes;
     if( $attributes->{Directory} ) {
-        return $self->_IdsDir( $attributes->{Directory} );
+        return $self->_ids_dir( $attributes->{Directory} );
     } else {
-        return $self->_IdsDB( Jifty->handle->dbh );
+        return $self->_ids_db( Jifty->handle->dbh );
     }
 }
 
-sub _IdsDir {
+sub _ids_dir {
     my ($self, $dir) = @_;
     require File::Find;
     my %file;
     File::Find::find(
-        sub { return unless /^[a-zA-Z0-9]+$/;
+        sub  { return unless /^[a-zA-Z0-9]+$/;
               $file{$_} = (stat($_))[9];
             },
         $dir,
@@ -150,7 +150,7 @@ sub _IdsDir {
     return [ sort { $file{$a} <=> $file{$b} } keys %file ];
 }
 
-sub _IdsDB {
+sub _ids_db {
     my ($self, $dbh) = @_;
     my $ids = $dbh->selectcol_arrayref("SELECT id FROM sessions order BY LastUpdated DESC");
     die "couldn't get ids: ". $dbh->errstr if $dbh->errstr;
@@ -163,17 +163,17 @@ Takes seconds and deletes all sessions that are older.
 
 =cut
 
-sub ClearOld {
+sub clear_old {
     my $class = shift || __PACKAGE__;
     my $attributes = $class->attributes;
     if( $attributes->{Directory} ) {
         return $class->_CleariOldDir( $attributes->{Directory}, @_ );
     } else {
-        return $class->_ClearOldDB( Jifty->handle->dbh, @_ );
+        return $class->clear_old_db( Jifty->handle->dbh, @_ );
     }
 }
 
-sub _ClearOldDB {
+sub clear_old_db {
     my ($self, $dbh, $older_than) = @_;
     my $rows;
     unless( int $older_than ) {
@@ -193,13 +193,13 @@ sub _ClearOldDB {
     return;
 }
 
-sub _ClearOldDir {
+sub _clear_old_dir {
     my ($self, $dir, $older_than) = @_;
 
     require File::Spec if int $older_than;
     
     my $now = time;
-    my $class = $self->Class;
+    my $class = $self->class;
     my $attrs = $self->attributes;
 
     foreach my $id( @{ $self->ids } ) {
@@ -231,9 +231,9 @@ then leave only the latest one.
 
 =cut
 
-sub ClearByUser {
+sub clear_by_user {
     my $self = shift || __PACKAGE__;
-    my $class = $self->Class;
+    my $class = $self->class;
     my $attrs = $self->attributes;
 
     my %seen = ();
@@ -260,7 +260,7 @@ sub TIEHASH {
     my $self = shift;
     my $id = shift;
 
-    my $class = $self->Class;
+    my $class = $self->class;
     my $attrs = $self->attributes;
 
     my %session;

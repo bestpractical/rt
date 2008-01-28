@@ -80,7 +80,7 @@ sub new  {
 # }}}
 
 # {{{ sub _init 
-sub _init  {
+sub _init {
   my $self = shift;
   my %args = ( Argument => undef,
                ScripActionObj => undef,
@@ -112,7 +112,7 @@ sub _init  {
 # Access Scripwide data
 
 # {{{ sub Argument 
-sub Argument  {
+sub argument {
   my $self = shift;
   return($self->{'Argument'});
 }
@@ -147,14 +147,14 @@ sub scrip_obj  {
 # }}}
 
 # {{{ sub ScripActionObj
-sub ScripActionObj  {
+sub scrip_action_obj {
   my $self = shift;
   return($self->{'ScripActionObj'});
 }
 # }}}
 
 # {{{ sub Type
-sub Type  {
+sub type {
   my $self = shift;
   return($self->{'Type'});
 }
@@ -176,7 +176,7 @@ sub commit  {
 #What does this type of Action does
 
 # {{{ sub Describe 
-sub Describe  {
+sub describe {
   my $self = shift;
   return _("No description for %1", ref $self);
 }
@@ -196,7 +196,7 @@ sub prepare  {
 #If this rule applies to this transaction, return true.
 
 # {{{ sub IsApplicable 
-sub IsApplicable  {
+sub is_applicable {
   my $self = shift;
   return(undef);
 }

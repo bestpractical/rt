@@ -56,7 +56,7 @@
 
 #footer #time {
     color: white;
-    background: #069 url(<%RT->Config->Get('WebImagesURL')%>/css/ctr-b2g.gif) no-repeat top right;
+    background: #069 url(<%RT->config->get('WebImagesURL')%>/css/ctr-b2g.gif) no-repeat top right;
     padding: 0.2em 0 0.3em 0;
     margin: 0;
     position: relative;
@@ -65,11 +65,11 @@
 
 #footer #time span {
     padding: 0.2em 2em 0.3em 3em;
-    background: url(<%RT->Config->Get('WebImagesURL')%>/css/cbr-b2g.gif) no-repeat bottom right;
+    background: url(<%RT->config->get('WebImagesURL')%>/css/cbr-b2g.gif) no-repeat bottom right;
 }
 
 #footer #bpscredits {
-    background: #ccc url(<%RT->Config->Get('WebImagesURL')%>/css/ctr-gray.gif) no-repeat top right;
+    background: #ccc url(<%RT->config->get('WebImagesURL')%>/css/ctr-gray.gif) no-repeat top right;
     padding: 0.2em 0 0.3em 0;
     margin: 0;
     position: relative;
@@ -79,7 +79,7 @@
 
 #footer #bpscredits span {
     padding: 0.2em 2em 0.3em 3em;
-    background: url(<%RT->Config->Get('WebImagesURL')%>/css/cbr-gray.gif) no-repeat bottom right;
+    background: url(<%RT->config->get('WebImagesURL')%>/css/cbr-gray.gif) no-repeat bottom right;
 }
 
 #footer #legal {

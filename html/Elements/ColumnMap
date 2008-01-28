@@ -10,50 +10,50 @@ my $COLUMN_MAP = {
     id => {
         attribute => 'id',
         align     => 'right',
-        value     => sub { return $_[0]->id }
+        value     => sub  { return $_[0]->id }
     },
 
     Created => {
         attribute => 'Created',
         title     => 'Created',
-        value     => sub { return $_[0]->created_obj->AsString }
+        value     => sub  { return $_[0]->created_obj->as_string }
     },
     CreatedRelative => {
         attribute => 'Created',
         title     => 'Created',
-        value     => sub { return $_[0]->created_obj->AgeAsString }
+        value     => sub  { return $_[0]->created_obj->age_as_string }
     },
     CreatedBy => {
         attribute => 'CreatedBy',
         title => 'Created By',
-        value     => sub { return $_[0]->creator_obj->name }
+        value     => sub  { return $_[0]->creator_obj->name }
     },
     LastUpdated => {
         attribute => 'LastUpdated',
         title     => 'Last Updated',
-        value     => sub { return $_[0]->LastUpdatedObj->AsString }
+        value     => sub  { return $_[0]->last_updated_obj->as_string }
     },
     LastUpdatedRelative => {
         attribute => 'LastUpdated',
         title     => 'Last Updated',
-        value     => sub { return $_[0]->LastUpdatedObj->AgeAsString }
+        value     => sub  { return $_[0]->last_updated_obj->age_as_string }
     },
     LastUpdatedBy => {
         attribute => 'LastUpdatedBy',
         title     => 'Last Updated By',
-        value     => sub { return $_[0]->LastUpdatedByObj->name }
+        value     => sub  { return $_[0]->last_updated_by_obj->name }
     },
 
 
     CheckBox => {
-        title => sub {
+        title => sub  {
             my $name = $_[1] || 'SelectedTickets';
             my $checked = $m->request_args->{ $name .'All' }? 'checked="checked"': '';
 
             return \qq{<input type="checkbox" name="${name}All" value="1" $checked
                               onclick="setCheckbox(this.form, '$name', this.checked)" />};
         },
-        value => sub {
+        value => sub  {
             my $id = $_[0]->id;
 
             my $name = $_[2] || 'SelectedTickets';
@@ -73,7 +73,7 @@ my $COLUMN_MAP = {
     },
     RadioButton => {
         title => \'&nbsp;',
-        value => sub {
+        value => sub  {
             my $id = $_[0]->id;
 
             my $name = $_[2] || 'SelectedTicket';

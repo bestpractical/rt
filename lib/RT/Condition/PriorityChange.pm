@@ -63,7 +63,7 @@ the Priority Obj
 
 =cut
 
-sub IsApplicable {
+sub is_applicable {
     my $self = shift;
     if ($self->transaction_obj->Field eq 'Priority') {
 	return(1);

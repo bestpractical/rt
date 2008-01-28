@@ -88,7 +88,7 @@
 %
 %     my $url = ($toptabs->{$tab}->{'path'}||'') =~ /^https?:/i
 %         ? $toptabs->{$tab}->{'path'} || ''
-%         : RT->Config->Get('WebPath') . "/" . $toptabs->{$tab}->{'path'};
+%         : RT->config->get('WebPath') . "/" . $toptabs->{$tab}->{'path'};
 %     
     <li<% $class->{'li'} ? qq[ class="$class->{li}"] : ''|n %> >
     <% $count > 1 && !$postsep && qq[<span class="bullet">&#183; </span>]|n%>

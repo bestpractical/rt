@@ -81,7 +81,7 @@ sub __DependsOn
            );
     push( @$list, $objs );
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $list,
@@ -103,10 +103,10 @@ sub __Relates
 
 # Parent, nested parts
     if( $self->Parent ) {
-        if( $self->ParentObj && $self->ParentId ) {
-            push( @$list, $self->ParentObj );
+        if( $self->parent_obj && $self->ParentId ) {
+            push( @$list, $self->parent_obj );
         } else {
-            my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+            my $rec = $args{'Shredder'}->get_record( Object => $self );
             $self = $rec->{'Object'};
             $rec->{'State'} |= INVALID;
             $rec->{'Description'} = "Have no parent attachment #". $self->Parent ." object";
@@ -118,13 +118,13 @@ sub __Relates
     if( defined $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+        my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'} = "Have no related transaction #". $self->TransactionId ." object";
     }
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,

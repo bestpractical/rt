@@ -137,7 +137,7 @@ Return only SystemInternal Groups, such as "privileged" "unprivileged" and "ever
 =cut
 
 
-sub limit_ToSystemInternalGroups {
+sub limit_to_system_internal_groups {
     my $self = shift;
     $self->limit(column => 'Domain', operator => '=', value => 'SystemInternal');
     # All system internal groups have the same instance. No reason to limit down further
@@ -156,7 +156,7 @@ Return only UserDefined Groups
 =cut
 
 
-sub limit_ToUserDefinedGroups {
+sub limit_to_user_defined_groups {
     my $self = shift;
     $self->limit(column => 'Domain', operator => '=', value => 'UserDefined');
     # All user-defined groups have the same instance. No reason to limit down further
@@ -176,7 +176,7 @@ is PRINCIPAL_ID
 =cut
 
 
-sub limit_ToPersonalGroupsFor {
+sub limit_to_personal_groups_for {
     my $self = shift;
     my $princ = shift;
 
@@ -197,7 +197,7 @@ Limits the set of groups found to role groups for queue QUEUE_ID
 
 =cut
 
-sub limit_ToRolesForQueue {
+sub limit_to_roles_for_queue {
     my $self = shift;
     my $queue = shift;
     $self->limit(column => 'Domain', operator => '=', value => 'RT::Model::Queue-Role');
@@ -214,7 +214,7 @@ Limits the set of groups found to role groups for Ticket Ticket_ID
 
 =cut
 
-sub limit_ToRolesForTicket {
+sub limit_to_roles_for_ticket {
     my $self = shift;
     my $Ticket = shift;
     $self->limit(column => 'Domain', operator => '=', value => 'RT::Model::Ticket-Role');
@@ -231,7 +231,7 @@ Limits the set of groups found to role groups for System System_ID
 
 =cut
 
-sub limit_ToRolesForSystem {
+sub limit_to_roles_for_system {
     my $self = shift;
     $self->limit(column => 'Domain', operator => '=', value => 'RT::System-Role');
 }
@@ -245,7 +245,7 @@ Principal PRINCIPAL_ID as a member
 
 =cut
 
-sub WithMember {
+sub with_member {
     my $self = shift;
     my %args = ( principal_id => undef,
                  Recursively => undef,
@@ -263,7 +263,7 @@ sub WithMember {
     $self->limit(alias => $members, column => 'MemberId', operator => '=', value => $args{'principal_id'});
 }
 
-sub WithoutMember {
+sub without_member {
     my $self = shift;
     my %args = (
         principal_id => undef,
@@ -304,7 +304,7 @@ Find all groups which have RIGHTNAME for RT::Record. Optionally include global r
 =cut
 
 #XXX: should be generilized
-sub WithRight {
+sub with_right {
     my $self = shift;
     my %args = ( Right                  => undef,
                  Object =>              => undef,
@@ -315,10 +315,10 @@ sub WithRight {
                  @_ );
 
     my $from_role = $self->clone;
-    $from_role->WithRoleRight( %args );
+    $from_role->with_role_right( %args );
 
     my $from_group = $self->clone;
-    $from_group->WithGroupRight( %args );
+    $from_group->with_group_right( %args );
 
     #XXX: DIRTY HACK
     use Jifty::DBI::Collection::Union;
@@ -359,11 +359,11 @@ sub _join_group_members_for_group_rights {
                 );
 }
 sub _join_acl                  { return (shift)->RT::Model::UserCollection::_join_acl( @_ ) }
-sub _RoleClauses              { return (shift)->RT::Model::UserCollection::_RoleClauses( @_ ) }
-sub _who_have_role_rightSplitted { return (shift)->RT::Model::UserCollection::_who_have_role_rightSplitted( @_ ) }
+sub _role_clauses { return (shift)->RT::Model::UserCollection::_RoleClauses( @_ ) }
+sub who_have_role_right_splitted { return (shift)->RT::Model::UserCollection::_who_have_role_rightSplitted( @_ ) }
 sub _get_equiv_objects          { return (shift)->RT::Model::UserCollection::_get_equiv_objects( @_ ) }
-sub WithGroupRight            { return (shift)->RT::Model::UserCollection::who_have_group_right( @_ ) }
-sub WithRoleRight             { return (shift)->RT::Model::UserCollection::who_have_role_right( @_ ) }
+sub with_group_right { return (shift)->RT::Model::UserCollection::who_have_group_right( @_ ) }
+sub with_role_right { return (shift)->RT::Model::UserCollection::who_have_role_right( @_ ) }
 
 # {{{ sub limit_to_enabled
 

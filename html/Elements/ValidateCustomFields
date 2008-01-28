@@ -66,7 +66,7 @@ while ( my $CF = $CustomFields->next ) {
     my @values = ();
     if ( ref $value eq 'ARRAY' ) {
         @values = @$value;
-    } elsif ( defined $CF->Type && $CF->Type =~ /text/i ) {
+    } elsif ( defined $CF->type && $CF->type =~ /text/i ) {
         @values = ($value);
     } else {
         @values = split /\r*\n/, ($value || '');
@@ -82,7 +82,7 @@ while ( my $CF = $CustomFields->next ) {
     @values = ('') unless @values;
 
     foreach my $value( @values ) {
-        next if $CF->MatchPattern($value);
+        next if $CF->match_pattern($value);
 
         my $msg = _("Input must match %1", $CF->FriendlyPattern);
         $m->notes( ('InvalidField-' . $CF->id) => $msg );

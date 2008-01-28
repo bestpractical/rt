@@ -88,7 +88,7 @@ alternate short form of specifying a full ticket URI.
 
 =cut
 
-sub ParseURI { 
+sub parse_uri { 
     my $self = shift;
     my $uri = shift;
 
@@ -110,7 +110,7 @@ Return the URI scheme
 
 =cut
 
-sub Scheme {
+sub scheme {
   return $scheme;
 }
 

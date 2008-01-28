@@ -15,11 +15,11 @@ use_ok('RT::Model::Scrip');
 
 use File::Temp qw/tempfile/;
 my ($fh, $filename) = tempfile( UNLINK => 1, SUFFIX => '.rt');
-my $link_scrips_orig = RT->Config->Get( 'LinkTransactionsRun1Scrip' );
-RT->Config->set( 'LinkTransactionsRun1Scrip', 1 );
+my $link_scrips_orig = RT->config->get( 'LinkTransactionsRun1Scrip' );
+RT->config->set( 'LinkTransactionsRun1Scrip', 1 );
 
-my $link_acl_checks_orig = RT->Config->Get( 'StrictLinkACL' );
-RT->Config->set( 'StrictLinkACL', 1);
+my $link_acl_checks_orig = RT->config->get( 'StrictLinkACL' );
+RT->config->set( 'StrictLinkACL', 1);
 
 my $condition = RT::Model::ScripCondition->new(current_user => RT->system_user );
 $condition->load('User Defined');
@@ -47,11 +47,11 @@ my $commit_code = <<END;
 	Jifty->log->debug("Data is \$data");
 	
 	open \$file, ">$filename" or die "couldn't open $filename";
-	if (\$self->transaction_obj->Type eq 'AddLink') {
+	if (\$self->transaction_obj->type eq 'AddLink') {
 	    Jifty->log->debug("add_link");
 	    print \$file \$data+1, "\n";
 	}
-	elsif (\$self->transaction_obj->Type eq 'DeleteLink') {
+	elsif (\$self->transaction_obj->type eq 'DeleteLink') {
 	    Jifty->log->debug("delete_link");
 	    print \$file \$data-1, "\n";
 	}
@@ -66,7 +66,7 @@ END
 my $Scrips = RT::Model::ScripCollection->new(current_user => RT->system_user );
 $Scrips->find_all_rows;
 while ( my $Scrip = $Scrips->next ) {
-    $Scrip->delete if $Scrip->Description and $Scrip->Description =~ /Add or Delete Link \d+/;
+    $Scrip->delete if $Scrip->description and $Scrip->description =~ /Add or Delete Link \d+/;
 }
 
 
@@ -77,7 +77,7 @@ my $scrip = RT::Model::Scrip->new(current_user => RT->system_user);
                           Template       => $template->id,
                           Stage          => 'TransactionCreate',
                           Queue          => 0,
-                  CustomIsApplicableCode => '$self->transaction_obj->Type =~ /(Add|Delete)Link/;',
+                  CustomIsApplicableCode => '$self->transaction_obj->type =~ /(Add|Delete)Link/;',
                        CustomPrepareCode => '1;',
                        CustomCommitCode  => $commit_code,
                            );
@@ -114,7 +114,7 @@ diag('Create tickets without rights to link') if $ENV{'TEST_VERBOSE'};
 diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VERBOSE'};
 {
     # on q2 we have no rights, but use checking one only on thing
-    RT->Config->set( StrictLinkACL => 0 );
+    RT->config->set( StrictLinkACL => 0 );
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
     my ($id,$tid,$msg) = $parent->create( Subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
@@ -126,7 +126,7 @@ diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VER
     is($child->_links('Target')->count, 0, 'link was Created only one');
     # no scrip run on second ticket accroding to config option
     is(link_count($filename), undef, "scrips ok");
-    RT->Config->set( StrictLinkACL => 1 );
+    RT->config->set( StrictLinkACL => 1 );
 }
 
 ($id,$msg) = $u1->principal_object->grant_right ( Object => $q1, Right => 'ModifyTicket');
@@ -152,7 +152,7 @@ diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
 diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
 {
     # on q2 we have no rights, but use checking one only on thing
-    RT->Config->set( StrictLinkACL => 0 );
+    RT->config->set( StrictLinkACL => 0 );
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
     my ($id,$tid,$msg) = $parent->create( Subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
@@ -168,7 +168,7 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     $child->current_user( $creator );
 
     # turn off feature and try to delete link, we should fail
-    RT->Config->set( StrictLinkACL => 1 );
+    RT->config->set( StrictLinkACL => 1 );
     ($id, $msg) = $child->add_link(Type => 'MemberOf', Target => $parent->id);
     ok(!$id, $msg);
     is(link_count($filename), 1, "scrips ok");
@@ -178,14 +178,14 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     $child->current_user( $creator );
 
     # try to delete link, we should success as feature is active
-    RT->Config->set( StrictLinkACL => 0 );
+    RT->config->set( StrictLinkACL => 0 );
     ($id, $msg) = $child->delete_link(Type => 'MemberOf', Target => $parent->id);
     ok($id, $msg);
     is(link_count($filename), 0, "scrips ok");
     $child->current_user( RT->system_user );
     $child->_links('Base')->_do_count;
     is($child->_links('Base')->count, 0, 'link was deleted');
-    RT->Config->set( StrictLinkACL => 1 );
+    RT->config->set( StrictLinkACL => 1 );
 }
 
 my $tid;
@@ -221,22 +221,22 @@ ok(!$id,$msg);
 ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 
-my $transactions = $ticket2->Transactions;
+my $transactions = $ticket2->transactions;
 $transactions->limit( column => 'Type', value => 'AddLink' );
 is( $transactions->count, 1, "Transaction found in other ticket" );
 is( $transactions->first->Field , 'ReferredToBy');
-is( $transactions->first->new_value , $ticket->URI );
+is( $transactions->first->new_value , $ticket->uri );
 
 ($id,$msg) = $ticket->delete_link(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
-$transactions = $ticket2->Transactions;
+$transactions = $ticket2->transactions;
 $transactions->limit( column => 'Type', value => 'DeleteLink' );
 is( $transactions->count, 1, "Transaction found in other ticket" );
 is( $transactions->first->Field , 'ReferredToBy');
-is( $transactions->first->old_value , $ticket->URI );
+is( $transactions->first->old_value , $ticket->uri );
 
-RT->Config->set( LinkTransactionsRun1Scrip => 0 );
+RT->config->set( LinkTransactionsRun1Scrip => 0 );
 
 ($id,$msg) =$ticket->add_link(Type => 'RefersTo', Target => $ticket2->id);
 ok($id,$msg);
@@ -250,11 +250,11 @@ is(link_count($filename), 0, "scrips ok");
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 {
-    my $transactions = $ticket->Transactions;
+    my $transactions = $ticket->transactions;
     $transactions->limit( column => 'Type', value => 'AddLink' );
     is( $transactions->count, 2, "Still two txns on the base" );
 
-    $transactions = $ticket2->Transactions;
+    $transactions = $ticket2->transactions;
     $transactions->limit( column => 'Type', value => 'AddLink' );
     is( $transactions->count, 2, "Still two txns on the target" );
 
@@ -267,11 +267,11 @@ is(link_count($filename), 0, "scrips ok");
 ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 {
-    my $transactions = $ticket->Transactions;
+    my $transactions = $ticket->transactions;
     $transactions->limit( column => 'Type', value => 'AddLink' );
     is( $transactions->count, 2, "still five txn on the base" );
 
-    $transactions = $ticket2->Transactions;
+    $transactions = $ticket2->transactions;
     $transactions->limit( column => 'Type', value => 'AddLink' );
     is( $transactions->count, 3, "+1 txn on the target" );
 
@@ -284,11 +284,11 @@ is(link_count($filename), 0, "scrips ok");
 ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 {
-    my $transactions = $ticket->Transactions;
+    my $transactions = $ticket->transactions;
     $transactions->limit( column => 'Type', value => 'AddLink' );
     is( $transactions->count, 3, "+1 txn on the base" );
 
-    $transactions = $ticket2->Transactions;
+    $transactions = $ticket2->transactions;
     $transactions->limit( column => 'Type', value => 'AddLink' );
     is( $transactions->count, 3, "three txns on the target" );
 }
@@ -298,8 +298,8 @@ is(link_count($filename), 0, "scrips ok");
 
 
 # restore
-RT->Config->set( LinkTransactionsRun1Scrip => $link_scrips_orig );
-RT->Config->set( StrictLinkACL => $link_acl_checks_orig );
+RT->config->set( LinkTransactionsRun1Scrip => $link_scrips_orig );
+RT->config->set( StrictLinkACL => $link_acl_checks_orig );
 
 {
     my $Scrips = RT::Model::ScripCollection->new(current_user => RT->system_user );

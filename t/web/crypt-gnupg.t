@@ -9,11 +9,11 @@ eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 
 RT::Test->set_mail_catcher;
 
-RT->Config->set( LogToScreen => 'debug' );
-RT->Config->set( LogStackTraces => 'error' );
-RT->Config->set( comment_address => 'general@example.com');
-RT->Config->set( correspond_address => 'general@example.com');
-RT->Config->set( DefaultSearchResultFormat => qq{
+RT->config->set( LogToScreen => 'debug' );
+RT->config->set( LogStackTraces => 'error' );
+RT->config->set( comment_address => 'general@example.com');
+RT->config->set( correspond_address => 'general@example.com');
+RT->config->set( DefaultSearchResultFormat => qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
    'OO-__Ownername__-O',
@@ -28,16 +28,16 @@ use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
 use_ok('RT::Crypt::GnuPG');
 
-RT->Config->set( 'GnuPG',
+RT->config->set( 'GnuPG',
                  Enable => 1,
                  OutgoingMessagesFormat => 'RFC' );
 
-RT->Config->set( 'GnuPGOptions',
+RT->config->set( 'GnuPGOptions',
                  homedir => $homedir,
                  passphrase => 'recipient',
                   'no-permission-warning' => undef,
                   'trust-model' => 'always');
-RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 RT::Test->import_gnupg_key('recipient@example.com', 'public');
 RT::Test->import_gnupg_key('recipient@example.com', 'secret');
 RT::Test->import_gnupg_key('general@example.com', 'public');
@@ -112,13 +112,13 @@ MAIL
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
-    is ($tick->Subject,
+    is ($tick->subject,
         "RT mail sent back into RT",
         "Correct subject"
     );
 
-    my $txn = $tick->Transactions->first;
-    my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
+    my $txn = $tick->transactions->first;
+    my ($msg, @attachments) = @{$txn->attachments->items_array_ref};
 
     is( $msg->get_header('X-RT-Privacy'),
         'PGP',
@@ -129,8 +129,8 @@ MAIL
         "RT's outgoing mail looks encrypted"
     );
 
-    like($attachments[0]->Content, qr/Some content/, "RT's mail includes copy of ticket text");
-    like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+    like($attachments[0]->content, qr/Some content/, "RT's mail includes copy of ticket text");
+    like($attachments[0]->content, qr/$RT::rtname/, "RT's mail includes this instance's name");
 }
 
 $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
@@ -180,13 +180,13 @@ MAIL
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
-    is ($tick->Subject,
+    is ($tick->subject,
         "More RT mail sent back into RT",
         "Correct subject"
     );
 
-    my $txn = $tick->Transactions->first;
-    my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
+    my $txn = $tick->transactions->first;
+    my ($msg, @attachments) = @{$txn->attachments->items_array_ref};
 
     is( $msg->get_header('X-RT-Privacy'),
         'PGP',
@@ -201,8 +201,8 @@ MAIL
         "RT's outgoing mail looks signed"
     );
 
-    like($attachments[0]->Content, qr/Some other content/, "RT's mail includes copy of ticket text");
-    like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+    like($attachments[0]->content, qr/Some other content/, "RT's mail includes copy of ticket text");
+    like($attachments[0]->content, qr/$RT::rtname/, "RT's mail includes this instance's name");
 }
 
 $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
@@ -250,13 +250,13 @@ MAIL
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
-    is ($tick->Subject,
+    is ($tick->subject,
         "Final RT mail sent back into RT",
         "Correct subject"
     );
 
-    my $txn = $tick->Transactions->first;
-    my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
+    my $txn = $tick->transactions->first;
+    my ($msg, @attachments) = @{$txn->attachments->items_array_ref};
 
     is( $msg->get_header('X-RT-Privacy'),
         'PGP',
@@ -271,8 +271,8 @@ MAIL
         "RT's outgoing mail looks signed"
     );
 
-    like($attachments[0]->Content, qr/Some final\? content/, "RT's mail includes copy of ticket text");
-    like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+    like($attachments[0]->content, qr/Some final\? content/, "RT's mail includes copy of ticket text");
+    like($attachments[0]->content, qr/$RT::rtname/, "RT's mail includes this instance's name");
 }
 
 RT::Test->fetch_caught_mails;
@@ -315,13 +315,13 @@ MAIL
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
-    is ($tick->Subject,
+    is ($tick->subject,
         "Post-final! RT mail sent back into RT",
         "Correct subject"
     );
 
-    my $txn = $tick->Transactions->first;
-    my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
+    my $txn = $tick->transactions->first;
+    my ($msg, @attachments) = @{$txn->attachments->items_array_ref};
 
     is( $msg->get_header('X-RT-Privacy'),
         'PGP',
@@ -336,8 +336,8 @@ MAIL
         "RT's outgoing mail looks signed"
     );
 
-    like($attachments[0]->Content, qr/Thought you had me figured out didya/, "RT's mail includes copy of ticket text");
-    like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+    like($attachments[0]->content, qr/Thought you had me figured out didya/, "RT's mail includes copy of ticket text");
+    like($attachments[0]->content, qr/$RT::rtname/, "RT's mail includes this instance's name");
 }
 
 sub strip_headers
@@ -375,7 +375,7 @@ ok ($id, "got id of a newly created ticket - $id");
 $tick = RT::Model::Ticket->new(current_user => RT->system_user );
 $tick->load( $id );
 ok ($tick->id, "loaded ticket #$id");
-is ($tick->Subject,
+is ($tick->subject,
     "Nokey requestor",
     "Correct subject"
 );

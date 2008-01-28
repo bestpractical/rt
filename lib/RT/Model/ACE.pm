@@ -154,7 +154,7 @@ sub load_by_values {
 
     my $princ_obj;
     ( $princ_obj, $args{'principal_type'} ) =
-      $self->_canonicalize_Principal( $args{'principal_id'},
+      $self->canonicalize_principal( $args{'principal_id'},
                                      $args{'principal_type'} );
 
     unless ( $princ_obj->id ) {
@@ -163,7 +163,7 @@ sub load_by_values {
         );
     }
 
-    my ($object, $object_type, $object_id) = $self->_ParseObjectArg( %args );
+    my ($object, $object_type, $object_id) = $self->_parse_object_arg( %args );
     unless( $object ) {
 	return ( 0, _("System error. Right not granted.") );
     }
@@ -235,7 +235,7 @@ sub create {
     if (!defined $args{'Object'} && !defined $args{'object_id'} && !defined $args{'object_type'}) {
         $args{'Object'} = RT->system;
     }
-    ($args{'Object'}, $args{'object_type'}, $args{'object_id'}) = $self->_ParseObjectArg( %args );
+    ($args{'Object'}, $args{'object_type'}, $args{'object_id'}) = $self->_parse_object_arg( %args );
     unless( $args{'Object'} ) {
 	return ( 0, _("System error. Right not granted.") );
     }
@@ -243,7 +243,7 @@ sub create {
     # {{{ Validate the principal
     my $princ_obj;
     ( $princ_obj, $args{'principal_type'} ) =
-      $self->_canonicalize_Principal( $args{'principal_id'},
+      $self->canonicalize_principal( $args{'principal_id'},
                                      $args{'principal_type'} );
 
     unless ( $princ_obj->id ) {
@@ -280,7 +280,7 @@ sub create {
 
     #check if it's a valid right_name
     if ( $args{'Object'}->can('AvailableRights') ) {
-        unless ( exists $args{'Object'}->AvailableRights->{ $args{'right_name'} } ) {
+        unless ( exists $args{'Object'}->available_rights->{ $args{'right_name'} } ) {
             Jifty->log->warn(
                 "Couldn't validate right name '$args{'right_name'}'"
                 ." for object of ". ref( $args{'Object'} ) ." class"
@@ -338,7 +338,7 @@ Always returns a tuple of (ReturnValue, Message)
 
 =cut
 
-sub Delegate {
+sub delegate {
     my $self = shift;
     my %args = ( principal_id => undef,
                  @_ );
@@ -348,7 +348,7 @@ sub Delegate {
     }
     my $princ_obj;
     ( $princ_obj, $args{'principal_type'} ) =
-      $self->_canonicalize_Principal( $args{'principal_id'},
+      $self->canonicalize_principal( $args{'principal_id'},
                                      $args{'principal_type'} );
 
     unless ( $princ_obj->id ) {
@@ -370,7 +370,7 @@ sub Delegate {
     unless ( $self->principal_object->is_group ) {
         return ( 0, _("System Error") );
     }
-    unless ( $self->principal_object->Object->has_member_recursively(
+    unless ( $self->principal_object->object->has_member_recursively(
                                                 $self->current_user->principal_object
              )
       ) {
@@ -578,7 +578,7 @@ If the user has no rights, returns undef.
 
 
 
-sub Object {
+sub object {
     my $self = shift;
 
     my $appliesto_obj;
@@ -644,7 +644,7 @@ sub _value {
         return ( $self->__value(@_) );
     }
     elsif ( $self->principal_object->is_group
-            && $self->principal_object->Object->has_member_recursively(
+            && $self->principal_object->object->has_member_recursively(
                                                 $self->current_user->principal_object
             )
       ) {
@@ -674,7 +674,7 @@ Returns a tuple of  (RT::Model::Principal, principal_type)  for the principal we
 
 =cut
 
-sub _canonicalize_Principal {
+sub canonicalize_principal {
     my $self       = shift;
     my $princ_id   = shift;
     my $princ_type = shift || 'Group';
@@ -705,7 +705,7 @@ sub _canonicalize_Principal {
     return ( $princ_obj, $princ_type );
 }
 
-sub _ParseObjectArg {
+sub _parse_object_arg {
     my $self = shift;
     my %args = (
         Object     => undef,

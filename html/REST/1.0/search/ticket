@@ -135,7 +135,7 @@ while (my $ticket = $tickets->next) {
 	
 
 	} else {	
-        	$output .= $ticket->id . ": ". $ticket->Subject . "\n";
+        	$output .= $ticket->id . ": ". $ticket->subject . "\n";
 	}
     }
     else {

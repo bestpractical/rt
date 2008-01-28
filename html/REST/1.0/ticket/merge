@@ -88,7 +88,7 @@ unless ($ticket->current_user_has_right('ModifyTicket')) {
     goto OUTPUT;
 }
 
-my ($n, $s) = $ticket->MergeInto($into);
+my ($n, $s) = $ticket->merge_into($into);
 
 if ($n == 0) {
     $status = "500 Error";

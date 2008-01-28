@@ -56,7 +56,7 @@
 </select>
 <%ONCE>
 my $queue = RT::Model::Queue->new();
-my @status = $queue->StatusArray();
+my @status = $queue->status_array();
 </%ONCE>
 <%ARGS>
 $name => undef

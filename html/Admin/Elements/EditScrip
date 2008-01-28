@@ -55,19 +55,19 @@
 <table>
 
 <tr><td align="right"><&|/l&>Description</&>:</td><td>
-<input name="Scrip-<% $id %>-Description" value="<% $ARGS{"Scrip-$id-Description"} || $scrip->Description || ''%>" />
+<input name="Scrip-<% $id %>-Description" value="<% $ARGS{"Scrip-$id-Description"} || $scrip->description || ''%>" />
 </td></tr>
 
 <tr><td align="right"><&|/l&>Condition</&>:</td><td>
 <& /Admin/Elements/SelectScripCondition,
     name => "Scrip-$id-ScripCondition",
-    Default => $ARGS{"Scrip-$id-ScripCondition"} || $scrip->ConditionObj->id,
+    Default => $ARGS{"Scrip-$id-ScripCondition"} || $scrip->condition_obj->id,
 &></td></tr>
 
 <tr><td align="right"><&|/l&>Action</&>:</td><td>
 <& /Admin/Elements/SelectScripAction,
     name => "Scrip-$id-ScripAction",
-    Default => $ARGS{"Scrip-$id-ScripAction"} || $scrip->ActionObj->id,
+    Default => $ARGS{"Scrip-$id-ScripAction"} || $scrip->action_obj->id,
 &></td></tr>
 
 <tr><td align="right"><&|/l&>Template</&>:</td><td>

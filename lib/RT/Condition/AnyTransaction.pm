@@ -61,7 +61,7 @@ This happens on every transaction. it's always applicable
 
 =cut
 
-sub IsApplicable {
+sub is_applicable {
     my $self = shift;
     return(1);
 }

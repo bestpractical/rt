@@ -135,7 +135,7 @@ foreach my $class (@classes) {
 	    $rv->{privileged} = int($obj->privileged);
 	}
 	elsif ($class eq 'CustomFields') {
-	    my $values = $obj->Values;
+	    my $values = $obj->values;
 	    while (my $value = $values->next) {
 		push @{$rv->{Values}}, {
 		    map { ($_ => $value->__value($_)) } qw(
@@ -148,7 +148,7 @@ foreach my $class (@classes) {
 	if (eval { require RT::Model::AttributeCollection; 1 }) {
 	    my $attributes = $obj->attributes;
 	    while (my $attribute = $attributes->next) {
-		my $content = $attribute->Content;
+		my $content = $attribute->content;
 		$rv->{Attributes}{$attribute->name} = $content if length($content);
 	    }
 	}

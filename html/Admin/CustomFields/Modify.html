@@ -62,15 +62,15 @@
 <td><input name="name" value="<% $CustomFieldObj->name || '' %>" size="20" /></td></tr>
 
 <tr><td class="label"><&|/l&>Description</&></td>
-<td><input name="Description" value="<% $CustomFieldObj->Description || '' %>" size="80" /></td></tr>
+<td><input name="Description" value="<% $CustomFieldObj->description || '' %>" size="80" /></td></tr>
 
 <tr><td class="label"><&|/l&>Type</&></td>
 <td><& /Admin/Elements/SelectCustomFieldType, 
         name => "TypeComposite", 
-        Default => $CustomFieldObj->TypeComposite, &>
+        Default => $CustomFieldObj->type_composite, &>
 </td></tr>
 
-% if ( $CustomFieldObj->id and $CustomFieldObj->IsSelectionType and RT->Config->Get('custom_field_valuesSources') ) {
+% if ( $CustomFieldObj->id and $CustomFieldObj->is_selection_type and RT->config->get('custom_field_valuesSources') ) {
 <tr><td class="label"><&|/l&>Field values source:</&></td><td>
 <& /Admin/Elements/EditCustomFieldValuesSource, CustomField => $CustomFieldObj &>
 </td></tr>
@@ -95,7 +95,7 @@
 &></td></tr>
 
 <tr><td class="label"><&|/l&>Link values to</&></td><td>
-<input size="60" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || '' %>" />
+<input size="60" name="LinkValueTo"  value="<% $CustomFieldObj->link_value_to || '' %>" />
 <div class="hints">
 <&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
 <&|/l&>Fill in this field with a URL.</&>
@@ -103,7 +103,7 @@
 </div></td></tr>
 
 <tr><td class="label"><&|/l&>Include page</&></td><td>
-<input size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->IncludeContentForValue || '' %>" />
+<input size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->include_content_for_value || '' %>" />
 <div class="hints">
 <&|/l&>RT can include content from another web service when showing this custom field.</&>
 <&|/l&>Fill in this field with a URL.</&>
@@ -119,7 +119,7 @@
 
 </table>
 
-% if ( $CustomFieldObj->id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
+% if ( $CustomFieldObj->id && $CustomFieldObj->is_selection_type && !$CustomFieldObj->is_external_values ) {
 <h2><&|/l&>Values</&></h2>
 <div>
 <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
@@ -171,13 +171,13 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         Object        => $CustomFieldObj,
         ARGSRef       => \%ARGS
     );
-    $CustomFieldObj->set_ValuesClass( $valuesClass );
+    $CustomFieldObj->set_values_class( $valuesClass );
 
     my $paramtag = "CustomField-". $CustomFieldObj->id ."-Value";
     # Delete any fields that want to be deleted
     foreach my $key ( keys %ARGS ) {
         next unless $key =~ /^Delete-$paramtag-(\d+)$/o;
-        my ($val, $msg) = $CustomFieldObj->deleteValue( $1 );
+        my ($val, $msg) = $CustomFieldObj->delete_value( $1 );
         push (@results, $msg);
     }
 
@@ -197,7 +197,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
 
     # Add any new values
     if ( defined $ARGS{ $paramtag ."-new-name" } && length $ARGS{ $paramtag ."-new-name" } ) {
-        my ($id, $msg) = $CustomFieldObj->AddValue(
+        my ($id, $msg) = $CustomFieldObj->add_value(
             map { $_ => $ARGS{ $paramtag ."-new-$_" } }
                 qw( name Description SortOrder Category )
         );

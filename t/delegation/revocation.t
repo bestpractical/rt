@@ -22,23 +22,23 @@ ok( $ret, "Load / Create test user 1: $msg" );
 $u1->set_privileged(1);
 
 $g1 = RT::Model::Group->new(current_user => RT->system_user);
-( $ret, $msg) = $g1->loadUserDefinedGroup('dg1');
+( $ret, $msg) = $g1->load_user_defined_group('dg1');
 unless ($ret) {
-    ( $ret, $msg ) = $g1->create_userDefinedGroup( name => 'dg1' );
+    ( $ret, $msg ) = $g1->create_user_defined_group( name => 'dg1' );
 }
 $pg1 = RT::Model::Group->new(current_user => RT->system_user);
-( $ret, $msg ) = $pg1->loadPersonalGroup( name => 'dpg1',
+( $ret, $msg ) = $pg1->load_personal_group( name => 'dpg1',
 					  User => $u1->principal_id );
 unless ($ret) {
-    ( $ret, $msg ) = $pg1->createPersonalGroup( name => 'dpg1',
+    ( $ret, $msg ) = $pg1->create_personal_group( name => 'dpg1',
 						principal_id => $u1->principal_id );
 }
 ok( $ret, "Load / Create test personal group 1: $msg" );
 $pg2 = RT::Model::Group->new(current_user => RT->system_user);
-( $ret, $msg ) = $pg2->loadPersonalGroup( name => 'dpg2',
+( $ret, $msg ) = $pg2->load_personal_group( name => 'dpg2',
 					  User => $u1->principal_id );
 unless ($ret) {
-    ( $ret, $msg ) = $pg2->createPersonalGroup( name => 'dpg2',
+    ( $ret, $msg ) = $pg2->create_personal_group( name => 'dpg2',
 						principal_id => $u1->principal_id );
 }
 ok( $ret, "Load / Create test personal group 2: $msg" );
@@ -60,9 +60,9 @@ $ace = RT::Model::ACE->new(current_user => RT::CurrentUser->new( id => $u1->id) 
     principal_id   => $g1->principal_id
 );
 ok( $ret, "Look up ACE to be delegated: $msg" );
-( $ret, $msg ) = $ace->Delegate( principal_id => $pg1->principal_id );
+( $ret, $msg ) = $ace->delegate( principal_id => $pg1->principal_id );
 ok( $ret, "Delegate ShowConfigTab to pg1: $msg" );
-( $ret, $msg ) = $ace->Delegate( principal_id => $pg2->principal_id );
+( $ret, $msg ) = $ace->delegate( principal_id => $pg2->principal_id );
 ok( $ret, "Delegate ShowConfigTab to pg2: $msg" );
 
 ok(( $pg1->principal_object->has_right( Right  => 'ShowConfigTab',
@@ -83,9 +83,9 @@ ok( not( $pg2->principal_object->has_right( Right  => 'ShowConfigTab',
 
 ( $ret, $msg ) = $g1->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g1: $msg" );
-( $ret, $msg ) = $ace->Delegate( principal_id => $pg1->principal_id );
+( $ret, $msg ) = $ace->delegate( principal_id => $pg1->principal_id );
 ok( $ret, "Delegate ShowConfigTab to pg1: $msg" );
-( $ret, $msg ) = $ace->Delegate( principal_id => $pg2->principal_id );
+( $ret, $msg ) = $ace->delegate( principal_id => $pg2->principal_id );
 ok( $ret, "Delegate ShowConfigTab to pg2: $msg" );
 
 ok(( $pg1->principal_object->has_right( Right  => 'ShowConfigTab',
@@ -112,7 +112,7 @@ sub clear_acls_and_groups {
     # Revoke all rights granted to our cast
     my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
     foreach (@principals) {
-	$acl->limit_ToPrincipal(Type => $$_->principal_object->principal_type,
+	$acl->limit_to_principal(Type => $$_->principal_object->principal_type,
 			       id => $$_->principal_object->id);
     }
     while (my $ace = $acl->next()) {
@@ -122,7 +122,7 @@ sub clear_acls_and_groups {
     # Remove all group memberships
     my $members = RT::Model::GroupMemberCollection->new(current_user => RT->system_user);
     foreach (@groups) {
-	$members->limit_ToMembersOfGroup( $$_->principal_id );
+	$members->limit_to_members_of_group( $$_->principal_id );
     }
     while (my $member = $members->next()) {
 	$member->delete();

@@ -62,7 +62,7 @@ If the priority exceeds the argument value
 
 =cut
 
-sub IsApplicable {
+sub is_applicable {
     my $self = shift;
     if ($self->ticket_obj->Priority > $self->Argument)  {
 	return(1);

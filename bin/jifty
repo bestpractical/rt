@@ -7,5 +7,5 @@ use UNIVERSAL::require;
 use Jifty;
 use Jifty::Script;
 
-local $SIG{INT} = sub { warn "Stopped\n"; exit; };
+local $SIG{INT} = sub  { warn "Stopped\n"; exit; };
 Jifty::Script->dispatch();

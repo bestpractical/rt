@@ -54,7 +54,7 @@ $Plugin => ''
 <%ONCE>
 use RT::Shredder::Plugin;
 my $plugin_obj = RT::Shredder::Plugin->new;
-my %plugins = $plugin_obj->List;
+my %plugins = $plugin_obj->list;
 </%ONCE>
 <%INIT>
 my $file = $plugins{ $Plugin };

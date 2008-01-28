@@ -82,7 +82,7 @@ diag "Make sure that when we call the mailgate without URL, it fails" if $ENV{'T
 {
     my $text = <<EOF;
 From: root\@localhost
-To: rt\@@{[RT->Config->Get('rtname')]}
+To: rt\@@{[RT->config->get('rtname')]}
 Subject: This is a test of new ticket creation
 
 Foob!
@@ -96,7 +96,7 @@ diag "Make sure that when we call the mailgate with wrong URL, it tempfails" if 
 {
     my $text = <<EOF;
 From: root\@localhost
-To: rt\@@{[RT->Config->Get('rtname')]}
+To: rt\@@{[RT->config->get('rtname')]}
 Subject: This is a test of new ticket creation
 
 Foob!
@@ -122,7 +122,7 @@ diag "Test new ticket creation by root who is privileged and superuser" if $ENV{
 {
     my $text = <<EOF;
 From: root\@localhost
-To: rt\@@{[RT->Config->Get('rtname')]}
+To: rt\@@{[RT->config->get('rtname')]}
 Subject: This is a test of new ticket creation
 
 Blah!
@@ -136,14 +136,14 @@ EOF
     my $tick = latest_ticket();
     isa_ok ($tick, 'RT::Model::Ticket');
     is ($tick->id, $id, "correct ticket id");
-    is ($tick->Subject , 'This is a test of new ticket creation', "Created the ticket");
+    is ($tick->subject , 'This is a test of new ticket creation', "Created the ticket");
 }
 
 diag "Test the 'X-RT-Mail-Extension' field in the header of a ticket" if $ENV{'TEST_VERBOSE'};
 {
     my $text = <<EOF;
 From: root\@localhost
-To: rt\@@{[RT->Config->Get('rtname')]}
+To: rt\@@{[RT->config->get('rtname')]}
 Subject: This is a test of the X-RT-Mail-Extension field
 Blah!
 Foob!
@@ -156,16 +156,16 @@ EOF
     my $tick = latest_ticket();
     isa_ok ($tick, 'RT::Model::Ticket');
     is ($tick->id, $id, "correct ticket id");
-    is ($tick->Subject, 'This is a test of the X-RT-Mail-Extension field', "Created the ticket");
+    is ($tick->subject, 'This is a test of the X-RT-Mail-Extension field', "Created the ticket");
 
-    my $transactions = $tick->Transactions;
+    my $transactions = $tick->transactions;
     $transactions->order_by({ column => 'id', order => 'DESC' });
     $transactions->limit( column => 'Type', operator => '!=', value => 'EmailRecord');
     my $txn = $transactions->first;
     isa_ok ($txn, 'RT::Model::Transaction');
-    is ($txn->Type, 'Create', "correct type");
+    is ($txn->type, 'Create', "correct type");
 
-    my $attachment = $txn->Attachments->first;
+    my $attachment = $txn->attachments->first;
     isa_ok ($attachment, 'RT::Model::Attachment');
     # XXX: We eat all newlines in header, that's not what RFC's suggesting
     is (
@@ -179,7 +179,7 @@ diag "Make sure that not standard --extension is passed" if $ENV{'TEST_VERBOSE'}
 {
     my $text = <<EOF;
 From: root\@localhost
-To: rt\@@{[RT->Config->Get('rtname')]}
+To: rt\@@{[RT->config->get('rtname')]}
 Subject: This is a test of new ticket creation
 
 Foob!
@@ -192,14 +192,14 @@ EOF
     isa_ok ($tick, 'RT::Model::Ticket');
     is ($tick->id, $id, "correct ticket id");
 
-    my $transactions = $tick->Transactions;
+    my $transactions = $tick->transactions;
     $transactions->order_by({ column => 'id', order => 'DESC' });
     $transactions->limit( column => 'Type', operator => '!=', value => 'EmailRecord');
     my $txn = $transactions->first;
     isa_ok ($txn, 'RT::Model::Transaction');
-    is ($txn->Type, 'Create', "correct type");
+    is ($txn->type, 'Create', "correct type");
 
-    my $attachment = $txn->Attachments->first;
+    my $attachment = $txn->attachments->first;
     isa_ok ($attachment, 'RT::Model::Attachment');
     is (
         $attachment->get_header('X-RT-Mail-Extension'),
@@ -225,14 +225,14 @@ EOF
     my $tick = latest_ticket();
     isa_ok ($tick, 'RT::Model::Ticket');
     is ($tick->id, $id, "correct ticket id");
-    is ($tick->Subject, 'using mailgate without --action arg', "using mailgate without --action arg");
+    is ($tick->subject, 'using mailgate without --action arg', "using mailgate without --action arg");
 }
 
 diag "This is a test of new ticket creation as an unknown user" if $ENV{'TEST_VERBOSE'};
 {
     my $text = <<EOF;
-From: doesnotexist\@@{[RT->Config->Get('rtname')]}
-To: rt\@@{[RT->Config->Get('rtname')]}
+From: doesnotexist\@@{[RT->config->get('rtname')]}
+To: rt\@@{[RT->config->get('rtname')]}
 Subject: This is a test of new ticket creation as an unknown user
 
 Blah!
@@ -245,10 +245,10 @@ EOF
     my $tick = latest_ticket();
     isa_ok ($tick, 'RT::Model::Ticket');
     ok ($tick->id, "found ticket ".$tick->id);
-    isnt ($tick->Subject , 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
+    isnt ($tick->subject , 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 
     my $u = RT::Model::User->new(current_user => RT->system_user);
-    $u->load("doesnotexist\@@{[RT->Config->Get('rtname')]}");
+    $u->load("doesnotexist\@@{[RT->config->get('rtname')]}");
     ok( !$u->id, "user does not exist and was not Created by failed ticket submission");
 }
 
@@ -265,8 +265,8 @@ my $ticket_id;
 diag "now everybody can create tickets. can a random unkown user create tickets?" if $ENV{'TEST_VERBOSE'};
 {
     my $text = <<EOF;
-From: doesnotexist\@@{[RT->Config->Get('rtname')]}
-To: rt\@@{[RT->Config->Get('rtname')]}
+From: doesnotexist\@@{[RT->config->get('rtname')]}
+To: rt\@@{[RT->config->get('rtname')]}
 Subject: This is a test of new ticket creation as an unknown user
 
 Blah!
@@ -280,10 +280,10 @@ EOF
     isa_ok ($tick, 'RT::Model::Ticket');
     ok ($tick->id, "found ticket ".$tick->id);
     is ($tick->id, $id, "correct ticket id");
-    is ($tick->Subject , 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
+    is ($tick->subject , 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
 
     my $u = RT::Model::User->new(current_user => RT->system_user );
-    $u->load( "doesnotexist\@@{[RT->Config->Get('rtname')]}" );
+    $u->load( "doesnotexist\@@{[RT->config->get('rtname')]}" );
     ok ($u->id, "user does not exist and was Created by ticket submission");
     $ticket_id = $id;
 }
@@ -291,9 +291,9 @@ EOF
 diag "can another random reply to a ticket without being granted privs? answer should be no." if $ENV{'TEST_VERBOSE'};
 {
     my $text = <<EOF;
-From: doesnotexist-2\@@{[RT->Config->Get('rtname')]}
-To: rt\@@{[RT->Config->Get('rtname')]}
-Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a reply as an unknown user
+From: doesnotexist-2\@@{[RT->config->get('rtname')]}
+To: rt\@@{[RT->config->get('rtname')]}
+Subject: [@{[RT->config->get('rtname')]} #$ticket_id] This is a test of a reply as an unknown user
 
 Blah!  (Should not work.)
 Foob!
@@ -303,7 +303,7 @@ EOF
     ok (!$id, "no way to reply to the ticket");
 
     my $u = RT::Model::User->new(current_user => RT->system_user);
-    $u->load('doesnotexist-2@'.RT->Config->Get('rtname'));
+    $u->load('doesnotexist-2@'.RT->config->get('rtname'));
     ok( !$u->id, " user does not exist and was not Created by ticket correspondence submission");
 }
 
@@ -319,9 +319,9 @@ diag "grant everyone 'ReplyToTicket' right" if $ENV{'TEST_VERBOSE'};
 diag "can another random reply to a ticket after being granted privs? answer should be yes" if $ENV{'TEST_VERBOSE'};
 {
     my $text = <<EOF;
-From: doesnotexist-2\@@{[RT->Config->Get('rtname')]}
-To: rt\@@{[RT->Config->Get('rtname')]}
-Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a reply as an unknown user
+From: doesnotexist-2\@@{[RT->config->get('rtname')]}
+To: rt\@@{[RT->config->get('rtname')]}
+Subject: [@{[RT->config->get('rtname')]} #$ticket_id] This is a test of a reply as an unknown user
 
 Blah!
 Foob!
@@ -331,15 +331,15 @@ EOF
     is ($id, $ticket_id, "replied to the ticket");
 
     my $u = RT::Model::User->new(current_user => RT->system_user);
-    $u->load('doesnotexist-2@'.RT->Config->Get('rtname'));
+    $u->load('doesnotexist-2@'.RT->config->get('rtname'));
     ok ($u->id, "user exists and was Created by ticket correspondence submission");
 }
 
 diag "add a reply to the ticket using '--extension ticket' feature" if $ENV{'TEST_VERBOSE'};
 {
     my $text = <<EOF;
-From: doesnotexist-2\@@{[RT->Config->Get('rtname')]}
-To: rt\@@{[RT->Config->Get('rtname')]}
+From: doesnotexist-2\@@{[RT->config->get('rtname')]}
+To: rt\@@{[RT->config->get('rtname')]}
 Subject: This is a test of a reply as an unknown user
 
 Blah!
@@ -355,14 +355,14 @@ EOF
     ok ($tick->id, "found ticket ".$tick->id);
     is ($tick->id, $id, "correct ticket id");
 
-    my $transactions = $tick->Transactions;
+    my $transactions = $tick->transactions;
     $transactions->order_by({ column => 'id', order => 'DESC' });
     $transactions->limit( column => 'Type', operator => '!=', value => 'EmailRecord');
     my $txn = $transactions->first;
     isa_ok ($txn, 'RT::Model::Transaction');
-    is ($txn->Type, 'Correspond', "correct type");
+    is ($txn->type, 'Correspond', "correct type");
 
-    my $attachment = $txn->Attachments->first;
+    my $attachment = $txn->attachments->first;
     isa_ok ($attachment, 'RT::Model::Attachment');
     is ($attachment->get_header('X-RT-Mail-Extension'), $id, 'header is in place');
 }
@@ -370,9 +370,9 @@ EOF
 diag "can another random comment on a ticket without being granted privs? answer should be no" if $ENV{'TEST_VERBOSE'};
 {
     my $text = <<EOF;
-From: doesnotexist-3\@@{[RT->Config->Get('rtname')]}
-To: rt\@@{[RT->Config->Get('rtname')]}
-Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a comment as an unknown user
+From: doesnotexist-3\@@{[RT->config->get('rtname')]}
+To: rt\@@{[RT->config->get('rtname')]}
+Subject: [@{[RT->config->get('rtname')]} #$ticket_id] This is a test of a comment as an unknown user
 
 Blah!  (Should not work.)
 Foob!
@@ -382,7 +382,7 @@ EOF
     ok (!$id, "no way to comment on the ticket");
 
     my $u = RT::Model::User->new(current_user => RT->system_user);
-    $u->load('doesnotexist-3@'.RT->Config->Get('rtname'));
+    $u->load('doesnotexist-3@'.RT->config->get('rtname'));
     ok( !$u->id, " user does not exist and was not Created by ticket comment submission");
 }
 
@@ -399,9 +399,9 @@ diag "grant everyone 'commentOnTicket' right" if $ENV{'TEST_VERBOSE'};
 diag "can another random reply to a ticket after being granted privs? answer should be yes" if $ENV{'TEST_VERBOSE'};
 {
     my $text = <<EOF;
-From: doesnotexist-3\@@{[RT->Config->Get('rtname')]}
-To: rt\@@{[RT->Config->Get('rtname')]}
-Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a comment as an unknown user
+From: doesnotexist-3\@@{[RT->config->get('rtname')]}
+To: rt\@@{[RT->config->get('rtname')]}
+Subject: [@{[RT->config->get('rtname')]} #$ticket_id] This is a test of a comment as an unknown user
 
 Blah!
 Foob!
@@ -411,16 +411,16 @@ EOF
     is ($id, $ticket_id, "replied to the ticket");
 
     my $u = RT::Model::User->new(current_user => RT->system_user);
-    $u->load('doesnotexist-3@'.RT->Config->Get('rtname'));
+    $u->load('doesnotexist-3@'.RT->config->get('rtname'));
     ok ($u->id, " user exists and was Created by ticket comment submission");
 }
 
 diag "add comment to the ticket using '--extension action' feature" if $ENV{'TEST_VERBOSE'};
 {
     my $text = <<EOF;
-From: doesnotexist-3\@@{[RT->Config->Get('rtname')]}
-To: rt\@@{[RT->Config->Get('rtname')]}
-Subject: [@{[RT->Config->Get('rtname')]} #$ticket_id] This is a test of a comment via '--extension action'
+From: doesnotexist-3\@@{[RT->config->get('rtname')]}
+To: rt\@@{[RT->config->get('rtname')]}
+Subject: [@{[RT->config->get('rtname')]} #$ticket_id] This is a test of a comment via '--extension action'
 
 Blah!
 Foob!
@@ -435,7 +435,7 @@ EOF
     ok ($tick->id, "found ticket ".$tick->id);
     is ($tick->id, $id, "correct ticket id");
 
-    my $transactions = $tick->Transactions;
+    my $transactions = $tick->transactions;
     $transactions->order_by({ column => 'id', order => 'DESC' });
     $transactions->limit(
         column => 'Type',
@@ -445,9 +445,9 @@ EOF
     );
     my $txn = $transactions->first;
     isa_ok ($txn, 'RT::Model::Transaction');
-    is ($txn->Type, 'comment', "correct type");
+    is ($txn->type, 'comment', "correct type");
 
-    my $attachment = $txn->Attachments->first;
+    my $attachment = $txn->attachments->first;
     isa_ok ($attachment, 'RT::Model::Attachment');
     is ($attachment->get_header('X-RT-Mail-Extension'), 'comment', 'header is in place');
 }
@@ -479,7 +479,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     isa_ok ($tick, 'RT::Model::Ticket');
     ok ($tick->id, "found ticket ".$tick->id);
     is ($tick->id, $id, "correct ticket id");
-    is ($tick->Subject , 'binary attachment test', "Created the ticket - ".$tick->id);
+    is ($tick->subject , 'binary attachment test', "Created the ticket - ".$tick->id);
 
     my $file = `cat $LOGO_FILE`;
     ok ($file, "Read in the logo image");
@@ -499,7 +499,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     is ($attachments->count, 1, 'Found only one gif attached to the ticket');
     my $attachment = $attachments->first;
     ok ($attachment->id, 'loaded attachment object');
-    my $acontent = $attachment->Content;
+    my $acontent = $attachment->content;
 
     diag "coming from the database, md5 hex is ".Digest::MD5::md5_hex($acontent) if $ENV{'TEST_VERBOSE'};
     is ($acontent, $file, 'The attachment isn\'t screwed up in the database.');
@@ -518,7 +518,7 @@ diag "Simple I18N testing" if $ENV{'TEST_VERBOSE'};
 {
     my $text = <<EOF;
 From: root\@localhost
-To: rtemail\@@{[RT->Config->Get('rtname')]}
+To: rtemail\@@{[RT->config->get('rtname')]}
 Subject: This is a test of I18N ticket creation
 Content-Type: text/plain; charset="utf-8"
 
@@ -535,18 +535,18 @@ EOF
     isa_ok ($tick, 'RT::Model::Ticket');
     ok ($tick->id, "found ticket ". $tick->id);
     is ($tick->id, $id, "correct ticket");
-    is ($tick->Subject , 'This is a test of I18N ticket creation', "Created the ticket - ". $tick->Subject);
+    is ($tick->subject , 'This is a test of I18N ticket creation', "Created the ticket - ". $tick->Subject);
 
     my $unistring = "\303\241\303\251\303\255\303\263\303\272";
     Encode::_utf8_on($unistring);
     is (
-        $tick->Transactions->first->Content,
-        $tick->Transactions->first->Attachments->first->Content,
-        "Content is ". $tick->Transactions->first->Attachments->first->Content
+        $tick->transactions->first->content,
+        $tick->transactions->first->attachments->first->content,
+        "Content is ". $tick->transactions->first->attachments->first->content
     );
     ok (
-        $tick->Transactions->first->Content =~ /$unistring/i,
-        $tick->id." appears to be unicode ". $tick->Transactions->first->Attachments->first->id
+        $tick->transactions->first->content =~ /$unistring/i,
+        $tick->id." appears to be unicode ". $tick->transactions->first->attachments->first->id
     );
 }
 
@@ -554,7 +554,7 @@ diag "supposedly I18N fails on the second message sent in." if $ENV{'TEST_VERBOS
 {
     my $text = <<EOF;
 From: root\@localhost
-To: rtemail\@@{[RT->Config->Get('rtname')]}
+To: rtemail\@@{[RT->config->get('rtname')]}
 Subject: This is a test of I18N ticket creation
 Content-Type: text/plain; charset="utf-8"
 
@@ -571,14 +571,14 @@ EOF
     isa_ok ($tick, 'RT::Model::Ticket');
     ok ($tick->id, "found ticket ". $tick->id);
     is ($tick->id, $id, "correct ticket");
-    is ($tick->Subject , 'This is a test of I18N ticket creation', "Created the ticket");
+    is ($tick->subject , 'This is a test of I18N ticket creation', "Created the ticket");
 
     my $unistring = "\303\241\303\251\303\255\303\263\303\272";
     Encode::_utf8_on($unistring);
 
     ok (
-        $tick->Transactions->first->Content =~ $unistring,
-        "It appears to be unicode - ". $tick->Transactions->first->Content
+        $tick->transactions->first->content =~ $unistring,
+        "It appears to be unicode - ". $tick->transactions->first->content
     );
 }
 
@@ -587,7 +587,7 @@ diag "check that mailgate doesn't suffer from empty Reply-To:" if $ENV{'TEST_VER
     my $text = <<EOF;
 From: root\@localhost
 Reply-To: 
-To: rtemail\@@{[RT->Config->Get('rtname')]}
+To: rtemail\@@{[RT->config->get('rtname')]}
 Subject: test
 Content-Type: text/plain; charset="utf-8"
  
@@ -602,7 +602,7 @@ EOF
     ok ($tick->id, "found ticket ". $tick->id);
     is ($tick->id, $id, "correct ticket");
 
-    like $tick->RequestorAddresses, qr/root\@localhost/, 'correct requestor';
+    like $tick->requestor_addresses, qr/root\@localhost/, 'correct requestor';
 }
 
 
@@ -611,7 +611,7 @@ ok ($val, $msg);
 
 SKIP: {
 skip "Advanced mailgate actions require an unsafe configuration", 47
-    unless RT->Config->Get('UnsafeEmailCommands');
+    unless RT->config->get('UnsafeEmailCommands');
 
 # create new queue to be shure we don't mess with rights
 use RT::Model::Queue;
@@ -632,7 +632,7 @@ $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: root\@localhost
-Subject: [@{[RT->Config->Get('rtname')]} \#$id] test
+Subject: [@{[RT->config->get('rtname')]} \#$id] test
 
 EOF
 close (MAIL);
@@ -641,13 +641,13 @@ is ($? >> 8, 0, "The mail gateway exited normally");
 $tick = RT::Model::Ticket->new(current_user => RT->system_user);
 $tick->load( $id );
 is( $tick->id, $id, 'load correct ticket');
-is( $tick->OwnerObj->email, 'root@localhost', 'successfuly take ticket via email');
+is( $tick->owner_obj->email, 'root@localhost', 'successfuly take ticket via email');
 
 # check that there is no text transactions writen
-is( $tick->Transactions->count, 2, 'no superfluous transactions');
+is( $tick->transactions->count, 2, 'no superfluous transactions');
 
 my $status;
-($status, $msg) = $tick->set_Owner( RT->nobody->id, 'Force' );
+($status, $msg) = $tick->set_owner( RT->nobody->id, 'Force' );
 ok( $status, 'successfuly changed owner: '. ($msg||'') );
 is( $tick->Owner, RT->nobody->id, 'set owner back to nobody');
 
@@ -656,7 +656,7 @@ $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $@");
 print MAIL <<EOF;
 From: root\@localhost
-Subject: [@{[RT->Config->Get('rtname')]} \#$id] correspondence
+Subject: [@{[RT->config->get('rtname')]} \#$id] correspondence
 
 test
 EOF
@@ -668,19 +668,19 @@ Jifty::DBI::Record::Cachable->flush_cache;
 $tick = RT::Model::Ticket->new(current_user => RT->system_user);
 $tick->load( $id );
 is( $tick->id, $id, "load correct ticket #$id");
-is( $tick->OwnerObj->email, 'root@localhost', 'successfuly take ticket via email');
-my $txns = $tick->Transactions;
+is( $tick->owner_obj->email, 'root@localhost', 'successfuly take ticket via email');
+my $txns = $tick->transactions;
 $txns->limit( column => 'Type', value => 'Correspond');
 $txns->order_by( column => 'id', order => 'DESC' );
 # +1 because of auto open
-is( $tick->Transactions->count, 6, 'no superfluous transactions');
-is( $txns->first->Subject, "[$RT::rtname \#$id] correspondence", 'successfuly add correspond within take via email' );
+is( $tick->transactions->count, 6, 'no superfluous transactions');
+is( $txns->first->subject, "[$RT::rtname \#$id] correspondence", 'successfuly add correspond within take via email' );
 
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve --debug"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: root\@localhost
-Subject: [@{[RT->Config->Get('rtname')]} \#$id] test
+Subject: [@{[RT->config->get('rtname')]} \#$id] test
 
 EOF
 close (MAIL);
@@ -692,7 +692,7 @@ $tick = RT::Model::Ticket->new(current_user => RT->system_user);
 $tick->load( $id );
 is( $tick->id, $id, 'load correct ticket');
 is( $tick->Status, 'resolved', 'successfuly resolved ticket via email');
-is( $tick->Transactions->count, 7, 'no superfluous transactions');
+is( $tick->transactions->count, 7, 'no superfluous transactions');
 
 use RT::Model::User;
 my $user = RT::Model::User->new(current_user => RT->system_user );
@@ -708,7 +708,7 @@ $tick = RT::Model::Ticket->new(current_user => RT->system_user);
 ($id) = $tick->create( Queue => $qid, Subject => 'test' );
 ok( $id, 'create new ticket' );
 
-my $rtname = RT->Config->Get('rtname');
+my $rtname = RT->config->get('rtname');
 
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
@@ -741,7 +741,7 @@ is ( $? >> 8, 0, "mailgate exited normally" );
 Jifty::DBI::Record::Cachable->flush_cache;
 
 cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
-is( $tick->Transactions->count, 3, "one transactions added" );
+is( $tick->transactions->count, 3, "one transactions added" );
 
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
@@ -756,7 +756,7 @@ is ( $? >> 8, 0, "mailgate exited normally" );
 Jifty::DBI::Record::Cachable->flush_cache;
 
 cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
-is( $tick->Transactions->count, 3, "no transactions added, user can't take ticket first" );
+is( $tick->transactions->count, 3, "no transactions added, user can't take ticket first" );
 
 # revoke ReplyToTicket right
 use RT::Model::ACE;
@@ -774,7 +774,7 @@ ok( !$user->has_right( Right => 'ReplyToTicket', Object => $tick ), "User can't 
 
 
 my $group = RT::Model::Group->new(current_user => RT->system_user );
-ok( $group->loadQueueRoleGroup( Queue => $qid, Type=> 'Owner' ), "load queue owners role group" );
+ok( $group->load_queue_role_group( Queue => $qid, Type=> 'Owner' ), "load queue owners role group" );
 $ace = RT::Model::ACE->new(current_user => RT->system_user );
 ($ace_id, $msg) = $group->principal_object->grant_right( Right => 'ReplyToTicket', Object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right" );
@@ -799,8 +799,8 @@ Jifty::DBI::Record::Cachable->flush_cache;
 $tick->load( $id );
 is( $tick->Owner, $user->id, "we changed owner" );
 ok( $user->has_right( Right => 'ReplyToTicket', Object => $tick ), "owner can reply to ticket" );
-is( $tick->Transactions->count, 5, "transactions added" );
-$txns = $tick->Transactions;
+is( $tick->transactions->count, 5, "transactions added" );
+$txns = $tick->transactions;
 while (my $t = $txns->next) {
     diag( $t->id, $t->Description."\n");
 }

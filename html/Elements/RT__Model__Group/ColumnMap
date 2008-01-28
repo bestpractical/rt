@@ -55,11 +55,11 @@ my $COLUMN_MAP = {
         title     => '#',
         attribute => 'id',
         align     => 'right',
-        value     => sub { return $_[0]->id },
+        value     => sub  { return $_[0]->id },
     },
     has_member => {
         title     => 'Member',
-        value     => sub {
+        value     => sub  {
             my $group = $_[0];
             my $uid   = $_[2] || return '';
             return $group->has_member( $uid )? $_[0]->_('yes'): $_[0]->_('no');
@@ -67,7 +67,7 @@ my $COLUMN_MAP = {
     },
     has_member_recursively => {
         title     => 'Recursive member',
-        value     => sub {
+        value     => sub  {
             my $group = $_[0];
             my $uid   = $_[2] || return '';
             return $group->has_member_recursively( $uid )? $_[0]->_('yes'): $_[0]->_('no');
@@ -76,7 +76,7 @@ my $COLUMN_MAP = {
 };
 
 foreach my $col( qw(name Description) ) {
-    $COLUMN_MAP->{ $col } = { attribute => $col, value => sub { return $_[0]->$col() } };
+    $COLUMN_MAP->{ $col } = { attribute => $col, value => sub  { return $_[0]->$col() } };
 }
 
 </%ONCE>

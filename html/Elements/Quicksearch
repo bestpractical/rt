@@ -47,15 +47,15 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="ticket-overview">
 <&|/Widgets/TitleBox, title => _("Quick search"), bodyclass => "",
-   titleright => _("Edit"), titleright_href => RT->Config->Get('WebPath').'/Prefs/Quicksearch.html' &>
+   titleright => _("Edit"), titleright_href => RT->config->get('WebPath').'/Prefs/Quicksearch.html' &>
 <& /Elements/QueueSummary,
    cache => 'quick_search_queues',
-   queue_filter => sub { $_->current_user_has_right('ShowTicket') && !exists $unwanted->{$_->name} },
+   queue_filter => sub  { $_->current_user_has_right('ShowTicket') && !exists $unwanted->{$_->name} },
    conditions => [ {cond => "Status = 'new'",  name => _('new')  },
 		   {cond => "Status = 'open'", name => _('open') },
 		   {cond => "Status = 'stalled'", name => _('stalled') }] &>
 </&>
 </div>
 <%INIT>
-my $unwanted = Jifty->web->current_user->user_object->Preferences('QuickSearch', {});
+my $unwanted = Jifty->web->current_user->user_object->preferences('QuickSearch', {});
 </%INIT>

@@ -70,14 +70,14 @@ sub __DependsOn
     my $list = [];
 
 # Custom field values
-    push( @$list, $self->Values );
+    push( @$list, $self->values );
 
 # Ticket custom field values
     my $objs = RT::Model::ObjectCustomFieldValueCollection->new;
     $objs->limit_to_custom_field( $self->id );
     push( @$list, $objs );
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $list,
@@ -97,7 +97,7 @@ sub __Relates
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-    my $obj = $self->Object;
+    my $obj = $self->object;
 
 # Queue
 # Skip if it's global CF
@@ -105,14 +105,14 @@ sub __Relates
         if( $self->queue_obj && $self->queue_obj->id ) {
             push( @$list, $obj );
         } else {
-            my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+            my $rec = $args{'Shredder'}->get_record( Object => $self );
             $self = $rec->{'Object'};
             $rec->{'State'} |= INVALID;
             $rec->{'Description'} = "Have no related queue #". $self->Queue ." object";
         }
     }
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,

@@ -10,7 +10,7 @@ use RT;
 {
 
 my $s = RT::System->new(current_user => RT->system_user);
-my $rights = $s->AvailableRights;
+my $rights = $s->available_rights;
 ok ($rights, "Rights defined");
 ok ($rights->{'AdminUsers'},"AdminUsers right found");
 ok ($rights->{'create_ticket'},"create_ticket right found");

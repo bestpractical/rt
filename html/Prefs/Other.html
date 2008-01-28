@@ -53,28 +53,28 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="Other.html">
-% foreach my $section( RT->Config->Sections ) {
+% foreach my $section( RT->config->sections ) {
 <&|/Widgets/TitleBox, title => _( $section ) &>
-% foreach my $option( RT->Config->Options( Section => $section ) ) {
-% my $meta = RT->Config->Meta( $option );
+% foreach my $option( RT->config->options( Section => $section ) ) {
+% my $meta = RT->config->meta( $option );
 <& $meta->{'Widget'},
     Default      => 1,
     %{ $localize_meta->( $meta->{'WidgetArguments'} ) },
     name         => $option,
-    DefaultValue => scalar RT->Config->Get( $option ),
+    DefaultValue => scalar RT->config->get( $option ),
     current_value => $preferences->{ $option },
 &>
 % }
 </&>
 % }
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+% if ( RT->config->get('GnuPG')->{'Enable'} ) {
 <&|/Widgets/TitleBox, title => _( 'Cryptography' ) &>
 Preferred key: <& /Elements/GnuPG/SelectKeyForEncryption, email => $user_object->email, Default => $user_object->preferred_key &>
 </&>
 % }
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+% if ( RT->config->get('GnuPG')->{'Enable'} ) {
 <&|/Widgets/TitleBox, title => _( 'Cryptography' ) &>
 Preferred key: <& /Elements/SelectKey, email => $user_object->email, Default => $user_object->preferred_key &>
 </&>
@@ -87,7 +87,7 @@ my @results;
 my $title = _("Other preferences");
 
 my $user_object = Jifty->web->current_user->user_object;
-my $preferences = $user_object->Preferences( RT->system );
+my $preferences = $user_object->preferences( RT->system );
 
 if ((defined $preferred_key) && $preferred_key ne $user_object->first_attribute('preferred_key')) {
     my ($code, $msg) = $user_object->set_attribute(name => 'preferred_key', Content => $preferred_key);
@@ -95,14 +95,14 @@ if ((defined $preferred_key) && $preferred_key ne $user_object->first_attribute(
 }
 
 if ( $Update ) {
-    foreach my $option( RT->Config->Options ) {
-        my $meta = RT->Config->Meta( $option );
+    foreach my $option( RT->config->options ) {
+        my $meta = RT->config->meta( $option );
         my $value = $m->comp($meta->{'Widget'} .":Process",
             Arguments    => \%ARGS,
             Default      => 1,
             %{ $meta->{'WidgetArguments'} },
             name         => $option,
-            DefaultValue => scalar RT->Config->Get( $option ),
+            DefaultValue => scalar RT->config->get( $option ),
         );
         if ( defined $value ) {
             $preferences->{ $option } = $value;
@@ -110,9 +110,9 @@ if ( $Update ) {
             delete $preferences->{ $option };
         }
     }
-    $user_object->set_Preferences( RT->system, $preferences );
+    $user_object->set_preferences( RT->system, $preferences );
 }
-my $localize_meta = sub {
+my $localize_meta = sub  {
     my %meta = %{ shift() };
     $meta{'Description'} = _( $meta{'Description'} ) if $meta{'Description'};
     if ( $meta{'values_label'} ) {

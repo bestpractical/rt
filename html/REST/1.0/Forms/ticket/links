@@ -101,7 +101,7 @@ if ($changes) {
                     my $tick = RT::Model::Ticket->new();
                     $tick->load($nkey);
                     if ($tick->id) {
-                        $nkey = $uri->FromObject($tick);
+                        $nkey = $uri->from_object($tick);
                     }
                     else {
                         $n = 0;

@@ -78,13 +78,13 @@ $user_object->load($id) || Abort("Couldn't load user '$id'");
 my $title = _("RT at a glance for the user %1", $user_object->name);
 
 if ($ARGS{Reset}) {
-    $user_object->set_Preferences('HomepageSettings', {});
+    $user_object->set_preferences('HomepageSettings', {});
 }
 
 my ($default_portlets) = RT::System->new()->attributes->named('HomepageSettings');
-my $portlets  = $user_object->Preferences('HomepageSettings', $default_portlets ? $default_portlets->Content  : {});
+my $portlets  = $user_object->preferences('HomepageSettings', $default_portlets ? $default_portlets->content  : {});
 
-my %allowed_components = map {$_ => 1} @{ RT->Config->Get('HomepageComponents') };
+my %allowed_components = map {$_ => 1} @{ RT->config->get('HomepageComponents') };
 
 my @items;
 push @items, map {["component-$_", $_]} sort keys %allowed_components;
@@ -92,13 +92,13 @@ push @items, map {["component-$_", $_]} sort keys %allowed_components;
 my $sys = RT::System->new(current_user => RT::CurrentUser->new($user_object) );
 my @objs = ($sys);
 
-push @objs, RT::SavedSearches->new(current_user => RT::CurrentUser->new( $user_object ) )->_PrivacyObjects;
+push @objs, RT::SavedSearches->new(current_user => RT::CurrentUser->new( $user_object ) )->_privacy_objects;
 my @actions;
 
 for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
         my ($desc, $search) = @$_;
-        my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
+        my $SearchType = $search->content->{'SearchType'} || 'Ticket';
         if ($object eq $sys && $SearchType eq 'Ticket') {
             push @items, ["system-$desc", $desc];
         }
@@ -117,9 +117,9 @@ my @panes = $m->comp(
     Action => "MyRT.html?id=$id",
     items => \@items,
     current_portlets => $portlets,
-    OnSave => sub {
+    OnSave => sub  {
         my ( $conf, $pane ) = @_;
-        $user_object->set_Preferences( 'HomepageSettings', $conf );
+        $user_object->set_preferences( 'HomepageSettings', $conf );
         push @actions, _( 'Preferences %1 for user %2 .', $pane, $user_object->name );
     }
 );

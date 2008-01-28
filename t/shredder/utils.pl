@@ -97,7 +97,7 @@ sub rewrite_rtconfig
 sub config_set {
     my $opt = shift;
     $opt =~ s/^[\$\%\@]//;
-    RT->Config->set($opt, @_)
+    RT->config->set($opt, @_)
 }
 
 =head2 DATABASES
@@ -116,8 +116,8 @@ sub init_db
 {
 
 
-    $SIG{__WARN__} = sub { Jifty->log->warn( @_ ); warn @_ };
-    $SIG{__DIE__} = sub { Jifty->log->fatal( @_ ) unless $^S; Carp::confess @_ };
+    $SIG{__WARN__} = sub  { Jifty->log->warn( @_ ); warn @_ };
+    $SIG{__DIE__} = sub  { Jifty->log->fatal( @_ ) unless $^S; Carp::confess @_ };
 }
 
 use IPC::Open2;
@@ -126,7 +126,7 @@ sub _init_db
 
 
     foreach ( qw(Type Host Port name User password) ) {
-        $ENV{ "RT_DB_". uc $_ } = RT->Config->Get("Database$_");
+        $ENV{ "RT_DB_". uc $_ } = RT->config->get("Database$_");
     }
     my $cmd =  "$^X sbin/rt-setup-database --action init";
 
@@ -170,7 +170,7 @@ sub shredder_new
     my $obj = RT::Shredder->new();
 
     my $file = File::Spec->catfile( tmpdir(), test_name() .'.XXXX.sql' );
-    $obj->AddDumpPlugin( Arguments => {
+    $obj->add_dump_plugin( Arguments => {
         file_name    => $file,
         from_storage => 0,
     } );

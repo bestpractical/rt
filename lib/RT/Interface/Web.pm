@@ -172,7 +172,7 @@ a cached DBI statement handle twice at the same time.
 sub redirect {
     my $redir_to = shift;
     my $uri = URI->new($redir_to);
-    my $server_uri = URI->new(RT->Config->Get('WebURL') );
+    my $server_uri = URI->new(RT->config->get('WebURL') );
 
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,
@@ -196,7 +196,7 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 
 =cut
 
-sub StaticFileHeaders {
+sub static_file_headers {
     my $date = RT::Date->new(current_user => RT->system_user );
 
     # make cache public
@@ -204,13 +204,13 @@ sub StaticFileHeaders {
 
     # Expire things in a month.
     $date->set( value => time + 30*24*60*60 );
-    $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->RFC2616;
+    $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->rfc_2616;
 
     # if we set 'Last-Modified' then browser request a comp using 'If-Modified-Since'
     # request, but we don't handle it and generate full reply again
     # Last modified at server start time
     # $date->set( value => $^T );
-    # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
+    # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->rfc_2616;
 }
 
 
@@ -240,7 +240,7 @@ sub loc {
 
 # {{{ sub Abort
 # Error - calls Error and aborts
-sub Abort {
+sub abort {
 
     if ($session{'ErrorDocument'} && 
         $session{'ErrorDocumentType'}) {
@@ -328,8 +328,8 @@ sub create_ticket {
         time_worked      => $ARGS{'time_worked'},
         Subject         => $ARGS{'Subject'},
         Status          => $ARGS{'Status'},
-        Due             => $due->ISO,
-        starts          => $starts->ISO,
+        Due             => $due->iso,
+        starts          => $starts->iso,
         MIMEObj         => $MIMEObj
     );
 
@@ -342,7 +342,7 @@ sub create_ticket {
 
     if ( @temp_squelch ) {
         require RT::ScripAction::SendEmail;
-        RT::ScripAction::SendEmail->SquelchMailTo( RT::ScripAction::SendEmail->SquelchMailTo, @temp_squelch );
+        RT::ScripAction::SendEmail->squelch_mail_to( RT::ScripAction::SendEmail->squelch_mail_to, @temp_squelch );
     }
 
     if ( $ARGS{'AttachTickets'} ) {
@@ -377,7 +377,7 @@ sub create_ticket {
                 next;
             }
 
-            my $type = $cf->Type;
+            my $type = $cf->type;
 
             my @values = ();
             if ( ref $ARGS{ $arg } eq 'ARRAY' ) {
@@ -514,7 +514,7 @@ sub process_update_message {
         }
     }
 
-    if ( $args{ARGSRef}->{'UpdateSubject'} eq $args{'ticket_obj'}->Subject ) {
+    if ( $args{ARGSRef}->{'UpdateSubject'} eq $args{'ticket_obj'}->subject ) {
         $args{ARGSRef}->{'UpdateSubject'} = undef;
     }
 
@@ -534,10 +534,10 @@ sub process_update_message {
         $old_txn->load( $args{ARGSRef}->{'QuoteTransaction'} );
     }
     else {
-        $old_txn = $args{ticket_obj}->Transactions->first();
+        $old_txn = $args{ticket_obj}->transactions->first();
     }
 
-    if ( my $msg = $old_txn->Message->first ) {
+    if ( my $msg = $old_txn->message->first ) {
         RT::Interface::Email::SetInReplyTo( Message => $Message, InReplyTo => $msg );
     }
 
@@ -587,13 +587,13 @@ sub process_update_message {
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
         my ( $Transaction, $Description, $Object ) = $args{ticket_obj}->comment(%message_args);
         push( @results, $Description );
-        $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
+        $Object->update_custom_fields( ARGSRef => $args{ARGSRef} ) if $Object;
     }
     elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
         my ( $Transaction, $Description, $Object ) =
         $args{ticket_obj}->correspond(%message_args);
         push( @results, $Description );
-        $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
+        $Object->update_custom_fields( ARGSRef => $args{ARGSRef} ) if $Object;
     }
     else {
         push(
@@ -709,7 +709,7 @@ sub parse_date_to_iso {
         Format => 'unknown',
         Value  => $date
     );
-    return ( $date_obj->ISO );
+    return ( $date_obj->iso );
 }
 
 # }}}
@@ -788,7 +788,7 @@ sub update_record_object {
     );
 
     my $Object = $args{'Object'};
-    my @results = $Object->Update(
+    my @results = $Object->update(
         AttributesRef   => $args{'AttributesRef'},
         ARGSRef         => $args{'ARGSRef'},
         AttributePrefix => $args{'AttributePrefix'},
@@ -820,7 +820,7 @@ sub process_custom_field_updates {
 
     my $prefix = "CustomField-" . $Object->id;
     if ( $ARGSRef->{ "$prefix-AddValue-name" } ) {
-        my ( $addval, $addmsg ) = $Object->AddValue(
+        my ( $addval, $addmsg ) = $Object->add_value(
             name        => $ARGSRef->{ "$prefix-AddValue-name" },
             Description => $ARGSRef->{ "$prefix-AddValue-Description" },
             SortOrder   => $ARGSRef->{ "$prefix-AddValue-SortOrder" },
@@ -835,11 +835,11 @@ sub process_custom_field_updates {
 
     foreach my $id (@delete_values) {
         next unless defined $id;
-        my ( $err, $msg ) = $Object->deleteValue($id);
+        my ( $err, $msg ) = $Object->delete_value($id);
         push ( @results, $msg );
     }
 
-    my $vals = $Object->Values();
+    my $vals = $Object->values();
     while (my $cfv = $vals->next()) {
         if (my $so = $ARGSRef->{ "$prefix-SortOrder" . $cfv->id }) {
             if ($cfv->SortOrder != $so) {
@@ -917,7 +917,7 @@ sub process_ticket_basics {
         }
 
         my ( $val, $msg ) =
-            $ticket_obj->set_Owner( $ARGSRef->{'Owner'}, $ChownType );
+            $ticket_obj->set_owner( $ARGSRef->{'Owner'}, $ChownType );
         push ( @results, $msg );
     }
 
@@ -928,7 +928,7 @@ sub process_ticket_basics {
 
 # }}}
 
-sub ProcessTicketCustomFieldUpdates {
+sub process_ticket_custom_field_updates {
     my %args = @_;
     $args{'Object'} = delete $args{'ticket_obj'};
     my $ARGSRef = { %{ $args{'ARGSRef'} } };
@@ -947,7 +947,7 @@ sub ProcessTicketCustomFieldUpdates {
     return ProcessObjectCustomFieldUpdates(%args, ARGSRef => $ARGSRef);
 }
 
-sub ProcessObjectCustomFieldUpdates {
+sub process_object_custom_field_updates {
     my %args = @_;
     my $ARGSRef = $args{'ARGSRef'};
     my @results;
@@ -994,10 +994,10 @@ sub ProcessObjectCustomFieldUpdates {
     return @results;
 }
 
-sub _ProcessObjectCustomFieldUpdates {
+sub _process_object_custom_field_updates {
     my %args = @_;
     my $cf = $args{'CustomField'};
-    my $cf_type = $cf->Type;
+    my $cf_type = $cf->type;
 
     my @results;
     foreach my $arg ( keys %{ $args{'ARGS'} } ) {
@@ -1075,7 +1075,7 @@ sub _ProcessObjectCustomFieldUpdates {
 
             my %values_hash;
             foreach my $value ( @values ) {
-                if ( my $entry = $cf_values->HasEntry( $value ) ) {
+                if ( my $entry = $cf_values->has_entry( $value ) ) {
                     $values_hash{ $entry->id } = 1;
                     next;
                 }
@@ -1105,7 +1105,7 @@ sub _ProcessObjectCustomFieldUpdates {
             # keep everything up to the point of difference, delete the rest
             my $delete_flag;
             foreach my $old_cf (@{$cf_values->items_array_ref}) {
-                if (!$delete_flag and @values and $old_cf->Content eq $values[0]) {
+                if (!$delete_flag and @values and $old_cf->content eq $values[0]) {
                     shift @values;
                     next;
                 }
@@ -1141,7 +1141,7 @@ Returns an array of results messages.
 
 =cut
 
-sub ProcessTicketWatchers {
+sub process_ticket_watchers {
     my %args = (
         ticket_obj => undef,
         ARGSRef   => undef,
@@ -1180,7 +1180,7 @@ sub ProcessTicketWatchers {
         {
 
             #They're in this order because otherwise $1 gets clobbered :/
-            my ( $code, $msg ) = $Ticket->AddWatcher(
+            my ( $code, $msg ) = $Ticket->add_watcher(
                 Type  => $ARGSRef->{$key},
                 Email => $ARGSRef->{ "WatcherAddressEmail" . $1 }
             );
@@ -1189,7 +1189,7 @@ sub ProcessTicketWatchers {
 
         #Add requestors in the simple style demanded by the bulk manipulator
         elsif ( $key =~ /^Add(Requestor|Cc|AdminCc)$/ ) {
-            my ( $code, $msg ) = $Ticket->AddWatcher(
+            my ( $code, $msg ) = $Ticket->add_watcher(
                 Type  => $1,
                 Email => $ARGSRef->{$key}
             );
@@ -1203,7 +1203,7 @@ sub ProcessTicketWatchers {
             foreach my $value ( ref($form) ? @{$form} : ($form) ) {
                 next unless $value =~ /^(?:AdminCc|Cc|Requestor)$/i;
 
-                my ( $code, $msg ) = $Ticket->AddWatcher(
+                my ( $code, $msg ) = $Ticket->add_watcher(
                     Type        => $value,
                     principal_id => $principal_id
                 );
@@ -1225,7 +1225,7 @@ Returns an array of results messages.
 
 =cut
 
-sub ProcessTicketDates {
+sub process_ticket_dates {
     my %args = (
         ticket_obj => undef,
         ARGSRef   => undef,
@@ -1260,11 +1260,11 @@ sub ProcessTicketDates {
         );
 
         my $obj = $field . "Obj";
-        if ( ( defined $DateObj->Unix )
-            and ( $DateObj->Unix != $Ticket->$obj()->Unix() ) )
+        if ( ( defined $DateObj->unix )
+            and ( $DateObj->unix != $Ticket->$obj()->unix() ) )
         {
             my $method = "set_$field";
-            my ( $code, $msg ) = $Ticket->$method( $DateObj->ISO );
+            my ( $code, $msg ) = $Ticket->$method( $DateObj->iso );
             push @results, "$msg";
         }
     }
@@ -1283,7 +1283,7 @@ Returns an array of results messages.
 
 =cut
 
-sub ProcessTicketLinks {
+sub process_ticket_links {
     my %args = ( ticket_obj => undef,
                  ARGSRef   => undef,
                  @_ );
@@ -1298,7 +1298,7 @@ sub ProcessTicketLinks {
     if ( $ARGSRef->{ $Ticket->id . "-MergeInto" } ) {
          $ARGSRef->{ $Ticket->id . "-MergeInto" } =~ s/\s+//g;
         my ( $val, $msg ) =
-          $Ticket->MergeInto( $ARGSRef->{ $Ticket->id . "-MergeInto" } );
+          $Ticket->merge_into( $ARGSRef->{ $Ticket->id . "-MergeInto" } );
         push @results, $msg;
     }
 
@@ -1402,7 +1402,7 @@ sub get_column_map_entry {
         return $args{'Map'}{ $mainkey }{ $args{'Attribute'} }
             unless ref $args{'Map'}{ $mainkey }{ $args{'Attribute'} } eq 'CODE';
 
-        return sub { $args{'Map'}{ $mainkey }{ $args{'Attribute'} }->( @_, $subkey ) };
+        return sub  { $args{'Map'}{ $mainkey }{ $args{'Attribute'} }->( @_, $subkey ) };
     }
     return undef;
 }

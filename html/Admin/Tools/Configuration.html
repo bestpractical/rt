@@ -71,8 +71,8 @@ unless (Jifty->web->current_user->has_right( Object=> RT->system, Right => 'Supe
 
 <h2><&|/l&>RT Config</&></h2>
 <table>
-% foreach my $key ( RT->Config->Options( Overridable => undef ) ) {
-% my $val = RT->Config->Get( $key );
+% foreach my $key ( RT->config->options( Overridable => undef ) ) {
+% my $val = RT->config->get( $key );
 % next unless defined $val;
 <tr><td><% $key %></td>
 <td>
@@ -94,7 +94,7 @@ unless (Jifty->web->current_user->has_right( Object=> RT->system, Right => 'Supe
 <h2><&|/l&>RT Variables</&></h2>
 <table>
 % { no strict qw/refs/;
-% my %config_opt = map { $_ => 1 } RT->Config->Options( Overridable => undef );
+% my %config_opt = map { $_ => 1 } RT->config->options( Overridable => undef );
 % foreach my $key ( sort keys %{*RT::} ) {
 % next if !${'RT::'.$key} || ref ${'RT::'.$key} || $config_opt{ $key };
 <tr><td>RT::<% $key %></td>

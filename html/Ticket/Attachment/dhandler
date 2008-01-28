@@ -67,9 +67,9 @@
 
      }
 
-     my $content_type = $AttachmentObj->ContentType || 'text/plain';
+     my $content_type = $AttachmentObj->content_type || 'text/plain';
         
-     unless (RT->Config->Get('TrustHTMLAttachments')) {
+     unless (RT->config->get('TrustHTMLAttachments')) {
          $content_type = 'text/plain' if ($content_type =~ /^text\/html/i);
      }
 
@@ -80,7 +80,7 @@
 	$content_type .= ";charset=$enc";
      }
 
-     # unless (RT->Config->Get('TrustMIMEAttachments')) {
+     # unless (RT->config->get('TrustMIMEAttachments')) {
      #     $content_type = 'application/octet-stream';
      # }
 

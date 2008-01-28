@@ -113,7 +113,7 @@ my %Negate = qw(
     IS NOT	IS
 );
 
-sub limit_Attribute {
+sub limit_attribute {
     my ($self, %args) = @_;
     my $clause = 'alias';
     my $operator = ($args{operator} || '=');
@@ -194,14 +194,14 @@ Takes a paramhash of key/value pairs with the following keys:
 
 =cut
 
-sub _SingularClass {
+sub _singular_class {
     my $self = shift;
     my $class = ref($self);
     $class =~ s/Collection$// or die "Cannot deduce SingularClass for $class";
     return $class;
 }
 
-sub limit_CustomField {
+sub limit_custom_field {
     my $self = shift;
     my %args = ( value        => undef,
                  customfield  => undef,
@@ -225,7 +225,7 @@ sub limit_CustomField {
 	alias      => $alias,
 	column      => 'object_type',
 	operator   => '=',
-	value      => $self->_SingularClass,
+	value      => $self->_singular_class,
     );
     $self->limit(
 	alias      => $alias,
@@ -241,7 +241,7 @@ Find all matching rows, regardless of whether they are disabled or not
 
 =cut
 
-sub FindAllRows {
+sub find_all_rows {
     shift->{'find_disabled_rows'} = 1;
 }
 

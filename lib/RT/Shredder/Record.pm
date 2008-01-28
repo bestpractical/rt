@@ -61,7 +61,7 @@ Returns string in format Classname-object_id.
 
 =cut
 
-sub _AsString { return ref($_[0]) ."-". $_[0]->id }
+sub _as_string { return ref($_[0]) ."-". $_[0]->id }
 
 =head2 _AsInsertQuery
 
@@ -86,7 +86,7 @@ sub _AsInsertQuery
     return $res;
 }
 
-sub BeforeWipeout { return 1 }
+sub before_wipeout { return 1 }
 
 =head2 Dependencies
 
@@ -109,10 +109,10 @@ sub Dependencies
 
     my $deps = RT::Shredder::Dependencies->new();
     if( $args{'Flags'} & DEPENDS_ON ) {
-        $self->__DependsOn( %args, Dependencies => $deps );
+        $self->__depends_on( %args, Dependencies => $deps );
     }
     if( $args{'Flags'} & RELATES ) {
-        $self->__Relates( %args, Dependencies => $deps );
+        $self->__relates( %args, Dependencies => $deps );
     }
     return $deps;
 }
@@ -160,7 +160,7 @@ sub __DependsOn
     $objs->limit_to_object( $self );
     push( @$list, $objs );
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $list,
@@ -187,7 +187,7 @@ sub __Relates
         if( $obj && defined $obj->id ) {
             push( @$list, $obj );
         } else {
-            my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+            my $rec = $args{'Shredder'}->get_record( Object => $self );
             $self = $rec->{'Object'};
             $rec->{'State'} |= INVALID;
             push @{ $rec->{'Description'} },
@@ -202,7 +202,7 @@ sub __Relates
         if( $obj && defined $obj->id ) {
             push( @$list, $obj );
         } else {
-            my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+            my $rec = $args{'Shredder'}->get_record( Object => $self );
             $self = $rec->{'Object'};
             $rec->{'State'} |= INVALID;
             push @{ $rec->{'Description'} },
@@ -210,7 +210,7 @@ sub __Relates
         }
     }
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,
@@ -219,7 +219,7 @@ sub __Relates
 
     # cause of this $self->SUPER::__Relates should be called last
     # in overridden subs
-    my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+    my $rec = $args{'Shredder'}->get_record( Object => $self );
     $rec->{'State'} |= VALID unless( $rec->{'State'} & INVALID );
 
     return;
@@ -230,7 +230,7 @@ sub __Relates
 sub __Wipeout
 {
     my $self = shift;
-    my $msg = $self->_AsString ." wiped out";
+    my $msg = $self->_as_string ." wiped out";
     $self->SUPER::delete;
     Jifty->log->debug( $msg );
     return;
@@ -247,11 +247,11 @@ sub validate_Relations
         $args{'Shredder'} = RT::Shredder->new();
     }
 
-    my $rec = $args{'Shredder'}->PutObject( Object => $self );
+    my $rec = $args{'Shredder'}->put_object( Object => $self );
     return if( $rec->{'State'} & VALID );
     $self = $rec->{'Object'};
 
-    $self->_ValidateRelations( %args, Flags => RELATES );
+    $self->_validate_relations( %args, Flags => RELATES );
     $rec->{'State'} |= VALID unless( $rec->{'State'} & INVALID );
 
     return;
@@ -262,9 +262,9 @@ sub _ValidateRelations
     my $self = shift;
     my %args = ( @_ );
 
-    my $deps = $self->Dependencies( %args );
+    my $deps = $self->dependencies( %args );
 
-    $deps->validate_Relations( %args );
+    $deps->validate_relations( %args );
 
     return;
 }

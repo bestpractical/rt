@@ -67,7 +67,7 @@ while ( my $cgi = CGI::Fast->new ) {
     $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
     $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 
-    Module::Refresh->refresh if RT->Config->Get('DevelMode');
+    Module::Refresh->refresh if RT->config->get('DevelMode');
     RT::connect_to_database();
 
     if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
@@ -79,7 +79,7 @@ while ( my $cgi = CGI::Fast->new ) {
     if ($@) {
         Jifty->log->fatal($@);
     }
-    RT::Interface::Web::Handler->CleanupRequest(); 
+    RT::Interface::Web::Handler->cleanup_request(); 
 
 }
 

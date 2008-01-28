@@ -48,8 +48,8 @@ sub acl {
         sessions
     );
 
-    my $db_user = RT->Config->Get('DatabaseUser');
-    my $db_pass = RT->Config->Get('Databasepassword');
+    my $db_user = RT->config->get('DatabaseUser');
+    my $db_pass = RT->config->get('Databasepassword');
 
     # if there's already an rt_user, use it.
     my @row = $dbh->selectrow_array( "SELECT usename FROM pg_user WHERE usename = '$db_user'" );

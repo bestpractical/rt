@@ -131,7 +131,7 @@ sub create {
     }
 
 
-    unless ($self->canonicalize_UserInfo(\%args)) {
+    unless ($self->canonicalize_user_info(\%args)) {
         return ( 0, _("Could not set user info") );
     }
 
@@ -151,8 +151,8 @@ sub create {
         $args{'password'} = '*NO-PASSWORD*';
     }
     
-    elsif ( length( $args{'password'} ) < RT->Config->Get('MinimumpasswordLength') ) {
-        return ( 0, _("password needs to be at least %1 characters long",RT->Config->Get('MinimumpasswordLength')) );
+    elsif ( length( $args{'password'} ) < RT->config->get('MinimumpasswordLength') ) {
+        return ( 0, _("password needs to be at least %1 characters long",RT->config->get('MinimumpasswordLength')) );
     }
 
     unless ( $args{'name'} ) {
@@ -601,8 +601,8 @@ sub canonicalize_email {
     # Example: the following rule would treat all email
     # coming from a subdomain as coming from second level domain
     # foo.com
-    if ( my $match   = RT->Config->Get('canonicalize_emailMatch') and
-         my $replace = RT->Config->Get('canonicalize_emailReplace') )
+    if ( my $match   = RT->config->get('canonicalize_emailMatch') and
+         my $replace = RT->config->get('canonicalize_emailReplace') )
     {
         $email =~ s/$match/$replace/gi;
     }
@@ -627,7 +627,7 @@ an outside source and modified upon creation.
 
 =cut
 
-sub canonicalize_UserInfo {
+sub canonicalize_user_info {
     my $self = shift;
     my $args = shift;
     my $success = 1;
@@ -651,7 +651,7 @@ If the status is anything else, the new value returned is the error code.
 
 =cut
 
-sub set_Randompassword {
+sub set_randompassword {
     my $self = shift;
 
     unless ( $self->current_user_can_modify('password') ) {
@@ -659,8 +659,8 @@ sub set_Randompassword {
     }
 
 
-    my $min = ( RT->Config->Get('MinimumpasswordLength') > 6 ?  RT->Config->Get('MinimumpasswordLength') : 6);
-    my $max = ( RT->Config->Get('MinimumpasswordLength') > 8 ?  RT->Config->Get('MinimumpasswordLength') : 8);
+    my $min = ( RT->config->get('MinimumpasswordLength') > 6 ?  RT->config->get('MinimumpasswordLength') : 6);
+    my $max = ( RT->config->get('MinimumpasswordLength') > 8 ?  RT->config->get('MinimumpasswordLength') : 8);
     my $pass =    Text::Password::Pronounceable->generate($min => $max);
 
     # If we have "notify user on 
@@ -700,8 +700,8 @@ sub before_set_password {
     if ( !$password ) {
         return ( 0, _("No password set") );
     }
-    elsif ( length($password) < RT->Config->Get('MinimumpasswordLength') ) {
-        return ( 0, _("password needs to be at least %1 characters long", RT->Config->Get('MinimumpasswordLength')) );
+    elsif ( length($password) < RT->config->get('MinimumpasswordLength') ) {
+        return ( 0, _("password needs to be at least %1 characters long", RT->config->get('MinimumpasswordLength')) );
     }
             return ( 1, "ok");
 
@@ -869,11 +869,11 @@ user is a member.
 
 =cut
 
-sub OwnGroups {
+sub own_groups {
     my $self = shift;
     my $groups = RT::Model::GroupCollection->new;
-    $groups->limit_ToUserDefinedGroups;
-    $groups->WithMember(principal_id => $self->id, 
+    $groups->limit_to_user_defined_groups;
+    $groups->with_member(principal_id => $self->id, 
             Recursively => 1);
     return $groups;
 }
@@ -965,7 +965,7 @@ sub current_user_has_right {
 
 # }}}
 
-sub _Prefname {
+sub _prefname {
     my $name = shift;
     if (ref $name) {
         $name = ref($name).'-'.$name->id;
@@ -984,15 +984,15 @@ sub _Prefname {
 
 =cut
 
-sub Preferences {
+sub preferences {
     my $self  = shift;
-    my $name = _Prefname (shift);
+    my $name = _prefname (shift);
     my $default = shift;
 
     my $attr = RT::Model::Attribute->new;
-    $attr->load_by_nameAndObject( Object => $self, name => $name );
+    $attr->load_by_name_and_object( Object => $self, name => $name );
 
-    my $content = $attr->id ? $attr->Content : undef;
+    my $content = $attr->id ? $attr->content : undef;
     unless ( ref $content eq 'HASH' ) {
         return defined $content ? $content : $default;
     }
@@ -1018,14 +1018,14 @@ sub Preferences {
 
 =cut
 
-sub set_Preferences {
+sub set_preferences {
     my $self = shift;
-    my $name = _Prefname( shift );
+    my $name = _prefname( shift );
     my $value = shift;
     my $attr = RT::Model::Attribute->new;
-    $attr->load_by_nameAndObject( Object => $self, name => $name );
+    $attr->load_by_name_and_object( Object => $self, name => $name );
     if ( $attr->id ) {
-        return $attr->set_Content( $value );
+        return $attr->set_content( $value );
     }
     else {
         return $self->add_attribute( name => $name, Content => $value );
@@ -1041,11 +1041,11 @@ Returns a RT::Model::QueueCollection object containing every queue watched by th
 
 Takes a list of roles which is some subset of ('Cc', 'AdminCc').  Defaults to:
 
-$user->WatchedQueues('Cc', 'AdminCc');
+$user->watched_queues('Cc', 'AdminCc');
 
 =cut
 
-sub WatchedQueues {
+sub watched_queues {
 
     my $self = shift;
     my @roles = @_ || ('Cc', 'AdminCc');
@@ -1143,21 +1143,21 @@ sub _cleanup_invalid_delegations {
 
     # Look up all delegation rights currently posessed by this user.
     my $deleg_acl = RT::Model::ACECollection->new(current_user => RT->system_user);
-    $deleg_acl->limit_ToPrincipal(Type => 'User',
+    $deleg_acl->limit_to_principal(Type => 'User',
                  id => $self->principal_id,
                  IncludeGroupMembership => 1);
     $deleg_acl->limit( column => 'right_name',
                operator => '=',
                value => 'DelegateRights' );
-    my @allowed_deleg_objects = map {$_->Object()}
+    my @allowed_deleg_objects = map {$_->object()}
     @{$deleg_acl->items_array_ref()};
 
     # Look up all rights delegated by this principal which are
     # inconsistent with the allowed delegation objects.
     my $acl_to_del = RT::Model::ACECollection->new(current_user => RT->system_user);
-    $acl_to_del->DelegatedBy(Id => $self->id);
+    $acl_to_del->delegated_by(Id => $self->id);
     foreach (@allowed_deleg_objects) {
-    $acl_to_del->limit_NotObject($_);
+    $acl_to_del->limitnot_object($_);
     }
 
     # Delete all disallowed delegations
@@ -1217,7 +1217,7 @@ sub _set {
                                                old_value  => $Old,
                                                TimeTaken => $args{'TimeTaken'},
         );
-        return ( $Trans, scalar $TransObj->BriefDescription );
+        return ( $Trans, scalar $TransObj->brief_description );
     }
     else {
         return ( $ret, $msg );
@@ -1301,9 +1301,9 @@ return it). Returns C<undef> if no preferred key can be found.
 sub preferred_key
 {
     my $self = shift;
-    return undef unless RT->Config->Get('GnuPG')->{'Enable'};
+    return undef unless RT->config->get('GnuPG')->{'Enable'};
     my $prefkey = $self->first_attribute('preferred_key');
-    return $prefkey->Content if $prefkey;
+    return $prefkey->content if $prefkey;
 
     # we don't have a preferred key for this user, so now we must query GPG
     require RT::Crypt::GnuPG;
@@ -1329,7 +1329,7 @@ sub private_key {
     my $self = shift;
 
     my $key = $self->first_attribute('private_key') or return undef;
-    return $key->Content;
+    return $key->content;
 }
 
 sub set_private_key {

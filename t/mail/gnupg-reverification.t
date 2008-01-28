@@ -8,17 +8,17 @@ use RT::Test; use Test::More tests => 111;
 use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
 
-RT->Config->set( LogToScreen => 'debug' );
-RT->Config->set( 'GnuPG',
+RT->config->set( LogToScreen => 'debug' );
+RT->config->set( 'GnuPG',
                  Enable => 1,
                  OutgoingMessagesFormat => 'RFC' );
 
-RT->Config->set( 'GnuPGOptions',
+RT->config->set( 'GnuPGOptions',
                  homedir => $homedir,
                  passphrase => 'rt-test',
                  'no-permission-warning' => undef);
 
-RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 
 diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
@@ -59,7 +59,7 @@ foreach my $file ( @files ) {
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->load( $id );
     ok $ticket->id, "$eid: loaded ticket #$id";
-    is $ticket->Subject, "Test Email ID:$eid", "$eid: correct subject";
+    is $ticket->subject, "Test Email ID:$eid", "$eid: correct subject";
 
     $m->goto_ticket( $id );
     $m->content_like(

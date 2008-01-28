@@ -60,7 +60,7 @@
 %  $class = 'class="oddline"';
 % }
 <tr <%$class|n%>><td colspan="2"><h2><a
-href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->id%>"><%$Ticket->id%>:
+href="<%RT->config->get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->id%>"><%$Ticket->id%>:
 <%$Ticket->Subject%></a></h2></td></tr>
 <tr <%$class|n%>><td><span class="label"><&|/l&>Worked</&>:</span><input size="3" name="UpdateTimeWorked-<%$Ticket->id%>" /> <&|/l&>minutes</&>
 </td>
@@ -99,7 +99,7 @@ foreach my $arg ( keys %ARGS ) {
 
     if ( my $status = $ARGS{ 'UpdateStatus-' . $id } ) {
         if ( $status ne $ticket->Status ) {
-            my ( $val, $msg ) = $ticket->set_Status($status);
+            my ( $val, $msg ) = $ticket->set_status($status);
             push @results, _( "Ticket %1: %2", $id, $msg );
 
         }
@@ -108,9 +108,9 @@ foreach my $arg ( keys %ARGS ) {
 }
 
 my $Tickets = RT::Model::TicketCollection->new();
-$Tickets->limit_Owner(value => Jifty->web->current_user->id);
-$Tickets->limit_Status( value => 'open' );
-$Tickets->limit_Status ( value => 'new');
+$Tickets->limit_owner(value => Jifty->web->current_user->id);
+$Tickets->limit_status( value => 'open' );
+$Tickets->limit_status ( value => 'new');
 $Tickets->order_by ( column => 'Priority', order => 'DESC');
 
 

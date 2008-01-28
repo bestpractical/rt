@@ -177,10 +177,10 @@ example from L</SYNOPSIS>:
   RT::Shredder::Init( force => 1 );
   my $deleted = RT::Model::TicketCollection->new(current_user => RT->system_user );
   $deleted->{'allow_deleted_search'} = 1;
-  $deleted->limit_Queue( value => 'general' );
-  $deleted->limit_Status( value => 'deleted' );
+  $deleted->limit_queue( value => 'general' );
+  $deleted->limit_status( value => 'deleted' );
   while( my $t = $deleted->next ) {
-      $t->Wipeout;
+      $t->wipeout;
   }
 
 
@@ -266,8 +266,7 @@ configuration.
 
 our %opt = ();
 
-sub Init
-{
+sub init {
     %opt = @_;
     RT::load_config();
     RT::Init();
@@ -283,16 +282,14 @@ There currently are no %options.
 
 =cut
 
-sub new
-{
+sub new {
     my $proto = shift;
     my $self = bless( {}, ref $proto || $proto );
     $self->_init( @_ );
     return $self;
 }
 
-sub _init
-{
+sub _init {
     my $self = shift;
     $self->{'opt'}          = { %opt, @_ };
     $self->{'cache'}        = {};
@@ -313,7 +310,7 @@ Returns an array of records.
 
 For example:
 
-    my @objs = $shredder->CastObjectsToRecords(
+    my @objs = $shredder->cast_objects_to_records(
         Objects => [             # ARRAY reference
             'RT::Model::Attachment-10', # SCALAR or SCALAR reference
             $tickets,            # RT::Model::TicketCollection object (isa RT::SearchBuilder)
@@ -323,8 +320,7 @@ For example:
 
 =cut
 
-sub CastObjectsToRecords
-{
+sub cast_objects_to_records {
     my $self = shift;
     my %args = ( Objects => undef, @_ );
 
@@ -343,7 +339,7 @@ sub CastObjectsToRecords
         push @res, $targets;
     } elsif ( UNIVERSAL::isa( $targets, 'ARRAY' ) ) {
         foreach( @$targets ) {
-            push @res, $self->CastObjectsToRecords( Objects => $_ );
+            push @res, $self->cast_objects_to_records( Objects => $_ );
         }
     } elsif ( UNIVERSAL::isa( $targets, 'SCALAR' ) || !ref $targets ) {
         $targets = $$targets if ref $targets;
@@ -379,14 +375,13 @@ argument.
 
 =cut
 
-sub PutObjects
-{
+sub put_objects {
     my $self = shift;
     my %args = ( Objects => undef, @_ );
 
     my @res;
-    for( $self->CastObjectsToRecords( Objects => delete $args{'Objects'} ) ) {
-        push @res, $self->PutObject( %args, Object => $_ )
+    for( $self->cast_objects_to_records( Objects => delete $args{'Objects'} ) ) {
+        push @res, $self->put_object( %args, Object => $_ )
     }
 
     return @res;
@@ -402,8 +397,7 @@ classes then use C<PutObjects> method instead.
 
 =cut
 
-sub PutObject
-{
+sub put_object {
     my $self = shift;
     my %args = ( Object => undef, @_ );
 
@@ -412,7 +406,7 @@ sub PutObject
         RT::Shredder::Exception->throw( "Unsupported type '". (ref $obj || $obj || '(undef)')."'" );
     }
 
-    my $str = $obj->_AsString;
+    my $str = $obj->_as_string;
     return ($self->{'cache'}->{ $str } ||= { State => ON_STACK, Object => $obj } );
 }
 
@@ -428,8 +422,7 @@ You can read about possible states and their meanings in L<RT::Shredder::Constan
 
 =cut
 
-sub _ParseRefStrArgs
-{
+sub _parse_ref_str_args {
     my $self = shift;
     my %args = (
         String => '',
@@ -441,16 +434,15 @@ sub _ParseRefStrArgs
         Carp::croak( "both String and Object args passed" );
     }
     return $args{'String'} if $args{'String'};
-    return $args{'Object'}->_AsString if UNIVERSAL::can($args{'Object'}, '_AsString' );
+    return $args{'Object'}->_as_string if UNIVERSAL::can($args{'Object'}, '_AsString' );
     return '';
 }
 
-sub GetObject { return (shift)->GetRecord( @_ )->{'Object'} }
-sub GetState { return (shift)->GetRecord( @_ )->{'State'} }
-sub GetRecord
-{
+sub get_object { return (shift)->get_record( @_ )->{'Object'} }
+sub get_state { return (shift)->get_record( @_ )->{'State'} }
+sub get_record {
     my $self = shift;
-    my $str = $self->_ParseRefStrArgs( @_ );
+    my $str = $self->_parse_ref_str_args( @_ );
     return $self->{'cache'}->{ $str };
 }
 
@@ -462,8 +454,7 @@ TODO: These methods have no documentation.
 
 =cut
 
-sub PutResolver
-{
+sub put_resolver {
     my $self = shift;
     my %args = (
         BaseClass => '',
@@ -484,8 +475,7 @@ sub PutResolver
     return;
 }
 
-sub GetResolvers
-{
+sub get_resolvers {
     my $self = shift;
     my %args = (
         BaseClass => '',
@@ -504,115 +494,110 @@ sub GetResolvers
     return @res;
 }
 
-sub ApplyResolvers
-{
+sub apply_resolvers {
     my $self = shift;
     my %args = ( Dependency => undef, @_ );
     my $dep = $args{'Dependency'};
 
-    my @resolvers = $self->GetResolvers(
-        BaseClass   => $dep->BaseClass,
-        TargetClass => $dep->TargetClass,
+    my @resolvers = $self->get_resolvers(
+        BaseClass   => $dep->base_class,
+        TargetClass => $dep->target_class,
     );
 
     unless( @resolvers ) {
         RT::Shredder::Exception::Info->throw(
             tag   => 'NoResolver',
-            error => "Couldn't find resolver for dependency '". $dep->AsString ."'",
+            error => "Couldn't find resolver for dependency '". $dep->as_string ."'",
         );
     }
     $_->(
         Shredder     => $self,
         base_object   => $dep->base_object,
-        TargetObject => $dep->TargetObject,
+        TargetObject => $dep->target_object,
     ) foreach @resolvers;
 
     return;
 }
 
-sub WipeoutAll
-{
+sub wipeout_all {
     my $self = $_[0];
 
     while ( my ($k, $v) = each %{ $self->{'cache'} } ) {
         next if $v->{'State'} & (WIPED | IN_WIPING);
-        $self->Wipeout( Object => $v->{'Object'} );
+        $self->wipeout( Object => $v->{'Object'} );
     }
 }
 
-sub Wipeout
-{
+sub wipeout {
     my $self = shift;
     my $mark;
     eval {
         die "Couldn't begin transaction" unless Jifty->handle->begin_transaction;
-        $mark = $self->PushDumpMark or die "Couldn't get dump mark";
-        $self->_Wipeout( @_ );
-        $self->PopDumpMark( Mark => $mark );
+        $mark = $self->push_dump_mark or die "Couldn't get dump mark";
+        $self->_wipeout( @_ );
+        $self->pop_dump_mark( Mark => $mark );
         die "Couldn't commit transaction" unless Jifty->handle->commit;
     };
     if( $@ ) {
         Jifty->handle->rollback('force');
-        $self->RollbackDumpTo( Mark => $mark ) if $mark;
+        $self->rollback_dump_to( Mark => $mark ) if $mark;
         die $@ if RT::Shredder::Exception::Info->caught;
         die "Couldn't wipeout object: $@";
     }
 }
 
-sub _Wipeout
-{
+sub _wipeout {
     my $self = shift;
     my %args = ( CacheRecord => undef, Object => undef, @_ );
 
     my $record = $args{'CacheRecord'};
-    $record = $self->PutObject( Object => $args{'Object'} ) unless $record;
+    $record = $self->put_object( Object => $args{'Object'} ) unless $record;
     return if $record->{'State'} & (WIPED | IN_WIPING);
 
     $record->{'State'} |= IN_WIPING;
     my $object = $record->{'Object'};
 
-    $self->DumpObject( Object => $object, State => 'before any action' );
+    $self->dump_object( Object => $object, State => 'before any action' );
 
-    unless( $object->BeforeWipeout ) {
+    unless( $object->before_wipeout ) {
         RT::Shredder::Exception->throw( "BeforeWipeout check returned error" );
     }
 
-    my $deps = $object->Dependencies( Shredder => $self );
-    $deps->List(
+    my $deps = $object->dependencies( Shredder => $self );
+    $deps->list(
         WithFlags => DEPENDS_ON | VARIABLE,
-        Callback  => sub { $self->ApplyResolvers( Dependency => $_[0] ) },
+        Callback  => sub  { $self->apply_resolvers( Dependency => $_[0] ) },
     );
-    $self->DumpObject( Object => $object, State => 'after resolvers' );
+    $self->dump_object( Object => $object, State => 'after resolvers' );
 
-    $deps->List(
+    $deps->list(
         WithFlags    => DEPENDS_ON,
         WithoutFlags => WIPE_AFTER | VARIABLE,
-        Callback     => sub { $self->_Wipeout( Object => $_[0]->TargetObject ) },
+        Callback     => sub  { $self->_wipeout( Object => $_[0]->target_object ) },
     );
-    $self->DumpObject( Object => $object, State => 'after wiping dependencies' );
+    $self->dump_object( Object => $object, State => 'after wiping dependencies' );
 
-    $object->__Wipeout;
+    $object->__wipeout;
     $record->{'State'} |= WIPED; delete $record->{'Object'};
-    $self->DumpObject( Object => $object, State => 'after wipeout' );
+    $self->dump_object( Object => $object, State => 'after wipeout' );
 
-    $deps->List(
+    $deps->list(
         WithFlags => DEPENDS_ON | WIPE_AFTER,
         WithoutFlags => VARIABLE,
-        Callback => sub { $self->_Wipeout( Object => $_[0]->TargetObject ) },
+        Callback => sub  { $self->_wipeout( Object => $_[0]->target_object ) },
     );
-    $self->DumpObject( Object => $object, State => 'after late dependencies' );
+    $self->dump_object( Object => $object, State => 'after late dependencies' );
 
     return;
 }
 
-sub validate_Relations
-{
+sub validate_relations {
     my $self = shift;
     my %args = ( @_ );
 
     foreach my $record( values %{ $self->{'cache'} } ) {
         next if( $record->{'State'} & VALID );
-        $record->{'Object'}->validate_Relations( Shredder => $self );
+        $record->{'Object'}->validate_relations( Shredder => $self );
     }
 }
 
@@ -637,27 +622,26 @@ Returns an absolute path of the file.
 
 Examples:
     # file from storage with default name format
-    my $fname = $shredder->GetFilename;
+    my $fname = $shredder->get_filename;
 
     # file from storage with custom name format
-    my $fname = $shredder->GetFilename( Filename => 'shredder-XXXX.backup' );
+    my $fname = $shredder->get_filename( Filename => 'shredder-XXXX.backup' );
 
     # file with path relative to the current dir
-    my $fname = $shredder->GetFilename(
+    my $fname = $shredder->get_filename(
         FromStorage => 0,
         Filename => 'backups/shredder.sql',
     );
 
     # file with absolute path
-    my $fname = $shredder->GetFilename(
+    my $fname = $shredder->get_filename(
         FromStorage => 0,
         Filename => '/var/backups/shredder-XXXX.sql'
     );
 
 =cut
 
-sub GetFilename
-{
+sub get_filename {
     my $self = shift;
     my %args = ( Filename => '', FromStorage => 1, @_ );
 
@@ -671,7 +655,7 @@ sub GetFilename
 
     # convert to absolute path
     if( $args{'FromStorage'} ) {
-        $file = File::Spec->catfile( $self->StoragePath, $file );
+        $file = File::Spec->catfile( $self->storage_path, $file );
     } elsif( !File::Spec->file_name_is_absolute( $file ) ) {
         $file = File::Spec->rel2abs( $file );
     }
@@ -720,14 +704,13 @@ See also description of the L</GetFilename> method.
 
 =cut
 
-sub StoragePath
-{
-    return scalar( RT->Config->Get('ShredderStoragePath') )
+sub storage_path {
+    return scalar( RT->config->get('ShredderStoragePath') )
         || File::Spec->catdir( $RT::VarPath, qw(data RT-Shredder) );
 }
 
 my %active_dump_state = ();
-sub AddDumpPlugin {
+sub add_dump_plugin {
     my $self = shift;
     my %args = ( Object => undef, name => 'SQLDump', Arguments => undef, @_ );
 
@@ -738,14 +721,14 @@ sub AddDumpPlugin {
         my( $status, $msg ) = $plugin->load_by_name( $args{'name'} );
         die "Couldn't load dump plugin: $msg\n" unless $status;
     }
-    die "Plugin is not of correct type" unless lc $plugin->Type eq 'dump';
+    die "Plugin is not of correct type" unless lc $plugin->type eq 'dump';
 
     if ( my $pargs = $args{'Arguments'} ) {
-        my ($status, $msg) = $plugin->TestArgs( %$pargs );
+        my ($status, $msg) = $plugin->test_args( %$pargs );
         die "Couldn't set plugin args: $msg\n" unless $status;
     }
 
-    my @applies_to = $plugin->AppliesToStates;
+    my @applies_to = $plugin->applies_to_states;
     die "Plugin doesn't apply to any state" unless @applies_to;
     $active_dump_state{ lc $_ } = 1 foreach @applies_to;
 
@@ -754,40 +737,40 @@ sub AddDumpPlugin {
     return $plugin;
 }
 
-sub DumpObject {
+sub dump_object {
     my $self = shift;
     my %args = (Object => undef, State => undef, @_);
     die "No state passed" unless $args{'State'};
     return unless $active_dump_state{ lc $args{'State'} };
 
     foreach (@{ $self->{'dump_plugins'} }) {
-        next unless grep lc $args{'State'} eq lc $_, $_->AppliesToStates;
-        my ($state, $msg) = $_->Run( %args );
+        next unless grep lc $args{'State'} eq lc $_, $_->applies_to_states;
+        my ($state, $msg) = $_->run( %args );
         die "Couldn't run plugin: $msg" unless $state;
     }
 }
 
 { my $mark = 1; # XXX: integer overflows?
-sub PushDumpMark {
+sub push_dump_mark {
     my $self = shift;
     $mark++;
     foreach (@{ $self->{'dump_plugins'} }) {
-        my ($state, $msg) = $_->PushMark( Mark => $mark );
+        my ($state, $msg) = $_->push_mark( Mark => $mark );
         die "Couldn't push mark: $msg" unless $state;
     }
     return $mark;
 }
-sub PopDumpMark {
+sub pop_dump_mark {
     my $self = shift;
     foreach (@{ $self->{'dump_plugins'} }) {
-        my ($state, $msg) = $_->PushMark( @_ );
+        my ($state, $msg) = $_->push_mark( @_ );
         die "Couldn't pop mark: $msg" unless $state;
     }
 }
-sub RollbackDumpTo {
+sub rollback_dump_to {
     my $self = shift;
     foreach (@{ $self->{'dump_plugins'} }) {
-        my ($state, $msg) = $_->rollbackTo( @_ );
+        my ($state, $msg) = $_->rollback_to( @_ );
         die "Couldn't rollback to mark: $msg" unless $state;
     }
 }

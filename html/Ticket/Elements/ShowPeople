@@ -48,19 +48,19 @@
 <table>
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
-    <td class="value"><& /Elements/ShowUser, User => $Ticket->OwnerObj, Ticket => $Ticket &></td>
+    <td class="value"><& /Elements/ShowUser, User => $Ticket->owner_obj, Ticket => $Ticket &></td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Requestors</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></td>
+    <td class="value"><& ShowGroupMembers, Group => $Ticket->requestors, Ticket => $Ticket &></td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Cc</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></td>
+    <td class="value"><& ShowGroupMembers, Group => $Ticket->cc, Ticket => $Ticket &></td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>AdminCc</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></td>
+    <td class="value"><& ShowGroupMembers, Group => $Ticket->admin_cc, Ticket => $Ticket &></td>
   </tr>
 </table>
 <%ARGS>

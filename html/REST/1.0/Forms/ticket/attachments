@@ -85,23 +85,23 @@ if ($aid) {
         $c = $attachment->original_content;
         # if we're sending a binary attachment (and only the attachment)
         # flag it so bin/rt knows to special case it
-        if ($attachment->ContentType !~ /^text\//) {
+        if ($attachment->content_type !~ /^text\//) {
             $r->content_type($attachment->ContentType);
         }
     } else {
 	my @data;
 	push @data, [ id    => $attachment->id   ];
-	push @data, [ Subject    => $attachment->Subject   ];
+	push @data, [ Subject    => $attachment->subject   ];
 	push @data, [ Creator    => $attachment->Creator   ];
 	push @data, [ Created    => $attachment->Created   ];
 	push @data, [ Transaction    => $attachment->TransactionId   ];
 	push @data, [ Parent    => $attachment->Parent   ];
 	push @data, [ MessageId    => $attachment->MessageId   ];
-	push @data, [ Filename    => $attachment->Filename   ];
-	push @data, [ ContentType    => $attachment->ContentType   ];
+	push @data, [ Filename    => $attachment->filename   ];
+	push @data, [ ContentType    => $attachment->content_type   ];
 	push @data, [ ContentEncoding    => $attachment->ContentEncoding   ];
-	push @data, [ Headers    => $attachment->Headers   ];
-	push @data, [ Content    => $attachment->Content   ];
+	push @data, [ Headers    => $attachment->headers   ];
+	push @data, [ Content    => $attachment->content   ];
 
 	my %k = map {@$_} @data;
 	$o = [ map {$_->[0]} @data ];
@@ -111,14 +111,14 @@ if ($aid) {
 }
 else {
     my @attachments;
-    my $transactions = $ticket->Transactions;
+    my $transactions = $ticket->transactions;
     while (my $t = $transactions->next) {
-        my $attachments = $t->Attachments;
+        my $attachments = $t->attachments;
         while (my $a = $attachments->next) {
             my $size = length($a->Content) || 0;
             if ($size > 1024) { $size  = int($size/102.4)/10 . "k" }
             else              { $size .= "b" }
-            push @attachments, $a->id.": ".($a->Filename || '(Unnamed)')." (".$a->ContentType . " / ".$size.")";
+            push @attachments, $a->id.": ".($a->filename || '(Unnamed)')." (".$a->content_type . " / ".$size.")";
         }
     }
 

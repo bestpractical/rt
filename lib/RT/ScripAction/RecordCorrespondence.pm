@@ -80,7 +80,7 @@ will give us a loop.
 sub prepare {
     my $self = shift;
     if (defined $self->{'transaction_obj'} &&
-	$self->{'transaction_obj'}->Type =~ /^(comment|Correspond)$/) {
+	$self->{'transaction_obj'}->type =~ /^(comment|Correspond)$/) {
 	return undef;
     }
     return 1;
@@ -97,13 +97,13 @@ be used by the scrips that actually send the email.
 
 sub commit {
     my $self = shift;
-    $self->createTransaction();
+    $self->create_transaction();
 }
 
-sub createTransaction {
+sub create_transaction {
     my $self = shift;
 
-    my ($result, $msg) = $self->{'template_obj'}->Parse(
+    my ($result, $msg) = $self->{'template_obj'}->parse(
 	ticket_obj => $self->{'ticket_obj'});
     return undef unless $result;
     

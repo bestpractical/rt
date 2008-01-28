@@ -94,7 +94,7 @@ sub new  {
 # }}}
 
 # {{{ sub _init 
-sub _init  {
+sub _init {
   my $self = shift;
   my %args = ( transaction_obj => undef,
 	       ticket_obj => undef,
@@ -122,7 +122,7 @@ Return the optional argument associated with this ScripCondition
 
 =cut
 
-sub Argument  {
+sub argument {
   my $self = shift;
   return($self->{'Argument'});
 }
@@ -177,7 +177,7 @@ sub transaction_obj  {
 
 =cut
 
-sub ApplicableTransTypes  {
+sub applicable_trans_types {
   my $self = shift;
   return($self->{'ApplicableTransTypes'});
 }
@@ -190,7 +190,7 @@ sub ApplicableTransTypes  {
 #What does this type of Action does
 
 # {{{ sub Describe 
-sub Describe  {
+sub describe {
   my $self = shift;
   return (_("No description for %1", ref $self));
 }
@@ -202,7 +202,7 @@ sub Describe  {
 #If this rule applies to this transaction, return true.
 
 # {{{ sub IsApplicable 
-sub IsApplicable  {
+sub is_applicable {
   my $self = shift;
   return(undef);
 }

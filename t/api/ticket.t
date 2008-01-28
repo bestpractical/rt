@@ -20,20 +20,20 @@ my ($ret, $cmsg) = $testcf->create( name => 'selectmulti',
                     Queue => $testqueue->id,
                                Type => 'SelectMultiple');
 ok($ret,"Created the custom field - ".$cmsg);
-($ret,$cmsg) = $testcf->AddValue ( name => 'Value1',
+($ret,$cmsg) = $testcf->add_value ( name => 'Value1',
                         SortOrder => '1',
                         Description => 'A testing value');
 
 ok($ret, "Added a value - ".$cmsg);
 
-ok($testcf->AddValue ( name => 'Value2',
+ok($testcf->add_value ( name => 'Value2',
                         SortOrder => '2',
                         Description => 'Another testing value'));
-ok($testcf->AddValue ( name => 'Value3',
+ok($testcf->add_value ( name => 'Value3',
                         SortOrder => '3',
                         Description => 'Yet Another testing value'));
                        
-is($testcf->Values->count , 3);
+is($testcf->values->count , 3);
 
 use_ok('RT::Model::Ticket');
 
@@ -46,13 +46,13 @@ ok(my ($id, $msg) = $t->create( Queue => $testqueue->id,
                Owner => $u->id
               ));
 isnt($id , 0);
-is ($t->OwnerObj->id , $u->id, "Root is the ticket owner");
+is ($t->owner_obj->id , $u->id, "Root is the ticket owner");
 ok(my ($cfv, $cfm) =$t->add_custom_field_value(Field => $testcf->id,
                            Value => 'Value1'));
 isnt($cfv , 0, "Custom field creation didn't return an error: $cfm");
 is($t->custom_field_values($testcf->id)->count , 1);
 ok($t->custom_field_values($testcf->id)->first &&
-    $t->custom_field_values($testcf->id)->first->Content eq 'Value1', $t->custom_field_values($testcf->id)->first->Content . " (should be 'Value1')");;
+    $t->custom_field_values($testcf->id)->first->content eq 'Value1', $t->custom_field_values($testcf->id)->first->content . " (should be 'Value1')");;
 
 ok(my ($cfdv, $cfdm) = $t->delete_custom_field_value(Field => $testcf->id,
                         Value => 'Value1'));
@@ -61,9 +61,9 @@ is($t->custom_field_values($testcf->id)->count , 0);
 
 ok(my $t2 = RT::Model::Ticket->new(current_user => RT->system_user));
 ok($t2->load($id));
-is($t2->Subject, 'Testing');
+is($t2->subject, 'Testing');
 is($t2->queue_obj->id, $testqueue->id);
-is($t2->OwnerObj->id, $u->id);
+is($t2->owner_obj->id, $u->id);
 
 my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($id3, $msg3) = $t3->create( Queue => $testqueue->id,
@@ -94,9 +94,9 @@ my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 ok( $t->create(Queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy => 'http://www.cpan.org', RefersTo => 'http://fsck.com', Subject => 'This is a subject'), "Ticket Created");
 
 ok ( my $id = $t->id, "Got ticket id");
-like ($t->RefersTo->first->Target , qr/fsck.com/, "Got refers to");
-like ($t->ReferredToBy->first->Base , qr/cpan.org/, "Got referredtoby");
-is ($t->ResolvedObj->Unix, 0, "It hasn't been resolved - ". $t->ResolvedObj->Unix);
+like ($t->refers_to->first->Target , qr/fsck.com/, "Got refers to");
+like ($t->referred_to_by->first->Base , qr/cpan.org/, "Got referredtoby");
+is ($t->resolved_obj->unix, 0, "It hasn't been resolved - ". $t->resolved_obj->Unix);
 
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
@@ -117,15 +117,15 @@ $jesse->load_by_email('jesse@example.com');
 ok($jesse->id,  "Found the jesse rt user");
 
 
-ok ($ticket->IsWatcher(Type => 'Requestor', principal_id => $jesse->principal_id), "The ticket actually has jesse at fsck.com as a requestor");
-ok (my ($add_id, $add_msg) = $ticket->AddWatcher(Type => 'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok ($ticket->is_watcher(Type => 'Requestor', principal_id => $jesse->principal_id), "The ticket actually has jesse at fsck.com as a requestor");
+ok (my ($add_id, $add_msg) = $ticket->add_watcher(Type => 'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
 ok ($add_id, "Add succeeded: ($add_msg)");
 ok(my $bob = RT::Model::User->new(current_user => RT->system_user), "Creating a bob rt::user");
 $bob->load_by_email('bob@fsck.com');
 ok($bob->id,  "Found the bob rt user");
-ok ($ticket->IsWatcher(Type => 'Requestor', principal_id => $bob->principal_id), "The ticket actually has bob at fsck.com as a requestor");;
+ok ($ticket->is_watcher(Type => 'Requestor', principal_id => $bob->principal_id), "The ticket actually has bob at fsck.com as a requestor");;
 ok ( ($add_id, $add_msg) = $ticket->delete_watcher(Type =>'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
-ok (!$ticket->IsWatcher(Type => 'Requestor', principal_id => $bob->principal_id), "The ticket no longer has bob at fsck.com as a requestor");;
+ok (!$ticket->is_watcher(Type => 'Requestor', principal_id => $bob->principal_id), "The ticket no longer has bob at fsck.com as a requestor");;
 
 
 $group = RT::Model::Group->new(current_user => RT->system_user);
@@ -144,15 +144,15 @@ ok($group->has_member(RT->nobody->user_object->principal_object), "the owner gro
 $t = RT::Model::Ticket->new(current_user => RT->system_user);
 ok($t->create(Queue => 'general', Subject => 'SquelchTest'));
 
-is(scalar $t->SquelchMailTo, 0, "The ticket has no squelched recipients");
+is(scalar $t->squelch_mail_to, 0, "The ticket has no squelched recipients");
 
-my @returned = $t->SquelchMailTo('nobody@example.com');
+my @returned = $t->squelch_mail_to('nobody@example.com');
 
 is($#returned, 0, "The ticket has one squelched recipients");
 
 my @names = $t->attributes->names;
 is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
-@returned = $t->SquelchMailTo('nobody@example.com');
+@returned = $t->squelch_mail_to('nobody@example.com');
 
 
 is($#returned, 0, "The ticket has one squelched recipients");
@@ -161,9 +161,9 @@ is($#returned, 0, "The ticket has one squelched recipients");
 is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
 
 my $ret;
-($ret, $msg) = $t->UnsquelchMailTo('nobody@example.com');
+($ret, $msg) = $t->unsquelch_mail_to('nobody@example.com');
 ok($ret, "Removed nobody as a squelched recipient - ".$msg);
-@returned = $t->SquelchMailTo();
+@returned = $t->squelch_mail_to();
 is($#returned, -1, "The ticket has no squelched recipients". join(',',@returned));
 
 
@@ -176,7 +176,7 @@ my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
 $t2->create ( Subject => 'Merge test 2', Queue => 'general', Requestor => 'merge2@example.com');
 my $t2id = $t2->id;
 my $val;
-($msg, $val) = $t1->MergeInto($t2->id);
+($msg, $val) = $t1->merge_into($t2->id);
 ok ($msg,$val);
 $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
 is ($t1->id, undef, "ok. we've got a blank ticket1");
@@ -184,7 +184,7 @@ $t1->load($t1id);
 
 is ($t1->id, $t2->id);
 
-is ($t1->Requestors->MembersObj->count, 2);
+is ($t1->requestors->members_obj->count, 2);
 
 
 
@@ -199,12 +199,12 @@ $root->load('root');
 ok ($root->id, "Loaded the root user");
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 $t->load(1);
-my ($val,$msg) = $t->Steal;
+my ($val,$msg) = $t->steal;
 ok($val,$msg);
-is ($t->OwnerObj->id, RT->system_user->id , "system_user owns the ticket");
- ($val,$msg) =$t->set_Owner('root');
+is ($t->owner_obj->id, RT->system_user->id , "system_user owns the ticket");
+ ($val,$msg) =$t->set_owner('root');
 ok($val,$msg);
-is ($t->OwnerObj->name, 'root' , "Root owns the ticket");
+is ($t->owner_obj->name, 'root' , "Root owns the ticket");
 my $txns = RT::Model::TransactionCollection->new(current_user => RT->system_user);
 $txns->order_by(column => 'id', order => 'DESC');
 $txns->limit(column => 'object_id', value => '1');
@@ -212,7 +212,7 @@ $txns->limit(column => 'object_type', value => 'RT::Model::Ticket');
 $txns->limit(column => 'Type', operator => '!=',  value => 'EmailRecord');
 
 my $give  = $txns->first;
-is($give->Type, 'Give');
+is($give->type, 'Give');
 
 
 is($give-> new_value , $root->id , "Stolen from root");
@@ -229,13 +229,13 @@ my ($id, $tid, $msg)= $tt->create(Queue => 'general',
 ok($id, $msg);
 is($tt->Status, 'new', "New ticket is Created as new");
 
-($id, $msg) = $tt->set_Status('open');
+($id, $msg) = $tt->set_status('open');
 ok($id, $msg);
 like($msg, qr/open/i, "Status message is correct");
-($id, $msg) = $tt->set_Status('resolved');
+($id, $msg) = $tt->set_status('resolved');
 ok($id, $msg);
 like($msg, qr/resolved/i, "Status message is correct");
-($id, $msg) = $tt->set_Status('resolved');
+($id, $msg) = $tt->set_status('resolved');
 ok(!$id,$msg);
 
 

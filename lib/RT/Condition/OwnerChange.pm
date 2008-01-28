@@ -64,7 +64,7 @@ If we're changing the owner return true, otherwise return false
 
 =cut
 
-sub IsApplicable {
+sub is_applicable {
     my $self = shift;
     if ( ( $self->transaction_obj->Field || '' ) eq 'Owner' ) {
 	return(1);

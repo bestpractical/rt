@@ -81,13 +81,13 @@ sub new {
 }
 
 
-sub ParseObject  {
+sub parse_object {
     my $self = shift;
     my $obj = shift;
     $self->{'uri'} = "unknown-object:".ref($obj);
 }
 
-sub ParseURI { 
+sub parse_uri { 
     my $self = shift;
     my $uri = shift;
 
@@ -100,29 +100,29 @@ sub ParseURI {
 }
 
 
-sub Object {
+sub object {
     my $self = shift;
     return undef;
 
 }
 
-sub URI {
+sub uri {
     my $self = shift;
     return($self->{'uri'});
 }
 
-sub Scheme { 
+sub scheme { 
     my $self = shift;
     return($self->{'scheme'});
 
 }
 
-sub HREF {
+sub href {
     my $self = shift;
     return($self->{'href'} || $self->{'uri'});
 }
 
-sub IsLocal {
+sub is_local {
     my $self = shift;
     return undef;
 }
@@ -133,14 +133,14 @@ Return a "pretty" string representing the URI object.
 
 This is meant to be used like this:
 
- % $re = $uri->Resolver;
- <A HREF="<% $re->HREF %>"><% $re->AsString %></A>
+ % $re = $uri->resolver;
+ <A HREF="<% $re->href %>"><% $re->as_string %></A>
 
 =cut
 
-sub AsString {
+sub as_string {
     my $self = shift;
-    return $self->URI;
+    return $self->uri;
 }
 
 eval "require RT::URI::base_Vendor";

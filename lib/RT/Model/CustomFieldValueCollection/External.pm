@@ -112,12 +112,12 @@ sub limit {
     my %args = (@_);
     push @{ $self->{'__external_cf_limits'} ||= [] }, {
         %args,
-        CALLBACK => $self->__Buildlimit_Check( %args ),
+        CALLBACK => $self->__build_limit_check( %args ),
     };
     return $self->SUPER::limit( %args );
 }
 
-sub __Buildlimit_Check {
+sub __build_limit_check {
     my ($self, %args) = (@_);
     return undef unless $args{'column'} =~ /^(?:name|Description)$/;
 
@@ -149,13 +149,13 @@ END
     else {
         $code .= 'return 0;'
     }
-    $code = "sub {$code}";
+    $code = "sub  {$code}";
     my $cb = eval "$code";
     Jifty->log->error( "Couldn't build callback '$code': $@" ) if $@;
     return $cb;
 }
 
-sub __BuildAggregatorsCheck {
+sub __build_aggregators_check {
     my $self = shift;
 
     my %h = ( OR => ' || ', AND => ' && ' );
@@ -168,7 +168,7 @@ sub __BuildAggregatorsCheck {
     }
     return unless $code;
 
-    $code = "sub { my (\$sb,\$record) = (\@_); return $code }";
+    $code = "sub  { my (\$sb,\$record) = (\@_); return $code }";
     my $cb = eval "$code";
     Jifty->log->error( "Couldn't build callback '$code': $@" ) if $@;
     return $cb;
@@ -193,8 +193,8 @@ sub _do_search {
 
     my $i = 0;
 
-    my $check = $self->__BuildAggregatorsCheck;
-    foreach( @{ $self->ExternalValues } ) {
+    my $check = $self->__build_aggregators_check;
+    foreach( @{ $self->external_values } ) {
         my $value = $self->new_item;
         $value->load_from_hash( { %defaults, %$_ } );
         next if $check && !$check->( $self, $value );

@@ -6,7 +6,7 @@ use warnings;
 use RT::Test; use Test::More;
 
 
-my %clicky = map { $_ => 1 } grep $_, RT->Config->Get('Active_MakeClicky');
+my %clicky = map { $_ => 1 } grep $_, RT->config->get('Active_MakeClicky');
 if ( keys %clicky ) {
     plan 'no_plan';
 } else {
@@ -42,7 +42,7 @@ my ($id) = $ticket->create(
     MIMEObj => $message,
 );
 ok($id, "We Created a ticket #$id");
-ok($ticket->Transactions->first->Content, "Has some content");
+ok($ticket->transactions->first->content, "Has some content");
 
 ok $m->login, 'logged in';
 ok $m->goto_ticket($id), 'opened diplay page of the ticket';

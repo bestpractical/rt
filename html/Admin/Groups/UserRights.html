@@ -58,11 +58,11 @@
 <&| /Widgets/TitleBox, title => _('Modify user rights for group %1', $GroupObj->name) &>
 <table>
 % while ( my $Member = $Users->next ) {
-% my $user_object = $Member->MemberObj->Object;
+% my $user_object = $Member->member_obj->object;
   <tr align="right">
     <td valign="top"><& /Elements/ShowUser, User => $user_object &></td>
     <td><& /Admin/Elements/SelectRights,
-        principal_id => $Member->MemberObj->id,
+        principal_id => $Member->member_obj->id,
         principal_type => 'User',
         Object => $GroupObj,
     &></td>
@@ -96,7 +96,7 @@ $GroupObj->load($id) || Abort(_("Couldn't load group %1",$id));
 # Find out which users we want to display ACL selects for
 my $privileged = RT::Model::Group->new();
 $privileged->load_system_internal_group('privileged');
-my $Users = $privileged->MembersObj();
+my $Users = $privileged->members_obj();
 
     
   

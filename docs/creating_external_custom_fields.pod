@@ -72,12 +72,12 @@ Here's a simple static example:
   use base qw(RT::Model::CustomFieldValueCollection::External);
 
   # admin friendly description, the default valuse is the name of the class
-  sub SourceDescription {
+  sub source_description {
       return 'My Source';
   }
   
   # actual values provider method
-  sub ExternalValues {
+  sub external_values {
       # return reference to array ([])
       return [
           # each element of the array is a reference to hash that describe a value

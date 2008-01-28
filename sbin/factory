@@ -348,7 +348,7 @@ use vars qw( \@ISA );
 \@ISA= qw($CollectionBaseclass);
 
 
-sub _Init {
+sub _init {
     my \$self = shift;
     \$self->{'table'} = '$table';
     \$self->{'primary_key'} = 'id';
@@ -414,10 +414,10 @@ use $RecordBaseclass;
 use vars qw( \@ISA );
 \@ISA= qw( $RecordBaseclass );
 
-sub _Init {
+sub _init {
   my \$self = shift; 
 
-  \$self->Table('$table');
+  \$self->table('$table');
   \$self->SUPER::_Init(\@_);
 }
 
@@ -437,7 +437,7 @@ $Create
 
 $FieldsPod
 
-sub _CoreAccessible {
+sub _core_accessible {
     {
      
 $ClassAccessible
@@ -459,7 +459,7 @@ $ClassAccessible
 
 }
 
-sub MagicImport {
+sub magic_import {
     my $class = shift;
 
     #if (exists \$warnings::{unimport})  {

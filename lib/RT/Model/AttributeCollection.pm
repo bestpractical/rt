@@ -165,7 +165,7 @@ sub delete_entry {
     foreach my $attr ( $self->named( $args{'name'} ) ) {
         if ( ( !defined $args{'id'} and !defined $args{'Content'} )
              or ( defined $args{'id'} and $attr->id eq $args{'id'} )
-             or ( defined $args{'Content'} and $attr->Content eq $args{'Content'} ) )
+             or ( defined $args{'Content'} and $attr->content eq $args{'Content'} ) )
         {
             my ($id, $msg) = $attr->delete;
             return ($id, $msg) unless $id;

@@ -90,31 +90,31 @@ if ( $ARGS{'UpdateSummaryRows'} ) {
         $ARGS{SummaryRows} = 0;
     }
     else {
-        $user->set_Preferences( 'SummaryRows', int $ARGS{SummaryRows} );
+        $user->set_preferences( 'SummaryRows', int $ARGS{SummaryRows} );
         push @results, _('Preferences saved for %1.', _('summary rows'));
     }
 }
-$ARGS{'SummaryRows'} ||= $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
+$ARGS{'SummaryRows'} ||= $user->preferences('SummaryRows', RT->config->get('DefaultSummaryRows'));
 
 if ($ARGS{Reset}) {
-    $user->set_Preferences('HomepageSettings', {});
+    $user->set_preferences('HomepageSettings', {});
     delete $session{'my_rt_portlets'};
 }
 
 unless (exists $session{'my_rt_portlets'}) {
     my ($default_portlets) = RT::System->new()->attributes->named('HomepageSettings');
-    my $portlets = $default_portlets ? $default_portlets->Content : {};
-    $session{'my_rt_portlets'} = $user->Preferences('HomepageSettings', $portlets);
+    my $portlets = $default_portlets ? $default_portlets->content : {};
+    $session{'my_rt_portlets'} = $user->preferences('HomepageSettings', $portlets);
 }
 my $portlets = $session{'my_rt_portlets'};
 
 my %seen;
-my @items = map ["component-$_", $_], grep !$seen{$_}++, @{RT->Config->Get('HomepageComponents')};
+my @items = map ["component-$_", $_], grep !$seen{$_}++, @{RT->config->get('HomepageComponents')};
 
 my $sys = RT::System->new();
 my @objs = ($sys);
 
-push @objs, RT::SavedSearches->new()->_PrivacyObjects
+push @objs, RT::SavedSearches->new()->_privacy_objects
     if Jifty->web->current_user->has_right( Right  => 'LoadSavedSearch',
                                           Object => RT->system );
 
@@ -122,7 +122,7 @@ my @sys_searches;
 for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
         my ($desc, $search) = @$_;
-        my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
+        my $SearchType = $search->content->{'SearchType'} || 'Ticket';
         if ($object eq $sys && $SearchType eq 'Ticket') {
             push @items, ["system-$desc", $desc];
             push @sys_searches, [$desc, $search];
@@ -142,9 +142,9 @@ my @panes = $m->comp(
     Action => 'MyRT.html',
     items => \@items,
     current_portlets => $portlets,
-    OnSave => sub {
+    OnSave => sub  {
         my ( $conf, $pane ) = @_;
-        $user->set_Preferences( 'HomepageSettings', $conf );
+        $user->set_preferences( 'HomepageSettings', $conf );
         push @results, _( 'Preferences saved for %1.', $pane );
         delete $session{'my_rt_portlets'};
     }

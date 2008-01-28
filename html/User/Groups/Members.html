@@ -54,12 +54,12 @@
 
 
 
-<form action="<%RT->Config->Get('WebPath')%>/User/Groups/Members.html" method="post">
+<form action="<%RT->config->get('WebPath')%>/User/Groups/Members.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Group->id%>" />
 <table width="100%">
 <tr>
 <td>
-<&|/l&>Add members</&>
+<&|/l&>add members</&>
 </td>
 <td>
 <&|/l&>Current members</&>
@@ -72,28 +72,28 @@
 </td>
 <td valign="top">
 
-% if ($Group->MembersObj->count == 0 ) {
+% if ($Group->members_obj->count == 0 ) {
 <em><&|/l&>(No members)</&></em>
 % } else {
 <em><&|/l&>(Check box to delete)</&></em>
 <br />
 <br />
 <&|/l&>Users</&>
-% my $UserMembers = $Group->MembersObj;
-% $UserMembers->limit_ToUsers();
+% my $UserMembers = $Group->members_obj;
+% $UserMembers->limit_to_users();
 <ul>
 % while (my $member = $UserMembers->next()) {
 <li><input type="checkbox" class="checkbox" name="delete_member-<%$member->MemberId%>" value="1" />
-<& /Elements/ShowUser, User => $member->MemberObj->Object &>
+<& /Elements/ShowUser, User => $member->member_obj->object &>
 % }
 </ul>
 <&|/l&>Groups</&>
 <ul>
-% my $GroupMembers = $Group->MembersObj;
-% $GroupMembers->limit_ToGroups();
+% my $GroupMembers = $Group->members_obj;
+% $GroupMembers->limit_to_groups();
 % while (my $member = $GroupMembers->next()) {
 <li><input type="checkbox" class="checkbox" name="delete_member-<%$member->MemberId%>" value="1" />
-<%$member->MemberObj->Object->name%>
+<%$member->member_obj->object->name%>
 % }
 </ul>
 % }

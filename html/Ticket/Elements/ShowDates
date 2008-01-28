@@ -48,31 +48,31 @@
 <table>
   <tr>
     <td class="label date Created"><&|/l&>Created</&>:</td>
-    <td class="value date Created"><% $Ticket->created_obj->AsString %></td>
+    <td class="value date Created"><% $Ticket->created_obj->as_string %></td>
   </tr>
   <tr>
     <td class="label date starts"><&|/l&>starts</&>:</td>
-    <td class="value date starts"><% $Ticket->startsObj->AsString %></td>
+    <td class="value date starts"><% $Ticket->starts_obj->as_string %></td>
   </tr>
   <tr>
     <td class="label date started"><&|/l&>Started</&>:</td>
-    <td class="value date started"><% $Ticket->StartedObj->AsString %></td>
+    <td class="value date started"><% $Ticket->started_obj->as_string %></td>
   </tr>
   <tr>
-    <td class="label date told"><a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $Ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>:</td>
-    <td class="value date told"><% $Ticket->ToldObj->AsString %></td>
+    <td class="label date told"><a href="<% RT->config->get('WebPath') %>/Ticket/Display.html?id=<% $Ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>:</td>
+    <td class="value date told"><% $Ticket->told_obj->as_string %></td>
   </tr>
   <tr>
     <td class="label date due"><&|/l&>Due</&>:</td>
-    <td class="value date due"><% $Ticket->due_obj->AsString  %></td>
+    <td class="value date due"><% $Ticket->due_obj->as_string  %></td>
   </tr>
   <tr>
     <td class="label date resolved"><&|/l&>Closed</&>:</td>
-    <td class="value date resolved"><% $Ticket->ResolvedObj->AsString  %></td>
+    <td class="value date resolved"><% $Ticket->resolved_obj->as_string  %></td>
   </tr>
   <tr>
     <td class="label date updated"><&|/l&>Updated</&>:</td>
-% my $UpdatedString = $Ticket->LastUpdated ? _("%1 by %2", $Ticket->last_updated_as_string, $Ticket->LastUpdatedByObj->name) : loc("Never");
+% my $UpdatedString = $Ticket->LastUpdated ? _("%1 by %2", $Ticket->last_updated_as_string, $Ticket->last_updated_by_obj->name) : loc("Never");
 % if ($UpdatedLink) {
     <td class="value date updated"><A HREF="#lasttrans"><% $UpdatedString | h %></a></td>
 % } else {

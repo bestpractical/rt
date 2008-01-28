@@ -53,7 +53,7 @@
       <% $LastTransaction ? '<a name="lasttrans">&nbsp;</a>' : '&nbsp;' |n %>
     </td>
     <td class="date"><% $transdate|n %></td>
-% my $desc = $Transaction->BriefDescription;
+% my $desc = $Transaction->brief_description;
 % $m->callback( text => \$desc, Transaction => $Transaction, %ARGS, Callbackname => 'ModifyDisplay' );
     <td class="description">
       <% $Transaction->creator_obj->name %> - <% $TicketString %> <% $desc %>
@@ -65,7 +65,7 @@
   <tr>
     <td colspan="4" class="content">
 % if ( $Attachments->[0] && $Attachments->[0]->id ) {
-%   if (RT->Config->Get('GnuPG')->{'Enable'}) {
+%   if (RT->config->get('GnuPG')->{'Enable'}) {
         <& ShowGnuPGStatus, Attachment => $Attachments->[0], WarnUnsigned => $WarnUnsigned &>
 %   }
 % }
@@ -85,12 +85,12 @@ $ShowHeaders => 0
 $Collapsed => undef
 $ShowTitleBarCommands => 1
 $RowNum => 1
-$DisplayPath => RT->Config->Get('WebPath')."/Ticket/Display.html?id=".$Ticket->id
-$AttachPath => RT->Config->Get('WebPath')."/Ticket/Attachment"
-$UpdatePath => RT->Config->Get('WebPath')."/Ticket/Update.html"
-$ForwardPath => RT->Config->Get('WebPath')."/Ticket/Forward.html"
-$EncryptionPath => RT->Config->Get('WebPath')."/Ticket/GnuPG.html"
-$EmailRecordPath => RT->Config->Get('WebPath')."/Ticket/ShowEmailRecord.html"
+$DisplayPath => RT->config->get('WebPath')."/Ticket/Display.html?id=".$Ticket->id
+$AttachPath => RT->config->get('WebPath')."/Ticket/Attachment"
+$UpdatePath => RT->config->get('WebPath')."/Ticket/Update.html"
+$ForwardPath => RT->config->get('WebPath')."/Ticket/Forward.html"
+$EncryptionPath => RT->config->get('WebPath')."/Ticket/GnuPG.html"
+$EmailRecordPath => RT->config->get('WebPath')."/Ticket/ShowEmailRecord.html"
 $Attachments => undef
 $AttachmentContent => undef
 $ShowBody => 1
@@ -122,7 +122,7 @@ my %class = (
 my $transdate = $Transaction->created_as_string();
 $transdate =~ s/\s/&nbsp;/g;
 
-my ($type, $field) = ($Transaction->Type, $Transaction->Field || '');
+my ($type, $field) = ($Transaction->type, $Transaction->Field || '');
 my $type_class = $class{ $type };
 
 unless ( $type_class ) {
@@ -143,8 +143,8 @@ unless ( $type_class ) {
 }
 
 my $TicketString = '';
-if ( $Ticket->id != $Transaction->Ticket ) {
-    $TicketString = "Ticket " . $Transaction->Ticket . ": ";
+if ( $Ticket->id != $Transaction->ticket ) {
+    $TicketString = "Ticket " . $Transaction->ticket . ": ";
 }
 
 my $TimeTaken = '';
@@ -152,7 +152,7 @@ $TimeTaken = $Transaction->TimeTaken . " min"
     if $Transaction->TimeTaken;
 
 unless ($Attachments) { 
-    my $attachments = $Transaction->Attachments;
+    my $attachments = $Transaction->attachments;
     $attachments->columns( qw( id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId) );
     $Attachments = $attachments->items_array_ref();
 }
@@ -165,7 +165,7 @@ if ( $type =~ /EmailRecord$/ ) {
 
     $titlebar_commands .=
         "[<a target=\"_blank\" href=\"$EmailRecordPath?id="
-      . $Transaction->Ticket
+      . $Transaction->ticket
       . "&Transaction="
       . $Transaction->id
       . "&Attachment="
@@ -188,7 +188,7 @@ else {
         if ( $can_modify || $ticket->current_user_has_right('ReplyToTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath
-              . "?id=" . $Transaction->Ticket
+              . "?id=" . $Transaction->ticket
               . "&QuoteTransaction=" . $Transaction->id
               . "&Action=Respond\">"
               . _('Reply')
@@ -197,7 +197,7 @@ else {
         if ( $can_modify || $ticket->current_user_has_right('commentOnTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath."?id="
-              . $Transaction->Ticket
+              . $Transaction->ticket
               . "&QuoteTransaction="
               . $Transaction->id
               . "&Action=comment\">"
@@ -206,13 +206,13 @@ else {
         if ( $ticket->current_user_has_right('ForwardMessage') ) {
             $titlebar_commands .=
                 "[<a href=\"". $ForwardPath
-              . "?id=". $Transaction->Ticket
+              . "?id=". $Transaction->ticket
               . "&QuoteTransaction=". $Transaction->id
               . "\">". _('Forward') . "</a>]";
         }
         if ( $can_modify
-            && RT->Config->Get('GnuPG')->{'Enable'}
-            && RT->Config->Get('GnuPG')->{'AllowEncryptDataInDB'}
+            && RT->config->get('GnuPG')->{'Enable'}
+            && RT->config->get('GnuPG')->{'AllowEncryptDataInDB'}
             && $ticket->current_user_has_right('ForwardMessage')
         ) {
             $titlebar_commands .=

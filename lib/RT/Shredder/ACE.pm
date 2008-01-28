@@ -68,7 +68,7 @@ sub __DependsOn
     my $list = [];
 
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $list,
@@ -88,7 +88,7 @@ sub __Relates
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,

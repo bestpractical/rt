@@ -58,7 +58,7 @@ RT::Shredder::Plugin::Base - base class for Shredder plugins.
 
 =cut
 
-sub Type { return 'search' }
+sub type { return 'search' }
 
 =head1 ARGUMENTS
 
@@ -98,7 +98,7 @@ sub TestArgs
     return $self->SUPER::TestArgs( %args );
 }
 
-sub set_Resolvers { return 1 }
+sub set_resolvers { return 1 }
 
 
 =head2 fetch_next $collection [, $init]

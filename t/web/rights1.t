@@ -87,7 +87,7 @@ my $queue_obj = RT::Model::Queue->new(current_user => RT->system_user);
 				  Description => 'queue for SelectOwner testing');
 ok($ret, "SelectOwner test queue creation. $msg");
 my $group_obj = RT::Model::Group->new(current_user => RT->system_user);
-($ret, $msg) = $group_obj->create_userDefinedGroup(name => 'CustomerGroup-'.$$,
+($ret, $msg) = $group_obj->create_user_defined_group(name => 'CustomerGroup-'.$$,
 			      Description => 'group for SelectOwner testing');
 ok($ret, "SelectOwner test group creation. $msg");
 

@@ -86,24 +86,24 @@ sub __Relates
     if( defined $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+        my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'} = "Have no related Ticket #". $self->id ." object";
     }
 
 # Custom Field
-    $obj = $self->CustomFieldObj;
+    $obj = $self->custom_field_obj;
     if( defined $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+        my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'} = "Have no related CustomField #". $self->id ." object";
     }
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,

@@ -41,25 +41,25 @@ is( $ticket->first_custom_field_value, undef );
 my $local_cf1 = RT::Model::CustomField->new(current_user => RT->system_user );
 my ($status,$msg) = $local_cf1->create( name => 'RecordCustomFields1-'.$$, Type => 'SelectSingle', Queue => $queue->id );
 ok($status,$msg);
-($status,$msg)=$local_cf1->AddValue( name => 'Recordcustom_field_values11' );
+($status,$msg)=$local_cf1->add_value( name => 'Recordcustom_field_values11' );
 ok($status,$msg);
-($status,$msg)= $local_cf1->AddValue( name => 'Recordcustom_field_values12' );
+($status,$msg)= $local_cf1->add_value( name => 'Recordcustom_field_values12' );
 ok($status,$msg);
 
 my $local_cf2 = RT::Model::CustomField->new(current_user => RT->system_user );
 $local_cf2->create( name => 'RecordCustomFields2-'.$$, Type => 'SelectSingle', Queue => $queue->id );
-$local_cf2->AddValue( name => 'Recordcustom_field_values21' );
-$local_cf2->AddValue( name => 'Recordcustom_field_values22' );
+$local_cf2->add_value( name => 'Recordcustom_field_values21' );
+$local_cf2->add_value( name => 'Recordcustom_field_values22' );
 
 my $global_cf3 = RT::Model::CustomField->new(current_user => RT->system_user );
 $global_cf3->create( name => 'RecordCustomFields3-'.$$, Type => 'SelectSingle', Queue => 0 );
-$global_cf3->AddValue( name => 'Recordcustom_field_values31' );
-$global_cf3->AddValue( name => 'Recordcustom_field_values32' );
+$global_cf3->add_value( name => 'Recordcustom_field_values31' );
+$global_cf3->add_value( name => 'Recordcustom_field_values32' );
 
 my $local_cf4 = RT::Model::CustomField->new(current_user => RT->system_user );
 $local_cf4->create( name => 'RecordCustomFields4', Type => 'SelectSingle', Queue => $queue2->id );
-$local_cf4->AddValue( name => 'Recordcustom_field_values41' );
-$local_cf4->AddValue( name => 'Recordcustom_field_values42' );
+$local_cf4->add_value( name => 'Recordcustom_field_values41' );
+$local_cf4->add_value( name => 'Recordcustom_field_values42' );
 
 
 my @custom_fields = ($local_cf1, $local_cf2, $global_cf3);
@@ -126,11 +126,11 @@ SKIP: {
 # Add some values to our custom fields
 for (@custom_fields) {
 	# this should be tested elsewhere
-	$_->AddValue( name => 'Foo' );
-	$_->AddValue( name => 'Bar' );
+	$_->add_value( name => 'Foo' );
+	$_->add_value( name => 'Bar' );
 }
 
-my $test_add_delete_cycle = sub {
+my $test_add_delete_cycle = sub  {
 	my $cb = shift;
 	for (@custom_fields) {
 		($status, $msg) = $ticket->add_custom_field_value( Field => $cb->($_) , value => 'Foo' );
@@ -185,9 +185,9 @@ my $test_add_delete_cycle = sub {
 };
 
 # lets test cycle via CF id
-$test_add_delete_cycle->( sub { return $_[0]->id } );
+$test_add_delete_cycle->( sub  { return $_[0]->id } );
 # lets test cycle via CF object reference
-$test_add_delete_cycle->( sub { return $_[0] } );
+$test_add_delete_cycle->( sub  { return $_[0] } );
 
 $ticket->add_custom_field_value( Field => $local_cf2->id , value => 'Baz' );
 $ticket->add_custom_field_value( Field => $global_cf3->id , value => 'Baz' );
@@ -201,7 +201,7 @@ is( $ticket->first_custom_field_value( 'RecordCustomFields4' ), undef, "No first
 #	skip "TODO: should we add CF values to objects via CF name?", 48;
 # names are not unique
 	# lets test cycle via CF name
-#	$test_add_delete_cycle->( sub { return $_[0]->name } );
+#	$test_add_delete_cycle->( sub  { return $_[0]->name } );
 #}
 
 

@@ -63,13 +63,13 @@
 <%init>
 my @actions;
 
-my @items = map { [ "component-$_", $_ ] } sort @{ RT->Config->Get('HomepageComponents') };
+my @items = map { [ "component-$_", $_ ] } sort @{ RT->config->get('HomepageComponents') };
 my $sys = RT::System->new();
 # XXX: put this in savedsearches_to_portlet_items
 for ( $m->comp( "/Search/Elements/SearchesForObject",
                 Object => $sys )) {
     my ( $desc, $search ) = @$_;
-    my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
+    my $SearchType = $search->content->{'SearchType'} || 'Ticket';
     if ( $SearchType eq 'Ticket' ) {
         push @items, [ "system-$desc", $desc ];
     } else {
@@ -88,8 +88,8 @@ my @panes = $m->comp(
     panes  => ['body', 'summary'],
     Action => 'MyRT.html',
     items => \@items,
-    current_portlets => $default_portlets->Content,
-    OnSave => sub {
+    current_portlets => $default_portlets->content,
+    OnSave => sub  {
         my ( $conf, $pane ) = @_;
 	$default_portlets->set_content( $conf );
         push @actions, _( 'Global portlet %1 saved.', $pane );

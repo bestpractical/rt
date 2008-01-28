@@ -37,11 +37,11 @@ set( \$WebBaseURL , "http://localhost:\$WebPort");
     $ENV{'RT_SITE_CONFIG'} = $config->filename;
     close $config;
 
-    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
+    if (RT->config->get('DevelMode')) { require Module::Refresh; }
 
     # make it another function
     $mailsent = 0;
-    my $mailfunc = sub { 
+    my $mailfunc = sub  { 
         my $Entity = shift;
         $mailsent++;
         return 1;
@@ -135,7 +135,7 @@ sub load_or_create_user {
     # add new user to groups
     foreach ( @$MemberOf ) {
         my $group = RT::Model::Group->new(current_user => RT::system_user() );
-        $group->loadUserDefinedGroup( $_ );
+        $group->load_user_defined_group( $_ );
         die "couldn't load group '$_'" unless $group->id;
         $group->add_member( $obj->id );
     }
@@ -189,8 +189,8 @@ sub store_rights {
 
     my @res;
     while ( my $ace = $acl->next ) {
-        my $obj = $ace->principal_object->Object;
-        if ( $obj->isa('RT::Model::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == RT->nobody->id ) {
+        my $obj = $ace->principal_object->object;
+        if ( $obj->isa('RT::Model::Group') && $obj->type eq 'UserEquiv' && $obj->Instance == RT->nobody->id ) {
             next;
         }
 
@@ -222,8 +222,8 @@ sub set_rights {
     my $acl = RT::Model::ACECollection->new(current_user => RT->system_user );
     $acl->limit( column => 'right_name', operator => '!=', value => 'SuperUser' );
     while ( my $ace = $acl->next ) {
-        my $obj = $ace->principal_object->Object;
-        if ( $obj->isa('RT::Model::Group') && $obj->Type eq 'UserEquiv' && $obj->Instance == RT->nobody->id ) {
+        my $obj = $ace->principal_object->object;
+        if ( $obj->isa('RT::Model::Group') && $obj->type eq 'UserEquiv' && $obj->Instance == RT->nobody->id ) {
             next;
         }
         $ace->delete;
@@ -339,7 +339,7 @@ sub import_gnupg_key {
 
 sub set_mail_catcher {
     my $self = shift;
-    my $catcher = sub {
+    my $catcher = sub  {
         my $MIME = shift;
 
         open my $handle, '>>', 't/mailbox'
@@ -349,7 +349,7 @@ sub set_mail_catcher {
         print $handle "%% split me! %%\n";
         close $handle;
     };
-    RT->Config->set( MailCommand => $catcher );
+    RT->config->set( MailCommand => $catcher );
 }
 
 sub fetch_caught_mails {
@@ -386,7 +386,7 @@ sub lsign_gnupg_key {
 
     require RT::Crypt::GnuPG; require GnuPG::Interface;
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $gnupg->options->hash_init(
         RT::Crypt::GnuPG::_prepare_gnupg_options( %opt ),
         meta_interactive => 0,
@@ -443,7 +443,7 @@ sub trust_gnupg_key {
 
     require RT::Crypt::GnuPG; require GnuPG::Interface;
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $gnupg->options->hash_init(
         RT::Crypt::GnuPG::_prepare_gnupg_options( %opt ),
         meta_interactive => 0,

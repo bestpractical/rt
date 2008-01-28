@@ -11,7 +11,7 @@ use RT;
 
 ok (require RT::Model::TicketCollection);
 ok( my $testtickets = RT::Model::TicketCollection->new(current_user => RT->system_user ) );
-ok( $testtickets->limit_Status( value => 'deleted' ) );
+ok( $testtickets->limit_status( value => 'deleted' ) );
 # Should be zero until 'allow_deleted_search'
 is( $testtickets->count , 0 );
 

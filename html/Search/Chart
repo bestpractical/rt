@@ -70,7 +70,7 @@ use RT::Report::Tickets;
 my $tix = RT::Report::Tickets->new();
 $tix->from_sql( $Query );
 my $count_name = $tix->Column( FUNCTION => 'COUNT', column => 'id' );
-$tix->GroupBy( column => $PrimaryGroupBy );
+$tix->group_by( column => $PrimaryGroupBy );
 my $value_name = $tix->Column( column => $PrimaryGroupBy );
 
 my $chart = $chart_class->new( 600 => 400 );
@@ -108,7 +108,7 @@ if ($tix->count == 0) {
 
 if ($chart_class eq "GD::Graph::bars") {
     $chart->set(
-        x_label => $tix->Label( $PrimaryGroupBy ),
+        x_label => $tix->label( $PrimaryGroupBy ),
         x_labels_vertical => 1,
         y_label => _('Tickets'),
         show_values => 1

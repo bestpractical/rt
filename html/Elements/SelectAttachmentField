@@ -48,7 +48,7 @@
 <select name="<%$name%>">
 <option value="Subject"><&|/l&>Subject</&></option>
 <option value="Content"><&|/l&>Content</&></option>
-<option value="ContentType"><&|/l&>Content-Type</&></option>
+<option value="ContentType"><&|/l&>content-Type</&></option>
 <option value="Filename"><&|/l&>Filename</&></option>
 </select>
 <%ARGS>

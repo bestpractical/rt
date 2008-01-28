@@ -64,7 +64,7 @@ Set up the relevant recipients, then call our parent.
 
 sub prepare {
     my $self = shift;
-    $self->set_Recipients();
+    $self->set_recipients();
     $self->SUPER::prepare();
 }
 
@@ -75,19 +75,19 @@ Explicitly B<does not> notify the creator of the transaction by default
 
 =cut
 
-sub set_Recipients {
+sub set_recipients {
     my $self = shift;
 
     my $ticket = $self->ticket_obj;
 
-    my $arg = $self->Argument;
+    my $arg = $self->argument;
     $arg =~ s/\bAll\b/Owner,Requestor,AdminCc,Cc/;
 
     my ( @To, @PseudoTo, @Cc, @Bcc );
 
 
     if ( $arg =~ /\bOtherRecipients\b/ ) {
-        if ( my $attachment = $self->transaction_obj->Attachments->first ) {
+        if ( my $attachment = $self->transaction_obj->attachments->first ) {
             push @Cc, map { $_->address } Mail::Address->parse(
                 $attachment->get_header('RT-Send-Cc')
             );
@@ -98,42 +98,42 @@ sub set_Recipients {
     }
 
     if ( $arg =~ /\bRequestor\b/ ) {
-        push @To, $ticket->Requestors->member_emails;
+        push @To, $ticket->requestors->member_emails;
     }
 
     if ( $arg =~ /\bCc\b/ ) {
 
         #If we have a To, make the Ccs, Ccs, otherwise, promote them to To
         if (@To) {
-            push ( @Cc, $ticket->Cc->member_emails );
-            push ( @Cc, $ticket->queue_obj->Cc->member_emails  );
+            push ( @Cc, $ticket->cc->member_emails );
+            push ( @Cc, $ticket->queue_obj->cc->member_emails  );
         }
         else {
-            push ( @Cc, $ticket->Cc->member_emails  );
-            push ( @To, $ticket->queue_obj->Cc->member_emails  );
+            push ( @Cc, $ticket->cc->member_emails  );
+            push ( @To, $ticket->queue_obj->cc->member_emails  );
         }
     }
 
-    if ( $arg =~ /\bOwner\b/ && $ticket->OwnerObj->id != RT->nobody->id ) {
+    if ( $arg =~ /\bOwner\b/ && $ticket->owner_obj->id != RT->nobody->id ) {
         # If we're not sending to Ccs or requestors,
         # then the Owner can be the To.
         if (@To) {
-            push ( @Bcc, $ticket->OwnerObj->email );
+            push ( @Bcc, $ticket->owner_obj->email );
         }
         else {
-            push ( @To, $ticket->OwnerObj->email );
+            push ( @To, $ticket->owner_obj->email );
         }
 
     }
     if ( $arg =~ /\bAdminCc\b/ ) {
-        push ( @Bcc, $ticket->AdminCc->member_emails  );
-        push ( @Bcc, $ticket->queue_obj->AdminCc->member_emails  );
+        push ( @Bcc, $ticket->admin_cc->member_emails  );
+        push ( @Bcc, $ticket->queue_obj->admin_cc->member_emails  );
     }
 
-    if ( RT->Config->Get('UseFriendlyToLine') ) {
+    if ( RT->config->get('UseFriendlyToLine') ) {
         unless (@To) {
             push @PseudoTo,
-                sprintf RT->Config->Get('FriendlyToLineFormat'), $arg, $ticket->id;
+                sprintf RT->config->get('FriendlyToLineFormat'), $arg, $ticket->id;
         }
     }
 
@@ -142,7 +142,7 @@ sub set_Recipients {
     #Strip the sender out of the To, Cc and AdminCc and set the 
     # recipients fields used to build the message by the superclass.
     # unless a flag is set 
-    if (RT->Config->Get('NotifyActor')) {
+    if (RT->config->get('NotifyActor')) {
         @{ $self->{'To'} }  = @To;
         @{ $self->{'Cc'} }  = @Cc;
         @{ $self->{'Bcc'} } = @Bcc;

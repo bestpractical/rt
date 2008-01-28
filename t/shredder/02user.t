@@ -30,7 +30,7 @@ $ticket->__set( column => 'LastUpdatedBy', value => $uid );
 create_savepoint('aucreate'); # after user create
 
 {
-    my $resolver = sub {
+    my $resolver = sub  {
         my %args = (@_);
         my $t =	$args{'TargetObject'};
         my $resolver_uid = RT->system_user->id;
@@ -40,8 +40,8 @@ create_savepoint('aucreate'); # after user create
         }
     };
     my $shredder = shredder_new();
-    $shredder->PutResolver( BaseClass => 'RT::Model::User', Code => $resolver );
-    $shredder->Wipeout( Object => $user );
+    $shredder->put_resolver( BaseClass => 'RT::Model::User', Code => $resolver );
+    $shredder->wipeout( Object => $user );
     cmp_deeply( dump_current_and_savepoint('bucreate'), "current DB equal to savepoint");
 }
 
@@ -51,7 +51,7 @@ create_savepoint('aucreate'); # after user create
     $user->load($uid);
     ok($user->id, "loaded user after restore");
     my $shredder = shredder_new();
-    eval { $shredder->Wipeout( Object => $user ) };
+    eval { $shredder->wipeout( Object => $user ) };
     ok($@, "wipeout throw exception if no resolvers");
     cmp_deeply( dump_current_and_savepoint('aucreate'), "current DB equal to savepoint");
 }

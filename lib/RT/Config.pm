@@ -64,13 +64,13 @@ use File::Spec ();
     $config->load_configs;
 
     # get or set option
-    my $rt_web_path = $config->Get('WebPath');
+    my $rt_web_path = $config->get('WebPath');
     $config->set(EmailOutputEncoding => 'latin1');
 
     # get config object from RT package
     use RT;
     RT->load_config;
-    my $config = RT->Config;
+    my $config = RT->config;
 
 =head1 DESCRIPTION
 
@@ -215,8 +215,8 @@ Takes no arguments.
 sub load_configs
 {
     my $self = shift;
-    my @configs = $self->Configs;
-    $self->InitConfig( File => $_ ) foreach @configs;
+    my @configs = $self->configs;
+    $self->init_config( File => $_ ) foreach @configs;
     $self->load_config( File => $_ ) foreach @configs;
     return;
 }
@@ -361,31 +361,31 @@ options it's not that important, however for arrays and hash it's.
 In scalar context returns references to arrays and hashes.
 
 Use C<scalar> perl's op to force context, especially when you use
-C<(..., Argument => RT->Config->Get('ArrayOpt'), ...)>
+C<(..., Argument => RT->config->get('ArrayOpt'), ...)>
 as perl's '=>' op doesn't change context of the right hand argument to
-scalar. Instead use C<(..., Argument => scalar RT->Config->Get('ArrayOpt'), ...)>.
+scalar. Instead use C<(..., Argument => scalar RT->config->get('ArrayOpt'), ...)>.
 
 It's also important for options that have no default value(no default
 in F<etc/RT_Config.pm>). If you don't force scalar context then you'll
 get empty list and all your named args will be messed up. For example
-C<(arg1 => 1, arg2 => RT->Config->Get('OptionDoesNotExist'), arg3 => 3)>
+C<(arg1 => 1, arg2 => RT->config->get('OptionDoesNotExist'), arg3 => 3)>
 will result in C<(arg1 => 1, arg2 => 'arg3', 3)> what is most probably
-unexpected, or C<(arg1 => 1, arg2 => RT->Config->Get('ArrayOption'), arg3 => 3)>
+unexpected, or C<(arg1 => 1, arg2 => RT->config->get('ArrayOption'), arg3 => 3)>
 will result in C<(arg1 => 1, arg2 => 'element of option', 'another_one' => ..., 'arg3', 3)>.
 
 =cut
 
-sub Get {
+sub get {
     my ($self, $name, $user) = @_;
 
     my $res;
     if ( $user && $META{ $name }->{'Overridable'} ) {
         $user = $user->user_object if $user->isa('RT::CurrentUser');
-        my $prefs = $user->Preferences( RT->system );
+        my $prefs = $user->preferences( RT->system );
         $res = $prefs->{ $name } if $prefs;
     }
     $res = $OPTIONS{ $name } unless defined $res;
-    return $self->_ReturnValue($res, $META{ $name }->{'Type'} || 'SCALAR');
+    return $self->_return_value($res, $META{ $name }->{'Type'} || 'SCALAR');
 }
 
 =head2 Set
@@ -415,10 +415,10 @@ sub set {
         { no strict 'refs';  ${"RT::$name"} = $OPTIONS{$name}; }
     }
     $META{$name}->{'Type'} = $type;
-    return $self->_ReturnValue($old, $type);
+    return $self->_return_value($old, $type);
 }
 
-sub _ReturnValue {
+sub _return_value {
     my ($self, $res, $type) = @_;
     return $res unless wantarray;
 
@@ -451,7 +451,7 @@ sub set_from_config
     my $opt = $args{'Option'};
 
     my $type;
-    my $name = $self->__GetnameByRef( $opt );
+    my $name = $self->__getname_by_ref( $opt );
     if( $name ) {
         $type = ref $opt;
         $name =~ s/.*:://;
@@ -478,7 +478,7 @@ sub __GetnameByRef
     my $ref = shift;
     my $pack = shift;
     if ( !$pack && $last_pack ) {
-        my $tmp = $self->__GetnameByRef( $ref, $last_pack );
+        my $tmp = $self->__getname_by_ref( $ref, $last_pack );
         return $tmp if $tmp;
     }
     $pack ||= 'main::';
@@ -500,7 +500,7 @@ sub __GetnameByRef
         # if entry has trailing '::' then
         # it is link to other name space
         if ( $k =~ /::$/ ) {
-            $name = $self->__GetnameByRef($ref, $k);
+            $name = $self->__getname_by_ref($ref, $k);
             return $name if $name;
         }
 
@@ -530,11 +530,11 @@ sub __GetnameByRef
 
 =cut
 
-sub Meta {
+sub meta {
     return $META{$_[1]};
 }
 
-sub Sections {
+sub sections {
     my $self = shift;
     my %seen;
     return sort
@@ -543,7 +543,7 @@ sub Sections {
            values %META;
 }
 
-sub Options {
+sub options {
     my $self = shift;
     my %args = ( Section => undef, Overridable => 1, @_ );
     my @res = sort keys %META;
@@ -558,7 +558,7 @@ sub Options {
 
 =cut
 
-sub Type {
+sub type {
     my $self = shift;
     my $name = shift;
 }

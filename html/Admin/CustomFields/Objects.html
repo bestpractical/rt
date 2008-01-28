@@ -120,7 +120,7 @@ while (my $obj = $Objects->next) {
 	my $key = "Object-$obj_id-CF-$id";
 	if ($ARGS{$key}) {
 	    if (!$seen{$obj_id}) {
-		my ($val, $msg) = $CF->AddToObject($obj);
+		my ($val, $msg) = $CF->add_to_object($obj);
 		push (@results, $msg);
 		push @UnassignedObjs, $obj if !$val;
 	    }
@@ -128,7 +128,7 @@ while (my $obj = $Objects->next) {
 	else {
 	    push @UnassignedObjs, $obj;
 	    if ($seen{$obj_id}) {
-		my ($val, $msg) = $CF->RemoveFromObject($obj);
+		my ($val, $msg) = $CF->remove_from_object($obj);
 		push (@results, $msg);
 		pop @UnassignedObjs if !$val;
 	    }

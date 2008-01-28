@@ -58,19 +58,19 @@ if ( $actions[0] eq 'init' ) {
 foreach my $key(qw(Type Host name User password)) {
     next unless exists $ENV{ 'RT_DB_'. uc $key };
     print "Using Database$key from RT_DB_". uc($key) ." environment variable.\n";
-    RT->Config->set( "Database$key", $ENV{ 'RT_DB_'. uc $key });
+    RT->config->set( "Database$key", $ENV{ 'RT_DB_'. uc $key });
 }
 
-my $db_type = RT->Config->Get('DatabaseType') || '';
-my $db_host = RT->Config->Get('DatabaseHost') || '';
-my $db_name = RT->Config->Get('Databasename') || '';
-my $db_user = RT->Config->Get('DatabaseUser') || '';
-my $db_pass = RT->Config->Get('Databasepassword') || '';
+my $db_type = RT->config->get('DatabaseType') || '';
+my $db_host = RT->config->get('DatabaseHost') || '';
+my $db_name = RT->config->get('Databasename') || '';
+my $db_user = RT->config->get('DatabaseUser') || '';
+my $db_pass = RT->config->get('Databasepassword') || '';
 
 
 if ( $db_type eq 'SQLite' && !File::Spec->file_name_is_absolute($db_name) ) {
     $db_name = File::Spec->catfile($RT::VarPath, $db_name);
-    RT->Config->set( Databasename => $db_name );
+    RT->config->set( Databasename => $db_name );
 }
 
 my $dba_user = $args{'dba'} || $ENV{'RT_DBA_USER'} || $db_user || '';

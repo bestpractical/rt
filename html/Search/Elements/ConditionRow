@@ -57,7 +57,7 @@ $m->callback( Condition => \$Condition );
 return unless $Condition;
 
 my $handle_block;
-$handle_block = sub {
+$handle_block = sub  {
     my $box = shift;
     return $box unless ref $box;
 

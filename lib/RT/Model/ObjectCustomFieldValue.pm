@@ -73,7 +73,7 @@ use Jifty::DBI::Record schema {
 
 };
 
-sub CustomFieldObj {
+sub custom_field_obj {
 
     my $self = shift;
     unless ($self->{cf}){
@@ -125,10 +125,10 @@ sub create {
 }
 
 
-sub LargeContent {
+sub large_content {
     my $self = shift;
     return $self->_decode_lob(
-        $self->ContentType,
+        $self->content_type,
         $self->ContentEncoding,
         $self->_value( 'LargeContent', decode_utf8 => 0 )
     );
@@ -141,7 +141,7 @@ Loads a custom field value by Ticket, Content and which CustomField it's tied to
 =cut
 
 
-sub loadByTicketContentAndCustomField {
+sub load_by_ticket_content_and_custom_field {
     my $self = shift;
     my %args = (
         Ticket => undef,
@@ -159,7 +159,7 @@ sub loadByTicketContentAndCustomField {
     );
 }
 
-sub loadByObjectContentAndCustomField {
+sub load_by_object_content_and_custom_field {
     my $self = shift;
     my %args = (
         Object => undef,
@@ -187,11 +187,11 @@ content, try "LargeContent"
 
 =cut
 
-sub Content {
+sub content {
     my $self = shift;
     my $content = $self->_value('Content');
-    if ( !(defined $content && length $content) && $self->ContentType eq 'text/plain' ) {
-        return $self->LargeContent;
+    if ( !(defined $content && length $content) && $self->content_type eq 'text/plain' ) {
+        return $self->large_content;
     } else {
         return $content;
     }
@@ -203,7 +203,7 @@ Returns the object this value applies to
 
 =cut
 
-sub Object {
+sub object {
     my $self  = shift;
     my $Object = $self->__value('object_type')->new;
     $Object->load_by_id( $self->__value('object_id') );
@@ -244,7 +244,7 @@ The value of this custom field for the object in question.
 
 =cut
 
-sub _FillInTemplateURL {
+sub _fill_in_template_url {
 
     my $self = shift;
 
@@ -265,9 +265,9 @@ a LinkValueTo
 
 =cut
 
-sub LinkValueTo {
+sub link_value_to {
     my $self = shift;
-    return $self->_FillInTemplateURL($self->CustomFieldObj->LinkValueTo);
+    return $self->_fill_in_template_url($self->custom_field_obj->LinkValueTo);
 }
 
 
@@ -280,9 +280,9 @@ a IncludeContentForValue
 
 =cut
 
-sub IncludeContentForValue {
+sub include_content_for_value {
     my $self = shift;
-    return $self->_FillInTemplateURL($self->CustomFieldObj->IncludeContentForValue);
+    return $self->_fill_in_template_url($self->custom_field_obj->IncludeContentForValue);
 }
 
 1;

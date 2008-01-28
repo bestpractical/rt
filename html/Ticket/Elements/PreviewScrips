@@ -60,22 +60,22 @@ my @non_recipients = @{ $squelch{'emails'} };
 % if ( $Object ) {
 <i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br />
 
-% foreach my $scrip (@{$Object->Scrips->prepared}) {
-% next unless $scrip->ActionObj->Action->isa('RT::ScripAction::SendEmail');
-<b><% $scrip->Description || _('Scrip #%1',$scrip->id) %></b><br />
-<&|/l, _($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->template_obj->name)&>%1 %2 with template %3</&>
+% foreach my $scrip (@{$Object->scrips->prepared}) {
+% next unless $scrip->action_obj->action->isa('RT::ScripAction::SendEmail');
+<b><% $scrip->description || _('Scrip #%1',$scrip->id) %></b><br />
+<&|/l, _($scrip->condition_obj->name), loc($scrip->action_obj->name), loc($scrip->template_obj->name)&>%1 %2 with template %3</&>
 <br />
 %foreach my $type qw(To Cc Bcc) {
-%my @addresses =  $scrip->ActionObj->Action->$type();
+%my @addresses =  $scrip->action_obj->action->$type();
 <ul>
 %foreach my $addr (@addresses) {
 <li> <b><%_($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$ticket_obj->id%>-SquelchMailTo" value="<%$addr->address%>" /> <%$addr->address%>
 % }
 </ul>
 % }
-% if (RT->Config->Get('PreviewScripMessages')) {
+% if (RT->config->get('PreviewScripMessages')) {
 <textarea cols="80" rows="5">
-<%$scrip->ActionObj->template_obj->MIMEObj->as_string%>
+<%$scrip->action_obj->template_obj->mime_obj->as_string%>
 </textarea>
 % }
 % }
@@ -88,7 +88,7 @@ my @non_recipients = @{ $squelch{'emails'} };
 <ul>
 % foreach my $recipient (@non_recipients) {
 <li><input type="checkbox" class="checkbox" name="Ticket-<%$ticket_obj->id%>-UnsquelchMailTo" value="<%$recipient->Content%>" />
-<% $recipient->Content %>
+<% $recipient->content %>
 % }
 </ul>
 <& /Elements/Submit, Value => 'UpdatePreview', Label => _('Save changes')&>
@@ -102,7 +102,7 @@ my $arg = 'Ticket-'.$ticket_obj->id.'-SquelchMailTo';
 my @squelchto = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
 
 foreach my $address (@squelchto) {
-        $ticket_obj->SquelchMailTo($address) if ($address);
+        $ticket_obj->squelch_mail_to($address) if ($address);
 }
 
 
@@ -110,7 +110,7 @@ $arg = 'Ticket-'.$ticket_obj->id.'-UnsquelchMailTo';
 my @unsquelchto = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
 
 foreach my $address (@unsquelchto) {
-        $ticket_obj->UnsquelchMailTo($address) if ($address);
+        $ticket_obj->unsquelch_mail_to($address) if ($address);
 }
 
 
@@ -177,8 +177,8 @@ unless ( $id && $txn ) {
 }
 
 my @recipients;
-foreach my $scrip ( @{ $txn->Scrips->prepared } ) {
-    my $action = $scrip->ActionObj->Action;
+foreach my $scrip ( @{ $txn->scrips->prepared } ) {
+    my $action = $scrip->action_obj->action;
     next unless $action->isa('RT::ScripAction::SendEmail');
 
     foreach my $type qw(To Cc Bcc) {
@@ -222,8 +222,8 @@ unless ( $id && $txn ) {
 }
 
 my @recipients;
-foreach my $scrip ( @{ $txn->Scrips->prepared } ) {
-    my $action = $scrip->ActionObj->Action;
+foreach my $scrip ( @{ $txn->scrips->prepared } ) {
+    my $action = $scrip->action_obj->action;
     next unless $action->isa('RT::ScripAction::SendEmail');
 
     foreach my $type qw(To Cc Bcc) {

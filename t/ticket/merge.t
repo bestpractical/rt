@@ -22,10 +22,10 @@ use RT;
     ($id, $msg) = $t1->comment(Content => 'This is a comment on the original');
     ok($id,$msg);
 
-    my $txns = $t1->Transactions;
+    my $txns = $t1->transactions;
     my $comments = 0;
     while (my $txn = $txns->next) {
-    $comments++ if ($txn->Type eq 'comment');
+    $comments++ if ($txn->type eq 'comment');
     }
     is($comments,1, "our first ticket has only one comment");
 
@@ -39,29 +39,29 @@ use RT;
     ok($id,$msg);
 
 
-    $txns = $t2->Transactions;
+    $txns = $t2->transactions;
      $comments = 0;
     while (my $txn = $txns->next) {
-        $comments++ if ($txn->Type eq 'comment');
+        $comments++ if ($txn->type eq 'comment');
     }
     is($comments,1, "our second ticket has only one comment");
 
     ($id, $msg) = $t1->comment(Content => 'This is a second  comment on the original');
     ok($id,$msg);
 
-    $txns = $t1->Transactions;
+    $txns = $t1->transactions;
     $comments = 0;
     while (my $txn = $txns->next) {
-        $comments++ if ($txn->Type eq 'comment');
+        $comments++ if ($txn->type eq 'comment');
     }
     is($comments,2, "our first ticket now has two comments");
 
-    ($id,$msg) = $t2->MergeInto($t1->id);
+    ($id,$msg) = $t2->merge_into($t1->id);
     ok($id,$msg);
-    $txns = $t1->Transactions;
+    $txns = $t1->transactions;
     $comments = 0;
     while (my $txn = $txns->next) {
-        $comments++ if ($txn->Type eq 'comment');
+        $comments++ if ($txn->type eq 'comment');
     }
     is($comments,3, "our first ticket now has three comments - we merged safely");
 }
@@ -87,6 +87,6 @@ use RT;
     ($id,$val) = $t2->add_link(Type => 'DependsOn', Target => $t3->id);
     ok($id,$val);
 
-    ($id,$val) = $t->MergeInto($t2->id);
+    ($id,$val) = $t->merge_into($t2->id);
     ok($id,$val);
 }

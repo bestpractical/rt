@@ -77,7 +77,7 @@ Returns a hash of available rights for this object. The keys are the right names
 
 =cut
 
-sub AvailableRights {
+sub available_rights {
     my $self = shift;
     return($RIGHTS);
 }
@@ -91,12 +91,12 @@ Returns a user-readable description of what this group is for and what it's name
 
 =cut
 
-sub SelfDescription {
+sub self_description {
 	my $self = shift;
 	if ($self->Domain eq 'ACLEquivalence') {
 		my $user = RT::Model::Principal->new;
 		$user->load($self->Instance);
-		return _("user %1",$user->Object->name);
+		return _("user %1",$user->object->name);
 	}
 	elsif ($self->Domain eq 'UserDefined') {
 		return _("group '%1'",$self->name);
@@ -163,7 +163,7 @@ the group's name.
 
 =cut
 
-sub loadUserDefinedGroup {
+sub load_user_defined_group {
     my $self       = shift;
     my $identifier = shift;
 
@@ -216,7 +216,7 @@ Loads a personal group from the database.
 
 =cut
 
-sub loadPersonalGroup {
+sub load_personal_group {
     my $self       = shift;
     my %args =  (   name => undef,
                     User => undef,
@@ -291,7 +291,7 @@ Takes a param hash with 2 parameters:
 
 =cut
 
-sub loadQueueRoleGroup {
+sub load_queue_role_group {
     my $self       = shift;
     my %args = (Queue => undef,
                 Type => undef,
@@ -317,7 +317,7 @@ Takes a single param: Type
 
 =cut
 
-sub loadSystemRoleGroup {
+sub load_system_role_group {
     my $self       = shift;
     my $type = shift;
         $self->load_by_cols( Domain => 'RT::System-Role',
@@ -429,7 +429,7 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 
 =cut
 
-sub create_userDefinedGroup {
+sub create_user_defined_group {
     my $self = shift;
 
     unless ( $self->current_user_has_right('AdminGroup') ) {
@@ -460,8 +460,8 @@ sub _createacl_equivalence_group {
     my $princ = shift;
       my ($id,$msg) = $self->_create( Domain => 'ACLEquivalence', 
                            Type => 'UserEquiv',
-                           name => 'User '. $princ->Object->id,
-                           Description => 'ACL equiv. for user '.$princ->Object->id,
+                           name => 'User '. $princ->object->id,
+                           Description => 'ACL equiv. for user '.$princ->object->id,
                            Instance => $princ->id,
                            InsideTransaction => 1);
 
@@ -473,7 +473,7 @@ sub _createacl_equivalence_group {
        # We use stashuser so we don't get transactions inside transactions
        # and so we bypass all sorts of cruft we don't need
        my $aclstash = RT::Model::GroupMember->new;
-       my ($stash_id, $add_msg) = $aclstash->_StashUser(Group => $self->principal_object, Member => $princ);
+       my ($stash_id, $add_msg) = $aclstash->_stash_user(Group => $self->principal_object, Member => $princ);
 
       unless ($stash_id) {
         Jifty->log->fatal("Couldn't add the user to his own acl equivalence group:".$add_msg);
@@ -498,7 +498,7 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 
 =cut
 
-sub createPersonalGroup {
+sub create_personal_group {
     my $self = shift;
     my %args = (
         name        => undef,
@@ -552,7 +552,7 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 
 =cut
 
-sub createRoleGroup {
+sub create_role_group {
     my $self = shift;
     my %args = ( Instance => undef,
                  Type     => undef,
@@ -688,13 +688,13 @@ including all members of subgroups.
 
 =cut
 
-sub DeepMembersObj {
+sub deep_members_obj {
     my $self = shift;
     my $members_obj = RT::Model::CachedGroupMemberCollection->new;
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-    $members_obj->limit_ToMembersOfGroup( $self->id );
+    $members_obj->limit_to_members_of_group( $self->id );
 
     return ( $members_obj );
 
@@ -710,13 +710,13 @@ Returns an RT::Model::GroupMemberCollection object of this group's direct member
 
 =cut
 
-sub MembersObj {
+sub members_obj {
     my $self = shift;
     my $members_obj = RT::Model::GroupMemberCollection->new( current_user => $self->current_user );
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-    $members_obj->limit_ToMembersOfGroup( $self->id );
+    $members_obj->limit_to_members_of_group( $self->id );
 
     return ( $members_obj );
 
@@ -737,7 +737,7 @@ may contain as well system groups, personal and other.
 
 =cut
 
-sub GroupMembersObj {
+sub group_members_obj {
     my $self = shift;
     my %args = ( Recursively => 1, @_ );
 
@@ -776,7 +776,7 @@ changed with C<Recursively> named argument.
 
 =cut
 
-sub UserMembersObj {
+sub user_members_obj {
     my $self = shift;
     my %args = ( Recursively => 1, @_ );
 
@@ -821,7 +821,7 @@ sub member_emails {
     my $self = shift;
 
     my %addresses;
-    my $members = $self->UserMembersObj();
+    my $members = $self->user_members_obj();
     while (my $member = $members->next) {
         $addresses{$member->email} = 1;
     }
@@ -840,7 +840,7 @@ who are members of this group.
 =cut
 
 
-sub member_emailsAsString {
+sub member_emails_as_string {
     my $self = shift;
     return (join(', ', $self->member_emails));
 }
@@ -929,7 +929,7 @@ sub _add_member {
         return ( 0, _("Group already has member") );
     }
     if ( $new_member_obj->is_group &&
-         $new_member_obj->Object->has_member_recursively($self->principal_object) ) {
+         $new_member_obj->object->has_member_recursively($self->principal_object) ) {
 
         #This group can't be made to be a member of itself
         return ( 0, _("Groups can't be members of their members"));
@@ -1152,11 +1152,11 @@ sub _cleanup_invalid_delegations {
     my $in_trans = $args{InsideTransaction};
 
     # TODO: Can this be unrolled such that the number of DB queries is constant rather than linear in exploded group size?
-    my $members = $self->DeepMembersObj();
-    $members->limit_ToUsers();
+    my $members = $self->deep_members_obj();
+    $members->limit_to_users();
     Jifty->handle->begin_transaction() unless $in_trans;
     while ( my $member = $members->next()) {
-	my $ret = $member->MemberObj->_cleanup_invalid_delegations(InsideTransaction => 1,
+	my $ret = $member->member_obj->_cleanup_invalid_delegations(InsideTransaction => 1,
 								 Object => $args{Object});
 	unless ($ret) {
 	    Jifty->handle->rollback() unless $in_trans;
@@ -1217,7 +1217,7 @@ sub _set {
                                                old_value  => $Old,
                                                TimeTaken => $args{'TimeTaken'},
         );
-        return ( $Trans, scalar $TransObj->Description );
+        return ( $Trans, scalar $TransObj->description );
     }
     else {
         return ( $ret, $msg );

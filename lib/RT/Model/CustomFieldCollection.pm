@@ -69,14 +69,14 @@ use base qw/RT::SearchBuilder/;
 use Jifty::DBI::Collection::Unique;
 
 
-sub _OCFAlias {
+sub ocf_alias {
     my $self = shift;
     unless ($self->{_sql_ocfalias}) {
 
         $self->{'_sql_ocfalias'} = $self->new_alias('ObjectCustomFields');
     $self->join( alias1 => 'main',
                 column1 => 'id',
-                alias2 => $self->_OCFAlias,
+                alias2 => $self->ocf_alias,
                 column2 => 'CustomField' );
     }
     return($self->{_sql_ocfalias});
@@ -91,11 +91,11 @@ Limits the set of custom fields found to global custom fields or those tied to t
 
 =cut
 
-sub limit_ToGlobalOrQueue {
+sub limit_to_global_or_queue {
     my $self = shift;
     my $queue = shift;
-    $self->limit_ToGlobalOrobject_id( $queue );
-    $self->limit_ToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
+    $self->limit_to_global_orobject_id( $queue );
+    $self->limit_to_lookup_type( 'RT::Model::Queue-RT::Model::Ticket' );
 }
 
 # }}}
@@ -110,16 +110,16 @@ another call to this method
 
 =cut
 
-sub limit_ToQueue  {
+sub limit_to_queue {
    my $self = shift;
   my $queue = shift;
  
-  $self->limit (alias => $self->_OCFAlias,
+  $self->limit (alias => $self->ocf_alias,
                 entry_aggregator => 'OR',
 		column => 'object_id',
 		value => "$queue")
       if defined $queue;
-  $self->limit_ToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
+  $self->limit_to_lookup_type( 'RT::Model::Queue-RT::Model::Ticket' );
 }
 # }}}
 
@@ -134,14 +134,14 @@ another call to this method or limit_ToQueue
 =cut
 
 
-sub limit_ToGlobal  {
+sub limit_to_global {
    my $self = shift;
  
-  $self->limit (alias => $self->_OCFAlias,
+  $self->limit (alias => $self->ocf_alias,
                 entry_aggregator => 'OR',
 		column => 'object_id',
 		value => 0);
-  $self->limit_ToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
+  $self->limit_to_lookup_type( 'RT::Model::Queue-RT::Model::Ticket' );
 }
 # }}}
 
@@ -202,14 +202,14 @@ sub next {
 }
 # }}}
 
-sub limit_ToLookupType  {
+sub limit_to_lookup_type {
     my $self = shift;
     my $lookup = shift;
  
     $self->limit( column => 'LookupType', value => "$lookup" );
 }
 
-sub limit_ToChildType  {
+sub limit_to_child_type {
     my $self = shift;
     my $lookup = shift;
  
@@ -217,7 +217,7 @@ sub limit_ToChildType  {
     $self->limit( column => 'LookupType', ENDSWITH => "$lookup" );
 }
 
-sub limit_ToParentType  {
+sub limit_to_parent_type {
     my $self = shift;
     my $lookup = shift;
  
@@ -225,13 +225,13 @@ sub limit_ToParentType  {
     $self->limit( column => 'LookupType', starts_with => "$lookup" );
 }
 
-sub limit_ToGlobalOrobject_id {
+sub limit_to_global_orobject_id {
     my $self = shift;
     my $global_only = 1;
 
 
     foreach my $id (@_) {
-	$self->limit( alias           => $self->_OCFAlias,
+	$self->limit( alias           => $self->ocf_alias,
 		    column           => 'object_id',
 		    operator        => '=',
 		    value           => $id || 0,
@@ -239,15 +239,15 @@ sub limit_ToGlobalOrobject_id {
 	$global_only = 0 if $id;
     }
 
-    $self->limit( alias           => $self->_OCFAlias,
+    $self->limit( alias           => $self->ocf_alias,
                  column           => 'object_id',
                  operator        => '=',
                  value           => 0,
                  entry_aggregator => 'OR' ) unless $global_only;
 
     $self->order_by(
-	{ alias => $self->_OCFAlias, column => 'object_id', order => 'DESC' },
-	{ alias => $self->_OCFAlias, column => 'SortOrder' },
+	{ alias => $self->ocf_alias, column => 'object_id', order => 'DESC' },
+	{ alias => $self->ocf_alias, column => 'SortOrder' },
     );
     
     # This doesn't work on postgres. 

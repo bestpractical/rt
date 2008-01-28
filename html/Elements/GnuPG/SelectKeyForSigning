@@ -11,7 +11,7 @@ $name => 'SignUsing',
 $User => undef,
 </%ARGS>
 <%INIT>
-return unless RT->Config->Get('GnuPG')->{'Enable'};
+return unless RT->config->get('GnuPG')->{'Enable'};
 
 my $user_key = $User->private_key;
 </%INIT>

@@ -70,7 +70,7 @@ $print_content->( \$para ) if length $para;
 <%INIT>
 my $ticket = $Transaction ? $Transaction->ticket_obj : undef;
 
-my $print_content = sub {
+my $print_content = sub  {
     my $ref = shift;
     return unless defined $$ref && length $$ref;
 

@@ -67,18 +67,18 @@
 <input type="checkbox" class="checkbox" value="1" name="ShowRejected" <% defined($ARGS{'ShowRejected'}) && $ARGS{'ShowRejected'} && "checked"%> /> <&|/l&>Show denied requests</&><br />
 <input type="checkbox" class="checkbox" value="1" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && "checked"%> /> <&|/l&>Show requests awaiting other approvals</&><br />
 
-<&|/l,"<input size='15' value='".($Created_before->Unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests Created before %1</&><br />
+<&|/l,"<input size='15' value='".($Created_before->unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests Created before %1</&><br />
 
-<&|/l, "<input size='15' value='".( $Created_after->Unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />"&>Only show approvals for requests Created after %1</&>
+<&|/l, "<input size='15' value='".( $Created_after->unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />"&>Only show approvals for requests Created after %1</&>
 </&>
 
 <%init>
 my $tickets = RT::Model::TicketCollection->new();
-$tickets->limit_Owner( value => Jifty->web->current_user->id );
+$tickets->limit_owner( value => Jifty->web->current_user->id );
 
 # also consider AdminCcs as potential approvers.
 my $group_tickets = RT::Model::TicketCollection->new();
-$group_tickets->limit_Watcher( value => Jifty->web->current_user->user_object->email, type => 'AdminCc' );
+$group_tickets->limit_watcher( value => Jifty->web->current_user->user_object->email, type => 'AdminCc' );
 
 my $Created_before = RT::Date->new();
 my $Created_after = RT::Date->new();
@@ -87,24 +87,24 @@ foreach ($tickets, $group_tickets) {
     $_->limit( column      => 'Type', value => 'approval' );
 
     if ( $ARGS{'ShowResolved'} ) {
-	$_->limit_Status( value => 'resolved' );
+	$_->limit_status( value => 'resolved' );
     }
     if ( $ARGS{'ShowRejected'} ) {
-	$_->limit_Status( value => 'rejected' );
+	$_->limit_status( value => 'rejected' );
     }
     if ( $ARGS{'ShowPending'} || ( !$ARGS{'ShowRejected'} && !$ARGS{'Resolved'} ) ) {
-	$_->limit_Status( value => 'open' );
-	$_->limit_Status( value => 'new' );
-	$_->limit_Status( value => 'stalled' );
+	$_->limit_status( value => 'open' );
+	$_->limit_status( value => 'new' );
+	$_->limit_status( value => 'stalled' );
     }
 
     if ( $ARGS{'CreatedBefore'} ) {
 	$Created_before->set( Format => 'unknown', value => $ARGS{'CreatedBefore'} );
-	$_->limit_Created( operator => "<=", value => $Created_before->ISO );
+	$_->limit_created( operator => "<=", value => $Created_before->iso );
     }
     if ( $ARGS{'CreatedAfter'} ) {
 	$Created_after->set( Format => 'unknown', value => $ARGS{'CreatedAfter'} );
-	$_->limit_Created( operator => ">=", value => $Created_after->ISO );
+	$_->limit_created( operator => ">=", value => $Created_after->iso );
     }
 }
 

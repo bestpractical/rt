@@ -203,7 +203,7 @@ sub set_attribute {
     $_->delete foreach @AttributeObjs;
 
     $AttributeObj->set_Description( $args{'Description'} );
-    $AttributeObj->set_Content( $args{'Content'} );
+    $AttributeObj->set_content( $args{'Content'} );
 
     $self->attributes->redo_search;
     return 1;
@@ -367,7 +367,7 @@ sub load_by_cols {
 
 # {{{ LastUpdatedObj
 
-sub LastUpdatedObj {
+sub last_updated_obj {
     my $self = shift;
     my $obj  = RT::Date->new();
 
@@ -394,9 +394,9 @@ sub created_obj {
 #
 # TODO: This should be deprecated
 #
-sub AgeAsString {
+sub age_as_string {
     my $self = shift;
-    return ( $self->created_obj->AgeAsString() );
+    return ( $self->created_obj->age_as_string() );
 }
 
 # }}}
@@ -408,7 +408,7 @@ sub AgeAsString {
 sub last_updated_as_string {
     my $self = shift;
     if ( $self->LastUpdated ) {
-        return ( $self->LastUpdatedObj->AsString() );
+        return ( $self->last_updated_obj->as_string() );
 
     }
     else {
@@ -424,7 +424,7 @@ sub last_updated_as_string {
 #
 sub created_as_string {
     my $self = shift;
-    return ( $self->created_obj->AsString() );
+    return ( $self->created_obj->as_string() );
 }
 
 # }}}
@@ -433,11 +433,11 @@ sub created_as_string {
 #
 # TODO This should be deprecated
 #
-sub LongSinceUpdateAsString {
+sub long_since_update_as_string {
     my $self = shift;
     if ( $self->LastUpdated ) {
 
-        return ( $self->LastUpdatedObj->AgeAsString() );
+        return ( $self->last_updated_obj->age_as_string() );
 
     }
     else {
@@ -471,7 +471,7 @@ sub _set {
     }
 
     my $old_val = $self->__value($args{'column'});
-     $self->_setLastUpdated();
+     $self->set_last_updated();
     my $ret = $self->SUPER::_set(
         column => $args{'column'},
         value => $args{'value'},
@@ -510,14 +510,14 @@ It takes no options. Arguably, this is a bug
 
 =cut
 
-sub _setLastUpdated {
+sub set_last_updated {
     my $self = shift;
     my $now = RT::Date->new( current_user => $self->current_user );
     $now->set_to_now();
 
         my ( $msg, $val ) = $self->__set(
             column => 'LastUpdated',
-            value => $now->ISO
+            value => $now->iso
         );
         ( $msg, $val ) = $self->__set(
             column => 'LastUpdatedBy',
@@ -555,7 +555,7 @@ sub creator_obj {
 
 =cut
 
-sub LastUpdatedByObj {
+sub last_updated_by_obj {
     my $self = shift;
     unless ( exists $self->{LastUpdatedByObj} ) {
         $self->{'LastUpdatedByObj'} = RT::Model::User->new;
@@ -574,10 +574,10 @@ Returns this record's URI
 
 =cut
 
-sub URI {
+sub uri {
     my $self = shift;
     my $uri = RT::URI::fsck_com_rt->new;
-    return($uri->URIForObject($self));
+    return($uri->uri_for_object($self));
 }
 
 # }}}
@@ -615,12 +615,12 @@ sub _encode_lob {
         my $ContentEncoding = 'none';
 
         #get the max attachment length from RT
-        my $MaxSize = RT->Config->Get('MaxAttachmentSize');
+        my $MaxSize = RT->config->get('MaxAttachmentSize');
 
         #if the current attachment contains nulls and the
         #database doesn't support embedded nulls
 
-        if ( RT->Config->Get('AlwaysUseBase64')) {
+        if ( RT->config->get('AlwaysUseBase64')) {
 
             # set a flag telling us to mimencode the attachment
             $ContentEncoding = 'base64';
@@ -639,7 +639,7 @@ sub _encode_lob {
         if ( ($MaxSize) and ( $MaxSize < length($Body) ) ) {
 
             # if we're supposed to truncate large attachments
-            if (RT->Config->Get('TruncateLongAttachments')) {
+            if (RT->config->get('TruncateLongAttachments')) {
 
                 # truncate the attachment to that length.
                 $Body = substr( $Body, 0, $MaxSize );
@@ -647,7 +647,7 @@ sub _encode_lob {
             }
 
             # elsif we're supposed to drop large attachments on the floor,
-            elsif (RT->Config->Get('DropLongAttachments')) {
+            elsif (RT->config->get('DropLongAttachments')) {
 
                 # drop the attachment on the floor
                 Jifty->log->info( "$self: Dropped an attachment of size "
@@ -729,7 +729,7 @@ Returns a list of localized results of the update
 
 =cut
 
-sub Update {
+sub update {
     my $self = shift;
     my $class = ref($self) || $self;
 
@@ -820,7 +820,7 @@ which are 'MembersOf' this ticket
 
 =cut
 
-sub Members {
+sub members {
     my $self = shift;
     return ( $self->_links( 'Target', 'MemberOf' ) );
 }
@@ -836,7 +836,7 @@ ticket is a 'MemberOf'
 
 =cut
 
-sub MemberOf {
+sub member_of {
     my $self = shift;
     return ( $self->_links( 'Base', 'MemberOf' ) );
 }
@@ -851,7 +851,7 @@ sub MemberOf {
 
 =cut
 
-sub RefersTo {
+sub refers_to {
     my $self = shift;
     return ( $self->_links( 'Base', 'RefersTo' ) );
 }
@@ -866,7 +866,7 @@ This returns an L<RT::Model::LinkCollection> object which shows all references f
 
 =cut
 
-sub ReferredToBy {
+sub referred_to_by {
     my $self = shift;
     return ( $self->_links( 'Target', 'RefersTo' ) );
 }
@@ -881,7 +881,7 @@ sub ReferredToBy {
 
 =cut
 
-sub DependedOnBy {
+sub depended_on_by {
     my $self = shift;
     return ( $self->_links( 'Target', 'DependsOn' ) );
 }
@@ -915,7 +915,7 @@ sub has_unresolved_dependencies {
               value => $args{Type}); 
     }
     else {
-	    $deps->IgnoreType;
+	    $deps->ignore_type;
     }
 
     if ($deps->count > 0) {
@@ -933,7 +933,7 @@ sub has_unresolved_dependencies {
 
 Returns an RT::Model::TicketCollection object of tickets which this ticket depends on
 and which have a status of new, open or stalled. (That list comes from
-RT::Model::Queue->ActiveStatusArray
+RT::Model::Queue->active_status_array
 
 =cut
 
@@ -942,9 +942,9 @@ sub unresolved_dependencies {
     my $self = shift;
     my $deps = RT::Model::TicketCollection->new;
 
-    my @live_statuses = RT::Model::Queue->ActiveStatusArray();
+    my @live_statuses = RT::Model::Queue->active_status_array();
     foreach my $status (@live_statuses) {
-        $deps->limit_Status(value => $status);
+        $deps->limit_status(value => $status);
     }
     $deps->limit_depended_on_by($self->id);
 
@@ -968,7 +968,7 @@ dependency search.
 
 sub all_depended_on_by {
     my $self = shift;
-    my $dep = $self->DependedOnBy;
+    my $dep = $self->depended_on_by;
     my %args = (
         Type   => undef,
 	_found => {},
@@ -977,14 +977,14 @@ sub all_depended_on_by {
     );
 
     while (my $link = $dep->next()) {
-	next unless ($link->base_uri->IsLocal());
+	next unless ($link->base_uri->is_local());
 	next if $args{_found}{$link->base_obj->id};
 
 	if (!$args{Type}) {
 	    $args{_found}{$link->base_obj->id} = $link->base_obj;
 	    $link->base_obj->all_depended_on_by( %args, _top => 0 );
 	}
-	elsif ($link->base_obj->Type eq $args{Type}) {
+	elsif ($link->base_obj->type eq $args{Type}) {
 	    $args{_found}{$link->base_obj->id} = $link->base_obj;
 	}
 	else {
@@ -1010,7 +1010,7 @@ sub all_depended_on_by {
 
 =cut
 
-sub DependsOn {
+sub depends_on {
     my $self = shift;
     return ( $self->_links( 'Base', 'DependsOn' ) );
 }
@@ -1047,7 +1047,7 @@ sub _links {
         $self->{"$field$type"} = RT::Model::LinkCollection->new;
             # at least to myself
             $self->{"$field$type"}->limit( column => $field,
-                                           value => $self->URI,
+                                           value => $self->uri,
                                            entry_aggregator => 'OR' );
             $self->{"$field$type"}->limit( column => 'Type',
                                            value => $type )
@@ -1090,12 +1090,12 @@ sub _add_link {
         return ( 0, _("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
-        $args{'Target'} = $self->URI();
+        $args{'Target'} = $self->uri();
         $remote_link    = $args{'Base'};
         $direction      = 'Target';
     }
     elsif ( $args{'Target'} ) {
-        $args{'Base'} = $self->URI();
+        $args{'Base'} = $self->uri();
         $remote_link  = $args{'Target'};
         $direction    = 'Base';
     }
@@ -1106,7 +1106,7 @@ sub _add_link {
     # {{{ Check if the link already exists - we don't want duplicates
     use RT::Model::Link;
     my $old_link = RT::Model::Link->new;
-    $old_link->loadByParams( Base   => $args{'Base'},
+    $old_link->load_by_params( Base   => $args{'Base'},
                              Type   => $args{'Type'},
                              Target => $args{'Target'} );
     if ( $old_link->id ) {
@@ -1166,12 +1166,12 @@ sub _delete_link {
         return ( 0, _("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
-        $args{'Target'} = $self->URI();
+        $args{'Target'} = $self->uri();
 	$remote_link = $args{'Base'};
     	$direction = 'Target';
     }
     elsif ( $args{'Target'} ) {
-        $args{'Base'} = $self->URI();
+        $args{'Base'} = $self->uri();
 	$remote_link = $args{'Target'};
         $direction='Base';
     }
@@ -1184,7 +1184,7 @@ sub _delete_link {
     Jifty->log->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} . "\n" );
 
 
-    $link->loadByParams( Base=> $args{'Base'}, Type=> $args{'Type'}, Target=>  $args{'Target'} );
+    $link->load_by_params( Base=> $args{'Base'}, Type=> $args{'Type'}, Target=>  $args{'Target'} );
     #it's a real link. 
     if ( $link->id ) {
 
@@ -1220,7 +1220,7 @@ sub _new_transaction {
     my $self = shift;
     my %args = (
         TimeTaken => undef,
-        Type      => undef,
+        type      => undef,
         old_value  => undef,
         new_value  => undef,
         OldReference  => undef,
@@ -1271,12 +1271,12 @@ sub _new_transaction {
 
     Jifty->log->warn($msg) unless $transaction;
 
-    $self->_setLastUpdated;
+    $self->set_last_updated;
 
     if ( defined $args{'TimeTaken'} and $self->can('_UpdateTimeTaken')) {
-        $self->_UpdateTimeTaken( $args{'TimeTaken'} );
+        $self->_update_time_taken( $args{'TimeTaken'} );
     }
-    if ( RT->Config->Get('Usetransaction_batch') and $transaction ) {
+    if ( RT->config->get('Usetransaction_batch') and $transaction ) {
 	    push @{$self->{_transaction_batch}}, $trans if $args{'commit_scrips'};
     }
     return ( $transaction, $msg, $trans );
@@ -1292,7 +1292,7 @@ sub _new_transaction {
 
 =cut
 
-sub Transactions {
+sub transactions {
     my $self = shift;
 
     use RT::Model::TransactionCollection;
@@ -1321,16 +1321,16 @@ sub custom_fields {
     my $cfs  = RT::Model::CustomFieldCollection->new;
 
     # XXX handle multiple types properly
-    $cfs->limit_ToLookupType( $self->custom_field_lookup_type );
-    $cfs->limit_ToGlobalOrobject_id(
-        $self->_LookupId( $self->custom_field_lookup_type ) );
+    $cfs->limit_to_lookup_type( $self->custom_field_lookup_type );
+    $cfs->limit_to_global_orobject_id(
+        $self->_lookup_id( $self->custom_field_lookup_type ) );
 
     return $cfs;
 }
 
 # TODO: This _only_ works for RT::Class classes. it doesn't work, for example, for RT::FM classes.
 
-sub _LookupId {
+sub _lookup_id {
     my $self = shift;
     my $lookup = shift;
     my @classes = ($lookup =~ /RT::Model::(\w+)-/g);
@@ -1429,7 +1429,7 @@ sub add_custom_field_value {
     if ($cf->can('validate_Value')) { unless ( $cf->validate_Value( $args{'Value'} ) ) { return ( 0, _("Invalid value for custom field") ); } }
     # If the custom field only accepts a certain # of values, delete the existing
     # value and record a "changed from foo to bar" transaction
-    unless ( $cf->unlimitedValues ) {
+    unless ( $cf->unlimited_values ) {
 
         # Load up a Objectcustom_field_values object for this custom field and this ticket
         my $values = $cf->values_for_object($self);
@@ -1447,14 +1447,14 @@ sub add_custom_field_value {
                 if ( $i < $cf_values ) {
                     my ( $val, $msg ) = $cf->delete_value_for_object(
                         Object  => $self,
-                        Content => $value->Content
+                        Content => $value->content
                     );
                     unless ($val) {
                         return ( 0, $msg );
                     }
                     my ( $TransactionId, $Msg, $transaction_obj ) =
                       $self->_new_transaction(
-                        Type         => 'CustomField',
+                        type         => 'CustomField',
                         Field        => $cf->id,
                         OldReference => $value,
                       );
@@ -1465,7 +1465,7 @@ sub add_custom_field_value {
 
         my ( $old_value, $old_content );
         if ( $old_value = $values->first ) {
-            $old_content = $old_value->Content;
+            $old_content = $old_value->content;
             $old_content = undef if defined $old_content && !length $old_content;
 
             my $is_the_same = 1;
@@ -1476,7 +1476,7 @@ sub add_custom_field_value {
                 $is_the_same = 0 if defined $old_content;
             }
             if ( $is_the_same ) {
-                my $old_content = $old_value->LargeContent;
+                my $old_content = $old_value->large_content;
                 if ( defined $args{'LargeContent'} ) {
                     $is_the_same = 0 unless defined $old_content
                         && $old_content eq $args{'LargeContent'};
@@ -1511,14 +1511,14 @@ sub add_custom_field_value {
         if ( $args{'record_transaction'} ) {
             my ( $TransactionId, $Msg, $transaction_obj ) =
               $self->_new_transaction(
-                Type         => 'CustomField',
+                type         => 'CustomField',
                 Field        => $cf->id,
                 OldReference => $old_value,
                 NewReference => $new_value,
               );
         }
 
-        my $new_content = $new_value->Content;
+        my $new_content = $new_value->content;
         unless ( defined $old_content && length $old_content ) {
             return ( $new_value_id, _( "%1 %2 added", $cf->name, $new_content ));
         }
@@ -1546,7 +1546,7 @@ sub add_custom_field_value {
         }
         if ( $args{'record_transaction'} ) {
             my ( $tid, $msg ) = $self->_new_transaction(
-                Type          => 'CustomField',
+                type          => 'CustomField',
                 Field         => $cf->id,
                 NewReference  => $new_value_id,
                 ReferenceType => 'RT::Model::ObjectCustomFieldValue',
@@ -1598,7 +1598,7 @@ sub delete_custom_field_value {
     }
 
     my ( $TransactionId, $Msg, $transaction_obj ) = $self->_new_transaction(
-        Type          => 'CustomField',
+        type          => 'CustomField',
         Field         => $cf->id,
         OldReference  => $val,
         ReferenceType => 'RT::Model::ObjectCustomFieldValue',
@@ -1632,7 +1632,7 @@ sub first_custom_field_value {
     my $field = shift;
     my $values = $self->custom_field_values( $field );
     return undef unless my $first = $values->first;
-    return $first->Content;
+    return $first->content;
 }
 
 
@@ -1711,9 +1711,9 @@ sub basic_columns {
 }
 
 sub wiki_base {
-    return RT->Config->Get('WebPath'). "/index.html?q=";
+    return RT->config->get('WebPath'). "/index.html?q=";
 }
 
-sub Table { warn(" deprecated Table call discarded")}
+sub table { warn(" deprecated Table call discarded")}
 
 1;

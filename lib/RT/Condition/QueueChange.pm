@@ -62,7 +62,7 @@ If the queue has changed.
 
 =cut
 
-sub IsApplicable {
+sub is_applicable {
     my $self = shift;
     if ($self->transaction_obj->Field eq 'Queue') {
 	    return(1);

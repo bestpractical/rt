@@ -7,17 +7,17 @@ use Cwd 'getcwd';
 
 my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
 
-RT->Config->set( LogToScreen => 'debug' );
-RT->Config->set( 'GnuPG',
+RT->config->set( LogToScreen => 'debug' );
+RT->config->set( 'GnuPG',
                  Enable => 1,
                  OutgoingMessagesFormat => 'RFC' );
 
-RT->Config->set( 'GnuPGOptions',
+RT->config->set( 'GnuPGOptions',
                  homedir => $homedir,
                  passphrase => 'test',
                  'no-permission-warning' => undef);
 
-RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 

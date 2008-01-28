@@ -16,9 +16,9 @@ my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
 my ($val,$msg)  = $cf->create(name => 'Work Package-'.$$, Type => 'Freeform', LookupType => RT::Model::Ticket->custom_field_lookup_type, MaxValues => 1);
 ok($cf->id);
 ok($val,$msg);
-($val, $msg) = $cf->AddToObject($queue_obj);
+($val, $msg) = $cf->add_to_object($queue_obj);
 ok($val,$msg);
-ok($queue_obj->TicketCustomFields()->count, "We have a custom field, at least");
+ok($queue_obj->ticket_custom_fields()->count, "We have a custom field, at least");
 
 
 my $data = <<EOF;
@@ -30,8 +30,8 @@ EOF
 my $action = RT::ScripAction::CreateTickets->new(current_user => RT::CurrentUser->new(name => 'root'));
 ok ($action->current_user->id , "We have a current user");
  
-$action->Parse(Content => $data);
-my @results = $action->createByTemplate();
+$action->parse(Content => $data);
+my @results = $action->create_by_template();
 
 my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql ("Queue = '". $QUEUE."'");
@@ -40,10 +40,10 @@ is($tix->count, 2, '2 tickets');
 
 my $first = $tix->first();
 
-is($first->Subject(), 'hi'); 
+is($first->subject(), 'hi'); 
 is($first->first_custom_field_value($cf->id), '2.0');
 
 my $second = $tix->next;
-is($second->Subject(), 'hello'); 
+is($second->subject(), 'hello'); 
 is($second->first_custom_field_value($cf->id), '3.0');
 1;

@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % while ($values and my $value = $values->next ) {
-<textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$namePrefix%><%$CustomField->id%>-Values"><% $value->Content %></textarea><br />
+<textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$namePrefix%><%$CustomField->id%>-Values"><% $value->content %></textarea><br />
 % }
 % if (!$MaxValues or !$values or $values->count < $MaxValues) {
 <textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$namePrefix%><%$CustomField->id%>-Values"><% $Default %></textarea>

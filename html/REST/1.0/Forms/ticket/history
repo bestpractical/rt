@@ -62,7 +62,7 @@ unless ($ticket->id) {
     return [ "# Ticket $id does not exist.", [], {}, 1 ];
 }
 
-my $trans = $ticket->Transactions();
+my $trans = $ticket->transactions();
 my $total = $trans->count();
 
 if ( $args ) {
@@ -105,7 +105,7 @@ if ($tid) {
     
     # this paragraph limits the transaction ID query to transactions on this ticket. 
     # Otherwise you can query any transaction from any ticket, which makes no sense.
-    my $Transactions = $ticket->Transactions;
+    my $Transactions = $ticket->transactions;
     my $tok=0;
     while (my $T = $Transactions->next()) {
     	$tok=1 if ($T->id == $tid)
@@ -117,11 +117,11 @@ if ($tid) {
     }
 
     push @data, [ id    => $t->id   ];
-    push @data, [ Ticket    => $t->Ticket   ]
+    push @data, [ Ticket    => $t->ticket   ]
 	if (!%$fields || exists $fields->{lc 'Ticket'});
     push @data, [ TimeTaken    => $t->TimeTaken   ]
 	if (!%$fields || exists $fields->{lc 'TimeTaken'});
-    push @data, [ Type    => $t->Type   ]
+    push @data, [ Type    => $t->type   ]
 	if (!%$fields || exists $fields->{lc 'Type'});
     push @data, [ Field    => $t->Field   ]
 	if (!%$fields || exists $fields->{lc 'Field'});
@@ -131,9 +131,9 @@ if ($tid) {
 	if (!%$fields || exists $fields->{lc 'new_value'});
     push @data, [ Data    => $t->Data   ]
 	if (!%$fields || exists $fields->{lc 'Data'});
-    push @data, [ Description    => $t->Description   ]
+    push @data, [ Description    => $t->description   ]
 	if (!%$fields || exists $fields->{lc 'Description'});
-    push @data, [ Content    => $t->Content   ]
+    push @data, [ Content    => $t->content   ]
 	if (!%$fields || exists $fields->{lc 'Content'});
 
 
@@ -147,12 +147,12 @@ if ($tid) {
 
     if (!%$fields || exists $fields->{lc 'Attachments'}) {
 	my $attachlist;
-	my $attachments = $t->Attachments;
+	my $attachments = $t->attachments;
 	while (my $a = $attachments->next) {
 	    my $size = length($a->Content);
 	    if ($size > 1024) { $size  = int($size/102.4)/10 . "k" }
 	    else              { $size .= "b" }
-	    $attachlist .= "\n" . $a->id.": ".($a->Filename || "untitled")." (".$size.")";
+	    $attachlist .= "\n" . $a->id.": ".($a->filename || "untitled")." (".$size.")";
 	}
 	
 	push @data, [Attachments => $attachlist];
@@ -175,7 +175,7 @@ if ($tid) {
 	    $tids .= $tid;
 	} else {
 	    push @$o, $tid;
-	    $k->{$tid} = $t->Description;
+	    $k->{$tid} = $t->description;
 	}
     }
 

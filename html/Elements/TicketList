@@ -164,7 +164,7 @@ foreach my $col (@Format) {
 $Collection => undef
 
 $Query => undef
-$Format => RT->Config->Get('DefaultSearchResultFormat')
+$Format => RT->config->get('DefaultSearchResultFormat')
 $DisplayFormat => undef
 $Order => undef
 $order_by => undef

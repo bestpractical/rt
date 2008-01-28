@@ -60,9 +60,9 @@ foreach my $id (keys %cfqueues) {
         $id =~ s/^.'*(.*).'*$/$1/;
         $queue->load($id);
     }
-    $CustomFields->limit_ToQueue($queue->id);
+    $CustomFields->limit_to_queue($queue->id);
 }
-$CustomFields->limit_ToGlobal;
+$CustomFields->limit_to_global;
 $m->callback(
     Callbackname => 'MassageCustomFields',
     CustomFields => $CustomFields,

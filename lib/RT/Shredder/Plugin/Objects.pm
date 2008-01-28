@@ -87,7 +87,7 @@ sub TestArgs
         push @strings, map "RT::$name\-$_", @$list;
     }
 
-    my @objs = RT::Shredder->CastObjectsToRecords( Objects => \@strings );
+    my @objs = RT::Shredder->cast_objects_to_records( Objects => \@strings );
 
     my @res = $self->SUPER::TestArgs( %args );
 

@@ -57,6 +57,6 @@
 <input size="8" name="GroupString" />
 <%INIT>
 my $CFs = RT::Model::CustomFieldCollection->new();
-$CFs->limit_ToChildType('RT::Model::Group');
+$CFs->limit_to_child_type('RT::Model::Group');
 $CFs->order_by( column => 'name' );
 </%INIT>

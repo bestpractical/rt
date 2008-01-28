@@ -70,7 +70,7 @@ sub __DependsOn
 # Scrips
     my $objs = RT::Model::ScripCollection->new;
     $objs->limit( column => 'ScripAction', value => $self->id );
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $objs,

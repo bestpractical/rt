@@ -21,8 +21,8 @@ diag 'global template' if $ENV{'TEST_VERBOSE'};
     ok($id, 'Created template') or diag "error: $msg";
 
 	my $shredder = shredder_new();
-	$shredder->PutObjects( Objects => $template );
-	$shredder->WipeoutAll;
+	$shredder->put_objects( Objects => $template );
+	$shredder->wipeout_all;
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
@@ -38,8 +38,8 @@ diag 'local template' if $ENV{'TEST_VERBOSE'};
     ok($id, 'Created template') or diag "error: $msg";
 
 	my $shredder = shredder_new();
-	$shredder->PutObjects( Objects => $template );
-	$shredder->WipeoutAll;
+	$shredder->put_objects( Objects => $template );
+	$shredder->wipeout_all;
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
@@ -65,8 +65,8 @@ diag 'template used in scrip' if $ENV{'TEST_VERBOSE'};
     ok($id, 'Created scrip') or diag "error: $msg";
 
 	my $shredder = shredder_new();
-	$shredder->PutObjects( Objects => $template );
-	$shredder->WipeoutAll;
+	$shredder->put_objects( Objects => $template );
+	$shredder->wipeout_all;
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 

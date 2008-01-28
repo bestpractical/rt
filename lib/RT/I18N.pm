@@ -89,7 +89,7 @@ Initializes the lexicons used for localization.
 
 =cut
 
-sub Init {
+sub init {
 }
 
 =head2 encoding
@@ -249,12 +249,12 @@ tried.  Maybe it's ok now.
 
 =cut
 
-sub DecodeMIMEWordsToUTF8 {
+sub decode_mime_words_to_utf8 {
     my $str = shift;
     DecodeMIMEWordsToEncoding($str, 'utf-8');
 }
 
-sub DecodeMIMEWordsToEncoding {
+sub decode_mime_words_to_encoding {
     my $str = shift;
     my $enc = shift;
 
@@ -329,7 +329,7 @@ If $head_only is true, only guesses charset for head parts.  This is because hea
 
 =cut
 
-sub _FindOrGuessCharset {
+sub _find_or_guess_charset {
     my $entity = shift;
     my $head_only = shift;
     my $head = $entity->head;
@@ -358,14 +358,14 @@ use Encode::Guess to try to figure it out the string's encoding.
 
 =cut
 
-sub _GuessCharset {
+sub _guess_charset {
     my $fallback = 'iso-8859-1';
 
     # if $_[0] is null/empty, we don't guess its encoding
     return $fallback unless defined $_[0] && length $_[0];
 
     my $charset;
-    my @encodings = RT->Config->Get('EmailInputEncodings');
+    my @encodings = RT->config->get('EmailInputEncodings');
     if ( @encodings and eval { require Encode::Guess; 1 } ) {
 	Encode::Guess->set_suspects( @encodings );
 	my $decoder = Encode::Guess->guess( $_[0] );
@@ -380,7 +380,7 @@ sub _GuessCharset {
 	    my %matched = map { $_ => 1 } split(/ or /, $1);
 	    return 'utf-8' if $matched{'utf8'}; # one and only normalization
 
-	    foreach my $suspect (RT->Config->Get('EmailInputEncodings')) {
+	    foreach my $suspect (RT->config->get('EmailInputEncodings')) {
 		next unless $matched{$suspect};
 		Jifty->log->debug("Encode::Guess ambiguous ($decoder); using $suspect");
 		$charset = $suspect;

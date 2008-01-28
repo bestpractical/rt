@@ -55,7 +55,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<form action="<%RT->Config->Get('WebPath')%>/User/Groups/Modify.html" method="post">
+<form action="<%RT->config->get('WebPath')%>/User/Groups/Modify.html" method="post">
 
 %unless ($Group->id) {
 <input type="hidden" class="hidden" name="id" value="new" />
@@ -92,7 +92,7 @@ if ($Create) {
 else {
     if ( defined ($id) && $id eq 'new' ) {
 
-        my ( $id, $msg ) = $Group->createPersonalGroup(
+        my ( $id, $msg ) = $Group->create_personal_group(
                              name        => "$name",
                              principal_id => Jifty->web->current_user->id
         );

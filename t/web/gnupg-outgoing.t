@@ -9,23 +9,23 @@ use File::Temp qw(tempdir);
 
 RT::Test->set_mail_catcher;
 
-RT->Config->set( LogToScreen => 'debug' );
-RT->Config->set( LogStackTraces => 'error' );
+RT->config->set( LogToScreen => 'debug' );
+RT->config->set( LogStackTraces => 'error' );
 
 use_ok('RT::Crypt::GnuPG');
 
-RT->Config->set( GnuPG =>
+RT->config->set( GnuPG =>
     Enable => 1,
     OutgoingMessagesFormat => 'RFC',
 );
 
-RT->Config->set( GnuPGOptions =>
+RT->config->set( GnuPGOptions =>
     homedir => scalar tempdir( CLEANUP => 1 ),
     passphrase => 'rt-test',
     'no-permission-warning' => undef,
     'trust-model' => 'always',
 );
-RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');
@@ -141,7 +141,7 @@ foreach my $queue_set ( @variants ) {
 # like we are on another side recieve emails
 # ------------------------------------------------------------------------------
 
-unlink $_ foreach glob( RT->Config->Get('GnuPGOptions')->{'homedir'} ."/*" );
+unlink $_ foreach glob( RT->config->get('GnuPGOptions')->{'homedir'} ."/*" );
 RT::Test->import_gnupg_key('rt-recipient@example.com', 'public');
 RT::Test->import_gnupg_key('rt-test@example.com');
 
@@ -161,8 +161,8 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'plain'} } ) {
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
-    my $txn = $tick->Transactions->first;
-    my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
+    my $txn = $tick->transactions->first;
+    my ($msg, @attachments) = @{$txn->attachments->items_array_ref};
 
     ok !$msg->get_header('X-RT-Privacy'), "RT's outgoing mail has no crypto";
     is $msg->get_header('X-RT-Incoming-Encryption'), 'Not encrypted',
@@ -170,7 +170,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'plain'} } ) {
     ok !$msg->get_header('X-RT-Incoming-Signature'),
         "RT's outgoing mail looks not signed";
 
-    like $msg->Content, qr/Some content/, "RT's mail includes copy of ticket text";
+    like $msg->content, qr/Some content/, "RT's mail includes copy of ticket text";
 }
 
 foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed'} } ) {
@@ -182,8 +182,8 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed'} } ) {
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
-    my $txn = $tick->Transactions->first;
-    my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
+    my $txn = $tick->transactions->first;
+    my ($msg, @attachments) = @{$txn->attachments->items_array_ref};
 
     is $msg->get_header('X-RT-Privacy'), 'PGP',
         "RT's outgoing mail has crypto";
@@ -193,7 +193,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed'} } ) {
         qr/<rt-recipient\@example.com>/,
         "RT's outgoing mail looks signed";
 
-    like $attachments[0]->Content, qr/Some content/,
+    like $attachments[0]->content, qr/Some content/,
         "RT's mail includes copy of ticket text";
 }
 
@@ -206,8 +206,8 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'encrypted'} } ) {
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
-    my $txn = $tick->Transactions->first;
-    my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
+    my $txn = $tick->transactions->first;
+    my ($msg, @attachments) = @{$txn->attachments->items_array_ref};
 
     is $msg->get_header('X-RT-Privacy'), 'PGP',
         "RT's outgoing mail has crypto";
@@ -216,7 +216,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'encrypted'} } ) {
     ok !$msg->get_header('X-RT-Incoming-Signature'),
         "RT's outgoing mail looks not signed";
 
-    like $attachments[0]->Content, qr/Some content/,
+    like $attachments[0]->content, qr/Some content/,
         "RT's mail includes copy of ticket text";
 }
 
@@ -229,8 +229,8 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed_encrypted'} } ) {
     $tick->load( $id );
     ok ($tick->id, "loaded ticket #$id");
 
-    my $txn = $tick->Transactions->first;
-    my ($msg, @attachments) = @{$txn->Attachments->items_array_ref};
+    my $txn = $tick->transactions->first;
+    my ($msg, @attachments) = @{$txn->attachments->items_array_ref};
 
     is $msg->get_header('X-RT-Privacy'), 'PGP',
         "RT's outgoing mail has crypto";
@@ -240,7 +240,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed_encrypted'} } ) {
         qr/<rt-recipient\@example.com>/,
         "RT's outgoing mail looks signed";
 
-    like $attachments[0]->Content, qr/Some content/,
+    like $attachments[0]->content, qr/Some content/,
         "RT's mail includes copy of ticket text";
 }
 

@@ -93,7 +93,7 @@ aren't that queue's templates.
 
 =cut
 
-sub limit_ToNotInQueue {
+sub limit_to_not_in_queue {
     my $self = shift;
     my $queue_id = shift;
     $self->limit(column => 'Queue',
@@ -112,7 +112,7 @@ which can be used with any queue.
 
 =cut
 
-sub limit_ToGlobal {
+sub limit_to_global {
     my $self = shift;
     my $queue_id = shift;
     $self->limit(column => 'Queue',
@@ -131,7 +131,7 @@ templates
 
 =cut
 
-sub limit_ToQueue {
+sub limit_to_queue {
     my $self = shift;
     my $queue_id = shift;
     $self->limit(column => 'Queue',

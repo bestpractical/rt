@@ -153,7 +153,7 @@ sub load  {
 
 =cut
 
-sub loadAction  {
+sub load_action {
     my $self = shift;
     my %args = ( transaction_obj => undef,
 		 ticket_obj => undef,
@@ -168,7 +168,7 @@ sub loadAction  {
  
     eval "require $type" || die "Require of $type failed.\n$@\n";
     
-    $self->{'Action'}  = $type->new ( Argument => $self->Argument,
+    $self->{'Action'}  = $type->new ( Argument => $self->argument,
                                       CurrentUser => $self->current_user,
                                       ScripActionObj => $self, 
                                       scrip_obj => $args{'scrip_obj'},
@@ -200,7 +200,7 @@ sub template_obj {
         if ( ( $self->{'template_obj'}->__value('Queue') == 0 )
             && $self->{'_ticket_obj'} ) {
             my $tmptemplate = RT::Model::Template->new;
-            my ( $ok, $err ) = $tmptemplate->loadQueueTemplate(
+            my ( $ok, $err ) = $tmptemplate->load_queue_template(
                 Queue => $self->{'_ticket_obj'}->queue_obj->id,
                 name  => $self->{'template_obj'}->name);
 
@@ -223,7 +223,7 @@ sub template_obj {
 sub prepare  {
     my $self = shift;
     $self->{_Message_ID} = 0;
-    return ($self->Action->prepare());
+    return ($self->action->prepare());
   
 }
 # }}}
@@ -231,16 +231,16 @@ sub prepare  {
 # {{{ sub commit 
 sub commit  {
     my $self = shift;
-    return($self->Action->commit());
+    return($self->action->commit());
     
     
 }
 # }}}
 
 # {{{ sub Describe 
-sub Describe  {
+sub describe {
     my $self = shift;
-    return ($self->Action->Describe());
+    return ($self->action->describe());
     
 }
 # }}}
@@ -251,7 +251,7 @@ Return the actual RT::ScripAction object for this scrip.
 
 =cut
 
-sub Action {
+sub action {
     my $self = shift;
     return ($self->{'Action'});
 }

@@ -781,11 +781,11 @@ should become		<&|/l, $m->scomp('/Elements/SelectNewTicketQueue')&><input type="
 
 
 
-The string	<& /Elements/TitleBoxStart, width=> "40%", titleright => "RT $RT::VERSION for   RT->Config->Get('rtname')", title => 'Login' &>
+The string	<& /Elements/TitleBoxStart, width=> "40%", titleright => "RT $RT::VERSION for   RT->config->get('rtname')", title => 'Login' &>
 
 should become 	<& /Elements/TitleBoxStart, 
 			width=> "40%",
-			titleright => _("RT %1 for %2",$RT::VERSION, RT->Config->Get('rtname')),
+			titleright => _("RT %1 for %2",$RT::VERSION, RT->config->get('rtname')),
 			title => _('Login'),
 	      	&>
 	

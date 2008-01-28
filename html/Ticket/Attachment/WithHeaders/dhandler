@@ -62,7 +62,7 @@
     # XXX: should we check handle html here and integrate headers into html?
     $r->content_type( 'text/plain' );
     $m->clear_buffer;
-    $m->out( $AttachmentObj->Headers );
+    $m->out( $AttachmentObj->headers );
     $m->out( "\n\n" );
     $m->out( $AttachmentObj->original_content );
     $m->abort;

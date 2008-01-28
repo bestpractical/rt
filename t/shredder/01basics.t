@@ -22,7 +22,7 @@ my ($status, $msg) = $ticket->load( $id );
 ok( $id, "load ticket" ) or diag( "error: $msg" );
 
 my $shredder = shredder_new();
-$shredder->Wipeout( Object => $ticket );
+$shredder->wipeout( Object => $ticket );
 
 cmp_deeply( dump_current_and_savepoint(), "current DB equal to savepoint");
 

@@ -108,7 +108,7 @@ sub _do_search {
   
 
 # {{{ sub Limit 
-sub Limit  {
+sub limit {
   my $self = shift;
   my %args = ( entry_aggregator => 'AND',
 	       @_);

@@ -21,7 +21,7 @@ my ($val,$msg) = $template->create(Queue => 1,
                   Content => 'This is template content');
 ok($val,$msg);
 is($template->name, 'InsertTest');
-is($template->Content, 'This is template content', "We Created the object right");
-($val, $msg) = $template->set_Content( 'This is new template content');
+is($template->content, 'This is template content', "We Created the object right");
+($val, $msg) = $template->set_content( 'This is new template content');
 ok($val,$msg);
-is($template->Content, 'This is new template content', "We managed to _set_ the content");
+is($template->content, 'This is new template content', "We managed to _set_ the content");

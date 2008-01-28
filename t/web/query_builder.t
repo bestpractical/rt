@@ -28,7 +28,7 @@ ok $agent->login, "logged in";
 my $response = $agent->get($url."Search/Build.html");
 ok $response->is_success, "Fetched ". $url ."Search/Build.html";
 
-sub getQueryFromForm {
+sub get_query_from_form {
     $agent->form_name('BuildQuery');
     # This pulls out the "hidden input" query from the page
     my $q = $agent->current_form->find_input("Query")->value;
@@ -38,7 +38,7 @@ sub getQueryFromForm {
     return $q;
 }
 
-sub selectedClauses {
+sub selected_clauses {
     my @clauses = grep { defined } map { $_->value } $agent->current_form->find_input("clauses");
     return [ @clauses ];
 }
@@ -205,7 +205,7 @@ TODO: {
     my $cf = RT::Model::CustomField->new(current_user => RT->system_user );
     $cf->load_by_name( name => "\x{442}", Queue => 0 );
     if ( $cf->id ) {
-        is($cf->Type, 'Freeform', 'loaded and type is correct');
+        is($cf->type, 'Freeform', 'loaded and type is correct');
     } else {
         my ($return, $msg) = $cf->create(
             name => "\x{442}",

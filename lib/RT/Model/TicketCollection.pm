@@ -147,16 +147,16 @@ our %FIELD_METADATA = (
 
 # Mapping of Field Type to Function
 our %dispatch = (
-    ENUM            => \&_EnumLimit,
-    INT             => \&_IntLimit,
-    LINK            => \&_LinkLimit,
-    DATE            => \&_DateLimit,
-    STRING          => \&_StringLimit,
-    TRANSFIELD      => \&_TransLimit,
-    TRANSDATE       => \&_TransDateLimit,
-    WATCHERFIELD    => \&_WatcherLimit,
-    MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
-    CUSTOMFIELD     => \&_CustomFieldLimit,
+    ENUM            => \&_enum_limit,
+    INT             => \&_int_limit,
+    LINK            => \&_link_limit,
+    DATE            => \&_date_limit,
+    STRING          => \&_string_limit,
+    TRANSFIELD      => \&_trans_limit,
+    TRANSDATE       => \&_trans_date_limit,
+    WATCHERFIELD    => \&_watcher_limit,
+    MEMBERSHIPFIELD => \&_watcher_membership_limit,
+    CUSTOMFIELD     => \&_custom_field_limit,
 );
 our %can_bundle = ();# WATCHERFIELD => "yes", );
 
@@ -219,7 +219,7 @@ Returns the list of fields that lists of tickets can easily be sorted by
 
 =cut
 
-sub SortFields {
+sub sort_fields {
     my $self = shift;
     return (@SORTcolumns);
 }
@@ -276,7 +276,7 @@ Meta Data:
 
 =cut
 
-sub _EnumLimit {
+sub _enum_limit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
     # SQL::Statement changes != to <>.  (Can we remove this now?)
@@ -311,7 +311,7 @@ Meta Data:
 
 =cut
 
-sub _IntLimit {
+sub _int_limit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
     die "Invalid Operator $op for $field"
@@ -335,7 +335,7 @@ Meta Data:
 
 =cut
 
-sub _LinkLimit {
+sub _link_limit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
     my $meta = $FIELD_METADATA{$field};
@@ -503,7 +503,7 @@ Meta Data:
 
 =cut
 
-sub _DateLimit {
+sub _date_limit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
     die "Invalid Date Op: $op"
@@ -522,10 +522,10 @@ sub _DateLimit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->set_ToMidnight( Timezone => 'server' );
-        my $daystart = $date->ISO;
-        $date->AddDay;
-        my $dayend = $date->ISO;
+        $date->set_to_midnight( Timezone => 'server' );
+        my $daystart = $date->iso;
+        $date->add_day;
+        my $dayend = $date->iso;
 
         $sb->open_paren;
 
@@ -551,7 +551,7 @@ sub _DateLimit {
         $sb->_sql_limit(
             column    => $meta->[1],
             operator => $op,
-            value    => $date->ISO,
+            value    => $date->iso,
             @rest,
         );
     }
@@ -566,7 +566,7 @@ Meta Data:
 
 =cut
 
-sub _StringLimit {
+sub _string_limit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
     # FIXME:
@@ -594,7 +594,7 @@ Meta Data:
 =cut
 
 # This routine should really be factored into translimit.
-sub _TransDateLimit {
+sub _trans_date_limit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
     # See the comments for TransLimit, they apply here too
@@ -624,10 +624,10 @@ sub _TransDateLimit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->set_ToMidnight( Timezone => 'server' );
-        my $daystart = $date->ISO;
-        $date->AddDay;
-        my $dayend = $date->ISO;
+        $date->set_to_midnight( Timezone => 'server' );
+        my $daystart = $date->iso;
+        $date->add_day;
+        my $dayend = $date->iso;
 
         $sb->_sql_limit(
             alias         => $sb->{_sql_transalias},
@@ -657,7 +657,7 @@ sub _TransDateLimit {
             alias         => $sb->{_sql_transalias},
             column         => 'Created',
             operator      => $op,
-            value         => $date->ISO,
+            value         => $date->iso,
             case_sensitive => 0,
             @rest
         );
@@ -675,7 +675,7 @@ Meta Data:
 
 =cut
 
-sub _TransLimit {
+sub _trans_limit {
 
     # Content, ContentType, Filename
 
@@ -738,7 +738,7 @@ sub _TransLimit {
     $self->open_paren;
 
     #Search for the right field
-    if ( $field eq 'Content' and RT->Config->Get('DontSearchFileAttachments') ) {
+    if ( $field eq 'Content' and RT->config->get('DontSearchFileAttachments') ) {
        $self->_sql_limit(
 			alias         => $self->{_sql_trattachalias},
 			column         => 'Filename',
@@ -784,7 +784,7 @@ Meta Data:
 
 =cut
 
-sub _WatcherLimit {
+sub _watcher_limit {
     my $self  = shift;
     my $field = shift;
     my $op    = shift;
@@ -810,11 +810,11 @@ sub _WatcherLimit {
     }
     $rest{subkey} ||= 'email';
 
-    my $groups = $self->_RoleGroupsjoin( Type => $type );
+    my $groups = $self->_role_groupsjoin( Type => $type );
 
     $self->open_paren;
     if ( $op =~ /^IS(?: NOT)?$/ ) {
-        my $group_members = $self->_GroupMembersjoin( GroupsAlias => $groups );
+        my $group_members = $self->_group_membersjoin( GroupsAlias => $groups );
         # to avoid joining the table Users into the query, we just join GM
         # and make sure we don't match records where group is member of itself
         $self->SUPER::limit(
@@ -850,7 +850,7 @@ sub _WatcherLimit {
         $users_obj->rows_per_page(2);
         my @users = @{ $users_obj->items_array_ref };
 
-        my $group_members = $self->_GroupMembersjoin( GroupsAlias => $groups );
+        my $group_members = $self->_group_membersjoin( GroupsAlias => $groups );
         if ( @users <= 1 ) {
             my $uid = 0;
             $uid = $users[0]->id if @users;
@@ -899,7 +899,7 @@ sub _WatcherLimit {
             );
         }
     } else {
-        my $group_members = $self->_GroupMembersjoin(
+        my $group_members = $self->_group_membersjoin(
             GroupsAlias => $groups,
             New => 0,
         );
@@ -946,7 +946,7 @@ sub _WatcherLimit {
     $self->close_paren;
 }
 
-sub _RoleGroupsjoin {
+sub _role_groupsjoin {
     my $self = shift;
     my %args = (New => 0, Type => '', @_);
     return $self->{'_sql_role_group_aliases'}{ $args{'Type'} }
@@ -979,7 +979,7 @@ sub _RoleGroupsjoin {
     return $groups;
 }
 
-sub _GroupMembersjoin {
+sub _group_membersjoin {
     my $self = shift;
     my %args = (New => 1, GroupsAlias => undef, @_);
 
@@ -1009,13 +1009,13 @@ and for ordering.
 
 =cut
 
-sub _Watcherjoin {
+sub _watcherjoin {
     my $self = shift;
     my $type = shift || '';
 
 
-    my $groups = $self->_RoleGroupsjoin( Type => $type );
-    my $group_members = $self->_GroupMembersjoin( GroupsAlias => $groups );
+    my $groups = $self->_role_groupsjoin( Type => $type );
+    my $group_members = $self->_group_membersjoin( GroupsAlias => $groups );
     # XXX: work around, we must hide groups that
     # are members of the role group we search in,
     # otherwise them result in wrong NULLs in Users
@@ -1079,7 +1079,7 @@ LIMIT 25
 
 =cut
 
-sub _WatcherMembershipLimit {
+sub _watcher_membership_limit {
     my ( $self, $field, $op, $value, @rest ) = @_;
     my %rest = @rest;
 
@@ -1176,7 +1176,7 @@ Try and turn a CF descriptor into (cfid, cfname) object pair.
 
 =cut
 
-sub _CustomFieldDecipher {
+sub _custom_field_decipher {
     my ($self, $string) = @_;
 
     my ($queue, $field, $column) =
@@ -1191,7 +1191,7 @@ sub _CustomFieldDecipher {
         my $cf;
         if ( $q->id ) {
             # $queue = $q->name; # should we normalize the queue?
-            $cf = $q->CustomField( $field );
+            $cf = $q->custom_field( $field );
         }
         else {
             Jifty->log->warn("Queue '$queue' doesn't exists, parsed from '$string'");
@@ -1215,7 +1215,7 @@ Factor out the join of custom fields so we can use it for sorting too
 
 =cut
 
-sub _CustomFieldjoin {
+sub _custom_field_join {
     my ($self, $cfkey, $cfid, $field) = @_;
     # Perform one join per CustomField
     if ( $self->{_sql_object_cfv_alias}{$cfkey} ||
@@ -1306,7 +1306,7 @@ Meta Data:
 
 =cut
 
-sub _CustomFieldLimit {
+sub _custom_field_limit {
     my ( $self, $_field, $op, $value, %rest ) = @_;
 
     my $field = $rest{'subkey'} || die "No field specified";
@@ -1314,7 +1314,7 @@ sub _CustomFieldLimit {
     # For our sanity, we can only limit on one queue at a time
 
     my ($queue, $cfid, $column);
-    ($queue, $field, $cfid, $column) = $self->_CustomFieldDecipher( $field );
+    ($queue, $field, $cfid, $column) = $self->_custom_field_decipher( $field );
 
 # If we're trying to find custom fields that don't match something, we
 # want tickets where the custom field has no value at all.  Note that
@@ -1327,7 +1327,7 @@ sub _CustomFieldLimit {
     }
 
     my $cfkey = $cfid ? $cfid : "$queue.$field";
-    my ($TicketCFs, $CFs) = $self->_CustomFieldjoin( $cfkey, $cfid, $field );
+    my ($TicketCFs, $CFs) = $self->_custom_field_join( $cfkey, $cfid, $field );
 
     $self->open_paren;
 
@@ -1398,13 +1398,13 @@ sub order_by {
             my $users = $self->{_sql_u_watchers_alias_for_sort}{ $meta->[1] };
             unless ( $users ) {
                 $self->{_sql_u_watchers_alias_for_sort}{ $meta->[1] }
-                    = $users = ( $self->_Watcherjoin( $meta->[1] ) )[2];
+                    = $users = ( $self->_watcherjoin( $meta->[1] ) )[2];
             }
             push @res, { %$row, alias => $users, column => $subkey };
        } elsif ( defined $meta->[0] && $meta->[0] =~ /CUSTOMFIELD/i ) {
-           my ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $subkey );
+           my ($queue, $field, $cfid ) = $self->_custom_field_decipher( $subkey );
            my $cfkey = $cfid ? $cfid : "$queue.$field";
-           my ($TicketCFs, $CFs) = $self->_CustomFieldjoin( $cfkey, $cfid, $field );
+           my ($TicketCFs, $CFs) = $self->_custom_field_join( $cfkey, $cfid, $field );
            unless ($cfid) {
                # For those cases where we are doing a join against the
                # CF name, and don't have a CFid, use Unique to make sure
@@ -1486,7 +1486,7 @@ sub limit {
         )
         if ( !defined $args{'description'} );
 
-    my $index = $self->_nextIndex;
+    my $index = $self->next_index;
 
 # make the TicketRestrictions hash the equivalent of whatever we just passed in;
 
@@ -1519,19 +1519,19 @@ Returns a frozen string suitable for handing back to ThawLimits.
 
 =cut
 
-sub _FreezeThawKeys {
+sub _freeze_thaw_keys {
     'TicketRestrictions', 'restriction_index', 'looking_at_effective_id',
         'looking_at_type';
 }
 
 # {{{ sub FreezeLimits
 
-sub FreezeLimits {
+sub freeze_limits {
     my $self = shift;
     require Storable;
     require MIME::Base64;
     MIME::Base64::base64_encode(
-        Storable::freeze( \@{$self}{ $self->_FreezeThawKeys } ) );
+        Storable::freeze( \@{$self}{ $self->_freeze_thaw_keys } ) );
 }
 
 # }}}
@@ -1545,7 +1545,7 @@ object have that set of limits.
 
 # {{{ sub ThawLimits
 
-sub ThawLimits {
+sub thaw_limits {
     my $self = shift;
     my $in   = shift;
 
@@ -1558,7 +1558,7 @@ sub ThawLimits {
     require MIME::Base64;
 
     #We don't need to die if the thaw fails.
-    @{$self}{ $self->_FreezeThawKeys }
+    @{$self}{ $self->_freeze_thaw_keys }
         = eval { @{ Storable::thaw( MIME::Base64::base64_decode($in) ) }; };
 
     Jifty->log->error($@) if $@;
@@ -1580,7 +1580,7 @@ value is a queue id or name.
 
 =cut
 
-sub limit_Queue {
+sub limit_queue {
     my $self = shift;
     my %args = (
         value    => undef,
@@ -1624,11 +1624,11 @@ value is a status.
 RT adds Status != 'deleted' until object has
 allow_deleted_search internal property set.
 $tickets->{'allow_deleted_search'} = 1;
-$tickets->limit_Status( value => 'deleted' );
+$tickets->limit_status( value => 'deleted' );
 
 =cut
 
-sub limit_Status {
+sub limit_status {
     my $self = shift;
     my %args = (
         operator => '=',
@@ -1656,14 +1656,14 @@ to tickets of type "Ticket". Tickets of other types, such as "project" and
 
 =cut
 
-sub IgnoreType {
+sub ignore_type {
     my $self = shift;
 
     # Instead of faking a Limit that later gets ignored, fake up the
     # fact that we're already looking at type, so that the check in
     # Tickets_Overlay_SQL/from_sql goes down the right branch
 
-    #  $self->limit_Type(value => '__any');
+    #  $self->limit_type(value => '__any');
     $self->{looking_at_type} = 1;
 }
 
@@ -1681,7 +1681,7 @@ value is a string to search for in the type of the ticket.
 
 =cut
 
-sub limit_Type {
+sub limit_type {
     my $self = shift;
     my %args = (
         operator => '=',
@@ -1713,7 +1713,7 @@ value is a string to search for in the subject of the ticket.
 
 =cut
 
-sub limit_Subject {
+sub limit_subject {
     my $self = shift;
     my %args = (@_);
     $self->limit(
@@ -1742,7 +1742,7 @@ value is a ticket id to search for
 
 =cut
 
-sub limit_Id {
+sub limit_id {
     my $self = shift;
     my %args = (
         operator => '=',
@@ -1770,7 +1770,7 @@ value is a value to match the ticket\'s priority against
 
 =cut
 
-sub limit_Priority {
+sub limit_priority {
     my $self = shift;
     my %args = (@_);
     $self->limit(
@@ -1900,7 +1900,7 @@ value is a string to search for in the body of the ticket
 
 =cut
 
-sub limit_Content {
+sub limitcontent {
     my $self = shift;
     my %args = (@_);
     $self->limit(
@@ -1925,7 +1925,7 @@ value is a string to search for in the body of the ticket
 
 =cut
 
-sub limit_Filename {
+sub limitfilename {
     my $self = shift;
     my %args = (@_);
     $self->limit(
@@ -1949,7 +1949,7 @@ value is a content type to search ticket attachments for
 
 =cut
 
-sub limit_ContentType {
+sub limit_content_type {
     my $self = shift;
     my %args = (@_);
     $self->limit(
@@ -1978,7 +1978,7 @@ value is a user id.
 
 =cut
 
-sub limit_Owner {
+sub limit_owner {
     my $self = shift;
     my %args = (
         operator => '=',
@@ -2015,7 +2015,7 @@ sub limit_Owner {
 
 =cut
 
-sub limit_Watcher {
+sub limit_watcher {
     my $self = shift;
     my %args = (
         operator => '=',
@@ -2065,7 +2065,7 @@ target is the id or URI of the target of the link
 
 =cut
 
-sub limit_LinkedTo {
+sub limit_linked_to {
     my $self = shift;
     my %args = (
         target   => undef,
@@ -2102,7 +2102,7 @@ base is the id or URI of the base of the link
 
 =cut
 
-sub limit_LinkedFrom {
+sub limit_linked_from {
     my $self = shift;
     my %args = (
         base     => undef,
@@ -2139,7 +2139,7 @@ sub limit_LinkedFrom {
 sub limit_member_of {
     my $self      = shift;
     my $ticket_id = shift;
-    return $self->limit_LinkedTo(
+    return $self->limit_linked_to(
         @_,
         target => $ticket_id,
         type => 'MemberOf',
@@ -2152,7 +2152,7 @@ sub limit_member_of {
 sub limit_has_member {
     my $self      = shift;
     my $ticket_id = shift;
-    return $self->limit_LinkedFrom(
+    return $self->limit_linked_from(
         @_,
         base => "$ticket_id",
         type => 'has_member',
@@ -2164,10 +2164,10 @@ sub limit_has_member {
 
 # {{{ limit_DependsOn
 
-sub limit_DependsOn {
+sub limitdepends_on {
     my $self      = shift;
     my $ticket_id = shift;
-    return $self->limit_LinkedTo(
+    return $self->limit_linked_to(
         @_,
         target => $ticket_id,
         type => 'DependsOn',
@@ -2182,7 +2182,7 @@ sub limit_DependsOn {
 sub limit_depended_on_by {
     my $self      = shift;
     my $ticket_id = shift;
-    return $self->limit_LinkedFrom(
+    return $self->limit_linked_from(
         @_,
         base => $ticket_id,
         type => 'DependentOn',
@@ -2194,10 +2194,10 @@ sub limit_depended_on_by {
 
 # {{{ limit_RefersTo
 
-sub limit_RefersTo {
+sub limit_refers_to {
     my $self      = shift;
     my $ticket_id = shift;
-    return $self->limit_LinkedTo(
+    return $self->limit_linked_to(
         @_,
         target => $ticket_id,
         type => 'RefersTo',
@@ -2209,10 +2209,10 @@ sub limit_RefersTo {
 
 # {{{ limit_ReferredToBy
 
-sub limit_ReferredToBy {
+sub limit_referred_to_by {
     my $self      = shift;
     my $ticket_id = shift;
-    return $self->limit_LinkedFrom(
+    return $self->limit_linked_from(
         @_,
         base => $ticket_id,
         type => 'ReferredToBy',
@@ -2240,7 +2240,7 @@ the need to pass in a column argument.
 
 =cut
 
-sub limit_Date {
+sub limit_date {
     my $self = shift;
     my %args = (
         column    => undef,
@@ -2263,41 +2263,41 @@ sub limit_Date {
 
 # }}}
 
-sub limit_Created {
+sub limit_created {
     my $self = shift;
-    $self->limit_Date( column => 'Created', @_ );
+    $self->limit_date( column => 'Created', @_ );
 }
 
-sub limit_Due {
+sub limit_due {
     my $self = shift;
-    $self->limit_Date( column => 'Due', @_ );
+    $self->limit_date( column => 'Due', @_ );
 
 }
 
 sub limit_starts {
     my $self = shift;
-    $self->limit_Date( column => 'starts', @_ );
+    $self->limit_date( column => 'starts', @_ );
 
 }
 
-sub limit_Started {
+sub limit_started {
     my $self = shift;
-    $self->limit_Date( column => 'Started', @_ );
+    $self->limit_date( column => 'Started', @_ );
 }
 
-sub limit_Resolved {
+sub limit_resolved {
     my $self = shift;
-    $self->limit_Date( column => 'Resolved', @_ );
+    $self->limit_date( column => 'Resolved', @_ );
 }
 
-sub limit_Told {
+sub limit_told {
     my $self = shift;
-    $self->limit_Date( column => 'Told', @_ );
+    $self->limit_date( column => 'Told', @_ );
 }
 
-sub limit_LastUpdated {
+sub limit_last_updated {
     my $self = shift;
-    $self->limit_Date( column => 'LastUpdated', @_ );
+    $self->limit_date( column => 'LastUpdated', @_ );
 }
 
 #
@@ -2313,7 +2313,7 @@ value is a date and time in ISO format in GMT
 
 =cut
 
-sub limit_TransactionDate {
+sub limit_transaction_date {
     my $self = shift;
     my %args = (
         column    => 'TransactionDate',
@@ -2360,7 +2360,7 @@ Takes a paramhash of key/value pairs with the following keys:
 
 =cut
 
-sub limit_CustomField {
+sub limit_custom_field {
     my $self = shift;
     my %args = (
         value       => undef,
@@ -2410,7 +2410,7 @@ sub limit_CustomField {
 
     my @rest;
     @rest = ( entry_aggregator => 'AND' )
-        if ( $CF->Type eq 'SelectMultiple' );
+        if ( $CF->type eq 'SelectMultiple' );
 
         warn "limit_ing  ";
     $self->limit(
@@ -2440,7 +2440,7 @@ Keep track of the counter for the array of restrictions
 
 =cut
 
-sub _nextIndex {
+sub next_index {
     my $self = shift;
     return ( $self->{'restriction_index'}++ );
 }
@@ -2464,7 +2464,7 @@ sub _init {
     delete $self->{'columns_to_display'};
     $self->SUPER::_init(@_);
 
-    $self->_initSQL;
+    $self->_init_sql;
 
 }
 
@@ -2473,7 +2473,7 @@ sub _init {
 # {{{ sub count
 sub count {
     my $self = shift;
-    $self->_ProcessRestrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
+    $self->_process_restrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
     return ( $self->SUPER::count() );
 }
 
@@ -2482,7 +2482,7 @@ sub count {
 # {{{ sub count_all
 sub count_all {
     my $self = shift;
-    $self->_ProcessRestrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
+    $self->_process_restrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
     return ( $self->SUPER::count_all() );
 }
 
@@ -2520,7 +2520,7 @@ sub items_array_ref {
 sub next {
     my $self = shift;
 
-    $self->_ProcessRestrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
+    $self->_process_restrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
 
     my $Ticket = $self->SUPER::next();
     if ( ( defined($Ticket) ) and ( ref($Ticket) ) ) {
@@ -2596,7 +2596,7 @@ is a description of the purpose of that TicketRestriction
 
 =cut
 
-sub DescribeRestrictions {
+sub describe_restrictions {
     my $self = shift;
 
     my ( $row, %listing );
@@ -2618,7 +2618,7 @@ to.
 
 =cut
 
-sub RestrictionValues {
+sub restriction_values {
     my $self  = shift;
     my $field = shift;
     map $self->{'TicketRestrictions'}{$_}{'value'}, grep {
@@ -2638,7 +2638,7 @@ Removes all restrictions irretrievably
 
 =cut
 
-sub ClearRestrictions {
+sub clear_restrictions {
     my $self = shift;
     delete $self->{'TicketRestrictions'};
     $self->{'looking_at_effective_id'} = 0;
@@ -2657,7 +2657,7 @@ Removes that restriction from the session's limits.
 
 =cut
 
-sub deleteRestriction {
+sub delete_restriction {
     my $self = shift;
     my $row  = shift;
     delete $self->{'TicketRestrictions'}{$row};
@@ -2673,7 +2673,7 @@ sub deleteRestriction {
 
 # Convert a set of oldstyle SB Restrictions to Clauses for RQL
 
-sub _RestrictionsToClauses {
+sub _restrictions_to_clauses {
     my $self = shift;
 
     my $row;
@@ -2773,7 +2773,7 @@ sub _RestrictionsToClauses {
 
 =cut
 
-sub _ProcessRestrictions {
+sub _process_restrictions {
     my $self = shift;
 
     #Blow away ticket aliases since we'll need to regenerate them for
@@ -2785,17 +2785,17 @@ sub _ProcessRestrictions {
     delete $self->{'rows'};
     delete $self->{'count_all'};
 
-    my $sql = $self->Query;    # Violating the _SQL namespace
+    my $sql = $self->query;    # Violating the _SQL namespace
     if ( !$sql || $self->{'RecalcTicketLimits'} ) {
 
         #  "Restrictions to Clauses Branch\n";
-        my $clauseRef = eval { $self->_RestrictionsToClauses; };
+        my $clauseRef = eval { $self->_restrictions_to_clauses; };
         if ($@) {
             Jifty->log->error( "RestrictionsToClauses: " . $@ );
             $self->from_sql("");
         }
         else {
-            $sql = $self->ClausesToSQL($clauseRef);
+            $sql = $self->clauses_to_sql($clauseRef);
             $self->from_sql($sql) if $sql;
         }
     }
@@ -2810,7 +2810,7 @@ sub _ProcessRestrictions {
 
 =cut
 
-sub _BuildItemMap {
+sub _build_item_map {
     my $self = shift;
 
     my $items = $self->items_array_ref;
@@ -2842,9 +2842,9 @@ $ItemMap->{$id}->{next} = the ticket id found after $id
 
 =cut
 
-sub ItemMap {
+sub item_map {
     my $self = shift;
-    $self->_BuildItemMap()
+    $self->_build_item_map()
         unless ( $self->{'items_array'} and $self->{'item_map'} );
     return ( $self->{'item_map'} );
 }
@@ -2867,7 +2867,7 @@ You don't want to serialize a big tickets object, as the {items} hash will be in
 
 =cut
 
-sub PrepForSerialization {
+sub prep_for_serialization {
     my $self = shift;
     delete $self->{'items'};
     $self->redo_search();
@@ -2885,7 +2885,7 @@ use RT::SQL;
 # Lower Case version of columns, for case insensitivity
 my %lcfields = map { ( lc($_) => $_ ) } (keys %FIELD_METADATA);
 
-sub _initSQL {
+sub _init_sql {
   my $self = shift;
 
   # Private Member Variables (which should get cleaned)
@@ -2998,16 +2998,16 @@ sub _parser {
     my $ea = '';
 
     my %callback;
-    $callback{'open_paren'} = sub {
+    $callback{'open_paren'} = sub  {
       $self->_close_bundle(@bundle); @bundle = ();
       $self->open_paren
     };
-    $callback{'close_paren'} = sub {
+    $callback{'close_paren'} = sub  {
       $self->_close_bundle(@bundle); @bundle = ();
       $self->close_paren;
     };
-    $callback{'entry_aggregator'} = sub { $ea = $_[0] || '' };
-    $callback{'Condition'} = sub {
+    $callback{'entry_aggregator'} = sub  { $ea = $_[0] || '' };
+    $callback{'Condition'} = sub  {
         my ($key, $op, $value) = @_;
 
         # key has dot then it's compound variant and we have subkey
@@ -3057,7 +3057,7 @@ sub _parser {
         $self->{_sql_looking_at}{lc $key} = 1;
         $ea = '';
     };
-    RT::SQL::Parse($string, \%callback);
+    RT::SQL::parse($string, \%callback);
     $self->_close_bundle(@bundle); @bundle = ();
 }
 
@@ -3065,7 +3065,7 @@ sub _parser {
 
 =cut
 
-sub ClausesToSQL {
+sub clauses_to_sql {
   my $self = shift;
   my $clauses = shift;
   my @sql;
@@ -3108,7 +3108,7 @@ sub from_sql {
         local ($self->{'first_row'}, $self->{'show_rows'});
         $self->clean_slate;
     }
-    $self->_initSQL();
+    $self->_init_sql();
 
     return (1, _("No Query")) unless $query;
 
@@ -3166,7 +3166,7 @@ Returns the query that this object was initialized with
 
 =cut
 
-sub Query {
+sub query {
     return ($_[0]->{_sql_query});
 }
 

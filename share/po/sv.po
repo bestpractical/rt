@@ -45,7 +45,7 @@ msgstr "$1"
 msgid "$prefix %1"
 msgstr "$prefix %1"
 
-#. ($self->object_type, $self->Object->id)
+#. ($self->object_type, $self->object->id)
 #: lib/RT/URI/fsck_com_rt.pm:256
 msgid "%1 #%2"
 msgstr "%1 #%2"
@@ -55,14 +55,14 @@ msgstr "%1 #%2"
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#. ($self->GetWeekday($wday), $self->GetMonth($mon), map {sprintf "%02d", $_} ($mday, $hour, $min, $sec), ($year+1900))
+#. ($self->get_weekday($wday), $self->get_month($mon), map {sprintf "%02d", $_} ($mday, $hour, $min, $sec), ($year+1900))
 #: lib/RT/Date.pm:401
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %2 %3 %4:%5:%6 %7"
 
 #. ($cf->name, $new_value->Content)
 #. ($field, $self->new_value)
-#. ($self->Field, $principal->Object->name)
+#. ($self->Field, $principal->object->name)
 #: lib/RT/Record.pm:1685
 #: lib/RT/Transaction_Overlay.pm:647
 #: lib/RT/Transaction_Overlay.pm:690
@@ -83,14 +83,14 @@ msgstr "%1 %2 ändrat till %3"
 
 #. ($cf->name, $old_value->Content)
 #. ($field, $self->old_value)
-#. ($self->Field, $principal->Object->name)
+#. ($self->Field, $principal->object->name)
 #: lib/RT/Record.pm:1689
 #: lib/RT/Transaction_Overlay.pm:650
 #: lib/RT/Transaction_Overlay.pm:696
 msgid "%1 %2 deleted"
 msgstr "%1 %2 raderad"
 
-#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->template_obj->name))
+#. (_($scrip->condition_obj->name), loc($scrip->action_obj->name), loc($scrip->template_obj->name))
 #: html/Admin/Elements/EditScrips:65
 #: html/Admin/Elements/ListGlobalScrips:63
 #: html/Ticket/Elements/PreviewScrips:103
@@ -104,7 +104,7 @@ msgstr "%1 (%2) av %3"
 
 #. (_($Ticket->Status()))
 #. (_($ticket_obj->Status))
-#. ($ticket_obj->OwnerObj->name())
+#. ($ticket_obj->owner_obj->name())
 #. (_($DefaultStatus))
 #: html/SelfService/Update.html:60
 #: html/Ticket/Elements/EditBasics:108
@@ -180,15 +180,15 @@ msgstr "%1 tillagt som värde för %2"
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 tycks vara ett lokalt objekt men går inte att hitta i databasen"
 
-#. ($Ticket->last_updated_as_string, $Ticket->LastUpdatedByObj->name)
-#. ($self->BriefDescription , $self->creator_obj->name)
+#. ($Ticket->last_updated_as_string, $Ticket->last_updated_by_obj->name)
+#. ($self->brief_description , $self->creator_obj->name)
 #: html/Ticket/Elements/ShowDates:73
 #: lib/RT/Transaction_Overlay.pm:531
 msgid "%1 by %2"
 msgstr "%1 av %2"
 
 #. ($self->Field , $q1->name , $q2->name)
-#. ($self->Field, $t2->AsString, $t1->AsString)
+#. ($self->Field, $t2->as_string, $t1->AsString)
 #. ($self->Field, ($self->old_value? "'".$self->old_value ."'" : _("(no value)")) , "'". $self->new_value."'")
 #: lib/RT/Transaction_Overlay.pm:788
 #: lib/RT/Transaction_Overlay.pm:797
@@ -229,7 +229,7 @@ msgstr "%1 högsta prioriterade ärenden som tillhör mig"
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 är ett verktyg som reagerar på ärenden från ett externt planeringsverktyg, så som cron."
 
-#. ($principal->Object->name, $args{'Type'})
+#. ($principal->object->name, $args{'Type'})
 #: lib/RT/Queue_Overlay.pm:863
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 är inte längre en %2 för denna kö."
@@ -3469,12 +3469,12 @@ msgstr "Vid statusändring"
 msgid "On Transaction"
 msgstr "Vid transaktion"
 
-#. ("<input size='15' value='".( $Created_after->Unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
+#. ("<input size='15' value='".( $Created_after->unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
 #: html/Approvals/Elements/PendingMyApproval:70
 msgid "Only show approvals for requests Created after %1"
 msgstr "Visa endast godkännanden för förfrågningar som skapats efter %1"
 
-#. ("<input size='15' value='".($Created_before->Unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
+#. ("<input size='15' value='".($Created_before->unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
 #: html/Approvals/Elements/PendingMyApproval:68
 msgid "Only show approvals for requests Created before %1"
 msgstr "Visa endast godkännanden för förfrågningar som skapats före %1"
@@ -5599,7 +5599,7 @@ msgstr "tillåt skapande av sparade sökningar"
 msgid "allow loading of saved searches"
 msgstr "tillåt inläsning av sparade sökningar"
 
-#. ($right->principal_object->Object->SelfDescription)
+#. ($right->principal_object->object->SelfDescription)
 #: html/User/Elements/DelegateRights:80
 msgid "as granted to %1"
 msgstr "som givet till %1"
@@ -5825,7 +5825,7 @@ msgstr "ärende #%1 %2"
 msgid "undescribed group %1"
 msgstr "icke-beskriven grupp %1"
 
-#. ($user->Object->name)
+#. ($user->object->name)
 #: lib/RT/Group_Overlay.pm:211
 msgid "user %1"
 msgstr "användare %1"

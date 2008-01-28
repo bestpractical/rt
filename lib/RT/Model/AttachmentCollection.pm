@@ -73,7 +73,7 @@ use base qw/RT::SearchBuilder/;
 
 use RT::Model::Attachment;
 
-sub _init   {
+sub _init {
     my $self = shift;
     $self->{'table'} = "Attachments";
     $self->{'primary_key'} = "id";
@@ -99,7 +99,7 @@ or recursive joining then you have to create new alias youself.
 
 =cut
 
-sub TransactionAlias {
+sub transaction_alias {
     my $self = shift;
     return $self->{'_sql_transaction_alias'}
         if $self->{'_sql_transaction_alias'};
@@ -121,7 +121,7 @@ Limit result set to attachments of ContentType 'TYPE'...
 =cut
 
 
-sub ContentType  {
+sub content_type {
     my $self = shift;
     my %args = (
         value           => 'text/plain',
@@ -140,7 +140,7 @@ Limit result set to children of Attachment ID
 =cut
 
 
-sub ChildrenOf  {
+sub children_of {
     my $self = shift;
     my $attachment = shift;
     return $self->limit(
@@ -155,7 +155,7 @@ Limit result set to attachments with not empty content.
 
 =cut
 
-sub limit_NotEmpty {
+sub limit_not_empty {
     my $self = shift;
     $self->limit(
         entry_aggregator => 'AND',
@@ -179,11 +179,11 @@ Limit result set to attachments of a ticket.
 
 =cut
 
-sub limit_ByTicket {
+sub limit_by_ticket {
     my $self = shift;
     my $tid = shift;
 
-    my $transactions = $self->TransactionAlias;
+    my $transactions = $self->transaction_alias;
     $self->limit(
         entry_aggregator => 'AND',
         alias           => $transactions,

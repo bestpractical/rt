@@ -87,7 +87,7 @@ ok( !$user->has_right( Right => 'OwnTicket', Object => $queue ), "user can't own
 ok( !$user->has_right( Right => 'ReplyToTicket', Object => $queue ), "user can't reply to ticket" );
 
 my $group = RT::Model::Group->new(current_user => RT->system_user );
-ok( $group->loadQueueRoleGroup( Queue => $queue_id, Type=> 'Owner' ), "load queue owners role group" );
+ok( $group->load_queue_role_group( Queue => $queue_id, Type=> 'Owner' ), "load queue owners role group" );
 my $ace = RT::Model::ACE->new(current_user => RT->system_user );
 my ($ace_id, $msg) = $group->principal_object->grant_right( Right => 'ReplyToTicket', Object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right: $msg" );
@@ -105,7 +105,7 @@ my $status;
 ok( $status, "successfuly granted right: $msg" );
 ok( $user->has_right( Right => 'OwnTicket', Object => $queue ), "user can own ticket" );
 
-($status, $msg) = $ticket->set_Owner( $user_id );
+($status, $msg) = $ticket->set_owner( $user_id );
 ok( $status, "successfuly set owner: $msg" );
 is( $ticket->Owner, $user_id, "set correct owner" );
 
@@ -113,13 +113,13 @@ ok( $user->has_right( Right => 'ReplyToTicket', Object => $ticket ), "user is ow
 
 # Testing of equiv_objects
 $group = RT::Model::Group->new(current_user => RT->system_user );
-ok( $group->loadQueueRoleGroup( Queue => $queue_id, Type=> 'AdminCc' ), "load queue AdminCc role group" );
+ok( $group->load_queue_role_group( Queue => $queue_id, Type=> 'AdminCc' ), "load queue AdminCc role group" );
 $ace = RT::Model::ACE->new(current_user => RT->system_user );
 ($ace_id, $msg) = $group->principal_object->grant_right( Right => 'ModifyTicket', Object => $queue );
 ok( $ace_id, "Granted queue AdminCc role group with ModifyTicket right: $msg" );
 ok( $group->principal_object->has_right( Right => 'ModifyTicket', Object => $queue ), "role group can modify ticket" );
 ok( !$user->has_right( Right => 'ModifyTicket', Object => $ticket ), "user is not AdminCc and can't modify ticket" );
-($status, $msg) = $ticket->AddWatcher(Type => 'AdminCc', principal_id => $user->principal_id);
+($status, $msg) = $ticket->add_watcher(Type => 'AdminCc', principal_id => $user->principal_id);
 ok( $status, "successfuly added user as AdminCc");
 ok( $user->has_right( Right => 'ModifyTicket', Object => $ticket ), "user is AdminCc and can modify ticket" );
 

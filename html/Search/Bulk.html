@@ -56,7 +56,7 @@
     Order => $Order &>
 
 <& /Elements/ListActions, actions => \@results &>
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data">
+<form method="post" action="<% RT->config->get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data">
 % foreach my $var qw(Query Format order_by Order Rows Page) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
@@ -69,7 +69,7 @@
     Order => $Order,
     Rows => $Rows,
     Page => $Page,
-    BaseURL => RT->Config->Get('WebPath')."/Search/Bulk.html?"
+    BaseURL => RT->config->get('WebPath')."/Search/Bulk.html?"
    &>
 
 <hr>
@@ -83,15 +83,15 @@
 <table>
 <tr><td class="label"> <&|/l&>Make Owner</&>: </td>
 <td class="value"> <& /Elements/SelectOwner, name => "Owner" &> (<input type="checkbox" class="checkbox" name="ForceOwnerChange" /> <&|/l&>Force change</&>) </td></tr>
-<tr><td class="label"> <&|/l&>Add Requestor</&>: </td>
+<tr><td class="label"> <&|/l&>add Requestor</&>: </td>
 <td class="value"> <input name="AddRequestor" size="20" /> </td></tr>
 <tr><td class="label"> <&|/l&>Remove Requestor</&>: </td>
 <td class="value"> <input name="DeleteRequestor" size="20" /> </td></tr>
-<tr><td class="label"> <&|/l&>Add Cc</&>: </td>
+<tr><td class="label"> <&|/l&>add Cc</&>: </td>
 <td class="value"> <input name="AddCc" size="20" /> </td></tr>
 <tr><td class="label"> <&|/l&>Remove Cc</&>: </td>
 <td class="value"> <input name="DeleteCc" size="20" /> </td></tr>
-<tr><td class="label"> <&|/l&>Add AdminCc</&>: </td>
+<tr><td class="label"> <&|/l&>add AdminCc</&>: </td>
 <td class="value"> <input name="AddAdminCc" size="20" /> </td></tr>
 <tr><td class="label"> <&|/l&>Remove AdminCc</&>: </td>
 <td class="value"> <input name="DeleteAdminCc" size="20" /> </td></tr>
@@ -125,7 +125,7 @@
 </&>
 <&| /Widgets/TitleBox, title => _('Add comments or replies to selected tickets') &>
 <table>
-<tr><td align="right"><&|/l&>Update Type</&>:</td>
+<tr><td align="right"><&|/l&>update Type</&>:</td>
 <td><select name="UpdateType">
   <option value="private" ><&|/l&>comments (not sent to requestors)</&></option>
 <option value="response" ><&|/l&>Reply to requestors</&></option>
@@ -138,7 +138,7 @@
 <td><& /Elements/EditCustomField, 
     CustomField => $CF, 
     namePrefix => "Object-RT::Model::Transaction--CustomField-"
-    &><em><% $CF->FriendlyType %></em></td>
+    &><em><% $CF->friendly_type %></em></td>
 </td></tr>
 % } # end if while
  <tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="UpdateAttachment" type="file" /></td></tr>
@@ -151,13 +151,13 @@
 <&|/Widgets/TitleBox, title => _('Edit Custom Fields'), color => "#336633"&>
 <%perl>
 my $cfs = RT::Model::CustomFieldCollection->new();
-$cfs->limit_ToGlobal();
-$cfs->limit_ToQueue($_) for keys %$seen_queues;
+$cfs->limit_to_global();
+$cfs->limit_to_queue($_) for keys %$seen_queues;
 </%perl>
 <table>
 <tr>
 <th><&|/l&>name</&></th>
-<th><&|/l&>Add values</&></th>
+<th><&|/l&>add values</&></th>
 <th><&|/l&>delete values</&></th>
 </tr>
 % while (my $cf = $cfs->next()) {
@@ -167,16 +167,16 @@ $cfs->limit_ToQueue($_) for keys %$seen_queues;
 % my $rows = 5;
 % my @add = (namePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => $rows, Multiple => ($cf->MaxValues ==1 ? 0 : 1) , Cols => 25);
 % my @del = (namePrefix => 'Bulk-Delete-CustomField-', CustomField => $cf, Rows => $rows, Multiple => 1, Cols => 25);
-% if ($cf->Type eq 'Select') {
+% if ($cf->type eq 'Select') {
 <td><& /Elements/EditCustomFieldSelect, @add &></td>
 <td><& /Elements/EditCustomFieldSelect, @del &></td>
-% } elsif ($cf->Type eq 'Combobox') {
+% } elsif ($cf->type eq 'Combobox') {
 <td><& /Elements/EditCustomFieldCombobox, @add &></td>
 <td><& /Elements/EditCustomFieldCombobox, @del &></td>
-% } elsif ($cf->Type eq 'Freeform') {
+% } elsif ($cf->type eq 'Freeform') {
 <td><& /Elements/EditCustomFieldFreeform, @add &></td>
 <td><& /Elements/EditCustomFieldFreeform, @del &></td>
-% } elsif ($cf->Type eq 'Text') {
+% } elsif ($cf->type eq 'Text') {
 <td><& /Elements/EditCustomFieldText, @add &></td>
 <td>&nbsp;</td>
 % } else {
@@ -208,7 +208,7 @@ my (@results);
 
 $Page ||= 1;
 
-$Format ||= RT->Config->Get('DefaultSearchResultFormat');
+$Format ||= RT->config->get('DefaultSearchResultFormat');
 
 # inject _CHECKBOX to the first field.
 $Format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;
@@ -241,7 +241,7 @@ my $seen_queues = {};
 while ( my $ticket = $Tickets->next ) {
     next if $seen_queues->{ $ticket->Queue }++;
 
-    my $custom_fields = $ticket->queue_obj->TicketCustomFields;
+    my $custom_fields = $ticket->queue_obj->ticket_custom_fields;
     while ( my $field = $custom_fields->next ) {
         $fields->{ $field->id } = $field;
     }
@@ -330,11 +330,11 @@ while ( my $Ticket = $Tickets->next ) {
             map { s/(\r\n|\r)/\n/g; } @values;    # fix the newlines
                  # now break the multiline values into multivalues
             @values = map { split( /\n/, $_ ) } @values
-              unless ( $cf->SingleValue );
+              unless ( $cf->single_value );
 
             my $current_values = $Ticket->custom_field_values($cfid);
             foreach my $value (@values) {
-                if ( $op eq 'del' && $current_values->HasEntry($value) ) {
+                if ( $op eq 'del' && $current_values->has_entry($value) ) {
                     my ( $id, $msg ) = $Ticket->delete_custom_field_value(
                         column => $cfid,
                         value => $value
@@ -342,7 +342,7 @@ while ( my $Ticket = $Tickets->next ) {
                     push @cfresults, $msg;
                 }
 
-                elsif ( $op eq 'add' && !$current_values->HasEntry($value) ) {
+                elsif ( $op eq 'add' && !$current_values->has_entry($value) ) {
                     my ( $id, $msg ) = $Ticket->add_custom_field_value(
                         column => $cfid,
                         value => $value
@@ -364,8 +364,8 @@ while ( my $Ticket = $Tickets->next ) {
 }
 
 my $TxnCFs = RT::Model::CustomFieldCollection->new();
-$TxnCFs->limit_ToLookupType( RT::Model::Transaction->custom_field_lookup_type );
-$TxnCFs->limit_ToGlobalOrobject_id( sort keys %queues );
+$TxnCFs->limit_to_lookup_type( RT::Model::Transaction->custom_field_lookup_type );
+$TxnCFs->limit_to_global_orobject_id( sort keys %queues );
 
 </%INIT>
 <%args>

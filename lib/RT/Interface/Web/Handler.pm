@@ -61,20 +61,20 @@ use File::Path qw( rmtree );
 use File::Glob qw( bsd_glob );
 use File::Spec::Unix;
 
-sub DefaultHandlerArgs  { (
+sub default_handler_args { (
     comp_root => [
         [ local    => $RT::MasonLocalComponentRoot ],
-        (map {[ "plugin-".$_->name =>  $_->ComponentRoot ]} @{RT->Plugins}),
+        (map {[ "plugin-".$_->name =>  $_->component_root ]} @{RT->Plugins}),
         [ standard => $RT::MasonComponentRoot ]
     ],
     default_escape_flags => 'h',
     data_dir             => "$RT::MasonDataDir",
     allow_globals        => [qw(%session)],
     # Turn off static source if we're in developer mode.
-    static_source        => (RT->Config->Get('DevelMode') ? '0' : '1'), 
-    use_object_files     => (RT->Config->Get('DevelMode') ? '0' : '1'), 
+    static_source        => (RT->config->get('DevelMode') ? '0' : '1'), 
+    use_object_files     => (RT->config->get('DevelMode') ? '0' : '1'), 
     autoflush            => 0,
-    error_format         => (RT->Config->Get('DevelMode') ? 'html': 'brief'),
+    error_format         => (RT->config->get('DevelMode') ? 'html': 'brief'),
     request_class        => 'RT::Interface::Web::Request',
 ) };
 
@@ -89,7 +89,7 @@ sub DefaultHandlerArgs  { (
 
 sub new {
     my $class = shift;
-    $class->InitSessionDir;
+    $class->init_session_dir;
 
     if ( ($mod_perl::VERSION && $mod_perl::VERSION >= 1.9908) || $CGI::MOD_PERL) {
         goto &NewApacheHandler;
@@ -99,11 +99,11 @@ sub new {
     }
 }
 
-sub InitSessionDir {
+sub init_session_dir {
     # Activate the following if running httpd as root (the normal case).
     # Resets ownership of all files Created by Mason at startup.
     # Note that mysql uses DB for sessions, so there's no need to do this.
-    unless ( RT->Config->Get('DatabaseType') =~ /(?:mysql|Pg)/ ) {
+    unless ( RT->config->get('DatabaseType') =~ /(?:mysql|Pg)/ ) {
 
         # Clean up our umask to protect session files
         umask(0077);
@@ -134,7 +134,7 @@ sub InitSessionDir {
 
 =cut
 
-sub NewApacheHandler {
+sub new_apache_handler {
     require HTML::Mason::ApacheHandler;
     return NewHandler('HTML::Mason::ApacheHandler', args_method => "CGI", @_);
 }
@@ -149,12 +149,12 @@ sub NewApacheHandler {
 
 =cut
 
-sub NewCGIHandler {
+sub new_cgi_handler {
     require HTML::Mason::CGIHandler;
     return NewHandler('HTML::Mason::CGIHandler', @_);
 }
 
-sub NewHandler {
+sub new_handler {
     my $class = shift;
     my $handler = $class->new(
         DefaultHandlerArgs(),
@@ -189,7 +189,7 @@ and is not recommended to change.
 
 =cut
 
-sub CleanupRequest {
+sub cleanup_request {
 
     if ( Jifty->handle->transaction_depth ) {
         Jifty->handle->force_rollback;
@@ -202,7 +202,7 @@ sub CleanupRequest {
     # Consistency is imprived, too.
     RT::Model::Principal->invalidate_acl_cache();
     Jifty::DBI::Record::Cachable->flush_cache
-      if ( RT->Config->Get('WebFlushDbCacheEveryRequest')
+      if ( RT->config->get('WebFlushDbCacheEveryRequest')
         and UNIVERSAL::can(
             'Jifty::DBI::Record::Cachable' => 'flush_cache' ) );
 
@@ -210,7 +210,7 @@ sub CleanupRequest {
     require RT::ScripAction::SendEmail;
     RT::ScripAction::SendEmail->clean_slate;
     
-    if (RT->Config->Get('GnuPG')->{'Enable'}) {
+    if (RT->config->get('GnuPG')->{'Enable'}) {
         require RT::Crypt::GnuPG;
         RT::Crypt::GnuPG::use_key_for_encryption();
         RT::Crypt::GnuPG::use_key_for_signing( undef );

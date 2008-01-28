@@ -72,10 +72,10 @@ If the due date is before "now" return true
 
 =cut
 
-sub IsApplicable {
+sub is_applicable {
     my $self = shift;
-    if ($self->ticket_obj->due_obj->Unix > 0 and
-	$self->ticket_obj->due_obj->Unix < time())  {
+    if ($self->ticket_obj->due_obj->unix > 0 and
+	$self->ticket_obj->due_obj->unix < time())  {
 	return(1);
     } 
     else {

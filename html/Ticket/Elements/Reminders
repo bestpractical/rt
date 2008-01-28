@@ -57,26 +57,26 @@ $Ticket = load_ticket($id) if ($id);
 
 my $request_args = $m->request_args();
 
-my $reminder_collection = $Ticket->Reminders->Collection;
+my $reminder_collection = $Ticket->reminders->collection;
 
 if ( $request_args->{'update-reminders'} ) {
     while ( my $reminder = $reminder_collection->next ) {
         if (   $reminder->Status ne 'resolved' && $request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
-            $Ticket->Reminders->Resolve($reminder);
+            $Ticket->reminders->resolve($reminder);
         }
         elsif ( $reminder->Status eq 'resolved' && !$request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
-            $Ticket->Reminders->Open($reminder);
+            $Ticket->reminders->open($reminder);
         }
 
-        if ( exists( $request_args->{ 'Reminder-Subject-' . $reminder->id } ) && ( $reminder->Subject ne $request_args->{ 'Reminder-Subject-' . $reminder->id } )) {
-            $reminder->set_Subject( $request_args->{ 'Reminder-Subject-' . $reminder->id } ) ;
+        if ( exists( $request_args->{ 'Reminder-Subject-' . $reminder->id } ) && ( $reminder->subject ne $request_args->{ 'Reminder-Subject-' . $reminder->id } )) {
+            $reminder->set_subject( $request_args->{ 'Reminder-Subject-' . $reminder->id } ) ;
         }
 
         if ( exists( $request_args->{ 'Reminder-Owner-' . $reminder->id } ) && ( $reminder->Owner != $request_args->{ 'Reminder-Owner-' . $reminder->id } )) {
-            $reminder->set_Owner( $request_args->{ 'Reminder-Owner-' . $reminder->id } , "Force" ) ;
+            $reminder->set_owner( $request_args->{ 'Reminder-Owner-' . $reminder->id } , "Force" ) ;
         }
 
-        if ( exists( $request_args->{ 'Reminder-Due-' . $reminder->id } ) && ( $reminder->due_obj->Date ne $request_args->{ 'Reminder-Due-' . $reminder->id } )) {
+        if ( exists( $request_args->{ 'Reminder-Due-' . $reminder->id } ) && ( $reminder->due_obj->date ne $request_args->{ 'Reminder-Due-' . $reminder->id } )) {
             $reminder->set_Due( $request_args->{ 'Reminder-Due-' . $reminder->id } ) ;
         }
     }
@@ -86,22 +86,22 @@ if ( $request_args->{'NewReminder-Subject'} ) {
     my $due_obj = RT::Date->new();
     my $date    = Time::ParseDate::parsedate(
         $request_args->{'NewReminder-Due'},
-        UK            => RT->Config->Get('DateDayBeforeMonth'),
+        UK            => RT->config->get('DateDayBeforeMonth'),
         PREFER_PAST   => 0,
         PREFER_FUTURE => 1
     );
     $due_obj->set( value => $date, Format => 'unix' );
-    my ( $add_id, $msg, $txnid ) = $Ticket->Reminders->Add(
+    my ( $add_id, $msg, $txnid ) = $Ticket->reminders->add(
 
         Subject => $request_args->{'NewReminder-Subject'},
         Owner   => $request_args->{'NewReminder-Owner'},
-        Due     => $due_obj->ISO
+        Due     => $due_obj->iso
     );
 }
 
 # We've made changes, let's reload our search
 
-$reminder_collection = $Ticket->Reminders->Collection;
+$reminder_collection = $Ticket->reminders->collection;
 </%init>
 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
 <input type="hidden" class="hidden" name="update-reminders" value="1" />
@@ -149,8 +149,8 @@ $Ticket
 /> 
     <input type="text" size="15" name="Reminder-Subject-<% $Reminder->id %>" value="<%$Reminder->Subject%>" /> &bull; 
     <& /Elements/SelectOwner, name => 'Reminder-Owner-'.$Reminder->id, Queue => $Ticket->queue_obj, Default => $Reminder->Owner, DefaultValue => 0  &>
-    <& /Elements/SelectDate, name => 'Reminder-Due-'.$Reminder->id, Default => $Reminder->due_obj->Date &>
-    (<%$Reminder->due_obj->Unix>0  ? $Reminder->due_obj->AgeAsString : '' %>)<br />
+    <& /Elements/SelectDate, name => 'Reminder-Due-'.$Reminder->id, Default => $Reminder->due_obj->date &>
+    (<%$Reminder->due_obj->Unix>0  ? $Reminder->due_obj->age_as_string : '' %>)<br />
 </%method>
 <%method ShowEntry>
 <%args>
@@ -163,6 +163,6 @@ $Ticket
     <% $Reminder->Status eq 'resolved' ? 'CHECKED' : '' %> 
 /> 
     <%$Reminder->Subject%> &bull; 
-    <%$Reminder->OwnerObj->name%>
-    <%$Reminder->due_obj->Unix>0  ? "&bull; ". $Reminder->due_obj->AgeAsString : '' |n%><br />
+    <%$Reminder->owner_obj->name%>
+    <%$Reminder->due_obj->Unix>0  ? "&bull; ". $Reminder->due_obj->age_as_string : '' |n%><br />
 </%method>

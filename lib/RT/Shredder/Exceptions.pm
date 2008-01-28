@@ -91,7 +91,7 @@ option 'replace_relations' argument.
 END
 );
 
-sub Fields { return ((shift)->SUPER::Fields(@_), 'tag') }
+sub fields { return ((shift)->SUPER::Fields(@_), 'tag') }
 
 sub tag { return (shift)->{'tag'} }
 

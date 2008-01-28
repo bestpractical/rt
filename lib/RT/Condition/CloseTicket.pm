@@ -61,16 +61,16 @@ options.
 
 =cut
 
-sub IsApplicable {
+sub is_applicable {
     my $self = shift;
 
     my $txn = $self->transaction_obj;
-    return 0 unless $txn->Type eq "Status" ||
-        ( $txn->Type eq "Set" && $txn->Field eq "Status" );
+    return 0 unless $txn->type eq "Status" ||
+        ( $txn->type eq "Set" && $txn->Field eq "Status" );
 
     my $queue = $self->ticket_obj->queue_obj;
-    return 0 unless $queue->IsActiveStatus( $txn->old_value );
-    return 0 unless $queue->IsInactiveStatus( $txn->new_value );
+    return 0 unless $queue->is_active_status( $txn->old_value );
+    return 0 unless $queue->is_inactive_status( $txn->new_value );
 
     return 1;
 }

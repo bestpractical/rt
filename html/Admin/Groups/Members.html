@@ -54,7 +54,7 @@
 
 <&| /Widgets/TitleBox, title => _('Editing membership for group [_1]', $Group->name) &>
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Groups/Members.html" method="post">
+<form action="<%RT->config->get('WebPath')%>/Admin/Groups/Members.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
 <table width="100%">
 <tr>
@@ -62,21 +62,21 @@
 <h3><&|/l&>Current members</&></h3>
 </td>
 <td>
-<h3><&|/l&>Add members</&></h3>
+<h3><&|/l&>add members</&></h3>
 </td>
 </tr>
 
 <tr>
 <td valign="top">
 
-% if ($Group->MembersObj->Count == 0 ) {
+% if ($Group->members_obj->Count == 0 ) {
 <em><&|/l&>(No members)</&></em>
 % } else {
 <em><&|/l&>(Check box to delete)</&></em>
 <br />
 <br />
 <&|/l&>Users</&>
-% my $Users = $Group->UserMembersObj;
+% my $Users = $Group->user_members_obj;
 % $Users->order_by( column => $Userorder_by, order => $UserOrder );
 <ul>
 % while ( my $user = $Users->next ) {
@@ -87,12 +87,12 @@
 </ul>
 <&|/l&>Groups</&>
 <ul>
-% my $GroupMembers = $Group->MembersObj;
-% $GroupMembers->limit_ToGroups();
+% my $GroupMembers = $Group->members_obj;
+% $GroupMembers->limit_to_groups();
 % while ( my $member = $GroupMembers->next ) {
 % $GroupsSeen{ $member->MemberId } = 1 if $SkipSeenGroups;
 <li><input type="checkbox" class="checkbox" name="delete_member-<% $member->MemberId %>" value="1" />
-<% $member->MemberObj->Object->name %>
+<% $member->member_obj->object->name %>
 % }
 </ul>
 % }

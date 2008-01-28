@@ -54,7 +54,7 @@
 
 
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Queues/Modify.html" method="post">
+<form action="<%RT->config->get('WebPath')%>/Admin/Queues/Modify.html" method="post">
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 <input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $queue_obj->id %>" />
 
@@ -64,15 +64,15 @@
 </tr>
 
 <tr><td align="right"><&|/l&>Description</&>:</td>
-<td colspan="3"><input name="Description" value="<% ($Create) ? "" : $queue_obj->Description %>" size="60" /></td>
+<td colspan="3"><input name="Description" value="<% ($Create) ? "" : $queue_obj->description %>" size="60" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
 <td><input name="correspond_address" value="<% ($Create) ? "" : $queue_obj->correspond_address %>" />
-<br /><span><em><&|/l , RT->Config->Get('correspond_address')&>(If left blank, will default to %1)</&></em></span></td>
+<br /><span><em><&|/l , RT->config->get('correspond_address')&>(If left blank, will default to %1)</&></em></span></td>
 <td align="right"><&|/l&>comment Address</&>:</td>
 <td><input name="comment_address" value="<% ($Create) ? "" : $queue_obj->comment_address %>" />
-<br /><span><em><&|/l , RT->Config->Get('comment_address')&>(If left blank, will default to %1)</&></em></span></td>
+<br /><span><em><&|/l , RT->config->get('comment_address')&>(If left blank, will default to %1)</&></em></span></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Priority starts at</&>:</td>
@@ -85,11 +85,11 @@
 <td colspan="3"><input name="DefaultDueIn" value="<% ($Create) ? "" : $queue_obj->DefaultDueIn%>" /> <&|/l&>days</&>.</td>
 </tr>
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+% if ( RT->config->get('GnuPG')->{'Enable'} ) {
 <tr><td align="right"><input type="checkbox" class="checkbox" name="Sign" value="1" <% $queue_obj->Sign? 'checked': '' %> /></td>
-<td><&|/l&>Sign by default</&></td>
+<td><&|/l&>sign by default</&></td>
 <td align="right"><input type="checkbox" class="checkbox" name="Encrypt" value="1" <% $queue_obj->Encrypt? 'checked': '' %> /></td>
-<td><&|/l&>Encrypt by default</&></td>
+<td><&|/l&>encrypt by default</&></td>
 </tr>
 % }
 
@@ -98,11 +98,11 @@
 % $m->callback( %ARGS, queue_obj => $queue_obj, results => \@results );
 </td></tr>
 
-% if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-% if ( my $email = $queue_obj->correspond_address || RT->Config->Get('correspond_address') ) {
+% if ( RT->config->get('GnuPG')->{'Enable'} ) {
+% if ( my $email = $queue_obj->correspond_address || RT->config->get('correspond_address') ) {
 <tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, Type => 'private', email => $email &></td></tr>
 % }
-% if ( my $email = $queue_obj->comment_address || RT->Config->Get('comment_address') ) {
+% if ( my $email = $queue_obj->comment_address || RT->config->get('comment_address') ) {
 <tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, Type => 'private', email => $email &></td></tr>
 % }
 % }

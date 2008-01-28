@@ -144,7 +144,7 @@ my ($n, $s) = $ticket->$action(MIMEObj => $ent,
                                TimeTaken => $changes{time_worked} || 0);
 $c = "# ".$s;
 if ($changes{Status}) {
-   my  ($status_n, $status_s) = $ticket->set_Status($changes{'Status'} );   
+   my  ($status_n, $status_s) = $ticket->set_status($changes{'Status'} );   
   $c .= "\n# ".$status_s;
 }
 

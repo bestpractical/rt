@@ -63,5 +63,5 @@ if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
 }
 
 $Handler->handle_cgi_object($cgi);
-RT::Interface::Web::Handler->CleanupRequest();
+RT::Interface::Web::Handler->cleanup_request();
 1;

@@ -53,7 +53,7 @@ use warnings;
 use base qw(RT::Shredder::Plugin::Base::Dump);
 use RT::Shredder;
 
-sub AppliesToStates { return 'after wiping dependencies' }
+sub applies_to_states { return 'after wiping dependencies' }
 
 sub SupportArgs
 {
@@ -66,7 +66,7 @@ sub TestArgs
     my $self = shift;
     my %args = @_;
     $args{'from_storage'} = 1 unless defined $args{'from_storage'};
-    my $file = $args{'file_name'} = RT::Shredder->GetFilename(
+    my $file = $args{'file_name'} = RT::Shredder->get_filename(
         Filename    => $args{'file_name'},
         FromStorage => delete $args{'from_storage'},
     );
@@ -76,8 +76,8 @@ sub TestArgs
     return $self->SUPER::TestArgs( %args );
 }
 
-sub Filename   { return $_[0]->{'opt'}{'file_name'}   }
-sub FileHandle { return $_[0]->{'opt'}{'file_handle'} }
+sub filename { return $_[0]->{'opt'}{'file_name'}   }
+sub file_handle { return $_[0]->{'opt'}{'file_handle'} }
 
 sub Run
 {
@@ -85,7 +85,7 @@ sub Run
     return (0, 'no handle') unless my $fh = $self->{'opt'}{'file_handle'};
 
     my %args = ( Object => undef, @_ );
-    my $query = $args{'Object'}->_AsInsertQuery;
+    my $query = $args{'Object'}->_as_insert_query;
     $query .= "\n" unless $query =~ /\n$/;
 
     return print $fh $query or return (0, "Couldn't write to filehandle");

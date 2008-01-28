@@ -57,17 +57,17 @@
     <meta http-equiv="refresh" content="<% $Refresh %>" />
 % }
 
-<link rel="shortcut icon" href="<%RT->Config->Get('WebImagesURL')%>/favicon.png" type="image/png" />
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/<% RT->Config->Get( 'WebDefaultStylesheet', Jifty->web->current_user ) %>/main-squished.css" type="text/css" media="all" />
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/print.css" type="text/css" media="print" />
+<link rel="shortcut icon" href="<%RT->config->get('WebImagesURL')%>/favicon.png" type="image/png" />
+<link rel="stylesheet" href="<%RT->config->get('WebPath')%>/NoAuth/css/<% RT->config->get( 'WebDefaultStylesheet', Jifty->web->current_user ) %>/main-squished.css" type="text/css" media="all" />
+<link rel="stylesheet" href="<%RT->config->get('WebPath')%>/NoAuth/css/print.css" type="text/css" media="print" />
 
 % if ( $RSSAutoDiscovery ) {
     <link rel="alternate" href="<%$RSSAutoDiscovery%>" type="application/rss+xml" title="RSS RT Search" />
 % }
 
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/util.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/titlebox-state.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/ahah.js"></script>
+<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/util.js"></script>
+<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/titlebox-state.js"></script>
+<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/ahah.js"></script>
 <script type="text/javascript"><!--
     onLoadHook("loadTitleBoxStates()");
 % if ( $Focus ) {
@@ -92,15 +92,15 @@
 % if (Jifty->web->current_user->name) {
     <&|/l, "<span>".Jifty->web->current_user->name."</span>" &>Logged in as %1</&>
 %     if ( Jifty->web->current_user->has_right( Right => 'ModifySelf', Object => RT->system ) ) {
-    | <a href="<%RT->Config->Get('WebPath')%><%$Prefs%>"><&|/l&>Preferences</&></a>
+    | <a href="<%RT->config->get('WebPath')%><%$Prefs%>"><&|/l&>Preferences</&></a>
 %     }
 % } else {
     <&|/l&>Not logged in.</&>
 % }
 % $m->callback( %ARGS );
 % unless (!Jifty->web->current_user->name
-%         or (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth'))) {
-    | <a  href="<%RT->Config->Get('WebPath')%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
+%         or (RT->config->get('WebExternalAuth') and !RT->config->get('WebFallbackToInternalAuth'))) {
+    | <a  href="<%RT->config->get('WebPath')%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
 % }
   </div>
 % }

@@ -80,22 +80,22 @@ sub __DependsOn
 # XXX: Here is problem cause has_member_recursively would return true allways
 # cause we didn't delete anything yet. :(
     # if pricipal is not member anymore(could be via other groups) then proceed
-    if( $self->GroupObj->Object->has_member_recursively( $self->MemberObj ) ) {
+    if( $self->group_obj->object->has_member_recursively( $self->member_obj ) ) {
         my $acl = RT::Model::ACECollection->new;
-        $acl->limit_ToPrincipal( id => $self->GroupId );
+        $acl->limit_to_principal( id => $self->GroupId );
 
         # look into all rights that have group
         while( my $ace = $acl->next ) {
             my $delegations = RT::Model::ACECollection->new;
-            $delegations->DelegatedFrom( id => $ace->id );
-            $delegations->DelegatedBy( id => $self->MemberId );
+            $delegations->delegated_from( id => $ace->id );
+            $delegations->delegated_by( id => $self->MemberId );
             push( @$list, $delegations );
         }
     }
 
 # XXX: Do we need to delete records if user lost right 'DelegateRights'?
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $list,
@@ -119,27 +119,27 @@ sub __Relates
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-    my $obj = $self->MemberObj;
+    my $obj = $self->member_obj;
     if( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+        my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'} = "Have no related Principal #". $self->MemberId ." object.";
     }
 
-    $obj = $self->GroupObj;
+    $obj = $self->group_obj;
     if( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+        my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'} = "Have no related Principal #". $self->GroupId ." object.";
     }
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,

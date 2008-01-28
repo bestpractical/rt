@@ -43,7 +43,7 @@ msgid "$prefix %1"
 msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:256
-#. ($self->object_type, $self->Object->id)
+#. ($self->object_type, $self->object->id)
 msgid "%1 #%2"
 msgstr ""
 
@@ -57,14 +57,14 @@ msgid "%1 %2 %3"
 msgstr "%1 %2 %3"
 
 #: lib/RT/Date.pm:401
-#. ($self->GetWeekday($wday), $self->GetMonth($mon), map {sprintf "%02d", $_} ($mday, $hour, $min, $sec), ($year+1900))
+#. ($self->get_weekday($wday), $self->get_month($mon), map {sprintf "%02d", $_} ($mday, $hour, $min, $sec), ($year+1900))
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %7. %2 %3 %4:%5:%6"
 
 #: lib/RT/Record.pm:1685 lib/RT/Transaction_Overlay.pm:647 lib/RT/Transaction_Overlay.pm:690
 #. ($cf->name, $new_value->Content)
 #. ($field, $self->new_value)
-#. ($self->Field, $principal->Object->name)
+#. ($self->Field, $principal->object->name)
 msgid "%1 %2 added"
 msgstr "[%1] mezõbe '%2' érték felvétele"
 
@@ -82,12 +82,12 @@ msgstr "%1 változtatása: '%2' --> '%3'"
 #: lib/RT/Record.pm:1689 lib/RT/Transaction_Overlay.pm:650 lib/RT/Transaction_Overlay.pm:696
 #. ($cf->name, $old_value->Content)
 #. ($field, $self->old_value)
-#. ($self->Field, $principal->Object->name)
+#. ($self->Field, $principal->object->name)
 msgid "%1 %2 deleted"
 msgstr "%1 %2 törölve"
 
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:63 html/Ticket/Elements/PreviewScrips:103
-#. (_($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->template_obj->name))
+#. (_($scrip->condition_obj->name), loc($scrip->action_obj->name), loc($scrip->template_obj->name))
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 a %3 sablonnal"
 
@@ -100,7 +100,7 @@ msgstr ""
 #. (_($DefaultStatus))
 #. (_($Ticket->Status()))
 #. (_($ticket_obj->Status))
-#. ($ticket_obj->OwnerObj->name())
+#. ($ticket_obj->owner_obj->name())
 msgid "%1 (Unchanged)"
 msgstr "%1 (változatlan)"
 
@@ -169,14 +169,14 @@ msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 nem találhato az adatbázisban, pedig helyi objektumnak látszik"
 
 #: html/Ticket/Elements/ShowDates:73 lib/RT/Transaction_Overlay.pm:531
-#. ($self->BriefDescription , $self->creator_obj->name)
-#. ($Ticket->last_updated_as_string, $Ticket->LastUpdatedByObj->name)
+#. ($self->brief_description , $self->creator_obj->name)
+#. ($Ticket->last_updated_as_string, $Ticket->last_updated_by_obj->name)
 msgid "%1 by %2"
 msgstr "%1  (%2)"
 
 #: lib/RT/Transaction_Overlay.pm:788 lib/RT/Transaction_Overlay.pm:797 lib/RT/Transaction_Overlay.pm:800
 #. ($self->Field , $q1->name , $q2->name)
-#. ($self->Field, $t2->AsString, $t1->AsString)
+#. ($self->Field, $t2->as_string, $t1->AsString)
 #. ($self->Field, ($self->old_value? "'".$self->old_value ."'" : _("(no value)")) , "'". $self->new_value."'")
 msgid "%1 changed from %2 to %3"
 msgstr "%1 változtatása: '%2' --> '%3'"
@@ -217,7 +217,7 @@ msgid "%1 is a tool to act on tickets from an external scheduling tool, such as 
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:863
-#. ($principal->Object->name, $args{'Type'})
+#. ($principal->object->name, $args{'Type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "Ennek a sornak %1 már nem %2-je."
 
@@ -3155,12 +3155,12 @@ msgid "On Transaction"
 msgstr "Tranzakciónál"
 
 #: html/Approvals/Elements/PendingMyApproval:70
-#. ("<input size='15' value='".( $Created_after->Unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
+#. ("<input size='15' value='".( $Created_after->unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
 msgid "Only show approvals for requests Created after %1"
 msgstr "Csak a(z) %1 után létrejött poblémák engedélyezései legyenek láthatóak"
 
 #: html/Approvals/Elements/PendingMyApproval:68
-#. ("<input size='15' value='".($Created_before->Unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
+#. ("<input size='15' value='".($Created_before->unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
 msgid "Only show approvals for requests Created before %1"
 msgstr ""
 "Csak a(z) %1 elõtt létrejött problémák engedélyezései legyenek láthatóak"
@@ -4954,7 +4954,7 @@ msgid "allow loading of saved searches"
 msgstr "betölthet saját lekérdezéseket"
 
 #: html/User/Elements/DelegateRights:80
-#. ($right->principal_object->Object->SelfDescription)
+#. ($right->principal_object->object->SelfDescription)
 msgid "as granted to %1"
 msgstr "%1nak engedélyezve"
 
@@ -5156,7 +5156,7 @@ msgid "undescribed group %1"
 msgstr ""
 
 #: lib/RT/Group_Overlay.pm:211
-#. ($user->Object->name)
+#. ($user->object->name)
 msgid "user %1"
 msgstr "felhasználó %1"
 

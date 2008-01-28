@@ -62,7 +62,7 @@ for my $pane (@$panes) {
         name      => $pane,
         Available => $items,
         AutoSave  => 1,
-        OnSubmit  => sub {
+        OnSubmit  => sub  {
             my $sel = shift;
             $portlets->{$pane} = [
                 map { m/(\w+)-(.*)$/;

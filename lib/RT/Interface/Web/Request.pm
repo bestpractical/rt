@@ -136,7 +136,7 @@ sub callback {
                 $self->interp->resolver->glob_path($path, $_);
             } @roots;
 
-        $cache{ $CacheKey } = $callbacks unless RT->Config->Get('DevelMode');
+        $cache{ $CacheKey } = $callbacks unless RT->config->get('DevelMode');
     }
 
     my @rv;

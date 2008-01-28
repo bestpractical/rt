@@ -62,7 +62,7 @@
 <table border="0">
 
 <tr><td align="right"><&|/l&>Subject</&>:</td>
-<td><% $ticket_obj->Subject %></td></tr>
+<td><% $ticket_obj->subject %></td></tr>
 
 <tr><td align="right"><&|/l&>To</&>:</td>
 <td><input name="To" size="60" value="<% $ARGS{'To'} %>" /></td></tr>
@@ -100,7 +100,7 @@ if ( $Forward || $ForwardAndReturn ) {
         $session{'i'}++;
         push @{ $session{"Actions"} ||= [] }, @results;
         RT::Interface::Web::redirect(
-            RT->Config->Get('WebURL') ."/Ticket/Display.html?id=". $id
+            RT->config->get('WebURL') ."/Ticket/Display.html?id=". $id
         );
     }
 }

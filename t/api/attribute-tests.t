@@ -33,7 +33,7 @@ is ($attr->count,1, " One attr after adding a first one");
 my $first_attr = $user->first_attribute('TestAttr');
 ok($first_attr, "got some sort of attribute");
 isa_ok($first_attr, 'RT::Model::Attribute');
-is($first_attr->Content, 'The attribute has content', "got the right content back");
+is($first_attr->content, 'The attribute has content', "got the right content back");
 
 ($id, $msg) = $attr->delete_entry(name => $runid);
 ok(!$id, "Deleted non-existant entry  - $msg");
@@ -49,7 +49,7 @@ ok($id, $msg);
 my $runid_attr = $user->first_attribute($runid);
 ok($runid_attr, "got some sort of attribute");
 isa_ok($runid_attr, 'RT::Model::Attribute');
-is($runid_attr->Content, 'First', "got the right content back");
+is($runid_attr->content, 'First', "got the right content back");
 
 is ($attr->count,2, " Two attrs after adding an attribute named $runid");
 ($id, $msg) = $user->add_attribute(name => $runid, Content => "Second");
@@ -58,7 +58,7 @@ ok($id, $msg);
 $runid_attr = $user->first_attribute($runid);
 ok($runid_attr, "got some sort of attribute");
 isa_ok($runid_attr, 'RT::Model::Attribute');
-is($runid_attr->Content, 'First', "got the first content back still");
+is($runid_attr->content, 'First', "got the first content back still");
 
 is ($attr->count,3, " Three attrs after adding a secondvalue to $runid");
 ($id, $msg) = $attr->delete_entry(name => $runid, Content => "First");

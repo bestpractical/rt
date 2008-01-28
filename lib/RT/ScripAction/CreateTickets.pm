@@ -132,9 +132,9 @@ A convoluted example
     my $name = "HR";
    
     my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
-    $groups->limit_ToUserDefinedGroups();
+    $groups->limit_to_user_defined_groups();
     $groups->limit(column => "name", operator => "=", value => "$name");
-    $groups->WithMember($transaction_obj->creator_obj->id);
+    $groups->with_member($transaction_obj->creator_obj->id);
  
     my $groupid = $groups->first->id;
  
@@ -298,10 +298,10 @@ sub commit {
     my $self = shift;
 
     # Create all the tickets we care about
-    return (1) unless $self->ticket_obj->Type eq 'ticket';
+    return (1) unless $self->ticket_obj->type eq 'ticket';
 
-    $self->createByTemplate( $self->ticket_obj );
-    $self->UpdateByTemplate( $self->ticket_obj );
+    $self->create_by_template( $self->ticket_obj );
+    $self->update_by_template( $self->ticket_obj );
     return (1);
 }
 
@@ -326,8 +326,8 @@ sub prepare {
 
     }
 
-    $self->Parse(
-        Content        => $self->template_obj->Content,
+    $self->parse(
+        Content        => $self->template_obj->content,
         _ActiveContent => 1
     );
     return 1;
@@ -338,7 +338,7 @@ sub prepare {
 
 # }}}
 
-sub createByTemplate {
+sub create_by_template {
     my $self = shift;
     my $top  = shift;
 
@@ -364,7 +364,7 @@ sub createByTemplate {
         @T::AllID = @{ $self->{'CreateTickets'} };
 
         ( $T::Tickets{$template_id}, $ticketargs )
-            = $self->ParseLines( $template_id, \@links, \@postponed );
+            = $self->parse_lines( $template_id, \@links, \@postponed );
 
         # Now we have a %args to work with.
         # Make sure we have at least the minimum set of
@@ -398,12 +398,12 @@ sub createByTemplate {
 
     }
 
-    $self->PostProcess( \@links, \@postponed );
+    $self->post_process( \@links, \@postponed );
 
     return @results;
 }
 
-sub UpdateByTemplate {
+sub update_by_template {
     my $self = shift;
     my $top  = shift;
 
@@ -423,7 +423,7 @@ sub UpdateByTemplate {
         @T::AllID = @{ $self->{'update_tickets'} };
 
         ( $T::Tickets{$template_id}, $ticketargs )
-            = $self->ParseLines( $template_id, \@links, \@postponed );
+            = $self->parse_lines( $template_id, \@links, \@postponed );
 
         # Now we have a %args to work with.
         # Make sure we have at least the minimum set of
@@ -454,7 +454,7 @@ sub UpdateByTemplate {
             next;
         }
 
-        my $current = $self->GetBaseTemplate( $T::Tickets{$template_id} );
+        my $current = $self->get_base_template( $T::Tickets{$template_id} );
 
         $template_id =~ m/^update-(.*)/;
         my $base_id = "base-$1";
@@ -473,21 +473,21 @@ sub UpdateByTemplate {
                 next;
             }
         }
-        push @results, $T::Tickets{$template_id}->Update(
+        push @results, $T::Tickets{$template_id}->update(
             AttributesRef => \@attribs,
             ARGSRef       => $ticketargs
         );
 
         if ( $ticketargs->{'Owner'} ) {
-            ($id, $msg) = $T::Tickets{$template_id}->set_Owner($ticketargs->{'Owner'}, "Force");
+            ($id, $msg) = $T::Tickets{$template_id}->set_owner($ticketargs->{'Owner'}, "Force");
             push @results, $msg unless $msg eq _("That user already owns that ticket");
         }
 
         push @results,
-            $self->UpdateWatchers( $T::Tickets{$template_id}, $ticketargs );
+            $self->update_watchers( $T::Tickets{$template_id}, $ticketargs );
 
         push @results,
-            $self->UpdateCustomFields( $T::Tickets{$template_id}, $ticketargs );
+            $self->update_custom_fields( $T::Tickets{$template_id}, $ticketargs );
 
         next unless $ticketargs->{'MIMEObj'};
         if ( $ticketargs->{'UpdateType'} =~ /^(private|comment)$/i ) {
@@ -525,7 +525,7 @@ sub UpdateByTemplate {
         }
     }
 
-    $self->PostProcess( \@links, \@postponed );
+    $self->post_process( \@links, \@postponed );
 
     return @results;
 }
@@ -539,7 +539,7 @@ allowing you to embed active perl in your templates.
 
 =cut
 
-sub Parse {
+sub parse {
     my $self = shift;
     my %args = (
         Content        => undef,
@@ -557,9 +557,9 @@ sub Parse {
     }
 
     if ( substr( $args{'Content'}, 0, 3 ) eq '===' ) {
-        $self->_ParseMultilineTemplate(%args);
+        $self->_parse_multiline_template(%args);
     } elsif ( $args{'Content'} =~ /(?:\t|,)/i ) {
-        $self->_ParseXSVTemplate(%args);
+        $self->_parse_xsv_template(%args);
 
     }
 }
@@ -574,7 +574,7 @@ Takes the same arguments as Parse
 
 =cut
 
-sub _ParseMultilineTemplate {
+sub _parse_multiline_template {
     my $self = shift;
     my %args = (@_);
 
@@ -639,7 +639,7 @@ sub _ParseMultilineTemplate {
         }
     }
 
-sub ParseLines {
+sub parse_lines {
     my $self        = shift;
     my $template_id = shift;
     my $links       = shift;
@@ -660,7 +660,7 @@ sub ParseLines {
         my $err;
         $content = $template->fill_in(
             PACKAGE => 'T',
-            BROKEN  => sub {
+            BROKEN  => sub  {
                 $err = {@_}->{error};
             }
         );
@@ -732,14 +732,14 @@ sub ParseLines {
             eval {
                 $dateobj->set( Format => 'iso', value => $args{$date} );
             };
-            if ($@ or $dateobj->Unix <= 0) {
+            if ($@ or $dateobj->unix <= 0) {
                 $dateobj->set( Format => 'unknown', value => $args{$date} );
             }
         }
-        $args{$date} = $dateobj->ISO;
+        $args{$date} = $dateobj->iso;
     }
 
-    $args{'requestor'} ||= $self->ticket_obj->Requestors->member_emails
+    $args{'requestor'} ||= $self->ticket_obj->requestors->member_emails
         if $self->ticket_obj;
 
     $args{'type'} ||= 'ticket';
@@ -792,7 +792,7 @@ sub ParseLines {
         }
     }
 
-    $self->GetDeferred( \%args, $template_id, $links, $postponed );
+    $self->get_deferred( \%args, $template_id, $links, $postponed );
 
     return $ticket_obj, \%ticketargs;
 }
@@ -804,7 +804,7 @@ Parses a tab or comma delimited template. Should only ever be called by Parse
 
 =cut
 
-sub _ParseXSVTemplate {
+sub _parse_xsv_template {
     my $self = shift;
     my %args = (@_);
 
@@ -928,7 +928,7 @@ sub _ParseXSVTemplate {
     }
 }
 
-sub GetDeferred {
+sub get_deferred {
     my $self      = shift;
     my $args      = shift;
     my $id        = shift;
@@ -955,25 +955,25 @@ sub GetDeferred {
     );
 }
 
-sub GetUpdateTemplate {
+sub get_update_template {
     my $self = shift;
     my $t    = shift;
 
     my $string;
     $string .= "Queue: " . $t->queue_obj->name . "\n";
-    $string .= "Subject: " . $t->Subject . "\n";
+    $string .= "Subject: " . $t->subject . "\n";
     $string .= "Status: " . $t->Status . "\n";
     $string .= "UpdateType: correspond\n";
     $string .= "Content: \n";
     $string .= "ENDOFCONTENT\n";
-    $string .= "Due: " . $t->due_obj->AsString . "\n";
-    $string .= "starts: " . $t->startsObj->AsString . "\n";
-    $string .= "Started: " . $t->StartedObj->AsString . "\n";
-    $string .= "Resolved: " . $t->ResolvedObj->AsString . "\n";
-    $string .= "Owner: " . $t->OwnerObj->name . "\n";
-    $string .= "Requestor: " . $t->RequestorAddresses . "\n";
-    $string .= "Cc: " . $t->CcAddresses . "\n";
-    $string .= "AdminCc: " . $t->AdminCcAddresses . "\n";
+    $string .= "Due: " . $t->due_obj->as_string . "\n";
+    $string .= "starts: " . $t->starts_obj->as_string . "\n";
+    $string .= "Started: " . $t->started_obj->as_string . "\n";
+    $string .= "Resolved: " . $t->resolved_obj->as_string . "\n";
+    $string .= "Owner: " . $t->owner_obj->name . "\n";
+    $string .= "Requestor: " . $t->requestor_addresses . "\n";
+    $string .= "Cc: " . $t->cc_addresses . "\n";
+    $string .= "AdminCc: " . $t->admin_cc_addresses . "\n";
     $string .= "time_worked: " . $t->time_worked . "\n";
     $string .= "time_estimated: " . $t->time_estimated . "\n";
     $string .= "time_left: " . $t->time_left . "\n";
@@ -1009,22 +1009,22 @@ sub GetUpdateTemplate {
     return $string;
 }
 
-sub GetBaseTemplate {
+sub get_base_template {
     my $self = shift;
     my $t    = shift;
 
     my $string;
     $string .= "Queue: " . $t->Queue . "\n";
-    $string .= "Subject: " . $t->Subject . "\n";
+    $string .= "Subject: " . $t->subject . "\n";
     $string .= "Status: " . $t->Status . "\n";
-    $string .= "Due: " . $t->due_obj->Unix . "\n";
-    $string .= "starts: " . $t->startsObj->Unix . "\n";
-    $string .= "Started: " . $t->StartedObj->Unix . "\n";
-    $string .= "Resolved: " . $t->ResolvedObj->Unix . "\n";
+    $string .= "Due: " . $t->due_obj->unix . "\n";
+    $string .= "starts: " . $t->starts_obj->unix . "\n";
+    $string .= "Started: " . $t->started_obj->unix . "\n";
+    $string .= "Resolved: " . $t->resolved_obj->unix . "\n";
     $string .= "Owner: " . $t->Owner . "\n";
-    $string .= "Requestor: " . $t->RequestorAddresses . "\n";
-    $string .= "Cc: " . $t->CcAddresses . "\n";
-    $string .= "AdminCc: " . $t->AdminCcAddresses . "\n";
+    $string .= "Requestor: " . $t->requestor_addresses . "\n";
+    $string .= "Cc: " . $t->cc_addresses . "\n";
+    $string .= "AdminCc: " . $t->admin_cc_addresses . "\n";
     $string .= "time_worked: " . $t->time_worked . "\n";
     $string .= "time_estimated: " . $t->time_estimated . "\n";
     $string .= "time_left: " . $t->time_left . "\n";
@@ -1034,7 +1034,7 @@ sub GetBaseTemplate {
     return $string;
 }
 
-sub GetCreateTemplate {
+sub get_create_template {
     my $self = shift;
 
     my $string;
@@ -1072,7 +1072,7 @@ sub GetCreateTemplate {
     return $string;
 }
 
-sub UpdateWatchers {
+sub update_watchers {
     my $self   = shift;
     my $ticket = shift;
     my $args   = shift;
@@ -1114,7 +1114,7 @@ sub UpdateWatchers {
         my @delete = grep( !defined $newhash{$_}, @old );
 
         foreach (@add) {
-            my ( $val, $msg ) = $ticket->AddWatcher(
+            my ( $val, $msg ) = $ticket->add_watcher(
                 Type  => $type,
                 Email => $_
             );
@@ -1135,7 +1135,7 @@ sub UpdateWatchers {
     return @results;
 }
 
-sub UpdateCustomFields {
+sub update_custom_fields {
     my $self   = shift;
     my $ticket = shift;
     my $args   = shift;
@@ -1149,15 +1149,15 @@ sub UpdateCustomFields {
         $CustomFieldObj->load_by_id($cf);
 
         my @values;
-        if ($CustomFieldObj->Type =~ /text/i) { # Both Text and Wikitext
+        if ($CustomFieldObj->type =~ /text/i) { # Both Text and Wikitext
             @values = ($args->{$arg});
         } else {
             @values = split /\n/, $args->{$arg};
         }
         
-        if ( ($CustomFieldObj->Type eq 'Freeform' 
+        if ( ($CustomFieldObj->type eq 'Freeform' 
               && ! $CustomFieldObj->SingleValue) ||
-              $CustomFieldObj->Type =~ /text/i) {
+              $CustomFieldObj->type =~ /text/i) {
             foreach my $val (@values) {
                 $val =~ s/\r//g;
             }
@@ -1175,7 +1175,7 @@ sub UpdateCustomFields {
     return @results;
 }
 
-sub PostProcess {
+sub post_process {
     my $self      = shift;
     my $links     = shift;
     my $postponed = shift;
@@ -1233,7 +1233,7 @@ sub PostProcess {
         my $ticket = $T::Tickets{$template_id};
         Jifty->log->debug( "Handling postponed actions for " . $ticket->id );
         my %args = %{ shift(@$postponed) };
-        $ticket->set_Status( $args{Status} ) if defined $args{Status};
+        $ticket->set_status( $args{Status} ) if defined $args{Status};
     }
 
 }

@@ -53,7 +53,7 @@
 % }
 <%INIT>
 if ( $Multiple and $values ) {
-    $Default = join "\n", map $_->Content, @{ $values->ItemsArrayRef };
+    $Default = join "\n", map $_->content, @{ $values->ItemsArrayRef };
 }
 unless ( $Multiple ) {
     $Default =~ s/\s*\n+\s*/ /g if $Default;

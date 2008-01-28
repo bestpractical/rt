@@ -29,7 +29,7 @@ works($id,$msg);
 
 sub add_works {
     works(
-        $cf->AddValue(name => $_[0], Description => $_[0], Category => $_[1])
+        $cf->add_value(name => $_[0], Description => $_[0], Category => $_[1])
     );
 };
 
@@ -39,11 +39,11 @@ add_works('value3', '1.1. A-sub one');
 add_works('value4', '1.2. A-sub two');
 add_works('value5', '');
 
-my $cfv = $cf->Values->first;
-is ($cf->Values->count,5, "got 5 values");
+my $cfv = $cf->values->first;
+is ($cf->values->count,5, "got 5 values");
 is($cfv->name, 'value1', "We got the first value");
-is($cfv->Category, '1. Category A');
-works($cfv->set_Category('1. Category AAA'));
-is($cfv->Category, '1. Category AAA');
+is($cfv->category, '1. Category A');
+works($cfv->set_category('1. Category AAA'));
+is($cfv->category, '1. Category AAA');
 
 1;

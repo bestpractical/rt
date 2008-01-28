@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
-my $Type = $CustomField->Type;
+my $Type = $CustomField->type;
 unless ( $Type ) {
     # if we can't see the type, all hell will break loose.
     Jifty->log->error( "Custom field #". $CustomField->id ." has empty type" );
@@ -69,7 +69,7 @@ my $MaxValues = $CustomField->MaxValues;
 if ($MaxValues == 1 && $values) {
     # what exactly is this doing?  Without the "unless" it breaks RTFM
     # transaction extraction into articles.
-    $Default = ($values->first ? $values->first->Content : '') unless $Default;
+    $Default = ($values->first ? $values->first->content : '') unless $Default;
     $values->goto_first_item;
 }
 # The "Magic" hidden input causes RT to know that we were trying to edit the field, even if 

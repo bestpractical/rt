@@ -83,7 +83,7 @@ sub check_order {
   my ($tx, @order) = @_;
   my @results;
   while (my $t = $tx->next) {
-    push @results, $t->custom_field_values($cfO->id)->first->Content;
+    push @results, $t->custom_field_values($cfO->id)->first->content;
   }
   my $results = join (" ",@results);
   my $order = join(" ",@order);

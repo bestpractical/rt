@@ -61,9 +61,9 @@ unless ($OCFV->id) {
     Abort("Bad OCFV id. Couldn't find OCFV '$id'\n");
 }
 
-my $content_type = $OCFV->ContentType || 'text/plain';
+my $content_type = $OCFV->content_type || 'text/plain';
     
-unless (RT->Config->Get('TrustHTMLAttachments')) {
+unless (RT->config->get('TrustHTMLAttachments')) {
     $content_type = 'text/plain' if ($content_type =~ /^text\/html/i);
 }
 

@@ -37,7 +37,7 @@ while (@requestors) {
     $tix->from_sql("Queue = '$queue' AND requestor = 'alpha\@example.com'");
     $tix->order_by({ column => "Subject" });
     my @subjects;
-    while (my $t = $tix->next) { push @subjects, $t->Subject; }
+    while (my $t = $tix->next) { push @subjects, $t->subject; }
     is(@subjects, 6, "found six tickets");
     is_deeply( \@subjects, [ sort @subjects ], "Subjects are sorted");
 }
@@ -46,7 +46,7 @@ sub check_emails_order
 {
     my ($tix,$count,$order) = (@_);
     my @mails;
-    while (my $t = $tix->next) { push @mails, $t->RequestorAddresses; }
+    while (my $t = $tix->next) { push @mails, $t->requestor_addresses; }
     is(@mails, $count, "found $count tickets for ". $tix->Query);
     my @required_order;
     if( $order =~ /asc/i ) {
@@ -102,10 +102,10 @@ sub check_emails_order
     my $g = RT::Model::Group->new(current_user => RT->system_user);
 
     my ($gid);
-    ($gid, $msg) = $g->create_userDefinedGroup(name => '20-sort-by-requestor.t-'.rand(200));
+    ($gid, $msg) = $g->create_user_defined_group(name => '20-sort-by-requestor.t-'.rand(200));
     ok($gid, "Created group") or diag("error: $msg");
 
-    ($id, $msg) = $t->Requestors->add_member( $gid );
+    ($id, $msg) = $t->requestors->add_member( $gid );
     ok($id, "added group to requestors group") or diag("error: $msg");
 }
 
@@ -125,7 +125,7 @@ TODO: {
     $tix->order_by({ column => "Requestor.email" });
     $tix->rows_per_page(30);
     my @mails;
-    while (my $t = $tix->next) { push @mails, $t->RequestorAddresses; }
+    while (my $t = $tix->next) { push @mails, $t->requestor_addresses; }
     is(@mails, 30, "found thirty tickets");
     is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependant)");
 }
@@ -136,7 +136,7 @@ TODO: {
     $tix->order_by({ column => "Requestor.email" });
     $tix->rows_per_page(30);
     my @mails;
-    while (my $t = $tix->next) { push @mails, $t->RequestorAddresses; }
+    while (my $t = $tix->next) { push @mails, $t->requestor_addresses; }
     is(@mails, 30, "found thirty tickets");
     is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependant)");
 }

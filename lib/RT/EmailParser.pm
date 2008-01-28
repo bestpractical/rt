@@ -122,7 +122,7 @@ sub smart_parse_mime_entity_from_scalar {
 
                 # We have to trust the temp file's name -- untaint it
                 $temp_file =~ /(.*)/;
-                my $entity = $self->parse_mime_entityFromFile( $1, $args{'Decode'}, $args{'Exact'} );
+                my $entity = $self->parse_mime_entity_from_file( $1, $args{'Decode'}, $args{'Exact'} );
                 unlink($1);
                 return $entity;
             }
@@ -131,7 +131,7 @@ sub smart_parse_mime_entity_from_scalar {
 
     #If for some reason we weren't able to parse the message using a temp file
     # try it with a scalar
-    if ( $@ || !$self->Entity ) {
+    if ( $@ || !$self->entity ) {
         return $self->parse_mime_entity_from_scalar( $args{'Message'}, $args{'Decode'}, $args{'Exact'} );
     }
 
@@ -181,7 +181,7 @@ Parses a mime entity from a filename passed in as an argument
 
 =cut
 
-sub parse_mime_entityFromFile {
+sub parse_mime_entity_from_file {
     my $self = shift;
     return $self->_parse_mime_entity( shift, 'parse_open', @_ );
 }
@@ -196,7 +196,7 @@ sub _parse_mime_entity {
 
     # Create a new parser object:
     my $parser = MIME::Parser->new();
-    $self->_SetupMIMEParser($parser);
+    $self->_setup_mime_parser($parser);
     $parser->decode_bodies(0) if $exact;
 
     # TODO: XXX 3.0 we really need to wrap this in an eval { }
@@ -210,7 +210,7 @@ sub _parse_mime_entity {
         }
     }
 
-    $self->_PostProcessNewEntity if $postprocess;
+    $self->_post_process_new_entity if $postprocess;
 
     return $self->{'entity'};
 }
@@ -264,7 +264,7 @@ cleans up and postprocesses a newly parsed MIME Entity
 
 =cut
 
-sub _PostProcessNewEntity {
+sub _post_process_new_entity {
     my $self = shift;
 
     #Now we've got a parsed mime object. 
@@ -272,7 +272,7 @@ sub _PostProcessNewEntity {
     # Unfold headers that are have embedded newlines
     #  Better do this before conversion or it will break
     #  with multiline encoded Subject (RFC2047) (fsck.com #5594)
-    $self->Head->unfold;
+    $self->head->unfold;
 
     # try to convert text parts into utf-8 charset
     RT::I18N::set_mime_entity_to_encoding($self->{'entity'}, 'utf-8');
@@ -283,11 +283,11 @@ sub _PostProcessNewEntity {
 Takes a hashref object containing queue_obj, Head and CurrentUser objects.
 Returns a list of all email addresses in the To and Cc 
 headers b<except> the current Queue\'s email addresses, the CurrentUser\'s 
-email address and anything that the RT->Config->Get('RTAddressRegexp') matches.
+email address and anything that the RT->config->get('RTAddressRegexp') matches.
 
 =cut
 
-sub ParseCcAddressesFromHead {
+sub parse_cc_addresses_from_head {
 
     my $self = shift;
 
@@ -299,8 +299,8 @@ sub ParseCcAddressesFromHead {
 
     my (@Addresses);
 
-    my @ToObjs = Mail::Address->parse( $self->Head->get('To') );
-    my @CcObjs = Mail::Address->parse( $self->Head->get('Cc') );
+    my @ToObjs = Mail::Address->parse( $self->head->get('To') );
+    my @CcObjs = Mail::Address->parse( $self->head->get('Cc') );
 
     foreach my $AddrObj ( @ToObjs, @CcObjs ) {
         my $Address = $AddrObj->address;
@@ -309,7 +309,7 @@ sub ParseCcAddressesFromHead {
         next if ( lc $args{'CurrentUser'}->email   eq lc $Address );
         next if ( lc $args{'queue_obj'}->correspond_address eq lc $Address );
         next if ( lc $args{'queue_obj'}->comment_address    eq lc $Address );
-        next if ( $self->IsRTAddress($Address) );
+        next if ( $self->is_rt_address($Address) );
 
         push ( @Addresses, $Address );
     }
@@ -325,14 +325,14 @@ of the From (evaluated in order of Reply-To:, From:, Sender)
 
 =cut
 
-sub ParseSenderAddressFromHead {
+sub parse_sender_address_from_head {
     my $self = shift;
 
     #Figure out who's sending this message.
-    my $From = $self->Head->get('Reply-To')
-      || $self->Head->get('From')
-      || $self->Head->get('Sender');
-    return ( $self->ParseAddressFromHeader($From) );
+    my $From = $self->head->get('Reply-To')
+      || $self->head->get('From')
+      || $self->head->get('Sender');
+    return ( $self->parse_address_from_header($From) );
 }
 
 
@@ -344,7 +344,7 @@ of the From (evaluated in order of Errors-To:,Reply-To:, From:, Sender)
 
 =cut
 
-sub ParseErrorsToAddressFromHead {
+sub parse_errors_to_address_from_head {
     my $self = shift;
 
     #Figure out who's sending this message.
@@ -352,9 +352,9 @@ sub ParseErrorsToAddressFromHead {
     foreach my $header ( 'Errors-To', 'Reply-To', 'From', 'Sender' ) {
 
         # If there's a header of that name
-        my $headerobj = $self->Head->get($header);
+        my $headerobj = $self->head->get($header);
         if ($headerobj) {
-            my ( $addr, $name ) = $self->ParseAddressFromHeader($headerobj);
+            my ( $addr, $name ) = $self->parse_address_from_header($headerobj);
 
             # If it's got actual useful content...
             return ($addr) if ($addr);
@@ -366,11 +366,11 @@ sub ParseErrorsToAddressFromHead {
 
 =head2 ParseAddressFromHeader ADDRESS
 
-Takes an address from $self->Head->get('Line') and returns a tuple: user@host, friendly name
+Takes an address from $self->head->get('Line') and returns a tuple: user@host, friendly name
 
 =cut
 
-sub ParseAddressFromHeader {
+sub parse_address_from_header {
     my $self = shift;
     my $Addr = shift;
 
@@ -403,13 +403,13 @@ Returns false, otherwise.
 
 =cut
 
-sub IsRTAddress {
+sub is_rt_address {
     my $self = shift;
     my $address = shift;
 
     # Example: the following rule would tell RT not to Cc 
     #   "tickets@noc.example.com"
-    my $address_re = RT->Config->Get('RTAddressRegexp');
+    my $address_re = RT->config->get('RTAddressRegexp');
     if ( defined $address_re && $address =~ /$address_re/i ) {
         return 1;
     }
@@ -427,7 +427,7 @@ Returns the same array with any IsRTAddress()es weeded out.
 
 =cut
 
-sub CullRTAddresses {
+sub cull_rt_addresses {
     my $self = shift;
     my @addresses= (@_);
     my @addrlist;
@@ -436,7 +436,7 @@ sub CullRTAddresses {
                                  # We use the class instead of the instance
                                  # because sloppy code calls this method
                                  # without a $self
-      push (@addrlist, $addr)    unless RT::EmailParser->IsRTAddress($addr);
+      push (@addrlist, $addr)    unless RT::EmailParser->is_rt_address($addr);
     }
     return (@addrlist);
 }
@@ -486,7 +486,7 @@ sub CullRTAddresses {
 
 =cut
 
-sub LookupExternalUserInfo {
+sub lookup_external_user_info {
   my $self = shift;
   my $email = shift;
   my $real_name = shift;
@@ -510,9 +510,9 @@ Return the parsed head from this message
 
 =cut
 
-sub Head {
+sub head {
     my $self = shift;
-    return $self->Entity->head;
+    return $self->entity->head;
 }
 
 =head2 Entity 
@@ -521,7 +521,7 @@ Return the parsed Entity from this message
 
 =cut
 
-sub Entity {
+sub entity {
     my $self = shift;
     return $self->{'entity'};
 }
@@ -542,7 +542,7 @@ A private instance method which sets up a mime parser to do its job
     ## At the same time, we should make sure that we nuke attachments 
     ## Over max size and return them
 
-sub _SetupMIMEParser {
+sub _setup_mime_parser {
     my $self   = shift;
     my $parser = shift;
     

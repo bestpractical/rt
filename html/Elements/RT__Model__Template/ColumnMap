@@ -55,12 +55,12 @@ our $TEMPLATE_COLUMN_MAP = {
         title     => '#',
         attribute => 'id',
         align     => 'right',
-        value     => sub { return $_[0]->id },
+        value     => sub  { return $_[0]->id },
     },
 };
 
 foreach my $col(qw(name Description)) {
-    $TEMPLATE_COLUMN_MAP->{ $col } = { attribute => $col, value => sub { return $_[0]->$col() } };
+    $TEMPLATE_COLUMN_MAP->{ $col } = { attribute => $col, value => sub  { return $_[0]->$col() } };
 }
 
 </%ONCE>

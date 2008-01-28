@@ -61,7 +61,7 @@ Set up the relevant recipients, then call our parent.
 
 sub prepare {
     my $self = shift;
-    $self->set_Recipients();
+    $self->set_recipients();
     $self->SUPER::prepare();
 }
 
@@ -74,10 +74,10 @@ Sets the recipients of this message to this ticket's Requestor.
 =cut
 
 
-sub set_Recipients {
+sub set_recipients {
     my $self=shift;
 
-    push(@{$self->{'To'}}, $self->ticket_obj->Requestors->member_emails);
+    push(@{$self->{'To'}}, $self->ticket_obj->requestors->member_emails);
     
     return(1);
 }
@@ -93,7 +93,7 @@ Set this message\'s return address to the apropriate queue address
 
 =cut
 
-sub set_ReturnAddress {
+sub set_return_address {
     my $self = shift;
     my %args = ( is_comment => 0,
 		 @_
@@ -102,21 +102,21 @@ sub set_ReturnAddress {
     my $replyto;
     if ($args{'is_comment'}) { 
 	$replyto = $self->ticket_obj->queue_obj->comment_address || 
-		     RT->Config->Get('comment_address');
+		     RT->config->get('comment_address');
     }
     else {
 	$replyto = $self->ticket_obj->queue_obj->correspond_address ||
-		     RT->Config->Get('correspond_address');
+		     RT->config->get('correspond_address');
     }
     
-    unless ($self->template_obj->MIMEObj->head->get('From')) {
-	if (RT->Config->Get('UseFriendlyFromLine')) {
-	    my $friendly_name = $self->ticket_obj->queue_obj->Description ||
+    unless ($self->template_obj->mime_obj->head->get('From')) {
+	if (RT->config->get('UseFriendlyFromLine')) {
+	    my $friendly_name = $self->ticket_obj->queue_obj->description ||
 		    $self->ticket_obj->queue_obj->name;
 	    $friendly_name =~ s/"/\\"/g;
 	    $self->set_header( 'From',
-		        sprintf(RT->Config->Get('FriendlyFromLineFormat'), 
-                $self->MIMEEncodeString( $friendly_name, RT->Config->Get('EmailOutputEncoding') ), $replyto),
+		        sprintf(RT->config->get('FriendlyFromLineFormat'), 
+                $self->mime_encode_string( $friendly_name, RT->config->get('EmailOutputEncoding') ), $replyto),
 	    );
 	}
 	else {
@@ -124,7 +124,7 @@ sub set_ReturnAddress {
 	}
     }
     
-    unless ($self->template_obj->MIMEObj->head->get('Reply-To')) {
+    unless ($self->template_obj->mime_obj->head->get('Reply-To')) {
 	$self->set_header('Reply-To', "$replyto");
     }
     

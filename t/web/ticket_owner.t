@@ -93,7 +93,7 @@ diag "user A can not change owner after create";
     is $ticket->Owner, $user_b->id, 'correct owner';
 
     # try the following group of tests twice with different agents(logins)
-    my $test_cb = sub {
+    my $test_cb = sub  {
         my $agent = shift;
         $agent->goto_ticket( $id );
         diag("Going to ticket $id");

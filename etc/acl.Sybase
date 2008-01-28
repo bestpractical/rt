@@ -1,8 +1,8 @@
 
 sub acl {
-    my $db_name = RT->Config->Get('Databasename');
-    my $db_user = RT->Config->Get('DatabaseUser');
-    my $db_pass = RT->Config->Get('Databasepassword');
+    my $db_name = RT->config->get('Databasename');
+    my $db_user = RT->config->get('DatabaseUser');
+    my $db_pass = RT->config->get('Databasepassword');
 
     return ("SP_ADDLOGIN $db_user, $db_pass, $db_name");
 }

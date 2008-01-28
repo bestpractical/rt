@@ -55,14 +55,14 @@
 
 %   while (my $scrip = $Scrips->next ) {
 <li>
-<a href="<%RT->Config->Get('WebPath')%>/Admin/Global/Scrip.html?id=<%$scrip->id%>&Queue=<%0%>">
+<a href="<%RT->config->get('WebPath')%>/Admin/Global/Scrip.html?id=<%$scrip->id%>&Queue=<%0%>">
 % if ($scrip->Description) {
-<%   $scrip->Description %> 
+<%   $scrip->description %> 
 % } else {
 <i>(<&|/l, $scrip->id&>Scrip #%1</&>)</i>
 % }
 </a><br />
-<small><&|/l, _($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->template_obj->name) &>%1 %2 with template %3</&></small>
+<small><&|/l, _($scrip->condition_obj->name), loc($scrip->action_obj->name), loc($scrip->template_obj->name) &>%1 %2 with template %3</&></small>
 </li>
 %   }
 
@@ -72,5 +72,5 @@
 
 <%init>
 my $Scrips = RT::Model::ScripCollection->new();
-$Scrips->limit_ToGlobal();
+$Scrips->limit_to_global();
 </%INIT>

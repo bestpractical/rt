@@ -57,5 +57,5 @@
 
 <%init>
 my $CustomFields = RT::Model::CustomFieldCollection->new();
-$CustomFields->limit_ToGlobal();
+$CustomFields->limit_to_global();
 </%INIT>

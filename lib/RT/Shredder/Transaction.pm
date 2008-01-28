@@ -68,10 +68,10 @@ sub __DependsOn
     my $list = [];
 
 # Attachments
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => DEPENDS_ON,
-            TargetObjects => $self->Attachments,
+            TargetObjects => $self->attachments,
             Shredder => $args{'Shredder'}
         );
 
@@ -94,7 +94,7 @@ sub __Relates
     if( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+        my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'} = "Have no related Ticket #". $self->id ." object";
@@ -102,7 +102,7 @@ sub __Relates
 
 # TODO: Users(Creator, LastUpdatedBy)
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,

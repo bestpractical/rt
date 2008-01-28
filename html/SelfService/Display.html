@@ -169,7 +169,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         and $ARGS{'Status'}
         and ( $ARGS{'Status'} ne $Ticket->Status ) )
     {
-        ( $code, $msg ) = $Ticket->set_Status( $ARGS{'Status'} );
+        ( $code, $msg ) = $Ticket->set_status( $ARGS{'Status'} );
         push @results, "$msg";
     }
 
@@ -219,11 +219,11 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         push @{ $session{"Actions"} ||= [] }, @results;
         $session{'i'}++;
         RT::Interface::Web::redirect(
-            RT->Config->Get('WebURL') ."SelfService/Display.html?id=". $Ticket->id
+            RT->config->get('WebURL') ."SelfService/Display.html?id=". $Ticket->id
         );
     }
 
-    my $Transactions = $Ticket->Transactions;
+    my $Transactions = $Ticket->transactions;
 
     my $attachments =
       $m->comp( '/Ticket/Elements/FindAttachments', Ticket => $Ticket );

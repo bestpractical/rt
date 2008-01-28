@@ -53,7 +53,7 @@ use RT::Report::Tickets::Entry;
 use strict;
 use warnings;
 
-sub Groupings {
+sub groupings {
     my $self = shift;
     my %args = (@_);
     my @fields = qw(
@@ -86,8 +86,8 @@ sub Groupings {
     if ( !$queues && $args{'Query'} ) {
         require RT::Interface::Web::QueryBuilder::Tree;
         my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-        $tree->ParseSQL( Query => $args{'Query'} );
-        $queues = $tree->GetReferencedQueues;
+        $tree->parse_sql( Query => $args{'Query'} );
+        $queues = $tree->get_referenced_queues;
     }
 
     if ( $queues ) {
@@ -101,9 +101,9 @@ sub Groupings {
                 $id =~ s/^.'*(.*).'*$/$1/;
                 $queue->load($id);
             }
-            $CustomFields->limit_ToQueue($queue->id);
+            $CustomFields->limit_to_queue($queue->id);
         }
-        $CustomFields->limit_ToGlobal;
+        $CustomFields->limit_to_global;
         while ( my $CustomField = $CustomFields->next ) {
             push @fields, "Custom field '". $CustomField->name ."'", "CF.{". $CustomField->id ."}";
         }
@@ -111,7 +111,7 @@ sub Groupings {
     return @fields;
 }
 
-sub Label {
+sub label {
     my $self = shift;
     my $field = shift;
     if ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {
@@ -124,12 +124,12 @@ sub Label {
     return _($field);
 }
 
-sub GroupBy {
+sub group_by {
     my $self = shift;
     my %args = ref $_[0]? %{ $_[0] }: (@_);
 
     $self->{'_group_by_field'} = $args{'column'};
-    %args = $self->_FieldToFunction( %args );
+    %args = $self->_field_to_function( %args );
 
     $self->SUPER::GroupBy( \%args );
 }
@@ -139,7 +139,7 @@ sub column {
     my %args = (@_);
 
     if ( $args{'column'} && !$args{'FUNCTION'} ) {
-        %args = $self->_FieldToFunction( %args );
+        %args = $self->_field_to_function( %args );
     }
 
     return $self->SUPER::column( %args );
@@ -155,7 +155,7 @@ columns if it makes sense
 sub _do_search {
     my $self = shift;
     $self->SUPER::_do_search( @_ );
-    $self->AddEmptyRows;
+    $self->add_empty_rows;
 }
 
 =head2 _FieldToFunction column
@@ -165,7 +165,7 @@ field.
 
 =cut
 
-sub _FieldToFunction {
+sub _field_to_function {
     my $self = shift;
     my %args = (@_);
 
@@ -189,7 +189,7 @@ sub _FieldToFunction {
         unless ( $cf->id ) {
             Jifty->log->error("Couldn't load CustomField #$cf_name");
         } else {
-            my ($ticket_cf_alias, $cf_alias) = $self->_CustomFieldjoin($cf->id, $cf->id, $cf_name);
+            my ($ticket_cf_alias, $cf_alias) = $self->_custom_field_join($cf->id, $cf->id, $cf_name);
             @args{qw(alias column)} = ($ticket_cf_alias, 'Content');
         }
     }
@@ -231,12 +231,12 @@ for, do that.
 
 =cut
 
-sub AddEmptyRows {
+sub add_empty_rows {
     my $self = shift;
     if ( $self->{'_group_by_field'} eq 'Status' ) {
         my %has = map { $_->__value('Status') => 1 } @{ $self->items_array_ref || [] };
 
-        foreach my $status ( grep !$has{$_}, RT::Model::Queue->new->StatusArray ) {
+        foreach my $status ( grep !$has{$_}, RT::Model::Queue->new->status_array ) {
 
             my $record = $self->new_item;
             $record->load_from_hash( {

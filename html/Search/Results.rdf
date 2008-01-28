@@ -57,8 +57,8 @@ $r->content_type('application/rss+xml');
         use XML::RSS;
         my $rss = new XML::RSS (version => '1.0');
         $rss->channel(
-          title        => RT->Config->Get('rtname').": Syndicated Search",
-          link         => RT->Config->Get('WebURL'),
+          title        => RT->config->get('rtname').": Syndicated Search",
+          link         => RT->config->get('WebURL'),
           description  => "",
           dc => {
           },
@@ -74,11 +74,11 @@ $r->content_type('application/rss+xml');
         my $creator_str = $m->scomp('/Elements/ShowUser', User => $Ticket->creator_obj);
         $creator_str =~ s/[\r\n]//g;
         $rss->add_item(
-          title       =>  $Ticket->Subject,
-          link        => RT->Config->Get('WebURL')."/Ticket/Display.html?id=".$Ticket->id,
-          description => $Ticket->Transactions->first->Content,
+          title       =>  $Ticket->subject,
+          link        => RT->config->get('WebURL')."/Ticket/Display.html?id=".$Ticket->id,
+          description => $Ticket->transactions->first->content,
           dc => {
-            subject  => ($Ticket->Subject  || _('No subject')),
+            subject  => ($Ticket->subject  || _('No subject')),
             creator  => $creator_str,
           },
         );

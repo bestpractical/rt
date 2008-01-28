@@ -230,7 +230,7 @@ $_->DESTROY foreach @New;
 
 push @$Selected, @NewSelection;
 
-$Tree->PruneChildlessAggregators;
+$Tree->prune_childless_aggregators;
 
 return @results;
 </%INIT>

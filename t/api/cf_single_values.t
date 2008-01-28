@@ -17,10 +17,10 @@ my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
 ok($id,$msg);
 
 
-($id,$msg) =$cf->AddValue(name => 'First');
+($id,$msg) =$cf->add_value(name => 'First');
 ok($id,$msg);
 
-($id,$msg) =$cf->AddValue(name => 'Second');
+($id,$msg) =$cf->add_value(name => 'Second');
 ok($id,$msg);
 
 

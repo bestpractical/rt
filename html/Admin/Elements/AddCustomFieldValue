@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<h3><&|/l&>Add Value</&></h3>
+<h3><&|/l&>add Value</&></h3>
 
 <table border="0">
 
@@ -53,7 +53,7 @@
 <th><&|/l&>Sort</&></th>
 <th><&|/l&>name</&></th>
 <th><&|/l&>Description</&></th>
-% if ( $CustomField->Type ne 'Combobox' ) {
+% if ( $CustomField->type ne 'Combobox' ) {
 <th><&|/l&>Category</&></th>
 % }
 </tr>
@@ -63,7 +63,7 @@
 <td><input type="text" size="3"  name="<% $paramtag %>-SortOrder"   /></td>
 <td><input type="text" size="30" name="<% $paramtag %>-name"        /></td>
 <td><input type="text" size="50" name="<% $paramtag %>-Description" /></td>
-% if ( $CustomField->Type ne 'Combobox' ) {
+% if ( $CustomField->type ne 'Combobox' ) {
 <td><input type="text" size="10" name="<% $paramtag %>-Category"    /></td>
 % }
 </tr>

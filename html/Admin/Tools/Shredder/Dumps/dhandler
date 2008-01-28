@@ -57,7 +57,7 @@ $m->abort(404) if $arg =~ m{\.\.|/|\\};
 
 use File::Spec ();
 use RT::Shredder ();
-my $File = File::Spec->catfile( RT::Shredder->StoragePath, $arg );
+my $File = File::Spec->catfile( RT::Shredder->storage_path, $arg );
 $r->content_type('application/octets-stream');
 open my $fh, "<:raw", $File or $m->abort(404);
 my $buf;

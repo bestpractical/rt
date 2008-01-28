@@ -87,7 +87,7 @@ sub new  {
 # }}}
 
 # {{{ sub _init 
-sub _init  {
+sub _init {
   my $self = shift;
   my %args = ( 
            TicketsObj => undef,
@@ -107,7 +107,7 @@ Return the optional argument associated with this Search
 
 =cut
 
-sub Argument  {
+sub argument {
   my $self = shift;
   return($self->{'Argument'});
 }
@@ -120,13 +120,13 @@ Return the Tickets object passed into this search
 
 =cut
 
-sub TicketsObj {
+sub tickets_obj {
     my $self = shift;
     return($self->{'TicketsObj'});
 }
 
 # {{{ sub Describe 
-sub Describe  {
+sub describe {
   my $self = shift;
   return (_("No description for %1", ref $self));
 }

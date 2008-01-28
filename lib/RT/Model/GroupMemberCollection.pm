@@ -79,7 +79,7 @@ groups from users for display purposes
 
 =cut
 
-sub limit_ToUsers {
+sub limit_to_users {
     my $self = shift;
 
     my $principals = $self->new_alias('Principals');
@@ -106,7 +106,7 @@ groups from users for display purposes
 
 =cut
 
-sub limit_ToGroups {
+sub limit_to_groups {
     my $self = shift;
 
     my $principals = $self->new_alias('Principals');
@@ -132,7 +132,7 @@ of the group which has PRINCIPAL_ID as its principal id.
 
 =cut
 
-sub limit_ToMembersOfGroup {
+sub limit_to_members_of_group {
     my $self = shift;
     my $group = shift;
 

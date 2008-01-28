@@ -85,8 +85,8 @@ sub limit  {
 	  ( $args{'column'}  eq 'Base') or ($args{'column'} eq 'Target')
        ) {
 	  my $dummy = RT::URI->new;
-	   $dummy->FromURI($args{'value'});
-	   # $uri = $dummy->URI;
+	   $dummy->from_uri($args{'value'});
+	   # $uri = $dummy->uri;
     }
 
 
@@ -119,7 +119,7 @@ find all things that refer to URI
 
 =cut
 
-sub limit_RefersTo {
+sub limit_refers_to {
     my $self = shift;
     my $URI = shift;
 
@@ -136,7 +136,7 @@ find all things that URI refers to
 
 =cut
 
-sub limit_ReferredToBy {
+sub limit_referred_to_by {
     my $self = shift;
     my $URI = shift;
 
@@ -155,10 +155,10 @@ sub next {
     return $Link unless $Link && ref $Link;
 
     # Skip links to local objects thast are deleted
-    if ( $Link->target_uri->IsLocal and UNIVERSAL::isa($Link->TargetObj,"RT::Model::Ticket")
-             and ($Link->TargetObj->__value('status')||'') eq "deleted") {
+    if ( $Link->target_uri->is_local and UNIVERSAL::isa($Link->target_obj,"RT::Model::Ticket")
+             and ($Link->target_obj->__value('status')||'') eq "deleted") {
         return $self->next;
-    } elsif ($Link->base_uri->IsLocal   and UNIVERSAL::isa($Link->base_obj,"RT::Model::Ticket")
+    } elsif ($Link->base_uri->is_local   and UNIVERSAL::isa($Link->base_obj,"RT::Model::Ticket")
              and ($Link->base_obj->__value('status')||'') eq "deleted") {
         return $self->next;
     } else {

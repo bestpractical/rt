@@ -70,7 +70,7 @@
 % my $ids = join ',', map $_->id, @{ $users->items_array_ref };
 % if ( $ids ) {
 <div align="right"><em>
-(<a href="<%RT->Config->Get('WebPath')%>/Download/Tabular/User/<% $ids %>/Users.tsv">
+(<a href="<%RT->config->get('WebPath')%>/Download/Tabular/User/<% $ids %>/Users.tsv">
 <&|/l&>Download as a tab-delimited file</&>
 </a>)</em></div>
 % }
@@ -78,7 +78,7 @@
 <br /><br />
 % }
 
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html">
+<form method="post" action="<% RT->config->get('WebPath') %>/Admin/Users/index.html">
 % foreach my $field( qw(Format Rows Page Order order_by) ) {
 %     next unless defined $ARGS{ $field } && length $ARGS{ $field };
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
@@ -98,7 +98,7 @@ $users->{'find_disabled_rows'} = 1 if $FinddisabledUsers;
 if ( defined($UserString) && length $UserString ) {
     $caption = _("Users matching search criteria");
     if ( $UserField =~ /^CustomField-(\d+)/ ) {
-        $users->limit_CustomField(
+        $users->limit_custom_field(
             customfield => $1,
             operator => $UserOp,
             value => $UserString,

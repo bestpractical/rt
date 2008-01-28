@@ -190,7 +190,7 @@ Returns a hash of available rights for this object. The keys are the right names
 
 =cut
 
-sub AvailableRights {
+sub available_rights {
     my $self = shift;
     return($RIGHTS);
 }
@@ -203,10 +203,10 @@ Returns an array of all ActiveStatuses for this queue
 
 =cut
 
-sub ActiveStatusArray {
+sub active_status_array {
     my $self = shift;
-    if (RT->Config->Get('ActiveStatus')) {
-    	return (RT->Config->Get('ActiveStatus'))
+    if (RT->config->get('ActiveStatus')) {
+    	return (RT->config->get('ActiveStatus'))
     } else {
         Jifty->log->warn("RT::ActiveStatus undefined, falling back to deprecated defaults");
         return (@DEFAULT_ACTIVE_STATUS);
@@ -223,10 +223,10 @@ Returns an array of all InactiveStatuses for this queue
 
 =cut
 
-sub InactiveStatusArray {
+sub inactive_status_array {
     my $self = shift;
-    if (RT->Config->Get('InactiveStatus')) {
-    	return (RT->Config->Get('InactiveStatus'))
+    if (RT->config->get('InactiveStatus')) {
+    	return (RT->config->get('InactiveStatus'))
     } else {
         Jifty->log->warn("RT::InactiveStatus undefined, falling back to deprecated defaults");
         return (@DEFAULT_INACTIVE_STATUS);
@@ -243,9 +243,9 @@ Returns an array of all statuses for this queue
 
 =cut
 
-sub StatusArray {
+sub status_array {
     my $self = shift;
-    return ($self->ActiveStatusArray(), $self->InactiveStatusArray());
+    return ($self->active_status_array(), $self->inactive_status_array());
 }
 
 # }}}
@@ -259,11 +259,11 @@ Returns true if value is a valid status.  Otherwise, returns 0.
 
 =cut
 
-sub IsValidStatus {
+sub is_valid_status {
     my $self  = shift;
     my $value = shift;
 
-    my $retval = grep ( $_ eq $value, $self->StatusArray );
+    my $retval = grep ( $_ eq $value, $self->status_array );
     return ($retval);
 
 }
@@ -279,11 +279,11 @@ Returns true if value is a Active status.  Otherwise, returns 0
 
 =cut
 
-sub IsActiveStatus {
+sub is_active_status {
     my $self  = shift;
     my $value = shift;
 
-    my $retval = grep ( $_ eq $value, $self->ActiveStatusArray );
+    my $retval = grep ( $_ eq $value, $self->active_status_array );
     return ($retval);
 
 }
@@ -299,11 +299,11 @@ Returns true if value is a Inactive status.  Otherwise, returns 0
 
 =cut
 
-sub IsInactiveStatus {
+sub is_inactive_status {
     my $self  = shift;
     my $value = shift;
 
-    my $retval = grep ( $_ eq $value, $self->InactiveStatusArray );
+    my $retval = grep ( $_ eq $value, $self->inactive_status_array );
     return ($retval);
 
 }
@@ -368,7 +368,7 @@ sub create {
         return ( 0, _('Queue could not be Created') );
     }
 
-    my $create_ret = $self->_createQueueGroups();
+    my $create_ret = $self->create_queue_groups();
     unless ($create_ret) {
         Jifty->handle->rollback();
         return ( 0, _('Queue could not be Created') );
@@ -376,12 +376,12 @@ sub create {
     Jifty->handle->commit;
 
     if ( defined $args{'Sign'} ) {
-        my ($status, $msg) = $self->set_Sign( $args{'Sign'} );
+        my ($status, $msg) = $self->set_sign( $args{'Sign'} );
         Jifty->log->error("Couldn't set attribute 'Sign': $msg")
             unless $status;
     }
     if ( defined $args{'Encrypt'} ) {
-        my ($status, $msg) = $self->set_Encrypt( $args{'Encrypt'} );
+        my ($status, $msg) = $self->set_encrypt( $args{'Encrypt'} );
         Jifty->log->error("Couldn't set attribute 'Encrypt': $msg")
             unless $status;
     }
@@ -475,16 +475,16 @@ sub validate_name {
 
 =cut
 
-sub Sign {
+sub sign {
     my $self = shift;
     my $value = shift;
 
     return undef unless $self->current_user_has_right('SeeQueue');
     my $attr = $self->first_attribute('Sign') or return 0;
-    return $attr->Content;
+    return $attr->content;
 }
 
-sub set_Sign {
+sub set_sign {
     my $self = shift;
     my $value = shift;
 
@@ -501,16 +501,16 @@ sub set_Sign {
     return ($status, _('Signing disabled'));
 }
 
-sub Encrypt {
+sub encrypt {
     my $self = shift;
     my $value = shift;
 
     return undef unless $self->current_user_has_right('SeeQueue');
     my $attr = $self->first_attribute('Encrypt') or return 0;
-    return $attr->Content;
+    return $attr->content;
 }
 
-sub set_Encrypt {
+sub set_encrypt {
     my $self = shift;
     my $value = shift;
 
@@ -535,13 +535,13 @@ Returns an RT::Model::TemplateCollection object of all of this queue's templates
 
 =cut
 
-sub Templates {
+sub templates {
     my $self = shift;
 
     my $templates = RT::Model::TemplateCollection->new;
 
     if ( $self->current_user_has_right('ShowTemplate') ) {
-        $templates->limit_ToQueue( $self->id );
+        $templates->limit_to_queue( $self->id );
     }
 
     return ($templates);
@@ -559,7 +559,7 @@ Load the queue-specific custom field named name
 
 =cut
 
-sub CustomField {
+sub custom_field {
     my $self = shift;
     my $name = shift;
     my $cf = RT::Model::CustomField->new;
@@ -577,13 +577,13 @@ queue-specific B<ticket> custom fields.
 
 =cut
 
-sub TicketCustomFields {
+sub ticket_custom_fields {
     my $self = shift;
 
     my $cfs = RT::Model::CustomFieldCollection->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-	$cfs->limit_ToGlobalOrobject_id( $self->id );
-	$cfs->limit_ToLookupType( 'RT::Model::Queue-RT::Model::Ticket' );
+	$cfs->limit_to_global_orobject_id( $self->id );
+	$cfs->limit_to_lookup_type( 'RT::Model::Queue-RT::Model::Ticket' );
     }
     return ($cfs);
 }
@@ -599,13 +599,13 @@ queue-specific B<transaction> custom fields.
 
 =cut
 
-sub TicketTransactionCustomFields {
+sub ticket_transaction_custom_fields {
     my $self = shift;
 
     my $cfs = RT::Model::CustomFieldCollection->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-	$cfs->limit_ToGlobalOrobject_id( $self->id );
-	$cfs->limit_ToLookupType( 'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' );
+	$cfs->limit_to_global_orobject_id( $self->id );
+	$cfs->limit_to_lookup_type( 'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' );
     }
     return ($cfs);
 }
@@ -632,14 +632,14 @@ It will return true on success and undef on failure.
 =cut
 
 
-sub _createQueueGroups {
+sub create_queue_groups {
     my $self = shift;
 
     my @types = qw(Cc AdminCc Requestor Owner);
 
     foreach my $type (@types) {
         my $type_obj = RT::Model::Group->new;
-        my ($id, $msg) = $type_obj->createRoleGroup(Instance => $self->id, 
+        my ($id, $msg) = $type_obj->create_role_group(Instance => $self->id, 
                                                      Type => $type,
                                                      Domain => 'RT::Model::Queue-Role');
         unless ($id) {
@@ -673,7 +673,7 @@ Returns a tuple of (status/id, message).
 
 =cut
 
-sub AddWatcher {
+sub add_watcher {
     my $self = shift;
     my %args = (
         Type  => undef,
@@ -721,12 +721,12 @@ sub AddWatcher {
 
     # }}}
 
-    return ( $self->_AddWatcher(%args) );
+    return ( $self->_add_watcher(%args) );
 }
 
 #This contains the meat of AddWatcher. but can be called from a routine like
 # Create, which doesn't need the additional acl check
-sub _AddWatcher {
+sub _add_watcher {
     my $self = shift;
     my %args = (
         Type   => undef,
@@ -780,7 +780,7 @@ sub _AddWatcher {
 
 
     my $group = RT::Model::Group->new;
-    $group->loadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
+    $group->load_queue_role_group(Type => $args{'Type'}, Queue => $self->id);
     unless ($group->id) {
         return(0,_("Group not found"));
     }
@@ -842,7 +842,7 @@ sub delete_watcher {
     }
 
     my $group = RT::Model::Group->new;
-    $group->loadQueueRoleGroup( Type => $args{'Type'}, Queue => $self->id );
+    $group->load_queue_role_group( Type => $args{'Type'}, Queue => $self->id );
     unless ( $group->id ) {
         return ( 0, _("Group not found") );
     }
@@ -914,7 +914,7 @@ sub delete_watcher {
     return (
         1,
         _(  "%1 is no longer a %2 for this queue.",
-            $principal->Object->name,
+            $principal->object->name,
             $args{'Type'}
         )
     );
@@ -930,14 +930,14 @@ returns String: All queue AdminCc email addresses as a string
 
 =cut
 
-sub AdminCcAddresses {
+sub admin_cc_addresses {
     my $self = shift;
     
     unless ( $self->current_user_has_right('SeeQueue') ) {
         return undef;
     }   
     
-    return ( $self->AdminCc->member_emailsAsString )
+    return ( $self->admin_cc->member_emails_as_string )
     
 }   
 
@@ -951,14 +951,14 @@ returns String: All queue Ccs as a string of email addresses
 
 =cut
 
-sub CcAddresses {
+sub cc_addresses {
     my $self = shift;
 
     unless ( $self->current_user_has_right('SeeQueue') ) {
         return undef;
     }
 
-    return ( $self->Cc->member_emailsAsString);
+    return ( $self->cc->member_emailsAsString);
 
 }
 # }}}
@@ -974,12 +974,12 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 
 =cut
 
-sub Cc {
+sub cc {
     my $self = shift;
 
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-        $group->loadQueueRoleGroup(Type => 'Cc', Queue => $self->id);
+        $group->load_queue_role_group(Type => 'Cc', Queue => $self->id);
     }
     return ($group);
 
@@ -997,12 +997,12 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 
 =cut
 
-sub AdminCc {
+sub admin_cc {
     my $self = shift;
 
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-        $group->loadQueueRoleGroup(Type => 'AdminCc', Queue => $self->id);
+        $group->load_queue_role_group(Type => 'AdminCc', Queue => $self->id);
     }
     return ($group);
 
@@ -1028,7 +1028,7 @@ Returns true if that principal is a member of the group Type for this queue
 
 =cut
 
-sub IsWatcher {
+sub is_watcher {
     my $self = shift;
 
     my %args = ( Type  => 'Cc',
@@ -1038,7 +1038,7 @@ sub IsWatcher {
 
     # Load the relevant group. 
     my $group = RT::Model::Group->new;
-    $group->loadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->id);
+    $group->load_queue_role_group(Type => $args{'Type'}, Queue => $self->id);
     # Ask if it has the member in question
 
     my $principal = RT::Model::Principal->new;
@@ -1063,11 +1063,11 @@ Returns true if the principal is a requestor of the current queue.
 
 =cut
 
-sub IsCc {
+sub is_cc {
     my $self = shift;
     my $cc   = shift;
 
-    return ( $self->IsWatcher( Type => 'Cc', principal_id => $cc ) );
+    return ( $self->is_watcher( Type => 'Cc', principal_id => $cc ) );
 
 }
 
@@ -1082,11 +1082,11 @@ Returns true if the principal is a requestor of the current queue.
 
 =cut
 
-sub IsAdminCc {
+sub is_admin_cc {
     my $self   = shift;
     my $person = shift;
 
-    return ( $self->IsWatcher( Type => 'AdminCc', principal_id => $person ) );
+    return ( $self->is_watcher( Type => 'AdminCc', principal_id => $person ) );
 
 }
 

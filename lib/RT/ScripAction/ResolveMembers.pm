@@ -60,7 +60,7 @@ use vars qw/@ISA/;
 #What does this type of Action does
 
 # {{{ sub Describe 
-sub Describe  {
+sub describe {
   my $self = shift;
   return _("%1 will resolve all members of a resolved group ticket.", ref $self);
 }
@@ -83,12 +83,12 @@ sub commit {
 
     while (my $Link=$Links->next()) {
 	# Todo: Try to deal with remote URIs as well
-	next unless $Link->base_uri->IsLocal;
+	next unless $Link->base_uri->is_local;
 	my $base=RT::Model::Ticket->new($self->ticket_obj->current_user);
 	# Todo: Only work if Base is a plain ticket num:
 	$base->load($Link->Base);
 	# I'm afraid this might be a major bottleneck if ResolveGroupTicket is on.
-        $base->Resolve;
+        $base->resolve;
     }
 }
 
@@ -96,7 +96,7 @@ sub commit {
 # Applicability checked in Commit.
 
 # {{{ sub IsApplicable 
-sub IsApplicable  {
+sub is_applicable {
   my $self = shift;
   1;  
   return 1;

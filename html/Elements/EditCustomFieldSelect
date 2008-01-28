@@ -53,7 +53,7 @@
 %       my $id = $namePrefix . $CustomField->id;
 %       my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, CategoryRef => \@category);
 %       if (@category) {
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/cascaded.js"></script>
+<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/cascaded.js"></script>
 %#      XXX - Hide this select from w3m?
       <select onchange="filter_cascade('<% $id %>-Values', this.value)" name="<% $id %>-Category">
         <option value="" <% !$selected && 'selected' %>><&|/l&>-</&></option>
@@ -84,11 +84,11 @@ $Rows => undef
 <%METHOD options>
 % @Default = grep defined && length, @Default;
 % my $selected;
-% my $CFVs = $CustomField->Values;
+% my $CFVs = $CustomField->values;
 % my @levels;
 % while ( my $value = $CFVs->next ) {
 %       my $name = $value->name;
-%       my $category = $value->Category || '';
+%       my $category = $value->category || '';
 %       my $level = (split /:/, $category, 2)[0] || '';
 %       while (@levels) {
 %           if ($levels[-1] eq $level) {
@@ -108,7 +108,7 @@ $Rows => undef
 %       }
         <option value="<% $name %>"
 %       if ( ( grep $_ eq $name, @Default )
-%            || ( $values && $values->HasEntry( $name ) ) )
+%            || ( $values && $values->has_entry( $name ) ) )
 %       {
 %           $$SelectedRef = 1;
             selected

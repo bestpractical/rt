@@ -28,19 +28,19 @@ isa_ok( $cf, 'RT::Model::CustomField' );
 {
     my ($cfid) = $cf->create( %arg );
     ok( $cfid, "Created cf" );
-    is( $cf->ValuesClass, VALUES_CLASS, "right values class" );
-    ok( $cf->IsExternalValues, "custom field has external values" );
+    is( $cf->values_class, VALUES_CLASS, "right values class" );
+    ok( $cf->is_external_values, "custom field has external values" );
 }
 
 {
     # create at least on group for the tests
     my $group = RT::Model::Group->new(current_user => RT->system_user );
-    my ($ret, $msg) = $group->create_userDefinedGroup( name => $q->name );
+    my ($ret, $msg) = $group->create_user_defined_group( name => $q->name );
     ok $ret, 'Created group' or diag "error: $msg";
 }
 
 {
-    my $values = $cf->Values;
+    my $values = $cf->values;
     isa_ok( $values, VALUES_CLASS );
     ok( $values->count, "we have values" );
     my ($failure, $count) = (0, 0);

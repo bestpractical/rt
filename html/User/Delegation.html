@@ -87,17 +87,17 @@ foreach $arg (keys %ARGS) {
         push (@results, _('Right not found'));
         next;
     }
-    my ($delid, $delmsg) = $ace->Delegate(principal_id => $principal);
+    my ($delid, $delmsg) = $ace->delegate(principal_id => $principal);
     push (@results, $delmsg);
 }
 
 my $personalgroups = RT::Model::GroupCollection->new();
-$personalgroups->limit_ToPersonalGroupsFor(Jifty->web->current_user->id);
+$personalgroups->limit_to_personal_groups_for(Jifty->web->current_user->id);
 
 my $objects;
 my $acl = RT::Model::ACECollection->new();
-$acl->ExcludeDelegatedRights();
-$acl->limit_ToPrincipal(Id => Jifty->web->current_user->id, 
+$acl->exclude_delegated_rights();
+$acl->limit_to_principal(Id => Jifty->web->current_user->id, 
                        IncludeGroupMembership => 1
                        );
 

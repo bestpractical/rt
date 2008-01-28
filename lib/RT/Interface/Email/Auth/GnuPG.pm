@@ -62,12 +62,12 @@ you care about and specify the following in your SiteConfig.pm
 
 =cut
 
-sub ApplyBeforeDecode { return 1 }
+sub apply_before_decode { return 1 }
 
 use RT::Crypt::GnuPG;
 use RT::EmailParser ();
 
-sub GetCurrentUser {
+sub get_current_user {
     my %args = (
         Message       => undef,
         RawMessageRef => undef,
@@ -133,7 +133,7 @@ sub GetCurrentUser {
     return 1;
 }
 
-sub HandleErrors {
+sub handle_errors {
     my %args = (
         Message => undef,
         Result => [],
@@ -161,7 +161,7 @@ sub HandleErrors {
     return $reject;
 }
 
-sub CheckNoprivate_key {
+sub check_noprivate_key {
     my %args = (Message => undef, Status => [], @_ );
     my @status = @{ $args{'Status'} };
 
@@ -192,7 +192,7 @@ sub CheckNoprivate_key {
     return 0;
 }
 
-sub CheckBadData {
+sub check_bad_data {
     my %args = (Message => undef, Status => [], @_ );
     my @bad_data_messages = 
         map $_->{'Message'},

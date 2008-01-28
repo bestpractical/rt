@@ -74,7 +74,7 @@ on the root node passed to it.)
 
 =cut
 
-sub TraversePrePost {
+sub traverse_pre_post {
    my ($self, $prefunc, $postfunc) = @_;
 
    # XXX: if pre or post action changes siblings (delete or adds)
@@ -82,7 +82,7 @@ sub TraversePrePost {
    $prefunc->($self) if $prefunc;
 
    foreach my $child ($self->getAllChildren()) { 
-           $child->TraversePrePost($prefunc, $postfunc);
+           $child->traverse_pre_post($prefunc, $postfunc);
    }
    
    $postfunc->($self) if $postfunc;
@@ -95,13 +95,13 @@ the key (even if it's "Queue != 'Foo'"), and values all 1.
 
 =cut
 
-sub GetReferencedQueues {
+sub get_referenced_queues {
     my $self = shift;
 
     my $queues = {};
 
     $self->traverse(
-        sub {
+        sub  {
             my $node = shift;
 
             return if $node->isRoot;
@@ -132,11 +132,11 @@ level of indentation for the option.
 
 =cut 
 
-sub GetQueryAndOptionList {
+sub get_query_and_option_list {
     my $self           = shift;
     my $selected_nodes = shift;
 
-    my $list = $self->__LinearizeTree;
+    my $list = $self->__linearize_tree;
     foreach my $e( @$list ) {
         $e->{'DEPTH'}    = $e->{'NODE'}->getDepth;
         $e->{'SELECTED'} = (grep $_ == $e->{'NODE'}, @$selected_nodes)? 'selected' : '';
@@ -152,12 +152,12 @@ or parenthesizations with no children, get rid of them.
 
 =cut
 
-sub PruneChildlessAggregators {
+sub prune_childless_aggregators {
     my $self = shift;
 
-    $self->TraversePrePost(
+    $self->traverse_pre_post(
         undef,
-        sub {
+        sub  {
             my $node = shift;
             return unless $node->isLeaf;
 
@@ -181,17 +181,17 @@ In fact, it's all of them but the root and its child.
 
 =cut
 
-sub GetDisplayedNodes {
-    return map $_->{NODE}, @{ (shift)->__LinearizeTree };
+sub get_displayed_nodes {
+    return map $_->{NODE}, @{ (shift)->__linearize_tree };
 }
 
 
-sub __LinearizeTree {
+sub __linearize_tree {
     my $self = shift;
 
     my ($list, $i) = ([], 0);
 
-    $self->TraversePrePost( sub {
+    $self->traverse_pre_post( sub  {
         my $node = shift;
         return if $node->isRoot;
 
@@ -219,7 +219,7 @@ sub __LinearizeTree {
         };
 
         $i++;
-    }, sub {
+    }, sub  {
         my $node = shift;
         return if $node->isRoot;
         return if $node->isLeaf;
@@ -229,7 +229,7 @@ sub __LinearizeTree {
     return $list;
 }
 
-sub ParseSQL {
+sub parse_sql {
     my $self = shift;
     my %args = (
         Query => '',
@@ -245,12 +245,12 @@ sub ParseSQL {
     my $node =  $self;
 
     my %callback;
-    $callback{'open_paren'} = sub {
+    $callback{'open_paren'} = sub  {
         $node = __PACKAGE__->new( 'AND', $node );
     };
-    $callback{'close_paren'} = sub { $node = $node->getParent };
-    $callback{'entry_aggregator'} = sub { $node->setNodeValue( $_[0] ) };
-    $callback{'Condition'} = sub {
+    $callback{'close_paren'} = sub  { $node = $node->getParent };
+    $callback{'entry_aggregator'} = sub  { $node->setNodeValue( $_[0] ) };
+    $callback{'Condition'} = sub  {
         my ($key, $op, $value) = @_;
 
         my ($main_key) = split /[.]/, $key;
@@ -270,7 +270,7 @@ sub ParseSQL {
         my $clause = { Key => $key, Op => $op, Value => $value };
         $node->addChild( __PACKAGE__->new( $clause ) );
     };
-    $callback{'Error'} = sub { push @results, @_ };
+    $callback{'Error'} = sub  { push @results, @_ };
 
     require RT::SQL;
     RT::SQL::Parse($string, \%callback);

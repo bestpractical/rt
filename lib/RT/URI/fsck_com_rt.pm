@@ -65,10 +65,10 @@ Returns the prefix for a local URI.
 
 =cut
 
-sub LocalURIPrefix {
+sub local_uri_prefix {
     my $self = shift;
     
-    my $prefix = $self->Scheme. "://". RT->Config->Get('organization');
+    my $prefix = $self->Scheme. "://". RT->config->get('organization');
 
     return ($prefix);
 }
@@ -79,7 +79,7 @@ sub LocalURIPrefix {
 
 sub object_type {
     my $self = shift;
-    my $object = shift || $self->Object;
+    my $object = shift || $self->object;
 
     my $type = 'ticket';
     if (ref($object) && (ref($object) ne 'RT::Model::Ticket')) {
@@ -99,10 +99,10 @@ Returns the RT URI for a local RT::Record object
 
 =cut
 
-sub URIForObject {
+sub uri_for_object {
     my $self = shift;
     my $obj = shift;
-    return ($self->LocalURIPrefix ."/". $self->object_type($obj) ."/". $obj->id);
+    return ($self->local_uri_prefix ."/". $self->object_type($obj) ."/". $obj->id);
 }
 
 
@@ -113,14 +113,14 @@ When handed an fsck.com-rt: URI, figures out things like whether its a local rec
 =cut
 
 
-sub ParseURI {
+sub parse_uri {
     my $self = shift;
     my $uri  = shift;
 
     if ( $uri =~ /^\d+$/ ) {
         my $ticket = RT::Model::Ticket->new;
         $ticket->load( $uri );
-        $self->{'uri'} = $ticket->URI;
+        $self->{'uri'} = $ticket->uri;
         $self->{'object'} = $ticket;
         return ($ticket->id);
     }
@@ -129,8 +129,8 @@ sub ParseURI {
     }
 
     #If it's a local URI, load the ticket object and return its URI
-    if ( $self->IsLocal ) {
-        my $local_uri_prefix = $self->LocalURIPrefix;
+    if ( $self->is_local ) {
+        my $local_uri_prefix = $self->local_uri_prefix;
         if ( $self->{'uri'} =~ /^\Q$local_uri_prefix\E\/(.*?)\/(\d+)$/i ) {
             my $type = $1;
             my $id   = $2;
@@ -163,9 +163,9 @@ Returns undef otherwise.
 
 =cut
 
-sub IsLocal {
+sub is_local {
 	my $self = shift;
-    my $local_uri_prefix = $self->LocalURIPrefix;
+    my $local_uri_prefix = $self->local_uri_prefix;
     if ( $self->{'uri'} =~ /^\Q$local_uri_prefix/i ) {
         return 1;
     }
@@ -182,7 +182,7 @@ Returns the object for this URI, if it's local. Otherwise returns undef.
 
 =cut
 
-sub Object {
+sub object {
     my $self = shift;
     return ($self->{'object'});
 
@@ -195,7 +195,7 @@ Return the URI scheme for RT records
 =cut
 
 
-sub Scheme {
+sub scheme {
     my $self = shift;
 	return "fsck.com-rt";
 }
@@ -208,10 +208,10 @@ Otherwise, return its URI
 =cut
 
 
-sub HREF {
+sub href {
     my $self = shift;
-    if ($self->IsLocal && $self->Object && ($self->object_type eq 'ticket')) {
-        return ( RT->Config->Get('WebURL') . "Ticket/Display.html?id=".$self->Object->id);
+    if ($self->is_local && $self->object && ($self->object_type eq 'ticket')) {
+        return ( RT->config->get('WebURL') . "Ticket/Display.html?id=".$self->object->id);
     }   
     else {
         return ($self->URI);
@@ -224,13 +224,13 @@ Returns either a localized string 'ticket #23' or the full URI if the object is 
 
 =cut
 
-sub AsString {
+sub as_string {
     my $self = shift;
-    if ($self->IsLocal && $self->Object) {
-	    return _("%1 #%2", $self->object_type, $self->Object->id);
+    if ($self->is_local && $self->Object) {
+	    return _("%1 #%2", $self->object_type, $self->object->id);
     }
     else {
-	    return $self->URI;
+	    return $self->uri;
     }
 }
 

@@ -107,9 +107,9 @@ sub create {
                  @_ );
 
     my $base = RT::URI->new;
-    $base->FromURI( $args{'Base'} );
+    $base->from_uri( $args{'Base'} );
 
-    unless ( $base->Resolver && $base->Scheme ) {
+    unless ( $base->resolver && $base->scheme ) {
 	my $msg = _("Couldn't resolve base '%1' into a URI.", 
 			     $args{'Base'});
         Jifty->log->warn( "$self $msg\n" );
@@ -122,9 +122,9 @@ sub create {
     }
 
     my $target = RT::URI->new;
-    $target->FromURI( $args{'Target'} );
+    $target->from_uri( $args{'Target'} );
 
-    unless ( $target->Resolver ) {
+    unless ( $target->resolver ) {
 	my $msg = _("Couldn't resolve target '%1' into a URI.", 
 			     $args{'Target'});
         Jifty->log->warn( "$self $msg\n" );
@@ -142,30 +142,30 @@ sub create {
 
 
 
-    if ( $base->IsLocal ) {
-        unless (UNIVERSAL::can($base->Object, 'id')) {
+    if ( $base->is_local ) {
+        unless (UNIVERSAL::can($base->object, 'id')) {
             return (undef, _("%1 appears to be a local object, but can't be found in the database", $args{'Base'}));
         
         }
-        $base_id = $base->Object->id;
+        $base_id = $base->object->id;
     }
-    if ( $target->IsLocal ) {
-        unless (UNIVERSAL::can($target->Object, 'id')) {
+    if ( $target->is_local ) {
+        unless (UNIVERSAL::can($target->object, 'id')) {
             return (undef, _("%1 appears to be a local object, but can't be found in the database", $args{'Target'}));
         
         }
-        $target_id = $target->Object->id;
+        $target_id = $target->object->id;
     }
 
     # {{{ We don't want references to ourself
-    if ( $base->URI eq $target->URI ) {
+    if ( $base->uri eq $target->uri ) {
         return ( 0, _("Can't link a ticket to itself") );
     }
 
     # }}}
 
-    my ( $id, $msg ) = $self->SUPER::create( Base        => $base->URI,
-                                             Target      => $target->URI,
+    my ( $id, $msg ) = $self->SUPER::create( Base        => $base->uri,
+                                             Target      => $target->uri,
                                              LocalBase   => $base_id,
                                              LocalTarget => $target_id,
                                              Type        => $args{'Type'} );
@@ -188,7 +188,7 @@ sub create {
 
 =cut
 
-sub loadByParams {
+sub load_by_params {
     my $self = shift;
     my %args = ( Base   => undef,
                  Target => undef,
@@ -196,19 +196,19 @@ sub loadByParams {
                  @_ );
 
     my $base = RT::URI->new;
-    $base->FromURI( $args{'Base'} );
+    $base->from_uri( $args{'Base'} );
 
     my $target = RT::URI->new;
-    $target->FromURI( $args{'Target'} );
+    $target->from_uri( $args{'Target'} );
     
-    unless ($base->Resolver && $target->Resolver) {
+    unless ($base->resolver && $target->Resolver) {
         return ( 0, _("Couldn't load link") );
     }
 
 
-    my ( $id, $msg ) = $self->load_by_cols( Base   => $base->URI,
+    my ( $id, $msg ) = $self->load_by_cols( Base   => $base->uri,
                                           Type   => $args{'Type'},
-                                          Target => $target->URI );
+                                          Target => $target->uri );
 
     unless ($id) {
         return ( 0, _("Couldn't load link") );
@@ -258,7 +258,7 @@ returns an RT::URI object for the "Target" of this link.
 sub target_uri {
     my $self = shift;
     my $URI = RT::URI->new;
-    $URI->FromURI($self->Target);
+    $URI->from_uri($self->Target);
     return ($URI);
 }
 
@@ -269,9 +269,9 @@ sub target_uri {
 
 =cut
 
-sub TargetObj {
+sub target_obj {
     my $self = shift;
-    return $self->target_uri->Object;
+    return $self->target_uri->object;
 }
 # }}}
 
@@ -286,7 +286,7 @@ returns an RT::URI object for the "Base" of this link.
 sub base_uri {
     my $self = shift;
     my $URI = RT::URI->new;
-    $URI->FromURI($self->Base);
+    $URI->from_uri($self->Base);
     return ($URI);
 }
 
@@ -299,7 +299,7 @@ sub base_uri {
 
 sub base_obj {
   my $self = shift;
-  return $self->base_uri->Object;
+  return $self->base_uri->object;
 }
 # }}}
 

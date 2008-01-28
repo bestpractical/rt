@@ -69,7 +69,7 @@ use base qw(RT::Search::Generic);
 
 
 # {{{ sub Describe 
-sub Describe  {
+sub describe {
   my $self = shift;
   return (_("No description for %1", ref $self));
 }
@@ -79,10 +79,10 @@ sub Describe  {
 sub prepare  {
   my $self = shift;
 
-  $self->TicketsObj->limit_Queue(value => $self->Argument);
+  $self->tickets_obj->limit_queue(value => $self->Argument);
 
-  foreach my $status (RT::Model::Queue->ActiveStatusArray()) {
-        $self->TicketsObj->limit_Status(value => $status);
+  foreach my $status (RT::Model::Queue->active_status_array()) {
+        $self->tickets_obj->limit_status(value => $status);
   }
 
   return(1);

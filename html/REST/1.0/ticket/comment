@@ -166,7 +166,7 @@ my ($n, $s) = $ticket->$action(MIMEObj => $ent,
                                TimeTaken => $k->{time_worked} || 0);
 $output = $s;
 if ($k->{Status}) {
-   my  ($status_n, $status_s) = $ticket->set_Status($k->{'Status'} );   
+   my  ($status_n, $status_s) = $ticket->set_status($k->{'Status'} );   
   $output .= "\n".$status_s;
 }
 

@@ -14,12 +14,12 @@ plan tests => 22;
 {
 	create_savepoint('clean');
 	my $pgroup = RT::Model::Group->new(current_user => RT->system_user );
-	my ($pgid) = $pgroup->create_userDefinedGroup( name => 'Parent group' );
+	my ($pgid) = $pgroup->create_user_defined_group( name => 'Parent group' );
 	ok( $pgid, "Created parent group" );
 	is( $pgroup->id, $pgid, "id is correct" );
 	
 	my $cgroup = RT::Model::Group->new(current_user => RT->system_user );
-	my ($cgid) = $cgroup->create_userDefinedGroup( name => 'Child group' );
+	my ($cgid) = $cgroup->create_user_defined_group( name => 'Child group' );
 	ok( $cgid, "Created child group" );
 	is( $cgroup->id, $cgid, "id is correct" );
 	
@@ -43,16 +43,16 @@ plan tests => 22;
 	is( $members->count, 1, "find membership record" );
 	
 	my $shredder = shredder_new();
-	$shredder->PutObjects( Objects => $members );
-	$shredder->WipeoutAll();
+	$shredder->put_objects( Objects => $members );
+	$shredder->wipeout_all();
 	cmp_deeply( dump_current_and_savepoint('buadd'), "current DB equal to savepoint");
 	
-	$shredder->PutObjects( Objects => $user );
-	$shredder->WipeoutAll();
+	$shredder->put_objects( Objects => $user );
+	$shredder->wipeout_all();
 	cmp_deeply( dump_current_and_savepoint('bucreate'), "current DB equal to savepoint");
 	
-	$shredder->PutObjects( Objects => [$pgroup, $cgroup] );
-	$shredder->WipeoutAll();
+	$shredder->put_objects( Objects => [$pgroup, $cgroup] );
+	$shredder->wipeout_all();
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
@@ -80,20 +80,20 @@ plan tests => 22;
 	my $status;
 	($status, $msg) = $ticket->load( $id );
 	ok( $id, "load ticket" ) or diag( "error: $msg" );
-	($status, $msg) = $ticket->set_Owner( $user->id );
+	($status, $msg) = $ticket->set_owner( $user->id );
 	ok( $status, "owner successfuly set") or diag( "error: $msg" );
 	is( $ticket->Owner, $user->id, "owner successfuly set") or diag( "error: $msg" );
 
-	my $member = $ticket->OwnerGroup->MembersObj->first;
+	my $member = $ticket->owner_group->members_obj->first;
 	my $shredder = shredder_new();
-	$shredder->PutObjects( Objects => $member );
-	$shredder->WipeoutAll();
+	$shredder->put_objects( Objects => $member );
+	$shredder->wipeout_all();
 
 	$ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 	($status, $msg) = $ticket->load( $id );
 	ok( $id, "load ticket" ) or diag( "error: $msg" );
 	is( $ticket->Owner, RT->nobody->id, "owner switched back to nobody" );
-	is( $ticket->OwnerGroup->MembersObj->first->MemberId, RT->nobody->id, "and owner role group member is nobody");
+	is( $ticket->owner_group->members_obj->first->MemberId, RT->nobody->id, "and owner role group member is nobody");
 }
 
 

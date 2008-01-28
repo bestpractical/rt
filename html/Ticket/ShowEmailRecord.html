@@ -50,26 +50,26 @@ $Attachment => undef
 $Transaction => undef
 </%ARGS>
 <%INIT>
-my $show_content = sub {
+my $show_content = sub  {
     my $attach = shift;
-    if ( $attach->ContentType =~ m{^(?:text|message)/}i ) {
-        $m->out( $m->interp->apply_escapes( $attach->Content, 'h' ) );
+    if ( $attach->content_type =~ m{^(?:text|message)/}i ) {
+        $m->out( $m->interp->apply_escapes( $attach->content, 'h' ) );
         return;
     }
-    my $href = RT->Config->Get('WebPath') .'/Ticket/Attachment/'
+    my $href = RT->config->get('WebPath') .'/Ticket/Attachment/'
         . $attach->TransactionId .'/'. $attach->id .'/'
-        . $m->interp->apply_escapes( $attach->Filename, 'u' );
+        . $m->interp->apply_escapes( $attach->filename, 'u' );
     $m->out( '<a href="'. $href  .'">'. _('download') .'</a>' );
 };
 
 my $show;
-$show = sub {
+$show = sub  {
     my $attach = shift;
     $m->out( '<pre style="padding: 2em;">' );
-    $m->out( $m->interp->apply_escapes( $attach->Headers, 'h' ) );
+    $m->out( $m->interp->apply_escapes( $attach->headers, 'h' ) );
     $m->out( "\n\n" );
-    if ( $attach->ContentType =~ m{^multipart/}i ) {
-        my $children = $attach->Children;
+    if ( $attach->content_type =~ m{^multipart/}i ) {
+        my $children = $attach->children;
         while ( my $child = $children->next ) {
             $show->( $child );
         }

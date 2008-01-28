@@ -62,7 +62,7 @@ if (UNIVERSAL::can($r, 'uri') and $r->uri =~ m{.*/(.*)}) {
 
 my $form_action = defined $goto             ? $goto
                 : defined $req_uri          ? $req_uri
-                :                             RT->Config->Get('WebPath')
+                :                             RT->config->get('WebPath')
                 ;
 </%INIT>
 
@@ -86,7 +86,7 @@ my $form_action = defined $goto             ? $goto
 <div id="login-box">
 <&| /Widgets/TitleBox, title => _('Login'), titleright => $RT::VERSION, hideable => 0 &>
 
-% unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
+% unless (RT->config->get('WebExternalAuth') and !RT->config->get('WebFallbackToInternalAuth')) {
 <form id="login" name="login" method="post" action="<% $form_action %>">
 
 <div class="input-row">

@@ -48,7 +48,7 @@
 <%PERL>
 my $rows = 10;
 my $has_right_adminusers = Jifty->web->current_user->has_right(Object => RT->system, Right => 'AdminUsers');
-my $people = $Ticket->Requestors->UserMembersObj;
+my $people = $Ticket->requestors->user_members_obj;
 while ( my $requestor = $people->next ) {
     next if $requestor->privileged;
     my $name = $m->scomp('/Elements/ShowUser', User => $requestor);
@@ -60,7 +60,7 @@ while ( my $requestor = $people->next ) {
 </%PERL>
 
 <&| /Widgets/TitleBox,
-    title_href => $has_right_adminusers? RT->Config->Get('WebPath')."/Admin/Users/Modify.html?id=".$requestor->id: undef,
+    title_href => $has_right_adminusers? RT->config->get('WebPath')."/Admin/Users/Modify.html?id=".$requestor->id: undef,
     title_raw => _("More about %1", $name),
 &>
 
@@ -73,7 +73,7 @@ while ( my $requestor = $people->next ) {
 <&|/l, $rows &>This user's %1 highest priority tickets</&>:<br />
 <ul>
 %while (my $w=$tickets->next) {
-<li><a href="<%RT->Config->Get('WebPath')%><%$DisplayPath%>?id=<%$w->id%>"><%$w->id%>: <%$w->Subject%></a> (<%$w->Status%>)
+<li><a href="<%RT->config->get('WebPath')%><%$DisplayPath%>?id=<%$w->id%>"><%$w->id%>: <%$w->Subject%></a> (<%$w->Status%>)
 %}
 </ul>
 

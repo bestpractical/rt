@@ -72,10 +72,10 @@ html>body #nav li ul {
     background-image: none;
 }
 
-#nav ul { background: #069 url(<%RT->Config->Get('WebImagesURL')%>/css/ctr.gif) no-repeat top right; }
-#nav ul div { background: transparent url(<%RT->Config->Get('WebImagesURL')%>/css/cbr.gif) no-repeat bottom right; }
-#nav ul.odd { background: #08c url(<%RT->Config->Get('WebImagesURL')%>/css/ctr.gif) no-repeat top right; }
-#nav ul.odd div { background: transparent url(<%RT->Config->Get('WebImagesURL')%>/css/cbr.gif) no-repeat bottom right; }
+#nav ul { background: #069 url(<%RT->config->get('WebImagesURL')%>/css/ctr.gif) no-repeat top right; }
+#nav ul div { background: transparent url(<%RT->config->get('WebImagesURL')%>/css/cbr.gif) no-repeat bottom right; }
+#nav ul.odd { background: #08c url(<%RT->config->get('WebImagesURL')%>/css/ctr.gif) no-repeat top right; }
+#nav ul.odd div { background: transparent url(<%RT->config->get('WebImagesURL')%>/css/cbr.gif) no-repeat bottom right; }
 
 #nav ul div {
     display: block;

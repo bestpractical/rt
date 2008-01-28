@@ -240,7 +240,7 @@ Retuns an RT::ScripAction object with this Scrip\'s Action
 
 =cut
 
-sub ActionObj {
+sub action_obj {
     my $self = shift;
 
     unless ( defined $self->{'ScripActionObj'} ) {
@@ -265,7 +265,7 @@ Retuns an L<RT::Model::ScripCondition> object with this Scrip's IsApplicable
 
 =cut
 
-sub ConditionObj {
+sub condition_obj {
     my $self = shift;
 
     my $res = RT::Model::ScripCondition->new;
@@ -317,7 +317,7 @@ should be loaded by the SuperUser role
 # XXX TODO : This code appears to be obsoleted in favor of similar code in Scrips->Apply.
 # Why is this here? Is it still called?
 
-sub Apply {
+sub apply {
     my $self = shift;
     my %args = ( ticket_obj      => undef,
                  transaction_obj => undef,
@@ -325,7 +325,7 @@ sub Apply {
 
     Jifty->log->debug("Now applying scrip ".$self->id . " for transaction ".$args{'transaction_obj'}->id);
 
-    my $Applicabletransaction_obj = $self->IsApplicable( ticket_obj      => $args{'ticket_obj'},
+    my $Applicabletransaction_obj = $self->is_applicable( ticket_obj      => $args{'ticket_obj'},
                                                         transaction_obj => $args{'transaction_obj'} );
     unless ( $Applicabletransaction_obj ) {
         return undef;
@@ -375,7 +375,7 @@ that is applicable.
 
 =cut
 
-sub IsApplicable {
+sub is_applicable {
     my $self = shift;
     my %args = ( ticket_obj      => undef,
                  transaction_obj => undef,
@@ -398,19 +398,19 @@ sub IsApplicable {
 	    Jifty->log->error( "Unknown Scrip stage:" . $self->Stage );
 	    return (undef);
 	}
-	my $ConditionObj = $self->ConditionObj;
+	my $ConditionObj = $self->condition_obj;
 	foreach my $transaction_obj ( @Transactions ) {
 	    # in TxnBatch stage we can select scrips that are not applicable to all txns
-	    my $txn_type = $transaction_obj->Type;
-	    next unless( $ConditionObj->ApplicableTransTypes =~ /(?:^|,)(?:Any|\Q$txn_type\E)(?:,|$)/i );
+	    my $txn_type = $transaction_obj->type;
+	    next unless( $ConditionObj->applicable_trans_types =~ /(?:^|,)(?:Any|\Q$txn_type\E)(?:,|$)/i );
 	    # Load the scrip's Condition object
-	    $ConditionObj->loadCondition(
+	    $ConditionObj->load_condition(
 		scrip_obj       => $self,
 		ticket_obj      => $args{'ticket_obj'},
 		transaction_obj => $transaction_obj,
 	    );
 
-            if ( $ConditionObj->IsApplicable() ) {
+            if ( $ConditionObj->is_applicable() ) {
 	        # We found an application Transaction -- return it
                 $return = $transaction_obj;
                 last;
@@ -445,14 +445,14 @@ sub prepare {
 
     my $return;
     eval {
-        $self->ActionObj->loadAction( scrip_obj       => $self,
+        $self->action_obj->load_action( scrip_obj       => $self,
                                       ticket_obj      => $args{'ticket_obj'},
                                       transaction_obj => $args{'transaction_obj'},
         );
-        $return = $self->ActionObj->prepare();
+        $return = $self->action_obj->prepare();
     };
     if (my $err = $@) {
-        Jifty->log->error( "Scrip prepare " . $self->id . " died. - " . $err ." ".$self->ActionObj->ExecModule);
+        Jifty->log->error( "Scrip prepare " . $self->id . " died. - " . $err ." ".$self->action_obj->ExecModule);
         return (undef);
     }
         return ($return);
@@ -476,7 +476,7 @@ sub commit {
 
     my $return;
     eval {
-        $return = $self->ActionObj->commit();
+        $return = $self->action_obj->commit();
     };
 
 #Searchbuilder caching isn't perfectly coherent. got to reload the ticket object, since it

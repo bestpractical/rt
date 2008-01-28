@@ -54,7 +54,7 @@ $Attr => undef
 <%ONCE>
 our ( $TICKET_COLUMN_MAP );
 
-my $LinkCallback = sub {
+my $LinkCallback = sub  {
     my $method = shift;
 
     my $mode            = $RT::Model::Ticket::LINKTYPEMAP{$method}{Mode};
@@ -63,12 +63,12 @@ my $LinkCallback = sub {
     my $mode_uri        = $mode.'URI';
     my $local_type      = 'Local'.$mode;
 
-    return sub {
+    return sub  {
         map {
             \'<a href="',
-            $_->$mode_uri->Resolver->HREF,
+            $_->$mode_uri->resolver->href,
             \'">',
-            ( $_->$mode_uri->IsLocal ? $_->$local_type : $_->$mode ),
+            ( $_->$mode_uri->is_local ? $_->$local_type : $_->$mode ),
             \'</a><br />',
         } @{ $_[0]->Links($other_mode,$type)->items_array_ref }
     }
@@ -78,25 +78,25 @@ $TICKET_COLUMN_MAP = {
     Queuename => {
         attribute => 'Queue',
         title     => 'Queue',
-        value     => sub { return $_[0]->queue_obj->name }
+        value     => sub  { return $_[0]->queue_obj->name }
     },
     Ownername => {
         title     => 'Owner',
         attribute => 'Owner',
-        value     => sub { return $_[0]->OwnerObj->name }
+        value     => sub  { return $_[0]->owner_obj->name }
     },
     Status => {
         attribute => 'Status',
-        value     => sub { return _($_[0]->Status) }
+        value     => sub  { return _($_[0]->Status) }
     },
     Subject => {
         attribute => 'Subject',
-        value => sub { return $_[0]->Subject || "(" . _('No subject') . ")" }
+        value => sub  { return $_[0]->subject || "(" . _('No subject') . ")" }
     },
     ExtendedStatus => {
         title     => 'Status',
         attribute => 'Status',
-        value     => sub {
+        value     => sub  {
             my $Ticket = shift;
 
             if ( $Ticket->has_unresolved_dependencies ) {
@@ -117,110 +117,110 @@ $TICKET_COLUMN_MAP = {
     },
     Priority => {
         attribute => 'Priority',
-        value     => sub { return $_[0]->Priority }
+        value     => sub  { return $_[0]->Priority }
     },
     initial_priority => {
         attribute => 'initial_priority',
         name => 'Initial Priority',
-        value     => sub { return $_[0]->initial_priority }
+        value     => sub  { return $_[0]->initial_priority }
     },
     final_priority => {
         attribute => 'final_priority',
         name => 'Final Priority',
-        value     => sub { return $_[0]->final_priority }
+        value     => sub  { return $_[0]->final_priority }
     },
     EffectiveId => {
         attribute => 'EffectiveId',
-        value     => sub { return $_[0]->EffectiveId }
+        value     => sub  { return $_[0]->EffectiveId }
     },
     Type => {
         attribute => 'Type',
-        value     => sub { return $_[0]->Type }
+        value     => sub  { return $_[0]->type }
     },
     time_worked => {
         attribute => 'time_worked',
         title => 'Time Worked',
-        value     => sub { return $_[0]->time_worked }
+        value     => sub  { return $_[0]->time_worked }
     },
     time_left => {
         attribute => 'time_left',
         title     => 'Time Left',
-        value     => sub { return $_[0]->time_left }
+        value     => sub  { return $_[0]->time_left }
     },
     time_estimated => {
         attribute => 'time_estimated',
         title => 'Time Estimated',
-        value     => sub { return $_[0]->time_estimated }
+        value     => sub  { return $_[0]->time_estimated }
     },
     Requestors => {
         attribute => 'Requestor.email',
-        value => sub { return $_[0]->Requestors->member_emailsAsString }
+        value => sub  { return $_[0]->requestors->member_emails_as_string }
     },
     Cc => {
         attribute => 'Cc.email',
-        value => sub { return $_[0]->Cc->member_emailsAsString }
+        value => sub  { return $_[0]->cc->member_emails_as_string }
     },
     AdminCc => {
         attribute => 'AdminCc.email',
-        value => sub { return $_[0]->AdminCc->member_emailsAsString }
+        value => sub  { return $_[0]->admin_cc->member_emails_as_string }
     },
     startsRelative => {
         title     => 'starts',
         attribute => 'starts',
-        value     => sub { return $_[0]->startsObj->AgeAsString }
+        value     => sub  { return $_[0]->starts_obj->age_as_string }
     },
     StartedRelative => {
         title     => 'Started',
         attribute => 'Started',
-        value     => sub { return $_[0]->StartedObj->AgeAsString }
+        value     => sub  { return $_[0]->started_obj->age_as_string }
     },
     ToldRelative => {
         title     => 'Told',
         attribute => 'Told',
-        value     => sub { return $_[0]->ToldObj->AgeAsString }
+        value     => sub  { return $_[0]->told_obj->age_as_string }
     },
     DueRelative => {
         title     => 'Due',
         attribute => 'Due',
-        value     => sub { 
+        value     => sub  { 
             my $date = $_[0]->due_obj;
-            if ( $date && $date->Unix > 0 && $date->Diff < 0 ) {
-                return (\'<span class="overdue">' , $date->AgeAsString , \'</span>');
+            if ( $date && $date->unix > 0 && $date->diff < 0 ) {
+                return (\'<span class="overdue">' , $date->age_as_string , \'</span>');
             } else {
-                return $date->AgeAsString;
+                return $date->age_as_string;
             }
         }
     },
     ResolvedRelative => {
         title     => 'Resolved',
         attribute => 'Resolved',
-        value     => sub { return $_[0]->ResolvedObj->AgeAsString }
+        value     => sub  { return $_[0]->resolved_obj->age_as_string }
     },
     starts => {
         attribute => 'starts',
-        value     => sub { return $_[0]->startsObj->AsString }
+        value     => sub  { return $_[0]->starts_obj->as_string }
     },
     Started => {
         attribute => 'Started',
-        value     => sub { return $_[0]->StartedObj->AsString }
+        value     => sub  { return $_[0]->started_obj->as_string }
     },
     Told => {
         attribute => 'Told',
-        value     => sub { return $_[0]->ToldObj->AsString }
+        value     => sub  { return $_[0]->told_obj->as_string }
     },
     Due => {
         attribute => 'Due',
-        value     => sub { return $_[0]->due_obj->AsString }
+        value     => sub  { return $_[0]->due_obj->as_string }
     },
     Resolved => {
         attribute => 'Resolved',
-        value     => sub { return $_[0]->ResolvedObj->AsString }
+        value     => sub  { return $_[0]->resolved_obj->as_string }
     },
     UpdateStatus => {
         title => _('New messages'),
-        value => sub {
-            my $txn = $_[0]->SeenUpTo or return $_[0]->_('No');
-            return \('<a href="'. RT->Config->Get('WebPath') .'/Ticket/Display.html?id='
+        value => sub  {
+            my $txn = $_[0]->seen_up_to or return $_[0]->_('No');
+            return \('<a href="'. RT->config->get('WebPath') .'/Ticket/Display.html?id='
                 . $_[0]->id .'#txn-'. $txn->id .'">'),
                 $_[0]->_('New'), \'</a>';
         },
@@ -228,9 +228,9 @@ $TICKET_COLUMN_MAP = {
     KeyRequestors => {
         title     => 'Requestors',
         attribute => 'Requestor.email',
-        value => sub {
+        value => sub  {
             my $t = shift;
-            my @requestors = $t->Requestors->member_emails;
+            my @requestors = $t->requestors->member_emails;
             for my $email (@requestors)
             {
                 my %key = RT::Crypt::GnuPG::get_key_info($email);
@@ -247,10 +247,10 @@ $TICKET_COLUMN_MAP = {
     KeyOwnername => {
         title     => 'Owner',
         attribute => 'Owner',
-        value     => sub {
+        value     => sub  {
             my $t = shift;
-            my $name = $t->OwnerObj->name;
-            my %key = RT::Crypt::GnuPG::get_key_info($t->OwnerObj->email);
+            my $name = $t->owner_obj->name;
+            my %key = RT::Crypt::GnuPG::get_key_info($t->owner_obj->email);
             if (!defined $key{'info'}) {
                 $name .= _(" (no pubkey!)");
             }
@@ -268,34 +268,34 @@ $TICKET_COLUMN_MAP = {
     } keys %RT::Model::Ticket::LINKTYPEMAP),
 
     (map {
-        my $value = RT->Config->Get($_);
-        $_ => { value => sub { return \$value } };
+        my $value = RT->config->get($_);
+        $_ => { value => sub  { return \$value } };
     
     } qw(WebPath WebBaseURL WebURL)),
 
     '_CLASS' => {
-        value => sub { return $_[1] % 2 ? 'oddline' : 'evenline' }
+        value => sub  { return $_[1] % 2 ? 'oddline' : 'evenline' }
     },
     '_CHECKBOX' => {
         attribute => 'checkbox',
         title => _('Update'),
         align     => 'right',
-        value     => sub { return \('<input type="checkbox" class="checkbox" name="UpdateTicket'.$_[0]->id.'" value="1" checked />') }
+        value     => sub  { return \('<input type="checkbox" class="checkbox" name="UpdateTicket'.$_[0]->id.'" value="1" checked />') }
     },
 
     CustomField => {
         attribute => undef,
-        title     => sub { return pop @_ },
-        value     => sub {
+        title     => sub  { return pop @_ },
+        value     => sub  {
             # Display custom field contents, separated by newlines.
             # For Image custom fields we also show a thumbnail here.
 
             my $values = $_[0]->custom_field_values( $_[-1] );
             my @values = map {
                 (
-                    ($_->CustomFieldObj->Type eq 'Image')
+                    ($_->custom_field_obj->type eq 'Image')
                         ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
-                        : $_->Content
+                        : $_->content
                 ),
                 \'<br />',
             } @{ $values->items_array_ref };
@@ -309,7 +309,7 @@ $TICKET_COLUMN_MAP->{'CF'} = $TICKET_COLUMN_MAP->{'CustomField'};
 
 # if no GPG support, then KeyOwnername and KeyRequestors fall back to the regular
 # versions
-if (RT->Config->Get('GnuPG')->{'Enable'}) {
+if (RT->config->get('GnuPG')->{'Enable'}) {
     require RT::Crypt::GnuPG;
 }
 else {

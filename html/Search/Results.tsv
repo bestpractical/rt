@@ -70,14 +70,14 @@ my @rows;
 my %known_cfs;
 
 my @attrs = qw( id queue_obj->name Subject Status time_estimated time_worked time_left Priority final_priority OwnerObj->name 
-                Requestors->member_emailsAsString Cc->member_emailsAsString AdminCc->member_emailsAsString
-                due_obj->ISO ToldObj->ISO created_obj->ISO ResolvedObj->ISO LastUpdatedObj->ISO);
+                Requestors->member_emails_as_string Cc->member_emails_as_string AdminCc->member_emails_as_string
+                due_obj->iso ToldObj->iso created_obj->iso ResolvedObj->iso LastUpdatedObj->ISO);
 
 $r->content_type('application/vnd.ms-excel');
 while ( my $Ticket = $Tickets->next()) {
     my $row;
     foreach my $attr (@attrs) {
-        if ($attr =~ /(.*)->ISO$/ and $Ticket->$1->Unix <= 0) {
+        if ($attr =~ /(.*)->ISO$/ and $Ticket->$1->unix <= 0) {
             $row->{$attr} = "";
         } else {
             my $method = '$Ticket->'.$attr.'()';
@@ -86,13 +86,13 @@ while ( my $Ticket = $Tickets->next()) {
         }
     }
 
-    my $cfs = $Ticket->queue_obj->TicketCustomFields();
+    my $cfs = $Ticket->queue_obj->ticket_custom_fields();
     while (my $cf = $cfs->next) {
         $known_cfs{$cf->id} = $cf->name;
         my @content;
         my $values = $Ticket->custom_field_values($cf->id);
         while (my $value = $values->next) {
-            push @content, $value->Content;
+            push @content, $value->content;
         }
         $row->{'CustomField-'.$cf->id} = join(', ',@content);
     }

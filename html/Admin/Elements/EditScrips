@@ -63,8 +63,8 @@
 <input type="checkbox" class="checkbox" name="DeleteScrip-<%$scrip->id%>" value="1" />
 </td>
 <td>
-<a href="Scrip.html?id=<%$scrip->id%>&Queue=<%$id%>"><% $scrip->Description || "<i>("._('no value').")</i>" |n %></a><br />
-<small><&|/l, _($scrip->ConditionObj->name), loc($scrip->ActionObj->name), loc($scrip->template_obj->name) &>%1 %2 with template %3</&></small>
+<a href="Scrip.html?id=<%$scrip->id%>&Queue=<%$id%>"><% $scrip->description || "<i>("._('no value').")</i>" |n %></a><br />
+<small><&|/l, _($scrip->condition_obj->name), loc($scrip->action_obj->name), loc($scrip->template_obj->name) &>%1 %2 with template %3</&></small>
 </td>
 </tr>
 %   }
@@ -89,10 +89,10 @@ if ($id)  {
 }
 
 if ($queue_obj->id) {                         
-	$Scrips->limit_ToQueue($id);
+	$Scrips->limit_to_queue($id);
 }                                            
 else {                                       
-        $Scrips->limit_ToGlobal();
+        $Scrips->limit_to_global();
 }                                           
 
 $Scrips->order_by( column => 'description' );

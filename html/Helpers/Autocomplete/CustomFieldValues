@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <ul>
 % while( my $value = $values->next ) {
-% my $desc = $value->Description || '';
+% my $desc = $value->description || '';
 % $desc = '<span class="informal"> ('. $m->interp->apply_escapes( $desc,  'h' ) .')</span>' if $desc;
 <li><% $value->name %><% $desc |n %></li>
 % }
@@ -63,7 +63,7 @@ while( my($k, $v) = each %ARGS ) {
 $m->abort unless $CustomField;
 my $CustomFieldObj = RT::Model::CustomField->new();
 $CustomFieldObj->load( $CustomField );
-my $values = $CustomFieldObj->Values;
+my $values = $CustomFieldObj->values;
 $values->limit(
     column           => 'name',
     operator        => 'LIKE',

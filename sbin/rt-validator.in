@@ -90,11 +90,11 @@ unless( $opt{'object'} ) {
 my $obj = load_object( $opt{'object'} );
 
 my $shredder = RT::Shredder->new;
-$obj->validate_Relations( Shredder => $shredder );
+$obj->validate_relations( Shredder => $shredder );
 
 foreach my $record( values %{ $shredder->{'Cache'} } ) {
 	next unless( $record->{'State'} & INVALID );
-	print STDERR $record->{'Object'}->_AsString ." is invalid\n";
+	print STDERR $record->{'Object'}->_as_string ." is invalid\n";
 	print STDERR "\t". (ref($record->{'Description'}) ?
 			join( "\n\t", @{$record->{'Description'}} ) :
 			$record->{'Description'})

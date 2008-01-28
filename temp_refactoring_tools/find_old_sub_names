@@ -1,0 +1,1 @@
+find . -type f |xargs grep '^sub '  |cut -d\: -f 2 | cut -d' ' -f 2 |sort |uniq | perl -n -e'my $x = $_; chomp($x); my $y =$x; $y=~ s/(\w)([A-Z])/$1."_".lc($2)/eg; $y =~ s/^_//; $y = lcfirst($y); print "re $x $y\n" if ($x ne lc($x))'>

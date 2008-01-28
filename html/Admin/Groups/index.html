@@ -69,7 +69,7 @@
 % my $ids = join ',', map $_->id, @{ $Groups->ItemsArrayRef };
 % if ( $ids ) {
 <div align="right"><em>
-(<a href="<% RT->Config->Get('WebPath') %>/Download/Tabular/Group/<% $ids %>/Groups.tsv">
+(<a href="<% RT->config->get('WebPath') %>/Download/Tabular/Group/<% $ids %>/Groups.tsv">
 <&|/l&>Download as a tab-delimited file</&>
 </a>)</em></div>
 % }
@@ -77,25 +77,25 @@
 <br /><br />
 % }
 
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
+<form method="post" action="<% RT->config->get('WebPath') %>/Admin/Groups/index.html">
 <input type="checkbox" class="checkbox" name="FinddisabledGroups" value="1" <% $FinddisabledGroups? 'checked="checked"': '' |n %> /> <&|/l&>Include disabled groups in listing.</&><br />
 <&|/l&>Find groups whose</&> <& /Elements/SelectGroups &><br />
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
 <%INIT>
 my $Groups = RT::Model::GroupCollection->new();
-$Groups->limit_ToUserDefinedGroups();
+$Groups->limit_to_user_defined_groups();
 my $title = _('Select a group');
 my $caption;
 
 if ($FinddisabledGroups) {
-    $Groups->FindAllRows();
+    $Groups->find_all_rows();
 }
 
 if (length $GroupString) {
     $caption = _("Groups matching search criteria");
     if ($GroupField =~ /^CustomField-(\d+)/) {
-	$Groups->limit_CustomField(
+	$Groups->limit_custom_field(
 	    customfield => $1,
 	    operator => $GroupOp,
 	    value => $GroupString,

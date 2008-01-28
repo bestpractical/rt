@@ -70,7 +70,7 @@ use base qw/RT::SearchBuilder/;
 
 
 # {{{ sub _init  
-sub _init   {
+sub _init {
   my $self = shift;
   
   $self->{'table'} = "Transactions";
@@ -98,7 +98,7 @@ Repeated calls to this method will intelligently limit down to that set of ticke
 =cut
 
 
-sub limit_ToTicket {
+sub limit_to_ticket {
     my $self = shift;
     my $tid  = shift;
 

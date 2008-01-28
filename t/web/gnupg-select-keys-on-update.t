@@ -9,24 +9,24 @@ use File::Temp qw(tempdir);
 
 RT::Test->set_mail_catcher;
 
-RT->Config->set( LogToScreen => 'debug' );
-RT->Config->set( LogStackTraces => 'error' );
+RT->config->set( LogToScreen => 'debug' );
+RT->config->set( LogStackTraces => 'error' );
 
 use_ok('RT::Crypt::GnuPG');
 
-RT->Config->set( GnuPG =>
+RT->config->set( GnuPG =>
     Enable => 1,
     OutgoingMessagesFormat => 'RFC',
 );
 
-RT->Config->set( GnuPGOptions =>
+RT->config->set( GnuPGOptions =>
     homedir => scalar tempdir( CLEANUP => 0 ),
     passphrase => 'rt-test',
     'no-permission-warning' => undef,
 );
-diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'};
+diag "GnuPG --homedir ". RT->config->get('GnuPGOptions')->{'homedir'};
 
-RT->Config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
 my $queue = RT::Test->load_or_create_queue(
     name              => 'Regression',

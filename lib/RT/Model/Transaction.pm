@@ -26,7 +26,7 @@ use Jifty::DBI::Record schema {
     column object_type => max_length is 64, type is 'varchar(64)', default is '';
     column object_id   => max_length is 11, type is 'int(11)',     default is '0';
     column TimeTaken  => max_length is 11, type is 'int(11)',     default is '0';
-    column Type       => max_length is 20, type is 'varchar(20)', default is '';
+    column type       => max_length is 20, type is 'varchar(20)', default is '';
     column Field     => max_length is 40, type is 'varchar(40)', default is '';
     column old_value => max_length is 255, type is 'varchar(255)', default is '';
     column new_value => max_length is 255, type is 'varchar(255)', default is '';
@@ -97,14 +97,14 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 Type
+=head2 type
 
-Returns the current value of Type. 
+Returns the current value of type. 
 (In the database, Type is stored as varchar(20).)
 
 
 
-=head2 SetType value
+=head2 set_type value
 
 
 Set Type to value. 
@@ -294,7 +294,7 @@ sub create {
     my %args = (
         id             => undef,
         TimeTaken      => 0,
-        Type           => 'undefined',
+        type           => 'undefined',
         Data           => '',
         Field          => undef,
         old_value       => undef,
@@ -322,7 +322,7 @@ sub create {
 
     #lets create our transaction
     my %params = (
-        Type      => $args{'Type'},
+        type      => $args{'type'},
         Data      => $args{'Data'},
         Field     => $args{'Field'},
         old_value  => $args{'old_value'},
@@ -343,7 +343,7 @@ sub create {
     my $id = $self->SUPER::create(%params);
     $self->load($id);
     if ( defined $args{'MIMEObj'} ) {
-        my ($id, $msg) = $self->_Attach( $args{'MIMEObj'} );
+        my ($id, $msg) = $self->_attach( $args{'MIMEObj'} );
         unless ( $id ) {
             Jifty->log->error("Couldn't add attachment: $msg");
             return ( 0, _("Couldn't add attachment") );
@@ -359,7 +359,7 @@ sub create {
         Jifty->log->debug('About to prepare scrips for transaction #' .$self->id); 
         $self->{'scrips'}->prepare(
             Stage       => 'TransactionCreate',
-            Type        => $args{'Type'},
+            type        => $args{'type'},
             Ticket      => $args{'object_id'},
             Transaction => $self->id,
         );
@@ -387,7 +387,7 @@ Scrips do not get persisted to the database with transactions.
 =cut
 
 
-sub Scrips {
+sub scrips {
     my $self = shift;
     return($self->{'scrips'});
 }
@@ -407,7 +407,7 @@ sub delete {
 
     Jifty->handle->begin_transaction();
 
-    my $attachments = $self->Attachments;
+    my $attachments = $self->attachments;
 
     while (my $attachment = $attachments->next) {
         my ($id, $msg) = $attachment->delete();
@@ -438,7 +438,7 @@ attachment for this transaction.
 
 =cut
 
-sub Message {
+sub message {
     my $self = shift;
 
     # XXX: Where is ACL check?
@@ -450,7 +450,7 @@ sub Message {
             column => 'TransactionId',
             value => $self->id
         );
-        $self->{'message'}->ChildrenOf(0);
+        $self->{'message'}->children_of(0);
     } else {
         $self->{'message'}->goto_first_item;
     }
@@ -476,23 +476,23 @@ missing, it defaults to the value of C<$RT::Transaction::PreferredContentType>.
 
 =cut
 
-sub Content {
+sub content {
     my $self = shift;
     my %args = (
-        Type  => $PreferredContentType || 'text/plain',
+        type  => $PreferredContentType || 'text/plain',
         Quote => 0,
         Wrap  => 70,
         @_
     );
 
     my $content;
-    if ( my $content_obj = $self->ContentObj ) {
-        $content = $content_obj->Content ||'';
+    if ( my $content_obj = $self->content_obj ) {
+        $content = $content_obj->content ||'';
 
-        if ( lc $content_obj->ContentType eq 'text/html' ) {
+        if ( lc $content_obj->content_type eq 'text/html' ) {
             $content =~ s/<p>--\s+<br \/>.*?$//s if $args{'Quote'};
 
-            if ($args{Type} ne 'text/html') {
+            if ($args{type} ne 'text/html') {
                 $content = HTML::FormatText->new(
                     leftmargin  => 0,
                     rightmargin => 78,
@@ -503,7 +503,7 @@ sub Content {
 	}
         else {
             $content =~ s/\n-- \n.*?$//s if $args{'Quote'};
-            if ($args{Type} eq 'text/html') {
+            if ($args{type} eq 'text/html') {
                 # Extremely simple text->html converter
                 $content =~ s/&/&#38;/g;
                 $content =~ s/</&lt;/g;
@@ -553,11 +553,11 @@ Returns a hashref of addresses related to this transaction. See L<RT::Model::Att
 
 =cut
 
-sub Addresses {
+sub addresses {
 	my $self = shift;
 
-	if (my $attach = $self->Attachments->first) {	
-		return $attach->Addresses;
+	if (my $attach = $self->attachments->first) {	
+		return $attach->addresses;
 	}
 	else {
 		return {};
@@ -575,12 +575,12 @@ Returns the RT::Model::Attachment object which contains the content for this Tra
 =cut
 
 
-sub ContentObj {
+sub content_obj {
     my $self = shift;
 
     # If we don't have any content, return undef now.
     # Get the set of toplevel attachments to this transaction.
-    return undef unless my $Attachment = $self->Attachments->first;
+    return undef unless my $Attachment = $self->attachments->first;
 
     # If it's a textual part, just return the body.
     if ( RT::I18N::is_textual_content_type($Attachment->ContentType) ) {
@@ -590,10 +590,10 @@ sub ContentObj {
     # If it's a multipart object, first try returning the first part with preferred
     # MIME type ('text/plain' by default).
 
-    elsif ( $Attachment->ContentType =~ '^multipart/' ) {
-        my $plain_parts = $Attachment->Children;
-        $plain_parts->ContentType( value => ($PreferredContentType || 'text/plain') );
-        $plain_parts->limit_NotEmpty;
+    elsif ( $Attachment->content_type =~ '^multipart/' ) {
+        my $plain_parts = $Attachment->children;
+        $plain_parts->content_type( value => ($PreferredContentType || 'text/plain') );
+        $plain_parts->limit_not_empty;
 
         # If we actully found a part, return its content
         if ( my $first = $plain_parts->first ) {
@@ -601,10 +601,10 @@ sub ContentObj {
         }
 
         # If that fails, return the first textual part which has some content.
-        my $all_parts = $self->Attachments;
+        my $all_parts = $self->attachments;
         while ( my $part = $all_parts->next ) {
             next unless RT::I18N::is_textual_content_type($part->ContentType)
-                        && $part->Content;
+                        && $part->content;
             return $part;
         }
     }
@@ -624,10 +624,10 @@ Otherwise, returns null
   
 =cut
 
-sub Subject {
+sub subject {
     my $self = shift;
-    return undef unless my $first = $self->Attachments->first;
-    return $first->Subject;
+    return undef unless my $first = $self->attachments->first;
+    return $first->subject;
 }
 
 # }}}
@@ -642,7 +642,7 @@ a ContentType that Attachments should be restricted to.
 
 =cut
 
-sub Attachments {
+sub attachments {
     my $self = shift;
 
     if ( $self->{'attachments'} ) {
@@ -679,7 +679,7 @@ A private method used to attach a mime object to this transaction.
 
 =cut
 
-sub _Attach {
+sub _attach {
     my $self       = shift;
     my $MIMEObject = shift;
 
@@ -710,18 +710,18 @@ Returns a text string which describes this transaction
 
 =cut
 
-sub Description {
+sub description {
     my $self = shift;
 
     unless ( $self->current_user_can_see ) {
         return ( _("Permission Denied") );
     }
 
-    unless ( defined $self->Type ) {
+    unless ( defined $self->type ) {
         return ( _("No transaction type specified"));
     }
 
-    return _("%1 by %2", $self->BriefDescription , $self->creator_obj->name );
+    return _("%1 by %2", $self->brief_description , $self->creator_obj->name );
 }
 
 # }}}
@@ -734,20 +734,20 @@ Returns a text string which briefly describes this transaction
 
 =cut
 
-sub BriefDescription {
+sub brief_description {
     my $self = shift;
 
     unless ( $self->current_user_can_see ) {
         return ( _("Permission Denied") );
     }
 
-    my $type = $self->Type;    #cache this, rather than calling it 30 times
+    my $type = $self->type;    #cache this, rather than calling it 30 times
 
     unless ( defined $type ) {
         return _("No transaction type specified");
     }
 
-    my $obj_type = $self->Friendlyobject_type;
+    my $obj_type = $self->friendlyobject_type;
 
     if ( $type eq 'Create' ) {
         return ( _( "%1 Created", $obj_type ) );
@@ -799,23 +799,23 @@ sub BriefDescription {
 }
 
 %_BriefDescriptions = (
-    commentEmailRecord => sub {
+    commentEmailRecord => sub  {
         my $self = shift;
         return _("Outgoing email about a comment recorded");
     },
-    EmailRecord => sub {
+    EmailRecord => sub  {
         my $self = shift;
         return _("Outgoing email recorded");
     },
-    Correspond => sub {
+    Correspond => sub  {
         my $self = shift;
         return _("Correspondence added");
     },
-    comment => sub {
+    comment => sub  {
         my $self = shift;
         return _("comments added");
     },
-    CustomField => sub {
+    CustomField => sub  {
         my $self = shift;
         my $field = _('CustomField');
 
@@ -836,15 +836,15 @@ sub BriefDescription {
             return _("%1 %2 changed to %3", $field, $self->old_value, $self->new_value );
         }
     },
-    Untake => sub {
+    Untake => sub  {
         my $self = shift;
         return _("Untaken");
     },
-    Take => sub {
+    Take => sub  {
         my $self = shift;
         return _("Taken");
     },
-    Force => sub {
+    Force => sub  {
         my $self = shift;
         my $Old = RT::Model::User->new;
         $Old->load( $self->old_value );
@@ -853,42 +853,42 @@ sub BriefDescription {
 
         return _("Owner forcibly changed from %1 to %2" , $Old->name , $New->name);
     },
-    Steal => sub {
+    Steal => sub  {
         my $self = shift;
         my $Old = RT::Model::User->new;
         $Old->load( $self->old_value );
         return _("Stolen from %1",  $Old->name);
     },
-    Give => sub {
+    Give => sub  {
         my $self = shift;
         my $New = RT::Model::User->new;
         $New->load( $self->new_value );
         return _( "Given to %1",  $New->name );
     },
-    AddWatcher => sub {
+    AddWatcher => sub  {
         my $self = shift;
         my $principal = RT::Model::Principal->new;
         $principal->load($self->new_value);
-        return _( "%1 %2 added", $self->Field, $principal->Object->name);
+        return _( "%1 %2 added", $self->Field, $principal->object->name);
     },
-    del_watcher => sub {
+    del_watcher => sub  {
         my $self = shift;
         my $principal = RT::Model::Principal->new;
         $principal->load($self->old_value);
-        return _( "%1 %2 deleted", $self->Field, $principal->Object->name);
+        return _( "%1 %2 deleted", $self->Field, $principal->object->name);
     },
-    Subject => sub {
+    Subject => sub  {
         my $self = shift;
         return _( "Subject changed to %1", $self->Data );
     },
-    AddLink => sub {
+    AddLink => sub  {
         my $self = shift;
         my $value;
         if ( $self->new_value ) {
             my $URI = RT::URI->new;
-            $URI->FromURI( $self->new_value );
-            if ( $URI->Resolver ) {
-                $value = $URI->Resolver->AsString;
+            $URI->from_uri( $self->new_value );
+            if ( $URI->resolver ) {
+                $value = $URI->resolver->as_string;
             }
             else {
                 $value = $self->new_value;
@@ -920,14 +920,14 @@ sub BriefDescription {
             return ( $self->Data );
         }
     },
-    delete_link => sub {
+    delete_link => sub  {
         my $self = shift;
         my $value;
         if ( $self->old_value ) {
             my $URI = RT::URI->new;
-            $URI->FromURI( $self->old_value );
-            if ( $URI->Resolver ) {
-                $value = $URI->Resolver->AsString;
+            $URI->from_uri( $self->old_value );
+            if ( $URI->resolver ) {
+                $value = $URI->resolver->as_string;
             }
             else {
                 $value = $self->old_value;
@@ -957,7 +957,7 @@ sub BriefDescription {
             return ( $self->Data );
         }
     },
-    Set => sub {
+    Set => sub  {
         my $self = shift;
         if ( $self->Field eq 'password' ) {
             return _('password changed');
@@ -976,30 +976,30 @@ sub BriefDescription {
             $t1->set(Format => 'ISO', value => $self->new_value);
             my $t2 = RT::Date->new();
             $t2->set(Format => 'ISO', value => $self->old_value);
-            return _( "%1 changed from %2 to %3", $self->Field, $t2->AsString, $t1->AsString );
+            return _( "%1 changed from %2 to %3", $self->Field, $t2->as_string, $t1->as_string );
         }
         else {
             return _( "%1 changed from %2 to %3", $self->Field, ($self->old_value? "'".$self->old_value ."'" : _("(no value)")) , "'". $self->new_value."'" );
         }
     },
-    PurgeTransaction => sub {
+    PurgeTransaction => sub  {
         my $self = shift;
         return _("Transaction %1 purged", $self->Data);
     },
-    AddReminder => sub {
+    AddReminder => sub  {
         my $self = shift;
         my $ticket = RT::Model::Ticket->new;
         $ticket->load($self->new_value);
         return _("Reminder '%1' added", $ticket->Subject);
     },
-    OpenReminder => sub {
+    OpenReminder => sub  {
         my $self = shift;
         my $ticket = RT::Model::Ticket->new;
         $ticket->load($self->new_value);
         return _("Reminder '%1' reopened", $ticket->Subject);
     
     },
-    ResolveReminder => sub {
+    ResolveReminder => sub  {
         my $self = shift;
         my $ticket = RT::Model::Ticket->new;
         $ticket->load($self->new_value);
@@ -1022,10 +1022,10 @@ Returns false otherwise
 
 =cut
 
-sub IsInbound {
+sub is_inbound {
     my $self = shift;
     $self->object_type eq 'RT::Model::Ticket' or return undef;
-    return ( $self->ticket_obj->IsRequestor( $self->creator_obj->principal_id ) );
+    return ( $self->ticket_obj->is_requestor( $self->creator_obj->principal_id ) );
 }
 
 # }}}
@@ -1083,7 +1083,7 @@ sub current_user_has_right {
     my $right = shift;
     return $self->current_user->has_right(
         Right  => $right,
-        Object => $self->Object
+        Object => $self->object
     );
 }
 
@@ -1101,7 +1101,7 @@ sub current_user_can_see {
     my $self = shift;
 
     # If it's a comment, we need to be extra special careful
-    my $type = $self->__value('Type');
+    my $type = $self->__value('type');
     if ( $type eq 'comment' ) {
         unless ( $self->current_user_has_right('ShowTicketcomments') ) {
             return 0;
@@ -1136,14 +1136,14 @@ sub current_user_can_see {
 
 # }}}
 
-sub Ticket {
+sub ticket {
     my $self = shift;
     return $self->object_id;
 }
 
 sub ticket_obj {
     my $self = shift;
-    return $self->Object;
+    return $self->object;
 }
 
 sub old_value {
@@ -1153,7 +1153,7 @@ sub old_value {
     {
         my $Object = $type->new;
         $Object->load( $id );
-        return $Object->Content;
+        return $Object->content;
     }
     else {
         return $self->__value('old_value');
@@ -1167,21 +1167,21 @@ sub new_value {
     {
         my $Object = $type->new;
         $Object->load( $id );
-        return $Object->Content;
+        return $Object->content;
     }
     else {
         return $self->__value('new_value');
     }
 }
 
-sub Object {
+sub object {
     my $self  = shift;
     my $Object = $self->__value('object_type')->new;
     $Object->load($self->__value('object_id'));
     return $Object;
 }
 
-sub Friendlyobject_type {
+sub friendlyobject_type {
     my $self = shift;
     my $type = $self->object_type or return undef;
     $type =~ s/^RT::Model:://;
@@ -1200,7 +1200,7 @@ sub Friendlyobject_type {
 
 =cut
 
-sub UpdateCustomFields {
+sub update_custom_fields {
     my $self = shift;
     my %args = (@_);
 
@@ -1253,15 +1253,15 @@ sub custom_field_values {
     my $self  = shift;
     my $field = shift;
 
-    if ( UNIVERSAL::can( $self->Object, 'queue_obj' ) ) {
+    if ( UNIVERSAL::can( $self->object, 'queue_obj' ) ) {
 
         # XXX: $field could be undef when we want fetch values for all CFs
         #      do we want to cover this situation somehow here?
         unless ( defined $field && $field =~ /^\d+$/o ) {
             my $CFs = RT::Model::CustomFieldCollection->new;
             $CFs->limit( column => 'name', value => $field );
-            $CFs->limit_ToLookupType($self->custom_field_lookup_type);
-            $CFs->limit_ToGlobalOrobject_id($self->Object->queue_obj->id);
+            $CFs->limit_to_lookup_type($self->custom_field_lookup_type);
+            $CFs->limit_to_global_orobject_id($self->object->queue_obj->id);
             $field = $CFs->first->id if $CFs->first;
         }
     }
@@ -1286,7 +1286,7 @@ sub custom_field_lookup_type {
 }
 
 # Transactions don't change. by adding this cache congif directiove, we don't lose pathalogically on long tickets.
-sub _CacheConfig {
+sub _cache_config {
   {
      'cache_p'        => 1,
      'fast_update_p'  => 1,

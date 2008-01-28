@@ -52,7 +52,7 @@ use warnings FATAL => 'all';
 
 use base qw(RT::Shredder::Plugin::SQLDump);
 
-sub AppliesToStates { return 'before any action' }
+sub applies_to_states { return 'before any action' }
 
 sub TestArgs
 {
@@ -80,12 +80,12 @@ sub Run
 
 my %skip_refs_to = ();
 
-sub WriteDownDefault {
+sub write_down_default {
     my $self = shift;
     my %args = ( Object => undef, @_ );
-    return $self->_WriteDownHash(
+    return $self->_write_down_hash(
         $args{'Object'},
-        $self->_MakeHash( $args{'Object'} ),
+        $self->_make_hash( $args{'Object'} ),
     );
 }
 
@@ -107,23 +107,23 @@ sub WriteDownDefault {
 # ScripCondition.pm - works fine with defaults
 # Template.pm - works fine with defaults
 
-sub WriteDownCachedGroupMember { return 1 }
-sub WriteDownPrincipal { return 1 }
+sub write_down_cached_group_member { return 1 }
+sub write_down_principal { return 1 }
 
-sub WriteDownGroup {
+sub write_down_group {
     my $self = shift;
     my %args = ( Object => undef, @_ );
     if ( $args{'Object'}->Domain =~ /-Role$/ ) {
-        return $skip_refs_to{ $args{'Object'}->_AsString } = 1;
+        return $skip_refs_to{ $args{'Object'}->_as_string } = 1;
     }
-    return $self->WriteDownDefault( %args );
+    return $self->write_down_default( %args );
 }
 
-sub WriteDownTransaction {
+sub write_down_transaction {
     my $self = shift;
     my %args = ( Object => undef, @_ );
 
-    my $props = $self->_MakeHash( $args{'Object'} );
+    my $props = $self->_make_hash( $args{'Object'} );
     $props->{'Object'} = delete $props->{'object_type'};
     $props->{'Object'} .= '-'. delete $props->{'object_id'}
         if $props->{'object_id'};
@@ -132,33 +132,33 @@ sub WriteDownTransaction {
     delete $props->{$_} foreach grep
         !defined $props->{$_} || $props->{$_} eq '', keys %$props;
 
-    return $self->_WriteDownHash( $args{'Object'}, $props );
+    return $self->_write_down_hash( $args{'Object'}, $props );
 }
 
-sub WriteDownScrip {
+sub write_down_scrip {
     my $self = shift;
     my %args = ( Object => undef, @_ );
-    my $props = $self->_MakeHash( $args{'Object'} );
-    $props->{'Action'} = $args{'Object'}->ActionObj->name;
-    $props->{'Condition'} = $args{'Object'}->ConditionObj->name;
+    my $props = $self->_make_hash( $args{'Object'} );
+    $props->{'Action'} = $args{'Object'}->action_obj->name;
+    $props->{'Condition'} = $args{'Object'}->condition_obj->name;
     $props->{'Template'} = $args{'Object'}->template_obj->name;
     $props->{'Queue'} = $args{'Object'}->queue_obj->name || 'global';
 
-    return $self->_WriteDownHash( $args{'Object'}, $props );
+    return $self->_write_down_hash( $args{'Object'}, $props );
 }
 
-sub _MakeHash {
+sub _make_hash {
     my ($self, $obj) = @_;
-    my $hash = $self->__MakeHash( $obj );
+    my $hash = $self->__make_hash( $obj );
     foreach (grep exists $hash->{$_}, qw(Creator LastUpdatedBy)) {
         my $method = $_ .'Obj';
         my $u = $obj->$method();
-        $hash->{ $_ } = $u->email || $u->name || $u->_AsString;
+        $hash->{ $_ } = $u->email || $u->name || $u->_as_string;
     }
     return $hash;
 }
 
-sub __MakeHash {
+sub __make_hash {
     my ($self, $obj) = @_;
     my %hash;
     $hash{ $_ } = $obj->$_()
@@ -166,11 +166,11 @@ sub __MakeHash {
     return \%hash;
 }
 
-sub _WriteDownHash {
+sub _write_down_hash {
     my ($self, $obj, $hash) = @_;
     return (0, 'no handle') unless my $fh = $self->{'opt'}{'file_handle'};
 
-    print $fh "=== ". $obj->_AsString ." ===\n"
+    print $fh "=== ". $obj->_as_string ." ===\n"
         or return (0, "Couldn't write to filehandle");
 
     foreach my $key( sort keys %$hash ) {

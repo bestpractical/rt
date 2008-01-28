@@ -87,7 +87,7 @@
 <&| /Widgets/TitleBox, title => _('Update ticket') &>
 <table>
   <tr>
-    <td class="label"><&|/l&>Update Type</&>:</td>
+    <td class="label"><&|/l&>update Type</&>:</td>
     <td class="entry">
       <select name="UpdateType">
 % if ($Cancomment) {
@@ -110,7 +110,7 @@
 <td class="entry"><& /Elements/EditCustomField, 
     CustomField => $CF, 
     namePrefix => "Object-RT::Model::Transaction--CustomField-"
-    &><em><% $CF->FriendlyType %></em>
+    &><em><% $CF->friendly_type %></em>
 </td></tr>
 %    } # end if while
 % } # end of if
@@ -157,7 +157,7 @@ unless ($OnlySearchForPeople) {
         my @owners =@{$ARGS{'Owner'}};
         delete $ARGS{'Owner'};
         foreach my $owner(@owners){
-            $ARGS{'Owner'} = $owner unless ($Ticket->OwnerObj->id == $owner);
+            $ARGS{'Owner'} = $owner unless ($Ticket->owner_obj->id == $owner);
         }
 
     }

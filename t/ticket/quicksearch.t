@@ -36,5 +36,5 @@ my @tests = (
     "notauser $queue root" => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( Subject LIKE 'notauser' )");
 
 while (my ($from, $to) = splice @tests, 0, 2) {
-    is($quick->QueryToSQL($from), $to, "<$from> -> <$to>");
+    is($quick->query_to_sql($from), $to, "<$from> -> <$to>");
 }

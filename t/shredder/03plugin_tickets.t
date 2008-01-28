@@ -14,7 +14,7 @@ use_ok('RT::Shredder::Plugin::Tickets');
     my $plugin = RT::Shredder::Plugin::Tickets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
 
-    is(lc $plugin->Type, 'search', 'correct type');
+    is(lc $plugin->type, 'search', 'correct type');
 }
 
 init_db();
@@ -35,29 +35,29 @@ use_ok('RT::Model::TicketCollection');
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
 
     my ($status, $msg, @objs);
-    ($status, $msg) = $plugin->TestArgs( query => 'Subject = "parent"' );
+    ($status, $msg) = $plugin->test_args( query => 'Subject = "parent"' );
     ok($status, "plugin arguments are ok") or diag "error: $msg";
 
-    ($status, @objs) = $plugin->Run;
+    ($status, @objs) = $plugin->run;
     ok($status, "executed plugin successfully") or diag "error: @objs";
-    @objs = RT::Shredder->CastObjectsToRecords( Objects => \@objs );
+    @objs = RT::Shredder->cast_objects_to_records( Objects => \@objs );
     is(scalar @objs, 1, "only one object in result set");
     is($objs[0]->id, $pid, "parent is in result set");
 
-    ($status, $msg) = $plugin->TestArgs( query => 'Subject = "parent"', with_linked => 1 );
+    ($status, $msg) = $plugin->test_args( query => 'Subject = "parent"', with_linked => 1 );
     ok($status, "plugin arguments are ok") or diag "error: $msg";
 
-    ($status, @objs) = $plugin->Run;
+    ($status, @objs) = $plugin->run;
     ok($status, "executed plugin successfully") or diag "error: @objs";
-    @objs = RT::Shredder->CastObjectsToRecords( Objects => \@objs );
+    @objs = RT::Shredder->cast_objects_to_records( Objects => \@objs );
     my %has = map { $_->id => 1 } @objs;
     is(scalar @objs, 2, "two objects in the result set");
     ok($has{$pid}, "parent is in the result set");
     ok($has{$cid}, "child is in the result set");
 
     my $shredder = shredder_new();
-    $shredder->PutObjects( Objects => \@objs );
-    $shredder->WipeoutAll;
+    $shredder->put_objects( Objects => \@objs );
+    $shredder->wipeout_all;
 }
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
@@ -77,29 +77,29 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
 
     my (@objs);
-    ($status, $msg) = $plugin->TestArgs( query => 'Subject = "parent"' );
+    ($status, $msg) = $plugin->test_args( query => 'Subject = "parent"' );
     ok($status, "plugin arguments are ok") or diag "error: $msg";
 
-    ($status, @objs) = $plugin->Run;
+    ($status, @objs) = $plugin->run;
     ok($status, "executed plugin successfully") or diag "error: @objs";
-    @objs = RT::Shredder->CastObjectsToRecords( Objects => \@objs );
+    @objs = RT::Shredder->cast_objects_to_records( Objects => \@objs );
     is(scalar @objs, 1, "only one object in result set");
     is($objs[0]->id, $pid, "parent is in result set");
 
-    ($status, $msg) = $plugin->TestArgs( query => 'Subject = "parent"', with_linked => 1 );
+    ($status, $msg) = $plugin->test_args( query => 'Subject = "parent"', with_linked => 1 );
     ok($status, "plugin arguments are ok") or diag "error: $msg";
 
-    ($status, @objs) = $plugin->Run;
+    ($status, @objs) = $plugin->run;
     ok($status, "executed plugin successfully") or diag "error: @objs";
-    @objs = RT::Shredder->CastObjectsToRecords( Objects => \@objs );
+    @objs = RT::Shredder->cast_objects_to_records( Objects => \@objs );
     is(scalar @objs, 2, "two objects in the result set");
     my %has = map { $_->id => 1 } @objs;
     ok($has{$pid}, "parent is in the result set");
     ok($has{$cid}, "child is in the result set");
 
     my $shredder = shredder_new();
-    $shredder->PutObjects( Objects => \@objs );
-    $shredder->WipeoutAll;
+    $shredder->put_objects( Objects => \@objs );
+    $shredder->wipeout_all;
 }
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
@@ -118,13 +118,13 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     my $plugin = RT::Shredder::Plugin::Tickets->new;
     isa_ok($plugin, 'RT::Shredder::Plugin::Tickets');
 
-    my ($status, $msg) = $plugin->TestArgs( query => 'Status = "resolved"', apply_query_to_linked => 1 );
+    my ($status, $msg) = $plugin->test_args( query => 'Status = "resolved"', apply_query_to_linked => 1 );
     ok($status, "plugin arguments are ok") or diag "error: $msg";
 
     my @objs;
-    ($status, @objs) = $plugin->Run;
+    ($status, @objs) = $plugin->run;
     ok($status, "executed plugin successfully") or diag "error: @objs";
-    @objs = RT::Shredder->CastObjectsToRecords( Objects => \@objs );
+    @objs = RT::Shredder->cast_objects_to_records( Objects => \@objs );
     is(scalar @objs, 2, "two objects in the result set");
     my %has = map { $_->id => 1 } @objs;
     ok($has{$pid}, "parent is in the result set");
@@ -132,15 +132,15 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     ok($has{$cid2}, "second child is in the result set");
 
     my $shredder = shredder_new();
-    $shredder->PutObjects( Objects => \@objs );
-    $shredder->WipeoutAll;
+    $shredder->put_objects( Objects => \@objs );
+    $shredder->wipeout_all;
 
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->load( $cid1 );
     is($ticket->id, $cid1, 'loaded ticket');
 
-    $shredder->PutObjects( Objects => $ticket );
-    $shredder->WipeoutAll;
+    $shredder->put_objects( Objects => $ticket );
+    $shredder->wipeout_all;
 }
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 

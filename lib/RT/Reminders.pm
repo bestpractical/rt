@@ -61,7 +61,7 @@ sub new {
 }
 
 
-sub Ticket {
+sub ticket {
     my $self = shift;
     $self->{'_ticket'} = shift if (@_);
     return ($self->{'_ticket'});
@@ -83,7 +83,7 @@ Returns an RT::Model::TicketCollection object containing reminders for this obje
 
 =cut
 
-sub Collection {
+sub collection {
     my $self = shift;
     my $col = RT::Model::TicketCollection->new;
 
@@ -109,7 +109,7 @@ Takes
 =cut
 
 
-sub Add {
+sub add {
     my $self = shift;
     my %args = ( Subject => undef,
                  Owner => undef,
@@ -120,7 +120,7 @@ sub Add {
     $reminder->create( Subject => $args{'Subject'},
                        Owner => $args{'Owner'},
                        Due => $args{'Due'},
-                       RefersTo => $self->Ticket,
+                       RefersTo => $self->ticket,
                        Type => 'reminder',
                        Queue => $self->ticket_obj->Queue,
                    
@@ -133,21 +133,21 @@ sub Add {
 }
 
 
-sub Open {
+sub open {
     my $self = shift;
     my $reminder = shift; 
 
-    $reminder->set_Status('open');
+    $reminder->set_status('open');
     $self->ticket_obj->_new_transaction(Type => 'OpenReminder',
                                     column => 'RT::Model::Ticket',
                                    new_value => $reminder->id);
 }
 
 
-sub Resolve {
+sub resolve {
     my $self = shift;
     my $reminder = shift;
-    $reminder->set_Status('resolved');
+    $reminder->set_status('resolved');
     $self->ticket_obj->_new_transaction(Type => 'ResolveReminder',
                                     column => 'RT::Model::Ticket',
                                    new_value => $reminder->id);

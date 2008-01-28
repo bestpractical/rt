@@ -24,12 +24,12 @@ use RT::Model::TicketCollection;
 
     my $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user );
     $tickets->{'allow_deleted_search'} = 1;
-    $tickets->limit_Status( value => 'deleted' );
+    $tickets->limit_status( value => 'deleted' );
     is( $tickets->count, 1, "found one deleted ticket" );
 
     my $shredder = shredder_new();
-    $shredder->PutObjects( Objects => $tickets );
-    $shredder->WipeoutAll;
+    $shredder->put_objects( Objects => $tickets );
+    $shredder->wipeout_all;
 }
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
@@ -46,12 +46,12 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     my ($status, $msg) = $parent->add_link( Type => 'MemberOf', Target => $cid );
     ok( $status, "Added link between tickets") or diag("error: $msg");
     my $shredder = shredder_new();
-    $shredder->PutObjects( Objects => $child );
-    $shredder->WipeoutAll;
+    $shredder->put_objects( Objects => $child );
+    $shredder->wipeout_all;
     cmp_deeply( dump_current_and_savepoint('parent_ticket'), "current DB equal to savepoint");
 
-    $shredder->PutObjects( Objects => $parent );
-    $shredder->WipeoutAll;
+    $shredder->put_objects( Objects => $parent );
+    $shredder->wipeout_all;
 }
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
@@ -70,12 +70,12 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     ($status, $msg) = $parent->add_link( Type => 'DependsOn', Target => $cid );
     ok( $status, "Added link between tickets") or diag("error: $msg");
     my $shredder = shredder_new();
-    $shredder->PutObjects( Objects => $child );
-    $shredder->WipeoutAll;
+    $shredder->put_objects( Objects => $child );
+    $shredder->wipeout_all;
     cmp_deeply( dump_current_and_savepoint('parent_ticket'), "current DB equal to savepoint");
 
-    $shredder->PutObjects( Objects => $parent );
-    $shredder->WipeoutAll;
+    $shredder->put_objects( Objects => $parent );
+    $shredder->wipeout_all;
 }
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 

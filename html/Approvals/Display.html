@@ -50,7 +50,7 @@
 <& Elements/Tabs, 
     current_tab => "Approvals/Display.html", 
     Title =>  $title &>
-<form method="post" action="<%RT->Config->Get('WebPath')%>/Approvals/index.html">
+<form method="post" action="<%RT->config->get('WebPath')%>/Approvals/index.html">
 
 <&| /Widgets/TitleBox, title => $title &>
 <& /Ticket/Elements/ShowHistory , Ticket => $Ticket, Collapsed => 0, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>

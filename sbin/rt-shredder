@@ -118,7 +118,7 @@ use File::Spec ();
 
 use RT::Shredder::Plugin ();
 # prefetch list of plugins
-our %plugins = RT::Shredder::Plugin->List;
+our %plugins = RT::Shredder::Plugin->list;
 
 our %opt;
 parse_args();
@@ -127,7 +127,7 @@ RT::Shredder::Init( %opt );
 my $shredder = RT::Shredder->new;
 
 {
-    my $plugin = eval { $shredder->AddDumpPlugin( Arguments => {
+    my $plugin = eval { $shredder->add_dump_plugin( Arguments => {
         file_name    => $opt{'sqldump'},
         from_storage => 0,
     } ) };
@@ -140,15 +140,15 @@ my $shredder = RT::Shredder->new;
             exit 0 unless prompt_yN( "Do you want to proceed?" );
         }
 	} else {
-        print "SQL dump file is '". $plugin->Filename ."'\n";
+        print "SQL dump file is '". $plugin->filename ."'\n";
     }
 }
 
 my @objs = process_plugins( $shredder );
 prompt_delete_objs( \@objs ) unless $opt{'force'};
 
-$shredder->PutObjects( Objects => $_ ) foreach @objs;
-eval { $shredder->WipeoutAll };
+$shredder->put_objects( Objects => $_ ) foreach @objs;
+eval { $shredder->wipeout_all };
 if( $@ ) {
     require RT::Shredder::Exceptions;
     if( my $e = RT::Shredder::Exception::Info->caught ) {
@@ -167,7 +167,7 @@ sub prompt_delete_objs
 	}
 	my $list = "Next objects would be deleted:\n";
 	foreach my $o( @$objs ) {
-		$list .= "\t". $o->_AsString ." object\n";
+		$list .= "\t". $o->_as_string ." object\n";
 	}
 	print $list;
 	exit(0) unless prompt_yN( "Do you want to proceed?" );
@@ -235,25 +235,25 @@ sub process_plugins
 	my @res;
 	foreach my $str( @{ $opt{'plugin'} } ) {
 		my $plugin = RT::Shredder::Plugin->new;
-		my( $status, $msg ) = $plugin->loadByString( $str );
+		my( $status, $msg ) = $plugin->load_by_string( $str );
 		unless( $status ) {
 			print STDERR "Couldn't load plugin\n";
 			print STDERR "Error: $msg\n";
 			exit(1);
 		}
-        if ( lc $plugin->Type eq 'search' ) {
+        if ( lc $plugin->type eq 'search' ) {
             push @res, _process_search_plugin( $shredder, $plugin );
         }
-        elsif ( lc $plugin->Type eq 'dump' ) {
+        elsif ( lc $plugin->type eq 'dump' ) {
             _process_dump_plugin( $shredder, $plugin );
         }
 	}
-	return RT::Shredder->CastObjectsToRecords( Objects => \@res );
+	return RT::Shredder->cast_objects_to_records( Objects => \@res );
 }
 
 sub _process_search_plugin {
     my ($shredder, $plugin) = @_;
-    my ($status, @objs) = $plugin->Run;
+    my ($status, @objs) = $plugin->run;
     unless( $status ) {
         print STDERR "Couldn't run plugin\n";
         print STDERR "Error: $objs[1]\n";
@@ -261,7 +261,7 @@ sub _process_search_plugin {
     }
 
     my $msg;
-    ($status, $msg) = $plugin->set_Resolvers( Shredder => $shredder );
+    ($status, $msg) = $plugin->set_resolvers( Shredder => $shredder );
     unless( $status ) {
         print STDERR "Couldn't set conflicts resolver\n";
         print STDERR "Error: $msg\n";
@@ -272,7 +272,7 @@ sub _process_search_plugin {
 
 sub _process_dump_plugin {
     my ($shredder, $plugin) = @_;
-    $shredder->AddDumpPlugin(
+    $shredder->add_dump_plugin(
         Object => $plugin,
     );
 }

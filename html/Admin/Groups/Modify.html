@@ -55,7 +55,7 @@
 
 
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html" method="post" enctype="multipart/form-data">
+<form action="<%RT->config->get('WebPath')%>/Admin/Groups/Modify.html" method="post" enctype="multipart/form-data">
 
 %unless ($Group->id) {
 <input type="hidden" class="hidden" name="id" value="new" />
@@ -109,7 +109,7 @@ else {
     $current_tab = 'Admin/Groups/Modify.html?id='.$id;
     if ($id eq 'new' ) {
 	
-	my ($create_id, $create_msg) = $Group->create_userDefinedGroup(name =>
+	my ($create_id, $create_msg) = $Group->create_user_defined_group(name =>
     "$name");
         unless ($create_id) {
             Abort (_("Group could not be Created: %1", $create_msg));

@@ -94,7 +94,7 @@ else {
         my $starts = RT::Date->new() ;
         $queue->load(1);
         $due->set_to_now;
-        $due->AddDays($queue->DefaultDueIn) if $queue->DefaultDueIn;
+        $due->add_days($queue->DefaultDueIn) if $queue->DefaultDueIn;
         $starts->set_to_now;
 
         return [
@@ -114,8 +114,8 @@ else {
                 initial_priority  => $queue->initial_priority,
                 final_priority    => $queue->final_priority,
                 time_estimated    => 0,
-                starts           => $starts->ISO,
-                Due              => $due->ISO,
+                starts           => $starts->iso,
+                Due              => $due->iso,
                 Text             => "",
             },
             0
@@ -181,7 +181,7 @@ if (!keys(%data)) {
     push @data, [ id    => "ticket/".$ticket->id   ];
     push @data, [ Queue => $ticket->queue_obj->name ] 
 	if (!%$fields || exists $fields->{lc 'Queue'});
-    push @data, [ Owner => $ticket->OwnerObj->name ]
+    push @data, [ Owner => $ticket->owner_obj->name ]
 	if (!%$fields || exists $fields->{lc 'Owner'});
     push @data, [ Creator => $ticket->creator_obj->name ]
 	if (!%$fields || exists $fields->{lc 'Creator'});
@@ -200,7 +200,7 @@ if (!keys(%data)) {
     foreach $key (@dates) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
         $time->set(Format => 'sql', value => $ticket->$key);
-        push @data, [ $key => $time->AsString ];
+        push @data, [ $key => $time->as_string ];
     }
 
     $time = RT::Date->new();
@@ -212,13 +212,13 @@ if (!keys(%data)) {
     }
 
     # Display custom fields
-    my $CustomFields = $ticket->queue_obj->TicketCustomFields();
+    my $CustomFields = $ticket->queue_obj->ticket_custom_fields();
     while (my $cf = $CustomFields->next()) {
 	next unless (!%$fields || (exists $fields->{"cf-".lc $cf->name}));
         my $vals = $ticket->custom_field_values($cf->id());
         my @out = ();
         while (my $v = $vals->next()) {
-            push @out, $v->Content;
+            push @out, $v->content;
         }
         push @data, [ 'CF-' . $cf->name => join ',', @out ];
     }
@@ -246,11 +246,11 @@ else {
 
         if ($key =~ /^queue$/i) {
             next if $val eq $ticket->queue_obj->name;
-            ($n, $s) = $ticket->set_Queue($val);
+            ($n, $s) = $ticket->set_queue($val);
         }
         elsif ($key =~ /^owner$/i) {
-            next if $val eq $ticket->OwnerObj->name;
-            ($n, $s) = $ticket->set_Owner($val);
+            next if $val eq $ticket->owner_obj->name;
+            ($n, $s) = $ticket->set_owner($val);
         }
         elsif (exists $simple{$key}) {
             $key = $simple{$key};
@@ -291,8 +291,8 @@ else {
                     push @msgs, [ $s, $n ];
                     next;
                 }
-                unless ($ticket->IsWatcher(Type => $type, Email => $p)) {
-                    ($s, $n) = $ticket->AddWatcher(Type => $type,
+                unless ($ticket->is_watcher(Type => $type, Email => $p)) {
+                    ($s, $n) = $ticket->add_watcher(Type => $type,
                                                    Email => $p);
                     push @msgs, [ $s, $n ];
                 }

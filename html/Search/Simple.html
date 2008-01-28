@@ -80,13 +80,13 @@ use RT::Search::Googleish;
 if ($q) {
     my $tickets = RT::Model::TicketCollection->new();
     if ($q =~ /^(\d+)$/) {
-        RT::Interface::Web::redirect(RT->Config->Get('WebURL')."/Ticket/Display.html?id=".$q);
+        RT::Interface::Web::redirect(RT->config->get('WebURL')."/Ticket/Display.html?id=".$q);
     }
 
     $m->callback( %ARGS, query => \$q, Callbackname => 'ModifyQuery' );
 
     if ($q =~ /^(\d+)$/) {
-        RT::Interface::Web::redirect(RT->Config->Get('WebURL')."/Ticket/Display.html?id=".$q);
+        RT::Interface::Web::redirect(RT->config->get('WebURL')."/Ticket/Display.html?id=".$q);
     }
 
     my %args = (
@@ -98,7 +98,7 @@ if ($q) {
 
     my $search = RT::Search::Googleish->new(%args);
 
-    $m->comp( "Results.html", Query => $search->QueryToSQL() );
+    $m->comp( "Results.html", Query => $search->query_to_sql() );
     $m->comp( "/Elements/Footer" );
     $m->abort();
 }

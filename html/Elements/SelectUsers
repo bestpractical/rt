@@ -57,6 +57,6 @@
 <input size="8" name="UserString" />
 <%INIT>
 my $CFs = RT::Model::CustomFieldCollection->new();
-$CFs->limit_ToChildType('RT::Model::User');
+$CFs->limit_to_child_type('RT::Model::User');
 $CFs->order_by( column => 'name' );
 </%INIT>

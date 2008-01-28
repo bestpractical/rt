@@ -53,7 +53,7 @@
 
 <%INIT>
 my $tickets = RT::Model::TicketCollection->new();
-my @sortfields = $tickets->SortFields();
+my @sortfields = $tickets->sort_fields();
 
 </%INIT>
 <%ARGS>

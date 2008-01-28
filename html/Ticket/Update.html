@@ -72,7 +72,7 @@
      name         => "Owner",
      ticket_obj    => $ticket_obj,
      queue_obj     => $ticket_obj->queue_obj,
-     DefaultLabel => _("%1 (Unchanged)", $ticket_obj->OwnerObj->name),
+     DefaultLabel => _("%1 (Unchanged)", $ticket_obj->owner_obj->name),
      Default      => $ARGS{'Owner'}
  &>
 <&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}||'' %>" /> 
@@ -83,7 +83,7 @@
 % if (!$skip) {
 <input type="hidden" class="hidden" name="id" value="<%$ticket_obj->id%>" /><br />
 % }
-<tr><td align="right"><&|/l&>Update Type</&>:</td>
+<tr><td align="right"><&|/l&>update Type</&>:</td>
 <td><select name="UpdateType">
 % if ($Cancomment) {
 <option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? "SELECTED" : !$ARGS{'UpdateType'}&&$commentDefault%>><&|/l&>comments (Not sent to requestors)</&></option>
@@ -93,7 +93,7 @@
 % }
 </select> 
 </td></tr>
-<tr><td align="right"><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $ticket_obj->Subject()%>" /></td></tr>
+<tr><td align="right"><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $ticket_obj->subject()%>" /></td></tr>
 
 <& /Ticket/Elements/UpdateCc, %ARGS, ticket_obj => $ticket_obj &>
 
@@ -103,7 +103,7 @@
 <tr>
 <td align="right"><% $CF->name %>:</td>
 <td><& /Elements/EditCustomField, CustomField => $CF, namePrefix =>
-    "Object-RT::Model::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
+    "Object-RT::Model::Transaction--CustomField-" &><em><% $CF->friendly_type %></em></td>
 </tr>
 %    } # end if while
 % } # end of if
@@ -119,7 +119,7 @@
 </tr>
 % } # end of if
 
-<tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" /><input type="hidden" class="hidden" name="UpdateAttach" value="1" />
+<tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>add More Files</&>" /><input type="hidden" class="hidden" name="UpdateAttach" value="1" />
 </td></tr>
 
 % if ( $gnupg_widget ) {

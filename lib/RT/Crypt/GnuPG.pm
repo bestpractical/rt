@@ -432,7 +432,7 @@ sub sign_encrypt {
         ];
     }
     
-    my $format = lc RT->Config->Get('GnuPG')->{'OutgoingMessagesFormat'} || 'RFC';
+    my $format = lc RT->config->get('GnuPG')->{'OutgoingMessagesFormat'} || 'RFC';
     if ( $format eq 'inline' ) {
         return sign_encrypt_inline( %args );
     } else {
@@ -455,7 +455,7 @@ sub sign_encrypt_rfc3156 {
     );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'default_key'} = $args{'Signer'}
         if $args{'Sign'} && $args{'Signer'};
@@ -634,7 +634,7 @@ sub _sign_encrypt_text_inline {
     return unless $args{'Sign'} || $args{'Encrypt'};
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'default_key'} = $args{'Signer'}
         if $args{'Sign'} && $args{'Signer'};
@@ -707,7 +707,7 @@ sub _sign_encrypt_text_inline {
     return %res;
 }
 
-sub _sign_encryptAttachmentInline {
+sub sign_encrypt_attachment_inline {
     my %args = (
         Entity => undef,
 
@@ -723,7 +723,7 @@ sub _sign_encryptAttachmentInline {
     return unless $args{'Sign'} || $args{'Encrypt'};
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'default_key'} = $args{'Signer'}
         if $args{'Sign'} && $args{'Signer'};
@@ -827,7 +827,7 @@ sub sign_encrypt_content {
     return unless $args{'Sign'} || $args{'Encrypt'};
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'default_key'} = $args{'Signer'}
         if $args{'Sign'} && $args{'Signer'};
@@ -1083,7 +1083,7 @@ sub verify_attachment {
     my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _prepare_gnupg_options( %opt ),
@@ -1132,7 +1132,7 @@ sub verify_rfc3156 {
     my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _prepare_gnupg_options( %opt ),
@@ -1187,7 +1187,7 @@ sub decrypt_rfc3156 {
     );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _prepare_gnupg_options( %opt ),
@@ -1268,7 +1268,7 @@ sub decrypt_inline {
     );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _prepare_gnupg_options( %opt ),
@@ -1362,7 +1362,7 @@ sub decrypt_content {
     );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _prepare_gnupg_options( %opt ),
@@ -1952,7 +1952,7 @@ sub get_keys_info {
     }
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'with-colons'} = undef; # parseable format
     $opt{'fingerprint'} = undef; # show fingerprint
@@ -2008,7 +2008,7 @@ sub get_keys_info {
 sub parse_keys_info {
     my @lines = @_;
 
-    my %gpg_opt = RT->Config->Get('GnuPGOptions');
+    my %gpg_opt = RT->config->get('GnuPGOptions');
 
     my @res = ();
     foreach my $line( @lines ) {
@@ -2158,7 +2158,7 @@ sub delete_key {
     my $key = shift;
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $gnupg->options->hash_init(
         _prepare_gnupg_options( %opt ),
         meta_interactive => 0,
@@ -2213,7 +2213,7 @@ sub import_key {
     my $key = shift;
 
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $gnupg->options->hash_init(
         _prepare_gnupg_options( %opt ),
         meta_interactive => 0,

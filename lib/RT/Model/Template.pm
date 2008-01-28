@@ -112,11 +112,11 @@ Load the global template with the name name
 
 =cut
 
-sub loadGlobalTemplate {
+sub load_global_template {
     my $self = shift;
     my $id   = shift;
 
-    return ( $self->loadQueueTemplate( Queue => 0, name => $id ) );
+    return ( $self->load_queue_template( Queue => 0, name => $id ) );
 }
 
 # }}}
@@ -129,7 +129,7 @@ Loads the Queue template named name for Queue QUEUE.
 
 =cut
 
-sub loadQueueTemplate {
+sub load_queue_template {
     my $self = shift;
     my %args = (
         Queue => undef,
@@ -227,9 +227,9 @@ returns false.
 
 =cut
 
-sub IsEmpty {
+sub is_empty {
      my $self = shift;
-    my $content = $self->Content;
+    my $content = $self->content;
     return 0 if defined $content && length $content;
     return 1;
  } 
@@ -241,7 +241,7 @@ undef if last call to L</Parse> failed or never be called.
  
 =cut
 
-sub MIMEObj {
+sub mime_obj {
     my $self = shift;
     return ( $self->{'MIMEObj'} );
 }
@@ -275,14 +275,14 @@ an error message.
  
 =cut
 
- sub Parse {
+ sub parse {
      my $self = shift;
 
     # clear prev MIME object
     $self->{'MIMEObj'} = undef;
 
      #We're passing in whatever we were passed. it's destined for _ParseContent
-     my ($content, $msg) = $self->_ParseContent(@_);
+     my ($content, $msg) = $self->_parse_content(@_);
      return ( 0, $msg ) unless defined $content && length $content;
 
      #Lets build our mime Entity
@@ -324,7 +324,7 @@ an error message.
 
 # Perform Template substitutions on the template
 
-sub _ParseContent {
+sub _parse_content {
     my $self = shift;
     my %args = (
         Argument       => undef,
@@ -333,7 +333,7 @@ sub _ParseContent {
         @_
     );
 
-    my $content = $self->Content;
+    my $content = $self->content;
     unless ( defined $content ) {
         return ( undef, _("Permissions denied") );
     }
@@ -348,14 +348,14 @@ sub _ParseContent {
 
     $args{'Ticket'} = delete $args{'ticket_obj'} if $args{'ticket_obj'};
     $args{'Transaction'} = delete $args{'transaction_obj'} if $args{'transaction_obj'};
-    $args{'Requestor'} = eval { $args{'Ticket'}->Requestors->UserMembersObj->first->name }
+    $args{'Requestor'} = eval { $args{'Ticket'}->requestors->user_members_obj->first->name }
         if $args{'Ticket'};
-    $args{'rtname'}    = RT->Config->Get('rtname');
+    $args{'rtname'}    = RT->config->get('rtname');
     if ( $args{'Ticket'} ) {
         my $t = $args{'Ticket'}; # avoid memory leak
-        $args{'loc'} = sub { _(@_) };
+        $args{'loc'} = sub  { _(@_) };
     } else {
-        $args{'loc'} = sub { _(@_) };
+        $args{'loc'} = sub  { _(@_) };
     }
 
     foreach my $key ( keys %args ) {
@@ -369,7 +369,7 @@ sub _ParseContent {
     my $is_broken = 0;
     my $retval = $template->fill_in(
         HASH => \%args,
-        BROKEN => sub {
+        BROKEN => sub  {
             my (%args) = @_;
             Jifty->log->error("Template parsing error: $args{error}")
                 unless $args{error} =~ /^Died at /; # ignore intentional die()

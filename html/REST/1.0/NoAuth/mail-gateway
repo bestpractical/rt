@@ -66,11 +66,11 @@ if ( $status == 1 ) {
   if ( $Ticket &&  $Ticket->id ) {
     $m->out( 'Ticket: '  . ($Ticket->id             || '') );
     $m->out( 'Queue: '   . ($Ticket->queue_obj->name || '') );
-    $m->out( 'Owner: '   . ($Ticket->OwnerObj->name || '') );
+    $m->out( 'Owner: '   . ($Ticket->owner_obj->name || '') );
     $m->out( 'Status: '  . ($Ticket->Status         || '') );
-    $m->out( 'Subject: ' . ($Ticket->Subject        || '') );
+    $m->out( 'Subject: ' . ($Ticket->subject        || '') );
     $m->out(
-      'Requestor: ' . ($Ticket->Requestors->member_emailsAsString || '') );
+      'Requestor: ' . ($Ticket->requestors->member_emails_as_string || '') );
   }
 }
 else {

@@ -110,7 +110,7 @@ Removes some of the nastiest nasties from the user\'s environment.
 
 =cut
 
-sub CleanEnv {
+sub clean_env {
     $ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
     $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
     $ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
@@ -134,7 +134,7 @@ loaded with that user.  if the current user isn't found, returns a copy of RT::N
 
 =cut
 
-sub GetCurrentUser  {
+sub get_current_user {
     
     require RT::CurrentUser;
     
@@ -146,7 +146,7 @@ sub GetCurrentUser  {
     #is that of the currentuser.
 
     $CurrentUser = RT::CurrentUser->new();
-    $CurrentUser->loadByGecos($Gecos);
+    $CurrentUser->load_by_gecos($Gecos);
     
     unless ($CurrentUser->id) {
 	Jifty->log->debug("No user with a unix login of '$Gecos' was found. ");
@@ -184,7 +184,7 @@ array of lines.
 
 =cut
 
-sub GetMessageContent {
+sub get_message_content {
     my %args = (  Source => undef,
 		  Content => undef,
 		  Edit => undef,

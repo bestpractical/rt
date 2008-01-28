@@ -96,7 +96,7 @@ use Win32::TieRegistry;
 my $ProcessObj;
 
 BEGIN {
-    my $runsvc = sub {
+    my $runsvc = sub  {
 	Win32::Process::Create(
 	    $ProcessObj, $^X, "$^X $0 --run", 0, NORMAL_PRIORITY_CLASS, "."
 	) or do {
@@ -111,7 +111,7 @@ BEGIN {
 	$Win32::TieRegistry::Registry->{
 	    'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\\'.
 	    'W3SVC\Parameters\Virtual Roots\\'
-	}->{RT->Config->Get('WebPath') || '/'} = "$path,,205";
+	}->{RT->config->get('WebPath') || '/'} = "$path,,205";
 	    
 	$Win32::TieRegistry::Registry->{
 	    'HKEY_LOCAL_MACHINE\Software\FASTCGI\.html\\'
@@ -210,7 +210,7 @@ BEGIN {
 	exit;
     }
     elsif ($ARGV[0] ne '--run') {
-	$SIG{__DIE__} = sub { $ProcessObj->Kill(0) if $ProcessObj };
+	$SIG{__DIE__} = sub  { $ProcessObj->Kill(0) if $ProcessObj };
 	$runsvc->();
 	warn "RT FastCGI Handler launched. Press [Enter] to terminate...\n";
 	<STDIN>;
@@ -231,7 +231,7 @@ while( my $cgi = CGI::Fast->new ) {
     my $comp = $ENV{'PATH_INFO'};
 
     $comp = $1 if ($comp =~ /^(.*)$/);
-    my $web_path = RT->Config->Get('WebPath');
+    my $web_path = RT->config->get('WebPath');
     $comp =~ s|^\Q$web_path\E\b||i;
     $comp .= "index.html" if ($comp =~ /\/$/);
     $comp =~ s/.pl$/.html/g;
@@ -239,7 +239,7 @@ while( my $cgi = CGI::Fast->new ) {
     warn "Serving $comp\n";
 
     $Handler->handle_cgi($comp);
-    RT::Interface::Web::Handler->CleanupRequest();
+    RT::Interface::Web::Handler->cleanup_request();
     # _should_ always be tied
 }
 

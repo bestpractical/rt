@@ -58,12 +58,12 @@ RT::Shredder::Plugin::Base - base class for Shredder plugins.
 
 =cut
 
-sub Type { return 'dump' }
-sub AppliesToStates { return () }
-sub SupportArgs { return () }
+sub type { return 'dump' }
+sub applies_to_states { return () }
+sub support_args { return () }
 
-sub PushMark { return 1 }
-sub PopMark { return 1 }
-sub rollbackTo { return 1 }
+sub push_mark { return 1 }
+sub pop_mark { return 1 }
+sub rollback_to { return 1 }
 
 1;

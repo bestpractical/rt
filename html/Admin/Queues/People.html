@@ -66,11 +66,11 @@
 
 <&|/l&>Cc</&>:
 
-<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, Watchers => $queue_obj->Cc &>
+<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, Watchers => $queue_obj->cc &>
 
 <&|/l&>Administrative Cc</&>:
 
-<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, Watchers => $queue_obj->AdminCc &>
+<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, Watchers => $queue_obj->admin_cc &>
 
 
 </td>
@@ -86,7 +86,7 @@
 <input type="submit" class="button" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
 
 <p>
-<&|/l&>Add new watchers</&>:<br />
+<&|/l&>add new watchers</&>:<br />
 <p>
 <strong><&|/l&>Users</&></strong>
 % if ($user_msg) {
@@ -165,7 +165,7 @@ foreach my  $key (keys %ARGS) {
     if ( ($ARGS{$key} =~ /^(AdminCc|Cc)$/) and
 	 ($key =~ /^Queue-AddWatcher-Principal-(\d*)$/) ) {
 	Jifty->log->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
-	my ($code, $msg) = $queue_obj->AddWatcher(Type => $ARGS{$key},
+	my ($code, $msg) = $queue_obj->add_watcher(Type => $ARGS{$key},
 				                             principal_id => $1);
 	push @results, $msg;
     }

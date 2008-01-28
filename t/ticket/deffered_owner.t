@@ -17,7 +17,7 @@ my $queue = RT::Test->load_or_create_queue( name => 'General' );
 ok $queue && $queue->id, 'loaded or Created queue';
 
 my $owner_role_group = RT::Model::Group->new(current_user => RT->system_user );
-$owner_role_group->loadQueueRoleGroup( Type => 'Owner', Queue => $queue->id );
+$owner_role_group->load_queue_role_group( Type => 'Owner', Queue => $queue->id );
 ok $owner_role_group->id, 'loaded owners role group of the queue';
 
 diag "check that defering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
@@ -42,7 +42,7 @@ diag "check that defering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
     is $ticket->Owner, $tester->id, 'correct owner';
-    like $ticket->AdminCcAddresses, qr/root\@localhost/, 'root is an admincc';
+    like $ticket->admin_cc_addresses, qr/root\@localhost/, 'root is an admincc';
 }
 diag "check that previous trick doesn't work without sufficient rights"
     if $ENV{'TEST_VERBOSE'};
@@ -64,7 +64,7 @@ diag "check that previous trick doesn't work without sufficient rights"
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
     is $ticket->Owner, $tester->id, 'correct owner';
-    unlike $ticket->AdminCcAddresses, qr/root\@localhost/, 'root is there';
+    unlike $ticket->admin_cc_addresses, qr/root\@localhost/, 'root is there';
 }
 
 diag "check that defering owner really works" if $ENV{'TEST_VERBOSE'};
@@ -73,7 +73,7 @@ diag "check that defering owner really works" if $ENV{'TEST_VERBOSE'};
         { Principal => $tester->principal_object,
           Right => [qw(SeeQueue ShowTicket create_ticket)],
         },
-        { Principal => $queue->Cc->principal_object,
+        { Principal => $queue->cc->principal_object,
           Object => $queue,
           Right => [qw(OwnTicket TakeTicket)],
         },
@@ -88,7 +88,7 @@ diag "check that defering owner really works" if $ENV{'TEST_VERBOSE'};
     );
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
-    like $ticket->CcAddresses, qr/tester\@localhost/, 'tester is in the cc list';
+    like $ticket->cc_addresses, qr/tester\@localhost/, 'tester is in the cc list';
     is $ticket->Owner, $tester->id, 'tester is also owner';
 }
 
@@ -109,7 +109,7 @@ diag "check that defering doesn't work without correct rights" if $ENV{'TEST_VER
     );
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
-    like $ticket->CcAddresses, qr/tester\@localhost/, 'tester is in the cc list';
+    like $ticket->cc_addresses, qr/tester\@localhost/, 'tester is in the cc list';
     isnt $ticket->Owner, $tester->id, 'tester is also owner';
 }
 

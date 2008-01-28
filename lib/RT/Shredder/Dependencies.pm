@@ -89,8 +89,8 @@ sub _PushDependencies
 {
     my $self = shift;
     my %args = ( TargetObjects => undef, Shredder => undef, @_ );
-    my @objs = $args{'Shredder'}->CastObjectsToRecords( Objects => delete $args{'TargetObjects'} );
-    $self->_PushDependency( %args, TargetObject => $_ ) foreach @objs;
+    my @objs = $args{'Shredder'}->cast_objects_to_records( Objects => delete $args{'TargetObjects'} );
+    $self->_push_dependency( %args, TargetObject => $_ ) foreach @objs;
     return;
 }
 
@@ -104,7 +104,7 @@ sub _PushDependency
             Shredder => undef,
             @_
            );
-    my $rec = $args{'Shredder'}->PutObject( Object => $args{'TargetObject'} );
+    my $rec = $args{'Shredder'}->put_object( Object => $args{'TargetObject'} );
     return if $rec->{'State'} & WIPED; # there is no object anymore
 
     push @{ $self->{'list'} },
@@ -140,8 +140,8 @@ sub List
 
     return
         map $args{'Callback'}? $args{'Callback'}->($_): $_,
-        grep !defined( $wflags ) || ($_->Flags & $wflags) == $wflags,
-        grep !defined( $woflags ) || !($_->Flags & $woflags),
+        grep !defined( $wflags ) || ($_->flags & $wflags) == $wflags,
+        grep !defined( $woflags ) || !($_->flags & $woflags),
         @{ $self->{'list'} };
 }
 

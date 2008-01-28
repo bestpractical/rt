@@ -56,13 +56,13 @@ $RSSFeedURL => undef
 $ShortQueryString => undef
 
 </%args>
-<a href="<%RT->Config->Get('WebPath')%>/Search/Bulk.html<%$QueryString%>"><&|/l&>Update multiple tickets</&></a><br />
-<a href="<%RT->Config->Get('WebPath')%>/Search/Results.html<%$QueryString%>"><&|/l&>Bookmarkable link</&></a><br />
-<a href="<%RT->Config->Get('WebPath')%>/Search/Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a> |
+<a href="<%RT->config->get('WebPath')%>/Search/Bulk.html<%$QueryString%>"><&|/l&>update multiple tickets</&></a><br />
+<a href="<%RT->config->get('WebPath')%>/Search/Results.html<%$QueryString%>"><&|/l&>Bookmarkable link</&></a><br />
+<a href="<%RT->config->get('WebPath')%>/Search/Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a> |
 <a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a> |
-<a href="<%RT->Config->Get('WebPath')%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Work offline</&></a><br />
+<a href="<%RT->config->get('WebPath')%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Work offline</&></a><br />
 
-<form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html"><&|/l&>chart</&>
+<form method="get" action="<%RT->config->get('WebPath')%>/Search/Chart.html"><&|/l&>chart</&>
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, order_by => $order_by, Order => $Order);
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>" />
@@ -81,5 +81,5 @@ if ( Jifty->web->current_user->has_right( Right => 'SuperUser', Object => RT->sy
         'Tickets:limit' => $Rows || '',
     );
 </%PERL>
-<a href="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shredder/?<% $query_string |n %>"><&|/l&>Shredder...</&></a>
+<a href="<% RT->config->get('WebPath') %>/Admin/Tools/Shredder/?<% $query_string |n %>"><&|/l&>Shredder...</&></a>
 % }

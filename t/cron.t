@@ -70,7 +70,7 @@ my $search = RT::Search::FromSQL->new(
 is(ref($search), 'RT::Search::FromSQL', "search Created");
 ok($search->prepare(), "from_sql search run");
 my $counter = 0;
-while(my $t = $search->TicketsObj->next() ) {
+while(my $t = $search->tickets_obj->next() ) {
     is($t->id(), $ticket1->id(), "from_sql search results 1");
     $counter++;
 }

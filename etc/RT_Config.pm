@@ -269,7 +269,7 @@ set($UseFriendlyToLine , 0);
 
 # sprintf() format of the friendly 'From:' header; its arguments
 # are WatcherType and TicketId.
-set($FriendlyToLineFormat, "\"%s of ". RT->Config->Get('rtname') ." Ticket #%s\":;");
+set($FriendlyToLineFormat, "\"%s of ". RT->config->get('rtname') ." Ticket #%s\":;");
 
 # By default, RT doesn't notify the person who performs an update, as they
 # already know what they've done. If you'd like to change this behaviour,
@@ -427,17 +427,17 @@ set($WebPort, 80);# + ($< * 7274) % 32766 + ($< && 1024));
 # This is the Scheme, server and port for constructing urls to webrt
 # $WebBaseURL doesn't need a trailing /
 
-set($WebBaseURL, "http://localhost:". RT->Config->Get('WebPort'));
+set($WebBaseURL, "http://localhost:". RT->config->get('WebPort'));
 
-set($WebURL, RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') . "/");
+set($WebURL, RT->config->get('WebBaseURL') . RT->config->get('WebPath') . "/");
 
 # $WebImagesURL points to the base URL where RT can find its images.
 
-set($WebImagesURL, RT->Config->Get('WebPath') . "/NoAuth/images/");
+set($WebImagesURL, RT->config->get('WebPath') . "/NoAuth/images/");
 
 # $LogoURL points to the URL of the RT logo displayed in the web UI
 
-set($LogoURL, $Config->Get('WebImagesURL') . "bplogo.gif");
+set($LogoURL, $Config->get('WebImagesURL') . "bplogo.gif");
 
 # WebNoAuthRegex - What portion of RT's URLspace should not require
 # authentication.

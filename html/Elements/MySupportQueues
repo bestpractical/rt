@@ -48,7 +48,7 @@
 <&|/Widgets/TitleBox, title => _("Queues I'm an AdminCc for"), bodyclass => "" &>
 <& /Elements/QueueSummary,
    cache => 'my_support_queues',
-   queue_filter => sub { $_->IsAdminCc(Jifty->web->current_user->id) },
+   queue_filter => sub  { $_->is_admin_cc(Jifty->web->current_user->id) },
    conditions => [ {cond => "Status = 'new'",  name => _('new')  },
 		   {cond => "Status = 'open'", name => _('open') }] &>
 </&>

@@ -7,8 +7,8 @@ use base qw/Jifty::Bootstrap/;
 
 sub run {
     my $self = shift;
-    $self->InsertInitialData();
-        $self->InsertData( $RT::EtcPath . "/initialdata" );
+    $self->insert_initial_data();
+        $self->insert_data( $RT::EtcPath . "/initialdata" );
 }
 
 =head1 METHODS
@@ -30,11 +30,11 @@ Fetches type and name of the DB from the config.
 
 =cut
 
-sub CreateDatabase {
+sub create_database {
     my $self = shift;
     my $dbh  = shift || die "No DBI handle provided";
-    my $db_type = RT->Config->Get('DatabaseType');
-    my $db_name = RT->Config->Get('Databasename');
+    my $db_type = RT->config->get('DatabaseType');
+    my $db_name = RT->config->get('Databasename');
     #print "Creating $db_type database $db_name.\n";
     if ( $db_type eq 'SQLite' ) {
         return;
@@ -71,14 +71,14 @@ Fetches type and name of the DB from the config.
 
 =cut
 
-sub DropDatabase {
+sub drop_database {
     my $self = shift;
     my $dbh  = shift || die "No DBI handle provided";
     my %args = ( Force => 0, @_ );
 
-    my $db_type = RT->Config->Get('DatabaseType');
-    my $db_name = RT->Config->Get('Databasename');
-    my $db_host = RT->Config->Get('DatabaseHost');
+    my $db_type = RT->config->get('DatabaseType');
+    my $db_name = RT->config->get('Databasename');
+    my $db_host = RT->config->get('DatabaseHost');
 
     if ( $db_type eq 'Oracle' ) {
         print <<END;
@@ -118,17 +118,17 @@ sub _yesno {
     $x =~ /^y/i;
 }
 
-sub InsertACL{}
+sub insert_acl {}
 
 =head2 InsertSchema
 
 =cut
 
-sub InsertSchema {
+sub insert_schema {
     my $self = shift;
     my $dbh  = shift || $self->dbh;
     my $base_path = (shift || $RT::EtcPath);
-    my $db_type = RT->Config->Get('DatabaseType');
+    my $db_type = RT->config->get('DatabaseType');
 
     my $file = get_version_file( $base_path . "/schema." . $db_type );
     unless ( $file ) {
@@ -160,7 +160,7 @@ sub InsertSchema {
     }
     close $fh_schema; close $fh_schema_local;
 
-    local $SIG{__WARN__} = sub {};
+    local $SIG{__WARN__} = sub  {};
     my $is_local = 0; # local/etc/schema needs to be nonfatal.
     $dbh->begin_work or die $dbh->errstr;
     foreach my $statement (@schema) {
@@ -222,9 +222,9 @@ sub cmp_version($$) {
 
 =cut
 
-sub InsertInitialData {
+sub insert_initial_data {
     my $self    = shift;
-    my $db_type = RT->Config->Get('DatabaseType');
+    my $db_type = RT->config->get('DatabaseType');
 
 
 
@@ -286,7 +286,7 @@ sub InsertInitialData {
 =cut
 
 # load some sort of data into the database
-sub InsertData {
+sub insert_data {
     my $self     = shift;
     my $datafile = shift;
 
@@ -323,7 +323,7 @@ sub InsertData {
                         $parent->load_by_cols( %$_ );
                     }
                     elsif ( !ref $_ ) {
-                        $parent->loadUserDefinedGroup( $_ );
+                        $parent->load_user_defined_group( $_ );
                     }
                     else {
                       print "(Error: wrong format of MemberOf field."
@@ -384,7 +384,7 @@ sub InsertData {
             }
 
             foreach my $value ( @{$values} ) {
-                my ( $return, $msg ) = $new_entry->AddValue(%$value);
+                my ( $return, $msg ) = $new_entry->add_value(%$value);
                 #print "(Error: $msg)\n" unless $return;
             }
 
@@ -439,15 +439,15 @@ sub InsertData {
             if ( $item->{'GroupDomain'} ) {
                 $princ = RT::Model::Group->new(current_user => RT->system_user);
                 if ( $item->{'GroupDomain'} eq 'UserDefined' ) {
-                  $princ->loadUserDefinedGroup( $item->{'GroupId'} );
+                  $princ->load_user_defined_group( $item->{'GroupId'} );
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
                   $princ->load_system_internal_group( $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::System-Role' ) {
-                  $princ->loadSystemRoleGroup( $item->{'GroupType'} );
+                  $princ->load_system_role_group( $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::Model::Queue-Role' &&
                           $item->{'Queue'} )
                 {
-                  $princ->loadQueueRoleGroup( Type => $item->{'GroupType'},
+                  $princ->load_queue_role_group( Type => $item->{'GroupType'},
                                               Queue => $object->id);
                 } else {
                   $princ->load( $item->{'GroupId'} );
@@ -560,7 +560,7 @@ sub InsertData {
         }
     }
 
-    my $db_type = RT->Config->Get('DatabaseType');
+    my $db_type = RT->config->get('DatabaseType');
     #print "Done setting up database content.\n";
 }
 
@@ -570,7 +570,7 @@ Given a userid, return that user's acl equivalence group
 
 =cut
 
-sub ACLEquivGroupId {
+sub acl_equiv_group_id {
     my $username = shift;
     my $user     = RT::Model::User->new(current_user => RT->system_user);
     $user->load($username);

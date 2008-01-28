@@ -128,7 +128,7 @@ Takes a unix username as its only argument.
 
 =cut
 
-sub loadByGecos  {
+sub load_by_gecos {
     my $self = shift;
     return $self->new( "Gecos", shift );
 }
@@ -176,7 +176,7 @@ string no longer than 32 bytes.
 
 =cut
 
-sub Authenticate { 
+sub authenticate { 
     my ($self, $password, $Created, $nonce, $realm) = @_;
 
     require Digest::MD5;

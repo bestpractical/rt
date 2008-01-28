@@ -93,10 +93,10 @@ sub create_users {
 	my @groups = @{$ARGS{'groups'}};
 	foreach my $group (@groups) {
 	    my $group_obj = RT::Model::Group->new();
-	    $group_obj->loadUserDefinedGroup($group);
+	    $group_obj->load_user_defined_group($group);
 	    unless ($group_obj->id()) {
 		# Create it.
-		$group_obj->create_userDefinedGroup(
+		$group_obj->create_user_defined_group(
 				name => $group,
 				Description => "lorem defined group $group",
 						   );

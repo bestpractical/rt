@@ -56,7 +56,7 @@
 % if (Jifty->web->current_user->has_right( Object=> RT->system, Right => 'SuperUser')) {
 <p>
   <&|/l&>You can also edit the predefined search itself</&>:
-  <a href="<% RT->Config->Get('WebPath').'/Search/Build.html?'.
+  <a href="<% RT->config->get('WebPath').'/Search/Build.html?'.
 	  $m->comp('/Elements/QueryString',
 		   LoadSavedSearch => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->name %></a>
 </p>
@@ -85,9 +85,9 @@ Abort('No search specified')
 
 my $search = $class->new();
 $search->load_by_id ($id);
-$title .= _($search->Description, _('"N"'));
+$title .= _($search->description, _('"N"'));
 my $user = Jifty->web->current_user->user_object;
-my $SearchArg = $user->Preferences($search, $search->Content);
+my $SearchArg = $user->preferences($search, $search->Content);
 $ARGS{Order}       = (ref $ARGS{Order}   ? join('|',grep {/\S/} @{$ARGS{Order}})   : $ARGS{Order});
 $ARGS{order_by}     = (ref $ARGS{order_by} ? join('|',grep {/\S/} @{$ARGS{order_by}}) : $ARGS{order_by});
 for (@fields) {
@@ -104,7 +104,7 @@ my ( $AvailableColumns, $CurrentFormat );
 
 if ($ARGS{'Save'}) {
     my $hash = {map { $_ => $ARGS{$_}} @fields};
-    my $pref = $user->set_Preferences ($search, $hash);
+    my $pref = $user->set_preferences ($search, $hash);
     push @actions, _('Preferences saved.');
 }
 

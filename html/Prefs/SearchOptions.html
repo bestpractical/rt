@@ -72,7 +72,7 @@ $order_by = join '|', grep defined && /\S/, (ref $order_by)? @{$order_by}: $orde
 $Order       = (ref $Order   ? join('|',grep {/\S/} @{$Order})   : $Order);
 $order_by     = (ref $order_by ? join('|',grep {/\S/} @{$order_by}) : $order_by);
 if ($ARGS{'SavePreferences'}) {
-    Jifty->web->current_user->user_object->set_Preferences("SearchDisplay",
+    Jifty->web->current_user->user_object->set_preferences("SearchDisplay",
     {
        Format      => $Format,
        Order       => $Order,
@@ -84,7 +84,7 @@ if ($ARGS{'SavePreferences'}) {
 # }}}
 
 # Read from user preferences
-my $prefs = Jifty->web->current_user->user_object->Preferences("SearchDisplay") || {};
+my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
 
 $Format      ||= $prefs->{'Format'};
 $Order       ||= ($prefs->{'Order'} || 'ASC');

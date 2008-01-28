@@ -59,7 +59,7 @@
 %#		  Available => \@items,
 %#                # you can do things with @{$sel->{Current}} in the 
 %#                # OnSubmit callback
-%#		  OnSubmit => sub { my $sel = shift; },
+%#		  OnSubmit => sub  { my $sel = shift; },
 %#		  Selected => \@selected);
 %#
 %# $m->comp ('/Widgets/SelectionBox:process', %ARGS, self => $sel)
@@ -74,8 +74,8 @@
 %# on every button clicked in non-js mode.
 <%method header>
 % unless ($nojs) {
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/class.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/list.js"></script>
+<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/class.js"></script>
+<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/list.js"></script>
 % }
 <%ARGS>
 $nojs => 0

@@ -131,14 +131,14 @@ $m->flush_buffer();
 my $Transactions = RT::Model::TransactionCollection->new();
 if ($Tickets) {
     while (my $t = $Tickets->next) {
-        $Transactions->limit_ToTicket($t->id);
+        $Transactions->limit_to_ticket($t->id);
     }
 } else {
-    $Transactions = $Ticket->Transactions;
+    $Transactions = $Ticket->transactions;
 }
 
 
-my $OldestFirst = RT->Config->Get( 'OldestTransactionsFirst', Jifty->web->current_user );
+my $OldestFirst = RT->config->get( 'OldestTransactionsFirst', Jifty->web->current_user );
 $OldestFirst = $OldestFirst? 'ASC': 'DESC';
 $Transactions->order_by( { column => 'Created',
                               order => $OldestFirst },
@@ -152,7 +152,7 @@ $AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket =
 
 </%INIT>
 <%ARGS>
-$URIFile => RT->Config->Get('WebPath')."/Ticket/Display.html"
+$URIFile => RT->config->get('WebPath')."/Ticket/Display.html"
 $Ticket => undef
 $Tickets => undef
 $Attachments => undef

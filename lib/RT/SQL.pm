@@ -68,23 +68,23 @@ my $re_op          = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIK
 my $reopen_paren  = qr[\(];
 my $reclose_paren = qr[\)];
 
-sub ParseToArray {
+sub parse_to_array {
     my ($string) = shift;
 
     my ($tree, $node, @pnodes);
     $node = $tree = [];
 
     my %callback;
-    $callback{'open_paren'} = sub { push @pnodes, $node; $node = []; push @{ $pnodes[-1] }, $node };
-    $callback{'close_paren'} = sub { $node = pop @pnodes };
-    $callback{'entry_aggregator'} = sub { push @$node, $_[0] };
-    $callback{'Condition'} = sub { push @$node, { Key => $_[0], Op => $_[1], Value => $_[2] } };
+    $callback{'open_paren'} = sub  { push @pnodes, $node; $node = []; push @{ $pnodes[-1] }, $node };
+    $callback{'close_paren'} = sub  { $node = pop @pnodes };
+    $callback{'entry_aggregator'} = sub  { push @$node, $_[0] };
+    $callback{'Condition'} = sub  { push @$node, { Key => $_[0], Op => $_[1], Value => $_[2] } };
 
     Parse($string, \%callback);
     return $tree;
 }
 
-sub Parse {
+sub parse {
     my ($string, $cb) = @_;
     $string = '' unless defined $string;
 
@@ -195,7 +195,7 @@ sub Parse {
     }
 }
 
-sub _BitmaskToString {
+sub _bitmask_to_string {
     my $mask = shift;
 
     my @res;

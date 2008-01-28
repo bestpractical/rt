@@ -55,7 +55,7 @@ my $message = '';
 if ( $QuoteTransaction ) {
     my $transaction = RT::Model::Transaction->new();
     $transaction->load( $QuoteTransaction );
-    $message = $transaction->Content( Quote => 1 );
+    $message = $transaction->content( Quote => 1 );
 }
 
 my $signature = '';
@@ -68,8 +68,8 @@ if ( $IncludeSignature and my $text = Jifty->web->current_user->user_object->Sig
 $QuoteTransaction => undef
 $name             => 'Content'
 $Default          => ''
-$Width            => RT->Config->Get('MessageBoxWidth', Jifty->web->current_user ) || 72
-$Height           => RT->Config->Get('MessageBoxHeight', Jifty->web->current_user ) || 15
-$Wrap             => RT->Config->Get('MessageBoxWrap') || 'HARD'
+$Width            => RT->config->get('MessageBoxWidth', Jifty->web->current_user ) || 72
+$Height           => RT->config->get('MessageBoxHeight', Jifty->web->current_user ) || 15
+$Wrap             => RT->config->get('MessageBoxWrap') || 'HARD'
 $IncludeSignature => 1
 </%ARGS>

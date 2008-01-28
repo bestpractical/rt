@@ -27,7 +27,7 @@ my $q2 = RT::Model::Queue->new(current_user => RT->system_user);
 ok($q2->load($id));
 is($q2->id, $id, "Sucessfully loaded the queue again");
 is($q2->name, 'Regression');
-is($q2->Description, 'A regression test queue');
+is($q2->description, 'A regression test queue');
 is($q2->correspond_address, 'correspond@a');
 is($q2->comment_address, 'comment@a');
 

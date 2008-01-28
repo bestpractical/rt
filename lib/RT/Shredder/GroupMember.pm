@@ -76,43 +76,43 @@ sub __DependsOn
 
     # XXX: right delegations should be cleaned here
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => DEPENDS_ON,
             TargetObjects => $list,
             Shredder => $args{'Shredder'}
         );
 
-    my $group = $self->GroupObj->Object;
+    my $group = $self->group_obj->object;
     # XXX: If we delete member of the ticket owner role group then we should also
     # fix ticket object, but only if we don't plan to delete group itself!
-    unless( ($group->Type || '') eq 'Owner' &&
+    unless( ($group->type || '') eq 'Owner' &&
         ($group->Domain || '') eq 'RT::Model::Ticket-Role' ) {
         return $self->SUPER::__DependsOn( %args );
     }
 
     # we don't delete group, so we have to fix Ticket and Group
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
                 base_object => $self,
                 Flags => DEPENDS_ON | VARIABLE,
                 TargetObjects => $group,
                 Shredder => $args{'Shredder'}
         );
-    $args{'Shredder'}->PutResolver(
+    $args{'Shredder'}->put_resolver(
             BaseClass => ref $self,
             TargetClass => ref $group,
-            Code => sub {
+            Code => sub  {
                 my %args = (@_);
                 my $group = $args{'TargetObject'};
-                return if $args{'Shredder'}->GetState( Object => $group ) & (WIPED|IN_WIPING);
-                return unless ($group->Type || '') eq 'Owner';
+                return if $args{'Shredder'}->get_state( Object => $group ) & (WIPED|IN_WIPING);
+                return unless ($group->type || '') eq 'Owner';
                 return unless ($group->Domain || '') eq 'RT::Model::Ticket-Role';
 
-                return if $group->MembersObj->count > 1;
+                return if $group->members_obj->count > 1;
 
                 my $group_member = $args{'base_object'};
 
-                if( $group_member->MemberObj->id == RT->nobody->id ) {
+                if( $group_member->member_obj->id == RT->nobody->id ) {
                     RT::Shredder::Exception->throw( "Couldn't delete Nobody from owners role group" );
                 }
 
@@ -150,27 +150,27 @@ sub __Relates
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-    my $obj = $self->MemberObj;
+    my $obj = $self->member_obj;
     if( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+        my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'} = "Have no related Principal #". $self->MemberId ." object.";
     }
 
-    $obj = $self->GroupObj;
+    $obj = $self->group_obj;
     if( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->GetRecord( Object => $self );
+        my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'} = "Have no related Principal #". $self->GroupId ." object.";
     }
 
-    $deps->_PushDependencies(
+    $deps->_push_dependencies(
             base_object => $self,
             Flags => RELATES,
             TargetObjects => $list,

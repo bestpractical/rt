@@ -156,7 +156,7 @@ Loads the Condition module in question.
 =cut
 
 
-sub loadCondition  {
+sub load_condition {
     my $self = shift;
     my %args = ( transaction_obj => undef,
 		 ticket_obj => undef,
@@ -173,8 +173,8 @@ sub loadCondition  {
 					 'ticket_obj' => $args{'ticket_obj'},
 					 'scrip_obj' => $args{'scrip_obj'},
 					 'transaction_obj' => $args{'transaction_obj'},
-					 'Argument' => $self->Argument,
-				     'ApplicableTransTypes' => $self->ApplicableTransTypes,
+					 'Argument' => $self->argument,
+				     'ApplicableTransTypes' => $self->applicable_trans_types,
                      CurrentUser => $self->current_user 
 				       );
 }
@@ -191,9 +191,9 @@ Helper method to call the condition module\'s Describe method.
 
 =cut
 
-sub Describe  {
+sub describe {
     my $self = shift;
-    return ($self->{'Condition'}->Describe());
+    return ($self->{'Condition'}->describe());
     
 }
 # }}}
@@ -206,9 +206,9 @@ Helper method to call the condition module\'s IsApplicable method.
 
 =cut
 
-sub IsApplicable  {
+sub is_applicable {
     my $self = shift;
-    return ($self->{'Condition'}->IsApplicable());
+    return ($self->{'Condition'}->is_applicable());
     
 }
 # }}}

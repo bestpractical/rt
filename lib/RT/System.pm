@@ -66,16 +66,16 @@ those rights globally.
 
 =cut
 
-sub AvailableRights {
+sub available_rights {
     my $self = shift;
 
     my $queue = RT::Model::Queue->new(current_user => RT->system_user);
     my $group = RT::Model::Group->new(current_user => RT->system_user);
     my $cf    = RT::Model::CustomField->new(current_user => RT->system_user);
 
-    my $qr = $queue->AvailableRights();
-    my $gr = $group->AvailableRights();
-    my $cr = $cf->AvailableRights();
+    my $qr = $queue->available_rights();
+    my $gr = $group->available_rights();
+    my $cr = $cf->available_rights();
 
     # Build a merged list of all system wide rights, queue rights and group rights.
     my %rights = (%{$RIGHTS}, %{$gr}, %{$qr}, %{$cr});

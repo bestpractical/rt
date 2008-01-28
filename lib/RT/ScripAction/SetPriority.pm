@@ -57,7 +57,7 @@ use vars qw/@ISA/;
 #What does this type of Action does
 
 # {{{ sub Describe 
-sub Describe  {
+sub describe {
   my $self = shift;
   return (ref $self . " will set a ticket's priority to the argument provided.");
 }

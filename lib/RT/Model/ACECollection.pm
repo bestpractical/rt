@@ -121,7 +121,7 @@ an RT::Record class.
 
 =cut
 
-sub limit_NotObject {
+sub limitnot_object {
     my $self = shift;
     my $obj  = shift;
     unless ( defined($obj)
@@ -162,7 +162,7 @@ if IncludeGroupMembership => 1 is specified, ACEs which apply to the principal d
 
 =cut
 
-sub limit_ToPrincipal {
+sub limit_to_principal {
     my $self = shift;
     my %args = ( Type                               => undef,
                  id                                 => undef,
@@ -217,10 +217,10 @@ Don't list rights which have been delegated.
 
 =cut
 
-sub ExcludeDelegatedRights {
+sub exclude_delegated_rights {
     my $self = shift;
-    $self->DelegatedBy(Id => 0);
-    $self->DelegatedFrom(Id => 0);
+    $self->delegated_by(Id => 0);
+    $self->delegated_from(Id => 0);
 }
 # }}}
 
@@ -235,7 +235,7 @@ Id is not optional.
 
 =cut
 
-sub DelegatedBy {
+sub delegated_by {
     my $self = shift;
     my %args = (
         id => undef,
@@ -263,7 +263,7 @@ Id is not optional.
 
 =cut
 
-sub DelegatedFrom {
+sub delegated_from {
     my $self = shift;
     my %args = (
                  id => undef,
@@ -283,9 +283,9 @@ sub next {
     if ( ( defined($ACE) ) and ( ref($ACE) ) ) {
 
         if ( $self->current_user->has_right( Right  => 'ShowACL',
-                                           Object => $ACE->Object )
+                                           Object => $ACE->object )
              or $self->current_user->has_right( Right  => 'ModifyACL',
-                                              Object => $ACE->Object )
+                                              Object => $ACE->object )
           ) {
             return ($ACE);
         }
@@ -340,7 +340,7 @@ sub _build_hash {
 
 =cut
 
-sub HasEntry {
+sub has_entry {
 
     my $self = shift;
     my %args = ( RightScope => undef,

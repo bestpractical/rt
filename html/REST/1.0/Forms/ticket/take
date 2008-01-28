@@ -110,7 +110,7 @@ goto OUTPUT;
 #
 #            ### take
 #            if ($val == 0) {
-#                ($ret_id, $msg) = $ticket->Take;
+#                ($ret_id, $msg) = $ticket->take;
 #                if (!$ret_id) {
 #                    push(@comments, "# Couldn't take ticket $id: $msg");
 #                    goto DONE;
@@ -119,7 +119,7 @@ goto OUTPUT;
 #            }
 #            ### steal
 #            else {
-#                ($ret_id, $msg) = $ticket->Steal;
+#                ($ret_id, $msg) = $ticket->steal;
 #                if (!$ret_id) {
 #                    push(@comments, "# Couldn't steal ticket $id: $msg");
 #                    goto DONE;

@@ -79,7 +79,7 @@ sub create {
         @_
     );
 
-    my $cf = $self->CustomFieldObj( $args{'CustomField'} );
+    my $cf = $self->custom_field_obj( $args{'CustomField'} );
     unless ( $cf->id ) {
         Jifty->log->error("Couldn't load '$args{'CustomField'}' custom field");
         return 0;
@@ -90,7 +90,7 @@ sub create {
     my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new;
     $ObjectCFs->limit_to_object_id( $args{'object_id'} );
     $ObjectCFs->limit_to_custom_field( $cf->id );
-    $ObjectCFs->limit_ToLookupType( $cf->LookupType );
+    $ObjectCFs->limit_to_lookup_type( $cf->LookupType );
     if ( my $first = $ObjectCFs->first ) {
         $self->load( $first->id );
         return $first->id;
@@ -99,7 +99,7 @@ sub create {
     unless ( defined $args{'SortOrder'} ) {
         my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new(current_user => RT->system_user );
         $ObjectCFs->limit_to_object_id( $args{'object_id'} );
-        $ObjectCFs->limit_ToLookupType( $cf->LookupType );
+        $ObjectCFs->limit_to_lookup_type( $cf->LookupType );
         $ObjectCFs->order_by( column => 'SortOrder', order => 'DESC' );
         if ( my $first = $ObjectCFs->first ) {
             $args{'SortOrder'} = $first->SortOrder + 1;
@@ -120,7 +120,7 @@ sub delete {
 
     my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new;
     $ObjectCFs->limit_to_object_id($self->object_id);
-    $ObjectCFs->limit_ToLookupType($self->CustomFieldObj->LookupType);
+    $ObjectCFs->limit_to_lookup_type($self->custom_field_obj->LookupType);
 
     # Move everything below us up
     my $sort_order = $self->SortOrder;
@@ -133,9 +133,9 @@ sub delete {
     $self->SUPER::delete;
 }
 
-sub CustomFieldObj {
+sub custom_field_obj {
     my $self = shift;
-    my $id = shift || $self->CustomField;
+    my $id = shift || $self->custom_field;
     my $CF = RT::Model::CustomField->new;
     $CF->load( $id );
     return $CF;

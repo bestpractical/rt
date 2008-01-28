@@ -95,14 +95,14 @@ success.
 sub load {
     my $self = shift;
     my ($privacy, $id) = @_;
-    my $object = $self->_GetObject($privacy);
+    my $object = $self->_get_object($privacy);
 
     if ($object) {
 	$self->{'Attribute'} = $object->attributes->with_id($id);
 	if ($self->{'Attribute'}->id) {
 	    $self->{'id'} = $self->{'Attribute'}->id;
 	    $self->{'Privacy'} = $privacy;
-	    $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
+	    $self->{'Type'} = $self->{'Attribute'}->sub_value('SearchType');
 	    return (1, _("Loaded search %1", $self->name));
 	} else {
 	    Jifty->log->error("Could not load attribute " . $id
@@ -129,7 +129,7 @@ and message, where status is true on success.  Defaults are:
 
 =cut
 
-sub Save {
+sub save {
     my $self = shift;
     my %args = ('Privacy' => 'RT::Model::User-' . $self->current_user->id,
 		'Type' => 'Ticket',
@@ -142,7 +142,7 @@ sub Save {
     my %params = %{$args{'SearchParams'}};
 
     $params{'SearchType'} = $type;
-    my $object = $self->_GetObject($privacy);
+    my $object = $self->_get_object($privacy);
 
     return (0, _("Failed to load object for %1", $privacy))
         unless $object;
@@ -182,7 +182,7 @@ will not be changed.
 
 =cut
 
-sub Update {
+sub update {
     my $self = shift;
     my %args = ('name' => '',
 		'SearchParams' => {},
@@ -191,7 +191,7 @@ sub Update {
     return(0, _("No search loaded")) unless $self->id;
     return(0, _("Could not load search attribute"))
 	unless $self->{'Attribute'}->id;
-    my ($status, $msg) = $self->{'Attribute'}->set_SubValues(%{$args{'SearchParams'}});
+    my ($status, $msg) = $self->{'Attribute'}->set_sub_values(%{$args{'SearchParams'}});
     if ($status && $args{'name'}) {
 	($status, $msg) = $self->{'Attribute'}->set_Description($args{'name'});
     }
@@ -230,7 +230,7 @@ Returns the name of the search.
 sub name {
     my $self = shift;
     return unless ref($self->{'Attribute'}) eq 'RT::Model::Attribute';
-    return $self->{'Attribute'}->Description();
+    return $self->{'Attribute'}->description();
 }
 
 =head2 GetParameter
@@ -239,11 +239,11 @@ Returns the given named parameter of the search, e.g. 'Query', 'Format'.
 
 =cut
 
-sub GetParameter {
+sub get_parameter {
     my $self = shift;
     my $param = shift;
     return unless ref($self->{'Attribute'}) eq 'RT::Model::Attribute';
-    return $self->{'Attribute'}->SubValue($param);
+    return $self->{'Attribute'}->sub_value($param);
 }
 
 =head2 id
@@ -264,7 +264,7 @@ Returns the principal object to whom this search belongs, in a string
 
 =cut
 
-sub Privacy {
+sub privacy {
     my $self = shift;
     return $self->{'Privacy'};
 }
@@ -276,7 +276,7 @@ saved searches that are relevant to a particular search page.
 
 =cut
 
-sub Type {
+sub type {
     my $self = shift;
     return $self->{'Type'};
 }
@@ -304,7 +304,7 @@ sub _load_privacy_object {
 # _GetObject: helper routine to load the correct object whose parameters
 #  have been passed.
 
-sub _GetObject {
+sub _get_object {
     my $self    = shift;
     my $privacy = shift;
 

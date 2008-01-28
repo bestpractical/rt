@@ -68,7 +68,7 @@ sub check_order {
   my ($tx, @order) = @_;
   my @results;
   while (my $t = $tx->next) {
-    push @results, $t->Subject;
+    push @results, $t->subject;
   }
   my $results = join (" ",@results);
   my $order = join(" ",@order);

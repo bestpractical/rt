@@ -53,22 +53,22 @@ package RT::Model::CustomFieldValueCollection::Groups;
 use base qw(RT::Model::CustomFieldValueCollection::External);
 
 sub record_class { 'RT::Model::CustomFieldValue'}
-sub SourceDescription {
+sub source_description {
     return 'RT user defined groups';
 }
 
-sub ExternalValues {
+sub external_values {
     my $self = shift;
 
     my @res;
     my $i = 0;
     my $groups = RT::Model::GroupCollection->new;
-    $groups->limit_ToUserDefinedGroups;
+    $groups->limit_to_user_defined_groups;
     $groups->order_by( { column => 'name' } );
     while( my $group = $groups->next ) {
         push @res, {
             name        => $group->name,
-            description => $group->Description,
+            description => $group->description,
             sortorder   => $i++,
         };
     }

@@ -83,7 +83,7 @@ See also L<with_linked>.
 
 =cut
 
-sub SupportArgs { return $_[0]->SUPER::SupportArgs, qw(query with_linked apply_query_to_linked) }
+sub support_args { return $_[0]->SUPER::SupportArgs, qw(query with_linked apply_query_to_linked) }
 
 sub TestArgs
 {
@@ -120,7 +120,7 @@ sub Run
     $self->fetch_next($objs, 1);
     while ( my $obj = $self->fetch_next( $objs ) ) {
         next if $seen{ $obj->id }++;
-        push @linked, $self->GetLinked( Object => $obj, Seen => \%seen );
+        push @linked, $self->get_linked( Object => $obj, Seen => \%seen );
         push @top, $obj;
         last if $self->{'opt'}{'limit'}
                 && @top >= $self->{'opt'}{'limit'};
@@ -143,7 +143,7 @@ sub GetLinked
     $self->fetch_next( $objs, 1 );
     while ( my $linked_obj = $self->fetch_next( $objs ) ) {
         next if $arg{'Seen'}->{ $linked_obj->id }++;
-        push @res, $self->GetLinked( %arg, Object => $linked_obj );
+        push @res, $self->get_linked( %arg, Object => $linked_obj );
         push @res, $linked_obj;
     }
     return @res;

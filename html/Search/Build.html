@@ -143,7 +143,7 @@ if ( $NewQuery ) {
 { # Attempt to load what we can from the session and preferences, set defaults
 
     my $current = $session{'CurrentSearchHash'};
-    my $prefs = Jifty->web->current_user->user_object->Preferences("SearchDisplay") || {};
+    my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
     my $default = { Query => '', Format => '', order_by => 'id', Order => 'ASC', rows_per_page => 50 };
 
     for( qw(Query Format order_by Order rows_per_page) ) {
@@ -163,11 +163,11 @@ if ( $NewQuery ) {
     }
 }
 
-my $ParseQuery = sub {
+my $ParseQuery = sub  {
     my ($string, $results) = @_;
 
     my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-    @$results = $tree->ParseSQL( Query => $string );
+    @$results = $tree->parse_sql( Query => $string );
 
     return $tree;
 };
@@ -179,7 +179,7 @@ if ( $actions[0] ) {
     return $m->comp( "Edit.html", Query => $query{'Query'}, actions => \@actions );
 }
 
-my @options = $tree->GetDisplayedNodes;
+my @options = $tree->get_displayed_nodes;
 my @current_values = grep defined, @options[@clauses];
 my @new_values = ();
 
@@ -254,7 +254,7 @@ push @actions, $m->comp('Elements/EditQuery:Process',
 # {{{ Rebuild $Query based on the additions / movements
 
 my $optionlist_arrayref;
-($query{'Query'}, $optionlist_arrayref) = $tree->GetQueryAndOptionList(\@current_values);
+($query{'Query'}, $optionlist_arrayref) = $tree->get_query_and_option_list(\@current_values);
 
 my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>) 
                                   . ("&nbsp;" x (5 * $_->{DEPTH}))
@@ -262,7 +262,7 @@ my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>
 
 # }}}
 
-my $queues = $tree->GetReferencedQueues;
+my $queues = $tree->get_referenced_queues;
 
 # {{{ Deal with format changes
 my ( $AvailableColumns, $CurrentFormat );

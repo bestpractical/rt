@@ -63,12 +63,12 @@
     Rows => $Rows,
     Page => $Page,
     Format => $Format,
-    BaseURL => RT->Config->Get('WebPath')."/Search/Results.html?"
+    BaseURL => RT->config->get('WebPath')."/Search/Results.html?"
 
    &>
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, order_by => $order_by, Order => $Order, HideResults => $HideResults, Page => $Page );
 <div align="right">
-<form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
+<form method="get" action="<%RT->config->get('WebPath')%>/Search/Results.html">
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
 % }
@@ -91,11 +91,11 @@
 </div>
 <%INIT>
 # Read from user preferences
-my $prefs = Jifty->web->current_user->user_object->Preferences("SearchDisplay") || {};
+my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
 
 # These variables are what define a search_hash; this is also
 # where we give sane defaults.
-$Format      ||= $prefs->{'Format'} || RT->Config->Get('DefaultSearchResultFormat');
+$Format      ||= $prefs->{'Format'} || RT->config->get('DefaultSearchResultFormat');
 $Order       ||= $prefs->{'Order'} || 'ASC';
 $order_by     ||= $prefs->{'order_by'} || 'id';
 
@@ -138,7 +138,7 @@ $session{'CurrentSearchHash'} = {
     };
 
 
-if ( $session{'tickets'}->Query()) {
+if ( $session{'tickets'}->query()) {
     $ticketcount = $session{tickets}->count_all();
     $title = _('Found [quant,_1,ticket]', $ticketcount);
 } else {
@@ -153,14 +153,14 @@ my $QueryString = "?".$m->comp('/Elements/QueryString',
                                Order => $Order,
                                Page => $Page);
 my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
-my $RSSFeedURL = RT->Config->Get('WebPath')."/Search/Results.rdf$ShortQueryString";
+my $RSSFeedURL = RT->config->get('WebPath')."/Search/Results.rdf$ShortQueryString";
 
 if ($ARGS{'TicketsRefreshInterval'}) {
 	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};
 }
 </%INIT>
 <%CLEANUP>
-$session{'tickets'}->PrepForSerialization();
+$session{'tickets'}->prep_for_serialization();
 </%CLEANUP>
 <%ARGS>
 $Query => undef

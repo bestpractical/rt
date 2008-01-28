@@ -71,9 +71,9 @@ sub prepare {
 
     my $status = $self->ticket_obj->Status;
     return undef if $status eq 'open';
-    return undef if $status eq 'new' && $self->transaction_obj->IsInbound;
+    return undef if $status eq 'new' && $self->transaction_obj->is_inbound;
 
-    if ( my $msg = $self->transaction_obj->Message->first ) {
+    if ( my $msg = $self->transaction_obj->message->first ) {
         return undef if ($msg->get_header('RT-Control') || '') =~ /\bno-autoopen\b/i;
     }
 
