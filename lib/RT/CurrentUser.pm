@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,8 +43,9 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
+
 =head1 name
 
   RT::CurrentUser - an RT object representing the current user
@@ -84,7 +85,6 @@ passed to Load method.
 
 =cut
 
-
 package RT::CurrentUser;
 
 use RT::I18N;
@@ -104,22 +104,24 @@ and log an error.
 
 sub create {
     my $self = shift;
-    Jifty->log->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
-    return (0, _('Permission Denied'));
+    Jifty->log->error(
+        'RT::CurrentUser is read-only, RT::Model::User for manipulation');
+    return ( 0, _('Permission Denied') );
 }
 
 sub delete {
     my $self = shift;
-    Jifty->log->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
-    return (0, _('Permission Denied'));
+    Jifty->log->error(
+        'RT::CurrentUser is read-only, RT::Model::User for manipulation');
+    return ( 0, _('Permission Denied') );
 }
 
 sub _set {
     my $self = shift;
-    Jifty->log->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
-    return (0, _('Permission Denied'));
+    Jifty->log->error(
+        'RT::CurrentUser is read-only, RT::Model::User for manipulation');
+    return ( 0, _('Permission Denied') );
 }
-
 
 =head2 LoadByGecos
 
@@ -153,7 +155,7 @@ Return the current currentuser object
 
 sub current_user {
     my $self = shift;
-    return($self);
+    return ($self);
 
 }
 
@@ -176,42 +178,46 @@ string no longer than 32 bytes.
 
 =cut
 
-sub authenticate { 
-    my ($self, $password, $Created, $nonce, $realm) = @_;
+sub authenticate {
+    my ( $self, $password, $Created, $nonce, $realm ) = @_;
 
     require Digest::MD5;
     require Digest::SHA1;
     require MIME::Base64;
 
-    my $username = $self->user_object->name or return;
+    my $username    = $self->user_object->name                or return;
     my $server_pass = $self->user_object->__value('password') or return;
-    my $auth_digest = MIME::Base64::encode_base64(Digest::SHA1::sha1(
-        $nonce .
-        $Created .
-        Digest::MD5::md5_hex("$username:$realm:$server_pass")
-    ));
+    my $auth_digest = MIME::Base64::encode_base64(
+        Digest::SHA1::sha1(
+                  $nonce 
+                . $Created
+                . Digest::MD5::md5_hex("$username:$realm:$server_pass")
+        )
+    );
 
     chomp($password);
     chomp($auth_digest);
 
-    return ($password eq $auth_digest);
+    return ( $password eq $auth_digest );
 }
 
 sub has_right {
     my $self = shift;
-    return 1 if ($self->is_superuser);
+    return 1 if ( $self->is_superuser );
     $self->user_object->has_right(@_);
 }
 
-
 sub superuser {
-   my $self = shift;
+    my $self = shift;
     return RT->system_user;
 }
 
 sub email { shift->user_object->email }
-sub name { shift->user_object->name }
-sub principal_object { my $self = shift;
-    Carp::confess unless ($self->user_object); 
-    return $self->user_object->principal_object }
+sub name  { shift->user_object->name }
+
+sub principal_object {
+    my $self = shift;
+    Carp::confess unless ( $self->user_object );
+    return $self->user_object->principal_object;
+}
 1;

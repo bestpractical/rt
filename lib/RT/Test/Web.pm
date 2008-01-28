@@ -10,16 +10,16 @@ require Test::More;
 
 sub get_ok {
     my $self = shift;
-    my $url = shift;
+    my $url  = shift;
     if ( $url =~ m{^/} ) {
         $url = $self->rt_base_url . $url;
     }
-    return $self->SUPER::get_ok($url, @_);
+    return $self->SUPER::get_ok( $url, @_ );
 }
 
 sub rt_base_url {
     return $RT::Test::existing_server if $RT::Test::existing_server;
-    return $RT::Test::server_url if $RT::Test::server_url;
+    return $RT::Test::server_url      if $RT::Test::server_url;
 }
 
 sub login {
@@ -29,7 +29,7 @@ sub login {
 
     my $url = $self->rt_base_url;
 
-    $self->get($url."/logout");
+    $self->get( $url . "/logout" );
     $self->get($url);
 
     my $moniker = $self->moniker_for('RT::Action::Login');
@@ -51,7 +51,8 @@ sub goto_ticket {
     my $self = shift;
     my $id   = shift;
     unless ( $id && int $id ) {
-        Test::More::diag( "error: wrong id ". defined $id? $id : '(undef)' );
+        Test::More::diag(
+            "error: wrong id " . defined $id ? $id : '(undef)' );
         return 0;
     }
 
@@ -59,14 +60,14 @@ sub goto_ticket {
     $url .= "/Ticket/Display.html?id=$id";
     $self->get($url);
     unless ( $self->status == 200 ) {
-        Test::More::diag( "error: status is ". $self->status );
+        Test::More::diag( "error: status is " . $self->status );
         return 0;
     }
     return 1;
 }
 
 sub goto_create_ticket {
-    my $self = shift;
+    my $self  = shift;
     my $queue = shift;
 
     my $id;

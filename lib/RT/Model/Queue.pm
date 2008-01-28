@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,8 +43,9 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
+
 =head1 name
 
   RT::Model::Queue - an RT Queue object
@@ -65,7 +66,6 @@ use RT::Model::Queue;
 
 =cut
 
-
 package RT::Model::Queue;
 
 use strict;
@@ -75,7 +75,6 @@ use RT::Model::GroupCollection;
 use RT::Model::ACECollection;
 use RT::Interface::Email;
 
-
 use base qw/RT::Record/;
 
 sub table {'Queues'}
@@ -83,22 +82,35 @@ sub table {'Queues'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
-
-column        name => max_length is 200,  type is 'varchar(200)',  default is '';
-column        Description => max_length is 255,  type is 'varchar(255)',  default is '';
-column        correspond_address => max_length is 120,  type is 'varchar(120)',  default is '';
-column        comment_address => max_length is 120,  type is 'varchar(120)',  default is '';
-column        initial_priority => max_length is 11,  type is 'int(11)',  default is '0';
-column        final_priority => max_length is 11,  type is 'int(11)',  default is '0';
-column        DefaultDueIn => max_length is 11,  type is 'int(11)',  default is '0';
-column        Creator => max_length is 11,  type is 'int(11)',  default is '0';
-column        Created =>   type is 'datetime',  default is '';
-column        LastUpdatedBy => max_length is 11,  type is 'int(11)',  default is '0';
-column        LastUpdated =>   type is 'datetime',  default is '';
-column        disabled => max_length is 6,  type is 'smallint(6)',  default is '0';
+    column name => max_length is 200, type is 'varchar(200)', default is '';
+    column
+        Description => max_length is 255,
+        type is 'varchar(255)', default is '';
+    column
+        correspond_address => max_length is 120,
+        type is 'varchar(120)', default is '';
+    column
+        comment_address => max_length is 120,
+        type is 'varchar(120)', default is '';
+    column
+        initial_priority => max_length is 11,
+        type is 'int(11)', default is '0';
+    column
+        final_priority => max_length is 11,
+        type is 'int(11)', default is '0';
+    column
+        DefaultDueIn => max_length is 11,
+        type is 'int(11)', default is '0';
+    column Creator => max_length is 11, type is 'int(11)', default is '0';
+    column Created => type is 'datetime', default is '';
+    column
+        LastUpdatedBy => max_length is 11,
+        type is 'int(11)', default is '0';
+    column LastUpdated => type is 'datetime', default is '';
+    column disabled => max_length is 6, type is 'smallint(6)', default is '0';
 };
-our @DEFAULT_ACTIVE_STATUS = qw(new open stalled);
-our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);  
+our @DEFAULT_ACTIVE_STATUS   = qw(new open stalled);
+our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);
 
 # _('new'); # For the string extractor to get a string to localize
 # _('open'); # For the string extractor to get a string to localize
@@ -107,36 +119,36 @@ our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);
 # _('rejected'); # For the string extractor to get a string to localize
 # _('deleted'); # For the string extractor to get a string to localize
 
-
 our $RIGHTS = {
-    SeeQueue            => 'Can this principal see this queue',       # loc_pair
-    AdminQueue          => 'Create, delete and modify queues',        # loc_pair
-    ShowACL             => 'Display Access Control List',             # loc_pair
-    ModifyACL           => 'Modify Access Control List',              # loc_pair
-    ModifyQueueWatchers => 'Modify the queue watchers',               # loc_pair
-    AssignCustomFields  => 'Assign and remove custom fields',         # loc_pair
-    ModifyTemplate      => 'Modify Scrip templates for this queue',   # loc_pair
-    ShowTemplate        => 'Display Scrip templates for this queue',  # loc_pair
+    SeeQueue            => 'Can this principal see this queue',     # loc_pair
+    AdminQueue          => 'Create, delete and modify queues',      # loc_pair
+    ShowACL             => 'Display Access Control List',           # loc_pair
+    ModifyACL           => 'Modify Access Control List',            # loc_pair
+    ModifyQueueWatchers => 'Modify the queue watchers',             # loc_pair
+    AssignCustomFields  => 'Assign and remove custom fields',       # loc_pair
+    ModifyTemplate      => 'Modify Scrip templates for this queue', # loc_pair
+    ShowTemplate => 'Display Scrip templates for this queue',       # loc_pair
 
-    ModifyScrips => 'Modify Scrips for this queue',                   # loc_pair
-    ShowScrips   => 'Display Scrips for this queue',                  # loc_pair
+    ModifyScrips => 'Modify Scrips for this queue',                 # loc_pair
+    ShowScrips   => 'Display Scrips for this queue',                # loc_pair
 
-    ShowTicket         => 'See ticket summaries',                    # loc_pair
-    ShowTicketcomments => 'See ticket private commentary',           # loc_pair
-    ShowOutgoingEmail => 'See exact outgoing email messages and their recipeients',           # loc_pair
+    ShowTicket         => 'See ticket summaries',                   # loc_pair
+    ShowTicketcomments => 'See ticket private commentary',          # loc_pair
+    ShowOutgoingEmail =>
+        'See exact outgoing email messages and their recipeients',  # loc_pair
 
-    Watch => 'Sign up as a ticket Requestor or ticket or queue Cc',   # loc_pair
-    WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',        # loc_pair
-    create_ticket    => 'Create tickets in this queue',                # loc_pair
-    ReplyToTicket   => 'Reply to tickets',                            # loc_pair
-    commentOnTicket => 'comment on tickets',                          # loc_pair
-    OwnTicket       => 'Own tickets',                                 # loc_pair
-    ModifyTicket    => 'Modify tickets',                              # loc_pair
-    DeleteTicket    => 'Delete tickets',                              # loc_pair
-    TakeTicket      => 'Take tickets',                                # loc_pair
-    StealTicket     => 'Steal tickets',                               # loc_pair
+    Watch => 'Sign up as a ticket Requestor or ticket or queue Cc', # loc_pair
+    WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',      # loc_pair
+    create_ticket   => 'Create tickets in this queue',              # loc_pair
+    ReplyToTicket   => 'Reply to tickets',                          # loc_pair
+    commentOnTicket => 'comment on tickets',                        # loc_pair
+    OwnTicket       => 'Own tickets',                               # loc_pair
+    ModifyTicket    => 'Modify tickets',                            # loc_pair
+    DeleteTicket    => 'Delete tickets',                            # loc_pair
+    TakeTicket      => 'Take tickets',                              # loc_pair
+    StealTicket     => 'Steal tickets',                             # loc_pair
 
-    ForwardMessage  => 'Forward messages to third person(s)',         # loc_pair
+    ForwardMessage => 'Forward messages to third person(s)',        # loc_pair
 
 };
 
@@ -149,15 +161,16 @@ $RT::Model::ACE::OBJECT_TYPES{'RT::Model::Queue'} = 1;
 foreach my $right ( keys %{$RIGHTS} ) {
     $RT::Model::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
 }
-    
 
 sub add_link {
     my $self = shift;
-    my %args = ( Target => '',
-                 Base   => '',
-                 Type   => '',
-                 Silent => undef,
-                 @_ );
+    my %args = (
+        Target => '',
+        Base   => '',
+        Type   => '',
+        Silent => undef,
+        @_
+    );
 
     unless ( $self->current_user_has_right('ModifyQueue') ) {
         return ( 0, _("Permission Denied") );
@@ -178,7 +191,7 @@ sub delete_link {
     #check acls
     unless ( $self->current_user_has_right('ModifyQueue') ) {
         Jifty->log->debug("No permission to delete links\n");
-        return ( 0, _('Permission Denied'))
+        return ( 0, _('Permission Denied') );
     }
 
     return $self->SUPER::_delete_link(%args);
@@ -192,7 +205,7 @@ Returns a hash of available rights for this object. The keys are the right names
 
 sub available_rights {
     my $self = shift;
-    return($RIGHTS);
+    return ($RIGHTS);
 }
 
 # {{{ ActiveStatusArray
@@ -205,10 +218,12 @@ Returns an array of all ActiveStatuses for this queue
 
 sub active_status_array {
     my $self = shift;
-    if (RT->config->get('ActiveStatus')) {
-    	return (RT->config->get('ActiveStatus'))
+    if ( RT->config->get('ActiveStatus') ) {
+        return ( RT->config->get('ActiveStatus') );
     } else {
-        Jifty->log->warn("RT::ActiveStatus undefined, falling back to deprecated defaults");
+        Jifty->log->warn(
+            "RT::ActiveStatus undefined, falling back to deprecated defaults"
+        );
         return (@DEFAULT_ACTIVE_STATUS);
     }
 }
@@ -225,10 +240,12 @@ Returns an array of all InactiveStatuses for this queue
 
 sub inactive_status_array {
     my $self = shift;
-    if (RT->config->get('InactiveStatus')) {
-    	return (RT->config->get('InactiveStatus'))
+    if ( RT->config->get('InactiveStatus') ) {
+        return ( RT->config->get('InactiveStatus') );
     } else {
-        Jifty->log->warn("RT::InactiveStatus undefined, falling back to deprecated defaults");
+        Jifty->log->warn(
+            "RT::InactiveStatus undefined, falling back to deprecated defaults"
+        );
         return (@DEFAULT_INACTIVE_STATUS);
     }
 }
@@ -245,7 +262,7 @@ Returns an array of all statuses for this queue
 
 sub status_array {
     my $self = shift;
-    return ($self->active_status_array(), $self->inactive_status_array());
+    return ( $self->active_status_array(), $self->inactive_status_array() );
 }
 
 # }}}
@@ -310,11 +327,7 @@ sub is_inactive_status {
 
 # }}}
 
-
 # {{{ sub create
-
-
-
 
 =head2 Create(ARGS)
 
@@ -336,20 +349,24 @@ If you pass the ACL check, it creates the queue and returns its queue id.
 sub create {
     my $self = shift;
     my %args = (
-        name              => undef,
+        name               => undef,
         correspond_address => '',
-        Description       => '',
+        Description        => '',
         comment_address    => '',
         initial_priority   => 0,
         final_priority     => 0,
-        DefaultDueIn      => 0,
-        Sign              => undef,
-        Encrypt           => undef,
+        DefaultDueIn       => 0,
+        Sign               => undef,
+        Encrypt            => undef,
         @_
     );
 
-
-    unless ( $self->current_user->has_right(Right => 'AdminQueue', Object => RT->system) )
+    unless (
+        $self->current_user->has_right(
+            Right  => 'AdminQueue',
+            Object => RT->system
+        )
+        )
     {    #Check them ACLs
         return ( 0, _("No permission to create queues") );
     }
@@ -358,11 +375,13 @@ sub create {
         return ( 0, _('Queue already exists') );
     }
 
-    my %attrs = map {$_ => 1} $self->readable_attributes;
+    my %attrs = map { $_ => 1 } $self->readable_attributes;
 
     #TODO better input validation
     Jifty->handle->begin_transaction();
-    my $id = $self->SUPER::create( map { $_ => $args{$_} } grep exists $args{$_}, keys %attrs );
+    my $id
+        = $self->SUPER::create( map { $_ => $args{$_} } grep exists $args{$_},
+        keys %attrs );
     unless ($id) {
         Jifty->handle->rollback();
         return ( 0, _('Queue could not be Created') );
@@ -376,12 +395,12 @@ sub create {
     Jifty->handle->commit;
 
     if ( defined $args{'Sign'} ) {
-        my ($status, $msg) = $self->set_sign( $args{'Sign'} );
+        my ( $status, $msg ) = $self->set_sign( $args{'Sign'} );
         Jifty->log->error("Couldn't set attribute 'Sign': $msg")
             unless $status;
     }
     if ( defined $args{'Encrypt'} ) {
-        my ($status, $msg) = $self->set_encrypt( $args{'Encrypt'} );
+        my ( $status, $msg ) = $self->set_encrypt( $args{'Encrypt'} );
         Jifty->log->error("Couldn't set attribute 'Encrypt': $msg")
             unless $status;
     }
@@ -391,12 +410,11 @@ sub create {
 
 # }}}
 
-# {{{ sub delete 
+# {{{ sub delete
 
 sub delete {
     my $self = shift;
-    return ( 0,
-        _('Deleting this object would break referential integrity') );
+    return ( 0, _('Deleting this object would break referential integrity') );
 }
 
 # }}}
@@ -413,7 +431,7 @@ Takes a boolean.
 
 # }}}
 
-# {{{ sub load 
+# {{{ sub load
 
 =head2 Load
 
@@ -422,16 +440,15 @@ Takes either a numerical id or a textual name and loads the specified queue.
 =cut
 
 sub load {
-    my $self = shift;
+    my $self       = shift;
     my $identifier = shift;
     if ( !$identifier ) {
         return (undef);
     }
 
     if ( $identifier =~ /^(\d+)$/ ) {
-        $self->load_by_cols( id => $identifier);
-    }
-    else {
+        $self->load_by_cols( id => $identifier );
+    } else {
         $self->load_by_cols( name => $identifier );
     }
 
@@ -454,17 +471,17 @@ sub validate_name {
     my $self = shift;
     my $name = shift;
 
-    my $tempqueue = RT::Model::Queue->new( current_user => RT->system_user);
+    my $tempqueue = RT::Model::Queue->new( current_user => RT->system_user );
     $tempqueue->load($name);
 
     #If this queue exists, return undef
-    if ( $tempqueue->name() && $tempqueue->id != $self->id)  {
+    if ( $tempqueue->name() && $tempqueue->id != $self->id ) {
         return (undef);
     }
 
     #If the queue doesn't exist, return 1
     else {
-        return ($self->SUPER::validate_name($name));
+        return ( $self->SUPER::validate_name($name) );
     }
 
 }
@@ -476,7 +493,7 @@ sub validate_name {
 =cut
 
 sub sign {
-    my $self = shift;
+    my $self  = shift;
     my $value = shift;
 
     return undef unless $self->current_user_has_right('SeeQueue');
@@ -485,24 +502,24 @@ sub sign {
 }
 
 sub set_sign {
-    my $self = shift;
+    my $self  = shift;
     my $value = shift;
 
     return ( 0, _('Permission Denied') )
         unless $self->current_user_has_right('AdminQueue');
 
-    my ($status, $msg) = $self->set_attribute(
+    my ( $status, $msg ) = $self->set_attribute(
         name        => 'Sign',
         Description => 'Sign outgoing messages by default',
         Content     => $value,
     );
-    return ($status, $msg) unless $status;
-    return ($status, _('Signing enabled')) if $value;
-    return ($status, _('Signing disabled'));
+    return ( $status, $msg ) unless $status;
+    return ( $status, _('Signing enabled') ) if $value;
+    return ( $status, _('Signing disabled') );
 }
 
 sub encrypt {
-    my $self = shift;
+    my $self  = shift;
     my $value = shift;
 
     return undef unless $self->current_user_has_right('SeeQueue');
@@ -511,20 +528,20 @@ sub encrypt {
 }
 
 sub set_encrypt {
-    my $self = shift;
+    my $self  = shift;
     my $value = shift;
 
     return ( 0, _('Permission Denied') )
         unless $self->current_user_has_right('AdminQueue');
 
-    my ($status, $msg) = $self->set_attribute(
+    my ( $status, $msg ) = $self->set_attribute(
         name        => 'Encrypt',
         Description => 'Encrypt outgoing messages by default',
         Content     => $value,
     );
-    return ($status, $msg) unless $status;
-    return ($status, _('Encrypting enabled')) if $value;
-    return ($status, _('Encrypting disabled'));
+    return ( $status, $msg ) unless $status;
+    return ( $status, _('Encrypting enabled') ) if $value;
+    return ( $status, _('Encrypting disabled') );
 }
 
 # {{{ sub Templates
@@ -562,11 +579,10 @@ Load the queue-specific custom field named name
 sub custom_field {
     my $self = shift;
     my $name = shift;
-    my $cf = RT::Model::CustomField->new;
-    $cf->load_by_name_and_queue(name => $name, Queue => $self->id); 
+    my $cf   = RT::Model::CustomField->new;
+    $cf->load_by_name_and_queue( name => $name, Queue => $self->id );
     return ($cf);
 }
-
 
 # {{{ TicketCustomFields
 
@@ -582,8 +598,8 @@ sub ticket_custom_fields {
 
     my $cfs = RT::Model::CustomFieldCollection->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-	$cfs->limit_to_global_orobject_id( $self->id );
-	$cfs->limit_to_lookup_type( 'RT::Model::Queue-RT::Model::Ticket' );
+        $cfs->limit_to_global_orobject_id( $self->id );
+        $cfs->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket');
     }
     return ($cfs);
 }
@@ -604,8 +620,9 @@ sub ticket_transaction_custom_fields {
 
     my $cfs = RT::Model::CustomFieldCollection->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-	$cfs->limit_to_global_orobject_id( $self->id );
-	$cfs->limit_to_lookup_type( 'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' );
+        $cfs->limit_to_global_orobject_id( $self->id );
+        $cfs->limit_to_lookup_type(
+            'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction');
     }
     return ($cfs);
 }
@@ -614,10 +631,9 @@ sub ticket_transaction_custom_fields {
 
 # }}}
 
-
 # {{{ Routines dealing with watchers.
 
-# {{{ _createQueueGroups 
+# {{{ _createQueueGroups
 
 =head2 _createQueueGroups
 
@@ -631,7 +647,6 @@ It will return true on success and undef on failure.
 
 =cut
 
-
 sub create_queue_groups {
     my $self = shift;
 
@@ -639,19 +654,22 @@ sub create_queue_groups {
 
     foreach my $type (@types) {
         my $type_obj = RT::Model::Group->new;
-        my ($id, $msg) = $type_obj->create_role_group(Instance => $self->id, 
-                                                     Type => $type,
-                                                     Domain => 'RT::Model::Queue-Role');
+        my ( $id, $msg ) = $type_obj->create_role_group(
+            Instance => $self->id,
+            Type     => $type,
+            Domain   => 'RT::Model::Queue-Role'
+        );
         unless ($id) {
-            Jifty->log->error("Couldn't create a Queue group of type '$type' for ticket ".
-                               $self->id.": ".$msg);
-            return(undef);
+            Jifty->log->error(
+                "Couldn't create a Queue group of type '$type' for ticket "
+                    . $self->id . ": "
+                    . $msg );
+            return (undef);
         }
-     }
-    return(1);
-   
-}
+    }
+    return (1);
 
+}
 
 # }}}
 
@@ -676,41 +694,46 @@ Returns a tuple of (status/id, message).
 sub add_watcher {
     my $self = shift;
     my %args = (
-        Type  => undef,
+        Type         => undef,
         principal_id => undef,
-        Email => undef,
+        Email        => undef,
         @_
     );
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( defined $args{'principal_id'} && 
-            $self->current_user->id  eq $args{'principal_id'}) {
-        #  If it's an AdminCc and they don't have 
+    if ( defined $args{'principal_id'}
+        && $self->current_user->id eq $args{'principal_id'} )
+    {
+
+        #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
-        if ( defined $args{'Type'} && ($args{'Type'} eq 'AdminCc') ) {
+        if ( defined $args{'Type'} && ( $args{'Type'} eq 'AdminCc' ) ) {
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
-                or $self->current_user_has_right('WatchAsAdminCc') ) {
-                return ( 0, _('Permission Denied'))
+                or $self->current_user_has_right('WatchAsAdminCc') )
+            {
+                return ( 0, _('Permission Denied') );
             }
         }
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
-        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
+        elsif (( $args{'Type'} eq 'Cc' )
+            or ( $args{'Type'} eq 'Requestor' ) )
+        {
 
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
-                or $self->current_user_has_right('Watch') ) {
-                return ( 0, _('Permission Denied'))
+                or $self->current_user_has_right('Watch') )
+            {
+                return ( 0, _('Permission Denied') );
             }
-        }
-     else {
-            Jifty->log->warn( "$self -> AddWatcher got passed a bogus type");
+        } else {
+            Jifty->log->warn("$self -> AddWatcher got passed a bogus type");
             return ( 0, _('Error in parameters to Queue->AddWatcher') );
         }
     }
 
-    # If the watcher isn't the current user 
+    # If the watcher isn't the current user
     # and the current user  doesn't have 'ModifyQueueWatcher'
     # bail
     else {
@@ -729,75 +752,97 @@ sub add_watcher {
 sub _add_watcher {
     my $self = shift;
     my %args = (
-        Type   => undef,
-        Silent => undef,
+        Type         => undef,
+        Silent       => undef,
         principal_id => undef,
-        Email => undef,
+        Email        => undef,
         @_
     );
 
-
     my $principal = RT::Model::Principal->new;
-    if ($args{'principal_id'}) {
-        $principal->load($args{'principal_id'});
-    }
-    elsif ($args{'Email'}) {
+    if ( $args{'principal_id'} ) {
+        $principal->load( $args{'principal_id'} );
+    } elsif ( $args{'Email'} ) {
 
         my $user = RT::Model::User->new;
-        $user->load_by_email($args{'Email'});
+        $user->load_by_email( $args{'Email'} );
 
-        unless ($user->id) {
-            $user->load($args{'Email'});
+        unless ( $user->id ) {
+            $user->load( $args{'Email'} );
         }
-        if ($user->id) { # If the user exists
-            $principal->load($user->principal_id);
+        if ( $user->id ) {    # If the user exists
+            $principal->load( $user->principal_id );
         } else {
 
-        # if the user doesn't exist, we need to create a new user
-             my $new_user = RT::Model::User->new(current_user => RT->system_user);
+            # if the user doesn't exist, we need to create a new user
+            my $new_user
+                = RT::Model::User->new( current_user => RT->system_user );
 
-            my ( $Address, $name ) =  
-               RT::Interface::Email::ParseAddressFromHeader($args{'Email'});
+            my ( $Address, $name )
+                = RT::Interface::Email::ParseAddressFromHeader(
+                $args{'Email'} );
 
             my ( $Val, $Message ) = $new_user->create(
-                name => $Address,
-                email => $Address,
-                real_name     => $name,
-                privileged   => 0,
-                comments     => 'AutoCreated when added as a watcher');
+                name       => $Address,
+                email      => $Address,
+                real_name  => $name,
+                privileged => 0,
+                comments   => 'AutoCreated when added as a watcher'
+            );
             unless ($Val) {
-                Jifty->log->error("Failed to create user ".$args{'Email'} .": " .$Message);
-                # Deal with the race condition of two account creations at once
-                $new_user->load_by_email($args{'Email'});
+                Jifty->log->error( "Failed to create user "
+                        . $args{'Email'} . ": "
+                        . $Message );
+
+               # Deal with the race condition of two account creations at once
+                $new_user->load_by_email( $args{'Email'} );
             }
-            $principal->load($new_user->principal_id);
+            $principal->load( $new_user->principal_id );
         }
     }
-    # If we can't find this watcher, we need to bail.
-    unless ($principal->id) {
-        return(0, _("Could not find or create that user"));
-    }
 
+    # If we can't find this watcher, we need to bail.
+    unless ( $principal->id ) {
+        return ( 0, _("Could not find or create that user") );
+    }
 
     my $group = RT::Model::Group->new;
-    $group->load_queue_role_group(Type => $args{'Type'}, Queue => $self->id);
-    unless ($group->id) {
-        return(0,_("Group not found"));
+    $group->load_queue_role_group(
+        Type  => $args{'Type'},
+        Queue => $self->id
+    );
+    unless ( $group->id ) {
+        return ( 0, _("Group not found") );
     }
 
-    if ( $group->has_member( $principal)) {
+    if ( $group->has_member($principal) ) {
 
-        return ( 0, _('That principal is already a %1 for this queue', $args{'Type'}) );
+        return (
+            0,
+            _(  'That principal is already a %1 for this queue',
+                $args{'Type'}
+            )
+        );
     }
 
-
-    my ($m_id, $m_msg) = $group->_add_member(principal_id => $principal->id);
+    my ( $m_id, $m_msg )
+        = $group->_add_member( principal_id => $principal->id );
     unless ($m_id) {
-        Jifty->log->error("Failed to add ".$principal->id." as a member of group ".$group->id."\n".$m_msg);
+        Jifty->log->error( "Failed to add "
+                . $principal->id
+                . " as a member of group "
+                . $group->id . "\n"
+                . $m_msg );
 
-        return ( 0, _('Could not make that principal a %1 for this queue', $args{'Type'}) );
+        return (
+            0,
+            _(  'Could not make that principal a %1 for this queue',
+                $args{'Type'}
+            )
+        );
     }
-    return ( 1, _('Added principal as a %1 for this queue', $args{'Type'}) );
+    return ( 1,
+        _( 'Added principal as a %1 for this queue', $args{'Type'} ) );
 }
 
 # }}}
@@ -820,7 +865,6 @@ Email (the email address of an existing wathcer)
 
 =cut
 
-
 sub delete_watcher {
     my $self = shift;
 
@@ -842,7 +886,10 @@ sub delete_watcher {
     }
 
     my $group = RT::Model::Group->new;
-    $group->load_queue_role_group( Type => $args{'Type'}, Queue => $self->id );
+    $group->load_queue_role_group(
+        Type  => $args{'Type'},
+        Queue => $self->id
+    );
     unless ( $group->id ) {
         return ( 0, _("Group not found") );
     }
@@ -932,14 +979,14 @@ returns String: All queue AdminCc email addresses as a string
 
 sub admin_cc_addresses {
     my $self = shift;
-    
+
     unless ( $self->current_user_has_right('SeeQueue') ) {
         return undef;
-    }   
-    
+    }
+
     return ( $self->admin_cc->member_emails_as_string )
-    
-}   
+
+}
 
 # }}}
 
@@ -958,11 +1005,11 @@ sub cc_addresses {
         return undef;
     }
 
-    return ( $self->cc->member_emailsAsString);
+    return ( $self->cc->member_emailsAsString );
 
 }
-# }}}
 
+# }}}
 
 # {{{ sub Cc
 
@@ -979,7 +1026,7 @@ sub cc {
 
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-        $group->load_queue_role_group(Type => 'Cc', Queue => $self->id);
+        $group->load_queue_role_group( Type => 'Cc', Queue => $self->id );
     }
     return ($group);
 
@@ -1002,7 +1049,10 @@ sub admin_cc {
 
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-        $group->load_queue_role_group(Type => 'AdminCc', Queue => $self->id);
+        $group->load_queue_role_group(
+            Type  => 'AdminCc',
+            Queue => $self->id
+        );
     }
     return ($group);
 
@@ -1031,27 +1081,31 @@ Returns true if that principal is a member of the group Type for this queue
 sub is_watcher {
     my $self = shift;
 
-    my %args = ( Type  => 'Cc',
-        principal_id    => undef,
+    my %args = (
+        Type         => 'Cc',
+        principal_id => undef,
         @_
     );
 
-    # Load the relevant group. 
+    # Load the relevant group.
     my $group = RT::Model::Group->new;
-    $group->load_queue_role_group(Type => $args{'Type'}, Queue => $self->id);
+    $group->load_queue_role_group(
+        Type  => $args{'Type'},
+        Queue => $self->id
+    );
+
     # Ask if it has the member in question
 
     my $principal = RT::Model::Principal->new;
-    $principal->load($args{'principal_id'});
-    unless ($principal->id) {
+    $principal->load( $args{'principal_id'} );
+    unless ( $principal->id ) {
         return (undef);
     }
 
-    return ($group->has_member_recursively($principal));
+    return ( $group->has_member_recursively($principal) );
 }
 
 # }}}
-
 
 # {{{ sub IsCc
 
@@ -1086,18 +1140,14 @@ sub is_admin_cc {
     my $self   = shift;
     my $person = shift;
 
-    return ( $self->is_watcher( Type => 'AdminCc', principal_id => $person ) );
+    return (
+        $self->is_watcher( Type => 'AdminCc', principal_id => $person ) );
 
 }
 
 # }}}
 
-
 # }}}
-
-
-
-
 
 # }}}
 
@@ -1147,7 +1197,7 @@ sub current_user_has_right {
         $self->has_right(
             Principal => $self->current_user,
             Right     => "$right"
-          )
+        )
     );
 
 }
@@ -1173,16 +1223,14 @@ sub has_right {
         Principal => $self->current_user,
         @_
     );
-     my $principal = delete $args{'Principal'};
-     unless ( $principal ) {
-         Jifty->log->error("Principal undefined in Queue::has_right");
+    my $principal = delete $args{'Principal'};
+    unless ($principal) {
+        Jifty->log->error("Principal undefined in Queue::has_right");
         return undef;
-     }
-  
-     return $principal->has_right(
-         %args,
-         Object => ($self->id ? $self : RT->system),
-    );
+    }
+
+    return $principal->has_right( %args,
+        Object => ( $self->id ? $self : RT->system ), );
 }
 
 # }}}

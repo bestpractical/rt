@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,8 +43,9 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
+
 =head1 name
 
   RT::SearchBuilder - a baseclass for RT collection objects
@@ -71,7 +72,7 @@ use base qw/Jifty::Collection/;
 use UNIVERSAL::require;
 
 sub _handle {
-    return Jifty->handle
+    return Jifty->handle;
 }
 
 =head2 limit_to_enabled
@@ -82,10 +83,12 @@ Only find items that haven't been disabled
 
 sub limit_to_enabled {
     my $self = shift;
-    
-    $self->limit( column => 'disabled',
-		  value => '0',
-		  operator => '=' );
+
+    $self->limit(
+        column   => 'disabled',
+        value    => '0',
+        operator => '='
+    );
 }
 
 =head2 limit_Attribute PARAMHASH
@@ -114,67 +117,66 @@ my %Negate = qw(
 );
 
 sub limit_attribute {
-    my ($self, %args) = @_;
+    my ( $self, %args ) = @_;
     my $clause = 'alias';
-    my $operator = ($args{operator} || '=');
-    
-    if ($args{NULL} and exists $args{value}) {
-	$clause = 'leftjoin';
-	$operator = $Negate{$operator};
+    my $operator = ( $args{operator} || '=' );
+
+    if ( $args{NULL} and exists $args{value} ) {
+        $clause   = 'leftjoin';
+        $operator = $Negate{$operator};
+    } elsif ( $args{NEGATE} ) {
+        $operator = $Negate{$operator};
     }
-    elsif ($args{NEGATE}) {
-	$operator = $Negate{$operator};
-    }
-    
+
     my $alias = $self->join(
-	type => 'left',
-	alias1 => $args{alias} || 'main',
-	column1 => 'id',
-	table2 => 'Attributes',
-	column2 => 'object_id'
+        type    => 'left',
+        alias1  => $args{alias} || 'main',
+        column1 => 'id',
+        table2  => 'Attributes',
+        column2 => 'object_id'
     );
 
     my $type = ref($self);
-    $type =~ s/(?:s|Collection)$//; # XXX - Hack!
+    $type =~ s/(?:s|Collection)$//;    # XXX - Hack!
 
     $self->limit(
-	$clause	   => $alias,
-	column      => 'object_type',
-	operator   => '=',
-	value      => $type,
+        $clause  => $alias,
+        column   => 'object_type',
+        operator => '=',
+        value    => $type,
     );
     $self->limit(
-	$clause	   => $alias,
-	column      => 'name',
-	operator   => '=',
-	value      => $args{name},
+        $clause  => $alias,
+        column   => 'name',
+        operator => '=',
+        value    => $args{name},
     ) if exists $args{name};
 
     return unless exists $args{value};
 
     $self->limit(
-	$clause	   => $alias,
-	column      => 'Content',
-	operator   => $operator,
-	value      => $args{value},
+        $clause  => $alias,
+        column   => 'Content',
+        operator => $operator,
+        value    => $args{value},
     );
 
     # Capture rows with the attribute defined as an empty string.
     $self->limit(
-	$clause    => $alias,
-	column      => 'Content',
-	operator   => '=',
-	value      => '',
-	entry_aggregator => $args{NULL} ? 'AND' : 'OR',
+        $clause  => $alias,
+        column   => 'Content',
+        operator => '=',
+        value    => '',
+        entry_aggregator => $args{NULL} ? 'AND' : 'OR',
     ) if $args{EMPTY};
 
     # Capture rows without the attribute defined
     $self->limit(
-	%args,
-	alias      => $alias,
-	column	   => 'id',
-	operator   => ($args{NEGATE} ? 'IS NOT' : 'IS'),
-	value      => 'NULL',
+        %args,
+        alias    => $alias,
+        column   => 'id',
+        operator => ( $args{NEGATE} ? 'IS NOT' : 'IS' ),
+        value    => 'NULL',
     ) if $args{NULL};
 }
 
@@ -195,7 +197,7 @@ Takes a paramhash of key/value pairs with the following keys:
 =cut
 
 sub _singular_class {
-    my $self = shift;
+    my $self  = shift;
     my $class = ref($self);
     $class =~ s/Collection$// or die "Cannot deduce SingularClass for $class";
     return $class;
@@ -203,35 +205,37 @@ sub _singular_class {
 
 sub limit_custom_field {
     my $self = shift;
-    my %args = ( value        => undef,
-                 customfield  => undef,
-                 operator     => '=',
-                 @_ );
+    my %args = (
+        value       => undef,
+        customfield => undef,
+        operator    => '=',
+        @_
+    );
 
     my $alias = $self->join(
-	type => 'left',
-	alias1     => 'main',
-	column1     => 'id',
-	table2     => 'Objectcustom_field_values',
-	column2     => 'object_id'
+        type    => 'left',
+        alias1  => 'main',
+        column1 => 'id',
+        table2  => 'Objectcustom_field_values',
+        column2 => 'object_id'
     );
     $self->limit(
-	alias      => $alias,
-	column      => 'CustomField',
-	operator   => '=',
-	value      => $args{'customfield'},
-    ) if ($args{'customfield'});
+        alias    => $alias,
+        column   => 'CustomField',
+        operator => '=',
+        value    => $args{'customfield'},
+    ) if ( $args{'customfield'} );
     $self->limit(
-	alias      => $alias,
-	column      => 'object_type',
-	operator   => '=',
-	value      => $self->_singular_class,
+        alias    => $alias,
+        column   => 'object_type',
+        operator => '=',
+        value    => $self->_singular_class,
     );
     $self->limit(
-	alias      => $alias,
-	column      => 'Content',
-	operator   => $args{'operator'},
-	value      => $args{'value'},
+        alias    => $alias,
+        column   => 'Content',
+        operator => $args{'operator'},
+        value    => $args{'value'},
     );
 }
 
@@ -255,9 +259,9 @@ match lower(colname) agaist lc($val);
 
 sub limit {
     my $self = shift;
-    my %args = (operator => '=',@_);
+    my %args = ( operator => '=', @_ );
     $args{'operator'} =~ s/like/matches/i;
-    return $self->SUPER::limit(case_sensitive => 1, %args);
+    return $self->SUPER::limit( case_sensitive => 1, %args );
 }
 
 # }}}
@@ -274,14 +278,13 @@ db.
 =cut
 
 sub items_order_by {
-    my $self = shift;
+    my $self  = shift;
     my $items = shift;
-  
-    if ($self->new_item()->can('SortOrder')) {
+
+    if ( $self->new_item()->can('SortOrder') ) {
         $items = [ sort { $a->SortOrder <=> $b->SortOrder } @{$items} ];
-    }
-    elsif ($self->new_item()->can('name')) {
-        $items = [ sort { lc($a->name) cmp lc($b->name) } @{$items} ];
+    } elsif ( $self->new_item()->can('name') ) {
+        $items = [ sort { lc( $a->name ) cmp lc( $b->name ) } @{$items} ];
     }
 
     return $items;
@@ -302,12 +305,11 @@ it.
 sub items_array_ref {
     my $self = shift;
     my @items;
-    
-    return $self->items_order_by($self->SUPER::items_array_ref());
+
+    return $self->items_order_by( $self->SUPER::items_array_ref() );
 }
 
 # }}}
 
 1;
-
 

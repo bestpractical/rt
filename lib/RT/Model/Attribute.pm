@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,12 +43,12 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
-
 
 use warnings;
 use strict;
+
 package RT::Model::Attribute;
 
 use Storable qw/nfreeze thaw/;
@@ -59,16 +59,20 @@ sub table {'Attributes'}
 use base 'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-column        object_id => max_length is 11,  type is 'int(11)', default is '0';
-column        name => max_length is 200,  type is 'varchar(200)', default is '';
-column        object_type => max_length is 200,  type is 'varchar(200)', default is '';
-column        Description => max_length is 255,  type is 'varchar(255)', default is '';
-column        ContentType => max_length is 255,  type is 'varchar(255)', default is '';
-column        Content =>   type is 'blob', default is '';
- 
-};
- 
+    column object_id => max_length is 11, type is 'int(11)', default is '0';
+    column name => max_length is 200, type is 'varchar(200)', default is '';
+    column
+        object_type => max_length is 200,
+        type is 'varchar(200)', default is '';
+    column
+        Description => max_length is 255,
+        type is 'varchar(255)', default is '';
+    column
+        ContentType => max_length is 255,
+        type is 'varchar(255)', default is '';
+    column Content => type is 'blob', default is '';
 
+};
 
 =head1 name
 
@@ -81,21 +85,25 @@ column        Content =>   type is 'blob', default is '';
 # the acl map is a map of "name of attribute" and "what right the user must have on the associated object to see/edit it
 
 our $ACL_MAP = {
-    SavedSearch => { create => 'EditSavedSearches',
-                     update => 'EditSavedSearches',
-                     delete => 'EditSavedSearches',
-                     display => 'ShowSavedSearches' },
+    SavedSearch => {
+        create  => 'EditSavedSearches',
+        update  => 'EditSavedSearches',
+        delete  => 'EditSavedSearches',
+        display => 'ShowSavedSearches'
+    },
 
 };
 
 # There are a number of attributes that users should be able to modify for themselves, such as saved searches
 #  we could do this with a different set of "modify" rights, but that gets very hacky very fast. this is even faster and even
 # hackier. we're hardcoding that a different set of rights are needed for attributes on oneself
-our $PERSONAL_ACL_MAP = { 
-    SavedSearch => { create => 'ModifySelf',
-                     update => 'ModifySelf',
-                     delete => 'ModifySelf',
-                     display => 'allow' },
+our $PERSONAL_ACL_MAP = {
+    SavedSearch => {
+        create  => 'ModifySelf',
+        update  => 'ModifySelf',
+        delete  => 'ModifySelf',
+        display => 'allow'
+    },
 
 };
 
@@ -105,31 +113,36 @@ Returns the right that the user needs to have on this attribute's object to perf
 
 =cut
 
-sub lookup_object_right { 
+sub lookup_object_right {
     my $self = shift;
-    my %args = ( object_type => undef,
-                 object_id => undef,
-                 Right => undef,
-                 name => undef,
-                 @_);
+    my %args = (
+        object_type => undef,
+        object_id   => undef,
+        Right       => undef,
+        name        => undef,
+        @_
+    );
 
     # if it's an attribute on oneself, check the personal acl map
-    if (($args{'object_type'} eq 'RT::Model::User') && ($args{'object_id'} eq $self->current_user->id)) {
-    return('allow') unless ($PERSONAL_ACL_MAP->{$args{'name'}});
-    return('allow') unless ($PERSONAL_ACL_MAP->{$args{'name'}}->{$args{'Right'}});
-    return($PERSONAL_ACL_MAP->{$args{'name'}}->{$args{'Right'}}); 
+    if (   ( $args{'object_type'} eq 'RT::Model::User' )
+        && ( $args{'object_id'} eq $self->current_user->id ) )
+    {
+        return ('allow') unless ( $PERSONAL_ACL_MAP->{ $args{'name'} } );
+        return ('allow')
+            unless (
+            $PERSONAL_ACL_MAP->{ $args{'name'} }->{ $args{'Right'} } );
+        return ( $PERSONAL_ACL_MAP->{ $args{'name'} }->{ $args{'Right'} } );
 
     }
-   # otherwise check the main ACL map
+
+    # otherwise check the main ACL map
     else {
-    return('allow') unless ($ACL_MAP->{$args{'name'}});
-    return('allow') unless ($ACL_MAP->{$args{'name'}}->{$args{'Right'}});
-    return($ACL_MAP->{$args{'name'}}->{$args{'Right'}}); 
+        return ('allow') unless ( $ACL_MAP->{ $args{'name'} } );
+        return ('allow')
+            unless ( $ACL_MAP->{ $args{'name'} }->{ $args{'Right'} } );
+        return ( $ACL_MAP->{ $args{'name'} }->{ $args{'Right'} } );
     }
 }
-
-
-
 
 =head2 Create PARAMHASH
 
@@ -145,68 +158,71 @@ You may pass a C<Object> instead of C<object_type> and C<object_id>.
 
 =cut
 
-
-
-
 sub create {
     my $self = shift;
-    my %args = ( 
-                name => '',
-                Description => '',
-                Content => '',
-                ContentType => '',
-                Object => undef,
-		  @_);
+    my %args = (
+        name        => '',
+        Description => '',
+        Content     => '',
+        ContentType => '',
+        Object      => undef,
+        @_
+    );
 
-    if ($args{Object} and UNIVERSAL::can($args{Object}, 'id')) {
-	    $args{object_type} = ref($args{Object});
-	    $args{object_id} = $args{Object}->id;
+    if ( $args{Object} and UNIVERSAL::can( $args{Object}, 'id' ) ) {
+        $args{object_type} = ref( $args{Object} );
+        $args{object_id}   = $args{Object}->id;
     } else {
-        return(0, _("Required parameter '%1' not specified", 'Object'));
+        return ( 0, _( "Required parameter '%1' not specified", 'Object' ) );
 
     }
-   
-    Carp::confess unless  $self->current_user;
-    # object_right is the right that the user has to have on the object for them to have $right on this attribute
+
+    Carp::confess unless $self->current_user;
+
+# object_right is the right that the user has to have on the object for them to have $right on this attribute
     my $object_right = $self->lookup_object_right(
-        Right      => 'create',
+        Right       => 'create',
         object_id   => $args{'object_id'},
         object_type => $args{'object_type'},
-        name       => $args{'name'}
+        name        => $args{'name'}
     );
-    if ($object_right eq 'deny') { 
-        return (0, _('Permission Denied'));
-    } 
-    elsif ($object_right eq 'allow') {
+    if ( $object_right eq 'deny' ) {
+        return ( 0, _('Permission Denied') );
+    } elsif ( $object_right eq 'allow' ) {
+
         # do nothing, we're ok
     }
 
-
-    elsif (!$self->current_user->has_right( Object => $args{Object}, Right => $object_right)) {
-        return (0, _('Permission Denied'));
+    elsif (
+        !$self->current_user->has_right(
+            Object => $args{Object},
+            Right  => $object_right
+        )
+        )
+    {
+        return ( 0, _('Permission Denied') );
     }
 
-   
-    if (ref ($args{'Content'}) ) { 
-        eval  {$args{'Content'} = $self->_serialize_content($args{'Content'}); };
+    if ( ref( $args{'Content'} ) ) {
+        eval {
+            $args{'Content'} = $self->_serialize_content( $args{'Content'} );
+        };
         if ($@) {
-         return(0, $@);
+            return ( 0, $@ );
         }
         $args{'ContentType'} = 'storable';
     }
 
-    
     $self->SUPER::create(
-                         name => $args{'name'},
-                         Content => $args{'Content'},
-                         ContentType => $args{'ContentType'},
-                         Description => $args{'Description'},
-                         object_type => $args{'object_type'},
-                         object_id => $args{'object_id'},
-);
+        name        => $args{'name'},
+        Content     => $args{'Content'},
+        ContentType => $args{'ContentType'},
+        Description => $args{'Description'},
+        object_type => $args{'object_type'},
+        object_id   => $args{'object_id'},
+    );
 
 }
-
 
 # {{{ sub load_by_nameAndObject
 
@@ -220,22 +236,21 @@ sub load_by_name_and_object {
     my $self = shift;
     my %args = (
         Object => undef,
-        name  => undef,
+        name   => undef,
         @_,
     );
 
     return (
-	$self->load_by_cols(
-	    name => $args{'name'},
-	    object_type => ref($args{'Object'}),
-	    object_id => $args{'Object'}->id,
-	)
+        $self->load_by_cols(
+            name        => $args{'name'},
+            object_type => ref( $args{'Object'} ),
+            object_id   => $args{'Object'}->id,
+        )
     );
 
 }
 
 # }}}
-
 
 =head2 _DeserializeContent
 
@@ -245,19 +260,19 @@ DeserializeContent returns this Attribute's "Content" as a hashref.
 =cut
 
 sub _deserialize_content {
-    my $self = shift;
+    my $self    = shift;
     my $content = shift;
 
     my $hashref;
-    eval {$hashref  = thaw(decode_base64($content))} ; 
+    eval { $hashref = thaw( decode_base64($content) ) };
     if ($@) {
-        Jifty->log->error("Deserialization of attribute ".$self->id. " failed");
+        Jifty->log->error(
+            "Deserialization of attribute " . $self->id . " failed" );
     }
 
-    return($hashref);
+    return ($hashref);
 
 }
-
 
 =head2 Content
 
@@ -268,37 +283,41 @@ If it's data structure returns a ref to that data structure.
 
 sub content {
     my $self = shift;
+
     # Here we call _value to get the ACL check.
     my $content = $self->_value('Content');
-    if ($self->__value('ContentType') eq 'storable') {
-        eval {$content = $self->_deserialize_content($content); };
+    if ( $self->__value('ContentType') eq 'storable' ) {
+        eval { $content = $self->_deserialize_content($content); };
         if ($@) {
-            Jifty->log->error("Deserialization of content for attribute ".$self->id. " failed. Attribute was: ".$content);
+            Jifty->log->error( "Deserialization of content for attribute "
+                    . $self->id
+                    . " failed. Attribute was: "
+                    . $content );
         }
-    } 
+    }
 
-    return($content);
+    return ($content);
 
 }
 
 sub _serialize_content {
-    my $self = shift;
+    my $self    = shift;
     my $content = shift;
-        return( encode_base64(nfreeze($content))); 
+    return ( encode_base64( nfreeze($content) ) );
 }
 
-
 sub set_content {
-    my $self = shift;
+    my $self    = shift;
     my $content = shift;
 
     # Call __value to avoid ACL check.
     if ( $self->__value('ContentType') eq 'storable' ) {
+
         # We eval the serialization because it will lose on a coderef.
         $content = eval { $self->_serialize_content($content) };
         if ($@) {
             Jifty->log->error("Content couldn't be frozen: $@");
-            return(0, "Content couldn't be frozen");
+            return ( 0, "Content couldn't be frozen" );
         }
     }
     return $self->_set( column => 'Content', value => $content );
@@ -312,11 +331,11 @@ Returns the subvalue for $key.
 =cut
 
 sub sub_value {
-    my $self = shift;
-    my $key = shift;
+    my $self   = shift;
+    my $key    = shift;
     my $values = $self->content();
     return undef unless ref($values);
-    return($values->{$key});
+    return ( $values->{$key} );
 }
 
 =head2 DeleteSubValue name
@@ -326,16 +345,13 @@ Deletes the subvalue with the key name
 =cut
 
 sub delete_sub_value {
-    my $self = shift;
-    my $key = shift;
+    my $self   = shift;
+    my $key    = shift;
     my %values = $self->content();
     delete $values{$key};
     $self->set_content(%values);
 
-    
-
 }
-
 
 =head2 DeleteAllSubValues 
 
@@ -343,10 +359,9 @@ Deletes all subvalues for this attribute
 
 =cut
 
-
 sub delete_all_sub_values {
-    my $self = shift; 
-    $self->set_content({});
+    my $self = shift;
+    $self->set_content( {} );
 }
 
 =head2 SetSubValues  {  }
@@ -359,67 +374,64 @@ Returns a tuple of (status, message)
 
 =cut
 
-
 sub set_sub_values {
-   my $self = shift;
-   my %args = (@_); 
-   my $values = ($self->content() || {} );
-   foreach my $key (keys %args) {
-    $values->{$key} = $args{$key};
-   }
+    my $self   = shift;
+    my %args   = (@_);
+    my $values = ( $self->content() || {} );
+    foreach my $key ( keys %args ) {
+        $values->{$key} = $args{$key};
+    }
 
-   $self->set_content($values);
+    $self->set_content($values);
 
 }
 
-
 sub object {
-    my $self = shift;
+    my $self        = shift;
     my $object_type = $self->__value('object_type');
     my $object;
     eval { $object = $object_type->new };
-    unless(UNIVERSAL::isa($object, $object_type)) {
-        Jifty->log->error("Attribute ".$self->id." has a bogus object type - $object_type (".$@.")");
-        return(undef);
-     }
-    $object->load($self->__value('object_id'));
+    unless ( UNIVERSAL::isa( $object, $object_type ) ) {
+        Jifty->log->error( "Attribute "
+                . $self->id
+                . " has a bogus object type - $object_type ("
+                . $@
+                . ")" );
+        return (undef);
+    }
+    $object->load( $self->__value('object_id') );
 
-    return($object);
+    return ($object);
 
 }
-
 
 sub delete {
     my $self = shift;
-    unless ($self->current_user_has_right('delete')) {
-        return (0,_('Permission Denied'));
+    unless ( $self->current_user_has_right('delete') ) {
+        return ( 0, _('Permission Denied') );
     }
-    return($self->SUPER::delete(@_));
+    return ( $self->SUPER::delete(@_) );
 }
-
 
 sub _value {
     my $self = shift;
-    unless ($self->current_user_has_right('display')) {
-        return (0,_('Permission Denied'));
+    unless ( $self->current_user_has_right('display') ) {
+        return ( 0, _('Permission Denied') );
     }
 
-    return($self->SUPER::_value(@_));
-
+    return ( $self->SUPER::_value(@_) );
 
 }
-
 
 sub _set {
     my $self = shift;
-    unless ($self->current_user_has_right('modify')) {
+    unless ( $self->current_user_has_right('modify') ) {
 
-        return (0,_('Permission Denied'));
+        return ( 0, _('Permission Denied') );
     }
-    return($self->SUPER::_set(@_));
+    return ( $self->SUPER::_set(@_) );
 
 }
-
 
 =head2 current_user_has_right
 
@@ -428,30 +440,34 @@ One of "display" "modify" "delete" or "create" and returns 1 if the user has tha
 =cut
 
 sub current_user_has_right {
-    my $self = shift;
+    my $self  = shift;
     my $right = shift;
 
-    # object_right is the right that the user has to have on the object for them to have $right on this attribute
+# object_right is the right that the user has to have on the object for them to have $right on this attribute
     my $object_right = $self->lookup_object_right(
-        Right      => $right,
+        Right       => $right,
         object_id   => $self->__value('object_id'),
         object_type => $self->__value('object_type'),
-        name       => $self->__value('name')
+        name        => $self->__value('name')
     );
-   
-    return (1) if ($object_right eq 'allow');
-    return (0) if ($object_right eq 'deny');
-    return(1) if ($self->current_user->has_right( Object => $self->object, Right => $object_right));
-    return(0);
+
+    return (1) if ( $object_right eq 'allow' );
+    return (0) if ( $object_right eq 'deny' );
+    return (1)
+        if (
+        $self->current_user->has_right(
+            Object => $self->object,
+            Right  => $object_right
+        )
+        );
+    return (0);
 
 }
-
 
 =head1 TODO
 
 We should be deserializing the content on load and then enver again, rather than at every access
 
 =cut
-
 
 1;

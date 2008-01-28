@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,8 +43,9 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
+
 =head1 name
 
   RT::Model::UserCollection - Collection of RT::Model::User objects
@@ -64,31 +65,37 @@
 
 use warnings;
 use strict;
+
 package RT::Model::UserCollection;
 use base qw/RT::SearchBuilder/;
 
-# {{{ sub _init 
+# {{{ sub _init
 sub _init {
     my $self = shift;
 
+    my @result = $self->SUPER::_init(@_);
 
-    my @result =          $self->SUPER::_init(@_);
     # By default, order by name
-    $self->order_by( alias => 'main',
-                    column => 'name',
-                        order => 'ASC' );
+    $self->order_by(
+        alias  => 'main',
+        column => 'name',
+        order  => 'ASC'
+    );
 
-    $self->{'princ_alias'} =  $self->new_alias('Principals');
+    $self->{'princ_alias'} = $self->new_alias('Principals');
 
     # XXX: should be generalized
-    $self->join( alias1 => 'main',
-                 column1 => 'id',
-                 alias2 => $self->principals_alias,
-                 column2 => 'id' );
-    $self->limit( alias => $self->principals_alias,
-                  column => 'principal_type',
-                  value => 'User',
-                );
+    $self->join(
+        alias1  => 'main',
+        column1 => 'id',
+        alias2  => $self->principals_alias,
+        column2 => 'id'
+    );
+    $self->limit(
+        alias  => $self->principals_alias,
+        column => 'principal_type',
+        value  => 'User',
+    );
 
     return (@result);
 }
@@ -104,12 +111,11 @@ Returns the string that represents this Users object's primary "Principals" alia
 # XXX: should be generalized
 sub principals_alias {
     my $self = shift;
-    return($self->{'princ_alias'});
+    return ( $self->{'princ_alias'} );
 
 }
 
-
-# {{{ sub _do_search 
+# {{{ sub _do_search
 
 =head2 _do_search
 
@@ -121,7 +127,7 @@ we're explicitly trying to see them.
 sub _do_search {
     my $self = shift;
 
-    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
+#unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
     unless ( $self->{'find_disabled_rows'} ) {
         $self->limit_to_enabled();
     }
@@ -142,10 +148,12 @@ Only find items that haven\'t been disabled
 sub limit_to_enabled {
     my $self = shift;
 
-    $self->limit( alias    => $self->principals_alias,
-                  column    => 'disabled',
-                  value    => '0',
-                  operator => '=' );
+    $self->limit(
+        alias    => $self->principals_alias,
+        column   => 'disabled',
+        value    => '0',
+        operator => '='
+    );
 }
 
 # }}}
@@ -185,15 +193,19 @@ sub member_of_group {
     my $groupalias = $self->new_alias('CachedGroupMembers');
 
     # join the principal to the groups table
-    $self->join( alias1 => $self->principals_alias,
-                 column1 => 'id',
-                 alias2 => $groupalias,
-                 column2 => 'MemberId' );
+    $self->join(
+        alias1  => $self->principals_alias,
+        column1 => 'id',
+        alias2  => $groupalias,
+        column2 => 'MemberId'
+    );
 
-    $self->limit( alias    => "$groupalias",
-                  column    => 'GroupId',
-                  value    => "$group",
-                  operator => "=" );
+    $self->limit(
+        alias    => "$groupalias",
+        column   => 'GroupId',
+        value    => "$group",
+        operator => "="
+    );
 }
 
 # }}}
@@ -232,8 +244,7 @@ If passed a queue object, with no id, it will find users who have that right for
 =cut
 
 # XXX: should be generalized
-sub _join_group_members
-{
+sub _join_group_members {
     my $self = shift;
     my %args = (
         IncludeSubgroupMembers => 1,
@@ -249,15 +260,14 @@ sub _join_group_members
     my $group_members;
     if ( $args{'IncludeSubgroupMembers'} ) {
         $group_members = $self->new_alias('CachedGroupMembers');
-    }
-    else {
+    } else {
         $group_members = $self->new_alias('GroupMembers');
     }
 
     $self->join(
-        alias1 => $group_members,
+        alias1  => $group_members,
         column1 => 'MemberId',
-        alias2 => $principals,
+        alias2  => $principals,
         column2 => 'id'
     );
 
@@ -265,17 +275,16 @@ sub _join_group_members
 }
 
 # XXX: should be generalized
-sub _join_groups
-{
+sub _join_groups {
     my $self = shift;
     my %args = (@_);
 
-    my $group_members = $self->_join_group_members( %args );
-    my $groups = $self->new_alias('Groups');
+    my $group_members = $self->_join_group_members(%args);
+    my $groups        = $self->new_alias('Groups');
     $self->join(
-        alias1 => $groups,
+        alias1  => $groups,
         column1 => 'id',
-        alias2 => $group_members,
+        alias2  => $group_members,
         column2 => 'GroupId'
     );
 
@@ -283,29 +292,28 @@ sub _join_groups
 }
 
 # XXX: should be generalized
-sub _join_acl
-{
+sub _join_acl {
     my $self = shift;
     my %args = (
-        Right                  => undef,
-        IncludeSuperusers      => undef,
+        Right             => undef,
+        IncludeSuperusers => undef,
         @_,
     );
 
     my $acl = $self->new_alias('ACL');
     $self->limit(
         alias    => $acl,
-        column    => 'right_name',
+        column   => 'right_name',
         operator => ( $args{Right} ? '=' : 'IS NOT' ),
         value => $args{Right} || 'NULL',
         entry_aggregator => 'OR'
     );
     if ( $args{'IncludeSuperusers'} and $args{'Right'} ) {
         $self->limit(
-            alias           => $acl,
+            alias            => $acl,
             column           => 'right_name',
-            operator        => '=',
-            value           => 'SuperUser',
+            operator         => '=',
+            value            => 'SuperUser',
             entry_aggregator => 'OR'
         );
     }
@@ -313,32 +321,32 @@ sub _join_acl
 }
 
 # XXX: should be generalized
-sub _get_equiv_objects
-{
+sub _get_equiv_objects {
     my $self = shift;
     my %args = (
-        Object                 => undef,
-        IncludeSystemRights    => undef,
-        equiv_objects           => [ ],
+        Object              => undef,
+        IncludeSystemRights => undef,
+        equiv_objects       => [],
         @_
     );
     return () unless $args{'Object'};
 
-    my @objects = ($args{'Object'});
+    my @objects = ( $args{'Object'} );
     if ( UNIVERSAL::isa( $args{'Object'}, 'RT::Model::Ticket' ) ) {
-        # If we're looking at ticket rights, we also want to look at the associated queue rights.
-        # this is a little bit hacky, but basically, now that we've done the ticket roles magic,
-        # we load the queue object and ask all the rest of our questions about the queue.
+
+# If we're looking at ticket rights, we also want to look at the associated queue rights.
+# this is a little bit hacky, but basically, now that we've done the ticket roles magic,
+# we load the queue object and ask all the rest of our questions about the queue.
 
         # XXX: This should be abstracted into object itself
-        if( $args{'Object'}->id ) {
+        if ( $args{'Object'}->id ) {
             push @objects, $args{'Object'}->acl_equivalence_objects;
         } else {
             push @objects, 'RT::Model::Queue';
         }
     }
 
-    if( $args{'IncludeSystemRights'} ) {
+    if ( $args{'IncludeSystemRights'} ) {
         push @objects, 'RT::System';
     }
     push @objects, @{ $args{'equiv_objects'} };
@@ -354,12 +362,14 @@ sub who_have_right {
         IncludeSystemRights    => undef,
         IncludeSuperusers      => undef,
         IncludeSubgroupMembers => 1,
-        equiv_objects           => [ ],
+        equiv_objects          => [],
         @_
     );
 
     if ( defined $args{'object_type'} || defined $args{'object_id'} ) {
-        Jifty->log->fatal( "who_have_right called with the Obsolete object_id/object_type API");
+        Jifty->log->fatal(
+            "who_have_right called with the Obsolete object_id/object_type API"
+        );
         return (undef);
     }
 
@@ -367,23 +377,23 @@ sub who_have_right {
     $from_role->who_have_role_right(%args);
 
     my $from_group = $self->clone;
-    $from_group->who_have_group_right( %args );
+    $from_group->who_have_group_right(%args);
 
     #XXX: DIRTY HACK
     use Jifty::DBI::Collection::Union;
     my $union = new Jifty::DBI::Collection::Union;
-    $union->add( $from_role ) ;
-    $union->add( $from_group );
+    $union->add($from_role);
+    $union->add($from_group);
     %$self = %$union;
     bless $self, ref($union);
 
     return;
 }
+
 # }}}
 
 # XXX: should be generalized
-sub who_have_role_right
-{
+sub who_have_role_right {
     my $self = shift;
     my %args = (
         Right                  => undef,
@@ -391,82 +401,81 @@ sub who_have_role_right
         IncludeSystemRights    => undef,
         IncludeSuperusers      => undef,
         IncludeSubgroupMembers => 1,
-        equiv_objects           => [ ],
+        equiv_objects          => [],
         @_
     );
 
-    my $groups = $self->_join_groups( %args );
-    my $acl = $self->_join_acl( %args );
+    my $groups = $self->_join_groups(%args);
+    my $acl    = $self->_join_acl(%args);
 
-    my ($check_roles, $check_objects) = ('','');
+    my ( $check_roles, $check_objects ) = ( '', '' );
 
+    my @objects = $self->_get_equiv_objects(%args);
 
-    my @objects = $self->_get_equiv_objects( %args );
-
-    if ( @objects ) {
-            my @role_clauses;
-            my @object_clauses;
-            foreach my $obj ( @objects ) {
-                    my $type = ref($obj)? ref($obj): $obj;
-                    my $id;
-                    $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+    if (@objects) {
+        my @role_clauses;
+        my @object_clauses;
+        foreach my $obj (@objects) {
+            my $type = ref($obj) ? ref($obj) : $obj;
+            my $id;
+            $id = $obj->id
+                if ref($obj) && UNIVERSAL::can( $obj, 'id' ) && $obj->id;
 
             my $role_clause = "$groups.Domain = '$type-Role'";
-    
+
             # if we want mysql 4.0 use indexes here. we MUST convert that
             # field to integer and drop this quotes.
-            $role_clause   .= " AND $groups.Instance = '$id'" if $id;
+            $role_clause .= " AND $groups.Instance = '$id'" if $id;
             push @role_clauses, "($role_clause)";
             my $object_clause = "$acl.object_type = '$type'";
-            $object_clause   .= " AND $acl.object_id = $id" if $id;
+            $object_clause .= " AND $acl.object_id = $id" if $id;
             push @object_clauses, "($object_clause)";
 
-
-    }
+        }
 
         $check_roles .= join ' OR ', @role_clauses;
         $check_objects = join ' OR ', @object_clauses;
     } else {
-        if( !$args{'IncludeSystemRights'} ) {
+        if ( !$args{'IncludeSystemRights'} ) {
             $check_objects = "($acl.object_type != 'RT::System')";
         }
     }
 
     $self->_add_subclause( "WhichObject", "($check_objects)" );
-    $self->_add_subclause( "WhichRole", "($check_roles)" );
+    $self->_add_subclause( "WhichRole",   "($check_roles)" );
 
-
-    $self->limit( alias => $acl,
-                  column => 'principal_type',
-                  value => "$groups.Type",
-                  quote_value => 0,
-                );
+    $self->limit(
+        alias       => $acl,
+        column      => 'principal_type',
+        value       => "$groups.Type",
+        quote_value => 0,
+    );
 
     # no system user
-    $self->limit( alias => $self->principals_alias,
-                  column => 'id',
-                  operator => '!=',
-                  value => RT->system_user->id
-                );
-    return
+    $self->limit(
+        alias    => $self->principals_alias,
+        column   => 'id',
+        operator => '!=',
+        value    => RT->system_user->id
+    );
+    return;
 }
 
 # XXX: should be generalized
-sub _join_group_members_for_group_rights
-{
-    my $self = shift;
-    my %args = (@_);
-    my $group_members = $self->_join_group_members( %args );
-    $self->limit( alias => $args{'ACLAlias'},
-                  column => 'principal_id',
-                  value => "$group_members.GroupId",
-                  quote_value => 0,
-                );
+sub _join_group_members_for_group_rights {
+    my $self          = shift;
+    my %args          = (@_);
+    my $group_members = $self->_join_group_members(%args);
+    $self->limit(
+        alias       => $args{'ACLAlias'},
+        column      => 'principal_id',
+        value       => "$group_members.GroupId",
+        quote_value => 0,
+    );
 }
 
 # XXX: should be generalized
-sub who_have_group_right
-{
+sub who_have_group_right {
     my $self = shift;
     my %args = (
         Right                  => undef,
@@ -474,50 +483,54 @@ sub who_have_group_right
         IncludeSystemRights    => undef,
         IncludeSuperusers      => undef,
         IncludeSubgroupMembers => 1,
-        equiv_objects           => [ ],
+        equiv_objects          => [],
         @_
     );
 
     # Find only rows where the right granted is
     # the one we're looking up or _possibly_ superuser
-    my $acl = $self->_join_acl( %args );
+    my $acl = $self->_join_acl(%args);
 
     my ($check_objects) = ('');
-    my @objects = $self->_get_equiv_objects( %args );
+    my @objects = $self->_get_equiv_objects(%args);
 
-    if ( @objects ) {
+    if (@objects) {
         my @object_clauses;
-        foreach my $obj ( @objects ) {
-            my $type = ref($obj)? ref($obj): $obj;
+        foreach my $obj (@objects) {
+            my $type = ref($obj) ? ref($obj) : $obj;
             my $id;
-            $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
+            $id = $obj->id
+                if ref($obj) && UNIVERSAL::can( $obj, 'id' ) && $obj->id;
 
             my $object_clause = "$acl.object_type = '$type'";
-            $object_clause   .= " AND $acl.object_id   = $id" if $id;
+            $object_clause .= " AND $acl.object_id   = $id" if $id;
             push @object_clauses, "($object_clause)";
         }
 
         $check_objects = join ' OR ', @object_clauses;
     } else {
-        if( !$args{'IncludeSystemRights'} ) {
+        if ( !$args{'IncludeSystemRights'} ) {
             $check_objects = "($acl.object_type != 'RT::System')";
         }
     }
     $self->_add_subclause( "WhichObject", "($check_objects)" );
-    
+
     $self->_join_group_members_for_group_rights( %args, ACLAlias => $acl );
+
     # Find only members of groups that have the right.
-    $self->limit( alias => $acl,
-                  column => 'principal_type',
-                  value => 'Group',
-                );
-    
+    $self->limit(
+        alias  => $acl,
+        column => 'principal_type',
+        value  => 'Group',
+    );
+
     # no system user
-    $self->limit( alias => $self->principals_alias,
-                  column => 'id',
-                  operator => '!=',
-                  value => RT->system_user->id
-                );
+    $self->limit(
+        alias    => $self->principals_alias,
+        column   => 'id',
+        operator => '!=',
+        value    => RT->system_user->id
+    );
     return;
 }
 
@@ -530,26 +543,29 @@ sub who_have_group_right
 # XXX: should be generalized
 sub who_belong_to_groups {
     my $self = shift;
-    my %args = ( Groups                 => undef,
-                 IncludeSubgroupMembers => 1,
-                 @_ );
+    my %args = (
+        Groups                 => undef,
+        IncludeSubgroupMembers => 1,
+        @_
+    );
 
     # Unprivileged users can't be granted real system rights.
     # is this really the right thing to be saying?
     $self->limit_to_privileged();
 
-    my $group_members = $self->_join_group_members( %args );
+    my $group_members = $self->_join_group_members(%args);
 
-    foreach my $groupid (@{$args{'Groups'}}) {
-        $self->limit( alias           => $group_members,
-                      column           => 'GroupId',
-                      value           => $groupid,
-                      quote_value      => 0,
-                      entry_aggregator => 'OR',
-                    );
+    foreach my $groupid ( @{ $args{'Groups'} } ) {
+        $self->limit(
+            alias            => $group_members,
+            column           => 'GroupId',
+            value            => $groupid,
+            quote_value      => 0,
+            entry_aggregator => 'OR',
+        );
     }
 }
-# }}}
 
+# }}}
 
 1;

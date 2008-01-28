@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 package RT::Interface::Web::QueryBuilder::Tree;
 
@@ -75,17 +75,17 @@ on the root node passed to it.)
 =cut
 
 sub traverse_pre_post {
-   my ($self, $prefunc, $postfunc) = @_;
+    my ( $self, $prefunc, $postfunc ) = @_;
 
-   # XXX: if pre or post action changes siblings (delete or adds)
-   # we could have problems
-   $prefunc->($self) if $prefunc;
+    # XXX: if pre or post action changes siblings (delete or adds)
+    # we could have problems
+    $prefunc->($self) if $prefunc;
 
-   foreach my $child ($self->getAllChildren()) { 
-           $child->traverse_pre_post($prefunc, $postfunc);
-   }
-   
-   $postfunc->($self) if $postfunc;
+    foreach my $child ( $self->getAllChildren() ) {
+        $child->traverse_pre_post( $prefunc, $postfunc );
+    }
+
+    $postfunc->($self) if $postfunc;
 }
 
 =head2 GetReferencedQueues
@@ -101,7 +101,7 @@ sub get_referenced_queues {
     my $queues = {};
 
     $self->traverse(
-        sub  {
+        sub {
             my $node = shift;
 
             return if $node->isRoot;
@@ -111,7 +111,7 @@ sub get_referenced_queues {
 
             if ( $clause->{Key} eq 'Queue' ) {
                 $queues->{ $clause->{Value} } = 1;
-            };
+            }
         }
     );
 
@@ -137,12 +137,13 @@ sub get_query_and_option_list {
     my $selected_nodes = shift;
 
     my $list = $self->__linearize_tree;
-    foreach my $e( @$list ) {
-        $e->{'DEPTH'}    = $e->{'NODE'}->getDepth;
-        $e->{'SELECTED'} = (grep $_ == $e->{'NODE'}, @$selected_nodes)? 'selected' : '';
+    foreach my $e (@$list) {
+        $e->{'DEPTH'} = $e->{'NODE'}->getDepth;
+        $e->{'SELECTED'}
+            = ( grep $_ == $e->{'NODE'}, @$selected_nodes ) ? 'selected' : '';
     }
 
-    return (join ' ', map $_->{'TEXT'}, @$list), $list;
+    return ( join ' ', map $_->{'TEXT'}, @$list ), $list;
 }
 
 =head2 PruneChildLessAggregators
@@ -157,7 +158,7 @@ sub prune_childless_aggregators {
 
     $self->traverse_pre_post(
         undef,
-        sub  {
+        sub {
             my $node = shift;
             return unless $node->isLeaf;
 
@@ -185,46 +186,49 @@ sub get_displayed_nodes {
     return map $_->{NODE}, @{ (shift)->__linearize_tree };
 }
 
-
 sub __linearize_tree {
     my $self = shift;
 
-    my ($list, $i) = ([], 0);
+    my ( $list, $i ) = ( [], 0 );
 
-    $self->traverse_pre_post( sub  {
-        my $node = shift;
-        return if $node->isRoot;
+    $self->traverse_pre_post(
+        sub {
+            my $node = shift;
+            return if $node->isRoot;
 
-        my $str = '';
-        if( $node->getIndex > 0 ) {
-            $str .= " ". $node->getParent->getNodeValue ." ";
+            my $str = '';
+            if ( $node->getIndex > 0 ) {
+                $str .= " " . $node->getParent->getNodeValue . " ";
+            }
+
+            unless ( $node->isLeaf ) {
+                $str .= '( ';
+            } else {
+
+                my $clause = $node->getNodeValue;
+                $str .= $clause->{Key};
+                $str .= " " . $clause->{Op};
+                $str .= " " . $clause->{Value};
+
+            }
+            $str =~ s/^\s+|\s+$//;
+
+            push @$list,
+                {
+                NODE  => $node,
+                TEXT  => $str,
+                INDEX => $i,
+                };
+
+            $i++;
+        },
+        sub {
+            my $node = shift;
+            return if $node->isRoot;
+            return if $node->isLeaf;
+            $list->[-1]->{'TEXT'} .= ' )';
         }
-
-        unless( $node->isLeaf ) {
-            $str .= '( ';
-        } else {
-
-            my $clause = $node->getNodeValue;
-            $str .= $clause->{Key};
-            $str .= " ". $clause->{Op};
-            $str .= " ". $clause->{Value};
-
-        }
-        $str =~ s/^\s+|\s+$//;
-
-        push @$list, {
-            NODE     => $node,
-            TEXT     => $str,
-            INDEX    => $i,
-        };
-
-        $i++;
-    }, sub  {
-        my $node = shift;
-        return if $node->isRoot;
-        return if $node->isLeaf;
-        $list->[-1]->{'TEXT'} .= ' )';
-    });
+    );
 
     return $list;
 }
@@ -242,44 +246,48 @@ sub parse_sql {
     my %field = %{ RT::Model::TicketCollection->new()->columns };
     my %lcfield = map { ( lc($_) => $_ ) } keys %field;
 
-    my $node =  $self;
+    my $node = $self;
 
     my %callback;
-    $callback{'open_paren'} = sub  {
+    $callback{'open_paren'} = sub {
         $node = __PACKAGE__->new( 'AND', $node );
     };
-    $callback{'close_paren'} = sub  { $node = $node->getParent };
-    $callback{'entry_aggregator'} = sub  { $node->setNodeValue( $_[0] ) };
-    $callback{'Condition'} = sub  {
-        my ($key, $op, $value) = @_;
+    $callback{'close_paren'} = sub { $node = $node->getParent };
+    $callback{'entry_aggregator'} = sub { $node->setNodeValue( $_[0] ) };
+    $callback{'Condition'} = sub {
+        my ( $key, $op, $value ) = @_;
 
         my ($main_key) = split /[.]/, $key;
 
         my $class;
         if ( exists $lcfield{ lc $main_key } ) {
-            $class = $field{ $main_key }->[0];
+            $class = $field{$main_key}->[0];
             $key =~ s/^[^.]+/ $lcfield{ lc $main_key } /e;
         }
-        unless( $class ) {
-            push @results, [ _("Unknown field: $key"), -1 ]
+        unless ($class) {
+            push @results, [ _("Unknown field: $key"), -1 ];
         }
 
         $value = "'$value'" if $value =~ /[^0-9]/;
-        $key = "'$key'" if $key =~ /^CF./;
+        $key   = "'$key'"   if $key   =~ /^CF./;
 
         my $clause = { Key => $key, Op => $op, Value => $value };
-        $node->addChild( __PACKAGE__->new( $clause ) );
+        $node->addChild( __PACKAGE__->new($clause) );
     };
-    $callback{'Error'} = sub  { push @results, @_ };
+    $callback{'Error'} = sub { push @results, @_ };
 
     require RT::SQL;
-    RT::SQL::Parse($string, \%callback);
+    RT::SQL::Parse( $string, \%callback );
     return @results;
 }
 
 eval "require RT::Interface::Web::QueryBuilder::Tree_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder/Tree_Vendor.pm});
+die $@
+    if ( $@
+    && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder/Tree_Vendor.pm} );
 eval "require RT::Interface::Web::QueryBuilder::Tree_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder/Tree_Local.pm});
+die $@
+    if ( $@
+    && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder/Tree_Local.pm} );
 
 1;

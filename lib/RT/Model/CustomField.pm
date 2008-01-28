@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,11 +43,12 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 use warnings;
 use strict;
+
 package RT::Model::CustomField;
 
 use base qw/ RT::Record/;
@@ -60,79 +61,87 @@ use RT::Model::ObjectCustomFieldValueCollection;
 sub table {'CustomFields'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-     
-column        name => max_length is 200,      type is 'varchar(200)', default is '';
-column        Type => max_length is 200,      type is 'varchar(200)', default is '';
-column        MaxValues => max_length is 11,      type is 'int(11)', default is '0';
-column        Pattern =>       type is 'longtext', default is '';
-column        Repeated => max_length is 6,      type is 'smallint(6)', default is '0';
-column        Description => max_length is 255,      type is 'varchar(255)', default is '';
-column        SortOrder => max_length is 11,      type is 'int(11)', default is '0';
-column        LookupType => max_length is 255,      type is 'varchar(255)', default is '';
-column        Creator => max_length is 11,      type is 'int(11)', default is '0';
-column        Created =>       type is 'datetime', default is '';
-column        LastUpdatedBy => max_length is 11,      type is 'int(11)', default is '0';
-column        LastUpdated =>       type is 'datetime', default is '';
-column        disabled => max_length is 6,      type is 'smallint(6)', default is '0';
-    };
 
+    column name => max_length is 200, type is 'varchar(200)', default is '';
+    column Type => max_length is 200, type is 'varchar(200)', default is '';
+    column MaxValues => max_length is 11, type is 'int(11)', default is '0';
+    column Pattern => type is 'longtext', default is '';
+    column Repeated => max_length is 6, type is 'smallint(6)', default is '0';
+    column
+        Description => max_length is 255,
+        type is 'varchar(255)', default is '';
+    column SortOrder => max_length is 11, type is 'int(11)', default is '0';
+    column
+        LookupType => max_length is 255,
+        type is 'varchar(255)', default is '';
+    column Creator => max_length is 11, type is 'int(11)', default is '0';
+    column Created => type is 'datetime', default is '';
+    column
+        LastUpdatedBy => max_length is 11,
+        type is 'int(11)', default is '0';
+    column LastUpdated => type is 'datetime', default is '';
+    column disabled => max_length is 6, type is 'smallint(6)', default is '0';
+};
 
 our %FieldTypes = (
     Select => [
         'Select multiple values',    # loc
-        'Select one value',        # loc
+        'Select one value',          # loc
         'Select up to %1 values',    # loc
     ],
     Freeform => [
-        'Enter multiple values',    # loc
-        'Enter one value',        # loc
-        'Enter up to %1 values',    # loc
+        'Enter multiple values',     # loc
+        'Enter one value',           # loc
+        'Enter up to %1 values',     # loc
     ],
     Text => [
         'Fill in multiple text areas',    # loc
-        'Fill in one text area',    # loc
-        'Fill in up to %1 text areas',# loc
+        'Fill in one text area',          # loc
+        'Fill in up to %1 text areas',    # loc
     ],
     Wikitext => [
         'Fill in multiple wikitext areas',    # loc
-        'Fill in one wikitext area',    # loc
-        'Fill in up to %1 wikitext areas',# loc
+        'Fill in one wikitext area',          # loc
+        'Fill in up to %1 wikitext areas',    # loc
     ],
     Image => [
-        'Upload multiple images',    # loc
-        'Upload one image',        # loc
-        'Upload up to %1 images',    # loc
+        'Upload multiple images',             # loc
+        'Upload one image',                   # loc
+        'Upload up to %1 images',             # loc
     ],
     Binary => [
-        'Upload multiple files',    # loc
-        'Upload one file',        # loc
-        'Upload up to %1 files',    # loc
+        'Upload multiple files',              # loc
+        'Upload one file',                    # loc
+        'Upload up to %1 files',              # loc
     ],
     Combobox => [
         'Combobox: Select or enter multiple values',    # loc
-        'Combobox: Select or enter one value',        # loc
+        'Combobox: Select or enter one value',          # loc
         'Combobox: Select or enter up to %1 values',    # loc
     ],
     Autocomplete => [
         'Enter multiple values with autocompletion',    # loc
-        'Enter one value with autocompletion',            # loc
+        'Enter one value with autocompletion',          # loc
         'Enter up to %1 values with autocompletion',    # loc
     ],
 );
 
+our %FRIENDLY_OBJECT_TYPES = ();
 
-our %FRIENDLY_OBJECT_TYPES =  ();
-
-RT::Model::CustomField->_forobject_type( 'RT::Model::Queue-RT::Model::Ticket' => "Tickets", );    #loc
 RT::Model::CustomField->_forobject_type(
-    'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' => "Ticket Transactions", );    #loc
-RT::Model::CustomField->_forobject_type( 'RT::Model::User'  => "Users", );                           #loc
-RT::Model::CustomField->_forobject_type( 'RT::Model::Group' => "Groups", );                          #loc
+    'RT::Model::Queue-RT::Model::Ticket' => "Tickets", );    #loc
+RT::Model::CustomField->_forobject_type(
+    'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' =>
+        "Ticket Transactions", );                            #loc
+RT::Model::CustomField->_forobject_type( 'RT::Model::User' => "Users", ); #loc
+RT::Model::CustomField->_forobject_type( 'RT::Model::Group' => "Groups", )
+    ;                                                                     #loc
 
 our $RIGHTS = {
-    SeeCustomField            => 'See custom fields',       # loc_pair
-    AdminCustomField          => 'Create, delete and modify custom fields',        # loc_pair
-    ModifyCustomField         => 'Add, delete and modify custom field values for objects' #loc_pair
+    SeeCustomField   => 'See custom fields',                        # loc_pair
+    AdminCustomField => 'Create, delete and modify custom fields',  # loc_pair
+    ModifyCustomField =>
+        'Add, delete and modify custom field values for objects'    #loc_pair
 };
 
 # Tell RT::Model::ACE that this sort of object can get acls granted
@@ -188,44 +197,55 @@ sub create {
         @_,
     );
 
-    unless ( $self->current_user->has_right(Object => RT->system, Right => 'AdminCustomField') ) {
-        return (0, _('Permission Denied'));
+    unless (
+        $self->current_user->has_right(
+            Object => RT->system,
+            Right  => 'AdminCustomField'
+        )
+        )
+    {
+        return ( 0, _('Permission Denied') );
     }
 
     if ( $args{TypeComposite} ) {
-        @args{'Type', 'MaxValues'} = split(/-/, $args{TypeComposite}, 2);
-    }
-    elsif ( $args{Type} =~ s/(?:(Single)|Multiple)$// ) {
+        @args{ 'Type', 'MaxValues' } = split( /-/, $args{TypeComposite}, 2 );
+    } elsif ( $args{Type} =~ s/(?:(Single)|Multiple)$// ) {
+
         # old style Type string
         $args{'MaxValues'} = $1 ? 1 : 0;
     }
-    
-    if ( !exists $args{'Queue'}) {
-    # do nothing -- things below are strictly backward compat
-    }
-    elsif (  ! $args{'Queue'} ) {
-        unless ( $self->current_user->has_right( Object => RT->system, Right => 'AssignCustomFields') ) {
+
+    if ( !exists $args{'Queue'} ) {
+
+        # do nothing -- things below are strictly backward compat
+    } elsif ( !$args{'Queue'} ) {
+        unless (
+            $self->current_user->has_right(
+                Object => RT->system,
+                Right  => 'AssignCustomFields'
+            )
+            )
+        {
             return ( 0, _('Permission Denied') );
         }
         $args{'LookupType'} = 'RT::Model::Queue-RT::Model::Ticket';
-    }
-    else {
+    } else {
         my $queue = RT::Model::Queue->new;
-        $queue->load($args{'Queue'});
-        unless ($queue->id) {
-            return (0, _("Queue not found"));
+        $queue->load( $args{'Queue'} );
+        unless ( $queue->id ) {
+            return ( 0, _("Queue not found") );
         }
         unless ( $queue->current_user_has_right('AssignCustomFields') ) {
             return ( 0, _('Permission Denied') );
         }
         $args{'LookupType'} = 'RT::Model::Queue-RT::Model::Ticket';
-        $args{'Queue'} = $queue->id;
+        $args{'Queue'}      = $queue->id;
     }
 
-    my ($ok, $msg) = $self->_is_valid_regex( $args{'Pattern'} );
-    return (0, _("Invalid pattern: %1", $msg)) unless $ok;
+    my ( $ok, $msg ) = $self->_is_valid_regex( $args{'Pattern'} );
+    return ( 0, _( "Invalid pattern: %1", $msg ) ) unless $ok;
 
-    (my $rv, $msg) = $self->SUPER::create(
+    ( my $rv, $msg ) = $self->SUPER::create(
         name        => $args{'name'},
         Type        => $args{'Type'},
         MaxValues   => $args{'MaxValues'},
@@ -240,16 +260,16 @@ sub create {
         $self->set_values_class( $args{'ValuesClass'} );
     }
 
-    return ($rv, $msg) unless exists $args{'Queue'};
+    return ( $rv, $msg ) unless exists $args{'Queue'};
 
     # Compat code -- create a new ObjectCustomField mapping
     my $OCF = RT::Model::ObjectCustomField->new;
     $OCF->create(
         CustomField => $self->id,
-        object_id => $args{'Queue'},
+        object_id   => $args{'Queue'},
     );
 
-    return ($rv, $msg);
+    return ( $rv, $msg );
 }
 
 =head2 Load ID/name
@@ -263,12 +283,11 @@ sub load {
     my $id = shift || '';
 
     if ( $id =~ /^\d+$/ ) {
-        return $self->SUPER::load( $id );
+        return $self->SUPER::load($id);
     } else {
         return $self->load_by_name( name => $id );
     }
 }
-
 
 # {{{ sub load_by_name
 
@@ -288,6 +307,7 @@ BUG/TODO, this won't let you specify that you only want user or group CFs.
 
 # Compatibility for API change after 3.0 beta 1
 *LoadnameAndQueue = \&load_by_name;
+
 # Change after 3.4 beta.
 *load_by_name_and_queue = \&load_by_name;
 
@@ -306,30 +326,34 @@ sub load_by_name {
         $args{'Queue'} = $queue_obj->id;
     }
 
-    # XXX - really naive implementation.  Slow. - not really. still just one query
+# XXX - really naive implementation.  Slow. - not really. still just one query
 
     my $CFs = RT::Model::CustomFieldCollection->new;
-    Carp::cluck unless ($args{'name'});
-    $CFs->limit( column => 'name', value => $args{'name'}, case_sensitive => 0);
+    Carp::cluck unless ( $args{'name'} );
+    $CFs->limit(
+        column         => 'name',
+        value          => $args{'name'},
+        case_sensitive => 0
+    );
+
     # Don't limit to queue if queue is 0.  Trying to do so breaks
     # RT::Model::Group type CFs.
     if ( defined $args{'Queue'} ) {
         $CFs->limit_to_queue( $args{'Queue'} );
     }
 
-    # When loading by name, it's ok if they're disabled. That's not a big deal.
-    $CFs->{'find_disabled_rows'}=1;
+   # When loading by name, it's ok if they're disabled. That's not a big deal.
+    $CFs->{'find_disabled_rows'} = 1;
 
     # We only want one entry.
     $CFs->rows_per_page(1);
-    return (0, _("Not found")) unless my $first = $CFs->first;
+    return ( 0, _("Not found") ) unless my $first = $CFs->first;
     return $self->load_by_id( $first->id );
 }
 
 # }}}
 
-# {{{ Dealing with custom field values 
-
+# {{{ Dealing with custom field values
 
 =cut
 
@@ -348,11 +372,13 @@ of the C<ValuesClass> method.
 sub values {
     my $self = shift;
 
-    my $class = $self->values_class || 'RT::Model::CustomFieldValueCollection';
+    my $class = $self->values_class
+        || 'RT::Model::CustomFieldValueCollection';
     eval "require $class" or die "$@";
     my $cf_values = $class->new;
+
     # if the user has no rights, return an empty object
-    if ( $self->id && $self->current_user_has_right( 'SeeCustomField') ) {
+    if ( $self->id && $self->current_user_has_right('SeeCustomField') ) {
         $cf_values->limit_to_custom_field( $self->id );
     }
     return ($cf_values);
@@ -371,19 +397,18 @@ sub add_value {
     my $self = shift;
     my %args = @_;
 
-    unless ($self->current_user_has_right('AdminCustomField')) {
-        return (0, _('Permission Denied'));
+    unless ( $self->current_user_has_right('AdminCustomField') ) {
+        return ( 0, _('Permission Denied') );
     }
 
     # allow zero value
     if ( !defined $args{'name'} || $args{'name'} eq '' ) {
-        return (0, _("Can't add a custom field value without a name"));
+        return ( 0, _("Can't add a custom field value without a name") );
     }
 
     my $newval = RT::Model::CustomFieldValue->new;
     return $newval->create( %args, CustomField => $self->id );
 }
-
 
 # }}}
 
@@ -399,29 +424,28 @@ Does not remove this value for any article which has had it selected
 
 sub delete_value {
     my $self = shift;
-    my $id = shift;
+    my $id   = shift;
     unless ( $self->current_user_has_right('AdminCustomField') ) {
-        return (0, _('Permission Denied'));
+        return ( 0, _('Permission Denied') );
     }
 
     my $val_to_del = RT::Model::CustomFieldValue->new;
-    $val_to_del->load( $id );
+    $val_to_del->load($id);
     unless ( $val_to_del->id ) {
-        return (0, _("Couldn't find that value"));
+        return ( 0, _("Couldn't find that value") );
     }
     unless ( $val_to_del->custom_field == $self->id ) {
-        return (0, _("That is not a value for this custom field"));
+        return ( 0, _("That is not a value for this custom field") );
     }
 
     my $retval = $val_to_del->delete;
-    unless ( $retval ) {
-        return (0, _("Custom field value could not be deleted"));
+    unless ($retval) {
+        return ( 0, _("Custom field value could not be deleted") );
     }
-    return ($retval, _("Custom field value deleted"));
+    return ( $retval, _("Custom field value deleted") );
 }
 
 # }}}
-
 
 =head2 ValidateQueue Queue
 
@@ -434,15 +458,15 @@ sub validate_queue {
     my $id = shift || '';
 
     return undef unless defined $id;
+
     # 0 means "Global" null would _not_ be ok.
     return 1 if $id eq '0';
 
-    my $q = RT::Model::Queue->new(current_user => RT->system_user );
-    $q->load( $id );
+    my $q = RT::Model::Queue->new( current_user => RT->system_user );
+    $q->load($id);
     return undef unless $q->id;
     return 1;
 }
-
 
 # {{{ Types
 
@@ -453,13 +477,13 @@ Retuns an array of the types of CustomField that are supported
 =cut
 
 sub types {
-    return (keys %FieldTypes);
+    return ( keys %FieldTypes );
 }
 
 # }}}
 
 # {{{ IsSelectionType
- 
+
 =head2 IsSelectionType 
 
 Retuns a boolean value indicating whether the C<Values> method makes sense
@@ -469,7 +493,7 @@ to this Custom Field.
 
 sub is_selection_type {
     my $self = shift;
-    my $type = @_? shift : $self->type;
+    my $type = @_ ? shift : $self->type;
     return undef unless $type;
 
     $type =~ /(?:Select|Combobox|Autocomplete)/;
@@ -477,14 +501,13 @@ sub is_selection_type {
 
 # }}}
 
-
 =head2 IsExternalValues
 
 =cut
 
 sub is_external_values {
-    my $self = shift;
-    my $selectable = $self->is_selection_type( @_ );
+    my $self       = shift;
+    my $selectable = $self->is_selection_type(@_);
     return $selectable unless $selectable;
 
     my $class = $self->values_class;
@@ -496,7 +519,7 @@ sub values_class {
     my $self = shift;
     return '' unless $self->is_selection_type;
 
-    my $class = $self->first_attribute( 'ValuesClass' );
+    my $class = $self->first_attribute('ValuesClass');
     $class = $class->content if $class;
     return $class || 'RT::Model::CustomFieldValueCollection';
 }
@@ -505,12 +528,11 @@ sub set_values_class {
     my $self = shift;
     my $class = shift || 'RT::Model::CustomFieldValueCollection';
 
-    if( $class eq 'RT::Model::CustomFieldValueCollection' ) {
-        return $self->delete_attribute( 'ValuesClass' );
+    if ( $class eq 'RT::Model::CustomFieldValueCollection' ) {
+        return $self->delete_attribute('ValuesClass');
     }
     return $self->set_attribute( name => 'ValuesClass', Content => $class );
 }
-
 
 =head2 FriendlyType [TYPE, MAX_valueS]
 
@@ -526,20 +548,20 @@ sub friendly_type {
     my $max  = @_ ? shift : $self->MaxValues;
     $max = 0 unless $max;
 
-    if (my $friendly_type = $FieldTypes{$type}[ $max && $max>2 ? 2 : $max]) {
+    if ( my $friendly_type
+        = $FieldTypes{$type}[ $max && $max > 2 ? 2 : $max ] )
+    {
         return ( _( $friendly_type, $max ) );
-    }
-    else {
-        return ( _( $type ) );
+    } else {
+        return ( _($type) );
     }
 }
 
 sub friendly_type_composite {
     my $self = shift;
     my $composite = shift || $self->type_composite;
-    return $self->friendly_type(split(/-/, $composite, 2));
+    return $self->friendly_type( split( /-/, $composite, 2 ) );
 }
-
 
 =head2 validate_Type TYPE
 
@@ -554,26 +576,30 @@ sub validate_type {
     my $type = shift;
 
     if ( $type =~ s/(?:Single|Multiple)$// ) {
-        Jifty->log->warn( "Prefix 'Single' and 'Multiple' to Type deprecated, use MaxValues instead at (". join(":",caller).")");
+        Jifty->log->warn(
+            "Prefix 'Single' and 'Multiple' to Type deprecated, use MaxValues instead at ("
+                . join( ":", caller )
+                . ")" );
     }
 
     if ( $FieldTypes{$type} ) {
         return 1;
-    }
-    else {
+    } else {
         return undef;
     }
 }
 
-
 sub set_type {
     my $self = shift;
     my $type = shift;
-    if ($type =~ s/(?:(Single)|Multiple)$//) {
-        Jifty->log->warn("'Single' and 'Multiple' on SetType deprecated, use SetMaxValues instead at (". join(":",caller).")");
-        $self->set_MaxValues($1 ? 1 : 0);
+    if ( $type =~ s/(?:(Single)|Multiple)$// ) {
+        Jifty->log->warn(
+            "'Single' and 'Multiple' on SetType deprecated, use SetMaxValues instead at ("
+                . join( ":", caller )
+                . ")" );
+        $self->set_MaxValues( $1 ? 1 : 0 );
     }
-    $self->_set(column =>'Type', value => $type);
+    $self->_set( column => 'Type', value => $type );
 }
 
 =head2 SetPattern STRING
@@ -585,15 +611,14 @@ is valid.
 =cut
 
 sub set_pattern {
-    my $self = shift;
+    my $self  = shift;
     my $regex = shift;
 
-    my ($ok, $msg) = $self->_is_valid_regex($regex);
+    my ( $ok, $msg ) = $self->_is_valid_regex($regex);
     if ($ok) {
-        return $self->set(column => 'Pattern', value => $regex);
-    }
-    else {
-        return (0, _("Invalid pattern: %1", $msg));
+        return $self->set( column => 'Pattern', value => $regex );
+    } else {
+        return ( 0, _( "Invalid pattern: %1", $msg ) );
     }
 }
 
@@ -604,21 +629,22 @@ Tests if the string contains an invalid regex.
 =cut
 
 sub _is_valid_regex {
-    my $self  = shift;
-    my $regex = shift or return (1, 'valid');
+    my $self = shift;
+    my $regex = shift or return ( 1, 'valid' );
 
-    local $^W; local $@;
-    local $SIG{__DIE__} = sub  { 1 };
-    local $SIG{__WARN__} = sub  { 1 };
+    local $^W;
+    local $@;
+    local $SIG{__DIE__}  = sub {1};
+    local $SIG{__WARN__} = sub {1};
 
-    if (eval { qr/$regex/; 1 }) {
-        return (1, 'valid');
+    if ( eval { qr/$regex/; 1 } ) {
+        return ( 1, 'valid' );
     }
 
     my $err = $@;
     $err =~ s{[,;].*}{};    # strip debug info from error
     chomp $err;
-    return (0, $err);
+    return ( 0, $err );
 }
 
 # {{{ SingleValue
@@ -632,20 +658,18 @@ Returns false if it accepts multiple values
 
 sub single_value {
     my $self = shift;
-    if ($self->MaxValues == 1) {
+    if ( $self->MaxValues == 1 ) {
         return 1;
-    } 
-    else {
+    } else {
         return undef;
     }
 }
 
 sub unlimited_values {
     my $self = shift;
-    if ($self->MaxValues == 0) {
+    if ( $self->MaxValues == 0 ) {
         return 1;
-    } 
-    else {
+    } else {
         return undef;
     }
 }
@@ -680,13 +704,13 @@ sub _set {
     unless ( $self->current_user_has_right('AdminCustomField') ) {
         return ( 0, _('Permission Denied') );
     }
-    return $self->SUPER::_set( @_ );
+    return $self->SUPER::_set(@_);
 
 }
 
 # }}}
 
-# {{{ sub _value 
+# {{{ sub _value
 
 =head2 _value
 
@@ -696,18 +720,18 @@ Returns its value as a string, if the user passes an ACL check
 =cut
 
 sub _value {
-    my $self  = shift;
+    my $self = shift;
     return undef unless $self->id;
 
     # we need to do the rights check
     unless ( $self->current_user_has_right('SeeCustomField') ) {
-        Jifty->log->debug(
-            "Permission denied. User #". $self->current_user->id
-            ." has no SeeCustomField right on CF #". $self->id
-        );
+        Jifty->log->debug( "Permission denied. User #"
+                . $self->current_user->id
+                . " has no SeeCustomField right on CF #"
+                . $self->id );
         return (undef);
     }
-    return $self->__value( @_ );
+    return $self->__value(@_);
 }
 
 # }}}
@@ -731,25 +755,26 @@ Set this custom field's type and maximum values as a composite value
 =cut
 
 sub set_type_composite {
-    my $self = shift;
+    my $self      = shift;
     my $composite = shift;
 
     my $old = $self->type_composite;
 
-    my ($type, $max_values) = split(/-/, $composite, 2);
+    my ( $type, $max_values ) = split( /-/, $composite, 2 );
     if ( $type ne $self->type ) {
-        my ($status, $msg) = $self->set_type( $type );
-        return ($status, $msg) unless $status;
+        my ( $status, $msg ) = $self->set_type($type);
+        return ( $status, $msg ) unless $status;
     }
-    if ( ($max_values || 0) != ($self->MaxValues || 0) ) {
-        my ($status, $msg) = $self->set_MaxValues( $max_values );
-        return ($status, $msg) unless $status;
+    if ( ( $max_values || 0 ) != ( $self->MaxValues || 0 ) ) {
+        my ( $status, $msg ) = $self->set_MaxValues($max_values);
+        return ( $status, $msg ) unless $status;
     }
-    return 1, _(
+    return 1,
+        _(
         "Type changed from '%1' to '%2'",
-        $self->friendly_type_composite( $old ),
-        $self->friendly_type_composite( $composite ),
-    );
+        $self->friendly_type_composite($old),
+        $self->friendly_type_composite($composite),
+        );
 }
 
 =head2 SetLookupType
@@ -759,15 +784,16 @@ Autrijus: care to doc how LookupTypes work?
 =cut
 
 sub set_lookup_type {
-    my $self = shift;
+    my $self   = shift;
     my $lookup = shift;
     if ( $lookup ne $self->LookupType ) {
+
         # Okay... We need to invalidate our existing relationships
         my $ObjectCustomFields = RT::Model::ObjectCustomFieldCollection->new;
-        $ObjectCustomFields->limit_to_custom_field($self->id);
-        $_->delete foreach @{$ObjectCustomFields->items_array_ref};
+        $ObjectCustomFields->limit_to_custom_field( $self->id );
+        $_->delete foreach @{ $ObjectCustomFields->items_array_ref };
     }
-    return $self->_set(column => 'LookupType', value => $lookup);
+    return $self->_set( column => 'LookupType', value => $lookup );
 }
 
 =head2 TypeComposite
@@ -776,10 +802,9 @@ Returns a composite value composed of this object's type and maximum values
 
 =cut
 
-
 sub type_composite {
     my $self = shift;
-    return join '-', ($self->type || ''), ($self->MaxValues || 0);
+    return join '-', ( $self->type || '' ), ( $self->MaxValues || 0 );
 }
 
 =head2 TypeComposites
@@ -790,7 +815,8 @@ Returns an array of all possible composite values for custom fields.
 
 sub type_composites {
     my $self = shift;
-    return grep !/(?:[Tt]ext|Combobox)-0/, map { ("$_-1", "$_-0") } $self->types;
+    return grep !/(?:[Tt]ext|Combobox)-0/,
+        map { ( "$_-1", "$_-0" ) } $self->types;
 }
 
 =head2 LookupTypes
@@ -799,16 +825,15 @@ Returns an array of LookupTypes available
 
 =cut
 
-
 sub lookup_types {
     my $self = shift;
     return keys %FRIENDLY_OBJECT_TYPES;
 }
 
 my @Friendlyobject_types = (
-    "%1 objects",            # loc
-    "%1's %2 objects",        # loc
-    "%1's %2's %3 objects",   # loc
+    "%1 objects",              # loc
+    "%1's %2 objects",         # loc
+    "%1's %2's %3 objects",    # loc
 );
 
 =head2 FriendlyTypeLookup
@@ -818,17 +843,16 @@ my @Friendlyobject_types = (
 sub friendly_lookup_type {
     my $self = shift;
     my $lookup = shift || $self->LookupType;
-   
-    return (_( $FRIENDLY_OBJECT_TYPES{$lookup} ))
-                     if (defined  $FRIENDLY_OBJECT_TYPES{$lookup} );
+
+    return ( _( $FRIENDLY_OBJECT_TYPES{$lookup} ) )
+        if ( defined $FRIENDLY_OBJECT_TYPES{$lookup} );
 
     my @types = map { s/^RT::// ? _($_) : $_ }
-      grep { defined and length }
-      split( /-/, $lookup )
-      or return;
+        grep { defined and length }
+        split( /-/, $lookup )
+        or return;
     return ( _( $Friendlyobject_types[$#types], @types ) );
 }
-
 
 =head2 AddToObject OBJECT
 
@@ -838,13 +862,12 @@ Takes an object
 
 =cut
 
-
 sub add_to_object {
-    my $self  = shift;
+    my $self   = shift;
     my $object = shift;
-    my $id = $object->id || 0;
+    my $id     = $object->id || 0;
 
-    unless (index($self->LookupType, ref($object)) == 0) {
+    unless ( index( $self->LookupType, ref($object) ) == 0 ) {
         return ( 0, _('Lookup type mismatch') );
     }
 
@@ -857,12 +880,11 @@ sub add_to_object {
     if ( $ObjectCF->id ) {
         return ( 0, _("That is already the current value") );
     }
-    my ( $oid, $msg ) =
-      $ObjectCF->create( object_id => $id, CustomField => $self->id );
+    my ( $oid, $msg )
+        = $ObjectCF->create( object_id => $id, CustomField => $self->id );
 
     return ( $oid, $msg );
 }
-
 
 =head2 RemoveFromObject OBJECT
 
@@ -872,13 +894,12 @@ Takes an object
 
 =cut
 
-
 sub remove_from_object {
-    my $self = shift;
+    my $self   = shift;
     my $object = shift;
-    my $id = $object->id || 0;
+    my $id     = $object->id || 0;
 
-    unless (index($self->LookupType, ref($object)) == 0) {
+    unless ( index( $self->LookupType, ref($object) ) == 0 ) {
         return ( 0, _('Object type mismatch') );
     }
 
@@ -891,6 +912,7 @@ sub remove_from_object {
     unless ( $ObjectCF->id ) {
         return ( 0, _("This custom field does not apply to that object") );
     }
+
     # XXX: Delete doesn't return anything
     my ( $oid, $msg ) = $ObjectCF->delete;
 
@@ -931,8 +953,8 @@ sub add_value_for_object {
         return ( 0, _('Permission Denied') );
     }
 
-    unless ( $self->match_pattern($args{'Content'} || '' ) ) {
-        return ( 0, _('Input must match %1', $self->FriendlyPattern) );
+    unless ( $self->match_pattern( $args{'Content'} || '' ) ) {
+        return ( 0, _( 'Input must match %1', $self->FriendlyPattern ) );
     }
 
     Jifty->handle->begin_transaction;
@@ -951,7 +973,7 @@ sub add_value_for_object {
             my $extra_item = $current_values->next;
             unless ( $extra_item->id ) {
                 Jifty->log->fatal( "We were just asked to delete "
-                    ."a custom field value that doesn't exist!" );
+                        . "a custom field value that doesn't exist!" );
                 Jifty->handle->rollback();
                 return (undef);
             }
@@ -961,8 +983,8 @@ sub add_value_for_object {
     }
     my $newval = RT::Model::ObjectCustomFieldValue->new;
     my $val    = $newval->create(
-        object_type   => ref($obj),
-        object_id     => $obj->id,
+        object_type  => ref($obj),
+        object_id    => $obj->id,
         Content      => $args{'Content'},
         LargeContent => $args{'LargeContent'},
         ContentType  => $args{'ContentType'},
@@ -971,7 +993,7 @@ sub add_value_for_object {
 
     unless ($val) {
         Jifty->handle->rollback();
-        return ($val, _("Couldn't create record"));
+        return ( $val, _("Couldn't create record") );
     }
 
     Jifty->handle->commit();
@@ -994,9 +1016,8 @@ sub match_pattern {
     my $self = shift;
     my $regex = $self->Pattern or return 1;
 
-    return (($_[0] || '') =~ $regex);
+    return ( ( $_[0] || '' ) =~ $regex );
 }
-
 
 # }}}
 
@@ -1010,18 +1031,16 @@ and localizing it.
 =cut
 
 sub friendly_pattern {
-    my $self = shift;
+    my $self  = shift;
     my $regex = $self->Pattern;
 
     return '' unless length $regex;
     if ( $regex =~ /\(\?#([^)]*)\)/ ) {
         return '[' . _($1) . ']';
-    }
-    else {
+    } else {
         return $regex;
     }
 }
-
 
 # }}}
 
@@ -1037,49 +1056,54 @@ Returns a tuple of (STATUS, MESSAGE). If the call succeeded, the STATUS is true.
 
 sub delete_value_for_object {
     my $self = shift;
-    my %args = ( Object => undef,
-                 Content => undef,
-                 id => undef,
-             @_ );
+    my %args = (
+        Object  => undef,
+        Content => undef,
+        id      => undef,
+        @_
+    );
 
-
-    unless ($self->current_user_has_right('ModifyCustomField')) {
-        return (0, _('Permission Denied'));
+    unless ( $self->current_user_has_right('ModifyCustomField') ) {
+        return ( 0, _('Permission Denied') );
     }
 
     my $oldval = RT::Model::ObjectCustomFieldValue->new;
 
-    if (my $id = $args{'id'}) {
+    if ( my $id = $args{'id'} ) {
         $oldval->load($id);
     }
-    unless ($oldval->id) { 
+    unless ( $oldval->id ) {
         $oldval->load_by_object_content_and_custom_field(
-            Object => $args{'Object'}, 
-            Content =>  $args{'Content'}, 
+            Object      => $args{'Object'},
+            Content     => $args{'Content'},
             CustomField => $self->id,
         );
     }
 
-
     # check to make sure we found it
-    unless ($oldval->id) {
-        return(0, _("Custom field value %1 could not be found for custom field %2", $args{'Content'}, $self->name));
+    unless ( $oldval->id ) {
+        return (
+            0,
+            _(  "Custom field value %1 could not be found for custom field %2",
+                $args{'Content'},
+                $self->name
+            )
+        );
     }
 
-    # for single-value fields, we need to validate that empty string is a valid value for it
-    if ( $self->single_value and not $self->match_pattern( '' ) ) {
-        return ( 0, _('Input must match %1', $self->FriendlyPattern) );
+# for single-value fields, we need to validate that empty string is a valid value for it
+    if ( $self->single_value and not $self->match_pattern('') ) {
+        return ( 0, _( 'Input must match %1', $self->FriendlyPattern ) );
     }
 
     # delete it
 
     my $ret = $oldval->delete();
     unless ($ret) {
-        return(0, _("Custom field value could not be found"));
+        return ( 0, _("Custom field value could not be found") );
     }
-    return($oldval->id, _("Custom field value deleted"));
+    return ( $oldval->id, _("Custom field value deleted") );
 }
-
 
 =head2 values_for_object OBJECT
 
@@ -1088,23 +1112,22 @@ Return an L<RT::Model::ObjectCustomFieldValueCollection> object containing all o
 =cut
 
 sub values_for_object {
-    my $self = shift;
+    my $self   = shift;
     my $object = shift;
 
     my $values = RT::Model::ObjectCustomFieldValueCollection->new();
-    unless ($self->current_user_has_right('SeeCustomField')) {
+    unless ( $self->current_user_has_right('SeeCustomField') ) {
+
         # Return an empty object if they have no rights to see
         return ($values);
     }
-    
-    
-    $values->limit_to_custom_field($self->id);
+
+    $values->limit_to_custom_field( $self->id );
     $values->limit_to_enabled();
     $values->limit_to_object($object);
 
     return ($values);
 }
-
 
 =head2 _Forobject_type PATH friendly_name
 
@@ -1122,14 +1145,13 @@ This is a class method.
 =cut
 
 sub _forobject_type {
-    my $self = shift;
-    my $path = shift;
+    my $self          = shift;
+    my $path          = shift;
     my $friendly_name = shift;
 
     $FRIENDLY_OBJECT_TYPES{$path} = $friendly_name;
 
 }
-
 
 =head2 IncludeContentForValue [value] (and SetIncludeContentForValue)
 
@@ -1142,12 +1164,11 @@ as they display records with custom fields in RT.
 sub set_include_content_for_value {
     shift->include_content_for_value(@_);
 }
+
 sub include_content_for_value {
     my $self = shift;
-    $self->url_template('IncludeContentForValue', @_);
+    $self->url_template( 'IncludeContentForValue', @_ );
 }
-
-
 
 =head2 LinkValueTo [value] (and SetLinkValueTo)
 
@@ -1157,17 +1178,15 @@ browser as they display records with custom fields in RT.
 
 =cut
 
-
 sub set_link_value_to {
     shift->link_value_to(@_);
 }
 
 sub link_value_to {
     my $self = shift;
-    $self->url_template('LinkValueTo', @_);
+    $self->url_template( 'LinkValueTo', @_ );
 
 }
-
 
 =head2 _URLTemplate  name [value]
 
@@ -1177,8 +1196,6 @@ the current user has the right to see this custom field.
 With two arguments, attemptes to set the relevant template value.
 
 =cut
-
-
 
 sub url_template {
     my $self          = shift;
@@ -1192,7 +1209,9 @@ sub url_template {
         $self->set_attribute( name => $template_name, Content => $value );
         return ( 1, _('Updated') );
     } else {
-        unless ( $self->id && $self->current_user_has_right('SeeCustomField') ) {
+        unless ( $self->id
+            && $self->current_user_has_right('SeeCustomField') )
+        {
             return (undef);
         }
 

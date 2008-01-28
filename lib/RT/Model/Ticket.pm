@@ -2,42 +2,42 @@ use warnings;
 use strict;
 
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -46,9 +46,9 @@ use strict;
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
-# {{{ Front Material 
+# {{{ Front Material
 
 =head1 SYNOPSIS
 
@@ -66,43 +66,53 @@ This module lets you manipulate RT\'s ticket object.
 
 =cut
 
-
 package RT::Model::Ticket;
 
 use strict;
 no warnings qw(redefine);
-   use base qw/RT::Record/;
+use base qw/RT::Record/;
 
-sub table {'Tickets'} 
-   
-   use Jifty::DBI::Schema;
-   use Jifty::DBI::Record schema {
+sub table {'Tickets'}
 
-     
-column        EffectiveId => max_length is 11,      type is 'int(11)', default is '0';
-column        Queue => max_length is 11,      type is 'int(11)', default is '0';
-column        Type => max_length is 16,      type is 'varchar(16)', default is '';
-column        IssueStatement => max_length is 11,      type is 'int(11)', default is '0';
-column        Resolution => max_length is 11,      type is 'int(11)', default is '0';
-column        Owner => max_length is 11,      type is 'int(11)', default is '0';
-column        Subject => max_length is 200,      type is 'varchar(200)', default is '';
-column        initial_priority => max_length is 11,      type is 'int(11)', default is '0';
-column        final_priority => max_length is 11,      type is 'int(11)', default is '0';
-column        Priority => max_length is 11,      type is 'int(11)', default is '0';
-column        time_estimated => max_length is 11,      type is 'int(11)', default is '0';
-column        time_worked => max_length is 11,      type is 'int(11)', default is '0';
-column        Status => max_length is 10,      type is 'varchar(10)', default is '';
-column        time_left => max_length is 11,      type is 'int(11)', default is '0';
-column        Told =>       type is 'datetime', default is '';
-column        starts =>       type is 'datetime', default is '';
-column        Started =>       type is 'datetime', default is '';
-column        Due =>       type is 'datetime', default is '';
-column        Resolved =>       type is 'datetime', default is '';
-column        LastUpdatedBy =>  max_length is 11,      type is 'int(11)', default is '0';
-column        LastUpdated =>         type is 'datetime', default is '';
-column        Creator =>  max_length is 11,      type is 'int(11)', default is '0';
-column        Created =>         type is 'datetime', default is '';
-column        disabled => max_length is 6,      type is 'smallint(6)', default is '0';
+use Jifty::DBI::Schema;
+use Jifty::DBI::Record schema {
+
+    column EffectiveId => max_length is 11, type is 'int(11)', default is '0';
+    column Queue       => max_length is 11, type is 'int(11)', default is '0';
+    column Type => max_length is 16, type is 'varchar(16)', default is '';
+    column
+        IssueStatement => max_length is 11,
+        type is 'int(11)', default is '0';
+    column Resolution => max_length is 11, type is 'int(11)', default is '0';
+    column Owner      => max_length is 11, type is 'int(11)', default is '0';
+    column
+        Subject => max_length is 200,
+        type is 'varchar(200)', default is '';
+    column
+        initial_priority => max_length is 11,
+        type is 'int(11)', default is '0';
+    column
+        final_priority => max_length is 11,
+        type is 'int(11)', default is '0';
+    column Priority => max_length is 11, type is 'int(11)', default is '0';
+    column
+        time_estimated => max_length is 11,
+        type is 'int(11)', default is '0';
+    column time_worked => max_length is 11, type is 'int(11)', default is '0';
+    column Status => max_length is 10, type is 'varchar(10)', default is '';
+    column time_left => max_length is 11, type is 'int(11)', default is '0';
+    column Told     => type is 'datetime', default is '';
+    column starts   => type is 'datetime', default is '';
+    column Started  => type is 'datetime', default is '';
+    column Due      => type is 'datetime', default is '';
+    column Resolved => type is 'datetime', default is '';
+    column
+        LastUpdatedBy => max_length is 11,
+        type is 'int(11)', default is '0';
+    column LastUpdated => type is 'datetime', default is '';
+    column Creator => max_length is 11,   type is 'int(11)', default is '0';
+    column Created => type is 'datetime', default is '';
+    column disabled => max_length is 6, type is 'smallint(6)', default is '0';
 };
 
 use RT::Model::Queue;
@@ -118,32 +128,51 @@ use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
 
-
 # {{{ LINKTYPEMAP
 # A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
 our %LINKTYPEMAP = (
-    MemberOf => { Type => 'MemberOf',
-                  Mode => 'Target', },
-    Parents => { Type => 'MemberOf',
-         Mode => 'Target', },
-    Members => { Type => 'MemberOf',
-                 Mode => 'Base', },
-    Children => { Type => 'MemberOf',
-          Mode => 'Base', },
-    has_member => { Type => 'MemberOf',
-                   Mode => 'Base', },
-    RefersTo => { Type => 'RefersTo',
-                  Mode => 'Target', },
-    ReferredToBy => { Type => 'RefersTo',
-                      Mode => 'Base', },
-    DependsOn => { Type => 'DependsOn',
-                   Mode => 'Target', },
-    DependedOnBy => { Type => 'DependsOn',
-                      Mode => 'Base', },
-    MergedInto => { Type => 'MergedInto',
-                   Mode => 'Target', },
+    MemberOf => {
+        Type => 'MemberOf',
+        Mode => 'Target',
+    },
+    Parents => {
+        Type => 'MemberOf',
+        Mode => 'Target',
+    },
+    Members => {
+        Type => 'MemberOf',
+        Mode => 'Base',
+    },
+    Children => {
+        Type => 'MemberOf',
+        Mode => 'Base',
+    },
+    has_member => {
+        Type => 'MemberOf',
+        Mode => 'Base',
+    },
+    RefersTo => {
+        Type => 'RefersTo',
+        Mode => 'Target',
+    },
+    ReferredToBy => {
+        Type => 'RefersTo',
+        Mode => 'Base',
+    },
+    DependsOn => {
+        Type => 'DependsOn',
+        Mode => 'Target',
+    },
+    DependedOnBy => {
+        Type => 'DependsOn',
+        Mode => 'Base',
+    },
+    MergedInto => {
+        Type => 'MergedInto',
+        Mode => 'Target',
+    },
 
 );
 
@@ -154,21 +183,29 @@ our %LINKTYPEMAP = (
 # to build and parse links between tickets
 
 our %LINKDIRMAP = (
-    MemberOf => { Base => 'MemberOf',
-                  Target => 'has_member', },
-    RefersTo => { Base => 'RefersTo',
-                Target => 'ReferredToBy', },
-    DependsOn => { Base => 'DependsOn',
-                   Target => 'DependedOnBy', },
-    MergedInto => { Base => 'MergedInto',
-                   Target => 'MergedInto', },
+    MemberOf => {
+        Base   => 'MemberOf',
+        Target => 'has_member',
+    },
+    RefersTo => {
+        Base   => 'RefersTo',
+        Target => 'ReferredToBy',
+    },
+    DependsOn => {
+        Base   => 'DependsOn',
+        Target => 'DependedOnBy',
+    },
+    MergedInto => {
+        Base   => 'MergedInto',
+        Target => 'MergedInto',
+    },
 
 );
 
 # }}}
 
-sub LINKTYPEMAP   { return \%LINKTYPEMAP   }
-sub LINKDIRMAP   { return \%LINKDIRMAP   }
+sub LINKTYPEMAP { return \%LINKTYPEMAP }
+sub LINKDIRMAP  { return \%LINKDIRMAP }
 
 # {{{ sub load
 
@@ -182,13 +219,14 @@ Otherwise, returns the ticket id.
 
 sub load {
     my $self = shift;
-    my $id   = shift || '';
+    my $id = shift || '';
 
-    #TODO modify this routine to look at EffectiveId and do the recursive load
-    # thing. be careful to cache all the interim tickets we try so we don't loop forever.
+#TODO modify this routine to look at EffectiveId and do the recursive load
+# thing. be careful to cache all the interim tickets we try so we don't loop forever.
 
     # FIXME: there is no Ticketbase_uri option in config
     my $base_uri = RT->config->get('Ticketbase_uri') || '';
+
     #If it's a local URI, turn it into a ticket id
     if ( $base_uri && $id =~ /^$base_uri(\d+)$/ ) {
         $id = $1;
@@ -200,10 +238,10 @@ sub load {
     }
 
     #If we have an integer URI, load the ticket
-    if (defined $id &&  $id =~ /^\d+$/ ) {
-        my ($ticketid,$msg) = $self->load_by_id($id);
+    if ( defined $id && $id =~ /^\d+$/ ) {
+        my ( $ticketid, $msg ) = $self->load_by_id($id);
 
-        unless ($self->id) {
+        unless ( $self->id ) {
             Jifty->log->fatal("$self tried to load a bogus ticket: $id\n");
             return (undef);
         }
@@ -217,7 +255,9 @@ sub load {
 
     #If we're merged, resolve the merge.
     if ( ( $self->EffectiveId ) and ( $self->EffectiveId != $self->id ) ) {
-        Jifty->log->debug ("We found a merged ticket.". $self->id ."/".$self->EffectiveId);
+        Jifty->log->debug( "We found a merged ticket."
+                . $self->id . "/"
+                . $self->EffectiveId );
         return ( $self->load( $self->EffectiveId ) );
     }
 
@@ -245,8 +285,7 @@ sub load_by_uri {
     if ( $base_uri && $uri =~ /^$base_uri(\d+)$/ ) {
         my $id = $1;
         return $self->load($id);
-    }
-    else {
+    } else {
         return undef;
     }
 }
@@ -300,43 +339,42 @@ sub create {
     my $self = shift;
 
     my %args = (
-        id                 => undef,
-        EffectiveId        => undef,
-        Queue              => undef,
-        Requestor          => undef,
-        Cc                 => undef,
-        AdminCc            => undef,
-        Type               => 'ticket',
-        Owner              => undef,
-        Subject            => '',
+        id                  => undef,
+        EffectiveId         => undef,
+        Queue               => undef,
+        Requestor           => undef,
+        Cc                  => undef,
+        AdminCc             => undef,
+        Type                => 'ticket',
+        Owner               => undef,
+        Subject             => '',
         initial_priority    => undef,
         final_priority      => undef,
-        Priority           => undef,
-        Status             => 'new',
+        Priority            => undef,
+        Status              => 'new',
         time_worked         => "0",
         time_left           => 0,
         time_estimated      => 0,
-        Due                => undef,
-        starts             => undef,
-        Started            => undef,
-        Resolved           => undef,
-        MIMEObj            => undef,
+        Due                 => undef,
+        starts              => undef,
+        Started             => undef,
+        Resolved            => undef,
+        MIMEObj             => undef,
         _record_transaction => 1,
-        DryRun             => 0,
+        DryRun              => 0,
         @_
     );
 
-    my ($ErrStr, @non_fatal_errors);
+    my ( $ErrStr, @non_fatal_errors );
 
-    my $queue_obj = RT::Model::Queue->new(current_user => RT->system_user );
-    if ( ref $args{'Queue'} && $args{'Queue'}->isa( 'RT::Model::Queue') ) {
+    my $queue_obj = RT::Model::Queue->new( current_user => RT->system_user );
+    if ( ref $args{'Queue'} && $args{'Queue'}->isa('RT::Model::Queue') ) {
         $queue_obj->load( $args{'Queue'}->id );
-    }
-    elsif ( $args{'Queue'} ) {
+    } elsif ( $args{'Queue'} ) {
         $queue_obj->load( $args{'Queue'} );
-    }
-    else {
-        Jifty->log->debug( $args{'Queue'} . " not a recognised queue object." );
+    } else {
+        Jifty->log->debug(
+            $args{'Queue'} . " not a recognised queue object." );
     }
 
     #Can't create a ticket without a queue.
@@ -351,11 +389,14 @@ sub create {
             Right  => 'create_ticket',
             Object => $queue_obj
         )
-      )
+        )
     {
         return (
             0, 0,
-            _( "No permission to create tickets in the queue '%1'", $queue_obj->name));
+            _(  "No permission to create tickets in the queue '%1'",
+                $queue_obj->name
+            )
+        );
     }
 
     unless ( $queue_obj->is_valid_status( $args{'Status'} ) ) {
@@ -364,8 +405,8 @@ sub create {
 
     #Since we have a queue, we can set queue defaults
 
-    #Initial Priority
-    # If there's no queue default initial priority and it's not set, set it to 0
+  #Initial Priority
+  # If there's no queue default initial priority and it's not set, set it to 0
     $args{'initial_priority'} = $queue_obj->initial_priority || 0
         unless defined $args{'initial_priority'};
 
@@ -387,10 +428,9 @@ sub create {
     my $Due = RT::Date->new();
     if ( defined $args{'Due'} ) {
         $Due->set( Format => 'ISO', value => $args{'Due'} );
-    }
-    elsif ( my $due_in = $queue_obj->DefaultDueIn ) {
+    } elsif ( my $due_in = $queue_obj->DefaultDueIn ) {
         $Due->set_to_now;
-        $Due->add_days( $due_in );
+        $Due->add_days($due_in);
     }
 
     my $starts = RT::Date->new();
@@ -401,8 +441,7 @@ sub create {
     my $Started = RT::Date->new();
     if ( defined $args{'Started'} ) {
         $Started->set( Format => 'ISO', value => $args{'Started'} );
-    }
-    elsif ( $args{'Status'} ne 'new' ) {
+    } elsif ( $args{'Status'} ne 'new' ) {
         $Started->set_to_now;
     }
 
@@ -412,10 +451,10 @@ sub create {
     }
 
     #If the status is an inactive status, set the resolved date
-    elsif ( $queue_obj->is_inactive_status( $args{'Status'} ) )
-    {
-        Jifty->log->debug( "Got a ". $args{'Status'}
-            ."(inactive) ticket with undefined resolved date. Setting to now."
+    elsif ( $queue_obj->is_inactive_status( $args{'Status'} ) ) {
+        Jifty->log->debug( "Got a "
+                . $args{'Status'}
+                . "(inactive) ticket with undefined resolved date. Setting to now."
         );
         $Resolved->set_to_now;
     }
@@ -450,20 +489,21 @@ sub create {
         unless ( $Owner->id ) {
             push @non_fatal_errors,
                 _("Owner could not be set.") . " "
-              . _( "User '%1' could not be found.", $args{'Owner'} );
+                . _( "User '%1' could not be found.", $args{'Owner'} );
             $Owner = undef;
         }
     }
 
     #If we have a proposed owner and they don't have the right
     #to own a ticket, scream about it and make them not the owner
-   
-    my $DeferOwner;  
-    if ( $Owner && $Owner->id != RT->nobody->id 
-        && !$Owner->has_right( Object => $queue_obj, Right  => 'OwnTicket' ) )
+
+    my $DeferOwner;
+    if (   $Owner
+        && $Owner->id != RT->nobody->id
+        && !$Owner->has_right( Object => $queue_obj, Right => 'OwnTicket' ) )
     {
         $DeferOwner = $Owner;
-        $Owner = undef;
+        $Owner      = undef;
         Jifty->log->debug('going to defer setting owner');
 
     }
@@ -479,19 +519,21 @@ sub create {
 # We attempt to load or create each of the people who might have a role for this ticket
 # _outside_ the transaction, so we don't get into ticket creation races
     foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
-        $args{ $type } = [ $args{ $type } ] unless ref $args{ $type };
+        $args{$type} = [ $args{$type} ] unless ref $args{$type};
         foreach my $watcher ( splice @{ $args{$type} } ) {
             next unless $watcher;
             if ( $watcher =~ /^\d+$/ ) {
                 push @{ $args{$type} }, $watcher;
             } else {
-                my @addresses = Mail::Address->parse( $watcher );
-                foreach my $address( @addresses ) {
-                    my $user = RT::Model::User->new(current_user => RT->system_user );
-                    my ($uid, $msg) = $user->load_or_create_by_email( $address );
-                    unless ( $uid ) {
+                my @addresses = Mail::Address->parse($watcher);
+                foreach my $address (@addresses) {
+                    my $user = RT::Model::User->new(
+                        current_user => RT->system_user );
+                    my ( $uid, $msg )
+                        = $user->load_or_create_by_email($address);
+                    unless ($uid) {
                         push @non_fatal_errors,
-                            _("Couldn't load or create user: %1", $msg);
+                            _( "Couldn't load or create user: %1", $msg );
                     } else {
                         push @{ $args{$type} }, $user->id;
                     }
@@ -503,21 +545,21 @@ sub create {
     Jifty->handle->begin_transaction();
 
     my %params = (
-        Queue           => $queue_obj->id,
-        Owner           => $Owner->id,
-        Subject         => $args{'Subject'},
+        Queue            => $queue_obj->id,
+        Owner            => $Owner->id,
+        Subject          => $args{'Subject'},
         initial_priority => $args{'initial_priority'},
         final_priority   => $args{'final_priority'},
-        Priority        => $args{'Priority'},
-        Status          => $args{'Status'},
+        Priority         => $args{'Priority'},
+        Status           => $args{'Status'},
         time_worked      => $args{'time_worked'},
         time_estimated   => $args{'time_estimated'},
         time_left        => $args{'time_left'},
-        Type            => $args{'Type'},
-        starts          => $starts->iso,
-        Started         => $Started->iso,
-        Resolved        => $Resolved->iso,
-        Due             => $Due->iso
+        Type             => $args{'Type'},
+        starts           => $starts->iso,
+        Started          => $Started->iso,
+        Resolved         => $Resolved->iso,
+        Due              => $Due->iso
     );
 
 # Parameters passed in during an import that we probably don't want to touch, otherwise
@@ -530,71 +572,70 @@ sub create {
         qw(time_worked time_left time_estimated initial_priority final_priority)
     {
         delete $params{$attr}
-          unless ( exists $params{$attr} && $params{$attr} );
+            unless ( exists $params{$attr} && $params{$attr} );
     }
 
     # Delete the time worked if we're counting it in the transaction
     delete $params{'time_worked'} if $args{'_record_transaction'};
 
-    my ($id,$ticket_message) = $self->SUPER::create( %params );
+    my ( $id, $ticket_message ) = $self->SUPER::create(%params);
     unless ($id) {
         Jifty->log->fatal( "Couldn't create a ticket: " . $ticket_message );
         Jifty->handle->rollback();
         return ( 0, 0,
-            _("Ticket could not be created due to an internal error")
-        );
+            _("Ticket could not be created due to an internal error") );
     }
 
     #Set the ticket's effective ID now that we've Created it.
     my ( $val, $msg ) = $self->__set(
         column => 'EffectiveId',
-        value => ( $args{'EffectiveId'} || $id )
+        value  => ( $args{'EffectiveId'} || $id )
     );
-    unless ( $val ) {
+    unless ($val) {
         Jifty->log->fatal("Couldn't set EffectiveId: $msg\n");
         Jifty->handle->rollback;
         return ( 0, 0,
-            _("Ticket could not be created due to an internal error")
-        );
+            _("Ticket could not be created due to an internal error") );
     }
 
     my $create_groups_ret = $self->_create_ticket_groups();
     unless ($create_groups_ret) {
         Jifty->log->fatal( "Couldn't create ticket groups for ticket "
-              . $self->id
-              . ". aborting Ticket creation." );
+                . $self->id
+                . ". aborting Ticket creation." );
         Jifty->handle->rollback();
         return ( 0, 0,
-            _("Ticket could not be created due to an internal error")
-        );
+            _("Ticket could not be created due to an internal error") );
     }
 
-    # Set the owner in the Groups table
-    # We denormalize it into the Ticket table too because doing otherwise would
-    # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
-    ($val,$msg) = $self->owner_group->_add_member(
-        principal_id       => $Owner->principal_id,
+# Set the owner in the Groups table
+# We denormalize it into the Ticket table too because doing otherwise would
+# kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
+    ( $val, $msg ) = $self->owner_group->_add_member(
+        principal_id      => $Owner->principal_id,
         InsideTransaction => 1
     ) unless $DeferOwner;
 
     # {{{ Deal with setting up watchers
 
     foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
+
         # we know it's an array ref
         foreach my $watcher ( @{ $args{$type} } ) {
 
-            # Note that we're using AddWatcher, rather than _AddWatcher, as we
-            # actually _want_ that ACL check. Otherwise, random ticket creators
-            # could make themselves adminccs and maybe get ticket rights. that would
-            # be poor
-            my $method = $type eq 'AdminCc'? 'AddWatcher': '_AddWatcher';
+      # Note that we're using AddWatcher, rather than _AddWatcher, as we
+      # actually _want_ that ACL check. Otherwise, random ticket creators
+      # could make themselves adminccs and maybe get ticket rights. that would
+      # be poor
+            my $method = $type eq 'AdminCc' ? 'AddWatcher' : '_AddWatcher';
 
-            my ($val, $msg) = $self->$method(
-                Type   => $type,
+            my ( $val, $msg ) = $self->$method(
+                Type         => $type,
                 principal_id => $watcher,
-                Silent => 1,
+                Silent       => 1,
             );
-            push @non_fatal_errors, _("Couldn't set %1 watcher: %2", $type, $msg)
+            push @non_fatal_errors,
+                _( "Couldn't set %1 watcher: %2", $type, $msg )
                 unless $val;
         }
     }
@@ -607,18 +648,19 @@ sub create {
         next unless $arg =~ /^CustomField-(\d+)$/i;
         my $cfid = $1;
 
-        foreach my $value (
-            UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
+        foreach my $value ( UNIVERSAL::isa( $args{$arg} => 'ARRAY' )
+            ? @{ $args{$arg} }
+            : ( $args{$arg} ) )
         {
             next unless defined $value && length $value;
 
             # Allow passing in uploaded LargeContent etc by hash reference
-            my ($status, $msg) = $self->add_custom_field_value(
-                (UNIVERSAL::isa( $value => 'HASH' )
+            my ( $status, $msg ) = $self->add_custom_field_value(
+                (   UNIVERSAL::isa( $value => 'HASH' )
                     ? %$value
-                    : (Value => $value)
+                    : ( Value => $value )
                 ),
-                Field             => $cfid,
+                Field              => $cfid,
                 record_transaction => 0,
             );
             push @non_fatal_errors, $msg unless $status;
@@ -645,11 +687,13 @@ sub create {
         foreach my $link (
             ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
         {
+
             # Check rights on the other end of the link if we must
             # then run _add_link that doesn't check for ACLs
-            if ( RT->config->get( 'StrictLinkACL' ) ) {
-                my ($val, $msg, $obj) = $self->_get_ticket_from_uri( URI => $link );
-                unless ( $val ) {
+            if ( RT->config->get('StrictLinkACL') ) {
+                my ( $val, $msg, $obj )
+                    = $self->_get_ticket_from_uri( URI => $link );
+                unless ($val) {
                     push @non_fatal_errors, $msg;
                     next;
                 }
@@ -659,35 +703,48 @@ sub create {
                     next;
                 }
             }
-            
+
             my ( $wval, $wmsg ) = $self->_add_link(
-                Type                          => $LINKTYPEMAP{$type}->{'Type'},
+                Type => $LINKTYPEMAP{$type}->{'Type'},
                 $LINKTYPEMAP{$type}->{'Mode'} => $link,
-                Silent                        => !$args{'_record_transaction'},
-                'Silent'. ( $LINKTYPEMAP{$type}->{'Mode'} eq 'Base'? 'Target': 'Base' )
-                                              => 1,
+                Silent => !$args{'_record_transaction'},
+                'Silent'
+                    . (
+                    $LINKTYPEMAP{$type}->{'Mode'} eq 'Base'
+                    ? 'Target'
+                    : 'Base'
+                    ) => 1,
             );
 
             push @non_fatal_errors, $wmsg unless ($wval);
         }
     }
 
-    # }}}
-    # Now that we've Created the ticket and set up its metadata, we can actually go and check OwnTicket on the ticket itself. 
-    # This might be different than before in cases where extensions like RTIR are doing clever things with RT's ACL system
-    if (  $DeferOwner ) { 
-            if (!$DeferOwner->has_right( Object => $self, Right  => 'OwnTicket')) {
-    
-        Jifty->log->warn( "User " . $Owner->name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $queue_obj->name ); 
-        push @non_fatal_errors, _( "Owner '%1' does not have rights to own this ticket.", $Owner->name);
+# }}}
+# Now that we've Created the ticket and set up its metadata, we can actually go and check OwnTicket on the ticket itself.
+# This might be different than before in cases where extensions like RTIR are doing clever things with RT's ACL system
+    if ($DeferOwner) {
+        if (!$DeferOwner->has_right( Object => $self, Right => 'OwnTicket' ) )
+        {
 
-    } else {
-        $Owner = $DeferOwner;
-        $self->__set(column => 'Owner', value => $Owner->id);
+            Jifty->log->warn( "User "
+                    . $Owner->name . "("
+                    . $Owner->id
+                    . ") was proposed "
+                    . "as a ticket owner but has no rights to own "
+                    . "tickets in "
+                    . $queue_obj->name );
+            push @non_fatal_errors,
+                _( "Owner '%1' does not have rights to own this ticket.",
+                $Owner->name );
 
-    }
+        } else {
+            $Owner = $DeferOwner;
+            $self->__set( column => 'Owner', value => $Owner->id );
+
+        }
         $self->owner_group->_add_member(
-            principal_id       => $Owner->principal_id,
+            principal_id      => $Owner->principal_id,
             InsideTransaction => 1
         );
     }
@@ -696,47 +753,51 @@ sub create {
 
         # {{{ Add a transaction for the create
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
-            type         => "Create",
-            TimeTaken    => $args{'time_worked'},
-            MIMEObj      => $args{'MIMEObj'},
+            type          => "Create",
+            TimeTaken     => $args{'time_worked'},
+            MIMEObj       => $args{'MIMEObj'},
             commit_scrips => !$args{'DryRun'},
         );
         if ( $self->id && $Trans ) {
 
-            $TransObj->update_custom_fields(ARGSRef => \%args);
+            $TransObj->update_custom_fields( ARGSRef => \%args );
 
-            Jifty->log->info( "Ticket " . $self->id . " created in queue '" . $queue_obj->name . "' by " . $self->current_user->name );
-            $ErrStr = _( "Ticket %1 created in queue '%2'", $self->id, $queue_obj->name );
+            Jifty->log->info( "Ticket "
+                    . $self->id
+                    . " created in queue '"
+                    . $queue_obj->name . "' by "
+                    . $self->current_user->name );
+            $ErrStr = _( "Ticket %1 created in queue '%2'",
+                $self->id, $queue_obj->name );
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
-        }
-        else {
+        } else {
             Jifty->handle->rollback();
 
             $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
             Jifty->log->error("Ticket couldn't be created: $ErrStr");
-            return ( 0, 0, _( "Ticket could not be created due to an internal error"));
+            return ( 0, 0,
+                _("Ticket could not be created due to an internal error") );
         }
-         if ( $args{'DryRun'} ) {
-                 Jifty->handle->rollback();
-                 return ($self->id, $TransObj, $ErrStr);
-             }
+        if ( $args{'DryRun'} ) {
+            Jifty->handle->rollback();
+            return ( $self->id, $TransObj, $ErrStr );
+        }
 
         Jifty->handle->commit();
         return ( $self->id, $TransObj->id, $ErrStr );
 
         # }}}
-    }
-    else {
+    } else {
 
         # Not going to record a transaction
         Jifty->handle->commit();
-        $ErrStr = _( "Ticket %1 created in queue '%2'", $self->id, $queue_obj->name );
+        $ErrStr = _( "Ticket %1 created in queue '%2'",
+            $self->id, $queue_obj->name );
         $ErrStr = join( "\n", $ErrStr, @non_fatal_errors );
         return ( $self->id, 0, $ErrStr );
 
     }
 }
-
 
 # }}}
 
@@ -753,7 +814,7 @@ sub _parse822_headers_for_attributes {
     my $content = shift;
     my %args;
 
-    my @lines = ( split ( /\n/, $content ) );
+    my @lines = ( split( /\n/, $content ) );
     while ( defined( my $line = shift @lines ) ) {
         if ( $line =~ /^(.*?):(?:\s+(.*))?$/ ) {
             my $value = $2;
@@ -767,27 +828,25 @@ sub _parse822_headers_for_attributes {
             if ( ref( $args{$tag} ) )
             {    #If it's an array, we want to push the value
                 push @{ $args{$tag} }, $value;
-            }
-            else {    #if there's nothing there, just set the value
+            } else {    #if there's nothing there, just set the value
                 $args{$tag} = $value;
             }
-        } elsif ($line =~ /^$/) {
+        } elsif ( $line =~ /^$/ ) {
 
             #TODO: this won't work, since "" isn't of the form "foo:value"
 
-                while ( defined( my $l = shift @lines ) ) {
-                    push @{ $args{'content'} }, $l;
-                }
+            while ( defined( my $l = shift @lines ) ) {
+                push @{ $args{'content'} }, $l;
             }
-        
+        }
+
     }
 
     foreach my $date qw(due starts started resolved) {
-        my $dateobj = RT::Date->new(current_user => RT->system_user);
-        if ( defined ($args{$date}) and $args{$date} =~ /^\d+$/ ) {
+        my $dateobj = RT::Date->new( current_user => RT->system_user );
+        if ( defined( $args{$date} ) and $args{$date} =~ /^\d+$/ ) {
             $dateobj->set( Format => 'unix', value => $args{$date} );
-        }
-        else {
+        } else {
             $dateobj->set( Format => 'unknown', value => $args{$date} );
         }
         $args{$date} = $dateobj->iso;
@@ -795,7 +854,7 @@ sub _parse822_headers_for_attributes {
     $args{'mimeobj'} = MIME::Entity->new();
     $args{'mimeobj'}->build(
         Type => ( $args{'contenttype'} || 'text/plain' ),
-        Data => ($args{'content'} || '')
+        Data => ( $args{'content'}     || '' )
     );
 
     return (%args);
@@ -820,35 +879,34 @@ sub import {
     my ( $ErrStr, $queue_obj, $Owner );
 
     my %args = (
-        id              => undef,
-        EffectiveId     => undef,
-        Queue           => undef,
-        Requestor       => undef,
-        Type            => 'ticket',
-        Owner           => RT->nobody->id,
-        Subject         => '[no subject]',
+        id               => undef,
+        EffectiveId      => undef,
+        Queue            => undef,
+        Requestor        => undef,
+        Type             => 'ticket',
+        Owner            => RT->nobody->id,
+        Subject          => '[no subject]',
         initial_priority => undef,
         final_priority   => undef,
-        Status          => 'new',
+        Status           => 'new',
         time_worked      => "0",
-        Due             => undef,
-        Created         => undef,
-        Updated         => undef,
-        Resolved        => undef,
-        Told            => undef,
+        Due              => undef,
+        Created          => undef,
+        Updated          => undef,
+        Resolved         => undef,
+        Told             => undef,
         @_
     );
 
     if ( ( defined( $args{'Queue'} ) ) && ( !ref( $args{'Queue'} ) ) ) {
-        $queue_obj = RT::Model::Queue->new(current_user => RT->system_user);
+        $queue_obj = RT::Model::Queue->new( current_user => RT->system_user );
         $queue_obj->load( $args{'Queue'} );
-    }
-    elsif ( ref( $args{'Queue'} ) eq 'RT::Model::Queue' ) {
-        $queue_obj = RT::Model::Queue->new(current_user => RT->system_user);
+    } elsif ( ref( $args{'Queue'} ) eq 'RT::Model::Queue' ) {
+        $queue_obj = RT::Model::Queue->new( current_user => RT->system_user );
         $queue_obj->load( $args{'Queue'}->id );
-    }
-    else {
-        Jifty->log->debug( "$self " . $args{'Queue'} . " not a recognised queue object." );
+    } else {
+        Jifty->log->debug(
+            "$self " . $args{'Queue'} . " not a recognised queue object." );
     }
 
     #Can't create a ticket without a queue.
@@ -860,14 +918,17 @@ sub import {
     #Now that we have a queue, Check the ACLS
     unless (
         $self->current_user->has_right(
-            Right    => 'create_ticket',
+            Right  => 'create_ticket',
             Object => $queue_obj
         )
-      )
+        )
     {
-        return ( 0,
-            _("No permission to create tickets in the queue '%1'"
-              , $queue_obj->name));
+        return (
+            0,
+            _(  "No permission to create tickets in the queue '%1'",
+                $queue_obj->name
+            )
+        );
     }
 
     # {{{ Deal with setting the owner
@@ -877,8 +938,7 @@ sub import {
     if ( defined( $args{'Owner'} ) ) {
         if ( ref( $args{'Owner'} ) ) {
             $Owner = $args{'Owner'};
-        }
-        else {
+        } else {
             $Owner = RT::Model::User->new();
             $Owner->load( $args{'Owner'} );
             if ( !defined( $Owner->id ) ) {
@@ -887,27 +947,27 @@ sub import {
         }
     }
 
-    #If we have a proposed owner and they don't have the right 
+    #If we have a proposed owner and they don't have the right
     #to own a ticket, scream about it and make them not the owner
-    if (
-        ( defined($Owner) )
+    if (    ( defined($Owner) )
         and ( $Owner->id != RT->nobody->id )
         and (
             !$Owner->has_right(
                 Object => $queue_obj,
-                Right    => 'OwnTicket'
+                Right  => 'OwnTicket'
             )
         )
-      )
+        )
     {
 
         Jifty->log->warn( "$self user "
-              . $Owner->name . "("
-              . $Owner->id
-              . ") was proposed "
-              . "as a ticket owner but has no rights to own "
-              . "tickets in '"
-              . $queue_obj->name . "'\n" );
+                . $Owner->name . "("
+                . $Owner->id
+                . ") was proposed "
+                . "as a ticket owner but has no rights to own "
+                . "tickets in '"
+                . $queue_obj->name
+                . "'\n" );
 
         $Owner = undef;
     }
@@ -921,7 +981,8 @@ sub import {
     # }}}
 
     unless ( $self->validate_status( $args{'Status'} ) ) {
-        return ( 0, _("'%1' is an invalid value for status", $args{'Status'}) );
+        return ( 0,
+            _( "'%1' is an invalid value for status", $args{'Status'} ) );
     }
 
     # If we're coming in with an id, set that now.
@@ -932,32 +993,31 @@ sub import {
     }
 
     my $id = $self->SUPER::create(
-        id              => $args{'id'},
-        EffectiveId     => $EffectiveId,
-        Queue           => $queue_obj->id,
-        Owner           => $Owner->id,
-        Subject         => $args{'Subject'},        # loc
+        id               => $args{'id'},
+        EffectiveId      => $EffectiveId,
+        Queue            => $queue_obj->id,
+        Owner            => $Owner->id,
+        Subject          => $args{'Subject'},             # loc
         initial_priority => $args{'initial_priority'},    # loc
-        final_priority   => $args{'final_priority'},    # loc
-        Priority        => $args{'initial_priority'},    # loc
-        Status          => $args{'Status'},        # loc
-        time_worked      => $args{'time_worked'},        # loc
-        Type            => $args{'Type'},        # loc
-        Created         => $args{'Created'},        # loc
-        Told            => $args{'Told'},        # loc
-        LastUpdated     => $args{'Updated'},        # loc
-        Resolved        => $args{'Resolved'},        # loc
-        Due             => $args{'Due'},        # loc
+        final_priority   => $args{'final_priority'},      # loc
+        Priority         => $args{'initial_priority'},    # loc
+        Status           => $args{'Status'},              # loc
+        time_worked      => $args{'time_worked'},         # loc
+        Type             => $args{'Type'},                # loc
+        Created          => $args{'Created'},             # loc
+        Told             => $args{'Told'},                # loc
+        LastUpdated      => $args{'Updated'},             # loc
+        Resolved         => $args{'Resolved'},            # loc
+        Due              => $args{'Due'},                 # loc
     );
 
     # If the ticket didn't have an id
     # Set the ticket's effective ID now that we've Created it.
     if ( $args{'id'} ) {
         $self->load( $args{'id'} );
-    }
-    else {
-        my ( $val, $msg ) =
-          $self->__set( column => 'EffectiveId', value => $id );
+    } else {
+        my ( $val, $msg )
+            = $self->__set( column => 'EffectiveId', value => $id );
 
         unless ($val) {
             Jifty->log->err(
@@ -978,12 +1038,18 @@ sub import {
         $self->_add_watcher( Type => 'Cc', Email => $watcher, Silent => 1 );
     }
     foreach $watcher ( @{ $args{'AdminCc'} } ) {
-        $self->_add_watcher( Type => 'AdminCc', Email => $watcher,
-            Silent => 1 );
+        $self->_add_watcher(
+            Type   => 'AdminCc',
+            Email  => $watcher,
+            Silent => 1
+        );
     }
     foreach $watcher ( @{ $args{'Requestor'} } ) {
-        $self->_add_watcher( Type => 'Requestor', Email => $watcher,
-            Silent => 1 );
+        $self->_add_watcher(
+            Type   => 'Requestor',
+            Email  => $watcher,
+            Silent => 1
+        );
     }
 
     return ( $self->id, $ErrStr );
@@ -993,7 +1059,7 @@ sub import {
 
 # {{{ Routines dealing with watchers.
 
-# {{{ _create_ticket_groups 
+# {{{ _create_ticket_groups
 
 =head2 _create_ticket_groups
 
@@ -1007,25 +1073,28 @@ It will return true on success and undef on failure.
 
 =cut
 
-
 sub _create_ticket_groups {
     my $self = shift;
-    
+
     my @types = qw(Requestor Owner Cc AdminCc);
 
     foreach my $type (@types) {
         my $type_obj = RT::Model::Group->new;
-        my ($id, $msg) = $type_obj->create_role_group(Domain => 'RT::Model::Ticket-Role',
-                                                       Instance => $self->id, 
-                                                       Type => $type);
+        my ( $id, $msg ) = $type_obj->create_role_group(
+            Domain   => 'RT::Model::Ticket-Role',
+            Instance => $self->id,
+            Type     => $type
+        );
         unless ($id) {
-            Jifty->log->error("Couldn't create a ticket group of type '$type' for ticket ".
-                               $self->id.": ".$msg);     
-            return(undef);
+            Jifty->log->error(
+                "Couldn't create a ticket group of type '$type' for ticket "
+                    . $self->id . ": "
+                    . $msg );
+            return (undef);
         }
-     }
-    return(1);
-    
+    }
+    return (1);
+
 }
 
 # }}}
@@ -1039,14 +1108,16 @@ A constructor which returns an RT::Model::Group object containing the owner of t
 =cut
 
 sub owner_group {
-    my $self = shift;
+    my $self      = shift;
     my $owner_obj = RT::Model::Group->new;
-    $owner_obj->load_ticket_role_group( Ticket => $self->id,  Type => 'Owner');
+    $owner_obj->load_ticket_role_group(
+        Ticket => $self->id,
+        Type   => 'Owner'
+    );
     return ($owner_obj);
 }
 
 # }}}
-
 
 # {{{ sub AddWatcher
 
@@ -1068,23 +1139,24 @@ If the watcher you\'re trying to set has an RT account, set the Owner paremeter 
 sub add_watcher {
     my $self = shift;
     my %args = (
-        Type  => undef,
+        Type         => undef,
         principal_id => undef,
-        Email => undef,
+        Email        => undef,
         @_
     );
 
     # ModifyTicket works in any case
-    return $self->_add_watcher( %args )
+    return $self->_add_watcher(%args)
         if $self->current_user_has_right('ModifyTicket');
 
     if ( $args{'Email'} ) {
         my ($addr) = Mail::Address->parse( $args{'Email'} );
-        return (0, _("Couldn't parse address from '%1 string", $args{'Email'} ))
+        return ( 0,
+            _( "Couldn't parse address from '%1 string", $args{'Email'} ) )
             unless $addr;
 
-        if ( lc $self->current_user->user_object->email
-            eq lc RT::Model::User->canonicalize_email( $addr->address ) )
+        if (lc $self->current_user->user_object->email eq
+            lc RT::Model::User->canonicalize_email( $addr->address ) )
         {
             $args{'principal_id'} = $self->current_user->id;
             delete $args{'Email'};
@@ -1093,7 +1165,9 @@ sub add_watcher {
 
     # If the watcher isn't the current user then the current user has no right
     # bail
-    unless ( $args{'principal_id'} && $self->current_user->id == $args{'principal_id'} ) {
+    unless ( $args{'principal_id'}
+        && $self->current_user->id == $args{'principal_id'} )
+    {
         return ( 0, _("Permission Denied") );
     }
 
@@ -1109,13 +1183,12 @@ sub add_watcher {
         unless ( $self->current_user_has_right('Watch') ) {
             return ( 0, _('Permission Denied') );
         }
-    }
-    else {
-        Jifty->log->warn( "AddWatcher got passed a bogus type");
+    } else {
+        Jifty->log->warn("AddWatcher got passed a bogus type");
         return ( 0, _('Error in parameters to Ticket->AddWatcher') );
     }
 
-    return $self->_add_watcher( %args );
+    return $self->_add_watcher(%args);
 }
 
 #This contains the meat of AddWatcher. but can be called from a routine like
@@ -1123,65 +1196,84 @@ sub add_watcher {
 sub _add_watcher {
     my $self = shift;
     my %args = (
-        Type   => undef,
-        Silent => undef,
+        Type         => undef,
+        Silent       => undef,
         principal_id => undef,
-        Email => undef,
+        Email        => undef,
         @_
     );
 
-
     my $principal = RT::Model::Principal->new;
-    if ($args{'Email'}) {
-        my $user = RT::Model::User->new(current_user => RT->system_user);
-        my ($pid, $msg) = $user->load_or_create_by_email( $args{'Email'} );
-        $args{'principal_id'} = $pid if $pid; 
+    if ( $args{'Email'} ) {
+        my $user = RT::Model::User->new( current_user => RT->system_user );
+        my ( $pid, $msg ) = $user->load_or_create_by_email( $args{'Email'} );
+        $args{'principal_id'} = $pid if $pid;
     }
-    if ($args{'principal_id'}) {
-        $principal->load($args{'principal_id'});
-    } 
+    if ( $args{'principal_id'} ) {
+        $principal->load( $args{'principal_id'} );
+    }
 
- 
     # If we can't find this watcher, we need to bail.
-    unless ($principal->id) {
-            Jifty->log->error("Could not load create a user with the email address '".$args{'Email'}. "' to add as a watcher for ticket ".$self->id);
-        return(0, _("Could not find or create that user"));
+    unless ( $principal->id ) {
+        Jifty->log->error(
+                  "Could not load create a user with the email address '"
+                . $args{'Email'}
+                . "' to add as a watcher for ticket "
+                . $self->id );
+        return ( 0, _("Could not find or create that user") );
     }
-
 
     my $group = RT::Model::Group->new;
-    $group->load_ticket_role_group(Type => $args{'Type'}, Ticket => $self->id);
-    unless ($group->id) {
-        return(0,_("Group not found"));
+    $group->load_ticket_role_group(
+        Type   => $args{'Type'},
+        Ticket => $self->id
+    );
+    unless ( $group->id ) {
+        return ( 0, _("Group not found") );
     }
 
-    if ( $group->has_member( $principal)) {
+    if ( $group->has_member($principal) ) {
 
-        return ( 0, _('That principal is already a %1 for this ticket', _($args{'Type'})) );
+        return (
+            0,
+            _(  'That principal is already a %1 for this ticket',
+                _( $args{'Type'} )
+            )
+        );
     }
 
-
-    my ( $m_id, $m_msg ) = $group->_add_member( principal_id => $principal->id,
-                                               InsideTransaction => 1 );
+    my ( $m_id, $m_msg ) = $group->_add_member(
+        principal_id      => $principal->id,
+        InsideTransaction => 1
+    );
     unless ($m_id) {
-        Jifty->log->error("Failed to add ".$principal->id." as a member of group ".$group->id."\n".$m_msg);
+        Jifty->log->error( "Failed to add "
+                . $principal->id
+                . " as a member of group "
+                . $group->id . "\n"
+                . $m_msg );
 
-        return ( 0, _('Could not make that principal a %1 for this ticket', _($args{'Type'})) );
+        return (
+            0,
+            _(  'Could not make that principal a %1 for this ticket',
+                _( $args{'Type'} )
+            )
+        );
     }
 
     unless ( $args{'Silent'} ) {
         $self->_new_transaction(
-            type     => 'AddWatcher',
+            type      => 'AddWatcher',
             new_value => $principal->id,
-            Field    => $args{'Type'}
+            Field     => $args{'Type'}
         );
     }
 
-        return ( 1, _('Added principal as a %1 for this ticket', _($args{'Type'})) );
+    return ( 1,
+        _( 'Added principal as a %1 for this ticket', _( $args{'Type'} ) ) );
 }
 
 # }}}
-
 
 # {{{ sub delete_watcher
 
@@ -1201,14 +1293,15 @@ Email (the email address of an existing wathcer)
 
 =cut
 
-
 sub delete_watcher {
     my $self = shift;
 
-    my %args = ( Type        => undef,
-                 principal_id => undef,
-                 Email       => undef,
-                 @_ );
+    my %args = (
+        Type         => undef,
+        principal_id => undef,
+        Email        => undef,
+        @_
+    );
 
     unless ( $args{'principal_id'} || $args{'Email'} ) {
         return ( 0, _("No principal specified") );
@@ -1217,8 +1310,7 @@ sub delete_watcher {
     if ( $args{'principal_id'} ) {
 
         $principal->load( $args{'principal_id'} );
-    }
-    else {
+    } else {
         my $user = RT::Model::User->new;
         $user->load_by_email( $args{'Email'} );
         $principal->load( $user->id );
@@ -1230,7 +1322,10 @@ sub delete_watcher {
     }
 
     my $group = RT::Model::Group->new;
-    $group->load_ticket_role_group( Type => $args{'Type'}, Ticket => $self->id );
+    $group->load_ticket_role_group(
+        Type   => $args{'Type'},
+        Ticket => $self->id
+    );
     unless ( $group->id ) {
         return ( 0, _("Group not found") );
     }
@@ -1242,25 +1337,27 @@ sub delete_watcher {
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
         if ( $args{'Type'} eq 'AdminCc' ) {
-            unless (    $self->current_user_has_right('ModifyTicket')
-                     or $self->current_user_has_right('WatchAsAdminCc') ) {
+            unless ( $self->current_user_has_right('ModifyTicket')
+                or $self->current_user_has_right('WatchAsAdminCc') )
+            {
                 return ( 0, _('Permission Denied') );
             }
         }
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
-        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) )
+        elsif (( $args{'Type'} eq 'Cc' )
+            or ( $args{'Type'} eq 'Requestor' ) )
         {
-            unless (    $self->current_user_has_right('ModifyTicket')
-                     or $self->current_user_has_right('Watch') ) {
+            unless ( $self->current_user_has_right('ModifyTicket')
+                or $self->current_user_has_right('Watch') )
+            {
                 return ( 0, _('Permission Denied') );
             }
-        }
-        else {
-            Jifty->log->warn("$self -> DeleteWatcher got passed a bogus type");
-            return ( 0,
-                     _('Error in parameters to Ticket->delete_watcher') );
+        } else {
+            Jifty->log->warn(
+                "$self -> DeleteWatcher got passed a bogus type");
+            return ( 0, _('Error in parameters to Ticket->delete_watcher') );
         }
     }
 
@@ -1278,40 +1375,44 @@ sub delete_watcher {
 
     unless ( $group->has_member($principal) ) {
         return ( 0,
-                 _( 'That principal is not a %1 for this ticket',
-                             $args{'Type'} ) );
+            _( 'That principal is not a %1 for this ticket', $args{'Type'} )
+        );
     }
 
     my ( $m_id, $m_msg ) = $group->_delete_member( $principal->id );
     unless ($m_id) {
         Jifty->log->error( "Failed to delete "
-                            . $principal->id
-                            . " as a member of group "
-                            . $group->id . "\n"
-                            . $m_msg );
+                . $principal->id
+                . " as a member of group "
+                . $group->id . "\n"
+                . $m_msg );
 
-        return (0,
-                _(
-                    'Could not remove that principal as a %1 for this ticket',
-                    $args{'Type'} ) );
+        return (
+            0,
+            _(  'Could not remove that principal as a %1 for this ticket',
+                $args{'Type'}
+            )
+        );
     }
 
     unless ( $args{'Silent'} ) {
-        $self->_new_transaction( type     => 'del_watcher',
-                                old_value => $principal->id,
-                                Field    => $args{'Type'} );
+        $self->_new_transaction(
+            type      => 'del_watcher',
+            old_value => $principal->id,
+            Field     => $args{'Type'}
+        );
     }
 
-    return ( 1,
-             _( "%1 is no longer a %2 for this ticket.",
-                         $principal->object->name,
-                         $args{'Type'} ) );
+    return (
+        1,
+        _(  "%1 is no longer a %2 for this ticket.",
+            $principal->object->name,
+            $args{'Type'}
+        )
+    );
 }
 
-
-
 # }}}
-
 
 =head2 SquelchMailTo [EMAIL]
 
@@ -1331,8 +1432,8 @@ sub squelch_mail_to {
         }
         my $attr = shift;
         $self->add_attribute( name => 'SquelchMailTo', Content => $attr )
-          unless grep { $_->content eq $attr }
-          $self->attributes->named('SquelchMailTo');
+            unless grep { $_->content eq $attr }
+                $self->attributes->named('SquelchMailTo');
 
     }
     unless ( $self->current_user_has_right('ShowTicket') ) {
@@ -1341,7 +1442,6 @@ sub squelch_mail_to {
     my @attributes = $self->attributes->named('SquelchMailTo');
     return (@attributes);
 }
-
 
 =head2 UnsquelchMailTo ADDRESS
 
@@ -1359,10 +1459,12 @@ sub unsquelch_mail_to {
         return ( 0, _("Permission Denied") );
     }
 
-    my ($val, $msg) = $self->attributes->delete_entry ( name => 'SquelchMailTo', Content => $address);
-    return ($val, $msg);
+    my ( $val, $msg ) = $self->attributes->delete_entry(
+        name    => 'SquelchMailTo',
+        Content => $address
+    );
+    return ( $val, $msg );
 }
-
 
 # {{{ a set of  [foo]AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string
 
@@ -1381,7 +1483,6 @@ sub requestor_addresses {
 
     return ( $self->requestors->member_emails_as_string );
 }
-
 
 =head2 AdminCcAddresses
 
@@ -1412,7 +1513,7 @@ sub cc_addresses {
     unless ( $self->current_user_has_right('ShowTicket') ) {
         return undef;
     }
-    return ( $self->cc->member_emailsAsString);
+    return ( $self->cc->member_emailsAsString );
 
 }
 
@@ -1434,7 +1535,10 @@ sub requestors {
 
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('ShowTicket') ) {
-        $group->load_ticket_role_group(Type => 'Requestor', Ticket => $self->id);
+        $group->load_ticket_role_group(
+            Type   => 'Requestor',
+            Ticket => $self->id
+        );
     }
     return ($group);
 
@@ -1457,7 +1561,7 @@ sub cc {
 
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('ShowTicket') ) {
-        $group->load_ticket_role_group(Type => 'Cc', Ticket => $self->id);
+        $group->load_ticket_role_group( Type => 'Cc', Ticket => $self->id );
     }
     return ($group);
 
@@ -1476,10 +1580,13 @@ If the user doesn't have "ShowTicket" permission, returns an empty group
 =cut
 
 sub admin_cc {
-    my $self = shift;
+    my $self  = shift;
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('ShowTicket') ) {
-        $group->load_ticket_role_group(Type => 'AdminCc', Ticket => $self->id);
+        $group->load_ticket_role_group(
+            Type   => 'AdminCc',
+            Ticket => $self->id
+        );
     }
     return ($group);
 
@@ -1512,25 +1619,30 @@ XX TODO: This should be Memoized.
 sub is_watcher {
     my $self = shift;
 
-    my %args = ( Type  => 'Requestor',
-        principal_id    => undef,
-        Email          => undef,
+    my %args = (
+        Type         => 'Requestor',
+        principal_id => undef,
+        Email        => undef,
         @_
     );
 
-    # Load the relevant group. 
+    # Load the relevant group.
     my $group = RT::Model::Group->new;
-    $group->load_ticket_role_group(Type => $args{'Type'}, Ticket => $self->id);
+    $group->load_ticket_role_group(
+        Type   => $args{'Type'},
+        Ticket => $self->id
+    );
 
     # Find the relevant principal.
-    if (!$args{principal_id} && $args{Email}) {
+    if ( !$args{principal_id} && $args{Email} ) {
+
         # Look up the specified user.
         my $user = RT::Model::User->new;
-        $user->load_by_email($args{Email});
-        if ($user->id) {
+        $user->load_by_email( $args{Email} );
+        if ( $user->id ) {
             $args{principal_id} = $user->principal_id;
-        }
-        else {
+        } else {
+
             # A non-existent user can't be a group member.
             return 0;
         }
@@ -1556,9 +1668,10 @@ sub is_requestor {
     my $self   = shift;
     my $person = shift;
 
-    return ( $self->is_watcher( Type => 'Requestor', principal_id => $person ) );
+    return (
+        $self->is_watcher( Type => 'Requestor', principal_id => $person ) );
 
-};
+}
 
 # }}}
 
@@ -1595,7 +1708,8 @@ sub is_admin_cc {
     my $self   = shift;
     my $person = shift;
 
-    return ( $self->is_watcher( Type => 'AdminCc', principal_id => $person ) );
+    return (
+        $self->is_watcher( Type => 'AdminCc', principal_id => $person ) );
 
 }
 
@@ -1617,7 +1731,7 @@ sub is_owner {
     # no ACL check since this is used in acl decisions
     # unless ($self->current_user_has_right('ShowTicket')) {
     #    return(undef);
-    #   }    
+    #   }
 
     #Tickets won't yet have owners when they're being Created.
     unless ( $self->owner_obj->id ) {
@@ -1626,8 +1740,7 @@ sub is_owner {
 
     if ( $person->id == $self->owner_obj->id ) {
         return (1);
-    }
-    else {
+    } else {
         return (undef);
     }
 }
@@ -1637,7 +1750,6 @@ sub is_owner {
 # }}}
 
 # }}}
-
 
 =head2 TransactionAddresses
 
@@ -1648,24 +1760,33 @@ NOTE: For performance reasons, this method might want to skip transactions and g
 
 =cut
 
-
 sub transaction_addresses {
     my $self = shift;
     my $txns = $self->transactions;
 
     my %addresses = ();
     foreach my $type (qw(Create comment Correspond)) {
-    $txns->limit(column => 'Type', operator => '=', value => $type , entry_aggregator => 'OR', case_sensitive => 1);
-        }
+        $txns->limit(
+            column           => 'Type',
+            operator         => '=',
+            value            => $type,
+            entry_aggregator => 'OR',
+            case_sensitive   => 1
+        );
+    }
 
-    while (my $txn = $txns->next) {
-        my $txnaddrs = $txn->addresses; 
+    while ( my $txn = $txns->next ) {
+        my $txnaddrs = $txn->addresses;
         foreach my $addrlist ( values %$txnaddrs ) {
-                foreach my $addr (@$addrlist) {
-                    # Skip addresses without a phrase (things that are just raw addresses) if we have a phrase
-                    next if ($addresses{$addr->address} && $addresses{$addr->address}->phrase && not $addr->phrase);
-                    $addresses{$addr->address} = $addr;
-                }
+            foreach my $addr (@$addrlist) {
+
+# Skip addresses without a phrase (things that are just raw addresses) if we have a phrase
+                next
+                    if ( $addresses{ $addr->address }
+                    && $addresses{ $addr->address }->phrase
+                    && not $addr->phrase );
+                $addresses{ $addr->address } = $addr;
+            }
         }
     }
 
@@ -1673,10 +1794,7 @@ sub transaction_addresses {
 
 }
 
-
-
-
-# {{{ Routines dealing with queues 
+# {{{ Routines dealing with queues
 
 # {{{ sub validate_Queue
 
@@ -1685,24 +1803,25 @@ sub validate_queue {
     my $value = shift;
 
     if ( !$value ) {
-        Jifty->log->warn( " RT:::Queue::validate_Queue called with a null value. this isn't ok.");
+        Jifty->log->warn(
+            " RT:::Queue::validate_Queue called with a null value. this isn't ok."
+        );
         return (1);
     }
 
     my $queue_obj = RT::Model::Queue->new;
-    my $id       = $queue_obj->load($value);
+    my $id        = $queue_obj->load($value);
 
     if ($id) {
         return (1);
-    }
-    else {
+    } else {
         return (undef);
     }
 }
 
 # }}}
 
-# {{{ sub set_Queue  
+# {{{ sub set_Queue
 
 sub set_queue {
     my $self     = shift;
@@ -1725,28 +1844,29 @@ sub set_queue {
     }
     unless (
         $self->current_user->has_right(
-            Right    => 'create_ticket',
+            Right  => 'create_ticket',
             Object => $Newqueue_obj
         )
-      )
+        )
     {
         return ( 0, _("You may not create requests in that queue.") );
     }
 
     unless (
         $self->owner_obj->has_right(
-            Right    => 'OwnTicket',
+            Right  => 'OwnTicket',
             Object => $Newqueue_obj
         )
-      )
+        )
     {
-        my $clone = RT::Model::Ticket->new(current_user => RT->system_user );
+        my $clone = RT::Model::Ticket->new( current_user => RT->system_user );
         $clone->load( $self->id );
         unless ( $clone->id ) {
-            return ( 0, _("Couldn't load copy of ticket #%1.", $self->id) );
+            return ( 0, _( "Couldn't load copy of ticket #%1.", $self->id ) );
         }
-        my ($status, $msg) = $clone->set_owner( RT->nobody->id, 'Force' );
-        Jifty->log->error("Couldn't set owner on queue change: $msg") unless $status;
+        my ( $status, $msg ) = $clone->set_owner( RT->nobody->id, 'Force' );
+        Jifty->log->error("Couldn't set owner on queue change: $msg")
+            unless $status;
     }
 
     return ( $self->_set( column => 'Queue', value => $Newqueue_obj->id() ) );
@@ -1767,7 +1887,7 @@ sub queue_obj {
 
     my $queue_obj = RT::Model::Queue->new;
 
-    #We call __value so that we can avoid the ACL decision and some deep recursion
+#We call __value so that we can avoid the ACL decision and some deep recursion
     my ($result) = $queue_obj->load( $self->__value('Queue') );
     return ($queue_obj);
 }
@@ -1794,8 +1914,7 @@ sub due_obj {
     # -1 is RT::Date slang for never
     if ( my $due = $self->Due ) {
         $time->set( Format => 'sql', value => $due );
-    }
-    else {
+    } else {
         $time->set( Format => 'unix', value => -1 );
     }
 
@@ -1804,7 +1923,7 @@ sub due_obj {
 
 # }}}
 
-# {{{ sub DueAsString 
+# {{{ sub DueAsString
 
 =head2 DueAsString
 
@@ -1858,10 +1977,9 @@ sub set_started {
 
     #We create a date object to catch date weirdness
     my $time_obj = RT::Date->new( $self->current_user() );
-    if ( $time ) {
+    if ($time) {
         $time_obj->set( Format => 'ISO', value => $time );
-    }
-    else {
+    } else {
         $time_obj->set_to_now();
     }
 
@@ -1871,7 +1989,7 @@ sub set_started {
     #We need $TicketAsSystem, in case the current user doesn't have
     #ShowTicket
     #
-    my $TicketAsSystem = RT::Model::Ticket->new(RT->system_user);
+    my $TicketAsSystem = RT::Model::Ticket->new( RT->system_user );
     $TicketAsSystem->load( $self->id );
     if ( $TicketAsSystem->Status eq 'new' ) {
         $TicketAsSystem->open();
@@ -1954,8 +2072,7 @@ sub told_as_string {
     my $self = shift;
     if ( $self->Told ) {
         return $self->told_obj->as_string();
-    }
-    else {
+    } else {
         return ("Never");
     }
 }
@@ -1974,7 +2091,7 @@ sub time_worked_as_string {
     my $self = shift;
     return "0" unless $self->time_worked;
 
-    #This is not really a date object, but if we diff a number of seconds 
+    #This is not really a date object, but if we diff a number of seconds
     #vs the epoch, we'll get a nice description of time worked.
 
     my $worked = RT::Date->new();
@@ -2013,34 +2130,37 @@ Returns: Transaction id, Error Message, Transaction Object
 sub comment {
     my $self = shift;
 
-    my %args = ( CcMessageTo  => undef,
-                 BccMessageTo => undef,
-                 MIMEObj      => undef,
-                 Content      => undef,
-                 TimeTaken => 0,
-                 DryRun     => 0, 
-                 @_ );
+    my %args = (
+        CcMessageTo  => undef,
+        BccMessageTo => undef,
+        MIMEObj      => undef,
+        Content      => undef,
+        TimeTaken    => 0,
+        DryRun       => 0,
+        @_
+    );
 
-    unless (    ( $self->current_user_has_right('commentOnTicket') )
-             or ( $self->current_user_has_right('ModifyTicket') ) ) {
+    unless ( ( $self->current_user_has_right('commentOnTicket') )
+        or ( $self->current_user_has_right('ModifyTicket') ) )
+    {
         return ( 0, _("Permission Denied"), undef );
     }
     $args{'NoteType'} = 'comment';
 
-    if ($args{'DryRun'}) {
+    if ( $args{'DryRun'} ) {
         Jifty->handle->begin_transaction();
         $args{'commit_scrips'} = 0;
     }
 
     my @results = $self->_record_note(%args);
-    if ($args{'DryRun'}) {
+    if ( $args{'DryRun'} ) {
         Jifty->handle->rollback();
     }
 
-    return(@results);
+    return (@results);
 }
-# }}}
 
+# }}}
 
 =head2 correspond
 
@@ -2063,31 +2183,34 @@ Returns: Transaction id, Error Message, Transaction Object
 
 sub correspond {
     my $self = shift;
-    my %args = ( CcMessageTo  => undef,
-                 BccMessageTo => undef,
-                 MIMEObj      => undef,
-                 Content      => undef,
-                 TimeTaken    => 0,
-                 @_ );
+    my %args = (
+        CcMessageTo  => undef,
+        BccMessageTo => undef,
+        MIMEObj      => undef,
+        Content      => undef,
+        TimeTaken    => 0,
+        @_
+    );
 
-    unless (    ( $self->current_user_has_right('ReplyToTicket') )
-             or ( $self->current_user_has_right('ModifyTicket') ) ) {
+    unless ( ( $self->current_user_has_right('ReplyToTicket') )
+        or ( $self->current_user_has_right('ModifyTicket') ) )
+    {
         return ( 0, _("Permission Denied"), undef );
     }
 
-    $args{'NoteType'} = 'Correspond'; 
-    if ($args{'DryRun'}) {
+    $args{'NoteType'} = 'Correspond';
+    if ( $args{'DryRun'} ) {
         Jifty->handle->begin_transaction();
         $args{'commit_scrips'} = 0;
     }
 
     my @results = $self->_record_note(%args);
 
-    #Set the last told date to now if this isn't mail from the requestor.
-    #TODO: Note that this will wrongly ack mail from any non-requestor as a "told"
-    $self->set_told unless ( $self->is_requestor($self->current_user->id));
+#Set the last told date to now if this isn't mail from the requestor.
+#TODO: Note that this will wrongly ack mail from any non-requestor as a "told"
+    $self->set_told unless ( $self->is_requestor( $self->current_user->id ) );
 
-    if ($args{'DryRun'}) {
+    if ( $args{'DryRun'} ) {
         Jifty->handle->rollback();
     }
 
@@ -2109,15 +2232,15 @@ Performs no access control checks. hence, dangerous.
 
 sub _record_note {
     my $self = shift;
-    my %args = ( 
-        CcMessageTo  => undef,
-        BccMessageTo => undef,
-        Encrypt      => undef,
-        Sign         => undef,
-        MIMEObj      => undef,
-        Content      => undef,
-        NoteType     => 'Correspond',
-        TimeTaken    => 0,
+    my %args = (
+        CcMessageTo   => undef,
+        BccMessageTo  => undef,
+        Encrypt       => undef,
+        Sign          => undef,
+        MIMEObj       => undef,
+        Content       => undef,
+        NoteType      => 'Correspond',
+        TimeTaken     => 0,
         commit_scrips => 1,
         @_
     );
@@ -2128,7 +2251,9 @@ sub _record_note {
 
     unless ( $args{'MIMEObj'} ) {
         $args{'MIMEObj'} = MIME::Entity->build(
-            Data => ( ref $args{'Content'}? $args{'Content'}: [ $args{'Content'} ] )
+            Data => (
+                ref $args{'Content'} ? $args{'Content'} : [ $args{'Content'} ]
+            )
         );
     }
 
@@ -2140,42 +2265,41 @@ sub _record_note {
     # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and
     # RT-Send-Bcc: headers
 
-
     foreach my $type (qw/Cc Bcc/) {
         if ( defined $args{ $type . 'MessageTo' } ) {
 
-            my $addresses = join ', ', (
-                map { RT::Model::User->canonicalize_email( $_->address ) }
+            my $addresses = join ', ',
+                ( map { RT::Model::User->canonicalize_email( $_->address ) }
                     Mail::Address->parse( $args{ $type . 'MessageTo' } ) );
             $args{'MIMEObj'}->head->add( 'RT-Send-' . $type, $addresses );
         }
     }
 
     foreach my $argument (qw(Encrypt Sign)) {
-        $args{'MIMEObj'}->head->add(
-            "X-RT-$argument" => $args{ $argument }
-        ) if defined $args{ $argument };
+        $args{'MIMEObj'}->head->add( "X-RT-$argument" => $args{$argument} )
+            if defined $args{$argument};
     }
 
     # XXX: This code is duplicated several times
     # If this is from an external source, we need to come up with its
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
-    my $org = RT->config->get('organization');
+    my $org   = RT->config->get('organization');
     my $msgid = $args{'MIMEObj'}->head->get('Message-ID');
-    unless (defined $msgid && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/) {
-        $args{'MIMEObj'}->head->set(
-            'RT-Message-ID' => RT::Interface::Email::GenMessageId( Ticket => $self )
-        );
+    unless ( defined $msgid
+        && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/ )
+    {
+        $args{'MIMEObj'}->head->set( 'RT-Message-ID' =>
+                RT::Interface::Email::GenMessageId( Ticket => $self ) );
     }
 
     #Record the correspondence (write the transaction)
     my ( $Trans, $msg, $TransObj ) = $self->_new_transaction(
-             type => $args{'NoteType'},
-             Data => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
-             TimeTaken => $args{'TimeTaken'},
-             MIMEObj   => $args{'MIMEObj'}, 
-             commit_scrips => $args{'commit_scrips'},
+        type => $args{'NoteType'},
+        Data => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
+        TimeTaken     => $args{'TimeTaken'},
+        MIMEObj       => $args{'MIMEObj'},
+        commit_scrips => $args{'commit_scrips'},
     );
 
     unless ($Trans) {
@@ -2190,36 +2314,45 @@ sub _record_note {
 
 # }}}
 
-# {{{ sub _links 
+# {{{ sub _links
 
 sub _links {
     my $self = shift;
 
-    #TODO: Field isn't the right thing here. but I ahave no idea what mnemonic ---
-    #tobias meant by $f
+#TODO: Field isn't the right thing here. but I ahave no idea what mnemonic ---
+#tobias meant by $f
     my $field = shift;
-    my $type  = shift || "";
+    my $type = shift || "";
 
     unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} =
-          RT::Model::LinkCollection->new( current_user => $self->current_user );
+        $self->{"$field$type"} = RT::Model::LinkCollection->new(
+            current_user => $self->current_user );
         if ( $self->current_user_has_right('ShowTicket') ) {
+
             # Maybe this ticket is a merged ticket
             my $Tickets = RT::Model::TicketCollection->new();
+
             # at least to myself
-            $self->{"$field$type"}->limit( column => $field,
-                                           value => $self->uri,
-                                           entry_aggregator => 'OR' );
-            $Tickets->limit( column => 'EffectiveId',
-                             value => $self->EffectiveId );
-            while (my $Ticket = $Tickets->next) {
-                $self->{"$field$type"}->limit( column => $field,
-                                               value => $Ticket->uri,
-                                               entry_aggregator => 'OR' );
+            $self->{"$field$type"}->limit(
+                column           => $field,
+                value            => $self->uri,
+                entry_aggregator => 'OR'
+            );
+            $Tickets->limit(
+                column => 'EffectiveId',
+                value  => $self->EffectiveId
+            );
+            while ( my $Ticket = $Tickets->next ) {
+                $self->{"$field$type"}->limit(
+                    column           => $field,
+                    value            => $Ticket->uri,
+                    entry_aggregator => 'OR'
+                );
             }
-            $self->{"$field$type"}->limit( column => 'Type',
-                                           value => $type )
-              if ($type);
+            $self->{"$field$type"}->limit(
+                column => 'Type',
+                value  => $type
+            ) if ($type);
         }
     }
     return ( $self->{"$field$type"} );
@@ -2227,7 +2360,7 @@ sub _links {
 
 # }}}
 
-# {{{ sub delete_link 
+# {{{ sub delete_link
 
 =head2 delete_link
 
@@ -2245,10 +2378,10 @@ both transactions are Created.
 sub delete_link {
     my $self = shift;
     my %args = (
-        Base   => undef,
-        Target => undef,
-        Type   => undef,
-        Silent => undef,
+        Base         => undef,
+        Target       => undef,
+        Type         => undef,
+        Silent       => undef,
         SilentBase   => undef,
         SilentTarget => undef,
         @_
@@ -2262,59 +2395,65 @@ sub delete_link {
     #check acls
     my $right = 0;
     $right++ if $self->current_user_has_right('ModifyTicket');
-    if ( !$right && RT->config->get( 'StrictLinkACL' ) ) {
+    if ( !$right && RT->config->get('StrictLinkACL') ) {
         return ( 0, _("Permission Denied") );
     }
 
     # If the other URI is an RT::Model::Ticket, we want to make sure the user
     # can modify it too...
-    my ($status, $msg, $other_ticket) = $self->_get_ticket_from_uri( URI => $args{'Target'} || $args{'Base'} );
-    return (0, $msg) unless $status;
-    if ( !$other_ticket || $other_ticket->current_user_has_right('ModifyTicket') ) {
+    my ( $status, $msg, $other_ticket )
+        = $self->_get_ticket_from_uri( URI => $args{'Target'}
+            || $args{'Base'} );
+    return ( 0, $msg ) unless $status;
+    if ( !$other_ticket
+        || $other_ticket->current_user_has_right('ModifyTicket') )
+    {
         $right++;
     }
-    if ( ( !RT->config->get( 'StrictLinkACL' ) && $right == 0 ) ||
-         ( RT->config->get( 'StrictLinkACL' ) && $right < 2 ) )
+    if (   ( !RT->config->get('StrictLinkACL') && $right == 0 )
+        || ( RT->config->get('StrictLinkACL') && $right < 2 ) )
     {
         return ( 0, _("Permission Denied") );
     }
 
-    my ($val, $Msg) = $self->SUPER::_delete_link(%args);
+    my ( $val, $Msg ) = $self->SUPER::_delete_link(%args);
     return ( 0, $Msg ) unless $val;
 
     return ( $val, $Msg ) if $args{'Silent'};
 
-    my ($direction, $remote_link);
+    my ( $direction, $remote_link );
 
     if ( $args{'Base'} ) {
         $remote_link = $args{'Base'};
-        $direction = 'Target';
-    }
-    elsif ( $args{'Target'} ) {
+        $direction   = 'Target';
+    } elsif ( $args{'Target'} ) {
         $remote_link = $args{'Target'};
-        $direction = 'Base';
-    } 
+        $direction   = 'Base';
+    }
 
     my $remote_uri = RT::URI->new;
-    $remote_uri->from_uri( $remote_link );
+    $remote_uri->from_uri($remote_link);
 
-    unless ( $args{ 'Silent'. $direction } ) {
+    unless ( $args{ 'Silent' . $direction } ) {
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             type      => 'DeleteLink',
-            Field     => $LINKDIRMAP{$args{'Type'}}->{$direction},
-            old_value  => $remote_uri->uri || $remote_link,
+            Field     => $LINKDIRMAP{ $args{'Type'} }->{$direction},
+            old_value => $remote_uri->uri || $remote_link,
             TimeTaken => 0
         );
         Jifty->log->error("Couldn't create transaction: $Msg") unless $Trans;
     }
 
-    if ( !$args{ 'Silent'. ( $direction eq 'Target'? 'Base': 'Target' ) } && $remote_uri->is_local ) {
+    if ( !$args{ 'Silent' . ( $direction eq 'Target' ? 'Base' : 'Target' ) }
+        && $remote_uri->is_local )
+    {
         my $OtherObj = $remote_uri->object;
         my ( $val, $Msg ) = $OtherObj->_new_transaction(
-            type           => 'DeleteLink',
-            Field          => $direction eq 'Target' ? $LINKDIRMAP{$args{'Type'}}->{Base}
-                                            : $LINKDIRMAP{$args{'Type'}}->{Target},
-            old_value       => $self->uri,
+            type  => 'DeleteLink',
+            Field => $direction eq 'Target'
+            ? $LINKDIRMAP{ $args{'Type'} }->{Base}
+            : $LINKDIRMAP{ $args{'Type'} }->{Target},
+            old_value      => $self->uri,
             ActivateScrips => !RT->config->get('LinkTransactionsRun1Scrip'),
             TimeTaken      => 0,
         );
@@ -2341,13 +2480,15 @@ both transactions are Created.
 
 sub add_link {
     my $self = shift;
-    my %args = ( Target       => '',
-                 Base         => '',
-                 Type         => '',
-                 Silent       => undef,
-                 SilentBase   => undef,
-                 SilentTarget => undef,
-                 @_ );
+    my %args = (
+        Target       => '',
+        Base         => '',
+        Type         => '',
+        Silent       => undef,
+        SilentBase   => undef,
+        SilentTarget => undef,
+        @_
+    );
 
     unless ( $args{'Target'} || $args{'Base'} ) {
         Jifty->log->error("Base or Target must be specified\n");
@@ -2356,19 +2497,23 @@ sub add_link {
 
     my $right = 0;
     $right++ if $self->current_user_has_right('ModifyTicket');
-    if ( !$right && RT->config->get( 'StrictLinkACL' ) ) {
+    if ( !$right && RT->config->get('StrictLinkACL') ) {
         return ( 0, _("Permission Denied") );
     }
 
     # If the other URI is an RT::Model::Ticket, we want to make sure the user
     # can modify it too...
-    my ($status, $msg, $other_ticket) = $self->_get_ticket_from_uri( URI => $args{'Target'} || $args{'Base'} );
-    return (0, $msg) unless $status;
-    if ( !$other_ticket || $other_ticket->current_user_has_right('ModifyTicket') ) {
+    my ( $status, $msg, $other_ticket )
+        = $self->_get_ticket_from_uri( URI => $args{'Target'}
+            || $args{'Base'} );
+    return ( 0, $msg ) unless $status;
+    if ( !$other_ticket
+        || $other_ticket->current_user_has_right('ModifyTicket') )
+    {
         $right++;
     }
-    if ( ( !RT->config->get( 'StrictLinkACL' ) && $right == 0 ) ||
-         ( RT->config->get( 'StrictLinkACL' ) && $right < 2 ) )
+    if (   ( !RT->config->get('StrictLinkACL') && $right == 0 )
+        || ( RT->config->get('StrictLinkACL') && $right < 2 ) )
     {
         return ( 0, _("Permission Denied") );
     }
@@ -2387,14 +2532,14 @@ sub _get_ticket_from_uri {
 
     unless ( $uri_obj->resolver && $uri_obj->scheme ) {
         my $msg = _( "Couldn't resolve '%1' into a URI.", $args{'URI'} );
-        Jifty->log->warn( "$msg\n" );
-        return( 0, $msg );
+        Jifty->log->warn("$msg\n");
+        return ( 0, $msg );
     }
     my $obj = $uri_obj->resolver->object;
-    unless ( UNIVERSAL::isa($obj, 'RT::Model::Ticket') && $obj->id ) {
-        return (1, 'Found not a ticket', undef);
+    unless ( UNIVERSAL::isa( $obj, 'RT::Model::Ticket' ) && $obj->id ) {
+        return ( 1, 'Found not a ticket', undef );
     }
-    return (1, 'Found ticket', $obj);
+    return ( 1, 'Found ticket', $obj );
 }
 
 =head2 _add_link  
@@ -2405,47 +2550,52 @@ Private non-acled variant of add_link so that links can be added during create.
 
 sub _add_link {
     my $self = shift;
-    my %args = ( Target       => '',
-                 Base         => '',
-                 Type         => '',
-                 Silent       => undef,
-                 SilentBase   => undef,
-                 SilentTarget => undef,
-                 @_ );
+    my %args = (
+        Target       => '',
+        Base         => '',
+        Type         => '',
+        Silent       => undef,
+        SilentBase   => undef,
+        SilentTarget => undef,
+        @_
+    );
 
-    my ($val, $msg, $exist) = $self->SUPER::_add_link(%args);
-    return ($val, $msg) if !$val || $exist;
-    return ($val, $msg) if $args{'Silent'};
+    my ( $val, $msg, $exist ) = $self->SUPER::_add_link(%args);
+    return ( $val, $msg ) if !$val || $exist;
+    return ( $val, $msg ) if $args{'Silent'};
 
-    my ($direction, $remote_link);
+    my ( $direction, $remote_link );
     if ( $args{'Target'} ) {
-        $remote_link  = $args{'Target'};
-        $direction    = 'Base';
+        $remote_link = $args{'Target'};
+        $direction   = 'Base';
     } elsif ( $args{'Base'} ) {
-        $remote_link  = $args{'Base'};
-        $direction    = 'Target';
+        $remote_link = $args{'Base'};
+        $direction   = 'Target';
     }
 
     my $remote_uri = RT::URI->new;
-    $remote_uri->from_uri( $remote_link );
+    $remote_uri->from_uri($remote_link);
 
-    unless ( $args{ 'Silent'. $direction } ) {
+    unless ( $args{ 'Silent' . $direction } ) {
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             type      => 'AddLink',
-            Field     => $LINKDIRMAP{$args{'Type'}}->{$direction},
-            new_value  =>  $remote_uri->uri || $remote_link,
+            Field     => $LINKDIRMAP{ $args{'Type'} }->{$direction},
+            new_value => $remote_uri->uri || $remote_link,
             TimeTaken => 0
         );
         Jifty->log->error("Couldn't create transaction: $Msg") unless $Trans;
     }
 
-    if ( !$args{ 'Silent'. ( $direction eq 'Target'? 'Base': 'Target' ) } && $remote_uri->is_local ) {
+    if ( !$args{ 'Silent' . ( $direction eq 'Target' ? 'Base' : 'Target' ) }
+        && $remote_uri->is_local )
+    {
         my $OtherObj = $remote_uri->object;
         my ( $val, $msg ) = $OtherObj->_new_transaction(
-            type           => 'AddLink',
-            Field          => $direction eq 'Target' ? $LINKDIRMAP{$args{'Type'}}->{Base}
-                                            : $LINKDIRMAP{$args{'Type'}}->{Target},
-            new_value       => $self->uri,
+            type  => 'AddLink',
+            Field => $direction eq 'Target'
+            ? $LINKDIRMAP{ $args{'Type'} }->{Base}
+            : $LINKDIRMAP{ $args{'Type'} }->{Target},
+            new_value      => $self->uri,
             ActivateScrips => !RT->config->get('LinkTransactionsRun1Scrip'),
             TimeTaken      => 0,
         );
@@ -2456,7 +2606,6 @@ sub _add_link {
 }
 
 # }}}
-
 
 # {{{ sub MergeInto
 
@@ -2477,7 +2626,7 @@ sub merge_into {
     }
 
     # Load up the new ticket.
-    my $MergeInto = RT::Model::Ticket->new(current_user => RT->system_user);
+    my $MergeInto = RT::Model::Ticket->new( current_user => RT->system_user );
     $MergeInto->load($ticket_id);
 
     # make sure it exists.
@@ -2494,20 +2643,19 @@ sub merge_into {
 
     # We use EffectiveId here even though it duplicates information from
     # the links table becasue of the massive performance hit we'd take
-    # by trying to do a separate database query for merge info everytime 
-    # loaded a ticket. 
+    # by trying to do a separate database query for merge info everytime
+    # loaded a ticket.
 
     #update this ticket's effective id to the new ticket's id.
     my ( $id_val, $id_msg ) = $self->__set(
         column => 'EffectiveId',
-        value => $MergeInto->id()
+        value  => $MergeInto->id()
     );
 
     unless ($id_val) {
         Jifty->handle->rollback();
         return ( 0, _("Merge failed. Couldn't set EffectiveId") );
     }
-
 
     if ( $self->__value('Status') ne 'resolved' ) {
 
@@ -2517,8 +2665,7 @@ sub merge_into {
         unless ($status_val) {
             Jifty->handle->rollback();
             Jifty->log->error(
-                _(
-                    "%1 couldn't set status to resolved. RT's Database may be inconsistent.",
+                _(  "%1 couldn't set status to resolved. RT's Database may be inconsistent.",
                     $self
                 )
             );
@@ -2527,50 +2674,61 @@ sub merge_into {
     }
 
     # update all the links that point to that old ticket
-    my $old_links_to = RT::Model::LinkCollection->new(current_user => $self->current_user);
-    $old_links_to->limit(column => 'Target', value => $self->URI);
+    my $old_links_to = RT::Model::LinkCollection->new(
+        current_user => $self->current_user );
+    $old_links_to->limit( column => 'Target', value => $self->URI );
 
     my %old_seen;
-    while (my $link = $old_links_to->next) {
-        if (exists $old_seen{$link->Base."-".$link->Type}) {
+    while ( my $link = $old_links_to->next ) {
+        if ( exists $old_seen{ $link->Base . "-" . $link->Type } ) {
             $link->delete;
-        }   
-        elsif ($link->Base eq $MergeInto->URI) {
+        } elsif ( $link->Base eq $MergeInto->URI ) {
             $link->delete;
         } else {
-            # First, make sure the link doesn't already exist. then move it over.
-            my $tmp = RT::Model::Link->new(current_user => RT->system_user);
-            $tmp->load_by_cols(Base => $link->Base, Type => $link->type, LocalTarget => $MergeInto->id);
-            if ($tmp->id)   {
-                    $link->delete;
-            } else { 
-                $link->set_Target($MergeInto->URI);
-                $link->set_LocalTarget($MergeInto->id);
+
+         # First, make sure the link doesn't already exist. then move it over.
+            my $tmp = RT::Model::Link->new( current_user => RT->system_user );
+            $tmp->load_by_cols(
+                Base        => $link->Base,
+                Type        => $link->type,
+                LocalTarget => $MergeInto->id
+            );
+            if ( $tmp->id ) {
+                $link->delete;
+            } else {
+                $link->set_Target( $MergeInto->URI );
+                $link->set_LocalTarget( $MergeInto->id );
             }
-            $old_seen{$link->Base."-".$link->Type} =1;
+            $old_seen{ $link->Base . "-" . $link->Type } = 1;
         }
 
     }
 
-    my $old_links_from = RT::Model::LinkCollection->new(current_user=> $self->current_user);
-    $old_links_from->limit(column => 'Base', value => $self->URI);
+    my $old_links_from = RT::Model::LinkCollection->new(
+        current_user => $self->current_user );
+    $old_links_from->limit( column => 'Base', value => $self->URI );
 
-    while (my $link = $old_links_from->next) {
-        if (exists $old_seen{$link->Type."-".$link->Target}) {
+    while ( my $link = $old_links_from->next ) {
+        if ( exists $old_seen{ $link->Type . "-" . $link->Target } ) {
             $link->delete;
-        }   
-        if ($link->Target eq $MergeInto->URI) {
+        }
+        if ( $link->Target eq $MergeInto->URI ) {
             $link->delete;
         } else {
-            # First, make sure the link doesn't already exist. then move it over.
-            my $tmp = RT::Model::Link->new(current_user => RT->system_user);
-            $tmp->load_by_cols(Target => $link->Target, Type => $link->type, LocalBase => $MergeInto->id);
-            if ($tmp->id)   {
-                    $link->delete;
-            } else { 
-                $link->set_Base($MergeInto->URI);
-                $link->set_LocalBase($MergeInto->id);
-                $old_seen{$link->Type."-".$link->Target} =1;
+
+         # First, make sure the link doesn't already exist. then move it over.
+            my $tmp = RT::Model::Link->new( current_user => RT->system_user );
+            $tmp->load_by_cols(
+                Target    => $link->Target,
+                Type      => $link->type,
+                LocalBase => $MergeInto->id
+            );
+            if ( $tmp->id ) {
+                $link->delete;
+            } else {
+                $link->set_Base( $MergeInto->URI );
+                $link->set_LocalBase( $MergeInto->id );
+                $old_seen{ $link->Type . "-" . $link->Target } = 1;
             }
         }
 
@@ -2584,31 +2742,32 @@ sub merge_into {
             ( $MergeInto->$type() || 0 ) + ( $self->$type() || 0 ) );
 
     }
-#add all of this ticket's watchers to that ticket.
+
+    #add all of this ticket's watchers to that ticket.
     foreach my $watcher_type qw(Requestors Cc AdminCc) {
 
-        my $people = $self->$watcher_type->members_obj;
-        my $addwatcher_type =  $watcher_type;
-        $addwatcher_type  =~ s/s$//;
+        my $people          = $self->$watcher_type->members_obj;
+        my $addwatcher_type = $watcher_type;
+        $addwatcher_type =~ s/s$//;
 
         while ( my $watcher = $people->next ) {
-            
-           my ($val, $msg) =  $MergeInto->_add_watcher(
-                Type        => $addwatcher_type,
-                Silent => 1,
+
+            my ( $val, $msg ) = $MergeInto->_add_watcher(
+                Type         => $addwatcher_type,
+                Silent       => 1,
                 principal_id => $watcher->MemberId
             );
             unless ($val) {
                 Jifty->log->warn($msg);
             }
-    }
+        }
 
     }
 
-    #find all of the tickets that were merged into this ticket. 
+    #find all of the tickets that were merged into this ticket.
     my $old_mergees = RT::Model::TicketCollection->new();
     $old_mergees->limit(
-        column    => 'EffectiveId',
+        column   => 'EffectiveId',
         operator => '=',
         value    => $self->id
     );
@@ -2617,14 +2776,14 @@ sub merge_into {
     while ( my $ticket = $old_mergees->next() ) {
         my ( $val, $msg ) = $ticket->__set(
             column => 'EffectiveId',
-            value => $MergeInto->id()
+            value  => $MergeInto->id()
         );
     }
 
     #make a new link: this ticket is merged into that other ticket.
-    $self->add_link( Type   => 'MergedInto', Target => $MergeInto->id());
+    $self->add_link( Type => 'MergedInto', Target => $MergeInto->id() );
 
-    $MergeInto->set_last_updated;    
+    $MergeInto->set_last_updated;
 
     Jifty->handle->commit();
     return ( 1, _("Merge Successful") );
@@ -2661,7 +2820,7 @@ sub owner_obj {
 
 # }}}
 
-# {{{ sub OwnerAsString 
+# {{{ sub OwnerAsString
 
 =head2 OwnerAsString
 
@@ -2696,41 +2855,42 @@ sub set_owner {
 
     Jifty->handle->begin_transaction();
 
-    $self->set_last_updated(); # lock the ticket
-    $self->load( $self->id ); # in case $self changed while waiting for lock
+    $self->set_last_updated();  # lock the ticket
+    $self->load( $self->id );   # in case $self changed while waiting for lock
 
     my $OldOwnerObj = $self->owner_obj;
 
     my $NewOwnerObj = RT::Model::User->new;
-    $NewOwnerObj->load( $NewOwner );
+    $NewOwnerObj->load($NewOwner);
     unless ( $NewOwnerObj->id ) {
         Jifty->handle->rollback();
         return ( 0, _("That user does not exist") );
     }
 
-
     # must have ModifyTicket rights
     # or TakeTicket/StealTicket and $NewOwner is self
     # see if it's a take
     if ( $OldOwnerObj->id == RT->nobody->id ) {
-        unless (    $self->current_user_has_right('ModifyTicket')
-                 || $self->current_user_has_right('TakeTicket') ) {
+        unless ( $self->current_user_has_right('ModifyTicket')
+            || $self->current_user_has_right('TakeTicket') )
+        {
             Jifty->handle->rollback();
             return ( 0, _("Permission Denied") );
         }
     }
 
     # see if it's a steal
-    elsif (    $OldOwnerObj->id != RT->nobody->id
-            && $OldOwnerObj->id != $self->current_user->id ) {
+    elsif ($OldOwnerObj->id != RT->nobody->id
+        && $OldOwnerObj->id != $self->current_user->id )
+    {
 
-        unless (    $self->current_user_has_right('ModifyTicket')
-                 || $self->current_user_has_right('StealTicket') ) {
+        unless ( $self->current_user_has_right('ModifyTicket')
+            || $self->current_user_has_right('StealTicket') )
+        {
             Jifty->handle->rollback();
             return ( 0, _("Permission Denied") );
         }
-    }
-    else {
+    } else {
         unless ( $self->current_user_has_right('ModifyTicket') ) {
             Jifty->handle->rollback();
             return ( 0, _("Permission Denied") );
@@ -2739,21 +2899,25 @@ sub set_owner {
 
     # If we're not stealing and the ticket has an owner and it's not
     # the current user
-    if ( $Type ne 'Steal' and $Type ne 'Force'
-         and $OldOwnerObj->id != RT->nobody->id
-         and $OldOwnerObj->id != $self->current_user->id )
+    if (    $Type ne 'Steal'
+        and $Type ne 'Force'
+        and $OldOwnerObj->id != RT->nobody->id
+        and $OldOwnerObj->id != $self->current_user->id )
     {
         Jifty->handle->rollback();
         return ( 0, _("You can only take tickets that are unowned") )
             if $NewOwnerObj->id == $self->current_user->id;
         return (
             0,
-            _("You can only reassign tickets that you own or that are unowned" )
+            _(  "You can only reassign tickets that you own or that are unowned"
+            )
         );
     }
 
     #If we've specified a new owner and that user can't modify the ticket
-    elsif ( !$NewOwnerObj->has_right( Right => 'OwnTicket', Object => $self ) ) {
+    elsif (
+        !$NewOwnerObj->has_right( Right => 'OwnTicket', Object => $self ) )
+    {
         Jifty->handle->rollback();
         return ( 0, _("That user may not own tickets in that queue") );
     }
@@ -2774,8 +2938,9 @@ sub set_owner {
         return ( 0, _("Could not change owner. ") . $del_id );
     }
     my ( $add_id, $add_msg ) = $self->owner_group->_add_member(
-                                       principal_id => $NewOwnerObj->principal_id,
-                                       InsideTransaction => 1 );
+        principal_id      => $NewOwnerObj->principal_id,
+        InsideTransaction => 1
+    );
     unless ($add_id) {
         Jifty->handle->rollback();
         return ( 0, _("Could not change owner. ") . $add_msg );
@@ -2784,33 +2949,32 @@ sub set_owner {
     # We call set twice with slightly different arguments, so
     # as to not have an SQL transaction span two RT transactions
 
-    my ( $return ) = $self->_set(
-                      column             => 'Owner',
-                      value             => $NewOwnerObj->id,
-                      record_transaction => 0,
-                      TimeTaken         => 0,
-                      TransactionType   => $Type,
-                      CheckACL          => 0,                  # don't check acl
+    my ($return) = $self->_set(
+        column             => 'Owner',
+        value              => $NewOwnerObj->id,
+        record_transaction => 0,
+        TimeTaken          => 0,
+        TransactionType    => $Type,
+        CheckACL           => 0,                  # don't check acl
     );
 
-    if  (ref($return) and !$return) {
+    if ( ref($return) and !$return ) {
         Jifty->handle->rollback;
         return ( 0, _("Could not change owner. ") . $return );
     }
 
-   my ($val, $msg) = $self->_new_transaction(
+    my ( $val, $msg ) = $self->_new_transaction(
         type      => $Type,
         Field     => 'Owner',
-        new_value  => $NewOwnerObj->id,
-        old_value  => $OldOwnerObj->id,
+        new_value => $NewOwnerObj->id,
+        old_value => $OldOwnerObj->id,
         TimeTaken => 0,
     );
 
-    if ( $val ) {
+    if ($val) {
         $msg = _( "Owner changed from %1 to %2",
-                           $OldOwnerObj->name, $NewOwnerObj->name );
-    }
-    else {
+            $OldOwnerObj->name, $NewOwnerObj->name );
+    } else {
         Jifty->handle->rollback();
         return ( 0, $msg );
     }
@@ -2852,7 +3016,7 @@ sub untake {
 
 # }}}
 
-# {{{ sub Steal 
+# {{{ sub Steal
 
 =head2 Steal
 
@@ -2866,8 +3030,7 @@ sub steal {
 
     if ( $self->is_owner( $self->current_user ) ) {
         return ( 0, _("You already own this ticket") );
-    }
-    else {
+    } else {
         return ( $self->set_owner( $self->current_user->id, 'Steal' ) );
 
     }
@@ -2880,7 +3043,7 @@ sub steal {
 
 # {{{ Routines dealing with status
 
-# {{{ sub validate_Status 
+# {{{ sub validate_Status
 
 =head2 ValidateStatus STATUS
 
@@ -2917,34 +3080,37 @@ Alternatively, you can pass in a list of named parameters (Status => STATUS, For
 =cut
 
 sub set_status {
-    my $self   = shift;
+    my $self = shift;
     my %args;
 
-    if (@_ == 1) {
-    $args{Status} = shift;
-    }
-    else {
-    %args = (@_);
+    if ( @_ == 1 ) {
+        $args{Status} = shift;
+    } else {
+        %args = (@_);
     }
 
     #Check ACL
-    if ( $args{Status} eq 'deleted') {
-            unless ($self->current_user_has_right('DeleteTicket')) {
+    if ( $args{Status} eq 'deleted' ) {
+        unless ( $self->current_user_has_right('DeleteTicket') ) {
             return ( 0, _('Permission Denied') );
-       }
+        }
     } else {
-            unless ($self->current_user_has_right('ModifyTicket')) {
+        unless ( $self->current_user_has_right('ModifyTicket') ) {
             return ( 0, _('Permission Denied') );
-       }
+        }
     }
 
-    if (!$args{Force} && ($args{'Status'} eq 'resolved') && $self->has_unresolved_dependencies) {
-        return (0, _('That ticket has unresolved dependencies'));
+    if (   !$args{Force}
+        && ( $args{'Status'} eq 'resolved' )
+        && $self->has_unresolved_dependencies )
+    {
+        return ( 0, _('That ticket has unresolved dependencies') );
     }
 
-
-    unless ( $self->validate_status( $args{'Status'} ) ) { return ( 0, _("'%1' is an invalid value for status", $args{'Status'}) ); }
-
+    unless ( $self->validate_status( $args{'Status'} ) ) {
+        return ( 0,
+            _( "'%1' is an invalid value for status", $args{'Status'} ) );
+    }
 
     my $now = RT::Date->new;
     $now->set_to_now();
@@ -2953,27 +3119,33 @@ sub set_status {
     if ( $self->Status eq 'new' && $args{Status} ne 'new' ) {
 
         #Set the Started time to "now"
-        $self->_set( column             => 'Started',
-                     value             => $now->iso,
-                     record_transaction => 0 );
+        $self->_set(
+            column             => 'Started',
+            value              => $now->iso,
+            record_transaction => 0
+        );
     }
 
     #When we close a ticket, set the 'Resolved' attribute to now.
     # It's misnamed, but that's just historical.
-    if ( $self->queue_obj->is_inactive_status($args{Status}) ) {
-        $self->_set( column             => 'Resolved',
-                     value             => $now->iso,
-                     record_transaction => 0 );
+    if ( $self->queue_obj->is_inactive_status( $args{Status} ) ) {
+        $self->_set(
+            column             => 'Resolved',
+            value              => $now->iso,
+            record_transaction => 0
+        );
     }
 
     #Actually update the status
-   my ($val, $msg)= $self->_set( column           => 'Status',
-                          value           => $args{Status},
-                          TimeTaken       => 0,
-                          CheckACL      => 0,
-                          TransactionType => 'Status'  );
+    my ( $val, $msg ) = $self->_set(
+        column          => 'Status',
+        value           => $args{Status},
+        TimeTaken       => 0,
+        CheckACL        => 0,
+        TransactionType => 'Status'
+    );
 
-    return($val,$msg);
+    return ( $val, $msg );
 }
 
 # }}}
@@ -3057,7 +3229,6 @@ sub resolve {
 
 # }}}
 
-    
 # {{{ Actions + Routines dealing with transactions
 
 # {{{ sub set_Told and _setTold
@@ -3080,17 +3251,22 @@ sub set_told {
 
     my $datetold = RT::Date->new();
     if ($told) {
-        $datetold->set( Format => 'iso',
-                        value  => $told );
-    }
-    else {
+        $datetold->set(
+            Format => 'iso',
+            value  => $told
+        );
+    } else {
         $datetold->set_to_now();
     }
 
-    return ( $self->_set( column           => 'Told',
-                          value           => $datetold->iso,
-                          TimeTaken       => $timetaken,
-                          TransactionType => 'Told' ) );
+    return (
+        $self->_set(
+            column          => 'Told',
+            value           => $datetold->iso,
+            TimeTaken       => $timetaken,
+            TransactionType => 'Told'
+        )
+    );
 }
 
 =head2 _setTold
@@ -3099,15 +3275,19 @@ Updates the told without a transaction or acl check. Useful when we're sending r
 
 =cut
 
-sub set_told {
+sub _set_told {
     my $self = shift;
 
     my $now = RT::Date->new();
     $now->set_to_now();
 
     #use __set to get no ACLs ;)
-    return ( $self->__set( column => 'Told',
-                           value => $now->iso ) );
+    return (
+        $self->__set(
+            column => 'Told',
+            value  => $now->iso
+        )
+    );
 }
 
 =head2 SeenUpTo
@@ -3118,8 +3298,8 @@ sub set_told {
 sub seen_up_to {
     my $self = shift;
 
-    my $uid = $self->current_user->id;
-    my $attr = $self->first_attribute( "User-". $uid ."-SeenUpTo" );
+    my $uid  = $self->current_user->id;
+    my $attr = $self->first_attribute( "User-" . $uid . "-SeenUpTo" );
     return if $attr && $attr->content gt $self->LastUpdated;
 
     my $txns = $self->transactions;
@@ -3127,9 +3307,9 @@ sub seen_up_to {
     $txns->limit( column => 'Type', value => 'Correspond' );
     $txns->limit( column => 'Creator', operator => '!=', value => $uid );
     $txns->limit(
-        column => 'Created',
+        column   => 'Created',
         operator => '>',
-        value => $attr->content
+        value    => $attr->content
     ) if $attr;
     $txns->rows_per_page(1);
     return $txns->first;
@@ -3168,11 +3348,11 @@ sub DESTROY {
     return unless @$batch;
 
     require RT::Model::ScripCollection;
-    RT::Model::ScripCollection->new(current_user => RT->system_user)->apply(
-    Stage        => 'transaction_batch',
-    ticket_obj    => $self,
-    transaction_obj    => $batch->[0],
-    Type        => join(',', (map { $_->type } @{$batch}) )
+    RT::Model::ScripCollection->new( current_user => RT->system_user )->apply(
+        Stage           => 'transaction_batch',
+        ticket_obj      => $self,
+        transaction_obj => $batch->[0],
+        Type            => join( ',', ( map { $_->type } @{$batch} ) )
     );
 }
 
@@ -3183,29 +3363,28 @@ sub DESTROY {
 # {{{ sub _OverlayAccessible
 
 sub _overlay_accessible {
-    {
-        EffectiveId       => { 'read' => 1,  'write' => 1,  'public' => 1 },
-          Queue           => { 'read' => 1,  'write' => 1 },
-          Requestors      => { 'read' => 1,  'write' => 1 },
-          Owner           => { 'read' => 1,  'write' => 1 },
-          Subject         => { 'read' => 1,  'write' => 1 },
-          initial_priority => { 'read' => 1,  'write' => 1 },
-          final_priority   => { 'read' => 1,  'write' => 1 },
-          Priority        => { 'read' => 1,  'write' => 1 },
-          Status          => { 'read' => 1,  'write' => 1 },
-          time_estimated      => { 'read' => 1,  'write' => 1 },
-          time_worked      => { 'read' => 1,  'write' => 1 },
-          time_left        => { 'read' => 1,  'write' => 1 },
-          Told            => { 'read' => 1,  'write' => 1 },
-          Resolved        => { 'read' => 1 },
-          Type            => { 'read' => 1 },
-          starts        => { 'read' => 1, 'write' => 1 },
-          Started       => { 'read' => 1, 'write' => 1 },
-          Due           => { 'read' => 1, 'write' => 1 },
-          Creator       => { 'read' => 1, 'auto'  => 1 },
-          Created       => { 'read' => 1, 'auto'  => 1 },
-          LastUpdatedBy => { 'read' => 1, 'auto'  => 1 },
-          LastUpdated   => { 'read' => 1, 'auto'  => 1 }
+    {   EffectiveId      => { 'read' => 1, 'write' => 1, 'public' => 1 },
+        Queue            => { 'read' => 1, 'write' => 1 },
+        Requestors       => { 'read' => 1, 'write' => 1 },
+        Owner            => { 'read' => 1, 'write' => 1 },
+        Subject          => { 'read' => 1, 'write' => 1 },
+        initial_priority => { 'read' => 1, 'write' => 1 },
+        final_priority   => { 'read' => 1, 'write' => 1 },
+        Priority         => { 'read' => 1, 'write' => 1 },
+        Status           => { 'read' => 1, 'write' => 1 },
+        time_estimated   => { 'read' => 1, 'write' => 1 },
+        time_worked      => { 'read' => 1, 'write' => 1 },
+        time_left        => { 'read' => 1, 'write' => 1 },
+        Told             => { 'read' => 1, 'write' => 1 },
+        Resolved         => { 'read' => 1 },
+        Type             => { 'read' => 1 },
+        starts        => { 'read' => 1, 'write' => 1 },
+        Started       => { 'read' => 1, 'write' => 1 },
+        Due           => { 'read' => 1, 'write' => 1 },
+        Creator       => { 'read' => 1, 'auto'  => 1 },
+        Created       => { 'read' => 1, 'auto'  => 1 },
+        LastUpdatedBy => { 'read' => 1, 'auto'  => 1 },
+        LastUpdated   => { 'read' => 1, 'auto'  => 1 }
     };
 
 }
@@ -3217,67 +3396,73 @@ sub _overlay_accessible {
 sub _set {
     my $self = shift;
 
-    my %args = ( column             => undef,
-                 value             => undef,
-                 TimeTaken         => 0,
-                 record_transaction => 1,
-                 UpdateTicket      => 1,
-                 CheckACL          => 1,
-                 TransactionType   => 'Set',
-                 @_ );
+    my %args = (
+        column             => undef,
+        value              => undef,
+        TimeTaken          => 0,
+        record_transaction => 1,
+        UpdateTicket       => 1,
+        CheckACL           => 1,
+        TransactionType    => 'Set',
+        @_
+    );
 
-    if ($args{'CheckACL'}) {
-      unless ( $self->current_user_has_right('ModifyTicket')) {
-          return ( 0, _("Permission Denied"));
-      }
-   }
+    if ( $args{'CheckACL'} ) {
+        unless ( $self->current_user_has_right('ModifyTicket') ) {
+            return ( 0, _("Permission Denied") );
+        }
+    }
 
-    unless ($args{'UpdateTicket'} || $args{'record_transaction'}) {
-        Jifty->log->error("Ticket->_set called without a mandate to record an update or update the ticket");
-        return(0, _("Internal Error"));
+    unless ( $args{'UpdateTicket'} || $args{'record_transaction'} ) {
+        Jifty->log->error(
+            "Ticket->_set called without a mandate to record an update or update the ticket"
+        );
+        return ( 0, _("Internal Error") );
     }
 
     #if the user is trying to modify the record
 
     #Take care of the old value we really don't want to get in an ACL loop.
     # so ask the super::_value
-    my $Old = $self->SUPER::_value($args{'column'});
-   
-    if ($Old && $args{'value'} && $Old eq $args{'value'}) {
+    my $Old = $self->SUPER::_value( $args{'column'} );
 
-        return (0, _("That is already the current value"));
+    if ( $Old && $args{'value'} && $Old eq $args{'value'} ) {
+
+        return ( 0, _("That is already the current value") );
     }
     my ($return);
-    if ( $args{'UpdateTicket'}  ) {
+    if ( $args{'UpdateTicket'} ) {
 
         #Set the new value
-        my $return = $self->SUPER::_set( column => $args{'column'},
-                                                value => $args{'value'} );
+        my $return = $self->SUPER::_set(
+            column => $args{'column'},
+            value  => $args{'value'}
+        );
+
         #If we can't actually set the field to the value, don't record
         # a transaction. instead, get out of here.
-        if ($return->errno) {
-            return ( $return ) ;
+        if ( $return->errno ) {
+            return ($return);
         }
     }
     if ( $args{'record_transaction'} == 1 ) {
 
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
-                                               type => $args{'TransactionType'},
-                                               Field     => $args{'column'},
-                                               new_value  => $args{'value'},
-                                               old_value  => $Old,
-                                               TimeTaken => $args{'TimeTaken'},
+            type      => $args{'TransactionType'},
+            Field     => $args{'column'},
+            new_value => $args{'value'},
+            old_value => $Old,
+            TimeTaken => $args{'TimeTaken'},
         );
         return ( $Trans, scalar $TransObj->brief_description );
-    }
-    else {
-        return ( $return );
+    } else {
+        return ($return);
     }
 }
 
 # }}}
 
-# {{{ sub _value 
+# {{{ sub _value
 
 =head2 _value
 
@@ -3288,18 +3473,18 @@ Returns its value as a string, if the user passes an ACL check
 
 sub _value {
 
-    my $self  = shift;
+    my $self   = shift;
     my $column = shift;
 
     #if the column is public, return it.
-    if (1 ) { # $self->_Accessible( $column, 'public' ) ) {
+    if (1) {    # $self->_Accessible( $column, 'public' ) ) {
 
         #Jifty->log->debug("Skipping ACL check for $column\n");
         return ( $self->SUPER::_value($column) );
 
     }
 
-    #If the current user doesn't have ACLs, don't let em at it.  
+    #If the current user doesn't have ACLs, don't let em at it.
 
     unless ( $self->current_user_has_right('ShowTicket') ) {
         return (undef);
@@ -3328,7 +3513,7 @@ sub _update_time_taken {
     $Total = ( $Total || 0 ) + ( $Minutes || 0 );
     $self->SUPER::_set(
         column => "time_worked",
-        value => $Total
+        value  => $Total
     );
 
     return ($Total);
@@ -3340,7 +3525,7 @@ sub _update_time_taken {
 
 # {{{ Routines dealing with ACCESS CONTROL
 
-# {{{ sub current_user_has_right 
+# {{{ sub current_user_has_right
 
 =head2 current_user_has_right
 
@@ -3356,12 +3541,12 @@ sub current_user_has_right {
     return $self->current_user->principal_object->has_right(
         Object => $self,
         Right  => $right,
-    )
+    );
 }
 
 # }}}
 
-# {{{ sub has_right 
+# {{{ sub has_right
 
 =head2 has_right
 
@@ -3381,18 +3566,19 @@ sub has_right {
         @_
     );
 
-    unless ( ( defined $args{'Principal'} ) and ( ref( $args{'Principal'} ) ) )
+    unless (( defined $args{'Principal'} )
+        and ( ref( $args{'Principal'} ) ) )
     {
         Carp::cluck("Principal attrib undefined for Ticket::has_right");
         Jifty->log->fatal("Principal attrib undefined for Ticket::has_right");
-        return(undef);
+        return (undef);
     }
 
     return (
         $args{'Principal'}->has_right(
             Object => $self,
-            Right     => $args{'Right'}
-          )
+            Right  => $args{'Right'}
+        )
     );
 }
 
@@ -3409,18 +3595,16 @@ It isn't acutally a searchbuilder collection itself.
 
 sub reminders {
     my $self = shift;
-    
-    unless ($self->{'__reminders'}) {
+
+    unless ( $self->{'__reminders'} ) {
         $self->{'__reminders'} = RT::Reminders->new;
-        $self->{'__reminders'}->ticket($self->id);
+        $self->{'__reminders'}->ticket( $self->id );
     }
     return $self->{'__reminders'};
 
 }
 
-
-
-# {{{ sub Transactions 
+# {{{ sub Transactions
 
 =head2 Transactions
 
@@ -3435,21 +3619,21 @@ sub transactions {
 
     #If the user has no rights, return an empty object
     if ( $self->current_user_has_right('ShowTicket') ) {
-        $transactions->limit_to_ticket($self->id);
+        $transactions->limit_to_ticket( $self->id );
 
         # if the user may not see comments do not return them
         unless ( $self->current_user_has_right('ShowTicketcomments') ) {
             $transactions->limit(
                 subclause => 'acl',
                 column    => 'Type',
-                operator => '!=',
-                value    => "comment"
+                operator  => '!=',
+                value     => "comment"
             );
             $transactions->limit(
-                subclause => 'acl',
-                column    => 'Type',
-                operator => '!=',
-                value    => "commentEmailRecord",
+                subclause        => 'acl',
+                column           => 'Type',
+                operator         => '!=',
+                value            => "commentEmailRecord",
                 entry_aggregator => 'AND'
             );
 
@@ -3460,7 +3644,6 @@ sub transactions {
 }
 
 # }}}
-
 
 # {{{ TransactionCustomFields
 
@@ -3498,6 +3681,7 @@ sub custom_field_values {
             $cf->load_by_name_and_queue( name => $field, Queue => 0 );
         }
         unless ( $cf->id ) {
+
             # If we didn't find a valid cfid, give up.
             return RT::Model::CustomFieldValueCollection->new;
         }
@@ -3537,7 +3721,6 @@ sub acl_equivalence_objects {
     return $self->queue_obj;
 
 }
-
 
 1;
 

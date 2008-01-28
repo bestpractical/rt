@@ -22,9 +22,6 @@ use base qw/RT::Record/;
 
 =cut
 
-
-
-
 use Digest::MD5;
 use RT::Interface::Email;
 use Encode;
@@ -34,8 +31,8 @@ use Jifty::DBI::Schema;
 sub table {'Users'}
 
 use Jifty::DBI::Record schema {
-    column comments  => type is 'blob', default is '';
-    column Signature => type is 'blob', default is '';
+    column comments              => type is 'blob', default is '';
+    column Signature             => type is 'blob', default is '';
     column freeform_contact_info => type is 'blob', default is '';
     column
         organization =>,
@@ -91,17 +88,19 @@ use Jifty::DBI::Record schema {
 
 };
 
-use Jifty::Plugin::User::Mixin::Model::User; # name, email, email_confirmed
+use Jifty::Plugin::User::Mixin::Model::User;    # name, email, email_confirmed
 use Jifty::Plugin::Authentication::Password::Mixin::Model::User;
 
-# XXX TODO, merging params should 'just work' but does not 
- __PACKAGE__->column('email')->writable(1);
-sub set_email { my $self = shift; my $addr = shift;
-    $self->__set(column => 'email', value => $addr);
+# XXX TODO, merging params should 'just work' but does not
+__PACKAGE__->column('email')->writable(1);
+
+sub set_email {
+    my $self = shift;
+    my $addr = shift;
+    $self->__set( column => 'email', value => $addr );
 }
 
-
-# {{{ sub create 
+# {{{ sub create
 
 =head2 Create { PARAMHASH }
 
@@ -109,14 +108,13 @@ sub set_email { my $self = shift; my $addr = shift;
 
 =cut
 
-
 sub create {
     my $self = shift;
     my %args = (
-        privileged => 0,
-        disabled => 0,
-        email => '',
-        email_confirmed => 1,
+        privileged          => 0,
+        disabled            => 0,
+        email               => '',
+        email_confirmed     => 1,
         _record_transaction => 1,
         @_    # get the real argumentlist
     );
@@ -125,34 +123,44 @@ sub create {
     my $record_transaction = delete $args{'_record_transaction'};
 
     #Check the ACL
-    Carp::confess unless($self->current_user);
-    unless ( $self->current_user->user_object->has_right(Right => 'AdminUsers', Object => RT->system) ) {
+    Carp::confess unless ( $self->current_user );
+    unless (
+        $self->current_user->user_object->has_right(
+            Right  => 'AdminUsers',
+            Object => RT->system
+        )
+        )
+    {
         return ( 0, _('No permission to create users') );
     }
 
-
-    unless ($self->canonicalize_user_info(\%args)) {
+    unless ( $self->canonicalize_user_info( \%args ) ) {
         return ( 0, _("Could not set user info") );
     }
 
-    $args{'email'} = $self->canonicalize_email($args{'email'});
+    $args{'email'} = $self->canonicalize_email( $args{'email'} );
 
     # if the user doesn't have a name defined, set it to the email address
-    $args{'name'} = $args{'email'} unless ($args{'name'});
-
-
+    $args{'name'} = $args{'email'} unless ( $args{'name'} );
 
     # privileged is no longer a column in users
     my $privileged = $args{'privileged'};
     delete $args{'privileged'};
 
-
     if ( !$args{'password'} ) {
         $args{'password'} = '*NO-PASSWORD*';
     }
-    
-    elsif ( length( $args{'password'} ) < RT->config->get('MinimumpasswordLength') ) {
-        return ( 0, _("password needs to be at least %1 characters long",RT->config->get('MinimumpasswordLength')) );
+
+    elsif (
+        length( $args{'password'} )
+        < RT->config->get('MinimumpasswordLength') )
+    {
+        return (
+            0,
+            _(  "password needs to be at least %1 characters long",
+                RT->config->get('MinimumpasswordLength')
+            )
+        );
     }
 
     unless ( $args{'name'} ) {
@@ -160,26 +168,30 @@ sub create {
     }
 
     #SANITY CHECK THE name AND ABORT IF IT'S TAKEN
-    if (RT->system_user) {   #This only works if RT::system_user has been defined
-        my $TempUser = RT::Model::User->new(current_user => RT->system_user);
+    if ( RT->system_user )
+    {    #This only works if RT::system_user has been defined
+        my $TempUser
+            = RT::Model::User->new( current_user => RT->system_user );
         $TempUser->load( $args{'name'} );
         return ( 0, _('name in use') ) if ( $TempUser->id );
 
         return ( 0, _('Email address in use') )
-          unless ( $self->validate_email( $args{'email'} ) );
+            unless ( $self->validate_email( $args{'email'} ) );
+    } else {
+        Jifty->log->warn("$self couldn't check for pre-existing users");
     }
-    else {
-        Jifty->log->warn( "$self couldn't check for pre-existing users");
-    }
-
 
     Jifty->handle->begin_transaction();
+
     # Groups deal with principal ids, rather than user ids.
     # When creating this user, set up a principal id for it.
-    my $principal = RT::Model::Principal->new;
-    my $principal_id = $principal->create(principal_type => 'User',
-                                disabled => $args{'disabled'},
-                                object_id => '0');
+    my $principal    = RT::Model::Principal->new;
+    my $principal_id = $principal->create(
+        principal_type => 'User',
+        disabled       => $args{'disabled'},
+        object_id      => '0'
+    );
+
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         Jifty->handle->rollback();
@@ -188,16 +200,17 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-    $principal->__set(column => 'object_id', value => $principal_id);
+    $principal->__set( column => 'object_id', value => $principal_id );
     delete $args{'disabled'};
 
-    $self->SUPER::create(id => $principal_id , %args);
+    $self->SUPER::create( id => $principal_id, %args );
     my $id = $self->id;
 
     #If the create failed.
     unless ($id) {
         Jifty->handle->rollback();
-        Jifty->log->error("Could not create a new user - " .join('-', %args));
+        Jifty->log->error(
+            "Could not create a new user - " . join( '-', %args ) );
 
         return ( 0, _('Could not create user') );
     }
@@ -211,51 +224,57 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-
     my $everyone = RT::Model::Group->new;
     $everyone->load_system_internal_group('Everyone');
-    unless ($everyone->id) {
+    unless ( $everyone->id ) {
         Jifty->log->fatal("Could not load Everyone group on user creation.");
         Jifty->handle->rollback();
         return ( 0, _('Could not create user') );
     }
 
-
-    my ($everyone_id, $everyone_msg) = $everyone->_add_member( InsideTransaction => 1, principal_id => $self->principal_id);
+    my ( $everyone_id, $everyone_msg ) = $everyone->_add_member(
+        InsideTransaction => 1,
+        principal_id      => $self->principal_id
+    );
     unless ($everyone_id) {
-        Jifty->log->fatal("Could not add user to Everyone group on user creation.");
+        Jifty->log->fatal(
+            "Could not add user to Everyone group on user creation.");
         Jifty->log->fatal($everyone_msg);
         Jifty->handle->rollback();
         return ( 0, _('Could not create user') );
     }
 
-
     my $access_class = RT::Model::Group->new;
-    if ($privileged)  {
+    if ($privileged) {
         $access_class->load_system_internal_group('privileged');
     } else {
         $access_class->load_system_internal_group('Unprivileged');
     }
 
-    unless ($access_class->id) {
-        Jifty->log->fatal("Could not load privileged or Unprivileged group on user creation");
+    unless ( $access_class->id ) {
+        Jifty->log->fatal(
+            "Could not load privileged or Unprivileged group on user creation"
+        );
         Jifty->handle->rollback();
         return ( 0, _('Could not create user') );
     }
 
-
-    my ($ac_id, $ac_msg) = $access_class->_add_member( InsideTransaction => 1, principal_id => $self->principal_id);  
+    my ( $ac_id, $ac_msg ) = $access_class->_add_member(
+        InsideTransaction => 1,
+        principal_id      => $self->principal_id
+    );
 
     unless ($ac_id) {
-        Jifty->log->fatal("Could not add user to privileged or Unprivileged group on user creation. Aborted");
+        Jifty->log->fatal(
+            "Could not add user to privileged or Unprivileged group on user creation. Aborted"
+        );
         Jifty->log->fatal($ac_msg);
         Jifty->handle->rollback();
         return ( 0, _('Could not create user') );
     }
 
-
-    if ( $record_transaction ) {
-    $self->_new_transaction( Type => "Create" );
+    if ($record_transaction) {
+        $self->_new_transaction( Type => "Create" );
     }
 
     Jifty->handle->commit;
@@ -264,8 +283,6 @@ sub create {
 }
 
 # }}}
-
-
 
 # {{{ set_privileged
 
@@ -281,67 +298,86 @@ Returns a standard RT tuple of (val, msg);
 
 sub set_privileged {
     my $self = shift;
-    my $val = shift;
+    my $val  = shift;
 
     #Check the ACL
-    unless ( $self->current_user->has_right(Right => 'AdminUsers', Object => RT->system) ) {
+    unless (
+        $self->current_user->has_right(
+            Right  => 'AdminUsers',
+            Object => RT->system
+        )
+        )
+    {
         return ( 0, _('Permission Denied') );
     }
     my $priv = RT::Model::Group->new;
     $priv->load_system_internal_group('privileged');
-   
-    unless ($priv->id) {
+
+    unless ( $priv->id ) {
         Jifty->log->fatal("Could not find privileged pseudogroup");
-        return(0,_("Failed to find 'privileged' users pseudogroup."));
+        return ( 0, _("Failed to find 'privileged' users pseudogroup.") );
     }
 
     my $unpriv = RT::Model::Group->new;
     $unpriv->load_system_internal_group('Unprivileged');
-    unless ($unpriv->id) {
+    unless ( $unpriv->id ) {
         Jifty->log->fatal("Could not find unprivileged pseudogroup");
-        return(0,_("Failed to find 'Unprivileged' users pseudogroup"));
+        return ( 0, _("Failed to find 'Unprivileged' users pseudogroup") );
     }
 
     if ($val) {
-        if ($priv->has_member($self->principal_object)) {
+        if ( $priv->has_member( $self->principal_object ) ) {
+
             #Jifty->log->debug("That user is already privileged");
-            return (0,_("That user is already privileged"));
+            return ( 0, _("That user is already privileged") );
         }
-        if ($unpriv->has_member($self->principal_object)) {
-            $unpriv->_delete_member($self->principal_id);
+        if ( $unpriv->has_member( $self->principal_object ) ) {
+            $unpriv->_delete_member( $self->principal_id );
         } else {
-        # if we had layered transactions, life would be good
-        # sadly, we have to just go ahead, even if something
-        # bogus happened
-            Jifty->log->fatal("User ".$self->id." is neither privileged nor ".
-                "unprivileged. something is drastically wrong.");
+
+            # if we had layered transactions, life would be good
+            # sadly, we have to just go ahead, even if something
+            # bogus happened
+            Jifty->log->fatal( "User "
+                    . $self->id
+                    . " is neither privileged nor "
+                    . "unprivileged. something is drastically wrong." );
         }
-        my ($status, $msg) = $priv->_add_member( InsideTransaction => 1, principal_id => $self->principal_id);  
+        my ( $status, $msg ) = $priv->_add_member(
+            InsideTransaction => 1,
+            principal_id      => $self->principal_id
+        );
         if ($status) {
-            return (1, _("That user is now privileged"));
+            return ( 1, _("That user is now privileged") );
         } else {
-            return (0, $msg);
+            return ( 0, $msg );
         }
-    }
-    else {
-        if ($unpriv->has_member($self->principal_object)) {
+    } else {
+        if ( $unpriv->has_member( $self->principal_object ) ) {
+
             #Jifty->log->debug("That user is already unprivileged");
-            return (0,_("That user is already unprivileged"));
+            return ( 0, _("That user is already unprivileged") );
         }
-        if ($priv->has_member($self->principal_object)) {
-            $priv->_delete_member( $self->principal_id);
+        if ( $priv->has_member( $self->principal_object ) ) {
+            $priv->_delete_member( $self->principal_id );
         } else {
-        # if we had layered transactions, life would be good
-        # sadly, we have to just go ahead, even if something
-        # bogus happened
-            Jifty->log->fatal("User ".$self->id." is neither privileged nor ".
-                "unprivileged. something is drastically wrong.");
+
+            # if we had layered transactions, life would be good
+            # sadly, we have to just go ahead, even if something
+            # bogus happened
+            Jifty->log->fatal( "User "
+                    . $self->id
+                    . " is neither privileged nor "
+                    . "unprivileged. something is drastically wrong." );
         }
-        my ($status, $msg) = $unpriv->_add_member( InsideTransaction => 1, principal_id => $self->principal_id);  
+        my ( $status, $msg ) = $unpriv->_add_member(
+            InsideTransaction => 1,
+            principal_id      => $self->principal_id
+        );
         if ($status) {
-            return (1, _("That user is now unprivileged"));
+            return ( 1, _("That user is now unprivileged") );
         } else {
-            return (0, $msg);
+            return ( 0, $msg );
         }
     }
 }
@@ -360,17 +396,16 @@ sub privileged {
     my $self = shift;
     my $priv = RT::Model::Group->new;
     $priv->load_system_internal_group('privileged');
-    if ($priv->has_member($self->principal_object)) {
-        return(1);
-    }
-    else {
-        return(undef);
+    if ( $priv->has_member( $self->principal_object ) ) {
+        return (1);
+    } else {
+        return (undef);
     }
 }
 
 # }}}
 
-# {{{ sub _bootstrap_create 
+# {{{ sub _bootstrap_create
 
 #create a user without validating _any_ data.
 
@@ -381,35 +416,47 @@ sub _bootstrap_create {
     my $self = shift;
     my %args = (@_);
 
-    Jifty->handle->begin_transaction(); 
+    Jifty->handle->begin_transaction();
 
     # Groups deal with principal ids, rather than user ids.
     # When creating this user, set up a principal id for it.
-    my $principal = RT::Model::Principal->new(current_user => RT::CurrentUser->new(_bootstrap => 1));
-    my ($principal_id , $pmsg) = $principal->create(  principal_type => 'User', object_id => '0', disabled => '0');
+    my $principal = RT::Model::Principal->new(
+        current_user => RT::CurrentUser->new( _bootstrap => 1 ) );
+    my ( $principal_id, $pmsg ) = $principal->create(
+        principal_type => 'User',
+        object_id      => '0',
+        disabled       => '0'
+    );
+
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         Jifty->handle->rollback();
-        Jifty->log->fatal("Couldn't create a Principal on new user create. Strange things are afoot at the circle K: $pmsg");
+        Jifty->log->fatal(
+            "Couldn't create a Principal on new user create. Strange things are afoot at the circle K: $pmsg"
+        );
         return ( 0, 'Could not create user' );
     }
-    my ($val,$msg)=    $principal->__set(column => 'object_id', value => $principal_id);
+    my ( $val, $msg )
+        = $principal->__set( column => 'object_id', value => $principal_id );
 
-    my ($status, $user_msg) = $self->SUPER::create(id => $principal_id, %args, password => '*NO-PASSWORD*');
+    my ( $status, $user_msg ) = $self->SUPER::create(
+        id => $principal_id,
+        %args, password => '*NO-PASSWORD*'
+    );
     unless ($status) {
         die $user_msg;
     }
     my $id = $self->id;
+
     #If the create failed.
-      unless ($id) {
-      Jifty->handle->rollback();
-      return ( 0, 'Could not create user' ) ; #never loc this
+    unless ($id) {
+        Jifty->handle->rollback();
+        return ( 0, 'Could not create user' );    #never loc this
     }
 
-    
     my $aclstash = RT::Model::Group->new;
 
-    my $stash_id  = $aclstash->_createacl_equivalence_group($principal);
+    my $stash_id = $aclstash->_createacl_equivalence_group($principal);
 
     unless ($stash_id) {
         Jifty->handle->rollback();
@@ -417,7 +464,6 @@ sub _bootstrap_create {
         return ( 0, _('Could not create user') );
     }
 
-                                    
     Jifty->handle->commit();
 
     return ( $id, 'User Created' );
@@ -425,18 +471,19 @@ sub _bootstrap_create {
 
 # }}}
 
-# {{{ sub delete 
+# {{{ sub delete
 
 sub delete {
     my $self = shift;
 
-    return ( 0, _('Deleting this object would violate referential integrity') );
+    return ( 0,
+        _('Deleting this object would violate referential integrity') );
 
 }
 
 # }}}
 
-# {{{ sub load 
+# {{{ sub load
 
 =head2 Load
 
@@ -453,12 +500,10 @@ sub load {
     my $identifier = shift || return undef;
 
     if ( $identifier !~ /\D/ ) {
-        return $self->load_by_id( $identifier );
-    }
-    elsif ( UNIVERSAL::isa( $identifier, 'RT::Model::User' ) ) {
+        return $self->load_by_id($identifier);
+    } elsif ( UNIVERSAL::isa( $identifier, 'RT::Model::User' ) ) {
         return $self->load_by_id( $identifier->id );
-    }
-    else {
+    } else {
         return $self->load_by_cols( "name", $identifier );
     }
 }
@@ -491,7 +536,7 @@ sub load_by_email {
 
 # }}}
 
-# {{{ load_or_create_by_email 
+# {{{ load_or_create_by_email
 
 =head2 load_or_create_by_email ADDRESS
 
@@ -505,47 +550,50 @@ Returns a tuple of the user's id and a status message.
 =cut
 
 sub load_or_create_by_email {
-    my $self = shift;
+    my $self  = shift;
     my $email = shift;
 
-    my ($message, $name);
+    my ( $message, $name );
     if ( UNIVERSAL::isa( $email => 'Mail::Address' ) ) {
-        ($email, $name) = ($email->address, $email->phrase);
+        ( $email, $name ) = ( $email->address, $email->phrase );
     } else {
-        ($email, $name) = RT::Interface::Email::ParseAddressFromHeader( $email );
+        ( $email, $name )
+            = RT::Interface::Email::ParseAddressFromHeader($email);
     }
 
-    $self->load_by_email( $email );
-    $self->load( $email ) unless $self->id;
+    $self->load_by_email($email);
+    $self->load($email) unless $self->id;
     $message = _('User loaded');
 
-    unless( $self->id ) {
+    unless ( $self->id ) {
         my $val;
-        ($val, $message) = $self->create(
-            name         => $email,
-            email => $email,
-            real_name     => $name,
-            privileged   => 0,
-            comments     => 'AutoCreated when added as a watcher',
+        ( $val, $message ) = $self->create(
+            name       => $email,
+            email      => $email,
+            real_name  => $name,
+            privileged => 0,
+            comments   => 'AutoCreated when added as a watcher',
         );
-        unless ( $val ) {
+        unless ($val) {
+
             # Deal with the race condition of two account creations at once
-            $self->load_by_email( $email );
+            $self->load_by_email($email);
             unless ( $self->id ) {
                 sleep 5;
-                $self->load_by_email( $email );
+                $self->load_by_email($email);
             }
             if ( $self->id ) {
-                Jifty->log->error("Recovered from creation failure due to race condition");
+                Jifty->log->error(
+                    "Recovered from creation failure due to race condition");
                 $message = _("User loaded");
-            }
-            else {
-                Jifty->log->fatal("Failed to create user ". $email .": " .$message);
+            } else {
+                Jifty->log->fatal(
+                    "Failed to create user " . $email . ": " . $message );
             }
         }
     }
-    return (0, $message) unless $self->id;
-    return ($self->id, $message);
+    return ( 0, $message ) unless $self->id;
+    return ( $self->id, $message );
 }
 
 # }}}
@@ -566,15 +614,14 @@ sub validate_email {
     # if the email address is null, it's always valid
     return (1) if ( !$value || $value eq "" );
 
-    my $TempUser = RT::Model::User->new(current_user => RT->system_user);
+    my $TempUser = RT::Model::User->new( current_user => RT->system_user );
     $TempUser->load_by_email($value);
 
     if ( $TempUser->id && ( !$self->id || $TempUser->id != $self->id ) )
     {    # if we found a user with that address
             # it's invalid to set this user's address to it
         return (undef);
-    }
-    else {    #it's a valid email address
+    } else {    #it's a valid email address
         return (1);
     }
 }
@@ -582,8 +629,6 @@ sub validate_email {
 # }}}
 
 # {{{ sub canonicalize_email
-
-
 
 =head2 canonicalize_email ADDRESS
 
@@ -596,25 +641,23 @@ is class name not an object.
 =cut
 
 sub canonicalize_email {
-    my $self = shift;
+    my $self  = shift;
     my $email = shift;
+
     # Example: the following rule would treat all email
     # coming from a subdomain as coming from second level domain
     # foo.com
-    if ( my $match   = RT->config->get('canonicalize_emailMatch') and
-         my $replace = RT->config->get('canonicalize_emailReplace') )
+    if (    my $match = RT->config->get('canonicalize_emailMatch')
+        and my $replace = RT->config->get('canonicalize_emailReplace') )
     {
         $email =~ s/$match/$replace/gi;
     }
     return ($email);
 }
 
-
 # }}}
 
 # {{{ sub canonicalize_UserInfo
-
-
 
 =head2 canonicalize_UserInfo HASH of ARGS
 
@@ -628,16 +671,14 @@ an outside source and modified upon creation.
 =cut
 
 sub canonicalize_user_info {
-    my $self = shift;
-    my $args = shift;
+    my $self    = shift;
+    my $args    = shift;
     my $success = 1;
 
     return ($success);
 }
 
-
 # }}}
-
 
 # {{{ password related functions
 
@@ -658,12 +699,17 @@ sub set_randompassword {
         return ( 0, _("Permission Denied") );
     }
 
+    my $min
+        = ( RT->config->get('MinimumpasswordLength') > 6
+        ? RT->config->get('MinimumpasswordLength')
+        : 6 );
+    my $max
+        = ( RT->config->get('MinimumpasswordLength') > 8
+        ? RT->config->get('MinimumpasswordLength')
+        : 8 );
+    my $pass = Text::Password::Pronounceable->generate( $min => $max );
 
-    my $min = ( RT->config->get('MinimumpasswordLength') > 6 ?  RT->config->get('MinimumpasswordLength') : 6);
-    my $max = ( RT->config->get('MinimumpasswordLength') > 8 ?  RT->config->get('MinimumpasswordLength') : 8);
-    my $pass =    Text::Password::Pronounceable->generate($min => $max);
-
-    # If we have "notify user on 
+    # If we have "notify user on
 
     my ( $val, $msg ) = $self->set_password($pass);
 
@@ -676,7 +722,6 @@ sub set_randompassword {
 }
 
 # }}}
-
 
 # }}}
 
@@ -699,34 +744,35 @@ sub before_set_password {
 
     if ( !$password ) {
         return ( 0, _("No password set") );
+    } elsif ( length($password) < RT->config->get('MinimumpasswordLength') ) {
+        return (
+            0,
+            _(  "password needs to be at least %1 characters long",
+                RT->config->get('MinimumpasswordLength')
+            )
+        );
     }
-    elsif ( length($password) < RT->config->get('MinimumpasswordLength') ) {
-        return ( 0, _("password needs to be at least %1 characters long", RT->config->get('MinimumpasswordLength')) );
-    }
-            return ( 1, "ok");
+    return ( 1, "ok" );
 
 }
 
-
 # }}}
 
-                                                                                
 =head2 has_password
                                                                                 
 Returns true if the user has a valid password, otherwise returns false.         
                                                                                
 =cut
 
-
 sub has_password {
     my $self = shift;
-    my $pwd = $self->__value('password');
-    return undef if !defined $pwd
-                    || $pwd eq ''
-                    || $pwd eq '*NO-PASSWORD*';
+    my $pwd  = $self->__value('password');
+    return undef
+        if !defined $pwd
+            || $pwd eq ''
+            || $pwd eq '*NO-PASSWORD*';
     return 1;
 }
-
 
 # }}}
 
@@ -747,8 +793,14 @@ user will fail. The user will appear in no user listings.
 
 sub set_disabled {
     my $self = shift;
-    unless ( $self->current_user->has_right(Right => 'AdminUsers', Object => RT->system) ) {
-        return (0, _('Permission Denied'));
+    unless (
+        $self->current_user->has_right(
+            Right  => 'AdminUsers',
+            Object => RT->system
+        )
+        )
+    {
+        return ( 0, _('Permission Denied') );
     }
     return $self->principal_object->set_disabled(@_);
 }
@@ -757,7 +809,6 @@ sub disabled {
     my $self = shift;
     return $self->principal_object->disabled(@_);
 }
-
 
 # {{{ Principal related routines
 
@@ -770,7 +821,6 @@ The response is cached. principal_object should never ever change.
 
 =cut
 
-
 sub principal_object {
     my $self = shift;
 
@@ -782,15 +832,18 @@ sub principal_object {
     my $obj = RT::Model::Principal->new;
     $obj->load_by_id( $self->id );
     unless ( $obj->id ) {
-        Jifty->log->fatal( 'No principal for user #'. $self->id );
+        Jifty->log->fatal( 'No principal for user #' . $self->id );
         return undef;
     } elsif ( $obj->principal_type ne 'User' ) {
-        Jifty->log->fatal( 'User #'. $self->id .' has principal of '. $obj->principal_type .' type' );
+        Jifty->log->fatal( 'User #'
+                . $self->id
+                . ' has principal of '
+                . $obj->principal_type
+                . ' type' );
         return undef;
     }
     return $obj;
 }
-
 
 =head2 principal_id  
 
@@ -804,8 +857,6 @@ sub principal_id {
 }
 
 # }}}
-
-
 
 # {{{ sub has_group_right
 
@@ -827,12 +878,11 @@ Returns undef if they don't.
 sub has_group_right {
     my $self = shift;
     my %args = (
-        GroupObj    => undef,
-        Group       => undef,
-        Right       => undef,
+        GroupObj => undef,
+        Group    => undef,
+        Right    => undef,
         @_
     );
-
 
     if ( defined $args{'Group'} ) {
         $args{'GroupObj'} = RT::Model::Group->new;
@@ -846,21 +896,19 @@ sub has_group_right {
 
     # }}}
 
-
     # Figure out whether a user has the right we're asking about.
     my $retval = $self->has_right(
         Object => $args{'GroupObj'},
-        Right     => $args{'Right'},
+        Right  => $args{'Right'},
     );
 
     return ($retval);
-
 
 }
 
 # }}}
 
-# {{{ sub OwnGroups 
+# {{{ sub OwnGroups
 
 =head2 OwnGroups
 
@@ -870,11 +918,13 @@ user is a member.
 =cut
 
 sub own_groups {
-    my $self = shift;
+    my $self   = shift;
     my $groups = RT::Model::GroupCollection->new;
     $groups->limit_to_user_defined_groups;
-    $groups->with_member(principal_id => $self->id, 
-            Recursively => 1);
+    $groups->with_member(
+        principal_id => $self->id,
+        Recursively  => 1
+    );
     return $groups;
 }
 
@@ -890,7 +940,6 @@ sub own_groups {
 
 # }}}
 
-
 # {{{ sub has_right
 
 =head2 has_right
@@ -901,7 +950,7 @@ Shim around principal_object->has_right. See RT::Model::Principal
 
 sub has_right {
     my $self = shift;
-    return  $self->principal_object->has_right(@_);
+    return $self->principal_object->has_right(@_);
 
 }
 
@@ -921,19 +970,31 @@ sub current_user_can_modify {
     my $self  = shift;
     my $right = shift;
 
-    if ( $self->current_user->has_right(Right => 'AdminUsers', Object => RT->system) ) {
+    if ($self->current_user->has_right(
+            Right  => 'AdminUsers',
+            Object => RT->system
+        )
+        )
+    {
         return (1);
     }
 
-    #If the field is marked as an "administrators only" field, 
+    #If the field is marked as an "administrators only" field,
     # don\'t let the user touch it.
-    elsif (0) {# $self->_Accessible( $right, 'admin' ) ) {
+    elsif (0) {    # $self->_Accessible( $right, 'admin' ) ) {
         return (undef);
     }
 
     #If the current user is trying to modify themselves
-    elsif ( ( $self->id == $self->current_user->id )
-        and ( $self->current_user->has_right(Right => 'ModifySelf', Object => RT->system) ) )
+    elsif (
+        ( $self->id == $self->current_user->id )
+        and (
+            $self->current_user->has_right(
+                Right  => 'ModifySelf',
+                Object => RT->system
+            )
+        )
+        )
     {
         return (1);
     }
@@ -960,18 +1021,23 @@ has the requested right. returns undef otherwise
 sub current_user_has_right {
     my $self  = shift;
     my $right = shift;
-    return ( $self->current_user->has_right(Right => $right, Object => RT->system) );
+    return (
+        $self->current_user->has_right(
+            Right  => $right,
+            Object => RT->system
+        )
+    );
 }
 
 # }}}
 
 sub _prefname {
     my $name = shift;
-    if (ref $name) {
-        $name = ref($name).'-'.$name->id;
+    if ( ref $name ) {
+        $name = ref($name) . '-' . $name->id;
     }
 
-    return 'Pref-'.$name;
+    return 'Pref-' . $name;
 }
 
 # {{{ sub Preferences
@@ -985,8 +1051,8 @@ sub _prefname {
 =cut
 
 sub preferences {
-    my $self  = shift;
-    my $name = _prefname (shift);
+    my $self    = shift;
+    my $name    = _prefname(shift);
     my $default = shift;
 
     my $attr = RT::Model::Attribute->new;
@@ -997,13 +1063,14 @@ sub preferences {
         return defined $content ? $content : $default;
     }
 
-    if (ref $default eq 'HASH') {
-        for (keys %$default) {
+    if ( ref $default eq 'HASH' ) {
+        for ( keys %$default ) {
             exists $content->{$_} or $content->{$_} = $default->{$_};
         }
-    }
-    elsif (defined $default) {
-        Jifty->log->error("Preferences $name for user".$self->id." is hash but default is not");
+    } elsif ( defined $default ) {
+        Jifty->log->error( "Preferences $name for user"
+                . $self->id
+                . " is hash but default is not" );
     }
     return $content;
 }
@@ -1019,21 +1086,19 @@ sub preferences {
 =cut
 
 sub set_preferences {
-    my $self = shift;
-    my $name = _prefname( shift );
+    my $self  = shift;
+    my $name  = _prefname(shift);
     my $value = shift;
-    my $attr = RT::Model::Attribute->new;
+    my $attr  = RT::Model::Attribute->new;
     $attr->load_by_name_and_object( Object => $self, name => $name );
     if ( $attr->id ) {
-        return $attr->set_content( $value );
-    }
-    else {
+        return $attr->set_content($value);
+    } else {
         return $self->add_attribute( name => $name, Content => $value );
     }
 }
 
 # }}}
-
 
 =head2 WatchedQueues ROLE_LIST
 
@@ -1048,62 +1113,62 @@ $user->watched_queues('Cc', 'AdminCc');
 sub watched_queues {
 
     my $self = shift;
-    my @roles = @_ || ('Cc', 'AdminCc');
+    my @roles = @_ || ( 'Cc', 'AdminCc' );
 
-    Jifty->log->debug('WatcheQueues got user ' . $self->name);
+    Jifty->log->debug( 'WatcheQueues got user ' . $self->name );
 
     my $watched_queues = RT::Model::QueueCollection->new;
 
     my $group_alias = $watched_queues->join(
-                                             alias1 => 'main',
-                                             column1 => 'id',
-                                             table2 => 'Groups',
-                                             column2 => 'Instance',
-                                           );
+        alias1  => 'main',
+        column1 => 'id',
+        table2  => 'Groups',
+        column2 => 'Instance',
+    );
 
-    $watched_queues->limit( 
-                            alias => $group_alias,
-                            column => 'Domain',
-                            value => 'RT::Model::Queue-Role',
-                            entry_aggregator => 'AND',
-                          );
-    if (grep { $_ eq 'Cc' } @roles) {
+    $watched_queues->limit(
+        alias            => $group_alias,
+        column           => 'Domain',
+        value            => 'RT::Model::Queue-Role',
+        entry_aggregator => 'AND',
+    );
+    if ( grep { $_ eq 'Cc' } @roles ) {
         $watched_queues->limit(
-                                subclause => 'limit_ToWatchers',
-                                alias => $group_alias,
-                                column => 'Type',
-                                value => 'Cc',
-                                entry_aggregator => 'OR',
-                              );
+            subclause        => 'limit_ToWatchers',
+            alias            => $group_alias,
+            column           => 'Type',
+            value            => 'Cc',
+            entry_aggregator => 'OR',
+        );
     }
-    if (grep { $_ eq 'AdminCc' } @roles) {
+    if ( grep { $_ eq 'AdminCc' } @roles ) {
         $watched_queues->limit(
-                                subclause => 'limit_ToWatchers',
-                                alias => $group_alias,
-                                column => 'Type',
-                                value => 'AdminCc',
-                                entry_aggregator => 'OR',
-                              );
+            subclause        => 'limit_ToWatchers',
+            alias            => $group_alias,
+            column           => 'Type',
+            value            => 'AdminCc',
+            entry_aggregator => 'OR',
+        );
     }
 
     my $queues_alias = $watched_queues->join(
-                                              alias1 => $group_alias,
-                                              column1 => 'id',
-                                              table2 => 'CachedGroupMembers',
-                                              column2 => 'GroupId',
-                                            );
+        alias1  => $group_alias,
+        column1 => 'id',
+        table2  => 'CachedGroupMembers',
+        column2 => 'GroupId',
+    );
     $watched_queues->limit(
-                            alias => $queues_alias,
-                            column => 'MemberId',
-                            value => $self->principal_id,
-                          );
+        alias  => $queues_alias,
+        column => 'MemberId',
+        value  => $self->principal_id,
+    );
 
-    Jifty->log->debug("WatchedQueues got " . $watched_queues->count . " queues");
-    
+    Jifty->log->debug(
+        "WatchedQueues got " . $watched_queues->count . " queues" );
+
     return $watched_queues;
 
 }
-
 
 # {{{ sub _cleanup_invalid_delegations
 
@@ -1128,46 +1193,60 @@ and logs an internal error if the deletion fails (should not happen).
 
 sub _cleanup_invalid_delegations {
     my $self = shift;
-    my %args = ( InsideTransaction => undef,
-          @_ );
+    my %args = (
+        InsideTransaction => undef,
+        @_
+    );
 
     unless ( $self->id ) {
-    Jifty->log->warn("User not loaded.");
-    return (undef);
+        Jifty->log->warn("User not loaded.");
+        return (undef);
     }
 
     my $in_trans = $args{InsideTransaction};
 
-    return(1) if ($self->has_right(Right => 'DelegateRights',
-                  Object => RT->system));
+    return (1)
+        if (
+        $self->has_right(
+            Right  => 'DelegateRights',
+            Object => RT->system
+        )
+        );
 
     # Look up all delegation rights currently posessed by this user.
-    my $deleg_acl = RT::Model::ACECollection->new(current_user => RT->system_user);
-    $deleg_acl->limit_to_principal(Type => 'User',
-                 id => $self->principal_id,
-                 IncludeGroupMembership => 1);
-    $deleg_acl->limit( column => 'right_name',
-               operator => '=',
-               value => 'DelegateRights' );
-    my @allowed_deleg_objects = map {$_->object()}
-    @{$deleg_acl->items_array_ref()};
+    my $deleg_acl
+        = RT::Model::ACECollection->new( current_user => RT->system_user );
+    $deleg_acl->limit_to_principal(
+        Type                   => 'User',
+        id                     => $self->principal_id,
+        IncludeGroupMembership => 1
+    );
+    $deleg_acl->limit(
+        column   => 'right_name',
+        operator => '=',
+        value    => 'DelegateRights'
+    );
+    my @allowed_deleg_objects
+        = map { $_->object() } @{ $deleg_acl->items_array_ref() };
 
     # Look up all rights delegated by this principal which are
     # inconsistent with the allowed delegation objects.
-    my $acl_to_del = RT::Model::ACECollection->new(current_user => RT->system_user);
-    $acl_to_del->delegated_by(Id => $self->id);
+    my $acl_to_del
+        = RT::Model::ACECollection->new( current_user => RT->system_user );
+    $acl_to_del->delegated_by( Id => $self->id );
     foreach (@allowed_deleg_objects) {
-    $acl_to_del->limitnot_object($_);
+        $acl_to_del->limitnot_object($_);
     }
 
     # Delete all disallowed delegations
     while ( my $ace = $acl_to_del->next() ) {
-    my $ret = $ace->_delete(InsideTransaction => 1);
-    unless ($ret) {
-        Jifty->handle->rollback() unless $in_trans;
-        Jifty->log->warn("Couldn't delete delegated ACL entry ".$ace->id);
-        return (undef);
-    }
+        my $ret = $ace->_delete( InsideTransaction => 1 );
+        unless ($ret) {
+            Jifty->handle->rollback() unless $in_trans;
+            Jifty->log->warn(
+                "Couldn't delete delegated ACL entry " . $ace->id );
+            return (undef);
+        }
     }
 
     Jifty->handle->commit() unless $in_trans;
@@ -1182,28 +1261,31 @@ sub _set {
     my $self = shift;
 
     my %args = (
-        column => undef,
-        value => undef,
-    TransactionType   => 'Set',
-    record_transaction => 1,
+        column             => undef,
+        value              => undef,
+        TransactionType    => 'Set',
+        record_transaction => 1,
         @_
     );
 
-    # Nobody is allowed to futz with RT_System or Nobody 
+    # Nobody is allowed to futz with RT_System or Nobody
 
-    if ( ($self->id == RT->system_user->id )  || 
-         ($self->id == RT->nobody->id)) {
+    if (   ( $self->id == RT->system_user->id )
+        || ( $self->id == RT->nobody->id ) )
+    {
         return ( 0, _("Can not modify system users") );
     }
     unless ( $self->current_user_can_modify( $args{'column'} ) ) {
         return ( 0, _("Permission Denied") );
     }
 
-    my $Old = $self->SUPER::_value($args{'column'});
-    
-    my ($ret, $msg) = $self->SUPER::_set( column => $args{'column'},
-                      value => $args{'value'} );
-    
+    my $Old = $self->SUPER::_value( $args{'column'} );
+
+    my ( $ret, $msg ) = $self->SUPER::_set(
+        column => $args{'column'},
+        value  => $args{'value'}
+    );
+
     #If we can't actually set the field to the value, don't record
     # a transaction. instead, get out of here.
     if ( $ret == 0 ) { return ( 0, $msg ); }
@@ -1211,22 +1293,21 @@ sub _set {
     if ( $args{'record_transaction'} == 1 ) {
 
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
-                                               Type => $args{'TransactionType'},
-                                               Field     => $args{'column'},
-                                               new_value  => $args{'value'},
-                                               old_value  => $Old,
-                                               TimeTaken => $args{'TimeTaken'},
+            Type      => $args{'TransactionType'},
+            Field     => $args{'column'},
+            new_value => $args{'value'},
+            old_value => $Old,
+            TimeTaken => $args{'TimeTaken'},
         );
         return ( $Trans, scalar $TransObj->brief_description );
-    }
-    else {
+    } else {
         return ( $ret, $msg );
     }
 }
 
 # }}}
 
-# {{{ sub _value 
+# {{{ sub _value
 
 =head2 _value
 
@@ -1240,32 +1321,41 @@ sub _value {
     my $self  = shift;
     my $field = shift;
 
-    #If the current user doesn't have ACLs, don't let em at it.  
+    #If the current user doesn't have ACLs, don't let em at it.
 
-    my %public_fields = map {$_ => 1 } qw( name email 
-    id organization disabled
-      real_name nickname Gecos ExternalAuthId
-      auth_system ExternalContactInfoId
-      ContactInfoSystem );
+    my %public_fields = map { $_ => 1 } qw( name email
+        id organization disabled
+        real_name nickname Gecos ExternalAuthId
+        auth_system ExternalContactInfoId
+        ContactInfoSystem );
 
     #if the field is public, return it.
 
-    if ($public_fields{$field}) {
+    if ( $public_fields{$field} ) {
         return ( $self->SUPER::_value($field) );
 
     }
 
     #If the user wants to see their own values, let them
     # TODO figure ouyt a better way to deal with this
-   if ( $self->id && $self->current_user->id && $self->current_user->id == $self->id ) {
+    if (   $self->id
+        && $self->current_user->id
+        && $self->current_user->id == $self->id )
+    {
         return ( $self->SUPER::_value($field) );
     }
 
     #If the user has the admin users right, return the field
-    elsif ($self->current_user->user_object &&  $self->current_user->user_object->has_right(Right =>'AdminUsers', Object => RT->system) ) {
+    elsif (
+        $self->current_user->user_object
+        && $self->current_user->user_object->has_right(
+            Right  => 'AdminUsers',
+            Object => RT->system
+        )
+        )
+    {
         return ( $self->SUPER::_value($field) );
-    }
-    else {
+    } else {
         return (undef);
     }
 
@@ -1283,8 +1373,8 @@ sub _value {
 
 sub friendly_name {
     my $self = shift;
-    return $self->real_name if defined($self->real_name);
-    return $self->name if defined($self->name);
+    return $self->real_name if defined( $self->real_name );
+    return $self->name      if defined( $self->name );
     return "";
 }
 
@@ -1298,8 +1388,7 @@ return it). Returns C<undef> if no preferred key can be found.
 
 =cut
 
-sub preferred_key
-{
+sub preferred_key {
     my $self = shift;
     return undef unless RT->config->get('GnuPG')->{'Enable'};
     my $prefkey = $self->first_attribute('preferred_key');
@@ -1307,21 +1396,21 @@ sub preferred_key
 
     # we don't have a preferred key for this user, so now we must query GPG
     require RT::Crypt::GnuPG;
-    my %res = RT::Crypt::GnuPG::get_keys_for_encryption($self->email);
+    my %res = RT::Crypt::GnuPG::get_keys_for_encryption( $self->email );
     return undef unless defined $res{'info'};
     my @keys = @{ $res{'info'} };
     return undef if @keys == 0;
 
-    if (@keys == 1) {
+    if ( @keys == 1 ) {
         $prefkey = $keys[0]->{'Fingerprint'};
-    }
-    else {
+    } else {
+
         # prefer the maximally trusted key
         @keys = sort { $b->{'TrustLevel'} <=> $a->{'TrustLevel'} } @keys;
         $prefkey = $keys[0]->{'Fingerprint'};
     }
 
-    $self->set_attribute(name => 'preferred_key', Content => $prefkey);
+    $self->set_attribute( name => 'preferred_key', Content => $prefkey );
     return $prefkey;
 }
 
@@ -1334,43 +1423,41 @@ sub private_key {
 
 sub set_private_key {
     my $self = shift;
-    my $key = shift;
+    my $key  = shift;
+
     # XXX: ACL
-    unless ( $key ) {
-        my ($status, $msg) = $self->delete_attribute('private_key');
-        unless ( $status ) {
-            Jifty->log->error( "Couldn't delete attribute: $msg" );
-            return ($status, _("Couldn't unset private key"));
+    unless ($key) {
+        my ( $status, $msg ) = $self->delete_attribute('private_key');
+        unless ($status) {
+            Jifty->log->error("Couldn't delete attribute: $msg");
+            return ( $status, _("Couldn't unset private key") );
         }
-        return ($status, _("Unset private key"));
+        return ( $status, _("Unset private key") );
     }
 
     # check that it's really private key
     {
-        my %tmp = RT::Crypt::GnuPG::get_keys_for_signing( $key );
-        return (0, _("No such key or it's not suitable for signing"))
+        my %tmp = RT::Crypt::GnuPG::get_keys_for_signing($key);
+        return ( 0, _("No such key or it's not suitable for signing") )
             if $tmp{'exit_code'} || !$tmp{'info'};
     }
 
-    my ($status, $msg) = $self->setAttribute(
-        name => 'private_key',
+    my ( $status, $msg ) = $self->setAttribute(
+        name    => 'private_key',
         Content => $key,
     );
-    return ($status, _("Couldn't set private key"))    
+    return ( $status, _("Couldn't set private key") )
         unless $status;
-    return ($status, _("Unset private key"));
+    return ( $status, _("Unset private key") );
 }
 
 sub basic_columns {
-    (
-    [ name => 'User Id' ],
-    [ email => 'Email' ],
-    [ real_name => 'name' ],
-    [ organization => 'organization' ],
+    (   [ name         => 'User Id' ],
+        [ email        => 'Email' ],
+        [ real_name    => 'name' ],
+        [ organization => 'organization' ],
     );
 }
 
-
 1;
-
 

@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,9 +43,10 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 use RT::Model::User ();
+
 package RT::Model::User;
 
 use strict;
@@ -76,50 +77,49 @@ my @OBJECTS = qw(
     UserCollection
 );
 
-sub __DependsOn
-{
+sub __DependsOn {
     my $self = shift;
     my %args = (
-            Shredder => undef,
-            Dependencies => undef,
-            @_,
-           );
+        Shredder     => undef,
+        Dependencies => undef,
+        @_,
+    );
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-# Principal
+    # Principal
     $deps->_push_dependency(
-            base_object => $self,
-            Flags => DEPENDS_ON | WIPE_AFTER,
-            TargetObject => $self->principal_object,
-            Shredder => $args{'Shredder'}
-        );
+        base_object  => $self,
+        Flags        => DEPENDS_ON | WIPE_AFTER,
+        TargetObject => $self->principal_object,
+        Shredder     => $args{'Shredder'}
+    );
 
-# ACL equivalence group
-# don't use load_acl_equivalence_group cause it may not exists any more
+    # ACL equivalence group
+    # don't use load_acl_equivalence_group cause it may not exists any more
     my $objs = RT::Model::GroupCollection->new;
-    $objs->limit( column => 'Domain', value => 'ACLEquivalence' );
+    $objs->limit( column => 'Domain',   value => 'ACLEquivalence' );
     $objs->limit( column => 'Instance', value => $self->id );
     push( @$list, $objs );
 
-# Cleanup user's membership
+    # Cleanup user's membership
     $objs = RT::Model::GroupMemberCollection->new;
     $objs->limit( column => 'MemberId', value => $self->id );
     push( @$list, $objs );
 
     $deps->_push_dependencies(
-            base_object => $self,
-            Flags => DEPENDS_ON,
-            TargetObjects => $list,
-            Shredder => $args{'Shredder'}
-        );
+        base_object   => $self,
+        Flags         => DEPENDS_ON,
+        TargetObjects => $list,
+        Shredder      => $args{'Shredder'}
+    );
 
-# TODO: Almost all objects has Creator, LastUpdatedBy and etc. fields
-# which are references on users(Principal actualy)
+    # TODO: Almost all objects has Creator, LastUpdatedBy and etc. fields
+    # which are references on users(Principal actualy)
     my @var_objs;
-    foreach( @OBJECTS ) {
+    foreach (@OBJECTS) {
         my $class = "RT::Model::$_";
-        foreach my $method ( qw(Creator LastUpdatedBy) ) {
+        foreach my $method (qw(Creator LastUpdatedBy)) {
             my $objs = $class->new;
             next unless $objs->new_item->can($method);
             $objs->limit( column => $method, value => $self->id );
@@ -127,64 +127,64 @@ sub __DependsOn
         }
     }
     $deps->_push_dependencies(
-            base_object => $self,
-            Flags => DEPENDS_ON | VARIABLE,
-            TargetObjects => \@var_objs,
-            Shredder => $args{'Shredder'}
-        );
+        base_object   => $self,
+        Flags         => DEPENDS_ON | VARIABLE,
+        TargetObjects => \@var_objs,
+        Shredder      => $args{'Shredder'}
+    );
 
-    return $self->SUPER::__DependsOn( %args );
+    return $self->SUPER::__DependsOn(%args);
 }
 
-sub __Relates
-{
+sub __Relates {
     my $self = shift;
     my %args = (
-            Shredder => undef,
-            Dependencies => undef,
-            @_,
-           );
+        Shredder     => undef,
+        Dependencies => undef,
+        @_,
+    );
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-# Principal
+    # Principal
     my $obj = $self->principal_object;
-    if( $obj && defined $obj->id ) {
+    if ( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {
         my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
-        $rec->{'Description'} = "Have no related ACL equivalence Group object";
+        $rec->{'Description'}
+            = "Have no related ACL equivalence Group object";
     }
 
-    $obj = RT::Model::Group->new(current_user => RT->system_user );
+    $obj = RT::Model::Group->new( current_user => RT->system_user );
     $obj->load_acl_equivalence_group( $self->principal_object );
-    if( $obj && defined $obj->id ) {
+    if ( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {
         my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
-        $rec->{'Description'} = "Have no related Principal #". $self->id ." object";
+        $rec->{'Description'}
+            = "Have no related Principal #" . $self->id . " object";
     }
 
     $deps->_push_dependencies(
-            base_object => $self,
-            Flags => RELATES,
-            TargetObjects => $list,
-            Shredder => $args{'Shredder'}
-        );
-    return $self->SUPER::__Relates( %args );
+        base_object   => $self,
+        Flags         => RELATES,
+        TargetObjects => $list,
+        Shredder      => $args{'Shredder'}
+    );
+    return $self->SUPER::__Relates(%args);
 }
 
-sub BeforeWipeout
-{
+sub BeforeWipeout {
     my $self = shift;
-    if( $self->name =~ /^(RT_System|Nobody)$/ ) {
+    if ( $self->name =~ /^(RT_System|Nobody)$/ ) {
         RT::Shredder::Exception::Info->throw('SystemObject');
     }
-    return $self->SUPER::BeforeWipeout( @_ );
+    return $self->SUPER::BeforeWipeout(@_);
 }
 
 1;

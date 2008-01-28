@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,8 +43,9 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
+
 =head1 name
 
   RT::Model::Scrip - an RT Scrip object
@@ -61,30 +62,26 @@
 
 =cut
 
-
 package RT::Model::Scrip;
 
 use strict;
 no warnings qw(redefine);
-
 
 use base qw'RT::Record';
 sub table {'Scrips'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
-        column Queue      => type is 'int';
-        column Template => type is 'int';
-        column ScripAction => type is 'int';
-       column  ScripCondition         => type is 'int';
-       column  Stage                  => type is 'varchar(32)', default is 'TransactionCreate';
-     column   Description            => type is 'text';
-    column     CustomPrepareCode      => type is 'text';
-   column     CustomCommitCode       => type is 'text';
-   column     CustomIsApplicableCode =>  type is 'text';
-    };
-
-
+    column Queue          => type is 'int';
+    column Template       => type is 'int';
+    column ScripAction    => type is 'int';
+    column ScripCondition => type is 'int';
+    column Stage => type is 'varchar(32)', default is 'TransactionCreate';
+    column Description            => type is 'text';
+    column CustomPrepareCode      => type is 'text';
+    column CustomCommitCode       => type is 'text';
+    column CustomIsApplicableCode => type is 'text';
+};
 
 # {{{ sub create
 
@@ -125,14 +122,17 @@ sub create {
     );
 
     unless ( $args{'Queue'} ) {
-        unless ( $self->current_user->has_right( Object => RT->system,
-                                               Right  => 'ModifyScrips' ) )
+        unless (
+            $self->current_user->has_right(
+                Object => RT->system,
+                Right  => 'ModifyScrips'
+            )
+            )
         {
             return ( 0, _('Permission Denied') );
         }
         $args{'Queue'} = 0;    # avoid undef sneaking in
-    }
-    else {
+    } else {
         my $queue_obj = RT::Model::Queue->new;
         $queue_obj->load( $args{'Queue'} );
         unless ( $queue_obj->id ) {
@@ -151,7 +151,7 @@ sub create {
         unless $args{'ScripAction'};
     my $action = RT::Model::ScripAction->new;
     $action->load( $args{'ScripAction'} );
-    return ( 0, _( "Action '%1' not found", $args{'ScripAction'} ) ) 
+    return ( 0, _( "Action '%1' not found", $args{'ScripAction'} ) )
         unless $action->id;
 
     require RT::Model::Template;
@@ -181,10 +181,10 @@ sub create {
         CustomCommitCode       => $args{'CustomCommitCode'},
         CustomIsApplicableCode => $args{'CustomIsApplicableCode'},
     );
-    if ( $id ) {
+
+    if ($id) {
         return ( $id, _('Scrip Created') );
-    }
-    else {
+    } else {
         return ( $id, $msg );
     }
 }
@@ -250,7 +250,8 @@ sub action_obj {
 
         #TODO: why are we loading Actions with templates like this.
         # two separate methods might make more sense
-        $self->{'ScripActionObj'}->load( $self->ScripAction, $self->Template );
+        $self->{'ScripActionObj'}
+            ->load( $self->ScripAction, $self->Template );
     }
     return ( $self->{'ScripActionObj'} );
 }
@@ -313,44 +314,70 @@ should be loaded by the SuperUser role
 
 =cut
 
-
 # XXX TODO : This code appears to be obsoleted in favor of similar code in Scrips->Apply.
 # Why is this here? Is it still called?
 
 sub apply {
     my $self = shift;
-    my %args = ( ticket_obj      => undef,
-                 transaction_obj => undef,
-                 @_ );
+    my %args = (
+        ticket_obj      => undef,
+        transaction_obj => undef,
+        @_
+    );
 
-    Jifty->log->debug("Now applying scrip ".$self->id . " for transaction ".$args{'transaction_obj'}->id);
+    Jifty->log->debug( "Now applying scrip "
+            . $self->id
+            . " for transaction "
+            . $args{'transaction_obj'}->id );
 
-    my $Applicabletransaction_obj = $self->is_applicable( ticket_obj      => $args{'ticket_obj'},
-                                                        transaction_obj => $args{'transaction_obj'} );
-    unless ( $Applicabletransaction_obj ) {
+    my $Applicabletransaction_obj = $self->is_applicable(
+        ticket_obj      => $args{'ticket_obj'},
+        transaction_obj => $args{'transaction_obj'}
+    );
+    unless ($Applicabletransaction_obj) {
         return undef;
     }
 
     if ( $Applicabletransaction_obj->id != $args{'transaction_obj'}->id ) {
-        Jifty->log->debug("Found an applicable transaction ".$Applicabletransaction_obj->id . " in the same batch with transaction ".$args{'transaction_obj'}->id);
+        Jifty->log->debug( "Found an applicable transaction "
+                . $Applicabletransaction_obj->id
+                . " in the same batch with transaction "
+                . $args{'transaction_obj'}->id );
     }
 
     #If it's applicable, prepare and commit it
-    Jifty->log->debug("Now preparing scrip ".$self->id . " for transaction ".$Applicabletransaction_obj->id);
-    unless ( $self->prepare( ticket_obj      => $args{'ticket_obj'},
-                             transaction_obj => $Applicabletransaction_obj )
-      ) {
+    Jifty->log->debug( "Now preparing scrip "
+            . $self->id
+            . " for transaction "
+            . $Applicabletransaction_obj->id );
+    unless (
+        $self->prepare(
+            ticket_obj      => $args{'ticket_obj'},
+            transaction_obj => $Applicabletransaction_obj
+        )
+        )
+    {
         return undef;
     }
 
-    Jifty->log->debug("Now commiting scrip ".$self->id . " for transaction ".$Applicabletransaction_obj->id);
-    unless ( $self->commit( ticket_obj => $args{'ticket_obj'},
-                            transaction_obj => $Applicabletransaction_obj)
-      ) {
+    Jifty->log->debug( "Now commiting scrip "
+            . $self->id
+            . " for transaction "
+            . $Applicabletransaction_obj->id );
+    unless (
+        $self->commit(
+            ticket_obj      => $args{'ticket_obj'},
+            transaction_obj => $Applicabletransaction_obj
+        )
+        )
+    {
         return undef;
     }
 
-    Jifty->log->debug("We actually finished scrip ".$self->id . " for transaction ".$Applicabletransaction_obj->id);
+    Jifty->log->debug( "We actually finished scrip "
+            . $self->id
+            . " for transaction "
+            . $Applicabletransaction_obj->id );
     return (1);
 
 }
@@ -377,59 +404,66 @@ that is applicable.
 
 sub is_applicable {
     my $self = shift;
-    my %args = ( ticket_obj      => undef,
-                 transaction_obj => undef,
-                 @_ );
+    my %args = (
+        ticket_obj      => undef,
+        transaction_obj => undef,
+        @_
+    );
 
     my $return;
     eval {
 
-	my @Transactions;
+        my @Transactions;
 
-        if ( $self->Stage eq 'TransactionCreate') {
-	    # Only look at our current Transaction
-	    @Transactions = ( $args{'transaction_obj'} );
-        }
-        elsif ( $self->Stage eq 'transaction_batch') {
-	    # Look at all Transactions in this Batch
+        if ( $self->Stage eq 'TransactionCreate' ) {
+
+            # Only look at our current Transaction
+            @Transactions = ( $args{'transaction_obj'} );
+        } elsif ( $self->Stage eq 'transaction_batch' ) {
+
+            # Look at all Transactions in this Batch
             @Transactions = @{ $args{'ticket_obj'}->transaction_batch || [] };
+        } else {
+            Jifty->log->error( "Unknown Scrip stage:" . $self->Stage );
+            return (undef);
         }
-	else {
-	    Jifty->log->error( "Unknown Scrip stage:" . $self->Stage );
-	    return (undef);
-	}
-	my $ConditionObj = $self->condition_obj;
-	foreach my $transaction_obj ( @Transactions ) {
-	    # in TxnBatch stage we can select scrips that are not applicable to all txns
-	    my $txn_type = $transaction_obj->type;
-	    next unless( $ConditionObj->applicable_trans_types =~ /(?:^|,)(?:Any|\Q$txn_type\E)(?:,|$)/i );
-	    # Load the scrip's Condition object
-	    $ConditionObj->load_condition(
-		scrip_obj       => $self,
-		ticket_obj      => $args{'ticket_obj'},
-		transaction_obj => $transaction_obj,
-	    );
+        my $ConditionObj = $self->condition_obj;
+        foreach my $transaction_obj (@Transactions) {
+
+  # in TxnBatch stage we can select scrips that are not applicable to all txns
+            my $txn_type = $transaction_obj->type;
+            next
+                unless ( $ConditionObj->applicable_trans_types
+                =~ /(?:^|,)(?:Any|\Q$txn_type\E)(?:,|$)/i );
+
+            # Load the scrip's Condition object
+            $ConditionObj->load_condition(
+                scrip_obj       => $self,
+                ticket_obj      => $args{'ticket_obj'},
+                transaction_obj => $transaction_obj,
+            );
 
             if ( $ConditionObj->is_applicable() ) {
-	        # We found an application Transaction -- return it
+
+                # We found an application Transaction -- return it
                 $return = $transaction_obj;
                 last;
             }
-	}
+        }
     };
 
     if ($@) {
         die( "Scrip IsApplicable " . $self->id . " died. - " . $@ );
-        Jifty->log->error( "Scrip IsApplicable " . $self->id . " died. - " . $@ );
+        Jifty->log->error(
+            "Scrip IsApplicable " . $self->id . " died. - " . $@ );
         return (undef);
     }
 
-            return ($return);
+    return ($return);
 
 }
 
 # }}}
-
 
 =head2 prepare
 
@@ -439,23 +473,30 @@ Calls the action object's prepare method
 
 sub prepare {
     my $self = shift;
-    my %args = ( ticket_obj      => undef,
-                 transaction_obj => undef,
-                 @_ );
+    my %args = (
+        ticket_obj      => undef,
+        transaction_obj => undef,
+        @_
+    );
 
     my $return;
     eval {
-        $self->action_obj->load_action( scrip_obj       => $self,
-                                      ticket_obj      => $args{'ticket_obj'},
-                                      transaction_obj => $args{'transaction_obj'},
+        $self->action_obj->load_action(
+            scrip_obj       => $self,
+            ticket_obj      => $args{'ticket_obj'},
+            transaction_obj => $args{'transaction_obj'},
         );
         $return = $self->action_obj->prepare();
     };
-    if (my $err = $@) {
-        Jifty->log->error( "Scrip prepare " . $self->id . " died. - " . $err ." ".$self->action_obj->ExecModule);
+    if ( my $err = $@ ) {
+        Jifty->log->error( "Scrip prepare "
+                . $self->id
+                . " died. - "
+                . $err . " "
+                . $self->action_obj->ExecModule );
         return (undef);
     }
-        return ($return);
+    return ($return);
 }
 
 # }}}
@@ -470,14 +511,14 @@ Calls the action object's commit method
 
 sub commit {
     my $self = shift;
-    my %args = ( ticket_obj      => undef,
-                 transaction_obj => undef,
-                 @_ );
+    my %args = (
+        ticket_obj      => undef,
+        transaction_obj => undef,
+        @_
+    );
 
     my $return;
-    eval {
-        $return = $self->action_obj->commit();
-    };
+    eval { $return = $self->action_obj->commit(); };
 
 #Searchbuilder caching isn't perfectly coherent. got to reload the ticket object, since it
 # may have changed
@@ -508,7 +549,7 @@ sub _set {
 
     unless ( $self->current_user_has_right('ModifyScrips') ) {
         Jifty->log->debug(
-                 "CurrentUser can't modify Scrips for " . $self->Queue . "\n" );
+            "CurrentUser can't modify Scrips for " . $self->Queue . "\n" );
         return ( 0, _('Permission Denied') );
     }
     return $self->__set(@_);
@@ -523,8 +564,8 @@ sub _value {
 
     unless ( $self->current_user_has_right('ShowScrips') ) {
         Jifty->log->debug( "CurrentUser can't modify Scrips for "
-                            . $self->__value('Queue')
-                            . "\n" );
+                . $self->__value('Queue')
+                . "\n" );
         return (undef);
     }
 
@@ -545,8 +586,12 @@ calls has_right.
 sub current_user_has_right {
     my $self  = shift;
     my $right = shift;
-    return ( $self->has_right( Principal => $self->current_user->user_object,
-                              Right     => $right ) );
+    return (
+        $self->has_right(
+            Principal => $self->current_user->user_object,
+            Right     => $right
+        )
+    );
 
 }
 
@@ -564,17 +609,18 @@ Right string that applies to Scrips.
 
 sub has_right {
     my $self = shift;
-    my %args = ( Right     => undef,
-                 Principal => undef,
-                 @_ );
+    my %args = (
+        Right     => undef,
+        Principal => undef,
+        @_
+    );
 
     if ( $self->SUPER::_value('Queue') ) {
         return $args{'Principal'}->has_right(
             Right  => $args{'Right'},
             Object => $self->queue_obj
         );
-    }
-    else {
+    } else {
         return $args{'Principal'}->has_right(
             Object => RT->system,
             Right  => $args{'Right'},

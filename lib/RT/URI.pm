@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,11 +43,12 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 use warnings;
 use strict;
+
 package RT::URI;
 use base qw(RT::Base);
 
@@ -69,16 +70,12 @@ by RT::Model::Link objects.
 
 =cut
 
-
-
-
 =head2 new
 
 Create a RT::URI->new object.
 
 =cut
 
-                         
 sub new {
     my $proto = shift;
     my $class = ref($proto) || $proto;
@@ -87,8 +84,6 @@ sub new {
     $self->_get_current_user(@_);
     return ($self);
 }
-
-
 
 # {{{ FromObject
 
@@ -101,10 +96,10 @@ the local object
 
 sub from_object {
     my $self = shift;
-    my $obj = shift;
+    my $obj  = shift;
 
-    return undef unless  $obj->can('URI');
-    return $self->from_uri($obj->URI);
+    return undef unless $obj->can('URI');
+    return $self->from_uri( $obj->URI );
 }
 
 # }}}
@@ -122,32 +117,33 @@ Returns true if everything is ok, otherwise false
 
 sub from_uri {
     my $self = shift;
-    my $uri = shift;    
+    my $uri  = shift;
 
     return undef unless ($uri);
 
     my $scheme;
+
     # Special case: integers passed in as URIs must be ticket ids
-    if ($uri =~ /^(\d+)$/) {
-	$scheme = "fsck.com-rt";
-    } elsif ($uri =~ /^((?:\w|\.|-)+?):/) {
-	$scheme = $1;
-    }
-    else {
+    if ( $uri =~ /^(\d+)$/ ) {
+        $scheme = "fsck.com-rt";
+    } elsif ( $uri =~ /^((?:\w|\.|-)+?):/ ) {
+        $scheme = $1;
+    } else {
         Jifty->log->warn("Could not determine a URI scheme for $uri");
         return (undef);
     }
-     
-    # load up a resolver object for this scheme  
+
+    # load up a resolver object for this scheme
     $self->_get_resolver($scheme);
-    
-    unless ($self->resolver->parse_uri($uri)) {
-        Jifty->log->warn("Resolver ".ref($self->Resolver)." could not parse $uri");
-        $self->{resolver} = RT::URI::base->new; # clear resolver
-    	return (undef);
+
+    unless ( $self->resolver->parse_uri($uri) ) {
+        Jifty->log->warn(
+            "Resolver " . ref( $self->Resolver ) . " could not parse $uri" );
+        $self->{resolver} = RT::URI::base->new;    # clear resolver
+        return (undef);
     }
 
-    return(1);
+    return (1);
 
 }
 
@@ -163,18 +159,19 @@ Falls back to a null resolver. RT::URI::base.
 =cut
 
 sub _get_resolver {
-    my $self = shift;
+    my $self   = shift;
     my $scheme = shift;
 
     $scheme =~ s/(\.|-)/_/g;
 
     my $class = "RT::URI::$scheme";
-    Jifty::Util->try_to_require( $class);
-   
-    if ($class->can('new') ){ 
-        $self->{'resolver'} =$class->new(current_user => $self->current_user)
+    Jifty::Util->try_to_require($class);
+
+    if ( $class->can('new') ) {
+        $self->{'resolver'}
+            = $class->new( current_user => $self->current_user );
     } else {
-        $self->{'resolver'} = RT::URI::base->new; 
+        $self->{'resolver'} = RT::URI::base->new;
     }
 
 }
@@ -192,9 +189,10 @@ what sort of object this is the id of
 
 sub scheme {
     my $self = shift;
-    return ($self->resolver->Scheme);
+    return ( $self->resolver->Scheme );
 
 }
+
 # }}}
 # {{{ URI
 
@@ -207,9 +205,10 @@ of
 
 sub uri {
     my $self = shift;
-    return ($self->resolver->URI);
+    return ( $self->resolver->URI );
 
 }
+
 # }}}
 
 # {{{ Object
@@ -220,13 +219,11 @@ Returns a local object for this content. This will usually be an RT::Model::Tick
 
 =cut
 
-
-sub object {   
+sub object {
     my $self = shift;
-    return($self->resolver->Object);
+    return ( $self->resolver->Object );
 
 }
-
 
 # }}}
 
@@ -240,9 +237,8 @@ Returns a local object for this content. This will usually be an RT::Model::Tick
 
 sub is_local {
     my $self = shift;
-    return $self->resolver->is_local;     
+    return $self->resolver->is_local;
 }
-
 
 # }}}
 
@@ -250,7 +246,6 @@ sub is_local {
 
 
 =cut
-
 
 sub as_href {
     my $self = shift;
@@ -263,10 +258,9 @@ Returns this URI's URI resolver object
 
 =cut
 
-
 sub resolver {
-    my $self =shift;
-    return ($self->{'resolver'});
+    my $self = shift;
+    return ( $self->{'resolver'} );
 }
 
 1;

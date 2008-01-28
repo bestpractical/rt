@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,8 +43,9 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
+
 =head1 name
 
   RT::Model::QueueCollection - a collection of RT::Model::Queue objects
@@ -64,26 +65,29 @@
 
 use warnings;
 use strict;
+
 package RT::Model::QueueCollection;
 use base qw/RT::SearchBuilder/;
 
-
 # {{{ sub _init
-sub _init { 
-  my $self = shift;
-  $self->{'table'} = "Queues";
-  $self->{'primary_key'} = "id";
+sub _init {
+    my $self = shift;
+    $self->{'table'}       = "Queues";
+    $self->{'primary_key'} = "id";
 
-  # By default, order by name
-  $self->order_by( alias => 'main',
-		  column => 'name',
-		  order => 'ASC');
+    # By default, order by name
+    $self->order_by(
+        alias  => 'main',
+        column => 'name',
+        order  => 'ASC'
+    );
 
-  return ($self->SUPER::_init(@_));
+    return ( $self->SUPER::_init(@_) );
 }
+
 # }}}
 
-# {{{ sub _do_search 
+# {{{ sub _do_search
 
 =head2 _do_search
 
@@ -94,26 +98,28 @@ we're explicitly trying to see them.
 
 sub _do_search {
     my $self = shift;
-    
-    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
-    unless($self->{'find_disabled_rows'}) {
-	$self->limit_to_enabled();
+
+#unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
+    unless ( $self->{'find_disabled_rows'} ) {
+        $self->limit_to_enabled();
     }
-    
-    return($self->SUPER::_do_search(@_));
-    
+
+    return ( $self->SUPER::_do_search(@_) );
+
 }
 
 # }}}
-  
 
-# {{{ sub Limit 
+# {{{ sub Limit
 sub limit {
-  my $self = shift;
-  my %args = ( entry_aggregator => 'AND',
-	       @_);
-  $self->SUPER::limit(%args);
+    my $self = shift;
+    my %args = (
+        entry_aggregator => 'AND',
+        @_
+    );
+    $self->SUPER::limit(%args);
 }
+
 # }}}
 
 # {{{ sub add_record
@@ -126,11 +132,12 @@ This is used for filtering objects for both Next and items_array_ref.
 =cut
 
 sub add_record {
-    my $self = shift;
+    my $self  = shift;
     my $Queue = shift;
     return unless $Queue->current_user_has_right('SeeQueue');
     $self->SUPER::add_record($Queue);
 }
+
 # }}}
 
 1;

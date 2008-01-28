@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,9 +43,8 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
-
 
 use strict;
 use warnings;
@@ -375,12 +374,12 @@ sub create_by_template {
 
         foreach my $res ( split( '\n', $msg ) ) {
             push @results,
-                _( "Ticket %1", $T::Tickets{$template_id}->id ) . ': '
-                . $res;
+                _( "Ticket %1", $T::Tickets{$template_id}->id ) . ': ' . $res;
         }
         if ( !$id ) {
             if ( $self->ticket_obj ) {
-                $msg = "Couldn't create related ticket $template_id for "
+                $msg
+                    = "Couldn't create related ticket $template_id for "
                     . $self->ticket_obj->id . " "
                     . $msg;
             } else {
@@ -394,7 +393,7 @@ sub create_by_template {
         Jifty->log->debug("Assigned $template_id with $id");
         $T::Tickets{$template_id}->set_OriginObj( $self->ticket_obj )
             if $self->ticket_obj
-            && $T::Tickets{$template_id}->can('SetOriginObj');
+                && $T::Tickets{$template_id}->can('SetOriginObj');
 
     }
 
@@ -446,10 +445,11 @@ sub update_by_template {
 
         my $id = $template_id;
         $id =~ s/update-(\d+).*/$1/;
-        my ($loaded, $msg) = $T::Tickets{$template_id}->load_by_id($id);
+        my ( $loaded, $msg ) = $T::Tickets{$template_id}->load_by_id($id);
 
-        unless ( $loaded ) {
-            Jifty->log->error("Couldn't update ticket $template_id: " . $msg);
+        unless ($loaded) {
+            Jifty->log->error(
+                "Couldn't update ticket $template_id: " . $msg );
             push @results, _( "Couldn't load ticket '%1'", $id );
             next;
         }
@@ -479,15 +479,19 @@ sub update_by_template {
         );
 
         if ( $ticketargs->{'Owner'} ) {
-            ($id, $msg) = $T::Tickets{$template_id}->set_owner($ticketargs->{'Owner'}, "Force");
-            push @results, $msg unless $msg eq _("That user already owns that ticket");
+            ( $id, $msg )
+                = $T::Tickets{$template_id}
+                ->set_owner( $ticketargs->{'Owner'}, "Force" );
+            push @results, $msg
+                unless $msg eq _("That user already owns that ticket");
         }
 
         push @results,
             $self->update_watchers( $T::Tickets{$template_id}, $ticketargs );
 
         push @results,
-            $self->update_custom_fields( $T::Tickets{$template_id}, $ticketargs );
+            $self->update_custom_fields( $T::Tickets{$template_id},
+            $ticketargs );
 
         next unless $ticketargs->{'MIMEObj'};
         if ( $ticketargs->{'UpdateType'} =~ /^(private|comment)$/i ) {
@@ -499,10 +503,11 @@ sub update_by_template {
                 );
             push( @results,
                 $T::Tickets{$template_id}
-                    ->_( "Ticket %1", $T::Tickets{$template_id}->id )
-                    . ': '
+                    ->_( "Ticket %1", $T::Tickets{$template_id}->id ) . ': '
                     . $Description );
-        } elsif ( $ticketargs->{'UpdateType'} =~ /^(public|response|correspond)$/i ) {
+        } elsif (
+            $ticketargs->{'UpdateType'} =~ /^(public|response|correspond)$/i )
+        {
             my ( $Transaction, $Description, $Object )
                 = $T::Tickets{$template_id}->correspond(
                 BccMessageTo => $ticketargs->{'Bcc'},
@@ -511,8 +516,7 @@ sub update_by_template {
                 );
             push( @results,
                 $T::Tickets{$template_id}
-                    ->_( "Ticket %1", $T::Tickets{$template_id}->id )
-                    . ': '
+                    ->_( "Ticket %1", $T::Tickets{$template_id}->id ) . ': '
                     . $Description );
         } else {
             push(
@@ -580,64 +584,64 @@ sub _parse_multiline_template {
 
     my $template_id;
     my ( $queue, $requestor );
-        Jifty->log->debug("Line: ===");
-        foreach my $line ( split( /\n/, $args{'Content'} ) ) {
-            $line =~ s/\r$//;
-            Jifty->log->debug("Line: $line");
-            if ( $line =~ /^===/ ) {
-                if ( $template_id && !$queue && $args{'Queue'} ) {
-                    $self->{'templates'}->{$template_id}
-                        .= "Queue: $args{'Queue'}\n";
-                }
-                if ( $template_id && !$requestor && $args{'Requestor'} ) {
-                    $self->{'templates'}->{$template_id}
-                        .= "Requestor: $args{'Requestor'}\n";
-                }
-                $queue     = 0;
-                $requestor = 0;
+    Jifty->log->debug("Line: ===");
+    foreach my $line ( split( /\n/, $args{'Content'} ) ) {
+        $line =~ s/\r$//;
+        Jifty->log->debug("Line: $line");
+        if ( $line =~ /^===/ ) {
+            if ( $template_id && !$queue && $args{'Queue'} ) {
+                $self->{'templates'}->{$template_id}
+                    .= "Queue: $args{'Queue'}\n";
             }
-            if ( $line =~ /^===Create-Ticket: (.*)$/ ) {
-                $template_id = "create-$1";
-                Jifty->log->debug("****  Create ticket: $template_id");
-                push @{ $self->{'CreateTickets'} }, $template_id;
-            } elsif ( $line =~ /^===Update-Ticket: (.*)$/ ) {
-                $template_id = "update-$1";
-                Jifty->log->debug("****  Update ticket: $template_id");
-                push @{ $self->{'update_tickets'} }, $template_id;
-            } elsif ( $line =~ /^===Base-Ticket: (.*)$/ ) {
-                $template_id = "base-$1";
-                Jifty->log->debug("****  Base ticket: $template_id");
-                push @{ $self->{'base_tickets'} }, $template_id;
-            } elsif ( $line =~ /^===#.*$/ ) {    # a comment
-                next;
-            } else {
-                if ( $line =~ /^Queue:(.*)/i ) {
-                    $queue = 1;
-                    my $value = $1;
-                    $value =~ s/^\s//;
-                    $value =~ s/\s$//;
-                    if ( !$value && $args{'Queue'} ) {
-                        $value = $args{'Queue'};
-                        $line  = "Queue: $value";
-                    }
-                }
-                if ( $line =~ /^Requestors?:(.*)/i ) {
-                    $requestor = 1;
-                    my $value = $1;
-                    $value =~ s/^\s//;
-                    $value =~ s/\s$//;
-                    if ( !$value && $args{'Requestor'} ) {
-                        $value = $args{'Requestor'};
-                        $line  = "Requestor: $value";
-                    }
-                }
-                $self->{'templates'}->{$template_id} .= $line . "\n";
+            if ( $template_id && !$requestor && $args{'Requestor'} ) {
+                $self->{'templates'}->{$template_id}
+                    .= "Requestor: $args{'Requestor'}\n";
             }
+            $queue     = 0;
+            $requestor = 0;
         }
-        if ( $template_id && !$queue && $args{'Queue'} ) {
-            $self->{'templates'}->{$template_id} .= "Queue: $args{'Queue'}\n";
+        if ( $line =~ /^===Create-Ticket: (.*)$/ ) {
+            $template_id = "create-$1";
+            Jifty->log->debug("****  Create ticket: $template_id");
+            push @{ $self->{'CreateTickets'} }, $template_id;
+        } elsif ( $line =~ /^===Update-Ticket: (.*)$/ ) {
+            $template_id = "update-$1";
+            Jifty->log->debug("****  Update ticket: $template_id");
+            push @{ $self->{'update_tickets'} }, $template_id;
+        } elsif ( $line =~ /^===Base-Ticket: (.*)$/ ) {
+            $template_id = "base-$1";
+            Jifty->log->debug("****  Base ticket: $template_id");
+            push @{ $self->{'base_tickets'} }, $template_id;
+        } elsif ( $line =~ /^===#.*$/ ) {    # a comment
+            next;
+        } else {
+            if ( $line =~ /^Queue:(.*)/i ) {
+                $queue = 1;
+                my $value = $1;
+                $value =~ s/^\s//;
+                $value =~ s/\s$//;
+                if ( !$value && $args{'Queue'} ) {
+                    $value = $args{'Queue'};
+                    $line  = "Queue: $value";
+                }
+            }
+            if ( $line =~ /^Requestors?:(.*)/i ) {
+                $requestor = 1;
+                my $value = $1;
+                $value =~ s/^\s//;
+                $value =~ s/\s$//;
+                if ( !$value && $args{'Requestor'} ) {
+                    $value = $args{'Requestor'};
+                    $line  = "Requestor: $value";
+                }
+            }
+            $self->{'templates'}->{$template_id} .= $line . "\n";
         }
     }
+    if ( $template_id && !$queue && $args{'Queue'} ) {
+        $self->{'templates'}->{$template_id} .= "Queue: $args{'Queue'}\n";
+    }
+}
 
 sub parse_lines {
     my $self        = shift;
@@ -653,14 +657,14 @@ sub parse_lines {
             "Workflow: evaluating\n$self->{templates}{$template_id}");
 
         my $template = Text::Template->new(
-            type => 'STRING',
+            type   => 'STRING',
             SOURCE => $content
         );
 
         my $err;
         $content = $template->fill_in(
             PACKAGE => 'T',
-            BROKEN  => sub  {
+            BROKEN  => sub {
                 $err = {@_}->{error};
             }
         );
@@ -685,9 +689,9 @@ sub parse_lines {
     my @lines = ( split( /\n/, $content ) );
     while ( defined( my $line = shift @lines ) ) {
         if ( $line =~ /^(.*?):(?:\s+)(.*?)(?:\s*)$/ ) {
-            my $value = $2;
+            my $value        = $2;
             my $original_tag = $1;
-            my $tag   = lc($original_tag);
+            my $tag          = lc($original_tag);
             $tag =~ s/-//g;
             $tag =~ s/^(requestor|cc|admincc)s?$/$1/i;
 
@@ -704,19 +708,25 @@ sub parse_lines {
             }
 
             if ( $tag =~ /^content$/i ) {    #just build up the content
-                                          # convert it to an array
+                                             # convert it to an array
                 $args{$tag} = defined($value) ? [ $value . "\n" ] : [];
                 while ( defined( my $l = shift @lines ) ) {
                     last if ( $l =~ /^ENDOFCONTENT\s*$/ );
                     push @{ $args{'content'} }, $l . "\n";
                 }
             } else {
+
                 # if it's not content, strip leading and trailing spaces
                 if ( $args{$tag} ) {
                     $args{$tag} =~ s/^\s+//g;
                     $args{$tag} =~ s/\s+$//g;
                 }
-                if (($tag =~ /^(requestor|cc|admincc)$/i or grep {lc $_ eq $tag} keys %LINKTYPEMAP) and $args{$tag} =~ /,/) {
+                if ((   $tag =~ /^(requestor|cc|admincc)$/i
+                        or grep { lc $_ eq $tag } keys %LINKTYPEMAP
+                    )
+                    and $args{$tag} =~ /,/
+                    )
+                {
                     $args{$tag} = [ split /,\s*/, $args{$tag} ];
                 }
             }
@@ -729,10 +739,8 @@ sub parse_lines {
         if ( $args{$date} =~ /^\d+$/ ) {
             $dateobj->set( Format => 'unix', value => $args{$date} );
         } else {
-            eval {
-                $dateobj->set( Format => 'iso', value => $args{$date} );
-            };
-            if ($@ or $dateobj->unix <= 0) {
+            eval { $dateobj->set( Format => 'iso', value => $args{$date} ); };
+            if ( $@ or $dateobj->unix <= 0 ) {
                 $dateobj->set( Format => 'unknown', value => $args{$date} );
             }
         }
@@ -745,23 +753,23 @@ sub parse_lines {
     $args{'type'} ||= 'ticket';
 
     my %ticketargs = (
-        Queue           => $args{'queue'},
-        Subject         => $args{'subject'},
-        Status          => $args{'status'} || 'new',
-        Due             => $args{'due'},
-        starts          => $args{'starts'},
-        Started         => $args{'started'},
-        Resolved        => $args{'resolved'},
-        Owner           => $args{'owner'},
-        Requestor       => $args{'requestor'},
-        Cc              => $args{'cc'},
-        AdminCc         => $args{'admincc'},
+        Queue            => $args{'queue'},
+        Subject          => $args{'subject'},
+        Status           => $args{'status'} || 'new',
+        Due              => $args{'due'},
+        starts           => $args{'starts'},
+        Started          => $args{'started'},
+        Resolved         => $args{'resolved'},
+        Owner            => $args{'owner'},
+        Requestor        => $args{'requestor'},
+        Cc               => $args{'cc'},
+        AdminCc          => $args{'admincc'},
         time_worked      => $args{'time_worked'},
         time_estimated   => $args{'time_estimated'},
         time_left        => $args{'time_left'},
         initial_priority => $args{'initial_priority'} || 0,
         final_priority   => $args{'final_priority'} || 0,
-        Type            => $args{'type'},
+        Type             => $args{'type'},
     );
 
     if ( $args{content} ) {
@@ -775,6 +783,7 @@ sub parse_lines {
     }
 
     foreach my $tag ( keys(%args) ) {
+
         # if the tag was added later, skip it
         my $orig_tag = $original_tags{$tag} or next;
         if ( $orig_tag =~ /^customfield-?(\d+)$/i ) {
@@ -785,8 +794,11 @@ sub parse_lines {
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
         } elsif ($orig_tag) {
             my $cf = RT::Model::CustomField->new;
-            $cf->load_by_name( name => $orig_tag, Queue => $ticketargs{Queue} );
-            next unless ($cf->id) ;
+            $cf->load_by_name(
+                name  => $orig_tag,
+                Queue => $ticketargs{Queue}
+            );
+            next unless ( $cf->id );
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
 
         }
@@ -796,7 +808,6 @@ sub parse_lines {
 
     return $ticket_obj, \%ticketargs;
 }
-
 
 =head2 _ParseXSVTemplate 
 
@@ -809,7 +820,7 @@ sub _parse_xsv_template {
     my %args = (@_);
 
     use Regexp::Common qw(delimited);
-    my($first, $content) = split(/\r?\n/, $args{'Content'}, 2);
+    my ( $first, $content ) = split( /\r?\n/, $args{'Content'}, 2 );
 
     my $delimiter;
     if ( $first =~ /\t/ ) {
@@ -820,12 +831,12 @@ sub _parse_xsv_template {
     my @fields = split( /$delimiter/, $first );
 
     my $delimiter_re = qr[$delimiter];
-    my $justquoted = qr[$RE{quoted}];
+    my $justquoted   = qr[$RE{quoted}];
 
     # Used to generate automatic template ids
     my $autoid = 1;
 
-  LINE:
+LINE:
     while ($content) {
         $content =~ s/^(\s*\r?\n)+//;
 
@@ -845,8 +856,11 @@ sub _parse_xsv_template {
         # The template id
         my $template_id;
 
-      COLUMN:
-        while (not $EOL and length $content and $content =~ s/^($justquoted|.*?)($delimiter_re|$)//smix) {
+    COLUMN:
+        while ( not $EOL
+            and length $content
+            and $content =~ s/^($justquoted|.*?)($delimiter_re|$)//smix )
+        {
             $EOL = not $2;
 
             # Strip off quotes, if they exist
@@ -857,12 +871,13 @@ sub _parse_xsv_template {
             }
 
             # What column is this?
-            my $field = $fields[$i++];
+            my $field = $fields[ $i++ ];
             next COLUMN unless $field =~ /\S/;
             $field =~ s/^\s//;
             $field =~ s/\s$//;
 
             if ( $field =~ /^id$/i ) {
+
                 # Special case if this is the ID column
                 if ( $value =~ /^\d+$/ ) {
                     $template_id = 'update-' . $value;
@@ -875,37 +890,39 @@ sub _parse_xsv_template {
                     push @{ $self->{'CreateTickets'} }, $template_id;
                 }
             } else {
+
                 # Some translations
                 if (   $field =~ /^Body$/i
                     || $field =~ /^Data$/i
                     || $field =~ /^Message$/i )
-                  {
-                  $field = 'Content';
+                {
+                    $field = 'Content';
                 } elsif ( $field =~ /^Summary$/i ) {
                     $field = 'Subject';
                 } elsif ( $field =~ /^Queue$/i ) {
+
                     # Note that we found a queue
                     $queue = 1;
                     $value ||= $args{'Queue'};
                 } elsif ( $field =~ /^Requestors?$/i ) {
-                    $field = 'Requestor'; # Remove plural
-                    # Note that we found a requestor
+                    $field     = 'Requestor'; # Remove plural
+                                              # Note that we found a requestor
                     $requestor = 1;
                     $value ||= $args{'Requestor'};
                 }
 
                 # Tack onto the end of the template
                 $template .= $field . ": ";
-                $template .= (defined $value ? $value : "");
+                $template .= ( defined $value ? $value : "" );
                 $template .= "\n";
                 $template .= "ENDOFCONTENT\n"
-                  if $field =~ /^Content$/i;
+                    if $field =~ /^Content$/i;
             }
         }
 
         # Ignore blank lines
         next unless $template;
-        
+
         # If we didn't find a queue of requestor, tack on the defaults
         if ( !$queue && $args{'Queue'} ) {
             $template .= "Queue: $args{'Queue'}\n";
@@ -916,12 +933,14 @@ sub _parse_xsv_template {
 
         # If we never found an ID, come up with one
         unless ($template_id) {
-            $autoid++ while exists $self->{'templates'}->{"create-auto-$autoid"};
+            $autoid++
+                while exists $self->{'templates'}->{"create-auto-$autoid"};
             $template_id = "create-auto-$autoid";
+
             # Also, it's a ticket to create
             push @{ $self->{'CreateTickets'} }, $template_id;
         }
-        
+
         # Save the template we generated
         $self->{'templates'}->{$template_id} = $template;
 
@@ -1089,17 +1108,19 @@ sub update_watchers {
 
         my @old = split( /,\s*/, $oldaddr );
         my @new;
-        for (ref $newaddr ? @{$newaddr} : split( /,\s*/, $newaddr )) {
+        for ( ref $newaddr ? @{$newaddr} : split( /,\s*/, $newaddr ) ) {
+
             # Sometimes these are email addresses, sometimes they're
             # users.  Try to guess which is which, as we want to deal
             # with email addresses if at all possible.
             if (/^\S+@\S+$/) {
                 push @new, $_;
             } else {
+
                 # It doesn't look like an email address.  Try to load it.
                 my $user = RT::Model::User->new;
                 $user->load($_);
-                if ($user->id) {
+                if ( $user->id ) {
                     push @new, $user->email;
                 } else {
                     push @new, $_;
@@ -1141,7 +1162,7 @@ sub update_custom_fields {
     my $args   = shift;
 
     my @results;
-    foreach my $arg (keys %{$args}) {
+    foreach my $arg ( keys %{$args} ) {
         next unless $arg =~ /^CustomField-(\d+)$/;
         my $cf = $1;
 
@@ -1149,15 +1170,18 @@ sub update_custom_fields {
         $CustomFieldObj->load_by_id($cf);
 
         my @values;
-        if ($CustomFieldObj->type =~ /text/i) { # Both Text and Wikitext
-            @values = ($args->{$arg});
+        if ( $CustomFieldObj->type =~ /text/i ) {    # Both Text and Wikitext
+            @values = ( $args->{$arg} );
         } else {
             @values = split /\n/, $args->{$arg};
         }
-        
-        if ( ($CustomFieldObj->type eq 'Freeform' 
-              && ! $CustomFieldObj->SingleValue) ||
-              $CustomFieldObj->type =~ /text/i) {
+
+        if ((   $CustomFieldObj->type eq 'Freeform'
+                && !$CustomFieldObj->SingleValue
+            )
+            || $CustomFieldObj->type =~ /text/i
+            )
+        {
             foreach my $val (@values) {
                 $val =~ s/\r//g;
             }
@@ -1167,9 +1191,9 @@ sub update_custom_fields {
             next unless length($value);
             my ( $val, $msg ) = $ticket->add_custom_field_value(
                 column => $cf,
-                value => $value
+                value  => $value
             );
-            push ( @results, $msg );
+            push( @results, $msg );
         }
     }
     return @results;

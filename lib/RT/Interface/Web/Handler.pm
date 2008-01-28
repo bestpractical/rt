@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 package RT::Interface::Web::Handler;
 
@@ -61,24 +61,28 @@ use File::Path qw( rmtree );
 use File::Glob qw( bsd_glob );
 use File::Spec::Unix;
 
-sub default_handler_args { (
-    comp_root => [
-        [ local    => $RT::MasonLocalComponentRoot ],
-        (map {[ "plugin-".$_->name =>  $_->component_root ]} @{RT->Plugins}),
-        [ standard => $RT::MasonComponentRoot ]
-    ],
-    default_escape_flags => 'h',
-    data_dir             => "$RT::MasonDataDir",
-    allow_globals        => [qw(%session)],
-    # Turn off static source if we're in developer mode.
-    static_source        => (RT->config->get('DevelMode') ? '0' : '1'), 
-    use_object_files     => (RT->config->get('DevelMode') ? '0' : '1'), 
-    autoflush            => 0,
-    error_format         => (RT->config->get('DevelMode') ? 'html': 'brief'),
-    request_class        => 'RT::Interface::Web::Request',
-) };
+sub default_handler_args {
+    (   comp_root => [
+            [ local => $RT::MasonLocalComponentRoot ],
+            (   map { [ "plugin-" . $_->name => $_->component_root ] }
+                    @{ RT->Plugins }
+            ),
+            [ standard => $RT::MasonComponentRoot ]
+        ],
+        default_escape_flags => 'h',
+        data_dir             => "$RT::MasonDataDir",
+        allow_globals        => [qw(%session)],
 
-# {{{ sub new 
+        # Turn off static source if we're in developer mode.
+        static_source    => ( RT->config->get('DevelMode') ? '0' : '1' ),
+        use_object_files => ( RT->config->get('DevelMode') ? '0' : '1' ),
+        autoflush        => 0,
+        error_format => ( RT->config->get('DevelMode') ? 'html' : 'brief' ),
+        request_class => 'RT::Interface::Web::Request',
+    );
+}
+
+# {{{ sub new
 
 =head2 new
 
@@ -91,15 +95,15 @@ sub new {
     my $class = shift;
     $class->init_session_dir;
 
-    if ( ($mod_perl::VERSION && $mod_perl::VERSION >= 1.9908) || $CGI::MOD_PERL) {
+    if ( ( $mod_perl::VERSION && $mod_perl::VERSION >= 1.9908 ) || $CGI::MOD_PERL ) {
         goto &NewApacheHandler;
-    }
-    else {
+    } else {
         goto &NewCGIHandler;
     }
 }
 
 sub init_session_dir {
+
     # Activate the following if running httpd as root (the normal case).
     # Resets ownership of all files Created by Mason at startup.
     # Note that mysql uses DB for sessions, so there's no need to do this.
@@ -108,24 +112,24 @@ sub init_session_dir {
         # Clean up our umask to protect session files
         umask(0077);
 
-        if ($CGI::MOD_PERL and $CGI::MOD_PERL < 1.9908 ) {
+        if ( $CGI::MOD_PERL and $CGI::MOD_PERL < 1.9908 ) {
 
             chown( Apache->server->uid, Apache->server->gid,
                 $RT::MasonSessionDir )
-            if Apache->server->can('uid');
+                if Apache->server->can('uid');
         }
 
         # Die if WebSessionDir doesn't exist or we can't write to it
         stat($RT::MasonSessionDir);
         die "Can't read and write $RT::MasonSessionDir"
-        unless ( ( -d _ ) and ( -r _ ) and ( -w _ ) );
+            unless ( ( -d _ ) and ( -r _ ) and ( -w _ ) );
     }
 
 }
 
 # }}}
 
-# {{{ sub NewApacheHandler 
+# {{{ sub NewApacheHandler
 
 =head2 NewApacheHandler
 
@@ -136,12 +140,13 @@ sub init_session_dir {
 
 sub new_apache_handler {
     require HTML::Mason::ApacheHandler;
-    return NewHandler('HTML::Mason::ApacheHandler', args_method => "CGI", @_);
+    return NewHandler( 'HTML::Mason::ApacheHandler', args_method => "CGI",
+        @_ );
 }
 
 # }}}
 
-# {{{ sub NewCGIHandler 
+# {{{ sub NewCGIHandler
 
 =head2 NewCGIHandler
 
@@ -151,19 +156,16 @@ sub new_apache_handler {
 
 sub new_cgi_handler {
     require HTML::Mason::CGIHandler;
-    return NewHandler('HTML::Mason::CGIHandler', @_);
+    return NewHandler( 'HTML::Mason::CGIHandler', @_ );
 }
 
 sub new_handler {
     my $class = shift;
-    my $handler = $class->new(
-        DefaultHandlerArgs(),
-        @_
-    );
-  
+    my $handler = $class->new( DefaultHandlerArgs(), @_ );
+
     $handler->interp->set_escape( h => \&RT::Interface::Web::escape_utf8 );
-    $handler->interp->set_escape( u => \&RT::Interface::Web::escape_uri  );
-    return($handler);
+    $handler->interp->set_escape( u => \&RT::Interface::Web::escape_uri );
+    return ($handler);
 }
 
 =head2 CleanupRequest
@@ -195,27 +197,28 @@ sub cleanup_request {
         Jifty->handle->force_rollback;
         Jifty->log->fatal(
             "Transaction not committed. Usually indicates a software fault."
-            . "Data loss may have occurred" );
+                . "Data loss may have occurred" );
     }
 
     # Clean out the ACL cache. the performance impact should be marginal.
     # Consistency is imprived, too.
     RT::Model::Principal->invalidate_acl_cache();
     Jifty::DBI::Record::Cachable->flush_cache
-      if ( RT->config->get('WebFlushDbCacheEveryRequest')
-        and UNIVERSAL::can(
-            'Jifty::DBI::Record::Cachable' => 'flush_cache' ) );
+        if ( RT->config->get('WebFlushDbCacheEveryRequest')
+        and UNIVERSAL::can( 'Jifty::DBI::Record::Cachable' => 'flush_cache' )
+        );
 
     # cleanup global squelching of the mails
     require RT::ScripAction::SendEmail;
     RT::ScripAction::SendEmail->clean_slate;
-    
-    if (RT->config->get('GnuPG')->{'Enable'}) {
+
+    if ( RT->config->get('GnuPG')->{'Enable'} ) {
         require RT::Crypt::GnuPG;
         RT::Crypt::GnuPG::use_key_for_encryption();
-        RT::Crypt::GnuPG::use_key_for_signing( undef );
+        RT::Crypt::GnuPG::use_key_for_signing(undef);
     }
 }
+
 # }}}
 
 1;

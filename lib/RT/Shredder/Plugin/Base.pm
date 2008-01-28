@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 use strict;
@@ -52,26 +52,23 @@ use warnings FATAL => 'all';
 package RT::Shredder::Plugin::Base;
 use base qw/RT::Base/;
 
-
 =head1 name
 
 RT::Shredder::Plugin::Base - base class for Shredder plugins.
 
 =cut
 
-sub new
-{
+sub new {
     my $proto = shift;
     my $self = bless( {}, ref $proto || $proto );
-    $self->_init( @_ );
+    $self->_init(@_);
     return $self;
 }
 
-sub _init
-{
+sub _init {
     my $self = shift;
     $self->_get_current_user(@_);
-    $self->{'opt'} = { @_ };
+    $self->{'opt'} = {@_};
 }
 
 =head1 USAGE
@@ -120,16 +117,16 @@ C<(0, $msg)> in other case.
 
 =cut
 
-sub HasSupportForArgs
-{
-    my $self = shift;
-    my @args = @_;
+sub HasSupportForArgs {
+    my $self        = shift;
+    my @args        = @_;
     my @unsupported = ();
-    foreach my $a( @args ) {
+    foreach my $a (@args) {
         push @unsupported, $a unless grep $_ eq $a, $self->support_args;
     }
-    return( 1 ) unless @unsupported;
-    return( 0, "Plugin doesn't support argument(s): @unsupported" ) if @unsupported;
+    return (1) unless @unsupported;
+    return ( 0, "Plugin doesn't support argument(s): @unsupported" )
+        if @unsupported;
 }
 
 =head3 TestArgs
@@ -144,12 +141,11 @@ Method should be subclassed if plugin support non standard arguments.
 
 =cut
 
-sub TestArgs
-{
+sub TestArgs {
     my $self = shift;
     my %args = @_;
     if ( $self->{'opt'} ) {
-        $self->{'opt'} = { %{$self->{'opt'}}, %args };
+        $self->{'opt'} = { %{ $self->{'opt'} }, %args };
     } else {
         $self->{'opt'} = \%args;
     }
@@ -169,7 +165,9 @@ case values of the arguments are not available.
 
 =cut
 
-sub run { return (0, "This is abstract plugin, you couldn't use it directly") }
+sub run {
+    return ( 0, "This is abstract plugin, you couldn't use it directly" );
+}
 
 =head2 utils
 

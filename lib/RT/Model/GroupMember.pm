@@ -1,3 +1,4 @@
+
 =head1 name
 
   RT::Model::GroupMember - a member of an RT Group
@@ -22,7 +23,6 @@ doing something wrong.
 
 =cut
 
-
 package RT::Model::GroupMember;
 
 use strict;
@@ -35,12 +35,10 @@ sub table {'GroupMembers'}
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-            column GroupId =>  type is 'integer';
-                    column MemberId => type is 'integer';
+    column GroupId  => type is 'integer';
+    column MemberId => type is 'integer';
 
-                };
-
-
+};
 
 # {{{ sub create
 
@@ -57,56 +55,57 @@ Both Group and Member are expected to be RT::Model::Principal objects
 sub create {
     my $self = shift;
     my %args = (
-        Group  => undef,
-        Member => undef,
+        Group             => undef,
+        Member            => undef,
         InsideTransaction => undef,
         @_
     );
 
-    unless ($args{'Group'} &&
-            UNIVERSAL::isa($args{'Group'}, 'RT::Model::Principal') &&
-            $args{'Group'}->id ) {
+    unless ( $args{'Group'}
+        && UNIVERSAL::isa( $args{'Group'}, 'RT::Model::Principal' )
+        && $args{'Group'}->id )
+    {
 
         Jifty->log->warn("GroupMember::Create called with a bogus Group arg");
         return (undef);
     }
 
-    unless($args{'Group'}->is_group) {
-        Jifty->log->warn("Someone tried to add a member to a user instead of a group");
+    unless ( $args{'Group'}->is_group ) {
+        Jifty->log->warn(
+            "Someone tried to add a member to a user instead of a group");
         return (undef);
     }
 
-    unless ($args{'Member'} && 
-            UNIVERSAL::isa($args{'Member'}, 'RT::Model::Principal') &&
-            $args{'Member'}->id) {
-        Jifty->log->warn("GroupMember::Create called with a bogus Principal arg");
+    unless ( $args{'Member'}
+        && UNIVERSAL::isa( $args{'Member'}, 'RT::Model::Principal' )
+        && $args{'Member'}->id )
+    {
+        Jifty->log->warn(
+            "GroupMember::Create called with a bogus Principal arg");
         return (undef);
     }
 
-
-    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
-    # TODO what about the groups key cache?
+#Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
+# TODO what about the groups key cache?
     RT::Model::Principal->invalidate_acl_cache();
 
-    Jifty->handle->begin_transaction() unless ($args{'InsideTransaction'});
+    Jifty->handle->begin_transaction() unless ( $args{'InsideTransaction'} );
 
     # We really need to make sure we don't add any members to this group
-    # that contain the group itself. that would, um, suck. 
-    # (and recurse infinitely)  Later, we can add code to check this in the 
+    # that contain the group itself. that would, um, suck.
+    # (and recurse infinitely)  Later, we can add code to check this in the
     # cache and bail so we can support cycling directed graphs
 
-    if ($args{'Member'}->is_group) {
+    if ( $args{'Member'}->is_group ) {
         my $member_object = $args{'Member'}->object;
-        if ($member_object->has_member_recursively($args{'Group'})) {
+        if ( $member_object->has_member_recursively( $args{'Group'} ) ) {
             Jifty->log->debug("Adding that group would create a loop");
-            return(undef);
-        }
-        elsif ( $args{'Member'}->id == $args{'Group'}->id) {
+            return (undef);
+        } elsif ( $args{'Member'}->id == $args{'Group'}->id ) {
             Jifty->log->debug("Can't add a group to itself");
-            return(undef);
+            return (undef);
         }
     }
-
 
     my $id = $self->SUPER::create(
         GroupId  => $args{'Group'}->id,
@@ -114,7 +113,7 @@ sub create {
     );
 
     unless ($id) {
-        Jifty->handle->rollback() unless ($args{'InsideTransaction'});
+        Jifty->handle->rollback() unless ( $args{'InsideTransaction'} );
         return (undef);
     }
 
@@ -126,13 +125,12 @@ sub create {
         Via             => '0'
     );
 
-
-    #When adding a member to a group, we need to go back
-    #and popuplate the CachedGroupMembers of all the groups that group is part of .
+#When adding a member to a group, we need to go back
+#and popuplate the CachedGroupMembers of all the groups that group is part of .
 
     my $cgm = RT::Model::CachedGroupMemberCollection->new;
 
-    # find things which have the current group as a member. 
+    # find things which have the current group as a member.
     # $group is an RT::Model::Principal for the group.
     $cgm->limit_to_groups_with_member( $args{'Group'}->id );
 
@@ -141,28 +139,28 @@ sub create {
         my $via       = $parent_member->id;
         my $group_id  = $parent_member->GroupId;
 
-          my $other_cached_member =
-          RT::Model::CachedGroupMember->new;
-        my $other_cached_id = $other_cached_member->create(
+        my $other_cached_member = RT::Model::CachedGroupMember->new;
+        my $other_cached_id     = $other_cached_member->create(
             Member          => $args{'Member'},
-                      Group => $parent_member->group_obj,
+            Group           => $parent_member->group_obj,
             ImmediateParent => $parent_member->member_obj,
             Via             => $parent_member->id
         );
         unless ($other_cached_id) {
-            Jifty->log->err( "Couldn't add " . $args{'Member'}
-                  . " as a submember of a supergroup" );
-            Jifty->handle->rollback() unless ($args{'InsideTransaction'});
+            Jifty->log->err( "Couldn't add "
+                    . $args{'Member'}
+                    . " as a submember of a supergroup" );
+            Jifty->handle->rollback() unless ( $args{'InsideTransaction'} );
             return (undef);
         }
-    } 
+    }
 
     unless ($cached_id) {
-        Jifty->handle->rollback() unless ($args{'InsideTransaction'});
+        Jifty->handle->rollback() unless ( $args{'InsideTransaction'} );
         return (undef);
     }
 
-    Jifty->handle->commit() unless ($args{'InsideTransaction'});
+    Jifty->handle->commit() unless ( $args{'InsideTransaction'} );
 
     return ($id);
 }
@@ -193,14 +191,13 @@ sub _stash_user {
         @_
     );
 
-    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
-    # TODO what about the groups key cache?
+#Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
+# TODO what about the groups key cache?
     RT::Model::Principal->invalidate_acl_cache();
 
-
     # We really need to make sure we don't add any members to this group
-    # that contain the group itself. that would, um, suck. 
-    # (and recurse infinitely)  Later, we can add code to check this in the 
+    # that contain the group itself. that would, um, suck.
+    # (and recurse infinitely)  Later, we can add code to check this in the
     # cache and bail so we can support cycling directed graphs
 
     my $id = $self->SUPER::create(
@@ -243,48 +240,45 @@ Expects to be called _outside_ a transaction
 sub delete {
     my $self = shift;
 
-
     Jifty->handle->begin_transaction();
 
     # Find all occurrences of this member as a member of this group
     # in the cache and nuke them, recursively.
 
     # The following code will delete all Cached Group members
-    # where this member's group is _not_ the primary group 
-    # (Ie if we're deleting C as a member of B, and B happens to be 
+    # where this member's group is _not_ the primary group
+    # (Ie if we're deleting C as a member of B, and B happens to be
     # a member of A, will delete C as a member of A without touching
     # C as a member of B
 
     my $cached_submembers = RT::Model::CachedGroupMemberCollection->new;
 
     $cached_submembers->limit(
-        column    => 'MemberId',
+        column   => 'MemberId',
         operator => '=',
         value    => $self->member_obj->id
     );
 
     $cached_submembers->limit(
-        column    => 'ImmediateParentId',
+        column   => 'ImmediateParentId',
         operator => '=',
         value    => $self->group_obj->id
     );
 
-
-
-
-
     while ( my $item_to_del = $cached_submembers->next() ) {
-        my ($del_err,$del_msg) = $item_to_del->delete();
+        my ( $del_err, $del_msg ) = $item_to_del->delete();
         unless ($del_err) {
             Jifty->handle->rollback();
-            Jifty->log->warn("Couldn't delete cached group submember ".$item_to_del->id);
+            Jifty->log->warn( "Couldn't delete cached group submember "
+                    . $item_to_del->id );
             return (undef);
         }
     }
 
-    my ($err, $msg) = $self->SUPER::delete();
+    my ( $err, $msg ) = $self->SUPER::delete();
     unless ($err) {
-            Jifty->log->warn("Couldn't delete cached group submember ".$self->id);
+        Jifty->log->warn(
+            "Couldn't delete cached group submember " . $self->id );
         Jifty->handle->rollback();
         return (undef);
     }
@@ -292,15 +286,18 @@ sub delete {
     # Since this deletion may have changed the former member's
     # delegation rights, we need to ensure that no invalid delegations
     # remain.
-    ($err,$msg) = $self->member_obj->_cleanup_invalid_delegations(InsideTransaction => 1);
+    ( $err, $msg )
+        = $self->member_obj->_cleanup_invalid_delegations(
+        InsideTransaction => 1 );
     unless ($err) {
-	Jifty->log->warn("Unable to revoke delegated rights for principal ".$self->id);
-	Jifty->handle->rollback();
-	return (undef);
+        Jifty->log->warn(
+            "Unable to revoke delegated rights for principal " . $self->id );
+        Jifty->handle->rollback();
+        return (undef);
     }
 
-    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
-    # TODO what about the groups key cache?
+#Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
+# TODO what about the groups key cache?
     RT::Model::Principal->invalidate_acl_cache();
 
     Jifty->handle->commit();
@@ -322,7 +319,7 @@ sub member_obj {
     my $self = shift;
     unless ( defined( $self->{'Member_obj'} ) ) {
         $self->{'Member_obj'} = RT::Model::Principal->new;
-        $self->{'Member_obj'}->load( $self->MemberId ) if ($self->MemberId);
+        $self->{'Member_obj'}->load( $self->MemberId ) if ( $self->MemberId );
     }
     return ( $self->{'Member_obj'} );
 }

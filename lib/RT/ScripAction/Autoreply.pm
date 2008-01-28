@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 use strict;
@@ -57,7 +57,6 @@ use base qw(RT::ScripAction::SendEmail);
 Set up the relevant recipients, then call our parent.
 
 =cut
-
 
 sub prepare {
     my $self = shift;
@@ -73,19 +72,17 @@ Sets the recipients of this message to this ticket's Requestor.
 
 =cut
 
-
 sub set_recipients {
-    my $self=shift;
+    my $self = shift;
 
-    push(@{$self->{'To'}}, $self->ticket_obj->requestors->member_emails);
-    
-    return(1);
+    push( @{ $self->{'To'} }, $self->ticket_obj->requestors->member_emails );
+
+    return (1);
 }
 
 # }}}
 
-
-# {{{ sub set_ReturnAddress 
+# {{{ sub set_ReturnAddress
 
 =head2 SetReturnAddress
 
@@ -95,41 +92,46 @@ Set this message\'s return address to the apropriate queue address
 
 sub set_return_address {
     my $self = shift;
-    my %args = ( is_comment => 0,
-		 @_
-	       );
-    
+    my %args = (
+        is_comment => 0,
+        @_
+    );
+
     my $replyto;
-    if ($args{'is_comment'}) { 
-	$replyto = $self->ticket_obj->queue_obj->comment_address || 
-		     RT->config->get('comment_address');
+    if ( $args{'is_comment'} ) {
+        $replyto = $self->ticket_obj->queue_obj->comment_address
+            || RT->config->get('comment_address');
+    } else {
+        $replyto = $self->ticket_obj->queue_obj->correspond_address
+            || RT->config->get('correspond_address');
     }
-    else {
-	$replyto = $self->ticket_obj->queue_obj->correspond_address ||
-		     RT->config->get('correspond_address');
+
+    unless ( $self->template_obj->mime_obj->head->get('From') ) {
+        if ( RT->config->get('UseFriendlyFromLine') ) {
+            my $friendly_name = $self->ticket_obj->queue_obj->description
+                || $self->ticket_obj->queue_obj->name;
+            $friendly_name =~ s/"/\\"/g;
+            $self->set_header(
+                'From',
+                sprintf(
+                    RT->config->get('FriendlyFromLineFormat'),
+                    $self->mime_encode_string(
+                        $friendly_name, RT->config->get('EmailOutputEncoding')
+                    ),
+                    $replyto
+                ),
+            );
+        } else {
+            $self->set_header( 'From', $replyto );
+        }
     }
-    
-    unless ($self->template_obj->mime_obj->head->get('From')) {
-	if (RT->config->get('UseFriendlyFromLine')) {
-	    my $friendly_name = $self->ticket_obj->queue_obj->description ||
-		    $self->ticket_obj->queue_obj->name;
-	    $friendly_name =~ s/"/\\"/g;
-	    $self->set_header( 'From',
-		        sprintf(RT->config->get('FriendlyFromLineFormat'), 
-                $self->mime_encode_string( $friendly_name, RT->config->get('EmailOutputEncoding') ), $replyto),
-	    );
-	}
-	else {
-	    $self->set_header( 'From', $replyto );
-	}
+
+    unless ( $self->template_obj->mime_obj->head->get('Reply-To') ) {
+        $self->set_header( 'Reply-To', "$replyto" );
     }
-    
-    unless ($self->template_obj->mime_obj->head->get('Reply-To')) {
-	$self->set_header('Reply-To', "$replyto");
-    }
-    
+
 }
-  
+
 # }}}
 
 1;

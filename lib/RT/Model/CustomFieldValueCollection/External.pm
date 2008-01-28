@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 package RT::Model::CustomFieldValueCollection::External;
 
@@ -81,9 +81,8 @@ C<sortorder>.
 
 =cut
 
-
 # XXX What's the use of table?
-#sub table {} 
+#sub table {}
 
 sub _init {
     my $self = shift;
@@ -92,7 +91,7 @@ sub _init {
 
 sub clean_slate {
     my $self = shift;
-    delete $self->{ $_ } foreach qw(
+    delete $self->{$_} foreach qw(
         __external_cf
         __external_cf_limits
     );
@@ -104,26 +103,24 @@ sub _cloned_attributes {
     return qw(
         __external_cf
         __external_cf_limits
-    ), $self->SUPER::_cloned_attributes;
+        ), $self->SUPER::_cloned_attributes;
 }
 
 sub limit {
     my $self = shift;
     my %args = (@_);
-    push @{ $self->{'__external_cf_limits'} ||= [] }, {
-        %args,
-        CALLBACK => $self->__build_limit_check( %args ),
-    };
-    return $self->SUPER::limit( %args );
+    push @{ $self->{'__external_cf_limits'} ||= [] },
+        { %args, CALLBACK => $self->__build_limit_check(%args), };
+    return $self->SUPER::limit(%args);
 }
 
 sub __build_limit_check {
-    my ($self, %args) = (@_);
+    my ( $self, %args ) = (@_);
     return undef unless $args{'column'} =~ /^(?:name|Description)$/;
 
     $args{'operator'} ||= '=';
     my $quoted_value = $args{'value'};
-    if ( $quoted_value ) {
+    if ($quoted_value) {
         $quoted_value =~ s/'/\\'/g;
         $quoted_value = "'$quoted_value'";
     }
@@ -137,21 +134,25 @@ END
     if ( $args{'operator'} =~ /^(?:=|!=|<>)$/ ) {
         $code .= 'return 0 unless defined $value;';
         my %h = ( '=' => ' eq ', '!=' => ' ne ', '<>' => ' ne ' );
-        $code .= 'return 0 unless $value'. $h{ $args{'operator'} } .'$condition;';
-        $code .= 'return 1;'
-    }
-    elsif ( $args{'operator'} =~ /^(?:LIKE|NOT LIKE)$/i ) {
+        $code
+            .= 'return 0 unless $value'
+            . $h{ $args{'operator'} }
+            . '$condition;';
+        $code .= 'return 1;';
+    } elsif ( $args{'operator'} =~ /^(?:LIKE|NOT LIKE)$/i ) {
         $code .= 'return 0 unless defined $value;';
         my %h = ( 'LIKE' => ' =~ ', 'NOT LIKE' => ' !~ ' );
-        $code .= 'return 0 unless $value'. $h{ uc $args{'operator'} } .'/\Q$condition/i;';
-        $code .= 'return 1;'
-    }
-    else {
-        $code .= 'return 0;'
+        $code
+            .= 'return 0 unless $value'
+            . $h{ uc $args{'operator'} }
+            . '/\Q$condition/i;';
+        $code .= 'return 1;';
+    } else {
+        $code .= 'return 0;';
     }
     $code = "sub  {$code}";
     my $cb = eval "$code";
-    Jifty->log->error( "Couldn't build callback '$code': $@" ) if $@;
+    Jifty->log->error("Couldn't build callback '$code': $@") if $@;
     return $cb;
 }
 
@@ -159,18 +160,26 @@ sub __build_aggregators_check {
     my $self = shift;
 
     my %h = ( OR => ' || ', AND => ' && ' );
-    
+
     my $code = '';
-    for( my $i = 0; $i < @{ $self->{'__external_cf_limits'} }; $i++ ) {
+    for ( my $i = 0; $i < @{ $self->{'__external_cf_limits'} }; $i++ ) {
         next unless $self->{'__external_cf_limits'}->[$i]->{'CALLBACK'};
-        $code .= $h{ uc($self->{'__external_cf_limits'}->[$i]->{'entry_aggregator'} || 'OR') } if $code;
-        $code .= '$sb->{\'__external_cf_limits\'}->['. $i .']->{\'CALLBACK\'}->($record)';
+        $code .= $h{
+            uc( $self->{'__external_cf_limits'}->[$i]->{'entry_aggregator'}
+                    || 'OR'
+            )
+            }
+            if $code;
+        $code
+            .= '$sb->{\'__external_cf_limits\'}->[' 
+            . $i
+            . ']->{\'CALLBACK\'}->($record)';
     }
     return unless $code;
 
     $code = "sub  { my (\$sb,\$record) = (\@_); return $code }";
     my $cb = eval "$code";
-    Jifty->log->error( "Couldn't build callback '$code': $@" ) if $@;
+    Jifty->log->error("Couldn't build callback '$code': $@") if $@;
     return $cb;
 }
 
@@ -180,25 +189,25 @@ sub _do_search {
     delete $self->{'items'};
 
     my %defaults = (
-            id => 1,
-            name => '',
-            customfield => $self->{'__external_cf'},
-            sortorder => 0,
-            description => '',
-            creator => RT->system_user->id,
-            Created => undef,
-            lastupdatedby => RT->system_user->id,
-            lastupdated => undef,
+        id            => 1,
+        name          => '',
+        customfield   => $self->{'__external_cf'},
+        sortorder     => 0,
+        description   => '',
+        creator       => RT->system_user->id,
+        Created       => undef,
+        lastupdatedby => RT->system_user->id,
+        lastupdated   => undef,
     );
 
     my $i = 0;
 
     my $check = $self->__build_aggregators_check;
-    foreach( @{ $self->external_values } ) {
+    foreach ( @{ $self->external_values } ) {
         my $value = $self->new_item;
         $value->load_from_hash( { %defaults, %$_ } );
         next if $check && !$check->( $self, $value );
-        $self->add_record( $value );
+        $self->add_record($value);
     }
     $self->{'must_redo_search'} = 0;
     return $self->_record_count;
@@ -217,7 +226,7 @@ sub _do_count {
 sub limit_to_custom_field {
     my $self = shift;
     $self->{'__external_cf'} = $_[0];
-    return $self->SUPER::limit_to_custom_field( @_ );
+    return $self->SUPER::limit_to_custom_field(@_);
 }
 
 1;

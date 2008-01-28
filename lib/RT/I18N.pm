@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,8 +43,9 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
+
 =head1 name
 
 RT::I18N - a base class for localization of RT
@@ -67,19 +68,21 @@ use MIME::Head;
 # I decree that this project's first Language is English.
 
 our %Lexicon = (
-   'TEST_STRING' => 'Concrete Mixer',
+    'TEST_STRING' => 'Concrete Mixer',
 
     '__Content-Type' => 'text/plain; charset=utf-8',
 
-  '_AUTO' => 1,
-  # That means that lookup failures can't happen -- if we get as far
-  #  as looking for something in this lexicon, and we don't find it,
-  #  then automagically set $Lexicon{$key} = $key, before possibly
-  #  compiling it.
-  
-  # The exception is keys that start with "_" -- they aren't auto-makeable.
+    '_AUTO' => 1,
+
+    # That means that lookup failures can't happen -- if we get as far
+    #  as looking for something in this lexicon, and we don't find it,
+    #  then automagically set $Lexicon{$key} = $key, before possibly
+    #  compiling it.
+
+    # The exception is keys that start with "_" -- they aren't auto-makeable.
 
 );
+
 # End of lexicon.
 
 =head2 Init
@@ -101,8 +104,7 @@ If it can't find anything, it returns 'ISO-8859-1'
 
 =cut
 
-
-sub encoding { 'utf-8' }
+sub encoding {'utf-8'}
 
 # {{{ set_mime_entity_to_utf8
 
@@ -114,7 +116,7 @@ It's now a wrap-up of set_mime_entity_to_encoding($entity, 'utf-8').
 =cut
 
 sub set_mime_entity_to_utf8 {
-    RT::I18N::set_mime_entity_to_encoding(shift, 'utf-8');
+    RT::I18N::set_mime_entity_to_encoding( shift, 'utf-8' );
 }
 
 # }}}
@@ -137,7 +139,7 @@ Currently, it returns true iff $type matches this regular expression
 
 sub is_textual_content_type {
     my $type = shift;
-    ($type =~ m{^(?:text/(?:plain|html)|message/rfc822)\b}i) ? 1 : 0;
+    ( $type =~ m{^(?:text/(?:plain|html)|message/rfc822)\b}i ) ? 1 : 0;
 }
 
 # {{{ set_mime_entity_to_encoding
@@ -157,64 +159,76 @@ sub set_mime_entity_to_encoding {
     my ( $entity, $enc, $preserve_words ) = ( shift, shift, shift );
 
     # do the same for parts first of all
-    set_mime_entity_to_encoding( $_, $enc, $preserve_words ) foreach $entity->parts;
+    set_mime_entity_to_encoding( $_, $enc, $preserve_words )
+        foreach $entity->parts;
 
     my $charset = _FindOrGuessCharset($entity) or return;
+
     # one and only normalization
     $charset = 'utf-8' if $charset =~ /^utf-?8$/i;
     $enc     = 'utf-8' if $enc     =~ /^utf-?8$/i;
 
     set_mime_ehead_to_encoding(
-	$entity->head,
-	_FindOrGuessCharset($entity, 1) => $enc,
-	$preserve_words
+        $entity->head,
+        _FindOrGuessCharset( $entity, 1 ) => $enc,
+        $preserve_words
     );
 
     my $head = $entity->head;
 
     # convert at least MIME word encoded attachment filename
     foreach my $attr (qw(content-type.name content-disposition.filename)) {
-	if ( my $name = $head->mime_attr($attr) and !$preserve_words ) {
-	    $head->mime_attr( $attr => DecodeMIMEWordsToUTF8($name) );
-	}
+        if ( my $name = $head->mime_attr($attr) and !$preserve_words ) {
+            $head->mime_attr( $attr => DecodeMIMEWordsToUTF8($name) );
+        }
     }
 
     # If this is a textual entity, we'd need to preserve its original encoding
     $head->add( "X-RT-Original-Encoding" => $charset )
-	if $head->mime_attr('content-type.charset') or is_textual_content_type($head->mime_type);
+        if $head->mime_attr('content-type.charset')
+            or is_textual_content_type( $head->mime_type );
 
-    return unless is_textual_content_type($head->mime_type);
+    return unless is_textual_content_type( $head->mime_type );
 
     my $body = $entity->bodyhandle;
 
-    if ( $enc ne $charset && $body) {
-	my @lines = $body->as_lines or return;
+    if ( $enc ne $charset && $body ) {
+        my @lines = $body->as_lines or return;
 
-	# {{{ Convert the body
-	eval {
-	    Jifty->log->debug("Converting '$charset' to '$enc' for ". $head->mime_type . " - ". ($head->get('subject') || 'Subjectless message'));
+        # {{{ Convert the body
+        eval {
+            Jifty->log->debug( "Converting '$charset' to '$enc' for "
+                    . $head->mime_type . " - "
+                    . ( $head->get('subject') || 'Subjectless message' ) );
 
-	    # NOTE:: see the comments at the end of the sub.
-	    Encode::_utf8_off( $lines[$_] ) foreach ( 0 .. $#lines );
-	    Encode::from_to( $lines[$_], $charset => $enc ) for ( 0 .. $#lines );
-	};
+            # NOTE:: see the comments at the end of the sub.
+            Encode::_utf8_off( $lines[$_] ) foreach ( 0 .. $#lines );
+            Encode::from_to( $lines[$_], $charset => $enc )
+                for ( 0 .. $#lines );
+        };
 
-	if ($@) {
-	    Jifty->log->error( "Encoding error: " . $@ . " defaulting to ISO-8859-1 -> UTF-8" );
-	    eval {
-		Encode::from_to( $lines[$_], 'iso-8859-1' => $enc ) foreach ( 0 .. $#lines );
-	    };
-	    if ($@) {
-		Jifty->log->fatal( "Totally failed to convert to utf-8: " . $@ . " I give up" );
-	    }
-	}
-	# }}}
+        if ($@) {
+            Jifty->log->error( "Encoding error: " 
+                    . $@
+                    . " defaulting to ISO-8859-1 -> UTF-8" );
+            eval {
+                Encode::from_to( $lines[$_], 'iso-8859-1' => $enc )
+                    foreach ( 0 .. $#lines );
+            };
+            if ($@) {
+                Jifty->log->fatal( "Totally failed to convert to utf-8: " 
+                        . $@
+                        . " I give up" );
+            }
+        }
+
+        # }}}
 
         my $new_body = MIME::Body::InCore->new( \@lines );
 
         # set up the new entity
         $head->mime_attr( "content-type" => 'text/plain' )
-          unless ( $head->mime_attr("content-type") );
+            unless ( $head->mime_attr("content-type") );
         $head->mime_attr( "content-type.charset" => $enc );
         $entity->bodyhandle($new_body);
     }
@@ -251,7 +265,7 @@ tried.  Maybe it's ok now.
 
 sub decode_mime_words_to_utf8 {
     my $str = shift;
-    DecodeMIMEWordsToEncoding($str, 'utf-8');
+    DecodeMIMEWordsToEncoding( $str, 'utf-8' );
 }
 
 sub decode_mime_words_to_encoding {
@@ -261,60 +275,60 @@ sub decode_mime_words_to_encoding {
     @_ = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
     return ($str) unless (@_);
 
-    # add everything that hasn't matched to the end of the latest
-    # string in array this happen when we have 'key="=?encoded?="; key="plain"'
-    $_[-1] .= substr($str, pos $str);
+   # add everything that hasn't matched to the end of the latest
+   # string in array this happen when we have 'key="=?encoded?="; key="plain"'
+    $_[-1] .= substr( $str, pos $str );
 
     $str = "";
     while (@_) {
-	my ($prefix, $charset, $encoding, $enc_str, $trailing) =
-	    (shift, shift, lc shift, shift, shift);
+        my ( $prefix, $charset, $encoding, $enc_str, $trailing )
+            = ( shift, shift, lc shift, shift, shift );
 
-        $trailing =~ s/\s?\t?$//;               # Observed from Outlook Express
+        $trailing =~ s/\s?\t?$//;    # Observed from Outlook Express
 
-	if ( $encoding eq 'q' ) {
-	    use MIME::QuotedPrint;
-	    $enc_str =~ tr/_/ /;		# Observed from Outlook Express
-	    $enc_str = decode_qp($enc_str);
-	} elsif ( $encoding eq 'b' ) {
-	    use MIME::Base64;
-	    $enc_str = decode_base64($enc_str);
-	} else {
-	    Jifty->log->warn("Incorrect encoding '$encoding' in '$str', "
-            ."only Q(uoted-printable) and B(ase64) are supported");
-	}
+        if ( $encoding eq 'q' ) {
+            use MIME::QuotedPrint;
+            $enc_str =~ tr/_/ /;     # Observed from Outlook Express
+            $enc_str = decode_qp($enc_str);
+        } elsif ( $encoding eq 'b' ) {
+            use MIME::Base64;
+            $enc_str = decode_base64($enc_str);
+        } else {
+            Jifty->log->warn( "Incorrect encoding '$encoding' in '$str', "
+                    . "only Q(uoted-printable) and B(ase64) are supported" );
+        }
 
-	# now we have got a decoded subject, try to convert into the encoding
-	unless ($charset eq $enc) {
-	    eval { Encode::from_to($enc_str, $charset,  $enc) };
-	    if ($@) {
-		$charset = _GuessCharset( $enc_str );
-		Encode::from_to($enc_str, $charset, $enc);
-	    }
-	}
+        # now we have got a decoded subject, try to convert into the encoding
+        unless ( $charset eq $enc ) {
+            eval { Encode::from_to( $enc_str, $charset, $enc ) };
+            if ($@) {
+                $charset = _GuessCharset($enc_str);
+                Encode::from_to( $enc_str, $charset, $enc );
+            }
+        }
 
-        # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
-        # We _should_ be preserving them encoded until after parsing is completed and
-        # THEN undo the mime-encoding.
-        #
-        # This routine should be translating the existing mimeencoding to utf8 but leaving
-        # things encoded.
-        #
-        # It's legal for headers to contain mime-encoded commas and semicolons which
-        # should not be treated as address separators. (Encoding == quoting here)
-        #
-        # until this is fixed, we must escape any string containing a comma or semicolon
-        # this is only a bandaid
+# XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
+# We _should_ be preserving them encoded until after parsing is completed and
+# THEN undo the mime-encoding.
+#
+# This routine should be translating the existing mimeencoding to utf8 but leaving
+# things encoded.
+#
+# It's legal for headers to contain mime-encoded commas and semicolons which
+# should not be treated as address separators. (Encoding == quoting here)
+#
+# until this is fixed, we must escape any string containing a comma or semicolon
+# this is only a bandaid
 
-        $enc_str = qq{"$enc_str"} if ($enc_str =~ /[,;]/);                                     
-	$str .= $prefix . $enc_str . $trailing;
+        $enc_str = qq{"$enc_str"} if ( $enc_str =~ /[,;]/ );
+        $str .= $prefix . $enc_str . $trailing;
     }
 
     # We might have \n without trailing whitespace, which will result in
     # invalid headers.
     $str =~ s/\n//g;
 
-    return ($str)
+    return ($str);
 }
 
 # }}}
@@ -330,21 +344,21 @@ If $head_only is true, only guesses charset for head parts.  This is because hea
 =cut
 
 sub _find_or_guess_charset {
-    my $entity = shift;
+    my $entity    = shift;
     my $head_only = shift;
-    my $head = $entity->head;
+    my $head      = $entity->head;
 
     if ( my $charset = $head->mime_attr("content-type.charset") ) {
         return $charset;
     }
 
-    if ( !$head_only and $head->mime_type =~ m{^text/}) {
-	my $body = $entity->bodyhandle or return;
-	return _GuessCharset( $body->as_string );
-    }
-    else {
-	# potentially binary data -- don't guess the body
-	return _GuessCharset( $head->as_string );
+    if ( !$head_only and $head->mime_type =~ m{^text/} ) {
+        my $body = $entity->bodyhandle or return;
+        return _GuessCharset( $body->as_string );
+    } else {
+
+        # potentially binary data -- don't guess the body
+        return _GuessCharset( $head->as_string );
     }
 }
 
@@ -367,41 +381,45 @@ sub _guess_charset {
     my $charset;
     my @encodings = RT->config->get('EmailInputEncodings');
     if ( @encodings and eval { require Encode::Guess; 1 } ) {
-	Encode::Guess->set_suspects( @encodings );
-	my $decoder = Encode::Guess->guess( $_[0] );
+        Encode::Guess->set_suspects(@encodings);
+        my $decoder = Encode::Guess->guess( $_[0] );
 
-      if ( defined($decoder) ) {
-	if ( ref $decoder ) {
-	    $charset = $decoder->name;
-	    Jifty->log->debug("Guessed encoding: $charset");
-	    return $charset;
-	}
-	elsif ($decoder =~ /(\S+ or .+)/) {
-	    my %matched = map { $_ => 1 } split(/ or /, $1);
-	    return 'utf-8' if $matched{'utf8'}; # one and only normalization
+        if ( defined($decoder) ) {
+            if ( ref $decoder ) {
+                $charset = $decoder->name;
+                Jifty->log->debug("Guessed encoding: $charset");
+                return $charset;
+            } elsif ( $decoder =~ /(\S+ or .+)/ ) {
+                my %matched = map { $_ => 1 } split( / or /, $1 );
+                return 'utf-8'
+                    if $matched{'utf8'};    # one and only normalization
 
-	    foreach my $suspect (RT->config->get('EmailInputEncodings')) {
-		next unless $matched{$suspect};
-		Jifty->log->debug("Encode::Guess ambiguous ($decoder); using $suspect");
-		$charset = $suspect;
-		last;
-	    }
-	}
-	else {
-	    Jifty->log->warn("Encode::Guess failed: $decoder; fallback to $fallback");
-	}
-      }
-      else {
-	  Jifty->log->warn("Encode::Guess failed: decoder is undefined; fallback to $fallback");
-      }
-    }
-    elsif ( @encodings && $@ ) {
-        Jifty->log->error("You have set EmailInputEncodings, but we couldn't load Encode::Guess: $@");
+                foreach my $suspect ( RT->config->get('EmailInputEncodings') )
+                {
+                    next unless $matched{$suspect};
+                    Jifty->log->debug(
+                        "Encode::Guess ambiguous ($decoder); using $suspect");
+                    $charset = $suspect;
+                    last;
+                }
+            } else {
+                Jifty->log->warn(
+                    "Encode::Guess failed: $decoder; fallback to $fallback");
+            }
+        } else {
+            Jifty->log->warn(
+                "Encode::Guess failed: decoder is undefined; fallback to $fallback"
+            );
+        }
+    } elsif ( @encodings && $@ ) {
+        Jifty->log->error(
+            "You have set EmailInputEncodings, but we couldn't load Encode::Guess: $@"
+        );
     } else {
         Jifty->log->warn("No EmailInputEncodings set, fallback to $fallback");
     }
 
-    return ($charset || $fallback);
+    return ( $charset || $fallback );
 }
 
 # }}}
@@ -418,7 +436,8 @@ all the time
 =cut
 
 sub set_mime_ehead_to_encoding {
-    my ( $head, $charset, $enc, $preserve_words ) = ( shift, shift, shift, shift );
+    my ( $head, $charset, $enc, $preserve_words )
+        = ( shift, shift, shift, shift );
 
     $charset = 'utf-8' if $charset eq 'utf8';
     $enc     = 'utf-8' if $enc     eq 'utf8';
@@ -426,7 +445,7 @@ sub set_mime_ehead_to_encoding {
     return if $charset eq $enc and $preserve_words;
 
     foreach my $tag ( $head->tags ) {
-        next unless $tag; # seen in wild: headers with no name
+        next unless $tag;    # seen in wild: headers with no name
         my @values = $head->get_all($tag);
         $head->delete($tag);
         foreach my $value (@values) {
@@ -437,21 +456,27 @@ sub set_mime_ehead_to_encoding {
                     Encode::from_to( $value, $charset => $enc );
                 };
                 if ($@) {
-                    Jifty->log->error( "Encoding error: " . $@
-                                       . " defaulting to ISO-8859-1 -> UTF-8" );
+                    Jifty->log->error( "Encoding error: " 
+                            . $@
+                            . " defaulting to ISO-8859-1 -> UTF-8" );
                     eval { Encode::from_to( $value, 'iso-8859-1' => $enc ) };
                     if ($@) {
-                        Jifty->log->fatal( "Totally failed to convert to utf-8: " . $@ . " I give up" );
+                        Jifty->log->fatal(
+                                  "Totally failed to convert to utf-8: " 
+                                . $@
+                                . " I give up" );
                     }
                 }
             }
-            $value = DecodeMIMEWordsToEncoding( $value, $enc ) unless $preserve_words;
+            $value = DecodeMIMEWordsToEncoding( $value, $enc )
+                unless $preserve_words;
             $head->add( $tag, $value );
         }
     }
 
 }
+
 # }}}
 
-1;  # End of module.
+1;    # End of module.
 

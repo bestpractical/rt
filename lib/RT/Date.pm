@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,8 +43,9 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
+
 =head1 name
 
   RT::Date - a simple Object Oriented date.
@@ -63,7 +64,6 @@ The fact that it assumes that a time of 0 means "never" is probably a bug.
 =head1 METHODS
 
 =cut
-
 
 package RT::Date;
 
@@ -116,7 +116,7 @@ Object constructor takes one argument C<RT::CurrentUser> object.
 
 sub new {
     my $class = shift;
-    my $self = {};
+    my $self  = {};
     bless $self => ref($class) || $class;
     $self->_get_current_user(@_);
     $self->unix(0);
@@ -153,41 +153,48 @@ sub set {
 
     if ( $args{'Format'} =~ /^unix$/i ) {
         return $self->unix( $args{'value'} );
-    }
-    elsif ( $args{'Format'} =~ /^(sql|datemanip|iso)$/i ) {
+    } elsif ( $args{'Format'} =~ /^(sql|datemanip|iso)$/i ) {
         $args{'value'} =~ s!/!-!g;
 
-        if (   ( $args{'value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
-            || ( $args{'value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d):(\d\d):(\d\d)$/ )
-            || ( $args{'value'} =~ /^(?:(\d{4})-)?(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/ )
-            || ( $args{'value'} =~ /^(?:(\d{4})-)?(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)\+00$/ )
-          ) {
+        if (( $args{'value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
+            || ( $args{'value'}
+                =~ /^(\d{4})?(\d\d)(\d\d)(\d\d):(\d\d):(\d\d)$/ )
+            || ( $args{'value'}
+                =~ /^(?:(\d{4})-)?(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/ )
+            || ( $args{'value'}
+                =~ /^(?:(\d{4})-)?(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)\+00$/ )
+            )
+        {
 
-            my ($year, $mon, $mday, $hours, $min, $sec)  = ($1, $2, $3, $4, $5, $6);
+            my ( $year, $mon, $mday, $hours, $min, $sec )
+                = ( $1, $2, $3, $4, $5, $6 );
 
             # use current year if string has no value
-            $year ||= (localtime time)[5] + 1900;
+            $year ||= ( localtime time )[5] + 1900;
 
             #timegm expects month as 0->11
             $mon--;
 
-            #now that we've parsed it, deal with the case where everything was 0
+          #now that we've parsed it, deal with the case where everything was 0
             return $self->unix(0) if $mon < 0 || $mon > 11;
 
-            my $tz = lc $args{'Format'} eq 'datemanip'? 'user': 'utc';
-            $self->unix( $self->timelocal( $tz, $sec, $min, $hours, $mday, $mon, $year ) );
+            my $tz = lc $args{'Format'} eq 'datemanip' ? 'user' : 'utc';
+            $self->unix(
+                $self->time_local(
+                    $tz, $sec, $min, $hours, $mday, $mon, $year
+                )
+            );
 
             $self->unix(0) unless $self->unix > 0;
-        }
-        else {
+        } else {
             Jifty->log->warn(
                 "Couldn't parse date '$args{'value'}' as a $args{'Format'} format"
             );
             return $self->unix(undef);
         }
-    }
-    elsif ( $args{'Format'} =~ /^unknown$/i ) {
+    } elsif ( $args{'Format'} =~ /^unknown$/i ) {
         require Time::ParseDate;
+
         # the module supports only legacy timezones like PDT or EST...
         # so we parse date as GMT and later apply offset
         my $date = Time::ParseDate::parsedate(
@@ -197,17 +204,17 @@ sub set {
             PREFER_PAST   => RT->config->get('AmbiguousDayInPast'),
             PREFER_FUTURE => !RT->config->get('AmbiguousDayInPast')
         );
+
         # apply timezone offset
-        $date -= ($self->localtime( $args{Timezone}, $date ))[9];
+        $date -= ( $self->localtime( $args{Timezone}, $date ) )[9];
 
         Jifty->log->debug(
             "RT::Date used Time::ParseDate to make '$args{'value'}' $date\n"
         );
 
-        return $self->set( Format => 'unix', value => $date);
-    }
-    else {
-        Jifty->log->debug( "Unknown date format: $args{'Format'}\n");
+        return $self->set( Format => 'unix', value => $date );
+    } else {
+        Jifty->log->debug("Unknown date format: $args{'Format'}\n");
         return $self->unix(undef);
     }
 
@@ -245,11 +252,9 @@ Timezone context C<user>, C<server> or C<UTC>. See also L</Timezone>.
 sub set_to_midnight {
     my $self = shift;
     my %args = ( Timezone => '', @_ );
-    my $new = $self->timelocal(
-        $args{'Timezone'},
-        0,0,0,($self->localtime( $args{'Timezone'} ))[3..9]
-    );
-    return $self->unix( $new );
+    my $new  = $self->time_local( $args{'Timezone'}, 0, 0, 0,
+        ( $self->localtime( $args{'Timezone'} ) )[ 3 .. 9 ] );
+    return $self->unix($new);
 }
 
 =head2 Diff
@@ -264,13 +269,13 @@ incorrect or not set.
 =cut
 
 sub diff {
-    my $self = shift;
+    my $self  = shift;
     my $other = shift;
     $other = time unless defined $other;
     if ( UNIVERSAL::isa( $other, 'RT::Date' ) ) {
         $other = $other->unix;
     }
-    return undef unless $other=~ /^\d+$/ && $other > 0;
+    return undef unless $other =~ /^\d+$/ && $other > 0;
 
     my $unix = $self->unix;
     return undef unless $unix > 0;
@@ -291,10 +296,10 @@ two compared values is incorrect or not set.
 
 sub diff_as_string {
     my $self = shift;
-    my $diff = $self->diff( @_ );
+    my $diff = $self->diff(@_);
     return '' unless defined $diff;
 
-    return $self->duration_as_string( $diff );
+    return $self->duration_as_string($diff);
 }
 
 =head2 DurationAsString
@@ -315,36 +320,29 @@ sub duration_as_string {
     if ( $duration < $MINUTE ) {
         $s         = $duration;
         $time_unit = _("sec");
-    }
-    elsif ( $duration < ( 2 * $HOUR ) ) {
+    } elsif ( $duration < ( 2 * $HOUR ) ) {
         $s         = int( $duration / $MINUTE + 0.5 );
         $time_unit = _("min");
-    }
-    elsif ( $duration < ( 2 * $DAY ) ) {
+    } elsif ( $duration < ( 2 * $DAY ) ) {
         $s         = int( $duration / $HOUR + 0.5 );
         $time_unit = _("hours");
-    }
-    elsif ( $duration < ( 2 * $WEEK ) ) {
+    } elsif ( $duration < ( 2 * $WEEK ) ) {
         $s         = int( $duration / $DAY + 0.5 );
         $time_unit = _("days");
-    }
-    elsif ( $duration < ( 2 * $MONTH ) ) {
+    } elsif ( $duration < ( 2 * $MONTH ) ) {
         $s         = int( $duration / $WEEK + 0.5 );
         $time_unit = _("weeks");
-    }
-    elsif ( $duration < $YEAR ) {
+    } elsif ( $duration < $YEAR ) {
         $s         = int( $duration / $MONTH + 0.5 );
         $time_unit = _("months");
-    }
-    else {
+    } else {
         $s         = int( $duration / $YEAR + 0.5 );
         $time_unit = _("years");
     }
 
-    if ( $negative ) {
+    if ($negative) {
         return _( "%1 %2 ago", $s, $time_unit );
-    }
-    else {
+    } else {
         return _( "%1 %2", $s, $time_unit );
     }
 }
@@ -357,8 +355,6 @@ time in the object and now.
 =cut
 
 sub age_as_string { return $_[0]->diff_as_string }
-
-
 
 =head2 AsString
 
@@ -377,9 +373,10 @@ sub as_string {
 
     return _("Not set") unless $self->unix > 0;
 
-    my $format = RT->config->get( 'DateTimeFormat', $self->current_user ) || 'DefaultFormat';
+    my $format = RT->config->get( 'DateTimeFormat', $self->current_user )
+        || 'DefaultFormat';
     $format = { Format => $format } unless ref $format;
-    %args = (%$format, %args);
+    %args = ( %$format, %args );
 
     return $self->get( Timezone => 'user', %args );
 }
@@ -394,8 +391,8 @@ is sunday>.
 
 sub get_weekday {
     my $self = shift;
-    my $dow = shift;
-    
+    my $dow  = shift;
+
     return _("$DAYS_OF_WEEK[$dow].") if $DAYS_OF_WEEK[$dow];
     return '';
 }
@@ -409,7 +406,7 @@ Valid values are from from range 0-11.
 
 sub get_month {
     my $self = shift;
-    my $mon = shift;
+    my $mon  = shift;
 
     return _("$MONTHS[$mon].") if $MONTHS[$mon];
     return '';
@@ -426,10 +423,10 @@ Negative value can be used to substract seconds.
 sub add_seconds {
     my $self = shift;
     my $delta = shift or return $self->unix;
-    
-    $self->set(Format => 'unix', value => ($self->unix + $delta));
- 
-    return ($self->Unix);
+
+    $self->set( Format => 'unix', value => ( $self->unix + $delta ) );
+
+    return ( $self->Unix );
 }
 
 =head2 AddDays [DAYS]
@@ -464,7 +461,7 @@ Returns the number of seconds since the epoch
 =cut
 
 sub unix {
-    my $self = shift; 
+    my $self = shift;
     $self->{'time'} = shift if @_;
     return $self->{'time'};
 }
@@ -514,13 +511,12 @@ the current object.
 
 =cut
 
-sub Get
-{
-    my $self = shift;
-    my %args = (Format => 'ISO', @_);
+sub Get {
+    my $self      = shift;
+    my %args      = ( Format => 'ISO', @_ );
     my $formatter = $args{'Format'};
     $formatter = 'ISO' unless $self->can($formatter);
-    return $self->$formatter( %args );
+    return $self->$formatter(%args);
 }
 
 =head2 Output formatters
@@ -548,31 +544,31 @@ understand boolean argument C<DayOfTime>.
 
 =cut
 
-sub DefaultFormat
-{
+sub DefaultFormat {
     my $self = shift;
-    my %args = ( Date => 1,
-                 Time => 1,
-                 Timezone => '',
-                 @_,
-               );
-    
-       #  0    1    2     3     4    5     6     7      8      9
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
-                            $self->localtime($args{'Timezone'});
-    $wday = $self->get_weekday($wday);
-    $mon = $self->get_month($mon);
-    ($mday, $hour, $min, $sec) = map { sprintf "%02d", $_ } ($mday, $hour, $min, $sec);
+    my %args = (
+        Date     => 1,
+        Time     => 1,
+        Timezone => '',
+        @_,
+    );
 
-    if( $args{'Date'} && !$args{'Time'} ) {
-        return _('%1 %2 %3 %4',
-                          $wday,$mon,$mday,$year);
-    } elsif( !$args{'Date'} && $args{'Time'} ) {
-        return _('%1:%2:%3',
-                          $hour,$min,$sec);
+    #  0    1    2     3     4    5     6     7      8      9
+    my ($sec,  $min,  $hour,  $mday,  $mon,
+        $year, $wday, $ydaym, $isdst, $offset
+    ) = $self->localtime( $args{'Timezone'} );
+    $wday = $self->get_weekday($wday);
+    $mon  = $self->get_month($mon);
+    ( $mday, $hour, $min, $sec )
+        = map { sprintf "%02d", $_ } ( $mday, $hour, $min, $sec );
+
+    if ( $args{'Date'} && !$args{'Time'} ) {
+        return _( '%1 %2 %3 %4', $wday, $mon, $mday, $year );
+    } elsif ( !$args{'Date'} && $args{'Time'} ) {
+        return _( '%1:%2:%3', $hour, $min, $sec );
     } else {
-        return _('%1 %2 %3 %4:%5:%6 %7',
-                          $wday,$mon,$mday,$hour,$min,$sec,$year);
+        return _( '%1 %2 %3 %4:%5:%6 %7',
+            $wday, $mon, $mday, $hour, $min, $sec, $year );
     }
 }
 
@@ -589,23 +585,27 @@ See </Output formatters> for description of arguments.
 
 sub iso {
     my $self = shift;
-    my %args = ( Date => 1,
-                 Time => 1,
-                 Timezone => '',
-                 Seconds => 1,
-                 @_,
-               );
-       #  0    1    2     3     4    5     6     7      8      9
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
-                            $self->localtime($args{'Timezone'});
+    my %args = (
+        Date     => 1,
+        Time     => 1,
+        Timezone => '',
+        Seconds  => 1,
+        @_,
+    );
+
+    #  0    1    2     3     4    5     6     7      8      9
+    my ($sec,  $min,  $hour,  $mday,  $mon,
+        $year, $wday, $ydaym, $isdst, $offset
+    ) = $self->localtime( $args{'Timezone'} );
 
     #the month needs incrementing, as gmtime returns 0-11
     $mon++;
 
     my $res = '';
-    $res .= sprintf("%04d-%02d-%02d", $year, $mon, $mday) if $args{'Date'};
-    $res .= sprintf(' %02d:%02d', $hour, $min) if $args{'Time'};
-    $res .= sprintf(':%02d', $sec, $min) if $args{'Time'} && $args{'Seconds'};
+    $res .= sprintf( "%04d-%02d-%02d", $year, $mon, $mday ) if $args{'Date'};
+    $res .= sprintf( ' %02d:%02d', $hour, $min ) if $args{'Time'};
+    $res .= sprintf( ':%02d', $sec, $min )
+        if $args{'Time'} && $args{'Seconds'};
     $res =~ s/^\s+//;
 
     return $res;
@@ -628,34 +628,35 @@ See </Output formatters> for description of arguments.
 sub w3cdtf {
     my $self = shift;
     my %args = (
-        Time => 1,
+        Time     => 1,
         Timezone => '',
-        Seconds => 1,
+        Seconds  => 1,
         @_,
         Date => 1,
     );
-       #  0    1    2     3     4    5     6     7      8      9
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
-                            $self->localtime( $args{'Timezone'} );
+
+    #  0    1    2     3     4    5     6     7      8      9
+    my ($sec,  $min,  $hour,  $mday,  $mon,
+        $year, $wday, $ydaym, $isdst, $offset
+    ) = $self->localtime( $args{'Timezone'} );
 
     #the month needs incrementing, as gmtime returns 0-11
     $mon++;
 
     my $res = '';
-    $res .= sprintf("%04d-%02d-%02d", $year, $mon, $mday);
+    $res .= sprintf( "%04d-%02d-%02d", $year, $mon, $mday );
     if ( $args{'Time'} ) {
-        $res .= sprintf('T%02d:%02d', $hour, $min);
-        $res .= sprintf(':%02d', $sec, $min) if $args{'Seconds'};
-        if ( $offset ) {
-            $res .= sprintf "%s%02d:%02d", $self->_split_offset( $offset );
+        $res .= sprintf( 'T%02d:%02d', $hour, $min );
+        $res .= sprintf( ':%02d', $sec, $min ) if $args{'Seconds'};
+        if ($offset) {
+            $res .= sprintf "%s%02d:%02d", $self->_split_offset($offset);
         } else {
             $res .= 'Z';
         }
     }
 
     return $res;
-};
-
+}
 
 =head3 RFC2822 (MIME)
 
@@ -672,29 +673,31 @@ arguments.
 
 sub rfc_2822 {
     my $self = shift;
-    my %args = ( Date => 1,
-                 Time => 1,
-                 Timezone => '',
-                 DayOfWeek => 1,
-                 Seconds => 1,
-                 @_,
-               );
+    my %args = (
+        Date      => 1,
+        Time      => 1,
+        Timezone  => '',
+        DayOfWeek => 1,
+        Seconds   => 1,
+        @_,
+    );
 
-       #  0    1    2     3     4    5     6     7      8     9
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
-                            $self->localtime($args{'Timezone'});
+    #  0    1    2     3     4    5     6     7      8     9
+    my ($sec,  $min,  $hour,  $mday,  $mon,
+        $year, $wday, $ydaym, $isdst, $offset
+    ) = $self->localtime( $args{'Timezone'} );
 
-    my ($date, $time) = ('','');
+    my ( $date, $time ) = ( '', '' );
     $date .= "$DAYS_OF_WEEK[$wday], " if $args{'DayOfWeek'} && $args{'Date'};
     $date .= "$mday $MONTHS[$mon] $year" if $args{'Date'};
 
     if ( $args{'Time'} ) {
-        $time .= sprintf("%02d:%02d", $hour, $min);
-        $time .= sprintf(":%02d", $sec) if $args{'Seconds'};
-        $time .= sprintf " %s%02d%02d", $self->_split_offset( $offset );
+        $time .= sprintf( "%02d:%02d", $hour, $min );
+        $time .= sprintf( ":%02d", $sec ) if $args{'Seconds'};
+        $time .= sprintf " %s%02d%02d", $self->_split_offset($offset);
     }
 
-    return join ' ', grep $_, ($date, $time);
+    return join ' ', grep $_, ( $date, $time );
 }
 
 =head3 RFC2616 (HTTP)
@@ -725,24 +728,27 @@ See </Output formatters> for description of arguments.
 
 sub rfc_2616 {
     my $self = shift;
-    my %args = ( Date => 1, Time => 1,
-                 @_,
-                 Timezone => 'utc',
-                 Seconds => 1, DayOfWeek => 1,
-               );
+    my %args = (
+        Date => 1,
+        Time => 1,
+        @_,
+        Timezone  => 'utc',
+        Seconds   => 1,
+        DayOfWeek => 1,
+    );
 
-    my $res = $self->rfc_2822( @_ );
+    my $res = $self->rfc_2822(@_);
     $res =~ s/\s*[+-]\d\d\d\d$/ GMT/ if $args{'Time'};
     return $res;
 }
 
 sub _split_offset {
-    my ($self, $offset) = @_;
-    my $sign = $offset < 0? '-': '+';
-    $offset = int( (abs $offset) / 60 + 0.001 );
-    my $mins = $offset % 60;
-    my $hours = int( $offset/60 + 0.001 );
-    return $sign, $hours, $mins; 
+    my ( $self, $offset ) = @_;
+    my $sign = $offset < 0 ? '-' : '+';
+    $offset = int( ( abs $offset ) / 60 + 0.001 );
+    my $mins  = $offset % 60;
+    my $hours = int( $offset / 60 + 0.001 );
+    return $sign, $hours, $mins;
 }
 
 =head2 Timezones handling
@@ -765,13 +771,13 @@ represents timezone offset against C<UTC> in seconds.
 
 sub localtime {
     my $self = shift;
-    my $tz = $self->timezone(shift);
+    my $tz   = $self->timezone(shift);
 
     my $unix = shift || $self->unix;
     $unix = 0 unless $unix >= 0;
-    
+
     my @local;
-    if ($tz eq 'UTC') {
+    if ( $tz eq 'UTC' ) {
         @local = gmtime($unix);
     } else {
         {
@@ -781,9 +787,9 @@ sub localtime {
             POSIX::tzset();
             @local = localtime($unix);
         }
-        POSIX::tzset(); # return back previouse value
+        POSIX::tzset();    # return back previouse value
     }
-    $local[5] += 1900; # change year to 4+ digits format
+    $local[5] += 1900;     # change year to 4+ digits format
     my $offset = Time::Local::timegm_nocheck(@local) - $unix;
     return @local, $offset;
 }
@@ -799,22 +805,22 @@ You may pass $wday, $yday and $isdst, these are ignored.
 
 If you pass C<$offset> as ninth argument, it's used instead of
 C<$context>. It's done such way as code 
-C<$self->timelocal('utc', $self->localtime('server'))> doesn't
+C<$self->time_local('utc', $self->localtime('server'))> doesn't
 makes much sense and most probably would produce unexpected
 result, so the method ignore 'utc' context and uses offset
 returned by L<Localtime> method.
 
 =cut
 
-sub timelocal {
+sub time_local {
     my $self = shift;
-    my $tz = shift;
+    my $tz   = shift;
     if ( defined $_[9] ) {
-        return timegm(@_[0..5]) - $_[9];
+        return timegm( @_[ 0 .. 5 ] ) - $_[9];
     } else {
-        $tz = $self->timezone( $tz );
+        $tz = $self->timezone($tz);
         if ( $tz eq 'UTC' ) {
-            return Time::Local::timegm(@_[0..5]);
+            return Time::Local::timegm( @_[ 0 .. 5 ] );
         } else {
             my $rv;
             {
@@ -822,14 +828,13 @@ sub timelocal {
                 ## Using POSIX::tzset fixes a bug where the TZ environment variable
                 ## is cached.
                 POSIX::tzset();
-                $rv = Time::Local::timelocal(@_[0..5]);
+                $rv = Time::Local::timelocal( @_[ 0 .. 5 ] );
             };
-            POSIX::tzset(); # switch back to previouse value
+            POSIX::tzset();    # switch back to previouse value
             return $rv;
         }
     }
 }
-
 
 =head3 Timezone $context
 
@@ -856,16 +861,15 @@ If both server's and user's timezone names are undefined returns 'UTC'.
 =cut
 
 sub timezone {
-    my $self = shift;
+    my $self    = shift;
     my $context = lc(shift);
-
 
     $context = 'utc' unless $context =~ /^(?:utc|server|user)$/i;
 
     my $tz;
-    if( $context eq 'user' ) {
+    if ( $context eq 'user' ) {
         $tz = $self->current_user->user_object->timezone;
-    } elsif( $context eq 'server') {
+    } elsif ( $context eq 'server' ) {
         $tz = RT->config->get('Timezone');
     } else {
         $tz = 'UTC';
@@ -874,7 +878,5 @@ sub timezone {
     $tz = 'UTC' if lc $tz eq 'gmt';
     return $tz;
 }
-
-
 
 1;

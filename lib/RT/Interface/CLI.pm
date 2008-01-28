@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,28 +43,27 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 use strict;
 
 use RT;
+
 package RT::Interface::CLI;
-
-
 
 BEGIN {
     use Exporter ();
     use vars qw ($VERSION  @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-    
+
     # set the version for version checking
-    $VERSION = do { my @r = (q$Revision: 1.2.2.1 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r }; # must be all one line, for MakeMaker
-    
-    @ISA         = qw(Exporter);
-    
+    $VERSION = do { my @r = ( q$Revision: 1.2.2.1 $ =~ /\d+/g ); sprintf "%d." . "%02d" x $#r, @r }; # must be all one line, for MakeMaker
+
+    @ISA = qw(Exporter);
+
     # your exported package globals go here,
     # as well as any optionally exported functions
-    @EXPORT_OK   = qw(&CleanEnv 
-		      &GetCurrentUser &GetMessageContent &debug &loc);
+    @EXPORT_OK = qw(&CleanEnv
+        &GetCurrentUser &GetMessageContent &debug &loc);
 }
 
 =head1 name
@@ -103,7 +102,6 @@ BEGIN {
 
 =cut
 
-
 =head2 CleanEnv
 
 Removes some of the nastiest nasties from the user\'s environment.
@@ -111,21 +109,18 @@ Removes some of the nastiest nasties from the user\'s environment.
 =cut
 
 sub clean_env {
-    $ENV{'PATH'} = '/bin:/usr/bin';    # or whatever you need
+    $ENV{'PATH'}   = '/bin:/usr/bin';                   # or whatever you need
     $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
-    $ENV{'SHELL'} = '/bin/sh' if defined $ENV{'SHELL'};
-    $ENV{'ENV'} = '' if defined $ENV{'ENV'};
-    $ENV{'IFS'} = ''		if defined $ENV{'IFS'};
+    $ENV{'SHELL'}  = '/bin/sh' if defined $ENV{'SHELL'};
+    $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
+    $ENV{'IFS'}    = '' if defined $ENV{'IFS'};
 }
-
-
-
 
 {
 
-    my $CurrentUser; # shared betwen GetCurrentUser and loc
+    my $CurrentUser;    # shared betwen GetCurrentUser and loc
 
-# {{{ sub GetCurrentUser 
+    # {{{ sub GetCurrentUser
 
 =head2 GetCurrentUser
 
@@ -134,30 +129,32 @@ loaded with that user.  if the current user isn't found, returns a copy of RT::N
 
 =cut
 
-sub get_current_user {
-    
-    require RT::CurrentUser;
-    
-    #Instantiate a user object
-    
-    my $Gecos= ($^O eq 'MSWin32') ? Win32::Loginname() : (getpwuid($<))[0];
+    sub get_current_user {
 
-    #If the current user is 0, then RT will assume that the User object
-    #is that of the currentuser.
+        require RT::CurrentUser;
 
-    $CurrentUser = RT::CurrentUser->new();
-    $CurrentUser->load_by_gecos($Gecos);
-    
-    unless ($CurrentUser->id) {
-	Jifty->log->debug("No user with a unix login of '$Gecos' was found. ");
+        #Instantiate a user object
+
+        my $Gecos
+            = ( $^O eq 'MSWin32' ) ? Win32::Loginname() : ( getpwuid($<) )[0];
+
+        #If the current user is 0, then RT will assume that the User object
+        #is that of the currentuser.
+
+        $CurrentUser = RT::CurrentUser->new();
+        $CurrentUser->load_by_gecos($Gecos);
+
+        unless ( $CurrentUser->id ) {
+            Jifty->log->debug(
+                "No user with a unix login of '$Gecos' was found. ");
+        }
+
+        return ($CurrentUser);
     }
 
-    return($CurrentUser);
-}
-# }}}
+    # }}}
 
-
-# {{{ sub loc 
+    # {{{ sub loc
 
 =head2 loc
 
@@ -165,14 +162,15 @@ sub get_current_user {
 
 =cut
 
-sub loc {
-    die "No current user yet" unless $CurrentUser ||= RT::CurrentUser->new;
-    return $CurrentUser->_(@_);
-}
-# }}}
+    sub loc {
+        die "No current user yet"
+            unless $CurrentUser ||= RT::CurrentUser->new;
+        return $CurrentUser->_(@_);
+    }
+
+    # }}}
 
 }
-
 
 # {{{ sub GetMessageContent
 
@@ -185,55 +183,57 @@ array of lines.
 =cut
 
 sub get_message_content {
-    my %args = (  Source => undef,
-		  Content => undef,
-		  Edit => undef,
-		  CurrentUser => undef,
-		 @_);
+    my %args = (
+        Source      => undef,
+        Content     => undef,
+        Edit        => undef,
+        CurrentUser => undef,
+        @_
+    );
     my $source = $args{'Source'};
 
     my $edit = $args{'Edit'};
-    
+
     my $currentuser = $args{'CurrentUser'};
     my @lines;
 
     use File::Temp qw/ tempfile/;
-    
+
     #Load the sourcefile, if it's been handed to us
     if ($source) {
-	open (SOURCE, "<$source");
-	@lines = (<SOURCE>);
-	close (SOURCE);
+        open( SOURCE, "<$source" );
+        @lines = (<SOURCE>);
+        close(SOURCE);
+    } elsif ( $args{'Content'} ) {
+        @lines = split( '\n', $args{'Content'} );
     }
-    elsif ($args{'Content'}) {
-	@lines = split('\n',$args{'Content'});
-    }
+
     #get us a tempfile.
-    my ($fh, $filename) = tempfile();
-	
+    my ( $fh, $filename ) = tempfile();
+
     #write to a tmpfile
     for (@lines) {
-	print $fh $_;
+        print $fh $_;
     }
-    close ($fh);
-    
+    close($fh);
+
     #Edit the file if we need to
-    if ($edit) {	
+    if ($edit) {
 
-	unless ($ENV{'EDITOR'}) {
-	    Jifty->log->fatal('No $EDITOR variable defined'. "\n");
-	    return undef;
-	}
-	system ($ENV{'EDITOR'}, $filename);
-    }	
-    
-    open (READ, "<$filename");
+        unless ( $ENV{'EDITOR'} ) {
+            Jifty->log->fatal( 'No $EDITOR variable defined' . "\n" );
+            return undef;
+        }
+        system( $ENV{'EDITOR'}, $filename );
+    }
+
+    open( READ, "<$filename" );
     my @newlines = (<READ>);
-    close (READ);
+    close(READ);
 
-    unlink ($filename) unless (debug());
-    return(\@newlines);
-    
+    unlink($filename) unless ( debug() );
+    return ( \@newlines );
+
 }
 
 # }}}
@@ -244,22 +244,21 @@ sub debug {
     my $val = shift;
     my ($debug);
     if ($val) {
-	Jifty->log->debug($val."\n");
-	if ($debug) {
-	    print STDERR "$val\n";
-	}
+        Jifty->log->debug( $val . "\n" );
+        if ($debug) {
+            print STDERR "$val\n";
+        }
     }
     if ($debug) {
-	return(1);
-    }	
+        return (1);
+    }
 }
 
 # }}}
 
-
 eval "require RT::Interface::CLI_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/CLI_Vendor.pm});
+die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Interface/CLI_Vendor.pm} );
 eval "require RT::Interface::CLI_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Interface/CLI_Local.pm});
+die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Interface/CLI_Local.pm} );
 
 1;

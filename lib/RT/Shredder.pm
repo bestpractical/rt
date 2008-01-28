@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,13 +43,12 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 package RT::Shredder;
 
 use strict;
 use warnings;
-
 
 =head1 name
 
@@ -194,11 +193,11 @@ objects in the cache and backups storage.
 our $VERSION = '0.04';
 use File::Spec ();
 
-
 BEGIN {
-# I can't use 'use lib' here since it breakes tests
-# because test suite uses old RT::Shredder setup from
-# RT lib path
+
+    # I can't use 'use lib' here since it breakes tests
+    # because test suite uses old RT::Shredder setup from
+    # RT lib path
 
 ### after:     push @INC, qw(@RT_LIB_PATH@);
     push @INC, qw(/opt/rt3/local/lib /opt/rt3/lib);
@@ -285,7 +284,7 @@ There currently are no %options.
 sub new {
     my $proto = shift;
     my $self = bless( {}, ref $proto || $proto );
-    $self->_init( @_ );
+    $self->_init(@_);
     return $self;
 }
 
@@ -326,38 +325,40 @@ sub cast_objects_to_records {
 
     my @res;
     my $targets = delete $args{'Objects'};
-    unless( $targets ) {
-        RT::Shredder::Exception->throw( "Undefined Objects argument" );
+    unless ($targets) {
+        RT::Shredder::Exception->throw("Undefined Objects argument");
     }
 
-    if( UNIVERSAL::isa( $targets, 'RT::SearchBuilder' ) ) {
+    if ( UNIVERSAL::isa( $targets, 'RT::SearchBuilder' ) ) {
+
         #XXX: try to use ->_do_search + ->items_array_ref in feature
         #     like we do in Record with links, but change only when
         #     more tests would be available
-        while( my $tmp = $targets->next ) { push @res, $tmp };
+        while ( my $tmp = $targets->next ) { push @res, $tmp }
     } elsif ( UNIVERSAL::isa( $targets, 'RT::Record' ) ) {
         push @res, $targets;
     } elsif ( UNIVERSAL::isa( $targets, 'ARRAY' ) ) {
-        foreach( @$targets ) {
+        foreach (@$targets) {
             push @res, $self->cast_objects_to_records( Objects => $_ );
         }
     } elsif ( UNIVERSAL::isa( $targets, 'SCALAR' ) || !ref $targets ) {
         $targets = $$targets if ref $targets;
-        my ($class, $id) = split /-/, $targets;
-        $class = 'RT::'. $class unless $class =~ /^RTx?::/i;
+        my ( $class, $id ) = split /-/, $targets;
+        $class = 'RT::' . $class unless $class =~ /^RTx?::/i;
         eval "require $class";
         die "Couldn't load '$class' module" if $@;
-        my $obj = $class->new(current_user => RT->system_user );
+        my $obj = $class->new( current_user => RT->system_user );
         die "Couldn't construct new '$class' object" unless $obj;
-        $obj->load( $id );
+        $obj->load($id);
+
         unless ( $obj->id ) {
-            Jifty->log->error( "Couldn't load '$class' object with id '$id'" );
-            RT::Shredder::Exception::Info->throw( 'CouldntLoadObject' );
+            Jifty->log->error("Couldn't load '$class' object with id '$id'");
+            RT::Shredder::Exception::Info->throw('CouldntLoadObject');
         }
-        die "Loaded object has different id" unless( $id eq $obj->id );
+        die "Loaded object has different id" unless ( $id eq $obj->id );
         push @res, $obj;
     } else {
-        RT::Shredder::Exception->throw( "Unsupported type ". ref $targets );
+        RT::Shredder::Exception->throw( "Unsupported type " . ref $targets );
     }
     return @res;
 }
@@ -380,8 +381,10 @@ sub put_objects {
     my %args = ( Objects => undef, @_ );
 
     my @res;
-    for( $self->cast_objects_to_records( Objects => delete $args{'Objects'} ) ) {
-        push @res, $self->put_object( %args, Object => $_ )
+    for (
+        $self->cast_objects_to_records( Objects => delete $args{'Objects'} ) )
+    {
+        push @res, $self->put_object( %args, Object => $_ );
     }
 
     return @res;
@@ -402,12 +405,14 @@ sub put_object {
     my %args = ( Object => undef, @_ );
 
     my $obj = $args{'Object'};
-    unless( UNIVERSAL::isa( $obj, 'RT::Record' ) ) {
-        RT::Shredder::Exception->throw( "Unsupported type '". (ref $obj || $obj || '(undef)')."'" );
+    unless ( UNIVERSAL::isa( $obj, 'RT::Record' ) ) {
+        RT::Shredder::Exception->throw(
+            "Unsupported type '" . ( ref $obj || $obj || '(undef)' ) . "'" );
     }
 
     my $str = $obj->_as_string;
-    return ($self->{'cache'}->{ $str } ||= { State => ON_STACK, Object => $obj } );
+    return ( $self->{'cache'}->{$str}
+            ||= { State => ON_STACK, Object => $obj } );
 }
 
 =head4 GetObject, GetState, GetRecord( String => ''| Object => '' )
@@ -429,21 +434,23 @@ sub _parse_ref_str_args {
         Object => undef,
         @_
     );
-    if( $args{'String'} && $args{'Object'} ) {
+    if ( $args{'String'} && $args{'Object'} ) {
         require Carp;
-        Carp::croak( "both String and Object args passed" );
+        Carp::croak("both String and Object args passed");
     }
     return $args{'String'} if $args{'String'};
-    return $args{'Object'}->_as_string if UNIVERSAL::can($args{'Object'}, '_AsString' );
+    return $args{'Object'}->_as_string
+        if UNIVERSAL::can( $args{'Object'}, '_AsString' );
     return '';
 }
 
-sub get_object { return (shift)->get_record( @_ )->{'Object'} }
-sub get_state { return (shift)->get_record( @_ )->{'State'} }
+sub get_object { return (shift)->get_record(@_)->{'Object'} }
+sub get_state  { return (shift)->get_record(@_)->{'State'} }
+
 sub get_record {
     my $self = shift;
-    my $str = $self->_parse_ref_str_args( @_ );
-    return $self->{'cache'}->{ $str };
+    my $str  = $self->_parse_ref_str_args(@_);
+    return $self->{'cache'}->{$str};
 }
 
 =head3 Dependencies resolvers
@@ -457,20 +464,17 @@ TODO: These methods have no documentation.
 sub put_resolver {
     my $self = shift;
     my %args = (
-        BaseClass => '',
+        BaseClass   => '',
         TargetClass => '',
-        Code => undef,
+        Code        => undef,
         @_,
     );
-    unless( UNIVERSAL::isa( $args{'Code'} => 'CODE' ) ) {
+    unless ( UNIVERSAL::isa( $args{'Code'} => 'CODE' ) ) {
         die "Resolver '$args{Code}' is not code reference";
     }
 
-    my $resolvers = (
-        (
-            $self->{'resolver'}->{ $args{'BaseClass'} } ||= {}
-        )->{  $args{'TargetClass'} || '' } ||= []
-    );
+    my $resolvers = ( ( $self->{'resolver'}->{ $args{'BaseClass'} } ||= {} )
+        ->{ $args{'TargetClass'} || '' } ||= [] );
     unshift @$resolvers, $args{'Code'};
     return;
 }
@@ -478,16 +482,21 @@ sub put_resolver {
 sub get_resolvers {
     my $self = shift;
     my %args = (
-        BaseClass => '',
+        BaseClass   => '',
         TargetClass => '',
         @_,
     );
 
     my @res;
-    if( $args{'TargetClass'} && exists $self->{'resolver'}->{ $args{'BaseClass'} }->{ $args{'TargetClass'} } ) {
-        push @res, @{ $self->{'resolver'}->{ $args{'BaseClass'} }->{ $args{'TargetClass'} || '' } };
+    if ( $args{'TargetClass'}
+        && exists $self->{'resolver'}->{ $args{'BaseClass'} }
+        ->{ $args{'TargetClass'} } )
+    {
+        push @res,
+            @{ $self->{'resolver'}->{ $args{'BaseClass'} }
+                ->{ $args{'TargetClass'} || '' } };
     }
-    if( exists $self->{'resolver'}->{ $args{'BaseClass'} }->{ '' } ) {
+    if ( exists $self->{'resolver'}->{ $args{'BaseClass'} }->{''} ) {
         push @res, @{ $self->{'resolver'}->{ $args{'BaseClass'} }->{''} };
     }
 
@@ -497,22 +506,23 @@ sub get_resolvers {
 sub apply_resolvers {
     my $self = shift;
     my %args = ( Dependency => undef, @_ );
-    my $dep = $args{'Dependency'};
+    my $dep  = $args{'Dependency'};
 
     my @resolvers = $self->get_resolvers(
         BaseClass   => $dep->base_class,
         TargetClass => $dep->target_class,
     );
 
-    unless( @resolvers ) {
+    unless (@resolvers) {
         RT::Shredder::Exception::Info->throw(
             tag   => 'NoResolver',
-            error => "Couldn't find resolver for dependency '". $dep->as_string ."'",
+            error => "Couldn't find resolver for dependency '"
+                . $dep->as_string . "'",
         );
     }
     $_->(
         Shredder     => $self,
-        base_object   => $dep->base_object,
+        base_object  => $dep->base_object,
         TargetObject => $dep->target_object,
     ) foreach @resolvers;
 
@@ -522,8 +532,8 @@ sub apply_resolvers {
 sub wipeout_all {
     my $self = $_[0];
 
-    while ( my ($k, $v) = each %{ $self->{'cache'} } ) {
-        next if $v->{'State'} & (WIPED | IN_WIPING);
+    while ( my ( $k, $v ) = each %{ $self->{'cache'} } ) {
+        next if $v->{'State'} & ( WIPED | IN_WIPING );
         $self->wipeout( Object => $v->{'Object'} );
     }
 }
@@ -532,13 +542,14 @@ sub wipeout {
     my $self = shift;
     my $mark;
     eval {
-        die "Couldn't begin transaction" unless Jifty->handle->begin_transaction;
+        die "Couldn't begin transaction"
+            unless Jifty->handle->begin_transaction;
         $mark = $self->push_dump_mark or die "Couldn't get dump mark";
-        $self->_wipeout( @_ );
+        $self->_wipeout(@_);
         $self->pop_dump_mark( Mark => $mark );
         die "Couldn't commit transaction" unless Jifty->handle->commit;
     };
-    if( $@ ) {
+    if ($@) {
         Jifty->handle->rollback('force');
         $self->rollback_dump_to( Mark => $mark ) if $mark;
         die $@ if RT::Shredder::Exception::Info->caught;
@@ -552,51 +563,58 @@ sub _wipeout {
 
     my $record = $args{'CacheRecord'};
     $record = $self->put_object( Object => $args{'Object'} ) unless $record;
-    return if $record->{'State'} & (WIPED | IN_WIPING);
+    return if $record->{'State'} & ( WIPED | IN_WIPING );
 
     $record->{'State'} |= IN_WIPING;
     my $object = $record->{'Object'};
 
     $self->dump_object( Object => $object, State => 'before any action' );
 
-    unless( $object->before_wipeout ) {
-        RT::Shredder::Exception->throw( "BeforeWipeout check returned error" );
+    unless ( $object->before_wipeout ) {
+        RT::Shredder::Exception->throw("BeforeWipeout check returned error");
     }
 
     my $deps = $object->dependencies( Shredder => $self );
     $deps->list(
         WithFlags => DEPENDS_ON | VARIABLE,
-        Callback  => sub  { $self->apply_resolvers( Dependency => $_[0] ) },
+        Callback  => sub { $self->apply_resolvers( Dependency => $_[0] ) },
     );
     $self->dump_object( Object => $object, State => 'after resolvers' );
 
     $deps->list(
         WithFlags    => DEPENDS_ON,
         WithoutFlags => WIPE_AFTER | VARIABLE,
-        Callback     => sub  { $self->_wipeout( Object => $_[0]->target_object ) },
+        Callback => sub { $self->_wipeout( Object => $_[0]->target_object ) },
     );
-    $self->dump_object( Object => $object, State => 'after wiping dependencies' );
+    $self->dump_object(
+        Object => $object,
+        State  => 'after wiping dependencies'
+    );
 
     $object->__wipeout;
-    $record->{'State'} |= WIPED; delete $record->{'Object'};
+    $record->{'State'} |= WIPED;
+    delete $record->{'Object'};
     $self->dump_object( Object => $object, State => 'after wipeout' );
 
     $deps->list(
-        WithFlags => DEPENDS_ON | WIPE_AFTER,
+        WithFlags    => DEPENDS_ON | WIPE_AFTER,
         WithoutFlags => VARIABLE,
-        Callback => sub  { $self->_wipeout( Object => $_[0]->target_object ) },
+        Callback => sub { $self->_wipeout( Object => $_[0]->target_object ) },
     );
-    $self->dump_object( Object => $object, State => 'after late dependencies' );
+    $self->dump_object(
+        Object => $object,
+        State  => 'after late dependencies'
+    );
 
     return;
 }
 
 sub validate_relations {
     my $self = shift;
-    my %args = ( @_ );
+    my %args = (@_);
 
-    foreach my $record( values %{ $self->{'cache'} } ) {
-        next if( $record->{'State'} & VALID );
+    foreach my $record ( values %{ $self->{'cache'} } ) {
+        next if ( $record->{'State'} & VALID );
         $record->{'Object'}->validate_relations( Shredder => $self );
     }
 }
@@ -647,45 +665,46 @@ sub get_filename {
 
     # default value
     my $file = $args{'Filename'} || '%t-XXXX.sql';
-    if( $file =~ /\%t/i ) {
+    if ( $file =~ /\%t/i ) {
         require POSIX;
         my $date_time = POSIX::strftime( "%Y%m%dT%H%M%S", gmtime );
         $file =~ s/\%t/$date_time/gi;
     }
 
     # convert to absolute path
-    if( $args{'FromStorage'} ) {
+    if ( $args{'FromStorage'} ) {
         $file = File::Spec->catfile( $self->storage_path, $file );
-    } elsif( !File::Spec->file_name_is_absolute( $file ) ) {
-        $file = File::Spec->rel2abs( $file );
+    } elsif ( !File::Spec->file_name_is_absolute($file) ) {
+        $file = File::Spec->rel2abs($file);
     }
 
     # check mask
-    if( $file =~ /XXXX[^\/\\]*$/ ) {
-        my( $tmp, $i ) = ( $file, 0 );
+    if ( $file =~ /XXXX[^\/\\]*$/ ) {
+        my ( $tmp, $i ) = ( $file, 0 );
         do {
             $i++;
             $tmp = $file;
             $tmp =~ s/XXXX([^\/\\]*)$/sprintf("%04d", $i).$1/e;
-        } while( -e $tmp && $i < 9999 );
+        } while ( -e $tmp && $i < 9999 );
         $file = $tmp;
     }
 
-    if( -f $file ) {
-        unless( -w _ ) {
+    if ( -f $file ) {
+        unless ( -w _ ) {
             die "File '$file' exists, but is read-only";
         }
-    } elsif( !-e _ ) {
-        unless( File::Spec->file_name_is_absolute( $file ) ) {
-            $file = File::Spec->rel2abs( $file );
+    } elsif ( !-e _ ) {
+        unless ( File::Spec->file_name_is_absolute($file) ) {
+            $file = File::Spec->rel2abs($file);
         }
 
         # check base dir
-        my $dir = File::Spec->join( (File::Spec->splitpath( $file ))[0,1] );
-        unless( -e $dir && -d _) {
+        my $dir
+            = File::Spec->join( ( File::Spec->splitpath($file) )[ 0, 1 ] );
+        unless ( -e $dir && -d _ ) {
             die "Base directory '$dir' for file '$file' doesn't exist";
         }
-        unless( -w $dir ) {
+        unless ( -w $dir ) {
             die "Base directory '$dir' is not writable";
         }
     } else {
@@ -710,21 +729,22 @@ sub storage_path {
 }
 
 my %active_dump_state = ();
+
 sub add_dump_plugin {
     my $self = shift;
     my %args = ( Object => undef, name => 'SQLDump', Arguments => undef, @_ );
 
     my $plugin = $args{'Object'};
-    unless ( $plugin ) {
+    unless ($plugin) {
         require RT::Shredder::Plugin;
         $plugin = RT::Shredder::Plugin->new;
-        my( $status, $msg ) = $plugin->load_by_name( $args{'name'} );
+        my ( $status, $msg ) = $plugin->load_by_name( $args{'name'} );
         die "Couldn't load dump plugin: $msg\n" unless $status;
     }
     die "Plugin is not of correct type" unless lc $plugin->type eq 'dump';
 
     if ( my $pargs = $args{'Arguments'} ) {
-        my ($status, $msg) = $plugin->test_args( %$pargs );
+        my ( $status, $msg ) = $plugin->test_args(%$pargs);
         die "Couldn't set plugin args: $msg\n" unless $status;
     }
 
@@ -739,41 +759,45 @@ sub add_dump_plugin {
 
 sub dump_object {
     my $self = shift;
-    my %args = (Object => undef, State => undef, @_);
+    my %args = ( Object => undef, State => undef, @_ );
     die "No state passed" unless $args{'State'};
-    return unless $active_dump_state{ lc $args{'State'} };
+    return                unless $active_dump_state{ lc $args{'State'} };
 
-    foreach (@{ $self->{'dump_plugins'} }) {
+    foreach ( @{ $self->{'dump_plugins'} } ) {
         next unless grep lc $args{'State'} eq lc $_, $_->applies_to_states;
-        my ($state, $msg) = $_->run( %args );
+        my ( $state, $msg ) = $_->run(%args);
         die "Couldn't run plugin: $msg" unless $state;
     }
 }
 
-{ my $mark = 1; # XXX: integer overflows?
-sub push_dump_mark {
-    my $self = shift;
-    $mark++;
-    foreach (@{ $self->{'dump_plugins'} }) {
-        my ($state, $msg) = $_->push_mark( Mark => $mark );
-        die "Couldn't push mark: $msg" unless $state;
+{
+    my $mark = 1;    # XXX: integer overflows?
+
+    sub push_dump_mark {
+        my $self = shift;
+        $mark++;
+        foreach ( @{ $self->{'dump_plugins'} } ) {
+            my ( $state, $msg ) = $_->push_mark( Mark => $mark );
+            die "Couldn't push mark: $msg" unless $state;
+        }
+        return $mark;
     }
-    return $mark;
-}
-sub pop_dump_mark {
-    my $self = shift;
-    foreach (@{ $self->{'dump_plugins'} }) {
-        my ($state, $msg) = $_->push_mark( @_ );
-        die "Couldn't pop mark: $msg" unless $state;
+
+    sub pop_dump_mark {
+        my $self = shift;
+        foreach ( @{ $self->{'dump_plugins'} } ) {
+            my ( $state, $msg ) = $_->push_mark(@_);
+            die "Couldn't pop mark: $msg" unless $state;
+        }
     }
-}
-sub rollback_dump_to {
-    my $self = shift;
-    foreach (@{ $self->{'dump_plugins'} }) {
-        my ($state, $msg) = $_->rollback_to( @_ );
-        die "Couldn't rollback to mark: $msg" unless $state;
+
+    sub rollback_dump_to {
+        my $self = shift;
+        foreach ( @{ $self->{'dump_plugins'} } ) {
+            my ( $state, $msg ) = $_->rollback_to(@_);
+            die "Couldn't rollback to mark: $msg" unless $state;
+        }
     }
-}
 }
 
 1;

@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 package RT::Interface::Email::Auth::GnuPG;
 
@@ -76,15 +76,14 @@ sub get_current_user {
 
     $args{'Message'}->head->delete($_)
         for qw(X-RT-GnuPG-Status X-RT-Incoming-Encrypton
-               X-RT-Incoming-Signature X-RT-Privacy);
+        X-RT-Incoming-Signature X-RT-Privacy);
 
     my $msg = $args{'Message'}->dup;
 
-    my ($status, @res) = verify_decrypt( Entity => $args{'Message'} );
+    my ( $status, @res ) = verify_decrypt( Entity => $args{'Message'} );
     if ( $status && !@res ) {
-        $args{'Message'}->head->add(
-            'X-RT-Incoming-Encryption' => 'Not encrypted'
-        );
+        $args{'Message'}
+            ->head->add( 'X-RT-Incoming-Encryption' => 'Not encrypted' );
 
         return 1;
     }
@@ -92,10 +91,12 @@ sub get_current_user {
     # FIXME: Check if the message is encrypted to the address of
     # _this_ queue. send rejecting mail otherwise.
 
-    unless ( $status ) {
+    unless ($status) {
         Jifty->log->error("Had a problem during decrypting and verifying");
-        my $reject = HandleErrors( Message => $args{'Message'}, Result => \@res );
-        return (0, 'rejected because of problems during decrypting and verifying')
+        my $reject
+            = HandleErrors( Message => $args{'Message'}, Result => \@res );
+        return ( 0,
+            'rejected because of problems during decrypting and verifying' )
             if $reject;
     }
 
@@ -120,14 +121,15 @@ sub get_current_user {
             }
             if ( $_->{Operation} eq 'Verify' && $_->{Status} eq 'DONE' ) {
                 $args{'Message'}->head->add(
-                    'X-RT-Incoming-Signature' => $_->{UserString}
-                );
+                    'X-RT-Incoming-Signature' => $_->{UserString} );
             }
         }
 
-        $args{'Message'}->head->add( 'X-RT-Incoming-Encryption' => $decrypted
+        $args{'Message'}->head->add(
+              'X-RT-Incoming-Encryption' => $decrypted
             ? 'Success'
-            : 'Not encrypted' );
+            : 'Not encrypted'
+        );
     }
 
     return 1;
@@ -136,7 +138,7 @@ sub get_current_user {
 sub handle_errors {
     my %args = (
         Message => undef,
-        Result => [],
+        Result  => [],
         @_
     );
 
@@ -146,13 +148,25 @@ sub handle_errors {
     foreach my $run ( @{ $args{'Result'} } ) {
         my @status = RT::Crypt::GnuPG::parse_status( $run->{'status'} );
         unless ( $sent_once{'Noprivate_key'} ) {
-            unless ( CheckNoprivate_key( Message => $args{'Message'}, Status => \@status ) ) {
+            unless (
+                CheckNoprivate_key(
+                    Message => $args{'Message'},
+                    Status  => \@status
+                )
+                )
+            {
                 $sent_once{'Noprivate_key'}++;
                 $reject = 1;
             }
         }
         unless ( $sent_once{'BadData'} ) {
-            unless ( CheckBadData( Message => $args{'Message'}, Status => \@status ) ) {
+            unless (
+                CheckBadData(
+                    Message => $args{'Message'},
+                    Status  => \@status
+                )
+                )
+            {
                 $sent_once{'BadData'}++;
                 $reject = 1;
             }
@@ -162,57 +176,67 @@ sub handle_errors {
 }
 
 sub check_noprivate_key {
-    my %args = (Message => undef, Status => [], @_ );
+    my %args = ( Message => undef, Status => [], @_ );
     my @status = @{ $args{'Status'} };
 
     my @decrypts = grep $_->{'Operation'} eq 'Decrypt', @status;
     return 1 unless @decrypts;
-    foreach my $action ( @decrypts ) {
+    foreach my $action (@decrypts) {
+
         # if at least one secrete key exist then it's another error
-        return 1 if
-            grep !$_->{'User'}{'SecretKeyMissing'},
-                @{ $action->{'EncryptedTo'} };
+        return 1
+            if grep !$_->{'User'}{'SecretKeyMissing'},
+            @{ $action->{'EncryptedTo'} };
     }
 
     Jifty->log->error("Couldn't decrypt a message: have no private key");
 
-    my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
+    my $address = (
+        RT::Interface::Email::ParseSenderAddressFromHead(
+            $args{'Message'}->head
+        )
+    )[0];
     my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
         To        => $address,
         Template  => 'Error: no private key',
         Arguments => {
-            Message   => $args{'Message'},
+            Message    => $args{'Message'},
             ticket_obj => $args{'Ticket'},
         },
         InReplyTo => $args{'Message'},
     );
-    unless ( $status ) {
+    unless ($status) {
         Jifty->log->error("Couldn't send 'Error: no private key'");
     }
     return 0;
 }
 
 sub check_bad_data {
-    my %args = (Message => undef, Status => [], @_ );
-    my @bad_data_messages = 
-        map $_->{'Message'},
+    my %args = ( Message => undef, Status => [], @_ );
+    my @bad_data_messages
+        = map $_->{'Message'},
         grep $_->{'Status'} ne 'DONE' && $_->{'Operation'} eq 'Data',
         @{ $args{'Status'} };
     return 1 unless @bad_data_messages;
 
-    Jifty->log->error("Couldn't process a message: ". join ', ', @bad_data_messages );
+    Jifty->log->error( "Couldn't process a message: " . join ', ',
+        @bad_data_messages );
 
-    my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
+    my $address = (
+        RT::Interface::Email::ParseSenderAddressFromHead(
+            $args{'Message'}->head
+        )
+    )[0];
     my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
         To        => $address,
         Template  => 'Error: bad GnuPG data',
         Arguments => {
-            Messages  => [ @bad_data_messages ],
+            Messages   => [@bad_data_messages],
             ticket_obj => $args{'Ticket'},
         },
         InReplyTo => $args{'Message'},
     );
-    unless ( $status ) {
+    unless ($status) {
         Jifty->log->error("Couldn't send 'Error: bad GnuPG data'");
     }
     return 0;
@@ -224,8 +248,8 @@ sub verify_decrypt {
         @_
     );
 
-    my @res = RT::Crypt::GnuPG::verify_decrypt( %args );
-    unless ( @res ) {
+    my @res = RT::Crypt::GnuPG::verify_decrypt(%args);
+    unless (@res) {
         Jifty->log->debug("No more encrypted/signed parts");
         return 1;
     }
@@ -235,21 +259,21 @@ sub verify_decrypt {
     # return on any error
     if ( grep $_->{'exit_code'}, @res ) {
         Jifty->log->debug("Error during verify/decrypt operation");
-        return (0, @res);
+        return ( 0, @res );
     }
 
     # nesting
-    my ($status, @nested) = verify_decrypt( %args );
+    my ( $status, @nested ) = verify_decrypt(%args);
     return $status, @res, @nested;
 }
 
 eval "require RT::Interface::Email::Auth::GnuPG_Vendor";
 die $@
-  if ( $@
+    if ( $@
     && $@ !~ qr{^Can't locate RT/Interface/Email/Auth/GnuPG_Vendor.pm} );
 eval "require RT::Interface::Email::Auth::GnuPG_Local";
 die $@
-  if ( $@
+    if ( $@
     && $@ !~ qr{^Can't locate RT/Interface/Email/Auth/GnuPG_Local.pm} );
 
 1;

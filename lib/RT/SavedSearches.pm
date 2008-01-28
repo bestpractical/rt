@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,8 +43,9 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
+
 =head1 name
 
   RT::SavedSearches - a pseudo-collection for SavedSearch objects.
@@ -71,13 +72,13 @@ use RT::SavedSearch;
 use strict;
 use base 'RT::Base';
 
-sub new  {
+sub new {
     my $proto = shift;
     my $class = ref($proto) || $proto;
     my $self  = {};
-    bless ($self, $class);
+    bless( $self, $class );
     $self->_get_current_user(@_);
-    $self->{'idx'} = 0;
+    $self->{'idx'}     = 0;
     $self->{'objects'} = [];
     return $self;
 }
@@ -94,23 +95,23 @@ user/group will be loaded.  Repeated calls to the same object should DTRT.
 =cut
 
 sub limit_to_privacy {
-    my $self = shift;
+    my $self    = shift;
     my $privacy = shift;
-    my $type = shift;
+    my $type    = shift;
 
     my $object = $self->_get_object($privacy);
 
     if ($object) {
-	$self->{'objects'} = [];
-	my @search_atts = $object->attributes->named('SavedSearch');
-	foreach my $att (@search_atts) {
-	    my $search = RT::SavedSearch->new;
-	    $search->load($privacy, $att->id);
-	    next if $type && $search->type ne $type;
-	    push(@{$self->{'objects'}}, $search);
-	}
+        $self->{'objects'} = [];
+        my @search_atts = $object->attributes->named('SavedSearch');
+        foreach my $att (@search_atts) {
+            my $search = RT::SavedSearch->new;
+            $search->load( $privacy, $att->id );
+            next if $type && $search->type ne $type;
+            push( @{ $self->{'objects'} }, $search );
+        }
     } else {
-	Jifty->log->error("Could not load object $privacy");
+        Jifty->log->error("Could not load object $privacy");
     }
 }
 
@@ -123,13 +124,14 @@ Returns the next object in the collection.
 =cut
 
 sub next {
-    my $self = shift;
-    my $search = $self->{'objects'}->[$self->{'idx'}];
+    my $self   = shift;
+    my $search = $self->{'objects'}->[ $self->{'idx'} ];
     if ($search) {
-	$self->{'idx'}++;
+        $self->{'idx'}++;
     } else {
-	# We have run out of objects; reset the counter.
-	$self->{'idx'} = 0;
+
+        # We have run out of objects; reset the counter.
+        $self->{'idx'} = 0;
     }
     return $search;
 }
@@ -142,7 +144,7 @@ Returns the number of search objects found.
 
 sub count {
     my $self = shift;
-    return scalar @{$self->{'objects'}};
+    return scalar @{ $self->{'objects'} };
 }
 
 ### Internal methods
@@ -151,7 +153,7 @@ sub count {
 #  have been passed.
 
 sub _get_object {
-    my $self = shift;
+    my $self    = shift;
     my $privacy = shift;
 
     return RT::SavedSearch->new->_get_object($privacy);
@@ -167,8 +169,10 @@ sub _privacy_objects {
 
     my $groups = RT::Model::GroupCollection->new;
     $groups->limit_to_user_defined_groups;
-    $groups->with_member( principal_id => $self->current_user->id,
-                         Recursively => 1 );
+    $groups->with_member(
+        principal_id => $self->current_user->id,
+        Recursively  => 1
+    );
 
     return ( $CurrentUser->user_object, @{ $groups->items_array_ref() } );
 }

@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/copyleft/gpl.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 package RT::Shredder::Plugin;
 
@@ -89,18 +89,16 @@ after your've load it.
 
 =cut
 
-sub new
-{
+sub new {
     my $proto = shift;
     my $self = bless( {}, ref $proto || $proto );
-    $self->_init( @_ );
+    $self->_init(@_);
     return $self;
 }
 
-sub _init
-{
+sub _init {
     my $self = shift;
-    my %args = ( @_ );
+    my %args = (@_);
     $self->{'opt'} = \%args;
 }
 
@@ -115,13 +113,12 @@ plugins of that type.
 
 =cut
 
-sub List
-{
+sub List {
     my $self = shift;
     my $type = shift;
 
     my @files;
-    foreach my $root( @INC ) {
+    foreach my $root (@INC) {
         my $mask = File::Spec->catfile( $root, qw(RT Shredder Plugin *.pm) );
         push @files, glob $mask;
     }
@@ -131,14 +128,14 @@ sub List
     return %res unless $type;
 
     delete $res{'Base'};
-    foreach my $name( keys %res ) {
+    foreach my $name ( keys %res ) {
         my $class = join '::', qw(RT Shredder Plugin), $name;
-        unless( eval "require $class" ) {
-            delete $res{ $name };
+        unless ( eval "require $class" ) {
+            delete $res{$name};
             next;
         }
         next if lc $class->type eq lc $type;
-        delete $res{ $name };
+        delete $res{$name};
     }
 
     return %res;
@@ -159,22 +156,22 @@ is C<false> value.
 
 =cut
 
-sub load_by_name
-{
+sub load_by_name {
     my $self = shift;
-    my $name = shift or return (0, "name not specified");
+    my $name = shift or return ( 0, "name not specified" );
 
     local $@;
     my $plugin = "RT::Shredder::Plugin::$name";
-    eval "require $plugin" or return( 0, $@ );
-    return( 0, "Plugin '$plugin' has no method new") unless $plugin->can('new');
+    eval "require $plugin" or return ( 0, $@ );
+    return ( 0, "Plugin '$plugin' has no method new" )
+        unless $plugin->can('new');
 
-    my $obj = eval { $plugin->new( @_ ) };
-    return( 0, $@ ) if $@;
-    return( 0, 'constructor returned empty object' ) unless $obj;
+    my $obj = eval { $plugin->new(@_) };
+    return ( 0, $@ ) if $@;
+    return ( 0, 'constructor returned empty object' ) unless $obj;
 
-    $self->rebless( $obj );
-    return( 1, "successfuly load plugin" );
+    $self->rebless($obj);
+    return ( 1, "successfuly load plugin" );
 }
 
 =head2 LoadByString
@@ -196,33 +193,32 @@ is C<false>.
 
 =cut
 
-sub loadByString
-{
+sub loadByString {
     my $self = shift;
-    my ($plugin, $args) = split /=/, ( shift || '' ), 2;
+    my ( $plugin, $args ) = split /=/, ( shift || '' ), 2;
 
-    my ($status, $msg) = $self->load_by_name( $plugin, @_ );
-    return( $status, $msg ) unless $status;
+    my ( $status, $msg ) = $self->load_by_name( $plugin, @_ );
+    return ( $status, $msg ) unless $status;
 
     my %args;
-    foreach( split /\s*;\s*/, ( $args || '' ) ) {
-        my( $k,$v ) = split /\s*,\s*/, ( $_ || '' ), 2;
-        unless( $args{$k} ) {
+    foreach ( split /\s*;\s*/, ( $args || '' ) ) {
+        my ( $k, $v ) = split /\s*,\s*/, ( $_ || '' ), 2;
+        unless ( $args{$k} ) {
             $args{$k} = $v;
             next;
         }
 
-        $args{$k} = [ $args{$k} ] unless UNIVERSAL::isa( $args{ $k }, 'ARRAY');
+        $args{$k} = [ $args{$k} ] unless UNIVERSAL::isa( $args{$k}, 'ARRAY' );
         push @{ $args{$k} }, $v;
     }
 
-    ($status, $msg) = $self->has_support_for_args( keys %args );
-    return( $status, $msg ) unless $status;
+    ( $status, $msg ) = $self->has_support_for_args( keys %args );
+    return ( $status, $msg ) unless $status;
 
-    ($status, $msg) = $self->test_args( %args );
-    return( $status, $msg ) unless $status;
+    ( $status, $msg ) = $self->test_args(%args);
+    return ( $status, $msg ) unless $status;
 
-    return( 1, "successfuly load plugin" );
+    return ( 1, "successfuly load plugin" );
 }
 
 =head2 Rebless
@@ -237,9 +233,8 @@ plugin.
 
 =cut
 
-sub Rebless
-{
-    my( $self, $obj ) = @_;
+sub Rebless {
+    my ( $self, $obj ) = @_;
     bless( $self, ref $obj );
     %{$self} = %{$obj};
     return;

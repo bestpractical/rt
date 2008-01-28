@@ -12,16 +12,15 @@ use File::Spec ();
 use vars qw($Config $System $nobody $Handle );
 our $VERSION = '3.7.14';
 
-
-our $BasePath = '/home/jesse/svk/3.999-DANGEROUS';
-our $EtcPath = '/home/jesse/svk/3.999-DANGEROUS/etc';
-our $BinPath = '/home/jesse/svk/3.999-DANGEROUS/bin';
-our $VarPath = '/home/jesse/svk/3.999-DANGEROUS/var';
-our $LocalPath = '/home/jesse/svk/3.999-DANGEROUS/local';
-our $LocalLibPath = '/home/jesse/svk/3.999-DANGEROUS/local/lib';
-our $LocalEtcPath = '/home/jesse/svk/3.999-DANGEROUS/local/etc';
+our $BasePath         = '/home/jesse/svk/3.999-DANGEROUS';
+our $EtcPath          = '/home/jesse/svk/3.999-DANGEROUS/etc';
+our $BinPath          = '/home/jesse/svk/3.999-DANGEROUS/bin';
+our $VarPath          = '/home/jesse/svk/3.999-DANGEROUS/var';
+our $LocalPath        = '/home/jesse/svk/3.999-DANGEROUS/local';
+our $LocalLibPath     = '/home/jesse/svk/3.999-DANGEROUS/local/lib';
+our $LocalEtcPath     = '/home/jesse/svk/3.999-DANGEROUS/local/etc';
 our $LocalLexiconPath = '/home/jesse/svk/3.999-DANGEROUS/local/po';
-our $LocalPluginPath = $LocalPath."/plugins";
+our $LocalPluginPath  = $LocalPath . "/plugins";
 
 # $MasonComponentRoot is where your rt instance keeps its mason html files
 
@@ -39,8 +38,6 @@ our $MasonDataDir = '/home/jesse/svk/3.999-DANGEROUS/var/mason_data';
 # RT needs to put session data (for preserving state between connections
 # via the web interface)
 our $MasonSessionDir = '/home/jesse/svk/3.999-DANGEROUS/var/session_data';
-
-
 
 =head1 name
 
@@ -73,20 +70,20 @@ sub load_config {
     require RT::Config;
     $Config = RT::Config->new();
     $Config->load_configs;
-#    require RT::I18N;
+
+    #    require RT::I18N;
 
     # RT::Essentials mistakenly recommends that WebPath be set to '/'.
     # If the user does that, do what they mean.
-    $RT::WebPath = '' if ($RT::WebPath eq '/');
+    $RT::WebPath = '' if ( $RT::WebPath eq '/' );
 
     RT::I18N->init;
 }
 
 sub config {
-    my $self = shift; 
-    return $RT::Config ;
+    my $self = shift;
+    return $RT::Config;
 }
-
 
 =head2 Init
 
@@ -97,7 +94,7 @@ L<preloads classes /InitClasses>
 
 sub init {
 
-#    CheckPerlRequirements();
+    #    CheckPerlRequirements();
     #Get a database connection
     InitSystemObjects();
     InitPlugins();
@@ -109,18 +106,19 @@ sub init {
 ## Mason).  It will log all problems through the standard logging
 ## mechanism (see above).
 
-
-
 sub check_perl_requirements {
-    if ($^V < 5.008003) {
-        die sprintf "RT requires Perl v5.8.3 or newer.  Your current Perl is v%vd\n", $^V; 
+    if ( $^V < 5.008003 ) {
+        die sprintf
+            "RT requires Perl v5.8.3 or newer.  Your current Perl is v%vd\n",
+            $^V;
     }
 
     local ($@);
-    eval { 
-        my $x = ''; 
+    eval {
+        my $x = '';
         my $y = \$x;
-        require Scalar::Util; Scalar::Util::weaken($y);
+        require Scalar::Util;
+        Scalar::Util::weaken($y);
     };
     if ($@) {
         die <<"EOF";
@@ -143,8 +141,6 @@ EOF
     }
 }
 
-
-
 =head2 InitSystemObjects
 
 Initializes system objects: C<RT->system>, C<RT->system_user>
@@ -155,9 +151,10 @@ and C<RT->nobody>.
 sub init_system_objects {
 
     #RT's "nobody user" is a genuine database user. its ID lives here.
-    $nobody = RT::CurrentUser->new(name => 'Nobody');
-    Carp::confess "Could not load 'Nobody' User. This usually indicates a corrupt or missing RT database" unless $nobody->id;
-
+    $nobody = RT::CurrentUser->new( name => 'Nobody' );
+    Carp::confess
+        "Could not load 'Nobody' User. This usually indicates a corrupt or missing RT database"
+        unless $nobody->id;
 
     $System = RT::System->new();
 }
@@ -173,7 +170,6 @@ returns undef.
 Method can be called as class method.
 
 =cut
-
 
 =head2 DatabaseHandle
 
@@ -201,10 +197,10 @@ L</InitSystemObjects>.
 
 =cut
 
-sub system_user { 
-       my $system_user = RT::CurrentUser->new(name => 'RT_System');
-       $system_user->is_superuser(1);
-      return $system_user;
+sub system_user {
+    my $system_user = RT::CurrentUser->new( name => 'RT_System' );
+    $system_user->is_superuser(1);
+    return $system_user;
 
 }
 
@@ -226,9 +222,10 @@ You can define plugins by adding them to the @Plugins list in your RT_SiteConfig
 =cut
 
 our @PLUGINS = ();
+
 sub plugins {
     my $self = shift;
-    @PLUGINS = $self->init_plugins  unless (@PLUGINS);
+    @PLUGINS = $self->init_plugins unless (@PLUGINS);
     return \@PLUGINS;
 }
 
@@ -239,40 +236,38 @@ Initialze all Plugins found in the RT configuration file, setting up their lib a
 =cut
 
 sub init_plugins {
-    my $self    = shift;
+    my $self = shift;
     my @plugins;
     use RT::Plugin;
-    foreach my $plugin (RT->config->get('Plugins')) {
+    foreach my $plugin ( RT->config->get('Plugins') ) {
         next unless $plugin;
         my $plugindir = $plugin;
         $plugindir =~ s/::/-/g;
-        unless (-d $RT::LocalPluginPath."/$plugindir") {
-            Jifty->log->fatal("Plugin $plugindir not found in $RT::LocalPluginPath");
+        unless ( -d $RT::LocalPluginPath . "/$plugindir" ) {
+            Jifty->log->fatal(
+                "Plugin $plugindir not found in $RT::LocalPluginPath");
         }
 
         # Splice the plugin's lib dir into @INC;
         my @tmp_inc;
 
-
-        for (@INC){
-            if 
-            ( $_ eq $RT::LocalLibPath) {
-                push @tmp_inc, $_, $RT::LocalPluginPath . "/$plugindir";
-            } else {
-                push @tmp_inc, $_;
+        for (@INC) {
+            if ( $_ eq $RT::LocalLibPath ) {
+                        push @tmp_inc, $_,
+                            $RT::LocalPluginPath . "/$plugindir";
+                } else {
+                        push @tmp_inc, $_;
+                }
         }
-    }
 
         @INC = @tmp_inc;
         $plugin->require;
         die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
-        push @plugins, RT::Plugin->new(name =>$plugin);
+        push @plugins, RT::Plugin->new( name => $plugin );
     }
     return @plugins;
 
 }
-
-
 
 =head1 BUGS
 
