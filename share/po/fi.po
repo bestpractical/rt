@@ -1427,7 +1427,7 @@ msgstr "Pohjan lataaminen ei onnistunut"
 msgid "Couldn't load that user (%1)"
 msgstr "Tämän käyttäjän lataaminen ei onnistunut (%1)"
 
-#: html/SelfService/Display.html:158 lib/RT/Action/CreateTickets.pm:680
+#: html/SelfService/Display.html:158 lib/RT/Action/create_tickets.pm:680
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Tapauksen '%1' lataaminen ei onnistunut"
@@ -1519,7 +1519,7 @@ msgstr "Luo toiminto työjonolle %1"
 msgid "Create a template"
 msgstr "Luo pohja"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/create_ticketInQueue.html:46
 msgid "Create a ticket"
 msgstr ""
 
@@ -1568,7 +1568,7 @@ msgid "CreateSavedSearch"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:109
-msgid "CreateTicket"
+msgid "create_ticket"
 msgstr ""
 
 #: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48 lib/RT/Ticket_Overlay.pm:1169
@@ -4660,7 +4660,7 @@ msgstr "Valitse ryhmä"
 msgid "Select a queue"
 msgstr "Valitse työjono"
 
-#: html/SelfService/CreateTicketInQueue.html:48
+#: html/SelfService/create_ticketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr ""
 
@@ -5163,7 +5163,7 @@ msgstr "Tapaus sisältää päättämättömiä riippuvuuksia"
 msgid "That user already has that right"
 msgstr "Käyttäjällä on jo tuo oikeus"
 
-#: lib/RT/Action/CreateTickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
+#: lib/RT/Action/create_tickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
 msgid "That user already owns that ticket"
 msgstr "Käyttäjä omistaa jo tämän tapauksen"
 
@@ -5286,7 +5286,7 @@ msgstr "Tapauksen #%1 jättipäivitys: %2"
 msgid "Ticket #%1: %2"
 msgstr "Tapaus #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
+#: lib/RT/Action/create_tickets.pm:1350 lib/RT/Action/create_tickets.pm:1359 lib/RT/Action/create_tickets.pm:605 lib/RT/Action/create_tickets.pm:729 lib/RT/Action/create_tickets.pm:741
 #. ($T::Tickets{$template_id}->id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->id)
@@ -5581,7 +5581,7 @@ msgstr ""
 msgid "Update name"
 msgstr "Päivitä nimi"
 
-#: lib/RT/Action/CreateTickets.pm:750 lib/RT/Interface/Web.pm:584
+#: lib/RT/Action/create_tickets.pm:750 lib/RT/Interface/Web.pm:584
 msgid "Update not recorded."
 msgstr "Päivitystä ei tallennettu"
 
@@ -5611,7 +5611,7 @@ msgstr "Päivitä tapaus #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Päivitä tapaus #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:748 lib/RT/Interface/Web.pm:583
+#: lib/RT/Action/create_tickets.pm:748 lib/RT/Interface/Web.pm:583
 msgid "Update type was neither correspondence nor comment."
 msgstr "Päivityksen tyyppi ei ollut kirjeenvaihto eikä kommentti."
 

@@ -174,7 +174,7 @@ unless ($OnlySearchForPeople) {
         # strip leading directories
         $subject =~ s#^.*[\\/]##;
 
-        my $attachment = MakeMIMEEntity(
+        my $attachment = make_mime_entity(
            Subject             => $subject,
            Body                => "",
            AttachmentFieldname => 'UpdateAttachment'
@@ -183,8 +183,8 @@ unless ($OnlySearchForPeople) {
         $ARGS{'UpdateAttachments'}->{ $subject } = $attachment;
     }
 
-    push @results, ProcessUpdateMessage( ticket_obj => $Ticket, ARGSRef=>\%ARGS );
-    push @results, ProcessTicketBasics( ticket_obj => $Ticket, ARGSRef => \%ARGS );
+    push @results, process_update_message( ticket_obj => $Ticket, ARGSRef=>\%ARGS );
+    push @results, process_ticket_basics( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 }
 push @results, @wresults;
 push @results, @dresults;

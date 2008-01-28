@@ -20,7 +20,7 @@ my $user_b = RT::Test->load_or_create_user(
 ok $user_b && $user_b->id, 'loaded or created user';
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket ModifyTicket)] },
+    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket create_ticket OwnTicket ModifyTicket)] },
     { Principal => $user_b, Right => [qw(SeeQueue ShowTicket ReplyToTicket)] },
 ), 'set rights');
 RT::Test->started_ok;

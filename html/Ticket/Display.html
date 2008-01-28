@@ -109,11 +109,11 @@ if ($ARGS{'id'} eq 'new') {
         Abort('Queue not found');
     }
 
-    unless ( $Queue->current_user_has_right('CreateTicket') ) {
+    unless ( $Queue->current_user_has_right('create_ticket') ) {
         Abort('You have no permission to create tickets in that queue.');
     }
 
-    ($ticket_obj, @Actions) = CreateTicket(
+    ($ticket_obj, @Actions) = create_ticket(
         Attachments => delete $session{'Attachments'},
         %ARGS,
     );
@@ -148,7 +148,7 @@ if ($ARGS{'id'} eq 'new') {
         && $ARGS{'UpdateContent'} ne "-- \n" . $signature ))
     {
         $ARGS{UpdateAttachments} = $session{'Attachments'};
-        push @Actions, ProcessUpdateMessage(
+        push @Actions, process_update_message(
             ARGSRef   => \%ARGS,
             Actions   => \@Actions,
             ticket_obj => $ticket_obj,
@@ -156,7 +156,7 @@ if ($ARGS{'id'} eq 'new') {
         delete $session{'Attachments'};
     }
     push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
-    push @Actions, ProcessTicketBasics(   ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
+    push @Actions, process_ticket_basics(   ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
     push @Actions, ProcessTicketLinks(    ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
 
     # XXX: we shouldn't block actions here if user has no right to see the ticket,

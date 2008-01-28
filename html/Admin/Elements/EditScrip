@@ -186,7 +186,7 @@ else {
 
     my @attribs = qw(Queue ScripAction ScripCondition Template Stage
         Description CustomPrepareCode CustomCommitCode CustomIsApplicableCode);
-    my @results = UpdateRecordObject(
+    my @results = update_record_object(
         AttributesRef   => \@attribs,
         AttributePrefix => 'Scrip-'.$scrip->id,
         Object          => $scrip,

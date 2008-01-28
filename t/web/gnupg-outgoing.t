@@ -39,7 +39,7 @@ ok $queue && $queue->id, 'loaded or created queue';
 
 RT::Test->set_rights(
     Principal => 'Everyone',
-    Right => ['CreateTicket', 'ShowTicket', 'SeeQueue', 'ReplyToTicket', 'ModifyTicket'],
+    Right => ['create_ticket', 'ShowTicket', 'SeeQueue', 'ReplyToTicket', 'ModifyTicket'],
 );
 
 my ($baseurl, $m) = RT::Test->started_ok;

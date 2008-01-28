@@ -348,7 +348,7 @@ sub create {
     #Now that we have a queue, Check the ACLS
     unless (
         $self->current_user->has_right(
-            Right  => 'CreateTicket',
+            Right  => 'create_ticket',
             Object => $queue_obj
         )
       )
@@ -558,7 +558,7 @@ sub create {
         );
     }
 
-    my $create_groups_ret = $self->_CreateTicket_groups();
+    my $create_groups_ret = $self->_create_ticket_groups();
     unless ($create_groups_ret) {
         Jifty->log->fatal( "Couldn't create ticket groups for ticket "
               . $self->id
@@ -860,7 +860,7 @@ sub Import {
     #Now that we have a queue, Check the ACLS
     unless (
         $self->current_user->has_right(
-            Right    => 'CreateTicket',
+            Right    => 'create_ticket',
             Object => $queue_obj
         )
       )
@@ -965,7 +965,7 @@ sub Import {
         }
     }
 
-    my $create_groups_ret = $self->_CreateTicket_groups();
+    my $create_groups_ret = $self->_create_ticket_groups();
     unless ($create_groups_ret) {
         Jifty->log->fatal(
             "Couldn't create ticket groups for ticket " . $self->id );
@@ -993,9 +993,9 @@ sub Import {
 
 # {{{ Routines dealing with watchers.
 
-# {{{ _CreateTicket_groups 
+# {{{ _create_ticket_groups 
 
-=head2 _CreateTicket_groups
+=head2 _create_ticket_groups
 
 Create the ticket groups and links for this ticket. 
 This routine expects to be called from Ticket->create _inside of a transaction_
@@ -1008,7 +1008,7 @@ It will return true on success and undef on failure.
 =cut
 
 
-sub _CreateTicket_groups {
+sub _create_ticket_groups {
     my $self = shift;
     
     my @types = qw(Requestor Owner Cc AdminCc);
@@ -1725,7 +1725,7 @@ sub set_Queue {
     }
     unless (
         $self->current_user->has_right(
-            Right    => 'CreateTicket',
+            Right    => 'create_ticket',
             Object => $Newqueue_obj
         )
       )

@@ -1143,7 +1143,7 @@ msgstr "%1 sor nem betölthetõ"
 msgid "Couldn't load scrip #%1"
 msgstr ""
 
-#: html/SelfService/Display.html:158 lib/RT/Action/CreateTickets.pm:680
+#: html/SelfService/Display.html:158 lib/RT/Action/create_tickets.pm:680
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "A(z) '%1' nem betölthetõ"
@@ -1203,7 +1203,7 @@ msgstr "Hozzon létre egy scrip-et a(z) %1 sorhoz!"
 msgid "Create a template"
 msgstr "Hozzon létre egy sablont!"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/create_ticketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Új probléma"
 
@@ -1240,7 +1240,7 @@ msgid "CreateSavedSearch"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:109
-msgid "CreateTicket"
+msgid "create_ticket"
 msgstr ""
 
 #: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48 lib/RT/Ticket_Overlay.pm:1169
@@ -3890,7 +3890,7 @@ msgstr "Válasszon csoportot!"
 msgid "Select a queue"
 msgstr ""
 
-#: html/SelfService/CreateTicketInQueue.html:48
+#: html/SelfService/create_ticketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr ""
 
@@ -4337,7 +4337,7 @@ msgstr "Ez a sor nem létezik"
 msgid "That ticket has unresolved dependencies"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
+#: lib/RT/Action/create_tickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
 msgid "That user already owns that ticket"
 msgstr "Már ez a felhasználó a tulajdonos!"
 
@@ -4440,7 +4440,7 @@ msgstr "%1. számú (%2) probléma jellemzõinek módosítása"
 msgid "Ticket #%1: %2"
 msgstr "Probléma. %1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
+#: lib/RT/Action/create_tickets.pm:1350 lib/RT/Action/create_tickets.pm:1359 lib/RT/Action/create_tickets.pm:605 lib/RT/Action/create_tickets.pm:729 lib/RT/Action/create_tickets.pm:741
 #. ($T::Tickets{$template_id}->id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->id)
@@ -4667,7 +4667,7 @@ msgstr "Frissítés típusa"
 msgid "Update multiple tickets"
 msgstr "A kiválasztott problémák frissítése"
 
-#: lib/RT/Action/CreateTickets.pm:750 lib/RT/Interface/Web.pm:584
+#: lib/RT/Action/create_tickets.pm:750 lib/RT/Interface/Web.pm:584
 msgid "Update not recorded."
 msgstr ""
 
@@ -4689,7 +4689,7 @@ msgstr ""
 msgid "Update ticket #%1 (%2)"
 msgstr "%1. számú (%2) probléma aktualizálása"
 
-#: lib/RT/Action/CreateTickets.pm:748 lib/RT/Interface/Web.pm:583
+#: lib/RT/Action/create_tickets.pm:748 lib/RT/Interface/Web.pm:583
 msgid "Update type was neither correspondence nor comment."
 msgstr ""
 

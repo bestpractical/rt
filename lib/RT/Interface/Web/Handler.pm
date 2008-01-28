@@ -161,8 +161,8 @@ sub NewHandler {
         @_
     );
   
-    $handler->interp->set_escape( h => \&RT::Interface::Web::EscapeUTF8 );
-    $handler->interp->set_escape( u => \&RT::Interface::Web::EscapeURI  );
+    $handler->interp->set_escape( h => \&RT::Interface::Web::escape_utf8 );
+    $handler->interp->set_escape( u => \&RT::Interface::Web::escape_uri  );
     return($handler);
 }
 

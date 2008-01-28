@@ -356,7 +356,7 @@ if ($ARGS{'Attach'}) {			# attachment?
     # strip leading directories
     $subject =~ s#^.*[\\/]##;
 
-    my $attachment = MakeMIMEEntity(
+    my $attachment = make_mime_entity(
         Subject             => $subject,
         Body                => "",
         AttachmentFieldname => 'Attach'

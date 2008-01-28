@@ -68,5 +68,5 @@ foreach my $col(qw(name real_name nickname email organization
 </%ONCE>
 <%INIT>
 $m->callback( COLUMN_MAP => $USER_COLUMN_MAP, Callbackname => 'ColumnMap', CallbackOnce => 1 );
-return GetColumnMapEntry( Map => $USER_COLUMN_MAP, name => $name, Attribute => $Attr );
+return get_column_map_entry( Map => $USER_COLUMN_MAP, name => $name, Attribute => $Attr );
 </%INIT>

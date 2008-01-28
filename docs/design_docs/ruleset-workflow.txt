@@ -35,18 +35,18 @@ Note that "Scrips" are now called "Rules".
 === RuleAction "AquireMyLocks"
 
   FOREACH $Scrip IN $ticket_obj->Scrips
-    WHERE $Scrip.Action.Type == "TryCreateTicketWithRuleset"
+    WHERE $Scrip.Action.Type == "Trycreate_ticketWithRuleset"
        DO LockRuleset $Scrip.Action.Argument
 
-=== RuleAction "TryCreateTicketWithRuleset"
+=== RuleAction "Trycreate_ticketWithRuleset"
 
   DO ReleaseMyLockOnRuleset $Argument
   UNLESS RulesetLocked $Argument
-      DO CreateTicketWithRuleset $Argument
+      DO create_ticketWithRuleset $Argument
 
-=== RuleAction "CreateTicketWithRuleset"
+=== RuleAction "create_ticketWithRuleset"
 
-  GIVEN $Ticket AS CreateTicket(@OtherArguments)
+  GIVEN $Ticket AS create_ticket(@OtherArguments)
      DO SetTicketRuleSet $Argument
      DO RunTicketRuleSet $Argument
   
@@ -74,17 +74,17 @@ Note that "Scrips" are now called "Rules".
 * Rule:
 ** Condition: OnCreate 
 ** Condition: CF.Price > 1000
-** Action: TryCreateTicketWithRuleset "ManagerApproval"
+** Action: Trycreate_ticketWithRuleset "ManagerApproval"
 
 * Rule:
 ** Condition: OnCreate 
 ** Condition: CF.Price > 2000
-** Action: TryCreateTicketWithRuleset "PresidentApproval"
+** Action: Trycreate_ticketWithRuleset "PresidentApproval"
 
 * Rule:
 ** Condition: OnCreate 
 ** Condition: "Finance" is not blocked
-** Action: TryCreateTicketWithRuleset "FinanceApproval"
+** Action: Trycreate_ticketWithRuleset "FinanceApproval"
 
 * Rule:
 ** Condition: OnReject
@@ -98,7 +98,7 @@ Note that "Scrips" are now called "Rules".
 
 * Rule:
 ** Condition: OnResolve
-** Action: TryCreateTicketWithRuleset "FinanceApproval"
+** Action: Trycreate_ticketWithRuleset "FinanceApproval"
 
 * Rule:
 ** Condition: OnReject
@@ -112,7 +112,7 @@ Note that "Scrips" are now called "Rules".
 
 * Rule:
 ** Condition: OnResolve
-** Action: TryCreateTicketWithRuleset "FinanceApproval"
+** Action: Trycreate_ticketWithRuleset "FinanceApproval"
 
 * Rule:
 ** Condition: OnReject
@@ -126,7 +126,7 @@ Note that "Scrips" are now called "Rules".
 
 * Rule:
 ** Condition: OnReject
-** Action: ForceCreateTicketWithRuleset "CEOApproval"
+** Action: Forcecreate_ticketWithRuleset "CEOApproval"
 
 === RuleSet: "CEOApproval"
 

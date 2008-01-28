@@ -105,7 +105,7 @@ $CustomFieldObj->load($id) || $m->comp("/Elements/Error", Why => _("Couldn't loa
 
 my $title = _('Modify group rights for custom field %1', $CustomFieldObj->name);
 
-my @results = ProcessACLChanges( \%ARGS );
+my @results = process_acl_changes( \%ARGS );
 
 </%INIT>
 

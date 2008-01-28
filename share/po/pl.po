@@ -1568,7 +1568,7 @@ msgstr "Nie udało się załadować szablonu"
 msgid "Couldn't load that user (%1)"
 msgstr "Nie udało się załadować użytkownika (%1)"
 
-#: html/SelfService/Display.html:158 lib/RT/Action/CreateTickets.pm:680
+#: html/SelfService/Display.html:158 lib/RT/Action/create_tickets.pm:680
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Nie udało się załadować zgłoszenia '%1'"
@@ -1668,7 +1668,7 @@ msgstr "Utwórz skrypt dla kolejki %1"
 msgid "Create a template"
 msgstr "Utwórz szablon"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/create_ticketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Utwórz zgłoszenie"
 
@@ -1717,8 +1717,8 @@ msgid "CreateSavedSearch"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:109
-msgid "CreateTicket"
-msgstr "CreateTicket"
+msgid "create_ticket"
+msgstr "create_ticket"
 
 #: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48 lib/RT/Ticket_Overlay.pm:1169
 msgid "Created"

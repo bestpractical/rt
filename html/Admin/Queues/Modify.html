@@ -149,7 +149,7 @@ if ( $queue_obj->id ) {
             qw(Sign Encrypt disabled);
     }
 
-    push @results, UpdateRecordObject(
+    push @results, update_record_object(
         AttributesRef => \@attribs,
         Object => $queue_obj, 
         ARGSRef => \%ARGS

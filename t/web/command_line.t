@@ -386,8 +386,8 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     my %display_relns = map { $_ => $_ } @link_relns;
     $display_relns{has_member} = 'Members';
 
-    my $link1_id = ok_CreateTicket( "LinkTicket1-$$" );
-    my $link2_id = ok_CreateTicket( "LinkTicket2-$$" );
+    my $link1_id = ok_create_ticket( "LinkTicket1-$$" );
+    my $link2_id = ok_create_ticket( "LinkTicket2-$$" );
 
     foreach my $reln (@link_relns) {
         # create link
@@ -408,7 +408,7 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
 
 
 # helper function
-sub ok_CreateTicket {
+sub ok_create_ticket {
     my $subject = shift;
 
     expect_send("create -t ticket set subject='$subject'", 'Creating ticket...');

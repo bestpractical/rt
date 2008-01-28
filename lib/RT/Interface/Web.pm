@@ -67,15 +67,15 @@ use RT::System;
 use RT::SavedSearches;
 use URI qw();
 
-# {{{ EscapeUTF8
+# {{{ escape_utf8
 
-=head2 EscapeUTF8 SCALARREF
+=head2 escape_utf8 SCALARREF
 
 does a css-busting but minimalist escaping of whatever html you're passing in.
 
 =cut
 
-sub EscapeUTF8  {
+sub escape_utf8  {
     my $ref = shift;
     return unless defined $$ref;
 
@@ -90,16 +90,16 @@ sub EscapeUTF8  {
 
 # }}}
 
-# {{{ EscapeURI
+# {{{ escape_uri
 
-=head2 EscapeURI SCALARREF
+=head2 escape_uri SCALARREF
 
 Escapes URI component according to RFC2396
 
 =cut
 
 use Encode qw();
-sub EscapeURI {
+sub escape_uri {
     my $ref = shift;
     return unless defined $$ref;
 
@@ -109,9 +109,9 @@ sub EscapeURI {
 
 # }}}
 
-# {{{ Webcanonicalize_Info
+# {{{ web_canonicalize_info
 
-=head2 Webcanonicalize_Info();
+=head2 web_canonicalize_info();
 
 Different web servers set different environmental varibles. This
 function must return something suitable for REMOTE_USER. By default,
@@ -119,21 +119,21 @@ just downcase $ENV{'REMOTE_USER'}
 
 =cut
 
-sub Webcanonicalize_Info {
+sub web_canonicalize_info {
     return $ENV{'REMOTE_USER'}? lc $ENV{'REMOTE_USER'}: $ENV{'REMOTE_USER'};
 }
 
 # }}}
 
-# {{{ WebExternalAutoInfo
+# {{{ web_external_auto_info
 
-=head2 WebExternalAutoInfo($user);
+=head2 web_external_auto_info($user);
 
 Returns a hash of user attributes, used when WebExternalAuto is set.
 
 =cut
 
-sub WebExternalAutoInfo {
+sub web_external_auto_info {
     my $user = shift;
 
     my %user_info;
@@ -256,15 +256,15 @@ sub Abort {
 
 # }}}
 
-# {{{ sub CreateTicket 
+# {{{ sub create_ticket 
 
-=head2 CreateTicket ARGS
+=head2 create_ticket ARGS
 
 Create a new ticket, using Mason's %ARGS.  returns @results.
 
 =cut
 
-sub CreateTicket {
+sub create_ticket {
     my %ARGS = (@_);
 
     my (@Actions);
@@ -276,7 +276,7 @@ sub CreateTicket {
         Abort('Queue not found');
     }
 
-    unless ( $Queue->current_user_has_right('CreateTicket') ) {
+    unless ( $Queue->current_user_has_right('create_ticket') ) {
         Abort('You have no permission to create tickets in that queue.');
     }
 
@@ -285,7 +285,7 @@ sub CreateTicket {
     my $starts = RT::Date->new();
     $starts->set( Format => 'unknown', value => $ARGS{'starts'} );
 
-    my $MIMEObj = MakeMIMEEntity(
+    my $MIMEObj = make_mime_entity(
         Subject             => $ARGS{'Subject'},
         From                => $ARGS{'From'},
         Cc                  => $ARGS{'Cc'},
@@ -373,7 +373,7 @@ sub CreateTicket {
             }
 
             if ( $arg =~ /-Upload$/ ) {
-                $create_args{"CustomField-$cfid"} = _UploadedFile( $arg );
+                $create_args{"CustomField-$cfid"} = _uploaded_file( $arg );
                 next;
             }
 
@@ -463,9 +463,9 @@ sub load_ticket {
 
 # }}}
 
-# {{{ sub ProcessUpdateMessage
+# {{{ sub process_update_message
 
-=head2 ProcessUpdateMessage
+=head2 process_update_message
 
 Takes paramhash with fields ARGSRef, ticket_obj and SkipSignatureOnly.
 
@@ -476,7 +476,7 @@ is true.
 
 =cut
 
-sub ProcessUpdateMessage {
+sub process_update_message {
 
     #TODO document what else this takes.
     my %args = (
@@ -518,7 +518,7 @@ sub ProcessUpdateMessage {
         $args{ARGSRef}->{'UpdateSubject'} = undef;
     }
 
-    my $Message = MakeMIMEEntity(
+    my $Message = make_mime_entity(
         Subject => $args{ARGSRef}->{'UpdateSubject'},
         Body    => $args{ARGSRef}->{'UpdateContent'},
         Type    => $args{ARGSRef}->{'UpdateContentType'},
@@ -607,9 +607,9 @@ sub ProcessUpdateMessage {
 
 # }}}
 
-# {{{ sub MakeMIMEEntity
+# {{{ sub make_mime_entity
 
-=head2 MakeMIMEEntity PARAMHASH
+=head2 make_mime_entity PARAMHASH
 
 Takes a paramhash Subject, Body and AttachmentFieldname.
 
@@ -619,7 +619,7 @@ Also takes Form, Cc and Type as optional paramhash keys.
 
 =cut
 
-sub MakeMIMEEntity {
+sub make_mime_entity {
 
     #TODO document what else this takes.
     my %args = (
@@ -691,238 +691,17 @@ sub MakeMIMEEntity {
 
 # }}}
 
-# {{{ sub ProcessSearchQuery
 
-=head2 ProcessSearchQuery
+# {{{ sub parse_date_to_iso
 
-  Takes a form such as the one filled out in webrt/Search/Elements/PickRestriction and turns it into something that RT::Model::TicketCollection can understand.
-
-TODO Doc exactly what comes in the paramhash
-
-
-=cut
-
-sub ProcessSearchQuery {
-    my %args = @_;
-
-    ## TODO: The only parameter here is %ARGS.  Maybe it would be
-    ## cleaner to load this parameter as $ARGS, and use $ARGS->{...}
-    ## instead of $args{ARGS}->{...} ? :)
-
-    #Searches are sticky.
-    if ( defined $session{'tickets'} ) {
-
-        # Reset the old search
-        $session{'tickets'}->goto_first_item;
-    }
-    else {
-
-        # Init a new search
-        $session{'tickets'} = RT::Model::TicketCollection->new( );
-    }
-
-    #Import a bookmarked search if we have one
-    if ( defined $args{ARGS}->{'Bookmark'} ) {
-        $session{'tickets'}->ThawLimits( $args{ARGS}->{'Bookmark'} );
-    }
-
-    # {{{ Goto next/prev page
-    if ( $args{ARGS}->{'goto_page'} eq 'Next' ) {
-        $session{'tickets'}->nextPage;
-    }
-    elsif ( $args{ARGS}->{'goto_page'} eq 'Prev' ) {
-        $session{'tickets'}->PrevPage;
-    }
-    elsif ( $args{ARGS}->{'goto_page'} > 0 ) {
-
-        $session{'tickets'}->set_page_info( current_page => $args{ARGS}->{goto_page}  );
-    }
-
-    # }}}
-
-    # {{{ Deal with limiting the search
-
-    if ( $args{ARGS}->{'RefreshSearchInterval'} ) {
-        $session{'tickets_refresh_interval'} =
-          $args{ARGS}->{'RefreshSearchInterval'};
-    }
-
-    if ( $args{ARGS}->{'TicketsSortBy'} ) {
-        $session{'tickets_sort_by'}    = $args{ARGS}->{'TicketsSortBy'};
-        $session{'tickets_sort_order'} = $args{ARGS}->{'TicketsSortOrder'};
-        $session{'tickets'}->order_by(
-            column => $args{ARGS}->{'TicketsSortBy'},
-            order => $args{ARGS}->{'TicketsSortOrder'}
-        );
-    }
-
-    # }}}
-
-    # {{{ Set the query limit
-    if ( defined $args{ARGS}->{'rows_per_page'} ) {
-        Jifty->log->debug(
-            "limiting to " . $args{ARGS}->{'rows_per_page'} . " rows" );
-
-        $session{'tickets_rows_per_page'} = $args{ARGS}->{'rows_per_page'};
-        $session{'tickets'}->rows_per_page( $args{ARGS}->{'rows_per_page'} );
-    }
-
-    # }}}
-    # {{{ Limit priority
-    if ( $args{ARGS}->{'ValueOfPriority'} ne '' ) {
-        $session{'tickets'}->limit_Priority(
-            value    => $args{ARGS}->{'ValueOfPriority'},
-            operator => $args{ARGS}->{'PriorityOp'}
-        );
-    }
-
-    # }}}
-    # {{{ Limit owner
-    if ( $args{ARGS}->{'ValueOfOwner'} ne '' ) {
-        $session{'tickets'}->limit_Owner(
-            value    => $args{ARGS}->{'ValueOfOwner'},
-            operator => $args{ARGS}->{'OwnerOp'}
-        );
-    }
-
-    # }}}
-    # {{{ Limit requestor email
-     if ( $args{ARGS}->{'ValueOfWatcherRole'} ne '' ) {
-         $session{'tickets'}->limit_Watcher(
-             type => $args{ARGS}->{'WatcherRole'},
-             value    => $args{ARGS}->{'ValueOfWatcherRole'},
-             operator => $args{ARGS}->{'WatcherRoleOp'},
-
-        );
-    }
-
-    # }}}
-    # {{{ Limit Queue
-    if ( $args{ARGS}->{'ValueOfQueue'} ne '' ) {
-        $session{'tickets'}->limit_Queue(
-            value    => $args{ARGS}->{'ValueOfQueue'},
-            operator => $args{ARGS}->{'QueueOp'}
-        );
-    }
-
-    # }}}
-    # {{{ Limit Status
-    if ( $args{ARGS}->{'ValueOfStatus'} ne '' ) {
-        if ( ref( $args{ARGS}->{'ValueOfStatus'} ) ) {
-            foreach my $value ( @{ $args{ARGS}->{'ValueOfStatus'} } ) {
-                $session{'tickets'}->limit_Status(
-                    value    => $value,
-                    operator => $args{ARGS}->{'StatusOp'},
-                );
-            }
-        }
-        else {
-            $session{'tickets'}->limit_Status(
-                value    => $args{ARGS}->{'ValueOfStatus'},
-                operator => $args{ARGS}->{'StatusOp'},
-            );
-        }
-
-    }
-
-    # }}}
-    # {{{ Limit Subject
-    if ( $args{ARGS}->{'ValueOfSubject'} ne '' ) {
-        my $val = $args{ARGS}->{'ValueOfSubject'};
-        if ($args{ARGS}->{'SubjectOp'} =~ /like/) {
-            $val = "%".$val."%";
-        }
-        $session{'tickets'}->limit_Subject(
-            value    => $val,
-            operator => $args{ARGS}->{'SubjectOp'},
-        );
-    }
-
-    # }}}    
-    # {{{ Limit Dates
-    if ( $args{ARGS}->{'ValueOfDate'} ne '' ) {
-        my $date = ParseDateToISO( $args{ARGS}->{'ValueOfDate'} );
-        $args{ARGS}->{'DateType'} =~ s/_Date$//;
-
-        if ( $args{ARGS}->{'DateType'} eq 'Updated' ) {
-            $session{'tickets'}->limit_TransactionDate(
-                value    => $date,
-                operator => $args{ARGS}->{'DateOp'},
-            );
-        }
-        else {
-            $session{'tickets'}->limit_Date(
-                column => $args{ARGS}->{'DateType'},
-                value => $date,
-                operator => $args{ARGS}->{'DateOp'},
-            );
-        }
-    }
-
-    # }}}    
-    # {{{ Limit Content
-    if ( $args{ARGS}->{'ValueOfAttachmentField'} ne '' ) {
-        my $val = $args{ARGS}->{'ValueOfAttachmentField'};
-        if ($args{ARGS}->{'AttachmentFieldOp'} =~ /like/) {
-            $val = "%".$val."%";
-        }
-        $session{'tickets'}->limit(
-            column   => $args{ARGS}->{'AttachmentField'},
-            value    => $val,
-            operator => $args{ARGS}->{'AttachmentFieldOp'},
-        );
-    }
-
-    # }}}   
-
- # {{{ Limit CustomFields
-
-    foreach my $arg ( keys %{ $args{ARGS} } ) {
-        next unless ( $args{ARGS}->{$arg} );
-        next unless $arg =~ /^CustomField(\d+)$/;
-        my $id = $1;
-
-        my $form = $args{ARGS}->{ $arg };
-        my $oper = $args{ARGS}->{ "CustomFieldOp" . $id } || '';
-        foreach my $value ( ref($form) ? @{$form} : ($form) ) {
-            my $quote = 1;
-            if ($oper =~ /like/i) {
-                $value = "%".$value."%";
-            }
-            if ( $value =~ /^null$/i ) {
-
-                #Don't quote the string 'null'
-                $quote = 0;
-
-                # Convert the operator to something apropriate for nulls
-                $oper = 'IS'     if $oper eq '=';
-                $oper = 'IS NOT' if $oper eq '!=';
-            }
-            $session{'tickets'}->limit_CustomField(
-                customfield => $id,
-                operator    => $oper,
-                quote_value  => $quote,
-                value       => $value,
-            );
-        }
-    }
-
-    # }}}
-
-}
-
-# }}}
-
-# {{{ sub ParseDateToISO
-
-=head2 ParseDateToISO
+=head2 parse_date_to_iso
 
 Takes a date in an arbitrary format.
 Returns an ISO date and time in GMT
 
 =cut
 
-sub ParseDateToISO {
+sub parse_date_to_iso {
     my $date = shift;
 
     my $date_obj = RT::Date->new();
@@ -935,9 +714,9 @@ sub ParseDateToISO {
 
 # }}}
 
-# {{{ sub ProcessACLChanges
+# {{{ sub process_acl_changes
 
-sub ProcessACLChanges {
+sub process_acl_changes {
     my $ARGSref = shift;
 
     #XXX: why don't we get ARGSref like in other Process* subs?
@@ -999,7 +778,7 @@ Returns an array of success/failure messages
 
 =cut
 
-sub UpdateRecordObject {
+sub update_record_object {
     my %args = (
         ARGSRef       => undef,
         AttributesRef => undef,
@@ -1020,9 +799,9 @@ sub UpdateRecordObject {
 
 # }}}
 
-# {{{ sub ProcessCustomFieldUpdates
+# {{{ sub process_custom_field_updates
 
-sub ProcessCustomFieldUpdates {
+sub process_custom_field_updates {
     my %args = (
         CustomFieldObj => undef,
         ARGSRef        => undef,
@@ -1033,7 +812,7 @@ sub ProcessCustomFieldUpdates {
     my $ARGSRef = $args{'ARGSRef'};
 
     my @attribs = qw(name Type Description Queue SortOrder);
-    my @results = UpdateRecordObject(
+    my @results = update_record_object(
         AttributesRef => \@attribs,
         Object        => $Object,
         ARGSRef       => $ARGSRef
@@ -1075,15 +854,15 @@ sub ProcessCustomFieldUpdates {
 
 # }}}
 
-# {{{ sub ProcessTicketBasics
+# {{{ sub process_ticket_basics
 
-=head2 ProcessTicketBasics ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
+=head2 process_ticket_basics ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 
 Returns an array of results messages.
 
 =cut
 
-sub ProcessTicketBasics {
+sub process_ticket_basics {
 
     my %args = (
         ticket_obj => undef,
@@ -1121,7 +900,7 @@ sub ProcessTicketBasics {
     # RT core complains if you try
     delete $ARGSRef->{'Status'} unless $ARGSRef->{'Status'};
     
-    my @results = UpdateRecordObject(
+    my @results = update_record_object(
         AttributesRef => \@attribs,
         Object        => $ticket_obj,
         ARGSRef       => $ARGSRef,
@@ -1266,7 +1045,7 @@ sub _ProcessObjectCustomFieldUpdates {
             }
         }
         elsif ( $arg eq 'Upload' ) {
-            my $value_hash = _UploadedFile( $args{'Prefix'} . $arg ) or next;
+            my $value_hash = _uploaded_file( $args{'Prefix'} . $arg ) or next;
             my ( $val, $msg ) = $args{'Object'}->add_custom_field_value(
                 %$value_hash,
                 Field => $cf,
@@ -1513,7 +1292,7 @@ sub ProcessTicketLinks {
     my $ARGSRef = $args{'ARGSRef'};
 
 
-    my (@results) = ProcessRecordLinks(RecordObj => $Ticket, ARGSRef => $ARGSRef);
+    my (@results) = process_record_links(RecordObj => $Ticket, ARGSRef => $ARGSRef);
 
     #Merge if we need to
     if ( $ARGSRef->{ $Ticket->id . "-MergeInto" } ) {
@@ -1528,7 +1307,7 @@ sub ProcessTicketLinks {
 
 # }}}
 
-sub ProcessRecordLinks {
+sub process_record_links {
     my %args = ( RecordObj => undef,
                  ARGSRef   => undef,
                  @_ );
@@ -1584,7 +1363,7 @@ sub ProcessRecordLinks {
 }
 
 
-=head2 _UploadedFile ( $arg );
+=head2 _uploaded_file ( $arg );
 
 Takes a CGI parameter name; if a file is uploaded under that name,
 return a hash reference suitable for AddCustomFieldValue's use:
@@ -1594,7 +1373,7 @@ Returns C<undef> if no files were uploaded in the C<$arg> field.
 
 =cut
 
-sub _UploadedFile {
+sub _uploaded_file {
     my $arg = shift;
     my $cgi_object = Jifty->handler->cgi;
     my $fh = $cgi_object->upload($arg) or return undef;
@@ -1611,7 +1390,7 @@ sub _UploadedFile {
     };
 }
 
-sub GetColumnMapEntry {
+sub get_column_map_entry {
     my %args = ( Map => {}, name => '', Attribute => undef, @_ );
     # deal with the simplest thing first
     if ( $args{'Map'}{ $args{'name'} } ) {

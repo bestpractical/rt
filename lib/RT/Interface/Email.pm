@@ -1003,7 +1003,6 @@ sub SetInReplyTo {
     };
 
     my @id = $get_header->('Message-ID');
-    #XXX: custom header should begin with X- otherwise is violation of the standard
     my @rtid = $get_header->('RT-Message-ID');
     my @references = $get_header->('References');
     unless ( @references ) {
@@ -1236,7 +1235,7 @@ sub Gateway {
     if ( $SystemTicket->id ) {
         $Right = 'ReplyToTicket';
     } else {
-        $Right = 'CreateTicket';
+        $Right = 'create_ticket';
     }
 
     #Set up a queue object

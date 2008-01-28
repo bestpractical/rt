@@ -92,7 +92,7 @@ ok ($id,$msg);
 ok ($id,$msg);
 ($id,$msg) = $u1->principal_object->grant_right ( Object => $q2, Right => 'ShowTicket');
 ok ($id,$msg);
-($id,$msg) = $u1->principal_object->grant_right ( Object => $q1, Right => 'CreateTicket');
+($id,$msg) = $u1->principal_object->grant_right ( Object => $q1, Right => 'create_ticket');
 ok ($id,$msg);
 
 my $creator = RT::CurrentUser->new(id => $u1->id);
@@ -208,7 +208,7 @@ ok ($id, $msg);
 ok(!$id,$msg);
 is(link_count($filename), 0, "scrips ok");
 
-($id,$msg) = $u1->principal_object->grant_right ( Object => $q2, Right => 'CreateTicket');
+($id,$msg) = $u1->principal_object->grant_right ( Object => $q2, Right => 'create_ticket');
 ok ($id,$msg);
 ($id,$msg) = $u1->principal_object->grant_right ( Object => $q2, Right => 'ModifyTicket');
 ok ($id,$msg);

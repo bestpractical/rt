@@ -225,7 +225,7 @@ if ($user_object->id) {
         ARGSRef      => \%ARGS,
     );
     
-    my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
+    my @fieldresults = update_record_object ( AttributesRef => \@fields,
 					    Object => $user_object,
 					    ARGSRef => \%ARGS );
     push (@results,@fieldresults);

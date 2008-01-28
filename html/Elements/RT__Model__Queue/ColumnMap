@@ -92,6 +92,6 @@ our $ColumnMap = sub {
 </%ONCE>
 <%INIT>
 $m->callback( COLUMN_MAP => $QUEUE_COLUMN_MAP, Callbackname => 'ColumnMap', CallbackOnce => 1 );
-return GetColumnMapEntry( Map => $QUEUE_COLUMN_MAP, name => $name, Attribute => $Attr );
+return get_column_map_entry( Map => $QUEUE_COLUMN_MAP, name => $name, Attribute => $Attr );
 </%INIT>
 

@@ -1550,7 +1550,7 @@ msgstr "Impossibile caricare il modello"
 msgid "Couldn't load that user (%1)"
 msgstr "Impossibile caricare questo utente (%1)"
 
-#: html/SelfService/Display.html:158 lib/RT/Action/CreateTickets.pm:680
+#: html/SelfService/Display.html:158 lib/RT/Action/create_tickets.pm:680
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Impossibile caricare il ticket '%1'"
@@ -1642,7 +1642,7 @@ msgstr "Crea uno scrip per la coda %1"
 msgid "Create a template"
 msgstr "Crea un modello"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/create_ticketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Nuovo ticket"
 
@@ -1691,7 +1691,7 @@ msgid "CreateSavedSearch"
 msgstr "CreaRichiestaSalvata"
 
 #: lib/RT/Queue_Overlay.pm:109
-msgid "CreateTicket"
+msgid "create_ticket"
 msgstr "CreaTicket"
 
 #: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48 lib/RT/Ticket_Overlay.pm:1169
@@ -5007,7 +5007,7 @@ msgstr "Seleziona un gruppo"
 msgid "Select a queue"
 msgstr "Seleziona una coda"
 
-#: html/SelfService/CreateTicketInQueue.html:48
+#: html/SelfService/create_ticketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Scegli una coda per il nuovo ticket"
 
@@ -5558,7 +5558,7 @@ msgstr "Il ticket ha dipendenze non risolte"
 msgid "That user already has that right"
 msgstr "L'utente ha già questo diritto"
 
-#: lib/RT/Action/CreateTickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
+#: lib/RT/Action/create_tickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
 msgid "That user already owns that ticket"
 msgstr "L'utente ha già il ticket in carico"
 
@@ -5685,7 +5685,7 @@ msgstr "Ticket n°%1 aggiornamento Jumbo: %2"
 msgid "Ticket #%1: %2"
 msgstr "Ticket n°%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
+#: lib/RT/Action/create_tickets.pm:1350 lib/RT/Action/create_tickets.pm:1359 lib/RT/Action/create_tickets.pm:605 lib/RT/Action/create_tickets.pm:729 lib/RT/Action/create_tickets.pm:741
 #. ($T::Tickets{$template_id}->id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->id)
@@ -6008,7 +6008,7 @@ msgstr "Aggiorna ticket multipli"
 msgid "Update name"
 msgstr "Aggiorna nome"
 
-#: lib/RT/Action/CreateTickets.pm:750 lib/RT/Interface/Web.pm:584
+#: lib/RT/Action/create_tickets.pm:750 lib/RT/Interface/Web.pm:584
 msgid "Update not recorded."
 msgstr "Aggiornamento non registrato."
 
@@ -6038,7 +6038,7 @@ msgstr "Aggiorna il ticket n°%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Aggiorna il ticket n°%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:748 lib/RT/Interface/Web.pm:583
+#: lib/RT/Action/create_tickets.pm:748 lib/RT/Interface/Web.pm:583
 msgid "Update type was neither correspondence nor comment."
 msgstr "Il tipo aggiornamento non era ne' corrispondenza ne' commento."
 

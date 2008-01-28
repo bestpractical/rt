@@ -121,7 +121,7 @@ if (! $CustomField ) {
       $CustomFieldObj->load($CustomField) || Abort(_('No CustomField'));
       $title = _('Editing CustomField %1', $CustomFieldObj->name()); 
 
-      my @aresults = ProcessCustomFieldUpdates ( 
+      my @aresults = process_custom_field_updates ( 
                         CustomFieldObj => $CustomFieldObj,
                         ARGSRef => \%ARGS );
       push @results, @aresults;

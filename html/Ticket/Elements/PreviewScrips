@@ -123,7 +123,7 @@ else {
     $action = 'comment';
 }
 
-my $Message = MakeMIMEEntity(
+my $Message = make_mime_entity(
     Subject => $ARGS{'UpdateSubject'},
     Body    => $ARGS{'UpdateContent'},
 );
@@ -159,7 +159,7 @@ else {
     $action = 'comment';
 }
 
-my $Message = MakeMIMEEntity(
+my $Message = make_mime_entity(
     Subject => $ARGS{'UpdateSubject'},
     Body    => $ARGS{'UpdateContent'},
 );
@@ -192,7 +192,7 @@ return @recipients;
 <%METHOD GetRecipientsOnCreate>
 <%INIT>
 my $action;
-my $Message = MakeMIMEEntity(
+my $Message = make_mime_entity(
     Subject => $ARGS{'Subject'},
     Cc => $ARGS{'Cc'},
     Body    => $ARGS{'Content'},

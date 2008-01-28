@@ -66,5 +66,5 @@ foreach my $col(qw(name Description)) {
 </%ONCE>
 <%INIT>
 $m->callback( COLUMN_MAP => $TEMPLATE_COLUMN_MAP, Callbackname => 'ColumnMap', CallbackOnce => 1 );
-return GetColumnMapEntry( Map => $TEMPLATE_COLUMN_MAP, name => $name, Attribute => $Attr );
+return get_column_map_entry( Map => $TEMPLATE_COLUMN_MAP, name => $name, Attribute => $Attr );
 </%INIT>

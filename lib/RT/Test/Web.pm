@@ -79,7 +79,7 @@ sub goto_create_ticket {
     }
 
     $self->get('/');
-    $self->form_name('CreateTicketInQueue');
+    $self->form_name('create_ticketInQueue');
     $self->select( 'Queue', $id );
     $self->submit;
 

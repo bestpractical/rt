@@ -108,7 +108,7 @@ if ($template_obj->id()) {
   $queue_obj = $template_obj->queue_obj;
 
   my @attribs = qw( Description Content Queue name);
-  my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
+  my @aresults = update_record_object( AttributesRef => \@attribs, 
 				     Object => $template_obj, 
 				     ARGSRef => \%ARGS);
   $current_subtab = "Admin/Queues/Template.html?Queue=$Queue&Template=".$template_obj->id();

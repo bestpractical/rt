@@ -102,7 +102,7 @@ my $rootq = RT::Model::Queue->new(current_user => RT::CurrentUser->new( id => $r
 $rootq->load(1);
 ok($rootq->id, "Loaded the first queue");
 
-ok ($rootq->current_user->has_right(Right=> 'CreateTicket', Object => $rootq), "Root can create tickets");
+ok ($rootq->current_user->has_right(Right=> 'create_ticket', Object => $rootq), "Root can create tickets");
 
 my $new_user = RT::Model::User->new(current_user => RT->system_user);
 my ($id, $msg) = $new_user->create(name => 'ACLTest'.$$);
@@ -114,15 +114,15 @@ $q->load(1);
 ok($q->id, "Loaded the first queue");
 
 
-ok (!$q->current_user->has_right(Right => 'CreateTicket', Object => $q), "Some random user doesn't have the right to create tickets");
-ok (my ($gval, $gmsg) = $new_user->principal_object->grant_right( Right => 'CreateTicket', Object => $q), "Granted the random user the right to create tickets");
+ok (!$q->current_user->has_right(Right => 'create_ticket', Object => $q), "Some random user doesn't have the right to create tickets");
+ok (my ($gval, $gmsg) = $new_user->principal_object->grant_right( Right => 'create_ticket', Object => $q), "Granted the random user the right to create tickets");
 ok ($gval, "Grant succeeded - $gmsg");
 
 
-ok ($q->current_user->has_right(Right => 'CreateTicket', Object => $q), "The user can create tickets after we grant him the right");
-ok ( ($gval, $gmsg) = $new_user->principal_object->revoke_right( Right => 'CreateTicket', Object => $q), "revoked the random user the right to create tickets");
+ok ($q->current_user->has_right(Right => 'create_ticket', Object => $q), "The user can create tickets after we grant him the right");
+ok ( ($gval, $gmsg) = $new_user->principal_object->revoke_right( Right => 'create_ticket', Object => $q), "revoked the random user the right to create tickets");
 ok ($gval, "Revocation succeeded - $gmsg");
-ok (!$q->current_user->has_right(Right => 'CreateTicket', Object => $q), "The user can't create tickets anymore");
+ok (!$q->current_user->has_right(Right => 'create_ticket', Object => $q), "The user can't create tickets anymore");
 
 
 

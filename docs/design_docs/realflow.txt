@@ -34,11 +34,11 @@
 - If "CEO" is resolved, resolve the original ticket.
 - If "CEO" is rejected, reject the original ticket.
 
-[RuleAction CreateTicketWithRuleset]
+[RuleAction create_ticketWithRuleset]
   -> ReleaseMyLockOnRuleset $ruleset
   -> UnlessLockOnRuleset $ruleset
      # i.e. if no active tickets still have a lock on it
-     -> ForceCreateTicketWithRuleset $ruleset
+     -> Forcecreate_ticketWithRuleset $ruleset
 
 [Queue OrderRequest]
   -> Condition: OnCreate
@@ -48,12 +48,12 @@
 [RuleSet: PurchaseApproval]
   -> Condition: OnCreate 
      Condition: CF.Price > 1000
-     Action: CreateTicketWithRuleset "ManagerApproval"
+     Action: create_ticketWithRuleset "ManagerApproval"
   -> Condition: OnCreate 
      Condition: CF.Price > 2000
-     Action: CreateTicketWithRuleset "PresidentApproval"
+     Action: create_ticketWithRuleset "PresidentApproval"
   -> Condition: OnCreate 
-     Action: CreateTicketWithRuleset "FinanceApproval"
+     Action: create_ticketWithRuleset "FinanceApproval"
   -> Condition: OnReject
      Action: DeleteTree
 
@@ -61,15 +61,15 @@
   -> Condition: OnCreate
      Action: Prohibit Ruleset "FinanceApproval"
   -> Condition: OnResolve
-     Action: CreateTicketWithRuleset "FinanceApproval"
+     Action: create_ticketWithRuleset "FinanceApproval"
   -> Condition: OnReject
      Action: RejectTicket TOP
 
 [RuleSet: PresidentApproval]
   -> Condition: OnCreate
-     Action: Prohibit CreateTicketWithRuleset "FinanceApproval"
+     Action: Prohibit create_ticketWithRuleset "FinanceApproval"
   -> Condition: OnResolve
-     Action: CreateTicketWithRuleset "FinanceApproval"
+     Action: create_ticketWithRuleset "FinanceApproval"
   -> Condition: OnReject
      Action: RejectTicket TOP
 
@@ -79,7 +79,7 @@
   -> Condition: OnResolve
      Action: ResolveTicket TOP
   -> Condition: OnReject
-     Action: CreateTicketWithRuleset "CEOApproval"
+     Action: create_ticketWithRuleset "CEOApproval"
 
 [RuleSet: CEOApproval]
   -> Condition: OnResolve
@@ -145,13 +145,13 @@ ok( TicketB->Rules->HasEntry($ApprovalRule) )
 
 [Unassociated]
   - Rule FOO: OnAnything {
-        CreateTicketIfNotBlocked StageFOO
+        create_ticketIfNotBlocked StageFOO
         add_link DependedOnBy TOP to Stage1
         AssignRule DoStage2 to Stage1
         AssignRule DoStage3 to Stage1
     }
   - Rule BAR: OnAnything {
-        CreateTicketIfNotBlocked StageBAR
+        create_ticketIfNotBlocked StageBAR
         DoSomethingBizzare
     }
 

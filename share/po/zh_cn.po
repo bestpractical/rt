@@ -1889,7 +1889,7 @@ msgstr "无法加载模板"
 msgid "Couldn't load that user (%1)"
 msgstr "无法加载该名使用者(%1)"
 
-#: html/SelfService/Display.html:158 lib/RT/Action/CreateTickets.pm:680
+#: html/SelfService/Display.html:158 lib/RT/Action/create_tickets.pm:680
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "无法加载申请单 '%1'"
@@ -1997,7 +1997,7 @@ msgstr "为 %1 表单新增手续"
 msgid "Create a template"
 msgstr "新增模板"
 
-#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/create_ticketInQueue.html:46
 msgid "Create a ticket"
 msgstr "提出申请单"
 
@@ -2054,7 +2054,7 @@ msgid "CreateSavedSearch"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:109
-msgid "CreateTicket"
+msgid "create_ticket"
 msgstr "新增申请单"
 
 #: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48 lib/RT/Ticket_Overlay.pm:1169
@@ -6406,7 +6406,7 @@ msgstr "选择群组"
 msgid "Select a queue"
 msgstr "选择表单"
 
-#: html/SelfService/CreateTicketInQueue.html:48
+#: html/SelfService/create_ticketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr ""
 
@@ -7041,7 +7041,7 @@ msgstr "这份申请单有尚未解决的附属申请单"
 msgid "That user already has that right"
 msgstr "使用者已具有该项权限"
 
-#: lib/RT/Action/CreateTickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
+#: lib/RT/Action/create_tickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
 msgid "That user already owns that ticket"
 msgstr "该使用者已经承办这份申请单"
 
@@ -7184,7 +7184,7 @@ msgstr "更新申请单 #%1 的全部信息：%2"
 msgid "Ticket #%1: %2"
 msgstr "申请单 #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
+#: lib/RT/Action/create_tickets.pm:1350 lib/RT/Action/create_tickets.pm:1359 lib/RT/Action/create_tickets.pm:605 lib/RT/Action/create_tickets.pm:729 lib/RT/Action/create_tickets.pm:741
 #. ($T::Tickets{$template_id}->id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->id)
@@ -7555,7 +7555,7 @@ msgstr "批次更新申请单"
 msgid "Update name"
 msgstr "更新帐号"
 
-#: lib/RT/Action/CreateTickets.pm:750 lib/RT/Interface/Web.pm:584
+#: lib/RT/Action/create_tickets.pm:750 lib/RT/Interface/Web.pm:584
 msgid "Update not recorded."
 msgstr "更新未被记录"
 
@@ -7585,7 +7585,7 @@ msgstr "更新申请单 #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "更新申请单 #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:748 lib/RT/Interface/Web.pm:583
+#: lib/RT/Action/create_tickets.pm:748 lib/RT/Interface/Web.pm:583
 msgid "Update type was neither correspondence nor comment."
 msgstr "更新的内容并非申请单回复也不是评论"
 

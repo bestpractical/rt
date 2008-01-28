@@ -160,7 +160,7 @@ sub GetCurrentUser {
 
         # check to see whether "Everybody" or "Unprivileged users" can create tickets in this queue
         unless ( $everyone->principal_object->has_right( Object => $args{'Queue'},
-                                                    Right  => 'CreateTicket' )
+                                                    Right  => 'create_ticket' )
                  || $unpriv->principal_object->has_right( Object => $args{'Queue'},
                                                      Right  => 'ModifyTicket' ) )
         {

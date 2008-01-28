@@ -166,7 +166,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     $ARGS{'disabled'} = $disabled = $Enabled? 0 : 1;
 
     my @attribs = qw(disabled Pattern name TypeComposite LookupType Description LinkValueTo IncludeContentForValue);
-    push @results, UpdateRecordObject(
+    push @results, update_record_object(
         AttributesRef => \@attribs,
         Object        => $CustomFieldObj,
         ARGSRef       => \%ARGS

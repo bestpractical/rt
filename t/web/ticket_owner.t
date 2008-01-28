@@ -22,7 +22,7 @@ ok $user_b && $user_b->id, 'loaded or created user';
 RT::Test->started_ok;
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket CreateTicket ReplyToTicket)] },
+    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket create_ticket ReplyToTicket)] },
     { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
@@ -32,7 +32,7 @@ ok $agent_a->login('user_a', 'password'), 'logged in as user A';
 diag "current user has no right to own, nobody selected as owner on create";
 {
     $agent_a->get_ok('/', 'open home page');
-    $agent_a->form_name('CreateTicketInQueue');
+    $agent_a->form_name('create_ticketInQueue');
     $agent_a->select( 'Queue', $queue->id );
     $agent_a->submit;
 
@@ -55,7 +55,7 @@ diag "current user has no right to own, nobody selected as owner on create";
 diag "user can chose owner of a new ticket";
 {
     $agent_a->get_ok('/', 'open home page');
-    $agent_a->form_name('CreateTicketInQueue');
+    $agent_a->form_name('create_ticketInQueue');
     $agent_a->select( 'Queue', $queue->id );
     $agent_a->submit;
 
@@ -144,7 +144,7 @@ diag "on reply correct owner is selected";
 }
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket)] },
+    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket create_ticket OwnTicket)] },
     { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
@@ -184,7 +184,7 @@ diag "Couldn't steal without coresponding right";
 }
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket CreateTicket TakeTicket)] },
+    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket create_ticket TakeTicket)] },
 ), 'set rights');
 
 diag "TakeTicket require OwnTicket to work";
@@ -205,7 +205,7 @@ diag "TakeTicket require OwnTicket to work";
 }
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket TakeTicket)] },
+    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket create_ticket OwnTicket TakeTicket)] },
     { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
@@ -249,7 +249,7 @@ diag "TakeTicket+OwnTicket don't work when owner is not nobody";
 }
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket CreateTicket StealTicket)] },
+    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket create_ticket StealTicket)] },
     { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
@@ -272,7 +272,7 @@ diag "StealTicket require OwnTicket to work";
 }
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket StealTicket)] },
+    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket create_ticket OwnTicket StealTicket)] },
     { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
@@ -316,7 +316,7 @@ diag "StealTicket+OwnTicket don't work when owner is nobody";
 }
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket TakeTicket StealTicket)] },
+    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket create_ticket OwnTicket TakeTicket StealTicket)] },
     { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 

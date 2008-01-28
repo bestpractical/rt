@@ -62,7 +62,7 @@ my $queue_count = 0;
 my $queue_id = 1;
 
 while (my $queue = $queues->next) {
-  next unless $queue->current_user_has_right('CreateTicket');
+  next unless $queue->current_user_has_right('create_ticket');
   $queue_id = $queue->id;
   $queue_count++;
   last if ($queue_count > 1);
@@ -85,7 +85,7 @@ my $tabs = { A  => { title => _('Open tickets'),
 
 if ($queue_count > 1) {
         $tabs->{C} = { title => _('New ticket'),
-                       path => 'SelfService/CreateTicketInQueue.html'
+                       path => 'SelfService/create_ticketInQueue.html'
                        };
 } else {
         $tabs->{C} = { title => _('New ticket'),

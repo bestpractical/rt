@@ -334,7 +334,7 @@ if ($user_object->id && $id ne 'new') {
 		    Address2 City State Zip Country 
 		   );
 
-    my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
+    my @fieldresults = update_record_object ( AttributesRef => \@fields,
 					    Object => $user_object,
 					    ARGSRef => \%ARGS );
     push (@results,@fieldresults);

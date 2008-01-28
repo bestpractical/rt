@@ -109,7 +109,7 @@ if ( $ARGS{'Attach'} ) {    # attachment?
     # strip leading directories
     $subject =~ s#^.*[\\/]##;
 
-    my $attachment = MakeMIMEEntity(
+    my $attachment = make_mime_entity(
         Subject             => $subject,
         Body                => "",
         AttachmentFieldname => 'Attach'
@@ -130,7 +130,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         $m->abort;
     }
 
-    unless ( $Queue->current_user_has_right('CreateTicket') ) {
+    unless ( $Queue->current_user_has_right('create_ticket') ) {
         $m->comp( 'Error.html',
             Why =>
               _('You have no permission to create tickets in that queue.') );
@@ -139,7 +139,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
 
     ( $Ticket, @results ) =
-    CreateTicket( Attachments => $session{'Attachments'}, %ARGS, Status => 'new' );
+    create_ticket( Attachments => $session{'Attachments'}, %ARGS, Status => 'new' );
 
     unless ( $Ticket->id ) {
         $m->comp( 'Error.html', Why => join( "\n", @results ));
@@ -185,7 +185,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     {
         $ARGS{UpdateAttachments} = $session{'Attachments'};
     }
-    push @results, ProcessUpdateMessage(
+    push @results, process_update_message(
         ARGSRef   => \%ARGS,
         ticket_obj => $Ticket
     );

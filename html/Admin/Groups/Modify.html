@@ -137,7 +137,7 @@ else {
 if ($id) {
     
     my @fields = qw(Description name );
-    my @fieldresults = UpdateRecordObject ( AttributesRef => \@fields,
+    my @fieldresults = update_record_object ( AttributesRef => \@fields,
 					    Object => $Group,
 					    ARGSRef => \%ARGS );
     push (@results,@fieldresults);
