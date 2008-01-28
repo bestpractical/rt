@@ -599,7 +599,7 @@ sub Encrypt {
         RT->Config->Get('CorrespondAddress'),
         RT->Config->Get('CommentAddress'),
     ) {
-        my %res = RT::Crypt::GnuPG::GetKeysInfo( $address, 'private' );
+        my %res = RT::Crypt::GnuPG::get_keys_info( $address, 'private' );
         next if $res{'exit_code'} || !$res{'info'};
         %res = RT::Crypt::GnuPG::get_keys_for_encryption( $address );
         next if $res{'exit_code'} || !$res{'info'};
@@ -613,7 +613,7 @@ sub Encrypt {
     $self->set_header( 'Content-Type' => $type );
 
     my $content = $self->Content;
-    my %res = RT::Crypt::GnuPG::SignEncryptContent(
+    my %res = RT::Crypt::GnuPG::sign_encrypt_content(
         Content => \$content,
         Sign => 0,
         Encrypt => 1,
@@ -653,7 +653,7 @@ sub Decrypt {
     $self->set_header( 'Content-Type' => $type );
 
     my $content = $self->Content;
-    my %res = RT::Crypt::GnuPG::DecryptContent( Content => \$content, );
+    my %res = RT::Crypt::GnuPG::decrypt_content( Content => \$content, );
     if ( $res{'exit_code'} ) {
         return (0, _('GnuPG error. Contact with administrator'));
     }

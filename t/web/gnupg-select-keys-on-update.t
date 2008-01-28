@@ -77,7 +77,7 @@ diag "check that signing doesn't work if there is no key";
 {
     RT::Test->import_gnupg_key('rt-recipient@example.com');
     RT::Test->trust_gnupg_key('rt-recipient@example.com');
-    my %res = RT::Crypt::GnuPG::GetKeysInfo('rt-recipient@example.com');
+    my %res = RT::Crypt::GnuPG::get_keys_info('rt-recipient@example.com');
     is $res{'info'}[0]{'TrustTerse'}, 'ultimate', 'ultimately trusted key';
 }
 
@@ -113,7 +113,7 @@ diag "import first key of rt-test\@example.com";
 my $fpr1 = '';
 {
     RT::Test->import_gnupg_key('rt-test@example.com', 'public');
-    my %res = RT::Crypt::GnuPG::GetKeysInfo('rt-test@example.com');
+    my %res = RT::Crypt::GnuPG::get_keys_info('rt-test@example.com');
     is $res{'info'}[0]{'TrustLevel'}, 0, 'is not trusted key';
     $fpr1 = $res{'info'}[0]{'Fingerprint'};
 }
@@ -161,7 +161,7 @@ diag "import a second key of rt-test\@example.com";
 my $fpr2 = '';
 {
     RT::Test->import_gnupg_key('rt-test@example.com.2', 'public');
-    my %res = RT::Crypt::GnuPG::GetKeysInfo('rt-test@example.com');
+    my %res = RT::Crypt::GnuPG::get_keys_info('rt-test@example.com');
     is $res{'info'}[1]{'TrustLevel'}, 0, 'is not trusted key';
     $fpr2 = $res{'info'}[2]{'Fingerprint'};
 }
@@ -207,7 +207,7 @@ diag "check that things still doesn't work if two keys are not trusted";
 
 {
     RT::Test->lsign_gnupg_key( $fpr1 );
-    my %res = RT::Crypt::GnuPG::GetKeysInfo('rt-test@example.com');
+    my %res = RT::Crypt::GnuPG::get_keys_info('rt-test@example.com');
     ok $res{'info'}[0]{'TrustLevel'} > 0, 'trusted key';
     is $res{'info'}[1]{'TrustLevel'}, 0, 'is not trusted key';
 }

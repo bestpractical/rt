@@ -80,7 +80,7 @@ sub GetCurrentUser {
 
     my $msg = $args{'Message'}->dup;
 
-    my ($status, @res) = VerifyDecrypt( Entity => $args{'Message'} );
+    my ($status, @res) = verify_decrypt( Entity => $args{'Message'} );
     if ( $status && !@res ) {
         $args{'Message'}->head->add(
             'X-RT-Incoming-Encryption' => 'Not encrypted'
@@ -113,7 +113,7 @@ sub GetCurrentUser {
     # XXX: first entity only for now
     if (@res) {
         my $decrypted;
-        my @status = RT::Crypt::GnuPG::ParseStatus( $res[0]->{'status'} );
+        my @status = RT::Crypt::GnuPG::parse_status( $res[0]->{'status'} );
         for (@status) {
             if ( $_->{Operation} eq 'Decrypt' && $_->{Status} eq 'DONE' ) {
                 $decrypted = 1;
@@ -144,7 +144,7 @@ sub HandleErrors {
 
     my %sent_once = ();
     foreach my $run ( @{ $args{'Result'} } ) {
-        my @status = RT::Crypt::GnuPG::ParseStatus( $run->{'status'} );
+        my @status = RT::Crypt::GnuPG::parse_status( $run->{'status'} );
         unless ( $sent_once{'Noprivate_key'} ) {
             unless ( CheckNoprivate_key( Message => $args{'Message'}, Status => \@status ) ) {
                 $sent_once{'Noprivate_key'}++;
@@ -218,13 +218,13 @@ sub CheckBadData {
     return 0;
 }
 
-sub VerifyDecrypt {
+sub verify_decrypt {
     my %args = (
         Entity => undef,
         @_
     );
 
-    my @res = RT::Crypt::GnuPG::VerifyDecrypt( %args );
+    my @res = RT::Crypt::GnuPG::verify_decrypt( %args );
     unless ( @res ) {
         Jifty->log->debug("No more encrypted/signed parts");
         return 1;
@@ -239,7 +239,7 @@ sub VerifyDecrypt {
     }
 
     # nesting
-    my ($status, @nested) = VerifyDecrypt( %args );
+    my ($status, @nested) = verify_decrypt( %args );
     return $status, @res, @nested;
 }
 

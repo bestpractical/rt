@@ -65,7 +65,7 @@ my $needs_unsigned_warning = $WarnUnsigned;
 foreach ( $Attachment->split_headers ) {
     if ( s/^X-RT-GnuPG-Status:\s*//i ) {
         require RT::Crypt::GnuPG;
-        push @runs, [ RT::Crypt::GnuPG::ParseStatus( $_ ) ];
+        push @runs, [ RT::Crypt::GnuPG::parse_status( $_ ) ];
     }
 
     $needs_unsigned_warning = 0 if /^X-RT-Incoming-Signature:/;
@@ -104,7 +104,7 @@ my $reverify_cb = sub {
     }
 
     use RT::Interface::Email::Auth::GnuPG;
-    my ($status, @res) = RT::Interface::Email::Auth::GnuPG::VerifyDecrypt( Entity => $entity );
+    my ($status, @res) = RT::Interface::Email::Auth::GnuPG::verify_decrypt( Entity => $entity );
     if ( $status && !@res ) {
         # imposible in this situation
         return (0, "Content of attachment #". $original->id ." is not signed and/or encrypted");
@@ -117,7 +117,7 @@ my $reverify_cb = sub {
         $top->set_header('X-RT-Privacy' => 'PGP' );
         $top->del_header('X-RT-Incoming-Signature');
 
-        my @status = RT::Crypt::GnuPG::ParseStatus( $res[0]->{'status'} );
+        my @status = RT::Crypt::GnuPG::parse_status( $res[0]->{'status'} );
         for ( @status ) {
             if ( $_->{'Operation'} eq 'Verify' && $_->{'Status'} eq 'DONE' ) {
                 $top->add_header( 'X-RT-Incoming-Signature' => $_->{'UserString'} );
@@ -137,7 +137,7 @@ foreach my $run ( @runs ) {
             next unless $line->{'KeyType'} eq 'public' && $line->{'Status'} eq 'MISSING';
 
             # but only if we have key
-            my %key = RT::Crypt::GnuPG::GetPublicKeyInfo( $line->{'Key'} );
+            my %key = RT::Crypt::GnuPG::get_public_key_info( $line->{'Key'} );
             if ( $key{'info'} ) {
                 my ($status, $msg) = $reverify_cb->($Attachment);
                 unless ($status) {

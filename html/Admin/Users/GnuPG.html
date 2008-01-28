@@ -47,7 +47,7 @@ unless ( $user_object->id ) {
 $id = $ARGS{'id'} = $user_object->id;
 
 my $email = $user_object->email;
-my %keys_meta = RT::Crypt::GnuPG::GetKeysForSigning( $email, 'force' );
+my %keys_meta = RT::Crypt::GnuPG::get_keys_for_signing( $email, 'force' );
 
 $ARGS{'private_key'} = $m->comp('/Widgets/Form/Select:Process',
     name      => 'private_key',

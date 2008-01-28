@@ -383,7 +383,7 @@ sub _safe_run_child (&) {
     return shift->();
 }
 
-=head2 SignEncrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, ... ]
+=head2 sign_encrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, ... ]
 
 Signs and/or encrypts an email message with GnuPG utility.
 
@@ -395,7 +395,7 @@ During signing you can pass C<Signer> argument to set key we sign with this opti
 overrides gnupg's C<default-key> option. If C<Signer> argument is not provided
 then address of a message sender is used.
 
-As well you can pass C<Passphrase>, but if value is undefined then L</GetPassphrase>
+As well you can pass C<Passphrase>, but if value is undefined then L</get_passphrase>
 called to get it.
 
 =item Encrypting
@@ -415,12 +415,12 @@ Returns a hash with the following keys:
 
 =cut
 
-sub SignEncrypt {
+sub sign_encrypt {
     my %args = (@_);
 
     my $entity = $args{'Entity'};
     if ( $args{'Sign'} && !defined $args{'Signer'} ) {
-        $args{'Signer'} = UseKeyForSigning()
+        $args{'Signer'} = use_key_for_signing()
             || (Mail::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
     }
     if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
@@ -434,13 +434,13 @@ sub SignEncrypt {
     
     my $format = lc RT->Config->Get('GnuPG')->{'OutgoingMessagesFormat'} || 'RFC';
     if ( $format eq 'inline' ) {
-        return SignEncryptInline( %args );
+        return sign_encrypt_inline( %args );
     } else {
-        return SignEncryptRFC3156( %args );
+        return sign_encrypt_rfc3156( %args );
     }
 }
 
-sub SignEncryptRFC3156 {
+sub sign_encrypt_rfc3156 {
     my %args = (
         Entity => undef,
 
@@ -460,7 +460,7 @@ sub SignEncryptRFC3156 {
     $opt{'default_key'} = $args{'Signer'}
         if $args{'Sign'} && $args{'Signer'};
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
+        _prepare_gnupg_options( %opt ),
         armor => 1,
         meta_interactive => 0,
     );
@@ -472,7 +472,7 @@ sub SignEncryptRFC3156 {
         if !defined $args{'Passphrase'};
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+        $args{'Passphrase'} = get_passphrase( Address => $args{'Signer'} );
     }
 
     my %res;
@@ -531,7 +531,7 @@ sub SignEncryptRFC3156 {
     if ( $args{'Encrypt'} ) {
         my %seen;
         $gnupg->options->push_recipients( $_ ) foreach 
-            map UseKeyForEncryption($_) || $_,
+            map use_key_for_encryption($_) || $_,
             grep !$seen{ $_ }++, map $_->address,
             map Mail::Address->parse( $entity->head->get( $_ ) ),
             qw(To Cc Bcc);
@@ -597,7 +597,7 @@ sub SignEncryptRFC3156 {
     return %res;
 }
 
-sub SignEncryptInline {
+sub sign_encrypt_inline {
     my %args = ( @_ );
 
     my $entity = $args{'Entity'};
@@ -606,19 +606,19 @@ sub SignEncryptInline {
     $entity->make_singlepart;
     if ( $entity->is_multipart ) {
         foreach ( $entity->parts ) {
-            %res = SignEncryptInline( @_, Entity => $_ );
+            %res = sign_encrypt_inline( @_, Entity => $_ );
             return %res if $res{'exit_code'};
         }
         return %res;
     }
 
-    return _SignEncryptTextInline( @_ )
+    return _sign_encrypt_text_inline( @_ )
         if $entity->effective_type =~ /^text\//i;
 
-    return _SignEncryptAttachmentInline( @_ );
+    return _sign_encryptAttachmentInline( @_ );
 }
 
-sub _SignEncryptTextInline {
+sub _sign_encrypt_text_inline {
     my %args = (
         Entity => undef,
 
@@ -639,7 +639,7 @@ sub _SignEncryptTextInline {
     $opt{'default_key'} = $args{'Signer'}
         if $args{'Sign'} && $args{'Signer'};
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
+        _prepare_gnupg_options( %opt ),
         armor => 1,
         meta_interactive => 0,
     );
@@ -649,12 +649,12 @@ sub _SignEncryptTextInline {
         if !defined($args{'Passphrase'});
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+        $args{'Passphrase'} = get_passphrase( Address => $args{'Signer'} );
     }
 
     if ( $args{'Encrypt'} ) {
         $gnupg->options->push_recipients( $_ ) foreach 
-            map UseKeyForEncryption($_) || $_,
+            map use_key_for_encryption($_) || $_,
             @{ $args{'Recipients'} || [] };
     }
 
@@ -707,7 +707,7 @@ sub _SignEncryptTextInline {
     return %res;
 }
 
-sub _SignEncryptAttachmentInline {
+sub _sign_encryptAttachmentInline {
     my %args = (
         Entity => undef,
 
@@ -728,7 +728,7 @@ sub _SignEncryptAttachmentInline {
     $opt{'default_key'} = $args{'Signer'}
         if $args{'Sign'} && $args{'Signer'};
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
+        _prepare_gnupg_options( %opt ),
         armor => 1,
         meta_interactive => 0,
     );
@@ -738,13 +738,13 @@ sub _SignEncryptAttachmentInline {
         if !defined($args{'Passphrase'});
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+        $args{'Passphrase'} = get_passphrase( Address => $args{'Signer'} );
     }
 
     my $entity = $args{'Entity'};
     if ( $args{'Encrypt'} ) {
         $gnupg->options->push_recipients( $_ ) foreach
-            map UseKeyForEncryption($_) || $_,
+            map use_key_for_encryption($_) || $_,
             @{ $args{'Recipients'} || [] };
     }
 
@@ -811,7 +811,7 @@ sub _SignEncryptAttachmentInline {
     return %res;
 }
 
-sub SignEncryptContent {
+sub sign_encrypt_content {
     my %args = (
         Content => undef,
 
@@ -832,7 +832,7 @@ sub SignEncryptContent {
     $opt{'default_key'} = $args{'Signer'}
         if $args{'Sign'} && $args{'Signer'};
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
+        _prepare_gnupg_options( %opt ),
         armor => 1,
         meta_interactive => 0,
     );
@@ -842,12 +842,12 @@ sub SignEncryptContent {
         if !defined($args{'Passphrase'});
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+        $args{'Passphrase'} = get_passphrase( Address => $args{'Signer'} );
     }
 
     if ( $args{'Encrypt'} ) {
         $gnupg->options->push_recipients( $_ ) foreach 
-            map UseKeyForEncryption($_) || $_,
+            map use_key_for_encryption($_) || $_,
             @{ $args{'Recipients'} || [] };
     }
 
@@ -908,7 +908,7 @@ sub SignEncryptContent {
     return %res;
 }
 
-sub FindProtectedParts {
+sub find_protected_parts {
     my %args = ( Entity => undef, CheckBody => 1, @_ );
     my $entity = $args{'Entity'};
 
@@ -1026,32 +1026,32 @@ sub FindProtectedParts {
         };
     }
 
-    push @res, FindProtectedParts( Entity => $_ )
+    push @res, find_protected_parts( Entity => $_ )
         foreach grep !$skip{"$_"}, $entity->parts;
 
     return @res;
 }
 
-=head2 VerifyDecrypt Entity => undef, [ Detach => 1, Passphrase => undef ]
+=head2 verify_decrypt Entity => undef, [ Detach => 1, Passphrase => undef ]
 
 =cut
 
-sub VerifyDecrypt {
+sub verify_decrypt {
     my %args = ( Entity => undef, Detach => 1, @_ );
-    my @protected = FindProtectedParts( Entity => $args{'Entity'} );
+    my @protected = find_protected_parts( Entity => $args{'Entity'} );
     my @res;
     # XXX: detaching may brake nested signatures
     foreach my $item( grep $_->{'Type'} eq 'signed', @protected ) {
         if ( $item->{'Format'} eq 'RFC3156' ) {
-            push @res, { VerifyRFC3156( %$item ) };
+            push @res, { verify_rfc3156( %$item ) };
             if ( $args{'Detach'} ) {
                 $item->{'Top'}->parts( [ $item->{'Data'} ] );
                 $item->{'Top'}->make_singlepart;
             }
         } elsif ( $item->{'Format'} eq 'Inline' ) {
-            push @res, { VerifyInline( %$item ) };
+            push @res, { verify_inline( %$item ) };
         } elsif ( $item->{'Format'} eq 'Attachment' ) {
-            push @res, { VerifyAttachment( %$item ) };
+            push @res, { verify_attachment( %$item ) };
             if ( $args{'Detach'} ) {
                 $item->{'Top'}->parts( [ grep "$_" ne $item->{'Signature'}, $item->{'Top'}->parts ] );
                 $item->{'Top'}->make_singlepart;
@@ -1060,11 +1060,11 @@ sub VerifyDecrypt {
     }
     foreach my $item( grep $_->{'Type'} eq 'encrypted', @protected ) {
         if ( $item->{'Format'} eq 'RFC3156' ) {
-            push @res, { DecryptRFC3156( %$item ) };
+            push @res, { decrypt_rfc3156( %$item ) };
         } elsif ( $item->{'Format'} eq 'Inline' ) {
-            push @res, { DecryptInline( %$item ) };
+            push @res, { decrypt_inline( %$item ) };
         } elsif ( $item->{'Format'} eq 'Attachment' ) {
-            push @res, { DecryptAttachment( %$item ) };
+            push @res, { decrypt_attachment( %$item ) };
 #            if ( $args{'Detach'} ) {
 #                $item->{'Top'}->parts( [ grep "$_" ne $item->{'Signature'}, $item->{'Top'}->parts ] );
 #                $item->{'Top'}->make_singlepart;
@@ -1074,19 +1074,19 @@ sub VerifyDecrypt {
     return @res;
 }
 
-sub VerifyInline {
+sub verify_inline {
     my %args = ( Data => undef, Top => undef, @_ );
-    return DecryptInline( %args );
+    return decrypt_inline( %args );
 }
 
-sub VerifyAttachment {
+sub verify_attachment {
     my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
+        _prepare_gnupg_options( %opt ),
         meta_interactive => 0,
     );
 
@@ -1128,14 +1128,14 @@ sub VerifyAttachment {
     return %res;
 }
 
-sub VerifyRFC3156 {
+sub verify_rfc3156 {
     my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
+        _prepare_gnupg_options( %opt ),
         meta_interactive => 0,
     );
 
@@ -1177,7 +1177,7 @@ sub VerifyRFC3156 {
     return %res;
 }
 
-sub DecryptRFC3156 {
+sub decrypt_rfc3156 {
     my %args = (
         Data => undef,
         Info => undef,
@@ -1190,7 +1190,7 @@ sub DecryptRFC3156 {
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
+        _prepare_gnupg_options( %opt ),
         meta_interactive => 0,
     );
 
@@ -1203,7 +1203,7 @@ sub DecryptRFC3156 {
     $args{'Passphrase'} = delete $opt{'passphrase'}
         if !defined($args{'Passphrase'});
 
-    $args{'Passphrase'} = GetPassphrase()
+    $args{'Passphrase'} = get_passphrase()
         unless defined $args{'Passphrase'};
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
@@ -1260,7 +1260,7 @@ sub DecryptRFC3156 {
     return %res;
 }
 
-sub DecryptInline {
+sub decrypt_inline {
     my %args = (
         Data => undef,
         Passphrase => undef,
@@ -1271,7 +1271,7 @@ sub DecryptInline {
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
+        _prepare_gnupg_options( %opt ),
         meta_interactive => 0,
     );
 
@@ -1284,7 +1284,7 @@ sub DecryptInline {
     $args{'Passphrase'} = delete $opt{'passphrase'}
         if !defined($args{'Passphrase'});
 
-    $args{'Passphrase'} = GetPassphrase()
+    $args{'Passphrase'} = get_passphrase()
         unless defined $args{'Passphrase'};
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
@@ -1336,14 +1336,14 @@ sub DecryptInline {
     return %res;
 }
 
-sub DecryptAttachment {
+sub decrypt_attachment {
     my %args = (
         Top  => undef,
         Data => undef,
         Passphrase => undef,
         @_
     );
-    my %res = DecryptInline( %args );
+    my %res = decrypt_inline( %args );
     return %res if $res{'exit_code'};
 
     my $filename = $args{'Data'}->head->recommended_filename;
@@ -1354,7 +1354,7 @@ sub DecryptAttachment {
     return %res;
 }
 
-sub DecryptContent {
+sub decrypt_content {
     my %args = (
         Content => undef,
         Passphrase => undef,
@@ -1365,7 +1365,7 @@ sub DecryptContent {
     my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
+        _prepare_gnupg_options( %opt ),
         meta_interactive => 0,
     );
 
@@ -1373,7 +1373,7 @@ sub DecryptContent {
     $args{'Passphrase'} = delete $opt{'passphrase'}
         if !defined($args{'Passphrase'});
 
-    $args{'Passphrase'} = GetPassphrase()
+    $args{'Passphrase'} = get_passphrase()
         unless defined $args{'Passphrase'};
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
@@ -1434,18 +1434,18 @@ sub DecryptContent {
     return %res;
 }
 
-=head2 GetPassphrase [ Address => undef ]
+=head2 get_passphrase [ Address => undef ]
 
 Returns passphrase, called whenever it's required with Address as a named argument.
 
 =cut
 
-sub GetPassphrase {
+sub get_passphrase {
     my %args = ( Address => undef, @_ );
     return 'test';
 }
 
-=head2 ParseStatus
+=head2 parse_status
 
 Takes a string containing output of gnupg status stream. Parses it and returns
 array of hashes. Each element of array is a hash ref and represents line or
@@ -1504,7 +1504,7 @@ my %REASON_CODE_TO_TEXT = (
     },
 );
 
-sub ReasonCodeToText {
+sub reason_code_to_text {
     my $keyword = shift;
     my $code = shift;
     return $REASON_CODE_TO_TEXT{ $keyword }{ $code }
@@ -1550,7 +1550,7 @@ my %ignore_keyword = map { $_ => 1 } qw(
     TRUST_UNDEFINED TRUST_NEVER TRUST_MARGINAL TRUST_FULLY TRUST_ULTIMATE
 );
 
-sub ParseStatus {
+sub parse_status {
     my $status = shift;
     return () unless $status;
 
@@ -1577,7 +1577,7 @@ sub ParseStatus {
         }
 
         if ( $keyword eq 'USERID_HINT' ) {
-            my %tmp = _ParseUserHint($status, $line);
+            my %tmp = _parse_user_hint($status, $line);
             $latest_user_main_key = $tmp{'MainKey'};
             if ( $user_hint{ $tmp{'MainKey'} } ) {
                 while ( my ($k, $v) = each %tmp ) {
@@ -1716,7 +1716,7 @@ sub ParseStatus {
             @res{qw(Key PubkeyAlgo HashAlgo Class Timestamp ReasonCode Other)}
                 = split /\s+/, $args, 7;
 
-            $res{'Reason'} = ReasonCodeToText( $keyword, $res{'ReasonCode'} );
+            $res{'Reason'} = reason_code_to_text( $keyword, $res{'ReasonCode'} );
             $res{'Message'} .= ", the reason is ". $res{'Reason'};
 
             push @res, \%res;
@@ -1741,7 +1741,7 @@ sub ParseStatus {
         }
         elsif ( $keyword eq 'INV_RECP' ) {
             my ($rcode, $recipient) = split /\s+/, $args, 2;
-            my $reason = ReasonCodeToText( $keyword, $rcode );
+            my $reason = reason_code_to_text( $keyword, $rcode );
             push @res, {
                 Operation  => 'RecipientsCheck',
                 Status     => 'ERROR',
@@ -1753,7 +1753,7 @@ sub ParseStatus {
         }
         elsif ( $keyword eq 'NODATA' ) {
             my $rcode = (split /\s+/, $args)[0];
-            my $reason = ReasonCodeToText( $keyword, $rcode );
+            my $reason = reason_code_to_text( $keyword, $rcode );
             push @res, {
                 Operation  => 'Data',
                 Status     => 'ERROR',
@@ -1771,7 +1771,7 @@ sub ParseStatus {
     return @res;
 }
 
-sub _ParseUserHint {
+sub _parse_user_hint {
     my ($status, $hint) = (@_);
     my ($main_key_id, $user_str) = ($hint =~ /^USERID_HINT\s+(\S+)\s+(.*)$/);
     return () unless $main_key_id;
@@ -1782,7 +1782,7 @@ sub _ParseUserHint {
     );
 }
 
-sub _PrepareGnuPGOptions {
+sub _prepare_gnupg_options {
     my %opt = @_;
     my %res = map { lc $_ => $opt{ $_ } } grep $supported_opt{ lc $_ }, keys %opt;
     $res{'extra_args'} ||= [];
@@ -1798,7 +1798,7 @@ sub _PrepareGnuPGOptions {
 # no args -> clear
 # one arg -> return preferred key
 # many -> set
-sub UseKeyForEncryption {
+sub use_key_for_encryption {
     unless ( @_ ) {
         %key = ();
     } elsif ( @_ > 1 ) {
@@ -1810,7 +1810,7 @@ sub UseKeyForEncryption {
     return ();
 } }
 
-=head2 UseKeyForSigning
+=head2 use_key_for_signing
 
 Returns or sets identifier of the key that should be used for signing.
 
@@ -1821,7 +1821,7 @@ sets new value when called with one argument and unsets if it's undef.
 =cut
 
 { my $key;
-sub UseKeyForSigning {
+sub use_key_for_signing {
     if ( @_ ) {
         $key = $_[0];
     }
@@ -1839,7 +1839,7 @@ also listed.
 
 sub get_keys_for_encryption {
     my $key_id = shift;
-    my %res = GetKeysInfo( $key_id, 'public', @_ );
+    my %res = get_keys_info( $key_id, 'public', @_ );
     return %res if $res{'exit_code'};
     return %res unless $res{'info'};
 
@@ -1858,12 +1858,12 @@ sub get_keys_for_encryption {
     return %res;
 }
 
-sub GetKeysForSigning {
+sub get_keys_for_signing {
     my $key_id = shift;
-    return GetKeysInfo( $key_id, 'private', @_ );
+    return get_keys_info( $key_id, 'private', @_ );
 }
 
-sub CheckRecipients {
+sub check_recipients {
     my @recipients = (@_);
 
     my ($status, @issues) = (1, ());
@@ -1880,7 +1880,7 @@ sub CheckRecipients {
         # it's possible that we have no User record with the email
         $user = undef unless $user->id;
 
-        if ( my $fpr = UseKeyForEncryption( $address ) ) {
+        if ( my $fpr = use_key_for_encryption( $address ) ) {
             if ( $res{'info'} && @{ $res{'info'} } ) {
                 next if
                     grep lc $_->{'Fingerprint'} eq lc $fpr,
@@ -1928,21 +1928,21 @@ sub CheckRecipients {
     return ($status, @issues);
 }
 
-sub GetPublicKeyInfo {
-    return GetKeyInfo( shift, 'public', @_ );
+sub get_public_key_info {
+    return get_key_info( shift, 'public', @_ );
 }
 
-sub Getprivate_keyInfo {
-    return GetKeyInfo( shift, 'private', @_ );
+sub get_private_key_info {
+    return get_key_info( shift, 'private', @_ );
 }
 
-sub GetKeyInfo {
-    my %res = GetKeysInfo(@_);
+sub get_key_info {
+    my %res = get_keys_info(@_);
     $res{'info'} = $res{'info'}->[0];
     return %res;
 }
 
-sub GetKeysInfo {
+sub get_keys_info {
     my $email = shift;
     my $type = shift || 'public';
     my $force = shift;
@@ -1958,7 +1958,7 @@ sub GetKeysInfo {
     $opt{'fingerprint'} = undef; # show fingerprint
     $opt{'fixed-list-mode'} = undef; # don't merge uid with keys
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
+        _prepare_gnupg_options( %opt ),
         armor => 1,
         meta_interactive => 0,
     );
@@ -2000,12 +2000,12 @@ sub GetKeysInfo {
         return %res;
     }
 
-    @info = ParseKeysInfo( @info );
+    @info = parse_keys_info( @info );
     $res{'info'} = \@info;
     return %res;
 }
 
-sub ParseKeysInfo {
+sub parse_keys_info {
     my @lines = @_;
 
     my %gpg_opt = RT->Config->Get('GnuPGOptions');
@@ -2031,15 +2031,15 @@ sub ParseKeysInfo {
             $always_trust = 1 if exists $gpg_opt{'always-trust'};
             $always_trust = 1 if exists $gpg_opt{'trust-model'} && $gpg_opt{'trust-model'} eq 'always';
             @info{qw(Trust TrustTerse TrustLevel)} = 
-                _ConvertTrustChar( $info{'TrustChar'} );
+                _convert_trust_char( $info{'TrustChar'} );
             if ( $always_trust && $info{'TrustLevel'} >= 0 ) {
                 @info{qw(Trust TrustTerse TrustLevel)} = 
-                    _ConvertTrustChar( 'u' );
+                    _convert_trust_char( 'u' );
             }
 
             @info{qw(OwnerTrust OwnerTrustTerse OwnerTrustLevel)} = 
-                _ConvertTrustChar( $info{'OwnerTrustChar'} );
-            $info{ $_ } = _ParseDate( $info{ $_ } )
+                _convert_trust_char( $info{'OwnerTrustChar'} );
+            $info{ $_ } = _parse_date( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
         }
@@ -2051,8 +2051,8 @@ sub ParseKeysInfo {
                 Empty Empty Capabilities Other
             ) } = split /:/, $line, 12;
             @info{qw(OwnerTrust OwnerTrustTerse OwnerTrustLevel)} = 
-                _ConvertTrustChar( $info{'OwnerTrustChar'} );
-            $info{ $_ } = _ParseDate( $info{ $_ } )
+                _convert_trust_char( $info{'OwnerTrustChar'} );
+            $info{ $_ } = _parse_date( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
         }
@@ -2060,7 +2060,7 @@ sub ParseKeysInfo {
             my %info;
             @info{ qw(Trust Created Expire String) }
                 = (split /:/, $line)[0,4,5,8];
-            $info{ $_ } = _ParseDate( $info{ $_ } )
+            $info{ $_ } = _parse_date( $info{ $_ } )
                 foreach qw(Created Expire);
             push @{ $res[-1]{'User'} ||= [] }, \%info;
         }
@@ -2130,7 +2130,7 @@ sub ParseKeysInfo {
         ],
     );
 
-    sub _ConvertTrustChar {
+    sub _convert_trust_char {
         my $value = shift;
         return @{ $verbose{'-'} } unless $value;
         $value = substr $value, 0, 1;
@@ -2138,7 +2138,7 @@ sub ParseKeysInfo {
     }
 }
 
-sub _ParseDate {
+sub _parse_date {
     my $value = shift;
     # never
     return $value unless $value;
@@ -2154,13 +2154,13 @@ sub _ParseDate {
     return $obj;
 }
 
-sub DeleteKey {
+sub delete_key {
     my $key = shift;
 
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
+        _prepare_gnupg_options( %opt ),
         meta_interactive => 0,
     );
 
@@ -2209,13 +2209,13 @@ sub DeleteKey {
     return %res;
 }
 
-sub ImportKey {
+sub import_key {
     my $key = shift;
 
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
+        _prepare_gnupg_options( %opt ),
         meta_interactive => 0,
     );
 
@@ -2269,7 +2269,7 @@ Returns a true value if all went well.
 
 =cut
 
-sub DrySign {
+sub dry_sign {
     my $from = shift;
 
     my $mime = MIME::Entity->build(
@@ -2280,7 +2280,7 @@ sub DrySign {
         Data    => ['t'],
     );
 
-    my %res = SignEncrypt(
+    my %res = sign_encrypt(
         Sign    => 1,
         Encrypt => 0,
         Entity  => $mime,

@@ -1347,7 +1347,7 @@ sub set_private_key {
 
     # check that it's really private key
     {
-        my %tmp = RT::Crypt::GnuPG::GetKeysForSigning( $key );
+        my %tmp = RT::Crypt::GnuPG::get_keys_for_signing( $key );
         return (0, _("No such key or it's not suitable for signing"))
             if $tmp{'exit_code'} || !$tmp{'info'};
     }

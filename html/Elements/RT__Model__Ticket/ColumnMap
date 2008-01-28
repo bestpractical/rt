@@ -233,7 +233,7 @@ $TICKET_COLUMN_MAP = {
             my @requestors = $t->Requestors->member_emails;
             for my $email (@requestors)
             {
-                my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
+                my %key = RT::Crypt::GnuPG::get_key_info($email);
                 if (!defined $key{'info'}) {
                     $email .= _(" (no pubkey!)");
                 }
@@ -250,7 +250,7 @@ $TICKET_COLUMN_MAP = {
         value     => sub {
             my $t = shift;
             my $name = $t->OwnerObj->name;
-            my %key = RT::Crypt::GnuPG::GetKeyInfo($t->OwnerObj->email);
+            my %key = RT::Crypt::GnuPG::get_key_info($t->OwnerObj->email);
             if (!defined $key{'info'}) {
                 $name .= _(" (no pubkey!)");
             }

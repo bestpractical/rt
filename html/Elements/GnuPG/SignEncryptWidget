@@ -82,11 +82,11 @@ if ( $self->{'Sign'} ) {
         ? ( $queue_obj->comment_address || RT->Config->Get('comment_address') )
         : ( $queue_obj->correspond_address || RT->Config->Get('correspond_address') );
 
-    unless ( RT::Crypt::GnuPG::DrySign( $address ) ) {
+    unless ( RT::Crypt::GnuPG::dry_sign( $address ) ) {
         push @{ $self->{'GnuPGCanNotSignAs'} ||= [] }, $address;
         $checks_failure = 1;
     } else {
-        RT::Crypt::GnuPG::UseKeyForSigning( $self->{'SignUsing'} )
+        RT::Crypt::GnuPG::use_key_for_signing( $self->{'SignUsing'} )
             if $self->{'SignUsing'};
     }
 }
@@ -121,13 +121,13 @@ if ( $self->{'Encrypt'} ) {
     my %seen;
     @recipients = grep !$seen{ lc $_ }++, @recipients;
 
-    RT::Crypt::GnuPG::UseKeyForEncryption(
+    RT::Crypt::GnuPG::use_key_for_encryption(
         map { (/^UseKey-(.*)$/)[0] => $self->{ $_ } }
         grep $self->{ $_ } && /^UseKey-/,
         keys %$self
     );
 
-    my ($status, @issues) = RT::Crypt::GnuPG::CheckRecipients( @recipients );
+    my ($status, @issues) = RT::Crypt::GnuPG::check_recipients( @recipients );
     push @{ $self->{'GnuPGRecipientsKeyIssues'} ||= [] }, @issues;
     $checks_failure = 1 unless $status;
 }

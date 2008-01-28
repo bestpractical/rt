@@ -331,7 +331,7 @@ sub import_gnupg_key {
     $key =~ s/\@/-at-/g;
     $key .= ".$type.key";
     require RT::Crypt::GnuPG;
-    return RT::Crypt::GnuPG::ImportKey(
+    return RT::Crypt::GnuPG::import_key(
         RT::Test->file_content([qw(t data gnupg keys), $key])
     );
 }
@@ -388,7 +388,7 @@ sub lsign_gnupg_key {
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $gnupg->options->hash_init(
-        RT::Crypt::GnuPG::_PrepareGnuPGOptions( %opt ),
+        RT::Crypt::GnuPG::_prepare_gnupg_options( %opt ),
         meta_interactive => 0,
     );
 
@@ -445,7 +445,7 @@ sub trust_gnupg_key {
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->Config->Get('GnuPGOptions');
     $gnupg->options->hash_init(
-        RT::Crypt::GnuPG::_PrepareGnuPGOptions( %opt ),
+        RT::Crypt::GnuPG::_prepare_gnupg_options( %opt ),
         meta_interactive => 0,
     );
 

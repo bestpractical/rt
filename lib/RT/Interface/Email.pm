@@ -384,7 +384,7 @@ sub SendEmail {
             }
         }
 
-        my $res = SignEncrypt( %args, %crypt );
+        my $res = sign_encrypt( %args, %crypt );
         return $res unless $res > 0;
     }
 
@@ -672,7 +672,7 @@ sub ForwardTransaction {
     return (1, $txn->_("Send email successfully"));
 }
 
-=head2 SignEncrypt Entity => undef, Sign => 0, Encrypt => 0
+=head2 sign_encrypt Entity => undef, Sign => 0, Encrypt => 0
 
 Signs and encrypts message using L<RT::Crypt::GnuPG>, but as well
 handle errors with users' keys.
@@ -688,7 +688,7 @@ had been filtered out.
 
 =cut
 
-sub SignEncrypt {
+sub sign_encrypt {
     my %args = (
         Entity => undef,
         Sign => 0,
@@ -704,10 +704,10 @@ sub SignEncrypt {
     Jifty->log->debug("$msgid Encrypting message") if $args{'Encrypt'};
 
     require RT::Crypt::GnuPG;
-    my %res = RT::Crypt::GnuPG::SignEncrypt( %args );
+    my %res = RT::Crypt::GnuPG::sign_encrypt( %args );
     return 1 unless $res{'exit_code'};
 
-    my @status = RT::Crypt::GnuPG::ParseStatus( $res{'status'} );
+    my @status = RT::Crypt::GnuPG::parse_status( $res{'status'} );
 
     my @bad_recipients;
     foreach my $line ( @status ) {
@@ -771,7 +771,7 @@ sub SignEncrypt {
     }
 
     # redo without broken recipients
-    %res = RT::Crypt::GnuPG::SignEncrypt( %args );
+    %res = RT::Crypt::GnuPG::sign_encrypt( %args );
     return 0 if $res{'exit_code'};
 
     return 1;
