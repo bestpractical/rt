@@ -48,30 +48,26 @@
 <& /Elements/ListActions, actions => \@actions &>
 
 <form action="Scrips.html" method="post">
-<input type="hidden" class="hidden" name="id" value="<%$id%>" />
+<input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
 <h2><&|/l&>Current Scrips</&></h2>
-% if ($Scrips->Count == 0 ) {
-<p><i><&|/l&>(No scrips)</&></i></p>
-% } else {
-<table width="100%">
 <p><i><&|/l&>(Check box to delete)</&></i></p>
+<& /Elements/CollectionList,
+    OrderBy => 'Description',
+    Order => 'ASC',
+    Rows  => 100,
+    %ARGS,
+    Format => $Format,
+    DisplayFormat => "__CheckBox.{DeleteScrip}__, $Format",
+    Collection => $Scrips,
+    AllowSorting => 1,
+    PassArguments => [ qw(Query Format Rows Page Order OrderBy id) ],
+&>
 
-%   while (my $scrip = $Scrips->Next ) {
-<tr>
-<td>
-<input type="checkbox" class="checkbox" name="DeleteScrip-<%$scrip->Id%>" value="1" />
-</td>
-<td>
-<a href="Scrip.html?id=<%$scrip->Id%>&Queue=<%$id%>"><% $scrip->Description || "<i>(".loc('no value').")</i>" |n %></a><br />
-<small><&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name) &>[_1] [_2] with template [_3]</&></small>
-</td>
-</tr>
-%   }
-
-</table>
-
+% unless ( $Scrips->Count ) {
+<p><i><&|/l&>(No scrips)</&></i></p>
 % }
+
 <& /Elements/Submit,
     Caption => loc("Delete selected scrips"),
     Label => loc("Delete")
@@ -82,7 +78,6 @@
 my (@actions);
 
 my $Scrips = RT::Scrips->new($session{'CurrentUser'});
-
 
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 if ( $id ) {
@@ -99,10 +94,9 @@ else {
     $Scrips->LimitToGlobal();
 }
 
-$Scrips->OrderBy( FIELD => 'description' );
-
 # {{{ deal with modifying and deleting existing scrips
-foreach my $id ( grep $_, map /^DeleteScrip-(\d+)/, keys %ARGS ) {
+# we still support DeleteScrip-id format but array is preferred
+foreach my $id ( grep $_, @DeleteScrip, map /^DeleteScrip-(\d+)/, keys %ARGS ) {
     my $scrip = RT::Scrip->new($session{'CurrentUser'});
     $scrip->Load( $id );
     my ($retval, $msg) = $scrip->Delete;
@@ -114,9 +108,16 @@ foreach my $id ( grep $_, map /^DeleteScrip-(\d+)/, keys %ARGS ) {
     }
 }
 # }}}
+
+$Format ||= qq{'<a href="Scrip.html?id=__id__&Queue=$id">__id__</a>/TITLE:#'}
+    .qq{,'<a href="Scrip.html?id=__id__&Queue=$id">__Description__</a>/TITLE:Description'}
+    .q{,__Stage__, __Condition__, __Action__, __Template__};
+
 </%init>
 
 <%ARGS>
 $id => undef
 $title => undef
+$Format => undef
+@DeleteScrip => ()
 </%ARGS>
