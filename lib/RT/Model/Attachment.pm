@@ -169,7 +169,8 @@ Create an attachment exactly as specified in the named parameters.
 
 =cut
 
-sub import {
+#XXX: we don't want to mess with perl's importer
+sub __import {
     my $self = shift;
     my %args = ( ContentEncoding => 'none', @_ );
 
