@@ -57,7 +57,7 @@
 		transaction_obj => $tr, 
 		ticket_obj => $ti, 
 		scrip_obj => $scr, 
-		Argument => $arg, 
+		argument => $arg, 
 		Type => $type);
 
     if ($foo->IsApplicable) {
@@ -103,25 +103,25 @@ sub _init {
         ticket_obj           => undef,
         scrip_obj            => undef,
         template_obj         => undef,
-        Argument             => undef,
-        ApplicableTransTypes => undef,
+        argument             => undef,
+        applicable_trans_types => undef,
         @_
     );
 
-    $self->{'Argument'}             = $args{'Argument'};
+    $self->{'argument'}             = $args{'argument'};
     $self->{'scrip_obj'}            = $args{'scrip_obj'};
     $self->{'ticket_obj'}           = $args{'ticket_obj'};
     $self->{'transaction_obj'}      = $args{'transaction_obj'};
-    $self->{'ApplicableTransTypes'} = $args{'ApplicableTransTypes'};
+    $self->{'applicable_trans_types'} = $args{'applicable_trans_types'};
 }
 
 # }}}
 
 # Access Scripwide data
 
-# {{{ sub Argument
+# {{{ sub argument
 
-=head2 Argument
+=head2 argument
 
 Return the optional argument associated with this ScripCondition
 
@@ -129,7 +129,7 @@ Return the optional argument associated with this ScripCondition
 
 sub argument {
     my $self = shift;
-    return ( $self->{'Argument'} );
+    return ( $self->{'argument'} );
 }
 
 # }}}
@@ -188,7 +188,7 @@ sub transaction_obj {
 
 sub applicable_trans_types {
     my $self = shift;
-    return ( $self->{'ApplicableTransTypes'} );
+    return ( $self->{'applicable_trans_types'} );
 }
 
 # }}}

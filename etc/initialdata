@@ -74,62 +74,62 @@
        Description =>
 'Always sends a message to the requestors independent of message sender' ,                                            # loc
        ExecModule => 'Autoreply',
-       Argument   => 'Requestor' },
+       argument   => 'Requestor' },
     { name        => 'Notify Requestors',                    # loc
       Description => 'Sends a message to the requestors',    # loc
       ExecModule  => 'Notify',
-      Argument    => 'Requestor' },
+      argument    => 'Requestor' },
     { name        => 'Notify Owner as comment',              # loc
       Description => 'Sends mail to the owner',              # loc
       ExecModule  => 'NotifyAsComment',
-      Argument    => 'Owner' },
+      argument    => 'Owner' },
     { name        => 'Notify Owner',                         # loc
       Description => 'Sends mail to the owner',              # loc
       ExecModule  => 'Notify',
-      Argument    => 'Owner' },
+      argument    => 'Owner' },
     { name        => 'Notify Ccs as comment',              # loc
       Description => 'Sends mail to the Ccs as a comment', # loc
       ExecModule  => 'NotifyAsComment',
-      Argument    => 'Cc' },
+      argument    => 'Cc' },
     { name        => 'Notify Ccs',                                   # loc
       Description => 'Sends mail to the Ccs',                        # loc
       ExecModule  => 'Notify',
-      Argument    => 'Cc' },
+      argument    => 'Cc' },
     { name        => 'Notify AdminCcs as comment',                        # loc
       Description => 'Sends mail to the administrative Ccs as a comment', # loc
       ExecModule  => 'NotifyAsComment',
-      Argument    => 'AdminCc' },
+      argument    => 'AdminCc' },
     { name        => 'Notify AdminCcs',                                   # loc
       Description => 'Sends mail to the administrative Ccs',              # loc
       ExecModule  => 'Notify',
-      Argument    => 'AdminCc' },
+      argument    => 'AdminCc' },
 
     { name        => 'Notify Requestors and Ccs as comment',              # loc
       Description => 'Send mail to requestors and Ccs as a comment',      # loc
       ExecModule  => 'NotifyAsComment',
-      Argument    => 'Requestor,Cc' },
+      argument    => 'Requestor,Cc' },
 
     { name        => 'Notify Requestors and Ccs',                         # loc
       Description => 'Send mail to requestors and Ccs',                   # loc
       ExecModule  => 'Notify',
-      Argument    => 'Requestor,Cc' },
+      argument    => 'Requestor,Cc' },
 
     { name        => 'Notify Requestors, Ccs and AdminCcs as comment',    # loc
       Description => 'Send mail to all watchers as a "comment"',          # loc
       ExecModule  => 'NotifyAsComment',
-      Argument    => 'All' },
+      argument    => 'All' },
     { name        => 'Notify Requestors, Ccs and AdminCcs',               # loc
       Description => 'Send mail to all watchers',                         # loc
       ExecModule  => 'Notify',
-      Argument    => 'All' },
+      argument    => 'All' },
     { name        => 'Notify Other Recipients as comment',                # loc
       Description => 'Sends mail to explicitly listed Ccs and Bccs',      # loc
       ExecModule  => 'NotifyAsComment',
-      Argument    => 'OtherRecipients' },
+      argument    => 'OtherRecipients' },
     { name        => 'Notify Other Recipients',                           # loc
       Description => 'Sends mail to explicitly listed Ccs and Bccs',      # loc
       ExecModule  => 'Notify',
-      Argument    => 'OtherRecipients' },
+      argument    => 'OtherRecipients' },
     { name        => 'User Defined',                                      # loc
       Description => 'Perform a user-defined action',                     # loc
       ExecModule  => 'UserDefined', },
@@ -145,31 +145,31 @@
 @ScripConditions = (
     { name                 => 'On Create',                                # loc
       Description          => 'When a ticket is Created',                 # loc
-      ApplicableTransTypes => 'Create',
+      applicable_trans_types => 'Create',
       ExecModule           => 'AnyTransaction', },
 
     { name                 => 'On Transaction',                           # loc
       Description          => 'When anything happens',                    # loc
-      ApplicableTransTypes => 'Any',
+      applicable_trans_types => 'Any',
       ExecModule           => 'AnyTransaction', },
     {
 
       name                 => 'On Correspond',                             # loc
       Description          => 'Whenever correspondence comes in',          # loc
-      ApplicableTransTypes => 'Correspond',
+      applicable_trans_types => 'Correspond',
       ExecModule           => 'AnyTransaction', },
 
     {
 
       name                 => 'On comment',                                # loc
       Description          => 'Whenever comments come in',                 # loc
-      ApplicableTransTypes => 'comment',
+      applicable_trans_types => 'comment',
       ExecModule           => 'AnyTransaction' },
     {
 
       name                 => 'On Status Change',                          # loc
       Description          => 'Whenever a ticket\'s status changes',       # loc
-      ApplicableTransTypes => 'Status',
+      applicable_trans_types => 'Status',
       ExecModule           => 'AnyTransaction',
 
     },
@@ -177,14 +177,14 @@
 
       name                 => 'On Priority Change',                       # loc
       Description          => 'Whenever a ticket\'s priority changes',    # loc
-      ApplicableTransTypes => 'Set',
+      applicable_trans_types => 'Set',
       ExecModule           => 'PriorityChange',
     },
     {
 
       name                 => 'On Owner Change',                           # loc
       Description          => 'Whenever a ticket\'s owner changes',        # loc
-      ApplicableTransTypes => 'Any',
+      applicable_trans_types => 'Any',
       ExecModule           => 'OwnerChange',
 
     },
@@ -192,33 +192,33 @@
 
       name                 => 'On Queue Change',                           # loc
       Description          => 'Whenever a ticket\'s queue changes',        # loc
-      ApplicableTransTypes => 'Set',
+      applicable_trans_types => 'Set',
       ExecModule           => 'QueueChange',
 
     },
     {  name                 => 'On Resolve',                               # loc
        Description          => 'Whenever a ticket is resolved',            # loc
-       ApplicableTransTypes => 'Status',
+       applicable_trans_types => 'Status',
        ExecModule           => 'StatusChange',
-       Argument             => 'resolved'
+       argument             => 'resolved'
 
     },
 
     {  name                 => 'User Defined',                             # loc
        Description          => 'Whenever a user-defined condition occurs', # loc
-       ApplicableTransTypes => 'Any',
+       applicable_trans_types => 'Any',
        ExecModule           => 'UserDefined'
 
     },
 
     {  name                 => 'On Close',                                 # loc
        Description          => 'Whenever a ticket is closed(inactivated)', # loc
-       ApplicableTransTypes => 'Status,Set',
+       applicable_trans_types => 'Status,Set',
        ExecModule           => 'CloseTicket',
     },
     {  name                 => 'On Reopen',                                # loc
        Description          => 'Whenever a ticket is reopened(activated)', # loc
-       ApplicableTransTypes => 'Status,Set',
+       applicable_trans_types => 'Status,Set',
        ExecModule           => 'ReopenTicket',
     },
 
@@ -565,7 +565,7 @@ foreach my $link (@{ $links->items_array_ref }) {
 
 # Now magically turn myself into a Requestor Notify object...
 require RT::ScripAction::Notify; bless($self, 'RT::ScripAction::Notify');
-$self->{Argument} = 'Requestor'; $self->prepare;
+$self->{argument} = 'Requestor'; $self->prepare;
 
 return $rejected;
 # ------------------------------------------------------------------- #
@@ -601,7 +601,7 @@ foreach my $obj ($self->ticket_obj->all_depended_on_by( Type => 'ticket' )) {
 
 # Now magically turn myself into a Requestor Notify object...
 require RT::ScripAction::Notify; bless($self, 'RT::ScripAction::Notify');
-$self->{Argument} = 'Requestor'; $self->prepare;
+$self->{argument} = 'Requestor'; $self->prepare;
 
 return 1;
 # ------------------------------------------------------------------- #
@@ -658,7 +658,7 @@ while (my $link = $links->next) {
 
 # Now magically turn myself into a Requestor Notify object...
 require RT::ScripAction::Notify; bless($self, 'RT::ScripAction::Notify');
-$self->{Argument} = 'Requestor'; $self->prepare;
+$self->{argument} = 'Requestor'; $self->prepare;
 
 return 0; # ignore $passed;
 # ------------------------------------------------------------------- #

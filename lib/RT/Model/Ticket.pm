@@ -623,11 +623,11 @@ sub create {
         # we know it's an array ref
         foreach my $watcher ( @{ $args{$type} } ) {
 
-      # Note that we're using AddWatcher, rather than _AddWatcher, as we
+      # Note that we're using add_watcher, rather than _add_watcher, as we
       # actually _want_ that ACL check. Otherwise, random ticket creators
       # could make themselves adminccs and maybe get ticket rights. that would
       # be poor
-            my $method = $type eq 'AdminCc' ? 'AddWatcher' : '_AddWatcher';
+            my $method = $type eq 'AdminCc' ? 'add_watcher' : '_add_watcher';
 
             my ( $val, $msg ) = $self->$method(
                 Type         => $type,

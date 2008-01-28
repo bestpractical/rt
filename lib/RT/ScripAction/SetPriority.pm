@@ -79,7 +79,7 @@ sub prepare {
 sub commit {
     my $self = shift;
     warn "Committing the setprio";
-    $self->ticket_obj->set_Priority( $self->Argument );
+    $self->ticket_obj->set_Priority( $self->argument );
 
 }
 

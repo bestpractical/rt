@@ -348,7 +348,7 @@ sub _find_scrips {
     foreach ( split /\s*,\s*/, ( $args{'Type'} || '' ) ) {
         $self->limit(
             alias            => $ConditionsAlias,
-            column           => 'ApplicableTransTypes',
+            column           => 'applicable_trans_types',
             operator         => 'LIKE',
             value            => $_,
             entry_aggregator => 'OR',
@@ -358,7 +358,7 @@ sub _find_scrips {
     # Or where the scrip applies to any transaction
     $self->limit(
         alias            => $ConditionsAlias,
-        column           => 'ApplicableTransTypes',
+        column           => 'applicable_trans_types',
         operator         => 'LIKE',
         value            => "Any",
         entry_aggregator => 'OR',

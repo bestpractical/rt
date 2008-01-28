@@ -81,7 +81,7 @@ use Jifty::DBI::Record schema {
     column name        => type is 'text';
     column Description => type is 'text';
     column ExecModule  => type is 'text';
-    column Argument    => type is 'text';
+    column argument    => type is 'text';
     column Creator     => max_length is 11, type is 'int(11)', default is '0';
     column Created => type is 'datetime', default is '';
     column
@@ -174,7 +174,7 @@ sub load_action {
     eval "require $type" || die "Require of $type failed.\n$@\n";
 
     $self->{'Action'} = $type->new(
-        Argument        => $self->argument,
+        argument        => $self->argument,
         CurrentUser     => $self->current_user,
         ScripActionObj  => $self,
         scrip_obj       => $args{'scrip_obj'},

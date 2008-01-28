@@ -85,7 +85,7 @@ sub new {
 sub _init {
     my $self = shift;
     my %args = (
-        Argument        => undef,
+        argument        => undef,
         ScripActionObj  => undef,
         scrip_obj       => undef,
         template_obj    => undef,
@@ -96,7 +96,7 @@ sub _init {
         @_
     );
 
-    $self->{'Argument'}        = $args{'Argument'};
+    $self->{'argument'}        = $args{'argument'};
     $self->{'ScripActionObj'}  = $args{'ScripActionObj'};
     $self->{'scrip_obj'}       = $args{'scrip_obj'};
     $self->{'template_obj'}    = $args{'template_obj'};
@@ -116,10 +116,10 @@ sub _init {
 
 # Access Scripwide data
 
-# {{{ sub Argument
+# {{{ sub argument
 sub argument {
     my $self = shift;
-    return ( $self->{'Argument'} );
+    return ( $self->{'argument'} );
 }
 
 # }}}

@@ -150,7 +150,7 @@ sub prepare {
     my $self = shift;
 
     my ( $result, $message ) = $self->template_obj->parse(
-        Argument        => $self->argument,
+        argument        => $self->argument,
         ticket_obj      => $self->ticket_obj,
         transaction_obj => $self->transaction_obj
     );

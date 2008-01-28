@@ -81,8 +81,8 @@ use Jifty::DBI::Record schema {
     column name                 => type is 'text';
     column Description          => type is 'text';
     column ExecModule           => type is 'text';
-    column Argument             => type is 'text';
-    column ApplicableTransTypes => type is 'text';
+    column argument             => type is 'text';
+    column applicable_trans_types => type is 'text';
     column Creator => max_length is 11, type is 'int(11)', default is '0';
     column Created => type is 'datetime', default is '';
     column
@@ -179,8 +179,8 @@ sub load_condition {
         'ticket_obj'           => $args{'ticket_obj'},
         'scrip_obj'            => $args{'scrip_obj'},
         'transaction_obj'      => $args{'transaction_obj'},
-        'Argument'             => $self->argument,
-        'ApplicableTransTypes' => $self->applicable_trans_types,
+        'argument'             => $self->argument,
+        'applicable_trans_types' => $self->applicable_trans_types,
         CurrentUser            => $self->current_user
     );
 }
