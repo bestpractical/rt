@@ -1,5 +1,5 @@
 <%INIT>
-&RT::Interface::Web::StaticFileHeaders();
+&RT::Interface::Web::static_file_headers();
 
 # This autohandler will spit out RT's images if the user hasn't 
 # properly configured their webserver to stop RT from passing 
