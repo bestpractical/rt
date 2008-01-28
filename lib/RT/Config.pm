@@ -321,7 +321,7 @@ EOF
     return 1;
 }
 
-=head2 Configs
+=head2 configs
 
 Returns list of the top level configs file names. F<RT_Config.pm> is always
 first, other configs are ordered by name.
