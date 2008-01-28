@@ -72,9 +72,10 @@
 </table>
 
 % }
-<& /Elements/Submit, 
-	Caption => loc("Delete selected scrips"), 
-	Label => loc("Delete") &>
+<& /Elements/Submit,
+    Caption => loc("Delete selected scrips"),
+    Label => loc("Delete")
+&>
 </form>
 
 <%init>
@@ -84,37 +85,33 @@ my $Scrips = RT::Scrips->new($session{'CurrentUser'});
 
 
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
-if ($id)  {
-        $QueueObj->Load($id);                        
+if ( $id ) {
+    $QueueObj->Load( $id );
+    unless ( $QueueObj->id ) {
+        push @actions, loc("Couldn't load queue #[_1]", $id)
+    }
 }
 
-if ($QueueObj->id) {                         
-	$Scrips->LimitToQueue($id);
-}                                            
-else {                                       
-        $Scrips->LimitToGlobal();
-}                                           
+if ($QueueObj->id) {
+    $Scrips->LimitToQueue($id);
+}
+else {
+    $Scrips->LimitToGlobal();
+}
 
 $Scrips->OrderBy( FIELD => 'description' );
 
-
-
 # {{{ deal with modifying and deleting existing scrips
-foreach my $key (keys %ARGS) {
-  # {{{ if we're trying to delete the scrip
-  if ($key =~ /^DeleteScrip-(\d+)/) {
-    my $id = $1;
-    my $scrip = new RT::Scrip($session{'CurrentUser'});
-    $scrip->Load($id);
+foreach my $id ( grep $_, map /^DeleteScrip-(\d+)/, keys %ARGS ) {
+    my $scrip = RT::Scrip->new($session{'CurrentUser'});
+    $scrip->Load( $id );
     my ($retval, $msg) = $scrip->Delete;
     if ($retval) {
-      push @actions, loc("Scrip deleted");
+        push @actions, loc("Scrip deleted");
     }
     else {
-      push @actions, $msg;
+        push @actions, $msg;
     }
-  }
-  # }}}
 }
 # }}}
 </%init>
