@@ -45,32 +45,27 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ($Scrips->Count == 0) {
-
+% unless ( $Scrips->Count ) {
 <p><i><&|/l&>(No scrips)</&></i></p>
-
 % } else {
 
-<ul>
-
-%   while (my $scrip = $Scrips->Next ) {
-<li>
-<a href="<%RT->Config->Get('WebPath')%>/Admin/Global/Scrip.html?id=<%$scrip->Id%>&Queue=<%0%>">
-% if ($scrip->Description) {
-<%   $scrip->Description %> 
-% } else {
-<i>(<&|/l, $scrip->Id&>Scrip #[_1]</&>)</i>
-% }
-</a><br />
-<small><&|/l, loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name) &>[_1] [_2] with template [_3]</&></small>
-</li>
-%   }
-
-</ul>
+<& /Elements/CollectionList,
+    OrderBy => 'Description',
+    Order => 'ASC',
+    Rows  => 0,
+    %ARGS,
+    Format => $Format,
+    Collection => $Scrips,
+    ShowHeader => 0,
+&>
 
 % }
 
 <%init>
-my $Scrips = new RT::Scrips ($session{'CurrentUser'});
-$Scrips->LimitToGlobal();
+my $Format = q{'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__&Queue=0">__id__</a>/TITLE:#'}
+    .q{,'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__&Queue=0">__AutoDescription__</a>/TITLE:Condition, Action and Template'}
+    .q{__NEWLINE__,'','<small>__Description__</small>'};
+
+my $Scrips = RT::Scrips->new( $session{'CurrentUser'} );
+$Scrips->LimitToGlobal;
 </%INIT>
