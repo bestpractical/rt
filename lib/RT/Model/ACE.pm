@@ -298,7 +298,7 @@ sub create {
     $args{'right_name'} = $canonic_name;
 
     #check if it's a valid right_name
-    if ( $args{'Object'}->can('AvailableRights') ) {
+    if ( $args{'Object'}->can('available_rights') ) {
         unless (
             exists $args{'Object'}
             ->available_rights->{ $args{'right_name'} } )

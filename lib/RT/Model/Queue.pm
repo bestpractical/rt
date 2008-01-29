@@ -197,7 +197,7 @@ sub delete_link {
     return $self->SUPER::_delete_link(%args);
 }
 
-=head2 AvailableRights
+=head2 available_rights
 
 Returns a hash of available rights for this object. The keys are the right names and the values are a description of what the rights do
 
