@@ -1,4 +1,4 @@
-﻿/*
+/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  *
@@ -94,20 +94,21 @@ FCKConfig.TemplateReplaceCheckbox = true ;
 FCKConfig.ToolbarLocation = 'In' ;
 
 FCKConfig.ToolbarSets["Default"] = [
-	['Source','DocProps','-','Save','NewPage','Preview','-','Templates'],
+	['Source','DocProps','-','Save','NewPage','Preview'], // ,'-','Templates'],
 	['Cut','Copy','Paste','PasteText','PasteWord','-','Print','SpellCheck'],
 	['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
-	['Form','Checkbox','Radio','TextField','Textarea','Select','Button','ImageButton','HiddenField'],
+//	['Form','Checkbox','Radio','TextField','Textarea','Select','Button','ImageButton','HiddenField'],
+	['FitWindow','ShowBlocks'], // ,'-','About'],
 	'/',
 	['Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript'],
 	['OrderedList','UnorderedList','-','Outdent','Indent','Blockquote'],
 	['JustifyLeft','JustifyCenter','JustifyRight','JustifyFull'],
 	['Link','Unlink','Anchor'],
-	['Image','Flash','Table','Rule','Smiley','SpecialChar','PageBreak'],
+//	['Image','Flash','Table','Rule','Smiley','SpecialChar','PageBreak'],
+	['Table','Rule','SpecialChar','PageBreak'],
 	'/',
 	['Style','FontFormat','FontName','FontSize'],
-	['TextColor','BGColor'],
-	['FitWindow','ShowBlocks','-','About']		// No comma for the last row.
+	['TextColor','BGColor'] // No comma for the last row.
 ] ;
 
 FCKConfig.ToolbarSets["Basic"] = [
