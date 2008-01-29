@@ -66,7 +66,7 @@
     PassArguments => [qw(Format Rows Page Order order_by GroupString GroupOp Groupfield FinddisabledGroups)],
 &>
 
-% my $ids = join ',', map $_->id, @{ $Groups->ItemsArrayRef };
+% my $ids = join ',', map $_->id, @{ $Groups->items_array_ref };
 % if ( $ids ) {
 <div align="right"><em>
 (<a href="<% RT->config->get('WebPath') %>/Download/Tabular/Group/<% $ids %>/Groups.tsv">

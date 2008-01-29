@@ -71,7 +71,7 @@ my $CF = RT::Model::CustomField->new();
 $CF->load($id) if ($id);
 
 unless ($CF->id) {  abort(_("Could not load CustomField %1"), $id)};
-my $LookupType = $CF->LookupType || '';
+my $LookupType = $CF->lookup_type || '';
 $LookupType =~ /^(.*?)-/ ||
      abort(_("Object of type %1 cannot take custom fields", $LookupType));
 

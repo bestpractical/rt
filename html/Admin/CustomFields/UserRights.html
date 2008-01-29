@@ -60,7 +60,7 @@ Title => $title, &>
 %	while (my $Member = $Users->next()) {
 % my $user_object = $Member->member_obj->object();
 % my $group = RT::Model::Group->new();
-% $group->load_acl_equivalence_group($Member->MemberObj);
+% $group->load_acl_equivalence_group($Member->member_obj);
   <tr align="right"> 
 	<td valign="top"><& /Elements/ShowUser, User => $user_object &></td>
 	  <td>

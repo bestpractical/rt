@@ -100,8 +100,8 @@
     $ACLObj->limit_to_principal( id => $principal_id);
     $ACLObj->order_by(column=>'right_name'); 
 
-    if (ref($Object) && UNIVERSAL::can($Object, 'AvailableRights')) { 
-        %Rights = %{$Object->AvailableRights};
+    if (ref($Object) && UNIVERSAL::can($Object, 'available_rights')) { 
+        %Rights = %{$Object->available_rights};
     } 
 
         else {

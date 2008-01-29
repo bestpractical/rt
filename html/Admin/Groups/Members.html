@@ -55,7 +55,7 @@
 <&| /Widgets/TitleBox, title => _('Editing membership for group [_1]', $Group->name) &>
 
 <form action="<%RT->config->get('WebPath')%>/Admin/Groups/Members.html" method="post">
-<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
+<input type="hidden" class="hidden" name="id" value="<%$Group->id%>" />
 <table width="100%">
 <tr>
 <td>
@@ -69,7 +69,7 @@
 <tr>
 <td valign="top">
 
-% if ($Group->members_obj->Count == 0 ) {
+% if ($Group->members_obj->count == 0 ) {
 <em><&|/l&>(No members)</&></em>
 % } else {
 <em><&|/l&>(Check box to delete)</&></em>
@@ -81,7 +81,7 @@
 <ul>
 % while ( my $user = $Users->next ) {
 % $UsersSeen{ $user->id } = 1 if $SkipSeenUsers;
-<li><input type="checkbox" class="checkbox" name="delete_member-<% $user->PrincipalObj->Id %>" value="1" />
+<li><input type="checkbox" class="checkbox" name="delete_member-<% $user->principal_obj->id %>" value="1" />
 <& '/Elements/ShowUser', User => $user &></li>
 % }
 </ul>
@@ -90,8 +90,8 @@
 % my $GroupMembers = $Group->members_obj;
 % $GroupMembers->limit_to_groups();
 % while ( my $member = $GroupMembers->next ) {
-% $GroupsSeen{ $member->MemberId } = 1 if $SkipSeenGroups;
-<li><input type="checkbox" class="checkbox" name="delete_member-<% $member->MemberId %>" value="1" />
+% $GroupsSeen{ $member->member_id } = 1 if $SkipSeenGroups;
+<li><input type="checkbox" class="checkbox" name="delete_member-<% $member->member_id %>" value="1" />
 <% $member->member_obj->object->name %>
 % }
 </ul>

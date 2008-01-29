@@ -80,7 +80,7 @@
 <tr><td align="right"><&|/l&>Stage</&>:</td><td>
 <& /Admin/Elements/SelectStage,
     name => "Scrip-$id-Stage",
-    Default => $ARGS{"Scrip-$id-Stage"} || $scrip->Stage,
+    Default => $ARGS{"Scrip-$id-Stage"} || $scrip->stage,
 &></td></tr>
 
 </table>
@@ -99,21 +99,21 @@
 </td></tr>
 
 <tr><td class="labeltop"><&|/l&>Custom condition</&>:</td><td>
-% my $code = $ARGS{"Scrip-$id-CustomIsApplicableCode"} || $scrip->CustomIsApplicableCode || '';
+% my $code = $ARGS{"Scrip-$id-CustomIsApplicableCode"} || $scrip->custom_is_applicable_code || '';
 % my $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
 <textarea cols="80" rows="<% $lines %>" name="Scrip-<% $id %>-CustomIsApplicableCode"><% $code %></textarea>
 </td></tr>
 
 <tr><td class="labeltop"><&|/l&>Custom action preparation code</&>:</td><td>
-% $code = $ARGS{"Scrip-$id-CustomPrepareCode"} || $scrip->CustomPrepareCode || '';
+% $code = $ARGS{"Scrip-$id-CustomPrepareCode"} || $scrip->custom_prepare_code || '';
 % $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
 <textarea cols="80" rows="<% $lines %>" name="Scrip-<% $id %>-CustomPrepareCode"><% $code %></textarea>
 </td></tr>
 
 <tr><td class="labeltop"><&|/l&>Custom action cleanup code</&>:</td><td>
-% $code = $ARGS{"Scrip-$id-CustomCommitCode"} || $scrip->CustomCommitCode || '';
+% $code = $ARGS{"Scrip-$id-CustomCommitCode"} || $scrip->custom_commit_code || '';
 % $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
 <textarea cols="80" rows="<% $lines %>" name="Scrip-<% $id %>-CustomCommitCode"><% $code %></textarea>

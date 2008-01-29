@@ -92,14 +92,14 @@ $ObjectCFs->limit_to_lookup_type($lookup);
 
 # Check sanity of SortOrders
 my %SortOrders;
-$SortOrders{ $_->SortOrder }++
+$SortOrders{ $_->sort_order }++
   while ($_ = $ObjectCFs->next);
 
 # If there are duplicates, run though and squash them
 if (grep $_ > 1, values %SortOrders) {
     my $i = 1;
     while ( my $ObjectCF = $ObjectCFs->next ) {
-        $ObjectCF->set_SortOrder( $i++ );
+        $ObjectCF->set_sort_order( $i++ );
     }
     $ObjectCFs->goto_first_item;
 }
@@ -110,21 +110,21 @@ if ($CustomField and $Move) {
     $SourceObj->load_by_cols( object_id => $id, CustomField => $CustomField );
 
     my $TargetObj;
-    my $target_order = $SourceObj->SortOrder + $Move;
+    my $target_order = $SourceObj->sort_order + $Move;
     while (my $ObjectCF = $ObjectCFs->next) { 
-	my $this_order = $ObjectCF->SortOrder;
+	my $this_order = $ObjectCF->sort_order;
 
 	# if we have an exact match, finish the loop now
 	($TargetObj = $ObjectCF, last) if $this_order == $target_order;
 
 	# otherwise, we need to apropos toward the general direction
 	# ... first, check the sign is correct
-	next unless ($this_order - $SourceObj->SortOrder) * $Move > 0;
+	next unless ($this_order - $SourceObj->sort_order) * $Move > 0;
 
 	# ... next, see if we already have a candidate
 	if ($TargetObj) {
 	    # ... if yes, compare the delta and choose the smaller one
-	    my $orig_delta = abs($TargetObj->SortOrder - $target_order);
+	    my $orig_delta = abs($TargetObj->sort_order - $target_order);
 	    my $this_delta = abs($this_order - $target_order);
 	    next if $orig_delta < $this_delta;
 	}
@@ -134,9 +134,9 @@ if ($CustomField and $Move) {
 
     if ($TargetObj) {
 	# swap their sort order
-	my ($s, $t) = ($SourceObj->SortOrder, $TargetObj->SortOrder);
-	$TargetObj->set_SortOrder($s);
-	$SourceObj->set_SortOrder($t);
+	my ($s, $t) = ($SourceObj->sort_order, $TargetObj->sort_order);
+	$TargetObj->set_sort_order($s);
+	$SourceObj->set_sort_order($t);
 	# because order changed, we must redo search for subsequent uses
     }
 

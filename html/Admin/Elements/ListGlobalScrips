@@ -56,7 +56,7 @@
 %   while (my $scrip = $Scrips->next ) {
 <li>
 <a href="<%RT->config->get('WebPath')%>/Admin/Global/Scrip.html?id=<%$scrip->id%>&Queue=<%0%>">
-% if ($scrip->Description) {
+% if ($scrip->description) {
 <%   $scrip->description %> 
 % } else {
 <i>(<&|/l, $scrip->id&>Scrip #%1</&>)</i>

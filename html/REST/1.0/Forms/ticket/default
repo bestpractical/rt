@@ -94,7 +94,7 @@ else {
         my $starts = RT::Date->new() ;
         $queue->load(1);
         $due->set_to_now;
-        $due->add_days($queue->DefaultDueIn) if $queue->DefaultDueIn;
+        $due->add_days($queue->default_due_in) if $queue->default_due_in;
         $starts->set_to_now;
 
         return [
@@ -265,7 +265,7 @@ else {
 
             my $time = RT::Date->new() ;
             $time->set(Format => 'sql', value => $ticket->$key);
-            next if ($val =~ /^not set$/i || $val eq $time->AsString);
+            next if ($val =~ /^not set$/i || $val eq $time->as_string);
             ($n, $s) = $ticket->$set($val);
         }
         elsif (exists $people{$key}) {

@@ -79,13 +79,13 @@
 <tr><td class="label"><&|/l&>Applies to</&></td>
 <td><& /Admin/Elements/SelectCustomFieldLookupType, 
         name => "LookupType", 
-        Default => $CustomFieldObj->LookupType, &>
+        Default => $CustomFieldObj->lookup_type, &>
 </td></tr>
 
 <tr><td class="label"><&|/l&>Validation</&></td>
 <td><& /Widgets/ComboBox,
     name    => 'Pattern',
-    Default => $CustomFieldObj->Pattern,
+    Default => $CustomFieldObj->pattern,
     Size    => 20,
     Values  => [
         '(?#Mandatory).',
@@ -182,7 +182,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     }
 
     # Update any existing values
-    my $values = $CustomFieldObj->ValuesObj;
+    my $values = $CustomFieldObj->values_obj;
     while ( my $value = $values->next ) {
         foreach my $attr qw(name Description SortOrder Category) {
             my $param = "$paramtag-". $value->id ."-". $attr;

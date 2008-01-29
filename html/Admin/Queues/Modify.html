@@ -82,13 +82,13 @@
 </tr>
 
 <tr><td align="right"><&|/l&>Requests should be due in</&>:</td>
-<td colspan="3"><input name="DefaultDueIn" value="<% ($Create) ? "" : $queue_obj->DefaultDueIn%>" /> <&|/l&>days</&>.</td>
+<td colspan="3"><input name="DefaultDueIn" value="<% ($Create) ? "" : $queue_obj->default_due_in%>" /> <&|/l&>days</&>.</td>
 </tr>
 
 % if ( RT->config->get('GnuPG')->{'Enable'} ) {
-<tr><td align="right"><input type="checkbox" class="checkbox" name="Sign" value="1" <% $queue_obj->Sign? 'checked': '' %> /></td>
+<tr><td align="right"><input type="checkbox" class="checkbox" name="Sign" value="1" <% $queue_obj->sign? 'checked': '' %> /></td>
 <td><&|/l&>sign by default</&></td>
-<td align="right"><input type="checkbox" class="checkbox" name="Encrypt" value="1" <% $queue_obj->Encrypt? 'checked': '' %> /></td>
+<td align="right"><input type="checkbox" class="checkbox" name="Encrypt" value="1" <% $queue_obj->encrypt? 'checked': '' %> /></td>
 <td><&|/l&>encrypt by default</&></td>
 </tr>
 % }

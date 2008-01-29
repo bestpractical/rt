@@ -129,7 +129,7 @@ if ($tid) {
 	if (!%$fields || exists $fields->{lc 'old_value'});
     push @data, [ new_value    => $t->new_value   ]
 	if (!%$fields || exists $fields->{lc 'new_value'});
-    push @data, [ Data    => $t->Data   ]
+    push @data, [ Data    => $t->data   ]
 	if (!%$fields || exists $fields->{lc 'Data'});
     push @data, [ Description    => $t->description   ]
 	if (!%$fields || exists $fields->{lc 'Description'});
@@ -139,10 +139,10 @@ if ($tid) {
 
     if (!%$fields || exists $fields->{lc 'Content'}) {    
 	my $creator = RT::Model::User->new();
-	$creator->load($t->Creator);
+	$creator->load($t->creator);
 	push @data, [ Creator    => $creator->name   ];
     }
-    push @data, [ Created    => $t->Created   ]
+    push @data, [ Created    => $t->created   ]
 	if (!%$fields || exists $fields->{lc 'Created'});
 
     if (!%$fields || exists $fields->{lc 'Attachments'}) {

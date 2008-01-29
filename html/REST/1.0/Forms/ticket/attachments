@@ -92,14 +92,14 @@ if ($aid) {
 	my @data;
 	push @data, [ id    => $attachment->id   ];
 	push @data, [ subject    => $attachment->subject   ];
-	push @data, [ Creator    => $attachment->Creator   ];
-	push @data, [ Created    => $attachment->Created   ];
+	push @data, [ Creator    => $attachment->creator   ];
+	push @data, [ Created    => $attachment->created   ];
 	push @data, [ Transaction    => $attachment->transaction_id   ];
 	push @data, [ Parent    => $attachment->parent   ];
-	push @data, [ MessageId    => $attachment->MessageId   ];
+	push @data, [ MessageId    => $attachment->message_id   ];
 	push @data, [ Filename    => $attachment->filename   ];
 	push @data, [ content_type    => $attachment->content_type   ];
-	push @data, [ ContentEncoding    => $attachment->ContentEncoding   ];
+	push @data, [ ContentEncoding    => $attachment->content_encoding   ];
 	push @data, [ Headers    => $attachment->headers   ];
 	push @data, [ Content    => $attachment->content   ];
 

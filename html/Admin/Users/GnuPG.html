@@ -40,7 +40,7 @@ require RT::Crypt::GnuPG;
 my @results;
 
 my $user_object = RT::Model::User->new( );
-$user_object->Load( $id );
+$user_object->load( $id );
 unless ( $user_object->id ) {
     abort( _("Couldn't load user #%1", $id) );
 }

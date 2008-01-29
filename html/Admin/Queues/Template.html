@@ -104,7 +104,7 @@ else {
 }
 my $queue_obj;
 if ($template_obj->id()) {
-  $Queue = $template_obj->Queue;
+  $Queue = $template_obj->queue;
   $queue_obj = $template_obj->queue_obj;
 
   my @attribs = qw( Description Content Queue name);

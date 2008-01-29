@@ -90,7 +90,7 @@
 <tr><td align="right">
 <&|/l&>unix login</&>: 
 </td><td>
-<input name="Gecos" value="<%$user_object->Gecos%>" />
+<input name="Gecos" value="<%$user_object->gecos%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Language</&>: 
@@ -158,24 +158,24 @@
 <tr><td align="right">
 <&|/l&>City</&>: 
 </td><td>
-<input name="City" value="<%$user_object->City%>" size="14" />
+<input name="City" value="<%$user_object->city%>" size="14" />
 
 </td></tr>
 <tr><td align="right">
 <&|/l&>State</&>: 
 </td><td>
-<input name="State" value="<%$user_object->State%>" size="3" />
+<input name="State" value="<%$user_object->state%>" size="3" />
 
 </td></tr>
 <tr><td align="right">
 <&|/l&>Zip</&>: 
 </td><td>
-<input name="Zip" value="<%$user_object->Zip%>" size="9" />
+<input name="Zip" value="<%$user_object->zip%>" size="9" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Country</&>: 
 </td><td>
-<input name="Country" value="<%$user_object->Country%>" />
+<input name="Country" value="<%$user_object->country%>" />
 </td></tr>
 </table>
 </&>
@@ -185,22 +185,22 @@
 <tr><td align="right">
 <&|/l&>Residence</&>: 
 </td><td>
-<input name="HomePhone" value="<%$user_object->HomePhone%>" size="13" /><br />
+<input name="HomePhone" value="<%$user_object->home_phone%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Work</&>: 
 </td><td>
-<input name="WorkPhone" value="<%$user_object->WorkPhone%>" size="13" /><br />
+<input name="WorkPhone" value="<%$user_object->work_phone%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Mobile</&>: 
 </td><td>
-<input name="MobilePhone" value="<%$user_object->MobilePhone%>" size="13" /><br />
+<input name="MobilePhone" value="<%$user_object->mobile_phone%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Pager</&>: 
 </td><td>
-<input name="PagerPhone" value="<%$user_object->PagerPhone%>" size="13" /><br />
+<input name="PagerPhone" value="<%$user_object->pager_phone%>" size="13" /><br />
 </td>
 </tr>
 </table>
@@ -232,7 +232,7 @@
 %if (!$Create && $user_object->privileged) {
 <br />
 <&| /Widgets/TitleBox, title => _('Signature') &>
-<textarea class="signature" cols="80" rows="5" name="Signature" wrap="hard"><%$user_object->Signature%></textarea>
+<textarea class="signature" cols="80" rows="5" name="Signature" wrap="hard"><%$user_object->signature%></textarea>
 </&>
 % }
 

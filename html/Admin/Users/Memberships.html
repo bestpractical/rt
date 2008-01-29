@@ -105,7 +105,7 @@ if ( $Update ) {
             push @results, _( "Couldn't load group #%1", $gid );
             next;
         }
-        my ($status, $msg) = $group->AddMember( $id );
+        my ($status, $msg) = $group->add_member( $id );
         push @results, $msg;
     }
     foreach my $gid( @Delete ) {
@@ -115,17 +115,17 @@ if ( $Update ) {
             push @results, _( "Couldn't load group #%1", $gid );
             next;
         }
-        my ($status, $msg) = $group->DeleteMember( $id );
+        my ($status, $msg) = $group->delete_member( $id );
         push @results, $msg;
     }
 }
 
 my $is_member = RT::Model::GroupCollection->new();
-$is_member->limitToUserDefinedGroups;
+$is_member->limit_to_user_defined_groups;
 $is_member->with_member( principal_id => $user_object->id );
 
 my $is_not_member = RT::Model::GroupCollection->new();
-$is_not_member->limitToUserDefinedGroups;
+$is_not_member->limit_to_user_defined_groups;
 $is_not_member->without_member( principal_id => $user_object->id );
 
 $Format ||= q{'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__id__</a>/TITLE:#'}

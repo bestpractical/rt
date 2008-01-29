@@ -80,7 +80,7 @@ if ($id) {
     };
 
 
-    if ($cf->LookupType =~ /^RT::Model::Queue/io) {
+    if ($cf->lookup_type =~ /^RT::Model::Queue/io) {
 	$tabs->{'this'}->{subtabs}->{D} = {
 	title => _('Applies to'),
 	    path  => "Admin/CustomFields/Objects.html?id=" . $id,

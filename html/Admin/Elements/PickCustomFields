@@ -66,7 +66,7 @@
 <i>(<&|/l&>no name</&>)</i>
 % }
 </a><br />
-    <%$CustomFieldObj->Description%>
+    <%$CustomFieldObj->description%>
   </td>
   <td valign="top">
     <i><% $CustomFieldObj->friendly_type_composite %></i>

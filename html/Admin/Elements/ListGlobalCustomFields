@@ -48,7 +48,7 @@
 %   my $count = 0;
 %   while (my $CustomFieldObj = $CustomFields->next) { 
 %   $count++;
-<font size="-1"><%$CustomFieldObj->id%>/<% _($CustomFieldObj->type) %>/<%$CustomFieldObj->name%>: <%$CustomFieldObj->Description%></font>
+<font size="-1"><%$CustomFieldObj->id%>/<% _($CustomFieldObj->type) %>/<%$CustomFieldObj->name%>: <%$CustomFieldObj->description%></font>
 <br />
 %   }
 %   if (!$count) {

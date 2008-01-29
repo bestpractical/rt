@@ -61,7 +61,7 @@
 <tr><td align="right">
 <&|/l&>Description</&>:
 </td><td>
-<input name="Description" value="<%$CustomFieldObj->Description%>" size="80" />
+<input name="Description" value="<%$CustomFieldObj->description%>" size="80" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Type</&>:
@@ -115,7 +115,7 @@ if (! $CustomField ) {
 	  abort(_("Could not create CustomField: %1", $msg));
       }
       push @results, $msg;
-      $CustomFieldObj->set_SortOrder($CustomFieldObj->id);
+      $CustomFieldObj->set_sort_order($CustomFieldObj->id);
       $title = _('Created CustomField %1', $CustomFieldObj->name()); 
     } else {
       $CustomFieldObj->load($CustomField) || abort(_('No CustomField'));
