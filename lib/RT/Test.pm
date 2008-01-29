@@ -137,7 +137,7 @@ sub load_or_create_user {
         );
         $gms->limit(
             alias  => $groups_alias,
-            column => 'Domain',
+            column => 'domain',
             value  => 'UserDefined'
         );
         $gms->limit( column => 'MemberId', value => $obj->id );
@@ -212,7 +212,7 @@ sub store_rights {
         my $obj = $ace->principal_object->object;
         if (   $obj->isa('RT::Model::Group')
             && $obj->type eq 'UserEquiv'
-            && $obj->Instance == RT->nobody->id )
+            && $obj->instance == RT->nobody->id )
         {
             next;
         }
@@ -253,7 +253,7 @@ sub set_rights {
         my $obj = $ace->principal_object->object;
         if (   $obj->isa('RT::Model::Group')
             && $obj->type eq 'UserEquiv'
-            && $obj->Instance == RT->nobody->id )
+            && $obj->instance == RT->nobody->id )
         {
             next;
         }
