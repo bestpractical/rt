@@ -68,12 +68,12 @@ sub __DependsOn {
     my $list = [];
 
     # User is inconsistent without own Equivalence group
-    if ( $self->Domain eq 'ACLEquivalence' ) {
+    if ( $self->domain eq 'ACLEquivalence' ) {
 
         # delete user entry after ACL equiv group
         # in other case we will get deep recursion
         my $objs = RT::Model::User->new;
-        $objs->load( $self->Instance );
+        $objs->load( $self->instance );
         $deps->_push_dependency(
             base_object  => $self,
             Flags        => DEPENDS_ON | WIPE_AFTER,
@@ -138,9 +138,9 @@ sub __Relates {
     my $list = [];
 
     # Equivalence group id inconsistent without User
-    if ( $self->Domain eq 'ACLEquivalence' ) {
+    if ( $self->domain eq 'ACLEquivalence' ) {
         my $obj = RT::Model::User->new;
-        $obj->load( $self->Instance );
+        $obj->load( $self->instance );
         if ( $obj->id ) {
             push( @$list, $obj );
         } else {
@@ -149,7 +149,7 @@ sub __Relates {
             $rec->{'State'} |= INVALID;
             $rec->{'Description'}
                 = "ACLEguvivalence group have no related User #"
-                . $self->Instance
+                . $self->instance
                 . " object.";
         }
     }
@@ -177,7 +177,7 @@ sub __Relates {
 
 sub BeforeWipeout {
     my $self = shift;
-    if ( $self->Domain eq 'SystemInternal' ) {
+    if ( $self->domain eq 'SystemInternal' ) {
         RT::Shredder::Exception::Info->throw('SystemObject');
     }
     return $self->SUPER::BeforeWipeout(@_);

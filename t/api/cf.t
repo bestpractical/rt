@@ -39,7 +39,7 @@ is( $cfvs->count, 0 );
 is( $ticket->first_custom_field_value, undef );
 
 my $local_cf1 = RT::Model::CustomField->new(current_user => RT->system_user );
-my ($status,$msg) = $local_cf1->create( name => 'RecordCustomFields1-'.$$, Type => 'SelectSingle', Queue => $queue->id );
+my ($status,$msg) = $local_cf1->create( name => 'RecordCustomFields1-'.$$, type => 'SelectSingle', Queue => $queue->id );
 ok($status,$msg);
 ($status,$msg)=$local_cf1->add_value( name => 'Recordcustom_field_values11' );
 ok($status,$msg);
@@ -47,17 +47,17 @@ ok($status,$msg);
 ok($status,$msg);
 
 my $local_cf2 = RT::Model::CustomField->new(current_user => RT->system_user );
-$local_cf2->create( name => 'RecordCustomFields2-'.$$, Type => 'SelectSingle', Queue => $queue->id );
+$local_cf2->create( name => 'RecordCustomFields2-'.$$, type => 'SelectSingle', Queue => $queue->id );
 $local_cf2->add_value( name => 'Recordcustom_field_values21' );
 $local_cf2->add_value( name => 'Recordcustom_field_values22' );
 
 my $global_cf3 = RT::Model::CustomField->new(current_user => RT->system_user );
-$global_cf3->create( name => 'RecordCustomFields3-'.$$, Type => 'SelectSingle', Queue => 0 );
+$global_cf3->create( name => 'RecordCustomFields3-'.$$, type => 'SelectSingle', Queue => 0 );
 $global_cf3->add_value( name => 'Recordcustom_field_values31' );
 $global_cf3->add_value( name => 'Recordcustom_field_values32' );
 
 my $local_cf4 = RT::Model::CustomField->new(current_user => RT->system_user );
-$local_cf4->create( name => 'RecordCustomFields4', Type => 'SelectSingle', Queue => $queue2->id );
+$local_cf4->create( name => 'RecordCustomFields4', type => 'SelectSingle', Queue => $queue2->id );
 $local_cf4->add_value( name => 'Recordcustom_field_values41' );
 $local_cf4->add_value( name => 'Recordcustom_field_values42' );
 

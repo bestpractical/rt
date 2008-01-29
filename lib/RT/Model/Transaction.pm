@@ -603,9 +603,9 @@ sub content_obj {
 
 # }}}
 
-# {{{ sub Subject
+# {{{ sub subject
 
-=head2 Subject
+=head2 subject
 
 If this transaction has attached mime objects, returns the first one's subject
 Otherwise, returns null
@@ -866,7 +866,7 @@ sub brief_description {
         $principal->load( $self->old_value );
         return _( "%1 %2 deleted", $self->Field, $principal->object->name );
     },
-    Subject => sub {
+    subject => sub {
         my $self = shift;
         return _( "Subject changed to %1", $self->Data );
     },
@@ -974,20 +974,20 @@ sub brief_description {
         my $self   = shift;
         my $ticket = RT::Model::Ticket->new;
         $ticket->load( $self->new_value );
-        return _( "Reminder '%1' added", $ticket->Subject );
+        return _( "Reminder '%1' added", $ticket->subject );
     },
     OpenReminder => sub {
         my $self   = shift;
         my $ticket = RT::Model::Ticket->new;
         $ticket->load( $self->new_value );
-        return _( "Reminder '%1' reopened", $ticket->Subject );
+        return _( "Reminder '%1' reopened", $ticket->subject );
 
     },
     ResolveReminder => sub {
         my $self   = shift;
         my $ticket = RT::Model::Ticket->new;
         $ticket->load( $self->new_value );
-        return _( "Reminder '%1' completed", $ticket->Subject );
+        return _( "Reminder '%1' completed", $ticket->subject );
 
     }
 );

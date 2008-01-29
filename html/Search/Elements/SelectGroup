@@ -56,12 +56,12 @@
 
 <%INIT>
 my $groups = RT::Model::GroupCollection->new();
-$groups->limit(column => 'Domain', operator => '=', value => $Domain);
+$groups->limit(column => 'domain', operator => '=', value => $domain);
 
 </%INIT>
 <%ARGS>
 $AllowNull => 1
 $Default=> ''
 $name => 'Group'
-$Domain => 'UserDefined';
+$domain => 'UserDefined';
 </%ARGS>

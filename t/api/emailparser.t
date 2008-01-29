@@ -16,8 +16,8 @@ ok(require RT::EmailParser);
 
 {
 
-is(RT::EmailParser::IsRTAddress("","rt\@example.com"),1, "Regexp matched rt address" );
-is(RT::EmailParser::IsRTAddress("","frt\@example.com"),undef, "Regexp didn't match non-rt address" );
+is(RT::EmailParser::is_rt_address("","rt\@example.com"),1, "Regexp matched rt address" );
+is(RT::EmailParser::is_rt_address("","frt\@example.com"),undef, "Regexp didn't match non-rt address" );
 
 
 }
@@ -26,7 +26,7 @@ is(RT::EmailParser::IsRTAddress("","frt\@example.com"),undef, "Regexp didn't mat
 
 my @before = ("rt\@example.com", "frt\@example.com");
 my @after = ("frt\@example.com");
-ok(eq_array(RT::EmailParser::CullRTAddresses("",@before),@after), "CullRTAddresses only culls RT addresses");
+ok(eq_array(RT::EmailParser::cull_rt_addresses("",@before),@after), "cull_rt_addresses only culls RT addresses");
 
 
 }

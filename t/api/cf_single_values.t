@@ -13,7 +13,7 @@ my ($id,$msg) =$q->create(name => "CF-Single-".$$);
 ok($id,$msg);
 
 my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
-($id,$msg) = $cf->create(name => 'Single-'.$$, Type => 'Select', MaxValues => '1', Queue => $q->id);
+($id,$msg) = $cf->create(name => 'Single-'.$$, type => 'Select', MaxValues => '1', Queue => $q->id);
 ok($id,$msg);
 
 

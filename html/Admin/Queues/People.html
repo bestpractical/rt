@@ -190,7 +190,7 @@ $group_msg = _("No principals selected.");
  }
 else {
 $Groups = RT::Model::GroupCollection->new();
-$Groups->limit(column => 'Domain', operator => '=', value => 'UserDefined');
+$Groups->limit(column => 'domain', operator => '=', value => 'UserDefined');
 $Groups->limit(column => $ARGS{'GroupField'},
 		value => $ARGS{'GroupString'},
 		operator => $ARGS{'GroupOp'});

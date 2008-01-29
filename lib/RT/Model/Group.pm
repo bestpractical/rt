@@ -26,10 +26,10 @@ use base qw/RT::Record/;
 
 use Jifty::DBI::Record schema {
     column name        => type is 'varchar(200)';
-    column Description => type is 'text';
-    column Domain      => type is 'varchar(64)';
-    column Type        => type is 'varchar(64)';
-    column Instance    => type is 'integer';
+    column description => type is 'text';
+    column domain      => type is 'varchar(64)';
+    column type        => type is 'varchar(64)';
+    column instance    => type is 'integer';
 
 };
 
@@ -87,27 +87,27 @@ Returns a user-readable description of what this group is for and what it's name
 
 sub self_description {
     my $self = shift;
-    if ( $self->Domain eq 'ACLEquivalence' ) {
+    if ( $self->domain eq 'ACLEquivalence' ) {
         my $user = RT::Model::Principal->new;
-        $user->load( $self->Instance );
+        $user->load( $self->instance );
         return _( "user %1", $user->object->name );
-    } elsif ( $self->Domain eq 'UserDefined' ) {
+    } elsif ( $self->domain eq 'UserDefined' ) {
         return _( "group '%1'", $self->name );
-    } elsif ( $self->Domain eq 'Personal' ) {
+    } elsif ( $self->domain eq 'Personal' ) {
         my $user = RT::Model::User->new;
-        $user->load( $self->Instance );
+        $user->load( $self->instance );
         return _( "personal group '%1' for user '%2'", $self->name,
             $user->name );
-    } elsif ( $self->Domain eq 'RT::System-Role' ) {
-        return _( "system %1", $self->Type );
-    } elsif ( $self->Domain eq 'RT::Model::Queue-Role' ) {
+    } elsif ( $self->domain eq 'RT::System-Role' ) {
+        return _( "system %1", $self->type );
+    } elsif ( $self->domain eq 'RT::Model::Queue-Role' ) {
         my $queue = RT::Model::Queue->new;
-        $queue->load( $self->Instance );
-        return _( "queue %1 %2", $queue->name, $self->Type );
-    } elsif ( $self->Domain eq 'RT::Model::Ticket-Role' ) {
-        return _( "ticket #%1 %2", $self->Instance, $self->Type );
-    } elsif ( $self->Domain eq 'SystemInternal' ) {
-        return _( "system group '%1'", $self->Type );
+        $queue->load( $self->instance );
+        return _( "queue %1 %2", $queue->name, $self->type );
+    } elsif ( $self->domain eq 'RT::Model::Ticket-Role' ) {
+        return _( "ticket #%1 %2", $self->instance, $self->type );
+    } elsif ( $self->domain eq 'SystemInternal' ) {
+        return _( "system group '%1'", $self->type );
     } else {
         return _( "undescribed group %1", $self->id );
     }
@@ -156,12 +156,12 @@ sub load_user_defined_group {
 
     if ( $identifier =~ /^\d+$/ ) {
         return $self->load_by_cols(
-            Domain => 'UserDefined',
+            domain => 'UserDefined',
             id     => $identifier,
         );
     } else {
         return $self->load_by_cols(
-            Domain => 'UserDefined',
+            domain => 'UserDefined',
             name   => $identifier,
         );
     }
@@ -189,9 +189,9 @@ sub load_acl_equivalence_group {
     my $princ = shift;
 
     $self->load_by_cols(
-        "Domain"   => 'ACLEquivalence',
-        "Type"     => 'UserEquiv',
-        "Instance" => $princ->id
+        "domain"   => 'ACLEquivalence',
+        "type"     => 'UserEquiv',
+        "instance" => $princ->id
     );
 }
 
@@ -214,9 +214,9 @@ sub load_personal_group {
     );
 
     $self->load_by_cols(
-        "Domain"   => 'Personal',
-        "Instance" => $args{'User'},
-        "Type"     => '',
+        "domain"   => 'Personal',
+        "instance" => $args{'User'},
+        "type"     => '',
         "name"     => $args{'name'}
     );
 }
@@ -238,8 +238,8 @@ sub load_system_internal_group {
     my $identifier = shift;
 
     $self->load_by_cols(
-        "Domain" => 'SystemInternal',
-        "Type"   => $identifier
+        "domain" => 'SystemInternal',
+        "type"   => $identifier
     );
 }
 
@@ -247,14 +247,14 @@ sub load_system_internal_group {
 
 # {{{ sub load_ticket_role_group
 
-=head2 load_ticketRoleGroup  { Ticket => TICKET_ID, Type => TYPE }
+=head2 load_ticketRoleGroup  { Ticket => TICKET_ID, type => TYPE }
 
 Loads a ticket group from the database. 
 
 Takes a param hash with 2 parameters:
 
     Ticket is the TicketId we're curious about
-    Type is the type of Group we're trying to load: 
+    type is the type of Group we're trying to load: 
         Requestor, Cc, AdminCc, Owner
 
 =cut
@@ -263,13 +263,13 @@ sub load_ticket_role_group {
     my $self = shift;
     my %args = (
         Ticket => '0',
-        Type   => undef,
+        type   => undef,
         @_
     );
     $self->load_by_cols(
-        Domain   => 'RT::Model::Ticket-Role',
-        Instance => $args{'Ticket'},
-        Type     => $args{'Type'}
+        domain   => 'RT::Model::Ticket-Role',
+        instance => $args{'Ticket'},
+        type     => $args{'type'}
     );
 }
 
@@ -277,14 +277,14 @@ sub load_ticket_role_group {
 
 # {{{ sub loadQueueRoleGroup
 
-=head2 LoadQueueRoleGroup  { Queue => Queue_ID, Type => TYPE }
+=head2 LoadQueueRoleGroup  { Queue => Queue_ID, type => TYPE }
 
 Loads a Queue group from the database. 
 
 Takes a param hash with 2 parameters:
 
     Queue is the QueueId we're curious about
-    Type is the type of Group we're trying to load: 
+    type is the type of Group we're trying to load: 
         Requestor, Cc, AdminCc, Owner
 
 =cut
@@ -293,13 +293,13 @@ sub load_queue_role_group {
     my $self = shift;
     my %args = (
         Queue => undef,
-        Type  => undef,
+        type  => undef,
         @_
     );
     $self->load_by_cols(
-        Domain   => 'RT::Model::Queue-Role',
-        Instance => $args{'Queue'},
-        Type     => $args{'Type'}
+        domain   => 'RT::Model::Queue-Role',
+        instance => $args{'Queue'},
+        type     => $args{'type'}
     );
 }
 
@@ -307,13 +307,13 @@ sub load_queue_role_group {
 
 # {{{ sub loadSystemRoleGroup
 
-=head2 LoadSystemRoleGroup  Type
+=head2 LoadSystemRoleGroup  type
 
 Loads a System group from the database. 
 
-Takes a single param: Type
+Takes a single param: type
 
-    Type is the type of Group we're trying to load: 
+    type is the type of Group we're trying to load: 
         Requestor, Cc, AdminCc, Owner
 
 =cut
@@ -322,8 +322,8 @@ sub load_system_role_group {
     my $self = shift;
     my $type = shift;
     $self->load_by_cols(
-        Domain => 'RT::System-Role',
-        Type   => $type
+        domain => 'RT::System-Role',
+        type   => $type
     );
 }
 
@@ -352,7 +352,7 @@ sub create {
 
 =head2 _create
 
-Takes a paramhash with named arguments: name, Description.
+Takes a paramhash with named arguments: name, description.
 
 Returns a tuple of (Id, Message).  If id is 0, the create failed
 
@@ -362,10 +362,10 @@ sub _create {
     my $self = shift;
     my %args = (
         name                => undef,
-        Description         => undef,
-        Domain              => undef,
-        Type                => undef,
-        Instance            => '0',
+        description         => undef,
+        domain              => undef,
+        type                => undef,
+        instance            => '0',
         InsideTransaction   => undef,
         _record_transaction => 1,
         @_
@@ -384,10 +384,10 @@ sub _create {
     $self->SUPER::create(
         id          => $principal_id,
         name        => $args{'name'},
-        Description => $args{'Description'},
-        Type        => $args{'Type'},
-        Domain      => $args{'Domain'},
-        Instance    => ( $args{'Instance'} || '0' )
+        description => $args{'description'},
+        type        => $args{'type'},
+        domain      => $args{'domain'},
+        instance    => ( $args{'instance'} || '0' )
     );
     my $id = $self->id;
     unless ($id) {
@@ -418,7 +418,7 @@ sub _create {
     );
 
     if ( $args{'_record_transaction'} ) {
-        $self->_new_transaction( Type => "Create" );
+        $self->_new_transaction( type => "Create" );
     }
 
     Jifty->handle->commit() unless ( $args{'InsideTransaction'} );
@@ -430,7 +430,7 @@ sub _create {
 
 # {{{ create_userDefinedGroup
 
-=head2 create_userDefinedGroup { name => "name", Description => "Description"}
+=head2 create_userDefinedGroup { name => "name", description => "description"}
 
 A helper subroutine which creates a system group 
 
@@ -449,9 +449,9 @@ sub create_user_defined_group {
 
     return (
         $self->_create(
-            Domain   => 'UserDefined',
-            Type     => '',
-            Instance => '',
+            domain   => 'UserDefined',
+            type     => '',
+            instance => '',
             @_
         )
     );
@@ -475,11 +475,11 @@ sub _createacl_equivalence_group {
     my $self  = shift;
     my $princ = shift;
     my ( $id, $msg ) = $self->_create(
-        Domain            => 'ACLEquivalence',
-        Type              => 'UserEquiv',
+        domain            => 'ACLEquivalence',
+        type              => 'UserEquiv',
         name              => 'User ' . $princ->object->id,
-        Description       => 'ACL equiv. for user ' . $princ->object->id,
-        Instance          => $princ->id,
+        description       => 'ACL equiv. for user ' . $princ->object->id,
+        instance          => $princ->id,
         InsideTransaction => 1
     );
 
@@ -512,7 +512,7 @@ sub _createacl_equivalence_group {
 
 # {{{ CreatePersonalGroup
 
-=head2 CreatePersonalGroup { principal_id => PRINCIPAL_ID, name => "name", Description => "Description"}
+=head2 CreatePersonalGroup { principal_id => PRINCIPAL_ID, name => "name", description => "description"}
 
 A helper subroutine which creates a personal group. Generally,
 personal groups are used for ACL delegation and adding to ticket roles
@@ -526,7 +526,7 @@ sub create_personal_group {
     my $self = shift;
     my %args = (
         name         => undef,
-        Description  => undef,
+        description  => undef,
         principal_id => $self->current_user->id,
         @_
     );
@@ -549,11 +549,11 @@ sub create_personal_group {
 
     return (
         $self->_create(
-            Domain      => 'Personal',
-            Type        => '',
-            Instance    => $args{'principal_id'},
+            domain      => 'Personal',
+            type        => '',
+            instance    => $args{'principal_id'},
             name        => $args{'name'},
-            Description => $args{'Description'}
+            description => $args{'description'}
         )
     );
 }
@@ -562,12 +562,12 @@ sub create_personal_group {
 
 # {{{ CreateRoleGroup
 
-=head2 CreateRoleGroup { Domain => DOMAIN, Type =>  TYPE, Instance => ID }
+=head2 CreateRoleGroup { domain => DOMAIN, type =>  TYPE, instance => ID }
 
 A helper subroutine which creates a  ticket group. (What RT 2.0 called Ticket watchers)
-Type is one of ( "Requestor" || "Cc" || "AdminCc" || "Owner") 
-Domain is one of (RT::Model::Ticket-Role || RT::Model::Queue-Role || RT::System-Role)
-Instance is the id of the ticket or queue in question
+type is one of ( "Requestor" || "Cc" || "AdminCc" || "Owner") 
+domain is one of (RT::Model::Ticket-Role || RT::Model::Queue-Role || RT::System-Role)
+instance is the id of the ticket or queue in question
 
 This routine expects to be called from {Ticket||Queue}->createTicket_groups _inside of a transaction_
 
@@ -578,20 +578,20 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 sub create_role_group {
     my $self = shift;
     my %args = (
-        Instance => undef,
-        Type     => undef,
-        Domain   => undef,
+        instance => undef,
+        type     => undef,
+        domain   => undef,
         @_
     );
-    unless ( $args{'Type'} =~ /^(?:Cc|AdminCc|Requestor|Owner)$/ ) {
-        return ( 0, _("Invalid Group Type") );
+    unless ( $args{'type'} =~ /^(?:Cc|AdminCc|Requestor|Owner)$/ ) {
+        return ( 0, _("Invalid Group type") );
     }
 
     return (
         $self->_create(
-            Domain            => $args{'Domain'},
-            Instance          => $args{'Instance'},
-            Type              => $args{'Type'},
+            domain            => $args{'domain'},
+            instance          => $args{'instance'},
+            type              => $args{'type'},
             InsideTransaction => 1
         )
     );
@@ -645,8 +645,8 @@ This routine finds all the cached group members that are members of this group  
 sub set_disabled {
     my $self = shift;
     my $val  = shift;
-    if ( $self->Domain eq 'Personal' ) {
-        if ( $self->current_user->id == $self->Instance ) {
+    if ( $self->domain eq 'Personal' ) {
+        if ( $self->current_user->id == $self->instance ) {
             unless ( $self->current_user_has_right('AdminOwnPersonalGroups') )
             {
                 return ( 0, _('Permission Denied') );
@@ -894,8 +894,8 @@ sub add_member {
     my $self       = shift;
     my $new_member = shift;
 
-    if ( $self->Domain eq 'Personal' ) {
-        if ( $self->current_user->id == $self->Instance ) {
+    if ( $self->domain eq 'Personal' ) {
+        if ( $self->current_user->id == $self->instance ) {
             unless ( $self->current_user_has_right('AdminOwnPersonalGroups') )
             {
                 return ( 0, _('Permission Denied') );
@@ -1104,8 +1104,8 @@ sub delete_member {
     # to modify group membership or the user is the principal in question
     # and the user has the right to modify his own membership
 
-    if ( $self->Domain eq 'Personal' ) {
-        if ( $self->current_user->id == $self->Instance ) {
+    if ( $self->domain eq 'Personal' ) {
+        if ( $self->current_user->id == $self->instance ) {
             unless ( $self->current_user_has_right('AdminOwnPersonalGroups') )
             {
                 return ( 0, _('Permission Denied') );
@@ -1238,8 +1238,8 @@ sub _set {
         @_
     );
 
-    if ( $self->Domain eq 'Personal' ) {
-        if ( $self->current_user->id == $self->Instance ) {
+    if ( $self->domain eq 'Personal' ) {
+        if ( $self->current_user->id == $self->instance ) {
             unless ( $self->current_user_has_right('AdminOwnPersonalGroups') )
             {
                 return ( 0, _('Permission Denied') );
@@ -1270,7 +1270,7 @@ sub _set {
     if ( $args{'record_transaction'} == 1 ) {
 
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
-            Type      => $args{'TransactionType'},
+            type      => $args{'TransactionType'},
             Field     => $args{'Field'},
             new_value => $args{'Value'},
             old_value => $Old,
@@ -1366,7 +1366,7 @@ sub principal_id {
 # }}}
 
 sub basic_columns {
-    ( [ name => 'name' ], [ Description => 'Description' ], );
+    ( [ name => 'name' ], [ description => 'description' ], );
 }
 
 1;

@@ -655,9 +655,9 @@ sub create_queue_groups {
     foreach my $type (@types) {
         my $type_obj = RT::Model::Group->new;
         my ( $id, $msg ) = $type_obj->create_role_group(
-            Instance => $self->id,
-            Type     => $type,
-            Domain   => 'RT::Model::Queue-Role'
+            instance => $self->id,
+            type     => $type,
+            domain   => 'RT::Model::Queue-Role'
         );
         unless ($id) {
             Jifty->log->error(

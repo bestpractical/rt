@@ -223,7 +223,7 @@ sub loadByString {
 
 =head2 Rebless
 
-Instance method that takes one object as argument and rebless
+instance method that takes one object as argument and rebless
 the current object into into class of the argument and copy data
 of the former. Returns nothing.
 

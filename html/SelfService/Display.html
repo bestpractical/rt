@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => _('#%1: %2', $Ticket->id, $Ticket->Subject) &>
+<& /SelfService/Elements/Header, Title => _('#%1: %2', $Ticket->id, $Ticket->subject) &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -167,7 +167,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     #Update the status
     if (    ( defined $ARGS{'Status'} )
         and $ARGS{'Status'}
-        and ( $ARGS{'Status'} ne $Ticket->Status ) )
+        and ( $ARGS{'Status'} ne $Ticket->status ) )
     {
         ( $code, $msg ) = $Ticket->set_status( $ARGS{'Status'} );
         push @results, "$msg";

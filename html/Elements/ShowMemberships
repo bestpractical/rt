@@ -49,9 +49,9 @@
 % while ( my $GroupMember = $GroupMembers->next ) {
 %    my $Group = RT::Model::Group->new();
 %    $Group->load($GroupMember->GroupId) or next;
-%    if ($Group->Domain eq 'UserDefined') {
+%    if ($Group->domain eq 'UserDefined') {
 <li><a href="<%RT->config->get('WebPath')%>/Admin/Groups/Modify.html?id=<% $Group->id %>"><% $Group->name %></a></li>
-%    } elsif ($Group->Domain eq 'SystemInternal') {
+%    } elsif ($Group->domain eq 'SystemInternal') {
 <li><em><% _($Group->Type) %></em></li>
 %    }
 % }
@@ -68,18 +68,18 @@ my $alias = $GroupMembers->join(
 );
 $GroupMembers->limit(
     alias      => $alias,
-    column      => 'Domain',
+    column      => 'domain',
     operator   => '=',
     value      => 'SystemInternal',
 );
 $GroupMembers->limit(
     alias      => $alias,
-    column      => 'Domain',
+    column      => 'domain',
     operator   => '=',
     value      => 'UserDefined',
 );
 $GroupMembers->order_by(
-    { alias => $alias, column => 'Domain' },
+    { alias => $alias, column => 'domain' },
     { alias => $alias, column => 'name' },
 );
 </%INIT>

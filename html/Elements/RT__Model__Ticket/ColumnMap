@@ -85,9 +85,9 @@ $TICKET_COLUMN_MAP = {
         attribute => 'Owner',
         value     => sub  { return $_[0]->owner_obj->name }
     },
-    Status => {
-        attribute => 'Status',
-        value     => sub  { return _($_[0]->Status) }
+    status => {
+        attribute => 'status',
+        value     => sub  { return _($_[0]->status) }
     },
     Subject => {
         attribute => 'Subject',
@@ -110,7 +110,7 @@ $TICKET_COLUMN_MAP = {
                 }
             }
             else {
-                return _( $Ticket->Status );
+                return _( $Ticket->status );
             }
 
           }

@@ -48,7 +48,7 @@
 <table>
   <tr>
       <td class="label"><&|/l&>Subject</&>:</td>
-      <td class="value"><input name="Subject" value="<%$ticket_obj->Subject|h%>" size="50" /></td>
+      <td class="value"><input name="Subject" value="<%$ticket_obj->subject|h%>" size="50" /></td>
     </tr>
 
   <tr>
@@ -112,7 +112,7 @@
 
 <%INIT>
 #It's hard to do this inline, so we'll preload the html of the selectstatus in here.
-my $SelectStatus = $m->scomp("/Elements/SelectStatus", name => 'Status', DefaultLabel => _("%1 (Unchanged)",loc($ticket_obj->Status)));
+my $SelectStatus = $m->scomp("/Elements/SelectStatus", name => 'Status', DefaultLabel => _("%1 (Unchanged)",loc($ticket_obj->status)));
 my $SelectQueue = $m->scomp("/Elements/SelectQueue", name => 'Queue', Default =>$ticket_obj->queue_obj->id);
 
 </%INIT>

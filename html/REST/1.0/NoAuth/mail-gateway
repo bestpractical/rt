@@ -67,7 +67,7 @@ if ( $status == 1 ) {
     $m->out( 'Ticket: '  . ($Ticket->id             || '') );
     $m->out( 'Queue: '   . ($Ticket->queue_obj->name || '') );
     $m->out( 'Owner: '   . ($Ticket->owner_obj->name || '') );
-    $m->out( 'Status: '  . ($Ticket->Status         || '') );
+    $m->out( 'Status: '  . ($Ticket->status         || '') );
     $m->out( 'Subject: ' . ($Ticket->subject        || '') );
     $m->out(
       'Requestor: ' . ($Ticket->requestors->member_emails_as_string || '') );

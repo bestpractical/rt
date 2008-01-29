@@ -36,11 +36,11 @@ my ($tv,$ttv,$tm) = $ticket->create(Queue => $q->id,
 ok($tv, $tm);
 ok($ticket->set_owner('root'));
 is ($ticket->Priority , '21', "Ticket priority is set right");
-ok($ticket->Steal);
+ok($ticket->steal);
 is ($ticket->Priority , '22', "Ticket priority is set right");
-ok($ticket->Untake);
+ok($ticket->untake);
 is ($ticket->Priority , '23', "Ticket priority is set right");
-ok($ticket->Take);
+ok($ticket->take);
 is ($ticket->Priority , '24', "Ticket priority is set right");
 
 

@@ -18,46 +18,46 @@
 
 @Groups = (
     { name        => '',
-      Type        => 'Everyone',                        # loc
-      Domain      => 'SystemInternal',
-      Instance    => '',
-      Description => 'Pseudogroup for internal use',    # loc
+      type        => 'Everyone',                        # loc
+      domain      => 'SystemInternal',
+      instance    => '',
+      description => 'Pseudogroup for internal use',    # loc
     },
-    { Type        => 'privileged',                      # loc
-      Domain      => 'SystemInternal',
-      Instance    => '',
+    { type        => 'privileged',                      # loc
+      domain      => 'SystemInternal',
+      instance    => '',
       name        => '',
-      Description => 'Pseudogroup for internal use',    # loc
+      description => 'Pseudogroup for internal use',    # loc
     },
     { name        => '',
-      Type        => 'Unprivileged',                    # loc
-      Domain      => 'SystemInternal',
-      Instance    => '',
-      Description => 'Pseudogroup for internal use',    # loc
+      type        => 'Unprivileged',                    # loc
+      domain      => 'SystemInternal',
+      instance    => '',
+      description => 'Pseudogroup for internal use',    # loc
     },
     { name        => '',
-      Type        => 'Owner',                               # loc
-      Domain      => 'RT::System-Role',
-      Instance    => '',
-      Description => 'SystemRolegroup for internal use',    # loc
+      type        => 'Owner',                               # loc
+      domain      => 'RT::System-Role',
+      instance    => '',
+      description => 'SystemRolegroup for internal use',    # loc
     },
     { name        => '',
-      Type        => 'Requestor',                           # loc
-      Domain      => 'RT::System-Role',
-      Instance    => '',
-      Description => 'SystemRolegroup for internal use',    # loc
+      type        => 'Requestor',                           # loc
+      domain      => 'RT::System-Role',
+      instance    => '',
+      description => 'SystemRolegroup for internal use',    # loc
     },
     { name        => '',
-      Type        => 'Cc',                                  # loc
-      Domain      => 'RT::System-Role',
-      Instance    => '',
-      Description => 'SystemRolegroup for internal use',    # loc
+      type        => 'Cc',                                  # loc
+      domain      => 'RT::System-Role',
+      instance    => '',
+      description => 'SystemRolegroup for internal use',    # loc
     },
     { name        => '',
-      Type        => 'AdminCc',                             # loc
-      Domain      => 'RT::System-Role',
-      Instance    => '',
-      Description => 'Pseudogroup for internal use',        # loc
+      type        => 'AdminCc',                             # loc
+      domain      => 'RT::System-Role',
+      instance    => '',
+      description => 'Pseudogroup for internal use',        # loc
     }, );
 
 @Queues = ({ name              => 'General',
@@ -232,7 +232,7 @@
     {  Queue       => '0',
        name        => 'Autoreply',                                         # loc
        Description => 'Default Autoresponse template',                     # loc
-       content     => 'Subject: AutoReply: {$Ticket->Subject}
+       content     => 'Subject: AutoReply: {$Ticket->subject}
 
 
 Greetings,
@@ -267,12 +267,12 @@ you may reply to this message.
 
 
 {$Transaction->created_as_string}: Request {$Ticket->id} was acted upon.
-Transaction: {$Transaction->Description}
+Transaction: {$Transaction->description}
        Queue: {$Ticket->queue_obj->name}
      Subject: {$Transaction->subject || $Ticket->subject || "(No subject given)"}
        Owner: {$Ticket->owner_obj->name}
-  Requestors: {$Ticket->RequestorAddresses}
-      Status: {$Ticket->Status}
+  Requestors: {$Ticket->requestor_addresses}
+      Status: {$Ticket->status}
  Ticket <URL: {RT->config->get(\'WebURL\')}/Ticket/Display.html?id={$Ticket->id} >
 
 
@@ -307,7 +307,7 @@ Transaction: {$Transaction->Description}
        name        => 'Admin comment',                           # loc
        Description => 'Default admin comment template',          # loc
        content     =>
-'Subject: [comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[comment\\]//g; $s =~ s/^Re//i; $s;}
+'Subject: [comment] {my $s=($Transaction->subject||$Ticket->subject); $s =~ s/\\[comment\\]//g; $s =~ s/^Re//i; $s;}
 
 
 {RT->config->get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id}
@@ -334,7 +334,7 @@ This is a comment.  It is not sent to the Requestor(s):
       Queue       => '0',
       name        => 'Resolved',                 # loc
       Description => 'Ticket Resolved',          # loc
-      content     => 'Subject: Resolved: {$Ticket->Subject}
+      content     => 'Subject: Resolved: {$Ticket->subject}
 
 According to our records, your request has been resolved. If you have any
 further questions or concerns, please respond to this message.
@@ -344,7 +344,7 @@ further questions or concerns, please respond to this message.
        name        => "New Pending Approval",    # loc
        Description =>
          "Notify Owners and AdminCcs of new items pending their approval", # loc
-       content => 'Subject: New Pending Approval: {$Ticket->Subject}
+       content => 'Subject: New Pending Approval: {$Ticket->subject}
 
 Greetings,
 
@@ -363,7 +363,7 @@ batch-process all your pending approvals.
        name        => "Approval Passed",    # loc
        Description =>
          "Notify Owner of their ticket has been approved by some approver", # loc
-       content => 'Subject: Ticket Approved: {$Ticket->Subject}
+       content => 'Subject: Ticket Approved: {$Ticket->subject}
 
 Greetings,
 
@@ -375,7 +375,7 @@ Other approvals may be pending.
        name        => "All Approvals Passed",    # loc
        Description =>
          "Notify Owner of their ticket has been approved by all approvers", # loc
-       content => 'Subject: Ticket Approved: {$Ticket->Subject}
+       content => 'Subject: Ticket Approved: {$Ticket->subject}
 
 Greetings,
 
@@ -386,7 +386,7 @@ Your ticket has been approved.  Its Owner may now start to act on it.
        name        => "Approval Rejected",    # loc
        Description =>
          "Notify Owner of their rejected ticket", # loc
-       content => 'Subject: Ticket Rejected: {$Ticket->Subject}
+       content => 'Subject: Ticket Rejected: {$Ticket->subject}
 
 Greetings,
 
@@ -510,7 +510,7 @@ Your new password is:
        ScripCondition => 'User Defined',
        CustomIsApplicableCode => q[
 	    $self->ticket_obj->type eq 'approval'	and
-	    $self->transaction_obj->Field eq 'Status'	and
+	    $self->transaction_obj->field eq 'Status'	and
 	    $self->transaction_obj->new_value eq 'open'   and
 	    eval { $T::Approving = ($self->ticket_obj->all_depended_on_by( Type => 'ticket' ))[0] }
        ],
@@ -529,7 +529,7 @@ my $rejected = 0;
 my $links = $self->ticket_obj->depended_on_by;
 foreach my $link (@{ $links->items_array_ref }) {
     my $obj = $link->base_obj;
-    if ($obj->queue_obj->is_active_status($obj->Status)) {
+    if ($obj->queue_obj->is_active_status($obj->status)) {
 	if ($obj->type eq 'ticket') {
 	    $obj->comment(
 		Content	=> _("Your request was rejected."),
@@ -555,7 +555,7 @@ foreach my $link (@{ $links->items_array_ref }) {
 $links = $self->ticket_obj->depends_on;
 foreach my $link (@{ $links->items_array_ref }) {
     my $obj = $link->target_obj;
-    if ($obj->queue_obj->is_active_status($obj->Status)) {
+    if ($obj->queue_obj->is_active_status($obj->status)) {
 	$obj->set_status(
 	    Status	=> 'deleted',
 	    Force	=> 1,

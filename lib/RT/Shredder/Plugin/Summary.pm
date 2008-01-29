@@ -111,7 +111,7 @@ sub write_down_principal           { return 1 }
 sub write_down_group {
     my $self = shift;
     my %args = ( Object => undef, @_ );
-    if ( $args{'Object'}->Domain =~ /-Role$/ ) {
+    if ( $args{'Object'}->domain =~ /-Role$/ ) {
         return $skip_refs_to{ $args{'Object'}->_as_string } = 1;
     }
     return $self->write_down_default(%args);

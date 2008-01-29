@@ -76,14 +76,14 @@ CREATE TABLE Groups (
 	id 		SERIAL,
 	name 		VARCHAR(200) DEFAULT NULL,
 	Description 	VARCHAR(255) DEFAULT NULL,
-	Domain		VARCHAR(64) DEFAULT '',
+	domain		VARCHAR(64) DEFAULT '',
 	Type		VARCHAR(64) DEFAULT '',
-	Instance	INTEGER DEFAULT 0 NOT NULL,
---	Instance	VARCHAR(64) DEFAULT '' NOT NULL,
+	instance	INTEGER DEFAULT 0 NOT NULL,
+--	instance	VARCHAR(64) DEFAULT '' NOT NULL,
         PRIMARY KEY (id)
 );
-CREATE INDEX Groups1 ON Groups (Domain, Instance, Type, id);
-CREATE INDEX Groups2 ON Groups (Type, Instance, Domain);
+CREATE INDEX Groups1 ON Groups (domain, instance, Type, id);
+CREATE INDEX Groups2 ON Groups (Type, instance, domain);
 
 
 CREATE TABLE ScripConditions (

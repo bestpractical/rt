@@ -531,7 +531,7 @@ sub process_update_message {
     );
 
     $Message->head->add(
-        'Message-ID' => RT::Interface::Email::GenMessageId(
+        'Message-ID' => RT::Interface::Email::gen_message_id(
             Ticket => $args{'ticket_obj'},
         )
     );

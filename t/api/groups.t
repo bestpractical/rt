@@ -80,7 +80,7 @@ ok ($id,$msg);
 is($groups->count, 3);
 
 my $RTxGroup = RT::Model::Group->new(current_user => RT->system_user);
-($id, $msg) = $RTxGroup->create_user_defined_group( name => 'RTxGroup', Description => "RTx extension group");
+($id, $msg) = $RTxGroup->create_user_defined_group( name => 'RTxGroup', description => "RTx extension group");
 ok ($id,$msg);
 is ($RTxGroup->id, $id, "group loaded");
 

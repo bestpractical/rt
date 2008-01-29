@@ -87,7 +87,7 @@ my $groups = RT::Model::GroupCollection->new();
 
 # self-recursive group membership considered harmful!
 $groups->limit(column => 'id', value => $Group->id, operator => '!=' );
-$groups->limit(column => 'Domain', operator => '=', value => 'UserDefined');
+$groups->limit(column => 'domain', operator => '=', value => 'UserDefined');
 
 
 </%INIT>

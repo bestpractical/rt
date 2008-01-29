@@ -162,7 +162,7 @@ sub set_mime_entity_to_encoding {
     set_mime_entity_to_encoding( $_, $enc, $preserve_words )
         foreach $entity->parts;
 
-    my $charset = _FindOrGuessCharset($entity) or return;
+    my $charset = _find_or_guess_charset($entity) or return;
 
     # one and only normalization
     $charset = 'utf-8' if $charset =~ /^utf-?8$/i;
@@ -170,7 +170,7 @@ sub set_mime_entity_to_encoding {
 
     set_mime_ehead_to_encoding(
         $entity->head,
-        _FindOrGuessCharset( $entity, 1 ) => $enc,
+        _find_or_guess_charset( $entity, 1 ) => $enc,
         $preserve_words
     );
 
@@ -333,9 +333,9 @@ sub decode_mime_words_to_encoding {
 
 # }}}
 
-# {{{ _FindOrGuessCharset
+# {{{ _find_or_guess_charset
 
-=head2 _FindOrGuessCharset MIME::Entity, $head_only
+=head2 _find_or_guess_charset MIME::Entity, $head_only
 
 When handed a MIME::Entity will first attempt to read what charset the message is encoded in. Failing that, will use Encode::Guess to try to figure it out
 

@@ -14,7 +14,7 @@ ok(my ($id, $msg)=  $cf->create( name => 'TestingCF',
                                  Queue => '0',
                                  SortOrder => '1',
                                  Description => 'A Testing custom field',
-                                 Type=> 'SelectSingle'), 'Created a global CustomField');
+                                 type=> 'SelectSingle'), 'Created a global CustomField');
 isnt($id , 0, 'Global custom field correctly Created');
 ok ($cf->SingleValue);
 is($cf->type, 'Select');
@@ -33,7 +33,7 @@ ok(my ($bad_id, $bad_msg)=  $cf->create( name => 'TestingCF-bad',
                                  Queue => '0',
                                  SortOrder => '1',
                                  Description => 'A Testing custom field with a bogus Type',
-                                 Type=> 'SelectSingleton'), 'Created a global CustomField with a bogus type');
+                                 type=> 'SelectSingleton'), 'Created a global CustomField with a bogus type');
 is($bad_id , 0, 'Global custom field correctly decided to not create a cf with a bogus type ');
 
 

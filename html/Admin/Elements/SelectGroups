@@ -53,10 +53,10 @@
 
 <%INIT>
 my $groups = RT::Model::GroupCollection->new();
-$groups->limit(column => 'Domain', operator => '=', value => $Domain);
+$groups->limit(column => 'domain', operator => '=', value => $domain);
 
 </%INIT>
 <%ARGS>
 $name => 'groups'
-$Domain => 'UserDefined';
+$domain => 'UserDefined';
 </%ARGS>

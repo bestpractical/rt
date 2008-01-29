@@ -66,7 +66,7 @@ Create one or more tickets according to an externally supplied template.
 =head1 SYNOPSIS
 
  ===Create-Ticket codereview
- Subject: Code review for {$Tickets{'TOP'}->Subject}
+ Subject: Code review for {$Tickets{'TOP'}->subject}
  Depended-On-By: TOP
  Content: Someone has Created a ticket. you should review and approve it,
  so they can finish their work
@@ -115,7 +115,7 @@ shorthand TOP.
 A simple example:
 
  ===Create-Ticket: codereview
- Subject: Code review for {$Tickets{'TOP'}->Subject}
+ Subject: Code review for {$Tickets{'TOP'}->subject}
  Depended-On-By: TOP
  Content: Someone has Created a ticket. you should review and approve it,
  so they can finish their work
@@ -156,10 +156,10 @@ A convoluted example
  AdminCc: {join ("\nAdminCc: ",@admins) }
  Depended-On-By: TOP
  Refers-To: TOP
- Subject: Approval for ticket: {$Tickets{"TOP"}->id} - {$Tickets{"TOP"}->Subject}
+ Subject: Approval for ticket: {$Tickets{"TOP"}->id} - {$Tickets{"TOP"}->subject}
  Due: {time + 86400}
  Content-Type: text/plain
- Content: Your approval is requested for the ticket {$Tickets{"TOP"}->id}: {$Tickets{"TOP"}->Subject}
+ Content: Your approval is requested for the ticket {$Tickets{"TOP"}->id}: {$Tickets{"TOP"}->subject}
  Blah
  Blah
  ENDOFCONTENT
@@ -429,7 +429,7 @@ sub update_by_template {
         # reasonable data and do our thang
 
         my @attribs = qw(
-            Subject
+            subject
             final_priority
             Priority
             time_estimated
@@ -754,7 +754,7 @@ sub parse_lines {
 
     my %ticketargs = (
         Queue            => $args{'queue'},
-        Subject          => $args{'subject'},
+        subject          => $args{'subject'},
         Status           => $args{'status'} || 'new',
         Due              => $args{'due'},
         starts           => $args{'starts'},
@@ -898,7 +898,7 @@ LINE:
                 {
                     $field = 'Content';
                 } elsif ( $field =~ /^Summary$/i ) {
-                    $field = 'Subject';
+                    $field = 'subject';
                 } elsif ( $field =~ /^Queue$/i ) {
 
                     # Note that we found a queue

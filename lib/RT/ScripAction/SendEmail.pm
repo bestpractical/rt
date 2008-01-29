@@ -592,7 +592,7 @@ sub set_rt_special_headers {
             $self->set_header( "Message-ID" => $msgid );
         } else {
             $self->set_header(
-                'Message-ID' => RT::Interface::Email::GenMessageId(
+                'Message-ID' => RT::Interface::Email::gen_message_id(
                     Ticket      => $self->ticket_obj,
                     Scrip       => $self->scrip_obj,
                     ScripAction => $self->scrip_action_obj
@@ -658,7 +658,7 @@ sub remove_inappropriate_recipients {
     # Weed out any RT addresses. We really don't want to talk to ourselves!
     foreach my $type (@types) {
         @{ $self->{$type} }
-            = RT::EmailParser::CullRTAddresses( "", @{ $self->{$type} } );
+            = RT::EmailParser::cull_rt_addresses( "", @{ $self->{$type} } );
     }
 
     # If there are no recipients, don't try to send the message.
@@ -848,7 +848,7 @@ sub set_subject_token {
     my $self = shift;
 
     $self->template_obj->mime_obj->head->replace(
-        Subject => RT::Interface::Email::AddSubjectTag(
+        Subject => RT::Interface::Email::add_subject_tag(
             $self->template_obj->mime_obj->head->get('Subject'),
             $self->ticket_obj->id,
         ),

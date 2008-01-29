@@ -86,7 +86,7 @@ use Jifty::DBI::Record schema {
     column Resolution => max_length is 11, type is 'int(11)', default is '0';
     column Owner      => max_length is 11, type is 'int(11)', default is '0';
     column
-        Subject => max_length is 200,
+        subject => max_length is 200,
         type is 'varchar(200)', default is '';
     column
         initial_priority => max_length is 11,
@@ -99,7 +99,7 @@ use Jifty::DBI::Record schema {
         time_estimated => max_length is 11,
         type is 'int(11)', default is '0';
     column time_worked => max_length is 11, type is 'int(11)', default is '0';
-    column Status => max_length is 10, type is 'varchar(10)', default is '';
+    column status => max_length is 10, type is 'varchar(10)', default is '';
     column time_left => max_length is 11, type is 'int(11)', default is '0';
     column Told     => type is 'datetime', default is '';
     column starts   => type is 'datetime', default is '';
@@ -305,11 +305,11 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   AdminCc  - A reference to a  list of  email addresses or names
   Type -- The ticket\'s type. ignore this for now
   Owner -- This ticket\'s owner. either an RT::Model::User object or this user\'s id
-  Subject -- A string describing the subject of the ticket
+  subject -- A string describing the subject of the ticket
   Priority -- an integer from 0 to 99
   initial_priority -- an integer from 0 to 99
   final_priority -- an integer from 0 to 99
-  Status -- any valid status (Defined in RT::Model::Queue)
+  status -- any valid status (Defined in RT::Model::Queue)
   time_estimated -- an integer. estimated time for this task in minutes
   time_worked -- an integer. time worked so far in minutes
   time_left -- an integer. time remaining in minutes
@@ -347,11 +347,11 @@ sub create {
         AdminCc             => undef,
         Type                => 'ticket',
         Owner               => undef,
-        Subject             => '',
+        subject             => '',
         initial_priority    => undef,
         final_priority      => undef,
         Priority            => undef,
-        Status              => 'new',
+        status              => 'new',
         time_worked         => "0",
         time_left           => 0,
         time_estimated      => 0,
@@ -399,7 +399,7 @@ sub create {
         );
     }
 
-    unless ( $queue_obj->is_valid_status( $args{'Status'} ) ) {
+    unless ( $queue_obj->is_valid_status( $args{'status'} ) ) {
         return ( 0, 0, _('Invalid value for status') );
     }
 
@@ -441,7 +441,7 @@ sub create {
     my $Started = RT::Date->new();
     if ( defined $args{'Started'} ) {
         $Started->set( Format => 'ISO', value => $args{'Started'} );
-    } elsif ( $args{'Status'} ne 'new' ) {
+    } elsif ( $args{'status'} ne 'new' ) {
         $Started->set_to_now;
     }
 
@@ -451,9 +451,9 @@ sub create {
     }
 
     #If the status is an inactive status, set the resolved date
-    elsif ( $queue_obj->is_inactive_status( $args{'Status'} ) ) {
+    elsif ( $queue_obj->is_inactive_status( $args{'status'} ) ) {
         Jifty->log->debug( "Got a "
-                . $args{'Status'}
+                . $args{'status'}
                 . "(inactive) ticket with undefined resolved date. Setting to now."
         );
         $Resolved->set_to_now;
@@ -547,11 +547,11 @@ sub create {
     my %params = (
         Queue            => $queue_obj->id,
         Owner            => $Owner->id,
-        Subject          => $args{'Subject'},
+        subject          => $args{'subject'},
         initial_priority => $args{'initial_priority'},
         final_priority   => $args{'final_priority'},
         Priority         => $args{'Priority'},
-        Status           => $args{'Status'},
+        status           => $args{'status'},
         time_worked      => $args{'time_worked'},
         time_estimated   => $args{'time_estimated'},
         time_left        => $args{'time_left'},
@@ -885,10 +885,10 @@ sub import {
         Requestor        => undef,
         Type             => 'ticket',
         Owner            => RT->nobody->id,
-        Subject          => '[no subject]',
+        subject          => '[no subject]',
         initial_priority => undef,
         final_priority   => undef,
-        Status           => 'new',
+        status           => 'new',
         time_worked      => "0",
         Due              => undef,
         Created          => undef,
@@ -980,9 +980,9 @@ sub import {
 
     # }}}
 
-    unless ( $self->validate_status( $args{'Status'} ) ) {
+    unless ( $self->validate_status( $args{'status'} ) ) {
         return ( 0,
-            _( "'%1' is an invalid value for status", $args{'Status'} ) );
+            _( "'%1' is an invalid value for status", $args{'status'} ) );
     }
 
     # If we're coming in with an id, set that now.
@@ -997,11 +997,11 @@ sub import {
         EffectiveId      => $EffectiveId,
         Queue            => $queue_obj->id,
         Owner            => $Owner->id,
-        Subject          => $args{'Subject'},             # loc
+        subject          => $args{'subject'},             # loc
         initial_priority => $args{'initial_priority'},    # loc
         final_priority   => $args{'final_priority'},      # loc
         Priority         => $args{'initial_priority'},    # loc
-        Status           => $args{'Status'},              # loc
+        status           => $args{'status'},              # loc
         time_worked      => $args{'time_worked'},         # loc
         Type             => $args{'Type'},                # loc
         Created          => $args{'Created'},             # loc
@@ -1081,9 +1081,9 @@ sub _create_ticket_groups {
     foreach my $type (@types) {
         my $type_obj = RT::Model::Group->new;
         my ( $id, $msg ) = $type_obj->create_role_group(
-            Domain   => 'RT::Model::Ticket-Role',
-            Instance => $self->id,
-            Type     => $type
+            domain   => 'RT::Model::Ticket-Role',
+            instance => $self->id,
+            type     => $type
         );
         unless ($id) {
             Jifty->log->error(
@@ -1991,7 +1991,7 @@ sub set_started {
     #
     my $TicketAsSystem = RT::Model::Ticket->new( RT->system_user );
     $TicketAsSystem->load( $self->id );
-    if ( $TicketAsSystem->Status eq 'new' ) {
+    if ( $TicketAsSystem->status eq 'new' ) {
         $TicketAsSystem->open();
     }
 
@@ -2290,7 +2290,7 @@ sub _record_note {
         && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/ )
     {
         $args{'MIMEObj'}->head->set( 'RT-Message-ID' =>
-                RT::Interface::Email::GenMessageId( Ticket => $self ) );
+                RT::Interface::Email::gen_message_id( Ticket => $self ) );
     }
 
     #Record the correspondence (write the transaction)
@@ -2657,10 +2657,10 @@ sub merge_into {
         return ( 0, _("Merge failed. Couldn't set EffectiveId") );
     }
 
-    if ( $self->__value('Status') ne 'resolved' ) {
+    if ( $self->__value('status') ne 'resolved' ) {
 
         my ( $status_val, $status_msg )
-            = $self->__set( column => 'Status', value => 'resolved' );
+            = $self->__set( column => 'status', value => 'resolved' );
 
         unless ($status_val) {
             Jifty->handle->rollback();
@@ -2669,7 +2669,7 @@ sub merge_into {
                     $self
                 )
             );
-            return ( 0, _("Merge failed. Couldn't set Status") );
+            return ( 0, _("Merge failed. Couldn't set status") );
         }
     }
 
@@ -3067,7 +3067,7 @@ sub validate_status {
 
 # }}}
 
-# {{{ sub set_Status
+# {{{ sub set_status
 
 =head2 SetStatus STATUS
 
@@ -3084,13 +3084,13 @@ sub set_status {
     my %args;
 
     if ( @_ == 1 ) {
-        $args{Status} = shift;
+        $args{status} = shift;
     } else {
         %args = (@_);
     }
 
     #Check ACL
-    if ( $args{Status} eq 'deleted' ) {
+    if ( $args{status} eq 'deleted' ) {
         unless ( $self->current_user_has_right('DeleteTicket') ) {
             return ( 0, _('Permission Denied') );
         }
@@ -3101,22 +3101,22 @@ sub set_status {
     }
 
     if (   !$args{Force}
-        && ( $args{'Status'} eq 'resolved' )
+        && ( $args{'status'} eq 'resolved' )
         && $self->has_unresolved_dependencies )
     {
         return ( 0, _('That ticket has unresolved dependencies') );
     }
 
-    unless ( $self->validate_status( $args{'Status'} ) ) {
+    unless ( $self->validate_status( $args{'status'} ) ) {
         return ( 0,
-            _( "'%1' is an invalid value for status", $args{'Status'} ) );
+            _( "'%1' is an invalid value for status", $args{'status'} ) );
     }
 
     my $now = RT::Date->new;
     $now->set_to_now();
 
     #If we're changing the status from new, record that we've started
-    if ( $self->Status eq 'new' && $args{Status} ne 'new' ) {
+    if ( $self->status eq 'new' && $args{status} ne 'new' ) {
 
         #Set the Started time to "now"
         $self->_set(
@@ -3128,7 +3128,7 @@ sub set_status {
 
     #When we close a ticket, set the 'Resolved' attribute to now.
     # It's misnamed, but that's just historical.
-    if ( $self->queue_obj->is_inactive_status( $args{Status} ) ) {
+    if ( $self->queue_obj->is_inactive_status( $args{status} ) ) {
         $self->_set(
             column             => 'Resolved',
             value              => $now->iso,
@@ -3138,11 +3138,11 @@ sub set_status {
 
     #Actually update the status
     my ( $val, $msg ) = $self->_set(
-        column          => 'Status',
-        value           => $args{Status},
+        column          => 'status',
+        value           => $args{status},
         TimeTaken       => 0,
         CheckACL        => 0,
-        TransactionType => 'Status'
+        TransactionType => 'status'
     );
 
     return ( $val, $msg );
@@ -3367,11 +3367,11 @@ sub _overlay_accessible {
         Queue            => { 'read' => 1, 'write' => 1 },
         Requestors       => { 'read' => 1, 'write' => 1 },
         Owner            => { 'read' => 1, 'write' => 1 },
-        Subject          => { 'read' => 1, 'write' => 1 },
+        subject          => { 'read' => 1, 'write' => 1 },
         initial_priority => { 'read' => 1, 'write' => 1 },
         final_priority   => { 'read' => 1, 'write' => 1 },
         Priority         => { 'read' => 1, 'write' => 1 },
-        Status           => { 'read' => 1, 'write' => 1 },
+        status           => { 'read' => 1, 'write' => 1 },
         time_estimated   => { 'read' => 1, 'write' => 1 },
         time_worked      => { 'read' => 1, 'write' => 1 },
         time_left        => { 'read' => 1, 'write' => 1 },

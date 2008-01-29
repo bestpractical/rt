@@ -88,7 +88,7 @@ sub __DependsOn {
  # XXX: If we delete member of the ticket owner role group then we should also
  # fix ticket object, but only if we don't plan to delete group itself!
     unless ( ( $group->type || '' ) eq 'Owner'
-        && ( $group->Domain || '' ) eq 'RT::Model::Ticket-Role' )
+        && ( $group->domain || '' ) eq 'RT::Model::Ticket-Role' )
     {
         return $self->SUPER::__DependsOn(%args);
     }
@@ -111,7 +111,7 @@ sub __DependsOn {
                     & ( WIPED | IN_WIPING );
             return unless ( $group->type || '' ) eq 'Owner';
             return
-                unless ( $group->Domain || '' ) eq 'RT::Model::Ticket-Role';
+                unless ( $group->domain || '' ) eq 'RT::Model::Ticket-Role';
 
             return if $group->members_obj->count > 1;
 
@@ -127,7 +127,7 @@ sub __DependsOn {
 
             my $ticket = RT::Model::Ticket->new(
                 current_user => $group->current_user );
-            $ticket->load( $group->Instance );
+            $ticket->load( $group->instance );
             RT::Shredder::Exception->throw("Couldn't load ticket")
                 unless $ticket->id;
 

@@ -143,13 +143,13 @@ Return only SystemInternal Groups, such as "privileged" "unprivileged" and "ever
 sub limit_to_system_internal_groups {
     my $self = shift;
     $self->limit(
-        column   => 'Domain',
+        column   => 'domain',
         operator => '=',
         value    => 'SystemInternal'
     );
 
 # All system internal groups have the same instance. No reason to limit down further
-#$self->limit(column => 'Instance', operator => '=', value => '0');
+#$self->limit(column => 'instance', operator => '=', value => '0');
 }
 
 # }}}
@@ -165,13 +165,13 @@ Return only UserDefined Groups
 sub limit_to_user_defined_groups {
     my $self = shift;
     $self->limit(
-        column   => 'Domain',
+        column   => 'domain',
         operator => '=',
         value    => 'UserDefined'
     );
 
 # All user-defined groups have the same instance. No reason to limit down further
-#$self->limit(column => 'Instance', operator => '=', value => '');
+#$self->limit(column => 'instance', operator => '=', value => '');
 }
 
 # }}}
@@ -189,9 +189,9 @@ sub limit_to_personal_groups_for {
     my $self  = shift;
     my $princ = shift;
 
-    $self->limit( column => 'Domain', operator => '=', value => 'Personal' );
+    $self->limit( column => 'domain', operator => '=', value => 'Personal' );
     $self->limit(
-        column   => 'Instance',
+        column   => 'instance',
         operator => '=',
         value    => $princ
     );
@@ -211,11 +211,11 @@ sub limit_to_roles_for_queue {
     my $self  = shift;
     my $queue = shift;
     $self->limit(
-        column   => 'Domain',
+        column   => 'domain',
         operator => '=',
         value    => 'RT::Model::Queue-Role'
     );
-    $self->limit( column => 'Instance', operator => '=', value => $queue );
+    $self->limit( column => 'instance', operator => '=', value => $queue );
 }
 
 # }}}
@@ -232,11 +232,11 @@ sub limit_to_roles_for_ticket {
     my $self   = shift;
     my $Ticket = shift;
     $self->limit(
-        column   => 'Domain',
+        column   => 'domain',
         operator => '=',
         value    => 'RT::Model::Ticket-Role'
     );
-    $self->limit( column => 'Instance', operator => '=', value => '$Ticket' );
+    $self->limit( column => 'instance', operator => '=', value => '$Ticket' );
 }
 
 # }}}
@@ -252,7 +252,7 @@ Limits the set of groups found to role groups for System System_ID
 sub limit_to_roles_for_system {
     my $self = shift;
     $self->limit(
-        column   => 'Domain',
+        column   => 'domain',
         operator => '=',
         value    => 'RT::System-Role'
     );

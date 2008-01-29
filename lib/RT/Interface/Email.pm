@@ -190,7 +190,7 @@ sub check_for_bounce {
     return ( $ReturnPath =~ /<>/ );
 }
 
-=head2 IsRTAddress ADDRESS
+=head2 is_rt_address ADDRESS
 
 Takes a single parameter, an email address.
 Returns true if that address matches the C<RTAddressRegexp> config option.
@@ -210,15 +210,15 @@ sub is_rt_address {
     return undef;
 }
 
-=head2 CullRTAddresses ARRAY
+=head2 cull_rt_addresses ARRAY
 
 Takes a single argument, an array of email addresses.
-Returns the same array with any IsRTAddress()es weeded out.
+Returns the same array with any is_rt_address()es weeded out.
 
 =cut
 
 sub cull_rt_addresses {
-    return grep !IsRTAddress($_), @_;
+    return grep !is_rt_address($_), @_;
 }
 
 =head2 MailError PARAM HASH
@@ -687,7 +687,7 @@ sub forward_transaction {
     } else {
 
         # XXX: what if want to forward txn of other object than ticket?
-        $subject = AddSubjectTag( $subject, $txn->object_id );
+        $subject = add_subject_tag( $subject, $txn->object_id );
         $from = $txn->object->queue_obj->correspond_address
             || RT->config->get('correspond_address');
     }
@@ -871,7 +871,7 @@ sub create_user {
 Takes a hash containing queue_obj, Head and CurrentUser objects.
 Returns a list of all email addresses in the To and Cc
 headers b<except> the current Queue\'s email addresses, the CurrentUser\'s
-email address  and anything that the configuration sub RT::IsRTAddress matches.
+email address  and anything that the configuration sub RT::is_rt_address matches.
 
 =cut
 
@@ -894,7 +894,7 @@ sub parse_cc_addresses_from_head {
         next if lc $args{'CurrentUser'}->email            eq $address;
         next if lc $args{'queue_obj'}->correspond_address eq $address;
         next if lc $args{'queue_obj'}->comment_address    eq $address;
-        next if IsRTAddress($address);
+        next if is_rt_address($address);
 
         push @res, $address;
     }

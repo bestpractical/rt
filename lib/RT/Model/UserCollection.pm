@@ -421,11 +421,11 @@ sub who_have_role_right {
             $id = $obj->id
                 if ref($obj) && UNIVERSAL::can( $obj, 'id' ) && $obj->id;
 
-            my $role_clause = "$groups.Domain = '$type-Role'";
+            my $role_clause = "$groups.domain = '$type-Role'";
 
             # if we want mysql 4.0 use indexes here. we MUST convert that
             # field to integer and drop this quotes.
-            $role_clause .= " AND $groups.Instance = '$id'" if $id;
+            $role_clause .= " AND $groups.instance = '$id'" if $id;
             push @role_clauses, "($role_clause)";
             my $object_clause = "$acl.object_type = '$type'";
             $object_clause .= " AND $acl.object_id = $id" if $id;

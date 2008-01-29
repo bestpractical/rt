@@ -77,13 +77,13 @@ CREATE TABLE Groups (
 		CONSTRAINT Groups_Key PRIMARY KEY,
 	name 		VARCHAR2(200),
 	Description 	VARCHAR2(255),
-	Domain		VARCHAR2(64),
+	domain		VARCHAR2(64),
 	Type		VARCHAR2(64),
-	Instance	NUMBER(11,0) DEFAULT 0 -- NOT NULL
---	Instance	VARCHAR2(64)
+	instance	NUMBER(11,0) DEFAULT 0 -- NOT NULL
+--	instance	VARCHAR2(64)
 );
-CREATE INDEX Groups1 ON Groups (LOWER('Domain'), Instance, LOWER('Type'), id);
-CREATE INDEX Groups2 ON Groups (LOWER('Type'), Instance, LOWER('Domain'));
+CREATE INDEX Groups1 ON Groups (LOWER('domain'), instance, LOWER('Type'), id);
+CREATE INDEX Groups2 ON Groups (LOWER('Type'), instance, LOWER('domain'));
 
 
 CREATE SEQUENCE SCRIPCONDITIONS_seq;

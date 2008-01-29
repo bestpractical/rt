@@ -75,8 +75,8 @@ sub __DependsOn {
 
     # Queue role groups( Cc, AdminCc )
     $objs = RT::Model::GroupCollection->new;
-    $objs->limit( column => 'Domain',   value => 'RT::Model::Queue-Role' );
-    $objs->limit( column => 'Instance', value => $self->id );
+    $objs->limit( column => 'domain',   value => 'RT::Model::Queue-Role' );
+    $objs->limit( column => 'instance', value => $self->id );
     push( @$list, $objs );
 
     # Scrips

@@ -52,7 +52,7 @@
   </tr>
   <tr>
     <td class="label status"><&|/l&>Status</&>:</td>
-    <td class="value status"><&|/l&><% $Ticket->Status%></&></td>
+    <td class="value status"><&|/l&><% $Ticket->status%></&></td>
   </tr>
 % if ($Ticket->time_estimated) {
   <tr>

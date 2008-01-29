@@ -152,12 +152,12 @@ if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('ReplyToTicket') ) 
 }
 
 if ( $can{'ModifyTicket'} ) {
-    if ( $Ticket->Status ne 'resolved' ) {
+    if ( $Ticket->status ne 'resolved' ) {
         $actions->{'G'} = {
             path => "Ticket/Update.html?Action=comment&DefaultStatus=resolved&id=" . $id,
             title => _('Resolve') };
     }
-    if ( $Ticket->Status ne 'open' ) {
+    if ( $Ticket->status ne 'open' ) {
         $actions->{'A'} = { path => "Ticket/Display.html?Status=open&id=" . $id,
                             title => _('Open it') };
     }

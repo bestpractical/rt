@@ -959,13 +959,13 @@ sub _role_groupsjoin {
         alias1           => 'main',
         column1          => 'id',
         table2           => 'Groups',
-        column2          => 'Instance',
+        column2          => 'instance',
         entry_aggregator => 'AND',
     );
     $self->SUPER::limit(
         leftjoin => $groups,
         alias    => $groups,
-        column   => 'Domain',
+        column   => 'domain',
         value    => 'RT::Model::Ticket-Role',
     );
     $self->SUPER::limit(
@@ -1066,12 +1066,12 @@ WHERE (
     (
 	(Users_3.email = '22')
 	    AND
-	(Groups_1.Domain = 'RT::Model::Ticket-Role')
+	(Groups_1.domain = 'RT::Model::Ticket-Role')
 	    AND
 	(Groups_1.Type = 'RequestorGroup')
     )
 ) AND
-    Groups_1.Instance = main.id
+    Groups_1.instance = main.id
 AND
     Groups_1.id = CachedGroupMembers_2.GroupId
 AND
@@ -1119,14 +1119,14 @@ sub _watcher_membership_limit {
     # {{{ Tie to groups for tickets we care about
     $self->_sql_limit(
         alias            => $groups,
-        column           => 'Domain',
+        column           => 'domain',
         value            => 'RT::Model::Ticket-Role',
         entry_aggregator => 'AND'
     );
 
     $self->join(
         alias1  => $groups,
-        column1 => 'Instance',
+        column1 => 'instance',
         alias2  => 'main',
         column2 => 'id'
     );

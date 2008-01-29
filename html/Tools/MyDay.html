@@ -61,14 +61,14 @@
 % }
 <tr <%$class|n%>><td colspan="2"><h2><a
 href="<%RT->config->get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->id%>"><%$Ticket->id%>:
-<%$Ticket->Subject%></a></h2></td></tr>
+<%$Ticket->subject%></a></h2></td></tr>
 <tr <%$class|n%>><td><span class="label"><&|/l&>Worked</&>:</span><input size="3" name="UpdateTimeWorked-<%$Ticket->id%>" /> <&|/l&>minutes</&>
 </td>
 <td rowspan="2"><span class="label"><&|/l&>Comments</&>:<br /></span><textarea name="UpdateContent-<%$Ticket->id%>" rows="5"
 cols="60"></textarea></td></tr>
 <tr <%$class|n%>>
 <td><span class="label"><&|/l&>Status</&>:</span> <& /Elements/SelectStatus, name=> 'UpdateStatus-'.$Ticket->id, 
-				  DefaultLabel => _("%1 (Unchanged)",_($Ticket->Status())) &></td>
+				  DefaultLabel => _("%1 (Unchanged)",_($Ticket->status())) &></td>
                   </tr>
 
 % }
@@ -98,7 +98,7 @@ foreach my $arg ( keys %ARGS ) {
     }
 
     if ( my $status = $ARGS{ 'UpdateStatus-' . $id } ) {
-        if ( $status ne $ticket->Status ) {
+        if ( $status ne $ticket->status ) {
             my ( $val, $msg ) = $ticket->set_status($status);
             push @results, _( "Ticket %1: %2", $id, $msg );
 

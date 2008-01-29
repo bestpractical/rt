@@ -84,14 +84,14 @@ CREATE TABLE Groups (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
-  Domain varchar(64),
+  domain varchar(64),
   Type varchar(64),
-  Instance integer,
+  instance integer,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
 
-CREATE INDEX Groups1 ON Groups (Domain,Instance,Type,id);
-CREATE INDEX Groups2 On Groups (Type, Instance);   
+CREATE INDEX Groups1 ON Groups (domain,instance,Type,id);
+CREATE INDEX Groups2 On Groups (Type, instance);   
 
 # }}}
 

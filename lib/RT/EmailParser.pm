@@ -412,10 +412,10 @@ sub is_rt_address {
     return undef;
 }
 
-=head2 CullRTAddresses ARRAY
+=head2 cull_rt_addresses ARRAY
 
 Takes a single argument, an array of email addresses.
-Returns the same array with any IsRTAddress()es weeded out.
+Returns the same array with any is_rt_address()es weeded out.
 
 
 =cut

@@ -132,14 +132,14 @@ CREATE TABLE Groups (
   id INTEGER DEFAULT nextval('groups_id_seq'),
   name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
-  Domain varchar(64),
+  domain varchar(64),
   Type varchar(64),
-  Instance integer,
+  instance integer,
   PRIMARY KEY (id)
 
 );
-CREATE UNIQUE INDEX Groups1 ON Groups (Domain,Instance,Type,id, name);
-CREATE INDEX Groups2 On Groups  (Type, Instance, Domain);
+CREATE UNIQUE INDEX Groups1 ON Groups (domain,instance,Type,id, name);
+CREATE INDEX Groups2 On Groups  (Type, instance, domain);
 
 
 -- }}}

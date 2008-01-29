@@ -83,7 +83,7 @@ use Jifty::DBI::Record schema {
     column State => max_length is 100, type is 'varchar(100)', default is '';
     column Zip   => max_length is 16,  type is 'varchar(16)',  default is '';
     column Country  => max_length is 50, type is 'varchar(50)', default is '';
-    column Timezone => max_length is 50, type is 'varchar(50)', default is '';
+    column timezone => max_length is 50, type is 'varchar(50)', default is '';
     column PGPKey   => type is 'text';
 
 };
@@ -1123,12 +1123,12 @@ sub watched_queues {
         alias1  => 'main',
         column1 => 'id',
         table2  => 'Groups',
-        column2 => 'Instance',
+        column2 => 'instance',
     );
 
     $watched_queues->limit(
         alias            => $group_alias,
-        column           => 'Domain',
+        column           => 'domain',
         value            => 'RT::Model::Queue-Role',
         entry_aggregator => 'AND',
     );

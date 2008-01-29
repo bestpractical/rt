@@ -326,7 +326,7 @@ set(%GnuPG,
 # NOTE that options with '-' character MUST be quoted.
 
 set(%GnuPGOptions,
-    homedir => '/home/jesse/svk/3.999-DANGEROUS/var/data/gpg',
+    homedir => '/home/cubic/projs/RT/3.999-DANGEROUS/var/data/gpg',
 
     # URL of a keyserver
     #    keyserver => 'hkp://subkeys.pgp.net',

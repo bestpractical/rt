@@ -494,7 +494,7 @@ sub _has_role_right {
         . "AND Principals.id = CachedGroupMembers.GroupId "
         . "AND CachedGroupMembers.MemberId = "
         . $self->id . " "
-        . "AND ACL.principal_type = Groups.Type ";
+        . "AND ACL.principal_type = Groups.type ";
 
     my (@object_clauses);
     foreach my $obj ( @{ $args{'equiv_objects'} } ) {
@@ -520,12 +520,12 @@ sub _has_role_right {
             if ref($obj) && UNIVERSAL::can( $obj, 'id' ) && $obj->id;
 
         my $tmp = $query;
-        $tmp .= " AND Groups.Domain = '$type-Role'";
+        $tmp .= " AND Groups.domain = '$type-Role'";
 
-        # XXX: Groups.Instance is VARCHAR in DB, we should quote value
+        # XXX: Groups.instance is VARCHAR in DB, we should quote value
         # if we want mysql 4.0 use indexes here. we MUST convert that
         # field to integer and drop this quotes.
-        $tmp .= " AND Groups.Instance = '$id'" if $id;
+        $tmp .= " AND Groups.instance = '$id'" if $id;
 
         $self->_handle->apply_limits( \$tmp, 1 );
         my ($hit) = $self->_handle->fetch_result($tmp);
@@ -572,7 +572,7 @@ sub _get_principal_type_for_acl {
     my $self = shift;
     my $type;
     if (   $self->principal_type eq 'Group'
-        && $self->object->Domain =~ /Role$/ )
+        && $self->object->domain =~ /Role$/ )
     {
         $type = $self->object->type;
     } else {

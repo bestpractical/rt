@@ -66,7 +66,7 @@
 
 <tr><td align="right"><&|/l&>Status</&>:</td>
 <td>
-<& /Elements/SelectStatus, name=>"Status", DefaultLabel => _("%1 (Unchanged)", loc($ticket_obj->Status)), Default => $ARGS{'Status'} || ($ticket_obj->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
+<& /Elements/SelectStatus, name=>"Status", DefaultLabel => _("%1 (Unchanged)", loc($ticket_obj->status)), Default => $ARGS{'Status'} || ($ticket_obj->status eq $DefaultStatus ? undef : $DefaultStatus)&>
 <&|/l&>Owner</&>:  
 <& /Elements/SelectOwner,
      name         => "Owner",
@@ -164,7 +164,7 @@ my $ticket_obj = load_ticket($id);
 $m->callback( Ticket => $ticket_obj, ARGSRef => \%ARGS, Callbackname => 'Initial' );
 
 unless($DefaultStatus){
-    $DefaultStatus=($ARGS{'Status'} ||$ticket_obj->Status());
+    $DefaultStatus=($ARGS{'Status'} ||$ticket_obj->status());
 }
 
 if ($DefaultStatus =~ '^new$'){
@@ -172,9 +172,9 @@ if ($DefaultStatus =~ '^new$'){
 }
 
 if ($DefaultStatus eq 'resolved') {
-    $title = _("Resolve ticket #%1 (%2)", $ticket_obj->id, $ticket_obj->Subject);
+    $title = _("Resolve ticket #%1 (%2)", $ticket_obj->id, $ticket_obj->subject);
 } else {
-    $title = _("Update ticket #%1 (%2)", $ticket_obj->id, $ticket_obj->Subject);
+    $title = _("Update ticket #%1 (%2)", $ticket_obj->id, $ticket_obj->subject);
 }
 
 # Things needed in the template - we'll do the processing here, just

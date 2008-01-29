@@ -76,8 +76,8 @@ sub __DependsOn {
 
     # Ticket role groups( Owner, Requestors, Cc, AdminCc )
     $objs = RT::Model::GroupCollection->new;
-    $objs->limit( column => 'Domain',   value => 'RT::Model::Ticket-Role' );
-    $objs->limit( column => 'Instance', value => $self->id );
+    $objs->limit( column => 'domain',   value => 'RT::Model::Ticket-Role' );
+    $objs->limit( column => 'instance', value => $self->id );
     push( @$list, $objs );
 
     #TODO: Users, Queues if we wish export tool

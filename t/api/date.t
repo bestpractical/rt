@@ -16,7 +16,7 @@ use_ok('RT::Date');
 
 {
     # set timezone in all places to UTC
-    RT->system_user->user_object->__set(column => 'Timezone', value => 'UTC')
+    RT->system_user->user_object->__set(column => 'timezone', value => 'UTC')
                                 if RT->system_user->user_object->timezone;
     RT->config->set( Timezone => 'UTC' );
 }
@@ -40,7 +40,7 @@ my $current_user;
     is($date->timezone('server'), 'UTC', "dropped all timzones to UTC");
     is($date->timezone('unknown'), 'UTC', "with wrong context returns UTC");
 
-    $current_user->user_object->__set( column => 'Timezone', value => 'Europe/Moscow');
+    $current_user->user_object->__set( column => 'timezone', value => 'Europe/Moscow');
     is($current_user->user_object->timezone,
        'Europe/Moscow',
        "successfuly changed user's timezone");
@@ -59,7 +59,7 @@ my $current_user;
        "in user context still returns user's timezone");
     is($date->timezone, 'UTC', "the deafult value is always UTC");
     
-    $current_user->user_object->__set( column => 'Timezone', value => '');
+    $current_user->user_object->__set( column => 'timezone', value => '');
     is($current_user->user_object->timezone,
        '',
        "successfuly changed user's timezone");
@@ -184,7 +184,7 @@ my $current_user;
 
 
 { # positive timezone
-    $current_user->user_object->__set( column => 'Timezone', value => 'Europe/Moscow');
+    $current_user->user_object->__set( column => 'timezone', value => 'Europe/Moscow');
     my $date = RT::Date->new( current_user => $current_user );
     $date->set( Format => 'ISO', Timezone => 'utc', value => '2005-01-01 15:10:00' );
     is($date->iso( Timezone => 'user' ), '2005-01-01 18:10:00', "ISO");
@@ -200,7 +200,7 @@ my $current_user;
 }
 
 { # negative timezone
-    $current_user->user_object->__set( column => 'Timezone', value => 'America/New_York');
+    $current_user->user_object->__set( column => 'timezone', value => 'America/New_York');
     my $date = RT::Date->new( current_user => $current_user );
     $date->set( Format => 'ISO', Timezone => 'utc', value => '2005-01-01 15:10:00' );
     is($date->iso( Timezone => 'user' ), '2005-01-01 10:10:00', "ISO");
@@ -316,7 +316,7 @@ my $year = (localtime(time))[5] + 1900;
     $date->set(Format => 'unknown', value => '2005-11-28 15:10:00');
     is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
-    $current_user->user_object->__set( column => 'Timezone', value => 'Europe/Moscow');
+    $current_user->user_object->__set( column => 'timezone', value => 'Europe/Moscow');
     $date = RT::Date->new( current_user => $current_user );
     $date->set(Format => 'unknown', value => '2005-11-28 15:10:00');
     is($date->iso, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
@@ -343,7 +343,7 @@ my $year = (localtime(time))[5] + 1900;
     $date->set_to_midnight(Timezone => 'server');
     is($date->iso, '2005-11-27 21:00:00', "server context");
 
-    $current_user->user_object->__set( column => 'Timezone', value => 'Europe/Moscow');
+    $current_user->user_object->__set( column => 'timezone', value => 'Europe/Moscow');
     $date = RT::Date->new(current_user =>  $current_user );
     $date->set(Format => 'ISO', value => '2005-11-28 15:10:00');
     $date->set_to_midnight;
@@ -408,7 +408,7 @@ my $year = (localtime(time))[5] + 1900;
 }
 
 {
-    $current_user->user_object->__set( column => 'Timezone', value => '');
+    $current_user->user_object->__set( column => 'timezone', value => '');
     my $date = RT::Date->new(current_user =>  $current_user );
     is($date->as_string, "Not set", "AsString returns 'Not set'");
 
