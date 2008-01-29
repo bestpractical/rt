@@ -236,9 +236,9 @@ sub exclude_delegated_rights {
 
 # }}}
 
-# {{{ DelegatedBy
+# {{{ delegated_by
 
-=head2 DelegatedBy { id => undef }
+=head2 delegated_by { id => undef }
 
 Limit the ACL to rights delegated by the principal whose Principal id is
 B<Id>
@@ -254,7 +254,7 @@ sub delegated_by {
         @_
     );
     $self->limit(
-        column           => 'DelegatedBy',
+        column           => 'delegated_by',
         operator         => '=',
         value            => $args{'id'},
         entry_aggregator => 'OR'
@@ -264,9 +264,9 @@ sub delegated_by {
 
 # }}}
 
-# {{{ DelegatedFrom
+# {{{ delegated_from
 
-=head2 DelegatedFrom { id => undef }
+=head2 delegated_from { id => undef }
 
 Limit the ACL to rights delegate from the ACE which has the id specified 
 by the id parameter.
@@ -282,7 +282,7 @@ sub delegated_from {
         @_
     );
     $self->limit(
-        column           => 'DelegatedFrom',
+        column           => 'delegated_from',
         operator         => '=',
         value            => $args{'id'},
         entry_aggregator => 'OR'

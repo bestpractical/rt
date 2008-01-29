@@ -197,8 +197,8 @@ PARAMS is a parameter hash with the following elements:
    principal_id => The id of an RT::Model::Principal object
    principal_type => "User" "Group" or any Role type
    right_name => the name of a right. in any case
-   DelegatedBy => The Principal->id of the user delegating the right
-   DelegatedFrom => The id of the ACE which this new ACE is delegated from
+   delegated_by => The Principal->id of the user delegating the right
+   delegated_from => The id of the ACE which this new ACE is delegated from
 
 
     Either:
@@ -321,8 +321,8 @@ sub create {
         right_name     => $args{'right_name'},
         object_type    => $args{'object_type'},
         object_id      => $args{'object_id'},
-        DelegatedBy    => 0,
-        DelegatedFrom  => 0
+        delegated_by    => 0,
+        delegated_from  => 0,
     );
     if ( $self->id ) {
         return ( 0, _('That principal already has that right') );
@@ -334,8 +334,8 @@ sub create {
         right_name     => $args{'right_name'},
         object_type    => ref( $args{'Object'} ),
         object_id      => $args{'Object'}->id,
-        DelegatedBy    => 0,
-        DelegatedFrom  => 0
+        delegated_by    => 0,
+        delegated_from  => 0,
     );
 
 #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
@@ -432,8 +432,8 @@ sub delegate {
         right_name     => $self->__value('right_name'),
         object_type    => $self->__value('object_type'),
         object_id      => $self->__value('object_id'),
-        DelegatedBy    => $self->current_user->id,
-        DelegatedFrom  => $self->id
+        delegated_by    => $self->current_user->id,
+        delegated_from  => $self->id
     );
     if ( $delegated_ace->id ) {
         return ( 0, _('That principal already has that right') );
@@ -444,8 +444,8 @@ sub delegate {
         right_name    => $self->__value('right_name'),
         object_type   => $self->__value('object_type'),
         object_id     => $self->__value('object_id'),
-        DelegatedBy   => $self->current_user->id,
-        DelegatedFrom => $self->id
+        delegated_by   => $self->current_user->id,
+        delegated_from => $self->id
     );
 
 #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
@@ -487,9 +487,9 @@ sub delete {
                 Right  => 'ModifyACL',
                 Object => $self->object
             )
-            && $self->__value('DelegatedBy') == 0
+            && $self->__value('delegated_by') == 0
         )
-        || ( $self->__value('DelegatedBy') == $self->current_user->id )
+        || ( $self->__value('delegated_by') == $self->current_user->id )
         )
     {
         return ( 0, _('Permission Denied') );
@@ -692,7 +692,7 @@ sub _set {
 sub _value {
     my $self = shift;
 
-    if ( $self->__value('DelegatedBy') eq $self->current_user->id ) {
+    if ( $self->__value('delegated_by') eq $self->current_user->id ) {
         return ( $self->__value(@_) );
     } elsif (
         $self->principal_object->is_group
