@@ -18,7 +18,7 @@ use File::Spec;
 
 =head2 Database maintanance
 
-=head2 CreateDatabase $DBH
+=head2 create_database $DBH
 
 Creates a new database. This method can be used as class method.
 
@@ -55,7 +55,7 @@ sub create_database {
     }
 }
 
-=head3 DropDatabase $DBH [Force => 0]
+=head3 drop_database $DBH [Force => 0]
 
 Drops RT's database. This method can be used as class method.
 
@@ -120,7 +120,7 @@ sub _yesno {
 
 sub insert_acl { }
 
-=head2 InsertSchema
+=head2 insert_schema
 
 =cut
 
@@ -223,7 +223,7 @@ sub cmp_version($$) {
     return -1;
 }
 
-=head2 InsertInitialData
+=head2 insert_initial_data
 
 =cut
 
@@ -288,7 +288,7 @@ sub insert_initial_data {
     #print "done.\n";
 }
 
-=head InsertData
+=head insert_data
 
 =cut
 
@@ -326,7 +326,7 @@ sub insert_data {
         foreach my $item (@Groups) {
             my $new_entry
                 = RT::Model::Group->new( current_user => RT->system_user );
-            my $member_of = delete $item->{'MemberOf'};
+            my $member_of = delete $item->{'member_of'};
             my ( $return, $msg ) = $new_entry->_create(%$item);
 
             #print "(Error: $msg)" unless $return;
@@ -341,7 +341,7 @@ sub insert_data {
                     } elsif ( !ref $_ ) {
                         $parent->load_user_defined_group($_);
                     } else {
-                        print "(Error: wrong format of MemberOf field."
+                        print "(Error: wrong format of member_of field."
                             . " Should be name of user defined group or"
                             . " hash reference with 'column => value' pairs."
                             . " Use array reference to add to multiple groups)";
@@ -402,7 +402,7 @@ sub insert_data {
 
             # if ref then it's list of queues, so we do things ourself
             if ( exists $item->{'Queue'} && ref $item->{'Queue'} ) {
-                $item->{'LookupType'} = 'RT::Model::Queue-RT::Model::Ticket';
+                $item->{'lookup_type'} = 'RT::Model::Queue-RT::Model::Ticket';
                 @queues = @{ delete $item->{'Queue'} };
             }
 
@@ -420,11 +420,11 @@ sub insert_data {
             }
 
             # apply by default
-            if ( !@queues && !exists $item->{'Queue'} && $item->{LookupType} )
+            if ( !@queues && !exists $item->{'Queue'} && $item->{lookup_type} )
             {
                 my $ocf = RT::Model::ObjectCustomField->new(
                     current_user => RT->system_user );
-                $ocf->create( CustomField => $new_entry->id );
+                $ocf->create( custom_field => $new_entry->id );
             }
 
             for my $q (@queues) {
@@ -439,7 +439,7 @@ sub insert_data {
                 my $OCF = RT::Model::ObjectCustomField->new(
                     current_user => RT->system_user );
                 ( $return, $msg ) = $OCF->create(
-                    CustomField => $new_entry->id,
+                    custom_field => $new_entry->id,
                     object_id   => $q_obj->id,
                 );
 
@@ -500,7 +500,7 @@ sub insert_data {
             } else {
                 $princ
                     = RT::Model::User->new( current_user => RT->system_user );
-                $princ->load( $item->{'UserId'} );
+                $princ->load( $item->{'user_id'} );
             }
 
             unless ( $princ->id ) {
