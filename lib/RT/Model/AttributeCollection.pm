@@ -138,13 +138,13 @@ sub with_id {
     return ($attr);
 }
 
-=head2 delete_entry { name =>   Content => , id => }
+=head2 delete_entry { name =>   content => , id => }
 
 Deletes attributes with
     the matching name 
  and the matching content or id
 
-If Content and id are both undefined, delete all attributes with
+If content and id are both undefined, delete all attributes with
 the matching name.
 
 =cut
@@ -153,16 +153,16 @@ sub delete_entry {
     my $self = shift;
     my %args = (
         name    => undef,
-        Content => undef,
+        content => undef,
         id      => undef,
         @_
     );
     my $found = 0;
     foreach my $attr ( $self->named( $args{'name'} ) ) {
-        if (   ( !defined $args{'id'} and !defined $args{'Content'} )
+        if (   ( !defined $args{'id'} and !defined $args{'content'} )
             or ( defined $args{'id'} and $attr->id eq $args{'id'} )
-            or ( defined $args{'Content'}
-                and $attr->content eq $args{'Content'} )
+            or ( defined $args{'content'}
+                and $attr->content eq $args{'content'} )
             )
         {
             my ( $id, $msg ) = $attr->delete;

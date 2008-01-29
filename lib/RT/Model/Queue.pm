@@ -779,7 +779,7 @@ sub _add_watcher {
                 = RT::Model::User->new( current_user => RT->system_user );
 
             my ( $Address, $name )
-                = RT::Interface::Email::ParseAddressFromHeader(
+                = RT::Interface::Email::parse_address_from_header(
                 $args{'Email'} );
 
             my ( $Val, $Message ) = $new_user->create(

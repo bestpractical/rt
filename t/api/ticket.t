@@ -109,7 +109,7 @@ my $msg;
                 );
 ok ($id, "Ticket $id was Created");
 ok(my $group = RT::Model::Group->new(current_user => RT->system_user));
-ok($group->load_ticket_role_group(Ticket => $id, Type=> 'Requestor'));
+ok($group->load_ticket_role_group(ticket => $id, type=> 'Requestor'));
 ok ($group->id, "Found the requestors object for this ticket");
 
 ok(my $jesse = RT::Model::User->new(current_user => RT->system_user), "Creating a jesse rt::user");
@@ -129,13 +129,13 @@ ok (!$ticket->is_watcher(Type => 'Requestor', principal_id => $bob->principal_id
 
 
 $group = RT::Model::Group->new(current_user => RT->system_user);
-ok($group->load_ticket_role_group(Ticket => $id, Type=> 'Cc'));
+ok($group->load_ticket_role_group(ticket => $id, type => 'Cc'));
 ok ($group->id, "Found the cc object for this ticket");
 $group = RT::Model::Group->new(current_user => RT->system_user);
-ok($group->load_ticket_role_group(Ticket => $id, Type=> 'AdminCc'));
+ok($group->load_ticket_role_group(ticket => $id, type=> 'AdminCc'));
 ok ($group->id, "Found the AdminCc object for this ticket");
 $group = RT::Model::Group->new(current_user => RT->system_user);
-ok($group->load_ticket_role_group(Ticket => $id, Type=> 'Owner'));
+ok($group->load_ticket_role_group(ticket => $id, type=> 'Owner'));
 ok ($group->id, "Found the Owner object for this ticket");
 ok($group->has_member(RT->nobody->user_object->principal_object), "the owner group has the member 'RT_System'");
 

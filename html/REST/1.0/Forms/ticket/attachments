@@ -86,7 +86,7 @@ if ($aid) {
         # if we're sending a binary attachment (and only the attachment)
         # flag it so bin/rt knows to special case it
         if ($attachment->content_type !~ /^text\//) {
-            $r->content_type($attachment->ContentType);
+            $r->content_type($attachment->content_type);
         }
     } else {
 	my @data;

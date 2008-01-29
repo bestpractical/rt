@@ -79,9 +79,9 @@ if ( $Ticket->current_user_has_right('ShowTicket') ) {
         $attachments->limit( alias    => $transactions, column    => 'type', operator => '!=', value    => "comment" );
     }
 
-    $attachments->limit ( column => 'ContentType', operator => '=', value => 'text/plain');
-    $attachments->limit ( column => 'ContentType', operator => 'starts_with', value => 'message/');
-    $attachments->limit ( column => 'ContentType', operator => '=', value => 'text');
+    $attachments->limit ( column => 'content_type', operator => '=', value => 'text/plain');
+    $attachments->limit ( column => 'content_type', operator => 'starts_with', value => 'message/');
+    $attachments->limit ( column => 'content_type', operator => '=', value => 'text');
     $attachments->limit ( column => 'Filename', operator => 'IS', value => 'NULL')
         if RT->config->get('SuppressInlineTextFiles', $Ticket->current_user );
 }

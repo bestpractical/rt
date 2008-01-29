@@ -558,7 +558,7 @@ sub load_or_create_by_email {
         ( $email, $name ) = ( $email->address, $email->phrase );
     } else {
         ( $email, $name )
-            = RT::Interface::Email::ParseAddressFromHeader($email);
+            = RT::Interface::Email::parse_address_from_header($email);
     }
 
     $self->load_by_email($email);

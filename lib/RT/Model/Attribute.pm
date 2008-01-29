@@ -65,12 +65,12 @@ use Jifty::DBI::Record schema {
         object_type => max_length is 200,
         type is 'varchar(200)', default is '';
     column
-        Description => max_length is 255,
+        description => max_length is 255,
         type is 'varchar(255)', default is '';
     column
-        ContentType => max_length is 255,
+        content_type => max_length is 255,
         type is 'varchar(255)', default is '';
-    column Content => type is 'blob', default is '';
+    column content => type is 'blob', default is '';
 
 };
 
@@ -78,7 +78,7 @@ use Jifty::DBI::Record schema {
 
   RT::Model::Attribute 
 
-=head1 Content
+=head1 content
 
 =cut
 
@@ -149,8 +149,8 @@ sub lookup_object_right {
 Create takes a hash of values and creates a row in the database:
 
   varchar(200) 'name'.
-  varchar(255) 'Content'.
-  varchar(16) 'ContentType',
+  varchar(255) 'content'.
+  varchar(16) 'content_type',
   varchar(64) 'object_type'.
   int(11) 'object_id'.
 
@@ -162,9 +162,9 @@ sub create {
     my $self = shift;
     my %args = (
         name        => '',
-        Description => '',
-        Content     => '',
-        ContentType => '',
+        description => '',
+        content     => '',
+        content_type => '',
         Object      => undef,
         @_
     );
@@ -203,21 +203,21 @@ sub create {
         return ( 0, _('Permission Denied') );
     }
 
-    if ( ref( $args{'Content'} ) ) {
+    if ( ref( $args{'content'} ) ) {
         eval {
-            $args{'Content'} = $self->_serialize_content( $args{'Content'} );
+            $args{'content'} = $self->_serialize_content( $args{'content'} );
         };
         if ($@) {
             return ( 0, $@ );
         }
-        $args{'ContentType'} = 'storable';
+        $args{'content_type'} = 'storable';
     }
 
     $self->SUPER::create(
         name        => $args{'name'},
-        Content     => $args{'Content'},
-        ContentType => $args{'ContentType'},
-        Description => $args{'Description'},
+        content     => $args{'content'},
+        content_type => $args{'content_type'},
+        description => $args{'description'},
         object_type => $args{'object_type'},
         object_id   => $args{'object_id'},
     );
@@ -254,7 +254,7 @@ sub load_by_name_and_object {
 
 =head2 _DeserializeContent
 
-DeserializeContent returns this Attribute's "Content" as a hashref.
+DeserializeContent returns this Attribute's "content" as a hashref.
 
 
 =cut
@@ -274,7 +274,7 @@ sub _deserialize_content {
 
 }
 
-=head2 Content
+=head2 content
 
 Returns this attribute's content. If it's a scalar, returns a scalar
 If it's data structure returns a ref to that data structure.
@@ -285,8 +285,8 @@ sub content {
     my $self = shift;
 
     # Here we call _value to get the ACL check.
-    my $content = $self->_value('Content');
-    if ( $self->__value('ContentType') eq 'storable' ) {
+    my $content = $self->_value('content');
+    if ( $self->__value('content_type') eq 'storable' ) {
         eval { $content = $self->_deserialize_content($content); };
         if ($@) {
             Jifty->log->error( "Deserialization of content for attribute "
@@ -311,7 +311,7 @@ sub set_content {
     my $content = shift;
 
     # Call __value to avoid ACL check.
-    if ( $self->__value('ContentType') eq 'storable' ) {
+    if ( $self->__value('content_type') eq 'storable' ) {
 
         # We eval the serialization because it will lose on a coderef.
         $content = eval { $self->_serialize_content($content) };
@@ -320,7 +320,7 @@ sub set_content {
             return ( 0, "Content couldn't be frozen" );
         }
     }
-    return $self->_set( column => 'Content', value => $content );
+    return $self->_set( column => 'content', value => $content );
 }
 
 =head2 SubValue KEY

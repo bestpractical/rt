@@ -262,13 +262,13 @@ Takes a param hash with 2 parameters:
 sub load_ticket_role_group {
     my $self = shift;
     my %args = (
-        Ticket => '0',
+        ticket => '0',
         type   => undef,
         @_
     );
     $self->load_by_cols(
         domain   => 'RT::Model::Ticket-Role',
-        instance => $args{'Ticket'},
+        instance => $args{'ticket'},
         type     => $args{'type'}
     );
 }

@@ -362,7 +362,7 @@ sub parse_errors_to_address_from_head {
     }
 }
 
-=head2 ParseAddressFromHeader ADDRESS
+=head2 parse_address_from_header ADDRESS
 
 Takes an address from $self->head->get('Line') and returns a tuple: user@host, friendly name
 

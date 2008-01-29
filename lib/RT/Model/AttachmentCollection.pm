@@ -129,7 +129,7 @@ sub content_type {
         @_
     );
 
-    return $self->limit( %args, column => 'ContentType' );
+    return $self->limit( %args, column => 'content_type' );
 }
 
 =head2 ChildrenOf ID
@@ -157,14 +157,14 @@ sub limit_not_empty {
     my $self = shift;
     $self->limit(
         entry_aggregator => 'AND',
-        column           => 'Content',
+        column           => 'content',
         operator         => 'IS NOT',
         value            => 'NULL',
         quote_value      => 0,
     );
     $self->limit(
         entry_aggregator => 'AND',
-        column           => 'Content',
+        column           => 'content',
         operator         => '!=',
         value            => '',
     );

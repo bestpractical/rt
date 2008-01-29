@@ -1104,7 +1104,7 @@ sub owner_group {
     my $self      = shift;
     my $owner_obj = RT::Model::Group->new;
     $owner_obj->load_ticket_role_group(
-        Ticket => $self->id,
+        ticket => $self->id,
         type   => 'Owner'
     );
     return ($owner_obj);
@@ -1219,7 +1219,7 @@ sub _add_watcher {
     my $group = RT::Model::Group->new;
     $group->load_ticket_role_group(
         type   => $args{'type'},
-        Ticket => $self->id
+        ticket => $self->id
     );
     unless ( $group->id ) {
         return ( 0, _("Group not found") );
@@ -1317,7 +1317,7 @@ sub delete_watcher {
     my $group = RT::Model::Group->new;
     $group->load_ticket_role_group(
         type   => $args{'type'},
-        Ticket => $self->id
+        ticket => $self->id
     );
     unless ( $group->id ) {
         return ( 0, _("Group not found") );
@@ -1530,7 +1530,7 @@ sub requestors {
     if ( $self->current_user_has_right('ShowTicket') ) {
         $group->load_ticket_role_group(
             type   => 'Requestor',
-            Ticket => $self->id
+            ticket => $self->id
         );
     }
     return ($group);
@@ -1578,7 +1578,7 @@ sub admin_cc {
     if ( $self->current_user_has_right('ShowTicket') ) {
         $group->load_ticket_role_group(
             type   => 'AdminCc',
-            Ticket => $self->id
+            ticket => $self->id
         );
     }
     return ($group);
@@ -1623,7 +1623,7 @@ sub is_watcher {
     my $group = RT::Model::Group->new;
     $group->load_ticket_role_group(
         type   => $args{'type'},
-        Ticket => $self->id
+        ticket => $self->id
     );
 
     # Find the relevant principal.

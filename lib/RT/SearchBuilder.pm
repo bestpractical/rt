@@ -156,7 +156,7 @@ sub limit_attribute {
 
     $self->limit(
         $clause  => $alias,
-        column   => 'Content',
+        column   => 'content',
         operator => $operator,
         value    => $args{value},
     );
@@ -164,7 +164,7 @@ sub limit_attribute {
     # Capture rows with the attribute defined as an empty string.
     $self->limit(
         $clause  => $alias,
-        column   => 'Content',
+        column   => 'content',
         operator => '=',
         value    => '',
         entry_aggregator => $args{NULL} ? 'AND' : 'OR',
@@ -233,7 +233,7 @@ sub limit_custom_field {
     );
     $self->limit(
         alias    => $alias,
-        column   => 'Content',
+        column   => 'content',
         operator => $args{'operator'},
         value    => $args{'value'},
     );

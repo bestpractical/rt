@@ -86,7 +86,7 @@ my $reverify_cb = sub  {
     }
 
     my $attachments = $txn->attachments->clone;
-    $attachments->limit( column => 'ContentType', value => 'application/x-rt-original-message' );
+    $attachments->limit( column => 'content_type', value => 'application/x-rt-original-message' );
     my $original = $attachments->first;
     unless ( $original ) {
         return (0, "Couldn't find attachment with original email of transaction #". $txn->id);

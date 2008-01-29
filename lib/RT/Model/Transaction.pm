@@ -569,7 +569,7 @@ sub content_obj {
     return undef unless my $Attachment = $self->attachments->first;
 
     # If it's a textual part, just return the body.
-    if ( RT::I18N::is_textual_content_type( $Attachment->ContentType ) ) {
+    if ( RT::I18N::is_textual_content_type( $Attachment->content_type ) ) {
         return ($Attachment);
     }
 
@@ -591,7 +591,7 @@ sub content_obj {
         my $all_parts = $self->attachments;
         while ( my $part = $all_parts->next ) {
             next
-                unless RT::I18N::is_textual_content_type( $part->ContentType )
+                unless RT::I18N::is_textual_content_type( $part->content_type )
                     && $part->content;
             return $part;
         }

@@ -1440,7 +1440,7 @@ sub order_by {
             );
 
             push @res, { %$row, alias => $CFvs,      column => 'SortOrder' };
-            push @res, { %$row, alias => $TicketCFs, column => 'Content' };
+            push @res, { %$row, alias => $TicketCFs, column => 'content' };
         } elsif ( $field eq "Custom" && $subkey eq "Ownership" ) {
 
             # PAW logic is "reversed"
@@ -1903,7 +1903,7 @@ sub limitcontent {
     my $self = shift;
     my %args = (@_);
     $self->limit(
-        column      => 'Content',
+        column      => 'content',
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
@@ -1951,7 +1951,7 @@ sub limit_content_type {
     my $self = shift;
     my %args = (@_);
     $self->limit(
-        column      => 'ContentType',
+        column      => 'content_type',
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',

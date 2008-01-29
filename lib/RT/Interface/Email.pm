@@ -78,7 +78,7 @@ BEGIN {
         &ParseCcAddressesFromHead
         &ParseSenderAddressFromHead
         &ParseErrorsToAddressFromHead
-        &ParseAddressFromHeader
+        &parse_address_from_header
         &Gateway);
 
 }
@@ -629,12 +629,12 @@ sub forward_transaction {
         value    => $main_content->id,
     );
     $attachments->limit(
-        column   => 'ContentType',
+        column   => 'content_type',
         operator => 'NOT starts_with',
         value    => 'multipart/',
     );
     $attachments->limit(
-        column   => 'Content',
+        column   => 'content',
         operator => '!=',
         value    => '',
     );
@@ -914,7 +914,7 @@ sub parse_sender_address_from_head {
     #Figure out who's sending this message.
     foreach my $header ( 'Reply-To', 'From', 'Sender' ) {
         my $addr_line = $head->get($header) || next;
-        my ( $addr, $name ) = ParseAddressFromHeader($addr_line);
+        my ( $addr, $name ) = parse_address_from_header($addr_line);
 
         # only return if the address is not empty
         return ( $addr, $name ) if $addr;
@@ -941,7 +941,7 @@ sub parse_errors_to_address_from_head {
         # If there's a header of that name
         my $headerobj = $head->get($header);
         if ($headerobj) {
-            my ( $addr, $name ) = ParseAddressFromHeader($headerobj);
+            my ( $addr, $name ) = parse_address_from_header($headerobj);
 
             # If it's got actual useful content...
             return ($addr) if ($addr);
@@ -949,7 +949,7 @@ sub parse_errors_to_address_from_head {
     }
 }
 
-=head2 ParseAddressFromHeader ADDRESS
+=head2 parse_address_from_header ADDRESS
 
 Takes an address from C<$head->get('Line')> and returns a tuple: user@host, friendly name
 
@@ -1280,7 +1280,7 @@ sub gateway {
         return ( 0, $result, undef );
     }
 
-    $args{'ticket'} ||= ParseTicketId($Subject);
+    $args{'ticket'} ||= parse_ticket_id($Subject);
 
     $SystemTicket = RT::Model::Ticket->new( current_user => RT->system_user );
     $SystemTicket->load( $args{'ticket'} ) if ( $args{'ticket'} );

@@ -681,8 +681,8 @@ return 0; # ignore $passed;
 
 @Attributes = (
     { name => 'Search - My Tickets',
-      Description => '%1 highest priority tickets I own', # loc
-      Content     =>
+      description => '%1 highest priority tickets I own', # loc
+      content     =>
       { Format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                  . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
                  . q{Priority, Queuename, ExtendedStatus},
@@ -692,8 +692,8 @@ return 0; # ignore $passed;
       },
     },
     { name => 'Search - Unowned Tickets',
-      Description => '%1 newest unowned tickets', # loc
-      Content     =>
+      description => '%1 newest unowned tickets', # loc
+      content     =>
 # 'Take' #loc
       { Format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                  . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
@@ -705,8 +705,8 @@ return 0; # ignore $passed;
       },
     },
     { name => 'HomepageSettings',
-      Description => 'HomepageSettings',
-      Content =>
+      description => 'HomepageSettings',
+      content =>
       { 'body' => # loc
 	[ { type => 'system', name => 'My Tickets' },
 	  { type => 'system', name => 'Unowned Tickets' },

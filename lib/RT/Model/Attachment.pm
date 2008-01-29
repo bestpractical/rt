@@ -39,7 +39,7 @@ use Jifty::DBI::Record schema {
         type is 'varchar(200)', default is '';
     column Parent => max_length is 11, type is 'int(11)', default is '0';
     column
-        ContentType => max_length is 200,
+        content_type => max_length is 200,
         type is 'varchar(200)', default is '';
     column
         Filename => max_length is 255,
@@ -110,7 +110,7 @@ sub create {
         my ($id) = $self->SUPER::create(
             TransactionId => $args{'TransactionId'},
             Parent        => $args{'Parent'},
-            ContentType   => $Attachment->mime_type,
+            content_type   => $Attachment->mime_type,
             Headers       => $Attachment->head->as_string,
             MessageId     => $MessageId,
             Subject       => $Subject,
@@ -145,7 +145,7 @@ sub create {
 
         my $id = $self->SUPER::create(
             TransactionId   => $args{'TransactionId'},
-            ContentType     => $Attachment->mime_type,
+            content_type     => $Attachment->mime_type,
             ContentEncoding => $ContentEncoding,
             Parent          => $args{'Parent'},
             Headers         => $Attachment->head->as_string,
@@ -262,7 +262,7 @@ sub original_content {
     my $self = shift;
 
     return $self->content
-        unless RT::I18N::is_textual_content_type( $self->ContentType );
+        unless RT::I18N::is_textual_content_type( $self->content_type );
     my $enc = $self->original_encoding;
 
     my $content;
@@ -346,7 +346,7 @@ sub quote {
 
     # TODO: Handle Multipart/Mixed (eventually fix the link in the
     # ShowHistory web template?)
-    if ( RT::I18N::is_textual_content_type( $self->ContentType ) ) {
+    if ( RT::I18N::is_textual_content_type( $self->content_type ) ) {
         $body = $self->content;
 
         # Do we need any preformatting (wrapping, that is) of the message?
@@ -631,7 +631,7 @@ sub encrypt {
         return ( 0, _('No key suitable for encryption') );
     }
 
-    $self->__set( column => 'ContentType', value => $type );
+    $self->__set( column => 'content_type', value => $type );
     $self->set_header( 'Content-Type' => $type );
 
     my $content = $self->content;
@@ -646,7 +646,7 @@ sub encrypt {
     }
 
     my ( $status, $msg )
-        = $self->__set( column => 'Content', value => $content );
+        = $self->__set( column => 'content', value => $content );
     unless ($status) {
         return ( $status,
             _( "Couldn't replace content with encrypted data: %1", $msg ) );
@@ -673,7 +673,7 @@ sub decrypt {
     } else {
         return ( 1, _('Is not encrypted') );
     }
-    $self->__set( column => 'ContentType', value => $type );
+    $self->__set( column => 'content_type', value => $type );
     $self->set_header( 'Content-Type' => $type );
 
     my $content = $self->content;
@@ -683,7 +683,7 @@ sub decrypt {
     }
 
     my ( $status, $msg )
-        = $self->__set( column => 'Content', value => $content );
+        = $self->__set( column => 'content', value => $content );
     unless ($status) {
         return ( $status,
             _( "Couldn't replace content with decrypted data: %1", $msg ) );
