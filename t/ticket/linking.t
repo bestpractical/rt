@@ -224,7 +224,7 @@ is(link_count($filename), 1, "scrips ok");
 my $transactions = $ticket2->transactions;
 $transactions->limit( column => 'type', value => 'AddLink' );
 is( $transactions->count, 1, "Transaction found in other ticket" );
-is( $transactions->first->Field , 'ReferredToBy');
+is( $transactions->first->field , 'ReferredToBy');
 is( $transactions->first->new_value , $ticket->uri );
 
 ($id,$msg) = $ticket->delete_link(Type => 'RefersTo', Target => $ticket2->id);
@@ -233,7 +233,7 @@ is(link_count($filename), 0, "scrips ok");
 $transactions = $ticket2->transactions;
 $transactions->limit( column => 'type', value => 'DeleteLink' );
 is( $transactions->count, 1, "Transaction found in other ticket" );
-is( $transactions->first->Field , 'ReferredToBy');
+is( $transactions->first->field , 'ReferredToBy');
 is( $transactions->first->old_value , $ticket->uri );
 
 RT->config->set( LinkTransactionsRun1Scrip => 0 );

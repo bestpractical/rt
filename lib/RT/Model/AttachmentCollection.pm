@@ -107,7 +107,7 @@ sub transaction_alias {
     my $res = $self->new_alias('Transactions');
     $self->limit(
         entry_aggregator => 'AND',
-        column           => 'TransactionId',
+        column           => 'transaction_id',
         value            => $res . '.id',
         quote_value      => 0,
     );

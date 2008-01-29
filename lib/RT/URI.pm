@@ -138,7 +138,7 @@ sub from_uri {
 
     unless ( $self->resolver->parse_uri($uri) ) {
         Jifty->log->warn(
-            "Resolver " . ref( $self->Resolver ) . " could not parse $uri" );
+            "Resolver " . ref( $self->resolver ) . " could not parse $uri" );
         $self->{resolver} = RT::URI::base->new;    # clear resolver
         return (undef);
     }

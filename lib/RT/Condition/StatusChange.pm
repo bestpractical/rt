@@ -62,7 +62,7 @@ the Status Obj
 
 sub is_applicable {
     my $self = shift;
-    if (    ( $self->transaction_obj->Field eq 'Status' )
+    if (    ( $self->transaction_obj->field eq 'Status' )
         and ( $self->argument eq $self->transaction_obj->new_value() ) )
     {
         return (1);

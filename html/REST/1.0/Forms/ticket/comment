@@ -141,7 +141,7 @@ my $bcc = join ", ", @{ vsplit($changes{Bcc}) };
 my ($n, $s) = $ticket->$action(MIMEObj => $ent,
                                CcMessageTo => $cc,
                                BccMessageTo => $bcc,
-                               TimeTaken => $changes{time_worked} || 0);
+                               time_taken => $changes{time_worked} || 0);
 $c = "# ".$s;
 if ($changes{Status}) {
    my  ($status_n, $status_s) = $ticket->set_status($changes{'Status'} );   

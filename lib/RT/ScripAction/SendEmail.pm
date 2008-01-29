@@ -346,7 +346,7 @@ sub add_attachments {
     my $attachments = RT::Model::AttachmentCollection->new(
         current_user => RT->system_user );
     $attachments->limit(
-        column => 'TransactionId',
+        column => 'transaction_id',
         value  => $self->transaction_obj->id
     );
 

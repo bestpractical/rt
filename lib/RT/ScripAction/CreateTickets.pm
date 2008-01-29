@@ -499,7 +499,7 @@ sub update_by_template {
                 = $T::Tickets{$template_id}->comment(
                 BccMessageTo => $ticketargs->{'Bcc'},
                 MIMEObj      => $ticketargs->{'MIMEObj'},
-                TimeTaken    => $ticketargs->{'time_worked'}
+                time_taken    => $ticketargs->{'time_worked'}
                 );
             push( @results,
                 $T::Tickets{$template_id}
@@ -512,7 +512,7 @@ sub update_by_template {
                 = $T::Tickets{$template_id}->correspond(
                 BccMessageTo => $ticketargs->{'Bcc'},
                 MIMEObj      => $ticketargs->{'MIMEObj'},
-                TimeTaken    => $ticketargs->{'time_worked'}
+                time_taken    => $ticketargs->{'time_worked'}
                 );
             push( @results,
                 $T::Tickets{$template_id}
@@ -981,7 +981,7 @@ sub get_update_template {
     my $string;
     $string .= "Queue: " . $t->queue_obj->name . "\n";
     $string .= "Subject: " . $t->subject . "\n";
-    $string .= "Status: " . $t->Status . "\n";
+    $string .= "Status: " . $t->status . "\n";
     $string .= "UpdateType: correspond\n";
     $string .= "Content: \n";
     $string .= "ENDOFCONTENT\n";
@@ -1035,7 +1035,7 @@ sub get_base_template {
     my $string;
     $string .= "Queue: " . $t->Queue . "\n";
     $string .= "Subject: " . $t->subject . "\n";
-    $string .= "Status: " . $t->Status . "\n";
+    $string .= "Status: " . $t->status . "\n";
     $string .= "Due: " . $t->due_obj->unix . "\n";
     $string .= "starts: " . $t->starts_obj->unix . "\n";
     $string .= "Started: " . $t->started_obj->unix . "\n";

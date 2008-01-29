@@ -96,7 +96,7 @@ ok( $t->create(Queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy =>
 ok ( my $id = $t->id, "Got ticket id");
 like ($t->refers_to->first->Target , qr/fsck.com/, "Got refers to");
 like ($t->referred_to_by->first->Base , qr/cpan.org/, "Got referredtoby");
-is ($t->resolved_obj->unix, 0, "It hasn't been resolved - ". $t->resolved_obj->Unix);
+is ($t->resolved_obj->unix, 0, "It hasn't been resolved - ". $t->resolved_obj->unix);
 
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
@@ -227,7 +227,7 @@ my $tt = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($id, $tid, $msg)= $tt->create(Queue => 'general',
             subject => 'test');
 ok($id, $msg);
-is($tt->Status, 'new', "New ticket is Created as new");
+is($tt->status, 'new', "New ticket is Created as new");
 
 ($id, $msg) = $tt->set_status('open');
 ok($id, $msg);

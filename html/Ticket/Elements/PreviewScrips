@@ -132,7 +132,7 @@ my ( $Transaction, $Description, $Object ) = $ticket_obj->$action(
     CcMessageTo  => $ARGS{'UpdateCc'},
     BccMessageTo => $ARGS{'UpdateBcc'},
     MIMEObj      => $Message,
-    TimeTaken    => $ARGS{'UpdateTimeWorked'},
+    time_taken    => $ARGS{'UpdateTimeWorked'},
     DryRun       => 1
 );
 unless ( $Transaction ) {
@@ -168,7 +168,7 @@ my ( $id, $msg, $txn ) = $ticket_obj->$action(
     CcMessageTo  => $ARGS{'UpdateCc'},
     BccMessageTo => $ARGS{'UpdateBcc'},
     MIMEObj      => $Message,
-    TimeTaken    => $ARGS{'UpdateTimeWorked'},
+    time_taken    => $ARGS{'UpdateTimeWorked'},
     DryRun       => 1
 );
 unless ( $id && $txn ) {

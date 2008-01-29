@@ -574,7 +574,7 @@ sub process_update_message {
         Sign         => $args{ARGSRef}->{'Sign'},
         Encrypt      => $args{ARGSRef}->{'Encrypt'},
         MIMEObj      => $Message,
-        TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
+        time_taken    => $args{ARGSRef}->{'UpdateTimeWorked'}
     );
 
     unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {

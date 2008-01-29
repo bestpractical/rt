@@ -62,8 +62,8 @@
      unless ($AttachmentObj->id) {
         abort("Bad attachment id. Couldn't find attachment '$attach'\n");
     }
-     unless ($AttachmentObj->TransactionId() == $trans ) {
-        abort("Bad transaction number for attachment. $trans should be".$AttachmentObj->TransactionId() ."\n");
+     unless ($AttachmentObj->transaction_id() == $trans ) {
+        abort("Bad transaction number for attachment. $trans should be".$AttachmentObj->transaction_id() ."\n");
 
      }
 

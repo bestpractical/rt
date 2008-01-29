@@ -73,7 +73,7 @@ while ( my $requestor = $people->next ) {
 <&|/l, $rows &>This user's %1 highest priority tickets</&>:<br />
 <ul>
 %while (my $w=$tickets->next) {
-<li><a href="<%RT->config->get('WebPath')%><%$DisplayPath%>?id=<%$w->id%>"><%$w->id%>: <%$w->subject%></a> (<%$w->Status%>)
+<li><a href="<%RT->config->get('WebPath')%><%$DisplayPath%>?id=<%$w->id%>"><%$w->id%>: <%$w->subject%></a> (<%$w->status%>)
 %}
 </ul>
 

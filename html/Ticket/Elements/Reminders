@@ -61,10 +61,10 @@ my $reminder_collection = $Ticket->reminders->collection;
 
 if ( $request_args->{'update-reminders'} ) {
     while ( my $reminder = $reminder_collection->next ) {
-        if (   $reminder->Status ne 'resolved' && $request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
+        if (   $reminder->status ne 'resolved' && $request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
             $Ticket->reminders->resolve($reminder);
         }
-        elsif ( $reminder->Status eq 'resolved' && !$request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
+        elsif ( $reminder->status eq 'resolved' && !$request_args->{ 'Complete-Reminder-' . $reminder->id } ) {
             $Ticket->reminders->open($reminder);
         }
 
@@ -107,7 +107,7 @@ $reminder_collection = $Ticket->reminders->collection;
 <input type="hidden" class="hidden" name="update-reminders" value="1" />
 <div>
 % while (my $reminder = $reminder_collection->next) {
-%   if ($reminder->Status eq 'resolved' && !$ShowCompleted) {
+%   if ($reminder->status eq 'resolved' && !$ShowCompleted) {
 <input type="hidden" class="hidden" name="Complete-Reminder-<% $reminder->id %>" value="1" />
 %   } elsif ($Edit) {
 <& SELF:EditEntry, Reminder => $reminder, Ticket => $Ticket &>
@@ -145,12 +145,12 @@ $Ticket
 <input
     type="checkbox" 
     name="Complete-Reminder-<%$Reminder->id%>" 
-    <% $Reminder->Status eq 'resolved' ? 'CHECKED' : '' %> 
+    <% $Reminder->status eq 'resolved' ? 'CHECKED' : '' %> 
 /> 
     <input type="text" size="15" name="Reminder-subject-<% $Reminder->id %>" value="<%$Reminder->subject%>" /> &bull; 
     <& /Elements/SelectOwner, name => 'Reminder-Owner-'.$Reminder->id, Queue => $Ticket->queue_obj, Default => $Reminder->Owner, DefaultValue => 0  &>
     <& /Elements/SelectDate, name => 'Reminder-Due-'.$Reminder->id, Default => $Reminder->due_obj->date &>
-    (<%$Reminder->due_obj->Unix>0  ? $Reminder->due_obj->age_as_string : '' %>)<br />
+    (<%$Reminder->due_obj->unix>0  ? $Reminder->due_obj->age_as_string : '' %>)<br />
 </%method>
 <%method ShowEntry>
 <%args>
@@ -160,9 +160,9 @@ $Ticket
 <input
     type="checkbox" 
     name="Complete-Reminder-<%$Reminder->id%>" 
-    <% $Reminder->Status eq 'resolved' ? 'CHECKED' : '' %> 
+    <% $Reminder->status eq 'resolved' ? 'CHECKED' : '' %> 
 /> 
     <%$Reminder->subject%> &bull; 
     <%$Reminder->owner_obj->name%>
-    <%$Reminder->due_obj->Unix>0  ? "&bull; ". $Reminder->due_obj->age_as_string : '' |n%><br />
+    <%$Reminder->due_obj->unix>0  ? "&bull; ". $Reminder->due_obj->age_as_string : '' |n%><br />
 </%method>

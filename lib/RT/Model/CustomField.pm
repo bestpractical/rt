@@ -531,7 +531,7 @@ sub set_values_class {
     if ( $class eq 'RT::Model::CustomFieldValueCollection' ) {
         return $self->delete_attribute('ValuesClass');
     }
-    return $self->set_attribute( name => 'ValuesClass', Content => $class );
+    return $self->set_attribute( name => 'ValuesClass', content => $class );
 }
 
 =head2 FriendlyType [TYPE, MAX_valueS]
@@ -1206,7 +1206,7 @@ sub url_template {
         unless ( $self->current_user_has_right('AdminCustomField') ) {
             return ( 0, _('Permission Denied') );
         }
-        $self->set_attribute( name => $template_name, Content => $value );
+        $self->set_attribute( name => $template_name, content => $value );
         return ( 1, _('Updated') );
     } else {
         unless ( $self->id

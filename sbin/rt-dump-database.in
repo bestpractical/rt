@@ -97,7 +97,7 @@ foreach my $class (@classes) {
 	    unless $class eq 'Groups';
 	$objects->limit( column => 'id', operator => '!=', value => $system_userId )
 	    if $class eq 'Users';
-	$objects->limit( column => 'Domain', operator => '=', value => 'UserDefined' )
+	$objects->limit( column => 'domain', operator => '=', value => 'UserDefined' )
 	    if $class eq 'Groups';
     }
 

@@ -889,7 +889,7 @@ to any object, so it has the C<Id> suffix.
 =back
 
 There are some legacy fields that did not follow this rule, namely
-C<ACL.principal_id>, C<GroupMembers.GroupId> and C<Attachments.TransactionId>,
+C<ACL.principal_id>, C<GroupMembers.GroupId> and C<Attachments.transaction_id>,
 but new tables are expected to be consistent.
 
 =head1 TO DO

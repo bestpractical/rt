@@ -490,7 +490,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     $attachments->limit(column => 'content_type', value => 'image/gif');
     my $txn_alias = $attachments->join(
         alias1 => 'main',
-        column1 => 'TransactionId',
+        column1 => 'transaction_id',
         table2 => 'Transactions',
         column2 => 'id',
     );
@@ -505,7 +505,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     is ($acontent, $file, 'The attachment isn\'t screwed up in the database.');
 
     # Grab the binary attachment via the web ui
-    my $full_url = "$url/Ticket/Attachment/". $attachment->TransactionId
+    my $full_url = "$url/Ticket/Attachment/". $attachment->transaction_id
         ."/". $attachment->id. "/bplogo.gif";
         $ua->login();
     my $r = $ua->get( $full_url );
@@ -691,7 +691,7 @@ Jifty::DBI::Record::Cachable->flush_cache;
 $tick = RT::Model::Ticket->new(current_user => RT->system_user);
 $tick->load( $id );
 is( $tick->id, $id, 'load correct ticket');
-is( $tick->Status, 'resolved', 'successfuly resolved ticket via email');
+is( $tick->status, 'resolved', 'successfuly resolved ticket via email');
 is( $tick->transactions->count, 7, 'no superfluous transactions');
 
 use RT::Model::User;

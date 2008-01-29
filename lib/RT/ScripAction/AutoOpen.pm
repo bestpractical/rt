@@ -69,7 +69,7 @@ sub prepare {
 # if the ticket is already open or the ticket is new and the message is more mail from the
 # requestor, don't reopen it.
 
-    my $status = $self->ticket_obj->Status;
+    my $status = $self->ticket_obj->status;
     return undef if $status eq 'open';
     return undef if $status eq 'new' && $self->transaction_obj->is_inbound;
 
@@ -84,7 +84,7 @@ sub prepare {
 sub commit {
     my $self = shift;
 
-    my $oldstatus = $self->ticket_obj->Status;
+    my $oldstatus = $self->ticket_obj->status;
     $self->ticket_obj->__set( column => 'Status', value => 'open' );
     $self->ticket_obj->_new_transaction(
         type      => 'Status',

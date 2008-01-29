@@ -61,7 +61,7 @@ If the queue has changed.
 
 sub is_applicable {
     my $self = shift;
-    if ( $self->transaction_obj->Field eq 'Queue' ) {
+    if ( $self->transaction_obj->field eq 'Queue' ) {
         return (1);
     } else {
         return (undef);

@@ -606,7 +606,7 @@ sub create {
 # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
     ( $val, $msg ) = $self->owner_group->_add_member(
         principal_id      => $Owner->principal_id,
-        InsideTransaction => 1
+        inside_transaction => 1
     ) unless $DeferOwner;
 
     # {{{ Deal with setting up watchers
@@ -738,7 +738,7 @@ sub create {
         }
         $self->owner_group->_add_member(
             principal_id      => $Owner->principal_id,
-            InsideTransaction => 1
+            inside_transaction => 1
         );
     }
 
@@ -747,7 +747,7 @@ sub create {
         # {{{ Add a transaction for the create
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             type          => "Create",
-            TimeTaken     => $args{'time_worked'},
+            time_taken     => $args{'time_worked'},
             MIMEObj       => $args{'MIMEObj'},
             commit_scrips => !$args{'DryRun'},
         );
@@ -1237,7 +1237,7 @@ sub _add_watcher {
 
     my ( $m_id, $m_msg ) = $group->_add_member(
         principal_id      => $principal->id,
-        InsideTransaction => 1
+        inside_transaction => 1
     );
     unless ($m_id) {
         Jifty->log->error( "Failed to add "
@@ -2110,7 +2110,7 @@ Takes a hashref with the following attributes:
 If MIMEObj is undefined, Content will be used to build a MIME::Entity for this
 commentl
 
-MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content, DryRun
+MIMEObj, time_taken, CcMessageTo, BccMessageTo, Content, DryRun
 
 If DryRun is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
 They will, however, be prepared and you'll be able to access them through the transaction_obj
@@ -2128,7 +2128,7 @@ sub comment {
         BccMessageTo => undef,
         MIMEObj      => undef,
         Content      => undef,
-        TimeTaken    => 0,
+        time_taken    => 0,
         DryRun       => 0,
         @_
     );
@@ -2161,7 +2161,7 @@ Correspond on this ticket.
 Takes a hashref with the following attributes:
 
 
-MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content, DryRun
+MIMEObj, time_taken, CcMessageTo, BccMessageTo, Content, DryRun
 
 if there's no MIMEObj, Content is used to build a MIME::Entity object
 
@@ -2181,7 +2181,7 @@ sub correspond {
         BccMessageTo => undef,
         MIMEObj      => undef,
         Content      => undef,
-        TimeTaken    => 0,
+        time_taken    => 0,
         @_
     );
 
@@ -2233,7 +2233,7 @@ sub _record_note {
         MIMEObj       => undef,
         Content       => undef,
         NoteType      => 'Correspond',
-        TimeTaken     => 0,
+        time_taken     => 0,
         commit_scrips => 1,
         @_
     );
@@ -2290,7 +2290,7 @@ sub _record_note {
     my ( $Trans, $msg, $TransObj ) = $self->_new_transaction(
         type => $args{'NoteType'},
         Data => ( $args{'MIMEObj'}->head->get('subject') || 'No subject' ),
-        TimeTaken     => $args{'TimeTaken'},
+        time_taken     => $args{'time_taken'},
         MIMEObj       => $args{'MIMEObj'},
         commit_scrips => $args{'commit_scrips'},
     );
@@ -2432,7 +2432,7 @@ sub delete_link {
             type      => 'DeleteLink',
             Field     => $LINKDIRMAP{ $args{'type'} }->{$direction},
             old_value => $remote_uri->uri || $remote_link,
-            TimeTaken => 0
+            time_taken => 0
         );
         Jifty->log->error("Couldn't create transaction: $Msg") unless $Trans;
     }
@@ -2448,7 +2448,7 @@ sub delete_link {
             : $LINKDIRMAP{ $args{'type'} }->{Target},
             old_value      => $self->uri,
             ActivateScrips => !RT->config->get('LinkTransactionsRun1Scrip'),
-            TimeTaken      => 0,
+            time_taken      => 0,
         );
         Jifty->log->error("Couldn't create transaction: $Msg") unless $val;
     }
@@ -2574,7 +2574,7 @@ sub _add_link {
             type      => 'AddLink',
             Field     => $LINKDIRMAP{ $args{'type'} }->{$direction},
             new_value => $remote_uri->uri || $remote_link,
-            TimeTaken => 0
+            time_taken => 0
         );
         Jifty->log->error("Couldn't create transaction: $Msg") unless $Trans;
     }
@@ -2590,7 +2590,7 @@ sub _add_link {
             : $LINKDIRMAP{ $args{'type'} }->{Target},
             new_value      => $self->uri,
             ActivateScrips => !RT->config->get('LinkTransactionsRun1Scrip'),
-            TimeTaken      => 0,
+            time_taken      => 0,
         );
         Jifty->log->error("Couldn't create transaction: $msg") unless $val;
     }
@@ -2738,8 +2738,12 @@ sub merge_into {
 
     #add all of this ticket's watchers to that ticket.
     foreach my $watcher_type qw(Requestors Cc AdminCc) {
+        # XXX: artefact of API change
+        my $method = $watcher_type;
+        $method =~ s/(?<=[a-z])(?=[A-Z])/_/;
+        $method = lc $method;
 
-        my $people          = $self->$watcher_type->members_obj;
+        my $people          = $self->$method->members_obj;
         my $addwatcher_type = $watcher_type;
         $addwatcher_type =~ s/s$//;
 
@@ -2932,7 +2936,7 @@ sub set_owner {
     }
     my ( $add_id, $add_msg ) = $self->owner_group->_add_member(
         principal_id      => $NewOwnerObj->principal_id,
-        InsideTransaction => 1
+        inside_transaction => 1
     );
     unless ($add_id) {
         Jifty->handle->rollback();
@@ -2946,7 +2950,7 @@ sub set_owner {
         column             => 'Owner',
         value              => $NewOwnerObj->id,
         record_transaction => 0,
-        TimeTaken          => 0,
+        time_taken          => 0,
         TransactionType    => $Type,
         CheckACL           => 0,                  # don't check acl
     );
@@ -2961,7 +2965,7 @@ sub set_owner {
         Field     => 'Owner',
         new_value => $NewOwnerObj->id,
         old_value => $OldOwnerObj->id,
-        TimeTaken => 0,
+        time_taken => 0,
     );
 
     if ($val) {
@@ -3133,7 +3137,7 @@ sub set_status {
     my ( $val, $msg ) = $self->_set(
         column          => 'status',
         value           => $args{status},
-        TimeTaken       => 0,
+        time_taken       => 0,
         CheckACL        => 0,
         TransactionType => 'status'
     );
@@ -3256,7 +3260,7 @@ sub set_told {
         $self->_set(
             column          => 'Told',
             value           => $datetold->iso,
-            TimeTaken       => $timetaken,
+            time_taken       => $timetaken,
             TransactionType => 'Told'
         )
     );
@@ -3392,7 +3396,7 @@ sub _set {
     my %args = (
         column             => undef,
         value              => undef,
-        TimeTaken          => 0,
+        time_taken          => 0,
         record_transaction => 1,
         UpdateTicket       => 1,
         CheckACL           => 1,
@@ -3445,7 +3449,7 @@ sub _set {
             Field     => $args{'column'},
             new_value => $args{'value'},
             old_value => $Old,
-            TimeTaken => $args{'TimeTaken'},
+            time_taken => $args{'time_taken'},
         );
         return ( $Trans, scalar $TransObj->brief_description );
     } else {
@@ -3488,9 +3492,9 @@ sub _value {
 
 # }}}
 
-# {{{ sub _UpdateTimeTaken
+# {{{ sub _update_time_taken
 
-=head2 _UpdateTimeTaken
+=head2 _update_time_taken
 
 This routine will increment the time_worked counter. it should
 only be called from _new_transaction 

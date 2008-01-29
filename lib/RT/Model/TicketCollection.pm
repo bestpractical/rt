@@ -726,7 +726,7 @@ sub _trans_limit {
             alias1  => $self->{_sql_transalias},
             column1 => 'id',
             table2  => 'Attachments',
-            column2 => 'TransactionId',
+            column2 => 'transaction_id',
         );
     }
 

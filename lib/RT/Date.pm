@@ -426,7 +426,7 @@ sub add_seconds {
 
     $self->set( Format => 'unix', value => ( $self->unix + $delta ) );
 
-    return ( $self->Unix );
+    return ( $self->unix );
 }
 
 =head2 AddDays [DAYS]

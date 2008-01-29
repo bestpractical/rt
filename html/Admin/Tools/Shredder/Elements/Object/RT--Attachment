@@ -48,6 +48,6 @@
 <%ARGS>
 $Object => undef
 </%ARGS>
-<a href="<% RT->config->get('WebBaseURL') %>/Ticket/Attachment/<% $Object->TransactionId %>/<% $Object->id %>/">
+<a href="<% RT->config->get('WebBaseURL') %>/Ticket/Attachment/<% $Object->transaction_id %>/<% $Object->id %>/">
 Attachment(id:<% $Object->id %>, Filename: <% $Object->filename || '(no value)' %>)
 </a>

@@ -32,12 +32,12 @@ use base 'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column
-        TransactionId => max_length is 11,
+        transaction_id => max_length is 11,
         type is 'int(11)', default is '0';
     column
         MessageId => max_length is 200,
         type is 'varchar(200)', default is '';
-    column Parent => max_length is 11, type is 'int(11)', default is '0';
+    column parent => max_length is 11, type is 'int(11)', default is '0';
     column
         content_type => max_length is 200,
         type is 'varchar(200)', default is '';
@@ -61,8 +61,8 @@ use Jifty::DBI::Record schema {
 Create a new attachment. Takes a paramhash:
     
     'Attachment' Should be a single MIME body with optional subparts
-    'Parent' is an optional id of the parent attachment
-    'TransactionId' is the mandatory id of the transaction this attachment is associated with.;
+    'parent' is an optional id of the parent attachment
+    'transaction_id' is the mandatory id of the transaction this attachment is associated with.;
 
 =cut
 
@@ -70,8 +70,8 @@ sub create {
     my $self = shift;
     my %args = (
         id            => 0,
-        TransactionId => 0,
-        Parent        => 0,
+        transaction_id => 0,
+        parent        => 0,
         Attachment    => undef,
         @_
     );
@@ -80,7 +80,7 @@ sub create {
     my $Attachment = $args{'Attachment'};
 
     # if we didn't specify a ticket, we need to bail
-    unless ( $args{'TransactionId'} ) {
+    unless ( $args{'transaction_id'} ) {
         Jifty->log->fatal(
             "RT::Model::Attachment->create couldn't, as you didn't specify a transaction\n"
         );
@@ -108,8 +108,8 @@ sub create {
 # and we should act accordingly.
     unless ( defined $Attachment->bodyhandle ) {
         my ($id) = $self->SUPER::create(
-            TransactionId => $args{'TransactionId'},
-            Parent        => $args{'Parent'},
+            transaction_id => $args{'transaction_id'},
+            parent        => $args{'parent'},
             content_type   => $Attachment->mime_type,
             Headers       => $Attachment->head->as_string,
             MessageId     => $MessageId,
@@ -124,8 +124,8 @@ sub create {
         foreach my $part ( $Attachment->parts ) {
             my $SubAttachment = RT::Model::Attachment->new();
             my ($id) = $SubAttachment->create(
-                TransactionId => $args{'TransactionId'},
-                Parent        => $id,
+                transaction_id => $args{'transaction_id'},
+                parent        => $id,
                 Attachment    => $part,
             );
             unless ($id) {
@@ -144,10 +144,10 @@ sub create {
             $Attachment->mime_type );
 
         my $id = $self->SUPER::create(
-            TransactionId   => $args{'TransactionId'},
+            transaction_id   => $args{'transaction_id'},
             content_type     => $Attachment->mime_type,
             ContentEncoding => $ContentEncoding,
-            Parent          => $args{'Parent'},
+            parent          => $args{'parent'},
             Headers         => $Attachment->head->as_string,
             subject         => $subject,
             Content         => $Body,
@@ -191,14 +191,14 @@ sub transaction_obj {
 
     unless ( $self->{_transaction_obj} ) {
         $self->{_transaction_obj} = RT::Model::Transaction->new;
-        $self->{_transaction_obj}->load( $self->TransactionId );
+        $self->{_transaction_obj}->load( $self->transaction_id );
     }
 
     unless ( $self->{_transaction_obj}->id ) {
         Jifty->log->fatal( "Attachment "
                 . $self->id
                 . " can't find transaction "
-                . $self->TransactionId
+                . $self->transaction_id
                 . " which it is ostensibly part of. That's bad" );
     }
     return $self->{_transaction_obj};
@@ -213,10 +213,10 @@ has a parent, otherwise returns undef.
 
 sub parent_obj {
     my $self = shift;
-    return undef unless $self->Parent;
+    return undef unless $self->parent;
 
     my $parent = RT::Model::Attachment->new;
-    $parent->load_by_id( $self->Parent );
+    $parent->load_by_id( $self->parent );
     return $parent;
 }
 
@@ -224,7 +224,7 @@ sub parent_obj {
 
 Returns an L<RT::Model::AttachmentCollection> object which is preloaded with
 all attachments objects with this attachment\'s id as their
-C<Parent>.
+C<parent>.
 
 =cut
 

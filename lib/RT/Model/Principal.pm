@@ -240,7 +240,7 @@ sub revoke_right {
 
 # {{{ sub _cleanup_invalid_delegations
 
-=head2 sub _cleanup_invalid_delegations { InsideTransaction => undef }
+=head2 sub _cleanup_invalid_delegations { inside_transaction => undef }
 
 Revokes all ACE entries delegated by this principal which are
 inconsistent with this principal's current delegation rights.  Does
@@ -252,7 +252,7 @@ If this principal is a group, recursively calls this method on each
 cached user member of itself.
 
 If called from inside a transaction, specify a true value for the
-InsideTransaction parameter.
+inside_transaction parameter.
 
 Returns a true value if the deletion succeeded; returns a false value
 and logs an internal error if the deletion fails (should not happen).

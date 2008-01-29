@@ -66,7 +66,7 @@ sub is_applicable {
     my $txn = $self->transaction_obj;
     return 0
         unless $txn->type eq "Status"
-            || ( $txn->type eq "Set" && $txn->Field eq "Status" );
+            || ( $txn->type eq "Set" && $txn->field eq "Status" );
 
     my $queue = $self->ticket_obj->queue_obj;
     return 0 unless $queue->is_inactive_status( $txn->old_value );

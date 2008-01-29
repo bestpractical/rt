@@ -511,7 +511,7 @@ sub set_sign {
     my ( $status, $msg ) = $self->set_attribute(
         name        => 'Sign',
         description => 'Sign outgoing messages by default',
-        Content     => $value,
+        content     => $value,
     );
     return ( $status, $msg ) unless $status;
     return ( $status, _('Signing enabled') ) if $value;
@@ -537,7 +537,7 @@ sub set_encrypt {
     my ( $status, $msg ) = $self->set_attribute(
         name        => 'Encrypt',
         description => 'Encrypt outgoing messages by default',
-        Content     => $value,
+        content     => $value,
     );
     return ( $status, $msg ) unless $status;
     return ( $status, _('Encrypting enabled') ) if $value;
@@ -809,7 +809,7 @@ sub _add_watcher {
     my $group = RT::Model::Group->new;
     $group->load_queue_role_group(
         type  => $args{'type'},
-        Queue => $self->id
+        queue => $self->id
     );
     unless ( $group->id ) {
         return ( 0, _("Group not found") );
@@ -888,7 +888,7 @@ sub delete_watcher {
     my $group = RT::Model::Group->new;
     $group->load_queue_role_group(
         type  => $args{'type'},
-        Queue => $self->id
+        queue => $self->id
     );
     unless ( $group->id ) {
         return ( 0, _("Group not found") );
@@ -1026,7 +1026,7 @@ sub cc {
 
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-        $group->load_queue_role_group( type => 'Cc', Queue => $self->id );
+        $group->load_queue_role_group( type => 'Cc', queue => $self->id );
     }
     return ($group);
 
@@ -1051,7 +1051,7 @@ sub admin_cc {
     if ( $self->current_user_has_right('SeeQueue') ) {
         $group->load_queue_role_group(
             type  => 'AdminCc',
-            Queue => $self->id
+            queue => $self->id
         );
     }
     return ($group);
@@ -1091,7 +1091,7 @@ sub is_watcher {
     my $group = RT::Model::Group->new;
     $group->load_queue_role_group(
         type  => $args{'type'},
-        Queue => $self->id
+        queue => $self->id
     );
 
     # Ask if it has the member in question

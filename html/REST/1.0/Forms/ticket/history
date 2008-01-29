@@ -119,11 +119,11 @@ if ($tid) {
     push @data, [ id    => $t->id   ];
     push @data, [ Ticket    => $t->ticket   ]
 	if (!%$fields || exists $fields->{lc 'Ticket'});
-    push @data, [ TimeTaken    => $t->TimeTaken   ]
-	if (!%$fields || exists $fields->{lc 'TimeTaken'});
+    push @data, [ time_taken    => $t->time_taken   ]
+	if (!%$fields || exists $fields->{lc 'time_taken'});
     push @data, [ type    => $t->type   ]
 	if (!%$fields || exists $fields->{lc 'type'});
-    push @data, [ Field    => $t->Field   ]
+    push @data, [ Field    => $t->field   ]
 	if (!%$fields || exists $fields->{lc 'Field'});
     push @data, [ old_value    => $t->old_value   ]
 	if (!%$fields || exists $fields->{lc 'old_value'});

@@ -101,7 +101,7 @@ sub __Relates {
     my $list = [];
 
     # Parent, nested parts
-    if ( $self->Parent ) {
+    if ( $self->parent ) {
         if ( $self->parent_obj && $self->ParentId ) {
             push( @$list, $self->parent_obj );
         } else {
@@ -109,7 +109,7 @@ sub __Relates {
             $self = $rec->{'Object'};
             $rec->{'State'} |= INVALID;
             $rec->{'Description'}
-                = "Have no parent attachment #" . $self->Parent . " object";
+                = "Have no parent attachment #" . $self->parent . " object";
         }
     }
 
@@ -123,7 +123,7 @@ sub __Relates {
         $rec->{'State'} |= INVALID;
         $rec->{'Description'}
             = "Have no related transaction #"
-            . $self->TransactionId
+            . $self->transaction_id
             . " object";
     }
 

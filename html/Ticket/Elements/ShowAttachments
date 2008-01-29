@@ -70,7 +70,7 @@ if ($size) {
 </%PERL>
 
 <li><font size="-2">
-<a href="<%RT->config->get('WebPath')%>/Ticket/Attachment/<%$rev->TransactionId%>/<%$rev->id%>/<%$rev->filename | u%>">
+<a href="<%RT->config->get('WebPath')%>/Ticket/Attachment/<%$rev->transaction_id%>/<%$rev->id%>/<%$rev->filename | u%>">
 <&|/l, $rev->created_as_string, $size, $rev->creator_obj->name &>%1 (%2) by %3</&>
 </a>
 </font></li>

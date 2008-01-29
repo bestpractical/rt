@@ -26,9 +26,9 @@ use Jifty::DBI::Record schema {
         object_type => max_length is 64,
         type is 'varchar(64)', default is '';
     column object_id => max_length is 11, type is 'int(11)', default is '0';
-    column TimeTaken => max_length is 11, type is 'int(11)', default is '0';
+    column time_taken => max_length is 11, type is 'int(11)', default is '0';
     column type  => max_length is 20, type is 'varchar(20)', default is '';
-    column Field => max_length is 40, type is 'varchar(40)', default is '';
+    column field => max_length is 40, type is 'varchar(40)', default is '';
     column
         old_value => max_length is 255,
         type is 'varchar(255)', default is '';
@@ -36,10 +36,10 @@ use Jifty::DBI::Record schema {
         new_value => max_length is 255,
         type is 'varchar(255)', default is '';
     column
-        ReferenceType => max_length is 255,
+        reference_type => max_length is 255,
         type is 'varchar(255)', default is '';
-    column OldReference => max_length is 11, type is 'int(11)', default is '';
-    column NewReference => max_length is 11, type is 'int(11)', default is '';
+    column old_reference => max_length is 11, type is 'int(11)', default is '';
+    column new_reference => max_length is 11, type is 'int(11)', default is '';
     column Data => max_length is 255, type is 'varchar(255)', default is '';
     column Creator => max_length is 11, type is 'int(11)', default is '0';
     column Created => type is 'datetime', default is '';
@@ -80,19 +80,19 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
-=head2 TimeTaken
+=head2 time_taken
 
-Returns the current value of TimeTaken. 
-(In the database, TimeTaken is stored as int(11).)
+Returns the current value of time_taken. 
+(In the database, time_taken is stored as int(11).)
 
 
 
 =head2 SetTimeTaken value
 
 
-Set TimeTaken to value. 
+Set time_taken to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, TimeTaken will be stored as a int(11).)
+(In the database, time_taken will be stored as a int(11).)
 
 
 =cut
@@ -114,19 +114,19 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
-=head2 Field
+=head2 field
 
-Returns the current value of Field. 
-(In the database, Field is stored as varchar(40).)
+Returns the current value of field. 
+(In the database, field is stored as varchar(40).)
 
 
 
 =head2 SetField value
 
 
-Set Field to value. 
+Set field to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Field will be stored as a varchar(40).)
+(In the database, field will be stored as a varchar(40).)
 
 
 =cut
@@ -165,53 +165,53 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
-=head2 ReferenceType
+=head2 reference_type
 
-Returns the current value of ReferenceType. 
-(In the database, ReferenceType is stored as varchar(255).)
+Returns the current value of reference_type. 
+(In the database, reference_type is stored as varchar(255).)
 
 
 
 =head2 SetReferenceType value
 
 
-Set ReferenceType to value. 
+Set reference_type to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ReferenceType will be stored as a varchar(255).)
+(In the database, reference_type will be stored as a varchar(255).)
 
 
 =cut
 
-=head2 OldReference
+=head2 old_reference
 
-Returns the current value of OldReference. 
-(In the database, OldReference is stored as int(11).)
+Returns the current value of old_reference. 
+(In the database, old_reference is stored as int(11).)
 
 
 
 =head2 SetOldReference value
 
 
-Set OldReference to value. 
+Set old_reference to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, OldReference will be stored as a int(11).)
+(In the database, old_reference will be stored as a int(11).)
 
 
 =cut
 
-=head2 NewReference
+=head2 new_reference
 
-Returns the current value of NewReference. 
-(In the database, NewReference is stored as int(11).)
+Returns the current value of new_reference. 
+(In the database, new_reference is stored as int(11).)
 
 
 
 =head2 SetNewReference value
 
 
-Set NewReference to value. 
+Set new_reference to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, NewReference will be stored as a int(11).)
+(In the database, new_reference will be stored as a int(11).)
 
 
 =cut
@@ -278,10 +278,10 @@ sub create {
     my $self = shift;
     my %args = (
         id             => undef,
-        TimeTaken      => 0,
+        time_taken      => 0,
         type           => 'undefined',
         Data           => '',
-        Field          => undef,
+        field          => undef,
         old_value      => undef,
         new_value      => undef,
         MIMEObj        => undef,
@@ -289,9 +289,9 @@ sub create {
         commit_scrips  => 1,
         object_type    => 'RT::Model::Ticket',
         object_id      => 0,
-        ReferenceType  => undef,
-        OldReference   => undef,
-        NewReference   => undef,
+        reference_type  => undef,
+        old_reference   => undef,
+        new_reference   => undef,
         @_
     );
 
@@ -310,20 +310,20 @@ sub create {
     my %params = (
         type          => $args{'type'},
         Data          => $args{'Data'},
-        Field         => $args{'Field'},
+        field         => $args{'field'},
         old_value     => $args{'old_value'},
         new_value     => $args{'new_value'},
         Created       => $args{'Created'},
         object_type   => $args{'object_type'},
         object_id     => $args{'object_id'},
-        ReferenceType => $args{'ReferenceType'},
-        OldReference  => $args{'OldReference'},
-        NewReference  => $args{'NewReference'},
+        reference_type => $args{'reference_type'},
+        old_reference  => $args{'old_reference'},
+        new_reference  => $args{'new_reference'},
     );
 
 # Parameters passed in during an import that we probably don't want to touch, otherwise
     foreach my $attr
-        qw(id Creator Created LastUpdated TimeTaken LastUpdatedBy) {
+        qw(id Creator Created LastUpdated time_taken LastUpdatedBy) {
         $params{$attr} = $args{$attr} if ( $args{$attr} );
     }
 
@@ -437,7 +437,7 @@ sub message {
 
         $self->{'message'} = RT::Model::AttachmentCollection->new();
         $self->{'message'}->limit(
-            column => 'TransactionId',
+            column => 'transaction_id',
             value  => $self->id
         );
         $self->{'message'}->children_of(0);
@@ -646,7 +646,7 @@ sub attachments {
     }
 
     $self->{'attachments'}
-        ->limit( column => 'TransactionId', value => $self->id );
+        ->limit( column => 'transaction_id', value => $self->id );
 
     # Get the self->{'attachments'} in the order they're put into
     # the database.  Arguably, we should be returning a tree
@@ -680,7 +680,7 @@ sub _attach {
 
     my $Attachment = RT::Model::Attachment->new;
     my ( $id, $msg ) = $Attachment->create(
-        TransactionId => $self->id,
+        transaction_id => $self->id,
         Attachment    => $MIMEObject
     );
     return ( $Attachment, $msg || _("Attachment Created") );
@@ -743,7 +743,7 @@ sub brief_description {
     if ( $type eq 'Create' ) {
         return ( _( "%1 Created", $obj_type ) );
     } elsif ( $type =~ /Status/ ) {
-        if ( $self->Field eq 'Status' ) {
+        if ( $self->field eq 'Status' ) {
             if ( $self->new_value eq 'deleted' ) {
                 return ( _( "%1 deleted", $obj_type ) );
             } else {
@@ -761,7 +761,7 @@ sub brief_description {
         my $no_value = _("(no value)");
         return (
             _(  "%1 changed from %2 to %3",
-                $self->Field,
+                $self->field,
                 (   $self->old_value
                     ? "'" . $self->old_value . "'"
                     : $no_value
@@ -778,7 +778,7 @@ sub brief_description {
     return _(
         "Default: %1/%2 changed from %3 to %4",
         $type,
-        $self->Field,
+        $self->field,
         (   $self->old_value
             ? "'" . $self->old_value . "'"
             : _("(no value)")
@@ -808,9 +808,9 @@ sub brief_description {
         my $self  = shift;
         my $field = _('CustomField');
 
-        if ( $self->Field ) {
+        if ( $self->field ) {
             my $cf = RT::Model::CustomField->new;
-            $cf->load( $self->Field );
+            $cf->load( $self->field );
             $field = $cf->name();
         }
 
@@ -858,13 +858,13 @@ sub brief_description {
         my $self      = shift;
         my $principal = RT::Model::Principal->new;
         $principal->load( $self->new_value );
-        return _( "%1 %2 added", $self->Field, $principal->object->name );
+        return _( "%1 %2 added", $self->field, $principal->object->name );
     },
     del_watcher => sub {
         my $self      = shift;
         my $principal = RT::Model::Principal->new;
         $principal->load( $self->old_value );
-        return _( "%1 %2 deleted", $self->Field, $principal->object->name );
+        return _( "%1 %2 deleted", $self->field, $principal->object->name );
     },
     subject => sub {
         my $self = shift;
@@ -881,20 +881,20 @@ sub brief_description {
             } else {
                 $value = $self->new_value;
             }
-            if ( $self->Field eq 'DependsOn' ) {
+            if ( $self->field eq 'DependsOn' ) {
                 return _( "Dependency on %1 added", $value );
-            } elsif ( $self->Field eq 'DependedOnBy' ) {
+            } elsif ( $self->field eq 'DependedOnBy' ) {
                 return _( "Dependency by %1 added", $value );
 
-            } elsif ( $self->Field eq 'RefersTo' ) {
+            } elsif ( $self->field eq 'RefersTo' ) {
                 return _( "Reference to %1 added", $value );
-            } elsif ( $self->Field eq 'ReferredToBy' ) {
+            } elsif ( $self->field eq 'ReferredToBy' ) {
                 return _( "Reference by %1 added", $value );
-            } elsif ( $self->Field eq 'MemberOf' ) {
+            } elsif ( $self->field eq 'MemberOf' ) {
                 return _( "Membership in %1 added", $value );
-            } elsif ( $self->Field eq 'has_member' ) {
+            } elsif ( $self->field eq 'has_member' ) {
                 return _( "Member %1 added", $value );
-            } elsif ( $self->Field eq 'MergedInto' ) {
+            } elsif ( $self->field eq 'MergedInto' ) {
                 return _( "Merged into %1", $value );
             }
         } else {
@@ -913,18 +913,18 @@ sub brief_description {
                 $value = $self->old_value;
             }
 
-            if ( $self->Field eq 'DependsOn' ) {
+            if ( $self->field eq 'DependsOn' ) {
                 return _( "Dependency on %1 deleted", $value );
-            } elsif ( $self->Field eq 'DependedOnBy' ) {
+            } elsif ( $self->field eq 'DependedOnBy' ) {
                 return _( "Dependency by %1 deleted", $value );
 
-            } elsif ( $self->Field eq 'RefersTo' ) {
+            } elsif ( $self->field eq 'RefersTo' ) {
                 return _( "Reference to %1 deleted", $value );
-            } elsif ( $self->Field eq 'ReferredToBy' ) {
+            } elsif ( $self->field eq 'ReferredToBy' ) {
                 return _( "Reference by %1 deleted", $value );
-            } elsif ( $self->Field eq 'MemberOf' ) {
+            } elsif ( $self->field eq 'MemberOf' ) {
                 return _( "Membership in %1 deleted", $value );
-            } elsif ( $self->Field eq 'has_member' ) {
+            } elsif ( $self->field eq 'has_member' ) {
                 return _( "Member %1 deleted", $value );
             }
         } else {
@@ -933,31 +933,31 @@ sub brief_description {
     },
     Set => sub {
         my $self = shift;
-        if ( $self->Field eq 'password' ) {
+        if ( $self->field eq 'password' ) {
             return _('password changed');
-        } elsif ( $self->Field eq 'Queue' ) {
+        } elsif ( $self->field eq 'Queue' ) {
             my $q1 = RT::Model::Queue->new();
             $q1->load( $self->old_value );
             my $q2 = RT::Model::Queue->new();
             $q2->load( $self->new_value );
             return _( "%1 changed from %2 to %3",
-                $self->Field, $q1->name, $q2->name );
+                $self->field, $q1->name, $q2->name );
         }
 
         # Write the date/time change at local time:
-        elsif ( $self->Field =~ /Due|starts|Started|Told/ ) {
+        elsif ( $self->field =~ /Due|starts|Started|Told/i ) {
             my $t1 = RT::Date->new();
             $t1->set( Format => 'ISO', value => $self->new_value );
             my $t2 = RT::Date->new();
             $t2->set( Format => 'ISO', value => $self->old_value );
             return _(
-                "%1 changed from %2 to %3", $self->Field,
+                "%1 changed from %2 to %3", $self->field,
                 $t2->as_string,             $t1->as_string
             );
         } else {
             return _(
                 "%1 changed from %2 to %3",
-                $self->Field,
+                $self->field,
                 (   $self->old_value
                     ? "'" . $self->old_value . "'"
                     : _("(no value)")
@@ -1102,7 +1102,7 @@ sub current_user_can_see {
     }
 
   # Make sure the user can see the custom field before showing that it changed
-    elsif ( $type eq 'CustomField' and my $cf_id = $self->__value('Field') ) {
+    elsif ( $type eq 'CustomField' and my $cf_id = $self->__value('field') ) {
         my $cf = RT::Model::CustomField->new;
         $cf->load($cf_id);
         return 0 unless $cf->current_user_has_right('SeeCustomField');
@@ -1132,8 +1132,8 @@ sub ticket_obj {
 
 sub old_value {
     my $self = shift;
-    if (    my $type = $self->__value('ReferenceType')
-        and my $id = $self->__value('OldReference') )
+    if (    my $type = $self->__value('reference_type')
+        and my $id = $self->__value('old_reference') )
     {
         my $Object = $type->new;
         $Object->load($id);
@@ -1145,8 +1145,8 @@ sub old_value {
 
 sub new_value {
     my $self = shift;
-    if (    my $type = $self->__value('ReferenceType')
-        and my $id = $self->__value('NewReference') )
+    if (    my $type = $self->__value('reference_type')
+        and my $id = $self->__value('new_reference') )
     {
         my $Object = $type->new;
         $Object->load($id);

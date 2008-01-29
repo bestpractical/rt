@@ -193,8 +193,8 @@ sub set_attribute {
     my $self = shift;
     my %args = (
         name        => undef,
-        Description => undef,
-        Content     => undef,
+        description => undef,
+        content     => undef,
         @_
     );
 
@@ -916,11 +916,11 @@ sub has_unresolved_dependencies {
 
     my $deps = $self->unresolved_dependencies;
 
-    if ( $args{Type} ) {
+    if ( $args{'type'} ) {
         $deps->limit(
             column   => 'type',
             operator => '=',
-            value    => $args{Type}
+            value    => $args{'type'}
         );
     } else {
         $deps->ignore_type;
@@ -985,10 +985,10 @@ sub all_depended_on_by {
         next unless ( $link->base_uri->is_local() );
         next if $args{_found}{ $link->base_obj->id };
 
-        if ( !$args{Type} ) {
+        if ( !$args{'type'} ) {
             $args{_found}{ $link->base_obj->id } = $link->base_obj;
             $link->base_obj->all_depended_on_by( %args, _top => 0 );
-        } elsif ( $link->base_obj->type eq $args{Type} ) {
+        } elsif ( $link->base_obj->type eq $args{'type'} ) {
             $args{_found}{ $link->base_obj->id } = $link->base_obj;
         } else {
             $link->base_obj->all_depended_on_by( %args, _top => 0 );
@@ -1125,7 +1125,7 @@ sub _add_link {
     my ( $linkid, $linkmsg ) = $link->create(
         Target => $args{Target},
         Base   => $args{Base},
-        type   => $args{Type}
+        type   => $args{'type'}
     );
 
     unless ($linkid) {
@@ -1134,7 +1134,7 @@ sub _add_link {
     }
 
     my $TransString
-        = "Record $args{'Base'} $args{Type} record $args{'Target'}.";
+        = "Record $args{'Base'} $args{'type'} record $args{'Target'}.";
 
     return ( $linkid, _( "Link Created (%1)", $TransString ) );
 }
@@ -1202,7 +1202,7 @@ sub _delete_link {
         $link->delete();
 
         my $TransString
-            = "Record $args{'Base'} no longer $args{Type} record $args{'Target'}.";
+            = "Record $args{'Base'} no longer $args{'type'} record $args{'Target'}.";
         return ( 1, _( "Link deleted (%1)", $TransString ) );
     }
 
@@ -1230,13 +1230,13 @@ Private function to create a RT::Model::Transaction->new object for this ticket 
 sub _new_transaction {
     my $self = shift;
     my %args = (
-        TimeTaken      => undef,
+        time_taken      => undef,
         type           => undef,
         old_value      => undef,
         new_value      => undef,
-        OldReference   => undef,
-        NewReference   => undef,
-        ReferenceType  => undef,
+        old_reference   => undef,
+        new_reference   => undef,
+        reference_type  => undef,
         Data           => undef,
         Field          => undef,
         MIMEObj        => undef,
@@ -1245,9 +1245,9 @@ sub _new_transaction {
         @_
     );
 
-    my $old_ref  = $args{'OldReference'};
-    my $new_ref  = $args{'NewReference'};
-    my $ref_type = $args{'ReferenceType'};
+    my $old_ref  = $args{'old_reference'};
+    my $new_ref  = $args{'new_reference'};
+    my $ref_type = $args{'reference_type'};
     if ( $old_ref or $new_ref ) {
         $ref_type ||= ref($old_ref) || ref($new_ref);
         if ( !$ref_type ) {
@@ -1262,15 +1262,15 @@ sub _new_transaction {
     my ( $transaction, $msg ) = $trans->create(
         object_id      => $self->id,
         object_type    => ref($self),
-        TimeTaken      => $args{'TimeTaken'},
+        time_taken      => $args{'time_taken'},
         type           => $args{'type'},
         Data           => $args{'Data'},
         Field          => $args{'Field'},
         new_value      => $args{'new_value'},
         old_value      => $args{'old_value'},
-        NewReference   => $new_ref,
-        OldReference   => $old_ref,
-        ReferenceType  => $ref_type,
+        new_reference   => $new_ref,
+        old_reference   => $old_ref,
+        reference_type  => $ref_type,
         MIMEObj        => $args{'MIMEObj'},
         ActivateScrips => $args{'ActivateScrips'},
         commit_scrips  => $args{'commit_scrips'},
@@ -1283,8 +1283,8 @@ sub _new_transaction {
 
     $self->set_last_updated;
 
-    if ( defined $args{'TimeTaken'} and $self->can('_UpdateTimeTaken') ) {
-        $self->_update_time_taken( $args{'TimeTaken'} );
+    if ( defined $args{'time_taken'} and $self->can('_update_time_taken') ) {
+        $self->_update_time_taken( $args{'time_taken'} );
     }
     if ( RT->config->get('Usetransaction_batch') and $transaction ) {
         push @{ $self->{_transaction_batch} }, $trans
@@ -1470,11 +1470,11 @@ sub _add_custom_field_value {
                     unless ($val) {
                         return ( 0, $msg );
                     }
-                    my ( $TransactionId, $Msg, $transaction_obj )
+                    my ( $transaction_id, $Msg, $transaction_obj )
                         = $self->_new_transaction(
                         type         => 'CustomField',
                         Field        => $cf->id,
-                        OldReference => $value,
+                        old_reference => $value,
                         );
                 }
             }
@@ -1532,12 +1532,12 @@ sub _add_custom_field_value {
         }
 
         if ( $args{'record_transaction'} ) {
-            my ( $TransactionId, $Msg, $transaction_obj )
+            my ( $transaction_id, $Msg, $transaction_obj )
                 = $self->_new_transaction(
                 type         => 'CustomField',
                 Field        => $cf->id,
-                OldReference => $old_value,
-                NewReference => $new_value,
+                old_reference => $old_value,
+                new_reference => $new_value,
                 );
         }
 
@@ -1576,8 +1576,8 @@ sub _add_custom_field_value {
             my ( $tid, $msg ) = $self->_new_transaction(
                 type          => 'CustomField',
                 Field         => $cf->id,
-                NewReference  => $new_value_id,
-                ReferenceType => 'RT::Model::ObjectCustomFieldValue',
+                new_reference  => $new_value_id,
+                reference_type => 'RT::Model::ObjectCustomFieldValue',
             );
             unless ($tid) {
                 return ( 0, _( "Couldn't create a transaction: %1", $msg ) );
@@ -1626,18 +1626,18 @@ sub delete_custom_field_value {
         return ( 0, $msg );
     }
 
-    my ( $TransactionId, $Msg, $transaction_obj ) = $self->_new_transaction(
+    my ( $transaction_id, $Msg, $transaction_obj ) = $self->_new_transaction(
         type          => 'CustomField',
         Field         => $cf->id,
-        OldReference  => $val,
-        ReferenceType => 'RT::Model::ObjectCustomFieldValue',
+        old_reference  => $val,
+        reference_type => 'RT::Model::ObjectCustomFieldValue',
     );
-    unless ($TransactionId) {
+    unless ($transaction_id) {
         return ( 0, _( "Couldn't create a transaction: %1", $Msg ) );
     }
 
     return (
-        $TransactionId,
+        $transaction_id,
         _(  "%1 is no longer a value for custom field %2",
             $transaction_obj->old_value,
             $cf->name

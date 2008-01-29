@@ -49,12 +49,12 @@
 
 my $attachments = RT::Model::AttachmentCollection->new();
 
-$attachments->columns( qw(id Content content_type TransactionId ContentEncoding));
+$attachments->columns( qw(id Content content_type transaction_id ContentEncoding));
 
 if ( $Ticket->current_user_has_right('ShowTicket') ) {
     my $transactions = $attachments->new_alias('Transactions');
     $attachments->join( alias1 => 'main',
-                                           column1 => 'TransactionId',
+                                           column1 => 'transaction_id',
                                            alias2 => $transactions,
                                            column2 => 'id' );
     

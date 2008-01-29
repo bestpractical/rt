@@ -14,7 +14,7 @@ ok(ref($uri), "URI object exists");
 
 my $uristr = "t:1";
 $uri->parse_uri($uristr);
-is(ref($uri->Object), "RT::Model::Ticket", "Object loaded is a ticket");
+is(ref($uri->object), "RT::Model::Ticket", "Object loaded is a ticket");
 is($uri->object->id, 1, "Object loaded has correct ID");
 is($uri->uri, 'fsck.com-rt://'.RT->config->get('organization').'/ticket/1',
    "URI object has correct URI string");

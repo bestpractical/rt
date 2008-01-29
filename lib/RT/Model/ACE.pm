@@ -463,10 +463,10 @@ sub delegate {
 
 # {{{ sub delete
 
-=head2 Delete { InsideTransaction => undef}
+=head2 Delete { inside_transaction => undef}
 
 Delete this object. This method should ONLY ever be called from RT::Model::User or RT::Model::Group (or from itself)
-If this is being called from within a transaction, specify a true value for the parameter InsideTransaction.
+If this is being called from within a transaction, specify a true value for the parameter inside_transaction.
 Really, Jifty::DBI should use and/or fake subtransactions
 
 This routine will also recurse and delete any delegations of this right
@@ -501,13 +501,13 @@ sub delete {
 sub _delete {
     my $self = shift;
     my %args = (
-        InsideTransaction => undef,
+        inside_transaction => undef,
         @_
     );
 
-    my $InsideTransaction = $args{'InsideTransaction'};
+    my $inside_transaction = $args{'inside_transaction'};
 
-    Jifty->handle->begin_transaction() unless $InsideTransaction;
+    Jifty->handle->begin_transaction() unless $inside_transaction;
 
     my $delegated_from_this
         = RT::Model::ACECollection->new( current_user => RT->system_user );
@@ -521,12 +521,12 @@ sub _delete {
     my $submsg;
     while ( my $delegated_ace = $delegated_from_this->next ) {
         ( $delete_succeeded, $submsg )
-            = $delegated_ace->_delete( InsideTransaction => 1 );
+            = $delegated_ace->_delete( inside_transaction => 1 );
         last unless ($delete_succeeded);
     }
 
     unless ($delete_succeeded) {
-        Jifty->handle->rollback() unless $InsideTransaction;
+        Jifty->handle->rollback() unless $inside_transaction;
         return ( 0, _('Right could not be revoked') );
     }
 
@@ -540,7 +540,7 @@ sub _delete {
         )
     {
         $val = $self->principal_object->_cleanup_invalid_delegations(
-            InsideTransaction => 1 );
+            inside_transaction => 1 );
     }
 
     if ($val) {
@@ -548,11 +548,11 @@ sub _delete {
 #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
 # TODO what about the groups key cache?
         RT::Model::Principal->invalidate_acl_cache();
-        Jifty->handle->commit() unless $InsideTransaction;
+        Jifty->handle->commit() unless $inside_transaction;
         return ( $val, _('Right revoked') );
     }
 
-    Jifty->handle->rollback() unless $InsideTransaction;
+    Jifty->handle->rollback() unless $inside_transaction;
     return ( 0, _('Right could not be revoked') );
 }
 

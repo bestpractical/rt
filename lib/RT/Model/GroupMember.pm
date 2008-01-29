@@ -57,7 +57,7 @@ sub create {
     my %args = (
         Group             => undef,
         Member            => undef,
-        InsideTransaction => undef,
+        inside_transaction => undef,
         @_
     );
 
@@ -89,7 +89,7 @@ sub create {
 # TODO what about the groups key cache?
     RT::Model::Principal->invalidate_acl_cache();
 
-    Jifty->handle->begin_transaction() unless ( $args{'InsideTransaction'} );
+    Jifty->handle->begin_transaction() unless ( $args{'inside_transaction'} );
 
     # We really need to make sure we don't add any members to this group
     # that contain the group itself. that would, um, suck.
@@ -113,7 +113,7 @@ sub create {
     );
 
     unless ($id) {
-        Jifty->handle->rollback() unless ( $args{'InsideTransaction'} );
+        Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
         return (undef);
     }
 
@@ -150,17 +150,17 @@ sub create {
             Jifty->log->err( "Couldn't add "
                     . $args{'Member'}
                     . " as a submember of a supergroup" );
-            Jifty->handle->rollback() unless ( $args{'InsideTransaction'} );
+            Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
             return (undef);
         }
     }
 
     unless ($cached_id) {
-        Jifty->handle->rollback() unless ( $args{'InsideTransaction'} );
+        Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
         return (undef);
     }
 
-    Jifty->handle->commit() unless ( $args{'InsideTransaction'} );
+    Jifty->handle->commit() unless ( $args{'inside_transaction'} );
 
     return ($id);
 }
@@ -288,7 +288,7 @@ sub delete {
     # remain.
     ( $err, $msg )
         = $self->member_obj->_cleanup_invalid_delegations(
-        InsideTransaction => 1 );
+        inside_transaction => 1 );
     unless ($err) {
         Jifty->log->warn(
             "Unable to revoke delegated rights for principal " . $self->id );

@@ -20,7 +20,7 @@ use RT::Model::TicketCollection;
     my ($id) = $ticket->create( subject => 'test', Queue => 1 );
     ok( $id, "Created new ticket" );
     $ticket->delete;
-    is( $ticket->Status, 'deleted', "successfuly changed status" );
+    is( $ticket->status, 'deleted', "successfuly changed status" );
 
     my $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user );
     $tickets->{'allow_deleted_search'} = 1;

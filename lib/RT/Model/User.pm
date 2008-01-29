@@ -233,7 +233,7 @@ sub create {
     }
 
     my ( $everyone_id, $everyone_msg ) = $everyone->_add_member(
-        InsideTransaction => 1,
+        inside_transaction => 1,
         principal_id      => $self->principal_id
     );
     unless ($everyone_id) {
@@ -260,7 +260,7 @@ sub create {
     }
 
     my ( $ac_id, $ac_msg ) = $access_class->_add_member(
-        InsideTransaction => 1,
+        inside_transaction => 1,
         principal_id      => $self->principal_id
     );
 
@@ -344,7 +344,7 @@ sub set_privileged {
                     . "unprivileged. something is drastically wrong." );
         }
         my ( $status, $msg ) = $priv->_add_member(
-            InsideTransaction => 1,
+            inside_transaction => 1,
             principal_id      => $self->principal_id
         );
         if ($status) {
@@ -371,7 +371,7 @@ sub set_privileged {
                     . "unprivileged. something is drastically wrong." );
         }
         my ( $status, $msg ) = $unpriv->_add_member(
-            InsideTransaction => 1,
+            inside_transaction => 1,
             principal_id      => $self->principal_id
         );
         if ($status) {
@@ -1172,14 +1172,14 @@ sub watched_queues {
 
 # {{{ sub _cleanup_invalid_delegations
 
-=head2 _cleanup_invalid_delegations { InsideTransaction => undef }
+=head2 _cleanup_invalid_delegations { inside_transaction => undef }
 
 Revokes all ACE entries delegated by this user which are inconsistent
 with their current delegation rights.  Does not perform permission
 checks.  Should only ever be called from inside the RT library.
 
 If called from inside a transaction, specify a true value for the
-InsideTransaction parameter.
+inside_transaction parameter.
 
 Returns a true value if the deletion succeeded; returns a false value
 and logs an internal error if the deletion fails (should not happen).
@@ -1194,7 +1194,7 @@ and logs an internal error if the deletion fails (should not happen).
 sub _cleanup_invalid_delegations {
     my $self = shift;
     my %args = (
-        InsideTransaction => undef,
+        inside_transaction => undef,
         @_
     );
 
@@ -1203,7 +1203,7 @@ sub _cleanup_invalid_delegations {
         return (undef);
     }
 
-    my $in_trans = $args{InsideTransaction};
+    my $in_trans = $args{inside_transaction};
 
     return (1)
         if (
@@ -1240,7 +1240,7 @@ sub _cleanup_invalid_delegations {
 
     # Delete all disallowed delegations
     while ( my $ace = $acl_to_del->next() ) {
-        my $ret = $ace->_delete( InsideTransaction => 1 );
+        my $ret = $ace->_delete( inside_transaction => 1 );
         unless ($ret) {
             Jifty->handle->rollback() unless $in_trans;
             Jifty->log->warn(
@@ -1297,7 +1297,7 @@ sub _set {
             Field     => $args{'column'},
             new_value => $args{'value'},
             old_value => $Old,
-            TimeTaken => $args{'TimeTaken'},
+            time_taken => $args{'time_taken'},
         );
         return ( $Trans, scalar $TransObj->brief_description );
     } else {
@@ -1410,7 +1410,7 @@ sub preferred_key {
         $prefkey = $keys[0]->{'Fingerprint'};
     }
 
-    $self->set_attribute( name => 'preferred_key', Content => $prefkey );
+    $self->set_attribute( name => 'preferred_key', content => $prefkey );
     return $prefkey;
 }
 

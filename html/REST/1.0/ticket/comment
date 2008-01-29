@@ -163,7 +163,7 @@ my $bcc = join ", ", @{ vsplit($k->{Bcc}) };
 my ($n, $s) = $ticket->$action(MIMEObj => $ent,
                                CcMessageTo => $cc,
                                BccMessageTo => $bcc,
-                               TimeTaken => $k->{time_worked} || 0);
+                               time_taken => $k->{time_worked} || 0);
 $output = $s;
 if ($k->{Status}) {
    my  ($status_n, $status_s) = $ticket->set_status($k->{'Status'} );   
