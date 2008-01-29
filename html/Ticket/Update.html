@@ -98,7 +98,7 @@
 <& /Ticket/Elements/UpdateCc, %ARGS, ticket_obj => $ticket_obj &>
 
 
-% if (my $TxnCFs = $ticket_obj->TransactionCustomFields) {
+% if (my $TxnCFs = $ticket_obj->transaction_custom_fields) {
 %    while (my $CF = $TxnCFs->next()) {
 <tr>
 <td align="right"><% $CF->name %>:</td>

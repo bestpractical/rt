@@ -65,7 +65,7 @@ if ( $Object && $Object->id ) {
             || $TOP{ $namePrefix .$CustomField->id . '-Value' };
 }
 
-my $MaxValues = $CustomField->MaxValues;
+my $MaxValues = $CustomField->max_values;
 if ($MaxValues == 1 && $values) {
     # what exactly is this doing?  Without the "unless" it breaks RTFM
     # transaction extraction into articles.

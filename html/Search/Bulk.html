@@ -163,9 +163,9 @@ $cfs->limit_to_queue($_) for keys %$seen_queues;
 % while (my $cf = $cfs->next()) {
 <tr>
 <td class="label"><%$cf->name%><br />
-<em>(<%$cf->FriendlyType%>)</em></td>
+<em>(<%$cf->friendly_type%>)</em></td>
 % my $rows = 5;
-% my @add = (namePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => $rows, Multiple => ($cf->MaxValues ==1 ? 0 : 1) , Cols => 25);
+% my @add = (namePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => $rows, Multiple => ($cf->max_values ==1 ? 0 : 1) , Cols => 25);
 % my @del = (namePrefix => 'Bulk-Delete-CustomField-', CustomField => $cf, Rows => $rows, Multiple => 1, Cols => 25);
 % if ($cf->type eq 'Select') {
 <td><& /Elements/EditCustomFieldSelect, @add &></td>
@@ -239,7 +239,7 @@ abort( _("No search to operate on.") ) unless ($Tickets);
 my $fields      = {};
 my $seen_queues = {};
 while ( my $ticket = $Tickets->next ) {
-    next if $seen_queues->{ $ticket->Queue }++;
+    next if $seen_queues->{ $ticket->queue }++;
 
     my $custom_fields = $ticket->queue_obj->ticket_custom_fields;
     while ( my $field = $custom_fields->next ) {

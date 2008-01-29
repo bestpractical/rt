@@ -63,7 +63,7 @@ $SearchType => 'Ticket',
 %     # Skip it if it is not of search type we want.
 %     next if ($search->sub_value('SearchType')
 %              && $search->sub_value('SearchType') ne $SearchType);
-<option value="<%ref($object)%>-<%$object->id%>-SavedSearch-<%$search->id%>"> -<%$search->Description||_('Unnamed search')%></option>
+<option value="<%ref($object)%>-<%$object->id%>-SavedSearch-<%$search->id%>"> -<%$search->description||_('Unnamed search')%></option>
 % }
 % }
 </select>

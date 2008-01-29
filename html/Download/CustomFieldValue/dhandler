@@ -69,7 +69,7 @@ unless (RT->config->get('TrustHTMLAttachments')) {
 
 $r->content_type( $content_type );
 $m->clear_buffer();
-$m->out($OCFV->LargeContent);
+$m->out($OCFV->large_content);
 $m->abort; 
 </%perl>
 <%attr>

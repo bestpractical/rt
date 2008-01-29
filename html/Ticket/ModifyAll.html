@@ -103,7 +103,7 @@
     <td class="label"><&|/l&>subject</&>:</td>
     <td class="entry"><input name="Updatesubject" size="60" value="<%$Ticket->subject%>" /></td>
   </tr>
-% if (my $TxnCFs = $Ticket->TransactionCustomFields) {
+% if (my $TxnCFs = $Ticket->transaction_custom_fields) {
 %    while (my $CF = $TxnCFs->next()) {
 <tr>
 <td class="label"><% $CF->name %>:</td>

@@ -76,8 +76,8 @@ $q->load_by_cols(name => $Queue);
 % if ($Queue|| $CreatedBefore ||$CreatedAfter) {
 % # if we have a queue, do the search
 % if ($Queue) { $query .= " AND Queue = '$Queue'"}
-% if ($CreatedBefore) { $query .= " AND Created < '".$before->ISO."'"; }
-% if ($CreatedAfter) { $query .= " AND Created > '".$after->ISO."'"}
+% if ($CreatedBefore) { $query .= " AND Created < '".$before->iso."'"; }
+% if ($CreatedAfter) { $query .= " AND Created > '".$after->iso."'"}
 % my $groupby = 'Status';
 <& /Search/Elements/Chart, Query => $query, PrimaryGroupBy => $groupby &>
 % }

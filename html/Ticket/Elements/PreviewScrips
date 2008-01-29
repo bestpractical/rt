@@ -140,7 +140,7 @@ unless ( $Transaction ) {
 }
 
 
-return (Object => $Object, emails => [$ticket_obj->SquelchMailTo]);
+return (Object => $Object, emails => [$ticket_obj->squelch_mail_to]);
 </%INIT>
 </%METHOD>
 

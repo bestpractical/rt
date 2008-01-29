@@ -84,7 +84,7 @@ while ( my $CF = $CustomFields->next ) {
     foreach my $value( @values ) {
         next if $CF->match_pattern($value);
 
-        my $msg = _("Input must match %1", $CF->FriendlyPattern);
+        my $msg = _("Input must match %1", $CF->friendly_pattern);
         $m->notes( ('InvalidField-' . $CF->id) => $msg );
         push @res, $msg;
         $valid = 0;

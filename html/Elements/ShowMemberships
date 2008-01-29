@@ -48,7 +48,7 @@
 <ul>
 % while ( my $GroupMember = $GroupMembers->next ) {
 %    my $Group = RT::Model::Group->new();
-%    $Group->load($GroupMember->GroupId) or next;
+%    $Group->load($GroupMember->group_id) or next;
 %    if ($Group->domain eq 'UserDefined') {
 <li><a href="<%RT->config->get('WebPath')%>/Admin/Groups/Modify.html?id=<% $Group->id %>"><% $Group->name %></a></li>
 %    } elsif ($Group->domain eq 'SystemInternal') {

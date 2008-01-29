@@ -59,7 +59,7 @@ if ( $QuoteTransaction ) {
 }
 
 my $signature = '';
-if ( $IncludeSignature and my $text = Jifty->web->current_user->user_object->Signature ) {
+if ( $IncludeSignature and my $text = Jifty->web->current_user->user_object->signature ) {
 	$signature = "-- \n". $text;
 }
 

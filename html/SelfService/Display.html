@@ -180,7 +180,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         || ( defined $ARGS{'UpdateContent'}
             && $ARGS{'UpdateContent'} ne ''
             && $ARGS{'UpdateContent'} ne "-- \n"
-            . Jifty->web->current_user->user_object->Signature )
+            . Jifty->web->current_user->user_object->signature )
       )
     {
         $ARGS{UpdateAttachments} = $session{'Attachments'};

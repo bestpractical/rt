@@ -69,9 +69,9 @@ if ($ChartStyle eq 'pie') {
 use RT::Report::Tickets;
 my $tix = RT::Report::Tickets->new();
 $tix->from_sql( $Query );
-my $count_name = $tix->Column( FUNCTION => 'COUNT', column => 'id' );
+my $count_name = $tix->column( FUNCTION => 'COUNT', column => 'id' );
 $tix->group_by( column => $PrimaryGroupBy );
-my $value_name = $tix->Column( column => $PrimaryGroupBy );
+my $value_name = $tix->column( column => $PrimaryGroupBy );
 
 my $chart = $chart_class->new( 600 => 400 );
 
@@ -92,8 +92,8 @@ $chart->set_value_font( $font, 9 ) if $chart->can('set_value_font');
 # the chart will just be a non-loading image.
 if ($tix->count == 0) {
     my $plot = GD::Image->new(600 => 400);
-    $plot->colorAllocate(255, 255, 255); # background
-    my $black = $plot->colorAllocate(0, 0, 0);
+    $plot->color_allocate(255, 255, 255); # background
+    my $black = $plot->color_allocate(0, 0, 0);
 
     require GD::Text::Wrap;
     my $error = GD::Text::Wrap->new($plot,

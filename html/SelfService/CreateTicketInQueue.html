@@ -54,7 +54,7 @@
 % next unless $queue->current_user_has_right('create_ticket');
 
 <dt><a href="<%RT->config->get('WebPath')%>/SelfService/Create.html?Queue=<%$queue->id%>"><%$queue->name%></a></dt>
-<dd><%$queue->Description%></dd>
+<dd><%$queue->description%></dd>
 % }
 </dl>
 <%init>

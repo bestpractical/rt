@@ -77,8 +77,8 @@ $q->load_by_cols(name => $Queue);
 % # if we have a queue, do the search
 % $query = "Status = 'resolved'";
 % if ($Queue) { $query .= " AND Queue = '$Queue'"}
-% if ($ResolvedBefore) { $query .= " AND Resolved < '".$before->ISO."'"; }
-% if ($ResolvedAfter) { $query .= " AND Resolved > '".$after->ISO."'"}
+% if ($ResolvedBefore) { $query .= " AND Resolved < '".$before->iso."'"; }
+% if ($ResolvedAfter) { $query .= " AND Resolved > '".$after->iso."'"}
 % my $groupby = 'Owner';
 <& /Search/Elements/Chart, Query => $query, PrimaryGroupBy => $groupby &>
 % }

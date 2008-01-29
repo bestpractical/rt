@@ -55,16 +55,16 @@
 % while ( my $watcher = $Members->next ) {
 % my $member = $watcher->member_obj->object;
 <li>
-<input type="checkbox" class="checkbox" name="Ticket-DeleteWatcher-Type-<% $Watchers->type %>-Principal-<% $watcher->MemberId %>" value="1" unchecked />
+<input type="checkbox" class="checkbox" name="Ticket-DeleteWatcher-Type-<% $Watchers->type %>-Principal-<% $watcher->member_id %>" value="1" unchecked />
 % if ( $member->isa( 'RT::Model::User' ) ) { 
-<a href="<% RT->config->get('WebPath') %>/Admin/Users/Modify.html?id=<% $watcher->MemberId %>">
+<a href="<% RT->config->get('WebPath') %>/Admin/Users/Modify.html?id=<% $watcher->member_id %>">
 <& /Elements/ShowUser, User => $member &></a>
-% if ($ticket_obj and grep { $_->content eq $member->email } $ticket_obj->SquelchMailTo)  {
+% if ($ticket_obj and grep { $_->content eq $member->email } $ticket_obj->squelch_mail_to)  {
 <b><&|/l&>(Will not be sent email)</&></b>
 % }
 
 % } else {
-<a href="<% RT->config->get('WebPath') %>/Admin/Groups/Modify.html?id=<% $watcher->MemberId %>">
+<a href="<% RT->config->get('WebPath') %>/Admin/Groups/Modify.html?id=<% $watcher->member_id %>">
 <% $member->name %></a>
 % }
 </li>

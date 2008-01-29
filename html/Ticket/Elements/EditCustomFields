@@ -58,7 +58,7 @@
   <tr id="CF-<%$CustomField->id%>-EditRow">
     <td class="labeltop">
       <b><%$CustomField->name%></b><br />
-      <i><%$CustomField->FriendlyType%></i>
+      <i><%$CustomField->friendly_type%></i>
     </td>
     <td class="entry">
       <& /Elements/EditCustomField, 

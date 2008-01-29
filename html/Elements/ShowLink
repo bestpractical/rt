@@ -45,18 +45,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<a href="<%$URI->resolver->HREF%>">
-% if ($URI->IsLocal) {
+<a href="<%$URI->resolver->href%>">
+% if ($URI->is_local) {
 % my $member = $URI->object;
 % if (UNIVERSAL::isa($member, "RT::Model::Ticket")) {
 <%$member->id%>: (<%$member->owner_obj->name%>) <%$member->subject%> [<% _($member->status) %>]
 % } elsif ( UNIVERSAL::can($member, 'name')) {
-<%$URI->resolver->AsString%>: <%$member->name%>
+<%$URI->resolver->as_string%>: <%$member->name%>
 % } else {
-<%$URI->resolver->AsString%>
+<%$URI->resolver->as_string%>
 % }
 % } else {
-<%$URI->resolver->AsString%>
+<%$URI->resolver->as_string%>
 % }
 </a>
 <%ARGS>

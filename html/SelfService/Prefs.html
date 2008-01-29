@@ -75,8 +75,8 @@ if ($NewPass1) {
 }
 if ($Signature) {
     $Signature =~ s/(\r\n|\r)/\n/g;
-    if ($Signature ne Jifty->web->current_user->user_object->Signature) {
-	my ($val, $msg)=Jifty->web->current_user->user_object->set_Signature($Signature);
+    if ($Signature ne Jifty->web->current_user->user_object->signature) {
+	my ($val, $msg)=Jifty->web->current_user->user_object->set_signature($Signature);
 	push (@results, "Signature: ".$msg);
     }
 }

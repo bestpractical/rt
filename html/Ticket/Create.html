@@ -246,12 +246,12 @@
 my $cloneticket_obj;
 if ( $cloneTicket ) {
     $cloneticket_obj = RT::Model::Ticket->new();
-    $cloneticket_obj->Load($cloneTicket) or abort(_("Ticket could not be loaded"));
+    $cloneticket_obj->load($cloneTicket) or abort(_("Ticket could not be loaded"));
     
     my $clone = {
         Requestors       => join( ',', $cloneticket_obj->requestor_addresses ),
-        Cc               => join( ',', $cloneticket_obj->CcAddresses),
-        AdminCc          => join( ',', $cloneticket_obj->AdminCcAddresses),
+        Cc               => join( ',', $cloneticket_obj->cc_addresses),
+        AdminCc          => join( ',', $cloneticket_obj->admin_cc_addresses),
         initial_priority => $cloneticket_obj->priority, 
     };
     
@@ -262,37 +262,37 @@ if ( $cloneTicket ) {
         my $members = $cloneticket_obj->members;
         my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
         while ( my $member = $members->next ) {
-            push @members, $member->LocalBase;
+            push @members, $member->local_base;
         }
         $clone->{'MemberOf-new'} = join ' ', @members;
     
         my $members_of = $cloneticket_obj->member_of;
         while ( my $member_of = $members_of->next ) {
-            push @members_of, $member_of->LocalTarget;
+            push @members_of, $member_of->local_target;
         }
         $clone->{'new-MemberOf'} = join ' ', @members_of;
         
         my $refers = $cloneticket_obj->refers_to;
         while ( my $refer = $refers->next ) {
-            push @refers, $refer->LocalTarget;
+            push @refers, $refer->local_target;
         }
         $clone->{'new-RefersTo'} = join ' ', @refers;
     
         my $refers_by = $cloneticket_obj->referred_to_by;
         while ( my $refer_by = $refers_by->next ) {
-            push @refers_by, $refer_by->LocalBase;
+            push @refers_by, $refer_by->local_base;
         }
         $clone->{'RefersTo-new'} = join ' ', @refers_by;
     
         my $depends = $cloneticket_obj->depends_on;
         while ( my $depend = $depends->next ) {
-            push @depends, $depend->LocalTarget;
+            push @depends, $depend->local_target;
         }
         $clone->{'new-DependsOn'} = join ' ', @depends;
     
         my $depends_by = $cloneticket_obj->depended_on_by;
         while ( my $depend_by = $depends_by->next ) {
-            push @depends_by, $depend_by->LocalBase;
+            push @depends_by, $depend_by->local_base;
         }
         $clone->{'DependsOn-new'} = join ' ', @depends_by;
     
@@ -332,10 +332,10 @@ my $ValidCFs = $m->comp(
 
 # if no due date has been set explicitly, then use the
 # queue's default if it exists
-if ($queue_obj->DefaultDueIn && !$ARGS{'Due'}) {
+if ($queue_obj->default_due_in && !$ARGS{'Due'}) {
     my $default_due = RT::Date->new();
     $default_due->set_to_now();
-    $default_due->add_days($queue_obj->DefaultDueIn);
+    $default_due->add_days($queue_obj->default_due_in);
     $ARGS{'Due'} = $default_due->iso();
 }
 

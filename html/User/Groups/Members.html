@@ -83,7 +83,7 @@
 % $UserMembers->limit_to_users();
 <ul>
 % while (my $member = $UserMembers->next()) {
-<li><input type="checkbox" class="checkbox" name="delete_member-<%$member->MemberId%>" value="1" />
+<li><input type="checkbox" class="checkbox" name="delete_member-<%$member->member_id%>" value="1" />
 <& /Elements/ShowUser, User => $member->member_obj->object &>
 % }
 </ul>
@@ -92,7 +92,7 @@
 % my $GroupMembers = $Group->members_obj;
 % $GroupMembers->limit_to_groups();
 % while (my $member = $GroupMembers->next()) {
-<li><input type="checkbox" class="checkbox" name="delete_member-<%$member->MemberId%>" value="1" />
+<li><input type="checkbox" class="checkbox" name="delete_member-<%$member->member_id%>" value="1" />
 <%$member->member_obj->object->name%>
 % }
 </ul>

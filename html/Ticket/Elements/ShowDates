@@ -72,7 +72,7 @@
   </tr>
   <tr>
     <td class="label date updated"><&|/l&>Updated</&>:</td>
-% my $UpdatedString = $Ticket->LastUpdated ? _("%1 by %2", $Ticket->last_updated_as_string, $Ticket->last_updated_by_obj->name) : loc("Never");
+% my $UpdatedString = $Ticket->last_updated ? _("%1 by %2", $Ticket->last_updated_as_string, $Ticket->last_updated_by_obj->name) : loc("Never");
 % if ($UpdatedLink) {
     <td class="value date updated"><A HREF="#lasttrans"><% $UpdatedString | h %></a></td>
 % } else {

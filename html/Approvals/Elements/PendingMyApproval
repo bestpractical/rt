@@ -67,9 +67,9 @@
 <input type="checkbox" class="checkbox" value="1" name="ShowRejected" <% defined($ARGS{'ShowRejected'}) && $ARGS{'ShowRejected'} && "checked"%> /> <&|/l&>Show denied requests</&><br />
 <input type="checkbox" class="checkbox" value="1" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && "checked"%> /> <&|/l&>Show requests awaiting other approvals</&><br />
 
-<&|/l,"<input size='15' value='".($Created_before->unix > 0 &&$Created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests Created before %1</&><br />
+<&|/l,"<input size='15' value='".($Created_before->unix > 0 &&$Created_before->iso)."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests Created before %1</&><br />
 
-<&|/l, "<input size='15' value='".( $Created_after->unix >0 && $Created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />"&>Only show approvals for requests Created after %1</&>
+<&|/l, "<input size='15' value='".( $Created_after->unix >0 && $Created_after->iso)."' name='CreatedAfter' id='CreatedAfter' />"&>Only show approvals for requests Created after %1</&>
 </&>
 
 <%init>

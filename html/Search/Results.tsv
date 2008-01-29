@@ -71,13 +71,13 @@ my %known_cfs;
 
 my @attrs = qw( id queue_obj->name subject Status time_estimated time_worked time_left Priority final_priority OwnerObj->name 
                 Requestors->member_emails_as_string Cc->member_emails_as_string AdminCc->member_emails_as_string
-                due_obj->iso ToldObj->iso created_obj->iso ResolvedObj->iso LastUpdatedObj->ISO);
+                due_obj->iso ToldObj->iso created_obj->iso ResolvedObj->iso LastUpdatedObj->iso);
 
 $r->content_type('application/vnd.ms-excel');
 while ( my $Ticket = $Tickets->next()) {
     my $row;
     foreach my $attr (@attrs) {
-        if ($attr =~ /(.*)->ISO$/ and $Ticket->$1->unix <= 0) {
+        if ($attr =~ /(.*)->iso$/ and $Ticket->$1->unix <= 0) {
             $row->{$attr} = "";
         } else {
             my $method = '$Ticket->'.$attr.'()';

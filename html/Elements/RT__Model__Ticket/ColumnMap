@@ -70,7 +70,7 @@ my $LinkCallback = sub  {
             \'">',
             ( $_->$mode_uri->is_local ? $_->$local_type : $_->$mode ),
             \'</a><br />',
-        } @{ $_[0]->Links($other_mode,$type)->items_array_ref }
+        } @{ $_[0]->links($other_mode,$type)->items_array_ref }
     }
 };
 
@@ -131,7 +131,7 @@ $TICKET_COLUMN_MAP = {
     },
     EffectiveId => {
         attribute => 'EffectiveId',
-        value     => sub  { return $_[0]->EffectiveId }
+        value     => sub  { return $_[0]->effective_id }
     },
     type => {
         attribute => 'type',
