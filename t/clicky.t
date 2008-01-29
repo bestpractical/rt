@@ -24,7 +24,7 @@ my $queue = RT::Model::Queue->new($CurrentUser);
 $queue->load('General') || abort(_("Queue could not be loaded."));
 
 my $message = MIME::Entity->build(
-    Subject => 'test',
+    subject => 'test',
     Data    => <<END,
 If you have some problems with RT you could find help
 on http://wiki.bestpractical.com or subscribe to
@@ -37,7 +37,7 @@ END
 
 my $ticket = RT::Model::Ticket->new( $CurrentUser );
 my ($id) = $ticket->create(
-    Subject => 'test',
+    subject => 'test',
     Queue => $queue->id,
     MIMEObj => $message,
 );

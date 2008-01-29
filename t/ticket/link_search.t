@@ -17,14 +17,14 @@ $queue->load('General') || abort(_("Queue could not be loaded."));
 
 my $child_ticket = RT::Model::Ticket->new(current_user =>  $CurrentUser );
 my ($childid) = $child_ticket->create(
-    Subject => 'test child',
+    subject => 'test child',
     Queue => $queue->id,
 );
 ok($childid, "We Created a child ticket");
 
 my $parent_ticket = RT::Model::Ticket->new(current_user =>  $CurrentUser );
 my ($parentid) = $parent_ticket->create(
-    Subject => 'test parent',
+    subject => 'test parent',
     Children => [ $childid ],
     Queue => $queue->id,
 );
@@ -156,7 +156,7 @@ ok( !$has{$childid}, "The collection doesn't have our child - $childid");
 
 my $grand_child_ticket = RT::Model::Ticket->new(current_user =>  $CurrentUser );
 my ($grand_childid) = $child_ticket->create(
-    Subject => 'test child',
+    subject => 'test child',
     Queue   => $queue->id,
     MemberOf => $childid,
 );
@@ -164,7 +164,7 @@ ok($childid, "We Created a grand child ticket");
 
 my $unlinked_ticket = RT::Model::Ticket->new( current_user => $CurrentUser );
 my ($unlinked_id) = $child_ticket->create(
-    Subject => 'test unlinked',
+    subject => 'test unlinked',
     Queue   => $queue->id,
 );
 ok($unlinked_id, "We Created a grand child ticket");

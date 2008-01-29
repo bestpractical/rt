@@ -31,15 +31,15 @@ X-Spam-Status: Yes, hits=14.9 required=5.0 tests=BAYES_99,DATE_IN_FUTURE_06_12
 	MIME_HTML_ONLY,RCVD_IN_NJABL,SUBJ_HAS_SPACES,SUBJ_HAS_UNIQ_ID
 	SUBJ_ILLEGAL_CHARS autolearn=no version=2.60-cvs-jumbo.demos
 X-Spam-Report: 14.9 points, 5.0 required;
-	*  2.3 -- Subject contains lots of white space
+	*  2.3 -- subject contains lots of white space
 	*  1.0 -- BODY: HTML font color is unknown to us
 	*  0.3 -- BODY: FONT Size +2 and up or 3 and up
 		  [score: 1.0000]
 	*  2.8 -- BODY: Bayesian classifier spam probability is 99 to 100%
 	*  1.0 -- BODY: Message is 10% to 20% HTML
 	*  1.0 -- From contains too many raw illegal characters
-	*  1.0 -- Subject contains a unique ID
-	*  1.0 -- Subject contains too many raw illegal characters
+	*  1.0 -- subject contains a unique ID
+	*  1.0 -- subject contains too many raw illegal characters
 	*  1.2 -- Date: is 6 to 12 hours after Received: date
 		  [217.132.49.75 listed in dnsbl.njabl.org]
 	*  1.2 -- RBL: Received via a relay in dnsbl.njabl.org

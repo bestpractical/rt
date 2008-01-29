@@ -33,10 +33,10 @@ msgid "#%1"
 msgstr "#%1"
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
-#. ($Ticket->id, $Ticket->Subject)
-#. ($link->base_obj->id, $link->base_obj->Subject)
-#. ($ticket->id, $ticket->Subject)
-#. ($ticket_obj->id, $ticket_obj->Subject)
+#. ($Ticket->id, $Ticket->subject)
+#. ($link->base_obj->id, $link->base_obj->subject)
+#. ($ticket->id, $ticket->subject)
+#. ($ticket_obj->id, $ticket_obj->subject)
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
@@ -1051,9 +1051,9 @@ msgid "Approval"
 msgstr "签核"
 
 #: html/Approvals/Display.html:65 html/Approvals/Elements/ShowDependency:63 html/Approvals/index.html:86
-#. ($Ticket->id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->subject)
 #. ($ticket->id, $msg)
-#. ($link->base_obj->id, $link->base_obj->Subject)
+#. ($link->base_obj->id, $link->base_obj->subject)
 msgid "Approval #%1: %2"
 msgstr "签核单 #%1：%2"
 
@@ -3795,7 +3795,7 @@ msgid "LabelContent"
 msgstr "内容卷标"
 
 #: NOT FOUND IN SOURCE
-msgid "LabelSubject"
+msgid "Labelsubject"
 msgstr "主题卷标"
 
 #: NOT FOUND IN SOURCE
@@ -5202,7 +5202,7 @@ msgid "organization:"
 msgstr "组织："
 
 #: html/Approvals/Elements/Approve:53
-#. ($approving->id, $approving->Subject)
+#. ($approving->id, $approving->subject)
 msgid "Originating ticket: #%1"
 msgstr "原申请单：#%1"
 
@@ -5941,17 +5941,17 @@ msgid "Refresh this page every %1 minutes."
 msgstr "每 %1 分钟更新页面"
 
 #: lib/RT/Transaction_Overlay.pm:811
-#. ($ticket->Subject)
+#. ($ticket->subject)
 msgid "Reminder '%1' added"
 msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:824
-#. ($ticket->Subject)
+#. ($ticket->subject)
 msgid "Reminder '%1' completed"
 msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:817
-#. ($ticket->Subject)
+#. ($ticket->subject)
 msgid "Reminder '%1' reopened"
 msgstr ""
 
@@ -6079,7 +6079,7 @@ msgid "Resolve"
 msgstr "解决"
 
 #: html/Ticket/Update.html:156
-#. ($ticket_obj->id, $ticket_obj->Subject)
+#. ($ticket_obj->id, $ticket_obj->subject)
 msgid "Resolve ticket #%1 (%2)"
 msgstr "解决申请单 #%1 (%2)"
 
@@ -6800,12 +6800,12 @@ msgid "Subgroup"
 msgstr "子群组"
 
 #: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Update.html:65 html/Ticket/Create.html:108 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1162 lib/RT/TicketCollection_Overlay.pm:1733
-msgid "Subject"
+msgid "subject"
 msgstr "主题"
 
 #: docs/design_docs/string-extraction-guide.txt:89 lib/RT/StyleGuide.pod:815 lib/RT/Transaction_Overlay.pm:700
 #. ($self->Data)
-msgid "Subject changed to %1"
+msgid "subject changed to %1"
 msgstr "标题已改为 %1"
 
 #: html/Elements/Submit:75
@@ -7175,12 +7175,12 @@ msgid "Ticket # %1 Jumbo update: %2"
 msgstr "更新申请单 # %1 的全部信息：%2"
 
 #: html/Ticket/ModifyAll.html:46 html/Ticket/ModifyAll.html:50
-#. ($Ticket->id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->subject)
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "更新申请单 #%1 的全部信息：%2"
 
 #: html/Approvals/Elements/ShowDependency:67
-#. ($link->base_obj->id, $link->base_obj->Subject)
+#. ($link->base_obj->id, $link->base_obj->subject)
 msgid "Ticket #%1: %2"
 msgstr "申请单 #%1: %2"
 
@@ -7214,7 +7214,7 @@ msgid "Ticket Due"
 msgstr "表单处理期限"
 
 #: html/Ticket/History.html:46 html/Ticket/History.html:49
-#. ($Ticket->id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->subject)
 msgid "Ticket History # %1 %2"
 msgstr "申请单处理纪录 # %1 %2"
 
@@ -7581,7 +7581,7 @@ msgid "Update ticket #%1"
 msgstr "更新申请单 #%1"
 
 #: html/Ticket/Update.html:158
-#. ($ticket_obj->id, $ticket_obj->Subject)
+#. ($ticket_obj->id, $ticket_obj->subject)
 msgid "Update ticket #%1 (%2)"
 msgstr "更新申请单 #%1 (%2)"
 

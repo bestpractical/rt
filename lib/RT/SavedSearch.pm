@@ -202,7 +202,7 @@ sub update {
         = $self->{'Attribute'}->set_sub_values( %{ $args{'SearchParams'} } );
     if ( $status && $args{'name'} ) {
         ( $status, $msg )
-            = $self->{'Attribute'}->set_Description( $args{'name'} );
+            = $self->{'Attribute'}->set_description( $args{'name'} );
     }
     return ( $status, _( "Search update: %1", $msg ) );
 }

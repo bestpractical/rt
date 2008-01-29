@@ -83,7 +83,7 @@ diag "check in read-only mode that queue's props influence create/update ticket 
 
     my $ticket = RT::Model::Ticket->new( current_user =>RT->system_user );
     my ($id) = $ticket->create(
-        Subject   => 'test',
+        subject   => 'test',
         Queue     => $queue->id,
         Requestor => 'rt-test@example.com',
     );
@@ -119,7 +119,7 @@ my $tid;
 {
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     ($tid) = $ticket->create(
-        Subject   => 'test',
+        subject   => 'test',
         Queue     => $queue->id,
         Requestor => 'rt-test@example.com',
     );
@@ -252,7 +252,7 @@ sub create_a_ticket {
 
     $m->goto_create_ticket( $queue );
     $m->form_name('TicketCreate');
-    $m->field( Subject    => 'test' );
+    $m->field( subject    => 'test' );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content    => 'Some content' );
 

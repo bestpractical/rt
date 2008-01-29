@@ -91,7 +91,7 @@ if ($aid) {
     } else {
 	my @data;
 	push @data, [ id    => $attachment->id   ];
-	push @data, [ Subject    => $attachment->subject   ];
+	push @data, [ subject    => $attachment->subject   ];
 	push @data, [ Creator    => $attachment->Creator   ];
 	push @data, [ Created    => $attachment->Created   ];
 	push @data, [ Transaction    => $attachment->TransactionId   ];

@@ -71,6 +71,7 @@ sub prepare {
 
     # nothing to prepare
     # warn "preparing";
+    Jifty->log->debug( "Preparing the setprio");
     return 1;
 }
 
@@ -78,7 +79,7 @@ sub prepare {
 
 sub commit {
     my $self = shift;
-    warn "Committing the setprio";
+    Jifty->log->debug( "Committing the setprio");
     $self->ticket_obj->set_Priority( $self->argument );
 
 }

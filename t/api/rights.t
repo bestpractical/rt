@@ -96,7 +96,7 @@ ok( !$user->has_right( Right => 'ReplyToTicket', Object => $queue ), "user can't
 
 # new ticket
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
-my ($ticket_id) = $ticket->create( Queue => $queue_id, Subject => 'test');
+my ($ticket_id) = $ticket->create( Queue => $queue_id, subject => 'test');
 ok( $ticket_id, 'new ticket Created' );
 is( $ticket->Owner, RT->nobody->id, 'owner of the new ticket is nobody' );
 
@@ -124,7 +124,7 @@ ok( $status, "successfuly added user as AdminCc");
 ok( $user->has_right( Right => 'ModifyTicket', Object => $ticket ), "user is AdminCc and can modify ticket" );
 
 my $ticket2 = RT::Model::Ticket->new(current_user => RT->system_user);
-my ($ticket2_id) = $ticket2->create( Queue => $queue_id, Subject => 'test2');
+my ($ticket2_id) = $ticket2->create( Queue => $queue_id, subject => 'test2');
 ok( $ticket2_id, 'new ticket Created' );
 ok( !$user->has_right( Right => 'ModifyTicket', Object => $ticket2 ), "user is not AdminCc and can't modify ticket2" );
 

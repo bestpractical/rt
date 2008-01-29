@@ -78,7 +78,7 @@ sub SupportArgs {
         grep $_ && !$seen{$_}, shift->SUPER::SupportArgs(@_), qw(limit);
 }
 
-sub TestArgs {
+sub test_args {
     my $self = shift;
     my %args = @_;
     if ( defined $args{'limit'} && $args{'limit'} ne '' ) {
@@ -91,7 +91,7 @@ sub TestArgs {
     } else {
         $args{'limit'} = 10;
     }
-    return $self->SUPER::TestArgs(%args);
+    return $self->SUPER::test_args(%args);
 }
 
 sub set_resolvers { return 1 }

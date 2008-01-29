@@ -62,10 +62,10 @@ my %data   = %$changes;
 my $ticket = RT::Model::Ticket->new() ;
 my @dates  = qw(Created starts Started Due Resolved Told LastUpdated);
 my @people = qw(Requestors Cc AdminCc);
-my @create = qw(Queue Requestor Subject Cc AdminCc Owner Status Priority
+my @create = qw(Queue Requestor subject Cc AdminCc Owner Status Priority
                 initial_priority final_priority time_estimated time_worked
                 time_left starts Started Due Resolved);
-my @simple = qw(Subject Status Priority disabled time_estimated time_worked
+my @simple = qw(subject Status Priority disabled time_estimated time_worked
                 time_left initial_priority final_priority);
 my %dates  = map {lc $_ => $_} @dates;
 my %people = map {lc $_ => $_} @people;
@@ -99,13 +99,13 @@ else {
 
         return [
             "# Required: id, Queue",
-            [ qw(id Queue Requestor Subject Cc AdminCc Owner Status Priority
+            [ qw(id Queue Requestor subject Cc AdminCc Owner Status Priority
                  initial_priority final_priority time_estimated starts Due Text) ],
             {
                 id               => "ticket/new",
                 Queue            => $queue->name,
                 Requestor        => Jifty->web->current_user->name,
-                Subject          => "",
+                subject          => "",
                 Cc               => [],
                 AdminCc          => [],
                 Owner            => "",
@@ -154,7 +154,7 @@ else {
             $v{MIMEObj} =
                 MIME::Entity->build(
                     From => Jifty->web->current_user->email,
-                    Subject => $v{Subject},
+                    subject => $v{subject},
                     Data => $text
                 );
         }
@@ -186,7 +186,7 @@ if (!keys(%data)) {
     push @data, [ Creator => $ticket->creator_obj->name ]
 	if (!%$fields || exists $fields->{lc 'Creator'});
 
-    foreach (qw(Subject Status Priority initial_priority final_priority)) {
+    foreach (qw(subject Status Priority initial_priority final_priority)) {
 	next unless (!%$fields || (exists $fields->{lc $_}));
         push @data, [$_ => $ticket->$_ ];
     }

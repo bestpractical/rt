@@ -88,7 +88,7 @@ if ( $ARGS{'QuickCreate'} ) {
     my ($tid, $trans, $tmsg) = $ticket->create(Queue => $ARGS{'Queue'},
                     Owner => $ARGS{'Owner'},
                     Requestor => Jifty->web->current_user->id,
-                    Subject => $ARGS{'Subject'});
+                    subject => $ARGS{'subject'});
 
 
     push (@results, $tmsg);

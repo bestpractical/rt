@@ -126,7 +126,7 @@ our %FIELD_METADATA = (
     Resolved        => [ 'DATE'         => 'Resolved', ],
     LastUpdated     => [ 'DATE'         => 'LastUpdated', ],
     Created         => [ 'DATE'         => 'Created', ],
-    Subject         => [ 'STRING', ],
+    subject         => [ 'STRING', ],
     Content         => [ 'TRANSFIELD', ],
     content_type     => [ 'TRANSFIELD', ],
     Filename        => [ 'TRANSFIELD', ],
@@ -210,7 +210,7 @@ sub can_bundle { return \%can_bundle }
 # {{{ sub SortFields
 
 our @SORTcolumns = qw(id Status
-    Queue Subject
+    Queue subject
     Owner Created Due starts Started
     Told
     Resolved LastUpdated Priority time_worked time_left);
@@ -554,7 +554,7 @@ sub _date_limit {
 
 =head2 _StringLimit
 
-Handle simple fields which are just strings.  (Subject,Type)
+Handle simple fields which are just strings.  (subject,Type)
 
 Meta Data:
   None
@@ -1707,9 +1707,9 @@ sub limit_type {
 
 # {{{ Limit by string field
 
-# {{{ sub limit_Subject
+# {{{ sub limit_subject
 
-=head2 limit_Subject
+=head2 limit_subject
 
 Takes a paramhash with the fields operator and value.
 operator is one of = or !=.
@@ -1721,11 +1721,11 @@ sub limit_subject {
     my $self = shift;
     my %args = (@_);
     $self->limit(
-        column   => 'Subject',
+        column   => 'subject',
         value    => $args{'value'},
         operator => $args{'operator'},
         description =>
-            join( ' ', _('Subject'), $args{'operator'}, $args{'value'}, ),
+            join( ' ', _('subject'), $args{'operator'}, $args{'value'}, ),
     );
 }
 

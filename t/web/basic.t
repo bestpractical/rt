@@ -41,7 +41,7 @@ $agent->form_number(3);
 # Start with a string containing characters in latin1
 my $string = "I18N Web Testing זרו";
 Encode::from_to($string, 'iso-8859-1', 'utf8');
-$agent->field('Subject' => "Ticket with utf8 body");
+$agent->field('subject' => "Ticket with utf8 body");
 $agent->field('Content' => $string);
 ok($agent->submit(), "Created new ticket with $string as Content");
 like( $agent->{'content'}, qr{$string} , "Found the content");
@@ -54,9 +54,9 @@ $agent->form_number(3);
 # Start with a string containing characters in latin1
 $string = "I18N Web Testing זרו";
 Encode::from_to($string, 'iso-8859-1', 'utf8');
-$agent->field('Subject' => $string);
+$agent->field('subject' => $string);
 $agent->field('Content' => "Ticket with utf8 subject");
-ok($agent->submit(), "Created new ticket with $string as Subject");
+ok($agent->submit(), "Created new ticket with $string as subject");
 
 like( $agent->{'content'}, qr{$string} , "Found the content");
 
@@ -86,14 +86,14 @@ ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
 
 # set the first value
 ok($agent->form_name('BuildQuery'));
-$agent->field("AttachmentField", "Subject");
+$agent->field("AttachmentField", "subject");
 $agent->field("AttachmentOp", "LIKE");
 $agent->field("ValueOfAttachment", "aaa");
 $agent->submit("AddClause");
 
 # set the next value
 ok($agent->form_name('BuildQuery'));
-$agent->field("AttachmentField", "Subject");
+$agent->field("AttachmentField", "subject");
 $agent->field("AttachmentOp", "LIKE");
 $agent->field("ValueOfAttachment", "bbb");
 $agent->submit("AddClause");
@@ -108,7 +108,7 @@ $query =~ s/\s*$//g;
 # collapse other whitespace
 $query =~ s/\s+/ /g;
 
-is ($query, "Subject LIKE 'aaa' AND Subject LIKE 'bbb'");
+is ($query, "subject LIKE 'aaa' AND subject LIKE 'bbb'");
 
 # - new items go one level down
 # - add items at currently selected level

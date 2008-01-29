@@ -87,7 +87,7 @@ diag "user A can not change owner after create";
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Owner => $user_b->id,
-        Subject => 'test',
+        subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
     is $ticket->Owner, $user_b->id, 'correct owner';
@@ -125,7 +125,7 @@ diag "on reply correct owner is selected";
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Owner => $user_b->id,
-        Subject => 'test',
+        subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
     is $ticket->Owner, $user_b->id, 'correct owner';
@@ -153,7 +153,7 @@ diag "Couldn't take without coresponding right";
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
-        Subject => 'test',
+        subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
     is $ticket->Owner, RT->nobody->id, 'correct owner';
@@ -171,7 +171,7 @@ diag "Couldn't steal without coresponding right";
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Owner => $user_b->id,
-        Subject => 'test',
+        subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
     is $ticket->Owner, $user_b->id, 'correct owner';
@@ -192,7 +192,7 @@ diag "TakeTicket require OwnTicket to work";
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
-        Subject => 'test',
+        subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
     is $ticket->Owner, RT->nobody->id, 'correct owner';
@@ -214,7 +214,7 @@ diag "TakeTicket+OwnTicket work";
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
-        Subject => 'test',
+        subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
     is $ticket->Owner, RT->nobody->id, 'correct owner';
@@ -236,7 +236,7 @@ diag "TakeTicket+OwnTicket don't work when owner is not nobody";
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Owner => $user_b->id,
-        Subject => 'test',
+        subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
     is $ticket->Owner, $user_b->id, 'correct owner';
@@ -259,7 +259,7 @@ diag "StealTicket require OwnTicket to work";
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Owner => $user_b->id,
-        Subject => 'test',
+        subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
     is $ticket->Owner, $user_b->id, 'correct owner';
@@ -282,7 +282,7 @@ diag "StealTicket+OwnTicket work";
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Owner => $user_b->id,
-        Subject => 'test',
+        subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
     is $ticket->Owner, $user_b->id, 'correct owner';
@@ -303,7 +303,7 @@ diag "StealTicket+OwnTicket don't work when owner is nobody";
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
-        Subject => 'test',
+        subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
     is $ticket->Owner, RT->nobody->id, 'correct owner';
@@ -325,7 +325,7 @@ diag "no Steal link when owner nobody";
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
-        Subject => 'test',
+        subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
     is $ticket->Owner, RT->nobody->id, 'correct owner';
@@ -343,7 +343,7 @@ diag "no Take link when owner is not nobody";
     my ($id, $txn, $msg) = $ticket->create(
         Queue => $queue->id,
         Owner => $user_b->id,
-        Subject => 'test',
+        subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
     is $ticket->Owner, $user_b->id, 'correct owner';

@@ -199,7 +199,7 @@ sub set_mime_entity_to_encoding {
         eval {
             Jifty->log->debug( "Converting '$charset' to '$enc' for "
                     . $head->mime_type . " - "
-                    . ( $head->get('subject') || 'Subjectless message' ) );
+                    . ( $head->get('subject') || 'subjectless message' ) );
 
             # NOTE:: see the comments at the end of the sub.
             Encode::_utf8_off( $lines[$_] ) foreach ( 0 .. $#lines );
@@ -265,7 +265,7 @@ tried.  Maybe it's ok now.
 
 sub decode_mime_words_to_utf8 {
     my $str = shift;
-    DecodeMIMEWordsToEncoding( $str, 'utf-8' );
+    decode_mime_words_to_encoding( $str, 'utf-8' );
 }
 
 sub decode_mime_words_to_encoding {
@@ -468,7 +468,7 @@ sub set_mime_ehead_to_encoding {
                     }
                 }
             }
-            $value = DecodeMIMEWordsToEncoding( $value, $enc )
+            $value = decode_mime_words_to_encoding( $value, $enc )
                 unless $preserve_words;
             $head->add( $tag, $value );
         }

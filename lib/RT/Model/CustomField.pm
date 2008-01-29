@@ -647,9 +647,9 @@ sub _is_valid_regex {
     return ( 0, $err );
 }
 
-# {{{ SingleValue
+# {{{ single_value
 
-=head2 SingleValue
+=head2 single_value
 
 Returns true if this CustomField only accepts a single value. 
 Returns false if it accepts multiple values

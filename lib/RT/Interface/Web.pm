@@ -281,7 +281,7 @@ sub create_ticket {
     $starts->set( Format => 'unknown', value => $ARGS{'starts'} );
 
     my $MIMEObj = make_mime_entity(
-        Subject => $ARGS{'Subject'},
+        subject => $ARGS{'subject'},
         From    => $ARGS{'From'},
         Cc      => $ARGS{'Cc'},
         Body    => $ARGS{'Content'},
@@ -321,7 +321,7 @@ sub create_ticket {
         time_left        => $ARGS{'time_left'},
         time_estimated   => $ARGS{'time_estimated'},
         time_worked      => $ARGS{'time_worked'},
-        Subject          => $ARGS{'Subject'},
+        subject          => $ARGS{'subject'},
         Status           => $ARGS{'Status'},
         Due              => $due->iso,
         starts           => $starts->iso,
@@ -520,12 +520,12 @@ sub process_update_message {
         }
     }
 
-    if ( $args{ARGSRef}->{'UpdateSubject'} eq $args{'ticket_obj'}->subject ) {
-        $args{ARGSRef}->{'UpdateSubject'} = undef;
+    if ( $args{ARGSRef}->{'Updatesubject'} eq $args{'ticket_obj'}->subject ) {
+        $args{ARGSRef}->{'Updatesubject'} = undef;
     }
 
     my $Message = make_mime_entity(
-        Subject => $args{ARGSRef}->{'UpdateSubject'},
+        subject => $args{ARGSRef}->{'Updatesubject'},
         Body    => $args{ARGSRef}->{'UpdateContent'},
         type    => $args{ARGSRef}->{'Updatecontent_type'},
     );
@@ -616,7 +616,7 @@ sub process_update_message {
 
 =head2 make_mime_entity PARAMHASH
 
-Takes a paramhash Subject, Body and AttachmentFieldname.
+Takes a paramhash subject, Body and AttachmentFieldname.
 
 Also takes Form, Cc and type as optional paramhash keys.
 
@@ -628,7 +628,7 @@ sub make_mime_entity {
 
     #TODO document what else this takes.
     my %args = (
-        Subject             => undef,
+        subject             => undef,
         From                => undef,
         Cc                  => undef,
         Body                => undef,
@@ -638,7 +638,7 @@ sub make_mime_entity {
     );
     my $Message = MIME::Entity->build(
         type    => 'multipart/mixed',
-        Subject => $args{'Subject'} || "",
+        subject => $args{'subject'} || "",
         From    => $args{'From'},
         Cc      => $args{'Cc'},
     );
@@ -887,7 +887,7 @@ sub process_ticket_basics {
 
     # {{{ Set basic fields
     my @attribs = qw(
-        Subject
+        subject
         final_priority
         Priority
         time_estimated

@@ -60,7 +60,7 @@ sub SupportArgs {
     return $self->SUPER::SupportArgs, qw(file_name from_storage);
 }
 
-sub TestArgs {
+sub test_args {
     my $self = shift;
     my %args = @_;
     $args{'from_storage'} = 1 unless defined $args{'from_storage'};
@@ -71,7 +71,7 @@ sub TestArgs {
     open $args{'file_handle'}, ">:raw", $file
         or return ( 0, "Couldn't open '$file' for write: $!" );
 
-    return $self->SUPER::TestArgs(%args);
+    return $self->SUPER::test_args(%args);
 }
 
 sub filename    { return $_[0]->{'opt'}{'file_name'} }

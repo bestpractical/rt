@@ -17,7 +17,7 @@ use RT::Model::TicketCollection;
 
 {
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
-    my ($id) = $ticket->create( Subject => 'test', Queue => 1 );
+    my ($id) = $ticket->create( subject => 'test', Queue => 1 );
     ok( $id, "Created new ticket" );
     $ticket->delete;
     is( $ticket->Status, 'deleted', "successfuly changed status" );
@@ -35,12 +35,12 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
 
 {
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
-    my ($pid) = $parent->create( Subject => 'test', Queue => 1 );
+    my ($pid) = $parent->create( subject => 'test', Queue => 1 );
     ok( $pid, "Created new ticket" );
     create_savepoint('parent_ticket');
 
     my $child = RT::Model::Ticket->new(current_user => RT->system_user );
-    my ($cid) = $child->create( Subject => 'test', Queue => 1 );
+    my ($cid) = $child->create( subject => 'test', Queue => 1 );
     ok( $cid, "Created new ticket" );
 
     my ($status, $msg) = $parent->add_link( type => 'MemberOf', Target => $cid );
@@ -57,14 +57,14 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
 
 {
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
-    my ($pid) = $parent->create( Subject => 'test', Queue => 1 );
+    my ($pid) = $parent->create( subject => 'test', Queue => 1 );
     ok( $pid, "Created new ticket" );
     my ($status, $msg) = $parent->delete;
     ok( $status, 'deleted parent ticket');
     create_savepoint('parent_ticket');
 
     my $child = RT::Model::Ticket->new(current_user => RT->system_user );
-    my ($cid) = $child->create( Subject => 'test', Queue => 1 );
+    my ($cid) = $child->create( subject => 'test', Queue => 1 );
     ok( $cid, "Created new ticket" );
 
     ($status, $msg) = $parent->add_link( type => 'DependsOn', Target => $cid );

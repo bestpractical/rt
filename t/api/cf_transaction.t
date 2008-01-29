@@ -29,7 +29,7 @@ my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 
 my $transid;
 ($id,$transid, $msg) = $ticket->create(Queue => $q->id,
-                Subject => 'TxnCF test',
+                subject => 'TxnCF test',
             );
 ok($id,$msg);
 

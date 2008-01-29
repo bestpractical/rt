@@ -27,14 +27,14 @@ is($group->object_type_str, 'Group', "Group returns correct typestring");
 {
 
 my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
-my ($id, $trans, $msg) = $t1->create(Subject => 'DepTest1', Queue => 'general');
+my ($id, $trans, $msg) = $t1->create(subject => 'DepTest1', Queue => 'general');
 ok($id, "Created dep test 1 - $msg");
 
 my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
-(my $id2, $trans, my $msg2) = $t2->create(Subject => 'DepTest2', Queue => 'general');
+(my $id2, $trans, my $msg2) = $t2->create(subject => 'DepTest2', Queue => 'general');
 ok($id2, "Created dep test 2 - $msg2");
 my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
-(my $id3, $trans, my $msg3) = $t3->create(Subject => 'DepTest3', Queue => 'general', type => 'approval');
+(my $id3, $trans, my $msg3) = $t3->create(subject => 'DepTest3', Queue => 'general', type => 'approval');
 ok($id3, "Created dep test 3 - $msg3");
 my ($addid, $addmsg);
 ok (($addid, $addmsg) =$t1->add_link( type => 'DependsOn', Target => $t2->id));

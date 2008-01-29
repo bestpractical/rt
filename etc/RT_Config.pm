@@ -34,16 +34,16 @@ set( $rtname, "example.com" );
 # token matching and that you should use only "non-capturing" parenthesis
 # grouping. For example:
 #
-#     set($EmailSubjectTagRegex, qr/(?:example.com|example.org)/i );
+#     set($EmailsubjectTagRegex, qr/(?:example.com|example.org)/i );
 #
 # and NOT
 #
-#     set($EmailSubjectTagRegex, qr/(example.com|example.org)/i );
+#     set($EmailsubjectTagRegex, qr/(example.com|example.org)/i );
 #
 # This setting would make RT behave exactly as it does without the
 # setting enabled.
 #
-# set($EmailSubjectTagRegex, qr/\Q$rtname\E/i );
+# set($EmailsubjectTagRegex, qr/\Q$rtname\E/i );
 
 # You should set this to your organization's DNS domain. For example,
 # fsck.com or asylum.arkham.ma.us. It's used by the linking interface to
@@ -587,7 +587,7 @@ set( @MasonParameters, () );
 # $DefaultSearchResultFormat is the default format for RT search results
 set($DefaultSearchResultFormat, qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-   '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+   '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
    Status,
    Queuename, 
    Ownername, 

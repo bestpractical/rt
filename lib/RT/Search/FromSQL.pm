@@ -85,7 +85,7 @@ sub describe {
 =head2 Prepare
 
 The meat of the module.  Runs a search on its Tickets object, using
-the SQL string described in its Argument object.  The Tickets object
+the SQL string described in its argument object.  The Tickets object
 is reduced to those tickets matching the SQL query.
 
 =cut
@@ -94,7 +94,7 @@ is reduced to those tickets matching the SQL query.
 sub prepare {
     my $self = shift;
 
-    $self->tickets_obj->from_sql( $self->Argument );
+    $self->tickets_obj->from_sql( $self->argument );
     return (1);
 }
 

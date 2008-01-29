@@ -26,7 +26,7 @@ ok($id,$msg);
 
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 ($id,undef,$msg) = $t->create(Queue => $q->id,
-          Subject => 'CF Test');
+          subject => 'CF Test');
 
 ok($id,$msg);
 is($t->custom_field_values($cf->id)->count, 0, "No values yet");

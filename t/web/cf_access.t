@@ -80,7 +80,7 @@ diag "check that we have no the CF on the create"
 
     $m->submit_form(
         form_name => "TicketCreate",
-        fields => { Subject => 'test' },
+        fields => { subject => 'test' },
     );
     $m->content_like(qr/Ticket \d+ created/, "a ticket is Created succesfully");
 
@@ -111,7 +111,7 @@ diag "check that we have no the CF on the create"
 
     $m->submit_form(
         form_name => "TicketCreate",
-        fields => { Subject => 'test' },
+        fields => { subject => 'test' },
     );
     $tid = $1 if $m->content =~ /Ticket (\d+) created/i;
     ok $tid, "a ticket is Created succesfully";
@@ -144,7 +144,7 @@ diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
         form_name => "TicketCreate",
         fields => {
             $upload_field => ImageFile,
-            Subject => 'testing img cf creation',
+            subject => 'testing img cf creation',
         },
     );
 
@@ -152,7 +152,7 @@ diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
 
     $tid = $1 if $m->content =~ /Ticket (\d+) created/;
 
-    $m->title_like(qr/testing img cf creation/, "its title is the Subject");
+    $m->title_like(qr/testing img cf creation/, "its title is the subject");
 
     $m->follow_link( text => 'bplogo.gif' );
     $m->content_is(ImageFileContent, "it links to the uploaded image");

@@ -25,7 +25,7 @@ my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 $ticket->create(
 	Queue => $queue->id,
 	Requestor => 'root@localhost',
-	Subject => 'RecordCustomFields1',
+	subject => 'RecordCustomFields1',
 );
 
 ok($ticket->id, "Created the ticket ok");
@@ -150,7 +150,7 @@ my $test_add_delete_cycle = sub  {
 		is( $ticket->first_custom_field_value( $_->name ), 'Foo' , "first value by name is foo");
 
 	}
-	# because our CFs are SingleValue then new value addition should override
+	# because our CFs are single_value then new value addition should override
 	for (@custom_fields) {
 		($status, $msg) = $ticket->add_custom_field_value( Field => $_ , value => 'Bar' );
 		ok( $status, "message: $msg");

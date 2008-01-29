@@ -233,7 +233,7 @@ Sends an error message. Takes a param hash:
 
 =item Bcc - optional Bcc recipients;
 
-=item Subject - subject of the message, default is 'There has been an error';
+=item subject - subject of the message, default is 'There has been an error';
 
 =item Explanation - main content of the error, default value is 'Unexplained error';
 
@@ -254,7 +254,7 @@ sub mail_error {
         To          => RT->config->get('OwnerEmail'),
         Bcc         => undef,
         From        => RT->config->get('correspond_address'),
-        Subject     => 'There has been an error',
+        subject     => 'There has been an error',
         Explanation => 'Unexplained error',
         MIMEObj     => undef,
         Attach      => undef,
@@ -271,7 +271,7 @@ sub mail_error {
         From                    => $args{'From'},
         Bcc                     => $args{'Bcc'},
         To                      => $args{'To'},
-        Subject                 => $args{'Subject'},
+        subject                 => $args{'subject'},
         'Precedence:'           => 'bulk',
         'X-RT-Loop-Prevention:' => RT->config->get('rtname'),
     );
@@ -691,7 +691,7 @@ sub forward_transaction {
         $from = $txn->object->queue_obj->correspond_address
             || RT->config->get('correspond_address');
     }
-    $mail->head->set( Subject => "Fwd: $subject" );
+    $mail->head->set( subject => "Fwd: $subject" );
     $mail->head->set( From    => $from );
 
     my $status = RT->config->get('ForwardFromUser')
@@ -839,7 +839,7 @@ sub create_user {
         unless ( $NewUser->id ) {
             MailError(
                 To      => $ErrorsTo,
-                Subject => "User could not be Created",
+                subject => "User could not be Created",
                 Explanation =>
                     "User creation failed in mailgateway: $Message",
                 MIMEObj  => $entity,
@@ -855,7 +855,7 @@ sub create_user {
         Jifty->log->warn( "Couldn't load user '$Address'." . "giving up" );
         MailError(
             To      => $ErrorsTo,
-            Subject => "User could not be loaded",
+            subject => "User could not be loaded",
             Explanation =>
                 "User  '$Address' could not be loaded in the mail gateway",
             MIMEObj  => $entity,
@@ -1068,14 +1068,14 @@ sub set_in_reply_to {
 }
 
 sub parse_ticket_id {
-    my $Subject = shift;
+    my $subject = shift;
     my $id;
 
     my $rtname    = RT->config->get('rtname');
-    my $test_name = RT->config->get('EmailSubjectTagRegex')
+    my $test_name = RT->config->get('EmailsubjectTagRegex')
         || qr/\Q$rtname\E/i;
 
-    if ( $Subject =~ s/\[$test_name\s+\#(\d+)\s*\]//i ) {
+    if ( $subject =~ s/\[$test_name\s+\#(\d+)\s*\]//i ) {
         my $id = $1;
         Jifty->log->debug("Found a ticket ID. It's $id");
         return $id;
@@ -1088,7 +1088,7 @@ sub add_subject_tag {
     my $subject = shift;
     my $id      = shift;
 
-    my $tag_re = RT->config->get('EmailSubjectTagRegex');
+    my $tag_re = RT->config->get('EmailsubjectTagRegex');
     unless ($tag_re) {
         my $rtname = RT->config->get('rtname');
         $tag_re = qr/\Q$rtname\E/o;
@@ -1200,7 +1200,7 @@ sub gateway {
     my $Message = $parser->entity();
     unless ($Message) {
         MailError(
-            Subject     => "RT Bounce: Unparseable message",
+            subject     => "RT Bounce: Unparseable message",
             Explanation => "RT couldn't process the message below",
             Attach      => $args{'message'}
         );
@@ -1261,8 +1261,8 @@ sub gateway {
         . RT->config->get('organization') . '>';
 
     #Pull apart the subject line
-    my $Subject = $head->get('Subject') || '';
-    chomp $Subject;
+    my $subject = $head->get('subject') || '';
+    chomp $subject;
 
     # {{{ Lets check for mail loops of various sorts.
     my ( $should_store_machine_generated_message, $IsALoop, $result );
@@ -1270,7 +1270,7 @@ sub gateway {
         = _HandleMachineGeneratedMail(
         Message   => $Message,
         ErrorsTo  => $ErrorsTo,
-        Subject   => $Subject,
+        subject   => $subject,
         MessageId => $MessageId
         );
 
@@ -1280,7 +1280,7 @@ sub gateway {
         return ( 0, $result, undef );
     }
 
-    $args{'ticket'} ||= parse_ticket_id($Subject);
+    $args{'ticket'} ||= parse_ticket_id($subject);
 
     $SystemTicket = RT::Model::Ticket->new( current_user => RT->system_user );
     $SystemTicket->load( $args{'ticket'} ) if ( $args{'ticket'} );
@@ -1374,7 +1374,7 @@ sub gateway {
     if ( $AuthStat == 0 ) {
         MailError(
             To      => $ErrorsTo,
-            Subject => "Permission Denied",
+            subject => "Permission Denied",
             Explanation =>
                 "You do not have permission to communicate with RT",
             MIMEObj => $Message
@@ -1412,7 +1412,7 @@ sub gateway {
 
         my ( $id, $Transaction, $ErrStr ) = $Ticket->create(
             Queue     => $Systemqueue_obj->id,
-            Subject   => $Subject,
+            subject   => $subject,
             Requestor => \@Requestors,
             Cc        => \@Cc,
             MIMEObj   => $Message
@@ -1420,7 +1420,7 @@ sub gateway {
         if ( $id == 0 ) {
             MailError(
                 To          => $ErrorsTo,
-                Subject     => "Ticket creation failed: $Subject",
+                subject     => "Ticket creation failed: $subject",
                 Explanation => $ErrStr,
                 MIMEObj     => $Message
             );
@@ -1439,7 +1439,7 @@ sub gateway {
             my $error = "Could not find a ticket with id " . $args{'ticket'};
             MailError(
                 To          => $ErrorsTo,
-                Subject     => "Message not recorded: $Subject",
+                subject     => "Message not recorded: $subject",
                 Explanation => $error,
                 MIMEObj     => $Message
             );
@@ -1465,7 +1465,7 @@ sub gateway {
                 #Warn the sender that we couldn't actually submit the comment.
                 MailError(
                     To          => $ErrorsTo,
-                    Subject     => "Message not recorded: $Subject",
+                    subject     => "Message not recorded: $subject",
                     Explanation => $msg,
                     MIMEObj     => $Message
                 );
@@ -1501,7 +1501,7 @@ sub _run_unsafe_action {
         unless ($status) {
             MailError(
                 To          => $args{'ErrorsTo'},
-                Subject     => "Ticket not taken",
+                subject     => "Ticket not taken",
                 Explanation => $msg,
                 MIMEObj     => $args{'Message'}
             );
@@ -1514,7 +1514,7 @@ sub _run_unsafe_action {
             #Warn the sender that we couldn't actually submit the comment.
             MailError(
                 To          => $args{'ErrorsTo'},
-                Subject     => "Ticket not resolved",
+                subject     => "Ticket not resolved",
                 Explanation => $msg,
                 MIMEObj     => $args{'Message'}
             );
@@ -1545,7 +1545,7 @@ sub _no_authorized_user_found {
     # Notify the RT Admin of the failure.
     MailError(
         To          => RT->config->get('OwnerEmail'),
-        Subject     => "Could not load a valid user",
+        subject     => "Could not load a valid user",
         Explanation => <<EOT,
 RT could not load a valid user, and RT's configuration does not allow
 for the creation of a new user for this email (@{[$args{Requestor}]}).
@@ -1562,7 +1562,7 @@ EOT
     if ( $args{'Requestor'} ne RT->config->get('OwnerEmail') ) {
         MailError(
             To          => $args{'Requestor'},
-            Subject     => "Could not load a valid user",
+            subject     => "Could not load a valid user",
             Explanation => <<EOT,
 RT could not load a valid user, and RT's configuration does not allow
 for the creation of a new user for your email.
@@ -1579,7 +1579,7 @@ EOT
 Takes named params:
     Message
     ErrorsTo
-    Subject
+    subject
 
 Checks the message to see if it's a bounce, if it looks like a loop, if it's autogenerated, etc.
 Returns a triple of ("Should we continue (boolean)", "New value for $ErrorsTo", "Status message",
@@ -1591,7 +1591,7 @@ sub _handle_machine_generated_mail {
     my %args = (
         Message   => undef,
         ErrorsTo  => undef,
-        Subject   => undef,
+        subject   => undef,
         MessageId => undef,
         @_
     );
@@ -1626,7 +1626,7 @@ sub _handle_machine_generated_mail {
         if ( RT->config->get('LoopsToRTOwner') ) {
             MailError(
                 To          => $owner_mail,
-                Subject     => "RT Bounce: " . $args{'Subject'},
+                subject     => "RT Bounce: " . $args{'subject'},
                 Explanation => "RT thinks this message may be a bounce",
                 MIMEObj     => $args{Message}
             );

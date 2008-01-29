@@ -204,7 +204,7 @@ sub set_attribute {
     my $AttributeObj = pop(@AttributeObjs);
     $_->delete foreach @AttributeObjs;
 
-    $AttributeObj->set_Description( $args{'Description'} );
+    $AttributeObj->set_description( $args{'Description'} );
     $AttributeObj->set_content( $args{'Content'} );
 
     $self->attributes->redo_search;

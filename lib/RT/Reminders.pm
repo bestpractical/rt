@@ -101,7 +101,7 @@ Add a reminder for this ticket.
 
 Takes
 
-    Subject
+    subject
     Owner
     Due
 
@@ -111,7 +111,7 @@ Takes
 sub add {
     my $self = shift;
     my %args = (
-        Subject => undef,
+        subject => undef,
         Owner   => undef,
         Due     => undef,
         @_
@@ -119,7 +119,7 @@ sub add {
 
     my $reminder = RT::Model::Ticket->new;
     $reminder->create(
-        Subject  => $args{'Subject'},
+        subject  => $args{'subject'},
         Owner    => $args{'Owner'},
         Due      => $args{'Due'},
         RefersTo => $self->ticket,

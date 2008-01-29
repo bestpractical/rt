@@ -17,7 +17,7 @@ my ($qid) = $queue->load( 'General' );
 ok( $qid, "loaded queue" );
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
-my ($tid) = $ticket->create( Queue => $qid, Subject => 'test' );
+my ($tid) = $ticket->create( Queue => $qid, subject => 'test' );
 ok( $tid, "ticket Created" );
 
 create_savepoint('bucreate'); # berfore user create

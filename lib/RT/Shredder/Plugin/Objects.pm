@@ -72,7 +72,7 @@ sub SupportArgs {
     return $_[0]->SUPER::SupportArgs, @RT::Shredder::SUPPORTED_OBJECTS;
 }
 
-sub TestArgs {
+sub test_args {
     my $self = shift;
     my %args = @_;
 
@@ -87,7 +87,7 @@ sub TestArgs {
 
     my @objs = RT::Shredder->cast_objects_to_records( Objects => \@strings );
 
-    my @res = $self->SUPER::TestArgs(%args);
+    my @res = $self->SUPER::test_args(%args);
 
     $self->{'opt'}->{'objects'} = \@objs;
 

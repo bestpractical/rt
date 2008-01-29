@@ -22,7 +22,7 @@ ok($queue_obj->ticket_custom_fields()->count, "We have a custom field, at least"
 
 
 my $data = <<EOF;
-id,Queue,Subject,Status,Requestor,@{[$cf->name]}
+id,Queue,subject,Status,Requestor,@{[$cf->name]}
 create-1,$QUEUE,hi,new,root,2.0
 create-2,$QUEUE,hello,new,root,3.0
 EOF

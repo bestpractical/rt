@@ -274,7 +274,7 @@ sub _post_process_new_entity {
 
     # Unfold headers that are have embedded newlines
     #  Better do this before conversion or it will break
-    #  with multiline encoded Subject (RFC2047) (fsck.com #5594)
+    #  with multiline encoded subject (RFC2047) (fsck.com #5594)
     $self->head->unfold;
 
     # try to convert text parts into utf-8 charset

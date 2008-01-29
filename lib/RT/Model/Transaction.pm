@@ -868,7 +868,7 @@ sub brief_description {
     },
     subject => sub {
         my $self = shift;
-        return _( "Subject changed to %1", $self->Data );
+        return _( "subject changed to %1", $self->Data );
     },
     AddLink => sub {
         my $self = shift;

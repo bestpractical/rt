@@ -48,7 +48,7 @@ my $tid;
 {
     my $ticket = RT::Model::Ticket->new(current_user => $RT::system_user );
     ($tid) = $ticket->create(
-        Subject   => 'test',
+        subject   => 'test',
         Queue     => $queue->id,
     );
     ok $tid, 'ticket created';

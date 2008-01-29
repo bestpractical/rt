@@ -22,7 +22,7 @@ $m->submit;
 is($m->status, 200, "request successful");
 $m->content_like(qr/Create a new ticket/, 'ticket create page');
 $m->form_name('TicketCreate');
-$m->field('Subject', 'Attachments test');
+$m->field('subject', 'Attachments test');
 $m->field('Attach',  LogoFile);
 $m->field('Content', 'Some content');
 $m->submit;

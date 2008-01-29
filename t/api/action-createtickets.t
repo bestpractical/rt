@@ -28,10 +28,10 @@ Type: approval
 AdminCc: {join ("\nAdminCc: ",@admins) }
 Depended-On-By: {$Tickets{"TOP"}->id}
 Refers-To: TOP 
-Subject: Approval for ticket: {$Tickets{"TOP"}->id} - {$Tickets{"TOP"}->Subject}
+Subject: Approval for ticket: {$Tickets{"TOP"}->id} - {$Tickets{"TOP"}->subject}
 Due: {time + 86400}
 Content-Type: text/plain
-Content: Your approval is requested for the ticket {$Tickets{"TOP"}->id}: {$Tickets{"TOP"}->Subject}
+Content: Your approval is requested for the ticket {$Tickets{"TOP"}->id}: {$Tickets{"TOP"}->subject}
 Blah
 Blah
 ENDOFCONTENT
@@ -68,7 +68,7 @@ ok ($scrip->condition_obj->id, "Created the scrip condition");
 ok ($scrip->action_obj->id, "Created the scrip action");
 
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
-my($tid, $ttrans, $tmsg) = $t->create(Subject => "Sample workflow test",
+my($tid, $ttrans, $tmsg) = $t->create(subject => "Sample workflow test",
            Owner => "root",
            Queue => $q->id);
 
@@ -86,7 +86,7 @@ my $action =  RT::ScripAction::CreateTickets->new( CurrentUser => RT->system_use
 
 # comma-delimited templates
 my $commas = <<"EOF";
-id,Queue,Subject,Owner,Content
+id,Queue,subject,Owner,Content
 ticket1,General,"foo, bar",root,blah
 ticket2,General,foo bar,root,blah
 ticket3,General,foo' bar,root,blah'boo
@@ -96,7 +96,7 @@ EOF
 
 # Comma delimited templates with missing data
 my $sparse_commas = <<"EOF";
-id,Queue,Subject,Owner,Requestor
+id,Queue,subject,Owner,Requestor
 ticket14,General,,,bobby
 ticket15,General,,,tommy
 ticket16,General,,suzie,tommy
@@ -108,7 +108,7 @@ EOF
 
 # tab-delimited templates
 my $tabs = <<"EOF";
-id\tQueue\tSubject\tOwner\tContent
+id\tQueue\tsubject\tOwner\tContent
 ticket10\tGeneral\t"foo' bar"\troot\tblah'
 ticket11\tGeneral\tfoo, bar\troot\tblah
 ticket12\tGeneral\tfoo' bar\troot\tblah'boo

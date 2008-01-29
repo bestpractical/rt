@@ -45,7 +45,7 @@ use Jifty::DBI::Record schema {
         Filename => max_length is 255,
         type is 'varchar(255)', default is '';
     column
-        Subject => max_length is 255,
+        subject => max_length is 255,
         type is 'varchar(255)', default is '';
 
     column Content         => type is 'blob', default is '';
@@ -91,9 +91,9 @@ sub create {
     $Attachment->make_singlepart;
 
     # Get the subject
-    my $Subject = $Attachment->head->get( 'subject', 0 );
-    defined($Subject) or $Subject = '';
-    chomp($Subject);
+    my $subject = $Attachment->head->get( 'subject', 0 );
+    defined($subject) or $subject = '';
+    chomp($subject);
 
     #Get the Message-ID
     my $MessageId = $Attachment->head->get( 'Message-ID', 0 );
@@ -113,7 +113,7 @@ sub create {
             content_type   => $Attachment->mime_type,
             Headers       => $Attachment->head->as_string,
             MessageId     => $MessageId,
-            Subject       => $Subject,
+            subject       => $subject,
         );
 
         unless ($id) {
@@ -149,7 +149,7 @@ sub create {
             ContentEncoding => $ContentEncoding,
             Parent          => $args{'Parent'},
             Headers         => $Attachment->head->as_string,
-            Subject         => $Subject,
+            subject         => $subject,
             Content         => $Body,
             Filename        => $Filename,
             MessageId       => $MessageId,
@@ -445,7 +445,7 @@ sub addresses {
 
 =head2 nice_headers
 
-Returns a multi-line string of the To, From, Cc, Date and Subject headers.
+Returns a multi-line string of the To, From, Cc, Date and subject headers.
 
 =cut
 
@@ -454,7 +454,7 @@ sub nice_headers {
     my $hdrs = "";
     my @hdrs = $self->_split_headers;
     while ( my $str = shift @hdrs ) {
-        next unless $str =~ /^(To|From|RT-Send-Cc|Cc|Bcc|Date|Subject):/i;
+        next unless $str =~ /^(To|From|RT-Send-Cc|Cc|Bcc|Date|subject):/i;
         $hdrs .= $str . "\n";
         $hdrs .= shift(@hdrs) . "\n" while ( $hdrs[0] =~ /^[ \t]+/ );
     }

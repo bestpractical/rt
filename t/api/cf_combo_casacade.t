@@ -24,7 +24,7 @@ works($cf->create(@cf_args));
 # Set some CFVs with Category markers
 
 my $t = new( 'RT::Model::Ticket');
-my ($id,undef,$msg) = $t->create(Queue => $q->id, Subject => 'CF Test');
+my ($id,undef,$msg) = $t->create(Queue => $q->id, subject => 'CF Test');
 works($id,$msg);
 
 sub add_works {

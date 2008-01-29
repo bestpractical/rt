@@ -15,7 +15,7 @@ RT->config->set( comment_address => 'general@example.com');
 RT->config->set( correspond_address => 'general@example.com');
 RT->config->set( DefaultSearchResultFormat => qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-   '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+   '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
    'OO-__Ownername__-O',
    'OR-__Requestors__-O',
    'KO-__KeyOwnername__-K',
@@ -75,7 +75,7 @@ RT::Test->fetch_caught_mails;
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
 
-$m->field('Subject', 'Encryption test');
+$m->field('subject', 'Encryption test');
 $m->field('Content', 'Some content');
 ok($m->value('Encrypt', 2), "encrypt tick box is checked");
 ok(!$m->value('Sign', 2), "sign tick box is unchecked");
@@ -143,7 +143,7 @@ RT::Test->fetch_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
-$m->field('Subject', 'Signing test');
+$m->field('subject', 'Signing test');
 $m->field('Content', 'Some other content');
 ok(!$m->value('Encrypt', 2), "encrypt tick box is unchecked");
 ok($m->value('Sign', 2), "sign tick box is checked");
@@ -215,7 +215,7 @@ RT::Test->fetch_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
-$m->field('Subject', 'Crypt+Sign test');
+$m->field('subject', 'Crypt+Sign test');
 $m->field('Content', 'Some final? content');
 ok($m->value('Encrypt', 2), "encrypt tick box is checked");
 ok($m->value('Sign', 2), "sign tick box is checked");
@@ -279,7 +279,7 @@ RT::Test->fetch_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
-$m->field('Subject', 'Test crypt-off on encrypted queue');
+$m->field('subject', 'Test crypt-off on encrypted queue');
 $m->field('Content', 'Thought you had me figured out didya');
 $m->field(Encrypt => undef, 2); # turn off encryption
 ok(!$m->value('Encrypt', 2), "encrypt tick box is now unchecked");
@@ -353,12 +353,12 @@ $nokey->principal_object->grant_right(Right => 'create_ticket');
 $nokey->principal_object->grant_right(Right => 'OwnTicket');
 
 my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
-$tick->create(Subject => 'owner lacks pubkey', Queue => 'general',
+$tick->create(subject => 'owner lacks pubkey', Queue => 'general',
               Owner => $nokey);
 ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
 
 $tick = RT::Model::Ticket->new(current_user => RT->system_user );
-$tick->create(Subject => 'owner has pubkey', Queue => 'general',
+$tick->create(subject => 'owner has pubkey', Queue => 'general',
               Owner => 'root');
 ok($id = $tick->id, 'created ticket for owner-with-pubkey');
 my $mail = << "MAIL";

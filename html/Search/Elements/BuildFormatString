@@ -67,7 +67,7 @@ $CurrentDisplayColumns => undef
 
 # All the things we can display in the format string by default
 my @fields = qw(
-    id Queuename Subject
+    id Queuename subject
     Status ExtendedStatus UpdateStatus
     Type
 

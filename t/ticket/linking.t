@@ -101,10 +101,10 @@ diag('Create tickets without rights to link') if $ENV{'TEST_VERBOSE'};
 {
     # on q2 we have no rights, yet
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
-    my ($id,$tid,$msg) = $parent->create( Subject => 'Link test 1', Queue => $q2->id );
+    my ($id,$tid,$msg) = $parent->create( subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
     my $child = RT::Model::Ticket->new( current_user =>  $creator );
-    ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
+    ($id,$tid,$msg) = $child->create( subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
     ok($id,$msg);
     $child->current_user( RT->system_user );
     is($child->_links('Base')->count, 0, 'link was not Created, no permissions');
@@ -116,10 +116,10 @@ diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VER
     # on q2 we have no rights, but use checking one only on thing
     RT->config->set( StrictLinkACL => 0 );
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
-    my ($id,$tid,$msg) = $parent->create( Subject => 'Link test 1', Queue => $q2->id );
+    my ($id,$tid,$msg) = $parent->create( subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
     my $child = RT::Model::Ticket->new( current_user => $creator );
-    ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
+    ($id,$tid,$msg) = $child->create( subject => 'Link test 1', Queue => $q1->id, MemberOf => $parent->id );
     ok($id,$msg);
     $child->current_user( RT->system_user );
     is($child->_links('Base')->count, 1, 'link was Created');
@@ -136,10 +136,10 @@ diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
 {
     # on q2 we have no rights, yet
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
-    my ($id,$tid,$msg) = $parent->create( Subject => 'Link test 1', Queue => $q2->id );
+    my ($id,$tid,$msg) = $parent->create( subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
     my $child = RT::Model::Ticket->new( current_user => $creator);
-    ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id );
+    ($id,$tid,$msg) = $child->create( subject => 'Link test 1', Queue => $q1->id );
     ok($id,$msg);
     ($id, $msg) = $child->add_link(Type => 'MemberOf', Target => $parent->id);
     ok(!$id, $msg);
@@ -154,10 +154,10 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     # on q2 we have no rights, but use checking one only on thing
     RT->config->set( StrictLinkACL => 0 );
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
-    my ($id,$tid,$msg) = $parent->create( Subject => 'Link test 1', Queue => $q2->id );
+    my ($id,$tid,$msg) = $parent->create( subject => 'Link test 1', Queue => $q2->id );
     ok($id,$msg);
     my $child = RT::Model::Ticket->new( current_user => $creator );
-    ($id,$tid,$msg) = $child->create( Subject => 'Link test 1', Queue => $q1->id );
+    ($id,$tid,$msg) = $child->create( subject => 'Link test 1', Queue => $q1->id );
     ok($id,$msg);
     ($id, $msg) = $child->add_link(Type => 'MemberOf', Target => $parent->id);
     ok($id, $msg);
@@ -191,7 +191,7 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
 my $tid;
 my $ticket = RT::Model::Ticket->new( current_user => $creator);
 ok($ticket->isa('RT::Model::Ticket'));
-($id,$tid, $msg) = $ticket->create(Subject => 'Link test 1', Queue => $q1->id);
+($id,$tid, $msg) = $ticket->create(subject => 'Link test 1', Queue => $q1->id);
 ok ($id,$msg);
 
 diag('try link to itself') if $ENV{'TEST_VERBOSE'};
@@ -202,7 +202,7 @@ diag('try link to itself') if $ENV{'TEST_VERBOSE'};
 }
 
 my $ticket2 = RT::Model::Ticket->new(current_user => RT->system_user);
-($id, $tid, $msg) = $ticket2->create(Subject => 'Link test 2', Queue => $q2->id);
+($id, $tid, $msg) = $ticket2->create(subject => 'Link test 2', Queue => $q2->id);
 ok ($id, $msg);
 ($id,$msg) =$ticket->add_link(Type => 'RefersTo', Target => $ticket2->id);
 ok(!$id,$msg);

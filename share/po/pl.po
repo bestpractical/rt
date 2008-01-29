@@ -31,10 +31,10 @@ msgid "#"
 msgstr "Nr"
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
-#. ($Ticket->id, $Ticket->Subject)
-#. ($link->base_obj->id, $link->base_obj->Subject)
-#. ($ticket->id, $ticket->Subject)
-#. ($ticket_obj->id, $ticket_obj->Subject)
+#. ($Ticket->id, $Ticket->subject)
+#. ($link->base_obj->id, $link->base_obj->subject)
+#. ($ticket->id, $ticket->subject)
+#. ($ticket_obj->id, $ticket_obj->subject)
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
@@ -886,9 +886,9 @@ msgid "Approval"
 msgstr "Potwierdzenia"
 
 #: html/Approvals/Display.html:65 html/Approvals/Elements/ShowDependency:63 html/Approvals/index.html:86
-#. ($Ticket->id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->subject)
 #. ($ticket->id, $msg)
-#. ($link->base_obj->id, $link->base_obj->Subject)
+#. ($link->base_obj->id, $link->base_obj->subject)
 msgid "Approval #%1: %2"
 msgstr "Potwierdzenie #%1: %2"
 

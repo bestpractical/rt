@@ -1506,7 +1506,7 @@ sub cc_addresses {
     unless ( $self->current_user_has_right('ShowTicket') ) {
         return undef;
     }
-    return ( $self->cc->member_emailsAsString );
+    return ( $self->cc->member_emails_as_string );
 
 }
 
@@ -2289,7 +2289,7 @@ sub _record_note {
     #Record the correspondence (write the transaction)
     my ( $Trans, $msg, $TransObj ) = $self->_new_transaction(
         type => $args{'NoteType'},
-        Data => ( $args{'MIMEObj'}->head->get('subject') || 'No Subject' ),
+        Data => ( $args{'MIMEObj'}->head->get('subject') || 'No subject' ),
         TimeTaken     => $args{'TimeTaken'},
         MIMEObj       => $args{'MIMEObj'},
         commit_scrips => $args{'commit_scrips'},
@@ -2669,13 +2669,13 @@ sub merge_into {
     # update all the links that point to that old ticket
     my $old_links_to = RT::Model::LinkCollection->new(
         current_user => $self->current_user );
-    $old_links_to->limit( column => 'Target', value => $self->URI );
+    $old_links_to->limit( column => 'Target', value => $self->uri );
 
     my %old_seen;
     while ( my $link = $old_links_to->next ) {
         if ( exists $old_seen{ $link->Base . "-" . $link->type} ) {
             $link->delete;
-        } elsif ( $link->Base eq $MergeInto->URI ) {
+        } elsif ( $link->Base eq $MergeInto->uri ) {
             $link->delete;
         } else {
 
@@ -2689,7 +2689,7 @@ sub merge_into {
             if ( $tmp->id ) {
                 $link->delete;
             } else {
-                $link->set_Target( $MergeInto->URI );
+                $link->set_Target( $MergeInto->uri );
                 $link->set_LocalTarget( $MergeInto->id );
             }
             $old_seen{ $link->Base . "-" . $link->type} = 1;
@@ -2699,13 +2699,13 @@ sub merge_into {
 
     my $old_links_from = RT::Model::LinkCollection->new(
         current_user => $self->current_user );
-    $old_links_from->limit( column => 'Base', value => $self->URI );
+    $old_links_from->limit( column => 'Base', value => $self->uri );
 
     while ( my $link = $old_links_from->next ) {
         if ( exists $old_seen{ $link->type. "-" . $link->Target } ) {
             $link->delete;
         }
-        if ( $link->Target eq $MergeInto->URI ) {
+        if ( $link->Target eq $MergeInto->uri ) {
             $link->delete;
         } else {
 
@@ -2719,7 +2719,7 @@ sub merge_into {
             if ( $tmp->id ) {
                 $link->delete;
             } else {
-                $link->set_Base( $MergeInto->URI );
+                $link->set_Base( $MergeInto->uri );
                 $link->set_LocalBase( $MergeInto->id );
                 $old_seen{ $link->type. "-" . $link->Target } = 1;
             }

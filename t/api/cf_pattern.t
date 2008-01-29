@@ -25,7 +25,7 @@ fails($cf->create(@cf_args, Pattern => ')))bad!regex((('));
 works($cf->create(@cf_args, Pattern => 'good regex'));
 
 my $t = new('RT::Model::Ticket');
-my ($id,undef,$msg) = $t->create(Queue => $q->id, Subject => 'CF Test');
+my ($id,undef,$msg) = $t->create(Queue => $q->id, subject => 'CF Test');
 works($id,$msg);
 
 # OK, I'm thoroughly brain washed by HOP at this point now...

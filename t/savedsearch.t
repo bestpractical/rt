@@ -45,12 +45,12 @@ my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 $ticket->create(Queue => $queue->id,
 		Requestor => [ $searchuser->name ],
 		Owner => $searchuser,
-		Subject => 'saved search test');
+		subject => 'saved search test');
 
 
 # Now start the search madness.
 my $format = '\'   <b><a href="/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#\',
-\'<b><a href="/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject\',
+\'<b><a href="/Ticket/Display.html?id=__id__">__subject__</a></b>/TITLE:subject\',
 \'__Status__\',
 \'__Queuename__\',
 \'__Ownername__\',

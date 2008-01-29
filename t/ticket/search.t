@@ -62,7 +62,7 @@ ok($dupcf->id, "Created the SearchTest3 CF");
 my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ( $id, undef $msg ) = $t1->create(
     Queue      => $q->id,
-    Subject    => 'SearchTest1',
+    subject    => 'SearchTest1',
     Requestor  => ['search1@example.com'],
     $cflabel   => 'foo1',
     $cflabel2  => 'bar1',
@@ -74,7 +74,7 @@ ok( $id, $msg );
 my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t2->create(
     Queue      => $q->id,
-    Subject    => 'SearchTest2',
+    subject    => 'SearchTest2',
     Requestor  => ['search2@example.com'],
 #    $cflabel   => 'foo2',
     $cflabel2  => 'bar2',
@@ -85,7 +85,7 @@ ok( $id, $msg );
 my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t3->create(
     Queue      => $q->id,
-    Subject    => 'SearchTest3',
+    subject    => 'SearchTest3',
     Requestor  => ['search3@example.com'],
     $cflabel   => 'foo3',
 #    $cflabel2  => 'bar3',
@@ -96,7 +96,7 @@ ok( $id, $msg );
 my $t4 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t4->create(
     Queue      => $q->id,
-    Subject    => 'SearchTest4',
+    subject    => 'SearchTest4',
     Requestor  => ['search4@example.com'],
     $cflabel   => 'foo4',
     $cflabel2  => 'bar4',
@@ -107,7 +107,7 @@ ok( $id, $msg );
 my $t5 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t5->create(
     Queue      => $q->id,
-#    Subject    => 'SearchTest5',
+#    subject    => 'SearchTest5',
     Requestor  => ['search5@example.com'],
     $cflabel   => 'foo5',
     $cflabel2  => 'bar5',
@@ -118,7 +118,7 @@ ok( $id, $msg );
 my $t6 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t6->create(
     Queue      => $q->id,
-    Subject    => 'SearchTest6',
+    subject    => 'SearchTest6',
 #    Requestor  => ['search6@example.com'],
     $cflabel   => 'foo6',
     $cflabel2  => 'bar6',
@@ -129,7 +129,7 @@ ok( $id, $msg );
 my $t7 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t7->create(
     Queue      => $q->id,
-    Subject    => 'SearchTest7',
+    subject    => 'SearchTest7',
     Requestor  => ['search7@example.com'],
 #    $cflabel   => 'foo7',
 #    $cflabel2  => 'bar7',
@@ -184,23 +184,23 @@ $tix->from_sql("Queue = '$queue' AND Requestors IS NULL");
 is($tix->count, 1, "Search for no requestor");
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$tix->from_sql("Queue = '$queue' AND Subject = 'SearchTest1'");
+$tix->from_sql("Queue = '$queue' AND subject = 'SearchTest1'");
 is($tix->count, 1, "IS subject");
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$tix->from_sql("Queue = '$queue' AND Subject LIKE 'SearchTest1'");
+$tix->from_sql("Queue = '$queue' AND subject LIKE 'SearchTest1'");
 is($tix->count, 1, "LIKE subject");
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$tix->from_sql("Queue = '$queue' AND Subject = ''");
+$tix->from_sql("Queue = '$queue' AND subject = ''");
 is($tix->count, 1, "found one ticket");
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$tix->from_sql("Queue = '$queue' AND Subject LIKE 'SearchTest'");
+$tix->from_sql("Queue = '$queue' AND subject LIKE 'SearchTest'");
 is($tix->count, 6, "found 6 tickets");
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$tix->from_sql("Queue = '$queue' AND Subject LIKE 'qwerty'");
+$tix->from_sql("Queue = '$queue' AND subject LIKE 'qwerty'");
 is($tix->count, 0, "found zero ticket");
 
 
@@ -229,7 +229,7 @@ $tix->from_sql("CF.SearchTest LIKE 'foo' AND CF.SearchTest2 LIKE 'bar' AND CF.Se
 is($tix->count, 1, "like cf and like cf and is cf");
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$tix->from_sql("CF.SearchTest LIKE 'foo' AND Subject LIKE 'SearchTest'");
+$tix->from_sql("CF.SearchTest LIKE 'foo' AND subject LIKE 'SearchTest'");
 is($tix->count, 4, "like cf and like subject");
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);

@@ -79,7 +79,7 @@ sub support_args {
     return $_[0]->SUPER::SupportArgs, qw(files_only file longer);
 }
 
-sub TestArgs {
+sub test_args {
     my $self = shift;
     my %args = @_;
     my $queue;
@@ -94,7 +94,7 @@ sub TestArgs {
             return ( 0, "Invalid file size argument '$args{longer}'" );
         }
     }
-    return $self->SUPER::TestArgs(%args);
+    return $self->SUPER::test_args(%args);
 }
 
 sub Run {

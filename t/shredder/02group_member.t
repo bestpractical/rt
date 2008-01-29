@@ -74,7 +74,7 @@ plan tests => 22;
 
 	use RT::Model::TicketCollection;
 	my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
-	my ($id) = $ticket->create( Subject => 'test', Queue => $queue->id );
+	my ($id) = $ticket->create( subject => 'test', Queue => $queue->id );
 	ok( $id, "Created new ticket" );
 	$ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 	my $status;

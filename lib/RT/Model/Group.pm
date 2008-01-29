@@ -864,9 +864,9 @@ sub member_emails {
 
 # }}}
 
-# {{{ member_emailsAsString
+# {{{ member_emails_as_string
 
-=head2 member_emailsAsString
+=head2 member_emails_as_string
 
 Returns a comma delimited string of the email addresses of all users 
 who are members of this group.

@@ -79,7 +79,7 @@ Foob!');
 use Data::Dumper;
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
-my  ($id,  undef, $create_msg ) = $ticket->create(Requestor => ['root@localhost'], Queue => 'general', Subject => 'I18NTest', MIMEObj => $parser->Entity);
+my  ($id,  undef, $create_msg ) = $ticket->create(Requestor => ['root@localhost'], Queue => 'general', subject => 'I18NTest', MIMEObj => $parser->Entity);
 ok ($id,$create_msg);
 $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});

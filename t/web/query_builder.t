@@ -147,10 +147,10 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
     my $response = $agent->get($url."Search/Edit.html");
     ok( $response->is_success, "Fetched /Search/Edit.html" );
     ok($agent->form_number(3), "found the form");
-    $agent->field("Query", "Status = 'new' OR ( Status = 'open' AND Subject LIKE 'office' )");
+    $agent->field("Query", "Status = 'new' OR ( Status = 'open' AND subject LIKE 'office' )");
     $agent->submit;
     is( getQueryFromForm,
-        "Status = 'new' OR ( Status = 'open' AND Subject LIKE 'office' )",
+        "Status = 'new' OR ( Status = 'open' AND subject LIKE 'office' )",
         "no aggregators change"
     );
 }

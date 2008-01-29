@@ -22,20 +22,20 @@ my (@Created,%Created);
 my $string = 'subject/content SQL test';
 {
     my $t = RT::Model::Ticket->new(current_user => RT->system_user);
-    ok( $t->create(Queue => 'General', Subject => $string), "Ticket Created");
+    ok( $t->create(Queue => 'General', subject => $string), "Ticket Created");
     $Created{ $t->id }++; push @Created, $t->id;
 }
 
 {
     my $Message = MIME::Entity->build(
-                     Subject     => 'this is my subject',
+                     subject     => 'this is my subject',
                      From        => 'jesse@example.com',
                      Data        => [ $string ],
             );
 
     my $t = RT::Model::Ticket->new(current_user => RT->system_user);
     ok( $t->create( Queue => 'General',
-                    Subject => 'another ticket',
+                    subject => 'another ticket',
                     MIMEObj => $Message,
                     MemberOf => $Created[0]
                   ),
@@ -45,7 +45,7 @@ my $string = 'subject/content SQL test';
 }
 
 {
-    my $query = ("Subject LIKE '$string' OR Content LIKE '$string'");
+    my $query = ("subject LIKE '$string' OR Content LIKE '$string'");
     my ($status, $msg) = $tix->from_sql($query);
     ok ($status, "correct query") or diag("error: $msg");
 

@@ -31,7 +31,7 @@ diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
 {
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
-        Subject => 'test',
+        subject => 'test',
         Data    => ['test'],
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( Entity => $entity, Encrypt => 0, Passphrase => 'test' );
@@ -68,7 +68,7 @@ diag 'only signing. missing passphrase' if $ENV{'TEST_VERBOSE'};
 {
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
-        Subject => 'test',
+        subject => 'test',
         Data    => ['test'],
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( Entity => $entity, Encrypt => 0, Passphrase => '' );
@@ -86,7 +86,7 @@ diag 'only signing. wrong passphrase' if $ENV{'TEST_VERBOSE'};
 {
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
-        Subject => 'test',
+        subject => 'test',
         Data    => ['test'],
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( Entity => $entity, Encrypt => 0, Passphrase => 'wrong' );
@@ -105,7 +105,7 @@ diag 'encryption only' if $ENV{'TEST_VERBOSE'};
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'rt@example.com',
-        Subject => 'test',
+        subject => 'test',
         Data    => ['test'],
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( Entity => $entity, Sign => 0 );
@@ -131,7 +131,7 @@ diag 'encryption only, bad recipient' if $ENV{'TEST_VERBOSE'};
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'keyless@example.com',
-        Subject => 'test',
+        subject => 'test',
         Data    => ['test'],
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( Entity => $entity, Sign => 0 );
@@ -148,7 +148,7 @@ diag 'encryption and signing with combined method' if $ENV{'TEST_VERBOSE'};
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'rt@example.com',
-        Subject => 'test',
+        subject => 'test',
         Data    => ['test'],
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( Entity => $entity, Passphrase => 'test' );
@@ -178,7 +178,7 @@ diag 'encryption and signing with cascading, sign on encrypted' if $ENV{'TEST_VE
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'rt@example.com',
-        Subject => 'test',
+        subject => 'test',
         Data    => ['test'],
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( Entity => $entity, Sign => 0 );
@@ -200,7 +200,7 @@ diag 'find signed/encrypted part deep inside' if $ENV{'TEST_VERBOSE'};
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'rt@example.com',
-        Subject => 'test',
+        subject => 'test',
         Data    => ['test'],
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( Entity => $entity, Sign => 0 );
@@ -223,7 +223,7 @@ diag 'wrong signed/encrypted parts: no protocol' if $ENV{'TEST_VERBOSE'};
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'rt@example.com',
-        Subject => 'test',
+        subject => 'test',
         Data    => ['test'],
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( Entity => $entity, Sign => 0 );
@@ -239,7 +239,7 @@ diag 'wrong signed/encrypted parts: not enought parts' if $ENV{'TEST_VERBOSE'};
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'rt@example.com',
-        Subject => 'test',
+        subject => 'test',
         Data    => ['test'],
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( Entity => $entity, Sign => 0 );
@@ -255,7 +255,7 @@ diag 'wrong signed/encrypted parts: wrong proto' if $ENV{'TEST_VERBOSE'};
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'rt@example.com',
-        Subject => 'test',
+        subject => 'test',
         Data    => ['test'],
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( Entity => $entity, Sign => 0 );
@@ -271,7 +271,7 @@ diag 'wrong signed/encrypted parts: wrong proto' if $ENV{'TEST_VERBOSE'};
     my $entity = MIME::Entity->build(
         From    => 'rt@example.com',
         To      => 'rt@example.com',
-        Subject => 'test',
+        subject => 'test',
         Data    => ['test'],
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( Entity => $entity, Encrypt => 0, Passphrase => 'test' );

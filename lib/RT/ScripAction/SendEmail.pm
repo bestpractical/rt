@@ -563,7 +563,7 @@ sub set_rt_special_headers {
 
     $self->set_subject();
     $self->set_subject_token();
-    $self->set_header_as_encoding( 'Subject',
+    $self->set_header_as_encoding( 'subject',
         RT->config->get('EmailOutputEncoding') )
         if ( RT->config->get('EmailOutputEncoding') );
     $self->set_return_address();
@@ -804,10 +804,10 @@ sub set_header {
     return $self->template_obj->mime_obj->head->get($field);
 }
 
-=head2 SetSubject
+=head2 Setsubject
 
 This routine sets the subject. it does not add the rt tag. that gets done elsewhere
-If $self->{'Subject'} is already defined, it uses that. otherwise, it tries to get
+If $self->{'subject'} is already defined, it uses that. otherwise, it tries to get
 the transaction's subject.
 
 =cut 
@@ -816,16 +816,16 @@ sub set_subject {
     my $self = shift;
     my $subject;
 
-    if ( $self->template_obj->mime_obj->head->get('Subject') ) {
+    if ( $self->template_obj->mime_obj->head->get('subject') ) {
         return ();
     }
 
     my $message = $self->transaction_obj->attachments;
     $message->rows_per_page(1);
-    if ( $self->{'Subject'} ) {
-        $subject = $self->{'Subject'};
+    if ( $self->{'subject'} ) {
+        $subject = $self->{'subject'};
     } elsif ( my $first = $message->first ) {
-        my $tmp = $first->get_header('Subject');
+        my $tmp = $first->get_header('subject');
         $subject = defined $tmp ? $tmp : $self->ticket_obj->subject;
     } else {
         $subject = $self->ticket_obj->subject();
@@ -834,11 +834,11 @@ sub set_subject {
     $subject =~ s/(\r\n|\n|\s)/ /gi;
 
     chomp $subject;
-    $self->set_header( 'Subject', $subject );
+    $self->set_header( 'subject', $subject );
 
 }
 
-=head2 SetSubjectToken
+=head2 SetsubjectToken
 
 This routine fixes the RT tag in the subject. It's unlikely that you want to overwrite this.
 
@@ -848,8 +848,8 @@ sub set_subject_token {
     my $self = shift;
 
     $self->template_obj->mime_obj->head->replace(
-        Subject => RT::Interface::Email::add_subject_tag(
-            $self->template_obj->mime_obj->head->get('Subject'),
+        subject => RT::Interface::Email::add_subject_tag(
+            $self->template_obj->mime_obj->head->get('subject'),
             $self->ticket_obj->id,
         ),
     );

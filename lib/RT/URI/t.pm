@@ -81,7 +81,7 @@ use base qw/RT::URI::fsck_com_rt/;
 
 my $scheme = "t";
 
-=head2 ParseURI URI
+=head2 parse_uri URI
 
 When handed an t: URI, figures out if it is an RT ticket.  This is an
 alternate short form of specifying a full ticket URI.
@@ -98,7 +98,7 @@ sub parse_uri {
     # tickets after stripping off the t: prefix.
 
     if ( $uri =~ /^$scheme:(\d+)/ ) {
-        return $self->SUPER::ParseURI($1);
+        return $self->SUPER::parse_uri($1);
     } else {
         $self->{'uri'} = $uri;
         return undef;

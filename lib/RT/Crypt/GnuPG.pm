@@ -2392,7 +2392,7 @@ sub dry_sign {
         type    => "text/plain",
         From    => 'nobody@localhost',
         To      => 'nobody@localhost',
-        Subject => "dry sign",
+        subject => "dry sign",
         Data    => ['t'],
     );
 

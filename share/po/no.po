@@ -34,10 +34,10 @@ msgid "#%1"
 msgstr "#%1"
 
 #: html/Approvals/Elements/Approve:48 html/Approvals/Elements/ShowDependency:71 html/SelfService/Display.html:46 html/Ticket/Display.html:47 html/Ticket/Display.html:51
-#. ($Ticket->id, $Ticket->Subject)
-#. ($link->base_obj->id, $link->base_obj->Subject)
-#. ($ticket->id, $ticket->Subject)
-#. ($ticket_obj->id, $ticket_obj->Subject)
+#. ($Ticket->id, $Ticket->subject)
+#. ($link->base_obj->id, $link->base_obj->subject)
+#. ($ticket->id, $ticket->subject)
+#. ($ticket_obj->id, $ticket_obj->subject)
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
@@ -900,9 +900,9 @@ msgid "Approval"
 msgstr "Godkjennelse"
 
 #: html/Approvals/Display.html:65 html/Approvals/Elements/ShowDependency:63 html/Approvals/index.html:86
-#. ($Ticket->id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->subject)
 #. ($ticket->id, $msg)
-#. ($link->base_obj->id, $link->base_obj->Subject)
+#. ($link->base_obj->id, $link->base_obj->subject)
 msgid "Approval #%1: %2"
 msgstr "Godkjennelse #%1: %2"
 
@@ -4071,7 +4071,7 @@ msgid "organization"
 msgstr "Organisasjon"
 
 #: html/Approvals/Elements/Approve:53
-#. ($approving->id, $approving->Subject)
+#. ($approving->id, $approving->subject)
 msgid "Originating ticket: #%1"
 msgstr "Opprinnelig sak: #%1"
 
@@ -4574,17 +4574,17 @@ msgid "Refresh this page every %1 minutes."
 msgstr "Last siden på nytt hvert %1 minutt."
 
 #: lib/RT/Transaction_Overlay.pm:811
-#. ($ticket->Subject)
+#. ($ticket->subject)
 msgid "Reminder '%1' added"
 msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:824
-#. ($ticket->Subject)
+#. ($ticket->subject)
 msgid "Reminder '%1' completed"
 msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:817
-#. ($ticket->Subject)
+#. ($ticket->subject)
 msgid "Reminder '%1' reopened"
 msgstr ""
 
@@ -4684,7 +4684,7 @@ msgid "Resolve"
 msgstr "Løs"
 
 #: html/Ticket/Update.html:156
-#. ($ticket_obj->id, $ticket_obj->Subject)
+#. ($ticket_obj->id, $ticket_obj->subject)
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Løs saknr #%1 (%2)"
 
@@ -5293,12 +5293,12 @@ msgid "Style"
 msgstr ""
 
 #: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Update.html:65 html/Ticket/Create.html:108 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1162 lib/RT/TicketCollection_Overlay.pm:1733
-msgid "Subject"
+msgid "subject"
 msgstr "Emne"
 
 #: docs/design_docs/string-extraction-guide.txt:89 lib/RT/StyleGuide.pod:815 lib/RT/Transaction_Overlay.pm:700
 #. ($self->Data)
-msgid "Subject changed to %1"
+msgid "subject changed to %1"
 msgstr "Endre emne til %1"
 
 #: html/Elements/Submit:75
@@ -5604,12 +5604,12 @@ msgid "Ticket # %1 Jumbo update: %2"
 msgstr "Sak $ %1 Jumbo oppdater: %2"
 
 #: html/Ticket/ModifyAll.html:46 html/Ticket/ModifyAll.html:50
-#. ($Ticket->id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->subject)
 msgid "Ticket #%1 Jumbo update: %2"
 msgstr "Sak #%1 Jumbo oppdatering: %2"
 
 #: html/Approvals/Elements/ShowDependency:67
-#. ($link->base_obj->id, $link->base_obj->Subject)
+#. ($link->base_obj->id, $link->base_obj->subject)
 msgid "Ticket #%1: %2"
 msgstr "Sak #%1: %2"
 
@@ -5639,7 +5639,7 @@ msgid "Ticket Custom Fields"
 msgstr ""
 
 #: html/Ticket/History.html:46 html/Ticket/History.html:49
-#. ($Ticket->id, $Ticket->Subject)
+#. ($Ticket->id, $Ticket->subject)
 msgid "Ticket History # %1 %2"
 msgstr "Sakshistorikk # %1 %2"
 
@@ -5954,7 +5954,7 @@ msgid "Update ticket #%1"
 msgstr "Oppdater sak #%1"
 
 #: html/Ticket/Update.html:158
-#. ($ticket_obj->id, $ticket_obj->Subject)
+#. ($ticket_obj->id, $ticket_obj->subject)
 msgid "Update ticket #%1 (%2)"
 msgstr "Oppdater sak #%1 (%2)"
 

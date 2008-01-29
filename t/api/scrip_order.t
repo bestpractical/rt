@@ -44,7 +44,7 @@ my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 ($id, $msg) = $ticket->create( 
     Queue => $queue_id, 
     Requestor => 'order@example.com',
-    Subject => "Scrip order test $$",
+    subject => "Scrip order test $$",
 );
 ok($ticket->id, "Created ticket? id=$id");
 

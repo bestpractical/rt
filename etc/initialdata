@@ -429,7 +429,7 @@ You received this message as RT has problems with public keys of the following u
          "Inform user that we received an encrypted email and we have no private keys to decrypt", # loc
        content => q{Subject: we received message we cannot decrypt
 
-You sent an encrypted message with subject '{ $Message->head->get('Subject') }',
+You sent an encrypted message with subject '{ $Message->head->get('subject') }',
 but we have no private key it's encrypted to.
 
 Please, check that you encrypt messages with correct keys
@@ -684,7 +684,7 @@ return 0; # ignore $passed;
       description => '%1 highest priority tickets I own', # loc
       content     =>
       { Format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
-                 . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
+                 . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a>/TITLE:subject',}
                  . q{Priority, Queuename, ExtendedStatus},
         Query   => " Owner = '__CurrentUser__' AND ( Status = 'new' OR Status = 'open')",
         order_by => 'Priority',
@@ -696,7 +696,7 @@ return 0; # ignore $passed;
       content     =>
 # 'Take' #loc
       { Format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
-                 . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
+                 . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a>/TITLE:subject',}
                  . q{Queuename, ExtendedStatus, CreatedRelative, }
                  . q{'<A HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">___(Take)__</a>/TITLE:NBSP'},
         Query   => " Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",

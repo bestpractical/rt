@@ -72,7 +72,7 @@ diag "create a ticket using API with 'asd'(not 'ASD') as value of the CF"
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     my ($txnid, $msg);
     ($tid, $txnid, $msg) = $ticket->create(
-        Subject => 'test',
+        subject => 'test',
         Queue => $queue->id,
         "CustomField-$cfid" => 'ASD',
     );

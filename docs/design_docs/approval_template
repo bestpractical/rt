@@ -22,4 +22,4 @@
  Refers-To: {$tickets{'TOP'}->id}
  Due: {time + 86400}
  Content-Type: text/plain
- Content: Your approval is requested for the ticket {%$tickets{'TOP'}->id}: {$tickets{'TOP'}->Subject}
+ Content: Your approval is requested for the ticket {%$tickets{'TOP'}->id}: {$tickets{'TOP'}->subject}

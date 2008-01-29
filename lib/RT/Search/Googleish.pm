@@ -153,7 +153,7 @@ sub query_to_sql {
         # Else, subject must contain $key
         else {
             $key =~ s/['\\].*//g;
-            push @tql_clauses, "Subject LIKE '$key'";
+            push @tql_clauses, "subject LIKE '$key'";
         }
     }
 

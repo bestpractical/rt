@@ -54,7 +54,7 @@ use base qw(RT::Shredder::Plugin::SQLDump);
 
 sub applies_to_states { return 'before any action' }
 
-sub TestArgs {
+sub test_args {
     my $self = shift;
     my %args = ( file_name => '', @_ );
     unless ( $args{'file_name'} ) {
@@ -62,7 +62,7 @@ sub TestArgs {
         $args{'file_name'}
             = POSIX::strftime( "summary-%Y%m%dT%H%M%S.XXXX.txt", gmtime );
     }
-    return $self->SUPER::TestArgs(%args);
+    return $self->SUPER::test_args(%args);
 }
 
 sub Run {

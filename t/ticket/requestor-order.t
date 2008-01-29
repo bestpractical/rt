@@ -20,7 +20,7 @@ while (@requestors) {
     my $t = RT::Model::Ticket->new(current_user => RT->system_user);
     my ( $id, undef $msg ) = $t->create(
         Queue      => $q->id,
-        Subject    => shift @subjects,
+        subject    => shift @subjects,
         Requestor => [ shift @requestors ]
     );
     ok( $id, $msg );
@@ -35,11 +35,11 @@ while (@requestors) {
 {
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
     $tix->from_sql("Queue = '$queue' AND requestor = 'alpha\@example.com'");
-    $tix->order_by({ column => "Subject" });
+    $tix->order_by({ column => "subject" });
     my @subjects;
     while (my $t = $tix->next) { push @subjects, $t->subject; }
     is(@subjects, 6, "found six tickets");
-    is_deeply( \@subjects, [ sort @subjects ], "Subjects are sorted");
+    is_deeply( \@subjects, [ sort @subjects ], "subjects are sorted");
 }
 
 sub check_emails_order
@@ -72,7 +72,7 @@ sub check_emails_order
 
 {
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-    $tix->from_sql("Queue = '$queue' AND Subject = 'first test'");
+    $tix->from_sql("Queue = '$queue' AND subject = 'first test'");
     $tix->order_by({ column => "Requestor.email" });
     check_emails_order($tix, 6, 'ASC');
     $tix->order_by({ column => "Requestor.email", order => 'DESC' });
@@ -82,7 +82,7 @@ sub check_emails_order
 
 {
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-    $tix->from_sql("Queue = '$queue' AND Subject = 'first test'");
+    $tix->from_sql("Queue = '$queue' AND subject = 'first test'");
     $tix->order_by({ column => "Requestor.email" });
     check_emails_order($tix, 6, 'ASC');
     $tix->order_by({ column => "Requestor.email", order => 'DESC' });
@@ -94,7 +94,7 @@ sub check_emails_order
     my $t = RT::Model::Ticket->new(current_user => RT->system_user);
     my ( $id, $msg ) = $t->create(
         Queue      => $q->id,
-        Subject    => "first test",
+        subject    => "first test",
         Requestor  => 'badaboom@example.com',
     );
     ok( $id, "ticket Created" ) or diag( "error: $msg" );
@@ -110,7 +110,7 @@ sub check_emails_order
 }
 
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);    
-    $tix->from_sql("Queue = '$queue' AND Subject = 'first test'");
+    $tix->from_sql("Queue = '$queue' AND subject = 'first test'");
 TODO: {
     local $TODO = "if group has non users members we get wrong order";
     $tix->order_by({ column => "Requestor.email" });

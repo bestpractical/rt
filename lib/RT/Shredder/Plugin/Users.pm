@@ -96,7 +96,7 @@ sub SupportArgs {
         qw(status name email replace_relations no_tickets);
 }
 
-sub TestArgs {
+sub test_args {
     my $self = shift;
     my %args = @_;
     if ( $args{'status'} ) {
@@ -123,7 +123,7 @@ sub TestArgs {
         }
         $args{'replace_relations'} = $user->id;
     }
-    return $self->SUPER::TestArgs(%args);
+    return $self->SUPER::test_args(%args);
 }
 
 sub Run {

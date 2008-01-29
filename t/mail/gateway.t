@@ -461,7 +461,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     my $entity = MIME::Entity->build(
         From    => 'root@localhost',
         To      => 'rt@localhost',
-        Subject => 'binary attachment test',
+        subject => 'binary attachment test',
         Data    => ['This is a test of a binary attachment'],
     );
 
@@ -535,7 +535,7 @@ EOF
     isa_ok ($tick, 'RT::Model::Ticket');
     ok ($tick->id, "found ticket ". $tick->id);
     is ($tick->id, $id, "correct ticket");
-    is ($tick->subject , 'This is a test of I18N ticket creation', "Created the ticket - ". $tick->Subject);
+    is ($tick->subject , 'This is a test of I18N ticket creation', "Created the ticket - ". $tick->subject);
 
     my $unistring = "\303\241\303\251\303\255\303\263\303\272";
     Encode::_utf8_on($unistring);
@@ -624,7 +624,7 @@ ok( $qid, 'queue Created for ext-mailgate tests' );
 # create ticket that is owned by nobody
 use RT::Model::Ticket;
 my $tick = RT::Model::Ticket->new(current_user => RT->system_user);
-my ($id) = $tick->create( Queue => 'ext-mailgate', Subject => 'test');
+my ($id) = $tick->create( Queue => 'ext-mailgate', subject => 'test');
 ok( $id, 'new ticket Created' );
 is( $tick->Owner, RT->nobody->id, 'owner of the new ticket is nobody' );
 
@@ -705,7 +705,7 @@ ok( $uid, 'user Created for ext-mailgate tests' );
 ok( !$user->has_right( Right => 'OwnTicket', Object => $queue ), "User can't own ticket" );
 
 $tick = RT::Model::Ticket->new(current_user => RT->system_user);
-($id) = $tick->create( Queue => $qid, Subject => 'test' );
+($id) = $tick->create( Queue => $qid, subject => 'test' );
 ok( $id, 'create new ticket' );
 
 my $rtname = RT->config->get('rtname');

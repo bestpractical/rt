@@ -179,7 +179,7 @@ A complete list of acceptable fields for this beastie:
 
 
     *  Queue           => name or id# of a queue
-       Subject         => A text string
+       subject         => A text string
      ! Status          => A valid status. defaults to 'new'
        Due             => Dates can be specified in seconds since the epoch
                           to be handled literally or in a semi-free textual
@@ -1177,7 +1177,7 @@ sub update_custom_fields {
         }
 
         if ((   $CustomFieldObj->type eq 'Freeform'
-                && !$CustomFieldObj->SingleValue
+                && !$CustomFieldObj->single_value
             )
             || $CustomFieldObj->type =~ /text/i
             )

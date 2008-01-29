@@ -453,7 +453,6 @@ sub is_applicable {
     };
 
     if ($@) {
-        die( "Scrip IsApplicable " . $self->id . " died. - " . $@ );
         Jifty->log->error(
             "Scrip IsApplicable " . $self->id . " died. - " . $@ );
         return (undef);
@@ -522,13 +521,13 @@ sub commit {
 
 #Searchbuilder caching isn't perfectly coherent. got to reload the ticket object, since it
 # may have changed
-    $args{'ticket_obj'}->load( $args{'ticket_obj'}->id );
 
     if ($@) {
         Jifty->log->error( "Scrip Commit " . $self->id . " died. - " . $@ );
         return (undef);
     }
 
+    $args{'ticket_obj'}->load( $args{'ticket_obj'}->id );
     # Not destroying or weakening hte Action and Condition here could cause a
     # leak
 

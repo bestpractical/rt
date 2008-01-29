@@ -130,7 +130,7 @@ ok (!$q->current_user->has_right(Right => 'create_ticket', Object => $q), "The u
 
 # Create a ticket in the queue
 my $new_tick = RT::Model::Ticket->new(current_user => RT->system_user);
-my ($tickid, $tickmsg) = $new_tick->create(Subject=> 'ACL Test', Queue => 'General');
+my ($tickid, $tickmsg) = $new_tick->create(subject=> 'ACL Test', Queue => 'General');
 ok($tickid, "Created ticket: $tickid");
 # Make sure the user doesn't have the right to modify tickets in the queue
 ok (!$new_user->has_right( Object => $new_tick, Right => 'ModifyTicket'), "User can't modify the ticket without group membership");
@@ -161,7 +161,7 @@ ok($q_as_system->id, "Loaded the first queue");
 
 # Create a ticket in the queue
 my $new_tick2 = RT::Model::Ticket->new(current_user => RT->system_user);
-(my $tick2id, $tickmsg) = $new_tick2->create(Subject=> 'ACL Test 2', Queue =>$q_as_system->id);
+(my $tick2id, $tickmsg) = $new_tick2->create(subject=> 'ACL Test 2', Queue =>$q_as_system->id);
 ok($tick2id, "Created ticket: $tick2id");
 is($new_tick2->queue_obj->id, $q_as_system->id, "Created a new ticket in queue 1");
 

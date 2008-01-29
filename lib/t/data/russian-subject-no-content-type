@@ -34,7 +34,7 @@ X-Spam-Checker-Version: SpamAssassin 2.60-cvs-mail.demos (1.193-2003-06-13-exp)
 X-Spam-Level: +
 X-Spam-Status: No, hits=1.0 required=5.0 tests=SUBJ_ILLEGAL_CHARS autolearn=no
 	version=2.60-cvs-mail.demos
-X-Spam-Report: * SUBJ_ILLEGAL_CHARS  1.0 (Subject contains too many raw illegal characters)
+X-Spam-Report: * SUBJ_ILLEGAL_CHARS  1.0 (subject contains too many raw illegal characters)
 	
 Content-Length: 6
 

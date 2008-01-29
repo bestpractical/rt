@@ -107,10 +107,10 @@
 </tr>
 <tr>
 <td class="label">
-<&|/l&>Subject</&>:
+<&|/l&>subject</&>:
 </td>
 <td class="value" colspan="5">
-<input name="Subject" size="60" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
+<input name="subject" size="60" maxsize="200" value="<%$ARGS{subject} || ''%>" />
 </td>
 </tr>
 <tr>
@@ -256,7 +256,7 @@ if ( $cloneTicket ) {
     };
     
     $clone->{$_} = $cloneticket_obj->$_() 
-        for qw/Owner Subject final_priority time_estimated TimeWorked 
+        for qw/Owner subject final_priority time_estimated TimeWorked 
                 Status TimeLeft Starts Started Due Resolved/;
     
         my $members = $cloneticket_obj->members;
@@ -357,7 +357,7 @@ if ($ARGS{'Attach'}) {			# attachment?
     $subject =~ s#^.*[\\/]##;
 
     my $attachment = make_mime_entity(
-        Subject             => $subject,
+        subject             => $subject,
         Body                => "",
         AttachmentFieldname => 'Attach'
     );

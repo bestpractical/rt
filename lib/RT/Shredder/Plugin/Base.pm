@@ -129,7 +129,7 @@ sub HasSupportForArgs {
         if @unsupported;
 }
 
-=head3 TestArgs
+=head3 test_args
 
 Takes hash with arguments and thier values and returns true
 if all values pass testing otherwise returns C<(0, $msg)>.
@@ -141,7 +141,7 @@ Method should be subclassed if plugin support non standard arguments.
 
 =cut
 
-sub TestArgs {
+sub test_args {
     my $self = shift;
     my %args = @_;
     if ( $self->{'opt'} ) {
@@ -160,7 +160,7 @@ C<(0, $msg)> if error had happenned.
 
 Method B<must> be subclassed, this class always returns error.
 
-Method B<must> be called only after C<TestArgs> method in other
+Method B<must> be called only after C<test_args> method in other
 case values of the arguments are not available.
 
 =cut

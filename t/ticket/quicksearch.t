@@ -18,7 +18,7 @@ ok ($q->id, "Created the queue");
 my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ( $id, undef, $msg ) = $t1->create(
     Queue      => $q->id,
-    Subject    => 'SearchTest1',
+    subject    => 'SearchTest1',
     Requestor => ['search2@example.com'],
 );
 ok( $id, $msg );
@@ -32,8 +32,8 @@ my @tests = (
     "fulltext:jesse"       => "( Content LIKE 'jesse' )",
     $queue                 => "( Queue = '$queue' )",
     "root $queue"          => "( Owner = 'root' ) AND ( Queue = '$queue' )",
-    "notauser $queue"      => "( Queue = '$queue' ) AND ( Subject LIKE 'notauser' )",
-    "notauser $queue root" => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( Subject LIKE 'notauser' )");
+    "notauser $queue"      => "( Queue = '$queue' ) AND ( subject LIKE 'notauser' )",
+    "notauser $queue root" => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( subject LIKE 'notauser' )");
 
 while (my ($from, $to) = splice @tests, 0, 2) {
     is($quick->query_to_sql($from), $to, "<$from> -> <$to>");

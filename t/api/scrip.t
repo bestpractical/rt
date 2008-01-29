@@ -27,7 +27,7 @@ ok($val,$msg);
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($tv,$ttv,$tm) = $ticket->create(Queue => $q->id,
-                                    Subject => "hair on fire",
+                                    subject => "hair on fire",
                                     );
 ok($tv, $tm);
 
@@ -36,7 +36,7 @@ is ($ticket->Priority , '87', "Ticket priority is set right");
 
 my $ticket2 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($t2v,$t2tv,$t2m) = $ticket2->create(Queue => $q->id,
-                                    Subject => "hair in water",
+                                    subject => "hair in water",
                                     );
 ok($t2v, $t2m);
 

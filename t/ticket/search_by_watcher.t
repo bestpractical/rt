@@ -53,11 +53,11 @@ sub run_tests {
 }
 
 @data = (
-    { Subject => 'xy', Requestor => ['x@example.com', 'y@example.com'] },
-    { Subject => 'x', Requestor => 'x@example.com' },
-    { Subject => 'y', Requestor => 'y@example.com' },
-    { Subject => '-', },
-    { Subject => 'z', Requestor => 'z@example.com' },
+    { subject => 'xy', Requestor => ['x@example.com', 'y@example.com'] },
+    { subject => 'x', Requestor => 'x@example.com' },
+    { subject => 'y', Requestor => 'y@example.com' },
+    { subject => '-', },
+    { subject => 'z', Requestor => 'z@example.com' },
 );
 %test = (
     'Requestor = "x@example.com"'  => { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
@@ -103,13 +103,13 @@ TODO: {
 }
 
 @data = (
-    { Subject => 'xy', Cc => ['x@example.com'], Requestor => [ 'y@example.com' ] },
-    { Subject => 'x-', Cc => ['x@example.com'], Requestor => [] },
-    { Subject => '-y', Cc => [],                Requestor => [ 'y@example.com' ] },
-    { Subject => '-', },
-    { Subject => 'zz', Cc => ['z@example.com'], Requestor => [ 'z@example.com' ] },
-    { Subject => 'z-', Cc => ['z@example.com'], Requestor => [] },
-    { Subject => '-z', Cc => [],                Requestor => [ 'z@example.com' ] },
+    { subject => 'xy', Cc => ['x@example.com'], Requestor => [ 'y@example.com' ] },
+    { subject => 'x-', Cc => ['x@example.com'], Requestor => [] },
+    { subject => '-y', Cc => [],                Requestor => [ 'y@example.com' ] },
+    { subject => '-', },
+    { subject => 'zz', Cc => ['z@example.com'], Requestor => [ 'z@example.com' ] },
+    { subject => 'z-', Cc => ['z@example.com'], Requestor => [] },
+    { subject => '-z', Cc => [],                Requestor => [ 'z@example.com' ] },
 );
 %test = (
     'Cc = "x@example.com" AND Requestor = "y@example.com"' =>
@@ -175,7 +175,7 @@ my $nobody = RT->nobody();
     # create ticket and force type to not a 'ticket' value
     # bug #6898@rt3.fsck.com
     # and http://marc.theaimsgroup.com/?l=rt-devel&m=112662934627236&w=2
-    @data = ( { Subject => 'not a ticket' } );
+    @data = ( { subject => 'not a ticket' } );
     my($t) = add_tix_from_data();
     $t->_set( column             => 'type',
               value             => 'not a ticket',
@@ -201,7 +201,7 @@ my $nobody = RT->nobody();
     my $u = RT::Model::User->new(current_user => RT->system_user );
     $u->load_or_create_by_email('alpha@example.com');
     ok($u->id, "loaded user");
-    @data = ( { Subject => '4', Owner => $u->id } );
+    @data = ( { subject => '4', Owner => $u->id } );
     my($t) = add_tix_from_data();
     is( $t->Owner, $u->id, "Created ticket with custom owner" );
     my $u_alpha_id = $u->id;
@@ -209,7 +209,7 @@ my $nobody = RT->nobody();
     $u = RT::Model::User->new(current_user => RT->system_user );
     $u->load_or_create_by_email('bravo@example.com');
     ok($u->id, "loaded user");
-    @data = ( { Subject => '5', Owner => $u->id } );
+    @data = ( { subject => '5', Owner => $u->id } );
     ($t) = add_tix_from_data();
     is( $t->Owner, $u->id, "Created ticket with custom owner" );
     my $u_bravo_id = $u->id;

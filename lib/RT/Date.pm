@@ -129,7 +129,7 @@ Takes a param hash with the fields C<Format>, C<value> and C<Timezone>.
 
 If $args->{'Format'} is 'unix', takes the number of seconds since the epoch.
 
-If $args->{'Format'} is ISO, tries to parse an ISO date.
+If $args->{'Format'} is iso, tries to parse an iso date.
 
 If $args->{'Format'} is 'unknown', require Time::ParseDate and make it figure
 things out. This is a heavyweight operation that should never be called from
@@ -484,7 +484,7 @@ sub date_time {
 Takes Format argument which allows you choose date formatter.
 Pass throught other arguments to the formatter method.
 
-Returns the object's formatted date. Default formatter is ISO.
+Returns the object's formatted date. Default formatter is iso.
 
 =cut
 
@@ -503,7 +503,7 @@ sub time {
     return $self->get( @_, Date => 0, Time => 1 );
 }
 
-=head2 Get
+=head2 get
 
 Returnsa a formatted and localized string that represets time of
 the current object.
@@ -511,11 +511,11 @@ the current object.
 
 =cut
 
-sub Get {
+sub get {
     my $self      = shift;
-    my %args      = ( Format => 'ISO', @_ );
+    my %args      = ( Format => 'iso', @_ );
     my $formatter = $args{'Format'};
-    $formatter = 'ISO' unless $self->can($formatter);
+    $formatter = 'iso' unless $self->can($formatter);
     return $self->$formatter(%args);
 }
 
@@ -572,10 +572,10 @@ sub DefaultFormat {
     }
 }
 
-=head3 ISO
+=head3 iso 
 
-Returns the object's date in ISO format C<YYYY-MM-DD mm:hh:ss>.
-ISO format is locale independant, but adding timezone offset info
+Returns the object's date in iso format C<YYYY-MM-DD mm:hh:ss>.
+iso format is locale independant, but adding timezone offset info
 is not implemented yet.
 
 Supports arguments: C<Timezone>, C<Date>, C<Time> and C<Seconds>.
@@ -616,7 +616,7 @@ sub iso {
 Returns the object's date and time in W3C date time format
 (L<http://www.w3.org/TR/NOTE-datetime>).
 
-Format is locale independand and is close enought to ISO, but
+Format is locale independand and is close enought to iso, but
 note that date part is B<not optional> and output string
 has timezone offset mark in C<[+-]hh:mm> format.
 

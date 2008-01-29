@@ -99,7 +99,7 @@ sub from_object {
     my $obj  = shift;
 
     return undef unless $obj->can('URI');
-    return $self->from_uri( $obj->URI );
+    return $self->from_uri( $obj->uri );
 }
 
 # }}}
@@ -205,7 +205,7 @@ of
 
 sub uri {
     my $self = shift;
-    return ( $self->resolver->URI );
+    return ( $self->resolver->uri );
 
 }
 
@@ -221,7 +221,7 @@ Returns a local object for this content. This will usually be an RT::Model::Tick
 
 sub object {
     my $self = shift;
-    return ( $self->resolver->Object );
+    return ( $self->resolver->object );
 
 }
 

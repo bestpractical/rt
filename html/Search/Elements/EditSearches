@@ -188,7 +188,7 @@ if ( $obj && $obj->id ) {
     }
 
     $obj->set_sub_values( %$Query );
-    $obj->set_Description( $desc );
+    $obj->set_description( $desc );
 }
 elsif ( $id eq 'new' ) {
     my $saved_search = RT::SavedSearch->new();

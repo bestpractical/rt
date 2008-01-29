@@ -1739,10 +1739,10 @@ Text:
     Examples:
 
         rt ls "Priority > 5 and Status='new'"
-        rt ls -o +Subject "Priority > 5 and Status='new'"
+        rt ls -o +subject "Priority > 5 and Status='new'"
         rt ls -o -Created "Priority > 5 and Status='new'"
         rt ls -i "Priority > 5"|rt edit - set status=resolved
-        rt ls -t ticket "Subject like '[PATCH]%'"
+        rt ls -t ticket "subject like '[PATCH]%'"
 
 --
 

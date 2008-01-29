@@ -47,8 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
   <tr>
-      <td class="label"><&|/l&>Subject</&>:</td>
-      <td class="value"><input name="Subject" value="<%$ticket_obj->subject|h%>" size="50" /></td>
+      <td class="label"><&|/l&>subject</&>:</td>
+      <td class="value"><input name="subject" value="<%$ticket_obj->subject|h%>" size="50" /></td>
     </tr>
 
   <tr>

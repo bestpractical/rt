@@ -69,7 +69,7 @@ my $Order = "ASC";
 my $order_by = "Created";
 my @Format = qq{
    '<B><A HREF="}. RT->config->get('WebPath') .qq{/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-   '<B><A HREF="}. RT->config->get('WebPath') .qq{/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+   '<B><A HREF="}. RT->config->get('WebPath') .qq{/SelfService/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
    Status,
    Requestors,
    Ownername};

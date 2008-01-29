@@ -89,8 +89,8 @@ $TICKET_COLUMN_MAP = {
         attribute => 'status',
         value     => sub  { return _($_[0]->status) }
     },
-    Subject => {
-        attribute => 'Subject',
+    subject => {
+        attribute => 'subject',
         value => sub  { return $_[0]->subject || "(" . _('No subject') . ")" }
     },
     ExtendedStatus => {

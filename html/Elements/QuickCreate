@@ -51,7 +51,7 @@
 <input type="hidden" class="hidden" name="QuickCreate" value="1" />
 <table>
 <tr><td>
-<&|/l&>Subject</&>:<br /><input size="15" name="Subject" />
+<&|/l&>subject</&>:<br /><input size="15" name="subject" />
 </td><td>
 <&|/l&>Queue</&>:<br /><& /Elements/SelectNewTicketQueue, name => 'Queue', ShowNullOption => 0 &>
 </td><td>

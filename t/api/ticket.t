@@ -42,7 +42,7 @@ $u->load("root");
 ok ($u->id, "Found the root user");
 ok(my $t = RT::Model::Ticket->new(current_user => RT->system_user));
 ok(my ($id, $msg) = $t->create( Queue => $testqueue->id,
-               Subject => 'Testing',
+               subject => 'Testing',
                Owner => $u->id
               ));
 isnt($id , 0);
@@ -67,7 +67,7 @@ is($t2->owner_obj->id, $u->id);
 
 my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($id3, $msg3) = $t3->create( Queue => $testqueue->id,
-                                Subject => 'Testing',
+                                subject => 'Testing',
                                 Owner => $u->id);
 my ($cfv1, $cfm1) = $t->add_custom_field_value(Field => $testcf->id,
  Value => 'Value1');
@@ -91,7 +91,7 @@ ok(require RT::Model::Ticket, "Loading the RT::Model::Ticket library");
 {
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 
-ok( $t->create(Queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy => 'http://www.cpan.org', RefersTo => 'http://fsck.com', Subject => 'This is a subject'), "Ticket Created");
+ok( $t->create(Queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy => 'http://www.cpan.org', RefersTo => 'http://fsck.com', subject => 'This is a subject'), "Ticket Created");
 
 ok ( my $id = $t->id, "Got ticket id");
 like ($t->refers_to->first->Target , qr/fsck.com/, "Got refers to");
@@ -101,7 +101,7 @@ is ($t->resolved_obj->unix, 0, "It hasn't been resolved - ". $t->resolved_obj->U
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 my $msg;
-($id, $msg) = $ticket->create(Subject => "Foo",
+($id, $msg) = $ticket->create(subject => "Foo",
                 Owner => RT->nobody->id,
                 Status => 'open',
                 Requestor => ['jesse@example.com'],
@@ -142,7 +142,7 @@ ok($group->has_member(RT->nobody->user_object->principal_object), "the owner gro
 
 
 $t = RT::Model::Ticket->new(current_user => RT->system_user);
-ok($t->create(Queue => 'general', Subject => 'SquelchTest'));
+ok($t->create(Queue => 'general', subject => 'SquelchTest'));
 
 is(scalar $t->squelch_mail_to, 0, "The ticket has no squelched recipients");
 
@@ -170,10 +170,10 @@ is($#returned, -1, "The ticket has no squelched recipients". join(',',@returned)
 
 
 my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
-$t1->create ( Subject => 'Merge test 1', Queue => 'general', Requestor => 'merge1@example.com');
+$t1->create ( subject => 'Merge test 1', Queue => 'general', Requestor => 'merge1@example.com');
 my $t1id = $t1->id;
 my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
-$t2->create ( Subject => 'Merge test 2', Queue => 'general', Requestor => 'merge2@example.com');
+$t2->create ( subject => 'Merge test 2', Queue => 'general', Requestor => 'merge2@example.com');
 my $t2id = $t2->id;
 my $val;
 ($msg, $val) = $t1->merge_into($t2->id);
@@ -225,7 +225,7 @@ is($give->old_value , RT->system_user->id , "Stolen by the systemuser");
 
 my $tt = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($id, $tid, $msg)= $tt->create(Queue => 'general',
-            Subject => 'test');
+            subject => 'test');
 ok($id, $msg);
 is($tt->Status, 'new', "New ticket is Created as new");
 

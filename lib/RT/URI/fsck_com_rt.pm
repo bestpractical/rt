@@ -54,7 +54,7 @@ use RT::Model::Ticket;
 
 use base qw/RT::URI::base/;
 
-=head2 LocalURIPrefix  
+=head2 local_uri_prefix  
 
 Returns the prefix for a local URI. 
 
@@ -102,7 +102,7 @@ sub uri_for_object {
             . $obj->id );
 }
 
-=head2 ParseURI URI
+=head2 parse_uri URI
 
 When handed an fsck.com-rt: URI, figures out things like whether its a local record and what its ID is
 
@@ -207,7 +207,7 @@ sub href {
                 . "Ticket/Display.html?id="
                 . $self->object->id );
     } else {
-        return ( $self->URI );
+        return ( $self->uri );
     }
 }
 

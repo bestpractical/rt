@@ -88,7 +88,7 @@ sub support_args {
         qw(query with_linked apply_query_to_linked);
 }
 
-sub TestArgs {
+sub test_args {
     my $self = shift;
     my %args = @_;
     my $queue;
@@ -102,7 +102,7 @@ sub TestArgs {
     }
     $args{'with_linked'} = 1 if $args{'apply_query_to_linked'};
 
-    return $self->SUPER::TestArgs(%args);
+    return $self->SUPER::test_args(%args);
 }
 
 sub Run {
@@ -131,7 +131,7 @@ sub Run {
     return ( 1, @top, @linked );
 }
 
-sub GetLinked {
+sub get_linked {
     my $self  = shift;
     my %arg   = @_;
     my @res   = ();

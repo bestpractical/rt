@@ -124,7 +124,7 @@ else {
 }
 
 my $Message = make_mime_entity(
-    Subject => $ARGS{'UpdateSubject'},
+    subject => $ARGS{'Updatesubject'},
     Body    => $ARGS{'UpdateContent'},
 );
 
@@ -160,7 +160,7 @@ else {
 }
 
 my $Message = make_mime_entity(
-    Subject => $ARGS{'UpdateSubject'},
+    subject => $ARGS{'Updatesubject'},
     Body    => $ARGS{'UpdateContent'},
 );
 
@@ -193,7 +193,7 @@ return @recipients;
 <%INIT>
 my $action;
 my $Message = make_mime_entity(
-    Subject => $ARGS{'Subject'},
+    subject => $ARGS{'subject'},
     Cc => $ARGS{'Cc'},
     Body    => $ARGS{'Content'},
 );
@@ -211,7 +211,7 @@ my ( $id, $txn, $msg ) = $ticket_obj->create(
     time_left        => $ARGS{'time_left'},
     time_estimated   => $ARGS{'time_estimated'},
     time_worked      => $ARGS{'time_worked'},
-    Subject         => $ARGS{'Subject'},
+    subject         => $ARGS{'subject'},
     Status          => $ARGS{'Status'},
     MIMEObj      => $Message,
     DryRun       => 1

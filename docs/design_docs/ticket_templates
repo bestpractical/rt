@@ -1,5 +1,5 @@
 ===Create-Ticket: foo
- Subject: APPROVE <%TOP-Subject%>
+ Subject: APPROVE <%TOP-subject%>
  Status: status
  Queue: <%TOP-Queue%>
  Owner: <%TOP-Owner%>
@@ -12,5 +12,5 @@ blah
 blah
 blah
 ===Create-Ticket: bar
-Subject:  <%foo-Subject%>
+Subject:  <%foo-subject%>
 

@@ -16,7 +16,7 @@ ok(my ($id, $msg)=  $cf->create( name => 'TestingCF',
                                  Description => 'A Testing custom field',
                                  type=> 'SelectSingle'), 'Created a global CustomField');
 isnt($id , 0, 'Global custom field correctly Created');
-ok ($cf->SingleValue);
+ok ($cf->single_value);
 is($cf->type, 'Select');
 is($cf->MaxValues, 1);
 

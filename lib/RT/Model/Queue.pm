@@ -1005,7 +1005,7 @@ sub cc_addresses {
         return undef;
     }
 
-    return ( $self->cc->member_emailsAsString );
+    return ( $self->cc->member_emails_as_string );
 
 }
 

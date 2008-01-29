@@ -90,7 +90,7 @@ if ($self->{SearchId} eq 'new') {
 if ( $args->{Save} ) {
     if ( my $search = $self->{CurrentSearch}{Object} ) {
         # rename
-        $search->set_Description( $args->{Description} );
+        $search->set_description( $args->{Description} );
 	push @actions, _($self->{SearchType}).loc( ' %1 renamed to %2.', $self->{CurrentSearch}{Description}, $args->{Description} );
     }
     else {

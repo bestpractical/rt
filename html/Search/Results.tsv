@@ -69,7 +69,7 @@ else {
 my @rows;
 my %known_cfs;
 
-my @attrs = qw( id queue_obj->name Subject Status time_estimated time_worked time_left Priority final_priority OwnerObj->name 
+my @attrs = qw( id queue_obj->name subject Status time_estimated time_worked time_left Priority final_priority OwnerObj->name 
                 Requestors->member_emails_as_string Cc->member_emails_as_string AdminCc->member_emails_as_string
                 due_obj->iso ToldObj->iso created_obj->iso ResolvedObj->iso LastUpdatedObj->ISO);
 
@@ -104,7 +104,7 @@ while ( my $Ticket = $Tickets->next()) {
     foreach my $attr (@attrs) {
         my $label = $attr;
         $label =~ s'Obj-.(?:AsString|name|ISO)''g;
-        $label =~ s'-\>member_emailsAsString''g;
+        $label =~ s'-\>member_emails_as_string''g;
 	push @header, $label;
     }
     foreach my $id (sort keys %known_cfs) {
