@@ -306,7 +306,7 @@ else {
 		push @results, _('User could not be Created: %1', $msg);
 	}
     } else {
-	    $user_object->load($id) || $user_object->load($name) || Abort("Couldn't load user '$name'");
+	    $user_object->load($id) || $user_object->load($name) || abort("Couldn't load user '$name'");
         $val = $user_object->id();
     }
 

@@ -680,7 +680,7 @@ sub _encode_lob {
 
 sub _decode_lob {
     my $self            = shift;
-    my $ContentType     = shift || '';
+    my $content_type     = shift || '';
     my $ContentEncoding = shift || 'none';
     my $Content         = shift;
 
@@ -691,7 +691,7 @@ sub _decode_lob {
     } elsif ( $ContentEncoding && $ContentEncoding ne 'none' ) {
         return ( _( "Unknown ContentEncoding %1", $ContentEncoding ) );
     }
-    if ( RT::I18N::is_textual_content_type($ContentType) ) {
+    if ( RT::I18N::is_textual_content_type($content_type) ) {
         $Content = Encode::decode_utf8($Content)
             unless Encode::is_utf8($Content);
     }
@@ -1396,7 +1396,7 @@ sub _add_custom_field_value {
         Field              => undef,
         Value              => undef,
         LargeContent       => undef,
-        ContentType        => undef,
+        content_type        => undef,
         record_transaction => 1,
         @_
     );
@@ -1514,7 +1514,7 @@ sub _add_custom_field_value {
             Object       => $self,
             Content      => $args{'Value'},
             LargeContent => $args{'LargeContent'},
-            ContentType  => $args{'ContentType'},
+            content_type  => $args{'content_type'},
         );
 
         unless ($new_value_id) {
@@ -1565,7 +1565,7 @@ sub _add_custom_field_value {
             Object       => $self,
             Content      => $args{'Value'},
             LargeContent => $args{'LargeContent'},
-            ContentType  => $args{'ContentType'},
+            content_type  => $args{'content_type'},
         );
 
         unless ($new_value_id) {

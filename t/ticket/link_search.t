@@ -13,7 +13,7 @@ use RT::Test; use Test::More tests => 63;
 my $CurrentUser = RT->system_user;
 
 my $queue = RT::Model::Queue->new(current_user => $CurrentUser);
-$queue->load('General') || Abort(_("Queue could not be loaded."));
+$queue->load('General') || abort(_("Queue could not be loaded."));
 
 my $child_ticket = RT::Model::Ticket->new(current_user =>  $CurrentUser );
 my ($childid) = $child_ticket->create(

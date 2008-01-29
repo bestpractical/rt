@@ -196,7 +196,7 @@ sub check_noprivate_key {
             $args{'Message'}->head
         )
     )[0];
-    my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
+    my ($status) = RT::Interface::Email::send_emailUsingTemplate(
         To        => $address,
         Template  => 'Error: no private key',
         Arguments => {
@@ -227,7 +227,7 @@ sub check_bad_data {
             $args{'Message'}->head
         )
     )[0];
-    my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
+    my ($status) = RT::Interface::Email::send_emailUsingTemplate(
         To        => $address,
         Template  => 'Error: bad GnuPG data',
         Arguments => {

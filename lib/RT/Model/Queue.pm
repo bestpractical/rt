@@ -84,7 +84,7 @@ use Jifty::DBI::Record schema {
 
     column name => max_length is 200, type is 'varchar(200)', default is '';
     column
-        Description => max_length is 255,
+        description => max_length is 255,
         type is 'varchar(255)', default is '';
     column
         correspond_address => max_length is 120,
@@ -334,7 +334,7 @@ sub is_inactive_status {
 Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
   name (required)
-  Description
+  description
   correspond_address
   comment_address
   initial_priority
@@ -351,7 +351,7 @@ sub create {
     my %args = (
         name               => undef,
         correspond_address => '',
-        Description        => '',
+        description        => '',
         comment_address    => '',
         initial_priority   => 0,
         final_priority     => 0,
@@ -510,7 +510,7 @@ sub set_sign {
 
     my ( $status, $msg ) = $self->set_attribute(
         name        => 'Sign',
-        Description => 'Sign outgoing messages by default',
+        description => 'Sign outgoing messages by default',
         Content     => $value,
     );
     return ( $status, $msg ) unless $status;
@@ -536,7 +536,7 @@ sub set_encrypt {
 
     my ( $status, $msg ) = $self->set_attribute(
         name        => 'Encrypt',
-        Description => 'Encrypt outgoing messages by default',
+        description => 'Encrypt outgoing messages by default',
         Content     => $value,
     );
     return ( $status, $msg ) unless $status;

@@ -4,7 +4,7 @@ CREATE TABLE Attributes (
   name varchar(255) NOT NULL  ,
   Description varchar(255) NULL  ,
   Content LONGTEXT NULL  ,
-  ContentType varchar(16),
+  content_type varchar(16),
   object_type varchar(25) NOT NULL  ,
   object_id INTEGER default 0,
   Creator integer NULL  ,

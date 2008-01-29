@@ -97,7 +97,7 @@ my (@Actions, $Tickets);
 
 
 unless ($id || $ticket_obj) {
-    Abort('No ticket specified');
+    abort('No ticket specified');
 }
 
 if ($ARGS{'id'} eq 'new') {
@@ -106,11 +106,11 @@ if ($ARGS{'id'} eq 'new') {
     my $Queue = RT::Model::Queue->new();
     $Queue->load($ARGS{'Queue'});
     unless ( $Queue->id ) {
-        Abort('Queue not found');
+        abort('Queue not found');
     }
 
     unless ( $Queue->current_user_has_right('create_ticket') ) {
-        Abort('You have no permission to create tickets in that queue.');
+        abort('You have no permission to create tickets in that queue.');
     }
 
     ($ticket_obj, @Actions) = create_ticket(
@@ -118,7 +118,7 @@ if ($ARGS{'id'} eq 'new') {
         %ARGS,
     );
     unless ( $ticket_obj->current_user_has_right('ShowTicket') ) {
-        Abort("No permission to view newly Created ticket #".$ticket_obj->id.".");
+        abort("No permission to view newly Created ticket #".$ticket_obj->id.".");
     }
     # }}}
 } else { 
@@ -162,7 +162,7 @@ if ($ARGS{'id'} eq 'new') {
     # XXX: we shouldn't block actions here if user has no right to see the ticket,
     # but we should allow him to see actions he has done
     unless ($ticket_obj->current_user_has_right('ShowTicket')) {
-        Abort("No permission to view ticket");
+        abort("No permission to view ticket");
     }
     if ( $ARGS{'MarkAsSeen'} ) {
         $ticket_obj->set_attribute(

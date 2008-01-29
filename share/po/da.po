@@ -603,7 +603,7 @@ msgid "AND"
 msgstr "OG"
 
 #: NOT FOUND IN SOURCE
-msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgid "aborting to avoid unintended ticket modifications.\\n"
 msgstr "Afbryder for at undgå utilsigtede sagsændringer.\\n"
 
 #: html/User/Elements/Tabs:53
@@ -3826,12 +3826,12 @@ msgid "No Template"
 msgstr "Ingen skabelon"
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket "
+msgid "No Ticket specified. aborting ticket "
 msgstr "Ingen sag angivet. Afbryder sag."
 
 #: NOT FOUND IN SOURCE
 msgid ""
-"No Ticket specified. Aborting ticket modifications\\n"
+"No Ticket specified. aborting ticket modifications\\n"
 "\\n"
 msgstr ""
 "Ingen sag angivet. Afbryder sagsændringer\\n"

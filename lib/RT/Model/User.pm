@@ -266,7 +266,7 @@ sub create {
 
     unless ($ac_id) {
         Jifty->log->fatal(
-            "Could not add user to privileged or Unprivileged group on user creation. Aborted"
+            "Could not add user to privileged or Unprivileged group on user creation. aborted"
         );
         Jifty->log->fatal($ac_msg);
         Jifty->handle->rollback();

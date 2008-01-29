@@ -58,7 +58,7 @@ sub table {'Objectcustom_field_values'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column
-        ContentType => type is 'varchar(80)',
+        content_type => type is 'varchar(80)',
         max_length is 80, default is '';
     column LargeContent => type is 'longtext', default is '';
     column Creator => type is 'int(11)', max_length is 11, default is '0';
@@ -102,7 +102,7 @@ sub create {
         disabled        => 0,
         Content         => '',
         LargeContent    => undef,
-        ContentType     => '',
+        content_type     => '',
         ContentEncoding => '',
         @_,
     );
@@ -114,12 +114,12 @@ sub create {
         } else {
             $args{'LargeContent'} = $args{'Content'};
             $args{'Content'}      = '';
-            $args{'ContentType'} ||= 'text/plain';
+            $args{'content_type'} ||= 'text/plain';
         }
     }
 
     ( $args{'ContentEncoding'}, $args{'LargeContent'} )
-        = $self->_encode_lob( $args{'LargeContent'}, $args{'ContentType'} )
+        = $self->_encode_lob( $args{'LargeContent'}, $args{'content_type'} )
         if defined $args{'LargeContent'};
 
     return $self->SUPER::create(
@@ -129,7 +129,7 @@ sub create {
         disabled        => $args{'disabled'},
         Content         => $args{'Content'},
         LargeContent    => $args{'LargeContent'},
-        ContentType     => $args{'ContentType'},
+        content_type     => $args{'content_type'},
         ContentEncoding => $args{'ContentEncoding'},
     );
 }

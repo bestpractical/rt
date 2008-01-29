@@ -597,8 +597,8 @@ msgid "AND"
 msgstr "Y"
 
 #: NOT FOUND IN SOURCE
-msgid "Aborting to avoid unintended ticket modifications.\\n"
-msgstr "Abortando para prevenir modificaciones no intencionadas al ticket\\n"
+msgid "aborting to avoid unintended ticket modifications.\\n"
+msgstr "abortando para prevenir modificaciones no intencionadas al ticket\\n"
 
 #: html/User/Elements/Tabs:53
 msgid "About me"
@@ -3623,12 +3623,12 @@ msgid "No Template"
 msgstr "No hay plantilla"
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket "
-msgstr "No se especificó el ticket. Abortada la transacción"
+msgid "No Ticket specified. aborting ticket "
+msgstr "No se especificó el ticket. abortada la transacción"
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
-msgstr "No se especificó ticket. Abortando las modificaciones al ticket\\n\\n"
+msgid "No Ticket specified. aborting ticket modifications\\n\\n"
+msgstr "No se especificó ticket. abortando las modificaciones al ticket\\n\\n"
 
 #: html/Approvals/Elements/Approve:77
 msgid "No action"

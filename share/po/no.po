@@ -605,7 +605,7 @@ msgid "AND"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgid "aborting to avoid unintended ticket modifications.\\n"
 msgstr "Avbryter for å ungå uånsket saksendring"
 
 #: html/User/Elements/Tabs:53
@@ -3668,11 +3668,11 @@ msgid "No Template"
 msgstr "Ingen Mal"
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket "
+msgid "No Ticket specified. aborting ticket "
 msgstr "Ingen sak oppgitt. Avbryter sak "
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
+msgid "No Ticket specified. aborting ticket modifications\\n\\n"
 msgstr "Ingen Sak oppgitt. Avbryter saksendring\\n\\n"
 
 #: html/Approvals/Elements/Approve:77

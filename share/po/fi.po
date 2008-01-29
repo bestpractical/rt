@@ -562,7 +562,7 @@ msgid "AND"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgid "aborting to avoid unintended ticket modifications.\\n"
 msgstr "Peruutetaan tarkoittamattomien tapausmuutosten välttämiseksi.\\n"
 
 #: html/User/Elements/Tabs:53
@@ -3433,11 +3433,11 @@ msgid "No Template"
 msgstr "Ei pohjaa"
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket "
+msgid "No Ticket specified. aborting ticket "
 msgstr "Tapausta ei määritelty. Perutaan tapaus "
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
+msgid "No Ticket specified. aborting ticket modifications\\n\\n"
 msgstr "Tapausta ei määritelty. Poistutaan tapauksen muokkauksesta\\n\\n"
 
 #: html/Approvals/Elements/Approve:77

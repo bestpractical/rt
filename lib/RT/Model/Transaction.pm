@@ -251,7 +251,7 @@ Returns the current value of Created.
 
 sub table {'Transactions'}
 
-use vars qw( %_BriefDescriptions $PreferredContentType );
+use vars qw( %_BriefDescriptions $Preferredcontent_type );
 
 use RT::Model::AttachmentCollection;
 use RT::Model::ScripCollection;
@@ -462,14 +462,14 @@ at $args{'Wrap'}.  $args{'Wrap'} defaults to 70.
 
 If $args{'type'} is set to C<text/html>, plain texts are upgraded to HTML.
 Otherwise, HTML texts are downgraded to plain text.  If $args{'type'} is
-missing, it defaults to the value of C<$RT::Transaction::PreferredContentType>.
+missing, it defaults to the value of C<$RT::Transaction::Preferredcontent_type>.
 
 =cut
 
 sub content {
     my $self = shift;
     my %args = (
-        type => $PreferredContentType || 'text/plain',
+        type => $Preferredcontent_type || 'text/plain',
         Quote => 0,
         Wrap  => 70,
         @_
@@ -579,7 +579,7 @@ sub content_obj {
     elsif ( $Attachment->content_type =~ '^multipart/' ) {
         my $plain_parts = $Attachment->children;
         $plain_parts->content_type(
-            value => ( $PreferredContentType || 'text/plain' ) );
+            value => ( $Preferredcontent_type || 'text/plain' ) );
         $plain_parts->limit_not_empty;
 
         # If we actully found a part, return its content
@@ -626,7 +626,7 @@ sub subject {
 
 Returns all the RT::Model::Attachment objects which are attached
 to this transaction. Takes an optional parameter, which is
-a ContentType that Attachments should be restricted to.
+a content_type that Attachments should be restricted to.
 
 =cut
 

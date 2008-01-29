@@ -143,7 +143,7 @@ my ($field, @results, $User, $Users, $Groups, $watcher, $user_msg, $group_msg);
 
 
 my $queue_obj = RT::Model::Queue->new();
-$queue_obj->load($id) || Abort(_("Couldn't load queue", $id));
+$queue_obj->load($id) || abort(_("Couldn't load queue", $id));
 # }}}
 
 # {{{ Delete deletable watchers

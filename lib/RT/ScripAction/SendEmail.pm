@@ -310,7 +310,7 @@ sub send_message {
             . $self->scrip_obj->id . " "
             . ( $self->scrip_obj->description || '' ) );
 
-    my $status = RT::Interface::Email::SendEmail(
+    my $status = RT::Interface::Email::send_email(
         Entity      => $MIMEObj,
         Ticket      => $self->ticket_obj,
         Transaction => $self->transaction_obj,

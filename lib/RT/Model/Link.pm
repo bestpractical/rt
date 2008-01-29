@@ -216,7 +216,7 @@ sub load_by_params {
     my $target = RT::URI->new;
     $target->from_uri( $args{'Target'} );
 
-    unless ( $base->resolver && $target->Resolver ) {
+    unless ( $base->resolver && $target->resolver ) {
         return ( 0, _("Couldn't load link") );
     }
 

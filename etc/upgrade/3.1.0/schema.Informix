@@ -3,7 +3,7 @@ CREATE TABLE Attributes (
 	name 			VARCHAR(255) DEFAULT '' NOT NULL,
 	Description 		VARCHAR(255) DEFAULT NULL,
   	Content 	BYTE,
-	ContentType	VARCHAR(16),
+	content_type	VARCHAR(16),
 	object_type	VARCHAR(25) NOT NULL,
 	object_id	INTEGER DEFAULT 0 NOT NULL,
 	Creator 	INTEGER DEFAULT 0 NOT NULL,

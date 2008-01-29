@@ -110,7 +110,7 @@ my $Group = RT::Model::Group->new();
 $Group->load($id) ;
 
 unless ($Group->id) {
-    Abort(_('Could not load group'));
+    abort(_('Could not load group'));
 }
 
 my (@results);

@@ -79,7 +79,7 @@ sub table {'ScripConditions'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column name                 => type is 'text';
-    column Description          => type is 'text';
+    column description          => type is 'text';
     column ExecModule           => type is 'text';
     column argument             => type is 'text';
     column applicable_trans_types => type is 'text';

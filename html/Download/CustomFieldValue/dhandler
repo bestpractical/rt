@@ -52,13 +52,13 @@ if ($arg =~ /^(\d+)\//) {
     $id = $1;
 }
 else {
-    Abort("Corrupted customfieldvalue URL.");
+    abort("Corrupted customfieldvalue URL.");
 }
 my $OCFV = RT::Model::ObjectCustomFieldValue->new();
-$OCFV->load($id) || Abort("OCFV '$id' could not be loaded");
+$OCFV->load($id) || abort("OCFV '$id' could not be loaded");
 
 unless ($OCFV->id) {
-    Abort("Bad OCFV id. Couldn't find OCFV '$id'\n");
+    abort("Bad OCFV id. Couldn't find OCFV '$id'\n");
 }
 
 my $content_type = $OCFV->content_type || 'text/plain';

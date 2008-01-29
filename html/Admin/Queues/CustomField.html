@@ -62,7 +62,7 @@ $queue_obj->load($Queue);
 my ($title, $current_subtab);
 
 unless($queue_obj->id) {
-    Abort(_("Queue %1 not found", $Queue));
+    abort(_("Queue %1 not found", $Queue));
 }
 if ($CustomField) {
     $title = _('Modify a CustomField for queue %1', $queue_obj->name()); 

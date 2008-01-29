@@ -545,7 +545,7 @@ msgid "AND"
 msgstr "AND"
 
 #: NOT FOUND IN SOURCE
-msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgid "aborting to avoid unintended ticket modifications.\\n"
 msgstr "Přerušeno k zamezení nežádoucích změn požadavku.\\n"
 
 #: html/User/Elements/Tabs:53
@@ -3409,11 +3409,11 @@ msgid "No Template"
 msgstr "Žádný vzor"
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket "
+msgid "No Ticket specified. aborting ticket "
 msgstr "Neudán požadavek. Přerušuje se požadavek "
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
+msgid "No Ticket specified. aborting ticket modifications\\n\\n"
 msgstr "Neudán požadavek. Přerušují se úpravy požadavku\\n\\n"
 
 #: html/Approvals/Elements/Approve:77

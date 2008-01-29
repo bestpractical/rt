@@ -601,7 +601,7 @@ msgid "AND"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgid "aborting to avoid unintended ticket modifications.\\n"
 msgstr "Interruzione per evitare modifiche di ticket involontarie.\\n"
 
 #: html/User/Elements/Tabs:53
@@ -3716,7 +3716,7 @@ msgid "No Template"
 msgstr "Nessun Modello"
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket "
+msgid "No Ticket specified. aborting ticket "
 msgstr "Nessun ticket specificato. Annullo il ticket"
 
 #: html/Approvals/Elements/Approve:77

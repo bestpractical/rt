@@ -82,12 +82,12 @@
 my $ticket_obj = load_ticket($id);
 $id = $ARGS{'id'} = $ticket_obj->id;
 
-Abort( _("Permission denied") )
+abort( _("Permission denied") )
     unless $ticket_obj->current_user_has_right('ForwardMessage');
 
 my $txn = RT::Transaction->new();
 $txn->load( $QuoteTransaction );
-Abort( _("Couldn't load transaction #%1", $QuoteTransaction) )
+abort( _("Couldn't load transaction #%1", $QuoteTransaction) )
     unless $txn->id;
 
 my @results;

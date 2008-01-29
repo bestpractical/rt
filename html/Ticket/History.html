@@ -77,7 +77,7 @@ $id => undef
 my $Ticket = load_ticket ($id);
 
 unless ($Ticket->current_user_has_right('ShowTicket')) {
-	Abort("No permission to view ticket");
+	abort("No permission to view ticket");
 }
 
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $Ticket);

@@ -58,7 +58,7 @@
 <%INIT>
 my $Object = RT::Model::User->new();
 
-$Object->load($id) || Abort( _( "Couldn't load object %1", $id ) );
+$Object->load($id) || abort( _( "Couldn't load object %1", $id ) );
 my $FriendlySubTypes =
   RT::Model::CustomField->new()
   ->friendly_lookup_type( $Object->custom_field_lookup_type );

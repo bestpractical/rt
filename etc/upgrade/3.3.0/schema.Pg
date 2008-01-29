@@ -29,7 +29,7 @@ UPDATE objectcustomfieldvalues SET Current = 1;
 
 alter table objectcustomfieldvalues add column LargeContent TEXT NULL;
 
-alter table objectcustomfieldvalues add column ContentType varchar(80) NULL;
+alter table objectcustomfieldvalues add column content_type varchar(80) NULL;
 
 alter table objectcustomfieldvalues add column ContentEncoding varchar(80) NULL;
 

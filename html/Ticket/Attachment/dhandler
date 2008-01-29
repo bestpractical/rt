@@ -53,17 +53,17 @@
         $attach = $2;
     }
     else {
-        Abort("Corrupted attachment URL.");
+        abort("Corrupted attachment URL.");
     }
      my $AttachmentObj = RT::Model::Attachment->new();
-     $AttachmentObj->load($attach) || Abort("Attachment '$attach' could not be loaded");
+     $AttachmentObj->load($attach) || abort("Attachment '$attach' could not be loaded");
 
 
      unless ($AttachmentObj->id) {
-        Abort("Bad attachment id. Couldn't find attachment '$attach'\n");
+        abort("Bad attachment id. Couldn't find attachment '$attach'\n");
     }
      unless ($AttachmentObj->TransactionId() == $trans ) {
-        Abort("Bad transaction number for attachment. $trans should be".$AttachmentObj->TransactionId() ."\n");
+        abort("Bad transaction number for attachment. $trans should be".$AttachmentObj->TransactionId() ."\n");
 
      }
 

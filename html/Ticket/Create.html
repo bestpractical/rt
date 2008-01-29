@@ -246,7 +246,7 @@
 my $cloneticket_obj;
 if ( $cloneTicket ) {
     $cloneticket_obj = RT::Model::Ticket->new();
-    $cloneticket_obj->Load($cloneTicket) or Abort(_("Ticket could not be loaded"));
+    $cloneticket_obj->Load($cloneTicket) or abort(_("Ticket could not be loaded"));
     
     my $clone = {
         Requestors       => join( ',', $cloneticket_obj->requestor_addresses ),
@@ -317,7 +317,7 @@ if ( $cloneTicket ) {
 }
 my @results;
 my $queue_obj = RT::Model::Queue->new();
-$queue_obj->load($Queue) || Abort(_("Queue could not be loaded."));
+$queue_obj->load($Queue) || abort(_("Queue could not be loaded."));
 
 $m->callback( queue_obj => $queue_obj, ARGSRef => \%ARGS );
 

@@ -98,7 +98,7 @@ if ($aid) {
 	push @data, [ Parent    => $attachment->Parent   ];
 	push @data, [ MessageId    => $attachment->MessageId   ];
 	push @data, [ Filename    => $attachment->filename   ];
-	push @data, [ ContentType    => $attachment->content_type   ];
+	push @data, [ content_type    => $attachment->content_type   ];
 	push @data, [ ContentEncoding    => $attachment->ContentEncoding   ];
 	push @data, [ Headers    => $attachment->headers   ];
 	push @data, [ Content    => $attachment->content   ];

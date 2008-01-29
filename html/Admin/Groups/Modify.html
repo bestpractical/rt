@@ -112,12 +112,12 @@ else {
 	my ($create_id, $create_msg) = $Group->create_user_defined_group(name =>
     "$name");
         unless ($create_id) {
-            Abort (_("Group could not be Created: %1", $create_msg));
+            abort (_("Group could not be Created: %1", $create_msg));
      }
 	$id = $Group->id;
     }
     else {
-	$Group->load($id) || Abort('Could not load group');
+	$Group->load($id) || abort('Could not load group');
     }
 
 

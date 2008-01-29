@@ -25,7 +25,7 @@ $Decrypt => 0
 my $txn = RT::Model::Transaction->new();
 $txn->load( $id );
 unless ( $txn->id ) {
-    Abort(_("Couldn't load transaction #%1", $id));
+    abort(_("Couldn't load transaction #%1", $id));
 }
 $id = $txn->id;
 

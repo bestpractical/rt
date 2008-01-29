@@ -104,11 +104,11 @@
 
 
 if (!defined $id) {
-    Abort(_("No Group defined"));
+    abort(_("No Group defined"));
 }
 
 my $GroupObj = RT::Model::Group->new();
-$GroupObj->load($id) || Abort(_("Couldn't load group %1",$id));
+$GroupObj->load($id) || abort(_("Couldn't load group %1",$id));
 
 my $Groups;
     

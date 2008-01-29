@@ -50,13 +50,13 @@
     my ($id) = $m->dhandler_arg =~ /^(\d+)/;
     unless ( $id ) {
         # wrong url format
-        Abort("Corrupted attachment URL");
+        abort("Corrupted attachment URL");
     }
 
     my $AttachmentObj = RT::Model::Attachment->new();
     $AttachmentObj->load( $id );
     unless ( $AttachmentObj->id ) {
-        Abort("Couldn't load attachment #$id");
+        abort("Couldn't load attachment #$id");
     }
 
     # XXX: should we check handle html here and integrate headers into html?

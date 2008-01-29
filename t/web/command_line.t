@@ -212,7 +212,7 @@ my $attachment_id = $1;
 my $attachment_type = $2;
 ok($attachment_id, "Got attachment id=$attachment_id $attachment_type");
 expect_send("show ticket/$ticket_id/attachments/$attachment_id", "Showing attachment $attachment_id...");
-expect_like(qr/ContentType: $attachment_type/, 'Got the attachment');
+expect_like(qr/content_type: $attachment_type/, 'Got the attachment');
 
 # }}}
 

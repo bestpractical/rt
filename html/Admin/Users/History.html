@@ -60,7 +60,7 @@
 <%INIT>
 my $current_tab = 'Admin/Users/History.html?id='.$id;
 my $user_object = RT::Model::User->new();
-$user_object->load($id) || Abort("Couldn't load user '$id'");
+$user_object->load($id) || abort("Couldn't load user '$id'");
 my $title = _("History of the user %1", $user_object->name);
 </%INIT>
 <%ARGS>

@@ -21,7 +21,7 @@ alter table Objectcustom_field_values add column Current bool default 1;
 
 alter table Objectcustom_field_values add column LargeContent LONGTEXT NULL;
 
-alter table Objectcustom_field_values add column ContentType varchar(80) NULL;
+alter table Objectcustom_field_values add column content_type varchar(80) NULL;
 
 alter table Objectcustom_field_values add column ContentEncoding varchar(80) NULL;
 

@@ -934,7 +934,7 @@ Required:
 Optional:
 
     LargeContent
-    ContentType
+    content_type
 
 =cut
 
@@ -944,7 +944,7 @@ sub add_value_for_object {
         Object       => undef,
         Content      => undef,
         LargeContent => undef,
-        ContentType  => undef,
+        content_type  => undef,
         @_
     );
     my $obj = $args{'Object'} or return ( 0, _('Invalid object') );
@@ -987,7 +987,7 @@ sub add_value_for_object {
         object_id    => $obj->id,
         Content      => $args{'Content'},
         LargeContent => $args{'LargeContent'},
-        ContentType  => $args{'ContentType'},
+        content_type  => $args{'content_type'},
         custom_field  => $self->id
     );
 

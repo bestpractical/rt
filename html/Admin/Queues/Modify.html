@@ -126,12 +126,12 @@ if ($Create) {
 } else {
     if ( defined $id && $id eq 'new' ) {
         my ($val, $msg) = $queue_obj->create( name => $name );
-        Abort("$msg") unless $val;
+        abort("$msg") unless $val;
         delete $session{'create_in_queues'};
 		push @results, $msg;
     }
     else {
-        $queue_obj->load($id) || $queue_obj->load($name) || Abort(_("Couldn't load queue '%1'", $name));
+        $queue_obj->load($id) || $queue_obj->load($name) || abort(_("Couldn't load queue '%1'", $name));
     }
     $title = _('Editing Configuration for queue %1', $queue_obj->name);
     

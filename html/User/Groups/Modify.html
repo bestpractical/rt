@@ -97,12 +97,12 @@ else {
                              principal_id => Jifty->web->current_user->id
         );
         unless ($id) {
-            Abort( _("Could not create group") );
+            abort( _("Could not create group") );
         }
         $id = $Group->id;
     }
     else {
-        $Group->load($id) || Abort( _('Could not load group') );
+        $Group->load($id) || abort( _('Could not load group') );
     }
 
     if ($id) {

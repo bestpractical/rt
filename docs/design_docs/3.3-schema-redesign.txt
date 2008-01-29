@@ -34,7 +34,7 @@ TABLE Objectcustom_field_values (
 
   Content varchar(255) NULL  ,
   LargeContent LONGTEXT NULL,               -- New: data longer than 255 bytes
-  ContentType varchar(80) NULL,             -- New: MIME type of LargeContent
+  content_type varchar(80) NULL,             -- New: MIME type of LargeContent
   ContentEncoding varchar(80) NULL  ,       -- New: for binary LargeContent
   disabled int2 NOT NULL DEFAULT 0 ,        -- New: whether this is deleted
 )

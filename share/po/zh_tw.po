@@ -656,7 +656,7 @@ msgid "AND"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgid "aborting to avoid unintended ticket modifications.\\n"
 msgstr "離開以免不小心更改到申請單。\\n"
 
 #: NOT FOUND IN SOURCE
@@ -4731,11 +4731,11 @@ msgid "No Template"
 msgstr "沒有範本"
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket "
+msgid "No Ticket specified. aborting ticket "
 msgstr "未指定申請單。退出申請單 "
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
+msgid "No Ticket specified. aborting ticket modifications\\n\\n"
 msgstr "未指定申請單。退出申請單更改\\n\\n"
 
 #: NOT FOUND IN SOURCE

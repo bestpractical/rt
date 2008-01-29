@@ -599,7 +599,7 @@ msgid "AND"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgid "aborting to avoid unintended ticket modifications.\\n"
 msgstr "Przerwanie operacji, aby uniknąć niezamierzonych modyfikacji zgłoszenia.\\n"
 
 #: html/User/Elements/Tabs:53

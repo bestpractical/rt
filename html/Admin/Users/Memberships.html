@@ -91,7 +91,7 @@
 
 <%INIT>
 my $user_object = RT::Model::User->new();
-$user_object->load( $id ) || Abort("Couldn't load user '$id'");
+$user_object->load( $id ) || abort("Couldn't load user '$id'");
 
 my $title = _("Memberships of the user %1", $user_object->name);
 my $current_tab = 'Admin/Users/Memberships.html?id='. $id;

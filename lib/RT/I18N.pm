@@ -97,7 +97,7 @@ sub init {
 
 =head2 encoding
 
-Returns the encoding of the current lexicon, as yanked out of __ContentType's "charset" field.
+Returns the encoding of the current lexicon, as yanked out of __content_type's "charset" field.
 If it can't find anything, it returns 'ISO-8859-1'
 
 
@@ -302,7 +302,7 @@ sub decode_mime_words_to_encoding {
         unless ( $charset eq $enc ) {
             eval { Encode::from_to( $enc_str, $charset, $enc ) };
             if ($@) {
-                $charset = _GuessCharset($enc_str);
+                $charset = _guess_charset($enc_str);
                 Encode::from_to( $enc_str, $charset, $enc );
             }
         }
@@ -354,19 +354,19 @@ sub _find_or_guess_charset {
 
     if ( !$head_only and $head->mime_type =~ m{^text/} ) {
         my $body = $entity->bodyhandle or return;
-        return _GuessCharset( $body->as_string );
+        return _guess_charset( $body->as_string );
     } else {
 
         # potentially binary data -- don't guess the body
-        return _GuessCharset( $head->as_string );
+        return _guess_charset( $head->as_string );
     }
 }
 
 # }}}
 
-# {{{ _GuessCharset
+# {{{ _guess_charset
 
-=head2 _GuessCharset STRING
+=head2 _guess_charset STRING
 
 use Encode::Guess to try to figure it out the string's encoding.
 

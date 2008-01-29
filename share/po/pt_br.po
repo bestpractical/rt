@@ -597,8 +597,8 @@ msgid "AND"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Aborting to avoid unintended ticket modifications.\\n"
-msgstr "Abortando para evitar modificações indesejadas no tíquete.\\n"
+msgid "aborting to avoid unintended ticket modifications.\\n"
+msgstr "abortando para evitar modificações indesejadas no tíquete.\\n"
 
 #: html/User/Elements/Tabs:53
 msgid "About me"
@@ -3648,12 +3648,12 @@ msgid "No Template"
 msgstr "Não há Modelo"
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket "
-msgstr "Não há Tíquete especificado.  Abortando o tíquete "
+msgid "No Ticket specified. aborting ticket "
+msgstr "Não há Tíquete especificado.  abortando o tíquete "
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
-msgstr "Não há Tíquete especificado. Abortando modificações no tíquete\\n\\n"
+msgid "No Ticket specified. aborting ticket modifications\\n\\n"
+msgstr "Não há Tíquete especificado. abortando modificações no tíquete\\n\\n"
 
 #: html/Approvals/Elements/Approve:77
 msgid "No action"

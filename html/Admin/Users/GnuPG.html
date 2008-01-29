@@ -42,7 +42,7 @@ my @results;
 my $user_object = RT::Model::User->new( );
 $user_object->Load( $id );
 unless ( $user_object->id ) {
-    Abort( _("Couldn't load user #%1", $id) );
+    abort( _("Couldn't load user #%1", $id) );
 }
 $id = $ARGS{'id'} = $user_object->id;
 

@@ -77,7 +77,7 @@ use Jifty::DBI::Record schema {
     column ScripAction    => type is 'int';
     column ScripCondition => type is 'int';
     column Stage => type is 'varchar(32)', default is 'TransactionCreate';
-    column Description            => type is 'text';
+    column description            => type is 'text';
     column CustomPrepareCode      => type is 'text';
     column CustomCommitCode       => type is 'text';
     column CustomIsApplicableCode => type is 'text';
@@ -90,7 +90,7 @@ use Jifty::DBI::Record schema {
 Creates a new entry in the Scrips table. Takes a paramhash with:
 
         Queue                  => 0,
-        Description            => undef,
+        description            => undef,
         Template               => undef,
         ScripAction            => undef,
         ScripCondition         => undef,
@@ -114,7 +114,7 @@ sub create {
         ScripAction            => 0,                     # name or id
         ScripCondition         => 0,                     # name or id
         Stage                  => 'TransactionCreate',
-        Description            => undef,
+        description            => undef,
         CustomPrepareCode      => undef,
         CustomCommitCode       => undef,
         CustomIsApplicableCode => undef,
@@ -176,7 +176,7 @@ sub create {
         ScripCondition         => $condition->id,
         Stage                  => $args{'Stage'},
         ScripAction            => $action->id,
-        Description            => $args{'Description'},
+        description            => $args{'description'},
         CustomPrepareCode      => $args{'CustomPrepareCode'},
         CustomCommitCode       => $args{'CustomCommitCode'},
         CustomIsApplicableCode => $args{'CustomIsApplicableCode'},

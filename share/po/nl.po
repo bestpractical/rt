@@ -540,7 +540,7 @@ msgid "AND"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgid "aborting to avoid unintended ticket modifications.\\n"
 msgstr "Afbraak om ongewenste ticket aanpassing te voorkomen.\\n"
 
 #: html/User/Elements/Tabs:53
@@ -3435,11 +3435,11 @@ msgid "No Template"
 msgstr "Geen Sjabloon"
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket "
+msgid "No Ticket specified. aborting ticket "
 msgstr "Geen ticket gespecificeerd. Ticket afgebroken "
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
+msgid "No Ticket specified. aborting ticket modifications\\n\\n"
 msgstr "Geen ticket gespecificeerd. Ticket wijzigingen afgebroken\\n\\n"
 
 #: html/Approvals/Elements/Approve:77

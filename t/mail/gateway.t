@@ -487,7 +487,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
 
     # Verify that the binary attachment is valid in the database
     my $attachments = RT::Model::AttachmentCollection->new(current_user => RT->system_user);
-    $attachments->limit(column => 'ContentType', value => 'image/gif');
+    $attachments->limit(column => 'content_type', value => 'image/gif');
     my $txn_alias = $attachments->join(
         alias1 => 'main',
         column1 => 'TransactionId',

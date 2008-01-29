@@ -80,7 +80,7 @@ my @fields = qw(Format Order order_by rows_per_page);
 $ARGS{name} ||= '';
 my ($class, $id) = ( $ARGS{name} =~ m/^(.*)-(\d+)$/ );
 
-Abort('No search specified')
+abort('No search specified')
     unless defined $class and $class eq 'RT::Model::Attribute';
 
 my $search = $class->new();

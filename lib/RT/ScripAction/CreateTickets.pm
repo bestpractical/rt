@@ -211,7 +211,7 @@ A complete list of acceptable fields for this beastie:
                           within a template after a Content: header is treated
                           as content until we hit a line containing only 
                           ENDOFCONTENT
-       ContentType     => the content-type of the Content field.  Defaults to
+       content_type     => the content-type of the Content field.  Defaults to
                           'text/plain'
        UpdateType      => 'correspond' or 'comment'; used in conjunction with
                           'content' if this is an update.  Defaults to

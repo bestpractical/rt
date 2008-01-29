@@ -7,7 +7,7 @@ CREATE TABLE Attachments (
   MessageId varchar(160) NULL  ,
   Subject varchar(255) NULL  ,
   Filename varchar(255) NULL  ,
-  ContentType varchar(80) NULL  ,
+  content_type varchar(80) NULL  ,
   ContentEncoding varchar(80) NULL  ,
   Content LONGBLOB NULL  ,
   Headers LONGTEXT NULL  ,
@@ -349,7 +349,7 @@ CREATE TABLE Objectcustom_field_values (
 
   Content varchar(255) NULL  ,
   LargeContent LONGTEXT NULL,		    # New -- to hold 255+ strings
-  ContentType varchar(80) NULL,		    # New -- only text/* gets searched
+  content_type varchar(80) NULL,		    # New -- only text/* gets searched
   ContentEncoding varchar(80) NULL  ,	    # New -- for binary Content
 
   Creator integer NOT NULL DEFAULT 0  ,
@@ -433,7 +433,7 @@ CREATE TABLE Attributes (
   name varchar(255) NULL  ,
   Description varchar(255) NULL  ,
   Content text,
-  ContentType varchar(16),
+  content_type varchar(16),
   object_type varchar(64),
   object_id integer, # foreign key to anything
   Creator integer NOT NULL DEFAULT 0  ,

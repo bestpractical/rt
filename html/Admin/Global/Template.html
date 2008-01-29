@@ -95,11 +95,11 @@ if ($Create) {
 else {
   if (defined ($Template) && $Template eq 'new') {
       my ($val, $msg) =  $template_obj->create(Queue => $Queue, name => $name);
-      Abort(_("Could not create template: %1", $msg)) unless ($val);
+      abort(_("Could not create template: %1", $msg)) unless ($val);
      push @results, $msg;
     }
     else {
-       $template_obj->load($Template) || Abort(_('No Template'));
+       $template_obj->load($Template) || abort(_('No Template'));
     }
       $title = _('Modify template %1', loc($template_obj->name())); 
   

@@ -70,10 +70,10 @@
 my $CF = RT::Model::CustomField->new();
 $CF->load($id) if ($id);
 
-unless ($CF->id) {  Abort(_("Could not load CustomField %1"), $id)};
+unless ($CF->id) {  abort(_("Could not load CustomField %1"), $id)};
 my $LookupType = $CF->LookupType || '';
 $LookupType =~ /^(.*?)-/ ||
-     Abort(_("Object of type %1 cannot take custom fields", $LookupType));
+     abort(_("Object of type %1 cannot take custom fields", $LookupType));
 
 my $Class = $1;
 my $CollectionClass;
@@ -87,7 +87,7 @@ $CollectionClass = $Class.'Collection';
     $CollectionClass = $Class.'s';
 
 } else {
-    Abort(_("Can't find a collection class for '%1'", $Class));
+    abort(_("Can't find a collection class for '%1'", $Class));
 }
 
 

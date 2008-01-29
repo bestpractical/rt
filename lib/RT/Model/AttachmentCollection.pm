@@ -114,9 +114,9 @@ sub transaction_alias {
     return $self->{'_sql_transaction_alias'} = $res;
 }
 
-=head2 ContentType (value => 'text/plain', entry_aggregator => 'OR', operator => '=' ) 
+=head2 content_type (value => 'text/plain', entry_aggregator => 'OR', operator => '=' ) 
 
-Limit result set to attachments of ContentType 'TYPE'...
+Limit result set to attachments of content_type 'TYPE'...
 
 =cut
 

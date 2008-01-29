@@ -231,7 +231,7 @@ else {
 $Page = 1 unless $Page && $Page > 0; # workaround problems with Page = '' or undef
 $Tickets->set_page_info(per_page => $Rows, current_page => $Page);
 
-Abort( _("No search to operate on.") ) unless ($Tickets);
+abort( _("No search to operate on.") ) unless ($Tickets);
 
 # build up a list of all custom fields for tickets that we're displaying, so
 # we can display sane edit widgets.

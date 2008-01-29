@@ -83,7 +83,7 @@ $ticket_obj = load_ticket($id);
 # TODO: display the results, even if we can't display the ticket
 
 unless ($ticket_obj->current_user_has_right('ShowTicket')) {
-    Abort("No permission to view ticket");
+    abort("No permission to view ticket");
 } 
 
 </%INIT>

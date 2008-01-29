@@ -4,7 +4,7 @@ CREATE TABLE Attributes (
 	name 			VARCHAR2(255) NOT NULL,
 	Description 		VARCHAR2(255),
   	Content 	CLOB,
-    ContentType VARCHAR(16),
+    content_type VARCHAR(16),
 	object_type	VARCHAR2(25) NOT NULL,
 	object_id	NUMBER(11,0) DEFAULT 0 NOT NULL,
 	Creator 		NUMBER(11,0) DEFAULT 0 NOT NULL,

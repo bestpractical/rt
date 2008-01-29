@@ -233,7 +233,7 @@ sub loc {
 
 # }}}
 
-# {{{ sub Abort
+# {{{ sub abort
 # Error - calls Error and aborts
 sub abort {
 
@@ -268,11 +268,11 @@ sub create_ticket {
 
     my $Queue = RT::Model::Queue->new();
     unless ( $Queue->load( $ARGS{'Queue'} ) ) {
-        Abort('Queue not found');
+        abort('Queue not found');
     }
 
     unless ( $Queue->current_user_has_right('create_ticket') ) {
-        Abort('You have no permission to create tickets in that queue.');
+        abort('You have no permission to create tickets in that queue.');
     }
 
     my $due = RT::Date->new();
@@ -285,7 +285,7 @@ sub create_ticket {
         From    => $ARGS{'From'},
         Cc      => $ARGS{'Cc'},
         Body    => $ARGS{'Content'},
-        type    => $ARGS{'ContentType'},
+        type    => $ARGS{'content_type'},
     );
 
     if ( $ARGS{'Attachments'} ) {
@@ -417,12 +417,12 @@ sub create_ticket {
 
     my ( $id, $Trans, $ErrMsg ) = $Ticket->create(%create_args);
     unless ($id) {
-        Abort($ErrMsg);
+        abort($ErrMsg);
     }
 
     push( @Actions, split( "\n", $ErrMsg ) );
     unless ( $Ticket->current_user_has_right('ShowTicket') ) {
-        Abort(    "No permission to view newly Created ticket #"
+        abort(    "No permission to view newly Created ticket #"
                 . $Ticket->id
                 . "." );
     }
@@ -451,13 +451,13 @@ sub load_ticket {
     }
 
     unless ($id) {
-        Abort("No ticket specified");
+        abort("No ticket specified");
     }
 
     my $Ticket = RT::Model::Ticket->new();
     $Ticket->load($id);
     unless ( $Ticket->id ) {
-        Abort("Could not load ticket $id");
+        abort("Could not load ticket $id");
     }
     return $Ticket;
 }
@@ -527,7 +527,7 @@ sub process_update_message {
     my $Message = make_mime_entity(
         Subject => $args{ARGSRef}->{'UpdateSubject'},
         Body    => $args{ARGSRef}->{'UpdateContent'},
-        type    => $args{ARGSRef}->{'UpdateContentType'},
+        type    => $args{ARGSRef}->{'Updatecontent_type'},
     );
 
     $Message->head->add(
@@ -1402,7 +1402,7 @@ sub process_record_links {
 
 Takes a CGI parameter name; if a file is uploaded under that name,
 return a hash reference suitable for AddCustomFieldValue's use:
-C<( value => $filename, LargeContent => $content, ContentType => $type )>.
+C<( value => $filename, LargeContent => $content, content_type => $type )>.
 
 Returns C<undef> if no files were uploaded in the C<$arg> field.
 
@@ -1421,7 +1421,7 @@ sub _uploaded_file {
     return {
         value        => $filename,
         LargeContent => do { local $/; scalar <$fh> },
-        ContentType  => $upload_info->{'Content-Type'},
+        content_type  => $upload_info->{'Content-Type'},
     };
 }
 

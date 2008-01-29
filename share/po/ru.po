@@ -610,7 +610,7 @@ msgid "AND"
 msgstr "И"
 
 #: NOT FOUND IN SOURCE
-msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgid "aborting to avoid unintended ticket modifications.\\n"
 msgstr "Прекращаем работу во избежание нежелательного изменения заявки.\\n"
 
 #: html/User/Elements/Tabs:53
@@ -3742,11 +3742,11 @@ msgid "No Template"
 msgstr "Нет шаблона"
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket "
+msgid "No Ticket specified. aborting ticket "
 msgstr "Заявка не указана. Отмена."
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
+msgid "No Ticket specified. aborting ticket modifications\\n\\n"
 msgstr "Заявка не указана. Отменяем изменения заявки\\n\\n"
 
 #: html/Approvals/Elements/Approve:77

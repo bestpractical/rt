@@ -111,7 +111,7 @@
 <%INIT>
 
 my $Group = new RT::Model::Group();
-$Group->load($id) || Abort(_('Could not load group'));
+$Group->load($id) || abort(_('Could not load group'));
 
 my (%UsersSeen, %GroupsSeen);
 $GroupsSeen{ $Group->id } = 1; # can't be a member of ourself

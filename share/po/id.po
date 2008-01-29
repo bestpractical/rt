@@ -474,7 +474,7 @@ msgid "AND"
 msgstr "DAN"
 
 #: NOT FOUND IN SOURCE
-msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgid "aborting to avoid unintended ticket modifications.\\n"
 msgstr "Dibatalkan untuk menghindari modifikasi tiket yang tidak diharapkan.\\n"
 
 #: html/User/Elements/Tabs:53
@@ -3045,7 +3045,7 @@ msgid "No Template"
 msgstr "Tidak ada Template"
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket "
+msgid "No Ticket specified. aborting ticket "
 msgstr "Tidak ada Tiket yang ditentukan. Batalkan tiket "
 
 #: html/Approvals/Elements/Approve:77

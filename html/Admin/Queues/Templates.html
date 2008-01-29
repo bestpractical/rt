@@ -64,7 +64,7 @@ my ($title, $current_subtab);
 if ($queue_obj->id) {
     $title = _("Edit Templates for queue %1", $queue_obj->name);
 } else {
-    Abort(_("Queue %1 not found",$id));
+    abort(_("Queue %1 not found",$id));
 }
 my $subtabs = {
 	 A => { title => _('Select template'),

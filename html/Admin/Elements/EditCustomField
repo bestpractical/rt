@@ -112,13 +112,13 @@ if (! $CustomField ) {
       #  off in the files that use this component.)
       unless ($val) {
 	  $m->clear_buffer;
-	  Abort(_("Could not create CustomField: %1", $msg));
+	  abort(_("Could not create CustomField: %1", $msg));
       }
       push @results, $msg;
       $CustomFieldObj->set_SortOrder($CustomFieldObj->id);
       $title = _('Created CustomField %1', $CustomFieldObj->name()); 
     } else {
-      $CustomFieldObj->load($CustomField) || Abort(_('No CustomField'));
+      $CustomFieldObj->load($CustomField) || abort(_('No CustomField'));
       $title = _('Editing CustomField %1', $CustomFieldObj->name()); 
 
       my @aresults = process_custom_field_updates ( 

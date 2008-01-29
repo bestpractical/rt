@@ -128,7 +128,7 @@ our %FIELD_METADATA = (
     Created         => [ 'DATE'         => 'Created', ],
     Subject         => [ 'STRING', ],
     Content         => [ 'TRANSFIELD', ],
-    ContentType     => [ 'TRANSFIELD', ],
+    content_type     => [ 'TRANSFIELD', ],
     Filename        => [ 'TRANSFIELD', ],
     TransactionDate => [ 'TRANSDATE', ],
     Requestor       => [ 'WATCHERFIELD' => 'Requestor', ],
@@ -663,7 +663,7 @@ sub _trans_date_limit {
 
 =head2 _TransLimit
 
-Limit based on the Content of a transaction or the ContentType.
+Limit based on the Content of a transaction or the content_type.
 
 Meta Data:
   none
@@ -672,7 +672,7 @@ Meta Data:
 
 sub _trans_limit {
 
-    # Content, ContentType, Filename
+    # Content, content_type, Filename
 
     # If only this was this simple.  We've got to do something
     # complicated here:
@@ -1937,9 +1937,9 @@ sub limitfilename {
 }
 
 # }}}
-# {{{ sub limit_ContentType
+# {{{ sub limit_content_type
 
-=head2 limit_ContentType
+=head2 limit_content_type
 
 Takes a paramhash with the fields operator and value.
 operator is one of =, LIKE, NOT LIKE or !=.

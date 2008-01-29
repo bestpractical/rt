@@ -524,7 +524,7 @@ msgid "AND"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Aborting to avoid unintended ticket modifications.\\n"
+msgid "aborting to avoid unintended ticket modifications.\\n"
 msgstr "意図的でないチケットの修正を防ぐために強制終了します。\\n"
 
 #: html/User/Elements/Tabs:53
@@ -3265,11 +3265,11 @@ msgid "No Template"
 msgstr "テンプレートがありません"
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket "
+msgid "No Ticket specified. aborting ticket "
 msgstr "チケットが指定されていません。"
 
 #: NOT FOUND IN SOURCE
-msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
+msgid "No Ticket specified. aborting ticket modifications\\n\\n"
 msgstr "チケットが指定されていません。チケットの修正を終了します\\n\\n"
 
 #: html/Approvals/Elements/Approve:77

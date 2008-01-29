@@ -54,7 +54,7 @@ if ($arg =~ /^(\w+)\/([,\d]+)(?:\/([^\/]+))?/) {
     @ids = sort split(/,+/, $2);
 }
 else {
-    Abort("Corrupted tabular URL.");
+    abort("Corrupted tabular URL.");
 }
 
 my @cols = $class->basic_columns or return;

@@ -199,7 +199,7 @@ my ($title, $privilegedChecked, $EnabledChecked, $disabled, $result, @results);
 my ($val, $msg);
 
 
-	$user_object->load($id) || $user_object->load($name) || Abort("Couldn't load user '$name'");
+	$user_object->load($id) || $user_object->load($name) || abort("Couldn't load user '$name'");
 	$val = $user_object->id();
     
 

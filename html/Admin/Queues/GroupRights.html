@@ -117,11 +117,11 @@
 
 
 if (!defined $id) {
-    Abort(_("No Queue defined"));
+    abort(_("No Queue defined"));
 }
 
 my $queue_obj = RT::Model::Queue->new();
-$queue_obj->load($id) || Abort(_("Couldn't load queue %1",$id));
+$queue_obj->load($id) || abort(_("Couldn't load queue %1",$id));
 
 my $Groups;
 my $current_tab;

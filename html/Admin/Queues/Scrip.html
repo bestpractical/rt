@@ -60,7 +60,7 @@
 my $queue_obj = RT::Model::Queue->new();
 $queue_obj->load( $Queue );
 unless( $queue_obj->id ) {
-    Abort(_("Queue %1 not found", $id));
+    abort(_("Queue %1 not found", $id));
 }
 
 my ($title, $current_subtab);

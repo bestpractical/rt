@@ -79,7 +79,7 @@ sub table {'ScripActions'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column name        => type is 'text';
-    column Description => type is 'text';
+    column description => type is 'text';
     column ExecModule  => type is 'text';
     column argument    => type is 'text';
     column Creator     => max_length is 11, type is 'int(11)', default is '0';
