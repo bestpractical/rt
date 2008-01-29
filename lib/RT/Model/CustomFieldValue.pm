@@ -58,17 +58,17 @@ use base qw/RT::Record/;
 sub table {'custom_field_values'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column Creator => type is 'int(11)', max_length is 11, default is '0';
+    column creator => type is 'int(11)', max_length is 11, default is '0';
     column
-        LastUpdatedBy => type is 'int(11)',
+        last_updated_by => type is 'int(11)',
         max_length is 11, default is '0';
-    column SortOrder   => type is 'int(11)', max_length is 11, default is '0';
+    column sort_order   => type is 'int(11)', max_length is 11, default is '0';
     column custom_field => type is 'int(11)', max_length is 11, default is '0';
-    column Created     => type is 'datetime', default is '';
-    column LastUpdated => type is 'datetime', default is '';
+    column created     => type is 'datetime', default is '';
+    column last_updated => type is 'datetime', default is '';
     column name => type is 'varchar(200)', max_length is 200, default is '';
     column
-        Description => type is 'varchar(255)',
+        description => type is 'varchar(255)',
         max_length is 255, default is '';
 
 };
@@ -85,8 +85,8 @@ sub create {
     my %args = (
         custom_field => 0,
         name        => '',
-        Description => '',
-        SortOrder   => 0,
+        description => '',
+        sort_order   => 0,
         Category    => '',
         @_,
     );
@@ -107,7 +107,7 @@ sub create {
 
     my ( $id, $msg ) = $self->SUPER::create(
         custom_field => $cf_id,
-        map { $_ => $args{$_} } qw(name Description SortOrder)
+        map { $_ => $args{$_} } qw(name description sort_order)
     );
     return ( $id, $msg ) unless $id;
 

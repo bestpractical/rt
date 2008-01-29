@@ -64,22 +64,22 @@ use Jifty::DBI::Record schema {
 
     column name => max_length is 200, type is 'varchar(200)', default is '';
     column type => max_length is 200, type is 'varchar(200)', default is '';
-    column MaxValues => max_length is 11, type is 'int(11)', default is '0';
-    column Pattern => type is 'longtext', default is '';
-    column Repeated => max_length is 6, type is 'smallint(6)', default is '0';
+    column max_values => max_length is 11, type is 'int(11)', default is '0';
+    column pattern => type is 'longtext', default is '';
+    column repeated => max_length is 6, type is 'smallint(6)', default is '0';
     column
-        Description => max_length is 255,
+        description => max_length is 255,
         type is 'varchar(255)', default is '';
-    column SortOrder => max_length is 11, type is 'int(11)', default is '0';
+    column sort_order => max_length is 11, type is 'int(11)', default is '0';
     column
-        LookupType => max_length is 255,
+        lookup_type => max_length is 255,
         type is 'varchar(255)', default is '';
-    column Creator => max_length is 11, type is 'int(11)', default is '0';
-    column Created => type is 'datetime', default is '';
+    column creator => max_length is 11, type is 'int(11)', default is '0';
+    column created => type is 'datetime', default is '';
     column
-        LastUpdatedBy => max_length is 11,
+        last_updated_by => max_length is 11,
         type is 'int(11)', default is '0';
-    column LastUpdated => type is 'datetime', default is '';
+    column last_updated => type is 'datetime', default is '';
     column disabled => max_length is 6, type is 'smallint(6)', default is '0';
 };
 
@@ -170,15 +170,15 @@ Create takes a hash of values and creates a row in the database:
 
   varchar(200) 'name'.
   varchar(200) 'type'.
-  int(11) 'MaxValues'.
-  varchar(255) 'Pattern'.
-  smallint(6) 'Repeated'.
-  varchar(255) 'Description'.
-  int(11) 'SortOrder'.
-  varchar(255) 'LookupType'.
+  int(11) 'max_values'.
+  varchar(255) 'pattern'.
+  smallint(6) 'repeated'.
+  varchar(255) 'description'.
+  int(11) 'sort_order'.
+  varchar(255) 'lookup_type'.
   smallint(6) 'disabled'.
 
-C<LookupType> is generally the result of either
+C<lookup_type> is generally the result of either
 C<RT::Model::Ticket->custom_field_lookup_type> or C<RT::Model::Transaction->custom_field_lookup_type>.
 
 =cut
@@ -188,12 +188,12 @@ sub create {
     my %args = (
         name        => '',
         type        => '',
-        MaxValues   => 0,
-        Pattern     => '',
-        Description => '',
+        max_values   => 0,
+        pattern     => '',
+        description => '',
         disabled    => 0,
-        LookupType  => '',
-        Repeated    => 0,
+        lookup_type  => '',
+        repeated    => 0,
         @_,
     );
 
@@ -208,11 +208,11 @@ sub create {
     }
 
     if ( $args{TypeComposite} ) {
-        @args{ 'type', 'MaxValues' } = split( /-/, $args{TypeComposite}, 2 );
+        @args{ 'type', 'max_values' } = split( /-/, $args{TypeComposite}, 2 );
     } elsif ( $args{type} =~ s/(?:(Single)|Multiple)$// ) {
 
         # old style type string
-        $args{'MaxValues'} = $1 ? 1 : 0;
+        $args{'max_values'} = $1 ? 1 : 0;
     }
 
     if ( !exists $args{'Queue'} ) {
@@ -228,7 +228,7 @@ sub create {
         {
             return ( 0, _('Permission Denied') );
         }
-        $args{'LookupType'} = 'RT::Model::Queue-RT::Model::Ticket';
+        $args{'lookup_type'} = 'RT::Model::Queue-RT::Model::Ticket';
     } else {
         my $queue = RT::Model::Queue->new;
         $queue->load( $args{'Queue'} );
@@ -238,22 +238,22 @@ sub create {
         unless ( $queue->current_user_has_right('AssignCustomFields') ) {
             return ( 0, _('Permission Denied') );
         }
-        $args{'LookupType'} = 'RT::Model::Queue-RT::Model::Ticket';
+        $args{'lookup_type'} = 'RT::Model::Queue-RT::Model::Ticket';
         $args{'Queue'}      = $queue->id;
     }
 
-    my ( $ok, $msg ) = $self->_is_valid_regex( $args{'Pattern'} );
+    my ( $ok, $msg ) = $self->_is_valid_regex( $args{'pattern'} );
     return ( 0, _( "Invalid pattern: %1", $msg ) ) unless $ok;
 
     ( my $rv, $msg ) = $self->SUPER::create(
         name        => $args{'name'},
         type        => $args{'type'},
-        MaxValues   => $args{'MaxValues'},
-        Pattern     => $args{'Pattern'},
-        Description => $args{'Description'},
+        max_values   => $args{'max_values'},
+        pattern     => $args{'pattern'},
+        description => $args{'description'},
         disabled    => $args{'disabled'},
-        LookupType  => $args{'LookupType'},
-        Repeated    => $args{'Repeated'},
+        lookup_type  => $args{'lookup_type'},
+        repeated    => $args{'repeated'},
     );
 
     if ( exists $args{'ValuesClass'} ) {
@@ -388,7 +388,7 @@ sub values {
 
 =head3 AddValue HASH
 
-Create a new value for this CustomField.  Takes a paramhash containing the elements name, Description and SortOrder
+Create a new value for this CustomField.  Takes a paramhash containing the elements name, description and sort_order
 
 
 =cut
@@ -545,7 +545,7 @@ sub friendly_type {
     my $self = shift;
 
     my $type = @_ ? shift : $self->type;
-    my $max  = @_ ? shift : $self->MaxValues;
+    my $max  = @_ ? shift : $self->max_values;
     $max = 0 unless $max;
 
     if ( my $friendly_type
@@ -577,7 +577,7 @@ sub validate_type {
 
     if ( $type =~ s/(?:Single|Multiple)$// ) {
         Jifty->log->warn(
-            "Prefix 'Single' and 'Multiple' to type deprecated, use MaxValues instead at ("
+            "Prefix 'Single' and 'Multiple' to type deprecated, use max_values instead at ("
                 . join( ":", caller )
                 . ")" );
     }
@@ -597,7 +597,7 @@ sub set_type {
             "'Single' and 'Multiple' on SetType deprecated, use SetMaxValues instead at ("
                 . join( ":", caller )
                 . ")" );
-        $self->set_MaxValues( $1 ? 1 : 0 );
+        $self->set_max_values( $1 ? 1 : 0 );
     }
     $self->_set( column => 'type', value => $type );
 }
@@ -605,7 +605,7 @@ sub set_type {
 =head2 SetPattern STRING
 
 Takes a single string representing a regular expression.  Performs basic
-validation on that regex, and sets the C<Pattern> field for the CF if it
+validation on that regex, and sets the C<pattern> field for the CF if it
 is valid.
 
 =cut
@@ -616,7 +616,7 @@ sub set_pattern {
 
     my ( $ok, $msg ) = $self->_is_valid_regex($regex);
     if ($ok) {
-        return $self->set( column => 'Pattern', value => $regex );
+        return $self->set( column => 'pattern', value => $regex );
     } else {
         return ( 0, _( "Invalid pattern: %1", $msg ) );
     }
@@ -658,7 +658,7 @@ Returns false if it accepts multiple values
 
 sub single_value {
     my $self = shift;
-    if ( $self->MaxValues == 1 ) {
+    if ( $self->max_values == 1 ) {
         return 1;
     } else {
         return undef;
@@ -667,7 +667,7 @@ sub single_value {
 
 sub unlimited_values {
     my $self = shift;
-    if ( $self->MaxValues == 0 ) {
+    if ( $self->max_values == 0 ) {
         return 1;
     } else {
         return undef;
@@ -765,8 +765,8 @@ sub set_type_composite {
         my ( $status, $msg ) = $self->set_type($type);
         return ( $status, $msg ) unless $status;
     }
-    if ( ( $max_values || 0 ) != ( $self->MaxValues || 0 ) ) {
-        my ( $status, $msg ) = $self->set_MaxValues($max_values);
+    if ( ( $max_values || 0 ) != ( $self->max_values || 0 ) ) {
+        my ( $status, $msg ) = $self->set_max_values($max_values);
         return ( $status, $msg ) unless $status;
     }
     return 1,
@@ -786,14 +786,14 @@ Autrijus: care to doc how LookupTypes work?
 sub set_lookup_type {
     my $self   = shift;
     my $lookup = shift;
-    if ( $lookup ne $self->LookupType ) {
+    if ( $lookup ne $self->lookup_type ) {
 
         # Okay... We need to invalidate our existing relationships
         my $ObjectCustomFields = RT::Model::ObjectCustomFieldCollection->new;
         $ObjectCustomFields->limit_to_custom_field( $self->id );
         $_->delete foreach @{ $ObjectCustomFields->items_array_ref };
     }
-    return $self->_set( column => 'LookupType', value => $lookup );
+    return $self->_set( column => 'lookup_type', value => $lookup );
 }
 
 =head2 TypeComposite
@@ -804,7 +804,7 @@ Returns a composite value composed of this object's type and maximum values
 
 sub type_composite {
     my $self = shift;
-    return join '-', ( $self->type || '' ), ( $self->MaxValues || 0 );
+    return join '-', ( $self->type || '' ), ( $self->max_values || 0 );
 }
 
 =head2 TypeComposites
@@ -842,7 +842,7 @@ my @Friendlyobject_types = (
 
 sub friendly_lookup_type {
     my $self = shift;
-    my $lookup = shift || $self->LookupType;
+    my $lookup = shift || $self->lookup_type;
 
     return ( _( $FRIENDLY_OBJECT_TYPES{$lookup} ) )
         if ( defined $FRIENDLY_OBJECT_TYPES{$lookup} );
@@ -867,7 +867,7 @@ sub add_to_object {
     my $object = shift;
     my $id     = $object->id || 0;
 
-    unless ( index( $self->LookupType, ref($object) ) == 0 ) {
+    unless ( index( $self->lookup_type, ref($object) ) == 0 ) {
         return ( 0, _('Lookup type mismatch') );
     }
 
@@ -899,7 +899,7 @@ sub remove_from_object {
     my $object = shift;
     my $id     = $object->id || 0;
 
-    unless ( index( $self->LookupType, ref($object) ) == 0 ) {
+    unless ( index( $self->lookup_type, ref($object) ) == 0 ) {
         return ( 0, _('Object type mismatch') );
     }
 
@@ -959,9 +959,9 @@ sub add_value_for_object {
 
     Jifty->handle->begin_transaction;
 
-    if ( $self->MaxValues ) {
+    if ( $self->max_values ) {
         my $current_values = $self->values_for_object($obj);
-        my $extra_values = ( $current_values->count + 1 ) - $self->MaxValues;
+        my $extra_values = ( $current_values->count + 1 ) - $self->max_values;
 
         # (The +1 is for the new value we're adding)
 
@@ -1007,14 +1007,14 @@ sub add_value_for_object {
 
 =head2 MatchPattern STRING
 
-Tests the incoming string against the Pattern of this custom field object
-and returns a boolean; returns true if the Pattern is empty.
+Tests the incoming string against the pattern of this custom field object
+and returns a boolean; returns true if the pattern is empty.
 
 =cut
 
 sub match_pattern {
     my $self = shift;
-    my $regex = $self->Pattern or return 1;
+    my $regex = $self->pattern or return 1;
 
     return ( ( $_[0] || '' ) =~ $regex );
 }
@@ -1032,7 +1032,7 @@ and localizing it.
 
 sub friendly_pattern {
     my $self  = shift;
-    my $regex = $self->Pattern;
+    my $regex = $self->pattern;
 
     return '' unless length $regex;
     if ( $regex =~ /\(\?#([^)]*)\)/ ) {

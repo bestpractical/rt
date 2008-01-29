@@ -2394,9 +2394,9 @@ sub limit_custom_field {
     }
 
     my $q = "";
-    if ( $CF->Queue ) {
+    if ( $CF->queue ) {
         my $qo = RT::Model::Queue->new();
-        $qo->load( $CF->Queue );
+        $qo->load( $CF->queue );
         $q = $qo->name;
     }
 
@@ -2499,7 +2499,7 @@ sub items_array_ref {
         while ( my $item = $self->next ) {
             push( @{ $self->{'items_array'} }, $item );
         }
-        $self->GotoItem($placeholder);
+        $self->goto_item($placeholder);
         $self->{'items_array'}
             = $self->items_order_by( $self->{'items_array'} );
     }
@@ -2809,12 +2809,12 @@ sub _build_item_map {
 
     delete $self->{'item_map'};
     if ( $items->[0] ) {
-        $self->{'item_map'}->{'first'} = $items->[0]->EffectiveId;
+        $self->{'item_map'}->{'first'} = $items->[0]->effective_id;
         while ( my $item = shift @$items ) {
-            my $id = $item->EffectiveId;
+            my $id = $item->effective_id;
             $self->{'item_map'}->{$id}->{'defined'} = 1;
             $self->{'item_map'}->{$id}->{prev}      = $prev;
-            $self->{'item_map'}->{$id}->{next}      = $items->[0]->EffectiveId
+            $self->{'item_map'}->{$id}->{next}      = $items->[0]->effective_id
                 if ( $items->[0] );
             $prev = $id;
         }

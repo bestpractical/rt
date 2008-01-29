@@ -167,7 +167,7 @@ sub load_action {
     $self->{_ticket_obj} = $args{ticket_obj};
 
     #TODO: Put this in an eval
-    $self->ExecModule =~ /^(\w+)$/;
+    $self->exec_module =~ /^(\w+)$/;
     my $module = $1;
     my $type   = "RT::ScripAction::" . $module;
 

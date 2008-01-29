@@ -168,7 +168,7 @@ sub load_condition {
     );
 
     #TODO: Put this in an eval
-    $self->ExecModule =~ /^(\w+)$/;
+    $self->exec_module =~ /^(\w+)$/;
     my $module = $1;
     my $type   = "RT::Condition::" . $module;
 

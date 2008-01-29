@@ -981,7 +981,7 @@ sub current_user_can_modify {
 
     #If the field is marked as an "administrators only" field,
     # don\'t let the user touch it.
-    elsif (0) {    # $self->_Accessible( $right, 'admin' ) ) {
+    elsif (0) {    # $self->_accessible( $right, 'admin' ) ) {
         return (undef);
     }
 
@@ -1442,7 +1442,7 @@ sub set_private_key {
             if $tmp{'exit_code'} || !$tmp{'info'};
     }
 
-    my ( $status, $msg ) = $self->setAttribute(
+    my ( $status, $msg ) = $self->set_attribute(
         name    => 'private_key',
         Content => $key,
     );

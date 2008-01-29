@@ -729,7 +729,7 @@ sub add_watcher {
             }
         } else {
             Jifty->log->warn("$self -> AddWatcher got passed a bogus type");
-            return ( 0, _('Error in parameters to Queue->AddWatcher') );
+            return ( 0, _('Error in parameters to Queue->add_watcher') );
         }
     }
 

@@ -569,7 +569,7 @@ type is one of ( "Requestor" || "Cc" || "AdminCc" || "Owner")
 domain is one of (RT::Model::Ticket-Role || RT::Model::Queue-Role || RT::System-Role)
 instance is the id of the ticket or queue in question
 
-This routine expects to be called from {Ticket||Queue}->createTicket_groups _inside of a transaction_
+This routine expects to be called from {Ticket||Queue}->create_ticket_groups _inside of a transaction_
 
 Returns a tuple of (Id, Message).  If id is 0, the create failed
 

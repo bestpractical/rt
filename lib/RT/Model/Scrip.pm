@@ -251,7 +251,7 @@ sub action_obj {
         #TODO: why are we loading Actions with templates like this.
         # two separate methods might make more sense
         $self->{'ScripActionObj'}
-            ->load( $self->ScripAction, $self->Template );
+            ->load( $self->scrip_action, $self->template );
     }
     return ( $self->{'ScripActionObj'} );
 }
@@ -270,7 +270,7 @@ sub condition_obj {
     my $self = shift;
 
     my $res = RT::Model::ScripCondition->new;
-    $res->load( $self->ScripCondition );
+    $res->load( $self->scrip_condition );
     return $res;
 }
 
@@ -290,7 +290,7 @@ sub template_obj {
     unless ( defined $self->{'template_obj'} ) {
         require RT::Model::Template;
         $self->{'template_obj'} = RT::Model::Template->new;
-        $self->{'template_obj'}->load( $self->Template );
+        $self->{'template_obj'}->load( $self->template );
     }
     return ( $self->{'template_obj'} );
 }
@@ -314,7 +314,7 @@ should be loaded by the SuperUser role
 
 =cut
 
-# XXX TODO : This code appears to be obsoleted in favor of similar code in Scrips->Apply.
+# XXX TODO : This code appears to be obsoleted in favor of similar code in Scrips->apply.
 # Why is this here? Is it still called?
 
 sub apply {
@@ -415,16 +415,16 @@ sub is_applicable {
 
         my @Transactions;
 
-        if ( $self->Stage eq 'TransactionCreate' ) {
+        if ( $self->stage eq 'TransactionCreate' ) {
 
             # Only look at our current Transaction
             @Transactions = ( $args{'transaction_obj'} );
-        } elsif ( $self->Stage eq 'transaction_batch' ) {
+        } elsif ( $self->stage eq 'transaction_batch' ) {
 
             # Look at all Transactions in this Batch
             @Transactions = @{ $args{'ticket_obj'}->transaction_batch || [] };
         } else {
-            Jifty->log->error( "Unknown Scrip stage:" . $self->Stage );
+            Jifty->log->error( "Unknown Scrip stage:" . $self->stage );
             return (undef);
         }
         my $ConditionObj = $self->condition_obj;
@@ -492,7 +492,7 @@ sub prepare {
                 . $self->id
                 . " died. - "
                 . $err . " "
-                . $self->action_obj->ExecModule );
+                . $self->action_obj->exec_module );
         return (undef);
     }
     return ($return);
@@ -548,7 +548,7 @@ sub _set {
 
     unless ( $self->current_user_has_right('ModifyScrips') ) {
         Jifty->log->debug(
-            "CurrentUser can't modify Scrips for " . $self->Queue . "\n" );
+            "CurrentUser can't modify Scrips for " . $self->queue . "\n" );
         return ( 0, _('Permission Denied') );
     }
     return $self->__set(@_);

@@ -348,7 +348,7 @@ sub has_right {
 
     unshift @{ $args{'equiv_objects'} }, RT->system
         unless $self->can('_IsOverrideGlobalACL')
-            && $self->_IsOverrideGlobalACL( $args{'Object'} );
+            && $self->_is_override_global_acl( $args{'Object'} );
 
     # {{{ If we've cached a win or loss for this lookup say so
 

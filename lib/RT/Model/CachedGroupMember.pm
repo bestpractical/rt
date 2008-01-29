@@ -8,10 +8,10 @@ use base qw/RT::Record/;
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column GroupId           => references RT::Model::Group;
-    column MemberId          => type is 'integer';
-    column Via               => type is 'integer';
-    column ImmediateParentId => type is 'integer';
+    column group_id           => references RT::Model::Group;
+    column member_id          => type is 'integer';
+    column via               => type is 'integer';
+    column immediate_parent_id => type is 'integer';
     column disabled          => type is 'integer', default is '0';
 
 };
@@ -45,7 +45,7 @@ Create takes a hash of values and creates a row in the database:
   'ImmediateParent' is the RT::Model::Principal of the group that this 
   principal belongs to to get here
 
-  int(11) 'Via' is an internal reference to CachedGroupMembers->id of
+  int(11) 'via' is an internal reference to CachedGroupMembers->id of
   the "parent" record of this cached group member. It should be empty if 
   this member is a "direct" member of this group. (In that case, it will 
   be set to this cached group member's id after creation)
@@ -62,7 +62,7 @@ sub create {
         Group           => '',
         Member          => '',
         ImmediateParent => '',
-        Via             => '0',
+        via             => '0',
         disabled        => '0',
         @_
     );
@@ -94,11 +94,11 @@ sub create {
     }
 
     my $id = $self->SUPER::create(
-        GroupId           => $args{'Group'}->id,
-        MemberId          => $args{'Member'}->id,
-        ImmediateParentId => $args{'ImmediateParent'}->id,
+        group_id           => $args{'Group'}->id,
+        member_id          => $args{'Member'}->id,
+        immediate_parent_id => $args{'ImmediateParent'}->id,
         disabled          => $args{'disabled'},
-        Via               => $args{'Via'},
+        via               => $args{'via'},
     );
 
     unless ($id) {
@@ -106,18 +106,18 @@ sub create {
                 . $args{'Member'}
                 . " as a cached member of "
                 . $args{'Group'}->id . " via "
-                . $args{'Via'} );
+                . $args{'via'} );
         return (undef)
             ;    #this will percolate up and bail out of the transaction
     }
-    if ( $self->__value('Via') == 0 ) {
-        my ( $vid, $vmsg ) = $self->__set( column => 'Via', value => $id );
+    if ( $self->__value('via') == 0 ) {
+        my ( $vid, $vmsg ) = $self->__set( column => 'via', value => $id );
         unless ($vid) {
             Jifty->log->warn( "Due to a via error, couldn't create "
                     . $args{'Member'}
                     . " as a cached member of "
                     . $args{'Group'}->id . " via "
-                    . $args{'Via'} );
+                    . $args{'via'} );
             return (undef)
                 ;    #this will percolate up and bail out of the transaction
         }
@@ -132,7 +132,7 @@ sub create {
                 Member          => $member->member_obj,
                 ImmediateParent => $args{'Member'},
                 disabled        => $args{'disabled'},
-                Via             => $id
+                via             => $id
             );
             unless ($c_id) {
                 return (undef);    #percolate the error upwards.
@@ -171,7 +171,7 @@ sub delete {
             value    => $self->id
         );
         $deletable->limit(
-            column   => 'Via',
+            column   => 'via',
             operator => '=',
             value    => $self->id
         );
@@ -193,7 +193,7 @@ sub delete {
 
     unless ( $self->group_obj->object ) {
 
-        warn "HEY! NO group object object!!!" . $self->__value('GroupId');
+        warn "HEY! NO group object object!!!" . $self->__value('group_id');
         warn YAML::Dump($self);
         use YAML;
         return undef;
@@ -202,13 +202,13 @@ sub delete {
   # Unless $self->group_obj still has the member recursively $self->member_obj
   # (Since we deleted the database row above, $self no longer counts)
     unless (
-        $self->group_obj->object->has_member_recursively( $self->MemberId ) )
+        $self->group_obj->object->has_member_recursively( $self->member_id ) )
     {
 
-        #   Find all ACEs granted to $self->GroupId
+        #   Find all ACEs granted to $self->group_id
         my $acl = RT::Model::ACECollection->new(
             current_user => RT->system_user );
-        $acl->limit_to_principal( id => $self->GroupId );
+        $acl->limit_to_principal( id => $self->group_id );
 
         while ( my $this_ace = $acl->next() ) {
 
@@ -216,7 +216,7 @@ sub delete {
             my $delegations = RT::Model::ACECollection->new(
                 current_user => RT->system_user );
             $delegations->delegated_from( id => $this_ace->id );
-            $delegations->delegated_by( id => $self->MemberId );
+            $delegations->delegated_by( id => $self->member_id );
 
             # For each delegation
             while ( my $delegation = $delegations->next ) {
@@ -267,7 +267,7 @@ sub set_disabled {
         my $deletable = RT::Model::CachedGroupMemberCollection->new;
 
         $deletable->limit(
-            column   => 'Via',
+            column   => 'via',
             operator => '=',
             value    => $self->id
         );
@@ -290,13 +290,13 @@ sub set_disabled {
   # Unless $self->group_obj still has the member recursively $self->member_obj
   # (Since we Setdisabledd the database row above, $self no longer counts)
     unless (
-        $self->group_obj->object->has_member_recursively( $self->MemberId ) )
+        $self->group_obj->object->has_member_recursively( $self->member_id ) )
     {
 
-        #   Find all ACEs granted to $self->GroupId
+        #   Find all ACEs granted to $self->group_id
         my $acl = RT::Model::ACECollection->new(
             current_user => RT->system_user );
-        $acl->limit_to_principal( id => $self->GroupId );
+        $acl->limit_to_principal( id => $self->group_id );
 
         while ( my $this_ace = $acl->next() ) {
 
@@ -304,7 +304,7 @@ sub set_disabled {
             my $delegations = RT::Model::ACECollection->new(
                 current_user => RT->system_user );
             $delegations->delegated_from( id => $this_ace->id );
-            $delegations->delegated_by( id => $self->MemberId );
+            $delegations->delegated_by( id => $self->member_id );
 
             # For each delegation,  blow away the delegation
             while ( my $delegation = $delegations->next ) {
@@ -336,7 +336,7 @@ Returns the RT::Model::Principal object for this group Group
 sub group_obj {
     my $self      = shift;
     my $principal = RT::Model::Principal->new;
-    $principal->load( $self->GroupId );
+    $principal->load( $self->group_id );
     return ($principal);
 }
 
@@ -353,7 +353,7 @@ Returns the RT::Model::Principal object for this group ImmediateParent
 sub immediate_parent_obj {
     my $self      = shift;
     my $principal = RT::Model::Principal->new;
-    $principal->load( $self->ImmediateParentId );
+    $principal->load( $self->immediate_parent_id );
     return ($principal);
 }
 
@@ -370,7 +370,7 @@ Returns the RT::Model::Principal object for this group member
 sub member_obj {
     my $self      = shift;
     my $principal = RT::Model::Principal->new;
-    $principal->load( $self->MemberId );
+    $principal->load( $self->member_id );
     return ($principal);
 }
 

@@ -75,7 +75,7 @@ no warnings qw(redefine);
 sub table {'Links'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column Target => type is 'varchar(240)', max_length is 240, default is '';
+    column target => type is 'varchar(240)', max_length is 240, default is '';
     column Base   => type is 'varchar(240)', max_length is 240, default is '';
     column LocalTarget => type is 'int(11)', max_length is 11, default is '0';
     column Creator     => type is 'int(11)', max_length is 11, default is '0';
@@ -269,7 +269,7 @@ returns an RT::URI object for the "Target" of this link.
 sub target_uri {
     my $self = shift;
     my $URI  = RT::URI->new;
-    $URI->from_uri( $self->Target );
+    $URI->from_uri( $self->target );
     return ($URI);
 }
 
@@ -298,7 +298,7 @@ returns an RT::URI object for the "Base" of this link.
 sub base_uri {
     my $self = shift;
     my $URI  = RT::URI->new;
-    $URI->from_uri( $self->Base );
+    $URI->from_uri( $self->base );
     return ($URI);
 }
 

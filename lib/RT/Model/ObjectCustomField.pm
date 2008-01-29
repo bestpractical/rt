@@ -90,7 +90,7 @@ sub create {
     my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new;
     $ObjectCFs->limit_to_object_id( $args{'object_id'} );
     $ObjectCFs->limit_to_custom_field( $cf->id );
-    $ObjectCFs->limit_to_lookup_type( $cf->LookupType );
+    $ObjectCFs->limit_to_lookup_type( $cf->lookup_type );
     if ( my $first = $ObjectCFs->first ) {
         $self->load( $first->id );
         return $first->id;
@@ -100,10 +100,10 @@ sub create {
         my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new(
             current_user => RT->system_user );
         $ObjectCFs->limit_to_object_id( $args{'object_id'} );
-        $ObjectCFs->limit_to_lookup_type( $cf->LookupType );
+        $ObjectCFs->limit_to_lookup_type( $cf->lookup_type );
         $ObjectCFs->order_by( column => 'SortOrder', order => 'DESC' );
         if ( my $first = $ObjectCFs->first ) {
-            $args{'SortOrder'} = $first->SortOrder + 1;
+            $args{'SortOrder'} = $first->sort_order + 1;
         } else {
             $args{'SortOrder'} = 0;
         }
@@ -121,14 +121,14 @@ sub delete {
 
     my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new;
     $ObjectCFs->limit_to_object_id( $self->object_id );
-    $ObjectCFs->limit_to_lookup_type( $self->custom_field_obj->LookupType );
+    $ObjectCFs->limit_to_lookup_type( $self->custom_field_obj->lookup_type );
 
     # Move everything below us up
-    my $sort_order = $self->SortOrder;
+    my $sort_order = $self->sort_order;
     while ( my $OCF = $ObjectCFs->next ) {
-        my $this_order = $OCF->SortOrder;
+        my $this_order = $OCF->sort_order;
         next if $this_order <= $sort_order;
-        $OCF->set_SortOrder( $this_order - 1 );
+        $OCF->set_sort_order( $this_order - 1 );
     }
 
     $self->SUPER::delete;

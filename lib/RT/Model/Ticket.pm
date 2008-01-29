@@ -247,11 +247,11 @@ sub load {
     }
 
     #If we're merged, resolve the merge.
-    if ( ( $self->EffectiveId ) and ( $self->EffectiveId != $self->id ) ) {
+    if ( ( $self->effective_id ) and ( $self->effective_id != $self->id ) ) {
         Jifty->log->debug( "We found a merged ticket."
                 . $self->id . "/"
-                . $self->EffectiveId );
-        return ( $self->load( $self->EffectiveId ) );
+                . $self->effective_id );
+        return ( $self->load( $self->effective_id ) );
     }
 
     #Ok. we're loaded. lets get outa here.
@@ -421,7 +421,7 @@ sub create {
     my $Due = RT::Date->new();
     if ( defined $args{'Due'} ) {
         $Due->set( Format => 'ISO', value => $args{'Due'} );
-    } elsif ( my $due_in = $queue_obj->DefaultDueIn ) {
+    } elsif ( my $due_in = $queue_obj->default_due_in ) {
         $Due->set_to_now;
         $Due->add_days($due_in);
     }
@@ -1178,7 +1178,7 @@ sub add_watcher {
         }
     } else {
         Jifty->log->warn("AddWatcher got passed a bogus type");
-        return ( 0, _('Error in parameters to Ticket->AddWatcher') );
+        return ( 0, _('Error in parameters to Ticket->add_watcher') );
     }
 
     return $self->_add_watcher(%args);
@@ -1905,7 +1905,7 @@ sub due_obj {
     my $time = RT::Date->new();
 
     # -1 is RT::Date slang for never
-    if ( my $due = $self->Due ) {
+    if ( my $due = $self->due ) {
         $time->set( Format => 'sql', value => $due );
     } else {
         $time->set( Format => 'unix', value => -1 );
@@ -1943,7 +1943,7 @@ sub resolved_obj {
     my $self = shift;
 
     my $time = RT::Date->new();
-    $time->set( Format => 'sql', value => $self->Resolved );
+    $time->set( Format => 'sql', value => $self->resolved );
     return $time;
 }
 
@@ -2007,7 +2007,7 @@ sub started_obj {
     my $self = shift;
 
     my $time = RT::Date->new();
-    $time->set( Format => 'sql', value => $self->Started );
+    $time->set( Format => 'sql', value => $self->started );
     return $time;
 }
 
@@ -2045,7 +2045,7 @@ sub told_obj {
     my $self = shift;
 
     my $time = RT::Date->new();
-    $time->set( Format => 'sql', value => $self->Told );
+    $time->set( Format => 'sql', value => $self->told );
     return $time;
 }
 
@@ -2063,7 +2063,7 @@ TODO: This should be deprecated
 
 sub told_as_string {
     my $self = shift;
-    if ( $self->Told ) {
+    if ( $self->told ) {
         return $self->told_obj->as_string();
     } else {
         return ("Never");
@@ -2333,7 +2333,7 @@ sub _links {
             );
             $Tickets->limit(
                 column => 'EffectiveId',
-                value  => $self->EffectiveId
+                value  => $self->effective_id
             );
             while ( my $Ticket = $Tickets->next ) {
                 $self->{"$field$type"}->limit(
@@ -2673,26 +2673,26 @@ sub merge_into {
 
     my %old_seen;
     while ( my $link = $old_links_to->next ) {
-        if ( exists $old_seen{ $link->Base . "-" . $link->type} ) {
+        if ( exists $old_seen{ $link->base . "-" . $link->type} ) {
             $link->delete;
-        } elsif ( $link->Base eq $MergeInto->uri ) {
+        } elsif ( $link->base eq $MergeInto->uri ) {
             $link->delete;
         } else {
 
          # First, make sure the link doesn't already exist. then move it over.
             my $tmp = RT::Model::Link->new( current_user => RT->system_user );
             $tmp->load_by_cols(
-                Base        => $link->Base,
+                Base        => $link->base,
                 type        => $link->type,
                 LocalTarget => $MergeInto->id
             );
             if ( $tmp->id ) {
                 $link->delete;
             } else {
-                $link->set_Target( $MergeInto->uri );
-                $link->set_LocalTarget( $MergeInto->id );
+                $link->set_target( $MergeInto->uri );
+                $link->set_local_target( $MergeInto->id );
             }
-            $old_seen{ $link->Base . "-" . $link->type} = 1;
+            $old_seen{ $link->base . "-" . $link->type} = 1;
         }
 
     }
@@ -2702,26 +2702,26 @@ sub merge_into {
     $old_links_from->limit( column => 'Base', value => $self->uri );
 
     while ( my $link = $old_links_from->next ) {
-        if ( exists $old_seen{ $link->type. "-" . $link->Target } ) {
+        if ( exists $old_seen{ $link->type. "-" . $link->target } ) {
             $link->delete;
         }
-        if ( $link->Target eq $MergeInto->uri ) {
+        if ( $link->target eq $MergeInto->uri ) {
             $link->delete;
         } else {
 
          # First, make sure the link doesn't already exist. then move it over.
             my $tmp = RT::Model::Link->new( current_user => RT->system_user );
             $tmp->load_by_cols(
-                Target    => $link->Target,
+                Target    => $link->target,
                 type      => $link->type,
                 LocalBase => $MergeInto->id
             );
             if ( $tmp->id ) {
                 $link->delete;
             } else {
-                $link->set_Base( $MergeInto->uri );
-                $link->set_LocalBase( $MergeInto->id );
-                $old_seen{ $link->type. "-" . $link->Target } = 1;
+                $link->set_base( $MergeInto->uri );
+                $link->set_local_base( $MergeInto->id );
+                $old_seen{ $link->type. "-" . $link->target } = 1;
             }
         }
 
@@ -2752,7 +2752,7 @@ sub merge_into {
             my ( $val, $msg ) = $MergeInto->_add_watcher(
                 type         => $addwatcher_type,
                 Silent       => 1,
-                principal_id => $watcher->MemberId
+                principal_id => $watcher->member_id
             );
             unless ($val) {
                 Jifty->log->warn($msg);
@@ -3297,7 +3297,7 @@ sub seen_up_to {
 
     my $uid  = $self->current_user->id;
     my $attr = $self->first_attribute( "User-" . $uid . "-SeenUpTo" );
-    return if $attr && $attr->content gt $self->LastUpdated;
+    return if $attr && $attr->content gt $self->last_updated;
 
     my $txns = $self->transactions;
     $txns->limit( column => 'type', value => 'comment' );
@@ -3474,7 +3474,7 @@ sub _value {
     my $column = shift;
 
     #if the column is public, return it.
-    if (1) {    # $self->_Accessible( $column, 'public' ) ) {
+    if (1) {    # $self->_accessible( $column, 'public' ) ) {
 
         #Jifty->log->debug("Skipping ACL check for $column\n");
         return ( $self->SUPER::_value($column) );
@@ -3673,7 +3673,7 @@ sub custom_field_values {
     my $field = shift;
     if ( $field and $field !~ /^\d+$/ ) {
         my $cf = RT::Model::CustomField->new;
-        $cf->load_by_name_and_queue( name => $field, Queue => $self->Queue );
+        $cf->load_by_name_and_queue( name => $field, Queue => $self->queue );
         unless ( $cf->id ) {
             $cf->load_by_name_and_queue( name => $field, Queue => 0 );
         }

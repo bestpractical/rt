@@ -868,7 +868,7 @@ sub brief_description {
     },
     subject => sub {
         my $self = shift;
-        return _( "subject changed to %1", $self->Data );
+        return _( "subject changed to %1", $self->data );
     },
     AddLink => sub {
         my $self = shift;
@@ -898,7 +898,7 @@ sub brief_description {
                 return _( "Merged into %1", $value );
             }
         } else {
-            return ( $self->Data );
+            return ( $self->data );
         }
     },
     delete_link => sub {
@@ -928,7 +928,7 @@ sub brief_description {
                 return _( "Member %1 deleted", $value );
             }
         } else {
-            return ( $self->Data );
+            return ( $self->data );
         }
     },
     Set => sub {
@@ -968,7 +968,7 @@ sub brief_description {
     },
     PurgeTransaction => sub {
         my $self = shift;
-        return _( "Transaction %1 purged", $self->Data );
+        return _( "Transaction %1 purged", $self->data );
     },
     AddReminder => sub {
         my $self   = shift;
@@ -1056,7 +1056,7 @@ sub _value {
 
 =head2 current_user_has_right RIGHT
 
-Calls $self->current_user->HasQueueRight for the right passed in here.
+Calls $self->current_user->has_queue_right for the right passed in here.
 passed in here.
 
 =cut

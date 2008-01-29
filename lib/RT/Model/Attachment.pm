@@ -35,24 +35,24 @@ use Jifty::DBI::Record schema {
         transaction_id => max_length is 11,
         type is 'int(11)', default is '0';
     column
-        MessageId => max_length is 200,
+        message_id => max_length is 200,
         type is 'varchar(200)', default is '';
     column parent => max_length is 11, type is 'int(11)', default is '0';
     column
         content_type => max_length is 200,
         type is 'varchar(200)', default is '';
     column
-        Filename => max_length is 255,
+        filename => max_length is 255,
         type is 'varchar(255)', default is '';
     column
         subject => max_length is 255,
         type is 'varchar(255)', default is '';
 
     column content         => type is 'blob', default is '';
-    column ContentEncoding => type is 'blob', default is '';
-    column Headers         => type is 'blob', default is '';
-    column Creator => max_length is 11, type is 'int(11)', default is '0';
-    column Created => type is 'datetime';
+    column content_encoding => type is 'blob', default is '';
+    column headers         => type is 'blob', default is '';
+    column creator => max_length is 11, type is 'int(11)', default is '0';
+    column created => type is 'datetime';
 
 };
 
@@ -245,7 +245,7 @@ before returning it.
 
 sub content {
     my $self = shift;
-    return $self->_decode_lob( $self->content_type, $self->ContentEncoding,
+    return $self->_decode_lob( $self->content_type, $self->content_encoding,
         $self->_value( 'content', decode_utf8 => 0 ),
     );
 }
@@ -266,16 +266,16 @@ sub original_content {
     my $enc = $self->original_encoding;
 
     my $content;
-    if ( !$self->ContentEncoding || $self->ContentEncoding eq 'none' ) {
+    if ( !$self->content_encoding || $self->content_encoding eq 'none' ) {
         $content = $self->_value( 'content', decode_utf8 => 0 );
-    } elsif ( $self->ContentEncoding eq 'base64' ) {
+    } elsif ( $self->content_encoding eq 'base64' ) {
         $content = MIME::Base64::decode_base64(
             $self->_value( 'content', decode_utf8 => 0 ) );
-    } elsif ( $self->ContentEncoding eq 'quoted-printable' ) {
+    } elsif ( $self->content_encoding eq 'quoted-printable' ) {
         $content = MIME::QuotedPrint::decode(
             $self->_value( 'content', decode_utf8 => 0 ) );
     } else {
-        return ( _( "Unknown ContentEncoding %1", $self->ContentEncoding ) );
+        return ( _( "Unknown ContentEncoding %1", $self->content_encoding ) );
     }
 
   # Turn *off* the SvUTF8 bits here so decode_utf8 and from_to below can work.
@@ -594,7 +594,7 @@ sub encrypt {
     my $self = shift;
 
     my $txn = $self->transaction_obj;
-    return ( 0, _('Permission Denied') ) unless $txn->current_userCanSee;
+    return ( 0, _('Permission Denied') ) unless $txn->current_user_can_see;
     return ( 0, _('Permission Denied') )
         unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
     return ( 0, _('GnuPG integration is disabled') )
@@ -616,7 +616,7 @@ sub encrypt {
     my $queue = $txn->ticket_obj->queue_obj;
     my $encrypt_for;
     foreach my $address (
-        grep $_, $queue->CorrespondAddress, $queue->CommentAddress,
+        grep $_, $queue->correspond_address, $queue->comment_address,
         RT->config->get('CorrespondAddress'),
         RT->config->get('CommentAddress'),
         )
@@ -658,7 +658,7 @@ sub decrypt {
     my $self = shift;
 
     my $txn = $self->transaction_obj;
-    return ( 0, _('Permission Denied') ) unless $txn->current_userCanSee;
+    return ( 0, _('Permission Denied') ) unless $txn->current_user_can_see;
     return ( 0, _('Permission Denied') )
         unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
     return ( 0, _('GnuPG integration is disabled') )

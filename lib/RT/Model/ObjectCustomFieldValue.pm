@@ -136,7 +136,7 @@ sub create {
 
 sub large_content {
     my $self = shift;
-    return $self->_decode_lob( $self->content_type, $self->ContentEncoding,
+    return $self->_decode_lob( $self->content_type, $self->content_encoding,
         $self->_value( 'LargeContent', decode_utf8 => 0 ) );
 }
 
@@ -271,7 +271,7 @@ a LinkValueTo
 sub link_value_to {
     my $self = shift;
     return $self->_fill_in_template_url(
-        $self->custom_field_obj->LinkValueTo );
+        $self->custom_field_obj->link_value_to );
 }
 
 =head2 ValueIncludeURL
@@ -285,7 +285,7 @@ a IncludeContentForValue
 sub include_content_for_value {
     my $self = shift;
     return $self->_fill_in_template_url(
-        $self->custom_field_obj->IncludeContentForValue );
+        $self->custom_field_obj->include_content_for_value );
 }
 
 1;

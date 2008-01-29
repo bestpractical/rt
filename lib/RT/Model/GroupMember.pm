@@ -35,8 +35,8 @@ sub table {'GroupMembers'}
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column GroupId  => type is 'integer';
-    column MemberId => type is 'integer';
+    column group_id  => type is 'integer';
+    column member_id => type is 'integer';
 
 };
 
@@ -108,8 +108,8 @@ sub create {
     }
 
     my $id = $self->SUPER::create(
-        GroupId  => $args{'Group'}->id,
-        MemberId => $args{'Member'}->id
+        group_id  => $args{'Group'}->id,
+        member_id => $args{'Member'}->id
     );
 
     unless ($id) {
@@ -135,9 +135,9 @@ sub create {
     $cgm->limit_to_groups_with_member( $args{'Group'}->id );
 
     while ( my $parent_member = $cgm->next ) {
-        my $parent_id = $parent_member->MemberId;
+        my $parent_id = $parent_member->member_id;
         my $via       = $parent_member->id;
-        my $group_id  = $parent_member->GroupId;
+        my $group_id  = $parent_member->group_id;
 
         my $other_cached_member = RT::Model::CachedGroupMember->new;
         my $other_cached_id     = $other_cached_member->create(
@@ -201,8 +201,8 @@ sub _stash_user {
     # cache and bail so we can support cycling directed graphs
 
     my $id = $self->SUPER::create(
-        GroupId  => $args{'Group'}->id,
-        MemberId => $args{'Member'}->id,
+        group_id  => $args{'Group'}->id,
+        member_id => $args{'Member'}->id,
     );
 
     unless ($id) {
@@ -254,7 +254,7 @@ sub delete {
     my $cached_submembers = RT::Model::CachedGroupMemberCollection->new;
 
     $cached_submembers->limit(
-        column   => 'MemberId',
+        column   => 'member_id',
         operator => '=',
         value    => $self->member_obj->id
     );
@@ -319,7 +319,7 @@ sub member_obj {
     my $self = shift;
     unless ( defined( $self->{'Member_obj'} ) ) {
         $self->{'Member_obj'} = RT::Model::Principal->new;
-        $self->{'Member_obj'}->load( $self->MemberId ) if ( $self->MemberId );
+        $self->{'Member_obj'}->load( $self->member_id ) if ( $self->member_id );
     }
     return ( $self->{'Member_obj'} );
 }
@@ -330,7 +330,7 @@ sub member_obj {
 
 =head2 GroupObj
 
-Returns an RT::Model::Principal object for the Group specified in $self->GroupId
+Returns an RT::Model::Principal object for the Group specified in $self->group_id
 
 =cut
 
@@ -338,7 +338,7 @@ sub group_obj {
     my $self = shift;
     unless ( defined( $self->{'Group_obj'} ) ) {
         $self->{'Group_obj'} = RT::Model::Principal->new;
-        $self->{'Group_obj'}->load( $self->GroupId );
+        $self->{'Group_obj'}->load( $self->group_id );
     }
     return ( $self->{'Group_obj'} );
 }
