@@ -434,9 +434,9 @@ sub _has_group_right {
 # never find recursively disabled group members
 # also, check to see if the right is being granted _directly_ to this principal,
 #  as is the case when we want to look up group rights
-        . "AND CachedGroupMembers.GroupId  = ACL.principal_id "
-        . "AND CachedGroupMembers.GroupId  = Principals.id "
-        . "AND CachedGroupMembers.MemberId = "
+        . "AND CachedGroupMembers.group_id  = ACL.principal_id "
+        . "AND CachedGroupMembers.group_id  = Principals.id "
+        . "AND CachedGroupMembers.member_id = "
         . $self->id . " "
         . "AND CachedGroupMembers.disabled = 0 ";
     my @clauses;
@@ -490,8 +490,8 @@ sub _has_role_right {
 # never find recursively disabled group members
 # also, check to see if the right is being granted _directly_ to this principal,
 #  as is the case when we want to look up group rights
-        . "AND Principals.id = CachedGroupMembers.GroupId "
-        . "AND CachedGroupMembers.MemberId = "
+        . "AND Principals.id = CachedGroupMembers.group_id "
+        . "AND CachedGroupMembers.member_id = "
         . $self->id . " "
         . "AND ACL.principal_type = Groups.type ";
 

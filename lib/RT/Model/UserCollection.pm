@@ -469,7 +469,7 @@ sub _join_group_members_for_group_rights {
     $self->limit(
         alias       => $args{'ACLAlias'},
         column      => 'principal_id',
-        value       => "$group_members.GroupId",
+        value       => "$group_members.group_id",
         quote_value => 0,
     );
 }

@@ -77,9 +77,9 @@ sub available_rights {
     return ($RIGHTS);
 }
 
-# {{{ sub SelfDescription
+# {{{ sub self_description
 
-=head2 SelfDescription
+=head2 self_description
 
 Returns a user-readable description of what this group is for and what it's named.
 
@@ -731,9 +731,9 @@ sub deep_members_obj {
 
 # }}}
 
-# {{{ MembersObj
+# {{{ members_obj
 
-=head2 MembersObj
+=head2 members_obj
 
 Returns an RT::Model::GroupMemberCollection object of this group's direct members.
 
@@ -1027,8 +1027,8 @@ sub has_member {
 
     my $member_obj = RT::Model::GroupMember->new;
     $member_obj->load_by_cols(
-        MemberId => $id,
-        GroupId  => $self->id
+        member_id => $id,
+        group_id  => $self->id
     );
 
     if ( my $member_id = $member_obj->id ) {
@@ -1071,8 +1071,8 @@ sub has_member_recursively {
 
     my $member_obj = RT::Model::CachedGroupMember->new;
     $member_obj->load_by_cols(
-        MemberId => $id,
-        GroupId  => $self->id
+        member_id => $id,
+        group_id  => $self->id
     );
 
     if ( my $member_id = $member_obj->id ) {
@@ -1145,8 +1145,8 @@ sub _delete_member {
     my $member_obj = RT::Model::GroupMember->new;
 
     $member_obj->load_by_cols(
-        MemberId => $member_id,
-        GroupId  => $self->id
+        member_id => $member_id,
+        group_id  => $self->id
     );
 
     #If we couldn't load it, return undef.

@@ -820,7 +820,7 @@ sub _watcher_limit {
             leftjoin    => $group_members,
             column      => 'group_id',
             operator    => '!=',
-            value       => "$group_members.MemberId",
+            value       => "$group_members.member_id",
             quote_value => 0,
         );
         $self->_sql_limit(
@@ -872,7 +872,7 @@ sub _watcher_limit {
                 leftjoin    => $group_members,
                 column      => 'group_id',
                 operator    => '!=',
-                value       => "$group_members.MemberId",
+                value       => "$group_members.member_id",
                 quote_value => 0,
             );
             my $users = $self->join(
@@ -1024,12 +1024,12 @@ sub _watcherjoin {
     # table and break ordering. Now, we know that
     # RT doesn't allow to add groups as members of the
     # ticket roles, so we just hide entries in CGM table
-    # with MemberId == GroupId from results
+    # with member_id == group_id from results
     $self->SUPER::limit(
         leftjoin    => $group_members,
         column      => 'group_id',
         operator    => '!=',
-        value       => "$group_members.MemberId",
+        value       => "$group_members.member_id",
         quote_value => 0,
     );
     my $users = $self->join(
@@ -1073,9 +1073,9 @@ WHERE (
 ) AND
     Groups_1.instance = main.id
 AND
-    Groups_1.id = CachedGroupMembers_2.GroupId
+    Groups_1.id = CachedGroupMembers_2.group_id
 AND
-    CachedGroupMembers_2.MemberId = Users_3.id
+    CachedGroupMembers_2.member_id = Users_3.id
 order BY main.id ASC
 LIMIT 25
 

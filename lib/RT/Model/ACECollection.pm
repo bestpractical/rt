@@ -177,11 +177,11 @@ sub limit_to_principal {
             alias1  => 'main',
             column1 => 'principal_id',
             alias2  => $cgm,
-            column2 => 'GroupId'
+            column2 => 'group_id'
         );
         $self->limit(
             alias            => $cgm,
-            column           => 'MemberId',
+            column           => 'member_id',
             operator         => '=',
             value            => $args{'id'},
             entry_aggregator => 'OR'

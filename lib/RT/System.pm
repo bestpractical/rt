@@ -52,7 +52,7 @@ foreach my $right ( keys %{$RIGHTS} ) {
     $RT::Model::ACE::LOWERCASERIGHTNAMES{ lc $right } = $right;
 }
 
-=head2 AvailableRights
+=head2 available_rights
 
 Returns a hash of available rights for this object.
 The keys are the right names and the values are a
