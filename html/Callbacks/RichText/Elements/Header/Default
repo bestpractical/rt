@@ -54,9 +54,13 @@ function ReplaceAllTextareas() {
 
     for (var i=0; i < allTextAreas.length; i++) {
         var textArea = allTextAreas[i];
-        if ( (textArea.getAttribute('class') == 'messagebox') ) {
+        if ( (textArea.getAttribute('class') == 'messagebox')
+          || (textArea.getAttribute('className') == 'messagebox')) {
             // Turn the original plain text content into HTML 
-            textArea.innerHTML = textArea.innerHTML.replace(
+
+%# Special case - When continuing an edit session with attachment, keep the HTMLified content.
+% if (!$m->request_args->{'AddMoreAttach'}) {
+            textArea.value = textArea.value.replace(
                 /&/g, "&amp;"
             ).replace(
                 /</g, "&lt;"
@@ -65,6 +69,7 @@ function ReplaceAllTextareas() {
             ).replace(
                 /\n/g, "\n<br />"
             );
+% }
 
             var typeField = document.createElement('input');
             typeField.setAttribute('type', 'hidden');
