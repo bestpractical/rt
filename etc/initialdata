@@ -8,7 +8,7 @@
        privileged => '0', },
 
     {  name         => 'root',
-       Gecos        => 'root',
+       gecos        => 'root',
        real_name     => 'Enoch Root',
        password     => 'password',
        email => "root\@localhost",
@@ -73,104 +73,104 @@
     {  name        => 'Autoreply To Requestors',    # loc
        description =>
 'Always sends a message to the requestors independent of message sender' ,                                            # loc
-       ExecModule => 'Autoreply',
+       exec_module => 'Autoreply',
        argument   => 'Requestor' },
     { name        => 'Notify Requestors',                    # loc
       description => 'Sends a message to the requestors',    # loc
-      ExecModule  => 'Notify',
+      exec_module  => 'Notify',
       argument    => 'Requestor' },
     { name        => 'Notify Owner as comment',              # loc
       description => 'Sends mail to the owner',              # loc
-      ExecModule  => 'NotifyAsComment',
+      exec_module  => 'NotifyAsComment',
       argument    => 'Owner' },
     { name        => 'Notify Owner',                         # loc
       description => 'Sends mail to the owner',              # loc
-      ExecModule  => 'Notify',
+      exec_module  => 'Notify',
       argument    => 'Owner' },
     { name        => 'Notify Ccs as comment',              # loc
       description => 'Sends mail to the Ccs as a comment', # loc
-      ExecModule  => 'NotifyAsComment',
+      exec_module  => 'NotifyAsComment',
       argument    => 'Cc' },
     { name        => 'Notify Ccs',                                   # loc
       description => 'Sends mail to the Ccs',                        # loc
-      ExecModule  => 'Notify',
+      exec_module  => 'Notify',
       argument    => 'Cc' },
     { name        => 'Notify AdminCcs as comment',                        # loc
       description => 'Sends mail to the administrative Ccs as a comment', # loc
-      ExecModule  => 'NotifyAsComment',
+      exec_module  => 'NotifyAsComment',
       argument    => 'AdminCc' },
     { name        => 'Notify AdminCcs',                                   # loc
       description => 'Sends mail to the administrative Ccs',              # loc
-      ExecModule  => 'Notify',
+      exec_module  => 'Notify',
       argument    => 'AdminCc' },
 
     { name        => 'Notify Requestors and Ccs as comment',              # loc
       description => 'Send mail to requestors and Ccs as a comment',      # loc
-      ExecModule  => 'NotifyAsComment',
+      exec_module  => 'NotifyAsComment',
       argument    => 'Requestor,Cc' },
 
     { name        => 'Notify Requestors and Ccs',                         # loc
       description => 'Send mail to requestors and Ccs',                   # loc
-      ExecModule  => 'Notify',
+      exec_module  => 'Notify',
       argument    => 'Requestor,Cc' },
 
     { name        => 'Notify Requestors, Ccs and AdminCcs as comment',    # loc
       description => 'Send mail to all watchers as a "comment"',          # loc
-      ExecModule  => 'NotifyAsComment',
+      exec_module  => 'NotifyAsComment',
       argument    => 'All' },
     { name        => 'Notify Requestors, Ccs and AdminCcs',               # loc
       description => 'Send mail to all watchers',                         # loc
-      ExecModule  => 'Notify',
+      exec_module  => 'Notify',
       argument    => 'All' },
     { name        => 'Notify Other Recipients as comment',                # loc
       description => 'Sends mail to explicitly listed Ccs and Bccs',      # loc
-      ExecModule  => 'NotifyAsComment',
+      exec_module  => 'NotifyAsComment',
       argument    => 'OtherRecipients' },
     { name        => 'Notify Other Recipients',                           # loc
       description => 'Sends mail to explicitly listed Ccs and Bccs',      # loc
-      ExecModule  => 'Notify',
+      exec_module  => 'Notify',
       argument    => 'OtherRecipients' },
     { name        => 'User Defined',                                      # loc
       description => 'Perform a user-defined action',                     # loc
-      ExecModule  => 'UserDefined', },
+      exec_module  => 'UserDefined', },
     {  name        => 'Create Tickets',                                    # loc
        description =>
          'Create new tickets based on this scrip\'s template',             # loc
-       ExecModule => 'CreateTickets', },
+       exec_module => 'CreateTickets', },
     { name        => 'Open Tickets',                                      # loc
       description => 'Open tickets on correspondence',                    # loc
-      ExecModule  => 'AutoOpen' },
+      exec_module  => 'AutoOpen' },
 );
 
 @ScripConditions = (
     { name                 => 'On Create',                                # loc
       description          => 'When a ticket is Created',                 # loc
       applicable_trans_types => 'Create',
-      ExecModule           => 'AnyTransaction', },
+      exec_module           => 'AnyTransaction', },
 
     { name                 => 'On Transaction',                           # loc
       description          => 'When anything happens',                    # loc
       applicable_trans_types => 'Any',
-      ExecModule           => 'AnyTransaction', },
+      exec_module           => 'AnyTransaction', },
     {
 
       name                 => 'On Correspond',                             # loc
       description          => 'Whenever correspondence comes in',          # loc
       applicable_trans_types => 'Correspond',
-      ExecModule           => 'AnyTransaction', },
+      exec_module           => 'AnyTransaction', },
 
     {
 
       name                 => 'On comment',                                # loc
       description          => 'Whenever comments come in',                 # loc
       applicable_trans_types => 'comment',
-      ExecModule           => 'AnyTransaction' },
+      exec_module           => 'AnyTransaction' },
     {
 
       name                 => 'On Status Change',                          # loc
       description          => 'Whenever a ticket\'s status changes',       # loc
       applicable_trans_types => 'Status',
-      ExecModule           => 'AnyTransaction',
+      exec_module           => 'AnyTransaction',
 
     },
     {
@@ -178,14 +178,14 @@
       name                 => 'On Priority Change',                       # loc
       description          => 'Whenever a ticket\'s priority changes',    # loc
       applicable_trans_types => 'Set',
-      ExecModule           => 'PriorityChange',
+      exec_module           => 'PriorityChange',
     },
     {
 
       name                 => 'On Owner Change',                           # loc
       description          => 'Whenever a ticket\'s owner changes',        # loc
       applicable_trans_types => 'Any',
-      ExecModule           => 'OwnerChange',
+      exec_module           => 'OwnerChange',
 
     },
     {
@@ -193,13 +193,13 @@
       name                 => 'On Queue Change',                           # loc
       description          => 'Whenever a ticket\'s queue changes',        # loc
       applicable_trans_types => 'Set',
-      ExecModule           => 'QueueChange',
+      exec_module           => 'QueueChange',
 
     },
     {  name                 => 'On Resolve',                               # loc
        description          => 'Whenever a ticket is resolved',            # loc
        applicable_trans_types => 'Status',
-       ExecModule           => 'StatusChange',
+       exec_module           => 'StatusChange',
        argument             => 'resolved'
 
     },
@@ -207,29 +207,29 @@
     {  name                 => 'User Defined',                             # loc
        description          => 'Whenever a user-defined condition occurs', # loc
        applicable_trans_types => 'Any',
-       ExecModule           => 'UserDefined'
+       exec_module           => 'UserDefined'
 
     },
 
     {  name                 => 'On Close',                                 # loc
        description          => 'Whenever a ticket is closed(inactivated)', # loc
        applicable_trans_types => 'Status,Set',
-       ExecModule           => 'CloseTicket',
+       exec_module           => 'CloseTicket',
     },
     {  name                 => 'On Reopen',                                # loc
        description          => 'Whenever a ticket is reopened(activated)', # loc
        applicable_trans_types => 'Status,Set',
-       ExecModule           => 'ReopenTicket',
+       exec_module           => 'ReopenTicket',
     },
 
 );
 
 @Templates = (
-    { Queue       => '0',
+    { queue       => '0',
       name        => 'Blank',                                             # loc
       description => 'A blank template',                                  # loc
       content     => '', },
-    {  Queue       => '0',
+    {  queue       => '0',
        name        => 'Autoreply',                                         # loc
        description => 'Default Autoresponse template',                     # loc
        content     => 'Subject: AutoReply: {$Ticket->subject}
@@ -260,7 +260,7 @@ you may reply to this message.
 '
     },
 
-    {  Queue       => '0',
+    {  queue       => '0',
        name        => 'Transaction',                     # loc
        description => 'Default transaction template',    # loc
        content     => 'RT-Attach-Message: yes
@@ -282,7 +282,7 @@ Transaction: {$Transaction->description}
 
     {
 
-      Queue       => '0',
+      queue       => '0',
       name        => 'Admin Correspondence',                     # loc
       description => 'Default admin correspondence template',    # loc
       content     => 'RT-Attach-Message: yes
@@ -294,7 +294,7 @@ Transaction: {$Transaction->description}
 '
     },
 
-    {  Queue       => '0',
+    {  queue       => '0',
        name        => 'Correspondence',                          # loc
        description => 'Default correspondence template',         # loc
        content     => 'RT-Attach-Message: yes
@@ -303,7 +303,7 @@ Transaction: {$Transaction->description}
 '
     },
 
-    {  Queue       => '0',
+    {  queue       => '0',
        name        => 'Admin comment',                           # loc
        description => 'Default admin comment template',          # loc
        content     =>
@@ -317,7 +317,7 @@ This is a comment.  It is not sent to the Requestor(s):
 '
     },
 
-    {  Queue       => '0',
+    {  queue       => '0',
        name        => 'Status Change',                                     # loc
        description => 'Ticket status changed',                             # loc
        content     => 'Subject: Status Changed to: {$Transaction->new_value}
@@ -331,7 +331,7 @@ This is a comment.  It is not sent to the Requestor(s):
 
     {
 
-      Queue       => '0',
+      queue       => '0',
       name        => 'Resolved',                 # loc
       description => 'Ticket Resolved',          # loc
       content     => 'Subject: Resolved: {$Ticket->subject}
@@ -340,7 +340,7 @@ According to our records, your request has been resolved. If you have any
 further questions or concerns, please respond to this message.
 '
     },
-    {  Queue       => '___Approvals',
+    {  queue       => '___Approvals',
        name        => "New Pending Approval",    # loc
        description =>
          "Notify Owners and AdminCcs of new items pending their approval", # loc
@@ -359,7 +359,7 @@ batch-process all your pending approvals.
 {$Transaction->content()}
 '
     },
-    {  Queue       => '___Approvals',
+    {  queue       => '___Approvals',
        name        => "Approval Passed",    # loc
        description =>
          "Notify Owner of their ticket has been approved by some approver", # loc
@@ -371,7 +371,7 @@ Your ticket has been approved by { eval { $Approval->owner_obj->name } }.
 Other approvals may be pending.
 '
     },
-    {  Queue       => '___Approvals',
+    {  queue       => '___Approvals',
        name        => "All Approvals Passed",    # loc
        description =>
          "Notify Owner of their ticket has been approved by all approvers", # loc
@@ -382,7 +382,7 @@ Greetings,
 Your ticket has been approved.  Its Owner may now start to act on it.
 '
     },
-    {  Queue       => '___Approvals',
+    {  queue       => '___Approvals',
        name        => "Approval Rejected",    # loc
        description =>
          "Notify Owner of their rejected ticket", # loc
@@ -393,7 +393,7 @@ Greetings,
 Your ticket has been rejected by { eval { $Approval->owner_obj->name } }.
 '
     },
-    {  Queue       => 0,
+    {  queue       => 0,
        name        => "Forward",    # loc
        description => "Heading of a forwarded message", # loc
        content => q{
@@ -401,7 +401,7 @@ Your ticket has been rejected by { eval { $Approval->owner_obj->name } }.
 This is forward of transaction #{ $Transaction->id } of a ticket #{ $Ticket->id }
 }
     },
-    {  Queue       => 0,
+    {  queue       => 0,
        name        => "Error: public key",    # loc
        description =>
          "Inform user that he has problems with public key and couldn't recieve encrypted content", # loc
@@ -410,7 +410,7 @@ This is forward of transaction #{ $Transaction->id } of a ticket #{ $Ticket->id 
 You received this message as we have no your public PGP key or we have a problem with your key. Inform the administrator about the problem.
 }
     },
-    {  Queue       => 0,
+    {  queue       => 0,
        name        => "Error to RT owner: public key",    # loc
        description =>
          "Inform RT owner that user(s) have problems with public keys", # loc
@@ -423,7 +423,7 @@ You received this message as RT has problems with public keys of the following u
     }
 }}
     },
-    {  Queue       => 0,
+    {  queue       => 0,
        name        => "Error: no private key",    # loc
        description =>
          "Inform user that we received an encrypted email and we have no private keys to decrypt", # loc
@@ -435,7 +435,7 @@ but we have no private key it's encrypted to.
 Please, check that you encrypt messages with correct keys
 or contact the system administrator.}
     },
-    {  Queue       => 0,
+    {  queue       => 0,
        name        => "Error: bad GnuPG data",    # loc
        description =>
          "Inform user that a message he sent has invalid GnuPG data", # loc
@@ -447,7 +447,7 @@ You sent us a message that we cannot handle due to corrupted GnuPG signature or 
   }
 }}
     },
-    {  Queue       => 0,
+    {  queue       => 0,
        name        => "passwordChange",    # loc
        description =>
          "Inform user that his password has been reset", # loc
@@ -466,61 +466,61 @@ Your new password is:
 
 @Scrips = (
     {  description    => 'On Correspond Open Tickets',
-       ScripCondition => 'On Correspond',
-       ScripAction    => 'Open Tickets',
-       Template       => 'Blank' },
+       scrip_condition => 'On Correspond',
+       scrip_action    => 'Open Tickets',
+       template       => 'Blank' },
     {  description    => 'On Owner Change Notify Owner',
-       ScripCondition => 'On Owner Change',
-       ScripAction    => 'Notify Owner',
-       Template       => 'Transaction' },
+       scrip_condition => 'On Owner Change',
+       scrip_action    => 'Notify Owner',
+       template       => 'Transaction' },
     {  description    => 'On Create Autoreply To Requestors',
-       ScripCondition => 'On Create',
-       ScripAction    => 'AutoReply To Requestors',
-       Template       => 'AutoReply' },
+       scrip_condition => 'On Create',
+       scrip_action    => 'AutoReply To Requestors',
+       template       => 'AutoReply' },
     {  description    => 'On Create Notify AdminCcs',
-       ScripCondition => 'On Create',
-       ScripAction    => 'Notify AdminCcs',
-       Template       => 'Transaction' },
+       scrip_condition => 'On Create',
+       scrip_action    => 'Notify AdminCcs',
+       template       => 'Transaction' },
     {  description    => 'On Correspond Notify AdminCcs',
-       ScripCondition => 'On Correspond',
-       ScripAction    => 'Notify AdminCcs',
-       Template       => 'Admin Correspondence' },
+       scrip_condition => 'On Correspond',
+       scrip_action    => 'Notify AdminCcs',
+       template       => 'Admin Correspondence' },
     {  description    => 'On Correspond Notify Requestors and Ccs',
-       ScripCondition => 'On Correspond',
-       ScripAction    => 'Notify Requestors And Ccs',
-       Template       => 'Correspondence' },
+       scrip_condition => 'On Correspond',
+       scrip_action    => 'Notify Requestors And Ccs',
+       template       => 'Correspondence' },
     {  description    => 'On Correspond Notify Other Recipients',
-       ScripCondition => 'On Correspond',
-       ScripAction    => 'Notify Other Recipients',
-       Template       => 'Correspondence' },
+       scrip_condition => 'On Correspond',
+       scrip_action    => 'Notify Other Recipients',
+       template       => 'Correspondence' },
     {  description    => 'On comment Notify AdminCcs as comment',
-       ScripCondition => 'On comment',
-       ScripAction    => 'Notify AdminCcs As comment',
-       Template       => 'Admin comment' },
+       scrip_condition => 'On comment',
+       scrip_action    => 'Notify AdminCcs As comment',
+       template       => 'Admin comment' },
     {  description    => 'On comment Notify Other Recipients as comment',
-       ScripCondition => 'On comment',
-       ScripAction    => 'Notify Other Recipients As comment',
-       Template       => 'Correspondence' },
+       scrip_condition => 'On comment',
+       scrip_action    => 'Notify Other Recipients As comment',
+       template       => 'Correspondence' },
     {  description    => 'On Resolve Notify Requestors',
-       ScripCondition => 'On Resolve',
-       ScripAction    => 'Notify Requestors',
-       Template       => 'Resolved' },
+       scrip_condition => 'On Resolve',
+       scrip_action    => 'Notify Requestors',
+       template       => 'Resolved' },
     {  description => "When an approval ticket is Created, notify the Owner and AdminCc of the item awaiting their approval",    # loc
-       Queue          => '___Approvals',
-       ScripCondition => 'User Defined',
+       queue          => '___Approvals',
+       scrip_condition => 'User Defined',
        CustomIsApplicableCode => q[
 	    $self->ticket_obj->type eq 'approval'	and
 	    $self->transaction_obj->field eq 'Status'	and
 	    $self->transaction_obj->new_value eq 'open'   and
 	    eval { $T::Approving = ($self->ticket_obj->all_depended_on_by( type => 'ticket' ))[0] }
        ],
-       ScripAction    => 'Notify Owner',
-       Template       => 'New Pending Approval' },
+       scrip_action    => 'Notify Owner',
+       template       => 'New Pending Approval' },
     {  description => "If an approval is rejected, reject the original and delete pending approvals",    # loc
-       Queue            => '___Approvals',
-       ScripCondition   => 'On Status Change',
-       ScripAction      => 'User Defined',
-       CustomPrepareCode => q[
+       queue            => '___Approvals',
+       scrip_condition   => 'On Status Change',
+       scrip_action      => 'User Defined',
+       custom_prepare_code => q[
 # ------------------------------------------------------------------- #
 return(0) unless ( lc($self->transaction_obj->new_value) eq "rejected" or
 	           lc($self->transaction_obj->new_value) eq "deleted" );
@@ -570,13 +570,13 @@ $self->{argument} = 'Requestor'; $self->prepare;
 return $rejected;
 # ------------------------------------------------------------------- #
 	],
-       CustomCommitCode => '"never needed"',
-       Template          => 'Approval Rejected', },
+       custom_commit_code => '"never needed"',
+       template          => 'Approval Rejected', },
     {  description => "When a ticket has been approved by any approver, add correspondence to the original ticket", # loc
-       Queue             => '___Approvals',
-       ScripCondition    => 'On Resolve',
-       ScripAction       => 'User Defined',
-       CustomPrepareCode => q[
+       queue             => '___Approvals',
+       scrip_condition    => 'On Resolve',
+       scrip_action       => 'User Defined',
+       custom_prepare_code => q[
 # ------------------------------------------------------------------- #
 return(0) unless ($self->ticket_obj->type eq 'approval');
 
@@ -606,13 +606,13 @@ $self->{argument} = 'Requestor'; $self->prepare;
 return 1;
 # ------------------------------------------------------------------- #
 	],
-       CustomCommitCode => '"never needed"',
-       Template => 'Approval Passed' },
+       custom_commit_code => '"never needed"',
+       template => 'Approval Passed' },
     {  description => "When a ticket has been approved by all approvers, add correspondence to the original ticket", # loc
-       Queue             => '___Approvals',
-       ScripCondition    => 'On Resolve',
-       ScripAction       => 'User Defined',
-       CustomPrepareCode  => q[
+       queue             => '___Approvals',
+       scrip_condition    => 'On Resolve',
+       scrip_action       => 'User Defined',
+       custom_prepare_code  => q[
 # ------------------------------------------------------------------- #
 # Find all the tickets that depend on this (that this is approving)
 
@@ -663,17 +663,17 @@ $self->{argument} = 'Requestor'; $self->prepare;
 return 0; # ignore $passed;
 # ------------------------------------------------------------------- #
 	],
-       CustomCommitCode => '"never needed"',
-       Template => 'All Approvals Passed', },
+       custom_commit_code => '"never needed"',
+       template => 'All Approvals Passed', },
 
 );
 
 @ACL = (
-    { UserId => 'Nobody',      # - principalId
-      Right  => 'OwnTicket', },
+    { user_id => 'Nobody',      # - principalId
+      right  => 'OwnTicket', },
 
-    { UserId => 'root',        # - principalid
-      Right  => 'SuperUser', },
+    { user_id => 'root',        # - principalid
+      right  => 'SuperUser', },
 
 );
 
@@ -683,7 +683,7 @@ return 0; # ignore $passed;
     { name => 'Search - My Tickets',
       description => '%1 highest priority tickets I own', # loc
       content     =>
-      { Format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
+      { format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                  . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a>/TITLE:subject',}
                  . q{Priority, Queuename, ExtendedStatus},
         Query   => " Owner = '__CurrentUser__' AND ( Status = 'new' OR Status = 'open')",
@@ -695,13 +695,13 @@ return 0; # ignore $passed;
       description => '%1 newest unowned tickets', # loc
       content     =>
 # 'Take' #loc
-      { Format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
+      { format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                  . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a>/TITLE:subject',}
                  . q{Queuename, ExtendedStatus, CreatedRelative, }
                  . q{'<A HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">___(Take)__</a>/TITLE:NBSP'},
-        Query   => " Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
+        query   => " Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
         order_by => 'Created',
-        Order   => 'DESC'
+        order   => 'DESC'
       },
     },
     { name => 'HomepageSettings',
