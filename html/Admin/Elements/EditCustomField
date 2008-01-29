@@ -102,7 +102,7 @@ if (! $CustomField ) {
     if ($CustomField eq 'new') {
       my ($val, $msg) =  $CustomFieldObj->create(Queue => $Queue, 
                                                  name => $name, 
-                                                 Type => $Type,
+                                                 type => $Type,
                                                  Description => $Description,
 						 );
       

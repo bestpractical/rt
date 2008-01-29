@@ -70,7 +70,7 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     my ($cid) = $child->create( Subject => 'child', Queue => 1, MemberOf => $pid );
     ok( $cid, "Created new ticket" );
 
-    my ($status, $msg) = $child->add_link( Target => $pid, Type => 'DependsOn' );
+    my ($status, $msg) = $child->add_link( Target => $pid, type => 'DependsOn' );
     ok($status, "added reqursive link") or diag "error: $msg";
 
     my $plugin = RT::Shredder::Plugin::Tickets->new;

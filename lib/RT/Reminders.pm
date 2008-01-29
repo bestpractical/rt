@@ -87,7 +87,7 @@ sub collection {
     my $query
         = 'Queue = "'
         . $self->ticket_obj->queue_obj->name
-        . '" AND Type = "reminder"';
+        . '" AND type = "reminder"';
     $query .= ' AND RefersTo = "' . $self->Ticket . '"';
 
     $col->from_sql($query);
@@ -123,12 +123,12 @@ sub add {
         Owner    => $args{'Owner'},
         Due      => $args{'Due'},
         RefersTo => $self->ticket,
-        Type     => 'reminder',
+        type     => 'reminder',
         Queue    => $self->ticket_obj->Queue,
 
     );
     $self->ticket_obj->_new_transaction(
-        Type      => 'AddReminder',
+        type      => 'AddReminder',
         column    => 'RT::Model::Ticket',
         new_value => $reminder->id
     );
@@ -141,7 +141,7 @@ sub open {
 
     $reminder->set_status('open');
     $self->ticket_obj->_new_transaction(
-        Type      => 'OpenReminder',
+        type      => 'OpenReminder',
         column    => 'RT::Model::Ticket',
         new_value => $reminder->id
     );
@@ -152,7 +152,7 @@ sub resolve {
     my $reminder = shift;
     $reminder->set_status('resolved');
     $self->ticket_obj->_new_transaction(
-        Type      => 'ResolveReminder',
+        type      => 'ResolveReminder',
         column    => 'RT::Model::Ticket',
         new_value => $reminder->id
     );

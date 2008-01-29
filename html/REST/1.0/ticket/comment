@@ -127,7 +127,7 @@ foreach my $att (@atts) {
 
         $ent->attach(
             Path => $tmp,
-            Type => $info->{'Content-Type'} || guess_media_type($tmp),
+            type => $info->{'Content-Type'} || guess_media_type($tmp),
             Filename => $file,
             Disposition => "attachment"
         );

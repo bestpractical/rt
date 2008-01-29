@@ -73,8 +73,8 @@ if ($tid) {
   	    if (!%$fields || exists $fields->{lc 'Ticket'});
       push @data, [ TimeTaken    => $t->TimeTaken   ]
   	    if (!%$fields || exists $fields->{lc 'TimeTaken'});
-      push @data, [ Type    => $t->type   ]
-      	if (!%$fields || exists $fields->{lc 'Type'});
+      push @data, [ type    => $t->type   ]
+      	if (!%$fields || exists $fields->{lc 'type'});
       push @data, [ Field    => $t->Field   ]
       	if (!%$fields || exists $fields->{lc 'Field'});
       push @data, [ old_value    => $t->old_value   ]

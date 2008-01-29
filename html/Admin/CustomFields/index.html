@@ -97,7 +97,7 @@ $Showdisabled => 0
 $Type ||= $ARGS{'type'} || '';
 if ( !$Type && $ARGS{'type'} ) {
     $Type ||= $ARGS{'type'};
-    Jifty->log->warn("'type' argument is deprecated use 'Type' instead");
+    Jifty->log->warn("'type' argument is deprecated use 'type' instead");
 }
 
 my $CustomFields = RT::Model::CustomFieldCollection->new();

@@ -89,7 +89,7 @@ For example C<????> will match any string four characters long.
 
 =head2 for subclassing in plugins
 
-=head3 Type - is not supported yet
+=head3 type - is not supported yet
 
 See F<Todo> for more info.
 

@@ -491,7 +491,7 @@ sub insert_data {
                     && $item->{'Queue'} )
                 {
                     $princ->load_queue_role_group(
-                        Type  => $item->{'GroupType'},
+                        type  => $item->{'GroupType'},
                         Queue => $object->id
                     );
                 } else {

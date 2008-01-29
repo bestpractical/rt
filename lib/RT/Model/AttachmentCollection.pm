@@ -222,7 +222,7 @@ sub next {
     return $Attachment unless $Attachment;
 
     my $txn = $Attachment->transaction_obj;
-    if ( $txn->__value('Type') eq 'comment' ) {
+    if ( $txn->__value('type') eq 'comment' ) {
         return $Attachment
             if $txn->current_user_has_right('ShowTicketcomments');
     } elsif ( $txn->current_user_has_right('ShowTicket') ) {

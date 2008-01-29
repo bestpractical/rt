@@ -215,7 +215,7 @@ foreach my $table (@tables) {
 
     while ( my $row = $sth->fetchrow_hashref() ) {
         my $field   = $row->{'Field'};
-        my $type    = $row->{'Type'};
+        my $type    = $row->{'type'};
         my $default = $row->{'Default'};
         my $length = 0;
         if ($type =~ /^(?:.*?)\((\d+)\)$/) {

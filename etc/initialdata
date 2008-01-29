@@ -512,7 +512,7 @@ Your new password is:
 	    $self->ticket_obj->type eq 'approval'	and
 	    $self->transaction_obj->field eq 'Status'	and
 	    $self->transaction_obj->new_value eq 'open'   and
-	    eval { $T::Approving = ($self->ticket_obj->all_depended_on_by( Type => 'ticket' ))[0] }
+	    eval { $T::Approving = ($self->ticket_obj->all_depended_on_by( type => 'ticket' ))[0] }
        ],
        ScripAction    => 'Notify Owner',
        Template       => 'New Pending Approval' },
@@ -587,7 +587,7 @@ while (my $o = $t->next) {
 	    and $o->content !~ /Default Approval/;
 }
 
-foreach my $obj ($self->ticket_obj->all_depended_on_by( Type => 'ticket' )) {
+foreach my $obj ($self->ticket_obj->all_depended_on_by( type => 'ticket' )) {
     $obj->comment(
 	Content => _( "Your request has been approved by %1. Other approvals may still be pending.", # loc
 	    $self->transaction_obj->creator_obj->name,
@@ -617,13 +617,13 @@ return 1;
 # Find all the tickets that depend on this (that this is approving)
 
 my $Ticket = $self->ticket_obj;
-my @TOP    = $Ticket->all_depended_on_by( Type => 'ticket' );
+my @TOP    = $Ticket->all_depended_on_by( type => 'ticket' );
 my $links  = $Ticket->depended_on_by;
 my $passed = 0;
 
 while (my $link = $links->next) {
     my $obj = $link->base_obj;
-    next if ($obj->has_unresolved_dependencies( Type => 'approval' ));
+    next if ($obj->has_unresolved_dependencies( type => 'approval' ));
 
     if ($obj->type eq 'ticket') {
 	$obj->comment(

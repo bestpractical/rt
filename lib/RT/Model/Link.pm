@@ -79,7 +79,7 @@ use Jifty::DBI::Record schema {
     column Base   => type is 'varchar(240)', max_length is 240, default is '';
     column LocalTarget => type is 'int(11)', max_length is 11, default is '0';
     column Creator     => type is 'int(11)', max_length is 11, default is '0';
-    column Type => type is 'varchar(20)', max_length is 20, default is '';
+    column type => type is 'varchar(20)', max_length is 20, default is '';
     column
         LastUpdatedBy => type is 'int(11)',
         max_length is 11, default is '0';
@@ -96,7 +96,7 @@ use RT::URI;
 
 =head2 Create PARAMHASH
 
-Create a new link object. Takes 'Base', 'Target' and 'Type'.
+Create a new link object. Takes 'Base', 'Target' and 'type'.
 Returns undef on failure or a Link id on success.
 
 =cut
@@ -106,7 +106,7 @@ sub create {
     my %args = (
         Base   => undef,
         Target => undef,
-        Type   => undef,
+        type   => undef,
         @_
     );
 
@@ -180,7 +180,7 @@ sub create {
         Target      => $target->uri,
         LocalBase   => $base_id,
         LocalTarget => $target_id,
-        Type        => $args{'Type'}
+        type        => $args{'type'}
     );
     return ( $id, $msg );
 }
@@ -194,10 +194,10 @@ sub create {
   
   Base => undef,
   Target => undef,
-  Type =>undef
+  type =>undef
  
   Base and Target are expected to be integers which refer to Tickets or URIs
-  Type is the link type
+  type is the link type
 
 =cut
 
@@ -206,7 +206,7 @@ sub load_by_params {
     my %args = (
         Base   => undef,
         Target => undef,
-        Type   => undef,
+        type   => undef,
         @_
     );
 
@@ -222,7 +222,7 @@ sub load_by_params {
 
     my ( $id, $msg ) = $self->load_by_cols(
         Base   => $base->uri,
-        Type   => $args{'Type'},
+        type   => $args{'type'},
         Target => $target->uri
     );
 

@@ -225,7 +225,7 @@ msgid "%1 is a tool to act on tickets from an external scheduling tool, such as 
 msgstr "%1 est un outil agissant sur les tickets depuis un ordonnanceur externe tel que cron."
 
 #: lib/RT/Queue_Overlay.pm:863
-#. ($principal->object->name, $args{'Type'})
+#. ($principal->object->name, $args{'type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 n'est plus un %2 pour cette file."
 
@@ -553,12 +553,12 @@ msgid "Add, delete and modify custom field values for objects"
 msgstr "Ajouter, retirer et modifier des champs personnalisés pour les objets"
 
 #: lib/RT/Queue_Overlay.pm:763
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Added principal as a %1 for this queue"
 msgstr "Ajout groupe/utilisateur comme %1 pour cette file"
 
 #: lib/RT/Ticket_Overlay.pm:1455
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "Added principal as a %1 for this ticket"
 msgstr "Ajout groupe/utilisateur comme %1 pour ce ticket"
 
@@ -1058,17 +1058,17 @@ msgid "Could not load search attribute"
 msgstr "Impossible de charger l'attribut de recherche"
 
 #: lib/RT/Queue_Overlay.pm:761
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Could not make that principal a %1 for this queue"
 msgstr "Impossible de faire de ce groupe/utilisateur un %1 pour cette file"
 
 #: lib/RT/Ticket_Overlay.pm:1444
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Impossible de faire de ce groupe/utilisateur un %1 pour ce ticket"
 
 #: lib/RT/Queue_Overlay.pm:860
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "Impossible de supprimer ce groupe/utilisateur comme un %1 pour cette file"
 
@@ -4276,17 +4276,17 @@ msgid "That principal already has that right"
 msgstr "Ce groupe/utilisateur dispose déjà de ce droit"
 
 #: lib/RT/Queue_Overlay.pm:753
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "That principal is already a %1 for this queue"
 msgstr "Ce groupe/utilisateur est déjà un %1 pour cette file"
 
 #: lib/RT/Ticket_Overlay.pm:1435
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "That principal is already a %1 for this ticket"
 msgstr "Ce groupe/utilisateur est déjà un %1 pour ce ticket"
 
 #: lib/RT/Queue_Overlay.pm:852
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "That principal is not a %1 for this queue"
 msgstr "Ce groupe/utilisateur n'est pas un %1 pour cette file"
 

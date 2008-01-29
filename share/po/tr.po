@@ -211,7 +211,7 @@ msgid "%1 is a tool to act on tickets from an external scheduling tool, such as 
 msgstr "%1, biletlere dışarıdan müdahale edebilen bir araçtır (cron gibi)"
 
 #: lib/RT/Queue_Overlay.pm:863
-#. ($principal->object->name, $args{'Type'})
+#. ($principal->object->name, $args{'type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1, artık bu kuyruk için %2 değil."
 
@@ -532,12 +532,12 @@ msgid "Add, delete and modify custom field values for objects"
 msgstr "Nesneler için, kişiselleştirilmiş alanları ekleyin, silin ve değiştirin"
 
 #: lib/RT/Queue_Overlay.pm:763
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Added principal as a %1 for this queue"
 msgstr "Bu kuyruk için, asıl, %1 olarak eklendi"
 
 #: lib/RT/Ticket_Overlay.pm:1455
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "Added principal as a %1 for this ticket"
 msgstr "Bu bilet için, asıl, %1 olarak eklendi"
 
@@ -1037,17 +1037,17 @@ msgid "Could not load search attribute"
 msgstr "Arama özniteliği yüklenemiyor"
 
 #: lib/RT/Queue_Overlay.pm:761
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Could not make that principal a %1 for this queue"
 msgstr "Bu yetkili, bu kuyruk için bir %1 yapılamıyor"
 
 #: lib/RT/Ticket_Overlay.pm:1444
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Bu yetkili, bu bilet için bir %1 yapılamıyor"
 
 #: lib/RT/Queue_Overlay.pm:860
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "Bu yetkili, bu kuyruktan %1 olarak ayrılamıyor"
 
@@ -4236,17 +4236,17 @@ msgid "That principal already has that right"
 msgstr "Bu yetkili, zaten bu hakka sahip"
 
 #: lib/RT/Queue_Overlay.pm:753
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "That principal is already a %1 for this queue"
 msgstr "Bu yetkili, zaten bu kuyruk için bir %1"
 
 #: lib/RT/Ticket_Overlay.pm:1435
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "That principal is already a %1 for this ticket"
 msgstr "Bu yetkili, zaten bu bilet için bir %1"
 
 #: lib/RT/Queue_Overlay.pm:852
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "That principal is not a %1 for this queue"
 msgstr "Bu yetkili, zaten bu kuyruk için bir %1 değil"
 

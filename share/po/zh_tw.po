@@ -277,7 +277,7 @@ msgid "%1 is a tool to act on tickets from an external scheduling tool, such as 
 msgstr "%1 是從外部排程程式(如 cron)來對申請單進行操作的工具。"
 
 #: lib/RT/Queue_Overlay.pm:863
-#. ($principal->object->name, $args{'Type'})
+#. ($principal->object->name, $args{'type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 已不再是此表單的 %2。"
 
@@ -805,12 +805,12 @@ msgid "AddNextState"
 msgstr "新增下一項關卡"
 
 #: lib/RT/Queue_Overlay.pm:763
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Added principal as a %1 for this queue"
 msgstr "單位已新增為此表單的 %1"
 
 #: lib/RT/Ticket_Overlay.pm:1455
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "Added principal as a %1 for this ticket"
 msgstr "單位已新增為此申請單的 %1"
 
@@ -1753,17 +1753,17 @@ msgid "Could not load search attribute"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:761
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Could not make that principal a %1 for this queue"
 msgstr "無法將該單位設為此表單的 %1。"
 
 #: lib/RT/Ticket_Overlay.pm:1444
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "無法將該單位設為此申請單的 %1。"
 
 #: lib/RT/Queue_Overlay.pm:860
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "無法將單位 %1 從表單移除。"
 
@@ -7011,17 +7011,17 @@ msgid "That principal already has that right"
 msgstr "這項單位已經擁有該權限"
 
 #: lib/RT/Queue_Overlay.pm:753
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "That principal is already a %1 for this queue"
 msgstr "這項單位已經是這個表單的 %1"
 
 #: lib/RT/Ticket_Overlay.pm:1435
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "That principal is already a %1 for this ticket"
 msgstr "這項單位已經是這份申請單的 %1"
 
 #: lib/RT/Queue_Overlay.pm:852
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "That principal is not a %1 for this queue"
 msgstr "這項單位不是這個表單的 %1"
 

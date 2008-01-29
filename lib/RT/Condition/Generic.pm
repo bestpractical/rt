@@ -180,7 +180,7 @@ sub transaction_obj {
 
 # {{{ sub Type
 
-=head2 Type 
+=head2 type 
 
 
 

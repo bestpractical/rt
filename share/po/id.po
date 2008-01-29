@@ -219,7 +219,7 @@ msgid "%1 is a tool to act on tickets from an external scheduling tool, such as 
 msgstr "%1 adalah sebuah alat yang berfungsi pada tiket dari alat penjadwalan eksternal, seperti Cron."
 
 #: lib/RT/Queue_Overlay.pm:863
-#. ($principal->object->name, $args{'Type'})
+#. ($principal->object->name, $args{'type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 tidak lagi menjadi %2 untuk antrian ini."
 
@@ -579,12 +579,12 @@ msgid "Add, delete and modify custom field values for objects"
 msgstr "Tambah, hapus dan ubah nilai kolom kustom untuk objek"
 
 #: lib/RT/Queue_Overlay.pm:763
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Added principal as a %1 for this queue"
 msgstr "Tambahkan prinsipal sebagai %1 untuk antrian ini"
 
 #: lib/RT/Ticket_Overlay.pm:1455
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "Added principal as a %1 for this ticket"
 msgstr "Tambahkan prinsipal sebagai %1 untuk Tiket ini"
 
@@ -1123,17 +1123,17 @@ msgid "Could not load search attribute"
 msgstr "Tidak dapat memanggil attribut pencarian"
 
 #: lib/RT/Queue_Overlay.pm:761
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Could not make that principal a %1 for this queue"
 msgstr "Tidak dapat membuat prinsipal tersebut %1 untuk antrian ini"
 
 #: lib/RT/Ticket_Overlay.pm:1444
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Tidak dapat membuat prinsipal tersebut %1 untuk Tiket ini"
 
 #: lib/RT/Queue_Overlay.pm:860
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "Tidak dapat menghapus prinsipal tersebut sebagai  %1 untuk antrian ini"
 
@@ -4569,17 +4569,17 @@ msgid "That principal already has that right"
 msgstr "Prinsipal ini sudah memiliki hak-hak tersebut"
 
 #: lib/RT/Queue_Overlay.pm:753
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "That principal is already a %1 for this queue"
 msgstr "Prinsipal ini sudah %1 untuk antrian ini"
 
 #: lib/RT/Ticket_Overlay.pm:1435
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "That principal is already a %1 for this ticket"
 msgstr "Prinsipal ini sudah %1 untuk tiket ini"
 
 #: lib/RT/Queue_Overlay.pm:852
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "That principal is not a %1 for this queue"
 msgstr "Prinsipal ini bukan %1 untuk antrian ini"
 

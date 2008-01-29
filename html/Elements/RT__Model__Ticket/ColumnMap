@@ -100,8 +100,8 @@ $TICKET_COLUMN_MAP = {
             my $Ticket = shift;
 
             if ( $Ticket->has_unresolved_dependencies ) {
-                if (   $Ticket->has_unresolved_dependencies( Type => 'approval' )
-                    or $Ticket->has_unresolved_dependencies( Type => 'code' ) )
+                if (   $Ticket->has_unresolved_dependencies( type => 'approval' )
+                    or $Ticket->has_unresolved_dependencies( type => 'code' ) )
                 {
                     return \'<em>', _('(pending approval)'), \'</em>';
                 }
@@ -133,8 +133,8 @@ $TICKET_COLUMN_MAP = {
         attribute => 'EffectiveId',
         value     => sub  { return $_[0]->EffectiveId }
     },
-    Type => {
-        attribute => 'Type',
+    type => {
+        attribute => 'type',
         value     => sub  { return $_[0]->type }
     },
     time_worked => {

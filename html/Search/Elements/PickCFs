@@ -75,7 +75,7 @@ while ( my $CustomField = $CustomFields->next ) {
     $line{'name'} = "'CF.{" . $CustomField->name . "}'";
     $line{'Field'} = $CustomField->name;
     $line{'Op'} = {
-        Type => 'component',
+        type => 'component',
         Path => '/Elements/SelectCustomFieldOperator',
         Arguments => { True => _("is"),
                        False => _("isn't"),
@@ -84,7 +84,7 @@ while ( my $CustomField = $CustomFields->next ) {
                      },
     };
     $line{'Value'} = {
-        Type => 'component',
+        type => 'component',
         Path => '/Elements/SelectCustomFieldValue',
         Arguments => { CustomField => $CustomField },
     };

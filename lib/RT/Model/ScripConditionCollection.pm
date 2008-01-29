@@ -86,17 +86,17 @@ sub limit_to_type {
     my $type = shift;
     $self->limit(
         entry_aggregator => 'OR',
-        column           => 'Type',
+        column           => 'type',
         value            => "$type"
     ) if defined $type;
     $self->limit(
         entry_aggregator => 'OR',
-        column           => 'Type',
+        column           => 'type',
         value            => "Correspond"
     ) if $type eq "Create";
     $self->limit(
         entry_aggregator => 'OR',
-        column           => 'Type',
+        column           => 'type',
         value            => 'any'
     );
 

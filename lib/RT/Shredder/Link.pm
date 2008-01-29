@@ -73,20 +73,20 @@ sub __DependsOn {
     # add_link transactions
     my $map       = RT::Model::Ticket->LINKTYPEMAP;
     my $link_meta = $map->{ $self->type };
-    unless ( $link_meta && $link_meta->{'Mode'} && $link_meta->{'Type'} ) {
+    unless ( $link_meta && $link_meta->{'Mode'} && $link_meta->{'type'} ) {
         RT::Shredder::Exception->throw(
             'Wrong link link_meta, no record for ' . $self->type );
     }
     if ( $self->base_uri->is_local ) {
         my $objs = $self->base_obj->transactions;
         $objs->limit(
-            column   => 'Type',
+            column   => 'type',
             operator => '=',
             value    => 'AddLink',
         );
         $objs->limit( column => 'new_value', value => $self->Target );
         while ( my ( $k, $v ) = each %$map ) {
-            next unless $v->{'Type'} eq $link_meta->{'Type'};
+            next unless $v->{'type'} eq $link_meta->{'type'};
             next unless $v->{'Mode'} eq $link_meta->{'Mode'};
             $objs->limit( column => 'Field', value => $k );
         }
@@ -97,13 +97,13 @@ sub __DependsOn {
     if ( $self->target_uri->is_local ) {
         my $objs = $self->target_obj->transactions;
         $objs->limit(
-            column   => 'Type',
+            column   => 'type',
             operator => '=',
             value    => 'AddLink',
         );
         $objs->limit( column => 'new_value', value => $self->Base );
         while ( my ( $k, $v ) = each %$map ) {
-            next unless $v->{'Type'} eq $link_meta->{'Type'};
+            next unless $v->{'type'} eq $link_meta->{'type'};
             next unless $v->{'Mode'} eq $reverse{ $link_meta->{'Mode'} };
             $objs->limit( column => 'Field', value => $k );
         }

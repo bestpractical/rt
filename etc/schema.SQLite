@@ -48,7 +48,7 @@ CREATE TABLE Links (
   id INTEGER PRIMARY KEY  ,
   Base varchar(240) NULL  ,
   Target varchar(240) NULL  ,
-  Type varchar(20) NOT NULL  ,
+  type varchar(20) NOT NULL  ,
   LocalTarget integer NULL  ,
   LocalBase integer NULL  ,
   LastUpdatedBy integer NULL  ,
@@ -81,7 +81,7 @@ CREATE TABLE Groups (
   name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   domain varchar(64),
-  Type varchar(64),
+  type varchar(64),
   instance integer
   
 ) ;
@@ -115,7 +115,7 @@ CREATE TABLE Transactions (
   object_type varchar(255) NULL  ,
   object_id integer NULL  ,
   TimeTaken integer NULL  ,
-  Type varchar(20) NULL  ,
+  type varchar(20) NULL  ,
   Field varchar(40) NULL  ,
   old_value varchar(255) NULL  ,
   new_value varchar(255) NULL  ,
@@ -259,7 +259,7 @@ CREATE TABLE Tickets (
   id INTEGER PRIMARY KEY  ,
   EffectiveId integer NULL  ,
   Queue integer NULL  ,
-  Type varchar(16) NULL  ,
+  type varchar(16) NULL  ,
   IssueStatement integer NULL  ,
   Resolution integer NULL  ,
   Owner integer NULL  ,
@@ -318,7 +318,7 @@ CREATE TABLE Templates (
   Queue integer NOT NULL DEFAULT 0 ,
   name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
-  Type varchar(16) NULL  ,
+  type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
   TranslationOf integer NULL  ,
   Content blob NULL  ,
@@ -365,7 +365,7 @@ CREATE INDEX Objectcustom_field_values2 ON Objectcustom_field_values (CustomFiel
 CREATE TABLE CustomFields (
   id INTEGER NOT NULL  ,
   name varchar(200) NULL  ,
-  Type varchar(200) NULL  ,	# Changed -- 'Single' and 'Multiple' is moved out
+  type varchar(200) NULL  ,	# Changed -- 'Single' and 'Multiple' is moved out
   MaxValues integer,		# New -- was 'Single'(1) and 'Multiple'(0)
   Pattern varchar(65536) NULL  ,	# New -- Must validate against this
   Repeated int2 NOT NULL DEFAULT 0 , # New -- repeated table entry

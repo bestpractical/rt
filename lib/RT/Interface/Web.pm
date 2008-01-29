@@ -285,7 +285,7 @@ sub create_ticket {
         From    => $ARGS{'From'},
         Cc      => $ARGS{'Cc'},
         Body    => $ARGS{'Content'},
-        Type    => $ARGS{'ContentType'},
+        type    => $ARGS{'ContentType'},
     );
 
     if ( $ARGS{'Attachments'} ) {
@@ -308,7 +308,7 @@ sub create_ticket {
     }
 
     my %create_args = (
-        Type => $ARGS{'Type'} || 'ticket',
+        type => $ARGS{'type'} || 'ticket',
         Queue => $ARGS{'Queue'},
         Owner => $ARGS{'Owner'},
 
@@ -527,7 +527,7 @@ sub process_update_message {
     my $Message = make_mime_entity(
         Subject => $args{ARGSRef}->{'UpdateSubject'},
         Body    => $args{ARGSRef}->{'UpdateContent'},
-        Type    => $args{ARGSRef}->{'UpdateContentType'},
+        type    => $args{ARGSRef}->{'UpdateContentType'},
     );
 
     $Message->head->add(
@@ -618,7 +618,7 @@ sub process_update_message {
 
 Takes a paramhash Subject, Body and AttachmentFieldname.
 
-Also takes Form, Cc and Type as optional paramhash keys.
+Also takes Form, Cc and type as optional paramhash keys.
 
   Returns a MIME::Entity.
 
@@ -633,11 +633,11 @@ sub make_mime_entity {
         Cc                  => undef,
         Body                => undef,
         AttachmentFieldname => undef,
-        Type                => undef,
+        type                => undef,
         @_,
     );
     my $Message = MIME::Entity->build(
-        Type    => 'multipart/mixed',
+        type    => 'multipart/mixed',
         Subject => $args{'Subject'} || "",
         From    => $args{'From'},
         Cc      => $args{'Cc'},
@@ -653,7 +653,7 @@ sub make_mime_entity {
         no utf8;
         use bytes;
         $Message->attach(
-            Type => $args{'Type'} || 'text/plain',
+            type => $args{'type'} || 'text/plain',
             Charset => 'UTF-8',
             Data    => $args{'Body'},
         );
@@ -681,7 +681,7 @@ sub make_mime_entity {
             $filename =~ s#^.*[\\/]##;
 
             $Message->attach(
-                Type     => $uploadinfo->{'Content-Type'},
+                type     => $uploadinfo->{'Content-Type'},
                 Filename => Encode::decode_utf8($filename),
                 Data     => \@content,
             );
@@ -823,7 +823,7 @@ sub process_custom_field_updates {
     my $Object  = $args{'CustomFieldObj'};
     my $ARGSRef = $args{'ARGSRef'};
 
-    my @attribs = qw(name Type Description Queue SortOrder);
+    my @attribs = qw(name type Description Queue SortOrder);
     my @results = update_record_object(
         AttributesRef => \@attribs,
         Object        => $Object,
@@ -1181,7 +1181,7 @@ sub process_ticket_watchers {
         if ( $key =~ /^Ticket-DeleteWatcher-Type-(.*)-Principal-(\d+)$/ ) {
             my ( $code, $msg ) = $Ticket->delete_watcher(
                 principal_id => $2,
-                Type         => $1
+                type         => $1
             );
             push @results, $msg;
         }
@@ -1190,7 +1190,7 @@ sub process_ticket_watchers {
         elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {
             my ( $code, $msg ) = $Ticket->delete_watcher(
                 Email => $ARGSRef->{$key},
-                Type  => $1
+                type  => $1
             );
             push @results, $msg;
         }
@@ -1202,7 +1202,7 @@ sub process_ticket_watchers {
 
             #They're in this order because otherwise $1 gets clobbered :/
             my ( $code, $msg ) = $Ticket->add_watcher(
-                Type  => $ARGSRef->{$key},
+                type  => $ARGSRef->{$key},
                 Email => $ARGSRef->{ "WatcherAddressEmail" . $1 }
             );
             push @results, $msg;
@@ -1211,7 +1211,7 @@ sub process_ticket_watchers {
         #Add requestors in the simple style demanded by the bulk manipulator
         elsif ( $key =~ /^Add(Requestor|Cc|AdminCc)$/ ) {
             my ( $code, $msg ) = $Ticket->add_watcher(
-                Type  => $1,
+                type  => $1,
                 Email => $ARGSRef->{$key}
             );
             push @results, $msg;
@@ -1225,7 +1225,7 @@ sub process_ticket_watchers {
                 next unless $value =~ /^(?:AdminCc|Cc|Requestor)$/i;
 
                 my ( $code, $msg ) = $Ticket->add_watcher(
-                    Type         => $value,
+                    type         => $value,
                     principal_id => $principal_id
                 );
                 push @results, $msg;
@@ -1355,7 +1355,7 @@ sub process_record_links {
                 $base, $target, $type );
             my ( $val, $msg ) = $Record->delete_link(
                 Base   => $base,
-                Type   => $type,
+                type   => $type,
                 Target => $target
             );
 
@@ -1375,7 +1375,7 @@ sub process_record_links {
                 $luri =~ s/\s*$//;    # Strip trailing whitespace
                 my ( $val, $msg ) = $Record->add_link(
                     Target => $luri,
-                    Type   => $linktype
+                    type   => $linktype
                 );
                 push @results, $msg;
             }
@@ -1387,7 +1387,7 @@ sub process_record_links {
             {
                 my ( $val, $msg ) = $Record->add_link(
                     Base => $luri,
-                    Type => $linktype
+                    type => $linktype
                 );
 
                 push @results, $msg;

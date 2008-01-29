@@ -217,7 +217,7 @@ msgid "%1 is a tool to act on tickets from an external scheduling tool, such as 
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:863
-#. ($principal->object->name, $args{'Type'})
+#. ($principal->object->name, $args{'type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "Ennek a sornak %1 már nem %2-je."
 
@@ -541,12 +541,12 @@ msgid "Add, delete and modify custom field values for objects"
 msgstr "Egyéni mezõk lehetséges értékeinek létrehozása, módosítása, törlése"
 
 #: lib/RT/Queue_Overlay.pm:763
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Added principal as a %1 for this queue"
 msgstr "Hozzendelt egy vezetõt mint %1 ehhez a sorhoz"
 
 #: lib/RT/Ticket_Overlay.pm:1455
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "Added principal as a %1 for this ticket"
 msgstr "Hozzárendelt egy vezetõt mint %1 ehhez a problémához"
 
@@ -1051,17 +1051,17 @@ msgid "Could not load search attribute"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:761
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Could not make that principal a %1 for this queue"
 msgstr "A vezetõ nem lehet  %1-e a sornak"
 
 #: lib/RT/Ticket_Overlay.pm:1444
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "A vezetõ nem lehet %1-e a problémának"
 
 #: lib/RT/Queue_Overlay.pm:860
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "A vezetõt nem lehet mint a sor %1-ét eltávolítani"
 
@@ -4315,17 +4315,17 @@ msgid "That principal already has that right"
 msgstr "A felhasználónak/csoportnak mát van ilyen joga"
 
 #: lib/RT/Queue_Overlay.pm:753
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "That principal is already a %1 for this queue"
 msgstr "A vezetõ már %1-a a sornak"
 
 #: lib/RT/Ticket_Overlay.pm:1435
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "That principal is already a %1 for this ticket"
 msgstr "A vezetõ már %1-a a problémának"
 
 #: lib/RT/Queue_Overlay.pm:852
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "That principal is not a %1 for this queue"
 msgstr "A vezetõ már nem %1-a a sornak"
 

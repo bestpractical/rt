@@ -68,6 +68,6 @@
 <%init>
 my $reminders = RT::Model::TicketCollection->new();
 $reminders->from_sql('(Owner = "Nobody" OR Owner = "'.Jifty->web->current_user->name.'")' .
-    ' AND Type = "reminder" AND (Status = "new" OR Status = "open") AND Due > "1970-01-01"'); 
+    ' AND type = "reminder" AND (Status = "new" OR Status = "open") AND Due > "1970-01-01"'); 
 $reminders->order_by(column => 'Due', order => 'DESC');
 </%init>

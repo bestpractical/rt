@@ -200,7 +200,7 @@ A complete list of acceptable fields for this beastie:
        time_left        => 
        initial_priority => 
        final_priority   => 
-       Type            => 
+       type            => 
     +! DependsOn       => 
     +! DependedOnBy    =>
     +! RefersTo        =>
@@ -251,39 +251,39 @@ perl(1).
 
 my %LINKTYPEMAP = (
     MemberOf => {
-        Type => 'MemberOf',
+        type => 'MemberOf',
         Mode => 'Target',
     },
     Parents => {
-        Type => 'MemberOf',
+        type => 'MemberOf',
         Mode => 'Target',
     },
     Members => {
-        Type => 'MemberOf',
+        type => 'MemberOf',
         Mode => 'Base',
     },
     Children => {
-        Type => 'MemberOf',
+        type => 'MemberOf',
         Mode => 'Base',
     },
     has_member => {
-        Type => 'MemberOf',
+        type => 'MemberOf',
         Mode => 'Base',
     },
     RefersTo => {
-        Type => 'RefersTo',
+        type => 'RefersTo',
         Mode => 'Target',
     },
     ReferredToBy => {
-        Type => 'RefersTo',
+        type => 'RefersTo',
         Mode => 'Base',
     },
     DependsOn => {
-        Type => 'DependsOn',
+        type => 'DependsOn',
         Mode => 'Target',
     },
     DependedOnBy => {
-        Type => 'DependsOn',
+        type => 'DependsOn',
         Mode => 'Base',
     },
 
@@ -769,13 +769,13 @@ sub parse_lines {
         time_left        => $args{'time_left'},
         initial_priority => $args{'initial_priority'} || 0,
         final_priority   => $args{'final_priority'} || 0,
-        Type             => $args{'type'},
+        type             => $args{'type'},
     );
 
     if ( $args{content} ) {
         my $mimeobj = MIME::Entity->new();
         $mimeobj->build(
-            Type => $args{'contenttype'} || 'text/plain',
+            type => $args{'contenttype'} || 'text/plain',
             Data => $args{'content'}
         );
         $ticketargs{MIMEObj} = $mimeobj;
@@ -1136,7 +1136,7 @@ sub update_watchers {
 
         foreach (@add) {
             my ( $val, $msg ) = $ticket->add_watcher(
-                Type  => $type,
+                type  => $type,
                 Email => $_
             );
 
@@ -1146,7 +1146,7 @@ sub update_watchers {
 
         foreach (@delete) {
             my ( $val, $msg ) = $ticket->delete_watcher(
-                Type  => $type,
+                type  => $type,
                 Email => $_
             );
             push @results,
@@ -1238,7 +1238,7 @@ sub post_process {
                 }
 
                 my ( $wval, $wmsg ) = $ticket->add_link(
-                    Type => $LINKTYPEMAP{$type}->{'Type'},
+                    type => $LINKTYPEMAP{$type}->{'type'},
                     $LINKTYPEMAP{$type}->{'Mode'} => $link,
                     Silent                        => 1
                 );

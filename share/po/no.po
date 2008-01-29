@@ -258,7 +258,7 @@ msgid "%1 is a tool to act on tickets from an external scheduling tool, such as 
 msgstr "%1 er et verktøy for å behandle saker fra eksterne verktøy, slik som cron."
 
 #: lib/RT/Queue_Overlay.pm:863
-#. ($principal->object->name, $args{'Type'})
+#. ($principal->object->name, $args{'type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 er ikke lenger en %2 for denne køen."
 
@@ -734,12 +734,12 @@ msgid "AddNextState"
 msgstr "AddNextState"
 
 #: lib/RT/Queue_Overlay.pm:763
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Added principal as a %1 for this queue"
 msgstr "La til primær som en %1 for denne køen"
 
 #: lib/RT/Ticket_Overlay.pm:1455
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "Added principal as a %1 for this ticket"
 msgstr "La til primær som en %1 for denne saken"
 
@@ -1426,17 +1426,17 @@ msgid "Could not load search attribute"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:761
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Could not make that principal a %1 for this queue"
 msgstr "Kunne ikke sette den primæren som %1 for denne køen"
 
 #: lib/RT/Ticket_Overlay.pm:1444
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Kunne ikke sette den primæren som %1 for denne saken"
 
 #: lib/RT/Queue_Overlay.pm:860
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "Kunne ikke fjerne den primæren som %1 for denne køen"
 
@@ -5448,17 +5448,17 @@ msgid "That principal already has that right"
 msgstr "Den primæren har allerede den rettigheten"
 
 #: lib/RT/Queue_Overlay.pm:753
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "That principal is already a %1 for this queue"
 msgstr "Den primæren er allerede en %1 for denne køen"
 
 #: lib/RT/Ticket_Overlay.pm:1435
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "That principal is already a %1 for this ticket"
 msgstr "Den primæren er allerede en %1 for denne køen"
 
 #: lib/RT/Queue_Overlay.pm:852
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "That principal is not a %1 for this queue"
 msgstr "Den primæren er ikke en %1 for denne køen"
 

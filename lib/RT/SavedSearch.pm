@@ -103,7 +103,7 @@ sub load {
         if ( $self->{'Attribute'}->id ) {
             $self->{'id'}      = $self->{'Attribute'}->id;
             $self->{'Privacy'} = $privacy;
-            $self->{'Type'} = $self->{'Attribute'}->sub_value('SearchType');
+            $self->{'type'} = $self->{'Attribute'}->sub_value('SearchType');
             return ( 1, _( "Loaded search %1", $self->name ) );
         } else {
             Jifty->log->error( "Could not load attribute " 
@@ -137,13 +137,13 @@ sub save {
     my $self = shift;
     my %args = (
         'Privacy'      => 'RT::Model::User-' . $self->current_user->id,
-        'Type'         => 'Ticket',
+        'type'         => 'Ticket',
         'name'         => 'new search',
         'SearchParams' => {},
         @_
     );
     my $privacy = $args{'Privacy'};
-    my $type    = $args{'Type'};
+    my $type    = $args{'type'};
     my $name    = $args{'name'};
     my %params  = %{ $args{'SearchParams'} };
 
@@ -170,7 +170,7 @@ sub save {
         $self->{'Attribute'} = $object->attributes->with_id($att_id);
         $self->{'id'}        = $att_id;
         $self->{'Privacy'}   = $privacy;
-        $self->{'Type'}      = $type;
+        $self->{'type'}      = $type;
         return ( 1, _( "Saved search %1", $name ) );
     } else {
         Jifty->log->error("SavedSearch save failure: $att_msg");
@@ -287,7 +287,7 @@ saved searches that are relevant to a particular search page.
 
 sub type {
     my $self = shift;
-    return $self->{'Type'};
+    return $self->{'type'};
 }
 
 ### Internal methods

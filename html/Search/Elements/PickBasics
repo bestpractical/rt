@@ -55,19 +55,19 @@ my @lines = (
         name => 'id',
         Field => _('id'),
         Op => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectEqualityOperator',
         },
-        Value => { Type => 'text', Size => 5 }
+        Value => { type => 'text', Size => 5 }
     },
     {
         name => 'Attachment',
         Field => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectAttachmentField',
         },
         Op => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectBoolean',
             Arguments => {
 			    True => _("matches"), 
@@ -76,18 +76,18 @@ my @lines = (
 			    FalseVal => 'NOT LIKE',
             },
         },
-        Value => { Type => 'text', Size => 20 },
+        Value => { type => 'text', Size => 20 },
     },
     {
         name => 'Queue',
         Field => _('Queue'),
         Op => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectBoolean',
             Arguments => { TrueVal=> '=', FalseVal => '!=' },
         },
         Value => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectQueue',
             Arguments => { namedValues => 1, CheckQueueRight => 'ShowTicket' },
         },
@@ -96,12 +96,12 @@ my @lines = (
         name => 'Status',
         Field => _('Status'),
         Op => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectBoolean',
             Arguments => { TrueVal=> '=', FalseVal => '!=' },
         },
         Value => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectStatus',
             Arguments => { SkipDeleted => 1 },
         },
@@ -109,7 +109,7 @@ my @lines = (
     {
         name => 'Actor',
         Field => {
-            Type    => 'select',
+            type    => 'select',
             Options => [
                 Owner => _('Owner'),
                 Creator => _('Creator'),
@@ -117,12 +117,12 @@ my @lines = (
             ],
         },
         Op => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectBoolean',
             Arguments => { TrueVal=> '=', FalseVal => '!=' },
         },
         Value => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectOwner',
             Arguments => { value_attribute => 'name' },
         },
@@ -130,28 +130,28 @@ my @lines = (
     {
         name => 'Watcher',
         Field => {
-            Type => 'component',
+            type => 'component',
             Path => 'SelectPersonType',
             Arguments => { Default => 'Requestor' },
         },
         Op => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectMatch',
         },
-        Value => { Type => 'text', Size => 20 }
+        Value => { type => 'text', Size => 20 }
     },
     {
         name => 'Date',
         Field => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectDateType',
         },
         Op => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectDateRelation',
         },
         Value => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectDate',
             Arguments => { ShowTime => 0, Default => '' },
         },
@@ -159,7 +159,7 @@ my @lines = (
     {
         name => 'Time',
         Field => {
-            Type    => 'select',
+            type    => 'select',
             Options => [
                 time_worked => _('Time Worked'),
                 time_estimated => _('Time Estimated'),
@@ -167,13 +167,13 @@ my @lines = (
             ],
         },
         Op => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectEqualityOperator',
         },
         Value => [
-            { Type => 'text', Size => 5 },
+            { type => 'text', Size => 5 },
             {
-                Type => 'component',
+                type => 'component',
                 Path => '/Elements/SelectTimeUnits',
             },
         ],
@@ -181,7 +181,7 @@ my @lines = (
     {
         name => 'Priority',
         Field => {
-            Type    => 'select',
+            type    => 'select',
             Options => [
                 Priority => _('Priority'),
                 initial_priority => _('Initial Priority'),
@@ -189,20 +189,20 @@ my @lines = (
             ],
         },
         Op => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectEqualityOperator',
         },
-        Value => { Type => 'text', Size => 5 }
+        Value => { type => 'text', Size => 5 }
     },
     {
         name => 'Links',
-        Field => { Type => 'component', Path => 'SelectLinks' },
+        Field => { type => 'component', Path => 'SelectLinks' },
         Op => {
-            Type => 'component',
+            type => 'component',
             Path => '/Elements/SelectBoolean',
             Arguments => { TrueVal=> '=', FalseVal => '!=' },
         },
-        Value => { Type => 'text', Size => 5 }
+        Value => { type => 'text', Size => 5 }
     },
 );
 

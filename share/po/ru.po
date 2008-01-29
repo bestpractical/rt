@@ -255,7 +255,7 @@ msgid "%1 is a tool to act on tickets from an external scheduling tool, such as 
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:863
-#. ($principal->object->name, $args{'Type'})
+#. ($principal->object->name, $args{'type'})
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 больше не является %2 для этой очереди."
 
@@ -740,12 +740,12 @@ msgid "AddNextState"
 msgstr "ДобавлятьСледующееСостояние"
 
 #: lib/RT/Queue_Overlay.pm:763
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Added principal as a %1 for this queue"
 msgstr "Пользователь добавлен как %1 для этой очереди"
 
 #: lib/RT/Ticket_Overlay.pm:1455
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "Added principal as a %1 for this ticket"
 msgstr "Пользователь добавлен как %1 для этой заявки"
 
@@ -1444,17 +1444,17 @@ msgid "Could not load search attribute"
 msgstr "Ошибка загрузки атрибута запроса"
 
 #: lib/RT/Queue_Overlay.pm:761
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Could not make that principal a %1 for this queue"
 msgstr "Невозможно назначить этого пользователя %1 для этой очереди"
 
 #: lib/RT/Ticket_Overlay.pm:1444
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Невозможно назначить этого пользователя %1 для этой заявки"
 
 #: lib/RT/Queue_Overlay.pm:860
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "Невозможно отозвать функции у пользователя как %1 для этой очереди"
 
@@ -5586,17 +5586,17 @@ msgid "That principal already has that right"
 msgstr "Этот пользователь уже имеет это право."
 
 #: lib/RT/Queue_Overlay.pm:753
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "That principal is already a %1 for this queue"
 msgstr "Этот пользователь уже %1 для этой очереди"
 
 #: lib/RT/Ticket_Overlay.pm:1435
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 msgid "That principal is already a %1 for this ticket"
 msgstr "Этот пользователь уже %1 для этой заявки "
 
 #: lib/RT/Queue_Overlay.pm:852
-#. ($args{'Type'})
+#. ($args{'type'})
 msgid "That principal is not a %1 for this queue"
 msgstr "Этот пользователь не %1 для этой очереди"
 

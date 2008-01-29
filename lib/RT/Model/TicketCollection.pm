@@ -96,7 +96,7 @@ sub implicit_clauses { }
 our %FIELD_METADATA = (
     Status           => [ 'ENUM', ],
     Queue            => [ 'ENUM' => 'Queue', ],
-    Type             => [ 'ENUM', ],
+    type             => [ 'ENUM', ],
     Creator          => [ 'ENUM' => 'User', ],
     LastUpdatedBy    => [ 'ENUM' => 'User', ],
     Owner            => [ 'WATCHERFIELD' => 'Owner', ],
@@ -147,7 +147,7 @@ our %FIELD_METADATA = (
     WatcherGroup     => [ 'MEMBERSHIPFIELD', ],
 );
 
-# Mapping of Field Type to Function
+# Mapping of Field type to Function
 our %dispatch = (
     ENUM            => \&_enum_limit,
     INT             => \&_int_limit,
@@ -331,7 +331,7 @@ Handle fields which deal with links between tickets.  (MemberOf, DependsOn)
 
 Meta Data:
   1: Direction (From, To)
-  2: Link Type (MemberOf, DependsOn, RefersTo)
+  2: Link type (MemberOf, DependsOn, RefersTo)
 
 =cut
 
@@ -383,7 +383,7 @@ sub _link_limit {
         );
         $sb->SUPER::limit(
             leftjoin => $linkalias,
-            column   => 'Type',
+            column   => 'type',
             operator => '=',
             value    => $meta->[2],
         ) if $meta->[2];
@@ -405,7 +405,7 @@ sub _link_limit {
         );
         $sb->SUPER::limit(
             leftjoin => $linkalias,
-            column   => 'Type',
+            column   => 'type',
             operator => '=',
             value    => $meta->[2],
         ) if $meta->[2];
@@ -430,7 +430,7 @@ sub _link_limit {
         $sb->_sql_limit(
             @rest,
             alias    => $linkalias,
-            column   => 'Type',
+            column   => 'type',
             operator => '=',
             value    => $meta->[2],
         ) if $meta->[2];
@@ -807,7 +807,7 @@ sub _watcher_limit {
     }
     $rest{subkey} ||= 'email';
 
-    my $groups = $self->_role_groupsjoin( Type => $type );
+    my $groups = $self->_role_groupsjoin( type => $type );
 
     $self->open_paren;
     if ( $op =~ /^IS(?: NOT)?$/ ) {
@@ -949,9 +949,9 @@ sub _watcher_limit {
 
 sub _role_groupsjoin {
     my $self = shift;
-    my %args = ( New => 0, Type => '', @_ );
-    return $self->{'_sql_role_group_aliases'}{ $args{'Type'} }
-        if $self->{'_sql_role_group_aliases'}{ $args{'Type'} }
+    my %args = ( New => 0, type => '', @_ );
+    return $self->{'_sql_role_group_aliases'}{ $args{'type'} }
+        if $self->{'_sql_role_group_aliases'}{ $args{'type'} }
             && !$args{'New'};
 
     # we always have watcher groups for ticket, so we use INNER join
@@ -971,11 +971,11 @@ sub _role_groupsjoin {
     $self->SUPER::limit(
         leftjoin => $groups,
         alias    => $groups,
-        column   => 'Type',
-        value    => $args{'Type'},
-    ) if $args{'Type'};
+        column   => 'type',
+        value    => $args{'type'},
+    ) if $args{'type'};
 
-    $self->{'_sql_role_group_aliases'}{ $args{'Type'} } = $groups
+    $self->{'_sql_role_group_aliases'}{ $args{'type'} } = $groups
         unless $args{'New'};
 
     return $groups;
@@ -1015,7 +1015,7 @@ sub _watcherjoin {
     my $self = shift;
     my $type = shift || '';
 
-    my $groups        = $self->_role_groupsjoin( Type          => $type );
+    my $groups        = $self->_role_groupsjoin( type          => $type );
     my $group_members = $self->_group_membersjoin( GroupsAlias => $groups );
 
     # XXX: work around, we must hide groups that
@@ -1140,7 +1140,7 @@ sub _watcher_membership_limit {
     if ($type) {
         $self->_sql_limit(
             alias            => $groups,
-            column           => 'Type',
+            column           => 'type',
             value            => $type,
             entry_aggregator => 'AND'
         );
@@ -1508,7 +1508,7 @@ sub limit {
         $self->{'looking_at_effective_id'} = 1;
     }
 
-    if ( $args{'column'} eq 'Type'
+    if ( $args{'column'} eq 'type'
         && ( !$args{'alias'} || $args{'alias'} eq 'main' ) )
     {
         $self->{'looking_at_type'} = 1;
@@ -1693,11 +1693,11 @@ sub limit_type {
         @_
     );
     $self->limit(
-        column   => 'Type',
+        column   => 'type',
         value    => $args{'value'},
         operator => $args{'operator'},
         description =>
-            join( ' ', _('Type'), $args{'operator'}, $args{'Limit'}, ),
+            join( ' ', _('type'), $args{'operator'}, $args{'Limit'}, ),
     );
 }
 
@@ -2894,7 +2894,7 @@ sub _sql_limit {
         $self->{'looking_at_effective_id'} = 1;
     }
 
-    if ( $args{'column'} eq 'Type'
+    if ( $args{'column'} eq 'type'
         && ( !$args{'alias'} || $args{'alias'} eq 'main' ) )
     {
         $self->{'looking_at_type'} = 1;
@@ -3139,7 +3139,7 @@ sub from_sql {
     # Unless we've explicitly asked to look at a specific Type, we need
     # to limit to it.
     unless ( $self->{looking_at_type} ) {
-        $self->SUPER::limit( column => 'Type', value => 'ticket' );
+        $self->SUPER::limit( column => 'type', value => 'ticket' );
     }
 
     # We don't want deleted tickets unless 'allow_deleted_search' is set

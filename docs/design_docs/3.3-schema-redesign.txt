@@ -5,7 +5,7 @@
 TABLE CustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   name varchar(200) NULL  ,
-  Type varchar(200) NULL  ,                 -- Changed: see MaxValues below
+  type varchar(200) NULL  ,                 -- Changed: see MaxValues below
   MaxValues integer,                        -- New: 1 = Single, 0 = Multiple
   Pattern varchar(255) NULL  ,              -- New: regex to validate against
   Repeated int2 NOT NULL DEFAULT 0 ,        -- New: repeated table entry
@@ -44,7 +44,7 @@ TABLE Transactions (
   object_type varchar(255) NULL,             -- Final target of the Object
   object_id integer NOT NULL DEFAULT 0  ,    -- New: replaces the "Ticket" field
   TimeTaken integer NOT NULL DEFAULT 0  ,
-  Type varchar(20) NULL  ,
+  type varchar(20) NULL  ,
   Field varchar(40) NULL  ,
   old_value varchar(255) NULL  ,
   new_value varchar(255) NULL  ,

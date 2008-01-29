@@ -166,9 +166,9 @@ our %META = (
             },
         },
     },
-    MailPlugins  => { Type => 'ARRAY' },
-    GnuPG        => { Type => 'HASH' },
-    GnuPGOptions => { Type => 'HASH' },
+    MailPlugins  => { type => 'ARRAY' },
+    GnuPG        => { type => 'HASH' },
+    GnuPGOptions => { type => 'HASH' },
 );
 my %OPTIONS = ();
 
@@ -378,7 +378,7 @@ sub get {
         $res = $prefs->{$name} if $prefs;
     }
     $res = $OPTIONS{$name} unless defined $res;
-    return $self->_return_value( $res, $META{$name}->{'Type'} || 'SCALAR' );
+    return $self->_return_value( $res, $META{$name}->{'type'} || 'SCALAR' );
 }
 
 =head2 Set
@@ -396,7 +396,7 @@ sub set {
     my ( $self, $name ) = ( shift, shift );
 
     my $old = $OPTIONS{$name};
-    my $type = $META{$name}->{'Type'} || 'SCALAR';
+    my $type = $META{$name}->{'type'} || 'SCALAR';
     if ( $type eq 'ARRAY' ) {
         $OPTIONS{$name} = [@_];
         { no strict 'refs'; @{"RT::$name"} = (@_); }
@@ -407,7 +407,7 @@ sub set {
         $OPTIONS{$name} = shift;
         { no strict 'refs'; ${"RT::$name"} = $OPTIONS{$name}; }
     }
-    $META{$name}->{'Type'} = $type;
+    $META{$name}->{'type'} = $type;
     return $self->_return_value( $old, $type );
 }
 
@@ -449,12 +449,12 @@ sub set_from_config {
         $name =~ s/.*:://;
     } else {
         $name = $$opt;
-        $type = $META{$name}->{'Type'} || 'SCALAR';
+        $type = $META{$name}->{'type'} || 'SCALAR';
     }
 
     return 1 if exists $OPTIONS{$name} && !$args{'SiteConfig'};
 
-    $META{$name}->{'Type'} = $type;
+    $META{$name}->{'type'} = $type;
     foreach (qw(Package File Line SiteConfig Extension)) {
         $META{$name}->{'Source'}->{$_} = $args{$_};
     }

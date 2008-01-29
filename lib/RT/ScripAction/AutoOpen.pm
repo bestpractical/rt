@@ -87,7 +87,7 @@ sub commit {
     my $oldstatus = $self->ticket_obj->Status;
     $self->ticket_obj->__set( column => 'Status', value => 'open' );
     $self->ticket_obj->_new_transaction(
-        Type      => 'Status',
+        type      => 'Status',
         Field     => 'Status',
         old_value => $oldstatus,
         new_value => 'open',

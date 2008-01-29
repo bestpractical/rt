@@ -167,7 +167,7 @@ sub add_link {
     my %args = (
         Target => '',
         Base   => '',
-        Type   => '',
+        type   => '',
         Silent => undef,
         @_
     );
@@ -184,7 +184,7 @@ sub delete_link {
     my %args = (
         Base   => undef,
         Target => undef,
-        Type   => undef,
+        type   => undef,
         @_
     );
 
@@ -694,7 +694,7 @@ Returns a tuple of (status/id, message).
 sub add_watcher {
     my $self = shift;
     my %args = (
-        Type         => undef,
+        type         => undef,
         principal_id => undef,
         Email        => undef,
         @_
@@ -708,7 +708,7 @@ sub add_watcher {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
-        if ( defined $args{'Type'} && ( $args{'Type'} eq 'AdminCc' ) ) {
+        if ( defined $args{'type'} && ( $args{'type'} eq 'AdminCc' ) ) {
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
                 or $self->current_user_has_right('WatchAsAdminCc') )
             {
@@ -718,8 +718,8 @@ sub add_watcher {
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
-        elsif (( $args{'Type'} eq 'Cc' )
-            or ( $args{'Type'} eq 'Requestor' ) )
+        elsif (( $args{'type'} eq 'Cc' )
+            or ( $args{'type'} eq 'Requestor' ) )
         {
 
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
@@ -752,7 +752,7 @@ sub add_watcher {
 sub _add_watcher {
     my $self = shift;
     my %args = (
-        Type         => undef,
+        type         => undef,
         Silent       => undef,
         principal_id => undef,
         Email        => undef,
@@ -808,7 +808,7 @@ sub _add_watcher {
 
     my $group = RT::Model::Group->new;
     $group->load_queue_role_group(
-        Type  => $args{'Type'},
+        type  => $args{'type'},
         Queue => $self->id
     );
     unless ( $group->id ) {
@@ -820,7 +820,7 @@ sub _add_watcher {
         return (
             0,
             _(  'That principal is already a %1 for this queue',
-                $args{'Type'}
+                $args{'type'}
             )
         );
     }
@@ -837,19 +837,19 @@ sub _add_watcher {
         return (
             0,
             _(  'Could not make that principal a %1 for this queue',
-                $args{'Type'}
+                $args{'type'}
             )
         );
     }
     return ( 1,
-        _( 'Added principal as a %1 for this queue', $args{'Type'} ) );
+        _( 'Added principal as a %1 for this queue', $args{'type'} ) );
 }
 
 # }}}
 
 # {{{ sub delete_watcher
 
-=head2 DeleteWatcher { Type => TYPE, principal_id => PRINCIPAL_ID }
+=head2 DeleteWatcher { type => TYPE, principal_id => PRINCIPAL_ID }
 
 
 Deletes a queue  watcher.  Takes two arguments:
@@ -869,7 +869,7 @@ sub delete_watcher {
     my $self = shift;
 
     my %args = (
-        Type         => undef,
+        type         => undef,
         principal_id => undef,
         @_
     );
@@ -887,7 +887,7 @@ sub delete_watcher {
 
     my $group = RT::Model::Group->new;
     $group->load_queue_role_group(
-        Type  => $args{'Type'},
+        type  => $args{'type'},
         Queue => $self->id
     );
     unless ( $group->id ) {
@@ -900,7 +900,7 @@ sub delete_watcher {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyQueue', bail
-        if ( $args{'Type'} eq 'AdminCc' ) {
+        if ( $args{'type'} eq 'AdminCc' ) {
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
                 or $self->current_user_has_right('WatchAsAdminCc') )
             {
@@ -910,8 +910,8 @@ sub delete_watcher {
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyQueue', bail
-        elsif (( $args{'Type'} eq 'Cc' )
-            or ( $args{'Type'} eq 'Requestor' ) )
+        elsif (( $args{'type'} eq 'Cc' )
+            or ( $args{'type'} eq 'Requestor' ) )
         {
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
                 or $self->current_user_has_right('Watch') )
@@ -939,7 +939,7 @@ sub delete_watcher {
 
     unless ( $group->has_member($principal) ) {
         return ( 0,
-            _( 'That principal is not a %1 for this queue', $args{'Type'} ) );
+            _( 'That principal is not a %1 for this queue', $args{'type'} ) );
     }
 
     my ( $m_id, $m_msg ) = $group->_delete_member( $principal->id );
@@ -953,7 +953,7 @@ sub delete_watcher {
         return (
             0,
             _(  'Could not remove that principal as a %1 for this queue',
-                $args{'Type'}
+                $args{'type'}
             )
         );
     }
@@ -962,7 +962,7 @@ sub delete_watcher {
         1,
         _(  "%1 is no longer a %2 for this queue.",
             $principal->object->name,
-            $args{'Type'}
+            $args{'type'}
         )
     );
 }
@@ -1026,7 +1026,7 @@ sub cc {
 
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-        $group->load_queue_role_group( Type => 'Cc', Queue => $self->id );
+        $group->load_queue_role_group( type => 'Cc', Queue => $self->id );
     }
     return ($group);
 
@@ -1050,7 +1050,7 @@ sub admin_cc {
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
         $group->load_queue_role_group(
-            Type  => 'AdminCc',
+            type  => 'AdminCc',
             Queue => $self->id
         );
     }
@@ -1065,15 +1065,15 @@ sub admin_cc {
 # {{{ sub IsWatcher
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 
-=head2 IsWatcher { Type => TYPE, principal_id => PRINCIPAL_ID }
+=head2 IsWatcher { type => TYPE, principal_id => PRINCIPAL_ID }
 
-Takes a param hash with the attributes Type and principal_id
+Takes a param hash with the attributes type and principal_id
 
 Type is one of Requestor, Cc, AdminCc and Owner
 
 principal_id is an RT::Model::Principal id 
 
-Returns true if that principal is a member of the group Type for this queue
+Returns true if that principal is a member of the group type for this queue
 
 
 =cut
@@ -1082,7 +1082,7 @@ sub is_watcher {
     my $self = shift;
 
     my %args = (
-        Type         => 'Cc',
+        type         => 'Cc',
         principal_id => undef,
         @_
     );
@@ -1090,7 +1090,7 @@ sub is_watcher {
     # Load the relevant group.
     my $group = RT::Model::Group->new;
     $group->load_queue_role_group(
-        Type  => $args{'Type'},
+        type  => $args{'type'},
         Queue => $self->id
     );
 
@@ -1121,7 +1121,7 @@ sub is_cc {
     my $self = shift;
     my $cc   = shift;
 
-    return ( $self->is_watcher( Type => 'Cc', principal_id => $cc ) );
+    return ( $self->is_watcher( type => 'Cc', principal_id => $cc ) );
 
 }
 
@@ -1141,7 +1141,7 @@ sub is_admin_cc {
     my $person = shift;
 
     return (
-        $self->is_watcher( Type => 'AdminCc', principal_id => $person ) );
+        $self->is_watcher( type => 'AdminCc', principal_id => $person ) );
 
 }
 

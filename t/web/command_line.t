@@ -90,11 +90,11 @@ TODO: {
 
 # Set up a custom field for editing tests
 my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
-my ($val,$msg) = $cf->create(name => 'MyCF'.$$, Type => 'FreeformSingle', Queue => $queue_id);
+my ($val,$msg) = $cf->create(name => 'MyCF'.$$, type => 'FreeformSingle', Queue => $queue_id);
 ok($val,$msg);
 
 my $othercf = RT::Model::CustomField->new(current_user => RT->system_user);
-($val,$msg) = $othercf->create(name => 'My CF'.$$, Type => 'FreeformSingle', Queue => $queue_id);
+($val,$msg) = $othercf->create(name => 'My CF'.$$, type => 'FreeformSingle', Queue => $queue_id);
 ok($val,$msg);
 
 

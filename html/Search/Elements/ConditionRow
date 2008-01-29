@@ -69,16 +69,16 @@ $handle_block = sub  {
     }
 
     return undef unless UNIVERSAL::isa($box, 'HASH');
-    if ( $box->{'Type'} eq 'component' ) {
+    if ( $box->{'type'} eq 'component' ) {
         $box->{'Arguments'} ||= {},
         return $m->scomp( $box->{'Path'}, %{ $box->{'Arguments'} }, name => $name );
     }
-    if ( $box->{'Type'} eq 'text' ) {
+    if ( $box->{'type'} eq 'text' ) {
         my $default = $box->{'Default'} || '';
         my $size = $box->{'Size'}? qq{size="$box->{'Size'}"} : '';
         return qq{<input name="$name" value="$default" $size />};
     }
-    if ( $box->{'Type'} eq 'select' ) {
+    if ( $box->{'type'} eq 'select' ) {
         my $res = '';
         $res .= qq{<select name="$name">};
         my @options = @{ $box->{'Options'} };

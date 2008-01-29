@@ -274,7 +274,7 @@ sub create {
     }
 
     if ($record_transaction) {
-        $self->_new_transaction( Type => "Create" );
+        $self->_new_transaction( type => "Create" );
     }
 
     Jifty->handle->commit;
@@ -1136,7 +1136,7 @@ sub watched_queues {
         $watched_queues->limit(
             subclause        => 'limit_ToWatchers',
             alias            => $group_alias,
-            column           => 'Type',
+            column           => 'type',
             value            => 'Cc',
             entry_aggregator => 'OR',
         );
@@ -1145,7 +1145,7 @@ sub watched_queues {
         $watched_queues->limit(
             subclause        => 'limit_ToWatchers',
             alias            => $group_alias,
-            column           => 'Type',
+            column           => 'type',
             value            => 'AdminCc',
             entry_aggregator => 'OR',
         );
@@ -1217,7 +1217,7 @@ sub _cleanup_invalid_delegations {
     my $deleg_acl
         = RT::Model::ACECollection->new( current_user => RT->system_user );
     $deleg_acl->limit_to_principal(
-        Type                   => 'User',
+        type                   => 'User',
         id                     => $self->principal_id,
         IncludeGroupMembership => 1
     );
@@ -1293,7 +1293,7 @@ sub _set {
     if ( $args{'record_transaction'} == 1 ) {
 
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
-            Type      => $args{'TransactionType'},
+            type      => $args{'TransactionType'},
             Field     => $args{'column'},
             new_value => $args{'value'},
             old_value => $Old,

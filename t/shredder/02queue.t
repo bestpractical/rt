@@ -104,7 +104,7 @@ diag 'queue with a watcher' if $ENV{'TEST_VERBOSE'};
     ok($id, 'Created queue') or diag "error: $msg";
 
     ($id, $msg) = $queue->add_watcher(
-        Type   => 'Cc',
+        type   => 'Cc',
         principal_id => $group->id,
     );
     ok($id, 'added watcher') or diag "error: $msg";

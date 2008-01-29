@@ -899,7 +899,7 @@ sub depended_on_by {
 
 =head2 has_unresolved_dependencies
 
-  Takes a paramhash of Type (default to '__any').  Returns true if
+  Takes a paramhash of type (default to '__any').  Returns true if
 $self->unresolved_dependencies returns an object with one or more members
 of that type.  Returns false otherwise
 
@@ -910,7 +910,7 @@ of that type.  Returns false otherwise
 sub has_unresolved_dependencies {
     my $self = shift;
     my %args = (
-        Type => undef,
+        type => undef,
         @_
     );
 
@@ -918,7 +918,7 @@ sub has_unresolved_dependencies {
 
     if ( $args{Type} ) {
         $deps->limit(
-            column   => 'Type',
+            column   => 'type',
             operator => '=',
             value    => $args{Type}
         );
@@ -964,7 +964,7 @@ sub unresolved_dependencies {
 =head2 AllDependedOnBy
 
 Returns an array of RT::Model::Ticket objects which (directly or indirectly)
-depends on this ticket; takes an optional 'Type' argument in the param
+depends on this ticket; takes an optional 'type' argument in the param
 hash, which will limit returned tickets to that type, as well as cause
 tickets with that type to serve as 'leaf' nodes that stops the recursive
 dependency search.
@@ -975,7 +975,7 @@ sub all_depended_on_by {
     my $self = shift;
     my $dep  = $self->depended_on_by;
     my %args = (
-        Type   => undef,
+        type   => undef,
         _found => {},
         _top   => 1,
         @_
@@ -1052,7 +1052,7 @@ sub _links {
             entry_aggregator => 'OR'
         );
         $self->{"$field$type"}->limit(
-            column => 'Type',
+            column => 'type',
             value  => $type
         ) if ($type);
     }
@@ -1067,7 +1067,7 @@ sub _links {
 
 =head2 _add_link
 
-Takes a paramhash of Type and one of Base or Target. Adds that link to this object.
+Takes a paramhash of type and one of Base or Target. Adds that link to this object.
 
 Returns C<link id>, C<message> and C<exist> flag.
 
@@ -1079,7 +1079,7 @@ sub _add_link {
     my %args = (
         Target => '',
         Base   => '',
-        Type   => '',
+        type   => '',
         Silent => undef,
         @_
     );
@@ -1110,7 +1110,7 @@ sub _add_link {
     my $old_link = RT::Model::Link->new;
     $old_link->load_by_params(
         Base   => $args{'Base'},
-        Type   => $args{'Type'},
+        type   => $args{'type'},
         Target => $args{'Target'}
     );
     if ( $old_link->id ) {
@@ -1125,7 +1125,7 @@ sub _add_link {
     my ( $linkid, $linkmsg ) = $link->create(
         Target => $args{Target},
         Base   => $args{Base},
-        Type   => $args{Type}
+        type   => $args{Type}
     );
 
     unless ($linkid) {
@@ -1156,7 +1156,7 @@ sub _delete_link {
     my %args = (
         Base   => undef,
         Target => undef,
-        Type   => undef,
+        type   => undef,
         @_
     );
 
@@ -1185,13 +1185,13 @@ sub _delete_link {
     my $link = RT::Model::Link->new();
     Jifty->log->debug( "Trying to load link: "
             . $args{'Base'} . " "
-            . $args{'Type'} . " "
+            . $args{'type'} . " "
             . $args{'Target'}
             . "\n" );
 
     $link->load_by_params(
         Base   => $args{'Base'},
-        Type   => $args{'Type'},
+        type   => $args{'type'},
         Target => $args{'Target'}
     );
 
@@ -1263,7 +1263,7 @@ sub _new_transaction {
         object_id      => $self->id,
         object_type    => ref($self),
         TimeTaken      => $args{'TimeTaken'},
-        Type           => $args{'Type'},
+        type           => $args{'type'},
         Data           => $args{'Data'},
         Field          => $args{'Field'},
         new_value      => $args{'new_value'},

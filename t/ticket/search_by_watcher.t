@@ -177,7 +177,7 @@ my $nobody = RT->nobody();
     # and http://marc.theaimsgroup.com/?l=rt-devel&m=112662934627236&w=2
     @data = ( { Subject => 'not a ticket' } );
     my($t) = add_tix_from_data();
-    $t->_set( column             => 'Type',
+    $t->_set( column             => 'type',
               value             => 'not a ticket',
               CheckACL          => 0,
               record_transaction => 0,

@@ -17,7 +17,7 @@ isa_ok( $q, 'RT::Model::Queue' );
 my ($qid) = $q->create( name => "CF-External-". $$ );
 ok( $qid, "Created queue" );
 my %arg = ( name        => $q->name,
-            Type        => 'Select',
+            type        => 'Select',
             Queue       => $q->id,
             MaxValues   => 1,
             ValuesClass => VALUES_CLASS );

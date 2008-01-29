@@ -164,7 +164,7 @@ sub apply {
         Transaction     => undef,
         transaction_obj => undef,
         Stage           => undef,
-        Type            => undef,
+        type            => undef,
         @_
     );
 
@@ -212,7 +212,7 @@ sub prepare {
         Transaction     => undef,
         transaction_obj => undef,
         Stage           => undef,
-        Type            => undef,
+        type            => undef,
         @_
     );
 
@@ -224,7 +224,7 @@ sub prepare {
         Transaction     => $args{'Transaction'}
     );
 
-    $self->_find_scrips( Stage => $args{'Stage'}, Type => $args{'Type'} );
+    $self->_find_scrips( Stage => $args{'Stage'}, type => $args{'type'} );
 
     #Iterate through each script and check it's applicability.
     while ( my $scrip = $self->next() ) {
@@ -322,7 +322,7 @@ sub _find_scrips {
     my $self = shift;
     my %args = (
         Stage => undef,
-        Type  => undef,
+        type  => undef,
         @_
     );
 
@@ -345,7 +345,7 @@ sub _find_scrips {
 
     #We only want things where the scrip applies to this sort of transaction
     # transaction_batch stage can define list of transaction
-    foreach ( split /\s*,\s*/, ( $args{'Type'} || '' ) ) {
+    foreach ( split /\s*,\s*/, ( $args{'type'} || '' ) ) {
         $self->limit(
             alias            => $ConditionsAlias,
             column           => 'applicable_trans_types',
@@ -374,7 +374,7 @@ sub _find_scrips {
     Jifty->log->debug( "Found "
             . $self->count
             . " scrips for $args{'Stage'} stage"
-            . " with applicable type(s) $args{'Type'}" );
+            . " with applicable type(s) $args{'type'}" );
 }
 
 # }}}

@@ -76,7 +76,7 @@ if ( $Ticket->current_user_has_right('ShowTicket') ) {
                          value => $Ticket->id() );
     # if the user may not see comments do not return them
     unless ( $Ticket->current_user_has_right('ShowTicketcomments') ) {
-        $attachments->limit( alias    => $transactions, column    => 'Type', operator => '!=', value    => "comment" );
+        $attachments->limit( alias    => $transactions, column    => 'type', operator => '!=', value    => "comment" );
     }
 
     $attachments->limit ( column => 'ContentType', operator => '=', value => 'text/plain');

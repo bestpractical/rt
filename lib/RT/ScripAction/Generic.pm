@@ -91,7 +91,7 @@ sub _init {
         template_obj    => undef,
         ticket_obj      => undef,
         transaction_obj => undef,
-        Type            => undef,
+        type            => undef,
 
         @_
     );
@@ -102,7 +102,7 @@ sub _init {
     $self->{'template_obj'}    = $args{'template_obj'};
     $self->{'ticket_obj'}      = $args{'ticket_obj'};
     $self->{'transaction_obj'} = $args{'transaction_obj'};
-    $self->{'Type'}            = $args{'Type'};
+    $self->{'type'}            = $args{'type'};
 
     Scalar::Util::weaken( $self->{'ScripActionObj'} );
     Scalar::Util::weaken( $self->{'scrip_obj'} );
@@ -167,7 +167,7 @@ sub scrip_action_obj {
 # {{{ sub Type
 sub type {
     my $self = shift;
-    return ( $self->{'Type'} );
+    return ( $self->{'type'} );
 }
 
 # }}}

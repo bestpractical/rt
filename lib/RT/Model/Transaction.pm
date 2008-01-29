@@ -100,16 +100,16 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 type
 
 Returns the current value of type. 
-(In the database, Type is stored as varchar(20).)
+(In the database, type is stored as varchar(20).)
 
 
 
 =head2 set_type value
 
 
-Set Type to value. 
+Set type to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Type will be stored as a varchar(20).)
+(In the database, type will be stored as a varchar(20).)
 
 
 =cut
@@ -460,8 +460,8 @@ returns undef.
 Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message 
 at $args{'Wrap'}.  $args{'Wrap'} defaults to 70.
 
-If $args{'Type'} is set to C<text/html>, plain texts are upgraded to HTML.
-Otherwise, HTML texts are downgraded to plain text.  If $args{'Type'} is
+If $args{'type'} is set to C<text/html>, plain texts are upgraded to HTML.
+Otherwise, HTML texts are downgraded to plain text.  If $args{'type'} is
 missing, it defaults to the value of C<$RT::Transaction::PreferredContentType>.
 
 =cut

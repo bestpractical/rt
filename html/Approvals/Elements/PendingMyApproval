@@ -52,7 +52,7 @@
 % my %done;
 % foreach ($tickets, $group_tickets) {
 %   while (my $ticket = $_->next() ) {
-%     next if !$ARGS{'ShowDependent'} and $ticket->has_unresolved_dependencies( Type => 'approval' );
+%     next if !$ARGS{'ShowDependent'} and $ticket->has_unresolved_dependencies( type => 'approval' );
 %     next if $done{$ticket->id}++; # don't show duplicate tickets
 <& Approve, ticket => $ticket &>
 %   }
@@ -84,7 +84,7 @@ my $Created_before = RT::Date->new();
 my $Created_after = RT::Date->new();
 
 foreach ($tickets, $group_tickets) {
-    $_->limit( column      => 'Type', value => 'approval' );
+    $_->limit( column      => 'type', value => 'approval' );
 
     if ( $ARGS{'ShowResolved'} ) {
 	$_->limit_status( value => 'resolved' );

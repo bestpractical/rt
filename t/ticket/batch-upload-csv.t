@@ -13,7 +13,7 @@ my $queue_obj = RT::Model::Queue->new(current_user => RT->system_user);
 $queue_obj->create(name => $QUEUE);
 
 my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
-my ($val,$msg)  = $cf->create(name => 'Work Package-'.$$, Type => 'Freeform', LookupType => RT::Model::Ticket->custom_field_lookup_type, MaxValues => 1);
+my ($val,$msg)  = $cf->create(name => 'Work Package-'.$$, type => 'Freeform', LookupType => RT::Model::Ticket->custom_field_lookup_type, MaxValues => 1);
 ok($cf->id);
 ok($val,$msg);
 ($val, $msg) = $cf->add_to_object($queue_obj);

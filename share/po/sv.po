@@ -229,7 +229,7 @@ msgstr "%1 högsta prioriterade ärenden som tillhör mig"
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 är ett verktyg som reagerar på ärenden från ett externt planeringsverktyg, så som cron."
 
-#. ($principal->object->name, $args{'Type'})
+#. ($principal->object->name, $args{'type'})
 #: lib/RT/Queue_Overlay.pm:863
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 är inte längre en %2 för denna kö."
@@ -579,12 +579,12 @@ msgstr "Lägg till värden"
 msgid "Add, delete and modify custom field values for objects"
 msgstr "Lägg till, radera och modifiera extrafältvärden för objekt"
 
-#. ($args{'Type'})
+#. ($args{'type'})
 #: lib/RT/Queue_Overlay.pm:763
 msgid "Added principal as a %1 for this queue"
 msgstr "Tillagd principal som en %1 för denna kö"
 
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 #: lib/RT/Ticket_Overlay.pm:1455
 msgid "Added principal as a %1 for this ticket"
 msgstr "Tillagd principal som en %1 för detta ärende"
@@ -1149,17 +1149,17 @@ msgstr "Går ej att läsa in objekt för %1"
 msgid "Could not load search attribute"
 msgstr "Går ej att läsa in sökattribut"
 
-#. ($args{'Type'})
+#. ($args{'type'})
 #: lib/RT/Queue_Overlay.pm:761
 msgid "Could not make that principal a %1 for this queue"
 msgstr "Går ej att göra denna principal %1 för denna kö"
 
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 #: lib/RT/Ticket_Overlay.pm:1444
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Går ej att göra denna principal %1 för detta ärende"
 
-#. ($args{'Type'})
+#. ($args{'type'})
 #: lib/RT/Queue_Overlay.pm:860
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "Går ej att flytta denna principal som %1 för denna kö"
@@ -4893,17 +4893,17 @@ msgstr "Det är samma värde"
 msgid "That principal already has that right"
 msgstr "Principalen har redan den rättigheten"
 
-#. ($args{'Type'})
+#. ($args{'type'})
 #: lib/RT/Queue_Overlay.pm:753
 msgid "That principal is already a %1 for this queue"
 msgstr "Principalen är redan en %1 för denna kö"
 
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 #: lib/RT/Ticket_Overlay.pm:1435
 msgid "That principal is already a %1 for this ticket"
 msgstr "Principalen är redan en %1 för detta ärende"
 
-#. ($args{'Type'})
+#. ($args{'type'})
 #: lib/RT/Queue_Overlay.pm:852
 msgid "That principal is not a %1 for this queue"
 msgstr "Principalen är inte en %1 för denna kö"

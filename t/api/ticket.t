@@ -18,7 +18,7 @@ use_ok('RT::Model::CustomField');
 ok(my $testcf = RT::Model::CustomField->new(current_user => RT->system_user));
 my ($ret, $cmsg) = $testcf->create( name => 'selectmulti',
                     Queue => $testqueue->id,
-                               Type => 'SelectMultiple');
+                               type => 'SelectMultiple');
 ok($ret,"Created the custom field - ".$cmsg);
 ($ret,$cmsg) = $testcf->add_value ( name => 'Value1',
                         SortOrder => '1',
@@ -209,7 +209,7 @@ my $txns = RT::Model::TransactionCollection->new(current_user => RT->system_user
 $txns->order_by(column => 'id', order => 'DESC');
 $txns->limit(column => 'object_id', value => '1');
 $txns->limit(column => 'object_type', value => 'RT::Model::Ticket');
-$txns->limit(column => 'Type', operator => '!=',  value => 'EmailRecord');
+$txns->limit(column => 'type', operator => '!=',  value => 'EmailRecord');
 
 my $give  = $txns->first;
 is($give->type, 'Give');

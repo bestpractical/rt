@@ -79,21 +79,14 @@ use Jifty::DBI::Record schema {
 
     column EffectiveId => max_length is 11, type is 'int(11)', default is '0';
     column Queue       => max_length is 11, type is 'int(11)', default is '0';
-    column Type => max_length is 16, type is 'varchar(16)', default is '';
-    column
-        IssueStatement => max_length is 11,
+    column type => max_length is 16, type is 'varchar(16)', default is '';
+    column IssueStatement => max_length is 11,
         type is 'int(11)', default is '0';
     column Resolution => max_length is 11, type is 'int(11)', default is '0';
     column Owner      => max_length is 11, type is 'int(11)', default is '0';
-    column
-        subject => max_length is 200,
-        type is 'varchar(200)', default is '';
-    column
-        initial_priority => max_length is 11,
-        type is 'int(11)', default is '0';
-    column
-        final_priority => max_length is 11,
-        type is 'int(11)', default is '0';
+    column subject => max_length is 200, type is 'varchar(200)', default is '';
+    column initial_priority => max_length is 11, type is 'int(11)', default is '0';
+    column final_priority => max_length is 11, type is 'int(11)', default is '0';
     column Priority => max_length is 11, type is 'int(11)', default is '0';
     column
         time_estimated => max_length is 11,
@@ -134,43 +127,43 @@ use MIME::Entity;
 
 our %LINKTYPEMAP = (
     MemberOf => {
-        Type => 'MemberOf',
+        type => 'MemberOf',
         Mode => 'Target',
     },
     Parents => {
-        Type => 'MemberOf',
+        type => 'MemberOf',
         Mode => 'Target',
     },
     Members => {
-        Type => 'MemberOf',
+        type => 'MemberOf',
         Mode => 'Base',
     },
     Children => {
-        Type => 'MemberOf',
+        type => 'MemberOf',
         Mode => 'Base',
     },
     has_member => {
-        Type => 'MemberOf',
+        type => 'MemberOf',
         Mode => 'Base',
     },
     RefersTo => {
-        Type => 'RefersTo',
+        type => 'RefersTo',
         Mode => 'Target',
     },
     ReferredToBy => {
-        Type => 'RefersTo',
+        type => 'RefersTo',
         Mode => 'Base',
     },
     DependsOn => {
-        Type => 'DependsOn',
+        type => 'DependsOn',
         Mode => 'Target',
     },
     DependedOnBy => {
-        Type => 'DependsOn',
+        type => 'DependsOn',
         Mode => 'Base',
     },
     MergedInto => {
-        Type => 'MergedInto',
+        type => 'MergedInto',
         Mode => 'Target',
     },
 
@@ -303,7 +296,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Requestor -  A reference to a list of  email addresses or RT user names
   Cc  - A reference to a list of  email addresses or names
   AdminCc  - A reference to a  list of  email addresses or names
-  Type -- The ticket\'s type. ignore this for now
+  type -- The ticket\'s type. ignore this for now
   Owner -- This ticket\'s owner. either an RT::Model::User object or this user\'s id
   subject -- A string describing the subject of the ticket
   Priority -- an integer from 0 to 99
@@ -345,7 +338,7 @@ sub create {
         Requestor           => undef,
         Cc                  => undef,
         AdminCc             => undef,
-        Type                => 'ticket',
+        type                => 'ticket',
         Owner               => undef,
         subject             => '',
         initial_priority    => undef,
@@ -555,7 +548,7 @@ sub create {
         time_worked      => $args{'time_worked'},
         time_estimated   => $args{'time_estimated'},
         time_left        => $args{'time_left'},
-        Type             => $args{'Type'},
+        type             => $args{'type'},
         starts           => $starts->iso,
         Started          => $Started->iso,
         Resolved         => $Resolved->iso,
@@ -630,7 +623,7 @@ sub create {
             my $method = $type eq 'AdminCc' ? 'add_watcher' : '_add_watcher';
 
             my ( $val, $msg ) = $self->$method(
-                Type         => $type,
+                type         => $type,
                 principal_id => $watcher,
                 Silent       => 1,
             );
@@ -705,7 +698,7 @@ sub create {
             }
 
             my ( $wval, $wmsg ) = $self->_add_link(
-                Type => $LINKTYPEMAP{$type}->{'Type'},
+                type => $LINKTYPEMAP{$type}->{'type'},
                 $LINKTYPEMAP{$type}->{'Mode'} => $link,
                 Silent => !$args{'_record_transaction'},
                 'Silent'
@@ -853,7 +846,7 @@ sub _parse822_headers_for_attributes {
     }
     $args{'mimeobj'} = MIME::Entity->new();
     $args{'mimeobj'}->build(
-        Type => ( $args{'contenttype'} || 'text/plain' ),
+        type => ( $args{'contenttype'} || 'text/plain' ),
         Data => ( $args{'content'}     || '' )
     );
 
@@ -883,7 +876,7 @@ sub import {
         EffectiveId      => undef,
         Queue            => undef,
         Requestor        => undef,
-        Type             => 'ticket',
+        type             => 'ticket',
         Owner            => RT->nobody->id,
         subject          => '[no subject]',
         initial_priority => undef,
@@ -1003,7 +996,7 @@ sub import {
         Priority         => $args{'initial_priority'},    # loc
         status           => $args{'status'},              # loc
         time_worked      => $args{'time_worked'},         # loc
-        Type             => $args{'Type'},                # loc
+        type             => $args{'type'},                # loc
         Created          => $args{'Created'},             # loc
         Told             => $args{'Told'},                # loc
         LastUpdated      => $args{'Updated'},             # loc
@@ -1035,18 +1028,18 @@ sub import {
 
     my $watcher;
     foreach $watcher ( @{ $args{'Cc'} } ) {
-        $self->_add_watcher( Type => 'Cc', Email => $watcher, Silent => 1 );
+        $self->_add_watcher( type => 'Cc', Email => $watcher, Silent => 1 );
     }
     foreach $watcher ( @{ $args{'AdminCc'} } ) {
         $self->_add_watcher(
-            Type   => 'AdminCc',
+            type   => 'AdminCc',
             Email  => $watcher,
             Silent => 1
         );
     }
     foreach $watcher ( @{ $args{'Requestor'} } ) {
         $self->_add_watcher(
-            Type   => 'Requestor',
+            type   => 'Requestor',
             Email  => $watcher,
             Silent => 1
         );
@@ -1112,7 +1105,7 @@ sub owner_group {
     my $owner_obj = RT::Model::Group->new;
     $owner_obj->load_ticket_role_group(
         Ticket => $self->id,
-        Type   => 'Owner'
+        type   => 'Owner'
     );
     return ($owner_obj);
 }
@@ -1139,7 +1132,7 @@ If the watcher you\'re trying to set has an RT account, set the Owner paremeter 
 sub add_watcher {
     my $self = shift;
     my %args = (
-        Type         => undef,
+        type         => undef,
         principal_id => undef,
         Email        => undef,
         @_
@@ -1172,14 +1165,14 @@ sub add_watcher {
     }
 
     #  If it's an AdminCc and they don't have 'WatchAsAdminCc', bail
-    if ( $args{'Type'} eq 'AdminCc' ) {
+    if ( $args{'type'} eq 'AdminCc' ) {
         unless ( $self->current_user_has_right('WatchAsAdminCc') ) {
             return ( 0, _('Permission Denied') );
         }
     }
 
     #  If it's a Requestor or Cc and they don't have 'Watch', bail
-    elsif ( $args{'Type'} eq 'Cc' || $args{'Type'} eq 'Requestor' ) {
+    elsif ( $args{'type'} eq 'Cc' || $args{'type'} eq 'Requestor' ) {
         unless ( $self->current_user_has_right('Watch') ) {
             return ( 0, _('Permission Denied') );
         }
@@ -1196,7 +1189,7 @@ sub add_watcher {
 sub _add_watcher {
     my $self = shift;
     my %args = (
-        Type         => undef,
+        type         => undef,
         Silent       => undef,
         principal_id => undef,
         Email        => undef,
@@ -1225,7 +1218,7 @@ sub _add_watcher {
 
     my $group = RT::Model::Group->new;
     $group->load_ticket_role_group(
-        Type   => $args{'Type'},
+        type   => $args{'type'},
         Ticket => $self->id
     );
     unless ( $group->id ) {
@@ -1237,7 +1230,7 @@ sub _add_watcher {
         return (
             0,
             _(  'That principal is already a %1 for this ticket',
-                _( $args{'Type'} )
+                _( $args{'type'} )
             )
         );
     }
@@ -1256,7 +1249,7 @@ sub _add_watcher {
         return (
             0,
             _(  'Could not make that principal a %1 for this ticket',
-                _( $args{'Type'} )
+                _( $args{'type'} )
             )
         );
     }
@@ -1265,19 +1258,19 @@ sub _add_watcher {
         $self->_new_transaction(
             type      => 'AddWatcher',
             new_value => $principal->id,
-            Field     => $args{'Type'}
+            Field     => $args{'type'}
         );
     }
 
     return ( 1,
-        _( 'Added principal as a %1 for this ticket', _( $args{'Type'} ) ) );
+        _( 'Added principal as a %1 for this ticket', _( $args{'type'} ) ) );
 }
 
 # }}}
 
 # {{{ sub delete_watcher
 
-=head2 DeleteWatcher { Type => TYPE, principal_id => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
+=head2 DeleteWatcher { type => TYPE, principal_id => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
 
 
 Deletes a Ticket watcher.  Takes two arguments:
@@ -1297,7 +1290,7 @@ sub delete_watcher {
     my $self = shift;
 
     my %args = (
-        Type         => undef,
+        type         => undef,
         principal_id => undef,
         Email        => undef,
         @_
@@ -1323,7 +1316,7 @@ sub delete_watcher {
 
     my $group = RT::Model::Group->new;
     $group->load_ticket_role_group(
-        Type   => $args{'Type'},
+        type   => $args{'type'},
         Ticket => $self->id
     );
     unless ( $group->id ) {
@@ -1336,7 +1329,7 @@ sub delete_watcher {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
-        if ( $args{'Type'} eq 'AdminCc' ) {
+        if ( $args{'type'} eq 'AdminCc' ) {
             unless ( $self->current_user_has_right('ModifyTicket')
                 or $self->current_user_has_right('WatchAsAdminCc') )
             {
@@ -1346,8 +1339,8 @@ sub delete_watcher {
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
-        elsif (( $args{'Type'} eq 'Cc' )
-            or ( $args{'Type'} eq 'Requestor' ) )
+        elsif (( $args{'type'} eq 'Cc' )
+            or ( $args{'type'} eq 'Requestor' ) )
         {
             unless ( $self->current_user_has_right('ModifyTicket')
                 or $self->current_user_has_right('Watch') )
@@ -1375,7 +1368,7 @@ sub delete_watcher {
 
     unless ( $group->has_member($principal) ) {
         return ( 0,
-            _( 'That principal is not a %1 for this ticket', $args{'Type'} )
+            _( 'That principal is not a %1 for this ticket', $args{'type'} )
         );
     }
 
@@ -1390,7 +1383,7 @@ sub delete_watcher {
         return (
             0,
             _(  'Could not remove that principal as a %1 for this ticket',
-                $args{'Type'}
+                $args{'type'}
             )
         );
     }
@@ -1399,7 +1392,7 @@ sub delete_watcher {
         $self->_new_transaction(
             type      => 'del_watcher',
             old_value => $principal->id,
-            Field     => $args{'Type'}
+            Field     => $args{'type'}
         );
     }
 
@@ -1407,7 +1400,7 @@ sub delete_watcher {
         1,
         _(  "%1 is no longer a %2 for this ticket.",
             $principal->object->name,
-            $args{'Type'}
+            $args{'type'}
         )
     );
 }
@@ -1536,7 +1529,7 @@ sub requestors {
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('ShowTicket') ) {
         $group->load_ticket_role_group(
-            Type   => 'Requestor',
+            type   => 'Requestor',
             Ticket => $self->id
         );
     }
@@ -1561,7 +1554,7 @@ sub cc {
 
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('ShowTicket') ) {
-        $group->load_ticket_role_group( Type => 'Cc', Ticket => $self->id );
+        $group->load_ticket_role_group( type => 'Cc', Ticket => $self->id );
     }
     return ($group);
 
@@ -1584,7 +1577,7 @@ sub admin_cc {
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('ShowTicket') ) {
         $group->load_ticket_role_group(
-            Type   => 'AdminCc',
+            type   => 'AdminCc',
             Ticket => $self->id
         );
     }
@@ -1601,16 +1594,16 @@ sub admin_cc {
 # {{{ sub IsWatcher
 # a generic routine to be called by IsRequestor, IsCc and IsAdminCc
 
-=head2 IsWatcher { Type => TYPE, principal_id => PRINCIPAL_ID, Email => EMAIL }
+=head2 IsWatcher { type => TYPE, principal_id => PRINCIPAL_ID, Email => EMAIL }
 
-Takes a param hash with the attributes Type and either principal_id or Email
+Takes a param hash with the attributes type and either principal_id or Email
 
 Type is one of Requestor, Cc, AdminCc and Owner
 
 principal_id is an RT::Model::Principal id, and Email is an email address.
 
 Returns true if the specified principal (or the one corresponding to the
-specified address) is a member of the group Type for this ticket.
+specified address) is a member of the group type for this ticket.
 
 XX TODO: This should be Memoized. 
 
@@ -1620,7 +1613,7 @@ sub is_watcher {
     my $self = shift;
 
     my %args = (
-        Type         => 'Requestor',
+        type         => 'Requestor',
         principal_id => undef,
         Email        => undef,
         @_
@@ -1629,7 +1622,7 @@ sub is_watcher {
     # Load the relevant group.
     my $group = RT::Model::Group->new;
     $group->load_ticket_role_group(
-        Type   => $args{'Type'},
+        type   => $args{'type'},
         Ticket => $self->id
     );
 
@@ -1669,7 +1662,7 @@ sub is_requestor {
     my $person = shift;
 
     return (
-        $self->is_watcher( Type => 'Requestor', principal_id => $person ) );
+        $self->is_watcher( type => 'Requestor', principal_id => $person ) );
 
 }
 
@@ -1689,7 +1682,7 @@ sub is_cc {
     my $self = shift;
     my $cc   = shift;
 
-    return ( $self->is_watcher( Type => 'Cc', principal_id => $cc ) );
+    return ( $self->is_watcher( type => 'Cc', principal_id => $cc ) );
 
 }
 
@@ -1709,7 +1702,7 @@ sub is_admin_cc {
     my $person = shift;
 
     return (
-        $self->is_watcher( Type => 'AdminCc', principal_id => $person ) );
+        $self->is_watcher( type => 'AdminCc', principal_id => $person ) );
 
 }
 
@@ -1767,7 +1760,7 @@ sub transaction_addresses {
     my %addresses = ();
     foreach my $type (qw(Create comment Correspond)) {
         $txns->limit(
-            column           => 'Type',
+            column           => 'type',
             operator         => '=',
             value            => $type,
             entry_aggregator => 'OR',
@@ -2350,7 +2343,7 @@ sub _links {
                 );
             }
             $self->{"$field$type"}->limit(
-                column => 'Type',
+                column => 'type',
                 value  => $type
             ) if ($type);
         }
@@ -2380,7 +2373,7 @@ sub delete_link {
     my %args = (
         Base         => undef,
         Target       => undef,
-        Type         => undef,
+        type         => undef,
         Silent       => undef,
         SilentBase   => undef,
         SilentTarget => undef,
@@ -2437,7 +2430,7 @@ sub delete_link {
     unless ( $args{ 'Silent' . $direction } ) {
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             type      => 'DeleteLink',
-            Field     => $LINKDIRMAP{ $args{'Type'} }->{$direction},
+            Field     => $LINKDIRMAP{ $args{'type'} }->{$direction},
             old_value => $remote_uri->uri || $remote_link,
             TimeTaken => 0
         );
@@ -2451,8 +2444,8 @@ sub delete_link {
         my ( $val, $Msg ) = $OtherObj->_new_transaction(
             type  => 'DeleteLink',
             Field => $direction eq 'Target'
-            ? $LINKDIRMAP{ $args{'Type'} }->{Base}
-            : $LINKDIRMAP{ $args{'Type'} }->{Target},
+            ? $LINKDIRMAP{ $args{'type'} }->{Base}
+            : $LINKDIRMAP{ $args{'type'} }->{Target},
             old_value      => $self->uri,
             ActivateScrips => !RT->config->get('LinkTransactionsRun1Scrip'),
             TimeTaken      => 0,
@@ -2469,7 +2462,7 @@ sub delete_link {
 
 =head2 add_link
 
-Takes a paramhash of Type and one of Base or Target. Adds that link to this ticket.
+Takes a paramhash of type and one of Base or Target. Adds that link to this ticket.
 
 If Silent is true then no transaction would be recorded, in other
 case you can control creation of transactions on both base and
@@ -2483,7 +2476,7 @@ sub add_link {
     my %args = (
         Target       => '',
         Base         => '',
-        Type         => '',
+        type         => '',
         Silent       => undef,
         SilentBase   => undef,
         SilentTarget => undef,
@@ -2553,7 +2546,7 @@ sub _add_link {
     my %args = (
         Target       => '',
         Base         => '',
-        Type         => '',
+        type         => '',
         Silent       => undef,
         SilentBase   => undef,
         SilentTarget => undef,
@@ -2579,7 +2572,7 @@ sub _add_link {
     unless ( $args{ 'Silent' . $direction } ) {
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             type      => 'AddLink',
-            Field     => $LINKDIRMAP{ $args{'Type'} }->{$direction},
+            Field     => $LINKDIRMAP{ $args{'type'} }->{$direction},
             new_value => $remote_uri->uri || $remote_link,
             TimeTaken => 0
         );
@@ -2593,8 +2586,8 @@ sub _add_link {
         my ( $val, $msg ) = $OtherObj->_new_transaction(
             type  => 'AddLink',
             Field => $direction eq 'Target'
-            ? $LINKDIRMAP{ $args{'Type'} }->{Base}
-            : $LINKDIRMAP{ $args{'Type'} }->{Target},
+            ? $LINKDIRMAP{ $args{'type'} }->{Base}
+            : $LINKDIRMAP{ $args{'type'} }->{Target},
             new_value      => $self->uri,
             ActivateScrips => !RT->config->get('LinkTransactionsRun1Scrip'),
             TimeTaken      => 0,
@@ -2680,7 +2673,7 @@ sub merge_into {
 
     my %old_seen;
     while ( my $link = $old_links_to->next ) {
-        if ( exists $old_seen{ $link->Base . "-" . $link->Type } ) {
+        if ( exists $old_seen{ $link->Base . "-" . $link->type} ) {
             $link->delete;
         } elsif ( $link->Base eq $MergeInto->URI ) {
             $link->delete;
@@ -2690,7 +2683,7 @@ sub merge_into {
             my $tmp = RT::Model::Link->new( current_user => RT->system_user );
             $tmp->load_by_cols(
                 Base        => $link->Base,
-                Type        => $link->type,
+                type        => $link->type,
                 LocalTarget => $MergeInto->id
             );
             if ( $tmp->id ) {
@@ -2699,7 +2692,7 @@ sub merge_into {
                 $link->set_Target( $MergeInto->URI );
                 $link->set_LocalTarget( $MergeInto->id );
             }
-            $old_seen{ $link->Base . "-" . $link->Type } = 1;
+            $old_seen{ $link->Base . "-" . $link->type} = 1;
         }
 
     }
@@ -2709,7 +2702,7 @@ sub merge_into {
     $old_links_from->limit( column => 'Base', value => $self->URI );
 
     while ( my $link = $old_links_from->next ) {
-        if ( exists $old_seen{ $link->Type . "-" . $link->Target } ) {
+        if ( exists $old_seen{ $link->type. "-" . $link->Target } ) {
             $link->delete;
         }
         if ( $link->Target eq $MergeInto->URI ) {
@@ -2720,7 +2713,7 @@ sub merge_into {
             my $tmp = RT::Model::Link->new( current_user => RT->system_user );
             $tmp->load_by_cols(
                 Target    => $link->Target,
-                Type      => $link->type,
+                type      => $link->type,
                 LocalBase => $MergeInto->id
             );
             if ( $tmp->id ) {
@@ -2728,7 +2721,7 @@ sub merge_into {
             } else {
                 $link->set_Base( $MergeInto->URI );
                 $link->set_LocalBase( $MergeInto->id );
-                $old_seen{ $link->Type . "-" . $link->Target } = 1;
+                $old_seen{ $link->type. "-" . $link->Target } = 1;
             }
         }
 
@@ -2753,7 +2746,7 @@ sub merge_into {
         while ( my $watcher = $people->next ) {
 
             my ( $val, $msg ) = $MergeInto->_add_watcher(
-                Type         => $addwatcher_type,
+                type         => $addwatcher_type,
                 Silent       => 1,
                 principal_id => $watcher->MemberId
             );
@@ -2781,7 +2774,7 @@ sub merge_into {
     }
 
     #make a new link: this ticket is merged into that other ticket.
-    $self->add_link( Type => 'MergedInto', Target => $MergeInto->id() );
+    $self->add_link( type => 'MergedInto', Target => $MergeInto->id() );
 
     $MergeInto->set_last_updated;
 
@@ -3303,8 +3296,8 @@ sub seen_up_to {
     return if $attr && $attr->content gt $self->LastUpdated;
 
     my $txns = $self->transactions;
-    $txns->limit( column => 'Type', value => 'comment' );
-    $txns->limit( column => 'Type', value => 'Correspond' );
+    $txns->limit( column => 'type', value => 'comment' );
+    $txns->limit( column => 'type', value => 'Correspond' );
     $txns->limit( column => 'Creator', operator => '!=', value => $uid );
     $txns->limit(
         column   => 'Created',
@@ -3352,7 +3345,7 @@ sub DESTROY {
         Stage           => 'transaction_batch',
         ticket_obj      => $self,
         transaction_obj => $batch->[0],
-        Type            => join( ',', ( map { $_->type } @{$batch} ) )
+        type            => join( ',', ( map { $_->type } @{$batch} ) )
     );
 }
 
@@ -3377,7 +3370,7 @@ sub _overlay_accessible {
         time_left        => { 'read' => 1, 'write' => 1 },
         Told             => { 'read' => 1, 'write' => 1 },
         Resolved         => { 'read' => 1 },
-        Type             => { 'read' => 1 },
+        type             => { 'read' => 1 },
         starts        => { 'read' => 1, 'write' => 1 },
         Started       => { 'read' => 1, 'write' => 1 },
         Due           => { 'read' => 1, 'write' => 1 },
@@ -3625,13 +3618,13 @@ sub transactions {
         unless ( $self->current_user_has_right('ShowTicketcomments') ) {
             $transactions->limit(
                 subclause => 'acl',
-                column    => 'Type',
+                column    => 'type',
                 operator  => '!=',
                 value     => "comment"
             );
             $transactions->limit(
                 subclause        => 'acl',
-                column           => 'Type',
+                column           => 'type',
                 operator         => '!=',
                 value            => "commentEmailRecord",
                 entry_aggregator => 'AND'

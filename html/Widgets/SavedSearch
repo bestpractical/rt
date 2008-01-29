@@ -99,7 +99,7 @@ if ( $args->{Save} ) {
         my ( $ok, $search_msg ) = $saved_search->save(
             Privacy      => $args->{'Owner'},
             name         => $args->{'Description'},
-            Type         => $self->{'SearchType'},
+            type         => $self->{'SearchType'},
             SearchParams => $SearchParams
         );
         if ($ok) {
@@ -134,7 +134,7 @@ $args
 
 <%method show>
 <form method="post" action="<% $Action %>" name="SaveSearch">
-<& /Search/Elements/EditSearches, name => 'Owner', Type => $self->{SearchType}, AllowCopy => 0,
+<& /Search/Elements/EditSearches, name => 'Owner', type => $self->{SearchType}, AllowCopy => 0,
    CurrentSearch => $self->{CurrentSearch}, SearchId => $self->{SearchId}, Title => $Title  &><br />
 <%PERL>
 foreach my $field ( @{$self->{SearchFields}} ) {

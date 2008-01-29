@@ -130,7 +130,7 @@ sub commit {
     if ( $ret > 0 && RT->config->get('RecordOutgoingEmail') ) {
         if ($orig_message) {
             $message->attach(
-                Type        => 'application/x-rt-original-message',
+                type        => 'application/x-rt-original-message',
                 Disposition => 'inline',
                 Data        => $orig_message->as_string,
             );
@@ -393,7 +393,7 @@ sub add_attachment {
     my $MIMEObj = shift || $self->template_obj->mime_obj;
 
     $MIMEObj->attach(
-        Type     => $attach->content_type,
+        type     => $attach->content_type,
         Charset  => $attach->original_encoding,
         Data     => $attach->original_content,
         Filename => defined( $attach->Filename )
@@ -459,12 +459,12 @@ sub add_ticket {
     my $txn_alias = $attachs->transaction_alias;
     $attachs->limit(
         alias  => $txn_alias,
-        column => 'Type',
+        column => 'type',
         value  => 'Create'
     );
     $attachs->limit(
         alias  => $txn_alias,
-        column => 'Type',
+        column => 'type',
         value  => 'Correspond'
     );
     $attachs->limit_by_ticket($tid);
@@ -472,7 +472,7 @@ sub add_ticket {
     $attachs->order_by( column => 'Created' );
 
     my $ticket_mime = MIME::Entity->build(
-        Type        => 'multipart/mixed',
+        type        => 'multipart/mixed',
         Top         => 0,
         Description => "ticket #$tid",
     );
@@ -536,7 +536,7 @@ sub record_outgoing_mail_transaction {
 
     my ( $id, $msg ) = $transaction->create(
         Ticket         => $self->ticket_obj->id,
-        Type           => $type,
+        type           => $type,
         Data           => $msgid,
         MIMEObj        => $MIMEObj,
         ActivateScrips => 0

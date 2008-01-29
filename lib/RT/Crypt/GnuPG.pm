@@ -532,7 +532,7 @@ sub sign_encrypt_rfc3156 {
         $entity->head->mime_attr(
             'Content-Type.micalg' => 'pgp-' . lc $opt{'digest-algo'} );
         $entity->attach(
-            Type        => $protocol,
+            type        => $protocol,
             Disposition => 'inline',
             Data        => \@signature,
             Encoding    => '7bit',
@@ -592,13 +592,13 @@ sub sign_encrypt_rfc3156 {
         $entity->head->mime_attr( 'Content-Type' => 'multipart/encrypted' );
         $entity->head->mime_attr( 'Content-Type.protocol' => $protocol );
         $entity->attach(
-            Type        => $protocol,
+            type        => $protocol,
             Disposition => 'inline',
             Data        => [ 'Version: 1', '' ],
             Encoding    => '7bit',
         );
         $entity->attach(
-            Type        => 'application/octet-stream',
+            type        => 'application/octet-stream',
             Disposition => 'inline',
             Path        => $tmp_fn,
             Filename    => '',
@@ -815,7 +815,7 @@ sub sign_encrypt_attachment_inline {
     if ( $args{'Sign'} && !$args{'Encrypt'} ) {
         $entity->make_multipart;
         $entity->attach(
-            Type        => 'application/octet-stream',
+            type        => 'application/octet-stream',
             Path        => $tmp_fn,
             Filename    => "$filename.sig",
             Disposition => 'attachment',
@@ -951,7 +951,7 @@ sub find_protected_parts {
             my $type = $1 ? 'signed' : 'encrypted';
             Jifty->log->debug("Found $type inline part");
             return {
-                Type   => $type,
+                type   => $type,
                 Format => 'Inline',
                 Data   => $entity,
             };
@@ -986,7 +986,7 @@ sub find_protected_parts {
             }
             Jifty->log->debug("Found encrypted according to RFC3156 part");
             return {
-                Type   => 'encrypted',
+                type   => 'encrypted',
                 Format => 'RFC3156',
                 Top    => $entity,
                 Data   => $entity->parts(1),
@@ -1001,7 +1001,7 @@ sub find_protected_parts {
             }
             Jifty->log->debug("Found signed according to RFC3156 part");
             return {
-                Type      => 'signed',
+                type      => 'signed',
                 Format    => 'RFC3156',
                 Top       => $entity,
                 Data      => $entity->parts(0),
@@ -1041,7 +1041,7 @@ sub find_protected_parts {
         );
         push @res,
             {
-            Type      => 'signed',
+            type      => 'signed',
             Format    => 'Attachment',
             Top       => $entity,
             Data      => $data_part_in,
@@ -1063,7 +1063,7 @@ sub find_protected_parts {
                 . "'" );
         push @res,
             {
-            Type   => 'encrypted',
+            type   => 'encrypted',
             Format => 'Attachment',
             Top    => $entity,
             Data   => $part,
@@ -1086,7 +1086,7 @@ sub verify_decrypt {
     my @res;
 
     # XXX: detaching may brake nested signatures
-    foreach my $item ( grep $_->{'Type'} eq 'signed', @protected ) {
+    foreach my $item ( grep $_->{'type'} eq 'signed', @protected ) {
         if ( $item->{'Format'} eq 'RFC3156' ) {
             push @res, { verify_rfc3156(%$item) };
             if ( $args{'Detach'} ) {
@@ -1107,7 +1107,7 @@ sub verify_decrypt {
             }
         }
     }
-    foreach my $item ( grep $_->{'Type'} eq 'encrypted', @protected ) {
+    foreach my $item ( grep $_->{'type'} eq 'encrypted', @protected ) {
         if ( $item->{'Format'} eq 'RFC3156' ) {
             push @res, { decrypt_rfc3156(%$item) };
         } elsif ( $item->{'Format'} eq 'Inline' ) {
@@ -1798,7 +1798,7 @@ sub parse_status {
                 Operation      => 'Sign',
                 Status         => 'DONE',
                 Message        => "Signed message",
-                Type           => $props[0],
+                type           => $props[0],
                 PubKeyAlgo     => $props[1],
                 HashKeyAlgo    => $props[2],
                 Class          => $props[3],
@@ -2389,7 +2389,7 @@ sub dry_sign {
     my $from = shift;
 
     my $mime = MIME::Entity->build(
-        Type    => "text/plain",
+        type    => "text/plain",
         From    => 'nobody@localhost',
         To      => 'nobody@localhost',
         Subject => "dry sign",

@@ -222,7 +222,7 @@ ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 
 my $transactions = $ticket2->transactions;
-$transactions->limit( column => 'Type', value => 'AddLink' );
+$transactions->limit( column => 'type', value => 'AddLink' );
 is( $transactions->count, 1, "Transaction found in other ticket" );
 is( $transactions->first->Field , 'ReferredToBy');
 is( $transactions->first->new_value , $ticket->uri );
@@ -231,7 +231,7 @@ is( $transactions->first->new_value , $ticket->uri );
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 $transactions = $ticket2->transactions;
-$transactions->limit( column => 'Type', value => 'DeleteLink' );
+$transactions->limit( column => 'type', value => 'DeleteLink' );
 is( $transactions->count, 1, "Transaction found in other ticket" );
 is( $transactions->first->Field , 'ReferredToBy');
 is( $transactions->first->old_value , $ticket->uri );
@@ -251,11 +251,11 @@ ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 {
     my $transactions = $ticket->transactions;
-    $transactions->limit( column => 'Type', value => 'AddLink' );
+    $transactions->limit( column => 'type', value => 'AddLink' );
     is( $transactions->count, 2, "Still two txns on the base" );
 
     $transactions = $ticket2->transactions;
-    $transactions->limit( column => 'Type', value => 'AddLink' );
+    $transactions->limit( column => 'type', value => 'AddLink' );
     is( $transactions->count, 2, "Still two txns on the target" );
 
 }
@@ -268,11 +268,11 @@ ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 {
     my $transactions = $ticket->transactions;
-    $transactions->limit( column => 'Type', value => 'AddLink' );
+    $transactions->limit( column => 'type', value => 'AddLink' );
     is( $transactions->count, 2, "still five txn on the base" );
 
     $transactions = $ticket2->transactions;
-    $transactions->limit( column => 'Type', value => 'AddLink' );
+    $transactions->limit( column => 'type', value => 'AddLink' );
     is( $transactions->count, 3, "+1 txn on the target" );
 
 }
@@ -285,11 +285,11 @@ ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 {
     my $transactions = $ticket->transactions;
-    $transactions->limit( column => 'Type', value => 'AddLink' );
+    $transactions->limit( column => 'type', value => 'AddLink' );
     is( $transactions->count, 3, "+1 txn on the base" );
 
     $transactions = $ticket2->transactions;
-    $transactions->limit( column => 'Type', value => 'AddLink' );
+    $transactions->limit( column => 'type', value => 'AddLink' );
     is( $transactions->count, 3, "three txns on the target" );
 }
 ($id,$msg) =$ticket->delete_link(Type => 'RefersTo', Target => $ticket2->id, SilentTarget => 1);

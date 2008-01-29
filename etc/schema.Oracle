@@ -82,8 +82,8 @@ CREATE TABLE Groups (
 	instance	NUMBER(11,0) DEFAULT 0 -- NOT NULL
 --	instance	VARCHAR2(64)
 );
-CREATE INDEX Groups1 ON Groups (LOWER('domain'), instance, LOWER('Type'), id);
-CREATE INDEX Groups2 ON Groups (LOWER('Type'), instance, LOWER('domain'));
+CREATE INDEX Groups1 ON Groups (LOWER('domain'), instance, LOWER('type'), id);
+CREATE INDEX Groups2 ON Groups (LOWER('type'), instance, LOWER('domain'));
 
 
 CREATE SEQUENCE SCRIPCONDITIONS_seq;

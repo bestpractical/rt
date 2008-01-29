@@ -102,7 +102,7 @@ sub get_current_user {
 
     # attach the original encrypted message
     $args{'Message'}->attach(
-        Type        => 'application/x-rt-original-message',
+        type        => 'application/x-rt-original-message',
         Disposition => 'inline',
         Data        => ${ $args{'RawMessageRef'} },
     );

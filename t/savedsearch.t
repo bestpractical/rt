@@ -68,7 +68,7 @@ warn "My search user = ".$searchuser->id;
 my $mysearch = RT::SavedSearch->new( current_user => $curruser );
 ( $ret, $msg ) = $mysearch->save(
     Privacy      => 'RT::Model::User-' . $searchuser->id,
-    Type         => 'Ticket',
+    type         => 'Ticket',
     name         => 'owned by me',
     SearchParams => {
         'Format' => $format,
@@ -82,7 +82,7 @@ ok($ret, "mysearch was Created");
 
 my $groupsearch = RT::SavedSearch->new(current_user => $curruser);
 ($ret, $msg) = $groupsearch->save(Privacy => 'RT::Model::Group-' . $ingroup->id,
-				  Type => 'Ticket',
+				  type => 'Ticket',
 				  name => 'search queue',
 				  SearchParams => {'Format' => $format,
 						   'Query' => "Queue = '"
@@ -91,7 +91,7 @@ ok($ret, "groupsearch was Created");
 
 my $othersearch = RT::SavedSearch->new(current_user => $curruser);
 ($ret, $msg) = $othersearch->save(Privacy => 'RT::Model::Group-' . $outgroup->id,
-				  Type => 'Ticket',
+				  type => 'Ticket',
 				  name => 'searchuser requested',
 				  SearchParams => {'Format' => $format,
 						   'Query' => 
@@ -101,7 +101,7 @@ like($msg, qr/Failed to load object for/, "...for the right reason");
 
 $othersearch = RT::SavedSearch->new(current_user => RT->system_user);
 ($ret, $msg) = $othersearch->save(Privacy => 'RT::Model::Group-' . $outgroup->id,
-				  Type => 'Ticket',
+				  type => 'Ticket',
 				  name => 'searchuser requested',
 				  SearchParams => {'Format' => $format,
 						   'Query' => 
@@ -162,7 +162,7 @@ like($mysearch->get_parameter('Query'), qr/Queue/, "other mysearch object update
 
 my $genericsearch = RT::SavedSearch->new(current_user => $curruser);
 $genericsearch->save(name => 'generic search',
-		     Type => 'all',
+		     type => 'all',
 		     SearchParams => {'Query' => "Queue = 'General'"});
 
 my $ticketsearches = RT::SavedSearches->new(current_user => $curruser);

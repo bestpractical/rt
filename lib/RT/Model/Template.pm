@@ -36,7 +36,7 @@ use Jifty::DBI::Record schema {
     column
         Description => max_length is 255,
         type is 'varchar(255)', default is '';
-    column Type     => max_length is 16, type is 'varchar(16)', default is '';
+    column type     => max_length is 16, type is 'varchar(16)', default is '';
     column Language => max_length is 16, type is 'varchar(16)', default is '';
     column
         TranslationOf => max_length is 11,
@@ -171,7 +171,7 @@ sub create {
         content     => undef,
         Queue       => 0,
         Description => '[no description]',
-        Type => 'Action',    #By default, template are 'Action' templates
+        type => 'Action',    #By default, template are 'Action' templates
         name => undef,
         @_
     );

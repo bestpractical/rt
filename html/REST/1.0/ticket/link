@@ -64,12 +64,12 @@ my $object = $r->path_info;
 my @fields = qw(DependsOn DependedOnBy RefersTo ReferredToBy has_member MemberOf);
 my %fields = map { lc $_ => $_ } @fields;
 my %lfields = (
-    has_member    => { Type => 'MemberOf',  Mode => 'Base'   },
-    ReferredToBy => { Type => 'RefersTo',  Mode => 'Base'   },
-    DependedOnBy => { Type => 'DependsOn', Mode => 'Base'   },
-    MemberOf     => { Type => 'MemberOf',  Mode => 'Target' },
-    RefersTo     => { Type => 'RefersTo',  Mode => 'Target' },
-    DependsOn    => { Type => 'DependsOn', Mode => 'Target' },
+    has_member    => { type => 'MemberOf',  Mode => 'Base'   },
+    ReferredToBy => { type => 'RefersTo',  Mode => 'Base'   },
+    DependedOnBy => { type => 'DependsOn', Mode => 'Base'   },
+    MemberOf     => { type => 'MemberOf',  Mode => 'Target' },
+    RefersTo     => { type => 'RefersTo',  Mode => 'Target' },
+    DependsOn    => { type => 'DependsOn', Mode => 'Target' },
 );
 
 # http://.../REST/1.0/ticket/link/1

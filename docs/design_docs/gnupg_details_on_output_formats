@@ -24,7 +24,7 @@ seconds since Epoch and does not merge the first userID with the pub
 record.
 
 
- 1. Field:  Type of record
+ 1. Field:  type of record
 	    pub = public key
             crt = X.509 certificate
             crs = X.509 certificate and private key available
@@ -993,7 +993,7 @@ FIXME:  The layout changed, document it here.
 
 
 
-  Record Type 10 (hash table)
+  Record type 10 (hash table)
   --------------
     Due to the fact that we use fingerprints to lookup keys, we can
     implement quick access by some simple hash methods, and avoid

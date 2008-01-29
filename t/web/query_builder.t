@@ -210,7 +210,7 @@ TODO: {
         my ($return, $msg) = $cf->create(
             name => "\x{442}",
             Queue => 0,
-            Type => 'Freeform',
+            type => 'Freeform',
         );
         ok($return, 'Created CF') or diag "error: $msg";
     }

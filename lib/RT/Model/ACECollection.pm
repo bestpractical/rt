@@ -151,7 +151,7 @@ sub limitnot_object {
 
 # {{{ limit_ToPrincipal
 
-=head2 limit_ToPrincipal { Type => undef, id => undef, IncludeGroupMembership => undef }
+=head2 limit_ToPrincipal { type => undef, id => undef, IncludeGroupMembership => undef }
 
 Limit the ACL to the principal with principal_id id and principal_type Type
 
@@ -166,7 +166,7 @@ if IncludeGroupMembership => 1 is specified, ACEs which apply to the principal d
 sub limit_to_principal {
     my $self = shift;
     my %args = (
-        Type                   => undef,
+        type                   => undef,
         id                     => undef,
         IncludeGroupMembership => undef,
         @_
@@ -187,11 +187,11 @@ sub limit_to_principal {
             entry_aggregator => 'OR'
         );
     } else {
-        if ( defined $args{'Type'} ) {
+        if ( defined $args{'type'} ) {
             $self->limit(
                 column           => 'principal_type',
                 operator         => '=',
-                value            => $args{'Type'},
+                value            => $args{'type'},
                 entry_aggregator => 'OR'
             );
         }

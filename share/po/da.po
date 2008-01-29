@@ -269,7 +269,7 @@ msgstr "De %1 højest prioriterede sager, jeg har rekvireret"
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 er et værktøj, der arbejder med sager fra et bestemt planlægningsværktøj som f.eks. cron."
 
-#. ($principal->object->name, $args{'Type'})
+#. ($principal->object->name, $args{'type'})
 #: lib/RT/Queue_Overlay.pm:863
 msgid "%1 is no longer a %2 for this queue."
 msgstr "%1 er ikke længere en %2 til denne kø."
@@ -723,12 +723,12 @@ msgstr "Tilføj, slet og rediger ekstrafeltværdier for objekter"
 msgid "AddNextState"
 msgstr "TilføjNæsteStatus"
 
-#. ($args{'Type'})
+#. ($args{'type'})
 #: lib/RT/Queue_Overlay.pm:763
 msgid "Added principal as a %1 for this queue"
 msgstr "Tilføjede principal som %1 for denne kø"
 
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 #: lib/RT/Ticket_Overlay.pm:1455
 msgid "Added principal as a %1 for this ticket"
 msgstr "Tilføjede principal som %1 for denne sag"
@@ -1451,17 +1451,17 @@ msgstr "Kunne ikke indlæse objekt til %1"
 msgid "Could not load search attribute"
 msgstr "Kunne ikke indlæse søgeegenskab"
 
-#. ($args{'Type'})
+#. ($args{'type'})
 #: lib/RT/Queue_Overlay.pm:761
 msgid "Could not make that principal a %1 for this queue"
 msgstr "Kunne ikke gøre den principal til %1 for denne kø"
 
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 #: lib/RT/Ticket_Overlay.pm:1444
 msgid "Could not make that principal a %1 for this ticket"
 msgstr "Kunne ikke gøre den prinicipal til %1 for denne sag"
 
-#. ($args{'Type'})
+#. ($args{'type'})
 #: lib/RT/Queue_Overlay.pm:860
 msgid "Could not remove that principal as a %1 for this queue"
 msgstr "Kunne ikke slette den principal som %1 for denne kø"
@@ -5871,17 +5871,17 @@ msgstr "Det er den samme værdi"
 msgid "That principal already has that right"
 msgstr "Den principal har allerede den rettighed"
 
-#. ($args{'Type'})
+#. ($args{'type'})
 #: lib/RT/Queue_Overlay.pm:753
 msgid "That principal is already a %1 for this queue"
 msgstr "Den principal er allerede en %1 for denne kø"
 
-#. (_($args{'Type'}))
+#. (_($args{'type'}))
 #: lib/RT/Ticket_Overlay.pm:1435
 msgid "That principal is already a %1 for this ticket"
 msgstr "Den principal er allerede en %1 for denne sag"
 
-#. ($args{'Type'})
+#. ($args{'type'})
 #: lib/RT/Queue_Overlay.pm:852
 msgid "That principal is not a %1 for this queue"
 msgstr "Den principal er ikke en %1 for denne kø"

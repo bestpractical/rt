@@ -534,7 +534,7 @@ sub clear_acls_and_groups {
         = RT::Model::ACECollection->new( current_user => RT->system_user );
     foreach (@principals) {
         $acl->limit_to_principal(
-            Type => $$_->principal_object->principal_type,
+            type => $$_->principal_object->principal_type,
             id   => $$_->principal_object->id
         );
     }

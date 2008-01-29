@@ -57,9 +57,9 @@ alter table CustomFields add column MaxValues integer;
 # See above
 # alter table CustomFields drop index CustomFields1;
 
-UPDATE CustomFields SET MaxValues = 0 WHERE Type LIKE '%Multiple';
-UPDATE CustomFields SET MaxValues = 1 WHERE Type LIKE '%Single';
-UPDATE CustomFields SET Type = 'Select' WHERE Type LIKE 'Select%';
-UPDATE CustomFields SET Type = 'Freeform' WHERE Type LIKE 'Freeform%';
+UPDATE CustomFields SET MaxValues = 0 WHERE type LIKE '%Multiple';
+UPDATE CustomFields SET MaxValues = 1 WHERE type LIKE '%Single';
+UPDATE CustomFields SET type = 'Select' WHERE type LIKE 'Select%';
+UPDATE CustomFields SET type = 'Freeform' WHERE type LIKE 'Freeform%';
 UPDATE CustomFields Set LookupType = 'RT::Model::Queue-RT::Model::Ticket';
 alter table CustomFields drop column Queue; 

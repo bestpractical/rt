@@ -200,7 +200,7 @@ my $Message = make_mime_entity(
 
 my $ticket_obj = RT::Model::Ticket->new();
 my ( $id, $txn, $msg ) = $ticket_obj->create(
-    Type            => $ARGS{'Type'} || 'ticket',
+    type            => $ARGS{'type'} || 'ticket',
     Queue           => $ARGS{'Queue'},
     Owner           => $ARGS{'Owner'},
     Requestor       => $ARGS{'Requestors'},

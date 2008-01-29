@@ -187,7 +187,7 @@ sub get_transaction {
         { column => 'Created', order => $transaction },
         { column => 'id', order => $transaction },
     );
-    $txns->limit( column => 'Type', value => $transaction_type )
+    $txns->limit( column => 'type', value => $transaction_type )
         if $transaction_type;
     $txns->rows_per_page(1);
     return $txns->first;

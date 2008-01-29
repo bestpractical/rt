@@ -267,7 +267,7 @@ sub mail_error {
 
     # the colons are necessary to make ->build include non-standard headers
     my $entity = MIME::Entity->build(
-        Type                    => "multipart/mixed",
+        type                    => "multipart/mixed",
         From                    => $args{'From'},
         Bcc                     => $args{'Bcc'},
         To                      => $args{'To'},
@@ -285,7 +285,7 @@ sub mail_error {
     }
 
     if ( $args{'Attach'} ) {
-        $entity->attach( Data => $args{'Attach'}, Type => 'message/rfc822' );
+        $entity->attach( Data => $args{'Attach'}, type => 'message/rfc822' );
 
     }
 
@@ -665,7 +665,7 @@ sub forward_transaction {
             . " of a ticket #"
             . $txn->object_id;
         $mail = MIME::Entity->build(
-            Type => 'text/plain',
+            type => 'text/plain',
             Data => $description,
         );
     }
@@ -674,7 +674,7 @@ sub forward_transaction {
         foreach grep defined $args{$_}, qw(To Cc Bcc From);
 
     $mail->attach(
-        Type        => 'message/rfc822',
+        type        => 'message/rfc822',
         Disposition => 'attachment',
         Description => 'forwarded message',
         Data        => $entity->as_string,

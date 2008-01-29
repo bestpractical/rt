@@ -100,10 +100,10 @@
 
 % if ( RT->config->get('GnuPG')->{'Enable'} ) {
 % if ( my $email = $queue_obj->correspond_address || RT->config->get('correspond_address') ) {
-<tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, Type => 'private', email => $email &></td></tr>
+<tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, type => 'private', email => $email &></td></tr>
 % }
 % if ( my $email = $queue_obj->comment_address || RT->config->get('comment_address') ) {
-<tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, Type => 'private', email => $email &></td></tr>
+<tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, type => 'private', email => $email &></td></tr>
 % }
 % }
 

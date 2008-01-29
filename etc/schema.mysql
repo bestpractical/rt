@@ -48,7 +48,7 @@ CREATE TABLE Links (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Base varchar(240) CHARACTER SET latin1 NULL  ,
   Target varchar(240) CHARACTER SET latin1 NULL  ,
-  Type varchar(20) NOT NULL  ,
+  type varchar(20) NOT NULL  ,
   LocalTarget integer NOT NULL DEFAULT 0  ,
   LocalBase integer NOT NULL DEFAULT 0  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
@@ -85,7 +85,7 @@ CREATE TABLE Groups (
   name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
   domain varchar(64),
-  Type varchar(64),
+  type varchar(64),
   instance integer,
   PRIMARY KEY (id)
 ) TYPE=InnoDB;
@@ -120,7 +120,7 @@ CREATE TABLE Transactions (
   object_type varchar(64) NOT NULL,
   object_id integer NOT NULL DEFAULT 0  ,
   TimeTaken integer NOT NULL DEFAULT 0  ,
-  Type varchar(20) NULL  ,
+  type varchar(20) NULL  ,
   Field varchar(40) NULL  ,
   old_value varchar(255) NULL  ,
   new_value varchar(255) NULL  ,
@@ -268,7 +268,7 @@ CREATE TABLE Tickets (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   EffectiveId integer NOT NULL DEFAULT 0  ,
   Queue integer NOT NULL DEFAULT 0  ,
-  Type varchar(16) NULL  ,
+  type varchar(16) NULL  ,
   IssueStatement integer NOT NULL DEFAULT 0  ,
   Resolution integer NOT NULL DEFAULT 0  ,
   Owner integer NOT NULL DEFAULT 0  ,
@@ -325,7 +325,7 @@ CREATE TABLE Templates (
   Queue integer NOT NULL DEFAULT 0 ,
   name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
-  Type varchar(16) NULL  ,
+  type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
   TranslationOf integer NOT NULL DEFAULT 0  ,
   Content blob NULL  ,
@@ -370,7 +370,7 @@ CREATE INDEX Objectcustom_field_values2 ON Objectcustom_field_values (CustomFiel
 CREATE TABLE CustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   name varchar(200) NULL  ,
-  Type varchar(200) NULL  ,	# Changed -- 'Single' and 'Multiple' is moved out
+  type varchar(200) NULL  ,	# Changed -- 'Single' and 'Multiple' is moved out
   MaxValues integer,		# New -- was 'Single'(1) and 'Multiple'(0)
   Pattern TEXT NULL  ,	# New -- Must validate against this
   Repeated int2 NOT NULL DEFAULT 0 , # New -- repeated table entry

@@ -43,7 +43,7 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     my ($cid) = $child->create( Subject => 'test', Queue => 1 );
     ok( $cid, "Created new ticket" );
 
-    my ($status, $msg) = $parent->add_link( Type => 'MemberOf', Target => $cid );
+    my ($status, $msg) = $parent->add_link( type => 'MemberOf', Target => $cid );
     ok( $status, "Added link between tickets") or diag("error: $msg");
     my $shredder = shredder_new();
     $shredder->put_objects( Objects => $child );
@@ -67,7 +67,7 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     my ($cid) = $child->create( Subject => 'test', Queue => 1 );
     ok( $cid, "Created new ticket" );
 
-    ($status, $msg) = $parent->add_link( Type => 'DependsOn', Target => $cid );
+    ($status, $msg) = $parent->add_link( type => 'DependsOn', Target => $cid );
     ok( $status, "Added link between tickets") or diag("error: $msg");
     my $shredder = shredder_new();
     $shredder->put_objects( Objects => $child );

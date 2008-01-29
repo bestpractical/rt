@@ -51,10 +51,10 @@ ALTER TABLE CustomFields ADD Repeated NUMBER(11,0);
 ALTER TABLE CustomFields ADD Pattern VARCHAR2(255) NULL;
 ALTER TABLE CustomFields ADD MaxValues NUMBER(11,0);
 
-UPDATE CustomFields SET MaxValues = 0 WHERE Type LIKE '%Multiple';
-UPDATE CustomFields SET MaxValues = 1 WHERE Type LIKE '%Single';
-UPDATE CustomFields SET Type = 'Select' WHERE Type LIKE 'Select%';
-UPDATE CustomFields SET Type = 'Freeform' WHERE Type LIKE 'Freeform%';
+UPDATE CustomFields SET MaxValues = 0 WHERE type LIKE '%Multiple';
+UPDATE CustomFields SET MaxValues = 1 WHERE type LIKE '%Single';
+UPDATE CustomFields SET type = 'Select' WHERE type LIKE 'Select%';
+UPDATE CustomFields SET type = 'Freeform' WHERE type LIKE 'Freeform%';
 UPDATE CustomFields Set LookupType = 'RT::Model::Queue-RT::Model::Ticket';
 ALTER TABLE CustomFields MODIFY LookupType NOT NULL;
 UPDATE CustomFields Set Repeated = 0;

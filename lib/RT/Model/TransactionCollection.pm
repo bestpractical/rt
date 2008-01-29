@@ -138,7 +138,7 @@ sub next {
 
         # If the user can see the transaction's type, then they can
         #  see the transaction and we should hand it back.
-        if ( $Transaction->Type ) {
+        if ( $Transaction->type) {
             return ($Transaction);
         }
 

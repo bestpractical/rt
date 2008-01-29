@@ -34,12 +34,12 @@ my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
 (my $id2, $trans, my $msg2) = $t2->create(Subject => 'DepTest2', Queue => 'general');
 ok($id2, "Created dep test 2 - $msg2");
 my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
-(my $id3, $trans, my $msg3) = $t3->create(Subject => 'DepTest3', Queue => 'general', Type => 'approval');
+(my $id3, $trans, my $msg3) = $t3->create(Subject => 'DepTest3', Queue => 'general', type => 'approval');
 ok($id3, "Created dep test 3 - $msg3");
 my ($addid, $addmsg);
-ok (($addid, $addmsg) =$t1->add_link( Type => 'DependsOn', Target => $t2->id));
+ok (($addid, $addmsg) =$t1->add_link( type => 'DependsOn', Target => $t2->id));
 ok ($addid, $addmsg);
-ok (($addid, $addmsg) =$t1->add_link( Type => 'DependsOn', Target => $t3->id));
+ok (($addid, $addmsg) =$t1->add_link( type => 'DependsOn', Target => $t3->id));
 
 ok ($addid, $addmsg);
 my $link = RT::Model::Link->new(current_user => RT->system_user);
@@ -48,8 +48,8 @@ ok ($rv, $msg);
 is ($link->LocalTarget , $t3->id, "Link LocalTarget is correct");
 is ($link->LocalBase   , $t1->id, "Link LocalBase   is correct");
 ok ($t1->has_unresolved_dependencies, "Ticket ".$t1->id." has unresolved deps");
-ok (!$t1->has_unresolved_dependencies( Type => 'blah' ), "Ticket ".$t1->id." has no unresolved blahs");
-ok ($t1->has_unresolved_dependencies( Type => 'approval' ), "Ticket ".$t1->id." has unresolved approvals");
+ok (!$t1->has_unresolved_dependencies( type => 'blah' ), "Ticket ".$t1->id." has no unresolved blahs");
+ok ($t1->has_unresolved_dependencies( type => 'approval' ), "Ticket ".$t1->id." has unresolved approvals");
 ok (!$t2->has_unresolved_dependencies, "Ticket ".$t2->id." has no unresolved deps");
 ;
 
