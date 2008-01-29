@@ -277,7 +277,7 @@ sub parse_sql {
     $callback{'Error'} = sub { push @results, @_ };
 
     require RT::SQL;
-    RT::SQL::Parse( $string, \%callback );
+    RT::SQL::parse( $string, \%callback );
     return @results;
 }
 

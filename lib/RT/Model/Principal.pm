@@ -86,8 +86,7 @@ Returns undef, otherwise
 
 sub is_group {
     my $self = shift;
-    if ( defined $self->principal_type
-        && $self->principal_type eq 'Group' )
+    if ( lc( $self->principal_type ||'') eq 'group' )
     {
         return 1;
     }
@@ -571,8 +570,7 @@ return that. if it has no type, return group.
 sub _get_principal_type_for_acl {
     my $self = shift;
     my $type;
-    if (   $self->principal_type eq 'Group'
-        && $self->object->domain =~ /Role$/ )
+    if (   $self->is_group && $self->object->domain =~ /Role$/ )
     {
         $type = $self->object->type;
     } else {

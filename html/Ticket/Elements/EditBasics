@@ -96,7 +96,7 @@
   <tr>
       <td class="label"><&|/l&>Priority</&>:</td>
       <td class="value"><input name="Priority" 
-        value="<%$ticket_obj->Priority || ''|h%>" size="5" /></td>
+        value="<%$ticket_obj->priority || ''|h%>" size="5" /></td>
     </tr>
 
   <tr>

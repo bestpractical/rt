@@ -180,7 +180,7 @@ $cfs->limit_to_queue($_) for keys %$seen_queues;
 <td><& /Elements/EditCustomFieldText, @add &></td>
 <td>&nbsp;</td>
 % } else {
-%   Jifty->log->fatal("Unknown CustomField type: " . $cf->Type);
+%   Jifty->log->fatal("Unknown CustomField type: " . $cf->type);
 % }
 </tr>
 % }

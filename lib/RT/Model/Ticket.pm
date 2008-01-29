@@ -87,7 +87,7 @@ use Jifty::DBI::Record schema {
     column subject => max_length is 200, type is 'varchar(200)', default is '';
     column initial_priority => max_length is 11, type is 'int(11)', default is '0';
     column final_priority => max_length is 11, type is 'int(11)', default is '0';
-    column Priority => max_length is 11, type is 'int(11)', default is '0';
+    column priority => max_length is 11, type is 'int(11)', default is '0';
     column
         time_estimated => max_length is 11,
         type is 'int(11)', default is '0';
@@ -299,7 +299,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   type -- The ticket\'s type. ignore this for now
   Owner -- This ticket\'s owner. either an RT::Model::User object or this user\'s id
   subject -- A string describing the subject of the ticket
-  Priority -- an integer from 0 to 99
+  priority -- an integer from 0 to 99
   initial_priority -- an integer from 0 to 99
   final_priority -- an integer from 0 to 99
   status -- any valid status (Defined in RT::Model::Queue)
@@ -343,7 +343,7 @@ sub create {
         subject             => '',
         initial_priority    => undef,
         final_priority      => undef,
-        Priority            => undef,
+        priority            => undef,
         status              => 'new',
         time_worked         => "0",
         time_left           => 0,
@@ -398,7 +398,7 @@ sub create {
 
     #Since we have a queue, we can set queue defaults
 
-  #Initial Priority
+  #Initial priority
   # If there's no queue default initial priority and it's not set, set it to 0
     $args{'initial_priority'} = $queue_obj->initial_priority || 0
         unless defined $args{'initial_priority'};
@@ -408,10 +408,10 @@ sub create {
     $args{'final_priority'} = $queue_obj->final_priority || 0
         unless defined $args{'final_priority'};
 
-    # Priority may have changed from initial_priority, for the case
+    # priority may have changed from initial_priority, for the case
     # where we're importing tickets (eg, from an older RT version.)
-    $args{'Priority'} = $args{'initial_priority'}
-        unless defined $args{'Priority'};
+    $args{'priority'} = $args{'initial_priority'}
+        unless defined $args{'priority'};
 
     # {{{ Dates
     #TODO we should see what sort of due date we're getting, rather +
@@ -543,7 +543,7 @@ sub create {
         subject          => $args{'subject'},
         initial_priority => $args{'initial_priority'},
         final_priority   => $args{'final_priority'},
-        Priority         => $args{'Priority'},
+        priority         => $args{'priority'},
         status           => $args{'status'},
         time_worked      => $args{'time_worked'},
         time_estimated   => $args{'time_estimated'},
@@ -993,7 +993,7 @@ sub import {
         subject          => $args{'subject'},             # loc
         initial_priority => $args{'initial_priority'},    # loc
         final_priority   => $args{'final_priority'},      # loc
-        Priority         => $args{'initial_priority'},    # loc
+        priority         => $args{'initial_priority'},    # loc
         status           => $args{'status'},              # loc
         time_worked      => $args{'time_worked'},         # loc
         type             => $args{'type'},                # loc
@@ -3367,7 +3367,7 @@ sub _overlay_accessible {
         subject          => { 'read' => 1, 'write' => 1 },
         initial_priority => { 'read' => 1, 'write' => 1 },
         final_priority   => { 'read' => 1, 'write' => 1 },
-        Priority         => { 'read' => 1, 'write' => 1 },
+        priority         => { 'read' => 1, 'write' => 1 },
         status           => { 'read' => 1, 'write' => 1 },
         time_estimated   => { 'read' => 1, 'write' => 1 },
         time_worked      => { 'read' => 1, 'write' => 1 },

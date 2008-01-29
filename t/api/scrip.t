@@ -20,7 +20,7 @@ my ($val, $msg) =$s1->create( Queue => $q->id,
              ScripCondition => 'User Defined',
              CustomIsApplicableCode => 'if ($self->ticket_obj->subject =~ /fire/) { return (1);} else { return(0)}',
              CustomPrepareCode => 'return 1',
-             CustomCommitCode => '$self->ticket_obj->__set(column =>"Priority", value => "87");',
+             CustomCommitCode => '$self->ticket_obj->__set(column =>"priority", value => "87");',
              Template => 'Blank'
     );
 ok($val,$msg);
@@ -31,7 +31,7 @@ my ($tv,$ttv,$tm) = $ticket->create(Queue => $q->id,
                                     );
 ok($tv, $tm);
 
-is ($ticket->Priority , '87', "Ticket priority is set right");
+is ($ticket->priority , '87', "Ticket priority is set right");
 
 
 my $ticket2 = RT::Model::Ticket->new(current_user => RT->system_user);
@@ -40,7 +40,7 @@ my ($t2v,$t2tv,$t2m) = $ticket2->create(Queue => $q->id,
                                     );
 ok($t2v, $t2m);
 
-isnt ($ticket2->Priority , '87', "Ticket priority is set right");
+isnt ($ticket2->priority , '87', "Ticket priority is set right");
 
 
 

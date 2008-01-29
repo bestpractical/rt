@@ -48,7 +48,7 @@ use Jifty::DBI::Record schema {
         subject => max_length is 255,
         type is 'varchar(255)', default is '';
 
-    column Content         => type is 'blob', default is '';
+    column content         => type is 'blob', default is '';
     column ContentEncoding => type is 'blob', default is '';
     column Headers         => type is 'blob', default is '';
     column Creator => max_length is 11, type is 'int(11)', default is '0';
@@ -150,7 +150,7 @@ sub create {
             parent          => $args{'parent'},
             Headers         => $Attachment->head->as_string,
             subject         => $subject,
-            Content         => $Body,
+            content         => $Body,
             Filename        => $Filename,
             MessageId       => $MessageId,
         );
@@ -174,8 +174,8 @@ sub __import {
     my $self = shift;
     my %args = ( ContentEncoding => 'none', @_ );
 
-    ( $args{'ContentEncoding'}, $args{'Content'} )
-        = $self->_encode_lob( $args{'Content'}, $args{'MimeType'} );
+    ( $args{'ContentEncoding'}, $args{'content'} )
+        = $self->_encode_lob( $args{'content'}, $args{'MimeType'} );
 
     return ( $self->SUPER::create(%args) );
 }
@@ -236,7 +236,7 @@ sub children {
     return ($kids);
 }
 
-=head2 Content
+=head2 content
 
 Returns the attachment's content. if it's base64 encoded, decode it 
 before returning it.
@@ -246,7 +246,7 @@ before returning it.
 sub content {
     my $self = shift;
     return $self->_decode_lob( $self->content_type, $self->ContentEncoding,
-        $self->_value( 'Content', decode_utf8 => 0 ),
+        $self->_value( 'content', decode_utf8 => 0 ),
     );
 }
 
@@ -267,13 +267,13 @@ sub original_content {
 
     my $content;
     if ( !$self->ContentEncoding || $self->ContentEncoding eq 'none' ) {
-        $content = $self->_value( 'Content', decode_utf8 => 0 );
+        $content = $self->_value( 'content', decode_utf8 => 0 );
     } elsif ( $self->ContentEncoding eq 'base64' ) {
         $content = MIME::Base64::decode_base64(
-            $self->_value( 'Content', decode_utf8 => 0 ) );
+            $self->_value( 'content', decode_utf8 => 0 ) );
     } elsif ( $self->ContentEncoding eq 'quoted-printable' ) {
         $content = MIME::QuotedPrint::decode(
-            $self->_value( 'Content', decode_utf8 => 0 ) );
+            $self->_value( 'content', decode_utf8 => 0 ) );
     } else {
         return ( _( "Unknown ContentEncoding %1", $self->ContentEncoding ) );
     }
@@ -311,7 +311,7 @@ sub original_encoding {
 
 =head2 content_length
 
-Returns length of L</Content> in bytes.
+Returns length of L</content> in bytes.
 
 =cut
 
@@ -324,7 +324,7 @@ sub content_length {
     unless ( defined $len ) {
         use bytes;
         no warnings 'uninitialized';
-        $len = length( $self->Content );
+        $len = length( $self->content );
         $self->set_header( 'Content-Length' => $len );
     }
     return $len;

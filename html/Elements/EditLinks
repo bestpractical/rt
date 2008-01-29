@@ -59,7 +59,7 @@
     <td class="labeltop"><&|/l&>Depends on</&>:</td>
     <td class="value">
 % while (my $link = $Object->depends_on->next) {
-      <input type="checkbox" class="checkbox" name="delete_link--<%$link->Type%>-<%$link->Target%>" value="1" />
+      <input type="checkbox" class="checkbox" name="delete_link--<%$link->type%>-<%$link->Target%>" value="1" />
         <& ShowLink, URI => $link->target_uri &><br />
 % }
     </td>
@@ -68,7 +68,7 @@
     <td class="labeltop"><&|/l&>Depended on by</&>:</td>
     <td class="value">
 % while (my $link = $Object->depended_on_by->next) {
-      <input type="checkbox" class="checkbox" name="delete_link-<%$link->Base%>-<%$link->Type%>-" value="1" />
+      <input type="checkbox" class="checkbox" name="delete_link-<%$link->Base%>-<%$link->type%>-" value="1" />
         <& ShowLink, URI => $link->base_uri &><br />
 % }
     </td>
@@ -77,7 +77,7 @@
     <td class="labeltop"><&|/l&>Parents</&>:</td>
     <td class="value">
 % while (my $link = $Object->member_of->next) {
-      <input type="checkbox" class="checkbox" name="delete_link--<%$link->Type%>-<%$link->Target%>" value="1" />
+      <input type="checkbox" class="checkbox" name="delete_link--<%$link->type%>-<%$link->Target%>" value="1" />
         <& ShowLink, URI => $link->target_uri &><br />
 % }
     </td>
@@ -86,7 +86,7 @@
     <td class="labeltop"><&|/l&>Children</&>:</td>
     <td class="value">
 % while (my $link = $Object->members->next) {
-      <input type="checkbox" class="checkbox" name="delete_link-<%$link->Base%>-<%$link->Type%>-" value="1" />
+      <input type="checkbox" class="checkbox" name="delete_link-<%$link->Base%>-<%$link->type%>-" value="1" />
         <& ShowLink, URI => $link->base_uri &><br />
 % }
     </td>
@@ -95,7 +95,7 @@
     <td class="labeltop"><&|/l&>Refers to</&>:</td>
     <td class="value">
 % while (my $link = $Object->refers_to->next) {
-      <input type="checkbox" class="checkbox" name="delete_link--<%$link->Type%>-<%$link->Target%>" value="1" />
+      <input type="checkbox" class="checkbox" name="delete_link--<%$link->type%>-<%$link->Target%>" value="1" />
         <& ShowLink, URI => $link->target_uri &><br />
 %}
     </td>
@@ -106,7 +106,7 @@
 % while (my $link = $Object->referred_to_by->next) {
 % # Skip reminders
 % next if (UNIVERSAL::isa($link->base_obj, 'RT::Model::Ticket')  && $link->base_obj->type eq 'reminder');
-      <input type="checkbox" class="checkbox" name="delete_link-<%$link->Base%>-<%$link->Type%>-" value="1" />
+      <input type="checkbox" class="checkbox" name="delete_link-<%$link->Base%>-<%$link->type%>-" value="1" />
         <& ShowLink, URI => $link->base_uri &><br />
 % }
     </td>

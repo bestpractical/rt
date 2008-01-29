@@ -365,7 +365,7 @@ sub _find_scrips {
     );
 
     # Promise some kind of ordering
-    $self->order_by( column => 'Description' );
+    $self->order_by( column => 'description' );
 
     # we call Count below, but later we always do search
     # so just do search and get count from results

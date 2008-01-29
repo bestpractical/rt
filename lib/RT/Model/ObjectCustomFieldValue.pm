@@ -255,7 +255,7 @@ sub _fill_in_template_url {
     my $url = shift;
 
     $url =~ s/__id__/@{[$self->object_id]}/g;
-    $url =~ s/__CustomField__/@{[$self->Content]}/g;
+    $url =~ s/__CustomField__/@{[$self->content]}/g;
 
     return $url;
 }

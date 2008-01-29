@@ -996,7 +996,7 @@ sub get_update_template {
     $string .= "time_worked: " . $t->time_worked . "\n";
     $string .= "time_estimated: " . $t->time_estimated . "\n";
     $string .= "time_left: " . $t->time_left . "\n";
-    $string .= "initial_priority: " . $t->Priority . "\n";
+    $string .= "initial_priority: " . $t->priority . "\n";
     $string .= "final_priority: " . $t->final_priority . "\n";
 
     foreach my $type ( sort keys %LINKTYPEMAP ) {
@@ -1047,7 +1047,7 @@ sub get_base_template {
     $string .= "time_worked: " . $t->time_worked . "\n";
     $string .= "time_estimated: " . $t->time_estimated . "\n";
     $string .= "time_left: " . $t->time_left . "\n";
-    $string .= "initial_priority: " . $t->Priority . "\n";
+    $string .= "initial_priority: " . $t->priority . "\n";
     $string .= "final_priority: " . $t->final_priority . "\n";
 
     return $string;

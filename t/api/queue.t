@@ -75,25 +75,25 @@ my $Queue = RT::Model::Queue->new(current_user => RT->system_user); my ($id, $ms
                 );
 ok ($id, "Foo $id was Created");
 ok(my $group = RT::Model::Group->new(current_user => RT->system_user));
-ok($group->load_queue_role_group(Queue => $id, Type=> 'Requestor'));
+ok($group->load_queue_role_group(queue => $id, type=> 'Requestor'));
 ok ($group->id, "Found the ccs object for this Queue");
 
 
-ok (my ($add_id, $add_msg) = $Queue->add_watcher(Type => 'Cc', Email => 'bob@fsck.com'), "Added bob at fsck.com as a cc");
+ok (my ($add_id, $add_msg) = $Queue->add_watcher(type => 'Cc', Email => 'bob@fsck.com'), "Added bob at fsck.com as a cc");
 ok ($add_id, "Add succeeded: ($add_msg)");
 ok(my $bob = RT::Model::User->new(current_user => RT->system_user), "Creating a bob rt::user");
 $bob->load_by_email('bob@fsck.com');
 ok($bob->id,  "Found the bob rt user");
-ok ($Queue->is_watcher(Type => 'Cc', principal_id => $bob->principal_id), "The Queue actually has bob at fsck.com as a cc");;
-ok (($add_id, $add_msg) = $Queue->delete_watcher(Type =>'Cc', principal_id => $bob->principal_id ), "Removed bob at fsck.com as a cc");
-ok (!$Queue->is_watcher(Type => 'Cc', principal_id => $bob->principal_id), "The Queue no longer has bob at fsck.com as a cc");;
+ok ($Queue->is_watcher(type => 'Cc', principal_id => $bob->principal_id), "The Queue actually has bob at fsck.com as a cc");;
+ok (($add_id, $add_msg) = $Queue->delete_watcher(type =>'Cc', principal_id => $bob->principal_id ), "Removed bob at fsck.com as a cc");
+ok (!$Queue->is_watcher(type => 'Cc', principal_id => $bob->principal_id), "The Queue no longer has bob at fsck.com as a cc");;
 
 
 $group = RT::Model::Group->new(current_user => RT->system_user);
-ok($group->load_queue_role_group(Queue => $id, Type=> 'Cc'));
+ok($group->load_queue_role_group(queue => $id, type=> 'Cc'));
 ok ($group->id, "Found the cc object for this Queue");
 $group = RT::Model::Group->new(current_user => RT->system_user);
-ok($group->load_queue_role_group(Queue => $id, Type=> 'AdminCc'));
+ok($group->load_queue_role_group(queue => $id, type=> 'AdminCc'));
 ok ($group->id, "Found the AdminCc object for this Queue");
 
 

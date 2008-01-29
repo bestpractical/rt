@@ -152,7 +152,7 @@ foreach my $key (keys %ARGS) {
         my $id = $queue_obj->id;
 
     if (($key =~ /^Queue-$id-DeleteWatcher-Type-(.*?)-Principal-(\d*)$/)) {;
-	    my ($code, $msg) = $queue_obj->delete_watcher(Type => $1,
+	    my ($code, $msg) = $queue_obj->delete_watcher(type => $1,
                                                     principal_id => $2);
 	    push @results, $msg;
     }
@@ -165,7 +165,7 @@ foreach my  $key (keys %ARGS) {
     if ( ($ARGS{$key} =~ /^(AdminCc|Cc)$/) and
 	 ($key =~ /^Queue-AddWatcher-Principal-(\d*)$/) ) {
 	Jifty->log->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
-	my ($code, $msg) = $queue_obj->add_watcher(Type => $ARGS{$key},
+	my ($code, $msg) = $queue_obj->add_watcher(type => $ARGS{$key},
 				                             principal_id => $1);
 	push @results, $msg;
     }

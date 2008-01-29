@@ -117,15 +117,15 @@ $jesse->load_by_email('jesse@example.com');
 ok($jesse->id,  "Found the jesse rt user");
 
 
-ok ($ticket->is_watcher(Type => 'Requestor', principal_id => $jesse->principal_id), "The ticket actually has jesse at fsck.com as a requestor");
-ok (my ($add_id, $add_msg) = $ticket->add_watcher(Type => 'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok ($ticket->is_watcher(type => 'Requestor', principal_id => $jesse->principal_id), "The ticket actually has jesse at fsck.com as a requestor");
+ok (my ($add_id, $add_msg) = $ticket->add_watcher(type => 'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
 ok ($add_id, "Add succeeded: ($add_msg)");
 ok(my $bob = RT::Model::User->new(current_user => RT->system_user), "Creating a bob rt::user");
 $bob->load_by_email('bob@fsck.com');
 ok($bob->id,  "Found the bob rt user");
-ok ($ticket->is_watcher(Type => 'Requestor', principal_id => $bob->principal_id), "The ticket actually has bob at fsck.com as a requestor");;
-ok ( ($add_id, $add_msg) = $ticket->delete_watcher(Type =>'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
-ok (!$ticket->is_watcher(Type => 'Requestor', principal_id => $bob->principal_id), "The ticket no longer has bob at fsck.com as a requestor");;
+ok ($ticket->is_watcher(type => 'Requestor', principal_id => $bob->principal_id), "The ticket actually has bob at fsck.com as a requestor");;
+ok ( ($add_id, $add_msg) = $ticket->delete_watcher(type =>'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok (!$ticket->is_watcher(type => 'Requestor', principal_id => $bob->principal_id), "The ticket no longer has bob at fsck.com as a requestor");;
 
 
 $group = RT::Model::Group->new(current_user => RT->system_user);

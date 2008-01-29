@@ -21,7 +21,11 @@ my ($val, $msg) =$s1->create( Queue => $q->id,
              CustomIsApplicableCode => '',
              CustomPrepareCode => 'return 1',
              CustomCommitCode => '
-                    $self->ticket_obj->set_Priority($self->ticket_obj->Priority+1);
+                my ($status, $msg) = $self->ticket_obj->set_priority($self->ticket_obj->priority+1);
+                unless ( $status ) {
+                    Jifty->log->error($msg);
+                    return (0);
+                }
                 return(1);
             ',
              Template => 'Blank'
@@ -35,13 +39,13 @@ my ($tv,$ttv,$tm) = $ticket->create(Queue => $q->id,
                                     );
 ok($tv, $tm);
 ok($ticket->set_owner('root'));
-is ($ticket->Priority , '21', "Ticket priority is set right");
+is ($ticket->priority , '21', "Ticket priority is set right");
 ok($ticket->steal);
-is ($ticket->Priority , '22', "Ticket priority is set right");
+is ($ticket->priority , '22', "Ticket priority is set right");
 ok($ticket->untake);
-is ($ticket->Priority , '23', "Ticket priority is set right");
+is ($ticket->priority , '23', "Ticket priority is set right");
 ok($ticket->take);
-is ($ticket->Priority , '24', "Ticket priority is set right");
+is ($ticket->priority , '24', "Ticket priority is set right");
 
 
 

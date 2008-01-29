@@ -95,7 +95,7 @@ sub describe {
 sub prepare {
     my $self = shift;
 
-    if ($self->ticket_obj->Priority() == $self->ticket_obj->final_priority() )
+    if ($self->ticket_obj->priority() == $self->ticket_obj->final_priority() )
     {
 
         # no update necessary.
@@ -108,14 +108,14 @@ sub prepare {
     # If we don't have a due date, adjust the priority by one
     # until we hit the final priority
     if ( $due->unix() < 1 ) {
-        if ( $self->ticket_obj->Priority > $self->ticket_obj->final_priority )
+        if ( $self->ticket_obj->priority > $self->ticket_obj->final_priority )
         {
-            $self->{'prio'} = ( $self->ticket_obj->Priority - 1 );
+            $self->{'prio'} = ( $self->ticket_obj->priority - 1 );
             return 1;
         } elsif (
-            $self->ticket_obj->Priority < $self->ticket_obj->final_priority )
+            $self->ticket_obj->priority < $self->ticket_obj->final_priority )
         {
-            $self->{'prio'} = ( $self->ticket_obj->Priority + 1 );
+            $self->{'prio'} = ( $self->ticket_obj->priority + 1 );
             return 1;
         }
 
@@ -138,12 +138,12 @@ sub prepare {
             # final priority
 
             my $prio_delta = $self->ticket_obj->final_priority()
-                - $self->ticket_obj->Priority;
+                - $self->ticket_obj->priority;
 
             my $inc_priority_by = int( $prio_delta / $diff_in_days );
 
             #set the ticket's priority to that amount
-            $self->{'prio'} = $self->ticket_obj->Priority + $inc_priority_by;
+            $self->{'prio'} = $self->ticket_obj->priority + $inc_priority_by;
 
         }
 
@@ -160,7 +160,7 @@ sub prepare {
 
 sub commit {
     my $self = shift;
-    my ( $val, $msg ) = $self->ticket_obj->set_Priority( $self->{'prio'} );
+    my ( $val, $msg ) = $self->ticket_obj->set_priority( $self->{'prio'} );
 
     unless ($val) {
         Jifty->log->debug( $self . " $msg\n" );

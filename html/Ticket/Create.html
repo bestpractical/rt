@@ -252,7 +252,7 @@ if ( $cloneTicket ) {
         Requestors       => join( ',', $cloneticket_obj->requestor_addresses ),
         Cc               => join( ',', $cloneticket_obj->CcAddresses),
         AdminCc          => join( ',', $cloneticket_obj->AdminCcAddresses),
-        initial_priority => $cloneticket_obj->Priority, 
+        initial_priority => $cloneticket_obj->priority, 
     };
     
     $clone->{$_} = $cloneticket_obj->$_() 

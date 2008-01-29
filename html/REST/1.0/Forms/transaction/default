@@ -100,7 +100,7 @@ if ($tid) {
   	    my $attachlist;
   	    my $attachments = $t->attachments;
   	    while (my $a = $attachments->next) {
-  	      my $size = length($a->Content);
+  	      my $size = length($a->content);
   	      if ($size > 1024) {
   	        $size  = int($size/102.4)/10 . "k";
   	      }

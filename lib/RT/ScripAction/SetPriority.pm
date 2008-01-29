@@ -80,7 +80,7 @@ sub prepare {
 sub commit {
     my $self = shift;
     Jifty->log->debug( "Committing the setprio");
-    $self->ticket_obj->set_Priority( $self->argument );
+    $self->ticket_obj->set_priority( $self->argument );
 
 }
 

@@ -69,7 +69,7 @@ $Portlets ||= $session{'my_rt_portlets'};
 unless ( $Portlets ) {
     my ($default_portlets) = RT::System->new()->attributes->named('HomepageSettings');
     $Portlets = $session{'my_rt_portlets'} = $user->preferences(
-        HomepageSettings => $default_portlets? $default_portlets->Content: {},
+        HomepageSettings => $default_portlets? $default_portlets->content: {},
     );
 }
 

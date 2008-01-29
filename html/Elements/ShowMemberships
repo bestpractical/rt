@@ -52,7 +52,7 @@
 %    if ($Group->domain eq 'UserDefined') {
 <li><a href="<%RT->config->get('WebPath')%>/Admin/Groups/Modify.html?id=<% $Group->id %>"><% $Group->name %></a></li>
 %    } elsif ($Group->domain eq 'SystemInternal') {
-<li><em><% _($Group->Type) %></em></li>
+<li><em><% _($Group->type) %></em></li>
 %    }
 % }
 </ul>

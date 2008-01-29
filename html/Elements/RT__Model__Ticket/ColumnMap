@@ -117,7 +117,7 @@ $TICKET_COLUMN_MAP = {
     },
     Priority => {
         attribute => 'Priority',
-        value     => sub  { return $_[0]->Priority }
+        value     => sub  { return $_[0]->priority }
     },
     initial_priority => {
         attribute => 'initial_priority',

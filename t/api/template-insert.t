@@ -18,7 +18,7 @@ my $template = RT::Model::Template->new(current_user => RT->system_user);
 isa_ok($template, 'RT::Model::Template');
 my ($val,$msg) = $template->create(Queue => 1,
                   name => 'InsertTest',
-                  Content => 'This is template content');
+                  content => 'This is template content');
 ok($val,$msg);
 is($template->name, 'InsertTest');
 is($template->content, 'This is template content', "We Created the object right");

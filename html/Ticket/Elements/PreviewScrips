@@ -87,7 +87,7 @@ my @non_recipients = @{ $squelch{'emails'} };
 <br />
 <ul>
 % foreach my $recipient (@non_recipients) {
-<li><input type="checkbox" class="checkbox" name="Ticket-<%$ticket_obj->id%>-UnsquelchMailTo" value="<%$recipient->Content%>" />
+<li><input type="checkbox" class="checkbox" name="Ticket-<%$ticket_obj->id%>-UnsquelchMailTo" value="<%$recipient->content%>" />
 <% $recipient->content %>
 % }
 </ul>

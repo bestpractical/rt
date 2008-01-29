@@ -70,7 +70,7 @@ is($groups->count, 1);
 ($id, $msg) = $global_admin_cc->principal_object->grant_right(Right =>'OwnTicket', Object=> RT->system);
 ok ($id,$msg);
 ok (!$testuser->has_right(Object => $q, Right => 'OwnTicket') , "The test user does not have the right to own tickets in the test queue");
-($id, $msg) = $q->add_watcher(Type => 'AdminCc', principal_id => $testuser->id);
+($id, $msg) = $q->add_watcher(type => 'AdminCc', principal_id => $testuser->id);
 ok($id,$msg);
 ok ($testuser->has_right(Object => $q, Right => 'OwnTicket') , "The test user does have the right to own tickets now. thank god.");
 
