@@ -80,14 +80,14 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column name        => type is 'text';
     column description => type is 'text';
-    column ExecModule  => type is 'text';
+    column exec_module  => type is 'text';
     column argument    => type is 'text';
-    column Creator     => max_length is 11, type is 'int(11)', default is '0';
-    column Created => type is 'datetime', default is '';
+    column creator     => max_length is 11, type is 'int(11)', default is '0';
+    column created => type is 'datetime', default is '';
     column
-        LastUpdatedBy => max_length is 11,
+        last_updated_by => max_length is 11,
         type is 'int(11)', default is '0';
-    column LastUpdated => type is 'datetime', default is '';
+    column last_updated => type is 'datetime', default is '';
 
 };
 
@@ -150,7 +150,7 @@ sub load {
 
 # {{{ sub loadAction
 
-=head2 LoadAction HASH
+=head2 load_action HASH
 
   Takes a hash consisting of ticket_obj and transaction_obj.  Loads an RT::ScripAction:: module.
 
@@ -176,7 +176,7 @@ sub load_action {
     $self->{'Action'} = $type->new(
         argument        => $self->argument,
         CurrentUser     => $self->current_user,
-        ScripActionObj  => $self,
+        scrip_action_obj  => $self,
         scrip_obj       => $args{'scrip_obj'},
         template_obj    => $self->template_obj,
         ticket_obj      => $args{'ticket_obj'},

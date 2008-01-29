@@ -80,15 +80,15 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column name                 => type is 'text';
     column description          => type is 'text';
-    column ExecModule           => type is 'text';
+    column exec_module           => type is 'text';
     column argument             => type is 'text';
     column applicable_trans_types => type is 'text';
     column Creator => max_length is 11, type is 'int(11)', default is '0';
     column Created => type is 'datetime', default is '';
     column
-        LastUpdatedBy => max_length is 11,
+        last_updated_by => max_length is 11,
         type is 'int(11)', default is '0';
-    column LastUpdated => type is 'datetime', default is '';
+    column last_updated => type is 'datetime', default is '';
 
 };
 
@@ -152,7 +152,7 @@ sub load {
 
 # {{{ sub loadCondition
 
-=head2 LoadCondition  HASH
+=head2 load_condition  HASH
 
 takes a hash which has the following elements:  transaction_obj and ticket_obj.
 Loads the Condition module in question.
@@ -175,7 +175,7 @@ sub load_condition {
     eval "require $type" || die "Require of $type failed.\n$@\n";
 
     $self->{'Condition'} = $type->new(
-        'ScripConditionObj'    => $self,
+        'scrip_condition_obj'    => $self,
         'ticket_obj'           => $args{'ticket_obj'},
         'scrip_obj'            => $args{'scrip_obj'},
         'transaction_obj'      => $args{'transaction_obj'},
@@ -205,11 +205,11 @@ sub describe {
 
 # }}}
 
-# {{{ sub IsApplicable
+# {{{ sub is_applicable
 
-=head2 IsApplicable
+=head2 is_applicable
 
-Helper method to call the condition module\'s IsApplicable method.
+Helper method to call the condition module\'s is_applicable method.
 
 =cut
 

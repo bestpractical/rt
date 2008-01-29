@@ -32,7 +32,7 @@ sub table {'Users'}
 
 use Jifty::DBI::Record schema {
     column comments              => type is 'blob', default is '';
-    column Signature             => type is 'blob', default is '';
+    column signature             => type is 'blob', default is '';
     column freeform_contact_info => type is 'blob', default is '';
     column
         organization =>,
@@ -60,18 +60,18 @@ use Jifty::DBI::Record schema {
     column
         auth_system => max_length is 30,
         type is 'varchar(30)', default is '';
-    column Gecos => max_length is 16, type is 'varchar(16)', default is '';
+    column gecos => max_length is 16, type is 'varchar(16)', default is '';
     column
-        HomePhone => max_length is 30,
+        home_phone => max_length is 30,
         type is 'varchar(30)', default is '';
     column
-        WorkPhone => max_length is 30,
+        work_phone => max_length is 30,
         type is 'varchar(30)', default is '';
     column
-        MobilePhone => max_length is 30,
+        mobile_phone => max_length is 30,
         type is 'varchar(30)', default is '';
     column
-        PagerPhone => max_length is 30,
+        pager_phone => max_length is 30,
         type is 'varchar(30)', default is '';
     column
         Address1 => max_length is 200,
@@ -79,10 +79,10 @@ use Jifty::DBI::Record schema {
     column
         Address2 => max_length is 200,
         type is 'varchar(200)', default is '';
-    column City  => max_length is 100, type is 'varchar(100)', default is '';
-    column State => max_length is 100, type is 'varchar(100)', default is '';
-    column Zip   => max_length is 16,  type is 'varchar(16)',  default is '';
-    column Country  => max_length is 50, type is 'varchar(50)', default is '';
+    column city  => max_length is 100, type is 'varchar(100)', default is '';
+    column state => max_length is 100, type is 'varchar(100)', default is '';
+    column zip   => max_length is 16,  type is 'varchar(16)',  default is '';
+    column country  => max_length is 50, type is 'varchar(50)', default is '';
     column timezone => max_length is 50, type is 'varchar(50)', default is '';
     column PGPKey   => type is 'text';
 
@@ -1079,7 +1079,7 @@ sub preferences {
 
 # {{{ sub set_Preferences
 
-=head2 SetPreferences name/OBJ value
+=head2 set_preferences name/OBJ value
 
   Set user preferences associated with given object or name.
 
@@ -1100,7 +1100,7 @@ sub set_preferences {
 
 # }}}
 
-=head2 WatchedQueues ROLE_LIST
+=head2 watched_queues ROLE_LIST
 
 Returns a RT::Model::QueueCollection object containing every queue watched by the user.
 
@@ -1263,7 +1263,7 @@ sub _set {
     my %args = (
         column             => undef,
         value              => undef,
-        TransactionType    => 'Set',
+        transaction_type    => 'Set',
         record_transaction => 1,
         @_
     );
@@ -1293,7 +1293,7 @@ sub _set {
     if ( $args{'record_transaction'} == 1 ) {
 
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
-            type      => $args{'TransactionType'},
+            type      => $args{'transaction_type'},
             Field     => $args{'column'},
             new_value => $args{'value'},
             old_value => $Old,
@@ -1325,7 +1325,7 @@ sub _value {
 
     my %public_fields = map { $_ => 1 } qw( name email
         id organization disabled
-        real_name nickname Gecos ExternalAuthId
+        real_name nickname gecos ExternalAuthId
         auth_system ExternalContactInfoId
         ContactInfoSystem );
 
