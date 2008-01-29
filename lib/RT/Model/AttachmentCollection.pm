@@ -142,7 +142,7 @@ sub children_of {
     my $self       = shift;
     my $attachment = shift;
     return $self->limit(
-        column => 'Parent',
+        column => 'parent',
         value  => $attachment
     );
 }
@@ -200,7 +200,7 @@ sub limit_by_ticket {
     $self->limit(
         entry_aggregator => 'AND',
         alias            => $tickets,
-        column           => 'EffectiveId',
+        column           => 'effective_id',
         value            => $tid,
     );
     return;

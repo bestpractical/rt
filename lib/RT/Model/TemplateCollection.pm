@@ -99,7 +99,7 @@ sub limit_to_not_in_queue {
     my $self     = shift;
     my $queue_id = shift;
     $self->limit(
-        column   => 'Queue',
+        column   => 'queue',
         value    => "$queue_id",
         operator => '!='
     );
@@ -120,7 +120,7 @@ sub limit_to_global {
     my $self     = shift;
     my $queue_id = shift;
     $self->limit(
-        column   => 'Queue',
+        column   => 'queue',
         value    => "0",
         operator => '='
     );
@@ -141,7 +141,7 @@ sub limit_to_queue {
     my $self     = shift;
     my $queue_id = shift;
     $self->limit(
-        column   => 'Queue',
+        column   => 'queue',
         value    => "$queue_id",
         operator => '='
     );

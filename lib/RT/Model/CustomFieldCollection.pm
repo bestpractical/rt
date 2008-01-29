@@ -211,23 +211,23 @@ sub limit_to_lookup_type {
     my $self   = shift;
     my $lookup = shift;
 
-    $self->limit( column => 'LookupType', value => "$lookup" );
+    $self->limit( column => 'lookup_type', value => "$lookup" );
 }
 
 sub limit_to_child_type {
     my $self   = shift;
     my $lookup = shift;
 
-    $self->limit( column => 'LookupType', value => "$lookup" );
-    $self->limit( column => 'LookupType', ENDSWITH => "$lookup" );
+    $self->limit( column => 'lookup_type', value => "$lookup" );
+    $self->limit( column => 'lookup_type', ENDSWITH => "$lookup" );
 }
 
 sub limit_to_parent_type {
     my $self   = shift;
     my $lookup = shift;
 
-    $self->limit( column => 'LookupType', value => "$lookup" );
-    $self->limit( column => 'LookupType', starts_with => "$lookup" );
+    $self->limit( column => 'lookup_type', value => "$lookup" );
+    $self->limit( column => 'lookup_type', starts_with => "$lookup" );
 }
 
 sub limit_to_global_orobject_id {
@@ -259,7 +259,7 @@ sub limit_to_global_orobject_id {
     );
 
 # This doesn't work on postgres.
-#$self->order_by( alias => $class_cfs , column => "SortOrder", order => 'ASC');
+#$self->order_by( alias => $class_cfs , column => "sort_order", order => 'ASC');
 
 }
 

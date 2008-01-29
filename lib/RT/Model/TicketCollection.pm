@@ -456,7 +456,7 @@ sub _link_limit {
             $sb->open_paren;
             $sb->_sql_limit(
                 alias            => $linkalias,
-                column           => 'LocalBase',
+                column           => 'local_base',
                 value            => 'main.id',
                 quote_value      => 0,
                 entry_aggregator => 'AND',
@@ -472,7 +472,7 @@ sub _link_limit {
             $sb->open_paren;
             $sb->_sql_limit(
                 alias            => $linkalias,
-                column           => 'LocalTarget',
+                column           => 'local_target',
                 value            => 'main.id',
                 quote_value      => 0,
                 entry_aggregator => 'OR',
@@ -626,7 +626,7 @@ sub _trans_date_limit {
 
         $sb->_sql_limit(
             alias          => $sb->{_sql_transalias},
-            column         => 'Created',
+            column         => 'created',
             operator       => ">=",
             value          => $daystart,
             case_sensitive => 0,
@@ -634,7 +634,7 @@ sub _trans_date_limit {
         );
         $sb->_sql_limit(
             alias          => $sb->{_sql_transalias},
-            column         => 'Created',
+            column         => 'created',
             operator       => "<=",
             value          => $dayend,
             case_sensitive => 0,
@@ -650,7 +650,7 @@ sub _trans_date_limit {
         #Search for the right field
         $sb->_sql_limit(
             alias          => $sb->{_sql_transalias},
-            column         => 'Created',
+            column         => 'created',
             operator       => $op,
             value          => $date->iso,
             case_sensitive => 0,
@@ -738,7 +738,7 @@ sub _trans_limit {
     {
         $self->_sql_limit(
             alias            => $self->{_sql_trattachalias},
-            column           => 'Filename',
+            column           => 'filename',
             operator         => 'IS',
             value            => 'NULL',
             subclause        => 'contentquery',
@@ -798,7 +798,7 @@ sub _watcher_limit {
         my $o = RT::Model::User->new;
         $o->load($value);
         $self->_sql_limit(
-            column   => 'Owner',
+            column   => 'owner',
             operator => $op,
             value    => $o->id,
             %rest,
@@ -818,14 +818,14 @@ sub _watcher_limit {
         # and make sure we don't match records where group is member of itself
         $self->SUPER::limit(
             leftjoin    => $group_members,
-            column      => 'GroupId',
+            column      => 'group_id',
             operator    => '!=',
             value       => "$group_members.MemberId",
             quote_value => 0,
         );
         $self->_sql_limit(
             alias    => $group_members,
-            column   => 'GroupId',
+            column   => 'group_id',
             operator => $op,
             value    => $value,
             %rest,
@@ -857,7 +857,7 @@ sub _watcher_limit {
             $self->SUPER::limit(
                 leftjoin => $group_members,
                 alias    => $group_members,
-                column   => 'MemberId',
+                column   => 'member_id',
                 value    => $uid,
             );
             $self->_sql_limit(
@@ -870,7 +870,7 @@ sub _watcher_limit {
         } else {
             $self->SUPER::limit(
                 leftjoin    => $group_members,
-                column      => 'GroupId',
+                column      => 'group_id',
                 operator    => '!=',
                 value       => "$group_members.MemberId",
                 quote_value => 0,
@@ -878,7 +878,7 @@ sub _watcher_limit {
             my $users = $self->join(
                 type    => 'left',
                 alias1  => $group_members,
-                column1 => 'MemberId',
+                column1 => 'member_id',
                 table2  => 'Users',
                 column2 => 'id',
             );
@@ -911,7 +911,7 @@ sub _watcher_limit {
             $self->SUPER::limit(
                 leftjoin    => $group_members,
                 alias       => $group_members,
-                column      => 'MemberId',
+                column      => 'member_id',
                 value       => "$users.id",
                 quote_value => 0,
             );
@@ -994,7 +994,7 @@ sub _group_membersjoin {
         alias1           => $args{'GroupsAlias'},
         column1          => 'id',
         table2           => 'CachedGroupMembers',
-        column2          => 'GroupId',
+        column2          => 'group_id',
         entry_aggregator => 'AND',
     );
 
@@ -1027,7 +1027,7 @@ sub _watcherjoin {
     # with MemberId == GroupId from results
     $self->SUPER::limit(
         leftjoin    => $group_members,
-        column      => 'GroupId',
+        column      => 'group_id',
         operator    => '!=',
         value       => "$group_members.MemberId",
         quote_value => 0,
@@ -1035,7 +1035,7 @@ sub _watcherjoin {
     my $users = $self->join(
         type    => 'left',
         alias1  => $group_members,
-        column1 => 'MemberId',
+        column1 => 'member_id',
         table2  => 'Users',
         column2 => 'id',
     );
@@ -1099,7 +1099,7 @@ sub _watcher_membership_limit {
             ( $field, $op, $value, @rest ) = @$chunk;
             $self->_sql_limit(
                 alias    => $memberships,
-                column   => 'GroupId',
+                column   => 'group_id',
                 value    => $value,
                 operator => $op,
                 @rest,
@@ -1109,7 +1109,7 @@ sub _watcher_membership_limit {
     } else {
         $self->_sql_limit(
             alias    => $memberships,
-            column   => 'GroupId',
+            column   => 'group_id',
             value    => $value,
             operator => $op,
             @rest,
@@ -1150,19 +1150,19 @@ sub _watcher_membership_limit {
         alias1  => $groups,
         column1 => 'id',
         alias2  => $groupmembers,
-        column2 => 'GroupId'
+        column2 => 'group_id'
     );
 
     $self->join(
         alias1  => $groupmembers,
-        column1 => 'MemberId',
+        column1 => 'member_id',
         alias2  => $users,
         column2 => 'id'
     );
 
     $self->join(
         alias1  => $memberships,
-        column1 => 'MemberId',
+        column1 => 'member_id',
         alias2  => $users,
         column2 => 'id'
     );
@@ -1248,7 +1248,7 @@ sub _custom_field_join {
     } else {
         my $ocfalias = $self->join(
             type             => 'left',
-            column1          => 'Queue',
+            column1          => 'queue',
             table2           => 'ObjectCustomFields',
             column2          => 'object_id',
             entry_aggregator => 'OR',
@@ -1462,7 +1462,7 @@ sub order_by {
             push @res,
                 { %$row, column => "Owner=$nobodyId", order => $order };
 
-            push @res, { %$row, column => "Priority", order => $order };
+            push @res, { %$row, column => "priority", order => $order };
         } else {
             push @res, $row;
         }
@@ -1607,7 +1607,7 @@ sub limit_queue {
     #TODO check for a valid queue here
 
     $self->limit(
-        column   => 'Queue',
+        column   => 'queue',
         value    => $args{'value'},
         operator => $args{'operator'},
         description =>
@@ -1640,7 +1640,7 @@ sub limit_status {
         @_
     );
     $self->limit(
-        column   => 'Status',
+        column   => 'status',
         value    => $args{'value'},
         operator => $args{'operator'},
         description =>
@@ -1778,7 +1778,7 @@ sub limit_priority {
     my $self = shift;
     my %args = (@_);
     $self->limit(
-        column   => 'Priority',
+        column   => 'priority',
         value    => $args{'value'},
         operator => $args{'operator'},
         description =>
@@ -1927,7 +1927,7 @@ sub limitfilename {
     my $self = shift;
     my %args = (@_);
     $self->limit(
-        column      => 'Filename',
+        column      => 'filename',
         value       => $args{'value'},
         operator    => $args{'operator'},
         description => join( ' ',
@@ -1988,7 +1988,7 @@ sub limit_owner {
 
     # FIXME: check for a valid $owner
     $self->limit(
-        column   => 'Owner',
+        column   => 'owner',
         value    => $args{'value'},
         operator => $args{'operator'},
         description =>
@@ -2071,7 +2071,7 @@ sub limit_linked_to {
     );
 
     $self->limit(
-        column => 'LinkedTo',
+        column => 'linked_to',
         base   => undef,
         target => $args{'target'},
         type   => $args{'type'},
@@ -2113,7 +2113,7 @@ sub limit_linked_from {
     $type = $fromToMap{$type} if exists( $fromToMap{$type} );
 
     $self->limit(
-        column => 'LinkedTo',
+        column => 'linked_to',
         target => undef,
         base   => $args{'base'},
         type   => $type,
@@ -2217,7 +2217,7 @@ sub limit_referred_to_by {
 
 # {{{ sub limit_Date
 
-=head2 limit_Date (column => 'DateField', operator => $oper, value => $ISODate)
+=head2 limit_Date (column => 'date_field', operator => $oper, value => $ISODate)
 
 Takes a paramhash with the fields column operator and value.
 
@@ -2256,12 +2256,12 @@ sub limit_date {
 
 sub limit_created {
     my $self = shift;
-    $self->limit_date( column => 'Created', @_ );
+    $self->limit_date( column => 'created', @_ );
 }
 
 sub limit_due {
     my $self = shift;
-    $self->limit_date( column => 'Due', @_ );
+    $self->limit_date( column => 'due', @_ );
 
 }
 
@@ -2273,22 +2273,22 @@ sub limit_starts {
 
 sub limit_started {
     my $self = shift;
-    $self->limit_date( column => 'Started', @_ );
+    $self->limit_date( column => 'started', @_ );
 }
 
 sub limit_resolved {
     my $self = shift;
-    $self->limit_date( column => 'Resolved', @_ );
+    $self->limit_date( column => 'resolved', @_ );
 }
 
 sub limit_told {
     my $self = shift;
-    $self->limit_date( column => 'Told', @_ );
+    $self->limit_date( column => 'told', @_ );
 }
 
 sub limit_last_updated {
     my $self = shift;
-    $self->limit_date( column => 'LastUpdated', @_ );
+    $self->limit_date( column => 'last_updated', @_ );
 }
 
 #
@@ -2307,7 +2307,7 @@ value is a date and time in ISO format in GMT
 sub limit_transaction_date {
     my $self = shift;
     my %args = (
-        column   => 'TransactionDate',
+        column   => 'transaction_date',
         value    => undef,
         operator => undef,
 
@@ -2359,7 +2359,7 @@ sub limit_custom_field {
         customfield => undef,
         operator    => '=',
         description => undef,
-        column      => 'CustomFieldValue',
+        column      => 'custom_field_value',
         quote_value => 1,
         @_
     );
@@ -3118,7 +3118,7 @@ sub from_sql {
 
         #TODO, we shouldn't be hard #coding the tablename to main.
         $self->SUPER::limit(
-            column           => 'EffectiveId',
+            column           => 'effective_id',
             value            => 'main.id',
             entry_aggregator => 'AND',
             quote_value      => 0,
@@ -3128,7 +3128,7 @@ sub from_sql {
     # FIXME: Need to bring this logic back in
 
 #      if ($self->_islimit_ed && (! $self->{'looking_at_effective_id'})) {
-#         $self->SUPER::limit( column => 'EffectiveId',
+#         $self->SUPER::limit( column => 'effective_id',
 #               operator => '=',
 #               quote_value => 0,
 #               value => 'main.id');   #TODO, we shouldn't be hard coding the tablename to main.
@@ -3145,7 +3145,7 @@ sub from_sql {
     # We don't want deleted tickets unless 'allow_deleted_search' is set
     unless ( $self->{'allow_deleted_search'} ) {
         $self->SUPER::limit(
-            column   => 'Status',
+            column   => 'status',
             operator => '!=',
             value    => 'deleted',
         );

@@ -1155,11 +1155,11 @@ sub watched_queues {
         alias1  => $group_alias,
         column1 => 'id',
         table2  => 'CachedGroupMembers',
-        column2 => 'GroupId',
+        column2 => 'group_id',
     );
     $watched_queues->limit(
         alias  => $queues_alias,
-        column => 'MemberId',
+        column => 'member_id',
         value  => $self->principal_id,
     );
 

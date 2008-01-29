@@ -76,7 +76,7 @@ sub limit_to_lookup_type {
     );
     $self->limit(
         alias    => $self->{'_cfs_alias'},
-        column   => 'LookupType',
+        column   => 'lookup_type',
         operator => '=',
         value    => $lookup,
     );

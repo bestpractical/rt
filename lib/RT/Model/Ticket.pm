@@ -581,7 +581,7 @@ sub create {
 
     #Set the ticket's effective ID now that we've Created it.
     my ( $val, $msg ) = $self->__set(
-        column => 'EffectiveId',
+        column => 'effective_id',
         value  => ( $args{'EffectiveId'} || $id )
     );
     unless ($val) {
@@ -733,7 +733,7 @@ sub create {
 
         } else {
             $Owner = $DeferOwner;
-            $self->__set( column => 'Owner', value => $Owner->id );
+            $self->__set( column => 'owner', value => $Owner->id );
 
         }
         $self->owner_group->_add_member(
@@ -1010,7 +1010,7 @@ sub import {
         $self->load( $args{'id'} );
     } else {
         my ( $val, $msg )
-            = $self->__set( column => 'EffectiveId', value => $id );
+            = $self->__set( column => 'effective_id', value => $id );
 
         unless ($val) {
             Jifty->log->err(
@@ -1862,7 +1862,7 @@ sub set_queue {
             unless $status;
     }
 
-    return ( $self->_set( column => 'Queue', value => $Newqueue_obj->id() ) );
+    return ( $self->_set( column => 'queue', value => $Newqueue_obj->id() ) );
 }
 
 # }}}
@@ -1988,7 +1988,7 @@ sub set_started {
         $TicketAsSystem->open();
     }
 
-    return ( $self->_set( column => 'Started', value => $time_obj->iso ) );
+    return ( $self->_set( column => 'started', value => $time_obj->iso ) );
 
 }
 
@@ -2332,7 +2332,7 @@ sub _links {
                 entry_aggregator => 'OR'
             );
             $Tickets->limit(
-                column => 'EffectiveId',
+                column => 'effective_id',
                 value  => $self->effective_id
             );
             while ( my $Ticket = $Tickets->next ) {
@@ -2641,7 +2641,7 @@ sub merge_into {
 
     #update this ticket's effective id to the new ticket's id.
     my ( $id_val, $id_msg ) = $self->__set(
-        column => 'EffectiveId',
+        column => 'effective_id',
         value  => $MergeInto->id()
     );
 
@@ -2669,7 +2669,7 @@ sub merge_into {
     # update all the links that point to that old ticket
     my $old_links_to = RT::Model::LinkCollection->new(
         current_user => $self->current_user );
-    $old_links_to->limit( column => 'Target', value => $self->uri );
+    $old_links_to->limit( column => 'target', value => $self->uri );
 
     my %old_seen;
     while ( my $link = $old_links_to->next ) {
@@ -2699,7 +2699,7 @@ sub merge_into {
 
     my $old_links_from = RT::Model::LinkCollection->new(
         current_user => $self->current_user );
-    $old_links_from->limit( column => 'Base', value => $self->uri );
+    $old_links_from->limit( column => 'base', value => $self->uri );
 
     while ( my $link = $old_links_from->next ) {
         if ( exists $old_seen{ $link->type. "-" . $link->target } ) {
@@ -2764,7 +2764,7 @@ sub merge_into {
     #find all of the tickets that were merged into this ticket.
     my $old_mergees = RT::Model::TicketCollection->new();
     $old_mergees->limit(
-        column   => 'EffectiveId',
+        column   => 'effective_id',
         operator => '=',
         value    => $self->id
     );
@@ -2772,7 +2772,7 @@ sub merge_into {
     #   update their EffectiveId fields to the new ticket's id
     while ( my $ticket = $old_mergees->next() ) {
         my ( $val, $msg ) = $ticket->__set(
-            column => 'EffectiveId',
+            column => 'effective_id',
             value  => $MergeInto->id()
         );
     }
@@ -2947,7 +2947,7 @@ sub set_owner {
     # as to not have an SQL transaction span two RT transactions
 
     my ($return) = $self->_set(
-        column             => 'Owner',
+        column             => 'owner',
         value              => $NewOwnerObj->id,
         record_transaction => 0,
         time_taken          => 0,
@@ -3117,7 +3117,7 @@ sub set_status {
 
         #Set the Started time to "now"
         $self->_set(
-            column             => 'Started',
+            column             => 'started',
             value              => $now->iso,
             record_transaction => 0
         );
@@ -3127,7 +3127,7 @@ sub set_status {
     # It's misnamed, but that's just historical.
     if ( $self->queue_obj->is_inactive_status( $args{status} ) ) {
         $self->_set(
-            column             => 'Resolved',
+            column             => 'resolved',
             value              => $now->iso,
             record_transaction => 0
         );
@@ -3258,7 +3258,7 @@ sub set_told {
 
     return (
         $self->_set(
-            column          => 'Told',
+            column          => 'told',
             value           => $datetold->iso,
             time_taken       => $timetaken,
             TransactionType => 'Told'
@@ -3281,7 +3281,7 @@ sub _set_told {
     #use __set to get no ACLs ;)
     return (
         $self->__set(
-            column => 'Told',
+            column => 'told',
             value  => $now->iso
         )
     );
@@ -3302,9 +3302,9 @@ sub seen_up_to {
     my $txns = $self->transactions;
     $txns->limit( column => 'type', value => 'comment' );
     $txns->limit( column => 'type', value => 'Correspond' );
-    $txns->limit( column => 'Creator', operator => '!=', value => $uid );
+    $txns->limit( column => 'creator', operator => '!=', value => $uid );
     $txns->limit(
-        column   => 'Created',
+        column   => 'created',
         operator => '>',
         value    => $attr->content
     ) if $attr;

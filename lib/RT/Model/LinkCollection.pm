@@ -101,7 +101,7 @@ sub limit {
     {
         $self->order_by(
             alias  => 'main',
-            column => 'Base',
+            column => 'base',
             order  => 'ASC'
         );
     } elsif ( ( $args{'column'} eq 'Base' )
@@ -109,7 +109,7 @@ sub limit {
     {
         $self->order_by(
             alias  => 'main',
-            column => 'Target',
+            column => 'target',
             order  => 'ASC'
         );
     }
@@ -132,7 +132,7 @@ sub limit_refers_to {
     my $URI  = shift;
 
     $self->limit( column => 'type',   value => 'RefersTo' );
-    $self->limit( column => 'Target', value => $URI );
+    $self->limit( column => 'target', value => $URI );
 }
 
 # }}}
@@ -149,7 +149,7 @@ sub limit_referred_to_by {
     my $URI  = shift;
 
     $self->limit( column => 'type', value => 'RefersTo' );
-    $self->limit( column => 'Base', value => $URI );
+    $self->limit( column => 'base', value => $URI );
 }
 
 # }}}

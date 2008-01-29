@@ -285,12 +285,12 @@ sub with_member {
         alias1  => 'main',
         column1 => 'id',
         alias2  => $members,
-        column2 => 'GroupId'
+        column2 => 'group_id'
     );
 
     $self->limit(
         alias    => $members,
-        column   => 'MemberId',
+        column   => 'member_id',
         operator => '=',
         value    => $args{'principal_id'}
     );
@@ -310,18 +310,18 @@ sub without_member {
         type    => 'LEFT',
         column1 => 'id',
         table2  => $members,
-        column2 => 'GroupId',
+        column2 => 'group_id',
     );
     $self->limit(
         left_join => $members_alias,
         alias     => $members_alias,
-        column    => 'MemberId',
+        column    => 'member_id',
         operator  => '=',
         value     => $args{'principal_id'},
     );
     $self->limit(
         alias       => $members_alias,
-        column      => 'MemberId',
+        column      => 'member_id',
         operator    => 'IS',
         value       => 'NULL',
         quote_value => 0,

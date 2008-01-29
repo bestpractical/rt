@@ -85,7 +85,7 @@ sub limit_to_users {
     my $principals = $self->new_alias('Principals');
     $self->join(
         alias1  => 'main',
-        column1 => 'MemberId',
+        column1 => 'member_id',
         alias2  => $principals,
         column2 => 'id'
     );
@@ -116,7 +116,7 @@ sub limit_to_groups {
     my $principals = $self->new_alias('Principals');
     $self->join(
         alias1  => 'main',
-        column1 => 'MemberId',
+        column1 => 'member_id',
         alias2  => $principals,
         column2 => 'id'
     );
@@ -148,7 +148,7 @@ sub limit_to_members_of_group {
     return (
         $self->limit(
             value            => $group,
-            column           => 'GroupId',
+            column           => 'group_id',
             entry_aggregator => 'OR',
         )
     );
@@ -174,7 +174,7 @@ sub limit_to_groups_with_member {
     return (
         $self->limit(
             value => $member || '0',
-            column           => 'MemberId',
+            column           => 'member_id',
             entry_aggregator => 'OR',
             quote_value      => 0
         )

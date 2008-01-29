@@ -197,12 +197,12 @@ sub member_of_group {
         alias1  => $self->principals_alias,
         column1 => 'id',
         alias2  => $groupalias,
-        column2 => 'MemberId'
+        column2 => 'member_id'
     );
 
     $self->limit(
         alias    => "$groupalias",
-        column   => 'GroupId',
+        column   => 'group_id',
         value    => "$group",
         operator => "="
     );
@@ -266,7 +266,7 @@ sub _join_group_members {
 
     $self->join(
         alias1  => $group_members,
-        column1 => 'MemberId',
+        column1 => 'member_id',
         alias2  => $principals,
         column2 => 'id'
     );
@@ -285,7 +285,7 @@ sub _join_groups {
         alias1  => $groups,
         column1 => 'id',
         alias2  => $group_members,
-        column2 => 'GroupId'
+        column2 => 'group_id'
     );
 
     return $groups;
@@ -558,7 +558,7 @@ sub who_belong_to_groups {
     foreach my $groupid ( @{ $args{'Groups'} } ) {
         $self->limit(
             alias            => $group_members,
-            column           => 'GroupId',
+            column           => 'group_id',
             value            => $groupid,
             quote_value      => 0,
             entry_aggregator => 'OR',

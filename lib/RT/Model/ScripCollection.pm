@@ -85,7 +85,7 @@ sub limit_to_queue {
 
     $self->limit(
         entry_aggregator => 'OR',
-        column           => 'Queue',
+        column           => 'queue',
         value            => "$queue"
     ) if defined $queue;
 
@@ -108,7 +108,7 @@ sub limit_to_global {
 
     $self->limit(
         entry_aggregator => 'OR',
-        column           => 'Queue',
+        column           => 'queue',
         value            => 0
     );
 
@@ -332,13 +332,13 @@ sub _find_scrips {
 
     # or to "global"
 
-    $self->limit( column => "Stage", value => $args{'Stage'} );
+    $self->limit( column => "stage", value => $args{'Stage'} );
 
     my $ConditionsAlias = $self->new_alias('ScripConditions');
 
     $self->join(
         alias1  => 'main',
-        column1 => 'ScripCondition',
+        column1 => 'scrip_condition',
         alias2  => $ConditionsAlias,
         column2 => 'id'
     );

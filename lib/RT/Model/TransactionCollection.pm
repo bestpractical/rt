@@ -78,7 +78,7 @@ sub _init {
 
     # By default, order by the date of the transaction, rather than ID.
     $self->order_by(
-        {   column => 'Created',
+        {   column => 'created',
             order  => 'ASC'
         },
         {   column => 'id',
@@ -121,7 +121,7 @@ sub limit_to_ticket {
     }
     $self->limit(
         alias            => $self->{tickets_table},
-        column           => 'EffectiveId',
+        column           => 'effective_id',
         operator         => '=',
         entry_aggregator => 'OR',
         value            => $tid,

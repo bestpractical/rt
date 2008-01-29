@@ -677,7 +677,7 @@ sub set_disabled {
     my $cached_submembers = RT::Model::CachedGroupMemberCollection->new;
 
     $cached_submembers->limit(
-        column   => 'ImmediateParentId',
+        column   => 'immediate_parent_id',
         operator => '=',
         value    => $self->id
     );
@@ -778,13 +778,13 @@ sub group_members_obj {
     my $members_alias = $groups->new_alias($members_table);
     $groups->join(
         alias1  => $members_alias,
-        column1 => 'MemberId',
+        column1 => 'member_id',
         alias2  => $groups->principals_alias,
         column2 => 'id',
     );
     $groups->limit(
         alias  => $members_alias,
-        column => 'GroupId',
+        column => 'group_id',
         value  => $self->id,
     );
     $groups->limit(
@@ -822,13 +822,13 @@ sub user_members_obj {
     my $members_alias = $users->new_alias($members_table);
     $users->join(
         alias1  => $members_alias,
-        column1 => 'MemberId',
+        column1 => 'member_id',
         alias2  => $users->principals_alias,
         column2 => 'id',
     );
     $users->limit(
         alias  => $members_alias,
-        column => 'GroupId',
+        column => 'group_id',
         value  => $self->id,
     );
     $users->limit(

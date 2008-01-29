@@ -101,7 +101,7 @@ sub create {
             current_user => RT->system_user );
         $ObjectCFs->limit_to_object_id( $args{'object_id'} );
         $ObjectCFs->limit_to_lookup_type( $cf->lookup_type );
-        $ObjectCFs->order_by( column => 'SortOrder', order => 'DESC' );
+        $ObjectCFs->order_by( column => 'sort_order', order => 'DESC' );
         if ( my $first = $ObjectCFs->first ) {
             $args{'SortOrder'} = $first->sort_order + 1;
         } else {

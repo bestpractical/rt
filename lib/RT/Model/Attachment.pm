@@ -530,7 +530,7 @@ sub add_header {
         $value =~ s/\r+\n/\n /g;
         $newheader .= "$tag: $value\n";
     }
-    return $self->__set( column => 'Headers', value => $newheader );
+    return $self->__set( column => 'headers', value => $newheader );
 }
 
 =head2 SetHeader ( 'Tag', 'Value' )
@@ -554,7 +554,7 @@ sub set_header {
     }
 
     $newheader .= "$tag: $_[0]\n" if defined $tag;
-    $self->__set( column => 'Headers', value => $newheader );
+    $self->__set( column => 'headers', value => $newheader );
 }
 
 =head2 split_headers

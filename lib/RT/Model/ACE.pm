@@ -512,7 +512,7 @@ sub _delete {
     my $delegated_from_this
         = RT::Model::ACECollection->new( current_user => RT->system_user );
     $delegated_from_this->limit(
-        column   => 'DelegatedFrom',
+        column   => 'delegated_from',
         operator => '=',
         value    => $self->id
     );
