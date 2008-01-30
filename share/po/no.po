@@ -1562,7 +1562,7 @@ msgstr "Kunne ikke finne mal"
 msgid "Couldn't load that user (%1)"
 msgstr "Kunne ikke laste den brukeren (%1)"
 
-#: html/SelfService/Display.html:158 lib/RT/Action/create_tickets.pm:680
+#: html/SelfService/Display.html:158 lib/RT/Action/CreateTickets.pm:680
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Kunne ikke laste saken '%1'"
@@ -1707,7 +1707,7 @@ msgid "CreateSavedSearch"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:109
-msgid "create_ticket"
+msgid "CreateTicket"
 msgstr "OpprettSak"
 
 #: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48 lib/RT/Ticket_Overlay.pm:1169
@@ -5478,7 +5478,7 @@ msgstr "Denne saken har uløste avhengigheter"
 msgid "That user already has that right"
 msgstr "Den brukeren har allerede den rettigheten"
 
-#: lib/RT/Action/create_tickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
+#: lib/RT/Action/CreateTickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
 msgid "That user already owns that ticket"
 msgstr "Den brukeren eier allerede den saken"
 
@@ -5613,7 +5613,7 @@ msgstr "Sak #%1 Jumbo oppdatering: %2"
 msgid "Ticket #%1: %2"
 msgstr "Sak #%1: %2"
 
-#: lib/RT/Action/create_tickets.pm:1350 lib/RT/Action/create_tickets.pm:1359 lib/RT/Action/create_tickets.pm:605 lib/RT/Action/create_tickets.pm:729 lib/RT/Action/create_tickets.pm:741
+#: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
 #. ($T::Tickets{$template_id}->id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->id)
@@ -5928,7 +5928,7 @@ msgstr ""
 msgid "Update name"
 msgstr "Oppdater navn"
 
-#: lib/RT/Action/create_tickets.pm:750 lib/RT/Interface/Web.pm:584
+#: lib/RT/Action/CreateTickets.pm:750 lib/RT/Interface/Web.pm:584
 msgid "Update not recorded."
 msgstr "Oppdatering ikke lagret."
 
@@ -5958,7 +5958,7 @@ msgstr "Oppdater sak #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Oppdater sak #%1 (%2)"
 
-#: lib/RT/Action/create_tickets.pm:748 lib/RT/Interface/Web.pm:583
+#: lib/RT/Action/CreateTickets.pm:748 lib/RT/Interface/Web.pm:583
 msgid "Update type was neither correspondence nor comment."
 msgstr "Oppdateringstype var verken korrespondanse eller kommentar."
 

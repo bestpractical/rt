@@ -113,7 +113,7 @@ diag "revoke rights tests depend on" if $ENV{'TEST_VERBOSE'};
     $everyone_group->load_system_internal_group( 'Everyone' );
     ok ($everyone_group->id, "Found group 'everyone'");
 
-    foreach( qw(create_ticket ReplyToTicket CommentOnTicket) ) {
+    foreach( qw(CreateTicket ReplyToTicket CommentOnTicket) ) {
         $everyone_group->principal_object->revoke_right(right => $_);
     }
 }
@@ -252,11 +252,11 @@ EOF
     ok( !$u->id, "user does not exist and was not Created by failed ticket submission");
 }
 
-diag "grant everybody with create_ticket right" if $ENV{'TEST_VERBOSE'};
+diag "grant everybody with CreateTicket right" if $ENV{'TEST_VERBOSE'};
 {
     ok( RT::Test->set_rights(
         { Principal => $everyone_group->principal_object,
-          right => [qw(create_ticket)],
+          right => [qw(CreateTicket)],
         },
     ), "Granted everybody the right to create tickets");
 }
@@ -311,7 +311,7 @@ diag "grant everyone 'ReplyToTicket' right" if $ENV{'TEST_VERBOSE'};
 {
     ok( RT::Test->set_rights(
         { Principal => $everyone_group->principal_object,
-          right => [qw(create_ticket ReplyToTicket)],
+          right => [qw(CreateTicket ReplyToTicket)],
         },
     ), "Granted everybody the right to reply to tickets" );
 }
@@ -391,7 +391,7 @@ diag "grant everyone 'CommentOnTicket' right" if $ENV{'TEST_VERBOSE'};
 {
     ok( RT::Test->set_rights(
         { Principal => $everyone_group->principal_object,
-          right => [qw(create_ticket ReplyToTicket CommentOnTicket)],
+          right => [qw(CreateTicket ReplyToTicket CommentOnTicket)],
         },
     ), "Granted everybody the right to comment on tickets");
 }
@@ -606,7 +606,7 @@ EOF
 }
 
 
-my ($val,$msg) = $everyone_group->principal_object->revoke_right(right => 'create_ticket');
+my ($val,$msg) = $everyone_group->principal_object->revoke_right(right => 'CreateTicket');
 ok ($val, $msg);
 
 SKIP: {

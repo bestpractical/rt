@@ -1223,7 +1223,7 @@ msgstr "Konnte den Bereich %1 nicht laden"
 msgid "Couldn't load scrip #%1"
 msgstr ""
 
-#: html/SelfService/Display.html:158 lib/RT/Action/create_tickets.pm:680
+#: html/SelfService/Display.html:158 lib/RT/Action/CreateTickets.pm:680
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Konnte das Anfrage '%1' nicht laden"
@@ -1346,7 +1346,7 @@ msgid "CreateSavedSearch"
 msgstr "GespeicherteSucheErstellen"
 
 #: lib/RT/Queue_Overlay.pm:109
-msgid "create_ticket"
+msgid "CreateTicket"
 msgstr "AnfrageErstellen"
 
 #: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48 lib/RT/Ticket_Overlay.pm:1169
@@ -4539,7 +4539,7 @@ msgstr "Dieser Bereich existiert nicht"
 msgid "That ticket has unresolved dependencies"
 msgstr "Diese Anfrage hat ungelöste Abhängigkeiten"
 
-#: lib/RT/Action/create_tickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
+#: lib/RT/Action/CreateTickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
 msgid "That user already owns that ticket"
 msgstr "Diese Anfrage gehört bereits diesem Benutzer"
 
@@ -4651,7 +4651,7 @@ msgstr "Anfrage #%1 Alles aktualisieren: %2"
 msgid "Ticket #%1: %2"
 msgstr "Anfrage #%1: %2"
 
-#: lib/RT/Action/create_tickets.pm:1350 lib/RT/Action/create_tickets.pm:1359 lib/RT/Action/create_tickets.pm:605 lib/RT/Action/create_tickets.pm:729 lib/RT/Action/create_tickets.pm:741
+#: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
 #. ($T::Tickets{$template_id}->id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->id)
@@ -4887,7 +4887,7 @@ msgstr "Aktualisierungtyp"
 msgid "Update multiple tickets"
 msgstr "Mehrere Anfragen aktualisieren"
 
-#: lib/RT/Action/create_tickets.pm:750 lib/RT/Interface/Web.pm:584
+#: lib/RT/Action/CreateTickets.pm:750 lib/RT/Interface/Web.pm:584
 msgid "Update not recorded."
 msgstr "Aktualisierung nicht gespeichert."
 
@@ -4918,7 +4918,7 @@ msgstr "Aktualisiere Anfrage #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Aktualisiere Anfrage #%1 (%2)"
 
-#: lib/RT/Action/create_tickets.pm:748 lib/RT/Interface/Web.pm:583
+#: lib/RT/Action/CreateTickets.pm:748 lib/RT/Interface/Web.pm:583
 msgid "Update type was neither correspondence nor comment."
 msgstr "Aktualisierungstyp war weder Korrespondenz noch Kommentar."
 

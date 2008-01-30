@@ -35,16 +35,16 @@ Note that "Scrips" are now called "Rules".
 === RuleAction "AquireMyLocks"
 
   FOREACH $Scrip IN $ticket_obj->scrips
-    WHERE $Scrip.Action.Type == "Trycreate_ticketWithRuleset"
+    WHERE $Scrip.Action.Type == "TryCreateTicketWithRuleset"
        DO LockRuleset $Scrip.Action.Argument
 
-=== RuleAction "Trycreate_ticketWithRuleset"
+=== RuleAction "TryCreateTicketWithRuleset"
 
   DO ReleaseMyLockOnRuleset $Argument
   UNLESS RulesetLocked $Argument
-      DO create_ticketWithRuleset $Argument
+      DO CreateTicketWithRuleset $Argument
 
-=== RuleAction "create_ticketWithRuleset"
+=== RuleAction "CreateTicketWithRuleset"
 
   GIVEN $Ticket AS create_ticket(@OtherArguments)
      DO SetTicketRuleSet $Argument
@@ -74,17 +74,17 @@ Note that "Scrips" are now called "Rules".
 * Rule:
 ** Condition: OnCreate 
 ** Condition: CF.Price > 1000
-** Action: Trycreate_ticketWithRuleset "ManagerApproval"
+** Action: TryCreateTicketWithRuleset "ManagerApproval"
 
 * Rule:
 ** Condition: OnCreate 
 ** Condition: CF.Price > 2000
-** Action: Trycreate_ticketWithRuleset "PresidentApproval"
+** Action: TryCreateTicketWithRuleset "PresidentApproval"
 
 * Rule:
 ** Condition: OnCreate 
 ** Condition: "Finance" is not blocked
-** Action: Trycreate_ticketWithRuleset "FinanceApproval"
+** Action: TryCreateTicketWithRuleset "FinanceApproval"
 
 * Rule:
 ** Condition: OnReject
@@ -98,7 +98,7 @@ Note that "Scrips" are now called "Rules".
 
 * Rule:
 ** Condition: OnResolve
-** Action: Trycreate_ticketWithRuleset "FinanceApproval"
+** Action: TryCreateTicketWithRuleset "FinanceApproval"
 
 * Rule:
 ** Condition: OnReject
@@ -112,7 +112,7 @@ Note that "Scrips" are now called "Rules".
 
 * Rule:
 ** Condition: OnResolve
-** Action: Trycreate_ticketWithRuleset "FinanceApproval"
+** Action: TryCreateTicketWithRuleset "FinanceApproval"
 
 * Rule:
 ** Condition: OnReject
@@ -126,7 +126,7 @@ Note that "Scrips" are now called "Rules".
 
 * Rule:
 ** Condition: OnReject
-** Action: Forcecreate_ticketWithRuleset "CEOApproval"
+** Action: ForceCreateTicketWithRuleset "CEOApproval"
 
 === RuleSet: "CEOApproval"
 

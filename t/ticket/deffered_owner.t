@@ -24,7 +24,7 @@ diag "check that defering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
 {
     RT::Test->set_rights(
         { Principal => $tester->principal_object,
-          right => [qw(SeeQueue ShowTicket create_ticket OwnTicket)],
+          right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket)],
         },
         { Principal => $owner_role_group->principal_object,
           object => $queue,
@@ -49,7 +49,7 @@ diag "check that previous trick doesn't work without sufficient rights"
 {
     RT::Test->set_rights(
         { Principal => $tester->principal_object,
-          right => [qw(SeeQueue ShowTicket create_ticket OwnTicket)],
+          right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket)],
         },
     );
         my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $tester->id) );
@@ -71,7 +71,7 @@ diag "check that defering owner really works" if $ENV{'TEST_VERBOSE'};
 {
     RT::Test->set_rights(
         { Principal => $tester->principal_object,
-          right => [qw(SeeQueue ShowTicket create_ticket)],
+          right => [qw(SeeQueue ShowTicket CreateTicket)],
         },
         { Principal => $queue->cc->principal_object,
           object => $queue,
@@ -96,7 +96,7 @@ diag "check that defering doesn't work without correct rights" if $ENV{'TEST_VER
 {
     RT::Test->set_rights(
         { Principal => $tester->principal_object,
-          right => [qw(SeeQueue ShowTicket create_ticket)],
+          right => [qw(SeeQueue ShowTicket CreateTicket)],
         },
     );
         my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $tester->id) );

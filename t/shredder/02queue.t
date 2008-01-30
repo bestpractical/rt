@@ -79,7 +79,7 @@ diag 'queue with a Right granted' if $ENV{'TEST_VERBOSE'};
     ok($group->id, 'loaded group');
 
     ($id, $msg) = $group->principal_object->grant_right(
-        right  => 'create_ticket',
+        right  => 'CreateTicket',
         object => $queue,
     );
     ok($id, 'granted right') or diag "error: $msg";

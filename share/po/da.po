@@ -1590,7 +1590,7 @@ msgstr "Kunne ikke indlæse den bruger (%1)"
 
 #. ($id)
 #: html/SelfService/Display.html:158
-#: lib/RT/Action/create_tickets.pm:680
+#: lib/RT/Action/CreateTickets.pm:680
 msgid "Couldn't load ticket '%1'"
 msgstr "Kunne ikke indlæse sag '%1'"
 
@@ -1737,7 +1737,7 @@ msgid "CreateSavedSearch"
 msgstr "OpretGemtSøgning"
 
 #: lib/RT/Queue_Overlay.pm:109
-msgid "create_ticket"
+msgid "CreateTicket"
 msgstr "OpretSag"
 
 #: html/Elements/SelectDateType:47
@@ -5902,7 +5902,7 @@ msgstr "Denne sag har uløste afhængigheder"
 msgid "That user already has that right"
 msgstr "Den bruger har allerede den rettighed"
 
-#: lib/RT/Action/create_tickets.pm:710
+#: lib/RT/Action/CreateTickets.pm:710
 #: lib/RT/Ticket_Overlay.pm:3037
 msgid "That user already owns that ticket"
 msgstr "Brugeren ejer allerede den sag"
@@ -6036,11 +6036,11 @@ msgstr "Sag #%1: %2"
 #. ($T::Tickets{$template_id}->id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->id)
-#: lib/RT/Action/create_tickets.pm:1350
-#: lib/RT/Action/create_tickets.pm:1359
-#: lib/RT/Action/create_tickets.pm:605
-#: lib/RT/Action/create_tickets.pm:729
-#: lib/RT/Action/create_tickets.pm:741
+#: lib/RT/Action/CreateTickets.pm:1350
+#: lib/RT/Action/CreateTickets.pm:1359
+#: lib/RT/Action/CreateTickets.pm:605
+#: lib/RT/Action/CreateTickets.pm:729
+#: lib/RT/Action/CreateTickets.pm:741
 msgid "Ticket %1"
 msgstr "Sag %1"
 
@@ -6383,7 +6383,7 @@ msgstr "Opdater flere sager"
 msgid "Update name"
 msgstr "Opdater navn"
 
-#: lib/RT/Action/create_tickets.pm:750
+#: lib/RT/Action/CreateTickets.pm:750
 #: lib/RT/Interface/Web.pm:584
 msgid "Update not recorded."
 msgstr "Opdatering ikke registreret."
@@ -6415,7 +6415,7 @@ msgstr "Opdater sag #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Opdater sag #%1 (%2)"
 
-#: lib/RT/Action/create_tickets.pm:748
+#: lib/RT/Action/CreateTickets.pm:748
 #: lib/RT/Interface/Web.pm:583
 msgid "Update type was neither correspondence nor comment."
 msgstr "Opdateringstype var hverken korrespondance eller kommentar"

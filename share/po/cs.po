@@ -1442,7 +1442,7 @@ msgstr "Vzor nelze načíst"
 msgid "Couldn't load that user (%1)"
 msgstr "Uživatele (%1) nelze načíst"
 
-#: html/SelfService/Display.html:158 lib/RT/Action/create_tickets.pm:680
+#: html/SelfService/Display.html:158 lib/RT/Action/CreateTickets.pm:680
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Požadavek '%1' nelze načíst"
@@ -1575,7 +1575,7 @@ msgid "CreateSavedSearch"
 msgstr "Vytvořit uložený dotaz"
 
 #: lib/RT/Queue_Overlay.pm:109
-msgid "create_ticket"
+msgid "CreateTicket"
 msgstr "Vytvořit požadavek"
 
 #: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48 lib/RT/Ticket_Overlay.pm:1169
@@ -5163,7 +5163,7 @@ msgstr "Tento požadavek má nevyřešené závislosti"
 msgid "That user already has that right"
 msgstr "Tento uživatel již má toto právo"
 
-#: lib/RT/Action/create_tickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
+#: lib/RT/Action/CreateTickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
 msgid "That user already owns that ticket"
 msgstr "Tento uživatel již tento požadavek vlastní"
 
@@ -5286,7 +5286,7 @@ msgstr "Požadavek #%1 Maxi aktualizace: %2"
 msgid "Ticket #%1: %2"
 msgstr "Požadavek #%1: %2"
 
-#: lib/RT/Action/create_tickets.pm:1350 lib/RT/Action/create_tickets.pm:1359 lib/RT/Action/create_tickets.pm:605 lib/RT/Action/create_tickets.pm:729 lib/RT/Action/create_tickets.pm:741
+#: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
 #. ($T::Tickets{$template_id}->id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->id)
@@ -5597,7 +5597,7 @@ msgstr "Aktualizovat hromadně požadavky"
 msgid "Update name"
 msgstr "Aktualizovat jméno"
 
-#: lib/RT/Action/create_tickets.pm:750 lib/RT/Interface/Web.pm:584
+#: lib/RT/Action/CreateTickets.pm:750 lib/RT/Interface/Web.pm:584
 msgid "Update not recorded."
 msgstr "Aktualizace nezaznamenána"
 
@@ -5627,7 +5627,7 @@ msgstr "Aktualizace požadavku #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Aktualizace požadavku #%1 (%2)"
 
-#: lib/RT/Action/create_tickets.pm:748 lib/RT/Interface/Web.pm:583
+#: lib/RT/Action/CreateTickets.pm:748 lib/RT/Interface/Web.pm:583
 msgid "Update type was neither correspondence nor comment."
 msgstr "Typ aktualizace nebyl ani korespondence ani komentář."
 

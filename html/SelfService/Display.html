@@ -130,7 +130,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         $m->abort;
     }
 
-    unless ( $Queue->current_user_has_right('create_ticket') ) {
+    unless ( $Queue->current_user_has_right('CreateTicket') ) {
         $m->comp( 'Error.html',
             Why =>
               _('You have no permission to create tickets in that queue.') );

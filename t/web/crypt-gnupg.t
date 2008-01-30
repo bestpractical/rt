@@ -58,7 +58,7 @@ my $qid = $queue->id;
 
 RT::Test->set_rights(
     Principal => 'Everyone',
-    right => ['create_ticket', 'ShowTicket', 'SeeQueue', 'ModifyTicket'],
+    right => ['CreateTicket', 'ShowTicket', 'SeeQueue', 'ModifyTicket'],
 );
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -349,7 +349,7 @@ sub strip_headers
 
 # now test the OwnernameKey and RequestorsKey fields
 my $nokey = RT::Test->load_or_create_user(name => 'nokey', email => 'nokey@example.com');
-$nokey->principal_object->grant_right(right => 'create_ticket');
+$nokey->principal_object->grant_right(right => 'CreateTicket');
 $nokey->principal_object->grant_right(right => 'OwnTicket');
 
 my $tick = RT::Model::Ticket->new(current_user => RT->system_user );

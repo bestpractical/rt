@@ -1129,7 +1129,7 @@ msgstr "%1 kuyruğu yüklenemedi"
 msgid "Couldn't load scrip #%1"
 msgstr "Senet #%1 yüklenemedi"
 
-#: html/SelfService/Display.html:158 lib/RT/Action/create_tickets.pm:680
+#: html/SelfService/Display.html:158 lib/RT/Action/CreateTickets.pm:680
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "'%1' bileti yüklenemedi"
@@ -1227,7 +1227,7 @@ msgid "CreateSavedSearch"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:109
-msgid "create_ticket"
+msgid "CreateTicket"
 msgstr ""
 
 #: html/Elements/SelectDateType:47 html/Ticket/Elements/ShowDates:48 lib/RT/Ticket_Overlay.pm:1169
@@ -4258,7 +4258,7 @@ msgstr "Böyle bir kuyruk mevcut değil"
 msgid "That ticket has unresolved dependencies"
 msgstr "Bu bilet, çözümlenmemiş bağımlılıklara sahip"
 
-#: lib/RT/Action/create_tickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
+#: lib/RT/Action/CreateTickets.pm:710 lib/RT/Ticket_Overlay.pm:3037
 msgid "That user already owns that ticket"
 msgstr "Bu kullanıcı, zaten bu biletin sahibi"
 
@@ -4361,7 +4361,7 @@ msgstr "Bilet #%1 Büyük güncelleme: %2"
 msgid "Ticket #%1: %2"
 msgstr "Bilet #%1: %2"
 
-#: lib/RT/Action/create_tickets.pm:1350 lib/RT/Action/create_tickets.pm:1359 lib/RT/Action/create_tickets.pm:605 lib/RT/Action/create_tickets.pm:729 lib/RT/Action/create_tickets.pm:741
+#: lib/RT/Action/CreateTickets.pm:1350 lib/RT/Action/CreateTickets.pm:1359 lib/RT/Action/CreateTickets.pm:605 lib/RT/Action/CreateTickets.pm:729 lib/RT/Action/CreateTickets.pm:741
 #. ($T::Tickets{$template_id}->id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->id)
@@ -4584,7 +4584,7 @@ msgstr "Türü Güncelle"
 msgid "Update multiple tickets"
 msgstr "Birden çok bileti güncelle"
 
-#: lib/RT/Action/create_tickets.pm:750 lib/RT/Interface/Web.pm:584
+#: lib/RT/Action/CreateTickets.pm:750 lib/RT/Interface/Web.pm:584
 msgid "Update not recorded."
 msgstr "Güncelleme kaydedilmedi"
 
@@ -4602,7 +4602,7 @@ msgstr "Bileti güncelle: #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Bileti güncelle: #%1 (%2)"
 
-#: lib/RT/Action/create_tickets.pm:748 lib/RT/Interface/Web.pm:583
+#: lib/RT/Action/CreateTickets.pm:748 lib/RT/Interface/Web.pm:583
 msgid "Update type was neither correspondence nor comment."
 msgstr "Güncelleme türü cevap veya yorum değildi."
 

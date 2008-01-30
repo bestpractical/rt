@@ -67,7 +67,7 @@
 </select>
 % }
 <%args>
-$CheckQueueRight => 'create_ticket'
+$CheckQueueRight => 'CreateTicket'
 $ShowNullOption => 1
 $ShowAllQueues => 1
 $name => undef

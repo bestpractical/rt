@@ -271,7 +271,7 @@ sub create_ticket {
         abort('Queue not found');
     }
 
-    unless ( $Queue->current_user_has_right('create_ticket') ) {
+    unless ( $Queue->current_user_has_right('CreateTicket') ) {
         abort('You have no permission to create tickets in that queue.');
     }
 

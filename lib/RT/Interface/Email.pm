@@ -1287,7 +1287,7 @@ sub gateway {
     if ( $SystemTicket->id ) {
         $right = 'ReplyToTicket';
     } else {
-        $right = 'create_ticket';
+        $right = 'CreateTicket';
     }
 
     #Set up a queue object

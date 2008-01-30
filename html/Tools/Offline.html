@@ -117,7 +117,7 @@ if ($ARGS{'Parse'} && $ARGS{'template'}) {
     }
     $template =~ s/\r\n/\n/gs;
     $action->parse(Content => $template, queue => $qname, Requestor => $requestoraddress);
-    foreach ( @{ $action->{'create_tickets'} } ) {
+    foreach ( @{ $action->{'CreateTickets'} } ) {
         my $id = $_;
         $id =~ s/^create\-//;
         $string .= "===Create-Ticket: $id\n";

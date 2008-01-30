@@ -1252,7 +1252,7 @@ msgstr "Går ej att läsa in scrip #%1"
 
 #. ($id)
 #: html/SelfService/Display.html:158
-#: lib/RT/Action/create_tickets.pm:680
+#: lib/RT/Action/CreateTickets.pm:680
 msgid "Couldn't load ticket '%1'"
 msgstr "Går ej att läsa in ärende '%1'"
 
@@ -1363,7 +1363,7 @@ msgid "CreateSavedSearch"
 msgstr "SkapaSparadSök"
 
 #: lib/RT/Queue_Overlay.pm:109
-msgid "create_ticket"
+msgid "CreateTicket"
 msgstr "SkapaÄrende"
 
 #: html/Elements/SelectDateType:47
@@ -4916,7 +4916,7 @@ msgstr "Kön finns ej"
 msgid "That ticket has unresolved dependencies"
 msgstr "Ärendet har olösta avhängigheter"
 
-#: lib/RT/Action/create_tickets.pm:710
+#: lib/RT/Action/CreateTickets.pm:710
 #: lib/RT/Ticket_Overlay.pm:3037
 msgid "That user already owns that ticket"
 msgstr "Ärendet tillhör redan den användaren"
@@ -5026,11 +5026,11 @@ msgstr "Ärende #%1: %2"
 #. ($T::Tickets{$template_id}->id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->id)
-#: lib/RT/Action/create_tickets.pm:1350
-#: lib/RT/Action/create_tickets.pm:1359
-#: lib/RT/Action/create_tickets.pm:605
-#: lib/RT/Action/create_tickets.pm:729
-#: lib/RT/Action/create_tickets.pm:741
+#: lib/RT/Action/CreateTickets.pm:1350
+#: lib/RT/Action/CreateTickets.pm:1359
+#: lib/RT/Action/CreateTickets.pm:605
+#: lib/RT/Action/CreateTickets.pm:729
+#: lib/RT/Action/CreateTickets.pm:741
 msgid "Ticket %1"
 msgstr "Ärende %1"
 
@@ -5285,7 +5285,7 @@ msgstr "Uppdatera typ"
 msgid "Update multiple tickets"
 msgstr "Uppdatera flera ärenden"
 
-#: lib/RT/Action/create_tickets.pm:750
+#: lib/RT/Action/CreateTickets.pm:750
 #: lib/RT/Interface/Web.pm:584
 msgid "Update not recorded."
 msgstr "Uppdatera icke-inlästa."
@@ -5305,7 +5305,7 @@ msgstr "Uppdatera ärende #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Uppdatera ärende #%1 (%2)"
 
-#: lib/RT/Action/create_tickets.pm:748
+#: lib/RT/Action/CreateTickets.pm:748
 #: lib/RT/Interface/Web.pm:583
 msgid "Update type was neither correspondence nor comment."
 msgstr "Uppdateringstyp är varken korrespondens eller kommentar."

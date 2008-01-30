@@ -195,7 +195,7 @@ sub get_current_user {
         unless (
             $everyone->principal_object->has_right(
                 object => $args{'queue'},
-                right  => 'create_ticket'
+                right  => 'CreateTicket'
             )
             || $unpriv->principal_object->has_right(
                 object => $args{'queue'},
