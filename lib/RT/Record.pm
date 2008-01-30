@@ -165,16 +165,16 @@ sub add_attribute {
     my %args = (
         name        => undef,
         description => undef,
-        Content     => undef,
+        content     => undef,
         @_
     );
 
     my $attr = RT::Model::Attribute->new;
     my ( $id, $msg ) = $attr->create(
-        Object      => $self,
+        object      => $self,
         name        => $args{'name'},
         description => $args{'description'},
-        Content     => $args{'Content'}
+        content     => $args{'content'}
     );
 
     # XXX TODO: Why won't redo_search work here?
@@ -205,7 +205,7 @@ sub set_attribute {
     $_->delete foreach @AttributeObjs;
 
     $AttributeObj->set_description( $args{'description'} );
-    $AttributeObj->set_content( $args{'Content'} );
+    $AttributeObj->set_content( $args{'content'} );
 
     $self->attributes->redo_search;
     return 1;

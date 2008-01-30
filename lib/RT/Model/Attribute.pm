@@ -107,7 +107,7 @@ our $PERSONAL_ACL_MAP = {
 
 };
 
-=head2 LookupObjectRight { object_type => undef, object_id => undef, name => undef, Right => { create, update, delete, display } }
+=head2 Lookupobjectright { object_type => undef, object_id => undef, name => undef, right => { create, update, delete, display } }
 
 Returns the right that the user needs to have on this attribute's object to perform the related attribute operation. Returns "allow" if the right is otherwise unspecified.
 
@@ -118,7 +118,7 @@ sub lookup_object_right {
     my %args = (
         object_type => undef,
         object_id   => undef,
-        Right       => undef,
+        right       => undef,
         name        => undef,
         @_
     );
@@ -130,8 +130,8 @@ sub lookup_object_right {
         return ('allow') unless ( $PERSONAL_ACL_MAP->{ $args{'name'} } );
         return ('allow')
             unless (
-            $PERSONAL_ACL_MAP->{ $args{'name'} }->{ $args{'Right'} } );
-        return ( $PERSONAL_ACL_MAP->{ $args{'name'} }->{ $args{'Right'} } );
+            $PERSONAL_ACL_MAP->{ $args{'name'} }->{ $args{'right'} } );
+        return ( $PERSONAL_ACL_MAP->{ $args{'name'} }->{ $args{'right'} } );
 
     }
 
@@ -139,8 +139,8 @@ sub lookup_object_right {
     else {
         return ('allow') unless ( $ACL_MAP->{ $args{'name'} } );
         return ('allow')
-            unless ( $ACL_MAP->{ $args{'name'} }->{ $args{'Right'} } );
-        return ( $ACL_MAP->{ $args{'name'} }->{ $args{'Right'} } );
+            unless ( $ACL_MAP->{ $args{'name'} }->{ $args{'right'} } );
+        return ( $ACL_MAP->{ $args{'name'} }->{ $args{'right'} } );
     }
 }
 
@@ -154,7 +154,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(64) 'object_type'.
   int(11) 'object_id'.
 
-You may pass a C<Object> instead of C<object_type> and C<object_id>.
+You may pass a C<object> instead of C<object_type> and C<object_id>.
 
 =cut
 
@@ -165,15 +165,15 @@ sub create {
         description => '',
         content     => '',
         content_type => '',
-        Object      => undef,
+        object      => undef,
         @_
     );
 
-    if ( $args{Object} and UNIVERSAL::can( $args{Object}, 'id' ) ) {
-        $args{object_type} = ref( $args{Object} );
-        $args{object_id}   = $args{Object}->id;
+    if ( $args{object} and UNIVERSAL::can( $args{object}, 'id' ) ) {
+        $args{object_type} = ref( $args{object} );
+        $args{object_id}   = $args{object}->id;
     } else {
-        return ( 0, _( "Required parameter '%1' not specified", 'Object' ) );
+        return ( 0, _( "Required parameter '%1' not specified", 'object' ) );
 
     }
 
@@ -181,7 +181,7 @@ sub create {
 
 # object_right is the right that the user has to have on the object for them to have $right on this attribute
     my $object_right = $self->lookup_object_right(
-        Right       => 'create',
+        right       => 'create',
         object_id   => $args{'object_id'},
         object_type => $args{'object_type'},
         name        => $args{'name'}
@@ -195,8 +195,8 @@ sub create {
 
     elsif (
         !$self->current_user->has_right(
-            Object => $args{Object},
-            Right  => $object_right
+            object => $args{object},
+            right  => $object_right
         )
         )
     {
@@ -224,18 +224,18 @@ sub create {
 
 }
 
-# {{{ sub load_by_nameAndObject
+# {{{ sub load_by_nameAndobject
 
-=head2  load_by_nameAndObject (Object => OBJECT, name => name)
+=head2  load_by_nameAndobject (object => OBJECT, name => name)
 
-Loads the Attribute named name for Object OBJECT.
+Loads the Attribute named name for object OBJECT.
 
 =cut
 
 sub load_by_name_and_object {
     my $self = shift;
     my %args = (
-        Object => undef,
+        object => undef,
         name   => undef,
         @_,
     );
@@ -243,8 +243,8 @@ sub load_by_name_and_object {
     return (
         $self->load_by_cols(
             name        => $args{'name'},
-            object_type => ref( $args{'Object'} ),
-            object_id   => $args{'Object'}->id,
+            object_type => ref( $args{'object'} ),
+            object_id   => $args{'object'}->id,
         )
     );
 
@@ -445,7 +445,7 @@ sub current_user_has_right {
 
 # object_right is the right that the user has to have on the object for them to have $right on this attribute
     my $object_right = $self->lookup_object_right(
-        Right       => $right,
+        right       => $right,
         object_id   => $self->__value('object_id'),
         object_type => $self->__value('object_type'),
         name        => $self->__value('name')
@@ -456,8 +456,8 @@ sub current_user_has_right {
     return (1)
         if (
         $self->current_user->has_right(
-            Object => $self->object,
-            Right  => $object_right
+            object => $self->object,
+            right  => $object_right
         )
         );
     return (0);

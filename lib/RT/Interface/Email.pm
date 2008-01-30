@@ -77,7 +77,7 @@ BEGIN {
         &MailError
         &ParseCcAddressesFromHead
         &ParseSenderAddressFromHead
-        &ParseErrorsToAddressFromHead
+        &parse_errors_to_address_from_head
         &parse_address_from_header
         &gateway);
 
@@ -923,7 +923,7 @@ sub parse_sender_address_from_head {
     return ( undef, undef );
 }
 
-=head2 ParseErrorsToAddressFromHead HEAD
+=head2 parse_errors_to_address_from_head HEAD
 
 Takes a MIME::Header object. Return a single value : user@host
 of the From (evaluated in order of Return-path:,Errors-To:,Reply-To:,
@@ -1252,7 +1252,7 @@ sub gateway {
     $parser->_post_process_new_entity;
 
     my $head     = $Message->head;
-    my $ErrorsTo = ParseErrorsToAddressFromHead($head);
+    my $ErrorsTo = parse_errors_to_address_from_head($head);
 
     my $MessageId = $head->get('Message-ID')
         || "<no-message-id-" 

@@ -336,7 +336,7 @@ sub parse_sender_address_from_head {
     return ( $self->parse_address_from_header($From) );
 }
 
-=head2 ParseErrorsToAddressFromHead
+=head2 parse_errors_to_address_from_head
 
 Takes a MIME::Header object. Return a single value : user@host
 of the From (evaluated in order of Errors-To:,Reply-To:, From:, Sender)
