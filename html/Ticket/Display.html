@@ -155,7 +155,7 @@ if ($ARGS{'id'} eq 'new') {
         );
         delete $session{'Attachments'};
     }
-    push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
+    push @Actions, process_ticket_watchers(ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
     push @Actions, process_ticket_basics(   ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
     push @Actions, ProcessTicketLinks(    ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
 

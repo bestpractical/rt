@@ -162,7 +162,7 @@ unless ($OnlySearchForPeople) {
 
     }
 
-    @wresults   = ProcessTicketWatchers( ticket_obj => $Ticket, ARGSRef => \%ARGS);
+    @wresults   = process_ticket_watchers( ticket_obj => $Ticket, ARGSRef => \%ARGS);
     @cf_results = ProcessObjectCustomFieldUpdates( object => $Ticket, ARGSRef => \%ARGS);
     @dresults   = ProcessTicketDates( ticket_obj => $Ticket, ARGSRef => \%ARGS);
     @lresults   = ProcessTicketLinks( ticket_obj => $Ticket, ARGSRef => \%ARGS);

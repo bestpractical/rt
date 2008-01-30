@@ -1154,9 +1154,9 @@ sub _process_object_custom_field_updates {
     return @results;
 }
 
-# {{{ sub ProcessTicketWatchers
+# {{{ sub process_ticket_watchers
 
-=head2 ProcessTicketWatchers ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
+=head2 process_ticket_watchers ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 
 Returns an array of results messages.
 
