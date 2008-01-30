@@ -1056,7 +1056,7 @@ sub preferences {
     my $default = shift;
 
     my $attr = RT::Model::Attribute->new;
-    $attr->load_by_name_and_object( Object => $self, name => $name );
+    $attr->load_by_name_and_object( object => $self, name => $name );
 
     my $content = $attr->id ? $attr->content : undef;
     unless ( ref $content eq 'HASH' ) {
@@ -1090,7 +1090,7 @@ sub set_preferences {
     my $name  = _prefname(shift);
     my $value = shift;
     my $attr  = RT::Model::Attribute->new;
-    $attr->load_by_name_and_object( Object => $self, name => $name );
+    $attr->load_by_name_and_object( object => $self, name => $name );
     if ( $attr->id ) {
         return $attr->set_content($value);
     } else {
