@@ -139,7 +139,7 @@ our $RIGHTS = {
 
     Watch => 'Sign up as a ticket Requestor or ticket or queue Cc', # loc_pair
     WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',      # loc_pair
-    create_ticket   => 'Create tickets in this queue',              # loc_pair
+    CreateTicket   => 'Create tickets in this queue',              # loc_pair
     ReplyToTicket   => 'Reply to tickets',                          # loc_pair
     CommentOnTicket => 'comment on tickets',                        # loc_pair
     OwnTicket       => 'Own tickets',                               # loc_pair
