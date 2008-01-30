@@ -56,7 +56,7 @@ Note that "Scrips" are now called "Rules".
 * Condition: OnCreate
 * Action: AquireMyLocks
 
-=== Queue "PurchaseOrder"
+=== queue "PurchaseOrder"
 
 * Rule:
 ** Condition: OnCreate

@@ -49,24 +49,24 @@
 <option value="" 
 <% ! defined $Default && 'SELECTED' %>
 >-</option>
-%while  (my $ScripCondition = $ScripConditions->next) {
-<option value="<%$ScripCondition->id%>"
-<% defined $Default && $ScripCondition->id == $Default ? 'SELECTED'  : '' %>
-><% _($ScripCondition->name) %>
+%while  (my $scrip_condition = $scrip_conditions->next) {
+<option value="<%$scrip_condition->id%>"
+<% defined $Default && $scrip_condition->id == $Default ? 'SELECTED'  : '' %>
+><% _($scrip_condition->name) %>
 </option>
 %}
 </select>
 
 <%INIT>
-my $ScripConditions = RT::Model::ScripConditionCollection->new();
-$ScripConditions->find_all_rows;
-$ScripConditions->order_by(column => 'name');
+my $scrip_conditions = RT::Model::ScripConditionCollection->new();
+$scrip_conditions->find_all_rows;
+$scrip_conditions->order_by(column => 'name');
 
 
 </%INIT>
 <%ARGS>
 
 $Default => undef
-$name => 'ScripCondition'
+$name => 'scrip_condition'
 
 </%ARGS>

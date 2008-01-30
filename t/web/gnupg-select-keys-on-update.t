@@ -37,7 +37,7 @@ ok $queue && $queue->id, 'loaded or created queue';
 
 RT::Test->set_rights(
     Principal => 'Everyone',
-    Right => ['create_ticket', 'ShowTicket', 'SeeQueue', 'ReplyToTicket', 'ModifyTicket'],
+    right => ['create_ticket', 'ShowTicket', 'SeeQueue', 'ReplyToTicket', 'ModifyTicket'],
 );
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -49,7 +49,7 @@ my $tid;
     my $ticket = RT::Model::Ticket->new(current_user => $RT::system_user );
     ($tid) = $ticket->create(
         subject   => 'test',
-        Queue     => $queue->id,
+        queue     => $queue->id,
     );
     ok $tid, 'ticket created';
 }

@@ -77,7 +77,7 @@ sub __depends_on {
         $deps->_push_dependency(
             base_object  => $self,
             Flags        => DEPENDS_ON | WIPE_AFTER,
-            Targetobject => $objs,
+            targetobject => $objs,
             Shredder     => $args{'Shredder'}
         );
     }
@@ -86,7 +86,7 @@ sub __depends_on {
     $deps->_push_dependency(
         base_object  => $self,
         Flags        => DEPENDS_ON | WIPE_AFTER,
-        Targetobject => $self->principal_object,
+        targetobject => $self->principal_object,
         Shredder     => $args{'Shredder'}
     );
 
@@ -99,7 +99,7 @@ sub __depends_on {
     $objs = RT::Model::GroupMemberCollection->new;
     $objs->limit(
         value            => $self->principal_id,
-        column           => 'MemberId',
+        column           => 'member_id',
         entry_aggregator => 'OR',
         quote_value      => 0
     );
@@ -112,7 +112,7 @@ sub __depends_on {
     $objs = RT::Model::GroupMemberCollection->new;
     $objs->limit(
         value            => $self->principal_id,
-        column           => 'MemberId',
+        column           => 'member_id',
         entry_aggregator => 'OR',
         quote_value      => 0
     );

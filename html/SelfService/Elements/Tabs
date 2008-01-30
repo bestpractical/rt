@@ -85,7 +85,7 @@ my $tabs = { A  => { title => _('Open tickets'),
 
 if ($queue_count > 1) {
         $tabs->{C} = { title => _('New ticket'),
-                       path => 'SelfService/create_ticketInQueue.html'
+                       path => 'SelfService/CreateTicketInQueue.html'
                        };
 } else {
         $tabs->{C} = { title => _('New ticket'),
@@ -93,7 +93,7 @@ if ($queue_count > 1) {
                        };
 }
 
-if (Jifty->web->current_user->has_right( Right => 'ModifySelf',
+if (Jifty->web->current_user->has_right( right => 'ModifySelf',
 				       object => RT->system )) {
 	$tabs->{Z} = { title => _('Preferences'),
 		       path => 'SelfService/Prefs.html'

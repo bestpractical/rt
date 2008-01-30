@@ -346,7 +346,7 @@ String.prototype.gsub.prepareReplacement = function(replacement) {
 
 String.prototype.parseQuery = String.prototype.toQueryParams;
 
-var Template = Class.create();
+var template = Class.create();
 Template.Pattern = /(^|.|\r|\n)(#\{(.*?)\})/;
 Template.prototype = {
   initialize: function(template, pattern) {
@@ -847,8 +847,8 @@ Ajax.Responders.register({
   }
 });
 
-Ajax.Base = function() {};
-Ajax.Base.prototype = {
+Ajax.base = function() {};
+Ajax.base.prototype = {
   setOptions: function(options) {
     this.options = {
       method:       'post',
@@ -869,7 +869,7 @@ Ajax.Request = Class.create();
 Ajax.Request.Events =
   ['Uninitialized', 'Loading', 'Loaded', 'Interactive', 'Complete'];
 
-Ajax.Request.prototype = Object.extend(new Ajax.Base(), {
+Ajax.Request.prototype = Object.extend(new Ajax.base(), {
   _complete: false,
 
   initialize: function(url, options) {
@@ -1069,7 +1069,7 @@ Object.extend(Object.extend(Ajax.Updater.prototype, Ajax.Request.prototype), {
 });
 
 Ajax.PeriodicalUpdater = Class.create();
-Ajax.PeriodicalUpdater.prototype = Object.extend(new Ajax.Base(), {
+Ajax.PeriodicalUpdater.prototype = Object.extend(new Ajax.base(), {
   initialize: function(container, url, options) {
     this.setOptions(options);
     this.onComplete = this.options.onComplete;

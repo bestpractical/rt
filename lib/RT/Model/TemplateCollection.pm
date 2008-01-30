@@ -48,7 +48,7 @@
 
 =head1 name
 
-  RT::Model::TemplateCollection - a collection of RT Template objects
+  RT::Model::TemplateCollection - a collection of RT template objects
 
 =head1 SYNOPSIS
 
@@ -153,7 +153,7 @@ sub limit_to_queue {
 
 =head2 new_item
 
-Returns a new empty Template object
+Returns a new empty template object
 
 =cut
 
@@ -187,7 +187,7 @@ sub next {
             && $templ->current_user_has_queue_right('ShowTemplate')
             or $templ->current_user->has_right(
                 object => RT->system,
-                Right  => 'ShowTemplate'
+                right  => 'ShowTemplate'
             )
             )
         {

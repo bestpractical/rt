@@ -84,8 +84,8 @@ sub limit {
 
 #if someone's trying to search for tickets, try to resolve the uris for searching.
 
-    if (   ( $args{'operator'} eq '=' ) and ( $args{'column'} eq 'Base' )
-        or ( $args{'column'} eq 'Target' ) )
+    if (   ( $args{'operator'} eq '=' ) and ( $args{'column'} eq 'base' )
+        or ( $args{'column'} eq 'target' ) )
     {
         my $dummy = RT::URI->new;
         $dummy->from_uri( $args{'value'} );
@@ -96,16 +96,16 @@ sub limit {
     # If we're limiting by target, order by base
     # (Order by the thing that's changing)
 
-    if (   ( $args{'column'} eq 'Target' )
-        or ( $args{'column'} eq 'LocalTarget' ) )
+    if (   ( $args{'column'} eq 'target' )
+        or ( $args{'column'} eq 'local_target' ) )
     {
         $self->order_by(
             alias  => 'main',
             column => 'base',
             order  => 'ASC'
         );
-    } elsif ( ( $args{'column'} eq 'Base' )
-        or ( $args{'column'} eq 'LocalBase' ) )
+    } elsif ( ( $args{'column'} eq 'base' )
+        or ( $args{'column'} eq 'local_base' ) )
     {
         $self->order_by(
             alias  => 'main',

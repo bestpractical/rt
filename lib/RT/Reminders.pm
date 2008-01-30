@@ -124,7 +124,7 @@ sub add {
         Due      => $args{'Due'},
         RefersTo => $self->ticket,
         type     => 'reminder',
-        Queue    => $self->ticket_obj->queue,
+        queue    => $self->ticket_obj->queue,
 
     );
     $self->ticket_obj->_new_transaction(

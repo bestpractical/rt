@@ -59,9 +59,9 @@ my $LinkCallback = sub  {
 
     my $mode            = $RT::Model::Ticket::LINKTYPEMAP{$method}{Mode};
     my $type            = $RT::Model::Ticket::LINKTYPEMAP{$method}{Type};
-    my $other_mode      = ($mode eq "Target" ? "Base" : "Target");
+    my $other_mode      = ($mode eq "target" ? "base" : "target");
     my $mode_uri        = $mode.'URI';
-    my $local_type      = 'Local'.$mode;
+    my $local_type      = 'local_'.$mode;
 
     return sub  {
         map {
@@ -76,8 +76,8 @@ my $LinkCallback = sub  {
 
 $TICKET_COLUMN_MAP = {
     Queuename => {
-        attribute => 'Queue',
-        title     => 'Queue',
+        attribute => 'queue',
+        title     => 'queue',
         value     => sub  { return $_[0]->queue_obj->name }
     },
     Ownername => {
@@ -129,8 +129,8 @@ $TICKET_COLUMN_MAP = {
         name => 'Final Priority',
         value     => sub  { return $_[0]->final_priority }
     },
-    EffectiveId => {
-        attribute => 'EffectiveId',
+    effective_id => {
+        attribute => 'effective_id',
         value     => sub  { return $_[0]->effective_id }
     },
     type => {
@@ -192,8 +192,8 @@ $TICKET_COLUMN_MAP = {
         }
     },
     ResolvedRelative => {
-        title     => 'Resolved',
-        attribute => 'Resolved',
+        title     => 'resolved',
+        attribute => 'resolved',
         value     => sub  { return $_[0]->resolved_obj->age_as_string }
     },
     starts => {
@@ -212,8 +212,8 @@ $TICKET_COLUMN_MAP = {
         attribute => 'Due',
         value     => sub  { return $_[0]->due_obj->as_string }
     },
-    Resolved => {
-        attribute => 'Resolved',
+    resolved => {
+        attribute => 'resolved',
         value     => sub  { return $_[0]->resolved_obj->as_string }
     },
     UpdateStatus => {
@@ -271,7 +271,7 @@ $TICKET_COLUMN_MAP = {
         my $value = RT->config->get($_);
         $_ => { value => sub  { return \$value } };
     
-    } qw(WebPath WebBaseURL WebURL)),
+    } qw(WebPath WebbaseURL WebURL)),
 
     '_CLASS' => {
         value => sub  { return $_[1] % 2 ? 'oddline' : 'evenline' }

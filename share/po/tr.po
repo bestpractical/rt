@@ -159,8 +159,8 @@ msgid "%1 added as a value for %2"
 msgstr "%1, %2 için bir değer olarak eklendi"
 
 #: lib/RT/Link_Overlay.pm:144 lib/RT/Link_Overlay.pm:151
-#. ($args{'Base'})
-#. ($args{'Target'})
+#. ($args{'base'})
+#. ($args{'target'})
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 yerel bir nesne olarak gözüküyor, fakat veritabanında mevcut değil"
 
@@ -1190,7 +1190,7 @@ msgstr "%1 kuyruğu için yeni bir senet oluştur"
 msgid "Create a template"
 msgstr "Bir şablon oluştur"
 
-#: html/SelfService/Create.html:46 html/SelfService/create_ticketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Yeni bir bilet oluştur"
 
@@ -1874,7 +1874,7 @@ msgid "Group"
 msgstr "Grup"
 
 #: html/Admin/Elements/CustomFieldTabs:68 html/Admin/Elements/GroupTabs:66 html/Admin/Elements/QueueTabs:82 html/Admin/Elements/SystemTabs:65 html/Admin/Global/index.html:76
-msgid "Group Rights"
+msgid "Group rights"
 msgstr "Grup Yetkileri"
 
 #: lib/RT/Group_Overlay.pm:983
@@ -1945,7 +1945,7 @@ msgstr "Ev Sayfası"
 msgid "Hours"
 msgstr "Saat"
 
-#: lib/RT/Base.pm:119
+#: lib/RT/base.pm:119
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
 msgstr ""
@@ -2046,7 +2046,7 @@ msgid "Invalid Group Type"
 msgstr Geçersiz Grup Türü"
 
 #: lib/RT/Principal_Overlay.pm:161
-msgid "Invalid Right"
+msgid "Invalid right"
 msgstr "Geçersiz Hak"
 
 #: lib/RT/Record.pm:952
@@ -2366,7 +2366,7 @@ msgid "Merge Successful"
 msgstr "Birleştirme başarılı"
 
 #: lib/RT/Ticket_Overlay.pm:2780
-msgid "Merge failed. Couldn't set EffectiveId"
+msgid "Merge failed. Couldn't set effective_id"
 msgstr "Birleştirme başarısız. Etkin Numara atanamıyor"
 
 #: lib/RT/Ticket_Overlay.pm:2788
@@ -2433,7 +2433,7 @@ msgid "Modify Custom Fields which apply to all %1"
 msgstr "Bütün %1 etki eden özel alanları değiştir"
 
 #: html/Admin/Global/GroupRights.html:106 html/Admin/Groups/GroupRights.html:94 html/Admin/Queues/GroupRights.html:107
-msgid "Modify Group Rights"
+msgid "Modify Group rights"
 msgstr "Grup yetkilerini değiştir"
 
 #: html/Admin/Groups/Members.html:105 html/User/Groups/Members.html:101
@@ -2441,7 +2441,7 @@ msgid "Modify Members"
 msgstr "Üyeleri Değiştir"
 
 #: html/User/Delegation.html:58
-msgid "Modify Rights"
+msgid "Modify rights"
 msgstr "Yetkileri Değiştir"
 
 #: lib/RT/Queue_Overlay.pm:97
@@ -2453,7 +2453,7 @@ msgid "Modify Scrips for this queue"
 msgstr "Bu kuyruk için senetleri değiştir"
 
 #: html/Admin/Global/UserRights.html:75 html/Admin/Groups/UserRights.html:76 html/Admin/Queues/UserRights.html:75
-msgid "Modify User Rights"
+msgid "Modify User rights"
 msgstr "Kullanıcı haklarını değiştir"
 
 #: html/Admin/Queues/CustomField.html:66
@@ -3597,7 +3597,7 @@ msgid "Resolve ticket #%1 (%2)"
 msgstr "#%1 biletini çözümle (%2)"
 
 #: etc/initialdata:323 html/Elements/SelectDateType:49 lib/RT/Ticket_Overlay.pm:1172
-msgid "Resolved"
+msgid "resolved"
 msgstr "Çözüldü"
 
 #: html/Tools/Reports/Elements/Tabs:55
@@ -3629,11 +3629,11 @@ msgid "Revert"
 msgstr "Eskiye dön"
 
 #: lib/RT/ACE_Overlay.pm:630
-msgid "Right Delegated"
+msgid "right Delegated"
 msgstr "Yetki Aktarıldı"
 
 #: lib/RT/ACE_Overlay.pm:320
-msgid "Right Granted"
+msgid "right Granted"
 msgstr "Yetki Verildi"
 
 #: lib/RT/ACE_Overlay.pm:178
@@ -3823,7 +3823,7 @@ msgstr "Bir grubu seç"
 msgid "Select a queue"
 msgstr "Bir kuyruğu seç"
 
-#: html/SelfService/create_ticketInQueue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Yeni biletiniz için bir kuyruk seçin"
 
@@ -4535,9 +4535,9 @@ msgid "Unix login"
 msgstr "Unix girişi"
 
 #: lib/RT/Attachment_Overlay.pm:289 lib/RT/Record.pm:861
-#. ($self->ContentEncoding)
-#. ($ContentEncoding)
-msgid "Unknown ContentEncoding %1"
+#. ($self->content_encoding)
+#. ($content_encoding)
+msgid "Unknown content_encoding %1"
 msgstr "Bilinmeyen İçerikKodlaması %1"
 
 #: html/Search/Build.html:455 lib/RT/Report/Tickets.pm:410
@@ -4660,7 +4660,7 @@ msgid "User Defined conditions and actions"
 msgstr "Kullanıcı tanımlı durumlar ve eylemler"
 
 #: html/Admin/Elements/CustomFieldTabs:72 html/Admin/Elements/GroupTabs:68 html/Admin/Elements/QueueTabs:85 html/Admin/Elements/SystemTabs:68 html/Admin/Global/index.html:80
-msgid "User Rights"
+msgid "User rights"
 msgstr "Kullanıcı Hakları"
 
 #: html/Admin/Users/Modify.html:301

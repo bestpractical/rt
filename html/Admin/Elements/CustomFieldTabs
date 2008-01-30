@@ -67,11 +67,11 @@ if ($id) {
                 C => { title => _('Basics'),
                        path  => "Admin/CustomFields/Modify.html?id=" . $id,
                 },
-                F => { title => _('Group Rights'),
+                F => { title => _('Group rights'),
                        path  => "Admin/CustomFields/GroupRights.html?id="
                          . $id, },
                 G => {
-                    title => _('User Rights'),
+                    title => _('User rights'),
                     path => "Admin/CustomFields/UserRights.html?id=" . $id,
                 },
 
@@ -88,7 +88,7 @@ if ($id) {
     }
 }
 
-if (Jifty->web->current_user->has_right( object => RT->system, Right => 'AdminCustomField')) {
+if (Jifty->web->current_user->has_right( object => RT->system, right => 'AdminCustomField')) {
   $tabs->{"A"} = { title => _('Select custom field'),
                         path => "Admin/CustomFields/",
                            };

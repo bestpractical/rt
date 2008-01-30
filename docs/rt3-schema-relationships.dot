@@ -23,10 +23,10 @@ edge [
 "Attachments" -> "Attachments" [label="Parent -> id"];
 
 "CachedGroupMemers" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"CachedGroupMemers" -> "Groups" [label="GroupId -> id", weight=2];
-"CachedGroupMemers" -> "Principals" [label="MemberId -> id"];
+"CachedGroupMemers" -> "Groups" [label="group_id -> id", weight=2];
+"CachedGroupMemers" -> "Principals" [label="member_id -> id"];
 "CachedGroupMemers" -> "CachedGroupMemers" [label="Via -> id"];
-"CachedGroupMemers" -> "Groups" [label="ImmediateParentId -> id"];
+"CachedGroupMemers" -> "Groups" [label="immediate_parent_id -> id"];
 
 "CustomFields" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
@@ -34,15 +34,15 @@ edge [
 "custom_field_values" -> "CustomFields" [label="CustomField -> id"];
 
 "GroupMembers" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"GroupMembers" -> "Groups" [label="GroupId -> id", weight=2];
-"GroupMembers" -> "Principals" [label="MemberId -> id", weight = 2];
+"GroupMembers" -> "Groups" [label="group_id -> id", weight=2];
+"GroupMembers" -> "Principals" [label="member_id -> id", weight = 2];
 
 "Groups" [shape = record, fontsize = 18, label = "<col0> \N " ];
 "Groups" -> "Principals" [label="Groups.id -> id"];
 
 "Links" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"Links" -> "Tickets" [label="LocalBase => id (usually)", style="dotted"];
-"Links" -> "Tickets" [label="LocalTarget => id (usually)", style="dotted"];
+"Links" -> "Tickets" [label="local_base => id (usually)", style="dotted"];
+"Links" -> "Tickets" [label="local_target => id (usually)", style="dotted"];
 
 "Principals" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
@@ -53,10 +53,10 @@ edge [
 
 "ScripActions" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
-"ScripConditions" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"scrip_conditions" [shape = record, fontsize = 18, label = "<col0> \N " ];
 
 "Scrips" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"Scrips" -> "ScripConditions" [label="ScripCondition -> id"];
+"Scrips" -> "scrip_conditions" [label="scrip_condition -> id"];
 "Scrips" -> "ScripActions" [label="ScripAction -> id"];
 "Scrips" -> "Templates" [label="Template -> id"];
 "Scrips" -> "Queues" [label="Queue -> id"];
@@ -68,12 +68,12 @@ edge [
 "ObjectCustomFields" -> "CustomFields" [label="CustomField -> id"];
 "ObjectCustomFields" -> "Records" [label="object_id -> id"];
 
-"objectcustom_field_values" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"objectcustom_field_values" -> "CustomFields" [label="CustomField -> id"];
-"objectcustom_field_values" -> "Records" [label="object_id -> id"];
+"ObjectCustomFieldValues" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"ObjectCustomFieldValues" -> "CustomFields" [label="CustomField -> id"];
+"ObjectCustomFieldValues" -> "Records" [label="object_id -> id"];
 
 "Tickets" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"Tickets" -> "Tickets" [label="EffectiveId -> id"];
+"Tickets" -> "Tickets" [label="effective_id -> id"];
 "Tickets" -> "Principals" [label="Owner -> id"];
 "Queues" -> "Tickets" [style="invis"];
 "Tickets" -> "Queues" [label="Queue -> id"];

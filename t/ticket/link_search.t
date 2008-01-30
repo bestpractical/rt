@@ -18,7 +18,7 @@ $queue->load('General') || abort(_("Queue could not be loaded."));
 my $child_ticket = RT::Model::Ticket->new(current_user =>  $CurrentUser );
 my ($childid) = $child_ticket->create(
     subject => 'test child',
-    Queue => $queue->id,
+    queue => $queue->id,
 );
 ok($childid, "We Created a child ticket");
 
@@ -26,7 +26,7 @@ my $parent_ticket = RT::Model::Ticket->new(current_user =>  $CurrentUser );
 my ($parentid) = $parent_ticket->create(
     subject => 'test parent',
     Children => [ $childid ],
-    Queue => $queue->id,
+    queue => $queue->id,
 );
 ok($parentid, "We Created a parent ticket");
 
@@ -157,7 +157,7 @@ ok( !$has{$childid}, "The collection doesn't have our child - $childid");
 my $grand_child_ticket = RT::Model::Ticket->new(current_user =>  $CurrentUser );
 my ($grand_childid) = $child_ticket->create(
     subject => 'test child',
-    Queue   => $queue->id,
+    queue   => $queue->id,
     MemberOf => $childid,
 );
 ok($childid, "We Created a grand child ticket");
@@ -165,12 +165,12 @@ ok($childid, "We Created a grand child ticket");
 my $unlinked_ticket = RT::Model::Ticket->new( current_user => $CurrentUser );
 my ($unlinked_id) = $child_ticket->create(
     subject => 'test unlinked',
-    Queue   => $queue->id,
+    queue   => $queue->id,
 );
 ok($unlinked_id, "We Created a grand child ticket");
 
 $Collection = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$Collection->from_sql( "LinkedTo = $childid" );
+$Collection->from_sql( "linked_to = $childid" );
 is($Collection->count,1, "We found only one result");
 ok($Collection->first);
 is($Collection->first->id, $grand_childid, "We found all tickets linked to ticket #$childid");
@@ -182,7 +182,7 @@ ok($Collection->first);
 is($Collection->first->id, $parentid, "We found all tickets linked from ticket #$childid");
 
 $Collection = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$Collection->from_sql( "LinkedTo IS NULL" );
+$Collection->from_sql( "linked_to IS NULL" );
 ok($Collection->count, "Result is set is not empty");
 %has = ();
 while (my $t = $Collection->next) {
@@ -194,7 +194,7 @@ ok( !$has{$childid}, "child is NOT in collection");
 ok( !$has{$grand_childid}, "grand child too is not in collection");
 
 $Collection = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$Collection->from_sql( "LinkedTo IS NOT NULL" );
+$Collection->from_sql( "linked_to IS NOT NULL" );
 ok($Collection->count, "Result set is not empty");
 %has = ();
 while (my $t = $Collection->next) {

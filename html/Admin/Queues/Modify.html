@@ -86,9 +86,9 @@
 </tr>
 
 % if ( RT->config->get('GnuPG')->{'Enable'} ) {
-<tr><td align="right"><input type="checkbox" class="checkbox" name="Sign" value="1" <% $queue_obj->sign? 'checked': '' %> /></td>
+<tr><td align="right"><input type="checkbox" class="checkbox" name="sign" value="1" <% $queue_obj->sign? 'checked': '' %> /></td>
 <td><&|/l&>sign by default</&></td>
-<td align="right"><input type="checkbox" class="checkbox" name="Encrypt" value="1" <% $queue_obj->encrypt? 'checked': '' %> /></td>
+<td align="right"><input type="checkbox" class="checkbox" name="encrypt" value="1" <% $queue_obj->encrypt? 'checked': '' %> /></td>
 <td><&|/l&>encrypt by default</&></td>
 </tr>
 % }
@@ -140,13 +140,13 @@ if ($Create) {
 if ( $queue_obj->id ) {
     delete $session{'create_in_queues'};
     my @attribs= qw(description correspond_address comment_address name
-        initial_priority final_priority default_due_in Sign Encrypt disabled);
+        initial_priority final_priority default_due_in sign encrypt disabled);
 
     # we're asking about enabled on the web page but really care about disabled
     if ( $SetEnabled ) {
         $disabled = $ARGS{'disabled'} = $Enabled? 0: 1;
         $ARGS{$_} = 0 foreach grep !defined $ARGS{$_} || !length $ARGS{$_},
-            qw(Sign Encrypt disabled);
+            qw(sign encrypt disabled);
     }
 
     push @results, update_record_object(

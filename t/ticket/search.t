@@ -21,17 +21,17 @@ ok ($q->id, "Created the queue");
 # we believe the type shouldn't matter.
 
 my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
-$cf->create(name => 'SearchTest', type => 'Freeform', MaxValues => 0, Queue => $q->id);
+$cf->create(name => 'SearchTest', type => 'Freeform', MaxValues => 0, queue => $q->id);
 ok($cf->id, "Created the SearchTest CF");
 my $cflabel = "CustomField-".$cf->id;
 
 my $cf2 = RT::Model::CustomField->new(current_user => RT->system_user);
-$cf2->create(name => 'SearchTest2', type => 'Freeform', MaxValues => 0, Queue => $q->id);
+$cf2->create(name => 'SearchTest2', type => 'Freeform', MaxValues => 0, queue => $q->id);
 ok($cf2->id, "Created the SearchTest2 CF");
 my $cflabel2 = "CustomField-".$cf2->id;
 
 my $cf3 = RT::Model::CustomField->new(current_user => RT->system_user);
-$cf3->create(name => 'SearchTest3', type => 'Freeform', MaxValues => 0, Queue => $q->id);
+$cf3->create(name => 'SearchTest3', type => 'Freeform', MaxValues => 0, queue => $q->id);
 ok($cf3->id, "Created the SearchTest3 CF");
 my $cflabel3 = "CustomField-".$cf3->id;
 
@@ -44,13 +44,13 @@ my $dup = RT::Model::Queue->new(current_user => RT->system_user);
 $dup->create(name => $queue . "-Copy");
 ok ($dup->id, "Created the duplicate queue");
 my $dupcf = RT::Model::CustomField->new(current_user => RT->system_user);
-$dupcf->create(name => 'SearchTest', type => 'Freeform', MaxValues => 0, Queue => $dup->id);
+$dupcf->create(name => 'SearchTest', type => 'Freeform', MaxValues => 0, queue => $dup->id);
 ok($dupcf->id, "Created the duplicate SearchTest CF");
 $dupcf = RT::Model::CustomField->new(current_user => RT->system_user);
-$dupcf->create(name => 'SearchTest2', type => 'Freeform', MaxValues => 0, Queue => $dup->id);
+$dupcf->create(name => 'SearchTest2', type => 'Freeform', MaxValues => 0, queue => $dup->id);
 ok($dupcf->id, "Created the SearchTest2 CF");
 $dupcf = RT::Model::CustomField->new(current_user => RT->system_user);
-$dupcf->create(name => 'SearchTest3', type => 'Freeform', MaxValues => 0, Queue => $dup->id);
+$dupcf->create(name => 'SearchTest3', type => 'Freeform', MaxValues => 0, queue => $dup->id);
 ok($dupcf->id, "Created the SearchTest3 CF");
 
 
@@ -61,7 +61,7 @@ ok($dupcf->id, "Created the SearchTest3 CF");
 
 my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ( $id, undef $msg ) = $t1->create(
-    Queue      => $q->id,
+    queue      => $q->id,
     subject    => 'SearchTest1',
     Requestor  => ['search1@example.com'],
     $cflabel   => 'foo1',
@@ -73,7 +73,7 @@ ok( $id, $msg );
 
 my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t2->create(
-    Queue      => $q->id,
+    queue      => $q->id,
     subject    => 'SearchTest2',
     Requestor  => ['search2@example.com'],
 #    $cflabel   => 'foo2',
@@ -84,7 +84,7 @@ ok( $id, $msg );
 
 my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t3->create(
-    Queue      => $q->id,
+    queue      => $q->id,
     subject    => 'SearchTest3',
     Requestor  => ['search3@example.com'],
     $cflabel   => 'foo3',
@@ -95,7 +95,7 @@ ok( $id, $msg );
 
 my $t4 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t4->create(
-    Queue      => $q->id,
+    queue      => $q->id,
     subject    => 'SearchTest4',
     Requestor  => ['search4@example.com'],
     $cflabel   => 'foo4',
@@ -106,7 +106,7 @@ ok( $id, $msg );
 
 my $t5 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t5->create(
-    Queue      => $q->id,
+    queue      => $q->id,
 #    subject    => 'SearchTest5',
     Requestor  => ['search5@example.com'],
     $cflabel   => 'foo5',
@@ -117,7 +117,7 @@ ok( $id, $msg );
 
 my $t6 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t6->create(
-    Queue      => $q->id,
+    queue      => $q->id,
     subject    => 'SearchTest6',
 #    Requestor  => ['search6@example.com'],
     $cflabel   => 'foo6',
@@ -128,7 +128,7 @@ ok( $id, $msg );
 
 my $t7 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t7->create(
-    Queue      => $q->id,
+    queue      => $q->id,
     subject    => 'SearchTest7',
     Requestor  => ['search7@example.com'],
 #    $cflabel   => 'foo7',

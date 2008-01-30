@@ -123,7 +123,7 @@ sub _init {
 
 =head2 argument
 
-Return the optional argument associated with this ScripCondition
+Return the optional argument associated with this scrip_condition
 
 =cut
 

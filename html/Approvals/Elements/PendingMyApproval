@@ -92,7 +92,7 @@ foreach ($tickets, $group_tickets) {
     if ( $ARGS{'ShowRejected'} ) {
 	$_->limit_status( value => 'rejected' );
     }
-    if ( $ARGS{'ShowPending'} || ( !$ARGS{'ShowRejected'} && !$ARGS{'Resolved'} ) ) {
+    if ( $ARGS{'ShowPending'} || ( !$ARGS{'ShowRejected'} && !$ARGS{'resolved'} ) ) {
 	$_->limit_status( value => 'open' );
 	$_->limit_status( value => 'new' );
 	$_->limit_status( value => 'stalled' );

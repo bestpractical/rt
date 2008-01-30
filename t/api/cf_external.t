@@ -18,7 +18,7 @@ my ($qid) = $q->create( name => "CF-External-". $$ );
 ok( $qid, "Created queue" );
 my %arg = ( name        => $q->name,
             type        => 'Select',
-            Queue       => $q->id,
+            queue       => $q->id,
             MaxValues   => 1,
             ValuesClass => VALUES_CLASS );
 

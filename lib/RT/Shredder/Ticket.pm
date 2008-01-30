@@ -70,7 +70,7 @@ sub __depends_on {
     # Tickets which were merged in
     my $objs = RT::Model::TicketCollection->new;
     $objs->{'allow_deleted_search'} = 1;
-    $objs->limit( column => 'EffectiveId', value => $self->id );
+    $objs->limit( column => 'effective_id', value => $self->id );
     $objs->limit( column => 'id', operator => '!=', value => $self->id );
     push( @$list, $objs );
 
@@ -110,7 +110,7 @@ sub __Relates {
         $self = $rec->{'object'};
         $rec->{'State'} |= INVALID;
         $rec->{'description'}
-            = "Have no related Queue #" . $self->queue . " object";
+            = "Have no related queue #" . $self->queue . " object";
     }
 
     $deps->_push_dependencies(

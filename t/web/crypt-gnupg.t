@@ -58,7 +58,7 @@ my $qid = $queue->id;
 
 RT::Test->set_rights(
     Principal => 'Everyone',
-    Right => ['create_ticket', 'ShowTicket', 'SeeQueue', 'ModifyTicket'],
+    right => ['create_ticket', 'ShowTicket', 'SeeQueue', 'ModifyTicket'],
 );
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -349,16 +349,16 @@ sub strip_headers
 
 # now test the OwnernameKey and RequestorsKey fields
 my $nokey = RT::Test->load_or_create_user(name => 'nokey', email => 'nokey@example.com');
-$nokey->principal_object->grant_right(Right => 'create_ticket');
-$nokey->principal_object->grant_right(Right => 'OwnTicket');
+$nokey->principal_object->grant_right(right => 'create_ticket');
+$nokey->principal_object->grant_right(right => 'OwnTicket');
 
 my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
-$tick->create(subject => 'owner lacks pubkey', Queue => 'general',
+$tick->create(subject => 'owner lacks pubkey', queue => 'general',
               Owner => $nokey);
 ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
 
 $tick = RT::Model::Ticket->new(current_user => RT->system_user );
-$tick->create(subject => 'owner has pubkey', Queue => 'general',
+$tick->create(subject => 'owner has pubkey', queue => 'general',
               Owner => 'root');
 ok($id = $tick->id, 'created ticket for owner-with-pubkey');
 my $mail = << "MAIL";

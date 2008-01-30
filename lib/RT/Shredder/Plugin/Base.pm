@@ -97,12 +97,12 @@ See F<Todo> for more info.
 
 sub type { return '' }
 
-=head3 SupportArgs
+=head3 support_args
 
 Takes nothing.
 Returns list of the supported plugin arguments.
 
-Base class returns list of the arguments which all
+base class returns list of the arguments which all
 classes B<must> support.
 
 =cut

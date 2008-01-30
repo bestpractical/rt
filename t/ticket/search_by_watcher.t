@@ -18,7 +18,7 @@ sub add_tix_from_data {
     while (@data) {
         my $t = RT::Model::Ticket->new(current_user => RT->system_user);
         my ( $id, undef $msg ) = $t->create(
-            Queue => $q->id,
+            queue => $q->id,
             %{ shift(@data) },
         );
         ok( $id, "ticket Created" ) or diag("error: $msg");
@@ -193,7 +193,7 @@ my $nobody = RT->nobody();
     my $everyone = RT::Model::Group->new(current_user => RT->system_user );
     $everyone->load_system_internal_group('Everyone');
     ok($everyone->id, "loaded 'everyone' group");
-    my($id, $msg) = $everyone->principal_object->grant_right( Right => 'OwnTicket',
+    my($id, $msg) = $everyone->principal_object->grant_right( right => 'OwnTicket',
                                                          object => $q
                                                        );
     ok($id, "granted OwnTicket right to Everyone on '$queue'") or diag("error: $msg");

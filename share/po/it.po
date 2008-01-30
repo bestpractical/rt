@@ -194,8 +194,8 @@ msgid "%1 aliases require a TicketId to work on (from %2) %3"
 msgstr "gli alias %1 necessitano di un TicketId per lavorare con (da %2) %3"
 
 #: lib/RT/Link_Overlay.pm:144 lib/RT/Link_Overlay.pm:151
-#. ($args{'Base'})
-#. ($args{'Target'})
+#. ($args{'base'})
+#. ($args{'target'})
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 sembra essere un oggetto locale, ma non è presente nel database"
 
@@ -301,8 +301,8 @@ msgid "%1 succeeded\\n"
 msgstr "%1 riuscito\\n"
 
 #: NOT FOUND IN SOURCE
-msgid "%1 type unknown for $MessageId"
-msgstr "Tipo %1 sconosciuto per $MessageId"
+msgid "%1 type unknown for $message_id"
+msgstr "Tipo %1 sconosciuto per $message_id"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 type unknown for %2"
@@ -773,7 +773,7 @@ msgstr "Gestione/Gruppi"
 
 #: NOT FOUND IN SOURCE
 msgid "Admin/Queue/Basics"
-msgstr "Gestione/Code/Base"
+msgstr "Gestione/Code/base"
 
 #: NOT FOUND IN SOURCE
 msgid "AdminAllPersonalGroups"
@@ -1642,7 +1642,7 @@ msgstr "Crea uno scrip per la coda %1"
 msgid "Create a template"
 msgstr "Crea un modello"
 
-#: html/SelfService/Create.html:46 html/SelfService/create_ticketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Nuovo ticket"
 
@@ -2582,7 +2582,7 @@ msgid "Group %1 %2: %3"
 msgstr "Gruppo %1 %2: %3"
 
 #: html/Admin/Elements/CustomFieldTabs:68 html/Admin/Elements/GroupTabs:66 html/Admin/Elements/QueueTabs:82 html/Admin/Elements/SystemTabs:65 html/Admin/Global/index.html:76
-msgid "Group Rights"
+msgid "Group rights"
 msgstr "Diritti di gruppo"
 
 #: lib/RT/Group_Overlay.pm:983
@@ -2673,7 +2673,7 @@ msgstr "Homepage"
 msgid "Hours"
 msgstr ""
 
-#: lib/RT/Base.pm:119
+#: lib/RT/base.pm:119
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
 msgstr "Ho %quant(%1,concrete mixer)."
@@ -2790,7 +2790,7 @@ msgid "Invalid Group Type"
 msgstr "Tipo di gruppo non valido"
 
 #: lib/RT/Principal_Overlay.pm:161
-msgid "Invalid Right"
+msgid "Invalid right"
 msgstr "Diritto non valido"
 
 #: NOT FOUND IN SOURCE
@@ -2995,7 +2995,7 @@ msgid "Link values to"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "LinkedTo"
+msgid "linked_to"
 msgstr "CollegatoA"
 
 #: lib/RT/Ticket_Overlay.pm:700
@@ -3190,8 +3190,8 @@ msgid "Merge Successful"
 msgstr "Unione avvenuta con Successo"
 
 #: lib/RT/Ticket_Overlay.pm:2780
-msgid "Merge failed. Couldn't set EffectiveId"
-msgstr "Unione fallita. Impossibile impostare EffectiveId"
+msgid "Merge failed. Couldn't set effective_id"
+msgstr "Unione fallita. Impossibile impostare effective_id"
 
 #: lib/RT/Ticket_Overlay.pm:2788
 msgid "Merge failed. Couldn't set Status"
@@ -3269,7 +3269,7 @@ msgid "Modify Custom Fields which apply to all queues"
 msgstr "Modifica i Campi Personalizzati validi per tutte le code"
 
 #: html/Admin/Global/GroupRights.html:106 html/Admin/Groups/GroupRights.html:94 html/Admin/Queues/GroupRights.html:107
-msgid "Modify Group Rights"
+msgid "Modify Group rights"
 msgstr "Modifica diritti del gruppo"
 
 #: html/Admin/Groups/Members.html:105 html/User/Groups/Members.html:101
@@ -3277,7 +3277,7 @@ msgid "Modify Members"
 msgstr "Modifica appartenenti al gruppo"
 
 #: html/User/Delegation.html:58
-msgid "Modify Rights"
+msgid "Modify rights"
 msgstr "Modifica diritti"
 
 #: lib/RT/Queue_Overlay.pm:97
@@ -3293,11 +3293,11 @@ msgid "Modify System ACLS"
 msgstr "Modifica le ACL di Sistema"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify Template %1"
+msgid "Modify template %1"
 msgstr "Modifica il modello %1"
 
 #: html/Admin/Global/UserRights.html:75 html/Admin/Groups/UserRights.html:76 html/Admin/Queues/UserRights.html:75
-msgid "Modify User Rights"
+msgid "Modify User rights"
 msgstr "Modifica diritti utente"
 
 #: html/Admin/Queues/CustomField.html:66
@@ -4745,7 +4745,7 @@ msgid "Resolve ticket #%1 (%2)"
 msgstr "Risolvi il ticket n°%1 (%2)"
 
 #: etc/initialdata:323 html/Elements/SelectDateType:49 lib/RT/Ticket_Overlay.pm:1172
-msgid "Resolved"
+msgid "resolved"
 msgstr "Risolto"
 
 #: html/Tools/Reports/Elements/Tabs:55
@@ -4789,15 +4789,15 @@ msgid "Revert"
 msgstr "Annulla modifiche"
 
 #: NOT FOUND IN SOURCE
-msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
+msgid "right %1 not found for %2  %3 in scope %4 (%5)\\n"
 msgstr "Diritto %1 non trovato per %2  %3 limitatamente a %4 (%5)\\n"
 
 #: lib/RT/ACE_Overlay.pm:630
-msgid "Right Delegated"
+msgid "right Delegated"
 msgstr "Diritto delegato"
 
 #: lib/RT/ACE_Overlay.pm:320
-msgid "Right Granted"
+msgid "right Granted"
 msgstr "Diritto concesso"
 
 #: lib/RT/ACE_Overlay.pm:178
@@ -5007,7 +5007,7 @@ msgstr "Seleziona un gruppo"
 msgid "Select a queue"
 msgstr "Seleziona una coda"
 
-#: html/SelfService/create_ticketInQueue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Scegli una coda per il nuovo ticket"
 
@@ -5414,7 +5414,7 @@ msgid "System Error. Right not granted."
 msgstr "Errore di sistema. Diritto non concesso."
 
 #: NOT FOUND IN SOURCE
-msgid "System Error. right not granted"
+msgid "System Error. Right not granted"
 msgstr "Errore di sistema. Diritto non concesso"
 
 #: lib/RT/Transaction_Overlay.pm:224 lib/RT/Transaction_Overlay.pm:230
@@ -5939,10 +5939,10 @@ msgid "UnixUsername"
 msgstr "UsernameUnix"
 
 #: lib/RT/Attachment_Overlay.pm:289 lib/RT/Record.pm:861
-#. ($self->ContentEncoding)
-#. ($ContentEncoding)
-msgid "Unknown ContentEncoding %1"
-msgstr "ContentEncoding sconosciuto %1"
+#. ($self->content_encoding)
+#. ($content_encoding)
+msgid "Unknown content_encoding %1"
+msgstr "content_encoding sconosciuto %1"
 
 #: html/Search/Build.html:455 lib/RT/Report/Tickets.pm:410
 msgid "Unknown field: $key"
@@ -6120,7 +6120,7 @@ msgid "User Id"
 msgstr "Username"
 
 #: html/Admin/Elements/CustomFieldTabs:72 html/Admin/Elements/GroupTabs:68 html/Admin/Elements/QueueTabs:85 html/Admin/Elements/SystemTabs:68 html/Admin/Global/index.html:80
-msgid "User Rights"
+msgid "User rights"
 msgstr "Diritti dell'utente"
 
 #: NOT FOUND IN SOURCE

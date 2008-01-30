@@ -43,7 +43,7 @@ my $everyone;
 
 RT::Test->set_rights(
     Principal => $everyone->principal_object,
-    Right => ['create_ticket'],
+    right => ['create_ticket'],
 );
 
 

@@ -233,10 +233,10 @@ sub limit_to_privileged {
 
 # {{{ who_have_right
 
-=head2 who_have_right { Right => 'name', object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, equiv_objects => [ ] }
+=head2 who_have_right { right => 'name', object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, equiv_objects => [ ] }
 
 
-find all users who the right Right for this group, either individually
+find all users who the right right for this group, either individually
 or as members of groups
 
 If passed a queue object, with no id, it will find users who have that right for _any_ queue
@@ -295,7 +295,7 @@ sub _join_groups {
 sub _join_acl {
     my $self = shift;
     my %args = (
-        Right             => undef,
+        right             => undef,
         IncludeSuperusers => undef,
         @_,
     );
@@ -304,11 +304,11 @@ sub _join_acl {
     $self->limit(
         alias    => $acl,
         column   => 'right_name',
-        operator => ( $args{Right} ? '=' : 'IS NOT' ),
-        value => $args{Right} || 'NULL',
+        operator => ( $args{right} ? '=' : 'IS NOT' ),
+        value => $args{right} || 'NULL',
         entry_aggregator => 'OR'
     );
-    if ( $args{'IncludeSuperusers'} and $args{'Right'} ) {
+    if ( $args{'IncludeSuperusers'} and $args{'right'} ) {
         $self->limit(
             alias            => $acl,
             column           => 'right_name',
@@ -357,7 +357,7 @@ sub _get_equiv_objects {
 sub who_have_right {
     my $self = shift;
     my %args = (
-        Right                  => undef,
+        right                  => undef,
         object                 => undef,
         IncludeSystemRights    => undef,
         IncludeSuperusers      => undef,
@@ -396,7 +396,7 @@ sub who_have_right {
 sub who_have_role_right {
     my $self = shift;
     my %args = (
-        Right                  => undef,
+        right                  => undef,
         object                 => undef,
         IncludeSystemRights    => undef,
         IncludeSuperusers      => undef,
@@ -478,7 +478,7 @@ sub _join_group_members_for_group_rights {
 sub who_have_group_right {
     my $self = shift;
     my %args = (
-        Right                  => undef,
+        right                  => undef,
         object                 => undef,
         IncludeSystemRights    => undef,
         IncludeSuperusers      => undef,
@@ -487,7 +487,7 @@ sub who_have_group_right {
         @_
     );
 
-    # Find only rows where the right granted is
+    # Find only rows where the Right granted is
     # the one we're looking up or _possibly_ superuser
     my $acl = $self->_join_acl(%args);
 

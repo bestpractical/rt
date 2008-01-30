@@ -38,7 +38,7 @@ ok(!$agent->find_link( url => "$RT::WebPath/User/Prefs.html",
 
 # Now test for their presence, one at a time.  Sleep for a bit after
 # ACL changes, thanks to the 10s ACL cache.
-my ($grantid,$grantmsg) =$user_obj->principal_object->grant_right(Right => 'ShowConfigTab', object => RT->system);
+my ($grantid,$grantmsg) =$user_obj->principal_object->grant_right(right => 'ShowConfigTab', object => RT->system);
 
 ok($grantid,$grantmsg);
 
@@ -47,15 +47,15 @@ $agent->reload;
 like($agent->{'content'} , qr/Logout/i, "Reloaded page successfully");
 ok($agent->find_link( url => "$RT::WebPath/Admin/",
 		       text => 'Configuration'), "Found config tab" );
-my ($revokeid,$revokemsg) =$user_obj->principal_object->revoke_right(Right => 'ShowConfigTab');
+my ($revokeid,$revokemsg) =$user_obj->principal_object->revoke_right(right => 'ShowConfigTab');
 ok ($revokeid,$revokemsg);
-($grantid,$grantmsg) =$user_obj->principal_object->grant_right(Right => 'ModifySelf');
+($grantid,$grantmsg) =$user_obj->principal_object->grant_right(right => 'ModifySelf');
 ok ($grantid,$grantmsg);
 $agent->reload();
 like($agent->{'content'} , qr/Logout/i, "Reloaded page successfully");
 ok($agent->find_link( url => "$RT::WebPath/User/Prefs.html",
 		       text => 'Preferences'), "Found prefs pane" );
-($revokeid,$revokemsg) = $user_obj->principal_object->revoke_right(Right => 'ModifySelf');
+($revokeid,$revokemsg) = $user_obj->principal_object->revoke_right(right => 'ModifySelf');
 ok ($revokeid,$revokemsg);
 # Good.  Now load the search page and test Load/Save Search.
 $agent->follow_link( url => "$RT::WebPath/Search/Build.html",
@@ -64,14 +64,14 @@ is($agent->{'status'}, 200, "Fetched search builder page");
 ok($agent->{'content'} !~ /Load saved search/i, "No search loading box");
 ok($agent->{'content'} !~ /Saved searches/i, "No saved searches box");
 
-($grantid,$grantmsg) = $user_obj->principal_object->grant_right(Right => 'LoadSavedSearch');
+($grantid,$grantmsg) = $user_obj->principal_object->grant_right(right => 'LoadSavedSearch');
 ok($grantid,$grantmsg);
 $agent->reload();
 like($agent->{'content'} , qr/Load saved search/i, "Search loading box exists");
 ok($agent->{'content'} !~ /input\s+type=['"]submit['"][^>]+name=['"]SavedSearchSave['"]/i, 
    "Still no saved searches box");
 
-($grantid,$grantmsg) =$user_obj->principal_object->grant_right(Right => 'CreateSavedSearch');
+($grantid,$grantmsg) =$user_obj->principal_object->grant_right(right => 'CreateSavedSearch');
 ok ($grantid,$grantmsg);
 $agent->reload();
 like($agent->{'content'} , qr/Load saved search/i, 
@@ -94,11 +94,11 @@ ok($ret, "SelectOwner test group creation. $msg");
 # Add our customer to the customer group, and give it queue rights.
 ($ret, $msg) = $group_obj->add_member($user_obj->principal_object->id());
 ok($ret, "Added customer to its group. $msg");
-($grantid,$grantmsg) =$group_obj->principal_object->grant_right(Right => 'OwnTicket',
+($grantid,$grantmsg) =$group_obj->principal_object->grant_right(right => 'OwnTicket',
 				     object => $queue_obj);
                                      
 ok($grantid,$grantmsg);
-($grantid,$grantmsg) =$group_obj->principal_object->grant_right(Right => 'SeeQueue',
+($grantid,$grantmsg) =$group_obj->principal_object->grant_right(right => 'SeeQueue',
 				     object => $queue_obj);
 ok ($grantid,$grantmsg);
 # Now.  When we look at the search page we should be able to see

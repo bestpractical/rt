@@ -147,7 +147,7 @@ BEGIN {
 	    pwd     =>  $path,
 	    description => 'Enables port 8284 as the RT FastCGI handler.',
 	    parameters  => File::Spec->catfile(
-		    $path, File::Basename::basename($0)
+		    $path, File::Basename::Basename($0)
 	    ) . ' --service',
 	} );
     

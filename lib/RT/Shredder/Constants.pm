@@ -63,7 +63,7 @@ second group is states of RT objects in Shredder cache.
 
 =head2 DEPENDS_ON
 
-Targets that has such dependency flag set should be wiped out with base object.
+targets that has such dependency flag set should be wiped out with base object.
 
 =head2 WIPE_AFTER
 
@@ -82,7 +82,7 @@ change this reference when we delete user.
 
 =head2 RELATES
 
-This flag is used to validate relationships integrity. Base object
+This flag is used to validate relationships integrity. base object
 is valid only when all target objects which are marked with this flags
 exist.
 

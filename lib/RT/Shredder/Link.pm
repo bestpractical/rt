@@ -93,7 +93,7 @@ sub __depends_on {
         push( @$list, $objs );
     }
 
-    my %reverse = ( Base => 'Target', Target => 'Base' );
+    my %reverse = ( base => 'target', target => 'base' );
     if ( $self->target_uri->is_local ) {
         my $objs = $self->target_obj->transactions;
         $objs->limit(

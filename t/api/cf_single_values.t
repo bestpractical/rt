@@ -13,7 +13,7 @@ my ($id,$msg) =$q->create(name => "CF-Single-".$$);
 ok($id,$msg);
 
 my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
-($id,$msg) = $cf->create(name => 'Single-'.$$, type => 'Select', MaxValues => '1', Queue => $q->id);
+($id,$msg) = $cf->create(name => 'Single-'.$$, type => 'Select', MaxValues => '1', queue => $q->id);
 ok($id,$msg);
 
 
@@ -25,7 +25,7 @@ ok($id,$msg);
 
 
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
-($id,undef,$msg) = $t->create(Queue => $q->id,
+($id,undef,$msg) = $t->create(queue => $q->id,
           subject => 'CF Test');
 
 ok($id,$msg);

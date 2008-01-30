@@ -70,10 +70,10 @@ sub __depends_on {
     # Tickets
     my $objs = RT::Model::TicketCollection->new;
     $objs->{'allow_deleted_search'} = 1;
-    $objs->limit( column => 'Queue', value => $self->id );
+    $objs->limit( column => 'queue', value => $self->id );
     push( @$list, $objs );
 
-    # Queue role groups( Cc, AdminCc )
+    # queue role groups( Cc, AdminCc )
     $objs = RT::Model::GroupCollection->new;
     $objs->limit( column => 'domain',   value => 'RT::Model::Queue-Role' );
     $objs->limit( column => 'instance', value => $self->id );

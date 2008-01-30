@@ -17,7 +17,7 @@ my ($qid) = $queue->load( 'General' );
 ok( $qid, "loaded queue" );
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
-my ($tid) = $ticket->create( Queue => $qid, subject => 'test' );
+my ($tid) = $ticket->create( queue => $qid, subject => 'test' );
 ok( $tid, "ticket Created" );
 
 create_savepoint('bucreate'); # berfore user create
@@ -32,7 +32,7 @@ create_savepoint('aucreate'); # after user create
 {
     my $resolver = sub  {
         my %args = (@_);
-        my $t =	$args{'Targetobject'};
+        my $t =	$args{'targetobject'};
         my $resolver_uid = RT->system_user->id;
         foreach my $method ( qw(Creator LastUpdatedBy) ) {
             next unless $t->can($method);
@@ -40,7 +40,7 @@ create_savepoint('aucreate'); # after user create
         }
     };
     my $shredder = shredder_new();
-    $shredder->put_resolver( BaseClass => 'RT::Model::User', Code => $resolver );
+    $shredder->put_resolver( baseClass => 'RT::Model::User', Code => $resolver );
     $shredder->wipeout( object => $user );
     cmp_deeply( dump_current_and_savepoint('bucreate'), "current DB equal to savepoint");
 }

@@ -72,10 +72,10 @@ Allow you to limit search results. B<< Default value is C<10> >>.
 
 =cut
 
-sub SupportArgs {
+sub support_args {
     my %seen;
     return sort
-        grep $_ && !$seen{$_}, shift->SUPER::SupportArgs(@_), qw(limit);
+        grep $_ && !$seen{$_}, shift->SUPER::support_args(@_), qw(limit);
 }
 
 sub test_args {

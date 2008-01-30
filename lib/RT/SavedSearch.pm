@@ -157,7 +157,7 @@ sub save {
         return ( 0, _("No permission to save system-wide searches") )
             unless $self->current_user->has_right(
             object => RT->system,
-            Right  => 'SuperUser'
+            right  => 'SuperUser'
             );
     }
 

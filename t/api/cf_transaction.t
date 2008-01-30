@@ -28,7 +28,7 @@ ok($id,$msg);
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 
 my $transid;
-($id,$transid, $msg) = $ticket->create(Queue => $q->id,
+($id,$transid, $msg) = $ticket->create(queue => $q->id,
                 subject => 'TxnCF test',
             );
 ok($id,$msg);

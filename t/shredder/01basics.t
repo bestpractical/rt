@@ -14,7 +14,7 @@ create_savepoint();
 
 use RT::Model::TicketCollection;
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
-my ($id,undef,$cmsg) = $ticket->create( subject => 'test', Queue => 1 );
+my ($id,undef,$cmsg) = $ticket->create( subject => 'test', queue => 1 );
 ok( $id, "Created new ticket $cmsg " );
 
 $ticket = RT::Model::Ticket->new(current_user => RT->system_user );

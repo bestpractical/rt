@@ -57,7 +57,7 @@
     Rows => $Rows,
     Page => $Page,
     order_by => $order_by , 
-    BaseURL => $BaseURL,
+    baseURL => $baseURL,
     maxitems => $maxitems &> 
 % }
 <%PERL>
@@ -105,10 +105,10 @@ my $next = $m->comp(
 );
 </%perl>
 % if ($Page > 1) {
-<a href="<%$BaseURL%><%$prev%>"><&|/l&>Previous Page</&></a>
+<a href="<%$baseURL%><%$prev%>"><&|/l&>Previous Page</&></a>
 % }
 % if (($Page * $Rows) < $TotalFound) {
-<a href="<%$BaseURL%><%$next%>"><&|/l&>next Page</&></a>
+<a href="<%$baseURL%><%$next%>"><&|/l&>next Page</&></a>
 % }
 % }
 <%INIT>
@@ -172,7 +172,7 @@ $Rows => 50
 
 $Page => 1
 $Title => 'Ticket Search'
-$BaseURL => undef
+$baseURL => undef
 $AllowSorting => undef
 $ShowNavigation => 1
 $ShowHeader => 1

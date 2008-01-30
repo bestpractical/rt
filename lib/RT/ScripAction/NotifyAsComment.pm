@@ -52,10 +52,10 @@ use strict;
 use vars qw/@ISA/;
 @ISA = qw(RT::ScripAction::Notify);
 
-=head2 set_ReturnAddress
+=head2 set_return_address
 
 Tell SendEmail that this message should come out as a comment. 
-Calls SUPER::set_ReturnAddress.
+Calls SUPER::set_return_address.
 
 =cut
 
@@ -66,7 +66,7 @@ sub set_return_address {
     # from the relevant comment email address.
     $self->{'comment'} = 1;
 
-    return ( $self->SUPER::set_ReturnAddress( is_comment => 1 ) );
+    return ( $self->SUPER::set_return_address( is_comment => 1 ) );
 }
 
 1;

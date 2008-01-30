@@ -186,8 +186,8 @@ msgid "%1 aliases require a TicketId to work on (from %2) %3"
 msgstr "%1 aliasy vyžadují k činnosti TicketId (odesílatel %2) %3"
 
 #: lib/RT/Link_Overlay.pm:144 lib/RT/Link_Overlay.pm:151
-#. ($args{'Base'})
-#. ($args{'Target'})
+#. ($args{'base'})
+#. ($args{'target'})
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 vypadá jako lokální objekt, ale není v databázi"
 
@@ -289,8 +289,8 @@ msgid "%1 succeeded\\n"
 msgstr "%1 provedeno\\n"
 
 #: NOT FOUND IN SOURCE
-msgid "%1 type unknown for $MessageId"
-msgstr "typ %1 neznámý pro $MessageId"
+msgid "%1 type unknown for $message_id"
+msgstr "typ %1 neznámý pro $message_id"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 type unknown for %2"
@@ -1534,7 +1534,7 @@ msgstr "Vytvořit scrips pro frontu %1"
 msgid "Create a template"
 msgstr "Vytvořit vzor"
 
-#: html/SelfService/Create.html:46 html/SelfService/create_ticketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Vytvořit požadavek"
 
@@ -2354,7 +2354,7 @@ msgid "Group %1 %2: %3"
 msgstr "Skupina %1 %2: %3"
 
 #: html/Admin/Elements/CustomFieldTabs:68 html/Admin/Elements/GroupTabs:66 html/Admin/Elements/QueueTabs:82 html/Admin/Elements/SystemTabs:65 html/Admin/Global/index.html:76
-msgid "Group Rights"
+msgid "Group rights"
 msgstr "Práva skupiny"
 
 #: lib/RT/Group_Overlay.pm:983
@@ -2437,7 +2437,7 @@ msgstr "Domovská stránka"
 msgid "Hours"
 msgstr "Hodin"
 
-#: lib/RT/Base.pm:119
+#: lib/RT/base.pm:119
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
 msgstr "Mám %quant(%1,míchačku,míchačky,míchaček)"
@@ -2547,7 +2547,7 @@ msgid "Invalid Group Type"
 msgstr "Neplatný typ skupiny"
 
 #: lib/RT/Principal_Overlay.pm:161
-msgid "Invalid Right"
+msgid "Invalid right"
 msgstr "Neplatné právo"
 
 #: lib/RT/Record.pm:952
@@ -2899,8 +2899,8 @@ msgid "Merge Successful"
 msgstr "Sloučení úspěšné"
 
 #: lib/RT/Ticket_Overlay.pm:2780
-msgid "Merge failed. Couldn't set EffectiveId"
-msgstr "Sloučení se nepodařilo. Nelze nastavit EffectiveId"
+msgid "Merge failed. Couldn't set effective_id"
+msgstr "Sloučení se nepodařilo. Nelze nastavit effective_id"
 
 #: lib/RT/Ticket_Overlay.pm:2788
 msgid "Merge failed. Couldn't set Status"
@@ -2978,7 +2978,7 @@ msgid "Modify Custom Fields which apply to all queues"
 msgstr "Úprava uživatelských položek pro všechny fronty"
 
 #: html/Admin/Global/GroupRights.html:106 html/Admin/Groups/GroupRights.html:94 html/Admin/Queues/GroupRights.html:107
-msgid "Modify Group Rights"
+msgid "Modify Group rights"
 msgstr "Úprava skupinových práv"
 
 #: html/Admin/Groups/Members.html:105 html/User/Groups/Members.html:101
@@ -2986,7 +2986,7 @@ msgid "Modify Members"
 msgstr "Upravit členy"
 
 #: html/User/Delegation.html:58
-msgid "Modify Rights"
+msgid "Modify rights"
 msgstr "Upravit práva"
 
 #: lib/RT/Queue_Overlay.pm:97
@@ -2998,11 +2998,11 @@ msgid "Modify Scrips for this queue"
 msgstr "Upravovat scripy této fronty"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify Template %1"
+msgid "Modify template %1"
 msgstr "Upravovat vzor %1"
 
 #: html/Admin/Global/UserRights.html:75 html/Admin/Groups/UserRights.html:76 html/Admin/Queues/UserRights.html:75
-msgid "Modify User Rights"
+msgid "Modify User rights"
 msgstr "Upravit práva uživatelů"
 
 #: html/Admin/Queues/CustomField.html:66
@@ -4390,7 +4390,7 @@ msgid "Resolve ticket #%1 (%2)"
 msgstr "Vyřešení požadavku #%1 (%2)"
 
 #: etc/initialdata:323 html/Elements/SelectDateType:49 lib/RT/Ticket_Overlay.pm:1172
-msgid "Resolved"
+msgid "resolved"
 msgstr "Vyřešen"
 
 #: html/Tools/Reports/Elements/Tabs:55
@@ -4430,15 +4430,15 @@ msgid "Revert"
 msgstr "Vrátit"
 
 #: NOT FOUND IN SOURCE
-msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
+msgid "right %1 not found for %2  %3 in scope %4 (%5)\\n"
 msgstr "Nenalezeno právo %1 pro %2 %3 v mezích %4 (%5)"
 
 #: lib/RT/ACE_Overlay.pm:630
-msgid "Right Delegated"
+msgid "right Delegated"
 msgstr "Právo delegováno"
 
 #: lib/RT/ACE_Overlay.pm:320
-msgid "Right Granted"
+msgid "right Granted"
 msgstr "Právo přidáno"
 
 #: lib/RT/ACE_Overlay.pm:178
@@ -4644,7 +4644,7 @@ msgstr "Výběr skupiny"
 msgid "Select a queue"
 msgstr "Výběr fronty"
 
-#: html/SelfService/create_ticketInQueue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Výběr fronty pro váš nový požadavek"
 
@@ -5528,9 +5528,9 @@ msgid "UnixUsername"
 msgstr "Unixové uživatelské jméno"
 
 #: lib/RT/Attachment_Overlay.pm:289 lib/RT/Record.pm:861
-#. ($self->ContentEncoding)
-#. ($ContentEncoding)
-msgid "Unknown ContentEncoding %1"
+#. ($self->content_encoding)
+#. ($content_encoding)
+msgid "Unknown content_encoding %1"
 msgstr "Neznámé kódování obsahu %1"
 
 #: html/Search/Build.html:455 lib/RT/Report/Tickets.pm:410
@@ -5701,7 +5701,7 @@ msgid "User Id"
 msgstr "Identifikátor uživatele"
 
 #: html/Admin/Elements/CustomFieldTabs:72 html/Admin/Elements/GroupTabs:68 html/Admin/Elements/QueueTabs:85 html/Admin/Elements/SystemTabs:68 html/Admin/Global/index.html:80
-msgid "User Rights"
+msgid "User rights"
 msgstr "Práva uživatele"
 
 #: html/Admin/Users/Modify.html:301

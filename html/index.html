@@ -85,7 +85,7 @@ my @results;
 
 if ( $ARGS{'QuickCreate'} ) {
     my $ticket = RT::Model::Ticket->new();
-    my ($tid, $trans, $tmsg) = $ticket->create(Queue => $ARGS{'Queue'},
+    my ($tid, $trans, $tmsg) = $ticket->create(queue => $ARGS{'queue'},
                     Owner => $ARGS{'Owner'},
                     Requestor => Jifty->web->current_user->id,
                     subject => $ARGS{'subject'});
@@ -104,7 +104,7 @@ if ($ARGS{'HomeRefreshInterval'}) {
 }
 
 my $actions;
-if (Jifty->web->current_user->has_right(Right => 'ModifySelf', object => RT->system)) {
+if (Jifty->web->current_user->has_right(right => 'ModifySelf', object => RT->system)) {
     $actions = {
         A => { title => _('Edit'),
                path  => 'Prefs/MyRT.html',

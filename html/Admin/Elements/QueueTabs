@@ -81,16 +81,16 @@ if ($id) {
                         path => 'Admin/Queues/CustomFields.html?SubType=RT::Model::Ticket-RT::Model::Transaction&id='.$id,
                         },
 
-		 H => { title => _('Group Rights'),
+		 H => { title => _('Group rights'),
 			  path => "Admin/Queues/GroupRights.html?id=".$id,
 			},	
-		 I => { title => _('User Rights'),
+		 I => { title => _('User rights'),
 			  path => "Admin/Queues/UserRights.html?id=".$id,
 			}
         }
         };
 }
-if (Jifty->web->current_user->has_right( object => RT->system, Right => 'AdminQueue')) {
+if (Jifty->web->current_user->has_right( object => RT->system, right => 'AdminQueue')) {
   $tabs->{"A"} = { title => _('Select queue'),
   		     	path => "Admin/Queues/",
 			   };

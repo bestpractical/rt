@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $Query => "id > 0"
-$PrimaryGroupBy => 'Queue'
+$PrimaryGroupBy => 'queue'
 $SecondaryGroupBy => undef
 $ChartStyle => 'bars'
 </%args>
@@ -116,7 +116,7 @@ if ($chart_class eq "GD::Graph::bars") {
 }
 
 my %class = (
-    Queue => 'RT::Model::Queue',
+    queue => 'RT::Model::Queue',
     Owner => 'RT::Model::User',
 );
 my $class = $class{ $PrimaryGroupBy };

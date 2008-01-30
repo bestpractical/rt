@@ -84,9 +84,9 @@ ok ($add_id, "Add succeeded: ($add_msg)");
 ok(my $bob = RT::Model::User->new(current_user => RT->system_user), "Creating a bob rt::user");
 $bob->load_by_email('bob@fsck.com');
 ok($bob->id,  "Found the bob rt user");
-ok ($Queue->is_watcher(type => 'Cc', principal_id => $bob->principal_id), "The Queue actually has bob at fsck.com as a cc");;
+ok ($Queue->is_watcher(type => 'Cc', principal_id => $bob->principal_id), "The queue actually has bob at fsck.com as a cc");;
 ok (($add_id, $add_msg) = $Queue->delete_watcher(type =>'Cc', principal_id => $bob->principal_id ), "Removed bob at fsck.com as a cc");
-ok (!$Queue->is_watcher(type => 'Cc', principal_id => $bob->principal_id), "The Queue no longer has bob at fsck.com as a cc");;
+ok (!$Queue->is_watcher(type => 'Cc', principal_id => $bob->principal_id), "The queue no longer has bob at fsck.com as a cc");;
 
 
 $group = RT::Model::Group->new(current_user => RT->system_user);

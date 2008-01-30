@@ -76,7 +76,7 @@ kilobytes or megabytes.
 =cut
 
 sub support_args {
-    return $_[0]->SUPER::SupportArgs, qw(files_only file longer);
+    return $_[0]->SUPER::support_args, qw(files_only file longer);
 }
 
 sub test_args {
@@ -97,7 +97,7 @@ sub test_args {
     return $self->SUPER::test_args(%args);
 }
 
-sub Run {
+sub run {
     my $self       = shift;
     my @conditions = ();
     my @values     = ();

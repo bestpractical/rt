@@ -58,11 +58,11 @@
 </ul>
 <%INIT>
 my $GroupMembers = RT::Model::GroupMemberCollection->new();
-$GroupMembers->limit( column => 'MemberId', value => $user_object->id );
+$GroupMembers->limit( column => 'member_id', value => $user_object->id );
 my $alias = $GroupMembers->join(
     type => 'left',
     alias1     => 'main',
-    column1     => 'GroupId',
+    column1     => 'group_id',
     table2     => 'Groups',
     column2     => 'id'
 );

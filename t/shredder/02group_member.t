@@ -38,8 +38,8 @@ plan tests => 22;
 	ok( $status, "added user to child group") or diag "error: $msg";
 	
 	my $members = RT::Model::GroupMemberCollection->new( current_user => RT->system_user );
-	$members->limit( column => 'MemberId', value => $uid );
-	$members->limit( column => 'GroupId', value => $cgid );
+	$members->limit( column => 'member_id', value => $uid );
+	$members->limit( column => 'group_id', value => $cgid );
 	is( $members->count, 1, "find membership record" );
 	
 	my $shredder = shredder_new();
@@ -70,11 +70,11 @@ plan tests => 22;
 	$queue->load('General');
 	ok( $queue->id, "queue loaded succesfully" );
 
-	$user->principal_object->grant_right( Right => 'OwnTicket', object => $queue );
+	$user->principal_object->grant_right( right => 'OwnTicket', object => $queue );
 
 	use RT::Model::TicketCollection;
 	my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
-	my ($id) = $ticket->create( subject => 'test', Queue => $queue->id );
+	my ($id) = $ticket->create( subject => 'test', queue => $queue->id );
 	ok( $id, "Created new ticket" );
 	$ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 	my $status;

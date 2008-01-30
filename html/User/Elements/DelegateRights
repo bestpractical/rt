@@ -99,7 +99,7 @@ while ( my $delegation = $delegations->next) {
 my $sectionheading = _("%1 rights", loc($object_type =~ /^RT::(.*)$/));
 # 'System' # loc
 # 'Group'  # loc
-# 'Queue'  # loc
+# 'queue'  # loc
 
 </%init>
 <%args>

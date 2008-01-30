@@ -300,12 +300,12 @@ sub insert_data {
  # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (
         @Groups,       @Users,           @ACL,       @Queues,
-        @ScripActions, @ScripConditions, @Templates, @CustomFields,
+        @scrip_actions, @scrip_conditions, @Templates, @CustomFields,
         @Scrips,       @Attributes,      @Initial,   @Final
     );
     local (
         @Groups,       @Users,           @ACL,       @Queues,
-        @ScripActions, @ScripConditions, @Templates, @CustomFields,
+        @scrip_actions, @scrip_conditions, @Templates, @CustomFields,
         @Scrips,       @Attributes,      @Initial,   @Final
     );
 
@@ -401,9 +401,9 @@ sub insert_data {
             my @queues;
 
             # if ref then it's list of queues, so we do things ourself
-            if ( exists $item->{'Queue'} && ref $item->{'Queue'} ) {
+            if ( exists $item->{'queue'} && ref $item->{'queue'} ) {
                 $item->{'lookup_type'} = 'RT::Model::Queue-RT::Model::Ticket';
-                @queues = @{ delete $item->{'Queue'} };
+                @queues = @{ delete $item->{'queue'} };
             }
 
             my ( $return, $msg ) = $new_entry->create(%$item);
@@ -420,7 +420,7 @@ sub insert_data {
             }
 
             # apply by default
-            if ( !@queues && !exists $item->{'Queue'} && $item->{lookup_type} )
+            if ( !@queues && !exists $item->{'queue'} && $item->{lookup_type} )
             {
                 my $ocf = RT::Model::ObjectCustomField->new(
                     current_user => RT->system_user );
@@ -452,24 +452,22 @@ sub insert_data {
         #print "done.\n";
     }
     if (@ACL) {
-
         #print "Creating ACL...";
         for my $item (@ACL) {
-
             my ( $princ, $object );
 
-            # Global rights or Queue rights?
+            # Global rights or queue rights?
             if ( $item->{'CF'} ) {
                 $object = RT::Model::CustomField->new(
                     current_user => RT->system_user );
                 my @columns = ( name => $item->{'CF'} );
-                push @columns, Queue => $item->{'Queue'}
-                    if $item->{'Queue'} and not ref $item->{'Queue'};
+                push @columns, queue => $item->{'queue'}
+                    if $item->{'queue'} and not ref $item->{'queue'};
                 $object->load_by_name(@columns);
-            } elsif ( $item->{'Queue'} ) {
+            } elsif ( $item->{'queue'} ) {
                 $object = RT::Model::Queue->new(
                     current_user => RT->system_user );
-                $object->load( $item->{'Queue'} );
+                $object->load( $item->{'queue'} );
             } else {
                 $object = RT->system;
             }
@@ -481,21 +479,21 @@ sub insert_data {
                 $princ = RT::Model::Group->new(
                     current_user => RT->system_user );
                 if ( $item->{'GroupDomain'} eq 'UserDefined' ) {
-                    $princ->load_user_defined_group( $item->{'GroupId'} );
+                    $princ->load_user_defined_group( $item->{'group_id'} );
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
                     $princ->load_system_internal_group(
                         $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::System-Role' ) {
                     $princ->load_system_role_group( $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::Model::Queue-Role'
-                    && $item->{'Queue'} )
+                    && $item->{'queue'} )
                 {
                     $princ->load_queue_role_group(
                         type  => $item->{'GroupType'},
-                        Queue => $object->id
+                        queue => $object->id
                     );
                 } else {
-                    $princ->load( $item->{'GroupId'} );
+                    $princ->load( $item->{'group_id'} );
                 }
             } else {
                 $princ
@@ -510,16 +508,16 @@ sub insert_data {
 
             # Grant it
             my ( $return, $msg ) = $princ->principal_object->grant_right(
-                Right  => $item->{'Right'},
+                right  => $item->{'right'},
                 object => $object
             );
 
             if ($return) {
 
-                #print $return. ".";
+                #warn $return. ".";
             } else {
 
-                #print $msg . ".";
+                #warn $msg . ".";
 
             }
 
@@ -528,11 +526,11 @@ sub insert_data {
         #print "done.\n";
     }
 
-    if (@ScripActions) {
+    if (@scrip_actions) {
 
-        #print "Creating ScripActions...";
+        #print "Creating scrip_actions...";
 
-        for my $item (@ScripActions) {
+        for my $item (@scrip_actions) {
             my $new_entry = RT::Model::ScripAction->new(
                 current_user => RT->system_user );
             my $return = $new_entry->create(%$item);
@@ -543,11 +541,11 @@ sub insert_data {
         #print "done.\n";
     }
 
-    if (@ScripConditions) {
+    if (@scrip_conditions) {
 
-        #print "Creating ScripConditions...";
+        #print "Creating scrip_conditions...";
 
-        for my $item (@ScripConditions) {
+        for my $item (@scrip_conditions) {
             my $new_entry = RT::Model::ScripCondition->new(
                 current_user => RT->system_user );
             my $return = $new_entry->create(%$item);
@@ -581,14 +579,14 @@ sub insert_data {
                 = RT::Model::Scrip->new( current_user => RT->system_user );
 
             my @queues
-                = ref $item->{'Queue'} eq 'ARRAY'
-                ? @{ $item->{'Queue'} }
-                : $item->{'Queue'} || 0;
+                = ref $item->{'queue'} eq 'ARRAY'
+                ? @{ $item->{'queue'} }
+                : $item->{'queue'} || 0;
             push @queues, 0 unless @queues;    # add global queue at least
 
             foreach my $q (@queues) {
                 my ( $return, $msg )
-                    = $new_entry->create( %$item, Queue => $q );
+                    = $new_entry->create( %$item, queue => $q );
                 if ($return) {
 
                     #print $return. ".";

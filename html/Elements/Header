@@ -91,7 +91,7 @@
     <span class="hide"><a href="#skipnav"><&|/l&>Skip Menu</&></a> | </span>
 % if (Jifty->web->current_user->name) {
     <&|/l, "<span>".Jifty->web->current_user->name."</span>" &>Logged in as %1</&>
-%     if ( Jifty->web->current_user->has_right( Right => 'ModifySelf', object => RT->system ) ) {
+%     if ( Jifty->web->current_user->has_right( right => 'ModifySelf', object => RT->system ) ) {
     | <a href="<%RT->config->get('WebPath')%><%$Prefs%>"><&|/l&>Preferences</&></a>
 %     }
 % } else {

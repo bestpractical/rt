@@ -8,7 +8,7 @@ use strict;
 =head1 description
 
 This module should never be instantiated directly by client code. it's an internal 
-module which should only be instantiated through exported APIs in Ticket, Queue and other 
+module which should only be instantiated through exported APIs in Ticket, queue and other 
 similar objects.
 
 =head1 METHODS
@@ -96,10 +96,10 @@ sub create {
     chomp($subject);
 
     #Get the Message-ID
-    my $MessageId = $Attachment->head->get( 'Message-ID', 0 );
-    defined($MessageId) or $MessageId = '';
-    chomp($MessageId);
-    $MessageId =~ s/^<(.*?)>$/$1/o;
+    my $message_id = $Attachment->head->get( 'Message-ID', 0 );
+    defined($message_id) or $message_id = '';
+    chomp($message_id);
+    $message_id =~ s/^<(.*?)>$/$1/o;
 
     #Get the filename
     my $Filename = $Attachment->head->recommended_filename;
@@ -111,8 +111,8 @@ sub create {
             transaction_id => $args{'transaction_id'},
             parent        => $args{'parent'},
             content_type   => $Attachment->mime_type,
-            Headers       => $Attachment->head->as_string,
-            MessageId     => $MessageId,
+            headers       => $Attachment->head->as_string,
+            message_id     => $message_id,
             subject       => $subject,
         );
 
@@ -139,20 +139,20 @@ sub create {
     #If it's not multipart
     else {
 
-        my ( $ContentEncoding, $Body )
+        my ( $content_encoding, $Body )
             = $self->_encode_lob( $Attachment->bodyhandle->as_string,
             $Attachment->mime_type );
 
         my $id = $self->SUPER::create(
             transaction_id   => $args{'transaction_id'},
             content_type     => $Attachment->mime_type,
-            ContentEncoding => $ContentEncoding,
+            content_encoding => $content_encoding,
             parent          => $args{'parent'},
-            Headers         => $Attachment->head->as_string,
+            headers         => $Attachment->head->as_string,
             subject         => $subject,
             content         => $Body,
             Filename        => $Filename,
-            MessageId       => $MessageId,
+            message_id       => $message_id,
         );
 
         unless ($id) {
@@ -172,9 +172,9 @@ Create an attachment exactly as specified in the named parameters.
 #XXX: we don't want to mess with perl's importer
 sub __import {
     my $self = shift;
-    my %args = ( ContentEncoding => 'none', @_ );
+    my %args = ( content_encoding => 'none', @_ );
 
-    ( $args{'ContentEncoding'}, $args{'content'} )
+    ( $args{'content_encoding'}, $args{'content'} )
         = $self->_encode_lob( $args{'content'}, $args{'MimeType'} );
 
     return ( $self->SUPER::create(%args) );
@@ -275,7 +275,7 @@ sub original_content {
         $content = MIME::QuotedPrint::decode(
             $self->_value( 'content', decode_utf8 => 0 ) );
     } else {
-        return ( _( "Unknown ContentEncoding %1", $self->content_encoding ) );
+        return ( _( "Unknown content_encoding %1", $self->content_encoding ) );
     }
 
   # Turn *off* the SvUTF8 bits here so decode_utf8 and from_to below can work.
@@ -461,7 +461,7 @@ sub nice_headers {
     return $hdrs;
 }
 
-=head2 Headers
+=head2 headers
 
 Returns this object's headers as a string.  This method specifically
 removes the RT-Send-Bcc: header, so as to never reveal to whom RT sent a Bcc.
@@ -478,7 +478,7 @@ sub headers {
 =head2 get_header $TAG
 
 Returns the value of the header Tag as a string. This bypasses the weeding out
-done in Headers() above.
+done in headers() above.
 
 =cut
 
@@ -511,7 +511,7 @@ sub del_header {
         next if $line =~ /^\Q$tag\E:\s+(.*)$/is;
         $newheader .= "$line\n";
     }
-    return $self->__set( field => 'Headers', value => $newheader );
+    return $self->__set( field => 'headers', value => $newheader );
 }
 
 =head add_header $TAG, $VALUE, ...
@@ -523,7 +523,7 @@ Add one or many fields to the attachment's headers.
 sub add_header {
     my $self = shift;
 
-    my $newheader = $self->__value('Headers');
+    my $newheader = $self->__value('headers');
     while ( my ( $tag, $value ) = splice @_, 0, 2 ) {
         $value = '' unless defined $value;
         $value =~ s/\s+$//s;
@@ -581,7 +581,7 @@ per array entry. multiple lines are folded.
 
 sub _split_headers {
     my $self = shift;
-    my $headers = ( shift || $self->_value('Headers') );
+    my $headers = ( shift || $self->_value('headers') );
     my @headers;
     for ( split( /\n(?=\w|\z)/, $headers ) ) {
         push @headers, $_;
@@ -617,8 +617,8 @@ sub encrypt {
     my $encrypt_for;
     foreach my $address (
         grep $_, $queue->correspond_address, $queue->comment_address,
-        RT->config->get('CorrespondAddress'),
-        RT->config->get('CommentAddress'),
+        RT->config->get('correspond_address'),
+        RT->config->get('comment_address'),
         )
     {
         my %res = RT::Crypt::GnuPG::get_keys_info( $address, 'private' );

@@ -48,7 +48,7 @@
 <%ARGS>
 $Plugin => ''
 </%ARGS>
-<& PluginHelp, %ARGS, Plugin => 'Base' &>
+<& PluginHelp, %ARGS, Plugin => 'base' &>
 <div class="shredder-form">
 <span>Select plugin: </span>
 <select name="Plugin" onchange="showShredderPluginTab(this.value);">

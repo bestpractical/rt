@@ -15,7 +15,7 @@ my @scrips_fired;
 #Were not testing acls here.
 my $everyone = RT::Model::Group->new(current_user => RT->system_user);
 $everyone->load_system_internal_group('Everyone');
-$everyone->principal_object->grant_right( Right =>'SuperUser' );
+$everyone->principal_object->grant_right( right =>'SuperUser' );
 
 
 is (__PACKAGE__, 'main', "We're operating in the main package");
@@ -79,7 +79,7 @@ Foob!');
 use Data::Dumper;
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
-my  ($id,  undef, $create_msg ) = $ticket->create(Requestor => ['root@localhost'], Queue => 'general', subject => 'I18NTest', mime_obj => $parser->entity);
+my  ($id,  undef, $create_msg ) = $ticket->create(Requestor => ['root@localhost'], queue => 'general', subject => 'I18NTest', mime_obj => $parser->entity);
 ok ($id,$create_msg);
 $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
@@ -532,5 +532,5 @@ diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
 
 
 # Don't taint the environment
-$everyone->principal_object->revoke_right(Right =>'SuperUser');
+$everyone->principal_object->revoke_right(right =>'SuperUser');
 1;

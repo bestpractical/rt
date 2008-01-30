@@ -39,7 +39,7 @@ ok $queue && $queue->id, 'loaded or created queue';
 
 RT::Test->set_rights(
     Principal => 'Everyone',
-    Right => ['create_ticket', 'ShowTicket', 'SeeQueue', 'ReplyToTicket', 'ModifyTicket'],
+    right => ['create_ticket', 'ShowTicket', 'SeeQueue', 'ReplyToTicket', 'ModifyTicket'],
 );
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -84,7 +84,7 @@ diag "check in read-only mode that queue's props influence create/update ticket 
     my $ticket = RT::Model::Ticket->new( current_user =>RT->system_user );
     my ($id) = $ticket->create(
         subject   => 'test',
-        Queue     => $queue->id,
+        queue     => $queue->id,
         Requestor => 'rt-test@example.com',
     );
     ok $id, 'ticket created';
@@ -120,7 +120,7 @@ my $tid;
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     ($tid) = $ticket->create(
         subject   => 'test',
-        Queue     => $queue->id,
+        queue     => $queue->id,
         Requestor => 'rt-test@example.com',
     );
     ok $tid, 'ticket created';

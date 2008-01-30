@@ -161,8 +161,8 @@ msgid "%1 added as a value for %2"
 msgstr ""
 
 #: lib/RT/Link_Overlay.pm:144 lib/RT/Link_Overlay.pm:151
-#. ($args{'Base'})
-#. ($args{'Target'})
+#. ($args{'base'})
+#. ($args{'target'})
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr ""
 
@@ -1249,7 +1249,7 @@ msgstr ""
 msgid "Create a template"
 msgstr ""
 
-#: html/SelfService/Create.html:46 html/SelfService/create_ticketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr ""
 
@@ -1965,7 +1965,7 @@ msgid "Group %1 %2: %3"
 msgstr "קבוצה %1 %2: %3"
 
 #: html/Admin/Elements/CustomFieldTabs:68 html/Admin/Elements/GroupTabs:66 html/Admin/Elements/QueueTabs:82 html/Admin/Elements/SystemTabs:65 html/Admin/Global/index.html:76
-msgid "Group Rights"
+msgid "Group rights"
 msgstr "זכויות קבוצה"
 
 #: lib/RT/Group_Overlay.pm:983
@@ -2036,7 +2036,7 @@ msgstr "דף הבית"
 msgid "Hours"
 msgstr ""
 
-#: lib/RT/Base.pm:119
+#: lib/RT/base.pm:119
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
 msgstr ""
@@ -2137,7 +2137,7 @@ msgid "Invalid Group Type"
 msgstr ""
 
 #: lib/RT/Principal_Overlay.pm:161
-msgid "Invalid Right"
+msgid "Invalid right"
 msgstr ""
 
 #: lib/RT/Record.pm:952
@@ -2481,7 +2481,7 @@ msgid "Merge Successful"
 msgstr "מיזוג הצליח"
 
 #: lib/RT/Ticket_Overlay.pm:2780
-msgid "Merge failed. Couldn't set EffectiveId"
+msgid "Merge failed. Couldn't set effective_id"
 msgstr "מיזוג נכשל. לא יכולתי להגדיר מזהה אפקטיבי"
 
 #: lib/RT/Ticket_Overlay.pm:2788
@@ -2552,7 +2552,7 @@ msgid "Modify Custom Fields which apply to all %1"
 msgstr ""
 
 #: html/Admin/Global/GroupRights.html:106 html/Admin/Groups/GroupRights.html:94 html/Admin/Queues/GroupRights.html:107
-msgid "Modify Group Rights"
+msgid "Modify Group rights"
 msgstr ""
 
 #: html/Admin/Groups/Members.html:105 html/User/Groups/Members.html:101
@@ -2560,7 +2560,7 @@ msgid "Modify Members"
 msgstr ""
 
 #: html/User/Delegation.html:58
-msgid "Modify Rights"
+msgid "Modify rights"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:97
@@ -2572,7 +2572,7 @@ msgid "Modify Scrips for this queue"
 msgstr ""
 
 #: html/Admin/Global/UserRights.html:75 html/Admin/Groups/UserRights.html:76 html/Admin/Queues/UserRights.html:75
-msgid "Modify User Rights"
+msgid "Modify User rights"
 msgstr ""
 
 #: html/Admin/Queues/CustomField.html:66
@@ -3792,7 +3792,7 @@ msgid "Resolve ticket #%1 (%2)"
 msgstr "פתור פנייה #%1 (%2)"
 
 #: etc/initialdata:323 html/Elements/SelectDateType:49 lib/RT/Ticket_Overlay.pm:1172
-msgid "Resolved"
+msgid "resolved"
 msgstr "נפתר"
 
 #: html/Tools/Reports/Elements/Tabs:55
@@ -3832,11 +3832,11 @@ msgid "Revert"
 msgstr ""
 
 #: lib/RT/ACE_Overlay.pm:630
-msgid "Right Delegated"
+msgid "right Delegated"
 msgstr ""
 
 #: lib/RT/ACE_Overlay.pm:320
-msgid "Right Granted"
+msgid "right Granted"
 msgstr ""
 
 #: lib/RT/ACE_Overlay.pm:178
@@ -4026,7 +4026,7 @@ msgstr ""
 msgid "Select a queue"
 msgstr ""
 
-#: html/SelfService/create_ticketInQueue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr ""
 
@@ -4790,9 +4790,9 @@ msgid "Unix login"
 msgstr ""
 
 #: lib/RT/Attachment_Overlay.pm:289 lib/RT/Record.pm:861
-#. ($self->ContentEncoding)
-#. ($ContentEncoding)
-msgid "Unknown ContentEncoding %1"
+#. ($self->content_encoding)
+#. ($content_encoding)
+msgid "Unknown content_encoding %1"
 msgstr ""
 
 #: html/Search/Build.html:455 lib/RT/Report/Tickets.pm:410
@@ -4943,7 +4943,7 @@ msgid "User Id"
 msgstr "מזהה המשתמש"
 
 #: html/Admin/Elements/CustomFieldTabs:72 html/Admin/Elements/GroupTabs:68 html/Admin/Elements/QueueTabs:85 html/Admin/Elements/SystemTabs:68 html/Admin/Global/index.html:80
-msgid "User Rights"
+msgid "User rights"
 msgstr "זכויות המשתמש"
 
 #: html/Admin/Users/Modify.html:301

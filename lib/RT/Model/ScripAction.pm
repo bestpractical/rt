@@ -141,7 +141,7 @@ sub load {
         # Set the template id to the passed in template
         my $template = shift;
 
-        $self->{'Template'} = $template;
+        $self->{'template'} = $template;
     }
     return ( $self->id, ( _( '%1 ScripAction loaded', $self->id ) ) );
 }
@@ -199,17 +199,17 @@ TODO: Why are we not using the Scrip's template object?
 
 sub template_obj {
     my $self = shift;
-    return undef unless $self->{Template};
+    return undef unless $self->{template};
     if ( !$self->{'template_obj'} ) {
         $self->{'template_obj'} = RT::Model::Template->new;
-        $self->{'template_obj'}->load_by_id( $self->{'Template'} );
+        $self->{'template_obj'}->load_by_id( $self->{'template'} );
 
-        if ( ( $self->{'template_obj'}->__value('Queue') == 0 )
+        if ( ( $self->{'template_obj'}->__value('queue') == 0 )
             && $self->{'_ticket_obj'} )
         {
             my $tmptemplate = RT::Model::Template->new;
             my ( $ok, $err ) = $tmptemplate->load_queue_template(
-                Queue => $self->{'_ticket_obj'}->queue_obj->id,
+                queue => $self->{'_ticket_obj'}->queue_obj->id,
                 name  => $self->{'template_obj'}->name
             );
 

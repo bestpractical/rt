@@ -76,15 +76,15 @@ sub table {'Links'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column target => type is 'varchar(240)', max_length is 240, default is '';
-    column Base   => type is 'varchar(240)', max_length is 240, default is '';
-    column LocalTarget => type is 'int(11)', max_length is 11, default is '0';
+    column base   => type is 'varchar(240)', max_length is 240, default is '';
+    column local_target => type is 'int(11)', max_length is 11, default is '0';
     column Creator     => type is 'int(11)', max_length is 11, default is '0';
     column type => type is 'varchar(20)', max_length is 20, default is '';
     column
         LastUpdatedBy => type is 'int(11)',
         max_length is 11, default is '0';
     column Created => type is 'datetime', default is '';
-    column LocalBase => type is 'int(11)', max_length is 11, default is '0';
+    column local_base => type is 'int(11)', max_length is 11, default is '0';
     column LastUpdated => type is 'datetime', default is '';
 
 };
@@ -96,7 +96,7 @@ use RT::URI;
 
 =head2 Create PARAMHASH
 
-Create a new link object. Takes 'Base', 'Target' and 'type'.
+Create a new link object. Takes 'base', 'target' and 'type'.
 Returns undef on failure or a Link id on success.
 
 =cut
@@ -104,18 +104,18 @@ Returns undef on failure or a Link id on success.
 sub create {
     my $self = shift;
     my %args = (
-        Base   => undef,
-        Target => undef,
+        base   => undef,
+        target => undef,
         type   => undef,
         @_
     );
 
     my $base = RT::URI->new;
-    $base->from_uri( $args{'Base'} );
+    $base->from_uri( $args{'base'} );
 
     unless ( $base->resolver && $base->scheme ) {
         my $msg
-            = _( "Couldn't resolve base '%1' into a URI.", $args{'Base'} );
+            = _( "Couldn't resolve base '%1' into a URI.", $args{'base'} );
         Jifty->log->warn("$self $msg\n");
 
         if (wantarray) {
@@ -126,11 +126,11 @@ sub create {
     }
 
     my $target = RT::URI->new;
-    $target->from_uri( $args{'Target'} );
+    $target->from_uri( $args{'target'} );
 
     unless ( $target->resolver ) {
         my $msg = _( "Couldn't resolve target '%1' into a URI.",
-            $args{'Target'} );
+            $args{'target'} );
         Jifty->log->warn("$self $msg\n");
 
         if (wantarray) {
@@ -148,7 +148,7 @@ sub create {
             return (
                 undef,
                 _(  "%1 appears to be a local object, but can't be found in the database",
-                    $args{'Base'}
+                    $args{'base'}
                 )
             );
 
@@ -160,7 +160,7 @@ sub create {
             return (
                 undef,
                 _(  "%1 appears to be a local object, but can't be found in the database",
-                    $args{'Target'}
+                    $args{'target'}
                 )
             );
 
@@ -176,10 +176,10 @@ sub create {
     # }}}
 
     my ( $id, $msg ) = $self->SUPER::create(
-        Base        => $base->uri,
-        Target      => $target->uri,
-        LocalBase   => $base_id,
-        LocalTarget => $target_id,
+        base        => $base->uri,
+        target      => $target->uri,
+        local_base   => $base_id,
+        local_target => $target_id,
         type        => $args{'type'}
     );
     return ( $id, $msg );
@@ -192,11 +192,11 @@ sub create {
 
   Load an RT::Model::Link object from the database.  Takes three parameters
   
-  Base => undef,
-  Target => undef,
+  base => undef,
+  target => undef,
   type =>undef
  
-  Base and Target are expected to be integers which refer to Tickets or URIs
+  base and target are expected to be integers which refer to Tickets or URIs
   type is the link type
 
 =cut
@@ -204,26 +204,26 @@ sub create {
 sub load_by_params {
     my $self = shift;
     my %args = (
-        Base   => undef,
-        Target => undef,
+        base   => undef,
+        target => undef,
         type   => undef,
         @_
     );
 
     my $base = RT::URI->new;
-    $base->from_uri( $args{'Base'} );
+    $base->from_uri( $args{'base'} );
 
     my $target = RT::URI->new;
-    $target->from_uri( $args{'Target'} );
+    $target->from_uri( $args{'target'} );
 
     unless ( $base->resolver && $target->resolver ) {
         return ( 0, _("Couldn't load link") );
     }
 
     my ( $id, $msg ) = $self->load_by_cols(
-        Base   => $base->uri,
+        base   => $base->uri,
         type   => $args{'type'},
-        Target => $target->uri
+        target => $target->uri
     );
 
     unless ($id) {
@@ -262,7 +262,7 @@ sub load {
 
 =head2 target_uri
 
-returns an RT::URI object for the "Target" of this link.
+returns an RT::URI object for the "target" of this link.
 
 =cut
 
@@ -274,9 +274,9 @@ sub target_uri {
 }
 
 # }}}
-# {{{ sub TargetObj
+# {{{ sub targetObj
 
-=head2 TargetObj
+=head2 targetObj
 
 =cut
 
@@ -291,7 +291,7 @@ sub target_obj {
 
 =head2 base_uri
 
-returns an RT::URI object for the "Base" of this link.
+returns an RT::URI object for the "base" of this link.
 
 =cut
 

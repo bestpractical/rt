@@ -114,7 +114,7 @@ diag "revoke rights tests depend on" if $ENV{'TEST_VERBOSE'};
     ok ($everyone_group->id, "Found group 'everyone'");
 
     foreach( qw(create_ticket ReplyToTicket commentOnTicket) ) {
-        $everyone_group->principal_object->revoke_right(Right => $_);
+        $everyone_group->principal_object->revoke_right(right => $_);
     }
 }
 
@@ -256,7 +256,7 @@ diag "grant everybody with create_ticket right" if $ENV{'TEST_VERBOSE'};
 {
     ok( RT::Test->set_rights(
         { Principal => $everyone_group->principal_object,
-          Right => [qw(create_ticket)],
+          right => [qw(create_ticket)],
         },
     ), "Granted everybody the right to create tickets");
 }
@@ -311,7 +311,7 @@ diag "grant everyone 'ReplyToTicket' right" if $ENV{'TEST_VERBOSE'};
 {
     ok( RT::Test->set_rights(
         { Principal => $everyone_group->principal_object,
-          Right => [qw(create_ticket ReplyToTicket)],
+          right => [qw(create_ticket ReplyToTicket)],
         },
     ), "Granted everybody the right to reply to tickets" );
 }
@@ -391,7 +391,7 @@ diag "grant everyone 'commentOnTicket' right" if $ENV{'TEST_VERBOSE'};
 {
     ok( RT::Test->set_rights(
         { Principal => $everyone_group->principal_object,
-          Right => [qw(create_ticket ReplyToTicket commentOnTicket)],
+          right => [qw(create_ticket ReplyToTicket commentOnTicket)],
         },
     ), "Granted everybody the right to comment on tickets");
 }
@@ -606,7 +606,7 @@ EOF
 }
 
 
-my ($val,$msg) = $everyone_group->principal_object->revoke_right(Right => 'create_ticket');
+my ($val,$msg) = $everyone_group->principal_object->revoke_right(right => 'create_ticket');
 ok ($val, $msg);
 
 SKIP: {
@@ -624,7 +624,7 @@ ok( $qid, 'queue Created for ext-mailgate tests' );
 # create ticket that is owned by nobody
 use RT::Model::Ticket;
 my $tick = RT::Model::Ticket->new(current_user => RT->system_user);
-my ($id) = $tick->create( Queue => 'ext-mailgate', subject => 'test');
+my ($id) = $tick->create( queue => 'ext-mailgate', subject => 'test');
 ok( $id, 'new ticket Created' );
 is( $tick->owner, RT->nobody->id, 'owner of the new ticket is nobody' );
 
@@ -702,10 +702,10 @@ my ($uid) = $user->create( name => 'ext-mailgate',
 			   password => 'qwe123',
 			 );
 ok( $uid, 'user Created for ext-mailgate tests' );
-ok( !$user->has_right( Right => 'OwnTicket', object => $queue ), "User can't own ticket" );
+ok( !$user->has_right( right => 'OwnTicket', object => $queue ), "User can't own ticket" );
 
 $tick = RT::Model::Ticket->new(current_user => RT->system_user);
-($id) = $tick->create( Queue => $qid, subject => 'test' );
+($id) = $tick->create( queue => $qid, subject => 'test' );
 ok( $id, 'create new ticket' );
 
 my $rtname = RT->config->get('rtname');
@@ -723,10 +723,10 @@ Jifty::DBI::Record::Cachable->flush_cache;
 
 cmp_ok( $tick->owner, '!=', $user->id, "we didn't change owner" );
 
-($status, $msg) = $user->principal_object->grant_right( object => $queue, Right => 'ReplyToTicket' );
+($status, $msg) = $user->principal_object->grant_right( object => $queue, right => 'ReplyToTicket' );
 ok( $status, "successfuly granted right: $msg" );
 my $ace_id = $status;
-ok( $user->has_right( Right => 'ReplyToTicket', object => $tick ), "User can reply to ticket" );
+ok( $user->has_right( right => 'ReplyToTicket', object => $tick ), "User can reply to ticket" );
 
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action correspond-take"), "Opened the mailgate - $!");
@@ -770,18 +770,18 @@ while( my $ace = $acl->next ) {
 	$ace->delete;
 }
 
-ok( !$user->has_right( Right => 'ReplyToTicket', object => $tick ), "User can't reply to ticket any more" );
+ok( !$user->has_right( right => 'ReplyToTicket', object => $tick ), "User can't reply to ticket any more" );
 
 
 my $group = RT::Model::Group->new(current_user => RT->system_user );
-ok( $group->load_queue_role_group( Queue => $qid, Type=> 'Owner' ), "load queue owners role group" );
+ok( $group->load_queue_role_group( queue => $qid, Type=> 'Owner' ), "load queue owners role group" );
 $ace = RT::Model::ACE->new(current_user => RT->system_user );
-($ace_id, $msg) = $group->principal_object->grant_right( Right => 'ReplyToTicket', object => $queue );
+($ace_id, $msg) = $group->principal_object->grant_right( right => 'ReplyToTicket', object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right" );
 
-($status, $msg) = $user->principal_object->grant_right( object => $queue, Right => 'OwnTicket' );
+($status, $msg) = $user->principal_object->grant_right( object => $queue, right => 'OwnTicket' );
 ok( $status, "successfuly granted right: $msg" );
-($status, $msg) = $user->principal_object->grant_right( object => $queue, Right => 'TakeTicket' );
+($status, $msg) = $user->principal_object->grant_right( object => $queue, right => 'TakeTicket' );
 ok( $status, "successfuly granted right: $msg" );
 
 $! = 0;
@@ -790,7 +790,7 @@ print MAIL <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
 
-take-correspond with reply right granted to owner role
+take-correspond with reply Right granted to owner role
 EOF
 close (MAIL);
 is ( $? >> 8, 0, "mailgate exited normally" );
@@ -798,7 +798,7 @@ Jifty::DBI::Record::Cachable->flush_cache;
 
 $tick->load( $id );
 is( $tick->owner, $user->id, "we changed owner" );
-ok( $user->has_right( Right => 'ReplyToTicket', object => $tick ), "owner can reply to ticket" );
+ok( $user->has_right( right => 'ReplyToTicket', object => $tick ), "owner can reply to ticket" );
 is( $tick->transactions->count, 5, "transactions added" );
 $txns = $tick->transactions;
 while (my $t = $txns->next) {

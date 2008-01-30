@@ -201,8 +201,8 @@ msgstr "et %1 alias skal tilknyttes et sagsnummer"
 msgid "%1 aliases require a TicketId to work on (from %2) %3"
 msgstr "et %1 alias skal tilknyttes et sagsnummer (fra %2) %3"
 
-#. ($args{'Base'})
-#. ($args{'Target'})
+#. ($args{'base'})
+#. ($args{'target'})
 #: lib/RT/Link_Overlay.pm:144
 #: lib/RT/Link_Overlay.pm:151
 msgid "%1 appears to be a local object, but can't be found in the database"
@@ -314,8 +314,8 @@ msgid "%1 succeeded\\n"
 msgstr "%1 lykkedes"
 
 #: NOT FOUND IN SOURCE
-msgid "%1 type unknown for $MessageId"
-msgstr "%1 type ukendt for $MessageId"
+msgid "%1 type unknown for $message_id"
+msgstr "%1 type ukendt for $message_id"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 type unknown for %2"
@@ -1696,7 +1696,7 @@ msgid "Create a template"
 msgstr "Opret en skabelon"
 
 #: html/SelfService/Create.html:46
-#: html/SelfService/create_ticketInQueue.html:46
+#: html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Opret en sag"
 
@@ -2658,7 +2658,7 @@ msgstr "Gruppe %1 %2: %3"
 #: html/Admin/Elements/QueueTabs:82
 #: html/Admin/Elements/SystemTabs:65
 #: html/Admin/Global/index.html:76
-msgid "Group Rights"
+msgid "Group rights"
 msgstr "Grupperettigheder"
 
 #: lib/RT/Group_Overlay.pm:983
@@ -2759,7 +2759,7 @@ msgid "Hours"
 msgstr "Timer"
 
 #. (6)
-#: lib/RT/Base.pm:119
+#: lib/RT/base.pm:119
 msgid "I have %quant(%1,concrete mixer)."
 msgstr "Jeg har %quant(%1,concrete mixer)."
 
@@ -2883,7 +2883,7 @@ msgid "Invalid Group Type"
 msgstr "Ugyldig gruppetype"
 
 #: lib/RT/Principal_Overlay.pm:161
-msgid "Invalid Right"
+msgid "Invalid right"
 msgstr "Ugyldig rettighed"
 
 #: lib/RT/Record.pm:952
@@ -3256,7 +3256,7 @@ msgid "Merge Successful"
 msgstr "Sammenføjning udført med succes"
 
 #: lib/RT/Ticket_Overlay.pm:2780
-msgid "Merge failed. Couldn't set EffectiveId"
+msgid "Merge failed. Couldn't set effective_id"
 msgstr "Sammenføjning lykkedes ikke. Kunne ikke sætte EffektivID."
 
 #: lib/RT/Ticket_Overlay.pm:2788
@@ -3341,7 +3341,7 @@ msgstr "Rediger ekstrafelter, der gælder for alle køer"
 #: html/Admin/Global/GroupRights.html:106
 #: html/Admin/Groups/GroupRights.html:94
 #: html/Admin/Queues/GroupRights.html:107
-msgid "Modify Group Rights"
+msgid "Modify Group rights"
 msgstr "Rediger grupperettigheder"
 
 #: html/Admin/Groups/Members.html:105
@@ -3350,7 +3350,7 @@ msgid "Modify Members"
 msgstr "Rediger medlemmer"
 
 #: html/User/Delegation.html:58
-msgid "Modify Rights"
+msgid "Modify rights"
 msgstr "Rediger rettigheder"
 
 #: lib/RT/Queue_Overlay.pm:97
@@ -3362,13 +3362,13 @@ msgid "Modify Scrips for this queue"
 msgstr "Rediger scrips for denne kø"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify Template %1"
+msgid "Modify template %1"
 msgstr "Rediger skabelon %1"
 
 #: html/Admin/Global/UserRights.html:75
 #: html/Admin/Groups/UserRights.html:76
 #: html/Admin/Queues/UserRights.html:75
-msgid "Modify User Rights"
+msgid "Modify User rights"
 msgstr "Rediger brugerrettigheder"
 
 #. ($queue_obj->name())
@@ -5024,7 +5024,7 @@ msgstr "Løs sag #%1 (%2)"
 #: etc/initialdata:323
 #: html/Elements/SelectDateType:49
 #: lib/RT/Ticket_Overlay.pm:1172
-msgid "Resolved"
+msgid "resolved"
 msgstr "Løst"
 
 #: html/Tools/Reports/Elements/Tabs:55
@@ -5066,15 +5066,15 @@ msgid "Revert"
 msgstr "Gå tilbage"
 
 #: NOT FOUND IN SOURCE
-msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
+msgid "right %1 not found for %2  %3 in scope %4 (%5)\\n"
 msgstr "Rettighed %1 ikke fundet for %2 %3 i område %4 (%5)\\n"
 
 #: lib/RT/ACE_Overlay.pm:630
-msgid "Right Delegated"
+msgid "right Delegated"
 msgstr "Rettighed overdraget"
 
 #: lib/RT/ACE_Overlay.pm:320
-msgid "Right Granted"
+msgid "right Granted"
 msgstr "Rettighed tildelt"
 
 #: lib/RT/ACE_Overlay.pm:178
@@ -5313,7 +5313,7 @@ msgstr "Vælg en gruppe"
 msgid "Select a queue"
 msgstr "Vælg en kø"
 
-#: html/SelfService/create_ticketInQueue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Vælg en kø til din nye sag"
 
@@ -6305,11 +6305,11 @@ msgstr "Unix log-ind"
 msgid "UnixUsername"
 msgstr "UnixBrugernavn"
 
-#. ($ContentEncoding)
-#. ($self->ContentEncoding)
+#. ($content_encoding)
+#. ($self->content_encoding)
 #: lib/RT/Attachment_Overlay.pm:289
 #: lib/RT/Record.pm:861
-msgid "Unknown ContentEncoding %1"
+msgid "Unknown content_encoding %1"
 msgstr "Ukendt IndholdsKodning %1"
 
 #: html/Search/Build.html:455
@@ -6506,7 +6506,7 @@ msgstr "Bruger-ID"
 #: html/Admin/Elements/QueueTabs:85
 #: html/Admin/Elements/SystemTabs:68
 #: html/Admin/Global/index.html:80
-msgid "User Rights"
+msgid "User rights"
 msgstr "Brugerrettigheder"
 
 #: NOT FOUND IN SOURCE

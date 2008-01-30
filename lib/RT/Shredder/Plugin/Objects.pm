@@ -68,8 +68,8 @@ command:
 
 =cut
 
-sub SupportArgs {
-    return $_[0]->SUPER::SupportArgs, @RT::Shredder::SUPPORTED_OBJECTS;
+sub support_args {
+    return $_[0]->SUPER::support_args, @RT::Shredder::SUPPORTED_OBJECTS;
 }
 
 sub test_args {
@@ -94,7 +94,7 @@ sub test_args {
     return (@res);
 }
 
-sub Run {
+sub run {
     my $self = shift;
     my %args = ( Shredder => undef, @_ );
     return ( 1, @{ $self->{'opt'}->{'objects'} } );

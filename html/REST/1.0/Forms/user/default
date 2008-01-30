@@ -57,7 +57,7 @@ my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
 my $user = RT::Model::User->new() ;
-my @fields = qw(real_name nickname Gecos organization Address1 Address2 City
+my @fields = qw(real_name nickname gecos organization Address1 Address2 City
                 State Zip Country HomePhone WorkPhone MobilePhone PagerPhone
                 freeform_contact_info comments Signature lang email_encoding
                 web_encoding ExternalContactInfoId ContactInfoSystem

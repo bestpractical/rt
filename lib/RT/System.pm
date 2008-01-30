@@ -76,8 +76,8 @@ sub available_rights {
     my $cr = $cf->available_rights();
 
 # Build a merged list of all system wide rights, queue rights and group rights.
-    my %rights = ( %{$RIGHTS}, %{$gr}, %{$qr}, %{$cr} );
-    return ( \%rights );
+    my %Rights = ( %{$RIGHTS}, %{$gr}, %{$qr}, %{$cr} );
+    return ( \%Rights );
 }
 
 =head2 id

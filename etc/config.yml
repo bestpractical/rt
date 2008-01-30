@@ -11,7 +11,7 @@ framework:
     Driver: mysql
     Host: localhost
     password: ''
-    RecordBaseClass: Jifty::DBI::Record::Cachable
+    RecordbaseClass: Jifty::DBI::Record::Cachable
     User: root
     Version: 0.0.1
   DevelMode: 1
@@ -35,7 +35,7 @@ framework:
   SkipAccessControl: 0
   TemplateClass: RT::View
   Web: 
-    BaseURL: http://localhost
+    baseURL: http://localhost
     DataDir: var/mason
     Globals: [%session]
 

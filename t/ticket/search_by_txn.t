@@ -19,13 +19,13 @@ $tix->from_sql('Updated = "2005-08-05" AND subject = "$SUBJECT"');
 ok(! $tix->count, "Searching for tickets updated on a random date finds nothing" . $tix->count);
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
-$ticket->create(Queue => 'General', subject => $SUBJECT);
+$ticket->create(queue => 'General', subject => $SUBJECT);
 ok ($ticket->id, "We Created a ticket");
 my ($id, $txnid, $txnobj) =  $ticket->comment( Content => 'A comment that happend on 2004-01-01');
 
 isa_ok($txnobj, 'RT::Model::Transaction');
 
-ok($txnobj->created_obj->ISO);
+ok($txnobj->created_obj->iso);
 my ( $sid,$smsg) = $txnobj->__set(column => 'Created', value => '2005-08-05 20:00:56');
 ok($sid,$smsg);
 is($txnobj->created,'2005-08-05 20:00:56');

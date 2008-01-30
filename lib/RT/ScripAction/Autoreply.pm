@@ -82,9 +82,9 @@ sub set_recipients {
 
 # }}}
 
-# {{{ sub set_ReturnAddress
+# {{{ sub set_return_address
 
-=head2 SetReturnAddress
+=head2 set_return_address
 
 Set this message\'s return address to the apropriate queue address
 

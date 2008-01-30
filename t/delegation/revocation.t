@@ -45,9 +45,9 @@ ok( $ret, "Load / Create test personal group 2: $msg" );
 
 clear_acls_and_groups();
 
-( $ret, $msg ) = $u1->principal_object->grant_right( Right => 'DelegateRights' );
+( $ret, $msg ) = $u1->principal_object->grant_right( right => 'DelegateRights' );
 ok( $ret, "Grant DelegateRights to u1: $msg" );
-( $ret, $msg ) = $g1->principal_object->grant_right( Right => 'ShowConfigTab' );
+( $ret, $msg ) = $g1->principal_object->grant_right( right => 'ShowConfigTab' );
 ok( $ret, "Grant ShowConfigTab to g1: $msg" );
 ( $ret, $msg ) = $g1->add_member( $u1->principal_id );
 ok( $ret, "Add test user 1 to g1: $msg" );
@@ -65,19 +65,19 @@ ok( $ret, "Delegate ShowConfigTab to pg1: $msg" );
 ( $ret, $msg ) = $ace->delegate( principal_id => $pg2->principal_id );
 ok( $ret, "Delegate ShowConfigTab to pg2: $msg" );
 
-ok(( $pg1->principal_object->has_right( Right  => 'ShowConfigTab',
+ok(( $pg1->principal_object->has_right( right  => 'ShowConfigTab',
 				   object => RT->system ) and
-     $pg2->principal_object->has_right( Right  => 'ShowConfigTab',
+     $pg2->principal_object->has_right( right  => 'ShowConfigTab',
 				   object => RT->system )),
    "Test personal groups have ShowConfigTab right after delegation" );
 
 ( $ret, $msg ) = $g1->delete_member( $u1->principal_id );
 ok( $ret, "Delete test user 1 from g1: $msg" );
 
-ok( not( $pg1->principal_object->has_right( Right  => 'ShowConfigTab',
+ok( not( $pg1->principal_object->has_right( right  => 'ShowConfigTab',
 				       object => RT->system )),
     "Test personal group 1 lacks ShowConfigTab after user removed from g1" );
-ok( not( $pg2->principal_object->has_right( Right  => 'ShowConfigTab',
+ok( not( $pg2->principal_object->has_right( right  => 'ShowConfigTab',
 				       object => RT->system )),
     "Test personal group 2 lacks ShowConfigTab after user removed from g1" );
 
@@ -88,19 +88,19 @@ ok( $ret, "Delegate ShowConfigTab to pg1: $msg" );
 ( $ret, $msg ) = $ace->delegate( principal_id => $pg2->principal_id );
 ok( $ret, "Delegate ShowConfigTab to pg2: $msg" );
 
-ok(( $pg1->principal_object->has_right( Right  => 'ShowConfigTab',
+ok(( $pg1->principal_object->has_right( right  => 'ShowConfigTab',
 				   object => RT->system ) and
-     $pg2->principal_object->has_right( Right  => 'ShowConfigTab',
+     $pg2->principal_object->has_right( right  => 'ShowConfigTab',
 				   object => RT->system )),
    "Test personal groups have ShowConfigTab right after delegation" );
 
-( $ret, $msg ) = $g1->principal_object->revoke_right( Right => 'ShowConfigTab' );
+( $ret, $msg ) = $g1->principal_object->revoke_right( right => 'ShowConfigTab' );
 ok( $ret, "Revoke ShowConfigTab from g1: $msg" );
 
-ok( not( $pg1->principal_object->has_right( Right  => 'ShowConfigTab',
+ok( not( $pg1->principal_object->has_right( right  => 'ShowConfigTab',
 				       object => RT->system )),
     "Test personal group 1 lacks ShowConfigTab after user removed from g1" );
-ok( not( $pg2->principal_object->has_right( Right  => 'ShowConfigTab',
+ok( not( $pg2->principal_object->has_right( right  => 'ShowConfigTab',
 				       object => RT->system )),
     "Test personal group 2 lacks ShowConfigTab after user removed from g1" );
 

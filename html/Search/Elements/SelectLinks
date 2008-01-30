@@ -61,6 +61,6 @@ my @fields = ('has_member',
 	      'DependedOnBy',
 	      'RefersTo',
 	      'ReferredToBy',
-	      'LinkedTo',
+	      'linked_to',
 	      );
 </%INIT>

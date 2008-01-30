@@ -50,7 +50,7 @@ package RT::Interface::Email::Auth::GnuPG;
 use strict;
 use warnings;
 
-=head2 GetCurrentUser
+=head2 get_current_user
 
 To use the gnupg-secured mail gateway, you need to do the following:
 
@@ -94,7 +94,7 @@ sub get_current_user {
     unless ($status) {
         Jifty->log->error("Had a problem during decrypting and verifying");
         my $reject
-            = HandleErrors( Message => $args{'Message'}, Result => \@res );
+            = handle_errors( Message => $args{'Message'}, Result => \@res );
         return ( 0,
             'rejected because of problems during decrypting and verifying' )
             if $reject;
@@ -192,13 +192,13 @@ sub check_noprivate_key {
     Jifty->log->error("Couldn't decrypt a message: have no private key");
 
     my $address = (
-        RT::Interface::Email::ParseSenderAddressFromHead(
+        RT::Interface::Email::parse_sender_address_from_head(
             $args{'Message'}->head
         )
     )[0];
-    my ($status) = RT::Interface::Email::send_emailUsingTemplate(
+    my ($status) = RT::Interface::Email::send_email_using_template(
         To        => $address,
-        Template  => 'Error: no private key',
+        template  => 'Error: no private key',
         Arguments => {
             Message    => $args{'Message'},
             ticket_obj => $args{'Ticket'},
@@ -223,13 +223,13 @@ sub check_bad_data {
         @bad_data_messages );
 
     my $address = (
-        RT::Interface::Email::ParseSenderAddressFromHead(
+        RT::Interface::Email::parse_sender_address_from_head(
             $args{'Message'}->head
         )
     )[0];
-    my ($status) = RT::Interface::Email::send_emailUsingTemplate(
+    my ($status) = RT::Interface::Email::send_email_using_template(
         To        => $address,
-        Template  => 'Error: bad GnuPG data',
+        template  => 'Error: bad GnuPG data',
         Arguments => {
             Messages   => [@bad_data_messages],
             ticket_obj => $args{'Ticket'},

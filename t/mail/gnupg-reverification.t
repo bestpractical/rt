@@ -31,7 +31,7 @@ my $everyone;
 
 RT::Test->set_rights(
     Principal => $everyone,
-    Right => ['create_ticket'],
+    right => ['create_ticket'],
 );
 
 

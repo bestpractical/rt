@@ -59,7 +59,7 @@ $Page         => undef
 $maxitems     => undef
 
 $AllowSorting  => undef
-$BaseURL       => undef
+$baseURL       => undef
 @PassArguments => qw(Query Format Rows Page Order order_by)
 </%ARGS>
 <tr class="collection-as-table">
@@ -130,7 +130,7 @@ foreach my $col ( @Format ) {
             if $order_by[0] && $order_by[0] eq $attr;
 
         $m->out(
-            '<a href="' . $BaseURL
+            '<a href="' . $baseURL
             . $m->comp( '/Elements/QueryString',
                 %generic_query_args,
                 order_by => $attr, Order => $new_order

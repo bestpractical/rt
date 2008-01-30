@@ -300,11 +300,11 @@ sub next {
     if ( ( defined($ACE) ) and ( ref($ACE) ) ) {
 
         if ($self->current_user->has_right(
-                Right  => 'ShowACL',
+                right  => 'ShowACL',
                 object => $ACE->object
             )
             or $self->current_user->has_right(
-                Right  => 'ModifyACL',
+                right  => 'ModifyACL',
                 object => $ACE->object
             )
             )
@@ -369,8 +369,8 @@ sub has_entry {
 
     my $self = shift;
     my %args = (
-        RightScope     => undef,
-        RightAppliesTo => undef,
+        right_scope     => undef,
+        right_applies_to => undef,
         right_name     => undef,
         principal_id   => undef,
         principal_type => undef,
@@ -381,8 +381,8 @@ sub has_entry {
     $self->_do_search();
 
     if ($self->{'as_hash'}->{
-                  $args{'RightScope'} . "-"
-                . $args{'RightAppliesTo'} . "-"
+                  $args{'right_scope'} . "-"
+                . $args{'right_applies_to'} . "-"
                 . $args{'right_name'} . "-"
                 . $args{'principal_id'} . "-"
                 . $args{'principal_type'}

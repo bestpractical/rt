@@ -81,7 +81,7 @@
 <%ARGS>
 $Ticket => undef
 $Transaction => undef
-$ShowHeaders => 0
+$show_headers => 0
 $Collapsed => undef
 $ShowTitleBarCommands => 1
 $RowNum => 1
@@ -153,15 +153,15 @@ $time_taken = $Transaction->time_taken . " min"
 
 unless ($Attachments) { 
     my $attachments = $Transaction->attachments;
-    $attachments->columns( qw( id Filename content_type Headers subject Parent ContentEncoding content_type transaction_id) );
+    $attachments->columns( qw( id Filename content_type headers subject Parent content_encoding content_type transaction_id) );
     $Attachments = $attachments->items_array_ref();
 }
 my $titlebar_commands = '&nbsp;';
 
-my @DisplayHeaders=qw ( _all);
+my @display_headers=qw ( _all);
 
 if ( $type =~ /EmailRecord$/ ) {
-    @DisplayHeaders = qw(To Cc Bcc);
+    @display_headers = qw(To Cc Bcc);
 
     $titlebar_commands .=
         "[<a target=\"_blank\" href=\"$EmailRecordPath?id="
@@ -178,8 +178,8 @@ if ( $type =~ /EmailRecord$/ ) {
 # If the transaction has anything attached to it at all
 else {
 
-    unless ( $ShowHeaders ) {
-        @DisplayHeaders = qw(To From RT-Send-Cc Cc Bcc Date subject);
+    unless ( $show_headers ) {
+        @display_headers = qw(To From RT-Send-Cc Cc Bcc Date subject);
     }
 
     if ( $Attachments->[0] && $ShowTitleBarCommands ) {

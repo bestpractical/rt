@@ -301,8 +301,8 @@ Effect.DefaultOptions = {
   queue:      'parallel'
 }
 
-Effect.Base = function() {};
-Effect.Base.prototype = {
+Effect.base = function() {};
+Effect.base.prototype = {
   position: null,
   start: function(options) {
     this.options      = Object.extend(Object.extend({},Effect.DefaultOptions), options || {});
@@ -369,7 +369,7 @@ Effect.Base.prototype = {
 }
 
 Effect.Parallel = Class.create();
-Object.extend(Object.extend(Effect.Parallel.prototype, Effect.Base.prototype), {
+Object.extend(Object.extend(Effect.Parallel.prototype, Effect.base.prototype), {
   initialize: function(effects) {
     this.effects = effects || [];
     this.start(arguments[1]);
@@ -389,7 +389,7 @@ Object.extend(Object.extend(Effect.Parallel.prototype, Effect.Base.prototype), {
 });
 
 Effect.Event = Class.create();
-Object.extend(Object.extend(Effect.Event.prototype, Effect.Base.prototype), {
+Object.extend(Object.extend(Effect.Event.prototype, Effect.base.prototype), {
   initialize: function() {
     var options = Object.extend({
       duration: 0
@@ -400,7 +400,7 @@ Object.extend(Object.extend(Effect.Event.prototype, Effect.Base.prototype), {
 });
 
 Effect.Opacity = Class.create();
-Object.extend(Object.extend(Effect.Opacity.prototype, Effect.Base.prototype), {
+Object.extend(Object.extend(Effect.Opacity.prototype, Effect.base.prototype), {
   initialize: function(element) {
     this.element = $(element);
     if(!this.element) throw(Effect._elementDoesNotExistError);
@@ -419,7 +419,7 @@ Object.extend(Object.extend(Effect.Opacity.prototype, Effect.Base.prototype), {
 });
 
 Effect.Move = Class.create();
-Object.extend(Object.extend(Effect.Move.prototype, Effect.Base.prototype), {
+Object.extend(Object.extend(Effect.Move.prototype, Effect.base.prototype), {
   initialize: function(element) {
     this.element = $(element);
     if(!this.element) throw(Effect._elementDoesNotExistError);
@@ -459,7 +459,7 @@ Effect.MoveBy = function(element, toTop, toLeft) {
 };
 
 Effect.Scale = Class.create();
-Object.extend(Object.extend(Effect.Scale.prototype, Effect.Base.prototype), {
+Object.extend(Object.extend(Effect.Scale.prototype, Effect.base.prototype), {
   initialize: function(element, percent) {
     this.element = $(element);
     if(!this.element) throw(Effect._elementDoesNotExistError);
@@ -534,7 +534,7 @@ Object.extend(Object.extend(Effect.Scale.prototype, Effect.Base.prototype), {
 });
 
 Effect.Highlight = Class.create();
-Object.extend(Object.extend(Effect.Highlight.prototype, Effect.Base.prototype), {
+Object.extend(Object.extend(Effect.Highlight.prototype, Effect.base.prototype), {
   initialize: function(element) {
     this.element = $(element);
     if(!this.element) throw(Effect._elementDoesNotExistError);
@@ -570,7 +570,7 @@ Object.extend(Object.extend(Effect.Highlight.prototype, Effect.Base.prototype), 
 });
 
 Effect.ScrollTo = Class.create();
-Object.extend(Object.extend(Effect.ScrollTo.prototype, Effect.Base.prototype), {
+Object.extend(Object.extend(Effect.ScrollTo.prototype, Effect.base.prototype), {
   initialize: function(element) {
     this.element = $(element);
     this.start(arguments[1] || {});
@@ -974,7 +974,7 @@ Effect.Fold = function(element) {
 };
 
 Effect.Morph = Class.create();
-Object.extend(Object.extend(Effect.Morph.prototype, Effect.Base.prototype), {
+Object.extend(Object.extend(Effect.Morph.prototype, Effect.base.prototype), {
   initialize: function(element) {
     this.element = $(element);
     if(!this.element) throw(Effect._elementDoesNotExistError);

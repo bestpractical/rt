@@ -68,7 +68,7 @@
              description => 'A system-internal queue for the approvals system',
              disabled    => 2, } );
 
-@ScripActions = (
+@scrip_actions = (
 
     {  name        => 'Autoreply To Requestors',    # loc
        description =>
@@ -142,7 +142,7 @@
       exec_module  => 'AutoOpen' },
 );
 
-@ScripConditions = (
+@scrip_conditions = (
     { name                 => 'On Create',                                # loc
       description          => 'When a ticket is Created',                 # loc
       applicable_trans_types => 'Create',
@@ -190,7 +190,7 @@
     },
     {
 
-      name                 => 'On Queue Change',                           # loc
+      name                 => 'On queue Change',                           # loc
       description          => 'Whenever a ticket\'s queue changes',        # loc
       applicable_trans_types => 'Set',
       exec_module           => 'QueueChange',
@@ -332,7 +332,7 @@ This is a comment.  It is not sent to the Requestor(s):
     {
 
       queue       => '0',
-      name        => 'Resolved',                 # loc
+      name        => 'resolved',                 # loc
       description => 'Ticket Resolved',          # loc
       content     => 'Subject: Resolved: {$Ticket->subject}
 
@@ -504,11 +504,11 @@ Your new password is:
     {  description    => 'On Resolve Notify Requestors',
        scrip_condition => 'On Resolve',
        scrip_action    => 'Notify Requestors',
-       template       => 'Resolved' },
+       template       => 'resolved' },
     {  description => "When an approval ticket is Created, notify the Owner and AdminCc of the item awaiting their approval",    # loc
        queue          => '___Approvals',
        scrip_condition => 'User Defined',
-       CustomIsApplicableCode => q[
+       custom_is_applicable_code => q[
 	    $self->ticket_obj->type eq 'approval'	and
 	    $self->transaction_obj->field eq 'Status'	and
 	    $self->transaction_obj->new_value eq 'open'   and

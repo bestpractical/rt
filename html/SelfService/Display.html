@@ -75,8 +75,8 @@
 <& /Ticket/Elements/ShowHistory, 
       Ticket => $Ticket, 
       URIFile => "Display.html", 
-      ShowHeaders => $ARGS{'ShowHeaders'},
-      DownloadableHeaders => 0,
+      show_headers => $ARGS{'show_headers'},
+      downloadable_headers => 0,
       AttachPath => "Attachment", 
       Attachments => $attachments, 
       UpdatePath => "Update.html" 
@@ -125,7 +125,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     # {{{ Create a new ticket
 
     my $Queue = RT::Model::Queue->new();
-    unless ( $Queue->load( $ARGS{'Queue'} ) ) {
+    unless ( $Queue->load( $ARGS{'queue'} ) ) {
         $m->comp( 'Error.html', Why => _('Queue not found') );
         $m->abort;
     }

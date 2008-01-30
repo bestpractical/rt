@@ -50,7 +50,7 @@
 <& /SelfService/Elements/MyRequests,
     status          => ['rejected', 'resolved'],
     friendly_status => _('closed'), 
-	BaseURL         => RT->config->get('WebPath') ."/SelfService/Closed.html?",
+	baseURL         => RT->config->get('WebPath') ."/SelfService/Closed.html?",
 	Page            => $Page,
 &>
 

@@ -90,11 +90,11 @@ TODO: {
 
 # Set up a custom field for editing tests
 my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
-my ($val,$msg) = $cf->create(name => 'MyCF'.$$, type => 'FreeformSingle', Queue => $queue_id);
+my ($val,$msg) = $cf->create(name => 'MyCF'.$$, type => 'FreeformSingle', queue => $queue_id);
 ok($val,$msg);
 
 my $othercf = RT::Model::CustomField->new(current_user => RT->system_user);
-($val,$msg) = $othercf->create(name => 'My CF'.$$, type => 'FreeformSingle', Queue => $queue_id);
+($val,$msg) = $othercf->create(name => 'My CF'.$$, type => 'FreeformSingle', queue => $queue_id);
 ok($val,$msg);
 
 
@@ -325,13 +325,13 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     ok($steal_queue_id, "Got the queue? $msg");
     ok($steal_queue->id, "queue obj has id");
     my $status;
-    ($status, $msg) = $steal_user->principal_object->grant_right( Right => 'ShowTicket', object => $steal_queue );
+    ($status, $msg) = $steal_user->principal_object->grant_right( right => 'ShowTicket', object => $steal_queue );
     ok($status, "Gave 'ShowTicket' to our user? $msg");
-    ($status, $msg) = $steal_user->principal_object->grant_right( Right => 'OwnTicket', object => $steal_queue );
+    ($status, $msg) = $steal_user->principal_object->grant_right( right => 'OwnTicket', object => $steal_queue );
     ok($status, "Gave 'OwnTicket' to our user? $msg");
-    ($status, $msg) = $steal_user->principal_object->grant_right( Right => 'StealTicket', object => $steal_queue );
+    ($status, $msg) = $steal_user->principal_object->grant_right( right => 'StealTicket', object => $steal_queue );
     ok($status, "Gave 'StealTicket' to our user? $msg");
-    ($status, $msg) = $steal_user->principal_object->grant_right( Right => 'TakeTicket', object => $steal_queue );
+    ($status, $msg) = $steal_user->principal_object->grant_right( right => 'TakeTicket', object => $steal_queue );
     ok($status, "Gave 'TakeTicket' to our user? $msg");
 
     # create a ticket to take/steal

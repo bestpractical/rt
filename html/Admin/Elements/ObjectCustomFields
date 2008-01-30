@@ -61,7 +61,7 @@ $id ? (
 <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object => $object &>
 <%INIT>
 # XXX TODO: Validate here?
-#$object_type =~ /^RT::(Queue|User|Group)$/
+#$object_type =~ /^RT::(queue|User|Group)$/
 #    or abort(_("object of type %1 cannot take custom fields", $object_type));
 
 

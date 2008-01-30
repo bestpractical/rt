@@ -48,6 +48,6 @@
 <%ARGS>
 $object => undef
 </%ARGS>
-<a href="<% RT->config->get('WebBaseURL') %>/Ticket/Display.html?id=<% $object->id %>">
+<a href="<% RT->config->get('WebbaseURL') %>/Ticket/Display.html?id=<% $object->id %>">
 Ticket(id:<% $object->id %>, Subject: <% substr($object->subject, 0, 30) %>...)
 </a>

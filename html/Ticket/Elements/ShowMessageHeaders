@@ -61,7 +61,7 @@ foreach my $field( $Message->split_headers ) {
     push @headers, { Tag => $tag, value => $value };
 }
 
-my %display_headers = map { lc($_) => 1 } @DisplayHeaders;
+my %display_headers = map { lc($_) => 1 } @display_headers;
 
 $m->callback(
     message         => $Message,
@@ -85,5 +85,5 @@ if ( $Localize ) {
 <%ARGS>
 $Message => undef
 $Localize => 1
-@DisplayHeaders => ('_all')
+@display_headers => ('_all')
 </%ARGS>

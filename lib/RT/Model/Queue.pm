@@ -48,7 +48,7 @@
 
 =head1 name
 
-  RT::Model::Queue - an RT Queue object
+  RT::Model::Queue - an RT queue object
 
 =head1 SYNOPSIS
 
@@ -165,8 +165,8 @@ foreach my $right ( keys %{$RIGHTS} ) {
 sub add_link {
     my $self = shift;
     my %args = (
-        Target => '',
-        Base   => '',
+        target => '',
+        base   => '',
         type   => '',
         Silent => undef,
         @_
@@ -182,8 +182,8 @@ sub add_link {
 sub delete_link {
     my $self = shift;
     my %args = (
-        Base   => undef,
-        Target => undef,
+        base   => undef,
+        target => undef,
         type   => undef,
         @_
     );
@@ -363,7 +363,7 @@ sub create {
 
     unless (
         $self->current_user->has_right(
-            Right  => 'AdminQueue',
+            right  => 'AdminQueue',
             object => RT->system
         )
         )
@@ -580,7 +580,7 @@ sub custom_field {
     my $self = shift;
     my $name = shift;
     my $cf   = RT::Model::CustomField->new;
-    $cf->load_by_name_and_queue( name => $name, Queue => $self->id );
+    $cf->load_by_name_and_queue( name => $name, queue => $self->id );
     return ($cf);
 }
 
@@ -661,7 +661,7 @@ sub create_queue_groups {
         );
         unless ($id) {
             Jifty->log->error(
-                "Couldn't create a Queue group of type '$type' for ticket "
+                "Couldn't create a queue group of type '$type' for ticket "
                     . $self->id . ": "
                     . $msg );
             return (undef);
@@ -1195,8 +1195,8 @@ sub current_user_has_right {
 
     return (
         $self->has_right(
-            Principal => $self->current_user,
-            Right     => "$right"
+            principal => $self->current_user,
+            right     => $right
         )
     );
 
@@ -1208,22 +1208,22 @@ sub current_user_has_right {
 
 =head2 has_right
 
-Takes a param hash with the fields 'Right' and 'Principal'.
+Takes a param hash with the fields 'right' and 'Principal'.
 Principal defaults to the current user.
 Returns true if the principal has that right for this queue.
 Returns undef otherwise.
 
 =cut
 
-# TAKES: Right and optional "Principal" which defaults to the current user
+# TAKES: right and optional "Principal" which defaults to the current user
 sub has_right {
     my $self = shift;
     my %args = (
-        Right     => undef,
-        Principal => $self->current_user,
+        right     => undef,
+        principal => $self->current_user,
         @_
     );
-    my $principal = delete $args{'Principal'};
+    my $principal = delete $args{'principal'};
     unless ($principal) {
         Jifty->log->error("Principal undefined in Queue::has_right");
         return undef;

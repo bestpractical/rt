@@ -58,7 +58,7 @@
 // script.aculo.us is freely distributable under the terms of an MIT-style license.
 // For details, see the script.aculo.us web site: http://script.aculo.us/
 
-// Autocompleter.Base handles all the autocompletion functionality 
+// Autocompleter.base handles all the autocompletion functionality 
 // that's independent of the data source for autocompletion. This
 // includes drawing the autocompletion menu, observing keyboard
 // and mouse events, and similar.
@@ -87,8 +87,8 @@ if(typeof Effect == 'undefined')
   throw("controls.js requires including script.aculo.us' effects.js library");
 
 var Autocompleter = {}
-Autocompleter.Base = function() {};
-Autocompleter.Base.prototype = {
+Autocompleter.base = function() {};
+Autocompleter.base.prototype = {
   baseInitialize: function(element, update, options) {
     this.element     = $(element); 
     this.update      = $(update);  
@@ -377,7 +377,7 @@ Autocompleter.Base.prototype = {
 }
 
 Ajax.Autocompleter = Class.create();
-Object.extend(Object.extend(Ajax.Autocompleter.prototype, Autocompleter.Base.prototype), {
+Object.extend(Object.extend(Ajax.Autocompleter.prototype, Autocompleter.base.prototype), {
   initialize: function(element, update, url, options) {
     this.baseInitialize(element, update, options);
     this.options.asynchronous  = true;
@@ -441,7 +441,7 @@ Object.extend(Object.extend(Ajax.Autocompleter.prototype, Autocompleter.Base.pro
 // you support them.
 
 Autocompleter.Local = Class.create();
-Autocompleter.Local.prototype = Object.extend(new Autocompleter.Base(), {
+Autocompleter.Local.prototype = Object.extend(new Autocompleter.base(), {
   initialize: function(element, update, array, options) {
     this.baseInitialize(element, update, options);
     this.options.array = array;

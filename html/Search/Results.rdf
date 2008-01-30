@@ -65,7 +65,7 @@ $r->content_type('application/rss+xml');
           syn => {
             updatePeriod     => "hourly",
             updateFrequency  => "1",
-            updateBase       => "1901-01-01T00:00+00:00",
+            updatebase       => "1901-01-01T00:00+00:00",
           },
         );
 

@@ -49,18 +49,18 @@
 <option value="" 
 <% ! defined $Default && 'SELECTED' %>
 >-</option>
-%while  (my $ScripAction = $ScripActions->next) {
-<option value="<%$ScripAction->id%>"
-<% defined $Default && $ScripAction->id == $Default ? 'SELECTED' : '' %>
-><% _($ScripAction->name) %>
+%while  (my $scrip_action = $scrip_actions->next) {
+<option value="<%$scrip_action->id%>"
+<% defined $Default && $scrip_action->id == $Default ? 'SELECTED' : '' %>
+><% _($scrip_action->name) %>
 </option>
 %}
 </select>
 
 <%INIT>
-my $ScripActions = RT::Model::ScripActionCollection->new();
-$ScripActions->find_all_rows;
-$ScripActions->order_by(column => 'name');
+my $scrip_actions = RT::Model::ScripActionCollection->new();
+$scrip_actions->find_all_rows;
+$scrip_actions->order_by(column => 'name');
 
 
 
@@ -68,6 +68,6 @@ $ScripActions->order_by(column => 'name');
 <%ARGS>
 
 $Default => undef
-$name => 'ScripAction'
+$name => 'scrip_action'
 
 </%ARGS>

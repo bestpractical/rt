@@ -123,7 +123,7 @@ sub _set {
     return ( 0, _('Permission Denied') );
 }
 
-=head2 LoadByGecos
+=head2 LoadBygecos
 
 Loads a User into this CurrentUser object.
 Takes a unix username as its only argument.
@@ -132,7 +132,7 @@ Takes a unix username as its only argument.
 
 sub load_by_gecos {
     my $self = shift;
-    return $self->new( "Gecos", shift );
+    return $self->new( "gecos", shift );
 }
 
 =head2 load_by_name

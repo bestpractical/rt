@@ -48,7 +48,7 @@
 <%init>
 require  Module::Versions::Report;
 my $title = _('System Configuration');
-unless (Jifty->web->current_user->has_right( object=> RT->system, Right => 'SuperUser')) {
+unless (Jifty->web->current_user->has_right( object=> RT->system, right => 'SuperUser')) {
  abort(_('This feature is only available to system administrators'));
 } 
 

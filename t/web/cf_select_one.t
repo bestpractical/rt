@@ -73,7 +73,7 @@ diag "create a ticket using API with 'asd'(not 'ASD') as value of the CF"
     my ($txnid, $msg);
     ($tid, $txnid, $msg) = $ticket->create(
         subject => 'test',
-        Queue => $queue->id,
+        queue => $queue->id,
         "CustomField-$cfid" => 'ASD',
     );
     ok $tid, "Created ticket";

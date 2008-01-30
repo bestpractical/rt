@@ -191,8 +191,8 @@ msgid "%1 aliases require a TicketId to work on (from %2) %3"
 msgstr "do określenia aliasów dla %1 wymagany numer zgłoszenia (od %2) %3"
 
 #: lib/RT/Link_Overlay.pm:144 lib/RT/Link_Overlay.pm:151
-#. ($args{'Base'})
-#. ($args{'Target'})
+#. ($args{'base'})
+#. ($args{'target'})
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "Wydaje się, że %1 to obiekt lokalny, ale nie udało się wyszukać go w bazie danych"
 
@@ -311,8 +311,8 @@ msgid "%1 succeeded\\n"
 msgstr "%1 udało się"
 
 #: NOT FOUND IN SOURCE
-msgid "%1 type unknown for $MessageId"
-msgstr "%1 to nieznany typ id wiadomości ($MessageId)"
+msgid "%1 type unknown for $message_id"
+msgstr "%1 to nieznany typ id wiadomości ($message_id)"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 type unknown for %2"
@@ -1668,7 +1668,7 @@ msgstr "Utwórz skrypt dla kolejki %1"
 msgid "Create a template"
 msgstr "Utwórz szablon"
 
-#: html/SelfService/Create.html:46 html/SelfService/create_ticketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Utwórz zgłoszenie"
 
@@ -2605,7 +2605,7 @@ msgid "Group %1 %2: %3"
 msgstr "Grupa %1 %2: %3"
 
 #: html/Admin/Elements/CustomFieldTabs:68 html/Admin/Elements/GroupTabs:66 html/Admin/Elements/QueueTabs:82 html/Admin/Elements/SystemTabs:65 html/Admin/Global/index.html:76
-msgid "Group Rights"
+msgid "Group rights"
 msgstr "Uprawnienia grupowe"
 
 #: lib/RT/Group_Overlay.pm:983
@@ -2692,7 +2692,7 @@ msgstr "Start"
 msgid "Hours"
 msgstr ""
 
-#: lib/RT/Base.pm:119
+#: lib/RT/base.pm:119
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
 msgstr "Posiadam %quant(%1,concrete mixer)."
@@ -2809,7 +2809,7 @@ msgid "Invalid Group Type"
 msgstr "Nieprawidłowy typ grupy"
 
 #: lib/RT/Principal_Overlay.pm:161
-msgid "Invalid Right"
+msgid "Invalid right"
 msgstr "Nieprawidłowe uprawnienie"
 
 #: NOT FOUND IN SOURCE

@@ -13,10 +13,10 @@ ok($ret, 'ACL test user creation');
 $user_obj->set_name('customer');
 $user_obj->set_privileged(1);
 ($ret, $msg) = $user_obj->set_password('customer');
-$user_obj->principal_object->grant_right(Right => 'LoadSavedSearch');
-$user_obj->principal_object->grant_right(Right => 'EditSavedSearch');
-$user_obj->principal_object->grant_right(Right => 'CreateSavedSearch');
-$user_obj->principal_object->grant_right(Right => 'ModifySelf');
+$user_obj->principal_object->grant_right(right => 'LoadSavedSearch');
+$user_obj->principal_object->grant_right(right => 'EditSavedSearch');
+$user_obj->principal_object->grant_right(right => 'CreateSavedSearch');
+$user_obj->principal_object->grant_right(right => 'ModifySelf');
 
 ok $m->login( 'customer' => 'customer' ), "logged in";
 

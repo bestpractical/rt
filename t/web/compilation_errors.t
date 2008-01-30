@@ -18,7 +18,7 @@ $agent->cookie_jar($cookie_jar);
 
 # get the top page
 my $url = $agent->rt_base_url;
-diag "Base URL is '$url'" if $ENV{TEST_VERBOSE};
+diag "base URL is '$url'" if $ENV{TEST_VERBOSE};
 $agent->get($url);
 
 # {{{ test a login

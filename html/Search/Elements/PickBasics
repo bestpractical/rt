@@ -79,8 +79,8 @@ my @lines = (
         Value => { type => 'text', Size => 20 },
     },
     {
-        name => 'Queue',
-        Field => _('Queue'),
+        name => 'queue',
+        Field => _('queue'),
         Op => {
             type => 'component',
             Path => '/Elements/SelectBoolean',

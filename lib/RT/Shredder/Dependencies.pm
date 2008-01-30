@@ -82,33 +82,33 @@ SeeAlso: _PushDependecy, RT::Shredder::Dependency
 
 =cut
 
-sub _PushDependencies {
+sub _push_dependencies {
     my $self = shift;
     my %args = ( target_objects => undef, Shredder => undef, @_ );
     my @objs = $args{'Shredder'}
         ->cast_objects_to_records( objects => delete $args{'target_objects'} );
-    $self->_push_dependency( %args, Targetobject => $_ ) foreach @objs;
+    $self->_push_dependency( %args, targetobject => $_ ) foreach @objs;
     return;
 }
 
-sub _PushDependency {
+sub _push_dependency {
     my $self = shift;
     my %args = (
         base_object  => undef,
         Flags        => undef,
-        Targetobject => undef,
+        targetobject => undef,
         Shredder     => undef,
         @_
     );
     my $rec
-        = $args{'Shredder'}->put_object( object => $args{'Targetobject'} );
+        = $args{'Shredder'}->put_object( object => $args{'targetobject'} );
     return if $rec->{'State'} & WIPED;    # there is no object anymore
 
     push @{ $self->{'list'} },
         RT::Shredder::Dependency->new(
         base_object  => $args{'base_object'},
         Flags        => $args{'Flags'},
-        Targetobject => $rec->{'object'},
+        targetobject => $rec->{'object'},
         );
 
     if ( scalar @{ $self->{'list'} } > ( $RT::DependenciesLimit || 1000 ) ) {
@@ -117,12 +117,12 @@ sub _PushDependency {
     return;
 }
 
-=head2 List
+=head2 list
 
 
 =cut
 
-sub List {
+sub list {
     my $self = shift;
     my %args = (
         WithFlags    => undef,

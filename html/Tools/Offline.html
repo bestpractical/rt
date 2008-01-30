@@ -52,7 +52,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-% $m->callback( Requestor => \$requestoraddress, Queue => \$qname, %ARGS );
+% $m->callback( Requestor => \$requestoraddress, queue => \$qname, %ARGS );
 
 <form action="Offline.html" name="TicketUpdate" 
 	method="post" enctype="multipart/form-data">
@@ -105,10 +105,10 @@ my @results;
 use RT::ScripAction::CreateTickets;
 my $action = RT::ScripAction::CreateTickets->new(CurrentUser => Jifty->web->current_user);
 ;
-if ($ARGS{'Parse'} && $ARGS{'Template'}) {
+if ($ARGS{'Parse'} && $ARGS{'template'}) {
     $string = "";
     my $cgi_object = Jifty->handler->cgi;
-    my $fh = $cgi_object->upload('Template');
+    my $fh = $cgi_object->upload('template');
     my $filename = "$fh";
 
     my ($buffer, $template);
@@ -116,7 +116,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
 	    $template .= $buffer;
     }
     $template =~ s/\r\n/\n/gs;
-    $action->parse(Content => $template, Queue => $qname, Requestor => $requestoraddress);
+    $action->parse(Content => $template, queue => $qname, Requestor => $requestoraddress);
     foreach ( @{ $action->{'create_tickets'} } ) {
         my $id = $_;
         $id =~ s/^create\-//;
@@ -132,7 +132,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
 
 
 } elsif ($ARGS{'UpdateTickets'}) {
-    $action->parse(Content => $ARGS{string}, Queue => $qname, Requestor=> $requestoraddress);
+    $action->parse(Content => $ARGS{string}, queue => $qname, Requestor=> $requestoraddress);
     push @results, $action->create_by_template();
     push @results, $action->update_by_template();
 } else {
@@ -152,7 +152,7 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
 	
 	while (my $t = $Tickets->next) {
 	    $string .= "===# DO NOT EDIT #===\n";
-		$string .= "===Base-Ticket: " . $t->id . "\n";
+		$string .= "===base-Ticket: " . $t->id . "\n";
 	    $string .= $action->get_base_template($t);
 	    $string .= "===# DO NOT EDIT #===\n";
 		$string .= "" . "\n";

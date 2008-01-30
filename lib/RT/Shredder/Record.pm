@@ -64,14 +64,14 @@ Returns string in format Classname-object_id.
 
 sub _as_string { return ref( $_[0] ) . "-" . $_[0]->id }
 
-=head2 _AsInsertQuery
+=head2 _as_insert_query
 
 Returns INSERT query string that duplicates current record and
 can be used to insert record back into DB after delete.
 
 =cut
 
-sub _AsInsertQuery {
+sub _as_insert_query {
     my $self = shift;
 
     my $dbh = Jifty->handle->dbh;
@@ -153,7 +153,7 @@ sub __depends_on {
         # XXX: We don't use Links->next as it's dies when object
         #      is linked to object that doesn't exist
         #      also, ->next skip links to deleted tickets :(
-        foreach (qw(Base Target)) {
+        foreach (qw(base target)) {
             my $objs = $self->_links($_);
             $objs->_do_search;
             push @$list, $objs->items_array_ref;
@@ -235,7 +235,7 @@ sub __Relates {
 
 # implement proxy method because some RT classes
 # override Delete method
-sub __Wipeout {
+sub __wipeout {
     my $self = shift;
     my $msg  = $self->_as_string . " wiped out";
     $self->SUPER::delete;
@@ -243,7 +243,7 @@ sub __Wipeout {
     return;
 }
 
-sub validate_Relations {
+sub validate_relations {
     my $self = shift;
     my %args = (
         Shredder => undef,
@@ -263,7 +263,7 @@ sub validate_Relations {
     return;
 }
 
-sub _ValidateRelations {
+sub _validate_relations {
     my $self = shift;
     my %args = (@_);
 

@@ -352,7 +352,7 @@ they behave as described below.
 What's actually going on in the above is that C<@MailPlugins> is a
 list of Perl modules; RT prepends C<RT::Interface::Email::> to the name,
 to form a package name, and then C<use>'s this module. The module is
-expected to provide a C<GetCurrentUser> subroutine, which takes a hash of
+expected to provide a C<get_current_user> subroutine, which takes a hash of
 several parameters:
 
 =over 4
@@ -373,7 +373,7 @@ The authentication level returned from the previous plugin.
 
 The ticket under discussion
 
-=item Queue [OPTIONAL]
+=item queue [OPTIONAL]
 
 If we don't already have a ticket id, we need to know which queue we're talking about
 

@@ -98,7 +98,7 @@ use Jifty::DBI::Record schema {
     column starts   => type is 'datetime', default is '';
     column Started  => type is 'datetime', default is '';
     column Due      => type is 'datetime', default is '';
-    column Resolved => type is 'datetime', default is '';
+    column resolved => type is 'datetime', default is '';
     column
         last_updated_by => max_length is 11,
         type is 'int(11)', default is '0';
@@ -128,43 +128,43 @@ use MIME::Entity;
 our %LINKTYPEMAP = (
     MemberOf => {
         type => 'MemberOf',
-        Mode => 'Target',
+        Mode => 'target',
     },
     Parents => {
         type => 'MemberOf',
-        Mode => 'Target',
+        Mode => 'target',
     },
     Members => {
         type => 'MemberOf',
-        Mode => 'Base',
+        Mode => 'base',
     },
     Children => {
         type => 'MemberOf',
-        Mode => 'Base',
+        Mode => 'base',
     },
     has_member => {
         type => 'MemberOf',
-        Mode => 'Base',
+        Mode => 'base',
     },
     RefersTo => {
         type => 'RefersTo',
-        Mode => 'Target',
+        Mode => 'target',
     },
     ReferredToBy => {
         type => 'RefersTo',
-        Mode => 'Base',
+        Mode => 'base',
     },
     DependsOn => {
         type => 'DependsOn',
-        Mode => 'Target',
+        Mode => 'target',
     },
     DependedOnBy => {
         type => 'DependsOn',
-        Mode => 'Base',
+        Mode => 'base',
     },
     MergedInto => {
         type => 'MergedInto',
-        Mode => 'Target',
+        Mode => 'target',
     },
 
 );
@@ -177,20 +177,20 @@ our %LINKTYPEMAP = (
 
 our %LINKDIRMAP = (
     MemberOf => {
-        Base   => 'MemberOf',
-        Target => 'has_member',
+        base   => 'MemberOf',
+        target => 'has_member',
     },
     RefersTo => {
-        Base   => 'RefersTo',
-        Target => 'ReferredToBy',
+        base   => 'RefersTo',
+        target => 'ReferredToBy',
     },
     DependsOn => {
-        Base   => 'DependsOn',
-        Target => 'DependedOnBy',
+        base   => 'DependsOn',
+        target => 'DependedOnBy',
     },
     MergedInto => {
-        Base   => 'MergedInto',
-        Target => 'MergedInto',
+        base   => 'MergedInto',
+        target => 'MergedInto',
     },
 
 );
@@ -351,7 +351,7 @@ sub create {
         Due                 => undef,
         starts              => undef,
         Started             => undef,
-        Resolved            => undef,
+        resolved            => undef,
         mime_obj             => undef,
         _record_transaction => 1,
         dry_run              => 0,
@@ -373,13 +373,13 @@ sub create {
     #Can't create a ticket without a queue.
     unless ( $queue_obj->id ) {
         Jifty->log->debug("$self No valid queue given for ticket creation.");
-        return ( 0, 0, _('Could not create ticket. Queue not set') );
+        return ( 0, 0, _('Could not create ticket. queue not set') );
     }
 
     #Now that we have a queue, Check the ACLS
     unless (
         $self->current_user->has_right(
-            Right  => 'create_ticket',
+            right  => 'create_ticket',
             object => $queue_obj
         )
         )
@@ -439,8 +439,8 @@ sub create {
     }
 
     my $Resolved = RT::Date->new();
-    if ( defined $args{'Resolved'} ) {
-        $Resolved->set( Format => 'ISO', value => $args{'Resolved'} );
+    if ( defined $args{'resolved'} ) {
+        $Resolved->set( Format => 'ISO', value => $args{'resolved'} );
     }
 
     #If the status is an inactive status, set the resolved date
@@ -493,7 +493,7 @@ sub create {
     my $DeferOwner;
     if (   $owner
         && $owner->id != RT->nobody->id
-        && !$owner->has_right( object => $queue_obj, Right => 'OwnTicket' ) )
+        && !$owner->has_right( object => $queue_obj, right => 'OwnTicket' ) )
     {
         $DeferOwner = $owner;
         $owner      = undef;
@@ -551,7 +551,7 @@ sub create {
         type             => $args{'type'},
         starts           => $starts->iso,
         Started          => $Started->iso,
-        Resolved         => $Resolved->iso,
+        resolved         => $Resolved->iso,
         Due              => $Due->iso
     );
 
@@ -585,7 +585,7 @@ sub create {
         value  => ( $args{'effective_id'} || $id )
     );
     unless ($val) {
-        Jifty->log->fatal("Couldn't set EffectiveId: $msg\n");
+        Jifty->log->fatal("Couldn't set effective_id: $msg\n");
         Jifty->handle->rollback;
         return ( 0, 0,
             _("Ticket could not be created due to an internal error") );
@@ -703,9 +703,9 @@ sub create {
                 Silent => !$args{'_record_transaction'},
                 'Silent'
                     . (
-                    $LINKTYPEMAP{$type}->{'Mode'} eq 'Base'
-                    ? 'Target'
-                    : 'Base'
+                    $LINKTYPEMAP{$type}->{'Mode'} eq 'base'
+                    ? 'target'
+                    : 'base'
                     ) => 1,
             );
 
@@ -717,7 +717,7 @@ sub create {
 # Now that we've Created the ticket and set up its metadata, we can actually go and check OwnTicket on the ticket itself.
 # This might be different than before in cases where extensions like RTIR are doing clever things with RT's ACL system
     if ($DeferOwner) {
-        if (!$DeferOwner->has_right( object => $self, Right => 'OwnTicket' ) )
+        if (!$DeferOwner->has_right( object => $self, right => 'OwnTicket' ) )
         {
 
             Jifty->log->warn( "User "
@@ -794,9 +794,9 @@ sub create {
 
 # }}}
 
-# {{{ _Parse822HeadersForAttributes Content
+# {{{ _Parse822headersForAttributes Content
 
-=head2 _Parse822HeadersForAttributes Content
+=head2 _Parse822headersForAttributes Content
 
 Takes an RFC822 style message and parses its attributes into a hash.
 
@@ -886,7 +886,7 @@ sub import {
         Due              => undef,
         Created          => undef,
         Updated          => undef,
-        Resolved         => undef,
+        resolved         => undef,
         Told             => undef,
         @_
     );
@@ -905,13 +905,13 @@ sub import {
     #Can't create a ticket without a queue.
     unless ( defined($queue_obj) and $queue_obj->id ) {
         Jifty->log->debug("$self No queue given for ticket creation.");
-        return ( 0, _('Could not create ticket. Queue not set') );
+        return ( 0, _('Could not create ticket. queue not set') );
     }
 
     #Now that we have a queue, Check the ACLS
     unless (
         $self->current_user->has_right(
-            Right  => 'create_ticket',
+            right  => 'create_ticket',
             object => $queue_obj
         )
         )
@@ -947,7 +947,7 @@ sub import {
         and (
             !$owner->has_right(
                 object => $queue_obj,
-                Right  => 'OwnTicket'
+                right  => 'OwnTicket'
             )
         )
         )
@@ -979,15 +979,15 @@ sub import {
     }
 
     # If we're coming in with an id, set that now.
-    my $EffectiveId = undef;
+    my $effective_id = undef;
     if ( $args{'id'} ) {
-        $EffectiveId = $args{'id'};
+        $effective_id = $args{'id'};
 
     }
 
     my $id = $self->SUPER::create(
         id               => $args{'id'},
-        effective_id      => $EffectiveId,
+        effective_id      => $effective_id,
         queue            => $queue_obj->id,
         owner            => $owner->id,
         subject          => $args{'subject'},             # loc
@@ -1000,7 +1000,7 @@ sub import {
         Created          => $args{'Created'},             # loc
         Told             => $args{'Told'},                # loc
         last_updated      => $args{'Updated'},             # loc
-        Resolved         => $args{'Resolved'},            # loc
+        resolved         => $args{'resolved'},            # loc
         Due              => $args{'Due'},                 # loc
     );
 
@@ -1014,7 +1014,7 @@ sub import {
 
         unless ($val) {
             Jifty->log->err(
-                $self . "->import couldn't set EffectiveId: $msg\n" );
+                $self . "->import couldn't set effective_id: $msg\n" );
         }
     }
 
@@ -1837,7 +1837,7 @@ sub set_queue {
     }
     unless (
         $self->current_user->has_right(
-            Right  => 'create_ticket',
+            right  => 'create_ticket',
             object => $Newqueue_obj
         )
         )
@@ -1847,7 +1847,7 @@ sub set_queue {
 
     unless (
         $self->owner_obj->has_right(
-            Right  => 'OwnTicket',
+            right  => 'OwnTicket',
             object => $Newqueue_obj
         )
         )
@@ -2357,13 +2357,13 @@ sub _links {
 
 =head2 delete_link
 
-Delete a link. takes a paramhash of Base, Target, Type, Silent,
-SilentBase and SilentTarget. Either Base or Target must be null.
+Delete a link. takes a paramhash of base, target, Type, Silent,
+Silentbase and Silenttarget. Either base or target must be null.
 The null value will be replaced with this ticket\'s id.
 
 If Silent is true then no transaction would be recorded, in other
 case you can control creation of transactions on both base and
-target with SilentBase and SilentTarget respectively. By default
+target with Silentbase and Silenttarget respectively. By default
 both transactions are Created.
 
 =cut 
@@ -2371,17 +2371,17 @@ both transactions are Created.
 sub delete_link {
     my $self = shift;
     my %args = (
-        Base         => undef,
-        Target       => undef,
+        base         => undef,
+        target       => undef,
         type         => undef,
         Silent       => undef,
-        SilentBase   => undef,
-        SilentTarget => undef,
+        Silentbase   => undef,
+        Silenttarget => undef,
         @_
     );
 
-    unless ( $args{'Target'} || $args{'Base'} ) {
-        Jifty->log->error("Base or Target must be specified\n");
+    unless ( $args{'target'} || $args{'base'} ) {
+        Jifty->log->error("base or target must be specified\n");
         return ( 0, _('Either base or target must be specified') );
     }
 
@@ -2395,8 +2395,8 @@ sub delete_link {
     # If the other URI is an RT::Model::Ticket, we want to make sure the user
     # can modify it too...
     my ( $status, $msg, $other_ticket )
-        = $self->_get_ticket_from_uri( URI => $args{'Target'}
-            || $args{'Base'} );
+        = $self->_get_ticket_from_uri( URI => $args{'target'}
+            || $args{'base'} );
     return ( 0, $msg ) unless $status;
     if ( !$other_ticket
         || $other_ticket->current_user_has_right('ModifyTicket') )
@@ -2416,12 +2416,12 @@ sub delete_link {
 
     my ( $direction, $remote_link );
 
-    if ( $args{'Base'} ) {
-        $remote_link = $args{'Base'};
-        $direction   = 'Target';
-    } elsif ( $args{'Target'} ) {
-        $remote_link = $args{'Target'};
-        $direction   = 'Base';
+    if ( $args{'base'} ) {
+        $remote_link = $args{'base'};
+        $direction   = 'target';
+    } elsif ( $args{'target'} ) {
+        $remote_link = $args{'target'};
+        $direction   = 'base';
     }
 
     my $remote_uri = RT::URI->new;
@@ -2437,15 +2437,15 @@ sub delete_link {
         Jifty->log->error("Couldn't create transaction: $Msg") unless $Trans;
     }
 
-    if ( !$args{ 'Silent' . ( $direction eq 'Target' ? 'Base' : 'Target' ) }
+    if ( !$args{ 'Silent' . ( $direction eq 'target' ? 'base' : 'target' ) }
         && $remote_uri->is_local )
     {
         my $OtherObj = $remote_uri->object;
         my ( $val, $Msg ) = $OtherObj->_new_transaction(
             type  => 'DeleteLink',
-            Field => $direction eq 'Target'
-            ? $LINKDIRMAP{ $args{'type'} }->{Base}
-            : $LINKDIRMAP{ $args{'type'} }->{Target},
+            Field => $direction eq 'target'
+            ? $LINKDIRMAP{ $args{'type'} }->{base}
+            : $LINKDIRMAP{ $args{'type'} }->{target},
             old_value      => $self->uri,
             ActivateScrips => !RT->config->get('LinkTransactionsRun1Scrip'),
             time_taken      => 0,
@@ -2462,11 +2462,11 @@ sub delete_link {
 
 =head2 add_link
 
-Takes a paramhash of type and one of Base or Target. Adds that link to this ticket.
+Takes a paramhash of type and one of base or target. Adds that link to this ticket.
 
 If Silent is true then no transaction would be recorded, in other
 case you can control creation of transactions on both base and
-target with SilentBase and SilentTarget respectively. By default
+target with Silentbase and Silenttarget respectively. By default
 both transactions are Created.
 
 =cut
@@ -2474,17 +2474,17 @@ both transactions are Created.
 sub add_link {
     my $self = shift;
     my %args = (
-        Target       => '',
-        Base         => '',
+        target       => '',
+        base         => '',
         type         => '',
         Silent       => undef,
-        SilentBase   => undef,
-        SilentTarget => undef,
+        Silentbase   => undef,
+        Silenttarget => undef,
         @_
     );
 
-    unless ( $args{'Target'} || $args{'Base'} ) {
-        Jifty->log->error("Base or Target must be specified\n");
+    unless ( $args{'target'} || $args{'base'} ) {
+        Jifty->log->error("base or target must be specified\n");
         return ( 0, _('Either base or target must be specified') );
     }
 
@@ -2497,8 +2497,8 @@ sub add_link {
     # If the other URI is an RT::Model::Ticket, we want to make sure the user
     # can modify it too...
     my ( $status, $msg, $other_ticket )
-        = $self->_get_ticket_from_uri( URI => $args{'Target'}
-            || $args{'Base'} );
+        = $self->_get_ticket_from_uri( URI => $args{'target'}
+            || $args{'base'} );
     return ( 0, $msg ) unless $status;
     if ( !$other_ticket
         || $other_ticket->current_user_has_right('ModifyTicket') )
@@ -2544,12 +2544,12 @@ Private non-acled variant of add_link so that links can be added during create.
 sub _add_link {
     my $self = shift;
     my %args = (
-        Target       => '',
-        Base         => '',
+        target       => '',
+        base         => '',
         type         => '',
         Silent       => undef,
-        SilentBase   => undef,
-        SilentTarget => undef,
+        Silentbase   => undef,
+        Silenttarget => undef,
         @_
     );
 
@@ -2558,12 +2558,12 @@ sub _add_link {
     return ( $val, $msg ) if $args{'Silent'};
 
     my ( $direction, $remote_link );
-    if ( $args{'Target'} ) {
-        $remote_link = $args{'Target'};
-        $direction   = 'Base';
-    } elsif ( $args{'Base'} ) {
-        $remote_link = $args{'Base'};
-        $direction   = 'Target';
+    if ( $args{'target'} ) {
+        $remote_link = $args{'target'};
+        $direction   = 'base';
+    } elsif ( $args{'base'} ) {
+        $remote_link = $args{'base'};
+        $direction   = 'target';
     }
 
     my $remote_uri = RT::URI->new;
@@ -2579,15 +2579,15 @@ sub _add_link {
         Jifty->log->error("Couldn't create transaction: $Msg") unless $Trans;
     }
 
-    if ( !$args{ 'Silent' . ( $direction eq 'Target' ? 'Base' : 'Target' ) }
+    if ( !$args{ 'Silent' . ( $direction eq 'target' ? 'base' : 'target' ) }
         && $remote_uri->is_local )
     {
         my $OtherObj = $remote_uri->object;
         my ( $val, $msg ) = $OtherObj->_new_transaction(
             type  => 'AddLink',
-            Field => $direction eq 'Target'
-            ? $LINKDIRMAP{ $args{'type'} }->{Base}
-            : $LINKDIRMAP{ $args{'type'} }->{Target},
+            Field => $direction eq 'target'
+            ? $LINKDIRMAP{ $args{'type'} }->{base}
+            : $LINKDIRMAP{ $args{'type'} }->{target},
             new_value      => $self->uri,
             ActivateScrips => !RT->config->get('LinkTransactionsRun1Scrip'),
             time_taken      => 0,
@@ -2682,9 +2682,9 @@ sub merge_into {
          # First, make sure the link doesn't already exist. then move it over.
             my $tmp = RT::Model::Link->new( current_user => RT->system_user );
             $tmp->load_by_cols(
-                Base        => $link->base,
+                base        => $link->base,
                 type        => $link->type,
-                LocalTarget => $MergeInto->id
+                local_target => $MergeInto->id
             );
             if ( $tmp->id ) {
                 $link->delete;
@@ -2712,9 +2712,9 @@ sub merge_into {
          # First, make sure the link doesn't already exist. then move it over.
             my $tmp = RT::Model::Link->new( current_user => RT->system_user );
             $tmp->load_by_cols(
-                Target    => $link->target,
+                target    => $link->target,
                 type      => $link->type,
-                LocalBase => $MergeInto->id
+                local_base => $MergeInto->id
             );
             if ( $tmp->id ) {
                 $link->delete;
@@ -2778,7 +2778,7 @@ sub merge_into {
     }
 
     #make a new link: this ticket is merged into that other ticket.
-    $self->add_link( type => 'MergedInto', Target => $MergeInto->id() );
+    $self->add_link( type => 'MergedInto', target => $MergeInto->id() );
 
     $MergeInto->set_last_updated;
 
@@ -2913,7 +2913,7 @@ sub set_owner {
 
     #If we've specified a new owner and that user can't modify the ticket
     elsif (
-        !$NewOwnerObj->has_right( Right => 'OwnTicket', object => $self ) )
+        !$NewOwnerObj->has_right( right => 'OwnTicket', object => $self ) )
     {
         Jifty->handle->rollback();
         return ( 0, _("That user may not own tickets in that queue") );
@@ -3123,7 +3123,7 @@ sub set_status {
         );
     }
 
-    #When we close a ticket, set the 'Resolved' attribute to now.
+    #When we close a ticket, set the 'resolved' attribute to now.
     # It's misnamed, but that's just historical.
     if ( $self->queue_obj->is_inactive_status( $args{status} ) ) {
         $self->_set(
@@ -3373,7 +3373,7 @@ sub _overlay_accessible {
         time_worked      => { 'read' => 1, 'write' => 1 },
         time_left        => { 'read' => 1, 'write' => 1 },
         Told             => { 'read' => 1, 'write' => 1 },
-        Resolved         => { 'read' => 1 },
+        resolved         => { 'read' => 1 },
         type             => { 'read' => 1 },
         starts        => { 'read' => 1, 'write' => 1 },
         Started       => { 'read' => 1, 'write' => 1 },
@@ -3537,7 +3537,7 @@ sub current_user_has_right {
 
     return $self->current_user->principal_object->has_right(
         object => $self,
-        Right  => $right,
+        right  => $right,
     );
 }
 
@@ -3547,8 +3547,8 @@ sub current_user_has_right {
 
 =head2 has_right
 
- Takes a paramhash with the attributes 'Right' and 'Principal'
-  'Right' is a ticket-scoped textual right from RT::Model::ACE 
+ Takes a paramhash with the attributes 'right' and 'Principal'
+  'right' is a ticket-scoped textual right from RT::Model::ACE 
   'Principal' is an RT::Model::User object
 
   Returns 1 if the principal has the right. Returns undef if not.
@@ -3558,7 +3558,7 @@ sub current_user_has_right {
 sub has_right {
     my $self = shift;
     my %args = (
-        Right     => undef,
+        right     => undef,
         Principal => undef,
         @_
     );
@@ -3574,7 +3574,7 @@ sub has_right {
     return (
         $args{'Principal'}->has_right(
             object => $self,
-            Right  => $args{'Right'}
+            right  => $args{'right'}
         )
     );
 }

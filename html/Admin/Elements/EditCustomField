@@ -50,7 +50,7 @@
 
 <form method="post" action="CustomField.html">
 <input type="hidden" class="hidden" name="CustomField" value="<%$id %>" />
-<input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
+<input type="hidden" class="hidden" name="queue" value="<%$Queue%>" />
 
 <table width="100%" border="0">
 <tr><td align="right">
@@ -100,7 +100,7 @@ if (! $CustomField ) {
 } else {
 
     if ($CustomField eq 'new') {
-      my ($val, $msg) =  $CustomFieldObj->create(Queue => $Queue, 
+      my ($val, $msg) =  $CustomFieldObj->create(queue => $Queue, 
                                                  name => $name, 
                                                  type => $Type,
                                                  description => $description,

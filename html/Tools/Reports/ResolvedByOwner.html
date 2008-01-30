@@ -58,13 +58,13 @@ $q->load_by_cols(name => $Queue);
 <form method="post" action="ResolvedByOwner.html">
 % if ($Queue) {
 % # if we have a queue, do the search
-% my $query = "Status = 'resolved' AND Queue = '$Queue'";
+% my $query = "Status = 'resolved' AND queue = '$Queue'";
 % my $groupby = 'Owner';
 <& /Search/Elements/Chart, Query => $query, PrimaryGroupBy => $groupby &>
 % }
 
 <hr>
 
-<&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'Queue', namedValues => 1, Default => $q->id &>
+<&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'queue', namedValues => 1, Default => $q->id &>
 <& /Elements/Submit&>
 </form>

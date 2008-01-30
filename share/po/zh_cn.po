@@ -209,8 +209,8 @@ msgid "%1 aliases require a TicketId to work on (from %2) %3"
 msgstr "别名 %1 需要可用的申请单编号以处理 %3(出自 %2)"
 
 #: lib/RT/Link_Overlay.pm:144 lib/RT/Link_Overlay.pm:151
-#. ($args{'Base'})
-#. ($args{'Target'})
+#. ($args{'base'})
+#. ($args{'target'})
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 看来是个本地对象，却不在数据库里"
 
@@ -332,7 +332,7 @@ msgid "%1 succeeded\\n"
 msgstr "%1 完成\\n"
 
 #: NOT FOUND IN SOURCE
-msgid "%1 type unknown for $MessageId"
+msgid "%1 type unknown for $message_id"
 msgstr "不知道 $MessageID 的 %1 类别"
 
 #: NOT FOUND IN SOURCE
@@ -668,7 +668,7 @@ msgid "About me"
 msgstr "个人信息"
 
 #: NOT FOUND IN SOURCE
-msgid "Access Right"
+msgid "Access right"
 msgstr "系统使用登录权限"
 
 #: html/Admin/Users/Modify.html:106
@@ -847,7 +847,7 @@ msgid "Admin Correspondence"
 msgstr "管理员回复"
 
 #: NOT FOUND IN SOURCE
-msgid "Admin Rights"
+msgid "Admin rights"
 msgstr "管理员权限"
 
 #: html/Admin/Queues/index.html:46 html/Admin/Queues/index.html:49
@@ -1233,7 +1233,7 @@ msgid "Available Columns"
 msgstr "可用的字段："
 
 #: NOT FOUND IN SOURCE
-msgid "Available Rights:"
+msgid "Available rights:"
 msgstr "权限项目列表："
 
 #: NOT FOUND IN SOURCE
@@ -1997,7 +1997,7 @@ msgstr "为 %1 表单新增手续"
 msgid "Create a template"
 msgstr "新增模板"
 
-#: html/SelfService/Create.html:46 html/SelfService/create_ticketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "提出申请单"
 
@@ -2107,7 +2107,7 @@ msgid "Current Links"
 msgstr "现有关系"
 
 #: NOT FOUND IN SOURCE
-msgid "Current Rights:"
+msgid "Current rights:"
 msgstr "现有权限："
 
 #: html/Admin/Elements/EditScrips:51
@@ -2390,7 +2390,7 @@ msgid "Delegation Groups"
 msgstr "代理人群组"
 
 #: NOT FOUND IN SOURCE
-msgid "Delegation Rights"
+msgid "Delegation rights"
 msgstr "代理人权限"
 
 #: html/Admin/Elements/EditScrips:75 html/Search/Elements/EditFormat:103 html/Search/Elements/EditQuery:57 html/Search/Elements/EditSearches:63 html/Widgets/SelectionBox:204
@@ -2773,7 +2773,7 @@ msgid "Education"
 msgstr "最高学历"
 
 #: NOT FOUND IN SOURCE
-msgid "EffectiveId"
+msgid "effective_id"
 msgstr "有效编号"
 
 #: lib/RT/Record.pm:1295 lib/RT/Record.pm:1372 lib/RT/Ticket_Overlay.pm:2518 lib/RT/Ticket_Overlay.pm:2608
@@ -3254,7 +3254,7 @@ msgid "Full headers"
 msgstr "完整标头档"
 
 #: NOT FOUND IN SOURCE
-msgid "Gecos"
+msgid "gecos"
 msgstr "登入帐号"
 
 #: NOT FOUND IN SOURCE
@@ -3291,7 +3291,7 @@ msgid "Global Keyword Selections"
 msgstr "全域关键词选取"
 
 #: NOT FOUND IN SOURCE
-msgid "Global Rights:"
+msgid "Global rights:"
 msgstr "拥有全域权限列表："
 
 #: NOT FOUND IN SOURCE
@@ -3377,11 +3377,11 @@ msgid "Group name:"
 msgstr "群组名称："
 
 #: html/Admin/Elements/CustomFieldTabs:68 html/Admin/Elements/GroupTabs:66 html/Admin/Elements/QueueTabs:82 html/Admin/Elements/SystemTabs:65 html/Admin/Global/index.html:76
-msgid "Group Rights"
+msgid "Group rights"
 msgstr "群组权限"
 
 #: NOT FOUND IN SOURCE
-msgid "Group Rights:"
+msgid "Group rights:"
 msgstr "拥有群组权限列表："
 
 #: NOT FOUND IN SOURCE
@@ -3438,7 +3438,7 @@ msgid "Group renamed from %1 to %2"
 msgstr "群组 %1 已改名为 %2"
 
 #: NOT FOUND IN SOURCE
-msgid "Group with Queue Rights"
+msgid "Group with Queue rights"
 msgstr "拥有表单权限群组"
 
 #: NOT FOUND IN SOURCE
@@ -3466,7 +3466,7 @@ msgid "Groups this user belongs to"
 msgstr "使用者所属的群组"
 
 #: NOT FOUND IN SOURCE
-msgid "Groups with Global Rights"
+msgid "Groups with Global rights"
 msgstr "拥有全域权限群组"
 
 #: NOT FOUND IN SOURCE
@@ -3532,7 +3532,7 @@ msgstr "住宿费"
 msgid "Hours"
 msgstr ""
 
-#: lib/RT/Base.pm:119
+#: lib/RT/base.pm:119
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
 msgstr "我有 %quant(%1,份固体搅拌器)。"
@@ -3661,7 +3661,7 @@ msgid "Invalid Group Type"
 msgstr "错误的群组类别"
 
 #: lib/RT/Principal_Overlay.pm:161
-msgid "Invalid Right"
+msgid "Invalid right"
 msgstr "错误的权限"
 
 #: NOT FOUND IN SOURCE
@@ -4137,8 +4137,8 @@ msgid "Merge Successful"
 msgstr "整合完毕"
 
 #: lib/RT/Ticket_Overlay.pm:2780
-msgid "Merge failed. Couldn't set EffectiveId"
-msgstr "整合失败。无法设定 EffectiveId"
+msgid "Merge failed. Couldn't set effective_id"
+msgstr "整合失败。无法设定 effective_id"
 
 #: lib/RT/Ticket_Overlay.pm:2788
 msgid "Merge failed. Couldn't set Status"
@@ -4220,7 +4220,7 @@ msgid "Modify Custom Fields which apply to all queues"
 msgstr "更改适用于所有表单的自订字段"
 
 #: html/Admin/Global/GroupRights.html:106 html/Admin/Groups/GroupRights.html:94 html/Admin/Queues/GroupRights.html:107
-msgid "Modify Group Rights"
+msgid "Modify Group rights"
 msgstr "更改群组权限"
 
 #: html/Admin/Groups/Members.html:105 html/User/Groups/Members.html:101
@@ -4228,7 +4228,7 @@ msgid "Modify Members"
 msgstr "更改成员"
 
 #: html/User/Delegation.html:58
-msgid "Modify Rights"
+msgid "Modify rights"
 msgstr "更改权限"
 
 #: lib/RT/Queue_Overlay.pm:97
@@ -4244,11 +4244,11 @@ msgid "Modify System ACLS"
 msgstr "更改系统权限清单"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify Template %1"
+msgid "Modify template %1"
 msgstr "更改模板 %1"
 
 #: html/Admin/Global/UserRights.html:75 html/Admin/Groups/UserRights.html:76 html/Admin/Queues/UserRights.html:75
-msgid "Modify User Rights"
+msgid "Modify User rights"
 msgstr "更改使用者权限"
 
 #: NOT FOUND IN SOURCE
@@ -5363,7 +5363,7 @@ msgid "People"
 msgstr "人员"
 
 #: NOT FOUND IN SOURCE
-msgid "People with Queue Rights"
+msgid "People with Queue rights"
 msgstr "拥有表单权限人员"
 
 #: etc/initialdata:133
@@ -5661,7 +5661,7 @@ msgid "Queue Priority"
 msgstr "优先等级"
 
 #: NOT FOUND IN SOURCE
-msgid "Queue Rights"
+msgid "Queue rights"
 msgstr "表单权限"
 
 #: NOT FOUND IN SOURCE
@@ -6084,7 +6084,7 @@ msgid "Resolve ticket #%1 (%2)"
 msgstr "解决申请单 #%1 (%2)"
 
 #: etc/initialdata:323 html/Elements/SelectDateType:49 lib/RT/Ticket_Overlay.pm:1172
-msgid "Resolved"
+msgid "resolved"
 msgstr "已解决"
 
 #: html/Tools/Reports/Elements/Tabs:55
@@ -6128,15 +6128,15 @@ msgid "Revert"
 msgstr "复原"
 
 #: NOT FOUND IN SOURCE
-msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
+msgid "right %1 not found for %2  %3 in scope %4 (%5)\\n"
 msgstr "在 %4 (%5) 的范围内找不到 %2 %3 的 %1 权限\\n"
 
 #: lib/RT/ACE_Overlay.pm:630
-msgid "Right Delegated"
+msgid "right Delegated"
 msgstr "权限代理完毕"
 
 #: lib/RT/ACE_Overlay.pm:320
-msgid "Right Granted"
+msgid "right Granted"
 msgstr "权限设定完毕"
 
 #: lib/RT/ACE_Overlay.pm:178
@@ -6406,7 +6406,7 @@ msgstr "选择群组"
 msgid "Select a queue"
 msgstr "选择表单"
 
-#: html/SelfService/create_ticketInQueue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr ""
 
@@ -6865,7 +6865,7 @@ msgid "System Error. Right not granted."
 msgstr "系统错误。设定权限失败。"
 
 #: NOT FOUND IN SOURCE
-msgid "System Error. right not granted"
+msgid "System Error. Right not granted"
 msgstr "系统错误。设定权限失败。"
 
 #: lib/RT/Transaction_Overlay.pm:224 lib/RT/Transaction_Overlay.pm:230
@@ -6874,7 +6874,7 @@ msgid "System Error: %1"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "System Rights"
+msgid "System rights"
 msgstr "系统权限"
 
 #: html/Admin/Tools/index.html:47
@@ -7478,9 +7478,9 @@ msgid "UnixUsername"
 msgstr "外部系统登入帐号"
 
 #: lib/RT/Attachment_Overlay.pm:289 lib/RT/Record.pm:861
-#. ($self->ContentEncoding)
-#. ($ContentEncoding)
-msgid "Unknown ContentEncoding %1"
+#. ($self->content_encoding)
+#. ($content_encoding)
+msgid "Unknown content_encoding %1"
 msgstr "不可解的内容文字编码方式 %1"
 
 #: html/Search/Build.html:455 lib/RT/Report/Tickets.pm:410
@@ -7675,7 +7675,7 @@ msgid "User Number"
 msgstr "员工编号"
 
 #: html/Admin/Elements/CustomFieldTabs:72 html/Admin/Elements/GroupTabs:68 html/Admin/Elements/QueueTabs:85 html/Admin/Elements/SystemTabs:68 html/Admin/Global/index.html:80
-msgid "User Rights"
+msgid "User rights"
 msgstr "使用者权限"
 
 #: NOT FOUND IN SOURCE

@@ -48,7 +48,7 @@
 <select name="<%$name%>">
 <option value="Created"><&|/l&>Created</&></option>
 <option value="Started"><&|/l&>Started</&></option>
-<option value="Resolved"><&|/l&>Resolved</&></option>
+<option value="resolved"><&|/l&>Resolved</&></option>
 <option value="Told"><&|/l&>Last Contacted</&></option>
 <option value="LastUpdated"><&|/l&>Last Updated</&></option>
 <option value="starts"><&|/l&>starts</&></option>

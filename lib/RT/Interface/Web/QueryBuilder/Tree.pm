@@ -109,7 +109,7 @@ sub get_referenced_queues {
 
             my $clause = $node->getNodeValue();
 
-            if ( $clause->{Key} eq 'Queue' ) {
+            if ( $clause->{Key} eq 'queue' ) {
                 $queues->{ $clause->{Value} } = 1;
             }
         }

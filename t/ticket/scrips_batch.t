@@ -26,12 +26,12 @@ my $sid;
     $m->follow_link_ok(  text => 'New scrip'  );
     $m->form_number(3);
     $m->field('Scrip-new-Description' => 'test');
-    $m->select('Scrip-new-ScripCondition' => 'On Transaction');
-    $m->select('Scrip-new-ScripAction' => 'User Defined');
+    $m->select('Scrip-new-scrip_condition' => 'On Transaction');
+    $m->select('Scrip-new-scrip_action' => 'User Defined');
     $m->select('Scrip-new-Template' => 'Global template: Blank');
     $m->select('Scrip-new-Stage' => 'transaction_batch');
-    $m->field('Scrip-new-CustomPrepareCode' => 'return 1;');
-    $m->field('Scrip-new-CustomCommitCode' => 'return 1;');
+    $m->field('Scrip-new-custom_prepare_code' => 'return 1;');
+    $m->field('Scrip-new-custom_commit_code' => 'return 1;');
     $m->submit;
     $m->content_like( qr/Scrip Created/ );
 
@@ -39,8 +39,8 @@ my $sid;
 
     my $form = $m->form_number(3);
     is $m->value("Scrip-$sid-Description"), 'test', 'correct description';
-    is value_name($form, "Scrip-$sid-ScripCondition"), 'On Transaction', 'correct condition';
-    is value_name($form, "Scrip-$sid-ScripAction"), 'User Defined', 'correct action';
+    is value_name($form, "Scrip-$sid-scrip_condition"), 'On Transaction', 'correct condition';
+    is value_name($form, "Scrip-$sid-scrip_action"), 'User Defined', 'correct action';
     is value_name($form, "Scrip-$sid-Template"), 'Global template: Blank', 'correct template';
     is value_name($form, "Scrip-$sid-Stage"), 'transaction_batch', 'correct stage';
 
@@ -61,7 +61,7 @@ foreach my \$txn ( \@\$batch ) {
 return 1;
 END
 
-    $m->field( "Scrip-$sid-CustomCommitCode" => $code );
+    $m->field( "Scrip-$sid-custom_commit_code" => $code );
     $m->submit;
 
     $m->goto_create_ticket( $queue );

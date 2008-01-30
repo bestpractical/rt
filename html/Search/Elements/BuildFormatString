@@ -83,7 +83,7 @@ my @fields = qw(
     LastUpdated LastUpdatedRelative
     Told        ToldRelative
     Due         DueRelative
-    Resolved    ResolvedRelative
+    resolved    ResolvedRelative
 
     RefersTo    ReferredToBy
     DependsOn   DependedOnBy

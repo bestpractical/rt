@@ -71,7 +71,7 @@
       Ticket => $ticket_obj, 
       Tickets => $Tickets, 
       Collapsed => $ARGS{'Collapsed'}, 
-      ShowHeaders => $ARGS{'ShowHeaders'},
+      show_headers => $ARGS{'show_headers'},
       Attachments => $attachments,
       AttachmentContent => $attachment_content
 &> 
@@ -85,7 +85,7 @@
 <%ARGS>
 $id => undef
 $ticket_obj => undef
-$ShowHeaders => 0
+$show_headers => 0
 $Collapsed => undef
 </%ARGS>
 
@@ -104,7 +104,7 @@ if ($ARGS{'id'} eq 'new') {
     # {{{ Create a new ticket
 
     my $Queue = RT::Model::Queue->new();
-    $Queue->load($ARGS{'Queue'});
+    $Queue->load($ARGS{'queue'});
     unless ( $Queue->id ) {
         abort('Queue not found');
     }

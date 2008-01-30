@@ -12,7 +12,7 @@ use File::Spec ();
 use vars qw($Config $System $nobody $Handle );
 our $VERSION = '3.7.14';
 
-our $BasePath         = '/home/jesse/svk/3.999-DANGEROUS';
+our $basePath         = '/home/jesse/svk/3.999-DANGEROUS';
 our $EtcPath          = '/home/jesse/svk/3.999-DANGEROUS/etc';
 our $BinPath          = '/home/jesse/svk/3.999-DANGEROUS/bin';
 our $VarPath          = '/home/jesse/svk/3.999-DANGEROUS/var';

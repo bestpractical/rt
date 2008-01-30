@@ -17,7 +17,7 @@ ok ($q->id, "Created the queue");
 
 my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ( $id, undef, $msg ) = $t1->create(
-    Queue      => $q->id,
+    queue      => $q->id,
     subject    => 'SearchTest1',
     Requestor => ['search2@example.com'],
 );
@@ -28,12 +28,12 @@ my $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 my $quick = RT::Search::Googleish->new(Argument => "",
                                  TicketsObj => $tickets);
 my @tests = (
-    "General new open root"     => "( Owner = 'root' ) AND ( Queue = 'General' ) AND ( Status = 'new' OR Status = 'open' )", 
+    "General new open root"     => "( Owner = 'root' ) AND ( queue = 'General' ) AND ( Status = 'new' OR Status = 'open' )", 
     "fulltext:jesse"       => "( Content LIKE 'jesse' )",
-    $queue                 => "( Queue = '$queue' )",
-    "root $queue"          => "( Owner = 'root' ) AND ( Queue = '$queue' )",
-    "notauser $queue"      => "( Queue = '$queue' ) AND ( subject LIKE 'notauser' )",
-    "notauser $queue root" => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( subject LIKE 'notauser' )");
+    $queue                 => "( queue = '$queue' )",
+    "root $queue"          => "( Owner = 'root' ) AND ( queue = '$queue' )",
+    "notauser $queue"      => "( queue = '$queue' ) AND ( subject LIKE 'notauser' )",
+    "notauser $queue root" => "( Owner = 'root' ) AND ( queue = '$queue' ) AND ( subject LIKE 'notauser' )");
 
 while (my ($from, $to) = splice @tests, 0, 2) {
     is($quick->query_to_sql($from), $to, "<$from> -> <$to>");

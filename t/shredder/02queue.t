@@ -33,10 +33,10 @@ diag 'queue with scrip' if $ENV{'TEST_VERBOSE'};
     my $scrip = RT::Model::Scrip->new(current_user => RT->system_user );
     ($id, $msg) = $scrip->create(
         description    => 'my scrip',
-        Queue          => $queue->id,
-        ScripCondition => 'On Create',
-        ScripAction    => 'Open Tickets',
-        Template       => 'Blank',
+        queue          => $queue->id,
+        scrip_condition => 'On Create',
+        scrip_action    => 'Open Tickets',
+        template       => 'Blank',
     );
     ok($id, 'Created scrip') or diag "error: $msg";
 
@@ -56,7 +56,7 @@ diag 'queue with template' if $ENV{'TEST_VERBOSE'};
     my $template = RT::Model::Template->new(current_user => RT->system_user );
     ($id, $msg) = $template->create(
         name => 'my template',
-        Queue => $queue->id,
+        queue => $queue->id,
         Content => "\nsome content",
     );
     ok($id, 'Created template') or diag "error: $msg";
@@ -67,7 +67,7 @@ diag 'queue with template' if $ENV{'TEST_VERBOSE'};
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
-diag 'queue with a right granted' if $ENV{'TEST_VERBOSE'};
+diag 'queue with a Right granted' if $ENV{'TEST_VERBOSE'};
 {
 	create_savepoint('clean');
     my $queue = RT::Model::Queue->new(current_user => RT->system_user );
@@ -79,7 +79,7 @@ diag 'queue with a right granted' if $ENV{'TEST_VERBOSE'};
     ok($group->id, 'loaded group');
 
     ($id, $msg) = $group->principal_object->grant_right(
-        Right  => 'create_ticket',
+        right  => 'create_ticket',
         object => $queue,
     );
     ok($id, 'granted right') or diag "error: $msg";

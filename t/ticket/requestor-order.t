@@ -19,7 +19,7 @@ my @subjects = ("first test", "second test", "third test", "fourth test", "fifth
 while (@requestors) {
     my $t = RT::Model::Ticket->new(current_user => RT->system_user);
     my ( $id, undef $msg ) = $t->create(
-        Queue      => $q->id,
+        queue      => $q->id,
         subject    => shift @subjects,
         Requestor => [ shift @requestors ]
     );
@@ -93,7 +93,7 @@ sub check_emails_order
     # create ticket with group as member of the requestors group
     my $t = RT::Model::Ticket->new(current_user => RT->system_user);
     my ( $id, $msg ) = $t->create(
-        Queue      => $q->id,
+        queue      => $q->id,
         subject    => "first test",
         Requestor  => 'badaboom@example.com',
     );

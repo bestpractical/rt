@@ -112,7 +112,7 @@ $m->callback(
 
 foreach ( $SearchArg, $ProcessedSearchArg ) {
     $_->{'Query'}  =~ s/__CurrentUser__/Jifty->web->current_user->id/ge;
-    $_->{'Format'} =~ s/__(Web(?:Path|Base|BaseURL))__/scalar RT->config->get($1)/ge;
+    $_->{'Format'} =~ s/__(Web(?:Path|base|baseURL))__/scalar RT->config->get($1)/ge;
     $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/_("$1")/ge;
 }
 

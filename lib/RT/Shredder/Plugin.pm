@@ -113,7 +113,7 @@ plugins of that type.
 
 =cut
 
-sub List {
+sub list {
     my $self = shift;
     my $type = shift;
 
@@ -127,7 +127,7 @@ sub List {
 
     return %res unless $type;
 
-    delete $res{'Base'};
+    delete $res{'base'};
     foreach my $name ( keys %res ) {
         my $class = join '::', qw(RT Shredder Plugin), $name;
         unless ( eval "require $class" ) {

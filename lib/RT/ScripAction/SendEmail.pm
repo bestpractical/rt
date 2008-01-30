@@ -551,7 +551,7 @@ sub record_outgoing_mail_transaction {
     return $id;
 }
 
-=head2 SetRTSpecialHeaders 
+=head2 SetRTSpecialheaders 
 
 This routine adds all the random headers that RT wants in a mail message
 that don't matter much to anybody else.
@@ -730,7 +730,7 @@ sub remove_inappropriate_recipients {
     }
 }
 
-=head2 SetReturnAddress is_comment => BOOLEAN
+=head2 set_return_address is_comment => BOOLEAN
 
 Calculate and set From and Reply-To headers based on the is_comment flag.
 
@@ -855,7 +855,7 @@ sub set_subject_token {
     );
 }
 
-=head2 SetReferencesHeaders
+=head2 SetReferencesheaders
 
 Set References and In-Reply-To headers for this message.
 

@@ -18,7 +18,7 @@ Note that these are all guidelines, not unbreakable rules.  If you have
 a really good need to break one of the rules herein, however, then it is
 best to ask on the B<rt-devel> mailing list first.
 
-Note that with much of this document, it is not so much the Right Way as
+Note that with much of this document, it is not so much the right Way as
 it is Our Way.  We need to have conventions in order to make life easier
 for everyone.  So don't gripe, and just follow it, because you didn't
 get a good grade in "Plays Well With Others" in kindergarten and you
@@ -889,7 +889,7 @@ to any object, so it has the C<Id> suffix.
 =back
 
 There are some legacy fields that did not follow this rule, namely
-C<ACL.principal_id>, C<GroupMembers.GroupId> and C<Attachments.transaction_id>,
+C<ACL.principal_id>, C<GroupMembers.group_id> and C<Attachments.transaction_id>,
 but new tables are expected to be consistent.
 
 =head1 TO DO

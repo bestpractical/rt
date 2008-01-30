@@ -49,9 +49,9 @@
 # Find all the attachments which have parent $Parent
 # For each of these attachments
 foreach my $message ( grep $_->__value('Parent') == $Parent, @$Attachments ) {
-    $m->comp( 'ShowMessageHeaders',
+    $m->comp( 'show_message_headers',
               Message        => $message,
-              DisplayHeaders => \@DisplayHeaders,
+              display_headers => \@display_headers,
             );
 
     my $size = $message->content_length;
@@ -59,7 +59,7 @@ foreach my $message ( grep $_->__value('Parent') == $Parent, @$Attachments ) {
 </%PERL>
 <div class="downloadattachment">
 <a href="<% $AttachPath %>/<% $Transaction->id %>/<% $message->id %>/<% ($message->filename ||'')| u%>"><&|/l&>Download</&> <% $message->filename || _('(untitled)') %></a>
-% if ( $DownloadableHeaders && !$message->filename && $message->content_type =~ /text/  ) {
+% if ( $downloadable_headers && !$message->filename && $message->content_type =~ /text/  ) {
  / <a href="<% $AttachPath %>/WithHeaders/<% $message->id %>"><% _('with headers') %></a>
 % }
 <br/>
@@ -161,9 +161,9 @@ $m->comp(
 <%ARGS>
 $Ticket => undef
 $Transaction => undef
-$ShowHeaders => 0
+$show_headers => 0
 $Collapsed => undef
-$DownloadableHeaders => 1
+$downloadable_headers => 1
 $ShowTitleBarCommands => 1
 $RowNum => 1
 $AttachPath => RT->config->get('WebPath')."/Ticket/Attachment"
@@ -176,14 +176,14 @@ $Parent => 0
 $ParentObj => undef
 </%ARGS>
 <%INIT>
-my @DisplayHeaders=qw(_all);
+my @display_headers=qw(_all);
 if ( $Transaction->type =~ /EmailRecord$/ ) {
-    @DisplayHeaders = qw(To Cc Bcc);
+    @display_headers = qw(To Cc Bcc);
 }
 
 # If the transaction has anything attached to it at all
-elsif (!$ShowHeaders)  {
-    @DisplayHeaders = qw(To From RT-Send-Cc Cc Bcc Date subject);
+elsif (!$show_headers)  {
+    @display_headers = qw(To From RT-Send-Cc Cc Bcc Date subject);
 }
 
 my $size_to_str = sub  {

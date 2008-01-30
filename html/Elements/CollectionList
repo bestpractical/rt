@@ -58,7 +58,7 @@
     Rows         => $Rows,
     Page         => $Page,
     AllowSorting => $AllowSorting, 
-    BaseURL      => $BaseURL,
+    baseURL      => $baseURL,
     maxitems     => $maxitems,
 &> 
 % }
@@ -91,10 +91,10 @@ my $prev = $m->comp( '/Elements/QueryString', %query_args, Page => $Page - 1 );
 my $next = $m->comp( '/Elements/QueryString', %query_args, Page => $Page + 1 );
 </%PERL>
 % if ( $Page > 1 ) {
-<a href="<% $BaseURL %><% $prev %>"><&|/l&>Previous Page</&></a>
+<a href="<% $baseURL %><% $prev %>"><&|/l&>Previous Page</&></a>
 % }
 % if ( ($Page * $Rows) < $TotalFound ) {
-<a href="<% $BaseURL %><% $next %>"><&|/l&>next Page</&></a>
+<a href="<% $baseURL %><% $next %>"><&|/l&>next Page</&></a>
 % }
 % }
 <%INIT>
@@ -157,7 +157,7 @@ $Rows          => undef
 $Page          => 1
 
 $Title         => _('Ticket Search')
-$BaseURL       => RT->config->get('WebPath') . $m->request_comp->path .'?'
+$baseURL       => RT->config->get('WebPath') . $m->request_comp->path .'?'
 @PassArguments => qw(Query Format Rows Page Order order_by)
 
 $AllowSorting   => 0

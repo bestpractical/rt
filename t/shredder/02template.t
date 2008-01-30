@@ -32,7 +32,7 @@ diag 'local template' if $ENV{'TEST_VERBOSE'};
     my $template = RT::Model::Template->new(current_user => RT->system_user );
     my ($id, $msg) = $template->create(
         name => 'my template',
-        Queue => 'General',
+        queue => 'General',
         Content => "\nsome content",
     );
     ok($id, 'Created template') or diag "error: $msg";
@@ -49,7 +49,7 @@ diag 'template used in scrip' if $ENV{'TEST_VERBOSE'};
     my $template = RT::Model::Template->new(current_user => RT->system_user );
     my ($id, $msg) = $template->create(
         name => 'my template',
-        Queue => 'General',
+        queue => 'General',
         Content => "\nsome content",
     );
     ok($id, 'Created template') or diag "error: $msg";
@@ -57,10 +57,10 @@ diag 'template used in scrip' if $ENV{'TEST_VERBOSE'};
     my $scrip = RT::Model::Scrip->new(current_user => RT->system_user );
     ($id, $msg) = $scrip->create(
         description    => 'my scrip',
-        Queue          => 'General',
-        ScripCondition => 'On Create',
-        ScripAction    => 'Open Tickets',
-        Template       => $template->id,
+        queue          => 'General',
+        scrip_condition => 'On Create',
+        scrip_action    => 'Open Tickets',
+        template       => $template->id,
     );
     ok($id, 'Created scrip') or diag "error: $msg";
 

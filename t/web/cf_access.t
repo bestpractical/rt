@@ -59,7 +59,7 @@ my ( $cf, $cfid, $tid );
 my $tester = RT::Test->load_or_create_user( name => 'tester', password => '123456' );
 RT::Test->set_rights(
     { Principal => $tester->principal_object,
-      Right => [qw(SeeQueue ShowTicket create_ticket)],
+      right => [qw(SeeQueue ShowTicket create_ticket)],
     },
 );
 ok $m->login( $tester->name, 123456), 'logged in';
@@ -69,8 +69,8 @@ diag "check that we have no the CF on the create"
         if $ENV{'TEST_VERBOSE'};
 {
     $m->submit_form(
-        form_name => "create_ticketInQueue",
-        fields => { Queue => 'General' },
+        form_name => "CreateTicketInQueue",
+        fields => { queue => 'General' },
     );
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
@@ -91,7 +91,7 @@ diag "check that we have no the CF on the create"
 
 RT::Test->set_rights(
     { Principal => $tester->principal_object,
-      Right => [qw(SeeQueue ShowTicket create_ticket SeeCustomField)],
+      right => [qw(SeeQueue ShowTicket create_ticket SeeCustomField)],
     },
 );
 
@@ -100,8 +100,8 @@ diag "check that we have no the CF on the create"
         if $ENV{'TEST_VERBOSE'};
 {
     $m->submit_form(
-        form_name => "create_ticketInQueue",
-        fields => { Queue => 'General' },
+        form_name => "CreateTicketInQueue",
+        fields => { queue => 'General' },
     );
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
@@ -125,15 +125,15 @@ diag "check that we have no the CF on the create"
 
 RT::Test->set_rights(
     { Principal => $tester->principal_object,
-      Right => [qw(SeeQueue ShowTicket create_ticket SeeCustomField ModifyCustomField)],
+      right => [qw(SeeQueue ShowTicket create_ticket SeeCustomField ModifyCustomField)],
     },
 );
 
 diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
 {
     $m->submit_form(
-        form_name => "create_ticketInQueue",
-        fields => { Queue => 'General' },
+        form_name => "CreateTicketInQueue",
+        fields => { queue => 'General' },
     );
     $m->content_like(qr/Upload multiple images/, 'has a upload image field');
 

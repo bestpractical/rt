@@ -133,7 +133,7 @@ sub group_by {
     $self->{'_group_by_field'} = $args{'column'};
     %args = $self->_field_to_function(%args);
 
-    $self->SUPER::GroupBy( \%args );
+    $self->SUPER::group_by( \%args );
 }
 
 sub column {

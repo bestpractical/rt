@@ -18,7 +18,7 @@ Group ACLs
        
 In user.pm
 
-=item has_right  { Right => 'somerightname', object_type => 'Group', object_id => 'GroupId'
+=item has_right  { Right => 'somerightname', object_type => 'Group', object_id => 'group_id'
 
         Returns true if this user has the right 'somerightname' for
 the group with id 'id'
@@ -26,11 +26,11 @@ the group with id 'id'
 =cut
 
 
-=item RightsForobject { object_type => 'Group', object_id =>'GroupId' }
+=item RightsForobject { object_type => 'Group', object_id =>'group_id' }
 
 in users.pm
 
-=item who_have_right { Right =>'somerightname', object_type => 'Group', object_id => 'GroupId' }
+=item who_have_right { Right =>'somerightname', object_type => 'Group', object_id => 'group_id' }
 
 
         Finds all users who have the right 'somerightname' for the group

@@ -58,7 +58,7 @@ my @actions;
 my @objects = RT::SavedSearches->new()->_privacy_objects;
 push @objects, RT::System->new()
     if Jifty->web->current_user->has_right( object=> RT->system,
-                                          Right => 'SuperUser');
+                                          right => 'SuperUser');
 $self->{SearchId} ||= 'new';
 my $SearchParams = { map { $_ => $args->{$_} } @{$self->{SearchFields}} };
 

@@ -1670,7 +1670,7 @@ Text:
         groups:
 
         rights                  Global rights granted to this user.
-        rights/<queue>          Queue rights for this user.
+        rights/<queue>          queue rights for this user.
 
 --
 

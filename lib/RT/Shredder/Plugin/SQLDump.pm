@@ -55,9 +55,9 @@ use RT::Shredder;
 
 sub applies_to_states { return 'after wiping dependencies' }
 
-sub SupportArgs {
+sub support_args {
     my $self = shift;
-    return $self->SUPER::SupportArgs, qw(file_name from_storage);
+    return $self->SUPER::support_args, qw(file_name from_storage);
 }
 
 sub test_args {
@@ -77,7 +77,7 @@ sub test_args {
 sub filename    { return $_[0]->{'opt'}{'file_name'} }
 sub file_handle { return $_[0]->{'opt'}{'file_handle'} }
 
-sub Run {
+sub run {
     my $self = shift;
     return ( 0, 'no handle' ) unless my $fh = $self->{'opt'}{'file_handle'};
 

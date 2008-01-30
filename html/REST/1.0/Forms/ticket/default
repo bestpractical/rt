@@ -60,9 +60,9 @@ my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data   = %$changes;
 my $ticket = RT::Model::Ticket->new() ;
-my @dates  = qw(Created starts Started Due Resolved Told LastUpdated);
+my @dates  = qw(Created starts Started Due resolved Told LastUpdated);
 my @people = qw(Requestors Cc AdminCc);
-my @create = qw(Queue Requestor subject Cc AdminCc Owner Status Priority
+my @create = qw(queue Requestor subject Cc AdminCc Owner Status Priority
                 initial_priority final_priority time_estimated time_worked
                 time_left starts Started Due Resolved);
 my @simple = qw(subject Status Priority disabled time_estimated time_worked
@@ -99,11 +99,11 @@ else {
 
         return [
             "# Required: id, Queue",
-            [ qw(id Queue Requestor subject Cc AdminCc Owner Status Priority
+            [ qw(id queue Requestor subject Cc AdminCc Owner Status Priority
                  initial_priority final_priority time_estimated starts Due Text) ],
             {
                 id               => "ticket/new",
-                Queue            => $queue->name,
+                queue            => $queue->name,
                 Requestor        => Jifty->web->current_user->name,
                 subject          => "",
                 Cc               => [],
@@ -179,8 +179,8 @@ if (!keys(%data)) {
     my ($time, $key, $val, @data);
 
     push @data, [ id    => "ticket/".$ticket->id   ];
-    push @data, [ Queue => $ticket->queue_obj->name ] 
-	if (!%$fields || exists $fields->{lc 'Queue'});
+    push @data, [ queue => $ticket->queue_obj->name ] 
+	if (!%$fields || exists $fields->{lc 'queue'});
     push @data, [ Owner => $ticket->owner_obj->name ]
 	if (!%$fields || exists $fields->{lc 'Owner'});
     push @data, [ Creator => $ticket->creator_obj->name ]

@@ -20,8 +20,8 @@ my $user_b = RT::Test->load_or_create_user(
 ok $user_b && $user_b->id, 'loaded or created user';
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, Right => [qw(SeeQueue ShowTicket create_ticket OwnTicket ModifyTicket)] },
-    { Principal => $user_b, Right => [qw(SeeQueue ShowTicket ReplyToTicket)] },
+    { Principal => $user_a, right => [qw(SeeQueue ShowTicket create_ticket OwnTicket ModifyTicket)] },
+    { Principal => $user_b, right => [qw(SeeQueue ShowTicket ReplyToTicket)] },
 ), 'set rights');
 RT::Test->started_ok;
 
@@ -37,7 +37,7 @@ my $tid;
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id =>$user_a->id) );
     my ($txn, $msg);
     ($tid, $txn, $msg) = $ticket->create(
-        Queue => $queue->id,
+        queue => $queue->id,
         Owner => $user_a->id,
         subject => 'test',
     );

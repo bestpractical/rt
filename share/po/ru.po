@@ -187,8 +187,8 @@ msgid "%1 aliases require a TicketId to work on (from %2) %3"
 msgstr "%1 псевдонимы требуют идентификатор заявки для продолжения работы над (от %2) %3"
 
 #: lib/RT/Link_Overlay.pm:144 lib/RT/Link_Overlay.pm:151
-#. ($args{'Base'})
-#. ($args{'Target'})
+#. ($args{'base'})
+#. ($args{'target'})
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 является локальным объектом, но не найден в базе данных"
 
@@ -302,8 +302,8 @@ msgid "%1 succeeded\\n"
 msgstr "%1 успешно произведено\\n"
 
 #: NOT FOUND IN SOURCE
-msgid "%1 type unknown for $MessageId"
-msgstr "%1 тип не известен для $MessageId"
+msgid "%1 type unknown for $message_id"
+msgstr "%1 тип не известен для $message_id"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 type unknown for %2"
@@ -1680,7 +1680,7 @@ msgstr "Создать скриплет для очереди %1"
 msgid "Create a template"
 msgstr "Создать шаблон"
 
-#: html/SelfService/Create.html:46 html/SelfService/create_ticketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Создать заявку"
 
@@ -2596,7 +2596,7 @@ msgid "Group %1 %2: %3"
 msgstr "Группа %1 %2: %3"
 
 #: html/Admin/Elements/CustomFieldTabs:68 html/Admin/Elements/GroupTabs:66 html/Admin/Elements/QueueTabs:82 html/Admin/Elements/SystemTabs:65 html/Admin/Global/index.html:76
-msgid "Group Rights"
+msgid "Group rights"
 msgstr "Права группы"
 
 #: lib/RT/Group_Overlay.pm:983
@@ -2683,7 +2683,7 @@ msgstr "В начало"
 msgid "Hours"
 msgstr "Часов"
 
-#: lib/RT/Base.pm:119
+#: lib/RT/base.pm:119
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
 msgstr "Имеется %quant(%1,concrete mixer)."
@@ -2796,7 +2796,7 @@ msgid "Invalid Group Type"
 msgstr "Недопустимый тип группы"
 
 #: lib/RT/Principal_Overlay.pm:161
-msgid "Invalid Right"
+msgid "Invalid right"
 msgstr "Недопустимое право"
 
 #: NOT FOUND IN SOURCE
@@ -3188,7 +3188,7 @@ msgid "Merge Successful"
 msgstr "Заявки успешно объединены"
 
 #: lib/RT/Ticket_Overlay.pm:2780
-msgid "Merge failed. Couldn't set EffectiveId"
+msgid "Merge failed. Couldn't set effective_id"
 msgstr "Ошибка объединения. Невозможно установить идентификатор заявки."
 
 #: lib/RT/Ticket_Overlay.pm:2788
@@ -3279,7 +3279,7 @@ msgid "Modify Custom Fields which apply to all queues"
 msgstr "Изменить дополнительные поля, применяемые ко всем очередям"
 
 #: html/Admin/Global/GroupRights.html:106 html/Admin/Groups/GroupRights.html:94 html/Admin/Queues/GroupRights.html:107
-msgid "Modify Group Rights"
+msgid "Modify Group rights"
 msgstr "Изменить права группы"
 
 #: html/Admin/Groups/Members.html:105 html/User/Groups/Members.html:101
@@ -3287,7 +3287,7 @@ msgid "Modify Members"
 msgstr "Изменить участников"
 
 #: html/User/Delegation.html:58
-msgid "Modify Rights"
+msgid "Modify rights"
 msgstr "Изменить права"
 
 #: lib/RT/Queue_Overlay.pm:97
@@ -3303,11 +3303,11 @@ msgid "Modify System ACLS"
 msgstr "Изменить системные права доступа"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify Template %1"
+msgid "Modify template %1"
 msgstr "Изменить шаблон %1"
 
 #: html/Admin/Global/UserRights.html:75 html/Admin/Groups/UserRights.html:76 html/Admin/Queues/UserRights.html:75
-msgid "Modify User Rights"
+msgid "Modify User rights"
 msgstr "Изменить права пользователя"
 
 #: html/Admin/Queues/CustomField.html:66
@@ -4775,7 +4775,7 @@ msgid "Resolve ticket #%1 (%2)"
 msgstr "Решить заявку #%1 (%2)"
 
 #: etc/initialdata:323 html/Elements/SelectDateType:49 lib/RT/Ticket_Overlay.pm:1172
-msgid "Resolved"
+msgid "resolved"
 msgstr "Решено"
 
 #: html/Tools/Reports/Elements/Tabs:55
@@ -4815,15 +4815,15 @@ msgid "Revert"
 msgstr "Откатить"
 
 #: NOT FOUND IN SOURCE
-msgid "Right %1 not found for %2  %3 in scope %4 (%5)\\n"
+msgid "right %1 not found for %2  %3 in scope %4 (%5)\\n"
 msgstr "Право %1 не найдено для %2  %3 в рамках %4 (%5)\\n"
 
 #: lib/RT/ACE_Overlay.pm:630
-msgid "Right Delegated"
+msgid "right Delegated"
 msgstr "Право делегировано"
 
 #: lib/RT/ACE_Overlay.pm:320
-msgid "Right Granted"
+msgid "right Granted"
 msgstr "Право выдано"
 
 #: lib/RT/ACE_Overlay.pm:178
@@ -5041,7 +5041,7 @@ msgstr "Выберите группу"
 msgid "Select a queue"
 msgstr "Выберите очередь"
 
-#: html/SelfService/create_ticketInQueue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Выберите очередь для вашей новой заявки"
 
@@ -5468,7 +5468,7 @@ msgid "System Error. Right not granted."
 msgstr "Системная ошибка. Право не выдано"
 
 #: NOT FOUND IN SOURCE
-msgid "System Error. right not granted"
+msgid "System Error. Right not granted"
 msgstr "Системная ошибка. Право не выдано"
 
 #: lib/RT/Transaction_Overlay.pm:224 lib/RT/Transaction_Overlay.pm:230
@@ -6001,9 +6001,9 @@ msgid "UnixUsername"
 msgstr "Имя пользователя UNIX"
 
 #: lib/RT/Attachment_Overlay.pm:289 lib/RT/Record.pm:861
-#. ($self->ContentEncoding)
-#. ($ContentEncoding)
-msgid "Unknown ContentEncoding %1"
+#. ($self->content_encoding)
+#. ($content_encoding)
+msgid "Unknown content_encoding %1"
 msgstr "Неизвестная кодировка %1"
 
 #: html/Search/Build.html:455 lib/RT/Report/Tickets.pm:410
@@ -6186,7 +6186,7 @@ msgid "User Id"
 msgstr "Логин"
 
 #: html/Admin/Elements/CustomFieldTabs:72 html/Admin/Elements/GroupTabs:68 html/Admin/Elements/QueueTabs:85 html/Admin/Elements/SystemTabs:68 html/Admin/Global/index.html:80
-msgid "User Rights"
+msgid "User rights"
 msgstr "Права пользователя"
 
 #: NOT FOUND IN SOURCE

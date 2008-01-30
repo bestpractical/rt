@@ -17,25 +17,25 @@ my $queue = RT::Test->load_or_create_queue( name => 'General' );
 ok $queue && $queue->id, 'loaded or Created queue';
 
 my $owner_role_group = RT::Model::Group->new(current_user => RT->system_user );
-$owner_role_group->load_queue_role_group( type => 'Owner', Queue => $queue->id );
+$owner_role_group->load_queue_role_group( type => 'Owner', queue => $queue->id );
 ok $owner_role_group->id, 'loaded owners role group of the queue';
 
 diag "check that defering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
 {
     RT::Test->set_rights(
         { Principal => $tester->principal_object,
-          Right => [qw(SeeQueue ShowTicket create_ticket OwnTicket)],
+          right => [qw(SeeQueue ShowTicket create_ticket OwnTicket)],
         },
         { Principal => $owner_role_group->principal_object,
           object => $queue,
-          Right => [qw(ModifyTicket)],
+          right => [qw(ModifyTicket)],
         },
     );
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $tester->id) );
     # tester is owner, owner has right to modify owned tickets,
     # this right is required to set somebody as AdminCc
     my ($tid, $txn_id, $msg) = $ticket->create(
-        Queue   => $queue->id,
+        queue   => $queue->id,
         Owner   => $tester->id,
         AdminCc => 'root@localhost',
     );
@@ -49,7 +49,7 @@ diag "check that previous trick doesn't work without sufficient rights"
 {
     RT::Test->set_rights(
         { Principal => $tester->principal_object,
-          Right => [qw(SeeQueue ShowTicket create_ticket OwnTicket)],
+          right => [qw(SeeQueue ShowTicket create_ticket OwnTicket)],
         },
     );
         my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $tester->id) );
@@ -57,7 +57,7 @@ diag "check that previous trick doesn't work without sufficient rights"
     # tester is owner, owner has right to modify owned tickets,
     # this right is required to set somebody as AdminCc
     my ($tid, $txn_id, $msg) = $ticket->create(
-        Queue   => $queue->id,
+        queue   => $queue->id,
         Owner   => $tester->id,
         AdminCc => 'root@localhost',
     );
@@ -71,18 +71,18 @@ diag "check that defering owner really works" if $ENV{'TEST_VERBOSE'};
 {
     RT::Test->set_rights(
         { Principal => $tester->principal_object,
-          Right => [qw(SeeQueue ShowTicket create_ticket)],
+          right => [qw(SeeQueue ShowTicket create_ticket)],
         },
         { Principal => $queue->cc->principal_object,
           object => $queue,
-          Right => [qw(OwnTicket TakeTicket)],
+          right => [qw(OwnTicket TakeTicket)],
         },
     );
         my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $tester->id) );
 
     # set tester as Cc, Cc role group has right to own and take tickets
     my ($tid, $txn_id, $msg) = $ticket->create(
-        Queue => $queue->id,
+        queue => $queue->id,
         Owner => $tester->id,
         Cc    => 'tester@localhost',
     );
@@ -96,14 +96,14 @@ diag "check that defering doesn't work without correct rights" if $ENV{'TEST_VER
 {
     RT::Test->set_rights(
         { Principal => $tester->principal_object,
-          Right => [qw(SeeQueue ShowTicket create_ticket)],
+          right => [qw(SeeQueue ShowTicket create_ticket)],
         },
     );
         my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $tester->id) );
 
     # set tester as Cc, Cc role group has right to own and take tickets
     my ($tid, $txn_id, $msg) = $ticket->create(
-        Queue => $queue->id,
+        queue => $queue->id,
         Owner => $tester->id,
         Cc    => 'tester@localhost',
     );

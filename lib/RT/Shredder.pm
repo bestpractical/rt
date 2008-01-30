@@ -241,7 +241,7 @@ our @SUPPORTED_OBJECTS = qw(
     Queue
     Scrip
     ScripAction
-    ScripCondition
+    scrip_condition
     Template
     ObjectCustomFieldValue
     Ticket
@@ -440,7 +440,7 @@ sub _parse_ref_str_args {
     }
     return $args{'String'} if $args{'String'};
     return $args{'object'}->_as_string
-        if UNIVERSAL::can( $args{'object'}, '_AsString' );
+        if UNIVERSAL::can( $args{'object'}, '_as_string' );
     return '';
 }
 
@@ -464,8 +464,8 @@ TODO: These methods have no documentation.
 sub put_resolver {
     my $self = shift;
     my %args = (
-        BaseClass   => '',
-        TargetClass => '',
+        baseClass   => '',
+        targetClass => '',
         Code        => undef,
         @_,
     );
@@ -473,8 +473,8 @@ sub put_resolver {
         die "Resolver '$args{Code}' is not code reference";
     }
 
-    my $resolvers = ( ( $self->{'resolver'}->{ $args{'BaseClass'} } ||= {} )
-        ->{ $args{'TargetClass'} || '' } ||= [] );
+    my $resolvers = ( ( $self->{'resolver'}->{ $args{'baseClass'} } ||= {} )
+        ->{ $args{'targetClass'} || '' } ||= [] );
     unshift @$resolvers, $args{'Code'};
     return;
 }
@@ -482,22 +482,22 @@ sub put_resolver {
 sub get_resolvers {
     my $self = shift;
     my %args = (
-        BaseClass   => '',
-        TargetClass => '',
+        baseClass   => '',
+        targetClass => '',
         @_,
     );
 
     my @res;
-    if ( $args{'TargetClass'}
-        && exists $self->{'resolver'}->{ $args{'BaseClass'} }
-        ->{ $args{'TargetClass'} } )
+    if ( $args{'targetClass'}
+        && exists $self->{'resolver'}->{ $args{'baseClass'} }
+        ->{ $args{'targetClass'} } )
     {
         push @res,
-            @{ $self->{'resolver'}->{ $args{'BaseClass'} }
-                ->{ $args{'TargetClass'} || '' } };
+            @{ $self->{'resolver'}->{ $args{'baseClass'} }
+                ->{ $args{'targetClass'} || '' } };
     }
-    if ( exists $self->{'resolver'}->{ $args{'BaseClass'} }->{''} ) {
-        push @res, @{ $self->{'resolver'}->{ $args{'BaseClass'} }->{''} };
+    if ( exists $self->{'resolver'}->{ $args{'baseClass'} }->{''} ) {
+        push @res, @{ $self->{'resolver'}->{ $args{'baseClass'} }->{''} };
     }
 
     return @res;
@@ -509,8 +509,8 @@ sub apply_resolvers {
     my $dep  = $args{'Dependency'};
 
     my @resolvers = $self->get_resolvers(
-        BaseClass   => $dep->base_class,
-        TargetClass => $dep->target_class,
+        baseClass   => $dep->base_class,
+        targetClass => $dep->target_class,
     );
 
     unless (@resolvers) {
@@ -523,7 +523,7 @@ sub apply_resolvers {
     $_->(
         Shredder     => $self,
         base_object  => $dep->base_object,
-        Targetobject => $dep->target_object,
+        targetobject => $dep->target_object,
     ) foreach @resolvers;
 
     return;
@@ -702,10 +702,10 @@ sub get_filename {
         my $dir
             = File::Spec->join( ( File::Spec->splitpath($file) )[ 0, 1 ] );
         unless ( -e $dir && -d _ ) {
-            die "Base directory '$dir' for file '$file' doesn't exist";
+            die "base directory '$dir' for file '$file' doesn't exist";
         }
         unless ( -w $dir ) {
-            die "Base directory '$dir' is not writable";
+            die "base directory '$dir' is not writable";
         }
     } else {
         die "'$file' is not regular file";
@@ -816,7 +816,7 @@ Mainstream RT doesn't use FKs, but at least I posted DDL script that creates the
 in mysql DB, note that if you use FKs then this two valid keys don't allow delete
 Tickets because of bug in MySQL:
 
-  ALTER TABLE Tickets ADD FOREIGN KEY (EffectiveId) REFERENCES Tickets(id);
+  ALTER TABLE Tickets ADD FOREIGN KEY (effective_id) REFERENCES Tickets(id);
   ALTER TABLE CachedGroupMembers ADD FOREIGN KEY (Via) REFERENCES CachedGroupMembers(id);
 
 L<http://bugs.mysql.com/bug.php?id=4042>

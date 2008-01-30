@@ -115,7 +115,7 @@ my $sys = RT::System->new();
 my @objs = ($sys);
 
 push @objs, RT::SavedSearches->new()->_privacy_objects
-    if Jifty->web->current_user->has_right( Right  => 'LoadSavedSearch',
+    if Jifty->web->current_user->has_right( right  => 'LoadSavedSearch',
                                           object => RT->system );
 
 my @sys_searches;

@@ -31,7 +31,7 @@ sub _setup_config {
     $config = File::Temp->new;
     print $config qq{
 set( \$WebPort , $port);
-set( \$WebBaseURL , "http://localhost:\$WebPort");
+set( \$WebbaseURL , "http://localhost:\$WebPort");
 set( \$LogToScreen , "debug");
 set( \$LogStackTraces , "warning");
 };
@@ -135,7 +135,7 @@ sub load_or_create_user {
         my $gms = RT::Model::GroupMemberCollection->new(
             current_user => RT->system_user );
         my $groups_alias = $gms->join(
-            column1 => 'GroupId',
+            column1 => 'group_id',
             table2  => 'Groups',
             column2 => 'id',
         );
@@ -144,7 +144,7 @@ sub load_or_create_user {
             column => 'domain',
             value  => 'UserDefined'
         );
-        $gms->limit( column => 'MemberId', value => $obj->id );
+        $gms->limit( column => 'member_id', value => $obj->id );
         while ( my $group_member_record = $gms->next ) {
             $group_member_record->delete;
         }
@@ -288,11 +288,11 @@ sub add_rights {
                 $principal = $principal->principal_object;
             }
         }
-        my @rights
-            = ref $e->{'Right'} ? @{ $e->{'Right'} } : ( $e->{'Right'} );
-        foreach my $right (@rights) {
+        my @Rights
+            = ref $e->{'right'} ? @{ $e->{'right'} } : ( $e->{'right'} );
+        foreach my $right (@Rights) {
             my ( $status, $msg )
-                = $principal->grant_right( %$e, Right => $right );
+                = $principal->grant_right( %$e, right => $right );
             Jifty->log->warn($msg) unless $status;
         }
     }

@@ -69,7 +69,7 @@
     Order => $Order,
     Rows => $Rows,
     Page => $Page,
-    BaseURL => RT->config->get('WebPath')."/Search/Bulk.html?"
+    baseURL => RT->config->get('WebPath')."/Search/Bulk.html?"
    &>
 
 <hr>
@@ -104,7 +104,7 @@
 <tr><td class="label"> <&|/l&>Make priority</&>: </td>
 <td class="value"> <input name="Priority" size="4" /> </td></tr>
 <tr><td class="label"> <&|/l&>Make queue</&>: </td>
-<td class="value"> <& /Elements/SelectQueue, name => "Queue" &> </td></tr>
+<td class="value"> <& /Elements/SelectQueue, name => "queue" &> </td></tr>
 <tr><td class="label"> <&|/l&>Make Status</&>: </td>
 <td class="value"> <& /Elements/SelectStatus, name => "Status" &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date starts</&>: </td>

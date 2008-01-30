@@ -60,7 +60,7 @@ diag "set the next condition" if $ENV{'TEST_VERBOSE'};
     $agent->field("QueueOp", "!=");
     $agent->field("ValueOfQueue", "Regression");
     $agent->submit;
-    is get_query_from_form, "Owner = 'Nobody' AND Queue != 'Regression'",
+    is get_query_from_form, "Owner = 'Nobody' AND queue != 'Regression'",
         'correct query';
 }
 
@@ -89,13 +89,13 @@ diag "Move the second one up a level" if $ENV{'TEST_VERBOSE'};
 {
     $agent->click("Up");
     ok $agent->form_name('BuildQuery'), "found the form again";
-    is get_query_from_form, "id > 1234 OR Queue != 'Regression'", "moved up one";
+    is get_query_from_form, "id > 1234 OR queue != 'Regression'", "moved up one";
     is_deeply selected_clauses, ["0"], 'the one we moved up is selected';
 }
 
 diag "Move the second one right" if $ENV{'TEST_VERBOSE'};
 {
-    $agent->click("Right");
+    $agent->click("right");
     ok $agent->form_name('BuildQuery'), "found the form again";
     is get_query_from_form, "Queue != 'Regression' OR ( id > 1234 )",
         "moved over to the right (and down)";
@@ -107,7 +107,7 @@ diag "Move the block up" if $ENV{'TEST_VERBOSE'};
     $agent->select("clauses", ["1"]);
     $agent->click("Up");
     ok $agent->form_name('BuildQuery'), "found the form again";
-    is get_query_from_form, "( id > 1234 ) OR Queue != 'Regression'", "moved up";
+    is get_query_from_form, "( id > 1234 ) OR queue != 'Regression'", "moved up";
     is_deeply selected_clauses, ["0"], 'the one we moved up is selected';
 }
 
@@ -137,7 +137,7 @@ diag "Add a condition into a nested block" if $ENV{'TEST_VERBOSE'};
     ok $agent->form_name('BuildQuery'), "found the form again";
     is_deeply selected_clauses, ["2"], 'the one we added is only selected';
     is get_query_from_form,
-        "( id > 1234 AND Status = 'stalled' ) OR Queue != 'Regression'",
+        "( id > 1234 AND Status = 'stalled' ) OR queue != 'Regression'",
         "added new one";
 }
 
@@ -203,13 +203,13 @@ TODO: {
    local $TODO = "4.0 custom fields with non-ascii names currently explode. note sure why.";
 {
     my $cf = RT::Model::CustomField->new(current_user => RT->system_user );
-    $cf->load_by_name( name => "\x{442}", Queue => 0 );
+    $cf->load_by_name( name => "\x{442}", queue => 0 );
     if ( $cf->id ) {
         is($cf->type, 'Freeform', 'loaded and type is correct');
     } else {
         my ($return, $msg) = $cf->create(
             name => "\x{442}",
-            Queue => 0,
+            queue => 0,
             type => 'Freeform',
         );
         ok($return, 'Created CF') or diag "error: $msg";

@@ -14,11 +14,11 @@ if ($args{'object_type'} eq 'Ticket') {
      # and ask all the rest of our questions about the queue.
      my $tick = RT::Model::Ticket->new(current_user => RT->system_user);
      $tick->load($args{'object_id'});
-     $args{'object_type'} = 'Queue';
+     $args{'object_type'} = 'queue';
      $args{'object_id'} = $tick->queue_obj->id();
 
 }
-if ($args{'object_type'} eq 'Queue') {
+if ($args{'object_type'} eq 'queue') {
      $or_check_roles = " OR ( ( (Groups.Domain = 'QueueRole' AND Groups.Instance = '".$args{'object_id'}."') $or_check_ticket_roles ) 
                             AND Groups.Type = ACL.principal_type AND Groups.Id = Principals.object_id AND Principals.principal_type = 'Group') ";
 }
@@ -30,8 +30,8 @@ if (defined $args{'object_type'} ) {
 
 my $query = "SELECT Users.*  from ACL, Groups, Users, Principals, Principals UserPrinc, CachedGroupMembers  WHERE  
         Users.id = UserPrinc.object_id AND UserPrinc.principal_type = 'User' AND
-        Principals.Id = CachedGroupMembers.GroupId AND 
-        CachedGroupMembers.MemberId = UserPrinc.object_id AND 
+        Principals.Id = CachedGroupMembers.group_id AND 
+        CachedGroupMembers.member_id = UserPrinc.object_id AND 
         UserPrinc.principal_type = 'User'  AND
         (ACL.right_name = 'SuperUser' OR  ACL.right_name = '$right') AND
         (ACL.object_type = 'System' $or_look_at_object_rights) AND 

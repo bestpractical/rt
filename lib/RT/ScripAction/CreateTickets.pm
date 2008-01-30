@@ -139,7 +139,7 @@ A convoluted example
  
     my $adminccs = RT::Model::UserCollection->new(current_user => RT->system_user);
     $adminccs->who_have_right(
-	Right => "AdminGroup",
+	right => "AdminGroup",
 	object =>$groups->first,
 	IncludeSystemRights => undef,
 	IncludeSuperusers => 0,
@@ -178,7 +178,7 @@ A convoluted example
 A complete list of acceptable fields for this beastie:
 
 
-    *  Queue           => name or id# of a queue
+    *  queue           => name or id# of a queue
        subject         => A text string
      ! Status          => A valid status. defaults to 'new'
        Due             => Dates can be specified in seconds since the epoch
@@ -189,7 +189,7 @@ A complete list of acceptable fields for this beastie:
                           
        starts          => 
        Started         => 
-       Resolved        => 
+       resolved        => 
        Owner           => Username or id of an RT user who can and should own 
                           this ticket; forces the owner if necessary
    +   Requestor       => Email address
@@ -252,39 +252,39 @@ perl(1).
 my %LINKTYPEMAP = (
     MemberOf => {
         type => 'MemberOf',
-        Mode => 'Target',
+        Mode => 'target',
     },
     Parents => {
         type => 'MemberOf',
-        Mode => 'Target',
+        Mode => 'target',
     },
     Members => {
         type => 'MemberOf',
-        Mode => 'Base',
+        Mode => 'base',
     },
     Children => {
         type => 'MemberOf',
-        Mode => 'Base',
+        Mode => 'base',
     },
     has_member => {
         type => 'MemberOf',
-        Mode => 'Base',
+        Mode => 'base',
     },
     RefersTo => {
         type => 'RefersTo',
-        Mode => 'Target',
+        Mode => 'target',
     },
     ReferredToBy => {
         type => 'RefersTo',
-        Mode => 'Base',
+        Mode => 'base',
     },
     DependsOn => {
         type => 'DependsOn',
-        Mode => 'Target',
+        Mode => 'target',
     },
     DependedOnBy => {
         type => 'DependsOn',
-        Mode => 'Base',
+        Mode => 'base',
     },
 
 );
@@ -547,7 +547,7 @@ sub parse {
     my $self = shift;
     my %args = (
         Content        => undef,
-        Queue          => undef,
+        queue          => undef,
         Requestor      => undef,
         _ActiveContent => undef,
         @_
@@ -589,9 +589,9 @@ sub _parse_multiline_template {
         $line =~ s/\r$//;
         Jifty->log->debug("Line: $line");
         if ( $line =~ /^===/ ) {
-            if ( $template_id && !$queue && $args{'Queue'} ) {
+            if ( $template_id && !$queue && $args{'queue'} ) {
                 $self->{'templates'}->{$template_id}
-                    .= "Queue: $args{'Queue'}\n";
+                    .= "Queue: $args{'queue'}\n";
             }
             if ( $template_id && !$requestor && $args{'Requestor'} ) {
                 $self->{'templates'}->{$template_id}
@@ -608,9 +608,9 @@ sub _parse_multiline_template {
             $template_id = "update-$1";
             Jifty->log->debug("****  Update ticket: $template_id");
             push @{ $self->{'update_tickets'} }, $template_id;
-        } elsif ( $line =~ /^===Base-Ticket: (.*)$/ ) {
+        } elsif ( $line =~ /^===base-Ticket: (.*)$/ ) {
             $template_id = "base-$1";
-            Jifty->log->debug("****  Base ticket: $template_id");
+            Jifty->log->debug("****  base ticket: $template_id");
             push @{ $self->{'base_tickets'} }, $template_id;
         } elsif ( $line =~ /^===#.*$/ ) {    # a comment
             next;
@@ -620,8 +620,8 @@ sub _parse_multiline_template {
                 my $value = $1;
                 $value =~ s/^\s//;
                 $value =~ s/\s$//;
-                if ( !$value && $args{'Queue'} ) {
-                    $value = $args{'Queue'};
+                if ( !$value && $args{'queue'} ) {
+                    $value = $args{'queue'};
                     $line  = "Queue: $value";
                 }
             }
@@ -638,8 +638,8 @@ sub _parse_multiline_template {
             $self->{'templates'}->{$template_id} .= $line . "\n";
         }
     }
-    if ( $template_id && !$queue && $args{'Queue'} ) {
-        $self->{'templates'}->{$template_id} .= "Queue: $args{'Queue'}\n";
+    if ( $template_id && !$queue && $args{'queue'} ) {
+        $self->{'templates'}->{$template_id} .= "Queue: $args{'queue'}\n";
     }
 }
 
@@ -753,13 +753,13 @@ sub parse_lines {
     $args{'type'} ||= 'ticket';
 
     my %ticketargs = (
-        Queue            => $args{'queue'},
+        queue            => $args{'queue'},
         subject          => $args{'subject'},
         Status           => $args{'status'} || 'new',
         Due              => $args{'due'},
         starts           => $args{'starts'},
         Started          => $args{'started'},
-        Resolved         => $args{'resolved'},
+        resolved         => $args{'resolved'},
         Owner            => $args{'owner'},
         Requestor        => $args{'requestor'},
         Cc               => $args{'cc'},
@@ -790,13 +790,13 @@ sub parse_lines {
             $ticketargs{ "CustomField-" . $1 } = $args{$tag};
         } elsif ( $orig_tag =~ /^(?:customfield|cf)-?(.*)$/i ) {
             my $cf = RT::Model::CustomField->new;
-            $cf->load_by_name( name => $1, Queue => $ticketargs{Queue} );
+            $cf->load_by_name( name => $1, queue => $ticketargs{queue} );
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
         } elsif ($orig_tag) {
             my $cf = RT::Model::CustomField->new;
             $cf->load_by_name(
                 name  => $orig_tag,
-                Queue => $ticketargs{Queue}
+                queue => $ticketargs{queue}
             );
             next unless ( $cf->id );
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
@@ -840,7 +840,7 @@ LINE:
     while ($content) {
         $content =~ s/^(\s*\r?\n)+//;
 
-        # Keep track of Queue and Requestor, so we can provide defaults
+        # Keep track of queue and Requestor, so we can provide defaults
         my $queue;
         my $requestor;
 
@@ -903,7 +903,7 @@ LINE:
 
                     # Note that we found a queue
                     $queue = 1;
-                    $value ||= $args{'Queue'};
+                    $value ||= $args{'queue'};
                 } elsif ( $field =~ /^Requestors?$/i ) {
                     $field     = 'Requestor'; # Remove plural
                                               # Note that we found a requestor
@@ -924,8 +924,8 @@ LINE:
         next unless $template;
 
         # If we didn't find a queue of requestor, tack on the defaults
-        if ( !$queue && $args{'Queue'} ) {
-            $template .= "Queue: $args{'Queue'}\n";
+        if ( !$queue && $args{'queue'} ) {
+            $template .= "Queue: $args{'queue'}\n";
         }
         if ( !$requestor && $args{'Requestor'} ) {
             $template .= "Requestor: $args{'Requestor'}\n";

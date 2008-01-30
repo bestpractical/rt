@@ -67,12 +67,12 @@ my @fields = qw(DependsOn DependedOnBy RefersTo ReferredToBy Members MemberOf);
 my %fields = map { lc $_ => $_ } @fields;
 
 my %lfields = (
-    Members      => { type => 'MemberOf',  Mode => 'Base'   },
-    ReferredToBy => { type => 'RefersTo',  Mode => 'Base'   },
-    DependedOnBy => { type => 'DependsOn', Mode => 'Base'   },
-    MemberOf     => { type => 'MemberOf',  Mode => 'Target' },
-    RefersTo     => { type => 'RefersTo',  Mode => 'Target' },
-    DependsOn    => { type => 'DependsOn', Mode => 'Target' },
+    Members      => { type => 'MemberOf',  Mode => 'base'   },
+    ReferredToBy => { type => 'RefersTo',  Mode => 'base'   },
+    DependedOnBy => { type => 'DependsOn', Mode => 'base'   },
+    MemberOf     => { type => 'MemberOf',  Mode => 'target' },
+    RefersTo     => { type => 'RefersTo',  Mode => 'target' },
+    DependsOn    => { type => 'DependsOn', Mode => 'target' },
 );
 
 if ($changes) {

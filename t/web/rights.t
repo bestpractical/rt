@@ -9,7 +9,7 @@ my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, "logged in";
 $m->follow_link_ok( text => 'Configuration' );
 $m->follow_link_ok( text => 'Global' );
-$m->follow_link_ok( text => 'Group Rights' );
+$m->follow_link_ok( text => 'Group rights' );
 
 
 sub get_rights {
@@ -18,8 +18,8 @@ sub get_rights {
     my $object = shift;
     $agent->form_number(3);
     my @inputs = $agent->current_form->find_input("revoke_right-$principal_id-$object");
-    my @rights = sort grep $_, map $_->possible_values, grep $_, @inputs;
-    return @rights;
+    my @Rights = sort grep $_, map $_->possible_values, grep $_, @inputs;
+    return @Rights;
 };
 
 diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
@@ -48,9 +48,9 @@ diag "grant SuperUser right to everyone" if $ENV{'TEST_VERBOSE'};
     $m->select("grant_right-$everyone_gid-RT::System-1", ['SuperUser']);
     $m->submit;
 
-    $m->content_contains('Right Granted', 'got message');
+    $m->content_contains('right Granted', 'got message');
     RT::Model::Principal::invalidate_acl_cache();
-    ok($everyone->principal_object->has_right( Right => 'SuperUser', object => RT->system ), 'group has right');
+    ok($everyone->principal_object->has_right( right => 'SuperUser', object => RT->system ), 'group has right');
     is_deeply( [get_rights( $m, $everyone_gid, 'RT::System-1' )], ['SuperUser'], 'granted SuperUser right' );
 }
 
@@ -62,7 +62,7 @@ diag "revoke the right" if $ENV{'TEST_VERBOSE'};
 
     $m->content_contains('Right revoked', 'got message');
     RT::Model::Principal::invalidate_acl_cache();
-    ok(!$everyone->principal_object->has_right( Right => 'SuperUser', object => RT->system ), 'group has no right');
+    ok(!$everyone->principal_object->has_right( right => 'SuperUser', object => RT->system ), 'group has no right');
     is_deeply( [get_rights( $m, $everyone_gid, 'RT::System-1' )], [], 'revoked SuperUser right' );
 }
 
@@ -73,7 +73,7 @@ if ( @has ) {
     $m->select("grant_right-$everyone_gid-RT::System-1", \@has);
     $m->submit;
 
-    $m->content_contains('Right Granted', 'got message');
+    $m->content_contains('right Granted', 'got message');
     is_deeply(
         [ get_rights( $m, $everyone_gid, 'RT::System-1' ) ],
         [ @has ],

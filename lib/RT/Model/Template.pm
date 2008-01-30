@@ -31,7 +31,7 @@ sub table {'Templates'}
 use base qw'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column Queue => max_length is 11,  type is 'int(11)',      default is '0';
+    column queue => max_length is 11,  type is 'int(11)',      default is '0';
     column name  => max_length is 200, type is 'varchar(200)', default is '';
     column
         description => max_length is 255,
@@ -120,29 +120,29 @@ sub load_global_template {
     my $self = shift;
     my $id   = shift;
 
-    return ( $self->load_queue_template( Queue => 0, name => $id ) );
+    return ( $self->load_queue_template( queue => 0, name => $id ) );
 }
 
 # }}}
 
-# {{{ sub loadQueueTemplate
+# {{{ sub loadqueueTemplate
 
-=head2  load_queue_template (Queue => QUEUEID, name => name)
+=head2  load_queue_template (queue => QUEUEID, name => name)
 
-Loads the Queue template named name for Queue QUEUE.
+Loads the queue template named name for queue QUEUE.
 
 =cut
 
 sub load_queue_template {
     my $self = shift;
     my %args = (
-        Queue => undef,
+        queue => undef,
         name  => undef,
         @_
     );
 
     return (
-        $self->load_by_cols( name => $args{'name'}, Queue => $args{'Queue'} )
+        $self->load_by_cols( name => $args{'name'}, queue => $args{'queue'} )
     );
 
 }
@@ -153,10 +153,10 @@ sub load_queue_template {
 
 =head2 Create
 
-Takes a paramhash of content, Queue, name and description.
+Takes a paramhash of content, queue, name and description.
 name should be a unique string identifying this Template.
 description and content should be the template's title and content.
-Queue should be 0 for a global template and the queue # for a queue-specific 
+queue should be 0 for a global template and the queue # for a queue-specific 
 template.
 
 Returns the Template's id # if the create was successful. Returns undef for
@@ -169,39 +169,39 @@ sub create {
     my $self = shift;
     my %args = (
         content     => undef,
-        Queue       => 0,
+        queue       => 0,
         description => '[no description]',
         type => 'Action',    #By default, template are 'Action' templates
         name => undef,
         @_
     );
 
-    unless ( $args{'Queue'} ) {
+    unless ( $args{'queue'} ) {
         unless (
             $self->current_user->has_right(
-                Right  => 'ModifyTemplate',
+                right  => 'ModifyTemplate',
                 object => RT->system
             )
             )
         {
             return ( undef, _('Permission denied') );
         }
-        $args{'Queue'} = 0;
+        $args{'queue'} = 0;
     } else {
         my $queue_obj
             = RT::Model::Queue->new( current_user => $self->current_user );
-        $queue_obj->load( $args{'Queue'} )
+        $queue_obj->load( $args{'queue'} )
             || return ( undef, _('Invalid queue') );
 
         unless ( $queue_obj->current_user_has_right('ModifyTemplate') ) {
             return ( undef, _('Permission denied') );
         }
-        $args{'Queue'} = $queue_obj->id;
+        $args{'queue'} = $queue_obj->id;
     }
 
     my $result = $self->SUPER::create(
         content     => $args{'content'},
-        Queue       => $args{'Queue'},
+        queue       => $args{'queue'},
         description => $args{'description'},
         name        => $args{'name'},
     );
@@ -331,7 +331,7 @@ sub parse {
 
 # {{{ sub _ParseContent
 
-# Perform Template substitutions on the template
+# Perform template substitutions on the template
 
 sub _parse_content {
     my $self = shift;
@@ -414,7 +414,7 @@ sub current_user_has_queue_right {
 sub queue_obj {
     my $self = shift;
     my $q    = RT::Model::Queue->new;
-    $q->load( $self->__value('Queue') );
+    $q->load( $self->__value('queue') );
     return $q;
 }
 1;

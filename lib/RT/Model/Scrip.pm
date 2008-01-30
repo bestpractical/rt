@@ -125,7 +125,7 @@ sub create {
         unless (
             $self->current_user->has_right(
                 object => RT->system,
-                Right  => 'ModifyScrips'
+                right  => 'ModifyScrips'
             )
             )
         {
@@ -243,17 +243,17 @@ Retuns an RT::ScripAction object with this Scrip\'s Action
 sub action_obj {
     my $self = shift;
 
-    unless ( defined $self->{'ScripActionObj'} ) {
+    unless ( defined $self->{'scrip_action_obj'} ) {
         require RT::Model::ScripAction;
 
-        $self->{'ScripActionObj'} = RT::Model::ScripAction->new;
+        $self->{'scrip_action_obj'} = RT::Model::ScripAction->new;
 
         #TODO: why are we loading Actions with templates like this.
         # two separate methods might make more sense
-        $self->{'ScripActionObj'}
+        $self->{'scrip_action_obj'}
             ->load( $self->scrip_action, $self->template );
     }
-    return ( $self->{'ScripActionObj'} );
+    return ( $self->{'scrip_action_obj'} );
 }
 
 # }}}
@@ -588,7 +588,7 @@ sub current_user_has_right {
     return (
         $self->has_right(
             Principal => $self->current_user->user_object,
-            Right     => $right
+            right     => $right
         )
     );
 
@@ -600,29 +600,29 @@ sub current_user_has_right {
 
 =head2 has_right
 
-Takes a param-hash consisting of "Right" and "Principal"  Principal is 
-an RT::Model::User object or an RT::CurrentUser object. "Right" is a textual
-Right string that applies to Scrips.
+Takes a param-hash consisting of "right" and "Principal"  Principal is 
+an RT::Model::User object or an RT::CurrentUser object. "right" is a textual
+right string that applies to Scrips.
 
 =cut
 
 sub has_right {
     my $self = shift;
     my %args = (
-        Right     => undef,
+        right     => undef,
         Principal => undef,
         @_
     );
 
     if ( $self->SUPER::_value('queue') ) {
         return $args{'Principal'}->has_right(
-            Right  => $args{'Right'},
+            right  => $args{'right'},
             object => $self->queue_obj
         );
     } else {
         return $args{'Principal'}->has_right(
             object => RT->system,
-            Right  => $args{'Right'},
+            right  => $args{'right'},
         );
     }
 }

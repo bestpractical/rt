@@ -92,7 +92,7 @@ sub __Relates {
         $self = $rec->{'object'};
         $rec->{'State'} |= INVALID;
         $rec->{'description'}
-            = "Have no related Queue #" . $self->id . " object";
+            = "Have no related queue #" . $self->id . " object";
     }
 
     # Condition

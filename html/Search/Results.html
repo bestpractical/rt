@@ -63,7 +63,7 @@
     Rows => $Rows,
     Page => $Page,
     Format => $Format,
-    BaseURL => RT->config->get('WebPath')."/Search/Results.html?"
+    baseURL => RT->config->get('WebPath')."/Search/Results.html?"
 
    &>
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, order_by => $order_by, Order => $Order, HideResults => $HideResults, Page => $Page );

@@ -5,7 +5,7 @@ use RT;
 
 
 my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
-my ($id,$trans,$msg) =$t1->create (Queue => 'general', subject => 'Requestor test one', );
+my ($id,$trans,$msg) =$t1->create (queue => 'general', subject => 'Requestor test one', );
 ok ($id, $msg);
 
 use_ok("RT::URI::t");

@@ -63,7 +63,7 @@ BEGIN {
     # your exported package globals go here,
     # as well as any optionally exported functions
     @EXPORT_OK = qw(&CleanEnv
-        &GetCurrentUser &GetMessageContent &debug &loc);
+        &get_current_user &GetMessageContent &debug &loc);
 }
 
 =head1 name
@@ -75,7 +75,7 @@ BEGIN {
   use lib "/path/to/rt/libraries/";
 
   use RT::Interface::CLI  qw(CleanEnv 
-	  		   GetCurrentUser GetMessageContent loc);
+	  		   get_current_user GetMessageContent loc);
 
   #Clean out all the nasties from the environment
   CleanEnv();
@@ -90,7 +90,7 @@ BEGIN {
   RT::Init();
 
   #Get the current user all loaded
-  my $CurrentUser = GetCurrentUser();
+  my $CurrentUser = get_current_user();
 
   print _('Hello!'); # Synonym of $CuurentUser->loc('Hello!');
 
@@ -118,11 +118,11 @@ sub clean_env {
 
 {
 
-    my $CurrentUser;    # shared betwen GetCurrentUser and loc
+    my $CurrentUser;    # shared betwen get_current_user and loc
 
-    # {{{ sub GetCurrentUser
+    # {{{ sub get_current_user
 
-=head2 GetCurrentUser
+=head2 get_current_user
 
   Figures out the uid of the current user and returns an RT::CurrentUser object
 loaded with that user.  if the current user isn't found, returns a copy of RT::Nobody.
@@ -135,18 +135,18 @@ loaded with that user.  if the current user isn't found, returns a copy of RT::N
 
         #Instantiate a user object
 
-        my $Gecos
+        my $gecos
             = ( $^O eq 'MSWin32' ) ? Win32::Loginname() : ( getpwuid($<) )[0];
 
         #If the current user is 0, then RT will assume that the User object
         #is that of the currentuser.
 
         $CurrentUser = RT::CurrentUser->new();
-        $CurrentUser->load_by_gecos($Gecos);
+        $CurrentUser->load_by_gecos($gecos);
 
         unless ( $CurrentUser->id ) {
             Jifty->log->debug(
-                "No user with a unix login of '$Gecos' was found. ");
+                "No user with a unix login of '$gecos' was found. ");
         }
 
         return ($CurrentUser);

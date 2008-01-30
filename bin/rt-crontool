@@ -55,7 +55,7 @@ package RT;
 
 use Getopt::Long;
 
-use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc);
+use RT::Interface::CLI qw(CleanEnv get_current_user GetMessageContent loc);
 use RT::Model::TicketCollection;
 use RT::Model::Template;
 
@@ -69,7 +69,7 @@ RT::load_config();
 RT::Init();
 
 #Get the current user all loaded
-my $CurrentUser = GetCurrentUser();
+my $CurrentUser = get_current_user();
 
 unless ( $CurrentUser->id ) {
     print _("No RT user found. Please consult your RT administrator.\n");
@@ -160,7 +160,7 @@ while ( my $ticket = $tickets->next() ) {
         template_obj    => $template_obj,
         Argument       => $action_arg,
         scrip_obj       => $void_scrip,
-        ScripActionObj => $void_scrip_action,
+        scrip_action_obj => $void_scrip_action,
         CurrentUser    => $CurrentUser,
     );
 

@@ -73,7 +73,7 @@ our $QUEUE_COLUMN_MAP = {
         my $value = RT->config->get($_);
         $_ => { value => sub  { return \$value } };
     
-    } qw(WebPath WebBaseURL WebURL)),
+    } qw(WebPath WebbaseURL WebURL)),
 
 };
 foreach my $col(qw(name description correspond_address comment_address initial_priority final_priority default_due_in)) {

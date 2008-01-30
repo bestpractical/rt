@@ -22,7 +22,7 @@ my (@Created,%Created);
 my $string = 'subject/content SQL test';
 {
     my $t = RT::Model::Ticket->new(current_user => RT->system_user);
-    ok( $t->create(Queue => 'General', subject => $string), "Ticket Created");
+    ok( $t->create(queue => 'General', subject => $string), "Ticket Created");
     $Created{ $t->id }++; push @Created, $t->id;
 }
 
@@ -34,7 +34,7 @@ my $string = 'subject/content SQL test';
             );
 
     my $t = RT::Model::Ticket->new(current_user => RT->system_user);
-    ok( $t->create( Queue => 'General',
+    ok( $t->create( queue => 'General',
                     subject => 'another ticket',
                     mime_obj => $Message,
                     MemberOf => $Created[0]

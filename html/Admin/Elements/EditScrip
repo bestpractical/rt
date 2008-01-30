@@ -49,7 +49,7 @@
   
 <form method="post" action="Scrip.html">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
-<input type="hidden" class="hidden" name="Queue" value="<% $Queue %>" />
+<input type="hidden" class="hidden" name="queue" value="<% $Queue %>" />
 
 <&| /Widgets/TitleBox, title => _('Scrip Fields') &>
 <table>
@@ -60,21 +60,21 @@
 
 <tr><td align="right"><&|/l&>Condition</&>:</td><td>
 <& /Admin/Elements/SelectScripCondition,
-    name => "Scrip-$id-ScripCondition",
-    Default => $ARGS{"Scrip-$id-ScripCondition"} || $scrip->condition_obj->id,
+    name => "Scrip-$id-scrip_condition",
+    Default => $ARGS{"Scrip-$id-scrip_condition"} || $scrip->condition_obj->id,
 &></td></tr>
 
 <tr><td align="right"><&|/l&>Action</&>:</td><td>
 <& /Admin/Elements/SelectScripAction,
-    name => "Scrip-$id-ScripAction",
-    Default => $ARGS{"Scrip-$id-ScripAction"} || $scrip->action_obj->id,
+    name => "Scrip-$id-scrip_action",
+    Default => $ARGS{"Scrip-$id-scrip_action"} || $scrip->action_obj->id,
 &></td></tr>
 
 <tr><td align="right"><&|/l&>Template</&>:</td><td>
 <& /Admin/Elements/SelectTemplate,
     name => "Scrip-$id-Template",
     Default => $ARGS{"Scrip-$id-Template"} || $scrip->template_obj->id,
-    Queue => $Queue,
+    queue => $Queue,
 &></td></tr>
 
 <tr><td align="right"><&|/l&>Stage</&>:</td><td>
@@ -99,24 +99,24 @@
 </td></tr>
 
 <tr><td class="labeltop"><&|/l&>Custom condition</&>:</td><td>
-% my $code = $ARGS{"Scrip-$id-CustomIsApplicableCode"} || $scrip->custom_is_applicable_code || '';
+% my $code = $ARGS{"Scrip-$id-custom_is_applicable_code"} || $scrip->custom_is_applicable_code || '';
 % my $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
-<textarea cols="80" rows="<% $lines %>" name="Scrip-<% $id %>-CustomIsApplicableCode"><% $code %></textarea>
+<textarea cols="80" rows="<% $lines %>" name="Scrip-<% $id %>-custom_is_applicable_code"><% $code %></textarea>
 </td></tr>
 
 <tr><td class="labeltop"><&|/l&>Custom action preparation code</&>:</td><td>
-% $code = $ARGS{"Scrip-$id-CustomPrepareCode"} || $scrip->custom_prepare_code || '';
+% $code = $ARGS{"Scrip-$id-custom_prepare_code"} || $scrip->custom_prepare_code || '';
 % $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
-<textarea cols="80" rows="<% $lines %>" name="Scrip-<% $id %>-CustomPrepareCode"><% $code %></textarea>
+<textarea cols="80" rows="<% $lines %>" name="Scrip-<% $id %>-custom_prepare_code"><% $code %></textarea>
 </td></tr>
 
 <tr><td class="labeltop"><&|/l&>Custom action cleanup code</&>:</td><td>
-% $code = $ARGS{"Scrip-$id-CustomCommitCode"} || $scrip->custom_commit_code || '';
+% $code = $ARGS{"Scrip-$id-custom_commit_code"} || $scrip->custom_commit_code || '';
 % $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
-<textarea cols="80" rows="<% $lines %>" name="Scrip-<% $id %>-CustomCommitCode"><% $code %></textarea>
+<textarea cols="80" rows="<% $lines %>" name="Scrip-<% $id %>-custom_commit_code"><% $code %></textarea>
 </td></tr>
 
 </table>
@@ -168,14 +168,14 @@ return ($id) unless $id;
 my $scrip = RT::Model::Scrip->new();
 if ( $id eq 'new' ) {
     return $scrip->create(
-        Queue                  => $Queue,
-        ScripAction            => $ARGS{"Scrip-new-ScripAction"},
-        ScripCondition         => $ARGS{"Scrip-new-ScripCondition"},
-        Template               => $ARGS{"Scrip-new-Template"},
+        queue                  => $Queue,
+        scrip_action            => $ARGS{"Scrip-new-scrip_action"},
+        scrip_condition         => $ARGS{"Scrip-new-scrip_condition"},
+        template               => $ARGS{"Scrip-new-Template"},
         description            => $ARGS{"Scrip-new-Description"},
-        CustomPrepareCode      => $ARGS{"Scrip-new-CustomPrepareCode"},
-        CustomCommitCode       => $ARGS{"Scrip-new-CustomCommitCode"},
-        CustomIsApplicableCode => $ARGS{"Scrip-new-CustomIsApplicableCode"},
+        custom_prepare_code      => $ARGS{"Scrip-new-custom_prepare_code"},
+        custom_commit_code       => $ARGS{"Scrip-new-custom_commit_code"},
+        custom_is_applicable_code => $ARGS{"Scrip-new-custom_is_applicable_code"},
         Stage                  => $ARGS{"Scrip-new-Stage"},
     );
 }
@@ -184,8 +184,8 @@ else {
     return (undef, _("Couldn't load scrip #%1", $id))
         unless $scrip->id;
 
-    my @attribs = qw(Queue ScripAction ScripCondition Template Stage
-        description CustomPrepareCode CustomCommitCode CustomIsApplicableCode);
+    my @attribs = qw(queue scrip_action scrip_condition template Stage
+        description custom_prepare_code custom_commit_code custom_is_applicable_code);
     my @results = update_record_object(
         AttributesRef   => \@attribs,
         AttributePrefix => 'Scrip-'.$scrip->id,

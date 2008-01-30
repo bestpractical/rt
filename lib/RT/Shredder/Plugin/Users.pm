@@ -91,8 +91,8 @@ and you most probably want to use C<replace_relations> option.
 
 =cut
 
-sub SupportArgs {
-    return $_[0]->SUPER::SupportArgs,
+sub support_args {
+    return $_[0]->SUPER::support_args,
         qw(status name email replace_relations no_tickets);
 }
 
@@ -126,7 +126,7 @@ sub test_args {
     return $self->SUPER::test_args(%args);
 }
 
-sub Run {
+sub run {
     my $self = shift;
     my %args = ( Shredder => undef, @_ );
     my $objs
@@ -187,14 +187,14 @@ sub set_Resolvers {
         my $uid      = $self->{'opt'}{'replace_relations'};
         my $resolver = sub {
             my %args = (@_);
-            my $t    = $args{'Targetobject'};
+            my $t    = $args{'targetobject'};
             foreach my $method (qw(Creator LastUpdatedBy)) {
                 next unless $t->_accessible( $method => 'read' );
                 $t->__set( column => $method, value => $uid );
             }
         };
         $args{'Shredder'}->put_resolver(
-            BaseClass => 'RT::Model::User',
+            baseClass => 'RT::Model::User',
             Code      => $resolver
         );
     }

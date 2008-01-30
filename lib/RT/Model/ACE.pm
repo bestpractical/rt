@@ -98,9 +98,9 @@ use vars qw (
 
 # {{{ descriptions of rights
 
-=head1 Rights
+=head1 rights
 
-# Queue rights are the sort of queue rights that can only be granted
+# queue rights are the sort of queue rights that can only be granted
 # to real people or groups
 
 
@@ -264,7 +264,7 @@ sub create {
         unless (
             $self->current_user->has_right(
                 object => $args{'object'},
-                Right  => 'AdminGroup'
+                right  => 'AdminGroup'
             )
             )
         {
@@ -276,7 +276,7 @@ sub create {
         unless (
             $self->current_user->has_right(
                 object => $args{'object'},
-                Right  => 'ModifyACL'
+                right  => 'ModifyACL'
             )
             )
         {
@@ -342,7 +342,7 @@ sub create {
     RT::Model::Principal->invalidate_acl_cache();
 
     if ($id) {
-        return ( $id, _('Right Granted') );
+        return ( $id, _('right Granted') );
     } else {
         return ( 0, _('System error. Right not granted.') );
     }
@@ -392,7 +392,7 @@ sub delegate {
     # they have the permission to
     unless (
         $self->current_user->has_right(
-            Right  => 'DelegateRights',
+            right  => 'DelegateRights',
             object => $self->object
         )
         )
@@ -453,7 +453,7 @@ sub delegate {
     RT::Model::Principal->invalidate_acl_cache();
 
     if ( $id > 0 ) {
-        return ( $id, _('Right Delegated') );
+        return ( $id, _('right Delegated') );
     } else {
         return ( 0, _('System error. Right not delegated.') );
     }
@@ -484,7 +484,7 @@ sub delete {
 # or if it's a delegated ACE and it was delegated by the current user
     unless (
         (   $self->current_user->has_right(
-                Right  => 'ModifyACL',
+                right  => 'ModifyACL',
                 object => $self->object
             )
             && $self->__value('delegated_by') == 0
@@ -589,7 +589,7 @@ sub _bootstrap_create {
     if ( $id > 0 ) {
         return ($id);
     } else {
-        Jifty->log->err('System error. right not granted.');
+        Jifty->log->err('System error. Right not granted.');
         return (undef);
     }
 
@@ -704,7 +704,7 @@ sub _value {
         return ( $self->__value(@_) );
     } elsif (
         $self->current_user->has_right(
-            Right  => 'ShowACL',
+            right  => 'ShowACL',
             object => $self->object
         )
         )
@@ -746,7 +746,7 @@ sub canonicalize_principal {
         return ( $princ_obj, undef );
     }
 
-    # Rights never get granted to users. they get granted to their
+    # rights never get granted to users. they get granted to their
     # ACL equivalence groups
     if ( $princ_type eq 'User' ) {
         my $equiv_group = RT::Model::Group->new;

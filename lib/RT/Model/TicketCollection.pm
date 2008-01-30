@@ -94,13 +94,13 @@ sub implicit_clauses { }
 # metadata.
 
 our %FIELD_METADATA = (
-    Status           => [ 'ENUM', ],
-    Queue            => [ 'ENUM' => 'Queue', ],
+    status           => [ 'ENUM', ],
+    queue            => [ 'ENUM' => 'Queue', ],
     type             => [ 'ENUM', ],
     Creator          => [ 'ENUM' => 'User', ],
     LastUpdatedBy    => [ 'ENUM' => 'User', ],
-    Owner            => [ 'WATCHERFIELD' => 'Owner', ],
-    EffectiveId      => [ 'INT', ],
+    owner            => [ 'WATCHERFIELD' => 'Owner', ],
+    effective_id      => [ 'INT', ],
     id               => [ 'INT', ],
     initial_priority => [ 'INT', ],
     final_priority   => [ 'INT', ],
@@ -110,7 +110,7 @@ our %FIELD_METADATA = (
     time_estimated   => [ 'INT', ],
 
     Linked       => ['LINK'],
-    LinkedTo     => [ 'LINK' => 'To' ],
+    linked_to     => [ 'LINK' => 'To' ],
     LinkedFrom   => [ 'LINK' => 'From' ],
     MemberOf     => [ 'LINK' => To => 'MemberOf', ],
     DependsOn    => [ 'LINK' => To => 'DependsOn', ],
@@ -123,7 +123,7 @@ our %FIELD_METADATA = (
     starts          => [ 'DATE'         => 'starts', ],
     Started         => [ 'DATE'         => 'Started', ],
     Due             => [ 'DATE'         => 'Due', ],
-    Resolved        => [ 'DATE'         => 'Resolved', ],
+    resolved        => [ 'DATE'         => 'resolved', ],
     LastUpdated     => [ 'DATE'         => 'LastUpdated', ],
     Created         => [ 'DATE'         => 'Created', ],
     subject         => [ 'STRING', ],
@@ -210,10 +210,10 @@ sub can_bundle { return \%can_bundle }
 # {{{ sub SortFields
 
 our @SORTcolumns = qw(id Status
-    Queue subject
+    queue subject
     Owner Created Due starts Started
     Told
-    Resolved LastUpdated Priority time_worked time_left);
+    resolved LastUpdated Priority time_worked time_left);
 
 =head2 SortFields
 
@@ -345,9 +345,9 @@ sub _link_limit {
     my $direction = $meta->[1] || '';
     my ( $matchfield, $linkfield ) = ( '', '' );
     if ( $direction eq 'To' ) {
-        ( $matchfield, $linkfield ) = ( "Target", "Base" );
+        ( $matchfield, $linkfield ) = ( "target", "base" );
     } elsif ( $direction eq 'From' ) {
-        ( $matchfield, $linkfield ) = ( "Base", "Target" );
+        ( $matchfield, $linkfield ) = ( "base", "target" );
     } elsif ($direction) {
         die "Invalid link direction '$direction' for $field\n";
     }
@@ -359,7 +359,7 @@ sub _link_limit {
     } elsif ( $value =~ /\D/ ) {
         $is_local = 0;
     }
-    $matchfield = "Local$matchfield" if $is_local;
+    $matchfield = "local_$matchfield" if $is_local;
 
     my $is_negative = 0;
     if ( $op eq '!=' ) {
@@ -370,8 +370,8 @@ sub _link_limit {
 #For doing a left join to find "unlinked tickets" we want to generate a query that looks like this
 #    SELECT main.* FROM Tickets main
 #        left join Links Links_1 ON (     (Links_1.Type = 'MemberOf')
-#                                      AND(main.id = Links_1.LocalTarget))
-#        WHERE Links_1.LocalBase IS NULL;
+#                                      AND(main.id = Links_1.local_target))
+#        WHERE Links_1.local_base IS NULL;
 
     if ($is_null) {
         my $linkalias = $sb->join(
@@ -379,7 +379,7 @@ sub _link_limit {
             alias1  => 'main',
             column1 => 'id',
             table2  => 'Links',
-            column2 => 'Local' . $linkfield
+            column2 => 'local_' . $linkfield
         );
         $sb->SUPER::limit(
             leftjoin => $linkalias,
@@ -401,7 +401,7 @@ sub _link_limit {
             alias1  => 'main',
             column1 => 'id',
             table2  => 'Links',
-            column2 => 'Local' . $linkfield
+            column2 => 'local_' . $linkfield
         );
         $sb->SUPER::limit(
             leftjoin => $linkalias,
@@ -439,7 +439,7 @@ sub _link_limit {
         if ($direction) {
             $sb->_sql_limit(
                 alias            => $linkalias,
-                column           => 'Local' . $linkfield,
+                column           => 'local_' . $linkfield,
                 operator         => '=',
                 value            => 'main.id',
                 quote_value      => 0,
@@ -463,7 +463,7 @@ sub _link_limit {
             );
             $sb->_sql_limit(
                 alias            => $linkalias,
-                column           => $matchfield . 'Target',
+                column           => $matchfield . 'target',
                 value            => $value,
                 entry_aggregator => 'AND',
             );
@@ -479,7 +479,7 @@ sub _link_limit {
             );
             $sb->_sql_limit(
                 alias            => $linkalias,
-                column           => $matchfield . 'Base',
+                column           => $matchfield . 'base',
                 value            => $value,
                 entry_aggregator => 'AND',
             );
@@ -1057,7 +1057,7 @@ FROM
     CachedGroupMembers CachedGroupMembers_2,
     Users Users_3
 WHERE (
-    (main.EffectiveId = main.id)
+    (main.effective_id = main.id)
 ) AND (
     (main.Status != 'deleted')
 ) AND (
@@ -1428,7 +1428,7 @@ sub order_by {
                 type    => 'left',
                 alias1  => $TicketCFs,
                 column1 => 'custom_field',
-                table2  => 'custom_field_values',
+                table2  => 'CustomFieldValues',
                 column2 => 'custom_field',
             );
             $self->SUPER::limit(
@@ -1455,12 +1455,12 @@ sub order_by {
 
             # Ticket.Owner  1 0 0
             my $ownerId = $self->current_user->id;
-            push @res, { %$row, column => "Owner=$ownerId", order => $order };
+            push @res, { %$row, column => "owner=$ownerId", order => $order };
 
             # Unowned Tickets 0 1 0
             my $nobodyId = RT->nobody->id;
             push @res,
-                { %$row, column => "Owner=$nobodyId", order => $order };
+                { %$row, column => "owner=$nobodyId", order => $order };
 
             push @res, { %$row, column => "priority", order => $order };
         } else {
@@ -1502,7 +1502,7 @@ sub limit {
 
 # If we're looking at the effective id, we don't want to append the other clause
 # which limits us to tickets where id = effective id
-    if ( $args{'column'} eq 'EffectiveId'
+    if ( $args{'column'} eq 'effective_id'
         && ( !$args{'alias'} || $args{'alias'} eq 'main' ) )
     {
         $self->{'looking_at_effective_id'} = 1;
@@ -1536,7 +1536,7 @@ sub freeze_limits {
     my $self = shift;
     require Storable;
     require MIME::Base64;
-    MIME::Base64::base64_encode(
+    MIME::Base64::Base64_encode(
         Storable::freeze( \@{$self}{ $self->_freeze_thaw_keys } ) );
 }
 
@@ -1565,7 +1565,7 @@ sub thaw_limits {
 
     #We don't need to die if the thaw fails.
     @{$self}{ $self->_freeze_thaw_keys }
-        = eval { @{ Storable::thaw( MIME::Base64::base64_decode($in) ) }; };
+        = eval { @{ Storable::thaw( MIME::Base64::Base64_decode($in) ) }; };
 
     Jifty->log->error($@) if $@;
 
@@ -1611,7 +1611,7 @@ sub limit_queue {
         value    => $args{'value'},
         operator => $args{'operator'},
         description =>
-            join( ' ', _('Queue'), $args{'operator'}, $args{'value'}, ),
+            join( ' ', _('queue'), $args{'operator'}, $args{'value'}, ),
     );
 
 }
@@ -2048,11 +2048,11 @@ sub limit_watcher {
 
 # {{{ limit_ing based on links
 
-# {{{ limit_LinkedTo
+# {{{ limit_linked_to
 
-=head2 limit_LinkedTo
+=head2 limit_linked_to
 
-limit_LinkedTo takes a paramhash with two fields: type and target
+limit_linked_to takes a paramhash with two fields: type and target
 type limits the sort of link we want to search on
 
 type = { RefersTo, MemberOf, DependsOn }
@@ -2371,7 +2371,7 @@ sub limit_custom_field {
     } else {
         $CF->load_by_name_and_queue(
             name  => $args{customfield},
-            Queue => $args{queue}
+            queue => $args{queue}
         );
         $args{customfield} = $CF->id;
     }
@@ -2517,7 +2517,7 @@ sub next {
     my $Ticket = $self->SUPER::next();
     if ( ( defined($Ticket) ) and ( ref($Ticket) ) ) {
 
-        if ( $Ticket->__value('Status') eq 'deleted'
+        if ( $Ticket->__value('status') eq 'deleted'
             && !$self->{'allow_deleted_search'} )
         {
             return ( $self->next() );
@@ -2533,7 +2533,7 @@ sub next {
             return ($Ticket);
         }
 
-        if ( $Ticket->__value('Status') eq 'deleted' ) {
+        if ( $Ticket->__value('status') eq 'deleted' ) {
             return ( $self->next() );
         }
 
@@ -2686,8 +2686,8 @@ sub _restrictions_to_clauses {
                                    # we need to figure that out
 
         # One special case
-        # Rewrite LinkedTo meta field to the real field
-        if ( $field =~ /LinkedTo/ ) {
+        # Rewrite linked_to meta field to the real field
+        if ( $field =~ /linked_to/ ) {
             $realfield = $field = $restriction->{'type'};
         }
 
@@ -2888,7 +2888,7 @@ sub _init_sql {
 sub _sql_limit {
     my $self = shift;
     my %args = (@_);
-    if ( $args{'column'} eq 'EffectiveId'
+    if ( $args{'column'} eq 'effective_id'
         && ( !$args{'alias'} || $args{'alias'} eq 'main' ) )
     {
         $self->{'looking_at_effective_id'} = 1;
@@ -3113,7 +3113,7 @@ sub from_sql {
         return ( 0, $@ );
     }
 
-    # We only want to look at EffectiveId's (mostly) for these searches.
+    # We only want to look at effective_id's (mostly) for these searches.
     unless ( exists $self->{_sql_looking_at}{'effectiveid'} ) {
 
         #TODO, we shouldn't be hard #coding the tablename to main.

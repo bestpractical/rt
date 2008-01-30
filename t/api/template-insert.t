@@ -16,7 +16,7 @@ use_ok('RT::Model::Template');
 my $template = RT::Model::Template->new(current_user => RT->system_user);
 
 isa_ok($template, 'RT::Model::Template');
-my ($val,$msg) = $template->create(Queue => 1,
+my ($val,$msg) = $template->create(queue => 1,
                   name => 'InsertTest',
                   content => 'This is template content');
 ok($val,$msg);

@@ -72,7 +72,7 @@
 % }
       </table>
             
-      <& /Elements/Submit, Label => _('Modify User Rights'), Reset => 1 &>
+      <& /Elements/Submit, Label => _('Modify User rights'), Reset => 1 &>
       
   </form>
   
@@ -86,7 +86,7 @@
 
 
 if (!defined $id) {
-    abort(_("No Queue defined"));
+    abort(_("No queue defined"));
 }
 
 my $queue_obj = RT::Model::Queue->new();

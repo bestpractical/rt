@@ -2,7 +2,7 @@
 
 use RT::Test; use Test::More tests => 21;
 
-RT::Init();
+RT::init();
 
 use strict;
 use warnings;
@@ -33,27 +33,27 @@ my $cfB = RT::Model::CustomField->new(current_user => RT->system_user);
 my $cfC = RT::Model::CustomField->new(current_user => RT->system_user);
 
 ($ret, $msg) = $cfO->create( name => 'Order',
-                             Queue => 0,
+                             queue => 0,
                              sort_order => 1,
                              description => q{Something to compare results for, since we can't guarantee ticket ID},
                              Type=> 'FreeformSingle');
 ok($ret, "Custom Field Order Created");
 
 ($ret, $msg) = $cfA->create( name => 'Alpha',
-                             Queue => $queue_obj->id,
+                             queue => $queue_obj->id,
                              sort_order => 1,
                              description => 'A Testing custom field',
                              Type=> 'FreeformSingle');
 ok($ret, "Custom Field Alpha Created");
 
 ($ret, $msg) = $cfB->create( name => 'Beta',
-                             Queue => $queue_obj->id,
+                             queue => $queue_obj->id,
                              description => 'A Testing custom field',
                              Type=> 'FreeformSingle');
 ok($ret, "Custom Field Beta Created");
 
 ($ret, $msg) = $cfC->create( name => 'Charlie',
-                             Queue => $queue_obj->id,
+                             queue => $queue_obj->id,
                              description => 'A Testing custom field',
                              Type=> 'FreeformSingle');
 ok($ret, "Custom Field Charlie Created");
@@ -61,7 +61,7 @@ ok($ret, "Custom Field Charlie Created");
 # ----- Create some tickets to test with.  Assign them some values to
 # make it easy to sort with.
 my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
-$t1->create( Queue => $queue_obj->id,
+$t1->create( queue => $queue_obj->id,
              subject => 'One',
            );
 $t1->add_custom_field_value(Field => $cfO->id,  value => '1');
@@ -70,7 +70,7 @@ $t1->add_custom_field_value(Field => $cfB->id,  value => '1');
 $t1->add_custom_field_value(Field => $cfC->id,  value => 'BBB');
 
 my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
-$t2->create( Queue => $queue_obj->id,
+$t2->create( queue => $queue_obj->id,
              subject => 'Two',
            );
 $t2->add_custom_field_value(Field => $cfO->id,  value => '2');
@@ -132,7 +132,7 @@ check_order( $tx, 2, 1);
 
 # Add a new ticket, to test sorting on multiple columns.
 my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
-$t3->create( Queue => $queue_obj->id,
+$t3->create( queue => $queue_obj->id,
              subject => 'Three',
            );
 $t3->add_custom_field_value(Field => $cfO->id,  value => '3');

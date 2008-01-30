@@ -935,7 +935,7 @@ sub brief_description {
         my $self = shift;
         if ( $self->field eq 'password' ) {
             return _('password changed');
-        } elsif ( $self->field eq 'Queue' ) {
+        } elsif ( $self->field eq 'queue' ) {
             my $q1 = RT::Model::Queue->new();
             $q1->load( $self->old_value );
             my $q2 = RT::Model::Queue->new();
@@ -1065,7 +1065,7 @@ sub current_user_has_right {
     my $self  = shift;
     my $right = shift;
     return $self->current_user->has_right(
-        Right  => $right,
+        right  => $right,
         object => $self->object
     );
 }

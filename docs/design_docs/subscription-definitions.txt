@@ -68,7 +68,7 @@ actions that will be bundled with RT.
 What is a Scrip?
 
 ...it's an entry in the database that tells that an action is to be
-performed with a certain template and argument.  Template and argument
+performed with a certain template and argument.  template and argument
 doesn't make sense in all contexts.  A scrip can be limited to transaction
 types; the current implementation allows a comma-separated list (though for
 a "cleaner" schema design, it should be a separate table for this?).  It has
@@ -107,7 +107,7 @@ keywords, tickets, etc, and not only Queues */ ... the Scope table should
 indicate whether the Scrip is relevant for a given transaction type ... then
 the given Action should determinate whether it applies or not, and finally
 the Action has to find out (via the Watchers table) whom it applies to, and
-how to contact them ... and the Template tells how the mails that are sent
+how to contact them ... and the template tells how the mails that are sent
 out should look like.
 
 

@@ -58,7 +58,7 @@
       <& /Ticket/Elements/ShowCustomFields, Ticket => $approving &>
 % }
 % if ($ShowHistory) {
-      <& /Ticket/Elements/ShowHistory, Ticket => $approving, Collapsed => 0, ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
+      <& /Ticket/Elements/ShowHistory, Ticket => $approving, Collapsed => 0, ShowTitle => 0, show_headers => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
 % }
     </div>
   </div>

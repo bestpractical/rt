@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 package RT::Interface::Email::Auth::MailFrom;
-use RT::Interface::Email qw(ParseSenderAddressFromHead create_user);
+use RT::Interface::Email qw(parse_sender_address_from_head create_user);
 
 # This is what the ordinary, non-enhanced gateway does at the moment.
 
@@ -56,14 +56,14 @@ sub get_current_user {
         CurrentUser => undef,
         AuthLevel   => undef,
         Ticket      => undef,
-        Queue       => undef,
+        queue       => undef,
         Action      => undef,
         @_
     );
 
     # We don't need to do any external lookups
     my ( $Address, $name )
-        = ParseSenderAddressFromHead( $args{'Message'}->head );
+        = parse_sender_address_from_head( $args{'Message'}->head );
     unless ($Address) {
         Jifty->log->error("Couldn't find sender's address");
         return ( $args{'CurrentUser'}, -1 );
@@ -99,7 +99,7 @@ sub get_current_user {
 # but before we do that, we need to make sure that the Created user would have the right
 # to do what we're doing.
     if ( $args{'Ticket'} && $args{'Ticket'}->id ) {
-        my $qname = $args{'Queue'}->name;
+        my $qname = $args{'queue'}->name;
 
         # We have a ticket. that means we're commenting or corresponding
         if ( $args{'Action'} =~ /^comment$/i ) {
@@ -107,12 +107,12 @@ sub get_current_user {
 # check to see whether "Everyone" or "Unprivileged users" can comment on tickets
             unless (
                 $everyone->principal_object->has_right(
-                    object => $args{'Queue'},
-                    Right  => 'commentOnTicket'
+                    object => $args{'queue'},
+                    right  => 'commentOnTicket'
                 )
                 || $unpriv->principal_object->has_right(
-                    object => $args{'Queue'},
-                    Right  => 'commentOnTicket'
+                    object => $args{'queue'},
+                    right  => 'commentOnTicket'
                 )
                 )
             {
@@ -126,12 +126,12 @@ sub get_current_user {
 # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless (
                 $everyone->principal_object->has_right(
-                    object => $args{'Queue'},
-                    Right  => 'ReplyToTicket'
+                    object => $args{'queue'},
+                    right  => 'ReplyToTicket'
                 )
                 || $unpriv->principal_object->has_right(
-                    object => $args{'Queue'},
-                    Right  => 'ReplyToTicket'
+                    object => $args{'queue'},
+                    right  => 'ReplyToTicket'
                 )
                 )
             {
@@ -145,12 +145,12 @@ sub get_current_user {
 # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless (
                 $everyone->principal_object->has_right(
-                    object => $args{'Queue'},
-                    Right  => 'OwnTicket'
+                    object => $args{'queue'},
+                    right  => 'OwnTicket'
                 )
                 || $unpriv->principal_object->has_right(
-                    object => $args{'Queue'},
-                    Right  => 'OwnTicket'
+                    object => $args{'queue'},
+                    right  => 'OwnTicket'
                 )
                 )
             {
@@ -165,12 +165,12 @@ sub get_current_user {
 # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless (
                 $everyone->principal_object->has_right(
-                    object => $args{'Queue'},
-                    Right  => 'ModifyTicket'
+                    object => $args{'queue'},
+                    right  => 'ModifyTicket'
                 )
                 || $unpriv->principal_object->has_right(
-                    object => $args{'Queue'},
-                    Right  => 'ModifyTicket'
+                    object => $args{'queue'},
+                    right  => 'ModifyTicket'
                 )
                 )
             {
@@ -188,18 +188,18 @@ sub get_current_user {
     }
 
     # We're creating a ticket
-    elsif ( $args{'Queue'} && $args{'Queue'}->id ) {
-        my $qname = $args{'Queue'}->name;
+    elsif ( $args{'queue'} && $args{'queue'}->id ) {
+        my $qname = $args{'queue'}->name;
 
 # check to see whether "Everybody" or "Unprivileged users" can create tickets in this queue
         unless (
             $everyone->principal_object->has_right(
-                object => $args{'Queue'},
-                Right  => 'create_ticket'
+                object => $args{'queue'},
+                right  => 'create_ticket'
             )
             || $unpriv->principal_object->has_right(
-                object => $args{'Queue'},
-                Right  => 'ModifyTicket'
+                object => $args{'queue'},
+                right  => 'ModifyTicket'
             )
             )
         {

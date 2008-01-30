@@ -60,7 +60,7 @@ if ($ShowDisplayModes or $ShowTitle) {
     if ($ShowDisplayModes) {
         $titleright = '';
         
-        if ($ShowHeaders) {
+        if ($show_headers) {
             $titleright .= qq{<a href="$URIFile?id=} .
                            $Ticket->id.qq{">} .
                            _("Brief headers") .
@@ -69,7 +69,7 @@ if ($ShowDisplayModes or $ShowTitle) {
         }
         else {
             $titleright .= q[<span class="selected">] . _("Brief headers") . "</span> &mdash; ";
-            $titleright .= qq{<a href="$URIFile?ShowHeaders=1;id=} .
+            $titleright .= qq{<a href="$URIFile?show_headers=1;id=} .
                            $Ticket->id.qq{">} .
                            _("Full headers") .
                            qq{</a>};
@@ -109,7 +109,7 @@ while ( my $Transaction = $Transactions->next ) {
 
               Ticket               => $Ticket,
               Transaction          => $Transaction,
-              ShowHeaders          => $ShowHeaders,
+              show_headers          => $show_headers,
               RowNum               => $i,
               Attachments          => \@trans_attachments,
               AttachmentContent    => $trans_content,
@@ -157,7 +157,7 @@ $Ticket => undef
 $Tickets => undef
 $Attachments => undef
 $AttachmentContent => undef
-$ShowHeaders => undef
+$show_headers => undef
 $ShowTitle => 1
 $ShowDisplayModes => 1
 $WarnUnsigned => undef

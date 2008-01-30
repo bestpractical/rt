@@ -48,7 +48,7 @@
 <&| /Widgets/TitleBox, title => _($Title)&>
 
 %# Hide all the save functionality if the user shouldn't see it.
-% if (Jifty->web->current_user->has_right( Right => 'CreateSavedSearch',
+% if (Jifty->web->current_user->has_right( right => 'CreateSavedSearch',
 %                                        object=> RT->system )) {
 <&|/l&>Privacy:</&>
 % if ( $object && $object->id ) {
@@ -83,7 +83,7 @@
 
 <%INIT>
 return unless Jifty->web->current_user->has_right(
-    Right  => 'LoadSavedSearch',
+    right  => 'LoadSavedSearch',
     object => RT->system,
 );
 
@@ -98,7 +98,7 @@ use RT::SavedSearches;
 my @objects = RT::SavedSearches->new()->_privacy_objects;
 push @objects, RT::System->new()
     if Jifty->web->current_user->has_right( object=> RT->system,
-                                          Right => 'SuperUser' );
+                                          right => 'SuperUser' );
 
 </%INIT>
 
@@ -181,7 +181,7 @@ my $desc = $SavedSearch->{'description'};
 if ( $obj && $obj->id ) {
     # permission check
     if ($obj->object->isa('RT::System')) {
-        unless (Jifty->web->current_user->has_right( object=> RT->system, Right => 'SuperUser')) {
+        unless (Jifty->web->current_user->has_right( object=> RT->system, right => 'SuperUser')) {
             push @results, [ _("No permission to save system-wide searches"), 0 ];
             return @results;
         }

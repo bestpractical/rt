@@ -175,7 +175,7 @@ sub load_user_defined_group {
 
 Loads a user's acl equivalence group. Takes a principal object.
 ACL equivalnce groups are used to simplify the acl system. Each user
-has one group that only he is a member of. Rights granted to the user
+has one group that only he is a member of. rights granted to the user
 are actually granted to that group. This greatly simplifies ACL checks.
 While this results in a somewhat more complex setup when creating users
 and granting ACLs, it _greatly_ simplifies acl checks.
@@ -277,13 +277,13 @@ sub load_ticket_role_group {
 
 # {{{ sub loadQueueRoleGroup
 
-=head2 LoadQueueRoleGroup  { Queue => Queue_ID, type => TYPE }
+=head2 LoadQueueRoleGroup  { queue => Queue_ID, type => TYPE }
 
-Loads a Queue group from the database. 
+Loads a queue group from the database. 
 
 Takes a param hash with 2 parameters:
 
-    Queue is the QueueId we're curious about
+    queue is the QueueId we're curious about
     type is the type of Group we're trying to load: 
         Requestor, Cc, AdminCc, Owner
 
@@ -1300,7 +1300,7 @@ sub current_user_has_right {
     if ($self->id
         && $self->current_user->has_right(
             object => $self,
-            Right  => $right
+            right  => $right
         )
         )
     {
@@ -1308,7 +1308,7 @@ sub current_user_has_right {
     } elsif (
         $self->current_user->has_right(
             object => RT->system,
-            Right  => $right
+            right  => $right
         )
         )
     {

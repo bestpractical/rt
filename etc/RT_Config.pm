@@ -15,7 +15,7 @@ use RT::Config;
 
 =cut
 
-# {{{ Base Configuration
+# {{{ base Configuration
 
 # $rtname is the string that RT will look for in mail messages to
 # figure out what ticket a new piece of mail belongs to
@@ -426,12 +426,12 @@ set( $WebPath, "" );
 set( $WebPort, 80 );    # + ($< * 7274) % 32766 + ($< && 1024));
 
 # This is the Scheme, server and port for constructing urls to webrt
-# $WebBaseURL doesn't need a trailing /
+# $WebbaseURL doesn't need a trailing /
 
-set( $WebBaseURL, "http://localhost:" . RT->config->get('WebPort') );
+set( $WebbaseURL, "http://localhost:" . RT->config->get('WebPort') );
 
 set( $WebURL,
-    RT->config->get('WebBaseURL') . RT->config->get('WebPath') . "/" );
+    RT->config->get('WebbaseURL') . RT->config->get('WebPath') . "/" );
 
 # $WebImagesURL points to the base URL where RT can find its images.
 
@@ -498,10 +498,10 @@ set( $WebOpenIdAuth, undef );
 
 set( $WebFallbackToInternalAuth, undef );
 
-# $WebExternalGecos means to match 'gecos' field as the user identity);
+# $WebExternalgecos means to match 'gecos' field as the user identity);
 # useful with mod_auth_pwcheck and IIS Integrated Windows logon.
 
-set( $WebExternalGecos, undef );
+set( $WebExternalgecos, undef );
 
 # $WebExternalAuto will create users under the same name as REMOTE_USER
 # upon login, if it's missing in the Users table.
@@ -515,7 +515,7 @@ set( $AutoCreate, undef );
 
 # $WebSessionClass is the class you wish to use for managing Sessions.
 # It defaults to use your SQL database, but if you are using MySQL 3.x and
-# plans to use non-ascii Queue names, uncomment and add this line to
+# plans to use non-ascii queue names, uncomment and add this line to
 # RT_SiteConfig.pm will prevent session corruption.
 
 # set($WebSessionClass , 'Apache::Session::File');
@@ -735,8 +735,8 @@ set( $DevelMode, '0' );
 
 # {{{ Deprecated options
 
-# $AlwaysUseBase64 - Encode blobs as base64 in DB (?)
-# $Ticketbase_uri - Base URI to tickets in this system; used when loading (?)
+# $AlwaysUsebase64 - Encode blobs as base64 in DB (?)
+# $Ticketbase_uri - base URI to tickets in this system; used when loading (?)
 # $UseCodeTickets - This option is exists for backwards compatibility.  Don't use it.
 
 # }}}

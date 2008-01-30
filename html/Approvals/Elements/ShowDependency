@@ -74,7 +74,7 @@ while (my $link = $approving->next()) {
 	$text .= $head;
     }
 
-    $text .= $m->scomp('/Ticket/Elements/ShowHistory' , Ticket => $link->base_obj, Collapsed => ($type ne 'ticket'), ShowTitle => 0, ShowHeaders => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0);
+    $text .= $m->scomp('/Ticket/Elements/ShowHistory' , Ticket => $link->base_obj, Collapsed => ($type ne 'ticket'), ShowTitle => 0, show_headers => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0);
 
     $head .= $m->scomp('/Widgets/TitleBoxEnd');
     $text .= $m->scomp('/Widgets/TitleBoxEnd');

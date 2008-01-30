@@ -65,7 +65,7 @@ sub test_args {
     return $self->SUPER::test_args(%args);
 }
 
-sub Run {
+sub run {
     my $self  = shift;
     my %args  = ( object => undef, @_ );
     my $class = ref $args{'object'};
@@ -140,8 +140,8 @@ sub write_down_scrip {
     my $props = $self->_make_hash( $args{'object'} );
     $props->{'Action'}    = $args{'object'}->action_obj->name;
     $props->{'Condition'} = $args{'object'}->condition_obj->name;
-    $props->{'Template'}  = $args{'object'}->template_obj->name;
-    $props->{'Queue'}     = $args{'object'}->queue_obj->name || 'global';
+    $props->{'template'}  = $args{'object'}->template_obj->name;
+    $props->{'queue'}     = $args{'object'}->queue_obj->name || 'global';
 
     return $self->_write_down_hash( $args{'object'}, $props );
 }

@@ -64,10 +64,10 @@
                         path => 'Admin/Global/CustomFields/index.html',
                         },
 
-                G => { title => _('Group Rights'),
+                G => { title => _('Group rights'),
                                 path => 'Admin/Global/GroupRights.html',
                       },
-                H => { title => _('User Rights'),
+                H => { title => _('User rights'),
                                 path => 'Admin/Global/UserRights.html',
                       },
                 I => { title => _('RT at a glance'),

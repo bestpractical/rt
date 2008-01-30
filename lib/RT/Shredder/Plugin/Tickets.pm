@@ -61,7 +61,7 @@ RT::Shredder::Plugin::Tickets - search plugin for wiping tickets.
 
 Search tickets with query string.
 Examples:
-  Queue = 'my queue' AND ( Status = 'deleted' OR Status = 'rejected' )
+  queue = 'my queue' AND ( Status = 'deleted' OR Status = 'rejected' )
   LastUpdated < '2003-12-31 23:59:59'
 
 B<Hint:> You can construct query with the query builder in RT's web
@@ -84,7 +84,7 @@ See also L<with_linked>.
 =cut
 
 sub support_args {
-    return $_[0]->SUPER::SupportArgs,
+    return $_[0]->SUPER::support_args,
         qw(query with_linked apply_query_to_linked);
 }
 
@@ -105,7 +105,7 @@ sub test_args {
     return $self->SUPER::test_args(%args);
 }
 
-sub Run {
+sub run {
     my $self = shift;
     my $objs = $self->{'opt'}{'objects'}
         or return ( 1, undef );

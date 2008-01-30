@@ -82,6 +82,6 @@ $OtherTemplates->order_by(column => 'name');
 $Queue => undef
 $Default => 'none'
 $DefaultQueue => undef
-$name => 'Template'
+$name => 'template'
 
 </%ARGS>

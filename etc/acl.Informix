@@ -1,6 +1,0 @@
-
-sub acl {
-    return ("GRANT RESOURCE TO ". RT->config->get('DatabaseUser') .";");
-}
-
-1;

@@ -15,12 +15,12 @@ $q->create(name =>'ownerChangeTest');
 ok($q->id, "Created a scriptest queue");
 
 my $s1 = RT::Model::Scrip->new(current_user => RT->system_user);
-my ($val, $msg) =$s1->create( Queue => $q->id,
-             ScripAction => 'User Defined',
-             ScripCondition => 'On Owner Change',
-             CustomIsApplicableCode => '',
-             CustomPrepareCode => 'return 1',
-             CustomCommitCode => '
+my ($val, $msg) =$s1->create( queue => $q->id,
+             scrip_action => 'User Defined',
+             scrip_condition => 'On Owner Change',
+             custom_is_applicable_code => '',
+             custom_prepare_code => 'return 1',
+             custom_commit_code => '
                 my ($status, $msg) = $self->ticket_obj->set_priority($self->ticket_obj->priority+1);
                 unless ( $status ) {
                     Jifty->log->error($msg);
@@ -28,12 +28,12 @@ my ($val, $msg) =$s1->create( Queue => $q->id,
                 }
                 return(1);
             ',
-             Template => 'Blank'
+             template => 'Blank'
     );
 ok($val,$msg);
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
-my ($tv,$ttv,$tm) = $ticket->create(Queue => $q->id,
+my ($tv,$ttv,$tm) = $ticket->create(queue => $q->id,
                                     subject => "hair on fire",
                                     initial_priority => '20'
                                     );

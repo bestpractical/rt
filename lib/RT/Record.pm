@@ -48,7 +48,7 @@
 
 =head1 name
 
-  RT::Record - Base class for RT record objects
+  RT::Record - base class for RT record objects
 
 =head1 SYNOPSIS
 
@@ -602,7 +602,7 @@ sub validate_name {
 
 =head2 _EncodeLOB BODY MIME_TYPE
 
-Takes a potentially large attachment. Returns (ContentEncoding, EncodedBody) based on system configuration and selected database
+Takes a potentially large attachment. Returns (content_encoding, EncodedBody) based on system configuration and selected database
 
 =cut
 
@@ -611,7 +611,7 @@ sub _encode_lob {
     my $Body     = shift;
     my $MIMEType = shift;
 
-    my $ContentEncoding = 'none';
+    my $content_encoding = 'none';
 
     #get the max attachment length from RT
     my $MaxSize = RT->config->get('MaxAttachmentSize');
@@ -619,10 +619,10 @@ sub _encode_lob {
     #if the current attachment contains nulls and the
     #database doesn't support embedded nulls
 
-    if ( RT->config->get('AlwaysUseBase64') ) {
+    if ( RT->config->get('AlwaysUsebase64') ) {
 
         # set a flag telling us to mimencode the attachment
-        $ContentEncoding = 'base64';
+        $content_encoding = 'base64';
 
         #cut the max attchment size by 25% (for mime-encoding overhead.
         Jifty->log->debug("Max size is $MaxSize\n");
@@ -635,7 +635,7 @@ sub _encode_lob {
         && !Encode::is_utf8( $Body, 1 )
         )
     {
-        $ContentEncoding = 'quoted-printable';
+        $content_encoding = 'quoted-printable';
     }
 
     #if the attachment is larger than the maximum size
@@ -663,33 +663,33 @@ sub _encode_lob {
     }
 
     # if we need to mimencode the attachment
-    if ( $ContentEncoding eq 'base64' ) {
+    if ( $content_encoding eq 'base64' ) {
 
         # base64 encode the attachment
         Encode::_utf8_off($Body);
         $Body = MIME::Base64::encode_base64($Body);
 
-    } elsif ( $ContentEncoding eq 'quoted-printable' ) {
+    } elsif ( $content_encoding eq 'quoted-printable' ) {
         Encode::_utf8_off($Body);
         $Body = MIME::QuotedPrint::encode($Body);
     }
 
-    return ( $ContentEncoding, $Body );
+    return ( $content_encoding, $Body );
 
 }
 
 sub _decode_lob {
     my $self            = shift;
     my $content_type     = shift || '';
-    my $ContentEncoding = shift || 'none';
+    my $content_encoding = shift || 'none';
     my $Content         = shift;
 
-    if ( $ContentEncoding eq 'base64' ) {
+    if ( $content_encoding eq 'base64' ) {
         $Content = MIME::Base64::decode_base64($Content);
-    } elsif ( $ContentEncoding eq 'quoted-printable' ) {
+    } elsif ( $content_encoding eq 'quoted-printable' ) {
         $Content = MIME::QuotedPrint::decode($Content);
-    } elsif ( $ContentEncoding && $ContentEncoding ne 'none' ) {
-        return ( _( "Unknown ContentEncoding %1", $ContentEncoding ) );
+    } elsif ( $content_encoding && $content_encoding ne 'none' ) {
+        return ( _( "Unknown content_encoding %1", $content_encoding ) );
     }
     if ( RT::I18N::is_textual_content_type($content_type) ) {
         $Content = Encode::decode_utf8($Content)
@@ -706,20 +706,20 @@ use vars '%LINKDIRMAP';
 
 %LINKDIRMAP = (
     MemberOf => {
-        Base   => 'MemberOf',
-        Target => 'has_member',
+        base   => 'MemberOf',
+        target => 'has_member',
     },
     RefersTo => {
-        Base   => 'RefersTo',
-        Target => 'ReferredToBy',
+        base   => 'RefersTo',
+        target => 'ReferredToBy',
     },
     DependsOn => {
-        Base   => 'DependsOn',
-        Target => 'DependedOnBy',
+        base   => 'DependsOn',
+        target => 'DependedOnBy',
     },
     MergedInto => {
-        Base   => 'MergedInto',
-        Target => 'MergedInto',
+        base   => 'MergedInto',
+        target => 'MergedInto',
     },
 
 );
@@ -774,7 +774,7 @@ sub update {
 
         $value =~ s/\r\n/\n/gs;
 
-        # If Queue is 'General', we want to resolve the queue name for
+        # If queue is 'General', we want to resolve the queue name for
         # the object.
 
         # This is in an eval block because $object might not exist.
@@ -831,7 +831,7 @@ which are 'MembersOf' this ticket
 
 sub members {
     my $self = shift;
-    return ( $self->_links( 'Target', 'MemberOf' ) );
+    return ( $self->_links( 'target', 'MemberOf' ) );
 }
 
 # }}}
@@ -847,7 +847,7 @@ ticket is a 'MemberOf'
 
 sub member_of {
     my $self = shift;
-    return ( $self->_links( 'Base', 'MemberOf' ) );
+    return ( $self->_links( 'base', 'MemberOf' ) );
 }
 
 # }}}
@@ -862,7 +862,7 @@ sub member_of {
 
 sub refers_to {
     my $self = shift;
-    return ( $self->_links( 'Base', 'RefersTo' ) );
+    return ( $self->_links( 'base', 'RefersTo' ) );
 }
 
 # }}}
@@ -877,7 +877,7 @@ This returns an L<RT::Model::LinkCollection> object which shows all references f
 
 sub referred_to_by {
     my $self = shift;
-    return ( $self->_links( 'Target', 'RefersTo' ) );
+    return ( $self->_links( 'target', 'RefersTo' ) );
 }
 
 # }}}
@@ -892,7 +892,7 @@ sub referred_to_by {
 
 sub depended_on_by {
     my $self = shift;
-    return ( $self->_links( 'Target', 'DependsOn' ) );
+    return ( $self->_links( 'target', 'DependsOn' ) );
 }
 
 # }}}
@@ -1014,7 +1014,7 @@ sub all_depended_on_by {
 
 sub depends_on {
     my $self = shift;
-    return ( $self->_links( 'Base', 'DependsOn' ) );
+    return ( $self->_links( 'base', 'DependsOn' ) );
 }
 
 # }}}
@@ -1025,7 +1025,7 @@ sub depends_on {
 
 Return links (L<RT::Model::LinkCollection>) to/from this object.
 
-DIRECTION is either 'Base' or 'Target'.
+DIRECTION is either 'base' or 'target'.
 
 TYPE is a type of links to return, it can be omitted to get
 links of any type.
@@ -1067,7 +1067,7 @@ sub _links {
 
 =head2 _add_link
 
-Takes a paramhash of type and one of Base or Target. Adds that link to this object.
+Takes a paramhash of type and one of base or target. Adds that link to this object.
 
 Returns C<link id>, C<message> and C<exist> flag.
 
@@ -1077,8 +1077,8 @@ Returns C<link id>, C<message> and C<exist> flag.
 sub _add_link {
     my $self = shift;
     my %args = (
-        Target => '',
-        Base   => '',
+        target => '',
+        base   => '',
         type   => '',
         Silent => undef,
         @_
@@ -1088,19 +1088,19 @@ sub _add_link {
     my $remote_link;
     my $direction;
 
-    if ( $args{'Base'} and $args{'Target'} ) {
+    if ( $args{'base'} and $args{'target'} ) {
         Jifty->log->debug(
             "$self tried to create a link. both base and target were specified\n"
         );
         return ( 0, _("Can't specifiy both base and target") );
-    } elsif ( $args{'Base'} ) {
-        $args{'Target'} = $self->uri();
-        $remote_link    = $args{'Base'};
-        $direction      = 'Target';
-    } elsif ( $args{'Target'} ) {
-        $args{'Base'} = $self->uri();
-        $remote_link  = $args{'Target'};
-        $direction    = 'Base';
+    } elsif ( $args{'base'} ) {
+        $args{'target'} = $self->uri();
+        $remote_link    = $args{'base'};
+        $direction      = 'target';
+    } elsif ( $args{'target'} ) {
+        $args{'base'} = $self->uri();
+        $remote_link  = $args{'target'};
+        $direction    = 'base';
     } else {
         return ( 0, _('Either base or target must be specified') );
     }
@@ -1109,9 +1109,9 @@ sub _add_link {
     use RT::Model::Link;
     my $old_link = RT::Model::Link->new;
     $old_link->load_by_params(
-        Base   => $args{'Base'},
+        base   => $args{'base'},
         type   => $args{'type'},
-        Target => $args{'Target'}
+        target => $args{'target'}
     );
     if ( $old_link->id ) {
         Jifty->log->debug("$self Somebody tried to duplicate a link");
@@ -1123,8 +1123,8 @@ sub _add_link {
     # Storing the link in the DB.
     my $link = RT::Model::Link->new;
     my ( $linkid, $linkmsg ) = $link->create(
-        Target => $args{Target},
-        Base   => $args{Base},
+        target => $args{target},
+        base   => $args{base},
         type   => $args{'type'}
     );
 
@@ -1134,7 +1134,7 @@ sub _add_link {
     }
 
     my $TransString
-        = "Record $args{'Base'} $args{'type'} record $args{'Target'}.";
+        = "Record $args{'base'} $args{'type'} record $args{'target'}.";
 
     return ( $linkid, _( "Link Created (%1)", $TransString ) );
 }
@@ -1145,8 +1145,8 @@ sub _add_link {
 
 =head2 _delete_link
 
-Delete a link. takes a paramhash of Base, Target and Type.
-Either Base or Target must be null. The null value will 
+Delete a link. takes a paramhash of base, target and Type.
+Either base or target must be null. The null value will 
 be replaced with this ticket\'s id
 
 =cut 
@@ -1154,8 +1154,8 @@ be replaced with this ticket\'s id
 sub _delete_link {
     my $self = shift;
     my %args = (
-        Base   => undef,
-        Target => undef,
+        base   => undef,
+        target => undef,
         type   => undef,
         @_
     );
@@ -1166,33 +1166,33 @@ sub _delete_link {
     my $direction;
     my $remote_link;
 
-    if ( $args{'Base'} and $args{'Target'} ) {
-        Jifty->log->debug("$self ->_delete_link. got both Base and Target\n");
+    if ( $args{'base'} and $args{'target'} ) {
+        Jifty->log->debug("$self ->_delete_link. got both base and target\n");
         return ( 0, _("Can't specifiy both base and target") );
-    } elsif ( $args{'Base'} ) {
-        $args{'Target'} = $self->uri();
-        $remote_link    = $args{'Base'};
-        $direction      = 'Target';
-    } elsif ( $args{'Target'} ) {
-        $args{'Base'} = $self->uri();
-        $remote_link  = $args{'Target'};
-        $direction    = 'Base';
+    } elsif ( $args{'base'} ) {
+        $args{'target'} = $self->uri();
+        $remote_link    = $args{'base'};
+        $direction      = 'target';
+    } elsif ( $args{'target'} ) {
+        $args{'base'} = $self->uri();
+        $remote_link  = $args{'target'};
+        $direction    = 'base';
     } else {
-        Jifty->log->error("Base or Target must be specified\n");
+        Jifty->log->error("base or target must be specified\n");
         return ( 0, _('Either base or target must be specified') );
     }
 
     my $link = RT::Model::Link->new();
     Jifty->log->debug( "Trying to load link: "
-            . $args{'Base'} . " "
+            . $args{'base'} . " "
             . $args{'type'} . " "
-            . $args{'Target'}
+            . $args{'target'}
             . "\n" );
 
     $link->load_by_params(
-        Base   => $args{'Base'},
+        base   => $args{'base'},
         type   => $args{'type'},
-        Target => $args{'Target'}
+        target => $args{'target'}
     );
 
     #it's a real link.
@@ -1202,7 +1202,7 @@ sub _delete_link {
         $link->delete();
 
         my $TransString
-            = "Record $args{'Base'} no longer $args{'type'} record $args{'Target'}.";
+            = "Record $args{'base'} no longer $args{'type'} record $args{'target'}.";
         return ( 1, _( "Link deleted (%1)", $TransString ) );
     }
 
@@ -1448,7 +1448,7 @@ sub _add_custom_field_value {
  # value and record a "changed from foo to bar" transaction
     unless ( $cf->unlimited_values ) {
 
-# Load up a objectcustom_field_values object for this custom field and this ticket
+# Load up a ObjectCustomFieldValues object for this custom field and this ticket
         my $values = $cf->values_for_object($self);
 
 # We need to whack any old values here.  In most cases, the custom field should
@@ -1668,7 +1668,7 @@ sub first_custom_field_value {
 
 =head2 custom_field_values column
 
-Return a objectcustom_field_values object of all values of the CustomField whose 
+Return a ObjectCustomFieldValues object of all values of the CustomField whose 
 id or name is column for this record.
 
 Returns an RT::Model::ObjectCustomFieldValueCollection object

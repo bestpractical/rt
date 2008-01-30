@@ -200,7 +200,7 @@ sub create {
     unless (
         $self->current_user->has_right(
             object => RT->system,
-            Right  => 'AdminCustomField'
+            right  => 'AdminCustomField'
         )
         )
     {
@@ -215,14 +215,14 @@ sub create {
         $args{'max_values'} = $1 ? 1 : 0;
     }
 
-    if ( !exists $args{'Queue'} ) {
+    if ( !exists $args{'queue'} ) {
 
         # do nothing -- things below are strictly backward compat
-    } elsif ( !$args{'Queue'} ) {
+    } elsif ( !$args{'queue'} ) {
         unless (
             $self->current_user->has_right(
                 object => RT->system,
-                Right  => 'AssignCustomFields'
+                right  => 'AssignCustomFields'
             )
             )
         {
@@ -231,7 +231,7 @@ sub create {
         $args{'lookup_type'} = 'RT::Model::Queue-RT::Model::Ticket';
     } else {
         my $queue = RT::Model::Queue->new;
-        $queue->load( $args{'Queue'} );
+        $queue->load( $args{'queue'} );
         unless ( $queue->id ) {
             return ( 0, _("Queue not found") );
         }
@@ -239,7 +239,7 @@ sub create {
             return ( 0, _('Permission Denied') );
         }
         $args{'lookup_type'} = 'RT::Model::Queue-RT::Model::Ticket';
-        $args{'Queue'}      = $queue->id;
+        $args{'queue'}      = $queue->id;
     }
 
     my ( $ok, $msg ) = $self->_is_valid_regex( $args{'pattern'} );
@@ -260,13 +260,13 @@ sub create {
         $self->set_values_class( $args{'ValuesClass'} );
     }
 
-    return ( $rv, $msg ) unless exists $args{'Queue'};
+    return ( $rv, $msg ) unless exists $args{'queue'};
 
     # Compat code -- create a new ObjectCustomField mapping
     my $OCF = RT::Model::ObjectCustomField->new;
     $OCF->create(
         custom_field => $self->id,
-        object_id   => $args{'Queue'},
+        object_id   => $args{'queue'},
     );
 
     return ( $rv, $msg );
@@ -291,13 +291,13 @@ sub load {
 
 # {{{ sub load_by_name
 
-=head2 load_by_name (Queue => QUEUEID, name => name)
+=head2 load_by_name (queue => QUEUEID, name => name)
 
 Loads the Custom field named name.
 
-If a Queue parameter is specified, only look for ticket custom fields tied to that Queue.
+If a queue parameter is specified, only look for ticket custom fields tied to that Queue.
 
-If the Queue parameter is '0', look for global ticket custom fields.
+If the queue parameter is '0', look for global ticket custom fields.
 
 If no queue parameter is specified, look for any and all custom fields with this name.
 
@@ -314,16 +314,16 @@ BUG/TODO, this won't let you specify that you only want user or group CFs.
 sub load_by_name {
     my $self = shift;
     my %args = (
-        Queue => undef,
+        queue => undef,
         name  => undef,
         @_,
     );
 
     # if we're looking for a queue by name, make it a number
-    if ( defined $args{'Queue'} && $args{'Queue'} =~ /\D/ ) {
+    if ( defined $args{'queue'} && $args{'queue'} =~ /\D/ ) {
         my $queue_obj = RT::Model::Queue->new;
-        $queue_obj->load( $args{'Queue'} );
-        $args{'Queue'} = $queue_obj->id;
+        $queue_obj->load( $args{'queue'} );
+        $args{'queue'} = $queue_obj->id;
     }
 
 # XXX - really naive implementation.  Slow. - not really. still just one query
@@ -338,8 +338,8 @@ sub load_by_name {
 
     # Don't limit to queue if queue is 0.  Trying to do so breaks
     # RT::Model::Group type CFs.
-    if ( defined $args{'Queue'} ) {
-        $CFs->limit_to_queue( $args{'Queue'} );
+    if ( defined $args{'queue'} ) {
+        $CFs->limit_to_queue( $args{'queue'} );
     }
 
    # When loading by name, it's ok if they're disabled. That's not a big deal.
@@ -690,7 +690,7 @@ sub current_user_has_right {
 
     return $self->current_user->has_right(
         object => $self,
-        Right  => $right,
+        right  => $right,
     );
 }
 
@@ -854,7 +854,7 @@ sub friendly_lookup_type {
     return ( _( $Friendlyobject_types[$#types], @types ) );
 }
 
-=head2 AddToobject OBJECT
+=head2 AddToObject OBJECT
 
 Add this custom field as a custom field for a single object, such as a queue or group.
 

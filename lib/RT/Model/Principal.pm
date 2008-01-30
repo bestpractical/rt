@@ -146,7 +146,7 @@ sub object {
 
 # {{{ grant_right
 
-=head2 grant_right  { Right => RIGHTNAME, object => undef }
+=head2 grant_right  { right => RIGHTNAME, object => undef }
 
 A helper function which calls RT::Model::ACE->create
 
@@ -160,13 +160,13 @@ A helper function which calls RT::Model::ACE->create
 sub grant_right {
     my $self = shift;
     my %args = (
-        Right  => undef,
+        right  => undef,
         object => undef,
         @_
     );
 
-    unless ( $args{'Right'} ) {
-        return ( 0, _("Invalid Right") );
+    unless ( $args{'right'} ) {
+        return ( 0, _("Invalid right") );
     }
 
     #ACL check handled in ACE.pm
@@ -178,7 +178,7 @@ sub grant_right {
     # user equivalence group
     return (
         $ace->create(
-            right_name     => $args{'Right'},
+            right_name     => $args{'right'},
             object         => $args{'object'},
             principal_type => $type,
             principal_id   => $self->id
@@ -190,7 +190,7 @@ sub grant_right {
 
 # {{{ revoke_right
 
-=head2 revoke_right { Right => "right_name", object => "object" }
+=head2 revoke_right { right => "right_name", object => "object" }
 
 Delete a right that a user has 
 
@@ -205,7 +205,7 @@ sub revoke_right {
 
     my $self = shift;
     my %args = (
-        Right  => undef,
+        right  => undef,
         object => undef,
         @_
     );
@@ -223,7 +223,7 @@ sub revoke_right {
 
     my $ace = RT::Model::ACE->new;
     $ace->load_by_values(
-        right_name     => $args{'Right'},
+        right_name     => $args{'right'},
         object         => $args{'object'},
         principal_type => $type,
         principal_id   => $self->id
@@ -274,10 +274,10 @@ sub _cleanup_invalid_delegations {
 
 # {{{ sub has_right
 
-=head2 sub has_right (Right => 'right' object => undef)
+=head2 sub has_right (right => 'right' object => undef)
 
 
-Checks to see whether this principal has the right "Right" for the object
+Checks to see whether this principal has the right "right" for the object
 specified. If the object parameter is omitted, checks to see whether the 
 user has the right globally.
 
@@ -287,7 +287,7 @@ if we ask about a specific ticket.
 
 This takes the params:
 
-    Right => name of a right
+    right => name of a right
 
     And either:
 
@@ -303,12 +303,12 @@ Returns undef if no ACE was found.
 sub has_right {
     my $self = shift;
     my %args = (
-        Right         => undef,
+        right         => undef,
         object        => undef,
         equiv_objects => undef,
         @_,
     );
-    unless ( $args{'Right'} ) {
+    unless ( $args{'right'} ) {
         Jifty->log->fatal("has_right called without a right");
         return (undef);
     }
@@ -320,7 +320,7 @@ sub has_right {
         Jifty->log->error( "disabled User #"
                 . $self->id
                 . " failed access check for "
-                . $args{'Right'} );
+                . $args{'right'} );
         return (undef);
     }
 
@@ -346,10 +346,6 @@ sub has_right {
 
     }
 
-    unshift @{ $args{'equiv_objects'} }, RT->system
-        unless $self->can('_IsOverrideGlobalACL')
-            && $self->_is_override_global_acl( $args{'object'} );
-
     # {{{ If we've cached a win or loss for this lookup say so
 
 # Construct a hashkeys to cache decisions:
@@ -357,12 +353,12 @@ sub has_right {
 # 2) short_hashkey - one key for each object to store positive results only, it applies
 # only to direct group rights and partly to role rights
     my $self_id = $self->id;
-    my $full_hashkey = join ";:;", $self_id, $args{'Right'};
+    my $full_hashkey = join ";:;", $self_id, $args{'right'};
     foreach ( @{ $args{'equiv_objects'} } ) {
         my $ref_id = _reference_id($_);
         $full_hashkey .= ";:;$ref_id";
 
-        my $short_hashkey = join ";:;", $self_id, $args{'Right'}, $ref_id;
+        my $short_hashkey = join ";:;", $self_id, $args{'right'}, $ref_id;
         my $cached_answer = $_ACL_CACHE->fetch($short_hashkey);
         return $cached_answer > 0 if defined $cached_answer;
     }
@@ -375,7 +371,7 @@ sub has_right {
     my ( $hitcount, $via_obj ) = $self->_has_right(%args);
 
     $_ACL_CACHE->set( $full_hashkey => $hitcount ? 1 : -1 );
-    $_ACL_CACHE->set( "$self_id;:;$args{'Right'};:;$via_obj" => 1 )
+    $_ACL_CACHE->set( "$self_id;:;$args{'right'};:;$via_obj" => 1 )
         if $via_obj && $hitcount;
 
     return ($hitcount);
@@ -408,14 +404,14 @@ sub _has_right {
 sub _has_group_right {
     my $self = shift;
     my %args = (
-        Right         => undef,
+        right         => undef,
         equiv_objects => [],
         @_
     );
 
     return 1 if $self->id == RT->system_user->id;
 
-    my $right = $args{'Right'};
+    my $right = $args{'right'};
 
     my $query
         = "SELECT ACL.id, ACL.object_type, ACL.object_id "
@@ -464,11 +460,11 @@ sub _has_group_right {
 sub _has_role_right {
     my $self = shift;
     my %args = (
-        Right         => undef,
+        right         => undef,
         equiv_objects => [],
         @_
     );
-    my $right = $args{'Right'};
+    my $right = $args{'right'};
 
     my $query
         = "SELECT ACL.id "

@@ -319,7 +319,7 @@ sub parse_cc_addresses_from_head {
     return (@Addresses);
 }
 
-=head2 ParseSenderAddressFromHead
+=head2 parse_sender_address_from_head
 
 Takes a MIME::Header object. Returns a tuple: (user@host, friendly name) 
 of the From (evaluated in order of Reply-To:, From:, Sender)

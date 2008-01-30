@@ -184,7 +184,7 @@ sub redirect {
     Jifty->web->_redirect( $uri->canonical );
 }
 
-=head2 StaticFileHeaders 
+=head2 StaticFileheaders 
 
 Send the browser a few headers to try to get it to (somewhat agressively)
 cache RT's static Javascript and CSS files.
@@ -267,7 +267,7 @@ sub create_ticket {
     my $Ticket = RT::Model::Ticket->new();
 
     my $Queue = RT::Model::Queue->new();
-    unless ( $Queue->load( $ARGS{'Queue'} ) ) {
+    unless ( $Queue->load( $ARGS{'queue'} ) ) {
         abort('Queue not found');
     }
 
@@ -309,7 +309,7 @@ sub create_ticket {
 
     my %create_args = (
         type => $ARGS{'type'} || 'ticket',
-        Queue => $ARGS{'Queue'},
+        queue => $ARGS{'queue'},
         Owner => $ARGS{'Owner'},
 
         # note: name change
@@ -737,14 +737,14 @@ sub process_acl_changes {
         my ( $method, $principal_id, $object_type, $object_id )
             = ( $1, $2, $3, $4 );
 
-        my @rights;
+        my @Rights;
         if ( UNIVERSAL::isa( $ARGSref->{$arg}, 'ARRAY' ) ) {
-            @rights = @{ $ARGSref->{$arg} };
+            @Rights = @{ $ARGSref->{$arg} };
         } else {
-            @rights = $ARGSref->{$arg};
+            @Rights = $ARGSref->{$arg};
         }
-        @rights = grep $_, @rights;
-        next unless @rights;
+        @Rights = grep $_, @Rights;
+        next unless @Rights;
 
         my $principal = RT::Model::Principal->new();
         $principal->load($principal_id);
@@ -768,9 +768,9 @@ sub process_acl_changes {
             next;
         }
 
-        foreach my $right (@rights) {
+        foreach my $right (@Rights) {
             my ( $val, $msg )
-                = $principal->$method( object => $obj, Right => $right );
+                = $principal->$method( object => $obj, right => $right );
             push( @results, $msg );
         }
     }
@@ -823,7 +823,7 @@ sub process_custom_field_updates {
     my $object  = $args{'CustomFieldObj'};
     my $ARGSRef = $args{'ARGSRef'};
 
-    my @attribs = qw(name type description Queue sort_order);
+    my @attribs = qw(name type description queue sort_order);
     my @results = update_record_object(
         AttributesRef => \@attribs,
         object        => $object,
@@ -898,12 +898,12 @@ sub process_ticket_basics {
         Queue
     );
 
-    if ( $ARGSRef->{'Queue'} and ( $ARGSRef->{'Queue'} !~ /^(\d+)$/ ) ) {
+    if ( $ARGSRef->{'queue'} and ( $ARGSRef->{'queue'} !~ /^(\d+)$/ ) ) {
         my $tempqueue
             = RT::Model::Queue->new( current_user => RT->system_user );
-        $tempqueue->load( $ARGSRef->{'Queue'} );
+        $tempqueue->load( $ARGSRef->{'queue'} );
         if ( $tempqueue->id ) {
-            $ARGSRef->{'Queue'} = $tempqueue->id;
+            $ARGSRef->{'queue'} = $tempqueue->id;
         }
     }
 
@@ -1351,12 +1351,12 @@ sub process_record_links {
             my $target = $3;
 
             push @results,
-                _( "Trying to delete: Base: %1 Target: %2 Type: %3",
+                _( "Trying to delete: base: %1 target: %2 Type: %3",
                 $base, $target, $type );
             my ( $val, $msg ) = $Record->delete_link(
-                Base   => $base,
+                base   => $base,
                 type   => $type,
-                Target => $target
+                target => $target
             );
 
             push @results, $msg;
@@ -1374,7 +1374,7 @@ sub process_record_links {
             {
                 $luri =~ s/\s*$//;    # Strip trailing whitespace
                 my ( $val, $msg ) = $Record->add_link(
-                    Target => $luri,
+                    target => $luri,
                     type   => $linktype
                 );
                 push @results, $msg;
@@ -1386,7 +1386,7 @@ sub process_record_links {
                 split( / /, $ARGSRef->{ "$linktype-" . $Record->id } ) )
             {
                 my ( $val, $msg ) = $Record->add_link(
-                    Base => $luri,
+                    base => $luri,
                     type => $linktype
                 );
 

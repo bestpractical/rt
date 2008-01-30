@@ -86,7 +86,7 @@ sub _init {
     my $self = shift;
     my %args = (
         argument        => undef,
-        ScripActionObj  => undef,
+        scrip_action_obj  => undef,
         scrip_obj       => undef,
         template_obj    => undef,
         ticket_obj      => undef,
@@ -97,14 +97,14 @@ sub _init {
     );
 
     $self->{'argument'}        = $args{'argument'};
-    $self->{'ScripActionObj'}  = $args{'ScripActionObj'};
+    $self->{'scrip_action_obj'}  = $args{'scrip_action_obj'};
     $self->{'scrip_obj'}       = $args{'scrip_obj'};
     $self->{'template_obj'}    = $args{'template_obj'};
     $self->{'ticket_obj'}      = $args{'ticket_obj'};
     $self->{'transaction_obj'} = $args{'transaction_obj'};
     $self->{'type'}            = $args{'type'};
 
-    Scalar::Util::weaken( $self->{'ScripActionObj'} );
+    Scalar::Util::weaken( $self->{'scrip_action_obj'} );
     Scalar::Util::weaken( $self->{'scrip_obj'} );
     Scalar::Util::weaken( $self->{'template_obj'} );
     Scalar::Util::weaken( $self->{'ticket_obj'} );
@@ -156,10 +156,10 @@ sub scrip_obj {
 
 # }}}
 
-# {{{ sub ScripActionObj
+# {{{ sub scrip_action_obj
 sub scrip_action_obj {
     my $self = shift;
-    return ( $self->{'ScripActionObj'} );
+    return ( $self->{'scrip_action_obj'} );
 }
 
 # }}}

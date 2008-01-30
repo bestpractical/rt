@@ -70,8 +70,8 @@ sub __depends_on {
     my $list = [];
 
     my $objs = RT::Model::CachedGroupMemberCollection->new;
-    $objs->limit( column => 'MemberId',          value => $self->member_id );
-    $objs->limit( column => 'ImmediateParentId', value => $self->group_id );
+    $objs->limit( column => 'member_id',          value => $self->member_id );
+    $objs->limit( column => 'immediate_parent_id', value => $self->group_id );
     push( @$list, $objs );
 
     # XXX: right delegations should be cleaned here
@@ -101,11 +101,11 @@ sub __depends_on {
         Shredder      => $args{'Shredder'}
     );
     $args{'Shredder'}->put_resolver(
-        BaseClass   => ref $self,
-        TargetClass => ref $group,
+        baseClass   => ref $self,
+        targetClass => ref $group,
         Code        => sub {
             my %args  = (@_);
-            my $group = $args{'Targetobject'};
+            my $group = $args{'targetobject'};
             return
                 if $args{'Shredder'}->get_state( object => $group )
                     & ( WIPED | IN_WIPING );

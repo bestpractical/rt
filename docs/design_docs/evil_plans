@@ -159,4 +159,4 @@ For the near future:
 		id
 		ScripId
 		principal_type  ENUM: User, Group, Owner, Requestors, AdminCcs, Ccs
-		principal_id --  UserId or GroupId.  For Owner, Requestors, AdminCcs, Ccs, it doesn't really make a lick of difference.	
+		principal_id --  UserId or group_id.  For Owner, Requestors, AdminCcs, Ccs, it doesn't really make a lick of difference.	

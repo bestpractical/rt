@@ -51,7 +51,7 @@
 			 Query   => $Query, 
 			 Order   => $Order, 
 			 order_by => $order_by,
-			 BaseURL => $BaseURL,
+			 baseURL => $baseURL,
 			 Page    => $Page &>
 </&>
 
@@ -79,6 +79,6 @@ $friendly_status => _('open')
 $title => _("My %1 tickets", $friendly_status)
 @roles => ('Watcher')
 @status => ('open', 'new', 'stalled')
-$BaseURL => undef
+$baseURL => undef
 $Page => 1
 </%ARGS>

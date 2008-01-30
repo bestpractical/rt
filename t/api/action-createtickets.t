@@ -48,7 +48,7 @@ ENDOFCONTENT
 like ($approvals , qr/Content/, "Read in the approvals template");
 
 my $apptemp = RT::Model::Template->new(current_user => RT->system_user);
-$apptemp->create( Content => $approvals, name => "Approvals", Queue => "0");
+$apptemp->create( Content => $approvals, name => "Approvals", queue => "0");
 
 ok ($apptemp->id);
 
@@ -57,10 +57,10 @@ $q->create(name => 'WorkflowTest');
 ok ($q->id, "Created workflow test queue");
 
 my $scrip = RT::Model::Scrip->new(current_user => RT->system_user);
-my ($sval, $smsg) =$scrip->create( ScripCondition => 'On Transaction',
-                ScripAction => 'Create Tickets',
-                Template => 'Approvals',
-                Queue => $q->id);
+my ($sval, $smsg) =$scrip->create( scrip_condition => 'On Transaction',
+                scrip_action => 'Create Tickets',
+                template => 'Approvals',
+                queue => $q->id);
 ok ($sval, $smsg);
 ok ($scrip->id, "Created the scrip");
 ok ($scrip->template_obj->id, "Created the scrip template");
@@ -70,7 +70,7 @@ ok ($scrip->action_obj->id, "Created the scrip action");
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 my($tid, $ttrans, $tmsg) = $t->create(subject => "Sample workflow test",
            Owner => "root",
-           Queue => $q->id);
+           queue => $q->id);
 
 ok ($tid,$tmsg);
 

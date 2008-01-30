@@ -91,7 +91,7 @@ sub __depends_on {
     $deps->_push_dependency(
         base_object  => $self,
         Flags        => DEPENDS_ON | WIPE_AFTER,
-        Targetobject => $self->principal_object,
+        targetobject => $self->principal_object,
         Shredder     => $args{'Shredder'}
     );
 
@@ -104,7 +104,7 @@ sub __depends_on {
 
     # Cleanup user's membership
     $objs = RT::Model::GroupMemberCollection->new;
-    $objs->limit( column => 'MemberId', value => $self->id );
+    $objs->limit( column => 'member_id', value => $self->id );
     push( @$list, $objs );
 
     $deps->_push_dependencies(

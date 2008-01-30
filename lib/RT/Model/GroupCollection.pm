@@ -328,7 +328,7 @@ sub without_member {
     );
 }
 
-=head2 WithRight { Right => RIGHTNAME, object => RT::Record, IncludeSystemRights => 1, IncludeSuperusers => 0, equiv_objects => [ ] }
+=head2 Withright { right => RIGHTNAME, object => RT::Record, IncludeSystemRights => 1, IncludeSuperusers => 0, equiv_objects => [ ] }
 
 
 Find all groups which have RIGHTNAME for RT::Record. Optionally include global rights and superusers. By default, include the global rights, but not the superusers.
@@ -341,7 +341,7 @@ Find all groups which have RIGHTNAME for RT::Record. Optionally include global r
 sub with_right {
     my $self = shift;
     my %args = (
-        Right                  => undef,
+        right                  => undef,
         object                 => => undef,
         IncludeSystemRights    => 1,
         IncludeSuperusers      => undef,

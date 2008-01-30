@@ -68,13 +68,13 @@ sub new {
 sub set {
     my $self = shift;
     my %args = ( Flags => DEPENDS_ON, @_ );
-    my @keys = qw(Flags base_object Targetobject);
+    my @keys = qw(Flags base_object targetobject);
     @$self{@keys} = @args{@keys};
 
     return;
 }
 
-sub AsString {
+sub as_string {
     my $self = shift;
     my $res  = $self->base_object->_as_string;
     $res .= " " . $self->flags_as_string;
@@ -84,7 +84,7 @@ sub AsString {
 
 sub flags { return $_[0]->{'Flags'} }
 
-sub FlagsAsString {
+sub flags_as_String {
     my $self = shift;
     my @res  = ();
     foreach ( sort keys %FlagDescs ) {
@@ -97,10 +97,10 @@ sub FlagsAsString {
 }
 
 sub base_object   { return $_[0]->{'base_object'} }
-sub target_object { return $_[0]->{'Targetobject'} }
+sub target_object { return $_[0]->{'targetobject'} }
 sub object        { return shift()->{ ( {@_} )->{Type} . "object" } }
 
-sub target_class { return ref $_[0]->{'Targetobject'} }
+sub target_class { return ref $_[0]->{'targetobject'} }
 sub base_class   { return ref $_[0]->{'base_object'} }
 sub class        { return ref shift()->object(@_) }
 

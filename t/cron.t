@@ -15,7 +15,7 @@ my ($ret, $msg) = $user_obj->load_or_create_by_email('tara@example.com');
 ok($ret, 'record test user creation');
 ($ret,$msg) =$user_obj->set_name('tara');
 ok($ret,$msg);
-($ret,$msg) =$user_obj->principal_object->grant_right(Right => 'SuperUser');
+($ret,$msg) =$user_obj->principal_object->grant_right(right => 'SuperUser');
 ok($ret,$msg);
 my $CurrentUser = RT::CurrentUser->new(name => 'tara');
 is($user_obj->name,'tara');
@@ -29,7 +29,7 @@ RT-Send-Bcc: jesse@example.com
 This is a content string with no content.';
 
 my $template_obj = RT::Model::Template->new(current_user => RT->system_user);
-$template_obj->create(Queue       => '0',
+$template_obj->create(queue       => '0',
 		      name        => 'recordtest',
 		      description => 'testing Record actions',
 		      Content     => $template_content,
@@ -42,14 +42,14 @@ my $queue_obj = RT::Model::Queue->new(current_user => RT->system_user);
 ok($ret, 'record test queue creation');
 
 my $ticket1 = RT::Model::Ticket->new(current_user => RT->system_user);
-my ($id, $tobj, $msg2) = $ticket1->create(Queue    => $queue_obj,
+my ($id, $tobj, $msg2) = $ticket1->create(queue    => $queue_obj,
 					 Requestor => ['tara@example.com'],
 					 subject   => 'bork bork bork',
 					 Priority  => 22,
 					);
 ok($id, 'record test ticket creation 1');
 my $ticket2 = RT::Model::Ticket->new(current_user => RT->system_user);
-($id, $tobj, $msg2) = $ticket2->create(Queue     => $queue_obj,
+($id, $tobj, $msg2) = $ticket2->create(queue     => $queue_obj,
 				      Requestor => ['root@localhost'],
 				      subject   => 'hurdy gurdy'
 				      );
@@ -76,7 +76,7 @@ while(my $t = $search->tickets_obj->next() ) {
 }
 is ($counter, 1, "from_sql search results 2");
 
-# Right.  Now test the actions.
+# right.  Now test the actions.
 
 ok(require RT::ScripAction::RecordComment);
 ok(require RT::ScripAction::RecordCorrespondence);

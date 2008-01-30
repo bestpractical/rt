@@ -96,10 +96,10 @@ if ($aid) {
 	push @data, [ Created    => $attachment->created   ];
 	push @data, [ Transaction    => $attachment->transaction_id   ];
 	push @data, [ Parent    => $attachment->parent   ];
-	push @data, [ MessageId    => $attachment->message_id   ];
+	push @data, [ message_id    => $attachment->message_id   ];
 	push @data, [ Filename    => $attachment->filename   ];
 	push @data, [ content_type    => $attachment->content_type   ];
-	push @data, [ ContentEncoding    => $attachment->content_encoding   ];
+	push @data, [ content_encoding    => $attachment->content_encoding   ];
 	push @data, [ Headers    => $attachment->headers   ];
 	push @data, [ Content    => $attachment->content   ];
 

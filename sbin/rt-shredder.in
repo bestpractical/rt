@@ -280,7 +280,7 @@ sub _process_dump_plugin {
 sub show_plugin_list
 {
 	print "Plugins list:\n";
-	print "\t$_\n" foreach( grep !/^Base$/, keys %plugins );
+	print "\t$_\n" foreach( grep !/^base$/, keys %plugins );
 	exit(1);
 }
 
@@ -292,7 +292,7 @@ sub show_plugin_help
 		print "Couldn't find plugin '$name'\n";
 		show_plugin_list();
 	}
-	RT::Shredder::POD::plugin_cli( $plugins{'Base'}, \*STDOUT, 1 );
+	RT::Shredder::POD::plugin_cli( $plugins{'base'}, \*STDOUT, 1 );
 	RT::Shredder::POD::plugin_cli( $plugins{ $name }, \*STDOUT );
 	exit(1);
 }

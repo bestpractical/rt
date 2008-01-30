@@ -10,12 +10,12 @@ use RT;
 {
 
 my $s = RT::System->new(current_user => RT->system_user);
-my $rights = $s->available_rights;
-ok ($rights, "Rights defined");
-ok ($rights->{'AdminUsers'},"AdminUsers right found");
-ok ($rights->{'create_ticket'},"create_ticket right found");
-ok ($rights->{'AdminGroupMembership'},"ModifyGroupMembers right found");
-ok (!$rights->{'CasdasdsreateTicket'},"bogus right not found");
+my $Rights = $s->available_rights;
+ok ($Rights, "Rights defined");
+ok ($Rights->{'AdminUsers'},"AdminUsers right found");
+ok ($Rights->{'create_ticket'},"create_ticket right found");
+ok ($Rights->{'AdminGroupMembership'},"ModifyGroupMembers right found");
+ok (!$Rights->{'CasdasdsreateTicket'},"bogus Right not found");
 
 
 

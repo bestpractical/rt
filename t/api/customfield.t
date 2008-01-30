@@ -11,7 +11,7 @@ use RT;
 use_ok('RT::Model::CustomField');
 ok(my $cf = RT::Model::CustomField->new(current_user => RT->system_user));
 ok(my ($id, $msg)=  $cf->create( name => 'TestingCF',
-                                 Queue => '0',
+                                 queue => '0',
                                  sort_order => '1',
                                  description => 'A Testing custom field',
                                  type=> 'SelectSingle'), 'Created a global CustomField');
@@ -30,7 +30,7 @@ is($bogus_val , 0, "Unable to set a custom field's type to a bogus type");
 
 ok(my $bad_cf = RT::Model::CustomField->new(current_user => RT->system_user));
 ok(my ($bad_id, $bad_msg)=  $cf->create( name => 'TestingCF-bad',
-                                 Queue => '0',
+                                 queue => '0',
                                  sort_order => '1',
                                  description => 'A Testing custom field with a bogus Type',
                                  type=> 'SelectSingleton'), 'Created a global CustomField with a bogus type');

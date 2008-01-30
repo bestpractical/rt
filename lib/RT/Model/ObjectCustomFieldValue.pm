@@ -54,7 +54,7 @@ package RT::Model::ObjectCustomFieldValue;
 no warnings qw(redefine);
 
 use base qw/RT::Record/;
-sub table {'objectcustom_field_values'}
+sub table {'ObjectCustomFieldValues'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column
@@ -74,7 +74,7 @@ use Jifty::DBI::Record schema {
         Content => type is 'varchar(255)',
         max_length is 255, default is '';
     column
-        ContentEncoding => type is 'varchar(80)',
+        content_encoding => type is 'varchar(80)',
         max_length is 80, default is '';
     column LastUpdated => type is 'datetime', default is '';
     column
@@ -103,7 +103,7 @@ sub create {
         Content         => '',
         LargeContent    => undef,
         content_type     => '',
-        ContentEncoding => '',
+        content_encoding => '',
         @_,
     );
 
@@ -118,7 +118,7 @@ sub create {
         }
     }
 
-    ( $args{'ContentEncoding'}, $args{'LargeContent'} )
+    ( $args{'content_encoding'}, $args{'LargeContent'} )
         = $self->_encode_lob( $args{'LargeContent'}, $args{'content_type'} )
         if defined $args{'LargeContent'};
 
@@ -130,7 +130,7 @@ sub create {
         Content         => $args{'Content'},
         LargeContent    => $args{'LargeContent'},
         content_type     => $args{'content_type'},
-        ContentEncoding => $args{'ContentEncoding'},
+        content_encoding => $args{'content_encoding'},
     );
 }
 

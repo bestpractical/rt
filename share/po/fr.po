@@ -169,8 +169,8 @@ msgid "%1 added as a value for %2"
 msgstr "%1 ajouté(e) comme valeur de %2"
 
 #: lib/RT/Link_Overlay.pm:144 lib/RT/Link_Overlay.pm:151
-#. ($args{'Base'})
-#. ($args{'Target'})
+#. ($args{'base'})
+#. ($args{'target'})
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 semble être un objet local, mais est introuvable dans la base de données"
 
@@ -1218,7 +1218,7 @@ msgstr "Ajouter un scrip pour la file %1"
 msgid "Create a template"
 msgstr "Ajouter un modèle"
 
-#: html/SelfService/Create.html:46 html/SelfService/create_ticketInQueue.html:46
+#: html/SelfService/Create.html:46 html/SelfService/CreateTicketInQueue.html:46
 msgid "Create a ticket"
 msgstr "Ajouter un ticket"
 
@@ -1902,7 +1902,7 @@ msgid "Group"
 msgstr "Groupe"
 
 #: html/Admin/Elements/CustomFieldTabs:68 html/Admin/Elements/GroupTabs:66 html/Admin/Elements/QueueTabs:82 html/Admin/Elements/SystemTabs:65 html/Admin/Global/index.html:76
-msgid "Group Rights"
+msgid "Group rights"
 msgstr "Droits de groupe"
 
 #: lib/RT/Group_Overlay.pm:983
@@ -1973,7 +1973,7 @@ msgstr "Accueil"
 msgid "Hours"
 msgstr "Heuers"
 
-#: lib/RT/Base.pm:119
+#: lib/RT/base.pm:119
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
 msgstr "J'ai %quant(%1, toupie à béton)."
@@ -2074,7 +2074,7 @@ msgid "Invalid Group Type"
 msgstr "Type de groupe invalide"
 
 #: lib/RT/Principal_Overlay.pm:161
-msgid "Invalid Right"
+msgid "Invalid right"
 msgstr "Droit invalide"
 
 #: lib/RT/Record.pm:952
@@ -2398,8 +2398,8 @@ msgid "Merge Successful"
 msgstr "Fusion réussie"
 
 #: lib/RT/Ticket_Overlay.pm:2780
-msgid "Merge failed. Couldn't set EffectiveId"
-msgstr "Échec de fusion. Ne peut appliquer EffectiveId"
+msgid "Merge failed. Couldn't set effective_id"
+msgstr "Échec de fusion. Ne peut appliquer effective_id"
 
 #: lib/RT/Ticket_Overlay.pm:2788
 msgid "Merge failed. Couldn't set Status"
@@ -2465,7 +2465,7 @@ msgid "Modify Custom Fields which apply to all %1"
 msgstr "Modifier les champs personnalisés s'appliquant à tous les %1"
 
 #: html/Admin/Global/GroupRights.html:106 html/Admin/Groups/GroupRights.html:94 html/Admin/Queues/GroupRights.html:107
-msgid "Modify Group Rights"
+msgid "Modify Group rights"
 msgstr "Modifier les droits du groupe"
 
 #: html/Admin/Groups/Members.html:105 html/User/Groups/Members.html:101
@@ -2473,7 +2473,7 @@ msgid "Modify Members"
 msgstr "Modifier les membres"
 
 #: html/User/Delegation.html:58
-msgid "Modify Rights"
+msgid "Modify rights"
 msgstr "Modifier les droits"
 
 #: lib/RT/Queue_Overlay.pm:97
@@ -2485,7 +2485,7 @@ msgid "Modify Scrips for this queue"
 msgstr "Modifier les Scrips pour cette file"
 
 #: html/Admin/Global/UserRights.html:75 html/Admin/Groups/UserRights.html:76 html/Admin/Queues/UserRights.html:75
-msgid "Modify User Rights"
+msgid "Modify User rights"
 msgstr "Modifier les droits des usagers"
 
 #: html/Admin/Queues/CustomField.html:66
@@ -3629,7 +3629,7 @@ msgid "Resolve ticket #%1 (%2)"
 msgstr "Résoudre le ticket n°%1 (%2)"
 
 #: etc/initialdata:323 html/Elements/SelectDateType:49 lib/RT/Ticket_Overlay.pm:1172
-msgid "Resolved"
+msgid "resolved"
 msgstr "Résolu"
 
 #: html/Tools/Reports/Elements/Tabs:55
@@ -3661,11 +3661,11 @@ msgid "Revert"
 msgstr "Annuler"
 
 #: lib/RT/ACE_Overlay.pm:630
-msgid "Right Delegated"
+msgid "right Delegated"
 msgstr "Droit délégué"
 
 #: lib/RT/ACE_Overlay.pm:320
-msgid "Right Granted"
+msgid "right Granted"
 msgstr "Droit accordé"
 
 #: lib/RT/ACE_Overlay.pm:178
@@ -3863,7 +3863,7 @@ msgstr "Choisir un groupe"
 msgid "Select a queue"
 msgstr "Choisir une file"
 
-#: html/SelfService/create_ticketInQueue.html:48
+#: html/SelfService/CreateTicketInQueue.html:48
 msgid "Select a queue for your new ticket"
 msgstr "Choisir une file pour votre nouveau ticket"
 
@@ -4595,9 +4595,9 @@ msgid "Unix login"
 msgstr "Identifiant Unix"
 
 #: lib/RT/Attachment_Overlay.pm:289 lib/RT/Record.pm:861
-#. ($self->ContentEncoding)
-#. ($ContentEncoding)
-msgid "Unknown ContentEncoding %1"
+#. ($self->content_encoding)
+#. ($content_encoding)
+msgid "Unknown content_encoding %1"
 msgstr "Type d'encodage de courrier inconnu : %1"
 
 #: html/Search/Build.html:455 lib/RT/Report/Tickets.pm:410
@@ -4720,7 +4720,7 @@ msgid "User Defined conditions and actions"
 msgstr "Conditions et actions définies par l'utilisateur"
 
 #: html/Admin/Elements/CustomFieldTabs:72 html/Admin/Elements/GroupTabs:68 html/Admin/Elements/QueueTabs:85 html/Admin/Elements/SystemTabs:68 html/Admin/Global/index.html:80
-msgid "User Rights"
+msgid "User rights"
 msgstr "Droits utilisateurs"
 
 #: NOT FOUND IN SOURCE

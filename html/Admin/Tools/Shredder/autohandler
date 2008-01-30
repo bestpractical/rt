@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-unless( Jifty->web->current_user->has_right( Right => 'SuperUser', object => RT->system ) ) {
+unless( Jifty->web->current_user->has_right( right => 'SuperUser', object => RT->system ) ) {
 	return $m->comp( 'Elements/Error/NoRights' );
 }
 

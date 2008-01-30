@@ -126,7 +126,7 @@ sub create {
     Carp::confess unless ( $self->current_user );
     unless (
         $self->current_user->user_object->has_right(
-            Right  => 'AdminUsers',
+            right  => 'AdminUsers',
             object => RT->system
         )
         )
@@ -303,7 +303,7 @@ sub set_privileged {
     #Check the ACL
     unless (
         $self->current_user->has_right(
-            Right  => 'AdminUsers',
+            right  => 'AdminUsers',
             object => RT->system
         )
         )
@@ -795,7 +795,7 @@ sub set_disabled {
     my $self = shift;
     unless (
         $self->current_user->has_right(
-            Right  => 'AdminUsers',
+            right  => 'AdminUsers',
             object => RT->system
         )
         )
@@ -865,7 +865,7 @@ sub principal_id {
 Takes a paramhash which can contain
 these items:
     GroupObj => RT::Model::Group or Group => integer
-    Right => 'Right' 
+    right => 'right' 
 
 
 Returns 1 if this user has the right specified in the paramhash for the Group
@@ -880,7 +880,7 @@ sub has_group_right {
     my %args = (
         GroupObj => undef,
         Group    => undef,
-        Right    => undef,
+        right    => undef,
         @_
     );
 
@@ -889,7 +889,7 @@ sub has_group_right {
         $args{'GroupObj'}->load( $args{'Group'} );
     }
 
-    # {{{ Validate and load up the GroupId
+    # {{{ Validate and load up the group_id
     unless ( ( defined $args{'GroupObj'} ) and ( $args{'GroupObj'}->id ) ) {
         return undef;
     }
@@ -899,7 +899,7 @@ sub has_group_right {
     # Figure out whether a user has the right we're asking about.
     my $retval = $self->has_right(
         object => $args{'GroupObj'},
-        Right  => $args{'Right'},
+        right  => $args{'right'},
     );
 
     return ($retval);
@@ -930,9 +930,9 @@ sub own_groups {
 
 # }}}
 
-# {{{ sub Rights testing
+# {{{ sub rights testing
 
-=head1 Rights testing
+=head1 rights testing
 
 
 
@@ -971,7 +971,7 @@ sub current_user_can_modify {
     my $right = shift;
 
     if ($self->current_user->has_right(
-            Right  => 'AdminUsers',
+            right  => 'AdminUsers',
             object => RT->system
         )
         )
@@ -990,7 +990,7 @@ sub current_user_can_modify {
         ( $self->id == $self->current_user->id )
         and (
             $self->current_user->has_right(
-                Right  => 'ModifySelf',
+                right  => 'ModifySelf',
                 object => RT->system
             )
         )
@@ -1023,7 +1023,7 @@ sub current_user_has_right {
     my $right = shift;
     return (
         $self->current_user->has_right(
-            Right  => $right,
+            right  => $right,
             object => RT->system
         )
     );
@@ -1208,7 +1208,7 @@ sub _cleanup_invalid_delegations {
     return (1)
         if (
         $self->has_right(
-            Right  => 'DelegateRights',
+            right  => 'DelegateRights',
             object => RT->system
         )
         );
@@ -1349,7 +1349,7 @@ sub _value {
     elsif (
         $self->current_user->user_object
         && $self->current_user->user_object->has_right(
-            Right  => 'AdminUsers',
+            right  => 'AdminUsers',
             object => RT->system
         )
         )
