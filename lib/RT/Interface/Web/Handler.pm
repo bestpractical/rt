@@ -65,7 +65,7 @@ sub default_handler_args {
     (   comp_root => [
             [ local => $RT::MasonLocalComponentRoot ],
             (   map { [ "plugin-" . $_->name => $_->component_root ] }
-                    @{ RT->Plugins }
+                    @{ RT->plugins }
             ),
             [ standard => $RT::MasonComponentRoot ]
         ],

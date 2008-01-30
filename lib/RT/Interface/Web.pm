@@ -346,8 +346,8 @@ sub create_ticket {
 
     if ( $ARGS{'AttachTickets'} ) {
         require RT::ScripAction::SendEmail;
-        RT::ScripAction::SendEmail->AttachTickets(
-            RT::ScripAction::SendEmail->AttachTickets,
+        RT::ScripAction::SendEmail->attach_tickets(
+            RT::ScripAction::SendEmail->attach_tickets,
             ref $ARGS{'AttachTickets'}
             ? @{ $ARGS{'AttachTickets'} }
             : ( $ARGS{'AttachTickets'} )
@@ -505,7 +505,7 @@ sub process_update_message {
     # skip updates if the content contains only user's signature
     # and we don't update other fields
     if ( $args{'SkipSignatureOnly'} ) {
-        my $sig = $args{'ticket_obj'}->current_user->user_object->Signature
+        my $sig = $args{'ticket_obj'}->current_user->user_object->signature
             || '';
         $sig =~ s/^\s*|\s*$//g;
         if ( $args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ )
@@ -557,8 +557,8 @@ sub process_update_message {
 
     if ( $args{ARGSRef}->{'AttachTickets'} ) {
         require RT::ScripAction::SendEmail;
-        RT::ScripAction::SendEmail->AttachTickets(
-            RT::ScripAction::SendEmail->AttachTickets,
+        RT::ScripAction::SendEmail->attach_tickets(
+            RT::ScripAction::SendEmail->attach_tickets,
             ref $args{ARGSRef}->{'AttachTickets'}
             ? @{ $args{ARGSRef}->{'AttachTickets'} }
             : ( $args{ARGSRef}->{'AttachTickets'} )
@@ -854,8 +854,8 @@ sub process_custom_field_updates {
     my $vals = $Object->values();
     while ( my $cfv = $vals->next() ) {
         if ( my $so = $ARGSRef->{ "$prefix-SortOrder" . $cfv->id } ) {
-            if ( $cfv->SortOrder != $so ) {
-                my ( $err, $msg ) = $cfv->set_SortOrder($so);
+            if ( $cfv->sort_order != $so ) {
+                my ( $err, $msg ) = $cfv->set_sort_order($so);
                 push( @results, $msg );
             }
         }
@@ -919,7 +919,7 @@ sub process_ticket_basics {
 
     # We special case owner changing, so we can use ForceOwnerChange
     if ( $ARGSRef->{'Owner'}
-        && ( $ticket_obj->Owner != $ARGSRef->{'Owner'} ) )
+        && ( $ticket_obj->owner != $ARGSRef->{'Owner'} ) )
     {
         my ($ChownType);
         if ( $ARGSRef->{'ForceOwnerChange'} ) {
@@ -1086,7 +1086,7 @@ sub _process_object_custom_field_updates {
                     );
                 push( @results, $msg );
             }
-        } elsif ( $arg eq 'Values' && !$cf->Repeated ) {
+        } elsif ( $arg eq 'Values' && !$cf->repeated ) {
             my $cf_values = $args{'Object'}->custom_field_values( $cf->id );
 
             my %values_hash;

@@ -171,7 +171,7 @@ sub clear_old {
     my $class = shift || __PACKAGE__;
     my $attributes = $class->attributes;
     if ( $attributes->{Directory} ) {
-        return $class->_CleariOldDir( $attributes->{Directory}, @_ );
+        return $class->_cleari_old_dir( $attributes->{Directory}, @_ );
     } else {
         return $class->clear_old_db( Jifty->handle->dbh, @_ );
     }
