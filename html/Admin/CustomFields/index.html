@@ -104,5 +104,5 @@ my $CustomFields = RT::Model::CustomFieldCollection->new();
 $CustomFields->find_all_rows;
 $CustomFields->{'find_disabled_rows'} = 1 if $Showdisabled;
 $CustomFields->limit_to_lookup_type( $Type ) if $Type;
-$CustomFields->order_by( { column => 'LookupType' }, { column => 'name' } );
+$CustomFields->order_by( { column => 'lookup_type' }, { column => 'name' } );
 </%INIT>

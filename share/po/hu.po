@@ -3085,7 +3085,7 @@ msgstr "Objektum törölve"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($object_type)
-#. ($LookupType)
+#. ($lookup_type)
 msgid "object of type %1 cannot take custom fields"
 msgstr ""
 

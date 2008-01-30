@@ -82,7 +82,7 @@ foreach my $class (@classes) {
 
     if ($class eq 'CustomFields') {
         $objects->order_by(
-            { column => 'LookupType' },
+            { column => 'lookup_type' },
             { column => 'sort_order' },
             { column => 'id' },
         );

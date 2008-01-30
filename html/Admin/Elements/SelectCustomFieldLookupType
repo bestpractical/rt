@@ -56,5 +56,5 @@ my $cf = RT::Model::CustomField->new();
 </%INIT>
 <%ARGS>
 $Default=> ''
-$name => 'LookupType'
+$name => 'lookup_type'
 </%ARGS>

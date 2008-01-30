@@ -1359,7 +1359,7 @@ sub _lookup_id {
     return $object->id;
 }
 
-=head2 CustomFieldLookupType 
+=head2 custom_field_lookup_type 
 
 Returns the path RT uses to figure out which custom fields apply to this object.
 

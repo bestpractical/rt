@@ -3257,7 +3257,7 @@ msgstr "Objekt gelöscht"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($object_type)
-#. ($LookupType)
+#. ($lookup_type)
 msgid "object of type %1 cannot take custom fields"
 msgstr "Objekt vom Typ %1 kann keine benutzerdefinierten Felder haben"
 

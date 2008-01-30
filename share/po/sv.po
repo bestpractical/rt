@@ -3396,7 +3396,7 @@ msgstr "Objekt har skapats"
 msgid "object deleted"
 msgstr "Objekt har raderats"
 
-#. ($LookupType)
+#. ($lookup_type)
 #. ($object_type)
 #: html/Admin/CustomFields/Objects.html:72
 #: html/Admin/Elements/ObjectCustomFields:63

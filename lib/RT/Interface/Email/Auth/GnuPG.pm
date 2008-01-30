@@ -175,7 +175,7 @@ sub handle_errors {
     return $reject;
 }
 
-sub check_noprivate_key {
+sub check_no_private_key {
     my %args = ( Message => undef, Status => [], @_ );
     my @status = @{ $args{'Status'} };
 

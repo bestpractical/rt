@@ -78,7 +78,7 @@
 
 <tr><td class="label"><&|/l&>Applies to</&></td>
 <td><& /Admin/Elements/SelectCustomFieldLookupType, 
-        name => "LookupType", 
+        name => "lookup_type", 
         Default => $CustomFieldObj->lookup_type, &>
 </td></tr>
 
@@ -146,7 +146,7 @@ else {
         my ( $val, $msg ) = $CustomFieldObj->create(
             name          => $name,
             TypeComposite => $TypeComposite,
-            lookup_type    => $LookupType,
+            lookup_type    => $lookup_type,
             description   => $description,
             Pattern       => $Pattern,
         );
@@ -165,7 +165,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     #we're asking about enabled on the web page but really care about disabled.
     $ARGS{'disabled'} = $disabled = $Enabled? 0 : 1;
 
-    my @attribs = qw(disabled Pattern name TypeComposite LookupType description LinkValueTo IncludeContentForValue);
+    my @attribs = qw(disabled Pattern name TypeComposite lookup_type description LinkValueTo IncludeContentForValue);
     push @results, update_record_object(
         AttributesRef => \@attribs,
         object        => $CustomFieldObj,
@@ -214,7 +214,7 @@ $EnabledChecked = '' if $CustomFieldObj->disabled;
 <%ARGS>
 $id => undef
 $TypeComposite => undef
-$LookupType => undef
+$lookup_type => undef
 $MaxValues => undef
 $sort_order => undef
 $description => undef

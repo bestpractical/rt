@@ -1252,10 +1252,10 @@ sub custom_field_values {
 
 # {{{ sub custom_field_lookup_type
 
-=head2 CustomFieldLookupType
+=head2 CustomFieldlookup_type
 
 Returns the RT::Model::Transaction lookup type, which can 
-be passed to RT::Model::CustomField->create() via the 'LookupType' hash key.
+be passed to RT::Model::CustomField->create() via the 'lookup_type' hash key.
 
 =cut
 

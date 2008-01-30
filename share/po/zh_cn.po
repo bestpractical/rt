@@ -5034,7 +5034,7 @@ msgstr ""
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($object_type)
-#. ($LookupType)
+#. ($lookup_type)
 msgid "object of type %1 cannot take custom fields"
 msgstr "自订字段不适用于类别为 %1 的对象"
 

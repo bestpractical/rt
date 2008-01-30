@@ -777,9 +777,9 @@ sub set_type_composite {
         );
 }
 
-=head2 SetLookupType
+=head2 Setlookup_type
 
-Autrijus: care to doc how LookupTypes work?
+Autrijus: care to doc how lookup_types work?
 
 =cut
 
@@ -819,9 +819,9 @@ sub type_composites {
         map { ( "$_-1", "$_-0" ) } $self->types;
 }
 
-=head2 LookupTypes
+=head2 lookup_types
 
-Returns an array of LookupTypes available
+Returns an array of lookup_types available
 
 =cut
 

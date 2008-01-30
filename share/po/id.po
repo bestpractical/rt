@@ -3280,7 +3280,7 @@ msgstr "Objek sudah dihapus"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($object_type)
-#. ($LookupType)
+#. ($lookup_type)
 msgid "object of type %1 cannot take custom fields"
 msgstr "Tipe Objek %1 tidak dapat mengambil kolom kustom"
 
