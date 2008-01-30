@@ -144,7 +144,7 @@ my $Cancomment = 0;
 $CanRespond = 1 if ( $Ticket->current_user_has_right('ReplyToTicket') or
                      $Ticket->current_user_has_right('ModifyTicket') ); 
 
-$Cancomment = 1 if ( $Ticket->current_user_has_right('commentOnTicket') or
+$Cancomment = 1 if ( $Ticket->current_user_has_right('CommentOnTicket') or
                      $Ticket->current_user_has_right('ModifyTicket') );
 
 

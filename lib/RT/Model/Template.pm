@@ -44,7 +44,7 @@ use Jifty::DBI::Record schema {
     column content     => type is 'blob',     default is '';
     column LastUpdated => type is 'datetime', default is '';
     column
-        LastUpdatedBy => max_length is 11,
+        last_updated_by => max_length is 11,
         type is 'int(11)', default is '0';
     column Creator => max_length is 11, type is 'int(11)', default is '0';
     column Created => type is 'datetime', default is '';

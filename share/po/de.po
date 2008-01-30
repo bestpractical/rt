@@ -971,7 +971,7 @@ msgid "comment on tickets"
 msgstr "Kommentiere Anfragen"
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "commentOnTicket"
+msgid "CommentOnTicket"
 msgstr "AnfrageKommentieren"
 
 #: html/Ticket/ModifyAll.html:91 html/Ticket/Update.html:75

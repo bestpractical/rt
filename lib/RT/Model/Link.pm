@@ -78,14 +78,14 @@ use Jifty::DBI::Record schema {
     column target => type is 'varchar(240)', max_length is 240, default is '';
     column base   => type is 'varchar(240)', max_length is 240, default is '';
     column local_target => type is 'int(11)', max_length is 11, default is '0';
-    column Creator     => type is 'int(11)', max_length is 11, default is '0';
+    column creator     => type is 'int(11)', max_length is 11, default is '0';
     column type => type is 'varchar(20)', max_length is 20, default is '';
     column
-        LastUpdatedBy => type is 'int(11)',
+        last_updated_by => type is 'int(11)',
         max_length is 11, default is '0';
-    column Created => type is 'datetime', default is '';
+    column created => type is 'datetime', default is '';
     column local_base => type is 'int(11)', max_length is 11, default is '0';
-    column LastUpdated => type is 'datetime', default is '';
+    column last_updated => type is 'datetime', default is '';
 
 };
 
@@ -188,7 +188,7 @@ sub create {
 # }}}
 # {{{ sub loadByParams
 
-=head2 LoadByParams
+=head2 load_by_params
 
   Load an RT::Model::Link object from the database.  Takes three parameters
   

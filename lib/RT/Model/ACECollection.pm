@@ -151,14 +151,14 @@ sub limitnot_object {
 
 # {{{ limit_ToPrincipal
 
-=head2 limit_ToPrincipal { type => undef, id => undef, IncludeGroupMembership => undef }
+=head2 limit_ToPrincipal { type => undef, id => undef, include_group_membership => undef }
 
 Limit the ACL to the principal with principal_id id and principal_type Type
 
 Id is not optional.
 Type is.
 
-if IncludeGroupMembership => 1 is specified, ACEs which apply to the principal due to group membership will be included in the resultset.
+if include_group_membership => 1 is specified, ACEs which apply to the principal due to group membership will be included in the resultset.
 
 
 =cut
@@ -168,10 +168,10 @@ sub limit_to_principal {
     my %args = (
         type                   => undef,
         id                     => undef,
-        IncludeGroupMembership => undef,
+        include_group_membership => undef,
         @_
     );
-    if ( $args{'IncludeGroupMembership'} ) {
+    if ( $args{'include_group_membership'} ) {
         my $cgm = $self->new_alias('CachedGroupMembers');
         $self->join(
             alias1  => 'main',

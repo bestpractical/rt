@@ -87,7 +87,7 @@ ok( !$user->has_right( right => 'OwnTicket', object => $queue ), "user can't own
 ok( !$user->has_right( right => 'ReplyToTicket', object => $queue ), "user can't reply to ticket" );
 
 my $group = RT::Model::Group->new(current_user => RT->system_user );
-ok( $group->load_queue_role_group( queue => $queue_id, Type=> 'Owner' ), "load queue owners role group" );
+ok( $group->load_queue_role_group( queue => $queue_id, type=> 'Owner' ), "load queue owners role group" );
 my $ace = RT::Model::ACE->new(current_user => RT->system_user );
 my ($ace_id, $msg) = $group->principal_object->grant_right( right => 'ReplyToTicket', object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right: $msg" );
@@ -113,7 +113,7 @@ ok( $user->has_right( right => 'ReplyToTicket', object => $ticket ), "user is ow
 
 # Testing of equiv_objects
 $group = RT::Model::Group->new(current_user => RT->system_user );
-ok( $group->load_queue_role_group( queue => $queue_id, Type=> 'AdminCc' ), "load queue AdminCc role group" );
+ok( $group->load_queue_role_group( queue => $queue_id, type=> 'AdminCc' ), "load queue AdminCc role group" );
 $ace = RT::Model::ACE->new(current_user => RT->system_user );
 ($ace_id, $msg) = $group->principal_object->grant_right( right => 'ModifyTicket', object => $queue );
 ok( $ace_id, "Granted queue AdminCc role group with ModifyTicket right: $msg" );

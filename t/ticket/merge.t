@@ -82,9 +82,9 @@ use RT;
     ok ($t3->id);
 
     my ($id,$val);
-    ($id,$val) = $t->add_link(Type => 'DependsOn', target => $t3->id);
+    ($id,$val) = $t->add_link(type => 'DependsOn', target => $t3->id);
     ok($id,$val);
-    ($id,$val) = $t2->add_link(Type => 'DependsOn', target => $t3->id);
+    ($id,$val) = $t2->add_link(type => 'DependsOn', target => $t3->id);
     ok($id,$val);
 
     ($id,$val) = $t->merge_into($t2->id);

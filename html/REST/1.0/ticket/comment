@@ -106,7 +106,7 @@ if (!$k->{Text} && @atts == 0) {
 }
 
 my $cgi = Jifty->handler->cgi;
-my $ent = MIME::Entity->build(Type => "multipart/mixed");
+my $ent = MIME::Entity->build(type => "multipart/mixed");
 $ent->attach(Data => $k->{Text}) if $k->{Text};
 
 my $i = 1;
@@ -149,7 +149,7 @@ unless ($ticket->id) {
 }
 unless ($ticket->current_user_has_right('ModifyTicket') ||
         ($action eq "comment" &&
-         $ticket->current_user_has_right("commentOnTicket")) ||
+         $ticket->current_user_has_right("CommentOnTicket")) ||
         ($action eq "Correspond" &&
          $ticket->current_user_has_right("ReplyToTicket")))
 {

@@ -1520,7 +1520,7 @@ msgid "comment on tickets"
 msgstr "对申请单提出评论"
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "commentOnTicket"
+msgid "CommentOnTicket"
 msgstr "评论申请单"
 
 #: NOT FOUND IN SOURCE

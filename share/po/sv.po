@@ -996,7 +996,7 @@ msgid "comment on tickets"
 msgstr "Kommentar på ärenden"
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "commentOnTicket"
+msgid "CommentOnTicket"
 msgstr "KommentarPåÄrende"
 
 #: html/Ticket/ModifyAll.html:91

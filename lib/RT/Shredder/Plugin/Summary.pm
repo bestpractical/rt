@@ -149,7 +149,7 @@ sub write_down_scrip {
 sub _make_hash {
     my ( $self, $obj ) = @_;
     my $hash = $self->__make_hash($obj);
-    foreach ( grep exists $hash->{$_}, qw(Creator LastUpdatedBy) ) {
+    foreach ( grep exists $hash->{$_}, qw(Creator last_updated_by) ) {
         my $method = $_ . 'Obj';
         my $u      = $obj->$method();
         $hash->{$_} = $u->email || $u->name || $u->_as_string;

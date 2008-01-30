@@ -97,14 +97,14 @@ our %FIELD_METADATA = (
     status           => [ 'ENUM', ],
     queue            => [ 'ENUM' => 'Queue', ],
     type             => [ 'ENUM', ],
-    Creator          => [ 'ENUM' => 'User', ],
-    LastUpdatedBy    => [ 'ENUM' => 'User', ],
+    creator          => [ 'ENUM' => 'User', ],
+    last_updated_by    => [ 'ENUM' => 'User', ],
     owner            => [ 'WATCHERFIELD' => 'Owner', ],
     effective_id      => [ 'INT', ],
     id               => [ 'INT', ],
     initial_priority => [ 'INT', ],
     final_priority   => [ 'INT', ],
-    Priority         => [ 'INT', ],
+    priority         => [ 'INT', ],
     time_left        => [ 'INT', ],
     time_worked      => [ 'INT', ],
     time_estimated   => [ 'INT', ],
@@ -213,7 +213,7 @@ our @SORTcolumns = qw(id Status
     queue subject
     Owner Created Due starts Started
     Told
-    resolved LastUpdated Priority time_worked time_left);
+    resolved LastUpdated priority time_worked time_left);
 
 =head2 SortFields
 
@@ -304,7 +304,7 @@ sub _enum_limit {
 =head2 _IntLimit
 
 Handle fields where the values are limited to integers.  (For example,
-Priority, time_worked.)
+priority, time_worked.)
 
 Meta Data:
   None

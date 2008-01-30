@@ -113,7 +113,7 @@ diag "revoke rights tests depend on" if $ENV{'TEST_VERBOSE'};
     $everyone_group->load_system_internal_group( 'Everyone' );
     ok ($everyone_group->id, "Found group 'everyone'");
 
-    foreach( qw(create_ticket ReplyToTicket commentOnTicket) ) {
+    foreach( qw(create_ticket ReplyToTicket CommentOnTicket) ) {
         $everyone_group->principal_object->revoke_right(right => $_);
     }
 }
@@ -387,11 +387,11 @@ EOF
 }
 
 
-diag "grant everyone 'commentOnTicket' right" if $ENV{'TEST_VERBOSE'};
+diag "grant everyone 'CommentOnTicket' right" if $ENV{'TEST_VERBOSE'};
 {
     ok( RT::Test->set_rights(
         { Principal => $everyone_group->principal_object,
-          right => [qw(create_ticket ReplyToTicket commentOnTicket)],
+          right => [qw(create_ticket ReplyToTicket CommentOnTicket)],
         },
     ), "Granted everybody the right to comment on tickets");
 }
@@ -774,7 +774,7 @@ ok( !$user->has_right( right => 'ReplyToTicket', object => $tick ), "User can't 
 
 
 my $group = RT::Model::Group->new(current_user => RT->system_user );
-ok( $group->load_queue_role_group( queue => $qid, Type=> 'Owner' ), "load queue owners role group" );
+ok( $group->load_queue_role_group( queue => $qid, type=> 'Owner' ), "load queue owners role group" );
 $ace = RT::Model::ACE->new(current_user => RT->system_user );
 ($ace_id, $msg) = $group->principal_object->grant_right( right => 'ReplyToTicket', object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right" );

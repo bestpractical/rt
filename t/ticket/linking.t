@@ -141,7 +141,7 @@ diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
     my $child = RT::Model::Ticket->new( current_user => $creator);
     ($id,$tid,$msg) = $child->create( subject => 'Link test 1', queue => $q1->id );
     ok($id,$msg);
-    ($id, $msg) = $child->add_link(Type => 'MemberOf', target => $parent->id);
+    ($id, $msg) = $child->add_link(type => 'MemberOf', target => $parent->id);
     ok(!$id, $msg);
     is(link_count($filename), undef, "scrips ok");
     $child->current_user( RT->system_user );
@@ -159,7 +159,7 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     my $child = RT::Model::Ticket->new( current_user => $creator );
     ($id,$tid,$msg) = $child->create( subject => 'Link test 1', queue => $q1->id );
     ok($id,$msg);
-    ($id, $msg) = $child->add_link(Type => 'MemberOf', target => $parent->id);
+    ($id, $msg) = $child->add_link(type => 'MemberOf', target => $parent->id);
     ok($id, $msg);
     is(link_count($filename), 1, "scrips ok");
     $child->current_user( RT->system_user );
@@ -169,7 +169,7 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
 
     # turn off feature and try to delete link, we should fail
     RT->config->set( StrictLinkACL => 1 );
-    ($id, $msg) = $child->add_link(Type => 'MemberOf', target => $parent->id);
+    ($id, $msg) = $child->add_link(type => 'MemberOf', target => $parent->id);
     ok(!$id, $msg);
     is(link_count($filename), 1, "scrips ok");
     $child->current_user( RT->system_user );
@@ -179,7 +179,7 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
 
     # try to delete link, we should success as feature is active
     RT->config->set( StrictLinkACL => 0 );
-    ($id, $msg) = $child->delete_link(Type => 'MemberOf', target => $parent->id);
+    ($id, $msg) = $child->delete_link(type => 'MemberOf', target => $parent->id);
     ok($id, $msg);
     is(link_count($filename), 0, "scrips ok");
     $child->current_user( RT->system_user );
@@ -196,7 +196,7 @@ ok ($id,$msg);
 
 diag('try link to itself') if $ENV{'TEST_VERBOSE'};
 {
-    my ($id, $msg) = $ticket->add_link(Type => 'RefersTo', target => $ticket->id);
+    my ($id, $msg) = $ticket->add_link(type => 'RefersTo', target => $ticket->id);
     ok(!$id, $msg);
     is(link_count($filename), 0, "scrips ok");
 }
@@ -204,7 +204,7 @@ diag('try link to itself') if $ENV{'TEST_VERBOSE'};
 my $ticket2 = RT::Model::Ticket->new(current_user => RT->system_user);
 ($id, $tid, $msg) = $ticket2->create(subject => 'Link test 2', queue => $q2->id);
 ok ($id, $msg);
-($id,$msg) =$ticket->add_link(Type => 'RefersTo', target => $ticket2->id);
+($id,$msg) =$ticket->add_link(type => 'RefersTo', target => $ticket2->id);
 ok(!$id,$msg);
 is(link_count($filename), 0, "scrips ok");
 
@@ -212,12 +212,12 @@ is(link_count($filename), 0, "scrips ok");
 ok ($id,$msg);
 ($id,$msg) = $u1->principal_object->grant_right ( object => $q2, right => 'ModifyTicket');
 ok ($id,$msg);
-($id,$msg) = $ticket->add_link(Type => 'RefersTo', target => $ticket2->id);
+($id,$msg) = $ticket->add_link(type => 'RefersTo', target => $ticket2->id);
 ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
-($id,$msg) = $ticket->add_link(Type => 'RefersTo', target => -1);
+($id,$msg) = $ticket->add_link(type => 'RefersTo', target => -1);
 ok(!$id,$msg);
-($id,$msg) = $ticket->add_link(Type => 'RefersTo', target => $ticket2->id);
+($id,$msg) = $ticket->add_link(type => 'RefersTo', target => $ticket2->id);
 ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 
@@ -227,7 +227,7 @@ is( $transactions->count, 1, "Transaction found in other ticket" );
 is( $transactions->first->field , 'ReferredToBy');
 is( $transactions->first->new_value , $ticket->uri );
 
-($id,$msg) = $ticket->delete_link(Type => 'RefersTo', target => $ticket2->id);
+($id,$msg) = $ticket->delete_link(type => 'RefersTo', target => $ticket2->id);
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 $transactions = $ticket2->transactions;
@@ -238,15 +238,15 @@ is( $transactions->first->old_value , $ticket->uri );
 
 RT->config->set( LinkTransactionsRun1Scrip => 0 );
 
-($id,$msg) =$ticket->add_link(Type => 'RefersTo', target => $ticket2->id);
+($id,$msg) =$ticket->add_link(type => 'RefersTo', target => $ticket2->id);
 ok($id,$msg);
 is(link_count($filename), 2, "scrips ok");
-($id,$msg) =$ticket->delete_link(Type => 'RefersTo', target => $ticket2->id);
+($id,$msg) =$ticket->delete_link(type => 'RefersTo', target => $ticket2->id);
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 
 # tests for silent behaviour
-($id,$msg) = $ticket->add_link(Type => 'RefersTo', target => $ticket2->id, Silent => 1);
+($id,$msg) = $ticket->add_link(type => 'RefersTo', target => $ticket2->id, Silent => 1);
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 {
@@ -259,11 +259,11 @@ is(link_count($filename), 0, "scrips ok");
     is( $transactions->count, 2, "Still two txns on the target" );
 
 }
-($id,$msg) =$ticket->delete_link(Type => 'RefersTo', target => $ticket2->id, Silent => 1);
+($id,$msg) =$ticket->delete_link(type => 'RefersTo', target => $ticket2->id, Silent => 1);
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 
-($id,$msg) = $ticket->add_link(Type => 'RefersTo', target => $ticket2->id, Silentbase => 1);
+($id,$msg) = $ticket->add_link(type => 'RefersTo', target => $ticket2->id, Silentbase => 1);
 ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 {
@@ -276,11 +276,11 @@ is(link_count($filename), 1, "scrips ok");
     is( $transactions->count, 3, "+1 txn on the target" );
 
 }
-($id,$msg) =$ticket->delete_link(Type => 'RefersTo', target => $ticket2->id, Silentbase => 1);
+($id,$msg) =$ticket->delete_link(type => 'RefersTo', target => $ticket2->id, Silentbase => 1);
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 
-($id,$msg) = $ticket->add_link(Type => 'RefersTo', target => $ticket2->id, Silenttarget => 1);
+($id,$msg) = $ticket->add_link(type => 'RefersTo', target => $ticket2->id, Silenttarget => 1);
 ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 {
@@ -292,7 +292,7 @@ is(link_count($filename), 1, "scrips ok");
     $transactions->limit( column => 'type', value => 'AddLink' );
     is( $transactions->count, 3, "three txns on the target" );
 }
-($id,$msg) =$ticket->delete_link(Type => 'RefersTo', target => $ticket2->id, Silenttarget => 1);
+($id,$msg) =$ticket->delete_link(type => 'RefersTo', target => $ticket2->id, Silenttarget => 1);
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 

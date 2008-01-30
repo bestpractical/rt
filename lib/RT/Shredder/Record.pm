@@ -201,7 +201,7 @@ sub __Relates {
         }
     }
 
-    if ( $self->can('LastUpdatedBy') ) {
+    if ( $self->can('last_updated_by') ) {
         my $obj = RT::Model::Principal->new;
         $obj->load( $self->last_updated_by );
 
@@ -212,7 +212,7 @@ sub __Relates {
             $self = $rec->{'object'};
             $rec->{'State'} |= INVALID;
             push @{ $rec->{'description'} },
-                "Have no related User(LastUpdatedBy) #"
+                "Have no related User(last_updated_by) #"
                 . $self->last_updated_by
                 . " object";
         }

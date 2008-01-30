@@ -108,11 +108,11 @@ sub get_current_user {
             unless (
                 $everyone->principal_object->has_right(
                     object => $args{'queue'},
-                    right  => 'commentOnTicket'
+                    right  => 'CommentOnTicket'
                 )
                 || $unpriv->principal_object->has_right(
                     object => $args{'queue'},
-                    right  => 'commentOnTicket'
+                    right  => 'CommentOnTicket'
                 )
                 )
             {

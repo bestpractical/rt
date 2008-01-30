@@ -1255,7 +1255,7 @@ msgid "comment on tickets"
 msgstr "Комментарии заявки"
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "commentOnTicket"
+msgid "CommentOnTicket"
 msgstr "КомментироватьЗаявку"
 
 #: NOT FOUND IN SOURCE

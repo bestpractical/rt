@@ -1225,7 +1225,7 @@ msgid "comment on tickets"
 msgstr "Aggiunta di commenti ai ticket"
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "commentOnTicket"
+msgid "CommentOnTicket"
 msgstr "AggiungicommentiAlTicket"
 
 #: NOT FOUND IN SOURCE

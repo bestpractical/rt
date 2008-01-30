@@ -58,7 +58,7 @@
 		ticket_obj => $ti, 
 		scrip_obj => $scr, 
 		argument => $arg, 
-		Type => $type);
+		type => $type);
 
     if ($foo->is_applicable) {
  	   # do something

@@ -507,7 +507,7 @@ sub _set {
 
 =head2 _setLastUpdated
 
-This routine updates the LastUpdated and LastUpdatedBy columns of the row in question
+This routine updates the LastUpdated and last_updated_by columns of the row in question
 It takes no options. Arguably, this is a bug
 
 =cut
@@ -522,7 +522,7 @@ sub set_last_updated {
         value  => $now->iso
     );
     ( $msg, $val ) = $self->__set(
-        column => 'LastUpdatedBy',
+        column => 'last_updated_by',
         value  => $self->current_user ? $self->current_user->id : 0
     );
 }

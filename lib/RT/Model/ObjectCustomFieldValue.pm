@@ -64,7 +64,7 @@ use Jifty::DBI::Record schema {
     column Creator => type is 'int(11)', max_length is 11, default is '0';
     column object_id => type is 'int(11)', max_length is 11, default is '0';
     column
-        LastUpdatedBy => type is 'int(11)',
+        last_updated_by => type is 'int(11)',
         max_length is 11, default is '0';
     column disabled => type is 'smallint(6)', max_length is 6, default is '0';
     column sort_order => type is 'int(11)', max_length is 11, default is '0';

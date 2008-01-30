@@ -1,11 +1,9 @@
 
 use strict;
 use warnings;
-use RT::Test; use Test::More; 
+use RT::Test;
 plan tests => 22;
 use RT;
-
-
 
 {
 
@@ -13,6 +11,8 @@ ok (require RT::Record);
 
 
 }
+
+die "bla-bla";
 
 {
 

@@ -43,7 +43,7 @@ ok ($u->id, "Found the root user");
 ok(my $t = RT::Model::Ticket->new(current_user => RT->system_user));
 ok(my ($id, $msg) = $t->create( queue => $testqueue->id,
                subject => 'Testing',
-               Owner => $u->id
+               owner => $u->id
               ));
 isnt($id , 0);
 is ($t->owner_obj->id , $u->id, "Root is the ticket owner");
@@ -68,7 +68,7 @@ is($t2->owner_obj->id, $u->id);
 my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($id3, $msg3) = $t3->create( queue => $testqueue->id,
                                 subject => 'Testing',
-                                Owner => $u->id);
+                                owner => $u->id);
 my ($cfv1, $cfm1) = $t->add_custom_field_value(Field => $testcf->id,
  Value => 'Value1');
 isnt($cfv1 , 0, "Adding a custom field to ticket 1 is successful: $cfm");
@@ -102,8 +102,8 @@ is ($t->resolved_obj->unix, 0, "It hasn't been resolved - ". $t->resolved_obj->u
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 my $msg;
 ($id, $msg) = $ticket->create(subject => "Foo",
-                Owner => RT->nobody->id,
-                Status => 'open',
+                owner => RT->nobody->id,
+                status => 'open',
                 Requestor => ['jesse@example.com'],
                 queue => '1'
                 );
@@ -136,7 +136,7 @@ ok($group->load_ticket_role_group(ticket => $id, type=> 'AdminCc'));
 ok ($group->id, "Found the AdminCc object for this ticket");
 $group = RT::Model::Group->new(current_user => RT->system_user);
 ok($group->load_ticket_role_group(ticket => $id, type=> 'Owner'));
-ok ($group->id, "Found the Owner object for this ticket");
+ok ($group->id, "Found the owner object for this ticket");
 ok($group->has_member(RT->nobody->user_object->principal_object), "the owner group has the member 'RT_System'");
 
 

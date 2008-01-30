@@ -194,7 +194,7 @@ else {
               . _('Reply')
               . "</a>]&nbsp;";
         }
-        if ( $can_modify || $ticket->current_user_has_right('commentOnTicket') ) {
+        if ( $can_modify || $ticket->current_user_has_right('CommentOnTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath."?id="
               . $Transaction->ticket

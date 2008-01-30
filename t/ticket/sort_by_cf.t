@@ -36,26 +36,26 @@ my $cfC = RT::Model::CustomField->new(current_user => RT->system_user);
                              queue => 0,
                              sort_order => 1,
                              description => q{Something to compare results for, since we can't guarantee ticket ID},
-                             Type=> 'FreeformSingle');
+                             type=> 'FreeformSingle');
 ok($ret, "Custom Field Order Created");
 
 ($ret, $msg) = $cfA->create( name => 'Alpha',
                              queue => $queue_obj->id,
                              sort_order => 1,
                              description => 'A Testing custom field',
-                             Type=> 'FreeformSingle');
+                             type=> 'FreeformSingle');
 ok($ret, "Custom Field Alpha Created");
 
 ($ret, $msg) = $cfB->create( name => 'Beta',
                              queue => $queue_obj->id,
                              description => 'A Testing custom field',
-                             Type=> 'FreeformSingle');
+                             type=> 'FreeformSingle');
 ok($ret, "Custom Field Beta Created");
 
 ($ret, $msg) = $cfC->create( name => 'Charlie',
                              queue => $queue_obj->id,
                              description => 'A Testing custom field',
-                             Type=> 'FreeformSingle');
+                             type=> 'FreeformSingle');
 ok($ret, "Custom Field Charlie Created");
 
 # ----- Create some tickets to test with.  Assign them some values to

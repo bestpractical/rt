@@ -94,17 +94,17 @@ use Jifty::DBI::Record schema {
     column time_worked => max_length is 11, type is 'int(11)', default is '0';
     column status => max_length is 10, type is 'varchar(10)', default is '';
     column time_left => max_length is 11, type is 'int(11)', default is '0';
-    column Told     => type is 'datetime', default is '';
+    column told     => type is 'datetime', default is '';
     column starts   => type is 'datetime', default is '';
-    column Started  => type is 'datetime', default is '';
-    column Due      => type is 'datetime', default is '';
+    column started  => type is 'datetime', default is '';
+    column due      => type is 'datetime', default is '';
     column resolved => type is 'datetime', default is '';
     column
         last_updated_by => max_length is 11,
         type is 'int(11)', default is '0';
     column last_updated => type is 'datetime', default is '';
-    column Creator => max_length is 11,   type is 'int(11)', default is '0';
-    column Created => type is 'datetime', default is '';
+    column creator => max_length is 11,   type is 'int(11)', default is '0';
+    column created => type is 'datetime', default is '';
     column disabled => max_length is 6, type is 'smallint(6)', default is '0';
 };
 
@@ -307,7 +307,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   time_worked -- an integer. time worked so far in minutes
   time_left -- an integer. time remaining in minutes
   starts -- an ISO date describing the ticket\'s start date and time in GMT
-  Due -- an ISO date describing the ticket\'s due date and time in GMT
+  due -- an ISO date describing the ticket\'s due date and time in GMT
   mime_obj -- a MIME::Entity object with the content of the initial ticket request.
   CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
 
@@ -348,9 +348,9 @@ sub create {
         time_worked         => "0",
         time_left           => 0,
         time_estimated      => 0,
-        Due                 => undef,
+        due                 => undef,
         starts              => undef,
-        Started             => undef,
+        started             => undef,
         resolved            => undef,
         mime_obj             => undef,
         _record_transaction => 1,
@@ -379,7 +379,7 @@ sub create {
     #Now that we have a queue, Check the ACLS
     unless (
         $self->current_user->has_right(
-            right  => 'create_ticket',
+            right  => 'CreateTicket',
             object => $queue_obj
         )
         )
@@ -418,12 +418,12 @@ sub create {
     # than assuming it's in ISO format.
 
     #Set the due date. if we didn't get fed one, use the queue default due in
-    my $Due = RT::Date->new();
-    if ( defined $args{'Due'} ) {
-        $Due->set( Format => 'ISO', value => $args{'Due'} );
+    my $due = RT::Date->new();
+    if ( defined $args{'due'} ) {
+        $due->set( Format => 'ISO', value => $args{'due'} );
     } elsif ( my $due_in = $queue_obj->default_due_in ) {
-        $Due->set_to_now;
-        $Due->add_days($due_in);
+        $due->set_to_now;
+        $due->add_days($due_in);
     }
 
     my $starts = RT::Date->new();
@@ -431,11 +431,11 @@ sub create {
         $starts->set( Format => 'ISO', value => $args{'starts'} );
     }
 
-    my $Started = RT::Date->new();
-    if ( defined $args{'Started'} ) {
-        $Started->set( Format => 'ISO', value => $args{'Started'} );
+    my $started = RT::Date->new();
+    if ( defined $args{'started'} ) {
+        $started->set( Format => 'ISO', value => $args{'started'} );
     } elsif ( $args{'status'} ne 'new' ) {
-        $Started->set_to_now;
+        $started->set_to_now;
     }
 
     my $Resolved = RT::Date->new();
@@ -550,13 +550,13 @@ sub create {
         time_left        => $args{'time_left'},
         type             => $args{'type'},
         starts           => $starts->iso,
-        Started          => $Started->iso,
+        started          => $started->iso,
         resolved         => $Resolved->iso,
-        Due              => $Due->iso
+        due              => $due->iso
     );
 
 # Parameters passed in during an import that we probably don't want to touch, otherwise
-    foreach my $attr qw(id Creator Created last_updated last_updated_by) {
+    foreach my $attr qw(id creator created last_updated last_updated_by) {
         $params{$attr} = $args{$attr} if $args{$attr};
     }
 
@@ -579,7 +579,7 @@ sub create {
             _("Ticket could not be created due to an internal error") );
     }
 
-    #Set the ticket's effective ID now that we've Created it.
+    #Set the ticket's effective ID now that we've created it.
     my ( $val, $msg ) = $self->__set(
         column => 'effective_id',
         value  => ( $args{'effective_id'} || $id )
@@ -714,7 +714,7 @@ sub create {
     }
 
 # }}}
-# Now that we've Created the ticket and set up its metadata, we can actually go and check OwnTicket on the ticket itself.
+# Now that we've created the ticket and set up its metadata, we can actually go and check OwnTicket on the ticket itself.
 # This might be different than before in cases where extensions like RTIR are doing clever things with RT's ACL system
     if ($DeferOwner) {
         if (!$DeferOwner->has_right( object => $self, right => 'OwnTicket' ) )
@@ -867,7 +867,7 @@ Returns: TICKETID
 
 =cut
 
-sub import {
+sub __import {
     my $self = shift;
     my ( $ErrStr, $queue_obj, $owner );
 
@@ -883,11 +883,11 @@ sub import {
         final_priority   => undef,
         status           => 'new',
         time_worked      => "0",
-        Due              => undef,
-        Created          => undef,
+        due              => undef,
+        created          => undef,
         Updated          => undef,
         resolved         => undef,
-        Told             => undef,
+        told             => undef,
         @_
     );
 
@@ -911,7 +911,7 @@ sub import {
     #Now that we have a queue, Check the ACLS
     unless (
         $self->current_user->has_right(
-            right  => 'create_ticket',
+            right  => 'CreateTicket',
             object => $queue_obj
         )
         )
@@ -997,15 +997,15 @@ sub import {
         status           => $args{'status'},              # loc
         time_worked      => $args{'time_worked'},         # loc
         type             => $args{'type'},                # loc
-        Created          => $args{'Created'},             # loc
-        Told             => $args{'Told'},                # loc
+        created          => $args{'created'},             # loc
+        told             => $args{'told'},                # loc
         last_updated      => $args{'Updated'},             # loc
         resolved         => $args{'resolved'},            # loc
-        Due              => $args{'Due'},                 # loc
+        due              => $args{'due'},                 # loc
     );
 
     # If the ticket didn't have an id
-    # Set the ticket's effective ID now that we've Created it.
+    # Set the ticket's effective ID now that we've created it.
     if ( $args{'id'} ) {
         $self->load( $args{'id'} );
     } else {
@@ -1726,7 +1726,7 @@ sub is_owner {
     #    return(undef);
     #   }
 
-    #Tickets won't yet have owners when they're being Created.
+    #Tickets won't yet have owners when they're being created.
     unless ( $self->owner_obj->id ) {
         return (undef);
     }
@@ -1837,7 +1837,7 @@ sub set_queue {
     }
     unless (
         $self->current_user->has_right(
-            right  => 'create_ticket',
+            right  => 'CreateTicket',
             object => $Newqueue_obj
         )
         )
@@ -1999,7 +1999,7 @@ sub set_started {
 =head2 started_obj
 
   Returns an RT::Date object which contains this ticket's 
-'Started' time.
+'started' time.
 
 =cut
 
@@ -2037,7 +2037,7 @@ sub starts_obj {
 =head2 told_obj
 
   Returns an RT::Date object which contains this ticket's 
-'Told' time.
+'told' time.
 
 =cut
 
@@ -2133,7 +2133,7 @@ sub comment {
         @_
     );
 
-    unless ( ( $self->current_user_has_right('commentOnTicket') )
+    unless ( ( $self->current_user_has_right('CommentOnTicket') )
         or ( $self->current_user_has_right('ModifyTicket') ) )
     {
         return ( 0, _("Permission Denied"), undef );
@@ -2364,7 +2364,7 @@ The null value will be replaced with this ticket\'s id.
 If Silent is true then no transaction would be recorded, in other
 case you can control creation of transactions on both base and
 target with Silentbase and Silenttarget respectively. By default
-both transactions are Created.
+both transactions are created.
 
 =cut 
 
@@ -2467,7 +2467,7 @@ Takes a paramhash of type and one of base or target. Adds that link to this tick
 If Silent is true then no transaction would be recorded, in other
 case you can control creation of transactions on both base and
 target with Silentbase and Silenttarget respectively. By default
-both transactions are Created.
+both transactions are created.
 
 =cut
 
@@ -3115,7 +3115,7 @@ sub set_status {
     #If we're changing the status from new, record that we've started
     if ( $self->status eq 'new' && $args{status} ne 'new' ) {
 
-        #Set the Started time to "now"
+        #Set the started time to "now"
         $self->_set(
             column             => 'started',
             value              => $now->iso,
@@ -3316,7 +3316,7 @@ sub seen_up_to {
 
 =head2 transaction_batch
 
-  Returns an array reference of all transactions Created on this ticket during
+  Returns an array reference of all transactions created on this ticket during
   this ticket object's lifetime, or undef if there were none.
 
   Only works when the C<Usetransaction_batch> config option is set to true.
@@ -3372,14 +3372,14 @@ sub _overlay_accessible {
         time_estimated   => { 'read' => 1, 'write' => 1 },
         time_worked      => { 'read' => 1, 'write' => 1 },
         time_left        => { 'read' => 1, 'write' => 1 },
-        Told             => { 'read' => 1, 'write' => 1 },
+        told             => { 'read' => 1, 'write' => 1 },
         resolved         => { 'read' => 1 },
         type             => { 'read' => 1 },
         starts        => { 'read' => 1, 'write' => 1 },
-        Started       => { 'read' => 1, 'write' => 1 },
-        Due           => { 'read' => 1, 'write' => 1 },
-        Creator       => { 'read' => 1, 'auto'  => 1 },
-        Created       => { 'read' => 1, 'auto'  => 1 },
+        started       => { 'read' => 1, 'write' => 1 },
+        due           => { 'read' => 1, 'write' => 1 },
+        creator       => { 'read' => 1, 'auto'  => 1 },
+        created       => { 'read' => 1, 'auto'  => 1 },
         last_updated_by => { 'read' => 1, 'auto'  => 1 },
         last_updated   => { 'read' => 1, 'auto'  => 1 }
     };

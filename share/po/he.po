@@ -940,7 +940,7 @@ msgid "comment on tickets"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "commentOnTicket"
+msgid "CommentOnTicket"
 msgstr ""
 
 #: html/Ticket/ModifyAll.html:91 html/Ticket/Update.html:75

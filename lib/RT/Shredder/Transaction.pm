@@ -100,7 +100,7 @@ sub __Relates {
             = "Have no related Ticket #" . $self->id . " object";
     }
 
-    # TODO: Users(Creator, LastUpdatedBy)
+    # TODO: Users(Creator, last_updated_by)
 
     $deps->_push_dependencies(
         base_object   => $self,

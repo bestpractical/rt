@@ -181,7 +181,7 @@ if ( $can{'ModifyTicket'} ) {
 
 }
 
-if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('commentOnTicket') ) {
+if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('CommentOnTicket') ) {
     $actions->{'E'} = {
         title => _('comment'),
         path  => "Ticket/Update.html?Action=comment&id=" . $id,

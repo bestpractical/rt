@@ -194,7 +194,7 @@ if ($Action ne 'Respond') {
 $CanRespond = 1 if ( $ticket_obj->current_user_has_right('ReplyToTicket') or
                      $ticket_obj->current_user_has_right('ModifyTicket') ); 
 
-$Cancomment = 1 if ( $ticket_obj->current_user_has_right('commentOnTicket') or
+$Cancomment = 1 if ( $ticket_obj->current_user_has_right('CommentOnTicket') or
                      $ticket_obj->current_user_has_right('ModifyTicket') ); 
 
 

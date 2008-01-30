@@ -1263,8 +1263,8 @@ msgid "comment on tickets"
 msgstr "Komentarz do zgłoszeń"
 
 #: lib/RT/Queue_Overlay.pm:111
-msgid "commentOnTicket"
-msgstr "commentOnTicket"
+msgid "CommentOnTicket"
+msgstr "CommentOnTicket"
 
 #: NOT FOUND IN SOURCE
 msgid "comments"

@@ -108,7 +108,7 @@ my $mode = $lfields{$rel}->{Mode};
 my $n = 1;
 my $op = $del ? "delete_link" : "add_link";
 
-($n, $output) = $ticket->$op(Type => $type, $mode => $to);
+($n, $output) = $ticket->$op(type => $type, $mode => $to);
 if ($n == 0) {
     $status = "500 Error";
 } else {

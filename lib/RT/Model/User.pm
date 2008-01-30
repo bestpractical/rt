@@ -1219,7 +1219,7 @@ sub _cleanup_invalid_delegations {
     $deleg_acl->limit_to_principal(
         type                   => 'User',
         id                     => $self->principal_id,
-        IncludeGroupMembership => 1
+        include_group_membership => 1
     );
     $deleg_acl->limit(
         column   => 'right_name',

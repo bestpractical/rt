@@ -119,14 +119,14 @@ if ($changes) {
                 else {
                     my $type = $lfields{$key}->{Type};
                     my $mode = $lfields{$key}->{Mode};
-                    ($n, $s) = $ticket->delete_link(Type => $type, $mode => $u);
+                    ($n, $s) = $ticket->delete_link(type => $type, $mode => $u);
                     goto SET;
                 }
             }
             foreach my $u (keys %new) {
                 my $type = $lfields{$key}->{Type};
                 my $mode = $lfields{$key}->{Mode};
-                ($n, $s) = $ticket->add_link(Type => $type, $mode => $u);
+                ($n, $s) = $ticket->add_link(type => $type, $mode => $u);
                 goto SET;
             }
         }

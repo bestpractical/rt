@@ -98,7 +98,7 @@ my $objects;
 my $acl = RT::Model::ACECollection->new();
 $acl->exclude_delegated_rights();
 $acl->limit_to_principal(Id => Jifty->web->current_user->id, 
-                       IncludeGroupMembership => 1
+                       include_group_membership => 1
                        );
 
 while(my $right = $acl->next) {
