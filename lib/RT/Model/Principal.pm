@@ -115,9 +115,9 @@ sub is_user {
 
 # }}}
 
-# {{{ Object
+# {{{ object
 
-=head2 Object
+=head2 object
 
 Returns the user or group associated with this principal
 
@@ -146,7 +146,7 @@ sub object {
 
 # {{{ grant_right
 
-=head2 grant_right  { Right => RIGHTNAME, Object => undef }
+=head2 grant_right  { Right => RIGHTNAME, object => undef }
 
 A helper function which calls RT::Model::ACE->create
 
@@ -161,7 +161,7 @@ sub grant_right {
     my $self = shift;
     my %args = (
         Right  => undef,
-        Object => undef,
+        object => undef,
         @_
     );
 
@@ -179,7 +179,7 @@ sub grant_right {
     return (
         $ace->create(
             right_name     => $args{'Right'},
-            Object         => $args{'Object'},
+            object         => $args{'object'},
             principal_type => $type,
             principal_id   => $self->id
         )
@@ -190,7 +190,7 @@ sub grant_right {
 
 # {{{ revoke_right
 
-=head2 revoke_right { Right => "right_name", Object => "object" }
+=head2 revoke_right { Right => "right_name", object => "object" }
 
 Delete a right that a user has 
 
@@ -206,16 +206,16 @@ sub revoke_right {
     my $self = shift;
     my %args = (
         Right  => undef,
-        Object => undef,
+        object => undef,
         @_
     );
 
 #if we haven't specified any sort of right, we're talking about a global right
-    if (   !defined $args{'Object'}
+    if (   !defined $args{'object'}
         && !defined $args{'object_id'}
         && !defined $args{'object_type'} )
     {
-        $args{'Object'} = RT->system;
+        $args{'object'} = RT->system;
     }
 
     #ACL check handled in ACE.pm
@@ -224,7 +224,7 @@ sub revoke_right {
     my $ace = RT::Model::ACE->new;
     $ace->load_by_values(
         right_name     => $args{'Right'},
-        Object         => $args{'Object'},
+        object         => $args{'object'},
         principal_type => $type,
         principal_id   => $self->id
     );
@@ -274,11 +274,11 @@ sub _cleanup_invalid_delegations {
 
 # {{{ sub has_right
 
-=head2 sub has_right (Right => 'right' Object => undef)
+=head2 sub has_right (Right => 'right' object => undef)
 
 
-Checks to see whether this principal has the right "Right" for the Object
-specified. If the Object parameter is omitted, checks to see whether the 
+Checks to see whether this principal has the right "Right" for the object
+specified. If the object parameter is omitted, checks to see whether the 
 user has the right globally.
 
 This still hard codes to check to see if a user has queue-level rights
@@ -291,7 +291,7 @@ This takes the params:
 
     And either:
 
-    Object => an RT style object (->id will get its id)
+    object => an RT style object (->id will get its id)
 
 
 Returns 1 if a matching ACE was found.
@@ -304,7 +304,7 @@ sub has_right {
     my $self = shift;
     my %args = (
         Right         => undef,
-        Object        => undef,
+        object        => undef,
         equiv_objects => undef,
         @_,
     );
@@ -324,31 +324,31 @@ sub has_right {
         return (undef);
     }
 
-    if (   defined( $args{'Object'} )
-        && UNIVERSAL::can( $args{'Object'}, 'id' )
-        && $args{'Object'}->id )
+    if (   defined( $args{'object'} )
+        && UNIVERSAL::can( $args{'object'}, 'id' )
+        && $args{'object'}->id )
     {
 
-        push @{ $args{'equiv_objects'} }, $args{'Object'};
+        push @{ $args{'equiv_objects'} }, $args{'object'};
     } else {
         Jifty->log->fatal("has_right called with no valid object");
         return (undef);
     }
 
     # If this object is a ticket, we care about ticket roles and queue roles
-    if ( UNIVERSAL::isa( $args{'Object'} => 'RT::Model::Ticket' ) ) {
+    if ( UNIVERSAL::isa( $args{'object'} => 'RT::Model::Ticket' ) ) {
 
         # this is a little bit hacky, but basically, now that we've done
         # the ticket roles magic, we load the queue object
         # and ask all the rest of our questions about the queue.
         unshift @{ $args{'equiv_objects'} },
-            $args{'Object'}->acl_equivalence_objects;
+            $args{'object'}->acl_equivalence_objects;
 
     }
 
     unshift @{ $args{'equiv_objects'} }, RT->system
         unless $self->can('_IsOverrideGlobalACL')
-            && $self->_is_override_global_acl( $args{'Object'} );
+            && $self->_is_override_global_acl( $args{'object'} );
 
     # {{{ If we've cached a win or loss for this lookup say so
 

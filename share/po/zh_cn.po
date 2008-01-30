@@ -10,7 +10,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: html/Widgets/SavedSearch:70
-#. ($self->{CurrentSearch}{Object}->description)
+#. ($self->{CurrentSearch}{object}->description)
 msgid " %1 deleted."
 msgstr ""
 
@@ -362,7 +362,7 @@ msgstr "%1 内的 %2 的 %3 对象"
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:57
 #. ($object->name)
-#. ($Object->name)
+#. ($object->name)
 msgid "%1's saved searches"
 msgstr "%1 已储存的查询"
 
@@ -457,7 +457,7 @@ msgstr "没有模板"
 msgid "(No workflows)"
 msgstr "没有流程"
 
-#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/PickObjects:47
+#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/Pickobjects:47
 msgid "(None)"
 msgstr "(无)"
 
@@ -2659,7 +2659,7 @@ msgid "Edit Custom Fields"
 msgstr ""
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
-#. ($Object->name)
+#. ($object->name)
 msgid "Edit Custom Fields for %1"
 msgstr "编辑 %1 的自订字段"
 
@@ -3198,7 +3198,7 @@ msgid "Found %quant(%1,ticket)"
 msgstr "找到 %1 张申请单"
 
 #: lib/RT/Record.pm:956
-msgid "Found Object"
+msgid "Found object"
 msgstr "已找到对象"
 
 #: NOT FOUND IN SOURCE
@@ -5017,29 +5017,29 @@ msgid "OR"
 msgstr ""
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be Created"
+msgid "object could not be Created"
 msgstr "无法新增对象"
 
 #: lib/RT/Record.pm:123
-msgid "Object could not be deleted"
+msgid "object could not be deleted"
 msgstr ""
 
 #: lib/RT/Record.pm:341
-msgid "Object Created"
+msgid "object Created"
 msgstr "对象新增完毕"
 
 #: lib/RT/Record.pm:120
-msgid "Object deleted"
+msgid "object deleted"
 msgstr ""
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($object_type)
 #. ($LookupType)
-msgid "Object of type %1 cannot take custom fields"
+msgid "object of type %1 cannot take custom fields"
 msgstr "自订字段不适用于类别为 %1 的对象"
 
 #: lib/RT/CustomField_Overlay.pm:967
-msgid "Object type mismatch"
+msgid "object type mismatch"
 msgstr "对象类别不符"
 
 #: NOT FOUND IN SOURCE
@@ -6054,7 +6054,7 @@ msgid "Requests should be due in"
 msgstr "申请单处理期限"
 
 #: lib/RT/Attribute_Overlay.pm:146
-#. ('Object')
+#. ('object')
 msgid "Required parameter '%1' not specified"
 msgstr "未指定必要的参数‘%1’"
 
@@ -8196,7 +8196,7 @@ msgstr "月"
 msgid "new"
 msgstr "新建立"
 
-#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/PickObjects:65
+#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/Pickobjects:65
 msgid "no name"
 msgstr "没有名称"
 

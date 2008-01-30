@@ -176,7 +176,7 @@ my %OPTIONS = ();
 
 =head2 new
 
-Object constructor returns new object. Takes no arguments.
+object constructor returns new Object. Takes no arguments.
 
 =cut
 

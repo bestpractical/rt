@@ -189,7 +189,7 @@ else {
     my @results = update_record_object(
         AttributesRef   => \@attribs,
         AttributePrefix => 'Scrip-'.$scrip->id,
-        Object          => $scrip,
+        object          => $scrip,
         ARGSRef         => \%ARGS
     );
     return ($scrip->id, @results);

@@ -46,8 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Object => undef
+$object => undef
 </%ARGS>
-<a href="<% RT->config->get('WebBaseURL') %>/Ticket/Attachment/<% $Object->transaction_id %>/<% $Object->id %>/">
-Attachment(id:<% $Object->id %>, Filename: <% $Object->filename || '(no value)' %>)
+<a href="<% RT->config->get('WebBaseURL') %>/Ticket/Attachment/<% $object->transaction_id %>/<% $object->id %>/">
+Attachment(id:<% $object->id %>, Filename: <% $object->filename || '(no value)' %>)
 </a>

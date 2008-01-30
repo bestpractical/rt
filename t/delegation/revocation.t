@@ -55,7 +55,7 @@ ok( $ret, "Add test user 1 to g1: $msg" );
 $ace = RT::Model::ACE->new(current_user => RT::CurrentUser->new( id => $u1->id) );
 ( $ret, $msg ) = $ace->load_by_values(
     right_name     => 'ShowConfigTab',
-    Object        => RT->system,
+    object        => RT->system,
     principal_type => 'Group',
     principal_id   => $g1->principal_id
 );
@@ -66,19 +66,19 @@ ok( $ret, "Delegate ShowConfigTab to pg1: $msg" );
 ok( $ret, "Delegate ShowConfigTab to pg2: $msg" );
 
 ok(( $pg1->principal_object->has_right( Right  => 'ShowConfigTab',
-				   Object => RT->system ) and
+				   object => RT->system ) and
      $pg2->principal_object->has_right( Right  => 'ShowConfigTab',
-				   Object => RT->system )),
+				   object => RT->system )),
    "Test personal groups have ShowConfigTab right after delegation" );
 
 ( $ret, $msg ) = $g1->delete_member( $u1->principal_id );
 ok( $ret, "Delete test user 1 from g1: $msg" );
 
 ok( not( $pg1->principal_object->has_right( Right  => 'ShowConfigTab',
-				       Object => RT->system )),
+				       object => RT->system )),
     "Test personal group 1 lacks ShowConfigTab after user removed from g1" );
 ok( not( $pg2->principal_object->has_right( Right  => 'ShowConfigTab',
-				       Object => RT->system )),
+				       object => RT->system )),
     "Test personal group 2 lacks ShowConfigTab after user removed from g1" );
 
 ( $ret, $msg ) = $g1->add_member( $u1->principal_id );
@@ -89,19 +89,19 @@ ok( $ret, "Delegate ShowConfigTab to pg1: $msg" );
 ok( $ret, "Delegate ShowConfigTab to pg2: $msg" );
 
 ok(( $pg1->principal_object->has_right( Right  => 'ShowConfigTab',
-				   Object => RT->system ) and
+				   object => RT->system ) and
      $pg2->principal_object->has_right( Right  => 'ShowConfigTab',
-				   Object => RT->system )),
+				   object => RT->system )),
    "Test personal groups have ShowConfigTab right after delegation" );
 
 ( $ret, $msg ) = $g1->principal_object->revoke_right( Right => 'ShowConfigTab' );
 ok( $ret, "Revoke ShowConfigTab from g1: $msg" );
 
 ok( not( $pg1->principal_object->has_right( Right  => 'ShowConfigTab',
-				       Object => RT->system )),
+				       object => RT->system )),
     "Test personal group 1 lacks ShowConfigTab after user removed from g1" );
 ok( not( $pg2->principal_object->has_right( Right  => 'ShowConfigTab',
-				       Object => RT->system )),
+				       object => RT->system )),
     "Test personal group 2 lacks ShowConfigTab after user removed from g1" );
 
 

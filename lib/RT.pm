@@ -87,7 +87,7 @@ sub config {
 
 =head2 Init
 
-L<Connect to the database /connect_to_database>, L<initilizes system objects /InitSystemObjects>,
+L<Connect to the database /connect_to_database>, L<initilizes system objects /InitSystemobjects>,
 L<preloads classes /InitClasses> 
 
 =cut
@@ -141,7 +141,7 @@ EOF
     }
 }
 
-=head2 InitSystemObjects
+=head2 InitSystemobjects
 
 Initializes system objects: C<RT->system>, C<RT->system_user>
 and C<RT->nobody>.
@@ -183,7 +183,7 @@ sub database_handle { return $Handle }
 =head2 System
 
 Returns the current L<system object RT::System>. See also
-L</InitSystemObjects>.
+L</InitSystemobjects>.
 
 =cut
 
@@ -193,7 +193,7 @@ sub system { return RT::System->new }
 
 Returns the system user's object, it's object of
 L<RT::CurrentUser> class that represents the system. See also
-L</InitSystemObjects>.
+L</InitSystemobjects>.
 
 =cut
 
@@ -208,7 +208,7 @@ sub system_user {
 
 Returns object of Nobody. It's object of L<RT::CurrentUser> class
 that represents a user who can own ticket and nothing else. See
-also L</InitSystemObjects>.
+also L</InitSystemobjects>.
 
 =cut
 

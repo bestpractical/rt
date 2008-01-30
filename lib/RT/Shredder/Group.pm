@@ -57,7 +57,7 @@ use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;
 use RT::Shredder::Dependencies;
 
-sub __DependsOn {
+sub __depends_on {
     my $self = shift;
     my %args = (
         Shredder     => undef,
@@ -77,7 +77,7 @@ sub __DependsOn {
         $deps->_push_dependency(
             base_object  => $self,
             Flags        => DEPENDS_ON | WIPE_AFTER,
-            TargetObject => $objs,
+            Targetobject => $objs,
             Shredder     => $args{'Shredder'}
         );
     }
@@ -86,7 +86,7 @@ sub __DependsOn {
     $deps->_push_dependency(
         base_object  => $self,
         Flags        => DEPENDS_ON | WIPE_AFTER,
-        TargetObject => $self->principal_object,
+        Targetobject => $self->principal_object,
         Shredder     => $args{'Shredder'}
     );
 
@@ -121,10 +121,10 @@ sub __DependsOn {
     $deps->_push_dependencies(
         base_object   => $self,
         Flags         => DEPENDS_ON,
-        TargetObjects => $list,
+        target_objects => $list,
         Shredder      => $args{'Shredder'}
     );
-    return $self->SUPER::__DependsOn(%args);
+    return $self->SUPER::__depends_on(%args);
 }
 
 sub __Relates {
@@ -144,8 +144,8 @@ sub __Relates {
         if ( $obj->id ) {
             push( @$list, $obj );
         } else {
-            my $rec = $args{'Shredder'}->get_record( Object => $self );
-            $self = $rec->{'Object'};
+            my $rec = $args{'Shredder'}->get_record( object => $self );
+            $self = $rec->{'object'};
             $rec->{'State'} |= INVALID;
             $rec->{'description'}
                 = "ACLEguvivalence group have no related User #"
@@ -159,8 +159,8 @@ sub __Relates {
     if ( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->get_record( Object => $self );
-        $self = $rec->{'Object'};
+        my $rec = $args{'Shredder'}->get_record( object => $self );
+        $self = $rec->{'object'};
         $rec->{'State'} |= INVALID;
         $rec->{'description'}
             = "Have no related Principal #" . $self->id . " object.";
@@ -169,7 +169,7 @@ sub __Relates {
     $deps->_push_dependencies(
         base_object   => $self,
         Flags         => RELATES,
-        TargetObjects => $list,
+        target_objects => $list,
         Shredder      => $args{'Shredder'}
     );
     return $self->SUPER::__Relates(%args);
@@ -178,7 +178,7 @@ sub __Relates {
 sub BeforeWipeout {
     my $self = shift;
     if ( $self->domain eq 'SystemInternal' ) {
-        RT::Shredder::Exception::Info->throw('SystemObject');
+        RT::Shredder::Exception::Info->throw('Systemobject');
     }
     return $self->SUPER::BeforeWipeout(@_);
 }

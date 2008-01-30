@@ -333,12 +333,12 @@ CREATE TABLE Templates (
 
 
 
-# {{{ Objectcustom_field_values 
+# {{{ objectcustom_field_values 
 
-CREATE TABLE Objectcustom_field_values (
+CREATE TABLE objectcustom_field_values (
   id INTEGER NOT NULL  ,
   CustomField int NOT NULL  ,
-  object_type varchar(255) NOT NULL,	    # Final target of the Object
+  object_type varchar(255) NOT NULL,	    # Final target of the object
   object_id int NOT NULL  ,		    # New -- Replaces Ticket
   sort_order integer NOT NULL DEFAULT 0  ,
 
@@ -355,8 +355,8 @@ CREATE TABLE Objectcustom_field_values (
   PRIMARY KEY (id)
 ) ;
 
-CREATE INDEX Objectcustom_field_values1 ON Objectcustom_field_values (Content); 
-CREATE INDEX Objectcustom_field_values2 ON Objectcustom_field_values (CustomField,object_type,object_id); 
+CREATE INDEX objectcustom_field_values1 ON objectcustom_field_values (Content); 
+CREATE INDEX objectcustom_field_values2 ON objectcustom_field_values (CustomField,object_type,object_id); 
 
 # }}}
 

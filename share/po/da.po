@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#. ($self->{CurrentSearch}{Object}->description)
+#. ($self->{CurrentSearch}{object}->description)
 #: html/Widgets/SavedSearch:70
 msgid " %1 deleted."
 msgstr " %1 slettet."
@@ -338,7 +338,7 @@ msgstr "%1's %2 objekter"
 msgid "%1's %2's %3 objects"
 msgstr "%1's %2's %3 objekter"
 
-#. ($Object->name)
+#. ($object->name)
 #. ($object->name)
 #: html/Search/Elements/SearchPrivacy:52
 #: html/Search/Elements/SelectSearchObject:55
@@ -429,7 +429,7 @@ msgid "(No templates)"
 msgstr "(Ingen skabeloner)"
 
 #: html/Admin/Elements/PickCustomFields:47
-#: html/Admin/Elements/PickObjects:47
+#: html/Admin/Elements/Pickobjects:47
 msgid "(None)"
 msgstr "(Ingen)"
 
@@ -2177,7 +2177,7 @@ msgstr "Rediger"
 msgid "Edit Custom Fields"
 msgstr "Rediger ekstrafelter"
 
-#. ($Object->name)
+#. ($object->name)
 #: html/Admin/Elements/ObjectCustomFields:92
 #: html/Admin/Queues/CustomFields.html:64
 #: html/Admin/Users/CustomFields.html:64
@@ -2543,8 +2543,8 @@ msgid "Found %quant(%1,ticket)"
 msgstr "Fandt %quant(%1,ticket)"
 
 #: lib/RT/Record.pm:956
-msgid "Found Object"
-msgstr "Object fundet"
+msgid "Found object"
+msgstr "object fundet"
 
 #: NOT FOUND IN SOURCE
 msgid "Freeform"
@@ -4083,30 +4083,30 @@ msgid "OR"
 msgstr "ELLER"
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be Created"
+msgid "object could not be Created"
 msgstr "Objekt kunne ikke oprettes"
 
 #: lib/RT/Record.pm:123
-msgid "Object could not be deleted"
+msgid "object could not be deleted"
 msgstr "Objekt kunne ikke slettes"
 
 #: lib/RT/Record.pm:341
-msgid "Object Created"
+msgid "object Created"
 msgstr "Objekt oprettet"
 
 #: lib/RT/Record.pm:120
-msgid "Object deleted"
+msgid "object deleted"
 msgstr "Objekt slettet"
 
 #. ($LookupType)
 #. ($object_type)
 #: html/Admin/CustomFields/Objects.html:72
 #: html/Admin/Elements/ObjectCustomFields:63
-msgid "Object of type %1 cannot take custom fields"
+msgid "object of type %1 cannot take custom fields"
 msgstr "Objekt af typen %1 kan ikke håndtere ekstrafelter"
 
 #: lib/RT/CustomField_Overlay.pm:967
-msgid "Object type mismatch"
+msgid "object type mismatch"
 msgstr "Objekttype mismatch"
 
 #: lib/RT/Date.pm:450
@@ -4993,7 +4993,7 @@ msgstr "Rekvirenter"
 msgid "Requests should be due in"
 msgstr "Sager skulle være forfaldne om"
 
-#. ('Object')
+#. ('object')
 #: lib/RT/Attribute_Overlay.pm:146
 msgid "Required parameter '%1' not specified"
 msgstr "Påkrævet parameter '%1' ikke angivet"
@@ -6953,7 +6953,7 @@ msgid "new"
 msgstr "ny"
 
 #: html/Admin/Elements/PickCustomFields:64
-#: html/Admin/Elements/PickObjects:65
+#: html/Admin/Elements/Pickobjects:65
 msgid "no name"
 msgstr "intet navn"
 

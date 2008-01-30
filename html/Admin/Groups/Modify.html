@@ -78,8 +78,8 @@
 <% $CF->name %>:
 </td><td>
 <& /Elements/EditCustomField, CustomField => $CF, 
-                              Object => $Group, 
-                              ($Create ? (namePrefix => 'Object-RT::Model::Group--CustomField-') 
+                              object => $Group, 
+                              ($Create ? (namePrefix => 'object-RT::Model::Group--CustomField-') 
                                        : () )&>
 </td></tr>
 % }
@@ -138,10 +138,10 @@ if ($id) {
     
     my @fields = qw(description name );
     my @fieldresults = update_record_object ( AttributesRef => \@fields,
-					    Object => $Group,
+					    object => $Group,
 					    ARGSRef => \%ARGS );
     push (@results,@fieldresults);
-    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $Group );
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, object => $Group );
 }
 
 #we're asking about enabled on the web page but really care about disabled.

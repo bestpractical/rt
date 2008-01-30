@@ -1066,7 +1066,7 @@ sub current_user_has_right {
     my $right = shift;
     return $self->current_user->has_right(
         Right  => $right,
-        Object => $self->object
+        object => $self->object
     );
 }
 
@@ -1135,9 +1135,9 @@ sub old_value {
     if (    my $type = $self->__value('reference_type')
         and my $id = $self->__value('old_reference') )
     {
-        my $Object = $type->new;
-        $Object->load($id);
-        return $Object->content;
+        my $object = $type->new;
+        $object->load($id);
+        return $object->content;
     } else {
         return $self->__value('old_value');
     }
@@ -1148,9 +1148,9 @@ sub new_value {
     if (    my $type = $self->__value('reference_type')
         and my $id = $self->__value('new_reference') )
     {
-        my $Object = $type->new;
-        $Object->load($id);
-        return $Object->content;
+        my $object = $type->new;
+        $object->load($id);
+        return $object->content;
     } else {
         return $self->__value('new_value');
     }
@@ -1158,9 +1158,9 @@ sub new_value {
 
 sub object {
     my $self   = shift;
-    my $Object = $self->__value('object_type')->new;
-    $Object->load( $self->__value('object_id') );
-    return $Object;
+    my $object = $self->__value('object_type')->new;
+    $object->load( $self->__value('object_id') );
+    return $object;
 }
 
 sub friendlyobject_type {
@@ -1177,7 +1177,7 @@ sub friendlyobject_type {
     CustomField-<<Id>> => Value
         or 
 
-    Object-RT::Model::Transaction-CustomField-<<Id>> => Value parameters to update
+    object-RT::Model::Transaction-CustomField-<<Id>> => Value parameters to update
     this transaction's custom fields
 
 =cut
@@ -1204,7 +1204,7 @@ sub update_custom_fields {
     foreach my $arg ( keys %$args ) {
         next
             unless ( $arg
-            =~ /^(?:Object-RT::Model::Transaction--)?CustomField-(\d+)/ );
+            =~ /^(?:object-RT::Model::Transaction--)?CustomField-(\d+)/ );
         next if $arg =~ /-Magic$/;
         my $cfid   = $1;
         my $values = $args->{$arg};

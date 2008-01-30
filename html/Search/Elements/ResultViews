@@ -73,7 +73,7 @@ $ShortQueryString => undef
 </form>
 
 <%PERL>
-if ( Jifty->web->current_user->has_right( Right => 'SuperUser', Object => RT->system ) ) {
+if ( Jifty->web->current_user->has_right( Right => 'SuperUser', object => RT->system ) ) {
     my $query_string = $m->comp('/Elements/QueryString',
         Search => 1,
         Plugin => 'Tickets',

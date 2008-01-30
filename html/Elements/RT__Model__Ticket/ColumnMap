@@ -294,7 +294,7 @@ $TICKET_COLUMN_MAP = {
             my @values = map {
                 (
                     ($_->custom_field_obj->type eq 'Image')
-                        ? \($m->scomp( '/Elements/ShowCustomFieldImage', Object => $_ ))
+                        ? \($m->scomp( '/Elements/ShowCustomFieldImage', object => $_ ))
                         : $_->content
                 ),
                 \'<br />',

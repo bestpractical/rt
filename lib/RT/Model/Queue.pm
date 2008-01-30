@@ -155,7 +155,7 @@ our $RIGHTS = {
 # Tell RT::Model::ACE that this sort of object can get acls granted
 $RT::Model::ACE::OBJECT_TYPES{'RT::Model::Queue'} = 1;
 
-# TODO: This should be refactored out into an RT::Model::ACECollectionedObject or something
+# TODO: This should be refactored out into an RT::Model::ACECollectionedobject or something
 # stuff the rights into a hash of rights that can exist.
 
 foreach my $right ( keys %{$RIGHTS} ) {
@@ -364,7 +364,7 @@ sub create {
     unless (
         $self->current_user->has_right(
             Right  => 'AdminQueue',
-            Object => RT->system
+            object => RT->system
         )
         )
     {    #Check them ACLs
@@ -1230,7 +1230,7 @@ sub has_right {
     }
 
     return $principal->has_right( %args,
-        Object => ( $self->id ? $self : RT->system ), );
+        object => ( $self->id ? $self : RT->system ), );
 }
 
 # }}}

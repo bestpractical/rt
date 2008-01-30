@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: html/Widgets/SavedSearch:70
-#. ($self->{CurrentSearch}{Object}->description)
+#. ($self->{CurrentSearch}{object}->description)
 msgid " %1 deleted."
 msgstr ""
 
@@ -337,7 +337,7 @@ msgstr ""
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:57
 #. ($object->name)
-#. ($Object->name)
+#. ($object->name)
 msgid "%1's saved searches"
 msgstr "Zapisane zapytania %1"
 
@@ -424,7 +424,7 @@ msgstr "(Brak skryptów)"
 msgid "(No templates)"
 msgstr "(Brak szablonów)"
 
-#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/PickObjects:47
+#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/Pickobjects:47
 msgid "(None)"
 msgstr "(Brak)"
 
@@ -2126,7 +2126,7 @@ msgid "Edit Custom Fields"
 msgstr ""
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
-#. ($Object->name)
+#. ($object->name)
 msgid "Edit Custom Fields for %1"
 msgstr "Edytuj pola dla kolejki %1"
 
@@ -2506,7 +2506,7 @@ msgid "Found %quant(%1,ticket)"
 msgstr "Wyszukano %1 zgłoszeń"
 
 #: lib/RT/Record.pm:956
-msgid "Found Object"
+msgid "Found object"
 msgstr "Wyszukany obiekt"
 
 #: NOT FOUND IN SOURCE

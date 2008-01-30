@@ -82,7 +82,7 @@ RT::Shredder::Plugin - interface to access shredder plugins
 
 =head2 new
 
-Object constructor, returns new object. Takes optional hash
+object constructor, returns new Object. Takes optional hash
 as arguments, it's not required and this class doesn't use it,
 but plugins could define some arguments and can handle them
 after your've load it.
@@ -146,7 +146,7 @@ sub List {
 Takes name of the plugin as first argument, loads plugin,
 creates new plugin object and reblesses self into plugin
 if all steps were successfuly finished, then you don't need to
-create new object for the plugin.
+create new Object for the plugin.
 
 Other arguments are sent to the constructor of the plugin
 (method new.)

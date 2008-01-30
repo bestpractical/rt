@@ -25,10 +25,10 @@ TABLE ObjectCustomFields (
 );
 
 -- This table replaces Ticketcustom_field_values
-TABLE Objectcustom_field_values (
+TABLE objectcustom_field_values (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
-  object_type varchar(255) NOT NULL,         -- Final target of the Object
+  object_type varchar(255) NOT NULL,         -- Final target of the object
   object_id int NOT NULL  ,                  -- New: replaces the "Ticket" field
   sort_order integer NOT NULL DEFAULT 0  ,   -- New: for Repeated fields
 
@@ -41,7 +41,7 @@ TABLE Objectcustom_field_values (
 
 TABLE Transactions (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  object_type varchar(255) NULL,             -- Final target of the Object
+  object_type varchar(255) NULL,             -- Final target of the object
   object_id integer NOT NULL DEFAULT 0  ,    -- New: replaces the "Ticket" field
   TimeTaken integer NOT NULL DEFAULT 0  ,
   type varchar(20) NULL  ,

@@ -65,7 +65,7 @@ RT session class and utilities.
 CLASS METHODS can be used without creating object instances,
 it's mainly utilities to clean unused session records.
 
-Object is tied hash and can be used to access session data.
+object is tied hash and can be used to access session data.
 
 =head1 METHODS
 

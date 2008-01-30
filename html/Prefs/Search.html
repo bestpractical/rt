@@ -53,7 +53,7 @@
     Title => $title
 &>
 <& /Elements/ListActions, actions => \@actions &>
-% if (Jifty->web->current_user->has_right( Object=> RT->system, Right => 'SuperUser')) {
+% if (Jifty->web->current_user->has_right( object=> RT->system, Right => 'SuperUser')) {
 <p>
   <&|/l&>You can also edit the predefined search itself</&>:
   <a href="<% RT->config->get('WebPath').'/Search/Build.html?'.

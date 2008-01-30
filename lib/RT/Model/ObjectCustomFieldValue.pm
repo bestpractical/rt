@@ -54,7 +54,7 @@ package RT::Model::ObjectCustomFieldValue;
 no warnings qw(redefine);
 
 use base qw/RT::Record/;
-sub table {'Objectcustom_field_values'}
+sub table {'objectcustom_field_values'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column
@@ -167,13 +167,13 @@ sub load_by_ticket_content_and_custom_field {
 sub load_by_object_content_and_custom_field {
     my $self = shift;
     my %args = (
-        Object      => undef,
+        object      => undef,
         custom_field => undef,
         Content     => undef,
         @_
     );
 
-    my $obj = $args{'Object'} or return;
+    my $obj = $args{'object'} or return;
 
     return $self->load_by_cols(
         Content     => $args{'Content'},
@@ -203,7 +203,7 @@ sub content {
     }
 }
 
-=head2 Object
+=head2 object
 
 Returns the object this value applies to
 
@@ -211,9 +211,9 @@ Returns the object this value applies to
 
 sub object {
     my $self   = shift;
-    my $Object = $self->__value('object_type')->new;
-    $Object->load_by_id( $self->__value('object_id') );
-    return $Object;
+    my $object = $self->__value('object_type')->new;
+    $object->load_by_id( $self->__value('object_id') );
+    return $object;
 }
 
 =head2 Delete

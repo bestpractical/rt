@@ -81,8 +81,8 @@ sub Run {
     my $self = shift;
     return ( 0, 'no handle' ) unless my $fh = $self->{'opt'}{'file_handle'};
 
-    my %args = ( Object => undef, @_ );
-    my $query = $args{'Object'}->_as_insert_query;
+    my %args = ( object => undef, @_ );
+    my $query = $args{'object'}->_as_insert_query;
     $query .= "\n" unless $query =~ /\n$/;
 
     return print $fh $query or return ( 0, "Couldn't write to filehandle" );

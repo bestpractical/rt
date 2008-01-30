@@ -186,7 +186,7 @@ sub next {
         if (   $templ->queue
             && $templ->current_user_has_queue_right('ShowTemplate')
             or $templ->current_user->has_right(
-                Object => RT->system,
+                object => RT->system,
                 Right  => 'ShowTemplate'
             )
             )

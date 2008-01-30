@@ -702,7 +702,7 @@ my ($uid) = $user->create( name => 'ext-mailgate',
 			   password => 'qwe123',
 			 );
 ok( $uid, 'user Created for ext-mailgate tests' );
-ok( !$user->has_right( Right => 'OwnTicket', Object => $queue ), "User can't own ticket" );
+ok( !$user->has_right( Right => 'OwnTicket', object => $queue ), "User can't own ticket" );
 
 $tick = RT::Model::Ticket->new(current_user => RT->system_user);
 ($id) = $tick->create( Queue => $qid, subject => 'test' );
@@ -723,10 +723,10 @@ Jifty::DBI::Record::Cachable->flush_cache;
 
 cmp_ok( $tick->owner, '!=', $user->id, "we didn't change owner" );
 
-($status, $msg) = $user->principal_object->grant_right( Object => $queue, Right => 'ReplyToTicket' );
+($status, $msg) = $user->principal_object->grant_right( object => $queue, Right => 'ReplyToTicket' );
 ok( $status, "successfuly granted right: $msg" );
 my $ace_id = $status;
-ok( $user->has_right( Right => 'ReplyToTicket', Object => $tick ), "User can reply to ticket" );
+ok( $user->has_right( Right => 'ReplyToTicket', object => $tick ), "User can reply to ticket" );
 
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action correspond-take"), "Opened the mailgate - $!");
@@ -770,18 +770,18 @@ while( my $ace = $acl->next ) {
 	$ace->delete;
 }
 
-ok( !$user->has_right( Right => 'ReplyToTicket', Object => $tick ), "User can't reply to ticket any more" );
+ok( !$user->has_right( Right => 'ReplyToTicket', object => $tick ), "User can't reply to ticket any more" );
 
 
 my $group = RT::Model::Group->new(current_user => RT->system_user );
 ok( $group->load_queue_role_group( Queue => $qid, Type=> 'Owner' ), "load queue owners role group" );
 $ace = RT::Model::ACE->new(current_user => RT->system_user );
-($ace_id, $msg) = $group->principal_object->grant_right( Right => 'ReplyToTicket', Object => $queue );
+($ace_id, $msg) = $group->principal_object->grant_right( Right => 'ReplyToTicket', object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right" );
 
-($status, $msg) = $user->principal_object->grant_right( Object => $queue, Right => 'OwnTicket' );
+($status, $msg) = $user->principal_object->grant_right( object => $queue, Right => 'OwnTicket' );
 ok( $status, "successfuly granted right: $msg" );
-($status, $msg) = $user->principal_object->grant_right( Object => $queue, Right => 'TakeTicket' );
+($status, $msg) = $user->principal_object->grant_right( object => $queue, Right => 'TakeTicket' );
 ok( $status, "successfuly granted right: $msg" );
 
 $! = 0;
@@ -798,7 +798,7 @@ Jifty::DBI::Record::Cachable->flush_cache;
 
 $tick->load( $id );
 is( $tick->owner, $user->id, "we changed owner" );
-ok( $user->has_right( Right => 'ReplyToTicket', Object => $tick ), "owner can reply to ticket" );
+ok( $user->has_right( Right => 'ReplyToTicket', object => $tick ), "owner can reply to ticket" );
 is( $tick->transactions->count, 5, "transactions added" );
 $txns = $tick->transactions;
 while (my $t = $txns->next) {

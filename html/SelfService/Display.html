@@ -196,7 +196,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         delete $session{'Attachments'};
     }
 
-    my @cfupdates = ProcessObjectCustomFieldUpdates(Object => $Ticket, ARGSRef => \%ARGS);
+    my @cfupdates = ProcessObjectCustomFieldUpdates(object => $Ticket, ARGSRef => \%ARGS);
     push (@results, @cfupdates);
 
     # }}}

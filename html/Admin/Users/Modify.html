@@ -214,9 +214,9 @@
 <% $CF->name %>:
 </td><td>
 % if ($user_object->id) {
-<& /Elements/EditCustomField, %ARGS, Object => $user_object, CustomField => $CF &>
+<& /Elements/EditCustomField, %ARGS, object => $user_object, CustomField => $CF &>
 % } else {
-<& /Elements/EditCustomField, %ARGS, namePrefix => 'Object-RT::Model::User-new-CustomField-', CustomField => $CF &>
+<& /Elements/EditCustomField, %ARGS, namePrefix => 'object-RT::Model::User-new-CustomField-', CustomField => $CF &>
 % }
 </td></tr>
 % }
@@ -297,11 +297,11 @@ else {
 		push @results, $msg;
         foreach my $key ( keys %ARGS) {
             # Convert custom fields on the "new" object to custom fields on the one we've just Created
-            if ($key =~ /^Object-RT::Model::User-new-CustomField-(.*)$/) {
-            $ARGS{'Object-RT::Model::User-'.$val.'-CustomField-'.$1} = delete $ARGS{$key};
+            if ($key =~ /^object-RT::Model::User-new-CustomField-(.*)$/) {
+            $ARGS{'object-RT::Model::User-'.$val.'-CustomField-'.$1} = delete $ARGS{$key};
             }
         }
-        push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $user_object );
+        push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, object => $user_object );
 	} else {
 		push @results, _('User could not be Created: %1', $msg);
 	}
@@ -335,10 +335,10 @@ if ($user_object->id && $id ne 'new') {
 		   );
 
     my @fieldresults = update_record_object ( AttributesRef => \@fields,
-					    Object => $user_object,
+					    object => $user_object,
 					    ARGSRef => \%ARGS );
     push (@results,@fieldresults);
-    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $user_object );
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, object => $user_object );
 
 
     # {{{ Deal with special fields: privileged, Enabled

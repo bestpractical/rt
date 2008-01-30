@@ -57,7 +57,7 @@ use RT::Shredder::Exceptions;
 use RT::Shredder::Constants;
 use RT::Shredder::Dependencies;
 
-sub __DependsOn {
+sub __depends_on {
     my $self = shift;
     my %args = (
         Shredder     => undef,
@@ -70,10 +70,10 @@ sub __DependsOn {
     $deps->_push_dependencies(
         base_object   => $self,
         Flags         => DEPENDS_ON,
-        TargetObjects => $list,
+        target_objects => $list,
         Shredder      => $args{'Shredder'}
     );
-    return $self->SUPER::__DependsOn(%args);
+    return $self->SUPER::__depends_on(%args);
 }
 
 sub __Relates {
@@ -89,7 +89,7 @@ sub __Relates {
     $deps->_push_dependencies(
         base_object   => $self,
         Flags         => RELATES,
-        TargetObjects => $list,
+        target_objects => $list,
         Shredder      => $args{'Shredder'}
     );
     return $self->SUPER::__Relates(%args);

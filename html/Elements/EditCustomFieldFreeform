@@ -60,7 +60,7 @@ unless ( $Multiple ) {
 }
 </%INIT>
 <%ARGS>
-$Object => undef
+$object => undef
 $CustomField => undef
 $namePrefix => undef
 $Default => undef

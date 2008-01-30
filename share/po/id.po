@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 7bit\n"
 
 #: html/Widgets/SavedSearch:70
-#. ($self->{CurrentSearch}{Object}->description)
+#. ($self->{CurrentSearch}{object}->description)
 msgid " %1 deleted."
 msgstr ""
 
@@ -264,7 +264,7 @@ msgstr "%1's %2's %3 objek"
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:57
 #. ($object->name)
-#. ($Object->name)
+#. ($object->name)
 msgid "%1's saved searches"
 msgstr "%1's pencarian disimpan"
 
@@ -335,7 +335,7 @@ msgstr "(Tidak ada scrip)"
 msgid "(No templates)"
 msgstr "(Tidak ada template)"
 
-#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/PickObjects:47
+#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/Pickobjects:47
 msgid "(None)"
 msgstr "(Tidak satu pun)"
 
@@ -1677,7 +1677,7 @@ msgid "Edit Custom Fields"
 msgstr ""
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
-#. ($Object->name)
+#. ($object->name)
 msgid "Edit Custom Fields for %1"
 msgstr "Ubah Kolom Kustom untuk %1"
 
@@ -1988,7 +1988,7 @@ msgid "Found %quant(%1,ticket)"
 msgstr "Ditemukan % quant(%1,tiket)"
 
 #: lib/RT/Record.pm:956
-msgid "Found Object"
+msgid "Found object"
 msgstr "Objek ditemukan"
 
 #: NOT FOUND IN SOURCE
@@ -3263,29 +3263,29 @@ msgid "OR"
 msgstr "ATAU"
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be Created"
+msgid "object could not be Created"
 msgstr "Objek tidak dapat dibuat"
 
 #: lib/RT/Record.pm:123
-msgid "Object could not be deleted"
+msgid "object could not be deleted"
 msgstr "Objek tidak dapat dihapus"
 
 #: lib/RT/Record.pm:341
-msgid "Object Created"
-msgstr "Object sudah dibuat"
+msgid "object Created"
+msgstr "object sudah dibuat"
 
 #: lib/RT/Record.pm:120
-msgid "Object deleted"
+msgid "object deleted"
 msgstr "Objek sudah dihapus"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($object_type)
 #. ($LookupType)
-msgid "Object of type %1 cannot take custom fields"
+msgid "object of type %1 cannot take custom fields"
 msgstr "Tipe Objek %1 tidak dapat mengambil kolom kustom"
 
 #: lib/RT/CustomField_Overlay.pm:967
-msgid "Object type mismatch"
+msgid "object type mismatch"
 msgstr "Tipe Objek tidak sesuai (mismatch)"
 
 #: lib/RT/Date.pm:450
@@ -3864,7 +3864,7 @@ msgid "Requests should be due in"
 msgstr "permintaan akan melewati batas waktu dalam"
 
 #: lib/RT/Attribute_Overlay.pm:146
-#. ('Object')
+#. ('object')
 msgid "Required parameter '%1' not specified"
 msgstr "Parameter yang diperlukan '%1' tidak didefinisikan"
 
@@ -5418,7 +5418,7 @@ msgstr "bulan"
 msgid "new"
 msgstr "baru"
 
-#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/PickObjects:65
+#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/Pickobjects:65
 msgid "no name"
 msgstr "tidak ada nama"
 

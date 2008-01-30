@@ -1,11 +1,11 @@
-ALTER TABLE Objectcustom_field_values ADD COLUMN sort_order INTEGER;
-UPDATE Objectcustom_field_values SET sort_order = 0;
-ALTER TABLE Objectcustom_field_values ALTER COLUMN sort_order SET DEFAULT 0;
-ALTER TABLE Objectcustom_field_values ALTER COLUMN sort_order SET NOT NULL;
-ALTER TABLE Objectcustom_field_values ADD COLUMN disabled INTEGER;
-UPDATE Objectcustom_field_values SET disabled = 1 WHERE Current = 0;
-UPDATE Objectcustom_field_values SET disabled = 0 WHERE Current != 0;
-ALTER TABLE Objectcustom_field_values ALTER COLUMN disabled SET DEFAULT 0;
-ALTER TABLE Objectcustom_field_values ALTER COLUMN disabled SET NOT NULL;
+ALTER TABLE objectcustom_field_values ADD COLUMN sort_order INTEGER;
+UPDATE objectcustom_field_values SET sort_order = 0;
+ALTER TABLE objectcustom_field_values ALTER COLUMN sort_order SET DEFAULT 0;
+ALTER TABLE objectcustom_field_values ALTER COLUMN sort_order SET NOT NULL;
+ALTER TABLE objectcustom_field_values ADD COLUMN disabled INTEGER;
+UPDATE objectcustom_field_values SET disabled = 1 WHERE Current = 0;
+UPDATE objectcustom_field_values SET disabled = 0 WHERE Current != 0;
+ALTER TABLE objectcustom_field_values ALTER COLUMN disabled SET DEFAULT 0;
+ALTER TABLE objectcustom_field_values ALTER COLUMN disabled SET NOT NULL;
 
-ALTER TABLE Objectcustom_field_values DROP COLUMN Current;
+ALTER TABLE objectcustom_field_values DROP COLUMN Current;

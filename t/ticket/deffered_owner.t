@@ -27,7 +27,7 @@ diag "check that defering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
           Right => [qw(SeeQueue ShowTicket create_ticket OwnTicket)],
         },
         { Principal => $owner_role_group->principal_object,
-          Object => $queue,
+          object => $queue,
           Right => [qw(ModifyTicket)],
         },
     );
@@ -74,7 +74,7 @@ diag "check that defering owner really works" if $ENV{'TEST_VERBOSE'};
           Right => [qw(SeeQueue ShowTicket create_ticket)],
         },
         { Principal => $queue->cc->principal_object,
-          Object => $queue,
+          object => $queue,
           Right => [qw(OwnTicket TakeTicket)],
         },
     );

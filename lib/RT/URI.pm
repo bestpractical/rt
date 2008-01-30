@@ -72,7 +72,7 @@ by RT::Model::Link objects.
 
 =head2 new
 
-Create a RT::URI->new object.
+Create a RT::URI->new Object.
 
 =cut
 
@@ -85,9 +85,9 @@ sub new {
     return ($self);
 }
 
-# {{{ FromObject
+# {{{ from_object
 
-=head2 FromObject <Object>
+=head2 from_object <object>
 
 Given a local object, such as an RT::Model::Ticket or an RT::FM::Article, this routine will return a URI for
 the local object
@@ -211,9 +211,9 @@ sub uri {
 
 # }}}
 
-# {{{ Object
+# {{{ object
 
-=head2 Object
+=head2 object
 
 Returns a local object for this content. This will usually be an RT::Model::Ticket or somesuch
 

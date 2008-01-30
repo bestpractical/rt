@@ -16,7 +16,7 @@ msgstr ""
 "X-Generator: KBabel 1.11.4\n"
 
 #: html/Widgets/SavedSearch:70
-#. ($self->{CurrentSearch}{Object}->description)
+#. ($self->{CurrentSearch}{object}->description)
 msgid " %1 deleted."
 msgstr " %1 удалена."
 
@@ -332,7 +332,7 @@ msgstr "%1 %2 %3 объектов"
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:57
 #. ($object->name)
-#. ($Object->name)
+#. ($object->name)
 msgid "%1's saved searches"
 msgstr "%1 сохраненных запросов"
 
@@ -427,7 +427,7 @@ msgstr "(Нет скриплетов)"
 msgid "(No templates)"
 msgstr "(Нет шаблонов)"
 
-#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/PickObjects:47
+#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/Pickobjects:47
 msgid "(None)"
 msgstr "(Нет)"
 
@@ -2154,7 +2154,7 @@ msgid "Edit Custom Fields"
 msgstr "Редактировать Дополнительные Поля"
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
-#. ($Object->name)
+#. ($object->name)
 msgid "Edit Custom Fields for %1"
 msgstr "Редактирование дополнительных полей для %1"
 
@@ -2513,7 +2513,7 @@ msgid "Found %quant(%1,ticket)"
 msgstr "Найдено %quant(%1,ticket)"
 
 #: lib/RT/Record.pm:956
-msgid "Found Object"
+msgid "Found object"
 msgstr "Найден объект"
 
 #: NOT FOUND IN SOURCE
@@ -3992,29 +3992,29 @@ msgid "OR"
 msgstr "ИЛИ"
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be Created"
+msgid "object could not be Created"
 msgstr "Невозможно создать объект"
 
 #: lib/RT/Record.pm:123
-msgid "Object could not be deleted"
+msgid "object could not be deleted"
 msgstr "Невозможно удалить объект"
 
 #: lib/RT/Record.pm:341
-msgid "Object Created"
+msgid "object Created"
 msgstr "Объект создан"
 
 #: lib/RT/Record.pm:120
-msgid "Object deleted"
+msgid "object deleted"
 msgstr "Объект удален"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($object_type)
 #. ($LookupType)
-msgid "Object of type %1 cannot take custom fields"
+msgid "object of type %1 cannot take custom fields"
 msgstr "Тип объекта %1 не может содержать дополнительные поля"
 
 #: lib/RT/CustomField_Overlay.pm:967
-msgid "Object type mismatch"
+msgid "object type mismatch"
 msgstr "Несовпадение типа объекта"
 
 #: lib/RT/Date.pm:450
@@ -4749,7 +4749,7 @@ msgid "Requests should be due in"
 msgstr "Запросы должны быть обработаны за"
 
 #: lib/RT/Attribute_Overlay.pm:146
-#. ('Object')
+#. ('object')
 msgid "Required parameter '%1' not specified"
 msgstr "Необходимый параметр '%1' не указан"
 
@@ -6615,7 +6615,7 @@ msgstr "месяцев"
 msgid "new"
 msgstr "новая"
 
-#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/PickObjects:65
+#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/Pickobjects:65
 msgid "no name"
 msgstr "нет имени"
 

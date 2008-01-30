@@ -45,14 +45,14 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% my $content = $Object->large_content || $Object->content;
+% my $content = $object->large_content || $object->content;
 % $content = $m->comp('/Elements/ScrubHTML', Content => $content);
-% my $base = $Object->object->wiki_base;
+% my $base = $object->object->wiki_base;
 % my $wiki_content = Text::WikiFormat::format( $content."\n" , {}, { extended => 1,  absolute_links => 1, implicit_links => RT->config->get('WikiImplicitLinks'), prefix => $base} );
 <%$wiki_content|n%>
 <%init>
 use Text::WikiFormat;
 </%init>
 <%ARGS>
-$Object
+$object
 </%ARGS>

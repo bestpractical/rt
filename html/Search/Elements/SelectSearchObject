@@ -46,11 +46,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-@Objects => undef
+@objects => undef
 $name => undef
 </%args>
 <select name="<%$name%>">
-% foreach my $object (@Objects) {
+% foreach my $object (@objects) {
 % if (ref($object) eq 'RT::Model::User' && $object->id == Jifty->web->current_user->id) {
 <option value="<%ref($object)%>-<%$object->id%>"><&|/l&>My saved searches</&></option>
 % } else {

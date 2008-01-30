@@ -122,7 +122,7 @@ sub Run {
     $self->fetch_next( $objs, 1 );
     while ( my $obj = $self->fetch_next($objs) ) {
         next if $seen{ $obj->id }++;
-        push @linked, $self->get_linked( Object => $obj, Seen => \%seen );
+        push @linked, $self->get_linked( object => $obj, Seen => \%seen );
         push @top, $obj;
         last
             if $self->{'opt'}{'limit'}
@@ -135,7 +135,7 @@ sub get_linked {
     my $self  = shift;
     my %arg   = @_;
     my @res   = ();
-    my $query = 'Linked = ' . $arg{'Object'}->id;
+    my $query = 'Linked = ' . $arg{'object'}->id;
     if ( $self->{'opt'}{'apply_query_to_linked'} ) {
         $query .= " AND ( " . $self->{'opt'}{'query'} . " )";
     }
@@ -146,7 +146,7 @@ sub get_linked {
     $self->fetch_next( $objs, 1 );
     while ( my $linked_obj = $self->fetch_next($objs) ) {
         next if $arg{'Seen'}->{ $linked_obj->id }++;
-        push @res, $self->get_linked( %arg, Object => $linked_obj );
+        push @res, $self->get_linked( %arg, object => $linked_obj );
         push @res, $linked_obj;
     }
     return @res;

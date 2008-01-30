@@ -11,7 +11,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: html/Widgets/SavedSearch:70
-#. ($self->{CurrentSearch}{Object}->description)
+#. ($self->{CurrentSearch}{object}->description)
 msgid " %1 deleted."
 msgstr ""
 
@@ -287,7 +287,7 @@ msgstr "%1's %2's %3 Objekte"
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:57
 #. ($object->name)
-#. ($Object->name)
+#. ($object->name)
 msgid "%1's saved searches"
 msgstr "%1's gespeicherte Suchanfragen"
 
@@ -354,7 +354,7 @@ msgstr "(Keine Scrips)"
 msgid "(No templates)"
 msgstr "(Keine Vorlagen)"
 
-#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/PickObjects:47
+#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/Pickobjects:47
 msgid "(None)"
 msgstr "(Nichts)"
 
@@ -1707,7 +1707,7 @@ msgid "Edit Custom Fields"
 msgstr "Benutzerdefinierte Felder verändern"
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
-#. ($Object->name)
+#. ($object->name)
 msgid "Edit Custom Fields for %1"
 msgstr "Bearbeite benutzerdefinierte Felder für %1"
 
@@ -1990,7 +1990,7 @@ msgid "Found %quant(%1,ticket)"
 msgstr "%1 Anfrage(n) gefunden"
 
 #: lib/RT/Record.pm:956
-msgid "Found Object"
+msgid "Found object"
 msgstr "Objekt gefunden"
 
 #: NOT FOUND IN SOURCE
@@ -3240,29 +3240,29 @@ msgid "OR"
 msgstr "Oder"
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be Created"
+msgid "object could not be Created"
 msgstr "Objekt konnte nicht erstellt werden"
 
 #: lib/RT/Record.pm:123
-msgid "Object could not be deleted"
+msgid "object could not be deleted"
 msgstr "Objekt konnte nicht gelöscht werden"
 
 #: lib/RT/Record.pm:341
-msgid "Object Created"
+msgid "object Created"
 msgstr "Objekt erstellt"
 
 #: lib/RT/Record.pm:120
-msgid "Object deleted"
+msgid "object deleted"
 msgstr "Objekt gelöscht"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($object_type)
 #. ($LookupType)
-msgid "Object of type %1 cannot take custom fields"
+msgid "object of type %1 cannot take custom fields"
 msgstr "Objekt vom Typ %1 kann keine benutzerdefinierten Felder haben"
 
 #: lib/RT/CustomField_Overlay.pm:967
-msgid "Object type mismatch"
+msgid "object type mismatch"
 msgstr "Objekt Typ passt nicht"
 
 #: lib/RT/Date.pm:450
@@ -3805,7 +3805,7 @@ msgid "Requests should be due in"
 msgstr "Anfragen sollten erlegt werden innerhalb"
 
 #: lib/RT/Attribute_Overlay.pm:146
-#. ('Object')
+#. ('object')
 msgid "Required parameter '%1' not specified"
 msgstr "Benötigter Parameter '%1' nicht angegeben"
 
@@ -5318,7 +5318,7 @@ msgstr "Monate"
 msgid "new"
 msgstr "neu"
 
-#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/PickObjects:65
+#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/Pickobjects:65
 msgid "no name"
 msgstr "kein name"
 

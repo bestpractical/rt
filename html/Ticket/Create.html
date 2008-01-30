@@ -123,7 +123,7 @@
 <tr>
 <td align="right"><% $CF->name %>:</td>
 <td><& /Elements/EditCustomField, CustomField => $CF, namePrefix =>
-    "Object-RT::Model::Transaction--CustomField-" &><em><% $CF->friendly_type %></em></td>
+    "object-RT::Model::Transaction--CustomField-" &><em><% $CF->friendly_type %></em></td>
 </td></tr>
 % }
 % }
@@ -306,7 +306,7 @@ if ( $cloneTicket ) {
         while ( my $cf_value = $cf_values->next ) {
             push @cf_values, $cf_value->content;
         }
-        $clone->{"Object-RT::Model::Ticket--CustomField-$cf_id-value"} 
+        $clone->{"object-RT::Model::Ticket--CustomField-$cf_id-value"} 
             = join "\n", @cf_values;
     }
     

@@ -47,8 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 /* by TKirby, released under GPL */
 
- function _ClassSetup(Object) {
-  this.prototype	= Object;
+ function _ClassSetup(object) {
+  this.prototype	= object;
   return this;
  }
  

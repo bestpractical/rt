@@ -60,7 +60,7 @@ use RT::Shredder::Constants;
 use RT::Shredder::Transaction;
 use RT::Shredder::Record;
 
-sub __DependsOn {
+sub __depends_on {
     my $self = shift;
     my %args = (
         Shredder     => undef,
@@ -113,10 +113,10 @@ sub __DependsOn {
     $deps->_push_dependencies(
         base_object   => $self,
         Flags         => DEPENDS_ON | WIPE_AFTER,
-        TargetObjects => $list,
+        target_objects => $list,
         Shredder      => $args{'Shredder'}
     );
-    return $self->SUPER::__DependsOn(%args);
+    return $self->SUPER::__depends_on(%args);
 }
 
 #TODO: Link record has small strength, but should be encountered

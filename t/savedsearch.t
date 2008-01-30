@@ -26,8 +26,8 @@ $searchuser->principal_object->grant_right(Right => 'ModifySelf');
 my $ingroup = RT::Model::Group->new(current_user => RT->system_user);
 $ingroup->create_user_defined_group(name => 'searchgroup1'.$$);
 $ingroup->add_member($searchuser->id);
-$searchuser->principal_object->grant_right(Right => 'EditSavedSearches', Object => $ingroup);
-$searchuser->principal_object->grant_right(Right => 'ShowSavedSearches', Object => $ingroup);
+$searchuser->principal_object->grant_right(Right => 'EditSavedSearches', object => $ingroup);
+$searchuser->principal_object->grant_right(Right => 'ShowSavedSearches', object => $ingroup);
 
 # This is the group whose searches searchuser should not be able to see.
 my $outgroup = RT::Model::Group->new(current_user => RT->system_user);
@@ -36,9 +36,9 @@ $outgroup->add_member(RT->system_user->id);
 
 my $queue = RT::Model::Queue->new(current_user => RT->system_user);
 $queue->create(name => 'SearchQueue'.$$);
-$searchuser->principal_object->grant_right(Right => 'SeeQueue', Object => $queue);
-$searchuser->principal_object->grant_right(Right => 'ShowTicket', Object => $queue);
-$searchuser->principal_object->grant_right(Right => 'OwnTicket', Object => $queue);
+$searchuser->principal_object->grant_right(Right => 'SeeQueue', object => $queue);
+$searchuser->principal_object->grant_right(Right => 'ShowTicket', object => $queue);
+$searchuser->principal_object->grant_right(Right => 'OwnTicket', object => $queue);
 
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);

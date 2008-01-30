@@ -38,7 +38,7 @@ ok(!$agent->find_link( url => "$RT::WebPath/User/Prefs.html",
 
 # Now test for their presence, one at a time.  Sleep for a bit after
 # ACL changes, thanks to the 10s ACL cache.
-my ($grantid,$grantmsg) =$user_obj->principal_object->grant_right(Right => 'ShowConfigTab', Object => RT->system);
+my ($grantid,$grantmsg) =$user_obj->principal_object->grant_right(Right => 'ShowConfigTab', object => RT->system);
 
 ok($grantid,$grantmsg);
 
@@ -95,11 +95,11 @@ ok($ret, "SelectOwner test group creation. $msg");
 ($ret, $msg) = $group_obj->add_member($user_obj->principal_object->id());
 ok($ret, "Added customer to its group. $msg");
 ($grantid,$grantmsg) =$group_obj->principal_object->grant_right(Right => 'OwnTicket',
-				     Object => $queue_obj);
+				     object => $queue_obj);
                                      
 ok($grantid,$grantmsg);
 ($grantid,$grantmsg) =$group_obj->principal_object->grant_right(Right => 'SeeQueue',
-				     Object => $queue_obj);
+				     object => $queue_obj);
 ok ($grantid,$grantmsg);
 # Now.  When we look at the search page we should be able to see
 # ourself in the list of possible owners.

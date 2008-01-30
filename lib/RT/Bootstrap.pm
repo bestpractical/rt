@@ -511,7 +511,7 @@ sub insert_data {
             # Grant it
             my ( $return, $msg ) = $princ->principal_object->grant_right(
                 Right  => $item->{'Right'},
-                Object => $object
+                object => $object
             );
 
             if ($return) {
@@ -610,7 +610,7 @@ sub insert_data {
         my $sys = RT::System->new( current_user => RT->system_user );
         for my $item (@Attributes) {
             my $obj
-                = delete $item->{Object};  # XXX: make this something loadable
+                = delete $item->{object};  # XXX: make this something loadable
             $obj ||= $sys;
             my ( $return, $msg ) = $obj->add_attribute(%$item);
             if ($return) {

@@ -79,7 +79,7 @@
 <br />
 
 <&| /Widgets/TitleBox, title => _('Links') &>
-<& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
+<& /Elements/EditLinks, object => $Ticket, Merge => 1 &>
 </&>
 
 <br />
@@ -109,7 +109,7 @@
 <td class="label"><% $CF->name %>:</td>
 <td class="entry"><& /Elements/EditCustomField, 
     CustomField => $CF, 
-    namePrefix => "Object-RT::Model::Transaction--CustomField-"
+    namePrefix => "object-RT::Model::Transaction--CustomField-"
     &><em><% $CF->friendly_type %></em>
 </td></tr>
 %    } # end if while
@@ -163,7 +163,7 @@ unless ($OnlySearchForPeople) {
     }
 
     @wresults   = ProcessTicketWatchers( ticket_obj => $Ticket, ARGSRef => \%ARGS);
-    @cf_results = ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS);
+    @cf_results = ProcessObjectCustomFieldUpdates( object => $Ticket, ARGSRef => \%ARGS);
     @dresults   = ProcessTicketDates( ticket_obj => $Ticket, ARGSRef => \%ARGS);
     @lresults   = ProcessTicketLinks( ticket_obj => $Ticket, ARGSRef => \%ARGS);
 

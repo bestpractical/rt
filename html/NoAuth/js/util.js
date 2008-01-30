@@ -287,12 +287,12 @@ function showShredderPluginTab( plugin )
 	}
 }
 
-function checkAllObjects()
+function checkAllobjects()
 {
 	var check = $('shredder-select-all-objects-checkbox').checked;
 	var elements = $('shredder-search-form').elements;
 	for( var i = 0; i < elements.length; i++ ) {
-		if( elements[i].name != 'WipeoutObject' ) {
+		if( elements[i].name != 'Wipeoutobject' ) {
 			continue;
 		}
 		if( elements[i].type != 'checkbox' ) {

@@ -87,22 +87,22 @@ sub create {
 
     #XXX: Where is ACL check for 'AssignCustomFields'?
 
-    my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new;
-    $ObjectCFs->limit_to_object_id( $args{'object_id'} );
-    $ObjectCFs->limit_to_custom_field( $cf->id );
-    $ObjectCFs->limit_to_lookup_type( $cf->lookup_type );
-    if ( my $first = $ObjectCFs->first ) {
+    my $objectCFs = RT::Model::ObjectCustomFieldCollection->new;
+    $objectCFs->limit_to_object_id( $args{'object_id'} );
+    $objectCFs->limit_to_custom_field( $cf->id );
+    $objectCFs->limit_to_lookup_type( $cf->lookup_type );
+    if ( my $first = $objectCFs->first ) {
         $self->load( $first->id );
         return $first->id;
     }
 
     unless ( defined $args{'sort_order'} ) {
-        my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new(
+        my $objectCFs = RT::Model::ObjectCustomFieldCollection->new(
             current_user => RT->system_user );
-        $ObjectCFs->limit_to_object_id( $args{'object_id'} );
-        $ObjectCFs->limit_to_lookup_type( $cf->lookup_type );
-        $ObjectCFs->order_by( column => 'sort_order', order => 'DESC' );
-        if ( my $first = $ObjectCFs->first ) {
+        $objectCFs->limit_to_object_id( $args{'object_id'} );
+        $objectCFs->limit_to_lookup_type( $cf->lookup_type );
+        $objectCFs->order_by( column => 'sort_order', order => 'DESC' );
+        if ( my $first = $objectCFs->first ) {
             $args{'sort_order'} = $first->sort_order + 1;
         } else {
             $args{'sort_order'} = 0;
@@ -119,13 +119,13 @@ sub create {
 sub delete {
     my $self = shift;
 
-    my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new;
-    $ObjectCFs->limit_to_object_id( $self->object_id );
-    $ObjectCFs->limit_to_lookup_type( $self->custom_field_obj->lookup_type );
+    my $objectCFs = RT::Model::ObjectCustomFieldCollection->new;
+    $objectCFs->limit_to_object_id( $self->object_id );
+    $objectCFs->limit_to_lookup_type( $self->custom_field_obj->lookup_type );
 
     # Move everything below us up
     my $sort_order = $self->sort_order;
-    while ( my $OCF = $ObjectCFs->next ) {
+    while ( my $OCF = $objectCFs->next ) {
         my $this_order = $OCF->sort_order;
         next if $this_order <= $sort_order;
         $OCF->set_sort_order( $this_order - 1 );

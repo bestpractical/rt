@@ -46,52 +46,52 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& $ObjectTabs,
+<& $objectTabs,
 $id ? (
-    id => $Object->id, 
+    id => $object->id, 
     current_tab => "Admin/$Types/CustomFields.html?$sub_type_url&id=".$id, 
     current_subtab => "Admin/$Types/CustomFields.html?$sub_type_url&id=".$id, 
-    "${Type}Obj" => $Object,
+    "${Type}Obj" => $object,
 ) : (
     current_tab => "Admin/Global/CustomFields/${QualifiedType}s.html",
 ),
     Title => $title
     &>
 
-<& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object &>
+<& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object => $object &>
 <%INIT>
 # XXX TODO: Validate here?
 #$object_type =~ /^RT::(Queue|User|Group)$/
-#    or abort(_("Object of type %1 cannot take custom fields", $object_type));
+#    or abort(_("object of type %1 cannot take custom fields", $object_type));
 
 
 
 my $Type = $1;
 my $Types = $Type.'s';
-my $ObjectTabs;
-my $Object = $object_type->new();
+my $objectTabs;
+my $object = $object_type->new();
 
 
 my $QualifiedType;
 my $FriendlySubTypes;
 if (defined $SubType && $SubType =~/^RT::(.*)$/)  {
-    $FriendlySubTypes = RT::Model::CustomField->new()->friendly_lookup_type($Object->custom_field_lookup_type);
+    $FriendlySubTypes = RT::Model::CustomField->new()->friendly_lookup_type($object->custom_field_lookup_type);
    $QualifiedType = "$Type-$1"; 
 } else {
     $QualifiedType = $Type;
 }
 
 if ($id) { 
-    $Object->load($id) || abort(_("Couldn't load object %1", $id));
-    $ObjectTabs = "/Admin/Elements/${Type}Tabs";
+    $object->load($id) || abort(_("Couldn't load object %1", $id));
+    $objectTabs = "/Admin/Elements/${Type}Tabs";
 } else {
-    $ObjectTabs = "/Admin/Elements/GlobalCustomFieldTabs";
+    $objectTabs = "/Admin/Elements/GlobalCustomFieldTabs";
 
 } 
 
 my $title; 
 if ($id) {
-$title =  _('Edit Custom Fields for %1', $Object->name);
+$title =  _('Edit Custom Fields for %1', $object->name);
 }
 elsif ($SubType) {
 

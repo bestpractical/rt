@@ -82,7 +82,7 @@ F<< <RT_home>/var/data/RT-Shredder/<ISO_date>-XXXX.sql >>
 
 =head2 --object (DEPRECATED)
 
-Option has been deprecated, use plugin C<Objects> instead.
+Option has been deprecated, use plugin C<objects> instead.
 
 =head2 --plugin '<plugin name>[=<arg>,<val>[;<arg>,<val>]...]'
 
@@ -147,7 +147,7 @@ my $shredder = RT::Shredder->new;
 my @objs = process_plugins( $shredder );
 prompt_delete_objs( \@objs ) unless $opt{'force'};
 
-$shredder->put_objects( Objects => $_ ) foreach @objs;
+$shredder->put_objects( objects => $_ ) foreach @objs;
 eval { $shredder->wipeout_all };
 if( $@ ) {
     require RT::Shredder::Exceptions;
@@ -196,7 +196,7 @@ sub parse_args
 	Getopt::Long::Configure( "pass_through" );
 	my @objs = ();
 	if( GetOptions( 'object=s' => \@objs ) && @objs ) {
-		print STDERR "Option --object had been deprecated, use plugin 'Objects' instead\n";
+		print STDERR "Option --object had been deprecated, use plugin 'objects' instead\n";
         exit(1);
 	}
 
@@ -248,7 +248,7 @@ sub process_plugins
             _process_dump_plugin( $shredder, $plugin );
         }
 	}
-	return RT::Shredder->cast_objects_to_records( Objects => \@res );
+	return RT::Shredder->cast_objects_to_records( objects => \@res );
 }
 
 sub _process_search_plugin {
@@ -273,7 +273,7 @@ sub _process_search_plugin {
 sub _process_dump_plugin {
     my ($shredder, $plugin) = @_;
     $shredder->add_dump_plugin(
-        Object => $plugin,
+        object => $plugin,
     );
 }
 

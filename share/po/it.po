@@ -11,7 +11,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: html/Widgets/SavedSearch:70
-#. ($self->{CurrentSearch}{Object}->description)
+#. ($self->{CurrentSearch}{object}->description)
 msgid " %1 deleted."
 msgstr ""
 
@@ -331,7 +331,7 @@ msgstr "%3 oggetti di %2 di %1"
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:57
 #. ($object->name)
-#. ($Object->name)
+#. ($object->name)
 msgid "%1's saved searches"
 msgstr "ricerche salvate di %1"
 
@@ -418,7 +418,7 @@ msgstr "(nessuno Scrip)"
 msgid "(No templates)"
 msgstr "(nessun modello)"
 
-#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/PickObjects:47
+#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/Pickobjects:47
 msgid "(None)"
 msgstr "(nessuno)"
 
@@ -2120,7 +2120,7 @@ msgid "Edit Custom Fields"
 msgstr ""
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
-#. ($Object->name)
+#. ($object->name)
 msgid "Edit Custom Fields for %1"
 msgstr "Modifica i campi personalizzati per %1"
 
@@ -2479,7 +2479,7 @@ msgid "Found %quant(%1,ticket)"
 msgstr "Trovati %quant(%1,ticket)"
 
 #: lib/RT/Record.pm:956
-msgid "Found Object"
+msgid "Found object"
 msgstr "Trovato Oggetto"
 
 #: NOT FOUND IN SOURCE
@@ -3962,29 +3962,29 @@ msgid "OR"
 msgstr "OR"
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be Created"
+msgid "object could not be Created"
 msgstr "L'oggetto non può essere creato"
 
 #: lib/RT/Record.pm:123
-msgid "Object could not be deleted"
+msgid "object could not be deleted"
 msgstr "L'oggetto non può essere cancellato"
 
 #: lib/RT/Record.pm:341
-msgid "Object Created"
+msgid "object Created"
 msgstr "Oggetto creato"
 
 #: lib/RT/Record.pm:120
-msgid "Object deleted"
+msgid "object deleted"
 msgstr "Oggetto cancellato"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($object_type)
 #. ($LookupType)
-msgid "Object of type %1 cannot take custom fields"
+msgid "object of type %1 cannot take custom fields"
 msgstr "Oggetto di tipo %1 non accetta campi personalizzati"
 
 #: lib/RT/CustomField_Overlay.pm:967
-msgid "Object type mismatch"
+msgid "object type mismatch"
 msgstr "Tipo oggetto non corrisponde"
 
 #: lib/RT/Date.pm:450
@@ -4719,7 +4719,7 @@ msgid "Requests should be due in"
 msgstr "Le richieste devono essere soddisfatte entro"
 
 #: lib/RT/Attribute_Overlay.pm:146
-#. ('Object')
+#. ('object')
 msgid "Required parameter '%1' not specified"
 msgstr "Il parametro obbligatorio '%1' non è stato specificato"
 
@@ -6537,7 +6537,7 @@ msgstr "mesi"
 msgid "new"
 msgstr "nuovo"
 
-#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/PickObjects:65
+#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/Pickobjects:65
 msgid "no name"
 msgstr "nessun nome"
 

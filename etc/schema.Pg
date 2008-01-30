@@ -476,7 +476,7 @@ CREATE TABLE Templates (
 
 -- }}}
 
--- {{{ Objectcustom_field_values 
+-- {{{ objectcustom_field_values 
 
 
 
@@ -486,7 +486,7 @@ CREATE TABLE Templates (
 
 CREATE SEQUENCE objectcustomfieldvalues_id_s;
 
-CREATE TABLE Objectcustom_field_values (
+CREATE TABLE objectcustom_field_values (
   id INTEGER DEFAULT nextval('objectcustomfieldvalues_id_s'),
   CustomField int NOT NULL  ,
   object_type varchar(255) NULL  ,
@@ -507,8 +507,8 @@ CREATE TABLE Objectcustom_field_values (
 
 );
 
-CREATE INDEX Objectcustom_field_values1 ON Objectcustom_field_values (CustomField,object_type,object_id,Content); 
-CREATE INDEX Objectcustom_field_values2 ON Objectcustom_field_values (CustomField,object_type,object_id); 
+CREATE INDEX objectcustom_field_values1 ON objectcustom_field_values (CustomField,object_type,object_id,Content); 
+CREATE INDEX objectcustom_field_values2 ON objectcustom_field_values (CustomField,object_type,object_id); 
 
 -- }}}
 

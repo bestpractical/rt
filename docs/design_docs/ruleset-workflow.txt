@@ -28,7 +28,7 @@ It describes features that do not exist today and may never exist*_
              |  |                                   ^
              `-(!)----------------------------------'
 
-== Objects
+== objects
 
 Note that "Scrips" are now called "Rules".
 
@@ -52,7 +52,7 @@ Note that "Scrips" are now called "Rules".
   
 === GlobalRule "AquireLocks"
 
-* AppliesTo: All Objects
+* AppliesTo: All objects
 * Condition: OnCreate
 * Action: AquireMyLocks
 

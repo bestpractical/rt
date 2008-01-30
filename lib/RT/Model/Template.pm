@@ -180,7 +180,7 @@ sub create {
         unless (
             $self->current_user->has_right(
                 Right  => 'ModifyTemplate',
-                Object => RT->system
+                object => RT->system
             )
             )
         {

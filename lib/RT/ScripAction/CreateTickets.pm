@@ -140,7 +140,7 @@ A convoluted example
     my $adminccs = RT::Model::UserCollection->new(current_user => RT->system_user);
     $adminccs->who_have_right(
 	Right => "AdminGroup",
-	Object =>$groups->first,
+	object =>$groups->first,
 	IncludeSystemRights => undef,
 	IncludeSuperusers => 0,
 	IncludeSubgroupMembers => 0,
@@ -495,7 +495,7 @@ sub update_by_template {
 
         next unless $ticketargs->{'mime_obj'};
         if ( $ticketargs->{'UpdateType'} =~ /^(private|comment)$/i ) {
-            my ( $Transaction, $description, $Object )
+            my ( $Transaction, $description, $object )
                 = $T::Tickets{$template_id}->comment(
                 BccMessageTo => $ticketargs->{'Bcc'},
                 mime_obj      => $ticketargs->{'mime_obj'},
@@ -508,7 +508,7 @@ sub update_by_template {
         } elsif (
             $ticketargs->{'UpdateType'} =~ /^(public|response|correspond)$/i )
         {
-            my ( $Transaction, $description, $Object )
+            my ( $Transaction, $description, $object )
                 = $T::Tickets{$template_id}->correspond(
                 BccMessageTo => $ticketargs->{'Bcc'},
                 mime_obj      => $ticketargs->{'mime_obj'},

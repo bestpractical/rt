@@ -31,14 +31,14 @@ ok($ret, "$queue test queue creation. $msg");
 
 my $me = RT::Model::User->new(current_user => RT->system_user);
 ($ret, $msg) = $me->create(name => "Me$$", email => $$.'create-me-1@example.com');
-($ret, $msg) = $me->principal_object->grant_right(Object =>$queue_obj, Right => 'OwnTicket');
-($ret, $msg) = $me->principal_object->grant_right(Object =>$queue_obj, Right => 'SeeQueue');
-($ret, $msg) = $me->principal_object->grant_right(Object =>$queue_obj, Right => 'ShowTicket');
+($ret, $msg) = $me->principal_object->grant_right(object =>$queue_obj, Right => 'OwnTicket');
+($ret, $msg) = $me->principal_object->grant_right(object =>$queue_obj, Right => 'SeeQueue');
+($ret, $msg) = $me->principal_object->grant_right(object =>$queue_obj, Right => 'ShowTicket');
 my $you = RT::Model::User->new(current_user => RT->system_user);
 ($ret, $msg) = $you->create(name => "You$$", email => $$.'create-you-1@example.com');
-($ret, $msg) = $you->principal_object->grant_right(Object =>$queue_obj, Right => 'OwnTicket');
-($ret, $msg) = $you->principal_object->grant_right(Object =>$queue_obj, Right => 'SeeQueue');
-($ret, $msg) = $you->principal_object->grant_right(Object =>$queue_obj, Right => 'ShowTicket');
+($ret, $msg) = $you->principal_object->grant_right(object =>$queue_obj, Right => 'OwnTicket');
+($ret, $msg) = $you->principal_object->grant_right(object =>$queue_obj, Right => 'SeeQueue');
+($ret, $msg) = $you->principal_object->grant_right(object =>$queue_obj, Right => 'ShowTicket');
 
 my $nobody = RT::Model::User->new(current_user => RT->system_user);
 $nobody->load('nobody');

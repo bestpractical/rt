@@ -94,7 +94,7 @@ if ($queue_count > 1) {
 }
 
 if (Jifty->web->current_user->has_right( Right => 'ModifySelf',
-				       Object => RT->system )) {
+				       object => RT->system )) {
 	$tabs->{Z} = { title => _('Preferences'),
 		       path => 'SelfService/Prefs.html'
 		       };

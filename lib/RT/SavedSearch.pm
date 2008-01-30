@@ -156,7 +156,7 @@ sub save {
     if ( $object->isa('RT::System') ) {
         return ( 0, _("No permission to save system-wide searches") )
             unless $self->current_user->has_right(
-            Object => RT->system,
+            object => RT->system,
             Right  => 'SuperUser'
             );
     }
@@ -312,7 +312,7 @@ sub _load_privacy_object {
     return undef;
 }
 
-# _GetObject: helper routine to load the correct object whose parameters
+# _Getobject: helper routine to load the correct object whose parameters
 #  have been passed.
 
 sub _get_object {

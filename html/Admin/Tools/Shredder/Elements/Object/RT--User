@@ -46,8 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Object => undef
+$object => undef
 </%ARGS>
-<a href="<% RT->config->get('WebBaseURL') %>/Admin/Users/Modify.html?id=<% $Object->id %>">
-User(id:<% $Object->id %>, name: <% $Object->name %>)
+<a href="<% RT->config->get('WebBaseURL') %>/Admin/Users/Modify.html?id=<% $object->id %>">
+User(id:<% $object->id %>, name: <% $object->name %>)
 </a>

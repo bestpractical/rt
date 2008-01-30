@@ -274,7 +274,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
             $FieldsPod .= "
 =head2 ${field}Obj
 
-Returns the $modulemap{$field} Object which has the id returned by $field
+Returns the $modulemap{$field} object which has the id returned by $field
 
 
 =cut

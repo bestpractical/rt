@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
 % while ( my $CustomField = $CustomFields->next ) {
-% my $values = $Object->custom_field_values( $CustomField->id );
+% my $values = $object->custom_field_values( $CustomField->id );
 % my $count = $values->count;
   <tr id="CF-<%$CustomField->id%>-ShowRow">
     <td class="label"><% $CustomField->name %>:</td>
@@ -70,7 +70,7 @@
 % }
 </table>
 <%INIT>
-my $CustomFields = $Object->custom_fields;
+my $CustomFields = $object->custom_fields;
 $m->callback( Callbackname => 'MassageCustomFields', CustomFields => $CustomFields );
 
 my $print_value = sub  {
@@ -84,10 +84,10 @@ my $print_value = sub  {
         Callbackname => 'ShowComponentname',
         name         => \$comp,
         CustomField  => $cf,
-        Object       => $Object,
+        object       => $object,
     );
     if ( $m->comp_exists( $comp ) ) {
-        $m->comp( $comp, Object => $value );
+        $m->comp( $comp, object => $value );
     } else {
         $m->print( $value->content );
     }
@@ -110,5 +110,5 @@ my $print_value = sub  {
 
 </%INIT>
 <%ARGS>
-$Object => undef
+$object => undef
 </%ARGS>

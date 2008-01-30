@@ -74,7 +74,7 @@ Put in objects into collection.
 Takes
 base_object - any supported object of RT::Record subclass;
 Flags - flags that describe relationship between target and base objects;
-TargetObjects - any of RT::SearchBuilder or RT::Record subclassed objects
+target_objects - any of RT::SearchBuilder or RT::Record subclassed objects
 or array ref on list of this objects;
 Shredder - RT::Shredder object.
 
@@ -84,10 +84,10 @@ SeeAlso: _PushDependecy, RT::Shredder::Dependency
 
 sub _PushDependencies {
     my $self = shift;
-    my %args = ( TargetObjects => undef, Shredder => undef, @_ );
+    my %args = ( target_objects => undef, Shredder => undef, @_ );
     my @objs = $args{'Shredder'}
-        ->cast_objects_to_records( Objects => delete $args{'TargetObjects'} );
-    $self->_push_dependency( %args, TargetObject => $_ ) foreach @objs;
+        ->cast_objects_to_records( objects => delete $args{'target_objects'} );
+    $self->_push_dependency( %args, Targetobject => $_ ) foreach @objs;
     return;
 }
 
@@ -96,19 +96,19 @@ sub _PushDependency {
     my %args = (
         base_object  => undef,
         Flags        => undef,
-        TargetObject => undef,
+        Targetobject => undef,
         Shredder     => undef,
         @_
     );
     my $rec
-        = $args{'Shredder'}->put_object( Object => $args{'TargetObject'} );
+        = $args{'Shredder'}->put_object( object => $args{'Targetobject'} );
     return if $rec->{'State'} & WIPED;    # there is no object anymore
 
     push @{ $self->{'list'} },
         RT::Shredder::Dependency->new(
         base_object  => $args{'base_object'},
         Flags        => $args{'Flags'},
-        TargetObject => $rec->{'Object'},
+        Targetobject => $rec->{'object'},
         );
 
     if ( scalar @{ $self->{'list'} } > ( $RT::DependenciesLimit || 1000 ) ) {

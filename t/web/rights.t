@@ -50,7 +50,7 @@ diag "grant SuperUser right to everyone" if $ENV{'TEST_VERBOSE'};
 
     $m->content_contains('Right Granted', 'got message');
     RT::Model::Principal::invalidate_acl_cache();
-    ok($everyone->principal_object->has_right( Right => 'SuperUser', Object => RT->system ), 'group has right');
+    ok($everyone->principal_object->has_right( Right => 'SuperUser', object => RT->system ), 'group has right');
     is_deeply( [get_rights( $m, $everyone_gid, 'RT::System-1' )], ['SuperUser'], 'granted SuperUser right' );
 }
 
@@ -62,7 +62,7 @@ diag "revoke the right" if $ENV{'TEST_VERBOSE'};
 
     $m->content_contains('Right revoked', 'got message');
     RT::Model::Principal::invalidate_acl_cache();
-    ok(!$everyone->principal_object->has_right( Right => 'SuperUser', Object => RT->system ), 'group has no right');
+    ok(!$everyone->principal_object->has_right( Right => 'SuperUser', object => RT->system ), 'group has no right');
     is_deeply( [get_rights( $m, $everyone_gid, 'RT::System-1' )], [], 'revoked SuperUser right' );
 }
 

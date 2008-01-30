@@ -216,7 +216,7 @@ sub limit_custom_field {
         type    => 'left',
         alias1  => 'main',
         column1 => 'id',
-        table2  => 'Objectcustom_field_values',
+        table2  => 'ObjectCustomFieldValues',
         column2 => 'object_id'
     );
     $self->limit(

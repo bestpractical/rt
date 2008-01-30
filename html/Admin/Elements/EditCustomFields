@@ -48,17 +48,17 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%RT->config->get('WebPath')%><% $m->request_comp->path |n %>" method="post" name="EditCustomFields">
-<input type="hidden" class="hidden" name="id" value="<% $Object->id || ''%>" />
+<input type="hidden" class="hidden" name="id" value="<% $object->id || ''%>" />
 <input type="hidden" class="hidden" name="object_type" value="<% $object_type %>" />
 <input type="hidden" class="hidden" name="SubType" value="<% $SubType %>" />
 <input type="hidden" class="hidden" name="UpdateCFs" value="1" />
 
-% if ($Object->id) {
+% if ($object->id) {
 <h2><&|/l&>Global Custom Fields</&></h2>
 <& PickCustomFields, CustomFields => \@GlobalCFs, ReadOnly => 1, id => $id, SubType => $SubType &>
 % }
 <h2><&|/l&>Selected Custom Fields</&></h2>
-<& PickCustomFields, CustomFields => [$ObjectCFs->custom_fields], id => $id, Checked => 1, SubType => $SubType &>
+<& PickCustomFields, CustomFields => [$objectCFs->custom_fields], id => $id, Checked => 1, SubType => $SubType &>
 <h2><&|/l&>Unselected Custom Fields</&></h2>
 <& PickCustomFields, CustomFields => \@UnassignedCFs, id => $id, SubType => $SubType &>
 
@@ -71,8 +71,8 @@ my $CustomFields = RT::Model::CustomFieldCollection->new();
 my @results;
 my (@GlobalCFs, @UnassignedCFs);
 
-my $id = $Object->id;
-if ($id and !$Object->current_user_has_right('AssignCustomFields')) {
+my $id = $object->id;
+if ($id and !$object->current_user_has_right('AssignCustomFields')) {
     $m->out('<p><i>', _('(No custom fields)'), '</i></p>');
     return;
 }
@@ -84,24 +84,24 @@ $CustomFields->limit_to_lookup_type($lookup);
 $CustomFields->order_by( column => 'name' );
 
 
-my ($GlobalCFs, $ObjectCFs);
-$ObjectCFs = RT::Model::ObjectCustomFieldCollection->new();
-$ObjectCFs->find_all_rows;
-$ObjectCFs->limit_to_object_id($id);
-$ObjectCFs->limit_to_lookup_type($lookup);
+my ($GlobalCFs, $objectCFs);
+$objectCFs = RT::Model::ObjectCustomFieldCollection->new();
+$objectCFs->find_all_rows;
+$objectCFs->limit_to_object_id($id);
+$objectCFs->limit_to_lookup_type($lookup);
 
 # Check sanity of sort_orders
 my %sort_orders;
 $sort_orders{ $_->sort_order }++
-  while ($_ = $ObjectCFs->next);
+  while ($_ = $objectCFs->next);
 
 # If there are duplicates, run though and squash them
 if (grep $_ > 1, values %sort_orders) {
     my $i = 1;
-    while ( my $ObjectCF = $ObjectCFs->next ) {
-        $ObjectCF->set_sort_order( $i++ );
+    while ( my $objectCF = $objectCFs->next ) {
+        $objectCF->set_sort_order( $i++ );
     }
-    $ObjectCFs->goto_first_item;
+    $objectCFs->goto_first_item;
 }
 
 # {{{ deal with moving sort_order of custom fields
@@ -111,11 +111,11 @@ if ($CustomField and $Move) {
 
     my $TargetObj;
     my $target_order = $SourceObj->sort_order + $Move;
-    while (my $ObjectCF = $ObjectCFs->next) { 
-	my $this_order = $ObjectCF->sort_order;
+    while (my $objectCF = $objectCFs->next) { 
+	my $this_order = $objectCF->sort_order;
 
 	# if we have an exact match, finish the loop now
-	($TargetObj = $ObjectCF, last) if $this_order == $target_order;
+	($TargetObj = $objectCF, last) if $this_order == $target_order;
 
 	# otherwise, we need to apropos toward the general direction
 	# ... first, check the sign is correct
@@ -129,7 +129,7 @@ if ($CustomField and $Move) {
 	    next if $orig_delta < $this_delta;
 	}
 
-	$TargetObj = $ObjectCF;
+	$TargetObj = $objectCF;
     }
 
     if ($TargetObj) {
@@ -140,7 +140,7 @@ if ($CustomField and $Move) {
 	# because order changed, we must redo search for subsequent uses
     }
 
-    $ObjectCFs->goto_first_item;
+    $objectCFs->goto_first_item;
 }
 # }}}
 
@@ -161,24 +161,24 @@ while (my $cf = $CustomFields->next) {
     if ($UpdateCFs) {
 	# Go through and delete all the custom field relationships that this object
 	# no longer has
-	my $key = "Object-$id-CF-$cf_id";
+	my $key = "object-$id-CF-$cf_id";
 	if ($ARGS{$key}) {
-	    if (!$ObjectCFs->has_entry_for_custom_field($cf_id)) {
-		my ($val, $msg) = $cf->add_to_object($Object);
+	    if (!$objectCFs->has_entry_for_custom_field($cf_id)) {
+		my ($val, $msg) = $cf->add_to_object($object);
 		push (@results, $msg);
 		push @UnassignedCFs, $cf if !$val;
 	    }
 	}
 	else {
 	    push @UnassignedCFs, $cf;
-	    if ($ObjectCFs->has_entry_for_custom_field($cf_id)) {
-		my ($val, $msg) = $cf->remove_from_object($Object);
+	    if ($objectCFs->has_entry_for_custom_field($cf_id)) {
+		my ($val, $msg) = $cf->remove_from_object($object);
 		push (@results, $msg);
 		pop @UnassignedCFs if !$val;
 	    }
 	}
     }
-    elsif (!$ObjectCFs->has_entry_for_custom_field($cf_id)) {
+    elsif (!$objectCFs->has_entry_for_custom_field($cf_id)) {
 	push @UnassignedCFs, $cf;
     }
         else {
@@ -186,10 +186,10 @@ while (my $cf = $CustomFields->next) {
 }
 
 # redo search...
-$ObjectCFs = RT::Model::ObjectCustomFieldCollection->new();
-$ObjectCFs->find_all_rows;
-$ObjectCFs->limit_to_object_id($id);
-$ObjectCFs->limit_to_lookup_type($lookup);
+$objectCFs = RT::Model::ObjectCustomFieldCollection->new();
+$objectCFs->find_all_rows;
+$objectCFs->limit_to_object_id($id);
+$objectCFs->limit_to_lookup_type($lookup);
 
 </%INIT>
 <%ARGS>
@@ -199,7 +199,7 @@ $Source => undef
 $CustomField => undef
 $FinddisabledCustomFields => undef
 $UpdateCFs => 0
-$Object
+$object
 $object_type
 $SubType => ''
 </%ARGS>

@@ -1267,7 +1267,7 @@ sub gateway {
     # {{{ Lets check for mail loops of various sorts.
     my ( $should_store_machine_generated_message, $IsALoop, $result );
     ( $should_store_machine_generated_message, $ErrorsTo, $result, $IsALoop )
-        = _HandleMachineGeneratedMail(
+        = _handle_machine_generated_mail(
         Message   => $Message,
         ErrorsTo  => $ErrorsTo,
         subject   => $subject,
@@ -1574,7 +1574,7 @@ EOT
     }
 }
 
-=head2 _HandleMachineGeneratedMail
+=head2 _handle_machine_generated_mail
 
 Takes named params:
     Message

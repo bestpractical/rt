@@ -96,23 +96,23 @@
     my $ACE = RT::Model::ACE->new();
 
 
-    $ACLObj->limit_to_object( $Object);
+    $ACLObj->limit_to_object( $object);
     $ACLObj->limit_to_principal( id => $principal_id);
     $ACLObj->order_by(column=>'right_name'); 
 
-    if (ref($Object) && UNIVERSAL::can($Object, 'available_rights')) { 
-        %Rights = %{$Object->available_rights};
+    if (ref($object) && UNIVERSAL::can($object, 'available_rights')) { 
+        %Rights = %{$object->available_rights};
     } 
 
         else {
                 %Rights = ( _('System Error') => loc("No rights found") );
         }
         
-    $ACLDesc = "$principal_id-".ref($Object)."-".$Object->id;
+    $ACLDesc = "$principal_id-".ref($object)."-".$object->id;
 </%INIT>
     
 <%ARGS>
 $principal_type => undef
 $principal_id => undef
-$Object =>undef
+$object =>undef
 </%ARGS>

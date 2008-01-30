@@ -47,23 +47,23 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
 <&    /Admin/Elements/UserTabs,
-    id => $Object->id, 
+    id => $object->id, 
     current_tab => "Admin/Users/CustomFields.html?$id=".$id, 
     current_subtab => "Admin/Users/CustomFields.html?id=".$id, 
-    user_object => $Object,
+    user_object => $object,
     Title => $title
     &>
 
-    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, Object => $Object, object_type => 'RT::Model::User' &>
+    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object => $object, object_type => 'RT::Model::User' &>
 <%INIT>
-my $Object = RT::Model::User->new();
+my $object = RT::Model::User->new();
 
-$Object->load($id) || abort( _( "Couldn't load object %1", $id ) );
+$object->load($id) || abort( _( "Couldn't load object %1", $id ) );
 my $FriendlySubTypes =
   RT::Model::CustomField->new()
-  ->friendly_lookup_type( $Object->custom_field_lookup_type );
+  ->friendly_lookup_type( $object->custom_field_lookup_type );
 
-my $title = _( 'Edit Custom Fields for %1', $Object->name );
+my $title = _( 'Edit Custom Fields for %1', $object->name );
 
 </%INIT>
 <%ARGS>

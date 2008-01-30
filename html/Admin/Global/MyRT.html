@@ -67,7 +67,7 @@ my @items = map { [ "component-$_", $_ ] } sort @{ RT->config->get('HomepageComp
 my $sys = RT::System->new();
 # XXX: put this in savedsearches_to_portlet_items
 for ( $m->comp( "/Search/Elements/SearchesForObject",
-                Object => $sys )) {
+                object => $sys )) {
     my ( $desc, $search ) = @$_;
     my $SearchType = $search->content->{'SearchType'} || 'Ticket';
     if ( $SearchType eq 'Ticket' ) {

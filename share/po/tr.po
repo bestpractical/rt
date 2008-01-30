@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: html/Widgets/SavedSearch:70
-#. ($self->{CurrentSearch}{Object}->description)
+#. ($self->{CurrentSearch}{object}->description)
 msgid " %1 deleted."
 msgstr " %1 silindi."
 
@@ -249,7 +249,7 @@ msgstr "%1 ve %2 için %3 nesne"
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:57
 #. ($object->name)
-#. ($Object->name)
+#. ($object->name)
 msgid "%1's saved searches"
 msgstr "%1 için kaydedilmiş aramalar"
 
@@ -316,7 +316,7 @@ msgstr "(Senet yok)"
 msgid "(No templates)"
 msgstr "(Şablon yok)"
 
-#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/PickObjects:47
+#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/Pickobjects:47
 msgid "(None)"
 msgstr "(Hiçbiri)"
 
@@ -1544,7 +1544,7 @@ msgid "Edit Custom Fields"
 msgstr "Özel Bölümleri Düzenle"
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
-#. ($Object->name)
+#. ($object->name)
 msgid "Edit Custom Fields for %1"
 msgstr "%1 için özel bölümleri düzenle"
 
@@ -1815,7 +1815,7 @@ msgid "Found %quant(%1,ticket)"
 msgstr "%quant(%1,ticket) bulundu"
 
 #: lib/RT/Record.pm:956
-msgid "Found Object"
+msgid "Found object"
 msgstr "Nesne bulundu"
 
 #: lib/RT/Date.pm:421
@@ -3022,29 +3022,29 @@ msgid "OR"
 msgstr "VEYA"
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be Created"
+msgid "object could not be Created"
 msgstr "Nesne oluşturulamıyor"
 
 #: lib/RT/Record.pm:123
-msgid "Object could not be deleted"
+msgid "object could not be deleted"
 msgstr "Nesne silinemiyor"
 
 #: lib/RT/Record.pm:341
-msgid "Object Created"
+msgid "object Created"
 msgstr "Nesne oluşturuldu"
 
 #: lib/RT/Record.pm:120
-msgid "Object deleted"
+msgid "object deleted"
 msgstr "Nesne silindi"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($object_type)
 #. ($LookupType)
-msgid "Object of type %1 cannot take custom fields"
+msgid "object of type %1 cannot take custom fields"
 msgstr "%1 türündeki nesneler, özel alanlar alamazlar"
 
 #: lib/RT/CustomField_Overlay.pm:967
-msgid "Object type mismatch"
+msgid "object type mismatch"
 msgstr "Nesne türü eşleşmiyor"
 
 #: lib/RT/Date.pm:450
@@ -3571,7 +3571,7 @@ msgid "Requests should be due in"
 msgstr "İsteklerin yapılacağı zaman:"
 
 #: lib/RT/Attribute_Overlay.pm:146
-#. ('Object')
+#. ('object')
 msgid "Required parameter '%1' not specified"
 msgstr "Gerekli parametre '%1' belirtilmedi"
 
@@ -4977,7 +4977,7 @@ msgstr "ay"
 msgid "new"
 msgstr "yeni"
 
-#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/PickObjects:65
+#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/Pickobjects:65
 msgid "no name"
 msgstr "adsız"
 

@@ -233,7 +233,7 @@ sub limit_to_privileged {
 
 # {{{ who_have_right
 
-=head2 who_have_right { Right => 'name', Object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, equiv_objects => [ ] }
+=head2 who_have_right { Right => 'name', object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, equiv_objects => [ ] }
 
 
 find all users who the right Right for this group, either individually
@@ -324,23 +324,23 @@ sub _join_acl {
 sub _get_equiv_objects {
     my $self = shift;
     my %args = (
-        Object              => undef,
+        object              => undef,
         IncludeSystemRights => undef,
         equiv_objects       => [],
         @_
     );
-    return () unless $args{'Object'};
+    return () unless $args{'object'};
 
-    my @objects = ( $args{'Object'} );
-    if ( UNIVERSAL::isa( $args{'Object'}, 'RT::Model::Ticket' ) ) {
+    my @objects = ( $args{'object'} );
+    if ( UNIVERSAL::isa( $args{'object'}, 'RT::Model::Ticket' ) ) {
 
 # If we're looking at ticket rights, we also want to look at the associated queue rights.
 # this is a little bit hacky, but basically, now that we've done the ticket roles magic,
 # we load the queue object and ask all the rest of our questions about the queue.
 
         # XXX: This should be abstracted into object itself
-        if ( $args{'Object'}->id ) {
-            push @objects, $args{'Object'}->acl_equivalence_objects;
+        if ( $args{'object'}->id ) {
+            push @objects, $args{'object'}->acl_equivalence_objects;
         } else {
             push @objects, 'RT::Model::Queue';
         }
@@ -358,7 +358,7 @@ sub who_have_right {
     my $self = shift;
     my %args = (
         Right                  => undef,
-        Object                 => undef,
+        object                 => undef,
         IncludeSystemRights    => undef,
         IncludeSuperusers      => undef,
         IncludeSubgroupMembers => 1,
@@ -368,7 +368,7 @@ sub who_have_right {
 
     if ( defined $args{'object_type'} || defined $args{'object_id'} ) {
         Jifty->log->fatal(
-            "who_have_right called with the Obsolete object_id/object_type API"
+            "who_have_right called with the Obsolete object_id/Object_type API"
         );
         return (undef);
     }
@@ -397,7 +397,7 @@ sub who_have_role_right {
     my $self = shift;
     my %args = (
         Right                  => undef,
-        Object                 => undef,
+        object                 => undef,
         IncludeSystemRights    => undef,
         IncludeSuperusers      => undef,
         IncludeSubgroupMembers => 1,
@@ -441,7 +441,7 @@ sub who_have_role_right {
         }
     }
 
-    $self->_add_subclause( "WhichObject", "($check_objects)" );
+    $self->_add_subclause( "Whichobject", "($check_objects)" );
     $self->_add_subclause( "WhichRole",   "($check_roles)" );
 
     $self->limit(
@@ -479,7 +479,7 @@ sub who_have_group_right {
     my $self = shift;
     my %args = (
         Right                  => undef,
-        Object                 => undef,
+        object                 => undef,
         IncludeSystemRights    => undef,
         IncludeSuperusers      => undef,
         IncludeSubgroupMembers => 1,
@@ -513,7 +513,7 @@ sub who_have_group_right {
             $check_objects = "($acl.object_type != 'RT::System')";
         }
     }
-    $self->_add_subclause( "WhichObject", "($check_objects)" );
+    $self->_add_subclause( "Whichobject", "($check_objects)" );
 
     $self->_join_group_members_for_group_rights( %args, ACLAlias => $acl );
 

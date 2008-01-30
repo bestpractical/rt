@@ -11,9 +11,9 @@ alter table Transactions rename column Ticket to object_id;
 
 CREATE INDEX Transactions1 ON Transactions (object_type, object_id);
 
-alter table Ticketcustom_field_values rename to Objectcustom_field_values;
+alter table Ticketcustom_field_values rename to objectcustom_field_values;
 
-alter table Objectcustom_field_values  rename column Ticket to object_id;
+alter table objectcustom_field_values  rename column Ticket to object_id;
 
 alter table objectcustomfieldvalues add column object_type varchar(255);
 
@@ -33,9 +33,9 @@ alter table objectcustomfieldvalues add column content_type varchar(80) NULL;
 
 alter table objectcustomfieldvalues add column ContentEncoding varchar(80) NULL;
 
-create index Objectcustom_field_values1 on objectcustomfieldvalues (CustomField,object_type,object_id,Content); 
+create index objectcustom_field_values1 on objectcustomfieldvalues (CustomField,object_type,object_id,Content); 
 
-create index Objectcustom_field_values2  on objectcustomfieldvalues (CustomField,object_type,object_id); 
+create index objectcustom_field_values2  on objectcustomfieldvalues (CustomField,object_type,object_id); 
 
 
 CREATE SEQUENCE objectcustomfields_id_s;

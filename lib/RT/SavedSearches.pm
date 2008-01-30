@@ -149,7 +149,7 @@ sub count {
 
 ### Internal methods
 
-# _GetObject: helper routine to load the correct object whose parameters
+# _Getobject: helper routine to load the correct object whose parameters
 #  have been passed.
 
 sub _get_object {
@@ -161,7 +161,7 @@ sub _get_object {
 
 ### Internal methods
 
-# _PrivacyObjects: returns a list of objects that can be used to load saved searches from.
+# _Privacyobjects: returns a list of objects that can be used to load saved searches from.
 
 sub _privacy_objects {
     my $self        = shift;

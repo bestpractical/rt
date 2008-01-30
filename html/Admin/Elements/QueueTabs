@@ -90,7 +90,7 @@ if ($id) {
         }
         };
 }
-if (Jifty->web->current_user->has_right( Object => RT->system, Right => 'AdminQueue')) {
+if (Jifty->web->current_user->has_right( object => RT->system, Right => 'AdminQueue')) {
   $tabs->{"A"} = { title => _('Select queue'),
   		     	path => "Admin/Queues/",
 			   };

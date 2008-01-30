@@ -70,7 +70,7 @@
 %   }
 % }
 % if ( $Transaction->custom_field_values->count ) {
-      <& /Elements/ShowCustomFields, Object => $Transaction &>
+      <& /Elements/ShowCustomFields, object => $Transaction &>
 % }
 % $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
     </td>

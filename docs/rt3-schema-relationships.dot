@@ -68,9 +68,9 @@ edge [
 "ObjectCustomFields" -> "CustomFields" [label="CustomField -> id"];
 "ObjectCustomFields" -> "Records" [label="object_id -> id"];
 
-"Objectcustom_field_values" [shape = record, fontsize = 18, label = "<col0> \N " ];
-"Objectcustom_field_values" -> "CustomFields" [label="CustomField -> id"];
-"Objectcustom_field_values" -> "Records" [label="object_id -> id"];
+"objectcustom_field_values" [shape = record, fontsize = 18, label = "<col0> \N " ];
+"objectcustom_field_values" -> "CustomFields" [label="CustomField -> id"];
+"objectcustom_field_values" -> "Records" [label="object_id -> id"];
 
 "Tickets" [shape = record, fontsize = 18, label = "<col0> \N " ];
 "Tickets" -> "Tickets" [label="EffectiveId -> id"];

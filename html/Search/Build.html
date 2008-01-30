@@ -283,7 +283,7 @@ push @actions, $m->comp( 'Elements/EditSearches:Save', %ARGS, Query => \%query, 
 $session{'CurrentSearchHash'} = {
     %query,
     SearchId    => $saved_search{'id'},
-    Object      => $saved_search{'Object'},
+    object      => $saved_search{'object'},
     description => $saved_search{'description'},
 };
 

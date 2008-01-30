@@ -79,7 +79,7 @@ subtabs => {
     }
 }
 
-if (Jifty->web->current_user->has_right( Object => RT->system, Right => 'AdminUsers')) {
+if (Jifty->web->current_user->has_right( object => RT->system, Right => 'AdminUsers')) {
   $tabs->{"A"} = { title => _('Select user'),
   		     	path => "Admin/Users/",
 			   };

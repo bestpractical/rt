@@ -70,21 +70,21 @@ Dependecies list have reached its limit.
 See \$RT::DependenciesLimit in RT::Shredder docs.
 END
 
-    SystemObject => <<END,
+    Systemobject => <<END,
 System object was requested for deletion, shredder couldn't
 do that because system would be unusable than.
 END
 
-    CouldntLoadObject => <<END,
+    CouldntLoadobject => <<END,
 Shredder couldn't load object. Most probably it's not fatal error.
-May be you've used Objects plugin and asked to delete object that
+May be you've used objects plugin and asked to delete object that
 doesn't exist in the system. If you think that your request was
 correct and it's problem of the Shredder then you can get full error
 message from RT log files and send bug report.
 END
 
     NoResolver => <<END,
-Object has dependency that could be resolved, but resolver
+object has dependency that could be resolved, but resolver
 wasn't defined. You have to re-read documentation of the
 plugin you're using, for example the 'Users' plugin has
 option 'replace_relations' argument.

@@ -67,8 +67,8 @@ sub test_args {
 
 sub Run {
     my $self  = shift;
-    my %args  = ( Object => undef, @_ );
-    my $class = ref $args{'Object'};
+    my %args  = ( object => undef, @_ );
+    my $class = ref $args{'object'};
     $class =~ s/^RT:://;
     $class =~ s/:://g;
     my $method = 'WriteDown' . $class;
@@ -81,9 +81,9 @@ my %skip_refs_to = ();
 
 sub write_down_default {
     my $self = shift;
-    my %args = ( Object => undef, @_ );
-    return $self->_write_down_hash( $args{'Object'},
-        $self->_make_hash( $args{'Object'} ),
+    my %args = ( object => undef, @_ );
+    return $self->_write_down_hash( $args{'object'},
+        $self->_make_hash( $args{'object'} ),
     );
 }
 
@@ -110,40 +110,40 @@ sub write_down_principal           { return 1 }
 
 sub write_down_group {
     my $self = shift;
-    my %args = ( Object => undef, @_ );
-    if ( $args{'Object'}->domain =~ /-Role$/ ) {
-        return $skip_refs_to{ $args{'Object'}->_as_string } = 1;
+    my %args = ( object => undef, @_ );
+    if ( $args{'object'}->domain =~ /-Role$/ ) {
+        return $skip_refs_to{ $args{'object'}->_as_string } = 1;
     }
     return $self->write_down_default(%args);
 }
 
 sub write_down_transaction {
     my $self = shift;
-    my %args = ( Object => undef, @_ );
+    my %args = ( object => undef, @_ );
 
-    my $props = $self->_make_hash( $args{'Object'} );
-    $props->{'Object'} = delete $props->{'object_type'};
-    $props->{'Object'} .= '-' . delete $props->{'object_id'}
+    my $props = $self->_make_hash( $args{'object'} );
+    $props->{'object'} = delete $props->{'object_type'};
+    $props->{'object'} .= '-' . delete $props->{'object_id'}
         if $props->{'object_id'};
-    return 1 if $skip_refs_to{ $props->{'Object'} };
+    return 1 if $skip_refs_to{ $props->{'object'} };
 
     delete $props->{$_}
         foreach grep !defined $props->{$_} || $props->{$_} eq '',
         keys %$props;
 
-    return $self->_write_down_hash( $args{'Object'}, $props );
+    return $self->_write_down_hash( $args{'object'}, $props );
 }
 
 sub write_down_scrip {
     my $self  = shift;
-    my %args  = ( Object => undef, @_ );
-    my $props = $self->_make_hash( $args{'Object'} );
-    $props->{'Action'}    = $args{'Object'}->action_obj->name;
-    $props->{'Condition'} = $args{'Object'}->condition_obj->name;
-    $props->{'Template'}  = $args{'Object'}->template_obj->name;
-    $props->{'Queue'}     = $args{'Object'}->queue_obj->name || 'global';
+    my %args  = ( object => undef, @_ );
+    my $props = $self->_make_hash( $args{'object'} );
+    $props->{'Action'}    = $args{'object'}->action_obj->name;
+    $props->{'Condition'} = $args{'object'}->condition_obj->name;
+    $props->{'Template'}  = $args{'object'}->template_obj->name;
+    $props->{'Queue'}     = $args{'object'}->queue_obj->name || 'global';
 
-    return $self->_write_down_hash( $args{'Object'}, $props );
+    return $self->_write_down_hash( $args{'object'}, $props );
 }
 
 sub _make_hash {

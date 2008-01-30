@@ -45,14 +45,14 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if (@Objects == 0) {
+% if (@objects == 0) {
 <p><i><&|/l&>(None)</&></i></p>
 % } else {
 <table cellspacing="0" cellpadding="2">
 % my $count;
-% foreach my $Object (@Objects) {
+% foreach my $object (@objects) {
 <tr>
-%   my $id = "Object-".$Object->id."-CF-".$id;
+%   my $id = "object-".$object->id."-CF-".$id;
 %   if (!$ReadOnly) {
   <td valign="top">
 <input type="checkbox" id="<% $id %>" name="<% $id %>" value="1" <% $Checked ? 'CHECKED' : ''%>
@@ -61,12 +61,12 @@
 %   }
   <td valign="top">
     <label for="<% $id %>">
-% if ($Object->name) {
-    <b><%$Object->name%></b><br />
+% if ($object->name) {
+    <b><%$object->name%></b><br />
 % } else {
     <i>(<%_("no name")%>)</i><br />
 % }
-    <%$Object->can('description') ? ($Object->description||'') : '' %>
+    <%$object->can('description') ? ($object->description||'') : '' %>
     </label>
   </td>
 </tr>
@@ -74,7 +74,7 @@
 </table>
 % }
 <%ARGS>
-@Objects
+@objects
 $id
 $ReadOnly => 0
 $Checked => 0

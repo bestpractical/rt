@@ -88,7 +88,7 @@ if ($id) {
     }
 }
 
-if (Jifty->web->current_user->has_right( Object => RT->system, Right => 'AdminCustomField')) {
+if (Jifty->web->current_user->has_right( object => RT->system, Right => 'AdminCustomField')) {
   $tabs->{"A"} = { title => _('Select custom field'),
                         path => "Admin/CustomFields/",
                            };

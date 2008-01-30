@@ -57,7 +57,7 @@ use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;
 use RT::Shredder::Dependencies;
 
-sub __DependsOn {
+sub __depends_on {
     my $self = shift;
     my %args = (
         Shredder     => undef,
@@ -75,11 +75,11 @@ sub __DependsOn {
     $deps->_push_dependencies(
         base_object   => $self,
         Flags         => DEPENDS_ON,
-        TargetObjects => $list,
+        target_objects => $list,
         Shredder      => $args{'Shredder'},
     );
 
-    return $self->SUPER::__DependsOn(%args);
+    return $self->SUPER::__depends_on(%args);
 }
 
 sub __Relates {
@@ -97,8 +97,8 @@ sub __Relates {
     if ( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->get_record( Object => $self );
-        $self = $rec->{'Object'};
+        my $rec = $args{'Shredder'}->get_record( object => $self );
+        $self = $rec->{'object'};
         $rec->{'State'} |= INVALID;
         $rec->{'description'}
             = "Have no related Queue #" . $self->id . " object";
@@ -109,7 +109,7 @@ sub __Relates {
     $deps->_push_dependencies(
         base_object   => $self,
         Flags         => RELATES,
-        TargetObjects => $list,
+        target_objects => $list,
         Shredder      => $args{'Shredder'}
     );
     return $self->SUPER::__Relates(%args);

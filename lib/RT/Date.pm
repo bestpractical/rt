@@ -48,7 +48,7 @@
 
 =head1 name
 
-  RT::Date - a simple Object Oriented date.
+  RT::Date - a simple object Oriented date.
 
 =head1 SYNOPSIS
 
@@ -56,7 +56,7 @@
 
 =head1 description
 
-RT Date is a simple Date Object designed to be speedy and easy for RT to use
+RT Date is a simple Date object designed to be speedy and easy for RT to use
 
 The fact that it assumes that a time of 0 means "never" is probably a bug.
 
@@ -110,7 +110,7 @@ our @DAYS_OF_WEEK = qw(
 
 =head2 new
 
-Object constructor takes one argument C<RT::CurrentUser> object.
+object constructor takes one argument C<RT::CurrentUser> object.
 
 =cut
 
@@ -170,7 +170,7 @@ sub set {
                 = ( $1, $2, $3, $4, $5, $6 );
 
             # use current year if string has no value
-            $year ||= ( localtime time )[5] + 1900;
+            $year ||= ( CORE::localtime time )[5] + 1900;
 
             #timegm expects month as 0->11
             $mon--;
@@ -785,7 +785,7 @@ sub localtime {
             ## Using POSIX::tzset fixes a bug where the TZ environment variable
             ## is cached.
             POSIX::tzset();
-            @local = localtime($unix);
+            @local = CORE::localtime($unix);
         }
         POSIX::tzset();    # return back previouse value
     }

@@ -104,7 +104,7 @@ if ($ARGS{'HomeRefreshInterval'}) {
 }
 
 my $actions;
-if (Jifty->web->current_user->has_right(Right => 'ModifySelf', Object => RT->system)) {
+if (Jifty->web->current_user->has_right(Right => 'ModifySelf', object => RT->system)) {
     $actions = {
         A => { title => _('Edit'),
                path  => 'Prefs/MyRT.html',

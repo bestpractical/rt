@@ -132,7 +132,7 @@ Load an ACE by specifying a paramhash with the following fields:
 
         And either:
 
-	      Object => undef,
+	      object => undef,
 
             OR
 
@@ -147,7 +147,7 @@ sub load_by_values {
         principal_id   => undef,
         principal_type => undef,
         right_name     => undef,
-        Object         => undef,
+        object         => undef,
         object_id      => undef,
         object_type    => undef,
         @_
@@ -203,7 +203,7 @@ PARAMS is a parameter hash with the following elements:
 
     Either:
 
-   Object => An object to create rights for. ususally, an RT::Model::Queue or RT::Model::Group
+   object => An object to create rights for. ususally, an RT::Model::Queue or RT::Model::Group
              This should always be a Jifty::DBI::Record subclass
 
         OR
@@ -225,7 +225,7 @@ sub create {
         principal_id   => undef,
         principal_type => undef,
         right_name     => undef,
-        Object         => undef,
+        object         => undef,
         @_
     );
 
@@ -234,15 +234,15 @@ sub create {
     }
 
 #if we haven't specified any sort of right, we're talking about a global right
-    if (   !defined $args{'Object'}
+    if (   !defined $args{'object'}
         && !defined $args{'object_id'}
         && !defined $args{'object_type'} )
     {
-        $args{'Object'} = RT->system;
+        $args{'object'} = RT->system;
     }
-    ( $args{'Object'}, $args{'object_type'}, $args{'object_id'} )
+    ( $args{'object'}, $args{'object_type'}, $args{'object_id'} )
         = $self->_parse_object_arg(%args);
-    unless ( $args{'Object'} ) {
+    unless ( $args{'object'} ) {
         return ( 0, _("System error. Right not granted.") );
     }
 
@@ -260,10 +260,10 @@ sub create {
 
     # {{{ Check the ACL
 
-    if ( ref( $args{'Object'} ) eq 'RT::Model::Group' ) {
+    if ( ref( $args{'object'} ) eq 'RT::Model::Group' ) {
         unless (
             $self->current_user->has_right(
-                Object => $args{'Object'},
+                object => $args{'object'},
                 Right  => 'AdminGroup'
             )
             )
@@ -275,7 +275,7 @@ sub create {
     else {
         unless (
             $self->current_user->has_right(
-                Object => $args{'Object'},
+                object => $args{'object'},
                 Right  => 'ModifyACL'
             )
             )
@@ -298,15 +298,15 @@ sub create {
     $args{'right_name'} = $canonic_name;
 
     #check if it's a valid right_name
-    if ( $args{'Object'}->can('available_rights') ) {
+    if ( $args{'object'}->can('available_rights') ) {
         unless (
-            exists $args{'Object'}
+            exists $args{'object'}
             ->available_rights->{ $args{'right_name'} } )
         {
             Jifty->log->warn(
                       "Couldn't validate right name '$args{'right_name'}'"
                     . " for object of "
-                    . ref( $args{'Object'} )
+                    . ref( $args{'object'} )
                     . " class" );
             return ( 0, _('Invalid right') );
         }
@@ -332,8 +332,8 @@ sub create {
         principal_id   => $princ_obj->id,
         principal_type => $args{'principal_type'},
         right_name     => $args{'right_name'},
-        object_type    => ref( $args{'Object'} ),
-        object_id      => $args{'Object'}->id,
+        object_type    => ref( $args{'object'} ),
+        object_id      => $args{'object'}->id,
         delegated_by    => 0,
         delegated_from  => 0,
     );
@@ -393,7 +393,7 @@ sub delegate {
     unless (
         $self->current_user->has_right(
             Right  => 'DelegateRights',
-            Object => $self->object
+            object => $self->object
         )
         )
     {
@@ -485,7 +485,7 @@ sub delete {
     unless (
         (   $self->current_user->has_right(
                 Right  => 'ModifyACL',
-                Object => $self->object
+                object => $self->object
             )
             && $self->__value('delegated_by') == 0
         )
@@ -614,9 +614,9 @@ sub canonicalize_right_name {
 
 # }}}
 
-# {{{ sub Object
+# {{{ sub object
 
-=head2 Object
+=head2 object
 
 If the object this ACE applies to is a queue, returns the queue object. 
 If the object this ACE applies to is a group, returns the group object. 
@@ -641,7 +641,7 @@ sub object {
         $appliesto_obj->load( $self->__value('object_id') );
         return ($appliesto_obj);
     } else {
-        Jifty->log->warn( "$self -> Object called for an object "
+        Jifty->log->warn( "$self -> object called for an object "
                 . "of an unknown type:"
                 . $self->__value('object_type') );
         return (undef);
@@ -705,7 +705,7 @@ sub _value {
     } elsif (
         $self->current_user->has_right(
             Right  => 'ShowACL',
-            Object => $self->object
+            object => $self->object
         )
         )
     {
@@ -769,23 +769,23 @@ sub canonicalize_principal {
 sub _parse_object_arg {
     my $self = shift;
     my %args = (
-        Object      => undef,
+        object      => undef,
         object_id   => undef,
         object_type => undef,
         @_
     );
 
-    if ( $args{'Object'} && ( $args{'object_id'} || $args{'object_type'} ) ) {
+    if ( $args{'object'} && ( $args{'object_id'} || $args{'object_type'} ) ) {
         Jifty->log->fatal(
-            "Method called with an object_type or an object_id and Object args"
+            "Method called with an object_type or an object_id and object args"
         );
         return ();
-    } elsif ( $args{'Object'} && !UNIVERSAL::can( $args{'Object'}, 'id' ) ) {
+    } elsif ( $args{'object'} && !UNIVERSAL::can( $args{'object'}, 'id' ) ) {
         Jifty->log->fatal(
-            "Method called called Object that has no id method");
+            "Method called called object that has no id method");
         return ();
-    } elsif ( $args{'Object'} ) {
-        my $obj = $args{'Object'};
+    } elsif ( $args{'object'} ) {
+        my $obj = $args{'object'};
         return ( $obj, ref $obj, $obj->id );
     } elsif ( $args{'object_type'} ) {
         my $obj = $args{'object_type'}->new;

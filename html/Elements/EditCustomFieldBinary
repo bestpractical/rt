@@ -53,7 +53,7 @@
 <input type="file" name="<% $namePrefix %><% $CustomField->id %>-Upload" />
 % }
 <%ARGS>
-$Object => undef
+$object => undef
 $CustomField => undef
 $namePrefix => undef
 $Default => undef

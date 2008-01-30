@@ -113,10 +113,10 @@ sub delete {
     my $self = shift;
     my ($rv) = $self->SUPER::delete;
     if ($rv) {
-        return ( $rv, _("Object deleted") );
+        return ( $rv, _("object deleted") );
     } else {
 
-        return ( 0, _("Object could not be deleted") );
+        return ( 0, _("object could not be deleted") );
     }
 }
 
@@ -294,7 +294,7 @@ sub create {
 
     unless ($id) {
         if (wantarray) {
-            return ( $id, _('Object could not be Created') );
+            return ( $id, _('object could not be Created') );
         } else {
             return ($id);
         }
@@ -309,7 +309,7 @@ sub create {
     $self->load($id) if ($id);
 
     if (wantarray) {
-        return ( $id, _('Object Created') );
+        return ( $id, _('object Created') );
     } else {
         return ($id);
     }
@@ -807,7 +807,7 @@ sub update {
                                    "Invalid data",                         # loc
                                    "Couldn't find row",                    # loc
                                    "Missing a primary key?: %1",         # loc
-                                   "Found Object",                         # loc
+                                   "Found object",                         # loc
 
 =cut
 
@@ -1223,7 +1223,7 @@ sub _delete_link {
 
 =head2 _new_transaction  PARAMHASH
 
-Private function to create a RT::Model::Transaction->new object for this ticket update
+Private function to create a RT::Model::Transaction->new Object for this ticket update
 
 =cut
 
@@ -1448,7 +1448,7 @@ sub _add_custom_field_value {
  # value and record a "changed from foo to bar" transaction
     unless ( $cf->unlimited_values ) {
 
-# Load up a Objectcustom_field_values object for this custom field and this ticket
+# Load up a objectcustom_field_values object for this custom field and this ticket
         my $values = $cf->values_for_object($self);
 
 # We need to whack any old values here.  In most cases, the custom field should
@@ -1464,7 +1464,7 @@ sub _add_custom_field_value {
                 $i++;
                 if ( $i < $cf_values ) {
                     my ( $val, $msg ) = $cf->delete_value_for_object(
-                        Object  => $self,
+                        object  => $self,
                         Content => $value->content
                     );
                     unless ($val) {
@@ -1511,7 +1511,7 @@ sub _add_custom_field_value {
         }
 
         my ( $new_value_id, $value_msg ) = $cf->add_value_for_object(
-            Object       => $self,
+            object       => $self,
             Content      => $args{'Value'},
             LargeContent => $args{'LargeContent'},
             content_type  => $args{'content_type'},
@@ -1562,7 +1562,7 @@ sub _add_custom_field_value {
     # otherwise, just add a new value and record "new value added"
     else {
         my ( $new_value_id, $msg ) = $cf->add_value_for_object(
-            Object       => $self,
+            object       => $self,
             Content      => $args{'Value'},
             LargeContent => $args{'LargeContent'},
             content_type  => $args{'content_type'},
@@ -1618,7 +1618,7 @@ sub delete_custom_field_value {
     }
 
     my ( $val, $msg ) = $cf->delete_value_for_object(
-        Object  => $self,
+        object  => $self,
         id      => $args{'ValueId'},
         Content => $args{'Value'},
     );
@@ -1668,7 +1668,7 @@ sub first_custom_field_value {
 
 =head2 custom_field_values column
 
-Return a Objectcustom_field_values object of all values of the CustomField whose 
+Return a objectcustom_field_values object of all values of the CustomField whose 
 id or name is column for this record.
 
 Returns an RT::Model::ObjectCustomFieldValueCollection object

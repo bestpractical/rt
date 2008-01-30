@@ -194,7 +194,7 @@ my $nobody = RT->nobody();
     $everyone->load_system_internal_group('Everyone');
     ok($everyone->id, "loaded 'everyone' group");
     my($id, $msg) = $everyone->principal_object->grant_right( Right => 'OwnTicket',
-                                                         Object => $q
+                                                         object => $q
                                                        );
     ok($id, "granted OwnTicket right to Everyone on '$queue'") or diag("error: $msg");
 

@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#. ($self->{CurrentSearch}{Object}->description)
+#. ($self->{CurrentSearch}{object}->description)
 #: html/Widgets/SavedSearch:70
 msgid " %1 deleted."
 msgstr " %1 raderad."
@@ -266,7 +266,7 @@ msgstr "%1:s %2 objekt"
 msgid "%1's %2's %3 objects"
 msgstr "%1:s %2:s %3 objekt"
 
-#. ($Object->name)
+#. ($object->name)
 #. ($object->name)
 #: html/Search/Elements/SearchPrivacy:52
 #: html/Search/Elements/SelectSearchObject:55
@@ -349,7 +349,7 @@ msgid "(No templates)"
 msgstr "(Inga mallar)"
 
 #: html/Admin/Elements/PickCustomFields:47
-#: html/Admin/Elements/PickObjects:47
+#: html/Admin/Elements/Pickobjects:47
 msgid "(None)"
 msgstr "(Inga)"
 
@@ -1735,7 +1735,7 @@ msgstr "Redigera"
 msgid "Edit Custom Fields"
 msgstr "Redigera extrafält"
 
-#. ($Object->name)
+#. ($object->name)
 #: html/Admin/Elements/ObjectCustomFields:92
 #: html/Admin/Queues/CustomFields.html:64
 #: html/Admin/Users/CustomFields.html:64
@@ -2037,7 +2037,7 @@ msgid "Found %quant(%1,ticket)"
 msgstr "Hittade %quant(%1,ärende)"
 
 #: lib/RT/Record.pm:956
-msgid "Found Object"
+msgid "Found object"
 msgstr "Hittade Objekt"
 
 #: lib/RT/Date.pm:421
@@ -3381,30 +3381,30 @@ msgid "OR"
 msgstr "ELLER"
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be Created"
+msgid "object could not be Created"
 msgstr "Objekt kan ej skapas"
 
 #: lib/RT/Record.pm:123
-msgid "Object could not be deleted"
+msgid "object could not be deleted"
 msgstr "Objekt kan ej raderas"
 
 #: lib/RT/Record.pm:341
-msgid "Object Created"
+msgid "object Created"
 msgstr "Objekt har skapats"
 
 #: lib/RT/Record.pm:120
-msgid "Object deleted"
+msgid "object deleted"
 msgstr "Objekt har raderats"
 
 #. ($LookupType)
 #. ($object_type)
 #: html/Admin/CustomFields/Objects.html:72
 #: html/Admin/Elements/ObjectCustomFields:63
-msgid "Object of type %1 cannot take custom fields"
+msgid "object of type %1 cannot take custom fields"
 msgstr "Objekt av typen %1 kan inte hantera extrafält"
 
 #: lib/RT/CustomField_Overlay.pm:967
-msgid "Object type mismatch"
+msgid "object type mismatch"
 msgstr "Objekttypmissförhållande"
 
 #: lib/RT/Date.pm:450
@@ -4119,7 +4119,7 @@ msgstr "Rekvirenter"
 msgid "Requests should be due in"
 msgstr "Förfrågningar borde förfalla"
 
-#. ('Object')
+#. ('object')
 #: lib/RT/Attribute_Overlay.pm:146
 msgid "Required parameter '%1' not specified"
 msgstr "Nödvändig parameter '%1' ej specificerad"
@@ -5731,7 +5731,7 @@ msgid "new"
 msgstr "ny"
 
 #: html/Admin/Elements/PickCustomFields:64
-#: html/Admin/Elements/PickObjects:65
+#: html/Admin/Elements/Pickobjects:65
 msgid "no name"
 msgstr "inget namn"
 

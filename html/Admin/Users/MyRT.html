@@ -96,7 +96,7 @@ push @objs, RT::SavedSearches->new(current_user => RT::CurrentUser->new( $user_o
 my @actions;
 
 for my $object (@objs) {
-    for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
+    for ($m->comp("/Search/Elements/SearchesForObject", object => $object)) {
         my ($desc, $search) = @$_;
         my $SearchType = $search->content->{'SearchType'} || 'Ticket';
         if ($object eq $sys && $SearchType eq 'Ticket') {

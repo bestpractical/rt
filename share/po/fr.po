@@ -16,7 +16,7 @@ msgstr ""
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 
 #: html/Widgets/SavedSearch:70
-#. ($self->{CurrentSearch}{Object}->description)
+#. ($self->{CurrentSearch}{object}->description)
 msgid " %1 deleted."
 msgstr ""
 
@@ -262,7 +262,7 @@ msgstr "%1 de %2 de %3 objets"
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:57
 #. ($object->name)
-#. ($Object->name)
+#. ($object->name)
 msgid "%1's saved searches"
 msgstr "Recherches sauvées de %1"
 
@@ -329,7 +329,7 @@ msgstr "(Aucun Scrip)"
 msgid "(No templates)"
 msgstr "(Aucun modèle)"
 
-#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/PickObjects:47
+#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/Pickobjects:47
 msgid "(None)"
 msgstr "(Aucun)"
 
@@ -1572,7 +1572,7 @@ msgid "Edit Custom Fields"
 msgstr "Modifier les champs personnalisés"
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
-#. ($Object->name)
+#. ($object->name)
 msgid "Edit Custom Fields for %1"
 msgstr "Modifier les champs personnalisés pour %1"
 
@@ -1843,7 +1843,7 @@ msgid "Found %quant(%1,ticket)"
 msgstr "Trouvé %quant(%1,ticket)"
 
 #: lib/RT/Record.pm:956
-msgid "Found Object"
+msgid "Found object"
 msgstr "Objet trouvé"
 
 #: lib/RT/Date.pm:421
@@ -3054,29 +3054,29 @@ msgid "OR"
 msgstr "OU"
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be Created"
+msgid "object could not be Created"
 msgstr "L'objet n'a pas pu être ajouté"
 
 #: lib/RT/Record.pm:123
-msgid "Object could not be deleted"
+msgid "object could not be deleted"
 msgstr "Impossible d'effacer l'objet"
 
 #: lib/RT/Record.pm:341
-msgid "Object Created"
+msgid "object Created"
 msgstr "Objet ajouté"
 
 #: lib/RT/Record.pm:120
-msgid "Object deleted"
+msgid "object deleted"
 msgstr "Objet effacé"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($object_type)
 #. ($LookupType)
-msgid "Object of type %1 cannot take custom fields"
+msgid "object of type %1 cannot take custom fields"
 msgstr "Les objets de type %1 ne peuvent avoir de champs personnalisés"
 
 #: lib/RT/CustomField_Overlay.pm:967
-msgid "Object type mismatch"
+msgid "object type mismatch"
 msgstr "Le type d'objet ne correspond pas"
 
 #: lib/RT/Date.pm:450
@@ -3603,7 +3603,7 @@ msgid "Requests should be due in"
 msgstr "Le demande doit être résolue dans"
 
 #: lib/RT/Attribute_Overlay.pm:146
-#. ('Object')
+#. ('object')
 msgid "Required parameter '%1' not specified"
 msgstr "Le paramètre requis '%1' n'est pas spécifié"
 
@@ -5041,7 +5041,7 @@ msgstr "mois"
 msgid "new"
 msgstr "nouveau"
 
-#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/PickObjects:65
+#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/Pickobjects:65
 msgid "no name"
 msgstr "sans nom"
 

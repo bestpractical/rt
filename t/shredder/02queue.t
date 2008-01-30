@@ -18,7 +18,7 @@ diag 'simple queue' if $ENV{'TEST_VERBOSE'};
     ok($id, 'Created queue') or diag "error: $msg";
 
 	my $shredder = shredder_new();
-	$shredder->put_objects( Objects => $queue );
+	$shredder->put_objects( objects => $queue );
 	$shredder->wipeout_all;
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
@@ -41,7 +41,7 @@ diag 'queue with scrip' if $ENV{'TEST_VERBOSE'};
     ok($id, 'Created scrip') or diag "error: $msg";
 
 	my $shredder = shredder_new();
-	$shredder->put_objects( Objects => $queue );
+	$shredder->put_objects( objects => $queue );
 	$shredder->wipeout_all;
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
@@ -62,7 +62,7 @@ diag 'queue with template' if $ENV{'TEST_VERBOSE'};
     ok($id, 'Created template') or diag "error: $msg";
 
 	my $shredder = shredder_new();
-	$shredder->put_objects( Objects => $queue );
+	$shredder->put_objects( objects => $queue );
 	$shredder->wipeout_all;
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
@@ -80,12 +80,12 @@ diag 'queue with a right granted' if $ENV{'TEST_VERBOSE'};
 
     ($id, $msg) = $group->principal_object->grant_right(
         Right  => 'create_ticket',
-        Object => $queue,
+        object => $queue,
     );
     ok($id, 'granted right') or diag "error: $msg";
 
 	my $shredder = shredder_new();
-	$shredder->put_objects( Objects => $queue );
+	$shredder->put_objects( objects => $queue );
 	$shredder->wipeout_all;
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
@@ -110,11 +110,11 @@ diag 'queue with a watcher' if $ENV{'TEST_VERBOSE'};
     ok($id, 'added watcher') or diag "error: $msg";
 
 	my $shredder = shredder_new();
-	$shredder->put_objects( Objects => $queue );
+	$shredder->put_objects( objects => $queue );
 	$shredder->wipeout_all;
 	cmp_deeply( dump_current_and_savepoint('bqcreate'), "current DB equal to savepoint");
 
-#	$shredder->put_objects( Objects => $group );
+#	$shredder->put_objects( objects => $group );
 #	$shredder->wipeout_all;
 #	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }

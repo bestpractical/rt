@@ -35,7 +35,7 @@ all watchers, you'll need to set it explicitly now.
 
 UPGRADING FROM 3.3.14 and earlier - Changes:
 
-The "ModifyObjectcustom_field_values" right name was too long. It's been changed to
+The "Modifyobjectcustom_field_values" right name was too long. It's been changed to
 "ModifyCustomField"
 
 

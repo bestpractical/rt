@@ -11,7 +11,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: html/Widgets/SavedSearch:70
-#. ($self->{CurrentSearch}{Object}->description)
+#. ($self->{CurrentSearch}{object}->description)
 msgid " %1 deleted."
 msgstr "%1 smazán."
 
@@ -315,7 +315,7 @@ msgstr ""
 
 #: html/Search/Elements/SearchPrivacy:52 html/Search/Elements/SelectSearchObject:55 html/Search/Elements/SelectSearchesForObjects:57
 #. ($object->name)
-#. ($Object->name)
+#. ($object->name)
 msgid "%1's saved searches"
 msgstr "Uložené dotazy patřící %1"
 
@@ -390,7 +390,7 @@ msgstr "(Žádné scripy)"
 msgid "(No templates)"
 msgstr "(Žádné vzory)"
 
-#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/PickObjects:47
+#: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/Pickobjects:47
 msgid "(None)"
 msgstr "(Žádné)"
 
@@ -1944,7 +1944,7 @@ msgid "Edit Custom Fields"
 msgstr "Upravit uživatelské položky"
 
 #: html/Admin/Elements/ObjectCustomFields:92 html/Admin/Queues/CustomFields.html:64 html/Admin/Users/CustomFields.html:64
-#. ($Object->name)
+#. ($object->name)
 msgid "Edit Custom Fields for %1"
 msgstr "Upravit uživatelské položky pro %1"
 
@@ -2271,7 +2271,7 @@ msgid "Found %quant(%1,ticket)"
 msgstr "Nalezen%quant(%1,,y,o) %numf(%1) %quant(%1,požadavek,požadavky,požadavků)"
 
 #: lib/RT/Record.pm:956
-msgid "Found Object"
+msgid "Found object"
 msgstr "Nalezen objekt"
 
 #: NOT FOUND IN SOURCE
@@ -3651,29 +3651,29 @@ msgid "OR"
 msgstr "OR"
 
 #: lib/RT/Record.pm:322
-msgid "Object could not be Created"
+msgid "object could not be Created"
 msgstr "Objekt nemůže být vytvořen"
 
 #: lib/RT/Record.pm:123
-msgid "Object could not be deleted"
+msgid "object could not be deleted"
 msgstr "Objekt nemůže být smazán"
 
 #: lib/RT/Record.pm:341
-msgid "Object Created"
+msgid "object Created"
 msgstr "Objekt vytvořen"
 
 #: lib/RT/Record.pm:120
-msgid "Object deleted"
+msgid "object deleted"
 msgstr "Objekt smazán"
 
 #: html/Admin/CustomFields/Objects.html:72 html/Admin/Elements/ObjectCustomFields:63
 #. ($object_type)
 #. ($LookupType)
-msgid "Object of type %1 cannot take custom fields"
+msgid "object of type %1 cannot take custom fields"
 msgstr "Objektu typu %1 nemohou být přiděleny uživatelské položky"
 
 #: lib/RT/CustomField_Overlay.pm:967
-msgid "Object type mismatch"
+msgid "object type mismatch"
 msgstr "Nevhodný typ objektu"
 
 #: lib/RT/Date.pm:450
@@ -4364,7 +4364,7 @@ msgid "Requests should be due in"
 msgstr "Požadavky mají být vyřešeny do"
 
 #: lib/RT/Attribute_Overlay.pm:146
-#. ('Object')
+#. ('object')
 msgid "Required parameter '%1' not specified"
 msgstr "Povinný parametr '%1' nezadán"
 
@@ -6091,7 +6091,7 @@ msgstr "měsíců"
 msgid "new"
 msgstr "nový"
 
-#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/PickObjects:65
+#: html/Admin/Elements/PickCustomFields:64 html/Admin/Elements/Pickobjects:65
 msgid "no name"
 msgstr "bez jména"
 

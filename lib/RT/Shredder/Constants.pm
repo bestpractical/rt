@@ -104,13 +104,13 @@ loaded and placed into cache.
 
 =head2 WIPED
 
-Objects with this state are not exist any more in DB, but perl
+objects with this state are not exist any more in DB, but perl
 object is still in memory. This state is used to be shure that
 delete query is called once.
 
 =head2 VALID
 
-Object is marked with this state only when its relationships
+object is marked with this state only when its relationships
 are valid.
 
 =head2 INVALID

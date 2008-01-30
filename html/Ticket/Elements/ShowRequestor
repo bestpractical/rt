@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
 my $rows = 10;
-my $has_right_adminusers = Jifty->web->current_user->has_right(Object => RT->system, Right => 'AdminUsers');
+my $has_right_adminusers = Jifty->web->current_user->has_right(object => RT->system, Right => 'AdminUsers');
 my $people = $Ticket->requestors->user_members_obj;
 while ( my $requestor = $people->next ) {
     next if $requestor->privileged;

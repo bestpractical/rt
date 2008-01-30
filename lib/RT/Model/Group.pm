@@ -59,7 +59,7 @@ $RT::Model::ACE::OBJECT_TYPES{'RT::Model::Group'} = 1;
 
 #
 
-# TODO: This should be refactored out into an RT::Model::ACECollectionedObject or something
+# TODO: This should be refactored out into an RT::Model::ACECollectionedobject or something
 # stuff the rights into a hash of rights that can exist.
 
 foreach my $right ( keys %{$RIGHTS} ) {
@@ -1212,7 +1212,7 @@ sub _cleanup_invalid_delegations {
     while ( my $member = $members->next() ) {
         my $ret = $member->member_obj->_cleanup_invalid_delegations(
             inside_transaction => 1,
-            Object            => $args{Object}
+            object            => $args{object}
         );
         unless ($ret) {
             Jifty->handle->rollback() unless $in_trans;
@@ -1299,7 +1299,7 @@ sub current_user_has_right {
 
     if ($self->id
         && $self->current_user->has_right(
-            Object => $self,
+            object => $self,
             Right  => $right
         )
         )
@@ -1307,7 +1307,7 @@ sub current_user_has_right {
         return (1);
     } elsif (
         $self->current_user->has_right(
-            Object => RT->system,
+            object => RT->system,
             Right  => $right
         )
         )

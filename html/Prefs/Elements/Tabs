@@ -53,7 +53,7 @@
 
 <%INIT>
 my $tabs;
-$Searches ||= [$m->comp("/Search/Elements/SearchesForObject", Object => RT::System->new())];
+$Searches ||= [$m->comp("/Search/Elements/SearchesForObject", object => RT::System->new())];
 
 $tabs->{a} = {
     title => _('Quick search'),

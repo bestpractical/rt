@@ -264,9 +264,9 @@ sub prepared {
     return ( $self->{'prepared_scrips'} || [] );
 }
 
-# {{{ sup _setupSourceObjects
+# {{{ sup _setupSourceobjects
 
-=head2  _setupSourceObjects { ticket_obj , Ticket, Transaction, transaction_obj }
+=head2  _setupSourceobjects { ticket_obj , Ticket, Transaction, transaction_obj }
 
 Setup a ticket and transaction for this Scrip collection to work with as it runs through the 
 relevant scrips.  (Also to figure out which scrips apply)

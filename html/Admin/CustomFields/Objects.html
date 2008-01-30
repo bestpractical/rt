@@ -59,9 +59,9 @@
 <input type="hidden" class="hidden" name="UpdateObjs" value="1" />
 
 <h2><&|/l&>Selected objects</&></h2>
-<& /Admin/Elements/PickObjects, Objects => \@AssignedObjs, id => $id, Checked => 1 &>
+<& /Admin/Elements/Pickobjects, objects => \@AssignedObjs, id => $id, Checked => 1 &>
 <h2><&|/l&>Unselected objects</&></h2>
-<& /Admin/Elements/PickObjects, Objects => \@UnassignedObjs, id => $id &>
+<& /Admin/Elements/Pickobjects, objects => \@UnassignedObjs, id => $id &>
 
 <& /Elements/Submit, CheckAll => 1, ClearAll => 1 &>
 </form>
@@ -73,7 +73,7 @@ $CF->load($id) if ($id);
 unless ($CF->id) {  abort(_("Could not load CustomField %1"), $id)};
 my $LookupType = $CF->lookup_type || '';
 $LookupType =~ /^(.*?)-/ ||
-     abort(_("Object of type %1 cannot take custom fields", $LookupType));
+     abort(_("object of type %1 cannot take custom fields", $LookupType));
 
 my $Class = $1;
 my $CollectionClass;
@@ -93,31 +93,31 @@ $CollectionClass = $Class.'Collection';
 
 my $title = _('Modify associated objects for %1', $CF->name);
 
-my $Objects = $CollectionClass->new();
+my $objects = $CollectionClass->new();
 my (@results);
 my (@AssignedObjs, @UnassignedObjs);
 
-$Objects->find_all_rows;
-$Objects->order_by( column => 'name' );
+$objects->find_all_rows;
+$objects->order_by( column => 'name' );
 
 
-my $ObjectCFs;
-$ObjectCFs = RT::Model::ObjectCustomFieldCollection->new();
-$ObjectCFs->find_all_rows;
-$ObjectCFs->limit_to_custom_field($id);
+my $objectCFs;
+$objectCFs = RT::Model::ObjectCustomFieldCollection->new();
+$objectCFs->find_all_rows;
+$objectCFs->limit_to_custom_field($id);
 
 my %seen;
-while (my $OCF = $ObjectCFs->next) {
+while (my $OCF = $objectCFs->next) {
     $seen{$OCF->object_id}++;
 }
 
-while (my $obj = $Objects->next) { 
+while (my $obj = $objects->next) { 
     my $obj_id = $obj->id;
 
     if ($UpdateObjs) {
 	# Go through and delete all the custom field relationships that this object
 	# no longer has
-	my $key = "Object-$obj_id-CF-$id";
+	my $key = "object-$obj_id-CF-$id";
 	if ($ARGS{$key}) {
 	    if (!$seen{$obj_id}) {
 		my ($val, $msg) = $CF->add_to_object($obj);
@@ -144,6 +144,6 @@ while (my $obj = $Objects->next) {
 </%INIT>
 <%ARGS>
 $id => undef
-$FinddisabledObjects => 0
+$Finddisabledobjects => 0
 $UpdateObjs => 0
 </%ARGS>

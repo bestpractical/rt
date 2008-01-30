@@ -75,8 +75,8 @@ sub __Relates {
     if ( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->get_record( Object => $self );
-        $self = $rec->{'Object'};
+        my $rec = $args{'Shredder'}->get_record( object => $self );
+        $self = $rec->{'object'};
         $rec->{'State'} |= INVALID;
         $rec->{'description'}
             = "Have no related CustomField #" . $self->id . " object";
@@ -85,7 +85,7 @@ sub __Relates {
     $deps->_push_dependencies(
         base_object   => $self,
         Flags         => RELATES,
-        TargetObjects => $list,
+        target_objects => $list,
         Shredder      => $args{'Shredder'}
     );
     return $self->__relates(%args);

@@ -43,15 +43,15 @@ plan tests => 22;
 	is( $members->count, 1, "find membership record" );
 	
 	my $shredder = shredder_new();
-	$shredder->put_objects( Objects => $members );
+	$shredder->put_objects( objects => $members );
 	$shredder->wipeout_all();
 	cmp_deeply( dump_current_and_savepoint('buadd'), "current DB equal to savepoint");
 	
-	$shredder->put_objects( Objects => $user );
+	$shredder->put_objects( objects => $user );
 	$shredder->wipeout_all();
 	cmp_deeply( dump_current_and_savepoint('bucreate'), "current DB equal to savepoint");
 	
-	$shredder->put_objects( Objects => [$pgroup, $cgroup] );
+	$shredder->put_objects( objects => [$pgroup, $cgroup] );
 	$shredder->wipeout_all();
 	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
@@ -70,7 +70,7 @@ plan tests => 22;
 	$queue->load('General');
 	ok( $queue->id, "queue loaded succesfully" );
 
-	$user->principal_object->grant_right( Right => 'OwnTicket', Object => $queue );
+	$user->principal_object->grant_right( Right => 'OwnTicket', object => $queue );
 
 	use RT::Model::TicketCollection;
 	my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
@@ -86,7 +86,7 @@ plan tests => 22;
 
 	my $member = $ticket->owner_group->members_obj->first;
 	my $shredder = shredder_new();
-	$shredder->put_objects( Objects => $member );
+	$shredder->put_objects( objects => $member );
 	$shredder->wipeout_all();
 
 	$ticket = RT::Model::Ticket->new(current_user => RT->system_user );

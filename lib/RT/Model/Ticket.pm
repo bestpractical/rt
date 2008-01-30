@@ -323,7 +323,7 @@ Supported link types are C<MemberOf>, C<has_member>, C<RefersTo>, C<ReferredToBy
 C<DependsOn> and C<DependedOnBy>. Also, C<Parents> is alias for C<MemberOf> and
 C<Members> and C<Children> are aliases for C<has_member>.
 
-Returns: TICKETID, Transaction Object, Error Message
+Returns: TICKETID, Transaction object, Error Message
 
 
 =cut
@@ -380,7 +380,7 @@ sub create {
     unless (
         $self->current_user->has_right(
             Right  => 'create_ticket',
-            Object => $queue_obj
+            object => $queue_obj
         )
         )
     {
@@ -493,7 +493,7 @@ sub create {
     my $DeferOwner;
     if (   $owner
         && $owner->id != RT->nobody->id
-        && !$owner->has_right( Object => $queue_obj, Right => 'OwnTicket' ) )
+        && !$owner->has_right( object => $queue_obj, Right => 'OwnTicket' ) )
     {
         $DeferOwner = $owner;
         $owner      = undef;
@@ -717,7 +717,7 @@ sub create {
 # Now that we've Created the ticket and set up its metadata, we can actually go and check OwnTicket on the ticket itself.
 # This might be different than before in cases where extensions like RTIR are doing clever things with RT's ACL system
     if ($DeferOwner) {
-        if (!$DeferOwner->has_right( Object => $self, Right => 'OwnTicket' ) )
+        if (!$DeferOwner->has_right( object => $self, Right => 'OwnTicket' ) )
         {
 
             Jifty->log->warn( "User "
@@ -912,7 +912,7 @@ sub import {
     unless (
         $self->current_user->has_right(
             Right  => 'create_ticket',
-            Object => $queue_obj
+            object => $queue_obj
         )
         )
     {
@@ -946,7 +946,7 @@ sub import {
         and ( $owner->id != RT->nobody->id )
         and (
             !$owner->has_right(
-                Object => $queue_obj,
+                object => $queue_obj,
                 Right  => 'OwnTicket'
             )
         )
@@ -1838,7 +1838,7 @@ sub set_queue {
     unless (
         $self->current_user->has_right(
             Right  => 'create_ticket',
-            Object => $Newqueue_obj
+            object => $Newqueue_obj
         )
         )
     {
@@ -1848,7 +1848,7 @@ sub set_queue {
     unless (
         $self->owner_obj->has_right(
             Right  => 'OwnTicket',
-            Object => $Newqueue_obj
+            object => $Newqueue_obj
         )
         )
     {
@@ -2115,7 +2115,7 @@ mime_obj, time_taken, CcMessageTo, BccMessageTo, Content, dry_run
 If dry_run is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
 They will, however, be prepared and you'll be able to access them through the transaction_obj
 
-Returns: Transaction id, Error Message, Transaction Object
+Returns: Transaction id, Error Message, Transaction object
 (note the different order from Create()!)
 
 =cut
@@ -2168,7 +2168,7 @@ if there's no mime_obj, Content is used to build a MIME::Entity object
 If dry_run is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
 They will, however, be prepared and you'll be able to access them through the transaction_obj
 
-Returns: Transaction id, Error Message, Transaction Object
+Returns: Transaction id, Error Message, Transaction object
 (note the different order from Create()!)
 
 
@@ -2913,7 +2913,7 @@ sub set_owner {
 
     #If we've specified a new owner and that user can't modify the ticket
     elsif (
-        !$NewOwnerObj->has_right( Right => 'OwnTicket', Object => $self ) )
+        !$NewOwnerObj->has_right( Right => 'OwnTicket', object => $self ) )
     {
         Jifty->handle->rollback();
         return ( 0, _("That user may not own tickets in that queue") );
@@ -3536,7 +3536,7 @@ sub current_user_has_right {
     my $right = shift;
 
     return $self->current_user->principal_object->has_right(
-        Object => $self,
+        object => $self,
         Right  => $right,
     );
 }
@@ -3573,7 +3573,7 @@ sub has_right {
 
     return (
         $args{'Principal'}->has_right(
-            Object => $self,
+            object => $self,
             Right  => $args{'Right'}
         )
     );
@@ -3703,7 +3703,7 @@ sub custom_field_lookup_type {
     "RT::Model::Queue-RT::Model::Ticket";
 }
 
-=head2 ACLEquivalenceObjects
+=head2 ACLEquivalenceobjects
 
 This method returns a list of objects for which a user's rights also apply
 to this ticket. Generally, this is only the ticket's queue, but some RT 

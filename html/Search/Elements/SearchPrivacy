@@ -46,10 +46,10 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$Object => undef
+$object => undef
 </%args>
-% if (ref($Object) eq 'RT::Model::User' && $Object->id == Jifty->web->current_user->id) {
+% if (ref($object) eq 'RT::Model::User' && $object->id == Jifty->web->current_user->id) {
 <&|/l&>My saved searches</&>
 % } else {
-<&|/l, $Object->name&>%1's saved searches</&>
+<&|/l, $object->name&>%1's saved searches</&>
 % }

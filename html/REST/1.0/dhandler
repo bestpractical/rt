@@ -77,7 +77,7 @@ my $labels = "(?:$label,)*$label";
 #    http://.../REST/1.0/ticket/nn/comment
 #    http://.../REST/1.0/ticket/nn/attachment/1
 #
-# Objects are specified by their type, and either a unique numeric ID,
+# objects are specified by their type, and either a unique numeric ID,
 # or a unique name (e.g. ticket/1, queue/foo). Multiple objects of the
 # same type may be specified by a comma-separated list of identifiers
 # (e.g., user/ams,rai or ticket/1-3,5-7).
@@ -245,7 +245,7 @@ foreach $object (@objects) {
             # Can we resolve named objects?
             unless ($m->comp_exists($ns)) {
                 $i = 3;
-                $c = "# Objects of type $type must be specified by numeric id.";
+                $c = "# objects of type $type must be specified by numeric id.";
             }
             else {
                 my ($n, $s) = $m->comp("Forms/$type/ns", id => $id);

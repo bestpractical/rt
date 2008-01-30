@@ -54,7 +54,7 @@
 # Known Issues: FIXME!
 
 # - ClearRestrictions and Reinitialization is messy and unclear.  The
-# only good way to do it is to create a RT::Model::TicketCollection->new object.
+# only good way to do it is to create a RT::Model::TicketCollection->new Object.
 
 =head1 name
 
@@ -1236,7 +1236,7 @@ sub _custom_field_join {
             type    => 'left',
             alias1  => 'main',
             column1 => 'id',
-            table2  => 'Objectcustom_field_values',
+            table2  => 'ObjectCustomFieldValues',
             column2 => 'object_id',
         );
         $self->SUPER::limit(
@@ -1272,7 +1272,7 @@ sub _custom_field_join {
             type    => 'left',
             alias1  => $CFs,
             column1 => 'id',
-            table2  => 'Objectcustom_field_values',
+            table2  => 'ObjectCustomFieldValues',
             column2 => 'custom_field',
         );
         $self->SUPER::limit(

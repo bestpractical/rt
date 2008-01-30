@@ -169,7 +169,7 @@ sub Run {
     if ( $self->{'opt'}{'no_tickets'} ) {
         return $self->filter_without_tickets(
             Shredder => $args{'Shredder'},
-            Objects  => $objs,
+            objects  => $objs,
         );
     } else {
         if ( $self->{'opt'}{'limit'} ) {
@@ -187,7 +187,7 @@ sub set_Resolvers {
         my $uid      = $self->{'opt'}{'replace_relations'};
         my $resolver = sub {
             my %args = (@_);
-            my $t    = $args{'TargetObject'};
+            my $t    = $args{'Targetobject'};
             foreach my $method (qw(Creator LastUpdatedBy)) {
                 next unless $t->_accessible( $method => 'read' );
                 $t->__set( column => $method, value => $uid );
@@ -205,10 +205,10 @@ sub filter_without_tickets {
     my $self = shift;
     my %args = (
         Shredder => undef,
-        Objects  => undef,
+        objects  => undef,
         @_,
     );
-    my $users = $args{Objects};
+    my $users = $args{objects};
     $self->fetch_next( $users, 'init' );
 
     my @res;

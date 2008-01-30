@@ -109,7 +109,7 @@ sub dependencies {
     );
 
     unless ( $self->id ) {
-        RT::Shredder::Exception->throw('Object is not loaded');
+        RT::Shredder::Exception->throw('object is not loaded');
     }
 
     my $deps = RT::Shredder::Dependencies->new();
@@ -122,7 +122,7 @@ sub dependencies {
     return $deps;
 }
 
-sub __DependsOn {
+sub __depends_on {
     my $self = shift;
     my %args = (
         Shredder     => undef,
@@ -132,12 +132,12 @@ sub __DependsOn {
     my $deps = $args{'Dependencies'};
     my $list = [];
 
-    # Object custom field values
+    # object custom field values
     my $objs = $self->custom_field_values;
     $objs->{'find_expired_rows'} = 1;
     push( @$list, $objs );
 
-    # Object attributes
+    # object attributes
     $objs = $self->attributes;
     push( @$list, $objs );
 
@@ -168,7 +168,7 @@ sub __DependsOn {
     $deps->_push_dependencies(
         base_object   => $self,
         Flags         => DEPENDS_ON,
-        TargetObjects => $list,
+        target_objects => $list,
         Shredder      => $args{'Shredder'}
     );
     return;
@@ -191,8 +191,8 @@ sub __Relates {
         if ( $obj && defined $obj->id ) {
             push( @$list, $obj );
         } else {
-            my $rec = $args{'Shredder'}->get_record( Object => $self );
-            $self = $rec->{'Object'};
+            my $rec = $args{'Shredder'}->get_record( object => $self );
+            $self = $rec->{'object'};
             $rec->{'State'} |= INVALID;
             push @{ $rec->{'description'} },
                 "Have no related User(Creator) #"
@@ -208,8 +208,8 @@ sub __Relates {
         if ( $obj && defined $obj->id ) {
             push( @$list, $obj );
         } else {
-            my $rec = $args{'Shredder'}->get_record( Object => $self );
-            $self = $rec->{'Object'};
+            my $rec = $args{'Shredder'}->get_record( object => $self );
+            $self = $rec->{'object'};
             $rec->{'State'} |= INVALID;
             push @{ $rec->{'description'} },
                 "Have no related User(LastUpdatedBy) #"
@@ -221,13 +221,13 @@ sub __Relates {
     $deps->_push_dependencies(
         base_object   => $self,
         Flags         => RELATES,
-        TargetObjects => $list,
+        target_objects => $list,
         Shredder      => $args{'Shredder'}
     );
 
     # cause of this $self->SUPER::__Relates should be called last
     # in overridden subs
-    my $rec = $args{'Shredder'}->get_record( Object => $self );
+    my $rec = $args{'Shredder'}->get_record( object => $self );
     $rec->{'State'} |= VALID unless ( $rec->{'State'} & INVALID );
 
     return;
@@ -253,9 +253,9 @@ sub validate_Relations {
         $args{'Shredder'} = RT::Shredder->new();
     }
 
-    my $rec = $args{'Shredder'}->put_object( Object => $self );
+    my $rec = $args{'Shredder'}->put_object( object => $self );
     return if ( $rec->{'State'} & VALID );
-    $self = $rec->{'Object'};
+    $self = $rec->{'object'};
 
     $self->_validate_relations( %args, Flags => RELATES );
     $rec->{'State'} |= VALID unless ( $rec->{'State'} & INVALID );

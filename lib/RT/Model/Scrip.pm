@@ -124,7 +124,7 @@ sub create {
     unless ( $args{'queue'} ) {
         unless (
             $self->current_user->has_right(
-                Object => RT->system,
+                object => RT->system,
                 Right  => 'ModifyScrips'
             )
             )
@@ -617,11 +617,11 @@ sub has_right {
     if ( $self->SUPER::_value('queue') ) {
         return $args{'Principal'}->has_right(
             Right  => $args{'Right'},
-            Object => $self->queue_obj
+            object => $self->queue_obj
         );
     } else {
         return $args{'Principal'}->has_right(
-            Object => RT->system,
+            object => RT->system,
             Right  => $args{'Right'},
         );
     }

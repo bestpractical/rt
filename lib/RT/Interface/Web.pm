@@ -357,12 +357,12 @@ sub create_ticket {
     foreach my $arg ( keys %ARGS ) {
         next if $arg =~ /-(?:Magic|Category)$/;
 
-        if ( $arg =~ /^Object-RT::Model::Transaction--CustomField-/ ) {
+        if ( $arg =~ /^object-RT::Model::Transaction--CustomField-/ ) {
             $create_args{$arg} = $ARGS{$arg};
         }
 
-        # Object-RT::Model::Ticket--CustomField-3-Values
-        elsif ( $arg =~ /^Object-RT::Model::Ticket--CustomField-(\d+)(.*?)$/ )
+        # object-RT::Model::Ticket--CustomField-3-Values
+        elsif ( $arg =~ /^object-RT::Model::Ticket--CustomField-(\d+)(.*?)$/ )
         {
             my $cfid = $1;
 
@@ -593,15 +593,15 @@ sub process_update_message {
 
     my @results;
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
-        my ( $Transaction, $description, $Object )
+        my ( $Transaction, $description, $object )
             = $args{ticket_obj}->comment(%message_args);
         push( @results, $description );
-        $Object->update_custom_fields( ARGSRef => $args{ARGSRef} ) if $Object;
+        $object->update_custom_fields( ARGSRef => $args{ARGSRef} ) if $object;
     } elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
-        my ( $Transaction, $description, $Object )
+        my ( $Transaction, $description, $object )
             = $args{ticket_obj}->correspond(%message_args);
         push( @results, $description );
-        $Object->update_custom_fields( ARGSRef => $args{ARGSRef} ) if $Object;
+        $object->update_custom_fields( ARGSRef => $args{ARGSRef} ) if $object;
     } else {
         push( @results,
             _("Update type was neither correspondence nor comment.") . " "
@@ -770,7 +770,7 @@ sub process_acl_changes {
 
         foreach my $right (@rights) {
             my ( $val, $msg )
-                = $principal->$method( Object => $obj, Right => $right );
+                = $principal->$method( object => $obj, Right => $right );
             push( @results, $msg );
         }
     }
@@ -782,9 +782,9 @@ sub process_acl_changes {
 
 # {{{ sub UpdateRecordObj
 
-=head2 UpdateRecordObj ( ARGSRef => \%ARGS, Object => RT::Record, AttributesRef => \@attribs)
+=head2 UpdateRecordObj ( ARGSRef => \%ARGS, object => RT::Record, AttributesRef => \@attribs)
 
-@attribs is a list of ticket fields to check and update if they differ from the  B<Object>'s current values. ARGSRef is a ref to HTML::Mason's %ARGS.
+@attribs is a list of ticket fields to check and update if they differ from the  B<object>'s current values. ARGSRef is a ref to HTML::Mason's %ARGS.
 
 Returns an array of success/failure messages
 
@@ -794,13 +794,13 @@ sub update_record_object {
     my %args = (
         ARGSRef         => undef,
         AttributesRef   => undef,
-        Object          => undef,
+        object          => undef,
         AttributePrefix => undef,
         @_
     );
 
-    my $Object  = $args{'Object'};
-    my @results = $Object->update(
+    my $object  = $args{'object'};
+    my @results = $object->update(
         AttributesRef   => $args{'AttributesRef'},
         ARGSRef         => $args{'ARGSRef'},
         AttributePrefix => $args{'AttributePrefix'},
@@ -820,19 +820,19 @@ sub process_custom_field_updates {
         @_
     );
 
-    my $Object  = $args{'CustomFieldObj'};
+    my $object  = $args{'CustomFieldObj'};
     my $ARGSRef = $args{'ARGSRef'};
 
     my @attribs = qw(name type description Queue sort_order);
     my @results = update_record_object(
         AttributesRef => \@attribs,
-        Object        => $Object,
+        object        => $object,
         ARGSRef       => $ARGSRef
     );
 
-    my $prefix = "CustomField-" . $Object->id;
+    my $prefix = "CustomField-" . $object->id;
     if ( $ARGSRef->{"$prefix-AddValue-name"} ) {
-        my ( $addval, $addmsg ) = $Object->add_value(
+        my ( $addval, $addmsg ) = $object->add_value(
             name        => $ARGSRef->{"$prefix-AddValue-name"},
             description => $ARGSRef->{"$prefix-AddValue-Description"},
             sort_order   => $ARGSRef->{"$prefix-AddValue-sort_order"},
@@ -847,11 +847,11 @@ sub process_custom_field_updates {
 
     foreach my $id (@delete_values) {
         next unless defined $id;
-        my ( $err, $msg ) = $Object->delete_value($id);
+        my ( $err, $msg ) = $object->delete_value($id);
         push( @results, $msg );
     }
 
-    my $vals = $Object->values();
+    my $vals = $object->values();
     while ( my $cfv = $vals->next() ) {
         if ( my $so = $ARGSRef->{ "$prefix-sort_order" . $cfv->id } ) {
             if ( $cfv->sort_order != $so ) {
@@ -913,7 +913,7 @@ sub process_ticket_basics {
 
     my @results = update_record_object(
         AttributesRef => \@attribs,
-        Object        => $ticket_obj,
+        object        => $ticket_obj,
         ARGSRef       => $ARGSRef,
     );
 
@@ -942,17 +942,17 @@ sub process_ticket_basics {
 
 sub process_ticket_custom_field_updates {
     my %args = @_;
-    $args{'Object'} = delete $args{'ticket_obj'};
+    $args{'object'} = delete $args{'ticket_obj'};
     my $ARGSRef = { %{ $args{'ARGSRef'} } };
 
     # Build up a list of objects that we want to work with
     my %custom_fields_to_mod;
     foreach my $arg ( keys %$ARGSRef ) {
         if ( $arg =~ /^Ticket-(\d+-.*)/ ) {
-            $ARGSRef->{"Object-RT::Model::Ticket-$1"}
+            $ARGSRef->{"object-RT::Model::Ticket-$1"}
                 = delete $ARGSRef->{$arg};
         } elsif ( $arg =~ /^CustomField-(\d+-.*)/ ) {
-            $ARGSRef->{"Object-RT::Model::Ticket--$1"}
+            $ARGSRef->{"object-RT::Model::Ticket--$1"}
                 = delete $ARGSRef->{$arg};
         }
     }
@@ -969,8 +969,8 @@ sub process_object_custom_field_updates {
     my %custom_fields_to_mod;
     foreach my $arg ( keys %$ARGSRef ) {
 
-    # format: Object-<object class>-<object id>-CustomField-<CF id>-<commands>
-        next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField-(\d+)-(.*)$/;
+    # format: object-<object class>-<object id>-CustomField-<CF id>-<commands>
+        next unless $arg =~ /^object-([\w:]+)-(\d*)-CustomField-(\d+)-(.*)$/;
 
 # For each of those objects, find out what custom fields we want to work with.
         $custom_fields_to_mod{$1}{ $2 || 0 }{$3}{$4} = $ARGSRef->{$arg};
@@ -979,12 +979,12 @@ sub process_object_custom_field_updates {
     # For each of those objects
     foreach my $class ( keys %custom_fields_to_mod ) {
         foreach my $id ( keys %{ $custom_fields_to_mod{$class} } ) {
-            my $Object = $args{'Object'};
-            $Object = $class->new()
-                unless $Object && ref $Object eq $class;
+            my $object = $args{'object'};
+            $object = $class->new()
+                unless $object && ref $object eq $class;
 
-            $Object->load($id) unless ( $Object->id || 0 ) == $id;
-            unless ( $Object->id ) {
+            $object->load($id) unless ( $object->id || 0 ) == $id;
+            unless ( $object->id ) {
                 Jifty->log->warn("Couldn't load object $class #$id");
                 next;
             }
@@ -998,8 +998,8 @@ sub process_object_custom_field_updates {
                 }
                 push @results,
                     _ProcessObjectCustomFieldUpdates(
-                    Prefix      => "Object-$class-$id-CustomField-$cf-",
-                    Object      => $Object,
+                    Prefix      => "object-$class-$id-CustomField-$cf-",
+                    object      => $object,
                     CustomField => $CustomFieldObj,
                     ARGS        => $custom_fields_to_mod{$class}{$id}{$cf},
                     );
@@ -1056,7 +1056,7 @@ sub _process_object_custom_field_updates {
 
         if ( $arg eq 'AddValue' || $arg eq 'Value' ) {
             foreach my $value (@values) {
-                my ( $val, $msg ) = $args{'Object'}->add_custom_field_value(
+                my ( $val, $msg ) = $args{'object'}->add_custom_field_value(
                     Field => $cf->id,
                     Value => $value
                 );
@@ -1065,13 +1065,13 @@ sub _process_object_custom_field_updates {
         } elsif ( $arg eq 'Upload' ) {
             my $value_hash = _uploaded_file( $args{'Prefix'} . $arg ) or next;
             my ( $val, $msg )
-                = $args{'Object'}
+                = $args{'object'}
                 ->add_custom_field_value( %$value_hash, Field => $cf, );
             push( @results, $msg );
         } elsif ( $arg eq 'DeleteValues' ) {
             foreach my $value (@values) {
                 my ( $val, $msg )
-                    = $args{'Object'}->delete_custom_field_value(
+                    = $args{'object'}->delete_custom_field_value(
                     Field => $cf,
                     Value => $value,
                     );
@@ -1080,14 +1080,14 @@ sub _process_object_custom_field_updates {
         } elsif ( $arg eq 'DeleteValueIds' ) {
             foreach my $value (@values) {
                 my ( $val, $msg )
-                    = $args{'Object'}->delete_custom_field_value(
+                    = $args{'object'}->delete_custom_field_value(
                     Field   => $cf,
                     ValueId => $value,
                     );
                 push( @results, $msg );
             }
         } elsif ( $arg eq 'Values' && !$cf->repeated ) {
-            my $cf_values = $args{'Object'}->custom_field_values( $cf->id );
+            my $cf_values = $args{'object'}->custom_field_values( $cf->id );
 
             my %values_hash;
             foreach my $value (@values) {
@@ -1096,7 +1096,7 @@ sub _process_object_custom_field_updates {
                     next;
                 }
 
-                my ( $val, $msg ) = $args{'Object'}->add_custom_field_value(
+                my ( $val, $msg ) = $args{'object'}->add_custom_field_value(
                     Field => $cf,
                     Value => $value
                 );
@@ -1109,14 +1109,14 @@ sub _process_object_custom_field_updates {
                 next if $values_hash{ $cf_value->id };
 
                 my ( $val, $msg )
-                    = $args{'Object'}->delete_custom_field_value(
+                    = $args{'object'}->delete_custom_field_value(
                     Field   => $cf,
                     ValueId => $cf_value->id
                     );
                 push( @results, $msg );
             }
         } elsif ( $arg eq 'Values' ) {
-            my $cf_values = $args{'Object'}->custom_field_values( $cf->id );
+            my $cf_values = $args{'object'}->custom_field_values( $cf->id );
 
             # keep everything up to the point of difference, delete the rest
             my $delete_flag;
@@ -1135,7 +1135,7 @@ sub _process_object_custom_field_updates {
 
             # now add/replace extra things, if any
             foreach my $value (@values) {
-                my ( $val, $msg ) = $args{'Object'}->add_custom_field_value(
+                my ( $val, $msg ) = $args{'object'}->add_custom_field_value(
                     Field => $cf,
                     Value => $value
                 );
@@ -1145,8 +1145,8 @@ sub _process_object_custom_field_updates {
             push(
                 @results,
                 _(  "User asked for an unknown update type for custom field %1 for %2 object #%3",
-                    $cf->name, ref $args{'Object'},
-                    $args{'Object'}->id
+                    $cf->name, ref $args{'object'},
+                    $args{'object'}->id
                 )
             );
         }

@@ -65,17 +65,17 @@ my $global_admin_cc = RT::Model::Group->new(current_user => RT->system_user);
 $global_admin_cc->load_system_role_group('AdminCc');
 ok($global_admin_cc->id, "Found the global admincc group");
 my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
-$groups->with_right(Right => 'OwnTicket', Object => $q);
+$groups->with_right(Right => 'OwnTicket', object => $q);
 is($groups->count, 1);
-($id, $msg) = $global_admin_cc->principal_object->grant_right(Right =>'OwnTicket', Object=> RT->system);
+($id, $msg) = $global_admin_cc->principal_object->grant_right(Right =>'OwnTicket', object=> RT->system);
 ok ($id,$msg);
-ok (!$testuser->has_right(Object => $q, Right => 'OwnTicket') , "The test user does not have the right to own tickets in the test queue");
+ok (!$testuser->has_right(object => $q, Right => 'OwnTicket') , "The test user does not have the right to own tickets in the test queue");
 ($id, $msg) = $q->add_watcher(type => 'AdminCc', principal_id => $testuser->id);
 ok($id,$msg);
-ok ($testuser->has_right(Object => $q, Right => 'OwnTicket') , "The test user does have the right to own tickets now. thank god.");
+ok ($testuser->has_right(object => $q, Right => 'OwnTicket') , "The test user does have the right to own tickets now. thank god.");
 
 $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
-$groups->with_right(Right => 'OwnTicket', Object => $q);
+$groups->with_right(Right => 'OwnTicket', object => $q);
 ok ($id,$msg);
 is($groups->count, 3);
 
@@ -98,15 +98,15 @@ bless $RTxObj, 'RTx::System::Record';
 *RTx::System::Record::id = *RTx::System::Record::id;
 
 $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
-$groups->with_right(Right => 'RTxGroupRight', Object => $RTxSysObj);
+$groups->with_right(Right => 'RTxGroupRight', object => $RTxSysObj);
 is($groups->count, 1, "RTxGroupRight found for RTxSysObj");
 
 $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
-$groups->with_right(Right => 'RTxGroupRight', Object => $RTxObj);
+$groups->with_right(Right => 'RTxGroupRight', object => $RTxObj);
 is($groups->count, 0, "RTxGroupRight not found for RTxObj");
 
 $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
-$groups->with_right(Right => 'RTxGroupRight', Object => $RTxObj, equiv_objects => [ $RTxSysObj ]);
+$groups->with_right(Right => 'RTxGroupRight', object => $RTxObj, equiv_objects => [ $RTxSysObj ]);
 is($groups->count, 1, "RTxGroupRight found for RTxObj using equiv_objects");
 
 use RT::Model::ACE;
@@ -119,11 +119,11 @@ bless $RTxObj2, 'RTx::System::Record';
 *RTx::System::Record::id = sub  { 5; };
 
 $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
-$groups->with_right(Right => 'RTxGroupRight', Object => $RTxObj2);
+$groups->with_right(Right => 'RTxGroupRight', object => $RTxObj2);
 is($groups->count, 1, "RTxGroupRight found for RTxObj2");
 
 $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
-$groups->with_right(Right => 'RTxGroupRight', Object => $RTxObj2, equiv_objects => [ $RTxSysObj ]);
+$groups->with_right(Right => 'RTxGroupRight', object => $RTxObj2, equiv_objects => [ $RTxSysObj ]);
 is($groups->count, 1, "RTxGroupRight found for RTxObj2");
 
 

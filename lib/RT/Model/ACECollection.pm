@@ -111,9 +111,9 @@ sub limit_to_object {
 
 # }}}
 
-# {{{ limit_NotObject
+# {{{ limit_Notobject
 
-=head2 limit_NotObject $object
+=head2 limit_Notobject $object
 
 Limit the ACL to rights NOT on the object $object.  $object needs to be
 an RT::Record class.
@@ -301,11 +301,11 @@ sub next {
 
         if ($self->current_user->has_right(
                 Right  => 'ShowACL',
-                Object => $ACE->object
+                object => $ACE->object
             )
             or $self->current_user->has_right(
                 Right  => 'ModifyACL',
-                Object => $ACE->object
+                object => $ACE->object
             )
             )
         {

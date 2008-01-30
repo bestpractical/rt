@@ -49,7 +49,7 @@
 $Plugin => ''
 $Search => ''
 $Wipeout => ''
-@WipeoutObject => ()
+@Wipeoutobject => ()
 </%ARGS>
 <& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/ToolTabs,
@@ -69,7 +69,7 @@ $Wipeout => ''
 </div>
 <br />
 % if( $Search || $Wipeout ) {
-<& Elements/SelectObjects, Objects => \@objs &>
+<& Elements/Selectobjects, objects => \@objs &>
 % }
 </form>
 <%INIT>
@@ -146,9 +146,9 @@ if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit blo
 	($dump_file) = $backup_plugin->filename;
     push @{ $messages{'Success'} }, "SQL dump file is '$dump_file'";
 
-    $shredder->add_dump_plugin( Object => $backup_plugin );
+    $shredder->add_dump_plugin( object => $backup_plugin );
 
-	$shredder->put_objects( Objects => \@WipeoutObject );
+	$shredder->put_objects( objects => \@Wipeoutobject );
 	($status, $msg) = $plugin_obj->set_resolvers( Shredder => $shredder );
 	unless( $status ) {
 		push @{ $messages{Errors} }, $msg;
@@ -174,7 +174,7 @@ if( $Plugin && ( $Search || $Wipeout ) ) { { # use additional block({}) to effec
 
 	my $shredder = RT::Shredder->new;
 	foreach my $o( splice @objs ) {
-		eval { push @objs, $shredder->cast_objects_to_records( Objects => $o ) };
+		eval { push @objs, $shredder->cast_objects_to_records( objects => $o ) };
         $catch_non_fatals->() && last if $@;
 	}
 	unless( @objs ) {

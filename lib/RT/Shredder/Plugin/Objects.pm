@@ -64,7 +64,7 @@ the object name as argument and id as value, for example if
 you want select ticket #123 then from CLI you write next
 command:
 
-  rt-shredder --plugin 'Objects=Ticket,123'
+  rt-shredder --plugin 'objects=Ticket,123'
 
 =cut
 
@@ -85,7 +85,7 @@ sub test_args {
         push @strings, map "RT::$name\-$_", @$list;
     }
 
-    my @objs = RT::Shredder->cast_objects_to_records( Objects => \@strings );
+    my @objs = RT::Shredder->cast_objects_to_records( objects => \@strings );
 
     my @res = $self->SUPER::test_args(%args);
 

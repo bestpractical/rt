@@ -275,7 +275,7 @@ sub init {
 
   my $shredder = RT::Shredder->new(%options);
 
-Construct a RT::Shredder->new object.
+Construct a RT::Shredder->new Object.
 
 There currently are no %options.
 
@@ -296,13 +296,13 @@ sub _init {
     $self->{'dump_plugins'} = [];
 }
 
-=head4 CastObjectsToRecords( Objects => undef )
+=head4 CastobjectsToRecords( objects => undef )
 
 Cast objects to the C<RT::Record> objects or its ancesstors.
-Objects can be passed as SCALAR (format C<< <class>-<id> >>),
+objects can be passed as SCALAR (format C<< <class>-<id> >>),
 ARRAY, C<RT::Record> ancesstors or C<RT::SearchBuilder> ancesstor.
 
-Most methods that takes C<Objects> argument use this method to
+Most methods that takes C<objects> argument use this method to
 cast argument value to list of records.
 
 Returns an array of records.
@@ -310,7 +310,7 @@ Returns an array of records.
 For example:
 
     my @objs = $shredder->cast_objects_to_records(
-        Objects => [             # ARRAY reference
+        objects => [             # ARRAY reference
             'RT::Model::Attachment-10', # SCALAR or SCALAR reference
             $tickets,            # RT::Model::TicketCollection object (isa RT::SearchBuilder)
             $user,               # RT::Model::User object (isa RT::Record)
@@ -321,12 +321,12 @@ For example:
 
 sub cast_objects_to_records {
     my $self = shift;
-    my %args = ( Objects => undef, @_ );
+    my %args = ( objects => undef, @_ );
 
     my @res;
-    my $targets = delete $args{'Objects'};
+    my $targets = delete $args{'objects'};
     unless ($targets) {
-        RT::Shredder::Exception->throw("Undefined Objects argument");
+        RT::Shredder::Exception->throw("Undefined objects argument");
     }
 
     if ( UNIVERSAL::isa( $targets, 'RT::SearchBuilder' ) ) {
@@ -339,7 +339,7 @@ sub cast_objects_to_records {
         push @res, $targets;
     } elsif ( UNIVERSAL::isa( $targets, 'ARRAY' ) ) {
         foreach (@$targets) {
-            push @res, $self->cast_objects_to_records( Objects => $_ );
+            push @res, $self->cast_objects_to_records( objects => $_ );
         }
     } elsif ( UNIVERSAL::isa( $targets, 'SCALAR' ) || !ref $targets ) {
         $targets = $$targets if ref $targets;
@@ -353,7 +353,7 @@ sub cast_objects_to_records {
 
         unless ( $obj->id ) {
             Jifty->log->error("Couldn't load '$class' object with id '$id'");
-            RT::Shredder::Exception::Info->throw('CouldntLoadObject');
+            RT::Shredder::Exception::Info->throw('CouldntLoadobject');
         }
         die "Loaded object has different id" unless ( $id eq $obj->id );
         push @res, $obj;
@@ -365,46 +365,46 @@ sub cast_objects_to_records {
 
 =head3 OBJECTS CACHE
 
-=head4 PutObjects( Objects => undef )
+=head4 Putobjects( objects => undef )
 
 Puts objects into cache.
 
 Returns array of the cache entries.
 
-See C<CastObjectsToRecords> method for supported types of the C<Objects>
+See C<CastobjectsToRecords> method for supported types of the C<objects>
 argument.
 
 =cut
 
 sub put_objects {
     my $self = shift;
-    my %args = ( Objects => undef, @_ );
+    my %args = ( objects => undef, @_ );
 
     my @res;
     for (
-        $self->cast_objects_to_records( Objects => delete $args{'Objects'} ) )
+        $self->cast_objects_to_records( objects => delete $args{'objects'} ) )
     {
-        push @res, $self->put_object( %args, Object => $_ );
+        push @res, $self->put_object( %args, object => $_ );
     }
 
     return @res;
 }
 
-=head4 PutObject( Object => undef )
+=head4 Putobject( object => undef )
 
 Puts record object into cache and returns its cache entry.
 
 B<NOTE> that this method support B<only C<RT::Record> object or its ancesstor
 objects>, if you want put mutliple objects or objects represented by different
-classes then use C<PutObjects> method instead.
+classes then use C<Putobjects> method instead.
 
 =cut
 
 sub put_object {
     my $self = shift;
-    my %args = ( Object => undef, @_ );
+    my %args = ( object => undef, @_ );
 
-    my $obj = $args{'Object'};
+    my $obj = $args{'object'};
     unless ( UNIVERSAL::isa( $obj, 'RT::Record' ) ) {
         RT::Shredder::Exception->throw(
             "Unsupported type '" . ( ref $obj || $obj || '(undef)' ) . "'" );
@@ -412,16 +412,16 @@ sub put_object {
 
     my $str = $obj->_as_string;
     return ( $self->{'cache'}->{$str}
-            ||= { State => ON_STACK, Object => $obj } );
+            ||= { State => ON_STACK, object => $obj } );
 }
 
-=head4 GetObject, GetState, GetRecord( String => ''| Object => '' )
+=head4 Getobject, GetState, GetRecord( String => ''| object => '' )
 
 Returns record object from cache, cache entry state or cache entry accordingly.
 
-All three methods takes C<String> (format C<< <class>-<id> >>) or C<Object> argument.
-C<String> argument has more priority than C<Object> so if it's not empty then methods
-leave C<Object> argument unchecked.
+All three methods takes C<String> (format C<< <class>-<id> >>) or C<object> argument.
+C<String> argument has more priority than C<object> so if it's not empty then methods
+leave C<object> argument unchecked.
 
 You can read about possible states and their meanings in L<RT::Shredder::Constants> docs.
 
@@ -431,20 +431,20 @@ sub _parse_ref_str_args {
     my $self = shift;
     my %args = (
         String => '',
-        Object => undef,
+        object => undef,
         @_
     );
-    if ( $args{'String'} && $args{'Object'} ) {
+    if ( $args{'String'} && $args{'object'} ) {
         require Carp;
-        Carp::croak("both String and Object args passed");
+        Carp::croak("both String and object args passed");
     }
     return $args{'String'} if $args{'String'};
-    return $args{'Object'}->_as_string
-        if UNIVERSAL::can( $args{'Object'}, '_AsString' );
+    return $args{'object'}->_as_string
+        if UNIVERSAL::can( $args{'object'}, '_AsString' );
     return '';
 }
 
-sub get_object { return (shift)->get_record(@_)->{'Object'} }
+sub get_object { return (shift)->get_record(@_)->{'object'} }
 sub get_state  { return (shift)->get_record(@_)->{'State'} }
 
 sub get_record {
@@ -523,7 +523,7 @@ sub apply_resolvers {
     $_->(
         Shredder     => $self,
         base_object  => $dep->base_object,
-        TargetObject => $dep->target_object,
+        Targetobject => $dep->target_object,
     ) foreach @resolvers;
 
     return;
@@ -534,7 +534,7 @@ sub wipeout_all {
 
     while ( my ( $k, $v ) = each %{ $self->{'cache'} } ) {
         next if $v->{'State'} & ( WIPED | IN_WIPING );
-        $self->wipeout( Object => $v->{'Object'} );
+        $self->wipeout( object => $v->{'object'} );
     }
 }
 
@@ -559,16 +559,16 @@ sub wipeout {
 
 sub _wipeout {
     my $self = shift;
-    my %args = ( CacheRecord => undef, Object => undef, @_ );
+    my %args = ( CacheRecord => undef, object => undef, @_ );
 
     my $record = $args{'CacheRecord'};
-    $record = $self->put_object( Object => $args{'Object'} ) unless $record;
+    $record = $self->put_object( object => $args{'object'} ) unless $record;
     return if $record->{'State'} & ( WIPED | IN_WIPING );
 
     $record->{'State'} |= IN_WIPING;
-    my $object = $record->{'Object'};
+    my $object = $record->{'object'};
 
-    $self->dump_object( Object => $object, State => 'before any action' );
+    $self->dump_object( object => $object, State => 'before any action' );
 
     unless ( $object->before_wipeout ) {
         RT::Shredder::Exception->throw("BeforeWipeout check returned error");
@@ -579,30 +579,30 @@ sub _wipeout {
         WithFlags => DEPENDS_ON | VARIABLE,
         Callback  => sub { $self->apply_resolvers( Dependency => $_[0] ) },
     );
-    $self->dump_object( Object => $object, State => 'after resolvers' );
+    $self->dump_object( object => $object, State => 'after resolvers' );
 
     $deps->list(
         WithFlags    => DEPENDS_ON,
         WithoutFlags => WIPE_AFTER | VARIABLE,
-        Callback => sub { $self->_wipeout( Object => $_[0]->target_object ) },
+        Callback => sub { $self->_wipeout( object => $_[0]->target_object ) },
     );
     $self->dump_object(
-        Object => $object,
+        object => $object,
         State  => 'after wiping dependencies'
     );
 
     $object->__wipeout;
     $record->{'State'} |= WIPED;
-    delete $record->{'Object'};
-    $self->dump_object( Object => $object, State => 'after wipeout' );
+    delete $record->{'object'};
+    $self->dump_object( object => $object, State => 'after wipeout' );
 
     $deps->list(
         WithFlags    => DEPENDS_ON | WIPE_AFTER,
         WithoutFlags => VARIABLE,
-        Callback => sub { $self->_wipeout( Object => $_[0]->target_object ) },
+        Callback => sub { $self->_wipeout( object => $_[0]->target_object ) },
     );
     $self->dump_object(
-        Object => $object,
+        object => $object,
         State  => 'after late dependencies'
     );
 
@@ -615,7 +615,7 @@ sub validate_relations {
 
     foreach my $record ( values %{ $self->{'cache'} } ) {
         next if ( $record->{'State'} & VALID );
-        $record->{'Object'}->validate_relations( Shredder => $self );
+        $record->{'object'}->validate_relations( Shredder => $self );
     }
 }
 
@@ -732,9 +732,9 @@ my %active_dump_state = ();
 
 sub add_dump_plugin {
     my $self = shift;
-    my %args = ( Object => undef, name => 'SQLDump', Arguments => undef, @_ );
+    my %args = ( object => undef, name => 'SQLDump', Arguments => undef, @_ );
 
-    my $plugin = $args{'Object'};
+    my $plugin = $args{'object'};
     unless ($plugin) {
         require RT::Shredder::Plugin;
         $plugin = RT::Shredder::Plugin->new;
@@ -759,7 +759,7 @@ sub add_dump_plugin {
 
 sub dump_object {
     my $self = shift;
-    my %args = ( Object => undef, State => undef, @_ );
+    my %args = ( object => undef, State => undef, @_ );
     die "No state passed" unless $args{'State'};
     return                unless $active_dump_state{ lc $args{'State'} };
 

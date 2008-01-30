@@ -73,7 +73,7 @@ my $CustomFields = $ticket_obj->queue_obj->ticket_custom_fields();
 $m->callback( ticket_obj => $ticket_obj, CustomFields => $CustomFields, ARGSRef => \%ARGS );
 
 my @results = process_ticket_basics(ticket_obj => $ticket_obj, ARGSRef => \%ARGS);
-my @cf_results = ProcessObjectCustomFieldUpdates(Object => $ticket_obj, ARGSRef => \%ARGS);
+my @cf_results = ProcessObjectCustomFieldUpdates(object => $ticket_obj, ARGSRef => \%ARGS);
 push (@results, @cf_results);
 
 # undef so that transaction_batch scrips run and update the ticket

@@ -96,5 +96,5 @@ return wantarray? ($valid, @res): $valid;
 <%ARGS>
 $CustomFields
 $ARGSRef
-$namePrefix => "Object-RT::Model::Ticket--CustomField-"
+$namePrefix => "object-RT::Model::Ticket--CustomField-"
 </%ARGS>

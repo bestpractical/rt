@@ -75,7 +75,7 @@ diag "check that we have no the CF on the create"
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
     my $form = $m->form_name("TicketCreate");
-    my $upload_field = "Object-RT::Model::Ticket--CustomField-$cfid-Upload";
+    my $upload_field = "object-RT::Model::Ticket--CustomField-$cfid-Upload";
     ok !$form->find_input( $upload_field ), 'no form field on the page';
 
     $m->submit_form(
@@ -106,7 +106,7 @@ diag "check that we have no the CF on the create"
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
     my $form = $m->form_name("TicketCreate");
-    my $upload_field = "Object-RT::Model::Ticket--CustomField-$cfid-Upload";
+    my $upload_field = "object-RT::Model::Ticket--CustomField-$cfid-Upload";
     ok !$form->find_input( $upload_field ), 'no form field on the page';
 
     $m->submit_form(
@@ -119,7 +119,7 @@ diag "check that we have no the CF on the create"
     $m->follow_link( text => 'Custom Fields' );
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
     $form = $m->form_number(3);
-    $upload_field = "Object-RT::Model::Ticket-$tid-CustomField-$cfid-Upload";
+    $upload_field = "object-RT::Model::Ticket-$tid-CustomField-$cfid-Upload";
     ok !$form->find_input( $upload_field ), 'no form field on the page';
 }
 
@@ -138,7 +138,7 @@ diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
     $m->content_like(qr/Upload multiple images/, 'has a upload image field');
 
     $cfid =~ /(\d+)$/ or die "Hey this is impossible dude";
-    my $upload_field = "Object-RT::Model::Ticket--CustomField-$1-Upload";
+    my $upload_field = "object-RT::Model::Ticket--CustomField-$1-Upload";
 
     $m->submit_form(
         form_name => "TicketCreate",

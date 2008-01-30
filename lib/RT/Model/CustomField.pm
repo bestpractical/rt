@@ -199,7 +199,7 @@ sub create {
 
     unless (
         $self->current_user->has_right(
-            Object => RT->system,
+            object => RT->system,
             Right  => 'AdminCustomField'
         )
         )
@@ -221,7 +221,7 @@ sub create {
     } elsif ( !$args{'Queue'} ) {
         unless (
             $self->current_user->has_right(
-                Object => RT->system,
+                object => RT->system,
                 Right  => 'AssignCustomFields'
             )
             )
@@ -689,7 +689,7 @@ sub current_user_has_right {
     my $right = shift;
 
     return $self->current_user->has_right(
-        Object => $self,
+        object => $self,
         Right  => $right,
     );
 }
@@ -854,7 +854,7 @@ sub friendly_lookup_type {
     return ( _( $Friendlyobject_types[$#types], @types ) );
 }
 
-=head2 AddToObject OBJECT
+=head2 AddToobject OBJECT
 
 Add this custom field as a custom field for a single object, such as a queue or group.
 
@@ -875,18 +875,18 @@ sub add_to_object {
         return ( 0, _('Permission Denied') );
     }
 
-    my $ObjectCF = RT::Model::ObjectCustomField->new;
-    $ObjectCF->load_by_cols( object_id => $id, custom_field => $self->id );
-    if ( $ObjectCF->id ) {
+    my $objectCF = RT::Model::ObjectCustomField->new;
+    $objectCF->load_by_cols( object_id => $id, custom_field => $self->id );
+    if ( $objectCF->id ) {
         return ( 0, _("That is already the current value") );
     }
     my ( $oid, $msg )
-        = $ObjectCF->create( object_id => $id, custom_field => $self->id );
+        = $objectCF->create( object_id => $id, custom_field => $self->id );
 
     return ( $oid, $msg );
 }
 
-=head2 RemoveFromObject OBJECT
+=head2 remove_from_object OBJECT
 
 Remove this custom field  for a single object, such as a queue or group.
 
@@ -900,21 +900,21 @@ sub remove_from_object {
     my $id     = $object->id || 0;
 
     unless ( index( $self->lookup_type, ref($object) ) == 0 ) {
-        return ( 0, _('Object type mismatch') );
+        return ( 0, _('object type mismatch') );
     }
 
     unless ( $object->current_user_has_right('AssignCustomFields') ) {
         return ( 0, _('Permission Denied') );
     }
 
-    my $ObjectCF = RT::Model::ObjectCustomField->new;
-    $ObjectCF->load_by_cols( object_id => $id, custom_field => $self->id );
-    unless ( $ObjectCF->id ) {
+    my $objectCF = RT::Model::ObjectCustomField->new;
+    $objectCF->load_by_cols( object_id => $id, custom_field => $self->id );
+    unless ( $objectCF->id ) {
         return ( 0, _("This custom field does not apply to that object") );
     }
 
     # XXX: Delete doesn't return anything
-    my ( $oid, $msg ) = $ObjectCF->delete;
+    my ( $oid, $msg ) = $objectCF->delete;
 
     return ( $oid, $msg );
 }
@@ -928,7 +928,7 @@ Takes a param hash of
 
 Required:
 
-    Object
+    object
     Content
 
 Optional:
@@ -941,13 +941,13 @@ Optional:
 sub add_value_for_object {
     my $self = shift;
     my %args = (
-        Object       => undef,
+        object       => undef,
         Content      => undef,
         LargeContent => undef,
         content_type  => undef,
         @_
     );
-    my $obj = $args{'Object'} or return ( 0, _('Invalid object') );
+    my $obj = $args{'object'} or return ( 0, _('Invalid object') );
 
     unless ( $self->current_user_has_right('ModifyCustomField') ) {
         return ( 0, _('Permission Denied') );
@@ -1048,7 +1048,7 @@ sub friendly_pattern {
 
 =head2 delete_value_for_object HASH
 
-Deletes a custom field value for a ticket. Takes a param hash of Object and Content
+Deletes a custom field value for a ticket. Takes a param hash of object and Content
 
 Returns a tuple of (STATUS, MESSAGE). If the call succeeded, the STATUS is true. otherwise it's false
 
@@ -1057,7 +1057,7 @@ Returns a tuple of (STATUS, MESSAGE). If the call succeeded, the STATUS is true.
 sub delete_value_for_object {
     my $self = shift;
     my %args = (
-        Object  => undef,
+        object  => undef,
         Content => undef,
         id      => undef,
         @_
@@ -1074,7 +1074,7 @@ sub delete_value_for_object {
     }
     unless ( $oldval->id ) {
         $oldval->load_by_object_content_and_custom_field(
-            Object      => $args{'Object'},
+            object      => $args{'object'},
             Content     => $args{'Content'},
             custom_field => $self->id,
         );

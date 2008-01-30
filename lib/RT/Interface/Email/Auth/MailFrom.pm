@@ -107,11 +107,11 @@ sub get_current_user {
 # check to see whether "Everyone" or "Unprivileged users" can comment on tickets
             unless (
                 $everyone->principal_object->has_right(
-                    Object => $args{'Queue'},
+                    object => $args{'Queue'},
                     Right  => 'commentOnTicket'
                 )
                 || $unpriv->principal_object->has_right(
-                    Object => $args{'Queue'},
+                    object => $args{'Queue'},
                     Right  => 'commentOnTicket'
                 )
                 )
@@ -126,11 +126,11 @@ sub get_current_user {
 # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless (
                 $everyone->principal_object->has_right(
-                    Object => $args{'Queue'},
+                    object => $args{'Queue'},
                     Right  => 'ReplyToTicket'
                 )
                 || $unpriv->principal_object->has_right(
-                    Object => $args{'Queue'},
+                    object => $args{'Queue'},
                     Right  => 'ReplyToTicket'
                 )
                 )
@@ -145,11 +145,11 @@ sub get_current_user {
 # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless (
                 $everyone->principal_object->has_right(
-                    Object => $args{'Queue'},
+                    object => $args{'Queue'},
                     Right  => 'OwnTicket'
                 )
                 || $unpriv->principal_object->has_right(
-                    Object => $args{'Queue'},
+                    object => $args{'Queue'},
                     Right  => 'OwnTicket'
                 )
                 )
@@ -165,11 +165,11 @@ sub get_current_user {
 # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless (
                 $everyone->principal_object->has_right(
-                    Object => $args{'Queue'},
+                    object => $args{'Queue'},
                     Right  => 'ModifyTicket'
                 )
                 || $unpriv->principal_object->has_right(
-                    Object => $args{'Queue'},
+                    object => $args{'Queue'},
                     Right  => 'ModifyTicket'
                 )
                 )
@@ -194,11 +194,11 @@ sub get_current_user {
 # check to see whether "Everybody" or "Unprivileged users" can create tickets in this queue
         unless (
             $everyone->principal_object->has_right(
-                Object => $args{'Queue'},
+                object => $args{'Queue'},
                 Right  => 'create_ticket'
             )
             || $unpriv->principal_object->has_right(
-                Object => $args{'Queue'},
+                object => $args{'Queue'},
                 Right  => 'ModifyTicket'
             )
             )

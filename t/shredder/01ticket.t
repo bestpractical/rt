@@ -28,7 +28,7 @@ use RT::Model::TicketCollection;
     is( $tickets->count, 1, "found one deleted ticket" );
 
     my $shredder = shredder_new();
-    $shredder->put_objects( Objects => $tickets );
+    $shredder->put_objects( objects => $tickets );
     $shredder->wipeout_all;
 }
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
@@ -46,11 +46,11 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     my ($status, $msg) = $parent->add_link( type => 'MemberOf', Target => $cid );
     ok( $status, "Added link between tickets") or diag("error: $msg");
     my $shredder = shredder_new();
-    $shredder->put_objects( Objects => $child );
+    $shredder->put_objects( objects => $child );
     $shredder->wipeout_all;
     cmp_deeply( dump_current_and_savepoint('parent_ticket'), "current DB equal to savepoint");
 
-    $shredder->put_objects( Objects => $parent );
+    $shredder->put_objects( objects => $parent );
     $shredder->wipeout_all;
 }
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
@@ -70,11 +70,11 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     ($status, $msg) = $parent->add_link( type => 'DependsOn', Target => $cid );
     ok( $status, "Added link between tickets") or diag("error: $msg");
     my $shredder = shredder_new();
-    $shredder->put_objects( Objects => $child );
+    $shredder->put_objects( objects => $child );
     $shredder->wipeout_all;
     cmp_deeply( dump_current_and_savepoint('parent_ticket'), "current DB equal to savepoint");
 
-    $shredder->put_objects( Objects => $parent );
+    $shredder->put_objects( objects => $parent );
     $shredder->wipeout_all;
 }
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");

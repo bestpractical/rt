@@ -46,8 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Object => undef
+$object => undef
 </%ARGS>
-<a href="<% RT->config->get('WebBaseURL') %>/Ticket/Display.html?id=<% $Object->id %>">
-Ticket(id:<% $Object->id %>, Subject: <% substr($Object->subject, 0, 30) %>...)
+<a href="<% RT->config->get('WebBaseURL') %>/Ticket/Display.html?id=<% $object->id %>">
+Ticket(id:<% $object->id %>, Subject: <% substr($object->subject, 0, 30) %>...)
 </a>

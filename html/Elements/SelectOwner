@@ -82,11 +82,11 @@ else {
 
 my %user_uniq_hash;
 
-$m->callback( %ARGS, objects => \@objects, Callbackname => 'UpdateObjectList');
+$m->callback( %ARGS, objects => \@objects, Callbackname => 'UpdateobjectList');
 
 foreach my $object (@objects) {
 	my $Users = RT::Model::UserCollection->new();
-        $Users->who_have_right(Right => 'OwnTicket', Object => $object, IncludeSystemRights => 1, IncludeSuperusers => 0); 
+        $Users->who_have_right(Right => 'OwnTicket', object => $object, IncludeSystemRights => 1, IncludeSuperusers => 0); 
         while (my $User = $Users->next()) {
                 next if ($User->id == RT->nobody->id); # skip nobody here, so we can make them first later
 	      $user_uniq_hash{$User->id()} = $User;
@@ -96,7 +96,7 @@ foreach my $object (@objects) {
 my @users = sort { uc($a->name) cmp uc($b->name) } values %user_uniq_hash; 
 unshift(@users, RT->nobody->user_object);
 
-$m->callback( %ARGS, objects => \@objects, Callbackname => 'UpdateObjectList');
+$m->callback( %ARGS, objects => \@objects, Callbackname => 'UpdateobjectList');
 
 
 </%INIT>

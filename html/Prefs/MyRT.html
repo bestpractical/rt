@@ -116,11 +116,11 @@ my @objs = ($sys);
 
 push @objs, RT::SavedSearches->new()->_privacy_objects
     if Jifty->web->current_user->has_right( Right  => 'LoadSavedSearch',
-                                          Object => RT->system );
+                                          object => RT->system );
 
 my @sys_searches;
 for my $object (@objs) {
-    for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
+    for ($m->comp("/Search/Elements/SearchesForObject", object => $object)) {
         my ($desc, $search) = @$_;
         my $SearchType = $search->content->{'SearchType'} || 'Ticket';
         if ($object eq $sys && $SearchType eq 'Ticket') {

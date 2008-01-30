@@ -60,7 +60,7 @@ rtx-validator -o Ticket-100
 
 =head3 -o, --object <name>-<id>
 
-Object(class) name and object id splitted with C<-> that should be validated.
+object(class) name and object id splitted with C<-> that should be validated.
 Option is case sensetive.
 
 =head1 SEE ALSO
@@ -94,7 +94,7 @@ $obj->validate_relations( Shredder => $shredder );
 
 foreach my $record( values %{ $shredder->{'Cache'} } ) {
 	next unless( $record->{'State'} & INVALID );
-	print STDERR $record->{'Object'}->_as_string ." is invalid\n";
+	print STDERR $record->{'object'}->_as_string ." is invalid\n";
 	print STDERR "\t". (ref($record->{'description'}) ?
 			join( "\n\t", @{$record->{'description'}} ) :
 			$record->{'description'})

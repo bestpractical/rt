@@ -46,21 +46,21 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Object => undef
+$object => undef
 </%ARGS>
-<input type="checkbox" name="WipeoutObject" value="<% $Object->_as_string %>" />
+<input type="checkbox" name="Wipeoutobject" value="<% $object->_as_string %>" />
 <span>
 % if( $m->comp_exists( $path ) ) {
-% $m->comp( $path, Object => $Object );
+% $m->comp( $path, object => $object );
 % } else {
-<% $Object->_as_string %>
+<% $object->_as_string %>
 % }
 </span><br />
 <%ONCE>
 require File::Spec;
 </%ONCE>
 <%INIT>
-my $path = ref $Object;
+my $path = ref $object;
 $path =~ s/:/-/g;
-$path = File::Spec->catfile( 'Object', $path );
+$path = File::Spec->catfile( 'object', $path );
 </%INIT>

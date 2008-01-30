@@ -1,5 +1,5 @@
-ALTER TABLE Objectcustom_field_values ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0;
-ALTER TABLE Objectcustom_field_values ADD COLUMN disabled int2 NOT NULL DEFAULT 0;
+ALTER TABLE objectcustom_field_values ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE objectcustom_field_values ADD COLUMN disabled int2 NOT NULL DEFAULT 0;
 
-UPDATE Objectcustom_field_values SET disabled = 1 WHERE Current = 0;
-ALTER TABLE Objectcustom_field_values DROP COLUMN Current;
+UPDATE objectcustom_field_values SET disabled = 1 WHERE Current = 0;
+ALTER TABLE objectcustom_field_values DROP COLUMN Current;

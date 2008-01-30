@@ -354,7 +354,7 @@ sub show {
     print $c;
 }
 
-# To create a new object, we ask the server for a form with the defaults
+# To create a new Object, we ask the server for a form with the defaults
 # filled in, allow the user to edit it, and send the form back.
 #
 # To edit an object, we must ask the server for a form representing that
@@ -1471,7 +1471,7 @@ Text:
     which you can issue commands of the form "<action> [options] 
     [arguments]".  See "rt help shell" for details.
 
-    Objects are identified by a type and an ID (which can be a name or a
+    objects are identified by a type and an ID (which can be a name or a
     number, depending on the type). For some actions, the object type is
     implied (you can only comment on tickets); for others, the user must
     specify it explicitly. See "rt help objects" for details.
@@ -1581,7 +1581,7 @@ Text:
         - list          (list objects matching some condition)
         - show          (display object details)
         - edit          (edit object details)
-        - create        (create a new object)
+        - create        (create a new Object)
 
     Each type may define actions specific to itself; these are listed in
     the help item about that type.
@@ -1796,7 +1796,7 @@ Text:
     Edits information corresponding to the specified objects.
 
     If, instead of "edit", an action of "new" or "create" is specified,
-    then a new object is Created. In this case, no numeric object IDs
+    then a new Object is Created. In this case, no numeric object IDs
     may be specified, but the syntax and behaviour remain otherwise
     unchanged.
 

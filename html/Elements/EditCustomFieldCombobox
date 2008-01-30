@@ -57,7 +57,7 @@
     Values  => [map {$_->name} @{$CustomField->values->items_array_ref}],
 &>
 <%ARGS>
-$Object => undef
+$object => undef
 $CustomField => undef
 $namePrefix => undef
 $Default => undef

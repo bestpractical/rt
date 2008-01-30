@@ -55,9 +55,9 @@ return \%ARGS;
 
 <%init>
 my @actions;
-my @Objects = RT::SavedSearches->new()->_privacy_objects;
-push @Objects, RT::System->new()
-    if Jifty->web->current_user->has_right( Object=> RT->system,
+my @objects = RT::SavedSearches->new()->_privacy_objects;
+push @objects, RT::System->new()
+    if Jifty->web->current_user->has_right( object=> RT->system,
                                           Right => 'SuperUser');
 $self->{SearchId} ||= 'new';
 my $SearchParams = { map { $_ => $args->{$_} } @{$self->{SearchFields}} };
@@ -66,21 +66,21 @@ if ( my ( $container_object, $search_id ) = _parse_saved_search( $args->{'LoadSa
     my $search = $container_object->attributes->with_id($search_id);
     # We have a $search and now; import the others
     $self->{SearchId} = $args->{'LoadSavedSearch'};
-    $self->{CurrentSearch}{Object} = $search;
+    $self->{CurrentSearch}{object} = $search;
     $args->{$_} = $search->sub_value($_) for @{ $self->{SearchFields} };
 }
 
 # look for the current one in the available saved searches
 if ($self->{SearchId} eq 'new') {
-    for my $obj (@Objects) {
-        for ( $m->comp( "/Search/Elements/SearchesForObject", Object => $obj ) ) {
+    for my $obj (@objects) {
+        for ( $m->comp( "/Search/Elements/SearchesForObject", object => $obj ) ) {
             my ( $desc, $search ) = @$_;
             use Data::Dumper;
             # FFS
             local $Data::Dumper::Sortkeys = 1;
             if ( Dumper( $search->content ) eq
                  Dumper( { %$SearchParams, SearchType => $self->{SearchType} } ) ) {
-                $self->{CurrentSearch}{Object}      = $search;
+                $self->{CurrentSearch}{object}      = $search;
                 $self->{SearchId}                   = $search->id;
             }
         }
@@ -88,7 +88,7 @@ if ($self->{SearchId} eq 'new') {
 }
 
 if ( $args->{Save} ) {
-    if ( my $search = $self->{CurrentSearch}{Object} ) {
+    if ( my $search = $self->{CurrentSearch}{object} ) {
         # rename
         $search->set_description( $args->{description} );
 	push @actions, _($self->{SearchType}).loc( ' %1 renamed to %2.', $self->{CurrentSearch}{description}, $args->{description} );
@@ -103,7 +103,7 @@ if ( $args->{Save} ) {
             SearchParams => $SearchParams
         );
         if ($ok) {
-	    $self->{CurrentSearch}{Object} = $saved_search->{Attribute};
+	    $self->{CurrentSearch}{object} = $saved_search->{Attribute};
             push @actions, _($self->{SearchType}).loc( ' %1 saved.', $args->{description} );
         } else {
             push @actions,
@@ -112,16 +112,16 @@ if ( $args->{Save} ) {
     }
 }
 
-if ( $args->{Delete} && $self->{CurrentSearch}{Object} ) {
-    my ($ok, $msg) = $self->{CurrentSearch}{Object}->delete;
-    push @actions, $ok ? _($self->{SearchType}).loc( ' %1 deleted.', $self->{CurrentSearch}{Object}->description ) : $msg;
-    delete $self->{CurrentSearch}{Object};
+if ( $args->{Delete} && $self->{CurrentSearch}{object} ) {
+    my ($ok, $msg) = $self->{CurrentSearch}{object}->delete;
+    push @actions, $ok ? _($self->{SearchType}).loc( ' %1 deleted.', $self->{CurrentSearch}{object}->description ) : $msg;
+    delete $self->{CurrentSearch}{object};
     delete $self->{SearchId};
 
 }
 
-$self->{CurrentSearch}{description} = $self->{CurrentSearch}{Object}->description
-    if $self->{CurrentSearch}{Object};
+$self->{CurrentSearch}{description} = $self->{CurrentSearch}{object}->description
+    if $self->{CurrentSearch}{object};
 
 return @actions;
 </%init>

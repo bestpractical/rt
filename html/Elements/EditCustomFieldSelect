@@ -72,7 +72,7 @@
 %       $m->out($out);
       </select>
 <%ARGS>
-$Object => undef
+$object => undef
 $CustomField => undef
 $namePrefix => undef
 $Default => undef

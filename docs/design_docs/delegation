@@ -26,7 +26,7 @@ the group with id 'id'
 =cut
 
 
-=item RightsForObject { object_type => 'Group', object_id =>'GroupId' }
+=item RightsForobject { object_type => 'Group', object_id =>'GroupId' }
 
 in users.pm
 
@@ -69,7 +69,7 @@ be revoked
 
 
 
-ACL 1 Group Q has the right to Frob ObjectI.
+ACL 1 Group Q has the right to Frob objectI.
 ACL 2 User A has the right "DelegateRights"
 
 Group Q has the member Group S
@@ -78,11 +78,11 @@ Group S has the member Group T
 Group R has the member user A
 Group T has the member user A
 
-User A delegates to  Group P the right to Frob  ObjectI
+User A delegates to  Group P the right to Frob  objectI
 
         New ACL rule:
 
-        ACL 3: Group P has the right to Frob ObjectI 
+        ACL 3: Group P has the right to Frob objectI 
                      as delegated from ACL1 by User A
 
 

@@ -59,7 +59,7 @@ use RT::Shredder::Dependencies;
 
 # No dependencies that should be deleted with record
 
-sub __DependsOn {
+sub __depends_on {
     my $self = shift;
     my %args = (
         Shredder     => undef,
@@ -79,7 +79,7 @@ sub __DependsOn {
     $deps->_push_dependencies(
         base_object   => $self,
         Flags         => DEPENDS_ON,
-        TargetObjects => $list,
+        target_objects => $list,
         Shredder      => $args{'Shredder'}
     );
 
@@ -90,14 +90,14 @@ sub __DependsOn {
     unless ( ( $group->type || '' ) eq 'Owner'
         && ( $group->domain || '' ) eq 'RT::Model::Ticket-Role' )
     {
-        return $self->SUPER::__DependsOn(%args);
+        return $self->SUPER::__depends_on(%args);
     }
 
     # we don't delete group, so we have to fix Ticket and Group
     $deps->_push_dependencies(
         base_object   => $self,
         Flags         => DEPENDS_ON | VARIABLE,
-        TargetObjects => $group,
+        target_objects => $group,
         Shredder      => $args{'Shredder'}
     );
     $args{'Shredder'}->put_resolver(
@@ -105,9 +105,9 @@ sub __DependsOn {
         TargetClass => ref $group,
         Code        => sub {
             my %args  = (@_);
-            my $group = $args{'TargetObject'};
+            my $group = $args{'Targetobject'};
             return
-                if $args{'Shredder'}->get_state( Object => $group )
+                if $args{'Shredder'}->get_state( object => $group )
                     & ( WIPED | IN_WIPING );
             return unless ( $group->type || '' ) eq 'Owner';
             return
@@ -141,7 +141,7 @@ sub __DependsOn {
         },
     );
 
-    return $self->SUPER::__DependsOn(%args);
+    return $self->SUPER::__depends_on(%args);
 }
 
 #TODO: If we plan write export tool we also should fetch parent groups
@@ -161,8 +161,8 @@ sub __Relates {
     if ( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->get_record( Object => $self );
-        $self = $rec->{'Object'};
+        my $rec = $args{'Shredder'}->get_record( object => $self );
+        $self = $rec->{'object'};
         $rec->{'State'} |= INVALID;
         $rec->{'description'}
             = "Have no related Principal #" . $self->member_id . " object.";
@@ -172,8 +172,8 @@ sub __Relates {
     if ( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->get_record( Object => $self );
-        $self = $rec->{'Object'};
+        my $rec = $args{'Shredder'}->get_record( object => $self );
+        $self = $rec->{'object'};
         $rec->{'State'} |= INVALID;
         $rec->{'description'}
             = "Have no related Principal #" . $self->group_id . " object.";
@@ -182,7 +182,7 @@ sub __Relates {
     $deps->_push_dependencies(
         base_object   => $self,
         Flags         => RELATES,
-        TargetObjects => $list,
+        target_objects => $list,
         Shredder      => $args{'Shredder'}
     );
     return $self->SUPER::__Relates(%args);

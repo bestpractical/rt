@@ -51,16 +51,16 @@ $ticket_obj => undef
 </%args>
 <%init>
 my %squelch = $m->comp('SELF:SquelchRecipients', %ARGS);
-my $Object = $squelch{'Object'};
+my $object = $squelch{'object'};
 my @non_recipients = @{ $squelch{'emails'} };
 
 </%init>
 <h2><&|/l&>This message will be sent to...</&></h2>
 
-% if ( $Object ) {
+% if ( $object ) {
 <i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br />
 
-% foreach my $scrip (@{$Object->scrips->prepared}) {
+% foreach my $scrip (@{$object->scrips->prepared}) {
 % next unless $scrip->action_obj->action->isa('RT::ScripAction::SendEmail');
 <b><% $scrip->description || _('Scrip #%1',$scrip->id) %></b><br />
 <&|/l, _($scrip->condition_obj->name), loc($scrip->action_obj->name), loc($scrip->template_obj->name)&>%1 %2 with template %3</&>
@@ -128,7 +128,7 @@ my $Message = make_mime_entity(
     Body    => $ARGS{'UpdateContent'},
 );
 
-my ( $Transaction, $description, $Object ) = $ticket_obj->$action(
+my ( $Transaction, $description, $object ) = $ticket_obj->$action(
     CcMessageTo  => $ARGS{'UpdateCc'},
     BccMessageTo => $ARGS{'UpdateBcc'},
     mime_obj      => $Message,
@@ -140,7 +140,7 @@ unless ( $Transaction ) {
 }
 
 
-return (Object => $Object, emails => [$ticket_obj->squelch_mail_to]);
+return (object => $object, emails => [$ticket_obj->squelch_mail_to]);
 </%INIT>
 </%METHOD>
 

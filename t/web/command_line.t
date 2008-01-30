@@ -325,13 +325,13 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     ok($steal_queue_id, "Got the queue? $msg");
     ok($steal_queue->id, "queue obj has id");
     my $status;
-    ($status, $msg) = $steal_user->principal_object->grant_right( Right => 'ShowTicket', Object => $steal_queue );
+    ($status, $msg) = $steal_user->principal_object->grant_right( Right => 'ShowTicket', object => $steal_queue );
     ok($status, "Gave 'ShowTicket' to our user? $msg");
-    ($status, $msg) = $steal_user->principal_object->grant_right( Right => 'OwnTicket', Object => $steal_queue );
+    ($status, $msg) = $steal_user->principal_object->grant_right( Right => 'OwnTicket', object => $steal_queue );
     ok($status, "Gave 'OwnTicket' to our user? $msg");
-    ($status, $msg) = $steal_user->principal_object->grant_right( Right => 'StealTicket', Object => $steal_queue );
+    ($status, $msg) = $steal_user->principal_object->grant_right( Right => 'StealTicket', object => $steal_queue );
     ok($status, "Gave 'StealTicket' to our user? $msg");
-    ($status, $msg) = $steal_user->principal_object->grant_right( Right => 'TakeTicket', Object => $steal_queue );
+    ($status, $msg) = $steal_user->principal_object->grant_right( Right => 'TakeTicket', object => $steal_queue );
     ok($status, "Gave 'TakeTicket' to our user? $msg");
 
     # create a ticket to take/steal

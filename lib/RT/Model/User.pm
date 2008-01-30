@@ -127,7 +127,7 @@ sub create {
     unless (
         $self->current_user->user_object->has_right(
             Right  => 'AdminUsers',
-            Object => RT->system
+            object => RT->system
         )
         )
     {
@@ -304,7 +304,7 @@ sub set_privileged {
     unless (
         $self->current_user->has_right(
             Right  => 'AdminUsers',
-            Object => RT->system
+            object => RT->system
         )
         )
     {
@@ -796,7 +796,7 @@ sub set_disabled {
     unless (
         $self->current_user->has_right(
             Right  => 'AdminUsers',
-            Object => RT->system
+            object => RT->system
         )
         )
     {
@@ -898,7 +898,7 @@ sub has_group_right {
 
     # Figure out whether a user has the right we're asking about.
     my $retval = $self->has_right(
-        Object => $args{'GroupObj'},
+        object => $args{'GroupObj'},
         Right  => $args{'Right'},
     );
 
@@ -972,7 +972,7 @@ sub current_user_can_modify {
 
     if ($self->current_user->has_right(
             Right  => 'AdminUsers',
-            Object => RT->system
+            object => RT->system
         )
         )
     {
@@ -991,7 +991,7 @@ sub current_user_can_modify {
         and (
             $self->current_user->has_right(
                 Right  => 'ModifySelf',
-                Object => RT->system
+                object => RT->system
             )
         )
         )
@@ -1024,7 +1024,7 @@ sub current_user_has_right {
     return (
         $self->current_user->has_right(
             Right  => $right,
-            Object => RT->system
+            object => RT->system
         )
     );
 }
@@ -1209,7 +1209,7 @@ sub _cleanup_invalid_delegations {
         if (
         $self->has_right(
             Right  => 'DelegateRights',
-            Object => RT->system
+            object => RT->system
         )
         );
 
@@ -1350,7 +1350,7 @@ sub _value {
         $self->current_user->user_object
         && $self->current_user->user_object->has_right(
             Right  => 'AdminUsers',
-            Object => RT->system
+            object => RT->system
         )
         )
     {

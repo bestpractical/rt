@@ -81,12 +81,12 @@ Object.extend = function(destination, source) {
   return destination;
 }
 
-Object.extend(Object, {
+Object.extend(object, {
   inspect: function(object) {
     try {
       if (object === undefined) return 'undefined';
       if (object === null) return 'null';
-      return object.inspect ? object.inspect() : object.toString();
+      return Object.inspect ? Object.inspect() : object.toString();
     } catch (e) {
       if (e instanceof RangeError) return '...';
       throw e;
@@ -1157,7 +1157,7 @@ Element.extend = function(element) {
   if (!element || _nativeExtensions || element.nodeType == 3) return element;
 
   if (!element._extended && element.tagname && element != window) {
-    var methods = Object.clone(Element.Methods), cache = Element.extend.cache;
+    var methods = object.clone(Element.Methods), cache = Element.extend.cache;
 
     if (element.tagname == 'FORM')
       Object.extend(methods, Form.Methods);

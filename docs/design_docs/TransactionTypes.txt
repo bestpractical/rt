@@ -44,5 +44,5 @@ right TransactionClass (maybe via a sub
 RT::Model::TransactionTypes::new_transaction).  Then $Transaction->do is
 called.
 
-TransactionType->do initializes a new object of the right TransactionClass, and 
+TransactionType->do initializes a new Object of the right TransactionClass, and 
 

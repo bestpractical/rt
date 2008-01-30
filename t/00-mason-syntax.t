@@ -28,7 +28,7 @@ ok($ok, "mason syntax is ok");
 
 use HTML::Mason;
 use HTML::Mason::Compiler;
-use HTML::Mason::Compiler::ToObject;
+use HTML::Mason::Compiler::Toobject;
 BEGIN { require RT::Test; }
 use Encode qw(decode_utf8);
 
@@ -37,7 +37,7 @@ sub compile_file {
 
     my $text = decode_utf8(RT::Test->file_content($file));
 
-    my $compiler = new HTML::Mason::Compiler::ToObject;
+    my $compiler = new HTML::Mason::Compiler::Toobject;
     $compiler->compile(
         comp_source => $text,
         name => 'my',
