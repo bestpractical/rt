@@ -337,7 +337,7 @@ sub load_by_cols {
     delete $self->{'attributes'};
 
     return $self->SUPER::load_by_cols(@_)
-        ;    # unless $self->_Handle->case_sensitive;
+        ;    # unless $self->_handle->case_sensitive;
 
     # If this database is case sensitive we need to uncase objects for
     # explicit loading
@@ -370,7 +370,7 @@ sub last_updated_obj {
     my $self = shift;
     my $obj  = RT::Date->new();
 
-    $obj->set( Format => 'sql', value => $self->LastUpdated );
+    $obj->set( Format => 'sql', value => $self->last_updated );
     return $obj;
 }
 
@@ -382,7 +382,7 @@ sub created_obj {
     my $self = shift;
     my $obj  = RT::Date->new();
 
-    $obj->set( Format => 'sql', value => $self->Created );
+    $obj->set( Format => 'sql', value => $self->created );
 
     return $obj;
 }
@@ -406,7 +406,7 @@ sub age_as_string {
 
 sub last_updated_as_string {
     my $self = shift;
-    if ( $self->LastUpdated ) {
+    if ( $self->last_updated ) {
         return ( $self->last_updated_obj->as_string() );
 
     } else {
@@ -433,7 +433,7 @@ sub created_as_string {
 #
 sub long_since_update_as_string {
     my $self = shift;
-    if ( $self->LastUpdated ) {
+    if ( $self->last_updated ) {
 
         return ( $self->last_updated_obj->age_as_string() );
 
@@ -542,7 +542,7 @@ sub creator_obj {
     unless ( exists $self->{'creator_obj'} ) {
 
         $self->{'creator_obj'} = RT::Model::User->new;
-        $self->{'creator_obj'}->load( $self->Creator );
+        $self->{'creator_obj'}->load( $self->creator );
     }
     return ( $self->{'creator_obj'} );
 }
@@ -561,7 +561,7 @@ sub last_updated_by_obj {
     my $self = shift;
     unless ( exists $self->{LastUpdatedByObj} ) {
         $self->{'LastUpdatedByObj'} = RT::Model::User->new;
-        $self->{'LastUpdatedByObj'}->load( $self->LastUpdatedBy );
+        $self->{'LastUpdatedByObj'}->load( $self->last_updated_by );
     }
     return $self->{'LastUpdatedByObj'};
 }
@@ -1439,7 +1439,7 @@ sub _add_custom_field_value {
     }
 
     if ( $cf->can('validate_Value') ) {
-        unless ( $cf->validate_Value( $args{'Value'} ) ) {
+        unless ( $cf->validate_value( $args{'Value'} ) ) {
             return ( 0, _("Invalid value for custom field") );
         }
     }
@@ -1456,7 +1456,7 @@ sub _add_custom_field_value {
 # used to be a multiple and we have many values to whack....
         my $cf_values = $values->count;
 
-        if ( $cf_values > $cf->MaxValues ) {
+        if ( $cf_values > $cf->max_values ) {
             my $i = 0
                 ; #We want to delete all but the max we can currently have , so we can then
                   # execute the same code to "change" the value from old to new

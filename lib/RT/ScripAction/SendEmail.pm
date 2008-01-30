@@ -88,7 +88,7 @@ Cleans class-wide options, like L</SquelchMailTo> or L</AttachTickets>.
 sub clean_slate {
     my $self = shift;
     $self->squelch_mail_to(undef);
-    $self->AttachTickets(undef);
+    $self->attach_tickets(undef);
 }
 
 =head2 Commit
@@ -396,7 +396,7 @@ sub add_attachment {
         type     => $attach->content_type,
         Charset  => $attach->original_encoding,
         Data     => $attach->original_content,
-        Filename => defined( $attach->Filename )
+        Filename => defined( $attach->filename )
         ? $self->mime_encode_string( $attach->filename,
             RT->config->get('EmailOutputEncoding') )
         : undef,
@@ -435,7 +435,7 @@ L</AttachTickets> method.
 
 sub add_tickets {
     my $self = shift;
-    $self->add_ticket($_) foreach $self->AttachTickets;
+    $self->add_ticket($_) foreach $self->attach_tickets;
     return;
 }
 

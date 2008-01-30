@@ -161,7 +161,7 @@ sub query_to_sql {
     for my $queue ( @{ $self->{'Queues'} } ) {
         my $queue_obj = RT::Model::Queue->new(
             current_user => $self->tickets_obj->current_user );
-        $queue_obj->Load($queue) or next;
+        $queue_obj->load($queue) or next;
         push @queue_clauses, "Queue = '" . $queue_obj->name . "'";
     }
 
@@ -179,7 +179,7 @@ sub query_to_sql {
 # {{{ sub prepare
 sub prepare {
     my $self = shift;
-    my $tql  = $self->query_to_sql( $self->Argument );
+    my $tql  = $self->query_to_sql( $self->argument );
 
     Jifty->log->fatal($tql);
 

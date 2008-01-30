@@ -69,7 +69,7 @@ sub ticket_obj {
     my $self = shift;
     unless ( $self->{'_ticketobj'} ) {
         $self->{'_ticketobj'} = RT::Model::Ticket->new;
-        $self->{'_ticketobj'}->load( $self->Ticket );
+        $self->{'_ticketobj'}->load( $self->ticket );
     }
     return $self->{'_ticketobj'};
 }
@@ -88,7 +88,7 @@ sub collection {
         = 'Queue = "'
         . $self->ticket_obj->queue_obj->name
         . '" AND type = "reminder"';
-    $query .= ' AND RefersTo = "' . $self->Ticket . '"';
+    $query .= ' AND RefersTo = "' . $self->ticket . '"';
 
     $col->from_sql($query);
 
@@ -124,7 +124,7 @@ sub add {
         Due      => $args{'Due'},
         RefersTo => $self->ticket,
         type     => 'reminder',
-        Queue    => $self->ticket_obj->Queue,
+        Queue    => $self->ticket_obj->queue,
 
     );
     $self->ticket_obj->_new_transaction(

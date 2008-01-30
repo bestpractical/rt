@@ -391,7 +391,7 @@ sub create_by_template {
         }
 
         Jifty->log->debug("Assigned $template_id with $id");
-        $T::Tickets{$template_id}->set_OriginObj( $self->ticket_obj )
+        $T::Tickets{$template_id}->set_origin_obj( $self->ticket_obj )
             if $self->ticket_obj
                 && $T::Tickets{$template_id}->can('SetOriginObj');
 
@@ -1033,14 +1033,14 @@ sub get_base_template {
     my $t    = shift;
 
     my $string;
-    $string .= "Queue: " . $t->Queue . "\n";
+    $string .= "Queue: " . $t->queue . "\n";
     $string .= "Subject: " . $t->subject . "\n";
     $string .= "Status: " . $t->status . "\n";
     $string .= "Due: " . $t->due_obj->unix . "\n";
     $string .= "starts: " . $t->starts_obj->unix . "\n";
     $string .= "Started: " . $t->started_obj->unix . "\n";
     $string .= "Resolved: " . $t->resolved_obj->unix . "\n";
-    $string .= "Owner: " . $t->Owner . "\n";
+    $string .= "Owner: " . $t->owner . "\n";
     $string .= "Requestor: " . $t->requestor_addresses . "\n";
     $string .= "Cc: " . $t->cc_addresses . "\n";
     $string .= "AdminCc: " . $t->admin_cc_addresses . "\n";

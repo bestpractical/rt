@@ -18,6 +18,7 @@ sub import {
     $class->SUPER::import(@_);
     $class->_setup_config(%args);
     RT::init_system_objects();
+    $class->load_test_configs;
 }
 
 sub _setup_config {
@@ -31,6 +32,8 @@ sub _setup_config {
     print $config qq{
 set( \$WebPort , $port);
 set( \$WebBaseURL , "http://localhost:\$WebPort");
+set( \$LogToScreen , "debug");
+set( \$LogStackTraces , "warning");
 };
     print $config $args{'config'} if $args{'config'};
     print $config "\n1;\n";
@@ -57,6 +60,7 @@ sub started_ok {
         Jifty->log->warn($existing_server);
         return ( $existing_server, RT::Test::Web->new );
     }
+        Jifty->log->error("bla");
     my $server = Jifty::Test->make_server;
     $RT::Test::server_url = $server->started_ok . "/";
 
@@ -142,7 +146,7 @@ sub load_or_create_user {
         );
         $gms->limit( column => 'MemberId', value => $obj->id );
         while ( my $group_member_record = $gms->next ) {
-            $group_member_record->Delete;
+            $group_member_record->delete;
         }
     }
 
@@ -197,7 +201,7 @@ sub store_rights {
 
     # fake construction
     RT::ACE->new( current_user => RT->system_user );
-    my @fields = keys %{ RT::ACE->_ClassAccessible };
+    my @fields = keys %{ RT::ACE->_class_accessible };
 
     require RT::ACL;
     my $acl = RT::ACL->new( current_user => RT->system_user );

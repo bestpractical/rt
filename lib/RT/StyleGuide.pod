@@ -511,8 +511,8 @@ An example:
 		my $obj = new Constructor;
 		my($var1, $var2);
 
-		$obj->set_Foo($val);
-		$var1 = $obj->Foo();
+		$obj->set_foo($val);
+		$var1 = $obj->foo();
 
 
 		return($val);
@@ -802,9 +802,9 @@ should become 	return ( $id, _("Queue Created") );
 
 When returning or localizing a single string, the "extra" set of parenthesis () should be omitted.
 
-The code  	return ("subject changed to ". $self->Data );
+The code  	return ("subject changed to ". $self->data );
 
-should become	 return _( "subject changed to %1", $self->Data );
+should become	 return _( "subject changed to %1", $self->data );
 
 
 It is important not to localize  the names of rights or statuses within RT's core, as there is logic that depends on them as string identifiers.  The proper place to localize these values is when they're presented for display in the web or commandline interfaces.

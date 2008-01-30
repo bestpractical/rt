@@ -92,7 +92,7 @@ sub commit {
         my $base = RT::Model::Ticket->new( $self->ticket_obj->current_user );
 
         # Todo: Only work if Base is a plain ticket num:
-        $base->load( $Link->Base );
+        $base->load( $Link->base );
 
     # I'm afraid this might be a major bottleneck if ResolveGroupTicket is on.
         $base->resolve;

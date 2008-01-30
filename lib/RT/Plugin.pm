@@ -52,7 +52,7 @@ Returns the directory this plugin has installed its HTML::Mason templates into
 sub component_root {
     my $self = shift;
 
-    return $self->_BasePath . "/html";
+    return $self->_base_path . "/html";
 }
 
 =head2 PoDir
@@ -63,7 +63,7 @@ Returns the directory this plugin has installed its message catalogs into.
 
 sub po_dir {
     my $self = shift;
-    return $self->_BasePath . "/po";
+    return $self->_base_path . "/po";
 
 }
 

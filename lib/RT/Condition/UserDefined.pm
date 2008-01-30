@@ -62,7 +62,7 @@ This happens on every transaction. it's always applicable
 
 sub is_applicable {
     my $self   = shift;
-    my $retval = eval $self->scrip_obj->CustomIsApplicableCode;
+    my $retval = eval $self->scrip_obj->custom_is_applicable_code;
     if ($@) {
         Jifty->log->error(
             "Scrip " . $self->scrip_obj->id . " IsApplicable failed: " . $@ );

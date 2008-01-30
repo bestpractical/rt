@@ -219,7 +219,7 @@ Returns either a localized string 'ticket #23' or the full URI if the object is 
 
 sub as_string {
     my $self = shift;
-    if ( $self->is_local && $self->Object ) {
+    if ( $self->is_local && $self->object ) {
         return _( "%1 #%2", $self->object_type, $self->object->id );
     } else {
         return $self->uri;

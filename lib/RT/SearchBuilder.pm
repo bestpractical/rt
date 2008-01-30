@@ -282,7 +282,7 @@ sub items_order_by {
     my $items = shift;
 
     if ( $self->new_item()->can('SortOrder') ) {
-        $items = [ sort { $a->SortOrder <=> $b->SortOrder } @{$items} ];
+        $items = [ sort { $a->sort_order <=> $b->sort_order } @{$items} ];
     } elsif ( $self->new_item()->can('name') ) {
         $items = [ sort { lc( $a->name ) cmp lc( $b->name ) } @{$items} ];
     }

@@ -60,7 +60,7 @@
 		argument => $arg, 
 		Type => $type);
 
-    if ($foo->IsApplicable) {
+    if ($foo->is_applicable) {
  	   # do something
     }
 
