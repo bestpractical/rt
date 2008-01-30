@@ -1439,7 +1439,7 @@ sub order_by {
                 entry_aggregator => 'AND'
             );
 
-            push @res, { %$row, alias => $CFvs,      column => 'SortOrder' };
+            push @res, { %$row, alias => $CFvs,      column => 'sort_order' };
             push @res, { %$row, alias => $TicketCFs, column => 'content' };
         } elsif ( $field eq "Custom" && $subkey eq "Ownership" ) {
 

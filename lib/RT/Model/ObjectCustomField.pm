@@ -58,14 +58,14 @@ sub table {'ObjectCustomFields'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column custom_field => type is 'int(11)', max_length is 11, default is '0';
-    column Creator     => type is 'int(11)', max_length is 11, default is '0';
+    column creator     => type is 'int(11)', max_length is 11, default is '0';
     column object_id   => type is 'int(11)', max_length is 11, default is '0';
     column
-        LastUpdatedBy => type is 'int(11)',
+        last_updated_by => type is 'int(11)',
         max_length is 11, default is '0';
-    column SortOrder => type is 'int(11)', max_length is 11, default is '0';
-    column Created     => type is 'datetime', default is '';
-    column LastUpdated => type is 'datetime', default is '';
+    column sort_order => type is 'int(11)', max_length is 11, default is '0';
+    column created     => type is 'datetime', default is '';
+    column last_updated => type is 'datetime', default is '';
 
 };
 
@@ -74,7 +74,7 @@ sub create {
     my %args = (
         custom_field => 0,
         object_id   => 0,
-        SortOrder   => undef,
+        sort_order   => undef,
         @_
     );
 
@@ -96,23 +96,23 @@ sub create {
         return $first->id;
     }
 
-    unless ( defined $args{'SortOrder'} ) {
+    unless ( defined $args{'sort_order'} ) {
         my $ObjectCFs = RT::Model::ObjectCustomFieldCollection->new(
             current_user => RT->system_user );
         $ObjectCFs->limit_to_object_id( $args{'object_id'} );
         $ObjectCFs->limit_to_lookup_type( $cf->lookup_type );
         $ObjectCFs->order_by( column => 'sort_order', order => 'DESC' );
         if ( my $first = $ObjectCFs->first ) {
-            $args{'SortOrder'} = $first->sort_order + 1;
+            $args{'sort_order'} = $first->sort_order + 1;
         } else {
-            $args{'SortOrder'} = 0;
+            $args{'sort_order'} = 0;
         }
     }
 
     return $self->SUPER::create(
         custom_field => $args{'custom_field'},
         object_id   => $args{'object_id'},
-        SortOrder   => $args{'SortOrder'},
+        sort_order   => $args{'sort_order'},
     );
 }
 

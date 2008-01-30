@@ -407,7 +407,7 @@ sub add_attachment {
     );
 }
 
-=head2 AttachTickets [@IDs]
+=head2 attach_tickets [@IDs]
 
 Returns or set list of ticket's IDs that should be attached to an outgoing message.
 
@@ -419,7 +419,7 @@ clean list by passing undef as argument.
 {
     my $list = [];
 
-    sub AttachTickets {
+    sub attach_tickets {
         my $self = shift;
         $list = [ grep defined, @_ ] if @_;
         return @$list;

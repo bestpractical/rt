@@ -40,9 +40,9 @@ use Jifty::DBI::Record schema {
         type is 'varchar(255)', default is '';
     column old_reference => max_length is 11, type is 'int(11)', default is '';
     column new_reference => max_length is 11, type is 'int(11)', default is '';
-    column Data => max_length is 255, type is 'varchar(255)', default is '';
-    column Creator => max_length is 11, type is 'int(11)', default is '0';
-    column Created => type is 'datetime', default is '';
+    column data => max_length is 255, type is 'varchar(255)', default is '';
+    column creator => max_length is 11, type is 'int(11)', default is '0';
+    column created => type is 'datetime', default is '';
 
 };
 
@@ -87,7 +87,7 @@ Returns the current value of time_taken.
 
 
 
-=head2 SetTimeTaken value
+=head2 set_time_taken value
 
 
 Set time_taken to value. 
@@ -121,7 +121,7 @@ Returns the current value of field.
 
 
 
-=head2 SetField value
+=head2 set_field value
 
 
 Set field to value. 
@@ -172,7 +172,7 @@ Returns the current value of reference_type.
 
 
 
-=head2 SetReferenceType value
+=head2 set_reference_type value
 
 
 Set reference_type to value. 
@@ -189,7 +189,7 @@ Returns the current value of old_reference.
 
 
 
-=head2 SetOldReference value
+=head2 set_old_reference value
 
 
 Set old_reference to value. 
@@ -206,7 +206,7 @@ Returns the current value of new_reference.
 
 
 
-=head2 SetNewReference value
+=head2 set_new_reference value
 
 
 Set new_reference to value. 
@@ -216,35 +216,35 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
-=head2 Data
+=head2 data
 
-Returns the current value of Data. 
-(In the database, Data is stored as varchar(255).)
-
-
-
-=head2 SetData value
+Returns the current value of data. 
+(In the database, data is stored as varchar(255).)
 
 
-Set Data to value. 
+
+=head2 set_data value
+
+
+Set data to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Data will be stored as a varchar(255).)
+(In the database, data will be stored as a varchar(255).)
 
 
 =cut
 
-=head2 Creator
+=head2 creator
 
-Returns the current value of Creator. 
-(In the database, Creator is stored as int(11).)
+Returns the current value of creator. 
+(In the database, creator is stored as int(11).)
 
 
 =cut
 
-=head2 Created
+=head2 created
 
-Returns the current value of Created. 
-(In the database, Created is stored as datetime.)
+Returns the current value of created. 
+(In the database, created is stored as datetime.)
 
 
 =cut
@@ -280,7 +280,7 @@ sub create {
         id             => undef,
         time_taken      => 0,
         type           => 'undefined',
-        Data           => '',
+        data           => '',
         field          => undef,
         old_value      => undef,
         new_value      => undef,
@@ -309,11 +309,11 @@ sub create {
     #lets create our transaction
     my %params = (
         type          => $args{'type'},
-        Data          => $args{'Data'},
+        data          => $args{'data'},
         field         => $args{'field'},
         old_value     => $args{'old_value'},
         new_value     => $args{'new_value'},
-        Created       => $args{'Created'},
+        created       => $args{'created'},
         object_type   => $args{'object_type'},
         object_id     => $args{'object_id'},
         reference_type => $args{'reference_type'},
@@ -323,7 +323,7 @@ sub create {
 
 # Parameters passed in during an import that we probably don't want to touch, otherwise
     foreach my $attr
-        qw(id Creator Created LastUpdated time_taken LastUpdatedBy) {
+        qw(id creator created last_updated time_taken last_updated_by) {
         $params{$attr} = $args{$attr} if ( $args{$attr} );
     }
 
@@ -373,7 +373,7 @@ sub create {
 =head2 Scrips
 
 Returns the Scrips object for this transaction.
-This routine is only useful on a freshly Created transaction object.
+This routine is only useful on a freshly created transaction object.
 Scrips do not get persisted to the database with transactions.
 
 
@@ -553,9 +553,9 @@ sub addresses {
 
 }
 
-# {{{ ContentObj
+# {{{ content_obj
 
-=head2 ContentObj 
+=head2 content_obj 
 
 Returns the RT::Model::Attachment object which contains the content for this Transaction
 
@@ -717,9 +717,9 @@ sub description {
 
 # }}}
 
-# {{{ sub BriefDescription
+# {{{ sub brief_description
 
-=head2 BriefDescription
+=head2 brief_description
 
 Returns a text string which briefly describes this transaction
 
@@ -996,9 +996,9 @@ sub brief_description {
 
 # {{{ Utility methods
 
-# {{{ sub IsInbound
+# {{{ sub is_inbound
 
-=head2 IsInbound
+=head2 is_inbound
 
 Returns true if the creator of the transaction is a requestor of the ticket.
 Returns false otherwise
@@ -1170,7 +1170,7 @@ sub friendlyobject_type {
     return _($type);
 }
 
-=head2 UpdateCustomFields
+=head2 update_custom_fields
     
     Takes a hash of 
 
