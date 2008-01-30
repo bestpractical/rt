@@ -21,7 +21,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
         form_name => "ModifyCustomField",
         fields => {
             TypeComposite => 'Image-0',
-            LookupType => 'RT::Model::Queue-RT::Model::Ticket',
+            lookup_type => 'RT::Model::Queue-RT::Model::Ticket',
             name => 'img',
             description => 'img',
         },

@@ -24,7 +24,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
         fields => {
             name          => $cf_name,
             TypeComposite => 'Select-1',
-            LookupType    => 'RT::Model::Queue-RT::Model::Ticket',
+            lookup_type    => 'RT::Model::Queue-RT::Model::Ticket',
         },
     );
     $m->content_like( qr/Object Created/, 'Created CF sucessfully' );
