@@ -12,13 +12,15 @@ my $mailsent;
 
 my @server;
 
-sub import {
-    my $class = shift;
-    my %args  = @_;
-    $class->SUPER::import(@_);
-    $class->_setup_config(%args);
+sub setup {
+    my $self = shift;
+    my $args = shift;
+
+    # Make sure to call the super-class version
+    $self->SUPER::setup($args);
+
+    $self->_setup_config( @$args );
     RT::init_system_objects();
-    $class->load_test_configs;
 }
 
 sub _setup_config {
@@ -60,7 +62,6 @@ sub started_ok {
         Jifty->log->warn($existing_server);
         return ( $existing_server, RT::Test::Web->new );
     }
-        Jifty->log->error("bla");
     my $server = Jifty::Test->make_server;
     $RT::Test::server_url = $server->started_ok . "/";
 
