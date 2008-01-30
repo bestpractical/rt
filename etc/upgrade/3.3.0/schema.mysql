@@ -38,7 +38,7 @@ CREATE TABLE ObjectCustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
   object_id integer NOT NULL,
-  SortOrder integer NOT NULL DEFAULT 0  ,
+  sort_order integer NOT NULL DEFAULT 0  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -48,7 +48,7 @@ CREATE TABLE ObjectCustomFields (
 ) TYPE=InnoDB;
 
 
-INSERT into ObjectCustomFields (id, CustomField, object_id, SortOrder, Creator, LastUpdatedBy) SELECT  null, id, Queue, SortOrder, Creator, LastUpdatedBy from CustomFields;
+INSERT into ObjectCustomFields (id, CustomField, object_id, sort_order, Creator, LastUpdatedBy) SELECT  null, id, Queue, sort_order, Creator, LastUpdatedBy from CustomFields;
 
 alter table CustomFields add column LookupType varchar(255) NOT NULL;
 alter table CustomFields add column Repeated int2 NOT NULL DEFAULT 0 ;

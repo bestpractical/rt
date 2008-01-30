@@ -9,17 +9,17 @@ msgstr ""
 "Content-Type: text/plain; charset=utf8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#. ($self->{CurrentSearch}{Object}->Description)
+#. ($self->{CurrentSearch}{Object}->description)
 #: html/Widgets/SavedSearch:70
 msgid " %1 deleted."
 msgstr " %1 raderad."
 
-#. ($self->{CurrentSearch}{Description}, $args->{Description})
+#. ($self->{CurrentSearch}{description}, $args->{description})
 #: html/Widgets/SavedSearch:47
 msgid " %1 renamed to %2."
 msgstr " %1 omdöpt till %2."
 
-#. ($args->{Description})
+#. ($args->{description})
 #: html/Widgets/SavedSearch:60
 msgid " %1 saved."
 msgstr " %1 sparad."
@@ -196,7 +196,7 @@ msgstr "%1 av %2"
 msgid "%1 changed from %2 to %3"
 msgstr "%1 ändrat från %2 till %3"
 
-#. ($Description)
+#. ($description)
 #: html/Search/Build.html:213
 msgid "%1 copy"
 msgstr "%1 kopiera"
@@ -740,7 +740,7 @@ msgstr "Apr."
 msgid "Asc"
 msgstr "Stigande"
 
-#: html/Elements/SelectSortOrder:56
+#: html/Elements/Selectsort_order:56
 msgid "Ascending"
 msgstr "Stigande"
 
@@ -1644,7 +1644,7 @@ msgstr "Avhängig av"
 msgid "Desc"
 msgstr "Fallande"
 
-#: html/Elements/SelectSortOrder:56
+#: html/Elements/Selectsort_order:56
 msgid "Descending"
 msgstr "Fallande"
 
@@ -1663,7 +1663,7 @@ msgstr "Beskriv problemet nedan"
 #: html/Admin/Queues/Modify.html:69
 #: html/Search/Elements/EditSearches:56
 #: html/User/Groups/Modify.html:70
-msgid "Description"
+msgid "description"
 msgstr "Beskrivning"
 
 #: html/Search/Elements/EditFormat:71
@@ -5599,7 +5599,7 @@ msgstr "tillåt skapande av sparade sökningar"
 msgid "allow loading of saved searches"
 msgstr "tillåt inläsning av sparade sökningar"
 
-#. ($right->principal_object->object->SelfDescription)
+#. ($right->principal_object->object->Selfdescription)
 #: html/User/Elements/DelegateRights:80
 msgid "as granted to %1"
 msgstr "som givet till %1"

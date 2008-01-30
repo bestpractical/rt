@@ -25,12 +25,12 @@ CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
 CREATE TABLE rt3.Queues (
   id numeric(38,0) identity,
   name varchar(200) NOT NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   correspond_address varchar(120) NULL  ,
   comment_address varchar(120) NULL  ,
   initial_priority integer NOT NULL   ,
   final_priority integer NOT NULL   ,
-  DefaultDueIn integer NOT NULL   ,
+  default_due_in integer NOT NULL   ,
   Creator integer NOT NULL   ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL   ,
@@ -84,7 +84,7 @@ CREATE INDEX Principals2 ON Principals (object_id);
 CREATE TABLE rt3.Groups (
   id numeric(38,0) identity,
   name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   domain varchar(64),
   type varchar(64),
   instance integer,
@@ -101,7 +101,7 @@ CREATE INDEX Groups2 On Groups  (Type, instance, domain);
 CREATE TABLE rt3.ScripConditions (
   id numeric(38,0) identity,
   name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
   ApplicableTransTypes varchar(60) NULL  ,
@@ -140,7 +140,7 @@ CREATE INDEX Transactions2 ON Transactions (EffectiveTicket);
 
 CREATE TABLE rt3.Scrips (
   id numeric(38,0) identity,
-  Description varchar(255),
+  description varchar(255),
   ScripCondition integer NOT NULL   ,
   ScripAction integer NOT NULL   ,
   ConditionRules text NULL  ,
@@ -311,7 +311,7 @@ CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type) ;
 CREATE TABLE rt3.ScripActions (
   id numeric(38,0) identity,
   name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
   Creator integer NOT NULL   ,
@@ -329,7 +329,7 @@ CREATE TABLE rt3.Templates (
   id numeric(38,0) identity,
   Queue integer NOT NULL  ,
   name varchar(200) NOT NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
   TranslationOf integer NOT NULL   ,
@@ -370,8 +370,8 @@ CREATE TABLE rt3.CustomFields (
   name varchar(200) NULL  ,
   type varchar(200) NULL  ,
   Queue integer NOT NULL  ,
-  Description varchar(255) NULL  ,
-  SortOrder integer NOT NULL   ,
+  description varchar(255) NULL  ,
+  sort_order integer NOT NULL   ,
 
   Creator integer NOT NULL   ,
   Created DATETIME NULL  ,
@@ -392,8 +392,8 @@ CREATE TABLE rt3.custom_field_values (
   id numeric(38,0) identity,
   CustomField int NOT NULL  ,
   name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
-  SortOrder integer NOT NULL   ,
+  description varchar(255) NULL  ,
+  sort_order integer NOT NULL   ,
 
   Creator integer NOT NULL   ,
   Created DATETIME NULL  ,
@@ -412,7 +412,7 @@ CREATE INDEX custom_field_values1 ON custom_field_values (CustomField);
 CREATE TABLE rt3.Attributes (
   id numeric(38,0) identity,
   name varchar(255) NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   Content text,
   content_type varchar(16),
   object_type varchar(64),

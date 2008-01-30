@@ -72,6 +72,7 @@ unless ( $Portlets ) {
         HomepageSettings => $default_portlets? $default_portlets->content: {},
     );
 }
+return;
 
 my ($body, $summary) = @{$Portlets}{qw(body summary)};
 unless( $body && @$body ) {
@@ -79,7 +80,6 @@ unless( $body && @$body ) {
     $summary = undef;
 }
 $summary = undef unless $summary && @$summary;
-
 my $Rows = $user->preferences( 'SummaryRows', ( RT->config->get('DefaultSummaryRows') || 10 ) );
 
 my $show_cb = sub  {

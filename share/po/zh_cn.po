@@ -10,17 +10,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: html/Widgets/SavedSearch:70
-#. ($self->{CurrentSearch}{Object}->Description)
+#. ($self->{CurrentSearch}{Object}->description)
 msgid " %1 deleted."
 msgstr ""
 
 #: html/Widgets/SavedSearch:47
-#. ($self->{CurrentSearch}{Description}, $args->{Description})
+#. ($self->{CurrentSearch}{description}, $args->{description})
 msgid " %1 renamed to %2."
 msgstr ""
 
 #: html/Widgets/SavedSearch:60
-#. ($args->{Description})
+#. ($args->{description})
 msgid " %1 saved."
 msgstr ""
 
@@ -228,7 +228,7 @@ msgid "%1 changed from %2 to %3"
 msgstr "%1 的值从 %2 改为 %3"
 
 #: html/Search/Build.html:213
-#. ($Description)
+#. ($description)
 msgid "%1 copy"
 msgstr "%1 复制"
 
@@ -903,7 +903,7 @@ msgid "AdminGroup"
 msgstr "管理群组"
 
 #: NOT FOUND IN SOURCE
-msgid "AdminGroupDescription"
+msgid "AdminGroupdescription"
 msgstr "管理群组描述"
 
 #: lib/RT/Group_Overlay.pm:165
@@ -1139,7 +1139,7 @@ msgstr "您确定要删除？"
 msgid "Asc"
 msgstr ""
 
-#: html/Elements/SelectSortOrder:56
+#: html/Elements/Selectsort_order:56
 msgid "Ascending"
 msgstr "递增"
 
@@ -2522,7 +2522,7 @@ msgstr "需先处理"
 msgid "Desc"
 msgstr ""
 
-#: html/Elements/SelectSortOrder:56
+#: html/Elements/Selectsort_order:56
 msgid "Descending"
 msgstr "递减"
 
@@ -2531,15 +2531,15 @@ msgid "Describe the issue below"
 msgstr "在以下字段描述主题"
 
 #: html/Admin/CustomFields/Modify.html:61 html/Admin/Elements/AddCustomFieldValue:57 html/Admin/Elements/EditCustomField:60 html/Admin/Elements/EditCustomFieldValues:56 html/Admin/Elements/EditScrip:55 html/Admin/Elements/ModifyTemplate:57 html/Admin/Groups/Modify.html:71 html/Admin/Queues/Modify.html:69 html/Search/Elements/EditSearches:56 html/User/Groups/Modify.html:70
-msgid "Description"
+msgid "description"
 msgstr "描述"
 
 #: NOT FOUND IN SOURCE
-msgid "Description of Responsibility"
+msgid "description of Responsibility"
 msgstr "经办业务说明"
 
 #: NOT FOUND IN SOURCE
-msgid "Description:"
+msgid "description:"
 msgstr "描述："
 
 #: NOT FOUND IN SOURCE
@@ -3049,7 +3049,7 @@ msgid "Field Content:"
 msgstr "字段内容："
 
 #: NOT FOUND IN SOURCE
-msgid "Field Description"
+msgid "Field description"
 msgstr "字段描述"
 
 #: NOT FOUND IN SOURCE
@@ -3357,7 +3357,7 @@ msgid "Group Admin"
 msgstr "群组管理员"
 
 #: NOT FOUND IN SOURCE
-msgid "Group Description"
+msgid "Group description"
 msgstr "群组描述"
 
 #: NOT FOUND IN SOURCE
@@ -5174,7 +5174,7 @@ msgid "Opinion"
 msgstr "意见"
 
 #: NOT FOUND IN SOURCE
-msgid "Option Description"
+msgid "Option description"
 msgstr "选项描述"
 
 #: NOT FOUND IN SOURCE
@@ -5603,7 +5603,7 @@ msgid "Pseudogroup for internal use"
 msgstr "内部用的虚拟群组"
 
 #: NOT FOUND IN SOURCE
-msgid "Public Description"
+msgid "Public description"
 msgstr "公开说明"
 
 #: NOT FOUND IN SOURCE
@@ -6707,7 +6707,7 @@ msgid "Sort results by"
 msgstr "结果排序方式"
 
 #: NOT FOUND IN SOURCE
-msgid "SortOrder"
+msgid "sort_order"
 msgstr "排序顺序"
 
 #: html/Admin/Elements/EditScrip:78
@@ -6947,7 +6947,7 @@ msgid "Template Content"
 msgstr "通知模板内容"
 
 #: NOT FOUND IN SOURCE
-msgid "Template Description"
+msgid "Template description"
 msgstr "通知模板描述"
 
 #: NOT FOUND IN SOURCE
@@ -8018,7 +8018,7 @@ msgid "approving"
 msgstr "待签核"
 
 #: html/User/Elements/DelegateRights:80
-#. ($right->principal_object->object->SelfDescription)
+#. ($right->principal_object->object->Selfdescription)
 msgid "as granted to %1"
 msgstr "权限同 %1"
 

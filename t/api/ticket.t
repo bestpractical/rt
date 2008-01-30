@@ -21,17 +21,17 @@ my ($ret, $cmsg) = $testcf->create( name => 'selectmulti',
                                type => 'SelectMultiple');
 ok($ret,"Created the custom field - ".$cmsg);
 ($ret,$cmsg) = $testcf->add_value ( name => 'Value1',
-                        SortOrder => '1',
-                        Description => 'A testing value');
+                        sort_order => '1',
+                        description => 'A testing value');
 
 ok($ret, "Added a value - ".$cmsg);
 
 ok($testcf->add_value ( name => 'Value2',
-                        SortOrder => '2',
-                        Description => 'Another testing value'));
+                        sort_order => '2',
+                        description => 'Another testing value'));
 ok($testcf->add_value ( name => 'Value3',
-                        SortOrder => '3',
-                        Description => 'Yet Another testing value'));
+                        sort_order => '3',
+                        description => 'Yet Another testing value'));
                        
 is($testcf->values->count , 3);
 

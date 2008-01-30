@@ -80,7 +80,7 @@ RT::Interface::Email::Filter::SpamAssassin - Spam filter for RT
     # in RT config
     Set(@MailPlugins, 'Filter::SpamAssassin', ...other filters...);
 
-=head1 DESCRIPTION
+=head1 description
 
 This plugin checks to see if an incoming mail is spam (using
 C<spamassassin>) and if so, rewrites its headers. If the mail is very

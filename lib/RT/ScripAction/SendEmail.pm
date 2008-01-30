@@ -72,7 +72,7 @@ RT::ScripAction::AutoReply is a good example subclass.
   @ISA  = qw(RT::ScripAction::SendEmail);
 
 
-=head1 DESCRIPTION
+=head1 description
 
 Basically, you create another module RT::ScripAction::YourAction which ISA
 RT::ScripAction::SendEmail.
@@ -158,7 +158,7 @@ sub prepare {
         return (undef);
     }
 
-    my $MIMEObj = $self->template_obj->mime_obj;
+    my $mime_obj = $self->template_obj->mime_obj;
 
     # Header
     $self->set_rt_special_headers();
@@ -178,15 +178,15 @@ sub prepare {
 # TODO: We should be pulling the recipients out of the template and shove them into To, Cc and Bcc
 
     $self->set_header( 'To', join( ', ', @{ $self->{'To'} } ) )
-        if ( !$MIMEObj->head->get('To')
+        if ( !$mime_obj->head->get('To')
         && $self->{'To'}
         && @{ $self->{'To'} } );
     $self->set_header( 'Cc', join( ', ', @{ $self->{'Cc'} } ) )
-        if ( !$MIMEObj->head->get('Cc')
+        if ( !$mime_obj->head->get('Cc')
         && $self->{'Cc'}
         && @{ $self->{'Cc'} } );
     $self->set_header( 'Bcc', join( ', ', @{ $self->{'Bcc'} } ) )
-        if ( !$MIMEObj->head->get('Bcc')
+        if ( !$mime_obj->head->get('Bcc')
         && $self->{'Bcc'}
         && @{ $self->{'Bcc'} } );
 
@@ -196,8 +196,8 @@ sub prepare {
     $self->set_header( 'To', join( ', ', @{ $self->{'PseudoTo'} } ) )
         if $self->{'PseudoTo'}
             && @{ $self->{'PseudoTo'} }
-            && !$MIMEObj->head->get('To')
-            && ( $MIMEObj->head->get('Cc') or $MIMEObj->head->get('Bcc') );
+            && !$mime_obj->head->get('To')
+            && ( $mime_obj->head->get('Cc') or $mime_obj->head->get('Bcc') );
 
     # We should never have to set the MIME-Version header
     $self->set_header( 'MIME-Version', '1.0' );
@@ -206,7 +206,7 @@ sub prepare {
     $self->set_header( 'Content-Transfer-Encoding', '8bit' );
 
     # For security reasons, we only send out textual mails.
-    my @parts = $MIMEObj;
+    my @parts = $mime_obj;
     while ( my $part = shift @parts ) {
         if ( $part->is_multipart ) {
             push @parts, $part->parts;
@@ -217,12 +217,12 @@ sub prepare {
         }
     }
 
-    RT::I18N::set_mime_entity_to_encoding( $MIMEObj,
+    RT::I18N::set_mime_entity_to_encoding( $mime_obj,
         RT->config->get('EmailOutputEncoding'),
         'mime_words_ok', );
 
     # Build up a MIME::Entity that looks like the original message.
-    $self->add_attachments if $MIMEObj->head->get('RT-Attach-Message');
+    $self->add_attachments if $mime_obj->head->get('RT-Attach-Message');
 
     $self->add_tickets;
 
@@ -285,7 +285,7 @@ sub _addresses_from_header {
     return (@addresses);
 }
 
-=head2 SendMessage MIMEObj
+=head2 SendMessage mime_obj
 
 sends the message using RT's preferred API.
 TODO: Break this out to a separate module
@@ -296,9 +296,9 @@ sub send_message {
 
     # DO NOT SHIFT @_ in this subroutine.  It breaks Hook::LexWrap's
     # ability to pass @_ to a 'post' routine.
-    my ( $self, $MIMEObj ) = @_;
+    my ( $self, $mime_obj ) = @_;
 
-    my $msgid = $MIMEObj->head->get('Message-ID');
+    my $msgid = $mime_obj->head->get('Message-ID');
     chomp $msgid;
 
     $self->scrip_action_obj->{_Message_ID}++;
@@ -311,7 +311,7 @@ sub send_message {
             . ( $self->scrip_obj->description || '' ) );
 
     my $status = RT::Interface::Email::send_email(
-        Entity      => $MIMEObj,
+        Entity      => $mime_obj,
         Ticket      => $self->ticket_obj,
         Transaction => $self->transaction_obj,
     );
@@ -319,7 +319,7 @@ sub send_message {
 
     my $success = $msgid . " sent ";
     foreach (qw(To Cc Bcc)) {
-        my $recipients = $MIMEObj->head->get($_);
+        my $recipients = $mime_obj->head->get($_);
         $success .= " $_: " . $recipients if $recipients;
     }
     $success =~ s/\n//g;
@@ -339,9 +339,9 @@ we're building.
 sub add_attachments {
     my $self = shift;
 
-    my $MIMEObj = $self->template_obj->mime_obj;
+    my $mime_obj = $self->template_obj->mime_obj;
 
-    $MIMEObj->head->delete('RT-Attach-Message');
+    $mime_obj->head->delete('RT-Attach-Message');
 
     my $attachments = RT::Model::AttachmentCollection->new(
         current_user => RT->system_user );
@@ -374,7 +374,7 @@ sub add_attachments {
 
     # attach any of this transaction's attachments
     while ( my $attach = $attachments->next ) {
-        $MIMEObj->make_multipart('mixed');
+        $mime_obj->make_multipart('mixed');
         $self->add_attachment($attach);
     }
 
@@ -390,9 +390,9 @@ we're building.
 sub add_attachment {
     my $self    = shift;
     my $attach  = shift;
-    my $MIMEObj = shift || $self->template_obj->mime_obj;
+    my $mime_obj = shift || $self->template_obj->mime_obj;
 
-    $MIMEObj->attach(
+    $mime_obj->attach(
         type     => $attach->content_type,
         Charset  => $attach->original_encoding,
         Data     => $attach->original_content,
@@ -474,7 +474,7 @@ sub add_ticket {
     my $ticket_mime = MIME::Entity->build(
         type        => 'multipart/mixed',
         Top         => 0,
-        Description => "ticket #$tid",
+        description => "ticket #$tid",
     );
     while ( my $attachment = $attachs->next ) {
         $self->add_attachment( $attachment, $ticket_mime );
@@ -487,7 +487,7 @@ sub add_ticket {
     return;
 }
 
-=head2 RecordOutgoingMailTransaction MIMEObj
+=head2 RecordOutgoingMailTransaction mime_obj
 
 Record a transaction in RT with this outgoing message for future record-keeping purposes
 
@@ -495,9 +495,9 @@ Record a transaction in RT with this outgoing message for future record-keeping 
 
 sub record_outgoing_mail_transaction {
     my $self    = shift;
-    my $MIMEObj = shift;
+    my $mime_obj = shift;
 
-    my @parts = $MIMEObj->parts;
+    my @parts = $mime_obj->parts;
     my @attachments;
     my @keep;
     foreach my $part (@parts) {
@@ -511,12 +511,12 @@ sub record_outgoing_mail_transaction {
             push @keep, $part;
         }
     }
-    $MIMEObj->parts( \@keep );
+    $mime_obj->parts( \@keep );
     foreach my $attachment (@attachments) {
-        $MIMEObj->head->add( 'RT-Attachment', $attachment );
+        $mime_obj->head->add( 'RT-Attachment', $attachment );
     }
 
-    RT::I18N::set_mime_entity_to_encoding( $MIMEObj, 'utf-8',
+    RT::I18N::set_mime_entity_to_encoding( $mime_obj, 'utf-8',
         'mime_words_ok' );
 
     my $transaction = RT::Model::Transaction->new(
@@ -531,14 +531,14 @@ sub record_outgoing_mail_transaction {
         $type = 'EmailRecord';
     }
 
-    my $msgid = $MIMEObj->head->get('Message-ID');
+    my $msgid = $mime_obj->head->get('Message-ID');
     chomp $msgid;
 
     my ( $id, $msg ) = $transaction->create(
         Ticket         => $self->ticket_obj->id,
         type           => $type,
         Data           => $msgid,
-        MIMEObj        => $MIMEObj,
+        mime_obj        => $mime_obj,
         ActivateScrips => 0
     );
 

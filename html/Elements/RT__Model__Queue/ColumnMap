@@ -76,7 +76,7 @@ our $QUEUE_COLUMN_MAP = {
     } qw(WebPath WebBaseURL WebURL)),
 
 };
-foreach my $col(qw(name Description correspond_address comment_address initial_priority final_priority DefaultDueIn)) {
+foreach my $col(qw(name description correspond_address comment_address initial_priority final_priority default_due_in)) {
     $QUEUE_COLUMN_MAP->{$col} = { attribute => $col, value => sub  { return $_[0]->$col() } };
 }
 

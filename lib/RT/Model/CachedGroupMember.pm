@@ -24,7 +24,7 @@ use Jifty::DBI::Record schema {
 
   use RT::Model::CachedGroupMember;
 
-=head1 DESCRIPTION
+=head1 description
 
 =head1 METHODS
 

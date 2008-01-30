@@ -54,7 +54,7 @@
 
   use RT::Model::GroupMemberCollection;
 
-=head1 DESCRIPTION
+=head1 description
 
 
 =head1 METHODS

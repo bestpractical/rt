@@ -114,7 +114,7 @@ if ( $Update ) {
 }
 my $localize_meta = sub  {
     my %meta = %{ shift() };
-    $meta{'Description'} = _( $meta{'Description'} ) if $meta{'Description'};
+    $meta{'description'} = _( $meta{'description'} ) if $meta{'description'};
     if ( $meta{'values_label'} ) {
         while (my ($k, $v) = each %{ $meta{'values_label'} } ) {
             $meta{'values_label'}->{$k} = _( $meta{'values_label'}->{$k} );

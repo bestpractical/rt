@@ -50,7 +50,7 @@ $Object => undef
 </%args>
 <%init>
 # Returns an array of search objects associated on $Object,
-# in the form of [Description, searchObj]
+# in the form of [description, searchObj]
 my @result;
 while (my $search = $Object->attributes->next) {
     my $desc;

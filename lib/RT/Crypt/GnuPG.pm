@@ -58,7 +58,7 @@ use RT::EmailParser ();
 
 RT::Crypt::GnuPG - encrypt/decrypt and sign/verify email messages with the GNU Privacy Guard (GPG)
 
-=head1 DESCRIPTION
+=head1 description
 
 This module provides support for encryption and signing of outgoing messages, 
 as well as the decryption and verification of incoming email.

@@ -49,8 +49,8 @@ my $content =  RT::Test->file_content("$RT::BasePath/lib/t/data/multipart-report
 # be as much like the mail gateway as possible.
 use RT::Interface::Email;
 my %args =        (message => $content, queue => 1, action => 'correspond');
-my ($status, $msg) = RT::Interface::Email::Gateway(\%args);
-ok($status, "successfuly used Email::Gateway interface") or diag("error: $msg");
+my ($status, $msg) = RT::Interface::Email::gateway(\%args);
+ok($status, "successfuly used Email::gateway interface") or diag("error: $msg");
 my $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
@@ -79,7 +79,7 @@ Foob!');
 use Data::Dumper;
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
-my  ($id,  undef, $create_msg ) = $ticket->create(Requestor => ['root@localhost'], Queue => 'general', subject => 'I18NTest', MIMEObj => $parser->entity);
+my  ($id,  undef, $create_msg ) = $ticket->create(Requestor => ['root@localhost'], Queue => 'general', subject => 'I18NTest', mime_obj => $parser->entity);
 ok ($id,$create_msg);
 $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
@@ -112,7 +112,7 @@ $parser->parse_mime_entity_from_scalar($content);
 use RT::Interface::Email;
                            
  %args =        (message => $content, queue => 1, action => 'correspond');
- RT::Interface::Email::Gateway(\%args);
+ RT::Interface::Email::gateway(\%args);
  $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
@@ -132,11 +132,11 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 # If we correspond, does it do the right thing to the outbound messages?
 
 $parser->parse_mime_entity_from_scalar($content);
-  ($id, $msg) = $tick->comment(MIMEObj => $parser->entity);
+  ($id, $msg) = $tick->comment(mime_obj => $parser->entity);
 ok ($id, $msg);
 
 $parser->parse_mime_entity_from_scalar($content);
-($id, $msg) = $tick->correspond(MIMEObj => $parser->entity);
+($id, $msg) = $tick->correspond(mime_obj => $parser->entity);
 ok ($id, $msg);
 
 
@@ -154,7 +154,7 @@ RT->config->set( EmailOutputEncoding => 'iso-8859-1' );
 use RT::Interface::Email;
                                   
  %args =        (message => $content, queue => 1, action => 'correspond');
- RT::Interface::Email::Gateway(\%args);
+ RT::Interface::Email::gateway(\%args);
 $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
@@ -175,11 +175,11 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 # If we correspond, does it do the right thing to the outbound messages?
 
 $parser->parse_mime_entity_from_scalar($content);
- ($id, $msg) = $tick->comment(MIMEObj => $parser->entity);
+ ($id, $msg) = $tick->comment(mime_obj => $parser->entity);
 ok ($id, $msg);
 
 $parser->parse_mime_entity_from_scalar($content);
-($id, $msg) = $tick->correspond(MIMEObj => $parser->entity);
+($id, $msg) = $tick->correspond(mime_obj => $parser->entity);
 ok ($id, $msg);
 
 
@@ -254,7 +254,7 @@ $parser->parse_mime_entity_from_scalar($content);
     local *RT::ScripAction::SendEmail::SendMessage = sub  { return 1};
 
     %args = (message => $content, queue => 1, action => 'correspond');
-    RT::Interface::Email::Gateway(\%args);
+    RT::Interface::Email::gateway(\%args);
     # TODO: following 5 lines should replaced by get_latest_ticket_ok()
     $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
     $tickets->order_by({column => 'id', order => 'DESC'});
@@ -281,7 +281,7 @@ $parser->parse_mime_entity_from_scalar($content);
 &text_html_umlauts_redef_sendmessage;
 
  %args =        (message => $content, queue => 1, action => 'correspond');
- RT::Interface::Email::Gateway(\%args);
+ RT::Interface::Email::gateway(\%args);
  $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
@@ -318,7 +318,7 @@ $parser->parse_mime_entity_from_scalar($content);
 &text_html_russian_redef_sendmessage;
 
  %args =        (message => $content, queue => 1, action => 'correspond');
- RT::Interface::Email::Gateway(\%args);
+ RT::Interface::Email::gateway(\%args);
  $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
@@ -360,7 +360,7 @@ $parser->parse_mime_entity_from_scalar($content);
 # be as much like the mail gateway as possible.
 &text_plain_russian_redef_sendmessage;
  %args =        (message => $content, queue => 1, action => 'correspond');
- RT::Interface::Email::Gateway(\%args);
+ RT::Interface::Email::gateway(\%args);
  $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
@@ -402,7 +402,7 @@ $parser->parse_mime_entity_from_scalar($content);
 # be as much like the mail gateway as possible.
 &text_plain_nested_redef_sendmessage;
  %args =        (message => $content, queue => 1, action => 'correspond');
- RT::Interface::Email::Gateway(\%args);
+ RT::Interface::Email::gateway(\%args);
  $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
@@ -442,7 +442,7 @@ $parser->parse_mime_entity_from_scalar($content);
     no warnings qw/redefine/;
     local *RT::ScripAction::SendEmail::SendMessage = sub  { return 1};
     %args =        (message => $content, queue => 1, action => 'correspond');
-    RT::Interface::Email::Gateway(\%args);
+    RT::Interface::Email::gateway(\%args);
     $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
     $tickets->order_by({column => 'id', order => 'DESC'});
     $tickets->limit(column => 'id' ,operator => '>', value => '0');
@@ -467,7 +467,7 @@ $parser->parse_mime_entity_from_scalar($content);
 no warnings qw/redefine/;
 local *RT::ScripAction::SendEmail::SendMessage = sub  { return 1};
  %args =        (message => $content, queue => 1, action => 'correspond');
- RT::Interface::Email::Gateway(\%args);
+ RT::Interface::Email::gateway(\%args);
  $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
@@ -491,7 +491,7 @@ $parser->parse_mime_entity_from_scalar($content);
 
 
  %args =        (message => $content, queue => 1, action => 'correspond');
- RT::Interface::Email::Gateway(\%args);
+ RT::Interface::Email::gateway(\%args);
  $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
 $tickets->limit(column => 'id' ,operator => '>', value => '0');
@@ -510,7 +510,7 @@ like ($cc , qr/test5/, "Found test 5");
 diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
 {
     my $content = RT::Test->file_content("$RT::BasePath/lib/t/data/subject-with-folding-ws");
-    my ($status, $msg, $ticket) = RT::Interface::Email::Gateway(
+    my ($status, $msg, $ticket) = RT::Interface::Email::gateway(
         { message => $content, queue => 1, action => 'correspond' }
     );
     ok ($status, 'Created ticket') or diag "error: $msg";
@@ -521,7 +521,7 @@ diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
 diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
 {
     my $content = RT::Test->file_content("$RT::BasePath/lib/t/data/very-long-subject");
-    my ($status, $msg, $ticket) = RT::Interface::Email::Gateway(
+    my ($status, $msg, $ticket) = RT::Interface::Email::gateway(
         { message => $content, queue => 1, action => 'correspond' }
     );
     ok ($status, 'Created ticket') or diag "error: $msg";

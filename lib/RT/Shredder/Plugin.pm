@@ -221,7 +221,7 @@ sub loadByString {
     return ( 1, "successfuly load plugin" );
 }
 
-=head2 Rebless
+=head2 rebless
 
 instance method that takes one object as argument and rebless
 the current object into into class of the argument and copy data
@@ -233,7 +233,7 @@ plugin.
 
 =cut
 
-sub Rebless {
+sub rebless {
     my ( $self, $obj ) = @_;
     bless( $self, ref $obj );
     %{$self} = %{$obj};

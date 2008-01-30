@@ -21,7 +21,7 @@ my $queue = "CFSortQueue-$$";
 my $queue_obj = RT::Model::Queue->new(current_user => RT->system_user );
 ($ret, $msg) = $queue_obj->create(
     name => $queue,
-    Description => 'queue for custom field sort testing'
+    description => 'queue for custom field sort testing'
 );
 ok($ret, "$queue test queue creation. $msg");
 
@@ -34,27 +34,27 @@ my $cfC = RT::Model::CustomField->new(current_user => RT->system_user);
 
 ($ret, $msg) = $cfO->create( name => 'Order',
                              Queue => 0,
-                             SortOrder => 1,
-                             Description => q{Something to compare results for, since we can't guarantee ticket ID},
+                             sort_order => 1,
+                             description => q{Something to compare results for, since we can't guarantee ticket ID},
                              Type=> 'FreeformSingle');
 ok($ret, "Custom Field Order Created");
 
 ($ret, $msg) = $cfA->create( name => 'Alpha',
                              Queue => $queue_obj->id,
-                             SortOrder => 1,
-                             Description => 'A Testing custom field',
+                             sort_order => 1,
+                             description => 'A Testing custom field',
                              Type=> 'FreeformSingle');
 ok($ret, "Custom Field Alpha Created");
 
 ($ret, $msg) = $cfB->create( name => 'Beta',
                              Queue => $queue_obj->id,
-                             Description => 'A Testing custom field',
+                             description => 'A Testing custom field',
                              Type=> 'FreeformSingle');
 ok($ret, "Custom Field Beta Created");
 
 ($ret, $msg) = $cfC->create( name => 'Charlie',
                              Queue => $queue_obj->id,
-                             Description => 'A Testing custom field',
+                             description => 'A Testing custom field',
                              Type=> 'FreeformSingle');
 ok($ret, "Custom Field Charlie Created");
 

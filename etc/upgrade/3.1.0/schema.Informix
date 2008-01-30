@@ -1,7 +1,7 @@
 CREATE TABLE Attributes (
   	id 		SERIAL,
 	name 			VARCHAR(255) DEFAULT '' NOT NULL,
-	Description 		VARCHAR(255) DEFAULT NULL,
+	description 		VARCHAR(255) DEFAULT NULL,
   	Content 	BYTE,
 	content_type	VARCHAR(16),
 	object_type	VARCHAR(25) NOT NULL,

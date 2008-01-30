@@ -23,7 +23,7 @@ my($ret,$msg);
 my $queue = "PAWSortQueue-$$";
 my $queue_obj = RT::Model::Queue->new(current_user => RT->system_user);
 ($ret, $msg) = $queue_obj->create(name => $queue,
-                                  Description => 'queue for custom field sort testing');
+                                  description => 'queue for custom field sort testing');
 ok($ret, "$queue test queue creation. $msg");
 
 

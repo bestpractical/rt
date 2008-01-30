@@ -61,8 +61,8 @@
 <tr><td class="label"><&|/l&>name</&></td>
 <td><input name="name" value="<% $CustomFieldObj->name || '' %>" size="20" /></td></tr>
 
-<tr><td class="label"><&|/l&>Description</&></td>
-<td><input name="Description" value="<% $CustomFieldObj->description || '' %>" size="80" /></td></tr>
+<tr><td class="label"><&|/l&>description</&></td>
+<td><input name="description" value="<% $CustomFieldObj->description || '' %>" size="80" /></td></tr>
 
 <tr><td class="label"><&|/l&>Type</&></td>
 <td><& /Admin/Elements/SelectCustomFieldType, 
@@ -147,7 +147,7 @@ else {
             name          => $name,
             TypeComposite => $TypeComposite,
             LookupType    => $LookupType,
-            Description   => $Description,
+            description   => $description,
             Pattern       => $Pattern,
         );
         $m->comp( "/Elements/Error", Why => _( "Could not create CustomField", $msg ) ) unless $val;
@@ -165,7 +165,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     #we're asking about enabled on the web page but really care about disabled.
     $ARGS{'disabled'} = $disabled = $Enabled? 0 : 1;
 
-    my @attribs = qw(disabled Pattern name TypeComposite LookupType Description LinkValueTo IncludeContentForValue);
+    my @attribs = qw(disabled Pattern name TypeComposite LookupType description LinkValueTo IncludeContentForValue);
     push @results, update_record_object(
         AttributesRef => \@attribs,
         Object        => $CustomFieldObj,
@@ -184,7 +184,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     # Update any existing values
     my $values = $CustomFieldObj->values_obj;
     while ( my $value = $values->next ) {
-        foreach my $attr qw(name Description SortOrder Category) {
+        foreach my $attr qw(name description sort_order Category) {
             my $param = "$paramtag-". $value->id ."-". $attr;
             next unless exists $ARGS{$param};
             next if ($value->$attr()||'') eq ($ARGS{$param}||'');
@@ -199,7 +199,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     if ( defined $ARGS{ $paramtag ."-new-name" } && length $ARGS{ $paramtag ."-new-name" } ) {
         my ($id, $msg) = $CustomFieldObj->add_value(
             map { $_ => $ARGS{ $paramtag ."-new-$_" } }
-                qw( name Description SortOrder Category )
+                qw( name description sort_order Category )
         );
         push (@results, $msg);
     }
@@ -216,8 +216,8 @@ $id => undef
 $TypeComposite => undef
 $LookupType => undef
 $MaxValues => undef
-$SortOrder => undef
-$Description => undef
+$sort_order => undef
+$description => undef
 $Pattern => undef
 $name => undef
 $SetEnabled => undef

@@ -11,7 +11,7 @@ only be accessed through the helper functions in RT::Model::Group;
 If you're operating on an RT::Model::GroupMember object yourself, you B<ARE>
 doing something wrong.
 
-=head1 DESCRIPTION
+=head1 description
 
 
 

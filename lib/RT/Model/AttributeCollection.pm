@@ -55,7 +55,7 @@
   use RT::Model::AttributeCollection;
 my $Attributes = RT::Model::AttributeCollection->new($CurrentUser);
 
-=head1 DESCRIPTION
+=head1 description
 
 
 =head1 METHODS

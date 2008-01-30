@@ -94,7 +94,7 @@ BEGIN {
 
   print _('Hello!'); # Synonym of $CuurentUser->loc('Hello!');
 
-=head1 DESCRIPTION
+=head1 description
 
 
 =head1 METHODS

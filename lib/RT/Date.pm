@@ -54,7 +54,7 @@
 
   use RT::Date
 
-=head1 DESCRIPTION
+=head1 description
 
 RT Date is a simple Date Object designed to be speedy and easy for RT to use
 

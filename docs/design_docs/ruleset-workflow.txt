@@ -3,7 +3,7 @@
 _*This is a design document for a work in progress.
 It describes features that do not exist today and may never exist*_
 
-== Text Description
+== Text description
 
 * The user of PurchaseOrder queue fill in a numeric "CF", called "Price".
 * On creation, it needs to create following approvals:
@@ -140,7 +140,7 @@ Note that "Scrips" are now called "Rules".
 
 ### FNORD FNORD FNORD FNORD FNORD FNORD FNORD FNORD FNORD ###
 
-== Another Text Description
+== Another Text description
 
 * I have a MonitoredQueue that sets tickets to "Monitored" if its subject matches /monitored/.
 * I want to have a kind of Ticket that are 'Monitored'.

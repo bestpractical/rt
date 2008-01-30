@@ -160,7 +160,7 @@ sub available_rights {
 
   RT::Model::CustomField_Overlay - overlay for RT::Model::CustomField
 
-=head1 DESCRIPTION
+=head1 description
 
 =head1 'CORE' METHODS
 

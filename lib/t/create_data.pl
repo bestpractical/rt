@@ -98,7 +98,7 @@ sub create_users {
 		# Create it.
 		$group_obj->create_user_defined_group(
 				name => $group,
-				Description => "lorem defined group $group",
+				description => "lorem defined group $group",
 						   );
 	    }
 	    foreach (@users_returned) {

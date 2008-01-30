@@ -179,7 +179,7 @@ sub set_mime_entity_to_encoding {
     # convert at least MIME word encoded attachment filename
     foreach my $attr (qw(content-type.name content-disposition.filename)) {
         if ( my $name = $head->mime_attr($attr) and !$preserve_words ) {
-            $head->mime_attr( $attr => DecodeMIMEWordsToUTF8($name) );
+            $head->mime_attr( $attr => decode_mime_words_to_utf8($name) );
         }
     }
 
@@ -247,9 +247,9 @@ sub set_mime_entity_to_encoding {
 
 # }}}
 
-# {{{ DecodeMIMEWordsToUTF8
+# {{{ decode_mime_words_to_utf8
 
-=head2 DecodeMIMEWordsToUTF8 $raw
+=head2 decode_mime_words_to_utf8 $raw
 
 An utility method which mimics MIME::Words::decode_mimewords, but only
 limited functionality.  This function returns an utf-8 string.

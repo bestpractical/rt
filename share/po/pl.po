@@ -12,17 +12,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: html/Widgets/SavedSearch:70
-#. ($self->{CurrentSearch}{Object}->Description)
+#. ($self->{CurrentSearch}{Object}->description)
 msgid " %1 deleted."
 msgstr ""
 
 #: html/Widgets/SavedSearch:47
-#. ($self->{CurrentSearch}{Description}, $args->{Description})
+#. ($self->{CurrentSearch}{description}, $args->{description})
 msgid " %1 renamed to %2."
 msgstr ""
 
 #: html/Widgets/SavedSearch:60
-#. ($args->{Description})
+#. ($args->{description})
 msgid " %1 saved."
 msgstr ""
 
@@ -211,7 +211,7 @@ msgstr "%1 zmieniło się z %2 na %3"
 
 # Nie jestem pewien!
 #: html/Search/Build.html:213
-#. ($Description)
+#. ($description)
 msgid "%1 copy"
 msgstr "kopia %1"
 
@@ -958,7 +958,7 @@ msgstr "Artykuły"
 msgid "Asc"
 msgstr ""
 
-#: html/Elements/SelectSortOrder:56
+#: html/Elements/Selectsort_order:56
 msgid "Ascending"
 msgstr "Rosnąco"
 
@@ -2029,7 +2029,7 @@ msgstr "ZależyOd"
 msgid "Desc"
 msgstr ""
 
-#: html/Elements/SelectSortOrder:56
+#: html/Elements/Selectsort_order:56
 msgid "Descending"
 msgstr "Malejąco"
 
@@ -2038,7 +2038,7 @@ msgid "Describe the issue below"
 msgstr "Opis zgłoszenia"
 
 #: html/Admin/CustomFields/Modify.html:61 html/Admin/Elements/AddCustomFieldValue:57 html/Admin/Elements/EditCustomField:60 html/Admin/Elements/EditCustomFieldValues:56 html/Admin/Elements/EditScrip:55 html/Admin/Elements/ModifyTemplate:57 html/Admin/Groups/Modify.html:71 html/Admin/Queues/Modify.html:69 html/Search/Elements/EditSearches:56 html/User/Groups/Modify.html:70
-msgid "Description"
+msgid "description"
 msgstr "Opis"
 
 #: NOT FOUND IN SOURCE

@@ -58,7 +58,7 @@ my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
 my $queue = RT::Model::Queue->new() ;
 my @fields = qw(name description correspond_address comment_address
-                initial_priority final_priority DefaultDueIn);
+                initial_priority final_priority default_due_in);
 my %fields = map { lc $_ => $_ } @fields;
 
 if ($id ne 'new') {
@@ -75,12 +75,12 @@ else {
             {
                 id => 'queue/new',
                 name => '<queue name>',
-                Description => "",
+                description => "",
                 comment_address => "",
                 correspond_address => "",
                 initial_priority => "",
                 final_priority => "",
-                DefaultDueIn => "",
+                default_due_in => "",
             },
             0
         ];

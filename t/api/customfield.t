@@ -12,8 +12,8 @@ use_ok('RT::Model::CustomField');
 ok(my $cf = RT::Model::CustomField->new(current_user => RT->system_user));
 ok(my ($id, $msg)=  $cf->create( name => 'TestingCF',
                                  Queue => '0',
-                                 SortOrder => '1',
-                                 Description => 'A Testing custom field',
+                                 sort_order => '1',
+                                 description => 'A Testing custom field',
                                  type=> 'SelectSingle'), 'Created a global CustomField');
 isnt($id , 0, 'Global custom field correctly Created');
 ok ($cf->single_value);
@@ -31,8 +31,8 @@ is($bogus_val , 0, "Unable to set a custom field's type to a bogus type");
 ok(my $bad_cf = RT::Model::CustomField->new(current_user => RT->system_user));
 ok(my ($bad_id, $bad_msg)=  $cf->create( name => 'TestingCF-bad',
                                  Queue => '0',
-                                 SortOrder => '1',
-                                 Description => 'A Testing custom field with a bogus Type',
+                                 sort_order => '1',
+                                 description => 'A Testing custom field with a bogus Type',
                                  type=> 'SelectSingleton'), 'Created a global CustomField with a bogus type');
 is($bad_id , 0, 'Global custom field correctly decided to not create a cf with a bogus type ');
 
@@ -44,7 +44,7 @@ is($bad_id , 0, 'Global custom field correctly decided to not create a cf with a
 ok(my $cf = RT::Model::CustomField->new(current_user => RT->system_user));
 $cf->load(1);
 is($cf->id , 1);
-ok(my ($val,$msg)  = $cf->add_value(name => 'foo' , Description => 'TestCFValue', SortOrder => '6'));
+ok(my ($val,$msg)  = $cf->add_value(name => 'foo' , description => 'TestCFValue', sort_order => '6'));
 isnt($val , 0);
 ok (my ($delval, $delmsg) = $cf->delete_value($val));
 ok ($delval,"Deleting a cf value: $delmsg");

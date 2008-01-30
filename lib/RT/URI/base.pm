@@ -54,7 +54,7 @@ use base qw(RT::Base);
 
 RT::URI::base
 
-=head1 DESCRIPTION
+=head1 description
 
 A baseclass (and fallback) RT::URI handler. Every URI handler needs to 
 handle the API presented here

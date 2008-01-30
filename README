@@ -290,7 +290,7 @@ FastCgiServer /opt/rt3/bin/mason_handler.fcgi -idle-timeout 120
 
 
 
-SETTING UP THE MAIL GATEWAY 
+SETTING UP THE MAIL gateway 
 ---------------------------
 
 To let email flow to your RT server, you need to add a few lines of

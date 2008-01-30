@@ -59,7 +59,7 @@ our $TEMPLATE_COLUMN_MAP = {
     },
 };
 
-foreach my $col(qw(name Description)) {
+foreach my $col(qw(name description)) {
     $TEMPLATE_COLUMN_MAP->{ $col } = { attribute => $col, value => sub  { return $_[0]->$col() } };
 }
 

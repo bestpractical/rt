@@ -59,7 +59,7 @@ RT::Base
 
 =head1 SYNOPSIS
 
-=head1 DESCRIPTION
+=head1 description
 
 =head1 FUNCTIONS
 

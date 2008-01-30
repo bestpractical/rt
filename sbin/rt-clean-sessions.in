@@ -120,7 +120,7 @@ rt-clean-sessions - clean old and duplicate RT sessions
     rt-clean sessions --older 10D
     rt-clean sessions --debug --older 1M
 
-=head1 DESCRIPTION
+=head1 description
 
 Script cleans RT sessions from DB or dir with sessions data.
 Leaves in DB only one session per RT user and sessions that aren't older

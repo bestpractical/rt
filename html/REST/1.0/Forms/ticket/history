@@ -131,8 +131,8 @@ if ($tid) {
 	if (!%$fields || exists $fields->{lc 'new_value'});
     push @data, [ Data    => $t->data   ]
 	if (!%$fields || exists $fields->{lc 'Data'});
-    push @data, [ Description    => $t->description   ]
-	if (!%$fields || exists $fields->{lc 'Description'});
+    push @data, [ description    => $t->description   ]
+	if (!%$fields || exists $fields->{lc 'description'});
     push @data, [ Content    => $t->content   ]
 	if (!%$fields || exists $fields->{lc 'Content'});
 

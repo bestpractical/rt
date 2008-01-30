@@ -12,17 +12,17 @@ msgstr ""
 "Content-Transfer-Encoding: 7bit\n"
 
 #: html/Widgets/SavedSearch:70
-#. ($self->{CurrentSearch}{Object}->Description)
+#. ($self->{CurrentSearch}{Object}->description)
 msgid " %1 deleted."
 msgstr ""
 
 #: html/Widgets/SavedSearch:47
-#. ($self->{CurrentSearch}{Description}, $args->{Description})
+#. ($self->{CurrentSearch}{description}, $args->{description})
 msgid " %1 renamed to %2."
 msgstr ""
 
 #: html/Widgets/SavedSearch:60
-#. ($args->{Description})
+#. ($args->{description})
 msgid " %1 saved."
 msgstr ""
 
@@ -182,7 +182,7 @@ msgid "%1 changed from %2 to %3"
 msgstr "%1 sudah diganti dari %2 ke %3"
 
 #: html/Search/Build.html:213
-#. ($Description)
+#. ($description)
 msgid "%1 copy"
 msgstr "%1 ditiru"
 
@@ -729,7 +729,7 @@ msgstr "Apr."
 msgid "Asc"
 msgstr ""
 
-#: html/Elements/SelectSortOrder:56
+#: html/Elements/Selectsort_order:56
 msgid "Ascending"
 msgstr "Naik"
 
@@ -1592,7 +1592,7 @@ msgstr "Bergantung pada"
 msgid "Desc"
 msgstr ""
 
-#: html/Elements/SelectSortOrder:56
+#: html/Elements/Selectsort_order:56
 msgid "Descending"
 msgstr "Turun"
 
@@ -1601,7 +1601,7 @@ msgid "Describe the issue below"
 msgstr "Gambarkan persoalan dibawah ini"
 
 #: html/Admin/CustomFields/Modify.html:61 html/Admin/Elements/AddCustomFieldValue:57 html/Admin/Elements/EditCustomField:60 html/Admin/Elements/EditCustomFieldValues:56 html/Admin/Elements/EditScrip:55 html/Admin/Elements/ModifyTemplate:57 html/Admin/Groups/Modify.html:71 html/Admin/Queues/Modify.html:69 html/Search/Elements/EditSearches:56 html/User/Groups/Modify.html:70
-msgid "Description"
+msgid "description"
 msgstr "Deskripsi"
 
 #: html/Search/Elements/EditFormat:71 html/Ticket/Elements/Tabs:108
@@ -5288,7 +5288,7 @@ msgid "allow loading of saved searches"
 msgstr "mengijinkan memanggil pencarian yang disimpan"
 
 #: html/User/Elements/DelegateRights:80
-#. ($right->principal_object->object->SelfDescription)
+#. ($right->principal_object->object->Selfdescription)
 msgid "as granted to %1"
 msgstr "sudah diberikan ke %1"
 

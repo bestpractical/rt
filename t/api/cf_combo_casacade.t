@@ -29,7 +29,7 @@ works($id,$msg);
 
 sub add_works {
     works(
-        $cf->add_value(name => $_[0], Description => $_[0], Category => $_[1])
+        $cf->add_value(name => $_[0], description => $_[0], Category => $_[1])
     );
 };
 

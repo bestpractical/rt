@@ -51,7 +51,7 @@ diag "add the first condition" if $ENV{'TEST_VERBOSE'};
     $agent->field("ActorOp", "=");
     $agent->field("ValueOfActor", 'Nobody');
     $agent->submit;
-    is getQueryFromForm, "Owner = 'Nobody'", 'correct query';
+    is get_query_from_form, "Owner = 'Nobody'", 'correct query';
 }
 
 diag "set the next condition" if $ENV{'TEST_VERBOSE'};
@@ -60,7 +60,7 @@ diag "set the next condition" if $ENV{'TEST_VERBOSE'};
     $agent->field("QueueOp", "!=");
     $agent->field("ValueOfQueue", "Regression");
     $agent->submit;
-    is getQueryFromForm, "Owner = 'Nobody' AND Queue != 'Regression'",
+    is get_query_from_form, "Owner = 'Nobody' AND Queue != 'Regression'",
         'correct query';
 }
 
@@ -69,7 +69,7 @@ diag "We're going to delete the owner" if $ENV{'TEST_VERBOSE'};
     $agent->select("clauses", ["0"] );
     $agent->click("DeleteClause");
     ok $agent->form_name('BuildQuery'), "found the form";
-    is getQueryFromForm, "Queue != 'Regression'", 'correct query';
+    is get_query_from_form, "Queue != 'Regression'", 'correct query';
 }
 
 diag "add a cond with OR and se number by the way" if $ENV{'TEST_VERBOSE'};
@@ -79,9 +79,9 @@ diag "add a cond with OR and se number by the way" if $ENV{'TEST_VERBOSE'};
     $agent->field("ValueOfid" => "1234");
     $agent->click("AddClause");
     ok $agent->form_name('BuildQuery'), "found the form again";
-    is getQueryFromForm, "Queue != 'Regression' OR id > 1234",
+    is get_query_from_form, "Queue != 'Regression' OR id > 1234",
         "added something as OR, and number not quoted";
-    is_deeply selectedClauses, ["1"], 'the id that we just entered is still selected';
+    is_deeply selected_clauses, ["1"], 'the id that we just entered is still selected';
 
 }
 
@@ -89,17 +89,17 @@ diag "Move the second one up a level" if $ENV{'TEST_VERBOSE'};
 {
     $agent->click("Up");
     ok $agent->form_name('BuildQuery'), "found the form again";
-    is getQueryFromForm, "id > 1234 OR Queue != 'Regression'", "moved up one";
-    is_deeply selectedClauses, ["0"], 'the one we moved up is selected';
+    is get_query_from_form, "id > 1234 OR Queue != 'Regression'", "moved up one";
+    is_deeply selected_clauses, ["0"], 'the one we moved up is selected';
 }
 
 diag "Move the second one right" if $ENV{'TEST_VERBOSE'};
 {
     $agent->click("Right");
     ok $agent->form_name('BuildQuery'), "found the form again";
-    is getQueryFromForm, "Queue != 'Regression' OR ( id > 1234 )",
+    is get_query_from_form, "Queue != 'Regression' OR ( id > 1234 )",
         "moved over to the right (and down)";
-    is_deeply selectedClauses, ["2"], 'the one we moved right is selected';
+    is_deeply selected_clauses, ["2"], 'the one we moved right is selected';
 }
 
 diag "Move the block up" if $ENV{'TEST_VERBOSE'};
@@ -107,8 +107,8 @@ diag "Move the block up" if $ENV{'TEST_VERBOSE'};
     $agent->select("clauses", ["1"]);
     $agent->click("Up");
     ok $agent->form_name('BuildQuery'), "found the form again";
-    is getQueryFromForm, "( id > 1234 ) OR Queue != 'Regression'", "moved up";
-    is_deeply selectedClauses, ["0"], 'the one we moved up is selected';
+    is get_query_from_form, "( id > 1234 ) OR Queue != 'Regression'", "moved up";
+    is_deeply selected_clauses, ["0"], 'the one we moved up is selected';
 }
 
 
@@ -118,7 +118,7 @@ diag "Can not move up the top most clause" if $ENV{'TEST_VERBOSE'};
     $agent->click("Up");
     ok $agent->form_name('BuildQuery'), "found the form again";
     $agent->content_like(qr/error: can\S+t move up/, "i shouldn't have been able to hit up");
-    is_deeply selectedClauses, ["0"], 'the one we tried to move is selected';
+    is_deeply selected_clauses, ["0"], 'the one we tried to move is selected';
 }
 
 diag "Can not move left the left most clause" if $ENV{'TEST_VERBOSE'};
@@ -126,7 +126,7 @@ diag "Can not move left the left most clause" if $ENV{'TEST_VERBOSE'};
     $agent->click("Left");
     ok($agent->form_name('BuildQuery'), "found the form again");
     $agent->content_like(qr/error: can\S+t move left/, "i shouldn't have been able to hit left");
-    is_deeply selectedClauses, ["0"], 'the one we tried to move is selected';
+    is_deeply selected_clauses, ["0"], 'the one we tried to move is selected';
 }
 
 diag "Add a condition into a nested block" if $ENV{'TEST_VERBOSE'};
@@ -135,8 +135,8 @@ diag "Add a condition into a nested block" if $ENV{'TEST_VERBOSE'};
     $agent->select("ValueOfStatus" => "stalled");
     $agent->submit;
     ok $agent->form_name('BuildQuery'), "found the form again";
-    is_deeply selectedClauses, ["2"], 'the one we added is only selected';
-    is getQueryFromForm,
+    is_deeply selected_clauses, ["2"], 'the one we added is only selected';
+    is get_query_from_form,
         "( id > 1234 AND Status = 'stalled' ) OR Queue != 'Regression'",
         "added new one";
 }
@@ -149,7 +149,7 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
     ok($agent->form_number(3), "found the form");
     $agent->field("Query", "Status = 'new' OR ( Status = 'open' AND subject LIKE 'office' )");
     $agent->submit;
-    is( getQueryFromForm,
+    is( get_query_from_form,
         "Status = 'new' OR ( Status = 'open' AND subject LIKE 'office' )",
         "no aggregators change"
     );
@@ -221,7 +221,7 @@ TODO: {
     print ($agent->content());
     #$agent->field("ValueOf'CF.{\321\202}'", "\321\201");
     $agent->submit();
-    is( getQueryFromForm,
+    is( get_query_from_form,
         "'CF.{\321\202}' LIKE '\321\201'",
         "no changes, no duplicate condition with badly encoded text"
     );
@@ -237,7 +237,7 @@ diag "input a condition, select (several conditions), click delete"
     ok $agent->form_number(3), "found the form";
     $agent->field("Query", "( Status = 'new' OR Status = 'open' )");
     $agent->submit;
-    is( getQueryFromForm,
+    is( get_query_from_form,
         "( Status = 'new' OR Status = 'open' )",
         "query is the same"
     );
@@ -245,7 +245,7 @@ diag "input a condition, select (several conditions), click delete"
     $agent->field( ValueOfid => 10 );
     $agent->click("DeleteClause");
 
-    is( getQueryFromForm,
+    is( get_query_from_form,
         "id < 10",
         "replaced query successfuly"
     );

@@ -53,7 +53,7 @@ use base qw(Exporter);
 
 RT::Shredder::Constants -  RT::Shredder constants that is used to mark state of RT objects.
 
-=head1 DESCRIPTION
+=head1 description
 
 This module exports two group of bit constants.
 First group is group of flags which are used to clarify dependecies between objects, and

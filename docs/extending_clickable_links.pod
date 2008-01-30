@@ -1,6 +1,6 @@
 =head1 MakeClicky extension
 
-=head2 Description
+=head2 description
 
 I<MakeClicky> detects various formats of data in headers and email
 messages, and extends them with supporting links.

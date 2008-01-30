@@ -54,7 +54,7 @@
 <&| /Widgets/TitleBox, title => _('Scrip Fields') &>
 <table>
 
-<tr><td align="right"><&|/l&>Description</&>:</td><td>
+<tr><td align="right"><&|/l&>description</&>:</td><td>
 <input name="Scrip-<% $id %>-Description" value="<% $ARGS{"Scrip-$id-Description"} || $scrip->description || ''%>" />
 </td></tr>
 
@@ -172,7 +172,7 @@ if ( $id eq 'new' ) {
         ScripAction            => $ARGS{"Scrip-new-ScripAction"},
         ScripCondition         => $ARGS{"Scrip-new-ScripCondition"},
         Template               => $ARGS{"Scrip-new-Template"},
-        Description            => $ARGS{"Scrip-new-Description"},
+        description            => $ARGS{"Scrip-new-Description"},
         CustomPrepareCode      => $ARGS{"Scrip-new-CustomPrepareCode"},
         CustomCommitCode       => $ARGS{"Scrip-new-CustomCommitCode"},
         CustomIsApplicableCode => $ARGS{"Scrip-new-CustomIsApplicableCode"},
@@ -185,7 +185,7 @@ else {
         unless $scrip->id;
 
     my @attribs = qw(Queue ScripAction ScripCondition Template Stage
-        Description CustomPrepareCode CustomCommitCode CustomIsApplicableCode);
+        description CustomPrepareCode CustomCommitCode CustomIsApplicableCode);
     my @results = update_record_object(
         AttributesRef   => \@attribs,
         AttributePrefix => 'Scrip-'.$scrip->id,

@@ -57,8 +57,8 @@
 <& SelectSearchObject, name => 'SavedSearchOwner', Objects => \@Objects &>
 % }
 <br />
-<&|/l&>Description</&>:
-<input size="25" name="SavedSearchDescription" value="<% $Description %>" />
+<&|/l&>description</&>:
+<input size="25" name="SavedSearchdescription" value="<% $description %>" />
 
 % if ($Id ne 'new') {
 <nobr>
@@ -91,7 +91,7 @@ return unless Jifty->web->current_user->has_right(
 my $Dirty = $m->comp(
     'EditSearches:IsDirty',
     Query => $CurrentSearch,
-    SavedSearch => { id => $Id, Object => $Object, Description => $Description }
+    SavedSearch => { id => $Id, Object => $Object, description => $description }
 );
 
 use RT::SavedSearches;
@@ -106,7 +106,7 @@ push @Objects, RT::System->new()
 $Id => 'new'
 $Object => undef
 $Type => 'Ticket'
-$Description => ''
+$description => ''
 $CurrentSearch => {}
 $AllowCopy => 1
 $Title => 'Saved searches'
@@ -122,7 +122,7 @@ $SavedSearch => {}
 my @columns = qw(Query Format order_by Order rows_per_page);
 
 $SavedSearch->{'id'}          = $ARGS{'SavedSearchId'}          || 'new';
-$SavedSearch->{'Description'} = $ARGS{'SavedSearchDescription'} || '';
+$SavedSearch->{'description'} = $ARGS{'SavedSearchdescription'} || '';
 
 if ( $ARGS{'SavedSearchRevert'} ) {
     $ARGS{'SavedSearchLoad'} = $SavedSearch->{'id'};
@@ -134,7 +134,7 @@ if ( $ARGS{'SavedSearchLoad'} ) {
 
     $SavedSearch->{'id'}          = $ARGS{'SavedSearchLoad'};
     $SavedSearch->{'Object'}      = $search;
-    $SavedSearch->{'Description'} = $search->description;
+    $SavedSearch->{'description'} = $search->description;
     $Query->{$_} = $search->sub_value($_) foreach @columns;
 }
 elsif ( $ARGS{'SavedSearchDelete'} ) {
@@ -150,7 +150,7 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
 elsif ( $ARGS{'SavedSearchCopy'} ) {
     $SavedSearch->{'id'}          = 'new';
     $SavedSearch->{'Object'}      = undef;
-    $SavedSearch->{'Description'} = _( "%1 copy", $SavedSearch->{'Description'} );
+    $SavedSearch->{'description'} = _( "%1 copy", $SavedSearch->{'description'} );
 }
 
 if ( $SavedSearch->{'id'} && $SavedSearch->{'id'} ne 'new'
@@ -158,7 +158,7 @@ if ( $SavedSearch->{'id'} && $SavedSearch->{'id'} ne 'new'
 {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
     $SavedSearch->{'Object'} = $container->attributes->with_id( $id );
-    $SavedSearch->{'Description'} ||= $SavedSearch->{'Object'}->description;
+    $SavedSearch->{'description'} ||= $SavedSearch->{'Object'}->description;
 }
 
 </%INIT>
@@ -176,7 +176,7 @@ return unless $ARGS{'SavedSearchSave'};
 my @results;
 my $obj  = $SavedSearch->{'Object'};
 my $id   = $SavedSearch->{'id'};
-my $desc = $SavedSearch->{'Description'};
+my $desc = $SavedSearch->{'description'};
 
 if ( $obj && $obj->id ) {
     # permission check

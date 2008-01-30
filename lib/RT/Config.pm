@@ -72,7 +72,7 @@ use File::Spec ();
     RT->load_config;
     my $config = RT->config;
 
-=head1 DESCRIPTION
+=head1 description
 
 C<RT::Config> class provide access to RT's and RT extensions' config files.
 
@@ -102,7 +102,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Interface style',        #loc
+            description => 'Interface style',        #loc
                  # XXX: we need support for 'get values callback'
             Values => [qw(3.5-default 3.4-compat)],
         },
@@ -112,7 +112,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description =>
+            description =>
                 'Number of rows displayed in search results on the frontpage'
             ,    #loc
         },
@@ -122,7 +122,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Message box width',    #loc
+            description => 'Message box width',    #loc
         },
     },
     MessageBoxHeight => {
@@ -130,7 +130,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Message box height',    #loc
+            description => 'Message box height',    #loc
         },
     },
     MaxInlineBody => {
@@ -138,7 +138,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description =>
+            description =>
                 'Maximum size of messages (in bytes) that should be inlined in ticket history; A value of 0 (zero) will always inline'
             ,                                         #loc
         },
@@ -148,7 +148,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => 'Show oldest transactions first',    #loc
+            description => 'Show oldest transactions first',    #loc
         },
     },
     DateTimeFormat => {
@@ -156,7 +156,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description  => 'Date and time output format',            #loc
+            description  => 'Date and time output format',            #loc
             Values       => [qw(DefaultFormat RFC2822 ISO W3CDTF)],
             values_label => {
                 DefaultFormat => 'Default (Tue Dec 25 21:59:12 1995)',    #loc

@@ -58,7 +58,7 @@ RT::Interface::Web::Session - RT web session class
 =head1 SYNOPSYS
 
 
-=head1 DESCRIPTION
+=head1 description
 
 RT session class and utilities.
 

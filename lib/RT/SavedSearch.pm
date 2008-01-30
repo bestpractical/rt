@@ -54,7 +54,7 @@
 
   use RT::SavedSearch
 
-=head1 DESCRIPTION
+=head1 description
 
   SavedSearch is an object that can belong to either an RT::Model::User or an
   RT::Model::Group.  It consists of an ID, a description, and a number of
@@ -163,7 +163,7 @@ sub save {
 
     my ( $att_id, $att_msg ) = $object->add_attribute(
         'name'        => 'SavedSearch',
-        'Description' => $name,
+        'description' => $name,
         'Content'     => \%params
     );
     if ($att_id) {

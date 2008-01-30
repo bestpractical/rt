@@ -69,7 +69,7 @@ GetOptions( \%opts, "queue=s", "action=s", "url=s", "jar=s", "help", "debug", "e
 if ( $opts{'help'} ) {
     require Pod::Usage;
     import Pod::Usage;
-    pod2usage("RT Mail Gateway\n");
+    pod2usage("RT Mail gateway\n");
     exit 1;    # Don't want to succeed if this is really an email!
 }
 
@@ -293,7 +293,7 @@ Configure the timeout for posting the message to the web server.  The
 default timeout is 3 minutes (180 seconds).
 
 
-=head1 DESCRIPTION
+=head1 description
 
 The RT mail gateway is the primary mechanism for communicating with RT
 via email. This program simply directs the email to the RT web server,

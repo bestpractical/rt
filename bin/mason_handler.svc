@@ -57,7 +57,7 @@ mason_handler.svc - Win32 IIS Service handler for RT
     perl mason_handler.svc --help	# show this help
     perl mason_handler.svc 		# launch handler from command line
 
-=head1 DESCRIPTION
+=head1 description
 
 This script manages a stand-alone FastCGI server, and populates the necessary
 registry settings to run it with Microsoft IIS Server 4.0 or above.

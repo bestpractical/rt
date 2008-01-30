@@ -23,7 +23,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
             TypeComposite => 'Image-0',
             LookupType => 'RT::Model::Queue-RT::Model::Ticket',
             name => 'img',
-            Description => 'img',
+            description => 'img',
         },
     );
 }

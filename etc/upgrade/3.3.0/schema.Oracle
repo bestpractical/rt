@@ -21,7 +21,7 @@ ALTER TABLE Objectcustom_field_values MODIFY disabled NOT NULL;
 ALTER TABLE Objectcustom_field_values ADD LargeContent CLOB NULL;
 ALTER TABLE Objectcustom_field_values ADD content_type VARCHAR2(80) NULL;
 ALTER TABLE Objectcustom_field_values ADD ContentEncoding VARCHAR2(80) NULL;
-ALTER TABLE Objectcustom_field_values ADD SortOrder NUMBER(11,0) DEFAULT 0 NOT NULL;
+ALTER TABLE Objectcustom_field_values ADD sort_order NUMBER(11,0) DEFAULT 0 NOT NULL;
 
 
 
@@ -36,7 +36,7 @@ CREATE TABLE ObjectCustomFields (
                  CONSTRAINT ObjectCustomFields_Key PRIMARY KEY,
         CustomField       NUMBER(11,0)  NOT NULL,
         object_id              NUMBER(11,0)  NOT NULL,
-        SortOrder       NUMBER(11,0) DEFAULT 0 NOT NULL,
+        sort_order       NUMBER(11,0) DEFAULT 0 NOT NULL,
         Creator         NUMBER(11,0) DEFAULT 0 NOT NULL,
         Created         DATE,
         LastUpdatedBy   NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE ObjectCustomFields (
 );
 
 
-INSERT into ObjectCustomFields (id, CustomField, object_id, SortOrder, Creator, LastUpdatedBy) SELECT  objectcustomfields_seq.nextval, id, Queue, SortOrder, Creator, LastUpdatedBy from CustomFields;
+INSERT into ObjectCustomFields (id, CustomField, object_id, sort_order, Creator, LastUpdatedBy) SELECT  objectcustomfields_seq.nextval, id, Queue, sort_order, Creator, LastUpdatedBy from CustomFields;
 
 ALTER TABLE CustomFields ADD LookupType VARCHAR2(255);
 ALTER TABLE CustomFields ADD Repeated NUMBER(11,0);

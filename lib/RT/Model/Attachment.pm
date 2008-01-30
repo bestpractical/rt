@@ -5,7 +5,7 @@ use strict;
 
     use RT::Model::Attachment;
 
-=head1 DESCRIPTION
+=head1 description
 
 This module should never be instantiated directly by client code. it's an internal 
 module which should only be instantiated through exported APIs in Ticket, Queue and other 

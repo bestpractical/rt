@@ -71,7 +71,7 @@ while ( my $Scrip = $Scrips->next ) {
 
 
 my $scrip = RT::Model::Scrip->new(current_user => RT->system_user);
-($id,$msg) = $scrip->create( Description => "Add or Delete Link $$",
+($id,$msg) = $scrip->create( description => "Add or Delete Link $$",
                           ScripCondition => $condition->id,
                           ScripAction    => $action->id,
                           Template       => $template->id,
@@ -303,7 +303,7 @@ RT->config->set( StrictLinkACL => $link_acl_checks_orig );
 
 {
     my $Scrips = RT::Model::ScripCollection->new(current_user => RT->system_user );
-    $Scrips->limit( column => 'Description', operator => 'starts_with', value => 'Add or Delete Link ');
+    $Scrips->limit( column => 'description', operator => 'starts_with', value => 'Add or Delete Link ');
     while ( my $s = $Scrips->next ) { $s->delete };
 }
 

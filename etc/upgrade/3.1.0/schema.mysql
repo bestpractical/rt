@@ -3,7 +3,7 @@
 CREATE TABLE Attributes (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   name varchar(255) NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   Content text,
   content_type varchar(16),
   object_type varchar(64),

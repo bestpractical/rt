@@ -59,9 +59,9 @@
 <input name="name" value="<%$CustomFieldObj->name%>" size="20" />
 </td></tr>
 <tr><td align="right">
-<&|/l&>Description</&>:
+<&|/l&>description</&>:
 </td><td>
-<input name="Description" value="<%$CustomFieldObj->description%>" size="80" />
+<input name="description" value="<%$CustomFieldObj->description%>" size="80" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Type</&>:
@@ -103,7 +103,7 @@ if (! $CustomField ) {
       my ($val, $msg) =  $CustomFieldObj->create(Queue => $Queue, 
                                                  name => $name, 
                                                  type => $Type,
-                                                 Description => $Description,
+                                                 description => $description,
 						 );
       
       # if there is an error, then abort.  But since at this point there's
@@ -152,7 +152,7 @@ $title => undef
 $Queue => undef
 $CustomField => undef
 $Type => undef
-$Description => undef
+$description => undef
 $name => undef
 $SetEnabled => undef
 $Enabled => undef

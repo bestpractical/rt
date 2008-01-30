@@ -109,7 +109,7 @@ sub __Relates {
         my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
-        $rec->{'Description'}
+        $rec->{'description'}
             = "Have no related Queue #" . $self->queue . " object";
     }
 

@@ -8,7 +8,7 @@ RT::Model::Transaction
 
 =head1 SYNOPSIS
 
-=head1 DESCRIPTION
+=head1 description
 
 =head1 METHODS
 
@@ -251,7 +251,7 @@ Returns the current value of created.
 
 sub table {'Transactions'}
 
-use vars qw( %_BriefDescriptions $Preferredcontent_type );
+use vars qw( %_brief_descriptions $Preferredcontent_type );
 
 use RT::Model::AttachmentCollection;
 use RT::Model::ScripCollection;
@@ -284,7 +284,7 @@ sub create {
         field          => undef,
         old_value      => undef,
         new_value      => undef,
-        MIMEObj        => undef,
+        mime_obj        => undef,
         ActivateScrips => 1,
         commit_scrips  => 1,
         object_type    => 'RT::Model::Ticket',
@@ -329,8 +329,8 @@ sub create {
 
     my $id = $self->SUPER::create(%params);
     $self->load($id);
-    if ( defined $args{'MIMEObj'} ) {
-        my ( $id, $msg ) = $self->_attach( $args{'MIMEObj'} );
+    if ( defined $args{'mime_obj'} ) {
+        my ( $id, $msg ) = $self->_attach( $args{'mime_obj'} );
         unless ($id) {
             Jifty->log->error("Couldn't add attachment: $msg");
             return ( 0, _("Couldn't add attachment") );
@@ -670,9 +670,9 @@ A private method used to attach a mime object to this transaction.
 
 sub _attach {
     my $self       = shift;
-    my $MIMEObject = shift;
+    my $mime_object = shift;
 
-    unless ( defined $MIMEObject ) {
+    unless ( defined $mime_object ) {
         Jifty->log->error(
             "We can't attach a mime object if you don't give us one.");
         return ( 0, _( "%1: no attachment specified", $self ) );
@@ -681,7 +681,7 @@ sub _attach {
     my $Attachment = RT::Model::Attachment->new;
     my ( $id, $msg ) = $Attachment->create(
         transaction_id => $self->id,
-        Attachment    => $MIMEObject
+        Attachment    => $mime_object
     );
     return ( $Attachment, $msg || _("Attachment Created") );
 }
@@ -692,9 +692,9 @@ sub _attach {
 
 # {{{ Routines dealing with Transaction Attributes
 
-# {{{ sub Description
+# {{{ sub description
 
-=head2 Description
+=head2 description
 
 Returns a text string which describes this transaction
 
@@ -771,7 +771,7 @@ sub brief_description {
         );
     }
 
-    if ( my $code = $_BriefDescriptions{$type} ) {
+    if ( my $code = $_brief_descriptions{$type} ) {
         return $code->($self);
     }
 
@@ -787,7 +787,7 @@ sub brief_description {
     );
 }
 
-%_BriefDescriptions = (
+%_brief_descriptions = (
     commentEmailRecord => sub {
         my $self = shift;
         return _("Outgoing email about a comment recorded");

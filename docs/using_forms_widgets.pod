@@ -13,7 +13,7 @@ with minimum of required text labels.
 So you show a widget with:
     <& /Widgets/Form/Integer,
         name => 'nameOfInputElement',
-        Description => 'Input integer',
+        description => 'Input integer',
     &>
 
 You can show only C<input> box using:

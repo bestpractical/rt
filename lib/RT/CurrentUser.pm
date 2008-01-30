@@ -66,7 +66,7 @@
     $current_user->user_object->set_name('new_name');
 
 
-=head1 DESCRIPTION
+=head1 description
 
 B<Read-only> subclass of L<RT::Model::User> class. Used to define the current
 user. You should pass an instance of this class to constructors of

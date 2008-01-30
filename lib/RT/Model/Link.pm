@@ -54,7 +54,7 @@
 
   use RT::Model::Link;
 
-=head1 DESCRIPTION
+=head1 description
 
 This module should never be called directly by client code. it's an internal module which
 should only be accessed through exported APIs in Ticket other similar objects.

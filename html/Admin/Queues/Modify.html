@@ -63,8 +63,8 @@
 <td colspan="3"><input name="name" value="<% ($Create) ? "" : $queue_obj->name %>" /></td>
 </tr>
 
-<tr><td align="right"><&|/l&>Description</&>:</td>
-<td colspan="3"><input name="Description" value="<% ($Create) ? "" : $queue_obj->description %>" size="60" /></td>
+<tr><td align="right"><&|/l&>description</&>:</td>
+<td colspan="3"><input name="description" value="<% ($Create) ? "" : $queue_obj->description %>" size="60" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
@@ -82,7 +82,7 @@
 </tr>
 
 <tr><td align="right"><&|/l&>Requests should be due in</&>:</td>
-<td colspan="3"><input name="DefaultDueIn" value="<% ($Create) ? "" : $queue_obj->default_due_in%>" /> <&|/l&>days</&>.</td>
+<td colspan="3"><input name="default_due_in" value="<% ($Create) ? "" : $queue_obj->default_due_in%>" /> <&|/l&>days</&>.</td>
 </tr>
 
 % if ( RT->config->get('GnuPG')->{'Enable'} ) {
@@ -139,8 +139,8 @@ if ($Create) {
 }
 if ( $queue_obj->id ) {
     delete $session{'create_in_queues'};
-    my @attribs= qw(Description correspond_address comment_address name
-        initial_priority final_priority DefaultDueIn Sign Encrypt disabled);
+    my @attribs= qw(description correspond_address comment_address name
+        initial_priority final_priority default_due_in Sign Encrypt disabled);
 
     # we're asking about enabled on the web page but really care about disabled
     if ( $SetEnabled ) {
@@ -176,12 +176,12 @@ $id => undef
 $result => undef
 $name => undef
 $Create => undef
-$Description => undef
+$description => undef
 $correspond_address => undef
 $comment_address => undef
 $initial_priority => undef
 $final_priority => undef
-$DefaultDueIn => undef
+$default_due_in => undef
 $SetEnabled => undef
 $Enabled => undef
 </%ARGS>

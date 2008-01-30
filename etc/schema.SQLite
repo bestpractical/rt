@@ -25,12 +25,12 @@ CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
 CREATE TABLE Queues (
   id INTEGER PRIMARY KEY  ,
   name varchar(200) NOT NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   correspond_address varchar(120) NULL  ,
   comment_address varchar(120) NULL  ,
   initial_priority integer NULL  ,
   final_priority integer NULL  ,
-  DefaultDueIn integer NULL  ,
+  default_due_in integer NULL  ,
   Creator integer NULL  ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL  ,
@@ -79,7 +79,7 @@ CREATE TABLE Principals (
 CREATE TABLE Groups (
   id INTEGER ,
   name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   domain varchar(64),
   type varchar(64),
   instance integer
@@ -95,7 +95,7 @@ CREATE UNIQUE INDEX Groups1 ON Groups (name,domain,Type,instance) ;
 CREATE TABLE ScripConditions (
   id INTEGER PRIMARY KEY  ,
   name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
   ApplicableTransTypes varchar(60) NULL  ,
@@ -136,7 +136,7 @@ CREATE INDEX Transactions1 ON Transactions (object_type, object_id);
 
 CREATE TABLE Scrips (
   id INTEGER PRIMARY KEY  ,
-  Description varchar(255),
+  description varchar(255),
   ScripCondition integer NULL  ,
   ScripAction integer NULL  ,
   ConditionRules text NULL  ,
@@ -299,7 +299,7 @@ CREATE INDEX Tickets5 ON Tickets (id, EffectiveId) ;
 CREATE TABLE ScripActions (
   id INTEGER PRIMARY KEY  ,
   name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
   Creator integer NULL  ,
@@ -317,7 +317,7 @@ CREATE TABLE Templates (
   id INTEGER PRIMARY KEY  ,
   Queue integer NOT NULL DEFAULT 0 ,
   name varchar(200) NOT NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
   TranslationOf integer NULL  ,
@@ -340,7 +340,7 @@ CREATE TABLE Objectcustom_field_values (
   CustomField int NOT NULL  ,
   object_type varchar(255) NOT NULL,	    # Final target of the Object
   object_id int NOT NULL  ,		    # New -- Replaces Ticket
-  SortOrder integer NOT NULL DEFAULT 0  ,
+  sort_order integer NOT NULL DEFAULT 0  ,
 
   Content varchar(255) NULL  ,
   LargeContent LONGTEXT NULL,		    # New -- to hold 255+ strings
@@ -369,8 +369,8 @@ CREATE TABLE CustomFields (
   MaxValues integer,		# New -- was 'Single'(1) and 'Multiple'(0)
   Pattern varchar(65536) NULL  ,	# New -- Must validate against this
   Repeated int2 NOT NULL DEFAULT 0 , # New -- repeated table entry
-  Description varchar(255) NULL  ,
-  SortOrder integer NOT NULL DEFAULT 0  ,
+  description varchar(255) NULL  ,
+  sort_order integer NOT NULL DEFAULT 0  ,
   LookupType varchar(255) NOT NULL,
 
   Creator integer NOT NULL DEFAULT 0  ,
@@ -389,7 +389,7 @@ CREATE TABLE ObjectCustomFields (
   id INTEGER NOT NULL  ,
   CustomField int NOT NULL  ,
   object_id integer NOT NULL,
-  SortOrder integer NOT NULL DEFAULT 0  ,
+  sort_order integer NOT NULL DEFAULT 0  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -406,8 +406,8 @@ CREATE TABLE custom_field_values (
   id INTEGER NOT NULL  ,
   CustomField int NOT NULL  ,
   name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
-  SortOrder integer NOT NULL DEFAULT 0  ,
+  description varchar(255) NULL  ,
+  sort_order integer NOT NULL DEFAULT 0  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -424,7 +424,7 @@ CREATE INDEX custom_field_values1 ON custom_field_values (CustomField);
 CREATE TABLE Attributes (
   id INTEGER PRIMARY KEY  ,
   name varchar(255) NOT NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   Content LONGTEXT NULL  ,
   content_type varchar(16),
   object_type varchar(25) NOT NULL  ,

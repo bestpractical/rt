@@ -10,7 +10,7 @@ require Cwd;
 
 use RT::Shredder;
 
-=head1 DESCRIPTION
+=head1 description
 
 RT::Shredder test suite utilities.
 

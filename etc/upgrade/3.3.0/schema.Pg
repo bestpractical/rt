@@ -44,7 +44,7 @@ CREATE TABLE ObjectCustomFields (
   id INTEGER DEFAULT nextval('objectcustomfields_id_s'),
   CustomField integer NOT NULL,
   object_id integer NOT NULL,
-  SortOrder integer NOT NULL DEFAULT 0  ,
+  sort_order integer NOT NULL DEFAULT 0  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
@@ -55,7 +55,7 @@ CREATE TABLE ObjectCustomFields (
 );
 
 
-INSERT into ObjectCustomFields (CustomField, object_id, SortOrder, Creator, LastUpdatedBy) SELECT  id, Queue, SortOrder, Creator, LastUpdatedBy from CustomFields;
+INSERT into ObjectCustomFields (CustomField, object_id, sort_order, Creator, LastUpdatedBy) SELECT  id, Queue, sort_order, Creator, LastUpdatedBy from CustomFields;
 
 alter table CustomFields add column LookupType varchar(255);
 alter table CustomFields add column Repeated int2;

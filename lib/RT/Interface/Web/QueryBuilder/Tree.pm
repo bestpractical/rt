@@ -56,7 +56,7 @@ use base qw/Tree::Simple/;
 
   RT::Interface::Web::QueryBuilder::Tree - subclass of Tree::Simple used in Query Builder
 
-=head1 DESCRIPTION
+=head1 description
 
 This class provides support functionality for the Query Builder (Search/Build.html).
 It is a subclass of L<Tree::Simple>.

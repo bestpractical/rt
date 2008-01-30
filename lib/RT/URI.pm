@@ -59,7 +59,7 @@ use Carp;
 
 RT::URI
 
-=head1 DESCRIPTION
+=head1 description
 
 This class provides a base class for URIs, such as those handled
 by RT::Model::Link objects.  

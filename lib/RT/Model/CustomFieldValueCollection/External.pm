@@ -61,14 +61,14 @@ field from an arbitrary external data source.
 
 Custom field value lists can be produced by creating a class that
 inherits from C<RT::Model::CustomFieldValueCollection::External>, and overloading
-C<SourceDescription> and C<ExternalValues>.  See
+C<source_description> and C<ExternalValues>.  See
 L<RT::Model::CustomFieldValueCollection::Groups> for a simple example.
 
-=head1 DESCRIPTION
+=head1 description
 
 Subclasses should implement the following methods:
 
-=head2 SourceDescription
+=head2 source_description
 
 This method should return a string describing the data source; this is
 the identifier by which the user will see the dropdown.
@@ -77,7 +77,7 @@ the identifier by which the user will see the dropdown.
 
 This method should return an array reference of hash references.  The
 hash references should contain keys for C<name>, C<description>, and
-C<sortorder>.
+C<sort_order>.
 
 =cut
 
@@ -116,7 +116,7 @@ sub limit {
 
 sub __build_limit_check {
     my ( $self, %args ) = (@_);
-    return undef unless $args{'column'} =~ /^(?:name|Description)$/;
+    return undef unless $args{'column'} =~ /^(?:name|description)$/;
 
     $args{'operator'} ||= '=';
     my $quoted_value = $args{'value'};
@@ -192,7 +192,7 @@ sub _do_search {
         id            => 1,
         name          => '',
         customfield   => $self->{'__external_cf'},
-        sortorder     => 0,
+        sort_order     => 0,
         description   => '',
         creator       => RT->system_user->id,
         Created       => undef,

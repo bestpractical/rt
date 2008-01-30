@@ -326,13 +326,13 @@ $CreateOutParams);
 
 =head1 name
 
-  $CollectionClassname -- Class Description
+  $CollectionClassname -- Class description
  
 =head1 SYNOPSIS
 
   use $CollectionClassname
 
-=head1 DESCRIPTION
+=head1 description
 
 
 =head1 METHODS
@@ -355,14 +355,14 @@ sub _init {
 
 ";
 
-    if ( $fields{'SortOrder'} ) {
+    if ( $fields{'sort_order'} ) {
 
         $CollectionClass .= "
 
-  # By default, order by SortOrder
+  # By default, order by sort_order
   \$self->order_by(
 	 { alias => 'main',
-	   column => 'SortOrder',
+	   column => 'sort_order',
 	   order => 'ASC' },
 	 { alias => 'main',
 	   column => 'id',
@@ -396,7 +396,7 @@ $RecordClassname
 
 =head1 SYNOPSIS
 
-=head1 DESCRIPTION
+=head1 description
 
 =head1 METHODS
 

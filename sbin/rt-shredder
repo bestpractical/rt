@@ -59,7 +59,7 @@ rt-shredder - Script which wipe out tickets from RT DB
   rt-shredder --sqldump unshred.sql --plugin ...
   rt-shredder --force --plugin ...
 
-=head1 DESCRIPTION
+=head1 description
 
 rt-shredder - is script that allow you to wipe out objects
 from RT DB. This script uses API that L<RT::Shredder> module adds to RT.

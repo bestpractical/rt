@@ -151,7 +151,7 @@ else {
         $v{$_} = vsplit($v{$_}) foreach ( grep $create{lc $_}, @people );
 
         if ($text) {
-            $v{MIMEObj} =
+            $v{mime_obj} =
                 MIME::Entity->build(
                     From => Jifty->web->current_user->email,
                     subject => $v{subject},

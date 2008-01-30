@@ -3,7 +3,7 @@
 
 RT::System
 
-=head1 DESCRIPTION
+=head1 description
 
 RT::System is a simple global object used as a focal point for things
 that are system-wide.

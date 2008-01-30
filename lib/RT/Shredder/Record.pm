@@ -100,7 +100,7 @@ Returns L<RT::Shredder::Dependencies> object.
 
 =cut
 
-sub Dependencies {
+sub dependencies {
     my $self = shift;
     my %args = (
         Shredder => undef,
@@ -194,7 +194,7 @@ sub __Relates {
             my $rec = $args{'Shredder'}->get_record( Object => $self );
             $self = $rec->{'Object'};
             $rec->{'State'} |= INVALID;
-            push @{ $rec->{'Description'} },
+            push @{ $rec->{'description'} },
                 "Have no related User(Creator) #"
                 . $self->creator
                 . " object";
@@ -211,7 +211,7 @@ sub __Relates {
             my $rec = $args{'Shredder'}->get_record( Object => $self );
             $self = $rec->{'Object'};
             $rec->{'State'} |= INVALID;
-            push @{ $rec->{'Description'} },
+            push @{ $rec->{'description'} },
                 "Have no related User(LastUpdatedBy) #"
                 . $self->last_updated_by
                 . " object";

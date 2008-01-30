@@ -160,7 +160,7 @@ unless ($ticket->current_user_has_right('ModifyTicket') ||
 
 my $cc = join ", ", @{ vsplit($k->{Cc}) };
 my $bcc = join ", ", @{ vsplit($k->{Bcc}) };
-my ($n, $s) = $ticket->$action(MIMEObj => $ent,
+my ($n, $s) = $ticket->$action(mime_obj => $ent,
                                CcMessageTo => $cc,
                                BccMessageTo => $bcc,
                                time_taken => $k->{time_worked} || 0);

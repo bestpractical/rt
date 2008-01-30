@@ -49,12 +49,12 @@
 see docs/using_forms_widgets.pod
 </%DOC>
 <div id="form-box-<% lc $name %>">
-<span class="description"><% $Description %></span>:\
+<span class="description"><% $description %></span>:\
 <& SELF:InputOnly, %ARGS &>
 </div>
 <%ARGS>
 $name         => undef,
-$Description  => undef,
+$description  => undef,
 </%ARGS>
 
 <%METHOD InputOnly>

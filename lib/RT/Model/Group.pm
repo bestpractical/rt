@@ -12,7 +12,7 @@ package RT::Model::Group;
 use RT::Model::Group;
 my $group = RT::Model::Group->new($CurrentUser);
 
-=head1 DESCRIPTION
+=head1 description
 
 An RT group object.
 

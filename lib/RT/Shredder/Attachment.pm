@@ -108,7 +108,7 @@ sub __Relates {
             my $rec = $args{'Shredder'}->get_record( Object => $self );
             $self = $rec->{'Object'};
             $rec->{'State'} |= INVALID;
-            $rec->{'Description'}
+            $rec->{'description'}
                 = "Have no parent attachment #" . $self->parent . " object";
         }
     }
@@ -121,7 +121,7 @@ sub __Relates {
         my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
-        $rec->{'Description'}
+        $rec->{'description'}
             = "Have no related transaction #"
             . $self->transaction_id
             . " object";

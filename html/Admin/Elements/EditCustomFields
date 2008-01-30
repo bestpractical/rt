@@ -90,13 +90,13 @@ $ObjectCFs->find_all_rows;
 $ObjectCFs->limit_to_object_id($id);
 $ObjectCFs->limit_to_lookup_type($lookup);
 
-# Check sanity of SortOrders
-my %SortOrders;
-$SortOrders{ $_->sort_order }++
+# Check sanity of sort_orders
+my %sort_orders;
+$sort_orders{ $_->sort_order }++
   while ($_ = $ObjectCFs->next);
 
 # If there are duplicates, run though and squash them
-if (grep $_ > 1, values %SortOrders) {
+if (grep $_ > 1, values %sort_orders) {
     my $i = 1;
     while ( my $ObjectCF = $ObjectCFs->next ) {
         $ObjectCF->set_sort_order( $i++ );
@@ -104,7 +104,7 @@ if (grep $_ > 1, values %SortOrders) {
     $ObjectCFs->goto_first_item;
 }
 
-# {{{ deal with moving sortorder of custom fields
+# {{{ deal with moving sort_order of custom fields
 if ($CustomField and $Move) {
     my $SourceObj = RT::Model::ObjectCustomField->new();
     $SourceObj->load_by_cols( object_id => $id, CustomField => $CustomField );

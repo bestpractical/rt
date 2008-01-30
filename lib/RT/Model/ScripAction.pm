@@ -58,7 +58,7 @@ use strict;
   use RT::Model::ScripAction;
 
 
-=head1 DESCRIPTION
+=head1 description
 
 This module should never be called directly by client code. it's an internal module which
 should only be accessed through exported APIs in other modules.

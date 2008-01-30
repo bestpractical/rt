@@ -56,7 +56,7 @@ use strict;
   my $ticket = RT::Model::Ticket->new($CurrentUser);
   $ticket->load($ticket_id);
 
-=head1 DESCRIPTION
+=head1 description
 
 This module lets you manipulate RT\'s ticket object.
 
@@ -308,7 +308,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   time_left -- an integer. time remaining in minutes
   starts -- an ISO date describing the ticket\'s start date and time in GMT
   Due -- an ISO date describing the ticket\'s due date and time in GMT
-  MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
+  mime_obj -- a MIME::Entity object with the content of the initial ticket request.
   CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
 
 Ticket links can be set up during create by passing the link type as a hask key and
@@ -352,7 +352,7 @@ sub create {
         starts              => undef,
         Started             => undef,
         Resolved            => undef,
-        MIMEObj             => undef,
+        mime_obj             => undef,
         _record_transaction => 1,
         dry_run              => 0,
         @_
@@ -748,7 +748,7 @@ sub create {
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             type          => "Create",
             time_taken     => $args{'time_worked'},
-            MIMEObj       => $args{'MIMEObj'},
+            mime_obj       => $args{'mime_obj'},
             commit_scrips => !$args{'dry_run'},
         );
         if ( $self->id && $Trans ) {
@@ -844,8 +844,8 @@ sub _parse822_headers_for_attributes {
         }
         $args{$date} = $dateobj->iso;
     }
-    $args{'mimeobj'} = MIME::Entity->new();
-    $args{'mimeobj'}->build(
+    $args{'mime_obj'} = MIME::Entity->new();
+    $args{'mime_obj'}->build(
         type => ( $args{'contenttype'} || 'text/plain' ),
         Data => ( $args{'content'}     || '' )
     );
@@ -2107,10 +2107,10 @@ sub time_worked_as_string {
 
 comment on this ticket.
 Takes a hashref with the following attributes:
-If MIMEObj is undefined, Content will be used to build a MIME::Entity for this
+If mime_obj is undefined, Content will be used to build a MIME::Entity for this
 commentl
 
-MIMEObj, time_taken, CcMessageTo, BccMessageTo, Content, dry_run
+mime_obj, time_taken, CcMessageTo, BccMessageTo, Content, dry_run
 
 If dry_run is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
 They will, however, be prepared and you'll be able to access them through the transaction_obj
@@ -2126,7 +2126,7 @@ sub comment {
     my %args = (
         CcMessageTo  => undef,
         BccMessageTo => undef,
-        MIMEObj      => undef,
+        mime_obj      => undef,
         Content      => undef,
         time_taken    => 0,
         dry_run       => 0,
@@ -2161,9 +2161,9 @@ Correspond on this ticket.
 Takes a hashref with the following attributes:
 
 
-MIMEObj, time_taken, CcMessageTo, BccMessageTo, Content, dry_run
+mime_obj, time_taken, CcMessageTo, BccMessageTo, Content, dry_run
 
-if there's no MIMEObj, Content is used to build a MIME::Entity object
+if there's no mime_obj, Content is used to build a MIME::Entity object
 
 If dry_run is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
 They will, however, be prepared and you'll be able to access them through the transaction_obj
@@ -2179,7 +2179,7 @@ sub correspond {
     my %args = (
         CcMessageTo  => undef,
         BccMessageTo => undef,
-        MIMEObj      => undef,
+        mime_obj      => undef,
         Content      => undef,
         time_taken    => 0,
         @_
@@ -2230,7 +2230,7 @@ sub _record_note {
         BccMessageTo  => undef,
         Encrypt       => undef,
         Sign          => undef,
-        MIMEObj       => undef,
+        mime_obj       => undef,
         Content       => undef,
         NoteType      => 'Correspond',
         time_taken     => 0,
@@ -2238,12 +2238,12 @@ sub _record_note {
         @_
     );
 
-    unless ( $args{'MIMEObj'} || $args{'Content'} ) {
+    unless ( $args{'mime_obj'} || $args{'Content'} ) {
         return ( 0, _("No message attached"), undef );
     }
 
-    unless ( $args{'MIMEObj'} ) {
-        $args{'MIMEObj'} = MIME::Entity->build(
+    unless ( $args{'mime_obj'} ) {
+        $args{'mime_obj'} = MIME::Entity->build(
             Data => (
                 ref $args{'Content'} ? $args{'Content'} : [ $args{'Content'} ]
             )
@@ -2251,7 +2251,7 @@ sub _record_note {
     }
 
     # convert text parts into utf-8
-    RT::I18N::set_mime_entity_to_utf8( $args{'MIMEObj'} );
+    RT::I18N::set_mime_entity_to_utf8( $args{'mime_obj'} );
 
     # If we've been passed in CcMessageTo and BccMessageTo fields,
     # add them to the mime object for passing on to the transaction handler
@@ -2264,12 +2264,12 @@ sub _record_note {
             my $addresses = join ', ',
                 ( map { RT::Model::User->canonicalize_email( $_->address ) }
                     Mail::Address->parse( $args{ $type . 'MessageTo' } ) );
-            $args{'MIMEObj'}->head->add( 'RT-Send-' . $type, $addresses );
+            $args{'mime_obj'}->head->add( 'RT-Send-' . $type, $addresses );
         }
     }
 
     foreach my $argument (qw(Encrypt Sign)) {
-        $args{'MIMEObj'}->head->add( "X-RT-$argument" => $args{$argument} )
+        $args{'mime_obj'}->head->add( "X-RT-$argument" => $args{$argument} )
             if defined $args{$argument};
     }
 
@@ -2278,20 +2278,20 @@ sub _record_note {
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
     my $org   = RT->config->get('organization');
-    my $msgid = $args{'MIMEObj'}->head->get('Message-ID');
+    my $msgid = $args{'mime_obj'}->head->get('Message-ID');
     unless ( defined $msgid
         && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/ )
     {
-        $args{'MIMEObj'}->head->set( 'RT-Message-ID' =>
+        $args{'mime_obj'}->head->set( 'RT-Message-ID' =>
                 RT::Interface::Email::gen_message_id( Ticket => $self ) );
     }
 
     #Record the correspondence (write the transaction)
     my ( $Trans, $msg, $TransObj ) = $self->_new_transaction(
         type => $args{'NoteType'},
-        Data => ( $args{'MIMEObj'}->head->get('subject') || 'No subject' ),
+        Data => ( $args{'mime_obj'}->head->get('subject') || 'No subject' ),
         time_taken     => $args{'time_taken'},
-        MIMEObj       => $args{'MIMEObj'},
+        mime_obj       => $args{'mime_obj'},
         commit_scrips => $args{'commit_scrips'},
     );
 

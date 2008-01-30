@@ -28,7 +28,7 @@
 my $dir_path = $m->request_comp->dir_path;
 $Format ||= qq{'<a href="__WebPath__$dir_path/Template.html?Queue=$id&Template=__id__">__id__</a>/TITLE:#'}
     .qq{,'<a href="__WebPath__$dir_path/Template.html?Queue=$id&Template=__id__">__name__</a>/TITLE:name'}
-    .qq{,'__Description__'};
+    .qq{,'__description__'};
 
 my $queue_obj = RT::Model::Queue->new();
 $queue_obj->load( $id ) if $id;

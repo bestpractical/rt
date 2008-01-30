@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& NewListActions, actions => $actions &>
-<&|/Widgets/TitleBox, title => join(': ', grep defined, _("Current search"), $Description) &>
+<&|/Widgets/TitleBox, title => join(': ', grep defined, _("Current search"), $description) &>
 
 <select size="10" name="clauses" style="width: 100%" multiple>
 % $m->out($optionlist);
@@ -64,7 +64,7 @@
 
 </&>
 <%ARGS>
-$Description => ''
+$description => ''
 $optionlist => ''
 $actions => []
 </%ARGS>

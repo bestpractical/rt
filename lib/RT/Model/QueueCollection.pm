@@ -54,7 +54,7 @@
 
   use RT::Model::QueueCollection;
 
-=head1 DESCRIPTION
+=head1 description
 
 
 =head1 METHODS

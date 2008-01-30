@@ -9,7 +9,7 @@ CREATE TABLE Groups (
         Domain varchar(255), 
         Instance varchar(16),
         name varchar(255),
-        Description varchar(255),
+        description varchar(255),
 );
 CREATE TABLE ACL (
   id INTEGER NOT NULL  AUTO_INCREMENT,

@@ -57,7 +57,7 @@
 <th>&nbsp;</th>
 <th><&|/l&>Sort</&></th>
 <th><&|/l&>name</&></th>
-<th><&|/l&>Description</&></th>
+<th><&|/l&>description</&></th>
 % if ($CustomField->type ne 'Combobox') {
 <th><&|/l&>Category</&></th>
 % }
@@ -67,7 +67,7 @@
 % my $paramtag = "CustomField-". $CustomField->id ."-Value-". $value->id;
 <tr>
 <td><input type="checkbox" class="checkbox" name="Delete-<% $paramtag %>" /></td>
-<td><input type="text" size="3" name="<% $paramtag %>-SortOrder" value="<% $value->sort_order %>" /></td>
+<td><input type="text" size="3" name="<% $paramtag %>-sort_order" value="<% $value->sort_order %>" /></td>
 <td><input type="text" size="30" name="<% $paramtag %>-name" value="<% $value->name %>" /></td>
 <td><input type="text" size="50" name="<% $paramtag %>-Description" value="<% $value->description %>" /></td>
 % if ( $CustomField->type ne 'Combobox' ) {

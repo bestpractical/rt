@@ -53,7 +53,7 @@ use warnings;
 
 use base qw(RT::ScripAction::Generic);
 
-=head1 DESCRIPTION
+=head1 description
 
 Opens a ticket unless it's allready open, but only unless transaction
 L<RT::Model::Transaction/IsInbound is inbound>.

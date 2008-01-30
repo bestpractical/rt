@@ -55,7 +55,7 @@
   use RT::Model::TransactionCollection;
 
 
-=head1 DESCRIPTION
+=head1 description
 
 
 =head1 METHODS

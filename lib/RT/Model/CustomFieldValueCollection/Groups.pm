@@ -71,7 +71,7 @@ sub external_values {
             {
             name        => $group->name,
             description => $group->description,
-            sortorder   => $i++,
+            sort_order   => $i++,
             };
     }
     return \@res;

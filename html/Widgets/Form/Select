@@ -49,20 +49,20 @@
 see docs/using_forms_widgets.pod
 </%DOC>
 <div id="form-box-<% lc $name %>">
-% if ( $Description ) {
-<% $Description %>:\
+% if ( $description ) {
+<% $description %>:\
 % }
 <& SELF:InputOnly, %ARGS &>
 </div>
 <%ARGS>
 $name
-$Description      => undef,
+$description      => undef,
 </%ARGS>
 
 <%METHOD InputOnly>
 <%ARGS>
 $name
-$Description      => undef,
+$description      => undef,
 
 @values           => (),
 $valuesCallback   => undef,

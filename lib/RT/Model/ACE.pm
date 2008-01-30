@@ -52,7 +52,7 @@
   my $ace = RT::Model::ACE->new($CurrentUser);
 
 
-=head1 DESCRIPTION
+=head1 description
 
 
 
@@ -96,7 +96,7 @@ use vars qw (
     %TICKET_METAPRINCIPALS
 );
 
-# {{{ Descriptions of rights
+# {{{ descriptions of rights
 
 =head1 Rights
 
@@ -109,7 +109,7 @@ use vars qw (
 
 # }}}
 
-# {{{ Descriptions of principals
+# {{{ descriptions of principals
 
 %TICKET_METAPRINCIPALS = (
     Owner     => 'The owner of a ticket',                # loc_pair

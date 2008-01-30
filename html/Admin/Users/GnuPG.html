@@ -19,7 +19,7 @@
 
 <& /Widgets/Form/Select,
     name         => 'private_key',
-    Description  => _('Private Key'),
+    description  => _('Private Key'),
     values       => [ map $_->{'Key'}, @{ $keys_meta{'info'} } ],
     current_value => $user_object->private_key,
     DefaultLabel => _('No private key'),

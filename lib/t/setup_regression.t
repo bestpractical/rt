@@ -16,7 +16,7 @@ if ($q->id != 0) {
 }
 
 my ($id, $msg) = $q->create( name => 'Regression',
-            Description => 'A regression test queue',
+            description => 'A regression test queue',
             correspond_address => 'correspond@a',
             comment_address => 'comment@a');
 

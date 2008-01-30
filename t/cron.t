@@ -31,14 +31,14 @@ This is a content string with no content.';
 my $template_obj = RT::Model::Template->new(current_user => RT->system_user);
 $template_obj->create(Queue       => '0',
 		      name        => 'recordtest',
-		      Description => 'testing Record actions',
+		      description => 'testing Record actions',
 		      Content     => $template_content,
 		     );
 
 # Create a queue and some tickets.
 
 my $queue_obj = RT::Model::Queue->new(current_user => RT->system_user);
-($ret, $msg) = $queue_obj->create(name => 'recordtest', Description => 'queue for Action::Record testing');
+($ret, $msg) = $queue_obj->create(name => 'recordtest', description => 'queue for Action::Record testing');
 ok($ret, 'record test queue creation');
 
 my $ticket1 = RT::Model::Ticket->new(current_user => RT->system_user);
@@ -90,7 +90,7 @@ ok($comment_act->commit(), "comment committed");
 ok($correspond_act->commit(), "Correspondence committed");
 
 # Now test for loop suppression.
-my ($trans, $desc, $transaction) = $ticket2->comment(MIMEObj => $template_obj->mimeobj);
+my ($trans, $desc, $transaction) = $ticket2->comment(mime_obj => $template_obj->mime_obj);
 my $bogus_action = RT::ScripAction::RecordComment->new(ticket_obj => $ticket1, template_obj => $template_obj, transaction_obj => $transaction, CurrentUser => $CurrentUser);
 ok(!$bogus_action->prepare(), "comment aborted to prevent loop");
 

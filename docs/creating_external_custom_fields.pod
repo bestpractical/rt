@@ -1,6 +1,6 @@
 =head1 External custom fields
 
-=head2 Description
+=head2 description
 
 C<External custom fields> is extension to custom fields that allow
 you to define CF with a dinamic list of values. Loading values into
@@ -50,7 +50,7 @@ There are two main methods you want to override:
 
 =over 4
 
-=item SourceDescription
+=item source_description
 
 This method should return a string describing the data source; this is
 the identifier which the adimistrator will see in the dropdown in the web
@@ -60,7 +60,7 @@ interface. See L</Configuration>.
 
 This method should return an array reference of hash references.  The
 hash references should contain keys for C<name>, C<description>, and
-C<sortorder>. C<name> is most important one. The others are optional
+C<sort_order>. C<name> is most important one. The others are optional
 
 =back
 
@@ -81,12 +81,12 @@ Here's a simple static example:
       # return reference to array ([])
       return [
           # each element of the array is a reference to hash that describe a value
-          # possible keys are name, description and sortorder
-          { name => 'value1', description => 'external value', sortorder => 1 },
-          { name => 'value2', description => 'another external value', sortorder => 2 },
+          # possible keys are name, description and sort_order
+          { name => 'value1', description => 'external value', sort_order => 1 },
+          { name => 'value2', description => 'another external value', sort_order => 2 },
           # values without description are also valid, the default description is empty string
-          { name => 'value3', sortorder => 3 },
-          # you can skip sortorder too, but note that the default sortorder is 0 (zero)
+          { name => 'value3', sort_order => 3 },
+          # you can skip sort_order too, but note that the default sort_order is 0 (zero)
           { name => 'value3' },
       ];
   }

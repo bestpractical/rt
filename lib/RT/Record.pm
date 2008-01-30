@@ -53,7 +53,7 @@
 =head1 SYNOPSIS
 
 
-=head1 DESCRIPTION
+=head1 description
 
 
 
@@ -154,7 +154,7 @@ sub attributes {
 
 }
 
-=head2 add_attribute { name, Description, Content }
+=head2 add_attribute { name, description, Content }
 
 Adds a new attribute for this object.
 
@@ -164,7 +164,7 @@ sub add_attribute {
     my $self = shift;
     my %args = (
         name        => undef,
-        Description => undef,
+        description => undef,
         Content     => undef,
         @_
     );
@@ -173,7 +173,7 @@ sub add_attribute {
     my ( $id, $msg ) = $attr->create(
         Object      => $self,
         name        => $args{'name'},
-        Description => $args{'Description'},
+        description => $args{'description'},
         Content     => $args{'Content'}
     );
 
@@ -183,7 +183,7 @@ sub add_attribute {
     return ( $id, $msg );
 }
 
-=head2 set_attribute { name, Description, Content }
+=head2 set_attribute { name, description, Content }
 
 Like add_attribute, but replaces all existing attributes with the same name.
 
@@ -204,7 +204,7 @@ sub set_attribute {
     my $AttributeObj = pop(@AttributeObjs);
     $_->delete foreach @AttributeObjs;
 
-    $AttributeObj->set_description( $args{'Description'} );
+    $AttributeObj->set_description( $args{'description'} );
     $AttributeObj->set_content( $args{'Content'} );
 
     $self->attributes->redo_search;
@@ -1239,7 +1239,7 @@ sub _new_transaction {
         reference_type  => undef,
         Data           => undef,
         Field          => undef,
-        MIMEObj        => undef,
+        mime_obj        => undef,
         ActivateScrips => 1,
         commit_scrips  => 1,
         @_
@@ -1271,7 +1271,7 @@ sub _new_transaction {
         new_reference   => $new_ref,
         old_reference   => $old_ref,
         reference_type  => $ref_type,
-        MIMEObj        => $args{'MIMEObj'},
+        mime_obj        => $args{'mime_obj'},
         ActivateScrips => $args{'ActivateScrips'},
         commit_scrips  => $args{'commit_scrips'},
     );

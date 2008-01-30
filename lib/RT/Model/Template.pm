@@ -8,7 +8,7 @@
 
   use RT::Model::Template;
 
-=head1 DESCRIPTION
+=head1 description
 
 
 =head1 METHODS
@@ -34,7 +34,7 @@ use Jifty::DBI::Record schema {
     column Queue => max_length is 11,  type is 'int(11)',      default is '0';
     column name  => max_length is 200, type is 'varchar(200)', default is '';
     column
-        Description => max_length is 255,
+        description => max_length is 255,
         type is 'varchar(255)', default is '';
     column type     => max_length is 16, type is 'varchar(16)', default is '';
     column Language => max_length is 16, type is 'varchar(16)', default is '';
@@ -153,9 +153,9 @@ sub load_queue_template {
 
 =head2 Create
 
-Takes a paramhash of content, Queue, name and Description.
+Takes a paramhash of content, Queue, name and description.
 name should be a unique string identifying this Template.
-Description and content should be the template's title and content.
+description and content should be the template's title and content.
 Queue should be 0 for a global template and the queue # for a queue-specific 
 template.
 
@@ -170,7 +170,7 @@ sub create {
     my %args = (
         content     => undef,
         Queue       => 0,
-        Description => '[no description]',
+        description => '[no description]',
         type => 'Action',    #By default, template are 'Action' templates
         name => undef,
         @_
@@ -202,7 +202,7 @@ sub create {
     my $result = $self->SUPER::create(
         content     => $args{'content'},
         Queue       => $args{'Queue'},
-        Description => $args{'Description'},
+        description => $args{'description'},
         name        => $args{'name'},
     );
 
@@ -244,7 +244,7 @@ sub is_empty {
     return 1;
 }
 
-=head2 MIMEObj
+=head2 mime_obj
  
 Returns L<MIME::Entity> object parsed using L</Parse> method. Returns
 undef if last call to L</Parse> failed or never be called.
@@ -253,7 +253,7 @@ undef if last call to L</Parse> failed or never be called.
 
 sub mime_obj {
     my $self = shift;
-    return ( $self->{'MIMEObj'} );
+    return ( $self->{'mime_obj'} );
 }
 
 # {{{ sub Parse
@@ -274,7 +274,7 @@ sub mime_obj {
          
 This routine performs L<Text::Template> parsing on the template and then
 imports the results into a L<MIME::Entity> so we can really use it. Use
-L</MIMEObj> method to get the L<MIME::Entity> object.
+L</mime_obj> method to get the L<MIME::Entity> object.
  
 Takes a hash containing Argument, ticket_obj, and transaction_obj and other
 arguments that will be available in the template's code.
@@ -288,7 +288,7 @@ sub parse {
     my $self = shift;
 
     # clear prev MIME object
-    $self->{'MIMEObj'} = undef;
+    $self->{'mime_obj'} = undef;
 
     #We're passing in whatever we were passed. it's destined for _ParseContent
     my ( $content, $msg ) = $self->_parse_content(@_);
@@ -314,14 +314,14 @@ sub parse {
 
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
-    $self->{'MIMEObj'} = eval { $parser->parse_data($content) };
+    $self->{'mime_obj'} = eval { $parser->parse_data($content) };
     if ( my $error = $@ || $parser->last_error ) {
         Jifty->log->error("$error");
         return ( 0, $error );
     }
 
     # Unfold all headers
-    $self->{'MIMEObj'}->head->unfold;
+    $self->{'mime_obj'}->head->unfold;
 
     return ( 1, _("Template parsed") );
 

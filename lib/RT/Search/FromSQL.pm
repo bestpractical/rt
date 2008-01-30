@@ -52,7 +52,7 @@
 
 =head1 SYNOPSIS
 
-=head1 DESCRIPTION
+=head1 description
 
 Find all tickets described by the SQL statement passed as an argument
 

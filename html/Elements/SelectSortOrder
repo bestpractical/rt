@@ -60,6 +60,6 @@ my @order_names = (_('Ascending'), loc('Descending'));
 </%INIT>
 
 <%ARGS>
-$name => 'SortOrder'
+$name => 'sort_order'
 $Default => 'ASC'
 </%ARGS>

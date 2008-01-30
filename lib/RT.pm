@@ -47,7 +47,7 @@ RT - Request Tracker
 
 A fully featured request tracker package
 
-=head1 DESCRIPTION
+=head1 description
 
 =head2 INITIALIZATION
 

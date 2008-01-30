@@ -52,7 +52,7 @@
 
 =head1 SYNOPSIS
 
-=head1 DESCRIPTION
+=head1 description
 
 
 =head1 METHODS
@@ -270,7 +270,7 @@ sub limit {
 
 =head2 items_order_by
 
-If it has a SortOrder attribute, sort the array by SortOrder.
+If it has a sort_order attribute, sort the array by sort_order.
 Otherwise, if it has a "name" attribute, sort alphabetically by name
 Otherwise, just give up and return it in the order it came from the
 db.
@@ -281,7 +281,7 @@ sub items_order_by {
     my $self  = shift;
     my $items = shift;
 
-    if ( $self->new_item()->can('SortOrder') ) {
+    if ( $self->new_item()->can('sort_order') ) {
         $items = [ sort { $a->sort_order <=> $b->sort_order } @{$items} ];
     } elsif ( $self->new_item()->can('name') ) {
         $items = [ sort { lc( $a->name ) cmp lc( $b->name ) } @{$items} ];

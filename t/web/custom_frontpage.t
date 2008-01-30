@@ -26,7 +26,7 @@ $m->get ( $url."Search/Build.html");
 $m->form_name ('BuildQuery');
 
 $m->field ( "ValueOfAttachment" => 'stupid');
-$m->field ( "SavedSearchDescription" => 'stupid tickets');
+$m->field ( "SavedSearchdescription" => 'stupid tickets');
 $m->click_button (name => 'SavedSearchSave');
 
 $m->get ( $url.'Prefs/MyRT.html' );

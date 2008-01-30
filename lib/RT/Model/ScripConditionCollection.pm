@@ -55,7 +55,7 @@
   use RT::Model::ScripConditionCollection;
 
 
-=head1 DESCRIPTION
+=head1 description
 
 
 

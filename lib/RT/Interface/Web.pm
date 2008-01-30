@@ -280,7 +280,7 @@ sub create_ticket {
     my $starts = RT::Date->new();
     $starts->set( Format => 'unknown', value => $ARGS{'starts'} );
 
-    my $MIMEObj = make_mime_entity(
+    my $mime_obj = make_mime_entity(
         subject => $ARGS{'subject'},
         From    => $ARGS{'From'},
         Cc      => $ARGS{'Cc'},
@@ -289,7 +289,7 @@ sub create_ticket {
     );
 
     if ( $ARGS{'Attachments'} ) {
-        my $rv = $MIMEObj->make_multipart;
+        my $rv = $mime_obj->make_multipart;
         Jifty->log->error("Couldn't make multipart message")
             if !$rv || $rv !~ /^(?:DONE|ALREADY)$/;
 
@@ -298,12 +298,12 @@ sub create_ticket {
                 Jifty->log->error("Couldn't add empty attachemnt");
                 next;
             }
-            $MIMEObj->add_part($_);
+            $mime_obj->add_part($_);
         }
     }
 
     foreach my $argument (qw(Encrypt Sign)) {
-        $MIMEObj->head->add( "X-RT-$argument" => $ARGS{$argument} )
+        $mime_obj->head->add( "X-RT-$argument" => $ARGS{$argument} )
             if defined $ARGS{$argument};
     }
 
@@ -325,7 +325,7 @@ sub create_ticket {
         Status           => $ARGS{'Status'},
         Due              => $due->iso,
         starts           => $starts->iso,
-        MIMEObj          => $MIMEObj
+        mime_obj          => $mime_obj
     );
 
     my @temp_squelch;
@@ -573,7 +573,7 @@ sub process_update_message {
         BccMessageTo => $bcc,
         Sign         => $args{ARGSRef}->{'Sign'},
         Encrypt      => $args{ARGSRef}->{'Encrypt'},
-        MIMEObj      => $Message,
+        mime_obj      => $Message,
         time_taken    => $args{ARGSRef}->{'UpdateTimeWorked'}
     );
 
@@ -593,14 +593,14 @@ sub process_update_message {
 
     my @results;
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
-        my ( $Transaction, $Description, $Object )
+        my ( $Transaction, $description, $Object )
             = $args{ticket_obj}->comment(%message_args);
-        push( @results, $Description );
+        push( @results, $description );
         $Object->update_custom_fields( ARGSRef => $args{ARGSRef} ) if $Object;
     } elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
-        my ( $Transaction, $Description, $Object )
+        my ( $Transaction, $description, $Object )
             = $args{ticket_obj}->correspond(%message_args);
-        push( @results, $Description );
+        push( @results, $description );
         $Object->update_custom_fields( ARGSRef => $args{ARGSRef} ) if $Object;
     } else {
         push( @results,
@@ -823,7 +823,7 @@ sub process_custom_field_updates {
     my $Object  = $args{'CustomFieldObj'};
     my $ARGSRef = $args{'ARGSRef'};
 
-    my @attribs = qw(name type Description Queue SortOrder);
+    my @attribs = qw(name type description Queue sort_order);
     my @results = update_record_object(
         AttributesRef => \@attribs,
         Object        => $Object,
@@ -834,8 +834,8 @@ sub process_custom_field_updates {
     if ( $ARGSRef->{"$prefix-AddValue-name"} ) {
         my ( $addval, $addmsg ) = $Object->add_value(
             name        => $ARGSRef->{"$prefix-AddValue-name"},
-            Description => $ARGSRef->{"$prefix-AddValue-Description"},
-            SortOrder   => $ARGSRef->{"$prefix-AddValue-SortOrder"},
+            description => $ARGSRef->{"$prefix-AddValue-Description"},
+            sort_order   => $ARGSRef->{"$prefix-AddValue-sort_order"},
         );
         push( @results, $addmsg );
     }
@@ -853,7 +853,7 @@ sub process_custom_field_updates {
 
     my $vals = $Object->values();
     while ( my $cfv = $vals->next() ) {
-        if ( my $so = $ARGSRef->{ "$prefix-SortOrder" . $cfv->id } ) {
+        if ( my $so = $ARGSRef->{ "$prefix-sort_order" . $cfv->id } ) {
             if ( $cfv->sort_order != $so ) {
                 my ( $err, $msg ) = $cfv->set_sort_order($so);
                 push( @results, $msg );

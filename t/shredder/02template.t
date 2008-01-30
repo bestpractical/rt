@@ -56,7 +56,7 @@ diag 'template used in scrip' if $ENV{'TEST_VERBOSE'};
 
     my $scrip = RT::Model::Scrip->new(current_user => RT->system_user );
     ($id, $msg) = $scrip->create(
-        Description    => 'my scrip',
+        description    => 'my scrip',
         Queue          => 'General',
         ScripCondition => 'On Create',
         ScripAction    => 'Open Tickets',

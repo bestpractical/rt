@@ -66,7 +66,7 @@ use File::Temp qw/tempdir/;
 =head1 SYNOPSIS
 
 
-=head1 DESCRIPTION
+=head1 description
 
 
 

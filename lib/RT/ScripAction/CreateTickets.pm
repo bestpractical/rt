@@ -72,7 +72,7 @@ Create one or more tickets according to an externally supplied template.
  so they can finish their work
  ENDOFCONTENT
 
-=head1 DESCRIPTION
+=head1 description
 
 
 Using the "CreateTickets" ScripAction and mandatory dependencies, RT now has 
@@ -493,31 +493,31 @@ sub update_by_template {
             $self->update_custom_fields( $T::Tickets{$template_id},
             $ticketargs );
 
-        next unless $ticketargs->{'MIMEObj'};
+        next unless $ticketargs->{'mime_obj'};
         if ( $ticketargs->{'UpdateType'} =~ /^(private|comment)$/i ) {
-            my ( $Transaction, $Description, $Object )
+            my ( $Transaction, $description, $Object )
                 = $T::Tickets{$template_id}->comment(
                 BccMessageTo => $ticketargs->{'Bcc'},
-                MIMEObj      => $ticketargs->{'MIMEObj'},
+                mime_obj      => $ticketargs->{'mime_obj'},
                 time_taken    => $ticketargs->{'time_worked'}
                 );
             push( @results,
                 $T::Tickets{$template_id}
                     ->_( "Ticket %1", $T::Tickets{$template_id}->id ) . ': '
-                    . $Description );
+                    . $description );
         } elsif (
             $ticketargs->{'UpdateType'} =~ /^(public|response|correspond)$/i )
         {
-            my ( $Transaction, $Description, $Object )
+            my ( $Transaction, $description, $Object )
                 = $T::Tickets{$template_id}->correspond(
                 BccMessageTo => $ticketargs->{'Bcc'},
-                MIMEObj      => $ticketargs->{'MIMEObj'},
+                mime_obj      => $ticketargs->{'mime_obj'},
                 time_taken    => $ticketargs->{'time_worked'}
                 );
             push( @results,
                 $T::Tickets{$template_id}
                     ->_( "Ticket %1", $T::Tickets{$template_id}->id ) . ': '
-                    . $Description );
+                    . $description );
         } else {
             push(
                 @results,
@@ -773,12 +773,12 @@ sub parse_lines {
     );
 
     if ( $args{content} ) {
-        my $mimeobj = MIME::Entity->new();
-        $mimeobj->build(
+        my $mime_obj = MIME::Entity->new();
+        $mime_obj->build(
             type => $args{'contenttype'} || 'text/plain',
             Data => $args{'content'}
         );
-        $ticketargs{MIMEObj} = $mimeobj;
+        $ticketargs{mime_obj} = $mime_obj;
         $ticketargs{UpdateType} = $args{'updatetype'} || 'correspond';
     }
 

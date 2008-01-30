@@ -54,7 +54,7 @@ rtx-validator - Script that allow validate rt database
 
 rtx-validator -o Ticket-100
 
-=head1 DESCRIPTION
+=head1 description
 
 =head2 OPTIONS
 
@@ -95,9 +95,9 @@ $obj->validate_relations( Shredder => $shredder );
 foreach my $record( values %{ $shredder->{'Cache'} } ) {
 	next unless( $record->{'State'} & INVALID );
 	print STDERR $record->{'Object'}->_as_string ." is invalid\n";
-	print STDERR "\t". (ref($record->{'Description'}) ?
-			join( "\n\t", @{$record->{'Description'}} ) :
-			$record->{'Description'})
+	print STDERR "\t". (ref($record->{'description'}) ?
+			join( "\n\t", @{$record->{'description'}} ) :
+			$record->{'description'})
 		."\n";
 }
 

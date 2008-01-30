@@ -50,7 +50,7 @@
 
 RT::Condition::Overdue
 
-=head1 DESCRIPTION
+=head1 description
 
 Returns true if the ticket we're operating on is overdue
 

@@ -54,7 +54,7 @@
 
   use RT::Model::CustomFieldCollection;
 
-=head1 DESCRIPTION
+=head1 description
 
 =head1 METHODS
 
@@ -255,7 +255,7 @@ sub limit_to_global_orobject_id {
 
     $self->order_by(
         { alias => $self->ocf_alias, column => 'object_id', order => 'DESC' },
-        { alias => $self->ocf_alias, column => 'SortOrder' },
+        { alias => $self->ocf_alias, column => 'sort_order' },
     );
 
 # This doesn't work on postgres.

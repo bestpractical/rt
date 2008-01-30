@@ -83,7 +83,7 @@ foreach my $class (@classes) {
     if ($class eq 'CustomFields') {
         $objects->order_by(
             { column => 'LookupType' },
-            { column => 'SortOrder' },
+            { column => 'sort_order' },
             { column => 'id' },
         );
     }
@@ -139,7 +139,7 @@ foreach my $class (@classes) {
 	    while (my $value = $values->next) {
 		push @{$rv->{Values}}, {
 		    map { ($_ => $value->__value($_)) } qw(
-			name Description SortOrder
+			name description sort_order
 		    ),
 		};
 	    }

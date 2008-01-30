@@ -110,7 +110,7 @@ sub create_transaction {
 
     my ( $trans, $desc, $transaction )
         = $self->{'ticket_obj'}
-        ->correspond( MIMEObj => $self->template_obj->MIMEObj );
+        ->correspond( mime_obj => $self->template_obj->mime_obj );
     $self->{'transaction_obj'} = $transaction;
 }
 

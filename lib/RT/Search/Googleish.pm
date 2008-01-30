@@ -53,7 +53,7 @@
 
 =head1 SYNOPSIS
 
-=head1 DESCRIPTION
+=head1 description
 
 Use the argument passed in as a "Google-style" set of keywords
 

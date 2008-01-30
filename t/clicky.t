@@ -39,7 +39,7 @@ my $ticket = RT::Model::Ticket->new( $CurrentUser );
 my ($id) = $ticket->create(
     subject => 'test',
     Queue => $queue->id,
-    MIMEObj => $message,
+    mime_obj => $message,
 );
 ok($id, "We Created a ticket #$id");
 ok($ticket->transactions->first->content, "Has some content");

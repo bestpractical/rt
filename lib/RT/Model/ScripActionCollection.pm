@@ -55,7 +55,7 @@
   use RT::Model::ScripActionCollection;
 
 
-=head1 DESCRIPTION
+=head1 description
 
 
 

@@ -1,10 +1,10 @@
 @ScripActions = (
     { name        => 'Notify Ccs as comment',              # loc
-      Description => 'Sends mail to the Ccs as a comment', # loc
+      description => 'Sends mail to the Ccs as a comment', # loc
       ExecModule  => 'NotifyAsComment',
       Argument    => 'Cc' },
     { name        => 'Notify Ccs',                                   # loc
-      Description => 'Sends mail to the Ccs',                        # loc
+      description => 'Sends mail to the Ccs',                        # loc
       ExecModule  => 'Notify',
       Argument    => 'Cc' },
 );
@@ -13,7 +13,7 @@
 @ScripConditions = (
     {
       name                 => 'On Priority Change',                       # loc
-      Description          => 'Whenever a ticket\'s priority changes',    # loc
+      description          => 'Whenever a ticket\'s priority changes',    # loc
       ApplicableTransTypes => 'Set',
       ExecModule           => 'PriorityChange',
     },

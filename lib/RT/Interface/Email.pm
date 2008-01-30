@@ -79,7 +79,7 @@ BEGIN {
         &ParseSenderAddressFromHead
         &ParseErrorsToAddressFromHead
         &parse_address_from_header
-        &Gateway);
+        &gateway);
 
 }
 
@@ -92,9 +92,9 @@ BEGIN {
   use lib "!!RT_LIB_PATH!!";
   use lib "!!RT_ETC_PATH!!";
 
-  use RT::Interface::Email  qw(Gateway create_user);
+  use RT::Interface::Email  qw(gateway create_user);
 
-=head1 DESCRIPTION
+=head1 description
 
 
 
@@ -237,7 +237,7 @@ Sends an error message. Takes a param hash:
 
 =item Explanation - main content of the error, default value is 'Unexplained error';
 
-=item MIMEObj - optional MIME entity that's attached to the error mail, as well we
+=item mime_obj - optional MIME entity that's attached to the error mail, as well we
 add 'In-Reply-To' field to the error that points to this message.
 
 =item Attach - optional text that attached to the error as 'message/rfc822' part.
@@ -256,7 +256,7 @@ sub mail_error {
         From        => RT->config->get('correspond_address'),
         subject     => 'There has been an error',
         Explanation => 'Unexplained error',
-        MIMEObj     => undef,
+        mime_obj     => undef,
         Attach      => undef,
         LogLevel    => 'error',
         @_
@@ -275,13 +275,13 @@ sub mail_error {
         'Precedence:'           => 'bulk',
         'X-RT-Loop-Prevention:' => RT->config->get('rtname'),
     );
-    SetInReplyTo( Message => $entity, InReplyTo => $args{'MIMEObj'} );
+    SetInReplyTo( Message => $entity, InReplyTo => $args{'mime_obj'} );
 
     $entity->attach( Data => $args{'Explanation'} . "\n" );
 
-    if ( $args{'MIMEObj'} ) {
-        $args{'MIMEObj'}->sync_headers;
-        $entity->add_part( $args{'MIMEObj'} );
+    if ( $args{'mime_obj'} ) {
+        $args{'mime_obj'}->sync_headers;
+        $entity->add_part( $args{'mime_obj'} );
     }
 
     if ( $args{'Attach'} ) {
@@ -517,7 +517,7 @@ sub send_email {
 Loads a template. Parses it using arguments if it's not empty.
 Returns a tuple (L<RT::Model::Template> object, error message).
 
-Note that even if a template object is returned MIMEObj method
+Note that even if a template object is returned mime_obj method
 may return undef for empty templates.
 
 =cut
@@ -676,7 +676,7 @@ sub forward_transaction {
     $mail->attach(
         type        => 'message/rfc822',
         Disposition => 'attachment',
-        Description => 'forwarded message',
+        description => 'forwarded message',
         Data        => $entity->as_string,
     );
 
@@ -842,7 +842,7 @@ sub create_user {
                 subject => "User could not be Created",
                 Explanation =>
                     "User creation failed in mailgateway: $Message",
-                MIMEObj  => $entity,
+                mime_obj  => $entity,
                 LogLevel => 'error',
             );
         }
@@ -858,7 +858,7 @@ sub create_user {
             subject => "User could not be loaded",
             Explanation =>
                 "User  '$Address' could not be loaded in the mail gateway",
-            MIMEObj  => $entity,
+            mime_obj  => $entity,
             LogLevel => 'error'
         );
     }
@@ -1100,7 +1100,7 @@ sub add_subject_tag {
     return "[" . RT->config->get('rtname') . " #$id] $subject";
 }
 
-=head2 Gateway ARGSREF
+=head2 gateway ARGSREF
 
 
 Takes parameters:
@@ -1178,7 +1178,7 @@ sub gateway {
     my $Right;
 
     # Validate the action
-    my ( $status, @actions ) = IsCorrectAction( $args{'action'} );
+    my ( $status, @actions ) = is_correct_action( $args{'action'} );
     unless ($status) {
         return (
             -75,
@@ -1212,7 +1212,7 @@ sub gateway {
 
     my @mail_plugins = grep $_, RT->config->get('MailPlugins');
     push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
-    @mail_plugins = _LoadPlugins(@mail_plugins);
+    @mail_plugins = _load_plugins(@mail_plugins);
 
     my %skip_plugin;
     foreach my $class ( grep !ref, @mail_plugins ) {
@@ -1377,7 +1377,7 @@ sub gateway {
             subject => "Permission Denied",
             Explanation =>
                 "You do not have permission to communicate with RT",
-            MIMEObj => $Message
+            mime_obj => $Message
         );
         return (
             0,
@@ -1415,14 +1415,14 @@ sub gateway {
             subject   => $subject,
             Requestor => \@Requestors,
             Cc        => \@Cc,
-            MIMEObj   => $Message
+            mime_obj   => $Message
         );
         if ( $id == 0 ) {
             MailError(
                 To          => $ErrorsTo,
                 subject     => "Ticket creation failed: $subject",
                 Explanation => $ErrStr,
-                MIMEObj     => $Message
+                mime_obj     => $Message
             );
             return ( 0, "Ticket creation failed: $ErrStr", $Ticket );
         }
@@ -1441,7 +1441,7 @@ sub gateway {
                 To          => $ErrorsTo,
                 subject     => "Message not recorded: $subject",
                 Explanation => $error,
-                MIMEObj     => $Message
+                mime_obj     => $Message
             );
 
             return ( 0, $error );
@@ -1459,7 +1459,7 @@ sub gateway {
         #   If the action is comment, add a comment.
         if ( $action =~ /^(?:comment|correspond)$/i ) {
             my $method = lc $action;
-            my ( $status, $msg ) = $Ticket->$method( MIMEObj => $Message );
+            my ( $status, $msg ) = $Ticket->$method( mime_obj => $Message );
             unless ($status) {
 
                 #Warn the sender that we couldn't actually submit the comment.
@@ -1467,7 +1467,7 @@ sub gateway {
                     To          => $ErrorsTo,
                     subject     => "Message not recorded: $subject",
                     Explanation => $msg,
-                    MIMEObj     => $Message
+                    mime_obj     => $Message
                 );
                 return ( 0, "Message not recorded: $msg", $Ticket );
             }
@@ -1503,7 +1503,7 @@ sub _run_unsafe_action {
                 To          => $args{'ErrorsTo'},
                 subject     => "Ticket not taken",
                 Explanation => $msg,
-                MIMEObj     => $args{'Message'}
+                mime_obj     => $args{'Message'}
             );
             return ( 0, "Ticket not taken" );
         }
@@ -1516,7 +1516,7 @@ sub _run_unsafe_action {
                 To          => $args{'ErrorsTo'},
                 subject     => "Ticket not resolved",
                 Explanation => $msg,
-                MIMEObj     => $args{'Message'}
+                mime_obj     => $args{'Message'}
             );
             return ( 0, "Ticket not resolved" );
         }
@@ -1554,7 +1554,7 @@ You might need to grant 'Everyone' the right '@{[$args{Right}]}' for the
 queue @{[$args{'Queue'}]}.
 
 EOT
-        MIMEObj  => $args{'Message'},
+        mime_obj  => $args{'Message'},
         LogLevel => 'error'
     );
 
@@ -1568,7 +1568,7 @@ RT could not load a valid user, and RT's configuration does not allow
 for the creation of a new user for your email.
 
 EOT
-            MIMEObj  => $args{'Message'},
+            mime_obj  => $args{'Message'},
             LogLevel => 'error'
         );
     }
@@ -1628,7 +1628,7 @@ sub _handle_machine_generated_mail {
                 To          => $owner_mail,
                 subject     => "RT Bounce: " . $args{'subject'},
                 Explanation => "RT thinks this message may be a bounce",
-                MIMEObj     => $args{Message}
+                mime_obj     => $args{Message}
             );
         }
 
@@ -1661,7 +1661,7 @@ sub _handle_machine_generated_mail {
     return ( 1, $ErrorsTo, "Handled machine detection", $IsALoop );
 }
 
-=head2 IsCorrectAction
+=head2 is_correct_action
 
 Returns a list of valid actions we've found for this message
 

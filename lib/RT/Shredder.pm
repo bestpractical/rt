@@ -62,7 +62,7 @@ RT::Shredder - Permanently wipeout data from RT
   rt-shredder --force --plugin 'Tickets=queue,general;status,deleted'
 
 
-=head1 DESCRIPTION
+=head1 description
 
 RT::Shredder is extention to RT which allows you to permanently wipeout
 data from the RT database.  Shredder supports the wiping of almost

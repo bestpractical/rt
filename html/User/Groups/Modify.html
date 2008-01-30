@@ -69,7 +69,7 @@
 <td><input name="name" value="<%$Group->name%>" /></td>
 </tr><tr>
 <td align="right">
-<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->description%>" size="60" /></td>
+<&|/l&>description</&>:</td><td colspan="3"><input name="description" value="<%$Group->description%>" size="60" /></td>
 </tr><tr>
 <td colspan="2">
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
@@ -121,7 +121,7 @@ else {
 
 if ($id) {
     
-    my @fields = qw(Description name );
+    my @fields = qw(description name );
     my @fieldresults = update_record_object ( AttributesRef => \@fields,
 					    Object => $Group,
 					    ARGSRef => \%ARGS );
@@ -150,7 +150,7 @@ unless ($Group->disabled()) {
 <%ARGS>
 $Create => undef
 $name => undef
-$Description => undef
+$description => undef
 $SetEnabled => undef
 $Enabled => undef
 $id => undef

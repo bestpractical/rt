@@ -11,7 +11,7 @@ use RT;
 
 my $scrip_queue = RT::Model::Queue->new(current_user => RT->system_user);
 my ($queue_id, $msg) = $scrip_queue->create( name => "ScripOrdering-$$", 
-    Description => 'Test scrip ordering by description' );
+    description => 'Test scrip ordering by description' );
 ok($queue_id, "Created scrip-ordering test queue? ".$msg);
 
 my $priority_ten_scrip = RT::Model::Scrip->new(current_user => RT->system_user);

@@ -72,7 +72,7 @@ $values->limit(
 );
 $values->limit(
     entry_aggregator => 'OR',
-    column           => 'Description',
+    column           => 'description',
     operator        => 'LIKE',
     value           => $value,
     subclause       => 'autcomplete',

@@ -164,7 +164,7 @@ sub __Relates {
         my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
-        $rec->{'Description'}
+        $rec->{'description'}
             = "Have no related Principal #" . $self->member_id . " object.";
     }
 
@@ -175,7 +175,7 @@ sub __Relates {
         my $rec = $args{'Shredder'}->get_record( Object => $self );
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
-        $rec->{'Description'}
+        $rec->{'description'}
             = "Have no related Principal #" . $self->group_id . " object.";
     }
 

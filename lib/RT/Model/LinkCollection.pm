@@ -55,7 +55,7 @@
   use RT::Model::LinkCollection;
   my $links = RT::Model::LinkCollection->new($CurrentUser);
 
-=head1 DESCRIPTION
+=head1 description
 
 
 =head1 METHODS

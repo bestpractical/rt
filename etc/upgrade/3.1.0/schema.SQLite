@@ -2,7 +2,7 @@
 CREATE TABLE Attributes (
   id INTEGER PRIMARY KEY  ,
   name varchar(255) NOT NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   Content LONGTEXT NULL  ,
   content_type varchar(16),
   object_type varchar(25) NOT NULL  ,

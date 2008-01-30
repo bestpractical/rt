@@ -11,17 +11,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: html/Widgets/SavedSearch:70
-#. ($self->{CurrentSearch}{Object}->Description)
+#. ($self->{CurrentSearch}{Object}->description)
 msgid " %1 deleted."
 msgstr ""
 
 #: html/Widgets/SavedSearch:47
-#. ($self->{CurrentSearch}{Description}, $args->{Description})
+#. ($self->{CurrentSearch}{description}, $args->{description})
 msgid " %1 renamed to %2."
 msgstr ""
 
 #: html/Widgets/SavedSearch:60
-#. ($args->{Description})
+#. ($args->{description})
 msgid " %1 saved."
 msgstr ""
 
@@ -213,7 +213,7 @@ msgid "%1 changed from %2 to %3"
 msgstr "%1 ble endret fra %2 til %3"
 
 #: html/Search/Build.html:213
-#. ($Description)
+#. ($description)
 msgid "%1 copy"
 msgstr "%1 kopi"
 
@@ -952,7 +952,7 @@ msgstr "April"
 msgid "Asc"
 msgstr ""
 
-#: html/Elements/SelectSortOrder:56
+#: html/Elements/Selectsort_order:56
 msgid "Ascending"
 msgstr "Stigende"
 
@@ -2015,7 +2015,7 @@ msgstr "AvhengigAv"
 msgid "Desc"
 msgstr ""
 
-#: html/Elements/SelectSortOrder:56
+#: html/Elements/Selectsort_order:56
 msgid "Descending"
 msgstr "Synkende"
 
@@ -2024,7 +2024,7 @@ msgid "Describe the issue below"
 msgstr "Beskriv problemet under"
 
 #: html/Admin/CustomFields/Modify.html:61 html/Admin/Elements/AddCustomFieldValue:57 html/Admin/Elements/EditCustomField:60 html/Admin/Elements/EditCustomFieldValues:56 html/Admin/Elements/EditScrip:55 html/Admin/Elements/ModifyTemplate:57 html/Admin/Groups/Modify.html:71 html/Admin/Queues/Modify.html:69 html/Search/Elements/EditSearches:56 html/User/Groups/Modify.html:70
-msgid "Description"
+msgid "description"
 msgstr "Beskrivelse"
 
 #: NOT FOUND IN SOURCE
@@ -5212,7 +5212,7 @@ msgid "Sort results by"
 msgstr "Sorter resultater etter"
 
 #: NOT FOUND IN SOURCE
-msgid "SortOrder"
+msgid "sort_order"
 msgstr "SorteringsRekkefølge"
 
 #: html/Admin/Elements/EditScrip:78
@@ -6295,7 +6295,7 @@ msgid "allow loading of saved searches"
 msgstr ""
 
 #: html/User/Elements/DelegateRights:80
-#. ($right->principal_object->object->SelfDescription)
+#. ($right->principal_object->object->Selfdescription)
 msgid "as granted to %1"
 msgstr "som tildelt til %1"
 

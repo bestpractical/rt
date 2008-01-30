@@ -250,7 +250,7 @@ using a C<%args> hash to store them:
 
         my $self = shift;
         my %args = ( name => undef,
-                     Description => undef,
+                     description => undef,
                      @_ );
 
 You may specify defaults to those named parameters instead of using

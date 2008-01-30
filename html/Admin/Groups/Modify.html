@@ -70,7 +70,7 @@
 </tr>
 <tr>
 <td align="right">
-<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->description%>" size="60" /></td>
+<&|/l&>description</&>:</td><td colspan="3"><input name="description" value="<%$Group->description%>" size="60" /></td>
 </tr>
 % my $CFs = $Group->custom_fields;
 % while (my $CF = $CFs->next) {
@@ -136,7 +136,7 @@ else {
 
 if ($id) {
     
-    my @fields = qw(Description name );
+    my @fields = qw(description name );
     my @fieldresults = update_record_object ( AttributesRef => \@fields,
 					    Object => $Group,
 					    ARGSRef => \%ARGS );
@@ -167,7 +167,7 @@ unless ($Group->disabled()) {
 <%ARGS>
 $Create => undef
 $name => undef
-$Description => undef
+$description => undef
 $SetEnabled => undef
 $Enabled => undef
 $id => '' unless defined $id

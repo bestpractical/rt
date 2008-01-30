@@ -128,15 +128,15 @@ my $Message = make_mime_entity(
     Body    => $ARGS{'UpdateContent'},
 );
 
-my ( $Transaction, $Description, $Object ) = $ticket_obj->$action(
+my ( $Transaction, $description, $Object ) = $ticket_obj->$action(
     CcMessageTo  => $ARGS{'UpdateCc'},
     BccMessageTo => $ARGS{'UpdateBcc'},
-    MIMEObj      => $Message,
+    mime_obj      => $Message,
     time_taken    => $ARGS{'UpdateTimeWorked'},
     DryRun       => 1
 );
 unless ( $Transaction ) {
-    Jifty->log->error("Coulfn't fire '$action' action: $Description");
+    Jifty->log->error("Coulfn't fire '$action' action: $description");
 }
 
 
@@ -167,7 +167,7 @@ my $Message = make_mime_entity(
 my ( $id, $msg, $txn ) = $ticket_obj->$action(
     CcMessageTo  => $ARGS{'UpdateCc'},
     BccMessageTo => $ARGS{'UpdateBcc'},
-    MIMEObj      => $Message,
+    mime_obj      => $Message,
     time_taken    => $ARGS{'UpdateTimeWorked'},
     DryRun       => 1
 );
@@ -213,7 +213,7 @@ my ( $id, $txn, $msg ) = $ticket_obj->create(
     time_worked      => $ARGS{'time_worked'},
     subject         => $ARGS{'subject'},
     Status          => $ARGS{'Status'},
-    MIMEObj      => $Message,
+    mime_obj      => $Message,
     DryRun       => 1
 );
 unless ( $id && $txn ) {

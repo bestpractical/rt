@@ -84,11 +84,11 @@ like($agent->{'content'} , qr/input\s+type=['"]submit['"][^>]+name=['"]SavedSear
 
 my $queue_obj = RT::Model::Queue->new(current_user => RT->system_user);
 ($ret, $msg) = $queue_obj->create(name => 'CustomerQueue-'.$$, 
-				  Description => 'queue for SelectOwner testing');
+				  description => 'queue for SelectOwner testing');
 ok($ret, "SelectOwner test queue creation. $msg");
 my $group_obj = RT::Model::Group->new(current_user => RT->system_user);
 ($ret, $msg) = $group_obj->create_user_defined_group(name => 'CustomerGroup-'.$$,
-			      Description => 'group for SelectOwner testing');
+			      description => 'group for SelectOwner testing');
 ok($ret, "SelectOwner test group creation. $msg");
 
 # Add our customer to the customer group, and give it queue rights.

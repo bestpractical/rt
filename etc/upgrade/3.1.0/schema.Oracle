@@ -2,7 +2,7 @@ CREATE SEQUENCE ATTRIBUTES_seq;
 CREATE TABLE Attributes (
 	id 			NUMBER(11,0) PRIMARY KEY,
 	name 			VARCHAR2(255) NOT NULL,
-	Description 		VARCHAR2(255),
+	description 		VARCHAR2(255),
   	Content 	CLOB,
     content_type VARCHAR(16),
 	object_type	VARCHAR2(25) NOT NULL,

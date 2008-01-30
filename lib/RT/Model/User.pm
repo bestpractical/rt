@@ -13,7 +13,7 @@ use base qw/RT::Record/;
 
   use RT::Model::User;
 
-=head1 DESCRIPTION
+=head1 description
 
 
 =head1 METHODS

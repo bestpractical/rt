@@ -50,7 +50,7 @@
 
   RT::ScripAction::EscalatePriority
 
-=head1 DESCRIPTION
+=head1 description
 
 EscalatePriority is a ScripAction which is NOT intended to be called
 per transaction. It's intended to be called by an RT escalation tool.

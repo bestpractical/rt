@@ -47,12 +47,12 @@ CREATE SEQUENCE queues_id_seq;
 CREATE TABLE Queues (
   id INTEGER DEFAULT nextval('queues_id_seq'),
   name varchar(200) NOT NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   correspond_address varchar(120) NULL  ,
   comment_address varchar(120) NULL  ,
   initial_priority integer NOT NULL DEFAULT 0  ,
   final_priority integer NOT NULL DEFAULT 0  ,
-  DefaultDueIn integer NOT NULL DEFAULT 0  ,
+  default_due_in integer NOT NULL DEFAULT 0  ,
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
@@ -131,7 +131,7 @@ CREATE SEQUENCE groups_id_seq;
 CREATE TABLE Groups (
   id INTEGER DEFAULT nextval('groups_id_seq'),
   name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   domain varchar(64),
   type varchar(64),
   instance integer,
@@ -157,7 +157,7 @@ CREATE SEQUENCE scripconditions_id_seq;
 CREATE TABLE ScripConditions (
   id INTEGER DEFAULT nextval('scripconditions_id_seq'),
   name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
   ApplicableTransTypes varchar(60) NULL  ,
@@ -216,7 +216,7 @@ CREATE SEQUENCE scrips_id_seq;
 
 CREATE TABLE Scrips (
   id INTEGER DEFAULT nextval('scrips_id_seq'),
-  Description varchar(255),
+  description varchar(255),
   ScripCondition integer NOT NULL DEFAULT 0  ,
   ScripAction integer NOT NULL DEFAULT 0  ,
   ConditionRules text NULL  ,
@@ -434,7 +434,7 @@ CREATE SEQUENCE scripactions_id_seq;
 CREATE TABLE ScripActions (
   id INTEGER DEFAULT nextval('scripactions_id_seq'),
   name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   ExecModule varchar(60) NULL  ,
   Argument varchar(255) NULL  ,
   Creator integer NOT NULL DEFAULT 0  ,
@@ -461,7 +461,7 @@ CREATE TABLE Templates (
   id INTEGER DEFAULT nextval('templates_id_seq'),
   Queue integer NOT NULL DEFAULT 0 ,
   name varchar(200) NOT NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   type varchar(16) NULL  ,
   Language varchar(16) NULL  ,
   TranslationOf integer NOT NULL DEFAULT 0  ,
@@ -491,7 +491,7 @@ CREATE TABLE Objectcustom_field_values (
   CustomField int NOT NULL  ,
   object_type varchar(255) NULL  ,
   object_id int NOT NULL  ,
-  SortOrder integer NOT NULL DEFAULT 0  ,
+  sort_order integer NOT NULL DEFAULT 0  ,
 
   Content varchar(255) NULL  ,
   LargeContent text NULL,
@@ -530,8 +530,8 @@ CREATE TABLE CustomFields (
   Repeated integer NOT NULL DEFAULT 0 , 
   Pattern varchar(65536) NULL  ,
   LookupType varchar(255) NOT NULL  ,
-  Description varchar(255) NULL  ,
-  SortOrder integer NOT NULL DEFAULT 0  ,
+  description varchar(255) NULL  ,
+  sort_order integer NOT NULL DEFAULT 0  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
@@ -552,7 +552,7 @@ CREATE TABLE ObjectCustomFields (
   id INTEGER DEFAULT nextval('objectcustomfields_id_s'),
   CustomField integer NOT NULL,
   object_id integer NOT NULL,
-  SortOrder integer NOT NULL DEFAULT 0  ,
+  sort_order integer NOT NULL DEFAULT 0  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
@@ -578,8 +578,8 @@ CREATE TABLE custom_field_values (
   id INTEGER DEFAULT nextval('customfieldvalues_id_seq'),
   CustomField int NOT NULL  ,
   name varchar(200) NULL  ,
-  Description varchar(255) NULL  ,
-  SortOrder integer NOT NULL DEFAULT 0  ,
+  description varchar(255) NULL  ,
+  sort_order integer NOT NULL DEFAULT 0  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,
@@ -601,7 +601,7 @@ CREATE SEQUENCE attributes_id_seq;
 CREATE TABLE Attributes (
   id INTEGER DEFAULT nextval('attributes_id_seq'),
   name varchar(255) NOT NULL  ,
-  Description varchar(255) NULL  ,
+  description varchar(255) NULL  ,
   Content text,
   content_type varchar(16),
   object_type varchar(64),

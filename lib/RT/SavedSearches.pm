@@ -54,7 +54,7 @@
 
   use RT::SavedSearch
 
-=head1 DESCRIPTION
+=head1 description
 
   SavedSearches is an object consisting of a number of SavedSearch objects.
   It works more or less like a Jifty::DBI collection, although it

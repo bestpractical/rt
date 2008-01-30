@@ -9,17 +9,17 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#. ($self->{CurrentSearch}{Object}->Description)
+#. ($self->{CurrentSearch}{Object}->description)
 #: html/Widgets/SavedSearch:70
 msgid " %1 deleted."
 msgstr " %1 slettet."
 
-#. ($self->{CurrentSearch}{Description}, $args->{Description})
+#. ($self->{CurrentSearch}{description}, $args->{description})
 #: html/Widgets/SavedSearch:47
 msgid " %1 renamed to %2."
 msgstr " %1 omdøbt til %2."
 
-#. ($args->{Description})
+#. ($args->{description})
 #: html/Widgets/SavedSearch:60
 msgid " %1 saved."
 msgstr " %1 gemt."
@@ -224,7 +224,7 @@ msgstr "%1 af %2"
 msgid "%1 changed from %2 to %3"
 msgstr "%1 ændret fra %2 til %3"
 
-#. ($Description)
+#. ($description)
 #: html/Search/Build.html:213
 msgid "%1 copy"
 msgstr "%1 kopi"
@@ -936,7 +936,7 @@ msgstr "Apr."
 msgid "Asc"
 msgstr "Stigende"
 
-#: html/Elements/SelectSortOrder:56
+#: html/Elements/Selectsort_order:56
 msgid "Ascending"
 msgstr "Stigende"
 
@@ -2062,7 +2062,7 @@ msgstr "Afhængig af"
 msgid "Desc"
 msgstr "Faldende"
 
-#: html/Elements/SelectSortOrder:56
+#: html/Elements/Selectsort_order:56
 msgid "Descending"
 msgstr "Faldende"
 
@@ -2081,7 +2081,7 @@ msgstr "Beskriv problemet nedenfor"
 #: html/Admin/Queues/Modify.html:69
 #: html/Search/Elements/EditSearches:56
 #: html/User/Groups/Modify.html:70
-msgid "Description"
+msgid "description"
 msgstr "Beskrivelse"
 
 #: NOT FOUND IN SOURCE
@@ -5597,7 +5597,7 @@ msgid "Sort results by"
 msgstr "Sorter resultat efter"
 
 #: NOT FOUND IN SOURCE
-msgid "SortOrder"
+msgid "sort_order"
 msgstr "SorteringsRækkefølge"
 
 #: html/Admin/Elements/EditScrip:78
@@ -6773,7 +6773,7 @@ msgstr "tillad oprettelse af gemte søgninger"
 msgid "allow loading of saved searches"
 msgstr "tillad indlæsning af gemte søgninger"
 
-#. ($right->principal_object->object->SelfDescription)
+#. ($right->principal_object->object->Selfdescription)
 #: html/User/Elements/DelegateRights:80
 msgid "as granted to %1"
 msgstr "som givet til %1"

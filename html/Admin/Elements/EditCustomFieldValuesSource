@@ -48,7 +48,7 @@
 <div id="values-source-class-block">
 <select name="ValuesClass">
 % foreach my $source( @sources ) {
-<option value="<% $source->{'Class'} %>" <% $source->{'Class'} eq $CustomField->values_class && 'selected' %>><% $source->{'Description'} %></option>
+<option value="<% $source->{'Class'} %>" <% $source->{'Class'} eq $CustomField->values_class && 'selected' %>><% $source->{'description'} %></option>
 % }
 </select>
 </div>
@@ -68,9 +68,9 @@ foreach my $class( 'RT::Model::CustomFieldValueCollection', RT->config->get('cus
     }
 
     my %res = ( Class => $class );
-    $res{'Description'} = $class->source_description if $class->can('SourceDescription');
-    $res{'Description'} ||= $class;
-    $res{'Description'} = 'Provide list of values below' if $class eq 'RT::Model::CustomFieldValueCollection';
+    $res{'description'} = $class->source_description if $class->can('source_description');
+    $res{'description'} ||= $class;
+    $res{'description'} = 'Provide list of values below' if $class eq 'RT::Model::CustomFieldValueCollection';
     push @sources, \%res;
 }
 

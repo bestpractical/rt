@@ -132,7 +132,7 @@ sub parse {
                 .= '>' . $match . '<--here' . substr( $string, pos($string) );
             my $msg
                 = "Wrong query, expecting a "
-                . _BitmaskToString($want)
+                . _bitmask_to_string($want)
                 . " in '$tmp'";
             return $cb->{'Error'}->($msg) if $cb->{'Error'};
             die $msg;
@@ -189,7 +189,7 @@ sub parse {
     unless ( !$last || $last & ( CLOSE_PAREN | VALUE ) ) {
         my $msg
             = "Incomplete query, last element ("
-            . _BitmaskToString($last)
+            . _bitmask_to_string($last)
             . ") is not CLOSE_PAREN or VALUE in '$string'";
         return $cb->{'Error'}->($msg) if $cb->{'Error'};
         die $msg;

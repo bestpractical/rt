@@ -52,7 +52,7 @@
 
 =head1 SYNOPSIS
 
-=head1 DESCRIPTION
+=head1 description
 
 Find all active tickets in the queue named in the argument passed in
 

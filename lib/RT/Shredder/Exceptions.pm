@@ -54,7 +54,7 @@ use Exception::Class;
 use base qw(Exception::Class::Base);
 
 BEGIN {
-    __PACKAGE__->no_refs(0);
+    __PACKAGE__->NoRefs(0);
 }
 
 #sub NoRefs { return 0 }
@@ -64,7 +64,7 @@ package RT::Shredder::Exception::Info;
 
 use base qw(RT::Shredder::Exception);
 
-my %DESCRIPTION = (
+my %description = (
     DependenciesLimit => <<END,
 Dependecies list have reached its limit.
 See \$RT::DependenciesLimit in RT::Shredder docs.
@@ -99,12 +99,12 @@ sub full_message {
     my $self  = shift;
     my $error = $self->message;
     if ( my $tag = $self->tag ) {
-        my $message = $DESCRIPTION{ $self->tag } || '';
+        my $message = $description{ $self->tag } || '';
         warn "Tag '$tag' doesn't exist" unless $message;
         $message .= "\nAdditional info:\n$error" if $error;
         return $message;
     }
-    return $DESCRIPTION{$error} || $error;
+    return $description{$error} || $error;
 }
 
 sub show_trace { return 0 }

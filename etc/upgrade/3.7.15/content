@@ -2,7 +2,7 @@
 @Templates = (
     {  Queue       => 0,
        name        => "Forward",    # loc
-       Description => "Heading of a forwarded message", # loc
+       description => "Heading of a forwarded message", # loc
        Content => q{
 
 This is forward of transaction #{ $Transaction->id } of a ticket #{ $Ticket->id }

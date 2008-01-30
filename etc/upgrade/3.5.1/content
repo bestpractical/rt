@@ -1,6 +1,6 @@
 @Attributes = (
     { name => 'Search - My Tickets',
-      Description => '%1 highest priority tickets I own',
+      description => '%1 highest priority tickets I own',
       Content     =>
       { Format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#', '<a href="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a>/TITLE:subject', Priority, Queuename, ExtendedStatus},
         Query   => " Owner = '__CurrentUser__' AND ( Status = 'new' OR Status = 'open')",
@@ -8,7 +8,7 @@
         Order   => 'DESC' },
     },
     { name => 'Search - Unowned Tickets',
-      Description => '%1 newest unowned tickets',
+      description => '%1 newest unowned tickets',
       Content     =>
       { Format => "'<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__id__</a>/TITLE:#', '<a href=\"__WebPath__/Ticket/Display.html?id=__id__\">__subject__</a>/TITLE:subject', Queuename, ExtendedStatus, CreatedRelative, '<A HREF=\"__WebPath__/Ticket/Display.html?Action=Take&id=__id__\">___(Take)__</a>/TITLE:&nbsp;' ",
         Query   => " Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
@@ -16,7 +16,7 @@
         Order   => 'DESC' },
     },
     { name => 'HomepageSettings',
-      Description => 'HomepageSettings',
+      description => 'HomepageSettings',
       Content =>
       { 'body' =>
 	[ { type => 'system', name => 'My Tickets' },
