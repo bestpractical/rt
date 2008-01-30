@@ -41,7 +41,7 @@ is(cnt(), 1, "Value filled");
 fails(del('here is a good regex'));
 is(cnt(), 1, "Single CF - Value _not_ deleted");
 
-$cf->set_MaxValues(0);   # unlimited MaxValues
+$cf->set_max_values(0);   # unlimited MaxValues
 
 works(del('here is a good regex'));
 is(cnt(), 0, "Multiple CF - Value deleted");

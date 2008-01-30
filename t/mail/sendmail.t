@@ -79,7 +79,7 @@ Foob!');
 use Data::Dumper;
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
-my  ($id,  undef, $create_msg ) = $ticket->create(Requestor => ['root@localhost'], Queue => 'general', subject => 'I18NTest', MIMEObj => $parser->Entity);
+my  ($id,  undef, $create_msg ) = $ticket->create(Requestor => ['root@localhost'], Queue => 'general', subject => 'I18NTest', MIMEObj => $parser->entity);
 ok ($id,$create_msg);
 $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tickets->order_by({column => 'id', order => 'DESC'});
@@ -132,11 +132,11 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 # If we correspond, does it do the right thing to the outbound messages?
 
 $parser->parse_mime_entity_from_scalar($content);
-  ($id, $msg) = $tick->comment(MIMEObj => $parser->Entity);
+  ($id, $msg) = $tick->comment(MIMEObj => $parser->entity);
 ok ($id, $msg);
 
 $parser->parse_mime_entity_from_scalar($content);
-($id, $msg) = $tick->correspond(MIMEObj => $parser->Entity);
+($id, $msg) = $tick->correspond(MIMEObj => $parser->entity);
 ok ($id, $msg);
 
 
@@ -175,11 +175,11 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 # If we correspond, does it do the right thing to the outbound messages?
 
 $parser->parse_mime_entity_from_scalar($content);
- ($id, $msg) = $tick->comment(MIMEObj => $parser->Entity);
+ ($id, $msg) = $tick->comment(MIMEObj => $parser->entity);
 ok ($id, $msg);
 
 $parser->parse_mime_entity_from_scalar($content);
-($id, $msg) = $tick->correspond(MIMEObj => $parser->Entity);
+($id, $msg) = $tick->correspond(MIMEObj => $parser->entity);
 ok ($id, $msg);
 
 

@@ -626,7 +626,7 @@ use RT::Model::Ticket;
 my $tick = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($id) = $tick->create( Queue => 'ext-mailgate', subject => 'test');
 ok( $id, 'new ticket Created' );
-is( $tick->Owner, RT->nobody->id, 'owner of the new ticket is nobody' );
+is( $tick->owner, RT->nobody->id, 'owner of the new ticket is nobody' );
 
 $! = 0;
 ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
@@ -649,7 +649,7 @@ is( $tick->transactions->count, 2, 'no superfluous transactions');
 my $status;
 ($status, $msg) = $tick->set_owner( RT->nobody->id, 'Force' );
 ok( $status, 'successfuly changed owner: '. ($msg||'') );
-is( $tick->Owner, RT->nobody->id, 'set owner back to nobody');
+is( $tick->owner, RT->nobody->id, 'set owner back to nobody');
 
 
 $! = 0;
@@ -721,7 +721,7 @@ close (MAIL);
 is ( $? >> 8, 0, "mailgate exited normally" );
 Jifty::DBI::Record::Cachable->flush_cache;
 
-cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
+cmp_ok( $tick->owner, '!=', $user->id, "we didn't change owner" );
 
 ($status, $msg) = $user->principal_object->grant_right( Object => $queue, Right => 'ReplyToTicket' );
 ok( $status, "successfuly granted right: $msg" );
@@ -740,7 +740,7 @@ close (MAIL);
 is ( $? >> 8, 0, "mailgate exited normally" );
 Jifty::DBI::Record::Cachable->flush_cache;
 
-cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
+cmp_ok( $tick->owner, '!=', $user->id, "we didn't change owner" );
 is( $tick->transactions->count, 3, "one transactions added" );
 
 $! = 0;
@@ -755,7 +755,7 @@ close (MAIL);
 is ( $? >> 8, 0, "mailgate exited normally" );
 Jifty::DBI::Record::Cachable->flush_cache;
 
-cmp_ok( $tick->Owner, '!=', $user->id, "we didn't change owner" );
+cmp_ok( $tick->owner, '!=', $user->id, "we didn't change owner" );
 is( $tick->transactions->count, 3, "no transactions added, user can't take ticket first" );
 
 # revoke ReplyToTicket right
@@ -797,12 +797,12 @@ is ( $? >> 8, 0, "mailgate exited normally" );
 Jifty::DBI::Record::Cachable->flush_cache;
 
 $tick->load( $id );
-is( $tick->Owner, $user->id, "we changed owner" );
+is( $tick->owner, $user->id, "we changed owner" );
 ok( $user->has_right( Right => 'ReplyToTicket', Object => $tick ), "owner can reply to ticket" );
 is( $tick->transactions->count, 5, "transactions added" );
 $txns = $tick->transactions;
 while (my $t = $txns->next) {
-    diag( $t->id, $t->Description."\n");
+    diag( $t->id, $t->description."\n");
 }
 
 # }}}

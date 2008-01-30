@@ -47,7 +47,7 @@ sub check_emails_order
     my ($tix,$count,$order) = (@_);
     my @mails;
     while (my $t = $tix->next) { push @mails, $t->requestor_addresses; }
-    is(@mails, $count, "found $count tickets for ". $tix->Query);
+    is(@mails, $count, "found $count tickets for ". $tix->query);
     my @required_order;
     if( $order =~ /asc/i ) {
         @required_order = sort { $a? ($b? ($a cmp $b) : -1) : 1} @mails;

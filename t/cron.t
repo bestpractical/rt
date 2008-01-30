@@ -90,7 +90,7 @@ ok($comment_act->commit(), "comment committed");
 ok($correspond_act->commit(), "Correspondence committed");
 
 # Now test for loop suppression.
-my ($trans, $desc, $transaction) = $ticket2->comment(MIMEObj => $template_obj->MIMEObj);
+my ($trans, $desc, $transaction) = $ticket2->comment(MIMEObj => $template_obj->mimeobj);
 my $bogus_action = RT::ScripAction::RecordComment->new(ticket_obj => $ticket1, template_obj => $template_obj, transaction_obj => $transaction, CurrentUser => $CurrentUser);
 ok(!$bogus_action->prepare(), "comment aborted to prevent loop");
 

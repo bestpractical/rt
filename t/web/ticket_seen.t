@@ -42,7 +42,7 @@ my $tid;
         subject => 'test',
     );
     ok $tid, 'created a ticket #'. $tid or diag "error: $msg";
-    is $ticket->Owner, $user_a->id, 'correct owner';
+    is $ticket->owner, $user_a->id, 'correct owner';
 }
 
 diag "user B adds a message, we check that user A see notification and can clear it";

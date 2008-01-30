@@ -41,7 +41,7 @@ diag "check that defering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
     );
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
-    is $ticket->Owner, $tester->id, 'correct owner';
+    is $ticket->owner, $tester->id, 'correct owner';
     like $ticket->admin_cc_addresses, qr/root\@localhost/, 'root is an admincc';
 }
 diag "check that previous trick doesn't work without sufficient rights"
@@ -63,7 +63,7 @@ diag "check that previous trick doesn't work without sufficient rights"
     );
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
-    is $ticket->Owner, $tester->id, 'correct owner';
+    is $ticket->owner, $tester->id, 'correct owner';
     unlike $ticket->admin_cc_addresses, qr/root\@localhost/, 'root is there';
 }
 
@@ -89,7 +89,7 @@ diag "check that defering owner really works" if $ENV{'TEST_VERBOSE'};
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
     like $ticket->cc_addresses, qr/tester\@localhost/, 'tester is in the cc list';
-    is $ticket->Owner, $tester->id, 'tester is also owner';
+    is $ticket->owner, $tester->id, 'tester is also owner';
 }
 
 diag "check that defering doesn't work without correct rights" if $ENV{'TEST_VERBOSE'};
@@ -110,7 +110,7 @@ diag "check that defering doesn't work without correct rights" if $ENV{'TEST_VER
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
     like $ticket->cc_addresses, qr/tester\@localhost/, 'tester is in the cc list';
-    isnt $ticket->Owner, $tester->id, 'tester is also owner';
+    isnt $ticket->owner, $tester->id, 'tester is also owner';
 }
 
 

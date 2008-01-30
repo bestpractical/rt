@@ -18,12 +18,12 @@ ok(my ($id, $msg)=  $cf->create( name => 'TestingCF',
 isnt($id , 0, 'Global custom field correctly Created');
 ok ($cf->single_value);
 is($cf->type, 'Select');
-is($cf->MaxValues, 1);
+is($cf->max_values, 1);
 
-(my $val, $msg) = $cf->set_MaxValues('0');
+(my $val, $msg) = $cf->set_max_values('0');
 ok($val, $msg);
 is($cf->type, 'Select');
-ok(!$cf->MaxValues);
+ok(!$cf->max_values);
 ok(!$cf->single_value );
 ok(my ($bogus_val, $bogus_msg) = $cf->set_type('BogusType') , "Trying to set a custom field's type to a bogus type");
 is($bogus_val , 0, "Unable to set a custom field's type to a bogus type");

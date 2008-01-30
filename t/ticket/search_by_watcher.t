@@ -203,7 +203,7 @@ my $nobody = RT->nobody();
     ok($u->id, "loaded user");
     @data = ( { subject => '4', Owner => $u->id } );
     my($t) = add_tix_from_data();
-    is( $t->Owner, $u->id, "Created ticket with custom owner" );
+    is( $t->owner, $u->id, "Created ticket with custom owner" );
     my $u_alpha_id = $u->id;
 
     $u = RT::Model::User->new(current_user => RT->system_user );
@@ -211,7 +211,7 @@ my $nobody = RT->nobody();
     ok($u->id, "loaded user");
     @data = ( { subject => '5', Owner => $u->id } );
     ($t) = add_tix_from_data();
-    is( $t->Owner, $u->id, "Created ticket with custom owner" );
+    is( $t->owner, $u->id, "Created ticket with custom owner" );
     my $u_bravo_id = $u->id;
 
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
