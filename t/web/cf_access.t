@@ -58,7 +58,7 @@ my ( $cf, $cfid, $tid );
 
 my $tester = RT::Test->load_or_create_user( name => 'tester', password => '123456' );
 RT::Test->set_rights(
-    { Principal => $tester->principal_object,
+    { principal => $tester->principal_object,
       right => [qw(SeeQueue ShowTicket CreateTicket)],
     },
 );
@@ -90,7 +90,7 @@ diag "check that we have no the CF on the create"
 }
 
 RT::Test->set_rights(
-    { Principal => $tester->principal_object,
+    { principal => $tester->principal_object,
       right => [qw(SeeQueue ShowTicket CreateTicket SeeCustomField)],
     },
 );
@@ -124,7 +124,7 @@ diag "check that we have no the CF on the create"
 }
 
 RT::Test->set_rights(
-    { Principal => $tester->principal_object,
+    { principal => $tester->principal_object,
       right => [qw(SeeQueue ShowTicket CreateTicket SeeCustomField ModifyCustomField)],
     },
 );

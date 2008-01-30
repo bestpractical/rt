@@ -255,7 +255,7 @@ EOF
 diag "grant everybody with CreateTicket right" if $ENV{'TEST_VERBOSE'};
 {
     ok( RT::Test->set_rights(
-        { Principal => $everyone_group->principal_object,
+        { principal => $everyone_group->principal_object,
           right => [qw(CreateTicket)],
         },
     ), "Granted everybody the right to create tickets");
@@ -310,7 +310,7 @@ EOF
 diag "grant everyone 'ReplyToTicket' right" if $ENV{'TEST_VERBOSE'};
 {
     ok( RT::Test->set_rights(
-        { Principal => $everyone_group->principal_object,
+        { principal => $everyone_group->principal_object,
           right => [qw(CreateTicket ReplyToTicket)],
         },
     ), "Granted everybody the right to reply to tickets" );
@@ -390,7 +390,7 @@ EOF
 diag "grant everyone 'CommentOnTicket' right" if $ENV{'TEST_VERBOSE'};
 {
     ok( RT::Test->set_rights(
-        { Principal => $everyone_group->principal_object,
+        { principal => $everyone_group->principal_object,
           right => [qw(CreateTicket ReplyToTicket CommentOnTicket)],
         },
     ), "Granted everybody the right to comment on tickets");

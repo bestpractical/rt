@@ -36,7 +36,7 @@ my $queue = RT::Test->load_or_create_queue(
 ok $queue && $queue->id, 'loaded or created queue';
 
 RT::Test->set_rights(
-    Principal => 'Everyone',
+    principal => 'Everyone',
     right => ['CreateTicket', 'ShowTicket', 'SeeQueue', 'ReplyToTicket', 'ModifyTicket'],
 );
 

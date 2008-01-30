@@ -22,8 +22,8 @@ ok $user_b && $user_b->id, 'loaded or created user';
 RT::Test->started_ok;
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, right => [qw(SeeQueue ShowTicket CreateTicket ReplyToTicket)] },
-    { Principal => $user_b, right => [qw(SeeQueue ShowTicket OwnTicket)] },
+    { principal => $user_a, right => [qw(SeeQueue ShowTicket CreateTicket ReplyToTicket)] },
+    { principal => $user_b, right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
 my $agent_a = RT::Test::Web->new;
@@ -86,7 +86,7 @@ diag "user A can not change owner after create";
     my $ticket = RT::Model::Ticket->new( current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         queue => $queue->id,
-        Owner => $user_b->id,
+        owner => $user_b->id,
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
@@ -124,7 +124,7 @@ diag "on reply correct owner is selected";
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         queue => $queue->id,
-        Owner => $user_b->id,
+        owner => $user_b->id,
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
@@ -144,8 +144,8 @@ diag "on reply correct owner is selected";
 }
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket)] },
-    { Principal => $user_b, right => [qw(SeeQueue ShowTicket OwnTicket)] },
+    { principal => $user_a, right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket)] },
+    { principal => $user_b, right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
 diag "Couldn't take without coresponding right";
@@ -170,7 +170,7 @@ diag "Couldn't steal without coresponding right";
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         queue => $queue->id,
-        Owner => $user_b->id,
+        owner => $user_b->id,
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
@@ -184,7 +184,7 @@ diag "Couldn't steal without coresponding right";
 }
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, right => [qw(SeeQueue ShowTicket CreateTicket TakeTicket)] },
+    { principal => $user_a, right => [qw(SeeQueue ShowTicket CreateTicket TakeTicket)] },
 ), 'set rights');
 
 diag "TakeTicket require OwnTicket to work";
@@ -205,8 +205,8 @@ diag "TakeTicket require OwnTicket to work";
 }
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket TakeTicket)] },
-    { Principal => $user_b, right => [qw(SeeQueue ShowTicket OwnTicket)] },
+    { principal => $user_a, right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket TakeTicket)] },
+    { principal => $user_b, right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
 diag "TakeTicket+OwnTicket work";
@@ -235,7 +235,7 @@ diag "TakeTicket+OwnTicket don't work when owner is not nobody";
     my $ticket = RT::Model::Ticket->new( current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         queue => $queue->id,
-        Owner => $user_b->id,
+        owner => $user_b->id,
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
@@ -249,8 +249,8 @@ diag "TakeTicket+OwnTicket don't work when owner is not nobody";
 }
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, right => [qw(SeeQueue ShowTicket CreateTicket StealTicket)] },
-    { Principal => $user_b, right => [qw(SeeQueue ShowTicket OwnTicket)] },
+    { principal => $user_a, right => [qw(SeeQueue ShowTicket CreateTicket StealTicket)] },
+    { principal => $user_b, right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
 diag "StealTicket require OwnTicket to work";
@@ -258,7 +258,7 @@ diag "StealTicket require OwnTicket to work";
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         queue => $queue->id,
-        Owner => $user_b->id,
+        owner => $user_b->id,
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
@@ -272,8 +272,8 @@ diag "StealTicket require OwnTicket to work";
 }
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket StealTicket)] },
-    { Principal => $user_b, right => [qw(SeeQueue ShowTicket OwnTicket)] },
+    { principal => $user_a, right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket StealTicket)] },
+    { principal => $user_b, right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
 diag "StealTicket+OwnTicket work";
@@ -281,7 +281,7 @@ diag "StealTicket+OwnTicket work";
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         queue => $queue->id,
-        Owner => $user_b->id,
+        owner => $user_b->id,
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
@@ -316,8 +316,8 @@ diag "StealTicket+OwnTicket don't work when owner is nobody";
 }
 
 ok( RT::Test->set_rights(
-    { Principal => $user_a, right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket TakeTicket StealTicket)] },
-    { Principal => $user_b, right => [qw(SeeQueue ShowTicket OwnTicket)] },
+    { principal => $user_a, right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket TakeTicket StealTicket)] },
+    { principal => $user_b, right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
 diag "no Steal link when owner nobody";
@@ -342,7 +342,7 @@ diag "no Take link when owner is not nobody";
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $user_a->id ));
     my ($id, $txn, $msg) = $ticket->create(
         queue => $queue->id,
-        Owner => $user_b->id,
+        owner => $user_b->id,
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
