@@ -12,8 +12,6 @@ ok (require RT::Record);
 
 }
 
-die "bla-bla";
-
 {
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
