@@ -186,7 +186,7 @@ sub __Relates {
 
     if ( $self->can('Creator') ) {
         my $obj = RT::Model::Principal->new;
-        $obj->load( $self->Creator );
+        $obj->load( $self->creator );
 
         if ( $obj && defined $obj->id ) {
             push( @$list, $obj );
@@ -196,14 +196,14 @@ sub __Relates {
             $rec->{'State'} |= INVALID;
             push @{ $rec->{'Description'} },
                 "Have no related User(Creator) #"
-                . $self->Creator
+                . $self->creator
                 . " object";
         }
     }
 
     if ( $self->can('LastUpdatedBy') ) {
         my $obj = RT::Model::Principal->new;
-        $obj->load( $self->LastUpdatedBy );
+        $obj->load( $self->last_updated_by );
 
         if ( $obj && defined $obj->id ) {
             push( @$list, $obj );
@@ -213,7 +213,7 @@ sub __Relates {
             $rec->{'State'} |= INVALID;
             push @{ $rec->{'Description'} },
                 "Have no related User(LastUpdatedBy) #"
-                . $self->LastUpdatedBy
+                . $self->last_updated_by
                 . " object";
         }
     }

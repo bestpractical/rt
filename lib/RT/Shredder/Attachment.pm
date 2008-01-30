@@ -102,7 +102,7 @@ sub __Relates {
 
     # Parent, nested parts
     if ( $self->parent ) {
-        if ( $self->parent_obj && $self->ParentId ) {
+        if ( $self->parent_obj && $self->parent_id ) {
             push( @$list, $self->parent_obj );
         } else {
             my $rec = $args{'Shredder'}->get_record( Object => $self );

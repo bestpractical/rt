@@ -54,7 +54,7 @@ use Exception::Class;
 use base qw(Exception::Class::Base);
 
 BEGIN {
-    __PACKAGE__->NoRefs(0);
+    __PACKAGE__->no_refs(0);
 }
 
 #sub NoRefs { return 0 }

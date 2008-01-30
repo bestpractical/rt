@@ -100,7 +100,7 @@ sub __Relates {
 
     # Queue
     # Skip if it's global CF
-    if ( $self->Queue ) {
+    if ( $self->queue ) {
         if ( $self->queue_obj && $self->queue_obj->id ) {
             push( @$list, $obj );
         } else {
@@ -108,7 +108,7 @@ sub __Relates {
             $self = $rec->{'Object'};
             $rec->{'State'} |= INVALID;
             $rec->{'Description'}
-                = "Have no related queue #" . $self->Queue . " object";
+                = "Have no related queue #" . $self->queue . " object";
         }
     }
 

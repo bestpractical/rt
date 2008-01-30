@@ -83,13 +83,13 @@ sub __DependsOn {
         )
     {
         my $acl = RT::Model::ACECollection->new;
-        $acl->limit_to_principal( id => $self->GroupId );
+        $acl->limit_to_principal( id => $self->group_id );
 
         # look into all rights that have group
         while ( my $ace = $acl->next ) {
             my $delegations = RT::Model::ACECollection->new;
             $delegations->delegated_from( id => $ace->id );
-            $delegations->delegated_by( id => $self->MemberId );
+            $delegations->delegated_by( id => $self->member_id );
             push( @$list, $delegations );
         }
     }
@@ -127,7 +127,7 @@ sub __Relates {
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'}
-            = "Have no related Principal #" . $self->MemberId . " object.";
+            = "Have no related Principal #" . $self->member_id . " object.";
     }
 
     $obj = $self->group_obj;
@@ -138,7 +138,7 @@ sub __Relates {
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'}
-            = "Have no related Principal #" . $self->GroupId . " object.";
+            = "Have no related Principal #" . $self->group_id . " object.";
     }
 
     $deps->_push_dependencies(

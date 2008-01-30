@@ -189,7 +189,7 @@ sub set_Resolvers {
             my %args = (@_);
             my $t    = $args{'TargetObject'};
             foreach my $method (qw(Creator LastUpdatedBy)) {
-                next unless $t->_Accessible( $method => 'read' );
+                next unless $t->_accessible( $method => 'read' );
                 $t->__set( column => $method, value => $uid );
             }
         };

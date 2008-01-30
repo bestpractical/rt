@@ -70,8 +70,8 @@ sub __DependsOn {
     my $list = [];
 
     my $objs = RT::Model::CachedGroupMemberCollection->new;
-    $objs->limit( column => 'MemberId',          value => $self->MemberId );
-    $objs->limit( column => 'ImmediateParentId', value => $self->GroupId );
+    $objs->limit( column => 'MemberId',          value => $self->member_id );
+    $objs->limit( column => 'ImmediateParentId', value => $self->group_id );
     push( @$list, $objs );
 
     # XXX: right delegations should be cleaned here
@@ -165,7 +165,7 @@ sub __Relates {
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'}
-            = "Have no related Principal #" . $self->MemberId . " object.";
+            = "Have no related Principal #" . $self->member_id . " object.";
     }
 
     $obj = $self->group_obj;
@@ -176,7 +176,7 @@ sub __Relates {
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'}
-            = "Have no related Principal #" . $self->GroupId . " object.";
+            = "Have no related Principal #" . $self->group_id . " object.";
     }
 
     $deps->_push_dependencies(

@@ -160,7 +160,7 @@ sub _make_hash {
 sub __make_hash {
     my ( $self, $obj ) = @_;
     my %hash;
-    $hash{$_} = $obj->$_() foreach sort keys %{ $obj->_ClassAccessible };
+    $hash{$_} = $obj->$_() foreach sort keys %{ $obj->_class_accessible };
     return \%hash;
 }
 

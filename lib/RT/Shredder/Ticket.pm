@@ -110,7 +110,7 @@ sub __Relates {
         $self = $rec->{'Object'};
         $rec->{'State'} |= INVALID;
         $rec->{'Description'}
-            = "Have no related Queue #" . $self->Queue . " object";
+            = "Have no related Queue #" . $self->queue . " object";
     }
 
     $deps->_push_dependencies(

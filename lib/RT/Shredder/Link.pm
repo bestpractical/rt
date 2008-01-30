@@ -84,7 +84,7 @@ sub __DependsOn {
             operator => '=',
             value    => 'AddLink',
         );
-        $objs->limit( column => 'new_value', value => $self->Target );
+        $objs->limit( column => 'new_value', value => $self->target );
         while ( my ( $k, $v ) = each %$map ) {
             next unless $v->{'type'} eq $link_meta->{'type'};
             next unless $v->{'Mode'} eq $link_meta->{'Mode'};
@@ -101,7 +101,7 @@ sub __DependsOn {
             operator => '=',
             value    => 'AddLink',
         );
-        $objs->limit( column => 'new_value', value => $self->Base );
+        $objs->limit( column => 'new_value', value => $self->base );
         while ( my ( $k, $v ) = each %$map ) {
             next unless $v->{'type'} eq $link_meta->{'type'};
             next unless $v->{'Mode'} eq $reverse{ $link_meta->{'Mode'} };
