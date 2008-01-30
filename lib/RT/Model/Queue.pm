@@ -99,14 +99,14 @@ use Jifty::DBI::Record schema {
         final_priority => max_length is 11,
         type is 'int(11)', default is '0';
     column
-        DefaultDueIn => max_length is 11,
+        default_due_in => max_length is 11,
         type is 'int(11)', default is '0';
     column Creator => max_length is 11, type is 'int(11)', default is '0';
     column Created => type is 'datetime', default is '';
     column
-        LastUpdatedBy => max_length is 11,
+        last_updated_by => max_length is 11,
         type is 'int(11)', default is '0';
-    column LastUpdated => type is 'datetime', default is '';
+    column last_updated => type is 'datetime', default is '';
     column disabled => max_length is 6, type is 'smallint(6)', default is '0';
 };
 our @DEFAULT_ACTIVE_STATUS   = qw(new open stalled);
@@ -208,9 +208,9 @@ sub available_rights {
     return ($RIGHTS);
 }
 
-# {{{ ActiveStatusArray
+# {{{ active_status_array
 
-=head2 ActiveStatusArray
+=head2 active_status_array
 
 Returns an array of all ActiveStatuses for this queue
 
@@ -230,9 +230,9 @@ sub active_status_array {
 
 # }}}
 
-# {{{ InactiveStatusArray
+# {{{ inactive_status_array
 
-=head2 InactiveStatusArray
+=head2 inactive_status_array
 
 Returns an array of all InactiveStatuses for this queue
 
@@ -254,7 +254,7 @@ sub inactive_status_array {
 
 # {{{ StatusArray
 
-=head2 StatusArray
+=head2 status_array
 
 Returns an array of all statuses for this queue
 
@@ -267,9 +267,9 @@ sub status_array {
 
 # }}}
 
-# {{{ IsValidStatus
+# {{{ is_valid_status
 
-=head2 IsValidStatus value
+=head2 is_valid_status value
 
 Returns true if value is a valid status.  Otherwise, returns 0.
 
@@ -287,9 +287,9 @@ sub is_valid_status {
 
 # }}}
 
-# {{{ IsActiveStatus
+# {{{ is_active_status
 
-=head2 IsActiveStatus value
+=head2 is_active_status value
 
 Returns true if value is a Active status.  Otherwise, returns 0
 
@@ -307,9 +307,9 @@ sub is_active_status {
 
 # }}}
 
-# {{{ IsInactiveStatus
+# {{{ is_inactive_status
 
-=head2 IsInactiveStatus value
+=head2 is_inactive_status value
 
 Returns true if value is a Inactive status.  Otherwise, returns 0
 
@@ -339,7 +339,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   comment_address
   initial_priority
   final_priority
-  DefaultDueIn
+  default_due_in
  
 If you pass the ACL check, it creates the queue and returns its queue id.
 
@@ -355,7 +355,7 @@ sub create {
         comment_address    => '',
         initial_priority   => 0,
         final_priority     => 0,
-        DefaultDueIn       => 0,
+        default_due_in       => 0,
         Sign               => undef,
         Encrypt            => undef,
         @_
@@ -488,7 +488,7 @@ sub validate_name {
 
 # }}}
 
-=head2 SetSign
+=head2 set_sign
 
 =cut
 
@@ -584,9 +584,9 @@ sub custom_field {
     return ($cf);
 }
 
-# {{{ TicketCustomFields
+# {{{ ticket_custom_fields
 
-=head2 TicketCustomFields
+=head2 ticket_custom_fields
 
 Returns an L<RT::Model::CustomFieldCollection> object containing all global and
 queue-specific B<ticket> custom fields.
@@ -969,9 +969,9 @@ sub delete_watcher {
 
 # }}}
 
-# {{{ AdminCcAddresses
+# {{{ admin_cc_addresses
 
-=head2 AdminCcAddresses
+=head2 admin_cc_addresses
 
 returns String: All queue AdminCc email addresses as a string
 
@@ -1060,10 +1060,10 @@ sub admin_cc {
 
 # }}}
 
-# {{{ IsWatcher, IsCc, IsAdminCc
+# {{{ IsWatcher, IsCc, is_admin_cc
 
 # {{{ sub IsWatcher
-# a generic routine to be called by IsRequestor, IsCc and IsAdminCc
+# a generic routine to be called by IsRequestor, IsCc and is_admin_cc
 
 =head2 IsWatcher { type => TYPE, principal_id => PRINCIPAL_ID }
 
@@ -1127,9 +1127,9 @@ sub is_cc {
 
 # }}}
 
-# {{{ sub IsAdminCc
+# {{{ sub is_admin_cc
 
-=head2 IsAdminCc PRINCIPAL_ID
+=head2 is_admin_cc PRINCIPAL_ID
 
 Takes an RT::Model::Principal id.
 Returns true if the principal is a requestor of the current queue.

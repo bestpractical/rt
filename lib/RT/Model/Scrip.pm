@@ -72,15 +72,15 @@ sub table {'Scrips'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
-    column Queue          => type is 'int';
-    column Template       => type is 'int';
-    column ScripAction    => type is 'int';
-    column ScripCondition => type is 'int';
-    column Stage => type is 'varchar(32)', default is 'TransactionCreate';
+    column queue          => type is 'int';
+    column template       => type is 'int';
+    column scrip_action    => type is 'int';
+    column scrip_condition => type is 'int';
+    column stage => type is 'varchar(32)', default is 'TransactionCreate';
     column description            => type is 'text';
-    column CustomPrepareCode      => type is 'text';
-    column CustomCommitCode       => type is 'text';
-    column CustomIsApplicableCode => type is 'text';
+    column custom_prepare_code      => type is 'text';
+    column custom_commit_code       => type is 'text';
+    column custom_is_applicable_code => type is 'text';
 };
 
 # {{{ sub create
@@ -89,14 +89,14 @@ use Jifty::DBI::Record schema {
 
 Creates a new entry in the Scrips table. Takes a paramhash with:
 
-        Queue                  => 0,
+        queue                  => 0,
         description            => undef,
-        Template               => undef,
-        ScripAction            => undef,
-        ScripCondition         => undef,
-        CustomPrepareCode      => undef,
-        CustomCommitCode       => undef,
-        CustomIsApplicableCode => undef,
+        template               => undef,
+        scrip_action            => undef,
+        scrip_condition         => undef,
+        custom_prepare_code      => undef,
+        custom_commit_code       => undef,
+        custom_is_applicable_code => undef,
 
 
 
@@ -109,19 +109,19 @@ retval is 0 for failure or scrip id.  msg is a textual description of what happe
 sub create {
     my $self = shift;
     my %args = (
-        Queue                  => 0,
-        Template               => 0,                     # name or id
-        ScripAction            => 0,                     # name or id
-        ScripCondition         => 0,                     # name or id
-        Stage                  => 'TransactionCreate',
+        queue                  => 0,
+        template               => 0,                     # name or id
+        scrip_action            => 0,                     # name or id
+        scrip_condition         => 0,                     # name or id
+        stage                  => 'TransactionCreate',
         description            => undef,
-        CustomPrepareCode      => undef,
-        CustomCommitCode       => undef,
-        CustomIsApplicableCode => undef,
+        custom_prepare_code      => undef,
+        custom_commit_code       => undef,
+        custom_is_applicable_code => undef,
         @_
     );
 
-    unless ( $args{'Queue'} ) {
+    unless ( $args{'queue'} ) {
         unless (
             $self->current_user->has_right(
                 Object => RT->system,
@@ -131,55 +131,55 @@ sub create {
         {
             return ( 0, _('Permission Denied') );
         }
-        $args{'Queue'} = 0;    # avoid undef sneaking in
+        $args{'queue'} = 0;    # avoid undef sneaking in
     } else {
         my $queue_obj = RT::Model::Queue->new;
-        $queue_obj->load( $args{'Queue'} );
+        $queue_obj->load( $args{'queue'} );
         unless ( $queue_obj->id ) {
             return ( 0, _('Invalid queue') );
         }
         unless ( $queue_obj->current_user_has_right('ModifyScrips') ) {
             return ( 0, _('Permission Denied') );
         }
-        $args{'Queue'} = $queue_obj->id;
+        $args{'queue'} = $queue_obj->id;
     }
 
     #TODO +++ validate input
 
     require RT::Model::ScripAction;
     return ( 0, _("Action is mandatory argument") )
-        unless $args{'ScripAction'};
+        unless $args{'scrip_action'};
     my $action = RT::Model::ScripAction->new;
-    $action->load( $args{'ScripAction'} );
-    return ( 0, _( "Action '%1' not found", $args{'ScripAction'} ) )
+    $action->load( $args{'scrip_action'} );
+    return ( 0, _( "Action '%1' not found", $args{'scrip_action'} ) )
         unless $action->id;
 
     require RT::Model::Template;
-    return ( 0, _("Template is mandatory argument") )
-        unless $args{'Template'};
+    return ( 0, _("template is mandatory argument") )
+        unless $args{'template'};
     my $template = RT::Model::Template->new;
-    $template->load( $args{'Template'} );
-    return ( 0, _( "Template '%1' not found", $args{'Template'} ) )
+    $template->load( $args{'template'} );
+    return ( 0, _( "Template '%1' not found", $args{'template'} ) )
         unless $template->id;
 
     require RT::Model::ScripCondition;
     return ( 0, _("Condition is mandatory argument") )
-        unless $args{'ScripCondition'};
+        unless $args{'scrip_condition'};
     my $condition = RT::Model::ScripCondition->new;
-    $condition->load( $args{'ScripCondition'} );
-    return ( 0, _( "Condition '%1' not found", $args{'ScripCondition'} ) )
+    $condition->load( $args{'scrip_condition'} );
+    return ( 0, _( "Condition '%1' not found", $args{'scrip_condition'} ) )
         unless $condition->id;
 
     my ( $id, $msg ) = $self->SUPER::create(
-        Queue                  => $args{'Queue'},
-        Template               => $template->id,
-        ScripCondition         => $condition->id,
-        Stage                  => $args{'Stage'},
-        ScripAction            => $action->id,
+        queue                  => $args{'queue'},
+        template               => $template->id,
+        scrip_condition         => $condition->id,
+        stage                  => $args{'stage'},
+        scrip_action            => $action->id,
         description            => $args{'description'},
-        CustomPrepareCode      => $args{'CustomPrepareCode'},
-        CustomCommitCode       => $args{'CustomCommitCode'},
-        CustomIsApplicableCode => $args{'CustomIsApplicableCode'},
+        custom_prepare_code      => $args{'custom_prepare_code'},
+        custom_commit_code       => $args{'custom_commit_code'},
+        custom_is_applicable_code => $args{'custom_is_applicable_code'},
     );
 
     if ($id) {
@@ -225,16 +225,16 @@ sub queue_obj {
     if ( !$self->{'queue_obj'} ) {
         require RT::Model::Queue;
         $self->{'queue_obj'} = RT::Model::Queue->new;
-        $self->{'queue_obj'}->load( $self->__value('Queue') );
+        $self->{'queue_obj'}->load( $self->__value('queue') );
     }
     return ( $self->{'queue_obj'} );
 }
 
 # }}}
 
-# {{{ sub ActionObj
+# {{{ sub action_obj
 
-=head2 ActionObj
+=head2 action_obj
 
 Retuns an RT::ScripAction object with this Scrip\'s Action
 
@@ -258,11 +258,11 @@ sub action_obj {
 
 # }}}
 
-# {{{ sub ConditionObj
+# {{{ sub condition_obj
 
-=head2 ConditionObj
+=head2 condition_obj
 
-Retuns an L<RT::Model::ScripCondition> object with this Scrip's IsApplicable
+Retuns an L<RT::Model::ScripCondition> object with this Scrip's is_applicable
 
 =cut
 
@@ -280,7 +280,7 @@ sub condition_obj {
 
 =head2 template_obj
 
-Retuns an RT::Model::Template object with this Scrip\'s Template
+Retuns an L<RT::Model::Template> object with this Scrip\'s template
 
 =cut
 
@@ -304,7 +304,7 @@ sub template_obj {
 =head2 Apply { ticket_obj => undef, transaction_obj => undef}
 
 This method instantiates the ScripCondition and ScripAction objects for a
-single execution of this scrip. it then calls the IsApplicable method of the 
+single execution of this scrip. it then calls the is_applicable method of the 
 ScripCondition.
 If that succeeds, it calls the prepare method of the
 ScripAction. If that succeeds, it calls the Commit method of the ScripAction.
@@ -384,19 +384,19 @@ sub apply {
 
 # }}}
 
-# {{{ sub IsApplicable
+# {{{ sub is_applicable
 
-=head2 IsApplicable
+=head2 is_applicable
 
-Calls the  Condition object\'s IsApplicable method
+Calls the  Condition object\'s is_applicable method
 
 Upon success, returns the applicable Transaction object.
 Otherwise, undef is returned.
 
-If the Scrip is in the TransactionCreate Stage (the usual case), only test
+If the Scrip is in the TransactionCreate stage (the usual case), only test
 the associated Transaction object to see if it is applicable.
 
-For Scrips in the transaction_batch Stage, test all Transaction objects
+For Scrips in the transaction_batch stage, test all Transaction objects
 Created during the Ticket object's lifetime, and returns the first one
 that is applicable.
 
@@ -454,7 +454,7 @@ sub is_applicable {
 
     if ($@) {
         Jifty->log->error(
-            "Scrip IsApplicable " . $self->id . " died. - " . $@ );
+            "Scrip is_applicable " . $self->id . " died. - " . $@ );
         return (undef);
     }
 
@@ -563,7 +563,7 @@ sub _value {
 
     unless ( $self->current_user_has_right('ShowScrips') ) {
         Jifty->log->debug( "CurrentUser can't modify Scrips for "
-                . $self->__value('Queue')
+                . $self->__value('queue')
                 . "\n" );
         return (undef);
     }
@@ -614,7 +614,7 @@ sub has_right {
         @_
     );
 
-    if ( $self->SUPER::_value('Queue') ) {
+    if ( $self->SUPER::_value('queue') ) {
         return $args{'Principal'}->has_right(
             Right  => $args{'Right'},
             Object => $self->queue_obj
