@@ -82,7 +82,7 @@ unlike ($dependson->subject, qr/{/, "The subject doesn't have braces in it. that
 is ($t->referred_to_by->count,1, "It's only referred to by one other ticket");
 is ($t->referred_to_by->first->base_obj->id,$t->depends_on->first->target_obj->id, "The same ticket that depends on it refers to it.");
 use RT::ScripAction::CreateTickets;
-my $action =  RT::ScripAction::CreateTickets->new( CurrentUser => RT->system_user);;
+my $action =  RT::ScripAction::CreateTickets->new( current_user => RT->system_user);;
 
 # comma-delimited templates
 my $commas = <<"EOF";

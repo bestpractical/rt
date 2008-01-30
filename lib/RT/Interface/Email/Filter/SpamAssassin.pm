@@ -53,7 +53,7 @@ my $spamtest = Mail::SpamAssassin->new();
 sub get_current_user {
     my %args = (
         Message     => undef,
-        CurrentUser => undef,
+        current_user => undef,
         AuthLevel   => undef,
         @_
     );

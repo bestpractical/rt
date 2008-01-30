@@ -187,7 +187,7 @@ sub get_message_content {
         Source      => undef,
         Content     => undef,
         Edit        => undef,
-        CurrentUser => undef,
+        current_user => undef,
         @_
     );
     my $source = $args{'Source'};

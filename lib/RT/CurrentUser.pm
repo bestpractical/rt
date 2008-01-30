@@ -79,7 +79,7 @@ See also L<RT::Model::User> for a list of methods this class has.
 
 =head2 new
 
-Returns new CurrentUser object. Unlike all other classes of RT it takes
+Returns new current_user object. Unlike all other classes of RT it takes
 either subclass of C<RT::Model::User> class object or scalar value that is
 passed to Load method.
 
@@ -125,7 +125,7 @@ sub _set {
 
 =head2 LoadBygecos
 
-Loads a User into this CurrentUser object.
+Loads a User into this current_user object.
 Takes a unix username as its only argument.
 
 =cut
@@ -137,7 +137,7 @@ sub load_by_gecos {
 
 =head2 load_by_name
 
-Loads a User into this CurrentUser object.
+Loads a User into this current_user object.
 Takes a name.
 
 =cut

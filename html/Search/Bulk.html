@@ -277,7 +277,7 @@ while ( my $Ticket = $Tickets->next ) {
     my @basicresults =
       process_ticket_basics( ticket_obj => $Ticket, ARGSRef => \%ARGS );
     my @dateresults =
-      ProcessTicketDates( ticket_obj => $Ticket, ARGSRef => \%ARGS );
+      process_ticket_dates( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 
     #Update the watchers
     my @watchresults =
@@ -288,7 +288,7 @@ while ( my $Ticket = $Tickets->next ) {
         $ARGS{ $type . "-" . $Ticket->id } = $ARGS{"$type-Ticket"};
     }
     @linkresults =
-      ProcessTicketLinks( ticket_obj => $Ticket, ARGSRef => \%ARGS );
+      process_ticket_links( ticket_obj => $Ticket, ARGSRef => \%ARGS );
     foreach my $type qw(MergeInto DependsOn MemberOf RefersTo) {
         delete $ARGS{ $type . "-" . $Ticket->id };
         delete $ARGS{ $Ticket->id . "-" . $type };

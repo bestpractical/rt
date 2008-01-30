@@ -163,9 +163,9 @@ unless ($OnlySearchForPeople) {
     }
 
     @wresults   = process_ticket_watchers( ticket_obj => $Ticket, ARGSRef => \%ARGS);
-    @cf_results = ProcessObjectCustomFieldUpdates( object => $Ticket, ARGSRef => \%ARGS);
-    @dresults   = ProcessTicketDates( ticket_obj => $Ticket, ARGSRef => \%ARGS);
-    @lresults   = ProcessTicketLinks( ticket_obj => $Ticket, ARGSRef => \%ARGS);
+    @cf_results = process_object_custom_field_updates( object => $Ticket, ARGSRef => \%ARGS);
+    @dresults   = process_ticket_dates( ticket_obj => $Ticket, ARGSRef => \%ARGS);
+    @lresults   = process_ticket_links( ticket_obj => $Ticket, ARGSRef => \%ARGS);
 
     if ($ARGS{'UpdateAttachment'}) {
         my $subject = "$ARGS{'UpdateAttachment'}";

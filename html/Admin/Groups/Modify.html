@@ -141,7 +141,7 @@ if ($id) {
 					    object => $Group,
 					    ARGSRef => \%ARGS );
     push (@results,@fieldresults);
-    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, object => $Group );
+    push @results, process_object_custom_field_updates( ARGSRef => \%ARGS, object => $Group );
 }
 
 #we're asking about enabled on the web page but really care about disabled.

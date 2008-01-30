@@ -175,7 +175,7 @@ sub load_action {
 
     $self->{'Action'} = $type->new(
         argument        => $self->argument,
-        CurrentUser     => $self->current_user,
+        current_user     => $self->current_user,
         scrip_action_obj  => $self,
         scrip_obj       => $args{'scrip_obj'},
         template_obj    => $self->template_obj,

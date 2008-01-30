@@ -45,7 +45,7 @@ my $ticket1 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($id, $tobj, $msg2) = $ticket1->create(queue    => $queue_obj,
 					 Requestor => ['tara@example.com'],
 					 subject   => 'bork bork bork',
-					 Priority  => 22,
+					 priority  => 22,
 					);
 ok($id, 'record test ticket creation 1');
 my $ticket2 = RT::Model::Ticket->new(current_user => RT->system_user);
@@ -82,8 +82,8 @@ ok(require RT::ScripAction::RecordComment);
 ok(require RT::ScripAction::RecordCorrespondence);
 
 my ($comment_act, $correspond_act);
-ok($comment_act = RT::ScripAction::RecordComment->new(ticket_obj => $ticket1, template_obj => $template_obj, CurrentUser => $CurrentUser), "RecordComment Created");
-ok($correspond_act = RT::ScripAction::RecordCorrespondence->new(ticket_obj => $ticket2, template_obj => $template_obj, CurrentUser => $CurrentUser), "RecordCorrespondence Created");
+ok($comment_act = RT::ScripAction::RecordComment->new(ticket_obj => $ticket1, template_obj => $template_obj, current_user => $CurrentUser), "RecordComment Created");
+ok($correspond_act = RT::ScripAction::RecordCorrespondence->new(ticket_obj => $ticket2, template_obj => $template_obj, current_user => $CurrentUser), "RecordCorrespondence Created");
 ok($comment_act->prepare(), "comment prepared");
 ok($correspond_act->prepare(), "Correspond prepared");
 ok($comment_act->commit(), "comment committed");
@@ -91,7 +91,7 @@ ok($correspond_act->commit(), "Correspondence committed");
 
 # Now test for loop suppression.
 my ($trans, $desc, $transaction) = $ticket2->comment(mime_obj => $template_obj->mime_obj);
-my $bogus_action = RT::ScripAction::RecordComment->new(ticket_obj => $ticket1, template_obj => $template_obj, transaction_obj => $transaction, CurrentUser => $CurrentUser);
+my $bogus_action = RT::ScripAction::RecordComment->new(ticket_obj => $ticket1, template_obj => $template_obj, transaction_obj => $transaction, current_user => $CurrentUser);
 ok(!$bogus_action->prepare(), "comment aborted to prevent loop");
 
 1;

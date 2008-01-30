@@ -577,7 +577,7 @@ sub _value {
 
 =head2 current_user_has_right
 
-Helper menthod for has_right. Presets Principal to CurrentUser then 
+Helper menthod for has_right. Presets Principal to current_user then 
 calls has_right.
 
 =cut

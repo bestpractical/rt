@@ -157,7 +157,7 @@ if ($ARGS{'id'} eq 'new') {
     }
     push @Actions, process_ticket_watchers(ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
     push @Actions, process_ticket_basics(   ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
-    push @Actions, ProcessTicketLinks(    ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
+    push @Actions, process_ticket_links(    ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
 
     # XXX: we shouldn't block actions here if user has no right to see the ticket,
     # but we should allow him to see actions he has done

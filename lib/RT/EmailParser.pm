@@ -283,7 +283,7 @@ sub _post_process_new_entity {
 
 =head2 ParseCcAddressesFromHead HASHREF
 
-Takes a hashref object containing queue_obj, Head and CurrentUser objects.
+Takes a hashref object containing queue_obj, Head and current_user objects.
 Returns a list of all email addresses in the To and Cc 
 headers b<except> the current Queue\'s email addresses, the CurrentUser\'s 
 email address and anything that the RT->config->get('RTAddressRegexp') matches.
@@ -296,7 +296,7 @@ sub parse_cc_addresses_from_head {
 
     my %args = (
         queue_obj   => undef,
-        CurrentUser => undef,
+        current_user => undef,
         @_
     );
 

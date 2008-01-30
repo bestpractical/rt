@@ -53,7 +53,7 @@ use RT::Interface::Email qw(parse_sender_address_from_head create_user);
 sub get_current_user {
     my %args = (
         Message     => undef,
-        CurrentUser => undef,
+        current_user => undef,
         AuthLevel   => undef,
         Ticket      => undef,
         queue       => undef,

@@ -868,7 +868,7 @@ sub create_user {
 
 =head2 ParseCcAddressesFromHead HASH
 
-Takes a hash containing queue_obj, Head and CurrentUser objects.
+Takes a hash containing queue_obj, Head and current_user objects.
 Returns a list of all email addresses in the To and Cc
 headers b<except> the current Queue\'s email addresses, the CurrentUser\'s
 email address  and anything that the configuration sub RT::is_rt_address matches.
@@ -879,7 +879,7 @@ sub parse_cc_addresses_from_head {
     my %args = (
         Head        => undef,
         queue_obj   => undef,
-        CurrentUser => undef,
+        current_user => undef,
         @_
     );
 
@@ -1329,7 +1329,7 @@ sub gateway {
             ( $CurrentUser, $NewAuthStat ) = $Code->(
                 Message       => $Message,
                 RawMessageRef => \$args{'message'},
-                CurrentUser   => $CurrentUser,
+                current_user   => $CurrentUser,
                 AuthLevel     => $AuthStat,
                 Action        => $action,
                 Ticket        => $SystemTicket,
@@ -1405,7 +1405,7 @@ sub gateway {
         if ( RT->config->get('ParseNewMessageForTicketCcs') ) {
             @Cc = ParseCcAddressesFromHead(
                 Head        => $head,
-                CurrentUser => $CurrentUser,
+                current_user => $CurrentUser,
                 queue_obj   => $Systemqueue_obj
             );
         }
@@ -1477,7 +1477,7 @@ sub gateway {
                 ErrorsTo    => $ErrorsTo,
                 Message     => $Message,
                 Ticket      => $Ticket,
-                CurrentUser => $CurrentUser,
+                current_user => $CurrentUser,
             );
             return ( $status, $msg, $Ticket ) unless $status == 1;
         }
@@ -1491,7 +1491,7 @@ sub _run_unsafe_action {
         ErrorsTo    => undef,
         Message     => undef,
         Ticket      => undef,
-        CurrentUser => undef,
+        current_user => undef,
         @_
     );
 

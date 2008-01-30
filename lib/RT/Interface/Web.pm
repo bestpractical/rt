@@ -957,7 +957,7 @@ sub process_ticket_custom_field_updates {
         }
     }
 
-    return ProcessObjectCustomFieldUpdates( %args, ARGSRef => $ARGSRef );
+    return process_object_custom_field_updates( %args, ARGSRef => $ARGSRef );
 }
 
 sub process_object_custom_field_updates {
@@ -997,7 +997,7 @@ sub process_object_custom_field_updates {
                     next;
                 }
                 push @results,
-                    _ProcessObjectCustomFieldUpdates(
+                    _process_object_custom_field_updates(
                     Prefix      => "object-$class-$id-CustomField-$cf-",
                     object      => $object,
                     CustomField => $CustomFieldObj,
@@ -1238,9 +1238,9 @@ sub process_ticket_watchers {
 
 # }}}
 
-# {{{ sub ProcessTicketDates
+# {{{ sub process_ticket_dates
 
-=head2 ProcessTicketDates ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
+=head2 process_ticket_dates ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 
 Returns an array of results messages.
 
@@ -1296,9 +1296,9 @@ sub process_ticket_dates {
 
 # }}}
 
-# {{{ sub ProcessTicketLinks
+# {{{ sub process_ticket_links
 
-=head2 ProcessTicketLinks ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
+=head2 process_ticket_links ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
 
 Returns an array of results messages.
 

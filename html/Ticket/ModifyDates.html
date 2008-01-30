@@ -68,7 +68,7 @@
 
 my $ticket_obj = load_ticket($id);
 $m->callback( ticket_obj => $ticket_obj, ARGSRef => \%ARGS );
-my @results = ProcessTicketDates( ticket_obj => $ticket_obj, ARGSRef => \%ARGS);
+my @results = process_ticket_dates( ticket_obj => $ticket_obj, ARGSRef => \%ARGS);
 
 </%INIT>
 

@@ -181,7 +181,7 @@ sub load_condition {
         'transaction_obj'      => $args{'transaction_obj'},
         'argument'             => $self->argument,
         'applicable_trans_types' => $self->applicable_trans_types,
-        CurrentUser            => $self->current_user
+        current_user            => $self->current_user
     );
 }
 

@@ -120,7 +120,7 @@ my $tickets = RT::Model::TicketCollection->new($CurrentUser);
 my $search  = $search->new(
     TicketsObj  => $tickets,
     Argument    => $search_arg,
-    CurrentUser => $CurrentUser
+    current_user => $CurrentUser
 );
 
 $search->prepare();
@@ -144,7 +144,7 @@ while ( my $ticket = $tickets->next() ) {
             scrip_obj       => $void_scrip,
             template_obj    => $template_obj,
             Argument       => $condition_arg,
-            CurrentUser    => $CurrentUser,
+            current_user    => $CurrentUser,
         );
 
         # if the condition doesn't apply, get out of here
@@ -161,7 +161,7 @@ while ( my $ticket = $tickets->next() ) {
         Argument       => $action_arg,
         scrip_obj       => $void_scrip,
         scrip_action_obj => $void_scrip_action,
-        CurrentUser    => $CurrentUser,
+        current_user    => $CurrentUser,
     );
 
     #if our preparation, move onto the next ticket
