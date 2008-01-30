@@ -62,20 +62,12 @@ the Priority Obj
 
 sub is_applicable {
     my $self = shift;
-    if ( $self->transaction_obj->field eq 'Priority' ) {
+    if ( $self->transaction_obj->field eq 'priority' ) {
         return (1);
     } else {
         return (undef);
     }
 }
-
-eval "require RT::Condition::PriorityChange_Vendor";
-die $@
-    if ( $@
-    && $@ !~ qr{^Can't locate RT/Condition/PriorityChange_Vendor.pm} );
-eval "require RT::Condition::PriorityChange_Local";
-die $@
-    if ( $@ && $@ !~ qr{^Can't locate RT/Condition/PriorityChange_Local.pm} );
 
 1;
 

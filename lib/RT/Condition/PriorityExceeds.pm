@@ -68,16 +68,5 @@ sub is_applicable {
     }
 }
 
-eval "require RT::Condition::PriorityExceeds_Vendor";
-die $@
-    if ( $@
-    && $@
-    !~ qr{^Can't locate RT/Condition/PriorityExceedCollection_Vendor.pm} );
-eval "require RT::Condition::PriorityExceeds_Local";
-die $@
-    if ( $@
-    && $@
-    !~ qr{^Can't locate RT/Condition/PriorityExceedCollection_Local.pm} );
-
 1;
 

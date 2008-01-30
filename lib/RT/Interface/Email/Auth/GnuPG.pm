@@ -149,7 +149,7 @@ sub handle_errors {
         my @status = RT::Crypt::GnuPG::parse_status( $run->{'status'} );
         unless ( $sent_once{'Noprivate_key'} ) {
             unless (
-                CheckNoprivate_key(
+                check_no_private_key(
                     Message => $args{'Message'},
                     Status  => \@status
                 )
