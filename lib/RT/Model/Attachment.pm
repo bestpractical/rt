@@ -102,7 +102,7 @@ sub create {
     $message_id =~ s/^<(.*?)>$/$1/o;
 
     #Get the filename
-    my $Filename = $Attachment->head->recommended_filename;
+    my $filename = $Attachment->head->recommended_filename;
 
 # If a message has no bodyhandle, that means that it has subparts (or appears to)
 # and we should act accordingly.
@@ -151,7 +151,7 @@ sub create {
             headers         => $Attachment->head->as_string,
             subject         => $subject,
             content         => $Body,
-            Filename        => $Filename,
+            filename        => $filename,
             message_id       => $message_id,
         );
 

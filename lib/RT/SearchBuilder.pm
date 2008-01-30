@@ -239,13 +239,13 @@ sub limit_custom_field {
     );
 }
 
-=head2 FindAllRows
+=head2 include_disabled_rows
 
 Find all matching rows, regardless of whether they are disabled or not
 
 =cut
 
-sub find_all_rows {
+sub include_disabled_rows {
     shift->{'find_disabled_rows'} = 1;
 }
 

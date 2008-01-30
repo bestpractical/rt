@@ -89,7 +89,7 @@ my $title = _('Select a group');
 my $caption;
 
 if ($FinddisabledGroups) {
-    $Groups->find_all_rows();
+    $Groups->include_disabled_rows();
 }
 
 if (length $GroupString) {
