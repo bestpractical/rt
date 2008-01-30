@@ -346,6 +346,11 @@ sub has_right {
 
     }
 
+    unshift @{ $args{'equiv_objects'} }, RT->system
+                unless $self->can('_is_override_global_acl')
+                    && $self->_is_override_global_acl( $args{'object'} );
+
+
     # {{{ If we've cached a win or loss for this lookup say so
 
 # Construct a hashkeys to cache decisions:
