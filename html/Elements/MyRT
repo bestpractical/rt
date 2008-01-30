@@ -72,7 +72,6 @@ unless ( $Portlets ) {
         HomepageSettings => $default_portlets? $default_portlets->content: {},
     );
 }
-return;
 
 my ($body, $summary) = @{$Portlets}{qw(body summary)};
 unless( $body && @$body ) {
