@@ -106,7 +106,7 @@ sub load_or_create_user {
     my $self = shift;
     my %args = ( privileged => 1, disabled => 0, @_ );
 
-    my $MemberOf = delete $args{'MemberOf'};
+    my $MemberOf = delete $args{'member_of'};
     $MemberOf = [$MemberOf] if defined $MemberOf && !ref $MemberOf;
     $MemberOf ||= [];
 
@@ -273,18 +273,19 @@ sub add_rights {
 
     require RT::Model::ACECollection;
     foreach my $e (@list) {
-        my $principal = delete $e->{'Principal'};
+        my $principal = delete $e->{'principal'};
         unless ( ref $principal ) {
             if ( $principal =~ /^(everyone|(?:un)?privileged)$/i ) {
                 $principal = RT::Model::Group->new(
-                    current_user => RT->system_user );
+                    current_user => RT->system_user
+                );
                 $principal->load_system_internal_group($1);
             } else {
                 die
                     "principal is not an object, but also is not name of a system group";
             }
         }
-        unless ( $principal->isa('RT::Principal') ) {
+        unless ( $principal->isa('RT::Model::Principal') ) {
             if ( $principal->can('principal_object') ) {
                 $principal = $principal->principal_object;
             }

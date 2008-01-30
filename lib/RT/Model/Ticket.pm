@@ -595,7 +595,7 @@ sub create {
     unless ($create_groups_ret) {
         Jifty->log->fatal( "Couldn't create ticket groups for ticket "
                 . $self->id
-                . ". aborting Ticket creation." );
+                . ". aborting ticket creation." );
         Jifty->handle->rollback();
         return ( 0, 0,
             _("Ticket could not be created due to an internal error") );
@@ -1273,7 +1273,7 @@ sub _add_watcher {
 =head2 delete_watcher { type => TYPE, principal_id => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
 
 
-Deletes a Ticket watcher.  Takes two arguments:
+Deletes a ticket watcher.  Takes two arguments:
 
 Type  (one of Requestor,Cc,AdminCc)
 
@@ -1554,7 +1554,7 @@ sub cc {
 
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('ShowTicket') ) {
-        $group->load_ticket_role_group( type => 'Cc', Ticket => $self->id );
+        $group->load_ticket_role_group( type => 'Cc', ticket => $self->id );
     }
     return ($group);
 
