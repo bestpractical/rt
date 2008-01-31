@@ -161,7 +161,7 @@ sub handle_errors {
         }
         unless ( $sent_once{'BadData'} ) {
             unless (
-                CheckBadData(
+                check_bad_data(
                     Message => $args{'Message'},
                     Status  => \@status
                 )

@@ -3547,9 +3547,9 @@ sub current_user_has_right {
 
 =head2 has_right
 
- Takes a paramhash with the attributes 'right' and 'Principal'
+ Takes a paramhash with the attributes 'right' and 'principal'
   'right' is a ticket-scoped textual right from RT::Model::ACE 
-  'Principal' is an RT::Model::User object
+  'principal' is an RT::Model::User object
 
   Returns 1 if the principal has the right. Returns undef if not.
 
@@ -3563,8 +3563,8 @@ sub has_right {
         @_
     );
 
-    unless (( defined $args{'Principal'} )
-        and ( ref( $args{'Principal'} ) ) )
+    unless (( defined $args{'principal'} )
+        and ( ref( $args{'principal'} ) ) )
     {
         Carp::cluck("Principal attrib undefined for Ticket::has_right");
         Jifty->log->fatal("Principal attrib undefined for Ticket::has_right");
@@ -3572,7 +3572,7 @@ sub has_right {
     }
 
     return (
-        $args{'Principal'}->has_right(
+        $args{'principal'}->has_right(
             object => $self,
             right  => $args{'right'}
         )

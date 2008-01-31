@@ -1208,7 +1208,7 @@ sub current_user_has_right {
 
 =head2 has_right
 
-Takes a param hash with the fields 'right' and 'Principal'.
+Takes a param hash with the fields 'right' and 'principal'.
 Principal defaults to the current user.
 Returns true if the principal has that right for this queue.
 Returns undef otherwise.
