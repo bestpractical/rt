@@ -28,13 +28,13 @@ my $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 my $quick = RT::Search::Googleish->new(Argument => "",
                                  TicketsObj => $tickets);
 my @tests = (
-    "General new open root"     => "( Owner = 'root' ) AND ( queue = 'General' ) AND ( Status = 'new' OR Status = 'open' )", 
-    "fulltext:jesse"       => "( Content LIKE 'jesse' )",
+    "General new open root"     => "( owner = 'root' ) AND ( queue = 'General' ) AND ( status = 'new' OR status = 'open' )", 
+    "fulltext:jesse"       => "( content LIKE 'jesse' )",
     $queue                 => "( queue = '$queue' )",
-    "root $queue"          => "( Owner = 'root' ) AND ( queue = '$queue' )",
+    "root $queue"          => "( owner = 'root' ) AND ( queue = '$queue' )",
     "notauser $queue"      => "( queue = '$queue' ) AND ( subject LIKE 'notauser' )",
-    "notauser $queue root" => "( Owner = 'root' ) AND ( queue = '$queue' ) AND ( subject LIKE 'notauser' )");
+    "notauser $queue root" => "( owner = 'root' ) AND ( queue = '$queue' ) AND ( subject LIKE 'notauser' )");
 
 while (my ($from, $to) = splice @tests, 0, 2) {
-    is($quick->query_to_sql($from), $to, "<$from> -> <$to>");
+    is(lc $quick->query_to_sql($from), lc $to, "<$from> -> <$to>");
 }

@@ -3559,7 +3559,7 @@ sub has_right {
     my $self = shift;
     my %args = (
         right     => undef,
-        Principal => undef,
+        principal => undef,
         @_
     );
 
