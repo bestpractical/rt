@@ -1294,7 +1294,7 @@ sub _set {
 
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             type      => $args{'transaction_type'},
-            Field     => $args{'column'},
+            field     => $args{'column'},
             new_value => $args{'value'},
             old_value => $Old,
             time_taken => $args{'time_taken'},

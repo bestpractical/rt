@@ -1256,11 +1256,11 @@ sub _set {
         }
     }
 
-    my $Old = $self->SUPER::_value("$args{'Field'}");
+    my $Old = $self->SUPER::_value( $args{'column'} );
 
     my ( $ret, $msg ) = $self->SUPER::_set(
-        column => $args{'Field'},
-        value  => $args{'Value'}
+        column => $args{'column'},
+        value  => $args{'value'}
     );
 
     #If we can't actually set the field to the value, don't record
@@ -1271,8 +1271,8 @@ sub _set {
 
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             type      => $args{'TransactionType'},
-            Field     => $args{'Field'},
-            new_value => $args{'Value'},
+            field     => $args{'column'},
+            new_value => $args{'value'},
             old_value => $Old,
             time_taken => $args{'time_taken'},
         );

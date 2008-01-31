@@ -1258,7 +1258,7 @@ sub _add_watcher {
         $self->_new_transaction(
             type      => 'AddWatcher',
             new_value => $principal->id,
-            Field     => $args{'type'}
+            field     => $args{'type'}
         );
     }
 
@@ -1392,7 +1392,7 @@ sub delete_watcher {
         $self->_new_transaction(
             type      => 'del_watcher',
             old_value => $principal->id,
-            Field     => $args{'type'}
+            field     => $args{'type'}
         );
     }
 
@@ -2430,7 +2430,7 @@ sub delete_link {
     unless ( $args{ 'Silent' . $direction } ) {
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             type      => 'DeleteLink',
-            Field     => $LINKDIRMAP{ $args{'type'} }->{$direction},
+            field     => $LINKDIRMAP{ $args{'type'} }->{$direction},
             old_value => $remote_uri->uri || $remote_link,
             time_taken => 0
         );
@@ -2443,7 +2443,7 @@ sub delete_link {
         my $OtherObj = $remote_uri->object;
         my ( $val, $Msg ) = $OtherObj->_new_transaction(
             type  => 'DeleteLink',
-            Field => $direction eq 'target'
+            field => $direction eq 'target'
             ? $LINKDIRMAP{ $args{'type'} }->{base}
             : $LINKDIRMAP{ $args{'type'} }->{target},
             old_value      => $self->uri,
@@ -2572,7 +2572,7 @@ sub _add_link {
     unless ( $args{ 'Silent' . $direction } ) {
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             type      => 'AddLink',
-            Field     => $LINKDIRMAP{ $args{'type'} }->{$direction},
+            field     => $LINKDIRMAP{ $args{'type'} }->{$direction},
             new_value => $remote_uri->uri || $remote_link,
             time_taken => 0
         );
@@ -2585,7 +2585,7 @@ sub _add_link {
         my $OtherObj = $remote_uri->object;
         my ( $val, $msg ) = $OtherObj->_new_transaction(
             type  => 'AddLink',
-            Field => $direction eq 'target'
+            field => $direction eq 'target'
             ? $LINKDIRMAP{ $args{'type'} }->{base}
             : $LINKDIRMAP{ $args{'type'} }->{target},
             new_value      => $self->uri,
@@ -2962,7 +2962,7 @@ sub set_owner {
 
     my ( $val, $msg ) = $self->_new_transaction(
         type      => $Type,
-        Field     => 'Owner',
+        field     => 'Owner',
         new_value => $NewOwnerObj->id,
         old_value => $OldOwnerObj->id,
         time_taken => 0,
@@ -3446,7 +3446,7 @@ sub _set {
 
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             type      => $args{'transaction_type'},
-            Field     => $args{'column'},
+            field     => $args{'column'},
             new_value => $args{'value'},
             old_value => $Old,
             time_taken => $args{'time_taken'},

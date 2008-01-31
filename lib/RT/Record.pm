@@ -1237,8 +1237,8 @@ sub _new_transaction {
         old_reference   => undef,
         new_reference   => undef,
         reference_type  => undef,
-        Data           => undef,
-        Field          => undef,
+        data           => undef,
+        field          => undef,
         mime_obj        => undef,
         ActivateScrips => 1,
         commit_scrips  => 1,
@@ -1264,8 +1264,8 @@ sub _new_transaction {
         object_type    => ref($self),
         time_taken      => $args{'time_taken'},
         type           => $args{'type'},
-        Data           => $args{'Data'},
-        Field          => $args{'Field'},
+        data           => $args{'data'},
+        field          => $args{'field'},
         new_value      => $args{'new_value'},
         old_value      => $args{'old_value'},
         new_reference   => $new_ref,
@@ -1473,7 +1473,7 @@ sub _add_custom_field_value {
                     my ( $transaction_id, $Msg, $transaction_obj )
                         = $self->_new_transaction(
                         type         => 'CustomField',
-                        Field        => $cf->id,
+                        field        => $cf->id,
                         old_reference => $value,
                         );
                 }
@@ -1535,7 +1535,7 @@ sub _add_custom_field_value {
             my ( $transaction_id, $Msg, $transaction_obj )
                 = $self->_new_transaction(
                 type         => 'CustomField',
-                Field        => $cf->id,
+                field        => $cf->id,
                 old_reference => $old_value,
                 new_reference => $new_value,
                 );
@@ -1575,7 +1575,7 @@ sub _add_custom_field_value {
         if ( $args{'record_transaction'} ) {
             my ( $tid, $msg ) = $self->_new_transaction(
                 type          => 'CustomField',
-                Field         => $cf->id,
+                field         => $cf->id,
                 new_reference  => $new_value_id,
                 reference_type => 'RT::Model::ObjectCustomFieldValue',
             );
@@ -1628,7 +1628,7 @@ sub delete_custom_field_value {
 
     my ( $transaction_id, $Msg, $transaction_obj ) = $self->_new_transaction(
         type          => 'CustomField',
-        Field         => $cf->id,
+        field         => $cf->id,
         old_reference  => $val,
         reference_type => 'RT::Model::ObjectCustomFieldValue',
     );

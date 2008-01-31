@@ -112,16 +112,16 @@ sub add {
     my $self = shift;
     my %args = (
         subject => undef,
-        Owner   => undef,
-        Due     => undef,
+        owner   => undef,
+        due     => undef,
         @_
     );
 
     my $reminder = RT::Model::Ticket->new;
     $reminder->create(
         subject  => $args{'subject'},
-        Owner    => $args{'Owner'},
-        Due      => $args{'Due'},
+        owner    => $args{'Owner'},
+        due      => $args{'Due'},
         RefersTo => $self->ticket,
         type     => 'reminder',
         queue    => $self->ticket_obj->queue,
@@ -129,7 +129,7 @@ sub add {
     );
     $self->ticket_obj->_new_transaction(
         type      => 'AddReminder',
-        column    => 'RT::Model::Ticket',
+        field     => 'RT::Model::Ticket',
         new_value => $reminder->id
     );
 
@@ -142,7 +142,7 @@ sub open {
     $reminder->set_status('open');
     $self->ticket_obj->_new_transaction(
         type      => 'OpenReminder',
-        column    => 'RT::Model::Ticket',
+        field     => 'RT::Model::Ticket',
         new_value => $reminder->id
     );
 }
@@ -153,7 +153,7 @@ sub resolve {
     $reminder->set_status('resolved');
     $self->ticket_obj->_new_transaction(
         type      => 'ResolveReminder',
-        column    => 'RT::Model::Ticket',
+        field     => 'RT::Model::Ticket',
         new_value => $reminder->id
     );
 }

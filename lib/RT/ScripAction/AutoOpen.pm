@@ -88,10 +88,10 @@ sub commit {
     $self->ticket_obj->__set( column => 'Status', value => 'open' );
     $self->ticket_obj->_new_transaction(
         type      => 'Status',
-        Field     => 'Status',
+        field     => 'Status',
         old_value => $oldstatus,
         new_value => 'open',
-        Data      => 'Ticket auto-opened on incoming correspondence'
+        data      => 'Ticket auto-opened on incoming correspondence'
     );
 
     return 1;
