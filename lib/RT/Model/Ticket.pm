@@ -1424,7 +1424,7 @@ sub squelch_mail_to {
             return undef;
         }
         my $attr = shift;
-        $self->add_attribute( name => 'SquelchMailTo', Content => $attr )
+        $self->add_attribute( name => 'SquelchMailTo', content => $attr )
             unless grep { $_->content eq $attr }
                 $self->attributes->named('SquelchMailTo');
 
