@@ -367,7 +367,7 @@ of the C<ValuesClass> method.
 
 =cut
 
-*ValuesObj = \&Values;
+*values_obj = \&values;
 
 sub values {
     my $self = shift;
