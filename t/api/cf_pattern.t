@@ -21,8 +21,8 @@ works($q->create(name => "CF-Pattern-".$$));
 my $cf = new('RT::Model::CustomField');
 my @cf_args = (name => $q->name, type => 'Freeform', queue => $q->id, MaxValues => 1);
 
-fails($cf->create(@cf_args, Pattern => ')))bad!regex((('));
-works($cf->create(@cf_args, Pattern => 'good regex'));
+fails($cf->create(@cf_args, pattern => ')))bad!regex((('));
+works($cf->create(@cf_args, pattern => 'good regex'));
 
 my $t = new('RT::Model::Ticket');
 my ($id,undef,$msg) = $t->create(queue => $q->id, subject => 'CF Test');

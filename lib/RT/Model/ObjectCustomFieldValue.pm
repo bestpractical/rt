@@ -264,7 +264,7 @@ sub _fill_in_template_url {
 
 Returns a filled in URL template for this ObjectCustomFieldValue, suitable for 
 constructing a hyperlink in RT's webui. Returns undef if this custom field doesn't have
-a LinkValueTo
+a link_value_to
 
 =cut
 
@@ -278,7 +278,7 @@ sub link_value_to {
 
 Returns a filled in URL template for this ObjectCustomFieldValue, suitable for 
 constructing a hyperlink in RT's webui. Returns undef if this custom field doesn't have
-a IncludeContentForValue
+a include_content_for_value
 
 =cut
 

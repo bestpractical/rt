@@ -56,5 +56,5 @@ my $cf = RT::Model::CustomField->new();
 </%INIT>
 <%ARGS>
 $Default=>undef
-$name => 'TypeComposite'
+$name => 'type_composite'
 </%ARGS>

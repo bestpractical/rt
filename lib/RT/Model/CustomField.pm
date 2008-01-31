@@ -207,8 +207,8 @@ sub create {
         return ( 0, _('Permission Denied') );
     }
 
-    if ( $args{TypeComposite} ) {
-        @args{ 'type', 'max_values' } = split( /-/, $args{TypeComposite}, 2 );
+    if ( $args{type_composite} ) {
+        @args{ 'type', 'max_values' } = split( /-/, $args{type_composite}, 2 );
     } elsif ( $args{type} =~ s/(?:(Single)|Multiple)$// ) {
 
         # old style type string
@@ -747,7 +747,7 @@ Takes a boolean.
 
 # }}}
 
-=head2 SetTypeComposite
+=head2 Settype_composite
 
 Set this custom field's type and maximum values as a composite value
 
@@ -796,7 +796,7 @@ sub set_lookup_type {
     return $self->_set( column => 'lookup_type', value => $lookup );
 }
 
-=head2 TypeComposite
+=head2 type_composite
 
 Returns a composite value composed of this object's type and maximum values
 
@@ -807,7 +807,7 @@ sub type_composite {
     return join '-', ( $self->type || '' ), ( $self->max_values || 0 );
 }
 
-=head2 TypeComposites
+=head2 type_composites
 
 Returns an array of all possible composite values for custom fields.
 
@@ -1153,9 +1153,9 @@ sub _forobject_type {
 
 }
 
-=head2 IncludeContentForValue [value] (and SetIncludeContentForValue)
+=head2 include_content_for_value [value] (and Setinclude_content_for_value)
 
-Gets or sets the  C<IncludeContentForValue> for this custom field. RT
+Gets or sets the  C<include_content_for_value> for this custom field. RT
 uses this field to automatically include content into the user's browser
 as they display records with custom fields in RT.
 
@@ -1167,12 +1167,12 @@ sub set_include_content_for_value {
 
 sub include_content_for_value {
     my $self = shift;
-    $self->url_template( 'IncludeContentForValue', @_ );
+    $self->url_template( 'include_content_for_value', @_ );
 }
 
-=head2 LinkValueTo [value] (and SetLinkValueTo)
+=head2 link_value_to [value] (and Setlink_value_to)
 
-Gets or sets the  C<LinkValueTo> for this custom field. RT
+Gets or sets the  C<link_value_to> for this custom field. RT
 uses this field to make custom field values into hyperlinks in the user's
 browser as they display records with custom fields in RT.
 
@@ -1184,7 +1184,7 @@ sub set_link_value_to {
 
 sub link_value_to {
     my $self = shift;
-    $self->url_template( 'LinkValueTo', @_ );
+    $self->url_template( 'link_value_to', @_ );
 
 }
 

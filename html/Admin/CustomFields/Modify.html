@@ -66,7 +66,7 @@
 
 <tr><td class="label"><&|/l&>Type</&></td>
 <td><& /Admin/Elements/SelectCustomFieldType, 
-        name => "TypeComposite", 
+        name => "type_composite", 
         Default => $CustomFieldObj->type_composite, &>
 </td></tr>
 
@@ -84,7 +84,7 @@
 
 <tr><td class="label"><&|/l&>Validation</&></td>
 <td><& /Widgets/ComboBox,
-    name    => 'Pattern',
+    name    => 'pattern',
     Default => $CustomFieldObj->pattern,
     Size    => 20,
     Values  => [
@@ -95,7 +95,7 @@
 &></td></tr>
 
 <tr><td class="label"><&|/l&>Link values to</&></td><td>
-<input size="60" name="LinkValueTo"  value="<% $CustomFieldObj->link_value_to || '' %>" />
+<input size="60" name="link_value_to"  value="<% $CustomFieldObj->link_value_to || '' %>" />
 <div class="hints">
 <&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
 <&|/l&>Fill in this field with a URL.</&>
@@ -103,7 +103,7 @@
 </div></td></tr>
 
 <tr><td class="label"><&|/l&>Include page</&></td><td>
-<input size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->include_content_for_value || '' %>" />
+<input size="60" name="include_content_for_value" value="<% $CustomFieldObj->include_content_for_value || '' %>" />
 <div class="hints">
 <&|/l&>RT can include content from another web service when showing this custom field.</&>
 <&|/l&>Fill in this field with a URL.</&>
@@ -145,10 +145,10 @@ else {
     if ( $id eq 'new' ) {
         my ( $val, $msg ) = $CustomFieldObj->create(
             name          => $name,
-            TypeComposite => $TypeComposite,
+            type_composite => $type_composite,
             lookup_type    => $lookup_type,
             description   => $description,
-            Pattern       => $Pattern,
+            pattern       => $pattern,
         );
         $m->comp( "/Elements/Error", Why => _( "Could not create CustomField", $msg ) ) unless $val;
         push @results, $msg;
@@ -165,7 +165,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     #we're asking about enabled on the web page but really care about disabled.
     $ARGS{'disabled'} = $disabled = $Enabled? 0 : 1;
 
-    my @attribs = qw(disabled Pattern name TypeComposite lookup_type description LinkValueTo IncludeContentForValue);
+    my @attribs = qw(disabled pattern name type_composite lookup_type description link_value_to include_content_for_value);
     push @results, update_record_object(
         AttributesRef => \@attribs,
         object        => $CustomFieldObj,
@@ -213,12 +213,12 @@ $EnabledChecked = '' if $CustomFieldObj->disabled;
 </%INIT>
 <%ARGS>
 $id => undef
-$TypeComposite => undef
+$type_composite => undef
 $lookup_type => undef
 $MaxValues => undef
 $sort_order => undef
 $description => undef
-$Pattern => undef
+$pattern => undef
 $name => undef
 $SetEnabled => undef
 $Enabled => 0

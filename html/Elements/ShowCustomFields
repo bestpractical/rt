@@ -93,7 +93,7 @@ my $print_value = sub  {
     }
     $m->out('</a>') if $linked;
 
-    # This section automatically populates a div with the "IncludeContentForValue" for this custom
+    # This section automatically populates a div with the "include_content_for_value" for this custom
     # field if it's been defined
     if ( $cf->include_content_for_value ) {
        my $vid = $value->id;
