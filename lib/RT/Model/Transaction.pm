@@ -349,10 +349,10 @@ sub create {
         Jifty->log->debug(
             'About to prepare scrips for transaction #' . $self->id );
         $self->{'scrips'}->prepare(
-            Stage       => 'TransactionCreate',
+            stage       => 'TransactionCreate',
             type        => $args{'type'},
-            Ticket      => $args{'object_id'},
-            Transaction => $self->id,
+            ticket      => $args{'object_id'},
+            transaction => $self->id,
         );
         if ( $args{'commit_scrips'} ) {
             Jifty->log->debug(

@@ -5334,7 +5334,7 @@ msgid "Squelched message recipients"
 msgstr "Скрытые получатели сообщения"
 
 #: html/Admin/Elements/EditScrip:78
-msgid "Stage"
+msgid "stage"
 msgstr "Стадия"
 
 #: NOT FOUND IN SOURCE

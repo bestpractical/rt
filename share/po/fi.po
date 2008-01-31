@@ -4925,7 +4925,7 @@ msgid "sort_order"
 msgstr "Lajittelujärjestys"
 
 #: html/Admin/Elements/EditScrip:78
-msgid "Stage"
+msgid "stage"
 msgstr ""
 
 #: NOT FOUND IN SOURCE

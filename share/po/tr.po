@@ -4060,7 +4060,7 @@ msgid "Sort"
 msgstr "Sırala"
 
 #: html/Admin/Elements/EditScrip:78
-msgid "Stage"
+msgid "stage"
 msgstr "Aşama"
 
 #: html/Elements/SelectDateType:48 html/Ticket/Elements/EditDates:53 html/Ticket/Elements/ShowDates:56

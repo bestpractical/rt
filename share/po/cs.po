@@ -4917,7 +4917,7 @@ msgid "sort_order"
 msgstr "Třídící pořadí"
 
 #: html/Admin/Elements/EditScrip:78
-msgid "Stage"
+msgid "stage"
 msgstr "Fáze"
 
 #: NOT FOUND IN SOURCE

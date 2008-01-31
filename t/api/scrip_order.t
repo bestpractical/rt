@@ -23,7 +23,7 @@ my $priority_ten_scrip = RT::Model::Scrip->new(current_user => RT->system_user);
     custom_prepare_code => 'Jifty->log->debug("Setting priority to 10..."); return 1;',
     custom_commit_code => '$self->ticket_obj->set_priority(10);',
     template => 'Blank',
-    Stage => 'TransactionCreate',
+    stage => 'TransactionCreate',
 );
 ok($id, "Created priority-10 scrip? ".$msg);
 
@@ -36,7 +36,7 @@ my $priority_five_scrip = RT::Model::Scrip->new(current_user => RT->system_user)
     custom_prepare_code => 'Jifty->log->debug("Setting priority to 5..."); return 1;',
     custom_commit_code => '$self->ticket_obj->set_priority(5);', 
     template => 'Blank',
-    Stage => 'TransactionCreate',
+    stage => 'TransactionCreate',
 );
 ok($id, "Created priority-5 scrip? ".$msg);
 

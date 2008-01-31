@@ -160,10 +160,10 @@ sub apply {
 
     my %args = (
         ticket_obj      => undef,
-        Ticket          => undef,
-        Transaction     => undef,
+        ticket          => undef,
+        transaction     => undef,
         transaction_obj => undef,
-        Stage           => undef,
+        stage           => undef,
         type            => undef,
         @_
     );
@@ -183,6 +183,7 @@ sub commit {
     my $self = shift;
 
     foreach my $scrip ( @{ $self->prepared } ) {
+        Jifty->log->debug("We're trying to commit ". $scrip->description);
         Jifty->log->debug( "Committing scrip #"
                 . $scrip->id
                 . " on txn #"
@@ -208,10 +209,10 @@ sub prepare {
     my $self = shift;
     my %args = (
         ticket_obj      => undef,
-        Ticket          => undef,
-        Transaction     => undef,
+        ticket          => undef,
+        transaction     => undef,
         transaction_obj => undef,
-        Stage           => undef,
+        stage           => undef,
         type            => undef,
         @_
     );
@@ -219,15 +220,16 @@ sub prepare {
     #We're really going to need a non-acled ticket for the scrips to work
     $self->setup_source_objects(
         ticket_obj      => $args{'ticket_obj'},
-        Ticket          => $args{'Ticket'},
+        ticket          => $args{'ticket'},
         transaction_obj => $args{'transaction_obj'},
-        Transaction     => $args{'Transaction'}
+        transaction     => $args{'transaction'}
     );
 
-    $self->_find_scrips( Stage => $args{'Stage'}, type => $args{'type'} );
+    $self->_find_scrips( stage => $args{'stage'}, type => $args{'type'} );
 
     #Iterate through each script and check it's applicability.
     while ( my $scrip = $self->next() ) {
+        Jifty->log->debug("We're trying to prepare ". $scrip->description);
         next
             unless (
             $scrip->is_applicable(
@@ -236,6 +238,7 @@ sub prepare {
             )
             );
 
+            Jifty->log->debug("And it's applicable");
         #If it's applicable, prepare and commit it
         next
             unless (
@@ -244,6 +247,7 @@ sub prepare {
                 transaction_obj => $self->{'transaction_obj'}
             )
             );
+            Jifty->log->debug("And it's prepared");
         push @{ $self->{'prepared_scrips'} }, $scrip;
 
     }
@@ -280,8 +284,8 @@ sub setup_source_objects {
     my $self = shift;
     my %args = (
         ticket_obj      => undef,
-        Ticket          => undef,
-        Transaction     => undef,
+        ticket          => undef,
+        transaction     => undef,
         transaction_obj => undef,
         @_
     );
@@ -290,18 +294,18 @@ sub setup_source_objects {
         $self->{'ticket_obj'}->current_user( $self->current_user );
     } else {
         $self->{'ticket_obj'} = RT::Model::Ticket->new;
-        $self->{'ticket_obj'}->load( $args{'Ticket'} )
+        $self->{'ticket_obj'}->load( $args{'ticket'} )
             || Jifty->log->err(
-            "$self couldn't load ticket $args{'Ticket'}\n");
+            "$self couldn't load ticket $args{'ticket'}\n");
     }
 
     if ( ( $self->{'transaction_obj'} = $args{'transaction_obj'} ) ) {
         $self->{'transaction_obj'}->current_user( $self->current_user );
     } else {
         $self->{'transaction_obj'} = RT::Model::Transaction->new;
-        $self->{'transaction_obj'}->load( $args{'Transaction'} )
+        $self->{'transaction_obj'}->load( $args{'transaction'} )
             || Jifty->log->err(
-            "$self couldn't load transaction $args{'Transaction'}\n");
+            "$self couldn't load transaction $args{'transaction'}\n");
     }
 }
 
@@ -321,7 +325,7 @@ order.)
 sub _find_scrips {
     my $self = shift;
     my %args = (
-        Stage => undef,
+        stage => undef,
         type  => undef,
         @_
     );
@@ -332,7 +336,7 @@ sub _find_scrips {
 
     # or to "global"
 
-    $self->limit( column => "stage", value => $args{'Stage'} );
+    $self->limit( column => "stage", value => $args{'stage'} );
 
     my $ConditionsAlias = $self->new_alias('ScripConditions');
 
@@ -373,7 +377,7 @@ sub _find_scrips {
 
     Jifty->log->debug( "Found "
             . $self->count
-            . " scrips for $args{'Stage'} stage"
+            . " scrips for $args{'stage'} stage"
             . " with applicable type(s) $args{'type'}" );
 }
 

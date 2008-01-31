@@ -6711,15 +6711,15 @@ msgid "sort_order"
 msgstr "排序順序"
 
 #: html/Admin/Elements/EditScrip:78
-msgid "Stage"
+msgid "stage"
 msgstr "關卡"
 
 #: NOT FOUND IN SOURCE
-msgid "Stage Action"
+msgid "stage Action"
 msgstr "關卡運行動作"
 
 #: NOT FOUND IN SOURCE
-msgid "Stage Condition"
+msgid "stage Condition"
 msgstr "關卡運行條件"
 
 #: NOT FOUND IN SOURCE

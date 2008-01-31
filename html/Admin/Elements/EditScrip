@@ -77,10 +77,10 @@
     queue => $Queue,
 &></td></tr>
 
-<tr><td align="right"><&|/l&>Stage</&>:</td><td>
-<& /Admin/Elements/SelectStage,
-    name => "Scrip-$id-Stage",
-    Default => $ARGS{"Scrip-$id-Stage"} || $scrip->stage,
+<tr><td align="right"><&|/l&>stage</&>:</td><td>
+<& /Admin/Elements/Selectstage,
+    name => "Scrip-$id-stage",
+    Default => $ARGS{"Scrip-$id-stage"} || $scrip->stage,
 &></td></tr>
 
 </table>
@@ -176,7 +176,7 @@ if ( $id eq 'new' ) {
         custom_prepare_code      => $ARGS{"Scrip-new-custom_prepare_code"},
         custom_commit_code       => $ARGS{"Scrip-new-custom_commit_code"},
         custom_is_applicable_code => $ARGS{"Scrip-new-custom_is_applicable_code"},
-        Stage                  => $ARGS{"Scrip-new-Stage"},
+        stage                  => $ARGS{"Scrip-new-stage"},
     );
 }
 else {
@@ -184,7 +184,7 @@ else {
     return (undef, _("Couldn't load scrip #%1", $id))
         unless $scrip->id;
 
-    my @attribs = qw(queue scrip_action scrip_condition template Stage
+    my @attribs = qw(queue scrip_action scrip_condition template stage
         description custom_prepare_code custom_commit_code custom_is_applicable_code);
     my @results = update_record_object(
         AttributesRef   => \@attribs,

@@ -4723,7 +4723,7 @@ msgid "sort_order"
 msgstr "並び順"
 
 #: html/Admin/Elements/EditScrip:78
-msgid "Stage"
+msgid "stage"
 msgstr ""
 
 #: NOT FOUND IN SOURCE

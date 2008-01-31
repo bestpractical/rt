@@ -29,7 +29,7 @@ my $sid;
     $m->select('Scrip-new-scrip_condition' => 'On Transaction');
     $m->select('Scrip-new-scrip_action' => 'User Defined');
     $m->select('Scrip-new-Template' => 'Global template: Blank');
-    $m->select('Scrip-new-Stage' => 'transaction_batch');
+    $m->select('Scrip-new-stage' => 'transaction_batch');
     $m->field('Scrip-new-custom_prepare_code' => 'return 1;');
     $m->field('Scrip-new-custom_commit_code' => 'return 1;');
     $m->submit;
@@ -42,7 +42,7 @@ my $sid;
     is value_name($form, "Scrip-$sid-scrip_condition"), 'On Transaction', 'correct condition';
     is value_name($form, "Scrip-$sid-scrip_action"), 'User Defined', 'correct action';
     is value_name($form, "Scrip-$sid-Template"), 'Global template: Blank', 'correct template';
-    is value_name($form, "Scrip-$sid-Stage"), 'transaction_batch', 'correct stage';
+    is value_name($form, "Scrip-$sid-stage"), 'transaction_batch', 'correct stage';
 
     use File::Temp qw(tempfile);
     my ($tmp_fh, $tmp_fn) = tempfile();

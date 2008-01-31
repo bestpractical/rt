@@ -63,5 +63,5 @@ push @stages, 'disabled';
 </%INIT>
 <%ARGS>
 $Default => 'TransactionCreate'
-$name => 'Stage'
+$name => 'stage'
 </%ARGS>

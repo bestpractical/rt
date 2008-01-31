@@ -109,57 +109,57 @@ Prohibit Ticket Operation:
             -> Queue: B
               -> Rule: yyy
             -> Workflow: W
-              -> Stage: Approval
+              -> stage: Approval
               -> Rule: xxx
 
 isa_ok( $Approval->type, 'RT::Model::Ticket' );
 is( $Approval->Workflow->name, 'W' );
-is( $Approval->Stage->name, 'Approval' );
+is( $Approval->stage->name, 'Approval' );
 
 [Queue: A]
   -> Workflow: W
 
 [Workflow: W]
-  -> Stage: TOP
-  -> Stage: Approval
-  -> Stage: SUCCESS
-  -> Stage: FAIL
+  -> stage: TOP
+  -> stage: Approval
+  -> stage: SUCCESS
+  -> stage: FAIL
 
 "RuleCollections"
 
-[Stage: TOP]
-  -> Rule: OnCreate RunStage Approval
+[stage: TOP]
+  -> Rule: OnCreate Runstage Approval
 
 ok( TicketA->Rules->has_entry($ApprovalRule) )
 ok( TicketB->Rules->has_entry($ApprovalRule) )
 
 [Rule: Approval]
-  -> Rule: OnResolve RunStage SUCCESS
-  -> Rule: OnReject RunStage FAIL
+  -> Rule: OnResolve Runstage SUCCESS
+  -> Rule: OnReject Runstage FAIL
 
-[Stage: SUCCESS]
+[stage: SUCCESS]
   -> Rule: OnCreate SetStatus('resolved') TOP
 
-[Stage: FAIL]
+[stage: FAIL]
   -> Rule: OnCreate SetStatus('rejected') TOP
 
 [Unassociated]
   - Rule FOO: OnAnything {
-        CreateTicketIfNotBlocked StageFOO
-        add_link DependedOnBy TOP to Stage1
-        AssignRule DoStage2 to Stage1
-        AssignRule DoStage3 to Stage1
+        CreateTicketIfNotBlocked stageFOO
+        add_link DependedOnBy TOP to stage1
+        AssignRule Dostage2 to stage1
+        AssignRule Dostage3 to stage1
     }
   - Rule BAR: OnAnything {
-        CreateTicketIfNotBlocked StageBAR
+        CreateTicketIfNotBlocked stageBAR
         DoSomethingBizzare
     }
 
-     ,==> [Stage0] ==>.
+     ,==> [stage0] ==>.
     ,                  .
-[TOP] ==> [Stage1] ==> [Stage3]
+[TOP] ==> [stage1] ==> [stage3]
     `                  '
-     `==> [Stage2] ==>'
+     `==> [stage2] ==>'
 
 OnTransaction:
     $self->ticket->Queues->scrips->apply
@@ -170,7 +170,7 @@ OnTransaction:
 
 OnTransaction:
     $self->ticket->Queues->scrips->apply
-                 ->Stages->scrips->apply
+                 ->stages->scrips->apply
 
 [QueueX]
  - Rule:
@@ -183,9 +183,9 @@ OnTransaction:
         RunRule FOO
 
 
-[TOP] => [Stage1] => [Stage2] => [END]
-               `- => [Stage3] => [END]
-                ` -> [Stage4]
+[TOP] => [stage1] => [stage2] => [END]
+               `- => [stage3] => [END]
+                ` -> [stage4]
 
-[Stages]
+[stages]
  -> 

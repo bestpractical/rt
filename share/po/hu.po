@@ -4127,7 +4127,7 @@ msgid "Sort"
 msgstr "Rendezés"
 
 #: html/Admin/Elements/EditScrip:78
-msgid "Stage"
+msgid "stage"
 msgstr ""
 
 #: html/Elements/SelectDateType:48 html/Ticket/Elements/EditDates:53 html/Ticket/Elements/ShowDates:56

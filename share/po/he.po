@@ -4271,7 +4271,7 @@ msgid "Sort results by"
 msgstr "סדר תוצאות על פי"
 
 #: html/Admin/Elements/EditScrip:78
-msgid "Stage"
+msgid "stage"
 msgstr ""
 
 #: NOT FOUND IN SOURCE

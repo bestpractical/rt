@@ -4100,7 +4100,7 @@ msgid "Sort"
 msgstr "Trier"
 
 #: html/Admin/Elements/EditScrip:78
-msgid "Stage"
+msgid "stage"
 msgstr "Étape"
 
 #: html/Elements/SelectDateType:48 html/Ticket/Elements/EditDates:53 html/Ticket/Elements/ShowDates:56

@@ -5601,7 +5601,7 @@ msgid "sort_order"
 msgstr "SorteringsRækkefølge"
 
 #: html/Admin/Elements/EditScrip:78
-msgid "Stage"
+msgid "stage"
 msgstr "Trin"
 
 #: NOT FOUND IN SOURCE

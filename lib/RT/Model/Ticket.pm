@@ -2962,7 +2962,7 @@ sub set_owner {
 
     my ( $val, $msg ) = $self->_new_transaction(
         type      => $Type,
-        field     => 'Owner',
+        field     => 'owner',
         new_value => $NewOwnerObj->id,
         old_value => $OldOwnerObj->id,
         time_taken => 0,
@@ -3346,7 +3346,7 @@ sub DESTROY {
 
     require RT::Model::ScripCollection;
     RT::Model::ScripCollection->new( current_user => RT->system_user )->apply(
-        Stage           => 'transaction_batch',
+        stage           => 'transaction_batch',
         ticket_obj      => $self,
         transaction_obj => $batch->[0],
         type            => join( ',', ( map { $_->type } @{$batch} ) )

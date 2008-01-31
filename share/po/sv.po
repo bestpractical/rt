@@ -4663,7 +4663,7 @@ msgid "Sort"
 msgstr "Sortera"
 
 #: html/Admin/Elements/EditScrip:78
-msgid "Stage"
+msgid "stage"
 msgstr "Steg"
 
 #: html/Elements/SelectDateType:48

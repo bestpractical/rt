@@ -16,13 +16,17 @@ ok($q->id, "Created a scriptest queue");
 
 my $s1 = RT::Model::Scrip->new(current_user => RT->system_user);
 my ($val, $msg) =$s1->create( queue => $q->id,
+            description => 'on owner change, bump the priority',
              scrip_action => 'User Defined',
              scrip_condition => 'On Owner Change',
              custom_is_applicable_code => '',
              custom_prepare_code => 'return 1',
              custom_commit_code => '
+             Jifty->log->debug("HEY");
                 my ($status, $msg) = $self->ticket_obj->set_priority($self->ticket_obj->priority+1);
+             Jifty->log->debug("HEYyo");
                 unless ( $status ) {
+             Jifty->log->debug("Habao");
                     Jifty->log->error($msg);
                     return (0);
                 }
@@ -40,7 +44,6 @@ my ($tv,$ttv,$tm) = $ticket->create(queue => $q->id,
 ok($tv, $tm);
 ok($ticket->set_owner('root'));
 is ($ticket->priority , '21', "Ticket priority is set right");
-
 
 ok($ticket->steal);
 is ($ticket->priority , '22', "Ticket priority is set right");
