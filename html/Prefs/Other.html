@@ -90,7 +90,7 @@ my $user_object = Jifty->web->current_user->user_object;
 my $preferences = $user_object->preferences( RT->system );
 
 if ((defined $preferred_key) && $preferred_key ne $user_object->first_attribute('preferred_key')) {
-    my ($code, $msg) = $user_object->set_attribute(name => 'preferred_key', Content => $preferred_key);
+    my ($code, $msg) = $user_object->set_attribute(name => 'preferred_key', content => $preferred_key);
     push @results, _('Preferred Key: %1', _($msg));
 }
 

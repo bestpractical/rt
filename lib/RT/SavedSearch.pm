@@ -164,7 +164,7 @@ sub save {
     my ( $att_id, $att_msg ) = $object->add_attribute(
         'name'        => 'SavedSearch',
         'description' => $name,
-        'Content'     => \%params
+        'content'     => \%params
     );
     if ($att_id) {
         $self->{'Attribute'} = $object->attributes->with_id($att_id);

@@ -167,7 +167,7 @@ if ($ARGS{'id'} eq 'new') {
     if ( $ARGS{'MarkAsSeen'} ) {
         $ticket_obj->set_attribute(
             name => 'User-'. $ticket_obj->current_user->id .'-SeenUpTo',
-            Content => $ticket_obj->last_updated,
+            content => $ticket_obj->last_updated,
         );
         push @Actions, _('Marked all messages as seen');
     }

@@ -1094,7 +1094,7 @@ sub set_preferences {
     if ( $attr->id ) {
         return $attr->set_content($value);
     } else {
-        return $self->add_attribute( name => $name, Content => $value );
+        return $self->add_attribute( name => $name, content => $value );
     }
 }
 
@@ -1444,7 +1444,7 @@ sub set_private_key {
 
     my ( $status, $msg ) = $self->set_attribute(
         name    => 'private_key',
-        Content => $key,
+        content => $key,
     );
     return ( $status, _("Couldn't set private key") )
         unless $status;
