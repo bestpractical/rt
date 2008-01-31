@@ -68,7 +68,7 @@ record.
 		       20 = Elgamal (sign and encrypt - don't use them!)
 	    (for other id's see include/cipher.h)
  5. Field:  KeyID
- 6. Field:  Creation Date (in UTC).  For UID and UAT records, this is the
+ 6. Field:  Creation date (in UTC).  For UID and UAT records, this is the
             self-signature date.  Note that the dae is usally printed
             in seconds since epoch, however, we are migrating to an ISO
             8601 format (e.g. "19660205T091500").  This is currently
@@ -161,8 +161,8 @@ The "tru" trust database records have the fields:
     GnuPG before version 1.4 used the classic trust model by default.
     GnuPG 1.4 and later uses the PGP trust model by default.
 
- 4: Date trustdb was Created in seconds since 1/1/1970.
- 5: Date trustdb will expire in seconds since 1/1/1970.
+ 4: date trustdb was Created in seconds since 1/1/1970.
+ 5: date trustdb will expire in seconds since 1/1/1970.
 
 The "spk" signature subpacket records have the fields:
 

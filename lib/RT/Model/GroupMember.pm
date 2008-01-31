@@ -121,7 +121,7 @@ sub create {
     my $cached_id     = $cached_member->create(
         Member          => $args{'Member'},
         Group           => $args{'Group'},
-        ImmediateParent => $args{'Group'},
+        immediate_parent => $args{'Group'},
         Via             => '0'
     );
 
@@ -143,7 +143,7 @@ sub create {
         my $other_cached_id     = $other_cached_member->create(
             Member          => $args{'Member'},
             Group           => $parent_member->group_obj,
-            ImmediateParent => $parent_member->member_obj,
+            immediate_parent => $parent_member->member_obj,
             Via             => $parent_member->id
         );
         unless ($other_cached_id) {
@@ -213,7 +213,7 @@ sub _stash_user {
     my $cached_id     = $cached_member->create(
         Member          => $args{'Member'},
         Group           => $args{'Group'},
-        ImmediateParent => $args{'Group'},
+        immediate_parent => $args{'Group'},
         Via             => '0'
     );
 

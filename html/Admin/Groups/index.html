@@ -60,10 +60,10 @@
     Order => 'ASC',
     Rows  => 100,
     %ARGS,
-    Format => $Format,
+    format => $format,
     Collection => $Groups,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order order_by GroupString GroupOp Groupfield FinddisabledGroups)],
+    PassArguments => [qw(format Rows Page Order order_by GroupString GroupOp Groupfield FinddisabledGroups)],
 &>
 
 % my $ids = join ',', map $_->id, @{ $Groups->items_array_ref };
@@ -114,13 +114,13 @@ else {
 }
 
 
-$Format ||= q{'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__id__</a>/TITLE:#'}
+$format ||= q{'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__id__</a>/TITLE:#'}
     .q{,'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__name__</a>/TITLE:name'}
     .q{,'__description__'};
 
 </%INIT>
 <%ARGS>
-$Format => undef,
+$format => undef,
 
 $GroupString => '' unless defined $GroupString
 $GroupOp => '='

@@ -1852,7 +1852,7 @@ msgstr "Errore nei dati"
 
 #: html/SelfService/Display.html:61 html/Ticket/Create.html:203 html/Ticket/Elements/ShowSummary:83 html/Ticket/Elements/Tabs:116 html/Ticket/ModifyAll.html:65
 msgid "Dates"
-msgstr "Date"
+msgstr "date"
 
 #: lib/RT/Date.pm:452
 msgid "Dec."

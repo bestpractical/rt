@@ -60,7 +60,7 @@ unless ((defined $Default) or
 }
 
 unless ($name) {
-	$name = $menu_prefix. "_Date";
+	$name = $menu_prefix. "_date";
 }
 </%init>
 

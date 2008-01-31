@@ -502,7 +502,7 @@ Meta Data:
 sub _date_limit {
     my ( $sb, $field, $op, $value, @rest ) = @_;
 
-    die "Invalid Date Op: $op"
+    die "Invalid date Op: $op"
         unless $op =~ /^(=|>|<|>=|<=)$/;
 
     my $meta = $FIELD_METADATA{$field};
@@ -510,7 +510,7 @@ sub _date_limit {
         unless ( defined $meta->[1] );
 
     my $date = RT::Date->new();
-    $date->set( Format => 'unknown', value => $value );
+    $date->set( format => 'unknown', value => $value );
 
     if ( $op eq "=" ) {
 
@@ -518,7 +518,7 @@ sub _date_limit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->set_to_midnight( Timezone => 'server' );
+        $date->set_to_midnight( timezone => 'server' );
         my $daystart = $date->iso;
         $date->add_day;
         my $dayend = $date->iso;
@@ -610,7 +610,7 @@ sub _trans_date_limit {
     }
 
     my $date = RT::Date->new();
-    $date->set( Format => 'unknown', value => $value );
+    $date->set( format => 'unknown', value => $value );
 
     $sb->open_paren;
     if ( $op eq "=" ) {
@@ -619,7 +619,7 @@ sub _trans_date_limit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->set_to_midnight( Timezone => 'server' );
+        $date->set_to_midnight( timezone => 'server' );
         my $daystart = $date->iso;
         $date->add_day;
         my $dayend = $date->iso;

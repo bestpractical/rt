@@ -445,7 +445,7 @@ sub addresses {
 
 =head2 nice_headers
 
-Returns a multi-line string of the To, From, Cc, Date and subject headers.
+Returns a multi-line string of the To, From, Cc, date and subject headers.
 
 =cut
 

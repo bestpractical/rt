@@ -51,8 +51,8 @@
 <& /Elements/CollectionAsTable/Header,
     %ARGS,
     Class        => $Class,
-    Format       => \@Format,
-    FormatString => $Format,
+    format       => \@format,
+    format_string => $format,
     Order        => \@Order,
     order_by      => \@order_by,
     Rows         => $Rows,
@@ -70,7 +70,7 @@ while ( my $record = $Collection->next ) {
     $m->flush_buffer unless ++$i % 10;
     $m->comp('/Elements/CollectionAsTable/Row',
         i => $i,
-        Format => \@Format,
+        format => \@format,
         record => $record,
         maxitems => $maxitems,
         Class     => $Class,
@@ -115,21 +115,21 @@ if ( @order_by ) {
 $Page = 1 unless $Page && $Page > 0; # workaround problems with Page = '' or undef
 $Collection->set_page_info($Rows ? ( per_page => $Rows) : (per_page => 25), current_page => $Page);
 
-# DisplayFormat lets us use a "temporary" format for display, while 
+# display_format lets us use a "temporary" format for display, while 
 # still using our original format for next/prev page links.
 # bulk update uses this feature to add checkboxes
 
-$DisplayFormat ||= $Format;
+$display_format ||= $format;
 
 # Scrub the html of the format string to remove any potential nasties.
-$Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
-$DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat);
+$format = $m->comp('/Elements/ScrubHTML', Content => $format);
+$display_format = $m->comp('/Elements/ScrubHTML', Content => $display_format);
 
-my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
+my @format = $m->comp('/Elements/CollectionAsTable/ParseFormat', format => $display_format);
 
 # Find the maximum number of items in any row, so we can pad the table.
 my ($maxitems, $item) = (0, 0);
-foreach my $col (@Format) {
+foreach my $col (@format) {
     $item++;
     if ( $col->{title} && ($col->{title} eq 'NEWLINE') ) {
         $item = 0;
@@ -147,8 +147,8 @@ $Class =~ s/:/_/g;
 <%ARGS>
 $Collection    => undef
 
-$Format        => undef
-$DisplayFormat => undef
+$format        => undef
+$display_format => undef
 
 @Order         => ()
 @order_by       => ()
@@ -158,7 +158,7 @@ $Page          => 1
 
 $Title         => _('Ticket Search')
 $baseURL       => RT->config->get('WebPath') . $m->request_comp->path .'?'
-@PassArguments => qw(Query Format Rows Page Order order_by)
+@PassArguments => qw(Query format Rows Page Order order_by)
 
 $AllowSorting   => 0
 $ShowNavigation => 1

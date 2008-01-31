@@ -274,7 +274,7 @@ sub create {
         if $self->can('Creator') && $self->current_user;
 
     my $now = RT::Date->new( current_user => $self->current_user );
-    $now->set( Format => 'unix', value => time );
+    $now->set( format => 'unix', value => time );
 
     my ($id) = $self->SUPER::create(%attribs);
     if ( UNIVERSAL::isa( $id, 'Class::ReturnValue' ) ) {
@@ -370,7 +370,7 @@ sub last_updated_obj {
     my $self = shift;
     my $obj  = RT::Date->new();
 
-    $obj->set( Format => 'sql', value => $self->last_updated );
+    $obj->set( format => 'sql', value => $self->last_updated );
     return $obj;
 }
 
@@ -382,7 +382,7 @@ sub created_obj {
     my $self = shift;
     my $obj  = RT::Date->new();
 
-    $obj->set( Format => 'sql', value => $self->created );
+    $obj->set( format => 'sql', value => $self->created );
 
     return $obj;
 }

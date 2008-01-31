@@ -64,10 +64,10 @@
 
 <form method="post" action="Search.html" name="BuildQuery">
 <input type="hidden" name="name" value="<%$ARGS{name}%>" class="hidden" />
-<input type="hidden" name="Format" value="<%$ARGS{Format}%>" class="hidden" />
+<input type="hidden" name="format" value="<%$ARGS{format}%>" class="hidden" />
 
 <& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
-   AvailableColumns => $AvailableColumns, CurrentFormat => $CurrentFormat &>
+   AvailableColumns => $AvailableColumns, current_format => $current_format &>
 <& /Elements/Submit, Caption => _("Save"), Label => loc('Save'), name => 'Save'&>
 
 </form>
@@ -76,7 +76,7 @@
 my @actions;
 my $title = _("Customize").' ';
 
-my @fields = qw(Format Order order_by rows_per_page);
+my @fields = qw(format Order order_by rows_per_page);
 $ARGS{name} ||= '';
 my ($class, $id) = ( $ARGS{name} =~ m/^(.*)-(\d+)$/ );
 
@@ -96,8 +96,8 @@ for (@fields) {
 $ARGS{'Order'} = join '|', grep defined && /\S/, (ref $ARGS{'Order'})? @{$ARGS{'Order'}}: $ARGS{'Order'};
 $ARGS{'order_by'} = join '|', grep defined && /\S/, (ref $ARGS{'order_by'})? @{$ARGS{'order_by'}}: $ARGS{'order_by'};
 
-my ( $AvailableColumns, $CurrentFormat );
-( $ARGS{Format}, $AvailableColumns, $CurrentFormat ) = $m->comp(
+my ( $AvailableColumns, $current_format );
+( $ARGS{format}, $AvailableColumns, $current_format ) = $m->comp(
     '/Search/Elements/BuildFormatString',
     cfqueues => {}, %ARGS
 );

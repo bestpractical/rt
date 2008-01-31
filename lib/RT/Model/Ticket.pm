@@ -420,7 +420,7 @@ sub create {
     #Set the due date. if we didn't get fed one, use the queue default due in
     my $due = RT::Date->new();
     if ( defined $args{'due'} ) {
-        $due->set( Format => 'ISO', value => $args{'due'} );
+        $due->set( format => 'ISO', value => $args{'due'} );
     } elsif ( my $due_in = $queue_obj->default_due_in ) {
         $due->set_to_now;
         $due->add_days($due_in);
@@ -428,19 +428,19 @@ sub create {
 
     my $starts = RT::Date->new();
     if ( defined $args{'starts'} ) {
-        $starts->set( Format => 'ISO', value => $args{'starts'} );
+        $starts->set( format => 'ISO', value => $args{'starts'} );
     }
 
     my $started = RT::Date->new();
     if ( defined $args{'started'} ) {
-        $started->set( Format => 'ISO', value => $args{'started'} );
+        $started->set( format => 'ISO', value => $args{'started'} );
     } elsif ( $args{'status'} ne 'new' ) {
         $started->set_to_now;
     }
 
     my $Resolved = RT::Date->new();
     if ( defined $args{'resolved'} ) {
-        $Resolved->set( Format => 'ISO', value => $args{'resolved'} );
+        $Resolved->set( format => 'ISO', value => $args{'resolved'} );
     }
 
     #If the status is an inactive status, set the resolved date
@@ -838,9 +838,9 @@ sub _parse822_headers_for_attributes {
     foreach my $date qw(due starts started resolved) {
         my $dateobj = RT::Date->new( current_user => RT->system_user );
         if ( defined( $args{$date} ) and $args{$date} =~ /^\d+$/ ) {
-            $dateobj->set( Format => 'unix', value => $args{$date} );
+            $dateobj->set( format => 'unix', value => $args{$date} );
         } else {
-            $dateobj->set( Format => 'unknown', value => $args{$date} );
+            $dateobj->set( format => 'unknown', value => $args{$date} );
         }
         $args{$date} = $dateobj->iso;
     }
@@ -1889,7 +1889,7 @@ sub queue_obj {
 
 # }}}
 
-# {{{ Date printing routines
+# {{{ date printing routines
 
 # {{{ sub due_obj
 
@@ -1906,9 +1906,9 @@ sub due_obj {
 
     # -1 is RT::Date slang for never
     if ( my $due = $self->due ) {
-        $time->set( Format => 'sql', value => $due );
+        $time->set( format => 'sql', value => $due );
     } else {
-        $time->set( Format => 'unix', value => -1 );
+        $time->set( format => 'unix', value => -1 );
     }
 
     return $time;
@@ -1943,7 +1943,7 @@ sub resolved_obj {
     my $self = shift;
 
     my $time = RT::Date->new();
-    $time->set( Format => 'sql', value => $self->resolved );
+    $time->set( format => 'sql', value => $self->resolved );
     return $time;
 }
 
@@ -1971,7 +1971,7 @@ sub set_started {
     #We create a date object to catch date weirdness
     my $time_obj = RT::Date->new( $self->current_user() );
     if ($time) {
-        $time_obj->set( Format => 'ISO', value => $time );
+        $time_obj->set( format => 'ISO', value => $time );
     } else {
         $time_obj->set_to_now();
     }
@@ -2007,7 +2007,7 @@ sub started_obj {
     my $self = shift;
 
     my $time = RT::Date->new();
-    $time->set( Format => 'sql', value => $self->started );
+    $time->set( format => 'sql', value => $self->started );
     return $time;
 }
 
@@ -2026,7 +2026,7 @@ sub starts_obj {
     my $self = shift;
 
     my $time = RT::Date->new();
-    $time->set( Format => 'sql', value => $self->starts );
+    $time->set( format => 'sql', value => $self->starts );
     return $time;
 }
 
@@ -2045,7 +2045,7 @@ sub told_obj {
     my $self = shift;
 
     my $time = RT::Date->new();
-    $time->set( Format => 'sql', value => $self->told );
+    $time->set( format => 'sql', value => $self->told );
     return $time;
 }
 
@@ -3249,7 +3249,7 @@ sub set_told {
     my $datetold = RT::Date->new();
     if ($told) {
         $datetold->set(
-            Format => 'iso',
+            format => 'iso',
             value  => $told
         );
     } else {

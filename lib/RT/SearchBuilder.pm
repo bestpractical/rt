@@ -221,7 +221,7 @@ sub limit_custom_field {
     );
     $self->limit(
         alias    => $alias,
-        column   => 'CustomField',
+        column   => 'custom_field',
         operator => '=',
         value    => $args{'customfield'},
     ) if ( $args{'customfield'} );

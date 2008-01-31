@@ -61,10 +61,10 @@
     order_by => 'name',
     Order => 'ASC',
     %ARGS,
-    Format => $Format,
+    format => $format,
     Collection => $queues,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order order_by FinddisabledQueues)],
+    PassArguments => [qw(format Rows Page Order order_by FinddisabledQueues)],
 &>
 % }
 <form method="post" action="<% RT->config->get('WebPath') %>/Admin/Queues/index.html">
@@ -85,12 +85,12 @@ if ($FinddisabledQueues) {
     $caption = _("Enabled Queues");
 }
 
-$Format ||= q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</a>/TITLE:#'}
+$format ||= q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</a>/TITLE:#'}
     .q{,'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__name__</a>/TITLE:name'}
     .q{,__description__,__Address__,__Priority__,__default_due_in__,__disabled__};
 
 </%INIT>
 <%ARGS>
 $FinddisabledQueues => 0
-$Format             => undef
+$format             => undef
 </%ARGS>

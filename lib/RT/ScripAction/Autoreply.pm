@@ -114,7 +114,7 @@ sub set_return_address {
             $self->set_header(
                 'From',
                 sprintf(
-                    RT->config->get('FriendlyFromLineFormat'),
+                    RT->config->get('friendly_from_line_format'),
                     $self->mime_encode_string(
                         $friendly_name, RT->config->get('EmailOutputEncoding')
                     ),

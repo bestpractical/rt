@@ -79,8 +79,8 @@
     <td class="value"><& /Elements/SelectLang, name => 'lang', Default => $user_object->lang &></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Timezone</&>:</td>
-    <td class="value"><& /Elements/SelectTimezone, name => 'Timezone', Default => $user_object->timezone &></td>
+    <td class="label"><&|/l&>timezone</&>:</td>
+    <td class="value"><& /Elements/SelectTimezone, name => 'timezone', Default => $user_object->timezone &></td>
   </tr>
 </table>
 </&>
@@ -214,7 +214,7 @@ if ($user_object->id) {
 		    organization real_name nickname lang email_encoding web_encoding 
 		    ExternalContactInfoId ContactInfoSystem gecos ExternalAuthId 
 		    auth_system HomePhone WorkPhone MobilePhone PagerPhone Address1
-		Address2 City State Zip Country lang Timezone
+		Address2 City State Zip Country lang timezone
 		   );
 
     $m->callback(

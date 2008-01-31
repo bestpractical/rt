@@ -119,7 +119,7 @@ $SavedSearch => {}
 </%ARGS>
 <%INIT>
 
-my @columns = qw(Query Format order_by Order rows_per_page);
+my @columns = qw(Query format order_by Order rows_per_page);
 
 $SavedSearch->{'id'}          = $ARGS{'SavedSearchId'}          || 'new';
 $SavedSearch->{'description'} = $ARGS{'SavedSearchdescription'} || '';
@@ -231,7 +231,7 @@ $SavedSearch => {}
 my $obj  = $SavedSearch->{'object'};
 return 0 unless $obj && $obj->id;
 
-foreach( qw(Query Format order_by Order rows_per_page) ) {
+foreach( qw(Query format order_by Order rows_per_page) ) {
     return 1 if $obj->sub_value( $_ ) ne $Query->{$_};
 }
 

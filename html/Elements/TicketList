@@ -49,8 +49,8 @@
 
 % if ($ShowHeader) {
 <& /Elements/CollectionAsTable/Header, 
-    Format => \@Format, 
-    FormatString => $Format,
+    format => \@format, 
+    format_string => $format,
     AllowSorting => $AllowSorting, 
     Order => $Order, 
     Query => $Query,
@@ -68,7 +68,7 @@ while ( my $record = $Collection->next ) {
     $m->flush_buffer unless $i % 10;
     $m->comp('/Elements/CollectionAsTable/Row',
         i => $i,
-        Format => \@Format,
+        format => \@format,
         record => $record,
         maxitems => $maxitems,
     );
@@ -88,7 +88,7 @@ while ( my $record = $Collection->next ) {
 my $prev = $m->comp(
     '/Elements/QueryString',
     Query   => $Query,
-    Format  => $Format,
+    format  => $format,
     Rows    => $Rows,
     order_by => $order_by,
     Order   => $Order,
@@ -97,7 +97,7 @@ my $prev = $m->comp(
 my $next = $m->comp(
     '/Elements/QueryString',
     Query   => $Query,
-    Format  => $Format,
+    format  => $format,
     Rows    => $Rows,
     order_by => $order_by,
     Order   => $Order,
@@ -135,21 +135,21 @@ if ($order_by =~ /\|/) {
 $Page = 1 unless $Page && $Page > 0; # workaround problems with Page = '' or undef
 $Collection->set_page_info(per_page => $Rows, current_page => $Page);
 
-# DisplayFormat lets us use a "temporary" format for display, while 
+# display_format lets us use a "temporary" format for display, while 
 # still using our original format for next/prev page links.
 # bulk update uses this feature to add checkboxes
 
-$DisplayFormat ||= $Format;
+$display_format ||= $format;
 
 # Scrub the html of the format string to remove any potential nasties.
-$Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
-$DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat);
+$format = $m->comp('/Elements/ScrubHTML', Content => $format);
+$display_format = $m->comp('/Elements/ScrubHTML', Content => $display_format);
 
-my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
+my @format = $m->comp('/Elements/CollectionAsTable/ParseFormat', format => $display_format);
 
 # Find the maximum number of items in any row, so we can pad the table.
 my ($maxitems, $item) = (0, 0);
-foreach my $col (@Format) {
+foreach my $col (@format) {
     $item++;
     if ( $col->{title} && ($col->{title} eq 'NEWLINE') ) {
         $item = 0;
@@ -164,8 +164,8 @@ foreach my $col (@Format) {
 $Collection => undef
 
 $Query => undef
-$Format => RT->config->get('DefaultSearchResultFormat')
-$DisplayFormat => undef
+$format => RT->config->get('DefaultSearchResultFormat')
+$display_format => undef
 $Order => undef
 $order_by => undef
 $Rows => 50

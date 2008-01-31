@@ -38,7 +38,7 @@ my $tid;
     my ($txn, $msg);
     ($tid, $txn, $msg) = $ticket->create(
         queue => $queue->id,
-        Owner => $user_a->id,
+        owner => $user_a->id,
         subject => 'test',
     );
     ok $tid, 'created a ticket #'. $tid or diag "error: $msg";

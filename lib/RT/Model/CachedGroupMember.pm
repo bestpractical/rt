@@ -42,7 +42,7 @@ Create takes a hash of values and creates a row in the database:
   'Member' is the RT::Model::Principal  of the user or group we're adding to 
   the cache.
 
-  'ImmediateParent' is the RT::Model::Principal of the group that this 
+  'immediate_parent' is the RT::Model::Principal of the group that this 
   principal belongs to to get here
 
   int(11) 'via' is an internal reference to CachedGroupMembers->id of
@@ -61,7 +61,7 @@ sub create {
     my %args = (
         Group           => '',
         Member          => '',
-        ImmediateParent => '',
+        immediate_parent => '',
         via             => '0',
         disabled        => '0',
         @_
@@ -81,22 +81,22 @@ sub create {
         Jifty->log->debug("$self->create: bogus Group argument");
     }
 
-    unless ( $args{'ImmediateParent'}
-        && UNIVERSAL::isa( $args{'ImmediateParent'}, 'RT::Model::Principal' )
-        && $args{'ImmediateParent'}->id )
+    unless ( $args{'immediate_parent'}
+        && UNIVERSAL::isa( $args{'immediate_parent'}, 'RT::Model::Principal' )
+        && $args{'immediate_parent'}->id )
     {
-        Jifty->log->debug("$self->create: bogus ImmediateParent argument");
+        Jifty->log->debug("$self->create: bogus immediate_parent argument");
     }
 
 # If the parent group for this group member is disabled, it's disabled too, along with all its children
-    if ( $args{'ImmediateParent'}->disabled ) {
-        $args{'disabled'} = $args{'ImmediateParent'}->disabled;
+    if ( $args{'immediate_parent'}->disabled ) {
+        $args{'disabled'} = $args{'immediate_parent'}->disabled;
     }
 
     my $id = $self->SUPER::create(
         group_id           => $args{'Group'}->id,
         member_id          => $args{'Member'}->id,
-        immediate_parent_id => $args{'ImmediateParent'}->id,
+        immediate_parent_id => $args{'immediate_parent'}->id,
         disabled          => $args{'disabled'},
         via               => $args{'via'},
     );
@@ -130,7 +130,7 @@ sub create {
             my $c_id          = $cached_member->create(
                 Group           => $args{'Group'},
                 Member          => $member->member_obj,
-                ImmediateParent => $args{'Member'},
+                immediate_parent => $args{'Member'},
                 disabled        => $args{'disabled'},
                 via             => $id
             );
@@ -342,11 +342,11 @@ sub group_obj {
 
 # }}}
 
-# {{{ ImmediateParentObj
+# {{{ immediate_parentObj
 
-=head2 ImmediateParentObj  
+=head2 immediate_parentObj  
 
-Returns the RT::Model::Principal object for this group ImmediateParent
+Returns the RT::Model::Principal object for this group immediate_parent
 
 =cut
 

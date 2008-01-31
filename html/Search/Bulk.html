@@ -49,7 +49,7 @@
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Bulk.html",
     Title => $title,
-    Format => $ARGS{'Format'}, # we don't want the locally modified one
+    format => $ARGS{'format'}, # we don't want the locally modified one
     Query => $Query,
     Rows => $Rows,
     order_by => $order_by,
@@ -57,12 +57,12 @@
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->config->get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data">
-% foreach my $var qw(Query Format order_by Order Rows Page) {
+% foreach my $var qw(Query format order_by Order Rows Page) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
 <& /Elements/TicketList, Query => $Query,
-    DisplayFormat => $Format,
-    Format => $ARGS{'Format'},
+    display_format => $format,
+    format => $ARGS{'format'},
     Verbatim => 1,
     AllowSorting => 1,
     order_by => $order_by,
@@ -108,15 +108,15 @@
 <tr><td class="label"> <&|/l&>Make Status</&>: </td>
 <td class="value"> <& /Elements/SelectStatus, name => "Status" &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date starts</&>: </td>
-<td class="value"> <& /Elements/SelectDate, name => "starts_Date", ShowTime => 0, Default => '' &> </td></tr>
+<td class="value"> <& /Elements/SelectDate, name => "starts_date", ShowTime => 0, Default => '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Started</&>: </td>
-<td class="value"> <& /Elements/SelectDate, name => "Started_Date", ShowTime => 0, Default => '' &> </td></tr>
+<td class="value"> <& /Elements/SelectDate, name => "Started_date", ShowTime => 0, Default => '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Told</&>: </td>
-<td class="value"> <& /Elements/SelectDate, name => "Told_Date", ShowTime => 0, Default => '' &> </td></tr>
+<td class="value"> <& /Elements/SelectDate, name => "Told_date", ShowTime => 0, Default => '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Due</&>: </td>
-<td class="value"> <& /Elements/SelectDate, name => "Due_Date", ShowTime => 0, Default => '' &> </td></tr>
+<td class="value"> <& /Elements/SelectDate, name => "Due_date", ShowTime => 0, Default => '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Resolved</&>: </td>
-<td class="value"> <& /Elements/SelectDate, name => "Resolved_Date", ShowTime => 0, Default => '' &> </td></tr>
+<td class="value"> <& /Elements/SelectDate, name => "Resolved_date", ShowTime => 0, Default => '' &> </td></tr>
 </table>
 
 </td>
@@ -208,10 +208,10 @@ my (@results);
 
 $Page ||= 1;
 
-$Format ||= RT->config->get('DefaultSearchResultFormat');
+$format ||= RT->config->get('DefaultSearchResultFormat');
 
 # inject _CHECKBOX to the first field.
-$Format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;
+$format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;
 
 my $Tickets = RT::Model::TicketCollection->new();
 $Tickets->from_sql($Query);
@@ -369,7 +369,7 @@ $TxnCFs->limit_to_global_orobject_id( sort keys %queues );
 
 </%INIT>
 <%args>
-$Format => undef
+$format => undef
 $Page => 1
 $Rows => 50
 $Order => 'ASC'

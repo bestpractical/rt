@@ -71,7 +71,7 @@ my $mysearch = RT::SavedSearch->new( current_user => $curruser );
     type         => 'Ticket',
     name         => 'owned by me',
     SearchParams => {
-        'Format' => $format,
+        'format' => $format,
         'Query'  => "Owner = '" . $searchuser->name . "'"
     }
 );
@@ -84,7 +84,7 @@ my $groupsearch = RT::SavedSearch->new(current_user => $curruser);
 ($ret, $msg) = $groupsearch->save(Privacy => 'RT::Model::Group-' . $ingroup->id,
 				  type => 'Ticket',
 				  name => 'search queue',
-				  SearchParams => {'Format' => $format,
+				  SearchParams => {'format' => $format,
 						   'Query' => "Queue = '"
 						       . $queue->name . "'"});
 ok($ret, "groupsearch was Created");
@@ -93,7 +93,7 @@ my $othersearch = RT::SavedSearch->new(current_user => $curruser);
 ($ret, $msg) = $othersearch->save(Privacy => 'RT::Model::Group-' . $outgroup->id,
 				  type => 'Ticket',
 				  name => 'searchuser requested',
-				  SearchParams => {'Format' => $format,
+				  SearchParams => {'format' => $format,
 						   'Query' => 
 						       "Requestor.name LIKE 'search'"});
 ok(!$ret, "othersearch NOT Created");
@@ -103,7 +103,7 @@ $othersearch = RT::SavedSearch->new(current_user => RT->system_user);
 ($ret, $msg) = $othersearch->save(Privacy => 'RT::Model::Group-' . $outgroup->id,
 				  type => 'Ticket',
 				  name => 'searchuser requested',
-				  SearchParams => {'Format' => $format,
+				  SearchParams => {'format' => $format,
 						   'Query' => 
 						       "Requestor.name LIKE 'search'"});
 ok($ret, "othersearch Created by systemuser");
@@ -148,7 +148,7 @@ $loadedsearch4->load($othersearch->privacy, $othersearch->id);
 isnt($loadedsearch4->id, $othersearch->id, "Did not load othersearch");
 
 # Try to update an existing search.
-$loadedsearch1->update(	SearchParams => {'Format' => $format,
+$loadedsearch1->update(	SearchParams => {'format' => $format,
 			'Query' => "Queue = '" . $queue->name . "'" } );
 like($loadedsearch1->get_parameter('Query'), qr/Queue/,
      "Updated mysearch parameter");

@@ -27,7 +27,7 @@ sub capture_mail {
 RT->config->set( LogToScreen => 'debug' );
 RT->config->set( 'GnuPG',
                  Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
+                 outgoing_messages_format => 'RFC' );
 
 RT->config->set( 'GnuPGOptions',
                  homedir => $homedir,

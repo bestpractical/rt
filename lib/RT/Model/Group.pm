@@ -414,7 +414,7 @@ sub _create {
     $cgm->create(
         Group           => $self->principal_object,
         Member          => $self->principal_object,
-        ImmediateParent => $self->principal_object
+        immediate_parent => $self->principal_object
     );
 
     if ( $args{'_record_transaction'} ) {

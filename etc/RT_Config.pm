@@ -55,9 +55,9 @@ set( $organization, "example.com" );
 # passwords. setting it to 0 disables this check
 set( $MinimumpasswordLength, "5" );
 
-# $Timezone is used to convert times entered by users into GMT and back again
+# $timezone is used to convert times entered by users into GMT and back again
 # It should be set to a timezone recognized by your local unix box.
-set( $Timezone, 'US/Eastern' );
+set( $timezone, 'US/Eastern' );
 
 # }}}
 
@@ -258,7 +258,7 @@ set( $UseFriendlyFromLine, 1 );
 
 # sprintf() format of the friendly 'From:' header; its arguments
 # are Sendername and Senderemail.
-set( $FriendlyFromLineFormat, "\"%s via RT\" <%s>" );
+set( $friendly_from_line_format, "\"%s via RT\" <%s>" );
 
 # RT can optionally set a "Friendly" 'To:' header when sending messages to
 # Ccs or AdminCcs (rather than having a blank 'To:' header.
@@ -271,7 +271,7 @@ set( $UseFriendlyToLine, 0 );
 
 # sprintf() format of the friendly 'From:' header; its arguments
 # are WatcherType and TicketId.
-set( $FriendlyToLineFormat,
+set( $friendly_to_line_format,
     "\"%s of " . RT->config->get('rtname') . " Ticket #%s\":;" );
 
 # By default, RT doesn't notify the person who performs an update, as they
@@ -311,9 +311,9 @@ set( $ForwardFromUser, 0 );
 set(%GnuPG,
     Enable => 0,
 
-    # set OutgoingMessagesFormat to 'inline' to use inline encryption and
+    # set outgoing_messages_format to 'inline' to use inline encryption and
     # signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
-    OutgoingMessagesFormat => 'RFC',    # Inline
+    outgoing_messages_format => 'RFC',    # Inline
 
     # If you want to allow people to encrypt attachments inside the DB then
     # set below option to true value
@@ -657,22 +657,22 @@ set( $EmailOutputEncoding, 'utf-8' );
 
 # }}}
 
-# {{{ RT Date Handling Options
+# {{{ RT date Handling Options
 
 # You can choose date and time format.  See "Output formatters"
 # section in perldoc lib/RT/Date.pm for more options.  This option can
 # be overridden by users in their preferences.
 # Some examples:
-#set($DateTimeFormat, { Format => 'ISO', Seconds => 0 });
-#set($DateTimeFormat, 'RFC2822');
-#set($DateTimeFormat, { Format => 'RFC2822', Seconds => 0, DayOfWeek => 0 });
-set( $DateTimeFormat, 'DefaultFormat' );
+#set($date_time_format, { format => 'ISO', seconds => 0 });
+#set($date_time_format, 'RFC2822');
+#set($date_time_format, { format => 'RFC2822', seconds => 0, day_of_week => 0 });
+set( $date_time_format, 'default_format' );
 
 # Next two options are for Time::ParseDate
 # set this to 1 if your local date convention looks like "dd/mm/yy"
 # instead of "mm/dd/yy".
 
-set( $DateDayBeforeMonth, 1 );
+set( $date_day_before_month, 1 );
 
 # Should "Tuesday" default to meaning "Next Tuesday" or "Last Tuesday"?
 # set to 0 for "Next" or 1 for "Last".

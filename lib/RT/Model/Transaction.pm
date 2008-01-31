@@ -947,9 +947,9 @@ sub brief_description {
         # Write the date/time change at local time:
         elsif ( $self->field =~ /Due|starts|Started|Told/i ) {
             my $t1 = RT::Date->new();
-            $t1->set( Format => 'ISO', value => $self->new_value );
+            $t1->set( format => 'ISO', value => $self->new_value );
             my $t2 = RT::Date->new();
-            $t2->set( Format => 'ISO', value => $self->old_value );
+            $t2->set( format => 'ISO', value => $self->old_value );
             return _(
                 "%1 changed from %2 to %3", $self->field,
                 $t2->as_string,             $t1->as_string

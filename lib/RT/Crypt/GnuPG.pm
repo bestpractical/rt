@@ -89,14 +89,14 @@ set to true value to enable this subsystem:
 However, note that you B<must> add the 'Auth::GnuPG' email filter to enable
 the handling of incoming encrypted/signed messages.
 
-=head3 Format of outgoing messages
+=head3 format of outgoing messages
 
-Format of outgoing messages can be controlled using the 'OutgoingMessagesFormat'
+Format of outgoing messages can be controlled using the 'outgoing_messages_format'
 option in the RT config:
 
     set( %GnuPG,
         ... other options ...
-        OutgoingMessagesFormat => 'RFC',
+        outgoing_messages_format => 'RFC',
         ... other options ...
     );
 
@@ -104,7 +104,7 @@ or
 
     set( %GnuPG,
         ... other options ...
-        OutgoingMessagesFormat => 'Inline',
+        outgoing_messages_format => 'Inline',
         ... other options ...
     );
 
@@ -434,7 +434,7 @@ sub sign_encrypt {
         ];
     }
 
-    my $format = lc RT->config->get('GnuPG')->{'OutgoingMessagesFormat'}
+    my $format = lc RT->config->get('GnuPG')->{'outgoing_messages_format'}
         || 'RFC';
     if ( $format eq 'inline' ) {
         return sign_encrypt_inline(%args);
@@ -952,7 +952,7 @@ sub find_protected_parts {
             Jifty->log->debug("Found $type inline part");
             return {
                 type   => $type,
-                Format => 'Inline',
+                format => 'Inline',
                 Data   => $entity,
             };
         }
@@ -987,7 +987,7 @@ sub find_protected_parts {
             Jifty->log->debug("Found encrypted according to RFC3156 part");
             return {
                 type   => 'encrypted',
-                Format => 'RFC3156',
+                format => 'RFC3156',
                 Top    => $entity,
                 Data   => $entity->parts(1),
                 Info   => $entity->parts(0),
@@ -1002,7 +1002,7 @@ sub find_protected_parts {
             Jifty->log->debug("Found signed according to RFC3156 part");
             return {
                 type      => 'signed',
-                Format    => 'RFC3156',
+                format    => 'RFC3156',
                 Top       => $entity,
                 Data      => $entity->parts(0),
                 Signature => $entity->parts(1),
@@ -1042,7 +1042,7 @@ sub find_protected_parts {
         push @res,
             {
             type      => 'signed',
-            Format    => 'Attachment',
+            format    => 'Attachment',
             Top       => $entity,
             Data      => $data_part_in,
             Signature => $sig_part,
@@ -1064,7 +1064,7 @@ sub find_protected_parts {
         push @res,
             {
             type   => 'encrypted',
-            Format => 'Attachment',
+            format => 'Attachment',
             Top    => $entity,
             Data   => $part,
             };
@@ -1087,15 +1087,15 @@ sub verify_decrypt {
 
     # XXX: detaching may brake nested signatures
     foreach my $item ( grep $_->{'type'} eq 'signed', @protected ) {
-        if ( $item->{'Format'} eq 'RFC3156' ) {
+        if ( $item->{'format'} eq 'RFC3156' ) {
             push @res, { verify_rfc3156(%$item) };
             if ( $args{'Detach'} ) {
                 $item->{'Top'}->parts( [ $item->{'Data'} ] );
                 $item->{'Top'}->make_singlepart;
             }
-        } elsif ( $item->{'Format'} eq 'Inline' ) {
+        } elsif ( $item->{'format'} eq 'Inline' ) {
             push @res, { verify_inline(%$item) };
-        } elsif ( $item->{'Format'} eq 'Attachment' ) {
+        } elsif ( $item->{'format'} eq 'Attachment' ) {
             push @res, { verify_attachment(%$item) };
             if ( $args{'Detach'} ) {
                 $item->{'Top'}->parts(
@@ -1108,11 +1108,11 @@ sub verify_decrypt {
         }
     }
     foreach my $item ( grep $_->{'type'} eq 'encrypted', @protected ) {
-        if ( $item->{'Format'} eq 'RFC3156' ) {
+        if ( $item->{'format'} eq 'RFC3156' ) {
             push @res, { decrypt_rfc3156(%$item) };
-        } elsif ( $item->{'Format'} eq 'Inline' ) {
+        } elsif ( $item->{'format'} eq 'Inline' ) {
             push @res, { decrypt_inline(%$item) };
-        } elsif ( $item->{'Format'} eq 'Attachment' ) {
+        } elsif ( $item->{'format'} eq 'Attachment' ) {
             push @res, { decrypt_attachment(%$item) };
 
 #            if ( $args{'Detach'} ) {
@@ -2259,7 +2259,7 @@ sub _parse_date {
     if ( $value =~ /^\d+$/ ) {
         $obj->set( value => $value );
     } else {
-        $obj->set( Format => 'unknown', value => $value, Timezone => 'utc' );
+        $obj->set( format => 'unknown', value => $value, timezone => 'utc' );
     }
     return $obj;
 }

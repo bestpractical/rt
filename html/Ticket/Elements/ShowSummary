@@ -88,7 +88,7 @@
             </tr>
             </table>
 	  </&>
-	  <&| /Widgets/TitleBox, title => _("Dates"),
+	  <&| /Widgets/TitleBox, title => _("dates"),
 		title_href => RT->config->get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->id, 
 		class => 'ticket-info-dates' &>
 	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>

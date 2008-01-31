@@ -115,7 +115,7 @@ my $ticket_page_tabs = {
     _B => { title => _('Basics'),
             path  => "Ticket/Modify.html?id=" . $id, },
 
-    _C => { title => _('Dates'),
+    _C => { title => _('dates'),
             path  => "Ticket/ModifyDates.html?id=" . $id, },
     _D =>
       { title => _('People'), path => "Ticket/ModifyPeople.html?id=" . $id, },
@@ -202,7 +202,7 @@ $args= "?" . $m->comp(
     '/Elements/QueryString',
     SavedSearchId => $ARGS{'SavedSearchId'} || $session{'CurrentSearchHash'}->{'SearchId'},
     Query         => $ARGS{'Query'}         || $session{'CurrentSearchHash'}->{'Query'},
-    Format        => $ARGS{'Format'}        || $session{'CurrentSearchHash'}->{'Format'},
+    format        => $ARGS{'format'}        || $session{'CurrentSearchHash'}->{'format'},
     order_by       => $ARGS{'order_by'}       || $session{'CurrentSearchHash'}->{'order_by'},
     Order         => $ARGS{'Order'}         || $session{'CurrentSearchHash'}->{'Order'},
     Page          => $ARGS{'Page'}          || $session{'CurrentSearchHash'}->{'Page'},

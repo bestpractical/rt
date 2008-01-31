@@ -59,11 +59,11 @@ my $query = 'Status != "deleted" ';
 
 
 if ($CreatedAfter) {
-    $after->set(Format => 'unknown', value => $CreatedAfter);
+    $after->set(format => 'unknown', value => $CreatedAfter);
     $CreatedAfter = $after->as_string;
 }
 if ($CreatedBefore) {
-    $before->set(Format => 'unknown', value => $CreatedBefore);
+    $before->set(format => 'unknown', value => $CreatedBefore);
     $CreatedBefore = $before->as_string;
 }
 

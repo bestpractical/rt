@@ -112,8 +112,8 @@ $m->callback(
 
 foreach ( $SearchArg, $ProcessedSearchArg ) {
     $_->{'Query'}  =~ s/__CurrentUser__/Jifty->web->current_user->id/ge;
-    $_->{'Format'} =~ s/__(Web(?:Path|base|baseURL))__/scalar RT->config->get($1)/ge;
-    $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/_("$1")/ge;
+    $_->{'format'} =~ s/__(Web(?:Path|base|baseURL))__/scalar RT->config->get($1)/ge;
+    $_->{'format'} =~ s/__loc\(["']?(\w+)["']?\)__/_("$1")/ge;
 }
 
 my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );

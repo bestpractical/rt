@@ -64,11 +64,11 @@
     Order   => 'ASC',
     Rows    => 0,
     %ARGS,
-    DisplayFormat => "__CheckBox.{Delete}__,$Format",
-    Format => $Format,
+    display_format => "__CheckBox.{Delete}__,$format",
+    format => $format,
     Collection => $is_member,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order order_by id)],
+    PassArguments => [qw(format Rows Page Order order_by id)],
 &>
 
 <h2><&|/l&>Groups the user is not member of (check box to add)</&></h2>
@@ -78,11 +78,11 @@
     Order   => 'ASC',
     Rows    => 100,
     %ARGS,
-    DisplayFormat => "__CheckBox.{Add}__,'__has_member_recursively.{$id}__/TITLE:Recursive',$Format",
-    Format => $Format,
+    display_format => "__CheckBox.{Add}__,'__has_member_recursively.{$id}__/TITLE:Recursive',$format",
+    format => $format,
     Collection => $is_not_member,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order order_by)],
+    PassArguments => [qw(format Rows Page Order order_by)],
 &>
 
 <& /Elements/Submit, Label => _('Update'), name => 'Update' &>
@@ -128,7 +128,7 @@ my $is_not_member = RT::Model::GroupCollection->new();
 $is_not_member->limit_to_user_defined_groups;
 $is_not_member->without_member( principal_id => $user_object->id );
 
-$Format ||= q{'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__id__</a>/TITLE:#'}
+$format ||= q{'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__id__</a>/TITLE:#'}
     .q{,'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__name__</a>/TITLE:name'}
     .q{,'__description__'};
 </%INIT>
@@ -139,5 +139,5 @@ $Update => 0,
 @Add    => (),
 @Delete => (),
 
-$Format => undef
+$format => undef
 </%ARGS>

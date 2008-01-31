@@ -244,7 +244,7 @@ sub name {
 
 =head2 GetParameter
 
-Returns the given named parameter of the search, e.g. 'Query', 'Format'.
+Returns the given named parameter of the search, e.g. 'Query', 'format'.
 
 =cut
 

@@ -56,5 +56,5 @@
 <option value="Updated"><&|/l&>Updated</&></option>
 </select>
 <%ARGS>
-$name => 'DateType'
+$name => 'dateType'
 </%ARGS>

@@ -48,8 +48,8 @@
 <%ARGS>
 $Class        => 'RT__Model__Ticket'
 
-@Format       => undef
-$FormatString => undef
+@format       => undef
+$format_string => undef
 @order_by      => ()
 @Order        => ()
 $Query        => undef
@@ -60,17 +60,17 @@ $maxitems     => undef
 
 $AllowSorting  => undef
 $baseURL       => undef
-@PassArguments => qw(Query Format Rows Page Order order_by)
+@PassArguments => qw(Query format Rows Page Order order_by)
 </%ARGS>
 <tr class="collection-as-table">
 <%PERL>
 
 my %generic_query_args = map { $_ => $ARGS{$_} } @PassArguments;
 # backward compatibility workaround
-$generic_query_args{'Format'} = $FormatString if grep $_ eq 'Format', @PassArguments;
+$generic_query_args{'format'} = $format_string if grep $_ eq 'format', @PassArguments;
 
 my $item = 0;
-foreach my $col ( @Format ) {
+foreach my $col ( @format ) {
     my $title = $col->{'title'} || '';
     if ( $title eq 'NEWLINE' ) {
         while ( $item < $maxitems ) {

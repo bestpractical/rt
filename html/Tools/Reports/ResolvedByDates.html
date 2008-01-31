@@ -59,11 +59,11 @@ my $query = '';
 
 
 if ($ResolvedAfter) {
-    $after->set(Format => 'unknown', value => $ResolvedAfter);
+    $after->set(format => 'unknown', value => $ResolvedAfter);
     $ResolvedAfter = $after->as_string;
 }
 if ($ResolvedBefore) {
-    $before->set(Format => 'unknown', value => $ResolvedBefore);
+    $before->set(format => 'unknown', value => $ResolvedBefore);
     $ResolvedBefore = $before->as_string;
 }
 

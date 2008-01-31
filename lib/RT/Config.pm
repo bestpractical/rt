@@ -151,15 +151,15 @@ our %META = (
             description => 'Show oldest transactions first',    #loc
         },
     },
-    DateTimeFormat => {
+    date_time_format => {
         Section         => 'Date and time',                     #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             description  => 'Date and time output format',            #loc
-            Values       => [qw(DefaultFormat RFC2822 ISO W3CDTF)],
+            Values       => [qw(default_format RFC2822 ISO W3CDTF)],
             values_label => {
-                DefaultFormat => 'Default (Tue Dec 25 21:59:12 1995)',    #loc
+                default_format => 'Default (Tue Dec 25 21:59:12 1995)',    #loc
                 RFC2822       => 'RFC (Tue, 25 Dec 1995 21:59:12 -0300)', #loc
                 ISO           => 'ISO (1995-11-25 21:59:12)',             #loc
                 W3CDTF        => 'W3C (1995-11-25T21:59:12Z)',            #loc

@@ -48,10 +48,10 @@
 % my $content = $object->large_content || $object->content;
 % $content = $m->comp('/Elements/ScrubHTML', Content => $content);
 % my $base = $object->object->wiki_base;
-% my $wiki_content = Text::WikiFormat::format( $content."\n" , {}, { extended => 1,  absolute_links => 1, implicit_links => RT->config->get('WikiImplicitLinks'), prefix => $base} );
+% my $wiki_content = Text::Wikiformat::format( $content."\n" , {}, { extended => 1,  absolute_links => 1, implicit_links => RT->config->get('WikiImplicitLinks'), prefix => $base} );
 <%$wiki_content|n%>
 <%init>
-use Text::WikiFormat;
+use Text::Wikiformat;
 </%init>
 <%ARGS>
 $object

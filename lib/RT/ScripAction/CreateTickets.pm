@@ -737,11 +737,11 @@ sub parse_lines {
         my $dateobj = RT::Date->new;
         next unless $args{$date};
         if ( $args{$date} =~ /^\d+$/ ) {
-            $dateobj->set( Format => 'unix', value => $args{$date} );
+            $dateobj->set( format => 'unix', value => $args{$date} );
         } else {
-            eval { $dateobj->set( Format => 'iso', value => $args{$date} ); };
+            eval { $dateobj->set( format => 'iso', value => $args{$date} ); };
             if ( $@ or $dateobj->unix <= 0 ) {
-                $dateobj->set( Format => 'unknown', value => $args{$date} );
+                $dateobj->set( format => 'unknown', value => $args{$date} );
             }
         }
         $args{$date} = $dateobj->iso;

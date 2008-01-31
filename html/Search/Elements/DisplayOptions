@@ -134,6 +134,6 @@ if ($Order =~ /\|/) {
 $Order => undef
 $order_by => undef
 $rows_per_page => undef
-$Format => undef
+$format => undef
 $GroupBy => 'id'
 </%ARGS>

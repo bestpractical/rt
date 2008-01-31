@@ -179,7 +179,7 @@ if ( $type =~ /EmailRecord$/ ) {
 else {
 
     unless ( $show_headers ) {
-        @display_headers = qw(To From RT-Send-Cc Cc Bcc Date subject);
+        @display_headers = qw(To From RT-Send-Cc Cc Bcc date subject);
     }
 
     if ( $Attachments->[0] && $ShowTitleBarCommands ) {

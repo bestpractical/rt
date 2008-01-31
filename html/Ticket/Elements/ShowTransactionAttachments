@@ -49,7 +49,7 @@
 # Find all the attachments which have parent $Parent
 # For each of these attachments
 foreach my $message ( grep $_->__value('Parent') == $Parent, @$Attachments ) {
-    $m->comp( 'show_message_headers',
+    $m->comp( 'ShowMessageHeaders',
               Message        => $message,
               display_headers => \@display_headers,
             );
@@ -183,7 +183,7 @@ if ( $Transaction->type =~ /EmailRecord$/ ) {
 
 # If the transaction has anything attached to it at all
 elsif (!$show_headers)  {
-    @display_headers = qw(To From RT-Send-Cc Cc Bcc Date subject);
+    @display_headers = qw(To From RT-Send-Cc Cc Bcc date subject);
 }
 
 my $size_to_str = sub  {

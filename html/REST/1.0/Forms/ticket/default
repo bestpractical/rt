@@ -199,7 +199,7 @@ if (!keys(%data)) {
     $time = RT::Date->new();
     foreach $key (@dates) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
-        $time->set(Format => 'sql', value => $ticket->$key);
+        $time->set(format => 'sql', value => $ticket->$key);
         push @data, [ $key => $time->as_string ];
     }
 
@@ -264,7 +264,7 @@ else {
             $set = "set_$key";
 
             my $time = RT::Date->new() ;
-            $time->set(Format => 'sql', value => $ticket->$key);
+            $time->set(format => 'sql', value => $ticket->$key);
             next if ($val =~ /^not set$/i || $val eq $time->as_string);
             ($n, $s) = $ticket->$set($val);
         }

@@ -1538,7 +1538,7 @@ Element._attributeTranslations.names = {
   colspan:   "colSpan",
   rowspan:   "rowSpan",
   valign:    "vAlign",
-  datetime:  "dateTime",
+  datetime:  "DateTime",
   accesskey: "accessKey",
   tabindex:  "tabIndex",
   enctype:   "encType",

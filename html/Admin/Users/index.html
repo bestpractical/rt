@@ -61,10 +61,10 @@
     Order => 'ASC',
     Rows  => 100,
     %ARGS,
-    Format => $Format,
+    format => $format,
     Collection => $users,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order order_by UserString UserOp UserField IdLike EmailLike FinddisabledUsers)],
+    PassArguments => [qw(format Rows Page Order order_by UserString UserOp UserField IdLike EmailLike FinddisabledUsers)],
 &>
 
 % my $ids = join ',', map $_->id, @{ $users->items_array_ref };
@@ -79,7 +79,7 @@
 % }
 
 <form method="post" action="<% RT->config->get('WebPath') %>/Admin/Users/index.html">
-% foreach my $field( qw(Format Rows Page Order order_by) ) {
+% foreach my $field( qw(format Rows Page Order order_by) ) {
 %     next unless defined $ARGS{ $field } && length $ARGS{ $field };
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
@@ -117,13 +117,13 @@ else {
     $users->limit_to_privileged;
 }
 
-$Format ||= q{'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__id__</a>/TITLE:#'}
+$format ||= q{'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__id__</a>/TITLE:#'}
     .q{,'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__name__</a>/TITLE:name'}
     .q{,__real_name__, __email__};
 
 </%INIT>
 <%ARGS>
-$Format => undef,
+$format => undef,
 
 $UserString => undef
 $UserOp => '='

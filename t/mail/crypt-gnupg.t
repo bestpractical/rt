@@ -21,7 +21,7 @@ use_ok('MIME::Entity');
 
 RT->config->set( 'GnuPG',
                  Enable => 1,
-                 OutgoingMessagesFormat => 'RFC' );
+                 outgoing_messages_format => 'RFC' );
 
 RT->config->set( 'GnuPGOptions',
                  homedir => $homedir );
@@ -52,7 +52,7 @@ diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
     my @parts = RT::Crypt::GnuPG::find_protected_parts( Entity => $entity );
     is( scalar @parts, 1, 'one protected part' );
     is( $parts[0]->{'type'}, 'signed', "have signed part" );
-    is( $parts[0]->{'Format'}, 'RFC3156', "RFC3156 format" );
+    is( $parts[0]->{'format'}, 'RFC3156', "RFC3156 format" );
     is( $parts[0]->{'Top'}, $entity, "it's the same entity" );
 
     my @res = RT::Crypt::GnuPG::verify_decrypt( Entity => $entity );
@@ -122,7 +122,7 @@ diag 'encryption only' if $ENV{'TEST_VERBOSE'};
     my @parts = RT::Crypt::GnuPG::find_protected_parts( Entity => $entity );
     is( scalar @parts, 1, 'one protected part' );
     is( $parts[0]->{'type'}, 'encrypted', "have encrypted part" );
-    is( $parts[0]->{'Format'}, 'RFC3156', "RFC3156 format" );
+    is( $parts[0]->{'format'}, 'RFC3156', "RFC3156 format" );
     is( $parts[0]->{'Top'}, $entity, "it's the same entity" );
 }
 
@@ -169,7 +169,7 @@ diag 'encryption and signing with combined method' if $ENV{'TEST_VERBOSE'};
     my @parts = RT::Crypt::GnuPG::find_protected_parts( Entity => $entity );
     is( scalar @parts, 1, 'one protected part' );
     is( $parts[0]->{'type'}, 'encrypted', "have encrypted part" );
-    is( $parts[0]->{'Format'}, 'RFC3156', "RFC3156 format" );
+    is( $parts[0]->{'format'}, 'RFC3156', "RFC3156 format" );
     is( $parts[0]->{'Top'}, $entity, "it's the same entity" );
 }
 
@@ -191,7 +191,7 @@ diag 'encryption and signing with cascading, sign on encrypted' if $ENV{'TEST_VE
     my @parts = RT::Crypt::GnuPG::find_protected_parts( Entity => $entity );
     is( scalar @parts, 1, 'one protected part, top most' );
     is( $parts[0]->{'type'}, 'signed', "have signed part" );
-    is( $parts[0]->{'Format'}, 'RFC3156', "RFC3156 format" );
+    is( $parts[0]->{'format'}, 'RFC3156', "RFC3156 format" );
     is( $parts[0]->{'Top'}, $entity, "it's the same entity" );
 }
 
@@ -214,7 +214,7 @@ diag 'find signed/encrypted part deep inside' if $ENV{'TEST_VERBOSE'};
     my @parts = RT::Crypt::GnuPG::find_protected_parts( Entity => $entity );
     is( scalar @parts, 1, 'one protected part' );
     is( $parts[0]->{'type'}, 'encrypted', "have encrypted part" );
-    is( $parts[0]->{'Format'}, 'RFC3156', "RFC3156 format" );
+    is( $parts[0]->{'format'}, 'RFC3156', "RFC3156 format" );
     is( $parts[0]->{'Top'}, $entity->parts(0), "it's the same entity" );
 }
 
@@ -291,11 +291,11 @@ diag 'verify inline and in attachment signatures' if $ENV{'TEST_VERBOSE'};
     my @parts = RT::Crypt::GnuPG::find_protected_parts( Entity => $entity );
     is( scalar @parts, 2, 'two protected parts' );
     is( $parts[1]->{'type'}, 'signed', "have signed part" );
-    is( $parts[1]->{'Format'}, 'Inline', "inline format" );
+    is( $parts[1]->{'format'}, 'Inline', "inline format" );
     is( $parts[1]->{'Data'}, $entity->parts(0), "it's first part" );
 
     is( $parts[0]->{'type'}, 'signed', "have signed part" );
-    is( $parts[0]->{'Format'}, 'Attachment', "attachment format" );
+    is( $parts[0]->{'format'}, 'Attachment', "attachment format" );
     is( $parts[0]->{'Data'}, $entity->parts(1), "data in second part" );
     is( $parts[0]->{'Signature'}, $entity->parts(2), "file's signature in third part" );
 

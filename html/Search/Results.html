@@ -50,7 +50,7 @@
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Results.html".$QueryString, 
     Title => $title,
-    Format => $Format,
+    format => $format,
     Query => $Query,
     Rows => $Rows,
     order_by => $order_by,
@@ -62,11 +62,11 @@
     Order => $Order,
     Rows => $Rows,
     Page => $Page,
-    Format => $Format,
+    format => $format,
     baseURL => RT->config->get('WebPath')."/Search/Results.html?"
 
    &>
-% my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, order_by => $order_by, Order => $Order, HideResults => $HideResults, Page => $Page );
+% my %hiddens = (Query => $Query, format => $format, Rows => $Rows, order_by => $order_by, Order => $Order, HideResults => $HideResults, Page => $Page );
 <div align="right">
 <form method="get" action="<%RT->config->get('WebPath')%>/Search/Results.html">
 % foreach my $key (keys(%hiddens)) {
@@ -80,7 +80,7 @@
 <& Elements/ResultViews,
     QueryString => $QueryString,
     Query => $Query,
-    Format => $Format,
+    format => $format,
     Rows => $Rows,
     order_by => $order_by,
     Order => $Order,
@@ -95,7 +95,7 @@ my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") 
 
 # These variables are what define a search_hash; this is also
 # where we give sane defaults.
-$Format      ||= $prefs->{'Format'} || RT->config->get('DefaultSearchResultFormat');
+$format      ||= $prefs->{'format'} || RT->config->get('DefaultSearchResultFormat');
 $Order       ||= $prefs->{'Order'} || 'ASC';
 $order_by     ||= $prefs->{'order_by'} || 'id';
 
@@ -129,7 +129,7 @@ if ($order_by =~ /\|/) {
 }
 
 $session{'CurrentSearchHash'} = {
-    Format      => $Format,
+    format      => $format,
     Query       => $Query,
     Page       => $Page,
     Order       => $Order,
@@ -147,7 +147,7 @@ if ( $session{'tickets'}->query()) {
 
 my $QueryString = "?".$m->comp('/Elements/QueryString',
                                Query => $Query,
-                               Format => $Format,
+                               format => $format,
                                Rows => $Rows,
                                order_by => $order_by,
                                Order => $Order,
@@ -164,7 +164,7 @@ $session{'tickets'}->prep_for_serialization();
 </%CLEANUP>
 <%ARGS>
 $Query => undef
-$Format => undef 
+$format => undef 
 $HideResults => 0
 $Rows => undef
 $Page => 1

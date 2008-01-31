@@ -202,13 +202,13 @@ sub static_file_headers {
 
     # Expire things in a month.
     $date->set( value => time + 30 * 24 * 60 * 60 );
-    $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->rfc_2616;
+    $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->rfc2616;
 
 # if we set 'Last-Modified' then browser request a comp using 'If-Modified-Since'
 # request, but we don't handle it and generate full reply again
 # Last modified at server start time
 # $date->set( value => $^T );
-# $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->rfc_2616;
+# $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->rfc2616;
 }
 
 package HTML::Mason::Commands;
@@ -276,9 +276,9 @@ sub create_ticket {
     }
 
     my $due = RT::Date->new();
-    $due->set( Format => 'unknown', value => $ARGS{'Due'} );
+    $due->set( format => 'unknown', value => $ARGS{'Due'} );
     my $starts = RT::Date->new();
-    $starts->set( Format => 'unknown', value => $ARGS{'starts'} );
+    $starts->set( format => 'unknown', value => $ARGS{'starts'} );
 
     my $mime_obj = make_mime_entity(
         subject => $ARGS{'subject'},
@@ -712,7 +712,7 @@ sub parse_date_to_iso {
 
     my $date_obj = RT::Date->new();
     $date_obj->set(
-        Format => 'unknown',
+        format => 'unknown',
         Value  => $date
     );
     return ( $date_obj->iso );
@@ -1276,7 +1276,7 @@ sub process_ticket_dates {
 
         my $DateObj = RT::Date->new();
         $DateObj->set(
-            Format => 'unknown',
+            format => 'unknown',
             Value  => $ARGSRef->{ $field . '_Date' }
         );
 

@@ -48,7 +48,7 @@
 <%args>
 $QueryString => undef
 $Query => undef
-$Format => undef
+$format => undef
 $Rows => undef
 $order_by => undef
 $Order => undef
@@ -63,7 +63,7 @@ $ShortQueryString => undef
 <a href="<%RT->config->get('WebPath')%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Work offline</&></a><br />
 
 <form method="get" action="<%RT->config->get('WebPath')%>/Search/Chart.html"><&|/l&>chart</&>
-% my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, order_by => $order_by, Order => $Order);
+% my %hiddens = (Query => $Query, format => $format, Rows => $Rows, order_by => $order_by, Order => $Order);
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>" />
 % }

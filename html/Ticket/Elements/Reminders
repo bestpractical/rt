@@ -86,11 +86,11 @@ if ( $request_args->{'NewReminder-subject'} ) {
     my $due_obj = RT::Date->new();
     my $date    = Time::ParseDate::parsedate(
         $request_args->{'NewReminder-Due'},
-        UK            => RT->config->get('DateDayBeforeMonth'),
+        UK            => RT->config->get('date_day_before_month'),
         PREFER_PAST   => 0,
         PREFER_FUTURE => 1
     );
-    $due_obj->set( value => $date, Format => 'unix' );
+    $due_obj->set( value => $date, format => 'unix' );
     my ( $add_id, $msg, $txnid ) = $Ticket->reminders->add(
 
         subject => $request_args->{'NewReminder-subject'},

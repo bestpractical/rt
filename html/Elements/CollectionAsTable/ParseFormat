@@ -46,14 +46,14 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Format
+$format
 </%ARGS>
 
 <%init>
 use Regexp::Common qw/delimited/;
 my @Columns;
 
-while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
+while ($format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
     my $col = $1;
 
     if ($col =~ /^$RE{quoted}$/o) {

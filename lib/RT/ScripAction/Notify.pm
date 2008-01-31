@@ -130,7 +130,7 @@ sub set_recipients {
 
     if ( RT->config->get('UseFriendlyToLine') ) {
         unless (@To) {
-            push @PseudoTo, sprintf RT->config->get('FriendlyToLineFormat'),
+            push @PseudoTo, sprintf RT->config->get('friendly_to_line_format'),
                 $arg, $ticket->id;
         }
     }

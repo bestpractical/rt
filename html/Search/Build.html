@@ -76,7 +76,7 @@
 <form method="post" action="Build.html" name="BuildQuery">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'id'} %>" />
 <input type="hidden" class="hidden" name="Query" value="<% $query{'Query'} %>" />
-<input type="hidden" class="hidden" name="Format" value="<% $query{'Format'} %>" />
+<input type="hidden" class="hidden" name="format" value="<% $query{'format'} %>" />
 
 
 <div id="editquery">
@@ -105,7 +105,7 @@
 <& Elements/DisplayOptions,
     %ARGS, %query,
     AvailableColumns => $AvailableColumns,
-    CurrentFormat    => $CurrentFormat,
+    current_format    => $current_format,
 &>
 
 <& /Elements/Submit, Label => _('Add and Search'), name => 'DoSearch'&>
@@ -119,7 +119,7 @@ use RT::Interface::Web::QueryBuilder::Tree;
 my $title = _("Query Builder");
 
 my %query;
-for( qw(Query Format order_by Order rows_per_page) ) {
+for( qw(Query format order_by Order rows_per_page) ) {
     $query{$_} = $ARGS{$_};
 }
 
@@ -144,9 +144,9 @@ if ( $NewQuery ) {
 
     my $current = $session{'CurrentSearchHash'};
     my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
-    my $default = { Query => '', Format => '', order_by => 'id', Order => 'ASC', rows_per_page => 50 };
+    my $default = { Query => '', format => '', order_by => 'id', Order => 'ASC', rows_per_page => 50 };
 
-    for( qw(Query Format order_by Order rows_per_page) ) {
+    for( qw(Query format order_by Order rows_per_page) ) {
         $query{$_} = $current->{$_} unless defined $query{$_};
         $query{$_} = $prefs->{$_} unless defined $query{$_};
         $query{$_} = $default->{$_} unless defined $query{$_};
@@ -157,9 +157,9 @@ if ( $NewQuery ) {
             $query{$_} = join( '|', @{ $query{$_} } );
         }
     }
-    if ( $query{'Format'} ) {
+    if ( $query{'format'} ) {
         # Clean unwanted junk from the format
-        $query{'Format'} = $m->comp( '/Elements/ScrubHTML', Content => $query{'Format'} );
+        $query{'format'} = $m->comp( '/Elements/ScrubHTML', Content => $query{'format'} );
     }
 }
 
@@ -265,12 +265,12 @@ my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>
 my $queues = $tree->get_referenced_queues;
 
 # {{{ Deal with format changes
-my ( $AvailableColumns, $CurrentFormat );
-( $query{'Format'}, $AvailableColumns, $CurrentFormat ) = $m->comp(
+my ( $AvailableColumns, $current_format );
+( $query{'format'}, $AvailableColumns, $current_format ) = $m->comp(
     'Elements/BuildFormatString',
     %ARGS,
     cfqueues => $queues,
-    Format => $query{'Format'},
+    format => $query{'format'},
 );
 
 # }}}

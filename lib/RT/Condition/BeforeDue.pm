@@ -57,7 +57,7 @@ use vars qw/@ISA/;
 sub is_applicable {
     my $self = shift;
 
-    # Parse date string.  Format is "1d2h3m4s" for 1 day and 2 hours
+    # Parse date string.  format is "1d2h3m4s" for 1 day and 2 hours
     # and 3 minutes and 4 seconds.
     my %e;
     foreach (qw(d h m s)) {

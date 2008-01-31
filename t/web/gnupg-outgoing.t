@@ -16,7 +16,7 @@ use_ok('RT::Crypt::GnuPG');
 
 RT->config->set( GnuPG =>
     Enable => 1,
-    OutgoingMessagesFormat => 'RFC',
+    outgoing_messages_format => 'RFC',
 );
 
 RT->config->set( GnuPGOptions =>

@@ -141,7 +141,7 @@ my @lines = (
         Value => { type => 'text', Size => 20 }
     },
     {
-        name => 'Date',
+        name => 'date',
         Field => {
             type => 'component',
             Path => '/Elements/SelectDateType',

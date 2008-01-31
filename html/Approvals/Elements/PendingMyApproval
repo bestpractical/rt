@@ -99,11 +99,11 @@ foreach ($tickets, $group_tickets) {
     }
 
     if ( $ARGS{'CreatedBefore'} ) {
-	$Created_before->set( Format => 'unknown', value => $ARGS{'CreatedBefore'} );
+	$Created_before->set( format => 'unknown', value => $ARGS{'CreatedBefore'} );
 	$_->limit_created( operator => "<=", value => $Created_before->iso );
     }
     if ( $ARGS{'CreatedAfter'} ) {
-	$Created_after->set( Format => 'unknown', value => $ARGS{'CreatedAfter'} );
+	$Created_after->set( format => 'unknown', value => $ARGS{'CreatedAfter'} );
 	$_->limit_created( operator => ">=", value => $Created_after->iso );
     }
 }

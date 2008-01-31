@@ -49,7 +49,7 @@
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Edit.html?".$QueryString, 
     Title   => $title,
-    Format  => $Format,
+    format  => $format,
     Query   => $Query,
     Rows    => $Rows,
     order_by => $order_by,
@@ -63,17 +63,17 @@
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $SavedSearchId %>" />
 <textarea name="Query" rows="8" cols="72"><% $Query %></textarea>
 <br />
-<textarea name="Format" rows="8" cols="72"><% $Format %></textarea>
+<textarea name="format" rows="8" cols="72"><% $format %></textarea>
 <br />
 <& /Elements/Submit, Label => _("Apply"), Reset => 1, Caption => loc("Apply your changes")&>
 </form>
 
 <%INIT>
 my $title = _("Edit Query");
-$Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
+$format = $m->comp('/Elements/ScrubHTML', Content => $format);
 my $QueryString = $m->comp('/Elements/QueryString',
                            Query   => $Query,
-                           Format  => $Format,
+                           format  => $format,
                            Rows    => $Rows,
                            order_by => $order_by,
                            Order   => $Order,
@@ -86,7 +86,7 @@ my $QueryString = $m->comp('/Elements/QueryString',
 $SavedSearchId => 'new'
 
 $Query         => ''
-$Format        => ''
+$format        => ''
 $Rows          => '50'
 $order_by       => 'id'
 $Order         => 'ASC'
