@@ -236,10 +236,10 @@ sub __linearize_tree {
 sub parse_sql {
     my $self = shift;
     my %args = (
-        Query => '',
+        query => '',
         @_
     );
-    my $string = $args{'Query'};
+    my $string = $args{'query'};
 
     my @results;
 
@@ -261,7 +261,7 @@ sub parse_sql {
 
         my $class;
         if ( exists $lcfield{ lc $main_key } ) {
-            $class = $field{$main_key}->[0];
+            $class = $field{ $lcfield{ lc $main_key } }->[0];
             $key =~ s/^[^.]+/ $lcfield{ lc $main_key } /e;
         }
         unless ($class) {

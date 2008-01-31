@@ -167,7 +167,7 @@ my $ParseQuery = sub  {
     my ($string, $results) = @_;
 
     my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-    @$results = $tree->parse_sql( Query => $string );
+    @$results = $tree->parse_sql( query => $string );
 
     return $tree;
 };
