@@ -59,8 +59,8 @@ for (@tickets) {
   my $t = RT::Model::Ticket->new(current_user => RT->system_user);
   $t->create( queue => $queue_obj->id,
               subject => $_->[0],
-              Owner => $_->[2]->id,
-              Priority => $_->[1],
+              owner => $_->[2]->id,
+              priority => $_->[1],
             );
 }
 
