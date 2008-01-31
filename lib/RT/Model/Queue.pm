@@ -598,7 +598,7 @@ sub ticket_custom_fields {
 
     my $cfs = RT::Model::CustomFieldCollection->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-        $cfs->limit_to_global_orobject_id( $self->id );
+        $cfs->limit_to_global_or_object_id( $self->id );
         $cfs->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket');
     }
     return ($cfs);
@@ -620,7 +620,7 @@ sub ticket_transaction_custom_fields {
 
     my $cfs = RT::Model::CustomFieldCollection->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-        $cfs->limit_to_global_orobject_id( $self->id );
+        $cfs->limit_to_global_or_object_id( $self->id );
         $cfs->limit_to_lookup_type(
             'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction');
     }

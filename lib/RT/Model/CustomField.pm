@@ -128,13 +128,13 @@ our %FieldTypes = (
 
 our %FRIENDLY_OBJECT_TYPES = ();
 
-RT::Model::CustomField->_forobject_type(
+RT::Model::CustomField->_for_object_type(
     'RT::Model::Queue-RT::Model::Ticket' => "Tickets", );    #loc
-RT::Model::CustomField->_forobject_type(
+RT::Model::CustomField->_for_object_type(
     'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' =>
         "Ticket Transactions", );                            #loc
-RT::Model::CustomField->_forobject_type( 'RT::Model::User' => "Users", ); #loc
-RT::Model::CustomField->_forobject_type( 'RT::Model::Group' => "Groups", )
+RT::Model::CustomField->_for_object_type( 'RT::Model::User' => "Users", ); #loc
+RT::Model::CustomField->_for_object_type( 'RT::Model::Group' => "Groups", )
     ;                                                                     #loc
 
 our $RIGHTS = {
@@ -1129,7 +1129,7 @@ sub values_for_object {
     return ($values);
 }
 
-=head2 _Forobject_type PATH friendly_name
+=head2 _For_object_type PATH friendly_name
 
 Tell RT that a certain object accepts custom fields
 
@@ -1144,7 +1144,7 @@ This is a class method.
 
 =cut
 
-sub _forobject_type {
+sub _for_object_type {
     my $self          = shift;
     my $path          = shift;
     my $friendly_name = shift;

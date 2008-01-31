@@ -365,7 +365,7 @@ while ( my $Ticket = $Tickets->next ) {
 
 my $TxnCFs = RT::Model::CustomFieldCollection->new();
 $TxnCFs->limit_to_lookup_type( RT::Model::Transaction->custom_field_lookup_type );
-$TxnCFs->limit_to_global_orobject_id( sort keys %queues );
+$TxnCFs->limit_to_global_or_object_id( sort keys %queues );
 
 </%INIT>
 <%args>

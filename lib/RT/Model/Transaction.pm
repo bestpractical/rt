@@ -804,9 +804,9 @@ sub brief_description {
         my $self = shift;
         return _("comments added");
     },
-    CustomField => sub {
+    custom_field => sub {
         my $self  = shift;
-        my $field = _('CustomField');
+        my $field = _('custom_field');
 
         if ( $self->field ) {
             my $cf = RT::Model::CustomField->new;
@@ -1102,7 +1102,7 @@ sub current_user_can_see {
     }
 
   # Make sure the user can see the custom field before showing that it changed
-    elsif ( $type eq 'CustomField' and my $cf_id = $self->__value('field') ) {
+    elsif ( $type eq 'custom_field' and my $cf_id = $self->__value('field') ) {
         my $cf = RT::Model::CustomField->new;
         $cf->load($cf_id);
         return 0 unless $cf->current_user_has_right('SeeCustomField');
@@ -1241,7 +1241,7 @@ sub custom_field_values {
             my $CFs = RT::Model::CustomFieldCollection->new;
             $CFs->limit( column => 'name', value => $field );
             $CFs->limit_to_lookup_type( $self->custom_field_lookup_type );
-            $CFs->limit_to_global_orobject_id( $self->object->queue_obj->id );
+            $CFs->limit_to_global_or_object_id( $self->object->queue_obj->id );
             $field = $CFs->first->id if $CFs->first;
         }
     }

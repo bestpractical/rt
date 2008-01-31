@@ -309,7 +309,7 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   starts -- an ISO date describing the ticket\'s start date and time in GMT
   due -- an ISO date describing the ticket\'s due date and time in GMT
   mime_obj -- a MIME::Entity object with the content of the initial ticket request.
-  CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
+  custom_field-<n> -- a scalar or array of values for the customfield with the id <n>
 
 Ticket links can be set up during create by passing the link type as a hask key and
 the ticket id to be linked to as a value (or a URI when linking to other objects).
@@ -638,7 +638,7 @@ sub create {
     # {{{ Add all the custom fields
 
     foreach my $arg ( keys %args ) {
-        next unless $arg =~ /^CustomField-(\d+)$/i;
+        next unless $arg =~ /^custom_field-(\d+)$/i;
         my $cfid = $1;
 
         foreach my $value ( UNIVERSAL::isa( $args{$arg} => 'ARRAY' )

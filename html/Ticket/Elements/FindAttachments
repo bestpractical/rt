@@ -55,7 +55,7 @@ my %documents;
 # code that looks at attachments will look at each one in turn.
 my $attachments = RT::Model::AttachmentCollection->new();
 
-$attachments->columns( qw( id Filename content_type headers subject Parent content_encoding content_type transaction_id Created));
+$attachments->query_columns( qw( id filename content_type headers subject parent content_encoding content_type transaction_id created));
 
 my $transactions = $attachments->new_alias('Transactions');
 $attachments->join( alias1 => 'main',

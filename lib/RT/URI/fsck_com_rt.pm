@@ -87,7 +87,7 @@ sub object_type {
     return ($type);
 }
 
-=head2 URIForobject RT::Record
+=head2 uri_for_object RT::Record
 
 Returns the RT URI for a local RT::Record object
 

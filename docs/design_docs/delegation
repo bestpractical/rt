@@ -26,7 +26,7 @@ the group with id 'id'
 =cut
 
 
-=item RightsForobject { object_type => 'Group', object_id =>'group_id' }
+=item RightsFor_object { object_type => 'Group', object_id =>'group_id' }
 
 in users.pm
 

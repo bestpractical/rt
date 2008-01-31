@@ -95,7 +95,7 @@ Limits the set of custom fields found to global custom fields or those tied to t
 sub limit_to_global_or_queue {
     my $self  = shift;
     my $queue = shift;
-    $self->limit_to_global_orobject_id($queue);
+    $self->limit_to_global_or_object_id($queue);
     $self->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket');
 }
 
@@ -230,7 +230,7 @@ sub limit_to_parent_type {
     $self->limit( column => 'lookup_type', starts_with => "$lookup" );
 }
 
-sub limit_to_global_orobject_id {
+sub limit_to_global_or_object_id {
     my $self        = shift;
     my $global_only = 1;
 

@@ -78,7 +78,7 @@
 &></td></tr>
 
 <tr><td align="right"><&|/l&>stage</&>:</td><td>
-<& /Admin/Elements/Selectstage,
+<& /Admin/Elements/SelectStage,
     name => "Scrip-$id-stage",
     Default => $ARGS{"Scrip-$id-stage"} || $scrip->stage,
 &></td></tr>

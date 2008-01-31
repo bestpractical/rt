@@ -1333,7 +1333,7 @@ sub custom_fields {
 
     # XXX handle multiple types properly
     $cfs->limit_to_lookup_type( $self->custom_field_lookup_type );
-    $cfs->limit_to_global_orobject_id(
+    $cfs->limit_to_global_or_object_id(
         $self->_lookup_id( $self->custom_field_lookup_type ) );
 
     return $cfs;
@@ -1472,7 +1472,7 @@ sub _add_custom_field_value {
                     }
                     my ( $transaction_id, $Msg, $transaction_obj )
                         = $self->_new_transaction(
-                        type         => 'CustomField',
+                        type         => 'custom_field',
                         field        => $cf->id,
                         old_reference => $value,
                         );
@@ -1534,7 +1534,7 @@ sub _add_custom_field_value {
         if ( $args{'record_transaction'} ) {
             my ( $transaction_id, $Msg, $transaction_obj )
                 = $self->_new_transaction(
-                type         => 'CustomField',
+                type         => 'custom_field',
                 field        => $cf->id,
                 old_reference => $old_value,
                 new_reference => $new_value,
@@ -1574,7 +1574,7 @@ sub _add_custom_field_value {
         }
         if ( $args{'record_transaction'} ) {
             my ( $tid, $msg ) = $self->_new_transaction(
-                type          => 'CustomField',
+                type          => 'custom_field',
                 field         => $cf->id,
                 new_reference  => $new_value_id,
                 reference_type => 'RT::Model::ObjectCustomFieldValue',
@@ -1627,7 +1627,7 @@ sub delete_custom_field_value {
     }
 
     my ( $transaction_id, $Msg, $transaction_obj ) = $self->_new_transaction(
-        type          => 'CustomField',
+        type          => 'custom_field',
         field         => $cf->id,
         old_reference  => $val,
         reference_type => 'RT::Model::ObjectCustomFieldValue',

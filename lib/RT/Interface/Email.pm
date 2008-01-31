@@ -600,11 +600,11 @@ sub forward_transaction {
         # From/To/Cc headers that are on a top part
         my $attachments = RT::Model::AttachmentCollection->new(
             current_user => $txn->current_user );
-        $attachments->columns(qw(id Parent transaction_id headers));
+        $attachments->query_columns(qw(id parent transaction_id headers));
         $attachments->limit( column => 'transaction_id', value => $txn->id );
-        $attachments->limit( column => 'Parent',        value => 0 );
+        $attachments->limit( column => 'parent',        value => 0 );
         $attachments->limit(
-            column      => 'Parent',
+            column      => 'parent',
             operator    => 'IS',
             value       => 'NULL',
             quote_value => 0
