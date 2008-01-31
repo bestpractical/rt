@@ -587,7 +587,7 @@ sub current_user_has_right {
     my $right = shift;
     return (
         $self->has_right(
-            Principal => $self->current_user->user_object,
+            principal => $self->current_user->user_object,
             right     => $right
         )
     );
@@ -610,17 +610,17 @@ sub has_right {
     my $self = shift;
     my %args = (
         right     => undef,
-        Principal => undef,
+        principal => undef,
         @_
     );
 
     if ( $self->SUPER::_value('queue') ) {
-        return $args{'Principal'}->has_right(
+        return $args{'principal'}->has_right(
             right  => $args{'right'},
             object => $self->queue_obj
         );
     } else {
-        return $args{'Principal'}->has_right(
+        return $args{'principal'}->has_right(
             object => RT->system,
             right  => $args{'right'},
         );
