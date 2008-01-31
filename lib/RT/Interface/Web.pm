@@ -889,13 +889,13 @@ sub process_ticket_basics {
     my @attribs = qw(
         subject
         final_priority
-        Priority
+        priority
         time_estimated
         time_worked
         time_left
         Type
         Status
-        Queue
+        queue
     );
 
     if ( $ARGSRef->{'queue'} and ( $ARGSRef->{'queue'} !~ /^(\d+)$/ ) ) {
