@@ -26,7 +26,7 @@ my ($id, $txnid, $txnobj) =  $ticket->comment( Content => 'A comment that happen
 isa_ok($txnobj, 'RT::Model::Transaction');
 
 ok($txnobj->created_obj->iso);
-my ( $sid,$smsg) = $txnobj->__set(column => 'Created', value => '2005-08-05 20:00:56');
+my ( $sid,$smsg) = $txnobj->__set(column => 'created', value => '2005-08-05 20:00:56');
 ok($sid,$smsg);
 is($txnobj->created,'2005-08-05 20:00:56');
 is($txnobj->created_obj->iso,'2005-08-05 20:00:56');
