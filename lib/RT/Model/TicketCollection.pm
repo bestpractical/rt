@@ -794,7 +794,7 @@ sub _watcher_limit {
     # Owner was ENUM field, so "Owner = 'xxx'" allowed user to
     # search by id and name at the same time, this is workaround
     # to preserve backward compatibility
-    if ( $field eq 'Owner' && !$rest{subkey} && $op =~ /^!?=$/ ) {
+    if ( lc $field eq 'owner' && !$rest{subkey} && $op =~ /^!?=$/ ) {
         my $o = RT::Model::User->new;
         $o->load($value);
         $self->_sql_limit(
