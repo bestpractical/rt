@@ -184,7 +184,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     # Update any existing values
     my $values = $CustomFieldObj->values_obj;
     while ( my $value = $values->next ) {
-        foreach my $attr qw(name description sort_order Category) {
+        foreach my $attr qw(name description sort_order category) {
             my $param = "$paramtag-". $value->id ."-". $attr;
             next unless exists $ARGS{$param};
             next if ($value->$attr()||'') eq ($ARGS{$param}||'');
@@ -199,7 +199,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     if ( defined $ARGS{ $paramtag ."-new-name" } && length $ARGS{ $paramtag ."-new-name" } ) {
         my ($id, $msg) = $CustomFieldObj->add_value(
             map { $_ => $ARGS{ $paramtag ."-new-$_" } }
-                qw( name description sort_order Category )
+                qw( name description sort_order category )
         );
         push (@results, $msg);
     }

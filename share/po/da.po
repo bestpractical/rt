@@ -1146,7 +1146,7 @@ msgstr "Kan ikke oprette bruger: %1"
 
 #: html/Admin/Elements/AddCustomFieldValue:62
 #: html/Admin/Elements/EditCustomFieldValues:58
-msgid "Category"
+msgid "category"
 msgstr "Kategori"
 
 #: etc/initialdata:50

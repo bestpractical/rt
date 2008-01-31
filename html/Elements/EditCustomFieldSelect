@@ -51,11 +51,11 @@
 %       my $selected = 0;
 %       my @category;
 %       my $id = $namePrefix . $CustomField->id;
-%       my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, CategoryRef => \@category);
+%       my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, category_ref => \@category);
 %       if (@category) {
 <script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/cascaded.js"></script>
 %#      XXX - Hide this select from w3m?
-      <select onchange="filter_cascade('<% $id %>-Values', this.value)" name="<% $id %>-Category">
+      <select onchange="filter_cascade('<% $id %>-Values', this.value)" name="<% $id %>-category">
         <option value="" <% !$selected && 'selected' %>><&|/l&>-</&></option>
 %           foreach my $cat (@category) {
 %               my ($depth, $name) = @$cat;
@@ -102,7 +102,7 @@ $Rows => undef
 %           }
 %       }
 %       if ( length $level ) {
-%           push @$CategoryRef, [0+@levels, $level];
+%           push @$category_ref, [0+@levels, $level];
             <optgroup style="padding-left: <% @levels/2 %>em" label="<% $category %>">
 %           push @levels, $level;
 %       }
@@ -123,6 +123,6 @@ $CustomField => undef
 @Default => ()
 $values => undef
 $SelectedRef => undef
-$CategoryRef => undef
+$category_ref => undef
 </%ARGS>
 </%METHOD>

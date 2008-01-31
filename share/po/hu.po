@@ -842,7 +842,7 @@ msgid "Cannot create user: %1"
 msgstr "A felhasználó nem hozható létre: %1"
 
 #: html/Admin/Elements/AddCustomFieldValue:62 html/Admin/Elements/EditCustomFieldValues:58
-msgid "Category"
+msgid "category"
 msgstr ""
 
 #: etc/initialdata:50 html/Admin/Queues/People.html:65 html/SelfService/Create.html:71 html/Ticket/Create.html:88 html/Ticket/Elements/EditPeople:72 html/Ticket/Elements/ShowPeople:56 html/Ticket/Update.html:83 lib/RT/ACE_Overlay.pm:112

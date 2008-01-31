@@ -355,7 +355,7 @@ sub create_ticket {
     }
 
     foreach my $arg ( keys %ARGS ) {
-        next if $arg =~ /-(?:Magic|Category)$/;
+        next if $arg =~ /-(?:Magic|category)$/;
 
         if ( $arg =~ /^object-RT::Model::Transaction--CustomField-/ ) {
             $create_args{$arg} = $ARGS{$arg};
@@ -1016,7 +1016,7 @@ sub _process_object_custom_field_updates {
 
     my @results;
     foreach my $arg ( keys %{ $args{'ARGS'} } ) {
-        next if $arg =~ /Category$/;
+        next if $arg =~ /category$/;
 
         # since http won't pass in a form element with a null value, we need
         # to fake it

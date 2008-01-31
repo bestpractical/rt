@@ -54,7 +54,7 @@
 <th><&|/l&>name</&></th>
 <th><&|/l&>description</&></th>
 % if ( $CustomField->type ne 'Combobox' ) {
-<th><&|/l&>Category</&></th>
+<th><&|/l&>category</&></th>
 % }
 </tr>
 
@@ -64,7 +64,7 @@
 <td><input type="text" size="30" name="<% $paramtag %>-name"        /></td>
 <td><input type="text" size="50" name="<% $paramtag %>-Description" /></td>
 % if ( $CustomField->type ne 'Combobox' ) {
-<td><input type="text" size="10" name="<% $paramtag %>-Category"    /></td>
+<td><input type="text" size="10" name="<% $paramtag %>-category"    /></td>
 % }
 </tr>
 
