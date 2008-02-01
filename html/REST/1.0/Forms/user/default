@@ -57,9 +57,9 @@ my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
 my $user = RT::Model::User->new() ;
-my @fields = qw(real_name nickname gecos organization Address1 Address2 City
-                State Zip Country HomePhone WorkPhone MobilePhone PagerPhone
-                freeform_contact_info comments Signature lang email_encoding
+my @fields = qw(real_name nickname gecos organization Address1 Address2 city
+                state zip country home_phone work_phone mobile_phone pager_phone
+                freeform_contact_info comments signature lang email_encoding
                 web_encoding ExternalContactInfoId ContactInfoSystem
                 ExternalAuthId auth_system);
 my %fields = map { lc $_ => $_ } @fields;

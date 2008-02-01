@@ -63,16 +63,16 @@ if (!$ticket->id) {
 }
 
 my ($c, $o, $k, $e) = ("", [], {}, 0);
-my @fields = qw(DependsOn DependedOnBy RefersTo ReferredToBy Members MemberOf);
+my @fields = qw(depends_on depended_on_by refers_to referred_to_by members member_of);
 my %fields = map { lc $_ => $_ } @fields;
 
 my %lfields = (
-    Members      => { type => 'MemberOf',  Mode => 'base'   },
-    ReferredToBy => { type => 'RefersTo',  Mode => 'base'   },
-    DependedOnBy => { type => 'DependsOn', Mode => 'base'   },
-    MemberOf     => { type => 'MemberOf',  Mode => 'target' },
-    RefersTo     => { type => 'RefersTo',  Mode => 'target' },
-    DependsOn    => { type => 'DependsOn', Mode => 'target' },
+    members      => { type => 'MemberOf',  Mode => 'base'   },
+    referred_to_By => { type => 'RefersTo',  Mode => 'base'   },
+    depended_on_by => { type => 'DependsOn', Mode => 'base'   },
+    member_of     => { type => 'MemberOf',  Mode => 'target' },
+    refers_to     => { type => 'RefersTo',  Mode => 'target' },
+    depends_on    => { type => 'DependsOn', Mode => 'target' },
 );
 
 if ($changes) {

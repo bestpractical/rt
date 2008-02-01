@@ -60,12 +60,12 @@ my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data   = %$changes;
 my $ticket = RT::Model::Ticket->new() ;
-my @dates  = qw(Created starts Started Due resolved Told LastUpdated);
-my @people = qw(Requestors Cc AdminCc);
-my @create = qw(queue Requestor subject Cc AdminCc Owner Status Priority
+my @dates  = qw(created starts started due resolved told last_updated);
+my @people = qw(requestors cc admin_cc);
+my @create = qw(queue requestor subject cc admin_cc owner status priority
                 initial_priority final_priority time_estimated time_worked
-                time_left starts Started Due Resolved);
-my @simple = qw(subject Status Priority disabled time_estimated time_worked
+                time_left starts started due resolved);
+my @simple = qw(subject status priority disabled time_estimated time_worked
                 time_left initial_priority final_priority);
 my %dates  = map {lc $_ => $_} @dates;
 my %people = map {lc $_ => $_} @people;
@@ -99,23 +99,23 @@ else {
 
         return [
             "# Required: id, Queue",
-            [ qw(id queue Requestor subject Cc AdminCc Owner Status Priority
+            [ qw(id queue requestor subject cc AdminCc Owner status priority
                  initial_priority final_priority time_estimated starts Due Text) ],
             {
                 id               => "ticket/new",
                 queue            => $queue->name,
                 Requestor        => Jifty->web->current_user->name,
                 subject          => "",
-                Cc               => [],
-                AdminCc          => [],
-                Owner            => "",
-                Status           => "new",
-                Priority         => $queue->initial_priority,
+                cc               => [],
+                admin_cc          => [],
+                owner            => "",
+                status           => "new",
+                priority         => $queue->initial_priority,
                 initial_priority  => $queue->initial_priority,
                 final_priority    => $queue->final_priority,
                 time_estimated    => 0,
                 starts           => $starts->iso,
-                Due              => $due->iso,
+                due              => $due->iso,
                 Text             => "",
             },
             0
@@ -186,7 +186,7 @@ if (!keys(%data)) {
     push @data, [ Creator => $ticket->creator_obj->name ]
 	if (!%$fields || exists $fields->{lc 'Creator'});
 
-    foreach (qw(subject Status Priority initial_priority final_priority)) {
+    foreach (qw(subject status priority initial_priority final_priority)) {
 	next unless (!%$fields || (exists $fields->{lc $_}));
         push @data, [$_ => $ticket->$_ ];
     }
@@ -237,7 +237,7 @@ else {
         $n = 1;
 
         if (ref $val eq 'ARRAY') {
-            unless ($key =~ /^(?:Requestors|Cc|AdminCc)$/i) {
+            unless ($key =~ /^(?:requestors|cc|admin_cc)$/i) {
                 $n = 0;
                 $s = "$key may have only one value.";
                 goto SET;
