@@ -55,30 +55,30 @@ Both Group and Member are expected to be RT::Model::Principal objects
 sub create {
     my $self = shift;
     my %args = (
-        Group             => undef,
-        Member            => undef,
+        group             => undef,
+        member            => undef,
         inside_transaction => undef,
         @_
     );
 
-    unless ( $args{'Group'}
-        && UNIVERSAL::isa( $args{'Group'}, 'RT::Model::Principal' )
-        && $args{'Group'}->id )
+    unless ( $args{'group'}
+        && UNIVERSAL::isa( $args{'group'}, 'RT::Model::Principal' )
+        && $args{'group'}->id )
     {
 
         Jifty->log->warn("GroupMember::Create called with a bogus Group arg");
         return (undef);
     }
 
-    unless ( $args{'Group'}->is_group ) {
+    unless ( $args{'group'}->is_group ) {
         Jifty->log->warn(
             "Someone tried to add a member to a user instead of a group");
         return (undef);
     }
 
-    unless ( $args{'Member'}
-        && UNIVERSAL::isa( $args{'Member'}, 'RT::Model::Principal' )
-        && $args{'Member'}->id )
+    unless ( $args{'member'}
+        && UNIVERSAL::isa( $args{'member'}, 'RT::Model::Principal' )
+        && $args{'member'}->id )
     {
         Jifty->log->warn(
             "GroupMember::Create called with a bogus Principal arg");
@@ -96,20 +96,20 @@ sub create {
     # (and recurse infinitely)  Later, we can add code to check this in the
     # cache and bail so we can support cycling directed graphs
 
-    if ( $args{'Member'}->is_group ) {
-        my $member_object = $args{'Member'}->object;
-        if ( $member_object->has_member_recursively( $args{'Group'} ) ) {
+    if ( $args{'member'}->is_group ) {
+        my $member_object = $args{'member'}->object;
+        if ( $member_object->has_member_recursively( $args{'group'} ) ) {
             Jifty->log->debug("Adding that group would create a loop");
             return (undef);
-        } elsif ( $args{'Member'}->id == $args{'Group'}->id ) {
+        } elsif ( $args{'member'}->id == $args{'group'}->id ) {
             Jifty->log->debug("Can't add a group to itself");
             return (undef);
         }
     }
 
     my $id = $self->SUPER::create(
-        group_id  => $args{'Group'}->id,
-        member_id => $args{'Member'}->id
+        group_id  => $args{'group'}->id,
+        member_id => $args{'member'}->id
     );
 
     unless ($id) {
@@ -119,10 +119,10 @@ sub create {
 
     my $cached_member = RT::Model::CachedGroupMember->new;
     my $cached_id     = $cached_member->create(
-        Member          => $args{'Member'},
-        Group           => $args{'Group'},
-        immediate_parent => $args{'Group'},
-        Via             => '0'
+        member          => $args{'member'},
+        group           => $args{'group'},
+        immediate_parent => $args{'group'},
+        via             => '0'
     );
 
 #When adding a member to a group, we need to go back
@@ -132,7 +132,7 @@ sub create {
 
     # find things which have the current group as a member.
     # $group is an RT::Model::Principal for the group.
-    $cgm->limit_to_groups_with_member( $args{'Group'}->id );
+    $cgm->limit_to_groups_with_member( $args{'group'}->id );
 
     while ( my $parent_member = $cgm->next ) {
         my $parent_id = $parent_member->member_id;
@@ -141,14 +141,14 @@ sub create {
 
         my $other_cached_member = RT::Model::CachedGroupMember->new;
         my $other_cached_id     = $other_cached_member->create(
-            Member          => $args{'Member'},
-            Group           => $parent_member->group_obj,
+            member          => $args{'member'},
+            group           => $parent_member->group_obj,
             immediate_parent => $parent_member->member_obj,
-            Via             => $parent_member->id
+            via             => $parent_member->id
         );
         unless ($other_cached_id) {
             Jifty->log->err( "Couldn't add "
-                    . $args{'Member'}
+                    . $args{'member'}
                     . " as a submember of a supergroup" );
             Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
             return (undef);
@@ -186,8 +186,8 @@ This routine expects to be called inside a transaction by RT::Model::User->creat
 sub _stash_user {
     my $self = shift;
     my %args = (
-        Group  => undef,
-        Member => undef,
+        group  => undef,
+        member => undef,
         @_
     );
 
@@ -201,8 +201,8 @@ sub _stash_user {
     # cache and bail so we can support cycling directed graphs
 
     my $id = $self->SUPER::create(
-        group_id  => $args{'Group'}->id,
-        member_id => $args{'Member'}->id,
+        group_id  => $args{'group'}->id,
+        member_id => $args{'member'}->id,
     );
 
     unless ($id) {
@@ -211,10 +211,10 @@ sub _stash_user {
 
     my $cached_member = RT::Model::CachedGroupMember->new;
     my $cached_id     = $cached_member->create(
-        Member          => $args{'Member'},
-        Group           => $args{'Group'},
-        immediate_parent => $args{'Group'},
-        Via             => '0'
+        member          => $args{'member'},
+        group           => $args{'group'},
+        immediate_parent => $args{'group'},
+        via             => '0'
     );
 
     unless ($cached_id) {

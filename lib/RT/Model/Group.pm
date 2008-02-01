@@ -209,13 +209,13 @@ sub load_personal_group {
     my $self = shift;
     my %args = (
         name => undef,
-        User => undef,
+        user => undef,
         @_
     );
 
     $self->load_by_cols(
         "domain"   => 'Personal',
-        "instance" => $args{'User'},
+        "instance" => $args{'user'},
         "type"     => '',
         "name"     => $args{'name'}
     );
@@ -412,8 +412,8 @@ sub _create {
 # cached members. thankfully, we're creating the group now...so it has no members.
     my $cgm = RT::Model::CachedGroupMember->new;
     $cgm->create(
-        Group           => $self->principal_object,
-        Member          => $self->principal_object,
+        group           => $self->principal_object,
+        member          => $self->principal_object,
         immediate_parent => $self->principal_object
     );
 
@@ -492,8 +492,8 @@ sub _createacl_equivalence_group {
     # and so we bypass all sorts of cruft we don't need
     my $aclstash = RT::Model::GroupMember->new;
     my ( $stash_id, $add_msg ) = $aclstash->_stash_user(
-        Group  => $self->principal_object,
-        Member => $princ
+        group  => $self->principal_object,
+        member => $princ
     );
 
     unless ($stash_id) {
@@ -983,8 +983,8 @@ sub _add_member {
 
     my $member_object = RT::Model::GroupMember->new;
     my $id            = $member_object->create(
-        Member            => $new_member_obj,
-        Group             => $self->principal_object,
+        member            => $new_member_obj,
+        group             => $self->principal_object,
         inside_transaction => $args{'inside_transaction'}
     );
     if ($id) {
@@ -1233,7 +1233,7 @@ sub _set {
     my %args = (
         column             => undef,
         value              => undef,
-        TransactionType    => 'Set',
+        transaction_type    => 'Set',
         record_transaction => 1,
         @_
     );
@@ -1270,7 +1270,7 @@ sub _set {
     if ( $args{'record_transaction'} == 1 ) {
 
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
-            type      => $args{'TransactionType'},
+            type      => $args{'transaction_type'},
             field     => $args{'column'},
             new_value => $args{'value'},
             old_value => $Old,

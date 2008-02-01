@@ -59,24 +59,24 @@ sub table {'CachedGroupMembers'}
 sub create {
     my $self = shift;
     my %args = (
-        Group           => '',
-        Member          => '',
+        group           => '',
+        member          => '',
         immediate_parent => '',
         via             => '0',
         disabled        => '0',
         @_
     );
 
-    unless ( $args{'Member'}
-        && UNIVERSAL::isa( $args{'Member'}, 'RT::Model::Principal' )
-        && $args{'Member'}->id )
+    unless ( $args{'member'}
+        && UNIVERSAL::isa( $args{'member'}, 'RT::Model::Principal' )
+        && $args{'member'}->id )
     {
         Jifty->log->debug("$self->create: bogus Member argument");
     }
 
-    unless ( $args{'Group'}
-        && UNIVERSAL::isa( $args{'Group'}, 'RT::Model::Principal' )
-        && $args{'Group'}->id )
+    unless ( $args{'group'}
+        && UNIVERSAL::isa( $args{'group'}, 'RT::Model::Principal' )
+        && $args{'group'}->id )
     {
         Jifty->log->debug("$self->create: bogus Group argument");
     }
@@ -94,8 +94,8 @@ sub create {
     }
 
     my $id = $self->SUPER::create(
-        group_id           => $args{'Group'}->id,
-        member_id          => $args{'Member'}->id,
+        group_id           => $args{'group'}->id,
+        member_id          => $args{'member'}->id,
         immediate_parent_id => $args{'immediate_parent'}->id,
         disabled          => $args{'disabled'},
         via               => $args{'via'},
@@ -103,9 +103,9 @@ sub create {
 
     unless ($id) {
         Jifty->log->warn( "Couldn't create "
-                . $args{'Member'}
+                . $args{'member'}
                 . " as a cached member of "
-                . $args{'Group'}->id . " via "
+                . $args{'group'}->id . " via "
                 . $args{'via'} );
         return (undef)
             ;    #this will percolate up and bail out of the transaction
@@ -114,23 +114,23 @@ sub create {
         my ( $vid, $vmsg ) = $self->__set( column => 'via', value => $id );
         unless ($vid) {
             Jifty->log->warn( "Due to a via error, couldn't create "
-                    . $args{'Member'}
+                    . $args{'member'}
                     . " as a cached member of "
-                    . $args{'Group'}->id . " via "
+                    . $args{'group'}->id . " via "
                     . $args{'via'} );
             return (undef)
                 ;    #this will percolate up and bail out of the transaction
         }
     }
 
-    if ( $args{'Member'}->is_group() ) {
-        my $GroupMembers = $args{'Member'}->object->members_obj();
+    if ( $args{'member'}->is_group() ) {
+        my $GroupMembers = $args{'member'}->object->members_obj();
         while ( my $member = $GroupMembers->next() ) {
             my $cached_member = RT::Model::CachedGroupMember->new;
             my $c_id          = $cached_member->create(
-                Group           => $args{'Group'},
-                Member          => $member->member_obj,
-                immediate_parent => $args{'Member'},
+                group           => $args{'group'},
+                member          => $member->member_obj,
+                immediate_parent => $args{'member'},
                 disabled        => $args{'disabled'},
                 via             => $id
             );

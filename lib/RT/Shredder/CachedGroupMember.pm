@@ -69,7 +69,7 @@ sub __depends_on {
 
     # deep memebership
     my $objs = RT::Model::CachedGroupMemberCollection->new;
-    $objs->limit( column => 'Via', value => $self->id );
+    $objs->limit( column => 'via', value => $self->id );
     $objs->limit( column => 'id', operator => '!=', value => $self->id );
     push( @$list, $objs );
 

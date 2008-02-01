@@ -28,7 +28,7 @@ unless ($ret) {
 }
 $pg1 = RT::Model::Group->new(current_user => RT->system_user);
 ( $ret, $msg ) = $pg1->load_personal_group( name => 'dpg1',
-					  User => $u1->principal_id );
+					  user => $u1->principal_id );
 unless ($ret) {
     ( $ret, $msg ) = $pg1->create_personal_group( name => 'dpg1',
 						principal_id => $u1->principal_id );
@@ -36,7 +36,7 @@ unless ($ret) {
 ok( $ret, "Load / Create test personal group 1: $msg" );
 $pg2 = RT::Model::Group->new(current_user => RT->system_user);
 ( $ret, $msg ) = $pg2->load_personal_group( name => 'dpg2',
-					  User => $u1->principal_id );
+					  user => $u1->principal_id );
 unless ($ret) {
     ( $ret, $msg ) = $pg2->create_personal_group( name => 'dpg2',
 						principal_id => $u1->principal_id );
