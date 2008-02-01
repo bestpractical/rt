@@ -647,7 +647,7 @@ sub create {
         {
             next unless defined $value && length $value;
 
-            # Allow passing in uploaded LargeContent etc by hash reference
+            # Allow passing in uploaded large_content etc by hash reference
             my ( $status, $msg ) = $self->add_custom_field_value(
                 (   UNIVERSAL::isa( $value => 'HASH' )
                     ? %$value

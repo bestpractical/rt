@@ -1395,7 +1395,7 @@ sub _add_custom_field_value {
     my %args = (
         Field              => undef,
         Value              => undef,
-        LargeContent       => undef,
+        large_content       => undef,
         content_type        => undef,
         record_transaction => 1,
         @_
@@ -1434,7 +1434,7 @@ sub _add_custom_field_value {
     }
 
     # empty string is not correct value of any CF, so undef it
-    foreach (qw(Value LargeContent)) {
+    foreach (qw(Value large_content)) {
         $args{$_} = undef if defined $args{$_} && !length $args{$_};
     }
 
@@ -1498,10 +1498,10 @@ sub _add_custom_field_value {
             }
             if ($is_the_same) {
                 my $old_content = $old_value->large_content;
-                if ( defined $args{'LargeContent'} ) {
+                if ( defined $args{'large_content'} ) {
                     $is_the_same = 0
                         unless defined $old_content
-                            && $old_content eq $args{'LargeContent'};
+                            && $old_content eq $args{'large_content'};
                 } else {
                     $is_the_same = 0 if defined $old_content;
                 }
@@ -1513,7 +1513,7 @@ sub _add_custom_field_value {
         my ( $new_value_id, $value_msg ) = $cf->add_value_for_object(
             object       => $self,
             Content      => $args{'Value'},
-            LargeContent => $args{'LargeContent'},
+            large_content => $args{'large_content'},
             content_type  => $args{'content_type'},
         );
 
@@ -1564,7 +1564,7 @@ sub _add_custom_field_value {
         my ( $new_value_id, $msg ) = $cf->add_value_for_object(
             object       => $self,
             Content      => $args{'Value'},
-            LargeContent => $args{'LargeContent'},
+            large_content => $args{'large_content'},
             content_type  => $args{'content_type'},
         );
 

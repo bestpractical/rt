@@ -60,7 +60,7 @@ use Jifty::DBI::Record schema {
     column
         content_type => type is 'varchar(80)',
         max_length is 80, default is '';
-    column LargeContent => type is 'longtext', default is '';
+    column large_content => type is 'longtext', default is '';
     column Creator => type is 'int(11)', max_length is 11, default is '0';
     column object_id => type is 'int(11)', max_length is 11, default is '0';
     column
@@ -101,26 +101,26 @@ sub create {
         object_id       => 0,
         disabled        => 0,
         Content         => '',
-        LargeContent    => undef,
+        large_content    => undef,
         content_type     => '',
         content_encoding => '',
         @_,
     );
 
     if ( defined $args{'Content'} && length( $args{'Content'} ) > 255 ) {
-        if ( defined $args{'LargeContent'} && length $args{'LargeContent'} ) {
+        if ( defined $args{'large_content'} && length $args{'large_content'} ) {
             Jifty->log->error(
-                "Content is longer than 255 and LargeContent specified");
+                "Content is longer than 255 and large_content specified");
         } else {
-            $args{'LargeContent'} = $args{'Content'};
+            $args{'large_content'} = $args{'Content'};
             $args{'Content'}      = '';
             $args{'content_type'} ||= 'text/plain';
         }
     }
 
-    ( $args{'content_encoding'}, $args{'LargeContent'} )
-        = $self->_encode_lob( $args{'LargeContent'}, $args{'content_type'} )
-        if defined $args{'LargeContent'};
+    ( $args{'content_encoding'}, $args{'large_content'} )
+        = $self->_encode_lob( $args{'large_content'}, $args{'content_type'} )
+        if defined $args{'large_content'};
 
     return $self->SUPER::create(
         custom_field     => $args{'custom_field'},
@@ -128,7 +128,7 @@ sub create {
         object_id       => $args{'object_id'},
         disabled        => $args{'disabled'},
         Content         => $args{'Content'},
-        LargeContent    => $args{'LargeContent'},
+        large_content    => $args{'large_content'},
         content_type     => $args{'content_type'},
         content_encoding => $args{'content_encoding'},
     );
@@ -137,7 +137,7 @@ sub create {
 sub large_content {
     my $self = shift;
     return $self->_decode_lob( $self->content_type, $self->content_encoding,
-        $self->_value( 'LargeContent', decode_utf8 => 0 ) );
+        $self->_value( 'large_content', decode_utf8 => 0 ) );
 }
 
 =head2 LoadByTicketContentAndCustomField { Ticket => TICKET, custom_field => customfield, Content => CONTENT }
@@ -187,7 +187,7 @@ sub load_by_object_content_and_custom_field {
 =head2 Content
 
 Return this custom field's content. If there's no "regular"
-content, try "LargeContent"
+content, try "large_content"
 
 =cut
 

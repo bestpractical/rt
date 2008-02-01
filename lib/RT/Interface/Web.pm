@@ -1402,7 +1402,7 @@ sub process_record_links {
 
 Takes a CGI parameter name; if a file is uploaded under that name,
 return a hash reference suitable for AddCustomFieldValue's use:
-C<( value => $filename, LargeContent => $content, content_type => $type )>.
+C<( value => $filename, large_content => $content, content_type => $type )>.
 
 Returns C<undef> if no files were uploaded in the C<$arg> field.
 
@@ -1420,7 +1420,7 @@ sub _uploaded_file {
 
     return {
         value        => $filename,
-        LargeContent => do { local $/; scalar <$fh> },
+        large_content => do { local $/; scalar <$fh> },
         content_type  => $upload_info->{'Content-Type'},
     };
 }
