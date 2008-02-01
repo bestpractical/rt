@@ -48,7 +48,7 @@ ENDOFCONTENT
 like ($approvals , qr/Content/, "Read in the approvals template");
 
 my $apptemp = RT::Model::Template->new(current_user => RT->system_user);
-$apptemp->create( Content => $approvals, name => "Approvals", queue => "0");
+$apptemp->create( content => $approvals, name => "Approvals", queue => "0");
 
 ok ($apptemp->id);
 
@@ -86,7 +86,7 @@ my $action =  RT::ScripAction::CreateTickets->new( current_user => RT->system_us
 
 # comma-delimited templates
 my $commas = <<"EOF";
-id,Queue,subject,Owner,Content
+id,Queue,Subject,Owner,Content
 ticket1,General,"foo, bar",root,blah
 ticket2,General,foo bar,root,blah
 ticket3,General,foo' bar,root,blah'boo
@@ -96,7 +96,7 @@ EOF
 
 # Comma delimited templates with missing data
 my $sparse_commas = <<"EOF";
-id,Queue,subject,Owner,Requestor
+id,Queue,Subject,Owner,Requestor
 ticket14,General,,,bobby
 ticket15,General,,,tommy
 ticket16,General,,suzie,tommy
@@ -108,7 +108,7 @@ EOF
 
 # tab-delimited templates
 my $tabs = <<"EOF";
-id\tQueue\tsubject\tOwner\tContent
+id\tQueue\tSubject\tOwner\tContent
 ticket10\tGeneral\t"foo' bar"\troot\tblah'
 ticket11\tGeneral\tfoo, bar\troot\tblah
 ticket12\tGeneral\tfoo' bar\troot\tblah'boo
@@ -222,9 +222,9 @@ EOF
 
 
 
-$action->parse(Content =>$commas);
-$action->parse(Content =>$sparse_commas);
-$action->parse(Content => $tabs);
+$action->parse(content =>$commas);
+$action->parse(content =>$sparse_commas);
+$action->parse(content => $tabs);
 
 my %got;
 foreach (@{ $action->{'CreateTickets'} }) {

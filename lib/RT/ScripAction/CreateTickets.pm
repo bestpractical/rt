@@ -58,10 +58,8 @@ use MIME::Entity;
 
 =head1 name
 
- RT::ScripAction::CreateTickets
-
-Create one or more tickets according to an externally supplied template.
-
+RT::ScripAction::CreateTickets - Create one or more tickets according
+to an externally supplied template.
 
 =head1 SYNOPSIS
 
@@ -326,7 +324,7 @@ sub prepare {
     }
 
     $self->parse(
-        Content        => $self->template_obj->content,
+        content        => $self->template_obj->content,
         _ActiveContent => 1
     );
     return 1;
@@ -431,16 +429,16 @@ sub update_by_template {
         my @attribs = qw(
             subject
             final_priority
-            Priority
+            priority
             time_estimated
             time_worked
             time_left
-            Status
-            Queue
-            Due
+            status
+            queue
+            due
             starts
             Started
-            Resolved
+            resolved
         );
 
         my $id = $template_id;
@@ -546,7 +544,7 @@ allowing you to embed active perl in your templates.
 sub parse {
     my $self = shift;
     my %args = (
-        Content        => undef,
+        content        => undef,
         queue          => undef,
         Requestor      => undef,
         _ActiveContent => undef,
@@ -560,9 +558,9 @@ sub parse {
         $self->{'UsePerlTextTemplate'} = 0;
     }
 
-    if ( substr( $args{'Content'}, 0, 3 ) eq '===' ) {
+    if ( substr( $args{'content'}, 0, 3 ) eq '===' ) {
         $self->_parse_multiline_template(%args);
-    } elsif ( $args{'Content'} =~ /(?:\t|,)/i ) {
+    } elsif ( $args{'content'} =~ /(?:\t|,)/i ) {
         $self->_parse_xsv_template(%args);
 
     }
@@ -585,7 +583,7 @@ sub _parse_multiline_template {
     my $template_id;
     my ( $queue, $requestor );
     Jifty->log->debug("Line: ===");
-    foreach my $line ( split( /\n/, $args{'Content'} ) ) {
+    foreach my $line ( split( /\n/, $args{'content'} ) ) {
         $line =~ s/\r$//;
         Jifty->log->debug("Line: $line");
         if ( $line =~ /^===/ ) {
@@ -657,7 +655,7 @@ sub parse_lines {
             "Workflow: evaluating\n$self->{templates}{$template_id}");
 
         my $template = Text::Template->new(
-            type   => 'STRING',
+            TYPE   => 'STRING',
             SOURCE => $content
         );
 
@@ -755,12 +753,12 @@ sub parse_lines {
     my %ticketargs = (
         queue            => $args{'queue'},
         subject          => $args{'subject'},
-        Status           => $args{'status'} || 'new',
-        Due              => $args{'due'},
+        status           => $args{'status'} || 'new',
+        due              => $args{'due'},
         starts           => $args{'starts'},
-        Started          => $args{'started'},
+        started          => $args{'started'},
         resolved         => $args{'resolved'},
-        Owner            => $args{'owner'},
+        owner            => $args{'owner'},
         Requestor        => $args{'requestor'},
         Cc               => $args{'cc'},
         AdminCc          => $args{'admincc'},
@@ -820,7 +818,7 @@ sub _parse_xsv_template {
     my %args = (@_);
 
     use Regexp::Common qw(delimited);
-    my ( $first, $content ) = split( /\r?\n/, $args{'Content'}, 2 );
+    my ( $first, $content ) = split( /\r?\n/, $args{'content'}, 2 );
 
     my $delimiter;
     if ( $first =~ /\t/ ) {
@@ -896,7 +894,7 @@ LINE:
                     || $field =~ /^Data$/i
                     || $field =~ /^Message$/i )
                 {
-                    $field = 'Content';
+                    $field = 'content';
                 } elsif ( $field =~ /^Summary$/i ) {
                     $field = 'subject';
                 } elsif ( $field =~ /^Queue$/i ) {
@@ -916,7 +914,7 @@ LINE:
                 $template .= ( defined $value ? $value : "" );
                 $template .= "\n";
                 $template .= "ENDOFCONTENT\n"
-                    if $field =~ /^Content$/i;
+                    if $field =~ /^content$/i;
             }
         }
 
