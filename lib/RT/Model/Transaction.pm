@@ -285,7 +285,7 @@ sub create {
         old_value      => undef,
         new_value      => undef,
         mime_obj        => undef,
-        ActivateScrips => 1,
+        activate_scrips => 1,
         commit_scrips  => 1,
         object_type    => 'RT::Model::Ticket',
         object_id      => 0,
@@ -340,7 +340,7 @@ sub create {
     #Provide a way to turn off scrips if we need to
     Jifty->log->debug(
         'About to think about scrips for transaction #' . $self->id );
-    if (    $args{'ActivateScrips'}
+    if (    $args{'activate_scrips'}
         and $args{'object_type'} eq 'RT::Model::Ticket' )
     {
         $self->{'scrips'} = RT::Model::ScripCollection->new(
@@ -681,7 +681,7 @@ sub _attach {
     my $Attachment = RT::Model::Attachment->new;
     my ( $id, $msg ) = $Attachment->create(
         transaction_id => $self->id,
-        Attachment    => $mime_object
+        attachment    => $mime_object
     );
     return ( $Attachment, $msg || _("Attachment Created") );
 }
@@ -1213,8 +1213,8 @@ sub update_custom_fields {
         {
             next unless length($value);
             $self->add_custom_field_value(
-                Field              => $cfid,
-                Value              => $value,
+                field              => $cfid,
+                value              => $value,
                 record_transaction => 0,
             );
         }

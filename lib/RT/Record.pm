@@ -1240,7 +1240,7 @@ sub _new_transaction {
         data           => undef,
         field          => undef,
         mime_obj        => undef,
-        ActivateScrips => 1,
+        activate_scrips => 1,
         commit_scrips  => 1,
         @_
     );
@@ -1272,7 +1272,7 @@ sub _new_transaction {
         old_reference   => $old_ref,
         reference_type  => $ref_type,
         mime_obj        => $args{'mime_obj'},
-        ActivateScrips => $args{'ActivateScrips'},
+        activate_scrips => $args{'activate_scrips'},
         commit_scrips  => $args{'commit_scrips'},
     );
 

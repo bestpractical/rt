@@ -539,7 +539,7 @@ sub record_outgoing_mail_transaction {
         type           => $type,
         Data           => $msgid,
         mime_obj        => $mime_obj,
-        ActivateScrips => 0
+        activate_scrips => 0
     );
 
     if ($id) {

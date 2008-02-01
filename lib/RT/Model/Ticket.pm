@@ -2447,7 +2447,7 @@ sub delete_link {
             ? $LINKDIRMAP{ $args{'type'} }->{base}
             : $LINKDIRMAP{ $args{'type'} }->{target},
             old_value      => $self->uri,
-            ActivateScrips => !RT->config->get('LinkTransactionsRun1Scrip'),
+            activate_scrips => !RT->config->get('LinkTransactionsRun1Scrip'),
             time_taken      => 0,
         );
         Jifty->log->error("Couldn't create transaction: $Msg") unless $val;
@@ -2589,7 +2589,7 @@ sub _add_link {
             ? $LINKDIRMAP{ $args{'type'} }->{base}
             : $LINKDIRMAP{ $args{'type'} }->{target},
             new_value      => $self->uri,
-            ActivateScrips => !RT->config->get('LinkTransactionsRun1Scrip'),
+            activate_scrips => !RT->config->get('LinkTransactionsRun1Scrip'),
             time_taken      => 0,
         );
         Jifty->log->error("Couldn't create transaction: $msg") unless $val;

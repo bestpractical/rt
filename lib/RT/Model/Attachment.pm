@@ -72,12 +72,12 @@ sub create {
         id            => 0,
         transaction_id => 0,
         parent        => 0,
-        Attachment    => undef,
+        attachment    => undef,
         @_
     );
 
     # For ease of reference
-    my $Attachment = $args{'Attachment'};
+    my $Attachment = $args{'attachment'};
 
     # if we didn't specify a ticket, we need to bail
     unless ( $args{'transaction_id'} ) {
@@ -126,7 +126,7 @@ sub create {
             my ($id) = $SubAttachment->create(
                 transaction_id => $args{'transaction_id'},
                 parent        => $id,
-                Attachment    => $part,
+                attachment    => $part,
             );
             unless ($id) {
                 Jifty->log->fatal( "Attachment insert failed: "
