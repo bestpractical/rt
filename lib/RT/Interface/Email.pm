@@ -329,16 +329,15 @@ header field then it's value is used
 sub send_email {
     my (%args) = (
         entity      => undef,
-        Bounce      => 0,
+        bounce      => 0,
         ticket      => undef,
         transaction => undef,
         @_,
     );
-    foreach my $arg (qw(entity Bounce)) {
+    foreach my $arg (qw(Entity Bounce)) {
         next unless defined $args{ lc $arg };
 
-        Jifty->log->warn(
-            "'" . lc($arg) . "' argument is deprecated, use '$arg' instead" );
+        Jifty->log->warn( "'" . lc($arg) . "' argument is deprecated, use '$arg' instead" );
         $args{$arg} = delete $args{ lc $arg };
     }
 
