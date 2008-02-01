@@ -64,19 +64,19 @@ my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
 $t1->create( queue => $queue_obj->id,
              subject => 'One',
            );
-$t1->add_custom_field_value(Field => $cfO->id,  value => '1');
-$t1->add_custom_field_value(Field => $cfA->id,  value => '2');
-$t1->add_custom_field_value(Field => $cfB->id,  value => '1');
-$t1->add_custom_field_value(Field => $cfC->id,  value => 'BBB');
+$t1->add_custom_field_value(field => $cfO->id,  value => '1');
+$t1->add_custom_field_value(field => $cfA->id,  value => '2');
+$t1->add_custom_field_value(field => $cfB->id,  value => '1');
+$t1->add_custom_field_value(field => $cfC->id,  value => 'BBB');
 
 my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
 $t2->create( queue => $queue_obj->id,
              subject => 'Two',
            );
-$t2->add_custom_field_value(Field => $cfO->id,  value => '2');
-$t2->add_custom_field_value(Field => $cfA->id,  value => '1');
-$t2->add_custom_field_value(Field => $cfB->id,  value => '2');
-$t2->add_custom_field_value(Field => $cfC->id,  value => 'AAA');
+$t2->add_custom_field_value(field => $cfO->id,  value => '2');
+$t2->add_custom_field_value(field => $cfA->id,  value => '1');
+$t2->add_custom_field_value(field => $cfB->id,  value => '2');
+$t2->add_custom_field_value(field => $cfC->id,  value => 'AAA');
 
 # helper
 sub check_order {
@@ -135,10 +135,10 @@ my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
 $t3->create( queue => $queue_obj->id,
              subject => 'Three',
            );
-$t3->add_custom_field_value(Field => $cfO->id,  value => '3');
-$t3->add_custom_field_value(Field => $cfA->id,  value => '3');
-$t3->add_custom_field_value(Field => $cfB->id,  value => '2');
-$t3->add_custom_field_value(Field => $cfC->id,  value => 'AAA');
+$t3->add_custom_field_value(field => $cfO->id,  value => '3');
+$t3->add_custom_field_value(field => $cfA->id,  value => '3');
+$t3->add_custom_field_value(field => $cfB->id,  value => '2');
+$t3->add_custom_field_value(field => $cfC->id,  value => 'AAA');
 
 $tx = RT::Model::TicketCollection->new( current_user => RT->system_user );
 $tx->from_sql(qq[queue="$queue"] );
