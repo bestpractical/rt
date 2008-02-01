@@ -58,7 +58,7 @@
 
 <%init>
 my $queue_obj = RT::Model::Queue->new();
-$queue_obj->load( $Queue );
+$queue_obj->load( $queue );
 unless( $queue_obj->id ) {
     abort(_("Queue %1 not found", $id));
 }
@@ -71,7 +71,7 @@ my $subtabs = {
     },
     B => {
         title => _('New scrip'),
-        path => "Admin/Queues/Scrip.html?create=1&Queue=".$queue_obj->id,
+        path => "Admin/Queues/Scrip.html?create=1&queue=".$queue_obj->id,
         separator => 1,
     },
 };
@@ -80,14 +80,14 @@ my $scrip = RT::Model::Scrip->new();
 ($id, my @results) = $m->comp( '/Admin/Elements/EditScrip:Process', %ARGS );
 
 if ( $id ) {
-    $current_subtab = "Admin/Queues/Scrip.html?id=$id&Queue=". $queue_obj->id;
+    $current_subtab = "Admin/Queues/Scrip.html?id=$id&queue=". $queue_obj->id;
     $title = _("Modify a scrip for queue %1", $queue_obj->name);
     $subtabs->{"C"} = {
         title => _("Scrip #%1",$id),
-        path  => "Admin/Queues/Scrip.html?id=$id&Queue=".$queue_obj->id
+        path  => "Admin/Queues/Scrip.html?id=$id&queue=".$queue_obj->id
     };
 } else {
-    $current_subtab = "Admin/Queues/Scrip.html?create=1&Queue=".$queue_obj->id;
+    $current_subtab = "Admin/Queues/Scrip.html?create=1&queue=".$queue_obj->id;
     $title = _("Create a scrip for queue %1", $queue_obj->name);
 }
 
@@ -96,5 +96,5 @@ if ( $id ) {
 
 <%ARGS>
 $id => undef
-$Queue => undef
+$queue => undef
 </%ARGS>

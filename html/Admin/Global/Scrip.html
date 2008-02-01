@@ -63,7 +63,7 @@ my $subtabs = {
     },
     B => {
         title     => _('New scrip'),
-        path      => "Admin/Global/Scrip.html?create=1&Queue=0",
+        path      => "Admin/Global/Scrip.html?create=1&queue=0",
         separator => 1,
     },
 };
@@ -73,15 +73,15 @@ my ($id, @results) = $m->comp( '/Admin/Elements/EditScrip:Process', %ARGS );
 
 my ($title, $current_subtab);
 if ( $id ) {
-    $current_subtab = "Admin/Global/Scrip.html?id=$id&Queue=0";
+    $current_subtab = "Admin/Global/Scrip.html?id=$id&queue=0";
     $title = _("Modify a scrip which applies to all queues");
     $subtabs->{"C"} = {
         title => _('Scrip #%1', $id),
-        path  => "Admin/Global/Scrip.html?id=$id&Queue=0",
+        path  => "Admin/Global/Scrip.html?id=$id&queue=0",
     };
 }
 else {
-    $current_subtab = "Admin/Global/Scrip.html?create=1&Queue=0";
+    $current_subtab = "Admin/Global/Scrip.html?create=1&queue=0";
     $title = _("Add a scrip which will apply to all queues");
 }
 </%init>

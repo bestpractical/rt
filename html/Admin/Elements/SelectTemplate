@@ -67,8 +67,8 @@
 
 
 my $PrimaryTemplates = RT::Model::TemplateCollection->new();
-if ($Queue != 0) {
-$PrimaryTemplates->limit_to_queue($Queue);
+if ($queue != 0) {
+$PrimaryTemplates->limit_to_queue($queue);
 $PrimaryTemplates->order_by(column => 'name');
 }
 
@@ -79,7 +79,7 @@ $OtherTemplates->order_by(column => 'name');
 </%INIT>
 <%ARGS>
 
-$Queue => undef
+$queue => undef
 $Default => 'none'
 $DefaultQueue => undef
 $name => 'template'

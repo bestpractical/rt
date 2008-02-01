@@ -46,9 +46,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
-<& /Admin/Elements/QueueTabs, id => $Queue, 
+<& /Admin/Elements/QueueTabs, id => $queue, 
     queue_obj => $queue_obj,
-     current_tab => 'Admin/Queues/Templates.html?id='.$Queue,
+     current_tab => 'Admin/Queues/Templates.html?id='.$queue,
      current_subtab => $current_subtab, 
      subtabs => $subtabs, 
      Title => $title &>
@@ -62,7 +62,7 @@
 % }
 
 %# hang onto the queue id
-<input type="hidden" class="hidden" name="queue" value="<%$Queue%>" />
+<input type="hidden" class="hidden" name="queue" value="<%$queue%>" />
 <& /Admin/Elements/ModifyTemplate, name => $template_obj->name, description =>
 $template_obj->description, Content => $template_obj->content &> 
 <& /Elements/Submit, Label => _('Create'), Reset => 1 &>
@@ -76,22 +76,22 @@ my  ($title, @results, $current_subtab);
 
 my $subtabs = {
 		 A => { title => _('Select template'),
-  		     	path => "Admin/Queues/Templates.html?id=$Queue"
+  		     	path => "Admin/Queues/Templates.html?id=$queue"
 			   },
 		 B => { title => _('New template'),
-  		     	path => "Admin/Queues/Template.html?Create=1&Queue=$Queue",
+  		     	path => "Admin/Queues/Template.html?Create=1&queue=$queue",
 			separator => 1,
 			   }
 	      };
 
 if ($Create) {
   $title = _("Create a template");
-  $current_subtab = "Admin/Queues/Template.html?Create=1&Queue=".$Queue;
+  $current_subtab = "Admin/Queues/Template.html?Create=1&queue=".$queue;
 }
 
 else {
   if ($Template eq 'new') {
-      my ($val, $msg) =  $template_obj->create(queue => $Queue, name => $name);
+      my ($val, $msg) =  $template_obj->create(queue => $queue, name => $name);
       abort(_("Could not create template: %1", $msg)) unless ($val);
      push @results, $msg;
     }
@@ -104,26 +104,26 @@ else {
 }
 my $queue_obj;
 if ($template_obj->id()) {
-  $Queue = $template_obj->queue;
+  $queue = $template_obj->queue;
   $queue_obj = $template_obj->queue_obj;
 
   my @attribs = qw( description Content queue name);
   my @aresults = update_record_object( AttributesRef => \@attribs, 
 				     object => $template_obj, 
 				     ARGSRef => \%ARGS);
-  $current_subtab = "Admin/Queues/Template.html?Queue=$Queue&Template=".$template_obj->id();
+  $current_subtab = "Admin/Queues/Template.html?queue=$queue&Template=".$template_obj->id();
   $subtabs->{"C"} = { title => _('Template #%1', $template_obj->id()),
-  		     	path => "Admin/Queues/Template.html?Queue=$Queue&Template=".$template_obj->id(),
+  		     	path => "Admin/Queues/Template.html?queue=$queue&Template=".$template_obj->id(),
 			};
   push @results, @aresults;
 } else {
   $queue_obj = RT::Model::Queue->new();
-  $queue_obj->load($Queue);
+  $queue_obj->load($queue);
 }
 
 </%INIT>
 <%ARGS>
-$Queue => ''
+$queue => ''
 $Template => ''
 $Create => undef
 $name => undef

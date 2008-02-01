@@ -49,7 +49,7 @@
   
 <form method="post" action="Scrip.html">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
-<input type="hidden" class="hidden" name="queue" value="<% $Queue %>" />
+<input type="hidden" class="hidden" name="queue" value="<% $queue %>" />
 
 <&| /Widgets/TitleBox, title => _('Scrip Fields') &>
 <table>
@@ -74,7 +74,7 @@
 <& /Admin/Elements/SelectTemplate,
     name => "Scrip-$id-Template",
     Default => $ARGS{"Scrip-$id-Template"} || $scrip->template_obj->id,
-    queue => $Queue,
+    queue => $queue,
 &></td></tr>
 
 <tr><td align="right"><&|/l&>stage</&>:</td><td>
@@ -154,13 +154,13 @@ my $min_lines = 10;
 <%ARGS>
 $id => undef
 $title => undef
-$Queue => 0
+$queue => 0
 </%ARGS>
 
 <%METHOD Process>
 <%ARGS>
 $id => undef
-$Queue => undef
+$queue => undef
 </%ARGS>
 <%INIT>
 return ($id) unless $id;
@@ -168,7 +168,7 @@ return ($id) unless $id;
 my $scrip = RT::Model::Scrip->new();
 if ( $id eq 'new' ) {
     return $scrip->create(
-        queue                  => $Queue,
+        queue                  => $queue,
         scrip_action            => $ARGS{"Scrip-new-scrip_action"},
         scrip_condition         => $ARGS{"Scrip-new-scrip_condition"},
         template               => $ARGS{"Scrip-new-Template"},
