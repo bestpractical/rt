@@ -230,8 +230,8 @@ Don't list rights which have been delegated.
 
 sub exclude_delegated_rights {
     my $self = shift;
-    $self->delegated_by( Id => 0 );
-    $self->delegated_from( Id => 0 );
+    $self->delegated_by( id => 0 );
+    $self->delegated_from( id => 0 );
 }
 
 # }}}
