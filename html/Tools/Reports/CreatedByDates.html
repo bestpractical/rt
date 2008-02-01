@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$Queue => undef
+$queue => undef
 $CreatedBefore => undef
 $CreatedAfter => undef
 </%args>
@@ -68,14 +68,14 @@ if ($CreatedBefore) {
 }
 
 
-$q->load_by_cols(name => $Queue);
+$q->load_by_cols(name => $queue);
 </%init>
 <& /Elements/Header, Title => $title &>
 <& /Tools/Reports/Elements/Tabs, current_tab => 'Tools/Reports/CreatedByDates.html', Title => $title &>
 <form method="post" action="CreatedByDates.html">
-% if ($Queue|| $CreatedBefore ||$CreatedAfter) {
+% if ($queue|| $CreatedBefore ||$CreatedAfter) {
 % # if we have a queue, do the search
-% if ($Queue) { $query .= " AND queue = '$Queue'"}
+% if ($queue) { $query .= " AND queue = '$queue'"}
 % if ($CreatedBefore) { $query .= " AND Created < '".$before->iso."'"; }
 % if ($CreatedAfter) { $query .= " AND Created > '".$after->iso."'"}
 % my $groupby = 'Status';
@@ -84,7 +84,7 @@ $q->load_by_cols(name => $Queue);
 
 <hr>
 
-<br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'queue', namedValues => 1, Default => $q->id &>
+<br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'queue', named_values => 1, Default => $q->id &>
 <br /><&|/l&>Tickets Created after</&>: 
 <input size="20" name="CreatedAfter" value="<%$CreatedAfter || ''%>" />
 <br /><&|/l&>Tickets Created before</&>: 

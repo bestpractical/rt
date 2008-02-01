@@ -56,7 +56,7 @@
   <option value="">-</option>
 %     }
 %     for my $queue (@{$session{$cache_key}}) {
-  <option value="<% ($namedValues ? $queue->{name} : $queue->{id}) %>" 
+  <option value="<% ($named_values ? $queue->{name} : $queue->{id}) %>" 
   <% ($queue->{id} eq ($Default || '') ? 'selected="selected"' : '') |n %>>
     <%$queue->{name}%>
 %             if ($Verbose and $queue->{description}) {
@@ -72,7 +72,7 @@ $ShowNullOption => 1
 $ShowAllQueues => 1
 $name => undef
 $Verbose => undef
-$namedValues => 0
+$named_values => 0
 $Default => 0
 $Lite => 0
 </%args>

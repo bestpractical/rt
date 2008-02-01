@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$Queue => undef
+$queue => undef
 $ResolvedBefore => undef
 $ResolvedAfter => undef
 </%args>
@@ -68,15 +68,15 @@ if ($ResolvedBefore) {
 }
 
 
-$q->load_by_cols(name => $Queue);
+$q->load_by_cols(name => $queue);
 </%init>
 <& /Elements/Header, Title => $title &>
 <& /Tools/Reports/Elements/Tabs, current_tab => 'Tools/Reports/ResolvedByDates.html', Title => $title &>
 <form method="post" action="ResolvedByDates.html">
-% if ($Queue|| $ResolvedBefore ||$ResolvedAfter) {
+% if ($queue|| $ResolvedBefore ||$ResolvedAfter) {
 % # if we have a queue, do the search
 % $query = "Status = 'resolved'";
-% if ($Queue) { $query .= " AND queue = '$Queue'"}
+% if ($queue) { $query .= " AND queue = '$queue'"}
 % if ($ResolvedBefore) { $query .= " AND resolved < '".$before->iso."'"; }
 % if ($ResolvedAfter) { $query .= " AND resolved > '".$after->iso."'"}
 % my $groupby = 'Owner';
@@ -85,7 +85,7 @@ $q->load_by_cols(name => $Queue);
 
 <hr>
 
-<br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'queue', namedValues => 1, Default => $q->id &>
+<br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'queue', named_values => 1, Default => $q->id &>
 <br /><&|/l&>Tickets resolved after</&>: 
 <input size="20" name="ResolvedAfter" value="<%$ResolvedAfter || ''%>" />
 <br /><&|/l&>Tickets resolved before</&>: 

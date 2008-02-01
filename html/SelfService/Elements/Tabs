@@ -89,7 +89,7 @@ if ($queue_count > 1) {
                        };
 } else {
         $tabs->{C} = { title => _('New ticket'),
-                       path => 'SelfService/Create.html?Queue=' . $queue_id
+                       path => 'SelfService/Create.html?queue=' . $queue_id
                        };
 }
 

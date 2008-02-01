@@ -124,13 +124,13 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     # {{{ Create a new ticket
 
-    my $Queue = RT::Model::Queue->new();
-    unless ( $Queue->load( $ARGS{'queue'} ) ) {
+    my $queue = RT::Model::Queue->new();
+    unless ( $queue->load( $ARGS{'queue'} ) ) {
         $m->comp( 'Error.html', Why => _('Queue not found') );
         $m->abort;
     }
 
-    unless ( $Queue->current_user_has_right('CreateTicket') ) {
+    unless ( $queue->current_user_has_right('CreateTicket') ) {
         $m->comp( 'Error.html',
             Why =>
               _('You have no permission to create tickets in that queue.') );

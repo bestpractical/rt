@@ -53,7 +53,7 @@
 % while (my $queue = $queues->next) {    
 % next unless $queue->current_user_has_right('CreateTicket');
 
-<dt><a href="<%RT->config->get('WebPath')%>/SelfService/Create.html?Queue=<%$queue->id%>"><%$queue->name%></a></dt>
+<dt><a href="<%RT->config->get('WebPath')%>/SelfService/Create.html?queue=<%$queue->id%>"><%$queue->name%></a></dt>
 <dd><%$queue->description%></dd>
 % }
 </dl>

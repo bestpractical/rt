@@ -46,25 +46,25 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$Queue => undef
+$queue => undef
 </%args>
 <%init>
 my $title = _("Resolved tickets, grouped by owner");
 my $q = RT::Model::Queue->new();
-$q->load_by_cols(name => $Queue);
+$q->load_by_cols(name => $queue);
 </%init>
 <& /Elements/Header, Title => $title &>
 <& /Tools/Reports/Elements/Tabs, current_tab => '/Tools/Reports/ResolvedByOwner.html', Title => $title &>
 <form method="post" action="ResolvedByOwner.html">
-% if ($Queue) {
+% if ($queue) {
 % # if we have a queue, do the search
-% my $query = "Status = 'resolved' AND queue = '$Queue'";
+% my $query = "Status = 'resolved' AND queue = '$queue'";
 % my $groupby = 'Owner';
 <& /Search/Elements/Chart, Query => $query, PrimaryGroupBy => $groupby &>
 % }
 
 <hr>
 
-<&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'queue', namedValues => 1, Default => $q->id &>
+<&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'queue', named_values => 1, Default => $q->id &>
 <& /Elements/Submit&>
 </form>

@@ -89,7 +89,7 @@ my @lines = (
         Value => {
             type => 'component',
             Path => '/Elements/SelectQueue',
-            Arguments => { namedValues => 1, CheckQueueRight => 'ShowTicket' },
+            Arguments => { named_values => 1, CheckQueueRight => 'ShowTicket' },
         },
     },
     {
