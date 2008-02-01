@@ -125,7 +125,7 @@ sub _init_db
 {
 
 
-    foreach ( qw(Type Host Port name User password) ) {
+    foreach ( qw(Type Host Port Name User password) ) {
         $ENV{ "RT_DB_". uc $_ } = RT->config->get("Database$_");
     }
     my $cmd =  "$^X sbin/rt-setup-database --action init";
@@ -170,7 +170,7 @@ sub shredder_new
     my $obj = RT::Shredder->new();
 
     my $file = File::Spec->catfile( tmpdir(), test_name() .'.XXXX.sql' );
-    $obj->add_dump_plugin( Arguments => {
+    $obj->add_dump_plugin( arguments => {
         filename    => $file,
         from_storage => 0,
     } );
@@ -283,7 +283,7 @@ Returns DB dump as complex hash structure:
     }
     }
 
-Takes named argument C<CleanDates>. If true clean all date fields from
+Takes named argument C<clean_dates>. If true clean all date fields from
 dump. True by default.
 
 =cut
@@ -291,7 +291,7 @@ dump. True by default.
 sub dump_sqlite
 {
     my $dbh = shift;
-    my %args = ( CleanDates => 1, @_ );
+    my %args = ( clean_dates => 1, @_ );
 
     my $old_fhkn = $dbh->{'FetchHashKeyName'};
     $dbh->{'FetchHashKeyName'} = 'NAME_lc';
@@ -303,7 +303,7 @@ sub dump_sqlite
     foreach my $t( @tables ) {
         next if lc($t) =~/^_|sqlite/;
         $res->{$t} = $dbh->selectall_hashref("SELECT * FROM $t", 'id');
-        clean_dates( $res->{$t} ) if $args{'CleanDates'};
+        clean_dates( $res->{$t} ) if $args{'clean_dates'};
         die $DBI::err if $DBI::err;
     }
 
