@@ -394,7 +394,7 @@ sub _join_group_members_for_group_rights {
             %args);
     }
     $self->limit(
-        alias       => $args{'ACLAlias'},
+        alias       => $args{'aclalias'},
         column      => 'principal_id',
         value       => "main.id",
         quote_value => 0,
