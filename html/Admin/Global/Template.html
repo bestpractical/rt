@@ -62,7 +62,7 @@
 % }
 
 %# hang onto the queue id
-<input type="hidden" class="hidden" name="queue" value="<%$Queue%>" />
+<input type="hidden" class="hidden" name="queue" value="<%$queue%>" />
 
 <& /Admin/Elements/ModifyTemplate, name => $template_obj->name, description => $template_obj->description, Content => $template_obj->content &>
 
@@ -81,20 +81,20 @@ my $subtabs = {
   		     	path => "Admin/Global/Templates.html"
 			   },
 		 B => { title => _('New template'),
-  		     	path => "Admin/Global/Template.html?Create=1&Queue=0",
+  		     	path => "Admin/Global/Template.html?Create=1&queue=0",
 			separator => 1,
 			   }
 	      };
 
 
 if ($Create) {
-  $current_subtab = "Admin/Global/Template.html?Create=1&Queue=0";
+  $current_subtab = "Admin/Global/Template.html?Create=1&queue=0";
   $title = _("Create a template");
 }
 
 else {
   if (defined ($Template) && $Template eq 'new') {
-      my ($val, $msg) =  $template_obj->create(queue => $Queue, name => $name);
+      my ($val, $msg) =  $template_obj->create(queue => $queue, name => $name);
       abort(_("Could not create template: %1", $msg)) unless ($val);
      push @results, $msg;
     }
@@ -110,15 +110,15 @@ if ($template_obj->id()) {
   my @aresults = update_record_object( AttributesRef => \@attribs, 
 				     object => $template_obj, 
 				     ARGSRef => \%ARGS);
-  $current_subtab = "Admin/Global/Template.html?Queue=0&Template=".$template_obj->id();
+  $current_subtab = "Admin/Global/Template.html?queue=0&Template=".$template_obj->id();
   $subtabs->{"C"} = { title => _('Template #%1', $template_obj->id()),
-  		     	path => "Admin/Global/Template.html?Queue=0&Template=".$template_obj->id(),
+  		     	path => "Admin/Global/Template.html?queue=0&Template=".$template_obj->id(),
 			};
   push @results, @aresults;
 }
 </%INIT>
 <%ARGS>
-$Queue => undef
+$queue => undef
 $Template => undef
 $Create => undef
 $name => undef
