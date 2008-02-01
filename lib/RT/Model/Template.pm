@@ -336,7 +336,7 @@ sub parse {
 sub _parse_content {
     my $self = shift;
     my %args = (
-        Argument        => undef,
+        argument        => undef,
         ticket_obj      => undef,
         transaction_obj => undef,
         @_
@@ -355,15 +355,15 @@ sub _parse_content {
         SOURCE => $content
     );
 
-    $args{'Ticket'} = delete $args{'ticket_obj'} if $args{'ticket_obj'};
-    $args{'Transaction'} = delete $args{'transaction_obj'}
+    $args{'ticket'} = delete $args{'ticket_obj'} if $args{'ticket_obj'};
+    $args{'transaction'} = delete $args{'transaction_obj'}
         if $args{'transaction_obj'};
-    $args{'Requestor'}
-        = eval { $args{'Ticket'}->requestors->user_members_obj->first->name }
-        if $args{'Ticket'};
+    $args{'requestor'}
+        = eval { $args{'ticket'}->requestors->user_members_obj->first->name }
+        if $args{'ticket'};
     $args{'rtname'} = RT->config->get('rtname');
-    if ( $args{'Ticket'} ) {
-        my $t = $args{'Ticket'};    # avoid memory leak
+    if ( $args{'ticket'} ) {
+        my $t = $args{'ticket'};    # avoid memory leak
         $args{'loc'} = sub { _(@_) };
     } else {
         $args{'loc'} = sub { _(@_) };

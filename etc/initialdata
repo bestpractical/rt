@@ -232,31 +232,31 @@
     {  queue       => '0',
        name        => 'Autoreply',                                         # loc
        description => 'Default Autoresponse template',                     # loc
-       content     => 'Subject: AutoReply: {$Ticket->subject}
+       content     => 'Subject: AutoReply: {$ticket->subject}
 
 
 Greetings,
 
 This message has been automatically generated in response to the
 creation of a trouble ticket regarding:
-	"{$Ticket->subject()}", 
+	"{$ticket->subject()}", 
 a summary of which appears below.
 
 There is no need to reply to this message right now.  Your ticket has been
-assigned an ID of [{RT->config->get(\'rtname\')} #{$Ticket->id()}].
+assigned an ID of [{RT->config->get(\'rtname\')} #{$ticket->id()}].
 
 Please include the string:
 
-         [{RT->config->get(\'rtname\')} #{$Ticket->id}]
+         [{RT->config->get(\'rtname\')} #{$ticket->id}]
 
 in the subject line of all future correspondence about this issue. To do so, 
 you may reply to this message.
 
                         Thank you,
-                        {$Ticket->queue_obj->correspond_address()}
+                        {$ticket->queue_obj->correspond_address()}
 
 -------------------------------------------------------------------------
-{$Transaction->content()}
+{$transaction->content()}
 '
     },
 
@@ -266,17 +266,17 @@ you may reply to this message.
        content     => 'RT-Attach-Message: yes
 
 
-{$Transaction->created_as_string}: Request {$Ticket->id} was acted upon.
-Transaction: {$Transaction->description}
-       Queue: {$Ticket->queue_obj->name}
-     Subject: {$Transaction->subject || $Ticket->subject || "(No subject given)"}
-       Owner: {$Ticket->owner_obj->name}
-  Requestors: {$Ticket->requestor_addresses}
-      Status: {$Ticket->status}
- Ticket <URL: {RT->config->get(\'WebURL\')}/Ticket/Display.html?id={$Ticket->id} >
+{$transaction->created_as_string}: Request {$ticket->id} was acted upon.
+Transaction: {$transaction->description}
+       Queue: {$ticket->queue_obj->name}
+     Subject: {$transaction->subject || $ticket->subject || "(No subject given)"}
+       Owner: {$ticket->owner_obj->name}
+  Requestors: {$ticket->requestor_addresses}
+      Status: {$ticket->status}
+ Ticket <URL: {RT->config->get(\'WebURL\')}/Ticket/Display.html?id={$ticket->id} >
 
 
-{$Transaction->content()}
+{$transaction->content()}
 '
     },
 
@@ -288,9 +288,9 @@ Transaction: {$Transaction->description}
       content     => 'RT-Attach-Message: yes
 
 
-<URL: {RT->config->get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id} >
+<URL: {RT->config->get(\'WebURL\')}Ticket/Display.html?id={$ticket->id} >
 
-{$Transaction->content()}
+{$transaction->content()}
 '
     },
 
@@ -299,7 +299,7 @@ Transaction: {$Transaction->description}
        description => 'Default correspondence template',         # loc
        content     => 'RT-Attach-Message: yes
 
-{$Transaction->content()}
+{$transaction->content()}
 '
     },
 
@@ -307,25 +307,25 @@ Transaction: {$Transaction->description}
        name        => 'Admin comment',                           # loc
        description => 'Default admin comment template',          # loc
        content     =>
-'Subject: [comment] {my $s=($Transaction->subject||$Ticket->subject); $s =~ s/\\[comment\\]//g; $s =~ s/^Re//i; $s;}
+'Subject: [comment] {my $s=($transaction->subject||$ticket->subject); $s =~ s/\\[comment\\]//g; $s =~ s/^Re//i; $s;}
 
 
-{RT->config->get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id}
+{RT->config->get(\'WebURL\')}Ticket/Display.html?id={$ticket->id}
 This is a comment.  It is not sent to the Requestor(s):
 
-{$Transaction->content()}
+{$transaction->content()}
 '
     },
 
     {  queue       => '0',
        name        => 'Status Change',                                     # loc
        description => 'Ticket status changed',                             # loc
-       content     => 'Subject: Status Changed to: {$Transaction->new_value}
+       content     => 'Subject: Status Changed to: {$transaction->new_value}
 
 
-{RT->config->get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id}
+{RT->config->get(\'WebURL\')}Ticket/Display.html?id={$ticket->id}
 
-{$Transaction->content()}
+{$transaction->content()}
 '
     },
 
@@ -334,7 +334,7 @@ This is a comment.  It is not sent to the Requestor(s):
       queue       => '0',
       name        => 'resolved',                 # loc
       description => 'Ticket Resolved',          # loc
-      content     => 'Subject: Resolved: {$Ticket->subject}
+      content     => 'Subject: Resolved: {$ticket->subject}
 
 According to our records, your request has been resolved. If you have any
 further questions or concerns, please respond to this message.
@@ -344,26 +344,26 @@ further questions or concerns, please respond to this message.
        name        => "New Pending Approval",    # loc
        description =>
          "Notify Owners and AdminCcs of new items pending their approval", # loc
-       content => 'Subject: New Pending Approval: {$Ticket->subject}
+       content => 'Subject: New Pending Approval: {$ticket->subject}
 
 Greetings,
 
-There is a new item pending your approval: "{$Ticket->subject()}", 
+There is a new item pending your approval: "{$ticket->subject()}", 
 a summary of which appears below.
 
-Please visit {RT->config->get(\'WebURL\')}Approvals/Display.html?id={$Ticket->id}
+Please visit {RT->config->get(\'WebURL\')}Approvals/Display.html?id={$ticket->id}
 to approve or reject this ticket, or {RT->config->get(\'WebURL\')}Approvals/ to
 batch-process all your pending approvals.
 
 -------------------------------------------------------------------------
-{$Transaction->content()}
+{$transaction->content()}
 '
     },
     {  queue       => '___Approvals',
        name        => "Approval Passed",    # loc
        description =>
          "Notify Owner of their ticket has been approved by some approver", # loc
-       content => 'Subject: Ticket Approved: {$Ticket->subject}
+       content => 'Subject: Ticket Approved: {$ticket->subject}
 
 Greetings,
 
@@ -375,7 +375,7 @@ Other approvals may be pending.
        name        => "All Approvals Passed",    # loc
        description =>
          "Notify Owner of their ticket has been approved by all approvers", # loc
-       content => 'Subject: Ticket Approved: {$Ticket->subject}
+       content => 'Subject: Ticket Approved: {$ticket->subject}
 
 Greetings,
 
@@ -386,7 +386,7 @@ Your ticket has been approved.  Its Owner may now start to act on it.
        name        => "Approval Rejected",    # loc
        description =>
          "Notify Owner of their rejected ticket", # loc
-       content => 'Subject: Ticket Rejected: {$Ticket->subject}
+       content => 'Subject: Ticket Rejected: {$ticket->subject}
 
 Greetings,
 
@@ -398,7 +398,7 @@ Your ticket has been rejected by { eval { $Approval->owner_obj->name } }.
        description => "Heading of a forwarded message", # loc
        content => q{
 
-This is forward of transaction #{ $Transaction->id } of a ticket #{ $Ticket->id }
+This is forward of transaction #{ $transaction->id } of a ticket #{ $ticket->id }
 }
     },
     {  queue       => 0,
@@ -616,9 +616,9 @@ return 1;
 # ------------------------------------------------------------------- #
 # Find all the tickets that depend on this (that this is approving)
 
-my $Ticket = $self->ticket_obj;
-my @TOP    = $Ticket->all_depended_on_by( type => 'ticket' );
-my $links  = $Ticket->depended_on_by;
+my $ticket = $self->ticket_obj;
+my @TOP    = $ticket->all_depended_on_by( type => 'ticket' );
+my $links  = $ticket->depended_on_by;
 my $passed = 0;
 
 while (my $link = $links->next) {
@@ -629,7 +629,7 @@ while (my $link = $links->next) {
 	$obj->comment(
 	    Content	=> _("Your request has been approved."),
 	);
-	$T::Approval  = $Ticket;    # so we can access it inside templates
+	$T::Approval  = $ticket;    # so we can access it inside templates
 	$self->{ticket_obj} = $obj;  # we want the original id in the token line
 	$passed = 1;
     }
