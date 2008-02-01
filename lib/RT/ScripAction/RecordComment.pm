@@ -48,7 +48,7 @@
 use warnings;
 use strict;
 package RT::ScripAction::RecordComment;
-use base = qw(RT::ScripAction::Generic);
+use base  qw(RT::ScripAction::Generic);
 
 =head1 name
 
