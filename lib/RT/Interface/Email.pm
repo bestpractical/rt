@@ -289,10 +289,10 @@ sub mail_error {
 
     }
 
-    SendEmail( Entity => $entity, Bounce => 1 );
+    send_email( Entity => $entity, Bounce => 1 );
 }
 
-=head2 SendEmail Entity => undef, [ Bounce => 0, Ticket => undef, Transaction => undef ]
+=head2 send_email Entity => undef, [ Bounce => 0, Ticket => undef, Transaction => undef ]
 
 Sends an email (passed as a L<MIME::Entity> object C<ENTITY>) using
 RT's outgoing mail configuration. If C<BOUNCE> is passed, and is a
@@ -544,7 +544,7 @@ sub prepare_email_using_template {
     return $template;
 }
 
-=head2 SendEmailUsingTemplate template => '', Arguments => {}, From => correspond_address, To => '', Cc => '', Bcc => ''
+=head2 send_email_using_template template => '', Arguments => {}, From => correspond_address, To => '', Cc => '', Bcc => ''
 
 Sends email using a template, takes name of template, arguments for it and recipients.
 
@@ -578,7 +578,7 @@ sub send_email_using_template {
 
     set_in_reply_to( Message => $mail, InReplyTo => $args{'InReplyTo'} );
 
-    return SendEmail( Entity => $mail );
+    return send_email( Entity => $mail );
 }
 
 =head2 ForwardTransaction TRANSACTION, To => '', Cc => '', Bcc => ''
@@ -697,8 +697,8 @@ sub forward_transaction {
     my $status = RT->config->get('ForwardFromUser')
 
         # never sign if we forward from User
-        ? SendEmail( Entity => $mail, Transaction => $txn, sign => 0 )
-        : SendEmail( Entity => $mail, Transaction => $txn );
+        ? send_email( Entity => $mail, Transaction => $txn, sign => 0 )
+        : send_email( Entity => $mail, Transaction => $txn );
     return ( 0, $txn->_("Couldn't send email") ) unless $status;
     return ( 1, $txn->_("Send email successfully") );
 }
@@ -764,7 +764,7 @@ sub sign_encrypt {
         foreach @bad_recipients;
 
     foreach my $recipient (@bad_recipients) {
-        my $status = SendEmailUsingTemplate(
+        my $status = send_email_using_template(
             To        => $recipient->{'AddressObj'}->address,
             template  => 'Error: public key',
             Arguments => {
@@ -778,7 +778,7 @@ sub sign_encrypt {
         }
     }
 
-    my $status = SendEmailUsingTemplate(
+    my $status = send_email_using_template(
         To        => RT->config->get('OwnerEmail'),
         template  => 'Error to RT owner: public key',
         Arguments => {
