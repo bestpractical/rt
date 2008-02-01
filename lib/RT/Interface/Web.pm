@@ -893,8 +893,8 @@ sub process_ticket_basics {
         time_estimated
         time_worked
         time_left
-        Type
-        Status
+        type
+        status
         queue
     );
 
