@@ -60,11 +60,11 @@ use RT::Shredder::Dependencies;
 sub __depends_on {
     my $self = shift;
     my %args = (
-        Shredder     => undef,
-        Dependencies => undef,
+        shredder     => undef,
+        dependencies => undef,
         @_,
     );
-    my $deps = $args{'Dependencies'};
+    my $deps = $args{'dependencies'};
     my $list = [];
 
     # User is inconsistent without own Equivalence group
@@ -76,18 +76,18 @@ sub __depends_on {
         $objs->load( $self->instance );
         $deps->_push_dependency(
             base_object  => $self,
-            Flags        => DEPENDS_ON | WIPE_AFTER,
-            targetobject => $objs,
-            Shredder     => $args{'Shredder'}
+            flags        => DEPENDS_ON | WIPE_AFTER,
+            target_object => $objs,
+            shredder     => $args{'shredder'}
         );
     }
 
     # Principal
     $deps->_push_dependency(
         base_object  => $self,
-        Flags        => DEPENDS_ON | WIPE_AFTER,
-        targetobject => $self->principal_object,
-        Shredder     => $args{'Shredder'}
+        flags        => DEPENDS_ON | WIPE_AFTER,
+        target_object => $self->principal_object,
+        shredder     => $args{'shredder'}
     );
 
     # Group members records
@@ -120,9 +120,9 @@ sub __depends_on {
 
     $deps->_push_dependencies(
         base_object   => $self,
-        Flags         => DEPENDS_ON,
+        flags         => DEPENDS_ON,
         target_objects => $list,
-        Shredder      => $args{'Shredder'}
+        shredder      => $args{'shredder'}
     );
     return $self->SUPER::__depends_on(%args);
 }
@@ -130,11 +130,11 @@ sub __depends_on {
 sub __Relates {
     my $self = shift;
     my %args = (
-        Shredder     => undef,
-        Dependencies => undef,
+        shredder     => undef,
+        dependencies => undef,
         @_,
     );
-    my $deps = $args{'Dependencies'};
+    my $deps = $args{'dependencies'};
     my $list = [];
 
     # Equivalence group id inconsistent without User
@@ -144,9 +144,9 @@ sub __Relates {
         if ( $obj->id ) {
             push( @$list, $obj );
         } else {
-            my $rec = $args{'Shredder'}->get_record( object => $self );
+            my $rec = $args{'shredder'}->get_record( object => $self );
             $self = $rec->{'object'};
-            $rec->{'State'} |= INVALID;
+            $rec->{'state'} |= INVALID;
             $rec->{'description'}
                 = "ACLEguvivalence group have no related User #"
                 . $self->instance
@@ -159,18 +159,18 @@ sub __Relates {
     if ( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->get_record( object => $self );
+        my $rec = $args{'shredder'}->get_record( object => $self );
         $self = $rec->{'object'};
-        $rec->{'State'} |= INVALID;
+        $rec->{'state'} |= INVALID;
         $rec->{'description'}
             = "Have no related Principal #" . $self->id . " object.";
     }
 
     $deps->_push_dependencies(
         base_object   => $self,
-        Flags         => RELATES,
+        flags         => RELATES,
         target_objects => $list,
-        Shredder      => $args{'Shredder'}
+        shredder      => $args{'shredder'}
     );
     return $self->SUPER::__Relates(%args);
 }

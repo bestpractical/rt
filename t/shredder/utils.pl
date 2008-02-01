@@ -171,7 +171,7 @@ sub shredder_new
 
     my $file = File::Spec->catfile( tmpdir(), test_name() .'.XXXX.sql' );
     $obj->add_dump_plugin( Arguments => {
-        file_name    => $file,
+        filename    => $file,
         from_storage => 0,
     } );
 

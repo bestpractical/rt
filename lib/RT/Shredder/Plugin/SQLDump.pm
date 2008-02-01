@@ -57,16 +57,16 @@ sub applies_to_states { return 'after wiping dependencies' }
 
 sub support_args {
     my $self = shift;
-    return $self->SUPER::support_args, qw(file_name from_storage);
+    return $self->SUPER::support_args, qw(filename from_storage);
 }
 
 sub test_args {
     my $self = shift;
     my %args = @_;
     $args{'from_storage'} = 1 unless defined $args{'from_storage'};
-    my $file = $args{'file_name'} = RT::Shredder->get_filename(
-        Filename    => $args{'file_name'},
-        FromStorage => delete $args{'from_storage'},
+    my $file = $args{'filename'} = RT::Shredder->get_filename(
+        filename    => $args{'filename'},
+        from_storage => delete $args{'from_storage'},
     );
     open $args{'file_handle'}, ">:raw", $file
         or return ( 0, "Couldn't open '$file' for write: $!" );
@@ -74,7 +74,7 @@ sub test_args {
     return $self->SUPER::test_args(%args);
 }
 
-sub filename    { return $_[0]->{'opt'}{'file_name'} }
+sub filename    { return $_[0]->{'opt'}{'filename'} }
 sub file_handle { return $_[0]->{'opt'}{'file_handle'} }
 
 sub run {

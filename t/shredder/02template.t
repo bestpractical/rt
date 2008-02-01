@@ -16,7 +16,7 @@ diag 'global template' if $ENV{'TEST_VERBOSE'};
     my $template = RT::Model::Template->new(current_user => RT->system_user );
     my ($id, $msg) = $template->create(
         name => 'my template',
-        Content => "\nsome content",
+        content => "\nsome content",
     );
     ok($id, 'Created template') or diag "error: $msg";
 
@@ -33,7 +33,7 @@ diag 'local template' if $ENV{'TEST_VERBOSE'};
     my ($id, $msg) = $template->create(
         name => 'my template',
         queue => 'General',
-        Content => "\nsome content",
+        content => "\nsome content",
     );
     ok($id, 'Created template') or diag "error: $msg";
 
@@ -50,7 +50,7 @@ diag 'template used in scrip' if $ENV{'TEST_VERBOSE'};
     my ($id, $msg) = $template->create(
         name => 'my template',
         queue => 'General',
-        Content => "\nsome content",
+        content => "\nsome content",
     );
     ok($id, 'Created template') or diag "error: $msg";
 

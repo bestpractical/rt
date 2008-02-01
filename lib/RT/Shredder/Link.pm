@@ -63,11 +63,11 @@ use RT::Shredder::Record;
 sub __depends_on {
     my $self = shift;
     my %args = (
-        Shredder     => undef,
-        Dependencies => undef,
+        shredder     => undef,
+        dependencies => undef,
         @_,
     );
-    my $deps = $args{'Dependencies'};
+    my $deps = $args{'dependencies'};
     my $list = [];
 
     # add_link transactions
@@ -112,9 +112,9 @@ sub __depends_on {
 
     $deps->_push_dependencies(
         base_object   => $self,
-        Flags         => DEPENDS_ON | WIPE_AFTER,
+        flags         => DEPENDS_ON | WIPE_AFTER,
         target_objects => $list,
-        Shredder      => $args{'Shredder'}
+        shredder      => $args{'shredder'}
     );
     return $self->SUPER::__depends_on(%args);
 }
@@ -125,11 +125,11 @@ sub __depends_on {
 sub __Relates {
     my $self = shift;
     my %args = (
-        Shredder     => undef,
-        Dependencies => undef,
+        shredder     => undef,
+        dependencies => undef,
         @_,
     );
-    my $deps = $args{'Dependencies'};
+    my $deps = $args{'dependencies'};
     my $list = [];
 
     # FIXME: if link is local then object should exist

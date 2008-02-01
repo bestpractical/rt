@@ -60,11 +60,11 @@ use RT::Shredder::Dependencies;
 sub __depends_on {
     my $self = shift;
     my %args = (
-        Shredder     => undef,
-        Dependencies => undef,
+        shredder     => undef,
+        dependencies => undef,
         @_,
     );
-    my $deps = $args{'Dependencies'};
+    my $deps = $args{'dependencies'};
     my $list = [];
 
     # Tickets
@@ -95,9 +95,9 @@ sub __depends_on {
 
     $deps->_push_dependencies(
         base_object   => $self,
-        Flags         => DEPENDS_ON,
+        flags         => DEPENDS_ON,
         target_objects => $list,
-        Shredder      => $args{'Shredder'}
+        shredder      => $args{'shredder'}
     );
     return $self->SUPER::__depends_on(%args);
 }

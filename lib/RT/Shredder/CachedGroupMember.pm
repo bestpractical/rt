@@ -60,11 +60,11 @@ use RT::Shredder::Dependency;
 sub __depends_on {
     my $self = shift;
     my %args = (
-        Shredder     => undef,
-        Dependencies => undef,
+        shredder     => undef,
+        dependencies => undef,
         @_,
     );
-    my $deps = $args{'Dependencies'};
+    my $deps = $args{'dependencies'};
     my $list = [];
 
     # deep memebership
@@ -98,9 +98,9 @@ sub __depends_on {
 
     $deps->_push_dependencies(
         base_object   => $self,
-        Flags         => DEPENDS_ON,
+        flags         => DEPENDS_ON,
         target_objects => $list,
-        Shredder      => $args{'Shredder'}
+        shredder      => $args{'shredder'}
     );
 
     return $self->SUPER::__depends_on(%args);
@@ -112,20 +112,20 @@ sub __depends_on {
 sub __Relates {
     my $self = shift;
     my %args = (
-        Shredder     => undef,
-        Dependencies => undef,
+        shredder     => undef,
+        dependencies => undef,
         @_,
     );
-    my $deps = $args{'Dependencies'};
+    my $deps = $args{'dependencies'};
     my $list = [];
 
     my $obj = $self->member_obj;
     if ( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->get_record( object => $self );
+        my $rec = $args{'shredder'}->get_record( object => $self );
         $self = $rec->{'object'};
-        $rec->{'State'} |= INVALID;
+        $rec->{'state'} |= INVALID;
         $rec->{'description'}
             = "Have no related Principal #" . $self->member_id . " object.";
     }
@@ -134,18 +134,18 @@ sub __Relates {
     if ( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {
-        my $rec = $args{'Shredder'}->get_record( object => $self );
+        my $rec = $args{'shredder'}->get_record( object => $self );
         $self = $rec->{'object'};
-        $rec->{'State'} |= INVALID;
+        $rec->{'state'} |= INVALID;
         $rec->{'description'}
             = "Have no related Principal #" . $self->group_id . " object.";
     }
 
     $deps->_push_dependencies(
         base_object   => $self,
-        Flags         => RELATES,
+        flags         => RELATES,
         target_objects => $list,
-        Shredder      => $args{'Shredder'}
+        shredder      => $args{'shredder'}
     );
     return $self->SUPER::__Relates(%args);
 }

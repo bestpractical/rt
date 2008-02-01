@@ -60,11 +60,11 @@ use RT::Shredder::Dependencies;
 sub __depends_on {
     my $self = shift;
     my %args = (
-        Shredder     => undef,
-        Dependencies => undef,
+        shredder     => undef,
+        dependencies => undef,
         @_,
     );
-    my $deps = $args{'Dependencies'};
+    my $deps = $args{'dependencies'};
     my $list = [];
 
     # Scrips
@@ -72,9 +72,9 @@ sub __depends_on {
     $objs->limit( column => 'ScripCondition', value => $self->id );
     $deps->_push_dependencies(
         base_object   => $self,
-        Flags         => DEPENDS_ON,
+        flags         => DEPENDS_ON,
         target_objects => $objs,
-        Shredder      => $args{'Shredder'}
+        shredder      => $args{'shredder'}
     );
 
     return $self->SUPER::__depends_on(%args);
@@ -83,11 +83,11 @@ sub __depends_on {
 sub __Relates {
     my $self = shift;
     my %args = (
-        Shredder     => undef,
-        Dependencies => undef,
+        shredder     => undef,
+        dependencies => undef,
         @_,
     );
-    my $deps = $args{'Dependencies'};
+    my $deps = $args{'dependencies'};
     my $list = [];
 
     # TODO: Check here for exec module

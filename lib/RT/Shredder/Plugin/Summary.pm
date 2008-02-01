@@ -56,10 +56,10 @@ sub applies_to_states { return 'before any action' }
 
 sub test_args {
     my $self = shift;
-    my %args = ( file_name => '', @_ );
-    unless ( $args{'file_name'} ) {
+    my %args = ( filename => '', @_ );
+    unless ( $args{'filename'} ) {
         require POSIX;
-        $args{'file_name'}
+        $args{'filename'}
             = POSIX::strftime( "summary-%Y%m%dT%H%M%S.XXXX.txt", gmtime );
     }
     return $self->SUPER::test_args(%args);

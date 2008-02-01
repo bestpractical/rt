@@ -122,7 +122,7 @@ sub run {
     $self->fetch_next( $objs, 1 );
     while ( my $obj = $self->fetch_next($objs) ) {
         next if $seen{ $obj->id }++;
-        push @linked, $self->get_linked( object => $obj, Seen => \%seen );
+        push @linked, $self->get_linked( object => $obj, seen => \%seen );
         push @top, $obj;
         last
             if $self->{'opt'}{'limit'}

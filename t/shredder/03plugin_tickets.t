@@ -28,7 +28,7 @@ use_ok('RT::Model::TicketCollection');
     ok( $pid, "Created new ticket" );
 
     my $child = RT::Model::Ticket->new(current_user => RT->system_user );
-    my ($cid) = $child->create( subject => 'child', queue => 1, MemberOf => $pid );
+    my ($cid) = $child->create( subject => 'child', queue => 1, member_of => $pid );
     ok( $cid, "Created new ticket" );
 
     my $plugin = RT::Shredder::Plugin::Tickets->new;
@@ -67,7 +67,7 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     ok( $pid, "Created new ticket" );
 
     my $child = RT::Model::Ticket->new(current_user => RT->system_user );
-    my ($cid) = $child->create( subject => 'child', queue => 1, MemberOf => $pid );
+    my ($cid) = $child->create( subject => 'child', queue => 1, member_of => $pid );
     ok( $cid, "Created new ticket" );
 
     my ($status, $msg) = $child->add_link( target => $pid, type => 'DependsOn' );
@@ -105,14 +105,14 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
 
 { # create parent and child and check functionality of 'apply_query_to_linked' arg
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
-    my ($pid) = $parent->create( subject => 'parent', queue => 1, Status => 'resolved' );
+    my ($pid) = $parent->create( subject => 'parent', queue => 1, status => 'resolved' );
     ok( $pid, "Created new ticket" );
 
     my $child1 = RT::Model::Ticket->new(current_user => RT->system_user );
-    my ($cid1) = $child1->create( subject => 'child', queue => 1, MemberOf => $pid );
+    my ($cid1) = $child1->create( subject => 'child', queue => 1, member_of => $pid );
     ok( $cid1, "Created new ticket" );
     my $child2 = RT::Model::Ticket->new(current_user => RT->system_user );
-    my ($cid2) = $child2->create( subject => 'child', queue => 1, MemberOf => $pid, Status => 'resolved' );
+    my ($cid2) = $child2->create( subject => 'child', queue => 1, member_of => $pid, status => 'resolved' );
     ok( $cid2, "Created new ticket" );
 
     my $plugin = RT::Shredder::Plugin::Tickets->new;

@@ -57,7 +57,7 @@ diag 'queue with template' if $ENV{'TEST_VERBOSE'};
     ($id, $msg) = $template->create(
         name => 'my template',
         queue => $queue->id,
-        Content => "\nsome content",
+        content => "\nsome content",
     );
     ok($id, 'Created template') or diag "error: $msg";
 

@@ -128,7 +128,7 @@ sub test_args {
 
 sub run {
     my $self = shift;
-    my %args = ( Shredder => undef, @_ );
+    my %args = ( shredder => undef, @_ );
     my $objs
         = RT::Model::UserCollection->new( current_user => RT->system_user );
 
@@ -168,7 +168,7 @@ sub run {
 
     if ( $self->{'opt'}{'no_tickets'} ) {
         return $self->filter_without_tickets(
-            Shredder => $args{'Shredder'},
+            shredder => $args{'shredder'},
             objects  => $objs,
         );
     } else {
@@ -181,21 +181,21 @@ sub run {
 
 sub set_Resolvers {
     my $self = shift;
-    my %args = ( Shredder => undef, @_ );
+    my %args = ( shredder => undef, @_ );
 
     if ( $self->{'opt'}{'replace_relations'} ) {
         my $uid      = $self->{'opt'}{'replace_relations'};
         my $resolver = sub {
             my %args = (@_);
-            my $t    = $args{'targetobject'};
+            my $t    = $args{'target_object'};
             foreach my $method (qw(Creator last_updated_by)) {
                 next unless $t->_accessible( $method => 'read' );
                 $t->__set( column => $method, value => $uid );
             }
         };
-        $args{'Shredder'}->put_resolver(
-            baseClass => 'RT::Model::User',
-            Code      => $resolver
+        $args{'shredder'}->put_resolver(
+            base_class => 'RT::Model::User',
+            code      => $resolver
         );
     }
     return (1);
@@ -204,7 +204,7 @@ sub set_Resolvers {
 sub filter_without_tickets {
     my $self = shift;
     my %args = (
-        Shredder => undef,
+        shredder => undef,
         objects  => undef,
         @_,
     );

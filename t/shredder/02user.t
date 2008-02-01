@@ -40,7 +40,7 @@ create_savepoint('aucreate'); # after user create
         }
     };
     my $shredder = shredder_new();
-    $shredder->put_resolver( baseClass => 'RT::Model::User', Code => $resolver );
+    $shredder->put_resolver( base_class => 'RT::Model::User', code => $resolver );
     $shredder->wipeout( object => $user );
     cmp_deeply( dump_current_and_savepoint('bucreate'), "current DB equal to savepoint");
 }

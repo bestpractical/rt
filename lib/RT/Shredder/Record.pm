@@ -103,8 +103,8 @@ Returns L<RT::Shredder::Dependencies> object.
 sub dependencies {
     my $self = shift;
     my %args = (
-        Shredder => undef,
-        Flags    => DEPENDS_ON,
+        shredder => undef,
+        flags    => DEPENDS_ON,
         @_,
     );
 
@@ -113,11 +113,11 @@ sub dependencies {
     }
 
     my $deps = RT::Shredder::Dependencies->new();
-    if ( $args{'Flags'} & DEPENDS_ON ) {
-        $self->__depends_on( %args, Dependencies => $deps );
+    if ( $args{'flags'} & DEPENDS_ON ) {
+        $self->__depends_on( %args, dependencies => $deps );
     }
-    if ( $args{'Flags'} & RELATES ) {
-        $self->__relates( %args, Dependencies => $deps );
+    if ( $args{'flags'} & RELATES ) {
+        $self->__relates( %args, dependencies => $deps );
     }
     return $deps;
 }
@@ -125,11 +125,11 @@ sub dependencies {
 sub __depends_on {
     my $self = shift;
     my %args = (
-        Shredder     => undef,
-        Dependencies => undef,
+        shredder     => undef,
+        dependencies => undef,
         @_,
     );
-    my $deps = $args{'Dependencies'};
+    my $deps = $args{'dependencies'};
     my $list = [];
 
     # object custom field values
@@ -167,9 +167,9 @@ sub __depends_on {
 
     $deps->_push_dependencies(
         base_object   => $self,
-        Flags         => DEPENDS_ON,
+        flags         => DEPENDS_ON,
         target_objects => $list,
-        Shredder      => $args{'Shredder'}
+        shredder      => $args{'shredder'}
     );
     return;
 }
@@ -177,11 +177,11 @@ sub __depends_on {
 sub __Relates {
     my $self = shift;
     my %args = (
-        Shredder     => undef,
-        Dependencies => undef,
+        shredder     => undef,
+        dependencies => undef,
         @_,
     );
-    my $deps = $args{'Dependencies'};
+    my $deps = $args{'dependencies'};
     my $list = [];
 
     if ( $self->can('Creator') ) {
@@ -191,9 +191,9 @@ sub __Relates {
         if ( $obj && defined $obj->id ) {
             push( @$list, $obj );
         } else {
-            my $rec = $args{'Shredder'}->get_record( object => $self );
+            my $rec = $args{'shredder'}->get_record( object => $self );
             $self = $rec->{'object'};
-            $rec->{'State'} |= INVALID;
+            $rec->{'state'} |= INVALID;
             push @{ $rec->{'description'} },
                 "Have no related User(Creator) #"
                 . $self->creator
@@ -208,9 +208,9 @@ sub __Relates {
         if ( $obj && defined $obj->id ) {
             push( @$list, $obj );
         } else {
-            my $rec = $args{'Shredder'}->get_record( object => $self );
+            my $rec = $args{'shredder'}->get_record( object => $self );
             $self = $rec->{'object'};
-            $rec->{'State'} |= INVALID;
+            $rec->{'state'} |= INVALID;
             push @{ $rec->{'description'} },
                 "Have no related User(last_updated_by) #"
                 . $self->last_updated_by
@@ -220,15 +220,15 @@ sub __Relates {
 
     $deps->_push_dependencies(
         base_object   => $self,
-        Flags         => RELATES,
+        flags         => RELATES,
         target_objects => $list,
-        Shredder      => $args{'Shredder'}
+        shredder      => $args{'shredder'}
     );
 
     # cause of this $self->SUPER::__Relates should be called last
     # in overridden subs
-    my $rec = $args{'Shredder'}->get_record( object => $self );
-    $rec->{'State'} |= VALID unless ( $rec->{'State'} & INVALID );
+    my $rec = $args{'shredder'}->get_record( object => $self );
+    $rec->{'state'} |= VALID unless ( $rec->{'state'} & INVALID );
 
     return;
 }
@@ -246,19 +246,19 @@ sub __wipeout {
 sub validate_relations {
     my $self = shift;
     my %args = (
-        Shredder => undef,
+        shredder => undef,
         @_
     );
-    unless ( $args{'Shredder'} ) {
-        $args{'Shredder'} = RT::Shredder->new();
+    unless ( $args{'shredder'} ) {
+        $args{'shredder'} = RT::Shredder->new();
     }
 
-    my $rec = $args{'Shredder'}->put_object( object => $self );
-    return if ( $rec->{'State'} & VALID );
+    my $rec = $args{'shredder'}->put_object( object => $self );
+    return if ( $rec->{'state'} & VALID );
     $self = $rec->{'object'};
 
-    $self->_validate_relations( %args, Flags => RELATES );
-    $rec->{'State'} |= VALID unless ( $rec->{'State'} & INVALID );
+    $self->_validate_relations( %args, flags => RELATES );
+    $rec->{'state'} |= VALID unless ( $rec->{'state'} & INVALID );
 
     return;
 }

@@ -96,7 +96,7 @@ sub test_args {
 
 sub run {
     my $self = shift;
-    my %args = ( Shredder => undef, @_ );
+    my %args = ( shredder => undef, @_ );
     return ( 1, @{ $self->{'opt'}->{'objects'} } );
 }
 
