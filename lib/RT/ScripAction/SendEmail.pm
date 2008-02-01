@@ -311,9 +311,9 @@ sub send_message {
             . ( $self->scrip_obj->description || '' ) );
 
     my $status = RT::Interface::Email::send_email(
-        Entity      => $mime_obj,
-        Ticket      => $self->ticket_obj,
-        Transaction => $self->transaction_obj,
+        entity      => $mime_obj,
+        ticket      => $self->ticket_obj,
+        transaction => $self->transaction_obj,
     );
     return $status unless $status > 0;
 
@@ -474,7 +474,7 @@ sub add_ticket {
     my $ticket_mime = MIME::Entity->build(
         Type        => 'multipart/mixed',
         Top         => 0,
-        description => "ticket #$tid",
+        Description => "ticket #$tid",
     );
     while ( my $attachment = $attachs->next ) {
         $self->add_attachment( $attachment, $ticket_mime );
@@ -535,9 +535,9 @@ sub record_outgoing_mail_transaction {
     chomp $msgid;
 
     my ( $id, $msg ) = $transaction->create(
-        Ticket         => $self->ticket_obj->id,
+        ticket         => $self->ticket_obj->id,
         type           => $type,
-        Data           => $msgid,
+        data           => $msgid,
         mime_obj        => $mime_obj,
         activate_scrips => 0
     );
@@ -593,9 +593,9 @@ sub set_rt_special_headers {
         } else {
             $self->set_header(
                 'Message-ID' => RT::Interface::Email::gen_message_id(
-                    Ticket      => $self->ticket_obj,
-                    Scrip       => $self->scrip_obj,
-                    ScripAction => $self->scrip_action_obj
+                    ticket      => $self->ticket_obj,
+                    scrip       => $self->scrip_obj,
+                    scrip_action => $self->scrip_action_obj
                 ),
             );
         }
