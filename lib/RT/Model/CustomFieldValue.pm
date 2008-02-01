@@ -135,7 +135,7 @@ sub set_category {
     if ( defined $category && length $category ) {
         return $self->set_attribute(
             name    => 'category',
-            Content => $category,
+            content => $category,
         );
     } else {
         my ( $status, $msg ) = $self->delete_attribute('category');
