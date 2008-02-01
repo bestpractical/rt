@@ -12,32 +12,32 @@ use File::Spec ();
 use vars qw($Config $System $nobody $Handle );
 our $VERSION = '3.7.14';
 
-our $BASE_PATH         = '/home/jesse/svk/3.999-DANGEROUS';
-our $EtcPath          = '/home/jesse/svk/3.999-DANGEROUS/etc';
-our $BinPath          = '/home/jesse/svk/3.999-DANGEROUS/bin';
-our $VarPath          = '/home/jesse/svk/3.999-DANGEROUS/var';
-our $LocalPath        = '/home/jesse/svk/3.999-DANGEROUS/local';
-our $LocalLibPath     = '/home/jesse/svk/3.999-DANGEROUS/local/lib';
-our $LocalEtcPath     = '/home/jesse/svk/3.999-DANGEROUS/local/etc';
-our $LocalLexiconPath = '/home/jesse/svk/3.999-DANGEROUS/local/po';
+our $BASE_PATH         = Jifty::Util->app_root;
+our $EtcPath          = $BASE_PATH.'/etc';
+our $BinPath          = $BASE_PATH.'/bin';
+our $VarPath          = $BASE_PATH.'/var';
+our $LocalPath        = $BASE_PATH.'/local';
+our $LocalLibPath     = $BASE_PATH.'/local/lib';
+our $LocalEtcPath     = $BASE_PATH.'/local/etc';
+our $LocalLexiconPath = $BASE_PATH.'/local/po';
 our $LocalPluginPath  = $LocalPath . "/plugins";
 
 # $MasonComponentRoot is where your rt instance keeps its mason html files
 
-our $MasonComponentRoot = '/home/jesse/svk/3.999-DANGEROUS/html';
+our $MasonComponentRoot = $BASE_PATH.'/html';
 
 # $MasonLocalComponentRoot is where your rt instance keeps its site-local
 # mason html files.
 
-our $MasonLocalComponentRoot = '/home/jesse/svk/3.999-DANGEROUS/local/html';
+our $MasonLocalComponentRoot = $BASE_PATH.'/local/html';
 
 # $MasonDataDir Where mason keeps its datafiles
 
-our $MasonDataDir = '/home/jesse/svk/3.999-DANGEROUS/var/mason_data';
+our $MasonDataDir = $BASE_PATH.'/var/mason_data';
 
 # RT needs to put session data (for preserving state between connections
 # via the web interface)
-our $MasonSessionDir = '/home/jesse/svk/3.999-DANGEROUS/var/session_data';
+our $MasonSessionDir = $BASE_PATH.'/var/session_data';
 
 =head1 name
 
