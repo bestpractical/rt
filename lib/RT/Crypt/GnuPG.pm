@@ -445,14 +445,14 @@ sub sign_encrypt {
 
 sub sign_encrypt_rfc3156 {
     my %args = (
-        Entity => undef,
+        entity => undef,
 
         sign       => 1,
-        Signer     => undef,
-        Passphrase => undef,
+        signer     => undef,
+        passphrase => undef,
 
         encrypt    => 1,
-        Recipients => undef,
+        recipients => undef,
 
         @_
     );
@@ -460,22 +460,22 @@ sub sign_encrypt_rfc3156 {
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
-    $opt{'default_key'} = $args{'Signer'}
-        if $args{'sign'} && $args{'Signer'};
+    $opt{'default_key'} = $args{'signer'}
+        if $args{'sign'} && $args{'signer'};
     $gnupg->options->hash_init(
         _prepare_gnupg_options(%opt),
         armor            => 1,
         meta_interactive => 0,
     );
 
-    my $entity = $args{'Entity'};
+    my $entity = $args{'entity'};
 
     # handling passphrase in GnuPGOptions
-    $args{'Passphrase'} = delete $opt{'passphrase'}
-        if !defined $args{'Passphrase'};
+    $args{'passphrase'} = delete $opt{'passphrase'}
+        if !defined $args{'passphrase'};
 
-    if ( $args{'sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = get_passphrase( Address => $args{'Signer'} );
+    if ( $args{'sign'} && !defined $args{'passphrase'} ) {
+        $args{'passphrase'} = get_passphrase( Address => $args{'signer'} );
     }
 
     my %res;
@@ -493,7 +493,7 @@ sub sign_encrypt_rfc3156 {
             logger => ( $handle{'logger'} = new IO::Handle ),
             status => ( $handle{'status'} = new IO::Handle ),
         );
-        $gnupg->passphrase( $args{'Passphrase'} );
+        $gnupg->passphrase( $args{'passphrase'} );
 
         eval {
             local $SIG{'CHLD'} = 'DEFAULT';
@@ -557,7 +557,7 @@ sub sign_encrypt_rfc3156 {
             status => ( $handle{'status'} = new IO::Handle ),
         );
         $handles->options('stdout')->{'direct'} = 1;
-        $gnupg->passphrase( $args{'Passphrase'} ) if $args{'sign'};
+        $gnupg->passphrase( $args{'passphrase'} ) if $args{'sign'};
 
         eval {
             local $SIG{'CHLD'} = 'DEFAULT';
@@ -633,14 +633,14 @@ sub sign_encrypt_inline {
 
 sub _sign_encrypt_text_inline {
     my %args = (
-        Entity => undef,
+        entity => undef,
 
         sign       => 1,
-        Signer     => undef,
-        Passphrase => undef,
+        signer     => undef,
+        passphrase => undef,
 
         encrypt    => 1,
-        Recipients => undef,
+        recipients => undef,
 
         @_
     );
@@ -649,8 +649,8 @@ sub _sign_encrypt_text_inline {
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
-    $opt{'default_key'} = $args{'Signer'}
-        if $args{'sign'} && $args{'Signer'};
+    $opt{'default_key'} = $args{'signer'}
+        if $args{'sign'} && $args{'signer'};
     $gnupg->options->hash_init(
         _prepare_gnupg_options(%opt),
         armor            => 1,
@@ -658,17 +658,17 @@ sub _sign_encrypt_text_inline {
     );
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} = delete $opt{'passphrase'}
-        if !defined( $args{'Passphrase'} );
+    $args{'passphrase'} = delete $opt{'passphrase'}
+        if !defined( $args{'passphrase'} );
 
-    if ( $args{'sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = get_passphrase( Address => $args{'Signer'} );
+    if ( $args{'sign'} && !defined $args{'passphrase'} ) {
+        $args{'passphrase'} = get_passphrase( Address => $args{'signer'} );
     }
 
     if ( $args{'encrypt'} ) {
         $gnupg->options->push_recipients($_)
             foreach map use_key_for_encryption($_) || $_,
-            @{ $args{'Recipients'} || [] };
+            @{ $args{'recipients'} || [] };
     }
 
     my %res;
@@ -685,9 +685,9 @@ sub _sign_encrypt_text_inline {
         status => ( $handle{'status'} = new IO::Handle ),
     );
     $handles->options('stdout')->{'direct'} = 1;
-    $gnupg->passphrase( $args{'Passphrase'} ) if $args{'sign'};
+    $gnupg->passphrase( $args{'passphrase'} ) if $args{'sign'};
 
-    my $entity = $args{'Entity'};
+    my $entity = $args{'entity'};
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $method
@@ -726,14 +726,14 @@ sub _sign_encrypt_text_inline {
 
 sub sign_encrypt_attachment_inline {
     my %args = (
-        Entity => undef,
+        entity => undef,
 
         sign       => 1,
-        Signer     => undef,
-        Passphrase => undef,
+        signer     => undef,
+        passphrase => undef,
 
         encrypt    => 1,
-        Recipients => undef,
+        recipients => undef,
 
         @_
     );
@@ -742,8 +742,8 @@ sub sign_encrypt_attachment_inline {
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
-    $opt{'default_key'} = $args{'Signer'}
-        if $args{'sign'} && $args{'Signer'};
+    $opt{'default_key'} = $args{'signer'}
+        if $args{'sign'} && $args{'signer'};
     $gnupg->options->hash_init(
         _prepare_gnupg_options(%opt),
         armor            => 1,
@@ -751,18 +751,18 @@ sub sign_encrypt_attachment_inline {
     );
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} = delete $opt{'passphrase'}
-        if !defined( $args{'Passphrase'} );
+    $args{'passphrase'} = delete $opt{'passphrase'}
+        if !defined( $args{'passphrase'} );
 
-    if ( $args{'sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = get_passphrase( Address => $args{'Signer'} );
+    if ( $args{'sign'} && !defined $args{'passphrase'} ) {
+        $args{'passphrase'} = get_passphrase( Address => $args{'signer'} );
     }
 
-    my $entity = $args{'Entity'};
+    my $entity = $args{'entity'};
     if ( $args{'encrypt'} ) {
         $gnupg->options->push_recipients($_)
             foreach map use_key_for_encryption($_) || $_,
-            @{ $args{'Recipients'} || [] };
+            @{ $args{'recipients'} || [] };
     }
 
     my %res;
@@ -779,7 +779,7 @@ sub sign_encrypt_attachment_inline {
         status => ( $handle{'status'} = new IO::Handle ),
     );
     $handles->options('stdout')->{'direct'} = 1;
-    $gnupg->passphrase( $args{'Passphrase'} ) if $args{'sign'};
+    $gnupg->passphrase( $args{'passphrase'} ) if $args{'sign'};
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
@@ -823,7 +823,7 @@ sub sign_encrypt_attachment_inline {
     } else {
         $entity->bodyhandle( new MIME::Body::File $tmp_fn );
         $entity->effective_type('application/octet-stream');
-        $args{'Data'}->head->mime_attr( $_ => "$filename.pgp" )
+        $args{'data'}->head->mime_attr( $_ => "$filename.pgp" )
             foreach (qw(Content-Type.name Content-Disposition.filename));
 
     }
@@ -834,14 +834,14 @@ sub sign_encrypt_attachment_inline {
 
 sub sign_encrypt_content {
     my %args = (
-        Content => undef,
+        content => undef,
 
         sign       => 1,
-        Signer     => undef,
-        Passphrase => undef,
+        signer     => undef,
+        passphrase => undef,
 
         encrypt    => 1,
-        Recipients => undef,
+        recipients => undef,
 
         @_
     );
@@ -850,8 +850,8 @@ sub sign_encrypt_content {
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
-    $opt{'default_key'} = $args{'Signer'}
-        if $args{'sign'} && $args{'Signer'};
+    $opt{'default_key'} = $args{'signer'}
+        if $args{'sign'} && $args{'signer'};
     $gnupg->options->hash_init(
         _prepare_gnupg_options(%opt),
         armor            => 1,
@@ -859,17 +859,17 @@ sub sign_encrypt_content {
     );
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} = delete $opt{'passphrase'}
-        if !defined( $args{'Passphrase'} );
+    $args{'passphrase'} = delete $opt{'passphrase'}
+        if !defined( $args{'passphrase'} );
 
-    if ( $args{'sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = get_passphrase( Address => $args{'Signer'} );
+    if ( $args{'sign'} && !defined $args{'passphrase'} ) {
+        $args{'passphrase'} = get_passphrase( Address => $args{'signer'} );
     }
 
     if ( $args{'encrypt'} ) {
         $gnupg->options->push_recipients($_)
             foreach map use_key_for_encryption($_) || $_,
-            @{ $args{'Recipients'} || [] };
+            @{ $args{'recipients'} || [] };
     }
 
     my %res;
@@ -886,7 +886,7 @@ sub sign_encrypt_content {
         status => ( $handle{'status'} = new IO::Handle ),
     );
     $handles->options('stdout')->{'direct'} = 1;
-    $gnupg->passphrase( $args{'Passphrase'} ) if $args{'sign'};
+    $gnupg->passphrase( $args{'passphrase'} ) if $args{'sign'};
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
@@ -895,7 +895,7 @@ sub sign_encrypt_content {
             ? 'sign_and_encrypt'
             : ( $args{'sign'} ? 'clearsign' : 'encrypt' );
         my $pid = _safe_run_child { $gnupg->$method( handles => $handles ) };
-        $handle{'input'}->print( ${ $args{'Content'} } );
+        $handle{'input'}->print( ${ $args{'content'} } );
         close $handle{'input'};
         waitpid $pid, 0;
     };
@@ -918,7 +918,7 @@ sub sign_encrypt_content {
         return %res;
     }
 
-    ${ $args{'Content'} } = '';
+    ${ $args{'content'} } = '';
     seek $tmp_fh, 0, 0;
     while (1) {
         my $status = read $tmp_fh, my $buf, 4 * 1024;
@@ -927,15 +927,15 @@ sub sign_encrypt_content {
         } elsif ( !$status ) {
             last;
         }
-        ${ $args{'Content'} } .= $buf;
+        ${ $args{'content'} } .= $buf;
     }
 
     return %res;
 }
 
 sub find_protected_parts {
-    my %args = ( Entity => undef, CheckBody => 1, @_ );
-    my $entity = $args{'Entity'};
+    my %args = ( entity => undef, check_body => 1, @_ );
+    my $entity = $args{'entity'};
 
     # inline PGP block, only in singlepart
     unless ( $entity->is_multipart ) {
@@ -1081,15 +1081,15 @@ sub find_protected_parts {
 =cut
 
 sub verify_decrypt {
-    my %args = ( Entity => undef, Detach => 1, @_ );
-    my @protected = find_protected_parts( Entity => $args{'Entity'} );
+    my %args = ( entity => undef, detach => 1, @_ );
+    my @protected = find_protected_parts( Entity => $args{'entity'} );
     my @res;
 
     # XXX: detaching may brake nested signatures
     foreach my $item ( grep $_->{'type'} eq 'signed', @protected ) {
         if ( $item->{'format'} eq 'RFC3156' ) {
             push @res, { verify_rfc3156(%$item) };
-            if ( $args{'Detach'} ) {
+            if ( $args{'detach'} ) {
                 $item->{'Top'}->parts( [ $item->{'Data'} ] );
                 $item->{'Top'}->make_singlepart;
             }
@@ -1097,7 +1097,7 @@ sub verify_decrypt {
             push @res, { verify_inline(%$item) };
         } elsif ( $item->{'format'} eq 'Attachment' ) {
             push @res, { verify_attachment(%$item) };
-            if ( $args{'Detach'} ) {
+            if ( $args{'detach'} ) {
                 $item->{'Top'}->parts(
                     [   grep "$_" ne $item->{'Signature'},
                         $item->{'Top'}->parts
@@ -1125,12 +1125,12 @@ sub verify_decrypt {
 }
 
 sub verify_inline {
-    my %args = ( Data => undef, Top => undef, @_ );
+    my %args = ( data => undef, top => undef, @_ );
     return decrypt_inline(%args);
 }
 
 sub verify_attachment {
-    my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
+    my %args = ( data => undef, signature => undef, top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
@@ -1140,7 +1140,7 @@ sub verify_attachment {
 
     my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
-    $args{'Data'}->bodyhandle->print($tmp_fh);
+    $args{'data'}->bodyhandle->print($tmp_fh);
     $tmp_fh->flush;
 
     my %handle;
@@ -1161,7 +1161,7 @@ sub verify_attachment {
                 command_args => [ '-', $tmp_fn ]
             );
         };
-        $args{'Signature'}->bodyhandle->print( $handle{'input'} );
+        $args{'signature'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
         waitpid $pid, 0;
@@ -1183,7 +1183,7 @@ sub verify_attachment {
 }
 
 sub verify_rfc3156 {
-    my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
+    my %args = ( data => undef, signature => undef, top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
@@ -1193,7 +1193,7 @@ sub verify_rfc3156 {
 
     my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw:eol(CRLF?)';
-    $args{'Data'}->print($tmp_fh);
+    $args{'data'}->print($tmp_fh);
     $tmp_fh->flush;
 
     my %handle;
@@ -1214,7 +1214,7 @@ sub verify_rfc3156 {
                 command_args => [ '-', $tmp_fn ]
             );
         };
-        $args{'Signature'}->bodyhandle->print( $handle{'input'} );
+        $args{'signature'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
         waitpid $pid, 0;
@@ -1237,10 +1237,10 @@ sub verify_rfc3156 {
 
 sub decrypt_rfc3156 {
     my %args = (
-        Data       => undef,
-        Info       => undef,
-        Top        => undef,
-        Passphrase => undef,
+        data       => undef,
+        info       => undef,
+        top        => undef,
+        passphrase => undef,
         @_
     );
 
@@ -1250,17 +1250,17 @@ sub decrypt_rfc3156 {
     $gnupg->options->hash_init( _prepare_gnupg_options(%opt),
         meta_interactive => 0, );
 
-    if ( $args{'Data'}->bodyhandle->is_encoded ) {
+    if ( $args{'data'}->bodyhandle->is_encoded ) {
         require RT::EmailParser;
-        RT::EmailParser->_decode_body( $args{'Data'} );
+        RT::EmailParser->_decode_body( $args{'data'} );
     }
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} = delete $opt{'passphrase'}
-        if !defined( $args{'Passphrase'} );
+    $args{'passphrase'} = delete $opt{'passphrase'}
+        if !defined( $args{'passphrase'} );
 
-    $args{'Passphrase'} = get_passphrase()
-        unless defined $args{'Passphrase'};
+    $args{'passphrase'} = get_passphrase()
+        unless defined $args{'passphrase'};
 
     my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
@@ -1278,9 +1278,9 @@ sub decrypt_rfc3156 {
     my %res;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        $gnupg->passphrase( $args{'Passphrase'} );
+        $gnupg->passphrase( $args{'passphrase'} );
         my $pid = _safe_run_child { $gnupg->decrypt( handles => $handles ) };
-        $args{'Data'}->bodyhandle->print( $handle{'input'} );
+        $args{'data'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
         waitpid $pid, 0;
@@ -1311,16 +1311,16 @@ sub decrypt_rfc3156 {
     my $decrypted = $parser->parse_mime_entity_from_filehandle( $tmp_fh, 0 );
 
     $decrypted->{'__store_link_to_object_to_avoid_early_cleanup'} = $parser;
-    $args{'Top'}->parts( [] );
-    $args{'Top'}->add_part($decrypted);
-    $args{'Top'}->make_singlepart;
+    $args{'top'}->parts( [] );
+    $args{'top'}->add_part($decrypted);
+    $args{'top'}->make_singlepart;
     return %res;
 }
 
 sub decrypt_inline {
     my %args = (
-        Data       => undef,
-        Passphrase => undef,
+        data       => undef,
+        passphrase => undef,
         @_
     );
 
@@ -1330,17 +1330,17 @@ sub decrypt_inline {
     $gnupg->options->hash_init( _prepare_gnupg_options(%opt),
         meta_interactive => 0, );
 
-    if ( $args{'Data'}->bodyhandle->is_encoded ) {
+    if ( $args{'data'}->bodyhandle->is_encoded ) {
         require RT::EmailParser;
-        RT::EmailParser->_decode_body( $args{'Data'} );
+        RT::EmailParser->_decode_body( $args{'data'} );
     }
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} = delete $opt{'passphrase'}
-        if !defined( $args{'Passphrase'} );
+    $args{'passphrase'} = delete $opt{'passphrase'}
+        if !defined( $args{'passphrase'} );
 
-    $args{'Passphrase'} = get_passphrase()
-        unless defined $args{'Passphrase'};
+    $args{'passphrase'} = get_passphrase()
+        unless defined $args{'passphrase'};
 
     my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
@@ -1358,9 +1358,9 @@ sub decrypt_inline {
     my %res;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        $gnupg->passphrase( $args{'Passphrase'} );
+        $gnupg->passphrase( $args{'passphrase'} );
         my $pid = _safe_run_child { $gnupg->decrypt( handles => $handles ) };
-        $args{'Data'}->bodyhandle->print( $handle{'input'} );
+        $args{'data'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
         waitpid $pid, 0;
@@ -1387,24 +1387,24 @@ sub decrypt_inline {
     }
 
     seek $tmp_fh, 0, 0;
-    $args{'Data'}->bodyhandle( new MIME::Body::File $tmp_fn );
-    $args{'Data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
+    $args{'data'}->bodyhandle( new MIME::Body::File $tmp_fn );
+    $args{'data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
     return %res;
 }
 
 sub decrypt_attachment {
     my %args = (
-        Top        => undef,
-        Data       => undef,
-        Passphrase => undef,
+        top        => undef,
+        data       => undef,
+        passphrase => undef,
         @_
     );
     my %res = decrypt_inline(%args);
     return %res if $res{'exit_code'};
 
-    my $filename = $args{'Data'}->head->recommended_filename;
+    my $filename = $args{'data'}->head->recommended_filename;
     $filename =~ s/\.pgp$//i;
-    $args{'Data'}->head->mime_attr( $_ => $filename )
+    $args{'data'}->head->mime_attr( $_ => $filename )
         foreach (qw(Content-Type.name Content-Disposition.filename));
 
     return %res;
@@ -1412,8 +1412,8 @@ sub decrypt_attachment {
 
 sub decrypt_content {
     my %args = (
-        Content    => undef,
-        Passphrase => undef,
+        content    => undef,
+        passphrase => undef,
         @_
     );
 
@@ -1424,11 +1424,11 @@ sub decrypt_content {
         meta_interactive => 0, );
 
     # handling passphrase in GnupGOptions
-    $args{'Passphrase'} = delete $opt{'passphrase'}
-        if !defined( $args{'Passphrase'} );
+    $args{'passphrase'} = delete $opt{'passphrase'}
+        if !defined( $args{'passphrase'} );
 
-    $args{'Passphrase'} = get_passphrase()
-        unless defined $args{'Passphrase'};
+    $args{'passphrase'} = get_passphrase()
+        unless defined $args{'passphrase'};
 
     my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
@@ -1446,9 +1446,9 @@ sub decrypt_content {
     my %res;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        $gnupg->passphrase( $args{'Passphrase'} );
+        $gnupg->passphrase( $args{'passphrase'} );
         my $pid = _safe_run_child { $gnupg->decrypt( handles => $handles ) };
-        print { $handle{'input'} } ${ $args{'Content'} };
+        print { $handle{'input'} } ${ $args{'content'} };
         close $handle{'input'};
 
         waitpid $pid, 0;
@@ -1474,7 +1474,7 @@ sub decrypt_content {
         }
     }
 
-    ${ $args{'Content'} } = '';
+    ${ $args{'content'} } = '';
     seek $tmp_fh, 0, 0;
     while (1) {
         my $status = read $tmp_fh, my $buf, 4 * 1024;
@@ -1483,7 +1483,7 @@ sub decrypt_content {
         } elsif ( !$status ) {
             last;
         }
-        ${ $args{'Content'} } .= $buf;
+        ${ $args{'content'} } .= $buf;
     }
 
     return %res;
@@ -1496,7 +1496,7 @@ Returns passphrase, called whenever it's required with Address as a named argume
 =cut
 
 sub get_passphrase {
-    my %args = ( Address => undef, @_ );
+    my %args = ( address => undef, @_ );
     return 'test';
 }
 
