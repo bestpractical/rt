@@ -93,11 +93,11 @@ sub __set {
     my %args = (@_);
 
     unless ( defined $args{'value'} ) {
-        $args{'value'} ||= delete $args{'Value'};
+        $args{'value'} ||= delete $args{'value'};
     }
 
     unless ( defined $args{'column'} ) {
-        $args{'column'} ||= delete $args{'Field'};
+        $args{'column'} ||= delete $args{'field'};
     }
     $self->SUPER::__set(%args);
 
@@ -244,7 +244,7 @@ sub first_attribute {
 
 =head2  Create PARAMHASH
 
-Takes a PARAMHASH of Column -> Value pairs.
+Takes a PARAMHASH of Column -> value pairs.
 If any Column has a Validate$PARAMname subroutine defined and the 
 value provided doesn't pass validation, this routine returns
 an error.
@@ -1393,16 +1393,16 @@ sub add_custom_field_value {
 sub _add_custom_field_value {
     my $self = shift;
     my %args = (
-        Field              => undef,
-        Value              => undef,
+        field              => undef,
+        value              => undef,
         large_content       => undef,
         content_type        => undef,
         record_transaction => 1,
         @_
     );
-    if ( !defined $args{'Field'} ) {
-        $args{'Field'} ||= $args{'column'};
-        unless ( $args{'Field'} ) {
+    if ( !defined $args{'field'} ) {
+        $args{'field'} ||= delete $args{'column'};
+        unless ( $args{'field'} ) {
             Carp::cluck(
                 "Field argument missing. maybe a mistaken s// changed Field to Column?"
             );
@@ -1410,16 +1410,9 @@ sub _add_custom_field_value {
         }
     }
 
-    if ( !defined $args{'Value'} ) {
-        $args{'Value'} ||= delete $args{'value'};
-        unless ( $args{'Value'} ) {
-            Carp::cluck(
-                "Value argument missing. maybe i'ts written as 'value'?");
-        }
-    }
-    my $cf = $self->load_custom_field_by_identifier( $args{'Field'} );
+    my $cf = $self->load_custom_field_by_identifier( $args{'field'} );
     unless ( $cf->id ) {
-        return ( 0, _( "Custom field %1 not found", $args{'Field'} ) );
+        return ( 0, _( "Custom field %1 not found", $args{'field'} ) );
     }
 
     my $OCFs = $self->custom_fields;
@@ -1428,18 +1421,18 @@ sub _add_custom_field_value {
         return (
             0,
             _(  "Custom field %1 does not apply to this object",
-                $args{'Field'}
+                $args{'field'}
             )
         );
     }
 
     # empty string is not correct value of any CF, so undef it
-    foreach (qw(Value large_content)) {
+    foreach (qw(value large_content)) {
         $args{$_} = undef if defined $args{$_} && !length $args{$_};
     }
 
-    if ( $cf->can('validate_Value') ) {
-        unless ( $cf->validate_value( $args{'Value'} ) ) {
+    if ( $cf->can('validate_value') ) {
+        unless ( $cf->validate_value( $args{'value'} ) ) {
             return ( 0, _("Invalid value for custom field") );
         }
     }
@@ -1489,10 +1482,10 @@ sub _add_custom_field_value {
                 if defined $old_content && !length $old_content;
 
             my $is_the_same = 1;
-            if ( defined $args{'Value'} ) {
+            if ( defined $args{'value'} ) {
                 $is_the_same = 0
                     unless defined $old_content
-                        && lc $old_content eq lc $args{'Value'};
+                        && lc $old_content eq lc $args{'value'};
             } else {
                 $is_the_same = 0 if defined $old_content;
             }
@@ -1512,7 +1505,7 @@ sub _add_custom_field_value {
 
         my ( $new_value_id, $value_msg ) = $cf->add_value_for_object(
             object       => $self,
-            Content      => $args{'Value'},
+            Content      => $args{'value'},
             large_content => $args{'large_content'},
             content_type  => $args{'content_type'},
         );
@@ -1563,7 +1556,7 @@ sub _add_custom_field_value {
     else {
         my ( $new_value_id, $msg ) = $cf->add_value_for_object(
             object       => $self,
-            Content      => $args{'Value'},
+            Content      => $args{'value'},
             large_content => $args{'large_content'},
             content_type  => $args{'content_type'},
         );
@@ -1584,7 +1577,7 @@ sub _add_custom_field_value {
             }
         }
         return ( $new_value_id,
-            _( "%1 added as a value for %2", $args{'Value'}, $cf->name ) );
+            _( "%1 added as a value for %2", $args{'value'}, $cf->name ) );
     }
 }
 
@@ -1606,21 +1599,21 @@ If value is not a valid value for the custom field, returns
 sub delete_custom_field_value {
     my $self = shift;
     my %args = (
-        Field   => undef,
-        Value   => undef,
-        ValueId => undef,
+       field   => undef,
+        value   => undef,
+        value_id => undef,
         @_
     );
 
-    my $cf = $self->load_custom_field_by_identifier( $args{'Field'} );
+    my $cf = $self->load_custom_field_by_identifier( $args{'field'} );
     unless ( $cf->id ) {
-        return ( 0, _( "Custom field %1 not found", $args{'Field'} ) );
+        return ( 0, _( "Custom field %1 not found", $args{'field'} ) );
     }
 
     my ( $val, $msg ) = $cf->delete_value_for_object(
         object  => $self,
-        id      => $args{'ValueId'},
-        Content => $args{'Value'},
+        id      => $args{'value_id'},
+        Content => $args{'value'},
     );
     unless ($val) {
         return ( 0, $msg );

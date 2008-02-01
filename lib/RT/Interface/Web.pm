@@ -1024,17 +1024,17 @@ sub _process_object_custom_field_updates {
 
           # We don't care about the magic, if there's really a values element;
             next
-                if defined $args{'ARGS'}->{'Value'}
-                    && length $args{'ARGS'}->{'Value'};
+                if defined $args{'ARGS'}->{'value'}
+                    && length $args{'ARGS'}->{'value'};
             next
-                if defined $args{'ARGS'}->{'Values'}
-                    && length $args{'ARGS'}->{'Values'};
+                if defined $args{'ARGS'}->{'values'}
+                    && length $args{'ARGS'}->{'values'};
 
            # "Empty" values does not mean anything for Image and Binary fields
             next if $cf_type =~ /^(?:Image|Binary)$/;
 
-            $arg = 'Values';
-            $args{'ARGS'}->{'Values'} = undef;
+            $arg = 'values';
+            $args{'ARGS'}->{'values'} = undef;
         }
 
         my @values = ();
@@ -1054,11 +1054,11 @@ sub _process_object_custom_field_updates {
             }
             grep defined, @values;
 
-        if ( $arg eq 'AddValue' || $arg eq 'Value' ) {
+        if ( $arg eq 'AddValue' || $arg eq 'value' ) {
             foreach my $value (@values) {
                 my ( $val, $msg ) = $args{'object'}->add_custom_field_value(
-                    Field => $cf->id,
-                    Value => $value
+                    field => $cf->id,
+                    value => $value
                 );
                 push( @results, $msg );
             }
@@ -1066,27 +1066,27 @@ sub _process_object_custom_field_updates {
             my $value_hash = _uploaded_file( $args{'Prefix'} . $arg ) or next;
             my ( $val, $msg )
                 = $args{'object'}
-                ->add_custom_field_value( %$value_hash, Field => $cf, );
+                ->add_custom_field_value( %$value_hash, field => $cf, );
             push( @results, $msg );
-        } elsif ( $arg eq 'DeleteValues' ) {
+        } elsif ( $arg eq 'delete_values' ) {
             foreach my $value (@values) {
                 my ( $val, $msg )
                     = $args{'object'}->delete_custom_field_value(
-                    Field => $cf,
-                    Value => $value,
+                    field => $cf,
+                    value => $value,
                     );
                 push( @results, $msg );
             }
-        } elsif ( $arg eq 'DeleteValueIds' ) {
+        } elsif ( $arg eq 'delete_value_ids' ) {
             foreach my $value (@values) {
                 my ( $val, $msg )
                     = $args{'object'}->delete_custom_field_value(
-                    Field   => $cf,
-                    ValueId => $value,
+                   field   => $cf,
+                    value_id => $value,
                     );
                 push( @results, $msg );
             }
-        } elsif ( $arg eq 'Values' && !$cf->repeated ) {
+        } elsif ( $arg eq 'values' && !$cf->repeated ) {
             my $cf_values = $args{'object'}->custom_field_values( $cf->id );
 
             my %values_hash;
@@ -1097,8 +1097,8 @@ sub _process_object_custom_field_updates {
                 }
 
                 my ( $val, $msg ) = $args{'object'}->add_custom_field_value(
-                    Field => $cf,
-                    Value => $value
+                    field => $cf,
+                    value => $value
                 );
                 push( @results, $msg );
                 $values_hash{$val} = 1 if $val;
@@ -1110,12 +1110,12 @@ sub _process_object_custom_field_updates {
 
                 my ( $val, $msg )
                     = $args{'object'}->delete_custom_field_value(
-                    Field   => $cf,
-                    ValueId => $cf_value->id
+                    field   => $cf,
+                    value_id => $cf_value->id
                     );
                 push( @results, $msg );
             }
-        } elsif ( $arg eq 'Values' ) {
+        } elsif ( $arg eq 'values' ) {
             my $cf_values = $args{'object'}->custom_field_values( $cf->id );
 
             # keep everything up to the point of difference, delete the rest
@@ -1136,8 +1136,8 @@ sub _process_object_custom_field_updates {
             # now add/replace extra things, if any
             foreach my $value (@values) {
                 my ( $val, $msg ) = $args{'object'}->add_custom_field_value(
-                    Field => $cf,
-                    Value => $value
+                    field => $cf,
+                    value => $value
                 );
                 push( @results, $msg );
             }
