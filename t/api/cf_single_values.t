@@ -13,7 +13,7 @@ my ($id,$msg) =$q->create(name => "CF-Single-".$$);
 ok($id,$msg);
 
 my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
-($id,$msg) = $cf->create(name => 'Single-'.$$, type => 'Select', MaxValues => '1', queue => $q->id);
+($id,$msg) = $cf->create(name => 'Single-'.$$, type => 'Select', max_values => '1', queue => $q->id);
 ok($id,$msg);
 
 
@@ -30,10 +30,10 @@ my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 
 ok($id,$msg);
 is($t->custom_field_values($cf->id)->count, 0, "No values yet");
-$t->add_custom_field_value(Field => $cf->id, value => 'First');
+$t->add_custom_field_value(field => $cf->id, value => 'First');
 is($t->custom_field_values($cf->id)->count, 1, "One now");
 
-$t->add_custom_field_value(Field => $cf->id, value => 'Second');
+$t->add_custom_field_value(field => $cf->id, value => 'Second');
 is($t->custom_field_values($cf->id)->count, 1, "Still one");
 
 1;
