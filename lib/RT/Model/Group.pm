@@ -756,11 +756,11 @@ sub members_obj {
 
 # {{{ GroupMembersObj
 
-=head2 GroupMembersObj [Recursively => 1]
+=head2 GroupMembersObj [recursively => 1]
 
 Returns an L<RT::Model::GroupCollection> object of this group's members.
 By default returns groups including all subgroups, but
-could be changed with C<Recursively> named argument.
+could be changed with C<recursively> named argument.
 
 B<Note> that groups are not filtered by type and result
 may contain as well system groups, personal and other.
@@ -769,11 +769,11 @@ may contain as well system groups, personal and other.
 
 sub group_members_obj {
     my $self = shift;
-    my %args = ( Recursively => 1, @_ );
+    my %args = ( recursively => 1, @_ );
 
     my $groups = RT::Model::GroupCollection->new;
     my $members_table
-        = $args{'Recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
+        = $args{'recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
 
     my $members_alias = $groups->new_alias($members_table);
     $groups->join(
@@ -791,7 +791,7 @@ sub group_members_obj {
         alias  => $members_alias,
         column => 'disabled',
         value  => 0,
-    ) if $args{'Recursively'};
+    ) if $args{'recursively'};
 
     return $groups;
 }
@@ -804,19 +804,19 @@ sub group_members_obj {
 
 Returns an L<RT::Model::UserCollection> object of this group's members, by default
 returns users including all members of subgroups, but could be
-changed with C<Recursively> named argument.
+changed with C<recursively> named argument.
 
 =cut
 
 sub user_members_obj {
     my $self = shift;
-    my %args = ( Recursively => 1, @_ );
+    my %args = ( recursively => 1, @_ );
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
 
     my $members_table
-        = $args{'Recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
+        = $args{'recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
 
     my $users         = RT::Model::UserCollection->new;
     my $members_alias = $users->new_alias($members_table);
@@ -835,7 +835,7 @@ sub user_members_obj {
         alias  => $members_alias,
         column => 'disabled',
         value  => 0,
-    ) if $args{'Recursively'};
+    ) if $args{'recursively'};
 
     return ($users);
 }

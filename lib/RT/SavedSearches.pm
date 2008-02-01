@@ -171,7 +171,7 @@ sub _privacy_objects {
     $groups->limit_to_user_defined_groups;
     $groups->with_member(
         principal_id => $self->current_user->id,
-        Recursively  => 1
+        recursively  => 1
     );
 
     return ( $CurrentUser->user_object, @{ $groups->items_array_ref() } );

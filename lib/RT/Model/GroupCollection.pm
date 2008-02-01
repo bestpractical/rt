@@ -260,7 +260,7 @@ sub limit_to_roles_for_system {
 
 # }}}
 
-=head2 WithMember {principal_id => PRINCIPAL_ID, Recursively => undef}
+=head2 WithMember {principal_id => PRINCIPAL_ID, recursively => undef}
 
 Limits the set of groups returned to groups which have
 Principal PRINCIPAL_ID as a member
@@ -271,12 +271,12 @@ sub with_member {
     my $self = shift;
     my %args = (
         principal_id => undef,
-        Recursively  => undef,
+        recursively  => undef,
         @_
     );
     my $members;
 
-    if ( $args{'Recursively'} ) {
+    if ( $args{'recursively'} ) {
         $members = $self->new_alias('CachedGroupMembers');
     } else {
         $members = $self->new_alias('GroupMembers');
@@ -300,12 +300,12 @@ sub without_member {
     my $self = shift;
     my %args = (
         principal_id => undef,
-        Recursively  => undef,
+        recursively  => undef,
         @_
     );
 
     my $members
-        = $args{'Recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
+        = $args{'recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
     my $members_alias = $self->join(
         type    => 'LEFT',
         column1 => 'id',
@@ -328,7 +328,7 @@ sub without_member {
     );
 }
 
-=head2 Withright { right => RIGHTNAME, object => RT::Record, IncludeSystemRights => 1, IncludeSuperusers => 0, equiv_objects => [ ] }
+=head2 Withright { right => RIGHTNAME, object => RT::Record, include_system_rights => 1, include_superusers => 0, equiv_objects => [ ] }
 
 
 Find all groups which have RIGHTNAME for RT::Record. Optionally include global rights and superusers. By default, include the global rights, but not the superusers.
@@ -343,9 +343,9 @@ sub with_right {
     my %args = (
         right                  => undef,
         object                 => => undef,
-        IncludeSystemRights    => 1,
-        IncludeSuperusers      => undef,
-        IncludeSubgroupMembers => 0,
+        include_system_rights    => 1,
+        include_superusers      => undef,
+        include_subgroup_members => 0,
         equiv_objects          => [],
         @_
     );
@@ -372,14 +372,14 @@ sub with_right {
 sub _join_groups {
     my $self = shift;
     my %args = (@_);
-    return 'main' unless $args{'IncludeSubgroupMembers'};
+    return 'main' unless $args{'include_subgroup_members'};
     return $self->RT::Model::UserCollection::_join_groups(%args);
 }
 
 sub _join_group_members {
     my $self = shift;
     my %args = (@_);
-    return 'main' unless $args{'IncludeSubgroupMembers'};
+    return 'main' unless $args{'include_subgroup_members'};
     return $self->RT::Model::UserCollection::_join_group_members(%args);
 }
 

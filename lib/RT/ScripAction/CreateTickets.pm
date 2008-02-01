@@ -141,9 +141,9 @@ A convoluted example
     $adminccs->who_have_right(
 	right => "AdminGroup",
 	object =>$groups->first,
-	IncludeSystemRights => undef,
-	IncludeSuperusers => 0,
-	IncludeSubgroupMembers => 0,
+	include_system_rights => undef,
+	include_superusers => 0,
+	include_subgroup_members => 0,
     );
  
      my @admins;

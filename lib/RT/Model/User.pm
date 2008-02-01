@@ -878,19 +878,19 @@ Returns undef if they don't.
 sub has_group_right {
     my $self = shift;
     my %args = (
-        GroupObj => undef,
-        Group    => undef,
+        group_obj => undef,
+        group    => undef,
         right    => undef,
         @_
     );
 
-    if ( defined $args{'Group'} ) {
-        $args{'GroupObj'} = RT::Model::Group->new;
-        $args{'GroupObj'}->load( $args{'Group'} );
+    if ( defined $args{'group'} ) {
+        $args{'group_obj'} = RT::Model::Group->new;
+        $args{'group_obj'}->load( $args{'group'} );
     }
 
     # {{{ Validate and load up the group_id
-    unless ( ( defined $args{'GroupObj'} ) and ( $args{'GroupObj'}->id ) ) {
+    unless ( ( defined $args{'group_obj'} ) and ( $args{'group_obj'}->id ) ) {
         return undef;
     }
 
@@ -898,7 +898,7 @@ sub has_group_right {
 
     # Figure out whether a user has the right we're asking about.
     my $retval = $self->has_right(
-        object => $args{'GroupObj'},
+        object => $args{'group_obj'},
         right  => $args{'right'},
     );
 
@@ -923,7 +923,7 @@ sub own_groups {
     $groups->limit_to_user_defined_groups;
     $groups->with_member(
         principal_id => $self->id,
-        Recursively  => 1
+        recursively  => 1
     );
     return $groups;
 }
@@ -1233,7 +1233,7 @@ sub _cleanup_invalid_delegations {
     # inconsistent with the allowed delegation objects.
     my $acl_to_del
         = RT::Model::ACECollection->new( current_user => RT->system_user );
-    $acl_to_del->delegated_by( Id => $self->id );
+    $acl_to_del->delegated_by( id => $self->id );
     foreach (@allowed_deleg_objects) {
         $acl_to_del->limitnot_object($_);
     }

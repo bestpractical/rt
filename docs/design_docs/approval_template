@@ -8,7 +8,7 @@
    my $groupid = $groups->first->id;
 
    my $adminccs = RT::Model::UserCollection->new(current_user => RT->system_user);
-   $adminccs->who_have_right(Right => 'AdminGroup', IncludeSystemRights => undef, IncludeSuperusers => 0, IncludeSubgroupMembers => 0, object => $groups->first);
+   $adminccs->who_have_right(Right => 'AdminGroup', include_system_rights => undef, include_superusers => 0, include_subgroup_members => 0, object => $groups->first);
 
     my @admins;
     while (my $admin = $adminccs->next) {

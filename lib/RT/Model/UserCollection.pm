@@ -233,7 +233,7 @@ sub limit_to_privileged {
 
 # {{{ who_have_right
 
-=head2 who_have_right { right => 'name', object => $rt_object , IncludeSuperusers => undef, IncludeSubgroupMembers => undef, IncludeSystemRights => undef, equiv_objects => [ ] }
+=head2 who_have_right { right => 'name', object => $rt_object , include_superusers => undef, include_subgroup_members => undef, include_system_rights => undef, equiv_objects => [ ] }
 
 
 find all users who the right right for this group, either individually
@@ -247,7 +247,7 @@ If passed a queue object, with no id, it will find users who have that right for
 sub _join_group_members {
     my $self = shift;
     my %args = (
-        IncludeSubgroupMembers => 1,
+        include_subgroup_members => 1,
         @_
     );
 
@@ -258,7 +258,7 @@ sub _join_group_members {
     # all members of groups recursively. if we don't we'll find only 'direct'
     # members of the group in question
     my $group_members;
-    if ( $args{'IncludeSubgroupMembers'} ) {
+    if ( $args{'include_subgroup_members'} ) {
         $group_members = $self->new_alias('CachedGroupMembers');
     } else {
         $group_members = $self->new_alias('GroupMembers');
@@ -296,7 +296,7 @@ sub _join_acl {
     my $self = shift;
     my %args = (
         right             => undef,
-        IncludeSuperusers => undef,
+        include_superusers => undef,
         @_,
     );
 
@@ -308,7 +308,7 @@ sub _join_acl {
         value => $args{right} || 'NULL',
         entry_aggregator => 'OR'
     );
-    if ( $args{'IncludeSuperusers'} and $args{'right'} ) {
+    if ( $args{'include_superusers'} and $args{'right'} ) {
         $self->limit(
             alias            => $acl,
             column           => 'right_name',
@@ -325,7 +325,7 @@ sub _get_equiv_objects {
     my $self = shift;
     my %args = (
         object              => undef,
-        IncludeSystemRights => undef,
+        include_system_rights => undef,
         equiv_objects       => [],
         @_
     );
@@ -346,7 +346,7 @@ sub _get_equiv_objects {
         }
     }
 
-    if ( $args{'IncludeSystemRights'} ) {
+    if ( $args{'include_system_rights'} ) {
         push @objects, 'RT::System';
     }
     push @objects, @{ $args{'equiv_objects'} };
@@ -359,9 +359,9 @@ sub who_have_right {
     my %args = (
         right                  => undef,
         object                 => undef,
-        IncludeSystemRights    => undef,
-        IncludeSuperusers      => undef,
-        IncludeSubgroupMembers => 1,
+        include_system_rights    => undef,
+        include_superusers      => undef,
+        include_subgroup_members => 1,
         equiv_objects          => [],
         @_
     );
@@ -398,9 +398,9 @@ sub who_have_role_right {
     my %args = (
         right                  => undef,
         object                 => undef,
-        IncludeSystemRights    => undef,
-        IncludeSuperusers      => undef,
-        IncludeSubgroupMembers => 1,
+        include_system_rights    => undef,
+        include_superusers      => undef,
+        include_subgroup_members => 1,
         equiv_objects          => [],
         @_
     );
@@ -436,7 +436,7 @@ sub who_have_role_right {
         $check_roles .= join ' OR ', @role_clauses;
         $check_objects = join ' OR ', @object_clauses;
     } else {
-        if ( !$args{'IncludeSystemRights'} ) {
+        if ( !$args{'include_system_rights'} ) {
             $check_objects = "($acl.object_type != 'RT::System')";
         }
     }
@@ -480,9 +480,9 @@ sub who_have_group_right {
     my %args = (
         right                  => undef,
         object                 => undef,
-        IncludeSystemRights    => undef,
-        IncludeSuperusers      => undef,
-        IncludeSubgroupMembers => 1,
+        include_system_rights    => undef,
+        include_superusers      => undef,
+        include_subgroup_members => 1,
         equiv_objects          => [],
         @_
     );
@@ -509,13 +509,13 @@ sub who_have_group_right {
 
         $check_objects = join ' OR ', @object_clauses;
     } else {
-        if ( !$args{'IncludeSystemRights'} ) {
+        if ( !$args{'include_system_rights'} ) {
             $check_objects = "($acl.object_type != 'RT::System')";
         }
     }
     $self->_add_subclause( "Whichobject", "($check_objects)" );
 
-    $self->_join_group_members_for_group_rights( %args, ACLAlias => $acl );
+    $self->_join_group_members_for_group_rights( %args, aclalias => $acl );
 
     # Find only members of groups that have the right.
     $self->limit(
@@ -536,7 +536,7 @@ sub who_have_group_right {
 
 # {{{ who_belong_to_groups
 
-=head2 who_belong_to_groups { Groups => ARRAYREF, IncludeSubgroupMembers => 1 }
+=head2 who_belong_to_groups { Groups => ARRAYREF, include_subgroup_members => 1 }
 
 =cut
 
@@ -544,8 +544,8 @@ sub who_have_group_right {
 sub who_belong_to_groups {
     my $self = shift;
     my %args = (
-        Groups                 => undef,
-        IncludeSubgroupMembers => 1,
+        groups                 => undef,
+        include_subgroup_members => 1,
         @_
     );
 
@@ -555,7 +555,7 @@ sub who_belong_to_groups {
 
     my $group_members = $self->_join_group_members(%args);
 
-    foreach my $groupid ( @{ $args{'Groups'} } ) {
+    foreach my $groupid ( @{ $args{'groups'} } ) {
         $self->limit(
             alias            => $group_members,
             column           => 'group_id',
