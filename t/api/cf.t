@@ -94,9 +94,9 @@ for (@custom_fields) {
 # }}}
 
 # try to add field value with fields that do not exist {{{
- ($status, $msg) = $ticket->add_custom_field_value( Field => -1 , value => 'foo' );
+ ($status, $msg) = $ticket->add_custom_field_value( field => -1 , value => 'foo' );
 ok(!$status, "shouldn't add value" );
-($status, $msg) = $ticket->add_custom_field_value( Field => 'SomeUnexpedCustomFieldname' , value => 'foo' );
+($status, $msg) = $ticket->add_custom_field_value( field => 'SomeUnexpedCustomFieldname' , value => 'foo' );
 ok(!$status, "shouldn't add value" );
 # }}}
 
@@ -105,13 +105,13 @@ SKIP: {
 
 	skip "TODO: We want fields that are not allowed to set unexpected values", 10;
 	for (@custom_fields) {
-		($status, $msg) = $ticket->add_custom_field_value( Field => $_ , value => 'SomeUnexpectedCFValue' );
+		($status, $msg) = $ticket->add_custom_field_value( field => $_ , value => 'SomeUnexpectedCFValue' );
 		ok( !$status, 'value doesn\'t exist');
 	
-		($status, $msg) = $ticket->add_custom_field_value( Field => $_->id , value => 'SomeUnexpectedCFValue' );
+		($status, $msg) = $ticket->add_custom_field_value( field => $_->id , value => 'SomeUnexpectedCFValue' );
 		ok( !$status, 'value doesn\'t exist');
 	
-		($status, $msg) = $ticket->add_custom_field_value( Field => $_->name , value => 'SomeUnexpectedCFValue' );
+		($status, $msg) = $ticket->add_custom_field_value( field => $_->name , value => 'SomeUnexpectedCFValue' );
 		ok( !$status, 'value doesn\'t exist');
 	}
 	
@@ -133,7 +133,7 @@ for (@custom_fields) {
 my $test_add_delete_cycle = sub  {
 	my $cb = shift;
 	for (@custom_fields) {
-		($status, $msg) = $ticket->add_custom_field_value( Field => $cb->($_) , value => 'Foo' );
+		($status, $msg) = $ticket->add_custom_field_value( field => $cb->($_) , value => 'Foo' );
 		ok( $status, "message: $msg");
 	}
 	
@@ -152,7 +152,7 @@ my $test_add_delete_cycle = sub  {
 	}
 	# because our CFs are single_value then new value addition should override
 	for (@custom_fields) {
-		($status, $msg) = $ticket->add_custom_field_value( Field => $_ , value => 'Bar' );
+		($status, $msg) = $ticket->add_custom_field_value( field => $_ , value => 'Bar' );
 		ok( $status, "message: $msg");
 	}
 	$cfvs = $ticket->custom_field_values;
@@ -168,7 +168,7 @@ my $test_add_delete_cycle = sub  {
 	}
 	# delete it
 	for (@custom_fields ) { 
-		($status, $msg) = $ticket->delete_custom_field_value( Field => $_ , Value => 'Bar' );
+		($status, $msg) = $ticket->delete_custom_field_value(field => $_ , value => 'Bar' );
 		ok( $status, "Deleted a custom field value 'Bar' for field ".$_->id.": $msg");
 	}
 	$cfvs = $ticket->custom_field_values;
@@ -189,8 +189,8 @@ $test_add_delete_cycle->( sub  { return $_[0]->id } );
 # lets test cycle via CF object reference
 $test_add_delete_cycle->( sub  { return $_[0] } );
 
-$ticket->add_custom_field_value( Field => $local_cf2->id , value => 'Baz' );
-$ticket->add_custom_field_value( Field => $global_cf3->id , value => 'Baz' );
+$ticket->add_custom_field_value( field => $local_cf2->id , value => 'Baz' );
+$ticket->add_custom_field_value( field => $global_cf3->id , value => 'Baz' );
 # now if we ask for cf values on RecordCustomFields4 we should not get any
 $cfvs = $ticket->custom_field_values( 'RecordCustomFields4' );
 is( $cfvs->count, 0, "No custom field values for non-Queue cf" );
