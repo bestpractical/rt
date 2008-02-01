@@ -1189,7 +1189,7 @@ sub process_ticket_watchers {
         # Delete watchers in the simple style demanded by the bulk manipulator
         elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {
             my ( $code, $msg ) = $Ticket->delete_watcher(
-                Email => $ARGSRef->{$key},
+                email => $ARGSRef->{$key},
                 type  => $1
             );
             push @results, $msg;
@@ -1203,7 +1203,7 @@ sub process_ticket_watchers {
             #They're in this order because otherwise $1 gets clobbered :/
             my ( $code, $msg ) = $Ticket->add_watcher(
                 type  => $ARGSRef->{$key},
-                Email => $ARGSRef->{ "WatcherAddressEmail" . $1 }
+                email => $ARGSRef->{ "WatcherAddressEmail" . $1 }
             );
             push @results, $msg;
         }
@@ -1212,7 +1212,7 @@ sub process_ticket_watchers {
         elsif ( $key =~ /^Add(Requestor|Cc|AdminCc)$/ ) {
             my ( $code, $msg ) = $Ticket->add_watcher(
                 type  => $1,
-                Email => $ARGSRef->{$key}
+                email => $ARGSRef->{$key}
             );
             push @results, $msg;
         }

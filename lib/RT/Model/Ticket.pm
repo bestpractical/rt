@@ -625,7 +625,7 @@ sub create {
             my ( $val, $msg ) = $self->$method(
                 type         => $type,
                 principal_id => $watcher,
-                Silent       => 1,
+                silent       => 1,
             );
             push @non_fatal_errors,
                 _( "Couldn't set %1 watcher: %2", $type, $msg )
@@ -700,8 +700,8 @@ sub create {
             my ( $wval, $wmsg ) = $self->_add_link(
                 type => $LINKTYPEMAP{$type}->{'type'},
                 $LINKTYPEMAP{$type}->{'Mode'} => $link,
-                Silent => !$args{'_record_transaction'},
-                'Silent'
+                silent => !$args{'_record_transaction'},
+                'silent_'
                     . (
                     $LINKTYPEMAP{$type}->{'Mode'} eq 'base'
                     ? 'target'
@@ -1028,20 +1028,20 @@ sub __import {
 
     my $watcher;
     foreach $watcher ( @{ $args{'Cc'} } ) {
-        $self->_add_watcher( type => 'Cc', Email => $watcher, Silent => 1 );
+        $self->_add_watcher( type => 'Cc', email => $watcher, silent => 1 );
     }
     foreach $watcher ( @{ $args{'AdminCc'} } ) {
         $self->_add_watcher(
             type   => 'AdminCc',
-            Email  => $watcher,
-            Silent => 1
+            email  => $watcher,
+            silent => 1
         );
     }
     foreach $watcher ( @{ $args{'Requestor'} } ) {
         $self->_add_watcher(
             type   => 'Requestor',
-            Email  => $watcher,
-            Silent => 1
+            email  => $watcher,
+            silent => 1
         );
     }
 
@@ -1122,10 +1122,10 @@ Type        One of Requestor, Cc, AdminCc
 
 prinicpal_id The RT::Model::Principal id of the user or group that's being added as a watcher
 
-Email       The email address of the new watcher. If a user with this 
+email       The email address of the new watcher. If a user with this 
             email address can't be found, a new nonprivileged user will be created.
 
-If the watcher you\'re trying to set has an RT account, set the Owner paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
+If the watcher you\'re trying to set has an RT account, set the Owner paremeter to their User Id. Otherwise, set the email parameter to their email address.
 
 =cut
 
@@ -1134,7 +1134,7 @@ sub add_watcher {
     my %args = (
         type         => undef,
         principal_id => undef,
-        Email        => undef,
+        email        => undef,
         @_
     );
 
@@ -1142,17 +1142,17 @@ sub add_watcher {
     return $self->_add_watcher(%args)
         if $self->current_user_has_right('ModifyTicket');
 
-    if ( $args{'Email'} ) {
-        my ($addr) = Mail::Address->parse( $args{'Email'} );
+    if ( $args{'email'} ) {
+        my ($addr) = Mail::Address->parse( $args{'email'} );
         return ( 0,
-            _( "Couldn't parse address from '%1 string", $args{'Email'} ) )
+            _( "Couldn't parse address from '%1 string", $args{'email'} ) )
             unless $addr;
 
         if (lc $self->current_user->user_object->email eq
             lc RT::Model::User->canonicalize_email( $addr->address ) )
         {
             $args{'principal_id'} = $self->current_user->id;
-            delete $args{'Email'};
+            delete $args{'email'};
         }
     }
 
@@ -1190,16 +1190,16 @@ sub _add_watcher {
     my $self = shift;
     my %args = (
         type         => undef,
-        Silent       => undef,
+        silent       => undef,
         principal_id => undef,
-        Email        => undef,
+        email        => undef,
         @_
     );
 
     my $principal = RT::Model::Principal->new;
-    if ( $args{'Email'} ) {
+    if ( $args{'email'} ) {
         my $user = RT::Model::User->new( current_user => RT->system_user );
-        my ( $pid, $msg ) = $user->load_or_create_by_email( $args{'Email'} );
+        my ( $pid, $msg ) = $user->load_or_create_by_email( $args{'email'} );
         $args{'principal_id'} = $pid if $pid;
     }
     if ( $args{'principal_id'} ) {
@@ -1210,7 +1210,7 @@ sub _add_watcher {
     unless ( $principal->id ) {
         Jifty->log->error(
                   "Could not load create a user with the email address '"
-                . $args{'Email'}
+                . $args{'email'}
                 . "' to add as a watcher for ticket "
                 . $self->id );
         return ( 0, _("Could not find or create that user") );
@@ -1254,7 +1254,7 @@ sub _add_watcher {
         );
     }
 
-    unless ( $args{'Silent'} ) {
+    unless ( $args{'silent'} ) {
         $self->_new_transaction(
             type      => 'AddWatcher',
             new_value => $principal->id,
@@ -1270,7 +1270,7 @@ sub _add_watcher {
 
 # {{{ sub delete_watcher
 
-=head2 delete_watcher { type => TYPE, principal_id => PRINCIPAL_ID, Email => EMAIL_ADDRESS }
+=head2 delete_watcher { type => TYPE, principal_id => PRINCIPAL_ID, email => EMAIL_ADDRESS }
 
 
 Deletes a ticket watcher.  Takes two arguments:
@@ -1281,7 +1281,7 @@ and one of
 
 principal_id (an RT::Model::Principal id of the watcher you want to remove)
     OR
-Email (the email address of an existing wathcer)
+email (the email address of an existing wathcer)
 
 
 =cut
@@ -1292,11 +1292,11 @@ sub delete_watcher {
     my %args = (
         type         => undef,
         principal_id => undef,
-        Email        => undef,
+        email        => undef,
         @_
     );
 
-    unless ( $args{'principal_id'} || $args{'Email'} ) {
+    unless ( $args{'principal_id'} || $args{'email'} ) {
         return ( 0, _("No principal specified") );
     }
     my $principal = RT::Model::Principal->new;
@@ -1305,7 +1305,7 @@ sub delete_watcher {
         $principal->load( $args{'principal_id'} );
     } else {
         my $user = RT::Model::User->new;
-        $user->load_by_email( $args{'Email'} );
+        $user->load_by_email( $args{'email'} );
         $principal->load( $user->id );
     }
 
@@ -1388,7 +1388,7 @@ sub delete_watcher {
         );
     }
 
-    unless ( $args{'Silent'} ) {
+    unless ( $args{'silent'} ) {
         $self->_new_transaction(
             type      => 'del_watcher',
             old_value => $principal->id,
@@ -1594,13 +1594,13 @@ sub admin_cc {
 # {{{ sub is_watcher
 # a generic routine to be called by is_requestor, is_cc and is_admin_cc
 
-=head2 is_watcher { type => TYPE, principal_id => PRINCIPAL_ID, Email => EMAIL }
+=head2 is_watcher { type => TYPE, principal_id => PRINCIPAL_ID, email => EMAIL }
 
-Takes a param hash with the attributes type and either principal_id or Email
+Takes a param hash with the attributes type and either principal_id or email
 
 Type is one of Requestor, Cc, AdminCc and Owner
 
-principal_id is an RT::Model::Principal id, and Email is an email address.
+principal_id is an RT::Model::Principal id, and email is an email address.
 
 Returns true if the specified principal (or the one corresponding to the
 specified address) is a member of the group type for this ticket.
@@ -1615,7 +1615,7 @@ sub is_watcher {
     my %args = (
         type         => 'Requestor',
         principal_id => undef,
-        Email        => undef,
+        email        => undef,
         @_
     );
 
@@ -1627,11 +1627,11 @@ sub is_watcher {
     );
 
     # Find the relevant principal.
-    if ( !$args{principal_id} && $args{Email} ) {
+    if ( !$args{principal_id} && $args{email} ) {
 
         # Look up the specified user.
         my $user = RT::Model::User->new;
-        $user->load_by_email( $args{Email} );
+        $user->load_by_email( $args{email} );
         if ( $user->id ) {
             $args{principal_id} = $user->principal_id;
         } else {
@@ -2357,13 +2357,13 @@ sub _links {
 
 =head2 delete_link
 
-Delete a link. takes a paramhash of base, target, Type, Silent,
-Silentbase and Silenttarget. Either base or target must be null.
+Delete a link. takes a paramhash of base, target, Type, silent,
+silent_base and silent_target. Either base or target must be null.
 The null value will be replaced with this ticket\'s id.
 
-If Silent is true then no transaction would be recorded, in other
+If silent is true then no transaction would be recorded, in other
 case you can control creation of transactions on both base and
-target with Silentbase and Silenttarget respectively. By default
+target with silent_base and silent_target respectively. By default
 both transactions are created.
 
 =cut 
@@ -2374,9 +2374,9 @@ sub delete_link {
         base         => undef,
         target       => undef,
         type         => undef,
-        Silent       => undef,
-        Silentbase   => undef,
-        Silenttarget => undef,
+        silent       => undef,
+        silent_base   => undef,
+        silent_target => undef,
         @_
     );
 
@@ -2412,7 +2412,7 @@ sub delete_link {
     my ( $val, $Msg ) = $self->SUPER::_delete_link(%args);
     return ( 0, $Msg ) unless $val;
 
-    return ( $val, $Msg ) if $args{'Silent'};
+    return ( $val, $Msg ) if $args{'silent'};
 
     my ( $direction, $remote_link );
 
@@ -2427,7 +2427,7 @@ sub delete_link {
     my $remote_uri = RT::URI->new;
     $remote_uri->from_uri($remote_link);
 
-    unless ( $args{ 'Silent' . $direction } ) {
+    unless ( $args{ 'silent_' . $direction } ) {
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             type      => 'DeleteLink',
             field     => $LINKDIRMAP{ $args{'type'} }->{$direction},
@@ -2437,7 +2437,7 @@ sub delete_link {
         Jifty->log->error("Couldn't create transaction: $Msg") unless $Trans;
     }
 
-    if ( !$args{ 'Silent' . ( $direction eq 'target' ? 'base' : 'target' ) }
+    if ( !$args{ 'silent_' . ( $direction eq 'target' ? 'base' : 'target' ) }
         && $remote_uri->is_local )
     {
         my $OtherObj = $remote_uri->object;
@@ -2464,9 +2464,9 @@ sub delete_link {
 
 Takes a paramhash of type and one of base or target. Adds that link to this ticket.
 
-If Silent is true then no transaction would be recorded, in other
+If silent is true then no transaction would be recorded, in other
 case you can control creation of transactions on both base and
-target with Silentbase and Silenttarget respectively. By default
+target with silent_base and silent_target respectively. By default
 both transactions are created.
 
 =cut
@@ -2477,9 +2477,9 @@ sub add_link {
         target       => '',
         base         => '',
         type         => '',
-        Silent       => undef,
-        Silentbase   => undef,
-        Silenttarget => undef,
+        silent       => undef,
+        silent_base   => undef,
+        silent_target => undef,
         @_
     );
 
@@ -2547,15 +2547,15 @@ sub _add_link {
         target       => '',
         base         => '',
         type         => '',
-        Silent       => undef,
-        Silentbase   => undef,
-        Silenttarget => undef,
+        silent       => undef,
+        silent_base   => undef,
+        silent_target => undef,
         @_
     );
 
     my ( $val, $msg, $exist ) = $self->SUPER::_add_link(%args);
     return ( $val, $msg ) if !$val || $exist;
-    return ( $val, $msg ) if $args{'Silent'};
+    return ( $val, $msg ) if $args{'silent'};
 
     my ( $direction, $remote_link );
     if ( $args{'target'} ) {
@@ -2569,7 +2569,7 @@ sub _add_link {
     my $remote_uri = RT::URI->new;
     $remote_uri->from_uri($remote_link);
 
-    unless ( $args{ 'Silent' . $direction } ) {
+    unless ( $args{ 'silent_' . $direction } ) {
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
             type      => 'AddLink',
             field     => $LINKDIRMAP{ $args{'type'} }->{$direction},
@@ -2579,7 +2579,7 @@ sub _add_link {
         Jifty->log->error("Couldn't create transaction: $Msg") unless $Trans;
     }
 
-    if ( !$args{ 'Silent' . ( $direction eq 'target' ? 'base' : 'target' ) }
+    if ( !$args{ 'silent_' . ( $direction eq 'target' ? 'base' : 'target' ) }
         && $remote_uri->is_local )
     {
         my $OtherObj = $remote_uri->object;
@@ -2751,7 +2751,7 @@ sub merge_into {
 
             my ( $val, $msg ) = $MergeInto->_add_watcher(
                 type         => $addwatcher_type,
-                Silent       => 1,
+                silent       => 1,
                 principal_id => $watcher->member_id
             );
             unless ($val) {

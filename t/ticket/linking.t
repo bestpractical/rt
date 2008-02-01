@@ -246,7 +246,7 @@ ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 
 # tests for silent behaviour
-($id,$msg) = $ticket->add_link(type => 'RefersTo', target => $ticket2->id, Silent => 1);
+($id,$msg) = $ticket->add_link(type => 'RefersTo', target => $ticket2->id, silent => 1);
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 {
@@ -259,11 +259,11 @@ is(link_count($filename), 0, "scrips ok");
     is( $transactions->count, 2, "Still two txns on the target" );
 
 }
-($id,$msg) =$ticket->delete_link(type => 'RefersTo', target => $ticket2->id, Silent => 1);
+($id,$msg) =$ticket->delete_link(type => 'RefersTo', target => $ticket2->id, silent => 1);
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 
-($id,$msg) = $ticket->add_link(type => 'RefersTo', target => $ticket2->id, Silentbase => 1);
+($id,$msg) = $ticket->add_link(type => 'RefersTo', target => $ticket2->id, silent_base => 1);
 ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 {
@@ -276,11 +276,11 @@ is(link_count($filename), 1, "scrips ok");
     is( $transactions->count, 3, "+1 txn on the target" );
 
 }
-($id,$msg) =$ticket->delete_link(type => 'RefersTo', target => $ticket2->id, Silentbase => 1);
+($id,$msg) =$ticket->delete_link(type => 'RefersTo', target => $ticket2->id, silent_base => 1);
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 
-($id,$msg) = $ticket->add_link(type => 'RefersTo', target => $ticket2->id, Silenttarget => 1);
+($id,$msg) = $ticket->add_link(type => 'RefersTo', target => $ticket2->id, silent_target => 1);
 ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 {
@@ -292,7 +292,7 @@ is(link_count($filename), 1, "scrips ok");
     $transactions->limit( column => 'type', value => 'AddLink' );
     is( $transactions->count, 3, "three txns on the target" );
 }
-($id,$msg) =$ticket->delete_link(type => 'RefersTo', target => $ticket2->id, Silenttarget => 1);
+($id,$msg) =$ticket->delete_link(type => 'RefersTo', target => $ticket2->id, silent_target => 1);
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 

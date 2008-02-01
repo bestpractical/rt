@@ -79,7 +79,7 @@ ok($group->load_queue_role_group(queue => $id, type=> 'Requestor'));
 ok ($group->id, "Found the ccs object for this Queue");
 
 
-ok (my ($add_id, $add_msg) = $Queue->add_watcher(type => 'Cc', Email => 'bob@fsck.com'), "Added bob at fsck.com as a cc");
+ok (my ($add_id, $add_msg) = $Queue->add_watcher(type => 'Cc', email => 'bob@fsck.com'), "Added bob at fsck.com as a cc");
 ok ($add_id, "Add succeeded: ($add_msg)");
 ok(my $bob = RT::Model::User->new(current_user => RT->system_user), "Creating a bob rt::user");
 $bob->load_by_email('bob@fsck.com');

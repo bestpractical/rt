@@ -1240,7 +1240,7 @@ sub post_process {
                 my ( $wval, $wmsg ) = $ticket->add_link(
                     type => $LINKTYPEMAP{$type}->{'type'},
                     $LINKTYPEMAP{$type}->{'Mode'} => $link,
-                    Silent                        => 1
+                    silent                        => 1
                 );
 
                 Jifty->log->warn("add_link thru $link failed: $wmsg")

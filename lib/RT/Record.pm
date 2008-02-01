@@ -1080,7 +1080,7 @@ sub _add_link {
         target => '',
         base   => '',
         type   => '',
-        Silent => undef,
+        silent => undef,
         @_
     );
 

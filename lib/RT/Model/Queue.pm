@@ -168,7 +168,7 @@ sub add_link {
         target => '',
         base   => '',
         type   => '',
-        Silent => undef,
+        silent => undef,
         @_
     );
 
@@ -696,7 +696,7 @@ sub add_watcher {
     my %args = (
         type         => undef,
         principal_id => undef,
-        Email        => undef,
+        email        => undef,
         @_
     );
 
@@ -753,22 +753,22 @@ sub _add_watcher {
     my $self = shift;
     my %args = (
         type         => undef,
-        Silent       => undef,
+        silent       => undef,
         principal_id => undef,
-        Email        => undef,
+        email        => undef,
         @_
     );
 
     my $principal = RT::Model::Principal->new;
     if ( $args{'principal_id'} ) {
         $principal->load( $args{'principal_id'} );
-    } elsif ( $args{'Email'} ) {
+    } elsif ( $args{'email'} ) {
 
         my $user = RT::Model::User->new;
-        $user->load_by_email( $args{'Email'} );
+        $user->load_by_email( $args{'email'} );
 
         unless ( $user->id ) {
-            $user->load( $args{'Email'} );
+            $user->load( $args{'email'} );
         }
         if ( $user->id ) {    # If the user exists
             $principal->load( $user->principal_id );
@@ -780,7 +780,7 @@ sub _add_watcher {
 
             my ( $Address, $name )
                 = RT::Interface::Email::parse_address_from_header(
-                $args{'Email'} );
+                $args{'email'} );
 
             my ( $Val, $Message ) = $new_user->create(
                 name       => $Address,
@@ -791,11 +791,11 @@ sub _add_watcher {
             );
             unless ($Val) {
                 Jifty->log->error( "Failed to create user "
-                        . $args{'Email'} . ": "
+                        . $args{'email'} . ": "
                         . $Message );
 
                # Deal with the race condition of two account creations at once
-                $new_user->load_by_email( $args{'Email'} );
+                $new_user->load_by_email( $args{'email'} );
             }
             $principal->load( $new_user->principal_id );
         }
