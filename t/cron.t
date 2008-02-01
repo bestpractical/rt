@@ -2,7 +2,7 @@
 
 use strict;
 use RT::Test; use Test::More; 
-plan tests => 22;
+plan tests => 23;
 
 use RT;
 
@@ -29,11 +29,13 @@ RT-Send-Bcc: jesse@example.com
 This is a content string with no content.';
 
 my $template_obj = RT::Model::Template->new(current_user => RT->system_user);
-$template_obj->create(queue       => '0',
+($ret,$msg) = $template_obj->create(queue       => '0',
 		      name        => 'recordtest',
 		      description => 'testing Record actions',
-		      Content     => $template_content,
+		      content     => $template_content,
 		     );
+
+ok($ret,$msg);
 
 # Create a queue and some tickets.
 
@@ -81,17 +83,35 @@ is ($counter, 1, "from_sql search results 2");
 ok(require RT::ScripAction::RecordComment);
 ok(require RT::ScripAction::RecordCorrespondence);
 
-my ($comment_act, $correspond_act);
-ok($comment_act = RT::ScripAction::RecordComment->new(ticket_obj => $ticket1, template_obj => $template_obj, current_user => $CurrentUser), "RecordComment Created");
-ok($correspond_act = RT::ScripAction::RecordCorrespondence->new(ticket_obj => $ticket2, template_obj => $template_obj, current_user => $CurrentUser), "RecordCorrespondence Created");
-ok($comment_act->prepare(), "comment prepared");
-ok($correspond_act->prepare(), "Correspond prepared");
-ok($comment_act->commit(), "comment committed");
-ok($correspond_act->commit(), "Correspondence committed");
+my ( $comment_act, $correspond_act );
+ok( $comment_act = RT::ScripAction::RecordComment->new(
+        ticket_obj   => $ticket1,
+        template_obj => $template_obj,
+        current_user => $CurrentUser
+    ),
+    "RecordComment Created"
+);
+ok( $correspond_act = RT::ScripAction::RecordCorrespondence->new(
+        ticket_obj   => $ticket2,
+        template_obj => $template_obj,
+        current_user => $CurrentUser
+    ),
+    "RecordCorrespondence Created"
+);
+ok( $comment_act->prepare(),    "comment prepared" );
+ok( $correspond_act->prepare(), "Correspond prepared" );
+ok( $comment_act->commit(),     "comment committed" );
+ok( $correspond_act->commit(),  "Correspondence committed" );
 
 # Now test for loop suppression.
-my ($trans, $desc, $transaction) = $ticket2->comment(mime_obj => $template_obj->mime_obj);
-my $bogus_action = RT::ScripAction::RecordComment->new(ticket_obj => $ticket1, template_obj => $template_obj, transaction_obj => $transaction, current_user => $CurrentUser);
-ok(!$bogus_action->prepare(), "comment aborted to prevent loop");
+my ( $trans, $desc, $transaction )
+    = $ticket2->comment( mime_obj => $template_obj->mime_obj );
+my $bogus_action = RT::ScripAction::RecordComment->new(
+    ticket_obj      => $ticket1,
+    template_obj    => $template_obj,
+    transaction_obj => $transaction,
+    current_user    => $CurrentUser
+);
+ok( !$bogus_action->prepare(), "comment aborted to prevent loop" );
 
 1;
