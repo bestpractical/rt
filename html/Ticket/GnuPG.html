@@ -12,8 +12,8 @@
 <% _('Return back to the ticket') %>
 </a>
 <& /Elements/Submit,
-    Label => ($encrypted? _('Decrypt'): _('Encrypt')),
-    name  => ($encrypted? 'Decrypt': 'Encrypt'),
+    Label => ($encrypted? _('Decrypt'): _('encrypt')),
+    name  => ($encrypted? 'Decrypt': 'encrypt'),
 &>
 </form>
 <%ARGS>

@@ -637,8 +637,8 @@ sub encrypt {
     my $content = $self->content;
     my %res     = RT::Crypt::GnuPG::sign_encrypt_content(
         Content    => \$content,
-        Sign       => 0,
-        Encrypt    => 1,
+        sign       => 0,
+        encrypt    => 1,
         Recipients => [$encrypt_for],
     );
     if ( $res{'exit_code'} ) {

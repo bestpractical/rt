@@ -1,10 +1,10 @@
 <table>
-<td><% _('Sign')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, name => 'Sign', current_value => $self->{'Sign'} &>
+<td><% _('sign')%></td>
+<td><& /Widgets/Form/Boolean:InputOnly, name => 'sign', current_value => $self->{'sign'} &>
 using <& SelectKeyForSigning, User => Jifty->web->current_user->user_object &>
 </td>
-<td><% _('Encrypt')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, name => 'Encrypt', current_value => $self->{'Encrypt'} &></td>
+<td><% _('encrypt')%></td>
+<td><& /Widgets/Form/Boolean:InputOnly, name => 'encrypt', current_value => $self->{'encrypt'} &></td>
 </table>
 <%ARGS>
 $self => undef,
@@ -51,7 +51,7 @@ return unless $self;
 
 $queue_obj ||= $ticket_obj->queue_obj if $ticket_obj;
 
-foreach ( qw(Sign Encrypt) ) {
+foreach ( qw(sign encrypt) ) {
     $self->{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
         name => $_,
         DefaultValue => $queue_obj->$_,
@@ -73,7 +73,7 @@ return 1 unless $self;
 
 my $checks_failure = 0;
 
-if ( $self->{'Sign'} ) {
+if ( $self->{'sign'} ) {
     $queue_obj ||= $ticket_obj->queue_obj
         if $ticket_obj;
 
@@ -91,7 +91,7 @@ if ( $self->{'Sign'} ) {
     }
 }
 
-if ( $self->{'Encrypt'} ) {
+if ( $self->{'encrypt'} ) {
 
     my @recipients;
 

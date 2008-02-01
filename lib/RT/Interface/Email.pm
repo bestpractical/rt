@@ -267,7 +267,7 @@ sub mail_error {
 
     # the colons are necessary to make ->build include non-standard headers
     my $entity = MIME::Entity->build(
-        type                    => "multipart/mixed",
+        Type                    => "multipart/mixed",
         From                    => $args{'From'},
         Bcc                     => $args{'Bcc'},
         To                      => $args{'To'},
@@ -275,7 +275,7 @@ sub mail_error {
         'Precedence:'           => 'bulk',
         'X-RT-Loop-Prevention:' => RT->config->get('rtname'),
     );
-    SetInReplyTo( Message => $entity, InReplyTo => $args{'mime_obj'} );
+    set_in_reply_to( Message => $entity, InReplyTo => $args{'mime_obj'} );
 
     $entity->attach( Data => $args{'Explanation'} . "\n" );
 
@@ -312,12 +312,12 @@ This function as well signs and/or encrypts the message according to
 headers of a transaction's attachment or properties of a ticket's queue.
 To get full access to the configuration Ticket and/or Transaction
 arguments must be provided, but you can force behaviour using Sign
-and/or Encrypt arguments.
+and/or encrypt arguments.
 
 The following precedence of arguments are used to figure out if
 the message should be encrypted and/or signed:
 
-* if Sign or Encrypt argument is defined then its value is used
+* if sign or encrypt argument is defined then its value is used
 
 * else if Transaction's first attachment has X-RT-Sign or X-RT-Encrypt
 header field then it's value is used
@@ -373,7 +373,7 @@ sub send_email {
         $attachment = $args{'Transaction'}->attachments->first
             if $args{'Transaction'};
 
-        foreach my $argument (qw(Sign Encrypt)) {
+        foreach my $argument (qw(sign encrypt)) {
             next if defined $args{$argument};
 
             if ( $attachment
@@ -576,7 +576,7 @@ sub send_email_using_template {
     $mail->head->set( $_ => $args{$_} )
         foreach grep defined $args{$_}, qw(To Cc Bcc From);
 
-    SetInReplyTo( Message => $mail, InReplyTo => $args{'InReplyTo'} );
+    set_in_reply_to( Message => $mail, InReplyTo => $args{'InReplyTo'} );
 
     return SendEmail( Entity => $mail );
 }
@@ -665,7 +665,7 @@ sub forward_transaction {
             . " of a ticket #"
             . $txn->object_id;
         $mail = MIME::Entity->build(
-            type => 'text/plain',
+            Type => 'text/plain',
             Data => $description,
         );
     }
@@ -697,13 +697,13 @@ sub forward_transaction {
     my $status = RT->config->get('ForwardFromUser')
 
         # never sign if we forward from User
-        ? SendEmail( Entity => $mail, Transaction => $txn, Sign => 0 )
+        ? SendEmail( Entity => $mail, Transaction => $txn, sign => 0 )
         : SendEmail( Entity => $mail, Transaction => $txn );
     return ( 0, $txn->_("Couldn't send email") ) unless $status;
     return ( 1, $txn->_("Send email successfully") );
 }
 
-=head2 sign_encrypt Entity => undef, Sign => 0, Encrypt => 0
+=head2 sign_encrypt Entity => undef, sign => 0, encrypt => 0
 
 Signs and encrypts message using L<RT::Crypt::GnuPG>, but as well
 handle errors with users' keys.
@@ -722,17 +722,17 @@ had been filtered out.
 sub sign_encrypt {
     my %args = (
         Entity  => undef,
-        Sign    => 0,
-        Encrypt => 0,
+        sign    => 0,
+        encrypt => 0,
         @_
     );
-    return 1 unless $args{'Sign'} || $args{'Encrypt'};
+    return 1 unless $args{'sign'} || $args{'encrypt'};
 
     my $msgid = $args{'Entity'}->head->get('Message-ID') || '';
     chomp $msgid;
 
-    Jifty->log->debug("$msgid Signing message")    if $args{'Sign'};
-    Jifty->log->debug("$msgid Encrypting message") if $args{'Encrypt'};
+    Jifty->log->debug("$msgid Signing message")    if $args{'sign'};
+    Jifty->log->debug("$msgid Encrypting message") if $args{'encrypt'};
 
     require RT::Crypt::GnuPG;
     my %res = RT::Crypt::GnuPG::sign_encrypt(%args);

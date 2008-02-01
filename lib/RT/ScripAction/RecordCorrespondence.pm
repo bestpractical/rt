@@ -45,11 +45,10 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-package RT::ScripAction::RecordCorrespondence;
-require RT::ScripAction::Generic;
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::ScripAction::Generic);
+use warnings;
+package RT::ScripAction::RecordCorrespondence;
+use base qw(RT::ScripAction::Generic);
 
 =head1 name
 
@@ -79,7 +78,7 @@ will give us a loop.
 sub prepare {
     my $self = shift;
     if ( defined $self->{'transaction_obj'}
-        && $self->{'transaction_obj'}->type =~ /^(comment|Correspond)$/ )
+        && $self->{'transaction_obj'}->type =~ /^(comment|correspond)$/ )
     {
         return undef;
     }

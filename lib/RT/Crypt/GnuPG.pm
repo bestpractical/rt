@@ -383,7 +383,7 @@ sub _safe_run_child (&) {
     return shift->();
 }
 
-=head2 sign_encrypt Entity => MIME::Entity, [ Encrypt => 1, Sign => 1, ... ]
+=head2 sign_encrypt Entity => MIME::Entity, [ encrypt => 1, sign => 1, ... ]
 
 Signs and/or encrypts an email message with GnuPG utility.
 
@@ -419,12 +419,12 @@ sub sign_encrypt {
     my %args = (@_);
 
     my $entity = $args{'Entity'};
-    if ( $args{'Sign'} && !defined $args{'Signer'} ) {
+    if ( $args{'sign'} && !defined $args{'Signer'} ) {
         $args{'Signer'} = use_key_for_signing()
             || ( Mail::Address->parse( $entity->head->get('From') ) )[0]
             ->address;
     }
-    if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
+    if ( $args{'encrypt'} && !$args{'Recipients'} ) {
         my %seen;
         $args{'Recipients'} = [
             grep $_ && !$seen{$_}++,
@@ -447,11 +447,11 @@ sub sign_encrypt_rfc3156 {
     my %args = (
         Entity => undef,
 
-        Sign       => 1,
+        sign       => 1,
         Signer     => undef,
         Passphrase => undef,
 
-        Encrypt    => 1,
+        encrypt    => 1,
         Recipients => undef,
 
         @_
@@ -461,7 +461,7 @@ sub sign_encrypt_rfc3156 {
     my %opt   = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'default_key'} = $args{'Signer'}
-        if $args{'Sign'} && $args{'Signer'};
+        if $args{'sign'} && $args{'Signer'};
     $gnupg->options->hash_init(
         _prepare_gnupg_options(%opt),
         armor            => 1,
@@ -474,12 +474,12 @@ sub sign_encrypt_rfc3156 {
     $args{'Passphrase'} = delete $opt{'passphrase'}
         if !defined $args{'Passphrase'};
 
-    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+    if ( $args{'sign'} && !defined $args{'Passphrase'} ) {
         $args{'Passphrase'} = get_passphrase( Address => $args{'Signer'} );
     }
 
     my %res;
-    if ( $args{'Sign'} && !$args{'Encrypt'} ) {
+    if ( $args{'sign'} && !$args{'encrypt'} ) {
 
         # required by RFC3156(Ch. 5) and RFC1847(Ch. 2.1)
         $entity->head->mime_attr(
@@ -532,13 +532,13 @@ sub sign_encrypt_rfc3156 {
         $entity->head->mime_attr(
             'Content-Type.micalg' => 'pgp-' . lc $opt{'digest-algo'} );
         $entity->attach(
-            type        => $protocol,
+            Type        => $protocol,
             Disposition => 'inline',
             Data        => \@signature,
             Encoding    => '7bit',
         );
     }
-    if ( $args{'Encrypt'} ) {
+    if ( $args{'encrypt'} ) {
         my %seen;
         $gnupg->options->push_recipients($_)
             foreach map use_key_for_encryption($_) || $_, grep !$seen{$_}++,
@@ -557,12 +557,12 @@ sub sign_encrypt_rfc3156 {
             status => ( $handle{'status'} = new IO::Handle ),
         );
         $handles->options('stdout')->{'direct'} = 1;
-        $gnupg->passphrase( $args{'Passphrase'} ) if $args{'Sign'};
+        $gnupg->passphrase( $args{'Passphrase'} ) if $args{'sign'};
 
         eval {
             local $SIG{'CHLD'} = 'DEFAULT';
             my $pid = _safe_run_child {
-                $args{'Sign'}
+                $args{'sign'}
                     ? $gnupg->sign_and_encrypt( handles => $handles )
                     : $gnupg->encrypt( handles => $handles );
             };
@@ -592,13 +592,13 @@ sub sign_encrypt_rfc3156 {
         $entity->head->mime_attr( 'Content-Type' => 'multipart/encrypted' );
         $entity->head->mime_attr( 'Content-Type.protocol' => $protocol );
         $entity->attach(
-            type        => $protocol,
+            Type        => $protocol,
             Disposition => 'inline',
             Data        => [ 'Version: 1', '' ],
             Encoding    => '7bit',
         );
         $entity->attach(
-            type        => 'application/octet-stream',
+            Type        => 'application/octet-stream',
             Disposition => 'inline',
             Path        => $tmp_fn,
             Filename    => '',
@@ -635,22 +635,22 @@ sub _sign_encrypt_text_inline {
     my %args = (
         Entity => undef,
 
-        Sign       => 1,
+        sign       => 1,
         Signer     => undef,
         Passphrase => undef,
 
-        Encrypt    => 1,
+        encrypt    => 1,
         Recipients => undef,
 
         @_
     );
-    return unless $args{'Sign'} || $args{'Encrypt'};
+    return unless $args{'sign'} || $args{'encrypt'};
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'default_key'} = $args{'Signer'}
-        if $args{'Sign'} && $args{'Signer'};
+        if $args{'sign'} && $args{'Signer'};
     $gnupg->options->hash_init(
         _prepare_gnupg_options(%opt),
         armor            => 1,
@@ -661,11 +661,11 @@ sub _sign_encrypt_text_inline {
     $args{'Passphrase'} = delete $opt{'passphrase'}
         if !defined( $args{'Passphrase'} );
 
-    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+    if ( $args{'sign'} && !defined $args{'Passphrase'} ) {
         $args{'Passphrase'} = get_passphrase( Address => $args{'Signer'} );
     }
 
-    if ( $args{'Encrypt'} ) {
+    if ( $args{'encrypt'} ) {
         $gnupg->options->push_recipients($_)
             foreach map use_key_for_encryption($_) || $_,
             @{ $args{'Recipients'} || [] };
@@ -685,15 +685,15 @@ sub _sign_encrypt_text_inline {
         status => ( $handle{'status'} = new IO::Handle ),
     );
     $handles->options('stdout')->{'direct'} = 1;
-    $gnupg->passphrase( $args{'Passphrase'} ) if $args{'Sign'};
+    $gnupg->passphrase( $args{'Passphrase'} ) if $args{'sign'};
 
     my $entity = $args{'Entity'};
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $method
-            = $args{'Sign'} && $args{'Encrypt'}
+            = $args{'sign'} && $args{'encrypt'}
             ? 'sign_and_encrypt'
-            : ( $args{'Sign'} ? 'clearsign' : 'encrypt' );
+            : ( $args{'sign'} ? 'clearsign' : 'encrypt' );
         my $pid = _safe_run_child { $gnupg->$method( handles => $handles ) };
         $entity->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
@@ -728,22 +728,22 @@ sub sign_encrypt_attachment_inline {
     my %args = (
         Entity => undef,
 
-        Sign       => 1,
+        sign       => 1,
         Signer     => undef,
         Passphrase => undef,
 
-        Encrypt    => 1,
+        encrypt    => 1,
         Recipients => undef,
 
         @_
     );
-    return unless $args{'Sign'} || $args{'Encrypt'};
+    return unless $args{'sign'} || $args{'encrypt'};
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'default_key'} = $args{'Signer'}
-        if $args{'Sign'} && $args{'Signer'};
+        if $args{'sign'} && $args{'Signer'};
     $gnupg->options->hash_init(
         _prepare_gnupg_options(%opt),
         armor            => 1,
@@ -754,12 +754,12 @@ sub sign_encrypt_attachment_inline {
     $args{'Passphrase'} = delete $opt{'passphrase'}
         if !defined( $args{'Passphrase'} );
 
-    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+    if ( $args{'sign'} && !defined $args{'Passphrase'} ) {
         $args{'Passphrase'} = get_passphrase( Address => $args{'Signer'} );
     }
 
     my $entity = $args{'Entity'};
-    if ( $args{'Encrypt'} ) {
+    if ( $args{'encrypt'} ) {
         $gnupg->options->push_recipients($_)
             foreach map use_key_for_encryption($_) || $_,
             @{ $args{'Recipients'} || [] };
@@ -779,14 +779,14 @@ sub sign_encrypt_attachment_inline {
         status => ( $handle{'status'} = new IO::Handle ),
     );
     $handles->options('stdout')->{'direct'} = 1;
-    $gnupg->passphrase( $args{'Passphrase'} ) if $args{'Sign'};
+    $gnupg->passphrase( $args{'Passphrase'} ) if $args{'sign'};
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $method
-            = $args{'Sign'} && $args{'Encrypt'}
+            = $args{'sign'} && $args{'encrypt'}
             ? 'sign_and_encrypt'
-            : ( $args{'Sign'} ? 'detach_sign' : 'encrypt' );
+            : ( $args{'sign'} ? 'detach_sign' : 'encrypt' );
         my $pid = _safe_run_child { $gnupg->$method( handles => $handles ) };
         $entity->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
@@ -812,10 +812,10 @@ sub sign_encrypt_attachment_inline {
     }
 
     my $filename = $entity->head->recommended_filename || 'no_name';
-    if ( $args{'Sign'} && !$args{'Encrypt'} ) {
+    if ( $args{'sign'} && !$args{'encrypt'} ) {
         $entity->make_multipart;
         $entity->attach(
-            type        => 'application/octet-stream',
+            Type        => 'application/octet-stream',
             Path        => $tmp_fn,
             Filename    => "$filename.sig",
             Disposition => 'attachment',
@@ -836,22 +836,22 @@ sub sign_encrypt_content {
     my %args = (
         Content => undef,
 
-        Sign       => 1,
+        sign       => 1,
         Signer     => undef,
         Passphrase => undef,
 
-        Encrypt    => 1,
+        encrypt    => 1,
         Recipients => undef,
 
         @_
     );
-    return unless $args{'Sign'} || $args{'Encrypt'};
+    return unless $args{'sign'} || $args{'encrypt'};
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'default_key'} = $args{'Signer'}
-        if $args{'Sign'} && $args{'Signer'};
+        if $args{'sign'} && $args{'Signer'};
     $gnupg->options->hash_init(
         _prepare_gnupg_options(%opt),
         armor            => 1,
@@ -862,11 +862,11 @@ sub sign_encrypt_content {
     $args{'Passphrase'} = delete $opt{'passphrase'}
         if !defined( $args{'Passphrase'} );
 
-    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
+    if ( $args{'sign'} && !defined $args{'Passphrase'} ) {
         $args{'Passphrase'} = get_passphrase( Address => $args{'Signer'} );
     }
 
-    if ( $args{'Encrypt'} ) {
+    if ( $args{'encrypt'} ) {
         $gnupg->options->push_recipients($_)
             foreach map use_key_for_encryption($_) || $_,
             @{ $args{'Recipients'} || [] };
@@ -886,14 +886,14 @@ sub sign_encrypt_content {
         status => ( $handle{'status'} = new IO::Handle ),
     );
     $handles->options('stdout')->{'direct'} = 1;
-    $gnupg->passphrase( $args{'Passphrase'} ) if $args{'Sign'};
+    $gnupg->passphrase( $args{'Passphrase'} ) if $args{'sign'};
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $method
-            = $args{'Sign'} && $args{'Encrypt'}
+            = $args{'sign'} && $args{'encrypt'}
             ? 'sign_and_encrypt'
-            : ( $args{'Sign'} ? 'clearsign' : 'encrypt' );
+            : ( $args{'sign'} ? 'clearsign' : 'encrypt' );
         my $pid = _safe_run_child { $gnupg->$method( handles => $handles ) };
         $handle{'input'}->print( ${ $args{'Content'} } );
         close $handle{'input'};
@@ -1678,7 +1678,7 @@ sub parse_status {
             push @res, \%res;
         } elsif ( $keyword eq 'END_ENCRYPTION' ) {
             my %res = (
-                Operation => 'Encrypt',
+                Operation => 'encrypt',
                 Status    => 'DONE',
                 Message   => 'Data has been encrypted',
             );
@@ -1795,7 +1795,7 @@ sub parse_status {
             my @props = split /\s+/, $args;
             push @res,
                 {
-                Operation      => 'Sign',
+                Operation      => 'sign',
                 Status         => 'DONE',
                 Message        => "Signed message",
                 type           => $props[0],
@@ -2389,16 +2389,16 @@ sub dry_sign {
     my $from = shift;
 
     my $mime = MIME::Entity->build(
-        type    => "text/plain",
+        Type    => "text/plain",
         From    => 'nobody@localhost',
         To      => 'nobody@localhost',
-        subject => "dry sign",
+        Subject => "dry sign",
         Data    => ['t'],
     );
 
     my %res = sign_encrypt(
-        Sign    => 1,
-        Encrypt => 0,
+        sign    => 1,
+        encrypt => 0,
         Entity  => $mime,
         Signer  => $from,
     );

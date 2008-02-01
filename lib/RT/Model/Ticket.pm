@@ -846,7 +846,7 @@ sub _parse822_headers_for_attributes {
     }
     $args{'mime_obj'} = MIME::Entity->new();
     $args{'mime_obj'}->build(
-        type => ( $args{'contenttype'} || 'text/plain' ),
+        Type => ( $args{'contenttype'} || 'text/plain' ),
         Data => ( $args{'content'}     || '' )
     );
 
@@ -2228,8 +2228,8 @@ sub _record_note {
     my %args = (
         CcMessageTo   => undef,
         BccMessageTo  => undef,
-        Encrypt       => undef,
-        Sign          => undef,
+        encrypt       => undef,
+        sign          => undef,
         mime_obj       => undef,
         Content       => undef,
         NoteType      => 'Correspond',
@@ -2268,7 +2268,7 @@ sub _record_note {
         }
     }
 
-    foreach my $argument (qw(Encrypt Sign)) {
+    foreach my $argument (qw(encrypt sign)) {
         $args{'mime_obj'}->head->add( "X-RT-$argument" => $args{$argument} )
             if defined $args{$argument};
     }

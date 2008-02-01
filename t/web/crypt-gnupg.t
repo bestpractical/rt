@@ -66,8 +66,8 @@ diag($baseurl);
 ok $m->login, 'logged in';
 
 $m->get_ok("/Admin/Queues/Modify.html?id=$qid");
-$m->form_with_fields('Sign', 'Encrypt');
-$m->field(Encrypt => 1);
+$m->form_with_fields('sign', 'encrypt');
+$m->field(encrypt => 1);
 $m->submit;
 
 RT::Test->fetch_caught_mails;
@@ -77,8 +77,8 @@ $m->form_name('TicketCreate');
 
 $m->field('subject', 'Encryption test');
 $m->field('Content', 'Some content');
-ok($m->value('Encrypt', 2), "encrypt tick box is checked");
-ok(!$m->value('Sign', 2), "sign tick box is unchecked");
+ok($m->value('encrypt', 2), "encrypt tick box is checked");
+ok(!$m->value('sign', 2), "sign tick box is unchecked");
 $m->submit;
 is($m->status, 200, "request successful");
 
@@ -134,9 +134,9 @@ MAIL
 }
 
 $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
-$m->form_with_fields('Sign', 'Encrypt');
-$m->field(Encrypt => undef);
-$m->field(Sign => 1);
+$m->form_with_fields('sign', 'encrypt');
+$m->field(encrypt => undef);
+$m->field(sign => 1);
 $m->submit;
 
 RT::Test->fetch_caught_mails;
@@ -145,8 +145,8 @@ $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
 $m->field('subject', 'Signing test');
 $m->field('Content', 'Some other content');
-ok(!$m->value('Encrypt', 2), "encrypt tick box is unchecked");
-ok($m->value('Sign', 2), "sign tick box is checked");
+ok(!$m->value('encrypt', 2), "encrypt tick box is unchecked");
+ok($m->value('sign', 2), "sign tick box is checked");
 $m->submit;
 is($m->status, 200, "request successful");
 
@@ -206,9 +206,9 @@ MAIL
 }
 
 $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
-$m->form_with_fields('Sign', 'Encrypt');
-$m->field(Encrypt => 1);
-$m->field(Sign => 1);
+$m->form_with_fields('sign', 'encrypt');
+$m->field(encrypt => 1);
+$m->field(sign => 1);
 $m->submit;
 
 RT::Test->fetch_caught_mails;
@@ -217,8 +217,8 @@ $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
 $m->field('subject', 'Crypt+Sign test');
 $m->field('Content', 'Some final? content');
-ok($m->value('Encrypt', 2), "encrypt tick box is checked");
-ok($m->value('Sign', 2), "sign tick box is checked");
+ok($m->value('encrypt', 2), "encrypt tick box is checked");
+ok($m->value('sign', 2), "sign tick box is checked");
 $m->submit;
 is($m->status, 200, "request successful");
 $m->get($baseurl); # ensure that the mail has been processed
@@ -281,9 +281,9 @@ $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
 $m->field('subject', 'Test crypt-off on encrypted queue');
 $m->field('Content', 'Thought you had me figured out didya');
-$m->field(Encrypt => undef, 2); # turn off encryption
-ok(!$m->value('Encrypt', 2), "encrypt tick box is now unchecked");
-ok($m->value('Sign', 2), "sign tick box is still checked");
+$m->field(encrypt => undef, 2); # turn off encryption
+ok(!$m->value('encrypt', 2), "encrypt tick box is now unchecked");
+ok($m->value('sign', 2), "sign tick box is still checked");
 $m->submit;
 is($m->status, 200, "request successful");
 

@@ -112,7 +112,7 @@ sub commit {
         my $attachment = $self->transaction_obj->attachments->first;
 
         my %crypt;
-        foreach my $argument (qw(Sign Encrypt)) {
+        foreach my $argument (qw(sign encrypt)) {
             if ( $attachment
                 && defined $attachment->get_header("X-RT-$argument") )
             {
@@ -121,7 +121,7 @@ sub commit {
                 $crypt{$argument} = $self->ticket_obj->queue_obj->$argument();
             }
         }
-        if ( $crypt{'Sign'} || $crypt{'Encrypt'} ) {
+        if ( $crypt{'sign'} || $crypt{'encrypt'} ) {
             $orig_message = $message->dup;
         }
     }
@@ -130,7 +130,7 @@ sub commit {
     if ( $ret > 0 && RT->config->get('RecordOutgoingEmail') ) {
         if ($orig_message) {
             $message->attach(
-                type        => 'application/x-rt-original-message',
+                Type        => 'application/x-rt-original-message',
                 Disposition => 'inline',
                 Data        => $orig_message->as_string,
             );
@@ -393,7 +393,7 @@ sub add_attachment {
     my $mime_obj = shift || $self->template_obj->mime_obj;
 
     $mime_obj->attach(
-        type     => $attach->content_type,
+        Type     => $attach->content_type,
         Charset  => $attach->original_encoding,
         Data     => $attach->original_content,
         Filename => defined( $attach->filename )
@@ -472,7 +472,7 @@ sub add_ticket {
     $attachs->order_by( column => 'Created' );
 
     my $ticket_mime = MIME::Entity->build(
-        type        => 'multipart/mixed',
+        Type        => 'multipart/mixed',
         Top         => 0,
         description => "ticket #$tid",
     );

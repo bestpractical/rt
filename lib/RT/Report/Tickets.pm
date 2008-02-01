@@ -57,9 +57,9 @@ sub groupings {
     my $self   = shift;
     my %args   = (@_);
     my @fields = qw(
-        Owner
-        Status
-        Queue
+        owner
+        status
+        queue
         DueDaily
         DueMonthly
         DueAnnually
@@ -140,7 +140,7 @@ sub column {
     my $self = shift;
     my %args = (@_);
 
-    if ( $args{'column'} && !$args{'FUNCTION'} ) {
+    if ( $args{'column'} && !$args{'function'} ) {
         %args = $self->_field_to_function(%args);
     }
 
@@ -176,11 +176,11 @@ sub _field_to_function {
     if ( $field =~ /^(.*)(Daily|Monthly|Annually)$/ ) {
         my ( $field, $grouping ) = ( $1, $2 );
         if ( $grouping =~ /Daily/ ) {
-            $args{'FUNCTION'} = "SUBSTR($field,1,10)";
+            $args{'function'} = "SUBSTR($field,1,10)";
         } elsif ( $grouping =~ /Monthly/ ) {
-            $args{'FUNCTION'} = "SUBSTR($field,1,7)";
+            $args{'function'} = "SUBSTR($field,1,7)";
         } elsif ( $grouping =~ /Annually/ ) {
-            $args{'FUNCTION'} = "SUBSTR($field,1,4)";
+            $args{'function'} = "SUBSTR($field,1,4)";
         }
     } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ )
     {    #XXX: use CFDecipher method
@@ -232,8 +232,8 @@ for, do that.
 
 sub add_empty_rows {
     my $self = shift;
-    if ( $self->{'_group_by_field'} eq 'Status' ) {
-        my %has = map { $_->__value('Status') => 1 }
+    if ( $self->{'_group_by_field'} eq 'status' ) {
+        my %has = map { $_->__value('status') => 1 }
             @{ $self->items_array_ref || [] };
 
         foreach

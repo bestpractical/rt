@@ -128,7 +128,7 @@ if ($ARGS{'id'} eq 'new') {
         ticket_obj => $ticket_obj, Tickets => $Tickets,
         ActionsRef => \@Actions, ARGSRef => \%ARGS );
     if ( defined $ARGS{'Action'} ) {
-        if ($ARGS{'Action'} =~ /^(Steal|Kill|Take|SetTold)$/) {
+        if ($ARGS{'Action'} =~ /^(steal|kill|take|set_old)$/) {
             my $action = $1;
             my ($res, $msg) = $ticket_obj->$action();
             push(@Actions, $msg);

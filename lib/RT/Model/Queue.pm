@@ -356,8 +356,8 @@ sub create {
         initial_priority   => 0,
         final_priority     => 0,
         default_due_in       => 0,
-        Sign               => undef,
-        Encrypt            => undef,
+        sign               => undef,
+        encrypt            => undef,
         @_
     );
 
@@ -394,14 +394,14 @@ sub create {
     }
     Jifty->handle->commit;
 
-    if ( defined $args{'Sign'} ) {
-        my ( $status, $msg ) = $self->set_sign( $args{'Sign'} );
-        Jifty->log->error("Couldn't set attribute 'Sign': $msg")
+    if ( defined $args{'sign'} ) {
+        my ( $status, $msg ) = $self->set_sign( $args{'sign'} );
+        Jifty->log->error("Couldn't set attribute 'sign': $msg")
             unless $status;
     }
-    if ( defined $args{'Encrypt'} ) {
-        my ( $status, $msg ) = $self->set_encrypt( $args{'Encrypt'} );
-        Jifty->log->error("Couldn't set attribute 'Encrypt': $msg")
+    if ( defined $args{'encrypt'} ) {
+        my ( $status, $msg ) = $self->set_encrypt( $args{'encrypt'} );
+        Jifty->log->error("Couldn't set attribute 'encrypt': $msg")
             unless $status;
     }
 
@@ -497,7 +497,7 @@ sub sign {
     my $value = shift;
 
     return undef unless $self->current_user_has_right('SeeQueue');
-    my $attr = $self->first_attribute('Sign') or return 0;
+    my $attr = $self->first_attribute('sign') or return 0;
     return $attr->content;
 }
 
@@ -509,7 +509,7 @@ sub set_sign {
         unless $self->current_user_has_right('AdminQueue');
 
     my ( $status, $msg ) = $self->set_attribute(
-        name        => 'Sign',
+        name        => 'sign',
         description => 'Sign outgoing messages by default',
         content     => $value,
     );
@@ -523,7 +523,7 @@ sub encrypt {
     my $value = shift;
 
     return undef unless $self->current_user_has_right('SeeQueue');
-    my $attr = $self->first_attribute('Encrypt') or return 0;
+    my $attr = $self->first_attribute('encrypt') or return 0;
     return $attr->content;
 }
 
@@ -535,7 +535,7 @@ sub set_encrypt {
         unless $self->current_user_has_right('AdminQueue');
 
     my ( $status, $msg ) = $self->set_attribute(
-        name        => 'Encrypt',
+        name        => 'encrypt',
         description => 'Encrypt outgoing messages by default',
         content     => $value,
     );

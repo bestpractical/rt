@@ -49,7 +49,7 @@ diag "check that signing doesn't work if there is no key";
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
-    $m->tick( Sign => 1 );
+    $m->tick( sign => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->submit;
@@ -75,7 +75,7 @@ diag "check that things don't work if there is no key";
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
-    $m->tick( Encrypt => 1 );
+    $m->tick( encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->submit;
@@ -110,7 +110,7 @@ diag "check that things still doesn't work if key is not trusted";
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
-    $m->tick( Encrypt => 1 );
+    $m->tick( encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->submit;
@@ -157,7 +157,7 @@ diag "check that things still doesn't work if two keys are not trusted";
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
-    $m->tick( Encrypt => 1 );
+    $m->tick( encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->submit;
@@ -202,7 +202,7 @@ diag "check that we see key selector even if only one key is trusted but there a
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
-    $m->tick( Encrypt => 1 );
+    $m->tick( encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->submit;
@@ -229,7 +229,7 @@ diag "check that key selector works and we can select trusted key";
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
-    $m->tick( Encrypt => 1 );
+    $m->tick( encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->submit;
@@ -252,7 +252,7 @@ diag "check that key selector works and we can select trusted key";
 
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some emails';
-    check_text_emails( { Encrypt => 1 }, @mail );
+    check_text_emails( { encrypt => 1 }, @mail );
 }
 
 diag "check encrypting of attachments";
@@ -261,7 +261,7 @@ diag "check encrypting of attachments";
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
-    $m->tick( Encrypt => 1 );
+    $m->tick( encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->field( Attach => $0 );
@@ -285,7 +285,7 @@ diag "check encrypting of attachments";
 
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some emails';
-    check_text_emails( { Encrypt => 1, Attachment => 1 }, @mail );
+    check_text_emails( { encrypt => 1, Attachment => 1 }, @mail );
 }
 
 sub check_text_emails {
@@ -301,7 +301,7 @@ sub check_text_emails {
                         ? "Some content"
                         : "Attachment content";
 
-            if ( $args{'Encrypt'} ) {
+            if ( $args{'encrypt'} ) {
                 unlike $mail, qr/$content/, "outgoing $type was encrypted";
             } else {
                 like $mail, qr/$content/, "outgoing $type was not encrypted";
@@ -309,9 +309,9 @@ sub check_text_emails {
 
             next unless $type eq 'email';
 
-            if ( $args{'Sign'} && $args{'Encrypt'} ) {
+            if ( $args{'sign'} && $args{'encrypt'} ) {
                 like $mail, qr/BEGIN PGP MESSAGE/, 'outgoing email was signed';
-            } elsif ( $args{'Sign'} ) {
+            } elsif ( $args{'sign'} ) {
                 like $mail, qr/SIGNATURE/, 'outgoing email was signed';
             } else {
                 unlike $mail, qr/SIGNATURE/, 'outgoing email was not signed';

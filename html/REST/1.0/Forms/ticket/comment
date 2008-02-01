@@ -90,7 +90,7 @@ if (!$changes{Text} && @atts == 0) {
 }
 
 my $cgi = Jifty->handler->cgi;
-my $ent = MIME::Entity->build(type => "multipart/mixed");
+my $ent = MIME::Entity->build(Type => "multipart/mixed");
 $ent->attach(Data => $changes{Text}) if $changes{Text};
 
 my $i = 1;

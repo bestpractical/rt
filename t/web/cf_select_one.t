@@ -28,6 +28,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
         },
     );
     $m->content_like( qr/Object Created/, 'Created CF sucessfully' );
+    die $m->content;
     $cfid = $m->form_name('ModifyCustomField')->value('id');
     ok $cfid, "found id of the CF in the form, it's #$cfid";
 }

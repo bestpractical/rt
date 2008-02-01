@@ -47,9 +47,9 @@ ok $m->login, 'logged in';
 
 my @variants = (
     {},
-    { Sign => 1 },
-    { Encrypt => 1 },
-    { Sign => 1, Encrypt => 1 },
+    { sign => 1 },
+    { encrypt => 1 },
+    { sign => 1, encrypt => 1 },
 );
 
 # collect emails
@@ -66,15 +66,15 @@ diag "check in read-only mode that queue's props influence create/update ticket 
         set_queue_crypt_options( %$variant );
         $m->goto_create_ticket( $queue );
         $m->form_name('TicketCreate');
-        if ( $variant->{'Encrypt'} ) {
-            ok $m->value('Encrypt', 2), "encrypt tick box is checked";
+        if ( $variant->{'encrypt'} ) {
+            ok $m->value('encrypt', 2), "encrypt tick box is checked";
         } else {
-            ok !$m->value('Encrypt', 2), "encrypt tick box is unchecked";
+            ok !$m->value('encrypt', 2), "encrypt tick box is unchecked";
         }
-        if ( $variant->{'Sign'} ) {
-            ok $m->value('Sign', 2), "sign tick box is checked";
+        if ( $variant->{'sign'} ) {
+            ok $m->value('sign', 2), "sign tick box is checked";
         } else {
-            ok !$m->value('Sign', 2), "sign tick box is unchecked";
+            ok !$m->value('sign', 2), "sign tick box is unchecked";
         }
     }
 
@@ -94,15 +94,15 @@ diag "check in read-only mode that queue's props influence create/update ticket 
         $m->goto_ticket( $id );
         $m->follow_link_ok({text => 'Reply'}, '-> reply');
         $m->form_number(3);
-        if ( $variant->{'Encrypt'} ) {
-            ok $m->value('Encrypt', 2), "encrypt tick box is checked";
+        if ( $variant->{'encrypt'} ) {
+            ok $m->value('encrypt', 2), "encrypt tick box is checked";
         } else {
-            ok !$m->value('Encrypt', 2), "encrypt tick box is unchecked";
+            ok !$m->value('encrypt', 2), "encrypt tick box is unchecked";
         }
-        if ( $variant->{'Sign'} ) {
-            ok $m->value('Sign', 2), "sign tick box is checked";
+        if ( $variant->{'sign'} ) {
+            ok $m->value('sign', 2), "sign tick box is checked";
         } else {
-            ok !$m->value('Sign', 2), "sign tick box is unchecked";
+            ok !$m->value('sign', 2), "sign tick box is unchecked";
         }
     }
 }
@@ -256,7 +256,7 @@ sub create_a_ticket {
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content    => 'Some content' );
 
-    foreach ( qw(Sign Encrypt) ) {
+    foreach ( qw(sign encrypt) ) {
         if ( $args{ $_ } ) {
             $m->tick( $_ => 1 );
         } else {
@@ -287,7 +287,7 @@ sub update_ticket {
     $m->form_number(3);
     $m->field( UpdateContent => 'Some content' );
 
-    foreach ( qw(Sign Encrypt) ) {
+    foreach ( qw(sign encrypt) ) {
         if ( $args{ $_ } ) {
             $m->tick( $_ => 1 );
         } else {
@@ -311,24 +311,24 @@ sub check_text_emails {
 
     ok scalar @mail, "got some mail";
     for my $mail (@mail) {
-        if ( $args{'Encrypt'} ) {
+        if ( $args{'encrypt'} ) {
             unlike $mail, qr/Some content/, "outgoing email was encrypted";
         } else {
             like $mail, qr/Some content/, "outgoing email was not encrypted";
         } 
-        if ( $args{'Sign'} && $args{'Encrypt'} ) {
+        if ( $args{'sign'} && $args{'encrypt'} ) {
             like $mail, qr/BEGIN PGP MESSAGE/, 'outgoing email was signed';
-        } elsif ( $args{'Sign'} ) {
+        } elsif ( $args{'sign'} ) {
             like $mail, qr/SIGNATURE/, 'outgoing email was signed';
         } else {
             unlike $mail, qr/SIGNATURE/, 'outgoing email was not signed';
         }
     }
-    if ( $args{'Sign'} && $args{'Encrypt'} ) {
+    if ( $args{'sign'} && $args{'encrypt'} ) {
         push @{ $mail{'signed_encrypted'} }, @mail;
-    } elsif ( $args{'Sign'} ) {
+    } elsif ( $args{'sign'} ) {
         push @{ $mail{'signed'} }, @mail;
-    } elsif ( $args{'Encrypt'} ) {
+    } elsif ( $args{'encrypt'} ) {
         push @{ $mail{'encrypted'} }, @mail;
     } else {
         push @{ $mail{'plain'} }, @mail;
@@ -349,8 +349,8 @@ sub cleanup_headers {
 sub set_queue_crypt_options {
     my %args = @_;
     $m->get_ok("/Admin/Queues/Modify.html?id=". $queue->id);
-    $m->form_with_fields('Sign', 'Encrypt');
-    foreach my $opt ('Sign', 'Encrypt') {
+    $m->form_with_fields('sign', 'encrypt');
+    foreach my $opt ('sign', 'encrypt') {
         if ( $args{$opt} ) {
             $m->tick($opt => 1);
         } else {

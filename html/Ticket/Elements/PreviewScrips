@@ -226,7 +226,7 @@ foreach my $scrip ( @{ $txn->scrips->prepared } ) {
     my $action = $scrip->action_obj->action;
     next unless $action->isa('RT::ScripAction::SendEmail');
 
-    foreach my $type qw(To Cc Bcc) {
+    foreach my $type qw(to cc bcc) {
         push @recipients, $action->$type();
     }
 }

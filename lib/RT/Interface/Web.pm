@@ -302,7 +302,7 @@ sub create_ticket {
         }
     }
 
-    foreach my $argument (qw(Encrypt Sign)) {
+    foreach my $argument (qw(encrypt sign)) {
         $mime_obj->head->add( "X-RT-$argument" => $ARGS{$argument} )
             if defined $ARGS{$argument};
     }
@@ -543,7 +543,7 @@ sub process_update_message {
     }
 
     if ( my $msg = $old_txn->message->first ) {
-        RT::Interface::Email::SetInReplyTo(
+        RT::Interface::Email::set_in_reply_to(
             Message   => $Message,
             InReplyTo => $msg
         );
@@ -571,8 +571,8 @@ sub process_update_message {
     my %message_args = (
         CcMessageTo  => $cc,
         BccMessageTo => $bcc,
-        Sign         => $args{ARGSRef}->{'Sign'},
-        Encrypt      => $args{ARGSRef}->{'Encrypt'},
+        sign         => $args{ARGSRef}->{'sign'},
+        encrypt      => $args{ARGSRef}->{'encrypt'},
         mime_obj      => $Message,
         time_taken    => $args{ARGSRef}->{'UpdateTimeWorked'}
     );
@@ -637,7 +637,7 @@ sub make_mime_entity {
         @_,
     );
     my $Message = MIME::Entity->build(
-        type    => 'multipart/mixed',
+        Type    => 'multipart/mixed',
         subject => $args{'subject'} || "",
         From    => $args{'From'},
         Cc      => $args{'Cc'},
@@ -653,7 +653,7 @@ sub make_mime_entity {
         no utf8;
         use bytes;
         $Message->attach(
-            type => $args{'type'} || 'text/plain',
+            Type => $args{'type'} || 'text/plain',
             Charset => 'UTF-8',
             Data    => $args{'Body'},
         );
@@ -681,7 +681,7 @@ sub make_mime_entity {
             $filename =~ s#^.*[\\/]##;
 
             $Message->attach(
-                type     => $uploadinfo->{'Content-Type'},
+                Type     => $uploadinfo->{'Content-Type'},
                 Filename => Encode::decode_utf8($filename),
                 Data     => \@content,
             );

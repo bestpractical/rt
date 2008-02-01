@@ -775,7 +775,7 @@ sub parse_lines {
     if ( $args{content} ) {
         my $mime_obj = MIME::Entity->new();
         $mime_obj->build(
-            type => $args{'contenttype'} || 'text/plain',
+            Type => $args{'contenttype'} || 'text/plain',
             Data => $args{'content'}
         );
         $ticketargs{mime_obj} = $mime_obj;
