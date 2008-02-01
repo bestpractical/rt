@@ -812,7 +812,7 @@ sub _watcher_limit {
     $self->open_paren;
     if ( $op =~ /^IS(?: NOT)?$/ ) {
         my $group_members
-            = $self->_group_membersjoin( GroupsAlias => $groups );
+            = $self->_group_membersjoin( groups_alias => $groups );
 
         # to avoid joining the table Users into the query, we just join GM
         # and make sure we don't match records where group is member of itself
@@ -850,7 +850,7 @@ sub _watcher_limit {
         my @users = @{ $users_obj->items_array_ref };
 
         my $group_members
-            = $self->_group_membersjoin( GroupsAlias => $groups );
+            = $self->_group_membersjoin( groups_alias => $groups );
         if ( @users <= 1 ) {
             my $uid = 0;
             $uid = $users[0]->id if @users;
@@ -900,8 +900,8 @@ sub _watcher_limit {
         }
     } else {
         my $group_members = $self->_group_membersjoin(
-            GroupsAlias => $groups,
-            New         => 0,
+            groups_alias => $groups,
+            new         => 0,
         );
 
         my $users = $self->{'_sql_u_watchers_aliases'}{$group_members};
@@ -949,10 +949,10 @@ sub _watcher_limit {
 
 sub _role_groupsjoin {
     my $self = shift;
-    my %args = ( New => 0, type => '', @_ );
+    my %args = ( new => 0, type => '', @_ );
     return $self->{'_sql_role_group_aliases'}{ $args{'type'} }
         if $self->{'_sql_role_group_aliases'}{ $args{'type'} }
-            && !$args{'New'};
+            && !$args{'new'};
 
     # we always have watcher groups for ticket, so we use INNER join
     my $groups = $self->join(
@@ -976,30 +976,30 @@ sub _role_groupsjoin {
     ) if $args{'type'};
 
     $self->{'_sql_role_group_aliases'}{ $args{'type'} } = $groups
-        unless $args{'New'};
+        unless $args{'new'};
 
     return $groups;
 }
 
 sub _group_membersjoin {
     my $self = shift;
-    my %args = ( New => 1, GroupsAlias => undef, @_ );
+    my %args = ( new => 1, groups_alias => undef, @_ );
 
-    return $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} }
-        if $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} }
-            && !$args{'New'};
+    return $self->{'_sql_group_members_aliases'}{ $args{'groups_alias'} }
+        if $self->{'_sql_group_members_aliases'}{ $args{'groups_alias'} }
+            && !$args{'new'};
 
     my $alias = $self->join(
         type             => 'left',
-        alias1           => $args{'GroupsAlias'},
+        alias1           => $args{'groups_alias'},
         column1          => 'id',
         table2           => 'CachedGroupMembers',
         column2          => 'group_id',
         entry_aggregator => 'AND',
     );
 
-    $self->{'_sql_group_members_aliases'}{ $args{'GroupsAlias'} } = $alias
-        unless $args{'New'};
+    $self->{'_sql_group_members_aliases'}{ $args{'groups_alias'} } = $alias
+        unless $args{'new'};
 
     return $alias;
 }
@@ -1016,7 +1016,7 @@ sub _watcherjoin {
     my $type = shift || '';
 
     my $groups        = $self->_role_groupsjoin( type          => $type );
-    my $group_members = $self->_group_membersjoin( GroupsAlias => $groups );
+    my $group_members = $self->_group_membersjoin( groups_alias => $groups );
 
     # XXX: work around, we must hide groups that
     # are members of the role group we search in,
