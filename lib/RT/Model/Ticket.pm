@@ -1200,7 +1200,7 @@ sub unsquelch_mail_to {
 
     my ( $val, $msg ) = $self->attributes->delete_entry(
         name    => 'SquelchMailTo',
-        Content => $address
+        content => $address
     );
     return ( $val, $msg );
 }
@@ -1873,7 +1873,7 @@ sub comment {
         CcMessageTo  => undef,
         BccMessageTo => undef,
         mime_obj      => undef,
-        Content      => undef,
+        content      => undef,
         time_taken    => 0,
         dry_run       => 0,
         @_
@@ -1884,7 +1884,7 @@ sub comment {
     {
         return ( 0, _("Permission Denied"), undef );
     }
-    $args{'NoteType'} = 'comment';
+    $args{'note_type'} = 'comment';
 
     if ( $args{'dry_run'} ) {
         Jifty->handle->begin_transaction();
@@ -1926,7 +1926,7 @@ sub correspond {
         CcMessageTo  => undef,
         BccMessageTo => undef,
         mime_obj      => undef,
-        Content      => undef,
+        content      => undef,
         time_taken    => 0,
         @_
     );
@@ -1937,7 +1937,7 @@ sub correspond {
         return ( 0, _("Permission Denied"), undef );
     }
 
-    $args{'NoteType'} = 'Correspond';
+    $args{'note_type'} = 'Correspond';
     if ( $args{'dry_run'} ) {
         Jifty->handle->begin_transaction();
         $args{'commit_scrips'} = 0;
@@ -1977,14 +1977,14 @@ sub _record_note {
         encrypt       => undef,
         sign          => undef,
         mime_obj       => undef,
-        Content       => undef,
-        NoteType      => 'Correspond',
+        content       => undef,
+        note_type      => 'Correspond',
         time_taken     => 0,
         commit_scrips => 1,
         @_
     );
 
-    unless ( $args{'mime_obj'} || $args{'Content'} ) {
+    unless ( $args{'mime_obj'} || $args{'content'} ) {
         return ( 0, _("No message attached"), undef );
     }
 
@@ -2034,8 +2034,8 @@ sub _record_note {
 
     #Record the correspondence (write the transaction)
     my ( $Trans, $msg, $TransObj ) = $self->_new_transaction(
-        type => $args{'NoteType'},
-        Data => ( $args{'mime_obj'}->head->get('subject') || 'No subject' ),
+        type => $args{'note_type'},
+        data => ( $args{'mime_obj'}->head->get('subject') || 'No subject' ),
         time_taken     => $args{'time_taken'},
         mime_obj       => $args{'mime_obj'},
         commit_scrips => $args{'commit_scrips'},
@@ -2698,7 +2698,7 @@ sub set_owner {
         record_transaction => 0,
         time_taken          => 0,
         transaction_type    => $Type,
-        CheckACL           => 0,                  # don't check acl
+        check_acl           => 0,                  # don't check acl
     );
 
     if ( ref($return) and !$return ) {
@@ -2884,7 +2884,7 @@ sub set_status {
         column          => 'status',
         value           => $args{status},
         time_taken       => 0,
-        CheckACL        => 0,
+        check_acl        => 0,
         transaction_type => 'status'
     );
 
@@ -3144,19 +3144,19 @@ sub _set {
         value              => undef,
         time_taken          => 0,
         record_transaction => 1,
-        UpdateTicket       => 1,
-        CheckACL           => 1,
+        update_ticket       => 1,
+        check_acl           => 1,
         transaction_type    => 'Set',
         @_
     );
 
-    if ( $args{'CheckACL'} ) {
+    if ( $args{'check_acl'} ) {
         unless ( $self->current_user_has_right('ModifyTicket') ) {
             return ( 0, _("Permission Denied") );
         }
     }
 
-    unless ( $args{'UpdateTicket'} || $args{'record_transaction'} ) {
+    unless ( $args{'update_ticket'} || $args{'record_transaction'} ) {
         Jifty->log->error(
             "Ticket->_set called without a mandate to record an update or update the ticket"
         );
@@ -3174,7 +3174,7 @@ sub _set {
         return ( 0, _("That is already the current value") );
     }
     my ($return);
-    if ( $args{'UpdateTicket'} ) {
+    if ( $args{'update_ticket'} ) {
 
         #Set the new value
         my $return = $self->SUPER::_set(
