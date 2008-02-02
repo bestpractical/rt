@@ -72,8 +72,8 @@
 <&|/l&>description</&>:</td><td colspan="3"><input name="description" value="<%$Group->description%>" size="60" /></td>
 </tr><tr>
 <td colspan="2">
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this group)</&><br />
+<input type="hidden" class="hidden" name="set_enabled" value="1" />
+<input type="checkbox" class="checkbox" name="enabled" value="1" <%$enabled_checked%> /> <&|/l&>enabled (Unchecking this box disables this group)</&><br />
 </tr>
 </table>
 <& /Elements/Submit, Label => _('Save Changes'), Reset => 1 &>
@@ -81,7 +81,7 @@
 <%INIT>
 
 my $current_tab;
-my  ($title, @results, $disabled, $EnabledChecked);
+my  ($title, @results, $disabled, $enabled_checked);
 
 my $Group = RT::Model::Group->new();
 
@@ -129,19 +129,19 @@ if ($id) {
 }
 
 #we're asking about enabled on the web page but really care about disabled.
-if ($Enabled == 1) {
+if ($enabled == 1) {
     $disabled = 0;
 }	
 else {
     $disabled = 1;
 }
-if  ( ($SetEnabled) and ( $disabled != $Group->disabled) ) { 
+if  ( ($set_enabled) and ( $disabled != $Group->disabled) ) { 
     my  ($code, $msg) = $Group->set_disabled($disabled);
-    push @results, _('Enabled status %1', _($msg));
+    push @results, _('enabled status %1', _($msg));
 }
 
 unless ($Group->disabled()) {
-    $EnabledChecked ="CHECKED";
+    $enabled_checked ="CHECKED";
 }
 
 </%INIT>
@@ -151,7 +151,7 @@ unless ($Group->disabled()) {
 $Create => undef
 $name => undef
 $description => undef
-$SetEnabled => undef
-$Enabled => undef
+$set_enabled => undef
+$enabled => undef
 $id => undef
 </%ARGS>

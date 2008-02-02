@@ -1826,20 +1826,20 @@ msgstr "E-postadress används"
 
 #: html/Admin/CustomFields/Modify.html:98
 #: html/Admin/Elements/EditCustomField:72
-msgid "Enabled (Unchecking this box disables this custom field)"
+msgid "enabled (Unchecking this box disables this custom field)"
 msgstr "Aktiverad (Bortval av denna box deaktiverar detta extrafält)"
 
 #: html/Admin/Groups/Modify.html:84
 #: html/User/Groups/Modify.html:74
-msgid "Enabled (Unchecking this box disables this group)"
+msgid "enabled (Unchecking this box disables this group)"
 msgstr "Aktiverad (Bortval av denna box deaktiverar denna grupp)"
 
 #: html/Admin/Queues/Modify.html:105
-msgid "Enabled (Unchecking this box disables this queue)"
+msgid "enabled (Unchecking this box disables this queue)"
 msgstr "Aktiverad (Bortval av denna box deaktiverar denna kö)"
 
 #: html/Admin/Queues/index.html:78
-msgid "Enabled Queues"
+msgid "enabled Queues"
 msgstr "Aktiverade köer"
 
 #. (_($msg))
@@ -1847,13 +1847,13 @@ msgstr "Aktiverade köer"
 #: html/Admin/Groups/Modify.html:150
 #: html/Admin/Users/Modify.html:350
 #: html/User/Groups/Modify.html:138
-msgid "Enabled status %1"
+msgid "enabled status %1"
 msgstr "Aktiverad status %1"
 
 #. (_($msg))
 #: html/Admin/CustomFields/Modify.html:185
 #: html/Admin/Queues/Modify.html:162
-msgid "Enabled status: %1"
+msgid "enabled status: %1"
 msgstr "Aktiverad status: %1"
 
 #: lib/RT/CustomField_Overlay.pm:64

@@ -55,7 +55,7 @@
 
 
 <form action="<%RT->config->get('WebPath')%>/Admin/Queues/Modify.html" method="post">
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+<input type="hidden" class="hidden" name="set_enabled" value="1" />
 <input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $queue_obj->id %>" />
 
 <table>
@@ -85,7 +85,7 @@
 <td colspan="3"><input name="default_due_in" value="<% ($Create) ? "" : $queue_obj->default_due_in%>" /> <&|/l&>days</&>.</td>
 </tr>
 
-% if ( RT->config->get('GnuPG')->{'Enable'} ) {
+% if ( RT->config->get('GnuPG')->{'enable'} ) {
 <tr><td align="right"><input type="checkbox" class="checkbox" name="sign" value="1" <% $queue_obj->sign? 'checked': '' %> /></td>
 <td><&|/l&>sign by default</&></td>
 <td align="right"><input type="checkbox" class="checkbox" name="encrypt" value="1" <% $queue_obj->encrypt? 'checked': '' %> /></td>
@@ -93,12 +93,12 @@
 </tr>
 % }
 
-<tr><td align="right"><input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /></td>
-<td colspan="3"><&|/l&>Enabled (Unchecking this box disables this queue)</&><br />
+<tr><td align="right"><input type="checkbox" class="checkbox" name="enabled" value="1" <%$enabled_checked%> /></td>
+<td colspan="3"><&|/l&>enabled (Unchecking this box disables this queue)</&><br />
 % $m->callback( %ARGS, queue_obj => $queue_obj, results => \@results );
 </td></tr>
 
-% if ( RT->config->get('GnuPG')->{'Enable'} ) {
+% if ( RT->config->get('GnuPG')->{'enable'} ) {
 % if ( my $email = $queue_obj->correspond_address || RT->config->get('correspond_address') ) {
 <tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, type => 'private', email => $email &></td></tr>
 % }
@@ -114,11 +114,11 @@
 
 
 <%INIT>
-my ($title, $current_tab, @results, $disabled, $EnabledChecked);
+my ($title, $current_tab, @results, $disabled, $enabled_checked);
 my $queue_obj = RT::Model::Queue->new();
 $queue_obj->load( $id ) if !$id || $id eq 'new';
 
-$EnabledChecked = "checked";
+$enabled_checked = "checked";
 
 if ($Create) {
     $current_tab = 'Admin/Queues/Modify.html?Create=1';
@@ -143,8 +143,8 @@ if ( $queue_obj->id ) {
         initial_priority final_priority default_due_in sign encrypt disabled);
 
     # we're asking about enabled on the web page but really care about disabled
-    if ( $SetEnabled ) {
-        $disabled = $ARGS{'disabled'} = $Enabled? 0: 1;
+    if ( $set_enabled ) {
+        $disabled = $ARGS{'disabled'} = $enabled? 0: 1;
         $ARGS{$_} = 0 foreach grep !defined $ARGS{$_} || !length $ARGS{$_},
             qw(sign encrypt disabled);
     }
@@ -155,9 +155,9 @@ if ( $queue_obj->id ) {
         ARGSRef => \%ARGS
     );
 
-    $disabled = $ARGS{'disabled'} = $Enabled? 0: 1;
+    $disabled = $ARGS{'disabled'} = $enabled? 0: 1;
 
-    $EnabledChecked = "" if $queue_obj->disabled;
+    $enabled_checked = "" if $queue_obj->disabled;
 
     my @linkresults;
     $m->callback(
@@ -182,6 +182,6 @@ $comment_address => undef
 $initial_priority => undef
 $final_priority => undef
 $default_due_in => undef
-$SetEnabled => undef
-$Enabled => undef
+$set_enabled => undef
+$enabled => undef
 </%ARGS>

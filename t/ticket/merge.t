@@ -19,7 +19,7 @@ use RT;
     my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
     my ($tid,$transid, $t1msg) =$t1->create ( queue => $queue->name, subject => 'Merge test. orig');
     ok ($tid, $t1msg);
-    ($id, $msg) = $t1->comment(Content => 'This is a comment on the original');
+    ($id, $msg) = $t1->comment(content => 'This is a comment on the original');
     ok($id,$msg);
 
     my $txns = $t1->transactions;
@@ -35,7 +35,7 @@ use RT;
 
 
 
-    ($id, $msg) = $t2->comment(Content => 'This is a commet on the duplicate');
+    ($id, $msg) = $t2->comment(content => 'This is a commet on the duplicate');
     ok($id,$msg);
 
 
@@ -46,7 +46,7 @@ use RT;
     }
     is($comments,1, "our second ticket has only one comment");
 
-    ($id, $msg) = $t1->comment(Content => 'This is a second  comment on the original');
+    ($id, $msg) = $t1->comment(content => 'This is a second  comment on the original');
     ok($id,$msg);
 
     $txns = $t1->transactions;

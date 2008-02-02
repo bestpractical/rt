@@ -140,12 +140,12 @@ if ($ARGS{'id'} eq 'new') {
             ARGSRef => \%ARGS, 
             Actions => \@Actions);
     
-    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
+    $ARGS{'update_content'} =~ s/\r\n/\n/g if defined $ARGS{'update_content'};
     my $signature = Jifty->web->current_user->user_object->signature || '';
     if ( $ARGS{'UpdateTimeWorked'} || (
-        defined $ARGS{'UpdateContent'}
-        && $ARGS{'UpdateContent'} ne ''
-        && $ARGS{'UpdateContent'} ne "-- \n" . $signature ))
+        defined $ARGS{'update_content'}
+        && $ARGS{'update_content'} ne ''
+        && $ARGS{'update_content'} ne "-- \n" . $signature ))
     {
         $ARGS{UpdateAttachments} = $session{'Attachments'};
         push @Actions, process_update_message(

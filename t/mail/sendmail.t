@@ -22,7 +22,7 @@ is (__PACKAGE__, 'main', "We're operating in the main package");
 
 {
     no warnings qw/redefine/;
-    sub RT::ScripAction::SendEmail::SendMessage {
+    sub RT::ScripAction::SendEmail::send_message {
         my $self = shift;
         my $MIME = shift;
 
@@ -95,7 +95,7 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 # make sure it sends a notification to adminccs
 
 
-# we need to swap out SendMessage to test the new things we care about;
+# we need to swap out send_message to test the new things we care about;
 &utf8_redef_sendmessage;
 
 # create an iso 8859-1 ticket
@@ -143,7 +143,7 @@ ok ($id, $msg);
 
 
 
-# we need to swap out SendMessage to test the new things we care about;
+# we need to swap out send_message to test the new things we care about;
 &iso8859_redef_sendmessage;
 RT->config->set( EmailOutputEncoding => 'iso-8859-1' );
 # create an iso 8859-1 ticket
@@ -191,7 +191,7 @@ sub _fired_scrip {
 sub utf8_redef_sendmessage {
     no warnings qw/redefine/;
     eval ' 
-    sub RT::ScripAction::SendEmail::SendMessage {
+    sub RT::ScripAction::SendEmail::send_message {
         my $self = shift;
         my $MIME = shift;
 
@@ -218,7 +218,7 @@ sub utf8_redef_sendmessage {
 sub iso8859_redef_sendmessage {
     no warnings qw/redefine/;
     eval ' 
-    sub RT::ScripAction::SendEmail::SendMessage {
+    sub RT::ScripAction::SendEmail::send_message {
         my $self = shift;
         my $MIME = shift;
 
@@ -251,7 +251,7 @@ $parser->parse_mime_entity_from_scalar($content);
 # be as much like the mail gateway as possible.
 {
     no warnings qw/redefine/;
-    local *RT::ScripAction::SendEmail::SendMessage = sub  { return 1};
+    local *RT::ScripAction::SendEmail::send_message = sub  { return 1};
 
     %args = (message => $content, queue => 1, action => 'correspond');
     RT::Interface::Email::gateway(\%args);
@@ -294,7 +294,7 @@ is (count_attachs($tick), 1 , "Has one attachment, presumably a text-html and a 
 
 sub text_html_umlauts_redef_sendmessage {
     no warnings qw/redefine/;
-    eval 'sub RT::ScripAction::SendEmail::SendMessage { 
+    eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift;
                 my $MIME = shift;
                 return (1) unless ($self->scrip_obj->action_obj->name eq "Notify AdminCcs" );
@@ -330,7 +330,7 @@ is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-html and a 
 
 sub text_html_russian_redef_sendmessage {
     no warnings qw/redefine/;
-    eval 'sub RT::ScripAction::SendEmail::SendMessage { 
+    eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift; 
                 my $MIME = shift; 
                 use Data::Dumper;
@@ -372,7 +372,7 @@ is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-plain");
 is ($tick->subject, "\x{442}\x{435}\x{441}\x{442} \x{442}\x{435}\x{441}\x{442}", "Recorded the subject right");
 sub text_plain_russian_redef_sendmessage {
     no warnings qw/redefine/;
-    eval 'sub RT::ScripAction::SendEmail::SendMessage { 
+    eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift; 
                 my $MIME = shift; 
                 return (1) unless ($self->scrip_obj->action_obj->name eq "Notify AdminCcs" );
@@ -413,7 +413,7 @@ like (first_attach($tick)->content_type , qr/multipart\/mixed/, "We recorded the
 is (count_attachs($tick) , 5 , "Has one attachment, presumably a text-plain and a message RFC 822 and another plain");
 sub text_plain_nested_redef_sendmessage {
     no warnings qw/redefine/;
-    eval 'sub RT::ScripAction::SendEmail::SendMessage { 
+    eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift; 
                 my $MIME = shift; 
                 return (1) unless ($self->scrip_obj->action_obj->name eq "Notify AdminCcs" );
@@ -440,7 +440,7 @@ $parser->parse_mime_entity_from_scalar($content);
 # be as much like the mail gateway as possible.
 {
     no warnings qw/redefine/;
-    local *RT::ScripAction::SendEmail::SendMessage = sub  { return 1};
+    local *RT::ScripAction::SendEmail::send_message = sub  { return 1};
     %args =        (message => $content, queue => 1, action => 'correspond');
     RT::Interface::Email::gateway(\%args);
     $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
@@ -465,7 +465,7 @@ $parser->parse_mime_entity_from_scalar($content);
 # be as much like the mail gateway as possible.
 
 no warnings qw/redefine/;
-local *RT::ScripAction::SendEmail::SendMessage = sub  { return 1};
+local *RT::ScripAction::SendEmail::send_message = sub  { return 1};
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::gateway(\%args);
  $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);

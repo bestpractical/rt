@@ -497,10 +497,10 @@ sub process_update_message {
     return ()
         unless $args{ARGSRef}->{'UpdateTimeWorked'}
             || $args{ARGSRef}->{'UpdateAttachments'}
-            || $args{ARGSRef}->{'UpdateContent'};
+            || $args{ARGSRef}->{'update_content'};
 
-    $args{ARGSRef}->{'UpdateContent'} =~ s/\r+\n/\n/g
-        if $args{ARGSRef}->{'UpdateContent'};
+    $args{ARGSRef}->{'update_content'} =~ s/\r+\n/\n/g
+        if $args{ARGSRef}->{'update_content'};
 
     # skip updates if the content contains only user's signature
     # and we don't update other fields
@@ -508,7 +508,7 @@ sub process_update_message {
         my $sig = $args{'ticket_obj'}->current_user->user_object->signature
             || '';
         $sig =~ s/^\s*|\s*$//g;
-        if ( $args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ )
+        if ( $args{ARGSRef}->{'update_content'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ )
         {
             return ()
                 unless $args{ARGSRef}->{'UpdateTimeWorked'}
@@ -516,7 +516,7 @@ sub process_update_message {
 
             # we have to create transaction, but we don't create attachment
             # XXX: this couldn't work as expected
-            $args{ARGSRef}->{'UpdateContent'} = '';
+            $args{ARGSRef}->{'update_content'} = '';
         }
     }
 
@@ -526,7 +526,7 @@ sub process_update_message {
 
     my $Message = make_mime_entity(
         subject => $args{ARGSRef}->{'Updatesubject'},
-        Body    => $args{ARGSRef}->{'UpdateContent'},
+        Body    => $args{ARGSRef}->{'update_content'},
         type    => $args{ARGSRef}->{'Updatecontent_type'},
     );
 
@@ -566,7 +566,7 @@ sub process_update_message {
     }
 
     my $bcc = $args{ARGSRef}->{'UpdateBcc'};
-    my $cc  = $args{ARGSRef}->{'UpdateCc'};
+    my $cc  = $args{ARGSRef}->{'update_cc'};
 
     my %message_args = (
         cc_message_to  => $cc,

@@ -247,9 +247,9 @@ set( @MailParams, () );
 # and comment mail tracked by RT, unless overridden by a queue-specific
 # address.
 
-set( $correspond_address, 'RT_correspond_addressNotset' );
+set( $correspond_address, 'rt_correspond_address_not_set' );
 
-set( $comment_address, 'RT_comment_addressNotset' );
+set( $comment_address, 'rt_comment_address_not_set' );
 
 # By default, RT sets the outgoing mail's "From:" header to
 # "Sendername via RT".  setting this option to 0 disables it.
@@ -309,7 +309,7 @@ set( $ForwardFromUser, 0 );
 #  perldoc RT::Crypt::GnuPG  (or perldoc lib/RT/Crypt/GnuPG.pm from your RT install directory).
 
 set(%GnuPG,
-    Enable => 0,
+    enable => 0,
 
     # set outgoing_messages_format to 'inline' to use inline encryption and
     # signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.

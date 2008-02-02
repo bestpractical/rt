@@ -65,7 +65,7 @@
   <tr>
     <td colspan="4" class="content">
 % if ( $Attachments->[0] && $Attachments->[0]->id ) {
-%   if (RT->config->get('GnuPG')->{'Enable'}) {
+%   if (RT->config->get('GnuPG')->{'enable'}) {
         <& ShowGnuPGStatus, Attachment => $Attachments->[0], WarnUnsigned => $WarnUnsigned &>
 %   }
 % }
@@ -211,7 +211,7 @@ else {
               . "\">". _('Forward') . "</a>]";
         }
         if ( $can_modify
-            && RT->config->get('GnuPG')->{'Enable'}
+            && RT->config->get('GnuPG')->{'enable'}
             && RT->config->get('GnuPG')->{'AllowEncryptDataInDB'}
             && $ticket->current_user_has_right('ForwardMessage')
         ) {

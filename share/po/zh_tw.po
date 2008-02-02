@@ -2354,7 +2354,7 @@ msgid "Delegates"
 msgstr "代理人"
 
 #: NOT FOUND IN SOURCE
-msgid "Delegates Enabled Status"
+msgid "Delegates enabled Status"
 msgstr "代理啟動狀態"
 
 #: NOT FOUND IN SOURCE
@@ -2817,45 +2817,45 @@ msgid "Enable Delegates"
 msgstr "代理啟動"
 
 #: html/Admin/CustomFields/Modify.html:98 html/Admin/Elements/EditCustomField:72
-msgid "Enabled (Unchecking this box disables this custom field)"
+msgid "enabled (Unchecking this box disables this custom field)"
 msgstr "啟用(取消勾選將停用此自訂欄位)"
 
 #: html/Admin/Groups/Modify.html:84 html/User/Groups/Modify.html:74
-msgid "Enabled (Unchecking this box disables this group)"
+msgid "enabled (Unchecking this box disables this group)"
 msgstr "啟用(取消勾選將停用此群組)"
 
 #: html/Admin/Queues/Modify.html:105
-msgid "Enabled (Unchecking this box disables this queue)"
+msgid "enabled (Unchecking this box disables this queue)"
 msgstr "啟用(取消勾選將停用此表單)"
 
 #: NOT FOUND IN SOURCE
-msgid "Enabled Custom Fields"
+msgid "enabled Custom Fields"
 msgstr "已啟用的自訂欄位"
 
 #: NOT FOUND IN SOURCE
-msgid "Enabled Date"
+msgid "enabled Date"
 msgstr "啟用日期"
 
 #: NOT FOUND IN SOURCE
-msgid "Enabled Date:"
+msgid "enabled Date:"
 msgstr "啟動日期："
 
 #: html/Admin/Queues/index.html:78
-msgid "Enabled Queues"
+msgid "enabled Queues"
 msgstr "已啟用的表單"
 
 #: NOT FOUND IN SOURCE
-msgid "Enabled Status"
+msgid "enabled Status"
 msgstr "啟用狀態"
 
 #: html/Admin/Elements/EditCustomField:136 html/Admin/Groups/Modify.html:150 html/Admin/Users/Modify.html:350 html/User/Groups/Modify.html:138
 #. (_($msg))
-msgid "Enabled status %1"
+msgid "enabled status %1"
 msgstr "啟用狀態 %1"
 
 #: html/Admin/CustomFields/Modify.html:185 html/Admin/Queues/Modify.html:162
 #. (_($msg))
-msgid "Enabled status: %1"
+msgid "enabled status: %1"
 msgstr "啟用狀態: %1"
 
 #: NOT FOUND IN SOURCE

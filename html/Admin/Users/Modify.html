@@ -106,8 +106,8 @@
 </&>
 <br />
 <&| /Widgets/TitleBox, title => _('Access control') &>
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> />
+<input type="hidden" class="hidden" name="set_enabled" value="1" />
+<input type="checkbox" class="checkbox" name="enabled" value="1" <%$enabled_checked%> />
 <&|/l&>Let this user access RT</&><br />
 
 
@@ -247,7 +247,7 @@
 
 my $current_tab;
 my $user_object = RT::Model::User->new();
-my ($title, $privilegedChecked, $EnabledChecked, $disabled, $result, @results);
+my ($title, $privilegedChecked, $enabled_checked, $disabled, $result, @results);
 
 my ($val, $msg);
 
@@ -290,7 +290,7 @@ else {
 	    Zip                   => $ARGS{'Zip'},
 	    Country               => $ARGS{'Country'},
 	    privileged           => $ARGS{'privileged'},
-	    disabled            => ($ARGS{'Enabled'} ? 0 : 1)
+	    disabled            => ($ARGS{'enabled'} ? 0 : 1)
 	);
 
 	if ($val) {
@@ -341,18 +341,18 @@ if ($user_object->id && $id ne 'new') {
     push @results, process_object_custom_field_updates( ARGSRef => \%ARGS, object => $user_object );
 
 
-    # {{{ Deal with special fields: privileged, Enabled
+    # {{{ Deal with special fields: privileged, enabled
     if  ( $set_privileged and $privileged != $user_object->privileged ) {
          my ($code, $msg) = $user_object->set_privileged($privileged);
          push @results, _('privileged status: %1', _($msg));
     }
 
     #we're asking about enabled on the web page but really care about disabled.
-    $disabled = $Enabled ? 0 : 1;
+    $disabled = $enabled ? 0 : 1;
 
-    if  ( ($SetEnabled) and ( $disabled != $user_object->disabled) ) { 
+    if  ( ($set_enabled) and ( $disabled != $user_object->disabled) ) { 
         my  ($code, $msg) = $user_object->set_disabled($disabled);
-        push @results, _('Enabled status %1', _($msg));
+        push @results, _('enabled status %1', _($msg));
     }
 
 
@@ -380,7 +380,7 @@ if ( $user_object->id ) {
 
 # Do some setup for the ui
 unless ( $user_object->id && $user_object->disabled ) {
-    $EnabledChecked ="CHECKED";
+    $enabled_checked ="CHECKED";
 }
 
 if (!$Create && $user_object->privileged()) {  
@@ -406,8 +406,8 @@ $real_name  => undef
 $nickname  => undef
 $privileged => undef
 $set_privileged => undef
-$Enabled => undef
-$SetEnabled => undef
+$enabled => undef
+$set_enabled => undef
 $lang  => undef
 $email_encoding  => undef
 $web_encoding => undef

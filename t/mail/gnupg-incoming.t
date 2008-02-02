@@ -26,7 +26,7 @@ sub capture_mail {
 
 RT->config->set( LogToScreen => 'debug' );
 RT->config->set( 'GnuPG',
-                 Enable => 1,
+                 enable => 1,
                  outgoing_messages_format => 'RFC' );
 
 RT->config->set( 'GnuPGOptions',

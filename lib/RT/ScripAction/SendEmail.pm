@@ -105,7 +105,7 @@ sub commit {
 
     my $orig_message;
     if (   RT->config->get('RecordOutgoingEmail')
-        && RT->config->get('GnuPG')->{'Enable'} )
+        && RT->config->get('GnuPG')->{'enable'} )
     {
 
         # it's hacky, but we should know if we're going to crypt things
@@ -285,7 +285,7 @@ sub _addresses_from_header {
     return (@addresses);
 }
 
-=head2 SendMessage mime_obj
+=head2 send_message mime_obj
 
 sends the message using RT's preferred API.
 TODO: Break this out to a separate module

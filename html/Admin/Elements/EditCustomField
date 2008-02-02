@@ -70,8 +70,8 @@
 </td></tr>
 <tr><td>
 </td><td>
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /> <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
+<input type="hidden" class="hidden" name="set_enabled" value="1" />
+<input type="checkbox" class="checkbox" name="enabled" value="1" <%$enabled_checked%> /> <&|/l&>enabled (Unchecking this box disables this custom field)</&>
 </td></tr>
 </table>
 
@@ -91,7 +91,7 @@
 <%INIT>
 
 my $CustomFieldObj = RT::Model::CustomField->new();
-my $EnabledChecked = "CHECKED";
+my $enabled_checked = "CHECKED";
 my (@results);
 
 if (! $CustomField ) { 
@@ -131,15 +131,15 @@ if (! $CustomField ) {
 $id = $CustomFieldObj->id;
 
   #we're asking about enabled on the web page but really care about disabled.
-  my $disabled = ($Enabled ? 0 : 1);
+  my $disabled = ($enabled ? 0 : 1);
 
-  if  ( ($SetEnabled) and ( $disabled != $CustomFieldObj->disabled) ) { 
+  if  ( ($set_enabled) and ( $disabled != $CustomFieldObj->disabled) ) { 
       my  ($code, $msg) = $CustomFieldObj->set_disabled($disabled);
-      push @results, _('Enabled status %1', _($msg));
+      push @results, _('enabled status %1', _($msg));
   }
   
   if ($CustomFieldObj->disabled()) {
-      $EnabledChecked ="";
+      $enabled_checked ="";
   }
 
 }
@@ -154,6 +154,6 @@ $CustomField => undef
 $Type => undef
 $description => undef
 $name => undef
-$SetEnabled => undef
-$Enabled => undef
+$set_enabled => undef
+$enabled => undef
 </%ARGS>

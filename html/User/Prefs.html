@@ -194,7 +194,7 @@
 <%INIT>
 
 my $user_object = RT::Model::User->new();
-my ($title, $privilegedChecked, $EnabledChecked, $disabled, $result, @results);
+my ($title, $privilegedChecked, $enabled_checked, $disabled, $result, @results);
 
 my ($val, $msg);
 
@@ -231,7 +231,7 @@ if ($user_object->id) {
     push (@results,@fieldresults);
 
 
-# {{{ Deal with special fields: privileged, Enabled, and password
+# {{{ Deal with special fields: privileged, enabled, and password
 if  ( ($set_privileged) and ( $privileged != $user_object->privileged) ) {
 my  ($code, $msg) = $user_object->set_privileged($privileged);
      push @results, _('privileged status: %1', _($msg));
@@ -267,8 +267,8 @@ $real_name  => undef
 $nickname  => undef
 $privileged => undef
 $set_privileged => undef
-$Enabled => undef
-$SetEnabled => undef
+$enabled => undef
+$set_enabled => undef
 $lang  => undef
 $email_encoding  => undef
 $web_encoding => undef

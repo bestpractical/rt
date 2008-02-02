@@ -177,9 +177,9 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     if (
         $session{'Attachments'}
-        || ( defined $ARGS{'UpdateContent'}
-            && $ARGS{'UpdateContent'} ne ''
-            && $ARGS{'UpdateContent'} ne "-- \n"
+        || ( defined $ARGS{'update_content'}
+            && $ARGS{'update_content'} ne ''
+            && $ARGS{'update_content'} ne "-- \n"
             . Jifty->web->current_user->user_object->signature )
       )
     {

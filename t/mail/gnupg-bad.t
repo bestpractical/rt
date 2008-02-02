@@ -9,7 +9,7 @@ my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
 
 RT->config->set( LogToScreen => 'debug' );
 RT->config->set( 'GnuPG',
-                 Enable => 1,
+                 enable => 1,
                  outgoing_messages_format => 'RFC' );
 
 RT->config->set( 'GnuPGOptions',
@@ -28,7 +28,6 @@ $m->follow_link_ok( {text => 'General'} );
 $m->submit_form( form_number => 3,
          fields      => { correspond_address => 'rt@example.com' } );
 $m->content_like(qr/rt\@example.com.* - never/, 'has key info.');
-
 ok(my $user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "loaded user 'root'");
 $user->set_email('rt@example.com');

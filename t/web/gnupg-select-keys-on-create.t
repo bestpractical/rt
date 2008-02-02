@@ -15,7 +15,7 @@ RT->config->set( LogStackTraces => 'error' );
 use_ok('RT::Crypt::GnuPG');
 
 RT->config->set( GnuPG =>
-    Enable => 1,
+    enable => 1,
     outgoing_messages_format => 'RFC',
 );
 
@@ -51,7 +51,7 @@ diag "check that signing doesn't work if there is no key";
     $m->form_number(3);
     $m->tick( sign => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
-    $m->field( Content => 'Some content' );
+    $m->field( content => 'Some content' );
     $m->submit;
     $m->content_like(
         qr/unable to sign outgoing email messages/i,
@@ -77,7 +77,7 @@ diag "check that things don't work if there is no key";
     $m->form_number(3);
     $m->tick( encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
-    $m->field( Content => 'Some content' );
+    $m->field( content => 'Some content' );
     $m->submit;
     $m->content_like(
         qr/You are going to encrypt outgoing email messages/i,
@@ -112,7 +112,7 @@ diag "check that things still doesn't work if key is not trusted";
     $m->form_number(3);
     $m->tick( encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
-    $m->field( Content => 'Some content' );
+    $m->field( content => 'Some content' );
     $m->submit;
     $m->content_like(
         qr/You are going to encrypt outgoing email messages/i,
@@ -159,7 +159,7 @@ diag "check that things still doesn't work if two keys are not trusted";
     $m->form_number(3);
     $m->tick( encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
-    $m->field( Content => 'Some content' );
+    $m->field( content => 'Some content' );
     $m->submit;
     $m->content_like(
         qr/You are going to encrypt outgoing email messages/i,
@@ -204,7 +204,7 @@ diag "check that we see key selector even if only one key is trusted but there a
     $m->form_number(3);
     $m->tick( encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
-    $m->field( Content => 'Some content' );
+    $m->field( content => 'Some content' );
     $m->submit;
     $m->content_like(
         qr/You are going to encrypt outgoing email messages/i,
@@ -231,7 +231,7 @@ diag "check that key selector works and we can select trusted key";
     $m->form_number(3);
     $m->tick( encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
-    $m->field( Content => 'Some content' );
+    $m->field( content => 'Some content' );
     $m->submit;
     $m->content_like(
         qr/You are going to encrypt outgoing email messages/i,
@@ -263,7 +263,7 @@ diag "check encrypting of attachments";
     $m->form_number(3);
     $m->tick( encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
-    $m->field( Content => 'Some content' );
+    $m->field( content => 'Some content' );
     $m->field( Attach => $0 );
     $m->submit;
     $m->content_like(

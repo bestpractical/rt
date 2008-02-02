@@ -45,18 +45,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<tr><td align="right"><&|/l&>Cc</&>:</td><td> <input name="UpdateCc" id = "UpdateCc" size="60"
-        value="<% $ARGS{UpdateCc}||'' %>" />
+<tr><td align="right"><&|/l&>Cc</&>:</td><td> <input name="update_cc" id = "update_cc" size="60"
+        value="<% $ARGS{update_cc}||'' %>" />
 <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
         <br />
 
 %foreach my $addr ( keys %txn_addresses) {
 <input 
-id="UpdateCc-<%$addr%>" 
-name="UpdateCc-<%$addr%>" 
+id="update_cc-<%$addr%>" 
+name="update_cc-<%$addr%>" 
     type="checkbox" 
-    onClick="checkboxToInput('UpdateCc', 'UpdateCc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"  
-    <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
+    onClick="checkboxToInput('update_cc', 'update_cc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"  
+    <% $ARGS{'update_cc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}
 <div class="hints"><i><font size="-2">
             <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>

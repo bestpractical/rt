@@ -39,7 +39,7 @@ is($m->status, 200, "request successful");
 
 $m->form_name('TicketUpdate');
 $m->field('Attach',  FaviconFile);
-$m->field('UpdateContent', 'Message');
+$m->field('update_content', 'Message');
 $m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 

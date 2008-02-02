@@ -95,7 +95,7 @@
 </td></tr>
 <tr><td align="right"><&|/l&>subject</&>:</td><td> <input name="Updatesubject" size="60" value="<% $ARGS{Updatesubject} || $ticket_obj->subject()%>" /></td></tr>
 
-<& /Ticket/Elements/UpdateCc, %ARGS, ticket_obj => $ticket_obj &>
+<& /Ticket/Elements/update_cc, %ARGS, ticket_obj => $ticket_obj &>
 
 
 % if (my $TxnCFs = $ticket_obj->transaction_custom_fields) {
@@ -133,14 +133,14 @@
 
 <tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
 % $m->callback( %ARGS, Callbackname => 'BeforeMessageBox' );
-% if (exists $ARGS{UpdateContent}) {
+% if (exists $ARGS{update_content}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
 % my $temp = $ARGS{'QuoteTransaction'};
 % delete $ARGS{'QuoteTransaction'};
-<& /Elements/MessageBox, name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS&>
+<& /Elements/MessageBox, name=>"update_content", Default=>$ARGS{update_content}, IncludeSignature => 0, %ARGS&>
 % $ARGS{'QuoteTransaction'} = $temp;
 % } else {
-<& /Elements/MessageBox, name=>"UpdateContent", %ARGS &>
+<& /Elements/MessageBox, name=>"update_content", %ARGS &>
 % }
 </td></tr>
 </table>

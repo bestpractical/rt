@@ -2240,41 +2240,41 @@ msgid "email_encoding"
 msgstr "kodowanie e-maila"
 
 #: NOT FOUND IN SOURCE
-msgid "Enabled (Unchecking this box disables this Class)"
+msgid "enabled (Unchecking this box disables this Class)"
 msgstr "Udostępniona (nieoznaczenie tego pola spowoduje, że klasa będzie niedostępna)"
 
 #: html/Admin/CustomFields/Modify.html:98 html/Admin/Elements/EditCustomField:72
-msgid "Enabled (Unchecking this box disables this custom field)"
+msgid "enabled (Unchecking this box disables this custom field)"
 msgstr "Udostępnione (nieoznaczenie tego pola spowoduje, że pole będzie niedostępne)"
 
 #: html/Admin/Groups/Modify.html:84 html/User/Groups/Modify.html:74
-msgid "Enabled (Unchecking this box disables this group)"
+msgid "enabled (Unchecking this box disables this group)"
 msgstr "Udostępniona (nieoznaczenie tego pola spowoduje, że grupa będzie niedostępna)"
 
 #: html/Admin/Queues/Modify.html:105
-msgid "Enabled (Unchecking this box disables this queue)"
+msgid "enabled (Unchecking this box disables this queue)"
 msgstr "Udostępniona (nieoznaczenie tego pola spowoduje, że kolejka będzie niedostępna)"
 
 #: NOT FOUND IN SOURCE
-msgid "Enabled Classes"
+msgid "enabled Classes"
 msgstr "Dostępne klasy"
 
 #: NOT FOUND IN SOURCE
-msgid "Enabled Custom Fields"
+msgid "enabled Custom Fields"
 msgstr "Dostępne pola definiowane przez użytkownika"
 
 #: html/Admin/Queues/index.html:78
-msgid "Enabled Queues"
+msgid "enabled Queues"
 msgstr "Dostępne kolejki"
 
 #: html/Admin/Elements/EditCustomField:136 html/Admin/Groups/Modify.html:150 html/Admin/Users/Modify.html:350 html/User/Groups/Modify.html:138
 #. (_($msg))
-msgid "Enabled status %1"
+msgid "enabled status %1"
 msgstr "Dostępny status %1"
 
 #: html/Admin/CustomFields/Modify.html:185 html/Admin/Queues/Modify.html:162
 #. (_($msg))
-msgid "Enabled status: %1"
+msgid "enabled status: %1"
 msgstr "Statut actif: %1"
 
 #: NOT FOUND IN SOURCE

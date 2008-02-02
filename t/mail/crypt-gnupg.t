@@ -7,8 +7,6 @@ eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 
 plan tests => 94;
 
-RT->config->set( LogToScreen => 'debug' );
-RT->config->set( LogStackTraces => 'error' );
 use Data::Dumper;
 
 use File::Spec ();
@@ -20,7 +18,7 @@ use_ok('RT::Crypt::GnuPG');
 use_ok('MIME::Entity');
 
 RT->config->set( 'GnuPG',
-                 Enable => 1,
+                 enable => 1,
                  outgoing_messages_format => 'RFC' );
 
 RT->config->set( 'GnuPGOptions',
@@ -34,16 +32,16 @@ diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
         Subject => 'test',
         Data    => ['test'],
     );
-    my %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, encrypt => 0, Passphrase => 'test' );
+    my %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, encrypt => 0, passphrase => 'test' );
     ok( $entity, 'signed entity');
     ok( !$res{'logger'}, "log is here as well" );
     warn $res{'logger'};
     my @status = RT::Crypt::GnuPG::parse_status( $res{'status'} );
     is( scalar @status, 2, 'two records: passphrase, signing');
-    is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
-    is( $status[0]->{'Status'}, 'DONE', 'good passphrase');
-    is( $status[1]->{'Operation'}, 'sign', 'operation is correct');
-    is( $status[1]->{'Status'}, 'DONE', 'done');
+    is( $status[0]->{'operation'}, 'passphrase_check', 'operation is correct');
+    is( $status[0]->{'status'}, 'DONE', 'good passphrase');
+    is( $status[1]->{'operation'}, 'sign', 'operation is correct');
+    is( $status[1]->{'status'}, 'DONE', 'done');
     is( $status[1]->{'User'}->{'email'}, 'rt@example.com', 'correct email');
 
     ok( $entity->is_multipart, 'signed message is multipart' );
@@ -53,15 +51,15 @@ diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
     is( scalar @parts, 1, 'one protected part' );
     is( $parts[0]->{'type'}, 'signed', "have signed part" );
     is( $parts[0]->{'format'}, 'RFC3156', "RFC3156 format" );
-    is( $parts[0]->{'Top'}, $entity, "it's the same entity" );
+    is( $parts[0]->{'top'}, $entity, "it's the same entity" );
 
     my @res = RT::Crypt::GnuPG::verify_decrypt( entity => $entity );
     is scalar @res, 1, 'one operation';
     @status = RT::Crypt::GnuPG::parse_status( $res[0]{'status'} );
     is( scalar @status, 1, 'one record');
-    is( $status[0]->{'Operation'}, 'Verify', 'operation is correct');
-    is( $status[0]->{'Status'}, 'DONE', 'good passphrase');
-    is( $status[0]->{'Trust'}, 'ULTIMATE', 'have trust value');
+    is( $status[0]->{'operation'}, 'Verify', 'operation is correct');
+    is( $status[0]->{'status'}, 'DONE', 'good passphrase');
+    is( $status[0]->{'trust'}, 'ULTIMATE', 'have trust value');
 }
 
 diag 'only signing. missing passphrase' if $ENV{'TEST_VERBOSE'};
@@ -71,15 +69,15 @@ diag 'only signing. missing passphrase' if $ENV{'TEST_VERBOSE'};
         Subject => 'test',
         Data    => ['test'],
     );
-    my %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, encrypt => 0, Passphrase => '' );
+    my %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, encrypt => 0, passphrase => '' );
     ok( $res{'exit_code'}, "couldn't sign without passphrase");
     ok( $res{'error'}, "error is here" );
     ok( $res{'logger'}, "log is here as well" );
 
     my @status = RT::Crypt::GnuPG::parse_status( $res{'status'} );
     is( scalar @status, 1, 'one record');
-    is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
-    is( $status[0]->{'Status'}, 'MISSING', 'missing passphrase');
+    is( $status[0]->{'operation'}, 'passphrase_check', 'operation is correct');
+    is( $status[0]->{'status'}, 'MISSING', 'missing passphrase');
 }
 
 diag 'only signing. wrong passphrase' if $ENV{'TEST_VERBOSE'};
@@ -89,15 +87,15 @@ diag 'only signing. wrong passphrase' if $ENV{'TEST_VERBOSE'};
         Subject => 'test',
         Data    => ['test'],
     );
-    my %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, encrypt => 0, Passphrase => 'wrong' );
+    my %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, encrypt => 0, passphrase => 'wrong' );
     ok( $res{'exit_code'}, "couldn't sign with bad passphrase");
     ok( $res{'error'}, "error is here" );
     ok( $res{'logger'}, "log is here as well" );
 
     my @status = RT::Crypt::GnuPG::parse_status( $res{'status'} );
     is( scalar @status, 1, 'one record');
-    is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
-    is( $status[0]->{'Status'}, 'BAD', 'wrong passphrase');
+    is( $status[0]->{'operation'}, 'passphrase_check', 'operation is correct');
+    is( $status[0]->{'status'}, 'BAD', 'wrong passphrase');
 }
 
 diag 'encryption only' if $ENV{'TEST_VERBOSE'};
@@ -114,8 +112,8 @@ diag 'encryption only' if $ENV{'TEST_VERBOSE'};
 
     my @status = RT::Crypt::GnuPG::parse_status( $res{'status'} );
     is( scalar @status, 1, 'one record');
-    is( $status[0]->{'Operation'}, 'encrypt', 'operation is correct');
-    is( $status[0]->{'Status'}, 'DONE', 'done');
+    is( $status[0]->{'operation'}, 'encrypt', 'operation is correct');
+    is( $status[0]->{'status'}, 'DONE', 'done');
 
     ok($entity, 'get an encrypted part');
 
@@ -123,7 +121,7 @@ diag 'encryption only' if $ENV{'TEST_VERBOSE'};
     is( scalar @parts, 1, 'one protected part' );
     is( $parts[0]->{'type'}, 'encrypted', "have encrypted part" );
     is( $parts[0]->{'format'}, 'RFC3156', "RFC3156 format" );
-    is( $parts[0]->{'Top'}, $entity, "it's the same entity" );
+    is( $parts[0]->{'top'}, $entity, "it's the same entity" );
 }
 
 diag 'encryption only, bad recipient' if $ENV{'TEST_VERBOSE'};
@@ -151,18 +149,18 @@ diag 'encryption and signing with combined method' if $ENV{'TEST_VERBOSE'};
         Subject => 'test',
         Data    => ['test'],
     );
-    my %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, Passphrase => 'test' );
+    my %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, passphrase => 'test' );
     ok( !$res{'exit_code'}, "successful encryption with signing" );
     ok( !$res{'logger'}, "no records in logger" );
 
     my @status = RT::Crypt::GnuPG::parse_status( $res{'status'} );
     is( scalar @status, 3, 'three records: passphrase, sign and encrypt');
-    is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
-    is( $status[0]->{'Status'}, 'DONE', 'done');
-    is( $status[1]->{'Operation'}, 'sign', 'operation is correct');
-    is( $status[1]->{'Status'}, 'DONE', 'done');
-    is( $status[2]->{'Operation'}, 'encrypt', 'operation is correct');
-    is( $status[2]->{'Status'}, 'DONE', 'done');
+    is( $status[0]->{'operation'}, 'passphrase_check', 'operation is correct');
+    is( $status[0]->{'status'}, 'DONE', 'done');
+    is( $status[1]->{'operation'}, 'sign', 'operation is correct');
+    is( $status[1]->{'status'}, 'DONE', 'done');
+    is( $status[2]->{'operation'}, 'encrypt', 'operation is correct');
+    is( $status[2]->{'status'}, 'DONE', 'done');
 
     ok($entity, 'get an encrypted and signed part');
 
@@ -170,7 +168,7 @@ diag 'encryption and signing with combined method' if $ENV{'TEST_VERBOSE'};
     is( scalar @parts, 1, 'one protected part' );
     is( $parts[0]->{'type'}, 'encrypted', "have encrypted part" );
     is( $parts[0]->{'format'}, 'RFC3156', "RFC3156 format" );
-    is( $parts[0]->{'Top'}, $entity, "it's the same entity" );
+    is( $parts[0]->{'top'}, $entity, "it's the same entity" );
 }
 
 diag 'encryption and signing with cascading, sign on encrypted' if $ENV{'TEST_VERBOSE'};
@@ -184,7 +182,7 @@ diag 'encryption and signing with cascading, sign on encrypted' if $ENV{'TEST_VE
     my %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, sign => 0 );
     ok( !$res{'exit_code'}, 'successful encryption' );
     ok( !$res{'logger'}, "no records in logger" );
-    %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, encrypt => 0, Passphrase => 'test' );
+    %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, encrypt => 0, passphrase => 'test' );
     ok( !$res{'exit_code'}, 'successful signing' );
     ok( !$res{'logger'}, "no records in logger" );
 
@@ -192,7 +190,7 @@ diag 'encryption and signing with cascading, sign on encrypted' if $ENV{'TEST_VE
     is( scalar @parts, 1, 'one protected part, top most' );
     is( $parts[0]->{'type'}, 'signed', "have signed part" );
     is( $parts[0]->{'format'}, 'RFC3156', "RFC3156 format" );
-    is( $parts[0]->{'Top'}, $entity, "it's the same entity" );
+    is( $parts[0]->{'top'}, $entity, "it's the same entity" );
 }
 
 diag 'find signed/encrypted part deep inside' if $ENV{'TEST_VERBOSE'};
@@ -215,7 +213,7 @@ diag 'find signed/encrypted part deep inside' if $ENV{'TEST_VERBOSE'};
     is( scalar @parts, 1, 'one protected part' );
     is( $parts[0]->{'type'}, 'encrypted', "have encrypted part" );
     is( $parts[0]->{'format'}, 'RFC3156', "RFC3156 format" );
-    is( $parts[0]->{'Top'}, $entity->parts(0), "it's the same entity" );
+    is( $parts[0]->{'top'}, $entity->parts(0), "it's the same entity" );
 }
 
 diag 'wrong signed/encrypted parts: no protocol' if $ENV{'TEST_VERBOSE'};
@@ -274,7 +272,7 @@ diag 'wrong signed/encrypted parts: wrong proto' if $ENV{'TEST_VERBOSE'};
         Subject => 'test',
         Data    => ['test'],
     );
-    my %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, encrypt => 0, Passphrase => 'test' );
+    my %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, encrypt => 0, passphrase => 'test' );
     ok( !$res{'exit_code'}, 'success' );
     $entity->head->mime_attr( 'Content-Type.protocol' => 'application/bad-proto' );
 
@@ -291,20 +289,20 @@ diag 'verify inline and in attachment signatures' if $ENV{'TEST_VERBOSE'};
     my @parts = RT::Crypt::GnuPG::find_protected_parts( entity => $entity );
     is( scalar @parts, 2, 'two protected parts' );
     is( $parts[1]->{'type'}, 'signed', "have signed part" );
-    is( $parts[1]->{'format'}, 'Inline', "inline format" );
-    is( $parts[1]->{'Data'}, $entity->parts(0), "it's first part" );
+    is( $parts[1]->{'format'}, 'inline', "inline format" );
+    is( $parts[1]->{'data'}, $entity->parts(0), "it's first part" );
 
     is( $parts[0]->{'type'}, 'signed', "have signed part" );
-    is( $parts[0]->{'format'}, 'Attachment', "attachment format" );
-    is( $parts[0]->{'Data'}, $entity->parts(1), "data in second part" );
-    is( $parts[0]->{'Signature'}, $entity->parts(2), "file's signature in third part" );
+    is( $parts[0]->{'format'}, 'attachment', "attachment format" );
+    is( $parts[0]->{'data'}, $entity->parts(1), "data in second part" );
+    is( $parts[0]->{'signature'}, $entity->parts(2), "file's signature in third part" );
 
     my @res = RT::Crypt::GnuPG::verify_decrypt( entity => $entity );
     my @status = RT::Crypt::GnuPG::parse_status( $res[0]->{'status'} );
     is( scalar @status, 1, 'one record');
-    is( $status[0]->{'Operation'}, 'Verify', 'operation is correct');
-    is( $status[0]->{'Status'}, 'DONE', 'good passphrase');
-    is( $status[0]->{'Trust'}, 'ULTIMATE', 'have trust value');
+    is( $status[0]->{'operation'}, 'verify', 'operation is correct');
+    is( $status[0]->{'status'}, 'DONE', 'good passphrase');
+    is( $status[0]->{'trust'}, 'ULTIMATE', 'have trust value');
 
     $parser->filer->purge();
 }

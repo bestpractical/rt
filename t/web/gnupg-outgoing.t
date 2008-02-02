@@ -15,7 +15,7 @@ RT->config->set( LogStackTraces => 'error' );
 use_ok('RT::Crypt::GnuPG');
 
 RT->config->set( GnuPG =>
-    Enable => 1,
+    enable => 1,
     outgoing_messages_format => 'RFC',
 );
 
@@ -285,7 +285,7 @@ sub update_ticket {
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
     $m->form_number(3);
-    $m->field( UpdateContent => 'Some content' );
+    $m->field( update_content => 'Some content' );
 
     foreach ( qw(sign encrypt) ) {
         if ( $args{ $_ } ) {

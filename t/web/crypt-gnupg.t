@@ -29,7 +29,7 @@ my $homedir = tempdir( CLEANUP => 1 );
 use_ok('RT::Crypt::GnuPG');
 
 RT->config->set( 'GnuPG',
-                 Enable => 1,
+                 enable => 1,
                  outgoing_messages_format => 'RFC' );
 
 RT->config->set( 'GnuPGOptions',

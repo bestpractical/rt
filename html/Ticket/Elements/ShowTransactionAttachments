@@ -48,7 +48,7 @@
 <%PERL>
 # Find all the attachments which have parent $Parent
 # For each of these attachments
-foreach my $message ( grep $_->__value('Parent') == $Parent, @$Attachments ) {
+foreach my $message ( grep $_->__value('parent') == $Parent, @$Attachments ) {
     $m->comp( 'ShowMessageHeaders',
               Message        => $message,
               display_headers => \@display_headers,

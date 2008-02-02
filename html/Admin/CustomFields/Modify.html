@@ -112,9 +112,9 @@
 </div></td></tr>
 
 <tr><td class="label">&nbsp;</td><td>
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <% $EnabledChecked %> />
-<&|/l&>Enabled (Unchecking this box disables this custom field)</&>
+<input type="hidden" class="hidden" name="set_enabled" value="1" />
+<input type="checkbox" class="checkbox" name="enabled" value="1" <% $enabled_checked %> />
+<&|/l&>enabled (Unchecking this box disables this custom field)</&>
 </td></tr>
 
 </table>
@@ -163,7 +163,7 @@ else {
 if ( $ARGS{'Update'} && $id ne 'new' ) {
 
     #we're asking about enabled on the web page but really care about disabled.
-    $ARGS{'disabled'} = $disabled = $Enabled? 0 : 1;
+    $ARGS{'disabled'} = $disabled = $enabled? 0 : 1;
 
     my @attribs = qw(disabled pattern name type_composite lookup_type description link_value_to include_content_for_value);
     push @results, update_record_object(
@@ -207,8 +207,8 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
 
 $id = $CustomFieldObj->id if $CustomFieldObj->id;
 
-my $EnabledChecked = "checked";
-$EnabledChecked = '' if $CustomFieldObj->disabled;
+my $enabled_checked = "checked";
+$enabled_checked = '' if $CustomFieldObj->disabled;
 
 </%INIT>
 <%ARGS>
@@ -220,7 +220,7 @@ $sort_order => undef
 $description => undef
 $pattern => undef
 $name => undef
-$SetEnabled => undef
-$Enabled => 0
+$set_enabled => undef
+$enabled => 0
 $valuesClass => 'RT::Model::CustomFieldValueCollection'
 </%ARGS>

@@ -68,13 +68,13 @@
 </&>
 % }
 
-% if ( RT->config->get('GnuPG')->{'Enable'} ) {
+% if ( RT->config->get('GnuPG')->{'enable'} ) {
 <&|/Widgets/TitleBox, title => _( 'Cryptography' ) &>
 Preferred key: <& /Elements/GnuPG/SelectKeyForEncryption, email => $user_object->email, Default => $user_object->preferred_key &>
 </&>
 % }
 
-% if ( RT->config->get('GnuPG')->{'Enable'} ) {
+% if ( RT->config->get('GnuPG')->{'enable'} ) {
 <&|/Widgets/TitleBox, title => _( 'Cryptography' ) &>
 Preferred key: <& /Elements/SelectKey, email => $user_object->email, Default => $user_object->preferred_key &>
 </&>

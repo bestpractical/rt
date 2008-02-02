@@ -2292,24 +2292,24 @@ msgstr "E-mailKodning"
 
 #: html/Admin/CustomFields/Modify.html:98
 #: html/Admin/Elements/EditCustomField:72
-msgid "Enabled (Unchecking this box disables this custom field)"
+msgid "enabled (Unchecking this box disables this custom field)"
 msgstr "Aktiveret (fravalg af denne boks deaktiverer dette ekstrafelt)"
 
 #: html/Admin/Groups/Modify.html:84
 #: html/User/Groups/Modify.html:74
-msgid "Enabled (Unchecking this box disables this group)"
+msgid "enabled (Unchecking this box disables this group)"
 msgstr "Aktiveret (fravalg af denne boks deaktiverer denne gruppe)"
 
 #: html/Admin/Queues/Modify.html:105
-msgid "Enabled (Unchecking this box disables this queue)"
+msgid "enabled (Unchecking this box disables this queue)"
 msgstr "Aktiveret  (fravalg af denne boks deaktiverer denne kø)"
 
 #: NOT FOUND IN SOURCE
-msgid "Enabled Custom Fields"
+msgid "enabled Custom Fields"
 msgstr "Aktiverede ekstrafelter"
 
 #: html/Admin/Queues/index.html:78
-msgid "Enabled Queues"
+msgid "enabled Queues"
 msgstr "Aktiverede køer"
 
 #. (_($msg))
@@ -2317,13 +2317,13 @@ msgstr "Aktiverede køer"
 #: html/Admin/Groups/Modify.html:150
 #: html/Admin/Users/Modify.html:350
 #: html/User/Groups/Modify.html:138
-msgid "Enabled status %1"
+msgid "enabled status %1"
 msgstr "Aktiveret status %1"
 
 #. (_($msg))
 #: html/Admin/CustomFields/Modify.html:185
 #: html/Admin/Queues/Modify.html:162
-msgid "Enabled status: %1"
+msgid "enabled status: %1"
 msgstr "Aktiveret status: %1"
 
 #: lib/RT/CustomField_Overlay.pm:64

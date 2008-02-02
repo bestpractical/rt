@@ -125,11 +125,11 @@ else {
 
 my $Message = make_mime_entity(
     subject => $ARGS{'Updatesubject'},
-    Body    => $ARGS{'UpdateContent'},
+    Body    => $ARGS{'update_content'},
 );
 
 my ( $Transaction, $description, $object ) = $ticket_obj->$action(
-    cc_message_to  => $ARGS{'UpdateCc'},
+    cc_message_to  => $ARGS{'update_cc'},
     bcc_message_to => $ARGS{'UpdateBcc'},
     mime_obj      => $Message,
     time_taken    => $ARGS{'UpdateTimeWorked'},
@@ -161,11 +161,11 @@ else {
 
 my $Message = make_mime_entity(
     subject => $ARGS{'Updatesubject'},
-    Body    => $ARGS{'UpdateContent'},
+    Body    => $ARGS{'update_content'},
 );
 
 my ( $id, $msg, $txn ) = $ticket_obj->$action(
-    cc_message_to  => $ARGS{'UpdateCc'},
+    cc_message_to  => $ARGS{'update_cc'},
     bcc_message_to => $ARGS{'UpdateBcc'},
     mime_obj      => $Message,
     time_taken    => $ARGS{'UpdateTimeWorked'},

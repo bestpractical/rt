@@ -64,7 +64,7 @@ href="<%RT->config->get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->id%>"><%$
 <%$Ticket->subject%></a></h2></td></tr>
 <tr <%$class|n%>><td><span class="label"><&|/l&>Worked</&>:</span><input size="3" name="UpdateTimeWorked-<%$Ticket->id%>" /> <&|/l&>minutes</&>
 </td>
-<td rowspan="2"><span class="label"><&|/l&>Comments</&>:<br /></span><textarea name="UpdateContent-<%$Ticket->id%>" rows="5"
+<td rowspan="2"><span class="label"><&|/l&>Comments</&>:<br /></span><textarea name="update_content-<%$Ticket->id%>" rows="5"
 cols="60"></textarea></td></tr>
 <tr <%$class|n%>>
 <td><span class="label"><&|/l&>Status</&>:</span> <& /Elements/SelectStatus, name=> 'UpdateStatus-'.$Ticket->id, 
@@ -86,7 +86,7 @@ foreach my $arg ( keys %ARGS ) {
     my $id     = $1;
     my $ticket = load_ticket($id);
     next unless ( $ticket->id );
-    if ( my $content = $ARGS{'UpdateContent-'.$id} ) {
+    if ( my $content = $ARGS{'update_content-'.$id} ) {
         my ( $val, $msg ) = $ticket->comment(
             Content   => $content,
             time_taken => $ARGS{ 'UpdateTimeWorked-' . $id }

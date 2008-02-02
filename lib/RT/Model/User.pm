@@ -1390,7 +1390,7 @@ return it). Returns C<undef> if no preferred key can be found.
 
 sub preferred_key {
     my $self = shift;
-    return undef unless RT->config->get('GnuPG')->{'Enable'};
+    return undef unless RT->config->get('GnuPG')->{'enable'};
     my $prefkey = $self->first_attribute('preferred_key');
     return $prefkey->content if $prefkey;
 

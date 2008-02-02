@@ -82,7 +82,7 @@ and set almost any option 'gnupg' supports on your system.
 set to true value to enable this subsystem:
 
     set( %GnuPG,
-        Enable => 1,
+        enable => 1,
         ... other options ...
     );
 
@@ -104,7 +104,7 @@ or
 
     set( %GnuPG,
         ... other options ...
-        outgoing_messages_format => 'Inline',
+        outgoing_messages_format => 'inline',
         ... other options ...
     );
 
@@ -119,7 +119,7 @@ Technique described in these RFCs is well supported by many mail user
 agents (MUA), but some MUAs support only inline signatures and encryption,
 so it's possible to use inline format (see below).
 
-=item Inline
+=item inline
 
 This format doesn't take advantage of MIME, but some mail clients do
 not support GPG/MIME.
@@ -266,11 +266,11 @@ In the 'Error: public key' template there are a few additional variables availab
 
 =over 4
 
-=item $Message - user friendly error message
+=item $message - user friendly error message
 
-=item $Reason - short reason as listed above
+=item $reason - short reason as listed above
 
-=item $Recipient - recipient's identification
+=item $recipient - recipient's identification
 
 =item $AddressObj - L<Mail::Address> object containing recipient's email address
 
@@ -278,13 +278,13 @@ In the 'Error: public key' template there are a few additional variables availab
 
 A message can have several invalid recipients, to avoid sending many emails
 to the RT owner the system sends one message to the owner, grouped by
-recipient. In the 'Error to RT owner: public key' template a C<@BadRecipients>
+recipient. In the 'Error to RT owner: public key' template a C<@bad_recipients>
 array is available where each element is a hash reference that describes one
 recipient using the same fields as described above. So it's something like:
 
-    @BadRecipients = (
-        { Message => '...', Reason => '...', Recipient => '...', ...},
-        { Message => '...', Reason => '...', Recipient => '...', ...},
+    @bad_recipients = (
+        { message => '...', reason => '...', recipient => '...', ...},
+        { message => '...', reason => '...', recipient => '...', ...},
         ...
     )
 
@@ -294,7 +294,7 @@ Template 'Error: no private key' is used to inform the user that
 he sent an encrypted email, but we have no private key to decrypt
 it.
 
-In this template C<$Message> object of L<MIME::Entity> class
+In this template C<$message> object of L<MIME::Entity> class
 available. It's the message RT received.
 
 =head3 Invalid data
@@ -305,7 +305,7 @@ message he sent has invalid data and can not be handled.
 There are several reasons for this error, but most of them are data
 corruption or absence of expected information.
 
-In this template C<@Messages> array is available and contains list
+In this template C<@messages> array is available and contains list
 of error messages.
 
 =head1 FOR DEVELOPERS
@@ -391,16 +391,16 @@ Signs and/or encrypts an email message with GnuPG utility.
 
 =item Signing
 
-During signing you can pass C<Signer> argument to set key we sign with this option
-overrides gnupg's C<default-key> option. If C<Signer> argument is not provided
+During signing you can pass C<signer> argument to set key we sign with this option
+overrides gnupg's C<default-key> option. If C<signer> argument is not provided
 then address of a message sender is used.
 
-As well you can pass C<Passphrase>, but if value is undefined then L</get_passphrase>
+As well you can pass C<passphrase>, but if value is undefined then L</get_passphrase>
 called to get it.
 
 =item Encrypting
 
-During encryption you can pass a C<Recipients> array, otherwise C<To>, C<Cc> and
+During encryption you can pass a C<recipients> array, otherwise C<To>, C<Cc> and
 C<Bcc> fields of the message are used to fetch the list.
 
 =back
@@ -419,18 +419,15 @@ sub sign_encrypt {
     my %args = (@_);
 
     my $entity = $args{'entity'};
-    if ( $args{'sign'} && !defined $args{'Signer'} ) {
-        $args{'Signer'} = use_key_for_signing()
-            || ( Mail::Address->parse( $entity->head->get('From') ) )[0]
-            ->address;
+    if ( $args{'sign'} && !defined $args{'signer'} ) {
+        $args{'signer'} = use_key_for_signing() || ( Mail::Address->parse( $entity->head->get('From') ) )[0] ->address;
     }
-    if ( $args{'encrypt'} && !$args{'Recipients'} ) {
+    if ( $args{'encrypt'} && !$args{'recipients'} ) {
         my %seen;
-        $args{'Recipients'} = [
+        $args{'recipients'} = [
             grep $_ && !$seen{$_}++,
             map $_->address,
-            map Mail::Address->parse( $entity->head->get($_) ),
-            qw(To Cc Bcc)
+            map Mail::Address->parse( $entity->head->get($_) ), qw(To Cc Bcc)
         ];
     }
 
@@ -475,7 +472,7 @@ sub sign_encrypt_rfc3156 {
         if !defined $args{'passphrase'};
 
     if ( $args{'sign'} && !defined $args{'passphrase'} ) {
-        $args{'passphrase'} = get_passphrase( Address => $args{'signer'} );
+        $args{'passphrase'} = get_passphrase( address => $args{'signer'} );
     }
 
     my %res;
@@ -628,7 +625,7 @@ sub sign_encrypt_inline {
     return _sign_encrypt_text_inline(@_)
         if $entity->effective_type =~ /^text\//i;
 
-    return _sign_encryptAttachmentInline(@_);
+    return _sign_encrypt_attachment_inline(@_);
 }
 
 sub _sign_encrypt_text_inline {
@@ -662,7 +659,7 @@ sub _sign_encrypt_text_inline {
         if !defined( $args{'passphrase'} );
 
     if ( $args{'sign'} && !defined $args{'passphrase'} ) {
-        $args{'passphrase'} = get_passphrase( Address => $args{'signer'} );
+        $args{'passphrase'} = get_passphrase( address => $args{'signer'} );
     }
 
     if ( $args{'encrypt'} ) {
@@ -755,7 +752,7 @@ sub sign_encrypt_attachment_inline {
         if !defined( $args{'passphrase'} );
 
     if ( $args{'sign'} && !defined $args{'passphrase'} ) {
-        $args{'passphrase'} = get_passphrase( Address => $args{'signer'} );
+        $args{'passphrase'} = get_passphrase( address => $args{'signer'} );
     }
 
     my $entity = $args{'entity'};
@@ -863,7 +860,7 @@ sub sign_encrypt_content {
         if !defined( $args{'passphrase'} );
 
     if ( $args{'sign'} && !defined $args{'passphrase'} ) {
-        $args{'passphrase'} = get_passphrase( Address => $args{'signer'} );
+        $args{'passphrase'} = get_passphrase( address => $args{'signer'} );
     }
 
     if ( $args{'encrypt'} ) {
@@ -952,8 +949,8 @@ sub find_protected_parts {
             Jifty->log->debug("Found $type inline part");
             return {
                 type   => $type,
-                format => 'Inline',
-                Data   => $entity,
+                format => 'inline',
+                data   => $entity,
             };
         }
         $io->close;
@@ -988,9 +985,9 @@ sub find_protected_parts {
             return {
                 type   => 'encrypted',
                 format => 'RFC3156',
-                Top    => $entity,
-                Data   => $entity->parts(1),
-                Info   => $entity->parts(0),
+                top    => $entity,
+                data   => $entity->parts(1),
+                info   => $entity->parts(0),
             };
         } else {
             unless ( $protocol eq 'application/pgp-signature' ) {
@@ -1003,9 +1000,9 @@ sub find_protected_parts {
             return {
                 type      => 'signed',
                 format    => 'RFC3156',
-                Top       => $entity,
-                Data      => $entity->parts(0),
-                Signature => $entity->parts(1),
+                top       => $entity,
+                data      => $entity->parts(0),
+                signature => $entity->parts(1),
             };
         }
     }
@@ -1042,10 +1039,10 @@ sub find_protected_parts {
         push @res,
             {
             type      => 'signed',
-            format    => 'Attachment',
-            Top       => $entity,
-            Data      => $data_part_in,
-            Signature => $sig_part,
+            format    => 'attachment',
+            top       => $entity,
+            data      => $data_part_in,
+            signature => $sig_part,
             };
     }
 
@@ -1064,9 +1061,9 @@ sub find_protected_parts {
         push @res,
             {
             type   => 'encrypted',
-            format => 'Attachment',
-            Top    => $entity,
-            Data   => $part,
+            format => 'attachment',
+            top    => $entity,
+            data   => $part,
             };
     }
 
@@ -1076,7 +1073,7 @@ sub find_protected_parts {
     return @res;
 }
 
-=head2 verify_decrypt entity => undef, [ Detach => 1, Passphrase => undef ]
+=head2 verify_decrypt entity => undef, [ Detach => 1, passphrase => undef ]
 
 =cut
 
@@ -1090,34 +1087,34 @@ sub verify_decrypt {
         if ( $item->{'format'} eq 'RFC3156' ) {
             push @res, { verify_rfc3156(%$item) };
             if ( $args{'detach'} ) {
-                $item->{'Top'}->parts( [ $item->{'Data'} ] );
-                $item->{'Top'}->make_singlepart;
+                $item->{'top'}->parts( [ $item->{'data'} ] );
+                $item->{'top'}->make_singlepart;
             }
-        } elsif ( $item->{'format'} eq 'Inline' ) {
+        } elsif ( $item->{'format'} eq 'inline' ) {
             push @res, { verify_inline(%$item) };
-        } elsif ( $item->{'format'} eq 'Attachment' ) {
+        } elsif ( $item->{'format'} eq 'attachment' ) {
             push @res, { verify_attachment(%$item) };
             if ( $args{'detach'} ) {
-                $item->{'Top'}->parts(
-                    [   grep "$_" ne $item->{'Signature'},
-                        $item->{'Top'}->parts
+                $item->{'top'}->parts(
+                    [   grep "$_" ne $item->{'signature'},
+                        $item->{'top'}->parts
                     ]
                 );
-                $item->{'Top'}->make_singlepart;
+                $item->{'top'}->make_singlepart;
             }
         }
     }
     foreach my $item ( grep $_->{'type'} eq 'encrypted', @protected ) {
         if ( $item->{'format'} eq 'RFC3156' ) {
             push @res, { decrypt_rfc3156(%$item) };
-        } elsif ( $item->{'format'} eq 'Inline' ) {
+        } elsif ( $item->{'format'} eq 'inline' ) {
             push @res, { decrypt_inline(%$item) };
-        } elsif ( $item->{'format'} eq 'Attachment' ) {
+        } elsif ( $item->{'format'} eq 'attachment' ) {
             push @res, { decrypt_attachment(%$item) };
 
 #            if ( $args{'Detach'} ) {
-#                $item->{'Top'}->parts( [ grep "$_" ne $item->{'Signature'}, $item->{'Top'}->parts ] );
-#                $item->{'Top'}->make_singlepart;
+#                $item->{'top'}->parts( [ grep "$_" ne $item->{'signature'}, $item->{'top'}->parts ] );
+#                $item->{'top'}->make_singlepart;
 #            }
         }
     }
@@ -1489,9 +1486,9 @@ sub decrypt_content {
     return %res;
 }
 
-=head2 get_passphrase [ Address => undef ]
+=head2 get_passphrase [ address => undef ]
 
-Returns passphrase, called whenever it's required with Address as a named argument.
+Returns passphrase, called whenever it's required with address as a named argument.
 
 =cut
 
@@ -1506,22 +1503,22 @@ Takes a string containing output of gnupg status stream. Parses it and returns
 array of hashes. Each element of array is a hash ref and represents line or
 group of lines in the status message.
 
-All hashes have Operation, Status and Message elements.
+All hashes have operation, status and message elements.
 
 =over
 
-=item Operation
+=item operation
 
-Classification of operations gnupg performs. Now we have support
-for Sign, Encrypt, Decrypt, Verify, PassphraseCheck, RecipientsCheck and Data
+classification of operations gnupg performs. Now we have support
+for Sign, Encrypt, Decrypt, verify, passphrase_check, recipients_check and data
 values.
 
-=item Status
+=item status
 
 Informs about success. Value is 'DONE' on success, other values means that
 an operation failed, for example 'ERROR', 'BAD', 'MISSING' and may be other.
 
-=item Message
+=item message
 
 User friendly message.
 
@@ -1569,19 +1566,19 @@ sub reason_code_to_text {
 
 my %simple_keyword = (
     NO_RECP => {
-        Operation => 'RecipientsCheck',
-        Status    => 'ERROR',
-        Message   => 'No recipients',
+        operation => 'recipients_check',
+        status    => 'ERROR',
+        message   => 'No recipients',
     },
     UNEXPECTED => {
-        Operation => 'Data',
-        Status    => 'ERROR',
-        Message   => 'Unexpected data has been encountered',
+        operation => 'data',
+        status    => 'ERROR',
+        message   => 'Unexpected data has been encountered',
     },
     BADARMOR => {
-        Operation => 'Data',
-        Status    => 'ERROR',
-        Message   => 'The ASCII armor is corrupted',
+        operation => 'data',
+        status    => 'ERROR',
+        message   => 'The ASCII armor is corrupted',
     },
 );
 
@@ -1636,13 +1633,13 @@ sub parse_status {
 
         if ( $keyword eq 'USERID_HINT' ) {
             my %tmp = _parse_user_hint( $status, $line );
-            $latest_user_main_key = $tmp{'MainKey'};
-            if ( $user_hint{ $tmp{'MainKey'} } ) {
+            $latest_user_main_key = $tmp{'main_key'};
+            if ( $user_hint{ $tmp{'main_key'} } ) {
                 while ( my ( $k, $v ) = each %tmp ) {
-                    $user_hint{ $tmp{'MainKey'} }->{$k} = $v;
+                    $user_hint{ $tmp{'main_key'} }->{$k} = $v;
                 }
             } else {
-                $user_hint{ $tmp{'MainKey'} } = \%tmp;
+                $user_hint{ $tmp{'main_key'} } = \%tmp;
             }
             next;
         } elsif ( $keyword eq 'BAD_PASSPHRASE'
@@ -1650,49 +1647,49 @@ sub parse_status {
         {
             my $key_id = $args;
             my %res    = (
-                Operation => 'PassphraseCheck',
-                Status    => $keyword eq 'BAD_PASSPHRASE' ? 'BAD' : 'DONE',
+                operation => 'passphrase_check',
+                status    => $keyword eq 'BAD_PASSPHRASE' ? 'BAD' : 'DONE',
                 Key       => $key_id,
             );
-            $res{'Status'} = 'MISSING'
+            $res{'status'} = 'MISSING'
                 if $status[ $i - 1 ] =~ /^MISSING_PASSPHRASE/;
             foreach my $line ( reverse @status[ 0 .. $i - 1 ] ) {
                 next
                     unless $line
                         =~ /^NEED_PASSPHRASE\s+(\S+)\s+(\S+)\s+(\S+)/;
                 next if $key_id && $2 ne $key_id;
-                @res{ 'MainKey', 'Key', 'KeyType' } = ( $1, $2, $3 );
+                @res{ 'main_key', 'Key', 'key_type' } = ( $1, $2, $3 );
                 last;
             }
-            $res{'Message'}
+            $res{'message'}
                 = ucfirst(
-                lc( $res{'Status'} eq 'DONE' ? 'GOOD' : $res{'Status'} ) )
+                lc( $res{'status'} eq 'DONE' ? 'GOOD' : $res{'status'} ) )
                 . ' passphrase';
-            $res{'User'} = ( $user_hint{ $res{'MainKey'} } ||= {} )
-                if $res{'MainKey'};
-            if ( exists $res{'User'}->{'email'} ) {
-                $res{'Message'} .= ' for ' . $res{'User'}->{'email'};
+            $res{'user'} = ( $user_hint{ $res{'main_key'} } ||= {} )
+                if $res{'main_key'};
+            if ( exists $res{'user'}->{'email'} ) {
+                $res{'message'} .= ' for ' . $res{'user'}->{'email'};
             } else {
-                $res{'Message'} .= " for '0x$key_id'";
+                $res{'message'} .= " for '0x$key_id'";
             }
             push @res, \%res;
         } elsif ( $keyword eq 'END_ENCRYPTION' ) {
             my %res = (
-                Operation => 'encrypt',
-                Status    => 'DONE',
-                Message   => 'Data has been encrypted',
+                operation => 'encrypt',
+                status    => 'DONE',
+                message   => 'Data has been encrypted',
             );
             foreach my $line ( reverse @status[ 0 .. $i - 1 ] ) {
                 next unless $line =~ /^BEGIN_ENCRYPTION\s+(\S+)\s+(\S+)/;
-                @res{ 'MdcMethod', 'SymAlgo' } = ( $1, $2 );
+                @res{ 'MdcMethod', 'Symalgo' } = ( $1, $2 );
                 last;
             }
             push @res, \%res;
         } elsif ( $keyword eq 'DECRYPTION_FAILED'
             || $keyword eq 'DECRYPTION_OKAY' )
         {
-            my %res = ( Operation => 'Decrypt' );
-            @res{ 'Status', 'Message' }
+            my %res = ( operation => 'Decrypt' );
+            @res{ 'status', 'message' }
                 = $keyword eq 'DECRYPTION_FAILED'
                 ? ( 'ERROR', 'Decryption failed' )
                 : ( 'DONE', 'Decryption process succeeded' );
@@ -1702,11 +1699,11 @@ sub parse_status {
                 my ( $key, $alg, $key_length ) = ( $1, $2, $3 );
 
                 my %encrypted_to = (
-                    Message   => "The message is encrypted to '0x$key'",
-                    User      => ( $user_hint{$key} ||= {} ),
-                    Key       => $key,
-                    KeyLength => $key_length,
-                    Algorithm => $alg,
+                    message   => "The message is encrypted to '0x$key'",
+                    user      => ( $user_hint{$key} ||= {} ),
+                    key       => $key,
+                    key_length => $key_length,
+                    algorithm => $alg,
                 );
 
                 push @{ $res{'EncryptedTo'} ||= [] }, \%encrypted_to;
@@ -1717,50 +1714,50 @@ sub parse_status {
             my ($key) = split /\s+/, $args;
             my $type = $keyword eq 'NO_SECKEY' ? 'secret' : 'public';
             my %res = (
-                Operation => 'KeyCheck',
-                Status    => 'MISSING',
-                Message => ucfirst($type) . " key '0x$key' is not available",
-                Key     => $key,
-                KeyType => $type,
+                operation => 'KeyCheck',
+                status    => 'MISSING',
+                message => ucfirst($type) . " key '0x$key' is not available",
+                key     => $key,
+                key_type => $type,
             );
-            $res{'User'} = ( $user_hint{$key} ||= {} );
-            $res{'User'}{ ucfirst($type) . 'KeyMissing' } = 1;
+            $res{'user'} = ( $user_hint{$key} ||= {} );
+            $res{'user'}{ ucfirst($type) . 'KeyMissing' } = 1;
             push @res, \%res;
         }
 
         # GOODSIG, BADSIG, VALIDSIG, TRUST_*
         elsif ( $keyword eq 'GOODSIG' ) {
             my %res = (
-                Operation => 'Verify',
-                Status    => 'DONE',
-                Message   => 'The signature is good',
+                operation => 'verify',
+                status    => 'DONE',
+                message   => 'The signature is good',
             );
-            @res{qw(Key UserString)} = split /\s+/, $args, 2;
-            $res{'Message'} .= ', signed by ' . $res{'UserString'};
+            @res{qw(key userstring)} = split /\s+/, $args, 2;
+            $res{'message'} .= ', signed by ' . $res{'userstring'};
 
             foreach my $line ( @status[ $i .. $#status ] ) {
                 next unless $line =~ /^TRUST_(\S+)/;
-                $res{'Trust'} = $1;
+                $res{'trust'} = $1;
                 last;
             }
-            $res{'Message'}
-                .= ', trust level is ' . lc( $res{'Trust'} || 'unknown' );
+            $res{'message'}
+                .= ', trust level is ' . lc( $res{'trust'} || 'unknown' );
 
             foreach my $line ( @status[ $i .. $#status ] ) {
                 next unless $line =~ /^VALIDSIG\s+(.*)/;
                 @res{
                     qw(
-                        Fingerprint
-                        CreationDate
-                        Timestamp
-                        ExpireTimestamp
-                        Version
-                        Reserved
-                        PubkeyAlgo
-                        HashAlgo
-                        Class
+                        fingerprint
+                        creation_date
+                        timestamp
+                        expire_timestamp
+                        version
+                        reserved
+                        rubkey_algo
+                        hash_algo
+                        class
                         PKFingerprint
-                        Other
+                        other
                         )
                     }
                     = split /\s+/, $1, 10;
@@ -1769,24 +1766,24 @@ sub parse_status {
             push @res, \%res;
         } elsif ( $keyword eq 'BADSIG' ) {
             my %res = (
-                Operation => 'Verify',
-                Status    => 'BAD',
-                Message   => 'The signature has not been verified okay',
+                operation => 'verify',
+                status    => 'BAD',
+                message   => 'The signature has not been verified okay',
             );
-            @res{qw(Key UserString)} = split /\s+/, $args, 2;
+            @res{qw(Key userstring)} = split /\s+/, $args, 2;
             push @res, \%res;
         } elsif ( $keyword eq 'ERRSIG' ) {
             my %res = (
-                Operation => 'Verify',
-                Status    => 'ERROR',
-                Message   => 'Not possible to check the signature',
+                operation => 'verify',
+                status    => 'ERROR',
+                message   => 'Not possible to check the signature',
             );
-            @res{qw(Key PubkeyAlgo HashAlgo Class Timestamp ReasonCode Other)}
+            @res{qw(Key Pubkeyalgo Hashalgo class Timestamp reason_code Other)}
                 = split /\s+/, $args, 7;
 
-            $res{'Reason'}
-                = reason_code_to_text( $keyword, $res{'ReasonCode'} );
-            $res{'Message'} .= ", the reason is " . $res{'Reason'};
+            $res{'reason'}
+                = reason_code_to_text( $keyword, $res{'reason_code'} );
+            $res{'message'} .= ", the reason is " . $res{'reason'};
 
             push @res, \%res;
         } elsif ( $keyword eq 'SIG_CREATED' ) {
@@ -1795,18 +1792,18 @@ sub parse_status {
             my @props = split /\s+/, $args;
             push @res,
                 {
-                Operation      => 'sign',
-                Status         => 'DONE',
-                Message        => "Signed message",
+                operation      => 'sign',
+                status         => 'DONE',
+                message        => "Signed message",
                 type           => $props[0],
-                PubKeyAlgo     => $props[1],
-                HashKeyAlgo    => $props[2],
-                Class          => $props[3],
-                Timestamp      => $props[4],
-                KeyFingerprint => $props[5],
-                User           => $user_hint{$latest_user_main_key},
+                pub_key_algo     => $props[1],
+                hash_key_algo    => $props[2],
+                class          => $props[3],
+                timestamp      => $props[4],
+                key_fingerprint => $props[5],
+                user           => $user_hint{$latest_user_main_key},
                 };
-            $res[-1]->{Message}
+            $res[-1]->{message}
                 .= ' by ' . $user_hint{$latest_user_main_key}->{'email'}
                 if $user_hint{$latest_user_main_key};
         } elsif ( $keyword eq 'INV_RECP' ) {
@@ -1814,24 +1811,24 @@ sub parse_status {
             my $reason = reason_code_to_text( $keyword, $rcode );
             push @res,
                 {
-                Operation => 'RecipientsCheck',
-                Status    => 'ERROR',
-                Message =>
+                operation => 'recipients_check',
+                status    => 'ERROR',
+                message =>
                     "Recipient '$recipient' is unusable, the reason is '$reason'",
-                Recipient  => $recipient,
-                ReasonCode => $rcode,
-                Reason     => $reason,
+                recipient  => $recipient,
+                reason_code => $rcode,
+                reason     => $reason,
                 };
         } elsif ( $keyword eq 'NODATA' ) {
             my $rcode = ( split /\s+/, $args )[0];
             my $reason = reason_code_to_text( $keyword, $rcode );
             push @res,
                 {
-                Operation => 'Data',
-                Status    => 'ERROR',
-                Message => "No data has been found. The reason is '$reason'",
-                ReasonCode => $rcode,
-                Reason     => $reason,
+                operation => 'data',
+                status    => 'ERROR',
+                message => "No data has been found. The reason is '$reason'",
+                reason_code => $rcode,
+                reason     => $reason,
                 };
         } else {
             Jifty->log->warn("Keyword $keyword is unknown");
@@ -1848,8 +1845,8 @@ sub _parse_user_hint {
         = ( $hint =~ /^USERID_HINT\s+(\S+)\s+(.*)$/ );
     return () unless $main_key_id;
     return (
-        MainKey => $main_key_id,
-        String  => $user_str,
+        main_key => $main_key_id,
+        string  => $user_str,
         email   => ( map $_->address, Mail::Address->parse($user_str) )[0],
     );
 }
@@ -1859,8 +1856,8 @@ sub _prepare_gnupg_options {
     my %res = map { lc $_ => $opt{$_} } grep $supported_opt{ lc $_ },
         keys %opt;
     $res{'extra_args'} ||= [];
-    foreach my $o ( grep !$supported_opt{ lc $_ }, keys %opt ) {
-        push @{ $res{'extra_args'} }, '--' . lc $o;
+    foreach my $o ( grep !$supported_opt{  $_ }, keys %opt ) {
+        push @{ $res{'extra_args'} }, '--' . $o;
         push @{ $res{'extra_args'} }, $opt{$o}
             if defined $opt{$o};
     }
@@ -1925,14 +1922,14 @@ sub get_keys_for_encryption {
     foreach my $key ( splice @{ $res{'info'} } ) {
 
         # skip disabled keys
-        next if $key->{'Capabilities'} =~ /D/;
+        next if $key->{'capabilities'} =~ /D/;
 
         # skip keys not suitable for encryption
-        next unless $key->{'Capabilities'} =~ /e/i;
+        next unless $key->{'capabilities'} =~ /e/i;
 
         # skip disabled, expired, revoke and keys with no trust,
         # but leave keys with unknown trust level
-        next if $key->{'TrustLevel'} < 0;
+        next if $key->{'trust_level'} < 0;
 
         push @{ $res{'info'} }, $key;
     }
@@ -1957,7 +1954,7 @@ sub check_recipients {
         my %res = get_keys_for_encryption($address);
         if (   $res{'info'}
             && @{ $res{'info'} } == 1
-            && $res{'info'}[0]{'TrustLevel'} > 0 )
+            && $res{'info'}[0]{'trust_level'} > 0 )
         {
 
             # good, one suitable and trusted key
@@ -1972,8 +1969,8 @@ sub check_recipients {
         if ( my $fpr = use_key_for_encryption($address) ) {
             if ( $res{'info'} && @{ $res{'info'} } ) {
                 next
-                    if grep lc $_->{'Fingerprint'} eq lc $fpr,
-                    grep $_->{'TrustLevel'} > 0, @{ $res{'info'} };
+                    if grep lc $_->{'fingerprint'} eq lc $fpr,
+                    grep $_->{'trust_level'} > 0, @{ $res{'info'} };
             }
 
             $status = 0;
@@ -1982,7 +1979,7 @@ sub check_recipients {
                 $user ? ( User => $user ) : (),
                 Keys => undef,
             );
-            $issue{'Message'}
+            $issue{'message'}
                 = "Selected key either is not trusted or doesn't exist anymore."
                 ;    #loc
             push @issues, \%issue;
@@ -2005,18 +2002,18 @@ sub check_recipients {
         unless ( $res{'info'} && @{ $res{'info'} } ) {
 
             # no key
-            $issue{'Message'}
+            $issue{'message'}
                 = "There is no key suitable for encryption.";    #loc
-        } elsif ( @{ $res{'info'} } == 1 && !$res{'info'}[0]{'TrustLevel'} ) {
+        } elsif ( @{ $res{'info'} } == 1 && !$res{'info'}[0]{'trust_level'} ) {
 
             # trust is not set
-            $issue{'Message'}
+            $issue{'message'}
                 = "There is one suitable key, but trust level is not set."
                 ;                                                #loc
         } else {
 
             # multiple keys
-            $issue{'Message'}
+            $issue{'message'}
                 = "There are several keys suitable for encryption.";    #loc
         }
         push @issues, \%issue;
@@ -2122,9 +2119,9 @@ sub parse_keys_info {
             my %info;
             @info{
                 qw(
-                    TrustChar KeyLength Algorithm Key
-                    Created Expire Empty OwnerTrustChar
-                    Empty Empty Capabilities Other
+                    trust_char key_length algorithm Key
+                    created expire empty owner_trust_char
+                    empty empty capabilities Other
                     )
                 }
                 = split /:/, $line, 12;
@@ -2138,39 +2135,39 @@ sub parse_keys_info {
             $always_trust = 1
                 if exists $gpg_opt{'trust-model'}
                     && $gpg_opt{'trust-model'} eq 'always';
-            @info{qw(Trust TrustTerse TrustLevel)}
-                = _convert_trust_char( $info{'TrustChar'} );
-            if ( $always_trust && $info{'TrustLevel'} >= 0 ) {
-                @info{qw(Trust TrustTerse TrustLevel)}
+            @info{qw(trust trust_terse trust_level)}
+                = _convert_trust_char( $info{'trust_char'} );
+            if ( $always_trust && $info{'trust_level'} >= 0 ) {
+                @info{qw(trust trust_terse trust_level)}
                     = _convert_trust_char('u');
             }
 
-            @info{qw(OwnerTrust OwnerTrustTerse OwnerTrustLevel)}
-                = _convert_trust_char( $info{'OwnerTrustChar'} );
-            $info{$_} = _parse_date( $info{$_} ) foreach qw(Created Expire);
+            @info{qw(owner_trust owner_trust_terse owner_trust_level)}
+                = _convert_trust_char( $info{'owner_trust_char'} );
+            $info{$_} = _parse_date( $info{$_} ) foreach qw(created expire);
             push @res, \%info;
         } elsif ( $tag eq 'sec' ) {
             my %info;
             @info{
                 qw(
-                    Empty KeyLength Algorithm Key
-                    Created Expire Empty OwnerTrustChar
-                    Empty Empty Capabilities Other
+                    empty key_length algorithm Key
+                    created expire empty owner_trust_char
+                    empty empty capabilities Other
                     )
                 }
                 = split /:/, $line, 12;
-            @info{qw(OwnerTrust OwnerTrustTerse OwnerTrustLevel)}
-                = _convert_trust_char( $info{'OwnerTrustChar'} );
-            $info{$_} = _parse_date( $info{$_} ) foreach qw(Created Expire);
+            @info{qw(owner_trust owner_trust_terse owner_trust_level)}
+                = _convert_trust_char( $info{'owner_trust_char'} );
+            $info{$_} = _parse_date( $info{$_} ) foreach qw(created expire);
             push @res, \%info;
         } elsif ( $tag eq 'uid' ) {
             my %info;
-            @info{qw(Trust Created Expire String)}
+            @info{qw(trust created expire string)}
                 = ( split /:/, $line )[ 0, 4, 5, 8 ];
-            $info{$_} = _parse_date( $info{$_} ) foreach qw(Created Expire);
+            $info{$_} = _parse_date( $info{$_} ) foreach qw(created expire);
             push @{ $res[-1]{'User'} ||= [] }, \%info;
         } elsif ( $tag eq 'fpr' ) {
-            $res[-1]{'Fingerprint'} = ( split /:/, $line, 10 )[8];
+            $res[-1]{'fingerprint'} = ( split /:/, $line, 10 )[8];
         }
     }
     return @res;
@@ -2400,7 +2397,7 @@ sub dry_sign {
         sign    => 1,
         encrypt => 0,
         entity  => $mime,
-        Signer  => $from,
+        signer  => $from,
     );
 
     return $res{exit_code} == 0;

@@ -1650,29 +1650,29 @@ msgid "Email address in use"
 msgstr "Adresse email utilisée"
 
 #: html/Admin/CustomFields/Modify.html:98 html/Admin/Elements/EditCustomField:72
-msgid "Enabled (Unchecking this box disables this custom field)"
+msgid "enabled (Unchecking this box disables this custom field)"
 msgstr "Activé (Décocher cette case désactive ce champ personnalisé)"
 
 #: html/Admin/Groups/Modify.html:84 html/User/Groups/Modify.html:74
-msgid "Enabled (Unchecking this box disables this group)"
+msgid "enabled (Unchecking this box disables this group)"
 msgstr "Activé (Décocher cette case désactive ce groupe)"
 
 #: html/Admin/Queues/Modify.html:105
-msgid "Enabled (Unchecking this box disables this queue)"
+msgid "enabled (Unchecking this box disables this queue)"
 msgstr "Activé (Décocher cette case désactive cette file)"
 
 #: html/Admin/Queues/index.html:78
-msgid "Enabled Queues"
+msgid "enabled Queues"
 msgstr "Files actives"
 
 #: html/Admin/Elements/EditCustomField:136 html/Admin/Groups/Modify.html:150 html/Admin/Users/Modify.html:350 html/User/Groups/Modify.html:138
 #. (_($msg))
-msgid "Enabled status %1"
+msgid "enabled status %1"
 msgstr "État %1 activé"
 
 #: html/Admin/CustomFields/Modify.html:185 html/Admin/Queues/Modify.html:162
 #. (_($msg))
-msgid "Enabled status: %1"
+msgid "enabled status: %1"
 msgstr "État actif : %1"
 
 #: lib/RT/CustomField_Overlay.pm:64

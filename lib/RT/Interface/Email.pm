@@ -329,7 +329,7 @@ sub send_email {
         $args{'ticket'} = $args{'transaction'}->object;
     }
 
-    if ( RT->config->get('GnuPG')->{'Enable'} ) {
+    if ( RT->config->get('GnuPG')->{'enable'} ) {
         my %crypt;
 
         my $attachment;

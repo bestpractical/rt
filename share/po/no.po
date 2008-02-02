@@ -2218,33 +2218,33 @@ msgid "email_encoding"
 msgstr "EpostFormat"
 
 #: html/Admin/CustomFields/Modify.html:98 html/Admin/Elements/EditCustomField:72
-msgid "Enabled (Unchecking this box disables this custom field)"
+msgid "enabled (Unchecking this box disables this custom field)"
 msgstr "Aktivt (Fjern merkingen for å deaktivere dette fleksifeltet)"
 
 #: html/Admin/Groups/Modify.html:84 html/User/Groups/Modify.html:74
-msgid "Enabled (Unchecking this box disables this group)"
+msgid "enabled (Unchecking this box disables this group)"
 msgstr "Aktiv (Fjern merkingen for å deaktivere denne gruppen)"
 
 #: html/Admin/Queues/Modify.html:105
-msgid "Enabled (Unchecking this box disables this queue)"
+msgid "enabled (Unchecking this box disables this queue)"
 msgstr "Aktiv (Fjern merkingen for å deaktivere denne køen)"
 
 #: NOT FOUND IN SOURCE
-msgid "Enabled Custom Fields"
+msgid "enabled Custom Fields"
 msgstr "Aktive Fleksifelt"
 
 #: html/Admin/Queues/index.html:78
-msgid "Enabled Queues"
+msgid "enabled Queues"
 msgstr "Aktive Køer"
 
 #: html/Admin/Elements/EditCustomField:136 html/Admin/Groups/Modify.html:150 html/Admin/Users/Modify.html:350 html/User/Groups/Modify.html:138
 #. (_($msg))
-msgid "Enabled status %1"
+msgid "enabled status %1"
 msgstr "Aktiv status %1"
 
 #: html/Admin/CustomFields/Modify.html:185 html/Admin/Queues/Modify.html:162
 #. (_($msg))
-msgid "Enabled status: %1"
+msgid "enabled status: %1"
 msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:64
