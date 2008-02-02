@@ -942,7 +942,7 @@ sub add_value_for_object {
     my $self = shift;
     my %args = (
         object       => undef,
-        Content      => undef,
+        content      => undef,
         large_content => undef,
         content_type  => undef,
         @_
@@ -953,7 +953,7 @@ sub add_value_for_object {
         return ( 0, _('Permission Denied') );
     }
 
-    unless ( $self->match_pattern( $args{'Content'} || '' ) ) {
+    unless ( $self->match_pattern( $args{'content'} || '' ) ) {
         return ( 0, _( 'Input must match %1', $self->friendly_pattern ) );
     }
 
@@ -985,7 +985,7 @@ sub add_value_for_object {
     my $val    = $newval->create(
         object_type  => ref($obj),
         object_id    => $obj->id,
-        Content      => $args{'Content'},
+        content      => $args{'content'},
         large_content => $args{'large_content'},
         content_type  => $args{'content_type'},
         custom_field  => $self->id
@@ -1058,7 +1058,7 @@ sub delete_value_for_object {
     my $self = shift;
     my %args = (
         object  => undef,
-        Content => undef,
+        content => undef,
         id      => undef,
         @_
     );
@@ -1075,7 +1075,7 @@ sub delete_value_for_object {
     unless ( $oldval->id ) {
         $oldval->load_by_object_content_and_custom_field(
             object      => $args{'object'},
-            Content     => $args{'Content'},
+            content     => $args{'content'},
             custom_field => $self->id,
         );
     }
@@ -1085,7 +1085,7 @@ sub delete_value_for_object {
         return (
             0,
             _(  "Custom field value %1 could not be found for custom field %2",
-                $args{'Content'},
+                $args{'content'},
                 $self->name
             )
         );
