@@ -461,13 +461,13 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     my $entity = MIME::Entity->build(
         From    => 'root@localhost',
         To      => 'rt@localhost',
-        subject => 'binary attachment test',
+        Subject => 'binary attachment test',
         Data    => ['This is a test of a binary attachment'],
     );
 
     $entity->attach(
         Path     => $LOGO_FILE,
-        type     => 'image/gif',
+        Type     => 'image/gif',
         Encoding => 'base64',
     );
     # Create a ticket with a binary attachment
