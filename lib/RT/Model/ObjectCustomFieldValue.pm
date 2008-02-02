@@ -71,7 +71,7 @@ use Jifty::DBI::Record schema {
     column Created => type is 'datetime', default is '';
     column custom_field => type is 'int(11)', max_length is 11, default is '0';
     column
-        Content => type is 'varchar(255)',
+        content => type is 'varchar(255)',
         max_length is 255, default is '';
     column
         content_encoding => type is 'varchar(80)',
@@ -110,7 +110,7 @@ sub create {
     if ( defined $args{'content'} && length( $args{'content'} ) > 255 ) {
         if ( defined $args{'large_content'} && length $args{'large_content'} ) {
             Jifty->log->error(
-                "Content is longer than 255 and large_content specified");
+                "content is longer than 255 and large_content specified");
         } else {
             $args{'large_content'} = $args{'content'};
             $args{'content'}      = '';
@@ -140,9 +140,9 @@ sub large_content {
         $self->_value( 'large_content', decode_utf8 => 0 ) );
 }
 
-=head2 LoadByTicketContentAndCustomField { Ticket => TICKET, custom_field => customfield, Content => CONTENT }
+=head2 LoadByTicketContentAndCustomField { Ticket => TICKET, custom_field => customfield, content => CONTENT }
 
-Loads a custom field value by Ticket, Content and which custom_field it's tied to
+Loads a custom field value by Ticket, content and which custom_field it's tied to
 
 =cut
 
@@ -184,7 +184,7 @@ sub load_by_object_content_and_custom_field {
     );
 }
 
-=head2 Content
+=head2 content
 
 Return this custom field's content. If there's no "regular"
 content, try "large_content"
@@ -193,7 +193,7 @@ content, try "large_content"
 
 sub content {
     my $self    = shift;
-    my $content = $self->_value('Content');
+    my $content = $self->_value('content');
     if ( !( defined $content && length $content )
         && $self->content_type eq 'text/plain' )
     {
