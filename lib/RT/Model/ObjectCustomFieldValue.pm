@@ -100,20 +100,20 @@ sub create {
         object_type     => '',
         object_id       => 0,
         disabled        => 0,
-        Content         => '',
+        content         => '',
         large_content    => undef,
         content_type     => '',
         content_encoding => '',
         @_,
     );
 
-    if ( defined $args{'Content'} && length( $args{'Content'} ) > 255 ) {
+    if ( defined $args{'content'} && length( $args{'content'} ) > 255 ) {
         if ( defined $args{'large_content'} && length $args{'large_content'} ) {
             Jifty->log->error(
                 "Content is longer than 255 and large_content specified");
         } else {
-            $args{'large_content'} = $args{'Content'};
-            $args{'Content'}      = '';
+            $args{'large_content'} = $args{'content'};
+            $args{'content'}      = '';
             $args{'content_type'} ||= 'text/plain';
         }
     }
@@ -127,7 +127,7 @@ sub create {
         object_type     => $args{'object_type'},
         object_id       => $args{'object_id'},
         disabled        => $args{'disabled'},
-        Content         => $args{'Content'},
+        content         => $args{'content'},
         large_content    => $args{'large_content'},
         content_type     => $args{'content_type'},
         content_encoding => $args{'content_encoding'},
@@ -149,17 +149,17 @@ Loads a custom field value by Ticket, Content and which custom_field it's tied t
 sub load_by_ticket_content_and_custom_field {
     my $self = shift;
     my %args = (
-        Ticket      => undef,
+        ticket      => undef,
         custom_field => undef,
-        Content     => undef,
+        content     => undef,
         @_
     );
 
     return $self->load_by_cols(
-        Content     => $args{'Content'},
+        content     => $args{'content'},
         custom_field => $args{'custom_field'},
         object_type => 'RT::Model::Ticket',
-        object_id   => $args{'Ticket'},
+        object_id   => $args{'ticket'},
         disabled    => 0
     );
 }
@@ -169,14 +169,14 @@ sub load_by_object_content_and_custom_field {
     my %args = (
         object      => undef,
         custom_field => undef,
-        Content     => undef,
+        content     => undef,
         @_
     );
 
     my $obj = $args{'object'} or return;
 
     return $self->load_by_cols(
-        Content     => $args{'Content'},
+        content     => $args{'content'},
         custom_field => $args{'custom_field'},
         object_type => ref($obj),
         object_id   => $obj->id,
