@@ -744,14 +744,14 @@ sub update {
     my $class = ref($self) || $self;
 
     my %args = (
-        ARGSRef         => undef,
-        AttributesRef   => undef,
-        AttributePrefix => undef,
+        args_ref         => undef,
+        attributes_ref   => undef,
+        attribute_prefix => undef,
         @_
     );
 
-    my $attributes = $args{'AttributesRef'};
-    my $ARGSRef    = $args{'ARGSRef'};
+    my $attributes = $args{'attributes_ref'};
+    my $ARGSRef    = $args{'args_ref'};
     my @results;
 
     foreach my $attribute (@$attributes) {
@@ -759,14 +759,14 @@ sub update {
         if ( defined $ARGSRef->{$attribute} ) {
             $value = $ARGSRef->{$attribute};
         } elsif (
-            defined( $args{'AttributePrefix'} )
+            defined( $args{'attribute_prefix'} )
             && defined(
-                $ARGSRef->{ $args{'AttributePrefix'} . "-" . $attribute }
+                $ARGSRef->{ $args{'attribute_prefix'} . "-" . $attribute }
             )
             )
         {
             $value
-                = $ARGSRef->{ $args{'AttributePrefix'} . "-" . $attribute };
+                = $ARGSRef->{ $args{'attribute_prefix'} . "-" . $attribute };
 
         } else {
             next;
@@ -781,7 +781,7 @@ sub update {
         # and might not have a name method.
         # If it fails, we don't care
         eval {
-            my $object = $attribute . "Obj";
+            my $object = $attribute . "_obj";
             next if ( $self->can($object) && $self->$object->name eq $value );
         };
         next if ( $value eq ( $self->$attribute() || '' ) );
@@ -1458,7 +1458,7 @@ sub _add_custom_field_value {
                 if ( $i < $cf_values ) {
                     my ( $val, $msg ) = $cf->delete_value_for_object(
                         object  => $self,
-                        Content => $value->content
+                        content => $value->content
                     );
                     unless ($val) {
                         return ( 0, $msg );
@@ -1505,7 +1505,7 @@ sub _add_custom_field_value {
 
         my ( $new_value_id, $value_msg ) = $cf->add_value_for_object(
             object       => $self,
-            Content      => $args{'value'},
+            content      => $args{'value'},
             large_content => $args{'large_content'},
             content_type  => $args{'content_type'},
         );
@@ -1556,7 +1556,7 @@ sub _add_custom_field_value {
     else {
         my ( $new_value_id, $msg ) = $cf->add_value_for_object(
             object       => $self,
-            Content      => $args{'value'},
+            content      => $args{'value'},
             large_content => $args{'large_content'},
             content_type  => $args{'content_type'},
         );
@@ -1613,7 +1613,7 @@ sub delete_custom_field_value {
     my ( $val, $msg ) = $cf->delete_value_for_object(
         object  => $self,
         id      => $args{'value_id'},
-        Content => $args{'value'},
+        content => $args{'value'},
     );
     unless ($val) {
         return ( 0, $msg );
