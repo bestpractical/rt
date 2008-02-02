@@ -99,11 +99,11 @@ sub load {
     my $object = $self->_get_object($privacy);
 
     if ($object) {
-        $self->{'Attribute'} = $object->attributes->with_id($id);
-        if ( $self->{'Attribute'}->id ) {
-            $self->{'id'}      = $self->{'Attribute'}->id;
-            $self->{'Privacy'} = $privacy;
-            $self->{'type'} = $self->{'Attribute'}->sub_value('SearchType');
+        $self->{'attribute'} = $object->attributes->with_id($id);
+        if ( $self->{'attribute'}->id ) {
+            $self->{'id'}      = $self->{'attribute'}->id;
+            $self->{'privacy'} = $privacy;
+            $self->{'type'} = $self->{'attribute'}->sub_value('SearchType');
             return ( 1, _( "Loaded search %1", $self->name ) );
         } else {
             Jifty->log->error( "Could not load attribute " 
@@ -126,26 +126,26 @@ Takes a privacy, an optional type, a name, and a hashref containing the
 search parameters.  Saves the given parameters to the appropriate user/
 group object, and loads the resulting search.  Returns a tuple of status
 and message, where status is true on success.  Defaults are:
-  Privacy:      undef
+  privacy:      undef
   Type:         Ticket
   name:         "new search"
-  SearchParams: (empty hash)
+  search_params: (empty hash)
 
 =cut
 
 sub save {
     my $self = shift;
     my %args = (
-        'Privacy'      => 'RT::Model::User-' . $self->current_user->id,
+        'privacy'      => 'RT::Model::User-' . $self->current_user->id,
         'type'         => 'Ticket',
         'name'         => 'new search',
-        'SearchParams' => {},
+        'search_params' => {},
         @_
     );
-    my $privacy = $args{'Privacy'};
+    my $privacy = $args{'privacy'};
     my $type    = $args{'type'};
     my $name    = $args{'name'};
-    my %params  = %{ $args{'SearchParams'} };
+    my %params  = %{ $args{'search_params'} };
 
     $params{'SearchType'} = $type;
     my $object = $self->_get_object($privacy);
@@ -167,9 +167,9 @@ sub save {
         'content'     => \%params
     );
     if ($att_id) {
-        $self->{'Attribute'} = $object->attributes->with_id($att_id);
+        $self->{'attribute'} = $object->attributes->with_id($att_id);
         $self->{'id'}        = $att_id;
-        $self->{'Privacy'}   = $privacy;
+        $self->{'privacy'}   = $privacy;
         $self->{'type'}      = $type;
         return ( 1, _( "Saved search %1", $name ) );
     } else {
@@ -181,7 +181,7 @@ sub save {
 =head2 Update
 
 Updates the parameters of an existing search.  Takes the arguments
-"name" and "SearchParams"; SearchParams should be a hashref containing
+"name" and "search_params"; search_params should be a hashref containing
 the new parameters of the search.  If name is not specified, the name
 will not be changed.
 
@@ -191,18 +191,18 @@ sub update {
     my $self = shift;
     my %args = (
         'name'         => '',
-        'SearchParams' => {},
+        'search_params' => {},
         @_
     );
 
     return ( 0, _("No search loaded") ) unless $self->id;
     return ( 0, _("Could not load search attribute") )
-        unless $self->{'Attribute'}->id;
+        unless $self->{'attribute'}->id;
     my ( $status, $msg )
-        = $self->{'Attribute'}->set_sub_values( %{ $args{'SearchParams'} } );
+        = $self->{'attribute'}->set_sub_values( %{ $args{'search_params'} } );
     if ( $status && $args{'name'} ) {
         ( $status, $msg )
-            = $self->{'Attribute'}->set_description( $args{'name'} );
+            = $self->{'attribute'}->set_description( $args{'name'} );
     }
     return ( $status, _( "Search update: %1", $msg ) );
 }
@@ -217,7 +217,7 @@ where status is true upon success.
 sub delete {
     my $self = shift;
 
-    my ( $status, $msg ) = $self->{'Attribute'}->delete;
+    my ( $status, $msg ) = $self->{'attribute'}->delete;
     if ($status) {
 
         # we need to do_search to refresh current user's attributes
@@ -238,21 +238,21 @@ Returns the name of the search.
 
 sub name {
     my $self = shift;
-    return unless ref( $self->{'Attribute'} ) eq 'RT::Model::Attribute';
-    return $self->{'Attribute'}->description();
+    return unless ref( $self->{'attribute'} ) eq 'RT::Model::Attribute';
+    return $self->{'attribute'}->description();
 }
 
 =head2 GetParameter
 
-Returns the given named parameter of the search, e.g. 'Query', 'format'.
+Returns the given named parameter of the search, e.g. 'query', 'format'.
 
 =cut
 
 sub get_parameter {
     my $self  = shift;
     my $param = shift;
-    return unless ref( $self->{'Attribute'} ) eq 'RT::Model::Attribute';
-    return $self->{'Attribute'}->sub_value($param);
+    return unless ref( $self->{'attribute'} ) eq 'RT::Model::Attribute';
+    return $self->{'attribute'}->sub_value($param);
 }
 
 =head2 id
@@ -266,7 +266,7 @@ sub id {
     return $self->{'id'};
 }
 
-=head2 Privacy
+=head2 privacy
 
 Returns the principal object to whom this search belongs, in a string
 "<class>-<id>", e.g. "RT::Model::Group-16".
@@ -275,7 +275,7 @@ Returns the principal object to whom this search belongs, in a string
 
 sub privacy {
     my $self = shift;
-    return $self->{'Privacy'};
+    return $self->{'privacy'};
 }
 
 =head2 Type
