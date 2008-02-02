@@ -14,7 +14,7 @@ use warnings;
 
 use RT::Test;
 use Test::More;
-plan tests => 98;
+plan tests => 99;
 
 use RT;
 

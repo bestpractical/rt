@@ -289,10 +289,10 @@ sub mail_error {
 
     }
 
-    send_email( entity => $entity, Bounce => 1 );
+    send_email( entity => $entity, bounce => 1 );
 }
 
-=head2 send_email entity => undef, [ Bounce => 0, ticket => undef, transaction => undef ]
+=head2 send_email entity => undef, [ bounce => 0, ticket => undef, transaction => undef ]
 
 Sends an email (passed as a L<MIME::Entity> object C<ENTITY>) using
 RT's outgoing mail configuration. If C<BOUNCE> is passed, and is a
@@ -334,12 +334,6 @@ sub send_email {
         transaction => undef,
         @_,
     );
-    foreach my $arg (qw(Entity Bounce)) {
-        next unless defined $args{ lc $arg };
-
-        Jifty->log->warn( "'" . lc($arg) . "' argument is deprecated, use '$arg' instead" );
-        $args{$arg} = delete $args{ lc $arg };
-    }
 
     unless ( $args{'entity'} ) {
         Jifty->log->fatal("Could not send mail without 'entity' object");
@@ -406,7 +400,7 @@ sub send_email {
         my $path = RT->config->get('SendmailPath');
         my $args = RT->config->get('SendmailArguments');
         $args .= ' ' . RT->config->get('SendmailBounceArguments')
-            if $args{'Bounce'};
+            if $args{'bounce'};
 
         # VERP
         if (    $args{'transaction'}

@@ -295,10 +295,11 @@ sub create {
         @_
     );
 
-    $args{object_id} ||= $args{Ticket};
+    $args{object_id} ||= $args{ticket};
 
     #if we didn't specify a ticket, we need to bail
     unless ( $args{'object_id'} && $args{'object_type'} ) {
+        Carp::cluck();
         return (
             0,
             _(  "Transaction->create couldn't, as you didn't specify an object type and id"

@@ -383,7 +383,7 @@ sub _safe_run_child (&) {
     return shift->();
 }
 
-=head2 sign_encrypt Entity => MIME::Entity, [ encrypt => 1, sign => 1, ... ]
+=head2 sign_encrypt entity => MIME::Entity, [ encrypt => 1, sign => 1, ... ]
 
 Signs and/or encrypts an email message with GnuPG utility.
 
@@ -418,7 +418,7 @@ Returns a hash with the following keys:
 sub sign_encrypt {
     my %args = (@_);
 
-    my $entity = $args{'Entity'};
+    my $entity = $args{'entity'};
     if ( $args{'sign'} && !defined $args{'Signer'} ) {
         $args{'Signer'} = use_key_for_signing()
             || ( Mail::Address->parse( $entity->head->get('From') ) )[0]
@@ -613,13 +613,13 @@ sub sign_encrypt_rfc3156 {
 sub sign_encrypt_inline {
     my %args = (@_);
 
-    my $entity = $args{'Entity'};
+    my $entity = $args{'entity'};
 
     my %res;
     $entity->make_singlepart;
     if ( $entity->is_multipart ) {
         foreach ( $entity->parts ) {
-            %res = sign_encrypt_inline( @_, Entity => $_ );
+            %res = sign_encrypt_inline( @_, entity => $_ );
             return %res if $res{'exit_code'};
         }
         return %res;
@@ -1070,19 +1070,19 @@ sub find_protected_parts {
             };
     }
 
-    push @res, find_protected_parts( Entity => $_ )
+    push @res, find_protected_parts( entity => $_ )
         foreach grep !$skip{"$_"}, $entity->parts;
 
     return @res;
 }
 
-=head2 verify_decrypt Entity => undef, [ Detach => 1, Passphrase => undef ]
+=head2 verify_decrypt entity => undef, [ Detach => 1, Passphrase => undef ]
 
 =cut
 
 sub verify_decrypt {
     my %args = ( entity => undef, detach => 1, @_ );
-    my @protected = find_protected_parts( Entity => $args{'entity'} );
+    my @protected = find_protected_parts( entity => $args{'entity'} );
     my @res;
 
     # XXX: detaching may brake nested signatures
@@ -2399,7 +2399,7 @@ sub dry_sign {
     my %res = sign_encrypt(
         sign    => 1,
         encrypt => 0,
-        Entity  => $mime,
+        entity  => $mime,
         Signer  => $from,
     );
 

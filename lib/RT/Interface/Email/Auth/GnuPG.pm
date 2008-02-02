@@ -80,7 +80,7 @@ sub get_current_user {
 
     my $msg = $args{'Message'}->dup;
 
-    my ( $status, @res ) = verify_decrypt( Entity => $args{'Message'} );
+    my ( $status, @res ) = verify_decrypt( entity => $args{'Message'} );
     if ( $status && !@res ) {
         $args{'Message'}
             ->head->add( 'X-RT-Incoming-Encryption' => 'Not encrypted' );
@@ -244,7 +244,7 @@ sub check_bad_data {
 
 sub verify_decrypt {
     my %args = (
-        Entity => undef,
+        entity => undef,
         @_
     );
 

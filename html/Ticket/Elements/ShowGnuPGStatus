@@ -104,7 +104,7 @@ my $reverify_cb = sub  {
     }
 
     use RT::Interface::Email::Auth::GnuPG;
-    my ($status, @res) = RT::Interface::Email::Auth::GnuPG::verify_decrypt( Entity => $entity );
+    my ($status, @res) = RT::Interface::Email::Auth::GnuPG::verify_decrypt( entity => $entity );
     if ( $status && !@res ) {
         # imposible in this situation
         return (0, "Content of attachment #". $original->id ." is not signed and/or encrypted");
