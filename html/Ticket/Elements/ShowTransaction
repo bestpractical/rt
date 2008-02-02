@@ -153,7 +153,7 @@ $time_taken = $Transaction->time_taken . " min"
 
 unless ($Attachments) { 
     my $attachments = $Transaction->attachments;
-    $attachments->query_columns( qw( id filename content_type headers subject Parent content_encoding content_type transaction_id) );
+    $attachments->query_columns( qw( id filename content_type headers subject parent content_encoding content_type transaction_id) );
     $Attachments = $attachments->items_array_ref();
 }
 my $titlebar_commands = '&nbsp;';
@@ -179,7 +179,7 @@ if ( $type =~ /EmailRecord$/ ) {
 else {
 
     unless ( $show_headers ) {
-        @display_headers = qw(To From RT-Send-Cc Cc Bcc date subject);
+        @display_headers = qw(To From RT-Send-Cc Cc Bcc Date Subject);
     }
 
     if ( $Attachments->[0] && $ShowTitleBarCommands ) {

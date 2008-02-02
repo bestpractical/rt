@@ -78,7 +78,7 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
     column effective_id => max_length is 11, type is 'int(11)', default is '0';
-    column queue       => max_length is 11, type is 'int(11)', default is '0';
+    column queue       => references RT::Model::Queue;
     column type => max_length is 16, type is 'varchar(16)', default is '';
     column issue_statement => max_length is 11,
         type is 'int(11)', default is '0';
@@ -1731,7 +1731,7 @@ sub set_started {
     my $TicketAsSystem = RT::Model::Ticket->new( RT->system_user );
     $TicketAsSystem->load( $self->id );
     if ( $TicketAsSystem->status eq 'new' ) {
-        $TicketAsSystem->open();
+        $TicketAsSystem->set_status('open');
     }
 
     return ( $self->_set( column => 'started', value => $time_obj->iso ) );
@@ -2893,85 +2893,6 @@ sub set_status {
 
 # }}}
 
-# {{{ sub delete
-
-=head2 Delete
-
-Takes no arguments. Marks this ticket for garbage collection
-
-=cut
-
-sub delete {
-    my $self = shift;
-    return ( $self->set_status('deleted') );
-
-    # TODO: garbage collection
-}
-
-# }}}
-
-# {{{ sub Stall
-
-=head2 Stall
-
-Sets this ticket's status to stalled
-
-=cut
-
-sub stall {
-    my $self = shift;
-    return ( $self->set_status('stalled') );
-}
-
-# }}}
-
-# {{{ sub Reject
-
-=head2 Reject
-
-Sets this ticket's status to rejected
-
-=cut
-
-sub reject {
-    my $self = shift;
-    return ( $self->set_status('rejected') );
-}
-
-# }}}
-
-# {{{ sub Open
-
-=head2 Open
-
-Sets this ticket\'s status to Open
-
-=cut
-
-sub open {
-    my $self = shift;
-    return ( $self->set_status('open') );
-}
-
-# }}}
-
-# {{{ sub Resolve
-
-=head2 Resolve
-
-Sets this ticket\'s status to Resolved
-
-=cut
-
-sub resolve {
-    my $self = shift;
-    return ( $self->set_status('resolved') );
-}
-
-# }}}
-
-# }}}
-
 # {{{ Actions + Routines dealing with transactions
 
 # {{{ sub set_Told and _setTold
@@ -3103,38 +3024,6 @@ sub DESTROY {
 
 # {{{ PRIVATE UTILITY METHODS. Mostly needed so Ticket can be a DBIx::Record
 
-# {{{ sub _OverlayAccessible
-
-sub _overlay_accessible {
-    {   effective_id      => { 'read' => 1, 'write' => 1, 'public' => 1 },
-        queue            => { 'read' => 1, 'write' => 1 },
-        Requestors       => { 'read' => 1, 'write' => 1 },
-        owner            => { 'read' => 1, 'write' => 1 },
-        subject          => { 'read' => 1, 'write' => 1 },
-        initial_priority => { 'read' => 1, 'write' => 1 },
-        final_priority   => { 'read' => 1, 'write' => 1 },
-        priority         => { 'read' => 1, 'write' => 1 },
-        status           => { 'read' => 1, 'write' => 1 },
-        time_estimated   => { 'read' => 1, 'write' => 1 },
-        time_worked      => { 'read' => 1, 'write' => 1 },
-        time_left        => { 'read' => 1, 'write' => 1 },
-        told             => { 'read' => 1, 'write' => 1 },
-        resolved         => { 'read' => 1 },
-        type             => { 'read' => 1 },
-        starts        => { 'read' => 1, 'write' => 1 },
-        started       => { 'read' => 1, 'write' => 1 },
-        due           => { 'read' => 1, 'write' => 1 },
-        creator       => { 'read' => 1, 'auto'  => 1 },
-        created       => { 'read' => 1, 'auto'  => 1 },
-        last_updated_by => { 'read' => 1, 'auto'  => 1 },
-        last_updated   => { 'read' => 1, 'auto'  => 1 }
-    };
-
-}
-
-# }}}
-
-# {{{ sub _set
 
 sub _set {
     my $self = shift;
