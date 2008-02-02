@@ -281,114 +281,6 @@ sub _post_process_new_entity {
     RT::I18N::set_mime_entity_to_encoding( $self->{'entity'}, 'utf-8' );
 }
 
-=head2 ParseCcAddressesFromHead HASHREF
-
-Takes a hashref object containing queue_obj, Head and current_user objects.
-Returns a list of all email addresses in the To and Cc 
-headers b<except> the current Queue\'s email addresses, the CurrentUser\'s 
-email address and anything that the RT->config->get('RTAddressRegexp') matches.
-
-=cut
-
-sub parse_cc_addresses_from_head {
-
-    my $self = shift;
-
-    my %args = (
-        queue_obj   => undef,
-        current_user => undef,
-        @_
-    );
-
-    my (@Addresses);
-
-    my @ToObjs = Mail::Address->parse( $self->head->get('To') );
-    my @CcObjs = Mail::Address->parse( $self->head->get('Cc') );
-
-    foreach my $AddrObj ( @ToObjs, @CcObjs ) {
-        my $Address = $AddrObj->address;
-        my $user = RT::Model::User->new( current_user => RT->system_user );
-        $Address = $user->canonicalize_email($Address);
-        next if ( lc $args{'CurrentUser'}->email            eq lc $Address );
-        next if ( lc $args{'queue_obj'}->correspond_address eq lc $Address );
-        next if ( lc $args{'queue_obj'}->comment_address    eq lc $Address );
-        next if ( $self->is_rt_address($Address) );
-
-        push( @Addresses, $Address );
-    }
-    return (@Addresses);
-}
-
-=head2 parse_sender_address_from_head
-
-Takes a MIME::Header object. Returns a tuple: (user@host, friendly name) 
-of the From (evaluated in order of Reply-To:, From:, Sender)
-
-=cut
-
-sub parse_sender_address_from_head {
-    my $self = shift;
-
-    #Figure out who's sending this message.
-    my $From = $self->head->get('Reply-To')
-        || $self->head->get('From')
-        || $self->head->get('Sender');
-    return ( $self->parse_address_from_header($From) );
-}
-
-=head2 parse_errors_to_address_from_head
-
-Takes a MIME::Header object. Return a single value : user@host
-of the From (evaluated in order of Errors-To:,Reply-To:, From:, Sender)
-
-=cut
-
-sub parse_errors_to_address_from_head {
-    my $self = shift;
-
-    #Figure out who's sending this message.
-
-    foreach my $header ( 'Errors-To', 'Reply-To', 'From', 'Sender' ) {
-
-        # If there's a header of that name
-        my $headerobj = $self->head->get($header);
-        if ($headerobj) {
-            my ( $addr, $name )
-                = $self->parse_address_from_header($headerobj);
-
-            # If it's got actual useful content...
-            return ($addr) if ($addr);
-        }
-    }
-}
-
-=head2 parse_address_from_header ADDRESS
-
-Takes an address from $self->head->get('Line') and returns a tuple: user@host, friendly name
-
-=cut
-
-sub parse_address_from_header {
-    my $self = shift;
-    my $Addr = shift;
-
-    # Perl 5.8.0 breaks when doing regex matches on utf8
-    Encode::_utf8_off($Addr) if $] == 5.008;
-    my @Addresses = Mail::Address->parse($Addr);
-
-    my $AddrObj = $Addresses[0];
-
-    unless ( ref($AddrObj) ) {
-        return ( undef, undef );
-    }
-
-    my $name = ( $AddrObj->phrase || $AddrObj->comment || $AddrObj->address );
-
-    #Lets take the from and load a user object.
-    my $Address = $AddrObj->address;
-
-    return ( $Address, $name );
-}
 
 =head2 IsRTaddress ADDRESS
 
@@ -564,10 +456,5 @@ sub DESTROY {
     my $self = shift;
     File::Path::rmtree( [ @{ $self->{'AttachmentDirs'} } ], 0, 1 );
 }
-
-eval "require RT::EmailParser_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/EmailParser_Vendor.pm} );
-eval "require RT::EmailParser_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/EmailParser_Local.pm} );
 
 1;

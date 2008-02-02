@@ -190,36 +190,6 @@ sub check_for_bounce {
     return ( $ReturnPath =~ /<>/ );
 }
 
-=head2 is_rt_address ADDRESS
-
-Takes a single parameter, an email address.
-Returns true if that address matches the C<RTAddressRegexp> config option.
-Returns false, otherwise.
-
-=cut
-
-sub is_rt_address {
-    my $address = shift || '';
-
-    # Example: the following rule would tell RT not to Cc
-    #   "tickets@noc.example.com"
-    my $re_address = RT->config->get('RTAddressRegexp');
-    if ( $re_address && $address =~ /$re_address/i ) {
-        return 1;
-    }
-    return undef;
-}
-
-=head2 cull_rt_addresses ARRAY
-
-Takes a single argument, an array of email addresses.
-Returns the same array with any is_rt_address()es weeded out.
-
-=cut
-
-sub cull_rt_addresses {
-    return grep !is_rt_address($_), @_;
-}
 
 =head2 mail_error PARAM HASH
 
@@ -887,7 +857,7 @@ sub parse_cc_addresses_from_head {
         next if lc $args{'CurrentUser'}->email            eq $address;
         next if lc $args{'queue_obj'}->correspond_address eq $address;
         next if lc $args{'queue_obj'}->comment_address    eq $address;
-        next if is_rt_address($address);
+        next if RT::EmailParser->is_rt_address($address);
 
         push @res, $address;
     }

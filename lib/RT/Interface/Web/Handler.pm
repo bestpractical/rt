@@ -69,14 +69,6 @@ sub default_handler_args {
             ),
             [ standard => $RT::MasonComponentRoot ]
         ],
-        default_escape_flags => 'h',
-        data_dir             => "$RT::MasonDataDir",
-        allow_globals        => [qw(%session)],
-
-        # Turn off static source if we're in developer mode.
-        static_source    => ( RT->config->get('DevelMode') ? '0' : '1' ),
-        use_object_files => ( RT->config->get('DevelMode') ? '0' : '1' ),
-        autoflush        => 0,
         error_format => ( RT->config->get('DevelMode') ? 'html' : 'brief' ),
         request_class => 'RT::Interface::Web::Request',
     );
@@ -93,80 +85,11 @@ sub default_handler_args {
 
 sub new {
     my $class = shift;
-    $class->init_session_dir;
-
-    if ( ( $mod_perl::VERSION && $mod_perl::VERSION >= 1.9908 ) || $CGI::MOD_PERL ) {
-        goto &NewApacheHandler;
-    } else {
-        goto &NewCGIHandler;
-    }
+    my $self = {};
+    bless $self, $class;
+    return $self;
 }
 
-sub init_session_dir {
-
-    # Activate the following if running httpd as root (the normal case).
-    # Resets ownership of all files Created by Mason at startup.
-    # Note that mysql uses DB for sessions, so there's no need to do this.
-    unless ( RT->config->get('DatabaseType') =~ /(?:mysql|Pg)/ ) {
-
-        # Clean up our umask to protect session files
-        umask(0077);
-
-        if ( $CGI::MOD_PERL and $CGI::MOD_PERL < 1.9908 ) {
-
-            chown( Apache->server->uid, Apache->server->gid,
-                $RT::MasonSessionDir )
-                if Apache->server->can('uid');
-        }
-
-        # Die if WebSessionDir doesn't exist or we can't write to it
-        stat($RT::MasonSessionDir);
-        die "Can't read and write $RT::MasonSessionDir"
-            unless ( ( -d _ ) and ( -r _ ) and ( -w _ ) );
-    }
-
-}
-
-# }}}
-
-# {{{ sub NewApacheHandler
-
-=head2 NewApacheHandler
-
-  Takes extra options to pass to HTML::Mason::ApacheHandler->new
-  Returns a new Mason::ApacheHandler object
-
-=cut
-
-sub new_apache_handler {
-    require HTML::Mason::ApacheHandler;
-    return NewHandler( 'HTML::Mason::ApacheHandler', args_method => "CGI",
-        @_ );
-}
-
-# }}}
-
-# {{{ sub NewCGIHandler
-
-=head2 NewCGIHandler
-
-  Returns a new Mason::CGIHandler object
-
-=cut
-
-sub new_cgi_handler {
-    require HTML::Mason::CGIHandler;
-    return NewHandler( 'HTML::Mason::CGIHandler', @_ );
-}
-
-sub new_handler {
-    my $class = shift;
-    my $handler = $class->new( DefaultHandlerArgs(), @_ );
-
-    $handler->interp->set_escape( h => \&RT::Interface::Web::escape_utf8 );
-    $handler->interp->set_escape( u => \&RT::Interface::Web::escape_uri );
-    return ($handler);
-}
 
 =head2 CleanupRequest
 

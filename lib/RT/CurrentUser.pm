@@ -159,47 +159,6 @@ sub current_user {
 
 }
 
-=head2 Authenticate
-
-Takes $password, $Created and $nonce, and returns a boolean value
-representing whether the authentication succeeded.
-
-If both $nonce and $Created are specified, validate $password against:
-
-    encode_base64(sha1(
-        $nonce .
-        $Created .
-        sha1_hex( "$username:$realm:$server_pass" )
-    ))
-
-where $server_pass is the md5_hex(password) digest stored in the
-database, $Created is in ISO time format, and $nonce is a random
-string no longer than 32 bytes.
-
-=cut
-
-sub authenticate {
-    my ( $self, $password, $Created, $nonce, $realm ) = @_;
-
-    require Digest::MD5;
-    require Digest::SHA1;
-    require MIME::Base64;
-
-    my $username    = $self->user_object->name                or return;
-    my $server_pass = $self->user_object->__value('password') or return;
-    my $auth_digest = MIME::Base64::encode_base64(
-        Digest::SHA1::sha1(
-                  $nonce 
-                . $Created
-                . Digest::MD5::md5_hex("$username:$realm:$server_pass")
-        )
-    );
-
-    chomp($password);
-    chomp($auth_digest);
-
-    return ( $password eq $auth_digest );
-}
 
 sub has_right {
     my $self = shift;

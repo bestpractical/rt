@@ -171,15 +171,6 @@ Method can be called as class method.
 
 =cut
 
-=head2 DatabaseHandle
-
-Returns the current L<database handle object RT::Handle>.
-
-
-=cut
-
-sub database_handle { return $Handle }
-
 =head2 System
 
 Returns the current L<system object RT::System>. See also
