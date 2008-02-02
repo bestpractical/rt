@@ -139,8 +139,8 @@ unless ($ticket->current_user_has_right('ModifyTicket') ||
 my $cc = join ", ", @{ vsplit($changes{Cc}) };
 my $bcc = join ", ", @{ vsplit($changes{Bcc}) };
 my ($n, $s) = $ticket->$action(mime_obj => $ent,
-                               CcMessageTo => $cc,
-                               BccMessageTo => $bcc,
+                               cc_message_to => $cc,
+                               bcc_message_to => $bcc,
                                time_taken => $changes{time_worked} || 0);
 $c = "# ".$s;
 if ($changes{Status}) {

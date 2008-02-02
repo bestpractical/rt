@@ -569,8 +569,8 @@ sub process_update_message {
     my $cc  = $args{ARGSRef}->{'UpdateCc'};
 
     my %message_args = (
-        CcMessageTo  => $cc,
-        BccMessageTo => $bcc,
+        cc_message_to  => $cc,
+        bcc_message_to => $bcc,
         sign         => $args{ARGSRef}->{'sign'},
         encrypt      => $args{ARGSRef}->{'encrypt'},
         mime_obj      => $Message,

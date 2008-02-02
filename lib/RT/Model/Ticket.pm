@@ -1856,7 +1856,7 @@ Takes a hashref with the following attributes:
 If mime_obj is undefined, Content will be used to build a MIME::Entity for this
 commentl
 
-mime_obj, time_taken, CcMessageTo, BccMessageTo, Content, dry_run
+mime_obj, time_taken, cc_message_to, bcc_message_to, Content, dry_run
 
 If dry_run is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
 They will, however, be prepared and you'll be able to access them through the transaction_obj
@@ -1907,7 +1907,7 @@ Correspond on this ticket.
 Takes a hashref with the following attributes:
 
 
-mime_obj, time_taken, CcMessageTo, BccMessageTo, Content, dry_run
+mime_obj, time_taken, cc_message_to, bcc_message_to, Content, dry_run
 
 if there's no mime_obj, Content is used to build a MIME::Entity object
 
@@ -1999,7 +1999,7 @@ sub _record_note {
     # convert text parts into utf-8
     RT::I18N::set_mime_entity_to_utf8( $args{'mime_obj'} );
 
-    # If we've been passed in CcMessageTo and BccMessageTo fields,
+    # If we've been passed in cc_message_to and bcc_message_to fields,
     # add them to the mime object for passing on to the transaction handler
     # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and
     # RT-Send-Bcc: headers

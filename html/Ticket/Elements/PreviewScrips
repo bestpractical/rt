@@ -129,8 +129,8 @@ my $Message = make_mime_entity(
 );
 
 my ( $Transaction, $description, $object ) = $ticket_obj->$action(
-    CcMessageTo  => $ARGS{'UpdateCc'},
-    BccMessageTo => $ARGS{'UpdateBcc'},
+    cc_message_to  => $ARGS{'UpdateCc'},
+    bcc_message_to => $ARGS{'UpdateBcc'},
     mime_obj      => $Message,
     time_taken    => $ARGS{'UpdateTimeWorked'},
     DryRun       => 1
@@ -165,8 +165,8 @@ my $Message = make_mime_entity(
 );
 
 my ( $id, $msg, $txn ) = $ticket_obj->$action(
-    CcMessageTo  => $ARGS{'UpdateCc'},
-    BccMessageTo => $ARGS{'UpdateBcc'},
+    cc_message_to  => $ARGS{'UpdateCc'},
+    bcc_message_to => $ARGS{'UpdateBcc'},
     mime_obj      => $Message,
     time_taken    => $ARGS{'UpdateTimeWorked'},
     DryRun       => 1

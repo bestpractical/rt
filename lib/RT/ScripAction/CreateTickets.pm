@@ -495,7 +495,7 @@ sub update_by_template {
         if ( $ticketargs->{'UpdateType'} =~ /^(private|comment)$/i ) {
             my ( $Transaction, $description, $object )
                 = $T::Tickets{$template_id}->comment(
-                BccMessageTo => $ticketargs->{'Bcc'},
+                bcc_message_to => $ticketargs->{'Bcc'},
                 mime_obj      => $ticketargs->{'mime_obj'},
                 time_taken    => $ticketargs->{'time_worked'}
                 );
@@ -508,7 +508,7 @@ sub update_by_template {
         {
             my ( $Transaction, $description, $object )
                 = $T::Tickets{$template_id}->correspond(
-                BccMessageTo => $ticketargs->{'Bcc'},
+                bcc_message_to => $ticketargs->{'Bcc'},
                 mime_obj      => $ticketargs->{'mime_obj'},
                 time_taken    => $ticketargs->{'time_worked'}
                 );
