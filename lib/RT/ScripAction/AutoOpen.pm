@@ -85,9 +85,9 @@ sub commit {
     my $self = shift;
 
     my $oldstatus = $self->ticket_obj->status;
-    $self->ticket_obj->__set( column => 'Status', value => 'open' );
+    $self->ticket_obj->__set( column => 'status', value => 'open' );
     $self->ticket_obj->_new_transaction(
-        type      => 'Status',
+        type      => 'status',
         field     => 'Status',
         old_value => $oldstatus,
         new_value => 'open',

@@ -270,8 +270,8 @@ sub create {
         }
     }
 
-    $attribs{'Creator'} ||= $self->current_user->id
-        if $self->can('Creator') && $self->current_user;
+    $attribs{'creator'} ||= $self->current_user->id
+        if $self->can('creator') && $self->current_user;
 
     my $now = RT::Date->new( current_user => $self->current_user );
     $now->set( format => 'unix', value => time );

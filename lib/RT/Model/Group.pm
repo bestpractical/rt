@@ -1018,6 +1018,7 @@ sub has_member {
     } elsif ( $principal =~ /^\d+$/ ) {
         $id = $principal;
     } else {
+        Carp::cluck;
         Jifty->log->error(
                   "Group::has_member was called with an argument that"
                 . " isn't an RT::Model::Principal or id. It's $principal" );
