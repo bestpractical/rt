@@ -335,9 +335,9 @@ sub create {
         id                  => undef,
         effective_id         => undef,
         queue               => undef,
-        Requestor           => undef,
-        Cc                  => undef,
-        AdminCc             => undef,
+        requestor           => undef,
+        cc                  => undef,
+        admin_cc             => undef,
         type                => 'ticket',
         owner               => undef,
         subject             => '',
@@ -753,7 +753,7 @@ sub create {
         );
         if ( $self->id && $Trans ) {
 
-            $TransObj->update_custom_fields( ARGSRef => \%args );
+            $TransObj->update_custom_fields( args_ref => \%args );
 
             Jifty->log->info( "Ticket "
                     . $self->id
@@ -1870,8 +1870,8 @@ sub comment {
     my $self = shift;
 
     my %args = (
-        CcMessageTo  => undef,
-        BccMessageTo => undef,
+        cc_message_to  => undef,
+        bcc_message_to => undef,
         mime_obj      => undef,
         content      => undef,
         time_taken    => 0,
@@ -1923,8 +1923,8 @@ Returns: Transaction id, Error Message, Transaction object
 sub correspond {
     my $self = shift;
     my %args = (
-        CcMessageTo  => undef,
-        BccMessageTo => undef,
+        cc_message_to  => undef,
+        bcc_message_to => undef,
         mime_obj      => undef,
         content      => undef,
         time_taken    => 0,
@@ -1972,8 +1972,8 @@ Performs no access control checks. hence, dangerous.
 sub _record_note {
     my $self = shift;
     my %args = (
-        CcMessageTo   => undef,
-        BccMessageTo  => undef,
+        cc_message_to   => undef,
+        bcc_message_to  => undef,
         encrypt       => undef,
         sign          => undef,
         mime_obj       => undef,
@@ -1991,7 +1991,7 @@ sub _record_note {
     unless ( $args{'mime_obj'} ) {
         $args{'mime_obj'} = MIME::Entity->build(
             Data => (
-                ref $args{'Content'} ? $args{'Content'} : [ $args{'Content'} ]
+                ref $args{'content'} ? $args{'content'} : [ $args{'content'} ]
             )
         );
     }
@@ -2004,14 +2004,13 @@ sub _record_note {
     # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and
     # RT-Send-Bcc: headers
 
-    foreach my $type (qw/Cc Bcc/) {
-        if ( defined $args{ $type . 'MessageTo' } ) {
+    foreach my $type (qw/cc bcc/) {
+        next unless defined $args{ $type . '_message_to' };
 
-            my $addresses = join ', ',
-                ( map { RT::Model::User->canonicalize_email( $_->address ) }
-                    Mail::Address->parse( $args{ $type . 'MessageTo' } ) );
-            $args{'mime_obj'}->head->add( 'RT-Send-' . $type, $addresses );
-        }
+        my $addresses = join ', ',
+            ( map { RT::Model::User->canonicalize_email( $_->address ) }
+                Mail::Address->parse( $args{ $type . '_message_to' } ) );
+        $args{'mime_obj'}->head->add( 'RT-Send-' . $type, $addresses );
     }
 
     foreach my $argument (qw(encrypt sign)) {
