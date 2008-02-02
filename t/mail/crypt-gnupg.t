@@ -42,7 +42,7 @@ diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
     is( $status[0]->{'status'}, 'DONE', 'good passphrase');
     is( $status[1]->{'operation'}, 'sign', 'operation is correct');
     is( $status[1]->{'status'}, 'DONE', 'done');
-    is( $status[1]->{'User'}->{'email'}, 'rt@example.com', 'correct email');
+    is( $status[1]->{'user'}->{'email'}, 'rt@example.com', 'correct email');
 
     ok( $entity->is_multipart, 'signed message is multipart' );
     is( $entity->parts, 2, 'two parts' );
@@ -57,7 +57,7 @@ diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
     is scalar @res, 1, 'one operation';
     @status = RT::Crypt::GnuPG::parse_status( $res[0]{'status'} );
     is( scalar @status, 1, 'one record');
-    is( $status[0]->{'operation'}, 'Verify', 'operation is correct');
+    is( $status[0]->{'operation'}, 'verify', 'operation is correct');
     is( $status[0]->{'status'}, 'DONE', 'good passphrase');
     is( $status[0]->{'trust'}, 'ULTIMATE', 'have trust value');
 }

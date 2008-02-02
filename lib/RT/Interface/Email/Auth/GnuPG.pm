@@ -69,20 +69,20 @@ use RT::EmailParser ();
 
 sub get_current_user {
     my %args = (
-        Message       => undef,
-        RawMessageRef => undef,
+        message       => undef,
+        raw_message_ref => undef,
         @_
     );
 
-    $args{'Message'}->head->delete($_)
-        for qw(X-RT-GnuPG-Status X-RT-Incoming-Encrypton
+    $args{'message'}->head->delete($_)
+        for qw(X-RT-GnuPG-status X-RT-Incoming-Encrypton
         X-RT-Incoming-Signature X-RT-Privacy);
 
-    my $msg = $args{'Message'}->dup;
+    my $msg = $args{'message'}->dup;
 
-    my ( $status, @res ) = verify_decrypt( entity => $args{'Message'} );
+    my ( $status, @res ) = verify_decrypt( entity => $args{'message'} );
     if ( $status && !@res ) {
-        $args{'Message'}
+        $args{'message'}
             ->head->add( 'X-RT-Incoming-Encryption' => 'Not encrypted' );
 
         return 1;
@@ -94,38 +94,38 @@ sub get_current_user {
     unless ($status) {
         Jifty->log->error("Had a problem during decrypting and verifying");
         my $reject
-            = handle_errors( Message => $args{'Message'}, Result => \@res );
+            = handle_errors( message => $args{'message'}, result => \@res );
         return ( 0,
             'rejected because of problems during decrypting and verifying' )
             if $reject;
     }
 
     # attach the original encrypted message
-    $args{'Message'}->attach(
-        type        => 'application/x-rt-original-message',
+    $args{'message'}->attach(
+        Type        => 'application/x-rt-original-message',
         Disposition => 'inline',
-        Data        => ${ $args{'RawMessageRef'} },
+        Data        => ${ $args{'raw_message_ref'} },
     );
 
-    $args{'Message'}->head->add( 'X-RT-GnuPG-Status' => $_->{'status'} )
+    $args{'message'}->head->add( 'X-RT-GnuPG-status' => $_->{'status'} )
         foreach @res;
-    $args{'Message'}->head->add( 'X-RT-Privacy' => 'PGP' );
+    $args{'message'}->head->add( 'X-RT-Privacy' => 'PGP' );
 
     # XXX: first entity only for now
     if (@res) {
         my $decrypted;
         my @status = RT::Crypt::GnuPG::parse_status( $res[0]->{'status'} );
         for (@status) {
-            if ( $_->{Operation} eq 'Decrypt' && $_->{Status} eq 'DONE' ) {
+            if ( $_->{operation} eq 'decrypt' && $_->{status} eq 'DONE' ) {
                 $decrypted = 1;
             }
-            if ( $_->{Operation} eq 'Verify' && $_->{Status} eq 'DONE' ) {
-                $args{'Message'}->head->add(
-                    'X-RT-Incoming-Signature' => $_->{UserString} );
+            if ( $_->{operation} eq 'verify' && $_->{status} eq 'DONE' ) {
+                $args{'message'}->head->add(
+                    'X-RT-Incoming-Signature' => $_->{user_string} );
             }
         }
 
-        $args{'Message'}->head->add(
+        $args{'message'}->head->add(
               'X-RT-Incoming-Encryption' => $decrypted
             ? 'Success'
             : 'Not encrypted'
@@ -137,37 +137,37 @@ sub get_current_user {
 
 sub handle_errors {
     my %args = (
-        Message => undef,
-        Result  => [],
+        message => undef,
+        result  => [],
         @_
     );
 
     my $reject = 0;
 
     my %sent_once = ();
-    foreach my $run ( @{ $args{'Result'} } ) {
+    foreach my $run ( @{ $args{'result'} } ) {
         my @status = RT::Crypt::GnuPG::parse_status( $run->{'status'} );
-        unless ( $sent_once{'Noprivate_key'} ) {
+        unless ( $sent_once{'no_private_key'} ) {
             unless (
                 check_no_private_key(
-                    Message => $args{'Message'},
-                    Status  => \@status
+                    message => $args{'message'},
+                    status  => \@status
                 )
                 )
             {
-                $sent_once{'Noprivate_key'}++;
+                $sent_once{'no_private_key'}++;
                 $reject = 1;
             }
         }
-        unless ( $sent_once{'BadData'} ) {
+        unless ( $sent_once{'bad_data'} ) {
             unless (
                 check_bad_data(
-                    Message => $args{'Message'},
-                    Status  => \@status
+                    message => $args{'message'},
+                    status  => \@status
                 )
                 )
             {
-                $sent_once{'BadData'}++;
+                $sent_once{'bad_data'}++;
                 $reject = 1;
             }
         }
@@ -176,34 +176,34 @@ sub handle_errors {
 }
 
 sub check_no_private_key {
-    my %args = ( Message => undef, Status => [], @_ );
-    my @status = @{ $args{'Status'} };
+    my %args = ( message => undef, status => [], @_ );
+    my @status = @{ $args{'status'} };
 
-    my @decrypts = grep $_->{'Operation'} eq 'Decrypt', @status;
+    my @decrypts = grep $_->{'operation'} eq 'decrypt', @status;
     return 1 unless @decrypts;
     foreach my $action (@decrypts) {
 
         # if at least one secrete key exist then it's another error
         return 1
-            if grep !$_->{'User'}{'SecretKeyMissing'},
-            @{ $action->{'EncryptedTo'} };
+            if grep !$_->{'user'}{'secret_key_missing'},
+            @{ $action->{'encrypted_to'} };
     }
 
     Jifty->log->error("Couldn't decrypt a message: have no private key");
 
     my $address = (
         RT::Interface::Email::parse_sender_address_from_head(
-            $args{'Message'}->head
+            $args{'message'}->head
         )
     )[0];
     my ($status) = RT::Interface::Email::send_email_using_template(
         To        => $address,
         template  => 'Error: no private key',
-        Arguments => {
-            Message    => $args{'Message'},
-            ticket_obj => $args{'Ticket'},
+        arguments => {
+            message    => $args{'message'},
+            ticket_obj => $args{'ticket'},
         },
-        InReplyTo => $args{'Message'},
+        in_reply_to => $args{'message'},
     );
     unless ($status) {
         Jifty->log->error("Couldn't send 'Error: no private key'");
@@ -212,11 +212,11 @@ sub check_no_private_key {
 }
 
 sub check_bad_data {
-    my %args = ( Message => undef, Status => [], @_ );
+    my %args = ( message => undef, status => [], @_ );
     my @bad_data_messages
-        = map $_->{'Message'},
-        grep $_->{'Status'} ne 'DONE' && $_->{'Operation'} eq 'Data',
-        @{ $args{'Status'} };
+        = map $_->{'message'},
+        grep $_->{'status'} ne 'DONE' && $_->{'operation'} eq 'data',
+        @{ $args{'status'} };
     return 1 unless @bad_data_messages;
 
     Jifty->log->error( "Couldn't process a message: " . join ', ',
@@ -224,17 +224,17 @@ sub check_bad_data {
 
     my $address = (
         RT::Interface::Email::parse_sender_address_from_head(
-            $args{'Message'}->head
+            $args{'message'}->head
         )
     )[0];
     my ($status) = RT::Interface::Email::send_email_using_template(
-        To        => $address,
+        to        => $address,
         template  => 'Error: bad GnuPG data',
-        Arguments => {
-            Messages   => [@bad_data_messages],
-            ticket_obj => $args{'Ticket'},
+        arguments => {
+            messages   => [@bad_data_messages],
+            ticket_obj => $args{'ticket'},
         },
-        InReplyTo => $args{'Message'},
+        in_reply_to => $args{'message'},
     );
     unless ($status) {
         Jifty->log->error("Couldn't send 'Error: bad GnuPG data'");
@@ -266,15 +266,6 @@ sub verify_decrypt {
     my ( $status, @nested ) = verify_decrypt(%args);
     return $status, @res, @nested;
 }
-
-eval "require RT::Interface::Email::Auth::GnuPG_Vendor";
-die $@
-    if ( $@
-    && $@ !~ qr{^Can't locate RT/Interface/Email/Auth/GnuPG_Vendor.pm} );
-eval "require RT::Interface::Email::Auth::GnuPG_Local";
-die $@
-    if ( $@
-    && $@ !~ qr{^Can't locate RT/Interface/Email/Auth/GnuPG_Local.pm} );
 
 1;
 

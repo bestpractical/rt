@@ -1706,7 +1706,7 @@ sub parse_status {
                     algorithm => $alg,
                 );
 
-                push @{ $res{'EncryptedTo'} ||= [] }, \%encrypted_to;
+                push @{ $res{'encrypted_to'} ||= [] }, \%encrypted_to;
             }
 
             push @res, \%res;
@@ -1714,14 +1714,14 @@ sub parse_status {
             my ($key) = split /\s+/, $args;
             my $type = $keyword eq 'NO_SECKEY' ? 'secret' : 'public';
             my %res = (
-                operation => 'KeyCheck',
+                operation => 'key_check',
                 status    => 'MISSING',
                 message => ucfirst($type) . " key '0x$key' is not available",
                 key     => $key,
                 key_type => $type,
             );
             $res{'user'} = ( $user_hint{$key} ||= {} );
-            $res{'user'}{ ucfirst($type) . 'KeyMissing' } = 1;
+            $res{'user'}{ ucfirst($type) . 'key_missing' } = 1;
             push @res, \%res;
         }
 

@@ -94,9 +94,9 @@ my $reverify_cb = sub  {
 
     my $parser = RT::EmailParser->new();
     $parser->smart_parse_mime_entity_from_scalar(
-        Message => $original->content,
-        Decode => 0,
-        Exact => 1,
+        message => $original->content,
+        decode => 0,
+        exact => 1,
     );
     my $entity = $parser->entity;
     unless ( $entity ) {
@@ -119,8 +119,8 @@ my $reverify_cb = sub  {
 
         my @status = RT::Crypt::GnuPG::parse_status( $res[0]->{'status'} );
         for ( @status ) {
-            if ( $_->{'Operation'} eq 'Verify' && $_->{'Status'} eq 'DONE' ) {
-                $top->add_header( 'X-RT-Incoming-Signature' => $_->{'UserString'} );
+            if ( $_->{'operation'} eq 'verify' && $_->{'status'} eq 'DONE' ) {
+                $top->add_header( 'X-RT-Incoming-Signature' => $_->{'user_string'} );
                 $needs_unsigned_warning = 0;
             }
         }
@@ -131,10 +131,10 @@ my $reverify_cb = sub  {
 my @messages;
 foreach my $run ( @runs ) {
     foreach my $line ( @$run ) {
-        if ( $line->{'Operation'} eq 'KeyCheck' ) {
+        if ( $line->{'operation'} eq 'key_check' ) {
             next unless $Reverify;
             # if a public key was missing during verification then we want try again
-            next unless $line->{'KeyType'} eq 'public' && $line->{'Status'} eq 'MISSING';
+            next unless $line->{'key_type'} eq 'public' && $line->{'status'} eq 'MISSING';
 
             # but only if we have key
             my %key = RT::Crypt::GnuPG::get_public_key_info( $line->{'Key'} );
@@ -150,19 +150,19 @@ foreach my $run ( @runs ) {
                 push @messages, _( "Public key '0x%1' is required to verify signature", $line->{'Key'} );
             }
         }
-        elsif ( $line->{'Operation'} eq 'PassphraseCheck' ) {
-            next if $line->{'Status'} eq 'DONE';
-            push @messages, _( $line->{'Message'} );
+        elsif ( $line->{'operation'} eq 'passphrase_check' ) {
+            next if $line->{'status'} eq 'DONE';
+            push @messages, _( $line->{'message'} );
         }
-        elsif ( $line->{'Operation'} eq 'Decrypt' ) {
-            push @messages, _( $line->{'Message'} );
+        elsif ( $line->{'operation'} eq 'decrypt' ) {
+            push @messages, _( $line->{'message'} );
         }
-        elsif ( $line->{'Operation'} eq 'Verify' ) {
-            push @messages, _( $line->{'Message'} );
+        elsif ( $line->{'operation'} eq 'verify' ) {
+            push @messages, _( $line->{'message'} );
         }
         else {
-            next if $line->{'Status'} eq 'DONE';
-            push @messages, _( $line->{'Message'} );
+            next if $line->{'status'} eq 'DONE';
+            push @messages, _( $line->{'message'} );
         }
     }
 }
