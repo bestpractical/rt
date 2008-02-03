@@ -82,10 +82,10 @@ require RT::Crypt::GnuPG;
 my %res = RT::Crypt::GnuPG::get_key_info( $email, $Type );
 
 my $title;
-unless ( $Type eq 'private' ) {
-    $title = _('GnuPG public key(s) for %1', $email);
-} else {
+if ( $Type eq 'private' ) {
     $title = _('GnuPG private key(s) for %1', $email);
+} else {
+    $title = _('GnuPG public key(s) for %1', $email);
 }
 
 </%INIT>

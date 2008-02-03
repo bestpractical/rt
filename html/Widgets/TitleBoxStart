@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="titlebox <% $class %>" id="<% $id %>">
   <div class="titlebox-title<% $title_class && " $title_class" %>">
-% if ($hideable) {
+% if (0) { #$hideable) {
     <span class="widget"><a href="#" onclick="return rollup('<%$tid%>');" onfocus="this.blur(); return false;" title="Toggle visibility">X</a></span>
 % }
     <span class="left"><% $title_href && qq[<a href="$title_href">] | n %><% $title %><% $title_raw |n %><% $title_href && "</a>" |n%></span>
@@ -75,13 +75,12 @@ $hideable => 1
 #
 my $page = $m->request_comp->path;
 
-my $tid  = "TitleBox--$page--" .
-            join '--', ($class, $bodyclass, $title, $id);
+my $tid  ='';# "TitleBox--$page--" .  join '--', ($class, $bodyclass, $title, $id);
 
-$tid =~ s{[/\s]+}{_}g;
+#$tid =~ s{[/\s]+}{_}g;
 
-my $i = 0;
-$i++ while $m->notes("$tid-$i");
-$m->notes("$tid-$i" => 1);
-$tid = "$tid-$i";
+#my $i = 0;
+#$i++ while $m->notes("$tid-$i");
+#$m->notes("$tid-$i" => 1);
+#$tid = "$tid-$i";
 </%init>

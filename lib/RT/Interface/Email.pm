@@ -1199,7 +1199,7 @@ sub gateway {
             *{ $class . "::get_current_user" }{CODE};
         };
         my ( $status, $msg ) = $Code->(
-            Message       => $Message,
+            message       => $Message,
             raw_message_ref => \$args{'message'},
         );
         next if $status > 0;

@@ -1622,7 +1622,7 @@ sub parse_status {
         my ( $keyword, $args ) = ( $line =~ /^(\S+)\s*(.*)$/s );
         if ( $simple_keyword{$keyword} ) {
             push @res, $simple_keyword{$keyword};
-            $res[-1]->{'Keyword'} = $keyword;
+            $res[-1]->{'keyword'} = $keyword;
             next;
         }
         unless ( $parse_keyword{$keyword} ) {
@@ -1649,7 +1649,7 @@ sub parse_status {
             my %res    = (
                 operation => 'passphrase_check',
                 status    => $keyword eq 'BAD_PASSPHRASE' ? 'BAD' : 'DONE',
-                Key       => $key_id,
+                key       => $key_id,
             );
             $res{'status'} = 'MISSING'
                 if $status[ $i - 1 ] =~ /^MISSING_PASSPHRASE/;
@@ -1658,7 +1658,7 @@ sub parse_status {
                     unless $line
                         =~ /^NEED_PASSPHRASE\s+(\S+)\s+(\S+)\s+(\S+)/;
                 next if $key_id && $2 ne $key_id;
-                @res{ 'main_key', 'Key', 'key_type' } = ( $1, $2, $3 );
+                @res{ 'main_key', 'key', 'key_type' } = ( $1, $2, $3 );
                 last;
             }
             $res{'message'}
@@ -1681,14 +1681,14 @@ sub parse_status {
             );
             foreach my $line ( reverse @status[ 0 .. $i - 1 ] ) {
                 next unless $line =~ /^BEGIN_ENCRYPTION\s+(\S+)\s+(\S+)/;
-                @res{ 'MdcMethod', 'Symalgo' } = ( $1, $2 );
+                @res{ 'mdc_method', 'sym_algo' } = ( $1, $2 );
                 last;
             }
             push @res, \%res;
         } elsif ( $keyword eq 'DECRYPTION_FAILED'
             || $keyword eq 'DECRYPTION_OKAY' )
         {
-            my %res = ( operation => 'Decrypt' );
+            my %res = ( operation => 'decrypt' );
             @res{ 'status', 'message' }
                 = $keyword eq 'DECRYPTION_FAILED'
                 ? ( 'ERROR', 'Decryption failed' )
@@ -1732,8 +1732,8 @@ sub parse_status {
                 status    => 'DONE',
                 message   => 'The signature is good',
             );
-            @res{qw(key userstring)} = split /\s+/, $args, 2;
-            $res{'message'} .= ', signed by ' . $res{'userstring'};
+            @res{qw(key user_string)} = split /\s+/, $args, 2;
+            $res{'message'} .= ', signed by ' . $res{'user_string'};
 
             foreach my $line ( @status[ $i .. $#status ] ) {
                 next unless $line =~ /^TRUST_(\S+)/;
@@ -1756,7 +1756,7 @@ sub parse_status {
                         rubkey_algo
                         hash_algo
                         class
-                        PKFingerprint
+                        pk_fingerprint
                         other
                         )
                     }
@@ -1770,7 +1770,7 @@ sub parse_status {
                 status    => 'BAD',
                 message   => 'The signature has not been verified okay',
             );
-            @res{qw(Key userstring)} = split /\s+/, $args, 2;
+            @res{qw(key user_string)} = split /\s+/, $args, 2;
             push @res, \%res;
         } elsif ( $keyword eq 'ERRSIG' ) {
             my %res = (
@@ -1778,7 +1778,7 @@ sub parse_status {
                 status    => 'ERROR',
                 message   => 'Not possible to check the signature',
             );
-            @res{qw(Key Pubkeyalgo Hashalgo class Timestamp reason_code Other)}
+            @res{qw(key pubkey_algo hash_algo class timestamp reason_code Other)}
                 = split /\s+/, $args, 7;
 
             $res{'reason'}
@@ -1796,8 +1796,8 @@ sub parse_status {
                 status         => 'DONE',
                 message        => "Signed message",
                 type           => $props[0],
-                pub_key_algo     => $props[1],
-                hash_key_algo    => $props[2],
+                pubkey_algo     => $props[1],
+                hashkey_algo    => $props[2],
                 class          => $props[3],
                 timestamp      => $props[4],
                 key_fingerprint => $props[5],
@@ -1831,10 +1831,10 @@ sub parse_status {
                 reason     => $reason,
                 };
         } else {
-            Jifty->log->warn("Keyword $keyword is unknown");
+            Jifty->log->warn("keyword $keyword is unknown");
             next;
         }
-        $res[-1]{'Keyword'} = $keyword if @res && !$res[-1]{'Keyword'};
+        $res[-1]{'keyword'} = $keyword if @res && !$res[-1]{'keyword'};
     }
     return @res;
 }
@@ -1976,8 +1976,8 @@ sub check_recipients {
             $status = 0;
             my %issue = (
                 email => $address,
-                $user ? ( User => $user ) : (),
-                Keys => undef,
+                $user ? ( user => $user ) : (),
+                keys => undef,
             );
             $issue{'message'}
                 = "Selected key either is not trusted or doesn't exist anymore."
@@ -1995,8 +1995,8 @@ sub check_recipients {
         $status = 0;
         my %issue = (
             email => $address,
-            $user ? ( User => $user ) : (),
-            Keys => undef,
+            $user ? ( user => $user ) : (),
+            keys => undef,
         );
 
         unless ( $res{'info'} && @{ $res{'info'} } ) {
@@ -2119,7 +2119,7 @@ sub parse_keys_info {
             my %info;
             @info{
                 qw(
-                    trust_char key_length algorithm Key
+                    trust_char key_length algorithm key
                     created expire empty owner_trust_char
                     empty empty capabilities Other
                     )
@@ -2150,9 +2150,9 @@ sub parse_keys_info {
             my %info;
             @info{
                 qw(
-                    empty key_length algorithm Key
+                    empty key_length algorithm key
                     created expire empty owner_trust_char
-                    empty empty capabilities Other
+                    empty empty capabilities other
                     )
                 }
                 = split /:/, $line, 12;
@@ -2165,7 +2165,7 @@ sub parse_keys_info {
             @info{qw(trust created expire string)}
                 = ( split /:/, $line )[ 0, 4, 5, 8 ];
             $info{$_} = _parse_date( $info{$_} ) foreach qw(created expire);
-            push @{ $res[-1]{'User'} ||= [] }, \%info;
+            push @{ $res[-1]{'user'} ||= [] }, \%info;
         } elsif ( $tag eq 'fpr' ) {
             $res[-1]{'fingerprint'} = ( split /:/, $line, 10 )[8];
         }

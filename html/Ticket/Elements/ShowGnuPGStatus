@@ -56,7 +56,7 @@
 <%ARGS>
 $Attachment
 $WarnUnsigned => undef
-$Reverify     => 1
+$reverify     => 1
 </%ARGS>
 <%INIT>
 my @runs;
@@ -132,22 +132,22 @@ my @messages;
 foreach my $run ( @runs ) {
     foreach my $line ( @$run ) {
         if ( $line->{'operation'} eq 'key_check' ) {
-            next unless $Reverify;
+            next unless $reverify;
             # if a public key was missing during verification then we want try again
             next unless $line->{'key_type'} eq 'public' && $line->{'status'} eq 'MISSING';
 
             # but only if we have key
-            my %key = RT::Crypt::GnuPG::get_public_key_info( $line->{'Key'} );
+            my %key = RT::Crypt::GnuPG::get_public_key_info( $line->{'key'} );
             if ( $key{'info'} ) {
                 my ($status, $msg) = $reverify_cb->($Attachment);
                 unless ($status) {
                     Jifty->log->error($msg);
                 } else {
-                    return $m->comp('SELF', %ARGS, Reverify => 0);
+                    return $m->comp('SELF', %ARGS, reverify => 0);
                 }
             }
             else {
-                push @messages, _( "Public key '0x%1' is required to verify signature", $line->{'Key'} );
+                push @messages, _( "Public key '0x%1' is required to verify signature", $line->{'key'} );
             }
         }
         elsif ( $line->{'operation'} eq 'passphrase_check' ) {

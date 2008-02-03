@@ -47,66 +47,59 @@
 %# END BPS TAGGED BLOCK }}}
 <ul<% !$level ? ' id="system-menu"' : ''|n %><% $menu_class ? qq[ class="$menu_class"] : ''|n %>>
 <div<% $menu_class ? qq[ class="$menu_class"] : ''|n %>><div class="wrapper">
-% my $sep         = 0;
-% my $postsep     = 0;
-% my $accesskey   = 1;
-% 
-% $count = 0;
-% $class = {};
-% 
-% foreach $tab (sort keys %{$toptabs}) {
-%     $count++;
-%
-%     my $current = $current_toptab || '';
-%     my $path    = $toptabs->{$tab}->{'path'} || "";
-%     
-%     $path    =~ s#/index.html$##gi;
-%     $current =~ s#/index.html$##gi;
-%     
-%     $sep     = $toptabs->{$tab}->{'separator'} ? 1 : 0;
-%
-%     my @aclass;
-%     push @aclass, 'selected'
-%            if $path eq $current;
-%
-%     push @aclass, 'odd'
-%            if $level % 2;
-%
-%     $class->{a} = join ' ', @aclass;
-%
-%     my @li;
-%     push @li, 'first'
-%            if $count == 1;
-%
-%     push @li, 'pre-separator'
-%            if $sep;
-%
-%     push @li, 'post-separator'
-%            if $postsep;
-%
-%     $class->{li} = join ' ', @li;
-%
-%     my $url = ($toptabs->{$tab}->{'path'}||'') =~ /^https?:/i
-%         ? $toptabs->{$tab}->{'path'} || ''
-%         : RT->config->get('WebPath') . "/" . $toptabs->{$tab}->{'path'};
-%     
-    <li<% $class->{'li'} ? qq[ class="$class->{li}"] : ''|n %> >
-    <% $count > 1 && !$postsep && qq[<span class="bullet">&#183; </span>]|n%>
-    <a href="<% $url %>"
-      <% $class->{a} && qq[ class="$class->{a}"] |n %>
-      <% !$level && " accesskey='".$accesskey++."'" |n %>>
-    <% $toptabs->{$tab}->{'title'}%></a>
+<%perl>
+ my $sep         = 0;
+ my $postsep     = 0;
+ my $accesskey   = 1;
+ 
+ $count = 0;
+ $class = {};
+ 
+ foreach $tab (sort keys %{$toptabs}) {
+     $count++;
 
+     my $current = $current_toptab || '';
+     my $path    = $toptabs->{$tab}->{'path'} || "";
+     
+     $path    =~ s#/index.html$##gi;
+     $current =~ s#/index.html$##gi;
+     
+     $sep     = $toptabs->{$tab}->{'separator'} ? 1 : 0;
+
+     my @aclass;
+     push @aclass, 'selected'
+            if $path eq $current;
+
+     push @aclass, 'odd'
+            if $level % 2;
+
+     $class->{a} = join ' ', @aclass;
+
+     my @li;
+     push @li, 'first'
+            if $count == 1;
+
+     push @li, 'pre-separator'
+            if $sep;
+
+     push @li, 'post-separator'
+            if $postsep;
+
+     $class->{li} = join ' ', @li;
+
+     my $url = ($toptabs->{$tab}->{'path'}||'') =~ /^https?:/i
+         ? $toptabs->{$tab}->{'path'} || ''
+         : RT->config->get('WebPath') . "/" . $toptabs->{$tab}->{'path'};
+</%perl>
+<li<% $class->{'li'} ? qq[ class="$class->{li}"] : ''|n %> ><a href="<% $url %>" <% $class->{a} && qq[ class="$class->{a}"] |n %> <% !$level && " accesskey='".$accesskey++."'" |n %>> <% $toptabs->{$tab}->{'title'}%></a>
 %# Second-level items
-%     if ($toptabs->{$tab}->{'subtabs'}
-%         and keys %{$toptabs->{$tab}->{'subtabs'}})
-%     {
+%     if ($toptabs->{$tab}->{'subtabs'} and keys %{$toptabs->{$tab}->{'subtabs'}}) {
           <& /Elements/Menu, level => $level+1, 
                              current_toptab => $toptabs->{$tab}->{'current_subtab'},
                              toptabs => $toptabs->{$tab}->{'subtabs'},
                              last_level => $toptabs->{$tab}->{last_system_menu_level} &>
 %     }
-  </li>
+</li>
 %     if ($sep) {
   <li class="separator">&#183;&#183;&#183;</li>
 %     }

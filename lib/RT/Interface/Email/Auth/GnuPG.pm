@@ -75,7 +75,7 @@ sub get_current_user {
     );
 
     $args{'message'}->head->delete($_)
-        for qw(X-RT-GnuPG-status X-RT-Incoming-Encrypton
+        for qw(X-RT-GnuPG-status X-RT-Incoming-Encryption
         X-RT-Incoming-Signature X-RT-Privacy);
 
     my $msg = $args{'message'}->dup;
@@ -197,7 +197,7 @@ sub check_no_private_key {
         )
     )[0];
     my ($status) = RT::Interface::Email::send_email_using_template(
-        To        => $address,
+        to        => $address,
         template  => 'Error: no private key',
         arguments => {
             message    => $args{'message'},

@@ -100,8 +100,9 @@ sub email_ok {
     if ($usage =~ /encrypted/) {
         is( $msg->get_header('X-RT-Incoming-Encryption'),
             'Success',
-            "$eid: recorded incoming mail that is encrypted"
+            "$eid: recorded incoming mail that is encrypted" 
         );
+
         is( $msg->get_header('X-RT-Privacy'),
             'PGP',
             "$eid: recorded incoming mail that is encrypted"
@@ -124,7 +125,7 @@ sub email_ok {
     if ($usage =~ /signed/) {
         is( $msg->get_header('X-RT-Incoming-Signature'),
             'RT Test <rt-test@example.com>',
-            "$eid: recorded incoming mail that is signed"
+            "$eid: recorded incoming mail that is signed - $usage"
         );
     }
     else {

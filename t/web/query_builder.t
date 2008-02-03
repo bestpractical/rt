@@ -137,7 +137,7 @@ diag "Add a condition into a nested block" if $ENV{'TEST_VERBOSE'};
     ok $agent->form_name('BuildQuery'), "found the form again";
     is_deeply selected_clauses, ["2"], 'the one we added is only selected';
     is get_query_from_form,
-        "( id > 1234 AND Status = 'stalled' ) OR queue != 'Regression'",
+        "( id > 1234 AND status = 'stalled' ) OR queue != 'Regression'",
         "added new one";
 }
 
