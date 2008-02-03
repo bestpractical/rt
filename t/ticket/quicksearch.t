@@ -19,7 +19,7 @@ my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ( $id, undef, $msg ) = $t1->create(
     queue      => $q->id,
     subject    => 'SearchTest1',
-    Requestor => ['search2@example.com'],
+    requestor => ['search2@example.com'],
 );
 ok( $id, $msg );
 
