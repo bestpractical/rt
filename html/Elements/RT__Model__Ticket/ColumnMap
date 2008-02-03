@@ -237,7 +237,7 @@ $TICKET_COLUMN_MAP = {
                 if (!defined $key{'info'}) {
                     $email .= _(" (no pubkey!)");
                 }
-                elsif ($key{'info'}{'TrustLevel'} == 0) {
+                elsif ($key{'info'}{'trust_level'} == 0) {
                     $email .= _(" (untrusted!)");
                 }
             }
@@ -254,7 +254,7 @@ $TICKET_COLUMN_MAP = {
             if (!defined $key{'info'}) {
                 $name .= _(" (no pubkey!)");
             }
-            elsif ($key{'info'}{'TrustLevel'} == 0) {
+            elsif ($key{'info'}{'trust_level'} == 0) {
                 $name .= _(" (untrusted!)");
             }
 

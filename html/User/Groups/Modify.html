@@ -122,9 +122,9 @@ else {
 if ($id) {
     
     my @fields = qw(description name );
-    my @fieldresults = update_record_object ( AttributesRef => \@fields,
+    my @fieldresults = update_record_object ( attributes_ref => \@fields,
 					    object => $Group,
-					    ARGSRef => \%ARGS );
+					    args_ref => \%ARGS );
     push (@results,@fieldresults);
 }
 

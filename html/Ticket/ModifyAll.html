@@ -51,11 +51,11 @@
     current_tab => "Ticket/ModifyAll.html?id=".$Ticket->id, 
     Title => _("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->subject) &>
 
-% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
+% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="ModifyAll.html" enctype="multipart/form-data">
-% $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
+% $m->callback( Callbackname => 'FormStart', args_ref => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 
 <&| /Widgets/TitleBox, title => _('Modify ticket # %1', $Ticket->id) &>
@@ -148,7 +148,7 @@ $Cancomment = 1 if ( $Ticket->current_user_has_right('CommentOnTicket') or
                      $Ticket->current_user_has_right('ModifyTicket') );
 
 
-$m->callback( ticket_obj => $Ticket, ARGSRef => \%ARGS );
+$m->callback( ticket_obj => $Ticket, args_ref => \%ARGS );
 my (@wresults, @results,  @dresults, @lresults, @cf_results);
 
 unless ($OnlySearchForPeople) {
@@ -162,10 +162,10 @@ unless ($OnlySearchForPeople) {
 
     }
 
-    @wresults   = process_ticket_watchers( ticket_obj => $Ticket, ARGSRef => \%ARGS);
-    @cf_results = process_object_custom_field_updates( object => $Ticket, ARGSRef => \%ARGS);
-    @dresults   = process_ticket_dates( ticket_obj => $Ticket, ARGSRef => \%ARGS);
-    @lresults   = process_ticket_links( ticket_obj => $Ticket, ARGSRef => \%ARGS);
+    @wresults   = process_ticket_watchers( ticket_obj => $Ticket, args_ref => \%ARGS);
+    @cf_results = process_object_custom_field_updates( object => $Ticket, args_ref => \%ARGS);
+    @dresults   = process_ticket_dates( ticket_obj => $Ticket, args_ref => \%ARGS);
+    @lresults   = process_ticket_links( ticket_obj => $Ticket, args_ref => \%ARGS);
 
     if ($ARGS{'UpdateAttachment'}) {
         my $subject = "$ARGS{'UpdateAttachment'}";
@@ -183,8 +183,8 @@ unless ($OnlySearchForPeople) {
         $ARGS{'UpdateAttachments'}->{ $subject } = $attachment;
     }
 
-    push @results, process_update_message( ticket_obj => $Ticket, ARGSRef=>\%ARGS );
-    push @results, process_ticket_basics( ticket_obj => $Ticket, ARGSRef => \%ARGS );
+    push @results, process_update_message( ticket_obj => $Ticket, args_ref=>\%ARGS );
+    push @results, process_ticket_basics( ticket_obj => $Ticket, args_ref => \%ARGS );
 }
 push @results, @wresults;
 push @results, @dresults;

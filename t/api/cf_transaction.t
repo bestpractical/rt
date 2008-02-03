@@ -48,7 +48,7 @@ is ($values->count, 0, "It has no values");
 
 # Old API
 my %cf_updates = ( 'CustomField-'.$cf->id => 'Testing');
-$trans->update_custom_fields( ARGSRef => \%cf_updates);
+$trans->update_custom_fields( args_ref => \%cf_updates);
 
  $values = $trans->custom_field_values($txn_cf->id);
 is ($values->count, 1, "It has one value");

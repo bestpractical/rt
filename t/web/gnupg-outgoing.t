@@ -85,7 +85,7 @@ diag "check in read-only mode that queue's props influence create/update ticket 
     my ($id) = $ticket->create(
         subject   => 'test',
         queue     => $queue->id,
-        Requestor => 'rt-test@example.com',
+        requestor => 'rt-test@example.com',
     );
     ok $id, 'ticket created';
 
@@ -121,7 +121,7 @@ my $tid;
     ($tid) = $ticket->create(
         subject   => 'test',
         queue     => $queue->id,
-        Requestor => 'rt-test@example.com',
+        requestor => 'rt-test@example.com',
     );
     ok $tid, 'ticket created';
 }

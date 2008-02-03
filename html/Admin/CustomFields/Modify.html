@@ -167,9 +167,9 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
 
     my @attribs = qw(disabled pattern name type_composite lookup_type description link_value_to include_content_for_value);
     push @results, update_record_object(
-        AttributesRef => \@attribs,
+        attributes_ref => \@attribs,
         object        => $CustomFieldObj,
-        ARGSRef       => \%ARGS
+        args_ref       => \%ARGS
     );
     $CustomFieldObj->set_values_class( $valuesClass );
 

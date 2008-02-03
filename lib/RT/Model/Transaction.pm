@@ -1187,7 +1187,7 @@ sub update_custom_fields {
     my %args = (@_);
 
     # This method used to have an API that took a hash of a single
-    # value "ARGSRef", which was a reference to a hash of arguments.
+    # value "args_ref", which was a reference to a hash of arguments.
     # This was insane. The next few lines of code preserve that API
     # while giving us something saner.
 
@@ -1195,8 +1195,8 @@ sub update_custom_fields {
 
     my $args;
 
-    if ( $args{'ARGSRef'} ) {
-        $args = $args{ARGSRef};
+    if ( $args{'args_ref'} ) {
+        $args = $args{args_ref};
     } else {
         $args = \%args;
     }

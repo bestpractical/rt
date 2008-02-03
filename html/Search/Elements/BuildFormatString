@@ -117,7 +117,7 @@ while ( my $CustomField = $CustomFields->next ) {
     push @fields, "CustomField.{" . $CustomField->name . "}";
 }
 
-$m->callback( Fields => \@fields, ARGSRef => \%ARGS );
+$m->callback( Fields => \@fields, args_ref => \%ARGS );
 
 my ( @seen);
 

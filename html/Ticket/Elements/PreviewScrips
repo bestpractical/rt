@@ -133,7 +133,7 @@ my ( $Transaction, $description, $object ) = $ticket_obj->$action(
     bcc_message_to => $ARGS{'UpdateBcc'},
     mime_obj      => $Message,
     time_taken    => $ARGS{'UpdateTimeWorked'},
-    DryRun       => 1
+    dry_run       => 1
 );
 unless ( $Transaction ) {
     Jifty->log->error("Coulfn't fire '$action' action: $description");
@@ -202,10 +202,10 @@ my $ticket_obj = RT::Model::Ticket->new();
 my ( $id, $txn, $msg ) = $ticket_obj->create(
     type            => $ARGS{'type'} || 'ticket',
     queue           => $ARGS{'queue'},
-    Owner           => $ARGS{'Owner'},
-    Requestor       => $ARGS{'Requestors'},
-    Cc              => $ARGS{'Cc'},
-    AdminCc         => $ARGS{'AdminCc'},
+    owner           => $ARGS{'Owner'},
+    requestor       => $ARGS{'Requestors'},
+    cc              => $ARGS{'Cc'},
+    admin_Cc         => $ARGS{'AdminCc'},
     initial_priority => $ARGS{'initial_priority'},
     final_priority   => $ARGS{'final_priority'},
     time_left        => $ARGS{'time_left'},
@@ -214,7 +214,7 @@ my ( $id, $txn, $msg ) = $ticket_obj->create(
     subject         => $ARGS{'subject'},
     Status          => $ARGS{'Status'},
     mime_obj      => $Message,
-    DryRun       => 1
+    dry_run       => 1
 );
 unless ( $id && $txn ) {
     Jifty->log->error("Couldn't fire '$action' action: $msg");

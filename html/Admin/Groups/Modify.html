@@ -137,11 +137,11 @@ else {
 if ($id) {
     
     my @fields = qw(description name );
-    my @fieldresults = update_record_object ( AttributesRef => \@fields,
+    my @fieldresults = update_record_object ( attributes_ref => \@fields,
 					    object => $Group,
-					    ARGSRef => \%ARGS );
+					    args_ref => \%ARGS );
     push (@results,@fieldresults);
-    push @results, process_object_custom_field_updates( ARGSRef => \%ARGS, object => $Group );
+    push @results, process_object_custom_field_updates( args_ref => \%ARGS, object => $Group );
 }
 
 #we're asking about enabled on the web page but really care about disabled.

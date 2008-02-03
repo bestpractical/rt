@@ -50,7 +50,7 @@
     Ticket => $Ticket, current_tab => 'Ticket/History.html?id='.$Ticket->id, 
     Title => _("Ticket History # %1 %2", $Ticket->id, $Ticket->subject) &>
 
-% $m->callback(Callbackname => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
+% $m->callback(Callbackname => 'BeforeActionList', args_ref => \%ARGS, Ticket => $Ticket);
 
 
 <br />

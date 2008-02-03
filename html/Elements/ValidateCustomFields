@@ -52,14 +52,14 @@ while ( my $CF = $CustomFields->next ) {
     my $field = $namePrefix . $CF->id . "-Value";
 
     my $value;
-    if ($ARGSRef->{"${field}s-Magic"} and exists $ARGSRef->{"${field}s"}) {
-        $value = $ARGSRef->{"${field}s"};
+    if ($args_ref->{"${field}s-Magic"} and exists $args_ref->{"${field}s"}) {
+        $value = $args_ref->{"${field}s"};
 
         # We only validate Single Combos -- multis can never be user input
         next if ref $value;
     }
     else {
-        $value = $ARGSRef->{$field};
+        $value = $args_ref->{$field};
     }
     $m->notes(('Field-' . $CF->id) => $value);
 
@@ -95,6 +95,6 @@ return wantarray? ($valid, @res): $valid;
 </%INIT>
 <%ARGS>
 $CustomFields
-$ARGSRef
+$args_ref
 $namePrefix => "object-RT::Model::Ticket--CustomField-"
 </%ARGS>

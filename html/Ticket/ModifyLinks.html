@@ -51,12 +51,12 @@
     current_tab => "Ticket/ModifyLinks.html?id=".$Ticket->id, 
     Title => _("Link ticket #%1", $Ticket->id) &>
 
-% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);
+% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, Ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="ModifyLinks.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
-% $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
+% $m->callback( Callbackname => 'FormStart', args_ref => \%ARGS );
 <&| /Widgets/TitleBox, title => _('Edit Links') &>
 <& /Elements/EditLinks, object => $Ticket, Merge => 1 &>
 </&>
@@ -71,8 +71,8 @@
 my $Ticket = load_ticket($id);
 
 my @results;  
-$m->callback( ticket_obj => $Ticket, ARGSRef => \%ARGS, Results => \@results );
-push @results, process_ticket_links( ticket_obj => $Ticket, ARGSRef => \%ARGS );
+$m->callback( ticket_obj => $Ticket, args_ref => \%ARGS, Results => \@results );
+push @results, process_ticket_links( ticket_obj => $Ticket, args_ref => \%ARGS );
     
 </%INIT>
       

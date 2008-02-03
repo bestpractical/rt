@@ -15,13 +15,13 @@ return unless $self;
 
 <%METHOD new>
 <%ARGS>
-$Arguments => {}
+$arguments => {}
 </%ARGS>
 <%INIT>
 return undef unless RT->config->get('GnuPG')->{'enable'};
 
 require RT::Crypt::GnuPG;
-return { %$Arguments };
+return { %$arguments };
 </%INIT>
 </%METHOD>
 
@@ -64,7 +64,7 @@ foreach ( qw(sign encrypt) ) {
 <%METHOD Check>
 <%ARGS>
 $self      => undef
-$Operation => 'Update'
+$Operation => 'update'
 $ticket_obj => undef
 $queue_obj  => undef
 </%ARGS>
@@ -77,8 +77,8 @@ if ( $self->{'sign'} ) {
     $queue_obj ||= $ticket_obj->queue_obj
         if $ticket_obj;
 
-    my $address = $self->{'SignUsing'};
-    $address ||= ($self->{'UpdateType'}||'') eq "private"
+    my $address = $self->{'sign_using'};
+    $address ||= ($self->{'update_type'}||'') eq "private"
         ? ( $queue_obj->comment_address || RT->config->get('comment_address') )
         : ( $queue_obj->correspond_address || RT->config->get('correspond_address') );
 
@@ -86,8 +86,8 @@ if ( $self->{'sign'} ) {
         push @{ $self->{'GnuPGCanNotSignAs'} ||= [] }, $address;
         $checks_failure = 1;
     } else {
-        RT::Crypt::GnuPG::use_key_for_signing( $self->{'SignUsing'} )
-            if $self->{'SignUsing'};
+        RT::Crypt::GnuPG::use_key_for_signing( $self->{'sign_using'} )
+            if $self->{'sign_using'};
     }
 }
 
@@ -95,7 +95,7 @@ if ( $self->{'encrypt'} ) {
 
     my @recipients;
 
-    if ( $Operation eq 'Update' ) {
+    if ( $Operation eq 'update' ) {
         # skip any email addresses that we won't be sending mail to
         my %squelch = $m->comp(
             '/Ticket/Elements/PreviewScrips:SquelchRecipients',
@@ -108,7 +108,7 @@ if ( $self->{'encrypt'} ) {
             %$self, ticket_obj => $ticket_obj
         );
     }
-    elsif ( $Operation eq 'Create' ) {
+    elsif ( $Operation eq 'create' ) {
         @recipients = $m->comp(
             '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
             %$self,

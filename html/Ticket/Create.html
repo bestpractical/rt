@@ -55,7 +55,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <form action="<% RT->config->get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 <input type="hidden" class="hidden" name="id" value="new" />
-% $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
+% $m->callback( Callbackname => 'FormStart', args_ref => \%ARGS );
 
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
@@ -319,7 +319,7 @@ my @results;
 my $queue_obj = RT::Model::Queue->new();
 $queue_obj->load($queue) || abort(_("Queue could not be loaded."));
 
-$m->callback( queue_obj => $queue_obj, ARGSRef => \%ARGS );
+$m->callback( queue_obj => $queue_obj, args_ref => \%ARGS );
 
 my $CFs = $queue_obj->ticket_custom_fields();
 my $TxnCFs = $queue_obj->ticket_transaction_custom_fields();
@@ -327,7 +327,7 @@ my $TxnCFs = $queue_obj->ticket_transaction_custom_fields();
 my $ValidCFs = $m->comp(
     '/Elements/ValidateCustomFields',
     CustomFields => $CFs,
-    ARGSRef => \%ARGS
+    args_ref => \%ARGS
 );
 
 # if no due date has been set explicitly, then use the
@@ -374,7 +374,7 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 
 my $checks_failure = 0;
 
-my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
+my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', arguments => \%ARGS );
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
     self      => $gnupg_widget,
     queue_obj  => $queue_obj,
@@ -384,7 +384,7 @@ $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
 if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
     my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
         self      => $gnupg_widget,
-        Operation => 'Create',
+        operation => 'create',
         queue_obj  => $queue_obj,
     );
     $checks_failure = 1 unless $status;

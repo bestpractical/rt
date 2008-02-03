@@ -50,12 +50,12 @@
     Ticket => $ticket_obj, 
     Title=> $title &>
     
-% $m->callback(Callbackname => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $ticket_obj);
+% $m->callback(Callbackname => 'BeforeActionList', args_ref => \%ARGS, Ticket => $ticket_obj);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Update.html" name="TicketUpdate"
     method="post" enctype="multipart/form-data">
-% $m->callback( Callbackname => 'FormStart', ARGSRef => \%ARGS );
+% $m->callback( Callbackname => 'FormStart', args_ref => \%ARGS );
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
@@ -161,7 +161,7 @@ my $title;
 
 my $ticket_obj = load_ticket($id);
 
-$m->callback( Ticket => $ticket_obj, ARGSRef => \%ARGS, Callbackname => 'Initial' );
+$m->callback( Ticket => $ticket_obj, args_ref => \%ARGS, Callbackname => 'Initial' );
 
 unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$ticket_obj->status());
@@ -236,7 +236,7 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
 
 my @results;
 
-my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
+my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', arguments => \%ARGS );
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
     self => $gnupg_widget,
     ticket_obj => $ticket_obj,
@@ -250,7 +250,7 @@ if ( $ARGS{'SubmitTicket'} ) {
 }
 
 if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
-    $m->callback( Ticket => $ticket_obj, ARGSRef => \%ARGS, Callbackname => 'BeforeDisplay' );
+    $m->callback( Ticket => $ticket_obj, args_ref => \%ARGS, Callbackname => 'BeforeDisplay' );
     return $m->comp('Display.html', ticket_obj => $ticket_obj, %ARGS);
 }
 

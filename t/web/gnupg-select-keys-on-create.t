@@ -66,7 +66,7 @@ diag "check that signing doesn't work if there is no key";
     RT::Test->import_gnupg_key('rt-recipient@example.com');
     RT::Test->trust_gnupg_key('rt-recipient@example.com');
     my %res = RT::Crypt::GnuPG::get_keys_info('rt-recipient@example.com');
-    is $res{'info'}[0]{'TrustTerse'}, 'ultimate', 'ultimately trusted key';
+    is $res{'info'}[0]{'trust_terse'}, 'ultimate', 'ultimately trusted key';
 }
 
 diag "check that things don't work if there is no key";
@@ -100,8 +100,8 @@ my $fpr1 = '';
 {
     RT::Test->import_gnupg_key('rt-test@example.com', 'public');
     my %res = RT::Crypt::GnuPG::get_keys_info('rt-test@example.com');
-    is $res{'info'}[0]{'TrustLevel'}, 0, 'is not trusted key';
-    $fpr1 = $res{'info'}[0]{'Fingerprint'};
+    is $res{'info'}[0]{'trust_level'}, 0, 'is not trusted key';
+    $fpr1 = $res{'info'}[0]{'fingerprint'};
 }
 
 diag "check that things still doesn't work if key is not trusted";
@@ -147,8 +147,8 @@ my $fpr2 = '';
 {
     RT::Test->import_gnupg_key('rt-test@example.com.2', 'public');
     my %res = RT::Crypt::GnuPG::get_keys_info('rt-test@example.com');
-    is $res{'info'}[1]{'TrustLevel'}, 0, 'is not trusted key';
-    $fpr2 = $res{'info'}[2]{'Fingerprint'};
+    is $res{'info'}[1]{'trust_level'}, 0, 'is not trusted key';
+    $fpr2 = $res{'info'}[2]{'fingerprint'};
 }
 
 diag "check that things still doesn't work if two keys are not trusted";
@@ -192,8 +192,8 @@ diag "check that things still doesn't work if two keys are not trusted";
 {
     RT::Test->lsign_gnupg_key( $fpr1 );
     my %res = RT::Crypt::GnuPG::get_keys_info('rt-test@example.com');
-    ok $res{'info'}[0]{'TrustLevel'} > 0, 'trusted key';
-    is $res{'info'}[1]{'TrustLevel'}, 0, 'is not trusted key';
+    ok $res{'info'}[0]{'trust_level'} > 0, 'trusted key';
+    is $res{'info'}[1]{'trust_level'}, 0, 'is not trusted key';
 }
 
 diag "check that we see key selector even if only one key is trusted but there are more keys";
@@ -285,7 +285,7 @@ diag "check encrypting of attachments";
 
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some emails';
-    check_text_emails( { encrypt => 1, Attachment => 1 }, @mail );
+    check_text_emails( { encrypt => 1, attachment => 1 }, @mail );
 }
 
 sub check_text_emails {
@@ -295,7 +295,7 @@ sub check_text_emails {
     ok scalar @mail, "got some mail";
     for my $mail (@mail) {
         for my $type ('email', 'attachment') {
-            next if $type eq 'attachment' && !$args{'Attachment'};
+            next if $type eq 'attachment' && !$args{'attachment'};
 
             my $content = $type eq 'email'
                         ? "Some content"

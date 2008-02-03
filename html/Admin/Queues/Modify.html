@@ -138,7 +138,6 @@ if ($Create) {
     $current_tab = 'Admin/Queues/Modify.html?id='.$queue_obj->id;
 }
 if ( $queue_obj->id ) {
-    delete $session{'create_in_queues'};
     my @attribs= qw(description correspond_address comment_address name
         initial_priority final_priority default_due_in sign encrypt disabled);
 
@@ -150,9 +149,9 @@ if ( $queue_obj->id ) {
     }
 
     push @results, update_record_object(
-        AttributesRef => \@attribs,
+        attributes_ref => \@attribs,
         object => $queue_obj, 
-        ARGSRef => \%ARGS
+        args_ref => \%ARGS
     );
 
     $disabled = $ARGS{'disabled'} = $enabled? 0: 1;
@@ -163,7 +162,7 @@ if ( $queue_obj->id ) {
     $m->callback(
         results      => \@linkresults,
         RecordObj    => $queue_obj,
-        ARGSRef      => \%ARGS, 
+        args_ref      => \%ARGS, 
         Callbackname => 'ProcessLinks'
     );
     push @results, @linkresults;

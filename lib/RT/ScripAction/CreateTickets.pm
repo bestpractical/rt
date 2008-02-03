@@ -472,8 +472,8 @@ sub update_by_template {
             }
         }
         push @results, $T::Tickets{$template_id}->update(
-            AttributesRef => \@attribs,
-            ARGSRef       => $ticketargs
+            attributes_ref => \@attribs,
+            args_ref       => $ticketargs
         );
 
         if ( $ticketargs->{'owner'} ) {

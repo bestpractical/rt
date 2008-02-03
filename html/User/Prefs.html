@@ -222,12 +222,12 @@ if ($user_object->id) {
         fields       => \@fields,
         results      => \@results,
         user_object      => $user_object,
-        ARGSRef      => \%ARGS,
+        args_ref      => \%ARGS,
     );
     
-    my @fieldresults = update_record_object ( AttributesRef => \@fields,
+    my @fieldresults = update_record_object ( attributes_ref => \@fields,
 					    object => $user_object,
-					    ARGSRef => \%ARGS );
+					    args_ref => \%ARGS );
     push (@results,@fieldresults);
 
 

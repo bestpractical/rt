@@ -186,7 +186,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         $ARGS{UpdateAttachments} = $session{'Attachments'};
     }
     push @results, process_update_message(
-        ARGSRef   => \%ARGS,
+        args_ref   => \%ARGS,
         ticket_obj => $Ticket
     );
             delete $session{'Attachments'};
@@ -196,7 +196,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         delete $session{'Attachments'};
     }
 
-    my @cfupdates = process_object_custom_field_updates(object => $Ticket, ARGSRef => \%ARGS);
+    my @cfupdates = process_object_custom_field_updates(object => $Ticket, args_ref => \%ARGS);
     push (@results, @cfupdates);
 
     # }}}

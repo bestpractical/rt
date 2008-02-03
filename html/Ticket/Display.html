@@ -52,7 +52,7 @@
     current_tab => 'Ticket/Display.html?id='.$ticket_obj->id,
     Title => _("#%1: %2", $ticket_obj->id, $ticket_obj->subject) &>
 
-% $m->callback(Callbackname => 'BeforeActionList', %ARGS, Actions => \@Actions, ARGSRef => \%ARGS, Ticket => $ticket_obj);
+% $m->callback(Callbackname => 'BeforeActionList', %ARGS, Actions => \@Actions, args_ref => \%ARGS, Ticket => $ticket_obj);
 
 <& /Elements/ListActions, actions => \@Actions &>
 <& Elements/ShowUpdateStatus, Ticket => $ticket_obj &>
@@ -91,7 +91,7 @@ $Collapsed => undef
 
 <%INIT>
 
-$m->callback( ticket_obj => $ticket_obj, ARGSRef => \%ARGS, Callbackname => 'Initial' );
+$m->callback( ticket_obj => $ticket_obj, args_ref => \%ARGS, Callbackname => 'Initial' );
 
 my (@Actions, $Tickets);  
 
@@ -126,7 +126,7 @@ if ($ARGS{'id'} eq 'new') {
 
     $m->callback( Callbackname => 'BeforeProcessArguments',
         ticket_obj => $ticket_obj, Tickets => $Tickets,
-        ActionsRef => \@Actions, ARGSRef => \%ARGS );
+        ActionsRef => \@Actions, args_ref => \%ARGS );
     if ( defined $ARGS{'Action'} ) {
         if ($ARGS{'Action'} =~ /^(steal|kill|take|set_old)$/) {
             my $action = $1;
@@ -137,7 +137,7 @@ if ($ARGS{'id'} eq 'new') {
 
     $m->callback(Callbackname => 'ProcessArguments', 
             Ticket => $ticket_obj, 
-            ARGSRef => \%ARGS, 
+            args_ref => \%ARGS, 
             Actions => \@Actions);
     
     $ARGS{'update_content'} =~ s/\r\n/\n/g if defined $ARGS{'update_content'};
@@ -149,15 +149,15 @@ if ($ARGS{'id'} eq 'new') {
     {
         $ARGS{UpdateAttachments} = $session{'Attachments'};
         push @Actions, process_update_message(
-            ARGSRef   => \%ARGS,
+            args_ref   => \%ARGS,
             Actions   => \@Actions,
             ticket_obj => $ticket_obj,
         );
         delete $session{'Attachments'};
     }
-    push @Actions, process_ticket_watchers(ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
-    push @Actions, process_ticket_basics(   ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
-    push @Actions, process_ticket_links(    ARGSRef => \%ARGS, ticket_obj => $ticket_obj );
+    push @Actions, process_ticket_watchers(args_ref => \%ARGS, ticket_obj => $ticket_obj );
+    push @Actions, process_ticket_basics(   args_ref => \%ARGS, ticket_obj => $ticket_obj );
+    push @Actions, process_ticket_links(    args_ref => \%ARGS, ticket_obj => $ticket_obj );
 
     # XXX: we shouldn't block actions here if user has no right to see the ticket,
     # but we should allow him to see actions he has done
@@ -178,7 +178,7 @@ $m->callback(
     ticket_obj => \$ticket_obj,
     Tickets => \$Tickets,
     Actions => \@Actions,
-    ARGSRef => \%ARGS,
+    args_ref => \%ARGS,
 );
 
 # This code does automatic redirection if any updates happen. 

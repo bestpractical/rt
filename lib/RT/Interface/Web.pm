@@ -468,7 +468,7 @@ sub load_ticket {
 
 =head2 process_update_message
 
-Takes paramhash with fields ARGSRef, ticket_obj and SkipSignatureOnly.
+Takes paramhash with fields args_ref, ticket_obj and SkipSignatureOnly.
 
 Don't write message if it only contains current user's signature and
 SkipSignatureOnly argument is true. Function anyway adds attachments
@@ -481,26 +481,26 @@ sub process_update_message {
 
     #TODO document what else this takes.
     my %args = (
-        ARGSRef           => undef,
+        args_ref           => undef,
         ticket_obj        => undef,
         SkipSignatureOnly => 1,
         @_
     );
 
-    if ( $args{ARGSRef}->{'UpdateAttachments'}
-        && !keys %{ $args{ARGSRef}->{'UpdateAttachments'} } )
+    if ( $args{args_ref}->{'UpdateAttachments'}
+        && !keys %{ $args{args_ref}->{'UpdateAttachments'} } )
     {
-        delete $args{ARGSRef}->{'UpdateAttachments'};
+        delete $args{args_ref}->{'UpdateAttachments'};
     }
 
     #Make the update content have no 'weird' newlines in it
     return ()
-        unless $args{ARGSRef}->{'UpdateTimeWorked'}
-            || $args{ARGSRef}->{'UpdateAttachments'}
-            || $args{ARGSRef}->{'update_content'};
+        unless $args{args_ref}->{'UpdateTimeWorked'}
+            || $args{args_ref}->{'UpdateAttachments'}
+            || $args{args_ref}->{'update_content'};
 
-    $args{ARGSRef}->{'update_content'} =~ s/\r+\n/\n/g
-        if $args{ARGSRef}->{'update_content'};
+    $args{args_ref}->{'update_content'} =~ s/\r+\n/\n/g
+        if $args{args_ref}->{'update_content'};
 
     # skip updates if the content contains only user's signature
     # and we don't update other fields
@@ -508,26 +508,26 @@ sub process_update_message {
         my $sig = $args{'ticket_obj'}->current_user->user_object->signature
             || '';
         $sig =~ s/^\s*|\s*$//g;
-        if ( $args{ARGSRef}->{'update_content'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ )
+        if ( $args{args_ref}->{'update_content'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ )
         {
             return ()
-                unless $args{ARGSRef}->{'UpdateTimeWorked'}
-                    || $args{ARGSRef}->{'UpdateAttachments'};
+                unless $args{args_ref}->{'UpdateTimeWorked'}
+                    || $args{args_ref}->{'UpdateAttachments'};
 
             # we have to create transaction, but we don't create attachment
             # XXX: this couldn't work as expected
-            $args{ARGSRef}->{'update_content'} = '';
+            $args{args_ref}->{'update_content'} = '';
         }
     }
 
-    if ( $args{ARGSRef}->{'Updatesubject'} eq $args{'ticket_obj'}->subject ) {
-        $args{ARGSRef}->{'Updatesubject'} = undef;
+    if ( $args{args_ref}->{'Updatesubject'} eq $args{'ticket_obj'}->subject ) {
+        $args{args_ref}->{'Updatesubject'} = undef;
     }
 
     my $Message = make_mime_entity(
-        subject => $args{ARGSRef}->{'Updatesubject'},
-        Body    => $args{ARGSRef}->{'update_content'},
-        type    => $args{ARGSRef}->{'Updatecontent_type'},
+        subject => $args{args_ref}->{'Updatesubject'},
+        Body    => $args{args_ref}->{'update_content'},
+        type    => $args{args_ref}->{'Updatecontent_type'},
     );
 
     $Message->head->add(
@@ -536,8 +536,8 @@ sub process_update_message {
         )
     );
     my $old_txn = RT::Model::Transaction->new();
-    if ( $args{ARGSRef}->{'QuoteTransaction'} ) {
-        $old_txn->load( $args{ARGSRef}->{'QuoteTransaction'} );
+    if ( $args{args_ref}->{'QuoteTransaction'} ) {
+        $old_txn->load( $args{args_ref}->{'QuoteTransaction'} );
     } else {
         $old_txn = $args{ticket_obj}->transactions->first();
     }
@@ -549,36 +549,36 @@ sub process_update_message {
         );
     }
 
-    if ( $args{ARGSRef}->{'UpdateAttachments'} ) {
+    if ( $args{args_ref}->{'UpdateAttachments'} ) {
         $Message->make_multipart;
         $Message->add_part($_)
-            foreach values %{ $args{ARGSRef}->{'UpdateAttachments'} };
+            foreach values %{ $args{args_ref}->{'UpdateAttachments'} };
     }
 
-    if ( $args{ARGSRef}->{'AttachTickets'} ) {
+    if ( $args{args_ref}->{'AttachTickets'} ) {
         require RT::ScripAction::SendEmail;
         RT::ScripAction::SendEmail->attach_tickets(
             RT::ScripAction::SendEmail->attach_tickets,
-            ref $args{ARGSRef}->{'AttachTickets'}
-            ? @{ $args{ARGSRef}->{'AttachTickets'} }
-            : ( $args{ARGSRef}->{'AttachTickets'} )
+            ref $args{args_ref}->{'AttachTickets'}
+            ? @{ $args{args_ref}->{'AttachTickets'} }
+            : ( $args{args_ref}->{'AttachTickets'} )
         );
     }
 
-    my $bcc = $args{ARGSRef}->{'UpdateBcc'};
-    my $cc  = $args{ARGSRef}->{'update_cc'};
+    my $bcc = $args{args_ref}->{'UpdateBcc'};
+    my $cc  = $args{args_ref}->{'update_cc'};
 
     my %message_args = (
         cc_message_to  => $cc,
         bcc_message_to => $bcc,
-        sign         => $args{ARGSRef}->{'sign'},
-        encrypt      => $args{ARGSRef}->{'encrypt'},
+        sign         => $args{args_ref}->{'sign'},
+        encrypt      => $args{args_ref}->{'encrypt'},
         mime_obj      => $Message,
-        time_taken    => $args{ARGSRef}->{'UpdateTimeWorked'}
+        time_taken    => $args{args_ref}->{'UpdateTimeWorked'}
     );
 
     unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
-        foreach my $key ( keys %{ $args{ARGSRef} } ) {
+        foreach my $key ( keys %{ $args{args_ref} } ) {
             next unless $key =~ /^Update(cc|Bcc)-(.*)$/;
 
             my $var   = ucfirst($1) . 'MessageTo';
@@ -592,16 +592,16 @@ sub process_update_message {
     }
 
     my @results;
-    if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
+    if ( $args{args_ref}->{'UpdateType'} =~ /^(private|public)$/ ) {
         my ( $Transaction, $description, $object )
             = $args{ticket_obj}->comment(%message_args);
         push( @results, $description );
-        $object->update_custom_fields( ARGSRef => $args{ARGSRef} ) if $object;
-    } elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
+        $object->update_custom_fields( args_ref => $args{args_ref} ) if $object;
+    } elsif ( $args{args_ref}->{'UpdateType'} eq 'response' ) {
         my ( $Transaction, $description, $object )
             = $args{ticket_obj}->correspond(%message_args);
         push( @results, $description );
-        $object->update_custom_fields( ARGSRef => $args{ARGSRef} ) if $object;
+        $object->update_custom_fields( args_ref => $args{args_ref} ) if $object;
     } else {
         push( @results,
             _("Update type was neither correspondence nor comment.") . " "
@@ -782,9 +782,9 @@ sub process_acl_changes {
 
 # {{{ sub UpdateRecordObj
 
-=head2 UpdateRecordObj ( ARGSRef => \%ARGS, object => RT::Record, AttributesRef => \@attribs)
+=head2 UpdateRecordObj ( args_ref => \%ARGS, object => RT::Record, attributes_ref => \@attribs)
 
-@attribs is a list of ticket fields to check and update if they differ from the  B<object>'s current values. ARGSRef is a ref to HTML::Mason's %ARGS.
+@attribs is a list of ticket fields to check and update if they differ from the  B<object>'s current values. args_ref is a ref to HTML::Mason's %ARGS.
 
 Returns an array of success/failure messages
 
@@ -792,8 +792,8 @@ Returns an array of success/failure messages
 
 sub update_record_object {
     my %args = (
-        ARGSRef         => undef,
-        AttributesRef   => undef,
+        args_ref         => undef,
+        attributes_ref   => undef,
         object          => undef,
         AttributePrefix => undef,
         @_
@@ -801,8 +801,8 @@ sub update_record_object {
 
     my $object  = $args{'object'};
     my @results = $object->update(
-        AttributesRef   => $args{'AttributesRef'},
-        ARGSRef         => $args{'ARGSRef'},
+        attributes_ref   => $args{'attributes_ref'},
+        args_ref         => $args{'args_ref'},
         AttributePrefix => $args{'AttributePrefix'},
     );
 
@@ -816,34 +816,34 @@ sub update_record_object {
 sub process_custom_field_updates {
     my %args = (
         CustomFieldObj => undef,
-        ARGSRef        => undef,
+        args_ref        => undef,
         @_
     );
 
     my $object  = $args{'CustomFieldObj'};
-    my $ARGSRef = $args{'ARGSRef'};
+    my $args_ref = $args{'args_ref'};
 
     my @attribs = qw(name type description queue sort_order);
     my @results = update_record_object(
-        AttributesRef => \@attribs,
+        attributes_ref => \@attribs,
         object        => $object,
-        ARGSRef       => $ARGSRef
+        args_ref       => $args_ref
     );
 
     my $prefix = "CustomField-" . $object->id;
-    if ( $ARGSRef->{"$prefix-AddValue-name"} ) {
+    if ( $args_ref->{"$prefix-AddValue-name"} ) {
         my ( $addval, $addmsg ) = $object->add_value(
-            name        => $ARGSRef->{"$prefix-AddValue-name"},
-            description => $ARGSRef->{"$prefix-AddValue-Description"},
-            sort_order   => $ARGSRef->{"$prefix-AddValue-sort_order"},
+            name        => $args_ref->{"$prefix-AddValue-name"},
+            description => $args_ref->{"$prefix-AddValue-Description"},
+            sort_order   => $args_ref->{"$prefix-AddValue-sort_order"},
         );
         push( @results, $addmsg );
     }
 
     my @delete_values
-        = ( ref $ARGSRef->{"$prefix-DeleteValue"} eq 'ARRAY' )
-        ? @{ $ARGSRef->{"$prefix-DeleteValue"} }
-        : ( $ARGSRef->{"$prefix-DeleteValue"} );
+        = ( ref $args_ref->{"$prefix-DeleteValue"} eq 'ARRAY' )
+        ? @{ $args_ref->{"$prefix-DeleteValue"} }
+        : ( $args_ref->{"$prefix-DeleteValue"} );
 
     foreach my $id (@delete_values) {
         next unless defined $id;
@@ -853,7 +853,7 @@ sub process_custom_field_updates {
 
     my $vals = $object->values();
     while ( my $cfv = $vals->next() ) {
-        if ( my $so = $ARGSRef->{ "$prefix-sort_order" . $cfv->id } ) {
+        if ( my $so = $args_ref->{ "$prefix-sort_order" . $cfv->id } ) {
             if ( $cfv->sort_order != $so ) {
                 my ( $err, $msg ) = $cfv->set_sort_order($so);
                 push( @results, $msg );
@@ -868,7 +868,7 @@ sub process_custom_field_updates {
 
 # {{{ sub process_ticket_basics
 
-=head2 process_ticket_basics ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
+=head2 process_ticket_basics ( ticket_obj => $Ticket, args_ref => \%ARGS );
 
 Returns an array of results messages.
 
@@ -878,12 +878,12 @@ sub process_ticket_basics {
 
     my %args = (
         ticket_obj => undef,
-        ARGSRef    => undef,
+        args_ref    => undef,
         @_
     );
 
     my $ticket_obj = $args{'ticket_obj'};
-    my $ARGSRef    = $args{'ARGSRef'};
+    my $args_ref    = $args{'args_ref'};
 
     # {{{ Set basic fields
     my @attribs = qw(
@@ -898,38 +898,38 @@ sub process_ticket_basics {
         queue
     );
 
-    if ( $ARGSRef->{'queue'} and ( $ARGSRef->{'queue'} !~ /^(\d+)$/ ) ) {
+    if ( $args_ref->{'queue'} and ( $args_ref->{'queue'} !~ /^(\d+)$/ ) ) {
         my $tempqueue
             = RT::Model::Queue->new( current_user => RT->system_user );
-        $tempqueue->load( $ARGSRef->{'queue'} );
+        $tempqueue->load( $args_ref->{'queue'} );
         if ( $tempqueue->id ) {
-            $ARGSRef->{'queue'} = $tempqueue->id;
+            $args_ref->{'queue'} = $tempqueue->id;
         }
     }
 
     # Status isn't a field that can be set to a null value.
     # RT core complains if you try
-    delete $ARGSRef->{'Status'} unless $ARGSRef->{'Status'};
+    delete $args_ref->{'Status'} unless $args_ref->{'Status'};
 
     my @results = update_record_object(
-        AttributesRef => \@attribs,
+        attributes_ref => \@attribs,
         object        => $ticket_obj,
-        ARGSRef       => $ARGSRef,
+        args_ref       => $args_ref,
     );
 
     # We special case owner changing, so we can use ForceownerChange
-    if ( $ARGSRef->{'owner'}
-        && ( $ticket_obj->owner != $ARGSRef->{'owner'} ) )
+    if ( $args_ref->{'owner'}
+        && ( $ticket_obj->owner != $args_ref->{'owner'} ) )
     {
         my ($ChownType);
-        if ( $ARGSRef->{'ForceownerChange'} ) {
+        if ( $args_ref->{'ForceownerChange'} ) {
             $ChownType = "Force";
         } else {
             $ChownType = "Give";
         }
 
         my ( $val, $msg )
-            = $ticket_obj->set_owner( $ARGSRef->{'owner'}, $ChownType );
+            = $ticket_obj->set_owner( $args_ref->{'owner'}, $ChownType );
         push( @results, $msg );
     }
 
@@ -943,37 +943,37 @@ sub process_ticket_basics {
 sub process_ticket_custom_field_updates {
     my %args = @_;
     $args{'object'} = delete $args{'ticket_obj'};
-    my $ARGSRef = { %{ $args{'ARGSRef'} } };
+    my $args_ref = { %{ $args{'args_ref'} } };
 
     # Build up a list of objects that we want to work with
     my %custom_fields_to_mod;
-    foreach my $arg ( keys %$ARGSRef ) {
+    foreach my $arg ( keys %$args_ref ) {
         if ( $arg =~ /^Ticket-(\d+-.*)/ ) {
-            $ARGSRef->{"object-RT::Model::Ticket-$1"}
-                = delete $ARGSRef->{$arg};
+            $args_ref->{"object-RT::Model::Ticket-$1"}
+                = delete $args_ref->{$arg};
         } elsif ( $arg =~ /^CustomField-(\d+-.*)/ ) {
-            $ARGSRef->{"object-RT::Model::Ticket--$1"}
-                = delete $ARGSRef->{$arg};
+            $args_ref->{"object-RT::Model::Ticket--$1"}
+                = delete $args_ref->{$arg};
         }
     }
 
-    return process_object_custom_field_updates( %args, ARGSRef => $ARGSRef );
+    return process_object_custom_field_updates( %args, args_ref => $args_ref );
 }
 
 sub process_object_custom_field_updates {
     my %args    = @_;
-    my $ARGSRef = $args{'ARGSRef'};
+    my $args_ref = $args{'args_ref'};
     my @results;
 
     # Build up a list of objects that we want to work with
     my %custom_fields_to_mod;
-    foreach my $arg ( keys %$ARGSRef ) {
+    foreach my $arg ( keys %$args_ref ) {
 
     # format: object-<object class>-<object id>-CustomField-<CF id>-<commands>
         next unless $arg =~ /^object-([\w:]+)-(\d*)-CustomField-(\d+)-(.*)$/;
 
 # For each of those objects, find out what custom fields we want to work with.
-        $custom_fields_to_mod{$1}{ $2 || 0 }{$3}{$4} = $ARGSRef->{$arg};
+        $custom_fields_to_mod{$1}{ $2 || 0 }{$3}{$4} = $args_ref->{$arg};
     }
 
     # For each of those objects
@@ -1156,7 +1156,7 @@ sub _process_object_custom_field_updates {
 
 # {{{ sub process_ticket_watchers
 
-=head2 process_ticket_watchers ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
+=head2 process_ticket_watchers ( ticket_obj => $Ticket, args_ref => \%ARGS );
 
 Returns an array of results messages.
 
@@ -1165,17 +1165,17 @@ Returns an array of results messages.
 sub process_ticket_watchers {
     my %args = (
         ticket_obj => undef,
-        ARGSRef    => undef,
+        args_ref    => undef,
         @_
     );
     my (@results);
 
     my $Ticket  = $args{'ticket_obj'};
-    my $ARGSRef = $args{'ARGSRef'};
+    my $args_ref = $args{'args_ref'};
 
     # Munge watchers
 
-    foreach my $key ( keys %$ARGSRef ) {
+    foreach my $key ( keys %$args_ref ) {
 
         # Delete deletable watchers
         if ( $key =~ /^Ticket-DeleteWatcher-Type-(.*)-Principal-(\d+)$/ ) {
@@ -1189,21 +1189,21 @@ sub process_ticket_watchers {
         # Delete watchers in the simple style demanded by the bulk manipulator
         elsif ( $key =~ /^Delete(requestor|cc|admin_cc)$/ ) {
             my ( $code, $msg ) = $Ticket->delete_watcher(
-                email => $ARGSRef->{$key},
+                email => $args_ref->{$key},
                 type  => $1
             );
             push @results, $msg;
         }
 
         # Add new wathchers by email address
-        elsif ( ( $ARGSRef->{$key} || '' ) =~ /^(?:admin_cc|cc|requestor)$/
+        elsif ( ( $args_ref->{$key} || '' ) =~ /^(?:admin_cc|cc|requestor)$/
             and $key =~ /^WatcherTypeEmail(\d*)$/ )
         {
 
             #They're in this order because otherwise $1 gets clobbered :/
             my ( $code, $msg ) = $Ticket->add_watcher(
-                type  => $ARGSRef->{$key},
-                email => $ARGSRef->{ "WatcherAddressEmail" . $1 }
+                type  => $args_ref->{$key},
+                email => $args_ref->{ "WatcherAddressEmail" . $1 }
             );
             push @results, $msg;
         }
@@ -1212,7 +1212,7 @@ sub process_ticket_watchers {
         elsif ( $key =~ /^Add(requestor|cc|admin_cc)$/ ) {
             my ( $code, $msg ) = $Ticket->add_watcher(
                 type  => $1,
-                email => $ARGSRef->{$key}
+                email => $args_ref->{$key}
             );
             push @results, $msg;
         }
@@ -1220,7 +1220,7 @@ sub process_ticket_watchers {
         # Add new  watchers by owner
         elsif ( $key =~ /^Ticket-AddWatcher-Principal-(\d*)$/ ) {
             my $principal_id = $1;
-            my $form         = $ARGSRef->{$key};
+            my $form         = $args_ref->{$key};
             foreach my $value ( ref($form) ? @{$form} : ($form) ) {
                 next unless $value =~ /^(?:admin_cc|cc|requestor)$/i;
 
@@ -1240,7 +1240,7 @@ sub process_ticket_watchers {
 
 # {{{ sub process_ticket_dates
 
-=head2 process_ticket_dates ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
+=head2 process_ticket_dates ( ticket_obj => $Ticket, args_ref => \%ARGS );
 
 Returns an array of results messages.
 
@@ -1249,12 +1249,12 @@ Returns an array of results messages.
 sub process_ticket_dates {
     my %args = (
         ticket_obj => undef,
-        ARGSRef    => undef,
+        args_ref    => undef,
         @_
     );
 
     my $Ticket  = $args{'ticket_obj'};
-    my $ARGSRef = $args{'ARGSRef'};
+    my $args_ref = $args{'args_ref'};
 
     my (@results);
 
@@ -1269,15 +1269,15 @@ sub process_ticket_dates {
 
     #Run through each field in this list. update the value if apropriate
     foreach my $field (@date_fields) {
-        next unless exists $ARGSRef->{ $field . '_Date' };
-        next if $ARGSRef->{ $field . '_Date' } eq '';
+        next unless exists $args_ref->{ $field . '_Date' };
+        next if $args_ref->{ $field . '_Date' } eq '';
 
         my ( $code, $msg );
 
         my $DateObj = RT::Date->new();
         $DateObj->set(
             format => 'unknown',
-            Value  => $ARGSRef->{ $field . '_Date' }
+            Value  => $args_ref->{ $field . '_Date' }
         );
 
         my $obj = $field . "Obj";
@@ -1298,7 +1298,7 @@ sub process_ticket_dates {
 
 # {{{ sub process_ticket_links
 
-=head2 process_ticket_links ( ticket_obj => $Ticket, ARGSRef => \%ARGS );
+=head2 process_ticket_links ( ticket_obj => $Ticket, args_ref => \%ARGS );
 
 Returns an array of results messages.
 
@@ -1307,21 +1307,21 @@ Returns an array of results messages.
 sub process_ticket_links {
     my %args = (
         ticket_obj => undef,
-        ARGSRef    => undef,
+        args_ref    => undef,
         @_
     );
 
     my $Ticket  = $args{'ticket_obj'};
-    my $ARGSRef = $args{'ARGSRef'};
+    my $args_ref = $args{'args_ref'};
 
     my (@results)
-        = process_record_links( RecordObj => $Ticket, ARGSRef => $ARGSRef );
+        = process_record_links( RecordObj => $Ticket, args_ref => $args_ref );
 
     #Merge if we need to
-    if ( $ARGSRef->{ $Ticket->id . "-MergeInto" } ) {
-        $ARGSRef->{ $Ticket->id . "-MergeInto" } =~ s/\s+//g;
+    if ( $args_ref->{ $Ticket->id . "-MergeInto" } ) {
+        $args_ref->{ $Ticket->id . "-MergeInto" } =~ s/\s+//g;
         my ( $val, $msg )
-            = $Ticket->merge_into( $ARGSRef->{ $Ticket->id . "-MergeInto" } );
+            = $Ticket->merge_into( $args_ref->{ $Ticket->id . "-MergeInto" } );
         push @results, $msg;
     }
 
@@ -1333,17 +1333,17 @@ sub process_ticket_links {
 sub process_record_links {
     my %args = (
         RecordObj => undef,
-        ARGSRef   => undef,
+        args_ref   => undef,
         @_
     );
 
     my $Record  = $args{'RecordObj'};
-    my $ARGSRef = $args{'ARGSRef'};
+    my $args_ref = $args{'args_ref'};
 
     my (@results);
 
     # Delete links that are gone gone gone.
-    foreach my $arg ( keys %$ARGSRef ) {
+    foreach my $arg ( keys %$args_ref ) {
         if ( $arg =~ /delete_link-(.*?)-(DependsOn|MemberOf|RefersTo)-(.*)$/ )
         {
             my $base   = $1;
@@ -1368,9 +1368,9 @@ sub process_record_links {
     my @linktypes = qw( DependsOn MemberOf RefersTo );
 
     foreach my $linktype (@linktypes) {
-        if ( $ARGSRef->{ $Record->id . "-$linktype" } ) {
+        if ( $args_ref->{ $Record->id . "-$linktype" } ) {
             for my $luri (
-                split( / /, $ARGSRef->{ $Record->id . "-$linktype" } ) )
+                split( / /, $args_ref->{ $Record->id . "-$linktype" } ) )
             {
                 $luri =~ s/\s*$//;    # Strip trailing whitespace
                 my ( $val, $msg ) = $Record->add_link(
@@ -1380,10 +1380,10 @@ sub process_record_links {
                 push @results, $msg;
             }
         }
-        if ( $ARGSRef->{ "$linktype-" . $Record->id } ) {
+        if ( $args_ref->{ "$linktype-" . $Record->id } ) {
 
             for my $luri (
-                split( / /, $ARGSRef->{ "$linktype-" . $Record->id } ) )
+                split( / /, $args_ref->{ "$linktype-" . $Record->id } ) )
             {
                 my ( $val, $msg ) = $Record->add_link(
                     base => $luri,

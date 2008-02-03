@@ -301,7 +301,7 @@ else {
             $ARGS{'object-RT::Model::User-'.$val.'-CustomField-'.$1} = delete $ARGS{$key};
             }
         }
-        push @results, process_object_custom_field_updates( ARGSRef => \%ARGS, object => $user_object );
+        push @results, process_object_custom_field_updates( args_ref => \%ARGS, object => $user_object );
 	} else {
 		push @results, _('User could not be Created: %1', $msg);
 	}
@@ -334,11 +334,11 @@ if ($user_object->id && $id ne 'new') {
 		    Address2 City State Zip Country 
 		   );
 
-    my @fieldresults = update_record_object ( AttributesRef => \@fields,
+    my @fieldresults = update_record_object ( attributes_ref => \@fields,
 					    object => $user_object,
-					    ARGSRef => \%ARGS );
+					    args_ref => \%ARGS );
     push (@results,@fieldresults);
-    push @results, process_object_custom_field_updates( ARGSRef => \%ARGS, object => $user_object );
+    push @results, process_object_custom_field_updates( args_ref => \%ARGS, object => $user_object );
 
 
     # {{{ Deal with special fields: privileged, enabled

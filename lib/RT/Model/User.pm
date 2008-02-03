@@ -1402,12 +1402,12 @@ sub preferred_key {
     return undef if @keys == 0;
 
     if ( @keys == 1 ) {
-        $prefkey = $keys[0]->{'Fingerprint'};
+        $prefkey = $keys[0]->{'fingerprint'};
     } else {
 
         # prefer the maximally trusted key
-        @keys = sort { $b->{'TrustLevel'} <=> $a->{'TrustLevel'} } @keys;
-        $prefkey = $keys[0]->{'Fingerprint'};
+        @keys = sort { $b->{'trust_level'} <=> $a->{'trust_level'} } @keys;
+        $prefkey = $keys[0]->{'fingerprint'};
     }
 
     $self->set_attribute( name => 'preferred_key', content => $prefkey );

@@ -187,10 +187,10 @@ else {
     my @attribs = qw(queue scrip_action scrip_condition template stage
         description custom_prepare_code custom_commit_code custom_is_applicable_code);
     my @results = update_record_object(
-        AttributesRef   => \@attribs,
+        attributes_ref   => \@attribs,
         AttributePrefix => 'Scrip-'.$scrip->id,
         object          => $scrip,
-        ARGSRef         => \%ARGS
+        args_ref         => \%ARGS
     );
     return ($scrip->id, @results);
 }

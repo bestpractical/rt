@@ -729,10 +729,10 @@ use vars '%LINKDIRMAP';
 Updates fields on an object for you using the proper set methods,
 skipping unchanged values.
 
- ARGSRef => a hashref of attributes => value for the update
- AttributesRef => an arrayref of keys in ARGSRef that should be updated
- AttributePrefix => a prefix that should be added to the attributes in AttributesRef
-                    when looking up values in ARGSRef
+ args_ref => a hashref of attributes => value for the update
+ attributes_ref => an arrayref of keys in args_ref that should be updated
+ AttributePrefix => a prefix that should be added to the attributes in attributes_ref
+                    when looking up values in args_ref
                     Bare attributes are tried before prefixed attributes
 
 Returns a list of localized results of the update
@@ -751,22 +751,22 @@ sub update {
     );
 
     my $attributes = $args{'attributes_ref'};
-    my $ARGSRef    = $args{'args_ref'};
+    my $args_ref    = $args{'args_ref'};
     my @results;
 
     foreach my $attribute (@$attributes) {
         my $value;
-        if ( defined $ARGSRef->{$attribute} ) {
-            $value = $ARGSRef->{$attribute};
+        if ( defined $args_ref->{$attribute} ) {
+            $value = $args_ref->{$attribute};
         } elsif (
             defined( $args{'attribute_prefix'} )
             && defined(
-                $ARGSRef->{ $args{'attribute_prefix'} . "-" . $attribute }
+                $args_ref->{ $args{'attribute_prefix'} . "-" . $attribute }
             )
             )
         {
             $value
-                = $ARGSRef->{ $args{'attribute_prefix'} . "-" . $attribute };
+                = $args_ref->{ $args{'attribute_prefix'} . "-" . $attribute };
 
         } else {
             next;
