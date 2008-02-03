@@ -19,7 +19,7 @@ use RT::Model::TicketCollection;
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     my ($id) = $ticket->create( subject => 'test', queue => 1 );
     ok( $id, "Created new ticket" );
-    $ticket->delete;
+    $ticket->set_status('deleted');
     is( $ticket->status, 'deleted', "successfuly changed status" );
 
     my $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user );
@@ -59,7 +59,7 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
     my ($pid) = $parent->create( subject => 'test', queue => 1 );
     ok( $pid, "Created new ticket" );
-    my ($status, $msg) = $parent->delete;
+    my ($status, $msg) = $parent->set_status('deleted');
     ok( $status, 'deleted parent ticket');
     create_savepoint('parent_ticket');
 
