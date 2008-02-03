@@ -27,8 +27,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
             lookup_type    => 'RT::Model::Queue-RT::Model::Ticket',
         },
     );
-    $m->content_like( qr/Object Created/, 'Created CF sucessfully' );
-    die $m->content;
+    $m->content_like( qr/Created/, 'Created CF sucessfully' );
     $cfid = $m->form_name('ModifyCustomField')->value('id');
     ok $cfid, "found id of the CF in the form, it's #$cfid";
 }
@@ -43,7 +42,7 @@ diag "add 'qwe', 'ASD' and '0' as values to the CF" if $ENV{'TEST_VERBOSE'};
             },
             button => 'Update',
         );
-        $m->content_like( qr/Object Created/, 'added a value to the CF' ); # or diag $m->content;
+        $m->content_like( qr/Created/, 'added a value to the CF' ); # or diag $m->content;
     }
 }
 
@@ -63,7 +62,7 @@ diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
     $m->field( "object-". $queue->id ."-CF-$cfid" => 1 );
     $m->submit;
 
-    $m->content_like( qr/Object Created/, 'TCF added to the queue' );
+    $m->content_like( qr/Created/, 'TCF added to the queue' );
 }
 
 my $tid;
@@ -75,7 +74,7 @@ diag "create a ticket using API with 'asd'(not 'ASD') as value of the CF"
     ($tid, $txnid, $msg) = $ticket->create(
         subject => 'test',
         queue => $queue->id,
-        "CustomField-$cfid" => 'ASD',
+        "custom_field-$cfid" => 'ASD',
     );
     ok $tid, "Created ticket";
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};

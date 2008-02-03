@@ -161,7 +161,7 @@ if ( $queue_obj->id ) {
     my @linkresults;
     $m->callback(
         results      => \@linkresults,
-        RecordObj    => $queue_obj,
+        record_obj    => $queue_obj,
         args_ref      => \%ARGS, 
         Callbackname => 'ProcessLinks'
     );

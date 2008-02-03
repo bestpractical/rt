@@ -53,7 +53,8 @@ my ( $cf, $cfid, $tid );
     $m->field( $_ => undef ) for @names;    # ...and not any other. ;-)
     $m->submit;
 
-    $m->content_like( qr/Object Created/, 'TCF added to the queue' );
+    $m->content_like( qr/Created/, 'TCF added to the queue' );
+
 }
 
 my $tester = RT::Test->load_or_create_user( name => 'tester', password => '123456' );

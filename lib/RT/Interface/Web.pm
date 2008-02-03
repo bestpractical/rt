@@ -374,7 +374,7 @@ sub create_ticket {
             }
 
             if ( $arg =~ /-Upload$/ ) {
-                $create_args{"CustomField-$cfid"} = _uploaded_file($arg);
+                $create_args{"custom_field-$cfid"} = _uploaded_file($arg);
                 next;
             }
 
@@ -396,7 +396,7 @@ sub create_ticket {
                 }
                 grep defined, @values;
 
-            $create_args{"CustomField-$cfid"} = \@values;
+            $create_args{"custom_field-$cfid"} = \@values;
         }
     }
 
@@ -780,9 +780,9 @@ sub process_acl_changes {
 
 # }}}
 
-# {{{ sub UpdateRecordObj
+# {{{ sub update_record_obj
 
-=head2 UpdateRecordObj ( args_ref => \%ARGS, object => RT::Record, attributes_ref => \@attribs)
+=head2 update_record_obj ( args_ref => \%ARGS, object => RT::Record, attributes_ref => \@attribs)
 
 @attribs is a list of ticket fields to check and update if they differ from the  B<object>'s current values. args_ref is a ref to HTML::Mason's %ARGS.
 
@@ -1280,7 +1280,7 @@ sub process_ticket_dates {
             Value  => $args_ref->{ $field . '_Date' }
         );
 
-        my $obj = $field . "Obj";
+        my $obj = $field . "_obj";
         if (    ( defined $DateObj->unix )
             and ( $DateObj->unix != $Ticket->$obj()->unix() ) )
         {
@@ -1315,7 +1315,7 @@ sub process_ticket_links {
     my $args_ref = $args{'args_ref'};
 
     my (@results)
-        = process_record_links( RecordObj => $Ticket, args_ref => $args_ref );
+        = process_record_links( record_obj => $Ticket, args_ref => $args_ref );
 
     #Merge if we need to
     if ( $args_ref->{ $Ticket->id . "-MergeInto" } ) {
@@ -1332,12 +1332,12 @@ sub process_ticket_links {
 
 sub process_record_links {
     my %args = (
-        RecordObj => undef,
+        record_obj => undef,
         args_ref   => undef,
         @_
     );
 
-    my $Record  = $args{'RecordObj'};
+    my $Record  = $args{'record_obj'};
     my $args_ref = $args{'args_ref'};
 
     my (@results);

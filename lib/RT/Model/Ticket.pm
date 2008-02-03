@@ -651,9 +651,9 @@ sub create {
             my ( $status, $msg ) = $self->add_custom_field_value(
                 (   UNIVERSAL::isa( $value => 'HASH' )
                     ? %$value
-                    : ( Value => $value )
+                    : ( value => $value )
                 ),
-                Field              => $cfid,
+                field              => $cfid,
                 record_transaction => 0,
             );
             push @non_fatal_errors, $msg unless $status;

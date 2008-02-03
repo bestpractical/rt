@@ -23,17 +23,17 @@ ok ($q->id, "Created the queue");
 my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
 $cf->create(name => 'SearchTest', type => 'Freeform', MaxValues => 0, queue => $q->id);
 ok($cf->id, "Created the SearchTest CF");
-my $cflabel = "CustomField-".$cf->id;
+my $cflabel = "custom_field-".$cf->id;
 
 my $cf2 = RT::Model::CustomField->new(current_user => RT->system_user);
 $cf2->create(name => 'SearchTest2', type => 'Freeform', MaxValues => 0, queue => $q->id);
 ok($cf2->id, "Created the SearchTest2 CF");
-my $cflabel2 = "CustomField-".$cf2->id;
+my $cflabel2 = "custom_field-".$cf2->id;
 
 my $cf3 = RT::Model::CustomField->new(current_user => RT->system_user);
 $cf3->create(name => 'SearchTest3', type => 'Freeform', MaxValues => 0, queue => $q->id);
 ok($cf3->id, "Created the SearchTest3 CF");
-my $cflabel3 = "CustomField-".$cf3->id;
+my $cflabel3 = "custom_field-".$cf3->id;
 
 
 # There was a bug involving a missing join to ObjectCustomFields that
@@ -63,7 +63,7 @@ my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ( $id, undef $msg ) = $t1->create(
     queue      => $q->id,
     subject    => 'SearchTest1',
-    Requestor  => ['search1@example.com'],
+    requestor  => ['search1@example.com'],
     $cflabel   => 'foo1',
     $cflabel2  => 'bar1',
     $cflabel3  => 'qux1',
@@ -75,7 +75,7 @@ my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t2->create(
     queue      => $q->id,
     subject    => 'SearchTest2',
-    Requestor  => ['search2@example.com'],
+    requestor  => ['search2@example.com'],
 #    $cflabel   => 'foo2',
     $cflabel2  => 'bar2',
     $cflabel3  => 'qux2',
@@ -86,7 +86,7 @@ my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t3->create(
     queue      => $q->id,
     subject    => 'SearchTest3',
-    Requestor  => ['search3@example.com'],
+    requestor  => ['search3@example.com'],
     $cflabel   => 'foo3',
 #    $cflabel2  => 'bar3',
     $cflabel3  => 'qux3',
@@ -97,7 +97,7 @@ my $t4 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t4->create(
     queue      => $q->id,
     subject    => 'SearchTest4',
-    Requestor  => ['search4@example.com'],
+    requestor  => ['search4@example.com'],
     $cflabel   => 'foo4',
     $cflabel2  => 'bar4',
 #    $cflabel3  => 'qux4',
@@ -108,7 +108,7 @@ my $t5 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t5->create(
     queue      => $q->id,
 #    subject    => 'SearchTest5',
-    Requestor  => ['search5@example.com'],
+    requestor  => ['search5@example.com'],
     $cflabel   => 'foo5',
     $cflabel2  => 'bar5',
     $cflabel3  => 'qux5',
@@ -130,7 +130,7 @@ my $t7 = RT::Model::Ticket->new(current_user => RT->system_user);
 ( $id, undef, $msg ) = $t7->create(
     queue      => $q->id,
     subject    => 'SearchTest7',
-    Requestor  => ['search7@example.com'],
+    requestor  => ['search7@example.com'],
 #    $cflabel   => 'foo7',
 #    $cflabel2  => 'bar7',
     $cflabel3  => 'qux7',
@@ -147,8 +147,7 @@ is($tix->count, 7, "found all the tickets");
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND CF.SearchTest = 'foo1'");
-is($tix->count, 1, "matched identical subject");
-
+is($tix->count, 1, "matched identical cf value");
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND CF.SearchTest LIKE 'foo1'");
