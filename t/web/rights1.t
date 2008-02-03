@@ -105,7 +105,7 @@ ok ($grantid,$grantmsg);
 # ourself in the list of possible owners.
 
 $agent->reload();
-ok($agent->form_name('BuildQuery'), "Yep, form is still there");
+ok($agent->form_name('build_query'), "Yep, form is still there");
 my $input = $agent->current_form->find_input('value_of_actor');
 ok(grep(/customer-$$/, $input->value_names()), "Found self in the actor listing");
 

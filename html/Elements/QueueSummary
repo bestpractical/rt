@@ -58,10 +58,10 @@
 %   my $queue_cond = "Queue = '$queue->{name}' AND ";
 %   my $all_q = $queue_cond . "(Status = 'open' OR Status = 'new' OR Status = 'stalled')";
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
-<td><a href="<% RT->config->get('WebPath') %>/Search/Results.html?Query=<% $all_q |u,n %>" title="<% $queue->{description} %>"><% $queue->{name} %></a></td>
+<td><a href="<% RT->config->get('WebPath') %>/Search/Results.html?query=<% $all_q |u,n %>" title="<% $queue->{description} %>"><% $queue->{name} %></a></td>
 %   for my $condition (@$conditions) {
 %       $Tickets->from_sql( "Queue = $queue->{id} AND ". $condition->{cond} );
-<td align="right"><a href="<% RT->config->get('WebPath') %>/Search/Results.html?Query=<% $queue_cond.$condition->{cond} |u,n %>"><% $Tickets->count %></a></td>
+<td align="right"><a href="<% RT->config->get('WebPath') %>/Search/Results.html?query=<% $queue_cond.$condition->{cond} |u,n %>"><% $Tickets->count %></a></td>
 %   }
 </tr>
 % }

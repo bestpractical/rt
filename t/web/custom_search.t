@@ -11,10 +11,10 @@ my $url = $m->rt_base_url;
 
 
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
-$t->create(subject => 'for custom search'.$$, queue => 'general',
-	   Owner => 'root', Requestor => 'customsearch@localhost');
+my ($tkid,$txnid, $msg) = $t->create(subject => 'for custom search'.$$, queue => 'general',
+	   owner => 'root', requestor => 'customsearch@localhost');
 ok(my $id = $t->id, 'Created ticket for custom search');
-
+ok($tkid, $msg);
 ok $m->login, 'logged in';
 my $t_link = $m->find_link( text => "for custom search".$$ );
 like ($t_link->url, qr/$id/, 'link to the ticket we Created');
@@ -27,12 +27,12 @@ $m->get ($cus_hp);
 $m->content_like (qr'highest priority tickets');
 
 # add Requestor to the fields
-$m->form_name ('BuildQuery');
+$m->form_name ('build_query');
 # can't use submit form for mutli-valued select as it uses set_fields
 $m->field (SelectDisplayColumns => ['Requestors']);
 $m->click_button (name => 'AddCol') ;
 
-$m->form_name ('BuildQuery');
+$m->form_name ('build_query');
 $m->click_button (name => 'Save');
 
 $m->get( $url );
@@ -42,11 +42,11 @@ $m->content_contains ('customsearch@localhost', 'requestor now displayed ');
 # now remove Requestor from the fields
 $m->get ($cus_hp);
 
-$m->form_name ('BuildQuery');
+$m->form_name ('build_query');
 $m->field (CurrentDisplayColumns => 'Requestors');
 $m->click_button (name => 'RemoveCol') ;
 
-$m->form_name ('BuildQuery');
+$m->form_name ('build_query');
 $m->click_button (name => 'Save');
 
 $m->get( $url );

@@ -83,10 +83,10 @@ sub groupings {
     @fields = map { $_, $_ } @fields;
 
     my $queues = $args{'Queues'};
-    if ( !$queues && $args{'Query'} ) {
+    if ( !$queues && $args{'query'} ) {
         require RT::Interface::Web::QueryBuilder::Tree;
         my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-        $tree->parse_sql( Query => $args{'Query'} );
+        $tree->parse_sql( query => $args{'query'} );
         $queues = $tree->get_referenced_queues;
     }
 

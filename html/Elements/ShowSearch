@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
     title => _($search->description, $ProcessedSearchArg->{'Rows'}),
-    title_href => $query_link_url.$QueryString,
+    title_href => $query_link_url.$query_string,
     titleright => $customize ? _('Edit') : '',
     titleright_href => $customize &>
 <& $query_display_component, %$ProcessedSearchArg, ShowNavigation => 0 &>
@@ -116,7 +116,7 @@ foreach ( $SearchArg, $ProcessedSearchArg ) {
     $_->{'format'} =~ s/__loc\(["']?(\w+)["']?\)__/_("$1")/ge;
 }
 
-my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
+my $query_string = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 
 </%init>
 <%ARGS>

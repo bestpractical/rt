@@ -48,15 +48,15 @@
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'}, 
     RSSAutoDiscovery => $RSSFeedURL &>
 <& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Results.html".$QueryString, 
+    current_tab => "Search/Results.html".$query_string, 
     Title => $title,
     format => $format,
-    Query => $Query,
+    query => $query,
     Rows => $Rows,
     order_by => $order_by,
     Order => $Order &>
 <& /Elements/TicketList, 
-    Query => $Query,
+    query => $query,
     AllowSorting => 1,
     order_by => $order_by,
     Order => $Order,
@@ -66,7 +66,7 @@
     baseURL => RT->config->get('WebPath')."/Search/Results.html?"
 
    &>
-% my %hiddens = (Query => $Query, format => $format, Rows => $Rows, order_by => $order_by, Order => $Order, HideResults => $HideResults, Page => $Page );
+% my %hiddens = (query => $query, format => $format, Rows => $Rows, order_by => $order_by, Order => $Order, HideResults => $HideResults, Page => $Page );
 <div align="right">
 <form method="get" action="<%RT->config->get('WebPath')%>/Search/Results.html">
 % foreach my $key (keys(%hiddens)) {
@@ -78,16 +78,16 @@
 </div>
 <div align="right">
 <& Elements/ResultViews,
-    QueryString => $QueryString,
-    Query => $Query,
+    query_string => $query_string,
+    query => $query,
     format => $format,
     Rows => $Rows,
     order_by => $order_by,
     Order => $Order,
     RSSFeedURL => $RSSFeedURL,
-    ShortQueryString => $ShortQueryString,
+    short_querystring => $short_querystring,
 &>
-% $m->callback( QueryString => $QueryString, Callbackname => 'SearchActions' );
+% $m->callback( query_string => $query_string, Callbackname => 'SearchActions' );
 </div>
 <%INIT>
 # Read from user preferences
@@ -115,7 +115,7 @@ if ( !defined($Rows) ) {
 my ($title, $ticketcount);
 $session{'i'}++;
 $session{'tickets'} = RT::Model::TicketCollection->new() ;
-$session{'tickets'}->from_sql($Query) if ($Query);
+$session{'tickets'}->from_sql($query) if ($query);
 
 if ($order_by =~ /\|/) {
     # Multiple Sorts
@@ -130,7 +130,7 @@ if ($order_by =~ /\|/) {
 
 $session{'CurrentSearchHash'} = {
     format      => $format,
-    Query       => $Query,
+    query       => $query,
     Page       => $Page,
     Order       => $Order,
     order_by     => $order_by,
@@ -145,15 +145,15 @@ if ( $session{'tickets'}->query()) {
     $title = _("Find tickets");
 }
 
-my $QueryString = "?".$m->comp('/Elements/QueryString',
-                               Query => $Query,
+my $query_string = "?".$m->comp('/Elements/QueryString',
+                               query => $query,
                                format => $format,
                                Rows => $Rows,
                                order_by => $order_by,
                                Order => $Order,
                                Page => $Page);
-my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
-my $RSSFeedURL = RT->config->get('WebPath')."/Search/Results.rdf$ShortQueryString";
+my $short_querystring = "?".$m->comp('/Elements/QueryString', query => $query);
+my $RSSFeedURL = RT->config->get('WebPath')."/Search/Results.rdf$short_querystring";
 
 if ($ARGS{'TicketsRefreshInterval'}) {
 	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};
@@ -163,7 +163,7 @@ if ($ARGS{'TicketsRefreshInterval'}) {
 $session{'tickets'}->prep_for_serialization();
 </%CLEANUP>
 <%ARGS>
-$Query => undef
+$query => undef
 $format => undef 
 $HideResults => 0
 $Rows => undef

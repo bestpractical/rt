@@ -48,7 +48,7 @@
 <&| /Widgets/TitleBox, title =>  $title &>
 <& /Elements/TicketList, Title   => $title,
 			 format  => @format, 
-			 Query   => $Query, 
+			 query   => $query, 
 			 Order   => $Order, 
 			 order_by => $order_by,
 			 baseURL => $baseURL,
@@ -57,11 +57,11 @@
 
 <%INIT>
 my $id = Jifty->web->current_user->id;
-my $Query = "( "
+my $query = "( "
     . join( ' OR ', map "$_.id = $id", @roles )
     . ")";
 if ( @status ) {
-    $Query .= " AND ( "
+    $query .= " AND ( "
         . join( ' OR ', map "Status = '$_'", @status )
         . " )";
 }

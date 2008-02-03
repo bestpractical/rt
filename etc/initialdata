@@ -686,7 +686,7 @@ return 0; # ignore $passed;
       { format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                  . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a>/TITLE:subject',}
                  . q{Priority, Queuename, ExtendedStatus},
-        Query   => " owner = '__CurrentUser__' AND ( Status = 'new' OR Status = 'open')",
+        query   => " owner = '__CurrentUser__' AND ( Status = 'new' OR Status = 'open')",
         order_by => 'Priority',
         Order   => 'DESC'
       },

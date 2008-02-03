@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$Query => "id > 0"
+$query => "id > 0"
 $PrimaryGroupBy => 'queue'
 $SecondaryGroupBy => undef
 $ChartStyle => 'bars'
@@ -68,7 +68,7 @@ if ($ChartStyle eq 'pie') {
 
 use RT::Report::Tickets;
 my $tix = RT::Report::Tickets->new();
-$tix->from_sql( $Query );
+$tix->from_sql( $query );
 my $count_name = $tix->column( FUNCTION => 'COUNT', column => 'id' );
 $tix->group_by( column => $PrimaryGroupBy );
 my $value_name = $tix->column( column => $PrimaryGroupBy );

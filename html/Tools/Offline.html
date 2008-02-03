@@ -136,9 +136,9 @@ if ($ARGS{'Parse'} && $ARGS{'template'}) {
     push @results, $action->create_by_template();
     push @results, $action->update_by_template();
 } else {
-    if ($ARGS{'Query'}) {
+    if ($ARGS{'query'}) {
 	my $Tickets = RT::Model::TicketCollection->new();
-	$Tickets->from_sql($ARGS{'Query'});
+	$Tickets->from_sql($ARGS{'query'});
 	
 	while (my $t = $Tickets->next) {
 	    $string .= "===Update-Ticket: " . $t->id . "\n";

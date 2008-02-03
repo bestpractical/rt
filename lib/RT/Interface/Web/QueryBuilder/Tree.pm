@@ -280,14 +280,4 @@ sub parse_sql {
     RT::SQL::parse( $string, \%callback );
     return @results;
 }
-
-eval "require RT::Interface::Web::QueryBuilder::Tree_Vendor";
-die $@
-    if ( $@
-    && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder/Tree_Vendor.pm} );
-eval "require RT::Interface::Web::QueryBuilder::Tree_Local";
-die $@
-    if ( $@
-    && $@ !~ qr{^Can't locate RT/Interface/Web/QueryBuilder/Tree_Local.pm} );
-
 1;

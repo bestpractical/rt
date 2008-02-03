@@ -98,7 +98,7 @@ if ($q) {
 
     my $search = RT::Search::Googleish->new(%args);
 
-    $m->comp( "Results.html", Query => $search->query_to_sql() );
+    $m->comp( "Results.html", query => $search->query_to_sql() );
     $m->comp( "/Elements/Footer" );
     $m->abort();
 }

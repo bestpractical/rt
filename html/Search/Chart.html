@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$Query => "id > 0"
+$query => "id > 0"
 $PrimaryGroupBy => 'queue'
 $SecondaryGroupBy => ''
 $ChartStyle => 'bars'
@@ -59,7 +59,7 @@ my $title = _( "Search results grouped by %1", $PrimaryGroupBy );
 
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',
-    SearchFields => [qw(Query PrimaryGroupBy SecondaryGroupBy ChartStyle)] );
+    SearchFields => [qw(query PrimaryGroupBy SecondaryGroupBy ChartStyle)] );
 
 my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => $saved_search );
 

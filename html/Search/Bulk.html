@@ -50,17 +50,17 @@
     current_tab => "Search/Bulk.html",
     Title => $title,
     format => $ARGS{'format'}, # we don't want the locally modified one
-    Query => $Query,
+    query => $query,
     Rows => $Rows,
     order_by => $order_by,
     Order => $Order &>
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->config->get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data">
-% foreach my $var qw(Query format order_by Order Rows Page) {
+% foreach my $var qw(query format order_by Order Rows Page) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
-<& /Elements/TicketList, Query => $Query,
+<& /Elements/TicketList, query => $query,
     display_format => $format,
     format => $ARGS{'format'},
     Verbatim => 1,
@@ -214,7 +214,7 @@ $format ||= RT->config->get('DefaultSearchResultFormat');
 $format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;
 
 my $Tickets = RT::Model::TicketCollection->new();
-$Tickets->from_sql($Query);
+$Tickets->from_sql($query);
 if ( $order_by =~ /\|/ ) {
 
   # Multiple Sorts
@@ -374,5 +374,5 @@ $Page => 1
 $Rows => 50
 $Order => 'ASC'
 $order_by => 'id'
-$Query => undef
+$query => undef
 </%args>

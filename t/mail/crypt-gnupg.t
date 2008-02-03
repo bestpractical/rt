@@ -73,7 +73,6 @@ diag 'only signing. missing passphrase' if $ENV{'TEST_VERBOSE'};
     ok( $res{'exit_code'}, "couldn't sign without passphrase");
     ok( $res{'error'}, "error is here" );
     ok( $res{'logger'}, "log is here as well" );
-
     my @status = RT::Crypt::GnuPG::parse_status( $res{'status'} );
     is( scalar @status, 1, 'one record');
     is( $status[0]->{'operation'}, 'passphrase_check', 'operation is correct');

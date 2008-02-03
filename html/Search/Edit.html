@@ -47,10 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title&>
 <& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Edit.html?".$QueryString, 
+    current_tab => "Search/Edit.html?".$query_string, 
     Title   => $title,
     format  => $format,
-    Query   => $Query,
+    query   => $query,
     Rows    => $Rows,
     order_by => $order_by,
     Order   => $Order,
@@ -61,7 +61,7 @@
 
 <form method="post" action="Build.html">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $SavedSearchId %>" />
-<textarea name="Query" rows="8" cols="72"><% $Query %></textarea>
+<textarea name="query" rows="8" cols="72"><% $query %></textarea>
 <br />
 <textarea name="format" rows="8" cols="72"><% $format %></textarea>
 <br />
@@ -71,8 +71,8 @@
 <%INIT>
 my $title = _("Edit Query");
 $format = $m->comp('/Elements/ScrubHTML', content => $format);
-my $QueryString = $m->comp('/Elements/QueryString',
-                           Query   => $Query,
+my $query_string = $m->comp('/Elements/QueryString',
+                           query   => $query,
                            format  => $format,
                            Rows    => $Rows,
                            order_by => $order_by,
@@ -85,7 +85,7 @@ my $QueryString = $m->comp('/Elements/QueryString',
 <%ARGS>
 $SavedSearchId => 'new'
 
-$Query         => ''
+$query         => ''
 $format        => ''
 $Rows          => '50'
 $order_by       => 'id'

@@ -53,7 +53,7 @@
     format_string => $format,
     AllowSorting => $AllowSorting, 
     Order => $Order, 
-    Query => $Query,
+    query => $query,
     Rows => $Rows,
     Page => $Page,
     order_by => $order_by , 
@@ -87,7 +87,7 @@ while ( my $record = $Collection->next ) {
 <%perl>
 my $prev = $m->comp(
     '/Elements/QueryString',
-    Query   => $Query,
+    query   => $query,
     format  => $format,
     Rows    => $Rows,
     order_by => $order_by,
@@ -96,7 +96,7 @@ my $prev = $m->comp(
 );
 my $next = $m->comp(
     '/Elements/QueryString',
-    Query   => $Query,
+    query   => $query,
     format  => $format,
     Rows    => $Rows,
     order_by => $order_by,
@@ -114,7 +114,7 @@ my $next = $m->comp(
 <%INIT>
 unless ($Collection) {
         $Collection = RT::Model::TicketCollection->new();
-        $Collection->from_sql( $Query );
+        $Collection->from_sql( $query );
 }
 
 my $TotalFound =  $Collection->count_all();
@@ -163,7 +163,7 @@ foreach my $col (@format) {
 <%ARGS>
 $Collection => undef
 
-$Query => undef
+$query => undef
 $format => RT->config->get('DefaultSearchResultFormat')
 $display_format => undef
 $Order => undef

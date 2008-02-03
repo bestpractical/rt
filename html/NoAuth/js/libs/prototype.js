@@ -681,7 +681,7 @@ var Hash = function(obj) {
 };
 
 Object.extend(Hash, {
-  toQueryString: function(obj) {
+  toquery_string: function(obj) {
     var parts = [];
 
 	  this.prototype._each.call(obj, function(pair) {
@@ -752,8 +752,8 @@ Object.extend(Hash.prototype, {
     return result;
   },
 
-  toQueryString: function() {
-    return Hash.toQueryString(this);
+  toquery_string: function() {
+    return Hash.toquery_string(this);
   },
 
   inspect: function() {
@@ -889,7 +889,7 @@ Ajax.Request.prototype = Object.extend(new Ajax.base(), {
       this.method = 'post';
     }
 
-    params = Hash.toQueryString(params);
+    params = Hash.toquery_string(params);
     if (params && /Konqueror|Safari|KHTML/.test(navigator.userAgent)) params += '&_='
 
     // when GET, append parameters to URL
@@ -1938,7 +1938,7 @@ var Form = {
       return result;
     });
 
-    return getHash ? data : Hash.toQueryString(data);
+    return getHash ? data : Hash.toquery_string(data);
   }
 };
 
@@ -2028,7 +2028,7 @@ Form.Element.Methods = {
       if (value != undefined) {
         var pair = {};
         pair[element.name] = value;
-        return Hash.toQueryString(pair);
+        return Hash.toquery_string(pair);
       }
     }
     return '';

@@ -52,7 +52,7 @@
 %#   one out of the session hash.  Also, it could be getting just a raw query from
 %#   Build/Edit.html (Advanced).)
 %#
-%#   After doing some stuff with default arguments and saved searches, the ParseQuery
+%#   After doing some stuff with default arguments and saved searches, the parse_query
 %#   function (which is similar to, but not the same as, _parser in RT/Tickets_Overlay_SQL)
 %#   converts the Query into a RT::Interface::Web::QueryBuilder::Tree.  This mason file
 %#   then adds stuff to or modifies the tree based on the actions that had been requested
@@ -61,21 +61,21 @@
 %#   box in the top right corner.
 %#
 %#   Worthwhile refactoring: the tree manipulation code for the actions could use some cleaning
-%#   up.  The node-adding code is different in the "add" actions from in ParseQuery, which leads
-%#   to things like ParseQuery correctly not quoting numbers in numerical fields, while the "add"
+%#   up.  The node-adding code is different in the "add" actions from in parse_query, which leads
+%#   to things like parse_query correctly not quoting numbers in numerical fields, while the "add"
 %#   action does quote it (this breaks SQLite).
 %#
 <& /Elements/Header, Title => $title &>
 <& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Build.html?".$QueryString, 
+    current_tab => "Search/Build.html?".$query_string, 
     Title => $title,
     %query,
     SavedSearchId => $saved_search{'id'},
 &>
 
-<form method="post" action="Build.html" name="BuildQuery">
+<form method="post" action="Build.html" name="build_query">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'id'} %>" />
-<input type="hidden" class="hidden" name="Query" value="<% $query{'Query'} %>" />
+<input type="hidden" class="hidden" name="query" value="<% $query{'query'} %>" />
 <input type="hidden" class="hidden" name="format" value="<% $query{'format'} %>" />
 
 
@@ -93,7 +93,7 @@
 
 
 <div id="pick-criteria">
-    <& Elements/PickCriteria, query => $query{'Query'}, cfqueues => $queues &>
+    <& Elements/PickCriteria, query => $query{'query'}, cfqueues => $queues &>
 </div>
 <& /Elements/Submit,  Label => _('Add these terms'), name => 'AddClause'&>
 
@@ -113,20 +113,19 @@
 </form>
 
 <%INIT>
-use RT::Interface::Web::QueryBuilder;
 use RT::Interface::Web::QueryBuilder::Tree;
 
 my $title = _("Query Builder");
 
 my %query;
-for( qw(Query format order_by Order rows_per_page) ) {
+for( qw(query format order_by Order rows_per_page) ) {
     $query{$_} = $ARGS{$_};
 }
 
 my %saved_search;
-my @actions = $m->comp( 'Elements/EditSearches:Init', %ARGS, Query => \%query, SavedSearch => \%saved_search);
+my @actions = $m->comp( 'Elements/EditSearches:Init', %ARGS, query => \%query, SavedSearch => \%saved_search);
 
-if ( $NewQuery ) {
+if ( $new_query ) {
 
     # Wipe all data-carrying variables clear if we want a new
     # search, or we're deleting an old one..
@@ -144,9 +143,9 @@ if ( $NewQuery ) {
 
     my $current = $session{'CurrentSearchHash'};
     my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
-    my $default = { Query => '', format => '', order_by => 'id', Order => 'ASC', rows_per_page => 50 };
+    my $default = {query => '', format => '', order_by => 'id', Order => 'ASC', rows_per_page => 50 };
 
-    for( qw(Query format order_by Order rows_per_page) ) {
+    for( qw(query format order_by Order rows_per_page) ) {
         $query{$_} = $current->{$_} unless defined $query{$_};
         $query{$_} = $prefs->{$_} unless defined $query{$_};
         $query{$_} = $default->{$_} unless defined $query{$_};
@@ -163,7 +162,7 @@ if ( $NewQuery ) {
     }
 }
 
-my $ParseQuery = sub  {
+my $parse_query = sub  {
     my ($string, $results) = @_;
 
     my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
@@ -172,11 +171,11 @@ my $ParseQuery = sub  {
     return $tree;
 };
 
-my $tree = $ParseQuery->( $query{'Query'}, \@actions );
+my $tree = $parse_query->( $query{'query'}, \@actions );
 
 # if parsing went poorly, send them to the edit page to fix it
 if ( $actions[0] ) {
-    return $m->comp( "Edit.html", Query => $query{'Query'}, actions => \@actions );
+    return $m->comp( "Edit.html", query => $query{'query'}, actions => \@actions );
 }
 
 my @options = $tree->get_displayed_nodes;
@@ -254,7 +253,7 @@ push @actions, $m->comp('Elements/EditQuery:Process',
 # {{{ Rebuild $Query based on the additions / movements
 
 my $optionlist_arrayref;
-($query{'Query'}, $optionlist_arrayref) = $tree->get_query_and_option_list(\@current_values);
+($query{'query'}, $optionlist_arrayref) = $tree->get_query_and_option_list(\@current_values);
 
 my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>) 
                                   . ("&nbsp;" x (5 * $_->{DEPTH}))
@@ -276,7 +275,7 @@ my ( $AvailableColumns, $current_format );
 # }}}
 
 # if we're asked to save the current search, save it
-push @actions, $m->comp( 'Elements/EditSearches:Save', %ARGS, Query => \%query, SavedSearch => \%saved_search);
+push @actions, $m->comp( 'Elements/EditSearches:Save', %ARGS, query => \%query, SavedSearch => \%saved_search);
 
 # {{{ Push the updates into the session so we don't loose 'em
 
@@ -299,14 +298,14 @@ if ( $ARGS{'DoSearch'} ) {
 
 # }}}
 
-# {{{ Build a querystring for the tabs
+# {{{ Build a query_string for the tabs
 
-my $QueryString = '';
-if ($NewQuery) {
-    $QueryString = 'NewQuery=1';
+my $query_string = '';
+if ($new_query) {
+    $query_string = 'new_query=1';
 }
-elsif ( $query{'Query'} ) {
-    $QueryString = $m->comp('/Elements/QueryString', %query );
+elsif ( $query{'query'} ) {
+    $query_string = $m->comp('/Elements/QueryString', %query );
 }
 
 # }}}
@@ -314,6 +313,6 @@ elsif ( $query{'Query'} ) {
 </%INIT>
 
 <%ARGS>
-$NewQuery => 0
+$new_query => 0
 @clauses => ()
 </%ARGS>

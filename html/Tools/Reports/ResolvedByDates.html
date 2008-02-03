@@ -80,7 +80,7 @@ $q->load_by_cols(name => $queue);
 % if ($ResolvedBefore) { $query .= " AND resolved < '".$before->iso."'"; }
 % if ($ResolvedAfter) { $query .= " AND resolved > '".$after->iso."'"}
 % my $groupby = 'Owner';
-<& /Search/Elements/Chart, Query => $query, PrimaryGroupBy => $groupby &>
+<& /Search/Elements/Chart, query => $query, PrimaryGroupBy => $groupby &>
 % }
 
 <hr>

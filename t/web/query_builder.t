@@ -29,9 +29,9 @@ my $response = $agent->get($url."Search/Build.html");
 ok $response->is_success, "Fetched ". $url ."Search/Build.html";
 
 sub get_query_from_form {
-    $agent->form_name('BuildQuery');
+    $agent->form_name('build_query');
     # This pulls out the "hidden input" query from the page
-    my $q = $agent->current_form->find_input("Query")->value;
+    my $q = $agent->current_form->find_input("query")->value;
     $q =~ s/^\s+//g;
     $q =~ s/\s+$//g;
     $q =~ s/\s+/ /g;
@@ -46,7 +46,7 @@ sub selected_clauses {
 
 diag "add the first condition" if $ENV{'TEST_VERBOSE'};
 {
-    ok $agent->form_name('BuildQuery'), "found the form once";
+    ok $agent->form_name('build_query'), "found the form once";
     $agent->field("actor_field", "owner");
     $agent->field("actor_op", "=");
     $agent->field("value_of_actor", 'Nobody');
@@ -56,7 +56,7 @@ diag "add the first condition" if $ENV{'TEST_VERBOSE'};
 
 diag "set the next condition" if $ENV{'TEST_VERBOSE'};
 {
-    ok($agent->form_name('BuildQuery'), "found the form again");
+    ok($agent->form_name('build_query'), "found the form again");
     $agent->field("queue_op", "!=");
     $agent->field("value_of_queue", "Regression");
     $agent->submit;
@@ -68,7 +68,7 @@ diag "We're going to delete the owner" if $ENV{'TEST_VERBOSE'};
 {
     $agent->select("clauses", ["0"] );
     $agent->click("DeleteClause");
-    ok $agent->form_name('BuildQuery'), "found the form";
+    ok $agent->form_name('build_query'), "found the form";
     is get_query_from_form, "queue != 'Regression'", 'correct query';
 }
 
@@ -78,7 +78,7 @@ diag "add a cond with OR and se number by the way" if $ENV{'TEST_VERBOSE'};
     $agent->select("id_op", ">");
     $agent->field("value_of_id" => "1234");
     $agent->click("AddClause");
-    ok $agent->form_name('BuildQuery'), "found the form again";
+    ok $agent->form_name('build_query'), "found the form again";
     is get_query_from_form, "queue != 'Regression' OR id > 1234",
         "added something as OR, and number not quoted";
     is_deeply selected_clauses, ["1"], 'the id that we just entered is still selected';
@@ -88,7 +88,7 @@ diag "add a cond with OR and se number by the way" if $ENV{'TEST_VERBOSE'};
 diag "Move the second one up a level" if $ENV{'TEST_VERBOSE'};
 {
     $agent->click("Up");
-    ok $agent->form_name('BuildQuery'), "found the form again";
+    ok $agent->form_name('build_query'), "found the form again";
     is get_query_from_form, "id > 1234 OR queue != 'Regression'", "moved up one";
     is_deeply selected_clauses, ["0"], 'the one we moved up is selected';
 }
@@ -96,7 +96,7 @@ diag "Move the second one up a level" if $ENV{'TEST_VERBOSE'};
 diag "Move the second one right" if $ENV{'TEST_VERBOSE'};
 {
     $agent->click("Right");
-    ok $agent->form_name('BuildQuery'), "found the form again";
+    ok $agent->form_name('build_query'), "found the form again";
     is get_query_from_form, "queue != 'Regression' OR ( id > 1234 )",
         "moved over to the right (and down)";
     is_deeply selected_clauses, ["2"], 'the one we moved right is selected';
@@ -106,7 +106,7 @@ diag "Move the block up" if $ENV{'TEST_VERBOSE'};
 {
     $agent->select("clauses", ["1"]);
     $agent->click("Up");
-    ok $agent->form_name('BuildQuery'), "found the form again";
+    ok $agent->form_name('build_query'), "found the form again";
     is get_query_from_form, "( id > 1234 ) OR queue != 'Regression'", "moved up";
     is_deeply selected_clauses, ["0"], 'the one we moved up is selected';
 }
@@ -116,7 +116,7 @@ diag "Can not move up the top most clause" if $ENV{'TEST_VERBOSE'};
 {
     $agent->select("clauses", ["0"]);
     $agent->click("Up");
-    ok $agent->form_name('BuildQuery'), "found the form again";
+    ok $agent->form_name('build_query'), "found the form again";
     $agent->content_like(qr/error: can\S+t move up/, "i shouldn't have been able to hit up");
     is_deeply selected_clauses, ["0"], 'the one we tried to move is selected';
 }
@@ -124,7 +124,7 @@ diag "Can not move up the top most clause" if $ENV{'TEST_VERBOSE'};
 diag "Can not move left the left most clause" if $ENV{'TEST_VERBOSE'};
 {
     $agent->click("Left");
-    ok($agent->form_name('BuildQuery'), "found the form again");
+    ok($agent->form_name('build_query'), "found the form again");
     $agent->content_like(qr/error: can\S+t move left/, "i shouldn't have been able to hit left");
     is_deeply selected_clauses, ["0"], 'the one we tried to move is selected';
 }
@@ -134,7 +134,7 @@ diag "Add a condition into a nested block" if $ENV{'TEST_VERBOSE'};
     $agent->select("clauses", ["1"]);
     $agent->select("value_of_status" => "stalled");
     $agent->submit;
-    ok $agent->form_name('BuildQuery'), "found the form again";
+    ok $agent->form_name('build_query'), "found the form again";
     is_deeply selected_clauses, ["2"], 'the one we added is only selected';
     is get_query_from_form,
         "( id > 1234 AND status = 'stalled' ) OR queue != 'Regression'",
@@ -147,7 +147,7 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
     my $response = $agent->get($url."Search/Edit.html");
     ok( $response->is_success, "Fetched /Search/Edit.html" );
     ok($agent->form_number(3), "found the form");
-    $agent->field("Query", "Status = 'new' OR ( Status = 'open' AND subject LIKE 'office' )");
+    $agent->field("query", "Status = 'new' OR ( Status = 'open' AND subject LIKE 'office' )");
     $agent->submit;
     is( get_query_from_form,
         "status = 'new' OR ( status = 'open' AND subject LIKE 'office' )",
@@ -214,10 +214,10 @@ TODO: {
         );
         ok($return, 'Created CF') or diag "error: $msg";
     }
-    my $response = $agent->get($url."Search/Build.html?NewQuery=1");
+    my $response = $agent->get($url."Search/Build.html?new_query=1");
     ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
 
-    ok($agent->form_name('BuildQuery'), "found the form once");
+    ok($agent->form_name('build_query'), "found the form once");
     print ($agent->content());
     #$agent->field("ValueOf'CF.{\321\202}'", "\321\201");
     $agent->submit();
@@ -235,7 +235,7 @@ diag "input a condition, select (several conditions), click delete"
     my $response = $agent->get( $url."Search/Edit.html" );
     ok $response->is_success, "Fetched /Search/Edit.html";
     ok $agent->form_number(3), "found the form";
-    $agent->field("Query", "( Status = 'new' OR Status = 'open' )");
+    $agent->field("query", "( Status = 'new' OR Status = 'open' )");
     $agent->submit;
     is( get_query_from_form,
         "( status = 'new' OR status = 'open' )",

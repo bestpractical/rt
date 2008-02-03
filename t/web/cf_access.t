@@ -165,7 +165,7 @@ $m->follow_link( text => 'New Query' );
 
 $m->title_is(q/Query Builder/, 'Query building');
 $m->submit_form(
-    form_name => "BuildQuery",
+    form_name => "build_query",
     fields => {
         id_op => '=',
         value_of_id => $tid,
@@ -174,14 +174,14 @@ $m->submit_form(
     button => 'AddClause',
 );
 
-$m->form_name('BuildQuery');
+$m->form_name('build_query');
 
 my $col = ($m->current_form->find_input('SelectDisplayColumns'))[-1];
 $col->value( ($col->possible_values)[-1] );
 
 $m->click('AddCol');
 
-$m->form_name('BuildQuery');
+$m->form_name('build_query');
 $m->click('DoSearch');
 
 $m->follow_link( text_regex => qr/bplogo\.gif/ );

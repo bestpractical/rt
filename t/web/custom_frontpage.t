@@ -23,7 +23,7 @@ ok $m->login( 'customer' => 'customer' ), "logged in";
 $m->get ( $url."Search/Build.html");
 
 #create a saved search
-$m->form_name ('BuildQuery');
+$m->form_name ('build_query');
 
 $m->field ( "value_of_attachment" => 'stupid');
 $m->field ( "SavedSearchdescription" => 'stupid tickets');

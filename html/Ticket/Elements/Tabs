@@ -201,16 +201,16 @@ my $args;
 $args= "?" . $m->comp(
     '/Elements/QueryString',
     SavedSearchId => $ARGS{'SavedSearchId'} || $session{'CurrentSearchHash'}->{'SearchId'},
-    Query         => $ARGS{'Query'}         || $session{'CurrentSearchHash'}->{'Query'},
+    query         => $ARGS{'query'}         || $session{'CurrentSearchHash'}->{'query'},
     format        => $ARGS{'format'}        || $session{'CurrentSearchHash'}->{'format'},
     order_by       => $ARGS{'order_by'}       || $session{'CurrentSearchHash'}->{'order_by'},
     Order         => $ARGS{'Order'}         || $session{'CurrentSearchHash'}->{'Order'},
     Page          => $ARGS{'Page'}          || $session{'CurrentSearchHash'}->{'Page'},
     Rows          => $ARGS{'Rows'},
-  ) if ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'});
+  ) if ($ARGS{'query'} or $session{'CurrentSearchHash'}->{'query'});
 $args ||= '';
 
-$tabs->{"f"} = { path      => "Search/Build.html?NewQuery=1",
+$tabs->{"f"} = { path      => "Search/Build.html?new_query=1",
                  title     => _('New Search')};
 $tabs->{"g"} = { path      => "Search/Build.html$args",
                  title     => _('Edit Search')};

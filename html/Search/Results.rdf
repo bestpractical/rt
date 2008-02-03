@@ -48,7 +48,7 @@
 <%INIT>
 
 my $Tickets = RT::Model::TicketCollection->new();
-$Tickets->from_sql($ARGS{'Query'});
+$Tickets->from_sql($ARGS{'query'});
 $r->content_type('application/rss+xml');
 
 

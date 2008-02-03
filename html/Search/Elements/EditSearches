@@ -114,12 +114,12 @@ $Title => 'Saved searches'
 
 <%METHOD Init>
 <%ARGS>
-$Query   => {}
+$query   => {}
 $SavedSearch => {}
 </%ARGS>
 <%INIT>
 
-my @columns = qw(Query format order_by Order rows_per_page);
+my @columns = qw(query format order_by Order rows_per_page);
 
 $SavedSearch->{'id'}          = $ARGS{'SavedSearchId'}          || 'new';
 $SavedSearch->{'description'} = $ARGS{'SavedSearchdescription'} || '';
@@ -135,7 +135,7 @@ if ( $ARGS{'SavedSearchLoad'} ) {
     $SavedSearch->{'id'}          = $ARGS{'SavedSearchLoad'};
     $SavedSearch->{'object'}      = $search;
     $SavedSearch->{'description'} = $search->description;
-    $Query->{$_} = $search->sub_value($_) foreach @columns;
+    $query->{$_} = $search->sub_value($_) foreach @columns;
 }
 elsif ( $ARGS{'SavedSearchDelete'} ) {
     # We set $SearchId to 'new' above already, so peek into the %ARGS
@@ -166,7 +166,7 @@ if ( $SavedSearch->{'id'} && $SavedSearch->{'id'} ne 'new'
 
 <%METHOD Save>
 <%ARGS>
-$Query   => {}
+$query   => {}
 $SavedSearch => {}
 </%ARGS>
 <%INIT>
@@ -187,7 +187,7 @@ if ( $obj && $obj->id ) {
         }
     }
 
-    $obj->set_sub_values( %$Query );
+    $obj->set_sub_values( %$query );
     $obj->set_description( $desc );
 }
 elsif ( $id eq 'new' ) {
@@ -195,7 +195,7 @@ elsif ( $id eq 'new' ) {
     my ($status, $msg) = $saved_search->save(
         privacy      => $ARGS{'SavedSearchOwner'},
         name         => $desc,
-        search_params => $Query,
+        search_params => $query,
     );
 
     if ( $status ) {
@@ -223,7 +223,7 @@ return @results;
 
 <%METHOD IsDirty>
 <%ARGS>
-$Query   => {}
+$query   => {}
 $SavedSearch => {}
 </%ARGS>
 <%INIT>
@@ -231,8 +231,8 @@ $SavedSearch => {}
 my $obj  = $SavedSearch->{'object'};
 return 0 unless $obj && $obj->id;
 
-foreach( qw(Query format order_by order rows_per_page) ) {
-    return 1 if $obj->sub_value( $_ ) ne $Query->{$_};
+foreach( qw(query format order_by order rows_per_page) ) {
+    return 1 if $obj->sub_value( $_ ) ne $query->{$_};
 }
 
 return 0;

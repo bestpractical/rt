@@ -158,7 +158,7 @@ $Page          => 1
 
 $Title         => _('Ticket Search')
 $baseURL       => RT->config->get('WebPath') . $m->request_comp->path .'?'
-@PassArguments => qw(Query format Rows Page Order order_by)
+@PassArguments => qw(query format rows page Order order_by)
 
 $AllowSorting   => 0
 $ShowNavigation => 1

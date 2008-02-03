@@ -60,7 +60,7 @@ $q->load_by_cols(name => $queue);
 % # if we have a queue, do the search
 % my $query = "Status = 'resolved' AND queue = '$queue'";
 % my $groupby = 'Owner';
-<& /Search/Elements/Chart, Query => $query, PrimaryGroupBy => $groupby &>
+<& /Search/Elements/Chart, query => $query, PrimaryGroupBy => $groupby &>
 % }
 
 <hr>

@@ -72,7 +72,7 @@ TODO: {
 }
 # }}}
 
-# {{{ Query Builder tests
+# {{{ query Builder tests
 #
 # XXX: hey-ho, we have these tests in t/web/query-builder
 # TODO: move everything about QB there
@@ -85,22 +85,22 @@ ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
 # Adding items
 
 # set the first value
-ok($agent->form_name('BuildQuery'));
+ok($agent->form_name('build_query'));
 $agent->field("attachment_field", "subject");
 $agent->field("attachment_op", "LIKE");
 $agent->field("value_of_attachment", "aaa");
 $agent->submit("AddClause");
 
 # set the next value
-ok($agent->form_name('BuildQuery'));
+ok($agent->form_name('build_query'));
 $agent->field("attachment_field", "subject");
 $agent->field("attachment_op", "LIKE");
 $agent->field("value_of_attachment", "bbb");
 $agent->submit("AddClause");
-ok($agent->form_name('BuildQuery'));
+ok($agent->form_name('build_query'));
 
 # get the query
-my $query = $agent->current_form->find_input("Query")->value;
+my $query = $agent->current_form->find_input("query")->value;
 # strip whitespace from ends
 $query =~ s/^\s*//g;
 $query =~ s/\s*$//g;

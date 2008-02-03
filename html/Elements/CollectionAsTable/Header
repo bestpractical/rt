@@ -52,7 +52,7 @@ $Class        => 'RT__Model__Ticket'
 $format_string => undef
 @order_by      => ()
 @Order        => ()
-$Query        => undef
+$query        => undef
 $Rows         => undef
 $Page         => undef
 
@@ -60,7 +60,7 @@ $maxitems     => undef
 
 $AllowSorting  => undef
 $baseURL       => undef
-@PassArguments => qw(Query format Rows Page Order order_by)
+@PassArguments => qw(query format rows page Order order_by)
 </%ARGS>
 <tr class="collection-as-table">
 <%PERL>

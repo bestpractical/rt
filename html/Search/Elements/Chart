@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$Query => "id > 0"
+$query => "id > 0"
 $PrimaryGroupBy => 'queue'
 $SecondaryGroupBy => undef
 $ChartStyle => 'bars'
@@ -54,7 +54,7 @@ $ChartStyle => 'bars'
 <%init>
 use RT::Report::Tickets;
 my $tix = RT::Report::Tickets->new();
-$tix->from_sql( $Query );
+$tix->from_sql( $query );
 my $count_name = $tix->column( function => 'COUNT', column => 'id' );
 $tix->group_by( column => $PrimaryGroupBy );
 my $value_name = $tix->column( column => $PrimaryGroupBy );
@@ -100,7 +100,7 @@ my @sorted_values = map { $data{$_}} @sorted_keys;
 my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 </%init>
 
-<% _('Query:') %>&nbsp;<% $Query %><br />
+<% _('Query:') %>&nbsp;<% $query %><br />
 
 <img src="<%RT->config->get('WebPath')%>/Search/Chart?<%$query_string|n%>" /><br />
 
