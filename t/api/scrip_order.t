@@ -43,7 +43,7 @@ ok($id, "Created priority-5 scrip? ".$msg);
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 ($id, $msg) = $ticket->create( 
     queue => $queue_id, 
-    Requestor => 'order@example.com',
+    requestor => 'order@example.com',
     subject => "Scrip order test $$",
 );
 ok($ticket->id, "Created ticket? id=$id");
