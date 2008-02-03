@@ -87,8 +87,8 @@ sub __depends_on {
 
  # XXX: If we delete member of the ticket owner role group then we should also
  # fix ticket object, but only if we don't plan to delete group itself!
-    unless ( ( $group->type || '' ) eq 'Owner'
-        && ( $group->domain || '' ) eq 'RT::Model::Ticket-Role' )
+    unless ( lc( $group->type || '' ) eq 'owner'
+        && lc( $group->domain || '' ) eq 'rt::model::ticket-role' )
     {
         return $self->SUPER::__depends_on(%args);
     }
@@ -109,9 +109,9 @@ sub __depends_on {
             return
                 if $args{'shredder'}->get_state( object => $group )
                     & ( WIPED | IN_WIPING );
-            return unless ( $group->type || '' ) eq 'Owner';
+            return unless lc( $group->type || '' ) eq 'owner';
             return
-                unless ( $group->domain || '' ) eq 'RT::Model::Ticket-Role';
+                unless lc( $group->domain || '' ) eq 'rt::model::ticket-role';
 
             return if $group->members_obj->count > 1;
 
@@ -132,7 +132,7 @@ sub __depends_on {
                 unless $ticket->id;
 
             ( $status, $msg ) = $ticket->_set(
-                column => 'Owner',
+                column => 'owner',
                 value  => RT->nobody->id,
             );
             RT::Shredder::Exception->throw($msg) unless $status;
