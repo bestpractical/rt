@@ -135,8 +135,8 @@ A convoluted example
  
     my $groupid = $groups->first->id;
  
-    my $adminccs = RT::Model::UserCollection->new(current_user => RT->system_user);
-    $adminccs->who_have_right(
+    my $admin_ccs = RT::Model::UserCollection->new(current_user => RT->system_user);
+    $admin_ccs->who_have_right(
 	right => "AdminGroup",
 	object =>$groups->first,
 	include_system_rights => undef,
@@ -145,7 +145,7 @@ A convoluted example
     );
  
      my @admins;
-     while (my $admin = $adminccs->next) {
+     while (my $admin = $admin_ccs->next) {
          push (@admins, $admin->email); 
      }
  }
@@ -691,7 +691,7 @@ sub parse_lines {
             my $original_tag = $1;
             my $tag          = lc($original_tag);
             $tag =~ s/-//g;
-            $tag =~ s/^(requestor|cc|admincc)s?$/$1/i;
+            $tag =~ s/^(requestor|cc|admin_cc)s?$/$1/i;
 
             $original_tags{$tag} = $original_tag;
 
@@ -719,7 +719,7 @@ sub parse_lines {
                     $args{$tag} =~ s/^\s+//g;
                     $args{$tag} =~ s/\s+$//g;
                 }
-                if ((   $tag =~ /^(requestor|cc|admincc)$/i
+                if ((   $tag =~ /^(requestor|cc|admin_cc)$/i
                         or grep { lc $_ eq $tag } keys %LINKTYPEMAP
                     )
                     and $args{$tag} =~ /,/
@@ -761,7 +761,7 @@ sub parse_lines {
         owner            => $args{'owner'},
         requestor        => $args{'requestor'},
         cc               => $args{'cc'},
-        admin_cc          => $args{'admincc'},
+        admin_cc          => $args{'admin_cc'},
         time_worked      => $args{'time_worked'},
         time_estimated   => $args{'time_estimated'},
         time_left        => $args{'time_left'},
@@ -773,7 +773,7 @@ sub parse_lines {
     if ( $args{content} ) {
         my $mime_obj = MIME::Entity->new();
         $mime_obj->build(
-            Type => $args{'contenttype'} || 'text/plain',
+            Type => $args{'content_type'} || 'text/plain',
             Data => $args{'content'}
         );
         $ticketargs{mime_obj} = $mime_obj;
@@ -784,12 +784,12 @@ sub parse_lines {
 
         # if the tag was added later, skip it
         my $orig_tag = $original_tags{$tag} or next;
-        if ( $orig_tag =~ /^customfield-?(\d+)$/i ) {
-            $ticketargs{ "CustomField-" . $1 } = $args{$tag};
-        } elsif ( $orig_tag =~ /^(?:customfield|cf)-?(.*)$/i ) {
+        if ( $orig_tag =~ /^custom_?field-?(\d+)$/i ) {
+            $ticketargs{ "custom_field-" . $1 } = $args{$tag};
+        } elsif ( $orig_tag =~ /^(?:custom_?field|cf)-?(.*)$/i ) {
             my $cf = RT::Model::CustomField->new;
             $cf->load_by_name( name => $1, queue => $ticketargs{queue} );
-            $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
+            $ticketargs{ "custom_field-" . $cf->id } = $args{$tag};
         } elsif ($orig_tag) {
             my $cf = RT::Model::CustomField->new;
             $cf->load_by_name(
@@ -797,7 +797,7 @@ sub parse_lines {
                 queue => $ticketargs{queue}
             );
             next unless ( $cf->id );
-            $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
+            $ticketargs{ "custom_field-" . $cf->id } = $args{$tag};
 
         }
     }
@@ -968,7 +968,7 @@ sub get_deferred {
     push @$postponed, (
 
         # Status is postponed so we don't violate dependencies
-        $id, { Status => $args->{'status'}, }
+        $id, { status => $args->{'status'}, }
     );
 }
 
@@ -1015,7 +1015,7 @@ sub get_update_template {
         while ( my $link = $t->$method->next ) {
             $links .= ", " if $links;
 
-            my $object = $mode . "Obj";
+            my $object = $mode . "_obj";
             my $member = $link->$object;
             $links .= $member->id if $member;
         }
@@ -1096,8 +1096,8 @@ sub update_watchers {
 
     my @results;
 
-    foreach my $type qw(requesto cc admin_cc) {
-        my $method  = $type . 'Addresses';
+    foreach my $type qw(requestor cc admin_cc) {
+        my $method  = $type . '_addresses';
         my $oldaddr = $ticket->$method;
 
         # Skip unless we have a defined field
@@ -1161,23 +1161,23 @@ sub update_custom_fields {
 
     my @results;
     foreach my $arg ( keys %{$args} ) {
-        next unless $arg =~ /^CustomField-(\d+)$/;
+        next unless $arg =~ /^custom_?field-(\d+)$/;
         my $cf = $1;
 
-        my $CustomFieldObj = RT::Model::CustomField->new;
-        $CustomFieldObj->load_by_id($cf);
+        my $cf_obj = RT::Model::CustomField->new;
+        $cf_obj->load_by_id($cf);
 
         my @values;
-        if ( $CustomFieldObj->type =~ /text/i ) {    # Both Text and Wikitext
+        if ( $cf_obj->type =~ /text/i ) {    # Both Text and Wikitext
             @values = ( $args->{$arg} );
         } else {
             @values = split /\n/, $args->{$arg};
         }
 
-        if ((   $CustomFieldObj->type eq 'Freeform'
-                && !$CustomFieldObj->single_value
+        if ((   $cf_obj->type eq 'Freeform'
+                && !$cf_obj->single_value
             )
-            || $CustomFieldObj->type =~ /text/i
+            || $cf_obj->type =~ /text/i
             )
         {
             foreach my $val (@values) {
@@ -1255,7 +1255,7 @@ sub post_process {
         my $ticket = $T::Tickets{$template_id};
         Jifty->log->debug( "Handling postponed actions for " . $ticket->id );
         my %args = %{ shift(@$postponed) };
-        $ticket->set_status( $args{Status} ) if defined $args{Status};
+        $ticket->set_status( $args{status} ) if defined $args{status};
     }
 
 }
