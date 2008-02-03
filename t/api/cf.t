@@ -24,7 +24,7 @@ ok ($queue->id, "Created the second  queue");
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 $ticket->create(
 	queue => $queue->id,
-	Requestor => 'root@localhost',
+	requestor => 'root@localhost',
 	subject => 'RecordCustomFields1',
 );
 
