@@ -53,37 +53,37 @@ sub run_tests {
 }
 
 @data = (
-    { subject => 'xy', Requestor => ['x@example.com', 'y@example.com'] },
-    { subject => 'x', Requestor => 'x@example.com' },
-    { subject => 'y', Requestor => 'y@example.com' },
+    { subject => 'xy', requestor => ['x@example.com', 'y@example.com'] },
+    { subject => 'x', requestor => 'x@example.com' },
+    { subject => 'y', requestor => 'y@example.com' },
     { subject => '-', },
-    { subject => 'z', Requestor => 'z@example.com' },
+    { subject => 'z', requestor => 'z@example.com' },
 );
 %test = (
-    'Requestor = "x@example.com"'  => { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
-    'Requestor != "x@example.com"' => { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
+    'requestor = "x@example.com"'  => { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
+    'requestor != "x@example.com"' => { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
 
-    'Requestor = "y@example.com"'  => { xy => 1, x => 0, y => 1, '-' => 0, z => 0 },
-    'Requestor != "y@example.com"' => { xy => 0, x => 1, y => 0, '-' => 1, z => 1 },
+    'requestor = "y@example.com"'  => { xy => 1, x => 0, y => 1, '-' => 0, z => 0 },
+    'requestor != "y@example.com"' => { xy => 0, x => 1, y => 0, '-' => 1, z => 1 },
 
-    'Requestor LIKE "@example.com"'     => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
-    'Requestor NOT LIKE "@example.com"' => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
+    'requestor LIKE "@example.com"'     => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
+    'requestor NOT LIKE "@example.com"' => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
 
-    'Requestor IS NULL'            => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
-    'Requestor IS NOT NULL'        => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
+    'requestor IS NULL'            => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
+    'requestor IS NOT NULL'        => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
 
 # this test is a todo, we run it later
-#    'Requestor = "x@example.com" AND Requestor = "y@example.com"'   => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
-    'Requestor = "x@example.com" OR Requestor = "y@example.com"'    => { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
+#    'requestor = "x@example.com" AND requestor = "y@example.com"'   => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
+    'requestor = "x@example.com" OR requestor = "y@example.com"'    => { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
 
-    'Requestor != "x@example.com" AND Requestor != "y@example.com"' => { xy => 0, x => 0, y => 0, '-' => 1, z => 1 },
-    'Requestor != "x@example.com" OR Requestor != "y@example.com"'  => { xy => 0, x => 1, y => 1, '-' => 1, z => 1 },
+    'requestor != "x@example.com" AND requestor != "y@example.com"' => { xy => 0, x => 0, y => 0, '-' => 1, z => 1 },
+    'requestor != "x@example.com" OR requestor != "y@example.com"'  => { xy => 0, x => 1, y => 1, '-' => 1, z => 1 },
 
-    'Requestor = "x@example.com" AND Requestor != "y@example.com"'  => { xy => 0, x => 1, y => 0, '-' => 0, z => 0 },
-    'Requestor = "x@example.com" OR Requestor != "y@example.com"'   => { xy => 1, x => 1, y => 0, '-' => 1, z => 1 },
+    'requestor = "x@example.com" AND requestor != "y@example.com"'  => { xy => 0, x => 1, y => 0, '-' => 0, z => 0 },
+    'requestor = "x@example.com" OR requestor != "y@example.com"'   => { xy => 1, x => 1, y => 0, '-' => 1, z => 1 },
 
-    'Requestor != "x@example.com" AND Requestor = "y@example.com"'  => { xy => 0, x => 0, y => 1, '-' => 0, z => 0 },
-    'Requestor != "x@example.com" OR Requestor = "y@example.com"'   => { xy => 1, x => 0, y => 1, '-' => 1, z => 1 },
+    'requestor != "x@example.com" AND requestor = "y@example.com"'  => { xy => 0, x => 0, y => 1, '-' => 0, z => 0 },
+    'requestor != "x@example.com" OR requestor = "y@example.com"'   => { xy => 1, x => 0, y => 1, '-' => 1, z => 1 },
 );
 @tickets = add_tix_from_data();
 {
@@ -96,40 +96,40 @@ run_tests();
 TODO: {
     local $TODO = "we can't generate this query yet";
     %test = (
-        'Requestor = "x@example.com" AND Requestor = "y@example.com"'
+        'requestor = "x@example.com" AND requestor = "y@example.com"'
             => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
     );
     run_tests();
 }
 
 @data = (
-    { subject => 'xy', Cc => ['x@example.com'], Requestor => [ 'y@example.com' ] },
-    { subject => 'x-', Cc => ['x@example.com'], Requestor => [] },
-    { subject => '-y', Cc => [],                Requestor => [ 'y@example.com' ] },
+    { subject => 'xy', cc => ['x@example.com'], requestor => [ 'y@example.com' ] },
+    { subject => 'x-', cc => ['x@example.com'], requestor => [] },
+    { subject => '-y', cc => [],                requestor => [ 'y@example.com' ] },
     { subject => '-', },
-    { subject => 'zz', Cc => ['z@example.com'], Requestor => [ 'z@example.com' ] },
-    { subject => 'z-', Cc => ['z@example.com'], Requestor => [] },
-    { subject => '-z', Cc => [],                Requestor => [ 'z@example.com' ] },
+    { subject => 'zz', cc => ['z@example.com'], requestor => [ 'z@example.com' ] },
+    { subject => 'z-', cc => ['z@example.com'], requestor => [] },
+    { subject => '-z', cc => [],                requestor => [ 'z@example.com' ] },
 );
 %test = (
-    'Cc = "x@example.com" AND Requestor = "y@example.com"' =>
+    'cc = "x@example.com" AND requestor = "y@example.com"' =>
         { xy => 1, 'x-' => 0, '-y' => 0, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
-    'Cc = "x@example.com" OR Requestor = "y@example.com"' =>
+    'cc = "x@example.com" OR requestor = "y@example.com"' =>
         { xy => 1, 'x-' => 1, '-y' => 1, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
 
-    'Cc != "x@example.com" AND Requestor = "y@example.com"' =>
+    'cc != "x@example.com" AND requestor = "y@example.com"' =>
         { xy => 0, 'x-' => 0, '-y' => 1, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
-    'Cc != "x@example.com" OR Requestor = "y@example.com"' =>
+    'cc != "x@example.com" OR requestor = "y@example.com"' =>
         { xy => 1, 'x-' => 0, '-y' => 1, '-' => 1, zz => 1, 'z-' => 1, '-z' => 1 },
 
-    'Cc IS NULL AND Requestor = "y@example.com"' =>
+    'cc IS NULL AND requestor = "y@example.com"' =>
         { xy => 0, 'x-' => 0, '-y' => 1, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
-    'Cc IS NULL OR Requestor = "y@example.com"' =>
+    'cc IS NULL OR requestor = "y@example.com"' =>
         { xy => 1, 'x-' => 0, '-y' => 1, '-' => 1, zz => 0, 'z-' => 0, '-z' => 1 },
 
-    'Cc IS NOT NULL AND Requestor = "y@example.com"' =>
+    'cc IS NOT NULL AND requestor = "y@example.com"' =>
         { xy => 1, 'x-' => 0, '-y' => 0, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
-    'Cc IS NOT NULL OR Requestor = "y@example.com"' =>
+    'cc IS NOT NULL OR requestor = "y@example.com"' =>
         { xy => 1, 'x-' => 1, '-y' => 1, '-' => 0, zz => 1, 'z-' => 1, '-z' => 0 },
 );
 @tickets = add_tix_from_data();
