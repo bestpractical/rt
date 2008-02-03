@@ -1442,7 +1442,7 @@ sub order_by {
 
             push @res, { %$row, alias => $CFvs,      column => 'sort_order' };
             push @res, { %$row, alias => $TicketCFs, column => 'content' };
-        } elsif ( $field eq "Custom" && $subkey eq "ownership" ) {
+        } elsif ( $field eq "custom" && $subkey eq "ownership" ) {
 
             # PAW logic is "reversed"
             my $order = "ASC";

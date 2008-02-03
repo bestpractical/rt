@@ -82,11 +82,11 @@ my $cme = RT::CurrentUser->new( id =>$me->id );
 my $metx = RT::Model::TicketCollection->new( current_user => $cme );
 # Make sure we can sort in both directions on a queue specific field.
 $metx->from_sql(qq[queue="$queue"] );
-$metx->order_by( {column => "Custom.Ownership", order => 'ASC'} );
+$metx->order_by( {column => "custom.ownership", order => 'ASC'} );
 is($metx->count,6);
 check_order( $metx, qw[2 1 6 5 4 3]);
 
-$metx->order_by({ column => "Custom.Ownership", order => 'DESC'} );
+$metx->order_by({ column => "custom.ownership", order => 'DESC'} );
 is($metx->count,6);
 check_order( $metx, reverse qw[2 1 6 5 4 3]);
 
@@ -96,7 +96,7 @@ my $cyou = RT::CurrentUser->new( id => $you->id );
 my $youtx = RT::Model::TicketCollection->new( current_user => $cyou );
 # Make sure we can sort in both directions on a queue specific field.
 $youtx->from_sql(qq[queue="$queue"] );
-$youtx->order_by({ column => "Custom.Ownership", order => 'ASC'} );
+$youtx->order_by({ column => "custom.ownership", order => 'ASC'} );
 is($youtx->count,6);
 check_order( $youtx, qw[4 3 6 5 2 1]);
 
