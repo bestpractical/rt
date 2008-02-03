@@ -137,7 +137,7 @@ diag 'encryption only, bad recipient' if $ENV{'TEST_VERBOSE'};
 
     my @status = RT::Crypt::GnuPG::parse_status( $res{'status'} );
     is( scalar @status, 1, 'one record');
-    is( $status[0]->{'Keyword'}, 'INV_RECP', 'invalid recipient');
+    is( $status[0]->{'keyword'}, 'INV_RECP', 'invalid recipient');
 }
 
 diag 'encryption and signing with combined method' if $ENV{'TEST_VERBOSE'};

@@ -502,7 +502,6 @@ sub sign_encrypt_rfc3156 {
             waitpid $pid, 0;
         };
         my $err       = $@;
-        warn "Error was $err";
         my @signature = readline $handle{'output'};
         close $handle{'output'};
 
@@ -513,7 +512,7 @@ sub sign_encrypt_rfc3156 {
             close $handle{$_};
         }
         Jifty->log->debug( $res{'status'} ) if $res{'status'};
-        Jifty->log->warn( "EEEEE". $res{'error'} )   if $res{'error'};
+        Jifty->log->warn(  $res{'error'} )   if $res{'error'};
         Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
         if ( $err || $res{'exit_code'} ) {
             $res{'message'} = $err ? $err : "gpg exitted with error code " . ( $res{'exit_code'} >> 8 );
@@ -574,7 +573,7 @@ sub sign_encrypt_rfc3156 {
             close $handle{$_};
         }
         Jifty->log->debug( $res{'status'} ) if $res{'status'};
-        Jifty->log->warn( "EE". $res{'error'} )   if $res{'error'};
+        Jifty->log->warn(  $res{'error'} )   if $res{'error'};
         Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
         if ( $@ || $? ) {
             $res{'message'}
