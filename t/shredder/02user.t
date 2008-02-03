@@ -26,15 +26,15 @@ my ($uid, $msg) = $user->create( name => 'new user', privileged => 1, disabled =
 ok( $uid, "Created new user" ) or diag "error: $msg";
 is( $user->id, $uid, "id is correct" );
 # HACK: set ticket props to enable VARIABLE dependencies
-$ticket->__set( column => 'LastUpdatedBy', value => $uid );
+$ticket->__set( column => 'last_updated_by', value => $uid );
 create_savepoint('aucreate'); # after user create
 
 {
     my $resolver = sub  {
         my %args = (@_);
-        my $t =	$args{'targetobject'};
+        my $t =	$args{'target_object'};
         my $resolver_uid = RT->system_user->id;
-        foreach my $method ( qw(Creator LastUpdatedBy) ) {
+        foreach my $method ( qw(creator last_updated_by) ) {
             next unless $t->can($method);
             $t->__set( column => $method, value => $resolver_uid );
         }
