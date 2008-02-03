@@ -33,11 +33,11 @@ diag "check that defering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
     );
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $tester->id) );
     # tester is owner, owner has right to modify owned tickets,
-    # this right is required to set somebody as AdminCc
+    # this right is required to set somebody as admin_cc
     my ($tid, $txn_id, $msg) = $ticket->create(
         queue   => $queue->id,
         owner   => $tester->id,
-        AdminCc => 'root@localhost',
+        admin_cc => 'root@localhost',
     );
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
@@ -56,11 +56,11 @@ diag "check that previous trick doesn't work without sufficient rights"
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $tester->id) );
 
     # tester is owner, owner has right to modify owned tickets,
-    # this right is required to set somebody as AdminCc
+    # this right is required to set somebody as admin_cc
     my ($tid, $txn_id, $msg) = $ticket->create(
         queue   => $queue->id,
         owner   => $tester->id,
-        AdminCc => 'root@localhost',
+        admin_cc => 'root@localhost',
     );
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
@@ -81,11 +81,11 @@ diag "check that defering owner really works" if $ENV{'TEST_VERBOSE'};
     );
         my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $tester->id) );
 
-    # set tester as Cc, Cc role group has right to own and take tickets
+    # set tester as cc, cc role group has right to own and take tickets
     my ($tid, $txn_id, $msg) = $ticket->create(
         queue => $queue->id,
         owner => $tester->id,
-        Cc    => 'tester@localhost',
+        cc    => 'tester@localhost',
     );
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
@@ -102,11 +102,11 @@ diag "check that defering doesn't work without correct rights" if $ENV{'TEST_VER
     );
         my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id => $tester->id) );
 
-    # set tester as Cc, Cc role group has right to own and take tickets
+    # set tester as cc, cc role group has right to own and take tickets
     my ($tid, $txn_id, $msg) = $ticket->create(
         queue => $queue->id,
         owner => $tester->id,
-        Cc    => 'tester@localhost',
+        cc    => 'tester@localhost',
     );
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
