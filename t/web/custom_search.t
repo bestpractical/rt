@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test; use Test::More tests => 10;
+use RT::Test; use Test::More tests => 11;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
