@@ -135,7 +135,7 @@ sub get_linked {
     my $self  = shift;
     my %arg   = @_;
     my @res   = ();
-    my $query = 'Linked = ' . $arg{'object'}->id;
+    my $query = 'linked = ' . $arg{'object'}->id;
     if ( $self->{'opt'}{'apply_query_to_linked'} ) {
         $query .= " AND ( " . $self->{'opt'}{'query'} . " )";
     }
@@ -145,7 +145,7 @@ sub get_linked {
     $objs->from_sql($query);
     $self->fetch_next( $objs, 1 );
     while ( my $linked_obj = $self->fetch_next($objs) ) {
-        next if $arg{'Seen'}->{ $linked_obj->id }++;
+        next if $arg{'seen'}->{ $linked_obj->id }++;
         push @res, $self->get_linked( %arg, object => $linked_obj );
         push @res, $linked_obj;
     }
