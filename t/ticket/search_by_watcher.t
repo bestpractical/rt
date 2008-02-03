@@ -179,7 +179,7 @@ my $nobody = RT->nobody();
     my($t) = add_tix_from_data();
     $t->_set( column             => 'type',
               value             => 'not a ticket',
-              CheckACL          => 0,
+              check_acl          => 0,
               record_transaction => 0,
             );
     $total--;
