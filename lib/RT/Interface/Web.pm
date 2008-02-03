@@ -917,12 +917,12 @@ sub process_ticket_basics {
         args_ref       => $args_ref,
     );
 
-    # We special case owner changing, so we can use ForceownerChange
+    # We special case owner changing, so we can use force_owner_change
     if ( $args_ref->{'owner'}
         && ( $ticket_obj->owner != $args_ref->{'owner'} ) )
     {
         my ($ChownType);
-        if ( $args_ref->{'ForceownerChange'} ) {
+        if ( $args_ref->{'force_owner_change'} ) {
             $ChownType = "Force";
         } else {
             $ChownType = "Give";

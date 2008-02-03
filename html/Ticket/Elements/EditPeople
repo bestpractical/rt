@@ -64,7 +64,7 @@
 	GroupField => $GroupField, privilegedOnly => $privilegedOnly &> 
 </td><td valign="top">
 <h3><&|/l&>Owner</&></h3>
-<&|/l&>Owner</&>: <& /Elements/SelectOwner, name => 'Owner', queue_obj => $Ticket->queue_obj, ticket_obj => $Ticket, Default => $Ticket->owner_obj->id, DefaultValue => 0&>
+<&|/l&>Owner</&>: <& /Elements/SelectOwner, name => 'owner', queue_obj => $Ticket->queue_obj, ticket_obj => $Ticket, Default => $Ticket->owner_obj->id, DefaultValue => 0&>
 <h3><&|/l&>Current watchers</&></h3>
 <&|/l&>(Check box to delete)</&><br />
 

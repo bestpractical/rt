@@ -127,8 +127,8 @@ if ($ARGS{'id'} eq 'new') {
     $m->callback( Callbackname => 'BeforeProcessArguments',
         ticket_obj => $ticket_obj, Tickets => $Tickets,
         ActionsRef => \@Actions, args_ref => \%ARGS );
-    if ( defined $ARGS{'Action'} ) {
-        if ($ARGS{'Action'} =~ /^(steal|kill|take|set_old)$/) {
+    if ( defined $ARGS{'action'} ) {
+        if ($ARGS{'action'} =~ /^(steal|kill|take|set_told)$/) {
             my $action = $1;
             my ($res, $msg) = $ticket_obj->$action();
             push(@Actions, $msg);

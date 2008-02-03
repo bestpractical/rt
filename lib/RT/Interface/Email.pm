@@ -1183,7 +1183,7 @@ sub gateway {
         # check if we should apply filter before decoding
         my $check_cb = do {
             no strict 'refs';
-            *{ $class . "::ApplyBeforeDecode" }{CODE};
+            *{ $class . "::apply_before_decode" }{CODE};
         };
         next unless defined $check_cb;
         next

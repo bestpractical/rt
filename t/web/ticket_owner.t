@@ -38,8 +38,8 @@ diag "current user has no right to own, nobody selected as owner on create";
 
     $agent_a->content_like(qr/Create a new ticket/i, 'opened create ticket page');
     my $form = $agent_a->form_name('TicketCreate');
-    is $form->value('Owner'), RT->nobody->id, 'correct owner selected';
-    ok !grep($_ == $user_a->id, $form->find_input('Owner')->possible_values),
+    is $form->value('owner'), RT->nobody->id, 'correct owner selected';
+    ok !grep($_ == $user_a->id, $form->find_input('owner')->possible_values),
         'user A can not own tickets';
     $agent_a->submit;
 
@@ -61,11 +61,11 @@ diag "user can chose owner of a new ticket";
 
     $agent_a->content_like(qr/Create a new ticket/i, 'opened create ticket page');
     my $form = $agent_a->form_name('TicketCreate');
-    is $form->value('Owner'), RT->nobody->id, 'correct owner selected';
+    is $form->value('owner'), RT->nobody->id, 'correct owner selected';
 
-    ok grep($_ == $user_b->id,  $form->find_input('Owner')->possible_values),
+    ok grep($_ == $user_b->id,  $form->find_input('owner')->possible_values),
         'user B is listed as potential owner';
-    $agent_a->select('Owner', $user_b->id);
+    $agent_a->select('owner', $user_b->id);
     $agent_a->submit;
 
     $agent_a->content_like(qr/Ticket \d+ created in queue/i, 'created ticket');
@@ -99,8 +99,8 @@ diag "user A can not change owner after create";
         diag("Going to ticket $id");
         $agent->follow_link_ok(text => 'Basics');
         my $form = $agent->form_number(3);
-        is $form->value('Owner'), $user_b->id, 'correct owner selected';
-        $agent->select('Owner', RT->nobody->id);
+        is $form->value('owner'), $user_b->id, 'correct owner selected';
+        $agent->select('owner', RT->nobody->id);
         $agent->submit;
 
         $agent->content_like(
@@ -134,7 +134,7 @@ diag "on reply correct owner is selected";
     $agent_a->follow_link_ok(text => 'Reply');
 
     my $form = $agent_a->form_number(3);
-    is $form->value('Owner'), '', 'empty value selected';
+    is $form->value('owner'), '', 'empty value selected';
     $agent_a->submit;
 
     $ticket = RT::Model::Ticket->new(current_user => RT->system_user );

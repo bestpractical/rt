@@ -147,14 +147,14 @@ my %can = (
 if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('ReplyToTicket') ) {
     $actions->{'F'} = {
         title => _('Reply'),
-        path  => "Ticket/Update.html?Action=Respond&id=" . $id,
+        path  => "Ticket/Update.html?action=Respond&id=" . $id,
     };
 }
 
 if ( $can{'ModifyTicket'} ) {
     if ( $Ticket->status ne 'resolved' ) {
         $actions->{'G'} = {
-            path => "Ticket/Update.html?Action=comment&DefaultStatus=resolved&id=" . $id,
+            path => "Ticket/Update.html?action=comment&DefaultStatus=resolved&id=" . $id,
             title => _('Resolve') };
     }
     if ( $Ticket->status ne 'open' ) {
@@ -167,13 +167,13 @@ if ( $can{'ModifyTicket'} ) {
  if ( $Ticket->current_user_has_right('OwnTicket') ) {
      if ( $Ticket->owner_obj->id == RT->nobody->id ) {
          $actions->{'B'} = {
-             path => "Ticket/Display.html?Action=Take&id=" . $id,
+             path => "Ticket/Display.html?action=take&id=" . $id,
              title => _('Take'),
          } if $can{'ModifyTicket'} or $Ticket->current_user_has_right('TakeTicket');
      }
      elsif ( $Ticket->owner_obj->id != Jifty->web->current_user->id ) {
          $actions->{'C'} = {
-             path => "Ticket/Display.html?Action=Steal&id=" . $id,
+             path => "Ticket/Display.html?action=steal&id=" . $id,
              title => _('Steal'),
          } if $can{'ModifyTicket'} or $Ticket->current_user_has_right('StealTicket');
      }
@@ -184,7 +184,7 @@ if ( $can{'ModifyTicket'} ) {
 if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('CommentOnTicket') ) {
     $actions->{'E'} = {
         title => _('comment'),
-        path  => "Ticket/Update.html?Action=comment&id=" . $id,
+        path  => "Ticket/Update.html?action=comment&id=" . $id,
     };
 }
 }

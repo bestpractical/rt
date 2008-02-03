@@ -62,7 +62,7 @@
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
       <td class="value"><& /Elements/SelectOwner,
-          name         => 'Owner',
+          name         => 'owner',
           queue_obj     => $ticket_obj->queue_obj,
           ticket_obj    => $ticket_obj,
           Default      => $ticket_obj->owner_obj->id,

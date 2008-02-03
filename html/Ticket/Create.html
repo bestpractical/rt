@@ -76,7 +76,7 @@
 <&|/l&>Owner</&>:
 </td>
 <td class="value">
-    <& /Elements/SelectOwner, name => "Owner", queue_obj => $queue_obj, Default => $ARGS{Owner}|| RT->nobody->id, DefaultValue => 0 &>
+    <& /Elements/SelectOwner, name => "owner", queue_obj => $queue_obj, Default => $ARGS{owner}|| RT->nobody->id, DefaultValue => 0 &>
 </td>
 </tr>
 <tr>
@@ -256,7 +256,7 @@ if ( $cloneTicket ) {
     };
     
     $clone->{$_} = $cloneticket_obj->$_() 
-        for qw/Owner subject final_priority time_estimated TimeWorked 
+        for qw/owner subject final_priority time_estimated TimeWorked 
                 Status TimeLeft Starts Started Due Resolved/;
     
         my $members = $cloneticket_obj->members;

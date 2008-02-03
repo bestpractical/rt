@@ -69,11 +69,11 @@
 <& /Elements/SelectStatus, name=>"Status", DefaultLabel => _("%1 (Unchanged)", loc($ticket_obj->status)), Default => $ARGS{'Status'} || ($ticket_obj->status eq $DefaultStatus ? undef : $DefaultStatus)&>
 <&|/l&>Owner</&>:  
 <& /Elements/SelectOwner,
-     name         => "Owner",
+     name         => "owner",
      ticket_obj    => $ticket_obj,
      queue_obj     => $ticket_obj->queue_obj,
      DefaultLabel => _("%1 (Unchanged)", $ticket_obj->owner_obj->name),
-     Default      => $ARGS{'Owner'}
+     Default      => $ARGS{'owner'}
  &>
 <&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}||'' %>" /> 
 <& /Elements/SelectTimeUnits, name => 'UpdateTimeWorked'&>
