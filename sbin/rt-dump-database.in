@@ -137,7 +137,7 @@ foreach my $class (@classes) {
 	elsif ($class eq 'CustomFields') {
 	    my $values = $obj->values;
 	    while (my $value = $values->next) {
-		push @{$rv->{Values}}, {
+		push @{$rv->{values}}, {
 		    map { ($_ => $value->__value($_)) } qw(
 			name description sort_order
 		    ),
@@ -159,7 +159,7 @@ foreach my $class (@classes) {
 
 print(<< ".");
 no strict; use XML::Simple; *_ = XMLin(do { local \$/; readline(DATA) }, ForceArray => [qw(
- @classes Values
+ @classes values
 )], NoAttr => 1, SuppressEmpty => ''); *\$_ = (\$_{\$_} || []) for keys \%_; 1; # vim: ft=xml
 __DATA__
 .

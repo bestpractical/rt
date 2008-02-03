@@ -198,7 +198,7 @@ sub insert_data {
         for my $item (@CustomFields) {
             my $new_entry = RT::Model::CustomField->new(
                 current_user => RT->system_user );
-            my $values = delete $item->{'Values'};
+            my $values = delete $item->{'values'};
 
             my @queues;
 

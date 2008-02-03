@@ -49,19 +49,19 @@
 <script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/libs/scriptaculous/effects.js"></script>
 <script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/libs/scriptaculous/controls.js"></script>
 % if ( $Multiple ) {
-<textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-Values" id="<% $name %>-Values" ><% $Default %></textarea><div id="<% $name %>-Choices" class="autocomplete"></div>
+<textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-values" id="<% $name %>-values" ><% $Default %></textarea><div id="<% $name %>-Choices" class="autocomplete"></div>
 <script type="text/javascript">
 new Ajax.Autocompleter(
-    "<% $name %>-Values",
+    "<% $name %>-values",
     "<% $name %>-Choices",
     "/Helpers/Autocomplete/custom_field_values",
     { tokens: [ '\n' ] }
 );
 % } else {
-<input type="text" id="<% $name %>-Value" name="<% $name %>-Value" value="<% $Default %>"/><div id="<% $name %>-Choices" class="autocomplete"></div>
+<input type="text" id="<% $name %>-value" name="<% $name %>-value" value="<% $Default %>"/><div id="<% $name %>-Choices" class="autocomplete"></div>
 <script type="text/javascript">
 new Ajax.Autocompleter(
-    "<% $name %>-Value",
+    "<% $name %>-value",
     "<% $name %>-Choices",
     "/Helpers/Autocomplete/custom_field_values",
     {}

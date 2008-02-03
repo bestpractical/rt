@@ -231,7 +231,7 @@ To enable handling of encrypted and signed message in the RT you should add
 
 See also `perldoc lib/RT/Interface/Email/Auth/GnuPG.pm`.
 
-=head2 Errors handling
+=head2 Error handling
 
 There are several global templates created in the database by default. RT
 uses these templates to send error messages to users or RT's owner. These 
@@ -477,7 +477,7 @@ sub sign_encrypt_rfc3156 {
 
     my %res;
     if ( $args{'sign'} && !$args{'encrypt'} ) {
-
+    warn "Signing, not encrypting";
         # required by RFC3156(Ch. 5) and RFC1847(Ch. 2.1)
         $entity->head->mime_attr(
             'Content-Transfer-Encoding' => 'quoted-printable' );
@@ -502,6 +502,7 @@ sub sign_encrypt_rfc3156 {
             waitpid $pid, 0;
         };
         my $err       = $@;
+        warn "Error was $err";
         my @signature = readline $handle{'output'};
         close $handle{'output'};
 
@@ -512,13 +513,10 @@ sub sign_encrypt_rfc3156 {
             close $handle{$_};
         }
         Jifty->log->debug( $res{'status'} ) if $res{'status'};
-        Jifty->log->warn( $res{'error'} )   if $res{'error'};
+        Jifty->log->warn( "EEEEE". $res{'error'} )   if $res{'error'};
         Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
         if ( $err || $res{'exit_code'} ) {
-            $res{'message'}
-                = $err
-                ? $err
-                : "gpg exitted with error code " . ( $res{'exit_code'} >> 8 );
+            $res{'message'} = $err ? $err : "gpg exitted with error code " . ( $res{'exit_code'} >> 8 );
             return %res;
         }
 
@@ -576,7 +574,7 @@ sub sign_encrypt_rfc3156 {
             close $handle{$_};
         }
         Jifty->log->debug( $res{'status'} ) if $res{'status'};
-        Jifty->log->warn( $res{'error'} )   if $res{'error'};
+        Jifty->log->warn( "EE". $res{'error'} )   if $res{'error'};
         Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
         if ( $@ || $? ) {
             $res{'message'}
@@ -601,8 +599,7 @@ sub sign_encrypt_rfc3156 {
             Filename    => '',
             Encoding    => '7bit',
         );
-        $entity->parts(-1)->bodyhandle->{'_dirty_hack_to_save_a_ref_tmp_fh'}
-            = $tmp_fh;
+        $entity->parts(-1)->bodyhandle->{'_dirty_hack_to_save_a_ref_tmp_fh'} = $tmp_fh;
     }
     return %res;
 }

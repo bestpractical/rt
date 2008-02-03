@@ -173,7 +173,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     );
     $CustomFieldObj->set_values_class( $valuesClass );
 
-    my $paramtag = "CustomField-". $CustomFieldObj->id ."-Value";
+    my $paramtag = "CustomField-". $CustomFieldObj->id ."-value";
     # Delete any fields that want to be deleted
     foreach my $key ( keys %ARGS ) {
         next unless $key =~ /^Delete-$paramtag-(\d+)$/o;

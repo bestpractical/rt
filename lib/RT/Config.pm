@@ -104,7 +104,7 @@ our %META = (
         WidgetArguments => {
             description => 'Interface style',        #loc
                  # XXX: we need support for 'get values callback'
-            Values => [qw(3.5-default 3.4-compat)],
+            values => [qw(3.5-default 3.4-compat)],
         },
     },
     DefaultSummaryRows => {
@@ -157,7 +157,7 @@ our %META = (
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             description  => 'Date and time output format',            #loc
-            Values       => [qw(default_format RFC2822 ISO W3CDTF)],
+            values       => [qw(default_format RFC2822 ISO W3CDTF)],
             values_label => {
                 default_format => 'Default (Tue Dec 25 21:59:12 1995)',    #loc
                 RFC2822       => 'RFC (Tue, 25 Dec 1995 21:59:12 -0300)', #loc
@@ -262,7 +262,7 @@ sub _load_config {
             my ( $pack, $file, $line ) = caller;
             return $self->set_from_config(
                 Option     => $opt_ref,
-                Value      => [@args],
+                value      => [@args],
                 Package    => $pack,
                 File       => $file,
                 Line       => $line,
@@ -458,7 +458,7 @@ sub set_from_config {
     foreach (qw(Package File Line SiteConfig Extension)) {
         $META{$name}->{'Source'}->{$_} = $args{$_};
     }
-    $self->set( $name, @{ $args{'Value'} } );
+    $self->set( $name, @{ $args{'value'} } );
 
     return 1;
 }
@@ -553,17 +553,5 @@ sub options {
     return @res;
 }
 
-=head3 Type
-
-=cut
-
-sub type {
-    my $self = shift;
-    my $name = shift;
-}
-
-=head3 IsOverridable
-
-=cut
 
 1;

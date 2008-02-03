@@ -61,8 +61,8 @@ if ( $object && $object->id ) {
     $namePrefix ||= join('-', 'object', ref($object), $object->id, 'CustomField', '');
 } elsif (not $Default) {
     my %TOP = $m->request_args;
-    $Default = $TOP{ $namePrefix .$CustomField->id . '-Values' }
-            || $TOP{ $namePrefix .$CustomField->id . '-Value' };
+    $Default = $TOP{ $namePrefix .$CustomField->id . '-values' }
+            || $TOP{ $namePrefix .$CustomField->id . '-value' };
 }
 
 my $MaxValues = $CustomField->max_values;
@@ -72,9 +72,9 @@ if ($MaxValues == 1 && $values) {
     $Default = ($values->first ? $values->first->content : '') unless $Default;
     $values->goto_first_item;
 }
-# The "Magic" hidden input causes RT to know that we were trying to edit the field, even if 
+# The "magic" hidden input causes RT to know that we were trying to edit the field, even if 
 # we don't see a value later, since browsers aren't compelled to submit empty form fields
-$m->out("\n".'<input type="hidden" class="hidden" name="'.$namePrefix.$CustomField->id.'-Values-Magic" value="1" />'."\n");
+$m->out("\n".'<input type="hidden" class="hidden" name="'.$namePrefix.$CustomField->id.'-values-magic" value="1" />'."\n");
 
 my $EditComponent = "EditCustomField$Type";
 $m->callback( Callbackname => 'EditComponentname', name => \$EditComponent, CustomField => $CustomField, object => $object );

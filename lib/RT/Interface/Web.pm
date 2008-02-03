@@ -355,13 +355,13 @@ sub create_ticket {
     }
 
     foreach my $arg ( keys %ARGS ) {
-        next if $arg =~ /-(?:Magic|category)$/;
+        next if $arg =~ /-(?:magic|category)$/;
 
         if ( $arg =~ /^object-RT::Model::Transaction--CustomField-/ ) {
             $create_args{$arg} = $ARGS{$arg};
         }
 
-        # object-RT::Model::Ticket--CustomField-3-Values
+        # object-RT::Model::Ticket--CustomField-3-values
         elsif ( $arg =~ /^object-RT::Model::Ticket--CustomField-(\d+)(.*?)$/ )
         {
             my $cfid = $1;
@@ -713,7 +713,7 @@ sub parse_date_to_iso {
     my $date_obj = RT::Date->new();
     $date_obj->set(
         format => 'unknown',
-        Value  => $date
+        value  => $date
     );
     return ( $date_obj->iso );
 }
@@ -1020,7 +1020,7 @@ sub _process_object_custom_field_updates {
 
         # since http won't pass in a form element with a null value, we need
         # to fake it
-        if ( $arg eq 'Values-Magic' ) {
+        if ( $arg eq 'values-magic' ) {
 
           # We don't care about the magic, if there's really a values element;
             next
@@ -1277,7 +1277,7 @@ sub process_ticket_dates {
         my $DateObj = RT::Date->new();
         $DateObj->set(
             format => 'unknown',
-            Value  => $args_ref->{ $field . '_Date' }
+            value  => $args_ref->{ $field . '_Date' }
         );
 
         my $obj = $field . "_obj";
@@ -1476,10 +1476,5 @@ sub _parse_saved_search {
 
     return ( _load_container_object( $obj_type, $obj_id ), $search_id );
 }
-
-eval "require RT::Interface::Web_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Interface/Web_Vendor.pm} );
-eval "require RT::Interface::Web_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Interface/Web_Local.pm} );
 
 1;

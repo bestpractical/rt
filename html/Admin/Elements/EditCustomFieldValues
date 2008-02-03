@@ -64,7 +64,7 @@
 </tr>
 
 % while ( my $value = $values->next ) {
-% my $paramtag = "CustomField-". $CustomField->id ."-Value-". $value->id;
+% my $paramtag = "CustomField-". $CustomField->id ."-value-". $value->id;
 <tr>
 <td><input type="checkbox" class="checkbox" name="Delete-<% $paramtag %>" /></td>
 <td><input type="text" size="3" name="<% $paramtag %>-sort_order" value="<% $value->sort_order %>" /></td>

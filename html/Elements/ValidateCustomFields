@@ -49,10 +49,10 @@
 my ($valid, @res) = (1, ());
 $CustomFields->goto_first_item;
 while ( my $CF = $CustomFields->next ) {
-    my $field = $namePrefix . $CF->id . "-Value";
+    my $field = $namePrefix . $CF->id . "-value";
 
     my $value;
-    if ($args_ref->{"${field}s-Magic"} and exists $args_ref->{"${field}s"}) {
+    if ($args_ref->{"${field}s-magic"} and exists $args_ref->{"${field}s"}) {
         $value = $args_ref->{"${field}s"};
 
         # We only validate Single Combos -- multis can never be user input

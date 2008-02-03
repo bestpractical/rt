@@ -1205,7 +1205,7 @@ sub update_custom_fields {
         next
             unless ( $arg
             =~ /^(?:object-RT::Model::Transaction--)?CustomField-(\d+)/ );
-        next if $arg =~ /-Magic$/;
+        next if $arg =~ /-magic$/;
         my $cfid   = $1;
         my $values = $args->{$arg};
         foreach my $value (
