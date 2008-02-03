@@ -342,7 +342,7 @@ sub text_html_russian_redef_sendmessage {
                 my $content_1251;
                 $content_1251 = $MIME->parts(1)->bodyhandle->as_string();
                 like ($content_1251 , qr{Ó÷eáíûé Öeíòp "ÊÀÄĞÛ ÄÅËÎÂÎÃÎ ÌÈĞÀ" ïpèãëaøaeò ía òpeíèíã:},
-"Content matches drugim in codepage 1251" );
+"content matches drugim in codepage 1251" );
                  }';
 }
 

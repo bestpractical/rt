@@ -101,7 +101,7 @@ if ($aid) {
 	push @data, [ content_type    => $attachment->content_type   ];
 	push @data, [ content_encoding    => $attachment->content_encoding   ];
 	push @data, [ Headers    => $attachment->headers   ];
-	push @data, [ Content    => $attachment->content   ];
+	push @data, [ content    => $attachment->content   ];
 
 	my %k = map {@$_} @data;
 	$o = [ map {$_->[0]} @data ];

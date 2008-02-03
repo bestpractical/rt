@@ -64,7 +64,7 @@
 %# hang onto the queue id
 <input type="hidden" class="hidden" name="queue" value="<%$queue%>" />
 
-<& /Admin/Elements/ModifyTemplate, name => $template_obj->name, description => $template_obj->description, Content => $template_obj->content &>
+<& /Admin/Elements/ModifyTemplate, name => $template_obj->name, description => $template_obj->description, content => $template_obj->content &>
 
 <& /Elements/Submit, Label => _('Save Changes'), Reset => 1 &>
 </form>
@@ -106,7 +106,7 @@ else {
     
 }
 if ($template_obj->id()) {
-  my @attribs = qw( description Content queue name);
+  my @attribs = qw( description content queue name);
   my @aresults = update_record_object( AttributesRef => \@attribs, 
 				     object => $template_obj, 
 				     ARGSRef => \%ARGS);

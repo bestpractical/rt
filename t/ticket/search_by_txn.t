@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-use RT::Test; use Test::More tests => 10;
+use RT::Test; use Test::More tests => 11;
 
 BEGIN{ $ENV{'TZ'} = 'GMT'};
 
@@ -19,9 +19,10 @@ $tix->from_sql('Updated = "2005-08-05" AND subject = "$SUBJECT"');
 ok(! $tix->count, "Searching for tickets updated on a random date finds nothing" . $tix->count);
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
-$ticket->create(queue => 'General', subject => $SUBJECT);
+my ($id, $tid,$msg) = $ticket->create(queue => 'General', subject => $SUBJECT);
+ok($id,$msg);
 ok ($ticket->id, "We Created a ticket");
-my ($id, $txnid, $txnobj) =  $ticket->comment( Content => 'A comment that happend on 2004-01-01');
+my ($id, $txnid, $txnobj) =  $ticket->comment( content => 'A comment that happend on 2004-01-01');
 
 isa_ok($txnobj, 'RT::Model::Transaction');
 

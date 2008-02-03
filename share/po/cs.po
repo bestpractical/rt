@@ -70,7 +70,7 @@ msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %3.%2.%7 %4:%5:%6"
 
 #: lib/RT/Record.pm:1685 lib/RT/Transaction_Overlay.pm:647 lib/RT/Transaction_Overlay.pm:690
-#. ($cf->name, $new_value->Content)
+#. ($cf->name, $new_value->content)
 #. ($field, $self->new_value)
 #. ($self->Field, $principal->object->name)
 msgid "%1 %2 added"
@@ -82,13 +82,13 @@ msgid "%1 %2 ago"
 msgstr "- %1 %2"
 
 #: lib/RT/Record.pm:1692 lib/RT/Transaction_Overlay.pm:654
-#. ($cf->name, $old_content,                $new_value->Content)
+#. ($cf->name, $old_content,                $new_value->content)
 #. ($field, $self->old_value, $self->new_value)
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 změněno na %3"
 
 #: lib/RT/Record.pm:1689 lib/RT/Transaction_Overlay.pm:650 lib/RT/Transaction_Overlay.pm:696
-#. ($cf->name, $old_value->Content)
+#. ($cf->name, $old_value->content)
 #. ($field, $self->old_value)
 #. ($self->Field, $principal->object->name)
 msgid "%1 %2 deleted"
@@ -1205,7 +1205,7 @@ msgid "Contacted date '%1' could not be parsed"
 msgstr "Datum kontaktu '%1' nemůže být rozpoznáno"
 
 #: html/Admin/Elements/ModifyTemplate:65 html/Elements/SelectAttachmentField:48 html/Ticket/ModifyAll.html:119
-msgid "Content"
+msgid "content"
 msgstr "Obsah"
 
 #: html/Elements/SelectAttachmentField:49
@@ -1690,7 +1690,7 @@ msgid "Custom field not found"
 msgstr "Uživatelská položka nenalezena"
 
 #: lib/RT/CustomField_Overlay.pm:1157
-#. ($args{'Content'}, $self->name)
+#. ($args{'content'}, $self->name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Hodnota %1 nemůže být nalezena v uživatelské položce %2"
 
@@ -5338,7 +5338,7 @@ msgstr "Obsah požadavku"
 
 #: lib/RT/TicketCollection_Overlay.pm:1969
 msgid "Ticket content type"
-msgstr "Content type požadavku"
+msgstr "content type požadavku"
 
 #: lib/RT/Ticket_Overlay.pm:603 lib/RT/Ticket_Overlay.pm:617 lib/RT/Ticket_Overlay.pm:628 lib/RT/Ticket_Overlay.pm:763
 msgid "Ticket could not be Created due to an internal error"

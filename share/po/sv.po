@@ -60,7 +60,7 @@ msgstr "%1 %2"
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %2 %3 %4:%5:%6 %7"
 
-#. ($cf->name, $new_value->Content)
+#. ($cf->name, $new_value->content)
 #. ($field, $self->new_value)
 #. ($self->Field, $principal->object->name)
 #: lib/RT/Record.pm:1685
@@ -74,14 +74,14 @@ msgstr "%1 %2 tillagt"
 msgid "%1 %2 ago"
 msgstr "%1 %2 sedan"
 
-#. ($cf->name, $old_content,                $new_value->Content)
+#. ($cf->name, $old_content,                $new_value->content)
 #. ($field, $self->old_value, $self->new_value)
 #: lib/RT/Record.pm:1692
 #: lib/RT/Transaction_Overlay.pm:654
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 ändrat till %3"
 
-#. ($cf->name, $old_value->Content)
+#. ($cf->name, $old_value->content)
 #. ($field, $self->old_value)
 #. ($self->Field, $principal->object->name)
 #: lib/RT/Record.pm:1689
@@ -1048,7 +1048,7 @@ msgstr "Bekräfta"
 #: html/Admin/Elements/ModifyTemplate:65
 #: html/Elements/SelectAttachmentField:48
 #: html/Ticket/ModifyAll.html:119
-msgid "Content"
+msgid "content"
 msgstr "Innehåll"
 
 #: html/Elements/SelectAttachmentField:49
@@ -1465,7 +1465,7 @@ msgstr "Extrafält %1 ej funnet"
 msgid "Custom field '%1'"
 msgstr "Extrafält '%1'"
 
-#. ($args{'Content'}, $self->name)
+#. ($args{'content'}, $self->name)
 #: lib/RT/CustomField_Overlay.pm:1157
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Extrafältvärde %1 går ej att hitta för extrafält %2"

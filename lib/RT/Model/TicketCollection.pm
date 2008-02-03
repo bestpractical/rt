@@ -99,7 +99,7 @@ our %FIELD_METADATA = (
     type             => [ 'ENUM', ],
     creator          => [ 'ENUM' => 'User', ],
     last_updated_by    => [ 'ENUM' => 'User', ],
-    owner            => [ 'WATCHERFIELD' => 'Owner', ],
+    owner            => [ 'WATCHERFIELD' => 'owner', ],
     effective_id      => [ 'INT', ],
     id               => [ 'INT', ],
     initial_priority => [ 'INT', ],
@@ -127,23 +127,24 @@ our %FIELD_METADATA = (
     LastUpdated     => [ 'DATE'         => 'LastUpdated', ],
     Created         => [ 'DATE'         => 'Created', ],
     subject         => [ 'STRING', ],
-    Content         => [ 'TRANSFIELD', ],
+    content         => [ 'TRANSFIELD', ],
     content_type     => [ 'TRANSFIELD', ],
     Filename        => [ 'TRANSFIELD', ],
     TransactionDate => [ 'TRANSDATE', ],
-    Requestor       => [ 'WATCHERFIELD' => 'Requestor', ],
-    Requestors      => [ 'WATCHERFIELD' => 'Requestor', ],
-    Cc              => [ 'WATCHERFIELD' => 'Cc', ],
-    AdminCc         => [ 'WATCHERFIELD' => 'AdminCc', ],
+    requestor       => [ 'WATCHERFIELD' => 'requestor', ],
+    requestors      => [ 'WATCHERFIELD' => 'requestor', ],
+    cc              => [ 'WATCHERFIELD' => 'cc', ],
+    AdminCc         => [ 'WATCHERFIELD' => 'admin_cc', ],
+    admin_cc         => [ 'WATCHERFIELD' => 'admin_cc', ],
     Watcher         => [ 'WATCHERFIELD', ],
 
     CustomFieldvalue => [ 'CUSTOMFIELD', ],
     CustomField      => [ 'CUSTOMFIELD', ],
     CF               => [ 'CUSTOMFIELD', ],
     Updated          => [ 'TRANSDATE', ],
-    RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ],
-    CCGroup          => [ 'MEMBERSHIPFIELD' => 'Cc', ],
-    AdminCCGroup     => [ 'MEMBERSHIPFIELD' => 'AdminCc', ],
+    requestor_group   => [ 'MEMBERSHIPFIELD' => 'requestor', ],
+    cc_group          => [ 'MEMBERSHIPFIELD' => 'cc', ],
+    admin_cc_group     => [ 'MEMBERSHIPFIELD' => 'admin_cc', ],
     WatcherGroup     => [ 'MEMBERSHIPFIELD', ],
 );
 
@@ -211,7 +212,7 @@ sub can_bundle { return \%can_bundle }
 
 our @SORTcolumns = qw(id Status
     queue subject
-    Owner Created Due starts Started
+    owner Created Due starts Started
     Told
     resolved LastUpdated priority time_worked time_left);
 
@@ -663,7 +664,7 @@ sub _trans_date_limit {
 
 =head2 _TransLimit
 
-Limit based on the Content of a transaction or the content_type.
+Limit based on the content of a transaction or the content_type.
 
 Meta Data:
   none
@@ -684,7 +685,7 @@ sub _trans_limit {
     #when we redo the join.
 
     # In the SQL, we might have
-    #       (( Content = foo ) or ( Content = bar AND Content = baz ))
+    #       (( content = foo ) or ( content = bar AND content = baz ))
     # The AND group should share the same Alias.
 
     # Actually, maybe it doesn't matter.  We use the same alias and it
@@ -733,7 +734,7 @@ sub _trans_limit {
     $self->open_paren;
 
     #Search for the right field
-    if ( $field eq 'Content'
+    if ( $field eq 'content'
         and RT->config->get('DontSearchFileAttachments') )
     {
         $self->_sql_limit(
@@ -772,7 +773,7 @@ sub _trans_limit {
 
 =head2 _WatcherLimit
 
-Handle watcher limits.  (Requestor, CC, etc..)
+Handle watcher limits.  (requestor, CC, etc..)
 
 Meta Data:
   1: Field to query on
@@ -791,7 +792,7 @@ sub _watcher_limit {
     my $meta = $FIELD_METADATA{$field};
     my $type = $meta->[1] || '';
 
-    # Owner was ENUM field, so "Owner = 'xxx'" allowed user to
+    # owner was ENUM field, so "owner = 'xxx'" allowed user to
     # search by id and name at the same time, this is workaround
     # to preserve backward compatibility
     if ( lc $field eq 'owner' && !$rest{subkey} && $op =~ /^!?=$/ ) {
@@ -1068,7 +1069,7 @@ WHERE (
 	    AND
 	(Groups_1.domain = 'RT::Model::Ticket-Role')
 	    AND
-	(Groups_1.Type = 'RequestorGroup')
+	(Groups_1.Type = 'requestor_group')
     )
 ) AND
     Groups_1.instance = main.id
@@ -1349,7 +1350,7 @@ sub _custom_field_limit {
 
     $self->_sql_limit(
         alias       => $TicketCFs,
-        column      => $column || 'Content',
+        column      => $column || 'content',
         operator    => $op,
         value       => $value,
         quote_value => 1,
@@ -1359,7 +1360,7 @@ sub _custom_field_limit {
     if ($null_columns_ok) {
         $self->_sql_limit(
             alias            => $TicketCFs,
-            column           => $column || 'Content',
+            column           => $column || 'content',
             operator         => 'IS',
             value            => 'NULL',
             quote_value      => 0,
@@ -1435,13 +1436,13 @@ sub order_by {
                 leftjoin         => $CFvs,
                 column           => 'name',
                 quote_value      => 0,
-                value            => $TicketCFs . ".Content",
+                value            => $TicketCFs . ".content",
                 entry_aggregator => 'AND'
             );
 
             push @res, { %$row, alias => $CFvs,      column => 'sort_order' };
             push @res, { %$row, alias => $TicketCFs, column => 'content' };
-        } elsif ( $field eq "Custom" && $subkey eq "Ownership" ) {
+        } elsif ( $field eq "Custom" && $subkey eq "ownership" ) {
 
             # PAW logic is "reversed"
             my $order = "ASC";
@@ -1453,7 +1454,7 @@ sub order_by {
             # Unowned
             # Else
 
-            # Ticket.Owner  1 0 0
+            # Ticket.owner  1 0 0
             my $ownerId = $self->current_user->id;
             push @res, { %$row, column => "owner=$ownerId", order => $order };
 
@@ -1889,9 +1890,9 @@ sub limit_time_left {
 
 # {{{ limit_ing based on attachment attributes
 
-# {{{ sub limit_Content
+# {{{ sub limit_content
 
-=head2 limit_Content
+=head2 limit_content
 
 Takes a paramhash with the fields operator and value.
 operator is one of =, LIKE, NOT LIKE or !=.
@@ -1966,9 +1967,9 @@ sub limit_content_type {
 
 # {{{ limit_ing based on people
 
-# {{{ sub limit_Owner
+# {{{ sub limit_owner
 
-=head2 limit_Owner
+=head2 limit_owner
 
 Takes a paramhash with the fields operator and value.
 operator is one of = or !=.
@@ -1992,7 +1993,7 @@ sub limit_owner {
         value    => $args{'value'},
         operator => $args{'operator'},
         description =>
-            join( ' ', _('Owner'), $args{'operator'}, $owner->name(), ),
+            join( ' ', _('owner'), $args{'operator'}, $owner->name(), ),
     );
 
 }

@@ -62,5 +62,5 @@ Desc varchar(120)
 
 CREATE TABLE Autoreplies {
 ID int AUTO_INCREMENT,
-Content text
+content text
 );

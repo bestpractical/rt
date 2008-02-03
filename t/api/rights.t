@@ -87,7 +87,7 @@ ok( !$user->has_right( right => 'OwnTicket', object => $queue ), "user can't own
 ok( !$user->has_right( right => 'ReplyToTicket', object => $queue ), "user can't reply to ticket" );
 
 my $group = RT::Model::Group->new(current_user => RT->system_user );
-ok( $group->load_queue_role_group( queue => $queue_id, type=> 'Owner' ), "load queue owners role group" );
+ok( $group->load_queue_role_group( queue => $queue_id, type=> 'owner' ), "load queue owners role group" );
 my $ace = RT::Model::ACE->new(current_user => RT->system_user );
 my ($ace_id, $msg) = $group->principal_object->grant_right( right => 'ReplyToTicket', object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right: $msg" );
@@ -113,31 +113,31 @@ ok( $user->has_right( right => 'ReplyToTicket', object => $ticket ), "user is ow
 
 # Testing of equiv_objects
 $group = RT::Model::Group->new(current_user => RT->system_user );
-ok( $group->load_queue_role_group( queue => $queue_id, type=> 'AdminCc' ), "load queue AdminCc role group" );
+ok( $group->load_queue_role_group( queue => $queue_id, type=> 'admin_cc' ), "load queue admin_cc role group" );
 $ace = RT::Model::ACE->new(current_user => RT->system_user );
 ($ace_id, $msg) = $group->principal_object->grant_right( right => 'ModifyTicket', object => $queue );
-ok( $ace_id, "Granted queue AdminCc role group with ModifyTicket right: $msg" );
+ok( $ace_id, "Granted queue admin_cc role group with ModifyTicket right: $msg" );
 ok( $group->principal_object->has_right( right => 'ModifyTicket', object => $queue ), "role group can modify ticket" );
-ok( !$user->has_right( right => 'ModifyTicket', object => $ticket ), "user is not AdminCc and can't modify ticket" );
-($status, $msg) = $ticket->add_watcher(type => 'AdminCc', principal_id => $user->principal_id);
-ok( $status, "successfuly added user as AdminCc");
-ok( $user->has_right( right => 'ModifyTicket', object => $ticket ), "user is AdminCc and can modify ticket" );
+ok( !$user->has_right( right => 'ModifyTicket', object => $ticket ), "user is not admin_cc and can't modify ticket" );
+($status, $msg) = $ticket->add_watcher(type => 'admin_cc', principal_id => $user->principal_id);
+ok( $status, "successfuly added user as admin_cc");
+ok( $user->has_right( right => 'ModifyTicket', object => $ticket ), "user is admin_cc and can modify ticket" );
 
 my $ticket2 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($ticket2_id) = $ticket2->create( queue => $queue_id, subject => 'test2');
 ok( $ticket2_id, 'new ticket Created' );
-ok( !$user->has_right( right => 'ModifyTicket', object => $ticket2 ), "user is not AdminCc and can't modify ticket2" );
+ok( !$user->has_right( right => 'ModifyTicket', object => $ticket2 ), "user is not admin_cc and can't modify ticket2" );
 
 # now we can finally test equiv_objects
 my $equiv = [ $ticket ];
 ok( $user->has_right( right => 'ModifyTicket', object => $ticket2, equiv_objects => $equiv ), 
-    "user is not AdminCc but can modify ticket2 because of equiv_objects" );
+    "user is not admin_cc but can modify ticket2 because of equiv_objects" );
 
 # the first a third test below are the same, so they should both pass
 my $equiv2 = [];
 ok( !$user->has_right( right => 'ModifyTicket', object => $ticket2, equiv_objects => $equiv2 ), 
-    "user is not AdminCc and can't modify ticket2" );
+    "user is not admin_cc and can't modify ticket2" );
 ok( $user->has_right( right => 'ModifyTicket', object => $ticket, equiv_objects => $equiv2 ), 
-    "user is AdminCc and can modify ticket" );
+    "user is admin_cc and can modify ticket" );
 ok( !$user->has_right( right => 'ModifyTicket', object => $ticket2, equiv_objects => $equiv2 ), 
-    "user is not AdminCc and can't modify ticket2 (same question different answer)" );
+    "user is not admin_cc and can't modify ticket2 (same question different answer)" );

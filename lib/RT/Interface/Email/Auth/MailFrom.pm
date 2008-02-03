@@ -52,18 +52,18 @@ use RT::Interface::Email qw(parse_sender_address_from_head create_user);
 
 sub get_current_user {
     my %args = (
-        Message     => undef,
+        message     => undef,
         current_user => undef,
         AuthLevel   => undef,
         Ticket      => undef,
         queue       => undef,
-        Action      => undef,
+        action      => undef,
         @_
     );
 
     # We don't need to do any external lookups
     my ( $Address, $name )
-        = parse_sender_address_from_head( $args{'Message'}->head );
+        = parse_sender_address_from_head( $args{'message'}->head );
     unless ($Address) {
         Jifty->log->error("Couldn't find sender's address");
         return ( $args{'CurrentUser'}, -1 );
@@ -98,11 +98,11 @@ sub get_current_user {
 
 # but before we do that, we need to make sure that the Created user would have the right
 # to do what we're doing.
-    if ( $args{'Ticket'} && $args{'Ticket'}->id ) {
+    if ( $args{'ticket'} && $args{'ticket'}->id ) {
         my $qname = $args{'queue'}->name;
 
         # We have a ticket. that means we're commenting or corresponding
-        if ( $args{'Action'} =~ /^comment$/i ) {
+        if ( $args{'action'} =~ /^comment$/i ) {
 
 # check to see whether "Everyone" or "Unprivileged users" can comment on tickets
             unless (
@@ -121,7 +121,7 @@ sub get_current_user {
                 );
                 return ( $args{'CurrentUser'}, 0 );
             }
-        } elsif ( $args{'Action'} =~ /^correspond$/i ) {
+        } elsif ( $args{'action'} =~ /^correspond$/i ) {
 
 # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless (
@@ -140,7 +140,7 @@ sub get_current_user {
                 );
                 return ( $args{'CurrentUser'}, 0 );
             }
-        } elsif ( $args{'Action'} =~ /^take$/i ) {
+        } elsif ( $args{'action'} =~ /^take$/i ) {
 
 # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless (
@@ -160,7 +160,7 @@ sub get_current_user {
                 return ( $args{'CurrentUser'}, 0 );
             }
 
-        } elsif ( $args{'Action'} =~ /^resolve$/i ) {
+        } elsif ( $args{'action'} =~ /^resolve$/i ) {
 
 # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless (
@@ -182,7 +182,7 @@ sub get_current_user {
 
         } else {
             Jifty->log->warn(
-                "Action '" . ( $args{'Action'} || '' ) . "' is unknown" );
+                "action '" . ( $args{'action'} || '' ) . "' is unknown" );
             return ( $args{'CurrentUser'}, 0 );
         }
     }
@@ -211,7 +211,7 @@ sub get_current_user {
     }
 
     $CurrentUser
-        = create_user( undef, $Address, $name, $Address, $args{'Message'} );
+        = create_user( undef, $Address, $name, $Address, $args{'message'} );
 
     return ( $CurrentUser, 1 );
 }

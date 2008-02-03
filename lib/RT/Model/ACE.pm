@@ -112,10 +112,10 @@ use vars qw (
 # {{{ descriptions of principals
 
 %TICKET_METAPRINCIPALS = (
-    Owner     => 'The owner of a ticket',                # loc_pair
-    Requestor => 'The requestor of a ticket',            # loc_pair
-    Cc        => 'The CC of a ticket',                   # loc_pair
-    AdminCc   => 'The administrative CC of a ticket',    # loc_pair
+    owner     => 'The owner of a ticket',                # loc_pair
+    requestor => 'The requestor of a ticket',            # loc_pair
+    cc        => 'The CC of a ticket',                   # loc_pair
+    admin_cc   => 'The administrative CC of a ticket',    # loc_pair
 );
 
 # }}}

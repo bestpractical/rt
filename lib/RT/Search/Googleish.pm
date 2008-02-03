@@ -146,7 +146,7 @@ sub query_to_sql {
         elsif ( $key =~ /^fulltext:(.*?)$/i ) {
             $key = $1;
             $key =~ s/['\\].*//g;
-            push @tql_clauses, "Content LIKE '$key'";
+            push @tql_clauses, "content LIKE '$key'";
 
         }
 

@@ -95,7 +95,7 @@
 </td></tr>
 <tr><td align="right"><&|/l&>subject</&>:</td><td> <input name="Updatesubject" size="60" value="<% $ARGS{Updatesubject} || $ticket_obj->subject()%>" /></td></tr>
 
-<& /Ticket/Elements/update_cc, %ARGS, ticket_obj => $ticket_obj &>
+<& /Ticket/Elements/UpdateCc, %ARGS, ticket_obj => $ticket_obj &>
 
 
 % if (my $TxnCFs = $ticket_obj->transaction_custom_fields) {

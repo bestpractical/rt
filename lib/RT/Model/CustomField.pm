@@ -929,7 +929,7 @@ Takes a param hash of
 Required:
 
     object
-    Content
+    content
 
 Optional:
 
@@ -1048,7 +1048,7 @@ sub friendly_pattern {
 
 =head2 delete_value_for_object HASH
 
-Deletes a custom field value for a ticket. Takes a param hash of object and Content
+Deletes a custom field value for a ticket. Takes a param hash of object and content
 
 Returns a tuple of (STATUS, MESSAGE). If the call succeeded, the STATUS is true. otherwise it's false
 

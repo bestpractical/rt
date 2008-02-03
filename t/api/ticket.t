@@ -104,12 +104,12 @@ my $msg;
 ($id, $msg) = $ticket->create(subject => "Foo",
                 owner => RT->nobody->id,
                 status => 'open',
-                Requestor => ['jesse@example.com'],
+                requestor => ['jesse@example.com'],
                 queue => '1'
                 );
 ok ($id, "Ticket $id was Created");
 ok(my $group = RT::Model::Group->new(current_user => RT->system_user));
-ok($group->load_ticket_role_group(ticket => $id, type=> 'Requestor'));
+ok($group->load_ticket_role_group(ticket => $id, type=> 'requestor'));
 ok ($group->id, "Found the requestors object for this ticket");
 
 ok(my $jesse = RT::Model::User->new(current_user => RT->system_user), "Creating a jesse rt::user");
@@ -117,25 +117,25 @@ $jesse->load_by_email('jesse@example.com');
 ok($jesse->id,  "Found the jesse rt user");
 
 
-ok ($ticket->is_watcher(type => 'Requestor', principal_id => $jesse->principal_id), "The ticket actually has jesse at fsck.com as a requestor");
-ok (my ($add_id, $add_msg) = $ticket->add_watcher(type => 'Requestor', email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok ($ticket->is_watcher(type => 'requestor', principal_id => $jesse->principal_id), "The ticket actually has jesse at fsck.com as a requestor");
+ok (my ($add_id, $add_msg) = $ticket->add_watcher(type => 'requestor', email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
 ok ($add_id, "Add succeeded: ($add_msg)");
 ok(my $bob = RT::Model::User->new(current_user => RT->system_user), "Creating a bob rt::user");
 $bob->load_by_email('bob@fsck.com');
 ok($bob->id,  "Found the bob rt user");
-ok ($ticket->is_watcher(type => 'Requestor', principal_id => $bob->principal_id), "The ticket actually has bob at fsck.com as a requestor");;
-ok ( ($add_id, $add_msg) = $ticket->delete_watcher(type =>'Requestor', email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
-ok (!$ticket->is_watcher(type => 'Requestor', principal_id => $bob->principal_id), "The ticket no longer has bob at fsck.com as a requestor");;
+ok ($ticket->is_watcher(type => 'requestor', principal_id => $bob->principal_id), "The ticket actually has bob at fsck.com as a requestor");;
+ok ( ($add_id, $add_msg) = $ticket->delete_watcher(type =>'requestor', email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
+ok (!$ticket->is_watcher(type => 'requestor', principal_id => $bob->principal_id), "The ticket no longer has bob at fsck.com as a requestor");;
 
 
 $group = RT::Model::Group->new(current_user => RT->system_user);
-ok($group->load_ticket_role_group(ticket => $id, type => 'Cc'));
+ok($group->load_ticket_role_group(ticket => $id, type => 'cc'));
 ok ($group->id, "Found the cc object for this ticket");
 $group = RT::Model::Group->new(current_user => RT->system_user);
-ok($group->load_ticket_role_group(ticket => $id, type=> 'AdminCc'));
-ok ($group->id, "Found the AdminCc object for this ticket");
+ok($group->load_ticket_role_group(ticket => $id, type=> 'admin_cc'));
+ok ($group->id, "Found the admin_cc object for this ticket");
 $group = RT::Model::Group->new(current_user => RT->system_user);
-ok($group->load_ticket_role_group(ticket => $id, type=> 'Owner'));
+ok($group->load_ticket_role_group(ticket => $id, type=> 'owner'));
 ok ($group->id, "Found the owner object for this ticket");
 ok($group->has_member(RT->nobody->user_object->principal_object), "the owner group has the member 'RT_System'");
 
@@ -170,10 +170,10 @@ is($#returned, -1, "The ticket has no squelched recipients". join(',',@returned)
 
 
 my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
-$t1->create ( subject => 'Merge test 1', queue => 'general', Requestor => 'merge1@example.com');
+$t1->create ( subject => 'Merge test 1', queue => 'general', requestor => 'merge1@example.com');
 my $t1id = $t1->id;
 my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
-$t2->create ( subject => 'Merge test 2', queue => 'general', Requestor => 'merge2@example.com');
+$t2->create ( subject => 'Merge test 2', queue => 'general', requestor => 'merge2@example.com');
 my $t2id = $t2->id;
 my $val;
 ($msg, $val) = $t1->merge_into($t2->id);
@@ -187,9 +187,6 @@ is ($t1->id, $t2->id);
 is ($t1->requestors->members_obj->count, 2);
 
 
-
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {

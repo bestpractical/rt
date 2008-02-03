@@ -449,9 +449,9 @@ sub message {
 
 # }}}
 
-# {{{ sub Content
+# {{{ sub content
 
-=head2 Content PARAMHASH
+=head2 content PARAMHASH
 
 If this transaction has attached mime objects, returns the body of the first
 textual part (as defined in RT::I18N::is_textual_content_type).  Otherwise,

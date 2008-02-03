@@ -192,7 +192,7 @@ sub _field_to_function {
         } else {
             my ( $ticket_cf_alias, $cf_alias )
                 = $self->_custom_field_join( $cf->id, $cf->id, $cf_name );
-            @args{qw(alias column)} = ( $ticket_cf_alias, 'Content' );
+            @args{qw(alias column)} = ( $ticket_cf_alias, 'content' );
         }
     }
     return %args;

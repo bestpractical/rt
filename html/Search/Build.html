@@ -159,7 +159,7 @@ if ( $NewQuery ) {
     }
     if ( $query{'format'} ) {
         # Clean unwanted junk from the format
-        $query{'format'} = $m->comp( '/Elements/ScrubHTML', Content => $query{'format'} );
+        $query{'format'} = $m->comp( '/Elements/ScrubHTML', content => $query{'format'} );
     }
 }
 

@@ -21,7 +21,7 @@ while (@requestors) {
     my ( $id, undef $msg ) = $t->create(
         queue      => $q->id,
         subject    => shift @subjects,
-        Requestor => [ shift @requestors ]
+        requestor => [ shift @requestors ]
     );
     ok( $id, $msg );
 }
@@ -95,7 +95,7 @@ sub check_emails_order
     my ( $id, $msg ) = $t->create(
         queue      => $q->id,
         subject    => "first test",
-        Requestor  => 'badaboom@example.com',
+        requestor  => 'badaboom@example.com',
     );
     ok( $id, "ticket Created" ) or diag( "error: $msg" );
 

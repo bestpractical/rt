@@ -88,7 +88,7 @@ foreach my $arg ( keys %ARGS ) {
     next unless ( $ticket->id );
     if ( my $content = $ARGS{'update_content-'.$id} ) {
         my ( $val, $msg ) = $ticket->comment(
-            Content   => $content,
+            content   => $content,
             time_taken => $ARGS{ 'UpdateTimeWorked-' . $id }
         );
         push @results, _( "Ticket %1: %2", $id, $msg );

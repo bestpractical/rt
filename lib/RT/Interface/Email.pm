@@ -69,13 +69,13 @@ BEGIN {
     # as well as any optionally exported functions
     @EXPORT_OK = qw(
         &create_user
-        &GetMessageContent
+        &get_message_content
         &check_for_loops
         &check_for_suspicious_sender
         &check_for_auto_generated
         &check_for_bounce
         &mail_error
-        &ParseCcAddressesFromHead
+        &parse_cc_addresses_from_head
         &parse_sender_address_from_head
         &parse_errors_to_address_from_head
         &parse_address_from_header
@@ -205,14 +205,14 @@ Sends an error message. Takes a param hash:
 
 =item subject - subject of the message, default is 'There has been an error';
 
-=item Explanation - main content of the error, default value is 'Unexplained error';
+=item explanation - main content of the error, default value is 'Unexplained error';
 
 =item mime_obj - optional MIME entity that's attached to the error mail, as well we
 add 'In-Reply-To' field to the error that points to this message.
 
 =item Attach - optional text that attached to the error as 'message/rfc822' part.
 
-=item LogLevel - log level under which we should write explanation message into the
+=item log_level - log level under which we should write explanation message into the
 log, by default we log it as errorical.
 
 =back
@@ -225,15 +225,15 @@ sub mail_error {
         Bcc         => undef,
         From        => RT->config->get('correspond_address'),
         subject     => 'There has been an error',
-        Explanation => 'Unexplained error',
+        explanation => 'Unexplained error',
         mime_obj     => undef,
         Attach      => undef,
-        LogLevel    => 'error',
+        log_level    => 'error',
         @_
     );
 
-    my $level = $args{'LogLevel'};
-    Jifty->log->$level( $args{'Explanation'} ) if Jifty->log->can($level);
+    my $level = $args{'log_level'};
+    Jifty->log->$level( $args{'explanation'} ) if Jifty->log->can($level);
 
     # the colons are necessary to make ->build include non-standard headers
     my $entity = MIME::Entity->build(
@@ -241,13 +241,13 @@ sub mail_error {
         From                    => $args{'From'},
         Bcc                     => $args{'Bcc'},
         To                      => $args{'To'},
-        subject                 => $args{'subject'},
+        Subject                 => $args{'subject'},
         'Precedence:'           => 'bulk',
         'X-RT-Loop-Prevention:' => RT->config->get('rtname'),
     );
-    set_in_reply_to( Message => $entity, InReplyTo => $args{'mime_obj'} );
+    set_in_reply_to( Message => $entity, in_reply_to => $args{'mime_obj'} );
 
-    $entity->attach( Data => $args{'Explanation'} . "\n" );
+    $entity->attach( Data => $args{'explanation'} . "\n" );
 
     if ( $args{'mime_obj'} ) {
         $args{'mime_obj'}->sync_headers;
@@ -255,7 +255,7 @@ sub mail_error {
     }
 
     if ( $args{'Attach'} ) {
-        $entity->attach( Data => $args{'Attach'}, type => 'message/rfc822' );
+        $entity->attach( Data => $args{'Attach'}, Type => 'message/rfc822' );
 
     }
 
@@ -539,7 +539,7 @@ sub send_email_using_template {
     $mail->head->set( $_ => $args{$_} )
         foreach grep defined $args{$_}, qw(To Cc Bcc From);
 
-    set_in_reply_to( Message => $mail, InReplyTo => $args{'InReplyTo'} );
+    set_in_reply_to( Message => $mail, in_reply_to => $args{'in_reply_to'} );
 
     return send_email( entity => $mail );
 }
@@ -637,9 +637,9 @@ sub forward_transaction {
         foreach grep defined $args{$_}, qw(To Cc Bcc From);
 
     $mail->attach(
-        type        => 'message/rfc822',
+        Type        => 'message/rfc822',
         Disposition => 'attachment',
-        description => 'forwarded message',
+        Description => 'forwarded message',
         Data        => $entity->as_string,
     );
 
@@ -713,22 +713,22 @@ sub sign_encrypt {
             && $line->{'Status'} =~ /^(?:BAD|MISSING)$/ )
         {
             Jifty->log->error(
-                "$line->{'Status'} PASSPHRASE: $line->{'Message'}");
+                "$line->{'Status'} PASSPHRASE: $line->{'message'}");
             return 0;
         }
         next unless ( $line->{'Operation'} || '' ) eq 'RecipientsCheck';
         next if $line->{'Status'} eq 'DONE';
-        Jifty->log->error( $line->{'Message'} );
+        Jifty->log->error( $line->{'message'} );
         push @bad_recipients, $line;
     }
     return 0 unless @bad_recipients;
 
-    $_->{'AddressObj'} = ( Mail::Address->parse( $_->{'Recipient'} ) )[0]
+    $_->{'address_obj'} = ( Mail::Address->parse( $_->{'Recipient'} ) )[0]
         foreach @bad_recipients;
 
     foreach my $recipient (@bad_recipients) {
         my $status = send_email_using_template(
-            to        => $recipient->{'AddressObj'}->address,
+            to        => $recipient->{'address_obj'}->address,
             template  => 'Error: public key',
             arguments => {
                 %$recipient,
@@ -755,7 +755,7 @@ sub sign_encrypt {
     }
 
     delete_recipients_from_head( $args{'entity'}->head,
-        map $_->{'AddressObj'}->address,
+        map $_->{'address_obj'}->address,
         @bad_recipients );
 
     unless ( $args{'entity'}->head->get('To')
@@ -775,7 +775,7 @@ sub sign_encrypt {
 }
 
 sub create_user {
-    my ( $Username, $Address, $name, $ErrorsTo, $entity ) = @_;
+    my ( $Username, $Address, $name, $errors_to, $entity ) = @_;
 
     my $NewUser = RT::Model::User->new( current_user => RT->system_user );
 
@@ -801,12 +801,12 @@ sub create_user {
 
         unless ( $NewUser->id ) {
             mail_error(
-                To      => $ErrorsTo,
+                to      => $errors_to,
                 subject => "User could not be Created",
-                Explanation =>
+                explanation =>
                     "User creation failed in mailgateway: $Message",
                 mime_obj  => $entity,
-                LogLevel => 'error',
+                log_level => 'error',
             );
         }
     }
@@ -817,19 +817,19 @@ sub create_user {
     unless ( $CurrentUser->id ) {
         Jifty->log->warn( "Couldn't load user '$Address'." . "giving up" );
         mail_error(
-            To      => $ErrorsTo,
+            to      => $errors_to,
             subject => "User could not be loaded",
-            Explanation =>
+            explanation =>
                 "User  '$Address' could not be loaded in the mail gateway",
             mime_obj  => $entity,
-            LogLevel => 'error'
+            log_level => 'error'
         );
     }
 
     return $CurrentUser;
 }
 
-=head2 ParseCcAddressesFromHead HASH
+=head2 parse_cc_addresses_from_head HASH
 
 Takes a hash containing queue_obj, Head and current_user objects.
 Returns a list of all email addresses in the To and Cc
@@ -990,18 +990,18 @@ sub gen_message_id {
 sub set_in_reply_to {
     my %args = (
         Message   => undef,
-        InReplyTo => undef,
+        in_reply_to => undef,
         ticket    => undef,
         @_
     );
-    return unless $args{'Message'} && $args{'InReplyTo'};
+    return unless $args{'message'} && $args{'in_reply_to'};
 
     my $get_header = sub {
         my @res;
-        if ( $args{'InReplyTo'}->isa('MIME::Entity') ) {
-            @res = $args{'InReplyTo'}->head->get(shift);
+        if ( $args{'in_reply_to'}->isa('MIME::Entity') ) {
+            @res = $args{'in_reply_to'}->head->get(shift);
         } else {
-            @res = $args{'InReplyTo'}->get_header(shift) || '';
+            @res = $args{'in_reply_to'}->get_header(shift) || '';
         }
         return grep length, map { split /\s+/m, $_ } grep defined, @res;
     };
@@ -1024,7 +1024,7 @@ sub set_in_reply_to {
     @references = splice @references, 4, -6
         if @references > 10;
 
-    my $mail = $args{'Message'};
+    my $mail = $args{'message'};
     $mail->head->set( 'In-Reply-To' => join ' ', @rtid ? (@rtid) : (@id) )
         if @id || @rtid;
     $mail->head->set( 'References' => join ' ', @references );
@@ -1155,17 +1155,17 @@ sub gateway {
 
     my $parser = RT::EmailParser->new();
     $parser->smart_parse_mime_entity_from_scalar(
-        Message => $args{'message'},
-        Decode  => 0,
-        Exact   => 1,
+        message => $args{'message'},
+        decode  => 0,
+        exact   => 1,
     );
 
     my $Message = $parser->entity();
     unless ($Message) {
         mail_error(
             subject     => "RT Bounce: Unparseable message",
-            Explanation => "RT couldn't process the message below",
-            Attach      => $args{'message'}
+            explanation => "RT couldn't process the message below",
+            attach      => $args{'message'}
         );
 
         return ( 0,
@@ -1188,8 +1188,8 @@ sub gateway {
         next unless defined $check_cb;
         next
             unless $check_cb->(
-            Message       => $Message,
-            RawMessageRef => \$args{'message'},
+            message       => $Message,
+            raw_message_ref => \$args{'message'},
             );
 
         $skip_plugin{$class}++;
@@ -1200,7 +1200,7 @@ sub gateway {
         };
         my ( $status, $msg ) = $Code->(
             Message       => $Message,
-            RawMessageRef => \$args{'message'},
+            raw_message_ref => \$args{'message'},
         );
         next if $status > 0;
 
@@ -1215,7 +1215,7 @@ sub gateway {
     $parser->_post_process_new_entity;
 
     my $head     = $Message->head;
-    my $ErrorsTo = parse_errors_to_address_from_head($head);
+    my $errors_to = parse_errors_to_address_from_head($head);
 
     my $message_id = $head->get('Message-ID')
         || "<no-message-id-" 
@@ -1229,10 +1229,10 @@ sub gateway {
 
     # {{{ Lets check for mail loops of various sorts.
     my ( $should_store_machine_generated_message, $IsALoop, $result );
-    ( $should_store_machine_generated_message, $ErrorsTo, $result, $IsALoop )
+    ( $should_store_machine_generated_message, $errors_to, $result, $IsALoop )
         = _handle_machine_generated_mail(
-        Message   => $Message,
-        ErrorsTo  => $ErrorsTo,
+        message   => $Message,
+        errors_to  => $errors_to,
         subject   => $subject,
         message_id => $message_id
         );
@@ -1290,11 +1290,11 @@ sub gateway {
 
         foreach my $action (@actions) {
             ( $CurrentUser, $NewAuthStat ) = $Code->(
-                Message       => $Message,
-                RawMessageRef => \$args{'message'},
+                message       => $Message,
+                raw_message_ref => \$args{'message'},
                 current_user   => $CurrentUser,
-                AuthLevel     => $AuthStat,
-                Action        => $action,
+                auth_level     => $AuthStat,
+                action        => $action,
                 ticket        => $SystemTicket,
                 queue         => $Systemqueue_obj
             );
@@ -1324,8 +1324,8 @@ sub gateway {
         unless ( $AuthStat == -1 ) {
             _no_authorized_user_found(
                 right     => $right,
-                Message   => $Message,
-                Requestor => $ErrorsTo,
+                message   => $Message,
+                requestor => $errors_to,
                 queue     => $args{'queue'}
             );
 
@@ -1336,15 +1336,14 @@ sub gateway {
     # If we got a user, but they don't have the right to say things
     if ( $AuthStat == 0 ) {
         mail_error(
-            To      => $ErrorsTo,
+            to      => $errors_to,
             subject => "Permission Denied",
-            Explanation =>
-                "You do not have permission to communicate with RT",
+            explanation => "You do not have permission to communicate with RT",
             mime_obj => $Message
         );
         return (
             0,
-            "$ErrorsTo tried to submit a message to "
+            "$errors_to tried to submit a message to "
                 . $args{'queue'}
                 . " without permission.",
             undef
@@ -1363,11 +1362,11 @@ sub gateway {
     if ( !$args{'ticket'} && grep /^(comment|correspond)$/, @actions ) {
 
         my @Cc;
-        my @Requestors = ( $CurrentUser->id );
+        my @requestors = ( $CurrentUser->id );
 
         if ( RT->config->get('ParseNewMessageForTicketCcs') ) {
-            @Cc = ParseCcAddressesFromHead(
-                Head        => $head,
+            @Cc = parse_cc_addresses_from_head(
+                head        => $head,
                 current_user => $CurrentUser,
                 queue_obj   => $Systemqueue_obj
             );
@@ -1376,15 +1375,15 @@ sub gateway {
         my ( $id, $transaction, $ErrStr ) = $ticket->create(
             queue     => $Systemqueue_obj->id,
             subject   => $subject,
-            Requestor => \@Requestors,
-            Cc        => \@Cc,
+            requestor => \@requestors,
+            cc        => \@Cc,
             mime_obj   => $Message
         );
         if ( $id == 0 ) {
             mail_error(
-                To          => $ErrorsTo,
+                to          => $errors_to,
                 subject     => "Ticket creation failed: $subject",
-                Explanation => $ErrStr,
+                explanation => $ErrStr,
                 mime_obj     => $Message
             );
             return ( 0, "Ticket creation failed: $ErrStr", $ticket );
@@ -1401,9 +1400,9 @@ sub gateway {
         unless ( $ticket->id ) {
             my $error = "Could not find a ticket with id " . $args{'ticket'};
             mail_error(
-                To          => $ErrorsTo,
+                to          => $errors_to,
                 subject     => "Message not recorded: $subject",
-                Explanation => $error,
+                explanation => $error,
                 mime_obj     => $Message
             );
 
@@ -1427,18 +1426,18 @@ sub gateway {
 
                 #Warn the sender that we couldn't actually submit the comment.
                 mail_error(
-                    To          => $ErrorsTo,
+                    to          => $errors_to,
                     subject     => "Message not recorded: $subject",
-                    Explanation => $msg,
+                    explanation => $msg,
                     mime_obj     => $Message
                 );
                 return ( 0, "Message not recorded: $msg", $ticket );
             }
         } elsif ($unsafe_actions) {
-            my ( $status, $msg ) = _RunUnsafeAction(
-                Action      => $action,
-                ErrorsTo    => $ErrorsTo,
-                Message     => $Message,
+            my ( $status, $msg ) = _run_unsafe_action(
+                action      => $action,
+                errors_to    => $errors_to,
+                message     => $Message,
                 ticket      => $ticket,
                 current_user => $CurrentUser,
             );
@@ -1450,41 +1449,41 @@ sub gateway {
 
 sub _run_unsafe_action {
     my %args = (
-        Action      => undef,
-        ErrorsTo    => undef,
-        Message     => undef,
+        action      => undef,
+        errors_to    => undef,
+        message     => undef,
         ticket      => undef,
         current_user => undef,
         @_
     );
 
-    if ( $args{'Action'} =~ /^take$/i ) {
+    if ( $args{'action'} =~ /^take$/i ) {
         my ( $status, $msg )
             = $args{'ticket'}->set_owner( $args{'CurrentUser'}->id );
         unless ($status) {
             mail_error(
-                To          => $args{'ErrorsTo'},
+                To          => $args{'errors_to'},
                 subject     => "Ticket not taken",
-                Explanation => $msg,
-                mime_obj     => $args{'Message'}
+                explanation => $msg,
+                mime_obj     => $args{'message'}
             );
             return ( 0, "Ticket not taken" );
         }
-    } elsif ( $args{'Action'} =~ /^resolve$/i ) {
+    } elsif ( $args{'action'} =~ /^resolve$/i ) {
         my ( $status, $msg ) = $args{'ticket'}->set_status('resolved');
         unless ($status) {
 
             #Warn the sender that we couldn't actually submit the comment.
             mail_error(
-                To          => $args{'ErrorsTo'},
+                to          => $args{'errors_to'},
                 subject     => "Ticket not resolved",
-                Explanation => $msg,
-                mime_obj     => $args{'Message'}
+                explanation => $msg,
+                mime_obj     => $args{'message'}
             );
             return ( 0, "Ticket not resolved" );
         }
     } else {
-        return ( 0, "Not supported unsafe action $args{'Action'}",
+        return ( 0, "Not supported unsafe action $args{'action'}",
             $args{'ticket'} );
     }
     return ( 1, "Success" );
@@ -1499,8 +1498,8 @@ Emails the RT Owner and the requestor when the auth plugins return "No auth user
 sub _no_authorized_user_found {
     my %args = (
         right     => undef,
-        Message   => undef,
-        Requestor => undef,
+        message   => undef,
+        requestor => undef,
         queue     => undef,
         @_
     );
@@ -1509,30 +1508,30 @@ sub _no_authorized_user_found {
     mail_error(
         To          => RT->config->get('OwnerEmail'),
         subject     => "Could not load a valid user",
-        Explanation => <<EOT,
+        explanation => <<EOT,
 RT could not load a valid user, and RT's configuration does not allow
-for the creation of a new user for this email (@{[$args{Requestor}]}).
+for the creation of a new user for this email (@{[$args{requestor}]}).
 
 You might need to grant 'Everyone' the right '@{[$args{right}]}' for the
 queue @{[$args{'queue'}]}.
 
 EOT
-        mime_obj  => $args{'Message'},
-        LogLevel => 'error'
+        mime_obj  => $args{'message'},
+        log_level => 'error'
     );
 
     # Also notify the requestor that his request has been dropped.
-    if ( $args{'Requestor'} ne RT->config->get('OwnerEmail') ) {
+    if ( $args{'requestor'} ne RT->config->get('OwnerEmail') ) {
         mail_error(
-            To          => $args{'Requestor'},
+            to          => $args{'requestor'},
             subject     => "Could not load a valid user",
-            Explanation => <<EOT,
+            explanation => <<EOT,
 RT could not load a valid user, and RT's configuration does not allow
 for the creation of a new user for your email.
 
 EOT
-            mime_obj  => $args{'Message'},
-            LogLevel => 'error'
+            mime_obj  => $args{'message'},
+            log_level => 'error'
         );
     }
 }
@@ -1541,25 +1540,25 @@ EOT
 
 Takes named params:
     Message
-    ErrorsTo
+    errors_to
     subject
 
 Checks the message to see if it's a bounce, if it looks like a loop, if it's autogenerated, etc.
-Returns a triple of ("Should we continue (boolean)", "New value for $ErrorsTo", "Status message",
+Returns a triple of ("Should we continue (boolean)", "New value for $errors_to", "Status message",
 "This message appears to be a loop (boolean)" );
 
 =cut
 
 sub _handle_machine_generated_mail {
     my %args = (
-        Message   => undef,
-        ErrorsTo  => undef,
+        message   => undef,
+        errors_to  => undef,
         subject   => undef,
         message_id => undef,
         @_
     );
-    my $head     = $args{'Message'}->head;
-    my $ErrorsTo = $args{'ErrorsTo'};
+    my $head     = $args{'message'}->head;
+    my $errors_to = $args{'errors_to'};
 
     my $IsBounce = check_for_bounce($head);
 
@@ -1577,7 +1576,7 @@ sub _handle_machine_generated_mail {
     # send mail to the sender
     if ( $IsBounce || $IsSuspiciousSender || $IsAutoGenerated || $IsALoop ) {
         $SquelchReplies = 1;
-        $ErrorsTo       = $owner_mail;
+        $errors_to       = $owner_mail;
     }
 
     # Warn someone if it's a loop, before we drop it on the ground
@@ -1588,15 +1587,15 @@ sub _handle_machine_generated_mail {
         #Should we mail it to RTOwner?
         if ( RT->config->get('LoopsToRTOwner') ) {
             mail_error(
-                To          => $owner_mail,
+                to          => $owner_mail,
                 subject     => "RT Bounce: " . $args{'subject'},
-                Explanation => "RT thinks this message may be a bounce",
+                explanation => "RT thinks this message may be a bounce",
                 mime_obj     => $args{Message}
             );
         }
 
         #Do we actually want to store it?
-        return ( 0, $ErrorsTo, "Message Bounced", $IsALoop )
+        return ( 0, $errors_to, "Message Bounced", $IsALoop )
             unless RT->config->get('StoreLoops');
     }
 
@@ -1621,7 +1620,7 @@ sub _handle_machine_generated_mail {
         $head->add( 'RT-Squelch-Replies-To',    $Sender );
         $head->add( 'RT-DetectedAutoGenerated', 'true' );
     }
-    return ( 1, $ErrorsTo, "Handled machine detection", $IsALoop );
+    return ( 1, $errors_to, "Handled machine detection", $IsALoop );
 }
 
 =head2 is_correct_action
@@ -1639,10 +1638,5 @@ sub is_correct_action {
     }
     return ( 1, @actions );
 }
-
-eval "require RT::Interface::Email_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Interface/Email_Vendor.pm} );
-eval "require RT::Interface::Email_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Interface/Email_Local.pm} );
 
 1;

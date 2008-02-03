@@ -283,8 +283,8 @@ sub create_ticket {
     my $mime_obj = make_mime_entity(
         subject => $ARGS{'subject'},
         From    => $ARGS{'From'},
-        Cc      => $ARGS{'Cc'},
-        Body    => $ARGS{'Content'},
+        cc      => $ARGS{'cc'},
+        Body    => $ARGS{'content'},
         type    => $ARGS{'content_type'},
     );
 
@@ -310,12 +310,12 @@ sub create_ticket {
     my %create_args = (
         type => $ARGS{'type'} || 'ticket',
         queue => $ARGS{'queue'},
-        Owner => $ARGS{'Owner'},
+        owner => $ARGS{'owner'},
 
         # note: name change
-        Requestor        => $ARGS{'Requestors'},
-        Cc               => $ARGS{'Cc'},
-        AdminCc          => $ARGS{'AdminCc'},
+        requestor        => $ARGS{'requestors'},
+        cc               => $ARGS{'cc'},
+        admin_cc          => $ARGS{'admin_cc'},
         initial_priority => $ARGS{'initial_priority'},
         final_priority   => $ARGS{'final_priority'},
         time_left        => $ARGS{'time_left'},
@@ -329,7 +329,7 @@ sub create_ticket {
     );
 
     my @temp_squelch;
-    foreach my $type (qw(Requestor Cc AdminCc)) {
+    foreach my $type (qw(requestor cc admin_cc)) {
         push @temp_squelch, map $_->address,
             Mail::Address->parse( $create_args{$type} )
             if grep $_ eq $type || $_ eq ( $type . 's' ),
@@ -579,7 +579,7 @@ sub process_update_message {
 
     unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
         foreach my $key ( keys %{ $args{ARGSRef} } ) {
-            next unless $key =~ /^Update(Cc|Bcc)-(.*)$/;
+            next unless $key =~ /^Update(cc|Bcc)-(.*)$/;
 
             my $var   = ucfirst($1) . 'MessageTo';
             my $value = $2;
@@ -618,7 +618,7 @@ sub process_update_message {
 
 Takes a paramhash subject, Body and AttachmentFieldname.
 
-Also takes Form, Cc and type as optional paramhash keys.
+Also takes Form, cc and type as optional paramhash keys.
 
   Returns a MIME::Entity.
 
@@ -630,7 +630,7 @@ sub make_mime_entity {
     my %args = (
         subject             => undef,
         From                => undef,
-        Cc                  => undef,
+        cc                  => undef,
         Body                => undef,
         AttachmentFieldname => undef,
         type                => undef,
@@ -640,7 +640,7 @@ sub make_mime_entity {
         Type    => 'multipart/mixed',
         subject => $args{'subject'} || "",
         From    => $args{'From'},
-        Cc      => $args{'Cc'},
+        cc      => $args{'cc'},
     );
 
     if ( defined $args{'Body'} && length $args{'Body'} ) {
@@ -917,19 +917,19 @@ sub process_ticket_basics {
         ARGSRef       => $ARGSRef,
     );
 
-    # We special case owner changing, so we can use ForceOwnerChange
-    if ( $ARGSRef->{'Owner'}
-        && ( $ticket_obj->owner != $ARGSRef->{'Owner'} ) )
+    # We special case owner changing, so we can use ForceownerChange
+    if ( $ARGSRef->{'owner'}
+        && ( $ticket_obj->owner != $ARGSRef->{'owner'} ) )
     {
         my ($ChownType);
-        if ( $ARGSRef->{'ForceOwnerChange'} ) {
+        if ( $ARGSRef->{'ForceownerChange'} ) {
             $ChownType = "Force";
         } else {
             $ChownType = "Give";
         }
 
         my ( $val, $msg )
-            = $ticket_obj->set_owner( $ARGSRef->{'Owner'}, $ChownType );
+            = $ticket_obj->set_owner( $ARGSRef->{'owner'}, $ChownType );
         push( @results, $msg );
     }
 
@@ -1187,7 +1187,7 @@ sub process_ticket_watchers {
         }
 
         # Delete watchers in the simple style demanded by the bulk manipulator
-        elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {
+        elsif ( $key =~ /^Delete(requestor|cc|admin_cc)$/ ) {
             my ( $code, $msg ) = $Ticket->delete_watcher(
                 email => $ARGSRef->{$key},
                 type  => $1
@@ -1196,7 +1196,7 @@ sub process_ticket_watchers {
         }
 
         # Add new wathchers by email address
-        elsif ( ( $ARGSRef->{$key} || '' ) =~ /^(?:AdminCc|Cc|Requestor)$/
+        elsif ( ( $ARGSRef->{$key} || '' ) =~ /^(?:admin_cc|cc|requestor)$/
             and $key =~ /^WatcherTypeEmail(\d*)$/ )
         {
 
@@ -1209,7 +1209,7 @@ sub process_ticket_watchers {
         }
 
         #Add requestors in the simple style demanded by the bulk manipulator
-        elsif ( $key =~ /^Add(Requestor|Cc|AdminCc)$/ ) {
+        elsif ( $key =~ /^Add(requestor|cc|admin_cc)$/ ) {
             my ( $code, $msg ) = $Ticket->add_watcher(
                 type  => $1,
                 email => $ARGSRef->{$key}
@@ -1222,7 +1222,7 @@ sub process_ticket_watchers {
             my $principal_id = $1;
             my $form         = $ARGSRef->{$key};
             foreach my $value ( ref($form) ? @{$form} : ($form) ) {
-                next unless $value =~ /^(?:AdminCc|Cc|Requestor)$/i;
+                next unless $value =~ /^(?:admin_cc|cc|requestor)$/i;
 
                 my ( $code, $msg ) = $Ticket->add_watcher(
                     type         => $value,

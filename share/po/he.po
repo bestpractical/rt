@@ -57,7 +57,7 @@ msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr ""
 
 #: lib/RT/Record.pm:1685 lib/RT/Transaction_Overlay.pm:647 lib/RT/Transaction_Overlay.pm:690
-#. ($cf->name, $new_value->Content)
+#. ($cf->name, $new_value->content)
 #. ($field, $self->new_value)
 #. ($self->Field, $principal->object->name)
 msgid "%1 %2 added"
@@ -69,13 +69,13 @@ msgid "%1 %2 ago"
 msgstr ""
 
 #: lib/RT/Record.pm:1692 lib/RT/Transaction_Overlay.pm:654
-#. ($cf->name, $old_content,                $new_value->Content)
+#. ($cf->name, $old_content,                $new_value->content)
 #. ($field, $self->old_value, $self->new_value)
 msgid "%1 %2 changed to %3"
 msgstr ""
 
 #: lib/RT/Record.pm:1689 lib/RT/Transaction_Overlay.pm:650 lib/RT/Transaction_Overlay.pm:696
-#. ($cf->name, $old_value->Content)
+#. ($cf->name, $old_value->content)
 #. ($field, $self->old_value)
 #. ($self->Field, $principal->object->name)
 msgid "%1 %2 deleted"
@@ -992,7 +992,7 @@ msgid "Confirm"
 msgstr ""
 
 #: html/Admin/Elements/ModifyTemplate:65 html/Elements/SelectAttachmentField:48 html/Ticket/ModifyAll.html:119
-msgid "Content"
+msgid "content"
 msgstr "תוכן"
 
 #: html/Elements/SelectAttachmentField:49
@@ -1381,7 +1381,7 @@ msgid "Custom field '%1'"
 msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:1157
-#. ($args{'Content'}, $self->name)
+#. ($args{'content'}, $self->name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr ""
 

@@ -62,7 +62,7 @@ my $testuser = RT::Model::User->new(current_user => RT->system_user);
 ok ($id,$msg);
 
 my $global_admin_cc = RT::Model::Group->new(current_user => RT->system_user);
-$global_admin_cc->load_system_role_group('AdminCc');
+$global_admin_cc->load_system_role_group('admin_cc');
 ok($global_admin_cc->id, "Found the global admincc group");
 my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
 $groups->with_right(right => 'OwnTicket', object => $q);
@@ -70,7 +70,7 @@ is($groups->count, 1);
 ($id, $msg) = $global_admin_cc->principal_object->grant_right(right =>'OwnTicket', object=> RT->system);
 ok ($id,$msg);
 ok (!$testuser->has_right(object => $q, right => 'OwnTicket') , "The test user does not have the right to own tickets in the test queue");
-($id, $msg) = $q->add_watcher(type => 'AdminCc', principal_id => $testuser->id);
+($id, $msg) = $q->add_watcher(type => 'admin_cc', principal_id => $testuser->id);
 ok($id,$msg);
 ok ($testuser->has_right(object => $q, right => 'OwnTicket') , "The test user does have the right to own tickets now. thank god.");
 

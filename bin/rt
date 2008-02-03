@@ -827,7 +827,7 @@ sub submit {
         unless (ref $content) {
             # If it's just a string, make sure LWP handles it properly.
             # (By pretending that it's a file!)
-            $content = [ content => [undef, "", Content => $content] ];
+            $content = [ content => [undef, "", content => $content] ];
         }
         elsif (ref $content eq 'HASH') {
             my @data;

@@ -142,8 +142,8 @@ $Collection->set_page_info(per_page => $Rows, current_page => $Page);
 $display_format ||= $format;
 
 # Scrub the html of the format string to remove any potential nasties.
-$format = $m->comp('/Elements/ScrubHTML', Content => $format);
-$display_format = $m->comp('/Elements/ScrubHTML', Content => $display_format);
+$format = $m->comp('/Elements/ScrubHTML', content => $format);
+$display_format = $m->comp('/Elements/ScrubHTML', content => $display_format);
 
 my @format = $m->comp('/Elements/CollectionAsTable/ParseFormat', format => $display_format);
 

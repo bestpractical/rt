@@ -63,7 +63,7 @@ BEGIN {
     # your exported package globals go here,
     # as well as any optionally exported functions
     @EXPORT_OK = qw(&CleanEnv
-        &get_current_user &GetMessageContent &debug &loc);
+        &get_current_user &get_message_content &debug &loc);
 }
 
 =head1 name
@@ -75,7 +75,7 @@ BEGIN {
   use lib "/path/to/rt/libraries/";
 
   use RT::Interface::CLI  qw(CleanEnv 
-	  		   get_current_user GetMessageContent loc);
+	  		   get_current_user get_message_content loc);
 
   #Clean out all the nasties from the environment
   CleanEnv();

@@ -33,16 +33,16 @@ ok ($id,$msg);
 
 my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($trans);
-($id,$trans,$msg) =$t1->create (queue => 'general', subject => 'Requestor test one', Requestor => [$u1->email]);
+($id,$trans,$msg) =$t1->create (queue => 'general', subject => 'Requestor test one', requestor => [$u1->email]);
 ok ($id, $msg);
 
 my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
-($id,$trans,$msg) =$t2->create (queue => 'general', subject => 'Requestor test one', Requestor => [$u2->email]);
+($id,$trans,$msg) =$t2->create (queue => 'general', subject => 'Requestor test one', requestor => [$u2->email]);
 ok ($id, $msg);
 
 
 my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
-($id,$trans,$msg) =$t3->create (queue => 'general', subject => 'Requestor test one', Requestor => [$u2->email, $u1->email]);
+($id,$trans,$msg) =$t3->create (queue => 'general', subject => 'Requestor test one', requestor => [$u2->email, $u1->email]);
 ok ($id, $msg);
 
 
@@ -83,25 +83,16 @@ is ($tix4->count, 2);
 
 
 
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
-$t1->create(queue => 'general', subject => "limit_Watchers test", Requestors => \['requestor1@example.com']);
+$t1->create(queue => 'general', subject => "limit_Watchers test", requestors => \['requestor1@example.com']);
 
-
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 }
 
 {
-    undef $main::_STDOUT_;
-    undef $main::_STDERR_;
 
 # We assume that we've got some tickets hanging around from before.
 ok( my $unlimittickets = RT::Model::TicketCollection->new(current_user => RT->system_user ) );

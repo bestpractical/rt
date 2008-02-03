@@ -290,7 +290,7 @@ sub parse {
     # clear prev MIME object
     $self->{'mime_obj'} = undef;
 
-    #We're passing in whatever we were passed. it's destined for _ParseContent
+    #We're passing in whatever we were passed. it's destined for _Parsecontent
     my ( $content, $msg ) = $self->_parse_content(@_);
     return ( 0, $msg ) unless defined $content && length $content;
 
@@ -329,7 +329,7 @@ sub parse {
 
 # }}}
 
-# {{{ sub _ParseContent
+# {{{ sub _Parsecontent
 
 # Perform template substitutions on the template
 

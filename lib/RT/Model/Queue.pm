@@ -640,7 +640,7 @@ sub ticket_transaction_custom_fields {
 Create the ticket groups and links for this ticket. 
 This routine expects to be called from Ticket->create _inside of a transaction_
 
-It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.
+It will create four groups for this ticket: Requestor, Cc, AdminCc and owner.
 
 It will return true on success and undef on failure.
 
@@ -650,7 +650,7 @@ It will return true on success and undef on failure.
 sub create_queue_groups {
     my $self = shift;
 
-    my @types = qw(Cc AdminCc Requestor Owner);
+    my @types = qw(requestor owner cc admin_cc);
 
     foreach my $type (@types) {
         my $type_obj = RT::Model::Group->new;
@@ -685,7 +685,7 @@ PrinicpalId The RT::Model::Principal id of the user or group that's being added 
 Email       The email address of the new watcher. If a user with this 
             email address can't be found, a new nonprivileged user will be Created.
 
-If the watcher you\'re trying to set has an RT account, set the Owner paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
+If the watcher you\'re trying to set has an RT account, set the owner paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
 
 Returns a tuple of (status/id, message).
 
@@ -708,7 +708,7 @@ sub add_watcher {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
-        if ( defined $args{'type'} && ( $args{'type'} eq 'AdminCc' ) ) {
+        if ( defined $args{'type'} && ( $args{'type'} eq 'admin_cc' ) ) {
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
                 or $self->current_user_has_right('WatchAsAdminCc') )
             {
@@ -718,8 +718,8 @@ sub add_watcher {
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
-        elsif (( $args{'type'} eq 'Cc' )
-            or ( $args{'type'} eq 'Requestor' ) )
+        elsif (( $args{'type'} eq 'cc' )
+            or ( $args{'type'} eq 'requestor' ) )
         {
 
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
@@ -900,7 +900,7 @@ sub delete_watcher {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyQueue', bail
-        if ( $args{'type'} eq 'AdminCc' ) {
+        if ( $args{'type'} eq 'admin_cc' ) {
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
                 or $self->current_user_has_right('WatchAsAdminCc') )
             {
@@ -910,8 +910,8 @@ sub delete_watcher {
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyQueue', bail
-        elsif (( $args{'type'} eq 'Cc' )
-            or ( $args{'type'} eq 'Requestor' ) )
+        elsif (( $args{'type'} eq 'cc' )
+            or ( $args{'type'} eq 'requestor' ) )
         {
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
                 or $self->current_user_has_right('Watch') )
@@ -1050,7 +1050,7 @@ sub admin_cc {
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
         $group->load_queue_role_group(
-            type  => 'AdminCc',
+            type  => 'admin_cc',
             queue => $self->id
         );
     }
@@ -1069,7 +1069,7 @@ sub admin_cc {
 
 Takes a param hash with the attributes type and principal_id
 
-Type is one of Requestor, Cc, AdminCc and Owner
+Type is one of Requestor, Cc, AdminCc and owner
 
 principal_id is an RT::Model::Principal id 
 
@@ -1141,7 +1141,7 @@ sub is_admin_cc {
     my $person = shift;
 
     return (
-        $self->is_watcher( type => 'AdminCc', principal_id => $person ) );
+        $self->is_watcher( type => 'admin_cc', principal_id => $person ) );
 
 }
 

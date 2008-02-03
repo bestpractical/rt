@@ -355,7 +355,7 @@ sub add_attachments {
     $attachments->order_by( column => 'id' );
 
     # We want to make sure that we don't include the attachment that's
-    # being sued as the "Content" of this message"
+    # being sued as the "content" of this message"
     my $transaction_content_obj = $self->transaction_obj->content_obj;
 
     # XXX: this is legacy check of content type looks quite incorrect

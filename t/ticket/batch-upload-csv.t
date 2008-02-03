@@ -30,7 +30,7 @@ EOF
 my $action = RT::ScripAction::CreateTickets->new(current_user => RT::CurrentUser->new(name => 'root'));
 ok ($action->current_user->id , "We have a current user");
  
-$action->parse(Content => $data);
+$action->parse(content => $data);
 my @results = $action->create_by_template();
 
 my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);

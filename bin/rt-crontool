@@ -55,7 +55,7 @@ package RT;
 
 use Getopt::Long;
 
-use RT::Interface::CLI qw(CleanEnv get_current_user GetMessageContent loc);
+use RT::Interface::CLI qw(CleanEnv get_current_user get_message_content loc);
 use RT::Model::TicketCollection;
 use RT::Model::Template;
 

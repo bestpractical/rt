@@ -68,8 +68,8 @@ $scrubber->allow(
 $scrubber->comment(0);
 </%ONCE>
 <%init>
-return $scrubber->scrub($Content);
+return $scrubber->scrub($content);
 </%init>
 <%args>
-$Content => undef
+$content => undef
 </%args>

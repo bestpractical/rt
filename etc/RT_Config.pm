@@ -309,7 +309,7 @@ set( $ForwardFromUser, 0 );
 #  perldoc RT::Crypt::GnuPG  (or perldoc lib/RT/Crypt/GnuPG.pm from your RT install directory).
 
 set(%GnuPG,
-    enable => 0,
+    enable => 1,
 
     # set outgoing_messages_format to 'inline' to use inline encryption and
     # signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
@@ -326,7 +326,7 @@ set(%GnuPG,
 # NOTE that options with '-' character MUST be quoted.
 
 set(%GnuPGOptions,
-    homedir => '/home/cubic/projs/RT/3.999-DANGEROUS/var/data/gpg',
+    homedir => '/home/jesse/svk/3.999-DANGEROUS/var/data/gpg',
 
     # URL of a keyserver
     #    keyserver => 'hkp://subkeys.pgp.net',

@@ -1104,16 +1104,16 @@ sub set_preferences {
 
 Returns a RT::Model::QueueCollection object containing every queue watched by the user.
 
-Takes a list of roles which is some subset of ('Cc', 'AdminCc').  Defaults to:
+Takes a list of roles which is some subset of ('cc', 'admin_cc').  Defaults to:
 
-$user->watched_queues('Cc', 'AdminCc');
+$user->watched_queues('cc', 'admin_cc');
 
 =cut
 
 sub watched_queues {
 
     my $self = shift;
-    my @roles = @_ || ( 'Cc', 'AdminCc' );
+    my @roles = @_ || ( 'cc', 'admin_cc' );
 
     Jifty->log->debug( 'WatcheQueues got user ' . $self->name );
 
@@ -1132,21 +1132,21 @@ sub watched_queues {
         value            => 'RT::Model::Queue-Role',
         entry_aggregator => 'AND',
     );
-    if ( grep { $_ eq 'Cc' } @roles ) {
+    if ( grep { $_ eq 'cc' } @roles ) {
         $watched_queues->limit(
             subclause        => 'limit_ToWatchers',
             alias            => $group_alias,
             column           => 'type',
-            value            => 'Cc',
+            value            => 'cc',
             entry_aggregator => 'OR',
         );
     }
-    if ( grep { $_ eq 'AdminCc' } @roles ) {
+    if ( grep { $_ eq 'admin_cc' } @roles ) {
         $watched_queues->limit(
             subclause        => 'limit_ToWatchers',
             alias            => $group_alias,
             column           => 'type',
-            value            => 'AdminCc',
+            value            => 'admin_cc',
             entry_aggregator => 'OR',
         );
     }

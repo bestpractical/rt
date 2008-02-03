@@ -102,8 +102,8 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
           )
         {
 
-            if ( $AttachmentContent->{ $message->id } ) {
-                $content = $AttachmentContent->{ $message->id }->content;
+            if ( $attachment_content->{ $message->id } ) {
+                $content = $attachment_content->{ $message->id }->content;
             }
             else {
                 $content = $message->content;
@@ -111,7 +111,7 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
 
             # if it's a text/html clean the body and show it
             if ( $message->content_type =~ m{^text/(?:html|enriched)$}i ) {
-                $m->out( $m->comp( '/Elements/ScrubHTML', Content => $content ) );
+                $m->out( $m->comp( '/Elements/ScrubHTML', content => $content ) );
             }
 
             # if it's a text/plain show the body
@@ -170,7 +170,7 @@ $AttachPath => RT->config->get('WebPath')."/Ticket/Attachment"
 $UpdatePath => RT->config->get('WebPath')."/Ticket/Update.html"
 $EmailRecordPath => RT->config->get('WebPath')."/Ticket/ShowEmailRecord.html"
 $Attachments => undef
-$AttachmentContent => {}
+$attachment_content => {}
 $ShowBody => 1
 $Parent => 0
 $ParentObj => undef

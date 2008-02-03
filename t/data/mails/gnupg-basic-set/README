@@ -8,7 +8,7 @@ Emails may have either text plain or binary attachment.
 Text of plain attachment is
 "This is a test attachment.  The magic word is:  zanzibar."
 
-Content of binary attachment is RT's favicon.png.
+content of binary attachment is RT's favicon.png.
 
 Encrypted messages encrypted for rt-recipient@example.com.
 
@@ -36,7 +36,7 @@ Emails may have either text plain or binary attachment.
 Text of plain attachment is
 "This is a test attachment.  The magic word is:  zanzibar."
 
-Content of binary attachment is RT's favicon.png.
+content of binary attachment is RT's favicon.png.
 
 Encrypted messages encrypted for rt-recipient@example.com.
 

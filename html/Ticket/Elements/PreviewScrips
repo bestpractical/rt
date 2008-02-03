@@ -195,7 +195,7 @@ my $action;
 my $Message = make_mime_entity(
     subject => $ARGS{'subject'},
     Cc => $ARGS{'Cc'},
-    Body    => $ARGS{'Content'},
+    Body    => $ARGS{'content'},
 );
 
 my $ticket_obj = RT::Model::Ticket->new();

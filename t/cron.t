@@ -45,14 +45,14 @@ ok($ret, 'record test queue creation');
 
 my $ticket1 = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($id, $tobj, $msg2) = $ticket1->create(queue    => $queue_obj,
-					 Requestor => ['tara@example.com'],
+					 requestor => ['tara@example.com'],
 					 subject   => 'bork bork bork',
 					 priority  => 22,
 					);
 ok($id, 'record test ticket creation 1');
 my $ticket2 = RT::Model::Ticket->new(current_user => RT->system_user);
 ($id, $tobj, $msg2) = $ticket2->create(queue     => $queue_obj,
-				      Requestor => ['root@localhost'],
+				      requestor => ['root@localhost'],
 				      subject   => 'hurdy gurdy'
 				      );
 ok($id, 'record test ticket creation 2');

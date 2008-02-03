@@ -252,9 +252,9 @@ sub load_by_name_and_object {
 
 # }}}
 
-=head2 _DeserializeContent
+=head2 _Deserializecontent
 
-DeserializeContent returns this Attribute's "content" as a hashref.
+Deserializecontent returns this Attribute's "content" as a hashref.
 
 
 =cut
@@ -316,8 +316,8 @@ sub set_content {
         # We eval the serialization because it will lose on a coderef.
         $content = eval { $self->_serialize_content($content) };
         if ($@) {
-            Jifty->log->error("Content couldn't be frozen: $@");
-            return ( 0, "Content couldn't be frozen" );
+            Jifty->log->error("content couldn't be frozen: $@");
+            return ( 0, "content couldn't be frozen" );
         }
     }
     return $self->_set( column => 'content', value => $content );

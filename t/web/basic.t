@@ -42,8 +42,8 @@ $agent->form_number(3);
 my $string = "I18N Web Testing זרו";
 Encode::from_to($string, 'iso-8859-1', 'utf8');
 $agent->field('subject' => "Ticket with utf8 body");
-$agent->field('Content' => $string);
-ok($agent->submit(), "Created new ticket with $string as Content");
+$agent->field('content' => $string);
+ok($agent->submit(), "Created new ticket with $string as content");
 like( $agent->{'content'}, qr{$string} , "Found the content");
 ok($agent->{redirected_uri}, "Did redirection");
 
@@ -55,7 +55,7 @@ $agent->form_number(3);
 $string = "I18N Web Testing זרו";
 Encode::from_to($string, 'iso-8859-1', 'utf8');
 $agent->field('subject' => $string);
-$agent->field('Content' => "Ticket with utf8 subject");
+$agent->field('content' => "Ticket with utf8 subject");
 ok($agent->submit(), "Created new ticket with $string as subject");
 
 like( $agent->{'content'}, qr{$string} , "Found the content");

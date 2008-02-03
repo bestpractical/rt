@@ -636,7 +636,7 @@ sub encrypt {
 
     my $content = $self->content;
     my %res     = RT::Crypt::GnuPG::sign_encrypt_content(
-        Content    => \$content,
+        content    => \$content,
         sign       => 0,
         encrypt    => 1,
         Recipients => [$encrypt_for],
@@ -677,7 +677,7 @@ sub decrypt {
     $self->set_header( 'Content-Type' => $type );
 
     my $content = $self->content;
-    my %res = RT::Crypt::GnuPG::decrypt_content( Content => \$content, );
+    my %res = RT::Crypt::GnuPG::decrypt_content( content => \$content, );
     if ( $res{'exit_code'} ) {
         return ( 0, _('GnuPG error. Contact with administrator') );
     }

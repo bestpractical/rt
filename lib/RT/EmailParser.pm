@@ -95,7 +95,7 @@ Parse a message stored in a scalar from scalar_ref.
 
 sub smart_parse_mime_entity_from_scalar {
     my $self = shift;
-    my %args = ( Message => undef, Decode => 1, Exact => 0, @_ );
+    my %args = ( message => undef, decode => 1, exact => 0, @_ );
 
     eval {
         my ( $fh, $temp_file );
@@ -114,15 +114,15 @@ sub smart_parse_mime_entity_from_scalar {
             #thank you, windows
             binmode $fh;
             $fh->autoflush(1);
-            print $fh $args{'Message'};
+            print $fh $args{'message'};
             close($fh);
             if ( -f $temp_file ) {
 
                 # We have to trust the temp file's name -- untaint it
                 $temp_file =~ /(.*)/;
                 my $entity
-                    = $self->parse_mime_entity_from_file( $1, $args{'Decode'},
-                    $args{'Exact'} );
+                    = $self->parse_mime_entity_from_file( $1, $args{'decode'},
+                    $args{'exact'} );
                 unlink($1);
                 return $entity;
             }
@@ -132,8 +132,8 @@ sub smart_parse_mime_entity_from_scalar {
     #If for some reason we weren't able to parse the message using a temp file
     # try it with a scalar
     if ( $@ || !$self->entity ) {
-        return $self->parse_mime_entity_from_scalar( $args{'Message'},
-            $args{'Decode'}, $args{'Exact'} );
+        return $self->parse_mime_entity_from_scalar( $args{'message'},
+            $args{'decode'}, $args{'exact'} );
     }
 
 }
@@ -427,7 +427,7 @@ sub _setup_mime_parser {
     # Set up output directory for files:
 
     my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
-    push( @{ $self->{'AttachmentDirs'} }, $tmpdir );
+    push( @{ $self->{'_attachment_dirs'} }, $tmpdir );
     $parser->output_dir($tmpdir);
     $parser->filer->ignore_filename(1);
 
@@ -454,7 +454,7 @@ sub _setup_mime_parser {
 
 sub DESTROY {
     my $self = shift;
-    File::Path::rmtree( [ @{ $self->{'AttachmentDirs'} } ], 0, 1 );
+    File::Path::rmtree( [ @{ $self->{'_attachment_dirs'} } ], 0, 1 );
 }
 
 1;

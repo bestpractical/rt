@@ -83,7 +83,7 @@ if ($ShowDisplayModes or $ShowTitle) {
 <div id="ticket-history">
 <%perl>
 my @attachments = @{$Attachments->items_array_ref()};
-my @attachment_content = @{$AttachmentContent->items_array_ref()};
+my @attachment_content = @{$attachment_content->items_array_ref()};
 
 while ( my $Transaction = $Transactions->next ) {
     my $skip = 0;
@@ -112,7 +112,7 @@ while ( my $Transaction = $Transactions->next ) {
               show_headers          => $show_headers,
               RowNum               => $i,
               Attachments          => \@trans_attachments,
-              AttachmentContent    => $trans_content,
+              attachment_content    => $trans_content,
               LastTransaction      => $Transactions->is_last
  );
 
@@ -148,7 +148,7 @@ $Transactions->order_by( { column => 'Created',
 
 my $i;
 $Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket, Tickets => $Tickets || undef);
-$AttachmentContent ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket => $Ticket);
+$attachment_content ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket => $Ticket);
 
 </%INIT>
 <%ARGS>
@@ -156,7 +156,7 @@ $URIFile => RT->config->get('WebPath')."/Ticket/Display.html"
 $Ticket => undef
 $Tickets => undef
 $Attachments => undef
-$AttachmentContent => undef
+$attachment_content => undef
 $show_headers => undef
 $ShowTitle => 1
 $ShowDisplayModes => 1

@@ -209,7 +209,7 @@ A complete list of acceptable fields for this beastie:
                           within a template after a Content: header is treated
                           as content until we hit a line containing only 
                           ENDOFCONTENT
-       content_type     => the content-type of the Content field.  Defaults to
+       Content_type     => the content-type of the content field.  Defaults to
                           'text/plain'
        UpdateType      => 'correspond' or 'comment'; used in conjunction with
                           'content' if this is an update.  Defaults to
@@ -325,7 +325,7 @@ sub prepare {
 
     $self->parse(
         content        => $self->template_obj->content,
-        _ActiveContent => 1
+        _active_content => 1
     );
     return 1;
 
@@ -476,10 +476,10 @@ sub update_by_template {
             ARGSRef       => $ticketargs
         );
 
-        if ( $ticketargs->{'Owner'} ) {
+        if ( $ticketargs->{'owner'} ) {
             ( $id, $msg )
                 = $T::Tickets{$template_id}
-                ->set_owner( $ticketargs->{'Owner'}, "Force" );
+                ->set_owner( $ticketargs->{'owner'}, "Force" );
             push @results, $msg
                 unless $msg eq _("That user already owns that ticket");
         }
@@ -546,12 +546,12 @@ sub parse {
     my %args = (
         content        => undef,
         queue          => undef,
-        Requestor      => undef,
-        _ActiveContent => undef,
+        requestor      => undef,
+        _active_content => undef,
         @_
     );
 
-    if ( $args{'_ActiveContent'} ) {
+    if ( $args{'_active_content'} ) {
         $self->{'UsePerlTextTemplate'} = 1;
     } else {
 
@@ -591,9 +591,9 @@ sub _parse_multiline_template {
                 $self->{'templates'}->{$template_id}
                     .= "Queue: $args{'queue'}\n";
             }
-            if ( $template_id && !$requestor && $args{'Requestor'} ) {
+            if ( $template_id && !$requestor && $args{'requestor'} ) {
                 $self->{'templates'}->{$template_id}
-                    .= "Requestor: $args{'Requestor'}\n";
+                    .= "Requestor: $args{'requestor'}\n";
             }
             $queue     = 0;
             $requestor = 0;
@@ -628,8 +628,8 @@ sub _parse_multiline_template {
                 my $value = $1;
                 $value =~ s/^\s//;
                 $value =~ s/\s$//;
-                if ( !$value && $args{'Requestor'} ) {
-                    $value = $args{'Requestor'};
+                if ( !$value && $args{'requestor'} ) {
+                    $value = $args{'requestor'};
                     $line  = "Requestor: $value";
                 }
             }
@@ -759,9 +759,9 @@ sub parse_lines {
         started          => $args{'started'},
         resolved         => $args{'resolved'},
         owner            => $args{'owner'},
-        Requestor        => $args{'requestor'},
-        Cc               => $args{'cc'},
-        AdminCc          => $args{'admincc'},
+        requestor        => $args{'requestor'},
+        cc               => $args{'cc'},
+        admin_cc          => $args{'admincc'},
         time_worked      => $args{'time_worked'},
         time_estimated   => $args{'time_estimated'},
         time_left        => $args{'time_left'},
@@ -906,7 +906,7 @@ LINE:
                     $field     = 'Requestor'; # Remove plural
                                               # Note that we found a requestor
                     $requestor = 1;
-                    $value ||= $args{'Requestor'};
+                    $value ||= $args{'requestor'};
                 }
 
                 # Tack onto the end of the template
@@ -925,8 +925,8 @@ LINE:
         if ( !$queue && $args{'queue'} ) {
             $template .= "Queue: $args{'queue'}\n";
         }
-        if ( !$requestor && $args{'Requestor'} ) {
-            $template .= "Requestor: $args{'Requestor'}\n";
+        if ( !$requestor && $args{'requestor'} ) {
+            $template .= "Requestor: $args{'requestor'}\n";
         }
 
         # If we never found an ID, come up with one
@@ -1096,7 +1096,7 @@ sub update_watchers {
 
     my @results;
 
-    foreach my $type qw(Requestor Cc AdminCc) {
+    foreach my $type qw(requesto cc admin_cc) {
         my $method  = $type . 'Addresses';
         my $oldaddr = $ticket->$method;
 
@@ -1135,7 +1135,7 @@ sub update_watchers {
         foreach (@add) {
             my ( $val, $msg ) = $ticket->add_watcher(
                 type  => $type,
-                Email => $_
+                email => $_
             );
 
             push @results,
@@ -1145,7 +1145,7 @@ sub update_watchers {
         foreach (@delete) {
             my ( $val, $msg ) = $ticket->delete_watcher(
                 type  => $type,
-                Email => $_
+                email => $_
             );
             push @results,
                 $ticket->_( "Ticket %1", $ticket->id ) . ': ' . $msg;

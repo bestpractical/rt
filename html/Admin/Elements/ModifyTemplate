@@ -67,7 +67,7 @@
 <&|/l&>Content</&>:<br />
 </td>
 <td>
-<textarea name="Content" rows="25" cols="80" wrap="soft">
+<textarea name="content" rows="25" cols="80" wrap="soft">
 <%$Content%></textarea>
 </td>
 </tr>
@@ -80,5 +80,5 @@
 <%ARGS>
 $name => undef
 $description => undef
-$Content => undef
+$content => undef
 </%ARGS>

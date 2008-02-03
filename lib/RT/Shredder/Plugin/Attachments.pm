@@ -114,7 +114,7 @@ sub run {
         $size =~ s/([mk])//i;
         $size *= 1024        if $1 && lc $1 eq 'k';
         $size *= 1024 * 1024 if $1 && lc $1 eq 'm';
-        push @conditions, "( LENGTH(Content) > ? )";
+        push @conditions, "( LENGTH(content) > ? )";
         push @values,     $size;
     }
     return ( 0, "At least one condition should be provided" )

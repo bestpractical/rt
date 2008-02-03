@@ -66,7 +66,7 @@ if ( $IncludeSignature and my $text = Jifty->web->current_user->user_object->sig
 </%INIT>
 <%ARGS>
 $QuoteTransaction => undef
-$name             => 'Content'
+$name             => 'content'
 $Default          => ''
 $Width            => RT->config->get('MessageBoxWidth', Jifty->web->current_user ) || 72
 $Height           => RT->config->get('MessageBoxHeight', Jifty->web->current_user ) || 15

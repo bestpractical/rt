@@ -254,7 +254,7 @@ sub create_a_ticket {
     $m->form_name('TicketCreate');
     $m->field( subject    => 'test' );
     $m->field( Requestors => 'rt-test@example.com' );
-    $m->field( Content    => 'Some content' );
+    $m->field( content    => 'Some content' );
 
     foreach ( qw(sign encrypt) ) {
         if ( $args{ $_ } ) {

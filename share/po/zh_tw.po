@@ -81,7 +81,7 @@ msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%7-%2-%3 %4:%5:%6 %1"
 
 #: lib/RT/Record.pm:1685 lib/RT/Transaction_Overlay.pm:647 lib/RT/Transaction_Overlay.pm:690
-#. ($cf->name, $new_value->Content)
+#. ($cf->name, $new_value->content)
 #. ($field, $self->new_value)
 #. ($self->Field, $principal->object->name)
 msgid "%1 %2 added"
@@ -93,13 +93,13 @@ msgid "%1 %2 ago"
 msgstr "%1 %2 之前"
 
 #: lib/RT/Record.pm:1692 lib/RT/Transaction_Overlay.pm:654
-#. ($cf->name, $old_content,                $new_value->Content)
+#. ($cf->name, $old_content,                $new_value->content)
 #. ($field, $self->old_value, $self->new_value)
 msgid "%1 %2 changed to %3"
 msgstr "%1 已從 %2 改為 %3"
 
 #: lib/RT/Record.pm:1689 lib/RT/Transaction_Overlay.pm:650 lib/RT/Transaction_Overlay.pm:696
-#. ($cf->name, $old_value->Content)
+#. ($cf->name, $old_value->content)
 #. ($field, $self->old_value)
 #. ($self->Field, $principal->object->name)
 msgid "%1 %2 deleted"
@@ -1612,7 +1612,7 @@ msgid "Contacted date '%1' could not be parsed"
 msgstr "無法解讀聯絡日期 '%1'"
 
 #: html/Admin/Elements/ModifyTemplate:65 html/Elements/SelectAttachmentField:48 html/Ticket/ModifyAll.html:119
-msgid "Content"
+msgid "content"
 msgstr "內容"
 
 #: html/Elements/SelectAttachmentField:49
@@ -2213,7 +2213,7 @@ msgid "Custom field not found"
 msgstr "找不到自訂欄位"
 
 #: lib/RT/CustomField_Overlay.pm:1157
-#. ($args{'Content'}, $self->name)
+#. ($args{'content'}, $self->name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "無法從自訂欄位 %2 中找到 %1 這個欄位值"
 
@@ -3791,7 +3791,7 @@ msgid "LabelAttachments"
 msgstr "附件標籤"
 
 #: NOT FOUND IN SOURCE
-msgid "LabelContent"
+msgid "Labelcontent"
 msgstr "內容標籤"
 
 #: NOT FOUND IN SOURCE
@@ -6943,7 +6943,7 @@ msgid "Template #%1"
 msgstr "範本 #%1"
 
 #: NOT FOUND IN SOURCE
-msgid "Template Content"
+msgid "Template content"
 msgstr "通知範本內容"
 
 #: NOT FOUND IN SOURCE

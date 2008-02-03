@@ -293,9 +293,9 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
   id 
   queue  - Either a queue object or a queue name
-  Requestor -  A reference to a list of  email addresses or RT user names
-  Cc  - A reference to a list of  email addresses or names
-  AdminCc  - A reference to a  list of  email addresses or names
+  requestor -  A reference to a list of  email addresses or RT user names
+  cc  - A reference to a list of  email addresses or names
+  admin_cc  - A reference to a  list of  email addresses or names
   type -- The ticket\'s type. ignore this for now
   owner -- This ticket\'s owner. either an RT::Model::User object or this user\'s id
   subject -- A string describing the subject of the ticket
@@ -490,12 +490,12 @@ sub create {
     #If we have a proposed owner and they don't have the right
     #to own a ticket, scream about it and make them not the owner
 
-    my $DeferOwner;
+    my $defer_owner;
     if (   $owner
         && $owner->id != RT->nobody->id
         && !$owner->has_right( object => $queue_obj, right => 'OwnTicket' ) )
     {
-        $DeferOwner = $owner;
+        $defer_owner = $owner;
         $owner      = undef;
         Jifty->log->debug('going to defer setting owner');
 
@@ -511,7 +511,7 @@ sub create {
 
 # We attempt to load or create each of the people who might have a role for this ticket
 # _outside_ the transaction, so we don't get into ticket creation races
-    foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
+    foreach my $type ( "cc", "admin_cc", "requestor" ) {
         $args{$type} = [ $args{$type} ] unless ref $args{$type};
         foreach my $watcher ( splice @{ $args{$type} } ) {
             next unless $watcher;
@@ -607,11 +607,11 @@ sub create {
     ( $val, $msg ) = $self->owner_group->_add_member(
         principal_id      => $owner->principal_id,
         inside_transaction => 1
-    ) unless $DeferOwner;
+    ) unless $defer_owner;
 
     # {{{ Deal with setting up watchers
 
-    foreach my $type ( "Cc", "AdminCc", "Requestor" ) {
+    foreach my $type ( "cc", "admin_cc", "requestor" ) {
 
         # we know it's an array ref
         foreach my $watcher ( @{ $args{$type} } ) {
@@ -620,7 +620,7 @@ sub create {
       # actually _want_ that ACL check. Otherwise, random ticket creators
       # could make themselves adminccs and maybe get ticket rights. that would
       # be poor
-            my $method = $type eq 'AdminCc' ? 'add_watcher' : '_add_watcher';
+            my $method = $type eq 'admin_cc' ? 'add_watcher' : '_add_watcher';
 
             my ( $val, $msg ) = $self->$method(
                 type         => $type,
@@ -716,8 +716,8 @@ sub create {
 # }}}
 # Now that we've created the ticket and set up its metadata, we can actually go and check OwnTicket on the ticket itself.
 # This might be different than before in cases where extensions like RTIR are doing clever things with RT's ACL system
-    if ($DeferOwner) {
-        if (!$DeferOwner->has_right( object => $self, right => 'OwnTicket' ) )
+    if ($defer_owner) {
+        if (!$defer_owner->has_right( object => $self, right => 'OwnTicket' ) )
         {
 
             Jifty->log->warn( "User "
@@ -732,7 +732,7 @@ sub create {
                 $owner->name );
 
         } else {
-            $owner = $DeferOwner;
+            $owner = $defer_owner;
             $self->__set( column => 'owner', value => $owner->id );
 
         }
@@ -805,7 +805,7 @@ sub create {
 Create the ticket groups and links for this ticket. 
 This routine expects to be called from Ticket->create _inside of a transaction_
 
-It will create four groups for this ticket: Requestor, Cc, AdminCc and Owner.
+It will create four groups for this ticket: requestor, cc, admin_cc and Owner.
 
 It will return true on success and undef on failure.
 
@@ -815,7 +815,7 @@ It will return true on success and undef on failure.
 sub _create_ticket_groups {
     my $self = shift;
 
-    my @types = qw(Requestor Owner Cc AdminCc);
+    my @types = qw(requestor owner cc admin_cc);
 
     foreach my $type (@types) {
         my $type_obj = RT::Model::Group->new;
@@ -864,7 +864,7 @@ sub owner_group {
 
 add_watcher takes a parameter hash. The keys are as follows:
 
-Type        One of Requestor, Cc, AdminCc
+Type        One of requestor, cc, admin_cc
 
 prinicpal_id The RT::Model::Principal id of the user or group that's being added as a watcher
 
@@ -910,15 +910,15 @@ sub add_watcher {
         return ( 0, _("Permission Denied") );
     }
 
-    #  If it's an AdminCc and they don't have 'WatchAsAdminCc', bail
-    if ( $args{'type'} eq 'AdminCc' ) {
-        unless ( $self->current_user_has_right('WatchAsAdminCc') ) {
+    #  If it's an admin_cc and they don't have 'WatchAsadmin_cc', bail
+    if ( $args{'type'} eq 'admin_cc' ) {
+        unless ( $self->current_user_has_right('WatchAsadmin_cc') ) {
             return ( 0, _('Permission Denied') );
         }
     }
 
-    #  If it's a Requestor or Cc and they don't have 'Watch', bail
-    elsif ( $args{'type'} eq 'Cc' || $args{'type'} eq 'Requestor' ) {
+    #  If it's a requestor or cc and they don't have 'Watch', bail
+    elsif ( $args{'type'} eq 'cc' || $args{'type'} eq 'requestor' ) {
         unless ( $self->current_user_has_right('Watch') ) {
             return ( 0, _('Permission Denied') );
         }
@@ -1021,7 +1021,7 @@ sub _add_watcher {
 
 Deletes a ticket watcher.  Takes two arguments:
 
-Type  (one of Requestor,Cc,AdminCc)
+Type  (one of requestor,cc,admin_cc)
 
 and one of
 
@@ -1073,20 +1073,20 @@ sub delete_watcher {
     #If the watcher we're trying to add is for the current user
     if ( $self->current_user->id == $principal->id ) {
 
-        #  If it's an AdminCc and they don't have
-        #   'WatchAsAdminCc' or 'ModifyTicket', bail
-        if ( $args{'type'} eq 'AdminCc' ) {
+        #  If it's an admin_cc and they don't have
+        #   'WatchAsadmin_cc' or 'ModifyTicket', bail
+        if ( $args{'type'} eq 'admin_cc' ) {
             unless ( $self->current_user_has_right('ModifyTicket')
-                or $self->current_user_has_right('WatchAsAdminCc') )
+                or $self->current_user_has_right('WatchAsadmin_cc') )
             {
                 return ( 0, _('Permission Denied') );
             }
         }
 
-        #  If it's a Requestor or Cc and they don't have
+        #  If it's a requestor or cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
-        elsif (( $args{'type'} eq 'Cc' )
-            or ( $args{'type'} eq 'Requestor' ) )
+        elsif (( $args{'type'} eq 'cc' )
+            or ( $args{'type'} eq 'requestor' ) )
         {
             unless ( $self->current_user_has_right('ModifyTicket')
                 or $self->current_user_has_right('Watch') )
@@ -1209,7 +1209,7 @@ sub unsquelch_mail_to {
 
 =head2 requestor_addresses
 
- B<Returns> String: All Ticket Requestor email addresses as a string.
+ B<Returns> String: All Ticket requestor email addresses as a string.
 
 =cut
 
@@ -1225,7 +1225,7 @@ sub requestor_addresses {
 
 =head2 admin_cc_addresses
 
-returns String: All Ticket AdminCc email addresses as a string
+returns String: All Ticket admin_cc email addresses as a string
 
 =cut
 
@@ -1242,7 +1242,7 @@ sub admin_cc_addresses {
 
 =head2 cc_addresses
 
-returns String: All Ticket Ccs as a string of email addresses
+returns String: All Ticket ccs as a string of email addresses
 
 =cut
 
@@ -1258,14 +1258,14 @@ sub cc_addresses {
 
 # }}}
 
-# {{{ Routines that return RT::Watchers objects of Requestors, Ccs and AdminCcs
+# {{{ Routines that return RT::Watchers objects of requestors, ccs and admin_ccs
 
-# {{{ sub Requestors
+# {{{ sub requestors
 
-=head2 Requestors
+=head2 requestors
 
 Takes nothing.
-Returns this ticket's Requestors as an RT::Model::Group object
+Returns this ticket's requestors as an RT::Model::Group object
 
 =cut
 
@@ -1275,7 +1275,7 @@ sub requestors {
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('ShowTicket') ) {
         $group->load_ticket_role_group(
-            type   => 'Requestor',
+            type   => 'requestor',
             ticket => $self->id
         );
     }
@@ -1285,12 +1285,12 @@ sub requestors {
 
 # }}}
 
-# {{{ sub Cc
+# {{{ sub cc
 
-=head2 Cc
+=head2 cc
 
 Takes nothing.
-Returns an RT::Model::Group object which contains this ticket's Ccs.
+Returns an RT::Model::Group object which contains this ticket's ccs.
 If the user doesn't have "ShowTicket" permission, returns an empty group
 
 =cut
@@ -1300,7 +1300,7 @@ sub cc {
 
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('ShowTicket') ) {
-        $group->load_ticket_role_group( type => 'Cc', ticket => $self->id );
+        $group->load_ticket_role_group( type => 'cc', ticket => $self->id );
     }
     return ($group);
 
@@ -1313,7 +1313,7 @@ sub cc {
 =head2 admin_cc
 
 Takes nothing.
-Returns an RT::Model::Group object which contains this ticket's AdminCcs.
+Returns an RT::Model::Group object which contains this ticket's admin_ccs.
 If the user doesn't have "ShowTicket" permission, returns an empty group
 
 =cut
@@ -1323,7 +1323,7 @@ sub admin_cc {
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('ShowTicket') ) {
         $group->load_ticket_role_group(
-            type   => 'AdminCc',
+            type   => 'admin_cc',
             ticket => $self->id
         );
     }
@@ -1344,7 +1344,7 @@ sub admin_cc {
 
 Takes a param hash with the attributes type and either principal_id or email
 
-Type is one of Requestor, Cc, AdminCc and Owner
+Type is one of requestor, cc, admin_cc and Owner
 
 principal_id is an RT::Model::Principal id, and email is an email address.
 
@@ -1359,7 +1359,7 @@ sub is_watcher {
     my $self = shift;
 
     my %args = (
-        type         => 'Requestor',
+        type         => 'requestor',
         principal_id => undef,
         email        => undef,
         @_
@@ -1408,7 +1408,7 @@ sub is_requestor {
     my $person = shift;
 
     return (
-        $self->is_watcher( type => 'Requestor', principal_id => $person ) );
+        $self->is_watcher( type => 'requestor', principal_id => $person ) );
 
 }
 
@@ -1428,7 +1428,7 @@ sub is_cc {
     my $self = shift;
     my $cc   = shift;
 
-    return ( $self->is_watcher( type => 'Cc', principal_id => $cc ) );
+    return ( $self->is_watcher( type => 'cc', principal_id => $cc ) );
 
 }
 
@@ -1448,7 +1448,7 @@ sub is_admin_cc {
     my $person = shift;
 
     return (
-        $self->is_watcher( type => 'AdminCc', principal_id => $person ) );
+        $self->is_watcher( type => 'admin_cc', principal_id => $person ) );
 
 }
 
@@ -1493,7 +1493,7 @@ sub is_owner {
 =head2 transaction_addresses
 
 Returns a composite hashref of the results of L<RT::Model::Transaction/Addresses> for all this ticket's Create, comment or Correspond transactions.
-The keys are C<To>, C<Cc> and C<Bcc>. The values are lists of C<Mail::Address> objects.
+The keys are C<To>, C<cc> and C<Bcc>. The values are lists of C<Mail::Address> objects.
 
 NOTE: For performance reasons, this method might want to skip transactions and go straight for attachments. But to make that work right, we're going to need to go and walk around the access control in Attachment.pm's sub _value.
 
@@ -1853,7 +1853,7 @@ sub time_worked_as_string {
 
 comment on this ticket.
 Takes a hashref with the following attributes:
-If mime_obj is undefined, Content will be used to build a MIME::Entity for this
+If mime_obj is undefined, content will be used to build a MIME::Entity for this
 commentl
 
 mime_obj, time_taken, cc_message_to, bcc_message_to, Content, dry_run
@@ -1909,7 +1909,7 @@ Takes a hashref with the following attributes:
 
 mime_obj, time_taken, cc_message_to, bcc_message_to, Content, dry_run
 
-if there's no mime_obj, Content is used to build a MIME::Entity object
+if there's no mime_obj, content is used to build a MIME::Entity object
 
 If dry_run is defined, this update WILL NOT BE RECORDED. Scrips will not be committed.
 They will, however, be prepared and you'll be able to access them through the transaction_obj
@@ -2001,7 +2001,7 @@ sub _record_note {
 
     # If we've been passed in cc_message_to and bcc_message_to fields,
     # add them to the mime object for passing on to the transaction handler
-    # The "NotifyOtherRecipients" scripAction will look for RT-Send-Cc: and
+    # The "NotifyOtherRecipients" scripAction will look for RT-Send-cc: and
     # RT-Send-Bcc: headers
 
     foreach my $type (qw/cc bcc/) {
@@ -2482,7 +2482,7 @@ sub merge_into {
     }
 
     #add all of this ticket's watchers to that ticket.
-    foreach my $watcher_type qw(Requestors Cc AdminCc) {
+    foreach my $watcher_type qw(requestors cc admin_cc) {
         # XXX: artefact of API change
         my $method = $watcher_type;
         $method =~ s/(?<=[a-z])(?=[A-Z])/_/;
@@ -2600,11 +2600,11 @@ sub set_owner {
     $self->set_last_updated();  # lock the ticket
     $self->load( $self->id );   # in case $self changed while waiting for lock
 
-    my $OldOwnerObj = $self->owner_obj;
+    my $old_owner_obj = $self->owner_obj;
 
-    my $NewOwnerObj = RT::Model::User->new;
-    $NewOwnerObj->load($NewOwner);
-    unless ( $NewOwnerObj->id ) {
+    my $new_owner_obj = RT::Model::User->new;
+    $new_owner_obj->load($NewOwner);
+    unless ( $new_owner_obj->id ) {
         Jifty->handle->rollback();
         return ( 0, _("That user does not exist") );
     }
@@ -2612,7 +2612,7 @@ sub set_owner {
     # must have ModifyTicket rights
     # or TakeTicket/StealTicket and $NewOwner is self
     # see if it's a take
-    if ( $OldOwnerObj->id == RT->nobody->id ) {
+    if ( $old_owner_obj->id == RT->nobody->id ) {
         unless ( $self->current_user_has_right('ModifyTicket')
             || $self->current_user_has_right('TakeTicket') )
         {
@@ -2622,8 +2622,8 @@ sub set_owner {
     }
 
     # see if it's a steal
-    elsif ($OldOwnerObj->id != RT->nobody->id
-        && $OldOwnerObj->id != $self->current_user->id )
+    elsif ($old_owner_obj->id != RT->nobody->id
+        && $old_owner_obj->id != $self->current_user->id )
     {
 
         unless ( $self->current_user_has_right('ModifyTicket')
@@ -2643,12 +2643,12 @@ sub set_owner {
     # the current user
     if (    $Type ne 'Steal'
         and $Type ne 'Force'
-        and $OldOwnerObj->id != RT->nobody->id
-        and $OldOwnerObj->id != $self->current_user->id )
+        and $old_owner_obj->id != RT->nobody->id
+        and $old_owner_obj->id != $self->current_user->id )
     {
         Jifty->handle->rollback();
         return ( 0, _("You can only take tickets that are unowned") )
-            if $NewOwnerObj->id == $self->current_user->id;
+            if $new_owner_obj->id == $self->current_user->id;
         return (
             0,
             _(  "You can only reassign tickets that you own or that are unowned"
@@ -2658,7 +2658,7 @@ sub set_owner {
 
     #If we've specified a new owner and that user can't modify the ticket
     elsif (
-        !$NewOwnerObj->has_right( right => 'OwnTicket', object => $self ) )
+        !$new_owner_obj->has_right( right => 'OwnTicket', object => $self ) )
     {
         Jifty->handle->rollback();
         return ( 0, _("That user may not own tickets in that queue") );
@@ -2666,7 +2666,7 @@ sub set_owner {
 
     # If the ticket has an owner and it's the new owner, we don't need
     # To do anything
-    elsif ( $NewOwnerObj->id == $OldOwnerObj->id ) {
+    elsif ( $new_owner_obj->id == $old_owner_obj->id ) {
         Jifty->handle->rollback();
         return ( 0, _("That user already owns that ticket") );
     }
@@ -2680,7 +2680,7 @@ sub set_owner {
         return ( 0, _("Could not change owner. ") . $del_id );
     }
     my ( $add_id, $add_msg ) = $self->owner_group->_add_member(
-        principal_id      => $NewOwnerObj->principal_id,
+        principal_id      => $new_owner_obj->principal_id,
         inside_transaction => 1
     );
     unless ($add_id) {
@@ -2693,7 +2693,7 @@ sub set_owner {
 
     my ($return) = $self->_set(
         column             => 'owner',
-        value              => $NewOwnerObj->id,
+        value              => $new_owner_obj->id,
         record_transaction => 0,
         time_taken          => 0,
         transaction_type    => $Type,
@@ -2708,14 +2708,14 @@ sub set_owner {
     my ( $val, $msg ) = $self->_new_transaction(
         type      => $Type,
         field     => 'owner',
-        new_value => $NewOwnerObj->id,
-        old_value => $OldOwnerObj->id,
+        new_value => $new_owner_obj->id,
+        old_value => $old_owner_obj->id,
         time_taken => 0,
     );
 
     if ($val) {
         $msg = _( "Owner changed from %1 to %2",
-            $OldOwnerObj->name, $NewOwnerObj->name );
+            $old_owner_obj->name, $new_owner_obj->name );
     } else {
         Jifty->handle->rollback();
         return ( 0, $msg );

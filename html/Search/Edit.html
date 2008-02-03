@@ -70,7 +70,7 @@
 
 <%INIT>
 my $title = _("Edit Query");
-$format = $m->comp('/Elements/ScrubHTML', Content => $format);
+$format = $m->comp('/Elements/ScrubHTML', content => $format);
 my $QueryString = $m->comp('/Elements/QueryString',
                            Query   => $Query,
                            format  => $format,

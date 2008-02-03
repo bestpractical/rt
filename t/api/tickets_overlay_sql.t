@@ -45,7 +45,7 @@ my $string = 'subject/content SQL test';
 }
 
 {
-    my $query = ("subject LIKE '$string' OR Content LIKE '$string'");
+    my $query = ("subject LIKE '$string' OR content LIKE '$string'");
     my ($status, $msg) = $tix->from_sql($query);
     ok ($status, "correct query") or diag("error: $msg");
 

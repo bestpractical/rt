@@ -112,7 +112,7 @@ unless( $message{'filename'} ) {
     $args{'message'} = [
         undef, '',
         'Content-Type' => 'application/octet-stream',
-        Content => ${ $message{'content'} },
+        content => ${ $message{'content'} },
     ];
 } else {
     $args{'message'} = [

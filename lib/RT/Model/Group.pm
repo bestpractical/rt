@@ -583,7 +583,7 @@ sub create_role_group {
         domain   => undef,
         @_
     );
-    unless ( $args{'type'} =~ /^(?:Cc|AdminCc|Requestor|Owner)$/ ) {
+    unless ( $args{'type'} =~ /^(?:cc|admin_cc|requestor|owner)$/ ) {
         return ( 0, _("Invalid Group type") );
     }
 

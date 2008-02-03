@@ -133,11 +133,11 @@ if ($tid) {
 	if (!%$fields || exists $fields->{lc 'Data'});
     push @data, [ description    => $t->description   ]
 	if (!%$fields || exists $fields->{lc 'description'});
-    push @data, [ Content    => $t->content   ]
-	if (!%$fields || exists $fields->{lc 'Content'});
+    push @data, [ content    => $t->content   ]
+	if (!%$fields || exists $fields->{lc 'content'});
 
 
-    if (!%$fields || exists $fields->{lc 'Content'}) {    
+    if (!%$fields || exists $fields->{lc 'content'}) {    
 	my $creator = RT::Model::User->new();
 	$creator->load($t->creator);
 	push @data, [ Creator    => $creator->name   ];

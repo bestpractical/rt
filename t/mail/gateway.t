@@ -542,7 +542,7 @@ EOF
     is (
         $tick->transactions->first->content,
         $tick->transactions->first->attachments->first->content,
-        "Content is ". $tick->transactions->first->attachments->first->content
+        "content is ". $tick->transactions->first->attachments->first->content
     );
     ok (
         $tick->transactions->first->content =~ /$unistring/i,

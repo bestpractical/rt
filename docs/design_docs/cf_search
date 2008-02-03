@@ -39,7 +39,7 @@ limit_custom_field_values {
 
             foreach my $value ( @{ $restriction->{'valueS'} } ) {
                 $self->SUPER::limit( alias      => $TicketCFs,
-                                     column      => 'Content',
+                                     column      => 'content',
                                      operator   => $restriction->{'operator'},
                                      value      => $value,
                                      quote_value => $restriction->{'quote_value'},
@@ -52,7 +52,7 @@ limit_custom_field_values {
             #If we're trying to find tickets where the keyword isn't somethng, also check ones where it _IS_ null
             if ( $restriction->{'operator'} eq '!=' ) {
                 $self->SUPER::limit( alias           => $TicketCFs,
-                                     column           => 'Content',
+                                     column           => 'content',
                                      operator        => 'IS',
                                      value           => 'NULL',
                                      quote_value      => 0,

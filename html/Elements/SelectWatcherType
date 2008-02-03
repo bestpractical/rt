@@ -57,10 +57,10 @@
 <%INIT>
 my @types;
 if ($Scope =~ 'queue') {
-   @types = qw(Cc AdminCc);
+   @types = qw(cc admin_cc);
 }
 else { 
-   @types = qw(Requestor Cc AdminCc);
+   @types = qw(requestor cc admin_cc);
 }
 </%INIT>
 <%ARGS>

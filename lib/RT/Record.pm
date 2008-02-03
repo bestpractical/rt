@@ -154,7 +154,7 @@ sub attributes {
 
 }
 
-=head2 add_attribute { name, description, Content }
+=head2 add_attribute { name, description, content }
 
 Adds a new attribute for this object.
 
@@ -183,7 +183,7 @@ sub add_attribute {
     return ( $id, $msg );
 }
 
-=head2 set_attribute { name, description, Content }
+=head2 set_attribute { name, description, content }
 
 Like add_attribute, but replaces all existing attributes with the same name.
 
@@ -682,20 +682,20 @@ sub _decode_lob {
     my $self            = shift;
     my $content_type     = shift || '';
     my $content_encoding = shift || 'none';
-    my $Content         = shift;
+    my $content         = shift;
 
     if ( $content_encoding eq 'base64' ) {
-        $Content = MIME::Base64::decode_base64($Content);
+        $content = MIME::Base64::decode_base64($content);
     } elsif ( $content_encoding eq 'quoted-printable' ) {
-        $Content = MIME::QuotedPrint::decode($Content);
+        $content = MIME::QuotedPrint::decode($content);
     } elsif ( $content_encoding && $content_encoding ne 'none' ) {
         return ( _( "Unknown content_encoding %1", $content_encoding ) );
     }
     if ( RT::I18N::is_textual_content_type($content_type) ) {
-        $Content = Encode::decode_utf8($Content)
-            unless Encode::is_utf8($Content);
+        $content = Encode::decode_utf8($content)
+            unless Encode::is_utf8($content);
     }
-    return ($Content);
+    return ($content);
 }
 
 # {{{ LINKDIRMAP

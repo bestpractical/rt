@@ -90,8 +90,8 @@ return unless Jifty->web->current_user->has_right(
 # If we're modifying an old query, check if it's been changed
 my $Dirty = $m->comp(
     'EditSearches:IsDirty',
-    Query => $CurrentSearch,
-    SavedSearch => { id => $Id, object => $object, description => $description }
+    query => $CurrentSearch,
+    saved_search => { id => $Id, object => $object, description => $description }
 );
 
 use RT::SavedSearches;
@@ -193,9 +193,9 @@ if ( $obj && $obj->id ) {
 elsif ( $id eq 'new' ) {
     my $saved_search = RT::SavedSearch->new();
     my ($status, $msg) = $saved_search->save(
-        Privacy      => $ARGS{'SavedSearchOwner'},
+        privacy      => $ARGS{'SavedSearchOwner'},
         name         => $desc,
-        SearchParams => $Query,
+        search_params => $Query,
     );
 
     if ( $status ) {
@@ -231,7 +231,7 @@ $SavedSearch => {}
 my $obj  = $SavedSearch->{'object'};
 return 0 unless $obj && $obj->id;
 
-foreach( qw(Query format order_by Order rows_per_page) ) {
+foreach( qw(Query format order_by order rows_per_page) ) {
     return 1 if $obj->sub_value( $_ ) ne $Query->{$_};
 }
 

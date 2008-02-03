@@ -32,7 +32,7 @@ TABLE ObjectCustomFieldValues (
   object_id int NOT NULL  ,                  -- New: replaces the "Ticket" field
   sort_order integer NOT NULL DEFAULT 0  ,   -- New: for Repeated fields
 
-  Content varchar(255) NULL  ,
+  content varchar(255) NULL  ,
   large_content LONGTEXT NULL,               -- New: data longer than 255 bytes
   content_type varchar(80) NULL,             -- New: MIME type of large_content
   content_encoding varchar(80) NULL  ,       -- New: for binary large_content

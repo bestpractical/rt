@@ -183,7 +183,6 @@ sub commit {
     my $self = shift;
 
     foreach my $scrip ( @{ $self->prepared } ) {
-        Jifty->log->debug("We're trying to commit ". $scrip->description);
         Jifty->log->debug( "Committing scrip #"
                 . $scrip->id
                 . " on txn #"
@@ -229,7 +228,6 @@ sub prepare {
 
     #Iterate through each script and check it's applicability.
     while ( my $scrip = $self->next() ) {
-        Jifty->log->debug("We're trying to prepare ". $scrip->description);
         next
             unless (
             $scrip->is_applicable(
