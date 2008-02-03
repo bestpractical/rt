@@ -35,7 +35,7 @@ ok($moniker, "Found the moniker $moniker");
 $agent->submit();
 is($agent->{'status'}, 200, "Fetched the page ok");
 ok( $agent->content =~ /Logout/i, "Found a logout link");
-$agent->get($url."Ticket/Create.html?Queue=1");
+$agent->get($url."Ticket/Create.html?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
@@ -48,7 +48,7 @@ like( $agent->{'content'}, qr{$string} , "Found the content");
 ok($agent->{redirected_uri}, "Did redirection");
 
 
-$agent->get($url."Ticket/Create.html?Queue=1");
+$agent->get($url."Ticket/Create.html?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
@@ -86,16 +86,16 @@ ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
 
 # set the first value
 ok($agent->form_name('BuildQuery'));
-$agent->field("AttachmentField", "subject");
-$agent->field("AttachmentOp", "LIKE");
-$agent->field("ValueOfAttachment", "aaa");
+$agent->field("attachment_field", "subject");
+$agent->field("attachment_op", "LIKE");
+$agent->field("value_of_attachment", "aaa");
 $agent->submit("AddClause");
 
 # set the next value
 ok($agent->form_name('BuildQuery'));
-$agent->field("AttachmentField", "subject");
-$agent->field("AttachmentOp", "LIKE");
-$agent->field("ValueOfAttachment", "bbb");
+$agent->field("attachment_field", "subject");
+$agent->field("attachment_op", "LIKE");
+$agent->field("value_of_attachment", "bbb");
 $agent->submit("AddClause");
 ok($agent->form_name('BuildQuery'));
 

@@ -25,7 +25,7 @@ $m->get ( $url."Search/Build.html");
 #create a saved search
 $m->form_name ('BuildQuery');
 
-$m->field ( "ValueOfAttachment" => 'stupid');
+$m->field ( "value_of_attachment" => 'stupid');
 $m->field ( "SavedSearchdescription" => 'stupid tickets');
 $m->click_button (name => 'SavedSearchSave');
 

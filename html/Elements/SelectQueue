@@ -52,7 +52,7 @@
 % }
 % else {
 <select name="<%$name%>">
-%     if ($ShowNullOption) {
+%     if ($show_null_option) {
   <option value="">-</option>
 %     }
 %     for my $queue (@{$session{$cache_key}}) {
@@ -68,7 +68,7 @@
 % }
 <%args>
 $CheckQueueRight => 'CreateTicket'
-$ShowNullOption => 1
+$show_null_option => 1
 $ShowAllQueues => 1
 $name => undef
 $Verbose => undef

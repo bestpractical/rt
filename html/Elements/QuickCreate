@@ -48,15 +48,15 @@
 <div class="quick-create">
 <&| /Widgets/TitleBox, title => _('Quick ticket creation') &>
 <form method="post" action="<%RT->config->get('WebPath')%>/index.html">
-<input type="hidden" class="hidden" name="QuickCreate" value="1" />
+<input type="hidden" class="hidden" name="quick_create" value="1" />
 <table>
 <tr><td>
 <&|/l&>subject</&>:<br /><input size="15" name="subject" />
 </td><td>
-<&|/l&>Queue</&>:<br /><& /Elements/SelectNewTicketQueue, name => 'queue', ShowNullOption => 0 &>
+<&|/l&>Queue</&>:<br /><& /Elements/SelectNewTicketQueue, name => 'queue', show_null_option => 0 &>
 </td><td>
 <&|/l&>Owner</&>:<br />
-<select type="select" name="Owner">  
+<select type="select" name="owner">  
 <option value="<%Jifty->web->current_user->id%>" selected><%Jifty->web->current_user->name %></option>
 <option value="<%RT->nobody->id%>"><%_('Nobody')%></option>
 </select>

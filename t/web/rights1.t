@@ -106,7 +106,7 @@ ok ($grantid,$grantmsg);
 
 $agent->reload();
 ok($agent->form_name('BuildQuery'), "Yep, form is still there");
-my $input = $agent->current_form->find_input('ValueOfActor');
+my $input = $agent->current_form->find_input('value_of_actor');
 ok(grep(/customer-$$/, $input->value_names()), "Found self in the actor listing");
 
 die join(',',$input->value_names);

@@ -44,7 +44,7 @@ my ( $cf, $cfid, $tid );
     # Sort by numeric IDs in names
     my @names = map  { $_->[1] }
                 sort { $a->[0] <=> $b->[0] }
-                map  { /Object-1-CF-(\d+)/ ? [ $1 => $_ ] : () }
+                map  { /object-1-CF-(\d+)/ ? [ $1 => $_ ] : () }
                 grep defined, map $_->name, $m->current_form->inputs;
     $cf = pop(@names);
     $cf =~ /(\d+)$/ or die "Hey this is impossible dude";
@@ -166,9 +166,9 @@ $m->title_is(q/Query Builder/, 'Query building');
 $m->submit_form(
     form_name => "BuildQuery",
     fields => {
-        idOp => '=',
-        ValueOfid => $tid,
-        ValueOfQueue => 'General',
+        id_op => '=',
+        value_of_id => $tid,
+        value_of_queue => 'General',
     },
     button => 'AddClause',
 );

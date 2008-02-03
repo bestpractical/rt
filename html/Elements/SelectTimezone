@@ -54,7 +54,7 @@ my @names;
 <imput type="text" name="<% $name %>" value="<% $Default %>" />
 % }
 <select name="<% $name %>">
-% if ( $ShowNullOption ) {
+% if ( $show_null_option ) {
 <option value=""><&|/l&>System Default</&></option>
 % }
 % foreach my $tz (@names) {
@@ -62,7 +62,7 @@ my @names;
 % }
 </select>
 <%ARGS>
-$ShowNullOption => 1
+$show_null_option => 1
 $name => undef
 $Default => 0
 </%ARGS>

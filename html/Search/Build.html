@@ -185,7 +185,7 @@ my @new_values = ();
 
 # {{{ Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
-    next unless $arg =~ m/^ValueOf(\w+|'CF.{.*?}')$/
+    next unless $arg =~ m/^value_of_(\w+|'CF.{.*?}')$/
                 && ( ref $ARGS{$arg} eq "ARRAY"
                      ? grep $_ ne '', @{ $ARGS{$arg} }
                      : $ARGS{$arg} ne '' );
@@ -196,18 +196,18 @@ foreach my $arg ( keys %ARGS ) {
     my ($op, $value);
 
     #figure out if it's a grouping
-    my $keyword = $ARGS{ $field . "Field" } || $field;
+    my $keyword = $ARGS{ $field . "_field" } || $field;
 
     my ( @ops, @values );
-    if ( ref $ARGS{ 'ValueOf' . $field } eq "ARRAY" ) {
+    if ( ref $ARGS{ 'value_of_' . $field } eq "ARRAY" ) {
         # we have many keys/values to iterate over, because there is
         # more than one CF with the same name.
-        @ops    = @{ $ARGS{ $field . 'Op' } };
-        @values = @{ $ARGS{ 'ValueOf' . $field } };
+        @ops    = @{ $ARGS{ $field . '_op' } };
+        @values = @{ $ARGS{ 'value_of_' . $field } };
     }
     else {
-        @ops    = ( $ARGS{ $field . 'Op' } );
-        @values = ( $ARGS{ 'ValueOf' . $field } );
+        @ops    = ( $ARGS{ $field . '_op' } );
+        @values = ( $ARGS{ 'value_of_' . $field } );
     }
     Jifty->log->error("Bad Parameters passed into Query Builder")
         unless @ops == @values;

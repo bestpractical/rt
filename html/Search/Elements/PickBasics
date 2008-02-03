@@ -46,163 +46,163 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % foreach( @lines ) {
-<& ConditionRow, Condition => $_ &>
+<& ConditionRow, condition => $_ &>
 % }
 <%INIT>
 
 my @lines = (
     {
         name => 'id',
-        Field => _('id'),
-        Op => {
+        field => _('id'),
+        op => {
             type => 'component',
-            Path => '/Elements/SelectEqualityOperator',
+            path => '/Elements/SelectEqualityOperator',
         },
-        Value => { type => 'text', Size => 5 }
+        value => { type => 'text', Size => 5 }
     },
     {
-        name => 'Attachment',
-        Field => {
+        name => 'attachment',
+        field => {
             type => 'component',
-            Path => '/Elements/SelectAttachmentField',
+            path => '/Elements/SelectAttachmentField',
         },
-        Op => {
+        op => {
             type => 'component',
-            Path => '/Elements/SelectBoolean',
-            Arguments => {
+            path => '/Elements/SelectBoolean',
+            arguments => {
 			    True => _("matches"), 
 			    False => _("does not match"), 
 			    TrueVal => 'LIKE',
 			    FalseVal => 'NOT LIKE',
             },
         },
-        Value => { type => 'text', Size => 20 },
+        value => { type => 'text', Size => 20 },
     },
     {
         name => 'queue',
-        Field => _('queue'),
-        Op => {
+        field => _('queue'),
+        op => {
             type => 'component',
-            Path => '/Elements/SelectBoolean',
-            Arguments => { TrueVal=> '=', FalseVal => '!=' },
+            path => '/Elements/SelectBoolean',
+            arguments => { TrueVal=> '=', FalseVal => '!=' },
         },
-        Value => {
+        value => {
             type => 'component',
-            Path => '/Elements/SelectQueue',
-            Arguments => { named_values => 1, CheckQueueRight => 'ShowTicket' },
-        },
-    },
-    {
-        name => 'Status',
-        Field => _('Status'),
-        Op => {
-            type => 'component',
-            Path => '/Elements/SelectBoolean',
-            Arguments => { TrueVal=> '=', FalseVal => '!=' },
-        },
-        Value => {
-            type => 'component',
-            Path => '/Elements/SelectStatus',
-            Arguments => { SkipDeleted => 1 },
+            path => '/Elements/SelectQueue',
+            arguments => { named_values => 1, CheckQueueRight => 'ShowTicket' },
         },
     },
     {
-        name => 'Actor',
-        Field => {
+        name => 'status',
+        field => _('Status'),
+        op => {
+            type => 'component',
+            path => '/Elements/SelectBoolean',
+            arguments => { TrueVal=> '=', FalseVal => '!=' },
+        },
+        value => {
+            type => 'component',
+            path => '/Elements/SelectStatus',
+            arguments => { SkipDeleted => 1 },
+        },
+    },
+    {
+        name => 'actor',
+        field => {
             type    => 'select',
-            Options => [
-                Owner => _('Owner'),
-                Creator => _('Creator'),
-                LastUpdatedBy => _('Last updated by'),
+            options => [
+                owner => _('Owner'),
+                creator => _('Creator'),
+                last_updated_by => _('Last updated by'),
             ],
         },
-        Op => {
+        op => {
             type => 'component',
-            Path => '/Elements/SelectBoolean',
-            Arguments => { TrueVal=> '=', FalseVal => '!=' },
+            path => '/Elements/SelectBoolean',
+            arguments => { TrueVal=> '=', FalseVal => '!=' },
         },
-        Value => {
+        value => {
             type => 'component',
-            Path => '/Elements/SelectOwner',
-            Arguments => { value_attribute => 'name' },
+            path => '/Elements/SelectOwner',
+            arguments => { value_attribute => 'name' },
         },
     },
     {
-        name => 'Watcher',
-        Field => {
+        name => 'watcher',
+        field => {
             type => 'component',
-            Path => 'SelectPersonType',
-            Arguments => { Default => 'Requestor' },
+            path => 'SelectPersonType',
+            arguments => { Default => 'Requestor' },
         },
-        Op => {
+        op => {
             type => 'component',
-            Path => '/Elements/SelectMatch',
+            path => '/Elements/SelectMatch',
         },
-        Value => { type => 'text', Size => 20 }
+        value => { type => 'text', Size => 20 }
     },
     {
         name => 'date',
-        Field => {
+        field => {
             type => 'component',
-            Path => '/Elements/SelectDateType',
+            path => '/Elements/SelectDateType',
         },
-        Op => {
+        op => {
             type => 'component',
-            Path => '/Elements/SelectDateRelation',
+            path => '/Elements/SelectDateRelation',
         },
-        Value => {
+        value => {
             type => 'component',
-            Path => '/Elements/SelectDate',
-            Arguments => { ShowTime => 0, Default => '' },
+            path => '/Elements/SelectDate',
+            arguments => { ShowTime => 0, Default => '' },
         },
     },
     {
         name => 'Time',
-        Field => {
+        field => {
             type    => 'select',
-            Options => [
+            options => [
                 time_worked => _('Time Worked'),
                 time_estimated => _('Time Estimated'),
                 time_left => _('Time Left'),
             ],
         },
-        Op => {
+        op => {
             type => 'component',
-            Path => '/Elements/SelectEqualityOperator',
+            path => '/Elements/SelectEqualityOperator',
         },
-        Value => [
+        value => [
             { type => 'text', Size => 5 },
             {
                 type => 'component',
-                Path => '/Elements/SelectTimeUnits',
+                path => '/Elements/SelectTimeUnits',
             },
         ],
     },
     {
         name => 'Priority',
-        Field => {
+        field => {
             type    => 'select',
-            Options => [
-                Priority => _('Priority'),
+            options => [
+                priority => _('Priority'),
                 initial_priority => _('Initial Priority'),
                 final_priority => _('Final Priority'),
             ],
         },
-        Op => {
+        op => {
             type => 'component',
-            Path => '/Elements/SelectEqualityOperator',
+            path => '/Elements/SelectEqualityOperator',
         },
-        Value => { type => 'text', Size => 5 }
+        value => { type => 'text', Size => 5 }
     },
     {
         name => 'Links',
-        Field => { type => 'component', Path => 'SelectLinks' },
-        Op => {
+        field => { type => 'component', path => 'SelectLinks' },
+        op => {
             type => 'component',
-            Path => '/Elements/SelectBoolean',
-            Arguments => { TrueVal=> '=', FalseVal => '!=' },
+            path => '/Elements/SelectBoolean',
+            arguments => { TrueVal=> '=', FalseVal => '!=' },
         },
-        Value => { type => 'text', Size => 5 }
+        value => { type => 'text', Size => 5 }
     },
 );
 

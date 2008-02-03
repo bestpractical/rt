@@ -83,10 +83,10 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 
 my @results;
 
-if ( $ARGS{'QuickCreate'} ) {
+if ( $ARGS{'quick_create'} ) {
     my $ticket = RT::Model::Ticket->new();
     my ($tid, $trans, $tmsg) = $ticket->create(queue => $ARGS{'queue'},
-                    Owner => $ARGS{'Owner'},
+                    owner => $ARGS{'owner'},
                     Requestor => Jifty->web->current_user->id,
                     subject => $ARGS{'subject'});
 

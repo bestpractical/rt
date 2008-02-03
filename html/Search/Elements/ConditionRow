@@ -46,15 +46,15 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <tr>
-<td class="label"><% $handle_block->( $Condition->{'Field'}, $Condition->{'name'} .'Field' ) |n %></td>
-<td class="operator"><% $handle_block->( $Condition->{'Op'}, $Condition->{'name'} .'Op') |n %></td>
-<td class="value"><% $handle_block->( $Condition->{'Value'}, 'ValueOf'. $Condition->{'name'} ) |n %></td>
+<td class="label"><% $handle_block->( $condition->{'field'}, $condition->{'name'} .'_field' ) |n %></td>
+<td class="operator"><% $handle_block->( $condition->{'op'}, $condition->{'name'} .'_op') |n %></td>
+<td class="value"><% $handle_block->( $condition->{'value'}, 'value_of_'. $condition->{'name'} ) |n %></td>
 </tr>
 <%INIT>
-return unless $Condition && $Condition->{'name'};
+return unless $condition && $condition->{'name'};
 
-$m->callback( Condition => \$Condition );
-return unless $Condition;
+$m->callback( Condition => \$condition );
+return unless $condition;
 
 my $handle_block;
 $handle_block = sub  {
@@ -70,20 +70,21 @@ $handle_block = sub  {
 
     return undef unless UNIVERSAL::isa($box, 'HASH');
     if ( $box->{'type'} eq 'component' ) {
-        $box->{'Arguments'} ||= {},
-        return $m->scomp( $box->{'Path'}, %{ $box->{'Arguments'} }, name => $name );
+        $box->{'arguments'} ||= {},
+        return $m->scomp( $box->{'path'}, %{ $box->{'arguments'} }, name => $name );
     }
     if ( $box->{'type'} eq 'text' ) {
-        my $default = $box->{'Default'} || '';
-        my $size = $box->{'Size'}? qq{size="$box->{'Size'}"} : '';
+        my $default = $box->{'default'} || '';
+        my $size = $box->{'size'}? qq{size="$box->{'Size'}"} : '';
         return qq{<input name="$name" value="$default" $size />};
     }
     if ( $box->{'type'} eq 'select' ) {
         my $res = '';
         $res .= qq{<select name="$name">};
-        my @options = @{ $box->{'Options'} };
+        my @options = @{ $box->{'options'} };
         while( my $k = shift @options ) {
             my $v = shift @options;
+            # BUG, FIXME, TODO: html-escape $v
             $res .= qq{<option value="$k">$v</option>};
         }
         $res .= qq{</select>};
@@ -93,5 +94,5 @@ $handle_block = sub  {
 
 </%INIT>
 <%ARGS>
-$Condition => {}
+$condition => {}
 </%ARGS>

@@ -83,8 +83,8 @@ use Jifty::DBI::Record schema {
     column exec_module           => type is 'text';
     column argument             => type is 'text';
     column applicable_trans_types => type is 'text';
-    column Creator => max_length is 11, type is 'int(11)', default is '0';
-    column Created => type is 'datetime', default is '';
+    column creator => max_length is 11, type is 'int(11)', default is '0';
+    column created => type is 'datetime', default is '';
     column
         last_updated_by => max_length is 11,
         type is 'int(11)', default is '0';

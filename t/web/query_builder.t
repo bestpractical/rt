@@ -47,20 +47,20 @@ sub selected_clauses {
 diag "add the first condition" if $ENV{'TEST_VERBOSE'};
 {
     ok $agent->form_name('BuildQuery'), "found the form once";
-    $agent->field("ActorField", "Owner");
-    $agent->field("ActorOp", "=");
-    $agent->field("ValueOfActor", 'Nobody');
+    $agent->field("actor_field", "owner");
+    $agent->field("actor_op", "=");
+    $agent->field("value_of_actor", 'Nobody');
     $agent->submit;
-    is get_query_from_form, "Owner = 'Nobody'", 'correct query';
+    is lc get_query_from_form, lc "Owner = 'Nobody'", 'correct query';
 }
 
 diag "set the next condition" if $ENV{'TEST_VERBOSE'};
 {
     ok($agent->form_name('BuildQuery'), "found the form again");
-    $agent->field("QueueOp", "!=");
-    $agent->field("ValueOfQueue", "Regression");
+    $agent->field("queue_op", "!=");
+    $agent->field("value_of_queue", "Regression");
     $agent->submit;
-    is get_query_from_form, "Owner = 'Nobody' AND queue != 'Regression'",
+    is get_query_from_form, "owner = 'Nobody' AND queue != 'Regression'",
         'correct query';
 }
 
@@ -69,17 +69,17 @@ diag "We're going to delete the owner" if $ENV{'TEST_VERBOSE'};
     $agent->select("clauses", ["0"] );
     $agent->click("DeleteClause");
     ok $agent->form_name('BuildQuery'), "found the form";
-    is get_query_from_form, "Queue != 'Regression'", 'correct query';
+    is get_query_from_form, "queue != 'Regression'", 'correct query';
 }
 
 diag "add a cond with OR and se number by the way" if $ENV{'TEST_VERBOSE'};
 {
     $agent->field("AndOr", "OR");
-    $agent->select("idOp", ">");
-    $agent->field("ValueOfid" => "1234");
+    $agent->select("id_op", ">");
+    $agent->field("value_of_id" => "1234");
     $agent->click("AddClause");
     ok $agent->form_name('BuildQuery'), "found the form again";
-    is get_query_from_form, "Queue != 'Regression' OR id > 1234",
+    is get_query_from_form, "queue != 'Regression' OR id > 1234",
         "added something as OR, and number not quoted";
     is_deeply selected_clauses, ["1"], 'the id that we just entered is still selected';
 
@@ -95,9 +95,9 @@ diag "Move the second one up a level" if $ENV{'TEST_VERBOSE'};
 
 diag "Move the second one right" if $ENV{'TEST_VERBOSE'};
 {
-    $agent->click("right");
+    $agent->click("Right");
     ok $agent->form_name('BuildQuery'), "found the form again";
-    is get_query_from_form, "Queue != 'Regression' OR ( id > 1234 )",
+    is get_query_from_form, "queue != 'Regression' OR ( id > 1234 )",
         "moved over to the right (and down)";
     is_deeply selected_clauses, ["2"], 'the one we moved right is selected';
 }
@@ -132,7 +132,7 @@ diag "Can not move left the left most clause" if $ENV{'TEST_VERBOSE'};
 diag "Add a condition into a nested block" if $ENV{'TEST_VERBOSE'};
 {
     $agent->select("clauses", ["1"]);
-    $agent->select("ValueOfStatus" => "stalled");
+    $agent->select("value_of_status" => "stalled");
     $agent->submit;
     ok $agent->form_name('BuildQuery'), "found the form again";
     is_deeply selected_clauses, ["2"], 'the one we added is only selected';
@@ -150,7 +150,7 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
     $agent->field("Query", "Status = 'new' OR ( Status = 'open' AND subject LIKE 'office' )");
     $agent->submit;
     is( get_query_from_form,
-        "Status = 'new' OR ( Status = 'open' AND subject LIKE 'office' )",
+        "status = 'new' OR ( status = 'open' AND subject LIKE 'office' )",
         "no aggregators change"
     );
 }
@@ -238,11 +238,11 @@ diag "input a condition, select (several conditions), click delete"
     $agent->field("Query", "( Status = 'new' OR Status = 'open' )");
     $agent->submit;
     is( get_query_from_form,
-        "( Status = 'new' OR Status = 'open' )",
+        "( status = 'new' OR status = 'open' )",
         "query is the same"
     );
     $agent->select("clauses", [qw(0 1 2)]);
-    $agent->field( ValueOfid => 10 );
+    $agent->field( value_of_id => 10 );
     $agent->click("DeleteClause");
 
     is( get_query_from_form,
