@@ -1,7 +1,7 @@
 
 
 use RT::Test;
-use Test::More  tests => '19';
+use Test::More  tests => '20';
 
 use strict;
 use warnings;
