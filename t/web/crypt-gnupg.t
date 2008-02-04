@@ -16,10 +16,10 @@ RT->config->set( correspond_address => 'general@example.com');
 RT->config->set( DefaultSearchResultFormat => qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
-   'OO-__Ownername__-O',
-   'OR-__Requestors__-O',
-   'KO-__KeyOwnername__-K',
-   'KR-__KeyRequestors__-K',
+   'OO-__owner_name__-O',
+   'OR-__requestors__-O',
+   'KO-__key_owner_name__-K',
+   'KR-__key_requestors__-K',
    Status});
 
 use File::Spec ();
@@ -347,19 +347,19 @@ sub strip_headers
     return $mail;
 }
 
-# now test the OwnernameKey and RequestorsKey fields
+# now test the owner_nameKey and RequestorsKey fields
 my $nokey = RT::Test->load_or_create_user(name => 'nokey', email => 'nokey@example.com');
 $nokey->principal_object->grant_right(right => 'CreateTicket');
 $nokey->principal_object->grant_right(right => 'OwnTicket');
 
 my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
 $tick->create(subject => 'owner lacks pubkey', queue => 'general',
-              Owner => $nokey);
+              owner => $nokey);
 ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
 
 $tick = RT::Model::Ticket->new(current_user => RT->system_user );
 $tick->create(subject => 'owner has pubkey', queue => 'general',
-              Owner => 'root');
+              owner => 'root');
 ok($id = $tick->id, 'created ticket for owner-with-pubkey');
 my $mail = << "MAIL";
 Subject: Nokey requestor
@@ -417,18 +417,18 @@ my $content = $m->content;
 $content =~ s/&#40;/(/g;
 $content =~ s/&#41;/)/g;
 
-like($content, qr/OO-Nobody-O/, "original Ownername untouched");
-like($content, qr/OO-nokey-O/, "original Ownername untouched");
-like($content, qr/OO-root-O/, "original Ownername untouched");
+like($content, qr/OO-Nobody-O/, "original owner_name untouched");
+like($content, qr/OO-nokey-O/, "original owner_name untouched");
+like($content, qr/OO-root-O/, "original owner_name untouched");
 
 like($content, qr/OR-recipient\@example.com-O/, "original Requestors untouched");
 like($content, qr/OR-nokey\@example.com-O/, "original Requestors untouched");
 
-like($content, qr/KO-root-K/, "KeyOwnername does not issue no-pubkey warning for recipient");
-like($content, qr/KO-nokey \(no pubkey!\)-K/, "KeyOwnername issues no-pubkey warning for root");
-like($content, qr/KO-Nobody \(no pubkey!\)-K/, "KeyOwnername issues no-pubkey warning for nobody");
+like($content, qr/KO-root-K/, "key_owner_name does not issue no-pubkey warning for recipient");
+like($content, qr/KO-nokey \(no pubkey!\)-K/, "key_owner_name issues no-pubkey warning for root");
+like($content, qr/KO-Nobody \(no pubkey!\)-K/, "key_owner_name issues no-pubkey warning for nobody");
 
-like($content, qr/KR-recipient\@example.com-K/, "KeyRequestors does not issue no-pubkey warning for recipient\@example.com");
-like($content, qr/KR-general\@example.com-K/, "KeyRequestors does not issue no-pubkey warning for general\@example.com");
-like($content, qr/KR-nokey\@example.com \(no pubkey!\)-K/, "KeyRequestors DOES issue no-pubkey warning for nokey\@example.com");
+like($content, qr/KR-recipient\@example.com-K/, "key_requestors does not issue no-pubkey warning for recipient\@example.com");
+like($content, qr/KR-general\@example.com-K/, "key_requestors does not issue no-pubkey warning for general\@example.com");
+like($content, qr/KR-nokey\@example.com \(no pubkey!\)-K/, "key_requestors DOES issue no-pubkey warning for nokey\@example.com");
 

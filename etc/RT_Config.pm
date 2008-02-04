@@ -590,7 +590,7 @@ set($DefaultSearchResultFormat, qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
    Status,
    Queuename, 
-   Ownername, 
+   owner_name, 
    Priority, 
    '__NEWLINE__',
    '', 

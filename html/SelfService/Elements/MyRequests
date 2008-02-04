@@ -72,7 +72,7 @@ my @format = qq{
    '<B><A HREF="}. RT->config->get('WebPath') .qq{/SelfService/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
    Status,
    Requestors,
-   Ownername};
+   owner_name};
 </%INIT>
 <%ARGS>
 $friendly_status => _('open')

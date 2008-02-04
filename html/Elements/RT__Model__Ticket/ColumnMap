@@ -80,7 +80,7 @@ $TICKET_COLUMN_MAP = {
         title     => 'queue',
         value     => sub  { return $_[0]->queue_obj->name }
     },
-    Ownername => {
+    owner_name => {
         title     => 'Owner',
         attribute => 'Owner',
         value     => sub  { return $_[0]->owner_obj->name }
@@ -152,7 +152,7 @@ $TICKET_COLUMN_MAP = {
         title => 'Time Estimated',
         value     => sub  { return $_[0]->time_estimated }
     },
-    Requestors => {
+    requestors => {
         attribute => 'Requestor.email',
         value => sub  { return $_[0]->requestors->member_emails_as_string }
     },
@@ -225,7 +225,7 @@ $TICKET_COLUMN_MAP = {
                 $_[0]->_('New'), \'</a>';
         },
     },
-    KeyRequestors => {
+    key_requestors => {
         title     => 'Requestors',
         attribute => 'Requestor.email',
         value => sub  {
@@ -244,7 +244,7 @@ $TICKET_COLUMN_MAP = {
             return join ', ', @requestors;
         }
     },
-    KeyOwnername => {
+    key_owner_name => {
         title     => 'Owner',
         attribute => 'Owner',
         value     => sub  {
@@ -307,14 +307,14 @@ $TICKET_COLUMN_MAP = {
 
 $TICKET_COLUMN_MAP->{'CF'} = $TICKET_COLUMN_MAP->{'CustomField'};
 
-# if no GPG support, then KeyOwnername and KeyRequestors fall back to the regular
+# if no GPG support, then key_owner_name and key_requestors fall back to the regular
 # versions
 if (RT->config->get('GnuPG')->{'enable'}) {
     require RT::Crypt::GnuPG;
 }
 else {
-    $TICKET_COLUMN_MAP->{KeyOwnername} = $TICKET_COLUMN_MAP->{Ownername};
-    $TICKET_COLUMN_MAP->{KeyRequestors} = $TICKET_COLUMN_MAP->{Requestors};
+    $TICKET_COLUMN_MAP->{key_owner_name} = $TICKET_COLUMN_MAP->{owner_name};
+    $TICKET_COLUMN_MAP->{key_requestors} = $TICKET_COLUMN_MAP->{requestors};
 }
 </%ONCE>
 <%init>

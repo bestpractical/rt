@@ -53,7 +53,7 @@ my $format = '\'   <b><a href="/Ticket/Display.html?id=__id__">__id__</a></b>/TI
 \'<b><a href="/Ticket/Display.html?id=__id__">__subject__</a></b>/TITLE:subject\',
 \'__Status__\',
 \'__Queuename__\',
-\'__Ownername__\',
+\'__owner_name__\',
 \'__Priority__\',
 \'__NEWLINE__\',
 \'\',

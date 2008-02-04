@@ -4165,7 +4165,7 @@ msgid "Owner is"
 msgstr "In carico a"
 
 #: NOT FOUND IN SOURCE
-msgid "Ownername"
+msgid "owner_name"
 msgstr "NomeIncaricato"
 
 #: html/Elements/TicketList:78
