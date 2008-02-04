@@ -175,6 +175,7 @@ set( $SenderMustExistInExternalDatabase, undef );
 
 # @MailPlugins is a list of auth plugins for L<RT::Interface::Email>
 # to use; see L<rt-mailgate>
+set(@MailPlugins, 'Auth::MailFrom');
 
 # $UnsafeEmailCommands, if set to true, enables 'take' and 'resolve'
 # as possible actions via the mail gateway.  As its name implies, this
