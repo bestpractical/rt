@@ -795,7 +795,7 @@ sub update_record_object {
         args_ref         => undef,
         attributes_ref   => undef,
         object          => undef,
-        AttributePrefix => undef,
+        attribute_prefix => undef,
         @_
     );
 
@@ -803,7 +803,7 @@ sub update_record_object {
     my @results = $object->update(
         attributes_ref   => $args{'attributes_ref'},
         args_ref         => $args{'args_ref'},
-        AttributePrefix => $args{'AttributePrefix'},
+        attribute_prefix => $args{'attribute_prefix'},
     );
 
     return (@results);

@@ -731,7 +731,7 @@ skipping unchanged values.
 
  args_ref => a hashref of attributes => value for the update
  attributes_ref => an arrayref of keys in args_ref that should be updated
- AttributePrefix => a prefix that should be added to the attributes in attributes_ref
+ attriubte_prefix => a prefix that should be added to the attributes in attributes_ref
                     when looking up values in args_ref
                     Bare attributes are tried before prefixed attributes
 
@@ -1286,7 +1286,7 @@ sub _new_transaction {
     if ( defined $args{'time_taken'} and $self->can('_update_time_taken') ) {
         $self->_update_time_taken( $args{'time_taken'} );
     }
-    if ( RT->config->get('Usetransaction_batch') and $transaction ) {
+    if ( RT->config->get('use_transaction_batch') and $transaction ) {
         push @{ $self->{_transaction_batch} }, $trans
             if $args{'commit_scrips'};
     }

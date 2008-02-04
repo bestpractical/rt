@@ -704,7 +704,7 @@ set( $StrictLinkACL, 1 );
 # set $PreviewScripMessages to 1 if the scrips preview on the ticket
 # reply page should include the content of the messages to be sent.
 
-# set $Usetransaction_batch to 1 to execute transactions in batches,
+# set $use_transaction_batch to 1 to execute transactions in batches,
 # such that a resolve and comment (for example) would happen
 # simultaneously, instead of as two transactions, unaware of each
 # others' existence.

@@ -2985,7 +2985,7 @@ sub seen_up_to {
   Returns an array reference of all transactions created on this ticket during
   this ticket object's lifetime, or undef if there were none.
 
-  Only works when the C<Usetransaction_batch> config option is set to true.
+  Only works when the C<use_transaction_batch> config option is set to true.
 
 =cut
 
@@ -3034,7 +3034,7 @@ sub _set {
         record_transaction => 1,
         update_ticket       => 1,
         check_acl           => 1,
-        transaction_type    => 'Set',
+        transaction_type    => 'set',
         @_
     );
 

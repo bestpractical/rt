@@ -1,4 +1,4 @@
 --- 
 framework: 
-  LogLevel: WARN
+  LogLevel: DEBUG
 

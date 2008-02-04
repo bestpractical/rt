@@ -188,7 +188,7 @@ else {
         description custom_prepare_code custom_commit_code custom_is_applicable_code);
     my @results = update_record_object(
         attributes_ref   => \@attribs,
-        AttributePrefix => 'Scrip-'.$scrip->id,
+        attribute_prefix => 'Scrip-'.$scrip->id,
         object          => $scrip,
         args_ref         => \%ARGS
     );

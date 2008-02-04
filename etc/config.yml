@@ -11,7 +11,7 @@ framework:
     Driver: mysql
     Host: localhost
     password: ''
-    RecordbaseClass: Jifty::DBI::Record::Cachable
+    RecordBaseClass: Jifty::DBI::Record::Cachable
     User: root
     Version: 0.0.1
   DevelMode: 1

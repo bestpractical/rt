@@ -12,7 +12,7 @@ use_ok('RT::Model::Ticket');
 my $queue = RT::Test->load_or_create_queue( name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
 
-RT->config->set( Usetransaction_batch => 1 );
+RT->config->set( use_transaction_batch => 1 );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -25,7 +25,7 @@ my $sid;
     $m->follow_link_ok(  text => 'Scrips'  );
     $m->follow_link_ok(  text => 'New scrip'  );
     $m->form_number(3);
-    $m->field('Scrip-new-Description' => 'test');
+    $m->field('Scrip-new-Description' => 'On transaction, record updates');
     $m->select('Scrip-new-scrip_condition' => 'On Transaction');
     $m->select('Scrip-new-scrip_action' => 'User Defined');
     $m->select('Scrip-new-Template' => 'Global template: Blank');
@@ -38,7 +38,7 @@ my $sid;
     ($sid) = ($m->content =~ /Scrip\s*#(\d+)/);
 
     my $form = $m->form_number(3);
-    is $m->value("Scrip-$sid-Description"), 'test', 'correct description';
+    is $m->value("Scrip-$sid-Description"), 'On transaction, record updates', 'correct description';
     is value_name($form, "Scrip-$sid-scrip_condition"), 'On Transaction', 'correct condition';
     is value_name($form, "Scrip-$sid-scrip_action"), 'User Defined', 'correct action';
     is value_name($form, "Scrip-$sid-Template"), 'Global template: Blank', 'correct template';
@@ -46,10 +46,8 @@ my $sid;
 
     use File::Temp qw(tempfile);
     my ($tmp_fh, $tmp_fn) = tempfile();
-
     my $code = <<END;
 open my \$fh, '>', '$tmp_fn' or die "Couldn't open '$tmp_fn':\$!";
-
 my \$batch = \$self->ticket_obj->transaction_batch;
 unless ( \$batch && \@\$batch ) {
     print \$fh "no batch\n";
@@ -63,19 +61,16 @@ END
 
     $m->field( "Scrip-$sid-custom_commit_code" => $code );
     $m->submit;
-
     $m->goto_create_ticket( $queue );
     $m->form_number(3);
     $m->submit;
-
     is_deeply parse_handle($tmp_fh), ['Create'], 'Create';
-
     $m->follow_link_ok(  text => 'Resolve'  );
     $m->form_number(3);
     $m->field( "update_content" => 'resolve it' );
     $m->click('SubmitTicket');
-
-    is_deeply parse_handle($tmp_fh), ['comment', 'Status'], 'comment + Resolve';
+    $m->content_like(qr/Message recorded/);
+    is_deeply parse_handle($tmp_fh), ['comment', 'status'], 'comment + Resolve';
 }
 
 sub value_name {
