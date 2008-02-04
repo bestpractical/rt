@@ -276,15 +276,15 @@ sub create_ticket {
     }
 
     my $due = RT::Date->new();
-    $due->set( format => 'unknown', value => $ARGS{'Due'} );
+    $due->set( format => 'unknown', value => $ARGS{'due'} );
     my $starts = RT::Date->new();
     $starts->set( format => 'unknown', value => $ARGS{'starts'} );
 
     my $mime_obj = make_mime_entity(
         subject => $ARGS{'subject'},
-        From    => $ARGS{'From'},
+        from    => $ARGS{'From'},
         cc      => $ARGS{'cc'},
-        Body    => $ARGS{'content'},
+        body    => $ARGS{'content'},
         type    => $ARGS{'content_type'},
     );
 
@@ -322,8 +322,8 @@ sub create_ticket {
         time_estimated   => $ARGS{'time_estimated'},
         time_worked      => $ARGS{'time_worked'},
         subject          => $ARGS{'subject'},
-        Status           => $ARGS{'Status'},
-        Due              => $due->iso,
+        status           => $ARGS{'status'},
+        due              => $due->iso,
         starts           => $starts->iso,
         mime_obj          => $mime_obj
     );
@@ -526,7 +526,7 @@ sub process_update_message {
 
     my $Message = make_mime_entity(
         subject => $args{args_ref}->{'Updatesubject'},
-        Body    => $args{args_ref}->{'update_content'},
+        body    => $args{args_ref}->{'update_content'},
         type    => $args{args_ref}->{'Updatecontent_type'},
     );
 
@@ -629,24 +629,24 @@ sub make_mime_entity {
     #TODO document what else this takes.
     my %args = (
         subject             => undef,
-        From                => undef,
+        from                => undef,
         cc                  => undef,
-        Body                => undef,
+        body                => undef,
         AttachmentFieldname => undef,
         type                => undef,
         @_,
     );
     my $Message = MIME::Entity->build(
         Type    => 'multipart/mixed',
-        subject => $args{'subject'} || "",
-        From    => $args{'From'},
-        cc      => $args{'cc'},
+        Subject => $args{'subject'} || "",
+        From    => $args{'from'},
+        Cc      => $args{'cc'},
     );
 
-    if ( defined $args{'Body'} && length $args{'Body'} ) {
+    if ( defined $args{'body'} && length $args{'body'} ) {
 
         # Make the update content have no 'weird' newlines in it
-        $args{'Body'} =~ s/\r\n/\n/gs;
+        $args{'body'} =~ s/\r\n/\n/gs;
 
         # MIME::Head is not happy in utf-8 domain.  This only happens
         # when processing an incoming email (so far observed).
@@ -655,7 +655,7 @@ sub make_mime_entity {
         $Message->attach(
             Type => $args{'type'} || 'text/plain',
             Charset => 'UTF-8',
-            Data    => $args{'Body'},
+            Data    => $args{'body'},
         );
     }
 

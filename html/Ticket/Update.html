@@ -218,8 +218,7 @@ if ($ARGS{'Attach'}) {            # attachment?
     $subject =~ s#^.*[\\/]##;
 
     my $attachment = make_mime_entity(
-        Filename             => $subject,
-        Body                => "",
+        filename             => $subject,
         AttachmentFieldname => 'Attach'
     );
 

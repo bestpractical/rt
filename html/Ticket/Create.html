@@ -70,7 +70,7 @@
 <td class="label"><&|/l&>Status</&>:
 </td>
 <td class="value">
-<& /Elements/SelectStatus, name => "Status", Default => $ARGS{Status}||'new', DefaultValue => 0 &>
+<& /Elements/SelectStatus, name => "status", Default => $ARGS{status}||'new', DefaultValue => 0 &>
 </td>
 <td class="label">
 <&|/l&>Owner</&>:
@@ -84,7 +84,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value" colspan="5">
-    <input name="Requestors" value="<% ($ARGS{Requestors}) || Jifty->web->current_user->user_object->email %>" size="40" />
+    <input name="requestors" value="<% ($ARGS{requestors}) || Jifty->web->current_user->user_object->email %>" size="40" />
 </td>
 </tr>
 <tr>
@@ -257,7 +257,7 @@ if ( $cloneTicket ) {
     
     $clone->{$_} = $cloneticket_obj->$_() 
         for qw/owner subject final_priority time_estimated TimeWorked 
-                Status TimeLeft Starts Started Due Resolved/;
+                status TimeLeft Starts Started Due Resolved/;
     
         my $members = $cloneticket_obj->members;
         my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
@@ -358,7 +358,6 @@ if ($ARGS{'Attach'}) {			# attachment?
 
     my $attachment = make_mime_entity(
         subject             => $subject,
-        Body                => "",
         AttachmentFieldname => 'Attach'
     );
 

@@ -253,7 +253,7 @@ sub create_a_ticket {
     $m->goto_create_ticket( $queue );
     $m->form_name('TicketCreate');
     $m->field( subject    => 'test' );
-    $m->field( Requestors => 'rt-test@example.com' );
+    $m->field( requestors => 'rt-test@example.com' );
     $m->field( content    => 'Some content' );
 
     foreach ( qw(sign encrypt) ) {

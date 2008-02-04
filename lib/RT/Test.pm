@@ -51,7 +51,7 @@ set( \$LogStackTraces , "warning");
         $mailsent++;
         return 1;
     };
-    RT::Config->set( 'MailCommand' => $mailfunc );
+    RT->config->set( 'MailCommand' => $mailfunc );
 }
 our $server_url;
 

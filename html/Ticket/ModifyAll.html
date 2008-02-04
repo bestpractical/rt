@@ -176,7 +176,6 @@ unless ($OnlySearchForPeople) {
 
         my $attachment = make_mime_entity(
            subject             => $subject,
-           Body                => "",
            AttachmentFieldname => 'UpdateAttachment'
         );
         delete $ARGS{'UpdateAttachment'};

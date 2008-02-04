@@ -64,7 +64,7 @@ foreach ( qw(sign encrypt) ) {
 <%METHOD Check>
 <%ARGS>
 $self      => undef
-$Operation => 'update'
+$operation => 'update'
 $ticket_obj => undef
 $queue_obj  => undef
 </%ARGS>
@@ -95,7 +95,7 @@ if ( $self->{'encrypt'} ) {
 
     my @recipients;
 
-    if ( $Operation eq 'update' ) {
+    if ( $operation eq 'update' ) {
         # skip any email addresses that we won't be sending mail to
         my %squelch = $m->comp(
             '/Ticket/Elements/PreviewScrips:SquelchRecipients',
@@ -108,14 +108,14 @@ if ( $self->{'encrypt'} ) {
             %$self, ticket_obj => $ticket_obj
         );
     }
-    elsif ( $Operation eq 'create' ) {
+    elsif ( $operation eq 'create' ) {
         @recipients = $m->comp(
             '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
             %$self,
         );
     }
     else {
-        Jifty->log->fatal('Incorrect operation: '. $Operation );
+        Jifty->log->fatal('Incorrect operation: '. $operation );
     }
 
     my %seen;

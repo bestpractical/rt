@@ -125,7 +125,7 @@ else {
 
 my $Message = make_mime_entity(
     subject => $ARGS{'Updatesubject'},
-    Body    => $ARGS{'update_content'},
+    body    => $ARGS{'update_content'},
 );
 
 my ( $Transaction, $description, $object ) = $ticket_obj->$action(
@@ -161,7 +161,7 @@ else {
 
 my $Message = make_mime_entity(
     subject => $ARGS{'Updatesubject'},
-    Body    => $ARGS{'update_content'},
+    body    => $ARGS{'update_content'},
 );
 
 my ( $id, $msg, $txn ) = $ticket_obj->$action(
@@ -194,8 +194,8 @@ return @recipients;
 my $action;
 my $Message = make_mime_entity(
     subject => $ARGS{'subject'},
-    Cc => $ARGS{'Cc'},
-    Body    => $ARGS{'content'},
+    cc => $ARGS{'cc'},
+    body    => $ARGS{'content'},
 );
 
 my $ticket_obj = RT::Model::Ticket->new();

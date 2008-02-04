@@ -111,8 +111,7 @@ if ( $ARGS{'Attach'} ) {    # attachment?
 
     my $attachment = make_mime_entity(
         subject             => $subject,
-        Body                => "",
-        AttachmentFieldname => 'Attach'
+        AttachmentFieldname => 'Attach',
     );
 
     $session{'Attachments'} =

@@ -50,7 +50,7 @@ diag "check that signing doesn't work if there is no key";
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
     $m->tick( sign => 1 );
-    $m->field( Requestors => 'rt-test@example.com' );
+    $m->field( requestors => 'rt-test@example.com' );
     $m->field( content => 'Some content' );
     $m->submit;
     $m->content_like(
@@ -76,7 +76,7 @@ diag "check that things don't work if there is no key";
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
     $m->tick( encrypt => 1 );
-    $m->field( Requestors => 'rt-test@example.com' );
+    $m->field( requestors => 'rt-test@example.com' );
     $m->field( content => 'Some content' );
     $m->submit;
     $m->content_like(
@@ -111,7 +111,7 @@ diag "check that things still doesn't work if key is not trusted";
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
     $m->tick( encrypt => 1 );
-    $m->field( Requestors => 'rt-test@example.com' );
+    $m->field( requestors => 'rt-test@example.com' );
     $m->field( content => 'Some content' );
     $m->submit;
     $m->content_like(
@@ -158,7 +158,7 @@ diag "check that things still doesn't work if two keys are not trusted";
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
     $m->tick( encrypt => 1 );
-    $m->field( Requestors => 'rt-test@example.com' );
+    $m->field( requestors => 'rt-test@example.com' );
     $m->field( content => 'Some content' );
     $m->submit;
     $m->content_like(
@@ -203,7 +203,7 @@ diag "check that we see key selector even if only one key is trusted but there a
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
     $m->tick( encrypt => 1 );
-    $m->field( Requestors => 'rt-test@example.com' );
+    $m->field( requestors => 'rt-test@example.com' );
     $m->field( content => 'Some content' );
     $m->submit;
     $m->content_like(
@@ -230,7 +230,7 @@ diag "check that key selector works and we can select trusted key";
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
     $m->tick( encrypt => 1 );
-    $m->field( Requestors => 'rt-test@example.com' );
+    $m->field( requestors => 'rt-test@example.com' );
     $m->field( content => 'Some content' );
     $m->submit;
     $m->content_like(
@@ -262,7 +262,7 @@ diag "check encrypting of attachments";
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
     $m->tick( encrypt => 1 );
-    $m->field( Requestors => 'rt-test@example.com' );
+    $m->field( requestors => 'rt-test@example.com' );
     $m->field( content => 'Some content' );
     $m->field( Attach => $0 );
     $m->submit;
