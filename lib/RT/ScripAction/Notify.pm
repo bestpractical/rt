@@ -80,11 +80,11 @@ sub set_recipients {
     my $ticket = $self->ticket_obj;
 
     my $arg = $self->argument;
-    $arg =~ s/\bAll\b/Owner,Requestor,AdminCc,Cc/;
+    $arg =~ s/\bAll\b/Owner,Requestor,AdminCc,Cc/i;
 
     my ( @To, @PseudoTo, @Cc, @Bcc );
 
-    if ( $arg =~ /\bOtherRecipients\b/ ) {
+    if ( $arg =~ /\bOther_?Recipients\b/i ) {
         if ( my $attachment = $self->transaction_obj->attachments->first ) {
             push @Cc,
                 map { $_->address }
@@ -96,11 +96,11 @@ sub set_recipients {
         }
     }
 
-    if ( $arg =~ /\bRequestor\b/ ) {
+    if ( $arg =~ /\bRequestor\b/i ) {
         push @To, $ticket->requestors->member_emails;
     }
 
-    if ( $arg =~ /\bCc\b/ ) {
+    if ( $arg =~ /\bCc\b/i ) {
 
         #If we have a To, make the Ccs, Ccs, otherwise, promote them to To
         if (@To) {
@@ -112,7 +112,7 @@ sub set_recipients {
         }
     }
 
-    if ( $arg =~ /\bOwner\b/ && $ticket->owner_obj->id != RT->nobody->id ) {
+    if ( $arg =~ /\bOwner\b/i && $ticket->owner_obj->id != RT->nobody->id ) {
 
         # If we're not sending to Ccs or requestors,
         # then the Owner can be the To.
@@ -123,7 +123,7 @@ sub set_recipients {
         }
 
     }
-    if ( $arg =~ /\bAdminCc\b/ ) {
+    if ( $arg =~ /\bAdmin_?Cc\b/i ) {
         push( @Bcc, $ticket->admin_cc->member_emails );
         push( @Bcc, $ticket->queue_obj->admin_cc->member_emails );
     }

@@ -58,7 +58,7 @@
 % $m->callback( Callbackname => 'FormStart', args_ref => \%ARGS );
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
-<input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
+<input type="hidden" class="hidden" name="action" value="<% $ARGS{action}||'' %>" />
 
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
@@ -181,7 +181,7 @@ if ($DefaultStatus eq 'resolved') {
 # for the convenience:
 
 my ($commentDefault, $ResponseDefault);
-if ($Action ne 'Respond') {
+if ($action ne 'respond') {
    $commentDefault = "SELECTED"; 
     $ResponseDefault = "";
 } else {
@@ -257,6 +257,6 @@ if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
 
 <%ARGS>
 $id => undef
-$Action => undef
+$action => undef
 $DefaultStatus => undef
 </%ARGS>

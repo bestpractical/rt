@@ -147,7 +147,7 @@ my %can = (
 if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('ReplyToTicket') ) {
     $actions->{'F'} = {
         title => _('Reply'),
-        path  => "Ticket/Update.html?action=Respond&id=" . $id,
+        path  => "Ticket/Update.html?action=respond&id=" . $id,
     };
 }
 

@@ -190,7 +190,7 @@ else {
                 "[<a href=\"".$UpdatePath
               . "?id=" . $Transaction->ticket
               . "&QuoteTransaction=" . $Transaction->id
-              . "&Action=Respond\">"
+              . "&action=respond\">"
               . _('Reply')
               . "</a>]&nbsp;";
         }
@@ -200,7 +200,7 @@ else {
               . $Transaction->ticket
               . "&QuoteTransaction="
               . $Transaction->id
-              . "&Action=comment\">"
+              . "&action=comment\">"
               . _('comment') . "</a>]";
         }
         if ( $ticket->current_user_has_right('ForwardMessage') ) {
