@@ -56,7 +56,6 @@ $changes => undef
 my @data;
 $format ||= 's';
 my $ticket = RT::Model::Ticket->new();
-
 $ticket->load($id);
 if (!$ticket->id) {
     return [ "# Ticket $id does not exist.", [], {}, 1 ];
@@ -67,12 +66,12 @@ my @fields = qw(depends_on depended_on_by refers_to referred_to_by members membe
 my %fields = map { lc $_ => $_ } @fields;
 
 my %lfields = (
-    members      => { type => 'MemberOf',  Mode => 'base'   },
-    referred_to_By => { type => 'RefersTo',  Mode => 'base'   },
-    depended_on_by => { type => 'DependsOn', Mode => 'base'   },
-    member_of     => { type => 'MemberOf',  Mode => 'target' },
-    refers_to     => { type => 'RefersTo',  Mode => 'target' },
-    depends_on    => { type => 'DependsOn', Mode => 'target' },
+    members      => { type => 'MemberOf',  mode => 'base'   },
+    referred_to_by => { type => 'RefersTo',  mode => 'base'   },
+    depended_on_by => { type => 'DependsOn', mode => 'base'   },
+    member_of     => { type => 'MemberOf',  mode => 'target' },
+    refers_to     => { type => 'RefersTo',  mode => 'target' },
+    depends_on    => { type => 'DependsOn', mode => 'target' },
 );
 
 if ($changes) {
@@ -89,7 +88,7 @@ if ($changes) {
             $key = $fields{$key};
 
             my %old;
-            my $field = $lfields{$key}->{Mode};
+            my $field = $lfields{$key}->{mode};
             while (my $link = $ticket->$key->next) {
                 $old{$link->$field} = 1;
             }
@@ -117,15 +116,15 @@ if ($changes) {
                     delete $new{$u};
                 }
                 else {
-                    my $type = $lfields{$key}->{Type};
-                    my $mode = $lfields{$key}->{Mode};
+                    my $type = $lfields{$key}->{type};
+                    my $mode = $lfields{$key}->{mode};
                     ($n, $s) = $ticket->delete_link(type => $type, $mode => $u);
                     goto SET;
                 }
             }
             foreach my $u (keys %new) {
-                my $type = $lfields{$key}->{Type};
-                my $mode = $lfields{$key}->{Mode};
+                my $type = $lfields{$key}->{type};
+                my $mode = $lfields{$key}->{mode};
                 ($n, $s) = $ticket->add_link(type => $type, $mode => $u);
                 goto SET;
             }
@@ -156,17 +155,25 @@ else {
     foreach my $key (@fields) {
         my @val;
 
-        my $field = $lfields{$key}->{Mode};
+        my $field = $lfields{$key}->{mode};
         while (my $link = $ticket->$key->next) {
             push @val, $link->$field;
         }
         push(@val, "") if (@val == 0 && defined $format && $format eq 'l');
-        push @data, [ $key => [ @val ] ] if @val;
+        push @data, [ camel_to_pascal($key) => [ @val ] ] if @val;
     }
 
     my %k = map {@$_} @data;
     $o = [ map {$_->[0]} @data ];
     $k = \%k;
+}
+
+sub camel_to_pascal {
+    my $name = shift;
+    return unless $name;
+    $name =~ s/^(\w)/uc $1/ge;
+    $name =~ s/_(\w)/uc $1/ge;
+    return $name;
 }
 
 return [ $c, $o, $k, $e ];

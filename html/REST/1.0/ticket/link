@@ -55,7 +55,6 @@ $to
 </%ARGS>
 <%INIT>
 use RT::Interface::REST;
-
 my $output;
 my $status = "200 Ok";
 my $ticket = RT::Model::Ticket->new();
@@ -64,12 +63,12 @@ my $object = $r->path_info;
 my @fields = qw(DependsOn DependedOnBy RefersTo ReferredToBy has_member MemberOf);
 my %fields = map { lc $_ => $_ } @fields;
 my %lfields = (
-    has_member    => { type => 'MemberOf',  Mode => 'base'   },
-    ReferredToBy => { type => 'RefersTo',  Mode => 'base'   },
-    DependedOnBy => { type => 'DependsOn', Mode => 'base'   },
-    MemberOf     => { type => 'MemberOf',  Mode => 'target' },
-    RefersTo     => { type => 'RefersTo',  Mode => 'target' },
-    DependsOn    => { type => 'DependsOn', Mode => 'target' },
+    has_member    => { type => 'MemberOf',  mode => 'base'   },
+    ReferredToBy => { type => 'RefersTo',  mode => 'base'   },
+    DependedOnBy => { type => 'DependsOn', mode => 'base'   },
+    MemberOf     => { type => 'MemberOf',  mode => 'target' },
+    RefersTo     => { type => 'RefersTo',  mode => 'target' },
+    DependsOn    => { type => 'DependsOn', mode => 'target' },
 );
 
 # http://.../REST/1.0/ticket/link/1
@@ -102,8 +101,8 @@ unless ($ticket->id) {
     goto OUTPUT;
 }
 
-my $type = $lfields{$rel}->{Type};
-my $mode = $lfields{$rel}->{Mode};
+my $type = $lfields{$rel}->{type};
+my $mode = $lfields{$rel}->{mode};
 
 my $n = 1;
 my $op = $del ? "delete_link" : "add_link";
