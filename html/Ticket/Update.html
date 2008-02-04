@@ -164,7 +164,7 @@ my $ticket_obj = load_ticket($id);
 $m->callback( Ticket => $ticket_obj, args_ref => \%ARGS, Callbackname => 'Initial' );
 
 unless($DefaultStatus){
-    $DefaultStatus=($ARGS{'Status'} ||$ticket_obj->status());
+    $DefaultStatus=($ARGS{'status'} ||$ticket_obj->status());
 }
 
 if ($DefaultStatus =~ '^new$'){

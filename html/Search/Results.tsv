@@ -69,9 +69,9 @@ else {
 my @rows;
 my %known_cfs;
 
-my @attrs = qw( id queue_obj->name subject Status time_estimated time_worked time_left Priority final_priority OwnerObj->name 
-                Requestors->member_emails_as_string Cc->member_emails_as_string AdminCc->member_emails_as_string
-                due_obj->iso ToldObj->iso created_obj->iso ResolvedObj->iso LastUpdatedObj->iso);
+my @attrs = qw( id queue_obj->name subject status time_estimated time_worked time_left priority final_priority owner_obj->name 
+                requestors->member_emails_as_string cc->member_emails_as_string admin_cc->member_emails_as_string
+                due_obj->iso told_obj->iso created_obj->iso resolved_obj->iso last_updated_obj->iso);
 
 $r->content_type('application/vnd.ms-excel');
 while ( my $Ticket = $Tickets->next()) {

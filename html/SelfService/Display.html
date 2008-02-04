@@ -138,7 +138,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
 
     ( $Ticket, @results ) =
-    create_ticket( Attachments => $session{'Attachments'}, %ARGS, Status => 'new' );
+    create_ticket( Attachments => $session{'Attachments'}, %ARGS, status => 'new' );
 
     unless ( $Ticket->id ) {
         $m->comp( 'Error.html', Why => join( "\n", @results ));
@@ -164,11 +164,11 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     my ( $code, $msg );
 
     #Update the status
-    if (    ( defined $ARGS{'Status'} )
-        and $ARGS{'Status'}
-        and ( $ARGS{'Status'} ne $Ticket->status ) )
+    if (    ( defined $ARGS{'status'} )
+        and $ARGS{'status'}
+        and ( $ARGS{'status'} ne $Ticket->status ) )
     {
-        ( $code, $msg ) = $Ticket->set_status( $ARGS{'Status'} );
+        ( $code, $msg ) = $Ticket->set_status( $ARGS{'status'} );
         push @results, "$msg";
     }
 
