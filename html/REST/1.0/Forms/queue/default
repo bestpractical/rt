@@ -64,7 +64,7 @@ my %fields = map { lc $_ => $_ } @fields;
 if ($id ne 'new') {
     $queue->load($id);
     if (!$queue->id) {
-        return [ "# queue $id does not exist.", [], {}, 1 ];
+        return [ "# Queue $id does not exist.", [], {}, 1 ];
     }
 }
 else {
@@ -111,7 +111,7 @@ else {
 
         delete $data{id};
         $id = $queue->id;
-        push(@comments, "# queue $id Created.");
+        push(@comments, "# Queue $id created.");
         goto DONE if keys %data == 0;
     }
 }
@@ -161,7 +161,7 @@ else {
         }
     }
 
-    push(@comments, "# queue $id updated.") unless $n == 0;
+    push(@comments, "# Queue $id updated.") unless $n == 0;
 }
 
 DONE:

@@ -54,23 +54,23 @@ expect_run(
     quit => 'quit',
 );
 expect_send(q{create -t ticket set subject='new ticket' add cc=foo@example.com}, "Creating a ticket...");
-expect_like(qr/Ticket \d+ Created/, "Created the ticket");
-expect_handle->before() =~ /Ticket (\d+) Created/;
+expect_like(qr/Ticket \d+ created/, "Created the ticket");
+expect_handle->before() =~ /Ticket (\d+) created/;
 my $ticket_id = $1;
 ok($ticket_id, "Got ticket id=$ticket_id");
 expect_send(q{create -t ticket set subject='new ticket'}, "Creating a ticket as just a subject...");
-expect_like(qr/Ticket \d+ Created/, "Created the ticket");
+expect_like(qr/Ticket \d+ created/, "Created the ticket");
 
 # make sure we can request things as 'rt foo'
 expect_send(q{rt create -t ticket set subject='rt ticket'}, "Creating a ticket with 'rt create'...");
-expect_like(qr/Ticket \d+ Created/, "Created the ticket");
+expect_like(qr/Ticket \d+ created/, "Created the ticket");
 
 # {{{ test queue manipulation
 
 # creating queues
 expect_send("create -t queue set name='NewQueue$$'", 'Creating a queue...');
-expect_like(qr/Queue \d+ Created/, 'Created the queue');
-expect_handle->before() =~ /Queue (\d+) Created/;
+expect_like(qr/Queue \d+ created/, 'Created the queue');
+expect_handle->before() =~ /Queue (\d+) created/;
 my $queue_id = $1;
 ok($queue_id, "Got queue id=$queue_id");
 # updating users
@@ -220,8 +220,8 @@ expect_like(qr/content_type: $attachment_type/, 'Got the attachment');
 
 # creating users
 expect_send("create -t user set name='NewUser$$' email='fbar$$\@example.com'", 'Creating a user...');
-expect_like(qr/User \d+ Created/, 'Created the user');
-expect_handle->before() =~ /User (\d+) Created/;
+expect_like(qr/User \d+ created/, 'Created the user');
+expect_handle->before() =~ /User (\d+) created/;
 my $user_id = $1;
 ok($user_id, "Got user id=$user_id");
 # updating users
@@ -244,7 +244,7 @@ TODO: {
 todo_skip "Group manipulation doesn't work right now", 8;
 # creating groups
 expect_send("create -t group set name='NewGroup$$'", 'Creating a group...');
-expect_like(qr/Group \d+ Created/, 'Created the group');
+expect_like(qr/Group \d+ created/, 'Created the group');
 expect_handle->before() =~ /Group (\d+) Created/;
 my $group_id = $1;
 ok($group_id, "Got group id=$group_id");
@@ -269,7 +269,7 @@ todo_skip "Custom field manipulation not yet implemented", 8;
 
 # creating custom fields
 expect_send("create -t custom_field set name='NewCF$$'", 'Creating a custom field...');
-expect_like(qr/Custom Field \d+ Created/, 'Created the custom field');
+expect_like(qr/Custom Field \d+ created/, 'Created the custom field');
 expect_handle->before() =~ /Custom Field (\d+) Created/;
 my $cf_id = $1;
 ok($cf_id, "Got custom field id=$cf_id");
@@ -290,13 +290,13 @@ TODO: {
 
 # {{{ test merging tickets
 expect_send("create -t ticket set subject='CLIMergeTest1-$$'", 'Creating first ticket to merge...');
-expect_like(qr/Ticket \d+ Created/, 'Created first ticket');
-expect_handle->before() =~ /Ticket (\d+) Created/;
+expect_like(qr/Ticket \d+ created/, 'Created first ticket');
+expect_handle->before() =~ /Ticket (\d+) created/;
 my $merge_ticket_A = $1;
 ok($merge_ticket_A, "Got first ticket to merge id=$merge_ticket_A");
 expect_send("create -t ticket set subject='CLIMergeTest2-$$'", 'Creating second ticket to merge...');
-expect_like(qr/Ticket \d+ Created/, 'Created second ticket');
-expect_handle->before() =~ /Ticket (\d+) Created/;
+expect_like(qr/Ticket \d+ created/, 'Created second ticket');
+expect_handle->before() =~ /Ticket (\d+) created/;
 my $merge_ticket_B = $1;
 ok($merge_ticket_B, "Got second ticket to merge id=$merge_ticket_B");
 expect_send("merge $merge_ticket_B $merge_ticket_A", 'Merging the tickets...');
@@ -336,8 +336,8 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
 
     # create a ticket to take/steal
     expect_send("create -t ticket set queue=$steal_queue_id subject='CLIStealTest-$$'", 'Creating ticket to steal...');
-    expect_like(qr/Ticket \d+ Created/, 'Created ticket');
-    expect_handle->before() =~ /Ticket (\d+) Created/;
+    expect_like(qr/Ticket \d+ created/, 'Created ticket');
+    expect_handle->before() =~ /Ticket (\d+) created/;
     my $steal_ticket_id = $1;
     ok($steal_ticket_id, "Got ticket to steal id=$steal_ticket_id");
 
@@ -412,8 +412,8 @@ sub ok_create_ticket {
     my $subject = shift;
 
     expect_send("create -t ticket set subject='$subject'", 'Creating ticket...');
-    expect_like(qr/Ticket \d+ Created/, "Created ticket '$subject'");
-    expect_handle->before() =~ /Ticket (\d+) Created/;
+    expect_like(qr/Ticket \d+ created/, "Created ticket '$subject'");
+    expect_handle->before() =~ /Ticket (\d+) created/;
     my $id = $1;
     ok($id, "Got ticket id=$id");
     

@@ -168,7 +168,7 @@ else {
 
         delete $data{id};
         $id = $ticket->id;
-        push(@comments, "# Ticket $id Created.");
+        push(@comments, "# Ticket $id created.");
         # see if the hash is empty
         goto DONE if ! keys(%data);
     }
@@ -179,8 +179,8 @@ if (!keys(%data)) {
     my ($time, $key, $val, @data);
 
     push @data, [ id    => "ticket/".$ticket->id   ];
-    push @data, [ queue => $ticket->queue_obj->name ] 
-	if (!%$fields || exists $fields->{lc 'queue'});
+    push @data, [ Queue => $ticket->queue_obj->name ] 
+	if (!%$fields || exists $fields->{lc 'Queue'});
     push @data, [ Owner => $ticket->owner_obj->name ]
 	if (!%$fields || exists $fields->{lc 'Owner'});
     push @data, [ Creator => $ticket->creator_obj->name ]
@@ -188,19 +188,19 @@ if (!keys(%data)) {
 
     foreach (qw(subject status priority initial_priority final_priority)) {
 	next unless (!%$fields || (exists $fields->{lc $_}));
-        push @data, [$_ => $ticket->$_ ];
+        push @data, [ucfirst $_ => $ticket->$_ ];
     }
 
     foreach $key (@people) {
         next unless (!%$fields || (exists $fields->{lc $key}));
-        push @data, [ $key => [ $ticket->$key->member_emails ] ];
+        push @data, [ ucfirst $key => [ $ticket->$key->member_emails ] ];
     }
 
     $time = RT::Date->new();
     foreach $key (@dates) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
         $time->set(format => 'sql', value => $ticket->$key);
-        push @data, [ $key => $time->as_string ];
+        push @data, [ ucfirst $key => $time->as_string ];
     }
 
     $time = RT::Date->new();
@@ -208,7 +208,7 @@ if (!keys(%data)) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
         $val = $ticket->$key || 0;
         $val = "$val minutes" if $val;
-        push @data, [ $key => $val ];
+        push @data, [ ucfirst $key => $val ];
     }
 
     # Display custom fields

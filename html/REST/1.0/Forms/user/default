@@ -108,7 +108,7 @@ else {
 
         $id = $user->id;
         delete $data{id};
-        push(@comments, "# User $id Created.");
+        push(@comments, "# User $id created.");
         goto DONE if keys %data == 0;
     }
 }
