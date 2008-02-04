@@ -274,7 +274,7 @@ else {
 
             my %new  = map {$_=>1} @{ vsplit($val) };
             my %old  = map {$_=>1} $ticket->$key->member_emails;
-            my $type = $key eq 'Requestors' ? 'Requestor' : $key;
+            my $type = $key eq 'requestors' ? 'requestor' : $key;
 
             foreach $p (keys %old) {
                 unless (exists $new{$p}) {
