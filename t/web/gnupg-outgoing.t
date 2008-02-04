@@ -338,7 +338,7 @@ sub check_text_emails {
 sub cleanup_headers {
     my $mail = shift;
     # strip id from subject to create new ticket
-    $mail =~ s/^(Subject:)\s*\[.*?\s+#\d+\]\s*/$1 /m;
+    $mail =~ s/^(Subject:)\s*\[.*?\s+#\d+\]\s*/$1 /mi;
     # strip several headers
     foreach my $field ( qw(Message-ID X-RT-Original-Encoding RT-Originator RT-Ticket X-RT-Loop-Prevention) ) {
         $mail =~ s/^$field:.*?\n(?! |\t)//gmsi;
