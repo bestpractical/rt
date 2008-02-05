@@ -25,7 +25,9 @@ RT->Config->Set( 'GnuPG',
                  OutgoingMessagesFormat => 'RFC' );
 
 RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir );
+                 homedir => $homedir,
+                 'no-permission-warning' => undef,
+);
 
 
 diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
@@ -37,7 +39,7 @@ diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
     );
     my %res = RT::Crypt::GnuPG::SignEncrypt( Entity => $entity, Encrypt => 0, Passphrase => 'test' );
     ok( $entity, 'signed entity');
-    ok( !$res{'logger'}, "log is here as well" );
+    ok( !$res{'logger'}, "log is here as well" ) or diag $res{'logger'};
     my @status = RT::Crypt::GnuPG::ParseStatus( $res{'status'} );
     is( scalar @status, 2, 'two records: passphrase, signing');
     is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
