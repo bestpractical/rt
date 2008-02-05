@@ -60,7 +60,7 @@ use Jifty::DBI::Record schema {
     column
         content_type => type is 'varchar(80)',
         max_length is 80, default is '';
-    column large_content => type is 'longtext', default is '';
+    column large_content => type is 'blob', default is '';
     column Creator => type is 'int(11)', max_length is 11, default is '0';
     column object_id => type is 'int(11)', max_length is 11, default is '0';
     column
