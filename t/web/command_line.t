@@ -7,6 +7,7 @@ use RT::Test; use Test::More tests => 219;
 my ($baseurl, $m) = RT::Test->started_ok;
 use RT::Model::User;
 use RT::Model::Queue;
+use Encode;
 my $rt_tool_path = "$RT::BinPath/rt";
 
 # {{{  test configuration options
@@ -435,7 +436,9 @@ sub check_attachment {
     open (my $fh, $attachment_path) or die "Can't open $attachment_path: $!";
     my $attachment_content = do { local($/); <$fh> };
     close $fh;
-    chomp $attachment_content;
+    $attachment_content =~ s/^\n*//;
+    $attachment_content =~ s/\n*$//;
+    $attachment_content = encode( 'utf8', $attachment_content ); # jifty output is utf8 encoded
     expect_is($attachment_content,"Attachment contains original text");
 }
 
