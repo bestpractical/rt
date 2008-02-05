@@ -82,7 +82,7 @@ use Jifty::DBI::Record schema {
     column type => max_length is 16, type is 'varchar(16)', default is '';
     column issue_statement => max_length is 11,
         type is 'int(11)', default is '0';
-    column Resolution => max_length is 11, type is 'int(11)', default is '0';
+    column resolution => max_length is 11, type is 'int(11)', default is '0';
     column owner      => max_length is 11, type is 'int(11)', default is '0';
     column subject => max_length is 200, type is 'varchar(200)', default is '';
     column initial_priority => max_length is 11, type is 'int(11)', default is '0';
