@@ -3,13 +3,13 @@
 use strict;
 use warnings;
 
-use Test::More tests => 78;
+use Test::More tests => 79;
 use RT::Test;
 use RT::Ticket;
 
-my $q = RT::Queue->new( $RT::SystemUser );
-my $queue = 'SearchTests-'. rand(200);
-$q->Create( Name => $queue );
+my $q = RT::Test->load_or_create_queue( Name => 'Regression' );
+ok $q && $q->id, 'loaded or created queue';
+my $queue = $q->Name;
 
 my ($total, @data, @tickets, %test) = (0, ());
 
