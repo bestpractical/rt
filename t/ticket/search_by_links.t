@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 37;
+use Test::More tests => 80;
 use RT::Test;
 use RT::Ticket;
 
@@ -53,6 +53,7 @@ sub run_tests {
     }
 }
 
+# simple set with "no links", "parent and child"
 @data = (
     { Subject => '-', },
     { Subject => 'p', },
@@ -80,6 +81,48 @@ sub run_tests {
 
     'MemberOf    = '. $tickets[1]->id  => { '-' => 0, c => 1, p => 0 },
     'MemberOf   != '. $tickets[1]->id  => { '-' => 1, c => 0, p => 1 },
+);
+{
+    my $tix = RT::Tickets->new($RT::SystemUser);
+    $tix->FromSQL("Queue = '". $q->id ."'");
+    is($tix->Count, $total, "found $total tickets");
+}
+run_tests();
+
+# another set with tests of combinations searches
+@data = (
+    { Subject => '-', },
+    { Subject => 'p', },
+    { Subject => 'rp',  RefersTo => -1 },
+    { Subject => 'c',   MemberOf => -2 },
+    { Subject => 'rc1', RefersTo => -1 },
+    { Subject => 'rc2', RefersTo => -2 },
+);
+@tickets = add_tix_from_data();
+my $pid = $tickets[1]->id;
+%test = (
+    'RefersTo IS NOT NULL'  => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
+    'RefersTo IS     NULL'  => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
+
+    'RefersTo IS NOT NULL AND MemberOf IS NOT NULL'  => { '-' => 0, c => 0, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
+    'RefersTo IS NOT NULL AND MemberOf IS     NULL'  => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
+    'RefersTo IS     NULL AND MemberOf IS NOT NULL'  => { '-' => 0, c => 1, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
+    'RefersTo IS     NULL AND MemberOf IS     NULL'  => { '-' => 1, c => 0, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
+
+    'RefersTo IS NOT NULL OR  MemberOf IS NOT NULL'  => { '-' => 0, c => 1, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
+    'RefersTo IS NOT NULL OR  MemberOf IS     NULL'  => { '-' => 1, c => 0, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
+    'RefersTo IS     NULL OR  MemberOf IS NOT NULL'  => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
+    'RefersTo IS     NULL OR  MemberOf IS     NULL'  => { '-' => 1, c => 1, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
+
+    "RefersTo  = $pid AND MemberOf  = $pid" => { '-' => 0, c => 0, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
+    "RefersTo  = $pid AND MemberOf != $pid" => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 0, rc2 => 0 },
+    "RefersTo != $pid AND MemberOf  = $pid" => { '-' => 0, c => 1, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
+    "RefersTo != $pid AND MemberOf != $pid" => { '-' => 1, c => 0, p => 1, rp => 0, rc1 => 1, rc2 => 1 },
+
+    "RefersTo  = $pid OR  MemberOf  = $pid" => { '-' => 0, c => 1, p => 0, rp => 1, rc1 => 0, rc2 => 0 },
+    "RefersTo  = $pid OR  MemberOf != $pid" => { '-' => 1, c => 0, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
+    "RefersTo != $pid OR  MemberOf  = $pid" => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 1, rc2 => 1 },
+    "RefersTo != $pid OR  MemberOf != $pid" => { '-' => 1, c => 1, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
 );
 {
     my $tix = RT::Tickets->new($RT::SystemUser);
