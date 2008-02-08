@@ -53,7 +53,7 @@
 <&|/l, Jifty->web->current_user->name&>(displaying new and open tickets for %1)</&>
 <form method="post" action="MyDay.html">
 <table width="100%" cellpadding="0" cellspacing="0">
-% while ( my $Ticket = $Tickets->next()) {
+% while ( my $Ticket = $tickets->next()) {
 % my $class;
 % $i++;
 % if ($i % 2 ) {
@@ -107,11 +107,9 @@ foreach my $arg ( keys %ARGS ) {
 
 }
 
-my $Tickets = RT::Model::TicketCollection->new();
-$Tickets->limit_owner(value => Jifty->web->current_user->id);
-$Tickets->limit_status( value => 'open' );
-$Tickets->limit_status ( value => 'new');
-$Tickets->order_by ( column => 'Priority', order => 'DESC');
+my $tickets = RT::Model::TicketCollection->new();
+$tickets->from_sql("Status = 'new' or Status = 'open' AND owner = '".Jift->web->current_user->id"'");
+$tickets->order_by ( column => 'priority', order => 'DESC');
 
 
 </%INIT>

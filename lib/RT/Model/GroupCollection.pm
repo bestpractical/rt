@@ -84,19 +84,15 @@ use RT::Model::UserCollection;
 
 # {{{ sub _init
 
-sub _init {
+sub implicit_clauses {
     my $self = shift;
-    $self->{'table'}       = "Groups";
-    $self->{'primary_key'} = "id";
-
-    my @result = $self->SUPER::_init(@_);
-
     $self->order_by(
         alias  => 'main',
         column => 'name',
         order  => 'ASC'
     );
 
+    warn "joining!";
     # XXX: this code should be generalized
     $self->{'princalias'} = $self->join(
         alias1  => 'main',
@@ -108,13 +104,11 @@ sub _init {
     # even if this condition is useless and ids in the Groups table
     # only match principals with type 'Group' this could speed up
     # searches in some DBs.
-    $self->limit(
-        alias  => $self->{'princalias'},
+    $self->limit( alias  => $self->{'princalias'},
         column => 'principal_type',
         value  => 'Group',
     );
 
-    return (@result);
 }
 
 # }}}

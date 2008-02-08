@@ -69,7 +69,7 @@ my @fields = qw(
     Status ExtendedStatus UpdateStatus
     Type
 
-    owner_name Requestors Cc AdminCc CreatedBy LastUpdatedBy
+    owner_name requestors cc admin_cc created_by last_updated_by
 
     Priority initial_priority final_priority
 

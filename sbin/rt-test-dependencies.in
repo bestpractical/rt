@@ -1,4 +1,4 @@
-#!@PERL@
+#!/usr/bin/env perl
 # BEGIN BPS TAGGED BLOCK {{{
 # 
 # COPYRIGHT:
@@ -80,8 +80,8 @@ my %default = (
     'with-CLI' => 1,
     'with-OPENID' => 0,
     'with-MAILGATE' => 1, 
-    'with-DEV' => @RT_DEVEL_MODE@, 
-    'with-STANDALONE' => @RT_STANDALONE@,
+    'with-DEV' => 1,
+    'with-STANDALONE' => 1,
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
@@ -331,7 +331,6 @@ if ($args{'download'}) {
 
 check_perl_version();
 
-check_users();
 
 my %Missing_By_Type = ();
 foreach my $type (sort grep $args{$_}, keys %args) {
@@ -415,7 +414,7 @@ sub resolve_dep {
         unless ( $configured ) {
             print <<END;
 You didn't configure CPAN shell yet.
-Please run `@PERL@ -MCPAN -e shell` tool and configure it.
+Please run `perl -MCPAN -e shell` tool and configure it.
 END
             exit(1);
         }
@@ -440,9 +439,9 @@ this situatation:
 
 1) use a different tool to install dependencies by running setting the following
    shell environment variable and rerunning this tool:
-    RT_FIX_DEPS_CMD='@PERL@ -MCPAN -e"install %s"'
+    RT_FIX_DEPS_CMD='perl -MCPAN -e"install %s"'
 2) Attempt to configure CPAN by running:
-   `@PERL@ -MCPAN -e shell` program from shell.
+   `perl -MCPAN -e shell` program from shell.
    If this fails, you may have to manually upgrade CPAN (see below)
 3) Try to update the CPAN client. Download it from:
    http://search.cpan.org/dist/CPAN and try again
@@ -514,15 +513,6 @@ sub check_perl_version {
   }
 }
 
-sub check_users {
-  section("users");
-  print_found("rt group (@RTGROUP@)",      defined getgrnam("@RTGROUP@"));
-  print_found("bin owner (@BIN_OWNER@)",   defined getpwnam("@BIN_OWNER@"));
-  print_found("libs owner (@LIBS_OWNER@)", defined getpwnam("@LIBS_OWNER@"));
-  print_found("libs group (@LIBS_GROUP@)", defined getgrnam("@LIBS_GROUP@"));
-  print_found("web owner (@WEB_USER@)",    defined getpwnam("@WEB_USER@"));
-  print_found("web group (@WEB_GROUP@)",   defined getgrnam("@WEB_GROUP@"));
-}
 
 
 
