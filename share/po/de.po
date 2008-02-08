@@ -2323,7 +2323,7 @@ msgid "Last Updated"
 msgstr "Zuletzt Aktualisiert"
 
 #: html/Search/Elements/PickBasics:103
-msgid "LastUpdatedBy"
+msgid "last_updated_by"
 msgstr "ZuletztBearbeitetVon"
 
 #: html/Ticket/Elements/ShowBasics:68

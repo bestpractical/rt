@@ -33,11 +33,11 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column
         transaction_id => max_length is 11,
-        type is 'int(11)', default is '0';
+        type is 'int', default is '0';
     column
         message_id => max_length is 200,
         type is 'varchar(200)', default is '';
-    column parent => max_length is 11, type is 'int(11)', default is '0';
+    column parent => max_length is 11, type is 'int', default is '0';
     column
         content_type => max_length is 200,
         type is 'varchar(200)', default is '';
@@ -51,8 +51,8 @@ use Jifty::DBI::Record schema {
     column content         => type is 'blob', default is '';
     column content_encoding => type is 'blob', default is '';
     column headers         => type is 'blob', default is '';
-    column creator => max_length is 11, type is 'int(11)', default is '0';
-    column created => type is 'datetime';
+    column creator => max_length is 11, type is 'int', default is '0';
+    column created => type is 'timestamp';
 
 };
 

@@ -156,7 +156,7 @@ sub _ids_dir {
 sub _ids_db {
     my ( $self, $dbh ) = @_;
     my $ids = $dbh->selectcol_arrayref(
-        "SELECT id FROM sessions order BY LastUpdated DESC");
+        "SELECT id FROM sessions order BY last_updated DESC");
     die "couldn't get ids: " . $dbh->errstr if $dbh->errstr;
     return $ids;
 }
@@ -188,7 +188,7 @@ sub clear_old_db {
         my $date = POSIX::strftime( "%Y-%m-%d %H:%M",
             localtime( time - int $older_than ) );
 
-        my $sth = $dbh->prepare("DELETE FROM sessions WHERE LastUpdated < ?");
+        my $sth = $dbh->prepare("DELETE FROM sessions WHERE last_updated < ?");
         die "couldn't prepare query: " . $dbh->errstr unless $sth;
         $rows = $sth->execute($date);
         die "couldn't execute query: " . $dbh->errstr unless defined $rows;

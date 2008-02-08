@@ -28,18 +28,18 @@ my $COLUMN_MAP = {
         title => 'Created By',
         value     => sub  { return $_[0]->creator_obj->name }
     },
-    LastUpdated => {
-        attribute => 'LastUpdated',
+    last_updated => {
+        attribute => 'last_updated',
         title     => 'Last Updated',
         value     => sub  { return $_[0]->last_updated_obj->as_string }
     },
-    LastUpdatedRelative => {
-        attribute => 'LastUpdated',
+    last_updatedRelative => {
+        attribute => 'last_updated',
         title     => 'Last Updated',
         value     => sub  { return $_[0]->last_updated_obj->age_as_string }
     },
-    LastUpdatedBy => {
-        attribute => 'LastUpdatedBy',
+    last_updated_by => {
+        attribute => 'last_updated_by',
         title     => 'Last Updated By',
         value     => sub  { return $_[0]->last_updated_by_obj->name }
     },

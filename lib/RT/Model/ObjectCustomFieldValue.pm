@@ -61,22 +61,22 @@ use Jifty::DBI::Record schema {
         content_type => type is 'varchar(80)',
         max_length is 80, default is '';
     column large_content => type is 'blob', default is '';
-    column Creator => type is 'int(11)', max_length is 11, default is '0';
-    column object_id => type is 'int(11)', max_length is 11, default is '0';
+    column Creator => type is 'int', max_length is 11, default is '0';
+    column object_id => type is 'int', max_length is 11, default is '0';
     column
-        last_updated_by => type is 'int(11)',
+        last_updated_by => type is 'int',
         max_length is 11, default is '0';
     column disabled => type is 'smallint(6)', max_length is 6, default is '0';
-    column sort_order => type is 'int(11)', max_length is 11, default is '0';
-    column Created => type is 'datetime', default is '';
-    column custom_field => type is 'int(11)', max_length is 11, default is '0';
+    column sort_order => type is 'int', max_length is 11, default is '0';
+    column Created => type is 'timestamp';
+    column custom_field => type is 'int', max_length is 11, default is '0';
     column
         content => type is 'varchar(255)',
         max_length is 255, default is '';
     column
         content_encoding => type is 'varchar(80)',
         max_length is 80, default is '';
-    column LastUpdated => type is 'datetime', default is '';
+    column last_updated => type is 'timestamp';
     column
         object_type => type is 'varchar(255)',
         max_length is 255, default is '';

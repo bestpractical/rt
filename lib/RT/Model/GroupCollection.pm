@@ -92,7 +92,6 @@ sub implicit_clauses {
         order  => 'ASC'
     );
 
-    warn "joining!";
     # XXX: this code should be generalized
     $self->{'princalias'} = $self->join(
         alias1  => 'main',

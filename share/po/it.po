@@ -2924,15 +2924,15 @@ msgid "Last Updated By"
 msgstr "Modificato Da"
 
 #: NOT FOUND IN SOURCE
-msgid "LastUpdated"
+msgid "last_updated"
 msgstr "UltimaModifica"
 
 #: html/Search/Elements/PickBasics:103
-msgid "LastUpdatedBy"
+msgid "last_updated_by"
 msgstr "ModificatoPerUltimoDa"
 
 #: NOT FOUND IN SOURCE
-msgid "LastUpdatedRelative"
+msgid "last_updatedRelative"
 msgstr "TempoDaUltimoAggiornamento"
 
 #: html/Ticket/Elements/ShowBasics:68

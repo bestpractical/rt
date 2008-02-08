@@ -2888,11 +2888,11 @@ msgid "Last Updated"
 msgstr "Sist Oppdatert"
 
 #: NOT FOUND IN SOURCE
-msgid "LastUpdated"
+msgid "last_updated"
 msgstr "SistOppdatert"
 
 #: html/Search/Elements/PickBasics:103
-msgid "LastUpdatedBy"
+msgid "last_updated_by"
 msgstr ""
 
 #: html/Ticket/Elements/ShowBasics:68

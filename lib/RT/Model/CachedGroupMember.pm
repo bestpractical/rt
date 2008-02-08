@@ -45,7 +45,7 @@ Create takes a hash of values and creates a row in the database:
   'immediate_parent' is the RT::Model::Principal of the group that this 
   principal belongs to to get here
 
-  int(11) 'via' is an internal reference to CachedGroupMembers->id of
+  int 'via' is an internal reference to CachedGroupMembers->id of
   the "parent" record of this cached group member. It should be empty if 
   this member is a "direct" member of this group. (In that case, it will 
   be set to this cached group member's id after creation)

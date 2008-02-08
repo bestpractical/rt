@@ -598,7 +598,7 @@ set($DefaultSearchResultFormat, qq{
    '<small>__Requestors__</small>',
    '<small>__CreatedRelative__</small>',
    '<small>__ToldRelative__</small>',
-   '<small>__LastUpdatedRelative__</small>',
+   '<small>__last_updatedRelative__</small>',
    '<small>__time_left__</small>'}
 );
 

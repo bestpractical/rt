@@ -78,7 +78,7 @@ my @fields = qw(
     starts      startsRelative
     Started     StartedRelative
     Created     CreatedRelative
-    LastUpdated LastUpdatedRelative
+    last_updated last_updatedRelative
     Told        ToldRelative
     Due         DueRelative
     resolved    ResolvedRelative

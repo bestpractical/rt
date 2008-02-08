@@ -2677,7 +2677,7 @@ msgid "Last Updated"
 msgstr "Viimeksi päivitetty"
 
 #: html/Search/Elements/PickBasics:103
-msgid "LastUpdatedBy"
+msgid "last_updated_by"
 msgstr ""
 
 #: html/Ticket/Elements/ShowBasics:68

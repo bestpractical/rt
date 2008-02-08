@@ -60,7 +60,7 @@ my $format = '\'   <b><a href="/Ticket/Display.html?id=__id__">__id__</a></b>/TI
 \'<small>__Requestors__</small>\',
 \'<small>__CreatedRelative__</small>\',
 \'<small>__ToldRelative__</small>\',
-\'<small>__LastUpdatedRelative__</small>\',
+\'<small>__last_updatedRelative__</small>\',
 \'<small>__time_left__</small>\'';
 
 my $curruser = RT::CurrentUser->new(id => $searchuser->id);

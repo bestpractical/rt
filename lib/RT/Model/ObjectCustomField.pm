@@ -57,15 +57,15 @@ use base qw/RT::Record/;
 sub table {'ObjectCustomFields'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column custom_field => type is 'int(11)', max_length is 11, default is '0';
-    column creator     => type is 'int(11)', max_length is 11, default is '0';
-    column object_id   => type is 'int(11)', max_length is 11, default is '0';
+    column custom_field => type is 'int', max_length is 11, default is '0';
+    column creator     => type is 'int', max_length is 11, default is '0';
+    column object_id   => type is 'int', max_length is 11, default is '0';
     column
-        last_updated_by => type is 'int(11)',
+        last_updated_by => type is 'int',
         max_length is 11, default is '0';
-    column sort_order => type is 'int(11)', max_length is 11, default is '0';
-    column created     => type is 'datetime', default is '';
-    column last_updated => type is 'datetime', default is '';
+    column sort_order => type is 'int', max_length is 11, default is '0';
+    column created     => type is 'timestamp';
+    column last_updated => type is 'timestamp';
 
 };
 

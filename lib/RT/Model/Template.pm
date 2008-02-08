@@ -31,15 +31,15 @@ sub table {'Templates'}
 use base qw'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column queue => max_length is 11,  type is 'int(11)',      default is '0';
+    column queue => max_length is 11,  type is 'int',      default is '0';
     column name  => max_length is 200, type is 'varchar(200)', default is '';
     column description => max_length is 255, type is 'varchar(255)', default is '';
     column type     => max_length is 16, type is 'varchar(16)', default is '';
     column content     => type is 'blob',     default is '';
-    column last_updated => type is 'datetime', default is '';
-    column last_updated_by => max_length is 11, type is 'int(11)', default is '0';
-    column creator => max_length is 11, type is 'int(11)', default is '0';
-    column created => type is 'datetime', default is '';
+    column last_updated => type is 'timestamp';
+    column last_updated_by => max_length is 11, type is 'int', default is '0';
+    column creator => max_length is 11, type is 'int', default is '0';
+    column created => type is 'timestamp';
 
 };
 

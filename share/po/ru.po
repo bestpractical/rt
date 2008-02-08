@@ -2930,11 +2930,11 @@ msgid "Last Updated"
 msgstr "Последнее изменение"
 
 #: NOT FOUND IN SOURCE
-msgid "LastUpdated"
+msgid "last_updated"
 msgstr "Последнее изменение"
 
 #: html/Search/Elements/PickBasics:103
-msgid "LastUpdatedBy"
+msgid "last_updated_by"
 msgstr "Последний раз изменено"
 
 #: html/Ticket/Elements/ShowBasics:68

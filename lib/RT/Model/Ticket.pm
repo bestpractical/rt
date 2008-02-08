@@ -77,34 +77,34 @@ sub table {'Tickets'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
-    column effective_id => max_length is 11, type is 'int(11)', default is '0';
+    column effective_id => max_length is 11, type is 'int', default is '0';
     column queue       => references RT::Model::Queue;
     column type => max_length is 16, type is 'varchar(16)', default is '';
     column issue_statement => max_length is 11,
-        type is 'int(11)', default is '0';
-    column resolution => max_length is 11, type is 'int(11)', default is '0';
-    column owner      => max_length is 11, type is 'int(11)', default is '0';
+        type is 'int', default is '0';
+    column resolution => max_length is 11, type is 'int', default is '0';
+    column owner      => max_length is 11, type is 'int', default is '0';
     column subject => max_length is 200, type is 'varchar(200)', default is '';
-    column initial_priority => max_length is 11, type is 'int(11)', default is '0';
-    column final_priority => max_length is 11, type is 'int(11)', default is '0';
-    column priority => max_length is 11, type is 'int(11)', default is '0';
+    column initial_priority => max_length is 11, type is 'int', default is '0';
+    column final_priority => max_length is 11, type is 'int', default is '0';
+    column priority => max_length is 11, type is 'int', default is '0';
     column
         time_estimated => max_length is 11,
-        type is 'int(11)', default is '0';
-    column time_worked => max_length is 11, type is 'int(11)', default is '0';
+        type is 'int', default is '0';
+    column time_worked => max_length is 11, type is 'int', default is '0';
     column status => max_length is 10, type is 'varchar(10)', default is '';
-    column time_left => max_length is 11, type is 'int(11)', default is '0';
-    column told     => type is 'datetime', default is '';
-    column starts   => type is 'datetime', default is '';
-    column started  => type is 'datetime', default is '';
-    column due      => type is 'datetime', default is '';
-    column resolved => type is 'datetime', default is '';
+    column time_left => max_length is 11, type is 'int', default is '0';
+    column told     => type is 'timestamp';
+    column starts   => type is 'timestamp';
+    column started  => type is 'timestamp';
+    column due      => type is 'timestamp';
+    column resolved => type is 'timestamp';
     column
         last_updated_by => max_length is 11,
-        type is 'int(11)', default is '0';
-    column last_updated => type is 'datetime', default is '';
-    column creator => max_length is 11,   type is 'int(11)', default is '0';
-    column created => type is 'datetime', default is '';
+        type is 'int', default is '0';
+    column last_updated => type is 'timestamp';
+    column creator => max_length is 11,   type is 'int', default is '0';
+    column created => type is 'timestamp';
     column disabled => max_length is 6, type is 'smallint(6)', default is '0';
 };
 

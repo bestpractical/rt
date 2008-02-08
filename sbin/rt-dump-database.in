@@ -62,7 +62,7 @@ my $LocalOnly = @ARGV ? shift(@ARGV) : 1;
 my %RV;
 my %Ignore = (
     All => [qw(
-	id Created Creator LastUpdated LastUpdatedBy
+	id Created Creator last_updated last_updated_by
     )],
     Templates => [qw(
 	TranslationOf
@@ -93,7 +93,7 @@ foreach my $class (@classes) {
 
     if ($LocalOnly) {
         next if $class eq 'ACL'; # XXX - would go into infinite loop - XXX
-	$objects->limit( column => 'LastUpdatedBy', operator => '!=', value => $system_userId )
+	$objects->limit( column => 'last_updated_by', operator => '!=', value => $system_userId )
 	    unless $class eq 'Groups';
 	$objects->limit( column => 'id', operator => '!=', value => $system_userId )
 	    if $class eq 'Users';
@@ -103,7 +103,7 @@ foreach my $class (@classes) {
 
     my %fields;
     while (my $obj = $objects->next) {
-	next if $obj->can('LastUpdatedBy') and $obj->LastUpdatedBy == $system_userId;
+	next if $obj->can('last_updated_by') and $obj->last_updated_by == $system_userId;
 
 	if (!%fields) {
 	    %fields = map { $_ => 1 } keys %{$obj->_ClassAccessible};

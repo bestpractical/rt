@@ -64,22 +64,22 @@ use Jifty::DBI::Record schema {
 
     column name => max_length is 200, type is 'varchar(200)', default is '';
     column type => max_length is 200, type is 'varchar(200)', default is '';
-    column max_values => max_length is 11, type is 'int(11)', default is '0';
+    column max_values => max_length is 11, type is 'int', default is '0';
     column pattern => type is 'longtext', default is '';
     column repeated => max_length is 6, type is 'smallint(6)', default is '0';
     column
         description => max_length is 255,
         type is 'varchar(255)', default is '';
-    column sort_order => max_length is 11, type is 'int(11)', default is '0';
+    column sort_order => max_length is 11, type is 'int', default is '0';
     column
         lookup_type => max_length is 255,
         type is 'varchar(255)', default is '';
-    column creator => max_length is 11, type is 'int(11)', default is '0';
-    column created => type is 'datetime', default is '';
+    column creator => max_length is 11, type is 'int', default is '0';
+    column created => type is 'timestamp';
     column
         last_updated_by => max_length is 11,
-        type is 'int(11)', default is '0';
-    column last_updated => type is 'datetime', default is '';
+        type is 'int', default is '0';
+    column last_updated => type is 'timestamp';
     column disabled => max_length is 6, type is 'smallint(6)', default is '0';
 };
 
@@ -170,11 +170,11 @@ Create takes a hash of values and creates a row in the database:
 
   varchar(200) 'name'.
   varchar(200) 'type'.
-  int(11) 'max_values'.
+  int 'max_values'.
   varchar(255) 'pattern'.
   smallint(6) 'repeated'.
   varchar(255) 'description'.
-  int(11) 'sort_order'.
+  int 'sort_order'.
   varchar(255) 'lookup_type'.
   smallint(6) 'disabled'.
 

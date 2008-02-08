@@ -82,12 +82,12 @@ use Jifty::DBI::Record schema {
     column description => type is 'text';
     column exec_module  => type is 'text';
     column argument    => type is 'text';
-    column creator     => max_length is 11, type is 'int(11)', default is '0';
-    column created => type is 'datetime', default is '';
+    column creator     => max_length is 11, type is 'int', default is '0';
+    column created => type is 'timestamp';
     column
         last_updated_by => max_length is 11,
-        type is 'int(11)', default is '0';
-    column last_updated => type is 'datetime', default is '';
+        type is 'int', default is '0';
+    column last_updated => type is 'timestamp';
 
 };
 

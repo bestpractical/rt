@@ -59,7 +59,7 @@ sub table {'Attributes'}
 use base 'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column object_id => max_length is 11, type is 'int(11)', default is '0';
+    column object_id => max_length is 11, type is 'int', default is '0';
     column name => max_length is 200, type is 'varchar(200)', default is '';
     column
         object_type => max_length is 200,
@@ -152,7 +152,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(255) 'content'.
   varchar(16) 'content_type',
   varchar(64) 'object_type'.
-  int(11) 'object_id'.
+  int 'object_id'.
 
 You may pass a C<object> instead of C<object_type> and C<object_id>.
 

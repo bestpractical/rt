@@ -364,7 +364,7 @@ sub load_by_cols {
 
 # There is room for optimizations in most of those subs:
 
-# {{{ LastUpdatedObj
+# {{{ last_updatedObj
 
 sub last_updated_obj {
     my $self = shift;
@@ -400,7 +400,7 @@ sub age_as_string {
 
 # }}}
 
-# {{{ LastUpdatedAsString
+# {{{ last_updatedAsString
 
 # TODO this should be deprecated
 
@@ -503,11 +503,11 @@ sub _set {
 
 # }}}
 
-# {{{ sub _setLastUpdated
+# {{{ sub _setlast_updated
 
-=head2 _setLastUpdated
+=head2 _setlast_updated
 
-This routine updates the LastUpdated and last_updated_by columns of the row in question
+This routine updates the last_updated and last_updated_by columns of the row in question
 It takes no options. Arguably, this is a bug
 
 =cut
@@ -518,7 +518,7 @@ sub set_last_updated {
     $now->set_to_now();
 
     my ( $msg, $val ) = $self->__set(
-        column => 'LastUpdated',
+        column => 'last_updated',
         value  => $now->iso
     );
     ( $msg, $val ) = $self->__set(
@@ -549,9 +549,9 @@ sub creator_obj {
 
 # }}}
 
-# {{{ sub LastUpdatedByObj
+# {{{ sub last_updated_byObj
 
-=head2 LastUpdatedByObj
+=head2 last_updated_byObj
 
   Returns an RT::Model::User object of the last user to touch this object
 
@@ -559,11 +559,11 @@ sub creator_obj {
 
 sub last_updated_by_obj {
     my $self = shift;
-    unless ( exists $self->{LastUpdatedByObj} ) {
-        $self->{'LastUpdatedByObj'} = RT::Model::User->new;
-        $self->{'LastUpdatedByObj'}->load( $self->last_updated_by );
+    unless ( exists $self->{last_updated_byObj} ) {
+        $self->{'last_updated_byObj'} = RT::Model::User->new;
+        $self->{'last_updated_byObj'}->load( $self->last_updated_by );
     }
-    return $self->{'LastUpdatedByObj'};
+    return $self->{'last_updated_byObj'};
 }
 
 # }}}

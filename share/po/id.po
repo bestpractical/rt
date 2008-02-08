@@ -2337,7 +2337,7 @@ msgid "Last Updated"
 msgstr "Pembaharuan Terakhir"
 
 #: html/Search/Elements/PickBasics:103
-msgid "LastUpdatedBy"
+msgid "last_updated_by"
 msgstr "Pembaharuan Terakhir Oleh"
 
 #: html/Ticket/Elements/ShowBasics:68

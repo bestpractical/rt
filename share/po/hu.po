@@ -2171,7 +2171,7 @@ msgid "Last Updated"
 msgstr "Utoljára aktualizálva"
 
 #: html/Search/Elements/PickBasics:103
-msgid "LastUpdatedBy"
+msgid "last_updated_by"
 msgstr "Utoljára aktualizálta"
 
 #: html/Ticket/Elements/ShowBasics:68

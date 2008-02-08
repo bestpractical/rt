@@ -25,8 +25,8 @@ use Jifty::DBI::Record schema {
     column
         object_type => max_length is 64,
         type is 'varchar(64)', default is '';
-    column object_id => max_length is 11, type is 'int(11)', default is '0';
-    column time_taken => max_length is 11, type is 'int(11)', default is '0';
+    column object_id => max_length is 11, type is 'int', default is '0';
+    column time_taken => max_length is 11, type is 'int', default is '0';
     column type  => max_length is 20, type is 'varchar(20)', default is '';
     column field => max_length is 40, type is 'varchar(40)', default is '';
     column
@@ -38,11 +38,11 @@ use Jifty::DBI::Record schema {
     column
         reference_type => max_length is 255,
         type is 'varchar(255)', default is '';
-    column old_reference => max_length is 11, type is 'int(11)', default is '';
-    column new_reference => max_length is 11, type is 'int(11)', default is '';
+    column old_reference => max_length is 11, type is 'int', default is '';
+    column new_reference => max_length is 11, type is 'int', default is '';
     column data => max_length is 255, type is 'varchar(255)', default is '';
-    column creator => max_length is 11, type is 'int(11)', default is '0';
-    column created => type is 'datetime', default is '';
+    column creator => max_length is 11, type is 'int', default is '0';
+    column created => type is 'timestamp';
 
 };
 
@@ -66,7 +66,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 object_id
 
 Returns the current value of object_id. 
-(In the database, object_id is stored as int(11).)
+(In the database, object_id is stored as int.)
 
 
 
@@ -75,7 +75,7 @@ Returns the current value of object_id.
 
 Set object_id to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, object_id will be stored as a int(11).)
+(In the database, object_id will be stored as a int.)
 
 
 =cut
@@ -83,7 +83,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 time_taken
 
 Returns the current value of time_taken. 
-(In the database, time_taken is stored as int(11).)
+(In the database, time_taken is stored as int.)
 
 
 
@@ -92,7 +92,7 @@ Returns the current value of time_taken.
 
 Set time_taken to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, time_taken will be stored as a int(11).)
+(In the database, time_taken will be stored as a int.)
 
 
 =cut
@@ -185,7 +185,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 old_reference
 
 Returns the current value of old_reference. 
-(In the database, old_reference is stored as int(11).)
+(In the database, old_reference is stored as int.)
 
 
 
@@ -194,7 +194,7 @@ Returns the current value of old_reference.
 
 Set old_reference to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, old_reference will be stored as a int(11).)
+(In the database, old_reference will be stored as a int.)
 
 
 =cut
@@ -202,7 +202,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 new_reference
 
 Returns the current value of new_reference. 
-(In the database, new_reference is stored as int(11).)
+(In the database, new_reference is stored as int.)
 
 
 
@@ -211,7 +211,7 @@ Returns the current value of new_reference.
 
 Set new_reference to value. 
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, new_reference will be stored as a int(11).)
+(In the database, new_reference will be stored as a int.)
 
 
 =cut
@@ -236,7 +236,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 creator
 
 Returns the current value of creator. 
-(In the database, creator is stored as int(11).)
+(In the database, creator is stored as int.)
 
 
 =cut

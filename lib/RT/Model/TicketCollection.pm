@@ -124,7 +124,7 @@ our %FIELD_METADATA = (
     Started         => [ 'DATE'         => 'Started', ],
     Due             => [ 'DATE'         => 'Due', ],
     resolved        => [ 'DATE'         => 'resolved', ],
-    LastUpdated     => [ 'DATE'         => 'LastUpdated', ],
+    last_updated     => [ 'DATE'         => 'last_updated', ],
     Created         => [ 'DATE'         => 'Created', ],
     subject         => [ 'STRING', ],
     content         => [ 'TRANSFIELD', ],
@@ -214,7 +214,7 @@ our @SORTcolumns = qw(id Status
     queue subject
     owner Created Due starts Started
     Told
-    resolved LastUpdated priority time_worked time_left);
+    resolved last_updated priority time_worked time_left);
 
 =head2 SortFields
 

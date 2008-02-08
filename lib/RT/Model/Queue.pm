@@ -94,19 +94,19 @@ use Jifty::DBI::Record schema {
         type is 'varchar(120)', default is '';
     column
         initial_priority => max_length is 11,
-        type is 'int(11)', default is '0';
+        type is 'int', default is '0';
     column
         final_priority => max_length is 11,
-        type is 'int(11)', default is '0';
+        type is 'int', default is '0';
     column
         default_due_in => max_length is 11,
-        type is 'int(11)', default is '0';
-    column Creator => max_length is 11, type is 'int(11)', default is '0';
-    column Created => type is 'datetime', default is '';
+        type is 'int', default is '0';
+    column Creator => max_length is 11, type is 'int', default is '0';
+    column Created => type is 'timestamp';
     column
         last_updated_by => max_length is 11,
-        type is 'int(11)', default is '0';
-    column last_updated => type is 'datetime', default is '';
+        type is 'int', default is '0';
+    column last_updated => type is 'timestamp';
     column disabled => max_length is 6, type is 'smallint(6)', default is '0';
 };
 our @DEFAULT_ACTIVE_STATUS   = qw(new open stalled);

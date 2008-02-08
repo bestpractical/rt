@@ -3004,7 +3004,7 @@ msgid "Last Updated"
 msgstr "Sidst opdateret"
 
 #: html/Search/Elements/PickBasics:103
-msgid "LastUpdatedBy"
+msgid "last_updated_by"
 msgstr "SidstOpdateretAf"
 
 #: html/Ticket/Elements/ShowBasics:68

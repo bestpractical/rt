@@ -62,7 +62,7 @@ RT::Shredder::Plugin::Tickets - search plugin for wiping tickets.
 Search tickets with query string.
 Examples:
   queue = 'my queue' AND ( Status = 'deleted' OR Status = 'rejected' )
-  LastUpdated < '2003-12-31 23:59:59'
+  last_updated < '2003-12-31 23:59:59'
 
 B<Hint:> You can construct query with the query builder in RT's web
 interface and then open advanced page and copy query string.

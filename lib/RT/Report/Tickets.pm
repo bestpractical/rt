@@ -69,9 +69,9 @@ sub groupings {
         CreatedDaily
         CreatedMonthly
         CreatedAnnually
-        LastUpdatedDaily
-        LastUpdatedMonthly
-        LastUpdatedAnnually
+        last_updatedDaily
+        last_updatedMonthly
+        last_updatedAnnually
         StartedDaily
         StartedMonthly
         StartedAnnually
