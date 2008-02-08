@@ -55,11 +55,11 @@
 <table valign="top">
 
 % for my $o (0..3) {
-% $Order[$o] ||= ''; $order_by[$o] ||= '';
+% $order[$o] ||= ''; $order_by[$o] ||= '';
 <tr>
 <td class="label">
 % if ($o == 0) {
-<&|/l&>Order by</&>:
+<&|/l&>order by</&>:
 % }
 </td>
 <td class="value">
@@ -76,14 +76,14 @@ selected
 ><&|/l&><%$field%></&></option>
 % }
 </select>
-<select name="Order">
+<select name="order">
 <option value="ASC"
-% unless ( ($Order[$o]||'') eq "DESC" ) {
+% unless ( ($order[$o]||'') eq "DESC" ) {
 selected
 % }
 ><&|/l&>Asc</&></option>
 <option value="DESC"
-% if ( ($Order[$o]||'') eq "DESC" ) {
+% if ( ($order[$o]||'') eq "DESC" ) {
 selected
 % }
 ><&|/l&>Desc</&></option>
@@ -120,18 +120,18 @@ $fields{$_}=1 for @cfs;
 # Add PAW sort
 $fields{'Custom.Ownership'} = 1;
 
-my @Order = split /\|/, $Order;
+my @order = split /\|/, $order;
 my @order_by = split /\|/, $order_by;
-if ($Order =~ /\|/) {
-    @Order = split /\|/, $Order;
+if ($order =~ /\|/) {
+    @order = split /\|/, $order;
 } else {
-    @Order = ( $Order );
+    @order = ( $order );
 }
 
 </%INIT>
 
 <%ARGS>
-$Order => undef
+$order => undef
 $order_by => undef
 $rows_per_page => undef
 $format => undef

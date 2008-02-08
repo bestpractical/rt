@@ -119,7 +119,7 @@ $SavedSearch => {}
 </%ARGS>
 <%INIT>
 
-my @columns = qw(query format order_by Order rows_per_page);
+my @columns = qw(query format order_by order rows_per_page);
 
 $SavedSearch->{'id'}          = $ARGS{'SavedSearchId'}          || 'new';
 $SavedSearch->{'description'} = $ARGS{'SavedSearchdescription'} || '';

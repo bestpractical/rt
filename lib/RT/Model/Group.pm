@@ -133,7 +133,7 @@ sub load {
     if ( $identifier !~ /\D/ ) {
         $self->SUPER::load_by_id($identifier);
     } else {
-        Jifty->log->fatal("Group -> Load called with a bogus argument");
+        Jifty->log->fatal("Group -> Load called with a bogus argument: $identifier");
         return undef;
     }
 }
@@ -255,7 +255,7 @@ Takes a param hash with 2 parameters:
 
     Ticket is the TicketId we're curious about
     type is the type of Group we're trying to load: 
-        Requestor, Cc, AdminCc, Owner
+        requestor, cc, admin_cc, owner
 
 =cut
 
@@ -271,6 +271,8 @@ sub load_ticket_role_group {
         instance => $args{'ticket'},
         type     => $args{'type'}
     );
+
+    Carp::confess("AAA NO ROLE") unless $self->id;
 }
 
 # }}}
@@ -285,7 +287,7 @@ Takes a param hash with 2 parameters:
 
     queue is the QueueId we're curious about
     type is the type of Group we're trying to load: 
-        Requestor, Cc, AdminCc, Owner
+        requestor, cc, admin_cc, owner
 
 =cut
 
@@ -314,7 +316,7 @@ Loads a System group from the database.
 Takes a single param: type
 
     type is the type of Group we're trying to load: 
-        Requestor, Cc, AdminCc, Owner
+        requestor, cc, admin_cc, owner
 
 =cut
 
@@ -459,7 +461,7 @@ sub create_user_defined_group {
 
 # }}}
 
-# {{{ Ccreateacl_equivalence_group
+# {{{ ccreateacl_equivalence_group
 
 =head2 _createacl_equivalence_group { Principal }
 
@@ -565,7 +567,7 @@ sub create_personal_group {
 =head2 CreateRoleGroup { domain => DOMAIN, type =>  TYPE, instance => ID }
 
 A helper subroutine which creates a  ticket group. (What RT 2.0 called Ticket watchers)
-type is one of ( "Requestor" || "Cc" || "AdminCc" || "Owner") 
+type is one of ( "requestor" || "cc" || "admin_cc" || "owner") 
 domain is one of (RT::Model::Ticket-Role || RT::Model::Queue-Role || RT::System-Role)
 instance is the id of the ticket or queue in question
 
@@ -1335,22 +1337,14 @@ The response is cached. principal_object should never ever change.
 
 sub principal_object {
     my $self = shift;
-    unless (
-           defined $self->{'principal_object'}
-        && defined $self->{'principal_object'}->object_id
-        && ( $self->{'principal_object'}->object_id == $self->id )
-        && ( defined $self->{'principal_object'}->principal_type
-            && $self->{'principal_object'}->principal_type eq 'Group' )
-        )
-    {
-
+    unless ($self->{'principal_object'} && $self->{'principal_object'}->id) {
         $self->{'principal_object'} = RT::Model::Principal->new;
         $self->{'principal_object'}->load_by_cols(
-            'object_id'      => $self->id,
-            'principal_type' => 'Group'
+            id      => $self->id,
+            principal_type => 'Group'
         );
     }
-    return ( $self->{'principal_object'} );
+    return $self->{'principal_object'};
 }
 
 =head2 principal_id  

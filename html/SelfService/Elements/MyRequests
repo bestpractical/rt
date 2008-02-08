@@ -49,7 +49,7 @@
 <& /Elements/TicketList, Title   => $title,
 			 format  => @format, 
 			 query   => $query, 
-			 Order   => $Order, 
+			 order   => $order, 
 			 order_by => $order_by,
 			 baseURL => $baseURL,
 			 Page    => $Page &>
@@ -65,7 +65,7 @@ if ( @status ) {
         . join( ' OR ', map "Status = '$_'", @status )
         . " )";
 }
-my $Order = "ASC";
+my $order = "ASC";
 my $order_by = "Created";
 my @format = qq{
    '<B><A HREF="}. RT->config->get('WebPath') .qq{/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',

@@ -57,13 +57,13 @@
 
 <& /Elements/CollectionList,
     order_by => 'name',
-    Order => 'ASC',
+    order => 'ASC',
     Rows  => 100,
     %ARGS,
     format => $format,
     Collection => $Groups,
     AllowSorting => 1,
-    PassArguments => [qw(format Rows Page Order order_by GroupString GroupOp Groupfield FinddisabledGroups)],
+    PassArguments => [qw(format Rows Page order order_by GroupString GroupOp Groupfield FinddisabledGroups)],
 &>
 
 % my $ids = join ',', map $_->id, @{ $Groups->items_array_ref };

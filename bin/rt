@@ -1731,7 +1731,7 @@ Text:
 
         In addition,
         
-        -o +/-<field>   Orders the returned list by the specified field.
+        -o +/-<field>   orders the returned list by the specified field.
         -S var=val      Submits the specified variable with the request.
         -t type         Specifies the type of object to look for. (The
                         default is "ticket".)

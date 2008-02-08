@@ -53,7 +53,7 @@
     query   => $query,
     Rows    => $Rows,
     order_by => $order_by,
-    Order   => $Order,
+    order   => $order,
     SavedSearchId => $SavedSearchId,
 &>
 
@@ -76,7 +76,7 @@ my $query_string = $m->comp('/Elements/QueryString',
                            format  => $format,
                            Rows    => $Rows,
                            order_by => $order_by,
-                           Order   => $Order,
+                           order   => $order,
                           );
 
 </%INIT>
@@ -89,7 +89,7 @@ $query         => ''
 $format        => ''
 $Rows          => '50'
 $order_by       => 'id'
-$Order         => 'ASC'
+$order         => 'ASC'
 
 @actions       => ()
 </%ARGS>

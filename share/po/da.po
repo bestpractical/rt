@@ -4222,11 +4222,11 @@ msgid "Options"
 msgstr "Valgmuligheder"
 
 #: html/Search/Elements/DisplayOptions:59
-msgid "Order by"
+msgid "order by"
 msgstr "Sorteret efter"
 
 #: NOT FOUND IN SOURCE
-msgid "Ordering and sorting"
+msgid "ordering and sorting"
 msgstr "Sortering"
 
 #: html/Admin/Users/Modify.html:141

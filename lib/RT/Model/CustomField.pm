@@ -65,8 +65,8 @@ use Jifty::DBI::Record schema {
     column name => max_length is 200, type is 'varchar(200)', default is '';
     column type => max_length is 200, type is 'varchar(200)', default is '';
     column max_values => max_length is 11, type is 'int', default is '0';
-    column pattern => type is 'longtext', default is '';
-    column repeated => max_length is 6, type is 'smallint(6)', default is '0';
+    column pattern => type is 'text', default is '';
+    column repeated => max_length is 6, type is 'smallint', default is '0';
     column
         description => max_length is 255,
         type is 'varchar(255)', default is '';
@@ -80,7 +80,7 @@ use Jifty::DBI::Record schema {
         last_updated_by => max_length is 11,
         type is 'int', default is '0';
     column last_updated => type is 'timestamp';
-    column disabled => max_length is 6, type is 'smallint(6)', default is '0';
+    column disabled => max_length is 6, type is 'smallint', default is '0';
 };
 
 our %FieldTypes = (
@@ -172,11 +172,11 @@ Create takes a hash of values and creates a row in the database:
   varchar(200) 'type'.
   int 'max_values'.
   varchar(255) 'pattern'.
-  smallint(6) 'repeated'.
+  smallint 'repeated'.
   varchar(255) 'description'.
   int 'sort_order'.
   varchar(255) 'lookup_type'.
-  smallint(6) 'disabled'.
+  smallint 'disabled'.
 
 C<lookup_type> is generally the result of either
 C<RT::Model::Ticket->custom_field_lookup_type> or C<RT::Model::Transaction->custom_field_lookup_type>.

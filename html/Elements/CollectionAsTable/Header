@@ -51,7 +51,7 @@ $Class        => 'RT__Model__Ticket'
 @format       => undef
 $format_string => undef
 @order_by      => ()
-@Order        => ()
+@order        => ()
 $query        => undef
 $Rows         => undef
 $Page         => undef
@@ -60,7 +60,7 @@ $maxitems     => undef
 
 $AllowSorting  => undef
 $baseURL       => undef
-@PassArguments => qw(query format rows page Order order_by)
+@PassArguments => qw(query format rows page order order_by)
 </%ARGS>
 <tr class="collection-as-table">
 <%PERL>
@@ -126,14 +126,14 @@ foreach my $col ( @format ) {
       )
     {
         my $new_order = 'ASC';
-        $new_order = $Order[0] eq 'ASC'? 'DESC': 'ASC'
+        $new_order = $order[0] eq 'ASC'? 'DESC': 'ASC'
             if $order_by[0] && $order_by[0] eq $attr;
 
         $m->out(
             '<a href="' . $baseURL
             . $m->comp( '/Elements/QueryString',
                 %generic_query_args,
-                order_by => $attr, Order => $new_order
+                order_by => $attr, order => $new_order
             )
             . '">'. $title .'</a>'
         );

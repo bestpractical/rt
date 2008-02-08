@@ -107,7 +107,7 @@ use Jifty::DBI::Record schema {
         last_updated_by => max_length is 11,
         type is 'int', default is '0';
     column last_updated => type is 'timestamp';
-    column disabled => max_length is 6, type is 'smallint(6)', default is '0';
+    column disabled => max_length is 6, type is 'smallint', default is '0';
 };
 our @DEFAULT_ACTIVE_STATUS   = qw(new open stalled);
 our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);

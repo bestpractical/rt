@@ -11,13 +11,13 @@
 
 <& /Elements/CollectionList,
     order_by       => 'id',
-    Order         => 'ASC',
+    order         => 'ASC',
     %ARGS,
     display_format => '__CheckBox.{DeleteTemplates}__,'. $format,
     format        => $format,
     Collection    => $Templates,
     AllowSorting  => 1,
-    PassArguments => [qw(format Rows Page Order order_by FinddisabledQueues)],
+    PassArguments => [qw(format Rows Page order order_by FinddisabledQueues)],
 &>
 % }
 

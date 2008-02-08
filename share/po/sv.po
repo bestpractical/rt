@@ -3504,7 +3504,7 @@ msgid "Options"
 msgstr "Alternativ"
 
 #: html/Search/Elements/DisplayOptions:59
-msgid "Order by"
+msgid "order by"
 msgstr "Sortera efter"
 
 #: html/Admin/Users/Modify.html:141

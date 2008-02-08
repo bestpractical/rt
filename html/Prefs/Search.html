@@ -76,7 +76,7 @@
 my @actions;
 my $title = _("Customize").' ';
 
-my @fields = qw(format Order order_by rows_per_page);
+my @fields = qw(format order order_by rows_per_page);
 $ARGS{name} ||= '';
 my ($class, $id) = ( $ARGS{name} =~ m/^(.*)-(\d+)$/ );
 
@@ -88,12 +88,12 @@ $search->load_by_id ($id);
 $title .= _($search->description, _('"N"'));
 my $user = Jifty->web->current_user->user_object;
 my $SearchArg = $user->preferences($search, $search->content);
-$ARGS{Order}       = (ref $ARGS{Order}   ? join('|',grep {/\S/} @{$ARGS{Order}})   : $ARGS{Order});
+$ARGS{order}       = (ref $ARGS{order}   ? join('|',grep {/\S/} @{$ARGS{order}})   : $ARGS{order});
 $ARGS{order_by}     = (ref $ARGS{order_by} ? join('|',grep {/\S/} @{$ARGS{order_by}}) : $ARGS{order_by});
 for (@fields) {
     $ARGS{$_} = $SearchArg->{$_} unless defined $ARGS{$_};
 }
-$ARGS{'Order'} = join '|', grep defined && /\S/, (ref $ARGS{'Order'})? @{$ARGS{'Order'}}: $ARGS{'Order'};
+$ARGS{'order'} = join '|', grep defined && /\S/, (ref $ARGS{'order'})? @{$ARGS{'order'}}: $ARGS{'order'};
 $ARGS{'order_by'} = join '|', grep defined && /\S/, (ref $ARGS{'order_by'})? @{$ARGS{'order_by'}}: $ARGS{'order_by'};
 
 my ( $AvailableColumns, $current_format );

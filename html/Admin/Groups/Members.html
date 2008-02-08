@@ -77,7 +77,7 @@
 <br />
 <&|/l&>Users</&>
 % my $Users = $Group->user_members_obj;
-% $Users->order_by( column => $Userorder_by, order => $UserOrder );
+% $Users->order_by( column => $Userorder_by, order => $Userorder );
 <ul>
 % while ( my $user = $Users->next ) {
 % $UsersSeen{ $user->id } = 1 if $SkipSeenUsers;
@@ -152,7 +152,7 @@ foreach my $member (grep $_, @add_members_users, @add_members_groups) {
 @add_members_groups => ()
 $id => undef
 $Userorder_by => 'name'
-$UserOrder => 'ASC'
+$Userorder => 'ASC'
 $SkipSeenUsers => 1
 $SkipSeenGroups => 1
 </%ARGS>

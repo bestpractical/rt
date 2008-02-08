@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $order_by => 'id'
-$Order => 'ASC'
+$order => 'ASC'
 </%ARGS>
 <%INIT>
 
@@ -57,13 +57,13 @@ if ( $order_by =~ /\|/ ) {
 
   # Multiple Sorts
   my @order_by = split /\|/, $order_by;
-  my @Order   = split /\|/, $Order;
+  my @order   = split /\|/, $order;
   $Tickets->order_by(
-    map { { column => $order_by[$_], order => $Order[$_] } }
+    map { { column => $order_by[$_], order => $order[$_] } }
       ( 0 .. $#order_by ) );
 }
 else {
-  $Tickets->order_by( column => $order_by, order => $Order );
+  $Tickets->order_by( column => $order_by, order => $order );
 }
 
 my @rows;

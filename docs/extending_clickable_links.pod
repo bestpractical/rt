@@ -29,9 +29,9 @@ browser to wrap long URLs and avoid horizontal scrolling.
 RTIR is shipped with several actions you can use: 'ip', 'ipdecimal',
 'email', 'domain' and 'RIPE'.
 
-=head2 Order of clicky actions
+=head2 order of clicky actions
 
-Order of actions is important in situations when you use actions that
+order of actions is important in situations when you use actions that
 could match the same block of a text, in this case only the first matching
 action from the list would be applied. For example ot makes no sense to
 use C<httpurl> and C<httpurl_overwrite> at the same time as both actions

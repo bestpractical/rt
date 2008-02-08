@@ -688,7 +688,7 @@ return 0; # ignore $passed;
                  . q{Priority, Queuename, ExtendedStatus},
         query   => " owner = '__CurrentUser__' AND ( Status = 'new' OR Status = 'open')",
         order_by => 'Priority',
-        Order   => 'DESC'
+        order   => 'DESC'
       },
     },
     { name => 'Search - Unowned Tickets',

@@ -38,8 +38,8 @@ use Jifty::DBI::Record schema {
     column
         reference_type => max_length is 255,
         type is 'varchar(255)', default is '';
-    column old_reference => max_length is 11, type is 'int', default is '';
-    column new_reference => max_length is 11, type is 'int', default is '';
+    column old_reference => max_length is 11, type is 'int', default is '0';
+    column new_reference => max_length is 11, type is 'int', default is '0';
     column data => max_length is 255, type is 'varchar(255)', default is '';
     column creator => max_length is 11, type is 'int', default is '0';
     column created => type is 'timestamp';

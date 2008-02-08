@@ -3788,11 +3788,11 @@ msgid "Options"
 msgstr "Volby"
 
 #: html/Search/Elements/DisplayOptions:59
-msgid "Order by"
+msgid "order by"
 msgstr "Řadit podle"
 
 #: NOT FOUND IN SOURCE
-msgid "Ordering and sorting"
+msgid "ordering and sorting"
 msgstr "Řazení a třídění"
 
 #: html/Admin/Users/Modify.html:141 html/User/Prefs.html:129

@@ -52,7 +52,7 @@
     format => \@format, 
     format_string => $format,
     AllowSorting => $AllowSorting, 
-    Order => $Order, 
+    order => $order, 
     query => $query,
     Rows => $Rows,
     Page => $Page,
@@ -91,7 +91,7 @@ my $prev = $m->comp(
     format  => $format,
     Rows    => $Rows,
     order_by => $order_by,
-    Order   => $Order,
+    order   => $order,
     Page    => ( $Page - 1 )
 );
 my $next = $m->comp(
@@ -100,7 +100,7 @@ my $next = $m->comp(
     format  => $format,
     Rows    => $Rows,
     order_by => $order_by,
-    Order   => $Order,
+    order   => $order,
     Page    => ( $Page + 1 )
 );
 </%perl>
@@ -123,13 +123,13 @@ return '' if !$TotalFound && !$ShowEmpty;
 if ($order_by =~ /\|/) {
     # Multiple Sorts
     my @order_by = split /\|/,$order_by;
-    my @Order = split /\|/,$Order;
+    my @order = split /\|/,$order;
     $Collection->order_by(
-        map { { column => $order_by[$_], order => $Order[$_] } }
+        map { { column => $order_by[$_], order => $order[$_] } }
         ( 0 .. $#order_by )
     );
 } else {
-    $Collection->order_by(column => $order_by, order => $Order); 
+    $Collection->order_by(column => $order_by, order => $order); 
 }
 
 $Page = 1 unless $Page && $Page > 0; # workaround problems with Page = '' or undef
@@ -166,7 +166,7 @@ $Collection => undef
 $query => undef
 $format => RT->config->get('DefaultSearchResultFormat')
 $display_format => undef
-$Order => undef
+$order => undef
 $order_by => undef
 $Rows => 50
 

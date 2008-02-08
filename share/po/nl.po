@@ -3814,11 +3814,11 @@ msgid "Options"
 msgstr ""
 
 #: html/Search/Elements/DisplayOptions:59
-msgid "Order by"
+msgid "order by"
 msgstr "Sorteer op"
 
 #: NOT FOUND IN SOURCE
-msgid "Ordering and sorting"
+msgid "ordering and sorting"
 msgstr "Ordening en sortering"
 
 #: html/Admin/Users/Modify.html:141 html/User/Prefs.html:129

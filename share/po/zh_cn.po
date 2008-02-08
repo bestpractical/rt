@@ -5186,11 +5186,11 @@ msgid "Options"
 msgstr ""
 
 #: html/Search/Elements/DisplayOptions:59
-msgid "Order by"
+msgid "order by"
 msgstr "排序方式"
 
 #: NOT FOUND IN SOURCE
-msgid "Ordering and sorting"
+msgid "ordering and sorting"
 msgstr "顺序与排序方式"
 
 #: html/Admin/Users/Modify.html:141 html/User/Prefs.html:129

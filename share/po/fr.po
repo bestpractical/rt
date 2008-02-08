@@ -3175,7 +3175,7 @@ msgid "Options"
 msgstr "Options"
 
 #: html/Search/Elements/DisplayOptions:59
-msgid "Order by"
+msgid "order by"
 msgstr "Trier par"
 
 #: html/Admin/Users/Modify.html:141 html/User/Prefs.html:129

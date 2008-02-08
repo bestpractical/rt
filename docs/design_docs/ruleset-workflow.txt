@@ -5,7 +5,7 @@ It describes features that do not exist today and may never exist*_
 
 == Text description
 
-* The user of PurchaseOrder queue fill in a numeric "CF", called "Price".
+* The user of Purchaseorder queue fill in a numeric "CF", called "Price".
 * On creation, it needs to create following approvals:
 ** "ManagerApproval" if CF.Price is > 1000
 ** "PresidentApproval" if CF.Price is > 2000
@@ -56,7 +56,7 @@ Note that "Scrips" are now called "Rules".
 * Condition: OnCreate
 * Action: AquireMyLocks
 
-=== queue "PurchaseOrder"
+=== queue "Purchaseorder"
 
 * Rule:
 ** Condition: OnCreate

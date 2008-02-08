@@ -54,19 +54,19 @@
     query => $query,
     Rows => $Rows,
     order_by => $order_by,
-    Order => $Order &>
+    order => $order &>
 <& /Elements/TicketList, 
     query => $query,
     AllowSorting => 1,
     order_by => $order_by,
-    Order => $Order,
+    order => $order,
     Rows => $Rows,
     Page => $Page,
     format => $format,
     baseURL => RT->config->get('WebPath')."/Search/Results.html?"
 
    &>
-% my %hiddens = (query => $query, format => $format, Rows => $Rows, order_by => $order_by, Order => $Order, HideResults => $HideResults, Page => $Page );
+% my %hiddens = (query => $query, format => $format, Rows => $Rows, order_by => $order_by, order => $order, HideResults => $HideResults, Page => $Page );
 <div align="right">
 <form method="get" action="<%RT->config->get('WebPath')%>/Search/Results.html">
 % foreach my $key (keys(%hiddens)) {
@@ -83,7 +83,7 @@
     format => $format,
     Rows => $Rows,
     order_by => $order_by,
-    Order => $Order,
+    order => $order,
     RSSFeedURL => $RSSFeedURL,
     short_querystring => $short_querystring,
 &>
@@ -96,7 +96,7 @@ my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") 
 # These variables are what define a search_hash; this is also
 # where we give sane defaults.
 $format      ||= $prefs->{'format'} || RT->config->get('DefaultSearchResultFormat');
-$Order       ||= $prefs->{'Order'} || 'ASC';
+$order       ||= $prefs->{'order'} || 'ASC';
 $order_by     ||= $prefs->{'order_by'} || 'id';
 
 # Some forms pass in "rows_per_page" rather than "Rows"
@@ -120,19 +120,19 @@ $session{'tickets'}->from_sql($query) if ($query);
 if ($order_by =~ /\|/) {
     # Multiple Sorts
     my @order_by = split /\|/,$order_by;
-    my @Order = split /\|/,$Order;
+    my @order = split /\|/,$order;
     $session{'tickets'}->order_by(
-        map { { column => $order_by[$_], order => $Order[$_] } } ( 0
+        map { { column => $order_by[$_], order => $order[$_] } } ( 0
         .. $#order_by ) );; 
 } else {
-    $session{'tickets'}->order_by(column => $order_by, order => $Order); 
+    $session{'tickets'}->order_by(column => $order_by, order => $order); 
 }
 
 $session{'CurrentSearchHash'} = {
     format      => $format,
     query       => $query,
     Page       => $Page,
-    Order       => $Order,
+    order       => $order,
     order_by     => $order_by,
     rows_per_page => $Rows
     };
@@ -150,7 +150,7 @@ my $query_string = "?".$m->comp('/Elements/QueryString',
                                format => $format,
                                Rows => $Rows,
                                order_by => $order_by,
-                               Order => $Order,
+                               order => $order,
                                Page => $Page);
 my $short_querystring = "?".$m->comp('/Elements/QueryString', query => $query);
 my $RSSFeedURL = RT->config->get('WebPath')."/Search/Results.rdf$short_querystring";
@@ -169,5 +169,5 @@ $HideResults => 0
 $Rows => undef
 $Page => 1
 $order_by => undef
-$Order => undef
+$order => undef
 </%ARGS>

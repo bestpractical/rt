@@ -4133,11 +4133,11 @@ msgid "Options"
 msgstr "Параметры"
 
 #: html/Search/Elements/DisplayOptions:59
-msgid "Order by"
+msgid "order by"
 msgstr "Сортировать по"
 
 #: NOT FOUND IN SOURCE
-msgid "Ordering and sorting"
+msgid "ordering and sorting"
 msgstr "Порядок и сортировка"
 
 #: html/Admin/Users/Modify.html:141 html/User/Prefs.html:129
@@ -5314,7 +5314,7 @@ msgid "Sort"
 msgstr "Сортировка"
 
 #: NOT FOUND IN SOURCE
-msgid "Sort Order"
+msgid "Sort order"
 msgstr "Метод сортировки"
 
 #: NOT FOUND IN SOURCE

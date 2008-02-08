@@ -204,7 +204,7 @@ $args= "?" . $m->comp(
     query         => $ARGS{'query'}         || $session{'CurrentSearchHash'}->{'query'},
     format        => $ARGS{'format'}        || $session{'CurrentSearchHash'}->{'format'},
     order_by       => $ARGS{'order_by'}       || $session{'CurrentSearchHash'}->{'order_by'},
-    Order         => $ARGS{'Order'}         || $session{'CurrentSearchHash'}->{'Order'},
+    order         => $ARGS{'order'}         || $session{'CurrentSearchHash'}->{'order'},
     Page          => $ARGS{'Page'}          || $session{'CurrentSearchHash'}->{'Page'},
     Rows          => $ARGS{'Rows'},
   ) if ($ARGS{'query'} or $session{'CurrentSearchHash'}->{'query'});

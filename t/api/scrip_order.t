@@ -10,7 +10,7 @@ use RT;
 # {{{ test scrip ordering based on description
 
 my $scrip_queue = RT::Model::Queue->new(current_user => RT->system_user);
-my ($queue_id, $msg) = $scrip_queue->create( name => "ScripOrdering-$$", 
+my ($queue_id, $msg) = $scrip_queue->create( name => "Scripordering-$$", 
     description => 'Test scrip ordering by description' );
 ok($queue_id, "Created scrip-ordering test queue? ".$msg);
 

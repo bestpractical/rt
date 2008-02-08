@@ -32,12 +32,12 @@ my $cfA = RT::Model::CustomField->new(current_user => RT->system_user);
 my $cfB = RT::Model::CustomField->new(current_user => RT->system_user);
 my $cfC = RT::Model::CustomField->new(current_user => RT->system_user);
 
-($ret, $msg) = $cfO->create( name => 'Order',
+($ret, $msg) = $cfO->create( name => 'order',
                              queue => 0,
                              sort_order => 1,
                              description => q{Something to compare results for, since we can't guarantee ticket ID},
                              type=> 'FreeformSingle');
-ok($ret, "Custom Field Order Created");
+ok($ret, "Custom Field order Created");
 
 ($ret, $msg) = $cfA->create( name => 'Alpha',
                              queue => $queue_obj->id,
@@ -87,7 +87,7 @@ sub check_order {
   }
   my $results = join (" ",@results);
   my $order = join(" ",@order);
-  @_ = ($results, $order , "Ordered correctly: $order");
+  @_ = ($results, $order , "ordered correctly: $order");
   goto \&is;
 }
 

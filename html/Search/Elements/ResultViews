@@ -51,7 +51,7 @@ $query => undef
 $format => undef
 $Rows => undef
 $order_by => undef
-$Order => undef
+$order => undef
 $RSSFeedURL => undef
 $Shortquery_string => undef
 
@@ -63,7 +63,7 @@ $Shortquery_string => undef
 <a href="<%RT->config->get('WebPath')%>/Tools/Offline.html<%$Shortquery_string%>"><&|/l&>Work offline</&></a><br />
 
 <form method="get" action="<%RT->config->get('WebPath')%>/Search/Chart.html"><&|/l&>chart</&>
-% my %hiddens = (query => $query, format => $format, Rows => $Rows, order_by => $order_by, Order => $Order);
+% my %hiddens = (query => $query, format => $format, Rows => $Rows, order_by => $order_by, order => $order);
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>" />
 % }

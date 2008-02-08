@@ -105,7 +105,7 @@ use Jifty::DBI::Record schema {
     column last_updated => type is 'timestamp';
     column creator => max_length is 11,   type is 'int', default is '0';
     column created => type is 'timestamp';
-    column disabled => max_length is 6, type is 'smallint(6)', default is '0';
+    column disabled => max_length is 6, type is 'smallint', default is '0';
 };
 
 use RT::Model::Queue;
@@ -851,7 +851,7 @@ sub owner_group {
     my $owner_obj = RT::Model::Group->new;
     $owner_obj->load_ticket_role_group(
         ticket => $self->id,
-        type   => 'Owner'
+        type   => 'owner'
     );
     return ($owner_obj);
 }

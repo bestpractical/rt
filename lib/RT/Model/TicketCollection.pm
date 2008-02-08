@@ -846,7 +846,6 @@ sub _watcher_limit {
             operator => $op,
             value    => $value,
         );
-        $users_obj->order_by;
         $users_obj->rows_per_page(2);
         my @users = @{ $users_obj->items_array_ref };
 
@@ -1393,7 +1392,7 @@ sub order_by {
     my @res   = ();
     my $order = 0;
     foreach my $row (@args) {
-        if ( $row->{alias} || $row->{column} !~ /\./ ) {
+        if ( $row->{alias} || ( $row->{column} ||'') !~ /\./ ) {
             push @res, $row;
             next;
         }

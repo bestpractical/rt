@@ -22,7 +22,7 @@ my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($id, $tid,$msg) = $ticket->create(queue => 'General', subject => $SUBJECT);
 ok($id,$msg);
 ok ($ticket->id, "We Created a ticket");
-my ($id, $txnid, $txnobj) =  $ticket->comment( content => 'A comment that happend on 2004-01-01');
+my ($commentid, $txnid, $txnobj) =  $ticket->comment( content => 'A comment that happend on 2004-01-01');
 
 isa_ok($txnobj, 'RT::Model::Transaction');
 

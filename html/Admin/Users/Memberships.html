@@ -61,28 +61,28 @@
 
 <& /Elements/CollectionList,
     order_by => 'name',
-    Order   => 'ASC',
+    order   => 'ASC',
     Rows    => 0,
     %ARGS,
     display_format => "__CheckBox.{Delete}__,$format",
     format => $format,
     Collection => $is_member,
     AllowSorting => 1,
-    PassArguments => [qw(format Rows Page Order order_by id)],
+    PassArguments => [qw(format Rows Page order order_by id)],
 &>
 
 <h2><&|/l&>Groups the user is not member of (check box to add)</&></h2>
 
 <& /Elements/CollectionList,
     order_by => 'name',
-    Order   => 'ASC',
+    order   => 'ASC',
     Rows    => 100,
     %ARGS,
     display_format => "__CheckBox.{Add}__,'__has_member_recursively.{$id}__/TITLE:Recursive',$format",
     format => $format,
     Collection => $is_not_member,
     AllowSorting => 1,
-    PassArguments => [qw(format Rows Page Order order_by)],
+    PassArguments => [qw(format Rows Page order order_by)],
 &>
 
 <& /Elements/Submit, Label => _('Update'), name => 'Update' &>

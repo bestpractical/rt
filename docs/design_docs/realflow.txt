@@ -21,7 +21,7 @@
   without affecting existing ones.
 }
 
-- The user of OrderRequest queue needs to fill a numeric "CF",
+- The user of orderRequest queue needs to fill a numeric "CF",
   called "Price".
 - On creation, it needs to create following approvals:
     - "Manager" approval if CF.Price is > 1000
@@ -40,7 +40,7 @@
      # i.e. if no active tickets still have a lock on it
      -> ForceCreateTicketWithRuleset $ruleset
 
-[Queue OrderRequest]
+[Queue orderRequest]
   -> Condition: OnCreate
      Action: AddTicketRuleSet "PurchaseApproval"
              # Triggers immediately

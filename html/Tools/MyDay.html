@@ -108,7 +108,7 @@ foreach my $arg ( keys %ARGS ) {
 }
 
 my $tickets = RT::Model::TicketCollection->new();
-$tickets->from_sql("Status = 'new' or Status = 'open' AND owner = '".Jift->web->current_user->id"'");
+$tickets->from_sql("Status = 'new' or Status = 'open' AND owner = '".Jifty->web->current_user->id."'");
 $tickets->order_by ( column => 'priority', order => 'DESC');
 
 

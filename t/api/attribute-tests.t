@@ -18,7 +18,7 @@ ok($user->id, "Created a test user");
 
 ok(1, $user->attributes->build_select_query);
 my $attr = $user->attributes;
-# XXX: Order by id as some tests depend on it
+# XXX: order by id as some tests depend on it
 $attr->order_by({ column => 'id' });
 
 ok(1, $attr->build_select_query);

@@ -65,8 +65,8 @@ sub create {
         && UNIVERSAL::isa( $args{'group'}, 'RT::Model::Principal' )
         && $args{'group'}->id )
     {
-
-        Jifty->log->warn("GroupMember::Create called with a bogus Group arg");
+        Carp::cluck();
+        Jifty->log->warn("GroupMember::Create called with a bogus group arg: ".$args{'group'});
         return (undef);
     }
 

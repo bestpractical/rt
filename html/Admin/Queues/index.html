@@ -59,12 +59,12 @@
 % } else {
 <& /Elements/CollectionList,
     order_by => 'name',
-    Order => 'ASC',
+    order => 'ASC',
     %ARGS,
     format => $format,
     Collection => $queues,
     AllowSorting => 1,
-    PassArguments => [qw(format Rows Page Order order_by FinddisabledQueues)],
+    PassArguments => [qw(format Rows Page order order_by FinddisabledQueues)],
 &>
 % }
 <form method="post" action="<% RT->config->get('WebPath') %>/Admin/Queues/index.html">

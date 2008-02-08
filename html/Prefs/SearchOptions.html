@@ -59,23 +59,23 @@
             current_format => $current_format, 
             rows_per_page => $rows_per_page, 
             order_by => $order_by, 
-            Order => $Order &>
+            order => $order &>
 
 <& /Elements/Submit, name => 'SavePreferences', Label => _('Save Changes') &>
 </form>
 <%INIT>
 
 # {{{ If we're saving search preferences, do that now
-$Order = join '|', grep defined && /\S/, (ref $Order)? @{$Order}: $Order;
+$order = join '|', grep defined && /\S/, (ref $order)? @{$order}: $order;
 $order_by = join '|', grep defined && /\S/, (ref $order_by)? @{$order_by}: $order_by;
 
-$Order       = (ref $Order   ? join('|',grep {/\S/} @{$Order})   : $Order);
+$order       = (ref $order   ? join('|',grep {/\S/} @{$order})   : $order);
 $order_by     = (ref $order_by ? join('|',grep {/\S/} @{$order_by}) : $order_by);
 if ($ARGS{'SavePreferences'}) {
     Jifty->web->current_user->user_object->set_preferences("SearchDisplay",
     {
        format      => $format,
-       Order       => $Order,
+       order       => $order,
        order_by     => $order_by,
        rows_per_page => $rows_per_page,
     });
@@ -87,7 +87,7 @@ if ($ARGS{'SavePreferences'}) {
 my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
 
 $format      ||= $prefs->{'format'};
-$Order       ||= ($prefs->{'Order'} || 'ASC');
+$order       ||= ($prefs->{'order'} || 'ASC');
 $order_by     ||= ($prefs->{'order_by'} || 'id');
 ($rows_per_page =  defined( $prefs->{'rows_per_page'} ) ? $prefs->{'rows_per_page'}  : 50) unless defined ($rows_per_page);
 
@@ -101,7 +101,7 @@ my ( $AvailableColumns, $current_format );
 <%ARGS>
 $format => undef
 $description => undef
-$Order => undef
+$order => undef
 $order_by => undef
 $rows_per_page => undef
 </%ARGS>

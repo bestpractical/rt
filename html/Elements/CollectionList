@@ -53,7 +53,7 @@
     Class        => $Class,
     format       => \@format,
     format_string => $format,
-    Order        => \@Order,
+    order        => \@order,
     order_by      => \@order_by,
     Rows         => $Rows,
     Page         => $Page,
@@ -104,10 +104,10 @@ return '' if !$TotalFound && !$ShowEmpty;
 if ( @order_by ) {
     if ( $order_by[0] =~ /\|/ ) {
         @order_by = split /\|/, $order_by[0];
-        @Order = split /\|/,$Order[0];
+        @order = split /\|/,$order[0];
     }
     $Collection->order_by(
-        map { { column => $order_by[$_], order => $Order[$_] } }
+        map { { column => $order_by[$_], order => $order[$_] } }
         ( 0 .. $#order_by )
     );
 }
@@ -150,7 +150,7 @@ $Collection    => undef
 $format        => undef
 $display_format => undef
 
-@Order         => ()
+@order         => ()
 @order_by       => ()
 
 $Rows          => undef
@@ -158,7 +158,7 @@ $Page          => 1
 
 $Title         => _('Ticket Search')
 $baseURL       => RT->config->get('WebPath') . $m->request_comp->path .'?'
-@PassArguments => qw(query format rows page Order order_by)
+@PassArguments => qw(query format rows page order order_by)
 
 $AllowSorting   => 0
 $ShowNavigation => 1

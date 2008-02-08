@@ -94,7 +94,7 @@ sub limit {
     }
 
     # If we're limiting by target, order by base
-    # (Order by the thing that's changing)
+    # (order by the thing that's changing)
 
     if (   ( $args{'column'} eq 'target' )
         or ( $args{'column'} eq 'local_target' ) )

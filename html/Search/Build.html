@@ -118,7 +118,7 @@ use RT::Interface::Web::QueryBuilder::Tree;
 my $title = _("Query Builder");
 
 my %query;
-for( qw(query format order_by Order rows_per_page) ) {
+for( qw(query format order_by order rows_per_page) ) {
     $query{$_} = $ARGS{$_};
 }
 
@@ -143,15 +143,15 @@ if ( $new_query ) {
 
     my $current = $session{'CurrentSearchHash'};
     my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
-    my $default = {query => '', format => '', order_by => 'id', Order => 'ASC', rows_per_page => 50 };
+    my $default = {query => '', format => '', order_by => 'id', order => 'ASC', rows_per_page => 50 };
 
-    for( qw(query format order_by Order rows_per_page) ) {
+    for( qw(query format order_by order rows_per_page) ) {
         $query{$_} = $current->{$_} unless defined $query{$_};
         $query{$_} = $prefs->{$_} unless defined $query{$_};
         $query{$_} = $default->{$_} unless defined $query{$_};
     }
 
-    for( qw(Order order_by) ) {
+    for( qw(order order_by) ) {
         if (ref $query{$_} eq "ARRAY") {
             $query{$_} = join( '|', @{ $query{$_} } );
         }

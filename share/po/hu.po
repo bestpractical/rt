@@ -3194,7 +3194,7 @@ msgid "Options"
 msgstr ""
 
 #: html/Search/Elements/DisplayOptions:59
-msgid "Order by"
+msgid "order by"
 msgstr "Rendezés"
 
 #: html/Admin/Users/Modify.html:141 html/User/Prefs.html:129
