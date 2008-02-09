@@ -42,6 +42,7 @@ while (@requestors) {
     is_deeply( \@subjects, [ sort @subjects ], "subjects are sorted");
 }
 
+
 sub check_emails_order
 {
     my ($tix,$count,$order) = (@_);

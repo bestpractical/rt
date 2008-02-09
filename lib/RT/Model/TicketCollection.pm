@@ -379,7 +379,7 @@ sub _link_limit {
             type    => 'left',
             alias1  => 'main',
             column1 => 'id',
-            table2  => 'Links',
+            table2  => RT::Model::LinkCollection->new,
             column2 => 'local_' . $linkfield
         );
         $sb->SUPER::limit(
@@ -401,7 +401,7 @@ sub _link_limit {
             type    => 'left',
             alias1  => 'main',
             column1 => 'id',
-            table2  => 'Links',
+            table2  => RT::Model::LinkCollection->new,
             column2 => 'local_' . $linkfield
         );
         $sb->SUPER::limit(
@@ -425,7 +425,7 @@ sub _link_limit {
             quote_value => 0,
         );
     } else {
-        my $linkalias = $sb->new_alias('Links');
+        my $linkalias = $sb->new_alias(RT::Model::LinkCollection->new);
         $sb->open_paren;
 
         $sb->_sql_limit(
@@ -599,7 +599,7 @@ sub _trans_date_limit {
         $sb->{_sql_transalias} = $sb->join(
             alias1  => 'main',
             column1 => 'id',
-            table2  => 'Transactions',
+            table2  => RT::Model::TransactionCollection->new,
             column2 => 'object_id',
         );
         $sb->SUPER::limit(
@@ -711,7 +711,7 @@ sub _trans_limit {
         $self->{_sql_transalias} = $self->join(
             alias1  => 'main',
             column1 => 'id',
-            table2  => 'Transactions',
+            table2  => RT::Model::TransactionCollection->new,
             column2 => 'object_id',
         );
         $self->SUPER::limit(
@@ -726,7 +726,7 @@ sub _trans_limit {
             type => 'left',    # not all txns have an attachment
             alias1  => $self->{_sql_transalias},
             column1 => 'id',
-            table2  => 'Attachments',
+            table2  => RT::Model::AttachmentCollection->new,
             column2 => 'transaction_id',
         );
     }
@@ -879,7 +879,7 @@ sub _watcher_limit {
                 type    => 'left',
                 alias1  => $group_members,
                 column1 => 'member_id',
-                table2  => 'Users',
+                table2  => RT::Model::UserCollection->new,
                 column2 => 'id',
             );
             $self->SUPER::limit(
@@ -907,7 +907,7 @@ sub _watcher_limit {
         my $users = $self->{'_sql_u_watchers_aliases'}{$group_members};
         unless ($users) {
             $users = $self->{'_sql_u_watchers_aliases'}{$group_members}
-                = $self->new_alias('Users');
+                = $self->new_alias(RT::Model::UserCollection->new);
             $self->SUPER::limit(
                 leftjoin    => $group_members,
                 alias       => $group_members,
@@ -958,7 +958,7 @@ sub _role_groupsjoin {
     my $groups = $self->join(
         alias1           => 'main',
         column1          => 'id',
-        table2           => 'Groups',
+        table2           => RT::Model::GroupCollection->new,
         column2          => 'instance',
         entry_aggregator => 'AND',
     );
@@ -993,7 +993,7 @@ sub _group_membersjoin {
         type             => 'left',
         alias1           => $args{'groups_alias'},
         column1          => 'id',
-        table2           => 'CachedGroupMembers',
+        table2           => RT::Model::CachedGroupMemberCollection->new,
         column2          => 'group_id',
         entry_aggregator => 'AND',
     );
@@ -1036,7 +1036,7 @@ sub _watcherjoin {
         type    => 'left',
         alias1  => $group_members,
         column1 => 'member_id',
-        table2  => 'Users',
+        table2  => RT::Model::UserCollection->new,
         column2 => 'id',
     );
     return ( $groups, $group_members, $users );
@@ -1087,10 +1087,10 @@ sub _watcher_membership_limit {
 
     $self->open_paren;
 
-    my $groups       = $self->new_alias('Groups');
-    my $groupmembers = $self->new_alias('CachedGroupMembers');
-    my $users        = $self->new_alias('Users');
-    my $memberships  = $self->new_alias('CachedGroupMembers');
+    my $groups       = $self->new_alias(RT::Model::GroupCollection->new);
+    my $groupmembers = $self->new_alias(RT::Model::CachedGroupMemberCollection->new);
+    my $users        = $self->new_alias(RT::Model::UserCollection->new);
+    my $memberships  = $self->new_alias(RT::Model::CachedGroupMemberCollection->new);
 
     if ( ref $field ) {    # gross hack
         my @bundle = @$field;
@@ -1236,7 +1236,7 @@ sub _custom_field_join {
             type    => 'left',
             alias1  => 'main',
             column1 => 'id',
-            table2  => 'ObjectCustomFieldValues',
+            table2  => RT::Model::ObjectCustomFieldValueCollection->new,
             column2 => 'object_id',
         );
         $self->SUPER::limit(
@@ -1249,7 +1249,7 @@ sub _custom_field_join {
         my $ocfalias = $self->join(
             type             => 'left',
             column1          => 'queue',
-            table2           => 'ObjectCustomFields',
+            table2           => RT::Model::ObjectCustomFieldCollection->new,
             column2          => 'object_id',
             entry_aggregator => 'OR',
         );
@@ -1264,7 +1264,7 @@ sub _custom_field_join {
             type    => 'left',
             alias1  => $ocfalias,
             column1 => 'custom_field',
-            table2  => 'CustomFields',
+            table2  => RT::Model::CustomFieldCollection->new,
             column2 => 'id',
         );
 
@@ -1272,7 +1272,7 @@ sub _custom_field_join {
             type    => 'left',
             alias1  => $CFs,
             column1 => 'id',
-            table2  => 'ObjectCustomFieldValues',
+            table2  => RT::Model::ObjectCustomFieldValueCollection->new,
             column2 => 'custom_field',
         );
         $self->SUPER::limit(
@@ -1387,6 +1387,12 @@ C<alias> is set to the name of a watcher type.
 
 sub order_by {
     my $self = shift;
+
+    # If we're not forcing the order we don't want to do clever permutations
+    # (order_by is an accessor as well as a mutator)
+    return $self->SUPER::order_by() unless (@_);
+
+
     my @args = ref( $_[0] ) ? @_ : {@_};
     my $clause;
     my @res   = ();
@@ -1428,7 +1434,7 @@ sub order_by {
                 type    => 'left',
                 alias1  => $TicketCFs,
                 column1 => 'custom_field',
-                table2  => 'CustomFieldValues',
+                table2  => RT::Model::CustomFieldValueCollection->new,
                 column2 => 'custom_field',
             );
             $self->SUPER::limit(
