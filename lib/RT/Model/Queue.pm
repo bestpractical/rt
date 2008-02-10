@@ -139,7 +139,7 @@ our $RIGHTS = {
 
     Watch => 'Sign up as a ticket Requestor or ticket or queue Cc', # loc_pair
     WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',      # loc_pair
-    CreateTicket   => 'Create tickets in this queue',              # loc_pair
+    CreateTicket    => 'Create tickets in this queue',              # loc_pair
     ReplyToTicket   => 'Reply to tickets',                          # loc_pair
     CommentOnTicket => 'comment on tickets',                        # loc_pair
     OwnTicket       => 'Own tickets',                               # loc_pair
@@ -355,7 +355,7 @@ sub create {
         comment_address    => '',
         initial_priority   => 0,
         final_priority     => 0,
-        default_due_in       => 0,
+        default_due_in     => 0,
         sign               => undef,
         encrypt            => undef,
         @_
@@ -969,96 +969,23 @@ sub delete_watcher {
 
 # }}}
 
-# {{{ admin_cc_addresses
+=head2 role_group $role
 
-=head2 admin_cc_addresses
-
-returns String: All queue AdminCc email addresses as a string
-
-=cut
-
-sub admin_cc_addresses {
-    my $self = shift;
-
-    unless ( $self->current_user_has_right('SeeQueue') ) {
-        return undef;
-    }
-
-    return ( $self->admin_cc->member_emails_as_string )
-
-}
-
-# }}}
-
-# {{{ CcAddresses
-
-=head2 CcAddresses
-
-returns String: All queue Ccs as a string of email addresses
-
-=cut
-
-sub cc_addresses {
-    my $self = shift;
-
-    unless ( $self->current_user_has_right('SeeQueue') ) {
-        return undef;
-    }
-
-    return ( $self->cc->member_emails_as_string );
-
-}
-
-# }}}
-
-# {{{ sub Cc
-
-=head2 Cc
-
-Takes nothing.
-Returns an RT::Model::Group object which contains this Queue's Ccs.
+Returns an RT::Model::Group object.
 If the user doesn't have "ShowQueue" permission, returns an empty group
 
 =cut
 
-sub cc {
-    my $self = shift;
-
+sub role_group {
+    my $self  = shift;
+    my $role  = shift;
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-        $group->load_queue_role_group( type => 'Cc', queue => $self->id );
+        $group->load_queue_role_group( type => $role, queue => $self->id );
     }
     return ($group);
 
 }
-
-# }}}
-
-# {{{ sub AdminCc
-
-=head2 AdminCc
-
-Takes nothing.
-Returns an RT::Model::Group object which contains this Queue's AdminCcs.
-If the user doesn't have "ShowQueue" permission, returns an empty group
-
-=cut
-
-sub admin_cc {
-    my $self = shift;
-
-    my $group = RT::Model::Group->new;
-    if ( $self->current_user_has_right('SeeQueue') ) {
-        $group->load_queue_role_group(
-            type  => 'admin_cc',
-            queue => $self->id
-        );
-    }
-    return ($group);
-
-}
-
-# }}}
 
 # {{{ IsWatcher, IsCc, is_admin_cc
 

@@ -602,7 +602,7 @@ EOF
     ok ($tick->id, "found ticket ". $tick->id);
     is ($tick->id, $id, "correct ticket");
 
-    like $tick->requestor_addresses, qr/root\@localhost/, 'correct requestor';
+    like $tick->role_group("requestor")->member_emails_as_string, qr/root\@localhost/, 'correct requestor';
 }
 
 

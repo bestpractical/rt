@@ -184,7 +184,7 @@ $t1->load($t1id);
 
 is ($t1->id, $t2->id);
 
-is ($t1->requestors->members_obj->count, 2);
+is ($t1->role_group("requestor")->members_obj->count, 2);
 
 
 }

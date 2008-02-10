@@ -70,7 +70,7 @@ if ( $status == 1 ) {
     $m->out( 'Status: '  . ($ticket_obj->status         || '') );
     $m->out( 'Subject: ' . ($ticket_obj->subject        || '') );
     $m->out(
-      'Requestor: ' . ($ticket_obj->requestors->member_emails_as_string || '') );
+      'Requestor: ' . ($ticket_obj->role_group("requestor")->member_emails_as_string || '') );
   }
 }
 else {

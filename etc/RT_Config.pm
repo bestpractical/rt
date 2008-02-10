@@ -737,7 +737,7 @@ set( $DevelMode, '0' );
 # {{{ Deprecated options
 
 # $AlwaysUsebase64 - Encode blobs as base64 in DB (?)
-# $Ticketbase_uri - base URI to tickets in this system; used when loading (?)
+# $ticket_base_uri - base URI to tickets in this system; used when loading (?)
 # $UseCodeTickets - This option is exists for backwards compatibility.  Don't use it.
 
 # }}}

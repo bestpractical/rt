@@ -47,7 +47,7 @@ sub check_emails_order
 {
     my ($tix,$count,$order) = (@_);
     my @mails;
-    while (my $t = $tix->next) { push @mails, $t->requestor_addresses; }
+    while (my $t = $tix->next) { push @mails, $t->role_group("requestor")->member_emails_as_string; }
     is(@mails, $count, "found $count tickets for ". $tix->query);
     my @required_order;
     if( $order =~ /asc/i ) {
@@ -106,7 +106,7 @@ sub check_emails_order
     ($gid, $msg) = $g->create_user_defined_group(name => '20-sort-by-requestor.t-'.rand(200));
     ok($gid, "Created group") or diag("error: $msg");
 
-    ($id, $msg) = $t->requestors->add_member( $gid );
+    ($id, $msg) = $t->role_group("requestor")->add_member( $gid );
     ok($id, "added group to requestors group") or diag("error: $msg");
 }
 
@@ -126,7 +126,7 @@ TODO: {
     $tix->order_by({ column => "requestor.email" });
     $tix->rows_per_page(30);
     my @mails;
-    while (my $t = $tix->next) { push @mails, $t->requestor_addresses; }
+    while (my $t = $tix->next) { push @mails, $t->role_group("requestor")->member_emails_as_string; }
     is(@mails, 30, "found thirty tickets");
     is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependant)");
 }
@@ -137,7 +137,7 @@ TODO: {
     $tix->order_by({ column => "requestor.email" });
     $tix->rows_per_page(30);
     my @mails;
-    while (my $t = $tix->next) { push @mails, $t->requestor_addresses; }
+    while (my $t = $tix->next) { push @mails, $t->role_group("requestor")->member_emails_as_string; }
     is(@mails, 30, "found thirty tickets");
     is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependant)");
 }

@@ -477,7 +477,6 @@ sub sign_encrypt_rfc3156 {
 
     my %res;
     if ( $args{'sign'} && !$args{'encrypt'} ) {
-    warn "Signing, not encrypting";
         # required by RFC3156(Ch. 5) and RFC1847(Ch. 2.1)
         $entity->head->mime_attr(
             'Content-Transfer-Encoding' => 'quoted-printable' );
@@ -1453,7 +1452,7 @@ sub decrypt_content {
         close $handle{$_};
     }
     Jifty->log->debug( $res{'status'} )  if $res{'status'};
-    Jifty->log->warning( $res{'error'} ) if $res{'error'};
+    Jifty->log->warn( $res{'error'} ) if $res{'error'};
     Jifty->log->error( $res{'logger'} )  if $res{'logger'} && $?;
 
     # if the decryption is fine but the signature is bad, then without this

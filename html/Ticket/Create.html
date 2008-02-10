@@ -249,9 +249,9 @@ if ( $cloneTicket ) {
     $cloneticket_obj->load($cloneTicket) or abort(_("Ticket could not be loaded"));
     
     my $clone = {
-        Requestors       => join( ',', $cloneticket_obj->requestor_addresses ),
-        Cc               => join( ',', $cloneticket_obj->cc_addresses),
-        AdminCc          => join( ',', $cloneticket_obj->admin_cc_addresses),
+        Requestors       => join( ',', $cloneticket_obj->role_group("requestor")->member_emails_as_string ),
+        Cc               => join( ',', $cloneticket_obj->role_group("cc")->member_emails_as_string),
+        AdminCc          => join( ',', $cloneticket_obj->role_group("admin_cc")->member_emails_as_string),
         initial_priority => $cloneticket_obj->priority, 
     };
     

@@ -217,8 +217,8 @@ sub load {
 #TODO modify this routine to look at effective_id and do the recursive load
 # thing. be careful to cache all the interim tickets we try so we don't loop forever.
 
-    # FIXME: there is no Ticketbase_uri option in config
-    my $base_uri = RT->config->get('Ticketbase_uri') || '';
+    # FIXME: there is no ticket_base_uri option in config
+    my $base_uri = RT->config->get('ticket_base_uri') || '';
 
     #If it's a local URI, turn it into a ticket id
     if ( $base_uri && $id =~ /^$base_uri(\d+)$/ ) {
@@ -273,8 +273,8 @@ sub load_by_uri {
     my $self = shift;
     my $uri  = shift;
 
-    # FIXME: there is no Ticketbase_uri option in config
-    my $base_uri = RT->config->get('Ticketbase_uri');
+    # FIXME: there is no ticket_base_uri option in config
+    my $base_uri = RT->config->get('ticket_base_uri');
     if ( $base_uri && $uri =~ /^$base_uri(\d+)$/ ) {
         my $id = $1;
         return $self->load($id);
@@ -604,7 +604,7 @@ sub create {
 # Set the owner in the Groups table
 # We denormalize it into the Ticket table too because doing otherwise would
 # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
-    ( $val, $msg ) = $self->owner_group->_add_member(
+    ( $val, $msg ) = $self->role_group("owner")->_add_member(
         principal_id      => $owner->principal_id,
         inside_transaction => 1
     ) unless $defer_owner;
@@ -736,7 +736,7 @@ sub create {
             $self->__set( column => 'owner', value => $owner->id );
 
         }
-        $self->owner_group->_add_member(
+        $self->role_group("owner")->_add_member(
             principal_id      => $owner->principal_id,
             inside_transaction => 1
         );
@@ -825,10 +825,7 @@ sub _create_ticket_groups {
             type     => $type
         );
         unless ($id) {
-            Jifty->log->error(
-                "Couldn't create a ticket group of type '$type' for ticket "
-                    . $self->id . ": "
-                    . $msg );
+            Jifty->log->error( "Couldn't create a ticket group of type '$type' for ticket " . $self->id . ": " . $msg );
             return (undef);
         }
     }
@@ -838,22 +835,22 @@ sub _create_ticket_groups {
 
 # }}}
 
-# {{{ sub owner_group
 
-=head2 owner_group
+=head2 role_group("$role")
 
 A constructor which returns an RT::Model::Group object containing the owner of this ticket.
 
 =cut
 
-sub owner_group {
+sub role_group {
     my $self      = shift;
-    my $owner_obj = RT::Model::Group->new;
-    $owner_obj->load_ticket_role_group(
+    my $obj = RT::Model::Group->new;
+    my $role = shift;
+    $obj->load_ticket_role_group(
         ticket => $self->id,
-        type   => 'owner'
+        type   => $role
     );
-    return ($owner_obj);
+    return ($obj);
 }
 
 # }}}
@@ -1207,131 +1204,8 @@ sub unsquelch_mail_to {
 
 # {{{ a set of  [foo]AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string
 
-=head2 requestor_addresses
-
- B<Returns> String: All Ticket requestor email addresses as a string.
-
-=cut
-
-sub requestor_addresses {
-    my $self = shift;
-
-    unless ( $self->current_user_has_right('ShowTicket') ) {
-        return undef;
-    }
-
-    return ( $self->requestors->member_emails_as_string );
-}
-
-=head2 admin_cc_addresses
-
-returns String: All Ticket admin_cc email addresses as a string
-
-=cut
-
-sub admin_cc_addresses {
-    my $self = shift;
-
-    unless ( $self->current_user_has_right('ShowTicket') ) {
-        return undef;
-    }
-
-    return ( $self->admin_cc->member_emails_as_string )
-
-}
-
-=head2 cc_addresses
-
-returns String: All Ticket ccs as a string of email addresses
-
-=cut
-
-sub cc_addresses {
-    my $self = shift;
-
-    unless ( $self->current_user_has_right('ShowTicket') ) {
-        return undef;
-    }
-    return ( $self->cc->member_emails_as_string );
-
-}
-
-# }}}
-
 # {{{ Routines that return RT::Watchers objects of requestors, ccs and admin_ccs
 
-# {{{ sub requestors
-
-=head2 requestors
-
-Takes nothing.
-Returns this ticket's requestors as an RT::Model::Group object
-
-=cut
-
-sub requestors {
-    my $self = shift;
-
-    my $group = RT::Model::Group->new;
-    if ( $self->current_user_has_right('ShowTicket') ) {
-        $group->load_ticket_role_group(
-            type   => 'requestor',
-            ticket => $self->id
-        );
-    }
-    return ($group);
-
-}
-
-# }}}
-
-# {{{ sub cc
-
-=head2 cc
-
-Takes nothing.
-Returns an RT::Model::Group object which contains this ticket's ccs.
-If the user doesn't have "ShowTicket" permission, returns an empty group
-
-=cut
-
-sub cc {
-    my $self = shift;
-
-    my $group = RT::Model::Group->new;
-    if ( $self->current_user_has_right('ShowTicket') ) {
-        $group->load_ticket_role_group( type => 'cc', ticket => $self->id );
-    }
-    return ($group);
-
-}
-
-# }}}
-
-# {{{ sub admin_cc
-
-=head2 admin_cc
-
-Takes nothing.
-Returns an RT::Model::Group object which contains this ticket's admin_ccs.
-If the user doesn't have "ShowTicket" permission, returns an empty group
-
-=cut
-
-sub admin_cc {
-    my $self  = shift;
-    my $group = RT::Model::Group->new;
-    if ( $self->current_user_has_right('ShowTicket') ) {
-        $group->load_ticket_role_group(
-            type   => 'admin_cc',
-            ticket => $self->id
-        );
-    }
-    return ($group);
-
-}
-
-# }}}
 
 # }}}
 
@@ -2482,26 +2356,18 @@ sub merge_into {
     }
 
     #add all of this ticket's watchers to that ticket.
-    foreach my $watcher_type qw(requestors cc admin_cc) {
-        # XXX: artefact of API change
-        my $method = $watcher_type;
-        $method =~ s/(?<=[a-z])(?=[A-Z])/_/;
-        $method = lc $method;
+    foreach my $watcher_type qw(requestor cc admin_cc) {
 
-        my $people          = $self->$method->members_obj;
-        my $addwatcher_type = $watcher_type;
-        $addwatcher_type =~ s/s$//;
+        my $people          = $self->role_group($watcher_type)->members_obj;
 
         while ( my $watcher = $people->next ) {
 
             my ( $val, $msg ) = $MergeInto->_add_watcher(
-                type         => $addwatcher_type,
+                type         => $watcher_type,
                 silent       => 1,
                 principal_id => $watcher->member_id
             );
-            unless ($val) {
-                Jifty->log->warn($msg);
-            }
+                Jifty->log->warn($msg) unless ($val) ;
         }
 
     }
@@ -2674,12 +2540,12 @@ sub set_owner {
     # Delete the owner in the owner group, then add a new one
     # TODO: is this safe? it's not how we really want the API to work
     # for most things, but it's fast.
-    my ( $del_id, ) = $self->owner_group->members_obj->first->delete();
+    my ( $del_id, ) = $self->role_group("owner")->members_obj->first->delete();
     unless ($del_id) {
         Jifty->handle->rollback();
         return ( 0, _("Could not change owner. ") . $del_id );
     }
-    my ( $add_id, $add_msg ) = $self->owner_group->_add_member(
+    my ( $add_id, $add_msg ) = $self->role_group("owner")->_add_member(
         principal_id      => $new_owner_obj->principal_id,
         inside_transaction => 1
     );

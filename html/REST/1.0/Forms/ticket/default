@@ -193,7 +193,8 @@ if (!keys(%data)) {
 
     foreach $key (@people) {
         next unless (!%$fields || (exists $fields->{lc $key}));
-        push @data, [ ucfirst $key => [ $ticket->$key->member_emails ] ];
+        
+        push @data, [ ucfirst $key => [ $ticket->role_group($key eq 'requestors' ? 'requestor' : $key)->member_emails ] ];
     }
 
     $time = RT::Date->new();
@@ -271,10 +272,10 @@ else {
         elsif (exists $people{$key}) {
             $key = $people{$key};
             my ($p, @msgs);
+            my $type = $key eq 'requestors' ? 'requestor' : $key;
 
             my %new  = map {$_=>1} @{ vsplit($val) };
-            my %old  = map {$_=>1} $ticket->$key->member_emails;
-            my $type = $key eq 'requestors' ? 'requestor' : $key;
+            my %old  = map {$_=>1} $ticket->role_group($type)->member_emails;
 
             foreach $p (keys %old) {
                 unless (exists $new{$p}) {

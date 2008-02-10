@@ -271,7 +271,7 @@ Transaction: {$transaction->description}
        Queue: {$ticket->queue_obj->name}
      Subject: {$transaction->subject || $ticket->subject || "(No subject given)"}
        owner: {$ticket->owner_obj->name}
-  requestors: {$ticket->requestor_addresses}
+  requestors: {$ticket->role_group("requestor")->member_emails_as_string}
       Status: {$ticket->status}
  Ticket <URL: {RT->config->get(\'WebURL\')}/Ticket/Display.html?id={$ticket->id} >
 

@@ -66,11 +66,11 @@
 
 <&|/l&>Cc</&>:
 
-<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, Watchers => $queue_obj->cc &>
+<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, Watchers => $queue_obj->role_group("cc") &>
 
 <&|/l&>Administrative Cc</&>:
 
-<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, Watchers => $queue_obj->admin_cc &>
+<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, Watchers => $queue_obj->role_group("admin_cc") &>
 
 
 </td>

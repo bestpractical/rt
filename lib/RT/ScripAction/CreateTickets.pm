@@ -745,7 +745,7 @@ sub parse_lines {
         $args{$date} = $dateobj->iso;
     }
 
-    $args{'requestor'} ||= $self->ticket_obj->requestors->member_emails
+    $args{'requestor'} ||= $self->ticket_obj->role_group("requestor")->member_emails
         if $self->ticket_obj;
 
     $args{'type'} ||= 'ticket';
@@ -988,9 +988,9 @@ sub get_update_template {
     $string .= "Started: " . $t->started_obj->as_string . "\n";
     $string .= "Resolved: " . $t->resolved_obj->as_string . "\n";
     $string .= "Owner: " . $t->owner_obj->name . "\n";
-    $string .= "Requestor: " . $t->requestor_addresses . "\n";
-    $string .= "Cc: " . $t->cc_addresses . "\n";
-    $string .= "AdminCc: " . $t->admin_cc_addresses . "\n";
+    $string .= "Requestor: " . $t->role_group("requestor")->member_emails_as_string . "\n";
+    $string .= "Cc: " . $t->role_group("cc")->member_emails_as_string . "\n";
+    $string .= "AdminCc: " . $t->role_group("admin_cc")->member_emails_as_string . "\n";
     $string .= "time_worked: " . $t->time_worked . "\n";
     $string .= "time_estimated: " . $t->time_estimated . "\n";
     $string .= "time_left: " . $t->time_left . "\n";
@@ -1039,9 +1039,9 @@ sub get_base_template {
     $string .= "Started: " . $t->started_obj->unix . "\n";
     $string .= "Resolved: " . $t->resolved_obj->unix . "\n";
     $string .= "Owner: " . $t->owner . "\n";
-    $string .= "Requestor: " . $t->requestor_addresses . "\n";
-    $string .= "Cc: " . $t->cc_addresses . "\n";
-    $string .= "AdminCc: " . $t->admin_cc_addresses . "\n";
+    $string .= "Requestor: " . $t->role_group("requestor")->member_emails_as_string . "\n";
+    $string .= "Cc: " . $t->role_group("cc")->member_emails_as_string . "\n";
+    $string .= "AdminCc: " . $t->role_group("admin_cc")->member_emails_as_string . "\n";
     $string .= "time_worked: " . $t->time_worked . "\n";
     $string .= "time_estimated: " . $t->time_estimated . "\n";
     $string .= "time_left: " . $t->time_left . "\n";

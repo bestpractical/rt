@@ -84,7 +84,7 @@ plan tests => 22;
 	ok( $status, "owner successfuly set") or diag( "error: $msg" );
 	is( $ticket->owner, $user->id, "owner successfuly set") or diag( "error: $msg" );
 
-	my $member = $ticket->owner_group->members_obj->first;
+	my $member = $ticket->role_group("owner")->members_obj->first;
 	my $shredder = shredder_new();
 	$shredder->put_objects( objects => $member );
 	$shredder->wipeout_all();
@@ -93,7 +93,7 @@ plan tests => 22;
 	($status, $msg) = $ticket->load( $id );
 	ok( $id, "load ticket" ) or diag( "error: $msg" );
 	is( $ticket->owner, RT->nobody->id, "owner switched back to nobody" );
-	is( $ticket->owner_group->members_obj->first->member_id, RT->nobody->id, "and owner role group member is nobody");
+	is( $ticket->role_group("owner")->members_obj->first->member_id, RT->nobody->id, "and owner role group member is nobody");
 }
 
 

@@ -75,7 +75,7 @@ Sets the recipients of this message to this ticket's Requestor.
 sub set_recipients {
     my $self = shift;
 
-    push( @{ $self->{'To'} }, $self->ticket_obj->requestors->member_emails );
+    push( @{ $self->{'To'} }, $self->ticket_obj->role_group("requestor")->member_emails );
 
     return (1);
 }

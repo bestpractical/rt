@@ -69,13 +69,13 @@
 <&|/l&>(Check box to delete)</&><br />
 
 <&|/l&>Requestors</&>:
-<& EditWatchers, ticket_obj => $Ticket, Watchers => $Ticket->requestors &>
+<& EditWatchers, ticket_obj => $Ticket, Watchers => $Ticket->role_group("requestor") &>
 
 <&|/l&>Cc</&>:
-<& EditWatchers, ticket_obj => $Ticket, Watchers => $Ticket->cc &>
+<& EditWatchers, ticket_obj => $Ticket, Watchers => $Ticket->role_group("cc") &>
 
 <&|/l&>Administrative Cc</&>:
-<& EditWatchers, ticket_obj => $Ticket, Watchers => $Ticket->admin_cc &>
+<& EditWatchers, ticket_obj => $Ticket, Watchers => $Ticket->role_group("admin_cc") &>
 
 </td>
 </tr>

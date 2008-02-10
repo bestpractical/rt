@@ -75,7 +75,6 @@ BEGIN {
         &check_for_auto_generated
         &check_for_bounce
         &mail_error
-        &parse_cc_addresses_from_head
         &parse_sender_address_from_head
         &parse_errors_to_address_from_head
         &parse_address_from_header
@@ -829,7 +828,7 @@ sub create_user {
     return $CurrentUser;
 }
 
-=head2 parse_cc_addresses_from_head HASH
+=head2 parse_cc->member_emails_as_string_from_head HASH
 
 Takes a hash containing queue_obj, Head and current_user objects.
 Returns a list of all email addresses in the To and Cc

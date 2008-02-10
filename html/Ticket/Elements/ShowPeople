@@ -52,15 +52,15 @@
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Requestors</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->requestors, Ticket => $Ticket &></td>
+    <td class="value"><& ShowGroupMembers, Group => $Ticket->role_group("requestor"), Ticket => $Ticket &></td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Cc</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->cc, Ticket => $Ticket &></td>
+    <td class="value"><& ShowGroupMembers, Group => $Ticket->role_group("cc"), Ticket => $Ticket &></td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>AdminCc</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->admin_cc, Ticket => $Ticket &></td>
+    <td class="value"><& ShowGroupMembers, Group => $Ticket->role_group("admin_cc"), Ticket => $Ticket &></td>
   </tr>
 </table>
 <%ARGS>

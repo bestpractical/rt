@@ -42,7 +42,7 @@ diag "check that defering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
     is $ticket->owner, $tester->id, 'correct owner';
-    like $ticket->admin_cc_addresses, qr/root\@localhost/, 'root is an admincc';
+    like $ticket->role_group("admin_cc")->member_emails_as_string, qr/root\@localhost/, 'root is an admincc';
 }
 
 diag "check that previous trick doesn't work without sufficient rights"
@@ -65,7 +65,7 @@ diag "check that previous trick doesn't work without sufficient rights"
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
     is $ticket->owner, $tester->id, 'correct owner';
-    unlike $ticket->admin_cc_addresses, qr/root\@localhost/, 'root is there';
+    unlike $ticket->role_group("admin_cc")->member_emails_as_string, qr/root\@localhost/, 'root is there';
 }
 
 diag "check that defering owner really works" if $ENV{'TEST_VERBOSE'};
@@ -74,7 +74,7 @@ diag "check that defering owner really works" if $ENV{'TEST_VERBOSE'};
         { principal => $tester->principal_object,
           right => [qw(SeeQueue ShowTicket CreateTicket)],
         },
-        { principal => $queue->cc->principal_object,
+        { principal => $queue->role_group("cc")->principal_object,
           object => $queue,
           right => [qw(OwnTicket TakeTicket)],
         },
@@ -89,7 +89,7 @@ diag "check that defering owner really works" if $ENV{'TEST_VERBOSE'};
     );
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
-    like $ticket->cc_addresses, qr/tester\@localhost/, 'tester is in the cc list';
+    like $ticket->role_group("cc")->member_emails_as_string, qr/tester\@localhost/, 'tester is in the cc list';
     is $ticket->owner, $tester->id, 'tester is also owner';
 }
 
@@ -110,7 +110,7 @@ diag "check that defering doesn't work without correct rights" if $ENV{'TEST_VER
     );
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "Created a ticket";
-    like $ticket->cc_addresses, qr/tester\@localhost/, 'tester is in the cc list';
+    like $ticket->role_group("cc")->member_emails_as_string, qr/tester\@localhost/, 'tester is in the cc list';
     isnt $ticket->owner, $tester->id, 'tester is also owner';
 }
 

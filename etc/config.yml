@@ -8,11 +8,11 @@ framework:
   Database: 
     CheckSchema: 0
     Database: rt4
-    Driver: Pg
+    Driver: SQLite
     Host: localhost
     password: ''
     RecordBaseClass: Jifty::DBI::Record::Cachable
-    User: postgres
+    User: root
     Version: 0.0.1
   DevelMode: 1
   L10N: 
