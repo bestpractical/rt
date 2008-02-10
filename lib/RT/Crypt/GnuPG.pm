@@ -478,7 +478,14 @@ sub SignEncryptRFC3156 {
     my %res;
     if ( $args{'Sign'} && !$args{'Encrypt'} ) {
         # required by RFC3156(Ch. 5) and RFC1847(Ch. 2.1)
-        $entity->head->mime_attr('Content-Transfer-Encoding' => 'quoted-printable');
+        foreach ( grep !$_->is_multipart, $entity->parts_DFS ) {
+            my $tenc = $_->head->mime_encoding;
+            unless ( $tenc =~ m/^(?:7bit|quoted-printable|base64)$/i ) {
+                $_->head->mime_attr( 'Content-Transfer-Encoding'
+                    => $_->effective_type =~ m{^text/}? 'quoted-printable': 'base64'
+                );
+            }
+        }
 
         my %handle;
         my $handles = GnuPG::Handles->new(
