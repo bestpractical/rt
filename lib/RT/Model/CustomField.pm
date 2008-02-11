@@ -67,18 +67,12 @@ use Jifty::DBI::Record schema {
     column max_values => max_length is 11, type is 'int', default is '0';
     column pattern => type is 'text', default is '';
     column repeated => max_length is 6, type is 'smallint', default is '0';
-    column
-        description => max_length is 255,
-        type is 'varchar(255)', default is '';
+    column description => max_length is 255, type is 'varchar(255)', default is '';
     column sort_order => max_length is 11, type is 'int', default is '0';
-    column
-        lookup_type => max_length is 255,
-        type is 'varchar(255)', default is '';
-    column creator => max_length is 11, type is 'int', default is '0';
+    column lookup_type => max_length is 255, type is 'varchar(255)', default is '';
+    column creator => references RT::Model::Principal;
     column created => type is 'timestamp';
-    column
-        last_updated_by => max_length is 11,
-        type is 'int', default is '0';
+    column last_updated_by => references RT::Model::Principal;
     column last_updated => type is 'timestamp';
     column disabled => max_length is 6, type is 'smallint', default is '0';
 };

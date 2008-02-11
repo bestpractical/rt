@@ -58,12 +58,12 @@ been started, to make a comment on the ticket.
 
 =head1 SYNOPSIS
 
-my $action_obj = RT::ScripAction::RecordCorrespondence->new(
+my $scrip_action = RT::ScripAction::RecordCorrespondence->new(
 			'ticket_obj'   => $ticket_obj,
 			'template_obj' => $template_obj,
 			);
-my $result = $action_obj->prepare();
-$action_obj->commit() if $result;
+my $result = $scrip_action->prepare();
+$scrip_action->commit() if $result;
 
 =head1 METHODS
 

@@ -184,7 +184,7 @@ sub __Relates {
     my $deps = $args{'dependencies'};
     my $list = [];
 
-    if ( $self->can('Creator') ) {
+    if ( $self->can('creator') ) {
         my $obj = RT::Model::Principal->new;
         $obj->load( $self->creator );
 
@@ -195,7 +195,7 @@ sub __Relates {
             $self = $rec->{'object'};
             $rec->{'state'} |= INVALID;
             push @{ $rec->{'description'} },
-                "Have no related User(Creator) #"
+                "Have no related User(creator) #"
                 . $self->creator
                 . " object";
         }

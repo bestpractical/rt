@@ -61,15 +61,9 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column object_id => max_length is 11, type is 'int', default is '0';
     column name => max_length is 200, type is 'varchar(200)', default is '';
-    column
-        object_type => max_length is 200,
-        type is 'varchar(200)', default is '';
-    column
-        description => max_length is 255,
-        type is 'varchar(255)', default is '';
-    column
-        content_type => max_length is 255,
-        type is 'varchar(255)', default is '';
+    column object_type => max_length is 200, type is 'varchar(200)', default is '';
+    column description => max_length is 255, type is 'varchar(255)', default is '';
+    column content_type => max_length is 255, type is 'varchar(255)', default is '';
     column content => type is 'blob', default is '';
 
 };

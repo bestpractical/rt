@@ -67,50 +67,10 @@ This module lets you manipulate RT\'s ticket object.
 =cut
 
 package RT::Model::Ticket;
-
-use strict;
-no warnings qw(redefine);
 use base qw/RT::Record/;
-
-sub table {'Tickets'}
-
-use Jifty::DBI::Schema;
-use Jifty::DBI::Record schema {
-
-    column effective_id => max_length is 11, type is 'int', default is '0';
-    column queue       => references RT::Model::Queue;
-    column type => max_length is 16, type is 'varchar(16)', default is '';
-    column issue_statement => max_length is 11,
-        type is 'int', default is '0';
-    column resolution => max_length is 11, type is 'int', default is '0';
-    column owner      => max_length is 11, type is 'int', default is '0';
-    column subject => max_length is 200, type is 'varchar(200)', default is '';
-    column initial_priority => max_length is 11, type is 'int', default is '0';
-    column final_priority => max_length is 11, type is 'int', default is '0';
-    column priority => max_length is 11, type is 'int', default is '0';
-    column
-        time_estimated => max_length is 11,
-        type is 'int', default is '0';
-    column time_worked => max_length is 11, type is 'int', default is '0';
-    column status => max_length is 10, type is 'varchar(10)', default is '';
-    column time_left => max_length is 11, type is 'int', default is '0';
-    column told     => type is 'timestamp';
-    column starts   => type is 'timestamp';
-    column started  => type is 'timestamp';
-    column due      => type is 'timestamp';
-    column resolved => type is 'timestamp';
-    column
-        last_updated_by => max_length is 11,
-        type is 'int', default is '0';
-    column last_updated => type is 'timestamp';
-    column creator => max_length is 11,   type is 'int', default is '0';
-    column created => type is 'timestamp';
-    column disabled => max_length is 6, type is 'smallint', default is '0';
-};
 
 use RT::Model::Queue;
 use RT::Model::User;
-use RT::Record;
 use RT::Model::LinkCollection;
 use RT::Date;
 use RT::Model::CustomFieldCollection;
@@ -120,6 +80,38 @@ use RT::Reminders;
 use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
+
+
+sub table {'Tickets'}
+
+use Jifty::DBI::Schema;
+use Jifty::DBI::Record schema {
+
+    column effective_id => max_length is 11, type is 'int', default is '0';
+    column queue       => references RT::Model::Queue;
+    column type => max_length is 16, type is 'varchar(16)', default is '';
+    column issue_statement => max_length is 11, type is 'int', default is '0';
+    column resolution => max_length is 11, type is 'int', default is '0';
+    column owner      => max_length is 11, type is 'int', default is '0';
+    column subject => max_length is 200, type is 'varchar(200)', default is '';
+    column initial_priority => max_length is 11, type is 'int', default is '0';
+    column final_priority => max_length is 11, type is 'int', default is '0';
+    column priority => max_length is 11, type is 'int', default is '0';
+    column time_estimated => max_length is 11, type is 'int', default is '0';
+    column time_worked => max_length is 11, type is 'int', default is '0';
+    column time_left => max_length is 11, type is 'int', default is '0';
+    column status => max_length is 10, type is 'varchar(10)', default is '';
+    column told     => type is 'timestamp';
+    column starts   => type is 'timestamp';
+    column started  => type is 'timestamp';
+    column due      => type is 'timestamp';
+    column resolved => type is 'timestamp';
+    column last_updated_by => references RT::Model::User;
+    column last_updated => type is 'timestamp';
+    column creator => references RT::Model::User;
+    column created => type is 'timestamp';
+    column disabled => max_length is 6, type is 'smallint', default is '0';
+};
 
 # {{{ LINKTYPEMAP
 # A helper table for links mapping to make it easier
@@ -591,7 +583,7 @@ sub create {
             _("Ticket could not be created due to an internal error") );
     }
 
-    my $create_groups_ret = $self->_create_ticket_groups();
+    my $create_groups_ret = $self->_create_role_groups();
     unless ($create_groups_ret) {
         Jifty->log->fatal( "Couldn't create ticket groups for ticket "
                 . $self->id
@@ -798,9 +790,9 @@ sub create {
 
 # {{{ Routines dealing with watchers.
 
-# {{{ _create_ticket_groups
+# {{{ _create_role_groups
 
-=head2 _create_ticket_groups
+=head2 _create_role_groups
 
 Create the ticket groups and links for this ticket. 
 This routine expects to be called from Ticket->create _inside of a transaction_
@@ -812,7 +804,7 @@ It will return true on success and undef on failure.
 
 =cut
 
-sub _create_ticket_groups {
+sub _create_role_groups {
     my $self = shift;
 
     my @types = qw(requestor owner cc admin_cc);
@@ -1209,10 +1201,10 @@ sub unsquelch_mail_to {
 
 # }}}
 
-# {{{ is_watcher,is_requestor,is_cc, is_admin_cc
+# {{{ is_watcher,is_requestor
 
 # {{{ sub is_watcher
-# a generic routine to be called by is_requestor, is_cc and is_admin_cc
+# a generic routine to be called by is_requesto
 
 =head2 is_watcher { type => TYPE, principal_id => PRINCIPAL_ID, email => EMAIL }
 
@@ -1288,45 +1280,6 @@ sub is_requestor {
 
 # }}}
 
-# {{{ sub is_cc
-
-=head2 is_cc PRINCIPAL_ID
-
-  Takes an RT::Model::Principal id.
-  Returns true if the principal is a requestor of the current ticket.
-
-
-=cut
-
-sub is_cc {
-    my $self = shift;
-    my $cc   = shift;
-
-    return ( $self->is_watcher( type => 'cc', principal_id => $cc ) );
-
-}
-
-# }}}
-
-# {{{ sub is_admin_cc
-
-=head2 is_admin_cc PRINCIPAL_ID
-
-  Takes an RT::Model::Principal id.
-  Returns true if the principal is a requestor of the current ticket.
-
-=cut
-
-sub is_admin_cc {
-    my $self   = shift;
-    my $person = shift;
-
-    return (
-        $self->is_watcher( type => 'admin_cc', principal_id => $person ) );
-
-}
-
-# }}}
 
 # {{{ sub is_owner
 
@@ -1536,20 +1489,6 @@ sub due_obj {
 
 # }}}
 
-# {{{ sub due_as_string
-
-=head2 due_as_string
-
-Returns this ticket's due date as a human readable string
-
-=cut
-
-sub due_as_string {
-    my $self = shift;
-    return $self->due_obj->as_string();
-}
-
-# }}}
 
 # {{{ sub resolved_obj
 

@@ -9,9 +9,9 @@ use base qw/RT::Record/;
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column group_id           => references RT::Model::Group;
-    column member_id          => type is 'integer';
-    column via               => type is 'integer';
-    column immediate_parent_id => type is 'integer';
+    column member_id          => references RT::Model::Principal;
+    column via               => references RT::Model::CachedGroupMember;
+    column immediate_parent_id => references RT::Model::CachedGroupMember;
     column disabled          => type is 'integer', default is '0';
 
 };

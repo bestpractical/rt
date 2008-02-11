@@ -66,14 +66,10 @@ should only be accessed through exported APIs in other modules.
 
 =cut
 
-package RT::Model::ScripCondition;
-
 use strict;
-no warnings qw(redefine);
-
+use warnings;
+package RT::Model::ScripCondition;
 use base qw/RT::Record/;
-
-# {{{  sub _init
 
 sub table {'ScripConditions'}
 use Jifty::DBI::Schema;
@@ -83,34 +79,13 @@ use Jifty::DBI::Record schema {
     column exec_module           => type is 'text';
     column argument             => type is 'text';
     column applicable_trans_types => type is 'text';
-    column creator => max_length is 11, type is 'int', default is '0';
+    column creator =>  references RT::Model::User;
     column created => type is 'timestamp';
-    column
-        last_updated_by => max_length is 11,
-        type is 'int', default is '0';
+    column last_updated_by => references RT::Model::User;
     column last_updated => type is 'timestamp';
 
 };
 
-# }}}
-
-# {{{ sub create
-
-=head2 Create
-  
-  Takes a hash. Creates a new Condition entry.
-  should be better documented.
-
-=cut
-
-sub create {
-    my $self = shift;
-    return ( $self->SUPER::create(@_) );
-}
-
-# }}}
-
-# {{{ sub delete
 
 =head2 delete
 
@@ -123,11 +98,7 @@ sub delete {
     return ( 0, _('Unimplemented') );
 }
 
-# }}}
-
-# {{{ sub load
-
-=head2 Load IDENTIFIER
+=head2 load IDENTIFIER
 
 Loads a condition takes a name or ScripCondition id.
 
@@ -148,14 +119,12 @@ sub load {
     }
 }
 
-# }}}
 
-# {{{ sub loadCondition
 
 =head2 load_condition  HASH
 
 takes a hash which has the following elements:  transaction_obj and ticket_obj.
-Loads the Condition module in question.
+Loads the condition module in question.
 
 =cut
 
@@ -167,15 +136,12 @@ sub load_condition {
         @_
     );
 
-    #TODO: Put this in an eval
-    $self->exec_module =~ /^(\w+)$/;
-    my $module = $1;
-    my $type   = "RT::Condition::" . $module;
+    my $type   = "RT::Condition::" . $self->exec_module;
 
-    eval "require $type" || die "Require of $type failed.\n$@\n";
+    Jifty::Util->require($type);
 
-    $self->{'Condition'} = $type->new(
-        'scrip_condition_obj'    => $self,
+    $self->{'condition'} = $type->new(
+        'scrip_scrip_condition'    => $self,
         'ticket_obj'           => $args{'ticket_obj'},
         'scrip_obj'            => $args{'scrip_obj'},
         'transaction_obj'      => $args{'transaction_obj'},
@@ -185,13 +151,8 @@ sub load_condition {
     );
 }
 
-# }}}
 
-# {{{ The following methods call the Condition object
-
-# {{{ sub Describe
-
-=head2 Describe 
+=head2 describe 
 
 Helper method to call the condition module\'s Describe method.
 
@@ -199,13 +160,10 @@ Helper method to call the condition module\'s Describe method.
 
 sub describe {
     my $self = shift;
-    return ( $self->{'Condition'}->describe() );
+    return ( $self->{'condition'}->describe() );
 
 }
 
-# }}}
-
-# {{{ sub is_applicable
 
 =head2 is_applicable
 
@@ -215,21 +173,15 @@ Helper method to call the condition module\'s is_applicable method.
 
 sub is_applicable {
     my $self = shift;
-    return ( $self->{'Condition'}->is_applicable() );
+    return ( $self->{'condition'}->is_applicable() );
 
 }
 
-# }}}
-
-# }}}
-
-# {{{ sub DESTROY
 sub DESTROY {
     my $self = shift;
-    $self->{'Condition'} = undef;
+    $self->{'condition'} = undef;
 }
 
-# }}}
 
 sub _value { shift->__value(@_) }
 1;

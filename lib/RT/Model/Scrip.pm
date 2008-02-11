@@ -72,10 +72,10 @@ sub table {'Scrips'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
-    column queue          => type is 'int';
-    column template       => type is 'int';
-    column scrip_action    => type is 'int';
-    column scrip_condition => type is 'int';
+    column queue          => references RT::Model::Queue;
+    column template       => references RT::Model::Template;
+    column scrip_action    => references RT::Model::ScripAction;
+    column scrip_condition =>  references RT::Model::ScripCondition;
     column stage => type is 'varchar(32)', default is 'TransactionCreate';
     column description            => type is 'text';
     column custom_prepare_code      => type is 'text';
@@ -83,7 +83,6 @@ use Jifty::DBI::Record schema {
     column custom_is_applicable_code => type is 'text';
 };
 
-# {{{ sub create
 
 =head2 Create
 
@@ -144,9 +143,7 @@ sub create {
         $args{'queue'} = $queue_obj->id;
     }
 
-    #TODO +++ validate input
 
-    require RT::Model::ScripAction;
     return ( 0, _("Action is mandatory argument") )
         unless $args{'scrip_action'};
     my $action = RT::Model::ScripAction->new;
@@ -189,9 +186,18 @@ sub create {
     }
 }
 
-# }}}
 
-# {{{ sub delete
+sub scrip_action {
+    my $self = shift;
+    Jifty->log->debug("loading scripaction ".$self->__value('scrip_action'));
+    # jfity returns a new object each time you call the accessor. I'm not sure that's right, but it blows our behaviour
+    unless ($self->{'scrip_action'}) {
+            $self->{'scrip_action'} = RT::Model::ScripAction->new();
+            $self->{'scrip_action'}->load( $self->_value('scrip_action'), $self->_value('template'));
+        }
+    return $self->{'scrip_action'};
+
+}
 
 =head2 Delete
 
@@ -209,9 +215,6 @@ sub delete {
     return ( $self->SUPER::delete(@_) );
 }
 
-# }}}
-
-# {{{ sub queue_obj
 
 =head2 queue_obj
 
@@ -230,54 +233,6 @@ sub queue_obj {
     return ( $self->{'queue_obj'} );
 }
 
-# }}}
-
-# {{{ sub action_obj
-
-=head2 action_obj
-
-Retuns an RT::ScripAction object with this Scrip\'s Action
-
-=cut
-
-sub action_obj {
-    my $self = shift;
-
-    unless ( defined $self->{'scrip_action_obj'} ) {
-        require RT::Model::ScripAction;
-
-        $self->{'scrip_action_obj'} = RT::Model::ScripAction->new;
-
-        #TODO: why are we loading Actions with templates like this.
-        # two separate methods might make more sense
-        $self->{'scrip_action_obj'}
-            ->load( $self->scrip_action, $self->template );
-    }
-    return ( $self->{'scrip_action_obj'} );
-}
-
-# }}}
-
-# {{{ sub condition_obj
-
-=head2 condition_obj
-
-Retuns an L<RT::Model::ScripCondition> object with this Scrip's is_applicable
-
-=cut
-
-sub condition_obj {
-    my $self = shift;
-
-    my $res = RT::Model::ScripCondition->new;
-    $res->load( $self->scrip_condition );
-    return $res;
-}
-
-# }}}
-
-# {{{ sub template_obj
-
 =head2 template_obj
 
 Retuns an L<RT::Model::Template> object with this Scrip\'s template
@@ -290,16 +245,11 @@ sub template_obj {
     unless ( defined $self->{'template_obj'} ) {
         require RT::Model::Template;
         $self->{'template_obj'} = RT::Model::Template->new;
-        $self->{'template_obj'}->load( $self->template );
+        $self->{'template_obj'}->load( $self->template->id );
     }
     return ( $self->{'template_obj'} );
 }
 
-# }}}
-
-# {{{ Dealing with this instance of a scrip
-
-# {{{ sub Apply
 
 =head2 Apply { ticket_obj => undef, transaction_obj => undef}
 
@@ -325,66 +275,32 @@ sub apply {
         @_
     );
 
-    Jifty->log->debug( "Now applying scrip "
-            . $self->id
-            . " for transaction "
-            . $args{'transaction_obj'}->id );
-
-    my $Applicabletransaction_obj = $self->is_applicable(
-        ticket_obj      => $args{'ticket_obj'},
-        transaction_obj => $args{'transaction_obj'}
-    );
-    unless ($Applicabletransaction_obj) {
+    Jifty->log->debug( "Now applying scrip " . $self->id . " for transaction " . $args{'transaction_obj'}->id ); 
+    my $applicable_trans = $self->is_applicable( ticket_obj      => $args{'ticket_obj'}, transaction_obj => $args{'transaction_obj'});
+    unless ($applicable_trans) {
         return undef;
     }
 
-    if ( $Applicabletransaction_obj->id != $args{'transaction_obj'}->id ) {
-        Jifty->log->debug( "Found an applicable transaction "
-                . $Applicabletransaction_obj->id
-                . " in the same batch with transaction "
-                . $args{'transaction_obj'}->id );
+    if ( $applicable_trans->id != $args{'transaction_obj'}->id ) {
+        Jifty->log->debug( "Found an applicable transaction " . $applicable_trans->id . " in the same batch with txn " . $args{'transaction_obj'}->id );
     }
 
     #If it's applicable, prepare and commit it
-    Jifty->log->debug( "Now preparing scrip "
-            . $self->id
-            . " for transaction "
-            . $Applicabletransaction_obj->id );
-    unless (
-        $self->prepare(
-            ticket_obj      => $args{'ticket_obj'},
-            transaction_obj => $Applicabletransaction_obj
-        )
-        )
-    {
+    Jifty->log->debug( "Now preparing scrip " . $self->id . " for transaction " . $applicable_trans->id );
+    unless ( $self->prepare( ticket_obj      => $args{'ticket_obj'}, transaction_obj => $applicable_trans)) {
         return undef;
     }
 
-    Jifty->log->debug( "Now commiting scrip "
-            . $self->id
-            . " for transaction "
-            . $Applicabletransaction_obj->id );
-    unless (
-        $self->commit(
-            ticket_obj      => $args{'ticket_obj'},
-            transaction_obj => $Applicabletransaction_obj
-        )
-        )
-    {
+    Jifty->log->debug( "Now commiting scrip " . $self->id . " for transaction " . $applicable_trans->id );
+    unless ( $self->commit( ticket_obj      => $args{'ticket_obj'}, transaction_obj => $applicable_trans)) {
         return undef;
     }
 
-    Jifty->log->debug( "We actually finished scrip "
-            . $self->id
-            . " for transaction "
-            . $Applicabletransaction_obj->id );
+    Jifty->log->debug( "We actually finished scrip " . $self->id . " for transaction " . $applicable_trans->id );
     return (1);
 
 }
 
-# }}}
-
-# {{{ sub is_applicable
 
 =head2 is_applicable
 
@@ -413,6 +329,7 @@ sub is_applicable {
     my $return;
     eval {
 
+        Jifty->log->debug("In the eval for stage ". $self->stage);
         my @Transactions;
 
         if ( $self->stage eq 'TransactionCreate' ) {
@@ -427,34 +344,38 @@ sub is_applicable {
             Jifty->log->error( "Unknown Scrip stage:" . $self->stage );
             return (undef);
         }
-        my $ConditionObj = $self->condition_obj;
         foreach my $transaction_obj (@Transactions) {
 
-  # in TxnBatch stage we can select scrips that are not applicable to all txns
-            my $txn_type = $transaction_obj->type;
-            next
-                unless ( $ConditionObj->applicable_trans_types
-                =~ /(?:^|,)(?:Any|\Q$txn_type\E)(?:,|$)/i );
+        Jifty->log->debug("I found the transaction");
+        # in TxnBatch stage we can select scrips that are not applicable to all txns
+        my $txn_type = $transaction_obj->type;
+
+        my $condition = $self->scrip_condition;
+
+            next unless ( $condition->applicable_trans_types =~ /(?:^|,)(?:Any|\Q$txn_type\E)(?:,|$)/i );
 
             # Load the scrip's Condition object
-            $ConditionObj->load_condition(
+            $condition->load_condition(
                 scrip_obj       => $self,
                 ticket_obj      => $args{'ticket_obj'},
                 transaction_obj => $transaction_obj,
             );
-
-            if ( $ConditionObj->is_applicable() ) {
-
+        Jifty->log->debug("I loaded the condition");
+            if ( $condition->is_applicable() ) {
+                Jifty->log->debug("It's applicable");
+    
                 # We found an application Transaction -- return it
                 $return = $transaction_obj;
                 last;
+            } else {
+                Jifty->log->debug("It's not applicable");
+
             }
         }
     };
 
-    if ($@) {
-        Jifty->log->error(
-            "Scrip is_applicable " . $self->id . " died. - " . $@ );
+    if (my $err = $@) {
+        Jifty->log->error( "Scrip is_applicable " . $self->id . " died. - " . $err );
         return (undef);
     }
 
@@ -480,19 +401,19 @@ sub prepare {
 
     my $return;
     eval {
-        $self->action_obj->load_action(
+        $self->scrip_action->load_action(
             scrip_obj       => $self,
             ticket_obj      => $args{'ticket_obj'},
             transaction_obj => $args{'transaction_obj'},
         );
-        $return = $self->action_obj->prepare();
+        $return = $self->scrip_action->prepare();
     };
     if ( my $err = $@ ) {
         Jifty->log->error( "Scrip prepare "
                 . $self->id
                 . " died. - "
                 . $err . " "
-                . $self->action_obj->exec_module );
+                . $self->scrip_action->exec_module );
         return (undef);
     }
     return ($return);
@@ -517,7 +438,7 @@ sub commit {
     );
 
     my $return;
-    eval { $return = $self->action_obj->commit(); };
+    eval { $return = $self->scrip_action->commit(); };
 
 #Searchbuilder caching isn't perfectly coherent. got to reload the ticket object, since it
 # may have changed
@@ -534,14 +455,6 @@ sub commit {
     return ($return);
 }
 
-# }}}
-
-# }}}
-
-# {{{ ACL related methods
-
-# {{{ sub _set
-
 # does an acl check and then passes off the call
 sub _set {
     my $self = shift;
@@ -554,9 +467,6 @@ sub _set {
     return $self->__set(@_);
 }
 
-# }}}
-
-# {{{ sub _value
 # does an acl check and then passes off the call
 sub _value {
     my $self = shift;
@@ -571,9 +481,6 @@ sub _value {
     return $self->__value(@_);
 }
 
-# }}}
-
-# {{{ sub current_user_has_right
 
 =head2 current_user_has_right
 
@@ -594,9 +501,6 @@ sub current_user_has_right {
 
 }
 
-# }}}
-
-# {{{ sub has_right
 
 =head2 has_right
 
@@ -627,9 +531,7 @@ sub has_right {
     }
 }
 
-# }}}
 
-# }}}
 
 1;
 

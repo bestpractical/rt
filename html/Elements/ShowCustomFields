@@ -80,6 +80,8 @@ my $print_value = sub  {
         $m->out('<a href="'. $value->link_value_to .'" target="_new">');
     }
     my $comp = "ShowCustomField". $cf->type;
+Jifty->log->debug("$comp");
+Jifty->log->debug($cf->id);
     $m->callback(
         Callbackname => 'ShowComponentname',
         name         => \$comp,

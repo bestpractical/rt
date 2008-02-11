@@ -47,18 +47,18 @@
 # END BPS TAGGED BLOCK }}}
 #
 
-package RT::Model::Principal;
-
 use strict;
 use warnings;
 
+package RT::Model::Principal;
+use base qw/RT::Record/;
+
+
 use Cache::Simple::TimedExpiry;
 
-use RT;
 use RT::Model::Group;
 use RT::Model::User;
 
-use base qw/RT::Record/;
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
@@ -134,7 +134,7 @@ sub object {
         } else {
             return (undef);
         }
-        $self->{'object'}->load( $self->object_id() );
+        $self->{'object'}->load( $self->id() );
     }
     return ( $self->{'object'} );
 

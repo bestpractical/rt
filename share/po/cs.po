@@ -95,7 +95,7 @@ msgid "%1 %2 deleted"
 msgstr "%1 %2 smazán"
 
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:63 html/Ticket/Elements/PreviewScrips:103
-#. (_($scrip->condition_obj->name), loc($scrip->action_obj->name), loc($scrip->template_obj->name))
+#. (_($scrip->scrip_condition->name), loc($scrip->scrip_action->name), loc($scrip->template_obj->name))
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 se vzorem %3"
 
@@ -1600,7 +1600,7 @@ msgid "Created tickets in period, grouped by status"
 msgstr "Vytvořené požadavky za období, seskupené dle stavu"
 
 #: html/Search/Elements/PickBasics:102
-msgid "Creator"
+msgid "creator"
 msgstr "Tvůrce"
 
 #: html/Elements/EditLinks:49

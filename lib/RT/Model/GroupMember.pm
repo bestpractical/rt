@@ -35,8 +35,8 @@ sub table {'GroupMembers'}
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column group_id  => type is 'integer';
-    column member_id => type is 'integer';
+    column group_id  => references RT::Model::Group;
+    column member_id => references RT::Model::Principal;
 
 };
 

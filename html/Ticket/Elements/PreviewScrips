@@ -61,12 +61,12 @@ my @non_recipients = @{ $squelch{'emails'} };
 <i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br />
 
 % foreach my $scrip (@{$object->scrips->prepared}) {
-% next unless $scrip->action_obj->action->isa('RT::ScripAction::SendEmail');
+% next unless $scrip->scrip_action->action->isa('RT::ScripAction::SendEmail');
 <b><% $scrip->description || _('Scrip #%1',$scrip->id) %></b><br />
-<&|/l, _($scrip->condition_obj->name), loc($scrip->action_obj->name), loc($scrip->template_obj->name)&>%1 %2 with template %3</&>
+<&|/l, _($scrip->scrip_condition->name), loc($scrip->scrip_action->name), loc($scrip->template_obj->name)&>%1 %2 with template %3</&>
 <br />
 %foreach my $type qw(to cc bcc) {
-%my @addresses =  $scrip->action_obj->action->$type();
+%my @addresses =  $scrip->scrip_action->action->$type();
 <ul>
 %foreach my $addr (@addresses) {
 <li> <b><%_($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$ticket_obj->id%>-SquelchMailTo" value="<%$addr->address%>" /> <%$addr->address%>
@@ -75,7 +75,7 @@ my @non_recipients = @{ $squelch{'emails'} };
 % }
 % if (RT->config->get('PreviewScripMessages')) {
 <textarea cols="80" rows="5">
-<%$scrip->action_obj->template_obj->mime_obj->as_string%>
+<%$scrip->scrip_action->template_obj->mime_obj->as_string%>
 </textarea>
 % }
 % }
@@ -178,7 +178,7 @@ unless ( $id && $txn ) {
 
 my @recipients;
 foreach my $scrip ( @{ $txn->scrips->prepared } ) {
-    my $action = $scrip->action_obj->action;
+    my $action = $scrip->scrip_action->action;
     next unless $action->isa('RT::ScripAction::SendEmail');
 
     foreach my $type qw(to cc bcc) {
@@ -223,7 +223,7 @@ unless ( $id && $txn ) {
 
 my @recipients;
 foreach my $scrip ( @{ $txn->scrips->prepared } ) {
-    my $action = $scrip->action_obj->action;
+    my $action = $scrip->scrip_action->action;
     next unless $action->isa('RT::ScripAction::SendEmail');
 
     foreach my $type qw(to cc bcc) {

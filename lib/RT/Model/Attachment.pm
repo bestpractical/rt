@@ -31,27 +31,16 @@ sub table {'Attachments'}
 use base 'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column
-        transaction_id => max_length is 11,
-        type is 'int', default is '0';
-    column
-        message_id => max_length is 200,
-        type is 'varchar(200)', default is '';
-    column parent => max_length is 11, type is 'int', default is '0';
-    column
-        content_type => max_length is 200,
-        type is 'varchar(200)', default is '';
-    column
-        filename => max_length is 255,
-        type is 'varchar(255)', default is '';
-    column
-        subject => max_length is 255,
-        type is 'varchar(255)', default is '';
-
+    column transaction_id => references RT::Model::Transaction;
+    column message_id => max_length is 200, type is 'varchar(200)', default is '';
+    column parent => references RT::Model::Attachment;
+    column content_type => max_length is 200, type is 'varchar(200)', default is '';
+    column filename => max_length is 255, type is 'varchar(255)', default is '';
+    column subject => max_length is 255, type is 'varchar(255)', default is '';
     column content         => type is 'blob', default is '';
     column content_encoding => type is 'blob', default is '';
     column headers         => type is 'blob', default is '';
-    column creator => max_length is 11, type is 'int', default is '0';
+    column creator => references RT::Model::Principal;
     column created => type is 'timestamp';
 
 };

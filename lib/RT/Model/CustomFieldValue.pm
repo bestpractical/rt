@@ -48,28 +48,20 @@ use strict;
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-use warnings;
-use strict;
 
 package RT::Model::CustomFieldValue;
-
-no warnings qw/redefine/;
 use base qw/RT::Record/;
 sub table {'CustomFieldValues'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column creator => type is 'int', max_length is 11, default is '0';
-    column
-        last_updated_by => type is 'int',
-        max_length is 11, default is '0';
+    column creator => references RT::Model::User;
+    column last_updated_by => references RT::Model::User;
     column sort_order   => type is 'int', max_length is 11, default is '0';
     column custom_field => type is 'int', max_length is 11, default is '0';
     column created     => type is 'timestamp';
     column last_updated => type is 'timestamp';
     column name => type is 'varchar(200)', max_length is 200, default is '';
-    column
-        description => type is 'varchar(255)',
-        max_length is 255, default is '';
+    column description => type is 'varchar(255)', max_length is 255, default is '';
 
 };
 
@@ -91,10 +83,7 @@ sub create {
         @_,
     );
 
-    my $cf_id
-        = ref $args{'custom_field'}
-        ? $args{'custom_field'}->id
-        : $args{'custom_field'};
+    my $cf_id = ref $args{'custom_field'} ? $args{'custom_field'}->id : $args{'custom_field'};
 
     my $cf = RT::Model::CustomField->new;
     $cf->load($cf_id);

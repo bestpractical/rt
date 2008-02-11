@@ -8,7 +8,7 @@ framework:
   Database: 
     CheckSchema: 0
     Database: rt4
-    Driver: SQLite
+    Driver: mysql
     Host: localhost
     password: ''
     RecordBaseClass: Jifty::DBI::Record::Cachable

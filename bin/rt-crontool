@@ -138,7 +138,7 @@ while ( my $ticket = $tickets->next() ) {
 
     # perform some more advanced check
     if ($condition) {
-        my $condition_obj = $condition->new(
+        my $scrip_condition = $condition->new(
             transaction_obj => $transaction,
             ticket_obj      => $ticket,
             scrip_obj       => $void_scrip,
@@ -149,12 +149,12 @@ while ( my $ticket = $tickets->next() ) {
 
         # if the condition doesn't apply, get out of here
 
-        next unless ( $condition_obj->is_applicable );
+        next unless ( $scrip_condition->is_applicable );
         print _("Condition matches...") if ($verbose);
     }
 
     #prepare our action
-    my $action_obj = $action->new(
+    my $scrip_action = $action->new(
         ticket_obj      => $ticket,
         transaction_obj => $transaction,
         template_obj    => $template_obj,
@@ -165,11 +165,11 @@ while ( my $ticket = $tickets->next() ) {
     );
 
     #if our preparation, move onto the next ticket
-    next unless ( $action_obj->prepare );
+    next unless ( $scrip_action->prepare );
     print _("Action prepared...") if ($verbose);
 
     #commit our action.
-    next unless ( $action_obj->commit );
+    next unless ( $scrip_action->commit );
     print _("Action committed.\n") if ($verbose);
 }
 

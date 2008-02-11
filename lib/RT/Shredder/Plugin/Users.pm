@@ -75,7 +75,7 @@ Email address mask.
 
 When you delete user there is could be minor links to him in RT DB.
 This option allow you to replace this links with link to other user.
-This links are Creator and last_updated_by, but NOT any watcher roles,
+This links are creator and last_updated_by, but NOT any watcher roles,
 this mean that if user is watcher(Requestor, Owner,
 Cc or AdminCc) of the ticket or queue then link would be deleted.
 
@@ -135,7 +135,7 @@ sub run {
     # XXX: we want preload only things we need, but later while
     # logging we need all data, TODO envestigate this
     # $objs->columns(qw(id name email lang timezone
-    #                   Creator Created last_updated last_updated_by));
+    #                   creator Created last_updated last_updated_by));
     if ( my $s = $self->{'opt'}{'status'} ) {
         if ( $s eq 'any' ) {
             $objs->{'find_disabled_rows'} = 1;
@@ -188,7 +188,7 @@ sub set_Resolvers {
         my $resolver = sub {
             my %args = (@_);
             my $t    = $args{'target_object'};
-            foreach my $method (qw(Creator last_updated_by)) {
+            foreach my $method (qw(creator last_updated_by)) {
                 next unless $t->_accessible( $method => 'read' );
                 $t->__set( column => $method, value => $uid );
             }

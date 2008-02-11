@@ -70,11 +70,9 @@ should only be accessed through exported APIs in other modules.
 =cut
 
 package RT::Model::ScripAction;
-
-use strict;
-no warnings qw(redefine);
 use RT::Model::Template;
 use base qw/RT::Record/;
+
 sub table {'ScripActions'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
@@ -82,18 +80,12 @@ use Jifty::DBI::Record schema {
     column description => type is 'text';
     column exec_module  => type is 'text';
     column argument    => type is 'text';
-    column creator     => max_length is 11, type is 'int', default is '0';
+    column creator     => references RT::Model::User;
     column created => type is 'timestamp';
-    column
-        last_updated_by => max_length is 11,
-        type is 'int', default is '0';
+    column last_updated_by => references RT::Model::User;
     column last_updated => type is 'timestamp';
 
 };
-
-# }}}
-
-# {{{ sub create
 
 =head2 Create
 
@@ -102,22 +94,18 @@ documented.
 
 =cut
 
-# {{{ sub delete
 sub delete {
     my $self = shift;
 
     return ( 0, "ScripAction->delete not implemented" );
 }
 
-# }}}
 
-# {{{ sub load
-
-=head2 Load IDENTIFIER
+=head2 load IDENTIFIER
 
 Loads an action by its name.
 
-Returns: Id, Error Message
+Returns: id, Error Message
 
 =cut
 
@@ -146,10 +134,6 @@ sub load {
     return ( $self->id, ( _( '%1 ScripAction loaded', $self->id ) ) );
 }
 
-# }}}
-
-# {{{ sub loadAction
-
 =head2 load_action HASH
 
   Takes a hash consisting of ticket_obj and transaction_obj.  Loads an RT::ScripAction:: module.
@@ -165,15 +149,11 @@ sub load_action {
     );
 
     $self->{_ticket_obj} = $args{ticket_obj};
+        my $type = "RT::ScripAction::".$self->exec_module ;
+    Jifty::Util->require($type);
 
-    #TODO: Put this in an eval
-    $self->exec_module =~ /^(\w+)$/;
-    my $module = $1;
-    my $type   = "RT::ScripAction::" . $module;
 
-    eval "require $type" || die "Require of $type failed.\n$@\n";
-
-    $self->{'Action'} = $type->new(
+    $self->{'action'} = $type->new(
         argument        => $self->argument,
         current_user     => $self->current_user,
         scrip_action_obj  => $self,
@@ -183,10 +163,6 @@ sub load_action {
         transaction_obj => $args{'transaction_obj'},
     );
 }
-
-# }}}
-
-# {{{ sub template_obj
 
 =head2 template_obj
 
@@ -225,11 +201,8 @@ sub template_obj {
     return ( $self->{'template_obj'} );
 }
 
-# }}}
 
 # The following methods call the action object
-
-# {{{ sub prepare
 
 sub prepare {
     my $self = shift;
@@ -238,25 +211,17 @@ sub prepare {
 
 }
 
-# }}}
-
-# {{{ sub commit
 sub commit {
     my $self = shift;
     return ( $self->action->commit() );
 
 }
-
-# }}}
-
-# {{{ sub Describe
 sub describe {
     my $self = shift;
     return ( $self->action->describe() );
 
 }
 
-# }}}
 
 =head2 Action
 
@@ -266,25 +231,16 @@ Return the actual RT::ScripAction object for this scrip.
 
 sub action {
     my $self = shift;
-    return ( $self->{'Action'} );
+    return ( $self->{'action'} );
 }
 
-# {{{ sub DESTROY
 sub DESTROY {
     my $self = shift;
     $self->{'_ticket_obj'}  = undef;
-    $self->{'Action'}       = undef;
+    $self->{'action'}       = undef;
     $self->{'template_obj'} = undef;
 }
 
-# }}}
-
-=head2 TODO
-
-Between this, RT::Model::Scrip and RT::ScripAction::*, we need to be able to get rid of a 
-class. This just reeks of too much complexity -- jesse
-
-=cut
 
 1;
 

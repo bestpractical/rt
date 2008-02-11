@@ -78,16 +78,12 @@ use Jifty::DBI::Record schema {
     column
         principal_type => max_length is 25,
         type is 'varchar(25)', default is '';
-    column principal_id => type is 'int', default is '0';
-    column
-        right_name => max_length is 25,
-        type is 'varchar(25)', default is '';
-    column
-        object_type => max_length is 25,
-        type is 'varchar(25)', default is '';
+    column principal_id => references RT::Model::Principal;
+    column right_name => max_length is 25, type is 'varchar(25)', default is '';
+    column object_type => max_length is 25, type is 'varchar(25)', default is '';
     column object_id     => type is 'int', default is '0';
-    column delegated_by   => type is 'int', default is '0';
-    column delegated_from => type is 'int', default is '0';
+    column delegated_by   => references RT::Model::Principal;
+    column delegated_from => references RT::Model::ACE;
 };
 
 use vars qw (

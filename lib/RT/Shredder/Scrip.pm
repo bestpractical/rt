@@ -96,7 +96,7 @@ sub __Relates {
     }
 
     # Condition
-    $obj = $self->condition_obj;
+    $obj = $self->scrip_condition;
     if ( defined $obj->id ) {
         push( @$list, $obj );
     } else {
@@ -108,7 +108,7 @@ sub __Relates {
     }
 
     # Action
-    $obj = $self->action_obj;
+    $obj = $self->scrip_action;
     if ( defined $obj->id ) {
         push( @$list, $obj );
     } else {

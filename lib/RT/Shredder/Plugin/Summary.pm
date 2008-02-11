@@ -138,8 +138,8 @@ sub write_down_scrip {
     my $self  = shift;
     my %args  = ( object => undef, @_ );
     my $props = $self->_make_hash( $args{'object'} );
-    $props->{'Action'}    = $args{'object'}->action_obj->name;
-    $props->{'Condition'} = $args{'object'}->condition_obj->name;
+    $props->{'Action'}    = $args{'object'}->scrip_action->name;
+    $props->{'Condition'} = $args{'object'}->scrip_condition->name;
     $props->{'template'}  = $args{'object'}->template_obj->name;
     $props->{'queue'}     = $args{'object'}->queue_obj->name || 'global';
 
@@ -149,7 +149,7 @@ sub write_down_scrip {
 sub _make_hash {
     my ( $self, $obj ) = @_;
     my $hash = $self->__make_hash($obj);
-    foreach ( grep exists $hash->{$_}, qw(Creator last_updated_by) ) {
+    foreach ( grep exists $hash->{$_}, qw(creator last_updated_by) ) {
         my $method = $_ . 'Obj';
         my $u      = $obj->$method();
         $hash->{$_} = $u->email || $u->name || $u->_as_string;

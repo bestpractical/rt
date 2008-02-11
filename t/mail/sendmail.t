@@ -196,7 +196,7 @@ sub utf8_redef_sendmessage {
         my $MIME = shift;
 
         my $scrip = $self->scrip_obj->id;
-        ok(1, $self->scrip_obj->condition_obj->name . " ".$self->scrip_obj->action_obj->name);
+        ok(1, $self->scrip_obj->scrip_condition->name . " ".$self->scrip_obj->scrip_action->name);
         main::_fired_scrip($self->scrip_obj);
         $MIME->make_singlepart;
         main::is( ref($MIME) , \'MIME::Entity\',
@@ -223,7 +223,7 @@ sub iso8859_redef_sendmessage {
         my $MIME = shift;
 
         my $scrip = $self->scrip_obj->id;
-        ok(1, $self->scrip_obj->condition_obj->name . " ".$self->scrip_obj->action_obj->name);
+        ok(1, $self->scrip_obj->scrip_condition->name . " ".$self->scrip_obj->scrip_action->name);
         main::_fired_scrip($self->scrip_obj);
         $MIME->make_singlepart;
         main::is( ref($MIME) , \'MIME::Entity\',
@@ -297,7 +297,7 @@ sub text_html_umlauts_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift;
                 my $MIME = shift;
-                return (1) unless ($self->scrip_obj->action_obj->name eq "Notify AdminCcs" );
+                return (1) unless ($self->scrip_obj->scrip_action->name eq "Notify AdminCcs" );
                 is ($MIME->parts, 2, "generated correspondence mime entityis composed of three parts");
                 is ($MIME->head->mime_type , "multipart/mixed", "The first part is a multipart mixed". $MIME->head->mime_type);
                 is ($MIME->parts(0)->head->mime_type , "text/plain", "The second part is a plain");
@@ -334,7 +334,7 @@ sub text_html_russian_redef_sendmessage {
                 my $self = shift; 
                 my $MIME = shift; 
                 use Data::Dumper;
-                return (1) unless ($self->scrip_obj->action_obj->name eq "Notify AdminCcs" );
+                return (1) unless ($self->scrip_obj->scrip_action->name eq "Notify AdminCcs" );
                 ok (is $MIME->parts, 2, "generated correspondence mime entityis composed of three parts");
                 is ($MIME->head->mime_type , "multipart/mixed", "The first part is a multipart mixed". $MIME->head->mime_type);
                 is ($MIME->parts(0)->head->mime_type , "text/plain", "The second part is a plain");
@@ -375,7 +375,7 @@ sub text_plain_russian_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift; 
                 my $MIME = shift; 
-                return (1) unless ($self->scrip_obj->action_obj->name eq "Notify AdminCcs" );
+                return (1) unless ($self->scrip_obj->scrip_action->name eq "Notify AdminCcs" );
                 is ($MIME->head->mime_type , "text/plain", "The only part is text/plain ");
                  my $subject  = $MIME->head->get("subject");
                 chomp($subject);
@@ -416,7 +416,7 @@ sub text_plain_nested_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift; 
                 my $MIME = shift; 
-                return (1) unless ($self->scrip_obj->action_obj->name eq "Notify AdminCcs" );
+                return (1) unless ($self->scrip_obj->scrip_action->name eq "Notify AdminCcs" );
                 is ($MIME->head->mime_type , "multipart/mixed", "It is a mixed multipart");
                  my $subject  =  $MIME->head->get("subject");
                  $subject  = MIME::Base64::decode_base64( $subject);

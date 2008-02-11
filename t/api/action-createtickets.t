@@ -64,8 +64,8 @@ my ($sval, $smsg) =$scrip->create( scrip_condition => 'On Transaction',
 ok ($sval, $smsg);
 ok ($scrip->id, "Created the scrip");
 ok ($scrip->template_obj->id, "Created the scrip template");
-ok ($scrip->condition_obj->id, "Created the scrip condition");
-ok ($scrip->action_obj->id, "Created the scrip action");
+ok ($scrip->scrip_condition->id, "Created the scrip condition");
+ok ($scrip->scrip_action->id, "Created the scrip action");
 
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 my($tid, $ttrans, $tmsg) = $t->create(subject => "Sample workflow test",

@@ -61,13 +61,13 @@
 <tr><td align="right"><&|/l&>Condition</&>:</td><td>
 <& /Admin/Elements/SelectScripCondition,
     name => "Scrip-$id-scrip_condition",
-    Default => $ARGS{"Scrip-$id-scrip_condition"} || $scrip->condition_obj->id,
+    Default => $ARGS{"Scrip-$id-scrip_condition"} || $scrip->scrip_condition->id,
 &></td></tr>
 
 <tr><td align="right"><&|/l&>Action</&>:</td><td>
 <& /Admin/Elements/SelectScripAction,
     name => "Scrip-$id-scrip_action",
-    Default => $ARGS{"Scrip-$id-scrip_action"} || $scrip->action_obj->id,
+    Default => $ARGS{"Scrip-$id-scrip_action"} || $scrip->scrip_action->id,
 &></td></tr>
 
 <tr><td align="right"><&|/l&>Template</&>:</td><td>

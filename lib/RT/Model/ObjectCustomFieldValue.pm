@@ -57,41 +57,21 @@ use base qw/RT::Record/;
 sub table {'ObjectCustomFieldValues'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column
-        content_type => type is 'varchar(80)',
-        max_length is 80, default is '';
+    column content_type => type is 'varchar(80)', max_length is 80, default is '';
     column large_content => type is 'blob', default is '';
-    column Creator => type is 'int', max_length is 11, default is '0';
+    column creator => references RT::Model::User;
     column object_id => type is 'int', max_length is 11, default is '0';
-    column
-        last_updated_by => type is 'int',
-        max_length is 11, default is '0';
+    column last_updated_by => references RT::Model::User;
     column disabled => type is 'smallint', max_length is 6, default is '0';
     column sort_order => type is 'int', max_length is 11, default is '0';
     column Created => type is 'timestamp';
-    column custom_field => type is 'int', max_length is 11, default is '0';
-    column
-        content => type is 'varchar(255)',
-        max_length is 255, default is '';
-    column
-        content_encoding => type is 'varchar(80)',
-        max_length is 80, default is '';
+    column custom_field => references RT::Model::CustomField;
+    column content => type is 'varchar(255)', max_length is 255, default is '';
+    column content_encoding => type is 'varchar(80)', max_length is 80, default is '';
     column last_updated => type is 'timestamp';
-    column
-        object_type => type is 'varchar(255)',
-        max_length is 255, default is '';
+    column object_type => type is 'varchar(255)', max_length is 255, default is '';
 
 };
-
-sub custom_field_obj {
-
-    my $self = shift;
-    unless ( $self->{cf} ) {
-        $self->{cf} = RT::Model::CustomField->new;
-        $self->{cf}->load( $self->custom_field );
-    }
-    return $self->{cf};
-}
 
 sub create {
     my $self = shift;
@@ -271,7 +251,7 @@ a link_value_to
 sub link_value_to {
     my $self = shift;
     return $self->_fill_in_template_url(
-        $self->custom_field_obj->link_value_to );
+        $self->custom_field->link_value_to );
 }
 
 =head2 ValueIncludeURL
@@ -285,7 +265,7 @@ a include_content_for_value
 sub include_content_for_value {
     my $self = shift;
     return $self->_fill_in_template_url(
-        $self->custom_field_obj->include_content_for_value );
+        $self->custom_field->include_content_for_value );
 }
 
 1;

@@ -112,7 +112,7 @@ my @lines = (
             type    => 'select',
             options => [
                 owner => _('Owner'),
-                creator => _('Creator'),
+                creator => _('creator'),
                 last_updated_by => _('Last updated by'),
             ],
         },

@@ -82,7 +82,6 @@ use warnings;
 
 use base qw/RT::Base/;
 
-# {{{ sub new
 sub new {
     my $proto = shift;
     my $class = ref($proto) || $proto;
@@ -93,9 +92,6 @@ sub new {
     return $self;
 }
 
-# }}}
-
-# {{{ sub _init
 sub _init {
     my $self = shift;
     my %args = (
@@ -113,13 +109,12 @@ sub _init {
     $self->{'ticket_obj'}           = $args{'ticket_obj'};
     $self->{'transaction_obj'}      = $args{'transaction_obj'};
     $self->{'applicable_trans_types'} = $args{'applicable_trans_types'};
+    Jifty->log->debug( "My trans type is ".$self->{'applicable_trans_types'} );
 }
 
-# }}}
 
 # Access Scripwide data
 
-# {{{ sub argument
 
 =head2 argument
 
@@ -132,10 +127,6 @@ sub argument {
     return ( $self->{'argument'} );
 }
 
-# }}}
-
-# {{{ sub ticket_obj
-
 =head2 ticket_obj
 
 Return the ticket object we're talking about
@@ -146,10 +137,6 @@ sub ticket_obj {
     my $self = shift;
     return ( $self->{'ticket_obj'} );
 }
-
-# }}}
-
-# {{{ sub scrip_obj
 
 =head2 scrip_obj
 
@@ -162,9 +149,6 @@ sub scrip_obj {
     return ( $self->{'scrip_obj'} );
 }
 
-# }}}
-# {{{ sub transaction_obj
-
 =head2 transaction_obj
 
 Return the transaction object we're talking about
@@ -175,10 +159,6 @@ sub transaction_obj {
     my $self = shift;
     return ( $self->{'transaction_obj'} );
 }
-
-# }}}
-
-# {{{ sub Type
 
 =head2 type 
 
@@ -191,49 +171,35 @@ sub applicable_trans_types {
     return ( $self->{'applicable_trans_types'} );
 }
 
-# }}}
-
 # Scrip methods
 
 #What does this type of Action does
 
-# {{{ sub Describe
 sub describe {
     my $self = shift;
     return ( _( "No description for %1", ref $self ) );
 }
 
-# }}}
 
 #Parse the templates, get things ready to go.
 
 #If this rule applies to this transaction, return true.
 
-# {{{ sub IsApplicable
 sub is_applicable {
     my $self = shift;
     return (undef);
 }
 
-# }}}
-
-# {{{ sub DESTROY
 sub DESTROY {
     my $self = shift;
 
     # We need to clean up all the references that might maybe get
     # oddly circular
-    $self->{'template_obj'} = undef $self->{'ticket_obj'} = undef;
+    $self->{'template_obj'} = undef;
+    $self->{'ticket_obj'} = undef;
     $self->{'transaction_obj'} = undef;
     $self->{'scrip_obj'}       = undef;
 
 }
-
-# }}}
-
-eval "require RT::Condition::Generic_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Condition/Generic_Vendor.pm} );
-eval "require RT::Condition::Generic_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Condition/Generic_Local.pm} );
 
 1;

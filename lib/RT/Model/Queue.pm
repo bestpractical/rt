@@ -66,10 +66,9 @@ use RT::Model::Queue;
 
 =cut
 
-package RT::Model::Queue;
-
+use warnings;
 use strict;
-no warnings qw(redefine);
+package RT::Model::Queue;
 
 use RT::Model::GroupCollection;
 use RT::Model::ACECollection;
@@ -83,29 +82,15 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
     column name => max_length is 200, type is 'varchar(200)', default is '';
-    column
-        description => max_length is 255,
-        type is 'varchar(255)', default is '';
-    column
-        correspond_address => max_length is 120,
-        type is 'varchar(120)', default is '';
-    column
-        comment_address => max_length is 120,
-        type is 'varchar(120)', default is '';
-    column
-        initial_priority => max_length is 11,
-        type is 'int', default is '0';
-    column
-        final_priority => max_length is 11,
-        type is 'int', default is '0';
-    column
-        default_due_in => max_length is 11,
-        type is 'int', default is '0';
-    column Creator => max_length is 11, type is 'int', default is '0';
+    column description => max_length is 255, type is 'varchar(255)', default is '';
+    column correspond_address => max_length is 120, type is 'varchar(120)', default is '';
+    column comment_address => max_length is 120, type is 'varchar(120)', default is '';
+    column initial_priority => max_length is 11, type is 'int', default is '0';
+    column final_priority => max_length is 11, type is 'int', default is '0';
+    column default_due_in => max_length is 11, type is 'int', default is '0';
+    column creator => references RT::Model::User;
     column Created => type is 'timestamp';
-    column
-        last_updated_by => max_length is 11,
-        type is 'int', default is '0';
+    column last_updated_by => references RT::Model::User;
     column last_updated => type is 'timestamp';
     column disabled => max_length is 6, type is 'smallint', default is '0';
 };
@@ -1009,7 +994,7 @@ sub is_watcher {
     my $self = shift;
 
     my %args = (
-        type         => 'Cc',
+        type         => 'cc',
         principal_id => undef,
         @_
     );
@@ -1030,46 +1015,6 @@ sub is_watcher {
     }
 
     return ( $group->has_member_recursively($principal) );
-}
-
-# }}}
-
-# {{{ sub IsCc
-
-=head2 IsCc PRINCIPAL_ID
-
-Takes an RT::Model::Principal id.
-Returns true if the principal is a requestor of the current queue.
-
-
-=cut
-
-sub is_cc {
-    my $self = shift;
-    my $cc   = shift;
-
-    return ( $self->is_watcher( type => 'Cc', principal_id => $cc ) );
-
-}
-
-# }}}
-
-# {{{ sub is_admin_cc
-
-=head2 is_admin_cc PRINCIPAL_ID
-
-Takes an RT::Model::Principal id.
-Returns true if the principal is a requestor of the current queue.
-
-=cut
-
-sub is_admin_cc {
-    my $self   = shift;
-    my $person = shift;
-
-    return (
-        $self->is_watcher( type => 'admin_cc', principal_id => $person ) );
-
 }
 
 # }}}

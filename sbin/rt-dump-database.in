@@ -62,7 +62,7 @@ my $LocalOnly = @ARGV ? shift(@ARGV) : 1;
 my %RV;
 my %Ignore = (
     All => [qw(
-	id Created Creator last_updated last_updated_by
+	id Created creator last_updated last_updated_by
     )],
     Templates => [qw(
 	TranslationOf

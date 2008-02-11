@@ -46,13 +46,11 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Condition::UserDefined;
-
-use RT::Condition::Generic;
-
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Condition::Generic);
+use warnings;
+
+package RT::Condition::UserDefined;
+use base qw(RT::Condition::Generic);
 
 =head2 IsApplicable
 
@@ -62,20 +60,15 @@ This happens on every transaction. it's always applicable
 
 sub is_applicable {
     my $self   = shift;
+
+
     my $retval = eval $self->scrip_obj->custom_is_applicable_code;
     if ($@) {
-        Jifty->log->error(
-            "Scrip " . $self->scrip_obj->id . " IsApplicable failed: " . $@ );
+        Jifty->log->error( "Scrip " . $self->scrip_obj->id . " is_applicable failed: " . $@ );
         return (undef);
     }
     return ($retval);
 }
-
-eval "require RT::Condition::UserDefined_Vendor";
-die $@
-    if ( $@ && $@ !~ qr{^Can't locate RT/Condition/UserDefined_Vendor.pm} );
-eval "require RT::Condition::UserDefined_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Condition/UserDefined_Local.pm} );
 
 1;
 

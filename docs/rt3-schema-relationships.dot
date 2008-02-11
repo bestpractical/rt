@@ -12,7 +12,7 @@ edge [
 ];
 
 "Records" [shape = record, fontsize = 18, label = "(Any RT::Record)" ];
-"Records" -> "Principals" [label = "Creator -> id"];
+"Records" -> "Principals" [label = "creator -> id"];
 "ACL" [shape = record, fontsize = 18, label = "<col0> \N " ];
 "ACL" -> "Principals" [label="principal_id -> id"];
 "ACL" -> "Principals" [label="DelegatedBy -> id"];

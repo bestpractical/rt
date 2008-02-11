@@ -114,12 +114,12 @@ sub __depends_on {
         shredder      => $args{'shredder'}
     );
 
-    # TODO: Almost all objects has Creator, last_updated_by and etc. fields
+    # TODO: Almost all objects has creator, last_updated_by and etc. fields
     # which are references on users(Principal actualy)
     my @var_objs;
     foreach (@OBJECTS) {
         my $class = "RT::Model::$_";
-        foreach my $method (qw(Creator last_updated_by)) {
+        foreach my $method (qw(creator last_updated_by)) {
             my $objs = $class->new;
             next unless $objs->new_item->can($method);
             $objs->limit( column => $method, value => $self->id );

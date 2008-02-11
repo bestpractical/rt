@@ -46,14 +46,13 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::ScripAction::UserDefined;
-use RT::ScripAction::Generic;
-
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::ScripAction::Generic);
+use warnings;
+package RT::ScripAction::UserDefined;
 
-=head2 Prepare
+use base qw(RT::ScripAction::Generic);
+
+=head2 prepare
 
 This happens on every transaction. it's always applicable
 
@@ -61,10 +60,10 @@ This happens on every transaction. it's always applicable
 
 sub prepare {
     my $self   = shift;
+        Jifty->log->debug("preparing");
     my $retval = eval $self->scrip_obj->custom_prepare_code;
     if ($@) {
-        Jifty->log->error(
-            "Scrip " . $self->scrip_obj->id . " Prepare failed: " . $@ );
+        Jifty->log->error( "Scrip " . $self->scrip_obj->id . " Prepare failed: " . $@ );
         return (undef);
     }
     return ($retval);
@@ -78,6 +77,7 @@ This happens on every transaction. it's always applicable
 
 sub commit {
     my $self   = shift;
+        Jifty->log->debug("committing");
     my $retval = eval $self->scrip_obj->custom_commit_code;
     if ($@) {
         Jifty->log->error(

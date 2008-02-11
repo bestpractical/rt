@@ -73,18 +73,18 @@ use base qw/RT::Record/;
 use strict;
 no warnings qw(redefine);
 sub table {'Links'}
+
+
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column target => type is 'varchar(240)', max_length is 240, default is '';
     column base   => type is 'varchar(240)', max_length is 240, default is '';
-    column local_target => type is 'int', max_length is 11, default is '0';
-    column creator     => type is 'int', max_length is 11, default is '0';
+    column local_base => type is 'int';#references RT::Model::Ticket;
+    column local_target =>  type is 'int';#references RT::Model::Ticket;
+    column creator     =>  references RT::Model::User;
     column type => type is 'varchar(20)', max_length is 20, default is '';
-    column
-        last_updated_by => type is 'int',
-        max_length is 11, default is '0';
+    column last_updated_by => references RT::Model::User;
     column created => type is 'timestamp';
-    column local_base => type is 'int', max_length is 11, default is '0';
     column last_updated => type is 'timestamp';
 
 };
