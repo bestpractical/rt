@@ -342,6 +342,8 @@ sub _LinkLimit {
     if ( $op eq '!=' || $op =~ /\bNOT\b/i ) {
         $is_negative = 1;
     }
+    my $is_null = 0;
+    $is_null = 1 if !$value || $value =~ /^null$/io;
 
     my $direction = $meta->[1] || '';
     my ($matchfield, $linkfield) = ('', '');
@@ -358,15 +360,14 @@ sub _LinkLimit {
         $sb->_LinkLimit( 'LinkedTo', $op, $value, @rest );
         $sb->_LinkLimit(
             'LinkedFrom', $op, $value, @rest,
-            ENTRYAGGREGATOR => $is_negative? 'OR': 'AND'
+            ENTRYAGGREGATOR => (($is_negative && $is_null) || (!$is_null && !$is_negative))? 'OR': 'AND',
         );
         $sb->_CloseParen;
         return;
     }
 
-    my ($is_local, $is_null) = (1, 0);
-    if ( !$value || $value =~ /^null$/io ) {
-        $is_null = 1;
+    my $is_local = 1;
+    if ( $is_null ) {
         $op = ($op =~ /^(=|IS)$/)? 'IS': 'IS NOT';
     }
     elsif ( $value =~ /\D/ ) {
