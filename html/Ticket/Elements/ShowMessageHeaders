@@ -55,7 +55,7 @@
 </table>
 <%INIT>
 my @headers;
-foreach my $field( $Message->SplitHeaders ) {
+foreach my $field( RT->Config->Get('ShowBccHeader')? $Message->_SplitHeaders : $Message->SplitHeaders ) {
     my ($tag, $value) = split /:/, $field, 2;
     next unless $tag && $value;
     push @headers, { Tag => $tag, Value => $value };

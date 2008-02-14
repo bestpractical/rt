@@ -235,7 +235,6 @@ Set($SMTPDebug, 0);
 # @MailParams defines a list of options passed to $MailCommand if it
 # is not 'sendmailpipe', 'sendmail', or 'smtp'
 Set(@MailParams, ());
-# }}}
 
 # RT is designed such that any mail which already has a ticket-id associated
 # with it will get to the right place automatically.
@@ -293,10 +292,14 @@ Set($RecordOutgoingEmail, 1);
 
 # By default, RT forwards a message using queue's address and adds RT's tag into
 # subject of the outgoing message, so recipients' replies go into RT as correspondents.
-# To change this behavior, set $ForwardFromUser to 0 and RT will use address of the
-# current user and leave subject without RT's tag.
+# To change this behavior, set $ForwardFromUser to true value and RT will use
+# address of the current user and leave subject without RT's tag.
 
 Set($ForwardFromUser, 0);
+
+# By default RT hides from the web UI information about blind copies user sent on
+# reply or comment, to change this set the following option to true value
+Set($ShowBccHeader, 0);
 
 # }}}
 
