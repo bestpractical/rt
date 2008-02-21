@@ -51,11 +51,11 @@
     Title => "RT/Admin/Edit the group ". $Group->Name &>
 <& /Elements/ListActions, actions => \@results &>
 
+<form action="<%$RT::WebPath%>/Admin/Groups/Members.html" method="post">
+<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
 
 <&| /Widgets/TitleBox, title => loc('Editing membership for group [_1]', $Group->Name) &>
 
-<form action="<%$RT::WebPath%>/Admin/Groups/Members.html" method="post">
-<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
 <table width="100%">
 <tr>
 <td>
