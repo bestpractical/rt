@@ -1,5 +1,5 @@
 #
-msgit ""
+msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.5.x\n"
 "PO-Revision-Date: 2005-10-03 13:50-0400\n"
@@ -127,30 +127,6 @@ msgstr "%1 - Specificeer de conditie module die u wenst te gebruiken"
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - Specificeer de zoek module die u wenst te gebruiken"
 
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2004', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2005', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2005', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-     $RT::VERSION, 
-     '2005', 
-    '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: html/Elements/Footer:57
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2005', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
@@ -390,7 +366,7 @@ msgstr "(Geen slablonen)"
 
 #: html/Admin/Elements/PickCustomFields:47 html/Admin/Elements/PickObjects:47
 msgid "(None)"
-msgstr (Geen)""
+msgstr "(Geen)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will recieve future updates.)"
@@ -4166,7 +4142,7 @@ msgstr "RT heeft uw commando's verwerkt"
 
 #: NOT FOUND IN SOURCE
 msgid "RT is &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
-msgstr "RT is &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  Het is gedistribueerd onder <a href=\"http://www.gnu.org/copyleft/gpl.html\">Versie 2 van de GNU General Public License.</a>""
+msgstr "RT is &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  Het is gedistribueerd onder <a href=\"http://www.gnu.org/copyleft/gpl.html\">Versie 2 van de GNU General Public License.</a>"
 
 #: NOT FOUND IN SOURCE
 msgid "RT thinks this message may be a bounce"
@@ -5496,7 +5472,7 @@ msgstr "Transactie->Creëer kon niet, aangezien u geen ticket id gespecificeerd 
 
 #: lib/RT/Transaction_Overlay.pm:125
 msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
-msgstr "Transactie->Cre�r kon niet aangezien er geen objectttype en -id gespecificeerd is"
+msgstr "Transactie->Creëer kon niet,aangezien er geen objectttype en -id gespecificeerd is"
 
 #: lib/RT/Transaction_Overlay.pm:857
 msgid "Transactions are immutable"
