@@ -36,7 +36,7 @@ CREATE TABLE Queues (
 	LastUpdated		DATE,
 	Disabled 		NUMBER(11,0) DEFAULT 0 NOT NULL
 );
- CREATE  INDEX Queues1 ON Queues (LOWER('Name'));
+ CREATE  INDEX Queues1 ON Queues (LOWER(Name));
 CREATE INDEX Queues2 ON Queues (Disabled);
 
 
@@ -82,8 +82,8 @@ CREATE TABLE Groups (
 	Instance	NUMBER(11,0) DEFAULT 0 -- NOT NULL
 --	Instance	VARCHAR2(64)
 );
-CREATE INDEX Groups1 ON Groups (LOWER('Domain'), Instance, LOWER('Type'), id);
-CREATE INDEX Groups2 ON Groups (LOWER('Type'), Instance, LOWER('Domain'));
+CREATE INDEX Groups1 ON Groups (LOWER(Domain), Instance, LOWER(Type), id);
+CREATE INDEX Groups2 ON Groups (LOWER(Type), Instance, LOWER(Domain));
 
 
 CREATE SEQUENCE SCRIPCONDITIONS_seq;
@@ -225,8 +225,8 @@ CREATE TABLE Users (
 );
 -- CREATE UNIQUE INDEX Users1 ON Users (Name);
 
-CREATE INDEX Users2 ON Users( LOWER('Name'));
-CREATE INDEX Users4 ON Users (LOWER('EmailAddress'));
+CREATE INDEX Users2 ON Users( LOWER(Name));
+CREATE INDEX Users4 ON Users (LOWER(EmailAddress));
 
 
 CREATE SEQUENCE TICKETS_seq;
