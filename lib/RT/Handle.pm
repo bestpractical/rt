@@ -75,10 +75,9 @@ eval "use DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType') .";
 \@ISA= qw(DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType') .");";
 
 if ($@) {
-    die "Unable to load DBIx::SearchBuilder database handle for '". RT->Config->Get('DatabaseType') ."'.".
-        "\n".
-        "Perhaps you've picked an invalid database type or spelled it incorrectly.".
-        "\n". $@;
+    die "Unable to load DBIx::SearchBuilder database handle for '". RT->Config->Get('DatabaseType') ."'.\n".
+        "Perhaps you've picked an invalid database type or spelled it incorrectly.\n".
+        $@;
 }
 
 =head1 METHODS
@@ -113,11 +112,11 @@ from the config.
 
 =cut
 
-use File::Spec;
+require File::Spec;
 
 sub BuildDSN {
     my $self = shift;
-# Unless the database port is a positive integer, we really don't want to pass it.
+    # Unless the database port is a positive integer, we really don't want to pass it.
     my $db_port = RT->Config->Get('DatabasePort');
     $db_port = undef unless (defined $db_port && $db_port =~ /^(\d+)$/);
     my $db_host = RT->Config->Get('DatabaseHost');

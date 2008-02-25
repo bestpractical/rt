@@ -285,7 +285,7 @@ Returns L<DBI> database handle connected to RT database,
 you may specify credentials(USER and PASSWORD) to connect
 with. By default connects with credentials from RT config.
 
-=cut
+    no warnings 'unopened';
 
 sub get_rt_dbh {
     return _get_dbh( RT::Handle->DSN, $db_user, $db_pass );
