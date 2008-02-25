@@ -425,6 +425,7 @@ sub _Create {
     );
     my $id = $self->Id;
     unless ($id) {
+        $RT::Handle->Rollback() unless ($args{'InsideTransaction'});
         return ( 0, $self->loc('Could not create group') );
     }
 

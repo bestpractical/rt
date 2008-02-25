@@ -158,10 +158,7 @@ unless ($Attachments) {
 }
 my $titlebar_commands = '&nbsp;';
 
-my @DisplayHeaders=qw ( _all);
-
 if ( $type =~ /EmailRecord$/ ) {
-    @DisplayHeaders = qw(To Cc Bcc);
 
     $titlebar_commands .=
         "[<a target=\"_blank\" href=\"$EmailRecordPath?id="
@@ -177,10 +174,6 @@ if ( $type =~ /EmailRecord$/ ) {
 
 # If the transaction has anything attached to it at all
 else {
-
-    unless ( $ShowHeaders ) {
-        @DisplayHeaders = qw(To From RT-Send-Cc Cc Bcc Date Subject);
-    }
 
     if ( $Attachments->[0] && $ShowTitleBarCommands ) {
         my $ticket = $Transaction->TicketObj;

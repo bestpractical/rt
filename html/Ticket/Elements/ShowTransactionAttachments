@@ -183,6 +183,7 @@ if ( $Transaction->Type =~ /EmailRecord$/ ) {
 # If the transaction has anything attached to it at all
 elsif (!$ShowHeaders)  {
     @DisplayHeaders = qw(To From RT-Send-Cc Cc Bcc Date Subject);
+    push @DisplayHeaders, 'RT-Send-Bcc' if RT->Config->Get('ShowBccHeader');
 }
 
 my $size_to_str = sub {

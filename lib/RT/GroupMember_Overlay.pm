@@ -133,10 +133,12 @@ sub Create {
         my $member_object = $args{'Member'}->Object;
         if ($member_object->HasMemberRecursively($args{'Group'})) {
             $RT::Logger->debug("Adding that group would create a loop");
+            $RT::Handle->Rollback() unless ($args{'InsideTransaction'});
             return(undef);
         }
         elsif ( $args{'Member'}->Id == $args{'Group'}->Id) {
             $RT::Logger->debug("Can't add a group to itself");
+            $RT::Handle->Rollback() unless ($args{'InsideTransaction'});
             return(undef);
         }
     }

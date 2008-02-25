@@ -338,6 +338,13 @@ sub _LinkLimit {
     my $meta = $FIELD_METADATA{$field};
     die "Invalid Operator $op for $field" unless $op =~ /^(=|!=|IS|IS NOT)$/io;
 
+    my $is_negative = 0;
+    if ( $op eq '!=' || $op =~ /\bNOT\b/i ) {
+        $is_negative = 1;
+    }
+    my $is_null = 0;
+    $is_null = 1 if !$value || $value =~ /^null$/io;
+
     my $direction = $meta->[1] || '';
     my ($matchfield, $linkfield) = ('', '');
     if ( $direction eq 'To' ) {
@@ -348,23 +355,25 @@ sub _LinkLimit {
     }
     elsif ( $direction ) {
         die "Invalid link direction '$direction' for $field\n";
+    } else {
+        $sb->_OpenParen;
+        $sb->_LinkLimit( 'LinkedTo', $op, $value, @rest );
+        $sb->_LinkLimit(
+            'LinkedFrom', $op, $value, @rest,
+            ENTRYAGGREGATOR => (($is_negative && $is_null) || (!$is_null && !$is_negative))? 'OR': 'AND',
+        );
+        $sb->_CloseParen;
+        return;
     }
 
-    my ($is_local, $is_null) = (1, 0);
-    if ( !$value || $value =~ /^null$/io ) {
-        $is_null = 1;
+    my $is_local = 1;
+    if ( $is_null ) {
         $op = ($op =~ /^(=|IS)$/)? 'IS': 'IS NOT';
     }
     elsif ( $value =~ /\D/ ) {
         $is_local = 0;
     }
     $matchfield = "Local$matchfield" if $is_local;
-
-    my $is_negative = 0;
-    if ( $op eq '!=' ) {
-        $is_negative = 1;
-        $op = '=';
-    }
 
 #For doing a left join to find "unlinked tickets" we want to generate a query that looks like this
 #    SELECT main.* FROM Tickets main
@@ -395,7 +404,7 @@ sub _LinkLimit {
             QUOTEVALUE => 0,
         );
     }
-    elsif ( $is_negative ) {
+    else {
         my $linkalias = $sb->Join(
             TYPE   => 'LEFT',
             ALIAS1 => 'main',
@@ -412,82 +421,17 @@ sub _LinkLimit {
         $sb->SUPER::Limit(
             LEFTJOIN => $linkalias,
             FIELD    => $matchfield,
-            OPERATOR => $op,
+            OPERATOR => '=',
             VALUE    => $value,
         );
         $sb->_SQLLimit(
             @rest,
             ALIAS      => $linkalias,
             FIELD      => $matchfield,
-            OPERATOR   => 'IS',
+            OPERATOR   => $is_negative? 'IS': 'IS NOT',
             VALUE      => 'NULL',
             QUOTEVALUE => 0,
         );
-    }
-    else {
-        my $linkalias = $sb->NewAlias('Links');
-        $sb->_OpenParen;
-
-        $sb->_SQLLimit(
-            @rest,
-            ALIAS    => $linkalias,
-            FIELD    => 'Type',
-            OPERATOR => '=',
-            VALUE    => $meta->[2],
-        ) if $meta->[2];
-
-        $sb->_OpenParen;
-        if ( $direction ) {
-            $sb->_SQLLimit(
-                ALIAS           => $linkalias,
-                FIELD           => 'Local' . $linkfield,
-                OPERATOR        => '=',
-                VALUE           => 'main.id',
-                QUOTEVALUE      => 0,
-                ENTRYAGGREGATOR => 'AND',
-            );
-            $sb->_SQLLimit(
-                ALIAS           => $linkalias,
-                FIELD           => $matchfield,
-                OPERATOR        => '=',
-                VALUE           => $value,
-                ENTRYAGGREGATOR => 'AND',
-            );
-        } else {
-            $sb->_OpenParen;
-            $sb->_SQLLimit(
-                ALIAS           => $linkalias,
-                FIELD           => 'LocalBase',
-                VALUE           => 'main.id',
-                QUOTEVALUE      => 0,
-                ENTRYAGGREGATOR => 'AND',
-            );
-            $sb->_SQLLimit(
-                ALIAS           => $linkalias,
-                FIELD           => $matchfield .'Target',
-                VALUE           => $value,
-                ENTRYAGGREGATOR => 'AND',
-            );
-            $sb->_CloseParen;
-
-            $sb->_OpenParen;
-            $sb->_SQLLimit(
-                ALIAS           => $linkalias,
-                FIELD           => 'LocalTarget',
-                VALUE           => 'main.id',
-                QUOTEVALUE      => 0,
-                ENTRYAGGREGATOR => 'OR',
-            );
-            $sb->_SQLLimit(
-                ALIAS           => $linkalias,
-                FIELD           => $matchfield .'Base',
-                VALUE           => $value,
-                ENTRYAGGREGATOR => 'AND',
-            );
-            $sb->_CloseParen;
-        }
-        $sb->_CloseParen;
-        $sb->_CloseParen;
     }
 }
 

@@ -5,12 +5,11 @@ use warnings;
 use Test::More;
 eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 
-plan tests => 94;
+plan tests => 92;
 use RT::Test nodata => 1;
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( LogStackTraces => 'error' );
-use Data::Dumper;
 
 use File::Spec ();
 use Cwd;
@@ -25,7 +24,9 @@ RT->Config->Set( 'GnuPG',
                  OutgoingMessagesFormat => 'RFC' );
 
 RT->Config->Set( 'GnuPGOptions',
-                 homedir => $homedir );
+                 homedir => $homedir,
+                 'no-permission-warning' => undef,
+);
 
 
 diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
@@ -37,7 +38,7 @@ diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
     );
     my %res = RT::Crypt::GnuPG::SignEncrypt( Entity => $entity, Encrypt => 0, Passphrase => 'test' );
     ok( $entity, 'signed entity');
-    ok( !$res{'logger'}, "log is here as well" );
+    ok( !$res{'logger'}, "log is here as well" ) or diag $res{'logger'};
     my @status = RT::Crypt::GnuPG::ParseStatus( $res{'status'} );
     is( scalar @status, 2, 'two records: passphrase, signing');
     is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
@@ -73,8 +74,7 @@ diag 'only signing. missing passphrase' if $ENV{'TEST_VERBOSE'};
     );
     my %res = RT::Crypt::GnuPG::SignEncrypt( Entity => $entity, Encrypt => 0, Passphrase => '' );
     ok( $res{'exit_code'}, "couldn't sign without passphrase");
-    ok( $res{'error'}, "error is here" );
-    ok( $res{'logger'}, "log is here as well" );
+    ok( $res{'error'} || $res{'logger'}, "error is here" );
 
     my @status = RT::Crypt::GnuPG::ParseStatus( $res{'status'} );
     is( scalar @status, 1, 'one record');
@@ -91,8 +91,7 @@ diag 'only signing. wrong passphrase' if $ENV{'TEST_VERBOSE'};
     );
     my %res = RT::Crypt::GnuPG::SignEncrypt( Entity => $entity, Encrypt => 0, Passphrase => 'wrong' );
     ok( $res{'exit_code'}, "couldn't sign with bad passphrase");
-    ok( $res{'error'}, "error is here" );
-    ok( $res{'logger'}, "log is here as well" );
+    ok( $res{'error'} || $res{'logger'}, "error is here" );
 
     my @status = RT::Crypt::GnuPG::ParseStatus( $res{'status'} );
     is( scalar @status, 1, 'one record');
