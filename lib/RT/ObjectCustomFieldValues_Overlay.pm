@@ -93,7 +93,7 @@ sub LimitToObject {
 
 # }}}
 
-=sub HasEntry VALUE
+=head2 HasEntry VALUE
 
 If this collection has an entry with content that eq VALUE then
 returns the entry, otherwise returns undef.
