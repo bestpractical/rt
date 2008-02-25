@@ -112,11 +112,13 @@ new session objects.
 sub Attributes {
 
     return $_[0]->Backends->{RT->Config->Get('DatabaseType')} ? {
-            Handle     => $RT::Handle->dbh,
-            LockHandle => $RT::Handle->dbh,
+            Handle      => $RT::Handle->dbh,
+            LockHandle  => $RT::Handle->dbh,
+            Transaction => 1,
         } : {
             Directory     => $RT::MasonSessionDir,
             LockDirectory => $RT::MasonSessionDir,
+            Transaction   => 1,
         };
 }
 
