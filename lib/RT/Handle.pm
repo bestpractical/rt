@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Handle - RT's database handle
+RT::Handle - RT's database handle
 
 =head1 SYNOPSIS
 

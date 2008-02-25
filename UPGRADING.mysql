@@ -10,9 +10,7 @@ you're upgrading then you MUST follow instructions below.
 
 2) Follow instructions in the README file to the step 7)
 
-3) Apply changes described in the seven step, but only up to version 3.6.0.
-For example if you're upgrading from 3.2.x then you must apply changes for
-versions 3.3.0, 3.3.11 and 3.5.1, but not greater.
+3) Apply changes described in the seven step, but only up to version 3.8.0.
 
 4) Apply mysql 4.0->4.1 schema changes. RT tarball has script
 etc/upgrade/schema.mysql-4.0-4.1 that contain SQL queries to upgrade schema of
