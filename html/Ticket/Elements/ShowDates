@@ -64,7 +64,12 @@
   </tr>
   <tr>
     <td class="label date due"><&|/l&>Due</&>:</td>
-    <td class="value date due"><% $Ticket->DueObj->AsString  %></td>
+% my $due = $Ticket->DueObj;
+% if ( $due && $due->Unix > 0 && $due->Diff < 0 ) {
+    <td class="value date due"><span class="overdue"><% $due->AsString  %></span></td>
+% } else {
+    <td class="value date due"><% $due->AsString  %></td>
+% }
   </tr>
   <tr>
     <td class="label date resolved"><&|/l&>Closed</&>:</td>
