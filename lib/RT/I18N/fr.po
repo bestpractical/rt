@@ -3,12 +3,12 @@
 # valid as of 3.5-TESTING r3738
 # jfenal <jfenal@gmail.com>, 2005.
 # jfenal <jfenal@free.fr>, 2005.
-# Emmanuel Lacour <elacour@easter-eggs.com>, 2007.
+# Emmanuel Lacour <elacour@easter-eggs.com>, 2008.
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.5.x\n"
 "POT-Creation-Date: 2002-05-02 11:36+0800\n"
-"PO-Revision-Date: 2005-10-28 02:19+0200\n"
+"PO-Revision-Date: 2008-02-22 10:07+0200\n"
 "Last-Translator: Emmanuel Lacour <elacour@easter-eggs.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -122,7 +122,7 @@ msgstr "%1 - Un paramètre à passer à %2"
 #: bin/rt-crontool:262
 #. ("--verbose")
 msgid "%1 - Output status updates to STDOUT"
-msgstr "%1 - Ecrit les mises à jour de statuts sur STDOUT"
+msgstr "%1 - Écrit les mises à jour de statuts sur STDOUT"
 
 #: bin/rt-crontool:253
 #. ("--template-id")
@@ -222,7 +222,7 @@ msgstr "Mes %1 tickets de plus haute priorité"
 
 #: NOT FOUND IN SOURCE
 msgid "Status changed from %1 to %2"
-msgstr "Status changé de %1 à %2"
+msgstr "Statut changé de %1 à %2"
 
 #: bin/rt-crontool:229
 #. ($0)
@@ -289,7 +289,7 @@ msgstr "%1k"
 #: html/Ticket/Elements/ShowTime:49
 #. (sprintf("%.1f",$minutes / 60))
 msgid "%quant(%1,hour)"
-msgstr ""
+msgstr "%quant(%1,heure)"
 
 #: lib/RT/Ticket_Overlay.pm:1142
 #. ($args{'Status'})
@@ -755,7 +755,7 @@ msgstr "Attachements"
 
 #: lib/RT/Attributes_Overlay.pm:171
 msgid "Attribute Deleted"
-msgstr "Attibut supprimé"
+msgstr "Attribut supprimé"
 
 #: lib/RT/Date.pm:448
 msgid "Aug."
@@ -1570,7 +1570,7 @@ msgstr "Télécharger en tant que fichier délimité par tabulations"
 
 #: html/Elements/SelectDateType:53 html/Ticket/Create.html:209 html/Ticket/Elements/EditDates:66 html/Ticket/Elements/Reminders:133 html/Ticket/Elements/ShowDates:64 lib/RT/Ticket_Overlay.pm:1173
 msgid "Due"
-msgstr "Echéance"
+msgstr "Échéance"
 
 #: html/Elements/Quicksearch:48 html/Elements/ShowSearch:49 html/index.html:107
 msgid "Edit"
@@ -1754,7 +1754,7 @@ msgstr "Impossible de créer l'attribut de recherche"
 
 #: lib/RT/User_Overlay.pm:376
 msgid "Failed to find 'Privileged' users pseudogroup."
-msgstr "Recherche du pseudo groupe d'utilisateurs 'Priviligiés' infructueuse."
+msgstr "Recherche du pseudo groupe d'utilisateurs 'Privilégiés' infructueuse."
 
 #: lib/RT/User_Overlay.pm:383
 msgid "Failed to find 'Unprivileged' users pseudogroup"
@@ -1980,7 +1980,7 @@ msgstr "Accueil"
 
 #: html/Elements/SelectTimeUnits:48
 msgid "Hours"
-msgstr "Heuers"
+msgstr "Heures"
 
 #: lib/RT/Base.pm:119
 #. (6)
@@ -2009,11 +2009,11 @@ msgstr "SI aucun demandeur n'est spécifié, créer les tickets pour ce demandeu
 
 #: html/Tools/Offline.html:65
 msgid "If no queue is specified, create tickets in this queue."
-msgstr "Si aucune file n'est spécifée, créer les tickets dans cette file."
+msgstr "Si aucune file n'est spécifiée, créer les tickets dans cette file."
 
 #: bin/rt-crontool:267
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
-msgstr "Si cet outil était setgid, un utilisateur local mal intentionné pourrait l'utiliser pour obtenir un access administrateur à RT."
+msgstr "Si cet outil était setgid, un utilisateur local mal intentionné pourrait l'utiliser pour obtenir un accès administrateur à RT."
 
 #: html/Admin/Queues/People.html:126 html/Ticket/Modify.html:60 html/Ticket/ModifyAll.html:128 html/Ticket/ModifyPeople.html:60
 msgid "If you've updated anything above, be sure to"
@@ -2180,6 +2180,10 @@ msgstr "Date dernière MAJ"
 msgid "LastUpdatedBy"
 msgstr "DernièreMAJPar"
 
+#: NOT FOUND IN SOURCE
+msgid "Last Updated By"
+msgstr "Dernière MAJ par"
+
 #: html/Ticket/Elements/ShowBasics:68
 msgid "Left"
 msgstr "Restant"
@@ -2198,7 +2202,7 @@ msgstr "Relation"
 
 #: lib/RT/Record.pm:1306
 msgid "Link already exists"
-msgstr "Le lien existe déja"
+msgstr "Le lien existe déjà"
 
 #: lib/RT/Record.pm:1320
 msgid "Link could not be created"
@@ -2412,7 +2416,7 @@ msgstr "Échec de fusion. Ne peut appliquer EffectiveId"
 
 #: lib/RT/Ticket_Overlay.pm:2788
 msgid "Merge failed. Couldn't set Status"
-msgstr "Échec de fusion. Ne peut appliquer Status"
+msgstr "Échec de fusion. Ne peut appliquer Statut"
 
 #: html/Elements/EditLinks:131 html/Ticket/Elements/BulkLinks:48
 msgid "Merge into"
@@ -2710,7 +2714,7 @@ msgstr "Attribut 'Nom' obligatoire"
 #: html/SelfService/Elements/MyRequests:57
 #. ($friendly_status)
 msgid "My %1 tickets"
-msgstr "Mes %1 tickets"
+msgstr "Mes tickets %1s"
 
 #: html/Tools/Elements/Tabs:63
 msgid "My Day"
@@ -3020,15 +3024,15 @@ msgstr "Avertir l'intervenant par un commentaire"
 
 #: etc/initialdata:376
 msgid "Notify Owner of their rejected ticket"
-msgstr "Avertir l'Intervenant du rejet de son ticket"
+msgstr "Avertir l'intervenant du rejet de son ticket"
 
 #: etc/initialdata:365
 msgid "Notify Owner of their ticket has been approved by all approvers"
-msgstr "Avertir l'Intervenant de l'approbation de son ticket par tous les approbateurs"
+msgstr "Avertir l'intervenant de l'approbation de son ticket par tous les approbateurs"
 
 #: etc/initialdata:353
 msgid "Notify Owner of their ticket has been approved by some approver"
-msgstr "Avertir l'Intervenant de l'approbation de son ticket par un des approbateurs"
+msgstr "Avertir l'intervenant de l'approbation de son ticket par un des approbateurs"
 
 #: etc/initialdata:334
 msgid "Notify Owners and AdminCcs of new items pending their approval"
@@ -3474,7 +3478,7 @@ msgstr "RT en un coup d'œil pour l'utilisateur %1"
 
 #: html/Admin/CustomFields/Modify.html:117
 msgid "RT can include content from another web service when showing this custom field."
-msgstr "RT peut inclure le contenu d'un autre service web losque ce champs personnalisé est affiché."
+msgstr "RT peut inclure le contenu d'un autre service web lorsque ce champs personnalisé est affiché."
 
 #: html/Admin/CustomFields/Modify.html:106
 msgid "RT can make this custom field's values into hyperlinks to another service."
@@ -4122,7 +4126,7 @@ msgstr "Débute"
 
 #: html/Admin/Users/Modify.html:162 html/User/Prefs.html:145
 msgid "State"
-msgstr "Etat"
+msgstr "État"
 
 #: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/Tickets_Overlay.pm:1651
 msgid "Status"
@@ -4581,7 +4585,7 @@ msgstr "Champs personnalisées de la transaction"
 
 #: lib/RT/Transaction_Overlay.pm:128
 msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
-msgstr "Transation->Create a échoué car vous n'avez pas spécifié de type d'objet et d'id"
+msgstr "Transaction->Create a échoué car vous n'avez pas spécifié de type d'objet et d'id"
 
 #: lib/RT/Transaction_Overlay.pm:870
 msgid "Transactions are immutable"
@@ -4664,12 +4668,12 @@ msgstr "Mettre à jour le ticket"
 #: html/SelfService/Update.html:112 html/SelfService/Update.html:47
 #. ($Ticket->id)
 msgid "Update ticket #%1"
-msgstr "Mette à jour le ticket n°%1"
+msgstr "Mettre à jour le ticket n°%1"
 
 #: html/Ticket/Update.html:158
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Update ticket #%1 (%2)"
-msgstr "Mette à jour le ticket n°%1 (%2)"
+msgstr "Mettre à jour le ticket n°%1 (%2)"
 
 #: lib/RT/Action/CreateTickets.pm:748 lib/RT/Interface/Web.pm:583
 msgid "Update type was neither correspondence nor comment."

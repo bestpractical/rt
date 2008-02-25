@@ -103,10 +103,10 @@ if (!defined $id) {
 my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
 $CustomFieldObj->Load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load CustomField [_1]",$id));
 
-my $title = loc('Modify group rights for custom field [_1]', $CustomFieldObj->Name);
-
 my @results = ProcessACLChanges( \%ARGS );
 
+my $title = loc('Modify group rights for custom field [_1]', $CustomFieldObj->Name);
+    
 </%INIT>
 
 <%ARGS>

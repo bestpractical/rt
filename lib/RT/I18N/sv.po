@@ -6,7 +6,7 @@ msgstr ""
 "Last-Translator: Heidi Senderovitz\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #. ($self->{CurrentSearch}{Object}->Description)
@@ -4336,13 +4336,9 @@ msgstr "Sök efter godkännanden"
 msgid "Search for tickets"
 msgstr "Sök efter ärenden"
 
-#: NOT FOUND IN SOURCE
-msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name"
-msgstr "Sök efter ärenden. Skriv <strong>id</strong> nummer, <strong>köer</strong> med namn"
-
 #: html/Search/Simple.html:57
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name"
-msgstr ""
+msgstr "Sök efter ärenden. Skriv <strong>id</strong> nummer, <strong>köer</strong> med namn"
 
 #: html/User/Elements/Tabs:62
 msgid "Search options"
