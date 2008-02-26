@@ -194,21 +194,12 @@ sub Prepare {
     $self->SetHeader( 'Content-Transfer-Encoding','8bit');
 
     # For security reasons, we only send out textual mails.
-    my @parts = $MIMEObj;
-    while (my $part = shift @parts) {
-        if ($part->is_multipart) {
-            push @parts, $part->parts;
-        }
-        else {
-            if ( RT::I18N::IsTextualContentType( $part->mime_type ) ) {
-                $part->head->mime_attr( "Content-Type" => $part->mime_type )
-            } else {
-                $part->head->mime_attr( "Content-Type" => 'text/plain' );
-            }
-            $part->head->mime_attr( "Content-Type.charset" => 'utf-8' );
-        }
+    foreach my $part ( grep !$_->is_multipart, $MIMEObj->parts_DFS ) {
+        my $type = $part->mime_type || 'text/plain';
+        $type = 'text/plain' unless RT::I18N::IsTextualContentType( $type );
+        $part->head->mime_attr( "Content-Type" => $type );
+        $part->head->mime_attr( "Content-Type.charset" => 'utf-8' );
     }
-
 
     RT::I18N::SetMIMEEntityToEncoding(
         $MIMEObj,
