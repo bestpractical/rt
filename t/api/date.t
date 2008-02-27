@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 166;
+use Test::More tests => 165;
 
 use warnings; use strict;
 use RT::Test;
@@ -391,12 +391,13 @@ my $year = (localtime(time))[5] + 1900;
     $date->AddSeconds(3661);
     is($date->ISO, '1970-01-01 01:01:01', "added one hour, minute and a second");
 
-    TODO: {
-        local $TODO = "BUG or subject to change Date handling to support unix time <= 0";
-        $date->Unix(0);
-        $date->AddSeconds(-2);
-        ok($date->Unix > 0);
-    }
+# XXX: TODO, doesn't work with Test::Warn
+#    TODO: {
+#        local $TODO = "BUG or subject to change Date handling to support unix time <= 0";
+#        $date->Unix(0);
+#        $date->AddSeconds(-2);
+#        ok($date->Unix > 0);
+#    }
 
     $date->Unix(0);
     $date->AddDay;
