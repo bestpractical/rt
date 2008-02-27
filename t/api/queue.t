@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More; 
-plan tests => 25;
+plan tests => 24;
 use RT;
 use RT::Test;
 
@@ -57,23 +57,29 @@ ok(!$id, $val);
 
 {
 
-my $Queue = RT::Queue->new($RT::SystemUser); my ($id, $msg) = $Queue->Create(Name => "Foo",
-                );
+my $Queue = RT::Queue->new($RT::SystemUser);
+my ($id, $msg) = $Queue->Create(Name => "Foo");
 ok ($id, "Foo $id was created");
 ok(my $group = RT::Group->new($RT::SystemUser));
 ok($group->LoadQueueRoleGroup(Queue => $id, Type=> 'Requestor'));
 ok ($group->Id, "Found the requestors object for this Queue");
 
+{
+    my ($status, $msg) = $Queue->AddWatcher(Type => 'Cc', Email => 'bob@fsck.com');
+    ok ($status, "Added bob at fsck.com as a requestor") or diag "error: $msg";
+}
 
-ok (my ($add_id, $add_msg) = $Queue->AddWatcher(Type => 'Cc', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
-ok ($add_id, "Add succeeded: ($add_msg)");
 ok(my $bob = RT::User->new($RT::SystemUser), "Creating a bob rt::user");
 $bob->LoadByEmail('bob@fsck.com');
 ok($bob->Id,  "Found the bob rt user");
-ok ($Queue->IsWatcher(Type => 'Cc', PrincipalId => $bob->PrincipalId), "The Queue actually has bob at fsck.com as a requestor");;
-ok (($add_id, $add_msg) = $Queue->DeleteWatcher(Type =>'Cc', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
-ok (!$Queue->IsWatcher(Type => 'Cc', PrincipalId => $bob->PrincipalId), "The Queue no longer has bob at fsck.com as a requestor");;
+ok ($Queue->IsWatcher(Type => 'Cc', PrincipalId => $bob->PrincipalId), "The Queue actually has bob at fsck.com as a requestor");
 
+{
+    my ($status, $msg) = $Queue->DeleteWatcher(Type =>'Cc', Email => 'bob@fsck.com');
+    ok ($status, "Deleted bob from Ccs") or diag "error: $msg";
+    ok (!$Queue->IsWatcher(Type => 'Cc', PrincipalId => $bob->PrincipalId),
+        "The Queue no longer has bob at fsck.com as a requestor");
+}
 
 $group = RT::Group->new($RT::SystemUser);
 ok($group->LoadQueueRoleGroup(Queue => $id, Type=> 'Cc'));
