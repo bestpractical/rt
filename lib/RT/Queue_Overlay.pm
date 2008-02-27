@@ -806,15 +806,23 @@ sub DeleteWatcher {
                  PrincipalId => undef,
                  @_ );
 
-    unless ($args{'PrincipalId'} ) {
-        return(0, $self->loc("No principal specified"));
+    unless ( $args{'PrincipalId'} || $args{'Email'} ) {
+        return ( 0, $self->loc("No principal specified") );
     }
-    my $principal = RT::Principal->new($self->CurrentUser);
-    $principal->Load($args{'PrincipalId'});
+    my $principal = RT::Principal->new( $self->CurrentUser );
+    if ( $args{'PrincipalId'} ) {
+
+        $principal->Load( $args{'PrincipalId'} );
+    }
+    else {
+        my $user = RT::User->new( $self->CurrentUser );
+        $user->LoadByEmail( $args{'Email'} );
+        $principal->Load( $user->Id );
+    }
 
     # If we can't find this watcher, we need to bail.
-    unless ($principal->Id) {
-        return(0, $self->loc("Could not find that principal"));
+    unless ( $principal->Id ) {
+        return ( 0, $self->loc("Could not find that principal") );
     }
 
     my $group = RT::Group->new($self->CurrentUser);
