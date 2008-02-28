@@ -9,91 +9,91 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: lib/RT/Date.pm:444
+#: NOT FOUND IN SOURCE
 msgid "Apr."
 msgstr "Apr"
 
-#: lib/RT/Date.pm:448
+#: NOT FOUND IN SOURCE
 msgid "Aug."
 msgstr "Aug"
 
-#: lib/RT/Date.pm:452
+#: NOT FOUND IN SOURCE
 msgid "Dec."
 msgstr "Dec"
 
-#: lib/RT/Date.pm:442
+#: NOT FOUND IN SOURCE
 msgid "Feb."
 msgstr "Feb"
 
-#: lib/RT/Date.pm:421
+#: NOT FOUND IN SOURCE
 msgid "Fri."
 msgstr "Fri"
 
-#: html/Elements/Tabs:65
+#: html/Elements/Tabs:68
 msgid "Homepage"
 msgstr "Home"
 
-#: lib/RT/Date.pm:441
+#: NOT FOUND IN SOURCE
 msgid "Jan."
 msgstr "Jan"
 
-#: lib/RT/Date.pm:447
+#: NOT FOUND IN SOURCE
 msgid "Jul."
 msgstr "Jul"
 
-#: lib/RT/Date.pm:446
+#: NOT FOUND IN SOURCE
 msgid "Jun."
 msgstr "Jun"
 
-#: lib/RT/Date.pm:443
+#: NOT FOUND IN SOURCE
 msgid "Mar."
 msgstr "Mar"
 
-#: lib/RT/Date.pm:445
+#: NOT FOUND IN SOURCE
 msgid "May."
 msgstr "May"
 
-#: lib/RT/Date.pm:417
+#: NOT FOUND IN SOURCE
 msgid "Mon."
 msgstr "Mon"
 
-#: lib/RT/Date.pm:451
+#: NOT FOUND IN SOURCE
 msgid "Nov."
 msgstr "Nov"
 
-#: lib/RT/Date.pm:450
+#: NOT FOUND IN SOURCE
 msgid "Oct."
 msgstr "Oct"
 
-#: html/Ticket/Elements/Tabs:160
+#: html/Ticket/Elements/Tabs:162
 msgid "Open it"
 msgstr "Open"
 
-#: html/Admin/Users/Modify.html:183 html/User/Prefs.html:84
+#: html/Admin/Users/Modify.html:186 html/User/Prefs.html:90
 msgid "Residence"
 msgstr "Home"
 
-#: lib/RT/Date.pm:422
+#: NOT FOUND IN SOURCE
 msgid "Sat."
 msgstr "Sat"
 
-#: lib/RT/Date.pm:449
+#: NOT FOUND IN SOURCE
 msgid "Sep."
 msgstr "Sep"
 
-#: lib/RT/Date.pm:423
+#: NOT FOUND IN SOURCE
 msgid "Sun."
 msgstr "Sun"
 
-#: lib/RT/Date.pm:420
+#: NOT FOUND IN SOURCE
 msgid "Thu."
 msgstr "Thu"
 
-#: lib/RT/Date.pm:418
+#: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "Tue"
 
-#: lib/RT/Date.pm:419
+#: NOT FOUND IN SOURCE
 msgid "Wed."
 msgstr "Wed"
 
