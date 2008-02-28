@@ -16,6 +16,33 @@ accidentally damage your database and lose data or worse.
 
 *******
 
+UPGRADING FROM 3.6.X and earlier - Changes:
+
+There are a lot of changes all over the code, so it's highly recommended to
+use fresh directory and then reinstalling your customizations.
+
+New schema for mysql 4.1 and greater, read more in UPGRADING.mysql.
+
+Config format a little bit changed. All options MUST be set using Set function,
+no more "@XXX = (...) unless @XXX;". Use "Set(@XXX, ...);" instead.
+
+RTx::Shredder extension has been integrated into core and features have been
+add, so you MUST uninstall it before upgrading or use fresh dir for installation.
+
+New interface for making links in text clickable and doing other replacements
+has been integrated into RT.
+Read more in `perldoc docs/extending_clickable_links.pod`.
+
+New feature that allow users to forward messages. There is new option in
+the config, new rights and a template.
+
+New global templates with "Error: " prefix in the name to make it possible
+to configure error messages sent to users.
+
+Read about GnuPG integration in `perldoc docs/gnupg_integration.pod`.
+
+New scrip actions 'On Close' and 'On Reopen'.
+
 UPGRADING FROM 3.5.7 and earlier - Changes:
 
 Scrips are now prepared and committed in order alphanumerically by description.
