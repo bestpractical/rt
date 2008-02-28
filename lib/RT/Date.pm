@@ -83,29 +83,29 @@ $WEEK   = 7 * $DAY;
 $MONTH  = 30.4375 * $DAY;
 $YEAR   = 365.25 * $DAY;
 
-our @MONTHS = qw(
-    Jan
-    Feb
-    Mar
-    Apr
-    May
-    Jun
-    Jul
-    Aug
-    Sep
-    Oct
-    Nov
-    Dec
+our @MONTHS = (
+    'Jan', # loc
+    'Feb', # loc
+    'Mar', # loc
+    'Apr', # loc
+    'May', # loc
+    'Jun', # loc
+    'Jul', # loc
+    'Aug', # loc
+    'Sep', # loc
+    'Oct', # loc
+    'Nov', # loc
+    'Dec', # loc
 );
 
-our @DAYS_OF_WEEK = qw(
-    Sun
-    Mon
-    Tue
-    Wed
-    Thu
-    Fri
-    Sat
+our @DAYS_OF_WEEK = (
+    'Sun', # loc
+    'Mon', # loc
+    'Tue', # loc
+    'Wed', # loc
+    'Thu', # loc
+    'Fri', # loc
+    'Sat', # loc
 );
 
 =head2 new
