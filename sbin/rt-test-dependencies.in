@@ -277,6 +277,7 @@ String::ShellQuote 0 # needed for gnupg-incoming.t
 Test::HTTP::Server::Simple
 Log::Dispatch::Perl
 Test::Warn
+Test::Builder 0.77 # needed to fix TODO test
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
