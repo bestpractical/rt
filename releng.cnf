@@ -2,6 +2,6 @@ PRODUCT			        = rt
 TAG			            = 3.7.23
 CANONICAL_REPO		    = svn+ssh://svn.bestpractical.com/svn/bps-public/rt/
 TAGS		            = tags/
-TRUNK	                = branches/3.7-EXPERIMENTAL
+TRUNK	                = branches/3.8-TESTING
 TMP_DIR			        = /tmp
 RELEASE_DIR		        = /home/ftp/pub/rt/devel
