@@ -16,6 +16,15 @@ accidentally damage your database and lose data or worse.
 
 *******
 
+UPGRADEING FORM 3.7.80
+
+Added indexes to CachedGroupMembers for MySQL and Oracle.
+If you have previously installed RTx-Shredder, you may already
+have these indexes.  You can see the indexes by looking at
+etc/upgrade/3.7.81/schema.*
+
+These indexes can take a very long time to create.
+
 UPGRADING FROM 3.6.X and earlier - Changes:
 
 There are a lot of changes all over the code, so it's highly recommended to
