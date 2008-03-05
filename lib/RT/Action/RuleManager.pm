@@ -91,10 +91,18 @@ sub MatchRule {
 
     my $field = $rule->Field;
     my $val;
+
     if ($self->TransactionObj->can($field)) {
         $val = $self->TransactionObj->$field;
     }
-    elsif (my $att = $self->TransactionObj->Attachments->First) {
+    elsif ($field eq 'From') {
+        $val = $self->TransactionObj->CreatorObj->EmailAddress
+            || $self->TransactionObj->CreatorObj->Name;
+    }
+    elsif ($field eq 'Body') {
+        $val = $self->TransactionObj->ContentObj->Content;
+    }
+    elsif (my $att = $self->TransactionObj->ContentObj) {
         if ($att->can($field)) {
             $val = $att->$field;
         }
