@@ -28,7 +28,7 @@ msgstr " %1 переименована в %2."
 #: html/Widgets/SavedSearch:107
 #. ($args->{Description})
 msgid " %1 saved."
-msgstr " %1 сохранена."
+msgstr " %1 сохранен."
 
 #: html/Elements/RT__Ticket/ColumnMap:238 html/Elements/RT__Ticket/ColumnMap:255
 msgid " (no pubkey!)"
