@@ -1054,7 +1054,7 @@ sub AddWatcher {
 
     if ( $args{'Email'} ) {
         my ($addr) = Mail::Address->parse( $args{'Email'} );
-        return (0, $self->loc("Couldn't parse address from '[_1] string", $args{'Email'} ))
+        return (0, $self->loc("Couldn't parse address from '[_1]' string", $args{'Email'} ))
             unless $addr;
 
         if ( lc $self->CurrentUser->UserObj->EmailAddress
