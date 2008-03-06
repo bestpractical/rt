@@ -65,15 +65,16 @@ In the future, there will probably be other API goodness encapsulated here.
 
 
 package RT::System;
-use base qw /RT::Record/;
+
 use strict;
+use warnings;
+use base qw/RT::Record/;
 
 use RT::ACL;
-use vars qw/ $RIGHTS/;
 
 # System rights are rights granted to the whole system
 # XXX TODO Can't localize these outside of having an object around.
-$RIGHTS = {
+our $RIGHTS = {
     SuperUser              => 'Do anything and everything',           # loc_pair
     AdminAllPersonalGroups =>
       "Create, delete and modify the members of any user's personal groups"
@@ -134,16 +135,10 @@ sub _Init {
 
 Returns RT::System's id. It's 1. 
 
-
-
-
 =cut
 
 *Id = \&id;
-
-sub id {
-    return (1);
-}
+sub id { return 1 }
 
 =head2 Load
 
@@ -152,18 +147,26 @@ It does nothing
 
 =cut
 
-sub Load {
-	return (1);
-}
+sub Load    { return 1 }
+sub Name    { return 'RT System' }
+sub __Set   { return 0 }
+sub __Value { return 0 }
+sub Create  { return 0 }
+sub Delete  { return 0 }
 
-sub Name {
-    return 'RT System';
-}
+sub SubjectTag {
+    my $self = shift;
+    my $queue = shift;
 
-sub __Set { 0 }
-sub __Value { 0 }
-sub Create { 0 }
-sub Delete { 0 }
+    my $map = $self->FirstAttribute('BrandedSubjectTag');
+    $map = $map->Content if $map;
+    return $queue ? undef : () unless $map;
+
+    return $map->{ $queue->id } if $queue;
+
+    my %seen = ();
+    return grep !$seen{lc $_}++, values %$map;
+}
 
 eval "require RT::System_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/System_Vendor.pm});

@@ -659,8 +659,9 @@ sub ForwardTransaction {
         $from = $txn->CurrentUser->UserObj->EmailAddress;
     } else {
         # XXX: what if want to forward txn of other object than ticket?
-        $subject = AddSubjectTag( $subject, $txn->ObjectId );
-        $from = $txn->Object->QueueObj->CorrespondAddress
+        my $obj = $txn->Object;
+        $subject = AddSubjectTag( $subject, $obj );
+        $from = $obj->QueueObj->CorrespondAddress
             || RT->Config->Get('CorrespondAddress');
     }
     $mail->head->set( Subject => "Fwd: $subject" );
@@ -1027,34 +1028,49 @@ sub SetInReplyTo {
 
 sub ParseTicketId {
     my $Subject = shift;
-    my $id;
 
     my $rtname = RT->Config->Get('rtname');
     my $test_name = RT->Config->Get('EmailSubjectTagRegex') || qr/\Q$rtname\E/i;
 
+    my $id;
     if ( $Subject =~ s/\[$test_name\s+\#(\d+)\s*\]//i ) {
-        my $id = $1;
-        $RT::Logger->debug("Found a ticket ID. It's $id");
-        return $id;
+        $id = $1;
     } else {
-        return undef;
+        foreach my $tag ( RT->System->SubjectTag ) {
+            next unless $Subject =~ s/\[\Q$tag\E\s+\#(\d+)\s*\]//i;
+            $id = $1;
+            last;
+        }
     }
+    return undef unless $id;
+
+    $RT::Logger->debug("Found a ticket ID. It's $id");
+    return $id;
 }
 
 sub AddSubjectTag {
     my $subject = shift;
-    my $id      = shift;
+    my $ticket  = shift;
+    unless ( ref $ticket ) {
+        my $tmp = RT::Ticket->new( $RT::SystemUser );
+        $tmp->Load( $ticket );
+        $ticket = $tmp;
+    }
+    my $id = $ticket->id;
+    my $queue_tag = $ticket->QueueObj->SubjectTag;
 
     my $tag_re = RT->Config->Get('EmailSubjectTagRegex');
     unless ( $tag_re ) {
-        my $rtname = RT->Config->Get('rtname');
-        $tag_re = qr/\Q$rtname\E/o;
+        my $tag = $queue_tag || RT->Config->Get('rtname');
+        $tag_re = qr/\Q$tag\E/;
+    } elsif ( $queue_tag ) {
+        $tag_re = qr/$tag_re|\Q$queue_tag\E/;
     }
     return $subject if $subject =~ /\[$tag_re\s+#$id\]/;
 
     $subject =~ s/(\r\n|\n|\s)/ /gi;
     chomp $subject;
-    return "[". RT->Config->Get('rtname') ." #$id] $subject";
+    return "[". ($queue_tag || RT->Config->Get('rtname')) ." #$id] $subject";
 }
 
 

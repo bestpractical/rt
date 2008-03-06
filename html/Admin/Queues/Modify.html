@@ -67,6 +67,10 @@
 <td colspan="3"><input name="Description" value="<% ($Create) ? "" : $QueueObj->Description %>" size="60" /></td>
 </tr>
 
+<tr><td align="right"><&|/l&>Subject Tag</&>:</td>
+<td colspan="3"><input name="SubjectTag" value="<% $ARGS{'SubjectTag'} || ($Create ? "" : $QueueObj->SubjectTag) %>" size="60" /></td>
+</tr>
+
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
 <td><input name="CorrespondAddress" value="<% ($Create) ? "" : $QueueObj->CorrespondAddress %>" />
 <br /><span><em><&|/l , RT->Config->Get('CorrespondAddress')&>(If left blank, will default to [_1])</&></em></span></td>
@@ -140,7 +144,7 @@ if ($Create) {
 if ( $QueueObj->Id ) {
     delete $session{'create_in_queues'};
     my @attribs= qw(Description CorrespondAddress CommentAddress Name
-        InitialPriority FinalPriority DefaultDueIn Sign Encrypt Disabled);
+        InitialPriority FinalPriority DefaultDueIn Sign Encrypt SubjectTag Disabled);
 
     # we're asking about enabled on the web page but really care about disabled
     if ( $SetEnabled ) {

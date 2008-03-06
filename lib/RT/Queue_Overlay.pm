@@ -505,6 +505,38 @@ sub SetEncrypt {
     return ($status, $self->loc('Encrypting disabled'));
 }
 
+sub SubjectTag {
+    my $self = shift;
+    return RT->System->SubjectTag( $self );
+}
+
+sub SetSubjectTag {
+    my $self = shift;
+    my $value = shift;
+
+    return ( 0, $self->loc('Permission Denied') )
+        unless $self->CurrentUserHasRight('AdminQueue');
+
+    my $attr = RT->System->FirstAttribute('BrandedSubjectTag');
+    my $map = $attr ? $attr->Content : {};
+    if ( defined $value && length $value ) {
+        $map->{ $self->id } = $value;
+    } else {
+        delete $map->{ $self->id };
+    }
+
+    my ($status, $msg) = RT->System->SetAttribute(
+        Name        => 'BrandedSubjectTag',
+        Description => 'Queue id => subject tag map',
+        Content     => $map,
+    );
+    return ($status, $msg) unless $status;
+    return ($status, $self->loc(
+        "SubjectTag changed to [_1]", 
+        (defined $value && length $value)? $value : $self->loc("(no value)")
+    ))
+}
+
 # {{{ sub Templates
 
 =head2 Templates

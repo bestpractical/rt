@@ -439,7 +439,7 @@ sub InitSystemObjects {
     $Nobody->LoadByName('Nobody');
 
     require RT::System;
-    $System = new RT::System;
+    $System = RT::System->new( $SystemUser );
 }
 
 =head1 CLASS METHODS

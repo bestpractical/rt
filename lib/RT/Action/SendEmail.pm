@@ -806,7 +806,7 @@ sub SetSubjectToken {
     $self->TemplateObj->MIMEObj->head->replace(
         Subject => RT::Interface::Email::AddSubjectTag(
             $self->TemplateObj->MIMEObj->head->get('Subject'),
-            $self->TicketObj->id,
+            $self->TicketObj,
         ),
     );
 }
