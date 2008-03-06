@@ -118,7 +118,7 @@ sub MatchRule {
     $pattern =~ s/\\\*/.*/g;
     $pattern =~ s/\\\?/./g;
 
-    return($val =~ /^$pattern$/);
+    return($val =~ /^$pattern$/s);
 }
 
 sub Commit {
