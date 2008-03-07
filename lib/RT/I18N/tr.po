@@ -1469,7 +1469,7 @@ msgstr "Bağımlılık"
 
 #: html/Search/Elements/DisplayOptions:86
 msgid "Desc"
-msgstr Azal""
+msgstr "Azal"
 
 #: html/Elements/SelectSortOrder:56
 msgid "Descending"
@@ -2043,7 +2043,7 @@ msgstr "İç Hata: %1"
 
 #: lib/RT/Group_Overlay.pm:668
 msgid "Invalid Group Type"
-msgstr Geçersiz Grup Türü"
+msgstr "Geçersiz Grup Türü"
 
 #: lib/RT/Principal_Overlay.pm:161
 msgid "Invalid Right"
