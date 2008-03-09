@@ -138,12 +138,22 @@ sub Commit {
             $self->TicketObj->SetStatus($rule->Argument);
         }
         elsif ($handler eq 'Send the autoreply in this template:') {
+            my $body = $rule->Argument;
+
+            # If the body doesn't look like it has a header, prepend two newlines.
+            unless ($body =~ /^[\x21-\x7e]+:/ and $body =~ /\r?\n\r?\n/) {
+                $body = "\n\n$body";
+            }
+
             local $self->{TemplateObj} = bless {
                 user    => $self->CurrentUser,
-                fetched => { content => 1, queue => 1 },
+                fetched => {
+                    content => 1,
+                    queue   => 1,
+                },
                 values  => {
                     queue   => 0,
-                    content => $rule->Argument,
+                    content => $body,
                 },
             } => 'RT::Template';
 
