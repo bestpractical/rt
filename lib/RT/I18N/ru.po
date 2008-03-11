@@ -77,10 +77,6 @@ msgstr ""
 msgid "%1 %2"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid "%1 %2 %3 %4:%5:%6 %7"
-msgstr "%1 %2 %3 %4:%5:%6 %7"
-
 #: lib/RT/Record.pm:1630 lib/RT/Transaction_Overlay.pm:634 lib/RT/Transaction_Overlay.pm:677
 #. ($cf->Name, $new_content)
 #. ($field, $self->NewValue)
