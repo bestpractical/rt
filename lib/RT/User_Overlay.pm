@@ -979,7 +979,7 @@ sub IsPassword {
     return (undef);
 }
 
-=head2 Sub SetDisabled
+=head2 SetDisabled
 
 Toggles the user's disabled flag.
 If this flag is
@@ -996,11 +996,16 @@ sub SetDisabled {
     return $self->PrincipalObj->SetDisabled(@_);
 }
 
+=head2 Disabled
+
+Returns true if user is disabled or false otherwise
+
+=cut
+
 sub Disabled {
     my $self = shift;
     return $self->PrincipalObj->Disabled(@_);
 }
-
 
 =head2 PrincipalObj 
 
