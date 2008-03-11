@@ -300,6 +300,7 @@ dnl Configure the output files, and generate them.
 
 dnl Binaries that should be +x
 AC_CONFIG_FILES([
+                 etc/upgrade/3.8-branded-queues-extension
 		 sbin/rt-dump-database
 		 sbin/rt-setup-database
 		 sbin/rt-test-dependencies

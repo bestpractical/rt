@@ -16,7 +16,16 @@ accidentally damage your database and lose data or worse.
 
 *******
 
-UPGRADEING FORM 3.7.80
+UPGRADING FROM 3.7.81 and earlier - Changes:
+
+RT::Extension::BrandedQueues has been integrated into core, so you MUST read
+upgrading instructions docs/queue_subject_tag.pod EVEN IF you have not used
+that extension.
+
+RT::Action::LinearEscalate extension has been integrated into core,
+so you MUST uninstall it before upgrading.
+
+UPGRADING FROM 3.7.80 and earlier - Changes:
 
 Added indexes to CachedGroupMembers for MySQL and Oracle.
 If you have previously installed RTx-Shredder, you may already
