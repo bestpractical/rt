@@ -74,9 +74,6 @@ use RT::ACE;
 use RT::Interface::Email;
 use Encode;
 
-# {{{ sub _Accessible 
-
-
 sub _OverlayAccessible {
     {
 
@@ -100,10 +97,6 @@ sub _OverlayAccessible {
 }
 
 
-
-# }}}
-
-# {{{ sub Create 
 
 =head2 Create { PARAMHASH }
 
@@ -272,12 +265,6 @@ sub Create {
     return ( $id, $self->loc('User created') );
 }
 
-# }}}
-
-
-
-# {{{ SetPrivileged
-
 =head2 SetPrivileged BOOL
 
 If passed a true value, makes this user a member of the "Privileged"  PseudoGroup.
@@ -355,10 +342,6 @@ sub SetPrivileged {
     }
 }
 
-# }}}
-
-# {{{ Privileged
-
 =head2 Privileged
 
 Returns true if this user is privileged. Returns undef otherwise.
@@ -376,10 +359,6 @@ sub Privileged {
         return(undef);
     }
 }
-
-# }}}
-
-# {{{ sub _BootstrapCreate 
 
 #create a user without validating _any_ data.
 
@@ -430,20 +409,12 @@ sub _BootstrapCreate {
     return ( $id, 'User created' );
 }
 
-# }}}
-
-# {{{ sub Delete 
-
 sub Delete {
     my $self = shift;
 
     return ( 0, $self->loc('Deleting this object would violate referential integrity') );
 
 }
-
-# }}}
-
-# {{{ sub Load 
 
 =head2 Load
 
@@ -470,14 +441,9 @@ sub Load {
     }
 }
 
-# }}}
-
-# {{{ sub LoadByEmail
-
 =head2 LoadByEmail
 
 Tries to load this user object from the database by the user's email address.
-
 
 =cut
 
@@ -495,10 +461,6 @@ sub LoadByEmail {
     #$RT::Logger->debug("Trying to load an email address: $address\n");
     return $self->LoadByCol( "EmailAddress", $address );
 }
-
-# }}}
-
-# {{{ LoadOrCreateByEmail 
 
 =head2 LoadOrCreateByEmail ADDRESS
 
@@ -555,10 +517,6 @@ sub LoadOrCreateByEmail {
     return ($self->Id, $message);
 }
 
-# }}}
-
-# {{{ sub ValidateEmailAddress
-
 =head2 ValidateEmailAddress ADDRESS
 
 Returns true if the email address entered is not in use by another user or is 
@@ -586,12 +544,6 @@ sub ValidateEmailAddress {
     }
 }
 
-# }}}
-
-# {{{ sub CanonicalizeEmailAddress
-
-
-
 =head2 CanonicalizeEmailAddress ADDRESS
 
 CanonicalizeEmailAddress converts email addresses into canonical form.
@@ -616,13 +568,6 @@ sub CanonicalizeEmailAddress {
     return ($email);
 }
 
-
-# }}}
-
-# {{{ sub CanonicalizeUserInfo
-
-
-
 =head2 CanonicalizeUserInfo HASH of ARGS
 
 CanonicalizeUserInfo can convert all User->Create options.
@@ -643,14 +588,9 @@ sub CanonicalizeUserInfo {
 }
 
 
-# }}}
+=head2 Password related functions
 
-
-# {{{ Password related functions
-
-# {{{ sub SetRandomPassword
-
-=head2 SetRandomPassword
+=head3 SetRandomPassword
 
 Takes no arguments. Returns a status code and a new password or an error message.
 If the status is 1, the second value returned is the new password.
@@ -683,11 +623,7 @@ sub SetRandomPassword {
 
 }
 
-# }}}
-
-# {{{ sub ResetPassword
-
-=head2 ResetPassword
+=head3 ResetPassword
 
 Returns status, [ERROR or new password].  Resets this user\'s password to
 a randomly generated pronouncable password and emails them, using a 
@@ -726,11 +662,7 @@ sub ResetPassword {
 
 }
 
-# }}}
-
-# {{{ sub GenerateRandomPassword
-
-=head2 GenerateRandomPassword MIN_LEN and MAX_LEN
+=head3 GenerateRandomPassword MIN_LEN and MAX_LEN
 
 Returns a random password between MIN_LEN and MAX_LEN characters long.
 
@@ -916,11 +848,7 @@ sub _GenerateRandomNextChar {
     return ($i);
 }
 
-# }}}
-
-# {{{ sub SetPassword
-
-=head2 SetPassword
+=head3 SetPassword
 
 Takes a string. Checks the string's length and sets this user's password 
 to that string.
@@ -956,7 +884,7 @@ sub SetPassword {
 
 }
 
-=head2 _GeneratePassword PASSWORD
+=head3 _GeneratePassword PASSWORD
 
 returns an MD5 hash of the password passed in, in hexadecimal encoding.
 
@@ -972,7 +900,7 @@ sub _GeneratePassword {
 
 }
 
-=head2 _GeneratePasswordBase64 PASSWORD
+=head3 _GeneratePasswordBase64 PASSWORD
 
 returns an MD5 hash of the password passed in, in base64 encoding
 (obsoleted now).
@@ -989,15 +917,11 @@ sub _GeneratePasswordBase64 {
 
 }
 
-# }}}
-
-                                                                                
-=head2 HasPassword
+=head3 HasPassword
                                                                                 
 Returns true if the user has a valid password, otherwise returns false.         
                                                                                
 =cut
-
 
 sub HasPassword {
     my $self = shift;
@@ -1008,10 +932,7 @@ sub HasPassword {
     return 1;
 }
 
-
-# {{{ sub IsPassword 
-
-=head2 IsPassword
+=head3 IsPassword
 
 Returns true if the passed in value is this user's password.
 Returns undef otherwise.
@@ -1058,12 +979,6 @@ sub IsPassword {
     return (undef);
 }
 
-# }}}
-
-# }}}
-
-# {{{ sub SetDisabled
-
 =head2 Sub SetDisabled
 
 Toggles the user's disabled flag.
@@ -1072,8 +987,6 @@ set, all password checks for this user will fail. All ACL checks for this
 user will fail. The user will appear in no user listings.
 
 =cut 
-
-# }}}
 
 sub SetDisabled {
     my $self = shift;
@@ -1089,17 +1002,13 @@ sub Disabled {
 }
 
 
-# {{{ Principal related routines
-
 =head2 PrincipalObj 
 
 Returns the principal object for this user. returns an empty RT::Principal
 if there's no principal object matching this user. 
 The response is cached. PrincipalObj should never ever change.
 
-
 =cut
-
 
 sub PrincipalObj {
     my $self = shift;
@@ -1133,12 +1042,6 @@ sub PrincipalId {
     return $self->Id;
 }
 
-# }}}
-
-
-
-# {{{ sub HasGroupRight
-
 =head2 HasGroupRight
 
 Takes a paramhash which can contain
@@ -1169,13 +1072,10 @@ sub HasGroupRight {
         $args{'GroupObj'}->Load( $args{'Group'} );
     }
 
-    # {{{ Validate and load up the GroupId
+    # Validate and load up the GroupId
     unless ( ( defined $args{'GroupObj'} ) and ( $args{'GroupObj'}->Id ) ) {
         return undef;
     }
-
-    # }}}
-
 
     # Figure out whether a user has the right we're asking about.
     my $retval = $self->HasRight(
@@ -1184,13 +1084,7 @@ sub HasGroupRight {
     );
 
     return ($retval);
-
-
 }
-
-# }}}
-
-# {{{ sub OwnGroups 
 
 =head2 OwnGroups
 
@@ -1208,21 +1102,6 @@ sub OwnGroups {
     return $groups;
 }
 
-# }}}
-
-# {{{ sub Rights testing
-
-=head1 Rights testing
-
-
-
-=cut
-
-# }}}
-
-
-# {{{ sub HasRight
-
 =head2 HasRight
 
 Shim around PrincipalObj->HasRight. See RT::Principal
@@ -1230,14 +1109,9 @@ Shim around PrincipalObj->HasRight. See RT::Principal
 =cut
 
 sub HasRight {
-
     my $self = shift;
     return $self->PrincipalObj->HasRight(@_);
 }
-
-# }}}
-
-# {{{ sub CurrentUserCanModify
 
 =head2 CurrentUserCanModify RIGHT
 
@@ -1276,10 +1150,6 @@ sub CurrentUserCanModify {
 
 }
 
-# }}}
-
-# {{{ sub CurrentUserHasRight
-
 =head2 CurrentUserHasRight
   
 Takes a single argument. returns 1 if $Self->CurrentUser
@@ -1294,8 +1164,6 @@ sub CurrentUserHasRight {
     return ( $self->CurrentUser->HasRight(Right => $right, Object => $RT::System) );
 }
 
-# }}}
-
 sub _PrefName {
     my $name = shift;
     if (ref $name) {
@@ -1305,13 +1173,11 @@ sub _PrefName {
     return 'Pref-'.$name;
 }
 
-# {{{ sub Preferences
-
 =head2 Preferences NAME/OBJ DEFAULT
 
-  Obtain user preferences associated with given object or name.
-  Returns DEFAULT if no preferences found.  If DEFAULT is a hashref,
-  override the entries with user preferences.
+Obtain user preferences associated with given object or name.
+Returns DEFAULT if no preferences found.  If DEFAULT is a hashref,
+override the entries with user preferences.
 
 =cut
 
@@ -1339,13 +1205,9 @@ sub Preferences {
     return $content;
 }
 
-# }}}
-
-# {{{ sub SetPreferences
-
 =head2 SetPreferences NAME/OBJ VALUE
 
-  Set user preferences associated with given object or name.
+Set user preferences associated with given object or name.
 
 =cut
 
@@ -1362,9 +1224,6 @@ sub SetPreferences {
         return $self->AddAttribute( Name => $name, Content => $value );
     }
 }
-
-# }}}
-
 
 =head2 WatchedQueues ROLE_LIST
 
@@ -1435,9 +1294,6 @@ sub WatchedQueues {
 
 }
 
-
-# {{{ sub _CleanupInvalidDelegations
-
 =head2 _CleanupInvalidDelegations { InsideTransaction => undef }
 
 Revokes all ACE entries delegated by this user which are inconsistent
@@ -1505,10 +1361,6 @@ sub _CleanupInvalidDelegations {
     return (1);
 }
 
-# }}}
-
-# {{{ sub _Set
-
 sub _Set {
     my $self = shift;
 
@@ -1555,10 +1407,6 @@ sub _Set {
     }
 }
 
-# }}}
-
-# {{{ sub _Value 
-
 =head2 _Value
 
 Takes the name of a table column.
@@ -1600,13 +1448,9 @@ sub _Value {
 
 }
 
-# }}}
-
-# {{{ sub FriendlyName
-
 =head2 FriendlyName
 
-  Return the friendly name
+Return the friendly name
 
 =cut
 
@@ -1616,8 +1460,6 @@ sub FriendlyName {
     return $self->Name if defined($self->Name);
     return "";
 }
-
-# }}}
 
 =head2 PreferredKey
 
