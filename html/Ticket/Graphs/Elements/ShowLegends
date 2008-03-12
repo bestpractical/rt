@@ -1,0 +1,25 @@
+<&| /Widgets/TitleBox, title => loc('Legends') &>
+<table>
+
+<tr style="height: 2.8em;"><td>Status:</td><td>
+% foreach my $status ( sort keys %RT::Graph::Tickets::ticket_status_style ) {
+% my $style = $RT::Graph::Tickets::ticket_status_style{ $status };
+<span style="color: <% $style->{'fontcolor'} %>; padding: 0.6em; border: 1px solid black;"><% $status %></span>
+% }
+</td></tr>
+
+% if ( $FillUsing ) {
+<tr style="height: 2.8em;"><td><% $FillUsing %>:</td><td>
+% foreach my $value ( sort keys %RT::Graph::Tickets::fill_cache ) {
+% my $color = $RT::Graph::Tickets::fill_cache{ $value };
+<span style="background-color: <% $color %>; padding: 0.6em; border: 1px solid black;"><% $value %></span>
+% }
+</td></tr>
+% }
+
+</table>
+</&>
+
+<%ARGS>
+$FillUsing => ''
+</%ARGS>

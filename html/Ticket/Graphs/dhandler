@@ -1,0 +1,30 @@
+<%INIT>
+my $arg = $m->dhandler_arg;
+
+my ($type, $id);
+if ( $arg =~ m{^(Members|Links)/(\d+)$}i ) {
+    ($type, $id) = ($1, $2);
+} else {
+    return $m->abort( 404 );
+}
+
+my $ticket = RT::Ticket->new($session{'CurrentUser'} );
+$ticket->Load( $id );
+unless ( $ticket->id ) {
+    $RT::Logger->error("Couldn't load ticket #$id");
+    return $m->abort( 404 );
+}
+
+require RT::Graph::Tickets;
+my $method = 'Ticket'. ucfirst lc $type;
+my $graph = RT::Graph::Tickets->$method(
+    %ARGS,
+    Ticket => $ticket,
+);
+
+$r->content_type( 'image/png' );
+$m->clear_buffer;
+$graph->as_png( sub { $m->out( shift ) } );
+$m->abort;
+
+</%INIT>

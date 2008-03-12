@@ -1,0 +1,66 @@
+<& /Elements/Header, Title => $title &>
+<& /Ticket/Elements/Tabs,
+    Ticket => $ticket,
+    Title => $title,
+    current_tab => "Ticket/ModifyLinks.html?id=$id",
+&>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<& Elements/ShowGraph, %ARGS, Ticket => $ticket &>
+
+<form action="<% $RT::WebPath %><% $m->request_comp->path %>">
+<input type="hidden" class="hidden" name="id" value="<% $id %>" />
+<input type="hidden" class="hidden" name="Type" value="<% $ARGS{'Type'} %>" />
+
+<& Elements/EditGraphProperties,
+    %ARGS,
+    Ticket => $ticket,
+    Type   => $Type,
+    AllowAdditionalProperties => $Type eq 'Links'? 0 : 1,
+&>
+
+<& /Search/Elements/EditSearches,
+    Name => 'Owner',
+    SearchType => $saved_search->{SearchType},
+    AllowCopy => 0,
+    CurrentSearch => $saved_search->{CurrentSearch},
+    SearchId => $saved_search->{SearchId},
+    Title => loc('Manage saved graphs'),
+&>
+</form>
+
+<%ARGS>
+</%ARGS>
+<%INIT>
+my @results;
+
+my @save_arguments = qw(Type id Depth FillUsing ShowLinkDescriptions);
+foreach my $level ( 0 .. 6 ) {
+    push @save_arguments, "Level-". $level ."-Properties";
+}
+my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
+    SearchType   => 'Graph',
+    SearchFields => \@save_arguments,
+);
+push @results, $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => $saved_search );
+
+my $id = $ARGS{'id'};
+my $ticket = LoadTicket( $id );
+$ARGS{'id'} = $id = $ticket->id;
+
+my $Type = $ARGS{'Type'} || 'Links';
+$Type = ucfirst lc $Type;
+unless ( $Type eq 'Links' || $Type eq 'Members' ) {
+    $RT::Logger->error("'$Type' is incorrect type of ticket graph");
+    $Type = 'Links';
+}
+$ARGS{'Depth'} = 3 unless defined $ARGS{'Depth'} && length $ARGS{'Depth'};
+
+my $title;
+if ( $Type eq 'Links' ) {
+    $title = loc( "Ticket #[_1] full relationships graph", $id );
+} else {
+    $title = loc( "Ticket #[_1] relationships graph", $id );
+}
+</%INIT>
