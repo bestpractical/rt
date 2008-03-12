@@ -193,8 +193,6 @@ Digest::base
 Digest::MD5 2.27
 DBI 1.37
 Class::ReturnValue 0.40
-GnuPG::Interface
-PerlIO::eol
 DBIx::SearchBuilder 1.50
 Text::Template
 File::Spec 0.8
@@ -206,7 +204,6 @@ Locale::Maketext::Lexicon 0.32
 Locale::Maketext::Fuzzy
 MIME::Entity 5.425
 Mail::Mailer 1.57
-Net::SMTP
 Text::Wrapper 
 Time::ParseDate
 Time::HiRes 
@@ -306,15 +303,31 @@ HTML::Mason 1.31
 $deps{'MYSQL'} = [ text_to_hash( << '.') ];
 DBD::mysql 2.1018
 .
+
 $deps{'ORACLE'} = [ text_to_hash( << '.') ];
 DBD::Oracle
 .
+
 $deps{'POSTGRESQL'} = [ text_to_hash( << '.') ];
 DBD::Pg 1.43
 .
 
 $deps{'SQLITE'} = [ text_to_hash( << '.') ];
 DBD::SQLite 1.00
+.
+
+$deps{'GPG'} = [ text_to_hash( << '.') ];
+GnuPG::Interface
+PerlIO::eol
+.
+
+$deps{'ICAL'} = [ text_to_hash( << '.') ];
+Date::ICal
+Data::ICal
+.
+
+$deps{'SMTP'} = [ text_to_hash( << '.') ];
+Net::SMTP
 .
 
 if ($args{'download'}) {
