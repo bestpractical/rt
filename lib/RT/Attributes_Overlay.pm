@@ -47,12 +47,12 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::Attributes - collection of RT::Attribute objects
+RT::Attributes - collection of RT::Attribute objects
 
 =head1 SYNOPSIS
 
-  use RT::Attributes;
-my $Attributes = new RT::Attributes($CurrentUser);
+    use RT::Attributes;
+    my $Attributes = new RT::Attributes($CurrentUser);
 
 =head1 DESCRIPTION
 
