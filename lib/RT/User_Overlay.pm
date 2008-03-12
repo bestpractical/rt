@@ -979,6 +979,41 @@ sub IsPassword {
     return (undef);
 }
 
+=head3 AuthToken
+
+Returns an authentication string associated with the user.
+
+=cut
+
+sub AuthToken {
+    my $self = shift;
+    my $secret = $self->FirstAttribute("AuthToken");
+    return $secret->Content if $secret;
+
+    my $id = $self->id;
+    $self = RT::User->new( $RT::SystemUser );
+    $self->Load( $id );
+    $secret = substr(Digest::MD5::md5_hex(time . {} . rand()),0,16);
+    my ($status, $msg) = $self->SetAttribute( Name => "AuthToken", Content => $secret );
+    unless ( $status ) {
+        $RT::Logger->error( "Couldn't set auth token: $msg" );
+        return undef;
+    }
+    return $secret;
+}
+
+=head3 GenerateAuthToken
+
+Generate a random authentication string for the user.
+
+=cut
+
+sub GenerateAuthToken {
+    my $self = shift;
+    my $token = substr(Digest::MD5::md5_hex(time . {} . rand()),0,16);
+    return $self->SetAttribute( Name => "AuthToken", Content => $token );
+}
+
 =head2 SetDisabled
 
 Toggles the user's disabled flag.

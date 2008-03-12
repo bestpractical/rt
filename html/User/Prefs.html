@@ -166,11 +166,7 @@
 </tr>
 
 
-<tr>
-
-
-
-<td colspan="2" valign="top" class="boxcontainer">
+<tr><td colspan="2" valign="top" class="boxcontainer">
 %if ($UserObj->Privileged) {
 <br />
 <&| /Widgets/TitleBox, title => loc('Signature') &>
@@ -178,10 +174,18 @@
 <%$UserObj->Signature || ''%></textarea>
 </&>
 % }
+</td></tr>
 
-</td>
+<tr><td colspan="2" valign="top" class="boxcontainer">
+<&| /Widgets/TitleBox, title => loc('Secret authentication token'), id => "user-prefs-feeds" &>
 
-</tr>
+<p>All iCal feeds embed a secret token which authorizes you.  If the
+URL one of your iCal feeds got exposed to the outside world, you can
+get a new secret, <b>breaking all existing iCal feeds</b> below.</p>
+
+<& /Elements/Submit, Label => loc('Reset secret authentication token'), Name => "ResetAuthToken" &>
+</&>
+</td></tr>
 
 </table>
 

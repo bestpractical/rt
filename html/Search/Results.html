@@ -87,6 +87,9 @@
     RSSFeedURL => $RSSFeedURL,
     ShortQueryString => $ShortQueryString,
 &>
+
+<a href="<% $RT::WebURL %>NoAuth/iCal/<% $ical_path %>"><% loc('iCal feed') %></a>
+
 % $m->callback( QueryString => $QueryString, CallbackName => 'SearchActions' );
 </div>
 <%INIT>
@@ -158,6 +161,12 @@ my $RSSFeedURL = RT->Config->Get('WebPath')."/Search/Results.rdf$ShortQueryStrin
 if ($ARGS{'TicketsRefreshInterval'}) {
 	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};
 }
+
+my $ical_path = join '/', map $m->interp->apply_escapes($_, 'u'),
+    $session{'CurrentUser'}->UserObj->Name,
+    substr(Digest::MD5::md5_hex($session{'CurrentUser'}->UserObj->AuthToken . $Query),0,16),
+    $Query;
+
 </%INIT>
 <%CLEANUP>
 $session{'tickets'}->PrepForSerialization();
