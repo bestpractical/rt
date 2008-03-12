@@ -211,7 +211,6 @@ Text::Wrapper
 Time::ParseDate
 Time::HiRes 
 File::Temp 0.18
-Text::Autoformat
 Text::Quoted 2.02
 Tree::Simple 1.04
 UNIVERSAL::require
