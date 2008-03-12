@@ -240,13 +240,11 @@ if ($UserObj->Id) {
     push (@results,@fieldresults);
 
 
-# {{{ Deal with special fields: Privileged, Enabled, and Password
+# Deal with special fields: Privileged, Enabled, and Password
 if  ( ($SetPrivileged) and ( $Privileged != $UserObj->Privileged) ) {
 my  ($code, $msg) = $UserObj->SetPrivileged($Privileged);
      push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
 }
-
-
 
 #TODO: make this report errors properly
 if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->IsPassword($Pass1))) {
@@ -257,7 +255,10 @@ if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$UserObj->I
     push @results, loc("Passwords do not match. Your password has not been changed");
 }
 
-# }}}
+    if ( $ARGS{'ResetAuthToken'} ) {
+        my ($status, $msg) = $UserObj->GenerateAuthToken;
+        push @results, $msg;
+    }
 }
 
 
