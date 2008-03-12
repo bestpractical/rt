@@ -25,6 +25,10 @@ that extension.
 RT::Action::LinearEscalate extension has been integrated into core,
 so you MUST uninstall it before upgrading.
 
+RT::Extension::iCal has been integrated into core, so you MUST uninstall
+it before upgrading. As well, you must run etc/upgrade/3.8-ical-extension
+script to convert old data.
+
 UPGRADING FROM 3.7.80 and earlier - Changes:
 
 Added indexes to CachedGroupMembers for MySQL and Oracle.
