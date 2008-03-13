@@ -208,7 +208,7 @@ sub Prepare {
     my $attachment = $self->TransactionObj->Attachments->First;
     if ( $attachment && !( $attachment->GetHeader('X-RT-Encrypt') || $self->TicketObj->QueueObj->Encrypt ) ) {
         $attachment->SetHeader( 'X-RT-Encrypt' => 1 )
-            if $attachment->GetHeader("X-RT-Incoming-Encryption")||'' eq 'Success';
+            if ($attachment->GetHeader("X-RT-Incoming-Encryption")||'') eq 'Success';
     }
 
     return $result;
