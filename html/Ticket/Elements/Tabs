@@ -184,6 +184,12 @@ if ( $can{'ModifyTicket'} or $Ticket->CurrentUserHasRight('CommentOnTicket') ) {
         path  => "Ticket/Update.html?Action=Comment&id=" . $id,
     };
 }
+
+$actions->{'_ZZ'} = {
+    html => $m->scomp('/Ticket/Elements/Bookmark', id => $Ticket->id ),
+};
+
+
 }
 
 if ( (defined $actions->{A} || defined $actions->{B} || defined $actions->{C})
