@@ -81,7 +81,7 @@ my %default = (
     'with-CLI' => 1,
     'with-MAILGATE' => 1, 
     'with-DEV' => @RT_DEVEL_MODE@, 
-    'with-STANDALONE' => @RT_STANDALONE@,
+    'with-STANDALONE' => 0,
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 

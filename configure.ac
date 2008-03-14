@@ -7,7 +7,7 @@ AC_REVISION($Revision$)dnl
 
 dnl Setup autoconf
 AC_PREREQ(2.53)
-AC_INIT(RT, [3.7.81], [rt-bugs@bestpractical.com])
+AC_INIT(RT, 3.7.82, [rt-bugs@bestpractical.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
 dnl Extract RT version number components
@@ -33,12 +33,16 @@ fi
 
 dnl WEB_HANDLER
 AC_ARG_WITH(web-handler,
-	    AC_HELP_STRING([--with-web-handler=TYPE],
-	    		   [web web-handler RT will use (default: modperl1) (modperl1, modperl2, fastcgi and speedycgi are valid)]),
-            WEB_HANDLER=$withval,
-            WEB_HANDLER=modperl1)
-if test "$WEB_HANDLER" != 'modperl1' -a "$WEB_HANDLER" != 'modperl2' -a "$WEB_HANDLER" != 'fastcgi' -a "$WEB_HANDLER" != 'speedycgi'; then
-	AC_MSG_ERROR([Only modperl1, modperl2, fastcgi and speedycgi are valid web-handlers])
+    AC_HELP_STRING([--with-web-handler=LIST],
+	[comma separated list of web-handlers RT will be able to use.
+         Default is fastcgi when modperl1, modperl2, fastcgi, standalone
+         and speedycgi are valid. To succefuly run RT you need only one.
+        ]),
+    WEB_HANDLER=$withval,
+    WEB_HANDLER=fastcgi)
+my_web_handler_test=$($PERL -e 'print "ok" unless grep $_ !~ /^(modperl[12]|fastcgi|speedycgi|standalone)$/i, grep defined && length, split /\s*,\s*/, "$WEB_HANDLER"')
+if test "$my_web_handler_test" != "ok"; then
+	AC_MSG_ERROR([Only modperl1, modperl2, fastcgi, speedycgi and standalone are valid web-handlers])
 fi
 AC_SUBST(WEB_HANDLER)
 
@@ -248,15 +252,6 @@ AC_ARG_WITH(apachectl,
             APACHECTL=$withval, 
             APACHECTL=`which apachectl`)
 AC_SUBST(APACHECTL)
-
-dnl RT's standalone pure perl server
-AC_ARG_WITH(devel-mode,
-            AC_HELP_STRING([--with-standalone],
-                           [Install modules for pure perl standalone server]),
-
-            RT_STANDALONE="1",
-            RT_STANDALONE="0")
-AC_SUBST(RT_STANDALONE)
 
 dnl RT's "maintainer mode"
 AC_ARG_WITH(devel-mode,

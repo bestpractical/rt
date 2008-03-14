@@ -266,13 +266,15 @@ upgrade-noclobber: config-install libs-install html-install bin-install local-in
 
 
 # {{{ dependencies
+
+my_with_web_handlers= $(shell $(PERL) -e 'print join " ", map "--with-$$_", grep defined && length, split /,/, "$(WEB_HANDLER)"')
 testdeps:
-	$(PERL) ./sbin/rt-test-dependencies --verbose --with-$(DB_TYPE) --with-$(WEB_HANDLER)
+	$(PERL) ./sbin/rt-test-dependencies --verbose --with-$(DB_TYPE) $(my_with_web_handlers)
 
 depends: fixdeps
 
 fixdeps:
-	$(PERL) ./sbin/rt-test-dependencies --verbose --install --with-$(DB_TYPE) --with-$(WEB_HANDLER)
+	$(PERL) ./sbin/rt-test-dependencies --verbose --install --with-$(DB_TYPE) $(my_with_web_handlers)
 
 #}}}
 
