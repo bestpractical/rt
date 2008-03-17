@@ -404,6 +404,7 @@ sub AddAttachments {
     my $transaction_content_obj = $self->TransactionObj->ContentObj;
 
     # attach any of this transaction's attachments
+    my $seen_attachment = 0;
     while ( my $attach = $attachments->Next ) {
 
         # Don't attach anything blank
@@ -414,7 +415,12 @@ sub AddAttachments {
           if ( $transaction_content_obj
             && $transaction_content_obj->Id == $attach->Id
             && $transaction_content_obj->ContentType =~ qr{text/plain}i );
-        $MIMEObj->make_multipart('mixed');
+
+        if (!$seen_attachment) {
+            $MIMEObj->make_multipart('mixed', Force => 1);
+            $seen_attachment = 1;
+        }
+
         $MIMEObj->attach(
             Type     => $attach->ContentType,
             Charset  => $attach->OriginalEncoding,
