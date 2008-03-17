@@ -76,7 +76,7 @@ my $form_action = defined $goto             ? $goto
 <div id="body" class="login-body">
 
 % if ($Error) {
-<&| "/Widgets/TitleBox", title => loc('Error'), hideable => 0  &>
+<&| "/Widgets/TitleBox", title => loc('Error'), hideable => 0, class => 'error'  &>
 <% $Error %>
 </&>
 % }

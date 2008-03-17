@@ -45,7 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<div class="submit">
+<div class="submit"
+% if($id) {
+id="<%$id%>"
+% }
+>
   <div class="extra-buttons">
 % if ($CheckAll) {
   <input type="button" value="<%$CheckAllLabel%>" onclick="setCheckbox(this.form, '<% $CheckboxName %>', true);return false;" class="button" />
@@ -84,4 +88,5 @@ $CheckboxName => ''
 $OnClick => undef
 $Reset => undef
 $ResetLabel => loc('Reset')
+$id => undef
 </%ARGS>
