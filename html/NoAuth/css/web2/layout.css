@@ -1,0 +1,111 @@
+
+/* body */
+
+body {
+    padding:0;
+    margin:0;
+
+    background-color: #003EBA;
+    font-family: helvetica, arial, sans-serif;
+
+}
+
+div#body {
+    padding: 1em;
+    padding-top: 1.5em;
+    -moz-border-radius-topleft: 0.5em;
+    -moz-border-radius-bottomleft: 0.5em;
+
+    margin-left: 10em;
+    margin-top: 0em;
+    margin-bottom: 0em;
+    min-height: 20em;
+    background: #fefefe;
+    
+
+}
+
+
+div#quickbar {
+ background: #eee;
+ padding-top: 1em;
+ padding-left: 1em;
+ padding-bottom: 0.5em;
+ border-bottom: 1px solid #ccc;
+
+}
+
+#topactions {
+
+ position: absolute;
+ right: 1em;
+ top: 3em; 
+}
+
+#topactions form {
+ display: inline;
+
+}
+
+.topaction form#CreateTicketInQueue {
+ position: absolute;
+ right: 10em; 
+ left: -13.25em;
+  
+
+}
+
+.topaction form#CreateTicketInQueue:after {
+ padding-left:0.5em;
+ content: """;
+ color: #fff;
+}
+
+div#footer {
+ font-size: 0.8em;
+ margin-top: 2em;
+ background: #fff;
+ margin-bottom: 0;
+ spacing-bottom: 0;
+ padding-bottom: 1em;
+ padding-left: 1em;
+ padding-right: 1em;
+}
+
+div#footer #time {
+display: none 
+}
+
+div#footer #bpscredits {
+ padding-top: 1em;
+ text-align: right;
+} 
+
+
+/* logo stuff */
+
+div#logo {
+}
+div#logo a {
+     display: none;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+div#logo a img {
+    border: 0;
+}
+div#logo .rtname {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+}
+
+
+
+div#header h1 {
+ margin-top: 0.125em;
+ padding: 0.25em;
+ color: #fff;
+ margin-bottom: -0.5em;
+}

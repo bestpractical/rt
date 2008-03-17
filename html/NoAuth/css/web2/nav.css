@@ -1,143 +1,97 @@
-%# BEGIN BPS TAGGED BLOCK {{{
-%# 
-%# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
-%#                                          <jesse@bestpractical.com>
-%# 
-%# (Except where explicitly superseded by other copyright notices)
-%# 
-%# 
-%# LICENSE:
-%# 
-%# This work is made available to you under the terms of Version 2 of
-%# the GNU General Public License. A copy of that license should have
-%# been provided with this software, but in any event can be snarfed
-%# from www.gnu.org.
-%# 
-%# This work is distributed in the hope that it will be useful, but
-%# WITHOUT ANY WARRANTY; without even the implied warranty of
-%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-%# General Public License for more details.
-%# 
-%# You should have received a copy of the GNU General Public License
-%# along with this program; if not, write to the Free Software
-%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-%# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-%# 
-%# 
-%# CONTRIBUTION SUBMISSION POLICY:
-%# 
-%# (The following paragraph is not intended to limit the rights granted
-%# to you to modify and distribute this software under the terms of
-%# the GNU General Public License and is only of importance to you if
-%# you choose to contribute your changes and enhancements to the
-%# community by submitting them to Best Practical Solutions, LLC.)
-%# 
-%# By intentionally submitting any modifications, corrections or
-%# derivatives to this work, or any other work intended for use with
-%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
-%# you are the copyright holder for those contributions and you grant
-%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
-%# royalty-free, perpetual, license to use, copy, create derivative
-%# works based on those contributions, and sublicense and distribute
-%# those contributions and any derivatives thereof.
-%# 
-%# END BPS TAGGED BLOCK }}}
-#nav {
-    float: left;
-    clear: both;
-    height: 4em;
-    width: 100%;
-    background: #999;
-    padding-top: 1em;
+
+div#nav {
+ position: absolute;
+ left: 0;
+ font-size: 80%;
+ top: 7.2em;
+ width: 11em;
+ background: #fff;
+ -moz-border-radius-bottomright: 0.5em;
+
 }
 
-#nav ul {
-    float: left;
-    clear: left;
-    color: #eee;
-    font-weight: bold;
-    
-    margin: 0;
-    padding: 0;
-     
+div#nav ul {
+ padding-left: 0.5em;
+ margin-left: 0;
+ padding-right: 0.5em;
+  list-style-type: none;
+
 }
 
-#nav li ul {
+div#nav li {
+ padding: 0.125em;
+
 }
 
-/*
-%# We need the extra padding above for browsers where we display the arrows
-%# but those don't work in IE so we don't want as much spacing
-%# 
-%# IE wrongly matches the selector below even though there isn't an element
-%# above <html> in the doc tree
-*/
-* html #nav li ul {
-    margin-top: 0.25em;
+div#nav .bullet {
+ display: none;
 }
 
-#nav li {
-    display: inline;
-    margin-bottom: 1em;
-    padding: 0.2em 0 0.4em 0;
+div#nav .separator {
+display: none;
 }
 
 
-#nav ul div div.wrapper {
-    text-align: left;
-    padding: 0.2em 1em 0.4em 0;
-    margin-left:0;
+div#nav a, div#page-navigation a{
+ text-decoration: none;
+ color: #000;
 }
 
-
-#nav :link,
-#nav :visited
-{
-    color: #ececec;
-    text-decoration: none;
-}
-
-#nav :link.selected,
-#nav :visited.selected,
-#nav :link:hover,
-#nav :visited:hover
-{
-    color: #fc6; /*#ff6;*/
-}
-
-#nav :link.selected,
-#nav :visited.selected
-{
-    text-decoration: underline;
+div#nav a:hover, div#page-navigation a:hover {
+ text-decoration: underline;
 }
 
 
 
-
-#header #page-menu {
-    width: 100%;
-    height: 3em;
-    margin-top: -3.5em;
-    text-align: left;
-    padding-right: 0em;
-    float: left;
-    clear: both;
-    background: #999;
-}
-
-#header ul li {
-    display: inline;
+div#nav a.selected, div#page-navigation a.selected {
+  font-weight: bold;
 }
 
 
+div#nav a.selected:after {
+/* content: " > " */
+}
 
-#actions-menu  div div div{
-    position: relative;
-    right: 0;
-    top: -2em;
-    float: right;
-    margin-right: 2em;
+div#page-navigation {
+ background: white;
+ 
+
+}
+
+
+div#page-navigation ul {
+
+}
+
+div#page-navigation ul#page-menu{
+ padding-left: 9em;
+ padding-top:0.5em;
+ padding-bottom:0.5em;
+
+}
+
+div#page-navigation ul#actions-menu {
+ float: right;
+ margin-top: 0em;
+ padding: 0.5em;
+
+ spacing: 0;
+
+ background: #dedede;
+ border-left: 1px solid #ccc;
+ border-bottom: 1px solid #ccc;
+ -moz-border-radius-bottomleft: 0.5em;
+}
+
+
+
+div#page-navigation ul li{
+ display: inline;
+
+}
+
+
+ul.page-navigation ul.page-menu {
+ float: right;
+
 }

@@ -1,0 +1,105 @@
+.titlebox { 
+
+ background-color: #efefef;
+ padding-top: 1em;
+ margin-top: 1em;
+ -moz-border-radius: 0.5em;
+
+
+}
+
+
+.titlebox .titlebox { 
+
+ background-color: #ffffff;
+ padding-top: 1em;
+ margin-top: 1em;
+ -moz-border-radius: 0.5em;
+ margin-right: 1em;
+
+}
+
+
+
+.titlebox .titlebox-title {
+ font-size: 1.5em;
+ margin-top: -1.1em;
+ padding-bottom: 0.25em;
+ padding-left: 0.5em;
+}
+
+.titlebox .titlebox-title a {
+ text-decoration: none;
+ color: black;
+
+}
+
+.titlebox .titlebox-title a:hover {
+ text-decoration: underline;
+
+}
+
+.titlebox .titlebox-title .right-empty {
+ display:none;
+}
+
+.titlebox .titlebox-title .right {
+  position: relative;
+
+  float: right;
+  margin-top: -1em;
+  margin-right: 0em;
+  font-size: 0.6em;
+  background: #dedede;
+  border-left: 1px solid #ccc;
+ border-bottom: 1px solid #ccc;
+ padding: 0.25em;
+ -moz-border-radius-bottomleft: 0.25em;
+
+}
+
+.titlebox .titlebox-content {
+ padding-left: 1em;
+ padding-bottom: 1em;
+
+}
+
+.hidden {
+ display: none;
+}
+
+.titlebox .titlebox-title .widget a {
+  display: block;
+  padding-top: 1em;
+  width: 20px;
+
+  background: url(/NoAuth/images//css/rollup-arrow.gif) no-repeat center center;
+  margin: 0;
+  text-indent: -9999px;
+
+  position: absolute;
+  top: 0.4em;
+  left: 0.75em;
+  float: left;
+
+  /* WIN IE5 hack */
+  height: 7px;
+  voice-family: "\"}\"";
+  voice-family: inherit;
+  height: 0;
+  overflow: hidden;
+}
+
+html>body .titlebox .titlebox-title .widget a {
+    height: 0;
+    overflow: hidden;
+}
+
+* html .titlebox .titlebox-title .widget a {
+    background-position: center 0.3em;
+    left: -3.5em;
+}
+
+.titlebox.rolled-up .titlebox-title .widget a {
+    background-image: url(/NoAuth/images//css/rolldown-arrow.gif);
+}

@@ -1,0 +1,30 @@
+#comp-Search-Build #editquery, #comp-Search-Build #editsearches{
+  width: 40%;
+  float: right;
+  clear: both;
+  margin-top: -1em;
+}
+
+
+
+#comp-Search-Build #editsearches {
+padding-top: 1em;
+
+}
+
+
+#comp-Search-Build #pick-criteria {
+ width: 58%;
+ overflow: hidden;
+
+}
+
+#comp-Search-Build .submit {
+ width: 58%;
+
+}
+
+
+#comp-Search-Build #formatbuttons {
+ width: 100%;
+}
