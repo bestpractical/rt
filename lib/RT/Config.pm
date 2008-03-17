@@ -104,7 +104,7 @@ our %META = (
         WidgetArguments => {
             Description => 'Interface style', #loc
             # XXX: we need support for 'get values callback'
-            Values      => [qw(3.5-default 3.4-compat)],
+            Values      => [qw(3.5-default 3.4-compat web2)],
         },
     },
     DefaultSummaryRows => {
