@@ -67,6 +67,12 @@ sub default_mason_config {
     return RT->Config->Get('MasonParameters');
 } 
 
+sub install_mode {
+    my $self = shift;
+    $self->{'rt_install_mode'} = shift if @_;
+    return $self->{'rt_install_mode'};
+}
+
 sub handle_request {
 
     my $self = shift;
@@ -74,7 +80,7 @@ sub handle_request {
 
     Module::Refresh->refresh if RT->Config->Get('DevelMode');
 
-    RT::ConnectToDatabase();
+    RT::ConnectToDatabase() unless $self->install_mode;
 
     $self->SUPER::handle_request($cgi);
     $RT::Logger->crit($@) if ($@);
