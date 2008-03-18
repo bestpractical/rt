@@ -539,14 +539,13 @@ sub InitPlugins {
         my @tmp_inc;
 
 
-        for (@INC){
-            if 
-            ( $_ eq $RT::LocalLibPath) {
+        for (@INC) {
+            if ( $_ eq $RT::LocalLibPath) {
                 push @tmp_inc, $_, $RT::LocalPluginPath . "/$plugindir";
             } else {
                 push @tmp_inc, $_;
+            }
         }
-    }
 
         @INC = @tmp_inc;
         $plugin->require;
