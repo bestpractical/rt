@@ -3,8 +3,6 @@ package RT::Graph::Tickets;
 use strict;
 use warnings;
 
-our $VERSION = '0.09';
-
 =head1 NAME
 
 RT::Graph::Tickets - view relations between tickets as graphs
