@@ -100,9 +100,10 @@ foreach ( @actions ) {
 }
 
 # convert init to multiple actions
+my $init = 0;
 if ( $actions[0] eq 'init' ) {
     @actions = qw(create schema acl coredata insert);
-    $args{'datafile'} ||= $RT::EtcPath . "/initialdata";
+    $init = 1;
 }
 
 # set options from environment
@@ -189,7 +190,10 @@ foreach my $action ( @actions ) {
         check_db_compatibility( $RT::Handle->dbh );
 
         print "Now inserting data\n";
-        $RT::Handle->InsertData( $args{'datafile'} || ($args{'datadir'}."/content") );
+        my $file = $args{'datafile'};
+        $file = $RT::EtcPath . "/initialdata" if $init && !$file;
+        $file ||= $args{'datadir'}."/content";
+        $RT::Handle->InsertData( $file );
     }
 }
 
