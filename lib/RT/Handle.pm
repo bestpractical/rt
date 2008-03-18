@@ -208,25 +208,28 @@ sub CreateDatabase {
     my $dbh  = shift || die "No DBI handle provided";
     my $db_type = RT->Config->Get('DatabaseType');
     my $db_name = RT->Config->Get('DatabaseName');
-    print "Creating $db_type database $db_name.\n";
+
+    my $status;
     if ( $db_type eq 'SQLite' ) {
-        return;
+        return (1, 'Skipped as SQLite doesn\'t need any action');
+    }
+    elsif ( $db_type eq 'Oracle' ) {
+        return (1, 'Skipped as we\'re working with Oracle');
     }
     elsif ( $db_type eq 'Pg' ) {
         # XXX: as we get external DBH we don't know if RaiseError or PrintError
         # are enabled, so we have to setup it here and restore them back
-        $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE'");
-        if ( $DBI::errstr ) {
-            $dbh->do("CREATE DATABASE $db_name") || die $DBI::errstr;
-        }
+        $status = $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE'")
+            || $dbh->do("CREATE DATABASE $db_name");
     }
     elsif ( $db_type eq 'Informix' ) {
         local $ENV{'DB_LOCALE'} = 'en_us.utf8';
-        $dbh->do("CREATE DATABASE $db_name WITH BUFFERED LOG");
+        $status = $dbh->do("CREATE DATABASE $db_name WITH BUFFERED LOG");
     }
     else {
-        $dbh->do("CREATE DATABASE $db_name") or die $DBI::errstr;
+        $status = $dbh->do("CREATE DATABASE $db_name");
     }
+    return ($status, $DBI::errstr);
 }
 
 =head3 DropDatabase $DBH [Force => 0]

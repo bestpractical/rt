@@ -141,12 +141,10 @@ print "Working with:\n"
 foreach my $action ( @actions ) {
     if ( $action eq 'create' ) {
         my $dbh = get_system_dbh();
-        print "Now creating a database for RT.\n";
-        if ( $db_type ne 'Oracle' || $dba_user ne $db_user ) {
-            RT::Handle->CreateDatabase( $dbh );
-        } else {
-            print "...skipped as $dba_user is not $db_user or we're working with Oracle.\n";
-        }
+        print "Now creating a $db_type database $db_name for RT.\n";
+        my ($status, $msg) = RT::Handle->CreateDatabase( $dbh );
+        die "Couldn't create a DB: $msg" unless $status;
+        print "Done.\n";
     }
     elsif ( $action eq 'drop' ) {
         my $dbh = get_system_dbh();
@@ -162,7 +160,7 @@ foreach my $action ( @actions ) {
         $RT::Handle->dbh( $dbh );
 
         print "Now populating database schema.\n";
-        $RT::Handle->InsertSchema( $dbh, $args{'datadir'} );
+        $RT::Handle->InsertSchema( $dbh, $args{'datafile'} || $args{'datadir'} );
     }
     elsif ( $action eq 'acl' ) {
         my $dbh = get_admin_dbh();
@@ -172,7 +170,7 @@ foreach my $action ( @actions ) {
         $RT::Handle->dbh( $dbh );
 
         print "Now inserting database ACLs\n";
-        $RT::Handle->InsertACL( $dbh, $args{'datadir'} ) # unless $db_type eq 'Oracle'
+        $RT::Handle->InsertACL( $dbh, $args{'datafile'} || $args{'datadir'} );
     }
     elsif ( $action eq 'coredata' ) {
         $RT::Handle = new RT::Handle;
