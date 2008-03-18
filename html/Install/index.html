@@ -77,7 +77,23 @@ my @db_options = (
         },
     },
 );
+my %META = @db_options;
 
+my $dump_config = sub {
+    my %data = @_;
+
+    my $res = '';
+
+    for ( my $i = 0; $i < @db_options; $i += 2 ) {
+        my $option = $db_options[$i];
+        next unless exists $data{ $option } && defined $data{ $option };
+        my $meta = $db_options[$i+1];
+        my $value = $data{ $option };
+        $res .= "Set(\$$option, '$value');\n";
+    }
+    $res .= "\n1;# don't delete this line\n";
+    return $res;
+};
 
 if ( $ARGS{'DatabaseCreate'} ) {
     my %config = ();
@@ -95,7 +111,6 @@ if ( $ARGS{'DatabaseCreate'} ) {
         $config{ $option } = scalar RT->Config->Get( $option )
             if !defined $value && $meta->{'WidgetArguments'}{'Default'};
     }
-    use Data::Dumper;
-    warn(Dumper(\%config));
+    warn($dump_config->(%config));
 }
 </%INIT>
