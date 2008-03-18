@@ -1,0 +1,101 @@
+Hello, looks like it's new intallation of RT.
+
+We're going to bla-bla... intstall RT
+
+<form method="post">
+% for ( my $i = 0; $i < @db_options; $i += 2 ) {
+% my $option = $db_options[$i];
+% my $meta = $db_options[$i+1];
+<& $meta->{'Widget'},
+    Default      => 0,
+    %{ $meta->{'WidgetArguments'} },
+    Name         => $option,
+    CurrentValue => scalar RT->Config->Get( $option ),
+&>
+% }
+
+<& /Elements/Submit, Name => 'DatabaseCreate', Label => loc('Create database') &>
+
+</form>
+
+<%FLAGS>
+inherit => undef
+</%FLAGS>
+<%ARGS>
+</%ARGS>
+<%INIT>
+my @db_options = (
+    DatabaseType => {
+        Section         => 'Database', #loc
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Type of the database where RT will store its data', #loc
+            Values      => [qw(mysql Pg Oracle SQLite)],
+            ValuesLabel => {
+                mysql  => 'MySQL', #loc
+                Pg     => 'PostgreSQL', #loc
+                Oracle => 'Oracle', #loc
+                SQLite => 'SQLite (for experiments and development only)', #loc
+            },
+        },
+    },
+    DatabaseHost => {
+        Section         => 'Database', #loc
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => {
+            Description  => 'The domain name of your database server', #loc
+        },
+    },
+    DatabasePort => {
+        Section         => 'Database', #loc
+        Widget          => '/Widgets/Form/Integer',
+        WidgetArguments => {
+            Description  => 'Port number database server listen to', #loc
+            Default      => 1,
+            DefaultLabel => 'Leave empty to use default value of the RDBMS', #loc
+        },
+    },
+    DatabaseName => {
+        Section         => 'Database', #loc
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => {
+            Description => 'Name of the database', #loc
+        },
+    },
+    DatabaseUser => {
+        Section         => 'Database', #loc
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => {
+            Description => 'The name of the user RT will use to connect to the DB', #loc
+        },
+    },
+    DatabasePassword => {
+        Section         => 'Database', #loc
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => {
+            Description => 'Password for the above user RT will use to connect to the DB', #loc
+        },
+    },
+);
+
+
+if ( $ARGS{'DatabaseCreate'} ) {
+    my %config = ();
+    for ( my $i = 0; $i < @db_options; $i += 2 ) {
+        my $option = $db_options[$i];
+        my $meta = $db_options[$i+1];
+        my $value = $m->comp( $meta->{'Widget'} .':Process',
+            Arguments    => \%ARGS,
+            Default      => 0,
+            %{ $meta->{'WidgetArguments'} },
+            Name         => $option,
+            CurrentValue => scalar RT->Config->Get( $option ),
+        );
+        $config{ $option } = $value;
+        $config{ $option } = scalar RT->Config->Get( $option )
+            if !defined $value && $meta->{'WidgetArguments'}{'Default'};
+    }
+    use Data::Dumper;
+    warn(Dumper(\%config));
+}
+</%INIT>
