@@ -205,7 +205,7 @@ Fetches type and name of the DB from the config.
 
 sub CreateDatabase {
     my $self = shift;
-    my $dbh  = shift or return (0, die "No DBI handle provided");
+    my $dbh  = shift or return (0, "No DBI handle provided");
     my $db_type = RT->Config->Get('DatabaseType');
     my $db_name = RT->Config->Get('DatabaseName');
 
@@ -278,30 +278,30 @@ sub InsertACL {
     my $db_type = RT->Config->Get('DatabaseType');
     return if $db_type eq 'SQLite';
 
-    die "'$base_path' doesn't exist" unless -e $base_path;
+    return (0, "'$base_path' doesn't exist") unless -e $base_path;
 
     my $path;
     if ( -d $base_path ) {
         $path = File::Spec->catfile( $base_path, "acl.$db_type");
         $path = File::Spec->catfile( $base_path, "acl")
             unless -e $path;
-        die "Couldn't find ACLs for $db_type"
+        return (0, "Couldn't find ACLs for $db_type")
             unless -e $path;
     } else {
         $path = $base_path;
     }
 
     local *acl;
-    do $path || die "Couldn't load ACLs: " . $@;
+    do $path || return (0, "Couldn't load ACLs: " . $@);
     my @acl = acl($dbh);
     foreach my $statement (@acl) {
-#        print STDERR $statement if $args{'debug'};
-        my $sth = $dbh->prepare($statement) or die $dbh->errstr;
+        my $sth = $dbh->prepare($statement)
+            or return (0, "Couldn't prepare SQL query:\n $statement\n\nERROR: ". $dbh->errstr);
         unless ( $sth->execute ) {
-            die "Problem with statement:\n $statement\n" . $sth->errstr;
+            return (0, "Couldn't run SQL query:\n $statement\n\nERROR: ". $sth->errstr);
         }
     }
-    print "Done setting up database ACLs.\n";
+    return (1);
 }
 
 =head2 InsertSchema
@@ -312,18 +312,24 @@ sub InsertSchema {
     my $self = shift;
     my $dbh  = shift || $self->dbh;
     my $base_path = (shift || $RT::EtcPath);
-    my $db_type = RT->Config->Get('DatabaseType');
 
-    my $file = get_version_file( $base_path . "/schema." . $db_type );
+    my $file;
+    if ( -d $base_path ) {
+        my $db_type = RT->Config->Get('DatabaseType');
+        $file = $base_path . "/schema." . $db_type;
+    } else {
+        $file = $base_path;
+    }
+
+    $file = get_version_file( $file );
     unless ( $file ) {
-        die "Couldn't find schema file in '$base_path' dir";
+        return (0, "Couldn't find schema file(s) '$file*'");
     }
     unless ( -f $file || -r $file ) {
-        die "File '$file' doesn't exist or couldn't be read";
+        return (0, "File '$file' doesn't exist or couldn't be read");
     }
 
     my (@schema);
-    print "Creating database schema.\n";
 
     open my $fh_schema, "<$file";
 
@@ -345,20 +351,21 @@ sub InsertSchema {
     close $fh_schema; close $fh_schema_local;
 
     local $SIG{__WARN__} = sub {};
-    my $is_local = 0; # local/etc/schema needs to be nonfatal.
-    $dbh->begin_work or die $dbh->errstr;
+    my $is_local = 0;
+    $dbh->begin_work or return (0, "Couldn't begin transaction: ". $dbh->errstr);
     foreach my $statement (@schema) {
-        if ( $statement =~ /^\s*;$/ ) { $is_local = 1; next; }
+        if ( $statement =~ /^\s*;$/ ) {
+            $is_local = 1; next;
+        }
 
-#        print "Executing SQL:\n$statement\n" if defined $args{'debug'};
-        my $sth = $dbh->prepare($statement) or die $dbh->errstr;
+        my $sth = $dbh->prepare($statement)
+            or return (0, "Couldn't prepare SQL query:\n$statement\n\nERROR: ". $dbh->errstr);
         unless ( $sth->execute or $is_local ) {
-            die "Problem with statement:\n$statement\n" . $sth->errstr;
+            return (0, "Couldn't run SQL query:\n$statement\n\nERROR: ". $sth->errstr);
         }
     }
-    $dbh->commit or die $dbh->errstr;
-
-    print "Done setting up database schema.\n";
+    $dbh->commit or return (0, "Couldn't commit transaction: ". $dbh->errstr);
+    return (1);
 }
 
 =head1 get_version_file
@@ -484,8 +491,9 @@ sub InsertData {
     local (@Groups, @Users, @ACL, @Queues, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
 
-    require $datafile
-      || die "Couldn't find initial data for import\n" . $@;
+    local $@;
+    eval { require $datafile }
+      or return (0, "Couldn't load data from '$datafile' for import:\n\nERROR:". $@);
 
     if ( @Initial ) {
         print "Running initial actions...\n";
