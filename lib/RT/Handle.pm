@@ -98,9 +98,9 @@ sub Connect {
     }
 
     $self->SUPER::Connect(
-	    User => RT->Config->Get('DatabaseUser'),
+            User => RT->Config->Get('DatabaseUser'),
         Password => RT->Config->Get('DatabasePassword'),
-	);
+        );
 
     $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
 }
@@ -128,7 +128,7 @@ sub BuildDSN {
 
 
     $self->SUPER::BuildDSN( Host       => $db_host,
-			                Database   => $db_name,
+                                        Database   => $db_name,
                             Port       => $db_port,
                             Driver     => $db_type,
                             RequireSSL => RT->Config->Get('DatabaseRequireSSL'),
@@ -205,7 +205,7 @@ Fetches type and name of the DB from the config.
 
 sub CreateDatabase {
     my $self = shift;
-    my $dbh  = shift || die "No DBI handle provided";
+    my $dbh  = shift or return (0, die "No DBI handle provided");
     my $db_type = RT->Config->Get('DatabaseType');
     my $db_name = RT->Config->Get('DatabaseName');
 
@@ -240,58 +240,30 @@ Takes DBI handle as first argument. Many database systems require
 special handle to allow you to create a new database, so you have
 to use L<SystemDSN> method during connection.
 
-Takes as well optional named argument C<Force>, if it's true than
-no questions would be asked.
-
 Fetches type and name of the DB from the config.
 
 =cut
 
 sub DropDatabase {
     my $self = shift;
-    my $dbh  = shift || die "No DBI handle provided";
-    my %args = ( Force => 0, @_ );
+    my $dbh  = shift or return (0, "No DBI handle provided");
 
     my $db_type = RT->Config->Get('DatabaseType');
     my $db_name = RT->Config->Get('DatabaseName');
-    my $db_host = RT->Config->Get('DatabaseHost');
 
-    if ( $db_type eq 'Oracle' ) {
-        print <<END;
-
-To delete the tables and sequences of the RT Oracle database by running
-    \@etc/drop.Oracle
-through SQLPlus.
-
-END
-        return;
+    if ( $db_type eq 'Oracle' || $db_type eq 'Informix' ) {
+        return (0, "Use etc/drop.$db_type to drop database");
     }
-    unless ( $args{'Force'} ) {
-        print <<END;
-
-About to drop $db_type database $db_name on $db_host.
-WARNING: This will erase all data in $db_name.
-
-END
-        return unless _yesno();
-
+    elsif ( $db_type eq 'SQLite' ) {
+        my $path = $db_name;
+        $path = "$RT::VarPath/$path" unless substr($path, 0, 1) eq '/';
+        unlink $path or return (0, "Couldn't remove '$path': $!");
+        return (1);
+    } else {
+        $dbh->do("DROP DATABASE ". $db_name)
+            or return (0, $DBI::errstr);
     }
-
-    print "Dropping $db_type database $db_name.\n";
-
-    if ( $db_type eq 'SQLite' ) {
-	my $path = $db_name;
-	$path = "$RT::VarPath/$path" unless substr($path, 0, 1) eq '/';
-        unlink $path or warn $!;
-        return;
-    }
-    $dbh->do("DROP DATABASE ". $db_name) or warn $DBI::errstr;
-}
-
-sub _yesno {
-    print "Proceed [y/N]:";
-    my $x = scalar(<STDIN>);
-    $x =~ /^y/i;
+    return (1);
 }
 
 =head2 InsertACL
@@ -508,9 +480,9 @@ sub InsertData {
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @ACL, @Queues, @ScripActions, @ScripConditions,
-	   @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
+           @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
     local (@Groups, @Users, @ACL, @Queues, @ScripActions, @ScripConditions,
-	   @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
+           @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
 
     require $datafile
       || die "Couldn't find initial data for import\n" . $@;

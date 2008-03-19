@@ -150,8 +150,34 @@ foreach my $action ( @actions ) {
     elsif ( $action eq 'drop' ) {
         my $dbh = get_system_dbh();
 
-        print "Now dropping RT database\n";
-        RT::Handle->DropDatabase( $dbh, Force => $args{'force'} );
+        if ( $db_type eq 'Oracle' ) {
+            print <<END;
+
+To delete the tables and sequences of the RT $db_type database by running
+    \@etc/drop.$db_type
+through SQLPlus.
+
+END
+            exit(-1);
+        }
+
+        print "Dropping $db_type database $db_name.\n";
+        unless ( $args{'force'} ) {
+            print <<END;
+
+About to drop $db_type database $db_name on $db_host.
+WARNING: This will erase all data in $db_name.
+
+END
+            exit(-2) unless _yesno();
+        }
+
+        my ($status, $msg) = RT::Handle->DropDatabase( $dbh );
+        unless ( $status ) {
+            print STDERR "Couldn't delete database: $msg\n";
+            exit(-1);
+        }
+        print "Done.\n";
     }
     elsif ( $action eq 'schema' ) {
         my $dbh = get_admin_dbh();
@@ -308,6 +334,12 @@ sub _get_dbh {
         }
     }
     return $dbh;
+}
+
+sub _yesno {
+    print "Proceed [y/N]:";
+    my $x = scalar(<STDIN>);
+    $x =~ /^y/i;
 }
 
 sub help {
