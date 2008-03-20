@@ -1,6 +1,6 @@
 %# BEGIN LICENSE BLOCK
 %# 
-%#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
+%#  Copyright (c) 2002-2008 Jesse Vincent <jesse@bestpractical.com>
 %#  
 %#  This program is free software; you can redistribute it and/or modify
 %#  it under the terms of version 2 of the GNU General Public License 
@@ -18,6 +18,13 @@
 
 % my %uri;
 % $uri{$_}++ for split ' ', ($ARGS{$ARGS{'id'}.'-RefersTo'} || '');
+
+
+% # convert RTFM-Include-Article => $id to RTFM-Include-Article-$id
+% if ( $ARGS{'RTFM-Include-Article'} ) {
+%    $ARGS{"RTFM-Include-Article-$ARGS{'RTFM-Include-Article'}"}++;
+% }
+
 % foreach my $arg (keys %ARGS) {
 % if ($arg =~ /^RTFM-Include-Article-(\d+)$/) {
 % my $art = RT::FM::Article->new($session{'CurrentUser'});
@@ -28,6 +35,7 @@
 
 % }
 %}
+
 <input type="hidden" name="<%$ARGS{'id'}%>-RefersTo" value="<% join(' ',grep {$_} sort keys %uri) %>" />
 <table>
 <tr>
@@ -69,7 +77,40 @@
 <td><input type="submit" name="RTFM-Include-Article-<%$article->Id%>" value="Go" /></td>
 </tr>
 % }
+<tr>
+<td>
+
+% if ( @$topics ) {
+<select name="RTFM-Include-Topic">
+<option value="" <% $ARGS{'RTFM-Include-Topic'} ? () : 'selected' %>><&|/l&>Select a topic</&></option>
+% for ( @$topics ) { 
+<option value="<% $_->{id} %>" <% $ARGS{'RTFM-Include-Topic'} == $_->{id} ? 'selected' : () %> ><%'&nbsp;' x $_->{depth} . ($_->{name}|| loc('(no name)')) |n%>
+</option>
+% }
+</select>
+</td>
+<td><input type="submit" value="Go" /></td>
+</tr>
+
+% if ( $ARGS{'RTFM-Include-Topic'} ) {
+<tr>
+<td>
+<select name="RTFM-Include-Article">
+<option value="" <% $ARGS{'RTFM-Include-Article'} ? () : 'selected' %>><&|/l&>Select an article</&></option>
+% while ( my $art = $articles->Next ) {
+<option value="<% $art->id %>" <% $ARGS{'RTFM-Include-Article'} == $art->id ? 'selected' : () %> ><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
+% }
+</select>
+</td>
+<td><input type="submit" value="Go" /></td>
+</tr>
+
+% }
+% }
+
+
 </table>
+
 <%init>
 use RT::FM::ArticleCollection;
 
@@ -114,4 +155,42 @@ $hotlist->OrderByCols( {
 
     );
 
+my ( $articles, $topics );
+$articles = RT::FM::ArticleCollection->new( $session{CurrentUser} );
+$topics = [];
+
+my $ticket = RT::Ticket->new( $session{CurrentUser} );
+$ticket->Load( $ARGS{id} );
+my $top_topic = RT::FM::Topic->new( $session{CurrentUser} );
+$top_topic->LoadByCols( Name => 'Queues', Parent => 0 );
+
+if ( $top_topic->id ) {
+    my $queue_topic = RT::FM::Topic->new( $session{CurrentUser} );
+    $queue_topic->LoadByCols( Name => $ticket->QueueObj->Name, Parent =>
+            $top_topic->id );
+    if ( $queue_topic->id ) {
+    
+        # store all topics below $queue_topic to $topics
+        topics( $queue_topic, $topics, 0 );
+        
+        if ( $ARGS{'RTFM-Include-Topic'}  ) {
+            $articles->LimitTopics( $ARGS{'RTFM-Include-Topic'} );
+            $articles->OrderBy( FIELD => 'Name' );
+        }
+    }
+}
+
+
+# recursively get all the topics given a top topic
+sub topics {
+    my $parent = shift;
+    my $out = shift;
+    my $depth = shift;
+    while ( my $topic = $parent->Children->Next ) {
+	push @$out, { id => $topic->id, name => $topic->Name, depth => $depth };
+	topics( $topic, $out, $depth+1 );
+    }
+}
+
 </%init>
+

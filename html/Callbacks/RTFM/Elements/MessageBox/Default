@@ -1,6 +1,6 @@
 %# BEGIN LICENSE BLOCK
 %# 
-%#  Copyright (c) 2002-2003 Jesse Vincent <jesse@bestpractical.com>
+%#  Copyright (c) 2002-2008 Jesse Vincent <jesse@bestpractical.com>
 %#  
 %#  This program is free software; you can redistribute it and/or modify
 %#  it under the terms of version 2 of the GNU General Public License 
@@ -16,6 +16,11 @@
 %# 
 %# END LICENSE BLOCK
 %foreach my $arg (keys %ARGS) {
+% if ($arg eq 'RTFM-Include-Article' && $ARGS{$arg} ) {
+%    my $art = RT::FM::Article->new($session{'CurrentUser'});
+%    $art->Load($ARGS{$arg});
+<& /RTFM/Article/Elements/Preformatted, Article => $art &>\
+% }
 %
 % if ($arg =~ /^RTFM-Include-Article-(\d+)$/) {
 %    my $art = RT::FM::Article->new($session{'CurrentUser'});
@@ -33,3 +38,4 @@
 % }
 % }
 % return(1);
+
