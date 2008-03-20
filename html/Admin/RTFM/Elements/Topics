@@ -96,7 +96,7 @@ $topic
 %     $Action = "";
 <& .edit, topic => $topic &>
 %   } else {
-<a href="<%$RT::WebPath%>/Admin/RTFM/Classes/Topics.html?id=<%$RootObj->Id%>&Modify=<%$topic->Id%>"
+<a href="<%$RT::WebPath%><% $m->request_comp->path |n %>?id=<%$RootObj->Id%>&Modify=<%$topic->Id%>"
    title="<%$topic->Description%>"><%$topic->Name || loc("(no name)") %></a>
 %   }
 % }
