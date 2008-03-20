@@ -1,0 +1,224 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+%#                                          <sales@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<%$RT::WebPath%><% $m->request_comp->path |n %>" method="post">
+%#<form action="<%$RT::WebPath%>/Admin/RTFM/Classes/Topics.html" method="post">
+<input type="hidden" name="id" value="<%$ClassObj->Id%>" />
+
+% if (!$Modify) {
+<table>
+<tr>
+<td><&|/l&>Topic Name</&></td>
+<td><input type="text" name="Name" size="30" /></td>
+</tr>
+<tr>
+<td><&|/l&>Description</&></td>
+<td><input type="text" name="Description" size="50" /></td>
+</tr>
+</table>
+% } else {
+<a href="Topics.html">New topic</a>
+% }
+
+<& .tree, Element => $tree, Action => $Modify ? "Move" : "Add", Prefix => $Modify ? "Topic-$Modify-Parent" : "Insert", ClassObj => $ClassObj, Modify => $Modify &>
+
+</form>
+
+<%def .edit>
+&nbsp;
+<table style="margin-top: -0.75em">
+<tr>
+    <td>Topic Name:</td>
+    <td><input type="text" name="Topic-<%$topic->Id%>-Name" size="20" value="<%$topic->Name%>" /></td>
+    <td><input type="submit" name="Update" value="Update"><br /></td>
+</tr>
+<tr>
+    <td>Description:</td>
+    <td> <input type="text" name="Topic-<%$topic->Id%>-Description" size="20" value="<%$topic->Description%>" /></td>
+    <td><input type="submit" name="Delete-Topic-<%$topic->Id%>" value="Delete" /></td>
+</tr>
+</table>
+<%args>
+$topic
+</%args>
+</%def>
+
+<%def .tree>
+% my $topic = $Element->getNodeValue;
+% unless ($Element->isRoot) {
+%   if ($Modify and $topic->Id == $Modify) {
+%     $Action = "";
+<& .edit, topic => $topic &>
+%   } else {
+<a href="<%$RT::WebPath%>/Admin/RTFM/Classes/Topics.html?id=<%$ClassObj->Id%>&Modify=<%$topic->Id%>"
+   title="<%$topic->Description%>"><%$topic->Name || loc("(no name)") %></a>
+%   }
+% }
+<ul>
+% for my $e (sort {$a->getNodeValue->Name cmp $b->getNodeValue->Name} $Element->getAllChildren) {
+<li><& .tree, Element => $e, Action => $Action, Prefix => $Prefix, ClassObj => $ClassObj, Modify => $Modify &></li>
+% }
+% if ($Action) {
+% unless ($Action eq "Move" and grep {$_->getNodeValue->Id == $Modify} $Element->getAllChildren) {
+<li><input type="submit" name="<%$Prefix%>-<%$topic eq "root" ? 0 : $topic->Id%>" value="<&|/l&><%$Action%> here</&>" /></li>
+% }
+% }
+</ul>
+<%args>
+$Element
+$Action
+$Prefix
+$ClassObj
+$Modify
+</%args>
+</%def>
+</%def>
+
+<%INIT>
+
+my $ClassObj = new RT::FM::Class($session{'CurrentUser'});
+$ClassObj->Load($ARGS{'id'}) || $m->comp("/RTFM/Elements/Error", Why => "Couldn't load class '$id'");
+
+my $title = $Modify 
+  ? loc("Modify topic for [_1]", $ClassObj->Name) 
+  : loc("Edit topic hierarchy for [_1]", $ClassObj->Name);
+
+my @results;
+
+for my $k (keys %ARGS) {
+    if ($k =~ /^Topic-(\d+)-(Name|Description)/) {
+        my $topic = RT::FM::Topic->new($session{'CurrentUser'});
+        $topic->Load($1);
+        if ($topic->Id) {
+            next if $ARGS{$k} eq $topic->$2;
+            my $proc = "Set$2";
+            my ($val, $msg) = $topic->$proc($ARGS{$k});
+            push @results, $msg;
+        } else {
+            $m->comp("/Elements/Error", Why => loc("Topic not found"));
+        }
+    } elsif ($k =~ /^Topic-(\d+)-Parent-(\d+)/) {
+        my $topic = RT::FM::Topic->new($session{'CurrentUser'});
+        $topic->Load($1);
+        if ($topic->Id) {
+            next if $2 eq $topic->Parent;
+            my $old = $topic->Parent;
+            my $new = "$2";
+            my ($val, $msg) = $topic->setParent($new);
+            push @results, $msg;
+        } else {
+            $m->comp("/Elements/Error", Why => loc("Topic not found"));
+        }
+    } elsif ($k =~ /^Insert-(\d+)/) {
+        my $topic = RT::FM::Topic->new($session{'CurrentUser'});
+        my ($id, $msg) = $topic->Create(
+                                        Parent => $1,
+                                        Name => $ARGS{'Name'},
+                                        Description => $ARGS{'Description'},
+                                        ObjectType => ref($ClassObj),
+                                        ObjectId => $ClassObj->Id,
+                                       );
+        push @results, $msg;
+    }
+}
+for my $k (keys %ARGS) {
+    next unless $k =~ /^Delete-Topic-(\d+)/;
+    my $topic = RT::FM::Topic->new($session{'CurrentUser'});
+    $topic->Load($1);
+    if ($topic->Id) {
+        my ($val, $msg) = $topic->DeleteAll();
+        push @results, $msg;
+    } else {
+        $m->comp("/Elements/Error", Why => loc("Topic not found"));
+    }
+}
+
+my $topics = new RT::FM::TopicCollection($session{'CurrentUser'});
+$topics->LimitToObject($ClassObj);
+$topics->OrderByCols({FIELD => 'Parent'}, {FIELD => 'id'});
+
+use Tree::Simple;
+my $tree = Tree::Simple->new(Tree::Simple->ROOT);
+my %lookup = (0 => $tree);
+
+my @todo;
+while (my $topic = $topics->Next) {
+    push @todo, $topic;
+}
+
+{
+    my $changed = 0;
+    my @work = @todo;
+    @todo = ();
+    for my $topic (@work) {
+        if (defined $lookup{$topic->Parent}) {
+            $lookup{$topic->Id} = Tree::Simple->new($topic, $lookup{$topic->Parent});
+            $changed = 1;
+        } else {
+            push @todo, $topic;
+        }
+    }
+    redo unless $changed == 0;
+}
+
+for my $topic (@todo) {
+    $topic->setParent(0);
+    $lookup{$topic->Id} = Tree::Simple->new($topic, $tree);
+    push @results, "Reparented orphan ".$topic->Id." to root";
+}
+
+</%INIT>
+
+
+<%ARGS>
+$id => undef
+$Modify => ""
+</%ARGS>
+
