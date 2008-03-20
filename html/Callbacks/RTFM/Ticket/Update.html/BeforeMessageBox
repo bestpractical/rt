@@ -192,7 +192,7 @@ $topics = [];
 my $ticket = RT::Ticket->new( $session{CurrentUser} );
 $ticket->Load( $ARGS{id} );
 my $top_topic = RT::FM::Topic->new( $session{CurrentUser} );
-$top_topic->LoadByCols( Name => 'Queues', Parent => 0 );
+$top_topic->LoadByCols( Name => 'Queues', Parent => 0 , ObjectType => 'RT::FM::System', ObjectId => 1);
 
 if ( $top_topic->id ) {
     my $queue_topic = RT::FM::Topic->new( $session{CurrentUser} );
