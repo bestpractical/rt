@@ -73,7 +73,21 @@ my @db_options = (
         Section         => 'Database', #loc
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Password for the above user RT will use to connect to the DB', #loc
+            Description => 'Password of the above user RT will use to connect to the DB', #loc
+        },
+    },
+    DatabaseAdmin => {
+        Section         => 'Database', #loc
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => {
+            Description => 'The name of the database admin we will use to create and initialize the DB', #loc
+        },
+    },
+    DatabaseAdminPassword => {
+        Section         => 'Database', #loc
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => {
+            Description => 'Password of the database admin', #loc
         },
     },
 );
@@ -112,5 +126,49 @@ if ( $ARGS{'DatabaseCreate'} ) {
             if !defined $value && $meta->{'WidgetArguments'}{'Default'};
     }
     warn($dump_config->(%config));
+    {
+        open my $fh, '>', '/tmp/site-config';
+        print $fh $dump_config->(%config);
+        close $fh;
+    }
+
+    RT->Config->LoadConfig( File => '/tmp/site-config' );
+    require RT::Handle;
+
+    my ($dba_user, $dba_pass) = @config{'DatabaseAdmin', 'DatabaseAdminPassword'};
+
+    my $dbh = _get_dbh( RT::Handle->SystemDSN, $dba_user, $dba_pass );
+    my ($status, $msg) = RT::Handle->CreateDatabase( $dbh );
+
+    $dbh = _get_dbh( RT::Handle->DSN, $dba_user, $dba_pass );
+    ($status, $msg) = RT::Handle->InsertSchema( $dbh );
+    ($status, $msg) = RT::Handle->InsertACL( $dbh );
+
+    RT::ConnectToDatabase();
+    RT::InitLogging();
+    RT::InitSystemObjects();
+
+    ($status, $msg) = $RT::Handle->InsertInitialData;
+
+    $RT::Handle = new RT::Handle;
+    RT::Init();
+
+    ($status, $msg) = $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
+}
+
+sub _get_dbh {
+    my ($dsn, $user, $pass) = @_;
+    unless ( $user ) {
+        my $user = RT->Config->Get('DatabaseUser');
+        my $password = RT->Config->Get('DatabasePassword');
+    }
+    my $dbh = DBI->connect(
+        $dsn, $user, $pass,
+        { RaiseError => 0, PrintError => 0 },
+    );
+    unless ( $dbh ) {
+        return (undef, "Failed to connect to $dsn as user '$user': ". $DBI::errstr);
+    }
+    return $dbh;
 }
 </%INIT>
