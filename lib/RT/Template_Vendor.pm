@@ -24,17 +24,23 @@ sub Parse {
         ($rv, $msg) = $self->OldParse(@_);
     }
 
+    $RT::Logger->crit("Here: $rv vs $msg");
+    $RT::Logger->crit($self->Content);
+
     # We only HTMLify things if the template includes at least one Transaction->Content call.
     return ($rv, $msg) unless $rv and $self->Content =~ /->\s*Content\b/;
 
     my $orig_entity = $self->MIMEObj;
     my $mime_type   = $self->MIMEObj->mime_type;
 
+    $RT::Logger->crit("Here we see $mime_type");
     if (!$mime_type or $mime_type eq 'text/plain') {
         $self->_UpgradeToHTML(@_);
+        $RT::Logger->crit("Done upgrading");
     }
     elsif ($mime_type eq 'text/html') {
         $self->_DowngradeFromHTML(@_);
+        $RT::Logger->crit("Done downgrading");
     }
 
     return ($rv, $msg);
@@ -92,17 +98,26 @@ sub _UpgradeToHTML {
         foreach my $chunk (@{$self->{SOURCE}}) {
             if ($chunk->[0] eq 'TEXT') {
                 my $new_text = $chunk->[1];
+                my $header_text = '';
                 if (!$seen_header) {
                     # We don't HTMLify anything within the header.
-                    $seen_header = 1 if $new_text =~ /\n\n/;
-                    push @new_content, $chunk;
-                    next;
+                    if ($new_text =~ /\n\n/) {
+                        $seen_header = 1;
+
+                        # Preserve the header text but upgrade the body text
+                        ($header_text, $new_text) = split(/\n\n/, $new_text, 2);
+                        $header_text .= "\n\n";
+                    }
+                    else {
+                        push @new_content, $chunk;
+                        next;
+                    }
                 }
                 $new_text =~ s/&/&#38;/g;
                 $new_text =~ s/</&lt;/g;
                 $new_text =~ s/>/&gt;/g;
                 $new_text =~ s/\n/\n<br \/>/g;
-                push @new_content, [$chunk->[0], $new_text, $chunk->[2]];
+                push @new_content, [$chunk->[0], $header_text.$new_text, $chunk->[2]];
             }
             else {
                 push @new_content, $chunk;
