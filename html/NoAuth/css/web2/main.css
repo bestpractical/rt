@@ -1,3 +1,5 @@
+@import "yui-reset.css";
+@import "yui-fonts.css";
 @import "base.css";
 
 @import "layout.css";

@@ -3,9 +3,10 @@
  background-color: #efefef;
  padding-top: 1em;
  margin-top: 1em;
+ margin-left: 1em;
  -moz-border-radius: 0.5em;
-
-
+ -webkit-border-radius: 0.5em;
+ margin-bottom: 2em;
 }
 
 
@@ -15,17 +16,18 @@
  padding-top: 1em;
  margin-top: 1em;
  -moz-border-radius: 0.5em;
+ -webkit-border-radius: 0.5em;
  margin-right: 1em;
-
 }
 
 
 
 .titlebox .titlebox-title {
- font-size: 1.5em;
- margin-top: -1.1em;
+ position: relative;
+ margin-top: -1.5em;
  padding-bottom: 0.25em;
- padding-left: 0.5em;
+ padding-left: 1em;
+ 
 }
 
 .titlebox .titlebox-title a {
@@ -39,26 +41,47 @@
 
 }
 
+
+.titlebox .titlebox-title .left {
+    background: #ccc;
+    padding:0.2em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+
+}
+
 .titlebox .titlebox-title .right-empty {
  display:none;
 }
 
 .titlebox .titlebox-title .right {
-  position: relative;
-
-  float: right;
+  position: absolute;
+   right: 0;
+   top: 0.9em;
+  /*float: right;
   margin-top: -1em;
-  margin-right: 0em;
+  margin-right: 0em; */
   font-size: 0.6em;
   background: #dedede;
   border-left: 1px solid #ccc;
  border-bottom: 1px solid #ccc;
- padding: 0.25em;
+ padding-right: 0.4em;
+ padding-left: 0.4em;
+ padding-bottom: 0.2em;
+ padding-top: 0.2em;
  -moz-border-radius-bottomleft: 0.25em;
+ -webkit-border-bottom-left-radius: 0.25em;
+ 
+ 
+ -moz-border-radius-bottomleft: 0.25em;
+ -webkit-border-bottom-left-radius: 0.25em;
 
 }
 
 .titlebox .titlebox-content {
+ padding-top: 0.5em;
  padding-left: 1em;
  padding-bottom: 1em;
 
@@ -78,28 +101,18 @@
   text-indent: -9999px;
 
   position: absolute;
-  top: 0.4em;
-  left: 0.75em;
+  top: -0.5em;
+  left: -0.5em;
   float: left;
 
-  /* WIN IE5 hack */
-  height: 7px;
-  voice-family: "\"}\"";
-  voice-family: inherit;
-  height: 0;
-  overflow: hidden;
-}
-
-html>body .titlebox .titlebox-title .widget a {
-    height: 0;
-    overflow: hidden;
 }
 
 * html .titlebox .titlebox-title .widget a {
     background-position: center 0.3em;
-    left: -3.5em;
+    left: -1.5em; 
 }
 
 .titlebox.rolled-up .titlebox-title .widget a {
     background-image: url(/NoAuth/images//css/rolldown-arrow.gif);
 }
+

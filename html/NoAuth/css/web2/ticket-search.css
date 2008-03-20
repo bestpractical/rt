@@ -1,22 +1,25 @@
+
+
 #comp-Search-Build #editquery, #comp-Search-Build #editsearches{
+  margin-top: 0.2em;
   width: 40%;
   float: right;
   clear: both;
-  margin-top: -1em;
+/*  margin-top: -1em; */
 }
 
 
 
 #comp-Search-Build #editsearches {
-padding-top: 1em;
 
 }
 
 
 #comp-Search-Build #pick-criteria {
  width: 58%;
+ padding-top: 0.2em;
  overflow: hidden;
-
+ margin-top: -0.1em;
 }
 
 #comp-Search-Build .submit {

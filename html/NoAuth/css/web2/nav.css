@@ -2,25 +2,54 @@
 div#nav {
  position: absolute;
  left: 0;
- font-size: 80%;
- top: 7.2em;
+ font-size: 0.8em;
+ top: 3.2em;
  width: 11em;
  background: #fff;
  -moz-border-radius-bottomright: 0.5em;
+ -webkit-border-bottom-right-radius: 0.5em;
 
+ -moz-border-radius-topright: 0.5em;
+ -webkit-border-top-right-radius: 0.5em;
+ z-index: 1;
 }
 
 div#nav ul {
- padding-left: 0.5em;
+ padding-left: 0.75em;
  margin-left: 0;
- padding-right: 0.5em;
-  list-style-type: none;
+ padding-right: 0.75em;
+ list-style-type: none;
+}
+
+div#nav li:first-child {
+ border-top: 1px solid #ccc;
+ padding-top: 0.25em;
 
 }
 
 div#nav li {
  padding: 0.125em;
+ padding-bottom: 0.25em;
+ margin-bottom: 0.25em;
+ border-bottom: 1px solid #ccc;
+ padding-left: 0.5em;
+ margin-right: 0.25em;
+ margin-left: 0em;
+}
 
+div#nav li li:first-child {
+    margin-top: 0.25em;
+}
+div#nav li li {
+    margin-left: -0.5em;
+    padding-left: 1em;
+    margin-right: -0.5em;
+}
+
+div#nav li li:last-child {
+    margin-bottom: 0; 
+    padding-bottom: 0;
+    border: none;
 }
 
 div#nav .bullet {
@@ -54,7 +83,9 @@ div#nav a.selected:after {
 
 div#page-navigation {
  background: white;
- 
+ position: relative;
+ width:100%;
+ z-index: 0 ;
 
 }
 
@@ -63,24 +94,41 @@ div#page-navigation ul {
 
 }
 
-div#page-navigation ul#page-menu{
- padding-left: 9em;
+div#page-navigation ul#page-menu {
+ display: block;
+ position: absolute;
+ left: 8.5em;
+ font-size: 0.8em;
+ top: 2.3em;
+ height: 1em;
+ background-color: white;
+ right: 0em;
  padding-top:0.5em;
- padding-bottom:0.5em;
-
+ padding-bottom:0.75em;
 }
 
-div#page-navigation ul#actions-menu {
- float: right;
- margin-top: 0em;
- padding: 0.5em;
+/* ie hack */
+* html div#page-navigation ul#page-menu {
+    left: 6.5em;
+    top: 3.2em;
+    padding-left: 2em;
+}
 
- spacing: 0;
+
+div#page-navigation ul#actions-menu {
+ position: absolute;
+ right: 1em;
+ top: 4.9em;
+ margin-top: 0em;
+ padding: 0.25em;
+ padding-left: 0.5em;
+ padding-right: 0.5em;
 
  background: #dedede;
  border-left: 1px solid #ccc;
  border-bottom: 1px solid #ccc;
  -moz-border-radius-bottomleft: 0.5em;
+ -webkit-border-bottom-left-radius: 0.5em;
 }
 
 
