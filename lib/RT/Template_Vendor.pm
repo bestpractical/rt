@@ -24,23 +24,17 @@ sub Parse {
         ($rv, $msg) = $self->OldParse(@_);
     }
 
-    $RT::Logger->crit("Here: $rv vs $msg");
-    $RT::Logger->crit($self->Content);
-
     # We only HTMLify things if the template includes at least one Transaction->Content call.
     return ($rv, $msg) unless $rv and $self->Content =~ /->\s*Content\b/;
 
     my $orig_entity = $self->MIMEObj;
     my $mime_type   = $self->MIMEObj->mime_type;
 
-    $RT::Logger->crit("Here we see $mime_type");
     if (!$mime_type or $mime_type eq 'text/plain') {
         $self->_UpgradeToHTML(@_);
-        $RT::Logger->crit("Done upgrading");
     }
     elsif ($mime_type eq 'text/html') {
         $self->_DowngradeFromHTML(@_);
-        $RT::Logger->crit("Done downgrading");
     }
 
     return ($rv, $msg);
