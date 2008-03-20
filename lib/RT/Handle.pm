@@ -272,11 +272,14 @@ sub DropDatabase {
 
 sub InsertACL {
     my $self      = shift;
-    my $dbh       = shift || $self->dbh;
+    my $dbh       = shift;
     my $base_path = shift || $RT::EtcPath;
 
     my $db_type = RT->Config->Get('DatabaseType');
-    return if $db_type eq 'SQLite';
+    return (1) if $db_type eq 'SQLite';
+
+    $dbh = $self->dbh if !$dbh && ref $self;
+    return (0, "No DBI handle provided") unless $dbh;
 
     return (0, "'$base_path' doesn't exist") unless -e $base_path;
 
@@ -310,18 +313,22 @@ sub InsertACL {
 
 sub InsertSchema {
     my $self = shift;
-    my $dbh  = shift || $self->dbh;
+    my $dbh  = shift;
     my $base_path = (shift || $RT::EtcPath);
+
+    $dbh = $self->dbh if !$dbh && ref $self;
+    return (0, "No DBI handle provided") unless $dbh;
+
+    my $db_type = RT->Config->Get('DatabaseType');
 
     my $file;
     if ( -d $base_path ) {
-        my $db_type = RT->Config->Get('DatabaseType');
         $file = $base_path . "/schema." . $db_type;
     } else {
         $file = $base_path;
     }
 
-    $file = get_version_file( $file );
+    $file = $self->GetVersionFile( $dbh, $file );
     unless ( $file ) {
         return (0, "Couldn't find schema file(s) '$file*'");
     }
@@ -334,7 +341,7 @@ sub InsertSchema {
     open my $fh_schema, "<$file";
 
     my $has_local = 0;
-    open my $fh_schema_local, "<" . get_version_file( $RT::LocalEtcPath . "/schema." . $db_type )
+    open my $fh_schema_local, "<" . $self->GetVersionFile( $dbh, $RT::LocalEtcPath . "/schema." . $db_type )
         and $has_local = 1;
 
     my $statement = "";
@@ -368,23 +375,31 @@ sub InsertSchema {
     return (1);
 }
 
-=head1 get_version_file
+=head1 GetVersionFile
 
 Takes base name of the file as argument, scans for <base name>-<version> named
 files and returns file name with closest version to the version of the RT DB.
 
 =cut
 
-sub get_version_file {
+sub GetVersionFile {
+    my $self = shift;
+    my $dbh = shift;
     my $base_name = shift;
+
+    my $db_version = ref $self
+        ? $self->DatabaseVersion
+        : do {
+            my $tmp = RT::Handle->new;
+            $tmp->dbh($dbh);
+            $tmp->DatabaseVersion;
+        };
 
     require File::Glob;
     my @files = File::Glob::bsd_glob("$base_name*");
     return '' unless @files;
 
     my %version = map { $_ =~ /\.\w+-([-\w\.]+)$/; ($1||0) => $_ } @files;
-    my $db_version = $RT::Handle->DatabaseVersion;
-    print "Server version $db_version\n";
     my $version;
     foreach ( reverse sort cmp_version keys %version ) {
         if ( cmp_version( $db_version, $_ ) >= 0 ) {
@@ -445,15 +460,9 @@ sub InsertInitialData {
         Creator  => '1',
         LastUpdatedBy => '1',
     );
+    return ($val, $msg) unless $val;
 
-    unless ( $val ) {
-        print "$msg\n";
-        exit(-1);
-    }
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
-    print "done.\n";
-
-    print "Creating system user's ACL...";
 
     $CurrentUser = new RT::CurrentUser;
     $CurrentUser->LoadByName('RT_System');
@@ -471,8 +480,8 @@ sub InsertInitialData {
         ObjectId      => 1,
     );
 
-    print "done.\n";
     $RT::Handle->Disconnect() unless $db_type eq 'SQLite';
+    return (1);
 }
 
 =head InsertData
