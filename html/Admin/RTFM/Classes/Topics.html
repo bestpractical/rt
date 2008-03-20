@@ -48,7 +48,7 @@
 
 <& /Admin/RTFM/Elements/ClassTabs, id => $ClassObj->Id, Title => $title, current_tab => "Admin/RTFM/Classes/Topics.html?id=$id" &>
 
-<& /Admin/RTFM/Elements/Topics, title => $title, %ARGS &>
+<& /Admin/RTFM/Elements/Topics, title => $title, RootObj => $ClassObj, %ARGS &>
 
 <%INIT>
 

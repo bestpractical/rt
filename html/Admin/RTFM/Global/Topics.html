@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 
 <& /Admin/RTFM/Elements/GlobalTabs, current_tab => 'Admin/Global/Topics.html', Title => $title &>
-<& /Admin/RTFM/Elements/Topics, Global => 1, title => $title, %ARGS &>
+<& /Admin/RTFM/Elements/Topics, RootObj => $RT::FM::System, title => $title, %ARGS &>
 
 <%INIT>
 

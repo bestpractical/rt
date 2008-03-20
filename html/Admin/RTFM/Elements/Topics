@@ -121,14 +121,6 @@ $Modify
 
 <%INIT>
 
-my $RootObj;
-if ($Global) {
-    $RootObj = $RT::FM::System;
-} else {
-    $RootObj = new RT::FM::Class($session{'CurrentUser'});
-    $RootObj->Load($ARGS{'id'}) || $m->comp("/RTFM/Elements/Error", Why => "Couldn't load class '$id'");
-}
-
 my @results;
 
 for my $k (keys %ARGS) {
@@ -217,9 +209,8 @@ for my $topic (@todo) {
 
 
 <%ARGS>
-$id => undef
+$RootObj => undef
 $title => ""
-$Global => undef
 $Modify => ""
 </%ARGS>
 
