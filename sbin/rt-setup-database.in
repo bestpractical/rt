@@ -176,21 +176,15 @@ END
         my $dbh = get_admin_dbh();
         check_db_compatibility( $dbh );
 
-        $RT::Handle = new RT::Handle;
-        $RT::Handle->dbh( $dbh );
-
         print "Now populating database schema.\n";
-        ($status, $msg) = $RT::Handle->InsertSchema( $dbh, $args{'datafile'} || $args{'datadir'} );
+        ($status, $msg) = RT::Handle->InsertSchema( $dbh, $args{'datafile'} || $args{'datadir'} );
     }
     elsif ( $action eq 'acl' ) {
         my $dbh = get_admin_dbh();
         check_db_compatibility( $dbh );
 
-        $RT::Handle = new RT::Handle;
-        $RT::Handle->dbh( $dbh );
-
         print "Now inserting database ACLs\n";
-        ($status, $msg) = $RT::Handle->InsertACL( $dbh, $args{'datafile'} || $args{'datadir'} );
+        ($status, $msg) = RT::Handle->InsertACL( $dbh, $args{'datafile'} || $args{'datadir'} );
     }
     elsif ( $action eq 'coredata' ) {
         $RT::Handle = new RT::Handle;
