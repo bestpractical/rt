@@ -63,7 +63,7 @@ my $tabs;
                           path => "Admin/RTFM/Global/UserRights.html",
                         },
                  H => { title => loc('Topics'),
-                        patch => "Admin/RTFM/Global/Topics.html" }
+                        path => "Admin/RTFM/Global/Topics.html" }
 
 
                  
