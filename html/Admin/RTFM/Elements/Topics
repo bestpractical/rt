@@ -49,8 +49,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%$RT::WebPath%><% $m->request_comp->path |n %>" method="post">
-%#<form action="<%$RT::WebPath%>/Admin/RTFM/Classes/Topics.html" method="post">
-<input type="hidden" name="id" value="<%$ClassObj->Id%>" />
+<input type="hidden" name="id" value="<%$RootObj->Id%>" />
 
 % if (!$Modify) {
 <table>
@@ -67,7 +66,7 @@
 <a href="Topics.html">New topic</a>
 % }
 
-<& .tree, Element => $tree, Action => $Modify ? "Move" : "Add", Prefix => $Modify ? "Topic-$Modify-Parent" : "Insert", ClassObj => $ClassObj, Modify => $Modify &>
+<& .tree, Element => $tree, Action => $Modify ? "Move" : "Add", Prefix => $Modify ? "Topic-$Modify-Parent" : "Insert", RootObj => $RootObj, Modify => $Modify &>
 
 </form>
 
@@ -97,13 +96,13 @@ $topic
 %     $Action = "";
 <& .edit, topic => $topic &>
 %   } else {
-<a href="<%$RT::WebPath%>/Admin/RTFM/Classes/Topics.html?id=<%$ClassObj->Id%>&Modify=<%$topic->Id%>"
+<a href="<%$RT::WebPath%>/Admin/RTFM/Classes/Topics.html?id=<%$RootObj->Id%>&Modify=<%$topic->Id%>"
    title="<%$topic->Description%>"><%$topic->Name || loc("(no name)") %></a>
 %   }
 % }
 <ul>
 % for my $e (sort {$a->getNodeValue->Name cmp $b->getNodeValue->Name} $Element->getAllChildren) {
-<li><& .tree, Element => $e, Action => $Action, Prefix => $Prefix, ClassObj => $ClassObj, Modify => $Modify &></li>
+<li><& .tree, Element => $e, Action => $Action, Prefix => $Prefix, RootObj => $RootObj, Modify => $Modify &></li>
 % }
 % if ($Action) {
 % unless ($Action eq "Move" and grep {$_->getNodeValue->Id == $Modify} $Element->getAllChildren) {
@@ -115,20 +114,20 @@ $topic
 $Element
 $Action
 $Prefix
-$ClassObj
+$RootObj
 $Modify
 </%args>
-</%def>
 </%def>
 
 <%INIT>
 
-my $ClassObj = new RT::FM::Class($session{'CurrentUser'});
-$ClassObj->Load($ARGS{'id'}) || $m->comp("/RTFM/Elements/Error", Why => "Couldn't load class '$id'");
-
-my $title = $Modify 
-  ? loc("Modify topic for [_1]", $ClassObj->Name) 
-  : loc("Edit topic hierarchy for [_1]", $ClassObj->Name);
+my $RootObj;
+if ($Global) {
+    $RootObj = $RT::FM::System;
+} else {
+    $RootObj = new RT::FM::Class($session{'CurrentUser'});
+    $RootObj->Load($ARGS{'id'}) || $m->comp("/RTFM/Elements/Error", Why => "Couldn't load class '$id'");
+}
 
 my @results;
 
@@ -162,8 +161,8 @@ for my $k (keys %ARGS) {
                                         Parent => $1,
                                         Name => $ARGS{'Name'},
                                         Description => $ARGS{'Description'},
-                                        ObjectType => ref($ClassObj),
-                                        ObjectId => $ClassObj->Id,
+                                        ObjectType => ref($RootObj),
+                                        ObjectId => $RootObj->Id,
                                        );
         push @results, $msg;
     }
@@ -181,7 +180,7 @@ for my $k (keys %ARGS) {
 }
 
 my $topics = new RT::FM::TopicCollection($session{'CurrentUser'});
-$topics->LimitToObject($ClassObj);
+$topics->LimitToObject($RootObj);
 $topics->OrderByCols({FIELD => 'Parent'}, {FIELD => 'id'});
 
 use Tree::Simple;
@@ -219,6 +218,8 @@ for my $topic (@todo) {
 
 <%ARGS>
 $id => undef
+$title => ""
+$Global => undef
 $Modify => ""
 </%ARGS>
 
