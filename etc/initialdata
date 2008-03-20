@@ -707,7 +707,7 @@ return 0; # ignore $passed;
       Description => 'Bookmarked Tickets', #loc
       Content     =>
       { Format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
-                . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__\">__Subject__</a>/TITLE:Subject',}
+                . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
                 . q{Priority, QueueName, ExtendedStatus, Bookmark},
         Query   => "__Bookmarks__",
         OrderBy => 'LastUpdated',
