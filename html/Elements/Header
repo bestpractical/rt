@@ -50,7 +50,6 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
-
 <title><%$Title%></title>
 
 % if ($Refresh && $Refresh > 0) {
@@ -77,7 +76,10 @@
     onLoadHook("<% $onload |n %>");
 % }
 --></script>
-
+% my $stylesheet_plugin = "/NoAuth/css/". RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} )."/InHeader";
+% if ($m->comp_exists($stylesheet_plugin) ) {
+<& $stylesheet_plugin &>
+% }
 % $m->callback( %ARGS, CallbackName => 'Head' );
 
 </head>
