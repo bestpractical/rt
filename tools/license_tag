@@ -1,25 +1,98 @@
 #!/usr/bin/perl
-# BEGIN LICENSE BLOCK
-# 
-#
-# 
-# END LICENSE BLOCK
 
-my $LICENSE  = <<EOL;
 
- Copyright (c) 2002-2003 Jesse Vincent <jesse\@bestpractical.com>
+# BEGIN BPS TAGGED BLOCK {{{
+# 
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
+# 
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
+# 
+# 
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
+my $LICENSE  = <<'EOL';
+
+COPYRIGHT:
  
- This program is free software; you can redistribute it and/or modify
- it under the terms of version 2 of the GNU General Public License 
- as published by the Free Software Foundation.
+This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+                                         <sales@bestpractical.com>
 
- A copy of that license should have arrived with this
- software, but in any event can be snarfed from www.gnu.org.
+(Except where explicitly superseded by other copyright notices)
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+
+LICENSE:
+
+This work is made available to you under the terms of Version 2 of
+the GNU General Public License. A copy of that license should have
+been provided with this software, but in any event can be snarfed
+from www.gnu.org.
+
+This work is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 or visit their web page on the internet at
+http://www.gnu.org/copyleft/gpl.html.
+
+
+CONTRIBUTION SUBMISSION POLICY:
+
+(The following paragraph is not intended to limit the rights granted
+to you to modify and distribute this software under the terms of
+the GNU General Public License and is only of importance to you if
+you choose to contribute your changes and enhancements to the
+community by submitting them to Best Practical Solutions, LLC.)
+
+By intentionally submitting any modifications, corrections or
+derivatives to this work, or any other work intended for use with
+Request Tracker, to Best Practical Solutions, LLC, you confirm that
+you are the copyright holder for those contributions and you grant
+Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+royalty-free, perpetual, license to use, copy, create derivative
+works based on those contributions, and sublicense and distribute
+those contributions and any derivatives thereof.
 
 EOL
 
@@ -31,13 +104,13 @@ File::Find::find({ no_chdir => 1, wanted => \&tag_pm}, 'lib');
 File::Find::find({ no_chdir => 1, wanted => \&tag_mason}, 'html');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'sbin');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'bin');
-tag_makefile ('Makefile');
 tag_makefile ('README');
 
 
 sub tag_mason {
         my $pm = $_;
         next unless (-f $pm);
+        next if ($pm =~ /images/);
         open(FILE,"<$pm") || die "Failed to open $pm";
         my $file = (join "", <FILE>); 
         close (FILE);
@@ -46,16 +119,16 @@ sub tag_mason {
 
 
         print "$pm - ";
-        if ($file =~ /^%# BEGIN LICENSE BLOCK/ms) {
+        if ($file =~ /^%# BEGIN BPS TAGGED BLOCK {{{/ms) {
                 print "has license section";
-             $file =~ s/^%# BEGIN LICENSE BLOCK(.*?)%# END LICENSE BLOCK/%# BEGIN LICENSE BLOCK\n$pmlic%# END LICENSE BLOCK/ms;
+             $file =~ s/^%# BEGIN BPS TAGGED BLOCK {{{(.*?)%# END BPS TAGGED BLOCK }}}/%# BEGIN BPS TAGGED BLOCK {{{\n$pmlic%# END BPS TAGGED BLOCK }}}/ms;
              
 
         } else {
                 print "no license section";
-             $file ="%# BEGIN LICENSE BLOCK\n$pmlic%# END LICENSE BLOCK\n". $file;
+             $file ="%# BEGIN BPS TAGGED BLOCK {{{\n$pmlic%# END BPS TAGGED BLOCK }}}\n". $file;
         }
-        $file =~ s/%# END LICENSE BLOCK(\n+)/%# END LICENSE BLOCK\n\n/mg;
+        $file =~ s/%# END BPS TAGGED BLOCK }}}(\n+)/%# END BPS TAGGED BLOCK }}}\n/mg;
         print "\n";
         
         
@@ -78,16 +151,16 @@ sub tag_makefile {
 
 
         print "$pm - ";
-        if ($file =~ /^# BEGIN LICENSE BLOCK/ms) {
+        if ($file =~ /^# BEGIN BPS TAGGED BLOCK {{{/ms) {
                 print "has license section";
-             $file =~ s/^# BEGIN LICENSE BLOCK(.*?)# END LICENSE BLOCK/# BEGIN LICENSE BLOCK\n$pmlic# END LICENSE BLOCK/ms;
+             $file =~ s/^# BEGIN BPS TAGGED BLOCK {{{(.*?)# END BPS TAGGED BLOCK }}}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}/ms;
              
 
         } else {
                 print "no license section";
-             $file ="# BEGIN LICENSE BLOCK\n$pmlic# END LICENSE BLOCK\n". $file;
+             $file ="# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}\n". $file;
         }
-        $file =~ s/# END LICENSE BLOCK(\n+)/# END LICENSE BLOCK\n\n/mg;
+        $file =~ s/# END BPS TAGGED BLOCK }}}(\n+)/# END BPS TAGGED BLOCK }}}\n/mg;
         print "\n";
         
         
@@ -102,7 +175,7 @@ sub tag_makefile {
 
 sub tag_pm {
         my $pm = $_;
-        next unless $pm =~ /\.pm\z/s;
+        next unless $pm =~ /\.pm/s;
         open(FILE,"<$pm") || die "Failed to open $pm";
         my $file = (join "", <FILE>); 
         close (FILE);
@@ -111,22 +184,22 @@ sub tag_pm {
 
 
         print "$pm - ";
-        if ($file =~ /^# BEGIN LICENSE BLOCK/ms) {
+        if ($file =~ /^# BEGIN BPS TAGGED BLOCK {{{/ms) {
                 print "has license section";
-             $file =~ s/^# BEGIN LICENSE BLOCK(.*?)# END LICENSE BLOCK/# BEGIN LICENSE BLOCK\n$pmlic# END LICENSE BLOCK/ms;
+             $file =~ s/^# BEGIN BPS TAGGED BLOCK {{{(.*?)# END BPS TAGGED BLOCK }}}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}/ms;
              
 
         } else {
                 print "no license section";
-             $file ="# BEGIN LICENSE BLOCK\n$pmlic# END LICENSE BLOCK\n". $file;
+             $file ="# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}\n". $file;
         }
-        $file =~ s/# END LICENSE BLOCK(\n+)/# END LICENSE BLOCK\n\n/mg;
+        $file =~ s/# END BPS TAGGED BLOCK }}}(\n+)/# END BPS TAGGED BLOCK }}}\n/mg;
         print "\n";
         
         
 
 
-        open (FILE, ">$pm") || die "couldn't write new file";
+        open (FILE, ">$pm") || die "couldn't write new file $pm";
         print FILE $file;
         close FILE;
 
@@ -143,21 +216,21 @@ sub tag_script {
         $pmlic =~ s/^/# /msg;
 
         print "$pm - ";
-        if ($file =~ /^# BEGIN LICENSE BLOCK/ms) {
+        if ($file =~ /^# BEGIN BPS TAGGED BLOCK {{{/ms) {
                 print "has license section";
-             $file =~ s/^# BEGIN LICENSE BLOCK(.*?)# END LICENSE BLOCK/# BEGIN LICENSE BLOCK\n$pmlic# END LICENSE BLOCK/ms;
+             $file =~ s/^# BEGIN BPS TAGGED BLOCK {{{(.*?)# END BPS TAGGED BLOCK }}}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}/ms;
              
 
         } else {
                 print "no license section";
                 if ($file =~ /^(#!.*?)\n/) {
 
-            my  $lic ="# BEGIN LICENSE BLOCK\n$pmlic# END LICENSE BLOCK\n";
+            my  $lic ="# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}\n";
                 $file =~ s/^(#!.*?)\n/$1\n$lic/; 
 
                 } 
         }
-        $file =~ s/# END LICENSE BLOCK(\n+)/# END LICENSE BLOCK\n\n/mg;
+        $file =~ s/# END BPS TAGGED BLOCK }}}(\n+)/# END BPS TAGGED BLOCK }}}\n/mg;
         print "\n";
         
 

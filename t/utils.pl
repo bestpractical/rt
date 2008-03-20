@@ -5,7 +5,7 @@ use warnings;
 
 BEGIN {
 ### after:     push @INC, qw(@RT_LIB_PATH@);
-    push @INC, qw(/opt/rt3/local/lib /opt/rt3/lib);
+    push @INC, qw(/Users/falcone/svk/customers/apnic/rt-3.6.6/local/lib /Users/falcone/svk/customers/apnic/rt-3.6.6//lib);
 }
 
 1;
