@@ -49,19 +49,30 @@
 use warnings;
 use strict;
 
-BEGIN {
-    use lib( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
-    use RT;
-    RT::LoadConfig();
-    if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
-}
+use lib( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
+use RT;
+RT::LoadConfig();
+if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
-RT::Init();
+RT::CheckPerlRequirements();
 
 my $port = shift @ARGV || RT->Config->Get('WebPort') || '8080';
-use RT::Interface::Web::Standalone;
+
+my $install_mode = 0;
+
+unless ( eval { RT::ConnectToDatabase(); } ) {
+    print "new install";
+    $install_mode = 1;
+} else {
+    RT::InitSystemObjects();
+    RT::InitClasses();
+    RT::InitLogging();
+    RT::InitPlugins();
+}
+
+require RT::Interface::Web::Standalone;
 my $server = RT::Interface::Web::Standalone->new;
 $server->port($port);
+$server->install_mode( $install_mode );
 $server->run();
-
 
