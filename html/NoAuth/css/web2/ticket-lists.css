@@ -1,0 +1,60 @@
+table.ticket-list, table.queue-summary {
+  padding-right: 1em;
+  font-size: 0.8em;
+}
+
+
+
+
+
+table.ticket-list a, table.queue-summary a {
+
+  font-weight: bold;
+}
+
+
+
+th {
+  font-size: 0.8em;
+
+}
+
+th.collection-as-table {
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 0.5em;
+
+}
+
+tr.collection-as-table, tr.queue-summary {
+  padding-bottom: 1.5em;
+
+}
+
+
+
+
+a:hover  {
+  text-decoration: underline;
+}
+
+
+ a {
+  color: #000;
+  text-decoration: none;
+}
+
+
+table.ticket-list td, table.queue-summary td {
+  background: #efefef;
+  border-bottom: 1px solid #ccc;
+}
+
+
+
+tr.oddline td {
+  background: #ffffff;
+
+}
+
+
+

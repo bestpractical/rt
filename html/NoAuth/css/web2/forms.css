@@ -12,12 +12,19 @@ form {
   position: relative;
   text-align: right;
 }
+
 .input-row .input {
   position: relative;
   left: 1em;
   width: 10em;
   text-align: right;
 }
+
+.value {
+ font-size: 0.85em;
+
+}
+
 
 
 div.button-row {

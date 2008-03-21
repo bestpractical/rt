@@ -15,5 +15,5 @@
 #   perl -c /path/to/your/etc/RT_SiteConfig.pm
 
 Set( $rtname, 'example.com');
-Set(@Plugins,(qw(Extension-QuickDelete)));
+#Set(@Plugins,(qw(Extension-QuickDelete)));
 1;
