@@ -60,10 +60,16 @@ my $port = shift @ARGV || RT->Config->Get('WebPort') || '8080';
 
 my $install_mode = 0;
 
-unless ( eval { RT::ConnectToDatabase(); } ) {
-    print "new install";
+require RT::Handle;
+my ($integrity, $state, $msg) = RT::Handle->CheckIntegrity;
+
+unless ( $integrity ) {
+    print STDERR "We couldn't connect to DB defined in your config.\n";
+    print STDERR "We think it's a new installtion, here is error:\n\n";
+    print STDERR "$msg\n\n";
     $install_mode = 1;
 } else {
+    RT::ConnectToDatabase();
     RT::InitSystemObjects();
     RT::InitClasses();
     RT::InitLogging();

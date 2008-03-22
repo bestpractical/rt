@@ -189,9 +189,92 @@ sub SystemDSN {
     return $dsn;
 }
 
+=head2 Database compatibility and integrity checks
+
+
+
+=cut
+
+sub CheckIntegrity {
+    my $self = shift;
+    
+    my $dsn = $self->DSN;
+    my $user = RT->Config->Get('DatabaseUser');
+    my $pass = RT->Config->Get('DatabasePassword');
+
+    my $dbh = DBI->connect(
+        $dsn, $user, $pass,
+        { RaiseError => 0, PrintError => 0 },
+    );
+    unless ( $dbh ) {
+        return (0, 'no connection', "Failed to connect to $dsn as user '$user': ". $DBI::errstr);
+    }
+
+    RT::ConnectToDatabase();
+    RT::InitLogging();
+
+    require RT::CurrentUser;
+    my $test_user = new RT::CurrentUser;
+    $test_user->Load('RT_System');
+    unless ( $test_user->id ) {
+        return (0, 'no system user', "Couldn't find RT_System user in the DB '$dsn'");
+    }
+
+    $test_user = new RT::CurrentUser;
+    $test_user->Load('Nobody');
+    unless ( $test_user->id ) {
+        return (0, 'no nobody user', "Couldn't find Nobody user in the DB '$dsn'");
+    }
+
+    return $dbh;
+}
+
+sub CheckCompatibility {
+    my $self = shift;
+    my $dbh = shift;
+    my $state = shift || 'post';
+
+    my $db_type = RT->Config->Get('DatabaseType');
+    if ( $db_type eq "mysql" ) {
+        # Check which version we're running
+        my $version = ($dbh->selectrow_array("show variables like 'version'"))[1];
+        return (0, "couldn't get version of the mysql server")
+            unless $version;
+
+        ($version) = $version =~ /^(\d+\.\d+)/;
+        return (0, "RT is unsupported on MySQL versions before 4.0.x, it's $version")
+            if $version < 4;
+
+        # MySQL must have InnoDB support
+        my $innodb = ($dbh->selectrow_array("show variables like 'have_innodb'"))[1];
+        if ( lc $innodb eq "no" ) {
+            return (0, "RT requires that MySQL be compiled with InnoDB table support.\n".
+                "See http://dev.mysql.com/doc/mysql/en/InnoDB.html");
+        } elsif ( lc $innodb eq "disabled" ) {
+            return (0, "RT requires that MySQL InnoDB table support be enabled.\n".
+                "Remove the 'skip-innodb' line from your my.cnf file, restart MySQL, and try again.\n");
+        }
+
+        if ( $state eq 'post' ) {
+            my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Tickets")->[1];
+            unless ( $create_table =~ /(?:ENGINE|TYPE)\s*=\s*InnoDB/i ) {
+                return (0, "RT requires that all its tables be of InnoDB type. Upgrade RT tables.");
+            }
+        }
+        if ( $version >= 4.1 && $state eq 'post' ) {
+            my $create_table = $dbh->selectrow_arrayref("SHOW CREATE TABLE Attachments")->[1];
+            unless ( $create_table =~ /\bContent\b[^,]*BLOB/i ) {
+                return (0, "RT since version 3.8 has new schema for MySQL versions after 4.1.0\n"
+                    ."Follow instructions in the UPGRADING.mysql file.");
+            }
+        }
+    }
+    return (1)
+}
+
 =head2 Database maintanance
 
-=head2 CreateDatabase $DBH
+=head3 CreateDatabase $DBH
 
 Creates a new database. This method can be used as class method.
 
