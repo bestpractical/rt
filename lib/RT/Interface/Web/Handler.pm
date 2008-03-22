@@ -191,7 +191,7 @@ and is not recommended to change.
 
 sub CleanupRequest {
 
-    if ( $RT::Handle->TransactionDepth ) {
+    if ( $RT::Handle && $RT::Handle->TransactionDepth ) {
         $RT::Handle->ForceRollback;
         $RT::Logger->crit(
             "Transaction not committed. Usually indicates a software fault."
