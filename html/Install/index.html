@@ -1,41 +1,16 @@
-Hello, looks like it's new intallation of RT.
-
-We're going to bla-bla... intstall RT
-
-<form method="post">
-% for ( my $i = 0; $i < @db_options; $i += 2 ) {
-% my $option = $db_options[$i];
-% my $meta = $db_options[$i+1];
-<& $meta->{'Widget'},
-    Default      => 0,
-    %{ $meta->{'WidgetArguments'} },
-    Name         => $option,
-    CurrentValue => scalar RT->Config->Get( $option ),
-&>
-% }
-
-<& /Elements/Submit, Name => 'DatabaseCreate', Label => loc('Create database') &>
-
-</form>
-
-<%FLAGS>
-inherit => undef
-</%FLAGS>
-<%ARGS>
-</%ARGS>
-<%INIT>
-my @db_options = (
+<%ONCE>
+my %OPTION = (
     DatabaseType => {
         Section         => 'Database', #loc
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Type of the database where RT will store its data', #loc
-            Values      => [qw(mysql Pg Oracle SQLite)],
+            Values      => [qw(mysql Pg Oracle SQLite Informix)],
             ValuesLabel => {
-                mysql  => 'MySQL', #loc
-                Pg     => 'PostgreSQL', #loc
-                Oracle => 'Oracle', #loc
-                SQLite => 'SQLite (for experiments and development only)', #loc
+                mysql    => 'MySQL', #loc
+                Pg       => 'PostgreSQL', #loc
+                SQLite   => 'SQLite (for experiments and development only)', #loc
+                Informix => 'Informix (experimental)',
             },
         },
     },
@@ -91,17 +66,20 @@ my @db_options = (
         },
     },
 );
-my %META = @db_options;
+my @ORDERED_OPTIONS = qw(
+    DatabaseType
+    DatabaseHost DatabasePort DatabaseName
+    DatabaseAdmin DatabaseAdminPassword
+    DatabaseUser DatabasePassword
+);
 
 my $dump_config = sub {
     my %data = @_;
 
     my $res = '';
 
-    for ( my $i = 0; $i < @db_options; $i += 2 ) {
-        my $option = $db_options[$i];
+    foreach my $option ( keys %OPTION ) {
         next unless exists $data{ $option } && defined $data{ $option };
-        my $meta = $db_options[$i+1];
         my $value = $data{ $option };
         $res .= "Set(\$$option, '$value');\n";
     }
@@ -109,22 +87,231 @@ my $dump_config = sub {
     return $res;
 };
 
-if ( $ARGS{'DatabaseCreate'} ) {
-    my %config = ();
-    for ( my $i = 0; $i < @db_options; $i += 2 ) {
-        my $option = $db_options[$i];
-        my $meta = $db_options[$i+1];
-        my $value = $m->comp( $meta->{'Widget'} .':Process',
-            Arguments    => \%ARGS,
-            Default      => 0,
-            %{ $meta->{'WidgetArguments'} },
-            Name         => $option,
-            CurrentValue => scalar RT->Config->Get( $option ),
-        );
-        $config{ $option } = $value;
-        $config{ $option } = scalar RT->Config->Get( $option )
-            if !defined $value && $meta->{'WidgetArguments'}{'Default'};
+</%ONCE>
+Hello, looks like it's new intallation of RT.
+
+We're going to bla-bla... intstall RT.
+
+<h1>Database</h1>
+
+<form method="post">
+% for ( @DefinedOptions ) {
+<input type="hidden" name="DefinedOptions" value="<% $_ %>" />
+<input type="hidden" name="<% $_ %>" value="<% $_ %>" />
+% }
+
+% if ( $CurrentOption eq 'DatabaseType' || $DefinedOptions{'DatabaseType'} ) {
+<h2>Type</h2>
+
+% unless ( $DefinedOptions{'DatabaseType'} ) {
+
+<p>Please select type of the RDBMS you want to use with RT.</p>
+
+% if ( $CheckErrors{'DatabaseType'} ) {
+<p>There is error ocured during tests:
+<pre><% $CheckErrors{'DatabaseType'} %></pre>
+</p>
+% }
+
+<input type="hidden" name="DefinedOptions" value="DatabaseType" />
+<& $OPTION{'DatabaseType'}->{'Widget'},
+    Default      => 0,
+    %{ $OPTION{'DatabaseType'}->{'WidgetArguments'} },
+    Name         => 'DatabaseType',
+    CurrentValue => scalar RT->Config->Get('DatabaseType'),
+&>
+% } else {
+You've selected <% $config{ 'DatabaseType' } %> RDBMS as storage for RT.
+% }
+% }
+
+% if ( $CurrentOption eq 'DatabaseHost' || $DefinedOptions{'DatabaseHost'} ) {
+<h2>Host</h2>
+
+% unless ( $DefinedOptions{'DatabaseHost'} ) {
+
+The domain name or IP address of your database server.
+% if ( $config{'DatabaseType'} eq 'mysql' ) {
+If it's on localhost then leave it blank for slightly enhanced performance.
+% }
+
+<input type="hidden" name="DefinedOptions" value="DatabaseHost" />
+<& $OPTION{'DatabaseHost'}->{'Widget'},
+    Default      => 0,
+    %{ $OPTION{'DatabaseHost'}->{'WidgetArguments'} },
+    Name         => 'DatabaseHost',
+    CurrentValue => scalar RT->Config->Get('DatabaseHost'),
+&>
+% } else {
+RT will be using database on server <% $config{ 'DatabaseHost' } %>.
+% }
+% }
+
+% if ( $CurrentOption eq 'DatabasePort' || $DefinedOptions{'DatabasePort'} ) {
+<h2>Port</h2>
+
+% unless ( $DefinedOptions{'DatabasePort'} ) {
+
+Port number your database server listen to. If you don't know value then most
+probably it listen to default port and you can leave this option empty.
+
+<input type="hidden" name="DefinedOptions" value="DatabasePort" />
+<& $OPTION{'DatabasePort'}->{'Widget'},
+    Default      => 0,
+    %{ $OPTION{'DatabasePort'}->{'WidgetArguments'} },
+    Name         => 'DatabasePort',
+    CurrentValue => scalar RT->Config->Get('DatabasePort'),
+&>
+% } elsif ( $config{'DatabasePort'} ) {
+RT will be connecting to port number <% $config{ 'DatabasePort' } %>.
+% } else {
+RT will be connecting to default port.
+% }
+% }
+
+% if ( $CurrentOption eq 'DatabaseName' || $DefinedOptions{'DatabaseName'} ) {
+<h2>Name</h2>
+
+% unless ( $DefinedOptions{'DatabaseName'} ) {
+
+% if ( $config{'DatabaseType'} eq 'SQLite' ) {
+Absolute path to the database.
+% } else {
+Name of the database.
+% }
+
+<input type="hidden" name="DefinedOptions" value="DatabaseName" />
+<& $OPTION{'DatabaseName'}->{'Widget'},
+    Default      => 0,
+    %{ $OPTION{'DatabaseName'}->{'WidgetArguments'} },
+    Name         => 'DatabaseName',
+    CurrentValue => scalar RT->Config->Get('DatabaseName'),
+&>
+% } else {
+'<% $config{ 'DatabaseName' } %>' will be used as the database.
+% }
+% }
+
+% if ( $CurrentOption eq 'DatabaseUser' || $DefinedOptions{'DatabaseUser'} ) {
+<h2>Credentials</h2>
+
+% unless ( $DefinedOptions{'DatabaseUser'} ) {
+
+Please enter credentials RT is going to use to connect to the DB.
+This account has nothing to do with the web UI and any users' accounts.
+This user will be created in your database server and granted with rights
+to access RT DB and update it.
+
+<input type="hidden" name="DefinedOptions" value="DatabaseUser" />
+<& $OPTION{'DatabaseUser'}->{'Widget'},
+    Default      => 0,
+    %{ $OPTION{'DatabaseUser'}->{'WidgetArguments'} },
+    Name         => 'DatabaseUser',
+    CurrentValue => scalar RT->Config->Get('DatabaseUser'),
+&>
+<input type="hidden" name="DefinedOptions" value="DatabasePassword" />
+<& $OPTION{'DatabasePassword'}->{'Widget'},
+    Default      => 0,
+    %{ $OPTION{'DatabasePassword'}->{'WidgetArguments'} },
+    Name         => 'DatabasePassword',
+    CurrentValue => scalar RT->Config->Get('DatabasePassword'),
+&>
+% } else {
+RT will connect to the database using username '<% $config{ 'DatabaseUser' } %>'
+with password '<% $config{ 'DatabasePassword' } %>'.
+% }
+% }
+
+% if ( $CurrentOption eq 'DatabaseAdmin' || $DefinedOptions{'DatabaseAdmin'} ) {
+<h2>Adminstrator credentials</h2>
+
+% unless ( $DefinedOptions{'DatabaseAdmin'} ) {
+
+Please enter credentials of administrator that can create RT's database on
+the RDBMS server. This credentials will be used only to create the DB.
+
+<input type="hidden" name="DefinedOptions" value="DatabaseAdmin" />
+<& $OPTION{'DatabaseAdmin'}->{'Widget'},
+    Default      => 0,
+    %{ $OPTION{'DatabaseAdmin'}->{'WidgetArguments'} },
+    Name         => 'DatabaseAdmin',
+    CurrentValue => scalar RT->Config->Get('DatabaseAdmin'),
+&>
+<input type="hidden" name="DefinedOptions" value="DatabaseAdminPassword" />
+<& $OPTION{'DatabaseAdminPassword'}->{'Widget'},
+    Default      => 0,
+    %{ $OPTION{'DatabaseAdminPassword'}->{'WidgetArguments'} },
+    Name         => 'DatabaseAdminPassword',
+    CurrentValue => scalar RT->Config->Get('DatabaseAdminPassword'),
+&>
+% } else {
+RT will connect to the RDBMS server using administrator account '<% $config{ 'DatabaseAdmin' } %>'
+with password '<% $config{ 'DatabaseAdminPassword' } %>'.
+% }
+% }
+
+% if ( $CurrentOption ) {
+<& /Elements/Submit, Name => 'NextWizardStep', Label => loc('Next') &>
+% } else {
+<h2>Create</h2>
+
+Please, review your settings again.
+
+<& /Elements/Submit, Name => 'DatabaseCreate', Label => loc('Create database') &>
+% }
+
+</form>
+
+<%FLAGS>
+inherit => undef
+</%FLAGS>
+<%ARGS>
+@DefinedOptions => ()
+</%ARGS>
+<%INIT>
+
+my %DefinedOptions = map { $_ => 1 } @DefinedOptions;
+
+# process form data
+my %config = ();
+foreach my $option ( @DefinedOptions ) {
+    my $meta = $OPTION{ $option };
+    my $value = $m->comp( $meta->{'Widget'} .':Process',
+        Arguments    => \%ARGS,
+        Default      => 0,
+        %{ $meta->{'WidgetArguments'} },
+        Name         => $option,
+        CurrentValue => scalar RT->Config->Get( $option ),
+    );
+    $config{ $option } = $value;
+    $config{ $option } = RT->Config->Get( $option )
+        if !defined $value && $meta->{'WidgetArguments'}{'Default'};
+}
+
+# checks
+my %CheckErrors;
+if ( $DefinedOptions{'DatabaseType'} ) {
+    local $@;
+    unless ( eval "require DBD::". $config{'DatabaseType'} ) {
+        $CheckErrors{'DatabaseType'} = "Couldn't load driver for ". $config{'DatabaseType'} .". Error: $@";
+        delete $DefinedOptions{'DatabaseType'};
     }
+}
+
+my @RequiredOptions = @ORDERED_OPTIONS;
+if ( $DefinedOptions{'DatabaseType'} && $config{'DatabaseType'} eq 'SQLite' ) {
+    @RequiredOptions = qw(DatabaseType DatabaseName);
+}
+if ( $DefinedOptions{'DatabaseType'} && $config{'DatabaseType'} eq 'mysql' && $DefinedOptions{'DatabaseHost'} ) {
+    @RequiredOptions = grep $_ ne 'DatabaseRTHost', @RequiredOptions
+        if !$config{'DatabaseHost'} || $config{'DatabaseHost'} eq 'localhost';
+}
+my %RequiredOptions = map { $_ => 1 } @RequiredOptions;
+
+my $CurrentOption = (grep !$DefinedOptions{ $_ }, @RequiredOptions)[0];
+warn $CurrentOption;
+
+if ( $ARGS{'DatabaseCreate'} ) {
     warn($dump_config->(%config));
     {
         open my $fh, '>', '/tmp/site-config';
@@ -137,10 +324,12 @@ if ( $ARGS{'DatabaseCreate'} ) {
 
     my ($dba_user, $dba_pass) = @config{'DatabaseAdmin', 'DatabaseAdminPassword'};
 
-    my $dbh = _get_dbh( RT::Handle->SystemDSN, $dba_user, $dba_pass );
-    my ($status, $msg) = RT::Handle->CreateDatabase( $dbh );
+    my ($dbh, $status, $msg);
 
-    $dbh = _get_dbh( RT::Handle->DSN, $dba_user, $dba_pass );
+    ($dbh, $msg) = _get_dbh( RT::Handle->SystemDSN, $dba_user, $dba_pass );
+    ($status, $msg) = RT::Handle->CreateDatabase( $dbh );
+
+    ($dbh, $msg) = _get_dbh( RT::Handle->DSN, $dba_user, $dba_pass );
     ($status, $msg) = RT::Handle->InsertSchema( $dbh );
     ($status, $msg) = RT::Handle->InsertACL( $dbh );
 
