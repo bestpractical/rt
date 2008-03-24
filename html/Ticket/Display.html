@@ -187,8 +187,6 @@ if (@Actions) {
     $session{'i'}++;
 
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL') ."Ticket/Display.html?id=".$TicketObj->id);
-} else {
-    @Actions = @{ delete $session{"Actions"} || [] };
 }
 
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);
