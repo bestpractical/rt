@@ -88,19 +88,18 @@ sub _UpgradeToHTML {
         
         my $self = shift;
         my @new_content;
-        my $seen_header;
+        my $in_body;
         foreach my $chunk (@{$self->{SOURCE}}) {
             if ($chunk->[0] eq 'TEXT') {
                 my $new_text = $chunk->[1];
-                my $header_text = '';
-                if (!$seen_header) {
+                my $prepend = '';
+                if (!$in_body) {
                     # We don't HTMLify anything within the header.
-                    if ($new_text =~ /\n\n/) {
-                        $seen_header = 1;
+                    if ($new_text =~ /\n\r?\n/) {
+                        $in_body = 1;
 
                         # Preserve the header text but upgrade the body text
-                        ($header_text, $new_text) = split(/\n\n/, $new_text, 2);
-                        $header_text .= "\n\n";
+                        ($prepend, $new_text) = split(/(?<=\n\r\n)|(?<=\n\n)/, $new_text, 2);
                     }
                     else {
                         push @new_content, $chunk;
@@ -111,7 +110,7 @@ sub _UpgradeToHTML {
                 $new_text =~ s/</&lt;/g;
                 $new_text =~ s/>/&gt;/g;
                 $new_text =~ s/\n/\n<br \/>/g;
-                push @new_content, [$chunk->[0], $header_text.$new_text, $chunk->[2]];
+                push @new_content, [$chunk->[0], $prepend.$new_text, $chunk->[2]];
             }
             else {
                 push @new_content, $chunk;
