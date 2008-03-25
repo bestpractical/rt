@@ -50,21 +50,24 @@
 <form method="post" action="<%RT->Config->Get('WebPath')%>/index.html">
 <input type="hidden" class="hidden" name="QuickCreate" value="1" />
 <table>
-<tr><td>
-<&|/l&>Subject</&>:<br /><input size="15" name="Subject" />
+<tr class="input-row"><td class="label">
+    <&|/l&>Subject</&>
+    </td>
+    <td class="value"><input size="15" name="Subject" /></td>
+<td class="label"><&|/l&>Queue</&></td><td class="value"><& /Elements/SelectNewTicketQueue, Name => 'Queue', ShowNullOption => 0 &>
 </td><td>
-<&|/l&>Queue</&>:<br /><& /Elements/SelectNewTicketQueue, Name => 'Queue', ShowNullOption => 0 &>
-</td><td>
-<&|/l&>Owner</&>:<br />
+<td class="label"><&|/l&>Owner</&></td><td class="value">
 <select type="select" name="Owner">  
 <option value="<%$session{'CurrentUser'}->id%>" selected><%$session{'CurrentUser'}->Name %></option>
 <option value="<%$RT::Nobody->id%>"><%loc('Nobody')%></option>
 </select>
 </td>
 </tr>
-%#<tr><td colspan="3"><textarea cols="50" rows="3"></textarea></td></tr>
+<tr class="input-row">
+<td class="label"><&|/l&>Content</&></td>
+<td colspan="6" class="value"><textarea name="Content"cols="50" rows="3"></textarea></td></tr>
 </table>
-<div align="right"><input type="submit" class="button" value="<%loc('Create')%>" /></div>
+<& /Elements/Submit, Label => loc('Create') &>
 </form>
 </&>
 </div>

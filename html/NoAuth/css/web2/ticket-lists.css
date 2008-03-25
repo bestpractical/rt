@@ -10,7 +10,6 @@ table.ticket-list a, table.queue-summary a {
 
 
 th.collection-as-table {
- background: #eee;
  font-size: 0.9em;
   margin-bottom: 0.5em;
   text-align: left;
@@ -18,7 +17,7 @@ th.collection-as-table {
 }
 
 tr.collection-as-table+tr.collection-as-table th {
- border-bottom: 1px solid grey;
+ border-bottom: 2px solid grey;
 
 }
 
@@ -44,8 +43,12 @@ a:hover  {
 
 
 
-tr.oddline td {
+tr.evenline td {
   background: #eee;
+}
+
+tr.oddline td {
+  background: #fff;
 
 }
 
