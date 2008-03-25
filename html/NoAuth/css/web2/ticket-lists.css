@@ -1,34 +1,27 @@
 table.ticket-list, table.queue-summary {
   padding-right: 1em;
-  font-size: 0.8em;
+  font-size: 0.9em;
 }
 
 
-
-
-
 table.ticket-list a, table.queue-summary a {
-
   font-weight: bold;
 }
 
 
-
-th {
-  font-size: 0.8em;
-
-}
-
 th.collection-as-table {
-  border-bottom: 1px solid #ccc;
+ background: #eee;
+ font-size: 0.9em;
   margin-bottom: 0.5em;
+  text-align: left;
 
 }
 
-tr.collection-as-table, tr.queue-summary {
-  padding-bottom: 1.5em;
+tr.collection-as-table+tr.collection-as-table th {
+ border-bottom: 1px solid grey;
 
 }
+
 
 
 
@@ -44,7 +37,7 @@ a:hover  {
 }
 
 
-table.ticket-list td, table.queue-summary td {
+ table.queue-summary td {
   background: #efefef;
   border-bottom: 1px solid #ccc;
 }
@@ -52,9 +45,26 @@ table.ticket-list td, table.queue-summary td {
 
 
 tr.oddline td {
-  background: #ffffff;
+  background: #eee;
 
 }
 
+tr.evenline td, tr.oddline td {
+ border-top: 1px solid  #aaa;
+ padding-top: 0.5em;
+} 
+
+
+
+tr.evenline+tr.evenline td, tr.oddline+tr.oddline td{
+ padding-top: 0;
+ border: none;
+}
+
+
+
+table.ticket-list td:first-child, table.ticket-list th:first-child {
+  padding-left: 0.5em;
+}
 
 

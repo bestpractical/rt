@@ -55,8 +55,8 @@
     
 <form action="<%RT->Config->Get('WebPath')%>/Ticket/Reminders.html" method="post">
 <&|/Widgets/TitleBox, title => loc("Reminders"),
-                       title_class=> 'inverse',
-                       color => "#666699" &>
+                       class=>'ticket-info-reminders'
+                       &>
 
 <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 1, Edit => 1 &>
 </&>

@@ -57,7 +57,7 @@
 <form action="ModifyLinks.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
-<&| /Widgets/TitleBox, title => loc('Edit Links') &>
+<&| /Widgets/TitleBox, title => loc('Edit Links'), class=>'ticket-info-links' &>
 <& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
 </&>
 <& /Elements/Submit, Label => loc('Save Changes') &>

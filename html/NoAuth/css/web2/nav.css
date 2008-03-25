@@ -11,7 +11,8 @@ div#nav {
 
  -moz-border-radius-topright: 0.5em;
  -webkit-border-top-right-radius: 0.5em;
- z-index: 1;
+ z-index: 0;
+
 }
 
 div#nav ul {
@@ -85,7 +86,7 @@ div#page-navigation {
  background: white;
  position: relative;
  width:100%;
- z-index: 0 ;
+ z-index: 00;
 
 }
 
@@ -97,7 +98,7 @@ div#page-navigation ul {
 div#page-navigation ul#page-menu {
  display: block;
  position: absolute;
- left: 8.5em;
+ left: 9em;
  font-size: 0.8em;
  top: 2.3em;
  height: 1em;
@@ -117,7 +118,7 @@ div#page-navigation ul#page-menu {
 
 div#page-navigation ul#actions-menu {
  position: absolute;
- right: 1.1em;
+ right: 1em;
  top: 4.9em;
  margin-top: 0em;
  padding: 0.25em;
@@ -125,8 +126,8 @@ div#page-navigation ul#actions-menu {
  padding-right: 0.5em;
 
  background: #dedede;
- border-left: 1px solid #ccc;
- border-bottom: 1px solid #ccc;
+ border-left: 1px solid #aaa;
+ border-bottom: 2px solid #aaa;
  -moz-border-radius-bottomleft: 0.5em;
  -webkit-border-bottom-left-radius: 0.5em;
 }

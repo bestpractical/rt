@@ -12,8 +12,9 @@ body {
 }
 
 div#body {
-    padding: 1em;
-    padding-top: 1em;
+    padding-right: 1em;
+    padding-top: 1.5em;
+    padding-bottom: 1em;
     -moz-border-radius: 0.5em;
     -webkit-border-radius: 0.5em;
     margin-left: 9.8em;
@@ -21,8 +22,10 @@ div#body {
     margin-right: 1em;
     margin-bottom: 0em;
     min-height: 10%;
-    background: #fefefe;
-    
+    background: #fff;
+    border-top: 2px solid #ccc;
+    border-left: 2px solid #ccc;
+
 
 }
 
@@ -30,8 +33,15 @@ div#body {
 #topactions {
  position: absolute;
  right: 1em;
- top: 3.5em; 
+ top: 3.85em; 
  font-size: 0.8em;
+}
+
+#topactions form button, #topactions form input[type=submit], #topactions form input[type=button]{
+ padding-top: 0em;
+ padding-bottom: 0em;
+
+
 }
 
 #topactions form {
@@ -42,7 +52,7 @@ div#body {
 .topaction form#CreateTicketInQueue {
  position: absolute;
  top: 0;
- right: 20em; 
+ right: 21em; 
  left: -42.25em;
  text-align: right; 
 

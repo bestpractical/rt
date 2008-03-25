@@ -8,6 +8,9 @@
  -moz-border-radius: 0.5em;
  -webkit-border-radius: 0.5em;
  margin-bottom: 2em;
+ border-bottom: 2px solid #aaa;
+ border-right: 2px solid #aaa;
+
 }
 
 
@@ -19,6 +22,8 @@
  -moz-border-radius: 0.5em;
  -webkit-border-radius: 0.5em;
  margin-right: 1em;
+
+
 }
 
 
@@ -44,12 +49,17 @@
 
 
 .titlebox .titlebox-title .left {
+    font-weight: bold;
     background: #ccc;
-    padding:0.2em;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
+    margin-left: 0.75em;
+    padding:0.5em;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    border-bottom: 2px solid #aaa;
+    border-right: 2px solid #aaa;
+
 
 }
 
@@ -94,7 +104,7 @@
 
 .titlebox .titlebox-title .widget a {
   display: block;
-  padding-top: 1em;
+  padding-top: 0.5em;
   width: 20px;
 
   background: url(/NoAuth/images//css/rollup-arrow.gif) no-repeat center center;
@@ -102,8 +112,8 @@
   text-indent: -9999px;
 
   position: absolute;
-  top: -0.5em;
-  left: -0.5em;
+  top: -1em;
+  left: -0.25em;
   float: left;
 
 }

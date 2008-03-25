@@ -58,27 +58,27 @@
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
 
-<&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id) &>
+<&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id), class=>'ticket-info-basics' &>
 <& Elements/EditBasics, TicketObj => $Ticket &>
 <& Elements/EditCustomFields, TicketObj => $Ticket &>
 </&>
 
 <br />
 
-<&| /Widgets/TitleBox, title => loc('Dates') &>
+<&| /Widgets/TitleBox, title => loc('Dates'), class=>'ticket-info-dates'&>
 <& Elements/EditDates, TicketObj => $Ticket &>
 </&>
 
 <br />
 
 
-<&| /Widgets/TitleBox, title => loc('People') &>
+<&| /Widgets/TitleBox, title => loc('People'), class=>'ticket-info-people' &>
 <& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
 </&>
 
 <br />
 
-<&| /Widgets/TitleBox, title => loc('Links') &>
+<&| /Widgets/TitleBox, title => loc('Links'), class=>'ticket-info-links' &>
 <& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
 </&>
 
