@@ -2441,7 +2441,6 @@ Returns a reference to the set of all items found in this search
 
 sub ItemsArrayRef {
     my $self = shift;
-    my @items;
 
     unless ( $self->{'items_array'} ) {
 
