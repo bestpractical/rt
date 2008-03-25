@@ -45,13 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc("Display Columns") &>
-<table width="100%">
-<tr>
-<td>
-<& EditFormat, %ARGS &>
-</td>
-<td valign="top">
+<&| /Widgets/TitleBox, title => loc("Sorting"), id => 'sorting' &>
 <table valign="top">
 
 % for my $o (0..3) {
@@ -101,9 +95,9 @@ selected
 </td>
 </tr>
 </table>
-</td>
-</tr>
-</table>
+</&>
+<&| /Widgets/TitleBox, title => loc("Display Columns"), id => 'columns' &>
+<& EditFormat, %ARGS &>
 </&>
 
 <%INIT>

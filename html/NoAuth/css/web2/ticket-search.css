@@ -1,24 +1,28 @@
 
+#comp-Search-Build #body {
+    position: relative;
+}
 
 #comp-Search-Build #editquery, #comp-Search-Build #editsearches{
+  position: absolute;
   margin-top: 0.2em;
+  right: 1em;
   width: 40%;
-  float: right;
-  clear: both;
+  top: 1em;
 /*  margin-top: -1em; */
 }
 
 
 
 #comp-Search-Build #editsearches {
-
+  top: 24em;
 }
 
 
 #comp-Search-Build #pick-criteria {
  width: 58%;
  padding-top: 0.2em;
- overflow: hidden;
+ overflow-x: scroll;
  margin-top: -0.1em;
 }
 
@@ -27,6 +31,17 @@
 
 }
 
+
+#comp-Search-Build #sorting.titlebox {
+ width: 57%;
+
+}
+
+#comp-Search-Build #columns {
+
+
+ 
+}
 
 #comp-Search-Build #formatbuttons {
  width: 100%;

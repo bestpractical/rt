@@ -96,20 +96,18 @@
     <& Elements/PickCriteria, query => $query{'Query'}, cfqueues => $queues &>
 </div>
 <& /Elements/Submit,  Label => loc('Add these terms'), Name => 'AddClause'&>
-
 <& /Elements/Submit, Label => loc('Add these terms and Search'), Name => 'DoSearch'&>
 
 
 
-
+<span id="display-options">
 <& Elements/DisplayOptions,
     %ARGS, %query,
     AvailableColumns => $AvailableColumns,
     CurrentFormat    => $CurrentFormat,
 &>
-
 <& /Elements/Submit, Label => loc('Update format and Search'), Name => 'DoSearch', id=>"formatbuttons"&>
-
+</span>
 </form>
 
 <%INIT>
