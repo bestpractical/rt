@@ -150,7 +150,10 @@
 
 <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket' &>
 % if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
+<&|/Widgets/TitleBox, title => loc('Scrips and Recipients') &>
 <& /Ticket/Elements/PreviewScrips, TicketObj => $TicketObj, %ARGS &>
+</&>
+
 % }
 </form>
 <%INIT>

@@ -49,11 +49,12 @@
 see docs/using_forms_widgets.pod
 </%DOC>
 <div id="form-box-<% lc $Name %>">
-<span class="description"><% $Description %></span>:\
-<& SELF:InputOnly, %ARGS &>
+<span class="label description"><% $Description %></span>
+<span class="value"><& SELF:InputOnly, %ARGS &></span>
 % if ( $Default ) {
 <span class="comment"><% $DefaultLabel %></span>
 % }
+<span class="hints"><% $Hints %></span>
 </div>
 <%INIT>
 </%INIT>
@@ -66,7 +67,7 @@ $CurrentValue => '',
 
 $Default        => 0,
 $DefaultValue   => 0,
-$DefaultLabel   => loc( 'Leaving this empty will default to the system default of [_1]', $DefaultValue ),
+$DefaultLabel   => loc( 'Default: [_1]', $DefaultValue ),
 </%ARGS>
 
 <%METHOD InputOnly>

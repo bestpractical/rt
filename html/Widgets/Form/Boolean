@@ -49,8 +49,8 @@
 see docs/using_forms_widgets.pod
 </%DOC>
 <div id="form-box-<% lc $Name %>">
-<span class="description"><% $Description %></span>:\
-<& SELF:InputOnly, %ARGS &>
+<span class="label description"><% $Description %></span>
+<span class="value"><& SELF:InputOnly, %ARGS &></span>
 </div>
 <%ARGS>
 $Name         => undef,
@@ -63,7 +63,7 @@ $Name         => undef,
 
 $Default        => 0,
 $DefaultValue   => 0,
-$DefaultLabel   => loc( 'Use system default ([_1])', $DefaultValue? loc('Yes'): loc('No') ),
+$DefaultLabel   => loc( 'Use default ([_1])', $DefaultValue? loc('Yes'): loc('No') ),
 
 $CurrentValue => undef,
 </%ARGS>
