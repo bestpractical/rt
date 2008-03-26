@@ -102,17 +102,17 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Interface style', #loc
+            Description => 'Theme', #loc
             # XXX: we need support for 'get values callback'
             Values      => [qw(3.5-default 3.4-compat web2)],
         },
     },
     DefaultSummaryRows => {
-        Section         => 'General',
+        Section         => 'RT at a glance',
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Number of rows displayed in search results on the frontpage', #loc
+            Description => 'Number of search results', #loc
         },
     },
     MessageBoxWidth => {
@@ -136,7 +136,8 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Maximum size of messages (in bytes) that should be inlined in ticket history; A value of 0 (zero) will always inline', #loc
+            Description => 'Maximum inline message length', #loc
+            Hints => "Length in characters; Use '0' to show all messages inline, regardless of length" #loc
         },
     },
     OldestTransactionsFirst => {
@@ -144,21 +145,21 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => 'Show oldest transactions first', #loc
+            Description => 'Show oldest history first', #loc
         },
     },
     DateTimeFormat      => {
-        Section         => 'Date and time', #loc
+        Section         => 'Locale', #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Date and time output format', #loc
+            Description => 'Date format', #loc
             Values      => [qw(DefaultFormat RFC2822 ISO W3CDTF)],
             ValuesLabel => {
-                DefaultFormat => 'Default (Tue Dec 25 21:59:12 1995)', #loc
-                RFC2822       => 'RFC (Tue, 25 Dec 1995 21:59:12 -0300)', #loc
-                ISO           => 'ISO (1995-11-25 21:59:12)', #loc
-                W3CDTF        => 'W3C (1995-11-25T21:59:12Z)', #loc
+                DefaultFormat => 'Tue Dec 25 21:59:12 1995', #loc
+                RFC2822       => 'Tue, 25 Dec 1995 21:59:12 -0300', #loc
+                ISO           => '1995-11-25 21:59:12', #loc
+                W3CDTF        => '1995-11-25T21:59:12Z', #loc
             },
         },
     },
