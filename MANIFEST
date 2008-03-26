@@ -47,8 +47,10 @@ html/Admin/RTFM/Elements/ClassTabs
 html/Admin/RTFM/Elements/GlobalTabs
 html/Admin/RTFM/Elements/Header
 html/Admin/RTFM/Elements/Tabs
+html/Admin/RTFM/Elements/Topics
 html/Admin/RTFM/Global/GroupRights.html
 html/Admin/RTFM/Global/index.html
+html/Admin/RTFM/Global/Topics.html
 html/Admin/RTFM/Global/UserRights.html
 html/Admin/RTFM/index.html
 html/Callbacks/RTFM/Admin/Elements/CustomFieldTabs/Default
@@ -167,3 +169,4 @@ TODO
 tools/factory.mysql
 tools/factory.pg
 tools/license_tag
+UPGRADING
