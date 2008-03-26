@@ -593,22 +593,30 @@ sub InsertData {
            @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
 
     local $@;
+    $RT::Logger->debug("Going to load '$datafile' data file");
     eval { require $datafile }
       or return (0, "Couldn't load data from '$datafile' for import:\n\nERROR:". $@);
 
     if ( @Initial ) {
-        print "Running initial actions...\n";
-        # Don't trap errors here, as they *should* be fatal
-        $_->() for @Initial;
+        $RT::Logger->debug("Running initial actions...");
+        foreach ( @Initial ) {
+            local $@;
+            eval { $_->(); 1 } or return (0, "One of initial functions failed: $@");
+        }
+        $RT::Logger->debug("Done.");
     }
     if ( @Groups ) {
-        print "Creating groups...";
+        $RT::Logger->debug("Creating groups...");
         foreach my $item (@Groups) {
             my $new_entry = RT::Group->new( $RT::SystemUser );
             my $member_of = delete $item->{'MemberOf'};
             my ( $return, $msg ) = $new_entry->_Create(%$item);
-            print "(Error: $msg)" unless $return;
-            print $return. ".";
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+                next;
+            } else {
+                $RT::Logger->debug($return .".");
+            }
             if ( $member_of ) {
                 $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
                 foreach( @$member_of ) {
@@ -620,46 +628,57 @@ sub InsertData {
                         $parent->LoadUserDefinedGroup( $_ );
                     }
                     else {
-                        print "(Error: wrong format of MemberOf field."
+                        $RT::Logger->error(
+                            "(Error: wrong format of MemberOf field."
                             ." Should be name of user defined group or"
                             ." hash reference with 'column => value' pairs."
-                            ." Use array reference to add to multiple groups)";
+                            ." Use array reference to add to multiple groups)"
+                        );
                         next;
                     }
                     unless ( $parent->Id ) {
-                        print "(Error: couldn't load group to add member)";
+                        $RT::Logger->error("(Error: couldn't load group to add member)");
                         next;
                     }
                     my ( $return, $msg ) = $parent->AddMember( $new_entry->Id );
-                    print "(Error: $msg)" unless ($return);
-                    print $return. ".";
+                    unless ( $return ) {
+                        $RT::Logger->error( $msg );
+                    } else {
+                        $RT::Logger->debug( $return ."." );
+                    }
                 }
             }
         }
-        print "done.\n";
+        $RT::Logger->debug("done.");
     }
     if ( @Users ) {
-        print "Creating users...";
+        $RT::Logger->debug("Creating users...");
         foreach my $item (@Users) {
-            my $new_entry = new RT::User($RT::SystemUser);
+            my $new_entry = new RT::User( $RT::SystemUser );
             my ( $return, $msg ) = $new_entry->Create(%$item);
-            print "(Error: $msg)" unless $return;
-            print $return. ".";
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            } else {
+                $RT::Logger->debug( $return ."." );
+            }
         }
-        print "done.\n";
+        $RT::Logger->debug("done.");
     }
     if ( @Queues ) {
-        print "Creating queues...";
+        $RT::Logger->debug("Creating queues...");
         for my $item (@Queues) {
             my $new_entry = new RT::Queue($RT::SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
-            print "(Error: $msg)" unless $return;
-            print $return. ".";
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            } else {
+                $RT::Logger->debug( $return ."." );
+            }
         }
-        print "done.\n";
+        $RT::Logger->debug("done.");
     }
     if ( @CustomFields ) {
-        print "Creating custom fields...";
+        $RT::Logger->debug("Creating custom fields...");
         for my $item ( @CustomFields ) {
             my $new_entry = new RT::CustomField( $RT::SystemUser );
             my $values    = delete $item->{'Values'};
@@ -673,13 +692,13 @@ sub InsertData {
 
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless( $return ) {
-                print "(Error: $msg)\n";
+                $RT::Logger->error( $msg );
                 next;
             }
 
             foreach my $value ( @{$values} ) {
                 my ( $return, $msg ) = $new_entry->AddValue(%$value);
-                print "(Error: $msg)\n" unless $return;
+                $RT::Logger->error( $msg ) unless $return;
             }
 
             # apply by default
@@ -692,7 +711,7 @@ sub InsertData {
                 my $q_obj = RT::Queue->new($RT::SystemUser);
                 $q_obj->Load($q);
                 unless ( $q_obj->Id ) {
-                    print "(Error: Could not find queue " . $q . ")\n";
+                    $RT::Logger->error("Could not find queue ". $q );
                     next;
                 }
                 my $OCF = RT::ObjectCustomField->new($RT::SystemUser);
@@ -700,16 +719,16 @@ sub InsertData {
                     CustomField => $new_entry->Id,
                     ObjectId    => $q_obj->Id,
                 );
-                print "(Error: $msg)\n" unless $return and $OCF->Id;
+                $RT::Logger->error( $msg ) unless $return and $OCF->Id;
             }
 
             print $new_entry->Id. ".";
         }
 
-        print "done.\n";
+        $RT::Logger->debug("done.");
     }
     if ( @ACL ) {
-        print "Creating ACL...";
+        $RT::Logger->debug("Creating ACL...");
         for my $item (@ACL) {
 
             my ($princ, $object);
@@ -727,7 +746,7 @@ sub InsertData {
                 $object = $RT::System;
             }
 
-            print "Couldn't load object" and next unless $object and $object->Id;
+            $RT::Logger->error("Couldn't load object") and next unless $object and $object->Id;
 
             # Group rights or user rights?
             if ( $item->{'GroupDomain'} ) {
@@ -753,57 +772,70 @@ sub InsertData {
 
             # Grant it
             my ( $return, $msg ) = $princ->PrincipalObj->GrantRight(
-                                                     Right => $item->{'Right'},
-                                                     Object => $object );
-
-            if ( $return ) {
-                print $return. ".";
+                Right => $item->{'Right'},
+                Object => $object
+            );
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
             }
             else {
-                print $msg . ".";
-
+                $RT::Logger->debug( $return ."." );
             }
-
         }
-        print "done.\n";
+        $RT::Logger->debug("done.");
     }
 
     if ( @ScripActions ) {
-        print "Creating ScripActions...";
+        $RT::Logger->debug("Creating ScripActions...");
 
         for my $item (@ScripActions) {
             my $new_entry = RT::ScripAction->new($RT::SystemUser);
-            my $return    = $new_entry->Create(%$item);
-            print $return. ".";
+            my ( $return, $msg ) = $new_entry->Create(%$item);
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            }
+            else {
+                $RT::Logger->debug( $return ."." );
+            }
         }
 
-        print "done.\n";
+        $RT::Logger->debug("done.");
     }
 
     if ( @ScripConditions ) {
-        print "Creating ScripConditions...";
+        $RT::Logger->debug("Creating ScripConditions...");
 
         for my $item (@ScripConditions) {
             my $new_entry = RT::ScripCondition->new($RT::SystemUser);
-            my $return    = $new_entry->Create(%$item);
-            print $return. ".";
+            my ( $return, $msg ) = $new_entry->Create(%$item);
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            }
+            else {
+                $RT::Logger->debug( $return ."." );
+            }
         }
 
-        print "done.\n";
+        $RT::Logger->debug("done.");
     }
 
     if ( @Templates ) {
-        print "Creating templates...";
+        $RT::Logger->debug("Creating templates...");
 
         for my $item (@Templates) {
             my $new_entry = new RT::Template($RT::SystemUser);
-            my $return    = $new_entry->Create(%$item);
-            print $return. ".";
+            my ( $return, $msg ) = $new_entry->Create(%$item);
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            }
+            else {
+                $RT::Logger->debug( $return ."." );
+            }
         }
-        print "done.\n";
+        $RT::Logger->debug("done.");
     }
     if ( @Scrips ) {
-        print "Creating scrips...";
+        $RT::Logger->debug("Creating scrips...");
 
         for my $item (@Scrips) {
             my $new_entry = new RT::Scrip($RT::SystemUser);
@@ -813,44 +845,47 @@ sub InsertData {
 
             foreach my $q ( @queues ) {
                 my ( $return, $msg ) = $new_entry->Create( %$item, Queue => $q );
-            if ( $return ) {
-                    print $return. ".";
+                unless ( $return ) {
+                    $RT::Logger->error( $msg );
                 }
                 else {
-                    print "(Error: $msg)\n";
+                    $RT::Logger->debug( $return ."." );
                 }
             }
         }
-        print "done.\n";
+        $RT::Logger->debug("done.");
     }
     if ( @Attributes ) {
-        print "Creating predefined searches...";
+        $RT::Logger->debug("Creating predefined searches...");
         my $sys = RT::System->new($RT::SystemUser);
 
         for my $item (@Attributes) {
             my $obj = delete $item->{Object}; # XXX: make this something loadable
             $obj ||= $sys;
             my ( $return, $msg ) = $obj->AddAttribute (%$item);
-            if ( $return ) {
-                print $return. ".";
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
             }
             else {
-                print "(Error: $msg)\n";
+                $RT::Logger->debug( $return ."." );
             }
         }
-        print "done.\n";
+        $RT::Logger->debug("done.");
     }
     if ( @Final ) {
-        print "Running final actions...\n";
+        $RT::Logger->debug("Running final actions...");
         for ( @Final ) {
+            local $@;
             eval { $_->(); };
-            print "(Error: $@)\n" if $@;
+            $RT::Logger->error( "Failed to run one of final actions: $@" );
         }
+        $RT::Logger->debug("done.");
     }
 
     my $db_type = RT->Config->Get('DatabaseType');
     $RT::Handle->Disconnect() unless $db_type eq 'SQLite';
-    print "Done setting up database content.\n";
+
+    $RT::Logger->debug("Done setting up database content.");
 }
 
 =head2 ACLEquivGroupId
