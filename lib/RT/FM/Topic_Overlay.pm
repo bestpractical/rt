@@ -173,7 +173,8 @@ sub ParentObj {
 
 =head2 Children
 
-Returns a TopicCollection object containing this topic's children.
+Returns a TopicCollection object containing this topic's children,
+sorted by Topic.Name.
 
 =cut
 
@@ -183,6 +184,7 @@ sub Children {
         $self->{'Children'} = RT::FM::TopicCollection->new($self->CurrentUser);
         $self->{'Children'}->Limit('FIELD' => 'Parent',
                                    'VALUE' => $self->Id);
+        $self->{'Children'}->OrderBy('FIELD' => 'Name');
     }
     return $self->{'Children'};
 }
