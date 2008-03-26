@@ -1,0 +1,34 @@
+Upgrade instructions (From any 2.2.x release)
+-----------------------------------------------------
+
+There were no database changes from 2.2 to 2.4
+you should be able to follow the normal
+installation instructions which will overwrite
+existing RTFM code with the 2.4 version.
+
+It is recommended that you make a backup of your
+/opt/rt3 directory in case there are problems
+
+After installing 2.4, stop and start your web
+server, clearing your mason cache if necesary.
+
+Upgrade instructions (From any  2.0.x release):
+-----------------------------------------------------
+
+1) perl Makefile.PL
+
+2) perl -I/path/to/your/rt/lib sbin/migrate-2.0-to-2.1
+
+3) Type "make install"
+
+4) Type "ls etc/upgrade"; For each item in that directory whose name
+   is greater than your previously installed RTFM version, run:
+
+            /opt/rt3/sbin/rt-setup-database --action schema \
+                --datadir etc/upgrade/<version>
+            /opt/rt3/sbin/rt-setup-database --action acl \
+                --datadir etc/upgrade/<version>
+            /opt/rt3/sbin/rt-setup-database --action insert \
+                 --datadir etc/upgrade/<version>
+
+5) stop and start your web server
