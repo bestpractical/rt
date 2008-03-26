@@ -51,7 +51,7 @@
 <& /Elements/ListActions, actions => \@Actions &>
 <a href="Topics.html"><&|/l&>All topics</&></a>
 % if (defined $class) {
-&gt; <a href="Topics.html?class=<%$currclass->Id%>"><% $currclass->Name %></a>
+&gt; <a href="Topics.html?class=<%$currclass_id%>"><% $currclass_name %></a>
 % }
 
 % if ($id != 0) {
@@ -62,8 +62,8 @@
 <%perl>
 if (defined $class) {
    $m->print('<h2>'.'<a href="'.
-   $RT::WebPath."/RTFM/Topics.html?class=" . $currclass->Id
-   .'">'.$currclass->Name."</a></h2>\n");
+   $RT::WebPath."/RTFM/Topics.html?class=" . $currclass_id
+   .'">'.$currclass_name."</a></h2>\n");
    ProduceTree(\@Actions, $currclass, 0, $id);
 } else {
     $m->print("<ul>\n");
@@ -73,6 +73,7 @@ if (defined $class) {
         .'">'.$c->Name."</a></h2>\n");
         $m->print("\n</li>\n");
     }
+    $m->print(qq|<li><h2><a href="$RT::WebPath/RTFM/Topics.html?class=0">Global Topics</a></h2></li>\n|);
     $m->print("</ul>\n");
 }
 </%perl>
@@ -144,11 +145,21 @@ if ($id or $showall) {
 my @Actions;
 my $Classes;
 my $currclass;
+my $currclass_id;
+my $currclass_name;
 my $currtopic;
 
-if ($class) {
-    $currclass = RT::FM::Class->new($session{'CurrentUser'});
-    $currclass->Load($class);
+if (defined $class) {
+    if ($class) {
+        $currclass = RT::FM::Class->new($session{'CurrentUser'});
+        $currclass->Load($class);
+        $currclass_id = $currclass->Id;
+        $currclass_name = $currclass->Name;
+    } else {
+        $currclass = $RT::FM::System;
+        $currclass_id = 0;
+        $currclass_name = 'Global Topics';
+    }
 } else {
     $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});
     $Classes->LimitToEnabled(); 
