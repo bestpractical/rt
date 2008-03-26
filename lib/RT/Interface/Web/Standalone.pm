@@ -83,7 +83,8 @@ sub handle_request {
     RT::ConnectToDatabase() unless $self->install_mode;
 
     $self->SUPER::handle_request($cgi);
-    $RT::Logger->crit($@) if ($@);
+    $RT::Logger->crit($@) if $@ && $RT::Logger;
+    warn $@ if $@ && !$RT::Logger;
 
     RT::Interface::Web::Handler->CleanupRequest();
 
