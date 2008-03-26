@@ -85,6 +85,8 @@ unless ($OnlyThisClass) {
 use Tree::Simple;
 
 my $inClass = new RT::FM::TopicCollection($session{'CurrentUser'});
+# global topics should always be available
+push @Classes,$RT::FM::System unless grep { $_ == $RT::FM::System } @Classes;
 $inClass->LimitToObject($_) for @Classes;
 $inClass->OrderByCols({FIELD => 'Name'});
 my $inTree = buildTree($inClass);
