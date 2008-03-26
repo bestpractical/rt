@@ -249,12 +249,6 @@ sub MakeLinks {
         $Articles->Limit(FIELD => 'Topic', VALUE => $topic->Id);
         $output .= " (".loc("[quant,_1,article]", $Articles->Count).")" if $Articles->Count;
 
-	if ($haschild) {
-        #  Commented out by Jesse, since it seems confusing
-        #  
-        #   $output .= " &nbsp;&nbsp;&nbsp;[ <a href=\"$query&showall=1\">Show all articles</a> ]";
-	}
-	
 	$output .= "</li>\n";
 	
     } else {
