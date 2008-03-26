@@ -1,19 +1,15 @@
 # Initial data for a fresh RT3 Installation.
 
 @Users = (
-    {  Name     => 'Nobody',
-       RealName => 'Nobody in particular',
-       Comments => 'Do not delete or modify this user. It is integral '
-         . 'to RT\'s internal data structures',
-       Privileged => '0', },
-
     {  Name         => 'root',
        Gecos        => 'root',
        RealName     => 'Enoch Root',
        Password     => 'password',
        EmailAddress => "root\@localhost",
        Comments     => 'SuperUser',
-       Privileged   => '1', } );
+       Privileged   => '1',
+    },
+);
 
 @Groups = (
     { Name        => '',
@@ -668,9 +664,6 @@ return 0; # ignore $passed;
 );
 
 @ACL = (
-    { UserId => 'Nobody',      # - principalId
-      Right  => 'OwnTicket', },
-
     { UserId => 'root',        # - principalid
       Right  => 'SuperUser', },
 
