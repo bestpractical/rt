@@ -233,16 +233,16 @@ sub MakeLinks {
     my $output;
 
     if (ref($topic) eq 'RT::FM::Topic') {
+
+        my $topic_info = $topic->Name() || loc("(no name)");
+        $topic_info .= ": " . $topic->Description() if $topic->Description;
+
 	if ($haschild) {
 	    $query = "Topics.html?id=" . $topic->Id . "&class=" . $c->Id;
+            $output = qq(<li><a href="$query">$topic_info</a>);
 	} else {
-	    $query = "Topics.html?id=" . $topic->Id . "&class=" . $c->Id .
-		"&showall=1";
-	}
-	
-	$output = "<li><a href=\"$query\">" . ($topic->Name() || loc("(no name)"));
-	$output .= ": " . $topic->Description() if $topic->Description();
-	$output .= "</a>";
+            $output = qq(<li>$topic_info);
+        }
 	
         my $Articles = RT::FM::ObjectTopicCollection->new($session{'CurrentUser'});
         $Articles->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Article');
