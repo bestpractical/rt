@@ -517,54 +517,63 @@ sub InsertInitialData {
 
     #Put together a current user object so we can create a User object
     require RT::CurrentUser;
-    my $CurrentUser = new RT::CurrentUser();
+    my $CurrentUser = new RT::CurrentUser;
 
-    print "Checking for existing system user...";
+    my @warnings;
+
     my $test_user = RT::User->new($CurrentUser);
     $test_user->Load('RT_System');
     if ( $test_user->id ) {
-        print "found!\n\nYou appear to have a functional RT database.\n"
-          . "Exiting, so as not to clobber your existing data.\n";
-        exit(-1);
-
+        push @warns, "Found system user in the DB.";
     }
     else {
-        print "not found.  This appears to be a new installation.\n";
+        my $user = RT::User->new( $CurrentUser );
+        my ( $val, $msg ) = $user->_BootstrapCreate(
+            Name     => 'RT_System',
+            RealName => 'The RT System itself',
+            Comments => 'Do not delete or modify this user. '
+                . 'It is integral to RT\'s internal database structures',
+            Creator  => '1',
+            LastUpdatedBy => '1',
+        );
+        return ($val, $msg) unless $val;
     }
-
-    print "Creating system user...";
-    my $RT_System = RT::User->new($CurrentUser);
-
-    my ( $val, $msg ) = $RT_System->_BootstrapCreate(
-        Name     => 'RT_System',
-        RealName => 'The RT System itself',
-        Comments => 'Do not delete or modify this user. '
-            . 'It is integral to RT\'s internal database structures',
-        Creator  => '1',
-        LastUpdatedBy => '1',
-    );
-    return ($val, $msg) unless $val;
 
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
 
     $CurrentUser = new RT::CurrentUser;
     $CurrentUser->LoadByName('RT_System');
     unless ( $CurrentUser->id ) {
-        print "Couldn't load system user\n";
-        exit(-1);
+        return (0, "Couldn't load system user");
     }
 
-    my $superuser_ace = RT::ACE->new( $CurrentUser );
-    $superuser_ace->_BootstrapCreate(
+    my $test_ace = RT::ACE->new( $CurrentUser );
+    $test_ace->LoadByCols(
         PrincipalId   => ACLEquivGroupId( $CurrentUser->Id ),
         PrincipalType => 'Group',
         RightName     => 'SuperUser',
         ObjectType    => 'RT::System',
         ObjectId      => 1,
     );
+    if ( $test_ace->id ) {
+        push @warns, "System user has global SuperUser right.";
+        
+    } else {
+        my $superuser_ace = RT::ACE->new( $CurrentUser );
+        $superuser_ace->_BootstrapCreate(
+            PrincipalId   => ACLEquivGroupId( $CurrentUser->Id ),
+            PrincipalType => 'Group',
+            RightName     => 'SuperUser',
+            ObjectType    => 'RT::System',
+            ObjectId      => 1,
+        );
+    }
+    DBIx::SearchBuilder::Record::Cachable->FlushCache;
 
-    $RT::Handle->Disconnect() unless $db_type eq 'SQLite';
-    return (1);
+    push @warns, "You appear to have a functional RT database."
+        if @warns;
+
+    return (1, @warns);
 }
 
 =head InsertData
