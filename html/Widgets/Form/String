@@ -60,6 +60,7 @@ see docs/using_forms_widgets.pod
 $Name
 
 $Description  => undef,
+$Hints        => ''
 
 $CurrentValue => '',
 
