@@ -64,7 +64,7 @@ if (defined $class) {
    $m->print('<h2>'.'<a href="'.
    $RT::WebPath."/RTFM/Topics.html?class=" . $currclass_id
    .'">'.$currclass_name."</a></h2>\n");
-   ProduceTree(\@Actions, $currclass, 0, $id);
+   ProduceTree(\@Actions, $currclass, $currclass_id, $currclass_name, 0, $id);
 } else {
     $m->print("<ul>\n");
     while (my $c = $Classes->Next) {
@@ -176,7 +176,7 @@ if ($id) {
 # the branch of the hierarchy which contains that topic ID.
 
 sub ProduceTree {
-    my ($Actions, $c, $parentid, $restrictid) = @_;
+    my ($Actions, $currclass, $currclass_id, $currclass_name, $parentid, $restrictid) = @_;
     $parentid = 0 unless $parentid;
 
     # Deal with tree restriction, if any.
@@ -184,10 +184,10 @@ sub ProduceTree {
         my $rtopic = RT::FM::Topic->new($session{'CurrentUser'});
 	$rtopic->Load($restrictid);
 	unless ($rtopic->Id() &&
-	        $rtopic->ObjectId() == $c->Id) {
+	        $rtopic->ObjectId() == $currclass_id) {
 	    push(@{$Actions}, "Could not restrict view to topic $restrictid");
 	    # Start over, without the restriction.
-	    &ProduceTree($Actions, $c, $parentid, undef);
+	    &ProduceTree($Actions, $currclass, $currclass_id, $currclass_name, $parentid, undef);
 	} else {
 	    my @showtopics;
 	    push(@showtopics, $rtopic);
@@ -202,9 +202,9 @@ sub ProduceTree {
             my $indents = @showtopics;
 	    while (my $t = pop @showtopics) {
 		print "<ul>";
-		print &MakeLinks($t, $c, $t->Children->Count);
+		print &MakeLinks($t, $currclass, $currclass_id, $currclass_name, $t->Children->Count);
 		if ($t->Id == $restrictid) {
-		    &ProduceTree($Actions, $c, $restrictid, undef);
+		    &ProduceTree($Actions, $currclass, $currclass_id, $currclass_name, $restrictid, undef);
 		}
 	    }
             print "</ul>" x $indents;
@@ -212,15 +212,15 @@ sub ProduceTree {
     } else {
 	# No restriction in place.  Build the entire tree.
 	my $topics = RT::FM::TopicCollection->new($session{'CurrentUser'});
-	$topics->LimitToObject($c);
+	$topics->LimitToObject($currclass);
 	$topics->LimitToKids($parentid);
         print "<ul>" if $topics->Count;
 	while (my $t = $topics->Next) {
 	    if ($t->Children->Count) {
-		print &MakeLinks($t, $c, 1);
-		&ProduceTree($Actions, $c, $t->Id);
+		print &MakeLinks($t, $currclass, $currclass_id, $currclass_name, 1);
+		&ProduceTree($Actions, $currclass, $currclass_id, $currclass_name, $t->Id);
 	    } else {
-		print &MakeLinks($t, $c, 0);
+		print &MakeLinks($t, $currclass, $currclass_id, $currclass_name, 0);
 	    }
 	}
         print "</ul>\n" if $topics->Count;
@@ -228,7 +228,7 @@ sub ProduceTree {
 }
 
 sub MakeLinks {
-    my ($topic, $c, $haschild) = @_;
+    my ($topic, $currclass, $currclass_id, $currclass_name, $haschild) = @_;
     my $query;
     my $output;
 
@@ -238,7 +238,7 @@ sub MakeLinks {
         $topic_info .= ": " . $topic->Description() if $topic->Description;
 
 	if ($haschild) {
-	    $query = "Topics.html?id=" . $topic->Id . "&class=" . $c->Id;
+	    $query = "Topics.html?id=" . $topic->Id . "&class=" . $currclass_id;
             $output = qq(<li><a href="$query">$topic_info</a>);
 	} else {
             $output = qq(<li>$topic_info);
@@ -254,9 +254,9 @@ sub MakeLinks {
     } else {
 	# This builds a link for the class specified, with no particular
 	# topic.
-	$query = "Topics.html?class=" . $c->Id;
-	$output = "<li><a href=\"$query\">" . $c->Name . "</a>";
-	$output .= ": " . $c->Description if $c->Description;
+	$query = "Topics.html?class=" . $currclass_id;
+	$output = "<li><a href=\"$query\">" . $currclass_name . "</a>";
+	$output .= ": " . $currclass->Description if $currclass->Description;
     }
     
     return $output;
