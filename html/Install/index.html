@@ -87,6 +87,23 @@ my $dump_config = sub {
     return $res;
 };
 
+
+my $get_dbh = sub {
+    my ($dsn, $user, $pass) = @_;
+    unless ( $user ) {
+        my $user = RT->Config->Get('DatabaseUser');
+        my $password = RT->Config->Get('DatabasePassword');
+    }
+    my $dbh = DBI->connect(
+        $dsn, $user, $pass,
+        { RaiseError => 0, PrintError => 0 },
+    );
+    unless ( $dbh ) {
+        return (undef, "Failed to connect to $dsn as user '$user': ". $DBI::errstr);
+    }
+    return $dbh;
+};
+
 </%ONCE>
 Hello, looks like it's new intallation of RT.
 
@@ -95,9 +112,9 @@ We're going to bla-bla... intstall RT.
 <h1>Database</h1>
 
 <form method="post">
-% for ( @DefinedOptions ) {
+% for ( grep $DefinedOptions{$_}, keys %DefinedOptions ) {
 <input type="hidden" name="DefinedOptions" value="<% $_ %>" />
-<input type="hidden" name="<% $_ %>" value="<% $_ %>" />
+<input type="hidden" name="<% $_ %>" value="<% $config{ $_ } %>" />
 % }
 
 % if ( $CurrentOption eq 'DatabaseType' || $DefinedOptions{'DatabaseType'} ) {
@@ -298,20 +315,8 @@ if ( $DefinedOptions{'DatabaseType'} ) {
     }
 }
 
-my @RequiredOptions = @ORDERED_OPTIONS;
-if ( $DefinedOptions{'DatabaseType'} && $config{'DatabaseType'} eq 'SQLite' ) {
-    @RequiredOptions = qw(DatabaseType DatabaseName);
-}
-if ( $DefinedOptions{'DatabaseType'} && $config{'DatabaseType'} eq 'mysql' && $DefinedOptions{'DatabaseHost'} ) {
-    @RequiredOptions = grep $_ ne 'DatabaseRTHost', @RequiredOptions
-        if !$config{'DatabaseHost'} || $config{'DatabaseHost'} eq 'localhost';
-}
-my %RequiredOptions = map { $_ => 1 } @RequiredOptions;
-
-my $CurrentOption = (grep !$DefinedOptions{ $_ }, @RequiredOptions)[0];
-warn $CurrentOption;
-
-if ( $ARGS{'DatabaseCreate'} ) {
+my $ActionError;
+if ( $ARGS{'DatabaseCreate'} ) { {
     warn($dump_config->(%config));
     {
         open my $fh, '>', '/tmp/site-config';
@@ -326,12 +331,36 @@ if ( $ARGS{'DatabaseCreate'} ) {
 
     my ($dbh, $status, $msg);
 
-    ($dbh, $msg) = _get_dbh( RT::Handle->SystemDSN, $dba_user, $dba_pass );
+    ($dbh, $msg) = $get_dbh->( RT::Handle->SystemDSN, $dba_user, $dba_pass );
+    unless ( $dbh ) {
+        $ActionError = "Couldn't connect to the DB using system DSN and admin credentials: $msg";
+        delete $DefinedOptions{$_} foreach qw(DatabaseHost DatabasePort DatabaseAdmin DatabaseAdminPassword);
+        last;
+    }
     ($status, $msg) = RT::Handle->CreateDatabase( $dbh );
+    unless ( $status ) {
+        $ActionError = "Couldn't create DB: $msg";
+        last;
+    }
 
-    ($dbh, $msg) = _get_dbh( RT::Handle->DSN, $dba_user, $dba_pass );
+    ($dbh, $msg) = $get_dbh->( RT::Handle->DSN, $dba_user, $dba_pass );
+    unless ( $dbh ) {
+        $ActionError = "Couldn't connect to the new RT DB using admin credentials: $msg";
+        delete $DefinedOptions{$_} foreach qw(DatabaseHost DatabasePort DatabaseAdmin DatabaseAdminPassword);
+        last;
+    }
+
     ($status, $msg) = RT::Handle->InsertSchema( $dbh );
+    unless ( $status ) {
+        $ActionError = "Couldn't insert database schema: $msg";
+        last;
+    }
+
     ($status, $msg) = RT::Handle->InsertACL( $dbh );
+    unless ( $status ) {
+        $ActionError = "Couldn't setup access control: $msg";
+        last;
+    }
 
     RT::ConnectToDatabase();
     RT::InitLogging();
@@ -343,21 +372,18 @@ if ( $ARGS{'DatabaseCreate'} ) {
     RT::Init();
 
     ($status, $msg) = $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
-}
+} }
 
-sub _get_dbh {
-    my ($dsn, $user, $pass) = @_;
-    unless ( $user ) {
-        my $user = RT->Config->Get('DatabaseUser');
-        my $password = RT->Config->Get('DatabasePassword');
-    }
-    my $dbh = DBI->connect(
-        $dsn, $user, $pass,
-        { RaiseError => 0, PrintError => 0 },
-    );
-    unless ( $dbh ) {
-        return (undef, "Failed to connect to $dsn as user '$user': ". $DBI::errstr);
-    }
-    return $dbh;
+my @RequiredOptions = @ORDERED_OPTIONS;
+if ( $DefinedOptions{'DatabaseType'} && $config{'DatabaseType'} eq 'SQLite' ) {
+    @RequiredOptions = qw(DatabaseType DatabaseName);
 }
+if ( $DefinedOptions{'DatabaseType'} && $config{'DatabaseType'} eq 'mysql' && $DefinedOptions{'DatabaseHost'} ) {
+    @RequiredOptions = grep $_ ne 'DatabaseRTHost', @RequiredOptions
+        if !$config{'DatabaseHost'} || $config{'DatabaseHost'} eq 'localhost';
+}
+my %RequiredOptions = map { $_ => 1 } @RequiredOptions;
+
+my $CurrentOption = (grep !$DefinedOptions{ $_ }, @RequiredOptions)[0];
+
 </%INIT>
