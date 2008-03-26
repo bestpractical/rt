@@ -214,6 +214,7 @@ sub ProduceTree {
 	my $topics = RT::FM::TopicCollection->new($session{'CurrentUser'});
 	$topics->LimitToObject($currclass);
 	$topics->LimitToKids($parentid);
+	$topics->OrderBy( FIELD => 'Name' );
         print "<ul>" if $topics->Count;
 	while (my $t = $topics->Next) {
 	    if ($t->Children->Count) {
