@@ -49,9 +49,8 @@ package RT::Action::NotifyAsComment;
 require RT::Action::Notify;
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Action::Notify);
-
+use warnings;
+use base qw(RT::Action::Notify);
 
 =head2 SetReturnAddress
 
