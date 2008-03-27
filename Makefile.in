@@ -154,6 +154,7 @@ SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/rt-dump-database \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-test-dependencies \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-clean-sessions \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-shredder
+				$(DESTDIR)/$(RT_SBIN_PATH)/rt-notify-group-admin
 
 # }}}
 
@@ -431,13 +432,15 @@ sbin-install:
 		sbin/rt-setup-database \
 		sbin/rt-test-dependencies \
 		sbin/rt-clean-sessions \
-		sbin/rt-shredder
+		sbin/rt-shredder \
+		sbin/rt-notify-group-admin
 	-cp -rp \
 		sbin/rt-dump-database \
 		sbin/rt-setup-database \
 		sbin/rt-test-dependencies \
 		sbin/rt-clean-sessions \
 		sbin/rt-shredder \
+		sbin/rt-notify-group-admin \
 		$(DESTDIR)/$(RT_SBIN_PATH)
 
 # }}}

@@ -303,6 +303,7 @@ AC_CONFIG_FILES([
          sbin/rt-clean-sessions
          sbin/rt-shredder
          sbin/rt-validator
+         sbin/rt-notify-group-admin
  		 bin/mason_handler.fcgi
  		 bin/mason_handler.scgi
  		 bin/standalone_httpd
