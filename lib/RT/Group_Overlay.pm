@@ -282,8 +282,10 @@ sub LoadSystemInternalGroup {
     my $self       = shift;
     my $identifier = shift;
 
-        $self->LoadByCols( "Domain" => 'SystemInternal',
-                           "Type" => $identifier );
+    return $self->LoadByCols(
+        Domain => 'SystemInternal',
+        Type   => $identifier,
+    );
 }
 
 # }}}

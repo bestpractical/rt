@@ -13,24 +13,6 @@
 
 @Groups = (
     { Name        => '',
-      Type        => 'Everyone',                        # loc
-      Domain      => 'SystemInternal',
-      Instance    => '',
-      Description => 'Pseudogroup for internal use',    # loc
-    },
-    { Type        => 'Privileged',                      # loc
-      Domain      => 'SystemInternal',
-      Instance    => '',
-      Name        => '',
-      Description => 'Pseudogroup for internal use',    # loc
-    },
-    { Name        => '',
-      Type        => 'Unprivileged',                    # loc
-      Domain      => 'SystemInternal',
-      Instance    => '',
-      Description => 'Pseudogroup for internal use',    # loc
-    },
-    { Name        => '',
       Type        => 'Owner',                               # loc
       Domain      => 'RT::System-Role',
       Instance    => '',

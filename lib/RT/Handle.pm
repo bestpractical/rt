@@ -514,20 +514,19 @@ sub cmp_version($$) {
 sub InsertInitialData {
     my $self    = shift;
 
-    #Put together a current user object so we can create a User object
-    require RT::CurrentUser;
-    my $CurrentUser = new RT::CurrentUser;
-
     my @warns;
 
+    # create RT_System user and grant him rights
     {
-        my $test_user = RT::User->new($CurrentUser);
+        require RT::CurrentUser;
+
+        my $test_user = RT::User->new( new RT::CurrentUser );
         $test_user->Load('RT_System');
         if ( $test_user->id ) {
             push @warns, "Found system user in the DB.";
         }
         else {
-            my $user = RT::User->new( $CurrentUser );
+            my $user = RT::User->new( new RT::CurrentUser );
             my ( $val, $msg ) = $user->_BootstrapCreate(
                 Name     => 'RT_System',
                 RealName => 'The RT System itself',
@@ -538,20 +537,38 @@ sub InsertInitialData {
             );
             return ($val, $msg) unless $val;
         }
-
         DBIx::SearchBuilder::Record::Cachable->FlushCache;
     }
 
-    $CurrentUser = new RT::CurrentUser;
-    $CurrentUser->LoadByName('RT_System');
-    unless ( $CurrentUser->id ) {
+    # init RT::SystemUser and RT::System objects
+    RT::InitSystemObjects();
+    unless ( $RT::SystemUser->id ) {
         return (0, "Couldn't load system user");
     }
 
+    foreach my $name (qw(Everyone Privileged Unprivileged)) {
+        my $group = RT::Group->new( $RT::SystemUser );
+        $group->LoadSystemInternalGroup( $name );
+        if ( $group->id ) {
+            push @warns, "System group '$name' already exists.";
+            next;
+        }
+
+        $group = RT::Group->new( $RT::SystemUser );
+        my ( $val, $msg ) = $group->_Create(
+            Type        => $name,
+            Domain      => 'SystemInternal',
+            Description => 'Pseudogroup for internal use',  # loc
+            Name        => '',
+            Instance    => '',
+        );
+        return ($val, $msg) unless $val;
+    }
+
     {
-        my $test_ace = RT::ACE->new( $CurrentUser );
+        my $test_ace = RT::ACE->new( $RT::SystemUser );
         $test_ace->LoadByCols(
-            PrincipalId   => ACLEquivGroupId( $CurrentUser->Id ),
+            PrincipalId   => ACLEquivGroupId( $RT::SystemUser->Id ),
             PrincipalType => 'Group',
             RightName     => 'SuperUser',
             ObjectType    => 'RT::System',
@@ -561,9 +578,9 @@ sub InsertInitialData {
             push @warns, "System user has global SuperUser right.";
             
         } else {
-            my $ace = RT::ACE->new( $CurrentUser );
+            my $ace = RT::ACE->new( $RT::SystemUser );
             my ( $val, $msg ) = $ace->_BootstrapCreate(
-                PrincipalId   => ACLEquivGroupId( $CurrentUser->Id ),
+                PrincipalId   => ACLEquivGroupId( $RT::SystemUser->Id ),
                 PrincipalType => 'Group',
                 RightName     => 'SuperUser',
                 ObjectType    => 'RT::System',
@@ -576,24 +593,23 @@ sub InsertInitialData {
 
     # nobody
     {
-        my $user = RT::User->new( $CurrentUser );
+        my $user = RT::User->new( $RT::SystemUser );
         $user->Load('Nobody');
         if ( $user->id ) {
             push @warns, "Found 'Nobody' user in the DB.";
         }
         else {
-            $user = RT::User->new( $CurrentUser );
-            my ( $val, $msg ) = $user->_BootstrapCreate(
+            my ( $val, $msg ) = $user->Create(
                 Name     => 'Nobody',
                 RealName => 'Nobody in particular',
                 Comments => 'Do not delete or modify this user. It is integral '
                     .'to RT\'s internal data structures',
-                Privileged => '0',
+                Privileged => 0,
             );
             return ($val, $msg) unless $val;
         }
 
-        my $test_ace = RT::ACE->new( $CurrentUser );
+        my $test_ace = RT::ACE->new( $RT::SystemUser );
         $test_ace->LoadByCols(
             PrincipalId   => ACLEquivGroupId( $user->Id ),
             PrincipalType => 'Group',
@@ -604,7 +620,7 @@ sub InsertInitialData {
         if ( $test_ace->id ) {
             push @warns, "User 'Nobody' has global OwnTicket right.";
         } else {
-            my $ace = RT::ACE->new( $CurrentUser );
+            my $ace = RT::ACE->new( $RT::SystemUser );
             my ( $val, $msg ) = $ace->_BootstrapCreate(
                 PrincipalId   => ACLEquivGroupId( $user->Id ),
                 PrincipalType => 'Group',
@@ -619,7 +635,7 @@ sub InsertInitialData {
     push @warns, "You appear to have a functional RT database."
         if @warns;
 
-    return (1, @warns);
+    return (1, join "\n", @warns);
 }
 
 =head InsertData
