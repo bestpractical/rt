@@ -12,30 +12,7 @@
 );
 
 @Groups = (
-    { Name        => '',
-      Type        => 'Owner',                               # loc
-      Domain      => 'RT::System-Role',
-      Instance    => '',
-      Description => 'SystemRolegroup for internal use',    # loc
-    },
-    { Name        => '',
-      Type        => 'Requestor',                           # loc
-      Domain      => 'RT::System-Role',
-      Instance    => '',
-      Description => 'SystemRolegroup for internal use',    # loc
-    },
-    { Name        => '',
-      Type        => 'Cc',                                  # loc
-      Domain      => 'RT::System-Role',
-      Instance    => '',
-      Description => 'SystemRolegroup for internal use',    # loc
-    },
-    { Name        => '',
-      Type        => 'AdminCc',                             # loc
-      Domain      => 'RT::System-Role',
-      Instance    => '',
-      Description => 'Pseudogroup for internal use',        # loc
-    }, );
+);
 
 @Queues = ({ Name              => 'General',
              Description       => 'The default queue',

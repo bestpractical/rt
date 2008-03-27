@@ -509,6 +509,15 @@ sub cmp_version($$) {
 
 =head2 InsertInitialData
 
+Inserts system objects into RT's DB, like system user or 'nobody',
+internal groups and other records required. However, this method
+doesn't insert any real users like 'root' and you have to use
+InsertData or another way to do that.
+
+Takes no arguments. Returns status and message tuple.
+
+It's safe to call this method even if those objects already exist.
+
 =cut
 
 sub InsertInitialData {
@@ -546,6 +555,33 @@ sub InsertInitialData {
         return (0, "Couldn't load system user");
     }
 
+    # grant SuperUser right to system user
+    {
+        my $test_ace = RT::ACE->new( $RT::SystemUser );
+        $test_ace->LoadByCols(
+            PrincipalId   => ACLEquivGroupId( $RT::SystemUser->Id ),
+            PrincipalType => 'Group',
+            RightName     => 'SuperUser',
+            ObjectType    => 'RT::System',
+            ObjectId      => 1,
+        );
+        if ( $test_ace->id ) {
+            push @warns, "System user has global SuperUser right.";
+        } else {
+            my $ace = RT::ACE->new( $RT::SystemUser );
+            my ( $val, $msg ) = $ace->_BootstrapCreate(
+                PrincipalId   => ACLEquivGroupId( $RT::SystemUser->Id ),
+                PrincipalType => 'Group',
+                RightName     => 'SuperUser',
+                ObjectType    => 'RT::System',
+                ObjectId      => 1,
+            );
+            return ($val, $msg) unless $val;
+        }
+        DBIx::SearchBuilder::Record::Cachable->FlushCache;
+    }
+
+    # system groups
     foreach my $name (qw(Everyone Privileged Unprivileged)) {
         my $group = RT::Group->new( $RT::SystemUser );
         $group->LoadSystemInternalGroup( $name );
@@ -563,32 +599,6 @@ sub InsertInitialData {
             Instance    => '',
         );
         return ($val, $msg) unless $val;
-    }
-
-    {
-        my $test_ace = RT::ACE->new( $RT::SystemUser );
-        $test_ace->LoadByCols(
-            PrincipalId   => ACLEquivGroupId( $RT::SystemUser->Id ),
-            PrincipalType => 'Group',
-            RightName     => 'SuperUser',
-            ObjectType    => 'RT::System',
-            ObjectId      => 1,
-        );
-        if ( $test_ace->id ) {
-            push @warns, "System user has global SuperUser right.";
-            
-        } else {
-            my $ace = RT::ACE->new( $RT::SystemUser );
-            my ( $val, $msg ) = $ace->_BootstrapCreate(
-                PrincipalId   => ACLEquivGroupId( $RT::SystemUser->Id ),
-                PrincipalType => 'Group',
-                RightName     => 'SuperUser',
-                ObjectType    => 'RT::System',
-                ObjectId      => 1,
-            );
-            return ($val, $msg) unless $val;
-        }
-        DBIx::SearchBuilder::Record::Cachable->FlushCache;
     }
 
     # nobody
@@ -609,27 +619,38 @@ sub InsertInitialData {
             return ($val, $msg) unless $val;
         }
 
-        my $test_ace = RT::ACE->new( $RT::SystemUser );
-        $test_ace->LoadByCols(
-            PrincipalId   => ACLEquivGroupId( $user->Id ),
-            PrincipalType => 'Group',
-            RightName     => 'OwnTicket',
-            ObjectType    => 'RT::System',
-            ObjectId      => 1,
-        );
-        if ( $test_ace->id ) {
+        if ( $user->HasRight( Right => 'OwnTicket', Object => $RT::System ) ) {
             push @warns, "User 'Nobody' has global OwnTicket right.";
         } else {
-            my $ace = RT::ACE->new( $RT::SystemUser );
-            my ( $val, $msg ) = $ace->_BootstrapCreate(
-                PrincipalId   => ACLEquivGroupId( $user->Id ),
-                PrincipalType => 'Group',
-                RightName     => 'OwnTicket',
-                ObjectType    => 'RT::System',
-                ObjectId      => 1,
+            my ( $val, $msg ) = $user->PrincipalObj->GrantRight(
+                Right => 'OwnTicket',
+                Object => $RT::System,
             );
             return ($val, $msg) unless $val;
         }
+    }
+
+    # rerun to get init Nobody as well
+    RT::InitSystemObjects();
+
+    # system role groups
+    foreach my $name (qw(Owner Requestor Cc AdminCc)) {
+        my $group = RT::Group->new( $RT::SystemUser );
+        $group->LoadSystemRoleGroup( $name );
+        if ( $group->id ) {
+            push @warns, "System role '$name' already exists.";
+            next;
+        }
+
+        $group = RT::Group->new( $RT::SystemUser );
+        my ( $val, $msg ) = $group->_Create(
+            Type        => $name,
+            Domain      => 'RT::System-Role',
+            Description => 'SystemRolegroup for internal use',  # loc
+            Name        => '',
+            Instance    => '',
+        );
+        return ($val, $msg) unless $val;
     }
 
     push @warns, "You appear to have a functional RT database."
