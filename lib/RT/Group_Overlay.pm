@@ -240,7 +240,7 @@ sub LoadACLEquivalenceGroup {
     return $self->LoadByCols(
         Domain   => 'ACLEquivalence',
         Type     => 'UserEquiv',
-        Instance => $id,
+        Instance => $principal,
     );
 }
 
