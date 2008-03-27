@@ -1,0 +1,13 @@
+ul.list-menu .menu-item {
+ font-size: 1.25em;
+}
+ul.list-menu {
+ list-style: none;
+
+}
+ul.list-menu .description {
+ display: block;
+ padding: 0.5em;
+ font-style: italic;
+ padding-left: 1em;
+}

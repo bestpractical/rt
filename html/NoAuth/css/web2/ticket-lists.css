@@ -1,6 +1,5 @@
-table.ticket-list, table.queue-summary {
+table.ticket-list, table.queue-summary, table.collection {
   margin-top: 0.75em;
-  margin-right: 1em;
   font-size: 0.9em;
   border: 1px solid #aaa;
   border-bottom: 2px solid #999;
@@ -20,12 +19,12 @@ table.queue-summary tr>*:last-child {
 
 }
 
-table.ticket-list a, table.queue-summary a {
+table.ticket-list a, table.queue-summary a, table.collection a  {
   font-weight: bold;
 }
 
 
-table.ticket-list th.collection-as-table {
+table.ticket-list th.collection-as-table, table.collection th.collection-as-table {
   background: #ddd;
  font-size: 0.9em;
   margin-bottom: 0.5em;

@@ -33,8 +33,8 @@
 
 
 #comp-Search-Build #sorting.titlebox {
- width: 57%;
-
+ width: 55%;
+ padding-right: 1em;
 }
 
 #comp-Search-Build #columns {

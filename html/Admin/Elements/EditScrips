@@ -51,7 +51,6 @@
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
 <h2><&|/l&>Current Scrips</&></h2>
-<p><i><&|/l&>(Check box to delete)</&></i></p>
 <& /Elements/CollectionList,
     OrderBy => 'Description',
     Order => 'ASC',
@@ -64,10 +63,11 @@
     PassArguments => [ qw(Query Format Rows Page Order OrderBy id) ],
 &>
 
-% unless ( $Scrips->Count ) {
+% if ( $Scrips->Count ) {
+<p><i><&|/l&>(Check box to delete)</&></i></p>
+% } else  {
 <p><i><&|/l&>(No scrips)</&></i></p>
 % }
-
 <& /Elements/Submit,
     Caption => loc("Delete selected scrips"),
     Label => loc("Delete")

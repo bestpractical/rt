@@ -8,6 +8,8 @@ div#nav {
  background: #fff;
  -moz-border-radius-bottomright: 0.5em;
  -webkit-border-bottom-right-radius: 0.5em;
+  border-left: 1px solid #999;  
+border-top: 1px solid #999;
 
  -moz-border-radius-topright: 0.5em;
  -webkit-border-top-right-radius: 0.5em;

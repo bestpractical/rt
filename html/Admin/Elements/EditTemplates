@@ -54,7 +54,6 @@
 <p><i><&|/l&>(No templates)</&></i></p>
 % } else {
 
-<i><&|/l&>(Check box to delete)</&></i>
 
 <& /Elements/CollectionList,
     OrderBy       => 'id',
@@ -66,6 +65,8 @@
     AllowSorting  => 1,
     PassArguments => [qw(Format Rows Page Order OrderBy FindDisabledQueues)],
 &>
+
+<i><&|/l&>(Check box to delete)</&></i>
 % }
 
 <& /Elements/Submit, Label => loc('Delete Template') &>

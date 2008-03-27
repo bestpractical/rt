@@ -49,43 +49,35 @@
 <& /Admin/Elements/Header, Title => loc('Admin/Global configuration') &>
 <& /Admin/Elements/SystemTabs, 
     Title => loc('Admin/Global configuration') &>
-
-<ul>
-% foreach my $key (sort keys %$tabs) {
-<li><span><a href="<% $tabs->{$key}{path} %>"><% $tabs->{$key}{title} %></a></span><br />
-<% $tabs->{$key}{text} %>
-</li>
-% }
-</ul>
-
+    <& /Elements/ListMenu, items => $tabs &>
 <%INIT>
   my $tabs = {
                 
                A => { title => loc('Scrips'),
                            text => loc('Modify scrips which apply to all queues'),
-                           path => 'Scrips.html',
+                           path => '/Admin/Global/Scrips.html',
                          },
                B => { title => loc('Templates'),
                         text => loc('Edit system templates'),
-                        path => 'Templates.html',
+                        path => '/Admin/Global/Templates.html',
                       },
               
                 F => { title => loc('Custom Fields'),
                 text => loc('Modify global custom fields'),
-                        path => 'CustomFields/index.html',
+                        path => '/Admin/Global/CustomFields/index.html',
                         },
 
                 G => { title => loc('Group Rights'),
                                 text => loc('Modify global group rights'),
-                                path => 'GroupRights.html',
+                                path => '/Admin/Global/GroupRights.html',
                       },
                 H => { title => loc('User Rights'),
                                 text => loc('Modify global user rights'),
-                                path => 'UserRights.html',
+                                path => '/Admin/Global/UserRights.html',
                       },
                 I => { title => loc('RT at a glance'),
                                 text => loc('Modify the default "RT at a glance" view'),
-                                path => 'MyRT.html',
+                                path => '/Admin/Global/MyRT.html',
                       },
 
 

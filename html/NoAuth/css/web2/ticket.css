@@ -16,7 +16,13 @@ div#ticket-history div.odd {
 }
 
 div#ticket-history {
- margin-right: 1em;
+
+ margin-top: 0.75em;
+ border-left: 1px solid #ccc;
+
+ border-right: 2px solid #999; 
+  border-bottom: 2px solid #999;
+
 }
 
 div#ticket-history td.actions {
@@ -37,6 +43,9 @@ div#ticket-history td.type {
  margin: 0.25em;
  width: 1em;
  height: 1.5em;
+ border-right: 1px solid #999;
+ border-bottom: 1px solid #999;
+
  -moz-border-radius: 0.25em;
  -webkit-border-bottom-right-radius: 0.25em;
 
@@ -110,6 +119,10 @@ div#ticket-history .messagebody {
  margin-left: 2em;
 
 }
+
+
+
+
 
 
 .ticket-transaction.basics .type { background: #b32; }

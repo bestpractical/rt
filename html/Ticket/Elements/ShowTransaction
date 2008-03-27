@@ -60,7 +60,7 @@
       <% $Transaction->CreatorObj->Name %> - <% $TicketString %> <% $desc %>
     </td>
     <td class="time-taken"><% $TimeTaken %></td>
-    <td class="actions"><% $titlebar_commands |n %></td>
+    <td class="actions<% $titlebar_commands ? '': ' hidden'%>"><% $titlebar_commands |n %></td>
   </tr>
 
   <tr>
@@ -157,7 +157,7 @@ unless ($Attachments) {
     $attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId) );
     $Attachments = $attachments->ItemsArrayRef();
 }
-my $titlebar_commands = '&nbsp;';
+my $titlebar_commands = '';
 
 if ( $type =~ /EmailRecord$/ ) {
 

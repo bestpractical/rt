@@ -10,7 +10,7 @@
  margin-bottom: 2em;
  border-bottom: 2px solid #aaa;
  border-right: 2px solid #aaa;
-
+ padding-right: 1em;
 }
 
 
@@ -22,8 +22,7 @@
  -moz-border-radius: 0.5em;
  -webkit-border-radius: 0.5em;
  margin-right: 1em;
-
-
+ 
 }
 
 
@@ -33,6 +32,7 @@
  margin-top: -1.5em;
  padding-bottom: 0.25em;
  padding-left: 1em;
+ margin-right: -1em;
  
 }
 

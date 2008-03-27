@@ -48,13 +48,7 @@
 <& /Admin/Elements/Header, Title => loc('RT Administration') &>
 <& /Admin/Elements/Tabs, Title => loc('RT Administration') &>
 
-<ul>
-%    foreach my $key (sort keys %$tabs) {
-<li><span><a href="<%RT->Config->Get('WebPath')%>/<%$tabs->{$key}->{'path'}|n %>"><%$tabs->{$key} ->{'title'}%></a></span><br />
-<%$tabs->{$key}->{description}%>
-</li>
-%}
-</ul>
+<& /Elements/ListMenu, items => $tabs &>
 <%init>
 
 

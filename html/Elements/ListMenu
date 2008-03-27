@@ -1,0 +1,11 @@
+<%args>
+$items
+</%args>
+<ul class="list-menu">
+%    foreach my $key (sort keys %$items) {
+<li><span class="menu-item"><a href="<%RT->Config->Get('WebPath')%><%$items->{$key}->{'path'}|n %>"><%$items->{$key}->{'title'}%></a></span><br />
+<span class="description"><%$items->{$key}->{description} || $items->{$key}->{text} %></span>
+
+</li>
+%}
+</ul>

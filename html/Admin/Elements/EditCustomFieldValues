@@ -50,7 +50,6 @@
 %    return;
 % }
 
-<i><&|/l&>(Check box to delete)</&></i>
 <table>
 
 <tr>
@@ -78,6 +77,7 @@
 % }
 
 </table>
+<i><&|/l&>(Check box to delete)</&></i>
 <%init>
 
 my $values = $CustomField->ValuesObj();
