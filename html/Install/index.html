@@ -111,6 +111,10 @@ We're going to bla-bla... intstall RT.
 
 <h1>Database</h1>
 
+% if ( $ActionError ) {
+<span class="error"><% $ActionError %></span>
+% }
+
 <form method="post">
 % for ( grep $DefinedOptions{$_}, keys %DefinedOptions ) {
 <input type="hidden" name="DefinedOptions" value="<% $_ %>" />
