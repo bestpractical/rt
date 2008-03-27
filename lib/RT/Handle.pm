@@ -513,7 +513,6 @@ sub cmp_version($$) {
 
 sub InsertInitialData {
     my $self    = shift;
-    my $db_type = RT->Config->Get('DatabaseType');
 
     #Put together a current user object so we can create a User object
     require RT::CurrentUser;
@@ -562,14 +561,15 @@ sub InsertInitialData {
             push @warns, "System user has global SuperUser right.";
             
         } else {
-            my $superuser_ace = RT::ACE->new( $CurrentUser );
-            $superuser_ace->_BootstrapCreate(
+            my $ace = RT::ACE->new( $CurrentUser );
+            my ( $val, $msg ) = $ace->_BootstrapCreate(
                 PrincipalId   => ACLEquivGroupId( $CurrentUser->Id ),
                 PrincipalType => 'Group',
                 RightName     => 'SuperUser',
                 ObjectType    => 'RT::System',
                 ObjectId      => 1,
             );
+            return ($val, $msg) unless $val;
         }
         DBIx::SearchBuilder::Record::Cachable->FlushCache;
     }
