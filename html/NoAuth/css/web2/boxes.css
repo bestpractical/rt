@@ -70,18 +70,15 @@
 .titlebox .titlebox-title .right {
   position: absolute;
    right: 0;
-   top: 0.9em;
-  /*float: right;
-  margin-top: -1em;
-  margin-right: 0em; */
-  font-size: 0.6em;
+   top: 0.5em;
+  font-size: 0.9em;
   background: #dedede;
   border-left: 1px solid #ccc;
  border-bottom: 1px solid #ccc;
  padding-right: 0.4em;
  padding-left: 0.4em;
  padding-bottom: 0.2em;
- padding-top: 0.2em;
+ padding-top: 0.5em;
  -moz-border-radius-bottomleft: 0.25em;
  -webkit-border-bottom-left-radius: 0.25em;
  

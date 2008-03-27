@@ -96,6 +96,7 @@
 
 	  <&| /Widgets/TitleBox, title => loc('Links'), 
 		title_href => RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id, 
+        titleright_raw => '<a href="'. $RT::WebPath. '/Ticket/Graphs/index.html?id='.$Ticket->id .'&Type=Links">'.loc('Graph').'</a>',
 		class => 'ticket-info-links' &>
 	        <& /Elements/ShowLinks, Ticket => $Ticket &>
           </&>

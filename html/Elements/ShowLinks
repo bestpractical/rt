@@ -103,15 +103,6 @@
     </td>
   </tr>
 
-<tr><td colspan="2"><hr /></td></tr>
-<tr><td colspan="2">
-<a href="<% $RT::WebPath %>/Ticket/Graphs/index.html?id=<% $Ticket->id %>&Type=Members">
-<% loc('Ticket Relationship Graph') %>
-</a></td></tr>
-<tr><td colspan="2">
-<a href="<% $RT::WebPath %>/Ticket/Graphs/index.html?id=<% $Ticket->id %>&Type=Links">
-<% loc('Ticket Full Relationship Graph') %>
-</a></td></tr>
 
 % # Allow people to add more rows to the table
 % $m->callback( %ARGS );
