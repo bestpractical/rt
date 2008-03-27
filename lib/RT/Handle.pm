@@ -941,12 +941,19 @@ Given a userid, return that user's acl equivalence group
 =cut
 
 sub ACLEquivGroupId {
-    my $username = shift;
-    my $user     = RT::User->new($RT::SystemUser);
-    $user->Load($username);
-    my $equiv_group = RT::Group->new($RT::SystemUser);
-    $equiv_group->LoadACLEquivalenceGroup($user);
-    return ( $equiv_group->Id );
+    my $id = shift;
+
+    my $cu = $RT::SystemUser;
+    unless ( $cu ) {
+        require RT::CurrentUser;
+        $cu = new RT::CurrentUser;
+        $cu->LoadByName('RT_System');
+        warn "Couldn't load RT_System user" unless $cu->id;
+    }
+
+    my $equiv_group = RT::Group->new( $cu );
+    $equiv_group->LoadACLEquivalenceGroup( $id );
+    return $equiv_group->Id;
 }
 
 eval "require RT::Handle_Vendor";
