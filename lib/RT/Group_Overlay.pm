@@ -221,26 +221,27 @@ sub LoadUserDefinedGroup {
 
 # {{{ sub LoadACLEquivalenceGroup 
 
-=head2 LoadACLEquivalenceGroup  PRINCIPAL
+=head2 LoadACLEquivalenceGroup PRINCIPAL
 
-Loads a user's acl equivalence group. Takes a principal object.
+Loads a user's acl equivalence group. Takes a principal object or its ID.
 ACL equivalnce groups are used to simplify the acl system. Each user
 has one group that only he is a member of. Rights granted to the user
 are actually granted to that group. This greatly simplifies ACL checks.
 While this results in a somewhat more complex setup when creating users
 and granting ACLs, it _greatly_ simplifies acl checks.
 
-
-
 =cut
 
 sub LoadACLEquivalenceGroup {
-    my $self       = shift;
-    my $princ = shift;
+    my $self = shift;
+    my $principal = shift;
+    $principal = $principal->id if ref $principal;
 
-        $self->LoadByCols( "Domain" => 'ACLEquivalence',
-                            "Type" => 'UserEquiv',
-                           "Instance" => $princ->Id);
+    return $self->LoadByCols(
+        Domain   => 'ACLEquivalence',
+        Type     => 'UserEquiv',
+        Instance => $id,
+    );
 }
 
 # }}}
