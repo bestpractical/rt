@@ -198,7 +198,8 @@ sub update {
         my $msghdr = "";
         $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^msgid/ );
         
-        my $msgid  = shift @lines;
+        my $msgid  = "";
+        $msgid .= shift @lines while ( $lines[0] && $lines[0] =~ /^(msgid|")/ );
         my $msgstr = "";
         $msgstr .= shift @lines while ( $lines[0] && $lines[0] =~ /^(msgstr|")/ );
 

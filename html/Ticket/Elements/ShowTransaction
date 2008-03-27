@@ -46,6 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <div class="ticket-transaction<% $type_class && " $type_class" %><% $RowNum % 2 ? ' odd' : ' even' %>">
+% $m->comp('/Elements/Callback', _CallbackName => 'ModifyDisplay', titlebar_cmd => \$titlebar_commands, Transaction => $Transaction, %ARGS);
+
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
   <tr>
     <td rowspan="2" valign="top" class="type">
@@ -70,6 +72,7 @@
 % $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
     </td>
   </tr>
+
 </table>
 </div>
 
