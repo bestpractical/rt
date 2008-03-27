@@ -135,9 +135,7 @@ sub Create {
 
 
 
-    # Privileged is no longer a column in users
-    my $privileged = $args{'Privileged'};
-    delete $args{'Privileged'};
+    my $privileged = delete $args{'Privileged'};
 
 
     if ($args{'CryptedPassword'} ) {
@@ -1144,7 +1142,7 @@ sub OwnGroups {
 
 =head2 HasRight
 
-Shim around PrincipalObj->HasRight. See RT::Principal
+Shim around PrincipalObj->HasRight. See L<RT::Principal>.
 
 =cut
 
