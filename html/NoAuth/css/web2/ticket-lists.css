@@ -1,20 +1,51 @@
 table.ticket-list, table.queue-summary {
-  padding-right: 1em;
+  margin-top: 0.75em;
+  margin-right: 1em;
   font-size: 0.9em;
+  border: 1px solid #aaa;
+  border-bottom: 2px solid #999;
+  border-right: 2px solid #999;
+
+
 }
 
+table.queue-summary tr>*:first-child {
+ padding-left: 1em;
+
+}
+
+
+table.queue-summary tr>*:last-child {
+ padding-right: 1em;
+
+}
 
 table.ticket-list a, table.queue-summary a {
   font-weight: bold;
 }
 
 
-th.collection-as-table {
+table.ticket-list th.collection-as-table {
+  background: #ddd;
  font-size: 0.9em;
   margin-bottom: 0.5em;
   text-align: left;
 
 }
+
+
+table.queue-summary th.collection-as-table {
+ font-size: 0.9em;
+  margin-bottom: 0.5em;
+  text-align: right;
+
+}
+
+table.queue-summary th.collection-as-table:first-child {
+  text-align: left;
+
+}
+
 
 tr.collection-as-table+tr.collection-as-table th {
  border-bottom: 2px solid grey;
