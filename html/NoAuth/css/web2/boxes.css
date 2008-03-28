@@ -1,6 +1,6 @@
 .titlebox { 
- border: 1px solid #ccc;
-
+ border-left: 1px solid #ccc;
+ border-top: 1px solid #ccc;
  background-color: #efefef;
  padding-top: 1em;
  margin-top: 1em;
@@ -13,6 +13,11 @@
  padding-right: 1em;
 }
 
+/* horrible ie hack */
+* html .titlebox {
+ border-top: none;
+ border-left: none;
+}
 
 .titlebox .titlebox { 
 
@@ -88,6 +93,13 @@
 
 }
 
+/* Horrible IE hacks */ 
+* html .titlebox .titlebox-title .right {
+    right: 0.7em;
+    top: 1em;
+} 
+
+
 .titlebox .titlebox-content {
  padding-top: 0.5em;
  padding-left: 1em;
@@ -117,6 +129,7 @@
 
 * html .titlebox .titlebox-title .widget a {
     background-position: center 0.3em;
+    top: 0em;
     left: -1.5em; 
 }
 
