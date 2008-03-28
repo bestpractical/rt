@@ -85,6 +85,8 @@ display: none ;
 
 div#footer #bpscredits {
  text-align: right;
+ background: url(../../images/bplogo.gif) no-repeat top right;
+ padding-top: 4em;
 } 
 
 
@@ -138,7 +140,7 @@ div#quick-personal {
 div#header h1 {
  position: absolute;
  left: 6.8em;
- top: 2.em;
+ top: 2em;
  font-size: 1.4em;
  margin-top: 0.125em;
  padding: 0.25em;
