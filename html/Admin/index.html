@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc('RT Administration') &>
-<& /Admin/Elements/Tabs, Title => loc('RT Administration') &>
+<& //Admin/Elements/Header, Title => loc('RT Administration') &>
+<& //Admin/Elements/Tabs, Title => loc('RT Administration') &>
 
 <& /Elements/ListMenu, items => $tabs &>
 <%init>
@@ -56,33 +56,33 @@
 my $tabs = {
     A => {
         title       => loc('Users'),
-        path        => 'Admin/Users/index.html',
+        path        => '/Admin/Users/index.html',
         description => loc('Manage users and passwords'),
     },
     B => {
         title => loc('Groups'),
-        path  => 'Admin/Groups/index.html',
+        path  => '/Admin/Groups/index.html',
         description => loc('Manage groups and group membership'),
     },
     C => {
         title       => loc('Queues'),
-        path        => 'Admin/Queues/index.html',
+        path        => '/Admin/Queues/index.html',
         description => loc('Manage queues and queue-specific properties'),
     },
     D => {
         'title'     => loc('Custom Fields'),
         description => loc('Manage custom fields and custom field values'),
-          path      => 'Admin/CustomFields/index.html',
+          path      => '/Admin/CustomFields/index.html',
     },
     E => {
         'title'     => loc('Global'),
-        path        => 'Admin/Global/index.html',
+        path        => '/Admin/Global/index.html',
         description =>
           loc('Manage properties and configuration which apply to all queues'),
     },
     F => {
         'title'     => loc('Tools'),
-        path        => 'Admin/Tools/index.html',
+        path        => '/Admin/Tools/index.html',
         description => loc('Use other RT administrative tools')
     },
 };
