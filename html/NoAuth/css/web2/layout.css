@@ -2,6 +2,8 @@
 /* body */
 
 body {
+
+
     padding:0;
     margin:0;
 
@@ -12,18 +14,20 @@ body {
 }
 
 div#body {
+    position: relative;
     padding: 1em;
     padding-top: 1.5em;
     -moz-border-radius: 0.5em;
     -webkit-border-radius: 0.5em;
     margin-left: 9.8em;
-    margin-top: 4.9em;
+    margin-top: 5.2em;
     margin-right: 1em;
     margin-bottom: 0em;
     min-height: 10%;
     background: #fff;
     border-top: 2px solid #ccc;
     border-left: 2px solid #ccc;
+    z-index:1;
 
 
 }
@@ -85,7 +89,7 @@ display: none ;
 
 div#footer #bpscredits {
  text-align: right;
- background: url(../../images/bplogo.gif) no-repeat top right;
+ background: url(/NoAuth/images/bplogo.gif) no-repeat top right;
  padding-top: 4em;
 } 
 
@@ -140,7 +144,7 @@ div#quick-personal {
 div#header h1 {
  position: absolute;
  left: 6.8em;
- top: 2em;
+ top: 1.em;
  font-size: 1.4em;
  margin-top: 0.125em;
  padding: 0.25em;

@@ -56,30 +56,27 @@ $RSSFeedURL => undef
 $ShortQueryString => undef
 
 </%args>
-<a href="<%RT->Config->Get('WebPath')%>/Search/Bulk.html<%$QueryString%>"><&|/l&>Update multiple tickets</&></a><br />
-<a href="<%RT->Config->Get('WebPath')%>/Search/Results.html<%$QueryString%>"><&|/l&>Bookmarkable link</&></a><br />
-<a href="<%RT->Config->Get('WebPath')%>/Search/Results.tsv<%$QueryString%>"><&|/l&>spreadsheet</&></a> |
-<a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a> |
-<a href="<%RT->Config->Get('WebPath')%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Work offline</&></a><br />
-
-<form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html"><&|/l&>chart</&>
+<ul class="search-result-views">
+<li><a href="<%RT->Config->Get('WebPath')%>/Search/Results.tsv<%$QueryString%>"><&|/l&>Spreadsheet</&></a></li>
+<li><a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a></li>
+<li><a href="<% $RT::WebURL %>NoAuth/iCal/<% $ical_path %>"><% loc('iCal') %></a></li>
+<li><a href="<%RT->Config->Get('WebPath')%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Editable text</&></a></li>
+%if ( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System ) ) {
+%    my $query_string = $m->comp('/Elements/QueryString', Search => 1, Plugin => 'Tickets', 'Tickets:query' => $Query, 'Tickets:limit' => $Rows || '',);
+<li><a href="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shredder/?<% $query_string |n %>"><&|/l&>Delete tickets</&></a></li>
+% }
+</ul>
+<form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html">
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>" />
 % }
-<&|/l, $m->scomp('SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query) &>grouped by [_1]</&>
-<&|/l, $m->scomp('SelectChartType', Name => 'ChartStyle') &>style: [_1]</&>
-<input type="submit" class="button" value="<%loc('Go')%>" />
+<&|/l, $m->scomp('SelectChartType', Name => 'ChartStyle'), $m->scomp('SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query) 
+&>[_1] chart by [_2]</&><input type="submit" class="button" value="<%loc('Go')%>" />
 </form>
-
-<%PERL>
-if ( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System ) ) {
-    my $query_string = $m->comp('/Elements/QueryString',
-        Search => 1,
-        Plugin => 'Tickets',
-        'Tickets:query' => $Query,
-        'Tickets:limit' => $Rows || '',
-    );
-</%PERL>
-<a href="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shredder/?<% $query_string |n %>"><&|/l&>Shredder...</&></a>
-% }
+<%init>
+my $ical_path = join '/', map $m->interp->apply_escapes($_, 'u'),
+    $session{'CurrentUser'}->UserObj->Name,
+    substr(Digest::MD5::md5_hex($session{'CurrentUser'}->UserObj->AuthToken . $Query),0,16),
+    $Query;
+</%init>

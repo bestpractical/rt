@@ -99,6 +99,9 @@
     top: 1em;
 } 
 
+.titlebox .titlebox-title .right a {
+ color: #000;
+}
 
 .titlebox .titlebox-content {
  padding-top: 0.5em;
