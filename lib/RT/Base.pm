@@ -104,7 +104,7 @@ sub CurrentUser {
             ." with a RT::CurrentUser or a RT::User obejct as the first argument.";
         $msg .= "\n". Carp::cluck() if @_;
 
-        $RT::Logger->err( $msg );
+        $RT::Logger->error( $msg );
         return $self->{'user'} = undef;
     }
 
