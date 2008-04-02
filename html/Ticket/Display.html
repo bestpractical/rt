@@ -135,11 +135,10 @@ if ($ARGS{'id'} eq 'new') {
     }
 
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
-    if ( $ARGS{'UpdateTimeWorked'} || (
-        defined $ARGS{'UpdateContent'}
+    if ( defined $ARGS{'UpdateContent'}
         && $ARGS{'UpdateContent'} ne ''
 	    && $ARGS{'UpdateContent'} ne "-- \n"
-	       . $session{'CurrentUser'}->UserObj->Signature ) )
+	       . $session{'CurrentUser'}->UserObj->Signature )
     {
 	    $ARGS{UpdateAttachments} = $session{'Attachments'};
 	    ProcessUpdateMessage(
@@ -148,6 +147,9 @@ if ($ARGS{'id'} eq 'new') {
 			TicketObj => $TicketObj,
         );
 	    delete $session{'Attachments'};
+    } elsif ( $ARGS{'UpdateTimeWorked'} ) {
+        # Add UpdateTimeWorked to TimeWorked (processed below with ProcessTicketBasics)
+        $ARGS{'TimeWorked'} = $TicketObj->TimeWorked + $ARGS{'UpdateTimeWorked'};
     }
     #Process status updates
     my @PeopleActions = ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj=>$TicketObj);
