@@ -50,47 +50,34 @@
 <%'-' x length("#".$Article->Id.": ".($Article->Name || loc('(no name)'))) %>
 % }
 % if ($Article->Summary =~ /\S/ and $include{Summary}) {
-<% $Article->Summary%>
+<% $Article->Summary %>
 % }
 % while (my $cf = $cfs->Next) {
 %   next unless $include{"CF-Title-".$cf->Id} or $include{"CF-Value-".$cf->Id};
 %   my $values = $Article->CustomFieldValues($cf->Id);
-
 %   if ($values->Count == 1) {
 %     my $value = $values->First; 
-%     my $content = $value ? $value->Content : "";
-%     if ($content =~ /<(.{1,5})>/) {
-%       $content = de_htmlify($content);
-%     }
 %     if ($include{"CF-Title-".$cf->Id}) {
 <%      $cf->Name%>:
 <%      '-' x length($cf->Name) %>
 %     }
-%     if ($include{"CF-Value-".$cf->Id}) {
-<%      $content%>
+%     if ($value && $include{"CF-Value-".$cf->Id}) {
+<%      $get_content->( $value ) %>
 %     }
 %   } else {
 %     my $val = $values->Next;
-%     my $content = $val ? $val->Content : "";
-%     if ($content =~ /<(.{1,5})>/) {
-%       $content = de_htmlify($content);
-%     }
 %     if ($include{"CF-Title-".$cf->Id}) {
 <%      $cf->Name%>: \
 %     }
-%     if ($include{"CF-Value-".$cf->Id}) {
-<%      $val && $content%>
+%     if ($val && $include{"CF-Value-".$cf->Id}) {
+<%      $get_content->( $val ) %>
 %     }
 %     while ($val = $values->Next) { 
-%       my $content = $val->Content;
-%       if ($content =~ /<(.{1,5})>/) {
-%         $content = de_htmlify($content);
-%       }
 %       if ($include{"CF-Title-".$cf->Id}) {
 <%        ' ' x length($cf->Name)%>  \
 %       }
-%       if ($include{"CF-Title-".$cf->Id}) {
-<%        $content%>
+%       if ($include{"CF-Value-".$cf->Id}) {
+<%        $get_content->( $val ) %>
 %       }
 %     } 
 %   }
@@ -102,7 +89,7 @@ my $cfs = $class->ArticleCustomFields;
 $include{"CF-Title-".$_->Id} = $include{"CF-Value-".$_->Id} = 1 while $_ = $cfs->Next;
 $include{$_} = not $class->FirstAttribute("Skip-$_") for keys %include;
 
-sub de_htmlify {
+my $de_htmlify = sub {
     my $content = shift;
     require HTML::TreeBuilder;
     my $tree = HTML::TreeBuilder->new;
@@ -113,8 +100,32 @@ sub de_htmlify {
     my $formatter = HTML::FormatText->new(leftmargin => 0, rightmargin => 50);
     $content = $formatter->format($tree);
     return $content;
-}
+};
+
+my $get_content = sub {
+    my $value = shift;
+    return '' unless $value;
+
+    my $content = $value->Content;
+    return '' unless defined $content && length $content;
+
+    if ( $RT::RTFM_ParseContentAsTemplate ) {
+        my ($new, $msg) = $Article->ParseTemplate( $content, Ticket => $Ticket );
+        unless ( defined $new && length $new ) {
+            $RT::Logger->error("Couldn't parse article's content: $msg");
+        } else {
+            $content = $new;
+        }
+    }
+
+    if ( $content =~ /<.{1,5}>/ ) {
+        $content = $de_htmlify->( $content );
+    }
+    return $content;
+};
+
 </%init>
 <%args>
 $Article
+$Ticket => undef
 </%args>
