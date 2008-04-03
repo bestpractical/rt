@@ -1,0 +1,227 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+%#                                          <sales@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+
+% my %uri;
+% $uri{$_}++ for split ' ', ($ARGS{$ARGS{'id'}.'-RefersTo'} || '');
+
+
+% # convert RTFM-Include-Article => $id to RTFM-Include-Article-$id
+% if ( $ARGS{'RTFM-Include-Article'} ) {
+%    $ARGS{"RTFM-Include-Article-$ARGS{'RTFM-Include-Article'}"}++;
+% }
+
+% foreach my $arg (keys %ARGS) {
+% if ($arg =~ /^RTFM-Include-Article-(\d+)$/) {
+% my $art = RT::FM::Article->new($session{'CurrentUser'});
+% $art->Load($1);
+% if ($art->Id) {
+% $uri{$art->URI}++;
+% }
+
+% }
+%}
+
+<input type="hidden" name="<%$ARGS{'id'}%>-RefersTo" value="<% join(' ',grep {$_} sort keys %uri) %>" />
+<table>
+<tr>
+<td><&|/l&>Search for RTFM articles matching</&></td>
+<td><input size=20 name="RTFM_Content" /></td>
+</tr>
+<tr>
+<td><&|/l&>Include RTFM article:</&></td>
+<td><input size=20 name="RTFM-Include-Article-Named" /></td>
+<td><input type="submit" value="Go" /></td>
+</tr>
+% if ($hotlist->Count) {
+<tr>
+<td>&nbsp;</td>
+<td><select name="RTFM-Include-Article-Named-Hotlist">
+<option value="" selected><&|/l&>Select an article</&></option>
+% while (my $article = $hotlist->Next) {
+<option value="<% $article->Id %>"><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></option>
+% }
+</select>
+</td>
+<td><input type="submit" value="Go" /></td>
+</tr>
+% }
+% my %dedupe_articles;
+% while (my $article = $articles_content->Next) {
+%   $dedupe_articles{$article->Id}++;
+<tr>
+<td>&nbsp;</td>
+<td><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></td>
+<td><input type="submit" name="RTFM-Include-Article-<%$article->Id%>" value="Go" /></td>
+</tr>
+% }
+% while (my $article = $articles_basics->Next) {
+%   next if $dedupe_articles{$article->Id};
+<tr>
+<td>&nbsp;</td>
+<td><%$article->Name || loc('(no name)')%>: <%$article->Summary%></td>
+<td><input type="submit" name="RTFM-Include-Article-<%$article->Id%>" value="Go" /></td>
+</tr>
+% }
+<tr>
+<td>
+
+% if ( @$topics ) {
+<select name="RTFM-Include-Topic">
+<option value="" <% $ARGS{'RTFM-Include-Topic'} ? () : 'selected' %>><&|/l&>Select a topic</&></option>
+% for ( @$topics ) { 
+<option value="<% $_->{id} %>" <% $ARGS{'RTFM-Include-Topic'} == $_->{id} ? 'selected' : () %> ><%'&nbsp;' x $_->{depth} . ($_->{name}|| loc('(no name)')) |n%>
+</option>
+% }
+</select>
+</td>
+<td><input type="submit" value="Go" /></td>
+</tr>
+
+% if ( $ARGS{'RTFM-Include-Topic'} ) {
+<tr>
+<td>
+<select name="RTFM-Include-Article">
+<option value="" <% $ARGS{'RTFM-Include-Article'} ? () : 'selected' %>><&|/l&>Select an article</&></option>
+% while ( my $art = $articles->Next ) {
+<option value="<% $art->id %>" <% $ARGS{'RTFM-Include-Article'} == $art->id ? 'selected' : () %> ><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
+% }
+</select>
+</td>
+<td><input type="submit" value="Go" /></td>
+</tr>
+
+% }
+% }
+
+
+</table>
+
+<%init>
+use RT::FM::ArticleCollection;
+
+my $articles_content =
+  RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+my $articles_basics = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+if ( $ARGS{'RTFM_Content'} ) {
+    $articles_content->LimitCustomField( VALUE => $ARGS{'RTFM_Content'},
+                                                OPERATOR => 'LIKE' );
+
+    $articles_basics->Limit( SUBCLAUSE       => 'all',
+                             FIELD           => 'Name',
+                             OPERATOR        => 'LIKE',
+                             VALUE           => $ARGS{'RTFM_Content'},
+                             ENTRYAGGREGATOR => "OR" );
+    $articles_basics->Limit( SUBCLAUSE       => 'all',
+                             FIELD           => 'Summary',
+                             OPERATOR        => 'LIKE',
+                             VALUE           => $ARGS{'RTFM_Content'},
+                             ENTRYAGGREGATOR => "OR" );
+}
+
+my $hotlist = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
+my $classes = $hotlist->Join(
+    ALIAS1 => 'main',
+    FIELD1 => 'Class',
+    TABLE2 => 'FM_Classes',
+    FIELD2 => 'id',
+);
+$hotlist->Limit( ALIAS => $classes, FIELD => 'HotList', VALUE => 1 );
+
+# By default, order by name
+$hotlist->OrderByCols( {
+            ALIAS => 'main',
+            FIELD => 'Name',
+            ORDER => 'ASC'
+    },
+        {   ALIAS => 'main',
+            FIELD => 'SortOrder',
+            ORDER => 'ASC'
+        },
+
+    );
+
+my ( $articles, $topics );
+$articles = RT::FM::ArticleCollection->new( $session{CurrentUser} );
+$topics = [];
+
+my $ticket = RT::Ticket->new( $session{CurrentUser} );
+$ticket->Load( $ARGS{id} );
+my $top_topic = RT::FM::Topic->new( $session{CurrentUser} );
+$top_topic->LoadByCols( Name => 'Queues', Parent => 0 , ObjectType => 'RT::FM::System', ObjectId => 1);
+
+if ( $top_topic->id ) {
+    my $queue_topic = RT::FM::Topic->new( $session{CurrentUser} );
+    $queue_topic->LoadByCols( Name => $ticket->QueueObj->Name, Parent =>
+            $top_topic->id );
+    if ( $queue_topic->id ) {
+    
+        # store all topics below $queue_topic to $topics
+        topics( $queue_topic, $topics, 0 );
+        
+        if ( $ARGS{'RTFM-Include-Topic'}  ) {
+            $articles->LimitTopics( $ARGS{'RTFM-Include-Topic'} );
+            $articles->OrderBy( FIELD => 'Name' );
+        }
+    }
+}
+
+
+# recursively get all the topics given a top topic
+sub topics {
+    my $parent = shift;
+    my $out = shift;
+    my $depth = shift;
+    while ( my $topic = $parent->Children->Next ) {
+	push @$out, { id => $topic->id, name => $topic->Name, depth => $depth };
+	topics( $topic, $out, $depth+1 );
+    }
+}
+
+</%init>
+
+
