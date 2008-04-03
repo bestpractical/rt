@@ -46,27 +46,10 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-% my %uri;
-% $uri{$_}++ for split ' ', ($ARGS{$ARGS{'id'}.'-RefersTo'} || '');
-
-
-% # convert RTFM-Include-Article => $id to RTFM-Include-Article-$id
-% if ( $ARGS{'RTFM-Include-Article'} ) {
-%    $ARGS{"RTFM-Include-Article-$ARGS{'RTFM-Include-Article'}"}++;
-% }
-
-% foreach my $arg (keys %ARGS) {
-% if ($arg =~ /^RTFM-Include-Article-(\d+)$/) {
-% my $art = RT::FM::Article->new($session{'CurrentUser'});
-% $art->Load($1);
-% if ($art->Id) {
-% $uri{$art->URI}++;
-% }
-
-% }
-%}
-
+% if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
 <input type="hidden" name="<%$ARGS{'id'}%>-RefersTo" value="<% join(' ',grep {$_} sort keys %uri) %>" />
+% }
+
 <table>
 <tr>
 <td><&|/l&>Search for RTFM articles matching</&></td>
@@ -142,6 +125,27 @@
 </table>
 
 <%init>
+# convert RTFM-Include-Article => $id to RTFM-Include-Article-$id
+if ( $ARGS{'RTFM-Include-Article'} ) {
+    $ARGS{"RTFM-Include-Article-$ARGS{'RTFM-Include-Article'}"}++;
+}
+
+my %uri;
+if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
+    $uri{$_}++ for split ' ', ($ARGS{$ARGS{'id'}.'-RefersTo'} || '');
+
+    foreach my $arg (keys %ARGS) {
+        if ($arg =~ /^RTFM-Include-Article-(\d+)$/) {
+            my $art = RT::FM::Article->new($session{'CurrentUser'});
+            $art->Load($1);
+            if ($art->Id) {
+                $uri{$art->URI}++;
+            }
+
+        }
+    }
+}
+
 use RT::FM::ArticleCollection;
 
 my $articles_content =
