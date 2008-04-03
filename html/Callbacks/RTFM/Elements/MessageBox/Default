@@ -46,20 +46,21 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-foreach my $arg ( keys %ARGS ) {
+my $parent_args = $m->caller_args(-1);
+foreach my $arg ( keys %$parent_args ) {
     my $article;
-    if ($arg eq 'RTFM-Include-Article' && $ARGS{$arg} ) {
+    if ($arg eq 'RTFM-Include-Article' && $parent_args->{$arg} ) {
         $article = RT::FM::Article->new($session{'CurrentUser'});
-        $article->Load($ARGS{$arg});
+        $article->Load($parent_args->{$arg});
     } elsif ( $arg =~ /^RTFM-Include-Article-(\d+)$/ ) {
         $article = RT::FM::Article->new($session{'CurrentUser'});
         $article->Load($1);
-    } elsif ( $arg =~ /^RTFM-Include-Article-Named/ && $ARGS{ $arg } ) {
+    } elsif ( $arg =~ /^RTFM-Include-Article-Named/ && $parent_args->{ $arg } ) {
         $article = RT::FM::Article->new($session{'CurrentUser'});
-        if ( $ARGS{$arg} =~ /\D/ ) {
-            $article->LoadByCols( Name => $ARGS{ $arg } );
+        if ( $parent_args->{$arg} =~ /\D/ ) {
+            $article->LoadByCols( Name => $parent_args->{ $arg } );
         } else {
-            $article->LoadByCols( id => $ARGS{ $arg } );
+            $article->LoadByCols( id => $parent_args->{ $arg } );
         }
     }
     next unless $article && $article->id;
