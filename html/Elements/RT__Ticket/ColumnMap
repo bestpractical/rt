@@ -69,7 +69,7 @@ my $ColumnMap = sub {
         my $field = $1;
 
         if ( $attr eq 'attribute' ) {
-            return (undef);
+            return ("CF.{$field}");
         }
         elsif ( $attr eq 'title' ) {
             return ( $field );
