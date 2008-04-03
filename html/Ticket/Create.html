@@ -154,9 +154,9 @@
 <&|/l&>Describe the issue below</&>:<br />
 <& /Elements/Callback, _CallbackName => 'BeforeMessageBox', QueueObj => $QueueObj, %ARGS &>
 % if (exists $ARGS{Content}) {
-<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0 &>
+<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0, %ARGS &>
 % } else {
-<& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
+<& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction, %ARGS &>
 %}
 
 <br />
