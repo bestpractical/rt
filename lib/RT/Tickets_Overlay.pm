@@ -1524,8 +1524,9 @@ sub OrderByCols {
             }
             push @res, { %$row, ALIAS => $users, FIELD => $subkey };
        } elsif ( $meta->[0] eq 'CUSTOMFIELD' ) {
-           my ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $subkey );
+           my ($queue, $field, $cfid, $cf_obj) = $self->_CustomFieldDecipher( $subkey );
            my $cfkey = $cfid ? $cfid : "$queue.$field";
+           $cfkey .= ".ordering" if !$cf_obj || ($cf_obj->MaxValues||0) != 1;
            my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
            unless ($cfid) {
                # For those cases where we are doing a join against the
