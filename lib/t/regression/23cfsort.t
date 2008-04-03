@@ -16,6 +16,8 @@ my($ret,$msg);
 
 
 # Test Sorting by custom fields.
+# TODO: it's hard to read this file, conver to new style,
+# for example look at 23cfsort-freeform-single.t
 
 # ---- Create a queue to test with.
 my $queue = "CFSortQueue-$$";
@@ -116,20 +118,14 @@ $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderBy( FIELD => "CF.{Charlie}", ORDER => 'DESC' );
 diag $tx->BuildSelectQuery;
 is($tx->Count,2);
-TODO: {
-    local $TODO = 'order by CF fail';
 check_order( $tx, 1, 2);
-}
 
 $tx = new RT::Tickets( $RT::SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderBy( FIELD => "CF.{Charlie}", ORDER => 'ASC' );
 diag $tx->BuildSelectQuery;
 is($tx->Count,2);
-TODO: {
-    local $TODO = 'order by CF fail';
 check_order( $tx, 2, 1);
-}
 
 # Add a new ticket, to test sorting on multiple columns.
 my $t3 = RT::Ticket->new($RT::SystemUser);
@@ -148,10 +144,7 @@ $tx->OrderByCols(
     { FIELD => "CF.${queue}.{Alpha}",   ORDER => 'DES' },
 );
 is($tx->Count,3);
-TODO: {
-    local $TODO = 'order by CF fail';
 check_order( $tx, 3, 2, 1);
-}
 
 $tx = new RT::Tickets( $RT::SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
@@ -160,10 +153,7 @@ $tx->OrderByCols(
     { FIELD => "CF.${queue}.{Alpha}",   ORDER => 'ASC' },
 );
 is($tx->Count,3);
-TODO: {
-    local $TODO = 'order by CF fail';
 check_order( $tx, 1, 2, 3);
-}
 
 # Reverse the order of the secondary column, which changes the order
 # of the first two tickets.
@@ -174,10 +164,7 @@ $tx->OrderByCols(
     { FIELD => "CF.${queue}.{Alpha}",   ORDER => 'ASC' },
 );
 is($tx->Count,3);
-TODO: {
-    local $TODO = 'order by CF fail';
 check_order( $tx, 2, 3, 1);
-}
 
 $tx = new RT::Tickets( $RT::SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
@@ -186,7 +173,5 @@ $tx->OrderByCols(
     { FIELD => "CF.${queue}.{Alpha}",   ORDER => 'DES' },
 );
 is($tx->Count,3);
-TODO: {
-    local $TODO = 'order by CF fail';
 check_order( $tx, 1, 3, 2);
-}
+
