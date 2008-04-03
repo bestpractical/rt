@@ -193,14 +193,18 @@ my ( $articles, $topics );
 $articles = RT::FM::ArticleCollection->new( $session{CurrentUser} );
 $topics = [];
 
-my $ticket = RT::Ticket->new( $session{CurrentUser} );
-$ticket->Load( $ARGS{id} );
+my $QueueObj = $ARGS{QueueObj};
+if ( $ARGS{id} && $ARGS{id} ne 'new' && !$QueueObj ) {
+    my $ticket = RT::Ticket->new( $session{CurrentUser} );
+    $ticket->Load( $ARGS{id} );
+    $QueueObj = $ticket->QueueObj;
+}
 my $top_topic = RT::FM::Topic->new( $session{CurrentUser} );
 $top_topic->LoadByCols( Name => 'Queues', Parent => 0 , ObjectType => 'RT::FM::System', ObjectId => 1);
 
 if ( $top_topic->id ) {
     my $queue_topic = RT::FM::Topic->new( $session{CurrentUser} );
-    $queue_topic->LoadByCols( Name => $ticket->QueueObj->Name, Parent =>
+    $queue_topic->LoadByCols( Name => $QueueObj->Name, Parent =>
             $top_topic->id );
     if ( $queue_topic->id ) {
     
