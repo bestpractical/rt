@@ -1303,7 +1303,7 @@ Try and turn a CF descriptor into (cfid, cfname) object pair.
 sub _CustomFieldDecipher {
     my ($self, $field) = @_;
  
-    my $queue = 0;
+    my $queue = undef;
     if ( $field =~ /^(.+?)\.{(.+)}$/ ) {
         ($queue, $field) = ($1, $2);
     }
@@ -1323,11 +1323,20 @@ sub _CustomFieldDecipher {
             $cf = RT::CustomField->new( $self->CurrentUser );
             $cf->LoadByNameAndQueue( Queue => 0, Name => $field );
         }
-        $cfid = $cf->id if $cf;
+        return ($queue, $field, $cf->id, $cf)
+            if $cf && $cf->id;
+        return ($queue, $field);
     }
- 
-    return ($queue, $field, $cfid);
- 
+
+    my $cfs = RT::CustomFields->new( $self->CurrentUser );
+    $cfs->Limit( FIELD => 'Name', VALUE => $field );
+    $cfs->LimitToLookupType('RT::Queue-RT::Ticket');
+    my $count = $cfs->Count;
+    return (undef, $field, undef) if $count > 1;
+    return (undef, $field, 0) if $count == 0;
+    my $cf = $cfs->First;
+    return (undef, $field, $cf->id, $cf) if $cf && $cf->id;
+    return (undef, $field, undef);
 }
  
 =head2 _CustomFieldJoin
