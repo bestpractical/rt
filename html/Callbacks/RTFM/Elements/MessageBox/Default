@@ -15,21 +15,25 @@
 %#  GNU General Public License for more details.
 %# 
 %# END LICENSE BLOCK
-%foreach my $arg (keys %ARGS) {
-%
-% if ($arg =~ /^RTFM-Include-Article-(\d+)$/) {
-%    my $art = RT::FM::Article->new($session{'CurrentUser'});
-%    $art->Load($1);
-<& /RTFM/Article/Elements/Preformatted, Article => $art &>\
-% }
-% if ($arg =~ /RTFM-Include-Article-Named/ && $ARGS{$arg} =~ /\D/) {
-%    my $art = RT::FM::Article->new($session{'CurrentUser'});
-%    $art->LoadByCols(Name => $ARGS{$arg});
-<& /RTFM/Article/Elements/Preformatted, Article => $art &>\
-% } elsif ($arg =~ /RTFM-Include-Article-Named/ && $ARGS{$arg}) {
-%    my $art = RT::FM::Article->new($session{'CurrentUser'});     
-%    $art->LoadByCols(id => $ARGS{$arg});
-<& /RTFM/Article/Elements/Preformatted, Article => $art &>\
-% }
-% }
-% return(1);
+<%INIT>
+foreach my $arg ( keys %ARGS ) {
+    my $article;
+    if ( $arg =~ /^RTFM-Include-Article-(\d+)$/ ) {
+        $article = RT::FM::Article->new($session{'CurrentUser'});
+        $article->Load($1);
+    } elsif ( $arg =~ /^RTFM-Include-Article-Named/ && $ARGS{ $arg } ) {
+        $article = RT::FM::Article->new($session{'CurrentUser'});
+        if ( $ARGS{$arg} =~ /\D/ ) {
+            $article->LoadByCols( Name => $ARGS{ $arg } );
+        } else {
+            $article->LoadByCols( id => $ARGS{ $arg } );
+        }
+    }
+    next unless $article && $article->id;
+
+    $m->comp('/RTFM/Article/Elements/Preformatted',
+        Article => $article,
+    );
+}
+return;
+</%INIT>
