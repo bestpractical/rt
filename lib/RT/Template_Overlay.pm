@@ -303,6 +303,16 @@ sub Parse {
     my ($content, $msg) = $self->_ParseContent(@_);
     return ( 0, $msg ) unless defined $content && length $content;
 
+    if ( $content =~ /^\S/s && $content !~ /^\S+:/ ) {
+        $RT::Logger->error(
+            "Template #". $self->id ." has leading line that doesn't"
+            ." look like header field, if you don't want to override"
+            ." any headers and don't want to see this error message"
+            ." then leave first line of the template empty"
+        );
+        $content = "\n".$content;
+    }
+
     #Lets build our mime Entity
 
     my $parser = MIME::Parser->new();
