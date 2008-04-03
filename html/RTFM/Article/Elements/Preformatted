@@ -46,7 +46,7 @@
 %       if ($include{"CF-Title-".$cf->Id}) {
 <%        ' ' x length($cf->Name)%>  \
 %       }
-%       if ($include{"CF-Title-".$cf->Id}) {
+%       if ($include{"CF-Value-".$cf->Id}) {
 <%        $get_content->( $val ) %>
 %       }
 %     } 
