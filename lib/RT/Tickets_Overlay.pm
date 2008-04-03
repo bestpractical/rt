@@ -1358,7 +1358,7 @@ sub _CustomFieldJoin {
     my ($TicketCFs, $CFs);
     if ( $cfid ) {
         $TicketCFs = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
-            TYPE   => 'left',
+            TYPE   => 'LEFT',
             ALIAS1 => 'main',
             FIELD1 => 'id',
             TABLE2 => 'ObjectCustomFieldValues',
@@ -1548,17 +1548,17 @@ sub OrderByCols {
                DBIx::SearchBuilder::Unique->import;
            }
            my $CFvs = $self->Join(
-               TYPE   => 'left',
+               TYPE   => 'LEFT',
                ALIAS1 => $TicketCFs,
                FIELD1 => 'CustomField',
                TABLE2 => 'CustomFieldValues',
                FIELD2 => 'CustomField',
            );
            $self->SUPER::Limit(
-               LEFTJOIN => $CFvs,
-               FIELD => 'Name',
-               QUOTEVALUE => 0,
-               VALUE => $TicketCFs . ".Content",
+               LEFTJOIN        => $CFvs,
+               FIELD           => 'Name',
+               QUOTEVALUE      => 0,
+               VALUE           => $TicketCFs . ".Content",
                ENTRYAGGREGATOR => 'AND'
            );
 
@@ -3046,7 +3046,6 @@ $tickets->{'flagname'} = 1;
 
 BUG: There should be an API for this
 
-=cut
 
 =begin testing
 
@@ -3056,6 +3055,8 @@ ok( $unlimittickets->UnLimit );
 ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets" );
 
 =end testing
+
+=cut
 
 1;
 
