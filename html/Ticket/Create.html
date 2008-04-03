@@ -168,7 +168,7 @@
 </tr>
 </table>
 </&>
-<& /Elements/Submit, Label => loc("Create")&>
+<& /Elements/Submit, Label => loc("Create"), Name => 'CreateTicket' &>
 </div>
 
 <div id="Ticket-Create-details">
@@ -235,7 +235,7 @@
 </td>
 </tr>
 </table>
-<& /Elements/Submit, Label => loc("Create") &>
+<& /Elements/Submit, Label => loc("Create"), Name => 'CreateTicket'  &>
 </div>
 </form>
 
@@ -371,7 +371,7 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
 
 # }}}
 
-if ((!exists $ARGS{'AddMoreAttach'}) and ($ARGS{'id'} eq 'new')) { # new ticket?
+if ((!exists $ARGS{'AddMoreAttach'}) and exists $ARGS{'CreateTicket'} and ($ARGS{'id'} eq 'new')) { # new ticket?
     if ($ValidCFs) {
         $m->comp('Display.html', %ARGS);
         $RT::Logger->crit("After display call; error is $@");
