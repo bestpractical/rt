@@ -1312,7 +1312,7 @@ sub _CustomFieldDecipher {
     my $cfid;
     if ( $queue ) {
         my $q = RT::Queue->new( $self->CurrentUser );
-        $q->Load( $queue ) if $queue;
+        $q->Load( $queue );
 
         my $cf;
         if ( $q->id ) {
