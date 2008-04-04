@@ -272,7 +272,7 @@ Apache::DBI 0.92
 .
 
 $deps{'MODPERL2'} = [ text_to_hash( << '.') ];
-CGI 2.92
+CGI 3.10
 Apache::DBI
 HTML::Mason 1.31
 .
