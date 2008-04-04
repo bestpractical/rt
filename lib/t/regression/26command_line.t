@@ -3,7 +3,7 @@
 use strict;
 use Test::Expect;
 #use Test::More qw/no_plan/;
-use Test::More tests => 218;
+use Test::More tests => 222;
 
 use RT;
 RT::LoadConfig();
@@ -155,6 +155,11 @@ expect_send("edit ticket/$ticket_id set 'CF-myCF$$=VALUE' ", 'Changing CF...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
 expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking new value');
 expect_like(qr/CF-myCF$$: VALUE/i, 'Verified change');
+# Test setting 0 as value of the custom field
+expect_send("edit ticket/$ticket_id set 'CF-myCF$$=0' ", 'Changing CF...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
+expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking new value');
+expect_like(qr/CF-myCF$$: 0/i, 'Verified change');
 # Test reading and setting custom fields with spaces
 expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking initial value');
 expect_like(qr/my CF$$:/i, 'Verified change');
