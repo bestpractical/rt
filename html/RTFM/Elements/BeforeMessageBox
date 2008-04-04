@@ -111,7 +111,7 @@
 <select name="RTFM-Include-Article">
 <option value="" <% $ARGS{'RTFM-Include-Article'} ? () : 'selected' %>><&|/l&>Select an article</&></option>
 % while ( my $art = $articles->Next ) {
-<option value="<% $art->id %>" <% $ARGS{'RTFM-Include-Article'} == $art->id ? 'selected' : () %> ><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
+<option value="<% $art->id %>" <% $ARGS{'RTFM-Include-Article'}||0 == $art->id ? 'selected' : () %> ><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
 % }
 </select>
 </td>
