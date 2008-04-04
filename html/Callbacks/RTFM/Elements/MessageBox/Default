@@ -31,8 +31,18 @@ foreach my $arg ( keys %ARGS ) {
     }
     next unless $article && $article->id;
 
+    my $Ticket = $ARGS{Ticket};
+    if ( !$Ticket and $ARGS{id} and $ARGS{id} ne 'new' ) {
+        $Ticket = RT::Ticket->new($session{'CurrentUser'});
+        my ($id,$msg) = $Ticket->Load($ARGS{id});
+        unless ($id) {
+            $RT::Logger->error("Couldn't load ticket $ARGS{id}: $msg")
+        }
+    }
+
+
     $m->comp('/RTFM/Article/Elements/Preformatted',
-        Article => $article,
+        Article => $article, Ticket => $Ticket
     );
 }
 return;
