@@ -3783,6 +3783,7 @@ sub CustomFieldValues {
             # If we didn't find a valid cfid, give up.
             return RT::ObjectCustomFieldValues->new($self->CurrentUser);
         }
+        $field = $cf->id;
     }
     return $self->SUPER::CustomFieldValues($field);
 }
