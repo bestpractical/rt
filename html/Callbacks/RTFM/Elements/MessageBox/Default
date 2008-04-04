@@ -66,11 +66,11 @@ foreach my $arg ( keys %$parent_args ) {
     next unless $article && $article->id;
 
     my $Ticket = $ARGS{Ticket};
-    if ( !$Ticket and $ARGS{id} and $ARGS{id} ne 'new' ) {
+    if ( !$Ticket and $parent_args{id} and $parent_args{id} ne 'new' ) {
         $Ticket = RT::Ticket->new($session{'CurrentUser'});
-        my ($id,$msg) = $Ticket->Load($ARGS{id});
+        my ($id,$msg) = $Ticket->Load($parent_args{id});
         unless ($id) {
-            $RT::Logger->error("Couldn't load ticket $ARGS{id}: $msg")
+            $RT::Logger->error("Couldn't load ticket $parent_args{id}: $msg")
         }
     }
 
