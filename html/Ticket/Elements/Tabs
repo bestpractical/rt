@@ -221,13 +221,13 @@ if ($args) {
   $tabs->{"i"} = { path      => "Search/Results.html$args",
                    title     => loc('Show Results'),
                    };
-  if ($current_tab =~  "Search/Results.html") {
+  if ($current_tab =~ m{Search/Results.html}) {
     $current_tab = "Search/Results.html$args";
   }
   $tabs->{"j"} = { path      => "Search/Bulk.html$args",
                    title     => loc('Bulk Update'),
                    };
-  if ($current_tab =~  "Search/Bulk.html") {
+  if ($current_tab =~  m{Search/Bulk.html}) {
     $current_tab = "Search/Bulk.html$args";
   }
   foreach my $searchtab (keys %{$searchtabs}) {
