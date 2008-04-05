@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 16;
+use Test::More tests => 17;
 use RT;
 use RT::Test;
 
@@ -16,6 +16,18 @@ use_ok('RT::Action::LinearEscalate');
 
 my $q = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $q && $q->id, 'loaded or created queue';
+
+# rt-cron-tool uses Gecos name to get rt user, so we'd better create one
+my $gecos = RT::Test->load_or_create_user(
+    Name => 'gecos',
+    Password => 'password',
+    Gecos => ($^O eq 'MSWin32') ? Win32::LoginName() : (getpwuid($<))[0],
+);
+ok $gecos && $gecos->id, 'loaded or created gecos user';
+
+# get rid of all right permissions
+$gecos->PrincipalObj->GrantRight( Right => 'SuperUser' );
+
 
 my $user = RT::Test->load_or_create_user(
     Name => 'user', Password => 'password',
