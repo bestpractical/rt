@@ -288,25 +288,25 @@ Test::Builder 0.77 # needed to fix TODO test
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
-CGI 2.92
+CGI 3.35
 FCGI
 CGI::Fast 
 .
 
 $deps{'SPEEDYCGI'} = [ text_to_hash( << '.') ];
-CGI 2.92
+CGI 3.35
 CGI::SpeedyCGI
 .
 
 
 $deps{'MODPERL1'} = [ text_to_hash( << '.') ];
-CGI 2.92
+CGI 3.35
 Apache::Request
 Apache::DBI 0.92
 .
 
 $deps{'MODPERL2'} = [ text_to_hash( << '.') ];
-CGI 2.92
+CGI 3.35
 Apache::DBI
 HTML::Mason 1.31
 .
