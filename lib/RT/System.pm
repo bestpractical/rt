@@ -110,6 +110,10 @@ those rights globally.
 
 =cut
 
+
+use RT::CustomField;
+use RT::Queue;
+use RT::Group; 
 sub AvailableRights {
     my $self = shift;
 
