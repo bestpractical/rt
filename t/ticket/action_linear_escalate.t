@@ -81,8 +81,8 @@ sub create_ticket_as_ok {
 sub escalate_ticket_ok {
     my $ticket = shift;
     my $id = $ticket->id;
-    print "rt-crontool --search RT::Search::FromSQL --search-arg \"id = @{[$id]}\" --action RT::Action::LinearEscalate --action-arg \"RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated\"\n";
-    print STDERR `/opt/rt3/bin/rt-crontool --search RT::Search::FromSQL --search-arg "id = @{[$id]}" --action RT::Action::LinearEscalate --action-arg "RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated"`;
+    print "$RT::BinPath/rt-crontool --search RT::Search::FromSQL --search-arg \"id = @{[$id]}\" --action RT::Action::LinearEscalate --action-arg \"RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated\"\n";
+    print STDERR `$RT::BinPath/rt-crontool --search RT::Search::FromSQL --search-arg "id = @{[$id]}" --action RT::Action::LinearEscalate --action-arg "RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated"`;
 
     $ticket->Load($id);     # reload, because otherwise we get the cached value
     ok( $ticket->Priority != 0, "Escalated ticket" );
