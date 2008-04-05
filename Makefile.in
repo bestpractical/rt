@@ -153,7 +153,7 @@ SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/rt-dump-database \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-test-dependencies \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-clean-sessions \
-				$(DESTDIR)/$(RT_SBIN_PATH)/rt-shredder
+				$(DESTDIR)/$(RT_SBIN_PATH)/rt-shredder \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-notify-group-admin
 
 # }}}

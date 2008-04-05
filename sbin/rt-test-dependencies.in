@@ -205,6 +205,7 @@ DBI 1.37
 Class::ReturnValue 0.40
 DBIx::SearchBuilder 1.50
 Text::Template
+File::ShareDir
 File::Spec 0.8
 HTML::Entities 
 HTML::Scrubber 0.08
