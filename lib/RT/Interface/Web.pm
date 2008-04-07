@@ -1242,7 +1242,7 @@ sub ProcessObjectCustomFieldUpdates {
                 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
                 $CustomFieldObj->LoadById( $cf );
                 unless ( $CustomFieldObj->id ) {
-                    $RT::Logger->warning("Couldn't load custom field #$id");
+                    $RT::Logger->warning("Couldn't load custom field #$cf");
                     next;
                 }
                 push @results, _ProcessObjectCustomFieldUpdates(
