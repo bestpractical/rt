@@ -7,9 +7,11 @@ use Test::More tests => 39;
 BEGIN { require 't/utils.pl' }
 
 use lib "/opt/rt3/lib";
-use RT;
-RT::LoadConfig;
-RT::Init;
+BEGIN {
+    use RT;
+    RT::LoadConfig;
+    RT::Init;
+}
 
 use RT::CustomField;
 use RT::EmailParser;
