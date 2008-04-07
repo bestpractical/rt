@@ -92,12 +92,11 @@ GetOptions( "search=s"           => \$search,
 
 help() if $help or not $search or not $action;
 
-$transaction ||= 'first';
-unless ( $transaction =~ /^(first|last)$/i ) {
-    print STDERR loc("--transaction argument could be only 'first' or 'last'");
+$transaction = lc( $transaction||'' );
+if ( $transaction && $transaction !~ /^(first|all|last)$/i ) {
+    print STDERR loc("--transaction argument could be only 'first', 'last' or 'all'");
     exit 1;
 }
-$transaction = lc($transaction) eq 'first'? 'ASC': 'DESC';
 
 # We _must_ have a search object
 load_module($search);
@@ -132,9 +131,28 @@ my $tickets = $search->TicketsObj;
 while ( my $ticket = $tickets->Next() ) {
     print $ticket->Id() . ": " if ($verbose);
 
-    my $transaction = get_transaction($ticket);
-    print loc("Using transaction #[_1]...", $transaction->id)
-        if $verbose && $transaction;
+    if ( $transaction ) {
+        my $txns = get_transactions($ticket);
+        my $found = 0;
+        while ( my $txn = $txns->Next ) {
+            print loc("Using transaction #[_1]...", $txn->id)
+                if $verbose;
+            process($ticket, $txn);
+            $found = 1;
+        }
+        print loc("Couldn't find suitable transaction, skipping")
+            if $verbose && !$found;
+    } else {
+        print loc("Processing without transaction, some conditions and actions may fail. Consider using --transaction argument")
+            if $verbose;
+
+        process($ticket);
+    }
+}
+
+sub process {
+    my $ticket = shift;
+    my $transaction = shift;
 
     # perform some more advanced check
     if ($condition) {
@@ -149,8 +167,8 @@ while ( my $ticket = $tickets->Next() ) {
 
         # if the condition doesn't apply, get out of here
 
-        next unless ( $condition_obj->IsApplicable );
-        print loc("Condition matches...") if ($verbose);
+        return unless $condition_obj->IsApplicable;
+        print loc("Condition matches...") if $verbose;
     }
 
     #prepare our action
@@ -165,32 +183,39 @@ while ( my $ticket = $tickets->Next() ) {
     );
 
     #if our preparation, move onto the next ticket
-    next unless ( $action_obj->Prepare );
-    print loc("Action prepared...") if ($verbose);
+    return unless $action_obj->Prepare;
+    print loc("Action prepared...") if $verbose;
 
     #commit our action.
-    next unless ( $action_obj->Commit );
-    print loc("Action committed.\n") if ($verbose);
+    return unless $action_obj->Commit;
+    print loc("Action committed.\n") if $verbose;
 }
 
-=head2 get_transaction
+=head2 get_transactions
 
-Takes ticket and returns its transaction acording to command
-line arguments C<--transaction> and <--transaction-type>.
+Takes ticket and returns L<RT::Transactions> object with transactions
+of the ticket according to command line arguments C<--transaction>
+and <--transaction-type>.
 
 =cut
 
-sub get_transaction {
+sub get_transactions {
     my $ticket = shift;
     my $txns = $ticket->Transactions;
+    my $order = $transaction eq 'last'? 'DESC': 'ASC';
     $txns->OrderByCols(
-        { FIELD => 'Created', ORDER => $transaction },
-        { FIELD => 'id', ORDER => $transaction },
+        { FIELD => 'Created', ORDER => $order },
+        { FIELD => 'id', ORDER => $order },
     );
-    $txns->Limit( FIELD => 'Type', VALUE => $transaction_type )
-        if $transaction_type;
-    $txns->RowsPerPage(1);
-    return $txns->First;
+    if ( $transaction_type ) {
+        $transaction_type =~ s/^\s+//;
+        $transaction_type =~ s/\s+$//;
+        foreach my $type ( split /\s*,\s*/, $transaction_type ) {
+            $txns->Limit( FIELD => 'Type', VALUE => $type, ENTRYAGGREGATOR => 'OR' );
+        }
+    }
+    $txns->RowsPerPage(1) unless $transaction eq 'all';
+    return $txns;
 }
 
 # {{{ load_module 
@@ -255,10 +280,10 @@ sub help {
       . loc( "[_1] - Specify id of the template you want to use", "--template-id" )
       . "\n";
     print "	"
-      . loc( "[_1] - Specify if you want to use either 'first' or 'last' transaction", "--transaction" )
+      . loc( "[_1] - Specify if you want to use either 'first', 'last' or 'all' transactions", "--transaction" )
       . "\n";
     print "	"
-      . loc( "[_1] - Specify the type of a transaction you want to use", "--transaction-type" )
+      . loc( "[_1] - Specify the comma separated list of transactions' types you want to use", "--transaction-type" )
       . "\n";
     print "	"
       . loc( "[_1] - Output status updates to STDOUT", "--verbose" ) . "\n";
