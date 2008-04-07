@@ -236,20 +236,20 @@ sub help {
       . loc( "[_1] - Specify the search module you want to use", "--search" )
       . "\n";
     print "	"
-      . loc( "[_1] - An argument to pass to [_2]", "--search-argument", "--search" )
+      . loc( "[_1] - An argument to pass to [_2]", "--search-arg", "--search" )
       . "\n";
 
     print "	"
       . loc( "[_1] - Specify the condition module you want to use", "--condition" )
       . "\n";
     print "	"
-      . loc( "[_1] - An argument to pass to [_2]", "--condition-argument", "--condition" )
+      . loc( "[_1] - An argument to pass to [_2]", "--condition-arg", "--condition" )
       . "\n";
     print "	"
       . loc( "[_1] - Specify the action module you want to use", "--action" )
       . "\n";
     print "	"
-      . loc( "[_1] - An argument to pass to [_2]", "--action-argument", "--action" )
+      . loc( "[_1] - An argument to pass to [_2]", "--action-arg", "--action" )
       . "\n";
     print "	"
       . loc( "[_1] - Specify id of the template you want to use", "--template-id" )
