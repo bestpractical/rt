@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 36;
+use Test::More tests => 57;
 use RT;
 RT::LoadConfig();
 RT::Init();
@@ -26,17 +26,20 @@ my $queue;
     ok($ret, "$queue test queue creation. $msg");
 }
 
+# CFs for testing, later we create another one
+my %CF;
+my $cf_name;
+
 diag "create a CF\n";
-my $cf_name = "Order$$";
-my $cf;
 {
-    $cf = RT::CustomField->new( $RT::SystemUser );
-    my ($ret, $msg) = $cf->Create(
-        Name  => $cf_name,
+    $cf_name = $CF{'CF'}{'name'} = "Order$$";
+    $CF{'CF'}{'obj'} = RT::CustomField->new( $RT::SystemUser );
+    my ($ret, $msg) = $CF{'CF'}{'obj'}->Create(
+        Name  => $CF{'CF'}{'name'},
         Queue => $queue->id,
         Type  => 'FreeformSingle',
     );
-    ok($ret, "Custom Field Order created");
+    ok($ret, "Custom Field $CF{'CF'}{'name'} created");
 }
 
 my ($total, @data, @tickets, @test) = (0, ());
@@ -47,15 +50,21 @@ sub add_tix_from_data {
     while (@data) {
         my $t = RT::Ticket->new($RT::SystemUser);
         my %args = %{ shift(@data) };
-        my @values = ();
-        if ( exists $args{'CF'} && ref $args{'CF'} ) {
-            @values = @{ delete $args{'CF'} };
-        } elsif ( exists $args{'CF'} ) {
-            @values = (delete $args{'CF'});
+
+        my $subject = '-';
+        foreach my $e ( grep exists $CF{$_} && defined $CF{$_}, keys %args ) {
+            my @values = ();
+            if ( ref $args{ $e } ) {
+                @values = @{ delete $args{ $e } };
+            } else {
+                @values = (delete $args{ $e });
+            }
+            $args{ 'CustomField-'. $CF{ $e }{'obj'}->id } = \@values
+                if @values;
+            $subject = join(",", sort @values) || '-'
+                if $e eq 'CF';
         }
-        $args{ 'CustomField-'. $cf->id } = \@values
-            if @values;
-        my $subject = join(",", sort @values) || '-';
+
         my ( $id, undef $msg ) = $t->Create(
             %args,
             Queue => $queue->id,
@@ -147,3 +156,36 @@ run_tests();
     { Query => "CF.{$cf_name} != 'c'", Order => "CF.$queue_name.{$cf_name}" },
 );
 run_tests();
+
+
+
+diag "create another CF\n";
+{
+    $CF{'AnotherCF'}{'name'} = "OrderAnother$$";
+    $CF{'AnotherCF'}{'obj'} = RT::CustomField->new( $RT::SystemUser );
+    my ($ret, $msg) = $CF{'AnotherCF'}{'obj'}->Create(
+        Name  => $CF{'AnotherCF'}{'name'},
+        Queue => $queue->id,
+        Type  => 'FreeformSingle',
+    );
+    ok($ret, "Custom Field $CF{'AnotherCF'}{'name'} created");
+}
+
+# test that order is not affect by other fields (had such problem)
+@data = (
+    { Subject => '-', },
+    { Subject => 'a', CF => 'a', AnotherCF => 'za' },
+    { Subject => 'b', CF => 'b', AnotherCF => 'ya' },
+    { Subject => 'c', CF => 'c', AnotherCF => 'xa' },
+);
+@tickets = add_tix_from_data();
+@test = (
+    { Order => "CF.{$cf_name}" },
+    { Order => "CF.$queue_name.{$cf_name}" },
+    { Query => "CF.{$cf_name} != 'c'", Order => "CF.{$cf_name}" },
+    { Query => "CF.{$cf_name} != 'c'", Order => "CF.$queue_name.{$cf_name}" },
+);
+run_tests();
+
+
+
