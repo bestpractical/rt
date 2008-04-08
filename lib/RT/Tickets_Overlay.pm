@@ -1393,9 +1393,15 @@ sub _CustomFieldJoin {
             TABLE2     => 'CustomFields',
             FIELD2     => 'id',
         );
+        $self->SUPER::Limit(
+            LEFTJOIN        => $CFs,
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => 'Name',
+            VALUE           => $field,
+        );
 
         $TicketCFs = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
-            TYPE   => 'left',
+            TYPE   => 'LEFT',
             ALIAS1 => $CFs,
             FIELD1 => 'id',
             TABLE2 => 'ObjectCustomFieldValues',
@@ -1461,17 +1467,6 @@ sub _CustomFieldLimit {
 
     $self->_OpenParen;
 
-    if ( $CFs ) {
-        $self->SUPER::Limit(
-            ALIAS           => $CFs,
-            FIELD           => 'Name',
-            VALUE           => $field,
-            ENTRYAGGREGATOR => 'AND',
-        );
-    }
-
-    $self->_OpenParen if $null_columns_ok;
-
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
         FIELD      => 'Content',
@@ -1490,7 +1485,6 @@ sub _CustomFieldLimit {
             QUOTEVALUE      => 0,
             ENTRYAGGREGATOR => 'OR',
         );
-        $self->_CloseParen;
     }
 
     $self->_CloseParen;
