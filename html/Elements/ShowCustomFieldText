@@ -1,0 +1,9 @@
+<%init>
+ my $content = $Object->LargeContent || $Object->Content;
+ $content = $m->comp('/Elements/ScrubHTML', Content => $content);
+ $content =~ s|\n|<br />|g;
+</%init>
+<%$content|n%>
+<%ARGS>
+$Object
+</%ARGS>
