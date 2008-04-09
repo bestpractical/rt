@@ -136,7 +136,7 @@ sub extract_strings_from_code {
 
         my ( $vars, $str );
         if ( $match =~
-                /\(\s*($RE{delimited}{-delim=>q{'"}}{-keep})(.*?)\s*\)$/ ) {
+                /\(\s*($RE{delimited}{-delim=>q{'"}}{-keep})(.*?)\s*\)$/s ) {
 
             $str = substr( $1, 1, -1 );       # $str comes before $vars now
             $vars = $9;

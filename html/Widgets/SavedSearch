@@ -151,7 +151,7 @@ foreach my $field ( @{$self->{SearchFields}} ) {
 <%ARGS>
 $self => undef
 $Action => ''
-$Title => 'Saved searches'
+$Title => loc('Saved searches')
 </%ARGS>
 <%init>
 </%init>

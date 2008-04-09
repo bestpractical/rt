@@ -99,5 +99,5 @@ $Description => undef
 $HideResults => 0
 $Dirty => 0
 $AllowCopy => 1
-$Title => 'Saved searches'
+$Title => loc('Saved searches')
 </%ARGS>
