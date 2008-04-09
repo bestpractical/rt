@@ -343,9 +343,7 @@ sub _ParseQuery {
             push @actions,
               [
                 $self->CurrentUser->loc(
-"current: $current, want $want, Error near ->$val<- expecting a "
-                      . $token
-                      . " in '$string'\n"
+"current: $current, want $want, Error near ->$val<- expecting a $token in '$string'\n"
                 ),
                 -1
               ];
