@@ -127,7 +127,7 @@ $Ticket
 <tr class="input-row">
 <td class="label"><label class="horizontal" for="NewReminder-Subject" ><&|/l&>Subject</&>:</label></td>
 <td class="value">
-<input type="text" size="15" name="NewReminder-Subject" />
+<input type="text" size="15" name="NewReminder-Subject" id="NewReminder-Subject" />
 </td>
 </tr>
 <tr class="input-row">
