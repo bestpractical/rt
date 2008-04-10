@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="<% $Name %>">
-<option value="minutes" selected><% loc('Minutes') %></option>
+<option value="minutes" selected="selected"><% loc('Minutes') %></option>
 <option value="hours"><% loc('Hours') %></option>
 </select>
 <%INIT>

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME ="<%$Name%>">
+<select name="<%$Name%>">
 %for my $option ($cf->LookupTypes) {
 <option value="<%$option%>" <%defined ($Default) && ($option eq $Default) && "SELECTED"%>><% $cf->FriendlyLookupType($option) %></option>
 %}

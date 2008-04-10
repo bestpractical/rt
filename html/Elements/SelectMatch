@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select NAME ="<%$Name%>">
+<select name="<%$Name%>">
 <option value="LIKE" <%$LikeDefault%>><%$Like%></option>
 <option value="NOT LIKE" <%$NotLikeDefault%>><%$NotLike%></option>
 <option value="=" <%$TrueDefault%>><%$True%></option>
