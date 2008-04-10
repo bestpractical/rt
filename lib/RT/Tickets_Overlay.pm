@@ -1512,10 +1512,43 @@ sub OrderByCols {
     my $order = 0;
 
     foreach my $row (@args) {
-        if ( $row->{ALIAS} || $row->{FIELD} !~ /\./ ) {
+        if ( $row->{ALIAS} ) {
             push @res, $row;
             next;
         }
+        if ( $row->{FIELD} !~ /\./ ) {
+            my $meta = $self->FIELDS->{ $row->{FIELD} };
+            unless ( $meta ) {
+                push @res, $row;
+                next;
+            }
+
+            if ( $meta->[0] eq 'ENUM' && ($meta->[1]||'') eq 'Queue' ) {
+                my $alias = $self->Join(
+                    TYPE   => 'LEFT',
+                    ALIAS1 => 'main',
+                    FIELD1 => $row->{'FIELD'},
+                    TABLE2 => 'Queues',
+                    FIELD2 => 'id',
+                );
+                push @res, { %$row, ALIAS => $alias, FIELD => "Name" };
+            } elsif ( ( $meta->[0] eq 'ENUM' && ($meta->[1]||'') eq 'User' )
+                || ( $meta->[0] eq 'WATCHERFIELD' && ($meta->[1]||'') eq 'Owner' )
+            ) {
+                my $alias = $self->Join(
+                    TYPE   => 'LEFT',
+                    ALIAS1 => 'main',
+                    FIELD1 => $row->{'FIELD'},
+                    TABLE2 => 'Users',
+                    FIELD2 => 'id',
+                );
+                push @res, { %$row, ALIAS => $alias, FIELD => "Name" };
+            } else {
+                push @res, $row;
+            }
+            next;
+        }
+
         my ( $field, $subkey ) = split /\./, $row->{FIELD}, 2;
         my $meta = $self->FIELDS->{$field};
         if ( $meta->[0] eq 'WATCHERFIELD' ) {
