@@ -46,18 +46,18 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
   <select name="<%$Name%>">
-    <option value="1" <%$SingleDefault%>><&|/l&>Single</&></option>
-    <option value="0" <%$MultipleDefault%>><&|/l&>Multiple</&></option>
+    <option value="1"<%$SingleDefault|n%>><&|/l&>Single</&></option>
+    <option value="0"<%$MultipleDefault|n%>><&|/l&>Multiple</&></option>
   </select>	
 
 
 <%INIT>
 my ($SingleDefault, $MultipleDefault);
 if ($Default == 1) {
-    $SingleDefault = "SELECTED";
+    $SingleDefault = qq[ selected="selected"];
 }
 elsif ($Default == 0 ) {
-    $MultipleDefault = "SELECTED";
+    $MultipleDefault = qq[ selected="selected"];
 }
 
 </%INIT>

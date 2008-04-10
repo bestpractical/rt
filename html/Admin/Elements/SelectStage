@@ -48,7 +48,7 @@
 <select name="<%$Name%>">
 % foreach my $stage (@stages) {
 <option value="<%$stage%>"
-<% ($stage eq $Default) && 'SELECTED' %>
+<% ($stage eq $Default) && qq[ selected="selected"] |n %>
 ><% loc($stage) %>
 </option>
 % }

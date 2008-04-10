@@ -56,7 +56,7 @@
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/cascaded.js"></script>
 %#      XXX - Hide this select from w3m?
       <select onchange="filter_cascade('<% $id %>-Values', this.value)" name="<% $id %>-Category">
-        <option value="" <% !$selected && 'selected' %>><&|/l&>-</&></option>
+        <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>-</&></option>
 %           foreach my $cat (@category) {
 %               my ($depth, $name) = @$cat;
         <option value="<% $name %>"><% '&nbsp;' x $depth |n %><% $name %></option>
@@ -67,8 +67,8 @@
 %       if ( $Rows && ( $Multiple || !@category ) ) {
         size="<% $Rows %>"
 %       }
-        <% $Multiple && 'multiple' %> >
-        <option value="" <% !$selected && 'SELECTED' %>><&|/l&>(no value)</&></option>
+        <% $Multiple && qq[multiple="multiple"] |n %> >
+        <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>(no value)</&></option>
 %       $m->out($out);
       </select>
 <%ARGS>

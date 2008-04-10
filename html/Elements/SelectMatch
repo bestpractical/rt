@@ -68,15 +68,15 @@ my $LikeDefault='';
 my $NotLikeDefault ='';
 
 if ($Default && $Default =~ /false/i) {
-	$FalseDefault = "SELECTED";
+	$FalseDefault = qq[ selected="selected"];
 }
 elsif ($Default && $Default =~ /true/i) {
-	$TrueDefault = "SELECTED";
+	$TrueDefault = qq[ selected="selected"];
 } 
 elsif ($Default && $Default =~ /notlike/i) {
-	$NotLikeDefault = "SELECTED";
+	$NotLikeDefault = qq[ selected="selected"];
 }
 else {
-	$LikeDefault = "SELECTED";
+	$LikeDefault = qq[ selected="selected"];
 }
 </%INIT>

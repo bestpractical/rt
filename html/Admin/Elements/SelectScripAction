@@ -47,11 +47,11 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
 <option value="" 
-<% ! defined $Default && 'SELECTED' %>
+<% ! defined $Default && qq[ selected="selected"] |n %>
 >-</option>
 %while  (my $ScripAction = $ScripActions->Next) {
 <option value="<%$ScripAction->Id%>"
-<% defined $Default && $ScripAction->Id == $Default && 'SELECTED' %>
+<% defined $Default && $ScripAction->Id == $Default && qq[ selected="selected"] |n %>
 ><% loc($ScripAction->Name) %>
 </option>
 %}

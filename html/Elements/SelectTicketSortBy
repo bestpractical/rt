@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
 % foreach my $field (@sortfields) {
-<option value="<%$field%>" <% $field eq $Default && 'SELECTED'%>><% loc($field) %></option>
+<option value="<%$field%>"<% $field eq $Default && qq[ selected="selected"] |n%>><% loc($field) %></option>
 % }
 </select>
 

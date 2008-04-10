@@ -50,7 +50,7 @@
 <option value="">-</option>
 % }
 %for my $option (@types) {
-<option value="<%$option%>" <%defined($Default) && $option eq $Default && "SELECTED"%>><%loc($option)%></option>
+<option value="<%$option%>"<%defined($Default) && $option eq $Default && qq[ selected="selected"] |n %>><%loc($option)%></option>
 %}
 </select>
 

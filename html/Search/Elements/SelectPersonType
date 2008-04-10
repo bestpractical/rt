@@ -51,11 +51,11 @@
 % }
 % for my $option (@types) {
 %  if ($Suffix) {
-<option value="<% $option %><% $Suffix %>" <%$option eq $Default && "SELECTED"%> ><%loc($option)%></option>
+<option value="<% $option %><% $Suffix %>"<%$option eq $Default && qq[ selected="selected"] |n %> ><%loc($option)%></option>
 %   next;
 %  }
 %  foreach my $subtype (@subtypes) {
-<option value="<%"$option.$subtype"%>" <%$option eq $Default && $subtype eq 'EmailAddress' && "SELECTED"%> ><% loc($option) %> <% loc($subtype) %></option>
+<option value="<%"$option.$subtype"%>"<%$option eq $Default && $subtype eq 'EmailAddress' && qq[ selected="selected"] |n %> ><% loc($option) %> <% loc($subtype) %></option>
 %  }
 % }
 </select>
