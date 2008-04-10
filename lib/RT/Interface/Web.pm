@@ -153,7 +153,12 @@ sub WebExternalAutoInfo {
 
     my %user_info;
 
-    $user_info{'Privileged'} = 1;
+    # default to making Privileged users, even if they specify
+    # some other default Attributes
+    if (!$RT::AutoCreate ||
+        ( ref($RT::AutoCreate) && not exists $RT::AutoCreate->{Privileged})) {
+        $user_info{'Privileged'} = 1;
+    }
 
     if ($^O !~ /^(?:riscos|MacOS|MSWin32|dos|os2)$/) {
         # Populate fields with information from Unix /etc/passwd

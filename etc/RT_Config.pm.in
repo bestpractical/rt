@@ -414,6 +414,13 @@ Set($WebExternalGecos , undef);
 
 Set($WebExternalAuto , undef);
 
+# If $WebExternalAuto is true, this will be passed to User's
+# Create method.  Use it to set defaults, such as creating 
+# Unprivileged users with { Privileged => 0 }
+# Must be a hashref of arguments
+
+Set($AutoCreate, undef);
+
 # $WebSessionClass is the class you wish to use for managing Sessions.
 # It defaults to use your SQL database, but if you are using MySQL 3.x and
 # plans to use non-ascii Queue names, uncomment and add this line to
