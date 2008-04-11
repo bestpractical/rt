@@ -116,10 +116,11 @@ sub callback {
 
     my $CacheKey = "$page--$name";
     return 1 if delete $args{'CallbackOnce'} && $called{ $CacheKey };
-    ++$called{ $CacheKey };
+    $called{ $CacheKey } = 1;
 
     my $callbacks = $cache{ $CacheKey };
     unless ( $callbacks ) {
+        $callbacks = [];
         my $path  = "/Callbacks/*$page/$name";
         my @roots = map $_->[1],
                         $HTML::Mason::VERSION <= 1.28
@@ -127,18 +128,20 @@ sub callback {
                             : $self->interp->comp_root_array;
 
         my %seen;
-        @$callbacks = sort map { 
-                # Skip backup files, files without a leading package name,
-                # and files we've already seen
-                grep !$seen{$_}++ && !m{/\.} && !m{~$} && m{^/Callbacks/[^/]+\Q$page/$name\E$},
-                $self->interp->resolver->glob_path($path, $_);
-            } @roots;
+        @$callbacks = (
+            sort grep defined && length,
+            # Skip backup files, files without a leading package name,
+            # and files we've already seen
+            grep !$seen{$_}++ && !m{/\.} && !m{~$} && m{^/Callbacks/[^/]+\Q$page/$name\E$},
+            map $self->interp->resolver->glob_path($path, $_),
+            @roots
+        );
 
         $cache{ $CacheKey } = $callbacks unless RT->Config->Get('DevelMode');
     }
 
     my @rv;
-    push @rv, scalar $self->comp( $_, %args) foreach @$callbacks;
+    push @rv, scalar $self->comp( $_, %args ) foreach @$callbacks;
     return @rv;
 }
 }
