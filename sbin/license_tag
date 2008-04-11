@@ -115,6 +115,8 @@ sub tag_mason {
         open(FILE,"<$pm") || die "Failed to open $pm";
         my $file = (join "", <FILE>); 
         close (FILE);
+        return if another_license($file);
+
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/%# /mg;
 
@@ -147,6 +149,8 @@ sub tag_makefile {
         open(FILE,"<$pm") || die "Failed to open $pm";
         my $file = (join "", <FILE>); 
         close (FILE);
+        return if another_license($file);
+
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/# /mg;
 
@@ -180,6 +184,8 @@ sub tag_pm {
         open(FILE,"<$pm") || die "Failed to open $pm";
         my $file = (join "", <FILE>); 
         close (FILE);
+        return if another_license($file);
+
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/# /mg;
 
@@ -213,6 +219,8 @@ sub tag_script {
         open(FILE,"<$pm") || die "Failed to open $pm";
         my $file = (join "", <FILE>); 
         close (FILE);
+        return if another_license($file);
+
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/# /msg;
 
@@ -239,5 +247,13 @@ sub tag_script {
         print FILE $file;
         close FILE;
 
+}
+
+sub another_license {
+    my $file = shift;
+    if ( $file =~ /\bcopyright\b/i && $file !~ /Copyright\s+(c)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/ ) {
+        return 1;
+    }
+    return 0;
 }
 
