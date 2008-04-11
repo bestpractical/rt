@@ -139,7 +139,7 @@ sub GetQueryAndOptionList {
     my $list = $self->__LinearizeTree;
     foreach my $e( @$list ) {
         $e->{'DEPTH'}    = $e->{'NODE'}->getDepth;
-        $e->{'SELECTED'} = (grep $_ == $e->{'NODE'}, @$selected_nodes)? 'selected' : '';
+        $e->{'SELECTED'} = (grep $_ == $e->{'NODE'}, @$selected_nodes)? qq[ selected="selected"] : '';
     }
 
     return (join ' ', map $_->{'TEXT'}, @$list), $list;
