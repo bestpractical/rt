@@ -110,16 +110,16 @@ tag_makefile ('README');
 
 sub tag_mason {
         my $pm = $_;
-        next unless (-f $pm);
-        next if ($pm =~ /images/);
+        return unless (-f $pm);
+        return if $pm =~ /images/ || $pm =~ /\.(?:png|jpe?g|gif)$/;
         open(FILE,"<$pm") || die "Failed to open $pm";
         my $file = (join "", <FILE>); 
         close (FILE);
+        print "$pm - ";
+        return if another_license($file) && print "has different license\n";
+
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/%# /mg;
-
-
-        print "$pm - ";
         if ($file =~ /^%# BEGIN BPS TAGGED BLOCK {{{/ms) {
                 print "has license section";
              $file =~ s/^%# BEGIN BPS TAGGED BLOCK {{{(.*?)%# END BPS TAGGED BLOCK }}}/%# BEGIN BPS TAGGED BLOCK {{{\n$pmlic%# END BPS TAGGED BLOCK }}}/ms;
@@ -147,11 +147,11 @@ sub tag_makefile {
         open(FILE,"<$pm") || die "Failed to open $pm";
         my $file = (join "", <FILE>); 
         close (FILE);
+        print "$pm - ";
+        return if another_license($file) && print "has different license\n";
+
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/# /mg;
-
-
-        print "$pm - ";
         if ($file =~ /^# BEGIN BPS TAGGED BLOCK {{{/ms) {
                 print "has license section";
              $file =~ s/^# BEGIN BPS TAGGED BLOCK {{{(.*?)# END BPS TAGGED BLOCK }}}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}/ms;
@@ -180,11 +180,11 @@ sub tag_pm {
         open(FILE,"<$pm") || die "Failed to open $pm";
         my $file = (join "", <FILE>); 
         close (FILE);
+        print "$pm - ";
+        return if another_license($file) && print "has different license\n";
+
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/# /mg;
-
-
-        print "$pm - ";
         if ($file =~ /^# BEGIN BPS TAGGED BLOCK {{{/ms) {
                 print "has license section";
              $file =~ s/^# BEGIN BPS TAGGED BLOCK {{{(.*?)# END BPS TAGGED BLOCK }}}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}/ms;
@@ -213,10 +213,11 @@ sub tag_script {
         open(FILE,"<$pm") || die "Failed to open $pm";
         my $file = (join "", <FILE>); 
         close (FILE);
+        print "$pm - ";
+        return if another_license($file) && print "has different license\n";
+
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/# /msg;
-
-        print "$pm - ";
         if ($file =~ /^# BEGIN BPS TAGGED BLOCK {{{/ms) {
                 print "has license section";
              $file =~ s/^# BEGIN BPS TAGGED BLOCK {{{(.*?)# END BPS TAGGED BLOCK }}}/# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}/ms;
@@ -239,5 +240,13 @@ sub tag_script {
         print FILE $file;
         close FILE;
 
+}
+
+sub another_license {
+    my $file = shift;
+    return 0 if $file =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i;
+    return 1 if $file =~ /\bcopyright\b/i; # common
+    return 1 if $file =~ /\(c\)\s+\d\d\d\d(?:-\d\d\d\d)?/i; # prototype
+    return 0;
 }
 
