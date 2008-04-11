@@ -110,8 +110,8 @@ tag_makefile ('README');
 
 sub tag_mason {
         my $pm = $_;
-        next unless (-f $pm);
-        next if ($pm =~ /images/);
+        return unless (-f $pm);
+        return if $pm =~ /images/ || $pm =~ /\.(?:png|jpe?g|gif)$/;
         open(FILE,"<$pm") || die "Failed to open $pm";
         my $file = (join "", <FILE>); 
         close (FILE);
