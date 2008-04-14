@@ -300,7 +300,7 @@ fixperms:
 	chgrp -R $(RTGROUP) $(DESTDIR)/$(RT_ETC_PATH)
 
 	chmod 0550 $(DESTDIR)/$(CONFIG_FILE)
-	chmod 0550 $(DESTDIR)/$(SITE_CONFIG_FILE)
+	chmod 0750 $(DESTDIR)/$(SITE_CONFIG_FILE)
 
 	# Make the interfaces executable
 	chown $(BIN_OWNER) $(BINARIES)
