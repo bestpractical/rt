@@ -370,12 +370,12 @@ my $ActionError;
 if ( $ARGS{'DatabaseCreate'} ) { {
     warn($dump_config->(%config));
     {
-        open my $fh, '>', '/tmp/site-config';
+        open my $fh, '>', '/tmp/SiteConfig';
         print $fh $dump_config->(%config);
         close $fh;
     }
 
-    RT->Config->LoadConfig( File => '/tmp/site-config' );
+    RT->Config->LoadConfig( File => '/tmp/SiteConfig' );
     require RT::Handle;
 
     my ($dba_user, $dba_pass) = @config{'DatabaseAdmin', 'DatabaseAdminPassword'};
