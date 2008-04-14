@@ -969,6 +969,11 @@ sub InsertData {
     $RT::Handle->Disconnect() unless $db_type eq 'SQLite';
 
     $RT::Logger->debug("Done setting up database content.");
+
+# TODO is it ok to return 1 here? If so, the previous codes in this sub
+# should return (0, $msg) if error happens instead of just warning.
+# anyway, we need to return something here to tell if everything is ok
+    return( 1, 'Done inserting data' );
 }
 
 =head2 ACLEquivGroupId
