@@ -50,7 +50,7 @@
 <& /Elements/Tabs, 
     current_toptab => 'Install', Title => 'Install' &>
 
-<& Elements/ShowWarning, Warning => $Warning &>
+<& /Elements/ListActions, actions => \@results &>
 
 <form method="post">
 <table>
@@ -76,31 +76,29 @@
 
 <%init>
 
-my ( @Types, $Warning, $config );
+my ( @Types, @results );
 @Types = qw/SQLite mysql Oracle Pg Informix/;
-$config = {};
-
-$m->comp( 'Elements/GetConfig', File => $File, Variable => $config );
-$DatabaseType ||= $config->{DatabaseType};
 
 if ( $Run ) {
 
     if ( grep { $DatabaseType eq $_ } @Types ) {
     
-        $config->{DatabaseType} = $DatabaseType;
+        $session{InstallConfig}{DatabaseType} = $DatabaseType;
+        $session{TimeStamp} = time; # need this to force %session update
         
-        $m->comp( 'Elements/SetConfig', File => $File, Variable => $config );
-        $m->comp( 'Elements/Redirect', File => $File, Page => '/Install/Step2.html' );
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'installation/Step2.html');
     }
     else {
-        $Warning = "invalid database type";
+        push @results, 'invalid database type';
     }
+}
+else {
+    $DatabaseType ||= $session{InstallConfig}{DatabaseType};
 }
 
 </%init>
 
 <%args>
 $DatabaseType => undef
-$File
 $Run => undef
 </%args>

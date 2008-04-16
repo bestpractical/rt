@@ -48,11 +48,12 @@
 
 <%init>
 
-if ( -e $File ) {
+if ( $session{InstallConfig} ) {
     $m->call_next;
 }
 else {
-     RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . '/Install/Start.html' );
+     RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+'installation/index.html' );
 
 }
 
