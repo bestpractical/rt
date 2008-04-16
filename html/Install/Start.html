@@ -79,10 +79,9 @@ if ( $Run ) {
     my $File;
     (undef, $File ) = tempfile( 'rt_install_XXXXXX', TMPDIR => 1, UNLINK => 1 );
     
-    RT::Interface::Web::EscapeURI( \$File );
-    
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-    "/Install/Step1.html?File=$File" );
+    $m->comp( 'Elements/SetConfig', File => $File, Variable => $config );
+    $m->comp( 'Elements/Redirect', File => $File, Page => '/Install/Step1.html' );
+
 }
 
 </%init>
