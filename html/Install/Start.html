@@ -65,11 +65,34 @@ rt introduction...
 this wizard introduction...
 </div>
 
-<& Elements/Move, NextLabel => loc('Config Database'),
-NextURL => '/Install/Step1.html'
-&>
+<form method="post">
+<input type="hidden" name="Run" value="1" />
+<& /Elements/Submit, Label => 'Start Config' &>
+</form>
+
 % }
+
+<%init>
+
+if ( $Run ) {
+    use File::Temp qw/tempfile/;
+    my $File;
+    (undef, $File ) = tempfile( 'rt_install_XXXXXX', TMPDIR => 1, UNLINK => 1 );
+    
+    my $escaped_file = $File;
+    RT::Interface::Web::EscapeURI( \$File );
+    
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+    "/Install/Step1.html?File=$File" );
+}
+
+</%init>
 
 <%args>
 $Force => 0
+$Run => 0
 </%args>
+
+<%flags>
+inherit => '../autohandler'
+</%flags>
