@@ -1,0 +1,140 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+
+<& /Elements/Header, Title => 'Install' &> 
+<& /Elements/Tabs, 
+    current_toptab => 'Install', Title => 'Step 2: Check your database credentials' &> 
+
+<& /Elements/ListActions, actions => \@results &>
+
+<form method="post">
+<table>
+<tr>
+<td><% loc('DatabaseName:') %></td>
+<td>
+<input type="text" name="DatabaseName" value="<% $ARGS{DatabaseName} ||
+$session{InstallConfig}{DatabaseName} || 'rt3' %>" />
+</td>
+</tr>
+% if ( $session{InstallConfig}{DatabaseType} ne 'SQlite' ) {
+% for ( qw/DatabaseHost DatabasePort DatabaseUser DatabasePassword/ ) {
+<tr>
+<td><% loc("$_:") %></td>
+<td>
+<input type="<% /Password/ ? 'password' : 'text' %>" name="<% $_ %>" value="<% $ARGS{$_} || $session{InstallConfig}{$_} %>" />
+</td>
+</tr>
+
+% }
+% if ( $session{InstallConfig}{DatabaseType} eq 'Pg' ) {
+<tr>
+<td><% loc('DatabaseRequireSSL:') %></td>
+<td>
+<input type="checkbox" name="DatabaseRequireSSL" value="1" />
+</td>
+</tr>
+% }
+
+% }
+</table>
+<input type="hidden" name="Run" value="1">
+
+% if ( $session{InstallConfig}{DatabaseType} ne 'SQLite' ) {
+<input type="submit" value="check if we can connect" name="Connect" />
+% }
+<& /Elements/Submit, Label => loc('Next: Customize your RT') &>
+</form>
+
+<%init>
+my @results;
+
+if ( $Run ) {
+
+    if ( $Connect ) {
+        my $handle = DBIx::SearchBuilder::Handle->new();
+        my $db_type = $session{InstallConfig}{DatabaseType};
+        
+        my $dsn;
+        $dsn = "dbi:$db_type:";
+        if ( $db_type eq 'Pg' ) {
+            # with postgres, you want to connect to template1 database
+            $dsn .= 'dbname=template1';
+        }
+        $dsn .= ";host=$ARGS{DatabaseHost}" if $ARGS{DatabaseHost};
+        $dsn .= ";port=$ARGS{DatabasePort}" if $ARGS{DatabasePort};
+        $dsn .= ";requiressl=1" if $ARGS{DatabaseRequireSSL};
+        
+        my $dbh = DBI->connect(
+            $dsn, $ARGS{DatabaseUser}, $ARGS{DatabasePassword},
+            { RaiseError => 0, PrintError => 0 },
+        );
+    
+        if ( $dbh ) {
+            push @results, "Connect succeed!";
+        }
+        else {
+            push @results, "Failed to connect: $DBI::errstr";
+        }
+    }
+    else {
+        for ( qw/DatabaseName DatabaseUser DatabasePassword DatabasePort
+                DatabaseHost DatabaseRequireSSL/ ) {
+            $session{InstallConfig}{$_} = $ARGS{$_} if $ARGS{$_};
+        }
+        $session{TimeStamp} = time;
+
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'installation/Step3.html');
+    }
+}
+
+</%init>
+
+<%args>
+$Connect => undef
+$Run => 0
+</%args>
