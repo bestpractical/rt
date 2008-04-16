@@ -89,7 +89,7 @@ if ( $Run ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'installation/Step2.html');
     }
     else {
-        push @results, 'invalid database type';
+        push @results, "invalid database type: $DatabaseType";
     }
 }
 else {
