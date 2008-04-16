@@ -79,7 +79,6 @@ if ( $Run ) {
     my $File;
     (undef, $File ) = tempfile( 'rt_install_XXXXXX', TMPDIR => 1, UNLINK => 1 );
     
-    my $escaped_file = $File;
     RT::Interface::Web::EscapeURI( \$File );
     
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
