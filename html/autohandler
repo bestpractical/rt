@@ -50,8 +50,9 @@
 # Roll back any dangling transactions from a previous failed connection
 $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
 
+my $log_sql_statements = RT->Config->Get('StatementLog');
 
-if (RT->Config->Get('StatementLog')) {
+if ( $log_sql_statements ) {
     $RT::Handle->ClearSQLStatementLog;
     $RT::Handle->LogSQLStatements(1);
 }
@@ -294,9 +295,7 @@ else {
     $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS);
 }
 
-$m->comp( '/Elements/Footer', %ARGS );
-
-if (RT->Config->Get('StatementLog')) {
+if ( $log_sql_statements ) {
     my @log = $RT::Handle->SQLStatementLog;
     $RT::Handle->ClearSQLStatementLog;
     for my $stmt (@log) {
@@ -311,12 +310,14 @@ if (RT->Config->Get('StatementLog')) {
             $duration = $bind;
         }
         $RT::Logger->log(
-            level => RT->Config->Get('StatementLog'),
+            level => $log_sql_statements,
             message => "SQL(" . sprintf( "%.2f", $duration ) . "s): $sql;"
                 . ( @bind ? "  [ bound values: @{[map{qq|'$_'|} @bind]} ]" : "" )
         );
     }
 }
+
+$m->comp( '/Elements/Footer', %ARGS );
 
 </%INIT>
 <%ARGS>
