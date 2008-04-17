@@ -54,7 +54,7 @@
 
 <form method="post">
 <table>
-<tr>
+<tr title="<% $title{DatabaseName} %>">
 <td><% loc('DatabaseName:') %></td>
 <td>
 <input type="text" name="DatabaseName" value="<% $ARGS{DatabaseName} ||
@@ -63,7 +63,7 @@ $session{InstallConfig}{DatabaseName} %>" />
 </tr>
 % if ( $session{InstallConfig}{DatabaseType} ne 'SQLite' ) {
 % for ( qw/DatabaseHost DatabasePort DatabaseUser DatabasePassword/ ) {
-<tr>
+<tr title="<% $title{$_} |n %>">
 <td><% loc("$_:") %></td>
 <td>
 <input type="<% /Password/ ? 'password' : 'text' %>" name="<% $_ %>" value="<% $ARGS{$_} || $session{InstallConfig}{$_} %>" />
@@ -72,7 +72,7 @@ $session{InstallConfig}{DatabaseName} %>" />
 
 % }
 % if ( $session{InstallConfig}{DatabaseType} eq 'Pg' ) {
-<tr>
+<tr title="<% $title{DatabaseRequireSSL} |n %>" >
 <td><% loc('DatabaseRequireSSL:') %></td>
 <td>
 <input type="checkbox" name="DatabaseRequireSSL" value="1" />
@@ -92,6 +92,38 @@ $session{InstallConfig}{DatabaseName} %>" />
 
 <%init>
 my @results;
+
+my %title = (
+DatabaseHost => <<'EOF'
+The domain name of your database server
+If you're running mysql and it's on localhost,
+leave it blank for enhanced performance
+EOF
+,
+DatabasePort => <<'EOF'
+The port that your database server is running on.  Ignored unless it's
+a positive integer. It's usually safe to leave this blank
+EOF
+,
+DatabaseUser => <<'EOF'
+The name of the database user (inside the database)
+EOF
+,
+DatabasePassword => <<'EOF'
+Password the DatabaseUser should use to access the database
+EOF
+,
+DatabaseName => <<'EOF'
+The name of the RT's database on your database server
+EOF
+,
+DatabaseRequireSSL => <<'EOF'
+If you're using Postgres and have compiled in SSL support,
+set DatabaseRequireSSL to 1 to turn on SSL communication
+EOF
+,
+
+);
 
 if ( $Run ) {
 
