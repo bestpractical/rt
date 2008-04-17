@@ -55,7 +55,7 @@
 <form method="post">
 <table>
 % for ( @types ) {
-<tr title="<% $title{$_} %>">
+<tr title="<% $title{$_} |n%>">
 <td><% loc("$_:") %></td>
 <td>
 % if ( $_ eq 'TimeZone' ) {

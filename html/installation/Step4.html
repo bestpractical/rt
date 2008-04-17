@@ -51,10 +51,17 @@
     current_toptab => 'Install', Title => 'Step 4: Finish' &> 
 
 <div class="intro">
-congratulations! ...
+<p>
+Congratulations! You've done the config, now you need to stop this temp
+RT instance, run `make initialize-database' in top dir, start RT again,
+then you'll get the new RT instance. :)
+</p>
+
+<p>
+All the config stuff is stored in etc/RT_SiteConfig.pm, if you want to
+prevent it from being modified, `chmod -w etc/RT_SiteConfig.pm' will lock
+it as you want.
+</p>
 </div>
 
-<div class="intro">
-how to lock config.
-</div>
 
