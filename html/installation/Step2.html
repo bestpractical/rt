@@ -58,10 +58,10 @@
 <td><% loc('DatabaseName:') %></td>
 <td>
 <input type="text" name="DatabaseName" value="<% $ARGS{DatabaseName} ||
-$session{InstallConfig}{DatabaseName} || 'rt3' %>" />
+$session{InstallConfig}{DatabaseName} %>" />
 </td>
 </tr>
-% if ( $session{InstallConfig}{DatabaseType} ne 'SQlite' ) {
+% if ( $session{InstallConfig}{DatabaseType} ne 'SQLite' ) {
 % for ( qw/DatabaseHost DatabasePort DatabaseUser DatabasePassword/ ) {
 <tr>
 <td><% loc("$_:") %></td>
