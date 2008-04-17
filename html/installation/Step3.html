@@ -55,7 +55,7 @@
 <form method="post">
 <table>
 % for ( @types ) {
-<tr>
+<tr title="<% $title{$_} %>">
 <td><% loc("$_:") %></td>
 <td>
 % if ( $_ eq 'TimeZone' ) {
@@ -77,6 +77,29 @@ my @results;
 
 my @types = qw/rtname Organization TimeZone/;
 my @extra_types = (); # TODO for nearly all the configurable stuff
+my %title = (
+rtname => <<'EOF'
+rtname is the string that RT will look for in mail messages to
+figure out what ticket a new piece of mail belongs to
+
+Your domain name is recommended, so as not to pollute the namespace.
+once you start using a given tag, you should probably never change it.
+(otherwise, mail for existing tickets won't get put in the right place
+EOF
+,
+Organization => <<'EOF'
+You should set this to your organization's DNS domain. For example,
+fsck.com or asylum.arkham.ma.us. It's used by the linking interface to
+guarantee that ticket URIs are unique and easy to construct.
+EOF
+,
+TimeZone => <<'EOF'
+$Timezone is used to convert times entered by users into GMT and back again
+It should be set to a timezone recognized by your local unix box.
+EOF
+,
+
+);
 
 if ( $Run ) {
 
