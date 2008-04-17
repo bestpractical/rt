@@ -50,12 +50,7 @@
 <& /Elements/Tabs, 
     current_toptab => 'Install', Title => 'Install' &>
 
-% if ( $RT::Installed && ! $Force ) {
-<div class="warning">
-    Seems you've already run this wizard, do you want to config it again?
-    click <a href="?Force=1">here</a> to reconfig.
-</div>
-% } else {
+<& /Elements/ListActions, actions => \@results &>
 
 <div class="intro">
 rt introduction...
@@ -65,16 +60,28 @@ rt introduction...
 this wizard introduction...
 </div>
 
+% unless ( $locked ) {
 <form method="post">
 <input type="hidden" name="Run" value="1" />
 <& /Elements/Submit, Label => 'Start Config' &>
 </form>
-
 % }
 
 <%init>
+my @results;
 
-if ( $Run ) {
+my $locked;
+my $file = File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
+$locked = 1 unless -w $file;
+
+if ( $RT::Installed && ! $Force ) {
+    push @results, "Seems you've already run this wizard";
+}
+
+if ( $locked ) {
+    push @results, "Config file $file is locked";
+}
+elsif ( $Run ) {
     $session{InstallConfig} ||= {};
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'installation/Step1.html');
 
