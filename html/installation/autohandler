@@ -48,7 +48,7 @@
 
 <%init>
 
-if ( $session{InstallConfig} ) {
+if ( $session{InstallConfig} && $session{CurrentUser}->HasRight( Right => 'SuperUser',  Object => $RT::System ) ) {
     $m->call_next;
 }
 else {
@@ -58,7 +58,3 @@ else {
 }
 
 </%init>
-
-<%args>
-$File => undef
-</%args>

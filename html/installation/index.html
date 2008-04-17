@@ -52,6 +52,8 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
+% if ( $session{CurrentUser}->HasRight( Right => 'SuperUser',  Object => $RT::System ) && ! $locked ) {
+
 <div class="intro">
 <p>
 RT is an enterprise-grade ticketing system which enables a group of people to intelligently and efficiently manage tasks, issues, and requests submitted by a community of users.
@@ -67,7 +69,6 @@ Click "Start Config" below to start!
 <p>
 </div>
 
-% unless ( $locked ) {
 <form method="post">
 <input type="hidden" name="Run" value="1" />
 <& /Elements/Submit, Label => 'Start Config' &>
@@ -78,20 +79,27 @@ Click "Start Config" below to start!
 my @results;
 
 my $locked;
-my $file = File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
-$locked = 1 unless -w $file;
 
-if ( $RT::Installed && ! $Force ) {
-    push @results, "Seems you've already run this wizard";
+if ( $session{CurrentUser}->HasRight( Right => 'SuperUser',  Object =>
+            $RT::System ) ) {
+    my $file = File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
+    $locked = 1 unless -w $file;
+    
+    if ( $RT::Installed && ! $Force ) {
+        push @results, "Seems you've already run this wizard";
+    }
+    
+    if ( $locked ) {
+        push @results, "Config file $file is locked";
+    }
+    elsif ( $Run ) {
+        $session{InstallConfig} ||= {};
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'installation/Step1.html');
+    
+    }
 }
-
-if ( $locked ) {
-    push @results, "Config file $file is locked";
-}
-elsif ( $Run ) {
-    $session{InstallConfig} ||= {};
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'installation/Step1.html');
-
+else {
+    push @results, 'Permission Denied';
 }
 
 </%init>
