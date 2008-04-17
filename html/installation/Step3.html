@@ -75,30 +75,30 @@
 <%init>
 my @results;
 
-my @types = qw/rtname Organization TimeZone/;
-my @extra_types = (); # TODO for nearly all the configurable stuff
+my @types = qw/rtname Organization TimeZone MininumPasswordLength
+MaxAttachmentSize/;
 my %title = (
 rtname => <<'EOF'
-rtname is the string that RT will look for in mail messages to
-figure out what ticket a new piece of mail belongs to
-
-Your domain name is recommended, so as not to pollute the namespace.
-once you start using a given tag, you should probably never change it.
+rtname is the string that RT will look for in mail messages to figure out what ticket a new piece of mail belongs to Your domain name is recommended, so as not to pollute the namespace.  once you start using a given tag, you should probably never change it.
 (otherwise, mail for existing tickets won't get put in the right place
 EOF
 ,
 Organization => <<'EOF'
-You should set this to your organization's DNS domain. For example,
-fsck.com or asylum.arkham.ma.us. It's used by the linking interface to
-guarantee that ticket URIs are unique and easy to construct.
+You should set this to your organization's DNS domain. For example, fsck.com or asylum.arkham.ma.us. It's used by the linking interface to guarantee that ticket URIs are unique and easy to construct.
 EOF
 ,
 TimeZone => <<'EOF'
-$Timezone is used to convert times entered by users into GMT and back again
-It should be set to a timezone recognized by your local unix box.
+$Timezone is used to convert times entered by users into GMT and back again It should be set to a timezone recognized by your local unix box.
 EOF
 ,
-
+MininumPasswordLength => <<'EOF'
+$MinimumPasswordLength defines the minimum length for user passwords. Setting it to 0 disables this check
+EOF
+,
+MaxAttachmentSize => <<'EOF'
+$MaxAttachmentSize sets the maximum size (in bytes) of attachments stored in the database.
+EOF
+,
 );
 
 if ( $Run ) {
@@ -108,21 +108,31 @@ if ( $Run ) {
     }
     $session{TimeStamp} = time;
 
-    require File::Spec;
-    my $file = File::Spec->catfile($RT::EtcPath, 'RT_SiteConfig.pm');
-
-    if ( open my $fh, '>', $file  ) {
-        for ( keys %{$session{InstallConfig}} ) {
-             print $fh "Set( \$$_, '$session{InstallConfig}{$_}' );\n";
+    for ( qw/MininumPasswordLength MaxAttachmentSize/ ) {
+        if ( $ARGS{$_} && $ARGS{$_} !~ /^\d+$/ ) {
+            push @results, "Invalid $_: it should be a number";
         }
-        print $fh "Set( \$Installed, 1 );\n";
-        print $fh "1;\n";
-        close $fh;
-
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'installation/Step4.html');
     }
-    else {
-        push @results, "Can't open config file $file to write: $!";
+
+    unless ( @results ) {
+
+
+        require File::Spec;
+        my $file = File::Spec->catfile($RT::EtcPath, 'RT_SiteConfig.pm');
+
+        if ( open my $fh, '>', $file  ) {
+            for ( keys %{$session{InstallConfig}} ) {
+                 print $fh "Set( \$$_, '$session{InstallConfig}{$_}' );\n";
+            }
+            print $fh "Set( \$Installed, 1 );\n";
+            print $fh "1;\n";
+            close $fh;
+
+            RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'installation/Step4.html');
+        }
+        else {
+            push @results, "Can't open config file $file to write: $!";
+        }
     }
 }
 
