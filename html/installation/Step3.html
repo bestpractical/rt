@@ -56,7 +56,7 @@
 <table>
 % for ( @types ) {
 <tr title="<% $title{$_} |n%>">
-<td><% loc("$_:") %></td>
+<td class="label"><% loc($_) %>:</td>
 <td>
 % if ( $_ eq 'TimeZone' ) {
 <& /Elements/SelectTimezone, Name => 'Timezone',  &>

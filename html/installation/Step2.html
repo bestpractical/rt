@@ -55,7 +55,7 @@
 <form method="post">
 <table>
 <tr title="<% $title{DatabaseName} %>">
-<td><% loc('DatabaseName:') %></td>
+<td class="label"><% loc('DatabaseName') %>:</td>
 <td>
 <input type="text" name="DatabaseName" value="<% $ARGS{DatabaseName} ||
 $session{InstallConfig}{DatabaseName} %>" />
@@ -64,7 +64,7 @@ $session{InstallConfig}{DatabaseName} %>" />
 % if ( $session{InstallConfig}{DatabaseType} ne 'SQLite' ) {
 % for ( qw/DatabaseHost DatabasePort DatabaseUser DatabasePassword/ ) {
 <tr title="<% $title{$_} |n %>">
-<td><% loc("$_:") %></td>
+<td class="label"><% loc($_) %>:</td>
 <td>
 <input type="<% /Password/ ? 'password' : 'text' %>" name="<% $_ %>" value="<% $ARGS{$_} || $session{InstallConfig}{$_} %>" />
 </td>
@@ -73,7 +73,7 @@ $session{InstallConfig}{DatabaseName} %>" />
 % }
 % if ( $session{InstallConfig}{DatabaseType} eq 'Pg' ) {
 <tr title="<% $title{DatabaseRequireSSL} |n %>" >
-<td><% loc('DatabaseRequireSSL:') %></td>
+<td class="label"><% loc('DatabaseRequireSSL') %>:</td>
 <td>
 <input type="checkbox" name="DatabaseRequireSSL" value="1" />
 </td>
