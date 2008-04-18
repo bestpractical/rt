@@ -61,7 +61,10 @@
 % if ( $_ eq 'TimeZone' ) {
 <& /Elements/SelectTimezone, Name => 'Timezone',  &>
 % } else {
-<input type="text" name="<% $_ %>" value="<% $ARGS{$_} || $session{InstallConfig}{$_} %>" />
+<input type="text" <% ( $_ eq 'MininumPasswordLength' || $_ eq
+'MaxAttachmentSize' ) ? q[onchange="this.value.match(/^\d+$/) ?
+this.style.background='white' : this.style.background='red'" ]: () |n %>
+name="<% $_ %>" value="<% $ARGS{$_} || $session{InstallConfig}{$_} %>" />
 % }
 </td>
 </tr>
