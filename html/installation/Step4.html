@@ -48,20 +48,29 @@
 
 <& /Elements/Header, Title => 'Install' &> 
 <& /Elements/Tabs, 
-    current_toptab => 'Install', Title => 'Step 4: Finish' &> 
+    current_toptab => 'Install', Title => 'Step 4: Initialize Database' &> 
 
-<div class="intro">
-<p>
-Congratulations! You've done the config, now you need to stop this temp
-RT instance, run `make initialize-database' in top dir, start RT again,
-then you'll get the new RT instance. :)
-</p>
+<& /Elements/ListActions, actions => \@results &>
 
-<p>
-All the config stuff is stored in etc/RT_SiteConfig.pm, if you want to
-prevent it from being modified, `chmod -w etc/RT_SiteConfig.pm' will lock
-it as you want.
-</p>
-</div>
+<form method="post">
+<input type="hidden" name="Run" value="1">
+<& /Elements/Submit, Label => loc('Initialize Database') &>
+</form>
 
+<%init>
+my @results;
+if ( $Run ) {
+    my $msg = `echo | $^X sbin/rt-setup-database --action init --dba $session{InstallConfig}{DatabaseUser} --dba-password '$session{InstallConfig}{DatabasePassword}' 2>&1`;
+    @results = split /\n/, $msg;
+# XXX $? doesn't work here, so I decided to grep the strings to find if any
+# error happens
+    unless ( grep { /^ERROR:/ } @results ) {
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'installation/Step5.html');
+    }
+}
+</%init>
+
+<%args>
+$Run => undef
+</%args>
 
