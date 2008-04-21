@@ -267,12 +267,6 @@ $TICKET_COLUMN_MAP = {
         $_ => { value => $LinkCallback->( $_ ) }
     } keys %RT::Ticket::LINKTYPEMAP),
 
-    (map {
-        my $value = RT->Config->Get($_);
-        $_ => { value => sub { return \$value } };
-    
-    } qw(WebPath WebBaseURL WebURL)),
-
     '_CLASS' => {
         value => sub { return $_[1] % 2 ? 'oddline' : 'evenline' }
     },

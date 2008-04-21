@@ -130,6 +130,11 @@ my $COLUMN_MAP = {
             return \qq{<input type="radio" name="SelectedTicket" value="$id" $checked />};
         },
     },
+    (map {
+        my $value = RT->Config->Get($_);
+        $_ => { value => sub { return \$value } };
+    
+    } qw(WebPath WebBaseURL WebURL)),
 };
 
 </%ONCE>
