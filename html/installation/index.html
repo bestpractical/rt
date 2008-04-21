@@ -63,7 +63,7 @@ It's used by Fortune 100 companies, government agencies, educational institution
 <p>
 This install wizard will instruct you to config your RT!
 Click "Start Config" below to start!
-<p>
+</p>
 </div>
 
 <form method="post">
@@ -91,6 +91,16 @@ if ( $session{CurrentUser}->HasRight( Right => 'SuperUser',  Object =>
     }
     elsif ( $Run ) {
         $session{InstallConfig} ||= {};
+        for ( qw/DatabaseType DatabaseName DatabaseHost DatabasePort
+                DatabaseUser DatabasePassword DatabaseRequireSSL rtname
+                Organization TimeZone MinimumPasswordLength MaxAttachmentSize
+                OwnerEmail CommentAddress CorrespondAddress MailCommand
+                SendmailArguments SendmailBounceArguments SendmailPath/ ) {
+            no strict 'refs';
+            my $v = "RT::$_";
+            $session{InstallConfig}{$_} ||= $$v;
+        }
+        $session{TimeStamp} = time;
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'installation/Step1.html');
     
     }
