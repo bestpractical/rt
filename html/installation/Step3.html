@@ -77,7 +77,7 @@ name="<% $_ %>" value="<% $ARGS{$_} || $session{InstallConfig}{$_} %>" />
 <%init>
 my @results;
 
-my @types = qw/rtname Organization TimeZone MininumPasswordLength/;
+my @types = qw/rtname Organization TimeZone MinimumPasswordLength/;
 my %title = (
 rtname => <<'EOF'
 rtname is the string that RT will look for in mail messages to figure out what ticket a new piece of mail belongs to Your domain name is recommended, so as not to pollute the namespace.  once you start using a given tag, you should probably never change it.
@@ -92,7 +92,7 @@ TimeZone => <<'EOF'
 $Timezone is used to convert times entered by users into GMT and back again It should be set to a timezone recognized by your local unix box.
 EOF
 ,
-MininumPasswordLength => <<'EOF'
+MinimumPasswordLength => <<'EOF'
 $MinimumPasswordLength defines the minimum length for user passwords. Setting it to 0 disables this check
 EOF
 ,
