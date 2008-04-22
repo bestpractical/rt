@@ -62,10 +62,10 @@ push @Objects, RT::System->new($session{'CurrentUser'})
 $self->{SearchId} ||= 'new';
 my $SearchParams = { map { $_ => $args->{$_} } @{$self->{SearchFields}} };
 
-if ( my ( $container_object, $search_id ) = _parse_saved_search( $args->{'LoadSavedSearch'} ) ) {
+if ( my ( $container_object, $search_id ) = _parse_saved_search( $args->{'SavedSearchLoad'} ) ) {
     my $search = $container_object->Attributes->WithId($search_id);
     # We have a $search and now; import the others
-    $self->{SearchId} = $args->{'LoadSavedSearch'};
+    $self->{SearchId} = $args->{'SavedSearchLoad'};
     $self->{CurrentSearch}{Object} = $search;
     $args->{$_} = $search->SubValue($_) for @{ $self->{SearchFields} };
 }
@@ -87,24 +87,24 @@ if ($self->{SearchId} eq 'new') {
     }
 }
 
-if ( $args->{Save} ) {
+if ( $args->{SavedSearchSave} ) {
     if ( my $search = $self->{CurrentSearch}{Object} ) {
         # rename
-        $search->SetDescription( $args->{Description} );
-	push @actions, loc($self->{SearchType}).loc( ' [_1] renamed to [_2].', $self->{CurrentSearch}{Description}, $args->{Description} );
+        $search->SetDescription( $args->{SavedSearchDescription} );
+	push @actions, loc($self->{SearchType}).loc( ' [_1] renamed to [_2].', $self->{CurrentSearch}{Description}, $args->{SavedSearchDescription} );
     }
     else {
         # new saved search
         my $saved_search = RT::SavedSearch->new( $session{'CurrentUser'} );
         my ( $ok, $search_msg ) = $saved_search->Save(
-            Privacy      => $args->{'Owner'},
-            Name         => $args->{'Description'},
+            Privacy      => $args->{'SavedSearchOwner'},
+            Name         => $args->{'SavedSearchDescription'},
             Type         => $self->{'SearchType'},
             SearchParams => $SearchParams
         );
         if ($ok) {
 	    $self->{CurrentSearch}{Object} = $saved_search->{Attribute};
-            push @actions, loc($self->{SearchType}).loc( ' [_1] saved.', $args->{Description} );
+            push @actions, loc($self->{SearchType}).loc( ' [_1] saved.', $args->{SavedSearchDescription} );
         } else {
             push @actions,
                 [ loc("Can't save [_1]", loc($self->{SearchType})) . ': ' . loc($search_msg), 0 ];
@@ -112,7 +112,7 @@ if ( $args->{Save} ) {
     }
 }
 
-if ( $args->{Delete} && $self->{CurrentSearch}{Object} ) {
+if ( $args->{SavedSearchDelete} && $self->{CurrentSearch}{Object} ) {
     my ($ok, $msg) = $self->{CurrentSearch}{Object}->Delete;
     push @actions, $ok ? loc($self->{SearchType}).loc( ' [_1] deleted.', $self->{CurrentSearch}{Object}->Description ) : $msg;
     delete $self->{CurrentSearch}{Object};
