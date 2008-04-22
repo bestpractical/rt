@@ -68,12 +68,11 @@
 &>
 
 <& /Search/Elements/EditSearches,
-    Name => 'Owner',
-    Type => $saved_search->{SearchType},
-    AllowCopy => 0,
-    CurrentSearch => $saved_search->{CurrentSearch},
-    SearchId => $saved_search->{SearchId},
     Title => loc('Manage saved graphs'),
+    Id => $saved_search->{SearchId},
+    Type => $saved_search->{SearchType},
+    CurrentSearch => $saved_search->{CurrentSearch},
+    AllowCopy => 0,
 &>
 </form>
 
