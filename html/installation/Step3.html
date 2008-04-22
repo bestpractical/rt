@@ -61,7 +61,7 @@
 % if ( $_ eq 'TimeZone' ) {
 <& /Elements/SelectTimezone, Name => 'Timezone',  &>
 % } else {
-<input type="text" <% $_ eq 'MininumPasswordLength' ? q[onchange="(!this.value || this.value.match(/^\d+$/)) ?
+<input type="text" <% $_ eq 'MinimumPasswordLength' ? q[onchange="(!this.value || this.value.match(/^\d+$/)) ?
 this.style.background='white' : this.style.background='red'" ]: () |n %>
 name="<% $_ %>" value="<% $ARGS{$_} || $session{InstallConfig}{$_} %>" />
 % }
