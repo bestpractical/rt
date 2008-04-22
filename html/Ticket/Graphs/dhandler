@@ -49,8 +49,8 @@
 my $arg = $m->dhandler_arg;
 
 my ($type, $id);
-if ( $arg =~ m{^(\d+)$}i ) {
-    ($id) = ($1);
+if ( $arg =~ m{^(Members|Links)/(\d+)$}i ) {
+    ($type, $id) = ($1, $2);
 } else {
     return $m->abort( 404 );
 }
@@ -63,7 +63,8 @@ unless ( $ticket->id ) {
 }
 
 require RT::Graph::Tickets;
-my $graph = RT::Graph::Tickets->TicketLinks(
+my $method = 'Ticket'. ucfirst lc $type;
+my $graph = RT::Graph::Tickets->$method(
     %ARGS,
     Ticket => $ticket,
 );

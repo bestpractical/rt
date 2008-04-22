@@ -104,6 +104,58 @@ sub gv_escape($) {
 
 our (%fill_cache, @available_colors) = ();
 
+sub TicketMembers {
+    my $self = shift;
+    my %args = (
+        Ticket       => undef,
+        Graph        => undef,
+        Seen         => undef,
+        Depth        => 0,
+        CurrentDepth => 1,
+        @_
+    );
+    unless ( $args{'Graph'} ) {
+        $args{'Graph'} = GraphViz->new(
+            name    => "ticket_members_". $args{'Ticket'}->id,
+            bgcolor => "transparent",
+            node    => { shape => 'box', style => 'rounded,filled', fillcolor => 'white' },
+        );
+        %fill_cache = ();
+        @available_colors = @fill_colors;
+    }
+
+    $self->AddTicket( %args );
+
+    $args{'Seen'} ||= {};
+    return $args{'Graph'} if $args{'Seen'}{ $args{'Ticket'}->id }++;
+
+    return $args{'Graph'} if $args{'Depth'} && $args{'CurrentDepth'} >= $args{'Depth'};
+
+    my $show_link_descriptions = $args{'ShowLinkDescriptions'}
+        && RT::Link->can('Description');
+
+    my $to_links = $args{'Ticket'}->Links('Target', 'MemberOf');
+    $to_links->GotoFirstItem;
+    while ( my $link = $to_links->Next ) {
+        my $base = $link->BaseObj;
+        next unless $base->isa('RT::Ticket');
+
+        $self->TicketMembers(
+            %args,
+            Ticket => $base,
+            CurrentDepth => $args{'CurrentDepth'} + 1,
+        );
+
+        my $desc;
+        $desc = $link->Description if $show_link_descriptions;
+        $args{'Graph'}->add_edge(
+            $args{'Ticket'}->id => $base->id,
+            $desc? (label => gv_escape $desc): (),
+        );
+    }
+    return $args{'Graph'};
+};
+
 my %property_cb = (
     Queue => sub { return $_[0]->QueueObj->Name || $_[0]->Queue },
     CF    => sub {

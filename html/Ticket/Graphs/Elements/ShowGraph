@@ -45,12 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<div><img src="<% $RT::WebPath %>/Ticket/Graphs/<% $id %>?<% $m->comp('/Elements/QueryString', %graphargs) %>" usemap="#<% $graph->{'NAME'} || 'test' %>" style="border: none" />
+<div><img src="<% $RT::WebPath %>/Ticket/Graphs/<% $Type %>/<% $id %>?<% $m->comp('/Elements/QueryString', %ARGS) %>" usemap="#<% $graph->{'NAME'} || 'test' %>" style="border: none" />
 <% Encode::decode_utf8( $graph->as_cmapx ) |n %>
 </div>
 <& ShowLegends, %ARGS, Ticket => $ticket &>
 <%ARGS>
 $id => undef;
+$Type => 'Links',
 </%ARGS>
 <%INIT>
 my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
@@ -61,11 +62,16 @@ unless ( $ticket->id ) {
 }
 $ARGS{'id'} = $id = $ticket->id;
 
-my $graph = RT::Graph::Tickets->TicketLinks(
+$Type = ucfirst lc $Type;
+unless ( $Type eq 'Links' || $Type eq 'Members' ) {
+    $RT::Logger->error("'$Type' is incorrect type of ticket graph");
+    $Type = 'Links';
+}
+
+require RT::Graph::Tickets;
+my $method = 'Ticket'. $Type;
+my $graph = RT::Graph::Tickets->$method(
     %ARGS,
     Ticket => $ticket,
 );
-
-my %graphargs;
-$graphargs{$_} = $ARGS{$_} for qw/Depth FillUsing/;
 </%INIT>

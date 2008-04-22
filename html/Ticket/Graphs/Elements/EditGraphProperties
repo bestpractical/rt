@@ -80,6 +80,23 @@ Show link descriptions:
 <br />
 % }
 
+<%PERL>
+if ( $AllowAdditionalProperties ) {
+    for my $i ( 1..($Depth||6) ) {
+        my @default;
+        if ( my $tmp = $ARGS{ 'Level-'. $i .'-Properties' } ) {
+            @default = ref $tmp? @$tmp : ($tmp);
+        }
+
+        $m->comp('SELF:Properties',
+            Level => $i,
+            Available => \@properties,
+            Default => \@default,
+        );
+    }
+}
+</%PERL>
+
 <& /Elements/Submit, Label => loc('Update Graph'), Name => 'Update' &>
 
 </&>
@@ -89,6 +106,7 @@ $id => undef
 $Depth => 3
 $FillUsing => ''
 $ShowLinkDescriptions => 0
+$AllowAdditionalProperties => 1
 </%ARGS>
 <%INIT>
 require RT::Graph::Tickets;
