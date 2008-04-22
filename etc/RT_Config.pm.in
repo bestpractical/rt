@@ -727,6 +727,9 @@ Set($StrictLinkACL, 1);
 
 Set($DevelMode, '@RT_DEVEL_MODE@');
 
+eval {require GraphViz;};
+Set($DisableGraphViz, $@ ? 1 : 0);
+
 # }}}
 
 # {{{ Deprecated options

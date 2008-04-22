@@ -248,19 +248,38 @@ dnl Set the value of apachectl
 AC_ARG_WITH(apachectl,
             AC_HELP_STRING([--with-apachectl],
                            [instruct RT where to find your apachectl]),
-
             APACHECTL=$withval, 
             APACHECTL=`which apachectl`)
 AC_SUBST(APACHECTL)
 
 dnl RT's "maintainer mode"
-AC_ARG_WITH(devel-mode,
-            AC_HELP_STRING([--with-devel-mode],
+AC_ARG_WITH(devel-mode,[],RT_DEVEL_MODE=$withval,RT_DEVEL_MODE="0")
+AC_ARG_ENABLE(devel-mode,
+            AC_HELP_STRING([--enable-devel-mode],
                            [Turn on development aids that might hurt you in production]),
-
-            RT_DEVEL_MODE="1", 
-            RT_DEVEL_MODE="0")
+            RT_DEVEL_MODE=$enableval,
+            RT_DEVEL_MODE=$RT_DEVEL_MODE)
+if test "$RT_DEVEL_MODE" = yes; then
+        RT_DEVEL_MODE="1"
+else
+        RT_DEVEL_MODE="0"
+fi
 AC_SUBST(RT_DEVEL_MODE)
+
+dnl RT's GraphViz dependency charts
+AC_CHECK_LIB([graph],[aginitlib],RT_GRAPHVIZ="1")
+AC_ARG_WITH(graphviz,[],RT_GRAPHVIZ=$withval)
+AC_ARG_ENABLE(graphviz,
+            AC_HELP_STRING([--enable-graphviz],
+                           [Turns on support for RT's GraphViz dependency charts]),
+            RT_GRAPHVIZ=$enableval)
+if test "$RT_GRAPHVIZ" = yes; then
+        RT_GRAPHVIZ="1"
+elif test "$RT_GRAPHVIZ" = no; then
+        RT_GRAPHVIZ="0"
+fi
+AC_SUBST(RT_GRAPHVIZ)
+
 dnl This section maps the variable names this script 'natively' generates
 dnl to their existing names. They should be removed from here as the .in
 dnl files are changed to use the new names.
@@ -297,28 +316,28 @@ dnl Binaries that should be +x
 AC_CONFIG_FILES([
                  etc/upgrade/3.8-branded-queues-extension
                  etc/upgrade/3.8-ical-extension
-		 sbin/rt-dump-database
-		 sbin/rt-setup-database
-		 sbin/rt-test-dependencies
-         sbin/rt-clean-sessions
-         sbin/rt-shredder
-         sbin/rt-validator
-         sbin/rt-notify-group-admin
- 		 bin/mason_handler.fcgi
- 		 bin/mason_handler.scgi
- 		 bin/standalone_httpd
- 		 bin/rt-crontool
- 		 bin/rt-mailgate
-		 bin/rt],
-		[chmod ug+x $ac_file]
+                 sbin/rt-dump-database
+                 sbin/rt-setup-database
+                 sbin/rt-test-dependencies
+                 sbin/rt-clean-sessions
+                 sbin/rt-shredder
+                 sbin/rt-validator
+                 sbin/rt-notify-group-admin
+                 bin/mason_handler.fcgi
+                 bin/mason_handler.scgi
+                 bin/standalone_httpd
+                 bin/rt-crontool
+                 bin/rt-mailgate
+                 bin/rt],
+                [chmod ug+x $ac_file]
                )
 
 dnl All other generated files
 AC_CONFIG_FILES([
-		 Makefile
-		 etc/RT_Config.pm
-		 lib/RT.pm
- 		 bin/mason_handler.svc
-		 bin/webmux.pl],
+                 Makefile
+                 etc/RT_Config.pm
+                 lib/RT.pm
+                 bin/mason_handler.svc
+                 bin/webmux.pl],
                )
 AC_OUTPUT

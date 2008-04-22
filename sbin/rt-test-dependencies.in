@@ -68,7 +68,7 @@ GetOptions(
     'with-GPG',
     'with-ICAL',
     'with-SMTP',
-    'with-GRAPH',
+    'with-GRAPHVIZ',
 
     'download=s',
     'repository=s',
@@ -91,7 +91,7 @@ my %default = (
     'with-GPG' => 1,
     'with-ICAL' => 1,
     'with-SMTP' => 1,
-    'with-GRAPH' => 1,
+    'with-GRAPHVIZ' => @RT_GRAPHVIZ@,
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
@@ -341,7 +341,7 @@ $deps{'SMTP'} = [ text_to_hash( << '.') ];
 Net::SMTP
 .
 
-$deps{'GRAPH'} = [ text_to_hash( << '.') ];
+$deps{'GRAPHVIZ'} = [ text_to_hash( << '.') ];
 GraphViz
 IPC::Run
 IPC::Run::SafeHandles

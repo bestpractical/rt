@@ -50,7 +50,7 @@
     Ticket => $Ticket, current_tab => 'Ticket/History.html?id='.$Ticket->id, 
     Title => loc("Ticket History # [_1] [_2]", $Ticket->Id, $Ticket->Subject) &>
 
-% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $Ticket);
+% $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'BeforeActionList' );
 
 
 <br />
@@ -63,8 +63,7 @@
     AttachmentContent => $attachment_content
     &> 
 
-<& /Elements/Callback, _CallbackName => 'AfterShowHistory', Ticket => $Ticket, 
-current_tab => 'Ticket/History.html?id=' . $Ticket->id, %ARGS &>
+% $m->callback( %ARGS, CallbackName => 'AfterShowHistory', Ticket => $Ticket, current_tab => 'Ticket/History.html?id=' . $Ticket->id );
 
 <%ARGS>
 $id => undef

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Callback, tabs => $tabs, %ARGS &>
+% $m->callback( %ARGS, tabs => $tabs );
 <& /Elements/PageLayout,
     current_toptab => $current_toptab,
     current_tab => $current_tab,

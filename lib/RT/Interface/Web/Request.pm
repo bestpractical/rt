@@ -72,7 +72,7 @@ sub new {
 Method replaces deprecated component C<Element/Callback>.
 
 Takes hash with optional C<CallbackPage>, C<CallbackName>
-and C<CallabckOnce> arguments, other arguments are passed
+and C<CallbackOnce> arguments, other arguments are passed
 throught to callback components.
 
 =over4
@@ -110,7 +110,7 @@ sub callback {
     my $name = delete $args{'CallbackName'} || 'Default';
     my $page = delete $args{'CallbackPage'} || $self->callers(0)->path;
     unless ( $page ) {
-        $RT::Logger->error("Coulnd't get a page name for callbacks");
+        $RT::Logger->error("Couldn't get a page name for callbacks");
         return;
     }
 

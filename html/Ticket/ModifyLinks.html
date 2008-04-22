@@ -57,7 +57,9 @@
 <form action="ModifyLinks.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
-<&| /Widgets/TitleBox, title => loc('Edit Links'), class=>'ticket-info-links' &>
+% my (@extra);
+% push @extra, titleright_raw => '<a href="'. $RT::WebPath. '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>' unless $RT::DisableGraphViz;
+<&| /Widgets/TitleBox, title => loc('Edit Links'), class=>'ticket-info-links', @extra &>
 <& /Elements/EditLinks, Object => $Ticket, Merge => 1 &>
 </&>
 <& /Elements/Submit, Label => loc('Save Changes') &>

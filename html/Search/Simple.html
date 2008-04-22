@@ -51,7 +51,7 @@
     Title => $title
 &>
 
-<& /Elements/Callback, _CallbackName => 'PreForm', %ARGS &>
+% $m->callback( %ARGS, CallbackName => 'PreForm' );
 
 <div id="SimpleSearchForm">
 <form action="Simple.html" method="get">
@@ -69,7 +69,7 @@
 
 </form>
 
-<& /Elements/Callback, _CallbackName => 'PostForm', %ARGS &>
+% $m->callback( %ARGS, CallbackName => 'PostForm' );
 
 </div>
 
@@ -94,7 +94,7 @@ if ($q) {
         TicketsObj => $tickets,
     );
 
-    $m->comp('/Elements/Callback', %ARGS, _CallbackName => 'SearchArgs', args => \%args);
+    $m->callback( %ARGS, CallbackName => 'SearchArgs', args => \%args);
 
     my $search = RT::Search::Googleish->new(%args);
 

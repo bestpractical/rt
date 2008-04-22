@@ -75,7 +75,8 @@ my %link_style = (
     RefersTo  => { style => 'dotted', constraint => 'false' },
 );
 
-my @fill_colors = qw(
+# We don't use qw() because perl complains about "possible attempt to put comments in qw() list"
+my @fill_colors = split ' ',<<EOT;
     #0000FF #8A2BE2 #A52A2A #DEB887 #5F9EA0 #7FFF00 #D2691E #FF7F50
     #6495ED #FFF8DC #DC143C #00FFFF #00008B #008B8B #B8860B #A9A9A9
     #A9A9A9 #006400 #BDB76B #8B008B #556B2F #FF8C00 #9932CC #8B0000
@@ -93,7 +94,7 @@ my @fill_colors = qw(
     #4169E1 #8B4513 #FA8072 #F4A460 #2E8B57 #FFF5EE #A0522D #C0C0C0
     #87CEEB #6A5ACD #708090 #708090 #FFFAFA #00FF7F #4682B4 #D2B48C
     #008080 #D8BFD8 #FF6347 #40E0D0 #EE82EE #F5DEB3 #FFFF00 #9ACD32
-);
+EOT
 
 sub gv_escape($) {
     my $value = shift;
@@ -102,58 +103,6 @@ sub gv_escape($) {
 }
 
 our (%fill_cache, @available_colors) = ();
-
-sub TicketMembers {
-    my $self = shift;
-    my %args = (
-        Ticket       => undef,
-        Graph        => undef,
-        Seen         => undef,
-        Depth        => 0,
-        CurrentDepth => 1,
-        @_
-    );
-    unless ( $args{'Graph'} ) {
-        $args{'Graph'} = GraphViz->new(
-            name    => "ticket_members_". $args{'Ticket'}->id,
-            bgcolor => "transparent",
-            node    => { shape => 'box', style => 'rounded,filled', fillcolor => 'white' },
-        );
-        %fill_cache = ();
-        @available_colors = @fill_colors;
-    }
-
-    $self->AddTicket( %args );
-
-    $args{'Seen'} ||= {};
-    return $args{'Graph'} if $args{'Seen'}{ $args{'Ticket'}->id }++;
-
-    return $args{'Graph'} if $args{'Depth'} && $args{'CurrentDepth'} >= $args{'Depth'};
-
-    my $show_link_descriptions = $args{'ShowLinkDescriptions'}
-        && RT::Link->can('Description');
-
-    my $to_links = $args{'Ticket'}->Links('Target', 'MemberOf');
-    $to_links->GotoFirstItem;
-    while ( my $link = $to_links->Next ) {
-        my $base = $link->BaseObj;
-        next unless $base->isa('RT::Ticket');
-
-        $self->TicketMembers(
-            %args,
-            Ticket => $base,
-            CurrentDepth => $args{'CurrentDepth'} + 1,
-        );
-
-        my $desc;
-        $desc = $link->Description if $show_link_descriptions;
-        $args{'Graph'}->add_edge(
-            $args{'Ticket'}->id => $base->id,
-            $desc? (label => gv_escape $desc): (),
-        );
-    }
-    return $args{'Graph'};
-};
 
 my %property_cb = (
     Queue => sub { return $_[0]->QueueObj->Name || $_[0]->Queue },
