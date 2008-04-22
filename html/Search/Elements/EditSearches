@@ -48,8 +48,7 @@
 <&| /Widgets/TitleBox, title => loc($Title)&>
 
 %# Hide all the save functionality if the user shouldn't see it.
-% if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
-%                                        Object=> $RT::System )) {
+% if ( $can_modify ) {
 <&|/l&>Privacy:</&>
 % if ( $Object && $Object->id ) {
 <& SearchPrivacy, Object => $Object->Object &>
@@ -62,7 +61,7 @@
 
 % if ($Id ne 'new') {
 <nobr>
-% if ($Dirty) {
+% if ( $Dirty ) {
 <input type="submit" class="button" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
 <input type="submit" class="button" name="SavedSearchDelete" value="<%loc('Delete')%>" />
@@ -87,11 +86,9 @@ return unless $session{'CurrentUser'}->HasRight(
     Object => $RT::System,
 );
 
-# If we're modifying an old query, check if it's been changed
-my $Dirty = $m->comp(
-    'EditSearches:IsDirty',
-    Query => $CurrentSearch,
-    SavedSearch => { Id => $Id, Object => $Object, Description => $Description }
+my $can_modify = $session{'CurrentUser'}->HasRight(
+    Right  => 'CreateSavedSearch',
+    Object => $RT::System,
 );
 
 use RT::SavedSearches;
@@ -99,6 +96,31 @@ my @Objects = RT::SavedSearches->new($session{CurrentUser})->_PrivacyObjects;
 push @Objects, RT::System->new( $session{'CurrentUser'} )
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
                                           Right => 'SuperUser' );
+
+my $is_dirty = sub {
+    my %arg = (
+        Query       => {},
+        SavedSearch => {},
+        SearchFields => [qw(Query Format OrderBy Order RowsPerPage)],
+        @_
+    );
+
+    my $obj  = $arg{'SavedSearch'}->{'Object'};
+    return 0 unless $obj && $obj->id;
+
+    foreach( @{ $arg{'SearchFields'} } ) {
+        return 1 if $obj->SubValue( $_ ) ne $arg{'Query'}->{$_};
+    }
+
+    return 0;
+};
+
+# If we're modifying an old query, check if it's been changed
+my $Dirty = $is_dirty->(
+    Query       => $CurrentSearch,
+    SavedSearch => { Id => $Id, Object => $Object, Description => $Description },
+    SearchFields => \@SearchFields,
+);
 
 </%INIT>
 
@@ -108,18 +130,18 @@ $Object        => undef
 $Type          => 'Ticket'
 $Description   => ''
 $CurrentSearch => {}
+@SearchFields   => ()
 $AllowCopy     => 1
 $Title         => loc('Saved searches')
 </%ARGS>
 
 <%METHOD Init>
 <%ARGS>
-$Query   => {}
+$Query       => {}
 $SavedSearch => {}
+@SearchFields => qw(Query Format OrderBy Order RowsPerPage)
 </%ARGS>
 <%INIT>
-
-my @FIELDS = qw(Query Format OrderBy Order RowsPerPage);
 
 $SavedSearch->{'Id'}          = $ARGS{'SavedSearchId'}          || 'new';
 $SavedSearch->{'Description'} = $ARGS{'SavedSearchDescription'} || '';
@@ -135,7 +157,7 @@ if ( $ARGS{'SavedSearchLoad'} ) {
     $SavedSearch->{'Id'}          = $ARGS{'SavedSearchLoad'};
     $SavedSearch->{'Object'}      = $search;
     $SavedSearch->{'Description'} = $search->Description;
-    $Query->{$_} = $search->SubValue($_) foreach @FIELDS;
+    $Query->{$_} = $search->SubValue($_) foreach @SearchFields;
 }
 elsif ( $ARGS{'SavedSearchDelete'} ) {
     # We set $SearchId to 'new' above already, so peek into the %ARGS
@@ -217,25 +239,6 @@ else {
 }
 
 return @results;
-
-</%INIT>
-</%METHOD>
-
-<%METHOD IsDirty>
-<%ARGS>
-$Query   => {}
-$SavedSearch => {}
-</%ARGS>
-<%INIT>
-
-my $obj  = $SavedSearch->{'Object'};
-return 0 unless $obj && $obj->id;
-
-foreach( qw(Query Format OrderBy Order RowsPerPage) ) {
-    return 1 if $obj->SubValue( $_ ) ne $Query->{$_};
-}
-
-return 0;
 
 </%INIT>
 </%METHOD>
