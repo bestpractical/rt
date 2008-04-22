@@ -58,7 +58,7 @@ my @actions;
 my @Objects = RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects;
 push @Objects, RT::System->new($session{'CurrentUser'})
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
-                                          Right => 'SuperUser');
+                                          Right => 'SuperUser' );
 $self->{SearchId} ||= 'new';
 my $SearchParams = { map { $_ => $args->{$_} } @{$self->{SearchFields}} };
 
@@ -149,9 +149,9 @@ foreach my $field ( @{$self->{SearchFields}} ) {
 % }
 </form>
 <%ARGS>
-$self => undef
+$self   => undef
 $Action => ''
-$Title => 'Saved searches'
+$Title  => loc('Saved searches')
 </%ARGS>
 <%init>
 </%init>
