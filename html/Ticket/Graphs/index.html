@@ -67,12 +67,13 @@
     AllowAdditionalProperties => $Type eq 'Links'? 0 : 1,
 &>
 
+<input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search->{Id} %>" />
 <& /Search/Elements/EditSearches,
-    Title => loc('Manage saved graphs'),
-    Id => $saved_search->{SearchId},
-    Type => $saved_search->{SearchType},
-    CurrentSearch => $saved_search->{CurrentSearch},
-    AllowCopy => 0,
+    %$saved_search,
+    Title         => loc('Manage saved graphs'),
+    SearchFields   => \@save_arguments,
+    CurrentSearch => { map { $_ => $ARGS{$_} } @save_arguments },
+    AllowCopy     => 0,
 &>
 </form>
 
@@ -86,11 +87,13 @@ my @save_arguments = qw(Type id Depth FillUsing ShowLinkDescriptions);
 foreach my $level ( 0 .. 6 ) {
     push @save_arguments, "Level-". $level ."-Properties";
 }
-my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
-    SearchType   => 'Graph',
+my $saved_search = { Type => 'Graph' };
+push @results, $m->comp( '/Search/Elements/EditSearches:Init',
+    %ARGS,
+    Query        => \%ARGS,
+    SavedSearch  => $saved_search,
     SearchFields => \@save_arguments,
 );
-push @results, $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => $saved_search );
 
 my $id = $ARGS{'id'};
 my $ticket = LoadTicket( $id );
