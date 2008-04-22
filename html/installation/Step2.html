@@ -128,6 +128,12 @@ EOF
 
 if ( $Run ) {
 
+    for ( qw/DatabaseName DatabaseUser DatabasePassword DatabasePort
+            DatabaseHost DatabaseRequireSSL/ ) {
+        $session{InstallConfig}{$_} = $ARGS{$_};
+    }
+    $session{TimeStamp} = time;
+
     if ( $Connect ) {
         my $handle = DBIx::SearchBuilder::Handle->new();
         my $db_type = $session{InstallConfig}{DatabaseType};
@@ -155,12 +161,6 @@ if ( $Run ) {
         }
     }
     else {
-        for ( qw/DatabaseName DatabaseUser DatabasePassword DatabasePort
-                DatabaseHost DatabaseRequireSSL/ ) {
-            $session{InstallConfig}{$_} = $ARGS{$_};
-        }
-        $session{TimeStamp} = time;
-
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'installation/Step3.html');
     }
 }
