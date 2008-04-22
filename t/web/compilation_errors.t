@@ -2,7 +2,9 @@
 
 use strict;
 use Test::More;
-plan tests => 407;
+my $tests = 7;
+find ( sub { wanted() and $tests += 4 } , 'html/');
+plan tests => $tests;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
@@ -40,11 +42,11 @@ like( $agent->{'content'} , qr/Logout/i, "Found a logout link");
 
 
 use File::Find;
-find ( \&wanted , 'html/');
+find ( sub { wanted() and test_get($File::Find::name) } , 'html/');
 
 sub wanted {
-        -f  && /\.html$/ && $_ !~ /Logout.html$/ && test_get($File::Find::name);
-}       
+        -f  && /\.html$/ && $_ !~ /Logout.html$/;
+}
 
 sub test_get {
         my $file = shift;
