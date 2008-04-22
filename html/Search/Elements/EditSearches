@@ -103,13 +103,13 @@ push @Objects, RT::System->new( $session{'CurrentUser'} )
 </%INIT>
 
 <%ARGS>
-$Id => 'new'
-$Object => undef
-$Type => 'Ticket'
-$Description => ''
+$Id            => 'new'
+$Object        => undef
+$Type          => 'Ticket'
+$Description   => ''
 $CurrentSearch => {}
-$AllowCopy => 1
-$Title => 'Saved searches'
+$AllowCopy     => 1
+$Title         => loc('Saved searches')
 </%ARGS>
 
 <%METHOD Init>
