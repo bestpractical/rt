@@ -134,8 +134,13 @@ $args
 
 <%method show>
 <form method="post" action="<% $Action %>" name="SaveSearch">
-<& /Search/Elements/EditSearches, Name => 'Owner', Type => $self->{SearchType}, AllowCopy => 0,
-   CurrentSearch => $self->{CurrentSearch}, SearchId => $self->{SearchId}, Title => $Title  &><br />
+<& /Search/Elements/EditSearches,
+    Id            => $self->{SearchId},
+    Type          => $self->{SearchType},
+    CurrentSearch => $self->{CurrentSearch},
+    Title         => $Title,
+    AllowCopy     => 0,
+&><br />
 <%PERL>
 foreach my $field ( @{$self->{SearchFields}} ) {
     if ( ref($ARGS{$field}) && ref($ARGS{$field}) ne 'ARRAY' ) {
