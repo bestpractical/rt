@@ -45,14 +45,16 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT;
 
 use strict;
 use warnings;
 
+package RT;
+
+
 use File::Spec ();
 
-use vars qw($Config $System $SystemUser $Nobody $Handle $Logger);
+use vars qw($Config $System $SystemUser $Nobody $Handle $Logger $_INSTALL_MODE);
 
 our $VERSION = '@RT_VERSION_MAJOR@.@RT_VERSION_MINOR@.@RT_VERSION_PATCH@';
 
@@ -556,6 +558,18 @@ sub InitPlugins {
 
 }
 
+
+sub InstallMode {
+    my $self = shift;
+    if (@_) {
+         $_INSTALL_MODE = shift;
+         if($_INSTALL_MODE) {
+             require RT::CurrentUser;
+            $SystemUser = RT::CurrentUser->new();
+         }
+    }
+    return $_INSTALL_MODE;
+}
 
 
 =head1 BUGS
