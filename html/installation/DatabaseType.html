@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-<& Elements/Header, Title => 'Install' &>
+<&|Elements/Wrapper, Title => 'Install' &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -71,7 +71,7 @@
 <input type="hidden" name="Run" value="1">
 <& /Elements/Submit, Label => loc('Next: Check your database credentials') &>
 </form>
-
+</&>
 <%init>
 
 my ( @Types, @results );

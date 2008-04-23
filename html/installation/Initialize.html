@@ -45,8 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-
-<& Elements/Header, Title => 'Step 6: Initialize Database' &> 
+<&|Elements/Wrapper, Title => 'Step 6: Initialize Database' &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -60,7 +59,7 @@ This might takes a bit long
 <input type="hidden" name="Run" value="1">
 <& /Elements/Submit, Label => loc('Initialize Database') &>
 </form>
-
+</&>
 <%init>
 my @results;
 if ( $Run ) {
@@ -74,7 +73,6 @@ if ( $Run ) {
     }
 }
 </%init>
-
 <%args>
 $Run => undef
 </%args>

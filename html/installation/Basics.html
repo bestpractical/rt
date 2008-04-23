@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-<& Elements/Header, Title => 'Step 3: Customize Basics' &> 
+<&| Elements/Wrapper, Title => 'Step 3: Customize Basics' &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -71,7 +71,7 @@ name="<% $_ %>" value="<% $ARGS{$_} || $RT::Installer->{InstallConfig}{$_} %>" /
 <input type="hidden" name="Run" value="1">
 <& /Elements/Submit, Label => loc('Next: Customize Emails') &>
 </form>
-
+</&>
 <%init>
 my @results;
 

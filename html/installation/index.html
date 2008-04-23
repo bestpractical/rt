@@ -45,8 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-
-<& Elements/Header, Title => 'Start to Config RT' &> 
+<&| Elements/Wrapper, Title => 'Start to Config RT' &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -69,7 +68,7 @@ Click "Start Config" below to start!
 <& /Elements/Submit, Label => 'Start Config' &>
 </form>
 % }
-
+</&>
 <%init>
 my @results;
 my $locked;

@@ -1,4 +1,19 @@
-<& /Elements/Header &>
-<%$m->content() |n%>
-</body></html>
+<&/Elements/Header, title => $Title &>
+<& /Elements/PageLayout,
+    title => $Title,
+    toptabs => { a => { title => loc('Install RT'),
+                        path => '/installation/'
+                        },
+                b => { title => loc('Buy Support'),
+                        path => 'mailto:sales@bestpractical.com'}
+                },
+                        
+    show_menu => 1
+&>
+<a name="skipnav" id="skipnav" accesskey="8"></a>
+<% $m->content() |n%>
+<& /Elements/Footer &>
 % $m->abort;
+<%args>
+$Title => 'Install RT'
+</%args>

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& Elements/Header, Title => 'Step 5: Customize Sendmail' &> 
+<&|Elements/Wrapper, Title => 'Step 5: Customize Sendmail' &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -68,7 +68,7 @@ Options below 'MailCommand' only take effect if MailCommand is 'sendmail' or 'se
 <input type="hidden" name="Run" value="1">
 <& /Elements/Submit, Label => loc('Next: Initialize Database') &>
 </form>
-
+</&>
 <%init>
 my @results;
 

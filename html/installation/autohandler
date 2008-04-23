@@ -57,6 +57,4 @@ else {
      RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));
 }
 </%init>
-<&|Elements/Wrapper &>
 <%$m->call_next()%>
-</&>

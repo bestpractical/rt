@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-<& Elements/Header, Title => 'Step 2: Check your database credentials' &> 
+<&| Elements/Wrapper, Title => 'Step 2: Check your database credentials' &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -88,7 +88,7 @@ $ARGS{DatabaseRequireSSL} ? 'checked="checked"' : '' %> />
 % }
 <& /Elements/Submit, Label => loc('Next: Customize Basics') &>
 </form>
-
+</&>
 <%init>
 my @results;
 
