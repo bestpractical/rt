@@ -308,7 +308,8 @@ sub TicketLinks {
                 Ticket => $next,
                 $type eq $args{'LeadingLink'}
                     ? ( CurrentDepth => $args{'CurrentDepth'} + 1 )
-                    : ( MaxDepth => 1, CurrentDepth => 1 ),
+                    : ( MaxDepth => $args{'CurrentDepth'} + 1,
+                        CurrentDepth => $args{'CurrentDepth'} + 1 ),
             );
 
             my $desc;
