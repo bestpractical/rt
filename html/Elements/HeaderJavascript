@@ -1,0 +1,16 @@
+<%args>
+$focus => undef
+$onload => undef
+</%args>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/util.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/titlebox-state.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/ahah.js"></script>
+<script type="text/javascript"><!--
+    onLoadHook("loadTitleBoxStates()");
+% if ( $focus ) {
+    onLoadHook("focusElementById('<% $focus %>')");
+% }
+% if ( $onload ) {
+    onLoadHook("<% $onload |n %>");
+% }
+--></script>
