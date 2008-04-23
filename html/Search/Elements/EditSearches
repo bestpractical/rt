@@ -146,6 +146,8 @@ $SavedSearch => {}
 $SavedSearch->{'Id'}          = $ARGS{'SavedSearchId'}          || 'new';
 $SavedSearch->{'Description'} = $ARGS{'SavedSearchDescription'} || '';
 
+my @results;
+
 if ( $ARGS{'SavedSearchRevert'} ) {
     $ARGS{'SavedSearchLoad'} = $SavedSearch->{'Id'};
 }
@@ -158,6 +160,12 @@ if ( $ARGS{'SavedSearchLoad'} ) {
     $SavedSearch->{'Object'}      = $search;
     $SavedSearch->{'Description'} = $search->Description;
     $Query->{$_} = $search->SubValue($_) foreach @SearchFields;
+
+    if ( $ARGS{'SavedSearchRevert'} ) {
+        push @results, loc('Loaded original "[_1]" saved search', $SavedSearch->{'Description'} );
+    } else {
+        push @results, loc('Loaded saved search "[_1]"', $SavedSearch->{'Description'} );
+    }
 }
 elsif ( $ARGS{'SavedSearchDelete'} ) {
     # We set $SearchId to 'new' above already, so peek into the %ARGS
@@ -168,6 +176,8 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
     }
     $SavedSearch->{'Id'}          = 'new';
     $SavedSearch->{'Object'}      = undef;
+    $SavedSearch->{'Description'} = undef;
+    push @results, loc("Deleted saved search");
 }
 elsif ( $ARGS{'SavedSearchCopy'} ) {
     $SavedSearch->{'Id'}          = 'new';
@@ -183,13 +193,16 @@ if ( $SavedSearch->{'Id'} && $SavedSearch->{'Id'} ne 'new'
     $SavedSearch->{'Description'} ||= $SavedSearch->{'Object'}->Description;
 }
 
+return @results;
+
 </%INIT>
 </%METHOD>
 
 <%METHOD Save>
 <%ARGS>
-$Query   => {}
-$SavedSearch => {}
+$Query        => {}
+$SavedSearch  => {}
+@SearchFields => qw(Query Format OrderBy Order RowsPerPage)
 </%ARGS>
 <%INIT>
 
@@ -200,24 +213,28 @@ my $obj  = $SavedSearch->{'Object'};
 my $id   = $SavedSearch->{'Id'};
 my $desc = $SavedSearch->{'Description'};
 
+my %params = map { $_ => $Query->{$_} } @SearchFields;
+
 if ( $obj && $obj->id ) {
     # permission check
     if ($obj->Object->isa('RT::System')) {
         unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
-            push @results, [ loc("No permission to save system-wide searches"), 0 ];
+            push @results, loc("No permission to save system-wide searches");
             return @results;
         }
     }
 
-    $obj->SetSubValues( %$Query );
+    $obj->SetSubValues( %params );
     $obj->SetDescription( $desc );
+    push @results, loc('Updated saved search "[_1]"', $desc);
 }
 elsif ( $id eq 'new' ) {
     my $saved_search = RT::SavedSearch->new( $session{'CurrentUser'} );
     my ($status, $msg) = $saved_search->Save(
         Privacy      => $ARGS{'SavedSearchOwner'},
         Name         => $desc,
-        SearchParams => $Query,
+        Type         => $saved_search->{'Type'},
+        SearchParams => \%params,
     );
 
     if ( $status ) {
@@ -231,11 +248,11 @@ elsif ( $id eq 'new' ) {
                     . $SavedSearch->{'Object'}->Id;
     }
     else {
-        push @results, [ loc("Can't find a saved search to work with").': '.loc($msg), 0 ];
+        push @results, loc("Can't find a saved search to work with").': '.loc($msg);
     }
 }
 else {
-    push @results, [ loc("Can't save this search"), 0 ];
+    push @results, loc("Can't save this search");
 }
 
 return @results;
