@@ -118,7 +118,7 @@ if ( $Run ) {
             close $fh;
 
             RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'installation/InitializeDatabase.html');
+'installation/Initialize.html');
         }
         else {
             push @results, "Can't open config file $file to write: $!";
