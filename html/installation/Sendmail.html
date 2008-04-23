@@ -45,10 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-
-<& /Elements/Header, Title => 'Install' &> 
-<& /Elements/Tabs, 
-    current_toptab => 'Install', Title => 'Step 5: Customize Sendmail' &> 
+<& Elements/Header, Title => 'Step 5: Customize Sendmail' &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -62,7 +59,7 @@ Options below 'MailCommand' only take effect if MailCommand is 'sendmail' or 'se
 <tr title="<% $title{$_} |n%>">
 <td class="label"><% loc($_) %>:</td>
 <td>
-<input type="text" name="<% $_ %>" value="<% $ARGS{$_} || $session{InstallConfig}{$_} %>" />
+<input type="text" name="<% $_ %>" value="<% $ARGS{$_} || $RT::Installer->{InstallConfig}{$_} %>" />
 </td>
 </tr>
 % }
@@ -99,9 +96,9 @@ EOF
 if ( $Run ) {
 
     for ( @types ) {
-        $session{InstallConfig}{$_} = $ARGS{$_} if $ARGS{$_};
+        $RT::Installer->{InstallConfig}{$_} = $ARGS{$_} if $ARGS{$_};
     }
-    $session{TimeStamp} = time;
+    $RT::Installer->{TimeStamp} = time;
 
     unless ( @results ) {
 
@@ -110,8 +107,8 @@ if ( $Run ) {
         my $file = File::Spec->catfile($RT::EtcPath, 'RT_SiteConfig.pm');
 
         if ( open my $fh, '>', $file  ) {
-            for ( keys %{$session{InstallConfig}} ) {
-                 print $fh "Set( \$$_, '$session{InstallConfig}{$_}' );\n";
+            for ( keys %{$RT::Installer->{InstallConfig}} ) {
+                 print $fh "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
             }
             print $fh "Set( \$Installed, 1 );\n";
             print $fh "1;\n";

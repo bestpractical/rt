@@ -46,9 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-<& /Elements/Header, Title => 'Install' &> 
-<& /Elements/Tabs, 
-    current_toptab => 'Install', Title => 'Step 4: Customize Emails' &> 
+<& Elements/Header, Title => 'Step 4: Customize Emails' &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -59,7 +57,7 @@
 <td class="label"><% loc($_) %>:</td>
 <td>
 <input type="text" <% $_ eq 'MaxAttachmentSize' ? q[onchange="(!this.value || this.value.match(/^\d+$/)) ? this.style.background='white' : this.style.background='red'" ]: () |n %>
-name="<% $_ %>" value="<% $ARGS{$_} || $session{InstallConfig}{$_} %>" />
+name="<% $_ %>" value="<% $ARGS{$_} || $RT::Installer->{InstallConfig}{$_} %>" />
 </td>
 </tr>
 % }
@@ -97,9 +95,9 @@ EOF
 if ( $Run ) {
 
     for ( @types ) {
-        $session{InstallConfig}{$_} = $ARGS{$_} if $ARGS{$_};
+        $RT::Installer->{InstallConfig}{$_} = $ARGS{$_} if $ARGS{$_};
     }
-    $session{TimeStamp} = time;
+    $RT::Installer->{TimeStamp} = time;
 
     for ( qw/MaxAttachmentSize/ ) {
         if ( $ARGS{$_} && $ARGS{$_} !~ /^\d+$/ ) {

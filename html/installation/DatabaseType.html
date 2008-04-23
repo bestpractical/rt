@@ -46,9 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-<& /Elements/Header, Title => 'Start to Config RT' &> 
-<& /Elements/Tabs, 
-    current_toptab => 'Install', Title => 'Install' &>
+<& Elements/Header, Title => 'Install' &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -85,18 +83,17 @@ if ( $Run ) {
 
     if ( grep { $DatabaseType eq $_ } @Types ) {
     
-        $session{InstallConfig}{DatabaseType} = $DatabaseType;
-        $session{TimeStamp} = time; # need this to force %session update
+        $RT::Installer->{InstallConfig}{DatabaseType} = $DatabaseType;
+        $RT::Installer->{TimeStamp} = time; # need this to force %session update
         
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'installation/DatabaseDetails.html');
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .  'installation/DatabaseDetails.html');
     }
     else {
         push @results, "invalid database type: $DatabaseType";
     }
 }
 else {
-    $DatabaseType ||= $session{InstallConfig}{DatabaseType};
+    $DatabaseType ||= $RT::Installer->{InstallConfig}{DatabaseType};
 }
 
 </%init>

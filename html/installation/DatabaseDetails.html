@@ -46,9 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-<& /Elements/Header, Title => 'Install' &> 
-<& /Elements/Tabs, 
-    current_toptab => 'Install', Title => 'Step 2: Check your database credentials' &> 
+<& Elements/Header, Title => 'Step 2: Check your database credentials' &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -58,20 +56,20 @@
 <td class="label"><% loc('DatabaseName') %>:</td>
 <td>
 <input type="text" name="DatabaseName" value="<% $ARGS{DatabaseName} ||
-$session{InstallConfig}{DatabaseName} %>" />
+$RT::Installer->{InstallConfig}{DatabaseName} %>" />
 </td>
 </tr>
-% if ( $session{InstallConfig}{DatabaseType} ne 'SQLite' ) {
+% if ( $RT::Installer->{InstallConfig}{DatabaseType} ne 'SQLite' ) {
 % for ( qw/DatabaseHost DatabasePort DatabaseUser DatabasePassword/ ) {
 <tr title="<% $title{$_} |n %>">
 <td class="label"><% loc($_) %>:</td>
 <td>
-<input type="<% /Password/ ? 'password' : 'text' %>" name="<% $_ %>" value="<% $ARGS{$_} || $session{InstallConfig}{$_} %>" />
+<input type="<% /Password/ ? 'password' : 'text' %>" name="<% $_ %>" value="<% $ARGS{$_} || $RT::Installer->{InstallConfig}{$_} %>" />
 </td>
 </tr>
 
 % }
-% if ( $session{InstallConfig}{DatabaseType} eq 'Pg' ) {
+% if ( $RT::Installer->{InstallConfig}{DatabaseType} eq 'Pg' ) {
 <tr title="<% $title{DatabaseRequireSSL} |n %>" >
 <td class="label"><% loc('DatabaseRequireSSL') %>:</td>
 <td>
@@ -85,7 +83,7 @@ $ARGS{DatabaseRequireSSL} ? 'checked="checked"' : '' %> />
 </table>
 <input type="hidden" name="Run" value="1">
 
-% if ( $session{InstallConfig}{DatabaseType} ne 'SQLite' ) {
+% if ( $RT::Installer->{InstallConfig}{DatabaseType} ne 'SQLite' ) {
 <input type="submit" value="check if we can connect" name="Connect" />
 % }
 <& /Elements/Submit, Label => loc('Next: Customize Basics') &>
@@ -130,13 +128,13 @@ if ( $Run ) {
 
     for ( qw/DatabaseName DatabaseUser DatabasePassword DatabasePort
             DatabaseHost DatabaseRequireSSL/ ) {
-        $session{InstallConfig}{$_} = $ARGS{$_};
+        $RT::Installer->{InstallConfig}{$_} = $ARGS{$_};
     }
-    $session{TimeStamp} = time;
+    $RT::Installer->{TimeStamp} = time;
 
     if ( $Connect ) {
         my $handle = DBIx::SearchBuilder::Handle->new();
-        my $db_type = $session{InstallConfig}{DatabaseType};
+        my $db_type = $RT::Installer->{InstallConfig}{DatabaseType};
         
         my $dsn;
         $dsn = "dbi:$db_type:";

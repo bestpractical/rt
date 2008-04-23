@@ -1,0 +1,4 @@
+<%args>
+$Title => undef
+</%args>
+<h1><%$Title%></h1>

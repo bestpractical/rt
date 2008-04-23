@@ -45,16 +45,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-
+<%flags>
+inherit => undef
+</%flags>
 <%init>
-
-if ( $session{InstallConfig} && $session{CurrentUser}->HasRight( Right => 'SuperUser',  Object => $RT::System ) ) {
-    $m->call_next;
+RT::Interface::Web::Redirect(RT->Config->Get('WebURL')) unless (RT->InstallMode);
+if (RT->InstallMode) {
+    $RT::Installer->{'CurrentUser'} = RT::CurrentUser->new();
 }
 else {
-     RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'installation/index.html' );
-
+     RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));
 }
-
 </%init>
+<&|Elements/Wrapper &>
+<%$m->call_next()%>
+</&>
