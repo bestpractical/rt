@@ -408,7 +408,7 @@ Set($StatementLog, undef);
 # @import any other files the stylesheet needs).  This allows you to
 # easily and cleanly create your own stylesheets to apply to RT.  This
 # option can be overridden by users in their preferences.
-Set($WebDefaultStylesheet, '3.5-default');
+Set($WebDefaultStylesheet, 'web2');
 
 # Define the directory name to be used for images in rt web
 # documents.
