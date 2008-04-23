@@ -46,9 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-
 if (RT->InstallMode) {
-
   if  ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
     $m->call_next();
   }
@@ -57,6 +55,7 @@ if (RT->InstallMode) {
     } else {
         $m->call_next();
     }
+    return;
 }
 
 # Roll back any dangling transactions from a previous failed connection
