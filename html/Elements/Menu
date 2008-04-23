@@ -86,7 +86,7 @@
 %
 %     $class->{li} = join ' ', @li;
 %
-%     my $url = ($toptabs->{$tab}->{'path'}||'') =~ /^https?:/i
+%     my $url = ($toptabs->{$tab}->{'path'}||'') =~ /^(?:https?|mailto):/i
 %         ? $toptabs->{$tab}->{'path'} || ''
 %         : RT->Config->Get('WebPath') . "/" . $toptabs->{$tab}->{'path'};
 %     
