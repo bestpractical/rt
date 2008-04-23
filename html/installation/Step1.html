@@ -77,7 +77,7 @@
 <%init>
 
 my ( @Types, @results );
-@Types = qw/SQLite mysql Oracle Pg Informix/;
+@Types = qw/SQLite mysql Pg Oracle/;
 require UNIVERSAL::require;
 @Types = grep { my $m = 'DBD::' . $_; $m->require ? 1 : 0 } @Types;
 
