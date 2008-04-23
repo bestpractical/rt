@@ -84,11 +84,6 @@ ul.action-results {
     margin-bottom: 0;
 }
 
-#comp-Search-Build .titlebox-content {
-    padding-left: 0.7em;
-    padding-right: 0.3em;
-}
-
 div.autocomplete {
     position: absolute;
     background-color: white;
@@ -110,35 +105,6 @@ div.autocomplete ul li {
     display: block;
     margin: 0;
     padding: 2px;
-}
-
-#comp-Search-Build .titlebox-content {
-    padding-left: 0.7em;
-    padding-right: 0.3em;
-}
-
-
-
-#editsearches {
-    width: 55%;
-    float:right;
-    text-align: left;
-    padding-right: 1em;
-}
-
-#editsearches .titlebox-content {
-    padding: 1em;
-}
-
-
-#editquery {
-    width: 40%;
-    float: left;
-    padding-left: 1em;
-}
-
-#pick-criteria {
-    clear: both;
 }
 
 .shredder-form { line-height: 3em }

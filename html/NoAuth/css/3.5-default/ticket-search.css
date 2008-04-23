@@ -45,18 +45,43 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-@import "misc.css";
-@import "login.css";
-@import "logo.css";
-@import "quickbar.css";
-@import "body.css";
-@import "approvals.css";
-@import "titlebox.css";
-@import "forms.css";
-@import "ticket.css";
-@import "transactions.css";
-@import "nav.css";
-@import "header.css";
-@import "footer.css";
-@import "ticket-search.css";
-@import "local.css";
+
+#comp-Search-Build #body {
+  position: relative;
+}
+
+#comp-Search-Build #editquery, #comp-Search-Build #editsearches{
+  position: absolute;
+  right: 1em;
+  width: 40%;
+}
+
+#comp-Search-Build #editsearches {
+  top: 24em;
+}
+
+
+#comp-Search-Build #pick-criteria {
+  width: 58%;
+}
+
+#comp-Search-Build .submit {
+  width: 58%;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+
+#comp-Search-Build #sorting.titlebox {
+  width: 58%;
+  margin-top: 4em;
+}
+
+#comp-Search-Build #formatbuttons {
+  width: 100%;
+}
+
+.refresh {
+  float: left;
+}
