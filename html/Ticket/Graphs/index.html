@@ -71,7 +71,8 @@
 <& /Search/Elements/EditSearches,
     %$saved_search,
     Title         => loc('Manage saved graphs'),
-    SearchFields   => \@save_arguments,
+    Type          => 'Graph',
+    SearchFields  => \@save_arguments,
     CurrentSearch => { map { $_ => $ARGS{$_} } @save_arguments },
     AllowCopy     => 0,
 &>
@@ -87,7 +88,7 @@ my @save_arguments = qw(Type id Depth FillUsing ShowLinkDescriptions);
 foreach my $level ( 0 .. 6 ) {
     push @save_arguments, "Level-". $level ."-Properties";
 }
-my $saved_search = { Type => 'Graph' };
+my $saved_search = { };
 push @results, $m->comp( '/Search/Elements/EditSearches:Init',
     %ARGS,
     Query        => \%ARGS,
@@ -103,9 +104,16 @@ my $Type = $ARGS{'Type'} || 'Links';
 $Type = ucfirst lc $Type;
 unless ( $Type eq 'Links' || $Type eq 'Members' ) {
     $RT::Logger->error("'$Type' is incorrect type of ticket graph");
-    $Type = 'Links';
+    $ARGS{'Type'} = $Type = 'Links';
 }
 $ARGS{'Depth'} = 3 unless defined $ARGS{'Depth'} && length $ARGS{'Depth'};
+
+push @results, $m->comp( '/Search/Elements/EditSearches:Save',
+    %ARGS,
+    Query        => \%ARGS,
+    SavedSearch  => $saved_search,
+    SearchFields => \@save_arguments,
+);
 
 my $title;
 if ( $Type eq 'Links' ) {
