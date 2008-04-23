@@ -358,7 +358,7 @@ Set(%GnuPGOptions,
 # From lowest to highest priority, the levels are:
 #  debug info notice warning error critical alert emergency
 Set($LogToSyslog    , 'debug');
-Set($LogToScreen    , 'error');
+Set($LogToScreen    , 'info');
 
 # Logging to a standalone file is also possible, but note that the
 # file should needs to both exist and be writable by all direct users
