@@ -52,7 +52,7 @@ $Attr => undef
 
 
 <%ONCE>
-our ( $TICKET_COLUMN_MAP );
+my $COLUMN_MAP;
 
 my $LinkCallback = sub {
     my $method = shift;
@@ -74,7 +74,7 @@ my $LinkCallback = sub {
     }
 };
 
-$TICKET_COLUMN_MAP = {
+$COLUMN_MAP = {
     QueueName => {
         attribute => 'Queue',
         title     => 'Queue',
@@ -305,7 +305,7 @@ $TICKET_COLUMN_MAP = {
     },
 };
 
-$TICKET_COLUMN_MAP->{'CF'} = $TICKET_COLUMN_MAP->{'CustomField'};
+$COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
 
 # if no GPG support, then KeyOwnerName and KeyRequestors fall back to the regular
 # versions
@@ -313,12 +313,13 @@ if (RT->Config->Get('GnuPG')->{'Enable'}) {
     require RT::Crypt::GnuPG;
 }
 else {
-    $TICKET_COLUMN_MAP->{KeyOwnerName} = $TICKET_COLUMN_MAP->{OwnerName};
-    $TICKET_COLUMN_MAP->{KeyRequestors} = $TICKET_COLUMN_MAP->{Requestors};
+    $COLUMN_MAP->{KeyOwnerName} = $COLUMN_MAP->{OwnerName};
+    $COLUMN_MAP->{KeyRequestors} = $COLUMN_MAP->{Requestors};
 }
 </%ONCE>
 <%init>
-$m->callback( COLUMN_MAP => $TICKET_COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
-$m->callback( COLUMN_MAP => $TICKET_COLUMN_MAP, CallbackName => 'ColumnMap' );
-return GetColumnMapEntry( Map => $TICKET_COLUMN_MAP, Name => $Name, Attribute => $Attr );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
+# backward compatibility
+$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap' );
+return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 </%init>

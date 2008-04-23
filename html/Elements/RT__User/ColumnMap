@@ -50,7 +50,7 @@ $Name
 $Attr => undef
 </%ARGS>
 <%ONCE>
-our $USER_COLUMN_MAP = {
+my $COLUMN_MAP = {
     id => {
         title     => '#',
         attribute => 'id',
@@ -62,11 +62,11 @@ our $USER_COLUMN_MAP = {
 foreach my $col(qw(Name RealName NickName EmailAddress Organization 
     HomePhone WorkPhone MobilePhone PagerPhone Address1 Address2 City State Zip Country))
 {
-    $USER_COLUMN_MAP->{ $col } = { attribute => $col, value => sub { return $_[0]->$col() } };
+    $COLUMN_MAP->{ $col } = { attribute => $col, value => sub { return $_[0]->$col() } };
 }
 
 </%ONCE>
 <%INIT>
-$m->callback( COLUMN_MAP => $USER_COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
-return GetColumnMapEntry( Map => $USER_COLUMN_MAP, Name => $Name, Attribute => $Attr );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
+return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 </%INIT>
