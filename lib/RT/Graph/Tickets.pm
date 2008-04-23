@@ -218,6 +218,7 @@ sub AddTicket {
     );
 
     my %node_style = (
+        style => 'filled,rounded',
         %{ $ticket_status_style{ $args{'Ticket'}->Status } || {} },
         URL   => $RT::WebPath .'/Ticket/Display.html?id='. $args{'Ticket'}->id,
         tooltip => gv_escape( $args{'Ticket'}->Subject || '#'. $args{'Ticket'}->id ),
