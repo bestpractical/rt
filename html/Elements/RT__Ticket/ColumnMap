@@ -99,14 +99,14 @@ $TICKET_COLUMN_MAP = {
         value     => sub {
             my $Ticket = shift;
 
-            if ( $Ticket->HasUnresolvedDependencies ) {
+            if ( my $count = $Ticket->HasUnresolvedDependencies ) {
                 if (   $Ticket->HasUnresolvedDependencies( Type => 'approval' )
                     or $Ticket->HasUnresolvedDependencies( Type => 'code' ) )
                 {
                     return \'<em>', loc('(pending approval)'), \'</em>';
                 }
                 else {
-                    return \'<em>', loc('(pending other Collection)'), \'</em>';
+                    return \'<em>', loc('(pending [quant,_1,other ticket])',$count), \'</em>';
                 }
             }
             else {

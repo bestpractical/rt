@@ -1013,11 +1013,10 @@ sub DependedOnBy {
 
 =head2 HasUnresolvedDependencies
 
-  Takes a paramhash of Type (default to '__any').  Returns true if
-$self->UnresolvedDependencies returns an object with one or more members
-of that type.  Returns false otherwise
-
-
+Takes a paramhash of Type (default to '__any').  Returns the number of
+unresolved dependencies, if $self->UnresolvedDependencies returns an
+object with one or more members of that type.  Returns false
+otherwise.
 
 =cut
 
@@ -1040,7 +1039,7 @@ sub HasUnresolvedDependencies {
     }
 
     if ($deps->Count > 0) {
-        return 1;
+        return $deps->Count;
     }
     else {
         return (undef);
