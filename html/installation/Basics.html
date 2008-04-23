@@ -48,35 +48,77 @@
 
 <& /Elements/Header, Title => 'Install' &> 
 <& /Elements/Tabs, 
-    current_toptab => 'Install', Title => 'Step 6: Initialize Database' &> 
+    current_toptab => 'Install', Title => 'Step 3: Customize Basics' &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
-% unless ( @results ) {
-<div>
-This might takes a bit long
-</div>
+<form method="post">
+<table>
+% for ( @types ) {
+<tr title="<% $title{$_} |n%>">
+<td class="label"><% loc($_) %>:</td>
+<td>
+% if ( $_ eq 'TimeZone' ) {
+<& /Elements/SelectTimezone, Name => 'Timezone',  &>
+% } else {
+<input type="text" <% $_ eq 'MinimumPasswordLength' ? q[onchange="(!this.value || this.value.match(/^\d+$/)) ?
+this.style.background='white' : this.style.background='red'" ]: () |n %>
+name="<% $_ %>" value="<% $ARGS{$_} || $session{InstallConfig}{$_} %>" />
+% }
+</td>
+</tr>
 % }
 
-<form method="post">
+</table>
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Initialize Database') &>
+<& /Elements/Submit, Label => loc('Next: Customize Emails') &>
 </form>
 
 <%init>
 my @results;
+
+my @types = qw/rtname Organization TimeZone MinimumPasswordLength/;
+my %title = (
+rtname => <<'EOF'
+rtname is the string that RT will look for in mail messages to figure out what ticket a new piece of mail belongs to Your domain name is recommended, so as not to pollute the namespace.  once you start using a given tag, you should probably never change it.
+(otherwise, mail for existing tickets won't get put in the right place
+EOF
+,
+Organization => <<'EOF'
+You should set this to your organization's DNS domain. For example, fsck.com or asylum.arkham.ma.us. It's used by the linking interface to guarantee that ticket URIs are unique and easy to construct.
+EOF
+,
+TimeZone => <<'EOF'
+$Timezone is used to convert times entered by users into GMT and back again It should be set to a timezone recognized by your local unix box.
+EOF
+,
+MinimumPasswordLength => <<'EOF'
+$MinimumPasswordLength defines the minimum length for user passwords. Setting it to 0 disables this check
+EOF
+,
+);
+
 if ( $Run ) {
-    my $msg = `echo | $^X sbin/rt-setup-database --action init --dba $session{InstallConfig}{DatabaseUser} --dba-password '$session{InstallConfig}{DatabasePassword}' 2>&1`;
-    @results = split /\n/, $msg;
-# XXX $? doesn't work here, so I decided to grep the strings to find if any
-# error happens
-    unless ( grep { /^ERROR:|aborted/ } @results ) {
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'installation/Step7.html');
+
+    for ( @types ) {
+        $session{InstallConfig}{$_} = $ARGS{$_} if $ARGS{$_};
+    }
+    $session{TimeStamp} = time;
+
+    for ( qw/MininumPasswordLength/ ) {
+        if ( $ARGS{$_} && $ARGS{$_} !~ /^\d+$/ ) {
+            push @results, "Invalid $_: it should be a number";
+        }
+    }
+
+    unless ( @results ) {
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+'installation/Emails.html');
     }
 }
+
 </%init>
 
 <%args>
-$Run => undef
+$Run => 0
 </%args>
-

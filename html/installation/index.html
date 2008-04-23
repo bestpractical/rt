@@ -101,7 +101,8 @@ if ( $session{CurrentUser}->HasRight( Right => 'SuperUser',  Object =>
             $session{InstallConfig}{$_} ||= $$v;
         }
         $session{TimeStamp} = time;
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'installation/Step1.html');
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+'installation/DatabaseType.html');
     
     }
 }

@@ -161,7 +161,8 @@ if ( $Run ) {
         }
     }
     else {
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'installation/Step3.html');
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+'installation/Basics.html');
     }
 }
 
