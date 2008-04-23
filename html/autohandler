@@ -47,6 +47,18 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
+if (RT->InstallMode) {
+
+  if  ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
+    $m->call_next();
+  }
+  elsif ( $m->request_comp->path !~ '^(/+)installation/' ) {
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."/installation/index.html");
+    } else {
+        $m->call_next();
+    }
+}
+
 # Roll back any dangling transactions from a previous failed connection
 $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
 
