@@ -384,7 +384,7 @@ sub Get {
     my ($self, $name, $user) = @_;
 
     my $res;
-    if ( $user && $META{ $name }->{'Overridable'} ) {
+    if ( $user&& $user->id && $META{ $name }->{'Overridable'} ) {
         $user = $user->UserObj if $user->isa('RT::CurrentUser');
         my $prefs = $user->Preferences( $RT::System );
         $res = $prefs->{ $name } if $prefs;
