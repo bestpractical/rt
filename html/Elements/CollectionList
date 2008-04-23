@@ -64,7 +64,7 @@
 % }
 
 <%PERL>
-my $i = 0;
+my ($i, $column_map) = (0, {});
 while ( my $record = $Collection->Next ) {
     # Every ten rows, flush the buffer and put something on the page.
     $m->flush_buffer unless ++$i % 10;
@@ -73,6 +73,7 @@ while ( my $record = $Collection->Next ) {
         Format => \@Format,
         record => $record,
         maxitems => $maxitems,
+        ColumnMap => $column_map,
         Class     => $Class,
     );
 }
