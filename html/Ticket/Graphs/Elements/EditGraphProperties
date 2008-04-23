@@ -46,12 +46,27 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Graph Properties') &>
-Depth <select name="Depth">
+
+<% loc('Main type of links') %> <select name="LeadingLink">
+% foreach ( @link_types ) {
+<option value="<% $_ %>" <% ($LeadingLink||'Members') eq $_? 'selected="selected"': '' |n %>><% loc($_) %></option>
+% }
+</select>
+
+<% loc('maximum depth') %> <select name="MaxDepth">
 <option value="0"><% loc('Unlimit') %></option>
 % foreach ( 1..6 ) {
-<option value="<% $_ %>" <% ($Depth||0) == $_? 'selected': '' %>><% $_ %></option>
+<option value="<% $_ %>" <% ($MaxDepth||0) == $_? 'selected': '' %>><% $_ %></option>
 % }
 </select><br />
+
+<% loc('Show as well') %>:
+% foreach my $type ( @link_types ) {
+% my $checked = '';
+% $checked = 'checked="checked"' if grep $type eq $_, @ShowLinks;
+<input type="checkbox" name="ShowLinks" value="<% $type %>" <% $checked |n %> /><% loc($type) %>
+% }
+<br />
 
 % my @properties = RT::Graph::Tickets->TicketProperties( $session{'CurrentUser'} );
 
@@ -81,19 +96,17 @@ Show link descriptions:
 % }
 
 <%PERL>
-if ( $AllowAdditionalProperties ) {
-    for my $i ( 1..($Depth||6) ) {
-        my @default;
-        if ( my $tmp = $ARGS{ 'Level-'. $i .'-Properties' } ) {
-            @default = ref $tmp? @$tmp : ($tmp);
-        }
-
-        $m->comp('SELF:Properties',
-            Level => $i,
-            Available => \@properties,
-            Default => \@default,
-        );
+for my $i ( 1..($MaxDepth||6) ) {
+    my @default;
+    if ( my $tmp = $ARGS{ 'Level-'. $i .'-Properties' } ) {
+        @default = ref $tmp? @$tmp : ($tmp);
     }
+
+    $m->comp('SELF:Properties',
+        Level => $i,
+        Available => \@properties,
+        Default => \@default,
+    );
 }
 </%PERL>
 
@@ -103,14 +116,18 @@ if ( $AllowAdditionalProperties ) {
 
 <%ARGS>
 $id => undef
-$Depth => 3
+$LeadingLink => 'Members'
+@ShowLinks => ('MemberOf', 'DependsOn', 'RefersTo')
+$MaxDepth => 3
 $FillUsing => ''
 $ShowLinkDescriptions => 0
-$AllowAdditionalProperties => 1
 </%ARGS>
 <%INIT>
 require RT::Graph::Tickets;
 require RT::Link;
+
+my @link_types = qw(Members MemberOf RefersTo ReferredToBy DependsOn DependedOnBy);
+@ShowLinks = grep $_ ne $LeadingLink, @ShowLinks;
 </%INIT>
 
 <%METHOD Properties>

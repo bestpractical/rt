@@ -71,8 +71,8 @@ our %ticket_status_style = (
 
 my %link_style = (
     MemberOf  => { style => 'solid' },
-    DependsOn => { style => 'dashed', constraint => 'false' },
-    RefersTo  => { style => 'dotted', constraint => 'false' },
+    DependsOn => { style => 'dashed' },
+    RefersTo  => { style => 'dotted' },
 );
 
 # We don't use qw() because perl complains about "possible attempt to put comments in qw() list"
@@ -103,58 +103,6 @@ sub gv_escape($) {
 }
 
 our (%fill_cache, @available_colors) = ();
-
-sub TicketMembers {
-    my $self = shift;
-    my %args = (
-        Ticket       => undef,
-        Graph        => undef,
-        Seen         => undef,
-        Depth        => 0,
-        CurrentDepth => 1,
-        @_
-    );
-    unless ( $args{'Graph'} ) {
-        $args{'Graph'} = GraphViz->new(
-            name    => "ticket_members_". $args{'Ticket'}->id,
-            bgcolor => "transparent",
-            node    => { shape => 'box', style => 'rounded,filled', fillcolor => 'white' },
-        );
-        %fill_cache = ();
-        @available_colors = @fill_colors;
-    }
-
-    $self->AddTicket( %args );
-
-    $args{'Seen'} ||= {};
-    return $args{'Graph'} if $args{'Seen'}{ $args{'Ticket'}->id }++;
-
-    return $args{'Graph'} if $args{'Depth'} && $args{'CurrentDepth'} >= $args{'Depth'};
-
-    my $show_link_descriptions = $args{'ShowLinkDescriptions'}
-        && RT::Link->can('Description');
-
-    my $to_links = $args{'Ticket'}->Links('Target', 'MemberOf');
-    $to_links->GotoFirstItem;
-    while ( my $link = $to_links->Next ) {
-        my $base = $link->BaseObj;
-        next unless $base->isa('RT::Ticket');
-
-        $self->TicketMembers(
-            %args,
-            Ticket => $base,
-            CurrentDepth => $args{'CurrentDepth'} + 1,
-        );
-
-        my $desc;
-        $desc = $link->Description if $show_link_descriptions;
-        $args{'Graph'}->add_edge(
-            $args{'Ticket'}->id => $base->id,
-            $desc? (label => gv_escape $desc): (),
-        );
-    }
-    return $args{'Graph'};
-};
 
 my %property_cb = (
     Queue => sub { return $_[0]->QueueObj->Name || $_[0]->Queue },
@@ -304,11 +252,19 @@ sub AddTicket {
 sub TicketLinks {
     my $self = shift;
     my %args = (
-        Ticket   => undef,
-        Graph    => undef,
-        Seen     => undef,
-        SeenEdge => undef,
-        Depth    => 0,
+        Ticket               => undef,
+
+        Graph                => undef,
+        Seen                 => undef,
+        SeenEdge             => undef,
+
+        LeadingLink          => 'Members',
+        ShowLinks            => [],
+
+        MaxDepth             => 0,
+        CurrentDepth         => 1,
+
+        ShowLinkDescriptions => 0,
         @_
     );
     unless ( $args{'Graph'} ) {
@@ -320,65 +276,54 @@ sub TicketLinks {
         %fill_cache = ();
         @available_colors = @fill_colors;
     }
-    $self->AddTicket( %args );
 
     $args{'Seen'} ||= {};
     return $args{'Graph'} if $args{'Seen'}{ $args{'Ticket'}->id }++;
 
-    return $args{'Graph'} if $args{'Depth'} && $args{'Depth'} == 1;
+    $self->AddTicket( %args );
+
+    return $args{'Graph'} if $args{'MaxDepth'} && $args{'CurrentDepth'} >= $args{'MaxDepth'};
 
     $args{'SeenEdge'} ||= {};
 
     my $show_link_descriptions = $args{'ShowLinkDescriptions'}
         && RT::Link->can('Description');
 
-    my $from_links = $args{'Ticket'}->Links('Base');
-    $from_links->GotoFirstItem;
-    while ( my $link = $from_links->Next ) {
-        my $target = $link->TargetObj;
-        next unless $target->isa('RT::Ticket');
+    foreach my $type ( $args{'LeadingLink'}, @{ $args{'ShowLinks'} } ) {
+        my $links = $args{'Ticket'}->$type();
+        $links->GotoFirstItem;
+        while ( my $link = $links->Next ) {
+            next if $args{'SeenEdge'}{ $link->id }++;
 
-        $self->TicketLinks(
-            %args,
-            Ticket => $target,
-            Depth => $args{'Depth'}? $args{'Depth'} - 1 : 0,
-        );
-        next if $args{'SeenEdge'}{ $link->id }++;
+            my $target = $link->TargetObj;
+            next unless $target->isa('RT::Ticket');
 
-        my $desc;
-        $desc = $link->Description if $show_link_descriptions;
-        $args{'Graph'}->add_edge(
-            $link->Type eq 'MemberOf'
-                ? ($target->id => $args{'Ticket'}->id)
-                : ($args{'Ticket'}->id => $target->id),
-            %{ $link_style{ $link->Type } || {} },
-            $desc? (label => gv_escape $desc): (),
-        );
+            my $base = $link->BaseObj;
+            next unless $target->isa('RT::Ticket');
+
+            my $next = $target->id == $args{'Ticket'}->id? $base : $target;
+
+            $self->TicketLinks(
+                %args,
+                Ticket => $next,
+                $type eq $args{'LeadingLink'}
+                    ? ( CurrentDepth => $args{'CurrentDepth'} + 1 )
+                    : ( MaxDepth => 1, CurrentDepth => 1 ),
+            );
+
+            my $desc;
+            $desc = $link->Description if $show_link_descriptions;
+            $args{'Graph'}->add_edge(
+                # we revers order of member links to get better layout
+                $link->Type eq 'MemberOf'
+                    ? ($target->id => $base->id, dir => 'back')
+                    : ($base->id => $target->id),
+                %{ $link_style{ $link->Type } || {} },
+                $desc? (label => gv_escape $desc): (),
+            );
+        }
     }
 
-    my $to_links = $args{'Ticket'}->Links('Target');
-    $to_links->GotoFirstItem;
-    while ( my $link = $to_links->Next ) {
-        my $base = $link->BaseObj;
-        next unless $base->isa('RT::Ticket');
-
-        $self->TicketLinks(
-            %args,
-            Ticket => $base,
-            Depth => $args{'Depth'}? $args{'Depth'} - 1 : 0,
-        );
-        next if $args{'SeenEdge'}{ $link->id }++;
-
-        my $desc;
-        $desc = $link->Description if $show_link_descriptions;
-        $args{'Graph'}->add_edge(
-            $link->Type eq 'MemberOf'
-                ? ($args{'Ticket'}->id => $base->id)
-                : ($base->id => $args{'Ticket'}->id),
-            %{ $link_style{ $link->Type } || {} },
-            $desc? (label => gv_escape $desc): (),
-        );
-    }
     return $args{'Graph'};
 }
 

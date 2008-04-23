@@ -58,14 +58,8 @@
 
 <form action="<% $RT::WebPath %><% $m->request_comp->path %>">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
-<input type="hidden" class="hidden" name="Type" value="<% $ARGS{'Type'} %>" />
 
-<& Elements/EditGraphProperties,
-    %ARGS,
-    Ticket => $ticket,
-    Type   => $Type,
-    AllowAdditionalProperties => $Type eq 'Links'? 0 : 1,
-&>
+<& Elements/EditGraphProperties, %ARGS, Ticket => $ticket &>
 
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search->{Id} %>" />
 <& /Search/Elements/EditSearches,
@@ -84,7 +78,7 @@
 use RT::Graph::Tickets;
 my @results;
 
-my @save_arguments = qw(Type id Depth FillUsing ShowLinkDescriptions);
+my @save_arguments = qw(id LeadingLink ShowLinks MaxDepth FillUsing ShowLinkDescriptions);
 foreach my $level ( 0 .. 6 ) {
     push @save_arguments, "Level-". $level ."-Properties";
 }
@@ -100,13 +94,14 @@ my $id = $ARGS{'id'};
 my $ticket = LoadTicket( $id );
 $ARGS{'id'} = $id = $ticket->id;
 
-my $Type = $ARGS{'Type'} || 'Links';
-$Type = ucfirst lc $Type;
-unless ( $Type eq 'Links' || $Type eq 'Members' ) {
-    $RT::Logger->error("'$Type' is incorrect type of ticket graph");
-    $ARGS{'Type'} = $Type = 'Links';
+$ARGS{'LeadingLink'} ||= 'Members';
+if ( $ARGS{'ShowLinks'} && !ref $ARGS{'ShowLinks'} ) {
+    $ARGS{'ShowLinks'} = [$ARGS{'ShowLinks'}];
+} elsif ( !$ARGS{'ShowLinks'} ) {
+    $ARGS{'ShowLinks'} = [ qw(MemberOf DependsOn RefersTo) ];
 }
-$ARGS{'Depth'} = 3 unless defined $ARGS{'Depth'} && length $ARGS{'Depth'};
+$ARGS{'ShowLinks'} = [ grep $_ ne $ARGS{'LeadingLink'}, @{ $ARGS{'ShowLinks'} } ];
+$ARGS{'MaxDepth'} = 3 unless defined $ARGS{'MaxDepth'} && length $ARGS{'MaxDepth'};
 
 push @results, $m->comp( '/Search/Elements/EditSearches:Save',
     %ARGS,
@@ -115,10 +110,5 @@ push @results, $m->comp( '/Search/Elements/EditSearches:Save',
     SearchFields => \@save_arguments,
 );
 
-my $title;
-if ( $Type eq 'Links' ) {
-    $title = loc( "Ticket #[_1] full relationships graph", $id );
-} else {
-    $title = loc( "Ticket #[_1] relationships graph", $id );
-}
+my $title = loc( "Ticket #[_1] relationships graph", $id );
 </%INIT>
