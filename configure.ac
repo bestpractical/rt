@@ -280,6 +280,19 @@ elif test "$RT_GRAPHVIZ" = no; then
 fi
 AC_SUBST(RT_GRAPHVIZ)
 
+dnl RT's GPG support
+AC_CHECK_PROG([RT_GPG], [gpg], "yes", "no")
+AC_ARG_ENABLE(gpg,
+            AC_HELP_STRING([--enable-gpg],
+                           [Turns on GPG support]),
+            RT_GPG=$enableval)
+if test "$RT_GPG" = yes; then
+        RT_GPG="1"
+elif test "$RT_GPG" = no; then
+        RT_GPG="0"
+fi
+AC_SUBST(RT_GPG)
+
 dnl This section maps the variable names this script 'natively' generates
 dnl to their existing names. They should be removed from here as the .in
 dnl files are changed to use the new names.

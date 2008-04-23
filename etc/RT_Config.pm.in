@@ -311,7 +311,7 @@ Set($ShowBccHeader, 0);
 
 
 Set( %GnuPG,
-    Enable => 0,
+    Enable => @RT_GPG@,
 
 # Set OutgoingMessagesFormat to 'inline' to use inline encryption and
 # signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
