@@ -52,33 +52,43 @@ use strict;
 use lib( "@LOCAL_LIB_PATH@", "@RT_LIB_PATH@");
 use RT;
 RT::LoadConfig();
+RT->InitLogging();
 if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
 RT::CheckPerlRequirements();
 
 my $port = shift @ARGV || RT->Config->Get('WebPort') || '8080';
 
-my $install_mode = 0;
 
 require RT::Handle;
 my ($integrity, $state, $msg) = RT::Handle->CheckIntegrity;
 
 unless ( $integrity ) {
-    print STDERR "We couldn't connect to DB defined in your config.\n";
-    print STDERR "We think it's a new installtion, here is error:\n\n";
-    print STDERR "$msg\n\n";
-    $install_mode = 1;
+    print STDERR <<EOF;
+    
+RT couldn't connect to the database where tickets are stored.
+If this is a new installation of RT, you should visit the URL below
+to configure RT and initialize your database.
+
+If this is an existing RT installation, this may indicate a database
+connectivity problem.
+
+The error RT got back when trying to connect to your database was:
+
+$msg
+
+EOF
+
+    RT->InstallMode(1);
 } else {
-    RT::ConnectToDatabase();
-    RT::InitSystemObjects();
-    RT::InitClasses();
-    RT::InitLogging();
-    RT::InitPlugins();
+    RT->ConnectToDatabase();
+    RT->InitSystemObjects();
+    RT->InitClasses();
+    RT->InitPlugins();
 }
 
 require RT::Interface::Web::Standalone;
 my $server = RT::Interface::Web::Standalone->new;
 $server->port($port);
-$server->install_mode( $install_mode );
 $server->run();
 

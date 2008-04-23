@@ -45,9 +45,12 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Interface::Web::Standalone;
+
 
 use strict;
+use warnings;
+package RT::Interface::Web::Standalone;
+
 use base 'HTTP::Server::Simple::Mason';
 use RT::Interface::Web::Handler;
 use RT::Interface::Web;
@@ -67,27 +70,24 @@ sub default_mason_config {
     return RT->Config->Get('MasonParameters');
 } 
 
-sub install_mode {
-    my $self = shift;
-    $self->{'rt_install_mode'} = shift if @_;
-    return $self->{'rt_install_mode'};
-}
-
 sub handle_request {
 
     my $self = shift;
     my $cgi = shift;
 
     Module::Refresh->refresh if RT->Config->Get('DevelMode');
-
-    RT::ConnectToDatabase() unless $self->install_mode;
-
+    RT::ConnectToDatabase() unless RT->InstallMode;
     $self->SUPER::handle_request($cgi);
     $RT::Logger->crit($@) if $@ && $RT::Logger;
     warn $@ if $@ && !$RT::Logger;
-
     RT::Interface::Web::Handler->CleanupRequest();
-
 }
+
+#sub net_server { 
+# use RT::Interface::Web::Standalone::PreFork;
+# 'RT::Interface::Web::Standalone::PreFork'
+#}
+
+
 
 1;
