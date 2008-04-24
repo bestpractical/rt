@@ -62,6 +62,12 @@ id="<%$id%>"
 % }
   </div>
   <div class="buttons">
+% if ( $Back ) {
+  <span class="caption"><%$BackCaption%></span>
+  <input type="submit" <% $BackOnClick ? qq[ onclick="$BackOnClick"] : '' | n %> <%
+      $BackName ? qq[ name="$BackName"] : '' | n %> value="<%$BackLabel%>" class="button" />
+% }
+
 % if ($AlternateLabel) {
   <span class="caption"><%$AlternateCaption%></span>
   <input type="submit" <% $OnClick ? qq[ onclick="$OnClick"] : '' | n %> <% $Name ? qq[ name="$Name"] : '' | n %> value="<%$AlternateLabel%>" class="button" />
@@ -85,6 +91,11 @@ $CheckAllLabel => loc('Check All')
 $ClearAll => undef
 $ClearAllLabel => loc('Clear All')
 $CheckboxName => ''
+$Back => undef
+$BackName => 'Back'
+$BackLabel => loc('Back')
+$BackCaption => ''
+$BackOnClick => undef
 $OnClick => undef
 $Reset => undef
 $ResetLabel => loc('Reset')
