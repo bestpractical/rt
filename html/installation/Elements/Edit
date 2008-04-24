@@ -1,0 +1,13 @@
+% for ( @$Types ) {
+<& $RT::Installer->{Option}{$_}{'Widget'},
+    Default      => 0,
+    %{ $RT::Installer->{Option}{$_}{'WidgetArguments'} },
+    Name         => $_,
+    CurrentValue => $RT::Installer->{InstallConfig}{$_} || scalar RT->Config->Get($_),
+&>
+% }
+
+
+<%args>
+$Types
+</%args>

@@ -1,0 +1,13 @@
+<%init>
+for ( @$Types ) {
+    $RT::Installer->{InstallConfig}{$_} =
+        $m->comp( $RT::Installer->{Option}{$_}{Widget} . ':Process', Name =>
+                $_, Arguments => $Arguments );
+}
+$RT::Installer->{TimeStamp} = time; # need this to force %session update
+</%init>
+
+<%args>
+$Arguments
+$Types
+</%args>
