@@ -1,9 +1,10 @@
-% for ( @$Types ) {
-<& $RT::Installer->{Option}{$_}{'Widget'},
+% for my $type ( @$Types ) {
+<& $RT::Installer->{Option}{$type}{'Widget'},
     Default      => 0,
-    %{ $RT::Installer->{Option}{$_}{'WidgetArguments'} },
-    Name         => $_,
-    CurrentValue => $RT::Installer->{InstallConfig}{$_} || scalar RT->Config->Get($_),
+    %{ $RT::Installer->{Option}{$type}{'WidgetArguments'} },
+    Name         => $type,
+    CurrentValue => $RT::Installer->{InstallConfig}{$_} || 
+        scalar RT->Config->Get($type),
 &>
 % }
 
