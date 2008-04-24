@@ -3,10 +3,14 @@
 use strict;
 use warnings;
 use Test::More;
-eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
+
+use RT::Test nodata => 1;
+plan skip_all => 'GnuPG required.'
+    unless eval 'use GnuPG::Interface; 1';
+plan skip_all => 'gpg executable is required.'
+    unless RT::Test->find_executable('gpg');
 
 plan tests => 92;
-use RT::Test nodata => 1;
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( LogStackTraces => 'error' );

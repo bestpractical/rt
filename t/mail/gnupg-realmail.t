@@ -2,8 +2,15 @@
 use strict;
 use warnings;
 
-use Test::More tests => 176;
+use Test::More;
 use RT::Test;
+
+plan skip_all => 'GnuPG required.'
+    unless eval 'use GnuPG::Interface; 1';
+plan skip_all => 'gpg executable is required.'
+    unless RT::Test->find_executable('gpg');
+
+plan tests => 176;
 
 use Digest::MD5 qw(md5_hex);
 

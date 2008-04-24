@@ -1,8 +1,16 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 94;
+use Test::More;
 use RT::Test;
+
+plan skip_all => 'GnuPG required.'
+    unless eval 'use GnuPG::Interface; 1';
+plan skip_all => 'gpg executable is required.'
+    unless RT::Test->find_executable('gpg');
+
+plan tests => 94;
+
 use RT::Action::SendEmail;
 
 eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
