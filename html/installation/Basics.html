@@ -74,6 +74,8 @@ name="<% $_ %>" value="<% $ARGS{$_} || $RT::Installer->{InstallConfig}{$_} %>" /
 </&>
 <%init>
 my @results;
+push @results, 'Connected Database with success!' unless
+$RT::Installer->{InstallConfig}{DatabaseType} eq 'SQLite';
 
 my @types = qw/rtname Organization TimeZone MinimumPasswordLength/;
 my %title = (

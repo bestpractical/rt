@@ -83,10 +83,11 @@ $ARGS{DatabaseRequireSSL} ? 'checked="checked"' : '' %> />
 </table>
 <input type="hidden" name="Run" value="1">
 
-% if ( $RT::Installer->{InstallConfig}{DatabaseType} ne 'SQLite' ) {
-<input type="submit" value="check if we can connect" name="Connect" />
-% }
+% if ( $RT::Installer->{InstallConfig}{DatabaseType} eq 'SQLite' ) {
 <& /Elements/Submit, Label => loc('Next: Customize Basics') &>
+% } else {
+<& /Elements/Submit, Label => loc('Next: Check Database Connectivity') &>
+% }
 </form>
 </&>
 <%init>
@@ -132,41 +133,35 @@ if ( $Run ) {
     }
     $RT::Installer->{TimeStamp} = time;
 
-    if ( $Connect ) {
-        my $handle = DBIx::SearchBuilder::Handle->new();
-        my $db_type = $RT::Installer->{InstallConfig}{DatabaseType};
-        
-        my $dsn;
-        $dsn = "dbi:$db_type:";
-        if ( $db_type eq 'Pg' ) {
-            # with postgres, you want to connect to template1 database
-            $dsn .= 'dbname=template1';
-        }
-        $dsn .= ";host=$ARGS{DatabaseHost}" if $ARGS{DatabaseHost};
-        $dsn .= ";port=$ARGS{DatabasePort}" if $ARGS{DatabasePort};
-        $dsn .= ";requiressl=1" if $ARGS{DatabaseRequireSSL};
-        
-        my $dbh = DBI->connect(
-            $dsn, $ARGS{DatabaseUser}, $ARGS{DatabasePassword},
-            { RaiseError => 0, PrintError => 0 },
-        );
+    my $handle = DBIx::SearchBuilder::Handle->new();
+    my $db_type = $RT::Installer->{InstallConfig}{DatabaseType};
     
-        if ( $dbh ) {
-            push @results, "Connect succeed!";
-        }
-        else {
-            push @results, "Failed to connect: $DBI::errstr";
-        }
+    my $dsn;
+    $dsn = "dbi:$db_type:";
+    if ( $db_type eq 'Pg' ) {
+        # with postgres, you want to connect to template1 database
+        $dsn .= 'dbname=template1';
     }
-    else {
+    $dsn .= ";host=$ARGS{DatabaseHost}" if $ARGS{DatabaseHost};
+    $dsn .= ";port=$ARGS{DatabasePort}" if $ARGS{DatabasePort};
+    $dsn .= ";requiressl=1" if $ARGS{DatabaseRequireSSL};
+    
+    my $dbh = DBI->connect(
+        $dsn, $ARGS{DatabaseUser}, $ARGS{DatabasePassword},
+        { RaiseError => 0, PrintError => 0 },
+    );
+
+    if ( $dbh ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'installation/Basics.html');
+    }
+    else {
+        push @results, "Failed to connect: $DBI::errstr";
     }
 }
 
 </%init>
 
 <%args>
-$Connect => undef
 $Run => 0
 </%args>
