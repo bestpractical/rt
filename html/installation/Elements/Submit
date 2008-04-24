@@ -1,0 +1,17 @@
+<table>
+<tr>
+<td>
+% if ( $Back ) {
+<& /Elements/Submit, Name => loc('Back'), Label => loc('Back') . ': ' . $Back &>
+% }
+</td>
+<td>
+<& /Elements/Submit, Label => loc('Next') . ': ' . $Next &>
+</td>
+</table>
+
+
+<%args>
+$Back => undef
+$Next 
+</%args>
