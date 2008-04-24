@@ -75,10 +75,6 @@ my $locked;
     my $file = File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
     $locked = 1 unless -w $file;
     
-    if ( $RT::Installed && ! $Force ) {
-        push @results, "Seems you've already run this wizard";
-    }
-    
     if ( $locked ) {
         push @results, "Config file $file is locked";
     }
@@ -98,7 +94,6 @@ my $locked;
 </%init>
 
 <%args>
-$Force => 0
 $Run => 0
 </%args>
 

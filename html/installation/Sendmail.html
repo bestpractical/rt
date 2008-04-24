@@ -110,7 +110,6 @@ if ( $Run ) {
             for ( keys %{$RT::Installer->{InstallConfig}} ) {
                  print $fh "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
             }
-            print $fh "Set( \$Installed, 1 );\n";
             print $fh "1;\n";
             close $fh;
 
