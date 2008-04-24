@@ -45,6 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
   RT::Queue - an RT Queue object
@@ -318,6 +319,7 @@ sub Create {
         CorrespondAddress => '',
         Description       => '',
         CommentAddress    => '',
+        SubjectTag        => '',
         InitialPriority   => 0,
         FinalPriority     => 0,
         DefaultDueIn      => 0,
@@ -865,10 +867,10 @@ sub DeleteWatcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
+    if ( defined $args{'PrincipalId'} and $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyQueue', bail
-  if ( $args{'Type'} eq 'AdminCc' ) {
+        if ( $args{'Type'} eq 'AdminCc' ) {
             unless ( $self->CurrentUserHasRight('ModifyQueueWatchers')
                 or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
                 return ( 0, $self->loc('Permission Denied'))

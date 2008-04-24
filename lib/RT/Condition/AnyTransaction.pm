@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
- 
 
 package RT::Condition::AnyTransaction;
 require RT::Condition::Generic;

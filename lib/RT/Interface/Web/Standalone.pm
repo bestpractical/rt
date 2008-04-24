@@ -46,7 +46,6 @@
 # 
 # END BPS TAGGED BLOCK }}}
 
-
 use strict;
 use warnings;
 package RT::Interface::Web::Standalone;

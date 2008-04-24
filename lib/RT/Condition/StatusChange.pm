@@ -45,8 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
- 
-
 
 package RT::Condition::StatusChange;
 require RT::Condition::Generic;

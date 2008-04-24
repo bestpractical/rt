@@ -194,7 +194,7 @@ sub tag_pm {
                 print "no license section";
              $file ="# BEGIN BPS TAGGED BLOCK {{{\n$pmlic# END BPS TAGGED BLOCK }}}\n". $file;
         }
-        $file =~ s/# END BPS TAGGED BLOCK }}}(\n+)/# END BPS TAGGED BLOCK }}}\n/mg;
+        $file =~ s/# END BPS TAGGED BLOCK }}}(\n+)/# END BPS TAGGED BLOCK }}}\n\n/mg;
         print "\n";
         
         

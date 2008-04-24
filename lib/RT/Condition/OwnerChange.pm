@@ -45,8 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
- 
-
 
 package RT::Condition::OwnerChange;
 require RT::Condition::Generic;

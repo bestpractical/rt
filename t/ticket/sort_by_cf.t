@@ -113,7 +113,6 @@ check_order( $tx, 2, 1);
 $tx = new RT::Tickets( $RT::SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderBy( FIELD => "CF.{Charlie}", ORDER => 'DESC' );
-diag $tx->BuildSelectQuery;
 is($tx->Count,2);
 TODO: {
     local $TODO = 'order by CF fail';
@@ -123,7 +122,6 @@ check_order( $tx, 1, 2);
 $tx = new RT::Tickets( $RT::SystemUser );
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderBy( FIELD => "CF.{Charlie}", ORDER => 'ASC' );
-diag $tx->BuildSelectQuery;
 is($tx->Count,2);
 TODO: {
     local $TODO = 'order by CF fail';

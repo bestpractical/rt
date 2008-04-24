@@ -45,6 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 package RT::Interface::Email::Filter::SpamAssassin;
 
 use Mail::SpamAssassin;

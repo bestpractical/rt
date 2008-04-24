@@ -45,6 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
 RT::Action::NotifyGroupAsComment - RT Action that sends notifications to groups and/or users as comment

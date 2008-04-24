@@ -45,6 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
 RT::Action::LinearEscalate - will move a ticket's priority toward its final priority.

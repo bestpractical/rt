@@ -45,6 +45,7 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
 # This Action will open the BASE if a dependent is resolved.
 package RT::Action::AutoOpen;
 
