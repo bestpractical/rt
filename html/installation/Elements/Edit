@@ -3,7 +3,7 @@
     Default      => 0,
     %{ $RT::Installer->{Option}{$type}{'WidgetArguments'} },
     Name         => $type,
-    CurrentValue => $RT::Installer->{InstallConfig}{$_} || 
+    CurrentValue => $RT::Installer->{InstallConfig}{$type} || 
         scalar RT->Config->Get($type),
 &>
 % }
