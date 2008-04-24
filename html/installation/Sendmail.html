@@ -66,7 +66,8 @@ Options below 'MailCommand' only take effect if MailCommand is 'sendmail' or 'se
 
 </table>
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Next: Initialize Database') &>
+<& /Elements/Submit, Label => loc('Next: Initialize Database'), Back => 1,
+    BackLabel => loc('Back: Customize Emails') &>
 </form>
 </&>
 <%init>
@@ -100,6 +101,11 @@ if ( $Run ) {
     }
     $RT::Installer->{TimeStamp} = time;
 
+    if ( $Back ) {
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+'installation/Emails.html');
+    }
+
     unless ( @results ) {
 
 
@@ -125,5 +131,6 @@ if ( $Run ) {
 </%init>
 
 <%args>
-$Run => 0
+$Run => undef 
+$Back => undef
 </%args>

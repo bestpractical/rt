@@ -68,8 +68,10 @@ name="<% $_ %>" value="<% $ARGS{$_} || $RT::Installer->{InstallConfig}{$_} %>" /
 % }
 
 </table>
+
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Next: Customize Emails') &>
+<& /Elements/Submit, Label => loc('Next: Customize Emails'), Back => 1,
+    BackLabel => loc('Back: Customize Database Details') &>
 </form>
 </&>
 <%init>
@@ -111,6 +113,10 @@ if ( $Run ) {
         }
     }
 
+    if ( $Back ) {
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+'installation/DatabaseDetails.html');
+    }
     unless ( @results ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'installation/Emails.html');
@@ -120,5 +126,6 @@ if ( $Run ) {
 </%init>
 
 <%args>
-$Run => 0
+$Run => undef
+$Back => undef
 </%args>

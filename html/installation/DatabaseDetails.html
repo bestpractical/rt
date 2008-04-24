@@ -83,11 +83,10 @@ $ARGS{DatabaseRequireSSL} ? 'checked="checked"' : '' %> />
 </table>
 <input type="hidden" name="Run" value="1">
 
-% if ( $RT::Installer->{InstallConfig}{DatabaseType} eq 'SQLite' ) {
-<& /Elements/Submit, Label => loc('Next: Customize Basics') &>
-% } else {
-<& /Elements/Submit, Label => loc('Next: Check Database Connectivity') &>
-% }
+<& /Elements/Submit, Label => $RT::Installer->{InstallConfig}{DatabaseType} eq
+'SQLite' ? loc('Next: Customize Basics') : loc('Next: Check Database
+        Connectivity'), Back => 1, BackLabel => loc('Back: Select Database Type'),
+    &>
 </form>
 </&>
 <%init>
@@ -133,6 +132,11 @@ if ( $Run ) {
     }
     $RT::Installer->{TimeStamp} = time;
 
+    if ( $Back ) {
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+'installation/DatabaseType.html');
+    }
+
     my $handle = DBIx::SearchBuilder::Handle->new();
     my $db_type = $RT::Installer->{InstallConfig}{DatabaseType};
     
@@ -163,5 +167,6 @@ if ( $Run ) {
 </%init>
 
 <%args>
-$Run => 0
+$Run => undef
+$Back => undef
 </%args>

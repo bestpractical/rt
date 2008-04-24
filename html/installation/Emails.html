@@ -64,7 +64,8 @@ name="<% $_ %>" value="<% $ARGS{$_} || $RT::Installer->{InstallConfig}{$_} %>" /
 
 </table>
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Next: Customize Sendmail') &>
+<& /Elements/Submit, Label => loc('Next: Customize Sendmail'), Back => 1,
+    BackLabel => loc('Back: Customize Basics') &>
 </form>
 </&>
 <%init>
@@ -99,6 +100,11 @@ if ( $Run ) {
     }
     $RT::Installer->{TimeStamp} = time;
 
+    if ( $Back ) {
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+'installation/Basics.html');
+    }
+
     for ( qw/MaxAttachmentSize/ ) {
         if ( $ARGS{$_} && $ARGS{$_} !~ /^\d+$/ ) {
             push @results, "Invalid $_: it should be a number";
@@ -114,5 +120,6 @@ if ( $Run ) {
 </%init>
 
 <%args>
-$Run => 0
+$Run => undef
+$Back => undef
 </%args>
