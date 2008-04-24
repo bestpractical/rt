@@ -529,6 +529,19 @@ sub file_content {
     return $content;
 }
 
+sub find_executable {
+    my $self = shift;
+    my $name = shift;
+
+    require File::Spec;
+    foreach my $dir ( split /:/, $ENV{'PATH'} ) {
+        my $fpath = File::Spec->catpath( (File::Spec->splitpath( $dir, 'no file' ))[0..1], $name );
+        next unless -e $fpath && -r _ && -x _;
+        return $fpath;
+    }
+    return undef;
+}
+
 sub import_gnupg_key {
     my $self = shift;
     my $key = shift;
