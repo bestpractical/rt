@@ -77,7 +77,6 @@ if ( $Run ) {
 
     $m->comp('Elements/Process', Types => \@Types, Arguments => \%ARGS);
     $RT::Installer->{InstallConfig}{TimeZone} = $ARGS{TimeZone};
-    $RT::Installer->{TimeStamp} = time;
 
     for ( qw/MininumPasswordLength/ ) {
         if ( $ARGS{$_} && $ARGS{$_} !~ /^\d+$/ ) {
