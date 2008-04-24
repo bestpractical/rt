@@ -51,60 +51,32 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post">
-<table>
-% for ( @types ) {
-<tr title="<% $title{$_} |n%>">
-<td class="label"><% loc($_) %>:</td>
-<td>
-% if ( $_ eq 'TimeZone' ) {
+<& Elements/Edit, Types => \@Types &>
+<div id="form-box-timezone">
+<span class="label">Timezone</span>
+<span class="value">
 <& /Elements/SelectTimezone, Name => 'Timezone',  &>
-% } else {
-<input type="text" <% $_ eq 'MinimumPasswordLength' ? q[onchange="(!this.value || this.value.match(/^\d+$/)) ?
-this.style.background='white' : this.style.background='red'" ]: () |n %>
-name="<% $_ %>" value="<% $ARGS{$_} || $RT::Installer->{InstallConfig}{$_} %>" />
-% }
-</td>
-</tr>
-% }
-
-</table>
+</div>
 
 <input type="hidden" name="Run" value="1">
 <& /Elements/Submit, Label => loc('Next: Customize Emails'), Back => 1,
     BackLabel => loc('Back: Customize Database Details') &>
 </form>
 </&>
+
+
 <%init>
 my @results;
-push @results, 'Connected Database with success!' unless
-$RT::Installer->{InstallConfig}{DatabaseType} eq 'SQLite';
+push @results, 'Connected Database with success!' unless $RT::Installer->{InstallConfig}{DatabaseType} eq 'SQLite';
 
-my @types = qw/rtname Organization TimeZone MinimumPasswordLength/;
-my %title = (
-rtname => <<'EOF'
-rtname is the string that RT will look for in mail messages to figure out what ticket a new piece of mail belongs to Your domain name is recommended, so as not to pollute the namespace.  once you start using a given tag, you should probably never change it.
-(otherwise, mail for existing tickets won't get put in the right place
-EOF
-,
-Organization => <<'EOF'
-You should set this to your organization's DNS domain. For example, fsck.com or asylum.arkham.ma.us. It's used by the linking interface to guarantee that ticket URIs are unique and easy to construct.
-EOF
-,
-TimeZone => <<'EOF'
-$Timezone is used to convert times entered by users into GMT and back again It should be set to a timezone recognized by your local unix box.
-EOF
-,
-MinimumPasswordLength => <<'EOF'
-$MinimumPasswordLength defines the minimum length for user passwords. Setting it to 0 disables this check
-EOF
-,
-);
+my @Types = qw/rtname Organization MinimumPasswordLength/;
+# XXX treat TimeZone specially, since it's not compatibal with /Widgets/
+
 
 if ( $Run ) {
 
-    for ( @types ) {
-        $RT::Installer->{InstallConfig}{$_} = $ARGS{$_} if $ARGS{$_};
-    }
+    $m->comp('Elements/Process', Types => \@Types, Arguments => \%ARGS);
+    $RT::Installer->{InstallConfig}{TimeZone} = $ARGS{TimeZone};
     $RT::Installer->{TimeStamp} = time;
 
     for ( qw/MininumPasswordLength/ ) {
@@ -117,7 +89,8 @@ if ( $Run ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'installation/DatabaseDetails.html');
     }
-    unless ( @results ) {
+    if ( $RT::Installer->{InstallConfig}{DatabaseType} eq 'SQLite' ?
+            @results == 0 : @results == 1 ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'installation/Emails.html');
     }

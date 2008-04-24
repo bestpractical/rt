@@ -54,17 +54,8 @@ Options below 'MailCommand' only take effect if MailCommand is 'sendmail' or 'se
 </div>
 <hr />
 <form method="post">
-<table>
-% for ( @types ) {
-<tr title="<% $title{$_} |n%>">
-<td class="label"><% loc($_) %>:</td>
-<td>
-<input type="text" name="<% $_ %>" value="<% $ARGS{$_} || $RT::Installer->{InstallConfig}{$_} %>" />
-</td>
-</tr>
-% }
+<& Elements/Edit, Types => \@Types &>
 
-</table>
 <input type="hidden" name="Run" value="1">
 <& /Elements/Submit, Label => loc('Next: Initialize Database'), Back => 1,
     BackLabel => loc('Back: Customize Emails') &>
@@ -73,33 +64,11 @@ Options below 'MailCommand' only take effect if MailCommand is 'sendmail' or 'se
 <%init>
 my @results;
 
-my @types = qw/MailCommand SendmailArguments SendmailBounceArguments SendmailPath/;
-my %title = (
-MailCommand => <<'EOF'
-MailCommand defines which method RT will use to try to send mail.  We know that 'sendmailpipe' works fairly well.  If 'sendmailpipe' doesn't work well for you, try 'sendmail'.  Other options are 'smtp' or 'qmail'.
-EOF
-,
-SendmailArguments => <<'EOF'
-SendmailArguments defines what flags to pass to $SendmailPath If you picked 'sendmailpipe', you MUST add a -t flag to $SendmailArguments These options are good for most sendmail wrappers and workalikes
-EOF
-,
-SendmailBounceArguments => <<'EOF'
-SendmailBounceArguments defines what flags to pass to $Sendmail assuming RT needs to send an error (ie. bounce).
-EOF
-,
-SendmailPath => <<'EOF'
-If you selected 'sendmailpipe' above, you MUST specify the path to your sendmail binary in $SendmailPath.
-EOF
-,      
-        
-);
+my @Types = qw/MailCommand SendmailArguments SendmailBounceArguments SendmailPath/;
 
 if ( $Run ) {
 
-    for ( @types ) {
-        $RT::Installer->{InstallConfig}{$_} = $ARGS{$_} if $ARGS{$_};
-    }
-    $RT::Installer->{TimeStamp} = time;
+    $m->comp('Elements/Process', Types => \@Types, Arguments => \%ARGS);
 
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .

@@ -51,22 +51,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post">
-<table>
-<tr>
-<td class="label"><% loc('DatabaseType') %>:</td>
-<td>
-<select name="DatabaseType">
-% for ( sort @Types ) {
-% if ( $DatabaseType && ( $_ eq $DatabaseType ) ) {
-<option selected="selected"><% $_ %></option>
-% } else {
-<option><% $_ %></option>
-% }
-% }
-</select>
-</td>
-</tr>
-</table>
+<& Elements/Edit, Types => \@Types &>
 
 <input type="hidden" name="Run" value="1">
 <& /Elements/Submit, Label => loc('Next: Check your database credentials') &>
@@ -74,31 +59,18 @@
 </&>
 <%init>
 
-my ( @Types, @results );
-@Types = qw/SQLite mysql Pg Oracle/;
-require UNIVERSAL::require;
-@Types = grep { my $m = 'DBD::' . $_; $m->require ? 1 : 0 } @Types;
+my @results;
+my @Types = 'DatabaseType';
 
 if ( $Run ) {
 
-    if ( grep { $DatabaseType eq $_ } @Types ) {
-    
-        $RT::Installer->{InstallConfig}{DatabaseType} = $DatabaseType;
-        $RT::Installer->{TimeStamp} = time; # need this to force %session update
-        
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .  'installation/DatabaseDetails.html');
-    }
-    else {
-        push @results, "invalid database type: $DatabaseType";
-    }
-}
-else {
-    $DatabaseType ||= $RT::Installer->{InstallConfig}{DatabaseType};
+    $m->comp('Elements/Process', Types => \@Types, Arguments => \%ARGS);
+
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .  'installation/DatabaseDetails.html');
 }
 
 </%init>
 
 <%args>
-$DatabaseType => undef
 $Run => undef
 </%args>

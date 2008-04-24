@@ -51,86 +51,31 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post">
-<table>
-<tr title="<% $title{DatabaseName} %>">
-<td class="label"><% loc('DatabaseName') %>:</td>
-<td>
-<input type="text" name="DatabaseName" value="<% $ARGS{DatabaseName} ||
-$RT::Installer->{InstallConfig}{DatabaseName} %>" />
-</td>
-</tr>
-% if ( $RT::Installer->{InstallConfig}{DatabaseType} ne 'SQLite' ) {
-% for ( qw/DatabaseHost DatabasePort DatabaseUser DatabasePassword/ ) {
-<tr title="<% $title{$_} |n %>">
-<td class="label"><% loc($_) %>:</td>
-<td>
-<input type="<% /Password/ ? 'password' : 'text' %>" name="<% $_ %>" value="<% $ARGS{$_} || $RT::Installer->{InstallConfig}{$_} %>" />
-</td>
-</tr>
-
-% }
-% if ( $RT::Installer->{InstallConfig}{DatabaseType} eq 'Pg' ) {
-<tr title="<% $title{DatabaseRequireSSL} |n %>" >
-<td class="label"><% loc('DatabaseRequireSSL') %>:</td>
-<td>
-<input type="checkbox" name="DatabaseRequireSSL" value="1" <%
-$ARGS{DatabaseRequireSSL} ? 'checked="checked"' : '' %> />
-</td>
-</tr>
-% }
-
-% }
-</table>
+<& Elements/Edit, Types => \@Types &>
 <input type="hidden" name="Run" value="1">
 
 <& /Elements/Submit, Label => $RT::Installer->{InstallConfig}{DatabaseType} eq
-'SQLite' ? loc('Next: Customize Basics') : loc('Next: Check Database
-        Connectivity'), Back => 1, BackLabel => loc('Back: Select Database Type'),
-    &>
+'SQLite' ? loc('Next: Customize Basics') : loc('Next: Check Database Connectivity'), Back => 1, BackLabel => loc('Back: Select Database Type'),
+&>
 </form>
 </&>
 <%init>
 my @results;
 
-my %title = (
-DatabaseHost => <<'EOF'
-The domain name of your database server
-If you're running mysql and it's on localhost,
-leave it blank for enhanced performance
-EOF
-,
-DatabasePort => <<'EOF'
-The port that your database server is running on.  Ignored unless it's
-a positive integer. It's usually safe to leave this blank
-EOF
-,
-DatabaseUser => <<'EOF'
-The name of the database user (inside the database)
-EOF
-,
-DatabasePassword => <<'EOF'
-Password the DatabaseUser should use to access the database
-EOF
-,
-DatabaseName => <<'EOF'
-The name of the RT's database on your database server
-EOF
-,
-DatabaseRequireSSL => <<'EOF'
-If you're using Postgres and have compiled in SSL support,
-set DatabaseRequireSSL to 1 to turn on SSL communication
-EOF
-,
+my @Types = 'DatabaseName';
 
-);
+unless ( $RT::Installer->{InstallConfig}{DatabaseType} eq 'SQLite' ) {
+    push @Types, 'DatabaseHost', 'DatabasePort', 'DatabaseUser',
+         'DatabasePassword';
+}
+if ( $RT::Installer->{InstallConfig}{DatabaseType} eq 'Pg' ) {
+    push @Types, 'DatabaseRequireSSL';
+}
+
 
 if ( $Run ) {
 
-    for ( qw/DatabaseName DatabaseUser DatabasePassword DatabasePort
-            DatabaseHost DatabaseRequireSSL/ ) {
-        $RT::Installer->{InstallConfig}{$_} = $ARGS{$_};
-    }
-    $RT::Installer->{TimeStamp} = time;
+    $m->comp('Elements/Process', Types => \@Types, Arguments => \%ARGS);
 
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
