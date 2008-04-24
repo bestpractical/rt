@@ -87,9 +87,9 @@ $q->LoadByCols(Name => $Queue);
 
 <br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $q->id &>
 <br /><&|/l&>Tickets resolved after</&>: 
-<input size="20" name="ResolvedAfter" value="<%$ResolvedAfter || ''%>" />
+<& /Elements/SelectDate, Name => 'ResolvedAfter', Default => ($ResolvedAfter) ? $after->ISO : ''&>
 <br /><&|/l&>Tickets resolved before</&>: 
-<input size="20" name="ResolvedBefore" value="<%$ResolvedBefore || ''%>" />
+<& /Elements/SelectDate, Name => 'ResolvedBefore', Default => ($ResolvedBefore) ? $before->ISO : ''&>
 
 <& /Elements/Submit&>
 </form>
