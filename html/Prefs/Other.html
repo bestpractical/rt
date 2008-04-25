@@ -89,21 +89,14 @@ if ((defined $PreferredKey) && $PreferredKey ne $UserObj->FirstAttribute('Prefer
 }
 
 if ( $Update ) {
-    foreach my $option( RT->Config->Options ) {
-        my $meta = RT->Config->Meta( $option );
-        my $value = $m->comp($meta->{'Widget'} .":Process",
-            Arguments    => \%ARGS,
-            Default      => 1,
-            %{ $meta->{'WidgetArguments'} },
-            Name         => $option,
-            DefaultValue => scalar RT->Config->Get( $option ),
-        );
-        if ( defined $value ) {
-            $preferences->{ $option } = $value;
-        } else {
-            delete $preferences->{ $option };
-        }
-    }
+    $m->comp( '/Widgets/Elements/BulkProcess', Meta => {
+                map { $_ => RT->Config->Meta($_) } RT->Config->Options
+            },
+            Store => $preferences,
+            Types => [RT->Config->Options], Default => 1, Arguments => \%ARGS,
+            DefaultValue => { map { $_ => RT->Config->Get($_) }
+                RT->Config->Options
+            }, );
     $UserObj->SetPreferences( $RT::System, $preferences );
 }
 my $localize_meta = sub {
