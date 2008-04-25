@@ -1,40 +1,57 @@
 ALTER TABLE Attachments CHANGE ContentType ContentType VARCHAR(80) CHARACTER SET ascii NULL;
+ALTER TABLE Attachments CHANGE MessageId MessageId VARCHAR(160) CHARACTER SET ascii NULL;
 ALTER TABLE Attachments CHANGE Content Content LONGBLOB NULL;
+ALTER TABLE Attachments CHANGE ContentEncoding ContentEncoding VARCHAR(160) CHARACTER SET ascii NULL;
 
-ALTER TABLE Queues CHANGE CorrespondAddress CorrespondAddress varchar(120) CHARACTER SET ascii NULL;
-ALTER TABLE Queues CHANGE CommentAddress CommentAddress varchar(120) CHARACTER SET ascii NULL;
+ALTER TABLE Queues CHANGE CorrespondAddress CorrespondAddress VARCHAR(120) CHARACTER SET ascii NULL;
+ALTER TABLE Queues CHANGE CommentAddress CommentAddress VARCHAR(120) CHARACTER SET ascii NULL;
 
-ALTER TABLE Links CHANGE Base Base varchar(240) CHARACTER SET ascii NULL;
-ALTER TABLE Links CHANGE Target Target varchar(240) CHARACTER SET ascii NULL;
+ALTER TABLE Links CHANGE Base Base VARCHAR(240) CHARACTER SET ascii NULL;
+ALTER TABLE Links CHANGE Target Target VARCHAR(240) CHARACTER SET ascii NULL;
+ALTER TABLE Links CHANGE Type Type VARCHAR(20) CHARACTER SET ascii NULL;
 
-ALTER TABLE ScripConditions CHANGE ExecModule ExecModule varchar(60) CHARACTER SET ascii NULL;
+ALTER TABLE Groups CHANGE Domain Domain VARCHAR(64) CHARACTER SET ascii NULL;
+ALTER TABLE Groups CHANGE Type Type VARCHAR(64) CHARACTER SET ascii NULL;
+
+ALTER TABLE Scrips CHANGE Stage Stage VARCHAR(32) CHARACTER SET ascii NULL
+
+ALTER TABLE ScripConditions CHANGE ExecModule ExecModule VARCHAR(60) CHARACTER SET ascii NULL;
 ALTER TABLE ScripConditions CHANGE Argument Argument VARBINARY(255) NULL;
+ALTER TABLE ScripConditions CHANGE ApplicableTransTypes ApplicableTransTypes VARCHAR(60) CHARACTER SET ascii NULL;
 
-ALTER TABLE Transactions CHANGE ObjectType ObjectType varchar(64) CHARACTER SET ascii NOT NULL;
-ALTER TABLE Transactions CHANGE Type Type varchar(20) CHARACTER SET ascii NULL;
-ALTER TABLE Transactions CHANGE Field Field varchar(40) CHARACTER SET ascii NULL;
-ALTER TABLE Transactions CHANGE ReferenceType ReferenceType varchar(255) CHARACTER SET ascii NULL;
+ALTER TABLE Tickets CHANGE Type Type VARCHAR(16) CHARACTER SET ascii NULL;
 
-ALTER TABLE ACL CHANGE PrincipalType PrincipalType varchar(25) CHARACTER SET ascii NOT NULL;
-ALTER TABLE ACL CHANGE RightName RightName varchar(25) CHARACTER SET ascii NOT NULL;
-ALTER TABLE ACL CHANGE ObjectType ObjectType varchar(25) CHARACTER SET ascii NOT NULL;
+ALTER TABLE Transactions CHANGE ObjectType ObjectType VARCHAR(64) CHARACTER SET ascii NOT NULL;
+ALTER TABLE Transactions CHANGE Type Type VARCHAR(20) CHARACTER SET ascii NULL;
+ALTER TABLE Transactions CHANGE Field Field VARCHAR(40) CHARACTER SET ascii NULL;
+ALTER TABLE Transactions CHANGE ReferenceType ReferenceType VARCHAR(255) CHARACTER SET ascii NULL;
+
+ALTER TABLE ACL CHANGE PrincipalType PrincipalType VARCHAR(25) CHARACTER SET ascii NOT NULL;
+ALTER TABLE ACL CHANGE RightName RightName VARCHAR(25) CHARACTER SET ascii NOT NULL;
+ALTER TABLE ACL CHANGE ObjectType ObjectType VARCHAR(25) CHARACTER SET ascii NOT NULL;
 
 ALTER TABLE Users CHANGE Password Password VARBINARY(40) NULL;
 ALTER TABLE Users CHANGE Comments Comments TEXT NULL;
 ALTER TABLE Users CHANGE Signature Signature TEXT NULL;
 ALTER TABLE Users CHANGE FreeformContactInfo FreeformContactInfo TEXT NULL;
 
-ALTER TABLE ScripActions CHANGE ExecModule ExecModule varchar(60) CHARACTER SET ascii NULL;
+ALTER TABLE ScripActions CHANGE ExecModule ExecModule VARCHAR(60) CHARACTER SET ascii NULL;
 ALTER TABLE ScripActions CHANGE Argument Argument VARBINARY(255) NULL;
 
 ALTER TABLE Templates CHANGE Content Content TEXT NULL;
+ALTER TABLE Templates CHANGE Type Type varchar(16) CHARACTER SET ascii NULL;
+ALTER TABLE Templates CHANGE Language Language varchar(16) CHARACTER SET ascii NULL;
 
-ALTER TABLE ObjectCustomFieldValues CHANGE ObjectType ObjectType varchar(255) CHARACTER SET ascii NOT NULL;
+ALTER TABLE ObjectCustomFieldValues CHANGE ObjectType ObjectType VARCHAR(255) CHARACTER SET ascii NOT NULL;
 ALTER TABLE ObjectCustomFieldValues CHANGE LargeContent LargeContent LONGBLOB NULL;
+ALTER TABLE ObjectCustomFieldValues CHANGE ContentType ContentType VARCHAR(80) CHARACTER SET ascii NULL;
+ALTER TABLE ObjectCustomFieldValues CHANGE ContentEncoding ContentEncoding VARCHAR(80) CHARACTER SET ascii NULL;
 
-ALTER TABLE CustomFields CHANGE LookupType LookupType varchar(255) CHARACTER SET ascii NOT NULL;
+ALTER TABLE CustomFields CHANGE LookupType LookupType VARCHAR(255) CHARACTER SET ascii NOT NULL;
+ALTER TABLE CustomFields CHANGE Type Type VARCHAR(200) CHARACTER SET ascii NULL;
 
 ALTER TABLE Attributes CHANGE Content Content BLOB;
-ALTER TABLE Attributes CHANGE ObjectType ObjectType varchar(64) CHARACTER SET ascii;
+ALTER TABLE Attributes CHANGE ObjectType ObjectType VARCHAR(64) CHARACTER SET ascii;
+ALTER TABLE Attributes CHANGE ContentType ContentType VARCHAR(16) CHARACTER SET ascii;
 
 ALTER TABLE sessions CHANGE a_session a_session LONGBLOB;

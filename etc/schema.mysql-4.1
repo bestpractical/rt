@@ -4,11 +4,11 @@ CREATE TABLE Attachments (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   TransactionId integer NOT NULL  ,
   Parent integer NOT NULL DEFAULT 0  ,
-  MessageId varchar(160) NULL  ,
+  MessageId varchar(160) CHARACTER SET ascii NULL  ,
   Subject varchar(255) NULL  ,
   Filename varchar(255) NULL  ,
   ContentType varchar(80) CHARACTER SET ascii NULL  ,
-  ContentEncoding varchar(80) NULL  ,
+  ContentEncoding varchar(80) CHARACTER SET ascii NULL  ,
   Content LONGBLOB NULL  ,
   Headers LONGTEXT NULL  ,
   Creator integer NOT NULL DEFAULT 0  ,
@@ -47,8 +47,8 @@ CREATE INDEX Queues2 ON Queues (Disabled) ;
 
 CREATE TABLE Links (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  Base varchar(240) CHARACTER SET ascii NULL,
-  Target varchar(240) CHARACTER SET ascii NULL,
+  Base varchar(240) NULL,
+  Target varchar(240) NULL,
   Type varchar(20) NOT NULL,
   LocalTarget integer NOT NULL DEFAULT 0  ,
   LocalBase integer NOT NULL DEFAULT 0  ,
@@ -57,7 +57,7 @@ CREATE TABLE Links (
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
   PRIMARY KEY (id)
-) TYPE=InnoDB CHARACTER SET utf8;
+) TYPE=InnoDB CHARACTER SET ascii;
 
 CREATE INDEX Links2 ON Links (Base,  Type) ;
 CREATE INDEX Links3 ON Links (Target,  Type) ;
@@ -85,8 +85,8 @@ CREATE TABLE Groups (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
-  Domain varchar(64),
-  Type varchar(64),
+  Domain varchar(64) CHARACTER SET ascii NULL,
+  Type varchar(64) CHARACTER SET ascii NULL,
   Instance integer,
   PRIMARY KEY (id)
 ) TYPE=InnoDB CHARACTER SET utf8;
@@ -104,7 +104,7 @@ CREATE TABLE ScripConditions (
   Description varchar(255) NULL  ,
   ExecModule varchar(60) CHARACTER SET ascii NULL,
   Argument VARBINARY(255) NULL  ,
-  ApplicableTransTypes varchar(60) NULL  ,
+  ApplicableTransTypes varchar(60) CHARACTER SET ascii NULL  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -151,7 +151,7 @@ CREATE TABLE Scrips (
   CustomIsApplicableCode text NULL  ,
   CustomPrepareCode text NULL  ,
   CustomCommitCode text NULL  ,
-  Stage varchar(32) NULL  ,
+  Stage varchar(32) CHARACTER SET ascii NULL  ,
   Queue integer NOT NULL DEFAULT 0  ,
   Template integer NOT NULL DEFAULT 0  ,
   Creator integer NOT NULL DEFAULT 0  ,
@@ -166,7 +166,7 @@ CREATE TABLE Scrips (
 # {{{ ACL
 CREATE TABLE ACL (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  PrincipalType varchar(25) CHARACTER SET ascii NOT NULL, #"User" "Group", "Owner", "Cc" "AdminCc", "Requestor", "Requestor" 
+  PrincipalType varchar(25) CHARACTER SET ascii NOT NULL, #"User" "Group", "Owner", "Cc" "AdminCc", "Requestor"
 
   PrincipalId integer NOT NULL  , #Foreign key to principals
   RightName varchar(25) CHARACTER SET ascii NOT NULL,
@@ -184,7 +184,7 @@ CREATE INDEX  ACL1 on ACL(RightName, ObjectType, ObjectId,PrincipalType,Principa
 # {{{ GroupMembers 
 
 CREATE TABLE GroupMembers (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
+  id INTEGER NOT NULL AUTO_INCREMENT,
   GroupId integer NOT NULL DEFAULT 0,
   MemberId integer NOT NULL DEFAULT 0,  #Foreign key to Principals
   PRIMARY KEY (id)
@@ -270,7 +270,7 @@ CREATE TABLE Tickets (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   EffectiveId integer NOT NULL DEFAULT 0  ,
   Queue integer NOT NULL DEFAULT 0  ,
-  Type varchar(16) NULL  ,
+  Type varchar(16) CHARACTER SET ascii NULL  ,
   IssueStatement integer NOT NULL DEFAULT 0  ,
   Resolution integer NOT NULL DEFAULT 0  ,
   Owner integer NOT NULL DEFAULT 0  ,
@@ -327,8 +327,8 @@ CREATE TABLE Templates (
   Queue integer NOT NULL DEFAULT 0 ,
   Name varchar(200) NOT NULL  ,
   Description varchar(255) NULL  ,
-  Type varchar(16) NULL  ,
-  Language varchar(16) NULL  ,
+  Type varchar(16) CHARACTER SET ascii NULL  ,
+  Language varchar(16) CHARACTER SET ascii NULL  ,
   TranslationOf integer NOT NULL DEFAULT 0  ,
   Content TEXT NULL  ,
   LastUpdated DATETIME NULL  ,
@@ -351,8 +351,8 @@ CREATE TABLE ObjectCustomFieldValues (
 
   Content varchar(255) NULL  ,
   LargeContent LONGBLOB NULL,		    # New -- to hold 255+ strings
-  ContentType varchar(80) NULL,		    # New -- only text/* gets searched
-  ContentEncoding varchar(80) NULL  ,	    # New -- for binary Content
+  ContentType varchar(80) CHARACTER SET ascii NULL,		    # New -- only text/* gets searched
+  ContentEncoding varchar(80) CHARACTER SET ascii NULL  ,	    # New -- for binary Content
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
@@ -372,7 +372,7 @@ CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,Ob
 CREATE TABLE CustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(200) NULL  ,
-  Type varchar(200) NULL  ,	# Changed -- 'Single' and 'Multiple' is moved out
+  Type varchar(200) CHARACTER SET ascii NULL  ,	# Changed -- 'Single' and 'Multiple' is moved out
   MaxValues integer,		# New -- was 'Single'(1) and 'Multiple'(0)
   Pattern TEXT NULL  ,	# New -- Must validate against this
   Repeated int2 NOT NULL DEFAULT 0 , # New -- repeated table entry
@@ -394,7 +394,7 @@ CREATE TABLE CustomFields (
 
 CREATE TABLE ObjectCustomFields (
   id INTEGER NOT NULL  AUTO_INCREMENT,
-  CustomField int NOT NULL  ,
+  CustomField integer NOT NULL  ,
   ObjectId integer NOT NULL,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
@@ -435,7 +435,7 @@ CREATE TABLE Attributes (
   Name varchar(255) NULL  ,
   Description varchar(255) NULL  ,
   Content BLOB,
-  ContentType varchar(16),
+  ContentType varchar(16) CHARACTER SET ascii,
   ObjectType varchar(64) CHARACTER SET ascii,
   ObjectId integer, # foreign key to anything
   Creator integer NOT NULL DEFAULT 0  ,
