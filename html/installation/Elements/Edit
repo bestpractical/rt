@@ -1,15 +1,19 @@
 % for my $type ( @$Types ) {
-<& $RT::Installer->{Meta}{$type}{'Widget'},
-    Default      => 0,
-    %{ $RT::Installer->{Meta}{$type}{'WidgetArguments'} },
+<& $Meta->{$type}{'Widget'},
+    Default      => $Default,
+    %{ $Meta->{$type}{'WidgetArguments'} },
     Name         => $type,
-    CurrentValue => exists $RT::Installer->{InstallConfig}{$type} ?
-        $RT::Installer->{InstallConfig}{$type} :
-        scalar RT->Config->Get($type),
+    exists $CurrentValue->{$type} ? ( CurrentValue => $CurrentValue->{$type} )
+        : (),
+    exists $DefaultValue->{$type} ? ( DefaultValue => $DefaultValue->{$type} )
+        : (),
 &>
 % }
 
-
 <%args>
 $Types
+$Meta
+$Default => 0
+$CurrentValue => {}
+$DefaultValue => {}
 </%args>
