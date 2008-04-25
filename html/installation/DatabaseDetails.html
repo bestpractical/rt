@@ -50,7 +50,8 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post">
-<& Elements/Edit, Types => \@Types &>
+<& Elements/Edit, Types => \@Types, Meta => $RT::Installer->{Meta},
+    CurrentValue => RT::Installer->CurrentValues(@Types) &>
 <input type="hidden" name="Run" value="1">
 
 <& /Elements/Submit, Label => $RT::Installer->{InstallConfig}{DatabaseType} eq

@@ -54,7 +54,8 @@ Options below 'MailCommand' only take effect if MailCommand is 'sendmail' or 'se
 </div>
 <hr />
 <form method="post">
-<& Elements/Edit, Types => \@Types &>
+<& Elements/Edit, Types => \@Types,Meta => $RT::Installer->{Meta},
+    CurrentValue => RT::Installer->CurrentValues(@Types) &>
 
 <input type="hidden" name="Run" value="1">
 <& /Elements/Submit, Label => loc('Next: Initialize Database'), Back => 1,
