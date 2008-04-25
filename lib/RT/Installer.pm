@@ -8,7 +8,7 @@ my %Meta = (
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Type of the database where RT will store its data',
-            Values => [
+            Values      => [
                 grep {
                     my $m = 'DBD::' . $_;
                     $m->require ? 1 : 0
@@ -135,9 +135,29 @@ my %Meta = (
 
 sub Meta {
     my $class = shift;
-    my $type = shift;
+    my $type  = shift;
     return $Meta{$type} if $type;
     return \%Meta;
+}
+
+sub CurrentValue {
+    my $class = shift;
+    my $type  = shift;
+    $type = $class if !ref $class && $class && $class ne 'RT::Installer';
+
+    return undef unless $type;
+    return
+      $RT::Installer && exists $RT::Installer->{InstallConfig}{$type}
+      ? $RT::Installer->{InstallConfig}{$type}
+      : scalar RT->Config->Get($type);
+}
+
+sub CurrentValues {
+    my $class = shift;
+    my @types = @_;
+    push @types, $class if !ref $class && $class && $class ne 'RT::Installer';
+
+    return { map { $_ => CurrentValue($_ ) } @types }; 
 }
 
 =head1 NAME
