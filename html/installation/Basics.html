@@ -74,7 +74,10 @@ my @Types = qw/rtname Organization MinimumPasswordLength/;
 
 if ( $Run ) {
 
-    $m->comp('Elements/Process', Types => \@Types, Arguments => \%ARGS);
+    $m->comp('Elements/Process', Types => \@Types, Arguments => \%ARGS,
+            Store => $RT::Installer->{InstallConfig},
+            Meta => $RT::Installer->{Meta} );
+    
     $RT::Installer->{InstallConfig}{TimeZone} = $ARGS{TimeZone};
 
     for ( qw/MininumPasswordLength/ ) {

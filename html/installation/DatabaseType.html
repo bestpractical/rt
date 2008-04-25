@@ -63,7 +63,8 @@ my @Types = 'DatabaseType';
 
 if ( $Run ) {
 
-    $m->comp('Elements/Process', Types => \@Types, Arguments => \%ARGS);
+    $m->comp('Elements/Process', Types => \@Types, Arguments => \%ARGS, Meta
+            => $RT::Installer->{Meta}, Store => $RT::Installer->{InstallConfig} );
 
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .  'installation/DatabaseDetails.html');
 }

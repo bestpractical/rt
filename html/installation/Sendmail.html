@@ -68,7 +68,9 @@ my @Types = qw/MailCommand SendmailArguments SendmailBounceArguments SendmailPat
 
 if ( $Run ) {
 
-    $m->comp('Elements/Process', Types => \@Types, Arguments => \%ARGS);
+    $m->comp('Elements/Process', Types => \@Types, Arguments => \%ARGS,
+            Store => $RT::Installer->{InstallConfig},
+            Meta => $RT::Installer->{Meta}, KeepUndef => 1);
 
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
