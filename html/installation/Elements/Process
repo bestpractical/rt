@@ -1,12 +1,26 @@
 <%init>
 for my $type ( @$Types ) {
-    $RT::Installer->{InstallConfig}{$type} =
-        $m->comp( $RT::Installer->{Option}{$type}{Widget} . ':Process', Name =>
-                $type, Arguments => $Arguments );
+    my $value =
+        $m->comp( $Meta->{$type}{Widget} . ':Process', Name => $type, 
+                Arguments => $Arguments, Default => $Default,
+                DefaultValue => $DefaultValue->{$type},
+                %{ $Meta->{$type}{WidgetArguments} },
+        );
+    unless ( $KeepUndef || defined $value ) {
+        delete $Store->{$type};
+    }
+    else {
+        $Store->{$type} = $value;
+    }
 }
 </%init>
 
 <%args>
 $Arguments
 $Types
+$Store
+$Meta => {}
+$KeepUndef => 0
+$Default => 0
+$DefaultValue => {}
 </%args>
