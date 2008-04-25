@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 require UNIVERSAL::require;
-my %Option = (
+my %Meta = (
     DatabaseType => {
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
@@ -133,8 +133,11 @@ my %Option = (
 
 );
 
-sub Option {
-    return \%Option;
+sub Meta {
+    my $class = shift;
+    my $type = shift;
+    return $Meta{$type} if $type;
+    return \%Meta;
 }
 
 =head1 NAME
@@ -144,11 +147,11 @@ sub Option {
 =head1 SYNOPSYS
 
     use RT::Installer;
-    my $option = RT::Installer->Option;
+    my $meta = RT::Installer->Meta;
 
 =head1 DESCRIPTION
 
-C<RT::Installer> class provides access to RT Installer Options
+C<RT::Installer> class provides access to RT Installer Meta
 
 =cut
 
