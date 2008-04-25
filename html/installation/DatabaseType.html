@@ -50,7 +50,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post">
-<& Elements/Edit, Types => \@Types, Meta => $RT::Installer->{Meta},
+<& /Widgets/Elements/BulkEdit, Types => \@Types, Meta => $RT::Installer->{Meta},
     CurrentValue => RT::Installer->CurrentValues(@Types) &>
 
 <input type="hidden" name="Run" value="1">
@@ -64,7 +64,7 @@ my @Types = 'DatabaseType';
 
 if ( $Run ) {
 
-    $m->comp('Elements/Process', Types => \@Types, Arguments => \%ARGS, Meta
+    $m->comp('/Widgets/Elements/BulkProcess', Types => \@Types, Arguments => \%ARGS, Meta
             => $RT::Installer->{Meta}, Store => $RT::Installer->{InstallConfig} );
 
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .  'installation/DatabaseDetails.html');

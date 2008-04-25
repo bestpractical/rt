@@ -50,7 +50,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post">
-<& Elements/Edit, Types => \@Types,Meta => $RT::Installer->{Meta},
+<& /Widgets/Elements/BulkEdit, Types => \@Types,Meta => $RT::Installer->{Meta},
     CurrentValue => RT::Installer->CurrentValues(@Types) &>
 
 <input type="hidden" name="Run" value="1">
@@ -65,7 +65,7 @@ my @Types = qw/MaxAttachmentSize OwnerEmail CommentAddress CorrespondAddress/;
 
 if ( $Run ) {
 
-    $m->comp('Elements/Process', Types => \@Types, Arguments => \%ARGS,
+    $m->comp('/Widgets/Elements/BulkProcess', Types => \@Types, Arguments => \%ARGS,
             Store => $RT::Installer->{InstallConfig},
             Meta => $RT::Installer->{Meta}, KeepUndef => 1 );
 
