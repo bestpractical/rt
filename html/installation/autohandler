@@ -54,7 +54,7 @@ if (RT->InstallMode) {
     require RT::Installer;
 
     $RT::Installer->{'CurrentUser'} = RT::CurrentUser->new();
-    $RT::Installer->{Option} = RT::Installer->Option;
+    $RT::Installer->{Meta} = RT::Installer->Meta;
 }
 else {
      RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));

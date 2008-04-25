@@ -1,7 +1,7 @@
 % for my $type ( @$Types ) {
-<& $RT::Installer->{Option}{$type}{'Widget'},
+<& $RT::Installer->{Meta}{$type}{'Widget'},
     Default      => 0,
-    %{ $RT::Installer->{Option}{$type}{'WidgetArguments'} },
+    %{ $RT::Installer->{Meta}{$type}{'WidgetArguments'} },
     Name         => $type,
     CurrentValue => $RT::Installer->{InstallConfig}{$type} || 
         scalar RT->Config->Get($type),
