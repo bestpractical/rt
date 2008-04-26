@@ -50,7 +50,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post">
-<& /Widgets/Elements/BulkEdit, Types => \@Types,Meta => $RT::Installer->{Meta},
+<& /Widgets/BulkEdit, Types => \@Types,Meta => $RT::Installer->{Meta},
     CurrentValue => RT::Installer->CurrentValues(@Types) &>
 <div id="form-box-timezone">
 <span class="label">Timezone</span>
@@ -75,7 +75,7 @@ my @Types = qw/rtname Organization MinimumPasswordLength/;
 
 if ( $Run ) {
 
-    $m->comp('/Widgets/Elements/BulkProcess', Types => \@Types, Arguments => \%ARGS,
+    $m->comp('/Widgets/BulkProcess', Types => \@Types, Arguments => \%ARGS,
             Store => $RT::Installer->{InstallConfig},
             Meta => $RT::Installer->{Meta} );
     

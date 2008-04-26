@@ -89,7 +89,7 @@ if ((defined $PreferredKey) && $PreferredKey ne $UserObj->FirstAttribute('Prefer
 }
 
 if ( $Update ) {
-    $m->comp( '/Widgets/Elements/BulkProcess', Meta => {
+    $m->comp( '/Widgets/BulkProcess', Meta => {
                 map { $_ => RT->Config->Meta($_) } RT->Config->Options
             },
             Store => $preferences,
