@@ -134,13 +134,13 @@ my %Meta = (
 
 );
 
-my $HAS_DATETIME_TZ = eval { require DateTime::TimeZonse };
+my $HAS_DATETIME_TZ = eval { require DateTime::TimeZone };
 
 if ($HAS_DATETIME_TZ) {
-    $Meta{TimeZone} = {
+    $Meta{Timezone} = {
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'TimeZone',
+            Description => 'Timezone',
             Values      => [ '', DateTime::TimeZone->all_names ],
             ValuesLabel => {
                 '' => 'System Default',    #loc
@@ -149,9 +149,9 @@ if ($HAS_DATETIME_TZ) {
     };
 }
 else {
-    $Meta{TimeZone} = {
+    $Meta{Timezone} = {
         Widget          => '/Widgets/Form/String',
-        WidgetArguments => { Description => 'TimeZone', },
+        WidgetArguments => { Description => 'Timezone', },
     };
 }
 
