@@ -70,10 +70,11 @@ $DefaultLabel   => loc( 'Default: [_1]', $DefaultValue ),
 </%ARGS>
 
 <%METHOD InputOnly>
-<input type="text" name="<% $Name %>" value="<% $CurrentValue || '' %>" />\
+<input type="<% $Type %>" name="<% $Name %>" value="<% $CurrentValue || '' %>" />\
 <%ARGS>
 $Name
 $CurrentValue => '',
+$Type => 'text'
 </%ARGS>
 </%METHOD>
 
