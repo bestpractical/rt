@@ -56,6 +56,7 @@ my %Meta = (
             Description =>
               'Password of the above user RT will use to connect to the DB'
             ,                                                               #loc
+            Type => 'password',
         },
     },
     DatabaseRequireSSL => {
