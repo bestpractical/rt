@@ -134,6 +134,27 @@ my %Meta = (
 
 );
 
+my $HAS_DATETIME_TZ = eval { require DateTime::TimeZonse };
+
+if ($HAS_DATETIME_TZ) {
+    $Meta{TimeZone} = {
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'TimeZone',
+            Values      => [ '', DateTime::TimeZone->all_names ],
+            ValuesLabel => {
+                '' => 'System Default',    #loc
+            },
+        },
+    };
+}
+else {
+    $Meta{TimeZone} = {
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => { Description => 'TimeZone', },
+    };
+}
+
 sub Meta {
     my $class = shift;
     my $type  = shift;
@@ -147,8 +168,8 @@ sub CurrentValue {
     $type = $class if !ref $class && $class && $class ne 'RT::Installer';
 
     return undef unless $type;
-    return
-      $RT::Installer && exists $RT::Installer->{InstallConfig}{$type}
+    return $RT::Installer
+      && exists $RT::Installer->{InstallConfig}{$type}
       ? $RT::Installer->{InstallConfig}{$type}
       : scalar RT->Config->Get($type);
 }
@@ -158,7 +179,7 @@ sub CurrentValues {
     my @types = @_;
     push @types, $class if !ref $class && $class && $class ne 'RT::Installer';
 
-    return { map { $_ => CurrentValue($_ ) } @types }; 
+    return { map { $_ => CurrentValue($_) } @types };
 }
 
 =head1 NAME
