@@ -740,6 +740,34 @@ sub RFC2616 {
     return $res;
 }
 
+=head4 iCal
+
+Returns the date and time formatted as an ICalendar string -- that is,
+C<yyyymmddThhmmssZ>
+
+=cut
+
+sub iCal {
+    my $self = shift;
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
+                            $self->Localtime( "UTC" );
+    
+    return sprintf( '%04d%02d%02dT%02d%02d%02dZ', $year, $mon, $mday, $hour, $min, $sec );
+}
+
+=head4 iCalDate
+
+Returns the date formatted as an ICalendar string -- that is, C<yyyymmddZ>
+
+=cut
+
+sub iCalDate {
+    my $self = shift;
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
+                            $self->Localtime( "UTC" );
+    return sprintf( '%04d%02d%02dZ', $year, $mon, $mday );
+}
+
 sub _SplitOffset {
     my ($self, $offset) = @_;
     my $sign = $offset < 0? '-': '+';

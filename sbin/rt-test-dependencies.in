@@ -333,7 +333,6 @@ PerlIO::eol
 .
 
 $deps{'ICAL'} = [ text_to_hash( << '.') ];
-Date::ICal
 Data::ICal
 .
 

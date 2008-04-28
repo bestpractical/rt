@@ -48,7 +48,6 @@
 <%init>
 use Data::ICal;
 use Data::ICal::Entry::Event;
-use Date::ICal;
 use Encode ();
 
 my $path = $m->dhandler_arg;
@@ -88,42 +87,31 @@ $feed->add_properties('calscale' => ['gregorian']);
 $feed->add_properties('method'   => ['publish']);
 $feed->add_properties('prodid'   => ["-//$RT::rtname//"]);
 
-my $ic = sub {
-    my $time = shift;
-
-    if (ref $time) {
-        $time = Date::ICal->new( epoch => $time->Unix )->ical;
-    } else {
-        $time = Date::ICal->new( epoch => $time )->ical;
-    }
-    $time =~ s/T.*// if shift;
-    return $time;
-};
-
 while (my $t = $tickets->Next) {
     next unless $t->DueObj->Unix > 0;
 
     my $starttime = $t->StartsObj->Unix > 0 ? $t->StartsObj : $t->CreatedObj;
 
+    my $now = RT::Date->new; $now->SetToNow;
     my $start = Data::ICal::Entry::Event->new;
     my $end   = Data::ICal::Entry::Event->new;
     $_->add_properties(
         url       => $RT::WebURL . "?q=".$t->id,
         organizer => $t->OwnerObj->Name,
-        dtstamp   => $ic->(time),
-        created   => $ic->($t->CreatedObj),
-       'last-modified' => $ic->($t->LastUpdatedObj),
+        dtstamp   => $now->iCal,
+        created   => $t->CreatedObj->iCal,
+       'last-modified' => $t->LastUpdatedObj->iCal,
     ) for $start, $end;
 
     $start->add_properties(
         summary   => "Start: ".$t->Subject,
-        dtstart   => $ic->($starttime, 1),
-        dtend     => $ic->($starttime, 1),
+        dtstart   => $starttime->iCalDate,
+        dtend     => $starttime->iCalDate,
     );
     $end->add_properties(
         summary   => "Due: ".$t->Subject,
-        dtstart   => $ic->($t->DueObj, 1),
-        dtend     => $ic->($t->DueObj, 1),
+        dtstart   => $t->DueObj->iCalDate,
+        dtend     => $t->DueObj->iCalDate,
     );
 
     $feed->add_entry($start);
