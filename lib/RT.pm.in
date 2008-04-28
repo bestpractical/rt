@@ -88,6 +88,23 @@ our $MasonDataDir = '@MASON_DATA_PATH@';
 # via the web interface)
 our $MasonSessionDir = '@MASON_SESSION_PATH@';
 
+# XXX TODO is there a better way to detect if path is relative or not?
+unless ( $BasePath && $BasePath =~ m{^/} ) {
+    my $pm_path = ( File::Spec->splitpath( $INC{'RT.pm'} ) )[1];
+
+    # need rel2abs here is to make sure path is absolute, since $INC{'RT.pm'}
+    # is not always absolute
+    $BasePath =
+      File::Spec->rel2abs( File::Spec->catfile( $pm_path, File::Spec->updir ) );
+
+    for my $path ( qw/EtcPath BinPath VarPath LocalPath LocalEtcPath
+            LocalLibPath LocalLexiconPath LocalPluginPath MasonComponentRoot
+            MasonLocalComponentRoot MasonDataDir MasonSessionDir/ ) {
+        no strict 'refs';
+        $$path = File::Spec->catfile( $BasePath, $$path )
+          unless $$path =~ m{^/};    # just change relative ones
+    }
+}
 
 
 =head1 NAME
