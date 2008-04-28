@@ -6,17 +6,25 @@ In order to resolve this issue we've changed schema for mysql 4.1 and greater
 versions. If you're installing new RT then you can skip this file, but if
 you're upgrading then you MUST follow instructions below.
 
-1) Backup RT database
+1) Backup RT database. It's really good to test that you can restore from
+   this backup.
 
 2) Follow instructions in the README file to the step 7)
 
 3) Apply changes described in the seven step, but only up to version 3.8.0.
 
 4) Apply mysql 4.0->4.1 schema changes. RT tarball has script
-etc/upgrade/schema.mysql-4.0-4.1 that contain SQL queries to upgrade schema of
+etc/upgrade/schema.mysql-4.0-4.1.pl that generates SQL queries to upgrade schema of
 the DB. Run it:
 
-  mysql -u root -p rt3 < etc/upgrade/schema.mysql-4.0-4.1
+    perl etc/upgrade/schema.mysql-4.0-4.1.pl > sql.queries
+
+5) Check sanity of sql queries or consult with your DBA
+
+6) Apply queries. Note that this step can take a while. May require additional
+   space on your hard drive comparable with size of your tables.
+
+    mysql -u root -p rt3 < sql.queries
 
 NOTE that 'rt3' is the default name of the RT DB, change it in the command above
 if you're using different name.
@@ -25,5 +33,11 @@ This step shouldn't produce any errors or warnings, but if you see some then rev
 DB from backup you made at step 1) and send report to the
 rt-users@lists.bestpractical.com mailing list.
 
-5) Return to the step 7 from README and apply other upgrade scripts and follow
+7) Return to the step 7 from README and apply other upgrade scripts and follow
 other steps.
+
+8) Test everything. The most important parts you have to test:
+* binary attachments, like docs, pdfs, images and other
+* binary custom fields
+* everything that may contain not ascii characters
+
