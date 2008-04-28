@@ -94,6 +94,9 @@
     { Name        => 'Open Tickets',                                      # loc
       Description => 'Open tickets on correspondence',                    # loc
       ExecModule  => 'AutoOpen' },
+    { Name        => 'Extract Subject Tag',                               # loc
+      Description => 'Extract tags from a Transaction\'s subject and add them to the Ticket\'s subject.', # loc
+      ExecModule  => 'ExtractSubjectTag' },
 );
 
 @ScripConditions = (
@@ -459,6 +462,10 @@ Your new password is:
        ScripCondition => 'On Resolve',
        ScripAction    => 'Notify Requestors',
        Template       => 'Resolved' },
+    {  Description    => "On transaction, add any tags in the transaction's subject to the ticket's subject",
+       ScripCondition => 'On Transaction',
+       ScripAction    => 'Extract Subject Tag',
+       Template       => 'Blank' },
     {  Description => "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval",    # loc
        Queue          => '___Approvals',
        ScripCondition => 'User Defined',

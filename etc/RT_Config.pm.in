@@ -185,6 +185,14 @@ Set($SenderMustExistInExternalDatabase , undef);
 # resolve arbitrary tickets!
 
 
+# The default "extract remote tracking tags" scrip settings; these
+# detect when your RT is talking to another RT, and adjusts the
+# subject accordingly.
+Set($ExtractSubjectTagMatch, qr/\[.+? #\d+\]/);
+Set($ExtractSubjectTagNoMatch, ( ${RT::EmailSubjectTagRegex}
+       ? qr/\[(?:${RT::EmailSubjectTagRegex}) #\d+\]/
+       : qr/\[\Q$RT::rtname\E #\d+\]/));
+
 # }}}
 
 # {{{ Outgoing mail configuration
@@ -198,6 +206,8 @@ Set($SenderMustExistInExternalDatabase , undef);
 # if you use 'sendmail' rather than 'sendmailpipe'
 
 Set($MailCommand , 'sendmailpipe');
+
+# }}}
 
 # {{{ Sendmail Configuration
 # These options only take effect if $MailCommand is 'sendmail' or
@@ -708,8 +718,6 @@ Set($StrictLinkACL, 1);
 # custom field values from external sources at runtime.
 
 # }}}
-
-
 
 # {{{ Development Mode
 #
