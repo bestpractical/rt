@@ -88,13 +88,20 @@ our $MasonDataDir = '@MASON_DATA_PATH@';
 # via the web interface)
 our $MasonSessionDir = '@MASON_SESSION_PATH@';
 
-unless ( File::Spec->file_name_is_absolute($EtcPath) ) {
-    my $pm_path = ( File::Spec->splitpath( $INC{'RT.pm'} ) )[1];
+unless (  File::Spec->file_name_is_absolute($EtcPath) ) {
 
-    # need rel2abs here is to make sure path is absolute, since $INC{'RT.pm'}
-    # is not always absolute
-    $BasePath =
-      File::Spec->rel2abs( File::Spec->catfile( $pm_path, File::Spec->updir ) );
+# if BasePath exists and is absolute, we won't infer it from $INC{'RT.pm'}.
+# otherwise RT.pm will make src dir(where we configure RT) be the BasePath 
+# instead of the --prefix one
+    unless ( -d $BasePath && File::Spec->file_name_is_absolute($BasePath) ) {
+        my $pm_path = ( File::Spec->splitpath( $INC{'RT.pm'} ) )[1];
+
+       # need rel2abs here is to make sure path is absolute, since $INC{'RT.pm'}
+       # is not always absolute
+        $BasePath =
+          File::Spec->rel2abs(
+            File::Spec->catfile( $pm_path, File::Spec->updir ) );
+    }
 
     for my $path ( qw/EtcPath BinPath VarPath LocalPath LocalEtcPath
             LocalLibPath LocalLexiconPath LocalPluginPath MasonComponentRoot
