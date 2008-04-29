@@ -51,15 +51,6 @@ use warnings;
 
 use vars qw($Nobody $SystemUser $item);
 
-# we need to chdir first because maybe @LOCAL_LIB_PATH@ and @RT_LIB_PATH@ are
-# relative paths, and we mostly run this script in source dir instead of
-# installed dir
-use File::Spec;
-BEGIN {
-    chdir "@RT_PATH@"
-      if -e "@RT_PATH@" && !File::Spec->file_name_is_absolute("@RT_LIB_PATH@");
-}
-
 use lib "@LOCAL_LIB_PATH@";
 use lib "@RT_LIB_PATH@";
 
