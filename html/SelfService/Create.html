@@ -65,7 +65,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value">
-<input name="Requestors" value="<%$session{CurrentUser}->EmailAddress%>" size="20" />
+<& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $session{CurrentUser}->EmailAddress &>
 </td>
 </tr>
 <tr>
@@ -73,7 +73,7 @@
 <&|/l&>Cc</&>:
 </td>
 <td class="value">
- <input name="Cc" size="20" />
+<& /Elements/EmailInput, Name => 'Cc', Size => '20' &>
 </td>
 </tr>
 <tr>
@@ -97,6 +97,8 @@
 <input name="Attach" type="file" />
 </td>
 </tr>
+</table>
+<table width="100%">
 <tr>
 <td colspan="2">
 <&|/l&>Describe the issue below</&>:<br />

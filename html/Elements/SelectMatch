@@ -67,13 +67,13 @@ my $FalseDefault='';
 my $LikeDefault=''; 
 my $NotLikeDefault ='';
 
-if ($Default && $Default =~ /false/i) {
+if ($Default && $Default =~ /false|!=/i) {
 	$FalseDefault = qq[ selected="selected"];
 }
-elsif ($Default && $Default =~ /true/i) {
+elsif ($Default && $Default =~ /true|=/i) {
 	$TrueDefault = qq[ selected="selected"];
 } 
-elsif ($Default && $Default =~ /notlike/i) {
+elsif ($Default && $Default =~ /notlike|NOT LIKE/i) {
 	$NotLikeDefault = qq[ selected="selected"];
 }
 else {

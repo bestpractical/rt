@@ -46,16 +46,12 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
-<option value="MemberOf"><&|/l&>Member of</&></option>
-<option value="DependsOn"><&|/l&>Depends on</&></option>
-<option value="RefersTo"><&|/l&>Refers to</&></option>
+<option <% ($Default eq 'MemberOf') ? 'selected="selected"' : '' %> value="MemberOf"><&|/l&>Member of</&></option>
+<option <% ($Default eq 'DependsOn') ? 'selected="selected"' : '' %> value="DependsOn"><&|/l&>Depends on</&></option>
+<option <% ($Default eq 'RefersTo') ? 'selected="selected"' : '' %> value="RefersTo"><&|/l&>Refers to</&></option>
 </select>
 
 <%ARGS>
 $Name => "LinkType"
-$Default => undef
+$Default => ''
 </%ARGS>
-
-<%INIT>
-# TODO handle Default
-</%INIT>

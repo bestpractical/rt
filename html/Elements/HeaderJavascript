@@ -52,10 +52,53 @@ $onload => undef
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/util.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/titlebox-state.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/ahah.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/prototype/prototype.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/scriptaculous/scriptaculous.js?load=effects,controls"></script>
+% if ( RT->Config->Get('MessageBoxRichText')) {
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/RichText/fckeditor.js"></script>
+% }
 <script type="text/javascript"><!--
     onLoadHook("loadTitleBoxStates()");
 % if ( $focus ) {
     onLoadHook("focusElementById('<% $focus %>')");
+% }
+% if ( RT->Config->Get('MessageBoxRichText')) {
+    function ReplaceAllTextareas() {
+        // replace all content and signature message boxes
+        var allTextAreas = document.getElementsByTagName("textarea");
+
+        for (var i=0; i < allTextAreas.length; i++) {
+            var textArea = allTextAreas[i];
+            if ( (textArea.getAttribute('class') == 'messagebox')
+              || (textArea.getAttribute('className') == 'messagebox')) {
+                // Turn the original plain text content into HTML 
+
+%# Special case - When continuing an edit session with attachment, keep the HTMLified content.
+% if (!$m->request_args->{'AddMoreAttach'}) {
+                textArea.value = textArea.value.replace(
+                    /&/g, "&amp;"
+                ).replace(
+                    /</g, "&lt;"
+                ).replace(
+                    />/g, "&gt;"
+                ).replace(
+                    /\n/g, "\n<br />"
+                );
+% }
+
+                var typeField = document.createElement('input');
+                typeField.setAttribute('type', 'hidden');
+                typeField.setAttribute('name', textArea.name + 'Type');
+                typeField.setAttribute('value', 'text/html');
+                textArea.parentNode.appendChild(typeField);
+
+                var oFCKeditor = new FCKeditor( textArea.name ) ;
+                oFCKeditor.BasePath = "/NoAuth/RichText/";
+                oFCKeditor.ReplaceTextarea();
+            }
+        }
+    }
+    onLoadHook("ReplaceAllTextareas()");
 % }
 % if ( $onload ) {
     onLoadHook("<% $onload |n %>");

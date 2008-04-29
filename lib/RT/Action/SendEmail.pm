@@ -353,8 +353,12 @@ sub AddAttachments {
     }
 
     # attach any of this transaction's attachments
+    my $seen_attachment = 0;
     while ( my $attach = $attachments->Next ) {
-        $MIMEObj->make_multipart('mixed');
+        if (!$seen_attachment) {
+            $MIMEObj->make_multipart('mixed', Force => 1);
+            $seen_attachment = 1;
+        }
         $self->AddAttachment( $attach );
     }
 

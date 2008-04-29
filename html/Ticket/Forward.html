@@ -82,7 +82,7 @@
 my $TicketObj = LoadTicket($id);
 $id = $ARGS{'id'} = $TicketObj->id;
 
-Abort( loc("Permission denied") )
+Abort( loc("Permission Denied") )
     unless $TicketObj->CurrentUserHasRight('ForwardMessage');
 
 my $txn = RT::Transaction->new( $session{'CurrentUser'} );

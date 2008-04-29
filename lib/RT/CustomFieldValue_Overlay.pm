@@ -80,7 +80,7 @@ sub Create {
         return (0, $self->loc("Couldn't load Custom Field #[_1]", $cf_id));
     }
     unless ( $cf->CurrentUserHasRight('AdminCustomField') ) {
-        return (0, $self->loc('Permission denied'));
+        return (0, $self->loc('Permission Denied'));
     }
 
     my ($id, $msg) = $self->SUPER::Create(

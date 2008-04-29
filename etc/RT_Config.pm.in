@@ -467,6 +467,9 @@ Set($MessageBoxHeight, 15);
 # Default wrapping: "HARD"  (choices "SOFT", "HARD")
 Set($MessageBoxWrap, "HARD");
 
+# Should "rich text" editing for email messages be turned on?
+Set($MessageBoxRichText, 1);
+
 # Support implicit links in WikiText custom fields?  A true value
 # causes InterCapped or ALLCAPS words in WikiText fields to
 # automatically become links to searches for those words.  If used on

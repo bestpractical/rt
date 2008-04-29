@@ -47,16 +47,22 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="UserField">
 % foreach my $col (RT::User->BasicColumns) {
-<option value="<% $col->[0] %>"><% loc($col->[1]) %></option>
+<option <% ($UserField eq $col->[0]) ? 'SELECTED' : '' %> value="<% $col->[0] %>"><% loc($col->[1]) %></option>
 % }
 % while (my $CF = $CFs->Next) {
-<option value="CustomField-<% $CF->Id %>"><&|/l&>CustomField</&>: <% $CF->Name %></option>
+%   my $val = "CustomField-" . $CF->Id;
+<option <% ($UserField eq $val) ? 'SELECTED' : '' %> value="<% $val %>"><&|/l&>CustomField</&>: <% $CF->Name %></option>
 % }
 </select>
-<& /Elements/SelectMatch, Name=> 'UserOp' &>
-<input size="8" name="UserString" />
+<& /Elements/SelectMatch, Name => 'UserOp', Default => $UserOp &>
+<input size="8" name="UserString" value="<% $UserString %>" />
 <%INIT>
 my $CFs = RT::CustomFields->new($session{'CurrentUser'});
 $CFs->LimitToChildType('RT::User');
 $CFs->OrderBy( FIELD => 'Name' );
 </%INIT>
+<%ARGS>
+$UserField  => ''
+$UserOp     => ''
+$UserString => ''
+</%ARGS>

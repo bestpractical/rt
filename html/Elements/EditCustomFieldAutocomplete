@@ -45,9 +45,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/libs/prototype.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/libs/scriptaculous/effects.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/libs/scriptaculous/controls.js"></script>
 % if ( $Multiple ) {
 <textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-Values" id="<% $name %>-Values" ><% $Default %></textarea><div id="<% $name %>-Choices" class="autocomplete"></div>
 <script type="text/javascript">
