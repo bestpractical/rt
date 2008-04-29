@@ -150,3 +150,23 @@
   customlexdir:		${customdir}/po
   customlibdir:		${customdir}/lib
 </Layout>
+
+<Layout relative>
+  bindir:		bin
+  sbindir:		sbin
+  sysconfdir:	etc
+  mandir:		man
+  libdir:		lib
+  datadir:		share
+  htmldir:		${datadir}/html
+  manualdir:	${datadir}/doc
+  localstatedir:	var
+  logfiledir:		${localstatedir}/log
+  masonstatedir:	${localstatedir}/mason_data
+  sessionstatedir:	${localstatedir}/session_data
+  customdir:		local
+  custometcdir:		${customdir}/etc
+  customhtmldir:	${customdir}/html
+  customlexdir:		${customdir}/po
+  customlibdir:		${customdir}/lib
+</Layout>
