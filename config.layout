@@ -152,6 +152,8 @@
 </Layout>
 
 <Layout relative>
+  prefix:		/opt/rt3
+  exec_prefix:		${prefix}
   bindir:		bin
   sbindir:		sbin
   sysconfdir:	etc
