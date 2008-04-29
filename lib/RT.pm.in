@@ -89,7 +89,7 @@ our $MasonDataDir = '@MASON_DATA_PATH@';
 our $MasonSessionDir = '@MASON_SESSION_PATH@';
 
 # XXX TODO is there a better way to detect if path is relative or not?
-unless ( $BasePath && $BasePath =~ m{^/} ) {
+unless ( $EtcPath && $EtcPath =~ m{^/} ) {
     my $pm_path = ( File::Spec->splitpath( $INC{'RT.pm'} ) )[1];
 
     # need rel2abs here is to make sure path is absolute, since $INC{'RT.pm'}
