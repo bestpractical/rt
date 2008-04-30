@@ -48,8 +48,20 @@
 # END BPS TAGGED BLOCK }}}
 use strict;
 
-use lib "@LOCAL_LIB_PATH@";
-use lib "@RT_LIB_PATH@";
+# fix lib paths, some may be relative
+BEGIN {
+    require File::Spec;
+    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            require FindBin;
+            $lib =
+              File::Spec->catfile( $FindBin::Bin, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
 
 use RT;
 use XML::Simple;

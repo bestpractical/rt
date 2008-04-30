@@ -73,8 +73,19 @@ C<RT::Shredder>
 use strict;
 use Getopt::Long;
 
-### after: use lib qw(@RT_LIB_PATH@);
-use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
+BEGIN {
+    require File::Spec;
+    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            require FindBin;
+            $lib =
+              File::Spec->catfile( $FindBin::Bin, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
 
 use RT::Shredder;
 use RT::Shredder::Constants;
