@@ -45,19 +45,26 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+
+
 #body.calpopup {
-    margin-left: 2em;
+    margin-left: 1em;
+    margin-top: 1em;
+} 
+
+#body.calpopup a {
+    font-size: 80%;
 }
 
 .calendar {
     text-align: center;
-    margin: 2em 0 0 0;
+    margin: 0 0 0 0;
 }
 
-.calendar td, .calendar th { padding: 0.1em 0.25em 0.1em 0.25em; }
+.calendar td, .calendar th { padding: 0.1em 0.1em 0.1em 0.1em; }
 
 .calendar caption .month {
-    padding: 0 1em 0 1em;
+    padding: 0 0.25em 0 0.25em;
     font-size: 1.5em;
 }
 
