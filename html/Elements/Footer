@@ -49,10 +49,11 @@
 </div>
 % $m->callback( %ARGS );
 <div id="footer">
+% if ($m->{'rt_base_time'}) {
   <p id="time">
     <span><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%></span>
   </p>
-
+%}
   <p id="bpscredits">
     <span>
 <&|/l,     '&#187;&#124;&#171;', $RT::VERSION, '2008', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>', &>[_1] RT [_2] Copyright 1996-[_3] [_4].</&>
