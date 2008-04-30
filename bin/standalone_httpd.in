@@ -56,6 +56,7 @@ BEGIN {
     for my $lib (@libs) {
         unless ( File::Spec->file_name_is_absolute($lib) ) {
             require FindBin;
+            no warnings "once";
             $lib =
               File::Spec->catfile( $FindBin::Bin, File::Spec->updir, $lib );
         }
