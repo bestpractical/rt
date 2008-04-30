@@ -50,7 +50,9 @@ package RT::Mason;
 
 use strict;
 use vars '$Handler';
-require ('@RT_BIN_PATH@/webmux.pl');
+use File::Basename;
+
+require (dirname(__FILE__) . '/webmux.pl');
 
 require CGI;
 

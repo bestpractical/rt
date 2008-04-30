@@ -51,7 +51,8 @@ package RT::Mason;
 use strict;
 use vars '$Handler';
 use File::Basename;
-require ('@RT_BIN_PATH@/webmux.pl');
+
+require (dirname(__FILE__) . '/webmux.pl');
 
 # Enter CGI::Fast mode, which should also work as a vanilla CGI script.
 require CGI::Fast;
