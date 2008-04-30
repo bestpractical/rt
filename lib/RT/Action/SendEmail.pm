@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org>
@@ -88,8 +88,8 @@ Cleans class-wide options, like L</SquelchMailTo> or L</AttachTickets>.
 
 sub CleanSlate {
     my $self = shift;
-    $self->SquelchMailTo( undef );
-    $self->AttachTickets( undef );
+    $self->SquelchMailTo(undef);
+    $self->AttachTickets(undef);
 }
 
 =head2 Commit
@@ -105,13 +105,18 @@ sub Commit {
     my $message = $self->TemplateObj->MIMEObj;
 
     my $orig_message;
-    if ( RT->Config->Get('RecordOutgoingEmail') && RT->Config->Get('GnuPG')->{'Enable'} ) {
+    if (   RT->Config->Get('RecordOutgoingEmail')
+        && RT->Config->Get('GnuPG')->{'Enable'} )
+    {
+
         # it's hacky, but we should know if we're going to crypt things
         my $attachment = $self->TransactionObj->Attachments->First;
 
         my %crypt;
-        foreach my $argument ( qw(Sign Encrypt) ) {
-            if ( $attachment && defined $attachment->GetHeader("X-RT-$argument") ) {
+        foreach my $argument (qw(Sign Encrypt)) {
+            if ( $attachment
+                && defined $attachment->GetHeader("X-RT-$argument") )
+            {
                 $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
             } else {
                 $crypt{$argument} = $self->TicketObj->QueueObj->$argument();
@@ -122,19 +127,18 @@ sub Commit {
         }
     }
 
-
-    my ($ret) = $self->SendMessage( $message );
+    my ($ret) = $self->SendMessage($message);
     if ( $ret > 0 && RT->Config->Get('RecordOutgoingEmail') ) {
-        if ( $orig_message ) {
+        if ($orig_message) {
             $message->attach(
                 Type        => 'application/x-rt-original-message',
                 Disposition => 'inline',
                 Data        => $orig_message->as_string,
             );
         }
-        $self->RecordOutgoingMailTransaction( $message );
+        $self->RecordOutgoingMailTransaction($message);
     }
-    return (abs $ret);
+    return ( abs $ret );
 }
 
 =head2 Prepare
@@ -164,49 +168,55 @@ sub Prepare {
 
     my %seen;
     foreach my $type qw(To Cc Bcc) {
-        @{ $self->{ $type } } =
-            grep defined && length && !$seen{ lc $_ }++,
-                @{ $self->{ $type } };
+        @{ $self->{$type} }
+            = grep defined && length && !$seen{ lc $_ }++,
+            @{ $self->{$type} };
     }
 
     # Go add all the Tos, Ccs and Bccs that we need to to the message to
     # make it happy, but only if we actually have values in those arrays.
 
-    # TODO: We should be pulling the recipients out of the template and shove them into To, Cc and Bcc
+# TODO: We should be pulling the recipients out of the template and shove them into To, Cc and Bcc
 
-    $self->SetHeader( 'To', join ( ', ', @{ $self->{'To'} } ) )
-      if ( ! $MIMEObj->head->get('To') &&  $self->{'To'} && @{ $self->{'To'} } );
-    $self->SetHeader( 'Cc', join ( ', ', @{ $self->{'Cc'} } ) )
-      if ( !$MIMEObj->head->get('Cc') && $self->{'Cc'} && @{ $self->{'Cc'} } );
-    $self->SetHeader( 'Bcc', join ( ', ', @{ $self->{'Bcc'} } ) )
-      if ( !$MIMEObj->head->get('Bcc') && $self->{'Bcc'} && @{ $self->{'Bcc'} } );
+    $self->SetHeader( 'To', join( ', ', @{ $self->{'To'} } ) )
+        if ( !$MIMEObj->head->get('To')
+        && $self->{'To'}
+        && @{ $self->{'To'} } );
+    $self->SetHeader( 'Cc', join( ', ', @{ $self->{'Cc'} } ) )
+        if ( !$MIMEObj->head->get('Cc')
+        && $self->{'Cc'}
+        && @{ $self->{'Cc'} } );
+    $self->SetHeader( 'Bcc', join( ', ', @{ $self->{'Bcc'} } ) )
+        if ( !$MIMEObj->head->get('Bcc')
+        && $self->{'Bcc'}
+        && @{ $self->{'Bcc'} } );
 
     # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
     # If we don't have any 'To' header (but do have other recipients), drop in
     # the pseudo-to header.
-    $self->SetHeader( 'To', join ( ', ', @{ $self->{'PseudoTo'} } ) )
-        if $self->{'PseudoTo'} && @{ $self->{'PseudoTo'} } && !$MIMEObj->head->get('To') 
-           && ( $MIMEObj->head->get('Cc') or $MIMEObj->head->get('Bcc') );
+    $self->SetHeader( 'To', join( ', ', @{ $self->{'PseudoTo'} } ) )
+        if $self->{'PseudoTo'}
+            && @{ $self->{'PseudoTo'} }
+            && !$MIMEObj->head->get('To')
+            && ( $MIMEObj->head->get('Cc') or $MIMEObj->head->get('Bcc') );
 
     # We should never have to set the MIME-Version header
     $self->SetHeader( 'MIME-Version', '1.0' );
 
     # fsck.com #5959: Since RT sends 8bit mail, we should say so.
-    $self->SetHeader( 'Content-Transfer-Encoding','8bit');
+    $self->SetHeader( 'Content-Transfer-Encoding', '8bit' );
 
     # For security reasons, we only send out textual mails.
     foreach my $part ( grep !$_->is_multipart, $MIMEObj->parts_DFS ) {
         my $type = $part->mime_type || 'text/plain';
-        $type = 'text/plain' unless RT::I18N::IsTextualContentType( $type );
-        $part->head->mime_attr( "Content-Type" => $type );
+        $type = 'text/plain' unless RT::I18N::IsTextualContentType($type);
+        $part->head->mime_attr( "Content-Type"         => $type );
         $part->head->mime_attr( "Content-Type.charset" => 'utf-8' );
     }
 
-    RT::I18N::SetMIMEEntityToEncoding(
-        $MIMEObj,
+    RT::I18N::SetMIMEEntityToEncoding( $MIMEObj,
         RT->Config->Get('EmailOutputEncoding'),
-        'mime_words_ok',
-    );
+        'mime_words_ok', );
 
     # Build up a MIME::Entity that looks like the original message.
     $self->AddAttachments if $MIMEObj->head->get('RT-Attach-Message');
@@ -214,9 +224,16 @@ sub Prepare {
     $self->AddTickets;
 
     my $attachment = $self->TransactionObj->Attachments->First;
-    if ( $attachment && !( $attachment->GetHeader('X-RT-Encrypt') || $self->TicketObj->QueueObj->Encrypt ) ) {
+    if ($attachment
+        && !(
+               $attachment->GetHeader('X-RT-Encrypt')
+            || $self->TicketObj->QueueObj->Encrypt
+        )
+        )
+    {
         $attachment->SetHeader( 'X-RT-Encrypt' => 1 )
-            if ($attachment->GetHeader("X-RT-Incoming-Encryption")||'') eq 'Success';
+            if ( $attachment->GetHeader("X-RT-Incoming-Encryption") || '' ) eq
+            'Success';
     }
 
     return $result;
@@ -230,7 +247,7 @@ Returns an array of L<Mail::Address> objects containing all the To: recipients f
 
 sub To {
     my $self = shift;
-    return ($self->_AddressesFromHeader('To'));
+    return ( $self->_AddressesFromHeader('To') );
 }
 
 =head2 Cc
@@ -239,9 +256,9 @@ Returns an array of L<Mail::Address> objects containing all the Cc: recipients f
 
 =cut
 
-sub Cc { 
+sub Cc {
     my $self = shift;
-    return ($self->_AddressesFromHeader('Cc'));
+    return ( $self->_AddressesFromHeader('Cc') );
 }
 
 =head2 Bcc
@@ -250,22 +267,20 @@ Returns an array of L<Mail::Address> objects containing all the Bcc: recipients 
 
 =cut
 
-
 sub Bcc {
     my $self = shift;
-    return ($self->_AddressesFromHeader('Bcc'));
+    return ( $self->_AddressesFromHeader('Bcc') );
 
 }
 
-sub _AddressesFromHeader  {
-    my $self = shift;
-    my $field = shift;
-    my $header = $self->TemplateObj->MIMEObj->head->get($field);
+sub _AddressesFromHeader {
+    my $self      = shift;
+    my $field     = shift;
+    my $header    = $self->TemplateObj->MIMEObj->head->get($field);
     my @addresses = Mail::Address->parse($header);
 
     return (@addresses);
 }
-
 
 =head2 SendMessage MIMEObj
 
@@ -275,6 +290,7 @@ TODO: Break this out to a separate module
 =cut
 
 sub SendMessage {
+
     # DO NOT SHIFT @_ in this subroutine.  It breaks Hook::LexWrap's
     # ability to pass @_ to a 'post' routine.
     my ( $self, $MIMEObj ) = @_;
@@ -283,25 +299,25 @@ sub SendMessage {
     chomp $msgid;
 
     $self->ScripActionObj->{_Message_ID}++;
-    
+
     $RT::Logger->info( $msgid . " #"
-        . $self->TicketObj->id . "/"
-        . $self->TransactionObj->id
-        . " - Scrip "
-        . $self->ScripObj->id . " "
-        . ($self->ScripObj->Description || '') );
+            . $self->TicketObj->id . "/"
+            . $self->TransactionObj->id
+            . " - Scrip "
+            . $self->ScripObj->id . " "
+            . ( $self->ScripObj->Description || '' ) );
 
     my $status = RT::Interface::Email::SendEmail(
-        Entity => $MIMEObj,
-        Ticket => $self->TicketObj,
+        Entity      => $MIMEObj,
+        Ticket      => $self->TicketObj,
         Transaction => $self->TransactionObj,
     );
     return $status unless $status > 0;
 
     my $success = $msgid . " sent ";
-    foreach( qw(To Cc Bcc) ) {
+    foreach (qw(To Cc Bcc)) {
         my $recipients = $MIMEObj->head->get($_);
-        $success .= " $_: ". $recipients if $recipients;
+        $success .= " $_: " . $recipients if $recipients;
     }
     $success =~ s/\n//g;
 
@@ -310,15 +326,12 @@ sub SendMessage {
     return (1);
 }
 
-
-
 =head2 AddAttachments
 
 Takes any attachments to this transaction and attaches them to the message
 we're building.
 
 =cut
-
 
 sub AddAttachments {
     my $self = shift;
@@ -332,17 +345,20 @@ sub AddAttachments {
         FIELD => 'TransactionId',
         VALUE => $self->TransactionObj->Id
     );
+
     # Don't attach anything blank
     $attachments->LimitNotEmpty;
-    $attachments->OrderBy( FIELD => 'id');
+    $attachments->OrderBy( FIELD => 'id' );
 
     # We want to make sure that we don't include the attachment that's
     # being sued as the "Content" of this message"
     my $transaction_content_obj = $self->TransactionObj->ContentObj;
+
     # XXX: this is legacy check of content type looks quite incorrect
     # to me //ruz
-    if ( $transaction_content_obj && $transaction_content_obj->id
-         && $transaction_content_obj->ContentType =~ m{text/plain}i )
+    if (   $transaction_content_obj
+        && $transaction_content_obj->id
+        && $transaction_content_obj->ContentType =~ m{text/plain}i )
     {
         $attachments->Limit(
             ENTRYAGGREGATOR => 'AND',
@@ -355,11 +371,11 @@ sub AddAttachments {
     # attach any of this transaction's attachments
     my $seen_attachment = 0;
     while ( my $attach = $attachments->Next ) {
-        if (!$seen_attachment) {
-            $MIMEObj->make_multipart('mixed', Force => 1);
+        if ( !$seen_attachment ) {
+            $MIMEObj->make_multipart( 'mixed', Force => 1 );
             $seen_attachment = 1;
         }
-        $self->AddAttachment( $attach );
+        $self->AddAttachment($attach);
     }
 
 }
@@ -372,19 +388,21 @@ we're building.
 =cut
 
 sub AddAttachment {
-    my $self = shift;
-    my $attach = shift;
+    my $self    = shift;
+    my $attach  = shift;
     my $MIMEObj = shift || $self->TemplateObj->MIMEObj;
 
     $MIMEObj->attach(
         Type     => $attach->ContentType,
         Charset  => $attach->OriginalEncoding,
         Data     => $attach->OriginalContent,
-        Filename => defined ($attach->Filename) ? 
-          $self->MIMEEncodeString( $attach->Filename, RT->Config->Get('EmailOutputEncoding') )
-          :
-          undef,
-        'RT-Attachment:' => $self->TicketObj->Id."/".$self->TransactionObj->Id."/".$attach->id,
+        Filename => defined( $attach->Filename )
+        ? $self->MIMEEncodeString( $attach->Filename,
+            RT->Config->Get('EmailOutputEncoding') )
+        : undef,
+        'RT-Attachment:' => $self->TicketObj->Id . "/"
+            . $self->TransactionObj->Id . "/"
+            . $attach->id,
         Encoding => '-SUGGEST',
     );
 }
@@ -400,6 +418,7 @@ clean list by passing undef as argument.
 
 {
     my $list = [];
+
     sub AttachTickets {
         my $self = shift;
         $list = [ grep defined, @_ ] if @_;
@@ -432,20 +451,24 @@ is Create or Correspond.
 
 sub AddTicket {
     my $self = shift;
-    my $tid = shift;
+    my $tid  = shift;
 
     # XXX: we need a current user here, but who is current user?
-    my $attachs = RT::Attachments->new( $RT::SystemUser );
+    my $attachs   = RT::Attachments->new($RT::SystemUser);
     my $txn_alias = $attachs->TransactionAlias;
     $attachs->Limit( ALIAS => $txn_alias, FIELD => 'Type', VALUE => 'Create' );
-    $attachs->Limit( ALIAS => $txn_alias, FIELD => 'Type', VALUE => 'Correspond' );
-    $attachs->LimitByTicket( $tid );
+    $attachs->Limit(
+        ALIAS => $txn_alias,
+        FIELD => 'Type',
+        VALUE => 'Correspond'
+    );
+    $attachs->LimitByTicket($tid);
     $attachs->LimitNotEmpty;
     $attachs->OrderBy( FIELD => 'Created' );
 
     my $ticket_mime = MIME::Entity->build(
-        Type => 'multipart/mixed',
-        Top => 0,
+        Type        => 'multipart/mixed',
+        Top         => 0,
         Description => "ticket #$tid",
     );
     while ( my $attachment = $attachs->Next ) {
@@ -454,7 +477,7 @@ sub AddTicket {
     if ( $ticket_mime->parts ) {
         my $email_mime = $self->TemplateObj->MIMEObj;
         $email_mime->make_multipart;
-        $email_mime->add_part( $ticket_mime );
+        $email_mime->add_part($ticket_mime);
     }
     return;
 }
@@ -465,10 +488,8 @@ Record a transaction in RT with this outgoing message for future record-keeping 
 
 =cut
 
-
-
 sub RecordOutgoingMailTransaction {
-    my $self = shift;
+    my $self    = shift;
     my $MIMEObj = shift;
 
     my @parts = $MIMEObj->parts;
@@ -477,26 +498,28 @@ sub RecordOutgoingMailTransaction {
     foreach my $part (@parts) {
         my $attach = $part->head->get('RT-Attachment');
         if ($attach) {
-            $RT::Logger->debug("We found an attachment. we want to not record it.");
+            $RT::Logger->debug(
+                "We found an attachment. we want to not record it.");
             push @attachments, $attach;
         } else {
             $RT::Logger->debug("We found a part. we want to record it.");
             push @keep, $part;
         }
     }
-    $MIMEObj->parts(\@keep);
+    $MIMEObj->parts( \@keep );
     foreach my $attachment (@attachments) {
-        $MIMEObj->head->add('RT-Attachment', $attachment);
+        $MIMEObj->head->add( 'RT-Attachment', $attachment );
     }
 
     RT::I18N::SetMIMEEntityToEncoding( $MIMEObj, 'utf-8', 'mime_words_ok' );
 
-    my $transaction = RT::Transaction->new($self->TransactionObj->CurrentUser);
+    my $transaction
+        = RT::Transaction->new( $self->TransactionObj->CurrentUser );
 
-    # XXX: TODO -> Record attachments as references to things in the attachments table, maybe.
+# XXX: TODO -> Record attachments as references to things in the attachments table, maybe.
 
     my $type;
-    if ($self->TransactionObj->Type eq 'Comment') {
+    if ( $self->TransactionObj->Type eq 'Comment' ) {
         $type = 'CommentEmailRecord';
     } else {
         $type = 'EmailRecord';
@@ -513,10 +536,11 @@ sub RecordOutgoingMailTransaction {
         ActivateScrips => 0
     );
 
-    if( $id ) {
+    if ($id) {
         $self->{'OutgoingMailTransaction'} = $id;
     } else {
-        $RT::Logger->warning( "Could not record outgoing message transaction: $msg" );
+        $RT::Logger->warning(
+            "Could not record outgoing message transaction: $msg");
     }
     return $id;
 }
@@ -533,41 +557,46 @@ sub SetRTSpecialHeaders {
 
     $self->SetSubject();
     $self->SetSubjectToken();
-    $self->SetHeaderAsEncoding( 'Subject', RT->Config->Get('EmailOutputEncoding') )
-      if (RT->Config->Get('EmailOutputEncoding'));
+    $self->SetHeaderAsEncoding( 'Subject',
+        RT->Config->Get('EmailOutputEncoding') )
+        if ( RT->Config->Get('EmailOutputEncoding') );
     $self->SetReturnAddress();
     $self->SetReferencesHeaders();
 
-    unless ($self->TemplateObj->MIMEObj->head->get('Message-ID')) {
-      # Get Message-ID for this txn
-      my $msgid = "";
-      if ( my $msg = $self->TransactionObj->Message->First ) {
-        $msgid = $msg->GetHeader("RT-Message-ID")
-            || $msg->GetHeader("Message-ID")
-      }
+    unless ( $self->TemplateObj->MIMEObj->head->get('Message-ID') ) {
 
-      # If there is one, and we can parse it, then base our Message-ID on it
-      if ($msgid 
-          and $msgid =~ s/<(rt-.*?-\d+-\d+)\.(\d+)-\d+-\d+\@\QRT->Config->Get('Organization')\E>$/
+        # Get Message-ID for this txn
+        my $msgid = "";
+        if ( my $msg = $self->TransactionObj->Message->First ) {
+            $msgid = $msg->GetHeader("RT-Message-ID")
+                || $msg->GetHeader("Message-ID");
+        }
+
+        # If there is one, and we can parse it, then base our Message-ID on it
+        if (    $msgid
+            and $msgid
+            =~ s/<(rt-.*?-\d+-\d+)\.(\d+)-\d+-\d+\@\QRT->Config->Get('Organization')\E>$/
                          "<$1." . $self->TicketObj->id
                           . "-" . $self->ScripObj->id
                           . "-" . $self->ScripActionObj->{_Message_ID}
                           . "@" . RT->Config->Get('Organization') . ">"/eg
-          and $2 == $self->TicketObj->id) {
-        $self->SetHeader( "Message-ID" => $msgid );
-      } else {
-        $self->SetHeader(
-            'Message-ID' => RT::Interface::Email::GenMessageId(
-                Ticket => $self->TicketObj,
-                Scrip => $self->ScripObj,
-                ScripAction => $self->ScripActionObj
-            ),
-        );
-      }
+            and $2 == $self->TicketObj->id
+            )
+        {
+            $self->SetHeader( "Message-ID" => $msgid );
+        } else {
+            $self->SetHeader(
+                'Message-ID' => RT::Interface::Email::GenMessageId(
+                    Ticket      => $self->TicketObj,
+                    Scrip       => $self->ScripObj,
+                    ScripAction => $self->ScripActionObj
+                ),
+            );
+        }
     }
 
     $self->SetHeader( 'Precedence', "bulk" )
-      unless ( $self->TemplateObj->MIMEObj->head->get("Precedence") );
+        unless ( $self->TemplateObj->MIMEObj->head->get("Precedence") );
 
     $self->SetHeader( 'X-RT-Loop-Prevention', RT->Config->Get('rtname') );
     $self->SetHeader( 'RT-Ticket',
@@ -575,10 +604,10 @@ sub SetRTSpecialHeaders {
     $self->SetHeader( 'Managed-by',
         "RT $RT::VERSION (http://www.bestpractical.com/rt/)" );
 
-    # XXX, TODO: use /ShowUser/ShowUserEntry(or something like that) when it would be 
-    #            refactored into user's method.
-    if (my $email = $self->TransactionObj->CreatorObj->EmailAddress) {
-      $self->SetHeader( 'RT-Originator', $email );
+# XXX, TODO: use /ShowUser/ShowUserEntry(or something like that) when it would be
+#            refactored into user's method.
+    if ( my $email = $self->TransactionObj->CreatorObj->EmailAddress ) {
+        $self->SetHeader( 'RT-Originator', $email );
     }
 
 }
@@ -595,9 +624,10 @@ clean this list when blocking is not required anymore, pass undef to do this.
 
 {
     my $squelch = [];
+
     sub SquelchMailTo {
         my $self = shift;
-        if ( @_ ) {
+        if (@_) {
             $squelch = [ grep defined, @_ ];
         }
         return @$squelch;
@@ -618,7 +648,8 @@ sub RemoveInappropriateRecipients {
     my @types = qw/To Cc Bcc/;
 
     # Weed out any RT addresses. We really don't want to talk to ourselves!
-    @{ $self->{$_} } = RT::EmailParser::CullRTAddresses( "", @{ $self->{$_} } ) for (@types);
+    @{ $self->{$_} } = RT::EmailParser::CullRTAddresses( "", @{ $self->{$_} } )
+        for (@types);
 
     # If there are no recipients, don't try to send the message.
     # If the transaction has content and has the header RT-Squelch-Replies-To
@@ -633,20 +664,23 @@ sub RemoveInappropriateRecipients {
             # Default ("true") is to redistribute, for historical reasons.
 
             if ( !RT->Config->Get('RedistributeAutoGeneratedMessages') ) {
+
                 # Don't send to any watchers.
                 @{ $self->{$_} } = () for (@types);
                 $RT::Logger->info( $msgid
                         . " The incoming message was autogenerated. "
                         . "Not redistributing this message based on site configuration.\n"
                 );
-            } elsif ( RT->Config->Get('RedistributeAutoGeneratedMessages') eq 'privileged' ) {
+            } elsif ( RT->Config->Get('RedistributeAutoGeneratedMessages') eq
+                'privileged' )
+            {
 
                 # Only send to "privileged" watchers.
                 foreach my $type (@types) {
                     foreach my $addr ( @{ $self->{$type} } ) {
                         my $user = RT::User->new($RT::SystemUser);
                         $user->LoadByEmail($addr);
-                        push @blacklist, $addr if (!$user->Privileged);
+                        push @blacklist, $addr if ( !$user->Privileged );
                     }
                 }
                 $RT::Logger->info( $msgid
@@ -671,7 +705,8 @@ sub RemoveInappropriateRecipients {
     foreach my $person_to_yank (@blacklist) {
         $person_to_yank =~ s/\s//g;
         foreach my $type (@types) {
-            @{ $self->{$type} } = grep !/^\Q$person_to_yank\E$/, @{ $self->{$type} };
+            @{ $self->{$type} } = grep !/^\Q$person_to_yank\E$/,
+                @{ $self->{$type} };
         }
     }
 }
@@ -696,15 +731,14 @@ sub SetReturnAddress {
 
     if ( $args{'is_comment'} ) {
         $replyto = $self->TicketObj->QueueObj->CommentAddress
-          || RT->Config->Get('CommentAddress');
-    }
-    else {
+            || RT->Config->Get('CommentAddress');
+    } else {
         $replyto = $self->TicketObj->QueueObj->CorrespondAddress
-          || RT->Config->Get('CorrespondAddress');
+            || RT->Config->Get('CorrespondAddress');
     }
 
     unless ( $self->TemplateObj->MIMEObj->head->get('From') ) {
-        if (RT->Config->Get('UseFriendlyFromLine')) {
+        if ( RT->Config->Get('UseFriendlyFromLine') ) {
             my $friendly_name = $self->TransactionObj->CreatorObj->FriendlyName;
             if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
                 $friendly_name = $1;
@@ -715,13 +749,13 @@ sub SetReturnAddress {
                 'From',
                 sprintf(
                     RT->Config->Get('FriendlyFromLineFormat'),
-                    $self->MIMEEncodeString( $friendly_name,
-                        RT->Config->Get('EmailOutputEncoding') ),
+                    $self->MIMEEncodeString(
+                        $friendly_name, RT->Config->Get('EmailOutputEncoding')
+                    ),
                     $replyto
                 ),
             );
-        }
-        else {
+        } else {
             $self->SetHeader( 'From', $replyto );
         }
     }
@@ -746,7 +780,7 @@ sub SetHeader {
     chomp $val;
     chomp $field;
     $self->TemplateObj->MIMEObj->head->fold_length( $field, 10000 );
-    $self->TemplateObj->MIMEObj->head->replace( $field,     $val );
+    $self->TemplateObj->MIMEObj->head->replace( $field, $val );
     return $self->TemplateObj->MIMEObj->head->get($field);
 }
 
@@ -770,12 +804,10 @@ sub SetSubject {
     $message->RowsPerPage(1);
     if ( $self->{'Subject'} ) {
         $subject = $self->{'Subject'};
-    }
-    elsif ( my $first = $message->First ) {
+    } elsif ( my $first = $message->First ) {
         my $tmp = $first->GetHeader('Subject');
-        $subject = defined $tmp? $tmp: $self->TicketObj->Subject;
-    }
-    else {
+        $subject = defined $tmp ? $tmp : $self->TicketObj->Subject;
+    } else {
         $subject = $self->TicketObj->Subject();
     }
 
@@ -814,11 +846,10 @@ sub SetReferencesHeaders {
     my ( @in_reply_to, @references, @msgid );
 
     if ( my $top = $self->TransactionObj->Message->First ) {
-        @in_reply_to = split(/\s+/m, $top->GetHeader('In-Reply-To') || '');  
-        @references = split(/\s+/m, $top->GetHeader('References') || '' );  
-        @msgid = split(/\s+/m, $top->GetHeader('Message-ID') || ''); 
-    }
-    else {
+        @in_reply_to = split( /\s+/m, $top->GetHeader('In-Reply-To') || '' );
+        @references  = split( /\s+/m, $top->GetHeader('References')  || '' );
+        @msgid       = split( /\s+/m, $top->GetHeader('Message-ID')  || '' );
+    } else {
         return (undef);
     }
 
@@ -827,48 +858,49 @@ sub SetReferencesHeaders {
     # to the References and In-Reply-To.  OR it came from an outside
     # source, and we should treat it as per the RFC
     my $org = RT->Config->Get('Organization');
-    if ( "@msgid" =~ /<(rt-.*?-\d+-\d+)\.(\d+)-0-0\@\Q$org\E>/) {
+    if ( "@msgid" =~ /<(rt-.*?-\d+-\d+)\.(\d+)-0-0\@\Q$org\E>/ ) {
 
-      # Make all references which are internal be to version which we
-      # have sent out
+        # Make all references which are internal be to version which we
+        # have sent out
 
-      for (@references, @in_reply_to) {
-        s/<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>$/
+        for ( @references, @in_reply_to ) {
+            s/<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>$/
           "<$1." . $self->TicketObj->id .
              "-" . $self->ScripObj->id .
              "-" . $self->ScripActionObj->{_Message_ID} .
              "@" . $org . ">"/eg
-      }
+        }
 
-      # In reply to whatever the internal message was in reply to
-      $self->SetHeader( 'In-Reply-To', join( " ",  ( @in_reply_to )));
+        # In reply to whatever the internal message was in reply to
+        $self->SetHeader( 'In-Reply-To', join( " ", (@in_reply_to) ) );
 
-      # Default the references to whatever we're in reply to
-      @references = @in_reply_to unless @references;
+        # Default the references to whatever we're in reply to
+        @references = @in_reply_to unless @references;
 
-      # References are unchanged from internal
+        # References are unchanged from internal
     } else {
-      # In reply to that message
-      $self->SetHeader( 'In-Reply-To', join( " ",  ( @msgid )));
 
-      # Default the references to whatever we're in reply to
-      @references = @in_reply_to unless @references;
+        # In reply to that message
+        $self->SetHeader( 'In-Reply-To', join( " ", (@msgid) ) );
 
-      # Push that message onto the end of the references
-      push @references, @msgid;
+        # Default the references to whatever we're in reply to
+        @references = @in_reply_to unless @references;
+
+        # Push that message onto the end of the references
+        push @references, @msgid;
     }
 
     # Push pseudo-ref to the front
     my $pseudo_ref = $self->PseudoReference;
-    @references = ($pseudo_ref, grep { $_ ne $pseudo_ref } @references);
+    @references = ( $pseudo_ref, grep { $_ ne $pseudo_ref } @references );
 
     # If there are more than 10 references headers, remove all but the
     # first four and the last six (Gotta keep this from growing
     # forever)
-    splice(@references, 4, -6) if ($#references >= 10);
+    splice( @references, 4, -6 ) if ( $#references >= 10 );
 
     # Add on the references
-    $self->SetHeader( 'References', join( " ",   @references) );
+    $self->SetHeader( 'References', join( " ", @references ) );
     $self->TemplateObj->MIMEObj->head->fold_length( 'References', 80 );
 
 }
@@ -882,10 +914,12 @@ Returns a fake Message-ID: header for the ticket to allow a base level of thread
 sub PseudoReference {
 
     my $self = shift;
-    my $pseudo_ref =  '<RT-Ticket-'.$self->TicketObj->id .'@'.RT->Config->Get('Organization') .'>';
+    my $pseudo_ref
+        = '<RT-Ticket-'
+        . $self->TicketObj->id . '@'
+        . RT->Config->Get('Organization') . '>';
     return $pseudo_ref;
 }
-
 
 =head2 SetHeaderAsEncoding($field_name, $charset_encoding)
 
@@ -897,19 +931,19 @@ sub SetHeaderAsEncoding {
     my $self = shift;
     my ( $field, $enc ) = ( shift, shift );
 
-    if ($field eq 'From' and RT->Config->Get('SMTPFrom')) {
-        $self->TemplateObj->MIMEObj->head->replace( $field, RT->Config->Get('SMTPFrom') );
-	return;
+    if ( $field eq 'From' and RT->Config->Get('SMTPFrom') ) {
+        $self->TemplateObj->MIMEObj->head->replace( $field,
+            RT->Config->Get('SMTPFrom') );
+        return;
     }
 
     my $value = $self->TemplateObj->MIMEObj->head->get($field);
 
-    $value =  $self->MIMEEncodeString($value, $enc);
+    $value = $self->MIMEEncodeString( $value, $enc );
 
     $self->TemplateObj->MIMEObj->head->replace( $field, $value );
 
-
-} 
+}
 
 =head2 MIMEEncodeString STRING ENCODING
 
@@ -918,12 +952,14 @@ Takes a string and a possible encoding and returns the string wrapped in MIME go
 =cut
 
 sub MIMEEncodeString {
-    my  $self = shift;
+    my $self  = shift;
     my $value = shift;
+
     # using RFC2047 notation, sec 2.
     # encoded-word = "=?" charset "?" encoding "?" encoded-text "?="
-    my $charset = shift;
+    my $charset  = shift;
     my $encoding = 'B';
+
     # An 'encoded-word' may not be more than 75 characters long
     #
     # MIME encoding increases 4/3*(number of bytes), and always in multiples
@@ -932,15 +968,20 @@ sub MIMEEncodeString {
     #
     # First we get the integer max which max*4/3 would fit on space.
     # Then we find the greater multiple of 3 lower or equal than $max.
-    my $max = int(((75-length('=?'.$charset.'?'.$encoding.'?'.'?='))*3)/4);
-    $max = int($max/3)*3;
+    my $max = int(
+        (   ( 75 - length( '=?' . $charset . '?' . $encoding . '?' . '?=' ) )
+            * 3
+        ) / 4
+    );
+    $max = int( $max / 3 ) * 3;
 
     chomp $value;
 
     if ( $max <= 0 ) {
-      # gives an error...
-      $RT::Logger->crit("Can't encode! Charset or encoding too big.\n");
-      return ($value);
+
+        # gives an error...
+        $RT::Logger->crit("Can't encode! Charset or encoding too big.\n");
+        return ($value);
     }
 
     return ($value) unless $value =~ /[^\x20-\x7e]/;
@@ -948,11 +989,11 @@ sub MIMEEncodeString {
     $value =~ s/\s*$//;
 
     # we need perl string to split thing char by char
-    Encode::_utf8_on($value) unless Encode::is_utf8( $value );
+    Encode::_utf8_on($value) unless Encode::is_utf8($value);
 
-    my ($tmp, @chunks) = ('', ());
+    my ( $tmp, @chunks ) = ( '', () );
     while ( length $value ) {
-        my $char = substr($value, 0, 1, '');
+        my $char = substr( $value, 0, 1, '' );
         my $octets = Encode::encode( $charset, $char );
         if ( length($tmp) + length($octets) > $max ) {
             push @chunks, $tmp;
@@ -964,14 +1005,14 @@ sub MIMEEncodeString {
 
     # encode an join chuncks
     $value = join "\n ",
-               map encode_mimeword( $_, $encoding, $charset ), @chunks ;
-    return($value); 
+        map encode_mimeword( $_, $encoding, $charset ), @chunks;
+    return ($value);
 }
 
 eval "require RT::Action::SendEmail_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Vendor.pm});
+die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Vendor.pm} );
 eval "require RT::Action::SendEmail_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Local.pm});
+die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/SendEmail_Local.pm} );
 
 1;
 
