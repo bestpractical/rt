@@ -65,8 +65,8 @@ my @results;
 my @Types = 'DatabaseName';
 
 unless ( $RT::Installer->{InstallConfig}{DatabaseType} eq 'SQLite' ) {
-    push @Types, 'DatabaseHost', 'DatabasePort', 'DatabaseUser',
-         'DatabasePassword';
+    push @Types, 'DatabaseHost', 'DatabasePort', 'DatabaseAdmin',
+        'DatabaseAdminPassword', 'DatabaseUser', 'DatabasePassword';
 }
 if ( $RT::Installer->{InstallConfig}{DatabaseType} eq 'Pg' ) {
     push @Types, 'DatabaseRequireSSL';

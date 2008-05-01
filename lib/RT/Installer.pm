@@ -91,6 +91,20 @@ my %Meta = (
             Description => 'Name of the database',                          #loc
         },
     },
+    DatabaseAdmin => {
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => {
+            Description => 'DBA of the database',  #loc
+        },
+    },
+    DatabaseAdminPassword => {
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => {
+            Description =>
+              'DBA password of the database',  #loc
+            Type => 'password',
+        },
+    },
     DatabaseUser => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
