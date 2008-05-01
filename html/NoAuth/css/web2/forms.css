@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+
 form {
 
     background: none;
@@ -80,7 +81,7 @@ div.button-row {
 
 input[type=reset], input[type=submit], input[class=button] {
    color: #fff;
-   background: #183b83;
+   background: #336699;
    padding: 0.25em;
    padding-left: 0.5em;
    padding-right: 0.5em;
@@ -111,3 +112,4 @@ div.submit {
 div.submit .extra-buttons {
  text-align: left;
 }
+

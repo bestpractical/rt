@@ -45,6 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+
+
 /* body */
 
 body {
@@ -54,7 +56,7 @@ body {
     margin:0;
 
     background-color: #183b83;
-    background: #183b83 url(<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/background-gradient.png) top left repeat-x ;
+    background: #183b83 url(/NoAuth/css/web2/background-gradient.png) top left repeat-x ;
     font-family: helvetica, arial, sans-serif;
 
 }
@@ -117,12 +119,23 @@ div#body {
 div#footer {
  position: absolute;
  right: 0;
+  text-align: right;
  font-size: 0.8em;
  margin-top: 2em;
  background: #fff;
  margin-bottom: 0;
  padding-left: 3em;
  padding-right: 1em;
+
+
+
+
+
+ border-top: 2px solid #aaa;
+ border-left: 2px solid #aaa;
+
+
+
  -moz-border-radius-topleft: 0.5em;
  -webkit-border-top-left-radius: 0.5em;
  -moz-border-radius-bottomleft: 0.5em;
@@ -135,7 +148,7 @@ display: none ;
 
 div#footer #bpscredits {
  text-align: right;
- background: url(<%RT->Config->Get('WebImagesURL')%>/bplogo.gif) no-repeat top right;
+ background: url(/NoAuth/images//bplogo.gif) no-repeat top right;
  padding-top: 4em;
 } 
 
@@ -196,3 +209,5 @@ div#header h1 {
  padding: 0.25em;
  color: #fff;
 }
+
+
