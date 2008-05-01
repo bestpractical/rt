@@ -164,6 +164,17 @@ our %META = (
             },
         },
     },
+    DisableGraphViz => {
+        Type            => 'SCALAR',
+        PostLoadCheck   => sub {
+            my $value = shift;
+            return unless $value;
+            return if $INC{'GraphViz'};
+            local $@;
+            return if eval {require GraphViz; 1};
+            warn "You've enabled GraphViz, but we couldn't load the module: $@";
+        },
+    },
     MailPlugins         => {
         Type            => 'ARRAY'
     },
@@ -224,6 +235,7 @@ sub LoadConfigs
     my @configs = $self->Configs;
     $self->InitConfig( File => $_ ) foreach @configs;
     $self->LoadConfig( File => $_ ) foreach @configs;
+    $self->PostLoadCheck;
     return;
 }
 
@@ -330,6 +342,13 @@ EOF
         die "$errormessage\n$@";
     }
     return 1;
+}
+
+sub PostLoadCheck {
+    my $self = shift;
+    foreach my $o ( grep $META{$_}{'PostLoadCheck'}, $self->Options( Overridable => undef ) ) {
+        $META{$o}->{'PostLoadCheck'}->( $self->Get($o) );
+    }
 }
 
 =head2 Configs
