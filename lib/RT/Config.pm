@@ -168,11 +168,12 @@ our %META = (
         Type            => 'SCALAR',
         PostLoadCheck   => sub {
             my $value = shift;
-            return unless $value;
+            return if $value;
             return if $INC{'GraphViz'};
             local $@;
             return if eval {require GraphViz; 1};
             warn "You've enabled GraphViz, but we couldn't load the module: $@";
+            $self->Set( DisableGraphViz => 1 );
         },
     },
     MailPlugins         => {
@@ -210,6 +211,8 @@ sub _Init
 }
 
 =head2 InitConfig
+
+Do nothin right now.
 
 =cut
 
