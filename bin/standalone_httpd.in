@@ -105,5 +105,21 @@ EOF
 require RT::Interface::Web::Standalone;
 my $server = RT::Interface::Web::Standalone->new;
 $server->port($port);
-$server->run();
+eval { $server->run() };
+
+if (my $err = $@) {
+   if ($err =~ /bind: Permission denied/ && $port <= 1024) {
+        print STDERR <<EOF;
+
+RT couldn't start up a web server on port @{[$port]}. This is often the case 
+if you're running @{[$0]} as someone other than your system's "root" user.  
+For now, RT has picked a random alternate port to run on.
+
+EOF
+        $server->port( 8000 + int(rand(1024))) ;
+        $server->run;
+   } else {
+        die $err;
+   }
+}
 
