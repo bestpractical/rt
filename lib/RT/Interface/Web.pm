@@ -1264,6 +1264,8 @@ sub _ProcessObjectCustomFieldUpdates {
 
     my @results;
     foreach my $arg ( keys %{ $args{'ARGS'} } ) {
+        # skip category argument
+        next if $arg eq 'Category';
 
         # since http won't pass in a form element with a null value, we need
         # to fake it
