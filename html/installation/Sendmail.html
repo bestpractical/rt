@@ -58,7 +58,8 @@ Options below 'MailCommand' only take effect if MailCommand is 'sendmail' or 'se
     CurrentValue => RT::Installer->CurrentValues(@Types) &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Next: Initialize Database'), Back => 1,
+<& /Elements/Submit, Label => $RT::Installer->{DatabaseAction} eq 'none' ?
+loc('Next: Finish') : loc('Next: Initialize Database'), Back => 1,
     BackLabel => loc('Back: Customize Emails') &>
 </form>
 </&>
@@ -80,22 +81,22 @@ if ( $Run ) {
 
     unless ( @results ) {
 
+        my ( $status, $msg ) = RT::Installer->SaveConfig;
 
-        require File::Spec;
-        my $file = File::Spec->catfile($RT::EtcPath, 'RT_SiteConfig.pm');
+        if ( $status ) {
+            RT->LoadConfig;
 
-        if ( open my $fh, '>', $file  ) {
-            for ( keys %{$RT::Installer->{InstallConfig}} ) {
-                 print $fh "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
-            }
-            print $fh "1;\n";
-            close $fh;
-
-            RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+            if ( $RT::Installer->{DatabaseAction} ne 'none' ) {
+                RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'installation/Initialize.html');
+            }
+            else {
+                RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+'installation/Finish.html');
+            }
         }
         else {
-            push @results, "Can't open config file $file to write: $!";
+            push @results, $msg;
         }
     }
 }

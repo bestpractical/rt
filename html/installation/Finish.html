@@ -62,4 +62,25 @@ prevent it from being modified, `chmod -w etc/RT_SiteConfig.pm' will lock
 it as you want.
 </p>
 </div>
+
+<form method="post">
+<input type="hidden" value="1" name="Run" />
+<& /Elements/Submit, Label => 'Start RT Journey!' &>
+</form>
+
 </&>
+<%init>
+if ( $Run ) {
+    RT->InstallMode(0);
+    RT->LoadConfig;
+    RT->ConnectToDatabase();
+    RT->InitSystemObjects();
+    RT->InitClasses();
+    RT->InitPlugins();
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));
+}
+</%init>
+
+<%args>
+$Run => undef
+</%args>
