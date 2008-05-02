@@ -440,7 +440,7 @@ rt-email-dashboards - Send email dashboards
 
 =head1 SYNOPSIS
 
-    /opt/rt3/local/bin/rt-email-dashboards [options]
+    /opt/rt3/local/sbin/rt-email-dashboards [options]
 
 =head1 DESCRIPTION
 
@@ -456,7 +456,7 @@ are taken to be in the user's timezone if available, UTC otherwise.
 You'll need to have cron run this script every hour. Here's an example crontab
 entry to do this.
 
-    0 * * * * /usr/bin/perl /opt/rt3/local/bin/rt-email-dashboards
+    0 * * * * @PERL@ /opt/rt3/local/sbin/rt-email-dashboards
 
 This will run the script every hour on the hour. This may need some further
 tweaking to be run as the correct user.
