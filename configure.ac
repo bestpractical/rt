@@ -376,6 +376,7 @@ AC_CONFIG_FILES([
                  sbin/rt-setup-database
                  sbin/rt-test-dependencies
                  sbin/rt-send-digest
+                 sbin/rt-email-dashboards
                  sbin/rt-clean-sessions
                  sbin/rt-shredder
                  sbin/rt-validator
@@ -384,7 +385,6 @@ AC_CONFIG_FILES([
                  bin/mason_handler.scgi
                  bin/standalone_httpd
                  bin/rt-crontool
-                 bin/rt-email-dashboards
                  bin/rt-mailgate
                  bin/rt],
                 [chmod ug+x $ac_file]
