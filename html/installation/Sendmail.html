@@ -81,16 +81,10 @@ if ( $Run ) {
 
     unless ( @results ) {
 
-        require File::Spec;
-        my $file = File::Spec->catfile($RT::EtcPath, 'RT_SiteConfig.pm');
+        my ( $status, $msg ) = RT::Installer->SaveConfig;
 
-        if ( open my $fh, '>', $file  ) {
-            for ( keys %{$RT::Installer->{InstallConfig}} ) {
-                 print $fh "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
-            }
-            print $fh "1;\n";
-            close $fh;
-            RT->Config->LoadConfigs; #( File => $file );
+        if ( $status ) {
+            RT->LoadConfig;
 
             if ( $RT::Installer->{DatabaseAction} ne 'none' ) {
                 RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
@@ -102,7 +96,7 @@ if ( $Run ) {
             }
         }
         else {
-            push @results, "Can't open config file $file to write: $!";
+            push @results, $msg;
         }
     }
 }

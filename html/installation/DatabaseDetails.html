@@ -89,73 +89,69 @@ if ( $Run ) {
 'installation/DatabaseType.html');
     }
     
-    require File::Spec;
-    my $file = File::Spec->catfile($RT::EtcPath, 'RT_SiteConfig.pm');
-
-    if ( open my $fh, '>', $file  ) {
-        for ( keys %{$RT::Installer->{InstallConfig}} ) {
-             print $fh "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
-        }
-        print $fh "1;\n";
-        close $fh;
-        RT->LoadConfig;
-    }
-
-# dba connect systemdsn
-    my $dbh = DBI->connect(
-        RT::Handle->SystemDSN, $ARGS{DatabaseAdmin}, $ARGS{DatabaseAdminPassword}, { RaiseError => 0, PrintError => 0 },
-    );
-
-    if ( $dbh ) {
-        push @results, 'connect succeed!';
-        # dba connect dsn, which has table info
-        $dbh = DBI->connect(
-            RT::Handle->DSN, $ARGS{DatabaseAdmin}, $ARGS{DatabaseAdminPassword}, { RaiseError => 0, PrintError => 0 },
-        );
-
-        if ( $dbh ) {
-            # check if Tickets table exists
-            my $sth = $dbh->table_info('', '', 'Tickets', 'TABLE');
-            # get 'Tickets' if it exists
-            if ( ($sth->fetchrow_array)[2] ) {
-
-                $sth = $dbh->prepare('select id from Users where Name=?');
-                $sth->execute('RT_System'); 
-                if ( $sth->fetchrow_array ) {
-                    $RT::Installer->{DatabaseAction} = 'none';
-                    push @results, "Database $RT::DatabaseName seems complete,
-don't need to initialize any more.";
-                }
-                else {
-                    $RT::Installer->{DatabaseAction} = 'acl,coredata,insert';
-                    push @results, "Database $RT::DatabaseName already exists 
-and has RT tables in place, but does not contain RT's metadata. 'Initialize
-Database' later can use this existing db and tables and insert metadata, if this's ok, click 'Customize Baisc' below to go on customizing RT";
-                }
-            }
-            else {
-                $RT::Installer->{DatabaseAction} = 'schema,acl,coredata,insert';
-                push @results, "Database $RT::DatabaseName already exists, but
-does not contain RT's tables and metadata. 'Initialize Database' later can use
-this existing db and insert tables and metadata, if this's ok, click
-'Customize Baisc' below to go on customizing RT";
-            }
-
-        }
-        else {
-            $RT::Installer->{DatabaseAction} =
-'create,schema,acl,coredata,insert';
-        }
-    }
-    else {
-        $RT::Installer->{DatabaseAction} = 'error';
-        push @results, "Failed to connect: $DBI::errstr";
-    }
-
-    if ( $ARGS{Next} && $RT::Installer->{DatabaseAction} && $RT::Installer->{DatabaseAction} ne 'error' ) {
+    if ( $ARGS{Next} ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'installation/Basics.html');
     }
+
+    my ( $status, $msg ) = RT::Installer->SaveConfig;
+    if ( $status ) {
+        RT->LoadConfig;
+    # dba connect systemdsn
+        my $dbh = DBI->connect(
+            RT::Handle->SystemDSN, $ARGS{DatabaseAdmin}, $ARGS{DatabaseAdminPassword}, { RaiseError => 0, PrintError => 0 },
+        );
+    
+        if ( $dbh ) {
+            push @results, 'connect succeed!';
+            # dba connect dsn, which has table info
+            $dbh = DBI->connect(
+                RT::Handle->DSN, $ARGS{DatabaseAdmin}, $ARGS{DatabaseAdminPassword}, { RaiseError => 0, PrintError => 0 },
+            );
+    
+            if ( $dbh ) {
+                # check if Tickets table exists
+                my $sth = $dbh->table_info('', '', 'Tickets', 'TABLE');
+                # get 'Tickets' if it exists
+                if ( ($sth->fetchrow_array)[2] ) {
+    
+                    $sth = $dbh->prepare('select id from Users where Name=?');
+                    $sth->execute('RT_System'); 
+                    if ( $sth->fetchrow_array ) {
+                        $RT::Installer->{DatabaseAction} = 'none';
+                        push @results, "Database $RT::DatabaseName seems complete,
+    don't need to initialize any more.";
+                    }
+                    else {
+                        $RT::Installer->{DatabaseAction} = 'acl,coredata,insert';
+                        push @results, "Database $RT::DatabaseName already exists 
+    and has RT tables in place, but does not contain RT's metadata. 'Initialize
+    Database' later can use this existing db and tables and insert metadata, if this's ok, click 'Customize Baisc' below to go on customizing RT";
+                    }
+                }
+                else {
+                    $RT::Installer->{DatabaseAction} = 'schema,acl,coredata,insert';
+                    push @results, "Database $RT::DatabaseName already exists, but
+    does not contain RT's tables and metadata. 'Initialize Database' later can use
+    this existing db and insert tables and metadata, if this's ok, click
+    'Customize Baisc' below to go on customizing RT";
+                }
+    
+            }
+            else {
+                $RT::Installer->{DatabaseAction} =
+    'create,schema,acl,coredata,insert';
+            }
+        }
+        else {
+            $RT::Installer->{DatabaseAction} = 'error';
+            push @results, "Failed to connect: $DBI::errstr";
+        }
+    }
+    else {
+        push @results, $msg;
+    }
+
 
 }
 
