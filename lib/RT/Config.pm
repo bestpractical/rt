@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+#
+# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 package RT::Config;
@@ -99,13 +99,13 @@ recommended.
 
 our %META = (
     WebDefaultStylesheet => {
-        Section         => 'General', #loc
+        Section         => 'General',                #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Theme', #loc
-            # XXX: we need support for 'get values callback'
-            Values      => [qw(3.5-default 3.4-compat web2)],
+            Description => 'Theme',                  #loc
+                 # XXX: we need support for 'get values callback'
+            Values => [qw(3.5-default 3.4-compat web2)],
         },
     },
     DefaultSummaryRows => {
@@ -113,7 +113,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Number of search results', #loc
+            Description => 'Number of search results',    #loc
         },
     },
     MessageBoxWidth => {
@@ -121,7 +121,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Message box width', #loc
+            Description => 'Message box width',           #loc
         },
     },
     MessageBoxHeight => {
@@ -129,16 +129,17 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Message box height', #loc
+            Description => 'Message box height',          #loc
         },
     },
     MaxInlineBody => {
-        Section         => 'Ticket display', #loc
+        Section         => 'Ticket display',              #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Maximum inline message length', #loc
-            Hints => "Length in characters; Use '0' to show all messages inline, regardless of length" #loc
+            Description => 'Maximum inline message length',    #loc
+            Hints =>
+                "Length in characters; Use '0' to show all messages inline, regardless of length" #loc
         },
     },
     OldestTransactionsFirst => {
@@ -146,27 +147,43 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => 'Show oldest history first', #loc
+            Description => 'Show oldest history first',    #loc
         },
     },
-    DateTimeFormat      => {
-        Section         => 'Locale', #loc
+    DateTimeFormat => {
+        Section         => 'Locale',                       #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Date format', #loc
+            Description => 'Date format',                            #loc
             Values      => [qw(DefaultFormat RFC2822 ISO W3CDTF)],
             ValuesLabel => {
-                DefaultFormat => 'Tue Dec 25 21:59:12 1995', #loc
-                RFC2822       => 'Tue, 25 Dec 1995 21:59:12 -0300', #loc
-                ISO           => '1995-11-25 21:59:12', #loc
-                W3CDTF        => '1995-11-25T21:59:12Z', #loc
+                DefaultFormat => 'Tue Dec 25 21:59:12 1995',           #loc
+                RFC2822       => 'Tue, 25 Dec 1995 21:59:12 -0300',    #loc
+                ISO           => '1995-11-25 21:59:12',                #loc
+                W3CDTF        => '1995-11-25T21:59:12Z',               #loc
             },
         },
     },
+     EmailFrequency => {
+        Section         => 'Mail',                                     #loc
+        Overridable     => 1,
+            Default     => 'Individual messages',
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Email delivery',
+            Values      => [
+                'Individual messages',
+                'Daily digest',
+                'Weekly digest',
+                'Suspended'
+            ]
+            }
+            },
     DisableGraphViz => {
         Type            => 'SCALAR',
         PostLoadCheck   => sub {
+            my $self  = shift;
             my $value = shift;
             return if $value;
             return if $INC{'GraphViz'};
@@ -176,15 +193,9 @@ our %META = (
             $self->Set( DisableGraphViz => 1 );
         },
     },
-    MailPlugins         => {
-        Type            => 'ARRAY'
-    },
-    GnuPG               => {
-        Type            => 'HASH'
-    },
-    GnuPGOptions        => {
-        Type            => 'HASH'
-    },
+    MailPlugins  => { Type => 'ARRAY' },
+    GnuPG        => { Type => 'HASH' },
+    GnuPGOptions => { Type => 'HASH' },
 );
 my %OPTIONS = ();
 
@@ -196,17 +207,15 @@ Object constructor returns new object. Takes no arguments.
 
 =cut
 
-sub new
-{
+sub new {
     my $proto = shift;
-    my $class = ref($proto)? ref($proto): $proto;
-    my $self = bless {}, $class;
+    my $class = ref($proto) ? ref($proto) : $proto;
+    my $self  = bless {}, $class;
     $self->_Init(@_);
     return $self;
 }
 
-sub _Init
-{
+sub _Init {
     return;
 }
 
@@ -216,10 +225,9 @@ Do nothin right now.
 
 =cut
 
-sub InitConfig
-{
+sub InitConfig {
     my $self = shift;
-    my %args = (File => '', @_);
+    my %args = ( File => '', @_ );
     $args{'File'} =~ s/(?<=Config)(?=\.pm$)/Meta/;
     return 1;
 }
@@ -232,9 +240,8 @@ Takes no arguments.
 
 =cut
 
-sub LoadConfigs
-{
-    my $self = shift;
+sub LoadConfigs {
+    my $self    = shift;
     my @configs = $self->Configs;
     $self->InitConfig( File => $_ ) foreach @configs;
     $self->LoadConfig( File => $_ ) foreach @configs;
@@ -257,35 +264,34 @@ overriding you have to copy original value from core config file.
 
 =cut
 
-sub LoadConfig
-{
+sub LoadConfig {
     my $self = shift;
-    my %args = (File => '', @_);
+    my %args = ( File => '', @_ );
     $args{'File'} =~ s/(?<!Site)(?=Config\.pm$)/Site/;
-    if ($args{'File'} eq 'RT_SiteConfig.pm' and my $site_config = $ENV{RT_SITE_CONFIG}) {
+    if ( $args{'File'} eq 'RT_SiteConfig.pm'
+        and my $site_config = $ENV{RT_SITE_CONFIG} )
+    {
         $self->_LoadConfig( %args, File => $site_config );
-    }
-    else {
-        $self->_LoadConfig( %args );
+    } else {
+        $self->_LoadConfig(%args);
     }
     $args{'File'} =~ s/Site(?=Config\.pm$)//;
-    $self->_LoadConfig( %args );
+    $self->_LoadConfig(%args);
     return 1;
 }
 
-sub _LoadConfig
-{
+sub _LoadConfig {
     my $self = shift;
-    my %args = (File => '', @_);
+    my %args = ( File => '', @_ );
 
-    my $is_ext = $args{'File'} !~ /^RT_(?:Site)?Config/? 1: 0;
-    my $is_site = $args{'File'} =~ /SiteConfig/? 1: 0;
+    my $is_ext = $args{'File'} !~ /^RT_(?:Site)?Config/ ? 1 : 0;
+    my $is_site = $args{'File'} =~ /SiteConfig/ ? 1 : 0;
 
     eval {
         package RT;
         local *Set = sub(\[$@%]@) {
-            my ($opt_ref, @args) = @_;
-            my ($pack, $file, $line) = caller;
+            my ( $opt_ref, @args ) = @_;
+            my ( $pack, $file, $line ) = caller;
             return $self->SetFromConfig(
                 Option     => $opt_ref,
                 Value      => [@args],
@@ -296,30 +302,31 @@ sub _LoadConfig
                 Extension  => $is_ext,
             );
         };
-        local @INC = ($RT::LocalEtcPath, $RT::EtcPath, @INC);
+        local @INC = ( $RT::LocalEtcPath, $RT::EtcPath, @INC );
         require $args{'File'};
     };
-    if( $@ ) {
+    if ($@) {
         return 1 if $is_site && $@ =~ qr{^Can't locate \Q$args{File}};
         if ( $is_site || $@ !~ qr{^Can't locate \Q$args{File}} ) {
             die qq{Couldn't load RT config file $args{'File'}:\n\n$@};
         }
 
         my $username = getpwuid($>);
-        my $group = getgrgid($();
+        my $group    = getgrgid($();
 
-        my ($file_path, $fileuid, $filegid);
+        my ( $file_path, $fileuid, $filegid );
         foreach ( $RT::LocalEtcPath, $RT::EtcPath, @INC ) {
             my $tmp = File::Spec->catfile( $_, $args{File} );
-            ($fileuid,$filegid) = (stat( $tmp ))[4,5];
+            ( $fileuid, $filegid ) = ( stat($tmp) )[ 4, 5 ];
             if ( defined $fileuid ) {
                 $file_path = $tmp;
                 last;
             }
         }
-        unless ( $file_path ) {
-            die qq{Couldn't load RT config file $args{'File'} as user $username / group $group.\n}
-               .qq{The file couldn't be find in $RT::LocalEtcPath and $RT::EtcPath.\n$@};
+        unless ($file_path) {
+            die
+                qq{Couldn't load RT config file $args{'File'} as user $username / group $group.\n}
+                . qq{The file couldn't be find in $RT::LocalEtcPath and $RT::EtcPath.\n$@};
         }
 
         my $message = <<EOF;
@@ -338,10 +345,9 @@ You may need to put the webserver user in the appropriate group
 EOF
 
         my $fileusername = getpwuid($fileuid);
-        my $filegroup = getgrgid($filegid);
-        my $errormessage = sprintf($message,
-            $file_path, $fileusername, $filegroup, $filegroup
-        );
+        my $filegroup    = getgrgid($filegid);
+        my $errormessage = sprintf( $message,
+            $file_path, $fileusername, $filegroup, $filegroup );
         die "$errormessage\n$@";
     }
     return 1;
@@ -361,21 +367,20 @@ first, other configs are ordered by name.
 
 =cut
 
-sub Configs
-{
-    my $self = shift;
+sub Configs {
+    my $self    = shift;
     my @configs = ();
-    foreach my $path( $RT::LocalEtcPath, $RT::EtcPath ) {
-        my $mask = File::Spec->catfile($path, "*_Config.pm");
+    foreach my $path ( $RT::LocalEtcPath, $RT::EtcPath ) {
+        my $mask = File::Spec->catfile( $path, "*_Config.pm" );
         my @files = glob $mask;
         @files = grep !/^RT_Config\.pm$/,
-                 grep $_ && /^\w+_Config\.pm$/,
-                 map { s/^.*[\\\/]//; $_ } @files;
+            grep $_ && /^\w+_Config\.pm$/,
+            map { s/^.*[\\\/]//; $_ } @files;
         push @configs, @files;
     }
 
     @configs = sort @configs;
-    unshift(@configs, 'RT_Config.pm');
+    unshift( @configs, 'RT_Config.pm' );
 
     return @configs;
 }
@@ -383,6 +388,11 @@ sub Configs
 =head2 Get
 
 Takes name of the option as argument and returns its current value.
+
+In the case of a user-overridable option, first checks the user's preferences before looking for site-wide configuration.
+
+Returns values from RT_SiteConfig, RT_Config and then the %META hash of configuration variables's "Default" for this config variable, in that order.
+
 
 Returns different things in scalar and array contexts. For scalar
 options it's not that important, however for arrays and hash it's.
@@ -404,16 +414,17 @@ will result in C<(arg1 => 1, arg2 => 'element of option', 'another_one' => ..., 
 =cut
 
 sub Get {
-    my ($self, $name, $user) = @_;
+    my ( $self, $name, $user ) = @_;
 
     my $res;
-    if ( $user&& $user->id && $META{ $name }->{'Overridable'} ) {
+    if ( $user && $user->id && $META{$name}->{'Overridable'} ) {
         $user = $user->UserObj if $user->isa('RT::CurrentUser');
-        my $prefs = $user->Preferences( $RT::System );
-        $res = $prefs->{ $name } if $prefs;
+        my $prefs = $user->Preferences($RT::System);
+        $res = $prefs->{$name} if $prefs;
     }
-    $res = $OPTIONS{ $name } unless defined $res;
-    return $self->_ReturnValue($res, $META{ $name }->{'Type'} || 'SCALAR');
+    $res = $OPTIONS{$name}           unless defined $res;
+    $res = $META{$name}->{'Default'} unless defined $res;
+    return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
 }
 
 =head2 Set
@@ -428,128 +439,131 @@ scalar type.
 =cut
 
 sub Set {
-    my ($self, $name) = (shift, shift);
-    
-    my $old = $OPTIONS{ $name };
-    my $type = $META{ $name }->{'Type'} || 'SCALAR';
+    my ( $self, $name ) = ( shift, shift );
+
+    my $old = $OPTIONS{$name};
+    my $type = $META{$name}->{'Type'} || 'SCALAR';
     if ( $type eq 'ARRAY' ) {
-        $OPTIONS{$name} = [ @_ ];
-        { no strict 'refs';  @{"RT::$name"} = (@_); }
+        $OPTIONS{$name} = [@_];
+        { no strict 'refs'; @{"RT::$name"} = (@_); }
     } elsif ( $type eq 'HASH' ) {
-        $OPTIONS{$name} = { @_ };
-        { no strict 'refs';  %{"RT::$name"} = (@_); }
+        $OPTIONS{$name} = {@_};
+        { no strict 'refs'; %{"RT::$name"} = (@_); }
     } else {
         $OPTIONS{$name} = shift;
-        { no strict 'refs';  ${"RT::$name"} = $OPTIONS{$name}; }
+        { no strict 'refs'; ${"RT::$name"} = $OPTIONS{$name}; }
     }
     $META{$name}->{'Type'} = $type;
-    return $self->_ReturnValue($old, $type);
+    return $self->_ReturnValue( $old, $type );
 }
 
 sub _ReturnValue {
-    my ($self, $res, $type) = @_;
+    my ( $self, $res, $type ) = @_;
     return $res unless wantarray;
 
-    if( $type eq 'ARRAY' ) {
+    if ( $type eq 'ARRAY' ) {
         return @{ $res || [] };
-    } elsif( $type eq 'HASH' ) {
+    } elsif ( $type eq 'HASH' ) {
         return %{ $res || {} };
     }
     return $res;
 }
 
-sub SetFromConfig
-{
+sub SetFromConfig {
     my $self = shift;
     my %args = (
-        Option => undef,
-        Value => [],
-        Package => 'RT',
-        File => '',
-        Line => 0,
+        Option     => undef,
+        Value      => [],
+        Package    => 'RT',
+        File       => '',
+        Line       => 0,
         SiteConfig => 1,
-        Extension => 0,
+        Extension  => 0,
         @_
     );
 
     unless ( $args{'File'} ) {
-        ($args{'Package'}, $args{'File'}, $args{'Line'}) = caller(1);
+        ( $args{'Package'}, $args{'File'}, $args{'Line'} ) = caller(1);
     }
 
     my $opt = $args{'Option'};
 
     my $type;
-    my $name = $self->__GetNameByRef( $opt );
-    if( $name ) {
+    my $name = $self->__GetNameByRef($opt);
+    if ($name) {
         $type = ref $opt;
         $name =~ s/.*:://;
     } else {
         $name = $$opt;
-        $type = $META{ $name }->{'Type'} || 'SCALAR';
+        $type = $META{$name}->{'Type'} || 'SCALAR';
     }
 
-    return 1 if exists $OPTIONS{ $name } && !$args{'SiteConfig'};
+    return 1 if exists $OPTIONS{$name} && !$args{'SiteConfig'};
 
-    $META{ $name }->{'Type'} = $type;
-    foreach ( qw(Package File Line SiteConfig Extension) ) {
-        $META{ $name }->{'Source'}->{$_} = $args{$_};
+    $META{$name}->{'Type'} = $type;
+    foreach (qw(Package File Line SiteConfig Extension)) {
+        $META{$name}->{'Source'}->{$_} = $args{$_};
     }
     $self->Set( $name, @{ $args{'Value'} } );
 
     return 1;
 }
 
-{ my $last_pack = '';
-sub __GetNameByRef
 {
-    my $self = shift;
-    my $ref = shift;
-    my $pack = shift;
-    if ( !$pack && $last_pack ) {
-        my $tmp = $self->__GetNameByRef( $ref, $last_pack );
-        return $tmp if $tmp;
-    }
-    $pack ||= 'main::';
-    $pack .= '::' unless substr($pack, -2) eq '::';
+    my $last_pack = '';
 
-    my %ref_sym = (
-        SCALAR => '$',
-        ARRAY => '@',
-        HASH => '%',
-        CODE => '&',
-    );
-    no strict 'refs';
-    my $name = undef;
-    # scan $pack name table(hash)
-    foreach my $k( keys %{$pack} ) {
-        # hash for main:: has reference on itself
-        next if $k eq 'main::';
-
-        # if entry has trailing '::' then
-        # it is link to other name space
-        if ( $k =~ /::$/ ) {
-            $name = $self->__GetNameByRef($ref, $k);
-            return $name if $name;
+    sub __GetNameByRef {
+        my $self = shift;
+        my $ref  = shift;
+        my $pack = shift;
+        if ( !$pack && $last_pack ) {
+            my $tmp = $self->__GetNameByRef( $ref, $last_pack );
+            return $tmp if $tmp;
         }
+        $pack ||= 'main::';
+        $pack .= '::' unless substr( $pack, -2 ) eq '::';
 
-        # entry of the table with references to
-        # SCALAR, ARRAY... and other types with
-        # the same name
-        my $entry = ${$pack}{$k};
-        next unless $entry;
+        my %ref_sym = (
+            SCALAR => '$',
+            ARRAY  => '@',
+            HASH   => '%',
+            CODE   => '&',
+        );
+        no strict 'refs';
+        my $name = undef;
 
-        # get entry for type we are looking for
-        my $entry_ref = *{$entry}{ref($ref)};
-        next unless $entry_ref;
+        # scan $pack name table(hash)
+        foreach my $k ( keys %{$pack} ) {
 
-        # if references are equal then we've found
-        if( $entry_ref == $ref ) {
-            $last_pack = $pack;
-            return ($ref_sym{ref($ref)} || '*') . $pack . $k;
+            # hash for main:: has reference on itself
+            next if $k eq 'main::';
+
+            # if entry has trailing '::' then
+            # it is link to other name space
+            if ( $k =~ /::$/ ) {
+                $name = $self->__GetNameByRef( $ref, $k );
+                return $name if $name;
+            }
+
+            # entry of the table with references to
+            # SCALAR, ARRAY... and other types with
+            # the same name
+            my $entry = ${$pack}{$k};
+            next unless $entry;
+
+            # get entry for type we are looking for
+            my $entry_ref = *{$entry}{ ref($ref) };
+            next unless $entry_ref;
+
+            # if references are equal then we've found
+            if ( $entry_ref == $ref ) {
+                $last_pack = $pack;
+                return ( $ref_sym{ ref($ref) } || '*' ) . $pack . $k;
+            }
         }
+        return '';
     }
-    return '';
-} }
+}
 
 =head2 Metadata
 
@@ -559,25 +573,29 @@ sub __GetNameByRef
 =cut
 
 sub Meta {
-    return $META{$_[1]};
+    return $META{ $_[1] };
 }
 
 sub Sections {
     my $self = shift;
     my %seen;
     return sort
-           grep !$seen{$_}++,
-           map $_->{'Section'} || 'General',
-           values %META;
+        grep !$seen{$_}++,
+        map $_->{'Section'} || 'General',
+        values %META;
 }
 
 sub Options {
     my $self = shift;
     my %args = ( Section => undef, Overridable => 1, @_ );
-    my @res = sort keys %META;
-    @res = grep( ( $META{$_}->{'Section'} || 'General' ) eq $args{'Section'}, @res ) if defined $args{'Section'};
+    my @res  = sort keys %META;
+    @res = grep( ( $META{$_}->{'Section'} || 'General' ) eq $args{'Section'},
+        @res )
+        if defined $args{'Section'};
     if ( defined $args{'Overridable'} ) {
-        @res = grep( ( $META{$_}->{'Overridable'} || 0 ) == $args{'Overridable'}, @res );
+        @res
+            = grep( ( $META{$_}->{'Overridable'} || 0 ) == $args{'Overridable'},
+            @res );
     }
     return @res;
 }

@@ -418,6 +418,16 @@ Your new password is:
   {$NewPassword}
 }
     },
+
+	       {   Queue       => '0',
+		   Name        => 'Email Digest',    # loc
+		   Description => 'Email template for periodic notification digests',  # loc
+		   Content => q[Subject: RT Email Digest
+
+{ $Argument }
+],
+               },
+
 );
 # }}}
 
