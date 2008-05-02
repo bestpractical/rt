@@ -47,23 +47,23 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-  RT::FauxObject - an API for faux-objects
+  RT::SharedSetting - an API for settings that belong to an RT::User or RT::Group
 
 =head1 SYNOPSIS
 
-  use RT::FauxObject
+  use RT::SharedSetting
 
 =head1 DESCRIPTION
 
-  A FauxObject is an object that can belong to an RT::User or an RT::Group. It
-  consists of an ID, a name, and some arbitrary data.
+  A SharedSetting is an object that can belong to an RT::User or an RT::Group.
+  It consists of an ID, a name, and some arbitrary data.
 
 =head1 METHODS
 
 
 =cut
 
-package RT::FauxObject;
+package RT::SharedSetting;
 use strict;
 use warnings;
 use RT::Attribute;
@@ -81,7 +81,7 @@ sub new  {
 
 =head2 Load
 
-Takes a privacy specification, an object ID, and a faux-object ID.  Loads the
+Takes a privacy specification, an object ID, and a shared-setting ID.  Loads the
 given object ID if it belongs to the stated user or group.  Calls the PostLoad
 method on success for any further initialization. Returns a tuple of status and
 message, where status is true on success.
@@ -163,9 +163,9 @@ sub Save {
 
 =head2 Update
 
-Updates the parameters of an existing faux-object. Any arguments are passed to
-the UpdateAttribute method. Returns a tuple of status and message, where status
-is true on success. 
+Updates the parameters of an existing shared setting. Any arguments are passed
+to the UpdateAttribute method. Returns a tuple of status and message, where
+status is true on success. 
 
 =cut
 
@@ -191,8 +191,8 @@ sub Update {
 
 =head2 Delete
     
-Deletes the existing faux-object. Returns a tuple of status and message, where
-status is true upon success.
+Deletes the existing shared setting. Returns a tuple of status and message,
+where status is true upon success.
 
 =cut
 
@@ -211,7 +211,7 @@ sub Delete {
 
 =head2 Name
 
-Returns the name of this faux-object.
+Returns the name of this shared setting.
 
 =cut
 
@@ -223,7 +223,7 @@ sub Name {
 
 =head2 Id
 
-Returns the numerical ID of this faux-object.
+Returns the numerical ID of this shared setting.
 
 =cut
 
@@ -234,7 +234,7 @@ sub Id {
 
 =head2 Privacy
 
-Returns the principal object to whom this faux-object belongs, in a string
+Returns the principal object to whom this shared setting belongs, in a string
 "<class>-<id>", e.g. "RT::Group-16".
 
 =cut
@@ -244,10 +244,10 @@ sub Privacy {
     return $self->{'Privacy'};
 }
 
-eval "require RT::FauxObject_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/FauxObject_Vendor.pm});
-eval "require RT::FauxObject_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/FauxObject_Local.pm});
+eval "require RT::SharedSetting_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/SharedSetting_Vendor.pm});
+eval "require RT::SharedSetting_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/SharedSetting_Local.pm});
 
 1;
 

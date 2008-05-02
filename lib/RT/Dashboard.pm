@@ -70,7 +70,7 @@ use RT::SavedSearch;
 
 use strict;
 use warnings;
-use base qw/RT::FauxObject/;
+use base qw/RT::SharedSetting/;
 
 my %new_rights = (
     ModifyDashboard    => 'Create and modify dashboards', #loc_pair
