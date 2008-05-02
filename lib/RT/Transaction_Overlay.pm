@@ -1103,54 +1103,7 @@ sub CustomFieldLookupType {
     "RT::Queue-RT::Ticket-RT::Transaction";
 }
 
-
-=item DeferredRecipients($freq, $include_sent )
-
-Takes the following arguments:
-
-=over
-
-=item * a string to indicate the frequency of digest delivery.  Valid values are "daily", "weekly", or "susp".
-
-=item * an optional argument which, if true, will return addresses even if this notification has been marked as 'sent' for this transaction.
-
-=back
-
-Returns an array of users who should now receive the notification that
-was recorded in this transaction.  Returns an empty array if there were
-no deferred users, or if $include_sent was not specified and the deferred
-notifications have been sent.
-
-=cut
-
-sub DeferredRecipients {
-    my $self = shift;
-    my $freq = shift;
-    my $include_sent = @_? shift : 0;
-
-    my $attr = $self->FirstAttribute('DeferredRecipients');
-
-    return () unless ($attr);
-
-    my $deferred = $attr->Content;
-
-    return () unless ( ref($deferred) eq 'HASH' && exists $deferred->{$freq} );
-
-    # Skip it.
-   
-    for my $user (keys %{$deferred->{$freq}}) {
-        if ($deferred->{$freq}->{$user}->{_sent} && !$include_sent) { 
-        delete $deferred->{$freq}->{$user} 
-    } 
-    }
-    # Now get our users.  Easy.
-    
-    return keys %{ $deferred->{$freq} };
-}
-
-
-
-# Transactions don't change. by adding this cache config directive, we don't lose pathalogically on long tickets.
+# Transactions don't change. by adding this cache congif directiove, we don't lose pathalogically on long tickets.
 sub _CacheConfig {
   {
      'cache_p'        => 1,

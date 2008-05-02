@@ -63,7 +63,6 @@ our $VERSION = '@RT_VERSION_MAJOR@.@RT_VERSION_MINOR@.@RT_VERSION_PATCH@';
 our $BasePath = '@RT_PATH@';
 our $EtcPath = '@RT_ETC_PATH@';
 our $BinPath = '@RT_BIN_PATH@';
-our $SbinPath = '@RT_SBIN_PATH@';
 our $VarPath = '@RT_VAR_PATH@';
 our $LocalPath = '@RT_LOCAL_PATH@';
 our $LocalEtcPath = '@LOCAL_ETC_PATH@';
@@ -104,7 +103,7 @@ unless (  File::Spec->file_name_is_absolute($EtcPath) ) {
             File::Spec->catfile( $pm_path, File::Spec->updir ) );
     }
 
-    for my $path ( qw/EtcPath BinPath SbinPath VarPath LocalPath LocalEtcPath
+    for my $path ( qw/EtcPath BinPath VarPath LocalPath LocalEtcPath
             LocalLibPath LocalLexiconPath LocalPluginPath MasonComponentRoot
             MasonLocalComponentRoot MasonDataDir MasonSessionDir/ ) {
         no strict 'refs';

@@ -66,15 +66,27 @@
 
 package RT::Dashboard;
 
+use RT::Base;
+use RT::Attribute;
 use RT::SavedSearch;
 
 use strict;
 use warnings;
-use base qw/RT::FauxObject/;
+use base qw/RT::Base/;
+
+sub new  {
+    my $proto = shift;
+    my $class = ref($proto) || $proto;
+    my $self  = {};
+    $self->{'Id'} = 0;
+    bless ($self, $class);
+    $self->CurrentUser(@_);
+    return $self;
+}
 
 my %new_rights = (
-    ModifyDashboard    => 'Create and modify dashboards', #loc_pair
-    SubscribeDashboard => 'Subscribe to email dashboards', #loc_pair
+    ModifyDashboard    => 'Create and modify dashboards',
+    SubscribeDashboard => 'Subscribe to email dashboards',
 );
 
 use RT::System;
@@ -82,42 +94,183 @@ $RT::System::RIGHTS = { %$RT::System::RIGHTS, %new_rights };
 %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
                                   map { lc($_) => $_ } keys %new_rights);
 
-=head2 ObjectName
+=head2 Load
 
-An object of this class is called "dashboard"
+Takes a privacy specification, an object ID, and a dashboard ID.  Loads
+the given dashboard ID if it belongs to the stated user or group.
+Returns a tuple of status and message, where status is true on
+success.
 
 =cut
 
-sub ObjectName { "dashboard" }
+sub Load {
+    my $self = shift;
+    my ($privacy, $id) = @_;
+    my $object = $self->_GetObject($privacy);
 
-sub SaveAttribute {
-    my $self   = shift;
-    my $object = shift;
-    my $args   = shift;
+    if ($object) {
+	$self->{'Attribute'} = $object->Attributes->WithId($id);
+	if ($self->{'Attribute'}->Id) {
+	    $self->{'Id'} = $self->{'Attribute'}->Id;
+	    $self->{'Privacy'} = $privacy;
+	    return (1, $self->loc("Loaded dashboard [_1]", $self->Name));
+	} else {
+	    $RT::Logger->error("Could not load attribute " . $id
+			       . " for object " . $privacy);
+	    return (0, $self->loc("Dashboard attribute load failure"));
+	}
+    } else {
+	$RT::Logger->warning("Could not load object $privacy when loading dashboard");
+	return (0, $self->loc("Could not load object for [_1]", $privacy));
+    }
 
-    return $object->AddAttribute(
-        'Name'        => 'Dashboard',
-        'Description' => $args{'Name'},
-        'Content'     => {Searches => $args{'Searches'}},
-    );
 }
 
-sub UpdateAttribute {
-    my $self = shift;
-    my $args = shift;
+=head2 Save
 
-    my ($status, $msg) = (1, undef);
-    if (defined $args->{'Searches'}) {
-        ($status, $msg) = $self->{'Attribute'}->SetSubValues(
-            Searches => $args->{'Searches'},
+Takes a privacy, a name, and an arrayref containing an arrayref of saved
+searches and their names. Saves the given parameters to the appropriate user/
+group object, and loads the resulting dashboard. Returns a tuple of status and
+message, where status is true on success. Defaults are:
+  Privacy:  undef
+  Name:     "new dashboard"
+  Searches: (empty array)
+
+=cut
+
+sub Save {
+    my $self = shift;
+    my %args = ('Privacy' => 'RT::User-' . $self->CurrentUser->Id,
+		'Name' => 'new dashboard',
+		'Searches' => [],
+		@_);
+    my $privacy = $args{'Privacy'};
+    my $name = $args{'Name'};
+    my @params = @{$args{'Searches'} || []};
+
+    my $object = $self->_GetObject($privacy);
+
+    return (0, $self->loc("Failed to load object for [_1]", $privacy))
+        unless $object;
+
+    if ( $object->isa('RT::System') ) {
+        return (0, $self->loc("No permission to save system-wide dashboards"))
+            unless $self->CurrentUser->HasRight(
+            Object => $RT::System,
+            Right  => 'SuperUser'
         );
     }
 
-    if ($status && $args->{'Name'}) {
-        ($status, $msg) = $self->{'Attribute'}->SetDescription($args->{'Name'});
+    my ( $att_id, $att_msg ) = $object->AddAttribute(
+        'Name'        => 'Dashboard',
+        'Description' => $name,
+        'Content'     => {Searches => \@params},
+    );
+    if ($att_id) {
+        $self->{'Attribute'} = $object->Attributes->WithId($att_id);
+        $self->{'Id'}        = $att_id;
+        $self->{'Privacy'}   = $privacy;
+        return ( 1, $self->loc( "Saved dashboard [_1]", $name ) );
+    }
+    else {
+        $RT::Logger->error("Dashboard save failure: $att_msg");
+        return ( 0, $self->loc("Failed to create dashboard attribute") );
+    }
+}
+
+=head2 Update
+
+Updates the parameters of an existing dashboard. Takes the arguments "Name" and
+"Searches"; Searches should be an arrayref of arrayrefs of saved searches. If
+Searches or Name is not specified, then they will not be changed.
+
+=cut
+
+sub Update {
+    my $self = shift;
+    my %args = ('Name' => '',
+		@_);
+ 
+    return(0, $self->loc("No dashboard loaded")) unless $self->Id;
+    return(0, $self->loc("Could not load dashboard attribute"))
+        unless $self->{'Attribute'}->Id;
+
+    my ($status, $msg) = (1, undef);
+    if (defined $args{'Searches'}) {
+        ($status, $msg) = $self->{'Attribute'}->SetSubValues(
+            Searches => $args{'Searches'},
+        );
     }
 
-    return ($status, $msg);
+    if ($status && $args{'Name'}) {
+        ($status, $msg) = $self->{'Attribute'}->SetDescription($args{'Name'});
+    }
+
+    return (1, $self->loc("Dashboard update: Nothing changed"))
+        if !defined $msg;
+
+    # prevent useless warnings
+    if ($msg =~ /That is already the current value/) {
+        return (1, $self->loc("Dashboard updated"));
+    }
+
+    return ($status, $self->loc("Dashboard update: [_1]", $msg));
+}
+
+=head2 Delete
+    
+Deletes the existing dashboard.  Returns a tuple of status and message,
+where status is true upon success.
+
+=cut
+
+sub Delete {
+    my $self = shift;
+
+    my ($status, $msg) = $self->{'Attribute'}->Delete;
+    if ($status) {
+	return (1, $self->loc("Deleted dashboard"));
+    } else {
+	return (0, $self->loc("Delete failed: [_1]", $msg));
+    }
+}
+	
+
+### Accessor methods
+
+=head2 Name
+
+Returns the name of the dashboard.
+
+=cut
+
+sub Name {
+    my $self = shift;
+    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
+    return $self->{'Attribute'}->Description();
+}
+
+=head2 Id
+
+Returns the numerical id of this dashboard.
+
+=cut
+
+sub Id {
+     my $self = shift;
+     return $self->{'Id'};
+}
+
+=head2 Privacy
+
+Returns the principal object to whom this dashboard belongs, in a string
+"<class>-<id>", e.g. "RT::Group-16".
+
+=cut
+
+sub Privacy {
+    my $self = shift;
+    return $self->{'Privacy'};
 }
 
 =head2 Searches

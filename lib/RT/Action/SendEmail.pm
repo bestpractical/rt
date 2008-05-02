@@ -104,8 +104,6 @@ activated in the config.
 sub Commit {
     my $self = shift;
 
-
-    $self->DeferDigestRecipients() if RT->Config->Get('RecordOutgoingEmail');
     my $message = $self->TemplateObj->MIMEObj;
 
     my $orig_message;
@@ -141,10 +139,7 @@ sub Commit {
             );
         }
         $self->RecordOutgoingMailTransaction($message);
-        $self->RecordDeferredRecipients();
     }
-
-
     return ( abs $ret );
 }
 
@@ -248,7 +243,7 @@ Returns an array of L<Mail::Address> objects containing all the To: recipients f
 
 sub To {
     my $self = shift;
-    return ( $self->AddressesFromHeader('To') );
+    return ( $self->_AddressesFromHeader('To') );
 }
 
 =head2 Cc
@@ -259,7 +254,7 @@ Returns an array of L<Mail::Address> objects containing all the Cc: recipients f
 
 sub Cc {
     my $self = shift;
-    return ( $self->AddressesFromHeader('Cc') );
+    return ( $self->_AddressesFromHeader('Cc') );
 }
 
 =head2 Bcc
@@ -270,11 +265,11 @@ Returns an array of L<Mail::Address> objects containing all the Bcc: recipients 
 
 sub Bcc {
     my $self = shift;
-    return ( $self->AddressesFromHeader('Bcc') );
+    return ( $self->_AddressesFromHeader('Bcc') );
 
 }
 
-sub AddressesFromHeader {
+sub _AddressesFromHeader {
     my $self      = shift;
     my $field     = shift;
     my $header    = $self->TemplateObj->MIMEObj->head->get($field);
@@ -313,23 +308,13 @@ sub SendMessage {
         Ticket      => $self->TicketObj,
         Transaction => $self->TransactionObj,
     );
-
-     
-    return $status unless ($status > 0 || exists ($self->{'Deferred'}));;
+    return $status unless $status > 0;
 
     my $success = $msgid . " sent ";
     foreach (@EMAIL_RECIPIENT_HEADERS) {
         my $recipients = $MIMEObj->head->get($_);
         $success .= " $_: " . $recipients if $recipients;
     }
-	
-    
-    if( exists $self->{'Deferred'} ) {
-        for (qw(daily weekly susp)) {
-            $success .= "\nBatched email $_ for: ". join(", ",keys % {$self->{'Deferred'}->{$_}} ) if (exists $self->{'Deferred'}->{$_});
-        }
-    }
-
     $success =~ s/\n//g;
 
     $RT::Logger->info($success);
@@ -621,98 +606,6 @@ sub SetRTSpecialHeaders {
         $self->SetHeader( 'RT-Originator', $email );
     }
 
-}
-
-
-sub DeferDigestRecipients {
-    my $self = shift;
-    $RT::Logger->debug( "Calling SetRecipientDigests for transaction " . $self->TransactionObj . ", id " . $self->TransactionObj->id );
-
-    # The digest attribute will be an array of notifications that need to
-    # be sent for this transaction.  The array will have the following
-    # format for its objects.
-    # $digest_hash -> {daily|weekly|susp} -> address -> {To|Cc|Bcc}
-    #                                     -> sent -> {true|false}
-    # The "sent" flag will be used by the cron job to indicate that it has
-    # run on this transaction.
-    # In a perfect world we might move this hash construction to the
-    # extension module itself.
-    my $digest_hash = {};
-
-    foreach my $mailfield (@EMAIL_RECIPIENT_HEADERS) {
-        $RT::Logger->debug( "Working on mailfield $mailfield; recipients are " . join( ',', @{ $self->{$mailfield} } ) );
-
-        # Store the 'daily digest' folk in an array.
-        my ( @send_now, @daily_digest, @weekly_digest, @suspended );
-
-        # Have to get the list of addresses directly from the MIME header
-        # at this point.
-        $RT::Logger->debug( $self->TemplateObj->MIMEObj->head->as_string );
-        foreach my $rcpt ( map { $_->address } $self->AddressesFromHeader($mailfield) ) {
-            next unless $rcpt;
-            my $user_obj = RT::User->new($RT::SystemUser);
-            $user_obj->LoadByEmail($rcpt);
-            if  ( ! $user_obj->id ) {
-                # If there's an email address in here without an associated
-                # RT user, pass it on through.
-                $RT::Logger->debug( "User $rcpt is not associated with an RT user object.  Send mail.");
-                push( @send_now, $rcpt );
-                next;
-            }
-
-            my $mailpref = RT->Config->Get( 'EmailFrequency', $user_obj ) || '';
-            $RT::Logger->debug( "Got user mail preference '$mailpref' for user $rcpt");
-
-            if ( $mailpref =~ /daily/i ) { push( @daily_digest, $rcpt ) }
-            elsif ( $mailpref =~ /weekly/i ) { push( @weekly_digest, $rcpt ) }
-            elsif ( $mailpref =~ /suspend/i ) { push( @suspended, $rcpt ) }
-            else { push( @send_now, $rcpt ) }
-        }
-
-        # Reset the relevant mail field.
-        $RT::Logger->debug( "Removing deferred recipients from $mailfield: line");
-        if (@send_now) {
-            $self->SetHeader( $mailfield, join( ', ', @send_now ) );
-        } else {    # No recipients!  Remove the header.
-            $self->TemplateObj->MIMEObj->head->delete($mailfield);
-        }
-
-        # Push the deferred addresses into the appropriate field in
-        # our attribute hash, with the appropriate mail header.
-        $RT::Logger->debug(
-            "Setting deferred recipients for attribute creation");
-        $digest_hash->{'daily'}->{$_} = {'header' => $mailfield , _sent => 0}  for (@daily_digest);
-        $digest_hash->{'weekly'}->{$_} ={'header' =>  $mailfield, _sent => 0}  for (@weekly_digest);
-        $digest_hash->{'susp'}->{$_} = {'header' => $mailfield, _sent =>0 }  for (@suspended);
-    }
-
-    if ( scalar keys %$digest_hash ) {
-
-        # Save the hash so that we can add it as an attribute to the
-        # outgoing email transaction.
-        $self->{'Deferred'} = $digest_hash;
-    } else {
-        $RT::Logger->debug( "No recipients found for deferred delivery on "
-                . "transaction #"
-                . $self->TransactionObj->id );
-    }
-}
-
-
-    
-sub  RecordDeferredRecipients {
-	my $self = shift;
-	my $txn_id = $self->{'OutgoingMailTransaction'};
-	return unless $txn_id;
-	
-	my $txn_obj = RT::Transaction->new( $self->CurrentUser );
-	$txn_obj->Load( $txn_id );
-    my( $ret, $msg ) = $txn_obj->AddAttribute( Name => 'DeferredRecipients',
-					      Content => $self->{'Deferred'});
-	$RT::Logger->warning( "Unable to add deferred recipients to outgoing transaction: $msg" ) 
-	    unless $ret;
-
-        return ($ret,$msg);
 }
 
 =head2 SquelchMailTo [@ADDRESSES]

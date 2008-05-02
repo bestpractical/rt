@@ -62,6 +62,7 @@
 
 <%init>
 my @results;
+push @results, 'Connected Database with success!' unless $RT::Installer->{InstallConfig}{DatabaseType} eq 'SQLite';
 
 my @Types = qw/rtname Organization MinimumPasswordLength Timezone/;
 
@@ -81,8 +82,8 @@ if ( $Run ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'installation/DatabaseDetails.html');
     }
-
-    unless ( @results ) {
+    if ( $RT::Installer->{InstallConfig}{DatabaseType} eq 'SQLite' ?
+            @results == 0 : @results == 1 ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'installation/Emails.html');
     }
