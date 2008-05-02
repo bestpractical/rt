@@ -106,7 +106,7 @@ sub Load {
             return (0, $self->loc("[_1] attribute load failure", ucfirst($self->ObjectName)));
         }
     } else {
-        $RT::Logger->warning("Could not load object $privacy when loading " . $self->OBjectName);
+        $RT::Logger->warning("Could not load object $privacy when loading " . $self->ObjectName);
         return (0, $self->loc("Could not load object for [_1]", $privacy));
     }
 }
