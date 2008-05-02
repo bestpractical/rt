@@ -91,8 +91,8 @@ sub SaveAttribute {
 
     return $object->AddAttribute(
         'Name'        => 'SavedSearch',
-        'Description' => $args{'Name'},
-        'Content'     => $args{'SearchParams'},
+        'Description' => $args->{'Name'},
+        'Content'     => $args->{'SearchParams'},
     );
 }
 
