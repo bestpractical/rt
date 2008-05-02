@@ -453,7 +453,8 @@ sbin-install:
 bin-install:
 	mkdir -p $(DESTDIR)/$(RT_BIN_PATH)
 	chmod +x bin/rt-mailgate \
-		bin/rt-crontool
+		bin/rt-crontool \
+		bin/rt-email-dashboards
 	-cp -rp \
 		bin/rt-mailgate \
 		bin/mason_handler.fcgi \
@@ -463,6 +464,7 @@ bin-install:
 		bin/rt \
 		bin/webmux.pl \
 		bin/rt-crontool \
+		bin/rt-email-dashboards \
 		$(DESTDIR)/$(RT_BIN_PATH)
 # }}}
 
