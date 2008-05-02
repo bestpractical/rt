@@ -1,0 +1,506 @@
+#!@PERL@
+# BEGIN BPS TAGGED BLOCK {{{
+# 
+# COPYRIGHT:
+#  
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+#                                          <jesse@bestpractical.com>
+# 
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
+# 
+# 
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+# fix lib paths, some may be relative
+BEGIN {
+    require File::Spec;
+    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            require FindBin;
+            no warnings "once";
+            $lib =
+              File::Spec->catfile( $FindBin::Bin, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
+
+use RT;
+use RT::Interface::Web;
+use RT::Interface::Web::Handler;
+use RT::Dashboard;
+use RT::Interface::CLI qw{ CleanEnv loc };
+
+use Getopt::Long;
+use HTML::Mason;
+use HTML::RewriteAttributes::Resources;
+use HTML::RewriteAttributes::Links;
+use MIME::Types;
+use POSIX 'tzset';
+
+# Clean out all the nasties from the environment
+CleanEnv();
+
+# Load the config file
+RT::LoadConfig();
+
+# Connect to the database and get RT::SystemUser and RT::Nobody loaded
+RT::Init();
+
+$HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
+
+no warnings 'once';
+
+# Read in the options
+my %opts;
+GetOptions( \%opts,
+    "help", "dryrun", "verbose", "vverbose", "epoch=i", "all", "skip-acl"
+);
+
+if ($opts{'help'}) {
+    require Pod::Usage;
+    import Pod::Usage;
+    pod2usage(-message => "RT Email Dashboards\n", -verbose => 1);
+    exit 1;
+}
+
+# helper functions
+sub verbose  { print loc(@_), "\n" if $opts{verbose} || $opts{vverbose}; 1 }
+sub vverbose { print loc(@_), "\n" if $opts{vverbose}; 1 }
+sub error    { $RT::Logger->error(loc(@_)); verbose(@_); 1 }
+sub warning  { $RT::Logger->warning(loc(@_)); verbose(@_); 1 }
+
+my $now = $opts{epoch} || time;
+verbose "Using time [_1]", scalar localtime($now);
+
+my $from = get_from();
+vverbose "Sending email from [_1]", $from;
+
+# look through each user for her subscriptions
+my $Users = RT::Users->new($RT::SystemUser);
+while (defined(my $user = $Users->Next)) {
+    if ($user->PrincipalObj->Disabled) {
+        vverbose "Skipping over "
+               . $user->Name
+               . " due to having a disabled account.";
+        next;
+    }
+
+    unless (email_of($user)) {
+        vverbose "Skipping over "
+               . $user->Name
+               . " due to lack of EmailAddress.";
+        next;
+    }
+
+    if (!$opts{"skip-acl"}) {
+        unless ($user->HasRight(Right => 'SubscribeDashboard', Object => $RT::System)) {
+            vverbose "Skipping over "
+                   . $user->Name
+                   . " due to lack of SubscribeDashboard right.";
+            next;
+        }
+    }
+
+    my ($hour, $dow, $dom) = hour_dow_dom_in($user->Timezone || 'UTC');
+    $hour .= ':00';
+    vverbose "Checking [_1]'s subscriptions: hour [_2], dow [_3], dom [_4]",
+             $user->Name, $hour, $dow, $dom;
+
+    my $currentuser = RT::CurrentUser->new;
+    $currentuser->LoadByName($user->Name);
+
+    # look through this user's subscriptions, are any supposed to be generated
+    # right now?
+    for my $subscription ($user->Attributes->Named('Subscription')) {
+
+        if (!$opts{all}) {
+            vverbose "Checking against subscription with frequency [_1], hour [_2], dow [_3], dom [_4]", $subscription->SubValue('Frequency'), $subscription->SubValue('Hour'), $subscription->SubValue('Dow'), $subscription->SubValue('Dom');
+
+            # correct hour?
+            next if $subscription->SubValue('Hour') ne $hour;
+
+            # if weekly, correct day of week?
+            if ($subscription->SubValue('Frequency') eq 'weekly') {
+                next if $subscription->SubValue('Dow') ne $dow;
+            }
+
+            # if monthly, correct day of month?
+            elsif ($subscription->SubValue('Frequency') eq 'monthly') {
+                next if $subscription->SubValue('Dom') != $dom;
+            }
+        }
+
+        eval { send_dashboard($currentuser, $subscription) };
+        error 'Caught exception: ' . $@ if $@;
+    }
+}
+
+sub send_dashboard {
+    my ($currentuser, $subscription) = @_;
+
+    my $rows = $subscription->SubValue('Rows');
+
+    my $dashboard = RT::Dashboard->new($currentuser);
+
+    $dashboard->Load($subscription->SubValue('Privacy'), $subscription->SubValue('DashboardId'))
+        or die loc(
+            "Unable to load dashboard [_1] of subscription [_2] for user [_3]",
+            $subscription->SubValue('DashboardId'),
+            $subscription->Id,
+            $currentuser->Name
+        );
+
+    verbose 'Creating dashboard "[_1]" for user "[_2]":',
+            $dashboard->Name,
+            $currentuser->Name;
+
+    if ($opts{'dryrun'}) {
+        print << "SUMMARY";
+    Dashboard: @{[ $dashboard->Name ]}
+    User:   @{[ $currentuser->Name ]} <@{[ email_of($currentuser) ]}>
+SUMMARY
+        return;
+    }
+
+    # get dashboard here
+    my $path = sprintf '/Prefs/Dashboards/Render.html?id=%d&Privacy=%s',
+        $dashboard->Id,
+        $dashboard->Privacy;
+
+    $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
+    my $contents = run_component(
+        '/Prefs/Dashboards/Render.html',
+        id => $dashboard->Id,
+        Privacy => $dashboard->Privacy,
+    );
+
+    # remove "Preview dashboard" from the header, leaving just the dashboard
+    # name
+    $contents =~ s/Preview dashboard\s*//;
+
+    for (@{ RT->Config->Get('EmailDashboardRemove') || [] }) {
+        $contents =~ s/$_//g;
+    }
+
+    vverbose "Got [_1] characters of output.", length $contents;
+
+    $contents = HTML::RewriteAttributes::Links->rewrite(
+        $contents,
+        RT->Config->Get('WebURL') . $path,
+    );
+
+    send_mail($currentuser, $dashboard, $subscription, $contents);
+}
+
+sub send_mail {
+    my ($currentuser, $dashboard, $subscription, $content) = @_;
+
+    verbose 'Sending dashboard "[_1]" to user [_2] <[_3]>',
+            $dashboard->Name,
+            $currentuser->Name,
+            email_of($currentuser);
+
+    my $subject = $currentuser->loc(
+        (RT->Config->Get('DashboardSubject') || "RT [_2] Dashboard: [_1]"),
+        $dashboard->Name,
+        ucfirst($subscription->SubValue('Frequency')),
+    );
+
+    my $entity = build_email(
+        $content, $from, email_of($currentuser), $subject,
+    );
+
+    my $ok = RT::Interface::Email::SendEmail(
+        Entity => $entity,
+    );
+
+    vverbose "Done sending dashboard to [_1] <[_2]>",
+             $currentuser->Name, email_of($currentuser)
+                 and return if $ok;
+
+    error 'Failed to email dashboard to user [_1] <[_2]>',
+          $currentuser->Name, email_of($currentuser);
+}
+
+sub build_email {
+    my ($content, $from, $to, $subject) = @_;
+    my @parts;
+    my %cid_of;
+
+    $content = HTML::RewriteAttributes::Resources->rewrite($content, sub {
+            my $uri = shift;
+
+            # already attached this object
+            return "cid:$cid_of{$uri}" if $cid_of{$uri};
+
+            $cid_of{$uri} = time() . $$ . int(rand(1e6));
+            my ($data, $filename, $mimetype, $encoding) = get_resource($uri);
+
+            push @parts, MIME::Entity->build(
+                Top          => 0,
+                Data         => $data,
+                Type         => $mimetype,
+                Encoding     => $encoding,
+                Disposition  => 'inline',
+                Name         => $filename,
+                'Content-Id' => $cid_of{$uri},
+            );
+
+            return "cid:$cid_of{$uri}";
+        },
+        inline_css => sub {
+            my $uri = shift;
+            my ($content) = get_resource($uri);
+            return $content;
+        },
+        inline_imports => 1,
+    );
+
+    my $entity = MIME::Entity->build(
+        From    => $from,
+        To      => $to,
+        Subject => $subject,
+        Type    => "multipart/mixed",
+    );
+
+    $entity->attach(
+        Data        => $content,
+        Type        => 'text/html',
+        Disposition => 'inline',
+    );
+
+    for my $part (@parts) {
+        $entity->add_part($part);
+    }
+
+    return $entity;
+}
+
+sub email_of {
+    my $user = shift;
+    return $user->EmailAddress if $user->EmailAddress;
+    return $user->Name if $user->Name =~ /\S@\S/;
+    return undef;
+}
+
+sub get_from {
+    RT->Config->Get('DashboardAddress') || RT->Config->Get('CorrespondAddress')
+}
+
+{
+    my $mason;
+    my $outbuf = '';
+
+    sub mason {
+        unless ($mason) {
+            vverbose "Creating Mason object.";
+            $mason = HTML::Mason::Interp->new(
+                RT::Interface::Web::Handler->DefaultHandlerArgs,
+                out_method => \$outbuf,
+                autohandler_name => '', # disable forced login and more
+            );
+        }
+        return $mason;
+    }
+
+    sub run_component {
+        mason->exec(@_);
+        my $ret = $outbuf;
+        $outbuf = '';
+        return $ret;
+    }
+}
+
+# this code is partially taken from 3.7
+{
+    my %cache;
+
+    sub hour_dow_dom_in {
+        my $tz = shift;
+        return @{$cache{$tz}} if exists $cache{$tz};
+
+        my ($hour, $dow, $dom);
+
+        {
+            local $ENV{'TZ'} = $tz;
+            ## Using POSIX::tzset fixes a bug where the TZ environment variable
+            ## is cached.
+            tzset();
+            (undef, undef, $hour, $dom, undef, undef, $dow) = localtime($now);
+        }
+        tzset(); # return back previous value
+
+        $hour = "0$hour"
+            if length($hour) == 1;
+        $dow = (qw/Sunday Monday Tuesday Wednesday Thursday Friday Saturday/)[$dow];
+
+        return @{$cache{$tz}} = ($hour, $dow, $dom);
+    }
+}
+
+sub get_resource {
+    my $uri = shift;
+    my ($content, $filename, $mimetype, $encoding);
+
+    # strip out RT::WebURL
+    $uri =~ s/^\Q$RT::WebURL//;
+
+    # add a leading / if needed
+    $uri = "/$uri"
+        unless $uri =~ m{^/};
+
+    my %args;
+    if ($uri =~ s/\?(.*)//) {
+        for (split /&/, ($1||'')) {
+            my ($k, $v) = /^(.*?)=(.*)$/
+                or die "Unable to parse query parameter '$_'";
+
+            for ($k, $v) { s/%(..)/chr hex $1/ge }
+            $args{$k} = $v;
+        }
+    }
+
+    $content = run_component($uri, %args);
+
+    $uri =~ s{^(.*/)(.*?)$}{$1};
+    $filename = $2;
+
+    # the rest of this was taken from Email::MIME::CreateHTML::Resolver::LWP
+    ($mimetype, $encoding) = MIME::Types::by_suffix($filename);
+
+    my $content_type = $HTML::Mason::Commands::r->content_type;
+    if ($content_type) {
+        $mimetype = $content_type;
+
+        # strip down to just a MIME type
+        $mimetype = $1 if $mimetype =~ /(\S+);\s*charset=(.*)$/;
+    }
+
+    #If all else fails then some conservative and general-purpose defaults are:
+    $mimetype ||= 'application/octet-stream';
+    $encoding ||= 'base64';
+
+    return ($content, $filename, $mimetype, $encoding);
+}
+
+package RT::Dashboard::FakeRequest;
+sub new { bless {}, shift }
+sub header_out { shift }
+sub headers_out { shift }
+sub content_type {
+    my $self = shift;
+    $self->{content_type} = shift if @_;
+    return $self->{content_type};
+}
+
+=head1 NAME
+
+rt-email-dashboards - Send email dashboards
+
+=head1 SYNOPSIS
+
+    /opt/rt3/local/bin/rt-email-dashboards [options]
+
+=head1 DESCRIPTION
+
+This tool will send users email based on how they have subscribed to
+dashboards. A dashboard is a set of saved searches, the subscription controls
+how often that dashboard is sent and how it's displayed.
+
+Each subscription has an hour, and possibly day of week or day of month. These
+are taken to be in the user's timezone if available, UTC otherwise.
+
+=head1 SETUP
+
+You'll need to have cron run this script every hour. Here's an example crontab
+entry to do this.
+
+    0 * * * * /usr/bin/perl /opt/rt3/local/bin/rt-email-dashboards
+
+This will run the script every hour on the hour. This may need some further
+tweaking to be run as the correct user.
+
+=head1 OPTIONS
+
+This tool supports a few options. Most are for debugging.
+
+=over 8
+
+=item --help
+
+Display this documentation
+
+=item --dryrun
+
+Figure out which dashboards would be sent, but don't actually generate them
+
+=item --epoch SECONDS
+
+Instead of using the current time to figure out which dashboards should be
+sent, use SECONDS (usually since midnight Jan 1st, 1970, so C<1192216018> would
+be Oct 12 19:06:58 GMT 2007).
+
+=item --verbose
+
+Print out some tracing information (such as which dashboards are being
+generated and sent out)
+
+=item --vverbose
+
+Print out more tracing information (such as each user and subscription that is
+being considered)
+
+=item --all
+
+Disable checking of whether each subscription should be sent right now (should
+only be used with --dryrun)
+
+=item --skip-acl
+
+Skip SubscribeDashboard access control checks
+
+=back
+
+=cut
+

@@ -340,6 +340,11 @@ $deps{'SMTP'} = [ text_to_hash( << '.') ];
 Net::SMTP
 .
 
+$deps{'DASHBOARDS'} = [ text_to_hash( << '.') ];
+HTML::RewriteAttributes 0.02
+MIME::Types
+.
+
 $deps{'GRAPHVIZ'} = [ text_to_hash( << '.') ];
 GraphViz
 IPC::Run
