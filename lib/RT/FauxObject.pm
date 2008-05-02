@@ -183,7 +183,7 @@ sub Update {
         if !defined $msg;
 
     # prevent useless warnings
-    return (1, $self->loc("[_1] updated"), ucfirst($self->ObjectName));
+    return (1, $self->loc("[_1] updated"), ucfirst($self->ObjectName))
         if $msg =~ /That is already the current value/;
 
     return ($status, $self->loc("[_1] update: [_2]", ucfirst($self->ObjectName), $msg));
