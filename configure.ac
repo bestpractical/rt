@@ -375,6 +375,7 @@ AC_CONFIG_FILES([
                  sbin/rt-dump-database
                  sbin/rt-setup-database
                  sbin/rt-test-dependencies
+                 sbin/rt-send-digest
                  sbin/rt-clean-sessions
                  sbin/rt-shredder
                  sbin/rt-validator
