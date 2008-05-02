@@ -94,7 +94,7 @@ my @items;
 my @selected;
 
 # Get the list of queries already in use
-for ($Dashboard->SearchIDs) {
+for ($Dashboard->SearchIds) {
     my ($privacy, $id, $desc) = @$_;
     my $name = "$id-$privacy";
     push @selected, $name;

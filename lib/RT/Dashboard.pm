@@ -132,17 +132,17 @@ sub Searches {
                my $search = RT::SavedSearch->new($self->CurrentUser);
                $search->Load($_->[0], $_->[1]);
                $search
-           } $self->SearchIDs;
+           } $self->SearchIds;
 }
 
-=head2 SearchIDs
+=head2 SearchIds
 
 Returns a list of array references, each being a saved-search privacy, ID, and
 description
 
 =cut
 
-sub SearchIDs {
+sub SearchIds {
     my $self = shift;
     return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
     return @{ $self->{'Attribute'}->SubValue('Searches') || [] };
@@ -157,7 +157,7 @@ Returns a list of array references, each one being suitable to pass to
 
 sub SearchPrivacies {
     my $self = shift;
-    return map { [$self->SearchPrivacy(@$_)] } $self->SearchIDs;
+    return map { [$self->SearchPrivacy(@$_)] } $self->SearchIds;
 }
 
 =head2 SearchPrivacy TYPE, ID, DESC

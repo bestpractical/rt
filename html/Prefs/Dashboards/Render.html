@@ -55,7 +55,7 @@
 <tr valign="top">
 
 <td class="boxcontainer" width="70%">
-% foreach ($DashboardObj->SearchIDs) {
+% foreach ($DashboardObj->SearchIds) {
 %   my ($type, $id, $desc) = @$_;
 %   my @for_showsearch = $DashboardObj->SearchPrivacy(@$_);
     <& /Elements/ShowSearch, @for_showsearch, Override => { Rows => $rows } &>
