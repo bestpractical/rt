@@ -435,7 +435,9 @@ sbin-install:
 		sbin/rt-test-dependencies \
 		sbin/rt-clean-sessions \
 		sbin/rt-shredder \
-		sbin/rt-notify-group-admin
+		sbin/rt-notify-group-admin \
+		sbin/rt-send-digest \
+		sbin/rt-email-dashboards
 	-cp -rp \
 		sbin/rt-dump-database \
 		sbin/rt-setup-database \
@@ -443,6 +445,8 @@ sbin-install:
 		sbin/rt-clean-sessions \
 		sbin/rt-shredder \
 		sbin/rt-notify-group-admin \
+		sbin/rt-send-digest \
+		sbin/rt-email-dashboards \
 		$(DESTDIR)/$(RT_SBIN_PATH)
 
 # }}}
