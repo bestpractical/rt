@@ -69,12 +69,19 @@
 .titlebox .titlebox { 
 
  background-color: #ffffff;
- padding-top: 1em;
  margin-top: 1em;
  -moz-border-radius: 0.5em;
  -webkit-border-radius: 0.5em;
- margin-right: 1em;
+ margin-right: 0.25em;
  
+}
+
+
+.titlebox {
+ margin-left: 0em;
+ margin-right: 0em;
+
+
 }
 
 
@@ -186,4 +193,7 @@
 .titlebox.rolled-up .titlebox-title .widget a {
     background-image: url(/NoAuth/images//css/rolldown-arrow.gif);
 }
+
+}
+
 
