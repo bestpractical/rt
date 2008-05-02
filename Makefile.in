@@ -137,6 +137,8 @@ RT_CLI_BIN		=	$(RT_BIN_PATH)/rt
 RT_MAILGATE_BIN		=	$(RT_BIN_PATH)/rt-mailgate
 # RT's cron tool
 RT_CRON_BIN		=	$(RT_BIN_PATH)/rt-crontool
+# RT's dashboard emailer
+RT_DASHBOARD_BIN		=	$(RT_BIN_PATH)/rt-email-dashboards
 
 # }}}
 
@@ -145,6 +147,7 @@ BINARIES		=	$(DESTDIR)/$(RT_MODPERL_HANDLER) \
 				$(DESTDIR)/$(RT_MAILGATE_BIN) \
 				$(DESTDIR)/$(RT_CLI_BIN) \
 				$(DESTDIR)/$(RT_CRON_BIN) \
+				$(DESTDIR)/$(RT_DASHBOARD_BIN) \
 				$(DESTDIR)/$(RT_STANDALONE_SERVER) \
 				$(DESTDIR)/$(RT_SPEEDYCGI_HANDLER) \
 				$(DESTDIR)/$(RT_FASTCGI_HANDLER) \
