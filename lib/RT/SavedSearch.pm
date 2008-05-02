@@ -67,169 +67,48 @@
 
 package RT::SavedSearch;
 
-use RT::Base;
-use RT::Attribute;
-
 use strict;
 use warnings;
-use base qw/RT::Base/;
+use base qw/RT::FauxObject/;
 
-sub new  {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
-    $self->{'Id'} = 0;
-    bless ($self, $class);
-    $self->CurrentUser(@_);
-    return $self;
-}
+=head2 ObjectName
 
-=head2 Load
-
-Takes a privacy specification, an object ID, and a search ID.  Loads
-the given search ID if it belongs to the stated user or group.
-Returns a tuple of status and message, where status is true on
-success.
+An object of this class is called "search"
 
 =cut
 
-sub Load {
+sub ObjectName { "search" }
+
+sub PostLoad {
     my $self = shift;
-    my ($privacy, $id) = @_;
-    my $object = $self->_GetObject($privacy);
-
-    if ($object) {
-	$self->{'Attribute'} = $object->Attributes->WithId($id);
-	if ($self->{'Attribute'}->Id) {
-	    $self->{'Id'} = $self->{'Attribute'}->Id;
-	    $self->{'Privacy'} = $privacy;
-	    $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
-	    return (1, $self->loc("Loaded search [_1]", $self->Name));
-	} else {
-	    $RT::Logger->error("Could not load attribute " . $id
-			       . " for object " . $privacy);
-	    return (0, $self->loc("Search attribute load failure"));
-	}
-    } else {
-	$RT::Logger->warning("Could not load object $privacy when loading search");
-	return (0, $self->loc("Could not load object for [_1]", $privacy));
-    }
-
+    $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
 }
 
-=head2 Save
+sub SaveAttribute {
+    my $self   = shift;
+    my $object = shift;
+    my $args   = shift;
 
-Takes a privacy, an optional type, a name, and a hashref containing the
-search parameters.  Saves the given parameters to the appropriate user/
-group object, and loads the resulting search.  Returns a tuple of status
-and message, where status is true on success.  Defaults are:
-  Privacy:      undef
-  Type:         Ticket
-  Name:         "new search"
-  SearchParams: (empty hash)
-
-=cut
-
-sub Save {
-    my $self = shift;
-    my %args = ('Privacy' => 'RT::User-' . $self->CurrentUser->Id,
-		'Type' => 'Ticket',
-		'Name' => 'new search',
-		'SearchParams' => {},
-		@_);
-    my $privacy = $args{'Privacy'};
-    my $type = $args{'Type'};
-    my $name = $args{'Name'};
-    my %params = %{$args{'SearchParams'}};
-
-    $params{'SearchType'} = $type;
-    my $object = $self->_GetObject($privacy);
-
-    return (0, $self->loc("Failed to load object for [_1]", $privacy))
-        unless $object;
-
-    if ( $object->isa('RT::System') ) {
-        return ( 0, $self->loc("No permission to save system-wide searches") )
-            unless $self->CurrentUser->HasRight(
-            Object => $RT::System,
-            Right  => 'SuperUser'
-        );
-    }
-
-    my ( $att_id, $att_msg ) = $object->AddAttribute(
+    return $object->AddAttribute(
         'Name'        => 'SavedSearch',
-        'Description' => $name,
-        'Content'     => \%params
+        'Description' => $args{'Name'},
+        'Content'     => $args{'SearchParams'},
     );
-    if ($att_id) {
-        $self->{'Attribute'} = $object->Attributes->WithId($att_id);
-        $self->{'Id'}        = $att_id;
-        $self->{'Privacy'}   = $privacy;
-        $self->{'Type'}      = $type;
-        return ( 1, $self->loc( "Saved search [_1]", $name ) );
-    }
-    else {
-        $RT::Logger->error("SavedSearch save failure: $att_msg");
-        return ( 0, $self->loc("Failed to create search attribute") );
-    }
 }
 
-=head2 Update
 
-Updates the parameters of an existing search.  Takes the arguments
-"Name" and "SearchParams"; SearchParams should be a hashref containing
-the new parameters of the search.  If Name is not specified, the name
-will not be changed.
-
-=cut
-
-sub Update {
+sub UpdateAttribute {
     my $self = shift;
-    my %args = ('Name' => '',
-		'SearchParams' => {},
-		@_);
-    
-    return(0, $self->loc("No search loaded")) unless $self->Id;
-    return(0, $self->loc("Could not load search attribute"))
-	unless $self->{'Attribute'}->Id;
-    my ($status, $msg) = $self->{'Attribute'}->SetSubValues(%{$args{'SearchParams'}});
-    if ($status && $args{'Name'}) {
-	($status, $msg) = $self->{'Attribute'}->SetDescription($args{'Name'});
+    my $args = shift;
+    my $params = $args->{'SearchParams'} || {};
+
+    my ($status, $msg) = $self->{'Attribute'}->SetSubValues(%$params);
+
+    if ($status && $args->{'Name'}) {
+        ($status, $msg) = $self->{'Attribute'}->SetDescription($args->{'Name'});
     }
-    return ($status, $self->loc("Search update: [_1]", $msg));
-}
 
-=head2 Delete
-    
-Deletes the existing search.  Returns a tuple of status and message,
-where status is true upon success.
-
-=cut
-
-sub Delete {
-    my $self = shift;
-
-    my ($status, $msg) = $self->{'Attribute'}->Delete;
-    if ($status) {
-	return (1, $self->loc("Deleted search"));
-    } else {
-	return (0, $self->loc("Delete failed: [_1]", $msg));
-    }
-}
-	
-
-### Accessor methods
-
-=head2 Name
-
-Returns the name of the search.
-
-=cut
-
-sub Name {
-    my $self = shift;
-    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
-    return $self->{'Attribute'}->Description();
+    return ($status, $msg);
 }
 
 =head2 GetParameter
@@ -243,17 +122,6 @@ sub GetParameter {
     my $param = shift;
     return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
     return $self->{'Attribute'}->SubValue($param);
-}
-
-=head2 Id
-
-Returns the numerical id of this search.
-
-=cut
-
-sub Id {
-     my $self = shift;
-     return $self->{'Id'};
 }
 
 =head2 Privacy
