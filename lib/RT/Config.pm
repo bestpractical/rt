@@ -167,7 +167,6 @@ our %META = (
     DisableGraphViz => {
         Type            => 'SCALAR',
         PostLoadCheck   => sub {
-            my $self  = shift;
             my $value = shift;
             return if $value;
             return if $INC{'GraphViz'};

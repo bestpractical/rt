@@ -244,24 +244,6 @@ sub CurrentValues {
     return { map { $_ => CurrentValue($_) } @types };
 }
 
-
-sub SaveConfig {
-
-    require File::Spec;
-    my $file = File::Spec->catfile($RT::EtcPath, 'RT_SiteConfig.pm');
-
-    if ( open my $fh, '>', $file  ) {
-        for ( keys %{$RT::Installer->{InstallConfig}} ) {
-             print $fh "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
-        }
-        print $fh "1;\n";
-        close $fh;
-        return ( 1, 'saved config with success' );
-    }
-
-    return ( 0, "can't save config to $file: $!" );
-}
-
 =head1 NAME
 
     RT::Installer - RT's Installer
