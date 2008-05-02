@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# http://www.gnu.org/copyleft/gpl.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,51 +45,16 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Tabs, 
-    tabs => $tabs, 
-    current_toptab => 'User/Prefs.html', 
-    current_tab => $current_tab, 
-    Title => $Title &>
-
-<%INIT>
-  my $tabs = { a => { title => loc('About me'),
-			  path => 'User/Prefs.html',
-			},
-	       g => { title => loc('Personal Groups'),
-			   path => 'User/Groups/',
-			 },
-	       h => { title => loc('Delegation'),
-			   path => 'User/Delegation.html',
-			 },
-	       f => { title => loc('Search options'),
-			   path => 'Prefs/SearchOptions.html',
-			 },
-	       r => { title => loc('RT at a glance'),
-			   path => 'Prefs/MyRT.html',
-			 },
-	       s => { title => loc('Dashboards'),
-			   path => 'Prefs/Dashboards/index.html',
-			 },
-	       t => { title => loc('Other'),
-			   path => 'Prefs/Other.html',
-			 },
-	     };
-
-  # Now let callbacks add their extra tabs
-  $m->callback( %ARGS, tabs => $tabs );
-
-  foreach my $tab (sort keys %{$tabs}) {
-    if ($tabs->{$tab}->{'path'} eq $current_tab) {
-      $tabs->{$tab}->{"subtabs"} = $subtabs;
-      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
-    }
-  }
-</%INIT>
-
-
-<%ARGS>
-$subtabs => undef
-$current_tab => undef
-$current_subtab => undef
-$Title => undef
-</%ARGS>
+<%args>
+@Objects => undef
+$Name => undef
+</%args>
+<select name="<%$Name%>">
+% foreach my $object (@Objects) {
+% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
+<option value="<%ref($object)%>-<%$object->id%>"><&|/l&>My dashboards</&></option>
+% } else {
+<option value="<%ref($object)%>-<%$object->id%>"><&|/l, $object->Name&>[_1]'s dashboards</&></option>
+% }
+% }
+</select>

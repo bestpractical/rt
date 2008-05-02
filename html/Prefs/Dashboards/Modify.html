@@ -1,0 +1,158 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, title => $title &>
+<& /Prefs/Dashboards/Elements/DashboardTabs,
+    current_subtab => $current_subtab,
+    Title => $title,
+    $Create ? () : (DashboardObj => $Dashboard),
+&>
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<%$RT::WebPath%>/Prefs/Dashboards/Modify.html" method="post" enctype="multipart/form-data">
+
+%unless ($Dashboard->Id) {
+<input type="hidden" class="hidden" name="id" value="new" />
+% } else {
+<input type="hidden" class="hidden" name="id" value="<%$Dashboard->Id%>" />
+% }
+<table>
+<tr><td align="right">
+<&|/l&>Name</&>:
+</td>
+<td><input name="Name" value="<%$Dashboard->Name%>" /></td>
+</tr>
+<tr><td align="right">
+<&|/l&>Privacy</&>:
+</td><td>
+<& /Prefs/Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies &>
+</td></tr>
+</table>
+<& /Elements/Submit, Label => loc('Save Changes') &>
+</form>
+<%INIT>
+
+my $current_subtab;
+my ($title, @results);
+my $tried_create = 0;
+
+use RT::Dashboard;
+
+my @privacies = RT::Dashboard->new($session{'CurrentUser'})->_PrivacyObjects;
+
+my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
+
+if ($Create) {
+    $current_subtab = 'Prefs/Dashboards/Modify.html?Create=1';
+    $title = loc("Create a new dashboard");
+} 
+else {
+    if ($id eq 'new') {
+        my ($val, $msg);
+        $tried_create = 1;
+
+        if ($session{'CurrentUser'}->HasRight(Right => 'ModifyDashboard', Object => $RT::System)) {
+            ($val, $msg) = $Dashboard->Save(
+                Name                  => $ARGS{'Name'},
+                Privacy               => $ARGS{'Privacy'},
+            );
+        }
+        else {
+            $msg = "No permission to create dashboards";
+        }
+
+        if (!$val) {
+            Abort(loc("Dashboard could not be created: [_1]", $msg));
+        }
+        $id = $Dashboard->Id;
+    }
+    else {
+        $Dashboard->Load($ARGS{'Privacy'}, $id)
+            or Abort('Could not load dashboard');
+    }
+
+    if ($id) {
+        $title = loc("Modify the dashboard [_1]", $Dashboard->Name);
+        $current_subtab = 'Prefs/Dashboards/Modify.html?id='
+                        . $id
+                        . '&Privacy=' . $Privacy;
+    }	
+    # If the create failed
+    else {
+        $Create = 1;
+        $current_subtab = 'Prefs/Dashboards/Modify.html?Create=1';
+        $title = loc("Create a new dashboard");
+    }
+}
+
+if (!$Create && !$tried_create && $id && defined($ARGS{'Name'})) {
+    my ($ok, $msg);
+    if ($session{'CurrentUser'}->HasRight(Right => 'ModifyDashboard', Object => $RT::System)) {
+        ($ok, $msg) = $Dashboard->Update(Privacy  => $ARGS{'Privacy'},
+                                      Name     => $ARGS{'Name'});
+    }
+    else {
+        $msg = "No permission to update dashboards";
+    }
+
+    if ($ok) {
+        push @results, loc("Dashboard updated");
+    }
+    else {
+        push @results, loc("Dashboard could not be updated: [_1]", $msg);
+    }
+
+}
+</%INIT>
+
+<%ARGS>
+$Create => undef
+$Name => undef
+$Privacy => undef
+$id => '' unless defined $id
+</%ARGS>
+

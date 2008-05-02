@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# http://www.gnu.org/copyleft/gpl.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,51 +45,54 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Tabs, 
-    tabs => $tabs, 
-    current_toptab => 'User/Prefs.html', 
-    current_tab => $current_tab, 
-    Title => $Title &>
+<& /Elements/Header, title => $title &>
+<& /Prefs/Dashboards/Elements/DashboardTabs,
+    current_subtab => $current_subtab,
+    Title => $title,
+    DashboardObj => $DashboardObj &>
+
+<table border="0" width="100%">
+<tr valign="top">
+
+<td class="boxcontainer" width="70%">
+% foreach ($DashboardObj->SearchIDs) {
+%   my ($type, $id, $desc) = @$_;
+%   my @for_showsearch = $DashboardObj->SearchPrivacy(@$_);
+    <& /Elements/ShowSearch, @for_showsearch, Override => { Rows => $rows } &>
+% }
+</td>
+
+</tr>
+</table>
 
 <%INIT>
-  my $tabs = { a => { title => loc('About me'),
-			  path => 'User/Prefs.html',
-			},
-	       g => { title => loc('Personal Groups'),
-			   path => 'User/Groups/',
-			 },
-	       h => { title => loc('Delegation'),
-			   path => 'User/Delegation.html',
-			 },
-	       f => { title => loc('Search options'),
-			   path => 'Prefs/SearchOptions.html',
-			 },
-	       r => { title => loc('RT at a glance'),
-			   path => 'Prefs/MyRT.html',
-			 },
-	       s => { title => loc('Dashboards'),
-			   path => 'Prefs/Dashboards/index.html',
-			 },
-	       t => { title => loc('Other'),
-			   path => 'Prefs/Other.html',
-			 },
-	     };
 
-  # Now let callbacks add their extra tabs
-  $m->callback( %ARGS, tabs => $tabs );
+my $current_subtab = 'Prefs/Dashboards/Render.html?id='
+                   . $id
+                   . '&Privacy=' . $Privacy;
 
-  foreach my $tab (sort keys %{$tabs}) {
-    if ($tabs->{$tab}->{'path'} eq $current_tab) {
-      $tabs->{$tab}->{"subtabs"} = $subtabs;
-      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
-    }
-  }
+use RT::Dashboard;
+my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
+$DashboardObj->Load($Privacy, $id)
+    or Abort('Could not load dashboard');
+
+my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
+my $Loaded = 0;
+
+# try to load the subscription to this id
+for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
+    next unless $sub->SubValue('DashboardId') == $id;
+    $SubscriptionObj = $sub;
+    $Loaded = 1;
+    last;
+}
+
+my $rows = $Loaded ? $SubscriptionObj->SubValue('Rows') : 20;
+my $title = "Preview dashboard " . $DashboardObj->Name;
+
 </%INIT>
-
-
 <%ARGS>
-$subtabs => undef
-$current_tab => undef
-$current_subtab => undef
-$Title => undef
+$id    => undef
+$Privacy     => undef
 </%ARGS>
+

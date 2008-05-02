@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# http://www.gnu.org/copyleft/gpl.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,51 +45,28 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Tabs, 
-    tabs => $tabs, 
-    current_toptab => 'User/Prefs.html', 
-    current_tab => $current_tab, 
-    Title => $Title &>
+<%args>
+$Object => undef
+</%args>
+<%init>
+# Returns an array of dashboards associated on $Object
 
-<%INIT>
-  my $tabs = { a => { title => loc('About me'),
-			  path => 'User/Prefs.html',
-			},
-	       g => { title => loc('Personal Groups'),
-			   path => 'User/Groups/',
-			 },
-	       h => { title => loc('Delegation'),
-			   path => 'User/Delegation.html',
-			 },
-	       f => { title => loc('Search options'),
-			   path => 'Prefs/SearchOptions.html',
-			 },
-	       r => { title => loc('RT at a glance'),
-			   path => 'Prefs/MyRT.html',
-			 },
-	       s => { title => loc('Dashboards'),
-			   path => 'Prefs/Dashboards/index.html',
-			 },
-	       t => { title => loc('Other'),
-			   path => 'Prefs/Other.html',
-			 },
-	     };
+use RT::Dashboard;
+my @dashboards;
+my $privacy = $Object->isa('RT::User')   ? 'RT::User-'  . $Object->Id
+            : $Object->isa('RT::Group')  ? 'RT::Group-' . $Object->Id
+            : $Object->isa('RT::System') ? 'RT::System'
+            : '';
 
-  # Now let callbacks add their extra tabs
-  $m->callback( %ARGS, tabs => $tabs );
+while (my $attr = $Object->Attributes->Next) {
+    if ($attr->Name =~ /^Dashboard\b/) {
+        my $dashboard = RT::Dashboard->new($session{'CurrentUser'});
+        my ($ok) = $dashboard->Load($privacy, $attr->id);
+        next if !$ok;
 
-  foreach my $tab (sort keys %{$tabs}) {
-    if ($tabs->{$tab}->{'path'} eq $current_tab) {
-      $tabs->{$tab}->{"subtabs"} = $subtabs;
-      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
+        push @dashboards, $dashboard;
     }
-  }
-</%INIT>
+}
+return @dashboards;
+</%init>
 
-
-<%ARGS>
-$subtabs => undef
-$current_tab => undef
-$current_subtab => undef
-$Title => undef
-</%ARGS>

@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# http://www.gnu.org/copyleft/gpl.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,51 +45,57 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Tabs, 
-    tabs => $tabs, 
-    current_toptab => 'User/Prefs.html', 
-    current_tab => $current_tab, 
-    Title => $Title &>
+<&| /Widgets/TitleBox, title => loc("[_1] Dashboards", $Type) &>
 
-<%INIT>
-  my $tabs = { a => { title => loc('About me'),
-			  path => 'User/Prefs.html',
-			},
-	       g => { title => loc('Personal Groups'),
-			   path => 'User/Groups/',
-			 },
-	       h => { title => loc('Delegation'),
-			   path => 'User/Delegation.html',
-			 },
-	       f => { title => loc('Search options'),
-			   path => 'Prefs/SearchOptions.html',
-			 },
-	       r => { title => loc('RT at a glance'),
-			   path => 'Prefs/MyRT.html',
-			 },
-	       s => { title => loc('Dashboards'),
-			   path => 'Prefs/Dashboards/index.html',
-			 },
-	       t => { title => loc('Other'),
-			   path => 'Prefs/Other.html',
-			 },
-	     };
+% if (@$Dashboards == 0) {
+    <p><% loc("No dashboards.") %></p>
+% } else {
+    <table class="collection-as-table">
+        <tr class="collection-as-table">
+            <th class="collection-as-table"><% loc("#") %></th>
+            <th class="collection-as-table"><% loc("Name") %></th>
+            <th class="collection-as-table"><% loc("Subscription") %></th>
+        </tr>
 
-  # Now let callbacks add their extra tabs
-  $m->callback( %ARGS, tabs => $tabs );
+%   my $i = 0;
+%   for my $dashboard (sort {$b->Id <=> $a->Id} @$Dashboards) {
+%       my $url = sprintf '%s/Prefs/Dashboards/Modify.html?id=%d&Privacy=%s',
+%                 $RT::WebPath,
+%                 $dashboard->Id,
+%                 $dashboard->Privacy; 
 
-  foreach my $tab (sort keys %{$tabs}) {
-    if ($tabs->{$tab}->{'path'} eq $current_tab) {
-      $tabs->{$tab}->{"subtabs"} = $subtabs;
-      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
-    }
-  }
-</%INIT>
+        <tr class="collection-as-table <% ++$i % 2 ? 'oddline' : 'evenline' %>">
+            <td class="collection-as-table">
+                <a href="<% $url %>">
+                    <% $dashboard->Id %>
+                </a>
+            </td>
+            <td class="collection-as-table">
+                <a href="<% $url %>">
+                    <% $dashboard->Name %>
+                </a>
+            </td>
+            <td class="collection-as-table">
+                <& /Prefs/Dashboards/Elements/ShowSubscription, Dashboard => $dashboard, Subscription => $subscription_for{$dashboard->Id} &>
+            </td>
+        </tr>
+%   }
 
+    </table>
+% }
+
+</&>
 
 <%ARGS>
-$subtabs => undef
-$current_tab => undef
-$current_subtab => undef
-$Title => undef
+$Type    => "Personal"
+$Dashboards => undef
 </%ARGS>
+<%INIT>
+# map each subscription to a dashboard ID
+my %subscription_for;
+
+for my $attr ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
+    $subscription_for{$attr->SubValue('DashboardId')} = $attr;
+}
+</%INIT>
+

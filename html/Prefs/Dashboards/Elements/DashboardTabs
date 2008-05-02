@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# http://www.gnu.org/copyleft/gpl.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,51 +45,60 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Tabs, 
-    tabs => $tabs, 
-    current_toptab => 'User/Prefs.html', 
-    current_tab => $current_tab, 
+<& /User/Elements/Tabs,
+    subtabs => $tabs,
+    current_tab => 'Prefs/Dashboards',
+    current_subtab => $current_subtab,
     Title => $Title &>
 
 <%INIT>
-  my $tabs = { a => { title => loc('About me'),
-			  path => 'User/Prefs.html',
-			},
-	       g => { title => loc('Personal Groups'),
-			   path => 'User/Groups/',
-			 },
-	       h => { title => loc('Delegation'),
-			   path => 'User/Delegation.html',
-			 },
-	       f => { title => loc('Search options'),
-			   path => 'Prefs/SearchOptions.html',
-			 },
-	       r => { title => loc('RT at a glance'),
-			   path => 'Prefs/MyRT.html',
-			 },
-	       s => { title => loc('Dashboards'),
-			   path => 'Prefs/Dashboards/index.html',
-			 },
-	       t => { title => loc('Other'),
-			   path => 'Prefs/Other.html',
-			 },
-	     };
+my $tabs;
+my $real_subtab = $current_subtab;
+if ( $DashboardObj and $DashboardObj->Id ) {
+    my $idpriv = sprintf 'id=%d&Privacy=%s',
+                 $DashboardObj->Id,
+                 $DashboardObj->Privacy;
+    my $modify  = "Prefs/Dashboards/Modify.html?$idpriv";
+    my $queries = "Prefs/Dashboards/Queries.html?$idpriv";
+    my $render  = "Prefs/Dashboards/Render.html?$idpriv";
 
-  # Now let callbacks add their extra tabs
-  $m->callback( %ARGS, tabs => $tabs );
+    $tabs->{"this"} = {
+        title   => $DashboardObj->Name,
+        path    => $modify,
+        current_subtab  => $current_subtab,
+        subtabs => {
+            a_Basics => { title => loc('Basics'),
+                          path  => $modify,
+            },
 
-  foreach my $tab (sort keys %{$tabs}) {
-    if ($tabs->{$tab}->{'path'} eq $current_tab) {
-      $tabs->{$tab}->{"subtabs"} = $subtabs;
-      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
-    }
-  }
+            b_Queries => { title => loc('Queries'),
+                           path  => $queries,
+            },
+
+            c_Subscription => { title => loc('Subscription'),
+                                path  => "Prefs/Dashboards/Subscription.html?DashboardId=" . $DashboardObj->Id . "&Privacy=" . $DashboardObj->Privacy
+            },
+
+
+            z_Preview => { title => loc('Preview'),
+                           path  => $render,
+            },
+        }
+    };
+
+    $current_subtab = $modify;
+}
+
+$tabs->{"A"} = { title => loc('Select dashboard'),
+                 path  => "Prefs/Dashboards/index.html" };
+$tabs->{"B"} = { title     => loc('New dashboard'),
+                 path      => "Prefs/Dashboards/Modify.html?Create=1",
+                 separator => 1 };
+
+
 </%INIT>
-
-
 <%ARGS>
-$subtabs => undef
-$current_tab => undef
+$DashboardObj => undef
 $current_subtab => undef
 $Title => undef
 </%ARGS>
