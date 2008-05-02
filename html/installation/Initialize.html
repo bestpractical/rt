@@ -69,11 +69,61 @@ if ( $Run ) {
 'installation/Sendmail.html');
     }
 
-    my $msg = `echo | $^X sbin/rt-setup-database --action init --dba $RT::Installer->{InstallConfig}{DatabaseUser} --dba-password '$RT::Installer->{InstallConfig}{DatabasePassword}' 2>&1`;
-    @results = split /\n/, $msg;
-# XXX $? doesn't work here, so I decided to grep the strings to find if any
-# error happens
-    unless ( grep { /^ERROR:|aborted/ } @results ) {
+    my @actions = split /,/, $RT::Installer->{DatabaseAction};
+
+    my $sysdbh = DBI->connect(
+        RT::Handle->SystemDSN,
+        $RT::Installer->{InstallConfig}{DatabaseAdmin},
+        $RT::Installer->{InstallConfig}{DatabaseAdminPassword}, 
+        { RaiseError => 0, PrintError => 0 },
+    );
+    die $DBI::errstr unless $sysdbh;
+
+    my ( $status, $msg ) = ( 1, '' );
+    if ( shift @actions eq 'create' ) {
+        ($status, $msg) = RT::Handle->CreateDatabase( $sysdbh );
+        unless ( $status ) {
+            push @results, "ERROR: $msg";
+        }
+    }
+
+    if ( $status ) {
+        my $dbh = DBI->connect(
+            RT::Handle->DSN, $RT::Installer->{InstallConfig}{DatabaseAdmin},
+            $RT::Installer->{InstallConfig}{DatabaseAdminPassword}, 
+            { RaiseError => 0, PrintError => 0 },
+        );
+        die $DBI::errstr unless $dbh;
+
+        foreach my $action ( @actions ) {
+            ($status, $msg) = (1, '');
+            if ( $action eq 'schema' ) {
+                ($status, $msg) = RT::Handle->InsertSchema( $dbh );
+            }
+            elsif ( $action eq 'acl' ) {
+                ($status, $msg) = RT::Handle->InsertACL( $dbh );
+            }
+            elsif ( $action eq 'coredata' ) {
+                $RT::Handle = new RT::Handle;
+                $RT::Handle->dbh( undef );
+                RT::ConnectToDatabase();
+                RT::InitLogging();
+                ($status, $msg) = $RT::Handle->InsertInitialData;
+            }
+            elsif ( $action eq 'insert' ) {
+                $RT::Handle = new RT::Handle;
+                RT::Init();
+                my $file = $RT::EtcPath . "/initialdata";
+                ($status, $msg) = $RT::Handle->InsertData( $file );
+            }
+            unless ( $status ) {
+                push @results, "ERROR: $msg";
+                last;
+            }
+        }
+    }
+
+    unless ( @results ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'installation/Finish.html');
     }
