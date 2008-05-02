@@ -54,9 +54,15 @@
     CurrentValue => RT::Installer->CurrentValues(@Types) &>
 <input type="hidden" name="Run" value="1">
 
-<& /Elements/Submit, Label => $RT::Installer->{InstallConfig}{DatabaseType} eq
-'SQLite' ? loc('Next: Customize Basics') : loc('Next: Check Database Connectivity'), Back => 1, BackLabel => loc('Back: Select Database Type'),
+<& /Elements/Submit, Label => loc('Next: Check Database Connectivity'), 
+Back => 1, BackLabel => loc('Back: Select Database Type'),
 &>
+
+% if ( $results[0] eq 'connect succeed!' ) {
+<& /Elements/Submit, Label => loc('Next: Customize Basics'), Name => 'Next' &>
+% }
+
+
 </form>
 </&>
 <%init>
@@ -75,39 +81,82 @@ if ( $RT::Installer->{InstallConfig}{DatabaseType} eq 'Pg' ) {
 
 if ( $Run ) {
 
-    $m->comp('/Widgets/BulkProcess', Types => \@Types, Arguments => \%ARGS, Store
-            => $RT::Installer->{InstallConfig}, Meta =>
-            $RT::Installer->{Meta}, KeepUndef => 1 ); 
+    $m->comp('/Widgets/BulkProcess', Types => \@Types, Arguments => \%ARGS, 
+            Store => $RT::Installer->{InstallConfig}, 
+            Meta => $RT::Installer->{Meta}, KeepUndef => 1 ); 
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'installation/DatabaseType.html');
     }
+    
+    require File::Spec;
+    my $file = File::Spec->catfile($RT::EtcPath, 'RT_SiteConfig.pm');
 
-    my $handle = DBIx::SearchBuilder::Handle->new();
-    my $db_type = $RT::Installer->{InstallConfig}{DatabaseType};
-    
-    my $dsn;
-    $dsn = "dbi:$db_type:";
-    if ( $db_type eq 'Pg' ) {
-        # with postgres, you want to connect to template1 database
-        $dsn .= 'dbname=template1';
+    if ( open my $fh, '>', $file  ) {
+        for ( keys %{$RT::Installer->{InstallConfig}} ) {
+             print $fh "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
+        }
+        print $fh "1;\n";
+        close $fh;
+        RT->LoadConfig;
     }
-    $dsn .= ";host=$ARGS{DatabaseHost}" if $ARGS{DatabaseHost};
-    $dsn .= ";port=$ARGS{DatabasePort}" if $ARGS{DatabasePort};
-    $dsn .= ";requiressl=1" if $ARGS{DatabaseRequireSSL};
-    
+
+# dba connect systemdsn
     my $dbh = DBI->connect(
-        $dsn, $ARGS{DatabaseUser}, $ARGS{DatabasePassword},
-        { RaiseError => 0, PrintError => 0 },
+        RT::Handle->SystemDSN, $ARGS{DatabaseAdmin}, $ARGS{DatabaseAdminPassword}, { RaiseError => 0, PrintError => 0 },
     );
 
     if ( $dbh ) {
+        push @results, 'connect succeed!';
+        # dba connect dsn, which has table info
+        $dbh = DBI->connect(
+            RT::Handle->DSN, $ARGS{DatabaseAdmin}, $ARGS{DatabaseAdminPassword}, { RaiseError => 0, PrintError => 0 },
+        );
+
+        if ( $dbh ) {
+            # check if Tickets table exists
+            my $sth = $dbh->table_info('', '', 'Tickets', 'TABLE');
+            # get 'Tickets' if it exists
+            if ( ($sth->fetchrow_array)[2] ) {
+
+                $sth = $dbh->prepare('select id from Users where Name=?');
+                $sth->execute('RT_System'); 
+                if ( $sth->fetchrow_array ) {
+                    $RT::Installer->{DatabaseAction} = 'none';
+                    push @results, "Database $RT::DatabaseName seems complete,
+don't need to initialize any more.";
+                }
+                else {
+                    $RT::Installer->{DatabaseAction} = 'acl,coredata,insert';
+                    push @results, "Database $RT::DatabaseName already exists 
+and has RT tables in place, but does not contain RT's metadata. 'Initialize
+Database' later can use this existing db and tables and insert metadata, if this's ok, click 'Customize Baisc' below to go on customizing RT";
+                }
+            }
+            else {
+                $RT::Installer->{DatabaseAction} = 'schema,acl,coredata,insert';
+                push @results, "Database $RT::DatabaseName already exists, but
+does not contain RT's tables and metadata. 'Initialize Database' later can use
+this existing db and insert tables and metadata, if this's ok, click
+'Customize Baisc' below to go on customizing RT";
+            }
+
+        }
+        else {
+            $RT::Installer->{DatabaseAction} =
+'create,schema,acl,coredata,insert';
+        }
+    }
+    else {
+        $RT::Installer->{DatabaseAction} = 'error';
+        push @results, "Failed to connect: $DBI::errstr";
+    }
+
+    if ( $ARGS{Next} && $RT::Installer->{DatabaseAction} && $RT::Installer->{DatabaseAction} ne 'error' ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'installation/Basics.html');
     }
-    else {
-        push @results, "Failed to connect: $DBI::errstr";
-    }
+
 }
 
 </%init>
