@@ -55,7 +55,7 @@ my %Meta = (
     DatabaseType => {
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Type of the database where RT will store its data',
+            Description => 'Database type',
             Values      => [
                 grep {
                     my $m = 'DBD::' . $_;
@@ -65,7 +65,7 @@ my %Meta = (
             ValuesLabel => {
                 mysql  => 'MySQL',                                          #loc
                 Pg     => 'PostgreSQL',                                     #loc
-                SQLite => 'SQLite (for experiments and development only)',  #loc
+                SQLite => 'SQLite',  #loc
                 Oracle => 'Oracle',                                         #loc
             },
         },
@@ -73,7 +73,8 @@ my %Meta = (
     DatabaseHost => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'The domain name of your database server',       #loc
+            Description => 'Database host',
+            Hints => "The domain name of your database server (like 'db.int.example.com')",       #loc
         },
     },
     DatabasePort => {
@@ -88,7 +89,8 @@ my %Meta = (
     DatabaseName => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Name of the database',                          #loc
+            Description => 'Database name', #loc
+            Hints => "What your database server will call RT's database. (like 'rt3')"
         },
     },
     DatabaseAdmin => {
