@@ -97,8 +97,8 @@ sub SaveAttribute {
 
     return $object->AddAttribute(
         'Name'        => 'Dashboard',
-        'Description' => $args{'Name'},
-        'Content'     => {Searches => $args{'Searches'}},
+        'Description' => $args->{'Name'},
+        'Content'     => {Searches => $args->{'Searches'}},
     );
 }
 
