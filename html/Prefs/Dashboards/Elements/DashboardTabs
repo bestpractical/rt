@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /User/Elements/Tabs,
     subtabs => $tabs,
-    current_tab => 'Prefs/Dashboards',
+    current_tab => 'Prefs/Dashboards/index.html',
     current_subtab => $current_subtab,
     Title => $Title &>
 

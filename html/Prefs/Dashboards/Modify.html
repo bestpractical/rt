@@ -82,14 +82,16 @@ my $tried_create = 0;
 
 use RT::Dashboard;
 
-my @privacies = RT::Dashboard->new($session{'CurrentUser'})->_PrivacyObjects;
-
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
+my @privacies = $Dashboard->_PrivacyObjects;
+
+# user went directly to Modify.html
+$Create = 1 if !$id;
 
 if ($Create) {
     $current_subtab = 'Prefs/Dashboards/Modify.html?Create=1';
     $title = loc("Create a new dashboard");
-} 
+}
 else {
     if ($id eq 'new') {
         my ($val, $msg);
@@ -133,7 +135,7 @@ if (!$Create && !$tried_create && $id && defined($ARGS{'Name'})) {
     my ($ok, $msg);
     if ($session{'CurrentUser'}->HasRight(Right => 'ModifyDashboard', Object => $RT::System)) {
         ($ok, $msg) = $Dashboard->Update(Privacy  => $ARGS{'Privacy'},
-                                      Name     => $ARGS{'Name'});
+                                         Name     => $ARGS{'Name'});
     }
     else {
         $msg = "No permission to update dashboards";
