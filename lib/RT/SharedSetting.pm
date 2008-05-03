@@ -244,6 +244,76 @@ sub Privacy {
     return $self->{'Privacy'};
 }
 
+=head2 GetParameter
+
+Returns the given named parameter of the setting.
+
+=cut
+
+sub GetParameter {
+    my $self = shift;
+    my $param = shift;
+    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
+    return $self->{'Attribute'}->SubValue($param);
+}
+
+### Internal methods
+
+# _GetObject: helper routine to load the correct object whose parameters
+#  have been passed.
+
+sub _GetObject {
+    my $self = shift;
+    my $privacy = shift;
+
+    my ($obj_type, $obj_id) = split(/\-/, ($privacy || ''));
+    if (!defined $obj_id) {
+        $RT::Logger->warning("Invalid privacy string \"$privacy\" passed to _GetObject");
+        return undef;
+    }
+
+    my $object = $self->_load_privacy_object($obj_type, $obj_id);
+
+    unless (ref($object) eq $obj_type) {
+        $RT::Logger->error("Could not load object of type $obj_type with ID $obj_id, got object of type " . (ref($object) || 'undef'));
+        return undef;
+    }
+
+    # Do not allow the loading of a user object other than the current
+    # user, or of a group object of which the current user is not a member.
+
+    if ($obj_type eq 'RT::User' && $object->Id != $self->CurrentUser->UserObj->Id) {
+        $RT::Logger->debug("Permission denied for user other than self");
+        return undef;
+    }
+
+    if ($obj_type eq 'RT::Group' && !$object->HasMemberRecursively($self->CurrentUser->PrincipalObj)) {
+        $RT::Logger->debug("Permission denied, ".$self->CurrentUser->Name.
+                           " is not a member of group");
+        return undef;
+    }
+
+    return $object;
+}
+
+sub _load_privacy_object {
+    my ($self, $obj_type, $obj_id) = @_;
+    if ( $obj_type eq 'RT::User' && $obj_id == $self->CurrentUser->Id)  {
+        return $self->CurrentUser->UserObj;
+    }
+    elsif ($obj_type eq 'RT::Group') {
+        my $group = RT::Group->new($self->CurrentUser);
+        $group->Load($obj_id);
+        return $group;
+    }
+    elsif ($obj_type eq 'RT::System') {
+        return RT::System->new($self->CurrentUser);
+    }
+
+    $RT::Logger->error("Tried to load a " . $self->ObjectName . " belonging to an $obj_type, which is neither a user nor a group");
+    return undef;
+}
+
 eval "require RT::SharedSetting_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/SharedSetting_Vendor.pm});
 eval "require RT::SharedSetting_Local";
