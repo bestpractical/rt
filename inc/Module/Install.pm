@@ -17,19 +17,29 @@ package Module::Install;
 #     3. The ./inc/ version of Module::Install loads
 # }
 
-use 5.004;
+BEGIN {
+	require 5.004;
+}
 use strict 'vars';
 
 use vars qw{$VERSION};
 BEGIN {
-    # All Module::Install core packages now require synchronised versions.
-    # This will be used to ensure we don't accidentally load old or
-    # different versions of modules.
-    # This is not enforced yet, but will be some time in the next few
-    # releases once we can make sure it won't clash with custom
-    # Module::Install extensions.
-    $VERSION = '0.68';
+	# All Module::Install core packages now require synchronised versions.
+	# This will be used to ensure we don't accidentally load old or
+	# different versions of modules.
+	# This is not enforced yet, but will be some time in the next few
+	# releases once we can make sure it won't clash with custom
+	# Module::Install extensions.
+	$VERSION = '0.72';
+
+	*inc::Module::Install::VERSION = *VERSION;
+	@inc::Module::Install::ISA     = __PACKAGE__;
+
 }
+
+
+
+
 
 # Whether or not inc::Module::Install is actually loaded, the
 # $INC{inc/Module/Install.pm} is what will still get set as long as
@@ -38,26 +48,29 @@ BEGIN {
 # they may not have a MI version that works with the Makefile.PL. This would
 # result in false errors or unexpected behaviour. And we don't want that.
 my $file = join( '/', 'inc', split /::/, __PACKAGE__ ) . '.pm';
-unless ( $INC{$file} ) {
-    die <<"END_DIE";
+unless ( $INC{$file} ) { die <<"END_DIE" }
+
 Please invoke ${\__PACKAGE__} with:
 
-    use inc::${\__PACKAGE__};
+	use inc::${\__PACKAGE__};
 
 not:
 
-    use ${\__PACKAGE__};
+	use ${\__PACKAGE__};
 
 END_DIE
-}
+
+
+
+
 
 # If the script that is loading Module::Install is from the future,
 # then make will detect this and cause it to re-run over and over
 # again. This is bad. Rather than taking action to touch it (which
 # is unreliable on some platforms and requires write permissions)
 # for now we should catch this and refuse to run.
-if ( -f $0 and (stat($0))[9] > time ) {
-	die << "END_DIE";
+if ( -f $0 and (stat($0))[9] > time ) { die <<"END_DIE" }
+
 Your installer $0 has a modification time in the future.
 
 This is known to create infinite loops in make.
@@ -65,115 +78,142 @@ This is known to create infinite loops in make.
 Please correct this, then run $0 again.
 
 END_DIE
-}
+
+
+
+
+
+# Build.PL was formerly supported, but no longer is due to excessive
+# difficulty in implementing every single feature twice.
+if ( $0 =~ /Build.PL$/i or -f 'Build.PL' ) { die <<"END_DIE" }
+
+Module::Install no longer supports Build.PL.
+
+It was impossible to maintain duel backends, and has been deprecated.
+
+Please remove all Build.PL files and only use the Makefile.PL installer.
+
+END_DIE
+
+
+
+
+
+# To save some more typing in Module::Install installers, every...
+# use inc::Module::Install
+# ...also acts as an implicit use strict.
+$^H |= strict::bits(qw(refs subs vars));
+
+
+
+
 
 use Cwd        ();
 use File::Find ();
 use File::Path ();
 use FindBin;
 
-*inc::Module::Install::VERSION = *VERSION;
-@inc::Module::Install::ISA     = __PACKAGE__;
-
 sub autoload {
-    my $self = shift;
-    my $who  = $self->_caller;
-    my $cwd  = Cwd::cwd();
-    my $sym  = "${who}::AUTOLOAD";
-    $sym->{$cwd} = sub {
-        my $pwd = Cwd::cwd();
-        if ( my $code = $sym->{$pwd} ) {
-            # delegate back to parent dirs
-            goto &$code unless $cwd eq $pwd;
-        }
-        $$sym =~ /([^:]+)$/ or die "Cannot autoload $who - $sym";
-        unshift @_, ($self, $1);
-        goto &{$self->can('call')} unless uc($1) eq $1;
-    };
+	my $self = shift;
+	my $who  = $self->_caller;
+	my $cwd  = Cwd::cwd();
+	my $sym  = "${who}::AUTOLOAD";
+	$sym->{$cwd} = sub {
+		my $pwd = Cwd::cwd();
+		if ( my $code = $sym->{$pwd} ) {
+			# delegate back to parent dirs
+			goto &$code unless $cwd eq $pwd;
+		}
+		$$sym =~ /([^:]+)$/ or die "Cannot autoload $who - $sym";
+		unshift @_, ( $self, $1 );
+		goto &{$self->can('call')} unless uc($1) eq $1;
+	};
 }
 
 sub import {
-    my $class = shift;
-    my $self  = $class->new(@_);
-    my $who   = $self->_caller;
+	my $class = shift;
+	my $self  = $class->new(@_);
+	my $who   = $self->_caller;
 
-    unless ( -f $self->{file} ) {
-        require "$self->{path}/$self->{dispatch}.pm";
-        File::Path::mkpath("$self->{prefix}/$self->{author}");
-        $self->{admin} = "$self->{name}::$self->{dispatch}"->new( _top => $self );
-        $self->{admin}->init;
-        @_ = ($class, _self => $self);
-        goto &{"$self->{name}::import"};
-    }
+	unless ( -f $self->{file} ) {
+		require "$self->{path}/$self->{dispatch}.pm";
+		File::Path::mkpath("$self->{prefix}/$self->{author}");
+		$self->{admin} = "$self->{name}::$self->{dispatch}"->new( _top => $self );
+		$self->{admin}->init;
+		@_ = ($class, _self => $self);
+		goto &{"$self->{name}::import"};
+	}
 
-    *{"${who}::AUTOLOAD"} = $self->autoload;
-    $self->preload;
+	*{"${who}::AUTOLOAD"} = $self->autoload;
+	$self->preload;
 
-    # Unregister loader and worker packages so subdirs can use them again
-    delete $INC{"$self->{file}"};
-    delete $INC{"$self->{path}.pm"};
+	# Unregister loader and worker packages so subdirs can use them again
+	delete $INC{"$self->{file}"};
+	delete $INC{"$self->{path}.pm"};
+
+	return 1;
 }
 
 sub preload {
-    my ($self) = @_;
+	my $self = shift;
+	unless ( $self->{extensions} ) {
+		$self->load_extensions(
+			"$self->{prefix}/$self->{path}", $self
+		);
+	}
 
-    unless ( $self->{extensions} ) {
-        $self->load_extensions(
-            "$self->{prefix}/$self->{path}", $self
-        );
-    }
+	my @exts = @{$self->{extensions}};
+	unless ( @exts ) {
+		my $admin = $self->{admin};
+		@exts = $admin->load_all_extensions;
+	}
 
-    my @exts = @{$self->{extensions}};
-    unless ( @exts ) {
-        my $admin = $self->{admin};
-        @exts = $admin->load_all_extensions;
-    }
+	my %seen;
+	foreach my $obj ( @exts ) {
+		while (my ($method, $glob) = each %{ref($obj) . '::'}) {
+			next unless $obj->can($method);
+			next if $method =~ /^_/;
+			next if $method eq uc($method);
+			$seen{$method}++;
+		}
+	}
 
-    my %seen;
-    foreach my $obj ( @exts ) {
-        while (my ($method, $glob) = each %{ref($obj) . '::'}) {
-            next unless $obj->can($method);
-            next if $method =~ /^_/;
-            next if $method eq uc($method);
-            $seen{$method}++;
-        }
-    }
-
-    my $who = $self->_caller;
-    foreach my $name ( sort keys %seen ) {
-        *{"${who}::$name"} = sub {
-            ${"${who}::AUTOLOAD"} = "${who}::$name";
-            goto &{"${who}::AUTOLOAD"};
-        };
-    }
+	my $who = $self->_caller;
+	foreach my $name ( sort keys %seen ) {
+		*{"${who}::$name"} = sub {
+			${"${who}::AUTOLOAD"} = "${who}::$name";
+			goto &{"${who}::AUTOLOAD"};
+		};
+	}
 }
 
 sub new {
-    my ($class, %args) = @_;
+	my ($class, %args) = @_;
 
-    # ignore the prefix on extension modules built from top level.
-    my $base_path = Cwd::abs_path($FindBin::Bin);
-    unless ( Cwd::abs_path(Cwd::cwd()) eq $base_path ) {
-        delete $args{prefix};
-    }
+	# ignore the prefix on extension modules built from top level.
+	my $base_path = Cwd::abs_path($FindBin::Bin);
+	unless ( Cwd::abs_path(Cwd::cwd()) eq $base_path ) {
+		delete $args{prefix};
+	}
 
-    return $args{_self} if $args{_self};
+	return $args{_self} if $args{_self};
 
-    $args{dispatch} ||= 'Admin';
-    $args{prefix}   ||= 'inc';
-    $args{author}   ||= ($^O eq 'VMS' ? '_author' : '.author');
-    $args{bundle}   ||= 'inc/BUNDLES';
-    $args{base}     ||= $base_path;
-    $class =~ s/^\Q$args{prefix}\E:://;
-    $args{name}     ||= $class;
-    $args{version}  ||= $class->VERSION;
-    unless ( $args{path} ) {
-        $args{path}  = $args{name};
-        $args{path}  =~ s!::!/!g;
-    }
-    $args{file}     ||= "$args{base}/$args{prefix}/$args{path}.pm";
+	$args{dispatch} ||= 'Admin';
+	$args{prefix}   ||= 'inc';
+	$args{author}   ||= ($^O eq 'VMS' ? '_author' : '.author');
+	$args{bundle}   ||= 'inc/BUNDLES';
+	$args{base}     ||= $base_path;
+	$class =~ s/^\Q$args{prefix}\E:://;
+	$args{name}     ||= $class;
+	$args{version}  ||= $class->VERSION;
+	unless ( $args{path} ) {
+		$args{path}  = $args{name};
+		$args{path}  =~ s!::!/!g;
+	}
+	$args{file}     ||= "$args{base}/$args{prefix}/$args{path}.pm";
+	$args{wrote}      = 0;
 
-    bless( \%args, $class );
+	bless( \%args, $class );
 }
 
 sub call {
@@ -184,98 +224,130 @@ sub call {
 }
 
 sub load {
-    my ($self, $method) = @_;
+	my ($self, $method) = @_;
 
-    $self->load_extensions(
-        "$self->{prefix}/$self->{path}", $self
-    ) unless $self->{extensions};
+	$self->load_extensions(
+		"$self->{prefix}/$self->{path}", $self
+	) unless $self->{extensions};
 
-    foreach my $obj (@{$self->{extensions}}) {
-        return $obj if $obj->can($method);
-    }
+	foreach my $obj (@{$self->{extensions}}) {
+		return $obj if $obj->can($method);
+	}
 
-    my $admin = $self->{admin} or die <<"END_DIE";
+	my $admin = $self->{admin} or die <<"END_DIE";
 The '$method' method does not exist in the '$self->{prefix}' path!
 Please remove the '$self->{prefix}' directory and run $0 again to load it.
 END_DIE
 
-    my $obj = $admin->load($method, 1);
-    push @{$self->{extensions}}, $obj;
+	my $obj = $admin->load($method, 1);
+	push @{$self->{extensions}}, $obj;
 
-    $obj;
+	$obj;
 }
 
 sub load_extensions {
-    my ($self, $path, $top) = @_;
+	my ($self, $path, $top) = @_;
 
-    unless ( grep { lc $_ eq lc $self->{prefix} } @INC ) {
-        unshift @INC, $self->{prefix};
-    }
+	unless ( grep { lc $_ eq lc $self->{prefix} } @INC ) {
+		unshift @INC, $self->{prefix};
+	}
 
-    foreach my $rv ( $self->find_extensions($path) ) {
-        my ($file, $pkg) = @{$rv};
-        next if $self->{pathnames}{$pkg};
+	foreach my $rv ( $self->find_extensions($path) ) {
+		my ($file, $pkg) = @{$rv};
+		next if $self->{pathnames}{$pkg};
 
-        local $@;
-        my $new = eval { require $file; $pkg->can('new') };
-        unless ( $new ) {
-            warn $@ if $@;
-            next;
-        }
-        $self->{pathnames}{$pkg} = delete $INC{$file};
-        push @{$self->{extensions}}, &{$new}($pkg, _top => $top );
-    }
+		local $@;
+		my $new = eval { require $file; $pkg->can('new') };
+		unless ( $new ) {
+			warn $@ if $@;
+			next;
+		}
+		$self->{pathnames}{$pkg} = delete $INC{$file};
+		push @{$self->{extensions}}, &{$new}($pkg, _top => $top );
+	}
 
-    $self->{extensions} ||= [];
+	$self->{extensions} ||= [];
 }
 
 sub find_extensions {
-    my ($self, $path) = @_;
+	my ($self, $path) = @_;
 
-    my @found;
-    File::Find::find( sub {
-        my $file = $File::Find::name;
-        return unless $file =~ m!^\Q$path\E/(.+)\.pm\Z!is;
-        my $subpath = $1;
-        return if lc($subpath) eq lc($self->{dispatch});
+	my @found;
+	File::Find::find( sub {
+		my $file = $File::Find::name;
+		return unless $file =~ m!^\Q$path\E/(.+)\.pm\Z!is;
+		my $subpath = $1;
+		return if lc($subpath) eq lc($self->{dispatch});
 
-        $file = "$self->{path}/$subpath.pm";
-        my $pkg = "$self->{name}::$subpath";
-        $pkg =~ s!/!::!g;
+		$file = "$self->{path}/$subpath.pm";
+		my $pkg = "$self->{name}::$subpath";
+		$pkg =~ s!/!::!g;
 
-        # If we have a mixed-case package name, assume case has been preserved
-        # correctly.  Otherwise, root through the file to locate the case-preserved
-        # version of the package name.
-        if ( $subpath eq lc($subpath) || $subpath eq uc($subpath) ) {
-            open PKGFILE, "<$subpath.pm" or die "find_extensions: Can't open $subpath.pm: $!";
-            my $in_pod = 0;
-            while ( <PKGFILE> ) {
-                $in_pod = 1 if /^=\w/;
-                $in_pod = 0 if /^=cut/;
-                next if ($in_pod || /^=cut/);  # skip pod text
-                next if /^\s*#/;               # and comments
-                if ( m/^\s*package\s+($pkg)\s*;/i ) {
-                    $pkg = $1;
-                    last;
-                }
-            }
-            close PKGFILE;
-        }
+		# If we have a mixed-case package name, assume case has been preserved
+		# correctly.  Otherwise, root through the file to locate the case-preserved
+		# version of the package name.
+		if ( $subpath eq lc($subpath) || $subpath eq uc($subpath) ) {
+			my $content = Module::Install::_read($subpath . '.pm');
+			my $in_pod  = 0;
+			foreach ( split //, $content ) {
+				$in_pod = 1 if /^=\w/;
+				$in_pod = 0 if /^=cut/;
+				next if ($in_pod || /^=cut/);  # skip pod text
+				next if /^\s*#/;               # and comments
+				if ( m/^\s*package\s+($pkg)\s*;/i ) {
+					$pkg = $1;
+					last;
+				}
+			}
+		}
 
-        push @found, [ $file, $pkg ];
-    }, $path ) if -d $path;
+		push @found, [ $file, $pkg ];
+	}, $path ) if -d $path;
 
-    @found;
+	@found;
 }
 
+
+
+
+
+#####################################################################
+# Utility Functions
+
 sub _caller {
-    my $depth = 0;
-    my $call  = caller($depth);
-    while ( $call eq __PACKAGE__ ) {
-        $depth++;
-        $call = caller($depth);
-    }
-    return $call;
+	my $depth = 0;
+	my $call  = caller($depth);
+	while ( $call eq __PACKAGE__ ) {
+		$depth++;
+		$call = caller($depth);
+	}
+	return $call;
+}
+
+sub _read {
+	local *FH;
+	open FH, "< $_[0]" or die "open($_[0]): $!";
+	my $str = do { local $/; <FH> };
+	close FH or die "close($_[0]): $!";
+	return $str;
+}
+
+sub _write {
+	local *FH;
+	open FH, "> $_[0]" or die "open($_[0]): $!";
+	foreach ( 1 .. $#_ ) { print FH $_[$_] or die "print($_[0]): $!" }
+	close FH or die "close($_[0]): $!";
+}
+
+sub _version {
+	my $s = shift || 0;
+	   $s =~ s/^(\d+)\.?//;
+	my $l = $1 || 0;
+	my @v = map { $_ . '0' x (3 - length $_) } $s =~ /(\d{1,3})\D?/g;
+	   $l = $l . '.' . join '', @v if @v;
+	return $l + 0;
 }
 
 1;
+
+# Copyright 2008 Adam Kennedy.

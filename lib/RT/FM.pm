@@ -18,6 +18,7 @@
 
 package RT::FM;
 
+use 5.8.3;
 use strict;
 use warnings;
 
