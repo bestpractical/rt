@@ -31,6 +31,8 @@ NOTE that upgrade steps are described below.
 
 6) stop and start your web server
 
+7) Before you can add content to RTFM articles, you will need to configure
+   classes and custom fields. For details, see lib/RT/FM/Introduction.pod
 
 Upgrade instructions (From any  2.0.x release):
 -----------------------------------------------------
