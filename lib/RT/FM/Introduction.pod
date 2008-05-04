@@ -1,0 +1,47 @@
+
+=head1 INTRODUCTION
+
+=head2 Basics
+
+Staff users should be now have a new "RTFM" menu item RT's top level menu.
+As an administrator, you should go create some "Classes" of articles in RTFM.
+Classes are equivalent to RT's queues. Unlike RTFM 1.0, RTFM 2.0 doesn't have a
+single "body" section for each article. Everything is a custom field (except
+for name, summary and some other basic metadata). So, you need to go create
+some custom fields.
+
+Once you've created your custom fields, go into your classes and click
+on "Custom Fields" and add the Custom Fields you want to each class.
+
+Grant some ACLs to your users and start creating articles.
+
+You can also bind articles to topics. Topics are created by administrators
+on classes using the 'Topics' submenu of the RTFM class configuration.
+The configuration screen for the class has a tab for 'topics'. Typing the
+name (and optionally description) of the topic, and then clicking the button
+at the appropriate location. This should allow you to build a tree of topics.
+This tree of topics should show up when creating or modifying articles
+in the class. These can be arbitrarily nested categories.
+
+Articles topics can be set from the 'Modify' screen for the article --
+simply select as many topics as you desire from the list at the bottom
+of the screen.
+
+Of course, RTFM integrates with RT.  You can extract the body of a
+ticket into an article. Within RT, you should now see an "Extract to
+article" button in the upper right hand corner of RT's UI when working
+with tickets. When you click that button, RTFM will ask you which
+Class to create your new article in.  Once you click on a class name,
+the Ticket's transactions will be displayed, along with a set of
+select boxes. For each transaction, you can pick which Freeform, Text,
+or WikiText field that transaction should be extracted to. From there
+on in, it's just regular article creation.  And the integration
+doesn't stop there! When replying to or commenting on tickets, there's
+a new UI widget that lets you search for and include RTFM articles in
+your reply. (They're editable, of course).
+
+=head2 Config options
+
+You can read about that in F<lib/RT/FM/Config.pod>
+
+=cut
