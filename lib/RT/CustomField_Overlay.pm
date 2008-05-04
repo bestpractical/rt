@@ -203,7 +203,7 @@ sub Create {
     my ($ok, $msg) = $self->_IsValidRegex( $args{'Pattern'} );
     return (0, $self->loc("Invalid pattern: [_1]", $msg)) unless $ok;
 
-    if ( $args{'MaxValues'} != 1 && $args{'Type'} =~ /^(text|combobox)$/i ) {
+    if ( $args{'MaxValues'} != 1 && $args{'Type'} =~ /(text|combobox)$/i ) {
         $RT::Logger->warning("Support for 'multiple' Texts or Comboboxes is not implemented");
         $args{'MaxValues'} = 1;
     }
