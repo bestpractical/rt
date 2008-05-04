@@ -1,3 +1,19 @@
+2.2.2
+
+FEATURES
+========
+
+ * add new option $RT::RTFM_ParseContentAsTemplate
+
+CLEANUPS
+========
+
+ * remove dependance on YAML
+
+ * upgrade Module::Install facility
+
+ * various doc and code cleanups
+
 2.2.1
 
 BUGS
