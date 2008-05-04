@@ -3,7 +3,6 @@ Changelog
 docs/adding_ticketing
 docs/developers_guide
 docs/schema.html
-docs/todo
 docs/whatwsitgoodfor
 etc/acl.mysql
 etc/acl.Oracle
@@ -124,6 +123,8 @@ lib/RT/FM/Class.pm
 lib/RT/FM/Class_Overlay.pm
 lib/RT/FM/ClassCollection.pm
 lib/RT/FM/ClassCollection_Overlay.pm
+lib/RT/FM/Config.pod
+lib/RT/FM/Introduction.pod
 lib/RT/FM/ObjectTopic.pm
 lib/RT/FM/ObjectTopicCollection.pm
 lib/RT/FM/ObjectTopicCollection_Overlay.pm
