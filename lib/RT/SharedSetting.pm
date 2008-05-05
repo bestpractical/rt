@@ -267,10 +267,6 @@ sub _GetObject {
     my $privacy = shift;
 
     my ($obj_type, $obj_id) = split(/\-/, ($privacy || ''));
-    if (!defined $obj_id) {
-        $RT::Logger->warning("Invalid privacy string \"$privacy\" passed to _GetObject");
-        return undef;
-    }
 
     my $object = $self->_load_privacy_object($obj_type, $obj_id);
 
