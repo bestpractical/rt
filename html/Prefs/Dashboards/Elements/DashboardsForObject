@@ -53,10 +53,7 @@ $Object => undef
 
 use RT::Dashboard;
 my @dashboards;
-my $privacy = $Object->isa('RT::User')   ? 'RT::User-'  . $Object->Id
-            : $Object->isa('RT::Group')  ? 'RT::Group-' . $Object->Id
-            : $Object->isa('RT::System') ? 'RT::System'
-            : '';
+my $privacy = RT::Dashboard->_build_privacy($Object);
 
 while (my $attr = $Object->Attributes->Next) {
     if ($attr->Name =~ /^Dashboard\b/) {

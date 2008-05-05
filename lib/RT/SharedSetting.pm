@@ -81,10 +81,10 @@ sub new  {
 
 =head2 Load
 
-Takes a privacy specification, an object ID, and a shared-setting ID.  Loads the
-given object ID if it belongs to the stated user or group.  Calls the PostLoad
-method on success for any further initialization. Returns a tuple of status and
-message, where status is true on success.
+Takes a privacy specification and a shared-setting ID.  Loads the given object
+ID if it belongs to the stated user or group. Calls the PostLoad method on
+success for any further initialization. Returns a tuple of status and message,
+where status is true on success.
 
 =cut
 
@@ -112,6 +112,30 @@ sub Load {
 }
 
 sub PostLoad { }
+
+=head2 LoadById
+
+First loads up the L<RT::Attribute> for this shared setting by ID, then calls
+L</Load> with the correct parameters. Returns a tuple of status and message,
+where status is true on success.
+
+=cut
+
+sub LoadById {
+    my $self = shift;
+    my $id   = shift;
+
+    my $attr = RT::Attribute->new($self->CurrentUser);
+    unless ($attr->LoadById($id)) {
+        return (0, $self->loc("Failed to load attribute [_1]", $id))
+    }
+
+    my $privacy = $self->_build_privacy($attr->ObjectType, $attr->ObjectId);
+    return (0, $self->loc("Bad privacy for attribute [_1], $id"))
+        if !$privacy;
+
+    return $self->Load($privacy, $id);
+}
 
 =head2 Save
 
@@ -308,6 +332,24 @@ sub _load_privacy_object {
 
     $RT::Logger->error("Tried to load a " . $self->ObjectName . " belonging to an $obj_type, which is neither a user nor a group");
     return undef;
+}
+
+sub _build_privacy {
+    my ($self, $obj_type, $obj_id) = @_;
+
+    # allow passing in just an object to find its privacy string
+    if (ref($obj_type)) {
+        my $Object = $obj_type;
+        return $Object->isa('RT::User')   ? 'RT::User-'  . $Object->Id
+             : $Object->isa('RT::Group')  ? 'RT::Group-' . $Object->Id
+             : $Object->isa('RT::System') ? 'RT::System'
+             : undef;
+    }
+
+    return $obj_type eq 'RT::User'   ? "$obj_type-$obj_id"
+         : $obj_type eq 'RT::Group'  ? "$obj_type-$obj_id"
+         : $obj_type eq 'RT::System' ? $obj_type
+         : undef;
 }
 
 eval "require RT::SharedSetting_Vendor";

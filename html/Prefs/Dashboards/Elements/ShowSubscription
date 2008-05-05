@@ -51,10 +51,9 @@ $Dashboard => undef
 $Subscription => undef
 </%ARGS>
 <%INIT>
-my $url = sprintf '%s/Prefs/Dashboards/Subscription.html?DashboardId=%d&Privacy=%s',
+my $url = sprintf '%s/Prefs/Dashboards/Subscription.html?DashboardId=%d',
           $RT::WebPath,
-          $Dashboard->Id,
-          $Dashboard->Privacy;
+          $Dashboard->Id,;
 
 my $frequency = loc("None");
 

@@ -78,15 +78,13 @@
 
 <%INIT>
 
-my $current_subtab = 'Prefs/Dashboards/Queries.html?id='
-                   . $id
-                   . '&Privacy=' . $Privacy;
+my $current_subtab = 'Prefs/Dashboards/Queries.html?id=' . $id;
 my @results;
 
 use RT::Dashboard;
 my $Dashboard = new RT::Dashboard($session{'CurrentUser'});
-$Dashboard->Load($ARGS{'Privacy'}, $id)
-    or Abort("Couldn't load dashboard.");
+my ($ok) = $Dashboard->LoadById($id)
+$ok || Abort("Couldn't load dashboard.");
 my $title = loc("Modify the queries of dashboard [_1]", $Dashboard->Name);
 
 my %desc_of;
@@ -161,7 +159,7 @@ $m->comp('/Widgets/SelectionBox:process', %ARGS, self => $sel, nojs => 1);
 
 </%INIT>
 <%ARGS>
-$Privacy => undef
+$Privacy
 $id => '' unless defined $id
 </%ARGS>
 

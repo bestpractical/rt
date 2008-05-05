@@ -55,9 +55,8 @@
 my $tabs;
 my $real_subtab = $current_subtab;
 if ( $DashboardObj and $DashboardObj->Id ) {
-    my $idpriv = sprintf 'id=%d&Privacy=%s',
-                 $DashboardObj->Id,
-                 $DashboardObj->Privacy;
+    my $idpriv = sprintf 'id=%d',
+                 $DashboardObj->Id;
     my $modify  = "Prefs/Dashboards/Modify.html?$idpriv";
     my $queries = "Prefs/Dashboards/Queries.html?$idpriv";
     my $render  = "Prefs/Dashboards/Render.html?$idpriv";
@@ -76,7 +75,7 @@ if ( $DashboardObj and $DashboardObj->Id ) {
             },
 
             c_Subscription => { title => loc('Subscription'),
-                                path  => "Prefs/Dashboards/Subscription.html?DashboardId=" . $DashboardObj->Id . "&Privacy=" . $DashboardObj->Privacy
+                                path  => "Prefs/Dashboards/Subscription.html?DashboardId=" . $DashboardObj->Id
             },
 
 

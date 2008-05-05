@@ -114,15 +114,13 @@ else {
         $id = $Dashboard->Id;
     }
     else {
-        $Dashboard->Load($ARGS{'Privacy'}, $id)
-            or Abort('Could not load dashboard');
+        my ($ok) = $Dashboard->LoadById($id);
+        $ok || Abort('Could not load dashboard');
     }
 
     if ($id) {
         $title = loc("Modify the dashboard [_1]", $Dashboard->Name);
-        $current_subtab = 'Prefs/Dashboards/Modify.html?id='
-                        . $id
-                        . '&Privacy=' . $Privacy;
+        $current_subtab = 'Prefs/Dashboards/Modify.html?id=' . $id;
     }	
     # If the create failed
     else {
@@ -155,7 +153,6 @@ if (!$Create && !$tried_create && $id && defined($ARGS{'Name'})) {
 <%ARGS>
 $Create => undef
 $Name => undef
-$Privacy => undef
 $id => '' unless defined $id
 </%ARGS>
 

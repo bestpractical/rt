@@ -162,9 +162,7 @@ monthly</input> , on day
 
 <%INIT>
 
-my $current_subtab = 'Prefs/Dashboards/Subscription.html?DashboardId='
-                   . $DashboardId
-                   . '&Privacy=' . $Privacy;
+my $current_subtab = 'Prefs/Dashboards/Subscription.html?DashboardId=' . $DashboardId;
 
 my ($title, @results);
 my ($val, $msg);
@@ -179,16 +177,12 @@ my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
 # first let's see if we already have a subscription to this DashboardId
 for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
     next unless $sub->SubValue('DashboardId') == $DashboardId;
-    $Loaded = 1;
     $SubscriptionObj = $sub;
-    $DashboardObj->Load($SubscriptionObj->SubValue('Privacy'), 
-                     $SubscriptionObj->SubValue('DashboardId'));
-
+    ($Loaded) = $DashboardObj->LoadById($SubscriptionObj->SubValue('DashboardId'));
 }
 
 if (!$Loaded) {
-    my ($ok, $msg) = $DashboardObj->Load($ARGS{'Privacy'}, 
-                                      $ARGS{'DashboardId'});
+    my ($ok, $msg) = $DashboardObj->LoadById($ARGS{'DashboardId'});
     $ok || Abort("Couldn't subscribe to dashboard $DashboardId: $msg.");
 
     if ($session{'CurrentUser'}->HasRight(Right => 'SubscribeDashboard', Object => $RT::System)) {
@@ -251,13 +245,13 @@ $title = loc("Modify the subscription to dashboard [_1]", $DashboardObj->Name);
 
 </%INIT>
 <%ARGS>
-$DashboardId    => undef
-$Privacy     => undef
+$DashboardId => undef
 $Frequency   => undef
 $Hour        => undef
 $Dow         => undef
 $Dom         => undef
 $Rows        => undef
 $Unsubscribe => undef
+$Privacy
 </%ARGS>
 
