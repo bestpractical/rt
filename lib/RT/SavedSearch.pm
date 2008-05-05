@@ -89,10 +89,14 @@ sub SaveAttribute {
     my $object = shift;
     my $args   = shift;
 
+    my $params = $args->{'SearchParams'};
+
+    $params->{'SearchType'} = $args->{'Type'} || 'Ticket';
+
     return $object->AddAttribute(
         'Name'        => 'SavedSearch',
         'Description' => $args->{'Name'},
-        'Content'     => $args->{'SearchParams'},
+        'Content'     => $params,
     );
 }
 
