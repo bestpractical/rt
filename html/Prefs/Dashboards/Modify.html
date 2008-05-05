@@ -102,6 +102,7 @@ else {
                 Name                  => $ARGS{'Name'},
                 Privacy               => $ARGS{'Privacy'},
             );
+            push @results, $msg;
         }
         else {
             $msg = "No permission to create dashboards";

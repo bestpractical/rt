@@ -32,6 +32,11 @@ $user_obj->PrincipalObj->GrantRight(Right => 'ModifyDashboard');
 $m->get_ok($url."Prefs/Dashboards/index.html");
 $m->content_contains("New dashboard", "'New dashboard' link because we now have ModifyDashboard");
 
-$m->save_content('test.html');
+$m->follow_link_ok({text => "New dashboard"});
+$m->form_name('ModifyDashboard');
+$m->field("Name" => 'different dashboard');
+$m->click_button(value => 'Save Changes');
+$m->content_lacks("No permission to create dashboards");
+$m->content_contains("Saved dashboard different dashboard");
 
 
