@@ -177,7 +177,8 @@ sub Create {
         # old style Type string
         $args{'MaxValues'} = $1 ? 1 : 0;
     }
-    
+    $args{'MaxValues'} = int $args{'MaxValues'};
+
     if ( !exists $args{'Queue'}) {
     # do nothing -- things below are strictly backward compat
     }
@@ -202,6 +203,11 @@ sub Create {
 
     my ($ok, $msg) = $self->_IsValidRegex( $args{'Pattern'} );
     return (0, $self->loc("Invalid pattern: [_1]", $msg)) unless $ok;
+
+    if ( $args{'MaxValues'} != 1 && $args{'Type'} =~ /(text|combobox)$/i ) {
+        $RT::Logger->warning("Support for 'multiple' Texts or Comboboxes is not implemented");
+        $args{'MaxValues'} = 1;
+    }
 
     (my $rv, $msg) = $self->SUPER::Create(
         Name        => $args{'Name'},
