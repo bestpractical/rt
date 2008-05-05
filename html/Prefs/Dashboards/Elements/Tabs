@@ -91,10 +91,12 @@ if ( $DashboardObj and $DashboardObj->Id ) {
 
 $tabs->{"A"} = { title => loc('Select dashboard'),
                  path  => "Prefs/Dashboards/index.html" };
-$tabs->{"B"} = { title     => loc('New dashboard'),
-                 path      => "Prefs/Dashboards/Modify.html?Create=1",
-                 separator => 1 };
 
+if ($session{'CurrentUser'}->HasRight(Right => 'ModifyDashboard', Object => $RT::System)) {
+    $tabs->{"B"} = { title     => loc('New dashboard'),
+                     path      => "Prefs/Dashboards/Modify.html?Create=1",
+                     separator => 1 };
+}
 
 </%INIT>
 <%ARGS>
