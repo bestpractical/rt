@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, title => $title &>
-<& /Prefs/Dashboards/Elements/Tabs,
+<& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
     Title => $title,
     DashboardObj => $DashboardObj &>
@@ -67,7 +67,7 @@
 
 <%INIT>
 
-my $current_subtab = 'Prefs/Dashboards/Render.html?id=' $id;
+my $current_subtab = 'Dashboards/Render.html?id=' $id;
 
 use RT::Dashboard;
 my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});

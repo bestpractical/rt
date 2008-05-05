@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, title => $title &>
-<& /Prefs/Dashboards/Elements/Tabs,
+<& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
     Title => $title,
     DashboardObj => $Dashboard &>
@@ -55,7 +55,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/Prefs/Dashboards/Queries.html" method="post" enctype="multipart/form-data">
+<form action="<%$RT::WebPath%>/Dashboards/Queries.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<%$Dashboard->Id%>" />
 <input type="hidden" class="hidden" name="Privacy" value="<%$Dashboard->Privacy%>" />
 <table width="100%" border="0">
@@ -78,7 +78,7 @@
 
 <%INIT>
 
-my $current_subtab = 'Prefs/Dashboards/Queries.html?id=' . $id;
+my $current_subtab = 'Dashboards/Queries.html?id=' . $id;
 my @results;
 
 use RT::Dashboard;
@@ -125,7 +125,7 @@ for my $object (@objs) {
 # Create a selectionbox widget for those queries
 my $sel = $m->comp(
     '/Widgets/SelectionBox:new',
-    Action    => 'Prefs/Dashboards/Queries.html',
+    Action    => 'Dashboards/Queries.html',
     Name      => "Searches",
     Available => \@items,
     Selected  => \@selected,

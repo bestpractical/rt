@@ -46,8 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, title => $title &>
-<& /Prefs/Dashboards/Elements/Tabs,
-    current_subtab => 'Prefs/Dashboards/index.html',
+<& /Dashboards/Elements/Tabs,
+    current_subtab => 'Dashboards/index.html',
     Title => $title &>
 
 <& /Elements/ListActions,
@@ -55,18 +55,18 @@
              ? [loc("Unsubscribed to dashboard [_1]", $Unsubscribe)]
              : [] &>
 
-<& /Prefs/Dashboards/Elements/ShowDashboards,
+<& /Dashboards/Elements/ShowDashboards,
     Type       => "Personal",
     Dashboards => \@personal_dashboards,
 &>
 
-<& /Prefs/Dashboards/Elements/ShowDashboards,
+<& /Dashboards/Elements/ShowDashboards,
     Type => "System",
     Dashboards => \@system_dashboards,
 &>
 
 % for my $group (sort keys %group_dashboards) {
-    <& /Prefs/Dashboards/Elements/ShowDashboards,
+    <& /Dashboards/Elements/ShowDashboards,
         Type       => $group,
         Dashboards => $group_dashboards{$group},
     &>
@@ -83,7 +83,7 @@ use RT::Dashboard;
 my @objs = RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects(ShowSystem => 1);
 
 for my $object (@objs) {
-    for my $dashboard ($m->comp("/Prefs/Dashboards/Elements/DashboardsForObject", Object => $object)) {
+    for my $dashboard ($m->comp("/Dashboards/Elements/DashboardsForObject", Object => $object)) {
         if ($object->isa('RT::System')) {
             push @system_dashboards, $dashboard;
         }

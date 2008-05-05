@@ -46,14 +46,14 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, title => $title &>
-<& /Prefs/Dashboards/Elements/Tabs,
+<& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
     Title => $title,
     $Create ? () : (DashboardObj => $Dashboard),
 &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/Prefs/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="ModifyDashboard">
+<form action="<%$RT::WebPath%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="ModifyDashboard">
 
 %unless ($Dashboard->Id) {
 <input type="hidden" class="hidden" name="id" value="new" />
@@ -69,7 +69,7 @@
 <tr><td align="right">
 <&|/l&>Privacy</&>:
 </td><td>
-<& /Prefs/Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies &>
+<& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies &>
 </td></tr>
 </table>
 <& /Elements/Submit, Label => loc('Save Changes') &>
@@ -89,7 +89,7 @@ my @privacies = $Dashboard->_PrivacyObjects;
 $Create = 1 if !$id;
 
 if ($Create) {
-    $current_subtab = 'Prefs/Dashboards/Modify.html?Create=1';
+    $current_subtab = 'Dashboards/Modify.html?Create=1';
     $title = loc("Create a new dashboard");
 }
 else {
@@ -120,12 +120,12 @@ else {
 
     if ($id) {
         $title = loc("Modify the dashboard [_1]", $Dashboard->Name);
-        $current_subtab = 'Prefs/Dashboards/Modify.html?id=' . $id;
+        $current_subtab = 'Dashboards/Modify.html?id=' . $id;
     }	
     # If the create failed
     else {
         $Create = 1;
-        $current_subtab = 'Prefs/Dashboards/Modify.html?Create=1';
+        $current_subtab = 'Dashboards/Modify.html?Create=1';
         $title = loc("Create a new dashboard");
     }
 }

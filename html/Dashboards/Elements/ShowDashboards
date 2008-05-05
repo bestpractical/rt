@@ -59,7 +59,7 @@
 
 %   my $i = 0;
 %   for my $dashboard (sort {$b->Id <=> $a->Id} @$Dashboards) {
-%       my $url = sprintf '%s/Prefs/Dashboards/Modify.html?id=%d',
+%       my $url = sprintf '%s/Dashboards/Modify.html?id=%d',
 %                 $RT::WebPath,
 %                 $dashboard->Id;
 
@@ -75,7 +75,7 @@
                 </a>
             </td>
             <td class="collection-as-table">
-                <& /Prefs/Dashboards/Elements/ShowSubscription, Dashboard => $dashboard, Subscription => $subscription_for{$dashboard->Id} &>
+                <& /Dashboards/Elements/ShowSubscription, Dashboard => $dashboard, Subscription => $subscription_for{$dashboard->Id} &>
             </td>
         </tr>
 %   }

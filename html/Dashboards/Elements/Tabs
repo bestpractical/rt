@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /User/Elements/Tabs,
     subtabs => $tabs,
-    current_tab => 'Prefs/Dashboards/index.html',
+    current_tab => 'Dashboards/index.html',
     current_subtab => $current_subtab,
     Title => $Title &>
 
@@ -57,9 +57,9 @@ my $real_subtab = $current_subtab;
 if ( $DashboardObj and $DashboardObj->Id ) {
     my $idpriv = sprintf 'id=%d',
                  $DashboardObj->Id;
-    my $modify  = "Prefs/Dashboards/Modify.html?$idpriv";
-    my $queries = "Prefs/Dashboards/Queries.html?$idpriv";
-    my $render  = "Prefs/Dashboards/Render.html?$idpriv";
+    my $modify  = "Dashboards/Modify.html?$idpriv";
+    my $queries = "Dashboards/Queries.html?$idpriv";
+    my $render  = "Dashboards/Render.html?$idpriv";
 
     $tabs->{"this"} = {
         title   => $DashboardObj->Name,
@@ -75,7 +75,7 @@ if ( $DashboardObj and $DashboardObj->Id ) {
             },
 
             c_Subscription => { title => loc('Subscription'),
-                                path  => "Prefs/Dashboards/Subscription.html?DashboardId=" . $DashboardObj->Id
+                                path  => "Dashboards/Subscription.html?DashboardId=" . $DashboardObj->Id
             },
 
 
@@ -92,11 +92,11 @@ if ( $DashboardObj and $DashboardObj->Id ) {
 }
 
 $tabs->{"A"} = { title => loc('Select dashboard'),
-                 path  => "Prefs/Dashboards/index.html" };
+                 path  => "Dashboards/index.html" };
 
 if ($session{'CurrentUser'}->HasRight(Right => 'ModifyDashboard', Object => $RT::System)) {
     $tabs->{"B"} = { title     => loc('New dashboard'),
-                     path      => "Prefs/Dashboards/Modify.html?Create=1",
+                     path      => "Dashboards/Modify.html?Create=1",
                      separator => 1 };
 }
 

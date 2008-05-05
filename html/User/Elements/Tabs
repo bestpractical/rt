@@ -68,7 +68,7 @@
 			   path => 'Prefs/MyRT.html',
 			 },
 	       s => { title => loc('Dashboards'),
-			   path => 'Prefs/Dashboards/index.html',
+			   path => 'Dashboards/index.html',
 			 },
 	       t => { title => loc('Other'),
 			   path => 'Prefs/Other.html',

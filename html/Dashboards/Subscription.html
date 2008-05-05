@@ -46,14 +46,14 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, title => $title &>
-<& /Prefs/Dashboards/Elements/Tabs,
+<& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
     Title => $title,
     DashboardObj => $DashboardObj &>
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/Prefs/Dashboards/Subscription.html" method="post" enctype="multipart/form-data">
+<form action="<%$RT::WebPath%>/Dashboards/Subscription.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="DashboardId" value="<% $SubscriptionObj->SubValue('DashboardId') %>" />
 <input type="hidden" class="hidden" name="Privacy" value="<% $SubscriptionObj->SubValue('Privacy') %>" />
 <table width="100%" border="0">
@@ -162,7 +162,7 @@ monthly</input> , on day
 
 <%INIT>
 
-my $current_subtab = 'Prefs/Dashboards/Subscription.html?DashboardId=' . $DashboardId;
+my $current_subtab = 'Dashboards/Subscription.html?DashboardId=' . $DashboardId;
 
 my ($title, @results);
 my ($val, $msg);
@@ -219,7 +219,7 @@ if (!$Loaded) {
 if ($Unsubscribe) {
     my ($ok, $msg) = $SubscriptionObj->Delete();
     $ok || Abort("Couldn't unsubscribe to dashboard $DashboardId.");
-    RT::Interface::Web::Redirect($RT::WebURL."Prefs/Dashboards/index.html?Unsubscribe=$DashboardId");
+    RT::Interface::Web::Redirect($RT::WebURL."Dashboards/index.html?Unsubscribe=$DashboardId");
 }
 
 # if hour is undefined, then they're looking at this for the first time

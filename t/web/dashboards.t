@@ -17,19 +17,18 @@ $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 
 ok $m->login(customer => 'customer'), "logged in";
 
-$m->get_ok($url."Prefs/Dashboards/index.html");
+$m->get_ok($url."Dashboards/index.html");
 $m->content_lacks("New dashboard", "No 'new dashboard' link because we have no ModifyDashboard");
 
-$m->get_ok($url."Prefs/Dashboards/Modify.html?Create=1");
+$m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->form_name('ModifyDashboard');
-
 $m->field("Name" => 'test dashboard');
 $m->click_button(value => 'Save Changes');
 $m->content_contains("No permission to create dashboards");
 
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifyDashboard');
 
-$m->get_ok($url."Prefs/Dashboards/index.html");
+$m->get_ok($url."Dashboards/index.html");
 $m->content_contains("New dashboard", "'New dashboard' link because we now have ModifyDashboard");
 
 $m->follow_link_ok({text => "New dashboard"});
