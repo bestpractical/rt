@@ -1081,10 +1081,7 @@ sub VerifyDecrypt {
     return @res;
 }
 
-sub VerifyInline {
-    my %args = ( Data => undef, Top => undef, @_ );
-    return DecryptInline( %args );
-}
+sub VerifyInline { return DecryptInline( @_ ) }
 
 sub VerifyAttachment {
     my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
@@ -1286,7 +1283,7 @@ sub DecryptInline {
         RT::EmailParser->_DecodeBody($args{'Data'});
     }
 
-    # handling passphrase in GnupGOptions
+    # handling passphrase in GnuPGOptions
     $args{'Passphrase'} = delete $opt{'passphrase'}
         if !defined($args{'Passphrase'});
 
@@ -1296,24 +1293,84 @@ sub DecryptInline {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
+    my $io = $args{'Data'}->open('r');
+    unless ( $io ) {
+        die "Entity has no body, never should happen";
+    }
+
+    my ($had_literal, $in_block) = ('', 0);
+    my ($block_fh, $block_fn) = File::Temp::tempfile();
+    binmode $block_fh, ':raw';
+
+    my %res;
+    while ( defined(my $str = $io->getline) ) {
+        if ( $in_block && $str =~ /-----END PGP (?:MESSAGE|SIGNATURE)-----/ ) {
+            print $block_fh $str;
+            seek $block_fh, 0, 0;
+
+            my ($res_fh, $res_fn);
+            ($res_fh, $res_fn, %res) = _DecryptInlineBlock(
+                %args,
+                GnuPG => $gnupg,
+                BlockHandle => $block_fh,
+            );
+            return %res unless $res_fh;
+
+            print $tmp_fh "-----BEGIN OF PGP PROTECTED PART-----\n" if $had_literal;
+            while (my $buf = <$res_fh> ) {
+                print $tmp_fh $buf;
+            }
+            print $tmp_fh "-----END OF PART-----\n" if $had_literal;
+
+            ($block_fh, $block_fn) = File::Temp::tempfile();
+            binmode $block_fh, ':raw';
+            $in_block = 0;
+        }
+        elsif ( $in_block || $str =~ /-----BEGIN PGP (SIGNED )?MESSAGE-----/ ) {
+            $in_block = 1;
+            print $block_fh $str;
+        }
+        else {
+            print $tmp_fh $str;
+            $had_literal = 1 if /\S/s;
+        }
+    }
+    $io->close;
+
+    seek $tmp_fh, 0, 0;
+    $args{'Data'}->bodyhandle( new MIME::Body::File $tmp_fn );
+    $args{'Data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
+    return %res;
+}
+
+sub _DecryptInlineBlock {
+    my %args = (
+        GnuPG => undef,
+        BlockHandle => undef,
+        Passphrase => undef,
+        @_
+    );
+    my $gnupg = $args{'GnuPG'};
+
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    binmode $tmp_fh, ':raw';
+
     my %handle;
     my $handles = GnuPG::Handles->new(
-        stdin  => ($handle{'input'}  = new IO::Handle),
+        stdin  => $args{'BlockHandle'},
         stdout => $tmp_fh,
         stderr => ($handle{'error'}  = new IO::Handle),
         logger => ($handle{'logger'} = new IO::Handle),
         status => ($handle{'status'} = new IO::Handle),
     );
     $handles->options( 'stdout' )->{'direct'} = 1;
+    $handles->options( 'stdin' )->{'direct'} = 1;
 
     my %res;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         $gnupg->passphrase( $args{'Passphrase'} );
         my $pid = _safe_run_child { $gnupg->decrypt( handles => $handles ) };
-        $args{'Data'}->bodyhandle->print( $handle{'input'} );
-        close $handle{'input'};
-
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
@@ -1332,14 +1389,12 @@ sub DecryptInline {
     if ( $res{'status'} !~ /DECRYPTION_OKAY/ ) {
         if ( $@ || $? ) {
             $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
-            return %res;
+            return (undef, undef, %res);
         }
     }
 
     seek $tmp_fh, 0, 0;
-    $args{'Data'}->bodyhandle( new MIME::Body::File $tmp_fn );
-    $args{'Data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
-    return %res;
+    return ($tmp_fh, $tmp_fn, %res);
 }
 
 sub DecryptAttachment {
@@ -1349,8 +1404,41 @@ sub DecryptAttachment {
         Passphrase => undef,
         @_
     );
-    my %res = DecryptInline( %args );
-    return %res if $res{'exit_code'};
+
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPGOptions');
+    $opt{'digest-algo'} ||= 'SHA1';
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( %opt ),
+        meta_interactive => 0,
+    );
+
+    if ( $args{'Data'}->bodyhandle->is_encoded ) {
+        require RT::EmailParser;
+        RT::EmailParser->_DecodeBody($args{'Data'});
+    }
+
+    # handling passphrase in GnuPGOptions
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
+
+    $args{'Passphrase'} = GetPassphrase()
+        unless defined $args{'Passphrase'};
+
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    binmode $tmp_fh, ':raw';
+    $args{'Data'}->bodyhandle->print( $tmp_fh );
+    seek $tmp_fh, 0, 0;
+
+    my ($res_fh, $res_fn, %res) = _DecryptInlineBlock(
+        %args,
+        GnuPG => $gnupg,
+        BlockHandle => $tmp_fh,
+    );
+    return %res unless $res_fh;
+
+    $args{'Data'}->bodyhandle( new MIME::Body::File $res_fn );
+    $args{'Data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $res_fh;
 
     my $filename = $args{'Data'}->head->recommended_filename;
     $filename =~ s/\.pgp$//i;
