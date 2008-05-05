@@ -215,10 +215,6 @@ SUMMARY
         Privacy => $dashboard->Privacy,
     );
 
-    # remove "Preview dashboard" from the header, leaving just the dashboard
-    # name
-    $contents =~ s/Preview dashboard\s*//;
-
     for (@{ RT->Config->Get('EmailDashboardRemove') || [] }) {
         $contents =~ s/$_//g;
     }

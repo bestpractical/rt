@@ -88,7 +88,7 @@ for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')
 }
 
 my $rows = $Loaded ? $SubscriptionObj->SubValue('Rows') : 20;
-my $title = "Preview dashboard " . $DashboardObj->Name;
+my $title = $DashboardObj->Name;
 
 </%INIT>
 <%ARGS>
