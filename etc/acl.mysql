@@ -4,6 +4,6 @@ return  (
 "USE mysql;",
 "DELETE FROM user WHERE user = '${RT::DatabaseUser}';",
 "DELETE FROM db where db = '${RT::DatabaseName}';",
-"GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE ON ${RT::DatabaseName}.* TO ${RT::DatabaseUser}\@'${RT::DatabaseRTHost}' IDENTIFIED BY '${RT::DatabasePassword}';");
+"GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE ON ${RT::DatabaseName}.* TO '${RT::DatabaseUser}'\@'${RT::DatabaseRTHost}' IDENTIFIED BY '${RT::DatabasePassword}';");
 }
 1;
