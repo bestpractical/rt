@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 24;
+use Test::More tests => 32;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -57,3 +57,27 @@ $m->form_name('DashboardQueries');
 $m->field('Searches-Available' => ["2-RT::System"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
+
+my $dashboard = RT::Dashboard->new($currentuser);
+my ($id) = $m->content =~ /name="id" value="(\d+)"/;
+ok($id, "got an ID, $id");
+$dashboard->LoadById($id);
+is($dashboard->Name, "different dashboard");
+
+my @searches = $dashboard->Searches;
+is(@searches, 1, "one saved search in the dashboard");
+like($searches[0]->Name, qr/newest unowned tickets/, "correct search name");
+
+$m->form_name('DashboardQueries');
+$m->field('Searches-Available' => ["1-RT::System"]);
+$m->click_button(name => 'add');
+$m->content_contains("Dashboard updated");
+
+RT::Record->FlushCache if RT::Record->can('FlushCache');
+$dashboard = RT::Dashboard->new($currentuser);
+$dashboard->LoadById($id);
+
+@searches = $dashboard->Searches;
+is(@searches, 2, "two saved searches in the dashboard");
+like($searches[0]->Name, qr/newest unowned tickets/, "correct existing search name");
+like($searches[1]->Name, qr/highest priority tickets I own/, "correct new search name");
