@@ -345,10 +345,9 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     # root takes the ticket
     expect_send("take $steal_ticket_id", 'root takes the ticket...');
     expect_like(qr/Owner changed from Nobody to root/, 'root took the ticket');
+    expect_quit();
 
     # log in as the non-root user
-    #expect_quit();      # this is apparently unnecessary, but I'll leave it in
-                         # until I'm sure
     $ENV{'RTUSER'} = "fooser$$";
     $ENV{'RTPASSWD'} = 'foobar';
     expect_run( command => "$rt_tool_path shell", prompt => 'rt> ', quit => 'quit',);
@@ -368,9 +367,9 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     expect_like(qr/Owner changed from root to fooser$$/, '...and succeeds!');
     expect_send("show ticket/$steal_ticket_id -f owner", 'Double-checking...');
     expect_like(qr/Owner: fooser$$/, '...yup, it worked.');
+    expect_quit();
 
     # log back in as root
-    #expect_quit();     # ditto
     $ENV{'RTUSER'} = 'root';
     $ENV{'RTPASSWD'} = 'password';
     expect_run( command => "$rt_tool_path shell", prompt => 'rt> ', quit => 'quit',);
@@ -407,6 +406,8 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     }
 # }}}
 
+expect_quit(); # We need to do this ourselves, so that we quit
+               # *before* we tear down the webserver.
 
 # helper function
 sub ok_create_ticket {
