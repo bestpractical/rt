@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 9;
+use Test::More tests => 23;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -14,6 +14,7 @@ $user_obj->SetName('customer');
 $user_obj->SetPrivileged(1);
 ($ret, $msg) = $user_obj->SetPassword('customer');
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
+my $currentuser = RT::CurrentUser->new($user_obj);
 
 ok $m->login(customer => 'customer'), "logged in";
 
@@ -38,4 +39,21 @@ $m->click_button(value => 'Save Changes');
 $m->content_lacks("No permission to create dashboards");
 $m->content_contains("Saved dashboard different dashboard");
 
+$m->get_ok($url."Dashboards/index.html");
+$m->content_contains("different dashboard");
+
+$m->follow_link_ok({text => "different dashboard"});
+$m->content_contains("Basics");
+$m->content_contains("Queries");
+$m->content_lacks("Subscription", "we don't have the SubscribeDashboard right");
+$m->content_contains("Preview");
+
+$m->follow_link_ok({text => "Basics"});
+$m->content_contains("Modify the dashboard different dashboard");
+
+$m->follow_link_ok({text => "Queries"});
+$m->content_contains("Modify the queries of dashboard different dashboard");
+$m->form_name('DashboardQueries');
+$m->field('Searches-Available' => ["2-RT::System"]);
+$m->click_button(name => 'add');
 

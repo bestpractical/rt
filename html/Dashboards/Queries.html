@@ -55,7 +55,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/Dashboards/Queries.html" method="post" enctype="multipart/form-data">
+<form action="<%$RT::WebPath%>/Dashboards/Queries.html" method="post" enctype="multipart/form-data" name="DashboardQueries">
 <input type="hidden" class="hidden" name="id" value="<%$Dashboard->Id%>" />
 <input type="hidden" class="hidden" name="Privacy" value="<%$Dashboard->Privacy%>" />
 <table width="100%" border="0">
@@ -110,12 +110,7 @@ for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
         my ($desc, $search) = @$_;
         my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
-
-        my $privacy = $object->isa('RT::User')   ? 'RT::User-'  . $object->Id
-                    : $object->isa('RT::Group')  ? 'RT::Group-' . $object->Id
-                    : $object->isa('RT::System') ? 'RT::System'
-                    : '';
-
+        my $privacy = $Dashboard->_build_privacy($object);
         my $name = $search->Id . '-' . $privacy;
         push @items, [$name, $desc];
         $desc_of{$name} = $desc;
