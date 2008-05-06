@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 23;
+use Test::More tests => 24;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -56,4 +56,4 @@ $m->content_contains("Modify the queries of dashboard different dashboard");
 $m->form_name('DashboardQueries');
 $m->field('Searches-Available' => ["2-RT::System"]);
 $m->click_button(name => 'add');
-
+$m->content_contains("Dashboard updated");
