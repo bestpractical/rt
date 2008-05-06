@@ -352,6 +352,7 @@ sub OutputMIMEObject {
     }
     else {
         my @mailer_args = ($RT::MailCommand);
+        my $method = 'send';
 
         local $ENV{MAILADDRESS};
 
@@ -360,14 +361,15 @@ sub OutputMIMEObject {
         }
         elsif ( $RT::MailCommand eq 'smtp' ) {
             $ENV{MAILADDRESS} = $RT::SMTPFrom || $MIMEObj->head->get('From');
-            push @mailer_args, ( Server => $RT::SMTPServer );
-            push @mailer_args, ( Debug  => $RT::SMTPDebug );
+            push @mailer_args, ( Host  => $RT::SMTPServer );
+            push @mailer_args, ( Debug => $RT::SMTPDebug );
+            $method = 'smtpsend';
         }
         else {
             push @mailer_args, $RT::MailParams;
         }
 
-        unless ( $MIMEObj->send(@mailer_args) ) {
+        unless ( $MIMEObj->$method(@mailer_args) ) {
             $RT::Logger->crit( $msgid . "Could not send mail." );
             return (0);
         }
