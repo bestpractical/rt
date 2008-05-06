@@ -132,8 +132,8 @@ function ComboBox_GetListSize( theList ) {
 function ComboBox_EnsureListSize( theList ) {
     if ( typeof( theList.listSize ) == "undefined" ) {
         if( typeof( theList.getAttribute ) != "undefined" ) {
-            if( theList.getAttribute( "listSize" ) != null && theList.getAttribute( "listSize" ) != "" ) {
-                theList.listSize = theList.getAttribute( "listSize" );
+            if( theList.getAttribute( "size" ) != null && theList.getAttribute( "size" ) != "" ) {
+                theList.listSize = theList.getAttribute( "size" );
                 return;
             }
         }

@@ -50,12 +50,13 @@
 
 <span id="<% $Name %>_Container" class="combobox">
 <input name="<% $Name %>" id="<% $Name %>" class="combo-text" value="<% $Default %>" type="text" <% $Size ? "size='$Size'" : '' |n %> autocomplete="off" />
-<br style="display: none" /><span id="<% $Name %>_Button" class="combo-button"></span></span><select name="List-<% $Name %>" id="<% $Name %>_List" class="combo-list" onchange="ComboBox_SimpleAttach(this, this.form['<% $Name %>']); " rows="<% $Rows %>">
+<br style="display: none" /><span id="<% $Name %>_Button" class="combo-button"></span><select name="List-<% $Name %>" id="<% $Name %>_List" class="combo-list" onchange="ComboBox_SimpleAttach(this, this.form['<% $Name %>']); " size="<% $Rows %>">
 <option style="display: none" value="">-</option>
 % foreach my $value (@Values) {
         <option value="<%$value%>"><% $value%></option>
 % }
 </select>
+</span>
 <script language="javascript"><!--
 ComboBox_InitWith('<% $Name %>');
 //--></script>
