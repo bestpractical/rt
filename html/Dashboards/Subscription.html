@@ -78,7 +78,6 @@
 % } else {
 <ol>
 %    for my $query (@searches) {
-%       my $priv = $query->Privacy;
 %       my $name;
 %       if ($query->{Attribute}->Name =~ /^Search - (.*)$/) {
 %           $name = $1;
@@ -190,13 +189,13 @@ if (!$Loaded) {
             Name => 'Subscription',
             Description => 'Subscription to dashboard ' . $DashboardId,
             Content => {
-                DashboardId  => $DashboardId,
-                Privacy   => $Privacy,
-                Frequency => 'daily',
-                Hour      => '06:00',
-                Dow       => 'Monday',
-                Dom       => 1,
-                Rows      => 20,
+                DashboardId => $DashboardId,
+                Privacy     => $ARGS{'Privacy'},
+                Frequency   => 'daily',
+                Hour        => '06:00',
+                Dow         => 'Monday',
+                Dom         => 1,
+                Rows        => 20,
             },
             ContentType => 'storable',
             Object      => $session{'CurrentUser'}->UserObj,
@@ -252,6 +251,5 @@ $Dow         => undef
 $Dom         => undef
 $Rows        => undef
 $Unsubscribe => undef
-$Privacy
 </%ARGS>
 

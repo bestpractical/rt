@@ -83,7 +83,7 @@ my @results;
 
 use RT::Dashboard;
 my $Dashboard = new RT::Dashboard($session{'CurrentUser'});
-my ($ok) = $Dashboard->LoadById($id)
+my ($ok) = $Dashboard->LoadById($id);
 $ok || Abort("Couldn't load dashboard.");
 my $title = loc("Modify the queries of dashboard [_1]", $Dashboard->Name);
 
@@ -159,7 +159,6 @@ $m->comp('/Widgets/SelectionBox:process', %ARGS, self => $sel, nojs => 1);
 
 </%INIT>
 <%ARGS>
-$Privacy
 $id => '' unless defined $id
 </%ARGS>
 
