@@ -54,7 +54,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%$RT::WebPath%>/Dashboards/Subscription.html" method="post" enctype="multipart/form-data">
-<input type="hidden" class="hidden" name="DashboardId" value="<% $SubscriptionObj->SubValue('DashboardId') %>" />
+<input type="hidden" class="hidden" name="DashboardId" value="<% $fields{'DashboardId'} %>" />
 <table width="100%" border="0">
 <tr>
 
@@ -84,7 +84,7 @@
 %           $name = $query->Name;
 %       }
         <li>
-            <% loc($name, $SubscriptionObj->SubValue('Rows')) %>
+            <% loc($name, $fields{'Rows'}) %>
         </li>
 %    }
 </ol>
@@ -103,7 +103,7 @@
 <select name="Hour">
 % for my $hour (0..23) {
 %     my $formatted = sprintf '%02d:00', $hour;
-%     my $selected = $formatted eq $SubscriptionObj->SubValue('Hour')
+%     my $selected = $formatted eq $fields{'Hour'}
 %                  ? 'selected="selected"'
 %                  : '';
 
@@ -115,24 +115,24 @@
 <tr><td align="right">
 <&|/l&>Frequency</&>:
 </td><td>
-<input type="radio" name="Frequency" value="daily" <% $SubscriptionObj->SubValue('Frequency') eq 'daily' ? "checked" : "" %>>
+<input type="radio" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? "checked" : "" %>>
     daily
 </input><br />
 
-<input type="radio" name="Frequency" value="weekly"<% $SubscriptionObj->SubValue('Frequency') eq 'weekly' ? "checked" : "" %>>
+<input type="radio" name="Frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? "checked" : "" %>>
 weekly</input>, on
 <select name="Dow">
 %   for my $dow (qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/) {
-    <option value="<% $dow %>" <% $SubscriptionObj->SubValue('Dow') eq $dow ? 'selected="selected"' : '' %>><% loc($dow) %></option>
+    <option value="<% $dow %>" <% $fields{'Dow'} eq $dow ? 'selected="selected"' : '' %>><% loc($dow) %></option>
 %   }
 </select>
 <br />
 
-<input type="radio" name="Frequency" value="monthly"<% $SubscriptionObj->SubValue('Frequency') eq 'monthly' ? "checked" : "" %>>
+<input type="radio" name="Frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? "checked" : "" %>>
 monthly</input> , on day
 <select name="Dom">
 %   for my $dom (1..31) {
-    <option value="<% $dom %>" <% $SubscriptionObj->SubValue('Dom') == $dom ? 'selected="selected"' : '' %>><% loc($dom) %></option>
+    <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' %>><% loc($dom) %></option>
 %   }
 </select>
 
@@ -142,7 +142,7 @@ monthly</input> , on day
 </td><td>
 <select name="Rows">
 %   for my $rows (1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 0) {
-        <option value="<% $rows %>" <% $SubscriptionObj->SubValue('Rows') eq $rows ? 'selected="selected"' : '' %>><% loc($rows || 'Unlimited') %></option>
+    <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' %>><% loc($rows || 'Unlimited') %></option>
 %   }
 </select>
 </td></tr>
@@ -152,10 +152,13 @@ monthly</input> , on day
 </tr>
 </table>
 
-<& /Elements/Submit, Label => loc('Save Changes') &>
-<br />
-<& /Elements/Submit, Name => "Unsubscribe", Label => loc('Unsubscribe') &>
-
+% if ($SubscriptionObj->Id) {
+    <& /Elements/Submit, Label => loc('Save Changes') &>
+    <br />
+    <& /Elements/Submit, Name => "Unsubscribe", Label => loc('Unsubscribe') &>
+% } else {
+    <& /Elements/Submit, Label => loc('Subscribe') &>
+% }
 </form>
 
 <%INIT>
@@ -176,70 +179,94 @@ my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
 for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
     next unless $sub->SubValue('DashboardId') == $DashboardId;
     $SubscriptionObj = $sub;
-    ($Loaded) = $DashboardObj->LoadById($SubscriptionObj->SubValue('DashboardId'));
+    last;
 }
 
-if (!$Loaded) {
-    my ($ok, $msg) = $DashboardObj->LoadById($ARGS{'DashboardId'});
-    $ok || Abort("Couldn't subscribe to dashboard $DashboardId: $msg.");
+$DashboardId = $SubscriptionObj->Id
+             ? $SubscriptionObj->SubValue('DashboardId')
+             : $ARGS{'DashboardId'};
 
-    if ($session{'CurrentUser'}->HasRight(Right => 'SubscribeDashboard', Object => $RT::System)) {
-        ($val, $msg) = $SubscriptionObj->Create(
-            Name => 'Subscription',
-            Description => 'Subscription to dashboard ' . $DashboardId,
-            Content => {
-                DashboardId => $DashboardId,
-                Privacy     => $ARGS{'Privacy'},
-                Frequency   => 'daily',
-                Hour        => '06:00',
-                Dow         => 'Monday',
-                Dom         => 1,
-                Rows        => 20,
-            },
-            ContentType => 'storable',
-            Object      => $session{'CurrentUser'}->UserObj,
-        );
-    }
-    else {
-        $msg = "No permission to subscribe to dashboards";
-    }
+($val, $msg) = $DashboardObj->LoadById($DashboardId);
+$val || Abort("Couldn't load dashboard $DashboardId: $msg.");
 
-    if ($val) {
-        push @results, loc("Subscribed to dashboard [_1]", $DashboardObj->Name);
-        push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
-            unless $session{'CurrentUser'}->EmailAddress;
-    }
-    else {
-        push @results, loc('Subscription could not be created: [_1]', $msg);
-    }
-}
-
-if ($Unsubscribe) {
+if ($SubscriptionObj->Id && $Unsubscribe) {
     my ($ok, $msg) = $SubscriptionObj->Delete();
     $ok || Abort("Couldn't unsubscribe to dashboard $DashboardId.");
+
+    # put the user back into a useful place with a message
     RT::Interface::Web::Redirect($RT::WebURL."Dashboards/index.html?Unsubscribe=$DashboardId");
 }
 
-# if hour is undefined, then they're looking at this for the first time
-# so we don't modify anything yet
-if (defined $Hour) {
-    ($val, $msg) = $SubscriptionObj->SetSubValues(
-        Frequency => $Frequency,
-        Hour      => $Hour,
-        Dow       => $Dow,
-        Dom       => $Dom,
-        Rows      => $Rows,
-    );
+my %fields = (
+    DashboardId => $DashboardId,
+    Frequency   => 'daily',
+    Hour        => '06:00',
+    Dow         => 'Monday',
+    Dom         => 1,
+    Rows        => 20,
+);
 
-    # not so good to spew base64-encoded data at the user :)
-    if ($msg =~ /^Content changed from/) {
-        $msg = "Subscription updated.";
+# update any fields with the values from the subscription object
+if ($SubscriptionObj->Id) {
+    for my $field (keys %fields) {
+        $fields{$field} = $SubscriptionObj->SubValue($field);
     }
-
-    push @results, $msg;
 }
 
-$title = loc("Modify the subscription to dashboard [_1]", $DashboardObj->Name);
+# finally, update any fields with arguments passed in by the user
+for my $field (keys %fields) {
+    next if $field eq 'DashboardId'; # but this one is immutable
+    $fields{$field} = $ARGS{$field}
+        if defined($ARGS{$field});
+}
+
+
+# this'll be defined on submit
+if (defined $ARGS{Frequency}) {
+    # update
+    if ($SubscriptionObj->Id) {
+        $DashboardId = delete $fields{'DashboardId'}; # immutable
+        ($val, $msg) = $SubscriptionObj->SetSubValues(%fields);
+        $fields{'DashboardId'} = $DashboardId;
+
+        # not so good to spew base64-encoded data at the user :)
+        if ($msg =~ /^Content changed from/) {
+            $msg = "Subscription updated.";
+        }
+
+        push @results, $msg;
+    }
+    # create
+    else {
+        if ($session{'CurrentUser'}->HasRight(Right => 'SubscribeDashboard', Object => $RT::System)) {
+            ($val, $msg) = $SubscriptionObj->Create(
+                Name        => 'Subscription',
+                Description => 'Subscription to dashboard ' . $DashboardId,
+                ContentType => 'storable',
+                Object      => $session{'CurrentUser'}->UserObj,
+                Content     => \%fields,
+            );
+        }
+        else {
+            $msg = "No permission to subscribe to dashboards";
+        }
+        if ($val) {
+            push @results, loc("Subscribed to dashboard [_1]", $DashboardObj->Name);
+            push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
+                unless $session{'CurrentUser'}->EmailAddress;
+        }
+        else {
+            push @results, loc('Subscription could not be created: [_1]', $msg);
+        }
+    }
+}
+
+if ($SubscriptionObj->Id) {
+    $title = loc("Modify the subscription to dashboard [_1]", $DashboardObj->Name);
+}
+else {
+    $title = loc("Subscribe to dashboard [_1]", $DashboardObj->Name);
+}
 
 </%INIT>
 <%ARGS>
