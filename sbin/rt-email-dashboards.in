@@ -183,7 +183,7 @@ sub send_dashboard {
 
     my $dashboard = RT::Dashboard->new($currentuser);
 
-    $dashboard->Load($subscription->SubValue('Privacy'), $subscription->SubValue('DashboardId'))
+    $dashboard->LoadById($subscription->SubValue('DashboardId'))
         or die loc(
             "Unable to load dashboard [_1] of subscription [_2] for user [_3]",
             $subscription->SubValue('DashboardId'),
