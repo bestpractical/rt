@@ -549,8 +549,11 @@ Set($EmailOutputEncoding , 'utf-8');
 
 Set($DateDayBeforeMonth , 1);
 
-# Should "Tuesday" default to meaning "Next Tuesday" or "Last Tuesday"?
-# Set to 0 for "Next" or 1 for "Last".
+# Should an unspecified day or year in a date refer to a future or a
+# past value? For example, should a date of "Tuesday" default to mean
+# the date for next Tuesday or last Tuesday? Should the date "March 1"
+# default to the date for next March or last March?
+# Set to 0 for the next date or 1 for the last date.
 
 Set($AmbiguousDayInPast , 1);
 
