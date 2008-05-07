@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 32;
+use Test::More tests => 46;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -15,6 +15,12 @@ $user_obj->SetPrivileged(1);
 ($ret, $msg) = $user_obj->SetPassword('customer');
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 my $currentuser = RT::CurrentUser->new($user_obj);
+
+my $queue = RT::Queue->new($RT::SystemUser);
+$queue->Create(Name => 'SearchQueue'.$$);
+$user_obj->PrincipalObj->GrantRight(Right => 'SeeQueue',   Object => $queue);
+$user_obj->PrincipalObj->GrantRight(Right => 'ShowTicket', Object => $queue);
+$user_obj->PrincipalObj->GrantRight(Right => 'OwnTicket',  Object => $queue);
 
 ok $m->login(customer => 'customer'), "logged in";
 
@@ -81,3 +87,34 @@ $dashboard->LoadById($id);
 is(@searches, 2, "two saved searches in the dashboard");
 like($searches[0]->Name, qr/newest unowned tickets/, "correct existing search name");
 like($searches[1]->Name, qr/highest priority tickets I own/, "correct new search name");
+
+my $ticket = RT::Ticket->new($RT::SystemUser);
+$ticket->Create(
+    Queue     => $queue->Id,
+	Requestor => [ $user_obj->Name ],
+	Owner     => $user_obj,
+	Subject   => 'dashboard test',
+);
+
+$m->follow_link_ok({text => "Preview"});
+$m->content_contains("20 highest priority tickets I own");
+$m->content_contains("20 newest unowned tickets");
+$m->content_lacks("Bookmarked Tickets");
+$m->content_contains("dashboard test", "ticket subject");
+
+$m->get_ok("/Dashboards/$id/This fragment left intentionally blank");
+$m->content_contains("20 highest priority tickets I own");
+$m->content_contains("20 newest unowned tickets");
+$m->content_lacks("Bookmarked Tickets");
+$m->content_contains("dashboard test", "ticket subject");
+
+$m->get_ok("/Dashboards/Subscription.html?DashboardId=$id");
+$m->form_name('SubscribeDashboard');
+$m->click_button(name => 'Save');
+$m->content_contains("No permission to subscribe to dashboards");
+
+$user_obj->PrincipalObj->GrantRight(Right => 'SubscribeDashboard');
+
+$m->get_ok("/Dashboards/Modify.html?id=$id");
+$m->follow_link_ok({text => "Subscription"});
+$m->save_content('test.html');

@@ -53,7 +53,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/Dashboards/Subscription.html" method="post" enctype="multipart/form-data">
+<form action="<%$RT::WebPath%>/Dashboards/Subscription.html" method="post" enctype="multipart/form-data" name="SubscribeDashboard">
 <input type="hidden" class="hidden" name="DashboardId" value="<% $fields{'DashboardId'} %>" />
 <table width="100%" border="0">
 <tr>
@@ -153,11 +153,11 @@ monthly</input> , on day
 </table>
 
 % if ($SubscriptionObj->Id) {
-    <& /Elements/Submit, Label => loc('Save Changes') &>
+    <& /Elements/Submit, Name => "Save", Label => loc('Save Changes') &>
     <br />
     <& /Elements/Submit, Name => "Unsubscribe", Label => loc('Unsubscribe') &>
 % } else {
-    <& /Elements/Submit, Label => loc('Subscribe') &>
+    <& /Elements/Submit, Name => "Save", Label => loc('Subscribe') &>
 % }
 </form>
 
@@ -222,7 +222,7 @@ for my $field (keys %fields) {
 
 
 # this'll be defined on submit
-if (defined $ARGS{Frequency}) {
+if (defined $ARGS{Save}) {
     # update
     if ($SubscriptionObj->Id) {
         $DashboardId = delete $fields{'DashboardId'}; # immutable
@@ -248,7 +248,7 @@ if (defined $ARGS{Frequency}) {
             );
         }
         else {
-            $msg = "No permission to subscribe to dashboards";
+            ($val, $msg) = (0, "No permission to subscribe to dashboards");
         }
         if ($val) {
             push @results, loc("Subscribed to dashboard [_1]", $DashboardObj->Name);
