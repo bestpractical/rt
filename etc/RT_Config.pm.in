@@ -738,7 +738,7 @@ Set($StrictLinkACL, 1);
 
 Set($DevelMode, '@RT_DEVEL_MODE@');
 
-Set($DisableGraphViz, do { local $@; eval {require GraphViz; 1;} ? 1 : 0 } );
+Set($DisableGraphViz, do { local $@; eval {require GraphViz; 1;} ? 0 : 1 } );
 
 # }}}
 
