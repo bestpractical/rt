@@ -356,7 +356,7 @@ EOF
 sub PostLoadCheck {
     my $self = shift;
     foreach my $o ( grep $META{$_}{'PostLoadCheck'}, $self->Options( Overridable => undef ) ) {
-        $META{$o}->{'PostLoadCheck'}->( $self->Get($o) );
+        $META{$o}->{'PostLoadCheck'}->( $self, $self->Get($o) );
     }
 }
 
