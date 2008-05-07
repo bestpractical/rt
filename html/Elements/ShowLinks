@@ -112,7 +112,7 @@
 <%INIT>
 
 my $clone;
-my $path = '/Ticket/Create.html?Queue='. $Ticket->Queue .'&CloneTicket='. $Ticket->id;
+my $path = RT->Config->Get('WebPath') . '/Ticket/Create.html?Queue='. $Ticket->Queue .'&CloneTicket='. $Ticket->id;
 my $members = $Ticket->Members;
 my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
 while ( my $member = $members->Next ) {
