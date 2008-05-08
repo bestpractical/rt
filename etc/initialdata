@@ -230,7 +230,7 @@ Transaction: {$Transaction->Description}
        Owner: {$Ticket->OwnerObj->Name}
   Requestors: {$Ticket->RequestorAddresses}
       Status: {$Ticket->Status}
- Ticket <URL: {RT->Config->Get(\'WebURL\')}/Ticket/Display.html?id={$Ticket->id} >
+ Ticket <URL: {RT->Config->Get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id} >
 
 
 {$Transaction->Content()}

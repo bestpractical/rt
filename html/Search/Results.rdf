@@ -75,7 +75,7 @@ $r->content_type('application/rss+xml');
         $creator_str =~ s/[\r\n]//g;
         $rss->add_item(
           title       =>  $Ticket->Subject,
-          link        => RT->Config->Get('WebURL')."/Ticket/Display.html?id=".$Ticket->id,
+          link        => RT->Config->Get('WebURL')."Ticket/Display.html?id=".$Ticket->id,
           description => $Ticket->Transactions->First->Content,
           dc => {
             subject  => ($Ticket->Subject  || loc('No subject')),
