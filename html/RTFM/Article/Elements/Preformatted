@@ -109,15 +109,6 @@ my $get_content = sub {
     my $content = $value->Content;
     return '' unless defined $content && length $content;
 
-    if ( $RT::RTFM_ParseContentAsTemplate ) {
-        my ($new, $msg) = $Article->ParseTemplate( $content, Ticket => $Ticket );
-        unless ( defined $new && length $new ) {
-            $RT::Logger->error("Couldn't parse article's content: $msg");
-        } else {
-            $content = $new;
-        }
-    }
-
     if ( $content =~ /<.{1,5}>/ ) {
         $content = $de_htmlify->( $content );
     }
@@ -127,5 +118,4 @@ my $get_content = sub {
 </%init>
 <%args>
 $Article
-$Ticket => undef
 </%args>
