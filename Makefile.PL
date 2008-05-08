@@ -3,8 +3,8 @@ RTx('RT-FM');
 name('RTFM');
 version_from('lib/RT/FM.pm');
 license('GPL version 2');
+perl_version('5.008003');
 requires(
-    perl              => 5.008,
     RT                => '3.004002',
     Text::WikiFormat  => 0,
     Tree::Simple      => 0,
