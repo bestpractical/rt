@@ -93,7 +93,7 @@ $onload => undef
                 textArea.parentNode.appendChild(typeField);
 
                 var oFCKeditor = new FCKeditor( textArea.name ) ;
-                oFCKeditor.BasePath = "/NoAuth/RichText/";
+                oFCKeditor.BasePath = "<%RT->Config->Get('WebPath')%>/NoAuth/RichText/";
                 oFCKeditor.ReplaceTextarea();
             }
         }
