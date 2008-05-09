@@ -16,6 +16,14 @@ accidentally damage your database and lose data or worse.
 
 *******
 
+UPGRADING FROM 3.7.85 and earlier - Changes:
+
+We've proved that it's possible to delete pretty big set of records
+from CachedGroupMembers table without loosing functionality. To delete
+record run the following script:
+
+    perl -I /opt/rt3/local/lib -I /opt/rt3/lib etc/upgrage/shrink_cgm_table.pl
+
 UPGRADING FROM 3.7.81 and earlier - Changes:
 
 RT::Extension::BrandedQueues has been integrated into core, so you MUST read
