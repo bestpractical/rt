@@ -3,7 +3,6 @@ Changelog
 docs/adding_ticketing
 docs/developers_guide
 docs/schema.html
-docs/todo
 docs/whatwsitgoodfor
 etc/acl.mysql
 etc/acl.Oracle
@@ -64,6 +63,7 @@ html/Callbacks/RTFM/Elements/MessageBox/Default
 html/Callbacks/RTFM/Elements/Tabs/Default
 html/Callbacks/RTFM/RTIR/Elements/Tabs/Default
 html/Callbacks/RTFM/SelfService/Elements/Tabs/Default
+html/Callbacks/RTFM/Ticket/Create.html/BeforeMessageBox
 html/Callbacks/RTFM/Ticket/Elements/Tabs/Default
 html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox
 html/NoAuth/webrtfm.css
@@ -92,6 +92,7 @@ html/RTFM/Article/ExtractIntoTopic.html
 html/RTFM/Article/History.html
 html/RTFM/Article/PreCreate.html
 html/RTFM/Article/Search.html
+html/RTFM/Elements/BeforeMessageBox
 html/RTFM/Elements/CreateArticle
 html/RTFM/Elements/Error
 html/RTFM/Elements/GotoArticle
@@ -131,6 +132,7 @@ lib/RT/FM/Class.pm
 lib/RT/FM/Class_Overlay.pm
 lib/RT/FM/ClassCollection.pm
 lib/RT/FM/ClassCollection_Overlay.pm
+lib/RT/FM/Introduction.pod
 lib/RT/FM/ObjectTopic.pm
 lib/RT/FM/ObjectTopicCollection.pm
 lib/RT/FM/ObjectTopicCollection_Overlay.pm

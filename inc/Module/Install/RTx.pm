@@ -1,11 +1,15 @@
 #line 1
 package Module::Install::RTx;
-use Module::Install::Base;
-@ISA = qw(Module::Install::Base);
 
-$Module::Install::RTx::VERSION = '0.20';
-
+use 5.008;
 use strict;
+use warnings;
+no warnings 'once';
+
+use Module::Install::Base;
+use base 'Module::Install::Base';
+our $VERSION = '0.22';
+
 use FindBin;
 use File::Glob     ();
 use File::Basename ();
@@ -21,10 +25,10 @@ sub RTx {
 
     $self->name("$RTx-$name")
         unless $self->name;
+    $self->all_from( -e "$name.pm" ? "$name.pm" : "lib/$RTx/$fname.pm" )
+        unless $self->version;
     $self->abstract("RT $name Extension")
         unless $self->abstract;
-    $self->version_from( -e "$name.pm" ? "$name.pm" : "lib/$RTx/$fname.pm" )
-        unless $self->version;
 
     my @prefixes = (qw(/opt /usr/local /home /usr /sw ));
     my $prefix   = $ENV{PREFIX};
@@ -49,6 +53,7 @@ sub RTx {
     }
 
     my $lib_path = File::Basename::dirname( $INC{'RT.pm'} );
+    my $local_lib_path = "$RT::LocalPath/lib";
     print "Using RT configuration from $INC{'RT.pm'}:\n";
     unshift @INC, "$RT::LocalPath/lib" if $RT::LocalPath;
 
@@ -60,11 +65,14 @@ sub RTx {
     my $with_subdirs = $ENV{WITH_SUBDIRS};
     @ARGV = grep { /WITH_SUBDIRS=(.*)/ ? ( ( $with_subdirs = $1 ), 0 ) : 1 }
         @ARGV;
-    my %subdirs = map { $_ => 1 } split( /\s*,\s*/, $with_subdirs );
+
+    my %subdirs;
+    %subdirs = map { $_ => 1 } split( /\s*,\s*/, $with_subdirs )
+        if defined $with_subdirs;
 
     foreach (qw(bin etc html po sbin var)) {
         next unless -d "$FindBin::Bin/$_";
-        next if %subdirs and !$subdirs{$_};
+        next if keys %subdirs and !$subdirs{$_};
         $self->no_index( directory => $_ );
 
         no strict 'refs';
@@ -73,7 +81,7 @@ sub RTx {
     }
 
     $path{$_} .= "/$name" for grep $path{$_}, qw(etc po var);
-    $path{lib} = "$RT::LocalPath/lib" unless %subdirs and !$subdirs{'lib'};
+    $path{lib} = "$RT::LocalPath/lib" unless keys %subdirs and !$subdirs{'lib'};
 
     # If we're running on RT 3.8 with plugin support, we really wany
     # to install libs, mason templates and po files into plugin specific
@@ -118,10 +126,10 @@ install ::
         $self->load('RTxFactory');
         $self->postamble(<< ".");
 factory ::
-\t\$(NOECHO) \$(PERL) -Ilib -I"$lib_path" -Minc::Module::Install -e"RTxFactory(qw($RTx $name))"
+\t\$(NOECHO) \$(PERL) -Ilib -I"$local_lib_path" -I"$lib_path" -Minc::Module::Install -e"RTxFactory(qw($RTx $name))"
 
 dropdb ::
-\t\$(NOECHO) \$(PERL) -Ilib -I"$lib_path" -Minc::Module::Install -e"RTxFactory(qw($RTx $name drop))"
+\t\$(NOECHO) \$(PERL) -Ilib -I"$local_lib_path" -I"$lib_path" -Minc::Module::Install -e"RTxFactory(qw($RTx $name drop))"
 
 .
     }
@@ -146,13 +154,13 @@ dropdb ::
         print "For first-time installation, type 'make initdb'.\n";
         my $initdb = '';
         $initdb .= <<"." if $has_etc{schema};
-\t\$(NOECHO) \$(PERL) -Ilib -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(schema))"
+\t\$(NOECHO) \$(PERL) -Ilib -I"$local_lib_path" -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(schema))"
 .
         $initdb .= <<"." if $has_etc{acl};
-\t\$(NOECHO) \$(PERL) -Ilib -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(acl))"
+\t\$(NOECHO) \$(PERL) -Ilib -I"$local_lib_path" -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(acl))"
 .
         $initdb .= <<"." if $has_etc{initialdata};
-\t\$(NOECHO) \$(PERL) -Ilib -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(insert))"
+\t\$(NOECHO) \$(PERL) -Ilib -I"$local_lib_path" -I"$lib_path" -Minc::Module::Install -e"RTxInitDB(qw(insert))"
 .
         $self->postamble("initdb ::\n$initdb\n");
         $self->postamble("initialize-database ::\n$initdb\n");
@@ -172,6 +180,4 @@ sub RTxInit {
 
 __END__
 
-#line 239
-
-#line 260
+#line 281

@@ -16,6 +16,8 @@ you may have.
 Installation instructions:
 --------------------------
 
+NOTE that upgrade steps are described below.
+
 1) Install RT 3.4.2 or newer
 
 2) Once RT appears to be happily installed, cd into the directory you
@@ -29,14 +31,19 @@ Installation instructions:
 
 6) stop and start your web server
 
+7) Before you can add content to RTFM articles, you will need to configure
+   classes and custom fields. For details, see lib/RT/FM/Introduction.pod
+
 ----------------------------------------------
 
 Upgrade instructions can be found in UPGRADING
 
-----------------------------------------------
+Further reading:
+-----------------------------------------------------
 
-After Installation:
--------------------
+You can read pod files using perldoc utility that comes with perl.
+1) lib/RT/FM/Introduction.pod - quick overview
+2) lib/RT/FM/Config.pod - RTFM's config options
 
 Staff users should be now have a new "RTFM" menu item RT's top level menu.
 As an administrator, you should go create some "Classes" of articles in RTFM.
@@ -48,8 +55,6 @@ other basic metadata). So, you need to go create some custom fields.
 
 Once you've created your custom fields, go into your classes and click
 on "Custom Fields" and add the Custom Fields you want to each class.
-
-Grant some ACLs to your users and start creating articles.
 
 Each Article will belong to a particular Class, but Articles can also be
 grouped using Topics.  Topics are created by administrators on Classes
@@ -84,6 +89,31 @@ stop there!  When replying to or commenting on tickets, there is a UI
 widget that lets you search for and include RTFM articles in your reply.
 (They're editable, of course).  
 
+You can also bind articles to topics. Topics are created by administrators
+on classes using the 'Topics' submenu of the RTFM class configuration.
+The configuration screen for the class has a tab for 'topics'. Typing the
+name (and optionally description) of the topic, and then clicking the button
+at the appropriate location. This should allow you to build a tree of topics.
+This tree of topics should show up when creating or modifying articles
+in the class. These can be arbitrarily nested categories.
+
+Articles topics can be set from the 'Modify' screen for the article --
+simply select as many topics as you desire from the list at the bottom
+of the screen.
+
+Of course, RTFM integrates with RT.  You can extract the body of a
+ticket into an article. Within RT, you should now see an "Extract to
+article" button in the upper right hand corner of RT's UI when working
+with tickets. When you click that button, RTFM will ask you which
+Class to create your new article in.  Once you click on a class name,
+the Ticket's transactions will be displayed, along with a set of
+select boxes. For each transaction, you can pick which Freeform, Text,
+or WikiText field that transaction should be extracted to. From there
+on in, it's just regular article creation.  And the integration
+doesn't stop there! When replying to or commenting on tickets, there's
+a new UI widget that lets you search for and include RTFM articles in
+your reply. (They're editable, of course).
+
 New in 2.4, you can use Topics to organize a set of Queue specific
 Articles.  Simply create a global Topic called 'Queues' and then create
 Topics under Queues named after each of your Queues.  Within each Queue
@@ -100,7 +130,8 @@ offered a choice of Topic 1 and Topic 2 along with the searching.
 After choosing Topic 1 or Topic 2, you will be given a list
 of relevant articles to choose.
 
-
+Bugs reporting and discussion lists:
+-----------------------------------------------------
 
 You probably want to discuss RTFM on rt-users@lists.bestpractical.com.
 (Send mail to rt-users-request@lists.fsck.com to subscribe)
@@ -108,7 +139,6 @@ You probably want to discuss RTFM on rt-users@lists.bestpractical.com.
 Bug reports can be sent to rtfm-bugs@bestpractical.com. You can look
 at open bug reports at http://rt3.fsck.com/. Log in as guest/guest
 to see the content of bug reports.
-
 
         Best,
         Jesse Vincent
