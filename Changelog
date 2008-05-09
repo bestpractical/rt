@@ -1,10 +1,5 @@
 2.2.2
 
-FEATURES
-========
-
- * add new option $RT::RTFM_ParseContentAsTemplate
-
 CLEANUPS
 ========
 
