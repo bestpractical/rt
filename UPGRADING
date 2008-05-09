@@ -22,7 +22,7 @@ We've proved that it's possible to delete pretty big set of records
 from CachedGroupMembers table without loosing functionality. To delete
 record run the following script:
 
-    perl -I /opt/rt3/local/lib -I /opt/rt3/lib etc/upgrage/shrink_cgm_table.pl
+    perl -I /opt/rt3/local/lib -I /opt/rt3/lib etc/upgrade/shrink_cgm_table.pl
 
 UPGRADING FROM 3.7.81 and earlier - Changes:
 
