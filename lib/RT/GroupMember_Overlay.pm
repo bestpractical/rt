@@ -172,6 +172,14 @@ sub Create {
     # find things which have the current group as a member. 
     # $group is an RT::Principal for the group.
     $cgm->LimitToGroupsWithMember( $args{'Group'}->Id );
+    $cgm->Limit(
+        SUBCLAUSE => 'filter', # dont't mess up with prev condition
+        FIELD => 'MemberId',
+        OPERATOR => '!=',
+        VALUE => 'main.GroupId',
+        QUOTEVALUE => 0,
+        ENTRYAGGREGATOR => 'AND',
+    );
 
     while ( my $parent_member = $cgm->Next ) {
         my $parent_id = $parent_member->MemberId;
