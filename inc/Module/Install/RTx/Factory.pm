@@ -31,7 +31,7 @@ sub RTxInitDB {
         "$RT::SbinPath/rt-setup-database",
         "--action"      => $action,
         "--datadir"     => "etc",
-        "--datafile"    => "etc/initialdata",
+        (($action eq 'insert') ? ("--datafile"    => "etc/initialdata") : ()),
         "--dba"         => $RT::DatabaseUser,
         "--prompt-for-dba-password" => ''
     );
