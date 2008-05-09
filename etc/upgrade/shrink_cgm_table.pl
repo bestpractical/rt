@@ -12,42 +12,44 @@ RT::Init();
 use RT::CachedGroupMembers;
 my $cgms = RT::CachedGroupMembers->new( $RT::SystemUser );
 $cgms->Limit(
-    FIELD => 'MemberId',
-    OPERATOR => '=',
-    VALUE => 'main.GroupId',
-    QUOTEVALUE => 0,
-    ENTRYAGGREGATOR => 'AND',
-);
-$cgms->Limit(
     FIELD => 'id',
-    OPERATOR => '=',
+    OPERATOR => '!=',
     VALUE => 'main.Via',
     QUOTEVALUE => 0,
     ENTRYAGGREGATOR => 'AND',
 );
 $cgms->FindAllRows;
 
-while ( my $loop_cgm = $cgms->Next ) {
-    my $descendants = RT::CachedGroupMembers->new( $RT::SystemUser );
-    $descendants->Limit(
-        FIELD => 'Via',
-        VALUE => $loop_cgm->id,
-        ENTRYAGGREGATOR => 'AND',
-    );
-    $descendants->Limit(
-        FIELD => 'id',
-        OPERATOR => '!=',
-        VALUE => 'main.Via',
-        QUOTEVALUE => 0,
-        ENTRYAGGREGATOR => 'AND',
-    );
-    $descendants->FindAllRows;
+my $alias = $cgms->Join(
+    TYPE   => 'LEFT',
+    FIELD1 => 'Via',
+    TABLE2 => 'CachedGroupMembers',
+    FIELD2 => 'id',
+);
+$cgms->Limit(
+    ALIAS => $alias,
+    FIELD => 'MemberId',
+    OPERATOR => '=',
+    VALUE => $alias .'.GroupId',
+    QUOTEVALUE => 0,
+    ENTRYAGGREGATOR => 'AND',
+);
+$cgms->Limit(
+    ALIAS => $alias,
+    FIELD => 'id',
+    OPERATOR => '=',
+    VALUE => $alias .'.Via',
+    QUOTEVALUE => 0,
+    ENTRYAGGREGATOR => 'AND',
+);
 
-    while ( my $rec = $descendants->Next ) {
-        my ($status) = $rec->Delete;
-        unless ($status) {
-            print STDERR "Couldn't delete CGM #". $rec->id;
-            exit 1;
-        }
+while ( my $rec = $cgms->Next ) {
+    $RT::Handle->BeginTransaction;
+    my ($status) = $rec->Delete;
+    unless ($status) {
+        print STDERR "Couldn't delete CGM #". $rec->id;
+        exit 1;
     }
+    $RT::Handle->Commit;
 }
+
