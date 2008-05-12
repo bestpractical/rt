@@ -111,7 +111,7 @@ my $get_content = sub {
 
     $m->comp('/Elements/Callback',
         %ARGS,
-        _CallbackName => 'UpdateLogic', 
+        _CallbackName => 'ProcessContent', 
         content => \$content,
     );
 
