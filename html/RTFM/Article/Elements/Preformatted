@@ -109,8 +109,11 @@ my $get_content = sub {
     my $content = $value->Content;
     return '' unless defined $content && length $content;
 
-    $$m->comp('/Elements/Callback', _CallbackName => 'UpdateLogic', 
-              content => \$content, %ARGS );
+    $m->comp('/Elements/Callback',
+        %ARGS,
+        _CallbackName => 'UpdateLogic', 
+        content => \$content,
+    );
 
     if ( $content =~ /<.{1,5}>/ ) {
         $content = $de_htmlify->( $content );
