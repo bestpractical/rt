@@ -2418,7 +2418,7 @@ sub _RecordNote {
     unless ( ($args{'MIMEObj'}->head->get('Message-ID') || '')
             =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$RT::Organization>/ )
     {
-        $args{'MIMEObj'}->head->set( 'RT-Message-ID',
+        $args{'MIMEObj'}->head->replace( 'RT-Message-ID',
             "<rt-"
             . $RT::VERSION . "-"
             . $$ . "-"
