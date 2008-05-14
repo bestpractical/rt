@@ -217,7 +217,7 @@ my $dbh = DBI->connect("dbi:mysql:$db_name", $db_user, $db_pass, { RaiseError =>
 push @sql_commands, qq{ALTER DATABASE $db_name DEFAULT CHARACTER SET utf8};
 convert_table($_) foreach @tables;
 
-print join "\n", @sql_commands, "";
+print join "\n", map(/;$/? $_ : "$_;", @sql_commands), "";
 exit 0;
 
 sub convert_table {
