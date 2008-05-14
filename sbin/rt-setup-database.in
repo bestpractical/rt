@@ -250,8 +250,18 @@ sub action_upgrade {
     return (0, "Couldn't read dir '$base_dir' with upgrade date")
         unless -d $base_dir || -r _;
 
-    my $upgrading_from = '3.6.6';
-    my $upgrading_to   = $RT::VERSION;
+    my $upgrading_from = undef;
+    do {
+        if ( defined $upgrading_from ) {
+            print "Doesn't match #.#.#: ";
+        } else {
+            print "Enter RT version you're upgrading from: ";
+        }
+        $upgrading_from = scalar <STDIN>;
+        chomp $upgrading_from;
+    } while $upgrading_from !~ /^\d+\.\d+\.\d+$/;
+
+    my $upgrading_to = $RT::VERSION;
     return (0, "The current version $upgrading_to is lower than $upgrading_from")
         if RT::Handle::cmp_version( $upgrading_from, $upgrading_to ) > 0;
 
