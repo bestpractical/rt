@@ -46,7 +46,7 @@
   mandir:		${prefix}/man
   libdir:		${prefix}/lib
   datadir:		${prefix}/share
-  htmldir:		${prefix}/html
+  htmldir:		${datadir}/html
   manualdir:		${datadir}/doc
   localstatedir:	${prefix}/var
   logfiledir:		${localstatedir}/log
