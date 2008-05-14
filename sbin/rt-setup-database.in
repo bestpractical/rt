@@ -153,82 +153,142 @@ print "Working with:\n"
     ."User:\t$db_user\nDBA:\t$dba_user\n";
 
 foreach my $action ( @actions ) {
-    my ($status, $msg) = (1, '');
-    if ( $action eq 'create' ) {
-        my $dbh = get_system_dbh();
-        ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'pre' );
-        error($action, $msg) unless $status;
+    no strict 'refs';
+    my ($status, $msg) = *{ 'action_'. $action }{'CODE'}->( %args );
+    error($action, $msg) unless $status;
+    print "Done.\n";
+}
 
-        print "Now creating a $db_type database $db_name for RT.\n";
-        ($status, $msg) = RT::Handle->CreateDatabase( $dbh );
-    }
-    elsif ( $action eq 'drop' ) {
-        if ( $db_type eq 'Oracle' ) {
-            print <<END;
+sub action_create {
+    my %args = @_;
+    my $dbh = get_system_dbh();
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'pre' );
+    return ($status, $msg) unless $status;
+
+    print "Now creating a $db_type database $db_name for RT.\n";
+    return RT::Handle->CreateDatabase( $dbh );
+}
+
+sub action_drop {
+    my %args = @_;
+    if ( $db_type eq 'Oracle' ) {
+        print <<END;
 
 To delete the tables and sequences of the RT $db_type database by running
     \@etc/drop.$db_type
 through SQLPlus.
 
 END
-            exit(-1);
-        }
+        exit(-1);
+    }
 
-        print "Dropping $db_type database $db_name.\n";
-        unless ( $args{'force'} ) {
-            print <<END;
+    print "Dropping $db_type database $db_name.\n";
+    unless ( $args{'force'} ) {
+        print <<END;
 
 About to drop $db_type database $db_name on $db_host.
 WARNING: This will erase all data in $db_name.
 
 END
-            exit(-2) unless _yesno();
+        exit(-2) unless _yesno();
+    }
+
+    my $dbh = get_system_dbh();
+    return RT::Handle->DropDatabase( $dbh );
+}
+
+sub action_schema {
+    my %args = @_;
+    my $dbh = get_admin_dbh();
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'pre' );
+    return ($status, $msg) unless $status;
+
+    print "Now populating database schema.\n";
+    return RT::Handle->InsertSchema( $dbh, $args{'datafile'} || $args{'datadir'} );
+}
+
+sub action_acl {
+    my %args = @_;
+    my $dbh = get_admin_dbh();
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'pre' );
+    return ($status, $msg) unless $status;
+
+    print "Now inserting database ACLs\n";
+    return RT::Handle->InsertACL( $dbh, $args{'datafile'} || $args{'datadir'} );
+}
+
+sub action_coredata {
+    my %args = @_;
+    $RT::Handle = new RT::Handle;
+    $RT::Handle->dbh( undef );
+    RT::ConnectToDatabase();
+    RT::InitLogging();
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'post' );
+    return ($status, $msg) unless $status;
+
+    print "Now inserting RT core system objects\n";
+    return $RT::Handle->InsertInitialData;
+}
+
+sub action_insert {
+    my %args = @_;
+    $RT::Handle = new RT::Handle;
+    RT::Init();
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'post' );
+    return ($status, $msg) unless $status;
+
+    print "Now inserting data\n";
+    my $file = $args{'datafile'};
+    $file = $RT::EtcPath . "/initialdata" if $init && !$file;
+    $file ||= $args{'datadir'}."/content";
+    return $RT::Handle->InsertData( $file );
+}
+
+sub action_upgrade {
+    my %args = @_;
+    my $base_dir = $args{'datadir'} || "./etc/upgrade";
+    return (0, "Couldn't read dir '$base_dir' with upgrade date")
+        unless -d $base_dir || -r _;
+
+    my $upgrading_from = '3.6.6';
+    my $upgrading_to   = $RT::VERSION;
+    return (0, "The current version $upgrading_to is lower than $upgrading_from")
+        if RT::Handle::cmp_version( $upgrading_from, $upgrading_to ) > 0;
+
+    opendir my $dh, $base_dir or die "couldn't open dir: $!";
+    my @versions = grep -d "$base_dir/$_" && /\d+\.\d+\.\d+/, readdir $dh;
+    closedir $dh;
+
+    @versions =
+        grep RT::Handle::cmp_version($_, $upgrading_to) <= 0,
+        grep RT::Handle::cmp_version($_, $upgrading_from) >= 0,
+        sort RT::Handle::cmp_version @versions;
+
+    unless ( @versions ) {
+        print "No DB changes between $upgrading_from and $upgrading_to\n";
+        return 1;
+    }
+
+    print "Going to apply following upgrades:\n";
+    print map "* $_\n", @versions;
+
+    print "HI THERE IT'S VERY IMPORTANT TO BACK UP BEFORE THIS STEP\n\n";
+    _yesno() unless $args{'force'};
+
+    foreach my $v ( @versions ) {
+        print "Processing $v\n";
+        my %tmp = (%args, datadir => "$base_dir/$v", datafile => undef);
+        if ( -e "$base_dir/$v/schema.$db_type" ) {
+            action_schema( %tmp );
         }
-
-        my $dbh = get_system_dbh();
-        ($status, $msg) = RT::Handle->DropDatabase( $dbh );
+        if ( -e "$base_dir/$v/acl.$db_type" ) {
+            action_acl( %tmp );
+        }
+        if ( -e "$base_dir/$v/content" ) {
+            action_insert( %tmp );
+        }
     }
-    elsif ( $action eq 'schema' ) {
-        my $dbh = get_admin_dbh();
-        ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'pre' );
-        error($action, $msg) unless $status;
-
-        print "Now populating database schema.\n";
-        ($status, $msg) = RT::Handle->InsertSchema( $dbh, $args{'datafile'} || $args{'datadir'} );
-    }
-    elsif ( $action eq 'acl' ) {
-        my $dbh = get_admin_dbh();
-        ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'pre' );
-        error($action, $msg) unless $status;
-
-        print "Now inserting database ACLs\n";
-        ($status, $msg) = RT::Handle->InsertACL( $dbh, $args{'datafile'} || $args{'datadir'} );
-    }
-    elsif ( $action eq 'coredata' ) {
-        $RT::Handle = new RT::Handle;
-        $RT::Handle->dbh( undef );
-        RT::ConnectToDatabase();
-        RT::InitLogging();
-        ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'post' );
-        error($action, $msg) unless $status;
-
-        print "Now inserting RT core system objects\n";
-        ($status, $msg) = $RT::Handle->InsertInitialData;
-    }
-    elsif ( $action eq 'insert' ) {
-        $RT::Handle = new RT::Handle;
-        RT::Init();
-        ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'post' );
-        error($action, $msg) unless $status;
-
-        print "Now inserting data\n";
-        my $file = $args{'datafile'};
-        $file = $RT::EtcPath . "/initialdata" if $init && !$file;
-        $file ||= $args{'datadir'}."/content";
-        ($status, $msg) = $RT::Handle->InsertData( $file );
-    }
-    error($action, $msg) unless $status;
-    print "Done.\n";
+    return 1;
 }
 
 sub error {
