@@ -102,12 +102,12 @@ if ( @actions > 1 && $args{'datafile'} ) {
     exit(-1);
 }
 foreach ( @actions ) {
-    unless ( /^(?:init|create|drop|schema|acl|coredata|insert)$/ ) {
+    unless ( /^(?:init|create|drop|schema|acl|coredata|insert|upgrade)$/ ) {
         print STDERR "$0 called with an invalid --action parameter.\n";
         exit(-1);
     }
-    if ( ($_ eq 'init' || $_ eq 'drop') && @actions > 1 ) {
-        print STDERR "You can not mix init or drop action with any action.\n";
+    if ( /^(?:init|drop|upgrade)$/ && @actions > 1 ) {
+        print STDERR "You can not mix init, drop or upgrade action with any action.\n";
         exit(-1);
     }
 }
