@@ -246,11 +246,15 @@ sub CurrentValues {
     return { map { $_ => CurrentValue($_) } @types };
 }
 
+sub ConfigFile {
+    require File::Spec;
+    return File::Spec->catfile($RT::EtcPath, 'RT_SiteConfig.pm');
+}
 
 sub SaveConfig {
+    my $class = shift;
 
-    require File::Spec;
-    my $file = File::Spec->catfile($RT::EtcPath, 'RT_SiteConfig.pm');
+    my $file = $class->ConfigFile;
 
     if ( open my $fh, '>', $file  ) {
         for ( keys %{$RT::Installer->{InstallConfig}} ) {

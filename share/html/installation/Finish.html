@@ -57,8 +57,8 @@ Now restart, you'll get the new RT instance. :)
 </p>
 
 <p>
-All the config stuff is stored in etc/RT_SiteConfig.pm, if you want to
-prevent it from being modified, `chmod -w etc/RT_SiteConfig.pm' will lock
+All the config stuff is stored in <% RT::Installer->ConfigFile %>, if you want to
+prevent it from being modified, `chmod -w <% RT::Installer->ConfigFile %>' will lock
 it as you want.
 </p>
 </div>
