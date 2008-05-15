@@ -254,7 +254,9 @@ sub SaveConfig {
 
     if ( open my $fh, '>', $file  ) {
         for ( keys %{$RT::Installer->{InstallConfig}} ) {
-             print $fh "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
+            if (defined $RT::Installer->{InstallConfig}{$_}) {
+                print $fh "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
+            }
         }
         print $fh "1;\n";
         close $fh;
