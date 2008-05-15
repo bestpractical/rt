@@ -58,7 +58,7 @@
 Back => 1, BackLabel => loc('Back: Select Database Type'),
 &>
 
-% if ( $results[0] eq 'connect succeed!' ) {
+% if ( @results && $results[0] eq 'connect succeed!' ) {
 <& /Elements/Submit, Label => loc('Next: Customize Basics'), Name => 'Next' &>
 % }
 
