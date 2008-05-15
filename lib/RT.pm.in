@@ -108,8 +108,9 @@ unless (  File::Spec->file_name_is_absolute($EtcPath) ) {
             LocalLibPath LocalLexiconPath LocalPluginPath MasonComponentRoot
             MasonLocalComponentRoot MasonDataDir MasonSessionDir/ ) {
         no strict 'refs';
+        # just change relative ones
         $$path = File::Spec->catfile( $BasePath, $$path )
-          unless $$path =~ m{^/};    # just change relative ones
+          unless File::Spec->file_name_is_absolute( $$path );
     }
 }
 
