@@ -644,14 +644,18 @@ sub Create {
     if (  $DeferOwner ) { 
             if (!$DeferOwner->HasRight( Object => $self, Right  => 'OwnTicket')) {
     
-        $RT::Logger->warning( "User " . $Owner->Name . "(" . $Owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $QueueObj->Name ); 
-        push @non_fatal_errors, $self->loc( "Owner '[_1]' does not have rights to own this ticket.", $Owner->Name);
+            $RT::Logger->warning( "User " . $DeferOwner->Name . "(" . $DeferOwner->id 
+                . ") was proposed as a ticket owner but has no rights to own "
+                . "tickets in " . $QueueObj->Name );
+            push @non_fatal_errors, $self->loc(
+                "Owner '[_1]' does not have rights to own this ticket.",
+                $DeferOwner->Name
+            );
+        } else {
+            $Owner = $DeferOwner;
+            $self->__Set(Field => 'Owner', Value => $Owner->id);
 
-    } else {
-        $Owner = $DeferOwner;
-        $self->__Set(Field => 'Owner', Value => $Owner->id);
-
-    }
+        }
         $self->OwnerGroup->_AddMember(
             PrincipalId       => $Owner->PrincipalId,
             InsideTransaction => 1
