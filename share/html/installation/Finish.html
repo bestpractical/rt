@@ -49,23 +49,24 @@
 
 <div class="intro">
 <p>
-Congratulations! You've done the config!
+Congratulations! You've completed the initial configuration of RT.
 </p>
 
 <p>
-Now restart, you'll get the new RT instance. :)
+Click "Begin RT Journey!" below to restart the web server. You should be taken directly to a login page. You'll be able to log in with a username of <tt>root</tt> and <tt>password</tt>.
 </p>
 
 <p>
-All the config stuff is stored in <% RT::Installer->ConfigFile %>, if you want to
-prevent it from being modified, `chmod -w <% RT::Installer->ConfigFile %>' will lock
-it as you want.
+The settings you've chosen are stored in <% RT::Installer->ConfigFile %>,
+should you need to refine your configuration further. Using
+`<tt>chmod -w '<% RT::Installer->ConfigFile %>'</tt>` will prevent this
+installation from being run again (in case your database server goes offline).
 </p>
 </div>
 
 <form method="post">
 <input type="hidden" value="1" name="Run" />
-<& /Elements/Submit, Label => 'Start RT Journey!' &>
+<& /Elements/Submit, Label => 'Begin RT Journey!' &>
 </form>
 
 </&>
