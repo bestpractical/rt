@@ -49,7 +49,7 @@
 <& /Elements/PageLayout,
     title => $Title,
     toptabs => { a => { title => loc('Install RT'),
-                        path => '/installation/'
+                        path => 'installation/'
                         },
                 b => { title => loc('Buy Support'),
                         path => 'mailto:sales@bestpractical.com'}
