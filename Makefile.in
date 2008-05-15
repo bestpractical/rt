@@ -403,7 +403,7 @@ libs-install:
 # {{{ html-install
 html-install:
 	[ -d $(DESTDIR)/$(MASON_HTML_PATH) ] || mkdir -p $(DESTDIR)/$(MASON_HTML_PATH)
-	-cp -rp ./html/* $(DESTDIR)/$(MASON_HTML_PATH)
+	-cp -rp ./share/html/* $(DESTDIR)/$(MASON_HTML_PATH)
 # }}}
 
 # {{{ doc-install
