@@ -30,7 +30,7 @@ AC_ARG_ENABLE(layout,
 	      LAYOUT=$enableval)
 
 if test "x$LAYOUT" = "x"; then
-	LAYOUT="RT3"
+	LAYOUT="relative"
 fi
 RT_LAYOUT($srcdir/config.layout, $LAYOUT)
 AC_MSG_CHECKING(for chosen layout)
