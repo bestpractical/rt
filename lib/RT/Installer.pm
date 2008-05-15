@@ -80,7 +80,7 @@ my %Meta = (
     DatabasePort => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Port number database server listen to',         #loc
+            Description => 'Database port number',         #loc
             Default     => 1,
             DefaultLabel =>
               'Leave empty to use default value of the RDBMS',              #loc
@@ -90,20 +90,21 @@ my %Meta = (
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description => 'Database name', #loc
-            Hints => "What your database server will call RT's database. (like 'rt3')"
         },
     },
     DatabaseAdmin => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description => 'DBA of the database',  #loc
+            Hints => "The database username of the administrator",
         },
     },
     DatabaseAdminPassword => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description =>
-              'DBA password of the database',  #loc
+              'DBA password',  #loc
+            Hints => "The database password of the administrator",
             Type => 'password',
         },
     },
@@ -111,22 +112,21 @@ my %Meta = (
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description =>
-              'The name of the user RT will use to connect to the DB',      #loc
+              'The Unix username to use for RT',      #loc
         },
     },
     DatabasePassword => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description =>
-              'Password of the above user RT will use to connect to the DB'
-            ,                                                               #loc
-            Type => 'password',
+              'The Unix password to use for RT',  #loc
+              Type => 'password',
         },
     },
     DatabaseRequireSSL => {
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => 'Connecting DB requires SSL',    # loc
+            Description => 'Use SSL?',    # loc
         },
     },
     rtname => {
