@@ -58,7 +58,7 @@
 Back => 1, BackLabel => loc('Back: Select Database Type'),
 &>
 
-% if ( @results && $results[0] eq 'connect succeed!' ) {
+% if ( @results && $results[0] eq 'Connection successful!' ) {
 <& /Elements/Submit, Label => loc('Next: Customize Basics'), Name => 'Next' &>
 % }
 
@@ -103,7 +103,7 @@ if ( $Run ) {
         );
     
         if ( $dbh ) {
-            push @results, 'connect succeed!';
+            push @results, 'Connection successful!';
             # dba connect dsn, which has table info
             $dbh = DBI->connect(
                 RT::Handle->DSN, $ARGS{DatabaseAdmin}, $ARGS{DatabaseAdminPassword}, { RaiseError => 0, PrintError => 0 },
@@ -119,24 +119,18 @@ if ( $Run ) {
                     $sth->execute('RT_System'); 
                     if ( $sth->fetchrow_array ) {
                         $RT::Installer->{DatabaseAction} = 'none';
-                        push @results, "Database $RT::DatabaseName seems complete,
-    don't need to initialize any more.";
+                        push @results, "Database $RT::DatabaseName appears to be fully initialized.";
                     }
                     else {
                         $RT::Installer->{DatabaseAction} = 'acl,coredata,insert';
-                        push @results, "Database $RT::DatabaseName already exists 
-    and has RT tables in place, but does not contain RT's metadata. 'Initialize
-    Database' later can use this existing db and tables and insert metadata, if this's ok, click 'Customize Baisc' below to go on customizing RT";
+                        push @results, "Database $RT::DatabaseName already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basic' below to continue customizing RT.";
                     }
                 }
                 else {
                     $RT::Installer->{DatabaseAction} = 'schema,acl,coredata,insert';
-                    push @results, "Database $RT::DatabaseName already exists, but
-    does not contain RT's tables and metadata. 'Initialize Database' later can use
-    this existing db and insert tables and metadata, if this's ok, click
-    'Customize Baisc' below to go on customizing RT";
+                    push @results, "Database $RT::DatabaseName already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT.";
                 }
-    
+
             }
             else {
                 $RT::Installer->{DatabaseAction} =
@@ -145,7 +139,7 @@ if ( $Run ) {
         }
         else {
             $RT::Installer->{DatabaseAction} = 'error';
-            push @results, "Failed to connect: $DBI::errstr";
+            push @results, "Failed to connect to database: $DBI::errstr";
         }
     }
     else {
