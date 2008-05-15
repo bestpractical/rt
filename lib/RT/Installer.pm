@@ -260,10 +260,10 @@ sub SaveConfig {
         }
         print $fh "1;\n";
         close $fh;
-        return ( 1, 'saved config with success' );
+        return ( 1, "Successfully saved configuration to $file." );
     }
 
-    return ( 0, "can't save config to $file: $!" );
+    return ( 0, "Cannot save configuration to $file: $!" );
 }
 
 =head1 NAME
