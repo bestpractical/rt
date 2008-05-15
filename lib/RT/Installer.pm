@@ -132,7 +132,7 @@ my %Meta = (
     rtname => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'rtname',                        #loc
+            Description => 'RT Name',                        #loc
         },
     },
     Organization => {
@@ -144,55 +144,55 @@ my %Meta = (
     MinimumPasswordLength => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'MinimumPasswordLength',         #loc
+            Description => 'Minimum password length',         #loc
         },
     },
     MaxAttachmentSize => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'MaxAttachmentSize',             #loc
+            Description => 'Max attachment size',             #loc
         },
     },
     OwnerEmail => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'OwnderEmail',                   #loc
+            Description => 'Owner email',                   #loc
         },
     },
     CommentAddress => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'CommentAddress',                #loc
+            Description => 'Comment address',                #loc
         },
     },
     CorrespondAddress => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'CorrespondAddress',             #loc
+            Description => 'Correspond address',             #loc
         },
     },
     MailCommand => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'MailCommand',                   #loc
+            Description => 'Mail command',                   #loc
         },
     },
     SendmailArguments => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'SendmailArguments',             #loc
+            Description => 'Sendmail arguments',             #loc
         },
     },
     SendmailBounceArguments => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'SendmailBounceArguments',       #loc
+            Description => 'Sendmail bounce arguments',       #loc
         },
     },
     SendmailPath => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'SendmailPath',                  #loc
+            Description => 'Sendmail path',                  #loc
         },
     },
 
