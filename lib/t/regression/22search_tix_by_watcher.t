@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 79;
+use Test::More tests => 103;
 use_ok('RT');
 RT::LoadConfig();
 RT::Init();
@@ -95,6 +95,37 @@ sub run_tests {
 }
 run_tests();
 
+# mixing searches by watchers with other conditions
+# http://rt3.fsck.com/Ticket/Display.html?id=9322
+%test = (
+    'Subject LIKE "x" AND Requestor = "y@example.com"' =>
+        { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
+    'Subject NOT LIKE "x" AND Requestor = "y@example.com"' =>
+        { xy => 0, x => 0, y => 1, '-' => 0, z => 0 },
+    'Subject LIKE "x" AND Requestor != "y@example.com"' =>
+        { xy => 0, x => 1, y => 0, '-' => 0, z => 0 },
+    'Subject NOT LIKE "x" AND Requestor != "y@example.com"' =>
+        { xy => 0, x => 0, y => 0, '-' => 1, z => 1 },
+    'Subject LIKE "x" OR Requestor = "y@example.com"' =>
+        { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
+    'Subject NOT LIKE "x" OR Requestor = "y@example.com"' =>
+        { xy => 1, x => 0, y => 1, '-' => 1, z => 1 },
+    'Subject LIKE "x" OR Requestor != "y@example.com"' =>
+        { xy => 1, x => 1, y => 0, '-' => 1, z => 1 },
+    'Subject NOT LIKE "x" OR Requestor != "y@example.com"' =>
+        { xy => 0, x => 1, y => 1, '-' => 1, z => 1 },
+
+    'Subject LIKE "z" AND (Requestor = "x@example.com" OR Requestor = "y@example.com")' =>
+        { xy => 0, x => 0, y => 0, '-' => 0, z => 0 },
+    'Subject NOT LIKE "z" AND (Requestor = "x@example.com" OR Requestor = "y@example.com")' =>
+        { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
+    'Subject LIKE "z" OR (Requestor = "x@example.com" OR Requestor = "y@example.com")' =>
+        { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
+    'Subject NOT LIKE "z" OR (Requestor = "x@example.com" OR Requestor = "y@example.com")' =>
+        { xy => 1, x => 1, y => 1, '-' => 1, z => 0 },
+);
+run_tests();
+
 TODO: {
     local $TODO = "we can't generate this query yet";
     %test = (
@@ -141,6 +172,7 @@ TODO: {
     is($tix->Count, $total, "found $total tickets");
 }
 run_tests();
+
 
 # owner is special watcher because reference is duplicated in two places,
 # owner was an ENUM field now it's WATCHERFIELD, but should support old
