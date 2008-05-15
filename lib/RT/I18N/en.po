@@ -29,7 +29,7 @@ msgstr "Feb"
 msgid "Fri."
 msgstr "Fri"
 
-#: html/Elements/Tabs:68
+#: share/html/Elements/Tabs:68
 msgid "Homepage"
 msgstr "Home"
 
@@ -65,11 +65,11 @@ msgstr "Nov"
 msgid "Oct."
 msgstr "Oct"
 
-#: html/Ticket/Elements/Tabs:162
+#: share/html/Ticket/Elements/Tabs:162
 msgid "Open it"
 msgstr "Open"
 
-#: html/Admin/Users/Modify.html:186 html/User/Prefs.html:90
+#: share/html/Admin/Users/Modify.html:186 share/html/User/Prefs.html:90
 msgid "Residence"
 msgstr "Home"
 
