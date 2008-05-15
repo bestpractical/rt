@@ -326,7 +326,7 @@ sub _LoadConfig {
         unless ($file_path) {
             die
                 qq{Couldn't load RT config file $args{'File'} as user $username / group $group.\n}
-                . qq{The file couldn't be find in $RT::LocalEtcPath and $RT::EtcPath.\n$@};
+                . qq{The file couldn't be found in $RT::LocalEtcPath and $RT::EtcPath.\n$@};
         }
 
         my $message = <<EOF;
