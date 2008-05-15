@@ -101,7 +101,7 @@ unless (  File::Spec->file_name_is_absolute($EtcPath) ) {
        # is not always absolute
         $BasePath =
           File::Spec->rel2abs(
-            File::Spec->catfile( $pm_path, File::Spec->updir ) );
+            File::Spec->catdir( $pm_path, File::Spec->updir ) );
     }
 
     for my $path ( qw/EtcPath BinPath SbinPath VarPath LocalPath LocalEtcPath
