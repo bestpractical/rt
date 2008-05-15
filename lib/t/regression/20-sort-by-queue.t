@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 57;
+use Test::More tests => 8;
 use RT;
 RT::LoadConfig();
 RT::Init();
