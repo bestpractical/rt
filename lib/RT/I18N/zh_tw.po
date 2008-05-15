@@ -6264,10 +6264,6 @@ msgstr "RT 收到從自己寄出的郵件 (%1)。"
 
 #: html/SelfService/Elements/Tabs:72 html/SelfService/Elements/Tabs:74
 msgid "RT Self Service"
-msgstr ""
-
-#: NOT FOUND IN SOURCE
-msgid "RT Self Service"
 msgstr "RT 自助服務"
 
 #: html/Admin/Tools/Configuration.html:94
