@@ -56,7 +56,7 @@ body {
     margin:0;
 
     background-color: #183b83;
-    background: #183b83 url(/NoAuth/css/web2/background-gradient.png) top left repeat-x ;
+    background: #183b83 url(<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/background-gradient.png) top left repeat-x ;
     font-family: helvetica, arial, sans-serif;
 
 }
@@ -148,7 +148,7 @@ display: none ;
 
 div#footer #bpscredits {
  text-align: right;
- background: url(/NoAuth/images//bplogo.gif) no-repeat top right;
+ background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images//bplogo.gif) no-repeat top right;
  padding-top: 4em;
 } 
 
