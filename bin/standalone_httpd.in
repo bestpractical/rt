@@ -94,6 +94,7 @@ $msg
 
 EOF
 
+    require RT::Installer;
     # don't enter install mode if the file exists but is unwritable
     if (-e RT::Installer->ConfigFile && !-w _) {
         die "Since your configuration exists but is not writable, I'm refusing to do anything.\n";
