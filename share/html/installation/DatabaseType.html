@@ -72,8 +72,20 @@ if ( $Run ) {
     $m->comp('/Widgets/BulkProcess', Types => \@Types, Arguments => \%ARGS, Meta
             => $RT::Installer->{Meta}, Store => $RT::Installer->{InstallConfig} );
 
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .  'installation/DatabaseDetails.html');
+# XXX need save config here, or the LoadConfig in the next page won't 
+# go well, even it save config there before LoadConfig.
+# don't know the the reason right now.
+
+    my ( $status, $msg ) = RT::Installer->SaveConfig;
+
+    if ( $status ) {
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .  'installation/DatabaseDetails.html');
+    }
+    else {
+        push @results, $msg;
+    }
 }
+
 
 </%init>
 
