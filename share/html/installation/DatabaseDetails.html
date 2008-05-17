@@ -58,7 +58,7 @@
 Back => 1, BackLabel => loc('Back: Select Database Type'),
 &>
 
-% if ( @results && $results[0] eq 'Connected with success!' ) {
+% if ( @results && $results[0] eq 'Connection succeeded' ) {
 <& /Elements/Submit, Label => loc('Next: Customize Basics'), Name => 'Next' &>
 % }
 
@@ -103,7 +103,7 @@ if ( $Run ) {
         );
     
         if ( $dbh ) {
-            push @results, 'Connected with success!';
+            push @results, 'Connection succeeded',
             # dba connect dsn, which has table info
             $dbh = DBI->connect(
                 RT::Handle->DSN, $ARGS{DatabaseAdmin}, $ARGS{DatabaseAdminPassword}, { RaiseError => 0, PrintError => 0 },
