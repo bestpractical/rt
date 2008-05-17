@@ -93,7 +93,6 @@ if ( $Run ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'installation/Basics.html');
     }
-
     my ( $status, $msg ) = RT::Installer->SaveConfig;
     if ( $status ) {
         RT->LoadConfig;
@@ -103,19 +102,28 @@ if ( $Run ) {
         );
     
         if ( $dbh ) {
-            push @results, 'Connection succeeded',
+            push @results, 'Connection succeeded';
             # dba connect dsn, which has table info
             $dbh = DBI->connect(
                 RT::Handle->DSN, $ARGS{DatabaseAdmin}, $ARGS{DatabaseAdminPassword}, { RaiseError => 0, PrintError => 0 },
             );
     
             if ( $dbh ) {
-                # check if Tickets table exists
-                my $sth = $dbh->table_info('', '', 'Tickets', 'TABLE');
-                # get 'Tickets' if it exists
-                if ( ($sth->fetchrow_array)[2] ) {
+                # check if table Users exists
+                eval {
+                    my $dbh = DBI->connect(
+                        RT::Handle->DSN,
+                        $ARGS{DatabaseAdmin},
+                        $ARGS{DatabaseAdminPassword},
+                        { RaiseError => 1, PrintError => 0 },
+                    );
+
+                    my $sth = $dbh->prepare('select * from Users');
+                };
+
+                unless ( $@ ) {
     
-                    $sth = $dbh->prepare('select id from Users where Name=?');
+                    my $sth = $dbh->prepare('select id from Users where Name=?');
                     $sth->execute('RT_System'); 
                     if ( $sth->fetchrow_array ) {
                         $RT::Installer->{DatabaseAction} = 'none';
