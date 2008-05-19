@@ -23,7 +23,7 @@ find( {
         $ok = 0;
         diag "error in ${File::Find::name}:\n$@";
     },
-}, 'html');
+}, 'share/html');
 ok($ok, "mason syntax is ok");
 
 use HTML::Mason;
