@@ -42,7 +42,7 @@ like( $agent->{'content'} , qr/Logout/i, "Found a logout link");
 
 
 use File::Find;
-find ( sub { wanted() and test_get($File::Find::name) } , 'html/');
+find ( sub { wanted() and test_get($File::Find::name) } , 'share/html/');
 
 sub wanted {
         -f  && /\.html$/ && $_ !~ /Logout.html$/;
@@ -51,7 +51,7 @@ sub wanted {
 sub test_get {
         my $file = shift;
 
-        $file =~ s#^html/##;
+        $file =~ s#^share/html/##;
         diag( "testing $url/$file" ) if $ENV{TEST_VERBOSE};
         ok ($agent->get("$url/$file", "GET $url/$file"), "Can Get $url/$file");
         is ($agent->{'status'}, 200, "Loaded $file");
