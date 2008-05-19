@@ -3,7 +3,7 @@
 use strict;
 use Test::More;
 my $tests = 7;
-find ( sub { wanted() and $tests += 4 } , 'html/');
+find ( sub { wanted() and $tests += 4 } , 'share/html/');
 plan tests => $tests;
 use HTTP::Request::Common;
 use HTTP::Cookies;
