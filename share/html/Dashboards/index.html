@@ -50,10 +50,7 @@
     current_subtab => 'Dashboards/index.html',
     Title => $title &>
 
-<& /Elements/ListActions,
-    actions => $Unsubscribe
-             ? [loc("Unsubscribed to dashboard [_1]", $Unsubscribe)]
-             : [] &>
+<& /Elements/ListActions, actions => \@actions &>
 
 <& /Dashboards/Elements/ShowDashboards,
     Type       => "Personal",
@@ -95,6 +92,19 @@ for my $object (@objs) {
         }
     }
 }
+
+my @actions;
+if (defined $Unsubscribe) {
+    my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
+    $Dashboard->LoadById($Unsubscribe);
+    if ($Dashboard->Id) {
+        push @actions, loc("Unsubscribed to dashboard [_1]", $Dashboard->Name);
+    }
+    else {
+        push @actions, loc("Unable to unsubscribe to dashboard [_1]", $Unsubscribe);
+    }
+}
+
 </%INIT>
 <%ARGS>
 $Unsubscribe => undef
