@@ -45,17 +45,21 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<html>
-<head>
-<title>RT: Logout</title>
- <meta HTTP-EQUIV="Refresh" content="0;URL=<%$URL%>">
-</head>
-<body>
+<& /Elements/Header, Title => loc('Logout'), Refresh => "1;URL=$URL" &>
+</div>
+
+<div id="body" class="login-body">
+<div id="login-box">
+
+<&| /Widgets/TitleBox, title => loc('Logged out'), hideable => 0 &>
 <p><&|/l&>You have been logged out of RT.</&>
 
 <br />
 <br />
 <a href="<%$URL%>"><&|/l&>You're welcome to login again</&></a>.
+</&>
+</div></div>
+<& /Elements/Footer, Menu => 0 &>
 
 % $m->abort();
 
@@ -64,6 +68,7 @@ $m->callback( %ARGS, CallbackName => 'BeforeSessionDelete' );
 
 if (defined %session) {
     tied(%session)->delete;
+    $session{'CurrentUser'} = RT::CurrentUser->new;
 }
 
 $m->callback( %ARGS, CallbackName => 'AfterSessionDelete' );

@@ -130,6 +130,7 @@ my $form_action = defined $goto             ? $goto
 </&>
 </div><!-- #login-box -->
 % $m->callback( %ARGS, CallbackName => 'AfterForm' );
+</div><!-- #login-body -->
 <& /Elements/Footer, Menu => 0 &>
 <%ARGS>
 $user => ""
