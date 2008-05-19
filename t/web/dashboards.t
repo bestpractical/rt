@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 46;
+use Test::More tests => 59;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -113,8 +113,37 @@ $m->form_name('SubscribeDashboard');
 $m->click_button(name => 'Save');
 $m->content_contains("No permission to subscribe to dashboards");
 
+RT::Record->FlushCache if RT::Record->can('FlushCache');
+is($user_obj->Attributes->Named('Subscription'), 0, "no subscriptions");
+
 $user_obj->PrincipalObj->GrantRight(Right => 'SubscribeDashboard');
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->follow_link_ok({text => "Subscription"});
-$m->save_content('test.html');
+$m->content_contains("Subscribe to dashboard different dashboard");
+$m->content_contains("Unowned Tickets");
+$m->content_contains("My Tickets");
+$m->content_lacks("Bookmarked Tickets", "only dashboard queries show up");
+
+$m->form_name('SubscribeDashboard');
+$m->click_button(name => 'Save');
+$m->content_lacks("No permission to subscribe to dashboards");
+$m->content_contains("Subscribed to dashboard different dashboard");
+
+RT::Record->FlushCache if RT::Record->can('FlushCache');
+TODO: {
+    local $TODO = "some kind of caching is still happening (it works if I remove the check above)";
+    is($user_obj->Attributes->Named('Subscription'), 1, "we have a subscription");
+};
+
+$m->get_ok("/Dashboards/Modify.html?id=$id");
+$m->follow_link_ok({text => "Subscription"});
+$m->content_contains("Modify the subscription to dashboard different dashboard");
+
+$m->form_name('SubscribeDashboard');
+$m->click_button(name => 'Unsubscribe');
+
+$m->content_contains("Unsubscribed to dashboard different dashboard");
+
+RT::Record->FlushCache if RT::Record->can('FlushCache');
+is($user_obj->Attributes->Named('Subscription'), 0, "no more subscriptions");
