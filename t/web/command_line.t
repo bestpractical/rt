@@ -198,10 +198,11 @@ expect_like(qr/id: ticket\/$ticket_id/, 'Got our ticket');
 # show ticket history
 expect_send("show ticket/$ticket_id/history", 'Showing our ticket\'s history...');
 expect_like(qr/Ticket created by root/, 'Got our history');
+
+expect_send("show -v ticket/$ticket_id/history", 'Showing our ticket\'s history verbosely...');
 TODO: {
     local $TODO = "Cannot show verbose ticket history right now";
     # show ticket history verbosely
-    expect_send("show -v ticket/$ticket_id/history", 'Showing our ticket\'s history verbosely...');
     expect_like(qr/Ticket created by root/, 'Got our history');
 }
 # get attachments from a ticket

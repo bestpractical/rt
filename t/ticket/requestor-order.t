@@ -111,11 +111,10 @@ sub check_emails_order
 
     my $tix = RT::Tickets->new($RT::SystemUser);    
     $tix->FromSQL("Queue = '$queue' AND Subject = 'first test'");
-TODO: {
-    local $TODO = "if group has non users members we get wrong order";
+
     $tix->OrderByCols({ FIELD => "Requestor.EmailAddress" });
     check_emails_order($tix, 7, 'ASC');
-}
+
     $tix->OrderByCols({ FIELD => "Requestor.EmailAddress", ORDER => 'DESC' });
     check_emails_order($tix, 7, 'DESC');
 
