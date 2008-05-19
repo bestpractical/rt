@@ -193,31 +193,6 @@ sub Load {
 
 # }}}
 
-# {{{ sub LoadByURI
-
-=head2 LoadByURI
-
-Given a local ticket URI, loads the specified ticket.
-
-=cut
-
-sub LoadByURI {
-    my $self = shift;
-    my $uri  = shift;
-
-    # FIXME: there is no TicketBaseURI option in config
-    my $base_uri = RT->Config->Get('TicketBaseURI');
-    if ( $base_uri && $uri =~ /^$base_uri(\d+)$/ ) {
-        my $id = $1;
-        return $self->Load($id);
-    }
-    else {
-        return undef;
-    }
-}
-
-# }}}
-
 # {{{ sub Create
 
 =head2 Create (ARGS)
