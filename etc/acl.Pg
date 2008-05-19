@@ -58,7 +58,13 @@ sub acl {
     }
 
     foreach my $table (@tables) {
-        push @acls, "GRANT SELECT, INSERT, UPDATE, DELETE ON $table TO $db_user;"
+        if ( $table =~ /^[a-z]/ && $table ne 'sessions' ) {
+# table like objectcustomfields_id_s
+            push @acls, "GRANT USAGE, SELECT, UPDATE ON $table TO $db_user;"
+        }
+        else {
+            push @acls, "GRANT SELECT, INSERT, UPDATE, DELETE ON $table TO $db_user;"
+        }
     }
     return (@acls);
 }
