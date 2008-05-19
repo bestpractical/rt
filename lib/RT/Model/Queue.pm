@@ -372,7 +372,7 @@ sub create {
         return ( 0, _('Queue could not be Created') );
     }
 
-    my $create_ret = $self->create_queue_groups();
+    my $create_ret = $self->_create_role_groups();
     unless ($create_ret) {
         Jifty->handle->rollback();
         return ( 0, _('Queue could not be Created') );
@@ -616,10 +616,6 @@ sub ticket_transaction_custom_fields {
 
 # }}}
 
-# {{{ Routines dealing with watchers.
-
-# {{{ _createQueueGroups
-
 =head2 _createQueueGroups
 
 Create the ticket groups and links for this ticket. 
@@ -629,13 +625,15 @@ It will create four groups for this ticket: Requestor, Cc, AdminCc and owner.
 
 It will return true on success and undef on failure.
 
-
 =cut
 
-sub create_queue_groups {
+
+sub roles { qw(requestor cc admin_cc) }
+
+sub _create_role_groups {
     my $self = shift;
 
-    my @types = qw(requestor owner cc admin_cc);
+    my @types = ('owner', $self->roles);
 
     foreach my $type (@types) {
         my $type_obj = RT::Model::Group->new;
@@ -645,10 +643,7 @@ sub create_queue_groups {
             domain   => 'RT::Model::Queue-Role'
         );
         unless ($id) {
-            Jifty->log->error(
-                "Couldn't create a queue group of type '$type' for ticket "
-                    . $self->id . ": "
-                    . $msg );
+            Jifty->log->error( "Couldn't create a queue group of type '$type' for ticket " . $self->id . ": " . $msg );
             return (undef);
         }
     }
@@ -656,11 +651,7 @@ sub create_queue_groups {
 
 }
 
-# }}}
-
-# {{{ sub AddWatcher
-
-=head2 AddWatcher
+=head2 add_watcher
 
 AddWatcher takes a parameter hash. The keys are as follows:
 
@@ -703,9 +694,7 @@ sub add_watcher {
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
-        elsif (( $args{'type'} eq 'cc' )
-            or ( $args{'type'} eq 'requestor' ) )
-        {
+        elsif (( $args{'type'} eq 'cc' ) or ( $args{'type'} eq 'requestor' ) ) {
 
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
                 or $self->current_user_has_right('Watch') )

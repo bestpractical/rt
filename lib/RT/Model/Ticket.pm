@@ -503,7 +503,8 @@ sub create {
 
 # We attempt to load or create each of the people who might have a role for this ticket
 # _outside_ the transaction, so we don't get into ticket creation races
-    foreach my $type ( "cc", "admin_cc", "requestor" ) {
+    foreach my $type ( $self->roles) {
+
         $args{$type} = [ $args{$type} ] unless ref $args{$type};
         foreach my $watcher ( splice @{ $args{$type} } ) {
             next unless $watcher;
@@ -603,7 +604,7 @@ sub create {
 
     # {{{ Deal with setting up watchers
 
-    foreach my $type ( "cc", "admin_cc", "requestor" ) {
+    foreach my $type ($self->roles) {
 
         # we know it's an array ref
         foreach my $watcher ( @{ $args{$type} } ) {
@@ -693,12 +694,7 @@ sub create {
                 type => $LINKTYPEMAP{$type}->{'type'},
                 $LINKTYPEMAP{$type}->{'Mode'} => $link,
                 silent => !$args{'_record_transaction'},
-                'silent_'
-                    . (
-                    $LINKTYPEMAP{$type}->{'Mode'} eq 'base'
-                    ? 'target'
-                    : 'base'
-                    ) => 1,
+                'silent_' . ( $LINKTYPEMAP{$type}->{'Mode'} eq 'base' ? 'target' : 'base') => 1,
             );
 
             push @non_fatal_errors, $wmsg unless ($wval);
@@ -804,12 +800,11 @@ It will return true on success and undef on failure.
 
 =cut
 
+sub roles { return ( "cc", "admin_cc", "requestor" ) ;}
 sub _create_role_groups {
     my $self = shift;
 
-    my @types = qw(requestor owner cc admin_cc);
-
-    foreach my $type (@types) {
+    foreach my $type ('owner', $self->roles) {
         my $type_obj = RT::Model::Group->new;
         my ( $id, $msg ) = $type_obj->create_role_group(
             domain   => 'RT::Model::Ticket-Role',
@@ -836,12 +831,9 @@ A constructor which returns an RT::Model::Group object containing the owner of t
 
 sub role_group {
     my $self      = shift;
-    my $obj = RT::Model::Group->new;
     my $role = shift;
-    $obj->load_ticket_role_group(
-        ticket => $self->id,
-        type   => $role
-    );
+    my $obj = RT::Model::Group->new;
+    $obj->load_ticket_role_group( ticket => $self->id, type   => $role);
     return ($obj);
 }
 
@@ -2295,7 +2287,7 @@ sub merge_into {
     }
 
     #add all of this ticket's watchers to that ticket.
-    foreach my $watcher_type qw(requestor cc admin_cc) {
+    foreach my $watcher_type ($self->roles) {
 
         my $people          = $self->role_group($watcher_type)->members_obj;
 
