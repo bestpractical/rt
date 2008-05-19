@@ -203,16 +203,10 @@ SUMMARY
         return;
     }
 
-    # get dashboard here
-    my $path = sprintf '/Prefs/Dashboards/Render.html?id=%d&Privacy=%s',
-        $dashboard->Id,
-        $dashboard->Privacy;
-
     $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
     my $contents = run_component(
         '/Prefs/Dashboards/Render.html',
         id => $dashboard->Id,
-        Privacy => $dashboard->Privacy,
     );
 
     for (@{ RT->Config->Get('EmailDashboardRemove') || [] }) {
@@ -223,7 +217,7 @@ SUMMARY
 
     $contents = HTML::RewriteAttributes::Links->rewrite(
         $contents,
-        RT->Config->Get('WebURL') . $path,
+        RT->Config->Get('WebURL') . '/Prefs/Dashboards/Render.html',
     );
 
     send_mail($currentuser, $dashboard, $subscription, $contents);
@@ -348,7 +342,6 @@ sub get_from {
     }
 }
 
-# this code is partially taken from 3.7
 {
     my %cache;
 
