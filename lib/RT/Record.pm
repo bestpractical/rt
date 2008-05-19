@@ -742,7 +742,7 @@ sub _EncodeLOB {
             $ContentEncoding = 'base64';
 
             #cut the max attchment size by 25% (for mime-encoding overhead.
-            $RT::Logger->debug("Max size is $MaxSize\n");
+            $RT::Logger->debug("Max size is $MaxSize");
             $MaxSize = $MaxSize * 3 / 4;
         # Some databases (postgres) can't handle non-utf8 data
         } elsif (    !$RT::Handle->BinarySafeBLOBs
@@ -767,9 +767,8 @@ sub _EncodeLOB {
 
                 # drop the attachment on the floor
                 $RT::Logger->info( "$self: Dropped an attachment of size "
-                                   . length($Body) . "\n"
-                                   . "It started: " . substr( $Body, 0, 60 ) . "\n"
-                                 );
+                                   . length($Body));
+                $RT::Logger->info( "It started: " . substr( $Body, 0, 60 ) );
                 return ("none", "Large attachment dropped" );
             }
         }
@@ -1207,7 +1206,7 @@ sub _AddLink {
     my $direction;
 
     if ( $args{'Base'} and $args{'Target'} ) {
-        $RT::Logger->debug( "$self tried to create a link. both base and target were specified\n" );
+        $RT::Logger->debug( "$self tried to create a link. both base and target were specified" );
         return ( 0, $self->loc("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
@@ -1283,7 +1282,7 @@ sub _DeleteLink {
     my $remote_link;
 
     if ( $args{'Base'} and $args{'Target'} ) {
-        $RT::Logger->debug("$self ->_DeleteLink. got both Base and Target\n");
+        $RT::Logger->debug("$self ->_DeleteLink. got both Base and Target");
         return ( 0, $self->loc("Can't specifiy both base and target") );
     }
     elsif ( $args{'Base'} ) {
@@ -1297,12 +1296,12 @@ sub _DeleteLink {
         $direction='Base';
     }
     else {
-        $RT::Logger->error("Base or Target must be specified\n");
+        $RT::Logger->error("Base or Target must be specified");
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
     my $link = new RT::Link( $self->CurrentUser );
-    $RT::Logger->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} . "\n" );
+    $RT::Logger->debug( "Trying to load link: " . $args{'Base'} . " " . $args{'Type'} . " " . $args{'Target'} );
 
 
     $link->LoadByParams( Base=> $args{'Base'}, Type=> $args{'Type'}, Target=>  $args{'Target'} );
@@ -1318,7 +1317,7 @@ sub _DeleteLink {
 
     #if it's not a link we can find
     else {
-        $RT::Logger->debug("Couldn't find that link\n");
+        $RT::Logger->debug("Couldn't find that link");
         return ( 0, $self->loc("Link not found") );
     }
 }

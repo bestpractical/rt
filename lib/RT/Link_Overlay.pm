@@ -98,7 +98,7 @@ sub Create {
     unless ( $base->Resolver && $base->Scheme ) {
 	my $msg = $self->loc("Couldn't resolve base '[_1]' into a URI.", 
 			     $args{'Base'});
-        $RT::Logger->warning( "$self $msg\n" );
+        $RT::Logger->warning( "$self $msg" );
 
 	if (wantarray) {
 	    return(undef, $msg);
@@ -113,7 +113,7 @@ sub Create {
     unless ( $target->Resolver ) {
 	my $msg = $self->loc("Couldn't resolve target '[_1]' into a URI.", 
 			     $args{'Target'});
-        $RT::Logger->warning( "$self $msg\n" );
+        $RT::Logger->warning( "$self $msg" );
 
 	if (wantarray) {
 	    return(undef, $msg);

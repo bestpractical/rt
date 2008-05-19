@@ -328,7 +328,7 @@ sub SendEmail {
         || $args{'Entity'}->head->get('Cc')
         || $args{'Entity'}->head->get('Bcc') )
     {
-        $RT::Logger->info( $msgid . " No recipients found. Not sending.\n" );
+        $RT::Logger->info( $msgid . " No recipients found. Not sending." );
         return -1;
     }
 

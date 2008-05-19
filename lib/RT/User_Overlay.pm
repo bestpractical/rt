@@ -457,7 +457,7 @@ sub LoadByEmail {
 
     $address = $self->CanonicalizeEmailAddress($address);
 
-    #$RT::Logger->debug("Trying to load an email address: $address\n");
+    #$RT::Logger->debug("Trying to load an email address: $address");
     return $self->LoadByCol( "EmailAddress", $address );
 }
 

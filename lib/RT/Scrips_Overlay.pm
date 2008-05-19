@@ -289,7 +289,7 @@ sub _SetupSourceObjects {
     else {
         $self->{'TicketObj'} = RT::Ticket->new( $self->CurrentUser );
         $self->{'TicketObj'}->Load( $args{'Ticket'} )
-          || $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}\n");
+          || $RT::Logger->err("$self couldn't load ticket $args{'Ticket'}");
     }
 
     if ( ( $self->{'TransactionObj'} = $args{'TransactionObj'} ) ) {
@@ -298,7 +298,7 @@ sub _SetupSourceObjects {
     else {
         $self->{'TransactionObj'} = RT::Transaction->new( $self->CurrentUser );
         $self->{'TransactionObj'}->Load( $args{'Transaction'} )
-          || $RT::Logger->err( "$self couldn't load transaction $args{'Transaction'}\n");
+          || $RT::Logger->err( "$self couldn't load transaction $args{'Transaction'}");
     }
 } 
 

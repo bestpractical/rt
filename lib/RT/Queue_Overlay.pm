@@ -156,7 +156,7 @@ sub DeleteLink {
 
     #check acls
     unless ( $self->CurrentUserHasRight('ModifyQueue') ) {
-        $RT::Logger->debug("No permission to delete links\n");
+        $RT::Logger->debug("No permission to delete links");
         return ( 0, $self->loc('Permission Denied'))
     }
 
@@ -805,7 +805,7 @@ sub _AddWatcher {
 
     my ($m_id, $m_msg) = $group->_AddMember(PrincipalId => $principal->Id);
     unless ($m_id) {
-        $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id."\n".$m_msg);
+        $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id.": ".$m_msg);
 
         return ( 0, $self->loc('Could not make that principal a [_1] for this queue', $args{'Type'}) );
     }
@@ -912,7 +912,7 @@ sub DeleteWatcher {
     my ($m_id, $m_msg) = $group->_DeleteMember($principal->Id);
     unless ($m_id) {
         $RT::Logger->error("Failed to delete ".$principal->Id.
-                           " as a member of group ".$group->Id."\n".$m_msg);
+                           " as a member of group ".$group->Id.": ".$m_msg);
 
         return ( 0,    $self->loc('Could not remove that principal as a [_1] for this queue', $args{'Type'}) );
     }

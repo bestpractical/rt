@@ -156,7 +156,7 @@ sub Commit {
    my ($val, $msg) = $self->TicketObj->SetPriority($self->{'prio'});
 
    unless ($val) {
-	$RT::Logger->debug($self . " $msg\n"); 
+	$RT::Logger->debug($self . " $msg"); 
    }
 }
 

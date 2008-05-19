@@ -314,7 +314,7 @@ sub _DoSearch {
     my $self = shift;
    # $RT::Logger->debug("Now in ".$self."->_DoSearch");
     my $return = $self->SUPER::_DoSearch(@_);
-  #  $RT::Logger->debug("In $self ->_DoSearch. return from SUPER::_DoSearch was $return\n");
+  #  $RT::Logger->debug("In $self ->_DoSearch. return from SUPER::_DoSearch was $return");
     $self->_BuildHash();
     return ($return);
 }

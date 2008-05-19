@@ -312,16 +312,16 @@ sub Prepare {
     my $self = shift;
 
     unless ( $self->TemplateObj ) {
-        $RT::Logger->warning("No template object handed to $self\n");
+        $RT::Logger->warning("No template object handed to $self");
     }
 
     unless ( $self->TransactionObj ) {
-        $RT::Logger->warning("No transaction object handed to $self\n");
+        $RT::Logger->warning("No transaction object handed to $self");
 
     }
 
     unless ( $self->TicketObj ) {
-        $RT::Logger->warning("No ticket object handed to $self\n");
+        $RT::Logger->warning("No ticket object handed to $self");
 
     }
 
@@ -665,7 +665,7 @@ sub ParseLines {
             }
         );
 
-        $RT::Logger->debug("Workflow: yielding\n$content");
+        $RT::Logger->debug("Workflow: yielding $content");
 
         if ($err) {
             $RT::Logger->error( "Ticket creation failed: " . $err );

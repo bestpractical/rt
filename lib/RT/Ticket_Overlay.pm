@@ -169,7 +169,7 @@ sub Load {
         my ($ticketid,$msg) = $self->LoadById($id);
 
         unless ($self->Id) {
-            $RT::Logger->crit("$self tried to load a bogus ticket: $id\n");
+            $RT::Logger->crit("$self tried to load a bogus ticket: $id");
             return (undef);
         }
     }
@@ -491,7 +491,7 @@ sub Create {
         Value => ( $args{'EffectiveId'} || $id )
     );
     unless ( $val ) {
-        $RT::Logger->crit("Couldn't set EffectiveId: $msg\n");
+        $RT::Logger->crit("Couldn't set EffectiveId: $msg");
         $RT::Handle->Rollback;
         return ( 0, 0,
             $self->loc("Ticket could not be created due to an internal error")
@@ -856,7 +856,7 @@ sub Import {
               . ") was proposed "
               . "as a ticket owner but has no rights to own "
               . "tickets in '"
-              . $QueueObj->Name . "'\n" );
+              . $QueueObj->Name . "'" );
 
         $Owner = undef;
     }
@@ -915,7 +915,7 @@ sub Import {
 
         unless ($val) {
             $RT::Logger->err(
-                $self . "->Import couldn't set EffectiveId: $msg\n" );
+                $self . "->Import couldn't set EffectiveId: $msg" );
         }
     }
 
@@ -1118,7 +1118,7 @@ sub _AddWatcher {
     my ( $m_id, $m_msg ) = $group->_AddMember( PrincipalId => $principal->Id,
                                                InsideTransaction => 1 );
     unless ($m_id) {
-        $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id."\n".$m_msg);
+        $RT::Logger->error("Failed to add ".$principal->Id." as a member of group ".$group->Id.": ".$m_msg);
 
         return ( 0, $self->loc('Could not make that principal a [_1] for this ticket', $self->loc($args{'Type'})) );
     }
@@ -1241,7 +1241,7 @@ sub DeleteWatcher {
         $RT::Logger->error( "Failed to delete "
                             . $principal->Id
                             . " as a member of group "
-                            . $group->Id . "\n"
+                            . $group->Id . ": "
                             . $m_msg );
 
         return (0,
@@ -2210,7 +2210,7 @@ sub DeleteLink {
     );
 
     unless ( $args{'Target'} || $args{'Base'} ) {
-        $RT::Logger->error("Base or Target must be specified\n");
+        $RT::Logger->error("Base or Target must be specified");
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
@@ -2305,7 +2305,7 @@ sub AddLink {
                  @_ );
 
     unless ( $args{'Target'} || $args{'Base'} ) {
-        $RT::Logger->error("Base or Target must be specified\n");
+        $RT::Logger->error("Base or Target must be specified");
         return ( 0, $self->loc('Either base or target must be specified') );
     }
 
@@ -2342,7 +2342,7 @@ sub __GetTicketFromURI {
 
     unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
         my $msg = $self->loc( "Couldn't resolve '[_1]' into a URI.", $args{'URI'} );
-        $RT::Logger->warning( "$msg\n" );
+        $RT::Logger->warning( $msg );
         return( 0, $msg );
     }
     my $obj = $uri_obj->Resolver->Object;
@@ -3242,7 +3242,7 @@ sub _Value {
     #if the field is public, return it.
     if ( $self->_Accessible( $field, 'public' ) ) {
 
-        #$RT::Logger->debug("Skipping ACL check for $field\n");
+        #$RT::Logger->debug("Skipping ACL check for $field");
         return ( $self->SUPER::_Value($field) );
 
     }

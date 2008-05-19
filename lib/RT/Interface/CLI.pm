@@ -222,7 +222,7 @@ sub GetMessageContent {
     if ($edit) {	
 
 	unless ($ENV{'EDITOR'}) {
-	    $RT::Logger->crit('No $EDITOR variable defined'. "\n");
+	    $RT::Logger->crit('No $EDITOR variable defined');
 	    return undef;
 	}
 	system ($ENV{'EDITOR'}, $filename);
@@ -245,7 +245,7 @@ sub debug {
     my $val = shift;
     my ($debug);
     if ($val) {
-	$RT::Logger->debug($val."\n");
+	$RT::Logger->debug($val);
 	if ($debug) {
 	    print STDERR "$val\n";
 	}
