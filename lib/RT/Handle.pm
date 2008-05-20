@@ -70,18 +70,27 @@ package RT::Handle;
 
 use strict;
 use warnings;
-
 use vars qw/@ISA/;
-eval "use DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType') .";
-\@ISA= qw(DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType') .");";
-
-if ($@) {
-    die "Unable to load DBIx::SearchBuilder database handle for '". RT->Config->Get('DatabaseType') ."'.\n".
-        "Perhaps you've picked an invalid database type or spelled it incorrectly.\n".
-        $@;
-}
 
 =head1 METHODS
+
+=head2 FinalizeDatabaseType
+
+Sets RT::Handle's superclass to the correct subclass of
+L<DBIx::SearchBuilder::Handle>, using the C<DatabaseType> configuration.
+
+=cut
+
+sub FinalizeDatabaseType {
+    eval "use DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType') .";
+    \@ISA= qw(DBIx::SearchBuilder::Handle::". RT->Config->Get('DatabaseType') .");";
+
+    if ($@) {
+        die "Unable to load DBIx::SearchBuilder database handle for '". RT->Config->Get('DatabaseType') ."'.\n".
+            "Perhaps you've picked an invalid database type or spelled it incorrectly.\n".
+            $@;
+    }
+}
 
 =head2 Connect
 
@@ -998,6 +1007,8 @@ sub ACLEquivGroupId {
     $equiv_group->LoadACLEquivalenceGroup( $id );
     return $equiv_group->Id;
 }
+
+__PACKAGE__->FinalizeDatabaseType;
 
 eval "require RT::Handle_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Handle_Vendor.pm});

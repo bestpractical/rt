@@ -92,10 +92,7 @@ if ( $Run ) {
 
     if ( $status ) {
 
-# XXX just found we need to refresh RT::Handle manually here
-# can anybody tell me why?
-        require Module::Refresh;
-        Module::Refresh->refresh_module('RT/Handle.pm');
+        RT::Handle->FinalizeDatabaseType();
 
         my $dbh = DBI->connect(
             RT::Handle->DSN, $RT::Installer->{InstallConfig}{DatabaseAdmin},
