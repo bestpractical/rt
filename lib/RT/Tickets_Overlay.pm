@@ -1473,14 +1473,35 @@ sub _CustomFieldLimit {
 
     $self->_OpenParen;
 
+    $self->_OpenParen;
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
         FIELD      => 'Content',
         OPERATOR   => $op,
         VALUE      => $value,
-        QUOTEVALUE => 1,
         @rest
     );
+
+    # XXX: if we join via CustomFields table then
+    # because of order of left joins we get NULLs in
+    # CF table and then get nulls for those records
+    # in OCFVs table what result in wrong results
+    # as decifer method now tries to load a CF then
+    # we fall into this situation only when there
+    # are more than one CF with the name in the DB.
+    # the same thing applies to order by call.
+    # TODO: reorder joins T <- OCFVs <- CFs <- OCFs if
+    # we want treat IS NULL as (not applies or has
+    # no value)
+    $self->_SQLLimit(
+        ALIAS      => $CFs,
+        FIELD      => 'Name',
+        OPERATOR   => 'IS NOT',
+        VALUE      => 'NULL',
+        QUOTEVALUE => 1,
+        ENTRYAGGREGATOR => 'AND',
+    ) if $CFs;
+    $self->_CloseParen;
 
     if ($null_columns_ok) {
         $self->_SQLLimit(
@@ -1570,6 +1591,15 @@ sub OrderByCols {
            my $cfkey = $cfid ? $cfid : "$queue.$field";
            $cfkey .= ".ordering" if !$cf_obj || ($cf_obj->MaxValues||0) != 1;
            my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+           # this is described in _CustomFieldLimit
+           $self->_SQLLimit(
+               ALIAS      => $CFs,
+               FIELD      => 'Name',
+               OPERATOR   => 'IS NOT',
+               VALUE      => 'NULL',
+               QUOTEVALUE => 1,
+               ENTRYAGGREGATOR => 'AND',
+           ) if $CFs;
            unless ($cfid) {
                # For those cases where we are doing a join against the
                # CF name, and don't have a CFid, use Unique to make sure
