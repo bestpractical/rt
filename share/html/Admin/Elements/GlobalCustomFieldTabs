@@ -51,28 +51,32 @@
     Title => $Title &>
 <%INIT>
 
+my $tabs = {
 
-  my $tabs = {
-                
-               A => { title => loc('Users'),
-                           text => loc('Modify scrips which apply to all queues'),
-                           path => 'Admin/Global/CustomFields/Users.html',
-                         },
-               B => { title => loc('Groups'),
-                        text => loc('Edit system templates'),
-                        path => 'Admin/Global/CustomFields/Groups.html',
-                      },
-              
-                F => { title => loc('Tickets'),
-                text => loc('Modify global custom fields'),
-                        path => 'Admin/Global/CustomFields/Queue-Tickets.html',
-                        },
+    A => {
+        title => loc('Users'),
+        text => loc('Select custom fields for all users'),
+        path => 'Admin/Global/CustomFields/Users.html',
+    },
 
-                        G => { title => loc('Ticket Transactions'),
-                                text => loc('Modify global group rights'),
-                                path => 'Admin/Global/CustomFields/Queue-Transactions.html',
-                      },
- 
+    B => {
+        title => loc('Groups'),
+        text => loc('Select custom fields for all user groups'),
+        path => 'Admin/Global/CustomFields/Groups.html',
+    },
+
+    F => {
+        title => loc('Tickets'),
+        text => loc('Select custom fields for tickets in all queues'),
+        path => 'Admin/Global/CustomFields/Queue-Tickets.html',
+    },
+
+    G => {
+        title => loc('Ticket Transactions'),
+        text => loc('Select custom fields for transactions on tickets in all queues'),
+        path => 'Admin/Global/CustomFields/Queue-Transactions.html',
+    },
+
 };
   # Now let callbacks add their extra tabs
   $m->callback( %ARGS, tabs => $tabs );
