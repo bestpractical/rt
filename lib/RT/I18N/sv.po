@@ -3072,7 +3072,7 @@ msgstr "Medlem %1 raderad"
 
 #: lib/RT/Group_Overlay.pm:992
 msgid "Member added"
-msgstr "Medlem tillagd"
+msgstr "Medlem tillagd: %1"
 
 #: lib/RT/Group_Overlay.pm:1157
 msgid "Member deleted"

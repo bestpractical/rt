@@ -3825,7 +3825,7 @@ msgstr "Rimosso appartenente %1"
 
 #: lib/RT/Group_Overlay.pm:992
 msgid "Member added"
-msgstr "Aggiunto appartenente"
+msgstr "Aggiunto appartenente: %1"
 
 #: lib/RT/Group_Overlay.pm:1157
 msgid "Member deleted"

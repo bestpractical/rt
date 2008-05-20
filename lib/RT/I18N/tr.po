@@ -3074,7 +3074,7 @@ msgstr "Üye %1 silindi"
 
 #: lib/RT/Group_Overlay.pm:992
 msgid "Member added"
-msgstr "Üye eklendi"
+msgstr "Üye eklendi: %1"
 
 #: lib/RT/Group_Overlay.pm:1157
 msgid "Member deleted"

@@ -3796,7 +3796,7 @@ msgstr "Członek %1 usunięty"
 
 #: lib/RT/Group_Overlay.pm:992
 msgid "Member added"
-msgstr "Członek grupy został dodany"
+msgstr "Członek grupy został dodany: %1"
 
 #: lib/RT/Group_Overlay.pm:1157
 msgid "Member deleted"

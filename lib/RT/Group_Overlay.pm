@@ -972,7 +972,7 @@ sub _AddMember {
     if ( $self->HasMember( $new_member_obj ) ) {
 
         #User is already a member of this group. no need to add it
-        return ( 0, $self->loc("Group already has member") );
+        return ( 0, $self->loc("Group already has member: [_1]", $new_member_obj->Object->Name) );
     }
     if ( $new_member_obj->IsGroup &&
          $new_member_obj->Object->HasMemberRecursively($self->PrincipalObj) ) {
@@ -989,7 +989,7 @@ sub _AddMember {
         InsideTransaction => $args{'InsideTransaction'}
     );
     if ($id) {
-        return ( 1, $self->loc("Member added") );
+        return ( 1, $self->loc("Member added: [_1]", $new_member_obj->Object->Name) );
     }
     else {
         return(0, $self->loc("Couldn't add member to group"));

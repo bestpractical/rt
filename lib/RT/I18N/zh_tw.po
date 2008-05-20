@@ -4788,7 +4788,7 @@ msgstr "成員 %1 刪除完畢"
 
 #: lib/RT/Group_Overlay.pm:992
 msgid "Member added"
-msgstr "新增成員完畢"
+msgstr "新增成員完畢: %1"
 
 #: lib/RT/Group_Overlay.pm:1157
 msgid "Member deleted"

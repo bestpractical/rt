@@ -3686,7 +3686,7 @@ msgstr "Medlem %1 slettet"
 
 #: lib/RT/Group_Overlay.pm:992
 msgid "Member added"
-msgstr "Medlem tilføjet"
+msgstr "Medlem tilføjet: %1"
 
 #: lib/RT/Group_Overlay.pm:1157
 msgid "Member deleted"

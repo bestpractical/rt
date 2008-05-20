@@ -3066,7 +3066,7 @@ msgstr "Člen %1 odebrán"
 
 #: lib/RT/Group_Overlay.pm:992
 msgid "Member added"
-msgstr "Člen přidán"
+msgstr "Člen přidán: %1"
 
 #: lib/RT/Group_Overlay.pm:1157
 msgid "Member deleted"

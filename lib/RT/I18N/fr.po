@@ -3103,7 +3103,7 @@ msgstr "Membre %1 supprimé"
 
 #: lib/RT/Group_Overlay.pm:992
 msgid "Member added"
-msgstr "Membre ajouté"
+msgstr "Membre ajouté: %1"
 
 #: lib/RT/Group_Overlay.pm:1157
 msgid "Member deleted"

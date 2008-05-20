@@ -3451,7 +3451,7 @@ msgstr ""
 
 #: lib/RT/Group_Overlay.pm:992
 msgid "Member added"
-msgstr "メンバーが追加されました"
+msgstr "メンバーが追加されました: %1"
 
 #: lib/RT/Group_Overlay.pm:1157
 msgid "Member deleted"

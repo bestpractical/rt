@@ -3052,7 +3052,7 @@ msgstr ""
 
 #: lib/RT/Group_Overlay.pm:992
 msgid "Member added"
-msgstr "חבר הוסף"
+msgstr "חבר הוסף: %1"
 
 #: lib/RT/Group_Overlay.pm:1157
 msgid "Member deleted"

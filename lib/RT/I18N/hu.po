@@ -3053,7 +3053,7 @@ msgstr "Tag törölve"
 
 #: lib/RT/Group_Overlay.pm:992
 msgid "Member added"
-msgstr "Tag hozzáadva"
+msgstr "Tag hozzáadva: %1"
 
 #: lib/RT/Group_Overlay.pm:1157
 msgid "Member deleted"
