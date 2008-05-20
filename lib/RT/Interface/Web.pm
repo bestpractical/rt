@@ -321,10 +321,16 @@ sub CreateTicket {
         Abort('You have no permission to create tickets in that queue.');
     }
 
-    my $due = new RT::Date( $session{'CurrentUser'} );
-    $due->Set( Format => 'unknown', Value => $ARGS{'Due'} );
-    my $starts = new RT::Date( $session{'CurrentUser'} );
-    $starts->Set( Format => 'unknown', Value => $ARGS{'Starts'} );
+    my $due;
+    if (defined $ARGS{'Due'} and $ARGS{'Due'} =~ /\S/) {
+        $due = new RT::Date( $session{'CurrentUser'} );
+        $due->Set( Format => 'unknown', Value => $ARGS{'Due'} );
+    }
+    my $starts;
+    if (defined $ARGS{'Starts'} and $ARGS{'Starts'} =~ /\S/) {
+        $starts = new RT::Date( $session{'CurrentUser'} );
+        $starts->Set( Format => 'unknown', Value => $ARGS{'Starts'} );
+    }
 
     my $MIMEObj = MakeMIMEEntity(
         Subject             => $ARGS{'Subject'},
@@ -369,8 +375,8 @@ sub CreateTicket {
         TimeWorked      => $ARGS{'TimeWorked'},
         Subject         => $ARGS{'Subject'},
         Status          => $ARGS{'Status'},
-        Due             => $due->ISO,
-        Starts          => $starts->ISO,
+        Due             => $due ? $due->ISO : undef,
+        Starts          => $starts ? starts->ISO : undef,
         MIMEObj         => $MIMEObj
     );
 
