@@ -64,37 +64,56 @@
 
 my @objects;
 if ($TicketObj) {
-        @objects = ($TicketObj);
-}
-elsif ($QueueObj) {
-        @objects = ($QueueObj);
-} 
-elsif ($cfqueues) {
-	@objects = keys %{$cfqueues};
-}
-else {
-    # Let's check rights on an empty queue object. that will do a search for any queue.
-    my $queue = RT::Queue->new($session{'CurrentUser'});
-	      push( @objects, $queue );
+    @objects = ($TicketObj);
+} elsif ($QueueObj) {
+    @objects = ($QueueObj);
+} elsif ($cfqueues) {
+    @objects = keys %{$cfqueues};
+} else {
+# Let's check rights on an empty queue object. that will do a search
+# for any queue.
+    my $queue = RT::Queue->new( $session{'CurrentUser'} );
+    push( @objects, $queue );
 }
 
 my %user_uniq_hash;
 
-$m->callback( %ARGS, objects => \@objects, CallbackName => 'UpdateObjectList');
+$m->callback(
+    %ARGS,
+    objects      => \@objects,
+    CallbackName => 'UpdateObjectList'
+);
 
+my $isSU = $session{CurrentUser}
+    ->HasRight( Right => 'SuperUser', Object => $RT::System );
 foreach my $object (@objects) {
-	my $Users = RT::Users->new($session{CurrentUser});
-        $Users->WhoHaveRight(Right => 'OwnTicket', Object => $object, IncludeSystemRights => 1, IncludeSuperusers => 0); 
-        while (my $User = $Users->Next()) {
-                next if ($User->id == $RT::Nobody->id); # skip nobody here, so we can make them first later
-	      $user_uniq_hash{$User->Id()} = $User;
-        }
+    my $Users = RT::Users->new( $session{CurrentUser} );
+    $Users->WhoHaveRight(
+        Right               => 'OwnTicket',
+        Object              => $object,
+        IncludeSystemRights => 1,
+        IncludeSuperusers   => $isSU
+    );
+    while ( my $User = $Users->Next() ) {
+        next
+            if ( $User->id == $RT::Nobody->id )
+            ;    # skip nobody here, so we can make them first later
+        $user_uniq_hash{ $User->Id() } = $User;
+    }
+}
+if ($Default && $Default != $RT::Nobody->id && !$user_uniq_hash{$Default}) {
+    $user_uniq_hash{$Default} = RT::User->new($session{CurrentUser});
+    $user_uniq_hash{$Default}->Load($Default);
 }
 
-my @users = sort { uc($a->Name) cmp uc($b->Name) } values %user_uniq_hash; 
-unshift(@users, $RT::Nobody);
+my @users = sort { uc( $a->Name ) cmp uc( $b->Name ) } values %user_uniq_hash;
+unshift( @users, $RT::Nobody );
 
-$m->callback( %ARGS, objects => \@objects, CallbackName => 'UpdateObjectList');
+$m->callback(
+    %ARGS,
+    objects      => \@objects,
+    CallbackName => 'UpdateObjectList'
+);
 
 
 </%INIT>
