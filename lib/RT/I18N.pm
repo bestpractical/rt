@@ -341,7 +341,11 @@ sub DecodeMIMEWordsToEncoding {
         # until this is fixed, we must escape any string containing a comma or semicolon
         # this is only a bandaid
 
-        $enc_str = qq{"$enc_str"} if ($enc_str =~ /[,;]/);                                     
+        # Some _other_ MUAs encode quotes _already_, and double quotes
+        # confuse us a lot, so only quote it if it isn't quoted
+        # already.
+        $enc_str = qq{"$enc_str"} if $enc_str =~ /[,;]/ and $enc_str !~ /^".*"$/;
+
 	$str .= $prefix . $enc_str . $trailing;
     }
 
