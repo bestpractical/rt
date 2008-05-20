@@ -3968,8 +3968,8 @@ msgid "Group Status"
 msgstr "群組狀態"
 
 #: lib/RT/Group_Overlay.pm:975
-msgid "Group already has member"
-msgstr "群組內已有此成員"
+msgid "Group already has member: %1"
+msgstr "群組內已有此成員: %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Group could not be created."
@@ -4787,7 +4787,7 @@ msgid "Member %1 deleted"
 msgstr "成員 %1 刪除完畢"
 
 #: lib/RT/Group_Overlay.pm:992
-msgid "Member added"
+msgid "Member added: %1"
 msgstr "新增成員完畢: %1"
 
 #: lib/RT/Group_Overlay.pm:1157

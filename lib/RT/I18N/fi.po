@@ -2870,8 +2870,8 @@ msgid "Group Rights"
 msgstr "Ryhmän oikeudet"
 
 #: lib/RT/Group_Overlay.pm:975
-msgid "Group already has member"
-msgstr "Ryhmässä on jo jäsen"
+msgid "Group already has member: %1"
+msgstr "Ryhmässä on jo jäsen: %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Group could not be created."
@@ -3513,7 +3513,7 @@ msgid "Member %1 deleted"
 msgstr ""
 
 #: lib/RT/Group_Overlay.pm:992
-msgid "Member added"
+msgid "Member added: %1"
 msgstr "Jäsen lisätty: %1"
 
 #: lib/RT/Group_Overlay.pm:1157

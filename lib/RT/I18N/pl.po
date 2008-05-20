@@ -3128,8 +3128,8 @@ msgid "Group Rights"
 msgstr "Uprawnienia grupowe"
 
 #: lib/RT/Group_Overlay.pm:975
-msgid "Group already has member"
-msgstr "Grupa ma już członka"
+msgid "Group already has member: %1"
+msgstr "Grupa ma już członka: %1"
 
 #: share/html/Admin/Groups/Modify.html:115
 #. ($create_msg)
@@ -3795,7 +3795,7 @@ msgid "Member %1 deleted"
 msgstr "Członek %1 usunięty"
 
 #: lib/RT/Group_Overlay.pm:992
-msgid "Member added"
+msgid "Member added: %1"
 msgstr "Członek grupy został dodany: %1"
 
 #: lib/RT/Group_Overlay.pm:1157

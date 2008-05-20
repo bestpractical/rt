@@ -3054,8 +3054,8 @@ msgid "Group Rights"
 msgstr "Derechos del grupo"
 
 #: lib/RT/Group_Overlay.pm:975
-msgid "Group already has member"
-msgstr "El grupo ya tiene miembros"
+msgid "Group already has member: %1"
+msgstr "El grupo ya tiene miembros: %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Group could not be created."
@@ -3729,7 +3729,7 @@ msgid "Member %1 deleted"
 msgstr "Miembro %1 borrado"
 
 #: lib/RT/Group_Overlay.pm:992
-msgid "Member added"
+msgid "Member added: %1"
 msgstr "Miembro añadido: %1"
 
 #: lib/RT/Group_Overlay.pm:1157

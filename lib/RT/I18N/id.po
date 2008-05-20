@@ -2618,8 +2618,8 @@ msgid "Group Rights"
 msgstr "Hak Grup"
 
 #: lib/RT/Group_Overlay.pm:975
-msgid "Group already has member"
-msgstr "Grup sudah memiliki anggota"
+msgid "Group already has member: %1"
+msgstr "Grup sudah memiliki anggota: %1"
 
 #: share/html/Admin/Groups/Modify.html:115
 #. ($create_msg)
@@ -3249,7 +3249,7 @@ msgid "Member %1 deleted"
 msgstr "Anggota %1 sudah dihapus"
 
 #: lib/RT/Group_Overlay.pm:992
-msgid "Member added"
+msgid "Member added: %1"
 msgstr "Anggota sudah ditambah: %1"
 
 #: lib/RT/Group_Overlay.pm:1157

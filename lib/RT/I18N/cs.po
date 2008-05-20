@@ -2453,8 +2453,8 @@ msgid "Group Rights"
 msgstr "Práva skupiny"
 
 #: lib/RT/Group_Overlay.pm:975
-msgid "Group already has member"
-msgstr "Skupina již má člena"
+msgid "Group already has member: %1"
+msgstr "Skupina již má člena: %1"
 
 #: share/html/Admin/Groups/Modify.html:115
 #. ($create_msg)
@@ -3065,7 +3065,7 @@ msgid "Member %1 deleted"
 msgstr "Člen %1 odebrán"
 
 #: lib/RT/Group_Overlay.pm:992
-msgid "Member added"
+msgid "Member added: %1"
 msgstr "Člen přidán: %1"
 
 #: lib/RT/Group_Overlay.pm:1157
