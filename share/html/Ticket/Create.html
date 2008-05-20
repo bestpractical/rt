@@ -336,7 +336,7 @@ if ($QueueObj->DefaultDueIn && !$ARGS{'Due'}) {
     my $default_due = RT::Date->new($session{'CurrentUser'});
     $default_due->SetToNow();
     $default_due->AddDays($QueueObj->DefaultDueIn);
-    $ARGS{'Due'} = $default_due->ISO();
+    $ARGS{'Due'} = $default_due->ISO(Timezone => 'user');
 }
 
 # {{{ deal with deleting uploaded attachments
