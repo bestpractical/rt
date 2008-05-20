@@ -1396,6 +1396,12 @@ sub _CustomFieldJoin {
         $self->SUPER::Limit(
             LEFTJOIN        => $CFs,
             ENTRYAGGREGATOR => 'AND',
+            FIELD           => 'LookupType',
+            VALUE           => 'RT::Queue-RT::Ticket',
+        );
+        $self->SUPER::Limit(
+            LEFTJOIN        => $CFs,
+            ENTRYAGGREGATOR => 'AND',
             FIELD           => 'Name',
             VALUE           => $field,
         );
