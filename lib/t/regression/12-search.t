@@ -142,67 +142,82 @@ ok( $id, $msg );
 # we have tickets. start searching
 my $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue'");
-is($tix->Count, 7, "found all the tickets");
+is($tix->Count, 7, "found all the tickets")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 
 # very simple searches. both CF and normal
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest = 'foo1'");
-is($tix->Count, 1, "matched identical subject");
+is($tix->Count, 1, "matched identical subject")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest LIKE 'foo1'");
-is($tix->Count, 1, "matched LIKE subject");
+is($tix->Count, 1, "matched LIKE subject")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest = 'foo'");
-is($tix->Count, 0, "IS a regexp match");
+is($tix->Count, 0, "IS a regexp match")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest LIKE 'foo'");
-is($tix->Count, 5, "matched LIKE subject");
+is($tix->Count, 5, "matched LIKE subject")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest IS NULL");
-is($tix->Count, 2, "IS null CF");
+is($tix->Count, 2, "IS null CF")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Requestors LIKE 'search1'");
-is($tix->Count, 1, "LIKE requestor");
+is($tix->Count, 1, "LIKE requestor")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Requestors = 'search1\@example.com'");
-is($tix->Count, 1, "IS requestor");
+is($tix->Count, 1, "IS requestor")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Requestors LIKE 'search'");
-is($tix->Count, 6, "LIKE requestor");
+is($tix->Count, 6, "LIKE requestor")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Requestors IS NULL");
-is($tix->Count, 1, "Search for no requestor");
+is($tix->Count, 1, "Search for no requestor")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Subject = 'SearchTest1'");
-is($tix->Count, 1, "IS subject");
+is($tix->Count, 1, "IS subject")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Subject LIKE 'SearchTest1'");
-is($tix->Count, 1, "LIKE subject");
+is($tix->Count, 1, "LIKE subject")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Subject = ''");
-is($tix->Count, 1, "found one ticket");
+is($tix->Count, 1, "found one ticket")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Subject LIKE 'SearchTest'");
-is($tix->Count, 6, "found two ticket");
+is($tix->Count, 6, "found two ticket")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Tickets->new($RT::SystemUser);
 $tix->FromSQL("Queue = '$queue' AND Subject LIKE 'qwerty'");
-is($tix->Count, 0, "found zero ticket");
+is($tix->Count, 0, "found zero ticket")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 
 
