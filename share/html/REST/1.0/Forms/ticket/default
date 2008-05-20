@@ -265,7 +265,9 @@ else {
             my $time = new RT::Date $session{CurrentUser};
             $time->Set(Format => 'sql', Value => $ticket->$key);
             next if ($val =~ /^not set$/i || $val eq $time->AsString);
-            ($n, $s) = $ticket->$set($val);
+
+            $time->Set(Format => 'unknown', Value => $val);
+            ($n, $s) = $ticket->$set($time->ISO);
         }
         elsif (exists $people{$key}) {
             $key = $people{$key};
