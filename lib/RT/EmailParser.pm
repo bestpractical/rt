@@ -472,9 +472,10 @@ sub _SetupMIMEParser {
     my $self   = shift;
     my $parser = shift;
     
-    # Set up output directory for files:
-
-    my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+    # Set up output directory for files; we use $RT::VarPath instead
+    # of File::Spec->tmpdir (e.g., /tmp) beacuse it isn't always
+    # writable.
+    my $tmpdir = File::Temp::tempdir( DIR => $RT::VarPath, CLEANUP => 1 );
     push ( @{ $self->{'AttachmentDirs'} }, $tmpdir );
     $parser->output_dir($tmpdir);
     $parser->filer->ignore_filename(1);
