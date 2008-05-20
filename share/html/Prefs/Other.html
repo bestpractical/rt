@@ -59,7 +59,7 @@
 % my $meta = RT->Config->Meta( $option );
 <& $meta->{'Widget'},
     Default      => 1,
-    %{ $localize_meta->( $meta->{'WidgetArguments'} ) },
+    %{ $finalize_meta->( $meta->{'WidgetArguments'} ) },
     Name         => $option,
     DefaultValue => scalar RT->Config->Get( $option ),
     CurrentValue => $preferences->{ $option },
@@ -100,8 +100,9 @@ if ( $Update ) {
             }, );
     $UserObj->SetPreferences( $RT::System, $preferences );
 }
-my $localize_meta = sub {
+my $finalize_meta = sub {
     my %meta = %{ shift() };
+    %meta = (%meta, %{ $meta{Callback}->() }) if $meta{Callback};
     $meta{'Description'} = loc( $meta{'Description'} ) if $meta{'Description'};
     if ( $meta{'ValuesLabel'} ) {
         while (my ($k, $v) = each %{ $meta{'ValuesLabel'} } ) {

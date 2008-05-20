@@ -46,5 +46,5 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <label accesskey="9">
-  <& /Elements/SelectQueue, Name => 'Queue', %ARGS, ShowNullOption => 0, ShowAllQueues => 0 &>
+  <& /Elements/SelectQueue, Name => 'Queue', Default => RT->Config->Get("DefaultQueue", $session{'CurrentUser'}), %ARGS, ShowNullOption => 0, ShowAllQueues => 0 &>
 </label>

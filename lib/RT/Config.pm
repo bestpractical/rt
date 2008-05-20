@@ -165,6 +165,25 @@ our %META = (
             },
         },
     },
+    DefaultQueue => {
+        Section         => 'General',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Default queue',
+            Callback    => sub {
+                my $ret = { Values => [], ValuesLabel => {}};
+                my $q = new RT::Queues($HTML::Mason::Commands::session{'CurrentUser'});
+                $q->UnLimit;
+                while (my $queue = $q->Next) {
+                    next unless $queue->CurrentUserHasRight("CreateTicket");
+                    push @{$ret->{Values}}, $queue->Id;
+                    $ret->{ValuesLabel}{$queue->Id} = $queue->Name;
+                }
+                return $ret;
+            },
+        }
+    },
      EmailFrequency => {
         Section         => 'Mail',                                     #loc
         Overridable     => 1,
