@@ -832,6 +832,7 @@ sub SetReturnAddress {
     my $self = shift;
     my %args = (
         is_comment => 0,
+        friendly_name => undef,
         @_
     );
 
@@ -849,9 +850,13 @@ sub SetReturnAddress {
 
     unless ( $self->TemplateObj->MIMEObj->head->get('From') ) {
         if ( RT->Config->Get('UseFriendlyFromLine') ) {
-            my $friendly_name = $self->TransactionObj->CreatorObj->FriendlyName;
-            if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
-                $friendly_name = $1;
+            my $friendly_name = $args{friendly_name};
+
+            unless ( $friendly_name ) {
+                $friendly_name = $self->TransactionObj->CreatorObj->FriendlyName;
+                if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
+                    $friendly_name = $1;
+                }
             }
 
             $friendly_name =~ s/"/\\"/g;

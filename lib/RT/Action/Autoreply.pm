@@ -96,38 +96,15 @@ Set this message\'s return address to the apropriate queue address
 
 sub SetReturnAddress {
     my $self = shift;
-    my %args = ( is_comment => 0,
-		 @_
-	       );
     
-    my $replyto;
-    if ($args{'is_comment'}) { 
-	$replyto = $self->TicketObj->QueueObj->CommentAddress || 
-		     RT->Config->Get('CommentAddress');
-    }
-    else {
-	$replyto = $self->TicketObj->QueueObj->CorrespondAddress ||
-		     RT->Config->Get('CorrespondAddress');
-    }
-    
-    unless ($self->TemplateObj->MIMEObj->head->get('From')) {
+    my $friendly_name;
+
 	if (RT->Config->Get('UseFriendlyFromLine')) {
-	    my $friendly_name = $self->TicketObj->QueueObj->Description ||
+	    $friendly_name = $self->TicketObj->QueueObj->Description ||
 		    $self->TicketObj->QueueObj->Name;
-	    $friendly_name =~ s/"/\\"/g;
-	    $self->SetHeader( 'From',
-		        sprintf(RT->Config->Get('FriendlyFromLineFormat'), 
-                $self->MIMEEncodeString( $friendly_name, RT->Config->Get('EmailOutputEncoding') ), $replyto),
-	    );
 	}
-	else {
-	    $self->SetHeader( 'From', $replyto );
-	}
-    }
-    
-    unless ($self->TemplateObj->MIMEObj->head->get('Reply-To')) {
-	$self->SetHeader('Reply-To', "$replyto");
-    }
+
+    $self->SUPER::SetReturnAddress( @_, friendly_name => $friendly_name );
     
 }
   
