@@ -811,7 +811,6 @@ sub _DecodeLOB {
         return ($Content);
 }
 
-# {{{ LINKDIRMAP
 # A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
