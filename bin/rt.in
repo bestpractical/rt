@@ -1834,7 +1834,7 @@ Text:
         rt create -t ticket
 
         # Non-interactive.
-        rt edit ticket/1-3 add cc=foo@example.com set priority=3
+        rt edit ticket/1-3 add cc=foo@example.com set priority=3 due=tomorrow
         rt ls -t tickets -i 'Priority > 5' | rt edit - set status=resolved
         rt edit ticket/4 set priority=3 owner=bar@example.com \
                          add cc=foo@example.com bcc=quux@example.net
