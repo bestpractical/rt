@@ -127,6 +127,13 @@ else {
         my (%v, $text);
 
         foreach my $k (keys %data) {
+            # flexibly parse any dates
+            if ($dates{lc $k}) {
+                my $time = new RT::Date $session{CurrentUser};
+                $time->Set(Format => 'unknown', Value => $data{$k});
+                $data{$k} = $time->ISO;
+            }
+
             if (exists $create{lc $k}) {
                 $v{$create{lc $k}} = delete $data{$k};
             }
