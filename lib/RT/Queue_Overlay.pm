@@ -694,46 +694,41 @@ sub AddWatcher {
         @_
     );
 
+    return ( 0, "No principal specified" )
+        unless $args{'Email'} or $args{'PrincipalId'};
+
+    if ( !$args{'PrincipalId'} && $args{'Email'} ) {
+        my $user = RT::User->new( $self->CurrentUser );
+        $user->LoadByEmail( $args{'Email'} );
+        $args{'PrincipalId'} = $user->PrincipalId if $user->id;
+    }
+
     # {{{ Check ACLS
+    return ( $self->_AddWatcher(%args) )
+        if $self->CurrentUserHasRight('ModifyQueueWatchers');
+
     #If the watcher we're trying to add is for the current user
-    if ( defined $args{'PrincipalId'} && 
-            $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
+    if ( defined $args{'PrincipalId'} && $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
         if ( defined $args{'Type'} && ($args{'Type'} eq 'AdminCc') ) {
-            unless ( $self->CurrentUserHasRight('ModifyQueueWatchers')
-                or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
-                return ( 0, $self->loc('Permission Denied'))
-            }
+            return ( $self->_AddWatcher(%args) )
+                if $self->CurrentUserHasRight('WatchAsAdminCc');
         }
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
-        elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
-
-            unless ( $self->CurrentUserHasRight('ModifyQueueWatchers')
-                or $self->CurrentUserHasRight('Watch') ) {
-                return ( 0, $self->loc('Permission Denied'))
-            }
+        elsif ( $args{'Type'} eq 'Cc' or $args{'Type'} eq 'Requestor' ) {
+            return ( $self->_AddWatcher(%args) )
+                if $self->CurrentUserHasRight('Watch');
         }
-     else {
+        else {
             $RT::Logger->warning( "$self -> AddWatcher got passed a bogus type");
             return ( 0, $self->loc('Error in parameters to Queue->AddWatcher') );
         }
     }
 
-    # If the watcher isn't the current user 
-    # and the current user  doesn't have 'ModifyQueueWatcher'
-    # bail
-    else {
-        unless ( $self->CurrentUserHasRight('ModifyQueueWatchers') ) {
-            return ( 0, $self->loc("Permission Denied") );
-        }
-    }
-
-    # }}}
-
-    return ( $self->_AddWatcher(%args) );
+    return ( 0, $self->loc("Permission Denied") );
 }
 
 #This contains the meat of AddWatcher. but can be called from a routine like
@@ -749,47 +744,44 @@ sub _AddWatcher {
     );
 
 
-    my $principal = RT::Principal->new($self->CurrentUser);
-    if ($args{'PrincipalId'}) {
-        $principal->Load($args{'PrincipalId'});
+    my $principal = RT::Principal->new( $self->CurrentUser );
+    if ( $args{'PrincipalId'} ) {
+        $principal->Load( $args{'PrincipalId'} );
     }
-    elsif ($args{'Email'}) {
-
+    elsif ( $args{'Email'} ) {
         my $user = RT::User->new($self->CurrentUser);
-        $user->LoadByEmail($args{'Email'});
+        $user->LoadByEmail( $args{'Email'} );
+        $user->Load( $args{'Email'} )
+            unless $user->id;
 
-        unless ($user->Id) {
-            $user->Load($args{'Email'});
-        }
-        if ($user->Id) { # If the user exists
-            $principal->Load($user->PrincipalId);
+        if ( $user->Id ) { # If the user exists
+            $principal->Load( $user->PrincipalId );
         } else {
-
-        # if the user doesn't exist, we need to create a new user
-             my $new_user = RT::User->new($RT::SystemUser);
+            # if the user doesn't exist, we need to create a new user
+            my $new_user = RT::User->new($RT::SystemUser);
 
             my ( $Address, $Name ) =  
                RT::Interface::Email::ParseAddressFromHeader($args{'Email'});
 
             my ( $Val, $Message ) = $new_user->Create(
-                Name => $Address,
+                Name         => $Address,
                 EmailAddress => $Address,
                 RealName     => $Name,
                 Privileged   => 0,
-                Comments     => 'Autocreated when added as a watcher');
+                Comments     => 'Autocreated when added as a watcher'
+            );
             unless ($Val) {
                 $RT::Logger->error("Failed to create user ".$args{'Email'} .": " .$Message);
                 # Deal with the race condition of two account creations at once
-                $new_user->LoadByEmail($args{'Email'});
+                $new_user->LoadByEmail( $args{'Email'} );
             }
-            $principal->Load($new_user->PrincipalId);
+            $principal->Load( $new_user->PrincipalId );
         }
     }
     # If we can't find this watcher, we need to bail.
-    unless ($principal->Id) {
+    unless ( $principal->Id ) {
         return(0, $self->loc("Could not find or create that user"));
     }
-
 
     my $group = RT::Group->new($self->CurrentUser);
     $group->LoadQueueRoleGroup(Type => $args{'Type'}, Queue => $self->Id);
@@ -838,14 +830,21 @@ sub DeleteWatcher {
 
     my %args = ( Type => undef,
                  PrincipalId => undef,
+                 Email => undef,
                  @_ );
 
     unless ( $args{'PrincipalId'} || $args{'Email'} ) {
         return ( 0, $self->loc("No principal specified") );
     }
+
+    if ( !$args{PrincipalId} and $args{Email} ) {
+        my $user = RT::User->new( $self->CurrentUser );
+        my ($rv, $msg) = $user->LoadByEmail( $args{Email} );
+        $args{PrincipalId} = $user->PrincipalId if $rv;
+    }
+    
     my $principal = RT::Principal->new( $self->CurrentUser );
     if ( $args{'PrincipalId'} ) {
-
         $principal->Load( $args{'PrincipalId'} );
     }
     else {
@@ -865,13 +864,15 @@ sub DeleteWatcher {
         return(0,$self->loc("Group not found"));
     }
 
+    my $can_modify_queue = $self->CurrentUserHasRight('ModifyQueueWatchers');
+
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
     if ( defined $args{'PrincipalId'} and $self->CurrentUser->PrincipalId  eq $args{'PrincipalId'}) {
         #  If it's an AdminCc and they don't have 
         #   'WatchAsAdminCc' or 'ModifyQueue', bail
         if ( $args{'Type'} eq 'AdminCc' ) {
-            unless ( $self->CurrentUserHasRight('ModifyQueueWatchers')
+            unless ( $can_modify_queue
                 or $self->CurrentUserHasRight('WatchAsAdminCc') ) {
                 return ( 0, $self->loc('Permission Denied'))
             }
@@ -880,7 +881,7 @@ sub DeleteWatcher {
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyQueue', bail
         elsif ( ( $args{'Type'} eq 'Cc' ) or ( $args{'Type'} eq 'Requestor' ) ) {
-            unless ( $self->CurrentUserHasRight('ModifyQueueWatchers')
+            unless ( $can_modify_queue
                 or $self->CurrentUserHasRight('Watch') ) {
                 return ( 0, $self->loc('Permission Denied'))
             }
@@ -894,7 +895,7 @@ sub DeleteWatcher {
     # If the watcher isn't the current user 
     # and the current user  doesn't have 'ModifyQueueWathcers' bail
     else {
-        unless ( $self->CurrentUserHasRight('ModifyQueueWatchers') ) {
+        unless ( $can_modify_queue ) {
             return ( 0, $self->loc("Permission Denied") );
         }
     }

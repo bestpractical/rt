@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title =>  $title &>
 <& /Elements/TicketList, Title   => $title,
-			 Format  => @Format, 
+			 Format  => $Format, 
 			 Query   => $Query, 
 			 Order   => $Order, 
 			 OrderBy => $OrderBy,
@@ -67,7 +67,7 @@ if ( @status ) {
 }
 my $Order = "ASC";
 my $OrderBy = "Created";
-my @Format = qq{
+my $Format = qq{
    '<B><A HREF="}. RT->Config->Get('WebPath') .qq{/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="}. RT->Config->Get('WebPath') .qq{/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
    Status,

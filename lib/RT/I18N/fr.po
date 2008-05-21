@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.5.x\n"
 "POT-Creation-Date: 2002-05-02 11:36+0800\n"
-"PO-Revision-Date: 2008-02-22 10:07+0200\n"
+"PO-Revision-Date: 2008-04-04 17:17+0200\n"
 "Last-Translator: Emmanuel Lacour <elacour@easter-eggs.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -153,7 +153,7 @@ msgid "%1 - Specify id of the template you want to use"
 msgstr "%1 - Précisez l'identifiant du modèle que vous souhaitez utiliser"
 
 #: NOT FOUND IN SOURCE
-msgid "%1 - Specify if you want to use either 'first' or 'last' tarnsaction"
+msgid "%1 - Specify if you want to use either 'first' or 'last' transaction"
 msgstr "%1 - Précisez si vous souhaitez utiliser la première ou la dernière transaction"
 
 #: bin/rt-crontool:297
@@ -261,10 +261,6 @@ msgstr "%1 créé(e)"
 #. ($obj_type)
 msgid "%1 deleted"
 msgstr "%1 supprimé(e)"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 grouped by %2"
-msgstr "%1 groupés par %2"
 
 #: etc/initialdata:652
 msgid "%1 highest priority tickets I own"
@@ -720,7 +716,7 @@ msgstr "GérerAppartenanceGroupes"
 msgid "AdminOwnPersonalGroups"
 msgstr "GérerGroupesPersonnelsPropres"
 
-#: lib/RT/Queue_Overlay.pm:92
+#: lib/RT/Queue_Overlay.pm:94
 msgid "AdminQueue"
 msgstr "GérerFile"
 
@@ -829,11 +825,11 @@ msgstr "Asc"
 msgid "Ascending"
 msgstr "Croissant"
 
-#: lib/RT/Queue_Overlay.pm:96
+#: lib/RT/Queue_Overlay.pm:98
 msgid "Assign and remove custom fields"
 msgstr "Fixer et supprimer les champs personnalisés"
 
-#: lib/RT/Queue_Overlay.pm:96
+#: lib/RT/Queue_Overlay.pm:98
 msgid "AssignCustomFields"
 msgstr "FixerChampsPersonnalisés"
 
@@ -982,7 +978,7 @@ msgstr ""
 msgid "Can not modify system users"
 msgstr "Les utilisateurs système ne peuvent être modifiés"
 
-#: lib/RT/Queue_Overlay.pm:91
+#: lib/RT/Queue_Overlay.pm:93
 msgid "Can this principal see this queue"
 msgstr "Le groupe/utilisateur peut-il voir cette file"
 
@@ -1117,7 +1113,7 @@ msgstr ""
 msgid "Comment on tickets"
 msgstr "Commentaire sur le ticket"
 
-#: lib/RT/Queue_Overlay.pm:111
+#: lib/RT/Queue_Overlay.pm:113
 msgid "CommentOnTicket"
 msgstr "CommenterTicket"
 
@@ -1441,13 +1437,15 @@ msgstr ""
 msgid "Couldn't resolve '%1' into a URI."
 msgstr "Impossible de convertir '%1' en URI."
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/Link_Overlay.pm:113
+#. ($args{'Base'})
 msgid "Couldn't resolve base '%1' into a URI."
-msgstr "Impossible de résoudre la base '%1' dans une URI."
+msgstr "Impossible de résoudre la base '%1' en URI."
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/Link_Overlay.pm:128
+#. ($args{'Target'})
 msgid "Couldn't resolve target '%1' into a URI."
-msgstr "Impossible de résoudre la cible '%1' dans une URI."
+msgstr "Impossible de résoudre la cible '%1' en URI."
 
 #: lib/RT/Interface/Email.pm:643
 msgid "Couldn't send email"
@@ -1540,7 +1538,7 @@ msgstr "Ajouter de nouveaux tickets basés sur le modèle de ce scrip"
 msgid "Create ticket"
 msgstr "Ajouter un ticket"
 
-#: lib/RT/Queue_Overlay.pm:109
+#: lib/RT/Queue_Overlay.pm:111
 msgid "Create tickets in this queue"
 msgstr "Ajouter des tickets dans cette file"
 
@@ -1548,7 +1546,7 @@ msgstr "Ajouter des tickets dans cette file"
 msgid "Create, delete and modify custom fields"
 msgstr "Ajouter, supprimer et modifier des champs personnalisés"
 
-#: lib/RT/Queue_Overlay.pm:92
+#: lib/RT/Queue_Overlay.pm:94
 msgid "Create, delete and modify queues"
 msgstr "Ajouter, supprimer et modifier les files"
 
@@ -1564,7 +1562,7 @@ msgstr "Ajouter, supprimer et modifier les utilisateurs"
 msgid "CreateSavedSearch"
 msgstr "CréerRechercheSauvée"
 
-#: lib/RT/Queue_Overlay.pm:109
+#: lib/RT/Queue_Overlay.pm:111
 msgid "CreateTicket"
 msgstr "CréerTicket"
 
@@ -1825,7 +1823,7 @@ msgstr "Supprimer les tickets"
 msgid "Delete values"
 msgstr "Supprimer les valeurs"
 
-#: lib/RT/Queue_Overlay.pm:114
+#: lib/RT/Queue_Overlay.pm:116
 msgid "DeleteTicket"
 msgstr "SupprimerTicket"
 
@@ -1906,7 +1904,7 @@ msgstr ""
 msgid "Display"
 msgstr "Afficher"
 
-#: lib/RT/Queue_Overlay.pm:93
+#: lib/RT/Queue_Overlay.pm:95
 msgid "Display Access Control List"
 msgstr "Afficher la liste des droits"
 
@@ -1914,11 +1912,11 @@ msgstr "Afficher la liste des droits"
 msgid "Display Columns"
 msgstr "Afficher les colonnes"
 
-#: lib/RT/Queue_Overlay.pm:99
+#: lib/RT/Queue_Overlay.pm:101
 msgid "Display Scrip templates for this queue"
 msgstr "Afficher les modèles de Scrips pour cette file"
 
-#: lib/RT/Queue_Overlay.pm:102
+#: lib/RT/Queue_Overlay.pm:104
 msgid "Display Scrips for this queue"
 msgstr "Afficher les Scrips pour cette file"
 
@@ -2698,7 +2696,7 @@ msgstr "Erreur interne : %1"
 msgid "Invalid Group Type"
 msgstr "Type de groupe invalide"
 
-#: lib/RT/Principal_Overlay.pm:161
+#: lib/RT/Principal_Overlay.pm:163
 msgid "Invalid Right"
 msgstr "Droit invalide"
 
@@ -2833,6 +2831,7 @@ msgid "Last Updated"
 msgstr "Date dernière MAJ"
 
 #: NOT FOUND IN SOURCE
+#. FIXME: title in ColumnMap, html/Elements/RT__Ticket/ColumnMap:278
 msgid "Last Updated By"
 msgstr "Dernière MAJ par"
 
@@ -3213,7 +3212,7 @@ msgstr "Clé primaire manquante ? : %1"
 msgid "Mobile"
 msgstr "Mobile"
 
-#: lib/RT/Queue_Overlay.pm:94
+#: lib/RT/Queue_Overlay.pm:96
 msgid "Modify Access Control List"
 msgstr "Modifier la liste de droits"
 
@@ -3239,11 +3238,11 @@ msgstr "Modifier les membres"
 msgid "Modify Rights"
 msgstr "Modifier les droits"
 
-#: lib/RT/Queue_Overlay.pm:97
+#: lib/RT/Queue_Overlay.pm:99
 msgid "Modify Scrip templates for this queue"
 msgstr "Modifier les modèles de Scrips pour cette file"
 
-#: lib/RT/Queue_Overlay.pm:100
+#: lib/RT/Queue_Overlay.pm:102
 msgid "Modify Scrips for this queue"
 msgstr "Modifier les Scrips pour cette file"
 
@@ -3399,7 +3398,7 @@ msgstr "Modifier le ticket n°%1"
 msgid "Modify ticket #%1"
 msgstr "Modifier le ticket n°%1"
 
-#: lib/RT/Queue_Overlay.pm:113
+#: lib/RT/Queue_Overlay.pm:115
 msgid "Modify tickets"
 msgstr "Modifier les tickets"
 
@@ -3418,7 +3417,7 @@ msgstr "Modifier les droits utilisateurs pour le groupe %1"
 msgid "Modify user rights for queue %1"
 msgstr "Modifier les droits utilisateurs pour la file %1"
 
-#: lib/RT/Queue_Overlay.pm:94
+#: lib/RT/Queue_Overlay.pm:96
 msgid "ModifyACL"
 msgstr "ModifierACL"
 
@@ -3434,11 +3433,11 @@ msgstr ""
 msgid "ModifyOwnMembership"
 msgstr "ModifierPropresAppartenances"
 
-#: lib/RT/Queue_Overlay.pm:95
+#: lib/RT/Queue_Overlay.pm:97
 msgid "ModifyQueueWatchers"
 msgstr "ModifierObservateurs"
 
-#: lib/RT/Queue_Overlay.pm:100
+#: lib/RT/Queue_Overlay.pm:102
 msgid "ModifyScrips"
 msgstr "ModifierScrips"
 
@@ -3446,11 +3445,11 @@ msgstr "ModifierScrips"
 msgid "ModifySelf"
 msgstr "ModifierDonnéesPerso"
 
-#: lib/RT/Queue_Overlay.pm:97
+#: lib/RT/Queue_Overlay.pm:99
 msgid "ModifyTemplate"
 msgstr "ModifierModèle"
 
-#: lib/RT/Queue_Overlay.pm:113
+#: lib/RT/Queue_Overlay.pm:115
 msgid "ModifyTicket"
 msgstr "ModifierTicket"
 
@@ -4147,11 +4146,11 @@ msgstr "Mail sortant enregistré"
 msgid "Over time, priority moves toward"
 msgstr "Temps dépassé, priorité augmentée"
 
-#: lib/RT/Queue_Overlay.pm:112
+#: lib/RT/Queue_Overlay.pm:114
 msgid "Own tickets"
 msgstr "Tickets propres"
 
-#: lib/RT/Queue_Overlay.pm:112
+#: lib/RT/Queue_Overlay.pm:114
 msgid "OwnTicket"
 msgstr "PrendreTicket"
 
@@ -4621,11 +4620,11 @@ msgstr "Adresse de réponse"
 msgid "Reply to requestors"
 msgstr "Répondre aux demandeurs"
 
-#: lib/RT/Queue_Overlay.pm:110
+#: lib/RT/Queue_Overlay.pm:112
 msgid "Reply to tickets"
 msgstr "Répondre aux tickets"
 
-#: lib/RT/Queue_Overlay.pm:110
+#: lib/RT/Queue_Overlay.pm:112
 msgid "ReplyToTicket"
 msgstr "RépondreTicket"
 
@@ -4900,15 +4899,15 @@ msgstr "Voir également:"
 msgid "See custom fields"
 msgstr "Voir les champs personnalisés"
 
-#: lib/RT/Queue_Overlay.pm:106
+#: lib/RT/Queue_Overlay.pm:108
 msgid "See exact outgoing email messages and their recipeients"
 msgstr "Voir les mails sortant et leurs destinataires"
 
-#: lib/RT/Queue_Overlay.pm:104
+#: lib/RT/Queue_Overlay.pm:106
 msgid "See ticket private commentary"
 msgstr "Voir les commentaires privés du ticket"
 
-#: lib/RT/Queue_Overlay.pm:103
+#: lib/RT/Queue_Overlay.pm:105
 msgid "See ticket summaries"
 msgstr "Vue récapitulative des tickets"
 
@@ -4920,7 +4919,7 @@ msgstr "VoirChampPersonnalisé"
 msgid "SeeGroup"
 msgstr "VoirGroupe"
 
-#: lib/RT/Queue_Overlay.pm:91
+#: lib/RT/Queue_Overlay.pm:93
 msgid "SeeQueue"
 msgstr "VoirFile"
 
@@ -5140,7 +5139,7 @@ msgstr "Afficher les requêtes en attente"
 msgid "Show requests awaiting other approvals"
 msgstr "Afficher les requêtes attendant d'autres approbations"
 
-#: lib/RT/Queue_Overlay.pm:93
+#: lib/RT/Queue_Overlay.pm:95
 msgid "ShowACL"
 msgstr "AfficherACL"
 
@@ -5148,7 +5147,7 @@ msgstr "AfficherACL"
 msgid "ShowConfigTab"
 msgstr "VoirOngletConfiguration"
 
-#: lib/RT/Queue_Overlay.pm:106
+#: lib/RT/Queue_Overlay.pm:108
 msgid "ShowOutgoingEmail"
 msgstr "AfficherEmailSortant"
 
@@ -5156,19 +5155,19 @@ msgstr "AfficherEmailSortant"
 msgid "ShowSavedSearches"
 msgstr "AfficherRecherchesSauvées"
 
-#: lib/RT/Queue_Overlay.pm:102
+#: lib/RT/Queue_Overlay.pm:104
 msgid "ShowScrips"
 msgstr "AfficherScrips"
 
-#: lib/RT/Queue_Overlay.pm:99
+#: lib/RT/Queue_Overlay.pm:101
 msgid "ShowTemplate"
 msgstr "AfficherModèle"
 
-#: lib/RT/Queue_Overlay.pm:103
+#: lib/RT/Queue_Overlay.pm:105
 msgid "ShowTicket"
 msgstr "AfficherTicket"
 
-#: lib/RT/Queue_Overlay.pm:104
+#: lib/RT/Queue_Overlay.pm:106
 msgid "ShowTicketComments"
 msgstr "AfficherCommentairesTickets"
 
@@ -5188,7 +5187,7 @@ msgstr ""
 msgid "Sign up as a ticket Requestor or ticket or queue Cc"
 msgstr "S'identifier en tant que demandeur ou CC de file ou de ticket"
 
-#: lib/RT/Queue_Overlay.pm:108
+#: lib/RT/Queue_Overlay.pm:110
 msgid "Sign up as a ticket or queue AdminCc"
 msgstr "S'identifier en tant qu'AdminCC de ticket ou de file"
 
@@ -5280,11 +5279,11 @@ msgstr "Statut changé de %1 à %2"
 msgid "Steal"
 msgstr "Voler"
 
-#: lib/RT/Queue_Overlay.pm:117
+#: lib/RT/Queue_Overlay.pm:119
 msgid "Steal tickets"
 msgstr "Voler les tickets "
 
-#: lib/RT/Queue_Overlay.pm:117
+#: lib/RT/Queue_Overlay.pm:119
 msgid "StealTicket"
 msgstr "VolerTicket"
 
@@ -5418,11 +5417,11 @@ msgstr "Chaîne_de_test"
 msgid "Take"
 msgstr "Prendre"
 
-#: lib/RT/Queue_Overlay.pm:115
+#: lib/RT/Queue_Overlay.pm:117
 msgid "Take tickets"
 msgstr "Prendre les tickets"
 
-#: lib/RT/Queue_Overlay.pm:115
+#: lib/RT/Queue_Overlay.pm:117
 msgid "TakeTicket"
 msgstr "PrendreTicket"
 
@@ -6121,7 +6120,8 @@ msgstr "Conditions et actions définies par l'utilisateur"
 msgid "User Rights"
 msgstr "Droits utilisateurs"
 
-#: NOT FOUND IN SOURCE
+#: lib/RT/Interface/Web.pm:1387
+#. ($cf->Name, ref $args{'Object'}, $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "L'utilisateur a demandé un type de mise à jour non connu pour le champ personnalisé %1 de l'objet %2 n°%3"
 
@@ -6195,7 +6195,7 @@ msgstr ""
 msgid "Watch"
 msgstr "Observer"
 
-#: lib/RT/Queue_Overlay.pm:108
+#: lib/RT/Queue_Overlay.pm:110
 msgid "WatchAsAdminCc"
 msgstr "ObserverCommeAdminCC"
 
@@ -6401,7 +6401,7 @@ msgstr "contient"
 msgid "days"
 msgstr "jours"
 
-#: lib/RT/Queue_Overlay.pm:87
+#: lib/RT/Queue_Overlay.pm:89
 msgid "deleted"
 msgstr "effacé"
 
@@ -6568,11 +6568,11 @@ msgstr "groupe personnel '%1' pour l'utilisateur '%2'"
 msgid "queue %1 %2"
 msgstr "file %1 %2"
 
-#: lib/RT/Queue_Overlay.pm:86
+#: lib/RT/Queue_Overlay.pm:88
 msgid "rejected"
 msgstr "rejeté"
 
-#: lib/RT/Queue_Overlay.pm:85
+#: lib/RT/Queue_Overlay.pm:87
 msgid "resolved"
 msgstr "résolu"
 
@@ -6588,7 +6588,7 @@ msgstr "montrer l'onglet de configuration"
 msgid "spreadsheet"
 msgstr "feuille de calcul"
 
-#: lib/RT/Queue_Overlay.pm:84
+#: lib/RT/Queue_Overlay.pm:86
 msgid "stalled"
 msgstr "stagnant"
 

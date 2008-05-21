@@ -1031,7 +1031,6 @@ sub AddWatcher {
     # ModifyTicket works in any case
     return $self->_AddWatcher( %args )
         if $self->CurrentUserHasRight('ModifyTicket');
-
     if ( $args{'Email'} ) {
         my ($addr) = Mail::Address->parse( $args{'Email'} );
         return (0, $self->loc("Couldn't parse address from '[_1]' string", $args{'Email'} ))
@@ -2113,7 +2112,6 @@ sub _RecordNote {
         ) if defined $args{ $argument };
     }
 
-    # XXX: This code is duplicated several times
     # If this is from an external source, we need to come up with its
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
@@ -3439,19 +3437,19 @@ See L<RT::Record>
 sub CustomFieldValues {
     my $self  = shift;
     my $field = shift;
-    if ( $field and $field !~ /^\d+$/ ) {
-        my $cf = RT::CustomField->new( $self->CurrentUser );
-        $cf->LoadByNameAndQueue( Name => $field, Queue => $self->Queue );
-        unless ( $cf->id ) {
-            $cf->LoadByNameAndQueue( Name => $field, Queue => 0 );
-        }
-        unless ( $cf->id ) {
-            # If we didn't find a valid cfid, give up.
-            return RT::ObjectCustomFieldValues->new($self->CurrentUser);
-        }
-        $field = $cf->id;
+
+    return $self->SUPER::CustomFieldValues( $field ) if !$field || $field =~ /^\d+$/;
+
+    my $cf = RT::CustomField->new( $self->CurrentUser );
+    $cf->LoadByNameAndQueue( Name => $field, Queue => $self->Queue );
+    unless ( $cf->id ) {
+        $cf->LoadByNameAndQueue( Name => $field, Queue => 0 );
     }
-    return $self->SUPER::CustomFieldValues($field);
+
+    # If we didn't find a valid cfid, give up.
+    return RT::ObjectCustomFieldValues->new( $self->CurrentUser ) unless $cf->id;
+
+    return $self->SUPER::CustomFieldValues( $cf->id );
 }
 
 # }}}

@@ -1139,16 +1139,19 @@ sub _CustomFieldDecipher {
             $RT::Logger->warning("Queue '$queue' doesn't exists, parsed from '$string'");
             $queue = 0;
         }
-
-        if ( $cf and my $id = $cf->id ) {
-            $cfid = $cf->id;
-            $field = $cf->Name;
-        }
-    } else {
-        $queue = 0;
+        return ($queue, $field, $cf->id, $cf) if $cf && $cf->id;
+        return ($queue, $field);
     }
- 
-    return ($queue, $field, $cfid, $column);
+
+    my $cfs = RT::CustomFields->new( $self->CurrentUser );
+    $cfs->Limit( FIELD => 'Name', VALUE => $field );
+    $cfs->LimitToLookupType('RT::Queue-RT::Ticket');
+    my $count = $cfs->Count;
+    return (undef, $field, undef) if $count > 1;
+    return (undef, $field, 0) if $count == 0;
+    my $cf = $cfs->First;
+    return (undef, $field, $cf->id, $cf) if $cf && $cf->id;
+    return (undef, $field, undef);
 }
  
 =head2 _CustomFieldJoin
@@ -1170,7 +1173,7 @@ sub _CustomFieldJoin {
     my ($TicketCFs, $CFs);
     if ( $cfid ) {
         $TicketCFs = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
-            TYPE   => 'left',
+            TYPE   => 'LEFT',
             ALIAS1 => 'main',
             FIELD1 => 'id',
             TABLE2 => 'ObjectCustomFieldValues',
@@ -1205,9 +1208,21 @@ sub _CustomFieldJoin {
             TABLE2     => 'CustomFields',
             FIELD2     => 'id',
         );
+        $self->SUPER::Limit(
+            LEFTJOIN        => $CFs,
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => 'LookupType',
+            VALUE           => 'RT::Queue-RT::Ticket',
+        );
+        $self->SUPER::Limit(
+            LEFTJOIN        => $CFs,
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => 'Name',
+            VALUE           => $field,
+        );
 
         $TicketCFs = $self->{_sql_object_cfv_alias}{$cfkey} = $self->Join(
-            TYPE   => 'left',
+            TYPE   => 'LEFT',
             ALIAS1 => $CFs,
             FIELD1 => 'id',
             TABLE2 => 'ObjectCustomFieldValues',
@@ -1272,27 +1287,37 @@ sub _CustomFieldLimit {
 
     $self->_OpenParen;
 
-    if ( $CFs && !$cfid ) {
-        $self->SUPER::Limit(
-            ALIAS           => $CFs,
-            FIELD           => 'Name',
-            VALUE           => $field,
-            ENTRYAGGREGATOR => 'AND',
-        );
-    }
-
-    $self->_OpenParen if $null_columns_ok;
-
+    $self->_OpenParen;
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
         FIELD      => $column || 'Content',
         OPERATOR   => $op,
         VALUE      => $value,
-        QUOTEVALUE => 1,
         %rest
     );
 
-    if ( $null_columns_ok ) {
+    # XXX: if we join via CustomFields table then
+    # because of order of left joins we get NULLs in
+    # CF table and then get nulls for those records
+    # in OCFVs table what result in wrong results
+    # as decifer method now tries to load a CF then
+    # we fall into this situation only when there
+    # are more than one CF with the name in the DB.
+    # the same thing applies to order by call.
+    # TODO: reorder joins T <- OCFVs <- CFs <- OCFs if
+    # we want treat IS NULL as (not applies or has
+    # no value)
+    $self->_SQLLimit(
+        ALIAS      => $CFs,
+        FIELD      => 'Name',
+        OPERATOR   => 'IS NOT',
+        VALUE      => 'NULL',
+        QUOTEVALUE => 1,
+        ENTRYAGGREGATOR => 'AND',
+    ) if $CFs;
+    $self->_CloseParen;
+
+    if ($null_columns_ok) {
         $self->_SQLLimit(
             ALIAS           => $TicketCFs,
             FIELD           => $column || 'Content',
@@ -1301,7 +1326,6 @@ sub _CustomFieldLimit {
             QUOTEVALUE      => 0,
             ENTRYAGGREGATOR => 'OR',
         );
-        $self->_CloseParen;
     }
 
     $self->_CloseParen;
@@ -1329,10 +1353,43 @@ sub OrderByCols {
     my $order = 0;
 
     foreach my $row (@args) {
-        if ( $row->{ALIAS} || $row->{FIELD} !~ /\./ ) {
+        if ( $row->{ALIAS} ) {
             push @res, $row;
             next;
         }
+        if ( $row->{FIELD} !~ /\./ ) {
+            my $meta = $self->FIELDS->{ $row->{FIELD} };
+            unless ( $meta ) {
+                push @res, $row;
+                next;
+            }
+
+            if ( $meta->[0] eq 'ENUM' && ($meta->[1]||'') eq 'Queue' ) {
+                my $alias = $self->Join(
+                    TYPE   => 'LEFT',
+                    ALIAS1 => 'main',
+                    FIELD1 => $row->{'FIELD'},
+                    TABLE2 => 'Queues',
+                    FIELD2 => 'id',
+                );
+                push @res, { %$row, ALIAS => $alias, FIELD => "Name" };
+            } elsif ( ( $meta->[0] eq 'ENUM' && ($meta->[1]||'') eq 'User' )
+                || ( $meta->[0] eq 'WATCHERFIELD' && ($meta->[1]||'') eq 'Owner' )
+            ) {
+                my $alias = $self->Join(
+                    TYPE   => 'LEFT',
+                    ALIAS1 => 'main',
+                    FIELD1 => $row->{'FIELD'},
+                    TABLE2 => 'Users',
+                    FIELD2 => 'id',
+                );
+                push @res, { %$row, ALIAS => $alias, FIELD => "Name" };
+            } else {
+                push @res, $row;
+            }
+            next;
+        }
+
         my ( $field, $subkey ) = split /\./, $row->{FIELD}, 2;
         my $meta = $self->FIELDS->{$field};
         if ( defined $meta->[0] && $meta->[0] eq 'WATCHERFIELD' ) {
@@ -1344,9 +1401,19 @@ sub OrderByCols {
             }
             push @res, { %$row, ALIAS => $users, FIELD => $subkey };
        } elsif ( defined $meta->[0] && $meta->[0] eq 'CUSTOMFIELD' ) {
-           my ($queue, $field, $cfid ) = $self->_CustomFieldDecipher( $subkey );
+           my ($queue, $field, $cfid, $cf_obj) = $self->_CustomFieldDecipher( $subkey );
            my $cfkey = $cfid ? $cfid : "$queue.$field";
+           $cfkey .= ".ordering" if !$cf_obj || ($cf_obj->MaxValues||0) != 1;
            my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+           # this is described in _CustomFieldLimit
+           $self->_SQLLimit(
+               ALIAS      => $CFs,
+               FIELD      => 'Name',
+               OPERATOR   => 'IS NOT',
+               VALUE      => 'NULL',
+               QUOTEVALUE => 1,
+               ENTRYAGGREGATOR => 'AND',
+           ) if $CFs;
            unless ($cfid) {
                # For those cases where we are doing a join against the
                # CF name, and don't have a CFid, use Unique to make sure
@@ -1358,17 +1425,17 @@ sub OrderByCols {
                DBIx::SearchBuilder::Unique->import;
            }
            my $CFvs = $self->Join(
-               TYPE   => 'left',
+               TYPE   => 'LEFT',
                ALIAS1 => $TicketCFs,
                FIELD1 => 'CustomField',
                TABLE2 => 'CustomFieldValues',
                FIELD2 => 'CustomField',
            );
            $self->SUPER::Limit(
-               LEFTJOIN => $CFvs,
-               FIELD => 'Name',
-               QUOTEVALUE => 0,
-               VALUE => $TicketCFs . ".Content",
+               LEFTJOIN        => $CFvs,
+               FIELD           => 'Name',
+               QUOTEVALUE      => 0,
+               VALUE           => $TicketCFs . ".Content",
                ENTRYAGGREGATOR => 'AND'
            );
 
@@ -2830,8 +2897,9 @@ $tickets->{'flagname'} = 1;
 
 BUG: There should be an API for this
 
-=cut
 
+
+=cut
 
 =cut
 

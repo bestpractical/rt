@@ -114,9 +114,8 @@ form input.checkbox, form input.radio {
 %# ComboBox styles... some properties like height and width must be dynamically
 %# set in the JS (at least for now).
 .combobox {
-    border: 2px inset #069;
-    padding-left: 0.5em;
-    padding-bottom: 0.1em;
+    border: 1px solid #069;
+    padding: 4px;
 }
 
 .combobox .combo-button {
@@ -132,10 +131,11 @@ form input.checkbox, form input.radio {
 .combobox .combo-text {
     border: none;
     margin: 0;
-    padding: 0;
+    padding: 1px;
 }
 
 .combobox .combo-list {
+    border: 1px outset;
     z-index: 200;
 }
 

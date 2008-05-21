@@ -215,7 +215,7 @@ sub SetMIMEEntityToEncoding {
     }
 
     # If this is a textual entity, we'd need to preserve its original encoding
-    $head->add( "X-RT-Original-Encoding" => $charset )
+    $head->replace( "X-RT-Original-Encoding" => $charset )
 	if $head->mime_attr('content-type.charset') or IsTextualContentType($head->mime_type);
 
     return unless IsTextualContentType($head->mime_type);

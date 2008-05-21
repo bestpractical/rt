@@ -88,7 +88,7 @@
 </td>
 </tr>
 <tr>
-<td class="labeltop">
+<td class="label">
 <&|/l&>Cc</&>:
 </td>
 <td class="value" colspan="3"><& /Elements/EmailInput, Name => 'Cc', Size => '40', Default => $ARGS{Cc} &></td>
@@ -97,7 +97,7 @@
 </td>
 </tr>
 <tr>
-<td class="labeltop">
+<td class="label">
 <&|/l&>Admin Cc</&>:
 </td>
 <td class="value" colspan="3"><& /Elements/EmailInput, Name => 'AdminCc', Size => '40', Default => $ARGS{AdminCc} &></td>
@@ -159,6 +159,7 @@
 <tr>
 <td colspan="6">
 <&|/l&>Describe the issue below</&>:<br />
+<& /Elements/Callback, _CallbackName => 'BeforeMessageBox', QueueObj => $QueueObj, %ARGS &>
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0 &>
 % } else {

@@ -104,6 +104,13 @@ sub QueryToSQL {
             push @id_clauses, "id = '$key'";
         }
 
+        elsif ($key =~ /^fulltext:(.*?)$/i) {
+            $key = $1;
+            $key =~ s/['\\].*//g;
+            push @tql_clauses, "Content LIKE '$key'";
+
+        }
+
         elsif ( $key =~ /\w+\@\w+/ ) {
             push @user_clauses, "Requestor LIKE '$key'";
         }
@@ -131,13 +138,6 @@ sub QueryToSQL {
             and $User->Privileged )
         {
             push @owner_clauses, "Owner = '" . $User->Name . "'";
-        }
-
-        elsif ($key =~ /^fulltext:(.*?)$/i) {
-            $key = $1;
-            $key =~ s/['\\].*//g;
-            push @tql_clauses, "Content LIKE '$key'";
-
         }
 
         # Else, subject must contain $key
