@@ -388,8 +388,6 @@ sub AddAttachments {
         }
         $self->AddAttachment($attach);
     }
-        my $method = 'send';
-
 }
 
 =head2 AddAttachment $attachment
