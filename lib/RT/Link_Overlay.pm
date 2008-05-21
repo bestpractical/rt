@@ -129,18 +129,20 @@ sub Create {
 
 
     if ( $base->IsLocal ) {
-        unless (UNIVERSAL::can($base->Object, 'Id')) {
+        my $object = $base->Object;
+        unless (UNIVERSAL::can($object, 'Id')) {
             return (undef, $self->loc("[_1] appears to be a local object, but can't be found in the database", $args{'Base'}));
         
         }
-        $base_id = $base->Object->Id;
+        $base_id = $object->Id if UNIVERSAL::isa($object, 'RT::Ticket');
     }
     if ( $target->IsLocal ) {
-        unless (UNIVERSAL::can($target->Object, 'Id')) {
+        my $object = $target->Object;
+        unless (UNIVERSAL::can($object, 'Id')) {
             return (undef, $self->loc("[_1] appears to be a local object, but can't be found in the database", $args{'Target'}));
         
         }
-        $target_id = $target->Object->Id;
+        $target_id = $object->Id if UNIVERSAL::isa($object, 'RT::Ticket');
     }
 
     # {{{ We don't want references to ourself

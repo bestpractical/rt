@@ -1,4 +1,4 @@
-use Test::More  tests => '89';
+use Test::More  tests => '101';
 
 use strict;
 use warnings;
@@ -306,6 +306,65 @@ RT->Config->Set( StrictLinkACL => $link_acl_checks_orig );
     $Scrips->Limit( FIELD => 'Description', OPERATOR => 'STARTSWITH', VALUE => 'Add or Delete Link ');
     while ( my $s = $Scrips->Next ) { $s->Delete };
 }
+
+
+my $link = RT::Link->new( $RT::SystemUser );
+($id,$msg) = $link->Create( Base => $ticket->URI, Target => $ticket2->URI, Type => 'MyLinkType' );
+ok($id, $msg);
+ok($link->LocalBase   == $ticket->id,  "LocalBase   set correctly");
+ok($link->LocalTarget == $ticket2->id, "LocalTarget set correctly");
+
+*RT::NotTicket::Id = sub { return $$ };
+*RT::NotTicket::id = &RT::NotTicket::Id;
+
+{
+    package RT::URI::not_ticket;
+    use RT::URI::base;
+    use vars qw(@ISA);
+    @ISA = qw/RT::URI::base/;
+    sub IsLocal { 1; }
+    sub Object { return bless {}, 'RT::NotTicket'; }
+}
+
+my $orig_getresolver = \&RT::URI::_GetResolver;
+
+    *RT::URI::_GetResolver = sub {
+        my $self = shift;
+        my $scheme = shift;
+
+        $scheme =~ s/(\.|-)/_/g;
+        my $resolver;
+        my $module = "RT::URI::$scheme";
+        $resolver = $module->new($self->CurrentUser);
+
+       if ($resolver) {
+           $self->{'resolver'} = $resolver;
+        } else {
+            $self->{'resolver'} = RT::URI::base->new($self->CurrentUser);
+        }
+    };
+
+($id,$msg) = $link->Create( Base => "not_ticket::$RT::Organization/notticket/$$", Target => $ticket2->URI, Type => 'MyLinkType' );
+ok($id, $msg);
+ok($link->LocalBase   == 0,            "LocalBase set correctly");
+ok($link->LocalTarget == $ticket2->id, "LocalTarget set correctly");
+
+($id,$msg) = $link->Create( Target => "not_ticket::$RT::Organization/notticket/$$", Base => $ticket->URI, Type => 'MyLinkType' );
+ok($id, $msg);
+ok($link->LocalTarget == 0,           "LocalTarget set correctly");
+ok($link->LocalBase   == $ticket->id, "LocalBase set correctly");
+
+($id,$msg) = $link->Create(
+                       Target => "not_ticket::$RT::Organization/notticket/1$$",
+                       Base   => "not_ticket::$RT::Organization/notticket/$$",
+                       Type => 'MyLinkType' );
+
+ok($id, $msg);
+ok($link->LocalTarget == 0, "LocalTarget set correctly");
+ok($link->LocalBase   == 0, "LocalBase set correctly");
+
+# restore _GetResolver
+*RT::URI::_GetResolver = $orig_getresolver;
 
 
 sub link_count {
