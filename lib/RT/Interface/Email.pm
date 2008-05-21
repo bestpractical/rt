@@ -150,7 +150,8 @@ sub CheckForSuspiciousSender {
     my ( $From, $junk ) = ParseSenderAddressFromHead($head);
 
     if (   ( $From =~ /^mailer-daemon\@/i )
-        or ( $From =~ /^postmaster\@/i ) )
+        or ( $From =~ /^postmaster\@/i )
+        or ( $From eq "" ))
     {
         return (1);
 
