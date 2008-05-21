@@ -270,8 +270,6 @@ my ( $AvailableColumns, $CurrentFormat );
     cfqueues => $queues,
     Format => $query{'Format'},
 );
-warn "AvailableColumns is $AvailableColumns\n";
-warn "Got CFs: @{[grep {/CustomField/} @{$AvailableColumns}]}\n";
 
 # }}}
 
