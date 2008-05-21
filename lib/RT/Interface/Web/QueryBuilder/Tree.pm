@@ -263,7 +263,7 @@ sub ParseSQL {
             $key =~ s/^[^.]+/ $lcfield{ lc $main_key } /e;
         }
         unless( $class ) {
-            push @results, [ $args{'CurrentUser'}->loc("Unknown field: %1", $key), -1 ]
+            push @results, [ $args{'CurrentUser'}->loc("Unknown field: [_1]", $key), -1 ]
         }
 
         $value = "'$value'" if $value =~ /[^0-9]/;
