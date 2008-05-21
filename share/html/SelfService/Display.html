@@ -164,16 +164,6 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     my ( $code, $msg );
 
-    #Update the status
-    if (    ( defined $ARGS{'Status'} )
-        and $ARGS{'Status'}
-        and ( $ARGS{'Status'} ne $Ticket->Status ) )
-    {
-        ( $code, $msg ) = $Ticket->SetStatus( $ARGS{'Status'} );
-        push @results, "$msg";
-    }
-
-    # }}}
 
     if (
         $session{'Attachments'}
@@ -200,6 +190,17 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     push (@results, @cfupdates);
 
     # }}}
+
+    #Update the status
+    if (    ( defined $ARGS{'Status'} )
+        and $ARGS{'Status'}
+        and ( $ARGS{'Status'} ne $Ticket->Status ) )
+    {
+        ( $code, $msg ) = $Ticket->SetStatus( $ARGS{'Status'} );
+        push @results, "$msg";
+    }
+    # }}}
+
 
     }
 
