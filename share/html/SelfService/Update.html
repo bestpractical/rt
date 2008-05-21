@@ -59,7 +59,7 @@
             <&|/l&>Status</&>
         </td>
         <td class="value">
-            <& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)",loc($DefaultStatus)) &>
+            <& /Elements/SelectStatus, Name=>"Status", DefaultLabel => loc("[_1] (Unchanged)", loc($Ticket->Status)), Default => $ARGS{'Status'} || ($Ticket->Status eq $DefaultStatus ? undef : $DefaultStatus)&>
         </td>
     </tr>
     <tr>
@@ -113,7 +113,7 @@ my $Ticket = LoadTicket($id);
 
 my $title = loc( "Update ticket #[_1]", $Ticket->id );
 
-$DefaultStatus = $Ticket->Status() unless ($DefaultStatus);
+$DefaultStatus = $ARGS{Status} || $Ticket->Status() unless ($DefaultStatus);
 
 
 Abort( loc("No permission to view update ticket") )
