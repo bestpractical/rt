@@ -63,7 +63,10 @@ $ColDown => undef
 $SelectDisplayColumns => undef
 $CurrentDisplayColumns => undef
 </%ARGS>
-<%ONCE>
+<%init>
+# This can't be in a <once> block, because otherwise we return the
+# same \@fields every request, and keep tacking more CustomFields onto
+# it -- and it grows per request.
 
 # All the things we can display in the format string by default
 my @fields = qw(
@@ -93,8 +96,6 @@ my @fields = qw(
     NEWLINE
 );
 
-</%ONCE>
-<%init>
 $m->callback( CallbackOnce => 1, CallbackName => 'SetFieldsOnce', Fields => \@fields );
 
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
