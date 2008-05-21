@@ -92,8 +92,6 @@ if ( $Run ) {
 
     if ( $status ) {
 
-        RT::Handle->FinalizeDatabaseType();
-
         my $dbh = DBI->connect(
             RT::Handle->DSN, $RT::Installer->{InstallConfig}{DatabaseAdmin},
             $RT::Installer->{InstallConfig}{DatabaseAdminPassword}, 

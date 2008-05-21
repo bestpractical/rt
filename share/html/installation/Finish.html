@@ -73,7 +73,6 @@ installation from being run again.
 <%init>
 if ( $Run ) {
     RT->InstallMode(0);
-    RT->LoadConfig;
     RT->ConnectToDatabase();
     RT->InitSystemObjects();
     RT->InitClasses();
