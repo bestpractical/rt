@@ -397,7 +397,7 @@ sub edit {
         elsif (/^set$/i) {
             my $vars = 0;
 
-            while (@ARGV && $ARGV[0] =~ /^($field)([+-]?=)(.*)$/) {
+            while (@ARGV && $ARGV[0] =~ /^($field)([+-]?=)(.*)$/s) {
                 my ($key, $op, $val) = ($1, $2, $3);
                 my $hash = ($op eq '=') ? \%set : ($op =~ /^\+/) ? \%add : \%del;
 
@@ -415,7 +415,7 @@ sub edit {
             my $vars = 0;
             my $hash = ($_ eq "add") ? \%add : \%del;
 
-            while (@ARGV && $ARGV[0] =~ /^($field)=(.*)$/) {
+            while (@ARGV && $ARGV[0] =~ /^($field)=(.*)$/s) {
                 my ($key, $val) = ($1, $2);
 
                 vpush($hash, lc $key, $val);
