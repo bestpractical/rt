@@ -115,7 +115,7 @@
 </tr>
 <tr>
 <td colspan="6">
-<& /Ticket/Elements/EditCustomFields, QueueObj => $QueueObj &>
+<& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj &>
 </td>
 </tr>
 % if ($TxnCFs->Count) {

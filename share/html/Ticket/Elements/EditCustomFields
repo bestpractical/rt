@@ -65,7 +65,7 @@
           Object => $TicketObj,
           CustomField => $CustomField,
           NamePrefix => $NamePrefix,
-          Default => $m->notes('Field-' . $CustomField->Id),
+          Default => $m->notes('Field-' . $CustomField->Id) || $ARGS{"CustomField-".$CustomField->Id},
       &>
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
         <br />
