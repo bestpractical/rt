@@ -46,5 +46,5 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <!--[if lt IE 8]>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/ie7/IE8.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/IE7/IE8.js"></script>
 <![endif]-->
