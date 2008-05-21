@@ -15,6 +15,8 @@ my($ret,$msg);
 
 
 # Test Sorting by custom fields.
+# TODO: it's hard to read this file, conver to new style,
+# for example look at 23cfsort-freeform-single.t
 
 # ---- Create a queue to test with.
 my $queue = "CFSortQueue-$$";
