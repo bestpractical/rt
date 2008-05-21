@@ -1121,37 +1121,37 @@ Try and turn a CF descriptor into (cfid, cfname) object pair.
 sub _CustomFieldDecipher {
     my ($self, $string) = @_;
 
-    my ($queue, $field, $column) =
-        ($string =~ /^(?:(.+?)\.)?{(.+)}(?:\.(.+))?$/);
+    my ($queue, $field, $column) = ($string =~ /^(?:(.+?)\.)?{(.+)}(?:\.(.+))?$/);
     $field ||= ($string =~ /^{(.*?)}$/)[0] || $string;
 
-    my $cfid;
+    my $cf;
     if ( $queue ) {
         my $q = RT::Queue->new( $self->CurrentUser );
         $q->Load( $queue );
 
-        my $cf;
         if ( $q->id ) {
             # $queue = $q->Name; # should we normalize the queue?
             $cf = $q->CustomField( $field );
         }
         else {
-            $RT::Logger->warning("Queue '$queue' doesn't exists, parsed from '$string'");
+            $RT::Logger->warning("Queue '$queue' doesn't exist, parsed from '$string'");
             $queue = 0;
         }
-        return ($queue, $field, $cf->id, $cf) if $cf && $cf->id;
-        return ($queue, $field);
-    }
+    } 
+    if (!$queue) {
 
     my $cfs = RT::CustomFields->new( $self->CurrentUser );
     $cfs->Limit( FIELD => 'Name', VALUE => $field );
     $cfs->LimitToLookupType('RT::Queue-RT::Ticket');
     my $count = $cfs->Count;
-    return (undef, $field, undef) if $count > 1;
-    return (undef, $field, 0) if $count == 0;
-    my $cf = $cfs->First;
-    return (undef, $field, $cf->id, $cf) if $cf && $cf->id;
-    return (undef, $field, undef);
+
+    if ($count > 1) { $cf = $cfs->First}
+    elsif ($count == 0 ) { $cf = undef }
+    }
+
+
+    return ($queue, $field, $cf, $column);
+
 }
  
 =head2 _CustomFieldJoin
@@ -1269,8 +1269,11 @@ sub _CustomFieldLimit {
 
     # For our sanity, we can only limit on one queue at a time
 
-    my ($queue, $cfid, $column);
-    ($queue, $field, $cfid, $column) = $self->_CustomFieldDecipher( $field );
+    my ($queue, $cfid, $cf, $column);
+    ($queue, $field, $cf, $column) = $self->_CustomFieldDecipher( $field );
+
+            $cfid = $cf ? $cf->id  : 0 ;
+
 
 # If we're trying to find custom fields that don't match something, we
 # want tickets where the custom field has no value at all.  Note that
@@ -1288,6 +1291,7 @@ sub _CustomFieldLimit {
     $self->_OpenParen;
 
     $self->_OpenParen;
+
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
         FIELD      => $column || 'Content',
@@ -1401,10 +1405,10 @@ sub OrderByCols {
             }
             push @res, { %$row, ALIAS => $users, FIELD => $subkey };
        } elsif ( defined $meta->[0] && $meta->[0] eq 'CUSTOMFIELD' ) {
-           my ($queue, $field, $cfid, $cf_obj) = $self->_CustomFieldDecipher( $subkey );
-           my $cfkey = $cfid ? $cfid : "$queue.$field";
+           my ($queue, $field, $cf_obj, $column) = $self->_CustomFieldDecipher( $subkey );
+           my $cfkey = $cf_obj ? $cf_obj->id : "$queue.$field";
            $cfkey .= ".ordering" if !$cf_obj || ($cf_obj->MaxValues||0) != 1;
-           my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+           my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, ($cf_obj ?$cf_obj->id :0) , $field );
            # this is described in _CustomFieldLimit
            $self->_SQLLimit(
                ALIAS      => $CFs,
@@ -1414,7 +1418,7 @@ sub OrderByCols {
                QUOTEVALUE => 1,
                ENTRYAGGREGATOR => 'AND',
            ) if $CFs;
-           unless ($cfid) {
+           unless ($cf_obj) {
                # For those cases where we are doing a join against the
                # CF name, and don't have a CFid, use Unique to make sure
                # we don't show duplicate tickets.  NOTE: I'm pretty sure
