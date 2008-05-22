@@ -58,6 +58,7 @@ use Cwd;
 use LWP;
 use Text::ParseWords;
 use HTTP::Request::Common;
+use HTTP::Headers;
 use Term::ReadLine;
 
 # We derive configuration information from hardwired defaults, dotfiles,
@@ -70,12 +71,13 @@ my $HOME = eval{(getpwuid($<))[7]}
            || ".";
 my %config = (
     (
-        debug   => 0,
-        user    => eval{(getpwuid($<))[0]} || $ENV{USER} || $ENV{USERNAME},
-        passwd  => undef,
-        server  => 'http://localhost/',
-        query   => undef,
-        orderby => undef,
+        debug        => 0,
+        user         => eval{(getpwuid($<))[0]} || $ENV{USER} || $ENV{USERNAME},
+        passwd       => undef,
+        server       => 'http://localhost/',
+        query        => undef,
+        orderby      => undef,
+        externalauth => undef,
     ),
     config_from_file($ENV{RTCONFIG} || ".rtrc"),
     config_from_env()
@@ -820,6 +822,7 @@ sub submit {
     my ($uri, $content) = @_;
     my ($req, $data);
     my $ua = new LWP::UserAgent(agent => "RT/3.0b", env_proxy => 1);
+    my $h = HTTP::Headers->new;
 
     # Did the caller specify any data to send with the request?
     $data = [];
@@ -844,8 +847,10 @@ sub submit {
         $data = $content;
     }
 
-    # Should we send authentication information to start a new session?
-    if (!defined $session->cookie) {
+
+    if ($config{externalauth}) {
+        $h->authorization_basic($config{user}, $config{passwd} || read_passwd() );
+    } elsif (!defined $session->cookie) {
         push @$data, ( user => $config{user} );
         push @$data, ( pass => $config{passwd} || read_passwd() );
     }
@@ -858,6 +863,9 @@ sub submit {
         $req = GET($uri);
     }
     $session->add_cookie_header($req);
+    if ($config{externalauth}) {
+        $req->header(%$h);
+    }
 
     # Then we send the request and parse the response.
     DEBUG(3, $req->as_string);
@@ -874,7 +882,7 @@ sub submit {
         $text =~ s/\n*$/\n/ if ($text);
 
         # "RT/3.0.1 401 Credentials required"
-	if ($status !~ m#^RT/\d+(?:\S+) (\d+) ([\w\s]+)$#) {
+        if ($status !~ m#^RT/\d+(?:\S+) (\d+) ([\w\s]+)$#) {
             warn "rt: Malformed RT response from $config{server}.\n";
             warn "(Rerun with RTDEBUG=3 for details.)\n" if $config{debug} < 3;
             exit -1;
@@ -1251,7 +1259,7 @@ sub parse_config_file {
             chomp;
             next if (/^#/ || /^\s*$/);
 
-            if (/^(user|passwd|server|query|orderby)\s+(.*)\s?$/) {
+            if (/^(externalauth|user|passwd|server|query|orderby)\s+(.*)\s?$/) {
                 $cfg{$1} = $2;
             }
             else {
