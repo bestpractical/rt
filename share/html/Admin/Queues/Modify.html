@@ -89,6 +89,18 @@
 <td colspan="3"><input name="DefaultDueIn" value="<% ($Create) ? "" : $QueueObj->DefaultDueIn%>" /> <&|/l&>days</&>.</td>
 </tr>
 
+% my $CFs = $QueueObj->CustomFields;
+% while (my $CF = $CFs->Next) {
+<tr valign="top"><td align="right">
+<% $CF->Name %>:
+</td><td>
+<& /Elements/EditCustomField, CustomField => $CF, 
+                              Object => $QueueObj, 
+                              ($Create ? (NamePrefix => 'Object-RT::Queue--CustomField-') 
+                                       : () )&>
+</td></tr>
+% }
+
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
 <tr><td align="right"><input type="checkbox" class="checkbox" name="Sign" value="1" <% $QueueObj->Sign? 'checked': '' %> /></td>
 <td><&|/l&>Sign by default</&></td>
@@ -171,6 +183,7 @@ if ( $QueueObj->Id ) {
         CallbackName => 'ProcessLinks'
     );
     push @results, @linkresults;
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $QueueObj );
 }
 </%INIT>
 

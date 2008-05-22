@@ -105,6 +105,7 @@ RT::CustomField->_ForObjectType( 'RT::Queue-RT::Ticket' => "Tickets", );    #loc
 RT::CustomField->_ForObjectType(
     'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions", );    #loc
 RT::CustomField->_ForObjectType( 'RT::User'  => "Users", );                           #loc
+RT::CustomField->_ForObjectType( 'RT::Queue'  => "Queues", );                         #loc
 RT::CustomField->_ForObjectType( 'RT::Group' => "Groups", );                          #loc
 
 our $RIGHTS = {
