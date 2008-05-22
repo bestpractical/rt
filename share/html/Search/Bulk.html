@@ -72,6 +72,8 @@
     BaseURL => RT->Config->Get('WebPath')."/Search/Bulk.html?"
    &>
 
+% $m->callback(CallbackName => 'AfterTicketList', ARGSRef => \%ARGS);
+
 <hr>
 
 <& /Elements/Submit, Label => loc('Update'), CheckAll => 1, ClearAll => 1 &>
