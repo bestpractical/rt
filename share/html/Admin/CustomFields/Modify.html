@@ -87,11 +87,7 @@
     Name    => 'Pattern',
     Default => $CustomFieldObj->Pattern,
     Size    => 20,
-    Values  => [
-        '(?#Mandatory).',
-        '(?#Digits)^[\d.]+$',
-        '(?#Year)^[12]\d{3}$',
-    ],
+    Values  => \@CFvalidations,
 &></td></tr>
 
 <tr><td class="label"><&|/l&>Link values to</&></td><td>
@@ -209,6 +205,14 @@ $id = $CustomFieldObj->id if $CustomFieldObj->id;
 
 my $EnabledChecked = "checked";
 $EnabledChecked = '' if $CustomFieldObj->Disabled;
+
+my @CFvalidations = (
+    '(?#Mandatory).',
+    '(?#Digits)^[\d.]+$',
+    '(?#Year)^[12]\d{3}$',
+);
+
+$m->callback(CallbackName => 'ValidationPatterns', Values => \@CFvalidations);
 
 </%INIT>
 <%ARGS>
