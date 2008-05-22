@@ -721,6 +721,8 @@ sub merge {
 
 sub link {
     my ($bad, $del, %data) = (0, 0, ());
+    my $type;
+
     my %ltypes = map { lc $_ => $_ } qw(DependsOn DependedOnBy RefersTo
                                         ReferredToBy HasMember MemberOf);
 
@@ -730,21 +732,26 @@ sub link {
         if (/^-d$/) {
             $del = 1;
         }
+        elsif (/^-t$/) {
+            $bad = 1, last unless defined($type = get_type_argument());
+        }
         else {
             whine "Unrecognised option: '$_'.";
             $bad = 1; last;
         }
     }
-
+    
+    $type = "ticket" unless $type; # default type to tickets
+    
     if (@ARGV == 3) {
         my ($from, $rel, $to) = @ARGV;
         if ($from !~ /^\d+$/ || $to !~ /^\d+$/) {
             my $bad = $from =~ /^\d+$/ ? $to : $from;
-            whine "Invalid ticket ID '$bad' specified.";
+            whine "Invalid $type ID '$bad' specified.";
             $bad = 1;
         }
-        unless (exists $ltypes{lc $rel}) {
-            whine "Invalid link '$rel' specified.";
+        if (($type eq "ticket") && ( ! exists $ltypes{lc $rel})) {
+            whine "Invalid link '$rel' for type $type specified.";
             $bad = 1;
         }
         %data = (id => $from, rel => $rel, to => $to, del => $del);
@@ -754,10 +761,9 @@ sub link {
         whine "Too $bad arguments specified.";
         $bad = 1;
     }
-    #return help("link", "ticket") if $bad;
-    return suggest_help("link", "ticket") if $bad;
-
-    my $r = submit("$REST/ticket/link", \%data);
+    return suggest_help("link", $type) if $bad;
+ 
+    my $r = submit("$REST/$type/link", \%data);
     print $r->content;
 }
 
