@@ -260,7 +260,7 @@ upgrade-instruct:
 	@echo "your previously installed RT version, run:"
 	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action schema --datadir etc/upgrade/<version>"
 	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action acl --datadir etc/upgrade/<version>"
-	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action insert --datadir etc/upgrade/<version>"
+	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --action insert --datadir etc/upgrade/<version>"
 
 
 upgrade: config-install dirs files-install fixperms upgrade-instruct
