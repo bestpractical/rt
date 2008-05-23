@@ -19,7 +19,7 @@ accidentally damage your database and lose data or worse.
 UPGRADING FROM 3.7.85 and earlier - Changes:
 
 We've proved that it's possible to delete pretty big set of records
-from CachedGroupMembers table without loosing functionality. To delete
+from CachedGroupMembers table without losing functionality. To delete
 record run the following script:
 
     perl -I /opt/rt3/local/lib -I /opt/rt3/lib etc/upgrade/shrink_cgm_table.pl
@@ -34,7 +34,7 @@ RT::Action::LinearEscalate extension has been integrated into core,
 so you MUST uninstall it before upgrading.
 
 RT::Extension::iCal has been integrated into core, so you MUST uninstall
-it before upgrading. As well, you must run etc/upgrade/3.8-ical-extension
+it before upgrading. In addition, you must run etc/upgrade/3.8-ical-extension
 script to convert old data.
 
 UPGRADING FROM 3.7.80 and earlier - Changes:
@@ -44,7 +44,7 @@ If you have previously installed RTx-Shredder, you may already
 have these indexes.  You can see the indexes by looking at
 etc/upgrade/3.7.81/schema.*
 
-These indexes can take a very long time to create.
+These indexes may take a very long time to create.
 
 UPGRADING FROM 3.6.X and earlier - Changes:
 
@@ -53,18 +53,19 @@ use fresh directory and then reinstalling your customizations.
 
 New schema for mysql 4.1 and greater, read more in UPGRADING.mysql.
 
-Config format a little bit changed. All options MUST be set using Set function,
-no more "@XXX = (...) unless @XXX;". Use "Set(@XXX, ...);" instead.
+Config format has been made stricter. All options MUST be set using Set
+function, no more "@XXX = (...) unless @XXX;". Use "Set(@XXX, ...);" instead.
 
 RTx::Shredder extension has been integrated into core and features have been
-add, so you MUST uninstall it before upgrading or use fresh dir for installation.
+added, so you MUST uninstall it before upgrading or use a fresh directory for
+installation.
 
 New interface for making links in text clickable and doing other replacements
 has been integrated into RT.
 Read more in `perldoc docs/extending_clickable_links.pod`.
 
-New feature that allow users to forward messages. There is new option in
-the config, new rights and a template.
+New feature that allow users to forward messages. There is a new option in
+the config ($ForwardFromUser), new rights and a template.
 
 New global templates with "Error: " prefix in the name to make it possible
 to configure error messages sent to users.
