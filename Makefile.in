@@ -254,13 +254,7 @@ upgrade-instruct:
 	@echo "Congratulations. RT has been upgraded. You should now check-over"
 	@echo "$(CONFIG_FILE) for any necessary site customization. Additionally,"
 	@echo "you should update RT's system database objects by running "
-	@echo "   ls etc/upgrade"
-	@echo ""
-	@echo "For each item in that directory whose name is greater than"
-	@echo "your previously installed RT version, run:"
-	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action schema --datadir etc/upgrade/<version>"
-	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action acl --datadir etc/upgrade/<version>"
-	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --action insert --datadir etc/upgrade/<version>"
+	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action upgrade"
 
 
 upgrade: config-install dirs files-install fixperms upgrade-instruct
