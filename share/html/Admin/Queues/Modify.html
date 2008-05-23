@@ -102,9 +102,9 @@
 % }
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-<tr><td align="right"><input type="checkbox" class="checkbox" name="Sign" value="1" <% $QueueObj->Sign? 'checked': '' %> /></td>
+<tr><td align="right"><input type="checkbox" class="checkbox" name="Sign" value="1" <% $QueueObj->Sign? 'checked="checked"': '' %> /></td>
 <td><&|/l&>Sign by default</&></td>
-<td align="right"><input type="checkbox" class="checkbox" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked': '' %> /></td>
+<td align="right"><input type="checkbox" class="checkbox" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked="checked"': '' %> /></td>
 <td><&|/l&>Encrypt by default</&></td>
 </tr>
 % }
@@ -134,7 +134,7 @@ my ($title, $current_tab, @results, $Disabled, $EnabledChecked);
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( $id ) if !$id || $id eq 'new';
 
-$EnabledChecked = "checked";
+$EnabledChecked = 'checked="checked"';
 
 if ($Create) {
     $current_tab = 'Admin/Queues/Modify.html?Create=1';

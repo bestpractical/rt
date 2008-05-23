@@ -76,13 +76,13 @@
 <form action="<%RT->Config->Get('WebPath')%>/Admin/CustomFields/index.html" method="get">
 <&|/l&>Only show custom fields for:</&>
 <select name="Type">
-<option value="" <% !$Type && 'selected'%> ><% loc('(any)') %></option>
+<option value="" <% !$Type && 'selected="selected"'%> ><% loc('(any)') %></option>
 % for (@types) {
-<option value="<% $_->[1] %>" <% $_->[1] eq $Type && 'selected'%> ><% $_->[0] %></option>
+<option value="<% $_->[1] %>" <% $_->[1] eq $Type && 'selected="selected"'%> ><% $_->[0] %></option>
 % }
 </select>
 <br />
-<input type="checkbox" class="checkbox" name="ShowDisabled" value="1" <% $ShowDisabled && 'checked' %> />
+<input type="checkbox" class="checkbox" name="ShowDisabled" value="1" <% $ShowDisabled && 'checked="checked"' %> />
 <&|/l&>Include disabled custom fields in listing.</&>
 <br />
 

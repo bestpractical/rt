@@ -54,7 +54,7 @@ $Plugin => ''
 <select name="Plugin" onchange="showShredderPluginTab(this.value);">
 <option value="">(no value)</option>
 % foreach my $p( keys %plugins ) {
-<option value="<% $p %>" <% ($p eq $Plugin)? 'selected': '' %>><% $p %></option>
+<option value="<% $p %>" <% ($p eq $Plugin)? 'selected="selected"': '' %>><% $p %></option>
 % }
 </select>
 </div>

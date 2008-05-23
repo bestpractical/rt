@@ -58,6 +58,6 @@ $IsChecked => undef
 <%INIT>
 $IsChecked = 
   ($Default && $Default =~ /checked/i)
-    ? " CHECKED " : "";
+    ? ' checked="checked" ' : "";
 1;
 </%INIT>

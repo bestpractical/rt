@@ -63,9 +63,9 @@ $False => loc("isn't")
 my $TrueDefault  = '';
 my $FalseDefault = '';
 if ($Default && $Default !~ /true/i) {
-	$FalseDefault = "selected";
+	$FalseDefault = 'selected="selected"';
 }
 else {
-	$TrueDefault = "selected";
+	$TrueDefault = 'selected="selected"';
 }
 </%INIT>

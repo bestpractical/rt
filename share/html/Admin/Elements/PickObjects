@@ -55,7 +55,7 @@
 %   my $id = "Object-".$Object->id."-CF-".$id;
 %   if (!$ReadOnly) {
   <td valign="top">
-<input type="checkbox" id="<% $id %>" name="<% $id %>" value="1" <% $Checked ? 'CHECKED' : ''%>
+<input type="checkbox" id="<% $id %>" name="<% $id %>" value="1" <% $Checked ? 'checked="checked"' : ''%>
 />
   </td>
 %   }

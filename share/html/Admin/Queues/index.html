@@ -68,7 +68,7 @@
 &>
 % }
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Queues/index.html">
-<input type="checkbox" class="checkbox" name="FindDisabledQueues" value="1" <% $FindDisabledQueues? 'checked': '' %> />
+<input type="checkbox" class="checkbox" name="FindDisabledQueues" value="1" <% $FindDisabledQueues? 'checked="checked"': '' %> />
 <&|/l&>Include disabled queues in listing.</&>
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>

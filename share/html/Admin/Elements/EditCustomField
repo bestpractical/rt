@@ -91,7 +91,7 @@
 <%INIT>
 
 my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
-my $EnabledChecked = "CHECKED";
+my $EnabledChecked = 'checked="checked"';
 my (@results);
 
 if (! $CustomField ) { 

@@ -381,11 +381,11 @@ if ( $UserObj->Id ) {
 
 # Do some setup for the ui
 unless ( $UserObj->id && $UserObj->Disabled ) {
-    $EnabledChecked ="CHECKED";
+    $EnabledChecked = 'checked="checked"';
 }
 
 if (!$Create && $UserObj->Privileged()) {  
-    $PrivilegedChecked = "CHECKED";
+    $PrivilegedChecked = 'checked="checked"';
 }
 
 # set the id, so the the menu will have the right info, this needs to

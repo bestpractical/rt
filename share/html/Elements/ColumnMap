@@ -104,7 +104,7 @@ my $COLUMN_MAP = {
             my $id = $_[0]->id;
 
             my $name = $_[2] || 'SelectedTickets';
-            return \qq{<input type="checkbox" name="$name" value="$id" checked />}
+            return \qq{<input type="checkbox" name="$name" value="$id" checked="checked" />}
                 if $m->request_args->{ $name . 'All'};
 
             my $arg = $m->request_args->{ $name };

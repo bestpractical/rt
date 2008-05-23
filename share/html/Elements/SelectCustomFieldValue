@@ -49,7 +49,7 @@
 % if ($CustomField->Type =~ /Select/i) {
 % my $values = $CustomField->Values;
 <select name="<%$Name%>">
-<option value="" selected>-</option>
+<option value="" selected="selected">-</option>
 <option value="NULL"><&|/l&>(no value)</&></option>
 % while (my $value = $values->Next) {
 <option value="<%$value->Name%>"><%$value->Name%></option>

@@ -50,7 +50,7 @@
 % my $value = shift @Values;
 <option value="<% $value %>"
 % if ($Default eq $value) {
-selected
+selected="selected"
 % }
 ><% $option %></option>
 % }

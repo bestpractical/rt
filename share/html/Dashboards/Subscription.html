@@ -115,11 +115,11 @@
 <tr><td align="right">
 <&|/l&>Frequency</&>:
 </td><td>
-<input type="radio" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? "checked" : "" %>>
+<input type="radio" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" %>>
     daily
 </input><br />
 
-<input type="radio" name="Frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? "checked" : "" %>>
+<input type="radio" name="Frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" %>>
 weekly</input>, on
 <select name="Dow">
 %   for my $dow (qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/) {
@@ -128,7 +128,7 @@ weekly</input>, on
 </select>
 <br />
 
-<input type="radio" name="Frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? "checked" : "" %>>
+<input type="radio" name="Frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" %>>
 monthly</input> , on day
 <select name="Dom">
 %   for my $dom (1..31) {

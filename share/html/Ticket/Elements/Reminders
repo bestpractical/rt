@@ -152,7 +152,7 @@ $Ticket
 <input
     type="checkbox" 
     name="Complete-Reminder-<%$Reminder->id%>" 
-    <% $Reminder->Status eq 'resolved' ? 'CHECKED' : '' %> 
+    <% $Reminder->Status eq 'resolved' ? 'checked="checked"' : '' %> 
 /> 
     <input type="text" size="15" name="Reminder-Subject-<% $Reminder->id %>" value="<%$Reminder->Subject%>" /> &bull; 
     <& /Elements/SelectOwner, Name => 'Reminder-Owner-'.$Reminder->id, Queue => $Ticket->QueueObj, Default => $Reminder->Owner, DefaultValue => 0  &>
@@ -167,7 +167,7 @@ $Ticket
 <input
     type="checkbox" 
     name="Complete-Reminder-<%$Reminder->id%>" 
-    <% $Reminder->Status eq 'resolved' ? 'CHECKED' : '' %> 
+    <% $Reminder->Status eq 'resolved' ? 'checked="checked"' : '' %> 
 /> 
     <%$Reminder->Subject%> &bull; 
     <%$Reminder->OwnerObj->Name%>

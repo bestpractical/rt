@@ -71,7 +71,7 @@
       <option value="<%$right%>"  
 	><% loc($right) %></option>
 % }
-<option value="" selected><&|/l&>(no value)</&></option>
+<option value="" selected="selected"><&|/l&>(no value)</&></option>
 </select>
 </td>
 </tr>

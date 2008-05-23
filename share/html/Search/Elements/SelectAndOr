@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<input type="radio" class="radio" name="<%$Name%>" checked value="AND" /><&|/l&>AND</&>
+<input type="radio" class="radio" name="<%$Name%>" checked="checked" value="AND" /><&|/l&>AND</&>
 <input type="radio" class="radio" name="<%$Name%>" value="OR" /><&|/l&>OR</&>
 
 <%ARGS>

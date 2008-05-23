@@ -56,7 +56,7 @@
 <% loc('maximum depth') %> <select name="MaxDepth">
 <option value="0"><% loc('Unlimit') %></option>
 % foreach ( 1..6 ) {
-<option value="<% $_ %>" <% ($MaxDepth||0) == $_? 'selected': '' %>><% $_ %></option>
+<option value="<% $_ %>" <% ($MaxDepth||0) == $_? 'selected="selected"': '' %>><% $_ %></option>
 % }
 </select><br />
 

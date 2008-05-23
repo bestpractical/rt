@@ -111,7 +111,7 @@ $Rows => undef
 %            || ( $Values && $Values->HasEntry( $name ) ) )
 %       {
 %           $$SelectedRef = 1;
-            selected
+            selected="selected"
 %       }
         ><% $name %></option>
 % }

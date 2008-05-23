@@ -65,7 +65,7 @@
 %    next unless $field;
 <option value="<%$field%>"
 % if (defined $OrderBy[$o] and $field eq $OrderBy[$o]) {
-selected
+selected="selected"
 % }
 ><&|/l&><%$field%></&></option>
 % }
@@ -73,12 +73,12 @@ selected
 <select name="Order">
 <option value="ASC"
 % unless ( ($Order[$o]||'') eq "DESC" ) {
-selected
+selected="selected"
 % }
 ><&|/l&>Asc</&></option>
 <option value="DESC"
 % if ( ($Order[$o]||'') eq "DESC" ) {
-selected
+selected="selected"
 % }
 ><&|/l&>Desc</&></option>
 </select>
