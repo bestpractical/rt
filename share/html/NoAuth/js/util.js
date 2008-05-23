@@ -194,12 +194,8 @@ function createCalendarLink(input) {
     if (e) {
         var link = document.createElement('a');
         link.setAttribute('href', '#');
+        link.setAttribute('onclick', "openCalWindow('"+input+"'); return false;");
 
-        clickevent = function clickevent(e) { openCalWindow(input); return false; };
-        if (! addEvent(link, "click", clickevent)) {
-            return false;
-        }
-        
         var text = document.createTextNode('<% loc("Choose a date") %>');
         link.appendChild(text);
 
@@ -225,17 +221,6 @@ function updateParentField(field, value) {
         window.opener.$(field).value = value;
         window.close();
     }
-}
-
-function addEvent(obj, sType, fn) {
-    if (obj.addEventListener) {
-        obj.addEventListener(sType, fn, false);
-    } else if (obj.attachEvent) {
-        var r = obj.attachEvent("on"+sType, fn);
-    } else {
-        return false;
-    }
-    return true;
 }
 
 function setCheckbox(form, name, val) {
