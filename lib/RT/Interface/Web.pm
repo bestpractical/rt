@@ -381,7 +381,7 @@ sub CreateTicket {
         Subject         => $ARGS{'Subject'},
         Status          => $ARGS{'Status'},
         Due             => $due ? $due->ISO : undef,
-        Starts          => $starts ? starts->ISO : undef,
+        Starts          => $starts ? $starts->ISO : undef,
         MIMEObj         => $MIMEObj
     );
 
