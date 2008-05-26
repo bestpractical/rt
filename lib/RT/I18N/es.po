@@ -2476,7 +2476,7 @@ msgstr ""
 #: html/Admin/Elements/SelectTemplate:59
 #. (loc($Template->Name))
 msgid "Global template: %1"
-msgstr "Plantilla global"
+msgstr "Plantilla global: %1"
 
 #: html/Admin/CustomFields/index.html:80 html/Search/Results.html:90 html/Tools/Offline.html:89
 msgid "Go"
