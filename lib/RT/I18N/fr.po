@@ -1928,7 +1928,7 @@ msgstr "Portlet global %1 sauvé."
 #: html/Admin/Elements/SelectTemplate:61
 #. (loc($Template->Name))
 msgid "Global template: %1"
-msgstr "Modèle global :  %1"
+msgstr "Modèle global : %1"
 
 #: html/Admin/CustomFields/index.html:82 html/Admin/Groups/index.html:69 html/Admin/Groups/index.html:75 html/Admin/Queues/People.html:82 html/Admin/Queues/People.html:86 html/Admin/Queues/index.html:68 html/Admin/Users/index.html:75 html/Approvals/index.html:54 html/Elements/RefreshHomepage:50 html/Search/Results.html:76 html/Search/Results.html:92 html/Ticket/Elements/EditPeople:55 html/Ticket/Elements/EditPeople:59 html/Tools/Offline.html:91
 msgid "Go!"
