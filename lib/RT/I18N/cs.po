@@ -2464,7 +2464,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "Upravovat scrip pro frontu %1"
 
 #: html/Admin/Global/Scrip.html:77
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Upravovat scrip platný pro všechny fronty"
 
 #: html/Admin/CustomFields/Objects.html:92

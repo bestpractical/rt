@@ -2520,7 +2520,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "Alterar uma scrip da queue %1"
 
 #: html/Admin/Global/Scrip.html:77
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Alterar uma scrip que se aplica a todas as queues"
 
 #: html/Admin/CustomFields/Objects.html:92

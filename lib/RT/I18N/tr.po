@@ -2467,7 +2467,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "%1 kuyruğu için bir senet değiştir"
 
 #: html/Admin/Global/Scrip.html:75
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Bütün kuyruklara etki eden bir senedi değiştir"
 
 #: html/Admin/CustomFields/Objects.html:90

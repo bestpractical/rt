@@ -2503,7 +2503,7 @@ msgid "Modify a scrip for queue %1"
 msgstr ""
 
 #: html/Admin/Global/Scrip.html:75
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr ""
 
 #: html/Admin/CustomFields/Objects.html:90

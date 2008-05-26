@@ -2676,7 +2676,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "Mengubah scrip untuk antrian %1"
 
 #: html/Admin/Global/Scrip.html:75
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Mengubah scrip  yang dapat digunakan di seluruh antrian"
 
 #: html/Admin/CustomFields/Objects.html:90

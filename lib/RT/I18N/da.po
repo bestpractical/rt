@@ -1629,7 +1629,7 @@ msgid "Create a CustomField for queue %1"
 msgstr "Opret et ekstrafelt til kø %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Create a CustomField which applies to all queues"
+msgid "Create a CustomField that applies to all queues"
 msgstr "Opret et ekstrafelt, der gælder for alle køer"
 
 #: NOT FOUND IN SOURCE
@@ -3377,7 +3377,7 @@ msgid "Modify a CustomField for queue %1"
 msgstr "Rediger et ekstrafelt for kø %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify a CustomField which applies to all queues"
+msgid "Modify a CustomField that applies to all queues"
 msgstr "Rediger et ekstrafelt, der gælder for alle køer"
 
 #. ($QueueObj->Name)
@@ -3386,7 +3386,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "Rediger et scrip for kø %1"
 
 #: html/Admin/Global/Scrip.html:75
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Rediger et scrip, der gælder for alle køer"
 
 #. ($CF->Name)

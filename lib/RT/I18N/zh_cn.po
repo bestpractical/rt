@@ -1941,7 +1941,7 @@ msgid "Create a CustomField for queue %1"
 msgstr "为 %1 表单新增自订字段"
 
 #: NOT FOUND IN SOURCE
-msgid "Create a CustomField which applies to all queues"
+msgid "Create a CustomField that applies to all queues"
 msgstr "为 %1 表单新增自订字段"
 
 #: NOT FOUND IN SOURCE
@@ -4273,7 +4273,7 @@ msgid "Modify a CustomField for queue %1"
 msgstr "更改 %1 表单内的自订字段"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify a CustomField which applies to all queues"
+msgid "Modify a CustomField that applies to all queues"
 msgstr "更改适用于所有表单的自订字段"
 
 #: html/Admin/Queues/Scrip.html:82
@@ -4282,7 +4282,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "更改 %1 表单内的手续"
 
 #: html/Admin/Global/Scrip.html:75
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "更改适用于所有表单的手续"
 
 #: html/Admin/CustomFields/Objects.html:90

@@ -1459,7 +1459,7 @@ msgid "Create a CustomField for queue %1"
 msgstr "Luo kenttä työjonolle %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Create a CustomField which applies to all queues"
+msgid "Create a CustomField that applies to all queues"
 msgstr "Luo kenttä, jota sovelletaan kaikkiin työjonoihin"
 
 #: NOT FOUND IN SOURCE
@@ -3048,7 +3048,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "Muokkaa työjonon %1 toimintoa"
 
 #: html/Admin/Global/Scrip.html:75
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Muokkaa toimintoa, jota sovelletaan kaikkiin työjonoihin"
 
 #: html/Admin/CustomFields/Objects.html:90

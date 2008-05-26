@@ -1604,7 +1604,7 @@ msgid "Create a CustomField for queue %1"
 msgstr "Utwórz pole dla kolejki %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Create a CustomField which applies to all queues"
+msgid "Create a CustomField that applies to all queues"
 msgstr "Utwórz pole, które dotyczy wszystkich kolejek"
 
 #: NOT FOUND IN SOURCE
@@ -3317,7 +3317,7 @@ msgid "Modify a CustomField for queue %1"
 msgstr "Modyfikuj pole dla kolejki %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify a CustomField which applies to all queues"
+msgid "Modify a CustomField that applies to all queues"
 msgstr "Modyfikuj pole, które dotyczy wszystkich kolejek"
 
 #: html/Admin/Queues/Scrip.html:82
@@ -3326,7 +3326,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "Modyfikuj skrypt dla kolejki %1"
 
 #: html/Admin/Global/Scrip.html:75
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Modyfikuj skrypt, który dotyczy wszystkich kolejek"
 
 #: NOT FOUND IN SOURCE

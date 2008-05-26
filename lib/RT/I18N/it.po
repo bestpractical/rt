@@ -1582,7 +1582,7 @@ msgid "Create a CustomField for queue %1"
 msgstr "Crea un campo personalizzato per la coda %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Create a CustomField which applies to all queues"
+msgid "Create a CustomField that applies to all queues"
 msgstr "Crea un campo personalizzato valido per tutte le code"
 
 #: NOT FOUND IN SOURCE
@@ -3306,7 +3306,7 @@ msgid "Modify a CustomField for queue %1"
 msgstr "Modifica un campo personalizzato per la coda %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify a CustomField which applies to all queues"
+msgid "Modify a CustomField that applies to all queues"
 msgstr "Modifica un campo personalizzato valido per tutte le code"
 
 #: html/Admin/Queues/Scrip.html:82
@@ -3315,7 +3315,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "Modifica uno scrip per la coda %1"
 
 #: html/Admin/Global/Scrip.html:75
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Modifica uno scrip valido per tutte le code"
 
 #: html/Admin/CustomFields/Objects.html:90

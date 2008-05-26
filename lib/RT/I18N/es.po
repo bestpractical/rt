@@ -1554,7 +1554,7 @@ msgid "Create a CustomField for queue %1"
 msgstr "Crear un campo personalizables para la cola %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Create a CustomField which applies to all queues"
+msgid "Create a CustomField that applies to all queues"
 msgstr "Crear un campo personalizable que se aplique a todas las colas"
 
 #: NOT FOUND IN SOURCE
@@ -3211,7 +3211,7 @@ msgid "Modify a CustomField for queue %1"
 msgstr "Modificar un campo personalizable para la cola %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify a CustomField which applies to all queues"
+msgid "Modify a CustomField that applies to all queues"
 msgstr "Modificar un campo personalizable que se aplique a todas las colas"
 
 #: html/Admin/Queues/Scrip.html:82
@@ -3220,7 +3220,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "Modificar un scrip para la cola %1"
 
 #: html/Admin/Global/Scrip.html:75
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Modificar un scrip que se aplique a todas las colas"
 
 #: html/Admin/CustomFields/Objects.html:90

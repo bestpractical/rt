@@ -1594,7 +1594,7 @@ msgid "Create a CustomField for queue %1"
 msgstr "Opprett et fleksifelt for køen %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Create a CustomField which applies to all queues"
+msgid "Create a CustomField that applies to all queues"
 msgstr "Opprett et fleksifelt for alle køer"
 
 #: NOT FOUND IN SOURCE
@@ -3262,7 +3262,7 @@ msgid "Modify a CustomField for queue %1"
 msgstr "Endre et fleksifelt for køen %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify a CustomField which applies to all queues"
+msgid "Modify a CustomField that applies to all queues"
 msgstr "Endre et fleksifelt som gjelder for alle køer"
 
 #: html/Admin/Queues/Scrip.html:82
@@ -3271,7 +3271,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "Endre et scrip for køen %1"
 
 #: html/Admin/Global/Scrip.html:75
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Endre et scrip som gjelder for alle køer"
 
 #: html/Admin/CustomFields/Objects.html:90
