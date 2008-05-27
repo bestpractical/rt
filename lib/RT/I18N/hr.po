@@ -4,13 +4,13 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 2.1.54\n"
+"Project-Id-Version: RT 3.8.x\n"
 "POT-Creation-Date: 2002-06-22 06:06+0200\n"
 "PO-Revision-Date: 2006-03-21 00:00+0100\n"
 "Last-Translator: Josip Rodin <lokalizacija@linux.hr>\n"
-"Language-Team: RT Croatian <lokalizacija@linux.hr>\n"
+"Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-2\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: share/html/Widgets/SavedSearch:117
@@ -119,7 +119,7 @@ msgstr "%1 %2 obrisano"
 #. ($_[0]->loc($_[0]->ConditionObj->Name),            $_[0]->loc($_[0]->ActionObj->Name),            $_[0]->loc($_[0]->TemplateObj->Name),)
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
 msgid "%1 %2 with template %3"
-msgstr "%1 %2 s predloπkom %3"
+msgstr "%1 %2 s predlo≈°kom %3"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 (%2) %3 this ticket\\n"
@@ -157,12 +157,12 @@ msgstr "%1 - %2 prikazano"
 #. ("--condition-arg", "--condition")
 #. ("--action-arg", "--action")
 msgid "%1 - An argument to pass to %2"
-msgstr "%1 - Argument za prosljeivanje na %2"
+msgstr "%1 - Argument za prosljeƒëivanje na %2"
 
 #: bin/rt-crontool:303
 #. ("--verbose")
 msgid "%1 - Output status updates to STDOUT"
-msgstr "%1 - Status prikaza se nadograuje na STDOUT"
+msgstr "%1 - Status prikaza se nadograƒëuje na STDOUT"
 
 #: bin/rt-crontool:294
 #. ("--template-id")
@@ -174,11 +174,11 @@ msgstr ""
 msgid "%1 - Specify if you want to use either 'first', 'last' or 'all' transactions"
 msgstr ""
 
-#msgstr "%1 - Piπi status prikaza nakon STDOUT"
+#msgstr "%1 - Pi≈°i status prikaza nakon STDOUT"
 #: bin/rt-crontool:288
 #. ("--action")
 msgid "%1 - Specify the action module you want to use"
-msgstr "%1 - Navedi koji Êe se modul rada koristiti"
+msgstr "%1 - Navedi koji ƒáe se modul rada koristiti"
 
 #: bin/rt-crontool:300
 #. ("--transaction-type")
@@ -188,12 +188,12 @@ msgstr ""
 #: bin/rt-crontool:282
 #. ("--condition")
 msgid "%1 - Specify the condition module you want to use"
-msgstr "%1 - Navedi koji Êe se modul uvjetovanja koristiti"
+msgstr "%1 - Navedi koji ƒáe se modul uvjetovanja koristiti"
 
 #: bin/rt-crontool:275
 #. ("--search")
 msgid "%1 - Specify the search module you want to use"
-msgstr "%1 - Navedi koji Êe se modul pretraæivanja koristiti"
+msgstr "%1 - Navedi koji ƒáe se modul pretra≈æivanja koristiti"
 
 #: share/html/Dashboards/Elements/ShowDashboards:48
 #. ($Type)
@@ -208,7 +208,7 @@ msgstr "%1 RT %2 Copyright 1996-%3 %4."
 #: lib/RT/ScripAction_Overlay.pm:148
 #. ($self->Id)
 msgid "%1 ScripAction loaded"
-msgstr "ScripAction %1 uËitano"
+msgstr "ScripAction %1 uƒçitano"
 
 #: lib/RT/Record.pm:1663
 #. ($args{'Value'}, $cf->Name)
@@ -219,7 +219,7 @@ msgstr "%1 dodano kao vrijednost za %2 "
 #. ($args{'Base'})
 #. ($args{'Target'})
 msgid "%1 appears to be a local object, but can't be found in the database"
-msgstr "%1 nije pronaen u datoteci iako izgleda da je lokalni objekt"
+msgstr "%1 nije pronaƒëen u datoteci iako izgleda da je lokalni objekt"
 
 #: share/html/Dashboards/Elements/ShowSubscription:72
 #. ($freq, $hour)
@@ -258,12 +258,12 @@ msgstr "%1 kopirati"
 
 #: lib/RT/Record.pm:910
 msgid "%1 could not be set to %2."
-msgstr "%1 nije moguÊe postaviti na %2."
+msgstr "%1 nije moguƒáe postaviti na %2."
 
 #: lib/RT/Ticket_Overlay.pm:2476
 #. ($self)
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
-msgstr "%1 nije moguÊe promijeniti status u rijeπeno. RT baza podataka bi mogla biti neujednaËena."
+msgstr "%1 nije moguƒáe promijeniti status u rije≈°eno. RT baza podataka bi mogla biti neujednaƒçena."
 
 #: lib/RT/Transaction_Overlay.pm:560
 #. ($obj_type)
@@ -277,15 +277,15 @@ msgstr "%1 obrisan"
 
 #: etc/initialdata:652
 msgid "%1 highest priority tickets I own"
-msgstr "%1 zahtjeva najviπeg prioriteta koje posjedujem"
+msgstr "%1 zahtjeva najvi≈°eg prioriteta koje posjedujem"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 highest priority tickets I own..."
-msgstr "%1 meni dodijeljenih zahtjeva najviπeg prioriteta..."
+msgstr "%1 meni dodijeljenih zahtjeva najvi≈°eg prioriteta..."
 
 #: NOT FOUND IN SOURCE
 msgid "%1 highest priority tickets I requested..."
-msgstr "%1 zahtjeva najviπeg prioriteta koje sam zatraæio/la..."
+msgstr "%1 zahtjeva najvi≈°eg prioriteta koje sam zatra≈æio/la..."
 
 #: bin/rt-crontool:270
 #. ($0)
@@ -300,17 +300,17 @@ msgstr ""
 #: lib/RT/Queue_Overlay.pm:921
 #. ($principal->Object->Name, $args{'Type'})
 msgid "%1 is no longer a %2 for this queue."
-msgstr "%1 viπe nije %2 u ovoj kategoriji."
+msgstr "%1 vi≈°e nije %2 u ovoj kategoriji."
 
 #: lib/RT/Ticket_Overlay.pm:1261
 #. ($principal->Object->Name,                         $args{'Type'})
 msgid "%1 is no longer a %2 for this ticket."
-msgstr "%1 viπe nije %2 ovog zahtjeva."
+msgstr "%1 vi≈°e nije %2 ovog zahtjeva."
 
 #: lib/RT/Record.pm:1720
 #. ($TransactionObj->OldValue, $cf->Name)
 msgid "%1 is no longer a value for custom field %2"
-msgstr "%1 viπe nije vrijednost za vlastito polje %2"
+msgstr "%1 vi≈°e nije vrijednost za vlastito polje %2"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 isn't a valid Queue id."
@@ -318,7 +318,7 @@ msgstr "%1 nije valjan ID za kategoriju."
 
 #: NOT FOUND IN SOURCE
 msgid "%1 matches"
-msgstr "%1 sadræi"
+msgstr "%1 sadr≈æi"
 
 #: share/html/Ticket/Elements/ShowTime:49 share/html/Ticket/Elements/ShowTime:51
 #. ($minutes)
@@ -327,15 +327,15 @@ msgstr "%1 min"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 most recently updated articles"
-msgstr "%1 zadnji nadograeni Ëlanci"
+msgstr "%1 zadnji nadograƒëeni ƒçlanci"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 newest articles"
-msgstr "%1 najnoviji Ëlanci"
+msgstr "%1 najnoviji ƒçlanci"
 
 #: etc/initialdata:663
 msgid "%1 newest unowned tickets"
-msgstr "%1 najnovijih zahtjeva bez rjeπavatelja"
+msgstr "%1 najnovijih zahtjeva bez rje≈°avatelja"
 
 #: lib/RT/CustomField_Overlay.pm:793
 msgid "%1 objects"
@@ -363,7 +363,7 @@ msgstr ""
 #: lib/RT/Action/ResolveMembers.pm:66
 #. (ref $self)
 msgid "%1 will resolve all members of a resolved group ticket."
-msgstr "%1 Êe rijeπiti sve Ëlanove rijeπenog grupnog zahtjeva."
+msgstr "%1 ƒáe rije≈°iti sve ƒçlanove rije≈°enog grupnog zahtjeva."
 
 #: lib/RT/CustomField_Overlay.pm:794
 msgid "%1's %2 objects"
@@ -417,11 +417,11 @@ msgstr "'%1' nije valjana vrijednost za status"
 
 #: NOT FOUND IN SOURCE
 msgid "(Check box to delete scrip)"
-msgstr "(OznaËiti za brisanje natuknice)"
+msgstr "(Oznaƒçiti za brisanje natuknice)"
 
 #: share/html/Admin/Elements/EditCustomFieldValues:80 share/html/Admin/Elements/EditQueueWatchers:66 share/html/Admin/Elements/EditScrips:67 share/html/Admin/Elements/EditTemplates:69 share/html/Admin/Groups/Members.html:106 share/html/Elements/EditLinks:112 share/html/Ticket/Elements/EditPeople:69 share/html/User/Groups/Members.html:78
 msgid "(Check box to delete)"
-msgstr "(OznaËiti za brisanje)"
+msgstr "(Oznaƒçiti za brisanje)"
 
 #: share/html/Ticket/Elements/PreviewScrips:61
 msgid "(Check boxes to disable notifications to the listed recipients)"
@@ -451,7 +451,7 @@ msgstr "(Nema vlastitih polja)"
 
 #: share/html/Admin/Groups/Members.html:73 share/html/User/Groups/Members.html:76
 msgid "(No members)"
-msgstr "(Nema Ëlanova)"
+msgstr "(Nema ƒçlanova)"
 
 #: share/html/Admin/Elements/EditScrips:69 share/html/Admin/Elements/ListGlobalScrips:49
 msgid "(No scrips)"
@@ -459,15 +459,15 @@ msgstr "(Nema natuknica)"
 
 #: share/html/Admin/Elements/EditTemplates:54
 msgid "(No templates)"
-msgstr "(Nema predloæaka)"
+msgstr "(Nema predlo≈æaka)"
 
 #: share/html/Admin/Elements/PickCustomFields:49 share/html/Admin/Elements/PickObjects:49
 msgid "(None)"
-msgstr "(Niπta)"
+msgstr "(Ni≈°ta)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
-msgstr "(©alje \"slijepu\" kopiju ove nadopune grupi e-mail adresa odvojenih zarezom. <b>Ne</b> mijenja tko Êe primati buduÊe nadopune.)"
+msgstr "(≈†alje \"slijepu\" kopiju ove nadopune grupi e-mail adresa odvojenih zarezom. <b>Ne</b> mijenja tko ƒáe primati buduƒáe nadopune.)"
 
 #: share/html/Ticket/Elements/UpdateCc:76
 msgid "(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
@@ -475,7 +475,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)"
-msgstr "(©alje kopiju ove nadopune grupi administrativnih e-mail adresa odvojenih zarezom. Ovi primatelji <b>Êe primati</b> buduÊe nadopune.)"
+msgstr "(≈†alje kopiju ove nadopune grupi administrativnih e-mail adresa odvojenih zarezom. Ovi primatelji <b>ƒáe primati</b> buduƒáe nadopune.)"
 
 #: share/html/Ticket/Create.html:105
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
@@ -483,7 +483,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <b>not</b> change who will receive future updates.)"
-msgstr "(©alje kopiju ovoe nadopune grupi e-mail adresa odvojenih zarezom. <b>Ne</b> mijenja tko Êe primati buduÊe nadopune.)"
+msgstr "(≈†alje kopiju ovoe nadopune grupi e-mail adresa odvojenih zarezom. <b>Ne</b> mijenja tko ƒáe primati buduƒáe nadopune.)"
 
 #: share/html/Ticket/Elements/UpdateCc:61
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)"
@@ -491,7 +491,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
-msgstr "(©alje kopiju ove nadopune grupi e-mail adresa odvojenih zarezom. Ovi primatelji <b>Êe primati</b> buduÊe nadopune.)"
+msgstr "(≈†alje kopiju ove nadopune grupi e-mail adresa odvojenih zarezom. Ovi primatelji <b>ƒáe primati</b> buduƒáe nadopune.)"
 
 #: share/html/Ticket/Create.html:96
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
@@ -515,7 +515,7 @@ msgstr "(prazno)"
 
 #: NOT FOUND IN SOURCE
 msgid "(no Summary)"
-msgstr "(nema saæetka)"
+msgstr "(nema sa≈æetka)"
 
 #: NOT FOUND IN SOURCE
 msgid "(no name listed)"
@@ -548,15 +548,15 @@ msgstr ""
 
 #: share/html/Elements/RT__Ticket/ColumnMap:106
 msgid "(pending approval)"
-msgstr "(Ëeka dopuπtenje)"
+msgstr "(ƒçeka dopu≈°tenje)"
 
 #: NOT FOUND IN SOURCE
 msgid "(pending other Collection)"
-msgstr "(Ëeka sastavljanje)"
+msgstr "(ƒçeka sastavljanje)"
 
 #: NOT FOUND IN SOURCE
 msgid "(pending other tickets)"
-msgstr "(Ëeka druge zahtjeve)"
+msgstr "(ƒçeka druge zahtjeve)"
 
 #: share/html/Admin/Users/Modify.html:73
 msgid "(required)"
@@ -615,7 +615,7 @@ msgstr "<input type=\"submit\" value=\"Novi zahtjev u\">&nbsp;%1"
 
 #: etc/initialdata:187
 msgid "A blank template"
-msgstr "Prazan predloæak"
+msgstr "Prazan predlo≈æak"
 
 #: share/html/Admin/Users/Modify.html:377
 msgid "A password was not set, so user won't be able to login."
@@ -623,7 +623,7 @@ msgstr ""
 
 #: lib/RT/ACE_Overlay.pm:163 lib/RT/Principal_Overlay.pm:219
 msgid "ACE not found"
-msgstr "ACE nije pronaeno"
+msgstr "ACE nije pronaƒëeno"
 
 #: lib/RT/ACE_Overlay.pm:617
 msgid "ACEs can only be created and deleted."
@@ -635,7 +635,7 @@ msgstr "I"
 
 #: NOT FOUND IN SOURCE
 msgid "Aborting to avoid unintended ticket modifications.\\n"
-msgstr "Prekid da bi se izbjegle neæeljene promjene na zahtjevu.\\n"
+msgstr "Prekid da bi se izbjegle ne≈æeljene promjene na zahtjevu.\\n"
 
 #: share/html/User/Elements/Tabs:55
 msgid "About me"
@@ -651,7 +651,7 @@ msgstr "Radnja"
 
 #: NOT FOUND IN SOURCE
 msgid "Action %1 not found"
-msgstr "Radnja %1 nije pronaena"
+msgstr "Radnja %1 nije pronaƒëena"
 
 #: lib/RT/Scrip_Overlay.pm:136
 #. ($args{'ScripAction'})
@@ -660,11 +660,11 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Action committed."
-msgstr "Radnja izvrπena."
+msgstr "Radnja izvr≈°ena."
 
 #: bin/rt-crontool:205
 msgid "Action committed.\\n"
-msgstr "Radnja izvrπena.\\n"
+msgstr "Radnja izvr≈°ena.\\n"
 
 #: lib/RT/Scrip_Overlay.pm:132
 msgid "Action is mandatory argument"
@@ -700,7 +700,7 @@ msgstr "Dodati kriterij"
 
 #: share/html/Ticket/Create.html:149 share/html/Ticket/Update.html:122
 msgid "Add More Files"
-msgstr "Dodati viπe datoteka"
+msgstr "Dodati vi≈°e datoteka"
 
 #: share/html/Search/Bulk.html:88
 msgid "Add Requestor"
@@ -720,7 +720,7 @@ msgstr "Dodaj natuknicu na ovu kategoriju"
 
 #: share/html/Admin/Global/Scrip.html:85
 msgid "Add a scrip which will apply to all queues"
-msgstr "Dodaj natuknicu koja Êe se primijeniti na sve kategorije"
+msgstr "Dodaj natuknicu koja ƒáe se primijeniti na sve kategorije"
 
 #: NOT FOUND IN SOURCE
 msgid "Add additional criteria"
@@ -732,11 +732,11 @@ msgstr "Dodaj komentare ili odgovore odabranim zahtjevima"
 
 #: share/html/Admin/Groups/Members.html:65 share/html/User/Groups/Members.html:62
 msgid "Add members"
-msgstr "Dodati Ëlanove"
+msgstr "Dodati ƒçlanove"
 
 #: share/html/Admin/Queues/People.html:89 share/html/Ticket/Elements/AddWatchers:51
 msgid "Add new watchers"
-msgstr "Dodati nove promatraËe"
+msgstr "Dodati nove promatraƒçe"
 
 #: share/html/Search/Build.html:98
 msgid "Add these terms"
@@ -810,7 +810,7 @@ msgstr "AdminGrupa"
 
 #: lib/RT/Group_Overlay.pm:89
 msgid "AdminGroupMembership"
-msgstr "AdminGrupnog»lanstva"
+msgstr "AdminGrupnogƒålanstva"
 
 #: lib/RT/System.pm:84
 msgid "AdminOwnPersonalGroups"
@@ -902,16 +902,16 @@ msgstr "Odobrenje #%1: %2"
 #: share/html/Approvals/index.html:77
 #. ($ticket->Id)
 msgid "Approval #%1: Notes not recorded due to a system error"
-msgstr "Odobrenje #%1: Nema zabiljeπki zbog sistemske greπke"
+msgstr "Odobrenje #%1: Nema zabilje≈°ki zbog sistemske gre≈°ke"
 
 #: share/html/Approvals/index.html:75
 #. ($ticket->Id)
 msgid "Approval #%1: Notes recorded"
-msgstr "Odobrenje #%1: Zabiljeæene napomene"
+msgstr "Odobrenje #%1: Zabilje≈æene napomene"
 
 #: etc/initialdata:320
 msgid "Approval Passed"
-msgstr "Odobrenje proπlo"
+msgstr "Odobrenje pro≈°lo"
 
 #: etc/initialdata:343
 msgid "Approval Rejected"
@@ -924,7 +924,7 @@ msgstr "Odobriti"
 #: etc/initialdata:565 etc/initialdata:567
 #. (# loc	    $note)
 msgid "Approver's notes: %1"
-msgstr "Zabiljeπke odobrenja: %1"
+msgstr "Zabilje≈°ke odobrenja: %1"
 
 #: lib/RT/Date.pm:91
 msgid "Apr"
@@ -940,23 +940,23 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Are you sure you want to delete this article?"
-msgstr "Jeste li sigurni da zelite obrisati ovaj Ëlanak?"
+msgstr "Jeste li sigurni da zelite obrisati ovaj ƒçlanak?"
 
 #: NOT FOUND IN SOURCE
 msgid "Article #%1 deleted"
-msgstr "»lanak #%1 obrisan"
+msgstr "ƒålanak #%1 obrisan"
 
 #: NOT FOUND IN SOURCE
 msgid "Article #%1: %2"
-msgstr "»lanak #%1: %2"
+msgstr "ƒålanak #%1: %2"
 
 #: NOT FOUND IN SOURCE
 msgid "Article not found"
-msgstr "»lanak nije pronaen"
+msgstr "ƒålanak nije pronaƒëen"
 
 #: NOT FOUND IN SOURCE
 msgid "Articles"
-msgstr "»lanci"
+msgstr "ƒålanci"
 
 #: share/html/Search/Elements/DisplayOptions:78
 msgid "Asc"
@@ -976,20 +976,20 @@ msgstr "DodijelitiVlastitaPolja"
 
 #: share/html/Search/Bulk.html:146 share/html/SelfService/Update.html:89 share/html/Ticket/ModifyAll.html:118 share/html/Ticket/Update.html:122
 msgid "Attach"
-msgstr "Priloæiti"
+msgstr "Prilo≈æiti"
 
 #: share/html/SelfService/Create.html:94 share/html/Ticket/Create.html:145
 msgid "Attach file"
-msgstr "Priloæiti datoteku"
+msgstr "Prilo≈æiti datoteku"
 
 #: share/html/SelfService/Update.html:77 share/html/Ticket/Create.html:133 share/html/Ticket/Update.html:112
 msgid "Attached file"
-msgstr "Priloæena datoteka"
+msgstr "Prilo≈æena datoteka"
 
 #: share/html/Ticket/ShowEmailRecord.html:83 share/html/Ticket/ShowEmailRecord.html:85 share/html/Ticket/ShowEmailRecord.html:88
 #. ($Attachment)
 msgid "Attachment '%1' could not be loaded"
-msgstr "Datoteka '%1' se nije mogla uËitati"
+msgstr "Datoteka '%1' se nije mogla uƒçitati"
 
 #: lib/RT/Transaction_Overlay.pm:503
 msgid "Attachment created"
@@ -1073,7 +1073,7 @@ msgstr "PGP-Signatura s greskama: %1\\n"
 
 #: NOT FOUND IN SOURCE
 msgid "Bad attachment id. Couldn't find attachment '%1'\\n"
-msgstr "Id priloga sadræi greske. Prilog '%1' nije pronaen\\n"
+msgstr "Id priloga sadr≈æi greske. Prilog '%1' nije pronaƒëen\\n"
 
 #: NOT FOUND IN SOURCE
 msgid "Bad data in %1"
@@ -1154,11 +1154,11 @@ msgstr "Sistemski korisnici se ne mogu promijeniti"
 
 #: lib/RT/Queue_Overlay.pm:91
 msgid "Can this principal see this queue"
-msgstr "Moæe li glavni parametar vidjeti ovu kategoriju"
+msgstr "Mo≈æe li glavni parametar vidjeti ovu kategoriju"
 
 #: lib/RT/CustomField_Overlay.pm:364
 msgid "Can't add a custom field value without a name"
-msgstr "Vrijednost za vlastito polje se ne moæe dodati bez imena"
+msgstr "Vrijednost za vlastito polje se ne mo≈æe dodati bez imena"
 
 #: share/html/Admin/CustomFields/Objects.html:88
 #. ($Class)
@@ -1167,15 +1167,15 @@ msgstr ""
 
 #: share/html/Search/Elements/EditSearches:251
 msgid "Can't find a saved search to work with"
-msgstr "Nije pronaena spremljena pretraga"
+msgstr "Nije pronaƒëena spremljena pretraga"
 
 #: lib/RT/Link_Overlay.pm:150
 msgid "Can't link a ticket to itself"
-msgstr "Zahtjev se ne moæe povezati na sebe!"
+msgstr "Zahtjev se ne mo≈æe povezati na sebe!"
 
 #: NOT FOUND IN SOURCE
 msgid "Can't merge into a merged ticket. You should never get this error"
-msgstr "Zahtjev se ne moæe spojiti sa sjedinjenim zahtjevom. Ovu greπku nikad ne biste smjeli dobiti"
+msgstr "Zahtjev se ne mo≈æe spojiti sa sjedinjenim zahtjevom. Ovu gre≈°ku nikad ne biste smjeli dobiti"
 
 #: share/html/Widgets/SavedSearch:110
 #. (loc($self->{SearchType}))
@@ -1184,7 +1184,7 @@ msgstr ""
 
 #: share/html/Search/Elements/EditSearches:255
 msgid "Can't save this search"
-msgstr "Ne moæe se spremiti ova pretraga"
+msgstr "Ne mo≈æe se spremiti ova pretraga"
 
 #: lib/RT/Record.pm:1209 lib/RT/Record.pm:1285
 msgid "Can't specifiy both base and target"
@@ -1193,7 +1193,7 @@ msgstr "Ne mogu se navesti istovremeno osnova i cilj"
 #: share/html/autohandler:216
 #. ($msg)
 msgid "Cannot create user: %1"
-msgstr "Ne moæe se napraviti korisnik: %1"
+msgstr "Ne mo≈æe se napraviti korisnik: %1"
 
 #: share/html/Admin/Elements/AddCustomFieldValue:57 share/html/Admin/Elements/EditCustomFieldValues:61
 msgid "Category"
@@ -1221,11 +1221,11 @@ msgstr "Odabrati sve"
 
 #: share/html/SelfService/Update.html:80 share/html/Ticket/Create.html:136 share/html/Ticket/Update.html:114
 msgid "Check box to delete"
-msgstr "OznaËiti za brisanje"
+msgstr "Oznaƒçiti za brisanje"
 
 #: share/html/Admin/Elements/SelectRights:57
 msgid "Check box to revoke right"
-msgstr "OznaËiti za poniπtenje ovlasti"
+msgstr "Oznaƒçiti za poni≈°tenje ovlasti"
 
 #: share/html/Elements/EditLinks:149 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:80 share/html/Ticket/Create.html:229 share/html/Ticket/Elements/BulkLinks:66
 msgid "Children"
@@ -1321,11 +1321,11 @@ msgstr "Komentari"
 
 #: share/html/Ticket/ModifyAll.html:94 share/html/Ticket/Update.html:89
 msgid "Comments (Not sent to requestors)"
-msgstr "Komentar (ne πalje se prijaviteljima)"
+msgstr "Komentar (ne ≈°alje se prijaviteljima)"
 
 #: share/html/Search/Bulk.html:132
 msgid "Comments (not sent to requestors)"
-msgstr "Komentar (ne πalje se prijaviteljima)"
+msgstr "Komentar (ne ≈°alje se prijaviteljima)"
 
 #: NOT FOUND IN SOURCE
 msgid "Comments about %1"
@@ -1341,7 +1341,7 @@ msgstr "Komentar dodan"
 
 #: lib/RT/Action/Generic.pm:173
 msgid "Commit Stubbed"
-msgstr "Predaja odrezanaƒ`¬∂bergabe abgehakt"
+msgstr "Predaja odrezana√Ñ`√Ç≈õbergabe abgehakt"
 
 #: share/html/Admin/Elements/EditScrip:62
 msgid "Condition"
@@ -1362,7 +1362,7 @@ msgstr "Uvjet se podudara s..."
 
 #: NOT FOUND IN SOURCE
 msgid "Condition not found"
-msgstr "Uvjet nije pronaen"
+msgstr "Uvjet nije pronaƒëen"
 
 #: share/html/Elements/Tabs:87
 msgid "Configuration"
@@ -1374,11 +1374,11 @@ msgstr "Potvrditi"
 
 #: share/html/Admin/Elements/ModifyTemplate:67 share/html/Elements/QuickCreate:67 share/html/Elements/SelectAttachmentField:50 share/html/Ticket/ModifyAll.html:122
 msgid "Content"
-msgstr "Sadræaj"
+msgstr "Sadr≈æaj"
 
 #: share/html/Elements/SelectAttachmentField:51
 msgid "Content-Type"
-msgstr "Tip sadræaja"
+msgstr "Tip sadr≈æaja"
 
 #: share/html/Search/Elements/EditSearches:69
 msgid "Copy"
@@ -1420,7 +1420,7 @@ msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:2727 lib/RT/Ticket_Overlay.pm:2735 lib/RT/Ticket_Overlay.pm:2752
 msgid "Could not change owner. "
-msgstr "Rjeπavatelj nije mogao biti promijenjen. "
+msgstr "Rje≈°avatelj nije mogao biti promijenjen. "
 
 #: share/html/Admin/CustomFields/Modify.html:149
 #. ($msg)
@@ -1434,16 +1434,16 @@ msgstr "Vlastito polje: %1 nije moglo biti napravljeno"
 
 #: lib/RT/Group_Overlay.pm:433 lib/RT/Group_Overlay.pm:440 share/html/User/Groups/Modify.html:100
 msgid "Could not create group"
-msgstr "Ne moæe se napraviti grupa"
+msgstr "Ne mo≈æe se napraviti grupa"
 
 #: share/html/Admin/Global/Template.html:94 share/html/Admin/Queues/Template.html:95
 #. ($msg)
 msgid "Could not create template: %1"
-msgstr "Predloæak: %1 nije mogao biti napravljen"
+msgstr "Predlo≈æak: %1 nije mogao biti napravljen"
 
 #: lib/RT/Ticket_Overlay.pm:285 lib/RT/Ticket_Overlay.pm:806
 msgid "Could not create ticket. Queue not set"
-msgstr "Zahtjev nije mogao biti napravljen. Kategorija nije odreena"
+msgstr "Zahtjev nije mogao biti napravljen. Kategorija nije odreƒëena"
 
 #: lib/RT/User_Overlay.pm:189 lib/RT/User_Overlay.pm:203 lib/RT/User_Overlay.pm:212 lib/RT/User_Overlay.pm:221 lib/RT/User_Overlay.pm:230 lib/RT/User_Overlay.pm:244 lib/RT/User_Overlay.pm:254 lib/RT/User_Overlay.pm:402
 msgid "Could not create user"
@@ -1451,11 +1451,11 @@ msgstr "Korisnik nije mogao biti napravljen"
 
 #: lib/RT/Queue_Overlay.pm:783 lib/RT/Ticket_Overlay.pm:1101
 msgid "Could not find or create that user"
-msgstr "Ovaj korisnik nije mogao biti pronaen ili napravljen"
+msgstr "Ovaj korisnik nije mogao biti pronaƒëen ili napravljen"
 
 #: lib/RT/Queue_Overlay.pm:858 lib/RT/Ticket_Overlay.pm:1182
 msgid "Could not find that principal"
-msgstr "Ovaj glavni parametar nije mogao biti pronaen"
+msgstr "Ovaj glavni parametar nije mogao biti pronaƒëen"
 
 #: lib/RT/SharedSetting.pm:201
 #. ($self->ObjectName)
@@ -1464,11 +1464,11 @@ msgstr ""
 
 #: share/html/Admin/CustomFields/Objects.html:71
 msgid "Could not load CustomField %1"
-msgstr "Vlastito polje %1 nije se moglo uËitati"
+msgstr "Vlastito polje %1 nije se moglo uƒçitati"
 
 #: share/html/Admin/Groups/Members.html:114 share/html/User/Groups/Members.html:113 share/html/User/Groups/Modify.html:105
 msgid "Could not load group"
-msgstr "Grupa se nije mogla uËitati"
+msgstr "Grupa se nije mogla uƒçitati"
 
 #: lib/RT/SharedSetting.pm:110
 #. ($privacy)
@@ -1505,7 +1505,7 @@ msgstr ""
 
 #: lib/RT/Group_Overlay.pm:995
 msgid "Couldn't add member to group"
-msgstr "»lan se nije mogao dodati grupi"
+msgstr "ƒålan se nije mogao dodati grupi"
 
 #: lib/RT/Record.pm:1660 lib/RT/Record.pm:1712
 #. ($msg)
@@ -1519,7 +1519,7 @@ msgstr ""
 
 #: lib/RT/Record.pm:919
 msgid "Couldn't find row"
-msgstr "Red nije pronaen"
+msgstr "Red nije pronaƒëen"
 
 #: bin/rt-crontool:157
 msgid "Couldn't find suitable transaction, skipping"
@@ -1527,21 +1527,21 @@ msgstr ""
 
 #: lib/RT/Group_Overlay.pm:969
 msgid "Couldn't find that principal"
-msgstr "Taj glavni parametar nije pronaen"
+msgstr "Taj glavni parametar nije pronaƒëen"
 
 #: lib/RT/CustomField_Overlay.pm:394
 msgid "Couldn't find that value"
-msgstr "Ova vrijednost nije pronaena"
+msgstr "Ova vrijednost nije pronaƒëena"
 
 #: lib/RT/CurrentUser.pm:164
 #. ($self->Id)
 msgid "Couldn't load %1 from the users database.\\n"
-msgstr "%1 se nije mogao uËitati iz korisniËke datoteke.\\n"
+msgstr "%1 se nije mogao uƒçitati iz korisniƒçke datoteke.\\n"
 
 #: share/html/Admin/CustomFields/UserRights.html:92
 #. ($id)
 msgid "Couldn't load Class %1"
-msgstr "Klasa %1 se nije mogla uËitati"
+msgstr "Klasa %1 se nije mogla uƒçitati"
 
 #: lib/RT/CustomFieldValue_Overlay.pm:80
 #. ($cf_id)
@@ -1551,7 +1551,7 @@ msgstr ""
 #: share/html/Admin/CustomFields/GroupRights.html:104
 #. ($id)
 msgid "Couldn't load CustomField %1"
-msgstr "Vlastito polje %1 nije se moglo uËitati"
+msgstr "Vlastito polje %1 nije se moglo uƒçitati"
 
 #: lib/RT/Ticket_Overlay.pm:1700
 #. ($self->Id)
@@ -1566,16 +1566,16 @@ msgstr ""
 #: share/html/Admin/Groups/GroupRights.html:111 share/html/Admin/Groups/UserRights.html:94
 #. ($id)
 msgid "Couldn't load group %1"
-msgstr "Grupa %1 se nije mogla uËitati"
+msgstr "Grupa %1 se nije mogla uƒçitati"
 
 #: lib/RT/Link_Overlay.pm:193 lib/RT/Link_Overlay.pm:202 lib/RT/Link_Overlay.pm:229
 msgid "Couldn't load link"
-msgstr "Link se nije mogao uËitati"
+msgstr "Link se nije mogao uƒçitati"
 
 #: share/html/Admin/Elements/ObjectCustomFields:85 share/html/Admin/Queues/CustomFields.html:61 share/html/Admin/Users/CustomFields.html:61
 #. ($id)
 msgid "Couldn't load object %1"
-msgstr "Objekt %1 se nije mogao uËitati"
+msgstr "Objekt %1 se nije mogao uƒçitati"
 
 #: lib/RT/Ticket_Overlay.pm:434
 #. ($msg)
@@ -1585,7 +1585,7 @@ msgstr ""
 #: share/html/Admin/Queues/People.html:146
 #. ($id)
 msgid "Couldn't load queue"
-msgstr "Kategorija se nije mogla uËitati"
+msgstr "Kategorija se nije mogla uƒçitati"
 
 #: share/html/Admin/Elements/EditScrips:86
 #. ($id)
@@ -1595,7 +1595,7 @@ msgstr ""
 #: share/html/Admin/Queues/GroupRights.html:124 share/html/Admin/Queues/UserRights.html:93
 #. ($id)
 msgid "Couldn't load queue %1"
-msgstr "Kategorija %1 se nije mogla uËitati"
+msgstr "Kategorija %1 se nije mogla uƒçitati"
 
 #: share/html/Admin/Queues/Modify.html:150
 #. ($Name)
@@ -1614,12 +1614,12 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Couldn't load that user (%1)"
-msgstr "Taj korisnik (%1) nije mogao biti uËitan"
+msgstr "Taj korisnik (%1) nije mogao biti uƒçitan"
 
 #: lib/RT/Action/CreateTickets.pm:453 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
-msgstr "Zahtjev '%1' se nije mogao uËitati"
+msgstr "Zahtjev '%1' se nije mogao uƒçitati"
 
 #: share/html/Ticket/Forward.html:90 share/html/Ticket/GnuPG.html:75
 #. ($id)
@@ -1710,7 +1710,7 @@ msgstr "Napravi vlastito polje primjenjivo na sve kategorije"
 
 #: NOT FOUND IN SOURCE
 msgid "Create a new article"
-msgstr "Napravi novi Ëlanak"
+msgstr "Napravi novi ƒçlanak"
 
 #: share/html/Dashboards/Modify.html:129 share/html/Dashboards/Modify.html:93
 msgid "Create a new dashboard"
@@ -1747,7 +1747,7 @@ msgstr "Napravi natuknicu za kategoriju %1"
 
 #: share/html/Admin/Global/Template.html:87 share/html/Admin/Queues/Template.html:88
 msgid "Create a template"
-msgstr "Napravi predloæak"
+msgstr "Napravi predlo≈æak"
 
 #: share/html/SelfService/Create.html:48 share/html/SelfService/CreateTicketInQueue.html:48
 msgid "Create a ticket"
@@ -1755,11 +1755,11 @@ msgstr "Napravi novi zahtjev"
 
 #: NOT FOUND IN SOURCE
 msgid "Create an article"
-msgstr "Napravi Ëlanak"
+msgstr "Napravi ƒçlanak"
 
 #: NOT FOUND IN SOURCE
 msgid "Create an article in class..."
-msgstr "Napravi Ëlanak u klasi..."
+msgstr "Napravi ƒçlanak u klasi..."
 
 #: lib/RT/Dashboard.pm:76
 msgid "Create and modify dashboards"
@@ -1775,7 +1775,7 @@ msgstr "Napravi nove zahtjeve temeljene na ovoj natuknici"
 
 #: share/html/SelfService/Create.html:109
 msgid "Create ticket"
-msgstr "Poπalji zahtjev"
+msgstr "Po≈°alji zahtjev"
 
 #: lib/RT/Queue_Overlay.pm:109
 msgid "Create tickets in this queue"
@@ -1791,7 +1791,7 @@ msgstr "Praviti, brisati i mijenjati kategorije"
 
 #: lib/RT/System.pm:84
 msgid "Create, delete and modify the members of personal groups"
-msgstr "Praviti, brisati i mijenjati Ëlanove osobnih grupa"
+msgstr "Praviti, brisati i mijenjati ƒçlanove osobnih grupa"
 
 #: lib/RT/System.pm:85
 msgid "Create, delete and modify users"
@@ -1849,7 +1849,7 @@ msgstr "Trenutne natuknice"
 
 #: share/html/Admin/Groups/Members.html:62 share/html/User/Groups/Members.html:65
 msgid "Current members"
-msgstr "Trenutni Ëlanovi"
+msgstr "Trenutni ƒçlanovi"
 
 #: share/html/Admin/Elements/SelectRights:53
 msgid "Current rights"
@@ -1882,7 +1882,7 @@ msgstr "Vlastita polja za %1"
 
 #: share/html/Admin/Elements/EditScrip:116
 msgid "Custom action cleanup code"
-msgstr "Definirani kod ciπcenja"
+msgstr "Definirani kod ci≈°cenja"
 
 #: share/html/Admin/Elements/EditScrip:109
 msgid "Custom action preparation code"
@@ -1915,7 +1915,7 @@ msgstr "Definirano polje %1 nema vrijednost."
 #: lib/RT/Record.pm:1511 lib/RT/Record.pm:1693
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
-msgstr "Definirano polje %1 nije pronaeno"
+msgstr "Definirano polje %1 nije pronaƒëeno"
 
 #: lib/RT/Report/Tickets.pm:120 lib/RT/Report/Tickets.pm:123
 #. ($cf)
@@ -1929,12 +1929,12 @@ msgstr "Definirano polje obrisano"
 
 #: NOT FOUND IN SOURCE
 msgid "Custom field not found"
-msgstr "Definirano polje nije pronaeno"
+msgstr "Definirano polje nije pronaƒëeno"
 
 #: lib/RT/CustomField_Overlay.pm:1050
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
-msgstr "Vrijednost %1 vlastitog polja %2 nije moglo biti pronaeno"
+msgstr "Vrijednost %1 vlastitog polja %2 nije moglo biti pronaƒëeno"
 
 #: lib/RT/CustomField_Overlay.pm:402
 msgid "Custom field value could not be deleted"
@@ -1942,7 +1942,7 @@ msgstr "Vrijednost vlastitog polja se nije mogla obrisati"
 
 #: lib/RT/CustomField_Overlay.pm:1062
 msgid "Custom field value could not be found"
-msgstr "Vrijednost vlastitog polja nije mogla biti pronaena"
+msgstr "Vrijednost vlastitog polja nije mogla biti pronaƒëena"
 
 #: lib/RT/CustomField_Overlay.pm:1064 lib/RT/CustomField_Overlay.pm:404
 msgid "Custom field value deleted"
@@ -2029,7 +2029,7 @@ msgstr ""
 
 #: etc/initialdata:191
 msgid "Default Autoresponse template"
-msgstr "Standardni predloæak automatskog odgovora"
+msgstr "Standardni predlo≈æak automatskog odgovora"
 
 #: share/html/Tools/Offline.html:62
 msgid "Default Queue"
@@ -2037,23 +2037,23 @@ msgstr "Standardna kategorija"
 
 #: share/html/Tools/Offline.html:71
 msgid "Default Requestor"
-msgstr "Standardni traæitelj"
+msgstr "Standardni tra≈æitelj"
 
 #: etc/initialdata:265
 msgid "Default admin comment template"
-msgstr "Standardni predloæak adminskog komentara"
+msgstr "Standardni predlo≈æak adminskog komentara"
 
 #: etc/initialdata:244
 msgid "Default admin correspondence template"
-msgstr "Standardni predloæak adminske korespondencije"
+msgstr "Standardni predlo≈æak adminske korespondencije"
 
 #: etc/initialdata:256
 msgid "Default correspondence template"
-msgstr "Standardni predloæak korespondencije"
+msgstr "Standardni predlo≈æak korespondencije"
 
 #: etc/initialdata:222
 msgid "Default transaction template"
-msgstr "Standardni predloæak transakcije"
+msgstr "Standardni predlo≈æak transakcije"
 
 #: share/html/Widgets/Form/Integer:71 share/html/Widgets/Form/String:69
 #. ($DefaultValue)
@@ -2075,11 +2075,11 @@ msgstr "Proslijediti ovlasti koje su vam dodijeljene"
 
 #: lib/RT/Group_Overlay.pm:91 lib/RT/System.pm:88
 msgid "DelegateRights"
-msgstr "ProsljeivanjeOvlasti"
+msgstr "ProsljeƒëivanjeOvlasti"
 
 #: share/html/User/Elements/Tabs:61
 msgid "Delegation"
-msgstr "ProsljeivanjeOvlasti"
+msgstr "ProsljeƒëivanjeOvlasti"
 
 #: share/html/Admin/Elements/EditScrips:73 share/html/Search/Elements/EditFormat:99 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:67 share/html/Widgets/SelectionBox:212
 msgid "Delete"
@@ -2087,11 +2087,11 @@ msgstr "Brisati"
 
 #: share/html/Admin/Elements/EditTemplates:72
 msgid "Delete Template"
-msgstr "Obrisati predloæak"
+msgstr "Obrisati predlo≈æak"
 
 #: NOT FOUND IN SOURCE
 msgid "Delete article #%1"
-msgstr "Obrisati Ëlanak #%1"
+msgstr "Obrisati ƒçlanak #%1"
 
 #: lib/RT/SharedSetting.pm:230
 #. ($msg)
@@ -2125,7 +2125,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Deleting this object could break referential integrity"
-msgstr "Brisanje ovog objekta moæe ugroziti referencijalni integritet"
+msgstr "Brisanje ovog objekta mo≈æe ugroziti referencijalni integritet"
 
 #: lib/RT/Queue_Overlay.pm:378
 msgid "Deleting this object would break referential integrity"
@@ -2177,7 +2177,7 @@ msgstr "Padajuce"
 
 #: share/html/SelfService/Create.html:104 share/html/Ticket/Create.html:161
 msgid "Describe the issue below"
-msgstr "Opiπi problem ispod"
+msgstr "Opi≈°i problem ispod"
 
 #: share/html/Admin/CustomFields/Modify.html:64 share/html/Admin/Elements/AddCustomFieldValue:55 share/html/Admin/Elements/EditCustomField:62 share/html/Admin/Elements/EditCustomFieldValues:59 share/html/Admin/Elements/EditScrip:57 share/html/Admin/Elements/ModifyTemplate:59 share/html/Admin/Groups/Modify.html:73 share/html/Admin/Queues/Modify.html:66 share/html/Search/Elements/EditSearches:59 share/html/User/Groups/Modify.html:72
 msgid "Description"
@@ -2197,31 +2197,31 @@ msgstr "Prikazati"
 
 #: lib/RT/Queue_Overlay.pm:93
 msgid "Display Access Control List"
-msgstr "Prikaæi listu konrole pristupa"
+msgstr "Prika≈æi listu konrole pristupa"
 
 #: share/html/Search/Elements/DisplayOptions:99
 msgid "Display Columns"
-msgstr "Prikaæi stupce"
+msgstr "Prika≈æi stupce"
 
 #: lib/RT/Queue_Overlay.pm:99
 msgid "Display Scrip templates for this queue"
-msgstr "Prikaæi predloπke natuknica za ovu kategoriju"
+msgstr "Prika≈æi predlo≈°ke natuknica za ovu kategoriju"
 
 #: lib/RT/Queue_Overlay.pm:102
 msgid "Display Scrips for this queue"
-msgstr "Prikaæi natuknice za ovu kategoriju"
+msgstr "Prika≈æi natuknice za ovu kategoriju"
 
 #: NOT FOUND IN SOURCE
 msgid "Display mode"
-msgstr "NaËin prikaza"
+msgstr "Naƒçin prikaza"
 
 #: lib/RT/Group_Overlay.pm:94
 msgid "Display saved searches for this group"
-msgstr "Prikaæi spemljene pretrage za ovu grupu"
+msgstr "Prika≈æi spemljene pretrage za ovu grupu"
 
 #: NOT FOUND IN SOURCE
 msgid "Display ticket #%1"
-msgstr "Prikaæi zahtjev br. %1"
+msgstr "Prika≈æi zahtjev br. %1"
 
 #: share/html/Elements/Footer:64
 msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
@@ -2233,11 +2233,11 @@ msgstr "Ucini bilo sto i sve"
 
 #: NOT FOUND IN SOURCE
 msgid "Do the Search"
-msgstr "Pretraæiti"
+msgstr "Pretra≈æiti"
 
 #: share/html/Elements/Refresh:53
 msgid "Don't refresh this page."
-msgstr "Ne osvjeæavaj ovu stranicu."
+msgstr "Ne osvje≈æavaj ovu stranicu."
 
 #: NOT FOUND IN SOURCE
 msgid "Don't show search results"
@@ -2257,11 +2257,11 @@ msgstr "Spremiti kao tabom odvojenu datoteku"
 
 #: lib/RT/Ticket_Overlay.pm:904 share/html/Elements/SelectDateType:55 share/html/Ticket/Create.html:215 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:140 share/html/Ticket/Elements/ShowDates:66
 msgid "Due"
-msgstr "Rijeπiti do"
+msgstr "Rije≈°iti do"
 
 #: NOT FOUND IN SOURCE
 msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
-msgstr "GRE©KA: Zahtjev '%1' se nije mogao uËitati: %2.\\n"
+msgstr "GRE≈†KA: Zahtjev '%1' se nije mogao uƒçitati: %2.\\n"
 
 #: share/html/Ticket/Elements/ShowTransaction:218
 msgid "Ecnrypt/Decrypt"
@@ -2315,7 +2315,7 @@ msgstr ""
 #: share/html/Admin/Queues/Templates.html:65
 #. ($QueueObj->Name)
 msgid "Edit Templates for queue %1"
-msgstr "Uredi predloπke za kategoriju %1"
+msgstr "Uredi predlo≈°ke za kategoriju %1"
 
 #: lib/RT/Group_Overlay.pm:93
 msgid "Edit saved searches for this group"
@@ -2323,7 +2323,7 @@ msgstr "Uredi spremljene potrage za ovu grupu"
 
 #: share/html/Admin/Global/index.html:61
 msgid "Edit system templates"
-msgstr "Uredi sistemske predloπke"
+msgstr "Uredi sistemske predlo≈°ke"
 
 #: lib/RT/Group_Overlay.pm:93
 msgid "EditSavedSearches"
@@ -2335,32 +2335,32 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Editing Configuration for Class %1"
-msgstr "Ureivanje postavki za klasu %1"
+msgstr "Ureƒëivanje postavki za klasu %1"
 
 #: share/html/Admin/Queues/Modify.html:152
 #. ($QueueObj->Name)
 msgid "Editing Configuration for queue %1"
-msgstr "Ureivanje postavki za kategoriju %1"
+msgstr "Ureƒëivanje postavki za kategoriju %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Editing Configuration for user %1"
-msgstr "Ureivanje postavki za korisnika %1"
+msgstr "Ureƒëivanje postavki za korisnika %1"
 
 #: share/html/Admin/CustomFields/Modify.html:154 share/html/Admin/Elements/EditCustomField:122
 #. ($CustomFieldObj->Name())
 #. ($CustomFieldObj->Name)
 msgid "Editing CustomField %1"
-msgstr "Ureivanje vlastita polja %1"
+msgstr "Ureƒëivanje vlastita polja %1"
 
 #: share/html/Admin/Groups/Members.html:57
 #. ($Group->Name)
 msgid "Editing membership for group %1"
-msgstr "Ureivanje Ëlanstva za grupu %1"
+msgstr "Ureƒëivanje ƒçlanstva za grupu %1"
 
 #: share/html/User/Groups/Members.html:152
 #. ($Group->Name)
 msgid "Editing membership for personal group %1"
-msgstr "Ureivanje Ëlanstva za osobnu grupu %1"
+msgstr "Ureƒëivanje ƒçlanstva za osobnu grupu %1"
 
 #: lib/RT/Record.pm:1222 lib/RT/Record.pm:1299 lib/RT/Ticket_Overlay.pm:2212 lib/RT/Ticket_Overlay.pm:2307
 msgid "Either base or target must be specified"
@@ -2386,7 +2386,7 @@ msgstr ""
 msgid "EmailAddress"
 msgstr "E-Mail adresa"
 
-### muss das ƒ`≈∫berhaupt ƒ`≈∫bersetzt werden???
+### muss das √Ñ`ƒπ≈überhaupt √Ñ`ƒπ≈übersetzt werden???
 #: NOT FOUND IN SOURCE
 msgid "EmailEncoding"
 msgstr "E-MailKodiranje"
@@ -2399,7 +2399,7 @@ msgstr ""
 msgid "Enabled (Unchecking this box disables this Class)"
 msgstr "Aktivirano (Uklanjanje oznake deaktivira ovu klasu)"
 
-### muss das ƒ`≈∫berhaupt ƒ`≈∫bersetzt werden???
+### muss das √Ñ`ƒπ≈überhaupt √Ñ`ƒπ≈übersetzt werden???
 #: share/html/Admin/CustomFields/Modify.html:113 share/html/Admin/Elements/EditCustomField:74
 msgid "Enabled (Unchecking this box disables this custom field)"
 msgstr "Aktivirano (Uklanjanje oznake deaktivira ovo vlastito polje)"
@@ -2456,7 +2456,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Enter Articles or URIs to link Articles to. Seperate multiple entries with spaces."
-msgstr "Unesi Ëlanke ili URI-je na koje se Ëlanci vezu. Visestruke unose razdvoji razmacima."
+msgstr "Unesi ƒçlanke ili URI-je na koje se ƒçlanci vezu. Visestruke unose razdvoji razmacima."
 
 #: lib/RT/CustomField_Overlay.pm:65
 msgid "Enter multiple values"
@@ -2500,31 +2500,31 @@ msgstr ""
 
 #: sbin/rt-send-digest:34 share/html/Elements/Login:79 share/html/SelfService/Error.html:48 share/html/SelfService/Error.html:49
 msgid "Error"
-msgstr "Greπka"
+msgstr "Gre≈°ka"
 
 #: lib/RT/Queue_Overlay.pm:727
 msgid "Error in parameters to Queue->AddWatcher"
-msgstr "Greπka u parametrima za Kategorija->DodajPromatraËa"
+msgstr "Gre≈°ka u parametrima za Kategorija->DodajPromatraƒça"
 
 #: NOT FOUND IN SOURCE
 msgid "Error in parameters to Queue->DelWatcher"
-msgstr "Greπka u parametrima za Kategorija->BriπiPromatraËa"
+msgstr "Gre≈°ka u parametrima za Kategorija->Bri≈°iPromatraƒça"
 
 #: lib/RT/Queue_Overlay.pm:891
 msgid "Error in parameters to Queue->DeleteWatcher"
-msgstr "Greπka u parametrima za Kategorija->BriπiPromatraËa"
+msgstr "Gre≈°ka u parametrima za Kategorija->Bri≈°iPromatraƒça"
 
 #: lib/RT/Ticket_Overlay.pm:1068
 msgid "Error in parameters to Ticket->AddWatcher"
-msgstr "Greπka u parametrima za Zahtjev->DodajPromatraËa"
+msgstr "Gre≈°ka u parametrima za Zahtjev->DodajPromatraƒça"
 
 #: NOT FOUND IN SOURCE
 msgid "Error in parameters to Ticket->DelWatcher"
-msgstr "Greπka u parametrima za Zahtjev->BriπiPromatraËa"
+msgstr "Gre≈°ka u parametrima za Zahtjev->Bri≈°iPromatraƒça"
 
 #: lib/RT/Ticket_Overlay.pm:1216
 msgid "Error in parameters to Ticket->DeleteWatcher"
-msgstr "Greπka u parametrima za Zahtjev->BriπiPromatraËa"
+msgstr "Gre≈°ka u parametrima za Zahtjev->Bri≈°iPromatraƒça"
 
 #: etc/initialdata:371 etc/upgrade/3.7.10/content:13
 msgid "Error to RT owner: public key"
@@ -2580,11 +2580,11 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Extract article from ticket #%1"
-msgstr "Izvadi Ëlanak iz zahtjeva br. %1"
+msgstr "Izvadi ƒçlanak iz zahtjeva br. %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Extract article from ticket #%1 into class %2"
-msgstr "Izvadi Ëlanak iz zahtjeva br. %1 u klasu %2"
+msgstr "Izvadi ƒçlanak iz zahtjeva br. %1 u klasu %2"
 
 #: etc/initialdata:98
 msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
@@ -2597,11 +2597,11 @@ msgstr ""
 
 #: lib/RT/User_Overlay.pm:290
 msgid "Failed to find 'Privileged' users pseudogroup."
-msgstr "Pseudogrupa 'Privilegirani' korisnici nije pronaena."
+msgstr "Pseudogrupa 'Privilegirani' korisnici nije pronaƒëena."
 
 #: lib/RT/User_Overlay.pm:297
 msgid "Failed to find 'Unprivileged' users pseudogroup"
-msgstr "Pseudogrupa 'Neprivilegirani' korisnici nije pronaena"
+msgstr "Pseudogrupa 'Neprivilegirani' korisnici nije pronaƒëena"
 
 #: lib/RT/SharedSetting.pm:130
 #. ($id)
@@ -2611,7 +2611,7 @@ msgstr ""
 #: bin/rt-crontool:247
 #. ($modname, $@)
 msgid "Failed to load module %1. (%2)"
-msgstr "Modul %1 nije mogao biti uËitan. (%2)"
+msgstr "Modul %1 nije mogao biti uƒçitan. (%2)"
 
 #: lib/RT/SharedSetting.pm:163
 #. ($privacy)
@@ -2684,23 +2684,23 @@ msgstr "Krajnji prioritet"
 
 #: NOT FOUND IN SOURCE
 msgid "Find group whose"
-msgstr "Pronai grupu Ëije"
+msgstr "Pronaƒëi grupu ƒçije"
 
 #: share/html/Admin/Groups/index.html:82 share/html/Admin/Queues/People.html:84 share/html/Ticket/Elements/EditPeople:57
 msgid "Find groups whose"
-msgstr "Pronai grupe Ëije"
+msgstr "Pronaƒëi grupe ƒçije"
 
 #: NOT FOUND IN SOURCE
 msgid "Find new/open tickets"
-msgstr "Pronai nove/otvorene zahtjeve"
+msgstr "Pronaƒëi nove/otvorene zahtjeve"
 
 #: share/html/Admin/Queues/People.html:80 share/html/Admin/Users/index.html:86 share/html/Ticket/Elements/EditPeople:53
 msgid "Find people whose"
-msgstr "Pronai ljude Ëije"
+msgstr "Pronaƒëi ljude ƒçije"
 
 #: share/html/Search/Results.html:146
 msgid "Find tickets"
-msgstr "Pronai zahtjeve"
+msgstr "Pronaƒëi zahtjeve"
 
 #: share/html/Ticket/Elements/Tabs:83
 msgid "First"
@@ -2753,11 +2753,11 @@ msgstr ""
 #: share/html/Search/Results.html:144
 #. ($ticketcount)
 msgid "Found %quant(%1,ticket)"
-msgstr "Pronaeno %quant(%1,ticket)"
+msgstr "Pronaƒëeno %quant(%1,ticket)"
 
 #: lib/RT/Record.pm:922
 msgid "Found Object"
-msgstr "Pronaen objekt"
+msgstr "Pronaƒëen objekt"
 
 #: NOT FOUND IN SOURCE
 msgid "Freeform"
@@ -2769,7 +2769,7 @@ msgstr "SlobodanKontaktInfo"
 
 #: NOT FOUND IN SOURCE
 msgid "FreeformMultiple"
-msgstr "SlobodanViπestrukiIzbor"
+msgstr "SlobodanVi≈°estrukiIzbor"
 
 #: NOT FOUND IN SOURCE
 msgid "FreeformSingle"
@@ -2797,7 +2797,7 @@ msgstr ""
 
 #: share/html/Tools/Offline.html:86
 msgid "Get template from file"
-msgstr "Preuzmi predloæak iz datoteke"
+msgstr "Preuzmi predlo≈æak iz datoteke"
 
 #: lib/RT/Transaction_Overlay.pm:673
 #. ($New->Name)
@@ -2824,7 +2824,7 @@ msgstr ""
 #: share/html/Admin/Elements/SelectTemplate:61
 #. (loc($Template->Name))
 msgid "Global template: %1"
-msgstr "Globalni predloæak: %1"
+msgstr "Globalni predlo≈æak: %1"
 
 #: share/html/Admin/Elements/UserTabs:76
 msgid "GnuPG"
@@ -2866,7 +2866,7 @@ msgstr "Idi na stranicu"
 
 #: share/html/Elements/GotoTicket:49 share/html/SelfService/Elements/GotoTicket:49
 msgid "Goto ticket"
-msgstr "Pokaæi zahtjev"
+msgstr "Poka≈æi zahtjev"
 
 #: share/html/Ticket/Elements/ShowSummary:97 share/html/Ticket/ModifyLinks.html:61
 msgid "Graph"
@@ -2886,7 +2886,7 @@ msgstr "Grupne ovlasti"
 
 #: NOT FOUND IN SOURCE
 msgid "Group already has member"
-msgstr "Grupa vec ima Ëlanove"
+msgstr "Grupa vec ima ƒçlanove"
 
 #: lib/RT/Group_Overlay.pm:975
 #. ($new_member_obj->Object->Name)
@@ -2904,11 +2904,11 @@ msgstr "Grupa napravljena"
 
 #: lib/RT/Group_Overlay.pm:1150
 msgid "Group has no such member"
-msgstr "Grupa ne sadræi takvog Ëlana"
+msgstr "Grupa ne sadr≈æi takvog ƒçlana"
 
 #: lib/RT/Group_Overlay.pm:955 lib/RT/Queue_Overlay.pm:789 lib/RT/Queue_Overlay.pm:864 lib/RT/Ticket_Overlay.pm:1108 lib/RT/Ticket_Overlay.pm:1188
 msgid "Group not found"
-msgstr "Grupa nije pronaena"
+msgstr "Grupa nije pronaƒëena"
 
 #: lib/RT/CustomField_Overlay.pm:1103 share/html/Admin/Elements/GlobalCustomFieldTabs:63 share/html/Admin/Elements/SelectNewGroupMembers:60 share/html/Admin/Elements/Tabs:58 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:87 share/html/Admin/Queues/People.html:108 share/html/Admin/index.html:63 share/html/User/Groups/Members.html:90
 msgid "Groups"
@@ -2916,7 +2916,7 @@ msgstr "Grupe"
 
 #: lib/RT/Group_Overlay.pm:981
 msgid "Groups can't be members of their members"
-msgstr "Grupe ne mogu biti Ëlanovi svojih Ëlanova"
+msgstr "Grupe ne mogu biti ƒçlanovi svojih ƒçlanova"
 
 #: share/html/Admin/Groups/index.html:96
 msgid "Groups matching search criteria"
@@ -2953,7 +2953,7 @@ msgstr "Povijest"
 
 #: NOT FOUND IN SOURCE
 msgid "History for article #%1"
-msgstr "Povijest za Ëlanak #%1"
+msgstr "Povijest za ƒçlanak #%1"
 
 #: share/html/Admin/Groups/History.html:64
 #. ($GroupObj->Name)
@@ -2971,7 +2971,7 @@ msgstr "KucniTelefon"
 
 #: share/html/Elements/Tabs:68
 msgid "Homepage"
-msgstr "PoËetna stranica"
+msgstr "Poƒçetna stranica"
 
 #: share/html/Dashboards/Subscription.html:101
 msgid "Hour"
@@ -3000,15 +3000,15 @@ msgstr "Identitet"
 
 #: etc/initialdata:490
 msgid "If an approval is rejected, reject the original and delete pending approvals"
-msgstr "Ako je odobrenje odbijeno, odbij original i pobriπi odobrenja na Ëekanju"
+msgstr "Ako je odobrenje odbijeno, odbij original i pobri≈°i odobrenja na ƒçekanju"
 
 #: share/html/Tools/Offline.html:75
 msgid "If no Requestor is specified, create tickets with this requestor."
-msgstr "Ako kreator nije odreen, napravi zahtjeve s ovim prijavitelj"
+msgstr "Ako kreator nije odreƒëen, napravi zahtjeve s ovim prijavitelj"
 
 #: share/html/Tools/Offline.html:66
 msgid "If no queue is specified, create tickets in this queue."
-msgstr "Ako kategorija nije odreena, napravi zahtjeve u ovoj kategoriji"
+msgstr "Ako kategorija nije odreƒëena, napravi zahtjeve u ovoj kategoriji"
 
 #: bin/rt-crontool:308
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
@@ -3016,7 +3016,7 @@ msgstr "Ako je ovaj alat 'setgid', neprijateljski lokalni korisnik bi mogao kori
 
 #: share/html/Admin/Queues/People.html:130 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:131 share/html/Ticket/ModifyPeople.html:63
 msgid "If you've updated anything above, be sure to"
-msgstr "Ako ste iπta mijenjali iznad, ne zaboravite kliknuti ovdje"
+msgstr "Ako ste i≈°ta mijenjali iznad, ne zaboravite kliknuti ovdje"
 
 #: lib/RT/Record.pm:913
 msgid "Illegal value for %1"
@@ -3032,19 +3032,19 @@ msgstr "Nepromjenjivo polje"
 
 #: NOT FOUND IN SOURCE
 msgid "Include disabled classes in listing."
-msgstr "Prikaæi i deaktivirane klase."
+msgstr "Prika≈æi i deaktivirane klase."
 
 #: share/html/Admin/CustomFields/index.html:86
 msgid "Include disabled custom fields in listing."
-msgstr "Prikaæi i deaktivirana vlastita polja."
+msgstr "Prika≈æi i deaktivirana vlastita polja."
 
 #: share/html/Admin/Groups/index.html:81
 msgid "Include disabled groups in listing."
-msgstr "Prikaæi i deaktivirane grupe"
+msgstr "Prika≈æi i deaktivirane grupe"
 
 #: share/html/Admin/Queues/index.html:72
 msgid "Include disabled queues in listing."
-msgstr "Prikaæi i deaktivirane kategorije."
+msgstr "Prika≈æi i deaktivirane kategorije."
 
 #: share/html/Admin/Users/index.html:88
 msgid "Include disabled users in search."
@@ -3096,7 +3096,7 @@ msgstr ""
 
 #: lib/RT/ScripAction_Overlay.pm:131
 msgid "Input error"
-msgstr "Greπka pri unosu"
+msgstr "Gre≈°ka pri unosu"
 
 #: lib/RT/CustomField_Overlay.pm:1055 lib/RT/CustomField_Overlay.pm:919 share/html/Elements/ValidateCustomFields:87
 #. ($CF->FriendlyPattern)
@@ -3110,24 +3110,24 @@ msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:3187
 msgid "Internal Error"
-msgstr "Interna greπka"
+msgstr "Interna gre≈°ka"
 
 #: lib/RT/Record.pm:294
 #. ($id->{error_message})
 msgid "Internal Error: %1"
-msgstr "Interna greπka: %1"
+msgstr "Interna gre≈°ka: %1"
 
 #: lib/RT/Group_Overlay.pm:607
 msgid "Invalid Group Type"
-msgstr "NevaæeÊa vrsta grupe"
+msgstr "Neva≈æeƒáa vrsta grupe"
 
 #: lib/RT/Principal_Overlay.pm:161
 msgid "Invalid Right"
-msgstr "NevaæeÊa ovlast"
+msgstr "Neva≈æeƒáa ovlast"
 
 #: lib/RT/Record.pm:918
 msgid "Invalid data"
-msgstr "NevaæeÊi podaci"
+msgstr "Neva≈æeƒái podaci"
 
 #: lib/RT/CustomField_Overlay.pm:912
 msgid "Invalid object"
@@ -3139,7 +3139,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Invalid owner. Defaulting to 'nobody'."
-msgstr "NevaæeÊi rjeπavatelj. Postavljeno na 'nobody'."
+msgstr "Neva≈æeƒái rje≈°avatelj. Postavljeno na 'nobody'."
 
 #: lib/RT/CustomField_Overlay.pm:206 lib/RT/CustomField_Overlay.pm:580
 #. ($msg)
@@ -3148,11 +3148,11 @@ msgstr ""
 
 #: lib/RT/Scrip_Overlay.pm:121 lib/RT/Template_Overlay.pm:221
 msgid "Invalid queue"
-msgstr "NevaæeÊa kategorija"
+msgstr "Neva≈æeƒáa kategorija"
 
 #: lib/RT/ACE_Overlay.pm:272
 msgid "Invalid right"
-msgstr "NevaæeÊa ovlast"
+msgstr "Neva≈æeƒáa ovlast"
 
 #: lib/RT/ACE_Overlay.pm:261
 msgid "Invalid right. Couldn't canonicalize right '$args{'RightName'}'"
@@ -3161,15 +3161,15 @@ msgstr ""
 #: lib/RT/Record.pm:269
 #. ($key)
 msgid "Invalid value for %1"
-msgstr "NevaæeÊa vijednost za %1"
+msgstr "Neva≈æeƒáa vijednost za %1"
 
 #: lib/RT/Record.pm:1532
 msgid "Invalid value for custom field"
-msgstr "NevaæeÊa vrijednost za vlastito polje"
+msgstr "Neva≈æeƒáa vrijednost za vlastito polje"
 
 #: lib/RT/Ticket_Overlay.pm:302
 msgid "Invalid value for status"
-msgstr "NevaæeÊa vrijednost za status"
+msgstr "Neva≈æeƒáa vrijednost za status"
 
 #: lib/RT/Attachment_Overlay.pm:690
 msgid "Is not encrypted"
@@ -3177,11 +3177,11 @@ msgstr ""
 
 #: bin/rt-crontool:309
 msgid "It is incredibly important that nonprivileged users not be allowed to run this tool."
-msgstr "Vrlo je vazno da neprivilegiranim korisnicima nije dopuπteno koristiti ovaj alat."
+msgstr "Vrlo je vazno da neprivilegiranim korisnicima nije dopu≈°teno koristiti ovaj alat."
 
 #: bin/rt-crontool:310
 msgid "It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool."
-msgstr "Preporucljivo je napraviti neprivilegiranog unix korisnika s ispravnim Ëlanstvom u grupi i RT pristupom za koristenje ovog alata."
+msgstr "Preporucljivo je napraviti neprivilegiranog unix korisnika s ispravnim ƒçlanstvom u grupi i RT pristupom za koristenje ovog alata."
 
 #: bin/rt-crontool:272
 msgid "It takes several arguments:"
@@ -3205,7 +3205,7 @@ msgstr ""
 
 #: lib/RT/Group_Overlay.pm:92
 msgid "Join or leave this group"
-msgstr "Pridruæi se ili napusti ovu grupu"
+msgstr "Pridru≈æi se ili napusti ovu grupu"
 
 #: lib/RT/Date.pm:94
 msgid "Jul"
@@ -3261,11 +3261,11 @@ msgstr "Posljednji kontaktiran"
 
 #: NOT FOUND IN SOURCE
 msgid "Last Notified"
-msgstr "Posljednji obavijeπten"
+msgstr "Posljednji obavije≈°ten"
 
 #: share/html/Elements/SelectDateType:53
 msgid "Last Updated"
-msgstr "Posljednje osvjeæavano"
+msgstr "Posljednje osvje≈æavano"
 
 #: share/html/Search/Elements/PickBasics:116
 msgid "Last updated by"
@@ -3273,7 +3273,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "LastUpdatedBy"
-msgstr "PosljednjeOsvjeæavanoOd"
+msgstr "PosljednjeOsvje≈æavanoOd"
 
 #: lib/RT/Installer.pm:86 share/html/Install/index.html:77
 msgid "Leave empty to use default value of the RDBMS"
@@ -3297,7 +3297,7 @@ msgstr "Dopustiti pristup RT-u ovom korisniku"
 
 #: share/html/Admin/Users/Modify.html:115
 msgid "Let this user be granted rights"
-msgstr "Dodijeliti viπe ovlasti ovom korisniku"
+msgstr "Dodijeliti vi≈°e ovlasti ovom korisniku"
 
 #: share/html/installation/index.html:71
 msgid "Let's go!"
@@ -3327,7 +3327,7 @@ msgstr "Link obrisan (%1)"
 
 #: lib/RT/Record.pm:1320
 msgid "Link not found"
-msgstr "Link nije pronaen"
+msgstr "Link nije pronaƒëen"
 
 #: share/html/Ticket/ModifyLinks.html:48 share/html/Ticket/ModifyLinks.html:52
 #. ($Ticket->Id)
@@ -3348,15 +3348,15 @@ msgstr "Linkovi"
 
 #: share/html/Search/Elements/EditSearches:79
 msgid "Load"
-msgstr "UËitati"
+msgstr "Uƒçitati"
 
 #: share/html/Search/Elements/EditSearches:77
 msgid "Load saved search:"
-msgstr "UËitati spremljenu pretragu"
+msgstr "Uƒçitati spremljenu pretragu"
 
 #: lib/RT/System.pm:90
 msgid "LoadSavedSearch"
-msgstr "UËitatiSpremljenuPretragu"
+msgstr "UƒçitatiSpremljenuPretragu"
 
 #: lib/RT/SharedSetting.pm:102
 #. ($self->ObjectName, $self->Name)
@@ -3370,7 +3370,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:65
 msgid "Loaded perl modules"
-msgstr "UËitani perl moduli"
+msgstr "Uƒçitani perl moduli"
 
 #: share/html/Search/Elements/EditSearches:167
 #. ($SavedSearch->{'Description'})
@@ -3387,7 +3387,7 @@ msgstr "Adresa"
 
 #: NOT FOUND IN SOURCE
 msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
-msgstr "Popis prijavljivanja %1 nije pronaen ili nije mogao biti ispisan.\\n RT se ne moæe pokrenuti."
+msgstr "Popis prijavljivanja %1 nije pronaƒëen ili nije mogao biti ispisan.\\n RT se ne mo≈æe pokrenuti."
 
 #: share/html/Elements/Header:85
 #. ("<span>".$session{'CurrentUser'}->Name."</span>")
@@ -3424,7 +3424,7 @@ msgstr ""
 
 #: share/html/Search/Bulk.html:86
 msgid "Make Owner"
-msgstr "Napravi rjeπavatelja"
+msgstr "Napravi rje≈°avatelja"
 
 #: share/html/Search/Bulk.html:110
 msgid "Make Status"
@@ -3436,15 +3436,15 @@ msgstr "Napravi datum"
 
 #: share/html/Search/Bulk.html:120
 msgid "Make date Resolved"
-msgstr "Napravi datum rjeπavanja"
+msgstr "Napravi datum rje≈°avanja"
 
 #: share/html/Search/Bulk.html:114
 msgid "Make date Started"
-msgstr "Napravi datum poËetka"
+msgstr "Napravi datum poƒçetka"
 
 #: share/html/Search/Bulk.html:112
 msgid "Make date Starts"
-msgstr "Napravi datum poËinjanja"
+msgstr "Napravi datum poƒçinjanja"
 
 #: share/html/Search/Bulk.html:116
 msgid "Make date Told"
@@ -3472,7 +3472,7 @@ msgstr "Upravljanje vlastitim poljima i njihovim vrijednostima"
 
 #: share/html/Admin/index.html:65
 msgid "Manage groups and group membership"
-msgstr "Upravljanje grupama i Ëlanstvom u grupama"
+msgstr "Upravljanje grupama i ƒçlanstvom u grupama"
 
 #: share/html/Admin/index.html:81
 msgid "Manage properties and configuration which apply to all queues"
@@ -3480,7 +3480,7 @@ msgstr "Upravljanje svojstvima i postavkama koji se primjenjuju na sve kategorij
 
 #: share/html/Admin/index.html:70
 msgid "Manage queues and queue-specific properties"
-msgstr "Upravljanje kategorijama i svojstvima specifiËnima za kategorije"
+msgstr "Upravljanje kategorijama i svojstvima specifiƒçnima za kategorije"
 
 #: share/html/Ticket/Graphs/index.html:67
 msgid "Manage saved graphs"
@@ -3525,16 +3525,16 @@ msgstr "Svi"
 #: lib/RT/Transaction_Overlay.pm:720
 #. ($value)
 msgid "Member %1 added"
-msgstr "Dodan Ëlan %1"
+msgstr "Dodan ƒçlan %1"
 
 #: lib/RT/Transaction_Overlay.pm:760
 #. ($value)
 msgid "Member %1 deleted"
-msgstr "Obrisan Ëlan %1"
+msgstr "Obrisan ƒçlan %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Member added"
-msgstr "Dodan Ëlan"
+msgstr "Dodan ƒçlan"
 
 #: lib/RT/Group_Overlay.pm:992
 #. ($new_member_obj->Object->Name)
@@ -3543,38 +3543,38 @@ msgstr ""
 
 #: lib/RT/Group_Overlay.pm:1157
 msgid "Member deleted"
-msgstr "Obrisan Ëlan"
+msgstr "Obrisan ƒçlan"
 
 #: lib/RT/Group_Overlay.pm:1161
 msgid "Member not deleted"
-msgstr "»lan nije obrisan"
+msgstr "ƒålan nije obrisan"
 
 #: share/html/Elements/SelectLinkType:49
 msgid "Member of"
-msgstr "»lan od"
+msgstr "ƒålan od"
 
 #: share/html/Admin/Elements/GroupTabs:65 share/html/User/Elements/GroupTabs:65
 msgid "Members"
-msgstr "»lanovi"
+msgstr "ƒålanovi"
 
 #: lib/RT/Transaction_Overlay.pm:717
 #. ($value)
 msgid "Membership in %1 added"
-msgstr "Dodano Ëlanstvo u %1"
+msgstr "Dodano ƒçlanstvo u %1"
 
 #: lib/RT/Transaction_Overlay.pm:757
 #. ($value)
 msgid "Membership in %1 deleted"
-msgstr "Obrisano Ëlanstvo u %1"
+msgstr "Obrisano ƒçlanstvo u %1"
 
 #: share/html/Admin/Elements/UserTabs:63
 msgid "Memberships"
-msgstr "»lanstva"
+msgstr "ƒålanstva"
 
 #: share/html/Admin/Users/Memberships.html:96
 #. ($UserObj->Name)
 msgid "Memberships of the user %1"
-msgstr "»lanstvo korisnika %1"
+msgstr "ƒålanstvo korisnika %1"
 
 #: lib/RT/Ticket_Overlay.pm:2583
 msgid "Merge Successful"
@@ -3615,7 +3615,7 @@ msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:2137
 msgid "Message could not be recorded"
-msgstr "Poruku nije bilo moguÊe zabiljeæiti"
+msgstr "Poruku nije bilo moguƒáe zabilje≈æiti"
 
 #: sbin/rt-send-digest:222
 msgid "Message for user"
@@ -3623,11 +3623,11 @@ msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:2140
 msgid "Message recorded"
-msgstr "Poruka zabiljeæena"
+msgstr "Poruka zabilje≈æena"
 
 #: share/html/Ticket/Elements/PreviewScrips:85
 msgid "Messages about this ticket will not be sent to..."
-msgstr "Poruke o ovom zahtjevu neÊe biti poslane..."
+msgstr "Poruke o ovom zahtjevu neƒáe biti poslane..."
 
 #: lib/RT/Installer.pm:147
 msgid "Minimum password length"
@@ -3639,11 +3639,11 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Mismatched parentheses"
-msgstr "Pogreπne zagrade"
+msgstr "Pogre≈°ne zagrade"
 
 #: lib/RT/Record.pm:920
 msgid "Missing a primary key?: %1"
-msgstr "%1: Nedostaje primarni kljuË?"
+msgstr "%1: Nedostaje primarni kljuƒç?"
 
 #: share/html/Admin/Users/Modify.html:196 share/html/User/Prefs.html:98
 msgid "Mobile"
@@ -3685,7 +3685,7 @@ msgstr "Promijeni grupne ovlasti"
 
 #: share/html/Admin/Groups/Members.html:107 share/html/User/Groups/Members.html:103
 msgid "Modify Members"
-msgstr "Promijeni Ëlanove"
+msgstr "Promijeni ƒçlanove"
 
 #: share/html/User/Delegation.html:60
 msgid "Modify Rights"
@@ -3693,7 +3693,7 @@ msgstr "Promijeni ovlasti"
 
 #: lib/RT/Queue_Overlay.pm:97
 msgid "Modify Scrip templates for this queue"
-msgstr "Promijeni predloπke natuknica za ovu kategoriju"
+msgstr "Promijeni predlo≈°ke natuknica za ovu kategoriju"
 
 #: lib/RT/Queue_Overlay.pm:100
 msgid "Modify Scrips for this queue"
@@ -3701,7 +3701,7 @@ msgstr "Promijeni natuknice za ovu kategoriju"
 
 #: share/html/Admin/Global/UserRights.html:73 share/html/Admin/Groups/UserRights.html:74 share/html/Admin/Queues/UserRights.html:75
 msgid "Modify User Rights"
-msgstr "Promijeni korisniËke ovlasti"
+msgstr "Promijeni korisniƒçke ovlasti"
 
 #: share/html/Admin/Queues/CustomField.html:68
 #. ($QueueObj->Name())
@@ -3723,7 +3723,7 @@ msgstr "Promijeni natuknice koji se primjenjuje na sve kategorije"
 
 #: NOT FOUND IN SOURCE
 msgid "Modify article #%1"
-msgstr "Promijeni Ëlanak #%1"
+msgstr "Promijeni ƒçlanak #%1"
 
 #: share/html/Admin/CustomFields/Objects.html:92
 #. ($CF->Name)
@@ -3758,15 +3758,15 @@ msgstr "Promijeni globalne grupne ovlasti."
 
 #: share/html/Admin/Global/UserRights.html:48 share/html/Admin/Global/UserRights.html:51 share/html/Admin/Global/index.html:75
 msgid "Modify global user rights"
-msgstr "Promijeni globalne korisniËke ovlasti"
+msgstr "Promijeni globalne korisniƒçke ovlasti"
 
 #: share/html/Admin/Global/UserRights.html:56
 msgid "Modify global user rights."
-msgstr "Promijeni globalne korisniËke ovlasti."
+msgstr "Promijeni globalne korisniƒçke ovlasti."
 
 #: lib/RT/Group_Overlay.pm:87
 msgid "Modify group metadata or delete group"
-msgstr "Promijeni grupne metapodatke ili obriπi grupu"
+msgstr "Promijeni grupne metapodatke ili obri≈°i grupu"
 
 #: share/html/Admin/CustomFields/GroupRights.html:108
 #. ($CustomFieldObj->Name)
@@ -3785,7 +3785,7 @@ msgstr "Promijeni grupne ovlasti za kategoriju %1"
 
 #: lib/RT/Group_Overlay.pm:89
 msgid "Modify membership roster for this group"
-msgstr "Promijeni popis Ëlanstva za ovu grupu"
+msgstr "Promijeni popis ƒçlanstva za ovu grupu"
 
 #: lib/RT/System.pm:86
 msgid "Modify one's own RT account"
@@ -3814,11 +3814,11 @@ msgstr "Promijeni natuknice koji se primjenjuju na sve kategorije"
 #: share/html/Admin/Global/Template.html:100 share/html/Admin/Queues/Template.html:101
 #. (loc($TemplateObj->Name()))
 msgid "Modify template %1"
-msgstr "Promijeni predloæak %1"
+msgstr "Promijeni predlo≈æak %1"
 
 #: share/html/Admin/Global/Templates.html:67
 msgid "Modify templates which apply to all queues"
-msgstr "Promijeni predloπke koji se primjenjuju na sve kategorije"
+msgstr "Promijeni predlo≈°ke koji se primjenjuju na sve kategorije"
 
 #: share/html/Dashboards/Modify.html:122
 #. ($Dashboard->Name)
@@ -3841,7 +3841,7 @@ msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:95
 msgid "Modify the queue watchers"
-msgstr "Promijeni promatraËe kategorije"
+msgstr "Promijeni promatraƒçe kategorije"
 
 #: share/html/Dashboards/Subscription.html:265
 #. ($DashboardObj->Name)
@@ -3870,17 +3870,17 @@ msgstr "Promijeni zahtjeve"
 #: share/html/Admin/CustomFields/UserRights.html:99
 #. ($CustomFieldObj->Name)
 msgid "Modify user rights for custom field %1"
-msgstr "Promijeni korisniËke ovlasti za vlastito polje %1"
+msgstr "Promijeni korisniƒçke ovlasti za vlastito polje %1"
 
 #: share/html/Admin/Groups/UserRights.html:48 share/html/Admin/Groups/UserRights.html:52 share/html/Admin/Groups/UserRights.html:58
 #. ($GroupObj->Name)
 msgid "Modify user rights for group %1"
-msgstr "Promijeni korisniËke ovlasti za grupu %1"
+msgstr "Promijeni korisniƒçke ovlasti za grupu %1"
 
 #: share/html/Admin/Queues/UserRights.html:48 share/html/Admin/Queues/UserRights.html:52
 #. ($QueueObj->Name)
 msgid "Modify user rights for queue %1"
-msgstr "Promijeni korisniËke ovlasti za kategoriju %1"
+msgstr "Promijeni korisniƒçke ovlasti za kategoriju %1"
 
 #: lib/RT/Queue_Overlay.pm:94
 msgid "ModifyACL"
@@ -3896,11 +3896,11 @@ msgstr ""
 
 #: lib/RT/Group_Overlay.pm:92
 msgid "ModifyOwnMembership"
-msgstr "PromijeniVlastito»lanstvo"
+msgstr "PromijeniVlastitoƒålanstvo"
 
 #: lib/RT/Queue_Overlay.pm:95
 msgid "ModifyQueueWatchers"
-msgstr "PromijeniPromatraËeKategorije"
+msgstr "PromijeniPromatraƒçeKategorije"
 
 #: lib/RT/Queue_Overlay.pm:100
 msgid "ModifyScrips"
@@ -3912,7 +3912,7 @@ msgstr "PromijeniSebe"
 
 #: lib/RT/Queue_Overlay.pm:97
 msgid "ModifyTemplate"
-msgstr "PromijeniPredloæak"
+msgstr "PromijeniPredlo≈æak"
 
 #: lib/RT/Queue_Overlay.pm:113
 msgid "ModifyTicket"
@@ -3929,7 +3929,7 @@ msgstr "Pon"
 #: share/html/Ticket/Elements/ShowRequestor:64
 #. ($name)
 msgid "More about %1"
-msgstr "Viπe o %1"
+msgstr "Vi≈°e o %1"
 
 #: share/html/Admin/Elements/PickCustomFields:85
 msgid "Move down"
@@ -3982,11 +3982,11 @@ msgstr "Ime"
 
 #: lib/RT/User_Overlay.pm:167
 msgid "Name in use"
-msgstr "KorisniËko ime se vec koristi"
+msgstr "Korisniƒçko ime se vec koristi"
 
 #: NOT FOUND IN SOURCE
 msgid "Name matches"
-msgstr "Ime sadræi"
+msgstr "Ime sadr≈æi"
 
 #: share/html/Install/index.html:84
 msgid "Name of the database"
@@ -4002,7 +4002,7 @@ msgstr "Novo"
 
 #: NOT FOUND IN SOURCE
 msgid "New Article"
-msgstr "Novi Ëlanak"
+msgstr "Novi ƒçlanak"
 
 #: share/html/Elements/EditLinks:118
 msgid "New Links"
@@ -4014,7 +4014,7 @@ msgstr "Nova lozinka"
 
 #: etc/initialdata:301
 msgid "New Pending Approval"
-msgstr "Nova odobrenja na Ëekanju"
+msgstr "Nova odobrenja na ƒçekanju"
 
 #: NOT FOUND IN SOURCE
 msgid "New Query"
@@ -4075,7 +4075,7 @@ msgstr "Nova natuknica"
 
 #: share/html/Admin/Global/Template.html:80 share/html/Admin/Global/Templates.html:62 share/html/Admin/Queues/Template.html:81 share/html/Admin/Queues/Templates.html:73
 msgid "New template"
-msgstr "Novi predloæak"
+msgstr "Novi predlo≈æak"
 
 #: share/html/SelfService/Elements/Tabs:87 share/html/SelfService/Elements/Tabs:91
 msgid "New ticket"
@@ -4103,15 +4103,15 @@ msgstr "Nove postavke prozora"
 
 #: share/html/Helpers/CalPopup.html:60 share/html/Install/index.html:322 share/html/Ticket/Elements/Tabs:94
 msgid "Next"
-msgstr "SljedeÊe"
+msgstr "Sljedeƒáe"
 
 #: share/html/Elements/CollectionList:98 share/html/Elements/TicketList:112
 msgid "Next Page"
-msgstr "SljedeÊa stranica"
+msgstr "Sljedeƒáa stranica"
 
 #: NOT FOUND IN SOURCE
 msgid "Next page"
-msgstr "SljedeÊa stranica"
+msgstr "Sljedeƒáa stranica"
 
 #: share/html/installation/DatabaseDetails.html:57
 msgid "Next: Check Database Connectivity"
@@ -4184,11 +4184,11 @@ msgstr "Nema kategorije"
 
 #: bin/rt-crontool:89
 msgid "No RT user found. Please consult your RT administrator.\\n"
-msgstr "Nije pronaen RT korisnik. Kontaktirajte svojeg RT administratora.\\n"
+msgstr "Nije pronaƒëen RT korisnik. Kontaktirajte svojeg RT administratora.\\n"
 
 #: share/html/Admin/Global/Template.html:98 share/html/Admin/Queues/Template.html:99
 msgid "No Template"
-msgstr "Nema predloπka"
+msgstr "Nema predlo≈°ka"
 
 #: NOT FOUND IN SOURCE
 msgid "No Ticket specified. Aborting ticket "
@@ -4275,7 +4275,7 @@ msgstr ""
 
 #: share/html/SelfService/Update.html:119
 msgid "No permission to view update ticket"
-msgstr "Nemate ovlasti za aæuriranje zahtjeva"
+msgstr "Nemate ovlasti za a≈æuriranje zahtjeva"
 
 #: lib/RT/Queue_Overlay.pm:837 lib/RT/Ticket_Overlay.pm:1167
 msgid "No principal specified"
@@ -4291,7 +4291,7 @@ msgstr ""
 
 #: share/html/Admin/Queues/index.html:58
 msgid "No queues matching search criteria found."
-msgstr "Nisu pronaene kategorije koji odgovaraju kriterijima pretrage"
+msgstr "Nisu pronaƒëene kategorije koji odgovaraju kriterijima pretrage"
 
 #: lib/RT/ACE_Overlay.pm:215
 msgid "No right specified"
@@ -4299,7 +4299,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/SelectRights:108
 msgid "No rights found"
-msgstr "Ovlasti nisu pronaene"
+msgstr "Ovlasti nisu pronaƒëene"
 
 #: share/html/Admin/Elements/SelectRights:55
 msgid "No rights granted."
@@ -4331,7 +4331,7 @@ msgstr ""
 
 #: share/html/Admin/Users/index.html:56
 msgid "No users matching search criteria found."
-msgstr "Nisu pronaeni korisnici koji odgovaraju kriterijima pretrage"
+msgstr "Nisu pronaƒëeni korisnici koji odgovaraju kriterijima pretrage"
 
 #: NOT FOUND IN SOURCE
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
@@ -4351,7 +4351,7 @@ msgstr ""
 
 #: lib/RT/Record.pm:917
 msgid "Nonexistant field?"
-msgstr "NepostojeÊe polje?"
+msgstr "Nepostojeƒáe polje?"
 
 #: share/html/Search/Chart:149 share/html/Search/Elements/Chart:90
 msgid "Not Set"
@@ -4371,15 +4371,15 @@ msgstr "Nije postavljeno"
 
 #: share/html/NoAuth/Reminder.html:50
 msgid "Not yet implemented."
-msgstr "Nije joπ implementirano."
+msgstr "Nije jo≈° implementirano."
 
 #: NOT FOUND IN SOURCE
 msgid "Not yet implemented...."
-msgstr "Nije joπ implementirano..."
+msgstr "Nije jo≈° implementirano..."
 
 #: share/html/Approvals/Elements/Approve:83
 msgid "Notes"
-msgstr "Biljeπke"
+msgstr "Bilje≈°ke"
 
 #: lib/RT/User_Overlay.pm:659
 msgid "Notification could not be sent"
@@ -4411,27 +4411,27 @@ msgstr "Obavijesti ostale primatelje u obliku komentara"
 
 #: etc/initialdata:40
 msgid "Notify Owner"
-msgstr "Obavijesti rjeπavatelja"
+msgstr "Obavijesti rje≈°avatelja"
 
 #: etc/initialdata:36
 msgid "Notify Owner as Comment"
-msgstr "Obavijesti rjeπavatelja u obliku komentara"
+msgstr "Obavijesti rje≈°avatelja u obliku komentara"
 
 #: etc/initialdata:345
 msgid "Notify Owner of their rejected ticket"
-msgstr "Obavijesti rjeπavatelja o odbijenim zahtjevima"
+msgstr "Obavijesti rje≈°avatelja o odbijenim zahtjevima"
 
 #: etc/initialdata:334
 msgid "Notify Owner of their ticket has been approved by all approvers"
-msgstr "Obavijesti rjeπavatelja da su svi odobrili zahtjev"
+msgstr "Obavijesti rje≈°avatelja da su svi odobrili zahtjev"
 
 #: etc/initialdata:322
 msgid "Notify Owner of their ticket has been approved by some approver"
-msgstr "Obavijesti rjeπavatelja da su neki odobrili zahtjev"
+msgstr "Obavijesti rje≈°avatelja da su neki odobrili zahtjev"
 
 #: etc/initialdata:303
 msgid "Notify Owners and AdminCcs of new items pending their approval"
-msgstr "Obavijesti rjeπavatelje i AdminCc-ove o odobrenjima na Ëekanju"
+msgstr "Obavijesti rje≈°avatelje i AdminCc-ove o odobrenjima na ƒçekanju"
 
 #: etc/initialdata:32
 msgid "Notify Requestors"
@@ -4475,11 +4475,11 @@ msgstr "Ili"
 
 #: lib/RT/Record.pm:308
 msgid "Object could not be created"
-msgstr "Objekt nije bilo moguÊe napraviti"
+msgstr "Objekt nije bilo moguƒáe napraviti"
 
 #: lib/RT/Record.pm:120
 msgid "Object could not be deleted"
-msgstr "Objekt nije bilo moguÊe obrisati"
+msgstr "Objekt nije bilo moguƒáe obrisati"
 
 #: lib/RT/Record.pm:327
 msgid "Object created"
@@ -4493,7 +4493,7 @@ msgstr "Objekt obrisan"
 #. ($ObjectType)
 #. ($LookupType)
 msgid "Object of type %1 cannot take custom fields"
-msgstr "Objekt tipa %1 ne moæe imati vlastita polja"
+msgstr "Objekt tipa %1 ne mo≈æe imati vlastita polja"
 
 #: lib/RT/CustomField_Overlay.pm:866
 msgid "Object type mismatch"
@@ -4517,7 +4517,7 @@ msgstr "Offline"
 
 #: share/html/Tools/Offline.html:51
 msgid "Offline edits"
-msgstr "Offline ureivanje"
+msgstr "Offline ureƒëivanje"
 
 #: share/html/Tools/Offline.html:48
 msgid "Offline upload"
@@ -4550,7 +4550,7 @@ msgstr "Pri pravljenju"
 
 #: etc/initialdata:142
 msgid "On Owner Change"
-msgstr "Pri promjeni rjeπavatelja"
+msgstr "Pri promjeni rje≈°avatelja"
 
 #: etc/initialdata:135 etc/upgrade/3.1.17/content:15
 msgid "On Priority Change"
@@ -4566,7 +4566,7 @@ msgstr ""
 
 #: etc/initialdata:156
 msgid "On Resolve"
-msgstr "Pri rjeπavanju"
+msgstr "Pri rje≈°avanju"
 
 #: etc/initialdata:127
 msgid "On Status Change"
@@ -4579,12 +4579,12 @@ msgstr "Pri transakciji"
 #: share/html/Approvals/Elements/PendingMyApproval:72
 #. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
 msgid "Only show approvals for requests created after %1"
-msgstr "Prikaæi samo odobrenja za zahtjeve napravljene nakon %1"
+msgstr "Prika≈æi samo odobrenja za zahtjeve napravljene nakon %1"
 
 #: share/html/Approvals/Elements/PendingMyApproval:70
 #. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
 msgid "Only show approvals for requests created before %1"
-msgstr "Prikaæi samo odobrenja za zahtjeve napravljene prije %1"
+msgstr "Prika≈æi samo odobrenja za zahtjeve napravljene prije %1"
 
 #: share/html/Admin/CustomFields/index.html:77
 msgid "Only show custom fields for:"
@@ -4657,11 +4657,11 @@ msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:611
 msgid "Outgoing email about a comment recorded"
-msgstr "Zabiljeæena odlazna poπta o komentaru"
+msgstr "Zabilje≈æena odlazna po≈°ta o komentaru"
 
 #: lib/RT/Transaction_Overlay.pm:615
 msgid "Outgoing email recorded"
-msgstr "Zabiljeæena odlazna poπta"
+msgstr "Zabilje≈æena odlazna po≈°ta"
 
 #: share/html/Admin/Queues/Modify.html:84
 msgid "Over time, priority moves toward"
@@ -4681,7 +4681,7 @@ msgstr "VlastitiZahtjev"
 
 #: lib/RT/ACE_Overlay.pm:99 lib/RT/Tickets_Overlay.pm:2013 share/html/Elements/QuickCreate:59 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Create.html:76 share/html/Ticket/Elements/EditBasics:63 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:135 share/html/Ticket/Elements/ShowPeople:50 share/html/Ticket/Update.html:70
 msgid "Owner"
-msgstr "Rjeπavatelj"
+msgstr "Rje≈°avatelj"
 
 #: lib/RT/Ticket_Overlay.pm:628
 #. ($DeferOwner->Name)
@@ -4691,11 +4691,11 @@ msgstr ""
 #: lib/RT/Ticket_Overlay.pm:2765
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
 msgid "Owner changed from %1 to %2"
-msgstr "Promjena rjeπavatelja od %1 u %2"
+msgstr "Promjena rje≈°avatelja od %1 u %2"
 
 #: lib/RT/Ticket_Overlay.pm:392
 msgid "Owner could not be set."
-msgstr "Nije moguÊe postaviti rjeπavatelja"
+msgstr "Nije moguƒáe postaviti rje≈°avatelja"
 
 #: lib/RT/Installer.pm:159
 msgid "Owner email"
@@ -4708,7 +4708,7 @@ msgstr "Vlasnik silom promijenjen od %1 u %2"
 
 #: NOT FOUND IN SOURCE
 msgid "Owner is"
-msgstr "Rjeπavatelj je"
+msgstr "Rje≈°avatelj je"
 
 #: share/html/Elements/CollectionList:87 share/html/Elements/TicketList:86
 #. ($Page, $pages)
@@ -4820,7 +4820,7 @@ msgstr "Brojevi telefona"
 
 #: NOT FOUND IN SOURCE
 msgid "Placeholder"
-msgstr "»uvar mjesta"
+msgstr "ƒåuvar mjesta"
 
 #: share/html/dhandler:51
 msgid "Please check the URL and try again."
@@ -4876,7 +4876,7 @@ msgstr "Prethodna stranica"
 #: lib/RT/ACE_Overlay.pm:146 lib/RT/ACE_Overlay.pm:235 lib/RT/ACE_Overlay.pm:340
 #. ($args{'PrincipalId'})
 msgid "Principal %1 not found."
-msgstr "Glavni parametar %1 nije pronaen."
+msgstr "Glavni parametar %1 nije pronaƒëen."
 
 #: sbin/rt-send-digest:27
 msgid "Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent"
@@ -4956,7 +4956,7 @@ msgstr "Kategorija"
 #. ($Queue)
 #. ($id)
 msgid "Queue %1 not found"
-msgstr "Kategorija %1 nije pronaena"
+msgstr "Kategorija %1 nije pronaƒëena"
 
 #: share/html/Admin/Queues/Modify.html:62
 msgid "Queue Name"
@@ -4968,11 +4968,11 @@ msgstr "Kategorija vec postoji"
 
 #: lib/RT/Queue_Overlay.pm:347 lib/RT/Queue_Overlay.pm:353
 msgid "Queue could not be created"
-msgstr "Kategoriju nije moguÊe napraviti"
+msgstr "Kategoriju nije moguƒáe napraviti"
 
 #: share/html/Ticket/Create.html:321 t/clicky.t:24 t/ticket/link_search.t:17
 msgid "Queue could not be loaded."
-msgstr "Kategorija se ne moæe uËitati"
+msgstr "Kategorija se ne mo≈æe uƒçitati"
 
 #: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:368 lib/RT/StyleGuide.pod:801
 msgid "Queue created"
@@ -4980,7 +4980,7 @@ msgstr "Kategorija napravljena"
 
 #: lib/RT/CustomField_Overlay.pm:196 share/html/SelfService/Display.html:129
 msgid "Queue not found"
-msgstr "Kategorija nije pronaena"
+msgstr "Kategorija nije pronaƒëena"
 
 #: share/html/Elements/GnuPG/SelectKeyForSigning:50 share/html/Elements/GnuPG/SelectKeyForSigning:54
 msgid "Queue's key"
@@ -5033,7 +5033,7 @@ msgstr ""
 
 #: share/html/Elements/Error:65 share/html/SelfService/Error.html:64
 msgid "RT Error"
-msgstr "RT greπka"
+msgstr "RT gre≈°ka"
 
 #: lib/RT/Installer.pm:135
 msgid "RT Name"
@@ -5075,11 +5075,11 @@ msgstr "Request Tracker za %1"
 
 #: NOT FOUND IN SOURCE
 msgid "RT has proccessed your commands"
-msgstr "RT je obradio vaπe naredbe"
+msgstr "RT je obradio va≈°e naredbe"
 
 #: NOT FOUND IN SOURCE
 msgid "RT is &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
-msgstr "RT je vlasniπtvo &copy; 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  Distribuira se pod <a href=\"http://www.gnu.org/copyleft/gpl.html\">Verzijom 2 GNU OpÊe Javne Licence.</a>"
+msgstr "RT je vlasni≈°tvo &copy; 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  Distribuira se pod <a href=\"http://www.gnu.org/copyleft/gpl.html\">Verzijom 2 GNU Opƒáe Javne Licence.</a>"
 
 #: share/html/Search/Simple.html:62
 msgid "RT will look for anything else you enter in ticket subjects."
@@ -5091,7 +5091,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "RTFM Error"
-msgstr "RTFM greπka"
+msgstr "RTFM gre≈°ka"
 
 #: share/html/Admin/Users/Modify.html:81 share/html/User/Prefs.html:71
 msgid "Real Name"
@@ -5135,12 +5135,12 @@ msgstr "Odnosi se na"
 
 #: NOT FOUND IN SOURCE
 msgid "Refine search"
-msgstr "Poboljπati pretragu"
+msgstr "Pobolj≈°ati pretragu"
 
 #: share/html/Elements/Refresh:59
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
-msgstr "Osvjeæi stranicu svakih %1 minuta."
+msgstr "Osvje≈æi stranicu svakih %1 minuta."
 
 #: lib/RT/Transaction_Overlay.pm:800
 #. ($ticket->Subject)
@@ -5225,7 +5225,7 @@ msgstr "Prijavitelji"
 
 #: share/html/Admin/Queues/Modify.html:88
 msgid "Requests should be due in"
-msgstr "Zahtjevi trebaju biti odraeni u"
+msgstr "Zahtjevi trebaju biti odraƒëeni u"
 
 #: lib/RT/Attribute_Overlay.pm:149
 #. ('Object')
@@ -5234,7 +5234,7 @@ msgstr "Trazeni parametar '%1' nije naveden"
 
 #: share/html/Elements/Submit:101
 msgid "Reset"
-msgstr "Vratiti na prijaπnje"
+msgstr "Vratiti na prija≈°nje"
 
 #: share/html/User/Prefs.html:186
 msgid "Reset secret authentication token"
@@ -5250,16 +5250,16 @@ msgstr "Doma"
 
 #: share/html/Ticket/Elements/Tabs:158
 msgid "Resolve"
-msgstr "Rijeπi"
+msgstr "Rije≈°i"
 
 #: share/html/Ticket/Update.html:178
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Resolve ticket #%1 (%2)"
-msgstr "Rijeπi zahtjev br. %1 (%2)"
+msgstr "Rije≈°i zahtjev br. %1 (%2)"
 
 #: etc/initialdata:292 lib/RT/Ticket_Overlay.pm:903 share/html/Elements/SelectDateType:51
 msgid "Resolved"
-msgstr "Rijeπeno"
+msgstr "Rije≈°eno"
 
 #: share/html/Tools/Reports/Elements/Tabs:57
 msgid "Resolved by owner"
@@ -5311,23 +5311,23 @@ msgstr "Ovlast dodijeljena"
 
 #: lib/RT/ACE_Overlay.pm:167
 msgid "Right Loaded"
-msgstr "Ovlast uËitana"
+msgstr "Ovlast uƒçitana"
 
 #: lib/RT/ACE_Overlay.pm:466 lib/RT/ACE_Overlay.pm:487
 msgid "Right could not be revoked"
-msgstr "Ovlasti nisu mogle biti poniπtene"
+msgstr "Ovlasti nisu mogle biti poni≈°tene"
 
 #: share/html/User/Delegation.html:87
 msgid "Right not found"
-msgstr "Ovlast nije pronaena"
+msgstr "Ovlast nije pronaƒëena"
 
 #: lib/RT/ACE_Overlay.pm:331 lib/RT/ACE_Overlay.pm:426
 msgid "Right not loaded."
-msgstr "Ovlast nije uËitana."
+msgstr "Ovlast nije uƒçitana."
 
 #: lib/RT/ACE_Overlay.pm:483
 msgid "Right revoked"
-msgstr "Ovlast poniπtena"
+msgstr "Ovlast poni≈°tena"
 
 #: NOT FOUND IN SOURCE
 msgid "Rights"
@@ -5340,7 +5340,7 @@ msgstr "Ovlasti nisu mogle biti odobrene za %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Rights could not be revoked for %1"
-msgstr "Ovlasti nisu mogle biti poniπtene za %1"
+msgstr "Ovlasti nisu mogle biti poni≈°tene za %1"
 
 #: share/html/Admin/Global/GroupRights.html:74 share/html/Admin/Queues/GroupRights.html:76
 msgid "Roles"
@@ -5435,7 +5435,7 @@ msgstr "Natuknice koji se primjenjuju na sve kategorije"
 
 #: share/html/Admin/Tools/Shredder/index.html:67 share/html/Elements/SimpleSearch:50 share/html/Search/Simple.html:67
 msgid "Search"
-msgstr "Traæi"
+msgstr "Tra≈æi"
 
 #: share/html/Prefs/SearchOptions.html:48 share/html/Prefs/SearchOptions.html:51
 msgid "Search Preferences"
@@ -5443,11 +5443,11 @@ msgstr ""
 
 #: share/html/Approvals/Elements/PendingMyApproval:61
 msgid "Search for approvals"
-msgstr "Traæi odobrenja"
+msgstr "Tra≈æi odobrenja"
 
 #: NOT FOUND IN SOURCE
 msgid "Search for articles"
-msgstr "Traæi Ëlanke"
+msgstr "Tra≈æi ƒçlanke"
 
 #: share/html/Search/Simple.html:77
 msgid "Search for tickets"
@@ -5496,7 +5496,7 @@ msgstr "Pogledaj privatne komentare zahtjeva"
 
 #: lib/RT/Queue_Overlay.pm:103
 msgid "See ticket summaries"
-msgstr "Pogledaj saæetke zahtjeva"
+msgstr "Pogledaj sa≈æetke zahtjeva"
 
 #: lib/RT/CustomField_Overlay.pm:112
 msgid "SeeCustomField"
@@ -5552,7 +5552,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/GlobalCustomFieldTabs:64 share/html/Admin/Global/CustomFields/index.html:72
 msgid "Select custom fields for all user groups"
-msgstr "Odaberi vlastita polja za sve korisniËke grupe"
+msgstr "Odaberi vlastita polja za sve korisniƒçke grupe"
 
 #: share/html/Admin/Elements/GlobalCustomFieldTabs:58 share/html/Admin/Global/CustomFields/index.html:67
 msgid "Select custom fields for all users"
@@ -5576,7 +5576,7 @@ msgstr "Odaberi grupu"
 
 #: lib/RT/CustomField_Overlay.pm:60
 msgid "Select multiple values"
-msgstr "Odaberi viπe vrijednosti"
+msgstr "Odaberi vi≈°e vrijednosti"
 
 #: lib/RT/CustomField_Overlay.pm:61
 msgid "Select one value"
@@ -5596,7 +5596,7 @@ msgstr "Odaberi natuknicu"
 
 #: share/html/Admin/Global/Template.html:77 share/html/Admin/Global/Templates.html:59 share/html/Admin/Queues/Template.html:78 share/html/Admin/Queues/Templates.html:70
 msgid "Select template"
-msgstr "Odaberi predloæak"
+msgstr "Odaberi predlo≈æak"
 
 #: lib/RT/CustomField_Overlay.pm:62
 msgid "Select up to %1 values"
@@ -5636,19 +5636,19 @@ msgstr ""
 
 #: etc/initialdata:76
 msgid "Send mail to all watchers"
-msgstr "Poπalji mail svim promatracima"
+msgstr "Po≈°alji mail svim promatracima"
 
 #: etc/initialdata:72
 msgid "Send mail to all watchers as a \"comment\""
-msgstr "Poπalji mail svim promatracima kao \"Kommentar\""
+msgstr "Po≈°alji mail svim promatracima kao \"Kommentar\""
 
 #: etc/initialdata:67
 msgid "Send mail to requestors and Ccs"
-msgstr "Poπalji mail prijaviteljima i CC-ovima"
+msgstr "Po≈°alji mail prijaviteljima i CC-ovima"
 
 #: etc/initialdata:62
 msgid "Send mail to requestors and Ccs as a comment"
-msgstr "Poπalji mail prijaviteljima i CC-ovima kao komentar"
+msgstr "Po≈°alji mail prijaviteljima i CC-ovima kao komentar"
 
 #: lib/RT/Installer.pm:183
 msgid "Sendmail arguments"
@@ -5664,31 +5664,31 @@ msgstr ""
 
 #: etc/initialdata:33
 msgid "Sends a message to the requestors"
-msgstr "©alje poruku prijaviteljima"
+msgstr "≈†alje poruku prijaviteljima"
 
 #: etc/initialdata:80 etc/initialdata:84
 msgid "Sends mail to explicitly listed Ccs and Bccs"
-msgstr "©alje mail CC-ovima i BCC-ovima s ovog popisa"
+msgstr "≈†alje mail CC-ovima i BCC-ovima s ovog popisa"
 
 #: etc/initialdata:49 etc/upgrade/3.1.17/content:7
 msgid "Sends mail to the Ccs"
-msgstr "©alje mail CC-ovima"
+msgstr "≈†alje mail CC-ovima"
 
 #: etc/initialdata:45 etc/upgrade/3.1.17/content:3
 msgid "Sends mail to the Ccs as a comment"
-msgstr "©alje mail CC-ovima kao komentar"
+msgstr "≈†alje mail CC-ovima kao komentar"
 
 #: etc/initialdata:57
 msgid "Sends mail to the administrative Ccs"
-msgstr "©alje mail administrativnim CC-ovima"
+msgstr "≈†alje mail administrativnim CC-ovima"
 
 #: etc/initialdata:53
 msgid "Sends mail to the administrative Ccs as a comment"
-msgstr "©alje mail administrativnim CC-ovima kao komentar"
+msgstr "≈†alje mail administrativnim CC-ovima kao komentar"
 
 #: etc/initialdata:37 etc/initialdata:41
 msgid "Sends mail to the owner"
-msgstr "©alje mail rjeπavatelju"
+msgstr "≈†alje mail rje≈°avatelju"
 
 #: lib/RT/Date.pm:96
 msgid "Sep"
@@ -5708,27 +5708,27 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowTransaction:174
 msgid "Show"
-msgstr "Pokaæi"
+msgstr "Poka≈æi"
 
 #: NOT FOUND IN SOURCE
 msgid "Show Approvals"
-msgstr "Pokaæi odobrenja"
+msgstr "Poka≈æi odobrenja"
 
 #: share/html/Search/Elements/EditFormat:54
 msgid "Show Columns"
-msgstr "Pokaæi stupce"
+msgstr "Poka≈æi stupce"
 
 #: share/html/Ticket/Elements/Tabs:225
 msgid "Show Results"
-msgstr "Pokaæi rezultate"
+msgstr "Poka≈æi rezultate"
 
 #: NOT FOUND IN SOURCE
 msgid "Show advanced search options..."
-msgstr "Pokaæi opcije za naprednu pretragu..."
+msgstr "Poka≈æi opcije za naprednu pretragu..."
 
 #: share/html/Approvals/Elements/PendingMyApproval:66
 msgid "Show approved requests"
-msgstr "Pokaæi odobrene zahtjeve"
+msgstr "Poka≈æi odobrene zahtjeve"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:63
 msgid "Show as well"
@@ -5736,15 +5736,15 @@ msgstr ""
 
 #: share/html/Ticket/Create.html:403
 msgid "Show basics"
-msgstr "Pokaæi osnove"
+msgstr "Poka≈æi osnove"
 
 #: share/html/Approvals/Elements/PendingMyApproval:67
 msgid "Show denied requests"
-msgstr "Pokaæi odbijene zahtjeve"
+msgstr "Poka≈æi odbijene zahtjeve"
 
 #: share/html/Ticket/Create.html:406
 msgid "Show details"
-msgstr "Pokaæi detalje"
+msgstr "Poka≈æi detalje"
 
 #: lib/RT/Config.pm:150
 msgid "Show oldest history first"
@@ -5752,51 +5752,51 @@ msgstr ""
 
 #: share/html/Approvals/Elements/PendingMyApproval:65
 msgid "Show pending requests"
-msgstr "Pokaæi zahtjeve na Ëekanju"
+msgstr "Poka≈æi zahtjeve na ƒçekanju"
 
 #: share/html/Approvals/Elements/PendingMyApproval:68
 msgid "Show requests awaiting other approvals"
-msgstr "Pokaæi zahtjeve koji cekaju druga odobrenja"
+msgstr "Poka≈æi zahtjeve koji cekaju druga odobrenja"
 
 #: NOT FOUND IN SOURCE
 msgid "Show ticket private commentary"
-msgstr "Pokaæi privatne komentare za zahtjev"
+msgstr "Poka≈æi privatne komentare za zahtjev"
 
 #: NOT FOUND IN SOURCE
 msgid "Show ticket summaries"
-msgstr "Pokaæi sazetke zahtjeva"
+msgstr "Poka≈æi sazetke zahtjeva"
 
 #: lib/RT/Queue_Overlay.pm:93
 msgid "ShowACL"
-msgstr "PokaæiACL-ove"
+msgstr "Poka≈æiACL-ove"
 
 #: lib/RT/System.pm:89
 msgid "ShowConfigTab"
-msgstr "PokaæiTabPostavki"
+msgstr "Poka≈æiTabPostavki"
 
 #: lib/RT/Queue_Overlay.pm:106
 msgid "ShowOutgoingEmail"
-msgstr "PokaæiOdlaznuPoπtu"
+msgstr "Poka≈æiOdlaznuPo≈°tu"
 
 #: lib/RT/Group_Overlay.pm:94
 msgid "ShowSavedSearches"
-msgstr "PokaæiSpremljenePretrage"
+msgstr "Poka≈æiSpremljenePretrage"
 
 #: lib/RT/Queue_Overlay.pm:102
 msgid "ShowScrips"
-msgstr "PokaæiNatuknice"
+msgstr "Poka≈æiNatuknice"
 
 #: lib/RT/Queue_Overlay.pm:99
 msgid "ShowTemplate"
-msgstr "PokaæiPredloπke"
+msgstr "Poka≈æiPredlo≈°ke"
 
 #: lib/RT/Queue_Overlay.pm:103
 msgid "ShowTicket"
-msgstr "PokaæiZahtjev"
+msgstr "Poka≈æiZahtjev"
 
 #: lib/RT/Queue_Overlay.pm:104
 msgid "ShowTicketComments"
-msgstr "PokaæiKomentareZahtjeva"
+msgstr "Poka≈æiKomentareZahtjeva"
 
 #: share/html/Admin/Elements/ToolTabs:60 share/html/Admin/Tools/Shredder/index.html:78
 msgid "Shredder"
@@ -5840,7 +5840,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/SelectSingleOrMultiple:49
 msgid "Single"
-msgstr "PojedinaËni"
+msgstr "Pojedinaƒçni"
 
 #: share/html/Search/Elements/EditFormat:72
 msgid "Size"
@@ -5900,15 +5900,15 @@ msgstr "Stadij"
 
 #: share/html/Elements/SelectDateType:50 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:58
 msgid "Started"
-msgstr "ZapoËeto"
+msgstr "Zapoƒçeto"
 
 #: share/html/Elements/SelectDateType:54 share/html/Ticket/Create.html:214 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:54
 msgid "Starts"
-msgstr "PoËinje"
+msgstr "Poƒçinje"
 
 #: share/html/Admin/Users/Modify.html:165 share/html/User/Prefs.html:151
 msgid "State"
-msgstr "Dræava"
+msgstr "Dr≈æava"
 
 #: lib/RT/Ticket_Overlay.pm:897 lib/RT/Tickets_Overlay.pm:1658 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:59 share/html/Ticket/Create.html:70 share/html/Ticket/Elements/EditBasics:55 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Update.html:67 share/html/Tools/MyDay.html:67
 msgid "Status"
@@ -5968,11 +5968,11 @@ msgstr ""
 
 #: share/html/Elements/Submit:87
 msgid "Submit"
-msgstr "Poπalji"
+msgstr "Po≈°alji"
 
 #: NOT FOUND IN SOURCE
 msgid "Submit Query"
-msgstr "Traæi"
+msgstr "Tra≈æi"
 
 #: share/html/Dashboards/Subscription.html:160
 msgid "Subscribe"
@@ -6007,7 +6007,7 @@ msgstr ""
 
 #: lib/RT/Group_Overlay.pm:713
 msgid "Succeeded"
-msgstr "Uspjeπno"
+msgstr "Uspje≈°no"
 
 #: lib/RT/Attachment_Overlay.pm:705
 msgid "Successfuly decrypted data"
@@ -6023,7 +6023,7 @@ msgstr "Sazetak"
 
 #: NOT FOUND IN SOURCE
 msgid "Summary matches"
-msgstr "Saæetak sadræi"
+msgstr "Sa≈æetak sadr≈æi"
 
 #: lib/RT/Date.pm:103 share/html/CalPopup.html:90
 msgid "Sun"
@@ -6051,7 +6051,7 @@ msgstr ""
 
 #: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:806 share/html/Admin/Elements/SelectRights:108
 msgid "System Error"
-msgstr "Greπka sistema"
+msgstr "Gre≈°ka sistema"
 
 #: lib/RT/Transaction_Overlay.pm:222 lib/RT/Transaction_Overlay.pm:228
 #. ($msg)
@@ -6064,11 +6064,11 @@ msgstr "Sistemski alati"
 
 #: lib/RT/ACE_Overlay.pm:404
 msgid "System error. Right not delegated."
-msgstr "Greπka sistema. Ovlast nije dodijeljena."
+msgstr "Gre≈°ka sistema. Ovlast nije dodijeljena."
 
 #: lib/RT/ACE_Overlay.pm:152 lib/RT/ACE_Overlay.pm:224 lib/RT/ACE_Overlay.pm:304
 msgid "System error. Right not granted."
-msgstr "Greπka sistema. Ovlast nije odobrena."
+msgstr "Gre≈°ka sistema. Ovlast nije odobrena."
 
 #: share/html/Admin/CustomFields/GroupRights.html:60 share/html/Admin/Global/GroupRights.html:58 share/html/Admin/Groups/GroupRights.html:60 share/html/Admin/Queues/GroupRights.html:59
 msgid "System groups"
@@ -6100,12 +6100,12 @@ msgstr "Preuzeti"
 
 #: share/html/Admin/Elements/EditScrip:74 share/html/Tools/Offline.html:79
 msgid "Template"
-msgstr "Predloæak"
+msgstr "Predlo≈æak"
 
 #: share/html/Admin/Global/Template.html:110 share/html/Admin/Queues/Template.html:115
 #. ($TemplateObj->Id())
 msgid "Template #%1"
-msgstr "Predloæak #%1"
+msgstr "Predlo≈æak #%1"
 
 #: share/html/Admin/Elements/EditTemplates:114
 #. ($id)
@@ -6119,7 +6119,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Template deleted"
-msgstr "Predloæak obrisan"
+msgstr "Predlo≈æak obrisan"
 
 #: lib/RT/Template_Overlay.pm:391
 msgid "Template is empty"
@@ -6131,11 +6131,11 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Template not found"
-msgstr "Predloæak nije pronaen"
+msgstr "Predlo≈æak nije pronaƒëen"
 
 #: lib/RT/Template_Overlay.pm:371
 msgid "Template parsed"
-msgstr "Predloæak analiziran"
+msgstr "Predlo≈æak analiziran"
 
 #: lib/RT/Template_Overlay.pm:434
 msgid "Template parsing error"
@@ -6143,11 +6143,11 @@ msgstr ""
 
 #: share/html/Admin/Elements/QueueTabs:72 share/html/Admin/Elements/SystemTabs:59 share/html/Admin/Global/index.html:60
 msgid "Templates"
-msgstr "Predloπci"
+msgstr "Predlo≈°ci"
 
 #: NOT FOUND IN SOURCE
 msgid "Templates for %1\\n"
-msgstr "Predloπci za %1\\n"
+msgstr "Predlo≈°ci za %1\\n"
 
 #: NOT FOUND IN SOURCE
 msgid "Text"
@@ -6195,7 +6195,7 @@ msgstr "Ta kategorija ne postoji"
 
 #: lib/RT/Ticket_Overlay.pm:2896
 msgid "That ticket has unresolved dependencies"
-msgstr "Taj zahtjev ima nerijeπene ovisnosti"
+msgstr "Taj zahtjev ima nerije≈°ene ovisnosti"
 
 #: NOT FOUND IN SOURCE
 msgid "That user already has that right"
@@ -6231,7 +6231,7 @@ msgstr "Ovom korisniku mozda ne pripadaju zahtjevi u toj kategoriji"
 
 #: lib/RT/Link_Overlay.pm:224
 msgid "That's not a numerical id"
-msgstr "To nije numeriËki Id"
+msgstr "To nije numeriƒçki Id"
 
 #: share/html/SelfService/Display.html:55 share/html/Ticket/Create.html:183 share/html/Ticket/Elements/ShowSummary:51
 msgid "The Basics"
@@ -6255,7 +6255,7 @@ msgstr "Administrativni CC zahtjeva"
 
 #: NOT FOUND IN SOURCE
 msgid "The comment has been recorded"
-msgstr "Komentar je zabiljeæen"
+msgstr "Komentar je zabilje≈æen"
 
 #: share/html/Install/index.html:68
 msgid "The domain name of your database server"
@@ -6267,11 +6267,11 @@ msgstr ""
 
 #: bin/rt-crontool:316
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
-msgstr "Sljedeca naredba Êe pronaci sve aktivne zahtjeve u kategoriji 'Opcenito' i postaviti njihov prioritet na 99 ako u zadnja 4 sata nije raeno na njima:"
+msgstr "Sljedeca naredba ƒáe pronaci sve aktivne zahtjeve u kategoriji 'Opcenito' i postaviti njihov prioritet na 99 ako u zadnja 4 sata nije raƒëeno na njima:"
 
 #: NOT FOUND IN SOURCE
 msgid "The following commands were not proccessed:\\n\\n"
-msgstr "SljedeÊe naredbe nisu odraene:\\n\\n"
+msgstr "Sljedeƒáe naredbe nisu odraƒëene:\\n\\n"
 
 #: lib/RT/Crypt/GnuPG.pm:2172
 msgid "The key has been disabled"
@@ -6307,7 +6307,7 @@ msgstr "Nova vrijednost je postavljena."
 
 #: lib/RT/ACE_Overlay.pm:99
 msgid "The owner of a ticket"
-msgstr "Rjeπavatelj zahtjeva"
+msgstr "Rje≈°avatelj zahtjeva"
 
 #: share/html/dhandler:50
 msgid "The page you requested could not be found"
@@ -6353,20 +6353,20 @@ msgstr ""
 
 #: share/html/Ticket/Elements/PreviewScrips:58
 msgid "This message will be sent to..."
-msgstr "Ova poruka Êe se poslati..."
+msgstr "Ova poruka ƒáe se poslati..."
 
 #: bin/rt-crontool:307
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
-msgstr "Ovaj alat dopuπta korisniku rad s proizvoljnim perl modulima iz RT-a."
+msgstr "Ovaj alat dopu≈°ta korisniku rad s proizvoljnim perl modulima iz RT-a."
 
 #: lib/RT/Transaction_Overlay.pm:325
 msgid "This transaction appears to have no content"
-msgstr "Ova transakcija vjerojatno nema sadræaja"
+msgstr "Ova transakcija vjerojatno nema sadr≈æaja"
 
 #: share/html/Ticket/Elements/ShowRequestor:73
 #. ($rows)
 msgid "This user's %1 highest priority tickets"
-msgstr "%1 Zahtjevi najviπeg prioriteta ovog korisnika"
+msgstr "%1 Zahtjevi najvi≈°eg prioriteta ovog korisnika"
 
 #: lib/RT/Date.pm:107 share/html/CalPopup.html:90
 msgid "Thu"
@@ -6379,7 +6379,7 @@ msgstr "Cet"
 #: share/html/Ticket/ModifyAll.html:48 share/html/Ticket/ModifyAll.html:52
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
-msgstr "Zahtjev br. %1 sve aæurirati: %2"
+msgstr "Zahtjev br. %1 sve a≈æurirati: %2"
 
 #: share/html/Ticket/Graphs/index.html:113
 #. ($id)
@@ -6428,7 +6428,7 @@ msgstr "Broj zahtjeva"
 
 #: etc/initialdata:293
 msgid "Ticket Resolved"
-msgstr "Zahtjev rijeπen"
+msgstr "Zahtjev rije≈°en"
 
 #: share/html/Elements/CollectionList:160
 msgid "Ticket Search"
@@ -6448,11 +6448,11 @@ msgstr "Sadzaj zahtjeva"
 
 #: lib/RT/Tickets_Overlay.pm:1976
 msgid "Ticket content type"
-msgstr "Tip sadræaja zahtjeva"
+msgstr "Tip sadr≈æaja zahtjeva"
 
 #: lib/RT/Ticket_Overlay.pm:484 lib/RT/Ticket_Overlay.pm:497 lib/RT/Ticket_Overlay.pm:508 lib/RT/Ticket_Overlay.pm:663
 msgid "Ticket could not be created due to an internal error"
-msgstr "Zahtjev nije mogao biti napravljen zbog interne greπke"
+msgstr "Zahtjev nije mogao biti napravljen zbog interne gre≈°ke"
 
 #: share/html/Ticket/Create.html:250
 msgid "Ticket could not be loaded"
@@ -6472,7 +6472,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket id not found"
-msgstr "Broj zahtjeva nije pronaen"
+msgstr "Broj zahtjeva nije pronaƒëen"
 
 #: share/html/Ticket/Display.html:62
 msgid "Ticket metadata"
@@ -6480,7 +6480,7 @@ msgstr "Metapodaci zahtjeva"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket not found"
-msgstr "Zahtjev nije pronaen"
+msgstr "Zahtjev nije pronaƒëen"
 
 #: etc/initialdata:279
 msgid "Ticket status changed"
@@ -6488,12 +6488,12 @@ msgstr "Status zahtjeva promijenjen"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket watchers"
-msgstr "PromatraËi zahtjeva"
+msgstr "Promatraƒçi zahtjeva"
 
 #: lib/RT/Search/FromSQL.pm:80
 #. (ref $self)
 msgid "TicketSQL search module"
-msgstr "TicketSQL pretraæivaËki modul"
+msgstr "TicketSQL pretra≈æivaƒçki modul"
 
 #: lib/RT/CustomField_Overlay.pm:1099 share/html/Admin/Elements/GlobalCustomFieldTabs:75 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:74 share/html/Search/Chart:113 share/html/Search/Elements/Chart:111
 msgid "Tickets"
@@ -6605,7 +6605,7 @@ msgstr "Transakcija"
 #: lib/RT/Transaction_Overlay.pm:794
 #. ($self->Data)
 msgid "Transaction %1 purged"
-msgstr "Transakcija %1 proËiπÊena"
+msgstr "Transakcija %1 proƒçi≈°ƒáena"
 
 #: lib/RT/Transaction_Overlay.pm:181
 msgid "Transaction Created"
@@ -6617,11 +6617,11 @@ msgstr "Transakcija vlastita polja"
 
 #: NOT FOUND IN SOURCE
 msgid "Transaction->Create couldn't, as you didn't specify a ticket id"
-msgstr "Transakcija->Napraviti nije izvrπeno jer nije naveden broj zahtjeva"
+msgstr "Transakcija->Napraviti nije izvr≈°eno jer nije naveden broj zahtjeva"
 
 #: lib/RT/Transaction_Overlay.pm:126
 msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
-msgstr "Transakcija->Napraviti nije izvrπeno jer nisu navedeni tip i id objekta"
+msgstr "Transakcija->Napraviti nije izvr≈°eno jer nisu navedeni tip i id objekta"
 
 #: lib/RT/Transaction_Overlay.pm:859
 msgid "Transactions are immutable"
@@ -6667,7 +6667,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Unable to load article"
-msgstr "»lanak nije moguÊe uËitati"
+msgstr "ƒålanak nije moguƒáe uƒçitati"
 
 #: sbin/rt-email-dashboards:192
 #. ($subscription->SubValue('DashboardId'),            $subscription->Id,            $currentuser->Name)
@@ -6689,7 +6689,7 @@ msgstr "Unix prijava"
 
 #: NOT FOUND IN SOURCE
 msgid "UnixUsername"
-msgstr "UnixKorisniËkoIme"
+msgstr "UnixKorisniƒçkoIme"
 
 #: lib/RT/Crypt/GnuPG.pm:2195 lib/RT/Crypt/GnuPG.pm:2200
 msgid "Unknown (no trust value assigned)"
@@ -6703,7 +6703,7 @@ msgstr ""
 #. ($self->ContentEncoding)
 #. ($ContentEncoding)
 msgid "Unknown ContentEncoding %1"
-msgstr "Nepoznato kodiranje sadræaja %1"
+msgstr "Nepoznato kodiranje sadr≈æaja %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Unknown field: $key"
@@ -6720,7 +6720,7 @@ msgstr ""
 
 #: share/html/Elements/SelectResultsPerPage:60
 msgid "Unlimited"
-msgstr "NeograniËeno"
+msgstr "Neograniƒçeno"
 
 #: share/html/Search/Elements/SelectSearchesForObjects:66
 msgid "Unnamed search"
@@ -6753,15 +6753,15 @@ msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:648
 msgid "Untaken"
-msgstr "VraÊeno"
+msgstr "Vraƒáeno"
 
 #: share/html/Admin/Elements/EditScrip:143 share/html/Admin/Users/Memberships.html:88 share/html/Elements/RT__Ticket/ColumnMap:275 share/html/Search/Bulk.html:197 share/html/Search/Bulk.html:79
 msgid "Update"
-msgstr "Aæuriraj"
+msgstr "A≈æuriraj"
 
 #: NOT FOUND IN SOURCE
 msgid "Update All"
-msgstr "Aæuriraj sve"
+msgstr "A≈æuriraj sve"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:113
 msgid "Update Graph"
@@ -6769,23 +6769,23 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Update ID"
-msgstr "ID aæuriranja"
+msgstr "ID a≈æuriranja"
 
 #: share/html/Ticket/Update.html:151
 msgid "Update Ticket"
-msgstr "Aæuriraj zahtjev"
+msgstr "A≈æuriraj zahtjev"
 
 #: share/html/Search/Bulk.html:130 share/html/Ticket/ModifyAll.html:90 share/html/Ticket/Update.html:86
 msgid "Update Type"
-msgstr "Tip aæuriranja"
+msgstr "Tip a≈æuriranja"
 
 #: NOT FOUND IN SOURCE
 msgid "Update all these tickets at once"
-msgstr "Aæuriraj sve ove zahtjeve oednom"
+msgstr "A≈æuriraj sve ove zahtjeve oƒëednom"
 
 #: NOT FOUND IN SOURCE
 msgid "Update email"
-msgstr "Aæuriraj email"
+msgstr "A≈æuriraj email"
 
 #: share/html/Search/Build.html:109
 msgid "Update format and Search"
@@ -6793,49 +6793,49 @@ msgstr ""
 
 #: share/html/Search/Bulk.html:204
 msgid "Update multiple tickets"
-msgstr "Aæuriraj viπe zahtjeva"
+msgstr "A≈æuriraj vi≈°e zahtjeva"
 
 #: NOT FOUND IN SOURCE
 msgid "Update name"
-msgstr "Aæuriraj ime"
+msgstr "A≈æuriraj ime"
 
 #: lib/RT/Action/CreateTickets.pm:523 lib/RT/Interface/Web.pm:654
 msgid "Update not recorded."
-msgstr "Aæuriranje nije zabiljeæeno."
+msgstr "A≈æuriranje nije zabilje≈æeno."
 
 #: NOT FOUND IN SOURCE
 msgid "Update selected tickets"
-msgstr "Aæuriraj odabrane zahtjeve"
+msgstr "A≈æuriraj odabrane zahtjeve"
 
 #: NOT FOUND IN SOURCE
 msgid "Update signature"
-msgstr "Aæuriraj potpis"
+msgstr "A≈æuriraj potpis"
 
 #: share/html/Ticket/ModifyAll.html:87
 msgid "Update ticket"
-msgstr "Aæuriraj zahtjev"
+msgstr "A≈æuriraj zahtjev"
 
 #: NOT FOUND IN SOURCE
 msgid "Update ticket # %1"
-msgstr "Aæuriraj zahtjev br. %1"
+msgstr "A≈æuriraj zahtjev br. %1"
 
 #: share/html/SelfService/Update.html:114 share/html/SelfService/Update.html:49
 #. ($Ticket->id)
 msgid "Update ticket #%1"
-msgstr "Aæuriraj zahtjev br. %1"
+msgstr "A≈æuriraj zahtjev br. %1"
 
 #: share/html/Ticket/Update.html:180
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Update ticket #%1 (%2)"
-msgstr "Aæuriraj zahtjev br. %1 (%2)"
+msgstr "A≈æuriraj zahtjev br. %1 (%2)"
 
 #: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:653
 msgid "Update type was neither correspondence nor comment."
-msgstr "Tip aæuriranja nije bio ni korespondencija ni komentar."
+msgstr "Tip a≈æuriranja nije bio ni korespondencija ni komentar."
 
 #: lib/RT/CustomField_Overlay.pm:1177 lib/RT/Ticket_Overlay.pm:902 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79
 msgid "Updated"
-msgstr "Aæurirano"
+msgstr "A≈æurirano"
 
 #: share/html/Search/Elements/EditSearches:229
 #. ($desc)
@@ -6844,35 +6844,35 @@ msgstr ""
 
 #: share/html/Tools/Offline.html:94
 msgid "Upload"
-msgstr "UËitaj s racunala"
+msgstr "Uƒçitaj s racunala"
 
 #: lib/RT/CustomField_Overlay.pm:85
 msgid "Upload multiple files"
-msgstr "UËitaj nekoliko datoteka s racunala"
+msgstr "Uƒçitaj nekoliko datoteka s racunala"
 
 #: lib/RT/CustomField_Overlay.pm:80
 msgid "Upload multiple images"
-msgstr "UËitaj nekoliko slika s racunala"
+msgstr "Uƒçitaj nekoliko slika s racunala"
 
 #: lib/RT/CustomField_Overlay.pm:86
 msgid "Upload one file"
-msgstr "UËitaj jednu datoteku s racunala"
+msgstr "Uƒçitaj jednu datoteku s racunala"
 
 #: lib/RT/CustomField_Overlay.pm:81
 msgid "Upload one image"
-msgstr "UËitaj jednu sliku s racunala"
+msgstr "Uƒçitaj jednu sliku s racunala"
 
 #: lib/RT/CustomField_Overlay.pm:87
 msgid "Upload up to %1 files"
-msgstr "UËitaj do %1 Datoteka s racunala"
+msgstr "Uƒçitaj do %1 Datoteka s racunala"
 
 #: lib/RT/CustomField_Overlay.pm:82
 msgid "Upload up to %1 images"
-msgstr "UËitaj do %1 slika s racunala"
+msgstr "Uƒçitaj do %1 slika s racunala"
 
 #: share/html/Tools/Offline.html:94
 msgid "Upload your changes"
-msgstr "UËitaj promjene"
+msgstr "Uƒçitaj promjene"
 
 #: sbin/rt-send-digest:19
 msgid "Usage: "
@@ -6898,12 +6898,12 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Use the dropdown menus to select which transactions you want to extract into a new RTFM article"
-msgstr "Koristi padajuÊe izbornike za odabir transakcija koje zeliπ ekstrahirati u novi RTFM Ëlanak"
+msgstr "Koristi padajuƒáe izbornike za odabir transakcija koje zeli≈° ekstrahirati u novi RTFM ƒçlanak"
 
 #: lib/RT/Ticket_Overlay.pm:393
 #. ($args{'Owner'})
 msgid "User '%1' could not be found."
-msgstr "Korisnik '%1' nije pronaen."
+msgstr "Korisnik '%1' nije pronaƒëen."
 
 #: share/html/Admin/Elements/ShowKeyInfo:65
 msgid "User (created - expire)"
@@ -6919,15 +6919,15 @@ msgstr "Uvjeti i radnje definirani od korisnika"
 
 #: NOT FOUND IN SOURCE
 msgid "User ID"
-msgstr "KorisniËki ID"
+msgstr "Korisniƒçki ID"
 
 #: NOT FOUND IN SOURCE
 msgid "User Id"
-msgstr "KorisniËki ID"
+msgstr "Korisniƒçki ID"
 
 #: share/html/Admin/Elements/CustomFieldTabs:74 share/html/Admin/Elements/GroupTabs:70 share/html/Admin/Elements/QueueTabs:87 share/html/Admin/Elements/SystemTabs:70 share/html/Admin/Global/index.html:74
 msgid "User Rights"
-msgstr "KorisniËke ovlasti"
+msgstr "Korisniƒçke ovlasti"
 
 #: lib/RT/Interface/Web.pm:1181
 #. ($cf->Name, ref $args{'Object'}, $args{'Object'}->id)
@@ -6937,7 +6937,7 @@ msgstr "Korisnik upitan o nepoznatom tipu updatea za vlastito polje %1 za %2 obj
 #: share/html/Admin/Users/Modify.html:306
 #. ($msg)
 msgid "User could not be created: %1"
-msgstr "Korisnika nije bilo moguÊe napraviti: %1"
+msgstr "Korisnika nije bilo moguƒáe napraviti: %1"
 
 #: lib/RT/User_Overlay.pm:264
 msgid "User created"
@@ -6953,11 +6953,11 @@ msgstr ""
 
 #: lib/RT/User_Overlay.pm:488 lib/RT/User_Overlay.pm:508
 msgid "User loaded"
-msgstr "korisnik uËitan"
+msgstr "korisnik uƒçitan"
 
 #: NOT FOUND IN SOURCE
 msgid "User view"
-msgstr "korisniËki pregled"
+msgstr "korisniƒçki pregled"
 
 #: share/html/Admin/Users/GnuPG.html:110
 msgid "User's GnuPG keys"
@@ -6969,7 +6969,7 @@ msgstr "Grupe definirane od korisnika"
 
 #: share/html/Admin/Users/Modify.html:71 share/html/Elements/Login:93 share/html/Ticket/Elements/AddWatchers:58
 msgid "Username"
-msgstr "KorisniËko ime"
+msgstr "Korisniƒçko ime"
 
 #: lib/RT/CustomField_Overlay.pm:1101 share/html/Admin/Elements/GlobalCustomFieldTabs:57 share/html/Admin/Elements/SelectNewGroupMembers:49 share/html/Admin/Elements/Tabs:55 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:77 share/html/Admin/Queues/People.html:91 share/html/Admin/index.html:58 share/html/User/Groups/Members.html:81
 msgid "Users"
@@ -7018,7 +7018,7 @@ msgstr "PromatrajKaoAdminCc"
 
 #: share/html/Admin/Elements/QueueTabs:65
 msgid "Watchers"
-msgstr "PromatraËi"
+msgstr "Promatraƒçi"
 
 #: NOT FOUND IN SOURCE
 msgid "WebEncoding"
@@ -7054,11 +7054,11 @@ msgstr "Kad je zahtjev napravljen"
 
 #: etc/initialdata:479
 msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
-msgstr "Kad je zahtjev napravljen, obavijesti rjeπavatelja i adminCc o predmetu koji ceka njihovo odobrenje"
+msgstr "Kad je zahtjev napravljen, obavijesti rje≈°avatelja i adminCc o predmetu koji ceka njihovo odobrenje"
 
 #: etc/initialdata:109
 msgid "When anything happens"
-msgstr "Kad se bilo πto dogodi"
+msgstr "Kad se bilo ≈°to dogodi"
 
 #: etc/initialdata:172 etc/upgrade/3.7.1/content:3
 msgid "Whenever a ticket is closed(inactivated)"
@@ -7070,11 +7070,11 @@ msgstr ""
 
 #: etc/initialdata:157
 msgid "Whenever a ticket is resolved"
-msgstr "Uvijek kad se rijeπi zahtjev"
+msgstr "Uvijek kad se rije≈°i zahtjev"
 
 #: etc/initialdata:143
 msgid "Whenever a ticket's owner changes"
-msgstr "Uvijek kad se promijeni rjeπavatelj zahtjeva"
+msgstr "Uvijek kad se promijeni rje≈°avatelj zahtjeva"
 
 #: etc/initialdata:136 etc/upgrade/3.1.17/content:16
 msgid "Whenever a ticket's priority changes"
@@ -7094,11 +7094,11 @@ msgstr "Uvijek kad se pojavi uvjet definiran od korisnika"
 
 #: etc/initialdata:122
 msgid "Whenever comments come in"
-msgstr "Uvijek kad uu komentari"
+msgstr "Uvijek kad uƒëu komentari"
 
 #: etc/initialdata:115
 msgid "Whenever correspondence comes in"
-msgstr "Uvijek kad ue korespondencija"
+msgstr "Uvijek kad uƒëe korespondencija"
 
 #: NOT FOUND IN SOURCE
 msgid "Which are referred to by "
@@ -7154,7 +7154,7 @@ msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:2704
 msgid "You can only reassign tickets that you own or that are unowned"
-msgstr "Moæete samo dodjeljivati zahtjeve koje posjedujete ili koji nemaju rjeπavatelja"
+msgstr "Mo≈æete samo dodjeljivati zahtjeve koje posjedujete ili koji nemaju rje≈°avatelja"
 
 #: lib/RT/Ticket_Overlay.pm:2700
 msgid "You can only take tickets that are unowned"
@@ -7163,7 +7163,7 @@ msgstr ""
 #: docs/design_docs/string-extraction-guide.txt:47 lib/RT/StyleGuide.pod:772
 #. ($num, $queue)
 msgid "You found %1 tickets in queue %2"
-msgstr "Naπli ste %1 zahtjeva u kategoriji %2"
+msgstr "Na≈°li ste %1 zahtjeva u kategoriji %2"
 
 #: share/html/NoAuth/Logout.html:55
 msgid "You have been logged out of RT."
@@ -7171,7 +7171,7 @@ msgstr "Odjavljeni ste iz RT-a."
 
 #: share/html/SelfService/Display.html:136
 msgid "You have no permission to create tickets in that queue."
-msgstr "Nemate dopuπtenje za pravljenje zahtjeva u toj kategoriji."
+msgstr "Nemate dopu≈°tenje za pravljenje zahtjeva u toj kategoriji."
 
 #: lib/RT/Ticket_Overlay.pm:1687
 msgid "You may not create requests in that queue."
@@ -7179,7 +7179,7 @@ msgstr "U ovoj kategoriji ne smijete praviti zahtjeve."
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"
-msgstr "Moæete se ponovno prijaviti"
+msgstr "Mo≈æete se ponovno prijaviti"
 
 #: NOT FOUND IN SOURCE
 msgid "Your %1 requests"
@@ -7188,23 +7188,23 @@ msgstr "Mojih %1 zahtjeva"
 #: etc/initialdata:563 etc/initialdata:565
 #. (# loc	    $self->TransactionObj->CreatorObj->Name,)
 msgid "Your request has been approved by %1. Other approvals may still be pending."
-msgstr "Vaπ zahtjev je odobren od %1. Druga dopuπtenja bi mogla joπ biti na Ëekanju."
+msgstr "Va≈° zahtjev je odobren od %1. Druga dopu≈°tenja bi mogla jo≈° biti na ƒçekanju."
 
 #: etc/initialdata:601
 msgid "Your request has been approved."
-msgstr "Vaπ zahtjev je odobren."
+msgstr "Va≈° zahtjev je odobren."
 
 #: etc/initialdata:506
 msgid "Your request was rejected."
-msgstr "Vaπ zahtjev je odbijen"
+msgstr "Va≈° zahtjev je odbijen"
 
 #: share/html/autohandler:265
 msgid "Your username or password is incorrect"
-msgstr "Vaπe korisniËko ime ili lozinka je neispravno"
+msgstr "Va≈°e korisniƒçko ime ili lozinka je neispravno"
 
 #: share/html/Admin/Users/Modify.html:171 share/html/User/Prefs.html:155
 msgid "Zip"
-msgstr "Poπtanski broj"
+msgstr "Po≈°tanski broj"
 
 #: share/html/Search/Elements/DisplayOptions:62
 msgid "[none]"
@@ -7216,7 +7216,7 @@ msgstr "Dopusti pravljenje spremljenih pretraga"
 
 #: lib/RT/System.pm:90
 msgid "allow loading of saved searches"
-msgstr "Dopusti uËitavanje spremljenih pretraga"
+msgstr "Dopusti uƒçitavanje spremljenih pretraga"
 
 #: NOT FOUND IN SOURCE
 msgid "and is not"
@@ -7241,15 +7241,15 @@ msgstr "zatvoreni"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:57
 msgid "contains"
-msgstr "sadræi"
+msgstr "sadr≈æi"
 
 #: NOT FOUND IN SOURCE
 msgid "content"
-msgstr "sadræaj"
+msgstr "sadr≈æaj"
 
 #: NOT FOUND IN SOURCE
 msgid "content-type"
-msgstr "vrsta sadræaja"
+msgstr "vrsta sadr≈æaja"
 
 #: NOT FOUND IN SOURCE
 msgid "correspondence (probably) not sent"
@@ -7286,7 +7286,7 @@ msgstr "ne podudara se s"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:58
 msgid "doesn't contain"
-msgstr "ne sadræi"
+msgstr "ne sadr≈æi"
 
 #: share/html/Ticket/ShowEmailRecord.html:62
 msgid "download"
@@ -7298,27 +7298,27 @@ msgstr "jednako je"
 
 #: share/html/Search/Elements/EditQuery:93
 msgid "error: can't move down"
-msgstr "greπka: ne moæe se pomicati dolje"
+msgstr "gre≈°ka: ne mo≈æe se pomicati dolje"
 
 #: share/html/Search/Elements/EditQuery:110 share/html/Search/Elements/EditQuery:116
 msgid "error: can't move left"
-msgstr "greπka: ne moæe se pomicati ulijevo"
+msgstr "gre≈°ka: ne mo≈æe se pomicati ulijevo"
 
 #: share/html/Search/Elements/EditQuery:92
 msgid "error: can't move up"
-msgstr "greπka: ne moæe se pomicati gore"
+msgstr "gre≈°ka: ne mo≈æe se pomicati gore"
 
 #: share/html/Search/Elements/EditQuery:185
 msgid "error: nothing to delete"
-msgstr "greπka: nema nicega za obrisati"
+msgstr "gre≈°ka: nema nicega za obrisati"
 
 #: share/html/Search/Elements/EditQuery:102 share/html/Search/Elements/EditQuery:129 share/html/Search/Elements/EditQuery:150
 msgid "error: nothing to move"
-msgstr "greπka: nema nicega za pomicati"
+msgstr "gre≈°ka: nema nicega za pomicati"
 
 #: share/html/Search/Elements/EditQuery:205
 msgid "error: nothing to toggle"
-msgstr "greπka: nema nicega za prebaciti"
+msgstr "gre≈°ka: nema nicega za prebaciti"
 
 #: NOT FOUND IN SOURCE
 msgid "filename"
@@ -7330,7 +7330,7 @@ msgstr ""
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectEqualityOperator:61
 msgid "greater than"
-msgstr "veÊe od"
+msgstr "veƒáe od"
 
 #: lib/RT/Group_Overlay.pm:140
 #. ($self->Name)
@@ -7457,7 +7457,7 @@ msgstr "odbijeno"
 
 #: lib/RT/Queue_Overlay.pm:85
 msgid "resolved"
-msgstr "rijeπeno"
+msgstr "rije≈°eno"
 
 #: lib/RT/Date.pm:321
 msgid "sec"
@@ -7465,11 +7465,11 @@ msgstr "sek"
 
 #: lib/RT/System.pm:89
 msgid "show Configuration tab"
-msgstr "Pokaæi tab postavki"
+msgstr "Poka≈æi tab postavki"
 
 #: NOT FOUND IN SOURCE
 msgid "spreadsheet"
-msgstr "tabliËno raËunanje"
+msgstr "tabliƒçno raƒçunanje"
 
 #: lib/RT/Queue_Overlay.pm:84
 msgid "stalled"
@@ -7491,7 +7491,7 @@ msgstr "sistemska grupa '%1'"
 
 #: share/html/Elements/Error:66 share/html/SelfService/Error.html:65
 msgid "the calling component did not specify why"
-msgstr "komponenta zvanja nije navela zaπto"
+msgstr "komponenta zvanja nije navela za≈°to"
 
 #: lib/RT/Group_Overlay.pm:156
 #. ($self->Instance, $self->Type)
