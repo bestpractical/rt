@@ -66,7 +66,7 @@ my @results;
 if ( $Run ) {
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'installation/Sendmail.html');
+'Install/Sendmail.html');
     }
 
     my @actions = split /,/, $RT::Installer->{DatabaseAction};
@@ -129,7 +129,7 @@ if ( $Run ) {
 
     unless ( @results ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'installation/Finish.html');
+'Install/Finish.html');
     }
 }
 </%init>

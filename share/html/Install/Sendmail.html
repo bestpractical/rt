@@ -76,7 +76,7 @@ if ( $Run ) {
 
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'installation/Emails.html');
+'Install/Emails.html');
     }
 
     unless ( @results ) {
@@ -89,11 +89,11 @@ if ( $Run ) {
 
             if ( $RT::Installer->{DatabaseAction} ne 'none' ) {
                 RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'installation/Initialize.html');
+'Install/Initialize.html');
             }
             else {
                 RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'installation/Finish.html');
+'Install/Finish.html');
             }
         }
         else {

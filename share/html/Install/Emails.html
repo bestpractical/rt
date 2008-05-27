@@ -71,7 +71,7 @@ if ( $Run ) {
 
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'installation/Basics.html');
+'Install/Basics.html');
     }
 
     for ( qw/MaxAttachmentSize/ ) {
@@ -82,7 +82,7 @@ if ( $Run ) {
 
     unless ( @results ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'installation/Sendmail.html');
+'Install/Sendmail.html');
     }
 }
 

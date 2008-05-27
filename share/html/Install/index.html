@@ -90,7 +90,7 @@ my $locked;
                 SendmailArguments SendmailBounceArguments SendmailPath/ ) {
             $RT::Installer->{InstallConfig}{$field} ||= RT->Config->Get($field);
         }
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .  'installation/DatabaseType.html');
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .  'Install/DatabaseType.html');
     
         }
 </%init>

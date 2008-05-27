@@ -79,12 +79,12 @@ if ( $Run ) {
 
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'installation/DatabaseDetails.html');
+'Install/DatabaseDetails.html');
     }
 
     unless ( @results ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'installation/Emails.html');
+'Install/Emails.html');
     }
 }
 
