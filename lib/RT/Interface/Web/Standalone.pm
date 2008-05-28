@@ -82,11 +82,10 @@ sub handle_request {
     RT::Interface::Web::Handler->CleanupRequest();
 }
 
-#sub net_server { 
-# use RT::Interface::Web::Standalone::PreFork;
-# 'RT::Interface::Web::Standalone::PreFork'
-#}
-
-
+sub net_server {
+    my $self = shift;
+    $self->{rt_net_server} = shift if @_;
+    return $self->{rt_net_server};
+}
 
 1;
