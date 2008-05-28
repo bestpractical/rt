@@ -593,6 +593,25 @@ Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueu
 
 Set(@MasonParameters, ());
 
+# Net::Server (rt-server) configuration {{{
+# The absolute minimum and maximum number of servers that will be created to
+# handle requests. Having multiple servers means that serving a slow page will
+# affect other users less.
+Set($MinServers, 1);
+Set($MaxServers, 1);
+
+# These next two options can be used to scale up and down the number of servers
+# to adjust to load. These two otions will respect the $MinServers and
+# $MaxServers options.
+#Set($MinSpareServers, 0);
+#Set($MaxSpareServers, 0);
+
+# This sets the absolute maximum number of requests a single server will serve.
+# Setting this would be useful if, for example, memory usage slowly crawls up
+# every hit.
+#Set($MaxRequests, 50);
+# }}}
+
 # $DefaultSearchResultFormat is the default format for RT search results
 Set ($DefaultSearchResultFormat, qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',

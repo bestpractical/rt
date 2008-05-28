@@ -52,4 +52,20 @@ use strict;
 package RT::Interface::Web::Standalone::PreFork;
 use base qw/Net::Server::PreFork/;
 
+my %option_map = (
+    min_servers       => 'MinServers',
+    max_servers       => 'MaxServers',
+    min_spare_servers => 'MinSpareServers',
+    max_spare_servers => 'MaxSpareServers',
+    max_requests      => 'MaxRequests',
+);
+
+sub default_values {
+    return {
+        map  { $_ => RT->Config->Get( $option_map{$_} ) }
+        grep { defined( RT->Config->Get( $option_map{$_} ) ) }
+        qw/min_servers max_servers min_spare_servers max_spare_servers max_requests/
+    };
+}
+
 1;
