@@ -4570,6 +4570,10 @@ msgstr "Mentionné par"
 msgid "Refers to"
 msgstr "Se rapporte à"
 
+#: share/html/Elements/RefreshHomepage:48
+msgid "Refresh"
+msgstr "Rafraîchir"
+
 #: share/html/Elements/Refresh:59
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
