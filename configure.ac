@@ -386,6 +386,7 @@ AC_CONFIG_FILES([
                  bin/standalone_httpd
                  bin/rt-crontool
                  bin/rt-mailgate
+                 bin/rt-server
                  bin/rt],
                 [chmod ug+x $ac_file]
                )
