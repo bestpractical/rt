@@ -544,11 +544,11 @@ sub ProcessUpdateMessage {
         delete $args{ARGSRef}->{'UpdateAttachments'};
     }
 
-    #Make the update content have no 'weird' newlines in it
     return () unless    $args{ARGSRef}->{'UpdateTimeWorked'}
                      || $args{ARGSRef}->{'UpdateAttachments'}
                      || $args{ARGSRef}->{'UpdateContent'};
 
+    #Make the update content have no 'weird' newlines in it
     $args{ARGSRef}->{'UpdateContent'} =~ s/\r+\n/\n/g if $args{ARGSRef}->{'UpdateContent'};
 
     # skip updates if the content contains only user's signature
@@ -556,7 +556,12 @@ sub ProcessUpdateMessage {
     if ( $args{'SkipSignatureOnly'} ) {
         my $sig = $args{'TicketObj'}->CurrentUser->UserObj->Signature || '';
         $sig =~ s/^\s*|\s*$//g;
-        if ( $args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ ) {
+        if ($args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/
+            or (    $args{ARGSRef}->{'UpdateContentType'} eq "text/html"
+                and $args{ARGSRef}->{'UpdateContent'}
+                =~ /^\s*<p>\s*(--)?\s*<br\s*\/?>\s*\Q$sig\E\s*<\/p>\s*$/ )
+            )
+        {
             return () unless $args{ARGSRef}->{'UpdateTimeWorked'} ||
                              $args{ARGSRef}->{'UpdateAttachments'};
 
