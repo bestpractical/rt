@@ -46,7 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, 
-    Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject) &>
+    Title => loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject),
+    LinkRel => \%link_rel &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $TicketObj, 
     current_tab => 'Ticket/Display.html?id='.$TicketObj->id,
@@ -200,4 +201,12 @@ if (@Actions) {
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);
 my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $TicketObj);
 
+my %link_rel;
+if (defined $session{'tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {
+    my $item_map = $session{'tickets'}->ItemMap;
+    $link_rel{first} = "Ticket/Display.html?id=" . $item_map->{first}                if $item_map->{$TicketObj->Id}{prev};
+    $link_rel{prev}  = "Ticket/Display.html?id=" . $item_map->{$TicketObj->Id}{prev} if $item_map->{$TicketObj->Id}{prev};
+    $link_rel{next}  = "Ticket/Display.html?id=" . $item_map->{$TicketObj->Id}{next} if $item_map->{$TicketObj->Id}{next};
+    $link_rel{last}  = "Ticket/Display.html?id=" . $item_map->{last}                 if $item_map->{$TicketObj->Id}{next};
+}
 </%INIT>

@@ -61,6 +61,10 @@
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/<% RT->Config->Get( 'WebDefaultStylesheet', $session{'CurrentUser'} ) %>/main.css" type="text/css" media="all" />
 <link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/print.css" type="text/css" media="print" />
 
+% for (keys %{$LinkRel || {}}) {
+    <link rel="<% $_ %>" href="<% RT->Config->Get('WebPath') . $LinkRel->{$_} %>" />
+% }
+
 % if ( $RSSAutoDiscovery ) {
     <link rel="alternate" href="<%$RSSAutoDiscovery%>" type="application/rss+xml" title="RSS RT Search" />
 % }
@@ -122,4 +126,5 @@ $ShowBar => 1
 $URL => undef
 $RSSAutoDiscovery => undef
 $onload => undef
+$LinkRel => undef
 </%ARGS>

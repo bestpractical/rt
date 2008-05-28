@@ -46,7 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'}, 
-    RSSAutoDiscovery => $RSSFeedURL &>
+    RSSAutoDiscovery => $RSSFeedURL,
+    LinkRel => \%link_rel &>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Results.html".$QueryString, 
     Title => $title,
@@ -63,7 +64,7 @@
     Rows => $Rows,
     Page => $Page,
     Format => $Format,
-    BaseURL => RT->Config->Get('WebPath')."/Search/Results.html?"
+    BaseURL => $BaseURL
 
    &>
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page );
@@ -160,6 +161,23 @@ if ($ARGS{'TicketsRefreshInterval'}) {
 	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};
 }
 
+my %link_rel;
+my $genpage = sub {
+    return $m->comp(
+        '/Elements/QueryString',
+        Query   => $Query,
+        Format  => $Format,
+        Rows    => $Rows,
+        OrderBy => $OrderBy,
+        Order   => $Order,
+        Page    => shift(@_),
+    );
+};
+my $BaseURL = RT->Config->Get('WebPath')."/Search/Results.html?";
+$link_rel{first} = $BaseURL . $genpage->(1)         if $Page > 1;
+$link_rel{prev}  = $BaseURL . $genpage->($Page - 1) if $Page > 1;
+$link_rel{next}  = $BaseURL . $genpage->($Page + 1) if ($Page * $Rows) < $ticketcount;
+$link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($ticketcount/$Rows)) if ($Page * $Rows) < $ticketcount;
 </%INIT>
 <%CLEANUP>
 $session{'tickets'}->PrepForSerialization();
