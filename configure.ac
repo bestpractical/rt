@@ -381,12 +381,12 @@ AC_CONFIG_FILES([
                  sbin/rt-shredder
                  sbin/rt-validator
                  sbin/rt-notify-group-admin
+                 sbin/rt-server
                  bin/mason_handler.fcgi
                  bin/mason_handler.scgi
                  bin/standalone_httpd
                  bin/rt-crontool
                  bin/rt-mailgate
-                 bin/rt-server
                  bin/rt],
                 [chmod ug+x $ac_file]
                )
