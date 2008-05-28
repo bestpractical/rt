@@ -61,11 +61,13 @@ my %option_map = (
 );
 
 sub default_values {
-    return {
+    my %forking = (
         map  { $_ => RT->Config->Get( $option_map{$_} ) }
         grep { defined( RT->Config->Get( $option_map{$_} ) ) }
-        qw/min_servers max_servers min_spare_servers max_spare_servers max_requests/
-    };
+        keys %option_map,
+    );
+
+    return { %forking, RT->Config->Get('NetServerOptions') };
 }
 
 1;

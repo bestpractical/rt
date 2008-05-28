@@ -610,6 +610,12 @@ Set($MaxServers, 1);
 # Setting this would be useful if, for example, memory usage slowly crawls up
 # every hit.
 #Set($MaxRequests, 50);
+
+# %NetServerOptions is a hash of additional options to use for
+# L<Net::Server/DEFAULT ARGUMENTS>. For example, you could set
+# reverse_lookups to get the hostnames for all users with:
+# Set(%NetServerOptions, (reverse_lookups => 1));
+Set(%NetServerOptions, ());
 # }}}
 
 # $DefaultSearchResultFormat is the default format for RT search results
