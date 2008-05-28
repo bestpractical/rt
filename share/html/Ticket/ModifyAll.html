@@ -165,7 +165,6 @@ unless ($OnlySearchForPeople) {
     @wresults   = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     @cf_results = ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS);
     @dresults   = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    @lresults   = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
     if ($ARGS{'UpdateAttachment'}) {
         my $subject = "$ARGS{'UpdateAttachment'}";
@@ -185,6 +184,7 @@ unless ($OnlySearchForPeople) {
 
     push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
+    @lresults   = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 }
 push @results, @wresults;
 push @results, @dresults;
