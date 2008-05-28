@@ -414,6 +414,7 @@ sub test_dep {
         if ($@) {
             my $error = $@;
             $error =~ s/\n(.*)$//s;
+            $error =~ s/at \(eval \d+\) line \d+\.$//;
             undef $error unless $error =~ /this is only/;
 
             return ( 0, $error );
