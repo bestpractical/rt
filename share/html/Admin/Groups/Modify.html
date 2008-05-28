@@ -153,7 +153,7 @@ else {
 }
 if  ( ($SetEnabled) and ( $Disabled != $Group->Disabled) ) { 
     my  ($code, $msg) = $Group->SetDisabled($Disabled);
-    push @results, loc('Enabled status [_1]', loc_fuzzy($msg));
+    push @results, $msg;
 }
 
 unless ($Group->Disabled()) {

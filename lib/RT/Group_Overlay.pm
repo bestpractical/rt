@@ -710,7 +710,11 @@ This routine finds all the cached group members that are members of this group  
     }
 
     $RT::Handle->Commit();
-    return (1, $self->loc("Succeeded"));
+    if ( $val == 1 ) {
+        return (1, $self->loc("Group disabled"));
+    } else {
+        return (1, $self->loc("Group enabled"));
+    }
 
 }
 
