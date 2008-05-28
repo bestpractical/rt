@@ -78,7 +78,7 @@ my $page = $m->request_comp->path;
 my $tid  = "TitleBox--$page--" .
             join '--', ($class, $bodyclass, $title, $id);
 
-$tid =~ s{[/\s]+}{_}g;
+$tid =~ s{[/\s'\\]+}{_}g;
 
 my $i = 0;
 $i++ while $m->notes("$tid-$i");
