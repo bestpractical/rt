@@ -122,7 +122,7 @@ div#ticket-history td.description {
 
 
 
-div#ticket-history>td.content {
+div#ticket-history td.content {
  position: relative;
  padding-right: 1em;
  font-size: 1.1em;
@@ -156,7 +156,7 @@ div#ticket-history .message-header-key {
   color: #666;
 }
 
-div#ticket-history>.messagebody {
+div#ticket-history .messagebody {
  font-size: 1.1em;
  padding-left: 1em;
  margin-top: 0.5em;
