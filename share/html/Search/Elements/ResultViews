@@ -61,10 +61,6 @@ $ShortQueryString => undef
 <li><a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a></li>
 <li><a href="<% $RT::WebURL %>NoAuth/iCal/<% $ical_path %>"><% loc('iCal') %></a></li>
 <li><a href="<%RT->Config->Get('WebPath')%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Editable text</&></a></li>
-%if ( $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => $RT::System ) ) {
-%    my $query_string = $m->comp('/Elements/QueryString', Search => 1, Plugin => 'Tickets', 'Tickets:query' => $Query, 'Tickets:limit' => $Rows || '',);
-<li><a href="<% RT->Config->Get('WebPath') %>/Admin/Tools/Shredder/?<% $query_string |n %>"><&|/l&>Delete tickets</&></a></li>
-% }
 </ul>
 <form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html">
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);

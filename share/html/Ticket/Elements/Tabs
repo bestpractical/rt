@@ -200,18 +200,23 @@ if ( (defined $actions->{A} || defined $actions->{B} || defined $actions->{C})
     elsif (defined $actions->{A}) { $actions->{A}->{separator} = 1 }
 }
 
-my $args;
-$args= "?" . $m->comp(
-    '/Elements/QueryString',
-    SavedSearchId => $ARGS{'SavedSearchId'} || $session{'CurrentSearchHash'}->{'SearchId'},
-    Query         => $ARGS{'Query'}         || $session{'CurrentSearchHash'}->{'Query'},
-    Format        => $ARGS{'Format'}        || $session{'CurrentSearchHash'}->{'Format'},
-    OrderBy       => $ARGS{'OrderBy'}       || $session{'CurrentSearchHash'}->{'OrderBy'},
-    Order         => $ARGS{'Order'}         || $session{'CurrentSearchHash'}->{'Order'},
-    Page          => $ARGS{'Page'}          || $session{'CurrentSearchHash'}->{'Page'},
-    Rows          => $ARGS{'Rows'},
-  ) if ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'});
-$args ||= '';
+my $args ='';
+my %query_args;
+
+if ( $ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'} ) {
+    $args = "?" . $m->comp( '/Elements/QueryString', %query_args );
+    %query_args = {
+
+        SavedSearchId => $ARGS{'SavedSearchId'} || $session{'CurrentSearchHash'}->{'SearchId'},
+        Query  => $ARGS{'Query'}  || $session{'CurrentSearchHash'}->{'Query'},
+        Format => $ARGS{'Format'} || $session{'CurrentSearchHash'}->{'Format'},
+        OrderBy => $ARGS{'OrderBy'} || $session{'CurrentSearchHash'}->{'OrderBy'},
+        Order => $ARGS{'Order'} || $session{'CurrentSearchHash'}->{'Order'},
+        Page  => $ARGS{'Page'}  || $session{'CurrentSearchHash'}->{'Page'},
+        Rows  => $ARGS{'Rows'} 
+    };
+
+}
 
 $tabs->{"f"} = { path      => "Search/Build.html?NewQuery=1",
                  title     => loc('New Search')};
@@ -233,9 +238,26 @@ if ($args) {
   if ($current_tab =~  m{Search/Bulk.html}) {
     $current_tab = "Search/Bulk.html$args";
   }
-  foreach my $searchtab (keys %{$searchtabs}) {
+
+if ( $session{'CurrentUser'} ->HasRight( Right => 'SuperUser', Object => $RT::System ) ) {
+    my $shred_args = $m->comp( '/Elements/QueryString',
+        Search          => 1,
+        Plugin          => 'Tickets',
+        'Tickets:query' => $query_args{'Query'},
+        'Tickets:limit' => $query_args{'Rows'}
+    );
+
+    $tabs->{"shredder"} = {
+        path  => 'Admin/Tools/Shredder/' . $shred_args,
+        title => loc('Shredder')
+    };
+
+}
+
+}
+
+foreach my $searchtab (keys %{$searchtabs}) {
     ($searchtab =~ /^_/) ? $tabs->{"s".$searchtab} = $searchtabs->{$searchtab} : $tabs->{"z_".$searchtab} = $searchtabs->{$searchtab};
-  }
 }
 </%INIT>
 

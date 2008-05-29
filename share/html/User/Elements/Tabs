@@ -70,7 +70,7 @@
 	       s => { title => loc('Dashboards'),
 			   path => 'Dashboards/index.html',
 			 },
-	       t => { title => loc('Other'),
+	       t => { title => loc('Settings'),
 			   path => 'Prefs/Other.html',
 			 },
 	     };
