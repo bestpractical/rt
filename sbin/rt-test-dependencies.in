@@ -63,7 +63,7 @@ GetOptions(
     'with-ORACLE',                        'with-FASTCGI',
     'with-SPEEDYCGI',                     'with-MODPERL1',
     'with-MODPERL2',                      'with-DEV',
-    'with-STANDALONE',
+    'with-STANDALONE',                    'with-FORKING',
 
     'with-GPG',
     'with-ICAL',
@@ -92,6 +92,7 @@ my %default = (
     'with-ICAL' => 1,
     'with-SMTP' => 1,
     'with-GRAPHVIZ' => @RT_GRAPHVIZ@,
+    'with-FORKING' => @RT_FORKING@,
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
@@ -252,6 +253,9 @@ CSS::Squish 0.06
 $deps{'STANDALONE'} = [ text_to_hash( << '.') ];
 HTTP::Server::Simple 0.07
 HTTP::Server::Simple::Mason 0.09
+.
+
+$deps{'FORKING'} = [ text_to_hash( << '.') ];
 Net::Server
 Net::Server::PreForking
 .
