@@ -994,7 +994,7 @@ sub GetUpdateTemplate {
         my $mode   = $LINKTYPEMAP{$type}->{Mode};
         my $method = $LINKTYPEMAP{$type}->{Type};
 
-        my $links;
+        my $links = '';
         while ( my $link = $t->$method->Next ) {
             $links .= ", " if $links;
 
