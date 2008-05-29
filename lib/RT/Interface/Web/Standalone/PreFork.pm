@@ -53,11 +53,11 @@ package RT::Interface::Web::Standalone::PreFork;
 use base qw/Net::Server::PreFork/;
 
 my %option_map = (
-    min_servers       => 'MinServers',
-    max_servers       => 'MaxServers',
-    min_spare_servers => 'MinSpareServers',
-    max_spare_servers => 'MaxSpareServers',
-    max_requests      => 'MaxRequests',
+    min_servers       => 'StandaloneMinServers',
+    max_servers       => 'StandaloneMaxServers',
+    min_spare_servers => 'StandaloneMinSpareServers',
+    max_spare_servers => 'StandaloneMaxSpareServers',
+    max_requests      => 'StandaloneMaxRequests',
 );
 
 sub default_values {

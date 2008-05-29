@@ -597,19 +597,19 @@ Set(@MasonParameters, ());
 # The absolute minimum and maximum number of servers that will be created to
 # handle requests. Having multiple servers means that serving a slow page will
 # affect other users less.
-Set($MinServers, 1);
-Set($MaxServers, 1);
+Set($StandaloneMinServers, 1);
+Set($StandaloneMaxServers, 1);
 
 # These next two options can be used to scale up and down the number of servers
-# to adjust to load. These two otions will respect the $MinServers and
-# $MaxServers options.
-Set($MinSpareServers, 0);
-Set($MaxSpareServers, 0);
+# to adjust to load. These two otions will respect the $StandaloneMinServers
+# and $StandaloneMaxServers options.
+Set($StandaloneMinSpareServers, 0);
+Set($StandaloneMaxSpareServers, 0);
 
 # This sets the absolute maximum number of requests a single server will serve.
 # Setting this would be useful if, for example, memory usage slowly crawls up
 # every hit.
-#Set($MaxRequests, 50);
+#Set($StandaloneMaxRequests, 50);
 
 # %NetServerOptions is a hash of additional options to use for
 # L<Net::Server/DEFAULT ARGUMENTS>. For example, you could set
