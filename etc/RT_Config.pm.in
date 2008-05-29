@@ -752,7 +752,9 @@ Set($StrictLinkACL, 1);
 
 
 # Set $CanonicalizeRedirectURLs to 1 to use $WebURL when redirecting rather
-# than the one we get from %ENV
+# than the one we get from %ENV.
+# If you use RT behind a reverse proxy, you almost certainly want to
+# enable this option.
 
 Set($CanonicalizeRedirectURLs, 1);
 
