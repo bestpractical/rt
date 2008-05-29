@@ -601,7 +601,7 @@ Set($StandaloneMinServers, 1);
 Set($StandaloneMaxServers, 1);
 
 # These next two options can be used to scale up and down the number of servers
-# to adjust to load. These two otions will respect the $StandaloneMinServers
+# to adjust to load. These two options will respect the $StandaloneMinServers
 # and $StandaloneMaxServers options.
 Set($StandaloneMinSpareServers, 0);
 Set($StandaloneMaxSpareServers, 0);
