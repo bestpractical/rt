@@ -204,8 +204,7 @@ my $args ='';
 my %query_args;
 
 if ( $ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'} ) {
-    $args = "?" . $m->comp( '/Elements/QueryString', %query_args );
-    %query_args = {
+    %query_args = (
 
         SavedSearchId => $ARGS{'SavedSearchId'} || $session{'CurrentSearchHash'}->{'SearchId'},
         Query  => $ARGS{'Query'}  || $session{'CurrentSearchHash'}->{'Query'},
@@ -213,9 +212,10 @@ if ( $ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'} ) {
         OrderBy => $ARGS{'OrderBy'} || $session{'CurrentSearchHash'}->{'OrderBy'},
         Order => $ARGS{'Order'} || $session{'CurrentSearchHash'}->{'Order'},
         Page  => $ARGS{'Page'}  || $session{'CurrentSearchHash'}->{'Page'},
-        Rows  => $ARGS{'Rows'} 
-    };
+        Rows  => $ARGS{'Rows'} || $session{'CurrentSearchHash'}->{'Rows'}, 
+    );
 
+    $args = "?" . $m->comp( '/Elements/QueryString', %query_args );
 }
 
 $tabs->{"f"} = { path      => "Search/Build.html?NewQuery=1",
