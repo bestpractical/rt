@@ -952,7 +952,6 @@ sub ProcessTicketBasics {
       Queue
     );
 
-    my @results;
 
     if ( $ARGSRef->{'Queue'} and ( $ARGSRef->{'Queue'} !~ /^(\d+)$/ ) ) {
         my $tempqueue = RT::Queue->new($RT::SystemUser);
@@ -962,21 +961,12 @@ sub ProcessTicketBasics {
         }
     }
 
-    # On queue change, change queue for reminders too
-    if ( $ARGSRef->{'Queue'} and ( $TicketObj->QueueObj->Id != $ARGSRef->{'Queue'} ) ) {
-        my $reminder_collection = $TicketObj->Reminders->Collection;
-        while ( my $reminder = $reminder_collection->Next ) {
-            my ($val, $msg) = $reminder->SetQueue($ARGSRef->{'Queue'});
-            push @results, $msg if ( !$val ); 
-        }
-    }
-
 
     # Status isn't a field that can be set to a null value.
     # RT core complains if you try
     delete $ARGSRef->{'Status'} unless $ARGSRef->{'Status'};
     
-    push @results, UpdateRecordObject(
+    my @results = UpdateRecordObject(
         AttributesRef => \@attribs,
         Object        => $TicketObj,
         ARGSRef       => $ARGSRef,
