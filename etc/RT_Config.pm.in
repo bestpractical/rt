@@ -750,6 +750,12 @@ Set($StrictLinkACL, 1);
 # RT::CustomFieldValues::External.  This can be used to pull lists of
 # custom field values from external sources at runtime.
 
+
+# Set $CanonicalizeRedirectURLs to 1 to use $WebURL when redirecting rather
+# than the one we get from %ENV
+
+Set($CanonicalizeRedirectURLs, 1);
+
 # }}}
 
 # {{{ Development Mode
