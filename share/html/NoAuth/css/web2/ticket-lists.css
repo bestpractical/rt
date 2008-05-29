@@ -101,19 +101,7 @@ tr.collection-as-table+tr.collection-as-table th {
 
 
 
-
-a:hover  {
-  text-decoration: underline;
-}
-
-
- a {
-  color: #000;
-  text-decoration: none;
-}
-
-
- table.queue-summary td {
+table.queue-summary td {
   background: #efefef;
   border-bottom: 1px solid #ccc;
 }
@@ -144,7 +132,12 @@ tr.evenline+tr.evenline td, tr.oddline+tr.oddline td{
 
 
 table.ticket-list td:first-child, table.ticket-list th:first-child {
-  padding-left: 0.5em;
+  padding-left: 1em;
 }
+
+table.ticket-list td:last-child, table.ticket-list th:last-child {
+  padding-right: 1em;
+}
+
 
 
