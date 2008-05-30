@@ -116,6 +116,14 @@ our %META = (
             Description => 'Number of search results',    #loc
         },
     },
+    MessageBoxRichText => {
+        Section => 'General',
+        Overridable => 1,
+        Widget => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'WYSIWYG message composer' # loc
+        }
+    },
     MessageBoxWidth => {
         Section         => 'General',
         Overridable     => 1,

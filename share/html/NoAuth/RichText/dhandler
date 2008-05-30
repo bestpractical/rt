@@ -59,6 +59,7 @@ my $type = {qw(
     xml     text/xml
     html    text/html
     js      application/javascript
+    css     text/css
     gif     image/gif
     jpg     image/jpeg
     png     image/png
