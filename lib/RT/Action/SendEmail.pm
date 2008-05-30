@@ -362,14 +362,12 @@ sub AddAttachments {
     $attachments->OrderBy( FIELD => 'id' );
 
     # We want to make sure that we don't include the attachment that's
-    # being sued as the "Content" of this message"
+    # being used as the "Content" of this message" unless that attachment's
+    # content type is not like text/...
     my $transaction_content_obj = $self->TransactionObj->ContentObj;
 
-    # XXX: this is legacy check of content type looks quite incorrect
-    # to me //ruz
     if (   $transaction_content_obj
-        && $transaction_content_obj->id
-        && $transaction_content_obj->ContentType =~ m{text/plain}i )
+        && $transaction_content_obj->ContentType =~ m{text/}i )
     {
         $attachments->Limit(
             ENTRYAGGREGATOR => 'AND',
