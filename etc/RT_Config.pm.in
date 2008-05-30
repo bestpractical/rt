@@ -756,7 +756,7 @@ Set($StrictLinkACL, 1);
 # If you use RT behind a reverse proxy, you almost certainly want to
 # enable this option.
 
-Set($CanonicalizeRedirectURLs, 1);
+Set($CanonicalizeRedirectURLs, 0);
 
 # }}}
 
