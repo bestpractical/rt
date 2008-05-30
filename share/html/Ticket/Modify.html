@@ -69,6 +69,13 @@
 my $TicketObj = LoadTicket($id);
 my $CustomFields = $TicketObj->QueueObj->TicketCustomFields();
 
+# call this to show up hints of valid cf values.
+$m->comp(
+    '/Elements/ValidateCustomFields',
+    CustomFields => $CustomFields,
+    ARGSRef => {},
+);
+
 # Now let callbacks have a chance at editing %ARGS
 $m->callback( TicketObj => $TicketObj, CustomFields => $CustomFields, ARGSRef => \%ARGS );
 

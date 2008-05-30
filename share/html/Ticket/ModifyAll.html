@@ -136,6 +136,14 @@
 
 
 my $Ticket = LoadTicket($id);
+my $CustomFields = $Ticket->QueueObj->TicketCustomFields();
+
+# call this to show up hints of valid cf values.
+$m->comp(
+    '/Elements/ValidateCustomFields',
+    CustomFields => $CustomFields,
+    ARGSRef => {},
+);
 
 my $CanRespond = 0;
 my $CanComment = 0;
