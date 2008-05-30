@@ -360,6 +360,13 @@ Set($LogoURL , $WebImagesURL . "bplogo.gif");
 Set($WebNoAuthRegex, qr!^(?:/+NoAuth/|
                             /+REST/\d+\.\d+/NoAuth/)!x );
 
+# SelfServiceRegex - What portion of RT's URLspace should
+# be accessible to Unprivileged users
+# This does not override the redirect from /Ticket/Display.html
+# to /SelfService/Display.html when Unprivileged
+# users attempt to access ticked displays
+Set($SelfServiceRegex, qr!^(?:/+SelfService/)!x );
+
 # For message boxes, set the entry box width and what type of wrapping
 # to use.
 #

@@ -280,7 +280,7 @@ if (    ( defined $session{'CurrentUser'} )
         }
 
         # otherwise, drop the user at the SelfService default page
-        elsif ( $m->base_comp->path !~ '^(/+)SelfService/' ) {
+        elsif ( $m->base_comp->path !~ $RT::SelfServiceRegex ) {
             RT::Interface::Web::Redirect($RT::WebURL."SelfService/");
         }
         else {
