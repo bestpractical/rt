@@ -129,9 +129,9 @@ div#ticket-history>td.content {
 }
 
 div#ticket-history div.downloadattachment {
+float: right;
+clear: both;
 font-size: 0.9em;
-position: absolute;
-right:3.75em;
 text-align: right;
 background: #eee;
 padding: 0.5em;
@@ -157,17 +157,23 @@ div#ticket-history .message-header-key {
 }
 
 div#ticket-history>.messagebody {
- font-size: 1.1em;
+ font-size: 1em;
  padding-left: 1em;
  margin-top: 0.5em;
  padding-top: 0.5em;
  border-top: 1px solid #ccc;
- margin-right: 16em;
+ margin-right: 0em;
  margin-left: 2em;
 
 }
 
 
+div#ticket-history .messagebody .messagebody{
+ font-size: 1em;
+ padding: 0; 
+ border: 0;
+ margin: 0;
+}
 
 
 
