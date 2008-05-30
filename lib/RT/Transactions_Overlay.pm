@@ -134,6 +134,7 @@ sub Next {
     if ((defined($Transaction)) and (ref($Transaction))) {
     	# If the user can see the transaction's type, then they can 
 	#  see the transaction and we should hand it back.
+        $RT::Logger->crit( $Transaction->Type, $Transaction->id );
 	if ($Transaction->Type) {
 	    return($Transaction);
 	}
