@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 143;
+use Test::More tests => 137;
 
 use RT::Test;
 
@@ -277,7 +277,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 
 
 # be as much like the mail gateway as possible.
-&text_html_umlauts_redef_sendmessage;
+&text_html_redef_sendmessage;
 
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
@@ -291,16 +291,15 @@ like (first_attach($tick)->Content , qr/causes Error/, "We recorded the content 
 like (first_attach($tick)->ContentType , qr/text\/html/, "We recorded the content as text/html");
 is (count_attachs($tick), 1 , "Has one attachment, presumably a text-html and a multipart alternative");
 
-sub text_html_umlauts_redef_sendmessage {
+sub text_html_redef_sendmessage {
     no warnings qw/redefine/;
     eval 'sub RT::Action::SendEmail::SendMessage { 
                 my $self = shift;
                 my $MIME = shift;
                 return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
-                is ($MIME->parts, 2, "generated correspondence mime entityis composed of three parts");
-                is ($MIME->head->mime_type , "multipart/mixed", "The first part is a multipart mixed". $MIME->head->mime_type);
-                is ($MIME->parts(0)->head->mime_type , "text/plain", "The second part is a plain");
-                is ($MIME->parts(1)->head->mime_type , "text/html", "The third part is an html ");
+                is ($MIME->parts, 0, "generated correspondence mime entity
+                        does not have parts");
+                is ($MIME->head->mime_type , "text/plain", "The mime type is a plain");
          }';
 }
 
@@ -314,7 +313,7 @@ $parser->ParseMIMEEntityFromScalar($content);
 
 
 # be as much like the mail gateway as possible.
-&text_html_russian_redef_sendmessage;
+&text_html_redef_sendmessage;
 
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::Gateway(\%args);
@@ -325,25 +324,8 @@ $tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
 ok ($tick->Id, "found ticket ".$tick->Id);
 
 like (first_attach($tick)->ContentType , qr/text\/html/, "We recorded the content right as text-html");
-is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-html and a multipart alternative");
 
-sub text_html_russian_redef_sendmessage {
-    no warnings qw/redefine/;
-    eval 'sub RT::Action::SendEmail::SendMessage { 
-                my $self = shift; 
-                my $MIME = shift; 
-                use Data::Dumper;
-                return (1) unless ($self->ScripObj->ScripActionObj->Name eq "Notify AdminCcs" );
-                ok (is $MIME->parts, 2, "generated correspondence mime entityis composed of three parts");
-                is ($MIME->head->mime_type , "multipart/mixed", "The first part is a multipart mixed". $MIME->head->mime_type);
-                is ($MIME->parts(0)->head->mime_type , "text/plain", "The second part is a plain");
-                is ($MIME->parts(1)->head->mime_type , "text/html", "The third part is an html ");
-                my $content_1251;
-                $content_1251 = $MIME->parts(1)->bodyhandle->as_string();
-                like ($content_1251 , qr{Ó÷eáíûé Öeíòp "ÊÀÄĞÛ ÄÅËÎÂÎÃÎ ÌÈĞÀ" ïpèãëaøaeò ía òpeíèíã:},
-"Content matches drugim in codepage 1251" );
-                 }';
-}
+is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-html and a multipart alternative");
 
 # }}}
 

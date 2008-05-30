@@ -548,6 +548,7 @@ sub ProcessUpdateMessage {
         @_
     );
 
+
     if ( $args{ARGSRef}->{'UpdateAttachments'}
         && !keys %{$args{ARGSRef}->{'UpdateAttachments'}} )
     {

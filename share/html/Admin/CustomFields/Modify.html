@@ -109,7 +109,7 @@
 
 <tr><td class="label">&nbsp;</td><td>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <% $EnabledChecked %> />
+<input type="checkbox" class="checkbox" name="Enabled" value="1" <% $EnabledChecked |n%> />
 <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
 </td></tr>
 
@@ -203,7 +203,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
 
 $id = $CustomFieldObj->id if $CustomFieldObj->id;
 
-my $EnabledChecked = "checked";
+my $EnabledChecked = qq[checked="checked"];
 $EnabledChecked = '' if $CustomFieldObj->Disabled;
 
 my @CFvalidations = (

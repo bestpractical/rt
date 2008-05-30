@@ -298,6 +298,7 @@ sub Parse {
     my $self = shift;
     my ($rv, $msg);
 
+
     if ($self->Content =~ m{^Content-Type:\s+text/html\b}im) {
         local $RT::Transaction::PreferredContentType = 'text/html';
         ($rv, $msg) = $self->_Parse(@_);
@@ -308,6 +309,7 @@ sub Parse {
 
     # We only HTMLify things if the template includes at least one Transaction->Content call.
     return ($rv, $msg) unless $rv and $self->Content =~ /->\s*Content\b/;
+    
 
     my $orig_entity = $self->MIMEObj;
     my $mime_type   = $self->MIMEObj->mime_type;
@@ -441,6 +443,7 @@ sub _ParseContent {
 sub _DowngradeFromHTML {
     my $self = shift;
     my $orig_entity = $self->MIMEObj;
+    die 'hehe';
 
     local $RT::Transaction::PreferredContentType = 'text/plain';
 
