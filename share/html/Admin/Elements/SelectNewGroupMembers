@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % if ( $Show ne 'Groups' ) {
 <b><&|/l&>Users</&></b>
-<select multiple="multiple" name="<% $Name %>Users" size="10">
+<select multiple name="<% $Name %>Users" size="10">
 % while ( my $user = $users->Next ) {
 % next if $SkipUsers->{ $user->id };
 <option value="User-<% $user->id %>"><& /Elements/ShowUser, User => $user &></option>
@@ -58,7 +58,7 @@
 
 % if ( $Show ne 'Users' ) {
 <b><&|/l&>Groups</&></b>
-<select multiple="multiple" name="<% $Name %>Groups" size="10">
+<select multiple name="<% $Name %>Groups" size="10">
 % while ( my $group = $groups->Next ) {
 % next if $SkipGroups->{ $group->id };
 <option value="Group-<% $group->id %>"><% $group->Name %></option>

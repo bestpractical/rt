@@ -125,6 +125,8 @@ RT_READABLE_DIR_MODE	=	0755
 RT_MODPERL_HANDLER	=	$(RT_BIN_PATH)/webmux.pl
 # RT_STANDALONE_SERVER is a stand-alone HTTP server
 RT_STANDALONE_SERVER	=	$(RT_BIN_PATH)/standalone_httpd
+# RT_NET_SERVER is an HTTP server using Net::Server
+RT_NET_SERVER	=	$(RT_BIN_PATH)/rt-server
 # RT_SPEEDYCGI_HANDLER is the mason handler script for SpeedyCGI
 RT_SPEEDYCGI_HANDLER	=	$(RT_BIN_PATH)/mason_handler.scgi
 # RT_FASTCGI_HANDLER is the mason handler script for FastCGI
@@ -154,7 +156,6 @@ SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/rt-dump-database \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-send-digest \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-email-dashboards \
-				$(DESTDIR)/$(RT_SBIN_PATH)/rt-server \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-test-dependencies \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-clean-sessions \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-shredder \
@@ -433,8 +434,7 @@ sbin-install:
 		sbin/rt-shredder \
 		sbin/rt-notify-group-admin \
 		sbin/rt-send-digest \
-		sbin/rt-email-dashboards \
-		sbin/rt-server
+		sbin/rt-email-dashboards
 	-cp -rp \
 		sbin/rt-dump-database \
 		sbin/rt-setup-database \
@@ -444,7 +444,6 @@ sbin-install:
 		sbin/rt-notify-group-admin \
 		sbin/rt-send-digest \
 		sbin/rt-email-dashboards \
-		sbin/rt-server \
 		$(DESTDIR)/$(RT_SBIN_PATH)
 
 # }}}
@@ -460,6 +459,7 @@ bin-install:
 		bin/mason_handler.fcgi \
 		bin/mason_handler.scgi \
 		bin/standalone_httpd \
+		bin/rt-server \
 		bin/mason_handler.svc \
 		bin/rt \
 		bin/webmux.pl \
@@ -495,7 +495,7 @@ start-httpd:
 	$(PERL) bin/standalone_httpd &
 
 start-server:
-	$(PERL) sbin/rt-server &
+	$(PERL) bin/rt-server &
 
 apachectl:
 	$(APACHECTL) stop

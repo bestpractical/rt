@@ -1706,8 +1706,7 @@ sub SetQueue {
     # On queue change, change queue for reminders too
     my $reminder_collection = $self->Reminders->Collection;
     while ( my $reminder = $reminder_collection->Next ) {
-        my ($status, $msg) = $reminder->SetQueue($NewQueue);
-        $RT::Logger->error('Queue change failed for reminder #' . $reminder->Id . ': ' . $msg) unless $status;
+        return ( 0, $self->loc("Queue change failed for reminder [_1]: [_2]", $reminder->Id ,$msg) ) unless $val;
     }
 
     return ( $self->_Set( Field => 'Queue', Value => $NewQueueObj->Id() ) );

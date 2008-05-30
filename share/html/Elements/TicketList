@@ -79,7 +79,7 @@ while ( my $record = $Collection->Next ) {
 </table>
 
 % if ($Rows && $ShowNavigation) {
-<hr />
+<hr>
 % my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
 % my $pages = int($TotalFound/$Rows)+$oddRows;
 % $pages = 1 if $pages < 1;

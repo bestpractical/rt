@@ -601,7 +601,7 @@ Set($StandaloneMinServers, 1);
 Set($StandaloneMaxServers, 1);
 
 # These next two options can be used to scale up and down the number of servers
-# to adjust to load. These two options will respect the $StandaloneMinServers
+# to adjust to load. These two otions will respect the $StandaloneMinServers
 # and $StandaloneMaxServers options.
 Set($StandaloneMinSpareServers, 0);
 Set($StandaloneMaxSpareServers, 0);
@@ -756,7 +756,7 @@ Set($StrictLinkACL, 1);
 # If you use RT behind a reverse proxy, you almost certainly want to
 # enable this option.
 
-Set($CanonicalizeRedirectURLs, 0);
+Set($CanonicalizeRedirectURLs, 1);
 
 # }}}
 

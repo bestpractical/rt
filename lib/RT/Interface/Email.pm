@@ -914,7 +914,7 @@ sub ParseAddressFromHeader {
         return ( undef, undef );
     }
 
-    my $Name = ( $AddrObj->name || $AddrObj->phrase || $AddrObj->comment || $AddrObj->address );
+    my $Name = ( $AddrObj->phrase || $AddrObj->comment || $AddrObj->address );
 
     #Lets take the from and load a user object.
     my $Address = $AddrObj->address;

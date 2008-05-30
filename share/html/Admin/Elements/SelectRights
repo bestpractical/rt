@@ -65,7 +65,7 @@
 </td>
 <td valign="top">
 <h3><&|/l&>New rights</&></h3> 
-<select size="5" multiple="multiple" name="GrantRight-<%$ACLDesc%>">
+<select size="5"  multiple  name="GrantRight-<%$ACLDesc%>">
 % foreach $right (sort keys %Rights) {
 % next if $current_rights{$right};
       <option value="<%$right%>"  

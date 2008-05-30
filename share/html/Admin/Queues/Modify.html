@@ -102,14 +102,14 @@
 % }
 
 % if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
-<tr><td align="right"><input type="checkbox" class="checkbox" name="Sign" value="1" <% $QueueObj->Sign? 'checked="checked"': '' |n%> /></td>
+<tr><td align="right"><input type="checkbox" class="checkbox" name="Sign" value="1" <% $QueueObj->Sign? 'checked="checked"': '' %> /></td>
 <td><&|/l&>Sign by default</&></td>
-<td align="right"><input type="checkbox" class="checkbox" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked="checked"': '' |n%> /></td>
+<td align="right"><input type="checkbox" class="checkbox" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked="checked"': '' %> /></td>
 <td><&|/l&>Encrypt by default</&></td>
 </tr>
 % }
 
-<tr><td align="right"><input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked|n%> /></td>
+<tr><td align="right"><input type="checkbox" class="checkbox" name="Enabled" value="1" <%$EnabledChecked%> /></td>
 <td colspan="3"><&|/l&>Enabled (Unchecking this box disables this queue)</&><br />
 % $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
 </td></tr>

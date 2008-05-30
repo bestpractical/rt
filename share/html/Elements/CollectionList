@@ -82,7 +82,7 @@ while ( my $record = $Collection->Next ) {
 </table>
 
 % if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
-<hr />
+<hr>
 % my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
 <&|/l, $Page, int($TotalFound/$Rows)+$oddRows&>Page [_1] of [_2]</&>
 
