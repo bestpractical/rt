@@ -106,6 +106,9 @@
 
 }
 
+.titlebox .titlebox-title a:visited {
+    color: #fff;
+}
 
 .titlebox .titlebox-title .left {
     font-weight: bold;
@@ -146,12 +149,6 @@
  -webkit-border-bottom-left-radius: 0.25em;
 
 }
-
-/* Horrible IE hacks */ 
-* html .titlebox .titlebox-title .right {
-    right: 0.7em;
-    top: 1em;
-} 
 
 .titlebox .titlebox-title .right a {
  color: #000;
@@ -194,6 +191,11 @@
     background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/images//css/rolldown-arrow.gif);
 }
 
-}
 
+
+/* Horrible IE hacks */ 
+* html .titlebox .titlebox-title .right {
+    right: 0.7em;
+    top: 1em;
+} 
 

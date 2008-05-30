@@ -190,7 +190,6 @@ div#ticket-history .messagebody .messagebody{
 
 
 
-.ticket-summary .titlebox-title a { color: #fff}
 .ticket-info-cfs .titlebox-title .left { background-color: #b32; color: #fff;}
 .ticket-info-basics .titlebox-title .left { background-color: #b32;  color: #fff;}
 .ticket-info-people .titlebox-title .left { background-color: #48c;  color: #fff;}
@@ -199,5 +198,5 @@ div#ticket-history .messagebody .messagebody{
 .ticket-info-dates .titlebox-title .left { background-color: #633063;  color: #fff;}
 
 
-
+.ticket-summary .titlebox-title a, div#body .ticket-summary .titlebox-title a:visited { color: #fff;}
 

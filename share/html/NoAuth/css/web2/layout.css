@@ -157,6 +157,8 @@ div#footer #bpscredits {
 
 div#logo {
 }
+
+
 div#logo a {
      display: none;
     position: absolute;
@@ -203,7 +205,6 @@ div#quick-personal {
 div#header h1 {
  position: absolute;
  left: 6.8em;
- top: 1.em;
  font-size: 1.4em;
  margin-top: 0.125em;
  padding: 0.25em;
