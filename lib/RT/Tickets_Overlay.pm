@@ -1139,21 +1139,21 @@ sub _CustomFieldDecipher {
         }
     } 
     if (!$queue) {
+        $queue = '';
+        my $cfs = RT::CustomFields->new( $self->CurrentUser );
+        $cfs->Limit( FIELD => 'Name', VALUE => $field );
+        $cfs->LimitToLookupType('RT::Queue-RT::Ticket');
+        my $count = $cfs->Count;
 
-    my $cfs = RT::CustomFields->new( $self->CurrentUser );
-    $cfs->Limit( FIELD => 'Name', VALUE => $field );
-    $cfs->LimitToLookupType('RT::Queue-RT::Ticket');
-    my $count = $cfs->Count;
-
-    if ($count > 1) { $cf = $cfs->First}
-    elsif ($count == 0 ) { $cf = undef }
+        if ($count > 1) { $cf = $cfs->First}
+        elsif ($count == 0 ) { $cf = undef }
     }
 
 
     return ($queue, $field, $cf, $column);
 
 }
- 
+
 =head2 _CustomFieldJoin
 
 Factor out the Join of custom fields so we can use it for sorting too
@@ -1271,8 +1271,7 @@ sub _CustomFieldLimit {
 
     my ($queue, $cfid, $cf, $column);
     ($queue, $field, $cf, $column) = $self->_CustomFieldDecipher( $field );
-
-            $cfid = $cf ? $cf->id  : 0 ;
+    $cfid = $cf ? $cf->id  : 0 ;
 
 
 # If we're trying to find custom fields that don't match something, we
