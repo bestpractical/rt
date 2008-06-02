@@ -189,7 +189,7 @@ sub Redirect {
         && $uri->host eq $server_uri->host
         && $uri->port eq $server_uri->port )
     {
-        if ( $ENV{'HTTPS'} eq 'on' ) {
+        if ( defined $ENV{HTTPS} and $ENV{'HTTPS'} eq 'on' ) {
             $uri->scheme('https');
         }
         else {
