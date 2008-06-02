@@ -40,7 +40,7 @@ sub run_tests {
         $count++ foreach grep $_, values %{ $test{$key} };
         is($tix->Count, $count, "found correct number of ticket(s) by '$key'") or $error = 1;
 
-        my $good_tickets = 1;
+        my $good_tickets = ($tix->Count == $count);
         while ( my $ticket = $tix->Next ) {
             next if $test{$key}->{ $ticket->Subject };
             diag $ticket->Subject ." ticket has been found when it's not expected";
