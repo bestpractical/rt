@@ -258,7 +258,7 @@ sub Create {
     # {{{ Canonicalize and check the right name
     my $canonic_name = $self->CanonicalizeRightName( $args{'RightName'} );
     unless ( $canonic_name ) {
-        return ( 0, $self->loc("Invalid right. Couldn't canonicalize right '$args{'RightName'}'") );
+        return ( 0, $self->loc("Invalid right. Couldn't canonicalize right '[_1]'", $args{'RightName'}) );
     }
     $args{'RightName'} = $canonic_name;
 

@@ -3076,7 +3076,8 @@ msgid "Invalid right"
 msgstr "無効な権利です"
 
 #: lib/RT/ACE_Overlay.pm:261
-msgid "Invalid right. Couldn't canonicalize right '$args{'RightName'}'"
+#. ($args{'RightName'})
+msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr ""
 
 #: lib/RT/Record.pm:269
