@@ -74,4 +74,16 @@ sub default_values {
     };
 }
 
+sub post_bind_hook {
+    my $self = shift;
+    my @ports = @{ $self->{server}->{port} };
+
+    print $0
+        . ": You can connect to your server at "
+        . (join ' , ', map { "http://localhost:$_/" } @ports)
+        . "\n";
+
+    $self->SUPER::post_bind_hook(@_);
+}
+
 1;
