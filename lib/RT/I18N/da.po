@@ -7529,10 +7529,6 @@ msgstr "korrespondance (sandsynligvis) ikke sendt"
 msgid "correspondence sent"
 msgstr "korrespondance sendt"
 
-#: NOT FOUND IN SOURCE
-msgid "current: $current, want $want, Error near ->$val<- expecting a "
-msgstr "aktuel: $current, vil have $want, Fejl nær ->$val<- forventer "
-
 #: lib/RT/Date.pm:333 share/html/Admin/Queues/Modify.html:89
 msgid "days"
 msgstr "dage"

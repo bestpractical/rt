@@ -7237,10 +7237,6 @@ msgstr "korespondencija (vjerojatno) nije poslana"
 msgid "correspondence sent"
 msgstr "korespondencija poslana"
 
-#: NOT FOUND IN SOURCE
-msgid "current: $current, want $want, Error near ->$val<- expecting a "
-msgstr "trenutno: $current, zelim $want, greska kod ->$val<- ocekujem "
-
 # this is genitive, not nominative! -joy
 #: lib/RT/Date.pm:333 share/html/Admin/Queues/Modify.html:89
 msgid "days"

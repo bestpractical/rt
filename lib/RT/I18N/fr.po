@@ -2203,10 +2203,6 @@ msgstr "Erreur de paramètres pour Ticket->AddWatcher"
 msgid "Error in parameters to Ticket->DeleteWatcher"
 msgstr "Erreur dans les paramètres de Ticket->DeleteWatcher"
 
-#: NOT FOUND IN SOURCE
-msgid "Error near ->%1<- expecting a %2 in '%3'"
-msgstr "Erreur près de ->%1<- %2 est attendu en '%3'"
-
 #: etc/initialdata:371 etc/upgrade/3.7.10/content:13
 msgid "Error to RT owner: public key"
 msgstr "Erreur au propriétaire RT: clefs publique"
@@ -6408,10 +6404,6 @@ msgstr "fermé"
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:57
 msgid "contains"
 msgstr "contient"
-
-#: NOT FOUND IN SOURCE
-msgid "current: $current, want $want, Error near ->$val<- expecting a $token in '$string'\\n"
-msgstr "actuellement: $current, souhaité $want, Erreur près de ->$val<- il manque un $token dans '$string'\\n"
 
 #: lib/RT/Date.pm:333 share/html/Admin/Queues/Modify.html:89
 msgid "days"

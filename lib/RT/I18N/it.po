@@ -7768,10 +7768,6 @@ msgstr "corrispondenza (probabilmente) non inviata"
 msgid "correspondence sent"
 msgstr "corrispondenza inviata"
 
-#: NOT FOUND IN SOURCE
-msgid "current: $current, want $want, Error near ->$val<- expecting a "
-msgstr "attuale: $current, richiesto $want, Errore vicino a ->$val<- mi aspettavo "
-
 #: lib/RT/Date.pm:333 share/html/Admin/Queues/Modify.html:89
 msgid "days"
 msgstr "giorni"
