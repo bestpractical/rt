@@ -55,8 +55,7 @@ body {
     padding:0;
     margin:0;
 
-    background-color: #183b83;
-    background: #183b83 url(<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/background-gradient.png) top left repeat-x ;
+    background: #547CCC url(<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/images/background-gradient.png) top left repeat-x ;
     font-family: helvetica, arial, sans-serif;
 
 }
