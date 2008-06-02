@@ -46,6 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
+use RT::Util;
+
 if (RT->InstallMode) {
   if  ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
     $m->call_next();

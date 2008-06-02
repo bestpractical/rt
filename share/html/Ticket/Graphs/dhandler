@@ -71,7 +71,11 @@ my $graph = RT::Graph::Tickets->$method(
 
 $r->content_type( 'image/png' );
 $m->clear_buffer;
-$graph->as_png( sub { $m->out( shift ) } );
+
+my $png;
+safe_run_child { $graph->as_png(\$png) };
+$m->out( $png );
+
 $m->abort;
 
 </%INIT>
