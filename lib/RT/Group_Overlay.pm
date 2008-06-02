@@ -1024,7 +1024,7 @@ sub HasMember {
         $id = $principal;
     } else {
         $RT::Logger->error("Group::HasMember was called with an argument that".
-                          " isn't an RT::Principal or id. It's $principal");
+                          " isn't an RT::Principal or id. It's ".($principal||'(undefined)'));
         return(undef);
     }
     return undef unless $id;
