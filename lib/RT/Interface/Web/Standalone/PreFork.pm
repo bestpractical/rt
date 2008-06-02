@@ -100,12 +100,4 @@ sub post_bind_hook {
     $self->SUPER::post_bind_hook(@_);
 }
 
-# Clear the environment before handling the next request. Only called if
-# a Net::Server is being used. Otherwise, HTTP::Server::Simple does it for us.
-sub post_accept {
-    my $self = shift;
-    RT::Interface::Web::Standalone->setup_environment;
-    $self->SUPER::post_accept(@_);
-}
-
 1;
