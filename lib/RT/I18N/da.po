@@ -375,14 +375,6 @@ msgstr "%1 rettigheder"
 msgid "%1 succeeded\\n"
 msgstr "%1 lykkedes"
 
-#: NOT FOUND IN SOURCE
-msgid "%1 type unknown for $MessageId"
-msgstr "%1 type ukendt for $MessageId"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 type unknown for %2"
-msgstr "%1 type ukendt for %2"
-
 #: lib/RT/SharedSetting.pm:213
 #. (ucfirst($self->ObjectName), $msg)
 msgid "%1 update: %2"

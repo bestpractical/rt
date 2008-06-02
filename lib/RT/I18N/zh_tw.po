@@ -383,14 +383,6 @@ msgstr "%1權限"
 msgid "%1 succeeded\\n"
 msgstr "%1 完成\\n"
 
-#: NOT FOUND IN SOURCE
-msgid "%1 type unknown for $MessageId"
-msgstr "不知道 $MessageID 的 %1 類別"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 type unknown for %2"
-msgstr "不知道 %2 的 %1 類別"
-
 #: lib/RT/SharedSetting.pm:213
 #. (ucfirst($self->ObjectName), $msg)
 msgid "%1 update: %2"

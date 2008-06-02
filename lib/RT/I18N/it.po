@@ -344,14 +344,6 @@ msgstr "Diritti su %1"
 msgid "%1 succeeded\\n"
 msgstr "%1 riuscito\\n"
 
-#: NOT FOUND IN SOURCE
-msgid "%1 type unknown for $MessageId"
-msgstr "Tipo %1 sconosciuto per $MessageId"
-
-#: NOT FOUND IN SOURCE
-msgid "%1 type unknown for %2"
-msgstr "Tipo %1 sconosciuto per %2"
-
 #: lib/RT/SharedSetting.pm:213
 #. (ucfirst($self->ObjectName), $msg)
 msgid "%1 update: %2"
