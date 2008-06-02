@@ -131,7 +131,7 @@ sub LoadById {
     }
 
     my $privacy = $self->_build_privacy($attr->ObjectType, $attr->ObjectId);
-    return (0, $self->loc("Bad privacy for attribute [_1], $id"))
+    return (0, $self->loc("Bad privacy for attribute [_1]", $id))
         if !$privacy;
 
     return $self->Load($privacy, $id);

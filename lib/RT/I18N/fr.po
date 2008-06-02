@@ -944,8 +944,8 @@ msgid "Back: Select Database Type"
 msgstr "Retour: Choix de la base de données"
 
 #: lib/RT/SharedSetting.pm:134
-msgid "Bad privacy for attribute %1, $id"
-msgstr "Mauvaise sécurité pour l'attribut %1, $id"
+msgid "Bad privacy for attribute %1"
+msgstr "Mauvaise sécurité pour l'attribut %1"
 
 #: share/html/Admin/Elements/CustomFieldTabs:67 share/html/Admin/Elements/GroupTabs:62 share/html/Admin/Elements/QueueTabs:62 share/html/Admin/Elements/UserTabs:60 share/html/Dashboards/Elements/Tabs:70 share/html/Ticket/Elements/Tabs:115 share/html/User/Elements/GroupTabs:61
 msgid "Basics"

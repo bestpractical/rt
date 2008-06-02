@@ -950,7 +950,7 @@ msgid "Bad data in %1"
 msgstr "Data buruk di dalam %1"
 
 #: lib/RT/SharedSetting.pm:134
-msgid "Bad privacy for attribute %1, $id"
+msgid "Bad privacy for attribute %1"
 msgstr ""
 
 #: share/html/Admin/Elements/CustomFieldTabs:67 share/html/Admin/Elements/GroupTabs:62 share/html/Admin/Elements/QueueTabs:62 share/html/Admin/Elements/UserTabs:60 share/html/Dashboards/Elements/Tabs:70 share/html/Ticket/Elements/Tabs:115 share/html/User/Elements/GroupTabs:61

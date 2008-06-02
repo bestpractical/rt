@@ -1416,7 +1416,7 @@ msgid "Bad data in %1"
 msgstr "%1 的資料錯誤"
 
 #: lib/RT/SharedSetting.pm:134
-msgid "Bad privacy for attribute %1, $id"
+msgid "Bad privacy for attribute %1"
 msgstr ""
 
 #: NOT FOUND IN SOURCE

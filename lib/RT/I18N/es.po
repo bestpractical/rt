@@ -1149,7 +1149,7 @@ msgid "Bad data in %1"
 msgstr "Datos incorrectos en %1"
 
 #: lib/RT/SharedSetting.pm:134
-msgid "Bad privacy for attribute %1, $id"
+msgid "Bad privacy for attribute %1"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
