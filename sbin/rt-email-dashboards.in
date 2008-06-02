@@ -214,7 +214,7 @@ SUMMARY
 
     $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
     my $contents = run_component(
-        '/Prefs/Dashboards/Render.html',
+        '/Dashboards/Render.html',
         id => $dashboard->Id,
     );
 
@@ -226,7 +226,7 @@ SUMMARY
 
     $contents = HTML::RewriteAttributes::Links->rewrite(
         $contents,
-        RT->Config->Get('WebURL') . '/Prefs/Dashboards/Render.html',
+        RT->Config->Get('WebURL') . '/Dashboards/Render.html',
     );
 
     send_mail($currentuser, $dashboard, $subscription, $contents);
