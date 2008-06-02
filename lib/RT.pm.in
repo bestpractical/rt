@@ -152,6 +152,17 @@ sub LoadConfig {
     # If the user does that, do what they mean.
     $RT::WebPath = '' if ($RT::WebPath eq '/');
 
+    # fix relative LogDir and GnuPG homedir
+    unless ( File::Spec->file_name_is_absolute( $Config->Get('LogDir') ) ) {
+        $Config->Set( LogDir =>
+              File::Spec->catfile( $BasePath, $Config->Get('LogDir') ) );
+    }
+
+    my $gpg = $Config->Get('GnuPGOptions');
+    unless ( File::Spec->file_name_is_absolute( $gpg->{homedir} ) ) {
+        $gpg->{homedir} = File::Spec->catfile( $BasePath, $gpg->{homedir} );
+    }
+
     RT::I18N->Init;
 }
 
