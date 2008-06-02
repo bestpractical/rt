@@ -568,7 +568,8 @@ sub ProcessUpdateMessage {
         my $sig = $args{'TicketObj'}->CurrentUser->UserObj->Signature || '';
         $sig =~ s/^\s*|\s*$//g;
         if ($args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/
-            or (    $args{ARGSRef}->{'UpdateContentType'} eq "text/html"
+            or (    defined $args{ARGSRef}->{'UpdateContentType'}
+                and $args{ARGSRef}->{'UpdateContentType'} eq "text/html"
                 and $args{ARGSRef}->{'UpdateContent'}
                 =~ /^\s*<p>\s*(--)?\s*<br\s*\/?>\s*\Q$sig\E\s*<\/p>\s*$/ )
             )

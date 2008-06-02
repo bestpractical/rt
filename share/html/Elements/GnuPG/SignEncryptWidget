@@ -125,7 +125,7 @@ if ( $self->{'Sign'} ) {
         if $TicketObj;
 
     my $address = $self->{'SignUsing'};
-    $address ||= $self->{'UpdateType'} eq "private"
+    $address ||= (defined $self->{'UpdateType'} and $self->{'UpdateType'} eq "private")
         ? ( $QueueObj->CommentAddress || RT->Config->Get('CommentAddress') )
         : ( $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') );
 
