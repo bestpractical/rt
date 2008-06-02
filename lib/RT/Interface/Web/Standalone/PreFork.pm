@@ -67,7 +67,11 @@ sub default_values {
         keys %option_map,
     );
 
-    return { %forking, RT->Config->Get('NetServerOptions') };
+    return {
+        %forking,
+        log_level => 1,
+        RT->Config->Get('NetServerOptions')
+    };
 }
 
 1;
