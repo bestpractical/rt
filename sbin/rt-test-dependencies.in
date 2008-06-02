@@ -148,6 +148,7 @@ sub conclude {
                     0, $module->{error} );
             }
         }
+        exit 1;
     }
 }
 
