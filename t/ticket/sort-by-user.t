@@ -21,7 +21,7 @@ my $queue;
 {
     $queue = RT::Queue->new( $RT::SystemUser );
     my ($ret, $msg) = $queue->Create(
-        Name => $queue,
+        Name => $queue_name,
         Description => 'queue for custom field sort testing'
     );
     ok($ret, "$queue test queue creation. $msg");

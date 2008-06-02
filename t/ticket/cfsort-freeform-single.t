@@ -13,12 +13,12 @@ use RT::CustomField;
 # Test Sorting by FreeformSingle custom field.
 
 diag "Create a queue to test with.";
-my $queue_name = "CFSortQueue$$";
+my $queue_name = "CFSortQueue-$$";
 my $queue;
 {
     $queue = RT::Queue->new( $RT::SystemUser );
     my ($ret, $msg) = $queue->Create(
-        Name => $queue,
+        Name => $queue_name,
         Description => 'queue for custom field sort testing'
     );
     ok($ret, "$queue test queue creation. $msg");
@@ -91,8 +91,11 @@ sub run_tests {
                 or $error = 1;
 
             my ($order_ok, $last) = (1, $order eq 'ASC'? '-': 'zzzzzz');
+            my $last_id = $tix->Last->id;
             while ( my $t = $tix->Next ) {
                 my $tmp;
+                next if $t->id == $last_id and $t->Subject eq "-"; # Nulls are allowed to come last, in Pg
+
                 if ( $order eq 'ASC' ) {
                     $tmp = ((split( /,/, $last))[0] cmp (split( /,/, $t->Subject))[0]);
                 } else {

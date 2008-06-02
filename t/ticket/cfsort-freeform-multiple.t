@@ -82,8 +82,11 @@ sub run_tests {
                 or $error = 1;
 
             my ($order_ok, $last) = (1, $order eq 'ASC'? '-': 'zzzzzz');
+            my $last_id = $tix->Last->id;
             while ( my $t = $tix->Next ) {
                 my $tmp;
+                next if $t->id == $last_id and $t->Subject eq "-"; # Nulls are allowed to come last, in Pg
+
                 if ( $order eq 'ASC' ) {
                     $tmp = ((split( /,/, $last))[0] cmp (split( /,/, $t->Subject))[0]);
                 } else {
