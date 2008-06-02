@@ -196,7 +196,7 @@ supported algorithms by your gpg. These algorithms are listed as hash-functions.
 =item --use-agent
 
 This option lets you use GPG Agent to cache the passphrase of RT's key. See
-L<http://www.gnupg.org/documentation/manuals./gnupg/Invoking-GPG_002dAGENT.html>
+L<http://www.gnupg.org/documentation/manuals/gnupg/Invoking-GPG_002dAGENT.html>
 for information about GPG Agent.
 
 =item --passphrase
