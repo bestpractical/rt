@@ -47,12 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 
 
-div.login-body#body {
-    background: none;
-    border: none;
-}
-
-
 #login-box hr {
  display: none;
 }
@@ -91,3 +85,4 @@ margin-right:auto;margin-left:auto;
  position: absolute;
  left:6em;
 }
+

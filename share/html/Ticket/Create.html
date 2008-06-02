@@ -179,7 +179,7 @@
 <table width="100%" border="0">
 <tr>
 <td width="50%" valign="top">
-
+    <div class="ticket-info-basics">
 	  <&| /Widgets/TitleBox, title => loc('The Basics'), 
 		title_class=> 'inverse',  
 		color => "#993333" &>
@@ -206,6 +206,7 @@
 </table>
 </&>
 <br />
+<div class="ticket-info-dates">
 <&|/Widgets/TitleBox, title => loc("Dates"),
 		title_class=> 'inverse',  
 		 color => "#663366" &>
@@ -215,10 +216,13 @@
 <tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || '' &></td></tr>
 </table>
 </&>
+</div>
+</div>
 <br />
 </td>
 
 <td valign="top">
+<div class="ticket-info-links">
 <&| /Widgets/TitleBox, title => loc('Links'), title_class=> 'inverse' &>
 
 <em><&|/l&>(Enter ticket ids or URLs, separated with spaces)</&></em>
@@ -233,6 +237,7 @@
 
 </table>
 </&>
+</div>
 <br />
 
 </td>
