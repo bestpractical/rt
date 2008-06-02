@@ -579,6 +579,8 @@ sub SetFromConfig {
             next unless $entry;
 
             # get entry for type we are looking for
+            # XXX skip scalar references. Otherwie 5.10 goes boom
+            return if ref($entry) eq 'SCALAR';  
             my $entry_ref = *{$entry}{ ref($ref) };
             next unless $entry_ref;
 
