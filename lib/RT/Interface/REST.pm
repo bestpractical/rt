@@ -202,7 +202,7 @@ sub form_compose {
                 $sp = " "x4 if length($sp) > 16;
 
                 foreach $v (@values) {
-                    $v = '' unless $v;
+                    $v = '' unless defined $v;
                     if ( $v =~ /\n/) {
                         $v =~ s/^/$sp/gm;
                         $v =~ s/^$sp//;
