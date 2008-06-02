@@ -293,19 +293,6 @@ elif test "$RT_GPG" = no; then
 fi
 AC_SUBST(RT_GPG)
 
-dnl RT's forking server support
-AC_CHECK_PROG([RT_FORKING], [forking], "yes", "no")
-AC_ARG_ENABLE(forking,
-            AC_HELP_STRING([--enable-forking],
-                           [Turns on forking-server support]),
-            RT_FORKING=$enableval)
-if test "$RT_FORKING" = yes; then
-        RT_FORKING="1"
-elif test "$RT_FORKING" = no; then
-        RT_FORKING="0"
-fi
-AC_SUBST(RT_FORKING)
-
 dnl This section maps the variable names this script 'natively' generates
 dnl to their existing names. They should be removed from here as the .in
 dnl files are changed to use the new names.
