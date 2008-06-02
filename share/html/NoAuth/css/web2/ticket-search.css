@@ -45,6 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+
+
 #comp-Search-Build #body {
     position: relative;
 }
@@ -53,7 +55,7 @@
   position: absolute;
   margin-top: 0.2em;
   right: 1em;
-  width: 40%;
+  left: 60%;
   top: 1em;
 /*  margin-top: -1em; */
 }
