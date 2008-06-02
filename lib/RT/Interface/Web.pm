@@ -424,7 +424,7 @@ sub CreateTicket {
             $create_args{$arg} = $ARGS{$arg};
         }
         # Object-RT::Ticket--CustomField-3-Values
-        elsif ( $arg =~ /^Object-RT::Ticket--CustomField-(\d+)(.*?)$/ ) {
+        elsif ( $arg =~ /^Object-RT::Ticket--CustomField-(\d+)/ ) {
             my $cfid = $1;
 
             my $cf = RT::CustomField->new( $session{'CurrentUser'} );
