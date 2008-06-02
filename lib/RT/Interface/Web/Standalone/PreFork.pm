@@ -60,6 +60,13 @@ my %option_map = (
     max_requests      => 'StandaloneMaxRequests',
 );
 
+=head2 default_values
+
+Produces the default values for L<Net::Server> configuration from RT's config
+files.
+
+=cut
+
 sub default_values {
     my %forking = (
         map  { $_ => RT->Config->Get( $option_map{$_} ) }
@@ -74,6 +81,13 @@ sub default_values {
     };
 }
 
+=head2 post_bind_hook
+
+After binding to the specified ports, let the user know that the server is
+prepared to handle connections.
+
+=cut
+
 sub post_bind_hook {
     my $self = shift;
     my @ports = @{ $self->{server}->{port} };
@@ -84,6 +98,14 @@ sub post_bind_hook {
         . "\n";
 
     $self->SUPER::post_bind_hook(@_);
+}
+
+# Clear the environment before handling the next request. Only called if
+# a Net::Server is being used. Otherwise, HTTP::Server::Simple does it for us.
+sub post_accept {
+    my $self = shift;
+    RT::Interface::Web::Standalone->setup_environment;
+    $self->SUPER::post_accept(@_);
 }
 
 1;
