@@ -29,7 +29,7 @@ ok( RT::Test->set_rights(
 my $agent_a = RT::Test::Web->new;
 ok $agent_a->login('user_a', 'password'), 'logged in as user A';
 
-diag "current user has no right to own, nobody selected as owner on create";
+diag "current user has no right to own, nobody selected as owner on create" if $ENV{TEST_VERBOSE};
 {
     $agent_a->get_ok('/', 'open home page');
     $agent_a->form_name('CreateTicketInQueue');
@@ -53,7 +53,7 @@ diag "current user has no right to own, nobody selected as owner on create";
     is $ticket->Owner, $RT::Nobody->id, 'correct owner';
 }
 
-diag "user can chose owner of a new ticket";
+diag "user can chose owner of a new ticket" if $ENV{TEST_VERBOSE};
 {
     $agent_a->get_ok('/', 'open home page');
     $agent_a->form_name('CreateTicketInQueue');
@@ -82,7 +82,7 @@ diag "user can chose owner of a new ticket";
 my $agent_b = RT::Test::Web->new;
 ok $agent_b->login('user_b', 'password'), 'logged in as user B';
 
-diag "user A can not change owner after create";
+diag "user A can not change owner after create" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(
@@ -115,11 +115,11 @@ diag "user A can not change owner after create";
     };
 
     $test_cb->($agent_a);
-diag "even owner(user B) can not change owner";
+    diag "even owner(user B) can not change owner" if $ENV{TEST_VERBOSE};
     $test_cb->($agent_b);
 }
 
-diag "on reply correct owner is selected";
+diag "on reply correct owner is selected" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(
@@ -148,7 +148,7 @@ ok( RT::Test->set_rights(
     { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
-diag "Couldn't take without coresponding right";
+diag "Couldn't take without coresponding right" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(
@@ -165,7 +165,7 @@ diag "Couldn't take without coresponding right";
         'no Steal link as well';
 }
 
-diag "Couldn't steal without coresponding right";
+diag "Couldn't steal without coresponding right" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(
@@ -187,7 +187,7 @@ ok( RT::Test->set_rights(
     { Principal => $user_a, Right => [qw(SeeQueue ShowTicket CreateTicket TakeTicket)] },
 ), 'set rights');
 
-diag "TakeTicket require OwnTicket to work";
+diag "TakeTicket require OwnTicket to work" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(
@@ -209,7 +209,7 @@ ok( RT::Test->set_rights(
     { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
-diag "TakeTicket+OwnTicket work";
+diag "TakeTicket+OwnTicket work" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(
@@ -230,7 +230,7 @@ diag "TakeTicket+OwnTicket work";
     is $ticket->Owner, $user_a->id, 'correct owner';
 }
 
-diag "TakeTicket+OwnTicket don't work when owner is not nobody";
+diag "TakeTicket+OwnTicket don't work when owner is not nobody" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(
@@ -253,7 +253,7 @@ ok( RT::Test->set_rights(
     { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
-diag "StealTicket require OwnTicket to work";
+diag "StealTicket require OwnTicket to work" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(
@@ -276,7 +276,7 @@ ok( RT::Test->set_rights(
     { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
-diag "StealTicket+OwnTicket work";
+diag "StealTicket+OwnTicket work" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(
@@ -298,7 +298,7 @@ diag "StealTicket+OwnTicket work";
     is $ticket->Owner, $user_a->id, 'correct owner';
 }
 
-diag "StealTicket+OwnTicket don't work when owner is nobody";
+diag "StealTicket+OwnTicket don't work when owner is nobody" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(
@@ -320,7 +320,7 @@ ok( RT::Test->set_rights(
     { Principal => $user_b, Right => [qw(SeeQueue ShowTicket OwnTicket)] },
 ), 'set rights');
 
-diag "no Steal link when owner nobody";
+diag "no Steal link when owner nobody" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(
@@ -337,7 +337,7 @@ diag "no Steal link when owner nobody";
         'but have Take link');
 }
 
-diag "no Take link when owner is not nobody";
+diag "no Take link when owner is not nobody" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $user_a );
     my ($id, $txn, $msg) = $ticket->Create(

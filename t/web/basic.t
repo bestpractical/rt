@@ -13,7 +13,7 @@ $agent->cookie_jar( HTTP::Cookies->new );
 
 # get the top page
 my $url = $agent->rt_base_url;
-diag $url;
+diag $url if $ENV{TEST_VERBOSE};
 $agent->get($url);
 
 is ($agent->{'status'}, 200, "Loaded a page");

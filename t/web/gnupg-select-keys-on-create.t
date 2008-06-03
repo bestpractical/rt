@@ -32,7 +32,7 @@ RT->Config->Set( GnuPGOptions =>
     passphrase => 'rt-test',
     'no-permission-warning' => undef,
 );
-diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'};
+diag "GnuPG --homedir ". RT->Config->Get('GnuPGOptions')->{'homedir'} if $ENV{TEST_VERBOSE};
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
@@ -51,7 +51,7 @@ RT::Test->set_rights(
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
 
-diag "check that signing doesn't work if there is no key";
+diag "check that signing doesn't work if there is no key" if $ENV{TEST_VERBOSE};
 {
     unlink "t/mailbox";
 
@@ -77,7 +77,7 @@ diag "check that signing doesn't work if there is no key";
     is $res{'info'}[0]{'TrustTerse'}, 'ultimate', 'ultimately trusted key';
 }
 
-diag "check that things don't work if there is no key";
+diag "check that things don't work if there is no key" if $ENV{TEST_VERBOSE};
 {
     unlink "t/mailbox";
 
@@ -103,7 +103,7 @@ diag "check that things don't work if there is no key";
     ok !@mail, 'there are no outgoing emails';
 }
 
-diag "import first key of rt-test\@example.com";
+diag "import first key of rt-test\@example.com" if $ENV{TEST_VERBOSE};
 my $fpr1 = '';
 {
     RT::Test->import_gnupg_key('rt-test@example.com', 'public');
@@ -112,7 +112,7 @@ my $fpr1 = '';
     $fpr1 = $res{'info'}[0]{'Fingerprint'};
 }
 
-diag "check that things still doesn't work if key is not trusted";
+diag "check that things still doesn't work if key is not trusted" if $ENV{TEST_VERBOSE};
 {
     unlink "t/mailbox";
 
@@ -150,7 +150,7 @@ diag "check that things still doesn't work if key is not trusted";
     ok !@mail, 'there are no outgoing emails';
 }
 
-diag "import a second key of rt-test\@example.com";
+diag "import a second key of rt-test\@example.com" if $ENV{TEST_VERBOSE};
 my $fpr2 = '';
 {
     RT::Test->import_gnupg_key('rt-test@example.com.2', 'public');
@@ -159,7 +159,7 @@ my $fpr2 = '';
     $fpr2 = $res{'info'}[2]{'Fingerprint'};
 }
 
-diag "check that things still doesn't work if two keys are not trusted";
+diag "check that things still doesn't work if two keys are not trusted" if $ENV{TEST_VERBOSE};
 {
     unlink "t/mailbox";
 

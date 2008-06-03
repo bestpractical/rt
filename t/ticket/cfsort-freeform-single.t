@@ -12,7 +12,7 @@ use RT::CustomField;
 
 # Test Sorting by FreeformSingle custom field.
 
-diag "Create a queue to test with.";
+diag "Create a queue to test with." if $ENV{TEST_VERBOSE};
 my $queue_name = "CFSortQueue-$$";
 my $queue;
 {
@@ -28,7 +28,7 @@ my $queue;
 my %CF;
 my $cf_name;
 
-diag "create a CF\n";
+diag "create a CF\n" if $ENV{TEST_VERBOSE};
 {
     $cf_name = $CF{'CF'}{'name'} = "Order$$";
     $CF{'CF'}{'obj'} = RT::CustomField->new( $RT::SystemUser );
@@ -160,7 +160,7 @@ run_tests();
 
 
 
-diag "create another CF\n";
+diag "create another CF\n" if $ENV{TEST_VERBOSE};
 {
     $CF{'AnotherCF'}{'name'} = "OrderAnother$$";
     $CF{'AnotherCF'}{'obj'} = RT::CustomField->new( $RT::SystemUser );

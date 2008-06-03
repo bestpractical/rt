@@ -53,7 +53,6 @@ plan tests => scalar @files;
 for (@files) {
     local $SIG{__WARN__} = sub {};
     require_ok($_);
-    diag $_;
 }
 
 1;

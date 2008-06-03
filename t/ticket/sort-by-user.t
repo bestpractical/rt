@@ -15,7 +15,7 @@ use RT::CustomField;
 # we sort by user name
 #########################################################
 
-diag "Create a queue to test with.";
+diag "Create a queue to test with." if $ENV{TEST_VERBOSE};
 my $queue_name = "OwnerSortQueue$$";
 my $queue;
 {

@@ -31,7 +31,7 @@ ok $agent_a->login('user_a', 'password'), 'logged in as user A';
 my $agent_b = RT::Test::Web->new;
 ok $agent_b->login('user_b', 'password'), 'logged in as user B';
 
-diag "create a ticket for testing";
+diag "create a ticket for testing" if $ENV{TEST_VERBOSE};
 my $tid;
 {
     my $ticket = RT::Ticket->new( $user_a );
@@ -45,7 +45,7 @@ my $tid;
     is $ticket->Owner, $user_a->id, 'correct owner';
 }
 
-diag "user B adds a message, we check that user A see notification and can clear it";
+diag "user B adds a message, we check that user A see notification and can clear it" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Ticket->new( $user_b );
     $ticket->Load( $tid );

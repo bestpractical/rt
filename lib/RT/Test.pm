@@ -508,7 +508,7 @@ sub set_mail_catcher {
 sub fetch_caught_mails {
     my $self = shift;
     return grep /\S/, split /%% split me! %%/,
-        RT::Test->file_content( 't/mailbox', 'unlink' => 1 );
+        RT::Test->file_content( 't/mailbox', 'unlink' => 1, noexist => 1 );
 }
 
 sub file_content {
@@ -521,7 +521,7 @@ sub file_content {
     diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
 
     open my $fh, "<:raw", $path
-        or do { warn "couldn't open file '$path': $!"; return '' };
+        or do { warn "couldn't open file '$path': $!" unless $args{noexist}; return '' };
     my $content = do { local $/; <$fh> };
     close $fh;
 
