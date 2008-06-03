@@ -314,8 +314,11 @@ ok($id, $msg);
 ok($link->LocalBase   == $ticket->id,  "LocalBase   set correctly");
 ok($link->LocalTarget == $ticket2->id, "LocalTarget set correctly");
 
-*RT::NotTicket::Id = sub { return $$ };
-*RT::NotTicket::id = &RT::NotTicket::Id;
+{
+    no warnings 'once';
+    *RT::NotTicket::Id = sub { return $$ };
+    *RT::NotTicket::id = &RT::NotTicket::Id;
+}
 
 {
     package RT::URI::not_ticket;
@@ -327,7 +330,8 @@ ok($link->LocalTarget == $ticket2->id, "LocalTarget set correctly");
 }
 
 my $orig_getresolver = \&RT::URI::_GetResolver;
-
+{
+    no warnings 'redefine';
     *RT::URI::_GetResolver = sub {
         my $self = shift;
         my $scheme = shift;
@@ -343,6 +347,7 @@ my $orig_getresolver = \&RT::URI::_GetResolver;
             $self->{'resolver'} = RT::URI::base->new($self->CurrentUser);
         }
     };
+}
 
 ($id,$msg) = $link->Create( Base => "not_ticket::$RT::Organization/notticket/$$", Target => $ticket2->URI, Type => 'MyLinkType' );
 ok($id, $msg);
@@ -364,8 +369,10 @@ ok($link->LocalTarget == 0, "LocalTarget set correctly");
 ok($link->LocalBase   == 0, "LocalBase set correctly");
 
 # restore _GetResolver
-*RT::URI::_GetResolver = $orig_getresolver;
-
+{
+    no warnings 'redefine';
+    *RT::URI::_GetResolver = $orig_getresolver;
+}
 
 sub link_count {
     my $file = shift;
