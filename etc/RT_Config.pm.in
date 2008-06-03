@@ -780,6 +780,12 @@ Set($DisableGraphViz, do { local $@; eval {require GraphViz; 1;} ? 0 : 1 } );
 
 # }}}
 
+# Ticket Updates 
+# Turn off the notices of unread messages on ticket display pages
+# by setting this to 0
+
+Set($EnableTicketUpdateStatus,1);
+
 # {{{ Deprecated options
 
 # $AlwaysUseBase64 - Encode blobs as base64 in DB (?)
