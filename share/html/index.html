@@ -88,7 +88,8 @@ if ( $ARGS{'QuickCreate'} ) {
                     Queue => $ARGS{'Queue'},
                     Owner => $ARGS{'Owner'},
                     Status => 'new',
-                    Requestor => $session{'CurrentUser'}->id,
+                    # yes! it's Requestors, not Requestor
+                    Requestors => $session{'CurrentUser'}->id,
                     From => $session{'CurrentUser'}->id,
                     Content => $ARGS{'Content'},
                     Subject => $ARGS{'Subject'});
