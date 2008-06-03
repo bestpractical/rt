@@ -57,9 +57,14 @@ RT::Graph::Tickets - view relations between tickets as graphs
 
 =cut
 
-use IPC::Run;
-use IPC::Run::SafeHandles;
-use GraphViz;
+unless ($RT::DisableGraphViz) {
+    require IPC::Run;
+    IPC::Run->import;
+    require IPC::Run::SafeHandles;
+    IPC::Run::SafeHandles->import;
+    require GraphViz;
+    GraphViz->import;
+}
 
 our %ticket_status_style = (
     new      => { fontcolor => '#FF0000' },
