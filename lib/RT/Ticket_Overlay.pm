@@ -1703,14 +1703,18 @@ sub SetQueue {
         $RT::Logger->error("Couldn't set owner on queue change: $msg") unless $status;
     }
 
-    # On queue change, change queue for reminders too
-    my $reminder_collection = $self->Reminders->Collection;
-    while ( my $reminder = $reminder_collection->Next ) {
-        my ($status, $msg) = $reminder->SetQueue($NewQueue);
-        $RT::Logger->error('Queue change failed for reminder #' . $reminder->Id . ': ' . $msg) unless $status;
-    }
+    my ($status, $msg) = $self->_Set( Field => 'Queue', Value => $NewQueueObj->Id() );
 
-    return ( $self->_Set( Field => 'Queue', Value => $NewQueueObj->Id() ) );
+    if ( $status ) {
+        # On queue change, change queue for reminders too
+        my $reminder_collection = $self->Reminders->Collection;
+        while ( my $reminder = $reminder_collection->Next ) {
+            my ($status, $msg) = $reminder->SetQueue($NewQueue);
+            $RT::Logger->error('Queue change failed for reminder #' . $reminder->Id . ': ' . $msg) unless $status;
+        }
+    }
+    
+    return ($status, $msg);
 }
 
 # }}}

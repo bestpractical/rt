@@ -88,8 +88,7 @@ sub Collection {
     my $self = shift;
     my $col = RT::Tickets->new($self->CurrentUser);
 
-     my $query =     'Queue = "'. $self->TicketObj->QueueObj->Name .'" AND Type = "reminder"';
-    $query .= ' AND RefersTo = "'.$self->Ticket.'"';
+     my $query = 'Type = "reminder" AND RefersTo = "'.$self->Ticket.'"';
    
     $col->FromSQL($query);
     
