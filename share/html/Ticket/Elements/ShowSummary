@@ -74,6 +74,7 @@
 % $m->callback( %ARGS, CallbackName => 'LeftColumn' );
 	</td>
 	<td valign="top" width="50%" class="boxcontainer">
+% if ( RT->Config->Get('EnableReminders') ) {
 	  <&|/Widgets/TitleBox, title => loc("Reminders"),
 		title_href => RT->Config->Get('WebPath')."/Ticket/Reminders.html?id=".$Ticket->Id, 
 		class => 'ticket-info-reminders' &>
@@ -88,6 +89,7 @@
             </tr>
             </table>
 	  </&>
+% }
 	  <&| /Widgets/TitleBox, title => loc("Dates"),
 		title_href => RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->Id, 
 		class => 'ticket-info-dates' &>

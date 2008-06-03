@@ -786,6 +786,11 @@ Set($DisableGraphViz, do { local $@; eval {require GraphViz; 1;} ? 0 : 1 } );
 
 Set($EnableTicketUpdateStatus,1);
 
+# Reminders
+# Hide links/portlets related to Reminders by setting this to 0
+
+Set($EnableReminders,1);
+
 # {{{ Deprecated options
 
 # $AlwaysUseBase64 - Encode blobs as base64 in DB (?)
