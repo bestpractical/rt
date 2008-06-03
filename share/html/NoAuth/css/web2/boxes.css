@@ -188,7 +188,7 @@
 }
 
 .titlebox.rolled-up .titlebox-title .widget a {
-    background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/images//css/rolldown-arrow.gif);
+    background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/css/rolldown-arrow.gif);
 }
 
 
