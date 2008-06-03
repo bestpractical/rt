@@ -978,7 +978,7 @@ sub MatchPattern {
     my $self = shift;
     my $regex = $self->Pattern or return 1;
 
-    return (($_[0] || '') =~ $regex);
+    return (( defined $_[0] ? $_[0] : '') =~ $regex);
 }
 
 
