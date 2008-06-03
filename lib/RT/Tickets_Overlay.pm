@@ -1291,6 +1291,8 @@ sub _CustomFieldLimit {
 
     $self->_OpenParen;
 
+    $self->_OpenParen;
+
     $self->_SQLLimit(
         ALIAS      => $TicketCFs,
         FIELD      => $column || 'Content',
@@ -1298,6 +1300,30 @@ sub _CustomFieldLimit {
         VALUE      => $value,
         %rest
     );
+
+    $self->_OpenParen;
+
+    $self->_SQLLimit(
+        ALIAS      => $TicketCFs,
+        FIELD      => $column || 'Content',
+        OPERATOR   => '=',
+        VALUE      => '',
+        QUOTEVALUE => 1,
+        ENTRYAGGREGATOR => 'OR'
+    );
+
+    $self->_SQLLimit(
+        ALIAS => $TicketCFs,
+        FIELD => 'LargeContent',
+        OPERATOR => $op,
+        VALUE => $value,
+        QUOTEVALUE => 1,
+        ENTRYAGGREGATOR => 'AND',
+    );
+
+    $self->_CloseParen;
+
+    $self->_CloseParen;
 
     # XXX: if we join via CustomFields table then
     # because of order of left joins we get NULLs in
