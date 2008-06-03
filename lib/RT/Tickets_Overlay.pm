@@ -1145,7 +1145,7 @@ sub _CustomFieldDecipher {
         $cfs->LimitToLookupType('RT::Queue-RT::Ticket');
         my $count = $cfs->Count;
 
-        if ($count > 1) { $cf = $cfs->First}
+        if ($count >= 1) { $cf = $cfs->First}
         elsif ($count == 0 ) { $cf = undef }
     }
 
