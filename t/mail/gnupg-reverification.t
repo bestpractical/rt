@@ -49,7 +49,7 @@ RT::Test->import_gnupg_key('rt-recipient@example.com');
 
 my @ticket_ids;
 
-my @files = glob("t/data/mails/gnupg-basic-set/*-signed-*");
+my @files = glob("t/data/gnupg/emails/*-signed-*");
 foreach my $file ( @files ) {
     diag "testing $file" if $ENV{'TEST_VERBOSE'};
 

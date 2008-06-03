@@ -111,7 +111,7 @@ ok($val,$msg);
 
     # add attachments to a ticket
     # text attachment
-    check_attachment("$RT::BasePath/lib/t/data/lorem-ipsum");
+    check_attachment("t/data/emails/lorem-ipsum");
     # binary attachment
     check_attachment($RT::MasonComponentRoot.'/NoAuth/images/bplogo.gif');
 

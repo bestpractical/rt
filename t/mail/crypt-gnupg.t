@@ -17,7 +17,7 @@ RT->Config->Set( LogStackTraces => 'error' );
 
 use File::Spec ();
 use Cwd;
-my $homedir = File::Spec->catdir( cwd(), qw(lib t data crypt-gnupg) );
+my $homedir = File::Spec->catdir( cwd(), qw(t data gnupg keyrings) );
 mkdir $homedir;
 
 use_ok('RT::Crypt::GnuPG');

@@ -17,7 +17,7 @@ use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
 
-my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
+my $homedir = File::Spec->catdir( getcwd(), qw(t data gnupg keyrings) );
 
 # catch any outgoing emails
 unlink "t/mailbox";

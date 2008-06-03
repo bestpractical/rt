@@ -123,7 +123,7 @@ sub init_db
     cleanup_tmp();
     RT::InitLogging();
 
-    diag( _init_db() );
+    _init_db();
 
     RT::Init();
     $SIG{__WARN__} = sub { $RT::Logger->warning( @_ ); warn @_ };
@@ -150,7 +150,7 @@ sub _init_db
 =head3 db_name
 
 Returns absolute file path to the current DB.
-It is C<cwd() .'/t/data/tmp/'. test_name() .'.db'>.
+It is C<cwd() .'/t/data/shredder/'. test_name() .'.db'>.
 See also C<test_name> function.
 
 =cut
@@ -212,11 +212,11 @@ sub test_name
 =head3 tmpdir
 
 Return absolute path to tmp dir used in tests.
-It is C<cwd(). "t/data/tmp">.
+It is C<cwd(). "t/data/shredder">.
 
 =cut
 
-sub tmpdir { return File::Spec->catdir(Cwd::cwd(), qw(lib t data shredder)) }
+sub tmpdir { return File::Spec->catdir(Cwd::cwd(), qw(t data shredder)) }
 
 =head2 create_tmpdir
 
@@ -228,7 +228,7 @@ sub create_tmpdir { my $n = tmpdir(); File::Path::mkpath( $n );    return $n }
 
 =head3 cleanup_tmp
 
-Delete all tmp files that match C<t/data/tmp/test_name.*> mask.
+Delete all tmp files that match C<t/data/shredder/test_name.*> mask.
 See also C<test_name> function.
 
 =cut
@@ -399,6 +399,11 @@ sub is_all_successful
     use Test::Builder;
     my $Test = Test::Builder->new;
     return grep( !$_, $Test->summary )? 0: 1;
+}
+
+END {
+    return unless is_all_successful;
+    File::Path::rmtree(tmpdir());
 }
 
 1;

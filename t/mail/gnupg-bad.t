@@ -14,7 +14,7 @@ plan tests => 6;
 
 use Cwd 'getcwd';
 
-my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
+my $homedir = File::Spec->catdir( getcwd(), qw(t data gnupg keyrings) );
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( 'GnuPG',
