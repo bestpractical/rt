@@ -42,7 +42,8 @@ ok(my ( $add_id, $add_msg, $txnid ) = $t->Reminders->Add(
     ), 'Add reminder');
 
 # Check that the new Reminder is here
-ok(my $reminders = $t->Reminders->Collection, 'Loading reminders for this ticket');
+my $reminders = $t->Reminders->Collection;
+ok($reminders, 'Loading reminders for this ticket');
 my $found = 0;
 while ( my $reminder = $reminders->Next ) {
     next unless $found == 0;
@@ -57,7 +58,8 @@ ok (my ($move_val, $move_msg) = $t->SetQueue('reminders tests 2'), 'Moving ticke
 is ($t->QueueObj->Name, 'reminders tests 2', 'Ticket successfully moved');
 
 # Check that the new reminder is still there and moved to the new queue
-ok(my $reminders = $t->Reminders->Collection, 'Loading reminders for this ticket');
+$reminders = $t->Reminders->Collection;
+ok($reminders, 'Loading reminders for this ticket');
 $found = 0;
 my $ok_queue = 0;
 while ( my $reminder = $reminders->Next ) {
