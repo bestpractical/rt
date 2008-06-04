@@ -559,7 +559,7 @@ sub ProcessUpdateMessage {
 
     return () unless    $args{ARGSRef}->{'UpdateTimeWorked'}
                      || $args{ARGSRef}->{'UpdateAttachments'}
-                     || $args{ARGSRef}->{'UpdateContent'};
+                     || defined $args{ARGSRef}->{'UpdateContent'};
 
     #Make the update content have no 'weird' newlines in it
     $args{ARGSRef}->{'UpdateContent'} =~ s/\r+\n/\n/g if $args{ARGSRef}->{'UpdateContent'};
