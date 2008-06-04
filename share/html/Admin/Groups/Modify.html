@@ -66,11 +66,11 @@
 <tr><td align="right">
 <&|/l&>Name</&>:
 </td>
-<td><input name="Name" value="<%$Group->Name%>" /></td>
+<td><input name="Name" value="<%$Group->Name||''%>" /></td>
 </tr>
 <tr>
 <td align="right">
-<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description%>" size="60" /></td>
+<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description||''%>" size="60" /></td>
 </tr>
 % my $CFs = $Group->CustomFields;
 % while (my $CF = $CFs->Next) {
@@ -145,7 +145,7 @@ if ($id) {
 }
 
 #we're asking about enabled on the web page but really care about disabled.
-if ($Enabled == 1) {
+if (defined $Enabled && $Enabled == 1) {
     $Disabled = 0;
 }	
 else {
