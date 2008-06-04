@@ -46,8 +46,12 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, error => $error );
+
+% unless ($SuppressHeader) {
 <& /Elements/Header, Code => $Code, Why => $Why, Title => $Title &>
 <& /Elements/Tabs, Title => $Title &>
+% }
+
 <div class="error">
 <%$Why%>
 <br />
@@ -63,7 +67,8 @@ $m->abort();
 $Code => undef
 $Details => ''
 $Title => loc("RT Error")
-$Why => loc("the calling component did not specify why")
+$Why => loc("the calling component did not specify why"),
+$SuppressHeader => 0,
 </%args>
 
 <%INIT>

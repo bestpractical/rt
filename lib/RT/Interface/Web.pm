@@ -297,15 +297,17 @@ sub loc_fuzzy {
 # {{{ sub Abort
 # Error - calls Error and aborts
 sub Abort {
+    my $why  = shift;
+    my %args = @_;
 
     if ($session{'ErrorDocument'} && 
         $session{'ErrorDocumentType'}) {
         $r->content_type($session{'ErrorDocumentType'});
-        $m->comp($session{'ErrorDocument'} , Why => shift);
+        $m->comp($session{'ErrorDocument'} , Why => $why, %args);
         $m->abort;
     } 
     else  {
-        $m->comp("/Elements/Error" , Why => shift);
+        $m->comp("/Elements/Error" , Why => $why, %args);
         $m->abort;
     }
 }
