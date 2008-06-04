@@ -83,7 +83,7 @@ while ( my $record = $Collection->Next ) {
 % my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
 % my $pages = int($TotalFound/$Rows)+$oddRows;
 % $pages = 1 if $pages < 1;
-<&|/l, $Page, $pages &>Page [_1] of [_2]</&>
+<&|/l, $Page, $pages &>Page </&>
 
 <%perl>
 my $prev = $m->comp(
@@ -95,6 +95,35 @@ my $prev = $m->comp(
     Order   => $Order,
     Page    => ( $Page - 1 )
 );
+
+my %show;
+$show{1} = 1;
+$show{$_} = 1 for (($Page - 2)..($Page + 2));
+$show{$pages} = 1;
+my $dots;
+for my $number (1..$pages){
+  if ($show{$number}){
+    $dots = undef;
+    if ($number == $Page){
+      $number = ("<em>$number </em>");
+    }	
+    my $num = $m->comp(
+		       '/Elements/QueryString',
+		       Query   => $Query,
+		       Format  => $Format,
+		       Rows    => $Rows,
+		       OrderBy => $OrderBy,
+		       Order   => $Order,
+		       Page    => $number
+		      );
+    $m->out("<a href=\"$BaseURL$num\">$number </a>");
+  }
+  elsif (not $dots){
+    $dots = 1;
+    $m->out(" ... ");
+  }
+}
+
 my $next = $m->comp(
     '/Elements/QueryString',
     Query   => $Query,
@@ -106,10 +135,10 @@ my $next = $m->comp(
 );
 </%perl>
 % if ($Page > 1) {
-<a href="<%$BaseURL%><%$prev%>"><&|/l&>Previous Page</&></a>
+<a href="<%$BaseURL%><%$prev%>"><&|/l&>Previous</&></a>
 % }
 % if (($Page * $Rows) < $TotalFound) {
-<a href="<%$BaseURL%><%$next%>"><&|/l&>Next Page</&></a>
+<a href="<%$BaseURL%><%$next%>"><&|/l&>Next</&></a>
 % }
 % }
 <%INIT>
