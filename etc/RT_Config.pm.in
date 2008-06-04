@@ -259,7 +259,7 @@ Set($CorrespondAddress , 'RT_CorrespondAddressNotSet');
 Set($CommentAddress , 'RT_CommentAddressNotSet');
 
 # By default, RT sets the outgoing mail's "From:" header to
-# "SenderName via RT".  Setting this option to 0 disables it.
+# "SenderName via RT".  Setting UseFriendlyFromLine to 0 disables it.
 
 Set($UseFriendlyFromLine , 1);
 
@@ -467,7 +467,7 @@ Set($MessageBoxHeight, 15);
 # Default wrapping: "HARD"  (choices "SOFT", "HARD")
 Set($MessageBoxWrap, "HARD");
 
-# Should "rich text" editing for email messages be turned on?
+# Should "rich text" editing be enabled? This option lets your users send html email messages from the web interface.
 Set($MessageBoxRichText, 1);
 
 # Support implicit links in WikiText custom fields?  A true value
@@ -529,10 +529,10 @@ Set($AutoCreate, undef);
 
 # Set($WebSessionClass , 'Apache::Session::File');
 
-# By default, RT hold session unless user close browser application, with
-# $AutoLogoff option you can setup session lifetime in minutes. User
-# would be logged out if he doesn't send any requests to RT for the
-# defined time.
+# By default, RT's user sessions persist until a user closes his or her 
+# browser. With the $AutoLogoff option you can setup session lifetime in 
+# minutes. A user will be logged out if he or she doesn't send any requests 
+# to RT for the defined time.
 
 Set($AutoLogoff, 0);
 
@@ -583,7 +583,7 @@ Set($ShowTransactionImages, 1);
 # $HomepageComponents is an arrayref of allowed components on a user's
 # customized homepage ("RT at a glance").
 
-Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders  RefreshHomepage)]);
+Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage)]);
 
 # @MasonParameters is the list of parameters for the constructor of
 # HTML::Mason's Apache or CGI Handler.  This is normally only useful
@@ -733,23 +733,24 @@ Set(@InactiveStatus, qw(resolved rejected deleted));
 # only one of the link transactions to have scrips run.
 Set($LinkTransactionsRun1Scrip , 0);
 
-# When this feature is enabled an user need ModifyTicket right on both
-# tickets to link them together, otherwise he can have right on any of
-# two.
+# When this feature is enabled a user needs ModifyTicket rights on both
+# tickets to link them together, otherwise he can have rights on either of
+# them.
 Set($StrictLinkACL, 1);
 
 # Set $PreviewScripMessages to 1 if the scrips preview on the ticket
 # reply page should include the content of the messages to be sent.
+Set($PreviewScripMessages, 0);
 
 # Set $UseTransactionBatch to 1 to execute transactions in batches,
 # such that a resolve and comment (for example) would happen
-# simultaneously, instead of as two transactions, unaware of each
-# others' existence.
+# simultaneously, instead of as two transactions, unaware of each# others' existence.
+Set($UseTransactionBatch, 0);
 
 # Set @CustomFieldValuesSources to a list of class names which extend
 # RT::CustomFieldValues::External.  This can be used to pull lists of
 # custom field values from external sources at runtime.
-
+Set(@CustomFieldValuesSources, ());
 
 # Set $CanonicalizeRedirectURLs to 1 to use $WebURL when redirecting rather
 # than the one we get from %ENV.
