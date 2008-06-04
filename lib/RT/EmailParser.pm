@@ -476,7 +476,7 @@ sub _SetupMIMEParser {
     # of File::Spec->tmpdir (e.g., /tmp) beacuse it isn't always
     # writable.
     my $tmpdir = File::Temp::tempdir( DIR => $RT::VarPath, CLEANUP => 1 );
-    push ( @{ $self->{'AttachmentDirs'} }, $tmpdir );
+    push ( @{ $self->{'AttachmentDirs'} ||= [] }, $tmpdir );
     $parser->output_dir($tmpdir);
     $parser->filer->ignore_filename(1);
 
@@ -504,7 +504,8 @@ sub _SetupMIMEParser {
 
 sub DESTROY {
     my $self = shift;
-    File::Path::rmtree([@{$self->{'AttachmentDirs'}}],0,1);
+    File::Path::rmtree([@{$self->{'AttachmentDirs'}}],0,1)
+        if $self->{'AttachmentDirs'};
 }
 
 
