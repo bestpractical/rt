@@ -62,7 +62,7 @@ $id ? (
 <%INIT>
 # XXX TODO: Validate here?
 #$ObjectType =~ /^RT::(Queue|User|Group)$/
-#    or Abort(loc("Object of type [_1] cannot take custom fields", $ObjectType));
+#    or Abort(loc("Object of type [_1] cannot take custom fields", $ObjectType), SuppressHeader => 1);
 
 
 
@@ -82,7 +82,7 @@ if (defined $SubType && $SubType =~/^RT::(.*)$/)  {
 }
 
 if ($id) { 
-    $Object->Load($id) || Abort(loc("Couldn't load object [_1]", $id));
+    $Object->Load($id) || Abort(loc("Couldn't load object [_1]", $id), SuppressHeader => 1);
     $ObjectTabs = "/Admin/Elements/${Type}Tabs";
 } else {
     $ObjectTabs = "/Admin/Elements/GlobalCustomFieldTabs";
