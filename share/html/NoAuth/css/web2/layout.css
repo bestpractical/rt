@@ -61,6 +61,7 @@ body {
 }
 
 div#body {
+    position: relative;
     padding: 1em;
     padding-top: 1.5em;
     -moz-border-radius: 0.5em;
