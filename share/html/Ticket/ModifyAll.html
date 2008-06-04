@@ -73,7 +73,7 @@
 
 
 <&| /Widgets/TitleBox, title => loc('People'), class=>'ticket-info-people' &>
-<& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
+<& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp, GroupString => $GroupString, GroupOp => $GroupOp, GroupField => $GroupField  &>
 </&>
 
 <br />
@@ -159,7 +159,7 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
 my (@wresults, @results,  @dresults, @lresults, @cf_results);
 
-unless ($OnlySearchForPeople) {
+unless ($OnlySearchForPeople or $OnlySearchForGroup ) {
     # There might be two owners. 
     if ( ref ($ARGS{'Owner'} )) {
         my @owners =@{$ARGS{'Owner'}};
@@ -217,9 +217,13 @@ unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
 
 <%ARGS>
 $OnlySearchForPeople => undef
+$OnlySearchForGroup => undef
 $UserField => undef
 $UserOp => undef
 $UserString => undef
+$GroupString => undef
+$GroupOp => undef
+$GroupField => undef
 $id => undef
 </%ARGS>
 
