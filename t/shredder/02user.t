@@ -55,10 +55,3 @@ create_savepoint('aucreate'); # after user create
     ok($@, "wipeout throw exception if no resolvers");
     cmp_deeply( dump_current_and_savepoint('aucreate'), "current DB equal to savepoint");
 }
-
-if( is_all_successful() ) {
-	cleanup_tmp();
-} else {
-	diag( note_on_fail() );
-}
-

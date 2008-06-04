@@ -25,9 +25,3 @@ my $shredder = shredder_new();
 $shredder->Wipeout( Object => $ticket );
 
 cmp_deeply( dump_current_and_savepoint(), "current DB equal to savepoint");
-
-if( is_all_successful() ) {
-	cleanup_tmp();
-} else {
-	diag( note_on_fail() );
-}

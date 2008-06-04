@@ -118,10 +118,3 @@ diag 'queue with a watcher' if $ENV{'TEST_VERBOSE'};
 #	$shredder->WipeoutAll;
 #	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
-
-if( is_all_successful() ) {
-	cleanup_tmp();
-} else {
-	diag( note_on_fail() );
-}
-

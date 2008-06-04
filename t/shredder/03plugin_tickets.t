@@ -143,4 +143,3 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     $shredder->WipeoutAll;
 }
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
-

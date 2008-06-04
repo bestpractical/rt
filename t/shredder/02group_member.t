@@ -96,10 +96,3 @@ plan tests => 22;
 	is( $ticket->Owner, $RT::Nobody->id, "owner switched back to nobody" );
 	is( $ticket->OwnerGroup->MembersObj->First->MemberId, $RT::Nobody->id, "and owner role group member is nobody");
 }
-
-
-if( is_all_successful() ) {
-	cleanup_tmp();
-} else {
-	diag( note_on_fail() );
-}

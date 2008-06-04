@@ -402,8 +402,12 @@ sub is_all_successful
 }
 
 END {
-    return unless is_all_successful;
-    File::Path::rmtree(tmpdir());
+    return unless -e tmpdir();
+    if( is_all_successful() ) {
+            cleanup_tmp();
+    } else {
+            diag( note_on_fail() );
+    }
 }
 
 1;
