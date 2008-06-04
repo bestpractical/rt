@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 6;
+use Test::More tests => 7;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
@@ -48,4 +48,4 @@ $m->field(q => 'fulltext:MERGEDAWAY');
 $m->submit;
 
 $m->content_contains('Found 1 ticket');
-
+$m->content_contains('base ticket', "base ticket is found, not the merged-away ticket");
