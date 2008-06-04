@@ -53,7 +53,7 @@
 &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%$RT::WebPath%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="ModifyDashboard">
+<form action="<%RT->Config->Get('WebPath')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="ModifyDashboard">
 
 %unless ($Dashboard->Id) {
 <input type="hidden" class="hidden" name="id" value="new" />

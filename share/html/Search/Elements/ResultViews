@@ -59,7 +59,7 @@ $ShortQueryString => undef
 <ul class="search-result-views">
 <li><a href="<%RT->Config->Get('WebPath')%>/Search/Results.tsv<%$QueryString%>"><&|/l&>Spreadsheet</&></a></li>
 <li><a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a></li>
-<li><a href="<% $RT::WebURL %>NoAuth/iCal/<% $ical_path %>"><% loc('iCal') %></a></li>
+<li><a href="<%RT->Config->Get('WebURL')%>/NoAuth/iCal/<% $ical_path %>"><% loc('iCal') %></a></li>
 <li><a href="<%RT->Config->Get('WebPath')%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Editable text</&></a></li>
 </ul>
 <form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html">

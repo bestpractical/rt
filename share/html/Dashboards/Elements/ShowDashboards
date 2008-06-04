@@ -60,7 +60,7 @@
 %   my $i = 0;
 %   for my $dashboard (sort {$b->Id <=> $a->Id} @$Dashboards) {
 %       my $url = sprintf '%s/Dashboards/Modify.html?id=%d',
-%                 $RT::WebPath,
+%                 RT->Config->Get('WebPath'),
 %                 $dashboard->Id;
 
         <tr class="collection-as-table <% ++$i % 2 ? 'oddline' : 'evenline' %>">
