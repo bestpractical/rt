@@ -156,7 +156,7 @@ sub bootstrap_db {
     my %args = @_;
 
    unless (defined $ENV{'RT_DBA_USER'} && defined $ENV{'RT_DBA_PASSWORD'}) {
-	die "RT_DBA_USER and RT_DBA_PASSWORD environment variables need to be set in order to run 'make test'";
+	BAIL_OUT("RT_DBA_USER and RT_DBA_PASSWORD environment variables need to be set in order to run 'make test'");
    }
     # bootstrap with dba cred
     my $dbh = _get_dbh(RT::Handle->SystemDSN,
