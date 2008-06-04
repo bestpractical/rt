@@ -392,13 +392,13 @@ insert-approval-data:
 # {{{ libs-install
 libs-install: 
 	[ -d $(DESTDIR)/$(RT_LIB_PATH) ] || mkdir -p $(DESTDIR)/$(RT_LIB_PATH)
-	-cd lib && find . -type d -name .svn -prune -o -type f -exec install -D {} $(DESTDIR)/$(RT_LIB_PATH)/{} \;
+	-cp -rp lib/* $(DESTDIR)/$(RT_LIB_PATH)
 # }}}
 
 # {{{ html-install
 html-install:
 	[ -d $(DESTDIR)/$(MASON_HTML_PATH) ] || mkdir -p $(DESTDIR)/$(MASON_HTML_PATH)
-	-cd share/html && find . -type d -name .svn -prune -o -type f -exec install -D {} $(DESTDIR)/$(MASON_HTML_PATH)/{} \;
+	-cp -rp ./share/html/* $(DESTDIR)/$(MASON_HTML_PATH)
 # }}}
 
 # {{{ doc-install
@@ -468,9 +468,9 @@ bin-install:
 
 # {{{ local-install
 local-install:
-	-cd local/html && find . -type d -name .svn -prune -o -type f -exec install -D {} $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)/{} \;
-	-cd local/po && find . -type d -name .svn -prune -o -type f -exec install -D {} $(DESTDIR)/$(LOCAL_LEXICON_PATH)/{} \;
-	-cd local/etc && find . -type d -name .svn -prune -o -type f -exec install -D {} $(DESTDIR)/$(LOCAL_ETC_PATH)/{} \;
+	-cp -rp ./local/html/* $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
+	-cp -rp ./local/po/* $(DESTDIR)/$(LOCAL_LEXICON_PATH)
+	-cp -rp ./local/etc/* $(DESTDIR)/$(LOCAL_ETC_PATH)
 # }}}
 
 # {{{ Best Practical Build targets -- no user servicable parts inside
