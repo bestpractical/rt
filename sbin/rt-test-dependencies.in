@@ -448,8 +448,8 @@ sub resolve_dep {
         }
         unless ( $configured ) {
             print <<END;
-You didn't configure CPAN shell yet.
-Please run `@PERL@ -MCPAN -e shell` tool and configure it.
+You haven't configured the CPAN shell yet.
+Please run `@PERL@ -MCPAN -e shell` to configure it.
 END
             exit(1);
         }
