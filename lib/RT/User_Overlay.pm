@@ -543,6 +543,25 @@ sub ValidateEmailAddress {
     }
 }
 
+=head2 SetEmailAddress
+
+Check to make sure someone else isn't using this email address already
+so that a better email address can be returned
+
+=cut
+
+sub SetEmailAddress {
+    my $self = shift;
+    my $Value = shift;
+
+    if ( $self->ValidateEmailAddress( $Value ) ) {
+        return $self->_Set( Field => 'EmailAddress', Value => $Value );
+    } else {
+        return ( 0, $self->loc('Email address in use') )
+    }
+
+}
+
 =head2 CanonicalizeEmailAddress ADDRESS
 
 CanonicalizeEmailAddress converts email addresses into canonical form.
