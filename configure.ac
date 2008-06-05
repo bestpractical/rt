@@ -275,7 +275,7 @@ AC_ARG_ENABLE(graphviz,
             RT_GRAPHVIZ=$enableval)
 if test "$RT_GRAPHVIZ" = yes; then
         RT_GRAPHVIZ="1"
-elif test "$RT_GRAPHVIZ" = no; then
+else
         RT_GRAPHVIZ="0"
 fi
 AC_SUBST(RT_GRAPHVIZ)
@@ -289,7 +289,7 @@ AC_ARG_ENABLE(gd,
             RT_GD=$enableval)
 if test "$RT_GD" = yes; then
         RT_GD="1"
-elif test "$RT_GD" = no; then
+else
         RT_GD="0"
 fi
 AC_SUBST(RT_GD)
@@ -302,7 +302,7 @@ AC_ARG_ENABLE(gpg,
             RT_GPG=$enableval)
 if test "$RT_GPG" = yes; then
         RT_GPG="1"
-elif test "$RT_GPG" = no; then
+else
         RT_GPG="0"
 fi
 AC_SUBST(RT_GPG)
