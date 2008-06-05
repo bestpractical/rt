@@ -50,12 +50,9 @@
 
 
 
-a:hover  {
-  text-decoration: underline;
-}
 
 
- a {
+a {
   color: #000;
   text-decoration: none;
 }
@@ -66,4 +63,7 @@ div#body a:visited {
 
 }
 
+a:hover  {
+  text-decoration: underline;
+}
 

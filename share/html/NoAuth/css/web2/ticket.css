@@ -45,16 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-.ticket-summary td .titlebox { 
- margin-left: 0.5em;
- margin-right: 0.5em;
-}
-
 
 
 div#ticket-history div.ticket-transaction {
  border-top: 1px solid #ccc;
- padding-bottom: 0.5em;
+ padding-bottom: 0.25em;
 
 }
 
@@ -72,60 +67,63 @@ div#ticket-history {
 
 }
 
-div#ticket-history td.actions {
+.ticket-transaction tr.metadata td { padding-top: 0.75em;} 
+.ticket-transaction tr.metadata td.actions {
+ padding: 0em;
  background: #ccc;
  text-align: right;
  border-left: 1px solid #999;
  border-bottom: 1px solid #999;
- 
  color: #ccc;
  -moz-border-radius-bottomleft: 0.5em;
  -webkit-border-bottom-left-radius: 0.5em;
  width: 1em;
+ white-space: nowrap;
 }
 
-div#ticket-history td.type {
+.ticket-transaction tr.metadata  td.type {
  text-align: center;
  position: absolute;
  margin: 0.25em;
  width: 1em;
- height: 1.5em;
+ height: 1.25em;
+ padding: none;
  border-right: 1px solid #999;
  border-bottom: 1px solid #999;
-
  -moz-border-radius: 0.25em;
  -webkit-border-bottom-right-radius: 0.25em;
-
 }
 
 div#ticket-history td.type a {
  color: #fff;
- font-size: 1.25em;
-
 }
 
 
 div#ticket-history td.date {
  padding-left: 2em;
  width: 10em;
-
 }
 
 
 div#ticket-history td.description {
  padding-left: 1em;
  font-weight: bold;
-
 }
 
-
-
-
-
-div#ticket-history>td.content {
+div#ticket-history td.content {
  position: relative;
  padding-right: 1em;
  font-size: 1.1em;
+}
+
+.ticket-transaction .content>.messagebody {
+ font-size: 1em;
+ padding-left: 1em;
+ margin-top: 0.5em;
+ padding-top: 0.5em;
+ border-top: 1px solid #ccc;
+ margin-left: 2em;
+
 }
 
 div#ticket-history div.downloadattachment {
@@ -135,10 +133,11 @@ font-size: 0.9em;
 text-align: right;
 background: #eee;
 padding: 0.5em;
+
 border: 1px solid #ccc;
 border-right: 2px solid #aaa;
 border-bottom: 2px solid #aaa;
-
+margin-top: 1em;
 -moz-border-radius: 0.5em;
 -webkit-border-radius: 0.5em;
 
@@ -156,17 +155,6 @@ div#ticket-history .message-header-key {
   color: #666;
 }
 
-div#ticket-history>.messagebody {
- font-size: 1em;
- padding-left: 1em;
- margin-top: 0.5em;
- padding-top: 0.5em;
- border-top: 1px solid #ccc;
- margin-right: 0em;
- margin-left: 2em;
-
-}
-
 
 div#ticket-history .messagebody .messagebody{
  font-size: 1em;
@@ -174,7 +162,6 @@ div#ticket-history .messagebody .messagebody{
  border: 0;
  margin: 0;
 }
-
 
 
 
@@ -199,4 +186,5 @@ div#ticket-history .messagebody .messagebody{
 
 
 .ticket-summary .titlebox-title a, div#body .ticket-summary .titlebox-title a:visited { color: #fff;}
+
 

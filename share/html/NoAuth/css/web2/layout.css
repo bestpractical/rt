@@ -180,7 +180,6 @@ div#quickbar, div#logo {
 }
 div#quickbar a, div#logo a { 
     color: #000;
-    text-decoration: none;
 }
 
 
@@ -211,7 +210,13 @@ div#header h1 {
  color: #fff;
 }
 
-body#comp-index td.boxcontainer {
-    padding-right: 1em;
+/* in multi-column layouts, make sure we have an internal gutter */
+
+tr .boxcontainer {
+      padding-right: 1em;
+}
+
+tr .boxcontainer:last-child {
+      padding-right: 0;
 }
 
