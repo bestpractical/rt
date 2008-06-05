@@ -1417,7 +1417,7 @@ sub ProcessRecordLinks {
                     if ref( $ARGSRef->{ $Record->Id . "-$linktype" } );
 
             for my $luri ( split ( / /, $ARGSRef->{ $Record->Id . "-$linktype" } ) ) {
-                next unless $uri;
+                next unless $luri;
                 $luri =~ s/\s*$//;    # Strip trailing whitespace
                 my ( $val, $msg ) = $Record->AddLink( Target => $luri,
                                                       Type   => $linktype );
