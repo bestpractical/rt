@@ -213,7 +213,7 @@ our %META = (
             my $self  = shift;
             my $value = shift;
             return if $value;
-            return if $INC{'GraphViz'};
+            return if $INC{'GraphViz.pm'};
             local $@;
             return if eval {require GraphViz; 1};
             warn "You've enabled GraphViz, but we couldn't load the module: $@";
@@ -226,7 +226,7 @@ our %META = (
             my $self  = shift;
             my $value = shift;
             return if $value;
-            return if $INC{'GD'};
+            return if $INC{'GD.pm'};
             local $@;
             return if eval {require GD; 1};
             warn "You've enabled GD, but we couldn't load the module: $@";
