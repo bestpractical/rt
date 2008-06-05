@@ -136,6 +136,9 @@ my %FIELD_METADATA = (
     Cc               => [ 'WATCHERFIELD'    => 'Cc', ],
     AdminCc          => [ 'WATCHERFIELD'    => 'AdminCc', ],
     Watcher          => [ 'WATCHERFIELD', ],
+    QueueCc          => [ 'WATCHERFIELD'    => 'Cc'      => 'Queue', ],
+    QueueAdminCc     => [ 'WATCHERFIELD'    => 'AdminCc' => 'Queue', ],
+    QueueWatcher     => [ 'WATCHERFIELD'    => undef     => 'Queue', ],
     LinkedTo         => [ 'LINKFIELD', ],
     CustomFieldValue => [ 'CUSTOMFIELD', ],
     CustomField      => [ 'CUSTOMFIELD', ],
@@ -832,6 +835,7 @@ sub _WatcherLimit {
 
     my $meta = $FIELD_METADATA{ $field };
     my $type = $meta->[1] || '';
+    my $class = $meta->[2] || 'Ticket';
 
     # Owner was ENUM field, so "Owner = 'xxx'" allowed user to
     # search by id and Name at the same time, this is workaround
@@ -849,7 +853,7 @@ sub _WatcherLimit {
     }
     $rest{SUBKEY} ||= 'EmailAddress';
 
-    my $groups = $self->_RoleGroupsJoin( Type => $type );
+    my $groups = $self->_RoleGroupsJoin( Type => $type, Class => $class );
 
     $self->_OpenParen;
     if ( $op =~ /^IS(?: NOT)?$/ ) {
@@ -987,9 +991,10 @@ sub _WatcherLimit {
 
 sub _RoleGroupsJoin {
     my $self = shift;
-    my %args = (New => 0, Type => '', @_);
-    return $self->{'_sql_role_group_aliases'}{ $args{'Type'} }
-        if $self->{'_sql_role_group_aliases'}{ $args{'Type'} } && !$args{'New'};
+    my %args = (New => 0, Class => 'Ticket', Type => '', @_);
+    return $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
+        if $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} }
+           && !$args{'New'};
 
     # XXX: this has been fixed in DBIx::SB-1.48
     # XXX: if we change this from Join to NewAlias+Limit
@@ -1002,7 +1007,7 @@ sub _RoleGroupsJoin {
     # we always have watcher groups for ticket, so we use INNER join
     my $groups = $self->Join(
         ALIAS1          => 'main',
-        FIELD1          => 'id',
+        FIELD1          => $args{'Class'} eq 'Queue'? 'Queue': 'id',
         TABLE2          => 'Groups',
         FIELD2          => 'Instance',
         ENTRYAGGREGATOR => 'AND',
@@ -1011,7 +1016,7 @@ sub _RoleGroupsJoin {
         LEFTJOIN        => $groups,
         ALIAS           => $groups,
         FIELD           => 'Domain',
-        VALUE           => 'RT::Ticket-Role',
+        VALUE           => 'RT::'. $args{'Class'} .'-Role',
     );
     $self->SUPER::Limit(
         LEFTJOIN        => $groups,
@@ -1020,7 +1025,7 @@ sub _RoleGroupsJoin {
         VALUE           => $args{'Type'},
     ) if $args{'Type'};
 
-    $self->{'_sql_role_group_aliases'}{ $args{'Type'} } = $groups
+    $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $args{'Type'} } = $groups
         unless $args{'New'};
 
     return $groups;
