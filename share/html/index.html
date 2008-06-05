@@ -84,18 +84,34 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 my @results;
 
 if ( $ARGS{'QuickCreate'} ) {
-    my ($t, $msg) = CreateTicket( 
-                    Queue => $ARGS{'Queue'},
-                    Owner => $ARGS{'Owner'},
-                    Status => 'new',
-                    # yes! it's Requestors, not Requestor
-                    Requestors => $session{'CurrentUser'}->id,
-                    From => $session{'CurrentUser'}->id,
-                    Content => $ARGS{'Content'},
-                    Subject => $ARGS{'Subject'});
+    my $QueueObj = new RT::Queue($session{'CurrentUser'});
+    $QueueObj->Load($ARGS{Queue}) or Abort(loc("Queue could not be loaded."));
+    
+    my $CFs = $QueueObj->TicketCustomFields();
+    
+    my $ValidCFs = $m->comp(
+        '/Elements/ValidateCustomFields',
+        CustomFields => $CFs,
+        ARGSRef => \%ARGS
+    );
 
 
-    push (@results, $msg);
+    if ( $ValidCFs ) {
+        my ($t, $msg) = CreateTicket( 
+                        Queue => $ARGS{'Queue'},
+                        Owner => $ARGS{'Owner'},
+                        Status => 'new',
+                        # yes! it's Requestors, not Requestor
+                        Requestors => $session{'CurrentUser'}->id,
+                        From => $session{'CurrentUser'}->id,
+                        Content => $ARGS{'Content'},
+                        Subject => $ARGS{'Subject'});
+        push @results, $msg;
+    }
+    else {
+        push @results, "can't quickly create ticket in queue " .
+            $QueueObj->Name . ' because some cfs need to be set, please go to normal ticket creation page to do that.';
+    }
 }
 
 
