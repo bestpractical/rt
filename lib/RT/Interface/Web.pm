@@ -1412,7 +1412,12 @@ sub ProcessRecordLinks {
 
     foreach my $linktype (@linktypes) {
         if ( $ARGSRef->{ $Record->Id . "-$linktype" } ) {
+            $ARGSRef->{ $Record->Id . "-$linktype" } =
+                join(' ', @{$ARGSRef->{ $Record->Id . "-$linktype" }})
+                    if ref( $ARGSRef->{ $Record->Id . "-$linktype" } );
+
             for my $luri ( split ( / /, $ARGSRef->{ $Record->Id . "-$linktype" } ) ) {
+                next unless $uri;
                 $luri =~ s/\s*$//;    # Strip trailing whitespace
                 my ( $val, $msg ) = $Record->AddLink( Target => $luri,
                                                       Type   => $linktype );
@@ -1420,8 +1425,12 @@ sub ProcessRecordLinks {
             }
         }
         if ( $ARGSRef->{ "$linktype-" . $Record->Id } ) {
+            $ARGSRef->{ "$linktype-" . $Record->Id } =
+                join(' ', @{$ARGSRef->{ "$linktype-" . $Record->Id }})
+                    if ref( $ARGSRef->{ "$linktype-" . $Record->Id } );
 
             for my $luri ( split ( / /, $ARGSRef->{ "$linktype-" . $Record->Id } ) ) {
+                next unless $luri;
                 my ( $val, $msg ) = $Record->AddLink( Base => $luri,
                                                       Type => $linktype );
 

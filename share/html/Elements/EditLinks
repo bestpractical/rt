@@ -157,6 +157,7 @@
     <td class="label"><&|/l&>Referred to by</&>:</td>
     <td class="entry"> <input name="RefersTo-<%$id%>" /></td>
   </tr>
+% $m->callback( CallbackName => 'NewLink' );
 </table>
 </td>
 </tr>
