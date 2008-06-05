@@ -14,25 +14,6 @@
 #
 #   perl -c /path/to/your/etc/RT_SiteConfig.pm
 
+Set( $rtname, 'example.com');
 #Set(@Plugins,(qw(Extension-QuickDelete)));
-
-Set( $DatabaseUser, 'rt_user' );
-Set( $SendmailBounceArguments, '-f "<>"' );
-Set( $Timezone, '' );
-Set( $CorrespondAddress, 'kyoki+rtcorrespond@bestpractical.com' );
-Set( $rtname, 'example.com' );
-Set( $SendmailArguments, '-oi -t' );
-Set( $Organization, 'example.com' );
-Set( $MaxAttachmentSize, '10000000' );
-Set( $DatabaseType, 'mysql' );
-Set( $DatabasePassword, 'rt_pass' );
-Set( $DatabaseAdmin, 'root' );
-Set( $SendmailPath, '/usr/sbin/sendmail' );
-Set( $MailCommand, 'sendmailpipe' );
-Set( $DatabaseAdminPassword, 'arimasen' );
-Set( $CommentAddress, 'kyoki+rtcomment@bestpractical.com' );
-Set( $DatabaseHost, 'localhost' );
-Set( $MinimumPasswordLength, '5' );
-Set( $DatabaseName, 'rt3' );
-Set( $OwnerEmail, 'kyoki@bestpractical.com' );
 1;
