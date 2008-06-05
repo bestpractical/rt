@@ -1,0 +1,48 @@
+<%ARGS>
+$BaseURL => undef
+$Rows => undef
+$TotalFound => undef
+$CurrentPage => undef
+$Pages => undef
+$URLParams => undef
+</%ARGS>
+
+<%INIT>
+$m->out(loc('Page') . ' ');
+
+my $prev = $m->comp(
+		    '/Elements/QueryString',
+		    @$URLParams,
+		    Page    => ( $CurrentPage - 1 )
+		   );
+my %show;
+$show{1} = 1;
+$show{$_} = 1 for (($CurrentPage - 2)..($CurrentPage + 2));
+$show{$Pages} = 1;
+my $dots;
+for my $number (1..$Pages){
+  if ($show{$number}){
+    $dots = undef;
+    my $qs = $m->comp('/Elements/QueryString', @$URLParams, Page => $number);
+    $m->out(  qq{<a href="$BaseURL$qs">}
+	      . (($number == $CurrentPage)  ? "<em>$number</em>" : $number) 
+	      . qq{</a> });
+  }
+  elsif (not $dots){
+    $dots = 1;
+    $m->out(" ... ");
+  }
+}
+
+my $next = $m->comp(
+		    '/Elements/QueryString',
+		    @$URLParams,
+		    Page    => ( $CurrentPage + 1 )
+		   );
+</%INIT>
+% if ($CurrentPage > 1) {
+<a href="<%$BaseURL%><%$prev%>"><&|/l&>Previous</&></a>
+% }
+% if (($CurrentPage * $Rows) < $TotalFound) {
+<a href="<%$BaseURL%><%$next%>"><&|/l&>Next</&></a>
+% }
