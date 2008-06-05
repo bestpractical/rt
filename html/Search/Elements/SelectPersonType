@@ -69,10 +69,10 @@ elsif ($Suffix eq 'Group') {
    @types = qw(Requestor Cc AdminCc Watcher);
 }
 else { 
-   @types = qw(Requestor Cc AdminCc Watcher Owner);
+   @types = qw(Requestor Cc AdminCc Watcher Owner QueueCc QueueAdminCc QueueWatcher);
 }
 
-my @subtypes = qw(EmailAddress Name RealName Nickname Organization Address1 Address2 WorkPhone HomePhone MobilePhone PagerPhone);
+my @subtypes = qw(EmailAddress Name RealName Nickname Organization Address1 Address2 WorkPhone HomePhone MobilePhone PagerPhone id);
 
 </%INIT>
 <%ARGS>
