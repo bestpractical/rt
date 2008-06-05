@@ -290,6 +290,9 @@ sub _parser {
       $key =~ s!\\(.)!$1!g;
       $val =~ s!\\(.)!$1!g;
       #    print "$ea Key=[$key] op=[$op]  val=[$val]\n";
+      
+      # replace __CurrentUser__ with id
+      $val = $self->CurrentUser->id if $val eq '__CurrentUser__';
 
 
    my $subkey = '';

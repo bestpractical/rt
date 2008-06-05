@@ -111,7 +111,6 @@ $m->comp(
 );
 
 foreach ( $SearchArg, $ProcessedSearchArg ) {
-    $_->{'Query'}  =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
     $_->{'Format'} =~ s/__WebPath__/$RT::WebPath/g;
     $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
 }
