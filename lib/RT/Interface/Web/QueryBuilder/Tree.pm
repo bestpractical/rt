@@ -266,6 +266,7 @@ sub ParseSQL {
             push @results, [ $args{'CurrentUser'}->loc("Unknown field: [_1]", $key), -1 ]
         }
 
+        $value =~ s/'/\\'/g;
         $value = "'$value'" if $value =~ /[^0-9]/;
         $key = "'$key'" if $key =~ /^CF./;
 

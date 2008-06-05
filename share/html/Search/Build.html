@@ -227,6 +227,7 @@ foreach my $arg ( keys %ARGS ) {
             $value = "'NULL'";
         }
         else {
+            $value =~ s/'/\\'/g;
             $value = "'$value'" unless $value =~ /^\d+$/;
         }
 

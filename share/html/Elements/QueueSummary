@@ -55,7 +55,9 @@
 % my $i;
 % for my $queue (@queues) {
 %   $i++;
-%   my $queue_cond = "Queue = '$queue->{Name}' AND ";
+%   my $name = $queue->{Name};
+%   $name =~ s/'/\\'/g;
+%   my $queue_cond = "Queue = '$name' AND ";
 %   my $all_q = $queue_cond . "(Status = 'open' OR Status = 'new' OR Status = 'stalled')";
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 <td><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $all_q |u,n %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a></td>
