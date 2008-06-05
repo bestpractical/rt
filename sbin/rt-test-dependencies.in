@@ -226,7 +226,7 @@ Tree::Simple 1.04
 UNIVERSAL::require
 Regexp::Common
 Scalar::Util
-Module::Versions::Report 1.03
+Module::Versions::Report 1.04
 Cache::Simple::TimedExpiry
 UNIVERSAL::require
 Calendar::Simple
