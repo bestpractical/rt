@@ -69,6 +69,7 @@ GetOptions(
     'with-ICAL',
     'with-SMTP',
     'with-GRAPHVIZ',
+    'with-GD',
 
     'download=s',
     'repository=s',
@@ -92,6 +93,7 @@ my %default = (
     'with-ICAL' => 1,
     'with-SMTP' => 1,
     'with-GRAPHVIZ' => @RT_GRAPHVIZ@,
+    'with-GD' => @RT_GD@,
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
@@ -243,9 +245,6 @@ CGI::Cookie 1.20
 Storable 2.08
 Apache::Session 1.53
 XML::RSS 1.05
-GD
-GD::Graph
-GD::Text
 Text::WikiFormat 0.76
 CSS::Squish 0.06
 .
@@ -354,6 +353,12 @@ $deps{'GRAPHVIZ'} = [ text_to_hash( << '.') ];
 GraphViz
 IPC::Run
 IPC::Run::SafeHandles
+.
+
+$deps{'GD'} = [ text_to_hash( << '.') ];
+GD
+GD::Graph
+GD::Text
 .
 
 if ($args{'download'}) {
