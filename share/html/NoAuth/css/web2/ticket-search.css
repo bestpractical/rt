@@ -70,9 +70,13 @@
 #comp-Search-Build #pick-criteria {
  width: 58%;
  padding-top: 0.2em;
- overflow-x: scroll;
  margin-top: -0.1em;
 }
+
+#comp-Search-Build #pick-criteria .titlebox-content {
+ overflow-x: scroll;
+}
+
 
 #comp-Search-Build .submit {
  width: 58%;
