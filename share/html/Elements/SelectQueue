@@ -51,7 +51,7 @@
 <input name="<%$Name%>" size="25" value="<%$d->Name%>" />
 % }
 % else {
-<select name="<%$Name%>">
+<select name="<%$Name%>" <% ($OnChange) ? 'onchange="'.$OnChange.'"' : '' |n %>>
 %     if ($ShowNullOption) {
   <option value="">-</option>
 %     }
@@ -75,6 +75,7 @@ $Verbose => undef
 $NamedValues => 0
 $Default => 0
 $Lite => 0
+$OnChange => undef
 </%args>
 <%init>
 my $cache_key = "SelectQueue---"
