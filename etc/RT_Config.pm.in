@@ -744,8 +744,8 @@ Set($PreviewScripMessages, 0);
 
 # Set $UseTransactionBatch to 1 to execute transactions in batches,
 # such that a resolve and comment (for example) would happen
-# simultaneously, instead of as two transactions, unaware of each# others' existence.
-Set($UseTransactionBatch, 0);
+# simultaneously, instead of as two transactions, unaware of each
+# others' existence.
 Set($UseTransactionBatch, 0);
 
 # Set @CustomFieldValuesSources to a list of class names which extend
