@@ -780,6 +780,8 @@ Set($DevelMode, '@RT_DEVEL_MODE@');
 
 Set($DisableGraphViz, do { local $@; eval {require GraphViz; 1;} ? 0 : 1 } );
 
+Set($DisableGD, do { local $@; eval {require GD; 1;} ? 0 : 1 } );
+
 # }}}
 
 # Ticket Updates 

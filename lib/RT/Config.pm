@@ -220,6 +220,19 @@ our %META = (
             $self->Set( DisableGraphViz => 1 );
         },
     },
+    DisableGD => {
+        Type            => 'SCALAR',
+        PostLoadCheck   => sub {
+            my $self  = shift;
+            my $value = shift;
+            return if $value;
+            return if $INC{'GD'};
+            local $@;
+            return if eval {require GD; 1};
+            warn "You've enabled GD, but we couldn't load the module: $@";
+            $self->Set( DisableGD => 1 );
+        },
+    },
     MailPlugins  => { Type => 'ARRAY' },
     GnuPG        => { Type => 'HASH' },
     GnuPGOptions => { Type => 'HASH' },
