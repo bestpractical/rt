@@ -290,15 +290,15 @@ fixperms:
 	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_BIN_PATH)	
 
 	chmod 0755 $(DESTDIR)/$(RT_ETC_PATH)
-	chmod 0500 $(DESTDIR)/$(RT_ETC_PATH)/*
+	chmod 0400 $(DESTDIR)/$(RT_ETC_PATH)/*
 
 	#TODO: the config file should probably be able to have its
 	# owner set separately from the binaries.
 	chown -R $(BIN_OWNER) $(DESTDIR)/$(RT_ETC_PATH)
 	chgrp -R $(RTGROUP) $(DESTDIR)/$(RT_ETC_PATH)
 
-	chmod 0550 $(DESTDIR)/$(CONFIG_FILE)
-	chmod 0750 $(DESTDIR)/$(SITE_CONFIG_FILE)
+	chmod 0440 $(DESTDIR)/$(CONFIG_FILE)
+	chmod 0440 $(DESTDIR)/$(SITE_CONFIG_FILE)
 
 	# Make the interfaces executable
 	chown $(BIN_OWNER) $(BINARIES)
@@ -350,8 +350,8 @@ files-install: libs-install etc-install bin-install sbin-install html-install lo
 
 config-install:
 	$(INSTALL) -m 0755 -d $(DESTDIR)/$(CONFIG_FILE_PATH)	
-	-$(INSTALL) -m 0644 etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE)
-	[ -f $(DESTDIR)/$(SITE_CONFIG_FILE) ] || $(INSTALL) -m 0644 etc/RT_SiteConfig.pm $(DESTDIR)/$(SITE_CONFIG_FILE) 
+	-$(INSTALL) -m 0440 etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE)
+	[ -f $(DESTDIR)/$(SITE_CONFIG_FILE) ] || $(INSTALL) -m 0440 etc/RT_SiteConfig.pm $(DESTDIR)/$(SITE_CONFIG_FILE) 
 
 	chgrp $(RTGROUP) $(DESTDIR)/$(CONFIG_FILE)
 	chown $(BIN_OWNER) $(DESTDIR)/$(CONFIG_FILE)
