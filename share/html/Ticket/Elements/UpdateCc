@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<tr><td align="right"><&|/l&>Cc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateCc', Size => '60', Default => $ARGS{UpdateCc} &>
+<tr><td align="right"><&|/l&>One-time Cc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateCc', Size => '60', Default => $ARGS{UpdateCc} &>
 <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
         <br />
 
@@ -57,11 +57,8 @@ name="UpdateCc-<%$addr%>"
     onClick="checkboxToInput('UpdateCc', 'UpdateCc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"  
     <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}
-<div class="hints"><i><font size="-2">
-            <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
-</div>
 </td></tr>
-<tr><td align="right"><&|/l&>Bcc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateBcc', Size => '60', Default => $ARGS{UpdateBcc} &><br />
+<tr><td align="right"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateBcc', Size => '60', Default => $ARGS{UpdateBcc} &><br />
 %foreach my $addr ( keys %txn_addresses) {
 <input
     id="UpdateBcc-<%$addr%>"
@@ -71,14 +68,10 @@ name="UpdateCc-<%$addr%>"
         <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%>> 
 <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}
-        <div class="hints">
-<i><font size="-2">
-        <&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
-</div>
 </td></tr>
 <%args>
 $TicketObj
 </%args>
 <%init>
-my %txn_addresses = %{$TicketObj->TransactionAddresses;};
+my %txn_addresses = %{$TicketObj->TransactionAddresses};
 </%init>
