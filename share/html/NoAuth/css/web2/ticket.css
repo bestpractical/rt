@@ -189,22 +189,18 @@ div#ticket-history .messagebody .messagebody{
 
 .ticket-summary .titlebox-title a, div#body .ticket-summary .titlebox-title a:visited { color: #fff;}
 
-
 .unread-messages .titlebox , .unread-messages .titlebox-title .left { 
-  border: 1px solid #c99;
-  border-right: 2px solid #500;
-  border-bottom: 2px solid #500;
+  border: 1px solid #99a;
+  border-right: 2px solid #aab;
+  border-bottom: 2px solid #aab;
 
 }
 
 
 .unread-messages .titlebox { 
-  background: #daa;
+  background-color: #dde;
 }
 
 .unread-messages .titlebox-title .left { 
-  background: #eaa;
+  background-color: #cce;
 }
-
-
-
