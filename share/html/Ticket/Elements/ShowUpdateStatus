@@ -45,9 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<div class="unread-messages">
 <&| /Widgets/TitleBox, title => loc('New messages'), title_href => "#txn-". $txn->id &>
-<&|/l, RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1" &>There are unread messages on this ticket, click "New Messages" above to jump to the oldest unread message. If you've read all messages, <a href="[_1]">mark them all as seen</a>.</&>
+<&|/l, &>There are unread messages on this ticket.</&>
+<&|/l, &>Click "New Messages" above to jump to the first unread message.</&>
+<&|/l, RT->Config->Get('WebPath') ."/Ticket/Display.html#txn-".$txn->id."?id=". $Ticket->id ."&MarkAsSeen=1" &><a href="[_1]">Click here to jump to the first unread message and mark all messages as seen</a>.</&>
 </&>
+</div>
 <%ARGS>
 $Ticket
 </%ARGS>

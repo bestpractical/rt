@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<div class="results">
 <&| /Widgets/TitleBox, title => loc('Results') &>
   <ul class="action-results">
 % foreach my $action (@actions) {
@@ -52,6 +53,7 @@
 % }
   </ul>
 </&>
+</div>
 <%init>
 
 if ( ref( $session{'Actions'} ) eq 'ARRAY' ) {
