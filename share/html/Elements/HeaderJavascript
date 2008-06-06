@@ -65,6 +65,9 @@ $onload => undef
 
 % if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
     function ReplaceAllTextareas() {
+        if (!FCKeditor_IsCompatibleBrowser())
+            return false;
+
         // replace all content and signature message boxes
         var allTextAreas = document.getElementsByTagName("textarea");
 
