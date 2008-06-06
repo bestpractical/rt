@@ -124,6 +124,12 @@ foreach my $row (@rows) {
         $val =~ s/(\n|\r)//g;
         push @row, $val;
     }
+
+    # remove tabs from all field values, they screw up the tsv
+    for (@row) {
+        $_ =~ s{\t}{    }g;
+    }
+
     $m->out(join("\t",@row));
     $m->out("\n");
 }
