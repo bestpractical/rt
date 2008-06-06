@@ -580,6 +580,12 @@ Set($OldestTransactionsFirst, '1');
 Set($ShowTransactionImages, 1);
 
 
+# By default, RT will prompt users when there are new, unread messages on tickets they are viewing
+# Set ShowUnreadMessageNotifications to a false value to disable this feature.
+
+Set($ShowUnreadMessageNotifications, 1);
+
+
 # $HomepageComponents is an arrayref of allowed components on a user's
 # customized homepage ("RT at a glance").
 

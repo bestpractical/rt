@@ -59,5 +59,6 @@
 $Ticket
 </%ARGS>
 <%INIT>
+return unless (RT->Config->Get( 'ShowUnreadMessageNotifications', $session{'CurrentUser'}));
 my $txn = $Ticket->SeenUpTo or return;
 </%INIT>

@@ -158,6 +158,15 @@ our %META = (
             Description => 'Show oldest history first',    #loc
         },
     },
+    ShowUnreadMessageNotifications => { 
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Notify me of unread messages',    #loc
+            } 
+
+    },
     DateTimeFormat => {
         Section         => 'Locale',                       #loc
         Overridable     => 1,
