@@ -688,6 +688,7 @@ return 0; # ignore $passed;
       { 'body' => # loc
 	[ { type => 'system', name => 'My Tickets' },
 	  { type => 'system', name => 'Unowned Tickets' },
+	  { type => 'system', name => 'Bookmarked Tickets' },
 	  { type => 'component',  name => 'QuickCreate'},
 	],
         'summary' => # loc
