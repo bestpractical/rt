@@ -202,8 +202,9 @@ div#quick-personal {
 div#header h1 {
  position: absolute;
  left: 6.8em;
- right: 22em;
+ right: 23em;
  overflow: hidden;
+ height: 1em;
  font-size: 1.4em;
  margin-top: 0.125em;
  padding: 0.25em;
