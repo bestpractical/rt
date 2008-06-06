@@ -62,6 +62,7 @@ while ( my $requestor = $people->Next ) {
 <&| /Widgets/TitleBox,
     title_href => $has_right_adminusers? RT->Config->Get('WebPath')."/Admin/Users/Modify.html?id=".$requestor->id: undef,
     title_raw => loc("More about [_1]", $name),
+    class => 'ticket-info-requestor'
 &>
 
 %# Additional information about this user.  Empty by default.

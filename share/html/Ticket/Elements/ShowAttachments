@@ -48,6 +48,7 @@
 % if (keys %documents) {
 <&| /Widgets/TitleBox, title => loc('Attachments'), 
         title_class=> 'inverse',  
+        class => 'ticket-info-attachments',
         color => "#336699" &>
 
 % foreach my $key (keys %documents) {

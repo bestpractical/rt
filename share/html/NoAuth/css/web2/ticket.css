@@ -131,7 +131,7 @@ float: right;
 clear: both;
 font-size: 0.9em;
 text-align: right;
-background: #eee;
+background: #ddd;
 padding: 0.5em;
 
 border: 1px solid #ccc;
@@ -144,7 +144,7 @@ margin-top: 1em;
 }
 
 div#ticket-history div.downloadattachment .downloadcontenttype{
-color: #aaa;
+color: #666;
 padding-right:0.25em;
 }
 
@@ -180,9 +180,11 @@ div#ticket-history .messagebody .messagebody{
 .ticket-info-cfs .titlebox-title .left { background-color: #b32; color: #fff;}
 .ticket-info-basics .titlebox-title .left { background-color: #b32;  color: #fff;}
 .ticket-info-people .titlebox-title .left { background-color: #48c;  color: #fff;}
+.ticket-info-requestor .titlebox-title .left { background-color: #48c;  color: #fff;}
 .ticket-info-links .titlebox-title .left { background-color: #316531;  color: #fff;}
 .ticket-info-reminders .titlebox-title .left { background-color: #369;  color: #fff;}
 .ticket-info-dates .titlebox-title .left { background-color: #633063;  color: #fff;}
+.ticket-info-attachments .titlebox-title .left { background-color: #993366;  color: #fff;}
 
 
 .ticket-summary .titlebox-title a, div#body .ticket-summary .titlebox-title a:visited { color: #fff;}
