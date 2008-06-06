@@ -790,12 +790,6 @@ Set($DisableGD, do { local $@; eval {require GD; 1;} ? 0 : 1 } );
 
 # }}}
 
-# Ticket Updates 
-# Turn off the notices of unread messages on ticket display pages
-# by setting this to 0
-
-Set($EnableTicketUpdateStatus,1);
-
 # Reminders
 # Hide links/portlets related to Reminders by setting this to 0
 

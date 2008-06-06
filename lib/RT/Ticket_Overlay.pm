@@ -3080,8 +3080,6 @@ sub _SetTold {
 
 sub SeenUpTo {
     my $self = shift;
-    return unless RT->Config->Get('EnableTicketUpdateStatus');
-
     my $uid = $self->CurrentUser->id;
     my $attr = $self->FirstAttribute( "User-". $uid ."-SeenUpTo" );
     return if $attr && $attr->Content gt $self->LastUpdated;
