@@ -64,7 +64,7 @@ if ($SavedSearch) {
     my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
     $search = $container_object->Attributes->WithId($search_id);
     unless ( $search->Id && ref( $SearchArg = $search->Content ) eq 'HASH' ) {
-        $m->out("Saved Search $SavedSearch not found");
+        $m->out("Saved Search $SavedSearch not found") unless $IgnoreMissing;
         return;
     }
     $SearchArg->{'SearchType'} ||= 'Ticket';
@@ -132,4 +132,5 @@ my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 $Name        => undef
 $SavedSearch => undef
 %Override    => ()
+$IgnoreMissing => undef
 </%ARGS>
