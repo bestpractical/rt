@@ -91,7 +91,7 @@ my @non_recipients = @{ $squelch{'EmailAddresses'} };
 <% $recipient->Content %>
 % }
 </ul>
-<& /Elements/Submit, Value => 'UpdatePreview', Label => loc('Save Changes')&>
+<& /Elements/Submit, Name => 'UpdatePreview', Value => 'UpdatePreview', Label => loc('Save Changes')&>
 
 <%METHOD SquelchRecipients>
 <%ARGS>

@@ -78,7 +78,7 @@ $onload => undef
                 // Turn the original plain text content into HTML 
 
 %# Special case - When continuing an edit session with attachment, keep the HTMLified content.
-% if (!$m->request_args->{'AddMoreAttach'}) {
+% if (!$m->request_args->{'AddMoreAttach'} && !$m->request_args->{'UpdatePreview'}) {
                 textArea.value = textArea.value.replace(
                     /&/g, "&amp;"
                 ).replace(
