@@ -48,8 +48,9 @@
 <div class="unread-messages">
 <&| /Widgets/TitleBox, title => loc('New messages'), title_href => "#txn-". $txn->id &>
 <&|/l, &>There are unread messages on this ticket.</&>
-<&|/l, &>Click "New Messages" above to jump to the first unread message.</&>
-<&|/l, RT->Config->Get('WebPath') ."/Ticket/Display.html#txn-".$txn->id."?id=". $Ticket->id ."&MarkAsSeen=1" &><a href="[_1]">Click here to jump to the first unread message and mark all messages as seen</a>.</&>
+<&|/l, 
+ RT->Config->Get('WebPath') ."/Ticket/Display.html#txn-".$txn->id."?id=". $Ticket->id ."&MarkAsSeen=1",
+ RT->Config->Get('WebPath') ."/Ticket/Display.html#txn-".$txn->id."?id=". $Ticket->id &>You can <a href="[_1]">jump to the first unread message</a> or <a href="[_2]">jump to the first unread message and mark all messages as seen</a>.</&>
 </&>
 </div>
 <%ARGS>

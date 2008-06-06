@@ -114,6 +114,7 @@ display: none;
 
 div#nav a, div#page-navigation a{
  text-decoration: none;
+ font-weight: normal;
  color: #000;
 }
 
