@@ -78,7 +78,7 @@ Preferred key: <& /Elements/GnuPG/SelectKeyForEncryption, EmailAddress => $UserO
 </form>
 <%INIT>
 my @results;
-my $title = loc("Other preferences");
+my $title = loc("Settings");
 
 my $UserObj = $session{'CurrentUser'}->UserObj;
 my $preferences = $UserObj->Preferences( $RT::System );

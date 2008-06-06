@@ -52,7 +52,7 @@ ok ($revokeid,$revokemsg);
 ok ($grantid,$grantmsg);
 $agent->reload();
 like($agent->{'content'} , qr/Logout/i, "Reloaded page successfully");
-ok($agent->find_link( url => "$RT::WebPath/User/Prefs.html",
+ok($agent->find_link( 
 		       text => 'Preferences'), "Found prefs pane" );
 ($revokeid,$revokemsg) = $user_obj->PrincipalObj->RevokeRight(Right => 'ModifySelf');
 ok ($revokeid,$revokemsg);

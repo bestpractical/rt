@@ -47,12 +47,18 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Tabs, 
     tabs => $tabs, 
-    current_toptab => 'User/Prefs.html', 
+    current_toptab => 'Prefs/Other.html', 
     current_tab => $current_tab, 
     Title => $Title &>
 
 <%INIT>
-  my $tabs = { a => { title => loc('About me'),
+  my $tabs = {
+  
+	       a => { title => loc('Settings'),
+			   path => 'Prefs/Other.html',
+			 },
+  
+             b => { title => loc('About me'),
 			  path => 'User/Prefs.html',
 			},
 	       g => { title => loc('Personal Groups'),
@@ -69,9 +75,6 @@
 			 },
 	       s => { title => loc('Dashboards'),
 			   path => 'Dashboards/index.html',
-			 },
-	       t => { title => loc('Settings'),
-			   path => 'Prefs/Other.html',
 			 },
 	     };
 
