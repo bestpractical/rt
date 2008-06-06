@@ -66,7 +66,7 @@ div#body {
     padding-top: 1.5em;
     -moz-border-radius: 0.5em;
     -webkit-border-radius: 0.5em;
-    margin-left: 9.8em;
+    margin-left: 10.5em;
     margin-top: 5.2em;
     margin-right: 1em;
     margin-bottom: 0em;
@@ -84,7 +84,7 @@ div#body {
  position: absolute;
  right: 1em;
  top: 3.85em; 
- font-size: 0.8em;
+ font-size: 0.9em;
 }
 
 #topactions form button, #topactions form input[type=submit], #topactions form input[type=button]{
@@ -119,7 +119,7 @@ div#footer {
  position: absolute;
  right: 0;
   text-align: right;
- font-size: 0.8em;
+ font-size: 0.9em;
  margin-top: 2em;
  background: #fff;
  margin-bottom: 0;
@@ -176,7 +176,7 @@ div#logo .rtname {
 
 
 div#quickbar, div#logo {
-    font-size: 0.8em;
+    font-size: 0.9em;
 }
 div#quickbar a, div#logo a { 
     color: #000;
@@ -201,12 +201,12 @@ div#quick-personal {
 
 div#header h1 {
  position: absolute;
- left: 6.8em;
+ left: 7.25em;
  right: 23em;
  overflow: hidden;
  height: 1em;
  font-size: 1.4em;
- margin-top: 0.125em;
+ margin-top: 0.4em;
  padding: 0.25em;
  color: #fff;
 }
