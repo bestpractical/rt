@@ -718,9 +718,11 @@ Set($DateDayBeforeMonth , 1);
 # past value? For example, should a date of "Tuesday" default to mean
 # the date for next Tuesday or last Tuesday? Should the date "March 1"
 # default to the date for next March or last March?
-# Set to 0 for the next date or 1 for the last date.
+# Set AmbiguousDayInPast for the last date, or AmbiguousDayInFuture for the
+# next date. The default is usually good.
 
-Set($AmbiguousDayInPast , 1);
+Set($AmbiguousDayInPast, 0);
+Set($AmbiguousDayInFuture, 0);
 
 # }}}
 

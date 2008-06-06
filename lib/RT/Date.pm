@@ -197,7 +197,7 @@ sub Set {
             GMT           => 1,
             UK            => RT->Config->Get('DateDayBeforeMonth'),
             PREFER_PAST   => RT->Config->Get('AmbiguousDayInPast'),
-            PREFER_FUTURE => !RT->Config->Get('AmbiguousDayInPast')
+            PREFER_FUTURE => RT->Config->Get('AmbiguousDayInFuture'),
         );
         # apply timezone offset
         $date -= ($self->Localtime( $args{Timezone}, $date ))[9];
