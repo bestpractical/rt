@@ -124,12 +124,13 @@ sub QueryToSQL {
             push @status_clauses, "Status = '" . $key . "'";
         }
 
-        # Is there a owner named $key?
         # Is there a queue named $key?
         elsif ( $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser )
             and $Queue->Load($key) )
         {
-            push @queue_clauses, "Queue = '" . $Queue->Name . "'";
+            my $quoted_queue = $Queue->Name;
+            $quoted_queue =~ s/'/\\'/g;
+            push @queue_clauses, "Queue = '$quoted_queue'";
         }
 
         # Is there a owner named $key?
@@ -151,7 +152,9 @@ sub QueryToSQL {
     for my $queue (@{ $self->{'Queues'} }) {
         my $QueueObj = RT::Queue->new($self->TicketsObj->CurrentUser);
         $QueueObj->Load($queue) or next;
-        push @queue_clauses, "Queue = '" . $QueueObj->Name . "'";
+        my $quoted_queue = $Queue->Name;
+        $quoted_queue =~ s/'/\\'/g;
+        push @queue_clauses, "Queue = '$quoted_queue'";
     }
 
     push @tql_clauses, join( " OR ", sort @id_clauses );
