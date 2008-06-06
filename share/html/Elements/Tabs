@@ -89,13 +89,6 @@ if ($session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab',
 		     };
 }
 
-if ($session{'CurrentUser'}->HasRight( Right => 'ModifySelf', 
-				       Object => $RT::System )) {
-    $basetabs->{K} = { title => loc('Preferences'),
-                       path => 'User/Prefs.html'
-		     };
-}
-
 if (!defined $toptabs) {
    $toptabs = $basetabs;
 }
