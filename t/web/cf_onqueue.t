@@ -13,7 +13,7 @@ diag "Create a queue CF" if $ENV{'TEST_VERBOSE'};
     $m->title_is(q/RT Administration/, 'admin screen');
     $m->follow_link( text => 'Custom Fields' );
     $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
-    $m->follow_link( text => 'New custom field' );
+    $m->follow_link( text => 'Create' );
     $m->submit_form(
         form_name => "ModifyCustomField",
         fields => {

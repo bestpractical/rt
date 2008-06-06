@@ -74,9 +74,9 @@ $tabs->{"this"} = { class => "currentnav",
     }
 }
 }
-$tabs->{"A"} = { title => loc('Select group'),
+$tabs->{"A"} = { title => loc('Select'),
                  path  => "Admin/Groups/", };
-$tabs->{"B"} = { title     => loc('New group'),
+$tabs->{"B"} = { title     => loc('Create'),
                  path      => "Admin/Groups/Modify.html?Create=1",
 		 separator => 1, };
 

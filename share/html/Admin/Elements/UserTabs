@@ -80,10 +80,10 @@ subtabs => {
 }
 
 if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminUsers')) {
-  $tabs->{"A"} = { title => loc('Select user'),
+  $tabs->{"A"} = { title => loc('Select'),
   		     	path => "Admin/Users/",
 			   };
-  $tabs->{"B"} = { title => loc('New user'),
+  $tabs->{"B"} = { title => loc('Create'),
   		     	path => "Admin/Users/Modify.html?Create=1",
 		separator => 1,
 	};

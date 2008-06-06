@@ -91,10 +91,10 @@ if ($id) {
         };
 }
 if ($session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'AdminQueue')) {
-  $tabs->{"A"} = { title => loc('Select queue'),
+  $tabs->{"A"} = { title => loc('Select'),
   		     	path => "Admin/Queues/",
 			   };
-  $tabs->{"B"} = { title => loc('New queue'),
+  $tabs->{"B"} = { title => loc('Create'),
   		     	path => "Admin/Queues/Modify.html?Create=1",
 		 separator => 1, };
 }
