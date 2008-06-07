@@ -189,6 +189,18 @@ my %Meta = (
             Description => 'Sendmail path',                  #loc
         },
     },
+    WebDomain => {
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => {
+            Description => 'domain name',                  #loc
+        },
+    },
+    WebPort => {
+        Widget          => '/Widgets/Form/Integer',
+        WidgetArguments => {
+            Description => 'web port',                  #loc
+        },
+    },
 
 );
 

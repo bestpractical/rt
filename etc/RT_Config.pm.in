@@ -437,10 +437,13 @@ Set($WebPath, "");
 
 Set($WebPort, 80);# + ($< * 7274) % 32766 + ($< && 1024));
 
+# you know what domain name is, right? ;)
+Set( $WebDomain, 'localhost' );
+
 # This is the Scheme, server and port for constructing urls to webrt
 # $WebBaseURL doesn't need a trailing /
 
-Set($WebBaseURL, "http://localhost:". RT->Config->Get('WebPort'));
+Set($WebBaseURL, 'http://' . RT->Config->Get('WebDomain') . ':' . RT->Config->Get('WebPort'));
 
 Set($WebURL, RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') . "/");
 
