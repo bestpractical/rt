@@ -71,7 +71,7 @@ my @lines = (
             Path => '/Elements/SelectBoolean',
             Arguments => {
 			    True => loc("matches"), 
-			    False => loc("does not match"), 
+			    False => loc("doesn't match"), 
 			    TrueVal => 'LIKE',
 			    FalseVal => 'NOT LIKE',
             },

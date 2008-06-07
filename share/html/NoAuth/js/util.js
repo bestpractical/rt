@@ -196,7 +196,7 @@ function createCalendarLink(input) {
         link.setAttribute('href', '#');
         link.setAttribute('onclick', "openCalWindow('"+input+"'); return false;");
 
-        var text = document.createTextNode('<% loc("Choose a date") %>');
+        var text = document.createTextNode('<% loc("Calendar") %>');
         link.appendChild(text);
 
         var space = document.createTextNode(' ');

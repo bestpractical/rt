@@ -47,9 +47,60 @@
 %# END BPS TAGGED BLOCK }}}
 
 
+
 #comp-Search-Build #body {
     position: relative;
 }
+
+
+
+#comp-Search-Build #pick-criteria select {
+  background: #eee;
+  border: 1px solid #ccc;
+}
+
+#comp-Search-Build #pick-criteria tr {
+ height: 1.5em;
+}
+
+#comp-Search-Build #pick-criteria td.label {
+    font-size: 0.9em;
+    padding-right: 0;
+}
+
+
+#comp-Search-Build #pick-criteria td.label * {
+}
+
+
+#comp-Search-Build #pick-criteria td.label select {
+  font-size: 0.9em;
+  text-align: right;
+  width: 13em;
+}
+
+#comp-Search-Build #pick-criteria td.operator {
+ padding-right: 0.5em;
+ text-align: right;
+ font-size: 0.9em;
+}
+#comp-Search-Build #pick-criteria td.operator select {
+ width: 8em;
+}
+
+#comp-Search-Build #pick-criteria td.value input,
+#comp-Search-Build #pick-criteria td.value select {
+ font-size: 0.9em;
+ max-width: 14em;
+}
+
+#comp-Search-Build #pick-criteria td.value {
+  padding-right: 0.5em;
+ min-width: 8em;
+ text-align: left;
+ font-size: 0.9em;
+}
+
 
 #comp-Search-Build #editquery, #comp-Search-Build #editsearches{
   position: absolute;
@@ -125,7 +176,7 @@
 }
 
 .search-result-views li:after  {
- content: " · ";
+ content: " Â· ";
 }
 
 .search-result-views li:last-child:after  {
@@ -135,6 +186,6 @@
 
 
 .refresh {
-
-float: left;
+    float: left;
 }
+
