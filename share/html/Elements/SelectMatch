@@ -54,8 +54,8 @@
 
 <%ARGS>
 $Name => undef
-$Like => loc('contains')
-$NotLike => loc("doesn't contain")
+$Like => loc('matches')
+$NotLike => loc("doesn't match")
 $True => loc('is')
 $False => loc("isn't")
 $Default => undef
