@@ -139,5 +139,7 @@ table.ticket-list td:last-child, table.ticket-list th:last-child {
   padding-right: 1em;
 }
 
-
+th.collection-as-table , td.collection-as-table {
+ padding-right: 0.5em;
+}
 
