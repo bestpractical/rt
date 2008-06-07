@@ -839,7 +839,7 @@ msgid "Advanced Search"
 msgstr "絞込み検索"
 
 #: share/html/Elements/SelectDateRelation:59
-msgid "After"
+msgid "after"
 msgstr "が以下より後である"
 
 #: share/html/Search/Elements/PickCriteria:59
@@ -1067,7 +1067,7 @@ msgid "Be sure to save your changes"
 msgstr "本当に変更を保存してもよろしいですか"
 
 #: share/html/Elements/SelectDateRelation:57 t/api/currentuser.t:28
-msgid "Before"
+msgid "before"
 msgstr "が以下より前である"
 
 #: share/html/Elements/Logo:51

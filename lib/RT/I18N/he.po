@@ -698,7 +698,7 @@ msgid "Advanced"
 msgstr ""
 
 #: share/html/Elements/SelectDateRelation:59
-msgid "After"
+msgid "after"
 msgstr "אחרי"
 
 #: share/html/Search/Elements/PickCriteria:59
@@ -904,7 +904,7 @@ msgid "Be sure to save your changes"
 msgstr "אל תשכח לשמור את השינויים"
 
 #: share/html/Elements/SelectDateRelation:57 t/api/currentuser.t:28
-msgid "Before"
+msgid "before"
 msgstr "לפני"
 
 #: share/html/Elements/Logo:51

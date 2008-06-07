@@ -1074,7 +1074,7 @@ msgid "Advanced Search Criteria"
 msgstr "進階查詢條件"
 
 #: share/html/Elements/SelectDateRelation:59
-msgid "After"
+msgid "after"
 msgstr "晚於"
 
 #: NOT FOUND IN SOURCE
@@ -1432,7 +1432,7 @@ msgid "Be sure to save your changes"
 msgstr "請別忘了儲存修改。"
 
 #: share/html/Elements/SelectDateRelation:57 t/api/currentuser.t:28
-msgid "Before"
+msgid "before"
 msgstr "早於"
 
 #: NOT FOUND IN SOURCE

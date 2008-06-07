@@ -724,7 +724,7 @@ msgid "Advanced"
 msgstr "Gelişmiş"
 
 #: share/html/Elements/SelectDateRelation:59
-msgid "After"
+msgid "after"
 msgstr "Sonra"
 
 #: share/html/Search/Elements/PickCriteria:59
@@ -930,7 +930,7 @@ msgid "Be sure to save your changes"
 msgstr "Değişikliklerinizi kaydettiğinizden emin olun"
 
 #: share/html/Elements/SelectDateRelation:57 t/api/currentuser.t:28
-msgid "Before"
+msgid "before"
 msgstr "Önce"
 
 #: share/html/Elements/Logo:51

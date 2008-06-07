@@ -748,7 +748,7 @@ msgid "Advanced"
 msgstr "Lanjutan"
 
 #: share/html/Elements/SelectDateRelation:59
-msgid "After"
+msgid "after"
 msgstr "Setelah"
 
 #: share/html/Search/Elements/PickCriteria:59
@@ -966,7 +966,7 @@ msgid "Be sure to save your changes"
 msgstr "Pastikanlah untuk menyimpan setiap perubahan anda"
 
 #: share/html/Elements/SelectDateRelation:57 t/api/currentuser.t:28
-msgid "Before"
+msgid "before"
 msgstr "Sebelum"
 
 #: share/html/Elements/Logo:51

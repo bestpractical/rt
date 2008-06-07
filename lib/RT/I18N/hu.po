@@ -706,7 +706,7 @@ msgid "Advanced"
 msgstr "Kézi lekérdezés"
 
 #: share/html/Elements/SelectDateRelation:59
-msgid "After"
+msgid "after"
 msgstr "után"
 
 #: share/html/Search/Elements/PickCriteria:59
@@ -914,7 +914,7 @@ msgstr ""
 
 # ## wieder - Duzen???
 #: share/html/Elements/SelectDateRelation:57 t/api/currentuser.t:28
-msgid "Before"
+msgid "before"
 msgstr "elõtt"
 
 #: share/html/Elements/Logo:51

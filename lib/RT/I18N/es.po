@@ -911,7 +911,7 @@ msgid "Advanced Search"
 msgstr "Búsqueda avanzada"
 
 #: share/html/Elements/SelectDateRelation:59
-msgid "After"
+msgid "after"
 msgstr "Después"
 
 #: NOT FOUND IN SOURCE
@@ -1161,7 +1161,7 @@ msgid "Be sure to save your changes"
 msgstr "Asegúrese de salvar sus cambios"
 
 #: share/html/Elements/SelectDateRelation:57 t/api/currentuser.t:28
-msgid "Before"
+msgid "before"
 msgstr "Antes"
 
 #: NOT FOUND IN SOURCE

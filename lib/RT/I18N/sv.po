@@ -722,7 +722,7 @@ msgid "Advanced"
 msgstr "Avancerad"
 
 #: share/html/Elements/SelectDateRelation:59
-msgid "After"
+msgid "after"
 msgstr "Efter"
 
 #: share/html/Search/Elements/PickCriteria:59
@@ -928,7 +928,7 @@ msgid "Be sure to save your changes"
 msgstr "Se till att spara dina ändringar"
 
 #: share/html/Elements/SelectDateRelation:57 t/api/currentuser.t:28
-msgid "Before"
+msgid "before"
 msgstr "Före"
 
 #: share/html/Elements/Logo:51

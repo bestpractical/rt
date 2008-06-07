@@ -841,7 +841,7 @@ msgid "Advanced Search Criteria"
 msgstr "Kriteriji napredne pretrage"
 
 #: share/html/Elements/SelectDateRelation:59
-msgid "After"
+msgid "after"
 msgstr "Nakon"
 
 #: NOT FOUND IN SOURCE
@@ -1101,7 +1101,7 @@ msgstr "Sjeti se spremiti promjene"
 
 ### wieder - Duzen???
 #: share/html/Elements/SelectDateRelation:57 t/api/currentuser.t:28
-msgid "Before"
+msgid "before"
 msgstr "Prije"
 
 #: share/html/Elements/Logo:51

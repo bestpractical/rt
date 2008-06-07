@@ -723,7 +723,7 @@ msgid "Advanced"
 msgstr "Pokročilé"
 
 #: share/html/Elements/SelectDateRelation:59
-msgid "After"
+msgid "after"
 msgstr "Po"
 
 #: share/html/Search/Elements/PickCriteria:59
@@ -929,7 +929,7 @@ msgid "Be sure to save your changes"
 msgstr "Nezapomeňte uložit své změny"
 
 #: share/html/Elements/SelectDateRelation:57 t/api/currentuser.t:28
-msgid "Before"
+msgid "before"
 msgstr "Před"
 
 #: share/html/Elements/Logo:51
