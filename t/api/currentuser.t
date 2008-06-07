@@ -25,7 +25,7 @@ SKIP: {
     skip "French localization is not enabled", 2
         unless grep $_ && $_ =~ /^(\*|fr)$/, RT->Config->Get('LexiconLanguages');
     ok ($lh = $cu->LanguageHandle('fr'));
-    is ($cu->loc('Before'), "Avant", "Localized TEST_STRING into French");
+    is ($cu->loc('before'), "avant", "Localized TEST_STRING into French");
 }
 
 

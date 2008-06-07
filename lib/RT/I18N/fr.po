@@ -762,7 +762,7 @@ msgstr "Avancé"
 
 #: share/html/Elements/SelectDateRelation:59
 msgid "after"
-msgstr "Après"
+msgstr "après"
 
 #: share/html/Search/Elements/PickCriteria:59
 msgid "Aggregator"
@@ -961,7 +961,7 @@ msgstr "Assurez-vous de sauvegarder vos modifications"
 
 #: share/html/Elements/SelectDateRelation:57 t/api/currentuser.t:28
 msgid "before"
-msgstr "Avant"
+msgstr "avant"
 
 #: share/html/Elements/Logo:51
 msgid "Best Practical Solutions, LLC corporate logo"
