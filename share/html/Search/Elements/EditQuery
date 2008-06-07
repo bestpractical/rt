@@ -64,7 +64,7 @@
 
 </&>
 <%ARGS>
-$Description => ''
+$Description => undef
 $optionlist => ''
 $actions => []
 </%ARGS>

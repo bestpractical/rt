@@ -57,7 +57,7 @@
 % }
 <br />
 <&|/l&>Description</&>:
-<input size="25" name="SavedSearchDescription" value="<% $Description %>" />
+<input size="25" name="SavedSearchDescription" value="<% $Description || '' %>" />
 
 % if ($Id ne 'new') {
 <nobr>
@@ -144,7 +144,7 @@ $SavedSearch => {}
 <%INIT>
 
 $SavedSearch->{'Id'}          = $ARGS{'SavedSearchId'}          || 'new';
-$SavedSearch->{'Description'} = $ARGS{'SavedSearchDescription'} || '';
+$SavedSearch->{'Description'} = $ARGS{'SavedSearchDescription'} || undef;
 
 my @results;
 

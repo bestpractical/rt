@@ -202,7 +202,7 @@ onsubmit="list_<% $name %>.selectAll();"
 % if (exists $selected{$_}) {
 selected="selected"
 % }
-><% $self->{_item_map}{$_} %></option>
+><% $self->{_item_map}{$_} ||'' %></option>
 % }
 </select>
 % unless ($ARGS{'NoArrows'}) {
