@@ -171,12 +171,6 @@ my %Meta = (
             Description => 'Correspond address',             #loc
         },
     },
-    MailCommand => {
-        Widget          => '/Widgets/Form/String',
-        WidgetArguments => {
-            Description => 'Mail command',                   #loc
-        },
-    },
     SendmailArguments => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
