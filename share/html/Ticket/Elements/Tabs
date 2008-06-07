@@ -229,18 +229,9 @@ $tabs->{"h"} = { path      => "Search/Edit.html$args",
                  title     => loc('Advanced'),
                  separator => 1 };
 if ($args) {
-  $tabs->{"i"} = { path      => "Search/Results.html$args",
-                   title     => loc('Show Results'),
-                   };
+
   if ($current_tab =~ m{Search/Results.html}) {
     $current_tab = "Search/Results.html$args";
-  }
-  $tabs->{"j"} = { path      => "Search/Bulk.html$args",
-                   title     => loc('Bulk Update'),
-                   };
-  if ($current_tab =~  m{Search/Bulk.html}) {
-    $current_tab = "Search/Bulk.html$args";
-  }
 
 if ( $session{'CurrentUser'} ->HasRight( Right => 'SuperUser', Object => $RT::System ) ) {
     my $shred_args = $m->comp( '/Elements/QueryString',
@@ -251,11 +242,25 @@ if ( $session{'CurrentUser'} ->HasRight( Right => 'SuperUser', Object => $RT::Sy
     );
 
     $tabs->{"shredder"} = {
-        path  => 'Admin/Tools/Shredder/' . $shred_args,
+        path  => 'Admin/Tools/Shredder/?' . $shred_args,
         title => loc('Shredder')
     };
 
 }
+  }
+  if ($current_tab =~  m{Search/Bulk.html}) {
+    $current_tab = "Search/Bulk.html$args";
+  }
+
+
+
+  $tabs->{"i"} = { path      => "Search/Results.html$args",
+                   title     => loc('Show Results'),
+                   };
+
+  $tabs->{"j"} = { path      => "Search/Bulk.html$args",
+                   title     => loc('Bulk Update'),
+                   };
 
 }
 
