@@ -112,14 +112,14 @@ my %Meta = (
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description =>
-              'The Unix username to use for RT',      #loc
+              'Database username for RT', #loc
         },
     },
     DatabasePassword => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description =>
-              'The Unix password to use for RT',  #loc
+              'Database password for RT( default is rt_pass )', #loc
               Type => 'password',
         },
     },
