@@ -118,19 +118,25 @@ my $path
     . '&CloneTicket='
     . $Ticket->id;
 
+
 for my $relation (
-    qw(MemberOf Members DependsOn DependedOnBy RefersTo ReferredToBy))
-{
+    qw(RefersTo ReferredToBy)) {
     my $mode  = $RT::Ticket::LINKTYPEMAP{$relation}->{Mode};
     my $type  = $RT::Ticket::LINKTYPEMAP{$relation}->{Type};
     my $other = "Local" . $mode;
     my $field = $mode eq 'Base' ? 'new-' . $type : $type . '-new';
     $clone->{$field} 
-        = $path 
-        . "&$field="
+        = $path . "&$field="
         . join( '%20',
         ( map { $_->$other() } @{ $Ticket->$relation->ItemsArrayRef } ),
         $Ticket->id );
+}
+
+for my $relation ( qw(MemberOf Members DependsOn DependedOnBy)) {
+    my $mode  = $RT::Ticket::LINKTYPEMAP{$relation}->{Mode};
+    my $type  = $RT::Ticket::LINKTYPEMAP{$relation}->{Type};
+    my $field = $mode eq 'Base' ? 'new-' . $type : $type . '-new';
+    $clone->{$field} = $path . "&$field=". $Ticket->id ;
 }
 
 </%INIT>
