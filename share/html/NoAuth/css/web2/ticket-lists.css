@@ -118,7 +118,7 @@ tr.oddline td {
 }
 
 tr.evenline td, tr.oddline td {
- border-top: 1px solid  #aaa;
+ border-top: 1px solid #c8c8c8;
  padding-top: 0.5em;
 } 
 
