@@ -63,7 +63,7 @@ my $object = $m->dhandler_arg;
 my $name   = qr{[\w.-]+};
 my $list   = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
 my $label  = '[a-zA-Z0-9@_.+-]+';
-my $field  = RT::Interface::REST->field_spec;
+my $field  = '[a-zA-Z](?:[a-zA-Z0-9_-]|\s+)*';
 my $labels = "(?:$label,)*$label";
 
 # We must handle requests such as the following:

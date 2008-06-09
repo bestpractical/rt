@@ -150,7 +150,7 @@ my %Meta = (
     MaxAttachmentSize => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Max attachment size( in bytes )',             #loc
+            Description => 'Max attachment size',             #loc
         },
     },
     OwnerEmail => {
@@ -186,7 +186,7 @@ my %Meta = (
     SendmailPath => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'where is sendmail command',                  #loc
+            Description => 'Sendmail path',                  #loc
         },
     },
     WebDomain => {

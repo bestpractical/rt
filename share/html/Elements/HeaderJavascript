@@ -77,8 +77,8 @@ $onload => undef
               || (textArea.getAttribute('className') == 'messagebox')) {
                 // Turn the original plain text content into HTML 
 
-%# Special case - when we re-edit a textarea, don't re-encode it
-% if (!$m->request_args->{'FCKeditorEncoded'}) {
+%# Special case - When continuing an edit session with attachment, keep the HTMLified content.
+% if (!$m->request_args->{'AddMoreAttach'} && !$m->request_args->{'UpdatePreview'}) {
                 textArea.value = textArea.value.replace(
                     /&/g, "&amp;"
                 ).replace(
@@ -90,14 +90,6 @@ $onload => undef
                 );
 % }
 
-%# for this template..
-                var FCKeditorEncoded = document.createElement('input');
-                FCKeditorEncoded.setAttribute('type', 'hidden');
-                FCKeditorEncoded.setAttribute('name', 'FCKeditorEncoded');
-                FCKeditorEncoded.setAttribute('value', '1');
-                textArea.parentNode.appendChild(FCKeditorEncoded);
-
-%# for FCKeditor..
                 var typeField = document.createElement('input');
                 typeField.setAttribute('type', 'hidden');
                 typeField.setAttribute('name', textArea.name + 'Type');

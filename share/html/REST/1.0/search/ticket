@@ -54,13 +54,12 @@ $orderby => undef
 $fields => undef
 </%ARGS>
 <%INIT>
-use RT::Interface::REST;
 my $output = "";
 my $status = "200 Ok";
 my $tickets = new RT::Tickets $session{CurrentUser};
 
 # Parse and validate any field specifications.
-my $field  = RT::Interface::REST->field_spec;
+my $field  = '[a-zA-Z](?:[a-zA-Z0-9_-]|\s+)*';
 my (%fields, @fields);
 if ($fields) {
     $format ||= "l";

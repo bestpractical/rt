@@ -121,7 +121,6 @@ sub extract_strings_from_code {
     my $line = 1;
     while (m!\G.*?<&\|/l(.*?)&>(.*?)</&>!sg) {
         my ( $vars, $str ) = ( $1, $2 );
-        $vars =~ s/[\n\r]//g;
         $line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
         $str =~ s/\\'/\'/g;
         #print "STR IS $str\n";

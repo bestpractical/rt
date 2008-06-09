@@ -94,7 +94,7 @@ sub DEBUG { warn @_ if $config{debug} >= shift }
 # (XXX: Ask Autrijus how i18n changes these definitions.)
 
 my $name   = '[\w.-]+';
-my $field  = '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-(?:[a-z0-9_ :()/-]|\s)+)';
+my $field  = '(?:[a-zA-Z](?:[a-zA-Z0-9_-]|\s+)*)';
 my $label  = '[a-zA-Z0-9@_.+-]+';
 my $labels = "(?:$label,)*$label";
 my $idlist = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
@@ -455,7 +455,7 @@ sub edit {
             whine "What type of object do you want to create?";
             $bad = 1;
         }
-        @objects = ("$type/new") if defined($type);
+        @objects = ("$type/new");
     }
     #return help($action, $type) if $bad;
     return suggest_help($action, $type) if $bad;

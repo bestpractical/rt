@@ -5002,7 +5002,7 @@ msgstr "Choisir la file"
 
 #: share/html/Prefs/Quicksearch.html:55
 msgid "Select queues to be displayed on the \"RT at a glance\" page"
-msgstr "Sélectionnez les files à afficher dans la page \"RT en un coup d'œil\""
+msgstr "Sélectionnez les files à afficher dans la page \"RT en un coup d'œil\" page"
 
 #: share/html/Admin/Global/Scrip.html:61 share/html/Admin/Global/Scrips.html:59 share/html/Admin/Queues/Scrip.html:69 share/html/Admin/Queues/Scrips.html:75
 msgid "Select scrip"

@@ -114,7 +114,6 @@ Set( \$WebBaseURL , "http://localhost:\$WebPort");
 Set( \$DatabaseName , $dbname);
 Set( \$LogToSyslog , undef);
 Set( \$LogToScreen , "warning");
-Set( \$MailCommand, 'testfile');
 };
     print $config $args{'config'} if $args{'config'};
     print $config "\n1;\n";
@@ -340,27 +339,6 @@ sub load_or_create_queue {
             my ($val, $msg) = $obj->$method( $args{ $field } );
             die "$msg" unless $val;
         }
-    }
-
-    return $obj;
-}
-
-=head2 load_or_create_custom_field
-
-=cut
-
-sub load_or_create_custom_field {
-    my $self = shift;
-    my %args = ( Disabled => 0, @_ );
-    my $obj = RT::CustomField->new( $RT::SystemUser );
-    if ( $args{'Name'} ) {
-        $obj->LoadByName( Name => $args{'Name'}, Queue => $args{'Queue'} );
-    } else {
-        die "Name is required";
-    }
-    unless ( $obj->id ) {
-        my ($val, $msg) = $obj->Create( %args );
-        die "$msg" unless $val;
     }
 
     return $obj;

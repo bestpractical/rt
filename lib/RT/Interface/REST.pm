@@ -63,7 +63,7 @@ BEGIN {
     @EXPORT = qw(expand_list form_parse form_compose vpush vsplit);
 }
 
-sub field_spec { '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-(?:[a-z0-9_ :()/-]|\s)+)' }
+my $field = '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-(?:[a-z0-9_ -]|\s)+)';
 
 # WARN: this code is duplicated in bin/rt.in,
 # change both functions at once
@@ -96,7 +96,6 @@ sub form_parse {
     my @forms = ();
     my @lines = split /\n/, $_[0];
     my ($c, $o, $k, $e) = ("", [], {}, "");
-    my $field = __PACKAGE__->field_spec;
 
     LINE:
     while (@lines) {
