@@ -115,6 +115,11 @@ my $LinkCallback = sub {
 };
 
 $COLUMN_MAP = {
+    Queue => {
+        attribute => 'Queue',
+        title     => 'Queue id',
+        value     => sub { return $_[0]->Queue }
+    },
     QueueName => {
         attribute => 'Queue',
         title     => 'Queue',
