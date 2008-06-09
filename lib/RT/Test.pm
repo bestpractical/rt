@@ -353,7 +353,7 @@ sub load_or_create_custom_field {
     my %args = ( Disabled => 0, @_ );
     my $obj = RT::CustomField->new( $RT::SystemUser );
     if ( $args{'Name'} ) {
-        $obj->LoadByCols( Name => $args{'Name'} );
+        $obj->LoadByName( Name => $args{'Name'}, Queue => $args{'Queue'} );
     } else {
         die "Name is required";
     }
