@@ -114,6 +114,7 @@ Set( \$WebBaseURL , "http://localhost:\$WebPort");
 Set( \$DatabaseName , $dbname);
 Set( \$LogToSyslog , undef);
 Set( \$LogToScreen , "warning");
+Set( \$MailCommand, 'testfile');
 };
     print $config $args{'config'} if $args{'config'};
     print $config "\n1;\n";
