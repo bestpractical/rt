@@ -47,17 +47,26 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
 % foreach my $stage (@stages) {
-<option value="<%$stage%>"
-<% ($stage eq $Default) && qq[ selected="selected"] |n %>
-><% loc($stage) %>
+
+%# allow [stage, display] in place of a scalar stage name
+% my ($value, $display) = ref($stage) ? @$stage : ($stage, $stage);
+
+<option value="<%$value%>"
+<% ($value eq $Default) && qq[ selected="selected"] |n %>
+><% loc($display) %>
 </option>
+
 % }
 <%INIT>
 if ( !defined $Default || $Default eq '') {
     $Default = 'TransactionCreate';
 }
 my @stages = 'TransactionCreate';
-push @stages, 'TransactionBatch' if RT->Config->Get('UseTransactionBatch');
+
+push @stages, RT->Config->Get('UseTransactionBatch')
+            ? 'TransactionBatch'
+            : ['TransactionBatch', 'TransactionBatch (DISABLED)'];
+
 push @stages, 'Disabled';
 </%INIT>
 <%ARGS>
