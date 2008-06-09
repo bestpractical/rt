@@ -66,7 +66,7 @@ loc('Next: Finish') : loc('Next: Initialize Database'), Back => 1,
 <%init>
 my @results;
 
-my @Types = qw/SendmailArguments SendmailBounceArguments SendmailPath/;
+my @Types = qw/MaxAttachmentSize SendmailArguments SendmailBounceArguments SendmailPath/;
 
 if ( $Run ) {
 
@@ -77,6 +77,12 @@ if ( $Run ) {
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'Install/Emails.html');
+    }
+
+    for ( qw/MaxAttachmentSize/ ) {
+        if ( $ARGS{$_} && $ARGS{$_} !~ /^\d+$/ ) {
+            push @results, "Invalid $_: it should be a number";
+        }
     }
 
     unless ( @results ) {
