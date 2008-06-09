@@ -254,9 +254,9 @@ Set(@MailParams, ());
 # and comment mail tracked by RT, unless overridden by a queue-specific
 # address.
 
-Set($CorrespondAddress , 'RT_CorrespondAddressNotSet');
+Set($CorrespondAddress , '');
 
-Set($CommentAddress , 'RT_CommentAddressNotSet');
+Set($CommentAddress , '');
 
 # By default, RT sets the outgoing mail's "From:" header to
 # "SenderName via RT".  Setting UseFriendlyFromLine to 0 disables it.
