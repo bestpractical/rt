@@ -346,6 +346,7 @@ sub _build_privacy {
              : undef;
     }
 
+    return undef unless ($obj_type);  # undef workaround
     return $obj_type eq 'RT::User'   ? "$obj_type-$obj_id"
          : $obj_type eq 'RT::Group'  ? "$obj_type-$obj_id"
          : $obj_type eq 'RT::System' ? $obj_type

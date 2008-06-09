@@ -356,9 +356,9 @@ my %supported_opt = map { $_ => 1 } qw(
 # we don't want to leak anything into FCGI/Apache/MP handles, this break things.
 # So code should look like:
 #        my $handles = GnuPG::Handles->new(
-#            stdin  => ($handle{'input'}  = new IO::Handle),
-#            stdout => ($handle{'output'} = new IO::Handle),
-#            stderr => ($handle{'error'}  = new IO::Handle),
+#            stdin  => ($handle{'stdin'}  = new IO::Handle),
+#            stdout => ($handle{'stdout'} = new IO::Handle),
+#            stderr => ($handle{'stderr'}  = new IO::Handle),
 #            ...
 #        );
 
@@ -466,36 +466,31 @@ sub SignEncryptRFC3156 {
             }
         }
 
-        my %handle;
-        my $handles = GnuPG::Handles->new(
-            stdin  => ($handle{'input'}  = new IO::Handle::CRLF),
-            stdout => ($handle{'output'} = new IO::Handle),
-            stderr => ($handle{'error'}  = new IO::Handle),
-            logger => ($handle{'logger'} = new IO::Handle),
-            status => ($handle{'status'} = new IO::Handle),
-        );
+    my ($handles, $handle_list) = _make_gpg_handles(stdin =>IO::Handle::CRLF->new );
+    my %handle = %$handle_list;
+
         $gnupg->passphrase( $args{'Passphrase'} );
 
         eval {
             local $SIG{'CHLD'} = 'DEFAULT';
             my $pid = safe_run_child { $gnupg->detach_sign( handles => $handles ) };
             $entity->make_multipart( 'mixed', Force => 1 );
-            $entity->parts(0)->print( $handle{'input'} );
-            close $handle{'input'};
+            $entity->parts(0)->print( $handle{'stdin'} );
+            close $handle{'stdin'};
             waitpid $pid, 0;
         };
         my $err = $@;
-        my @signature = readline $handle{'output'};
-        close $handle{'output'};
+        my @signature = readline $handle{'stdout'};
+        close $handle{'stdout'};
 
         $res{'exit_code'} = $?;
-        foreach ( qw(error logger status) ) {
+        foreach ( qw(stderr logger status) ) {
             $res{$_} = do { local $/; readline $handle{$_} };
             delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
             close $handle{$_};
         }
         $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-        $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+        $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
         $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
         if ( $err || $res{'exit_code'} ) {
             $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
@@ -525,14 +520,8 @@ sub SignEncryptRFC3156 {
         my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
         binmode $tmp_fh, ':raw';
 
-        my %handle;
-        my $handles = GnuPG::Handles->new(
-            stdin  => ($handle{'input'}  = new IO::Handle),
-            stdout => $tmp_fh,
-            stderr => ($handle{'error'}  = new IO::Handle),
-            logger => ($handle{'logger'} = new IO::Handle),
-            status => ($handle{'status'} = new IO::Handle),
-        );
+    my ($handles, $handle_list) = _make_gpg_handles(stdout => $tmp_fh);
+    my %handle = %$handle_list;
         $handles->options( 'stdout'  )->{'direct'} = 1;
         $gnupg->passphrase( $args{'Passphrase'} ) if $args{'Sign'};
 
@@ -542,22 +531,22 @@ sub SignEncryptRFC3156 {
                 ? $gnupg->sign_and_encrypt( handles => $handles )
                 : $gnupg->encrypt( handles => $handles ) };
             $entity->make_multipart( 'mixed', Force => 1 );
-            $entity->parts(0)->print( $handle{'input'} );
-            close $handle{'input'};
+            $entity->parts(0)->print( $handle{'stdin'} );
+            close $handle{'stdin'};
             waitpid $pid, 0;
         };
 
         $res{'exit_code'} = $?;
-        foreach ( qw(error logger status) ) {
+        foreach ( qw(stderr logger status) ) {
             $res{$_} = do { local $/; readline $handle{$_} };
             delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
             close $handle{$_};
         }
         $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-        $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+        $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
         $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
         if ( $@ || $? ) {
-            $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
+            $res{'message'} = $@? $@: "gpg exited with error code ". ($? >> 8);
             return %res;
         }
 
@@ -649,14 +638,9 @@ sub _SignEncryptTextInline {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin  => ($handle{'input'}  = new IO::Handle),
-        stdout => $tmp_fh,
-        stderr => ($handle{'error'}  = new IO::Handle),
-        logger => ($handle{'logger'} = new IO::Handle),
-        status => ($handle{'status'} = new IO::Handle),
-    );
+    my ($handles, $handle_list) = _make_gpg_handles(stdout => $tmp_fh);
+    my %handle = %$handle_list;
+
     $handles->options( 'stdout'  )->{'direct'} = 1;
     $gnupg->passphrase( $args{'Passphrase'} ) if $args{'Sign'};
 
@@ -667,20 +651,20 @@ sub _SignEncryptTextInline {
             ? 'sign_and_encrypt'
             : ($args{'Sign'}? 'clearsign': 'encrypt');
         my $pid = safe_run_child { $gnupg->$method( handles => $handles ) };
-        $entity->bodyhandle->print( $handle{'input'} );
-        close $handle{'input'};
+        $entity->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
     my $err = $@;
 
-    foreach ( qw(error logger status) ) {
+    foreach ( qw(stderr logger status) ) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
@@ -739,14 +723,8 @@ sub _SignEncryptAttachmentInline {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin  => ($handle{'input'}  = new IO::Handle),
-        stdout => $tmp_fh,
-        stderr => ($handle{'error'}  = new IO::Handle),
-        logger => ($handle{'logger'} = new IO::Handle),
-        status => ($handle{'status'} = new IO::Handle),
-    );
+    my ($handles, $handle_list) = _make_gpg_handles(stdout => $tmp_fh);
+    my %handle = %$handle_list;
     $handles->options( 'stdout'  )->{'direct'} = 1;
     $gnupg->passphrase( $args{'Passphrase'} ) if $args{'Sign'};
 
@@ -756,20 +734,20 @@ sub _SignEncryptAttachmentInline {
             ? 'sign_and_encrypt'
             : ($args{'Sign'}? 'detach_sign': 'encrypt');
         my $pid = safe_run_child { $gnupg->$method( handles => $handles ) };
-        $entity->bodyhandle->print( $handle{'input'} );
-        close $handle{'input'};
+        $entity->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
     my $err = $@;
 
-    foreach ( qw(error logger status) ) {
+    foreach ( qw(stderr logger status) ) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
@@ -842,14 +820,8 @@ sub SignEncryptContent {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin  => ($handle{'input'}  = new IO::Handle),
-        stdout => $tmp_fh,
-        stderr => ($handle{'error'}  = new IO::Handle),
-        logger => ($handle{'logger'} = new IO::Handle),
-        status => ($handle{'status'} = new IO::Handle),
-    );
+    my ($handles, $handle_list) = _make_gpg_handles(stdout => $tmp_fh);
+    my %handle = %$handle_list;
     $handles->options( 'stdout'  )->{'direct'} = 1;
     $gnupg->passphrase( $args{'Passphrase'} ) if $args{'Sign'};
 
@@ -859,20 +831,20 @@ sub SignEncryptContent {
             ? 'sign_and_encrypt'
             : ($args{'Sign'}? 'clearsign': 'encrypt');
         my $pid = safe_run_child { $gnupg->$method( handles => $handles ) };
-        $handle{'input'}->print( ${ $args{'Content'} } );
-        close $handle{'input'};
+        $handle{'stdin'}->print( ${ $args{'Content'} } );
+        close $handle{'stdin'};
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
     my $err = $@;
 
-    foreach ( qw(error logger status) ) {
+    foreach ( qw(stderr logger status) ) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
@@ -1078,32 +1050,26 @@ sub VerifyAttachment {
     $args{'Data'}->bodyhandle->print( $tmp_fh );
     $tmp_fh->flush;
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin  => ($handle{'input'}  = new IO::Handle),
-        stdout => ($handle{'output'} = new IO::Handle),
-        stderr => ($handle{'error'}  = new IO::Handle),
-        logger => ($handle{'logger'} = new IO::Handle),
-        status => ($handle{'status'} = new IO::Handle),
-    );
+    my ($handles, $handle_list) = _make_gpg_handles();
+    my %handle = %$handle_list;
 
     my %res;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $pid = safe_run_child { $gnupg->verify( handles => $handles, command_args => [ '-', $tmp_fn ] ) };
-        $args{'Signature'}->bodyhandle->print( $handle{'input'} );
-        close $handle{'input'};
+        $args{'Signature'}->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
 
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    foreach ( qw(error logger status) ) {
+    foreach ( qw(stderr logger status) ) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $@ || $? ) {
         $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
@@ -1127,32 +1093,26 @@ sub VerifyRFC3156 {
     $args{'Data'}->print( $tmp_fh );
     $tmp_fh->flush;
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin  => ($handle{'input'}  = new IO::Handle),
-        stdout => ($handle{'output'} = new IO::Handle),
-        stderr => ($handle{'error'}  = new IO::Handle),
-        logger => ($handle{'logger'} = new IO::Handle),
-        status => ($handle{'status'} = new IO::Handle),
-    );
+    my ($handles, $handle_list) = _make_gpg_handles();
+    my %handle = %$handle_list;
 
     my %res;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $pid = safe_run_child { $gnupg->verify( handles => $handles, command_args => [ '-', $tmp_fn ] ) };
-        $args{'Signature'}->bodyhandle->print( $handle{'input'} );
-        close $handle{'input'};
+        $args{'Signature'}->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
 
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    foreach ( qw(error logger status) ) {
+    foreach ( qw(stderr logger status) ) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $@ || $? ) {
         $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
@@ -1192,14 +1152,8 @@ sub DecryptRFC3156 {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin  => ($handle{'input'}  = new IO::Handle),
-        stdout => $tmp_fh,
-        stderr => ($handle{'error'}  = new IO::Handle),
-        logger => ($handle{'logger'} = new IO::Handle),
-        status => ($handle{'status'} = new IO::Handle),
-    );
+    my ($handles, $handle_list) = _make_gpg_handles(stdout => $tmp_fh);
+    my %handle = %$handle_list;
     $handles->options( 'stdout' )->{'direct'} = 1;
 
     my %res;
@@ -1207,19 +1161,19 @@ sub DecryptRFC3156 {
         local $SIG{'CHLD'} = 'DEFAULT';
         $gnupg->passphrase( $args{'Passphrase'} );
         my $pid = safe_run_child { $gnupg->decrypt( handles => $handles ) };
-        $args{'Data'}->bodyhandle->print( $handle{'input'} );
-        close $handle{'input'};
+        $args{'Data'}->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
 
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    foreach ( qw(error logger status) ) {
+    foreach ( qw(stderr logger status) ) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
 
     # if the decryption is fine but the signature is bad, then without this
@@ -1334,14 +1288,10 @@ sub _DecryptInlineBlock {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin  => $args{'BlockHandle'},
-        stdout => $tmp_fh,
-        stderr => ($handle{'error'}  = new IO::Handle),
-        logger => ($handle{'logger'} = new IO::Handle),
-        status => ($handle{'status'} = new IO::Handle),
-    );
+    my ($handles, $handle_list) = _make_gpg_handles(
+            stdin => $args{'BlockHandle'}, 
+            stdout => $tmp_fh);
+    my %handle = %$handle_list;
     $handles->options( 'stdout' )->{'direct'} = 1;
     $handles->options( 'stdin' )->{'direct'} = 1;
 
@@ -1353,13 +1303,13 @@ sub _DecryptInlineBlock {
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    foreach ( qw(error logger status) ) {
+    foreach ( qw(stderr logger status) ) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
 
     # if the decryption is fine but the signature is bad, then without this
@@ -1452,14 +1402,9 @@ sub DecryptContent {
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin  => ($handle{'input'}  = new IO::Handle),
-        stdout => $tmp_fh,
-        stderr => ($handle{'error'}  = new IO::Handle),
-        logger => ($handle{'logger'} = new IO::Handle),
-        status => ($handle{'status'} = new IO::Handle),
-    );
+    my ($handles, $handle_list) = _make_gpg_handles(
+            stdout => $tmp_fh);
+    my %handle = %$handle_list;
     $handles->options( 'stdout' )->{'direct'} = 1;
 
     my %res;
@@ -1467,19 +1412,19 @@ sub DecryptContent {
         local $SIG{'CHLD'} = 'DEFAULT';
         $gnupg->passphrase( $args{'Passphrase'} );
         my $pid = safe_run_child { $gnupg->decrypt( handles => $handles ) };
-        print { $handle{'input'} } ${ $args{'Content'} };
-        close $handle{'input'};
+        print { $handle{'stdin'} } ${ $args{'Content'} };
+        close $handle{'stdin'};
 
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    foreach ( qw(error logger status) ) {
+    foreach ( qw(stderr logger status) ) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
 
     # if the decryption is fine but the signature is bad, then without this
@@ -2038,34 +1983,28 @@ sub GetKeysInfo {
 
     my %res;
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin  => ($handle{'input'}  = new IO::Handle),
-        stdout => ($handle{'output'} = new IO::Handle),
-        stderr => ($handle{'error'}  = new IO::Handle),
-        logger => ($handle{'logger'} = new IO::Handle),
-        status => ($handle{'status'} = new IO::Handle),
-    );
+    my ($handles, $handle_list) = _make_gpg_handles();
+    my %handle = %$handle_list;
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $method = $type eq 'private'? 'list_secret_keys': 'list_public_keys';
         my $pid = safe_run_child { $gnupg->$method( handles => $handles, $email? (command_args => $email) : () ) };
-        close $handle{'input'};
+        close $handle{'stdin'};
         waitpid $pid, 0;
     };
 
-    my @info = readline $handle{'output'};
-    close $handle{'output'};
+    my @info = readline $handle{'stdout'};
+    close $handle{'stdout'};
 
     $res{'exit_code'} = $?;
-    foreach ( qw(error logger status) ) {
+    foreach ( qw(stderr logger status) ) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $@ || $? ) {
         $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
@@ -2236,15 +2175,8 @@ sub DeleteKey {
         meta_interactive => 0,
     );
 
-    my %handle; 
-    my $handles = GnuPG::Handles->new(
-        stdin   => ($handle{'input'}   = new IO::Handle),
-        stdout  => ($handle{'output'}  = new IO::Handle),
-        stderr  => ($handle{'error'}   = new IO::Handle),
-        logger  => ($handle{'logger'}  = new IO::Handle),
-        status  => ($handle{'status'}  = new IO::Handle),
-        command => ($handle{'command'} = new IO::Handle),
-    );
+    my ($handles, $handle_list) = _make_gpg_handles();
+    my %handle = %$handle_list;
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
@@ -2254,7 +2186,7 @@ sub DeleteKey {
             commands => ['--delete-secret-and-public-key'],
             command_args => [$key],
         ) };
-        close $handle{'input'};
+        close $handle{'stdin'};
         while ( my $str = readline $handle{'status'} ) {
             if ( $str =~ /^\[GNUPG:\]\s*GET_BOOL delete_key\..*/ ) {
                 print { $handle{'command'} } "y\n";
@@ -2263,17 +2195,17 @@ sub DeleteKey {
         waitpid $pid, 0;
     };
     my $err = $@;
-    close $handle{'output'};
+    close $handle{'stdout'};
 
     my %res;
     $res{'exit_code'} = $?;
-    foreach ( qw(error logger status) ) {
+    foreach ( qw(stderr logger status) ) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
@@ -2291,15 +2223,8 @@ sub ImportKey {
         meta_interactive => 0,
     );
 
-    my %handle; 
-    my $handles = GnuPG::Handles->new(
-        stdin   => ($handle{'input'}   = new IO::Handle),
-        stdout  => ($handle{'output'}  = new IO::Handle),
-        stderr  => ($handle{'error'}   = new IO::Handle),
-        logger  => ($handle{'logger'}  = new IO::Handle),
-        status  => ($handle{'status'}  = new IO::Handle),
-        command => ($handle{'command'} = new IO::Handle),
-    );
+    my ($handles, $handle_list) = _make_gpg_handles();
+    my %handle = %$handle_list;
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
@@ -2308,22 +2233,22 @@ sub ImportKey {
             handles => $handles,
             commands => ['--import'],
         ) };
-        print { $handle{'input'} } $key;
-        close $handle{'input'};
+        print { $handle{'stdin'} } $key;
+        close $handle{'stdin'};
         waitpid $pid, 0;
     };
     my $err = $@;
-    close $handle{'output'};
+    close $handle{'stdout'};
 
     my %res;
     $res{'exit_code'} = $?;
-    foreach ( qw(error logger status) ) {
+    foreach ( qw(stderr logger status) ) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'error'} ) if $res{'error'};
+    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
@@ -2363,6 +2288,56 @@ sub DrySign {
 }
 
 1;
+
+=head2 Probe
+
+This routine returns true if RT's GnuPG support is configured and working 
+properly (and false otherwise).
+
+
+=cut
+
+
+sub Probe {
+    my $gnupg = new GnuPG::Interface;
+    my %opt = RT->Config->Get('GnuPGOptions');
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( %opt ),
+        armor => 1,
+        meta_interactive => 0,
+    );
+
+    my ($handles, $handle_list) = _make_gpg_handles();
+    my %handle = %$handle_list;
+
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        my $pid = safe_run_child { $gnupg->version( handles => $handles ) };
+        close $handle{'stdin'};
+        waitpid $pid, 0;
+    };
+    return 0 if $@;
+    return 0 if $?;
+    return 1;
+}
+
+
+sub _make_gpg_handles {
+    my %handle_map = (
+        stdin  => IO::Handle->new(),
+        stdout => IO::Handle->new(),
+        stderr => IO::Handle->new(),
+        logger => IO::Handle->new(),
+        status => IO::Handle->new(),
+        command => IO::Handle->new(),
+
+
+            @_);
+
+    my $handles = GnuPG::Handles->new(%handle_map);
+    return ($handles, \%handle_map);
+}
+
 
 # helper package to avoid using temp file
 package IO::Handle::CRLF;

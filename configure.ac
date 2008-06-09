@@ -298,7 +298,7 @@ dnl RT's GPG support
 AC_CHECK_PROG([RT_GPG], [gpg], "yes", "no")
 AC_ARG_ENABLE(gpg,
             AC_HELP_STRING([--enable-gpg],
-                           [Turns on GPG support]),
+                           [Turns on GNU Privacy Guard (GPG) support]),
             RT_GPG=$enableval)
 if test "$RT_GPG" = yes; then
         RT_GPG="1"
