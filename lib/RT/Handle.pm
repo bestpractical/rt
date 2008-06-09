@@ -970,7 +970,8 @@ sub InsertData {
         for ( @Final ) {
             local $@;
             eval { $_->(); };
-            $RT::Logger->error( "Failed to run one of final actions: $@" );
+            $RT::Logger->error( "Failed to run one of final actions: $@" )
+                if $@;
         }
         $RT::Logger->debug("done.");
     }
