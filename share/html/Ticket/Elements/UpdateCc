@@ -50,6 +50,7 @@
         <br />
 
 %foreach my $addr ( keys %txn_addresses) {
+%    next if ( grep {$addr eq $_} @req_addresses );
 <input 
 id="UpdateCc-<%$addr%>" 
 name="UpdateCc-<%$addr%>" 
@@ -60,6 +61,7 @@ name="UpdateCc-<%$addr%>"
 </td></tr>
 <tr><td align="right"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateBcc', Size => '60', Default => $ARGS{UpdateBcc} &><br />
 %foreach my $addr ( keys %txn_addresses) {
+%    next if ( grep {$addr eq $_} @req_addresses );
 <input
     id="UpdateBcc-<%$addr%>"
     name="UpdateBcc-<%$addr%>"
@@ -74,4 +76,5 @@ $TicketObj
 </%args>
 <%init>
 my %txn_addresses = %{$TicketObj->TransactionAddresses};
+my @req_addresses = split /,/, $TicketObj->RequestorAddresses;
 </%init>
