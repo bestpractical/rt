@@ -45,61 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<table border="0" cellspacing="0" cellpadding="1" width="100%" class="collection">
-
-% if ( $ShowHeader ) {
-<& /Elements/CollectionAsTable/Header,
-    %ARGS,
-    Class        => $Class,
-    Format       => \@Format,
-    FormatString => $Format,
-    Order        => \@Order,
-    OrderBy      => \@OrderBy,
-    Rows         => $Rows,
-    Page         => $Page,
-    AllowSorting => $AllowSorting, 
-    BaseURL      => $BaseURL,
-    maxitems     => $maxitems,
-&> 
-% }
-
-<%PERL>
-my ($i, $column_map) = (0, {});
-while ( my $record = $Collection->Next ) {
-    # Every ten rows, flush the buffer and put something on the page.
-    $m->flush_buffer unless ++$i % 10;
-    $m->comp('/Elements/CollectionAsTable/Row',
-        i => $i,
-        Format => \@Format,
-        record => $record,
-        maxitems => $maxitems,
-        ColumnMap => $column_map,
-        Class     => $Class,
-    );
-}
-</%PERL>
-
-</table>
-
-% if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
-<hr />
-% my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
-<&|/l, $Page, int($TotalFound/$Rows)+$oddRows&>Page [_1] of [_2]</&>
-
-<%PERL>
-my %query_args = map { $_ => $ARGS{$_} } @PassArguments;
-my $prev = $m->comp( '/Elements/QueryString', %query_args, Page => $Page - 1 );
-my $next = $m->comp( '/Elements/QueryString', %query_args, Page => $Page + 1 );
-</%PERL>
-% if ( $Page > 1 ) {
-<a href="<% $BaseURL %><% $prev %>"><&|/l&>Previous Page</&></a>
-% }
-% if ( ($Page * $Rows) < $TotalFound ) {
-<a href="<% $BaseURL %><% $next %>"><&|/l&>Next Page</&></a>
-% }
-% }
 <%INIT>
-my $TotalFound = $Collection->CountAll;
+if (!$Collection && $Class eq 'RT::Tickets') {
+    $Collection = RT::Tickets->new( $session{'CurrentUser'} );
+    $Collection->FromSQL($Query);
+}
+
+my $TotalFound = $Collection->CountAll();
 return '' if !$TotalFound && !$ShowEmpty;
 
 if ( @OrderBy ) {
@@ -114,6 +66,8 @@ if ( @OrderBy ) {
 }
 
 $Collection->RowsPerPage( $Rows ) if $Rows;
+$Page = 1
+  unless $Page && $Page > 0;    # workaround problems with Page = '' or undef
 $Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
 
 # DisplayFormat lets us use a "temporary" format for display, while 
@@ -140,29 +94,84 @@ foreach my $col (@Format) {
     }
 }
 
-my $Class = ref $Collection;
+$Class ||= ref $Collection;
 $Class =~ s/s$//;
 $Class =~ s/:/_/g;
 
+$m->out('<table border="0" cellspacing="0" cellpadding="1"' . 
+	' width="100%" class="' . 
+	($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . '>');
+
+if ( $ShowHeader ) {
+  $m->comp('/Elements/CollectionAsTable/Header',
+	   %ARGS,
+	   Class        => $Class,
+	   Format       => \@Format,
+	   FormatString => $Format,
+	   Order        => \@Order,
+	   OrderBy      => \@OrderBy,
+	   Rows         => $Rows,
+	   Page         => $Page,
+	   AllowSorting => $AllowSorting, 
+	   BaseURL      => $BaseURL,
+	   maxitems     => $maxitems,
+	   );
+}
+
+my ($i, $column_map) = (0, {});
+while ( my $record = $Collection->Next ) {
+    # Every ten rows, flush the buffer and put something on the page.
+    $m->flush_buffer unless ++$i % 10;
+    $m->comp('/Elements/CollectionAsTable/Row',
+        i => $i,
+        Format => \@Format,
+        record => $record,
+        maxitems => $maxitems,
+        ColumnMap => $column_map,
+        Class     => $Class,
+    );
+}
+
+$m->out('</table>');
+if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
+  $m->out('<hr />');
+  my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
+  my $pages = int( $TotalFound / $Rows ) + $oddRows;
+  $pages = 1 if $pages < 1;
+
+
+  my %query_args = map { $_ => $ARGS{$_} } @PassArguments;
+  $m->comp(
+        '/Elements/CollectionListPaging',
+        BaseURL     => $BaseURL,
+        Rows        => $Rows,
+        TotalFound  => $TotalFound,
+        CurrentPage => $Page,
+        Pages       => $pages,
+        URLParams   => \%query_args
+    );
+
+}
+
 </%INIT>
 <%ARGS>
+$Class         => ''
 $Collection    => undef
-
 $Format        => undef
 $DisplayFormat => undef
-
 @Order         => ()
 @OrderBy       => ()
 
-$Rows          => undef
+$Rows          => 1
 $Page          => 1
-
 $Title         => loc('Ticket Search')
 $BaseURL       => RT->Config->Get('WebPath') . $m->request_comp->path .'?'
-@PassArguments => qw(Query Format Rows Page Order OrderBy)
+@PassArguments => qw( Query Format Rows Page Order OrderBy)
 
 $AllowSorting   => 0
 $ShowNavigation => 1
 $ShowHeader     => 1
 $ShowEmpty      => 0
+$IsTicket => 0
+$Query => 0
 </%ARGS>

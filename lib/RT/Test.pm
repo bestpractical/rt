@@ -344,6 +344,27 @@ sub load_or_create_queue {
     return $obj;
 }
 
+=head2 load_or_create_custom_field
+
+=cut
+
+sub load_or_create_custom_field {
+    my $self = shift;
+    my %args = ( Disabled => 0, @_ );
+    my $obj = RT::CustomField->new( $RT::SystemUser );
+    if ( $args{'Name'} ) {
+        $obj->LoadByName( Name => $args{'Name'}, Queue => $args{'Queue'} );
+    } else {
+        die "Name is required";
+    }
+    unless ( $obj->id ) {
+        my ($val, $msg) = $obj->Create( %args );
+        die "$msg" unless $val;
+    }
+
+    return $obj;
+}
+
 sub store_rights {
     my $self = shift;
 

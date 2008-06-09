@@ -8,11 +8,14 @@ $URLParams => undef
 </%ARGS>
 
 <%INIT>
+if ($Pages == 1) {
+  $m->out(loc('Page 1 of 1'));
+}
+else{
 $m->out(loc('Page') . ' ');
-
 my $prev = $m->comp(
 		    '/Elements/QueryString',
-		    @$URLParams,
+		    %$URLParams,
 		    Page    => ( $CurrentPage - 1 )
 		   );
 my %show;
@@ -23,7 +26,7 @@ my $dots;
 for my $number (1..$Pages){
   if ($show{$number}){
     $dots = undef;
-    my $qs = $m->comp('/Elements/QueryString', @$URLParams, Page => $number);
+    my $qs = $m->comp('/Elements/QueryString', %$URLParams, Page => $number);
     $m->out(  qq{<a href="$BaseURL$qs">}
 	      . (($number == $CurrentPage)  ? "<em>$number</em>" : $number) 
 	      . qq{</a> });
@@ -36,13 +39,14 @@ for my $number (1..$Pages){
 
 my $next = $m->comp(
 		    '/Elements/QueryString',
-		    @$URLParams,
+		    %$URLParams,
 		    Page    => ( $CurrentPage + 1 )
 		   );
+if ($CurrentPage > 1) {
+  $m->out(qq{<a href="$BaseURL$prev">}.loc('Previous ').qq{</a>});
+}
+if (($CurrentPage * $Rows) < $TotalFound) {
+  $m->out(qq{<a href="$BaseURL$next">}.loc('Next').qq{</a>});
+}
+}
 </%INIT>
-% if ($CurrentPage > 1) {
-<a href="<%$BaseURL%><%$prev%>"><&|/l&>Previous</&></a>
-% }
-% if (($CurrentPage * $Rows) < $TotalFound) {
-<a href="<%$BaseURL%><%$next%>"><&|/l&>Next</&></a>
-% }

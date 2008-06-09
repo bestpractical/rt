@@ -58,6 +58,10 @@ foreach my $id (keys %cfqueues) {
         # XXX TODO: This ancient code dates from a former developer
         # we have no idea what it means or why cfqueues are so encoded.
         $id =~ s/^.'*(.*).'*$/$1/;
+
+        # unescape internal quotes
+        $id =~ s/(\\(.))/$2 eq "'" ? "'" : $1/eg;
+
         $queue->Load($id);
     }
     $CustomFields->LimitToQueue($queue->Id);

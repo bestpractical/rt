@@ -109,7 +109,7 @@ our %META = (
         },
     },
     DefaultSummaryRows => {
-        Section         => 'RT at a glance',
+        Section         => 'RT at a glance',    #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
@@ -187,7 +187,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Default queue',
+            Description => 'Default queue',    #loc
             Callback    => sub {
                 my $ret = { Values => [], ValuesLabel => {}};
                 my $q = new RT::Queues($HTML::Mason::Commands::session{'CurrentUser'});
@@ -207,12 +207,12 @@ our %META = (
             Default     => 'Individual messages',
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Email delivery',
+            Description => 'Email delivery',    #loc
             Values      => [
-                'Individual messages',
-                'Daily digest',
-                'Weekly digest',
-                'Suspended'
+                'Individual messages',    #loc
+                'Daily digest',           #loc
+                'Weekly digest',          #loc
+                'Suspended'               #loc
             ]
             }
             },
