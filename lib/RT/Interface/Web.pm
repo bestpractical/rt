@@ -1395,9 +1395,6 @@ sub ProcessRecordLinks {
             my $type   = $2;
             my $target = $3;
 
-            push @results,
-                loc( "Trying to delete: Base: [_1] Target: [_2] Type: [_3]",
-                                              $base,       $target,   $type );
             my ( $val, $msg ) = $Record->DeleteLink( Base   => $base,
                                                      Type   => $type,
                                                      Target => $target );
