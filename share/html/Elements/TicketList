@@ -214,14 +214,12 @@ if ( $Rows && $ShowNavigation ) {
 </%INIT>
 <%ARGS>
 $Collection => undef
-
 $Query => undef
 $Format => RT->Config->Get('DefaultSearchResultFormat')
 $DisplayFormat => undef
-$Order => undef
-$OrderBy => undef
+@Order => ()
+@OrderBy => ()
 $Rows => 50
-
 $Page => 1
 $Title => 'Ticket Search'
 $BaseURL => undef
