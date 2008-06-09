@@ -209,10 +209,10 @@ our %META = (
         WidgetArguments => {
             Description => 'Email delivery',    #loc
             Values      => [
-                'Individual messages',
-                'Daily digest',
-                'Weekly digest',
-                'Suspended'
+                'Individual messages',    #loc
+                'Daily digest',           #loc
+                'Weekly digest',          #loc
+                'Suspended'               #loc
             ]
             }
             },
