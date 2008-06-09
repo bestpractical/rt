@@ -94,7 +94,7 @@ sub DEBUG { warn @_ if $config{debug} >= shift }
 # (XXX: Ask Autrijus how i18n changes these definitions.)
 
 my $name   = '[\w.-]+';
-my $field  = '(?:[a-zA-Z](?:[a-zA-Z0-9_-]|\s+)*)';
+my $field  = '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-(?:[a-z0-9_ :()/-]|\s)+)';
 my $label  = '[a-zA-Z0-9@_.+-]+';
 my $labels = "(?:$label,)*$label";
 my $idlist = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
