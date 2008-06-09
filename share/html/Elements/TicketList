@@ -100,51 +100,115 @@ $m->comp( '/Elements/CollectionListPaging',
 </%PERL>
 <%INIT>
 unless ($Collection) {
-        $Collection = RT::Tickets->new( $session{'CurrentUser'} );
-        $Collection->FromSQL( $Query );
+    $Collection = RT::Tickets->new( $session{'CurrentUser'} );
+    $Collection->FromSQL($Query);
 }
 
-my $TotalFound =  $Collection->CountAll();
+my $TotalFound = $Collection->CountAll();
 return '' if !$TotalFound && !$ShowEmpty;
 
-if ($OrderBy =~ /\|/) {
+if ( $OrderBy =~ /\|/ ) {
+
     # Multiple Sorts
-    my @OrderBy = split /\|/,$OrderBy;
-    my @Order = split /\|/,$Order;
+    my @OrderBy = split /\|/, $OrderBy;
+    my @Order   = split /\|/, $Order;
     $Collection->OrderByCols(
         map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
-        ( 0 .. $#OrderBy )
-    );
-} else {
-    $Collection->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+          ( 0 .. $#OrderBy ) );
+}
+else {
+    $Collection->OrderBy( FIELD => $OrderBy, ORDER => $Order );
 }
 
-$Collection->RowsPerPage( $Rows ) if $Rows;
-$Page = 1 unless $Page && $Page > 0; # workaround problems with Page = '' or undef
-$Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
+$Collection->RowsPerPage($Rows) if $Rows;
+$Page = 1
+  unless $Page && $Page > 0;    # workaround problems with Page = '' or undef
+$Collection->GotoPage( $Page - 1 );    # SB uses page 0 as the first page
 
-# DisplayFormat lets us use a "temporary" format for display, while 
+# DisplayFormat lets us use a "temporary" format for display, while
 # still using our original format for next/prev page links.
 # bulk update uses this feature to add checkboxes
 
 $DisplayFormat ||= $Format;
 
 # Scrub the html of the format string to remove any potential nasties.
-$Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
-$DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat);
+$Format        = $m->comp( '/Elements/ScrubHTML', Content => $Format );
+$DisplayFormat = $m->comp( '/Elements/ScrubHTML', Content => $DisplayFormat );
 
-my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
+my @Format = $m->comp( '/Elements/CollectionAsTable/ParseFormat',
+    Format => $DisplayFormat );
 
 # Find the maximum number of items in any row, so we can pad the table.
-my ($maxitems, $item) = (0, 0);
+my ( $maxitems, $item ) = ( 0, 0 );
 foreach my $col (@Format) {
     $item++;
-    if ( $col->{title} && ($col->{title} eq 'NEWLINE') ) {
+    if ( $col->{title} && ( $col->{title} eq 'NEWLINE' ) ) {
         $item = 0;
     }
     else {
         $maxitems = $item if $item > $maxitems;
     }
+}
+
+$m->out(
+'<table border="0" cellspacing="0" cellpadding="1" width="100%" class="ticket-list">'
+);
+
+if ($ShowHeader) {
+    $m->comp(
+        '/Elements/CollectionAsTable/Header',
+        Format       => \@Format,
+        FormatString => $Format,
+        AllowSorting => $AllowSorting,
+        Order        => $Order,
+        Query        => $Query,
+        Rows         => $Rows,
+        Page         => $Page,
+        OrderBy      => $OrderBy,
+        BaseURL      => $BaseURL,
+        maxitems     => $maxitems
+    );
+}
+
+my ( $i, $column_map ) = ( 0, {} );
+while ( my $record = $Collection->Next ) {
+    $i++;
+
+    # Every ten rows, flush the buffer and put something on the page.
+    $m->flush_buffer unless $i % 10;
+    $m->comp(
+        '/Elements/CollectionAsTable/Row',
+        i         => $i,
+        Format    => \@Format,
+        record    => $record,
+        maxitems  => $maxitems,
+        ColumnMap => $column_map,
+    );
+}
+
+$m->out('</table>');
+
+if ( $Rows && $ShowNavigation ) {
+    $m->out('<hr />');
+    my $oddRows = ( $TotalFound && $TotalFound % $Rows == 0 ) ? 0 : 1;
+    my $pages = int( $TotalFound / $Rows ) + $oddRows;
+    $pages = 1 if $pages < 1;
+    my @url_params = (
+        Query   => $Query,
+        Format  => $Format,
+        Rows    => $Rows,
+        OrderBy => $OrderBy,
+        Order   => $Order
+    );
+    $m->comp(
+        '/Elements/CollectionListPaging',
+        BaseURL     => $BaseURL,
+        Rows        => $Rows,
+        TotalFound  => $TotalFound,
+        CurrentPage => $Page,
+        Pages       => $pages,
+        URLParams   => \@url_params
+    );
 }
 
 </%INIT>
