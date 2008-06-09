@@ -186,7 +186,7 @@ my %Meta = (
     SendmailPath => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Sendmail path',                  #loc
+            Description => 'where is sendmail command',                  #loc
         },
     },
     WebDomain => {
