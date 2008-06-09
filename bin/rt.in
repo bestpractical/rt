@@ -455,7 +455,7 @@ sub edit {
             whine "What type of object do you want to create?";
             $bad = 1;
         }
-        @objects = ("$type/new");
+        @objects = ("$type/new") if defined($type);
     }
     #return help($action, $type) if $bad;
     return suggest_help($action, $type) if $bad;
