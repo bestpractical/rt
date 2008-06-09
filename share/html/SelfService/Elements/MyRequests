@@ -46,12 +46,15 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title =>  $title &>
-<& /Elements/TicketList, Title   => $title,
+<& /Elements/CollectionList, Title   => $title,
 			 Format  => $Format, 
 			 Query   => $Query, 
 			 Order   => $Order, 
 			 OrderBy => $OrderBy,
 			 BaseURL => $BaseURL,
+			 GenericQueryArgs => $GenericQueryArgs,
+			 AllowSorting => $AllowSorting,
+			 Class   => 'RT::Tickets',
 			 Page    => $Page &>
 </&>
 
@@ -65,8 +68,6 @@ if ( @status ) {
         . join( ' OR ', map "Status = '$_'", @status )
         . " )";
 }
-my $Order = "ASC";
-my $OrderBy = "Created";
 my $Format = qq{
    '<B><A HREF="}. RT->Config->Get('WebPath') .qq{/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="}. RT->Config->Get('WebPath') .qq{/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
@@ -81,4 +82,8 @@ $title => loc("My [_1] tickets", $friendly_status)
 @status => ('open', 'new', 'stalled')
 $BaseURL => undef
 $Page => 1
+$GenericQueryArgs => undef
+$AllowSorting => undef
+$Order => "ASC"
+$OrderBy => "Created"
 </%ARGS>

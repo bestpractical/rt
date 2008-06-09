@@ -50,14 +50,14 @@
     title_href => $query_link_url.$QueryString,
     titleright => $customize ? loc('Edit') : '',
     titleright_href => $customize &>
-<& $query_display_component, %$ProcessedSearchArg, ShowNavigation => 0 &>
+<& $query_display_component, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Tickets' &>
 </&>
 <%init>
 my $search;
 my $user = $session{'CurrentUser'}->UserObj;
 my $SearchArg;
 my $customize;
-my $query_display_component = '/Elements/TicketList';
+my $query_display_component = '/Elements/CollectionList';
 my $query_link_url = 'Search/Results.html';
 
 if ($SavedSearch) {

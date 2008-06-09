@@ -66,8 +66,7 @@ if ( @OrderBy ) {
 }
 
 $Collection->RowsPerPage( $Rows ) if $Rows;
-$Page = 1
-  unless $Page && $Page > 0;    # workaround problems with Page = '' or undef
+$Page = 1 unless $Page && $Page > 0;    # workaround problems with $Page = '' or undef
 $Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
 
 # DisplayFormat lets us use a "temporary" format for display, while 
@@ -114,6 +113,7 @@ if ( $ShowHeader ) {
 	   Page         => $Page,
 	   AllowSorting => $AllowSorting, 
 	   BaseURL      => $BaseURL,
+	   GenericQueryArgs => $GenericQueryArgs,
 	   maxitems     => $maxitems,
 	   );
 }
@@ -161,7 +161,7 @@ $Format        => undef
 $DisplayFormat => undef
 @Order         => ()
 @OrderBy       => ()
-
+$GenericQueryArgs => undef
 $Rows          => undef
 $Page          => 1
 $Title         => loc('Ticket Search')
@@ -172,6 +172,5 @@ $AllowSorting   => 0
 $ShowNavigation => 1
 $ShowHeader     => 1
 $ShowEmpty      => 0
-$IsTicket => 0
 $Query => 0
 </%ARGS>

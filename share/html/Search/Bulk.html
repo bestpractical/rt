@@ -60,7 +60,7 @@
 % foreach my $var qw(Query Format OrderBy Order Rows Page) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
-<& /Elements/TicketList, Query => $Query,
+<& /Elements/CollectionList, Query => $Query,
     DisplayFormat => $Format,
     Format => $ARGS{'Format'},
     Verbatim => 1,
@@ -69,7 +69,8 @@
     Order => $Order,
     Rows => $Rows,
     Page => $Page,
-    BaseURL => RT->Config->Get('WebPath')."/Search/Bulk.html?"
+    BaseURL => RT->Config->Get('WebPath')."/Search/Bulk.html?",
+    Class => 'RT::Tickets'
    &>
 
 % $m->callback(CallbackName => 'AfterTicketList', ARGSRef => \%ARGS);

@@ -56,7 +56,7 @@
     Rows => $Rows,
     OrderBy => $OrderBy,
     Order => $Order &>
-<& /Elements/TicketList, 
+<& /Elements/CollectionList, 
     Query => $Query,
     AllowSorting => 1,
     OrderBy => $OrderBy,
@@ -64,6 +64,7 @@
     Rows => $Rows,
     Page => $Page,
     Format => $Format,
+    Class => 'RT::Tickets',
     BaseURL => $BaseURL
 
    &>
