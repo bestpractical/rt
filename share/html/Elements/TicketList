@@ -45,38 +45,19 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<table border="0" cellspacing="0" cellpadding="1" width="100%" class="ticket-list">
+<%INIT>
+# unless ($Collection) {
+#     $Collection = RT::Tickets->new( $session{'CurrentUser'} );
+#     $Collection->FromSQL($Query);
+# }
 
-% if ($ShowHeader) {
-<& /Elements/CollectionAsTable/Header, 
-    Format => \@Format, 
-    FormatString => $Format,
-    AllowSorting => $AllowSorting, 
-    Order => $Order, 
-    Query => $Query,
-    Rows => $Rows,
-    Page => $Page,
-    OrderBy => $OrderBy , 
-    BaseURL => $BaseURL,
-    maxitems => $maxitems &> 
-% }
-<%PERL>
-my ($i, $column_map) = (0, {});
-while ( my $record = $Collection->Next ) {
-    $i++;
-    # Every ten rows, flush the buffer and put something on the page.
-    $m->flush_buffer unless $i % 10;
-    $m->comp('/Elements/CollectionAsTable/Row',
-        i => $i,
-        Format => \@Format,
-        record => $record,
-        maxitems => $maxitems,
-        ColumnMap => $column_map,
-    );
-}
-</%PERL>
+#  my $TotalFound = $Collection->CountAll();
+#  return '' if !$TotalFound && !$ShowEmpty;
 
-</table>
+# $Collection->RowsPerPage($Rows) if $Rows;
+# $Page = 1
+#   unless $Page && $Page > 0;    # workaround problems with Page = '' or undef
+# $Collection->GotoPage( $Page - 1 );    # SB uses page 0 as the first page
 
 %if ($Rows && $ShowNavigation) {
 <hr />
@@ -129,7 +110,7 @@ $Collection->GotoPage( $Page - 1 );    # SB uses page 0 as the first page
 # still using our original format for next/prev page links.
 # bulk update uses this feature to add checkboxes
 
-$DisplayFormat ||= $Format;
+# $m->out('</table>');
 
 # Scrub the html of the format string to remove any potential nasties.
 $Format        = $m->comp( '/Elements/ScrubHTML', Content => $Format );
@@ -221,7 +202,7 @@ $DisplayFormat => undef
 @OrderBy => ()
 $Rows => 50
 $Page => 1
-$Title => 'Ticket Search'
+$Title => loc('Ticket Search')
 $BaseURL => undef
 $AllowSorting => undef
 $ShowNavigation => 1

@@ -148,16 +148,14 @@ if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
 </%INIT>
 <%ARGS>
 $Collection    => undef
-
+$Query         => undef
 $Format        => undef
 $DisplayFormat => undef
-
 @Order         => ()
 @OrderBy       => ()
 
 $Rows          => 1
 $Page          => 1
-
 $Title         => loc('Ticket Search')
 $BaseURL       => RT->Config->Get('WebPath') . $m->request_comp->path .'?'
 @PassArguments => qw( Query Format Rows Page Order OrderBy)
