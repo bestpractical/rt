@@ -2764,20 +2764,6 @@ sub Next {
             return ($Ticket);
         }
 
-        if ( $Ticket->__Value('Status') eq 'deleted' ) {
-            return ( $self->Next() );
-        }
-
-        # Since Ticket could be granted with more rights instead
-        # of being revoked, it's ok if queue rights allow
-        # ShowTicket.  It seems need another query, but we have
-        # rights cache in Principal::HasRight.
-        elsif ($Ticket->QueueObj->CurrentUserHasRight('ShowTicket')
-            || $Ticket->CurrentUserHasRight('ShowTicket') )
-        {
-            return ($Ticket);
-        }
-
         #If the user doesn't have the right to show this ticket
         else {
             return ( $self->Next() );
