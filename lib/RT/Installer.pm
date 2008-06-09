@@ -150,7 +150,7 @@ my %Meta = (
     MaxAttachmentSize => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Max attachment size',             #loc
+            Description => 'Max attachment size( in bytes )',             #loc
         },
     },
     OwnerEmail => {
