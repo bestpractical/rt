@@ -157,7 +157,6 @@ if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
 <%ARGS>
 $Class         => ''
 $Collection    => undef
-$Query         => undef
 $Format        => undef
 $DisplayFormat => undef
 @Order         => ()
