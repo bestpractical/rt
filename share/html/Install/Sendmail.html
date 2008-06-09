@@ -60,7 +60,7 @@ Options below 'Mail command' only take effect if Mail command is 'sendmail' or '
 <input type="hidden" name="Run" value="1">
 <& /Elements/Submit, Label => $RT::Installer->{DatabaseAction} eq 'none' ?
 loc('Next: Finish') : loc('Next: Initialize Database'), Back => 1,
-    BackLabel => loc('Back: Customize Emails') &>
+    BackLabel => loc('Back: Customize Email Addresses') &>
 </form>
 </&>
 <%init>
