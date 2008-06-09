@@ -162,7 +162,7 @@ $DisplayFormat => undef
 @Order         => ()
 @OrderBy       => ()
 
-$Rows          => 1
+$Rows          => undef
 $Page          => 1
 $Title         => loc('Ticket Search')
 $BaseURL       => RT->Config->Get('WebPath') . $m->request_comp->path .'?'
