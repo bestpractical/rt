@@ -159,27 +159,10 @@ sub LoadConfig {
     }
 
     my $gpgopts = $Config->Get('GnuPGOptions');
-    my $gpg = $Config->Get('GnuPG');
     unless ( File::Spec->file_name_is_absolute( $gpgopts->{homedir} ) ) {
         $gpgopts->{homedir} = File::Spec->catfile( $BasePath, $gpgopts->{homedir} );
     }
-        unless (-d $gpgopts->{homedir}  && -r _ ) { # no homedir, no gpg
-            warn "RT's GnuPG libraries couldn't successfully read your".
-            " configured GnuPG home directory (".$gpgopts->{homedir}
-            ."). PGP support has been disabled";
-            $gpg->{'Enable'} = 0;
-        }
-
     
-    if ($gpg->{'Enable'}) {
-        require RT::Crypt::GnuPG;
-        unless (RT::Crypt::GnuPG->Prove()) {
-            warn "RT's GnuPG libraries couldn't successfully execute gpg.".
-            " PGP support has been disabled";
-            $gpg->{'Enable'} = 0;
-        }
-    }
-
     RT::I18N->Init;
 }
 
@@ -200,6 +183,8 @@ sub Init {
     InitClasses();
     InitLogging(); 
     InitPlugins();
+    RT->Config->PostLoadCheck;
+
 }
 
 =head2 ConnectToDatabase

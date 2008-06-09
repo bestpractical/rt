@@ -1300,20 +1300,6 @@ enable this option.
 =cut
 
 Set($CanonicalizeRedirectURLs, 0);
-
-=item C<$DisableGraphViz>
-
-=cut
-
-Set($DisableGraphViz, do { local $@; eval {require GraphViz; 1;} ? 0 : 1 } );
-
-=item C<$DisableGD>
-
-=cut
-
-Set($DisableGD, do { local $@; eval {require GD; 1;} ? 0 : 1 } );
-
-
 =item C<$EnableReminders>
 
 Hide links/portlets related to Reminders by setting this to 0

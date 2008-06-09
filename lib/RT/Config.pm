@@ -225,7 +225,7 @@ our %META = (
             return if $INC{'GraphViz.pm'};
             local $@;
             return if eval {require GraphViz; 1};
-            warn "You've enabled GraphViz, but we couldn't load the module: $@";
+            $RT::Logger->debug("You've enabled GraphViz, but we couldn't load the module: $@");
             $self->Set( DisableGraphViz => 1 );
         },
     },
@@ -238,13 +238,39 @@ our %META = (
             return if $INC{'GD.pm'};
             local $@;
             return if eval {require GD; 1};
-            warn "You've enabled GD, but we couldn't load the module: $@";
+            $RT::Logger->debug("You've enabled GD, but we couldn't load the module: $@");
             $self->Set( DisableGD => 1 );
         },
     },
     MailPlugins  => { Type => 'ARRAY' },
     GnuPG        => { Type => 'HASH' },
-    GnuPGOptions => { Type => 'HASH' },
+    GnuPGOptions => { Type => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+    my $gpg = $self->Get('GnuPG');
+    my $gpgopts = $self->Get('GnuPGOptions');
+        unless (-d $gpgopts->{homedir}  && -r _ ) { # no homedir, no gpg
+            $RT::Logger->debug(
+             "RT's GnuPG libraries couldn't successfully read your".
+            " configured GnuPG home directory (".$gpgopts->{homedir}
+            ."). PGP support has been disabled");
+            $gpg->{'Enable'} = 0;
+        }
+
+    
+    if ($gpg->{'Enable'}) {
+        require RT::Crypt::GnuPG;
+        unless (RT::Crypt::GnuPG->Prove()) {
+            $RT::Logger->debug(
+            "RT's GnuPG libraries couldn't successfully execute gpg.".
+            " PGP support has been disabled");
+            $gpg->{'Enable'} = 0;
+        }
+    }
+
+        
+        
+        }},
 );
 my %OPTIONS = ();
 
@@ -294,7 +320,6 @@ sub LoadConfigs {
     my @configs = $self->Configs;
     $self->InitConfig( File => $_ ) foreach @configs;
     $self->LoadConfig( File => $_ ) foreach @configs;
-    $self->PostLoadCheck;
     return;
 }
 
@@ -494,13 +519,13 @@ sub Set {
     my $type = $META{$name}->{'Type'} || 'SCALAR';
     if ( $type eq 'ARRAY' ) {
         $OPTIONS{$name} = [@_];
-        { no strict 'refs'; @{"RT::$name"} = (@_); }
+        { no warnings 'once'; no strict 'refs'; @{"RT::$name"} = (@_); }
     } elsif ( $type eq 'HASH' ) {
         $OPTIONS{$name} = {@_};
-        { no strict 'refs'; %{"RT::$name"} = (@_); }
+        { no warnings 'once';  no strict 'refs'; %{"RT::$name"} = (@_); }
     } else {
         $OPTIONS{$name} = shift;
-        { no strict 'refs'; ${"RT::$name"} = $OPTIONS{$name}; }
+        {no warnings 'once'; no strict 'refs'; ${"RT::$name"} = $OPTIONS{$name}; }
     }
     $META{$name}->{'Type'} = $type;
     return $self->_ReturnValue( $old, $type );
