@@ -2758,8 +2758,7 @@ sub Next {
         # of being revoked, it's ok if queue rights allow
         # ShowTicket.  It seems need another query, but we have
         # rights cache in Principal::HasRight.
-        elsif ($Ticket->QueueObj->CurrentUserHasRight('ShowTicket')
-            || $Ticket->CurrentUserHasRight('ShowTicket') )
+        elsif ( $Ticket->CurrentUserHasRight('ShowTicket') )
         {
             return ($Ticket);
         }
