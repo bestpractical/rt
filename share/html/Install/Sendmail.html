@@ -81,6 +81,10 @@ if ( $Run ) {
         }
     }
 
+    unless ( -e $ARGS{SendmailPath} ) {
+        push @results, "$ARGS{SendmailPath} doesn't exist.";
+    }
+
     unless ( @results ) {
 
         my ( $status, $msg ) = RT::Installer->SaveConfig;
