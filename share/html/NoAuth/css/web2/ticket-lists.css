@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%# 
-%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#  
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,6 +48,9 @@
 table.ticket-list, table.queue-summary, table.collection {
   margin-top: 0.75em;
   font-size: 0.9em;
+  border: 1px solid #aaa;
+  border-bottom: 2px solid #999;
+  border-right: 2px solid #999;
 
 
 }
@@ -68,10 +71,9 @@ table.ticket-list a, table.queue-summary a, table.collection a  {
 }
 
 
-table.ticket-list th.collection-as-table, table.collection th.collection-as-table, table.queue-summary th.collection-as-table {
- border-bottom: 1px solid #ccc;
+table.ticket-list th.collection-as-table, table.collection th.collection-as-table {
+  background: #ddd;
  font-size: 0.9em;
- background: #eee;
   margin-bottom: 0.5em;
   text-align: left;
 
@@ -79,6 +81,8 @@ table.ticket-list th.collection-as-table, table.collection th.collection-as-tabl
 
 
 table.queue-summary th.collection-as-table {
+ font-size: 0.9em;
+  margin-bottom: 0.5em;
   text-align: right;
 
 }
@@ -99,7 +103,9 @@ tr.collection-as-table+tr.collection-as-table th {
 
 table.queue-summary td {
   background: #efefef;
+  border-bottom: 1px solid #ccc;
 }
+
 
 
 tr.evenline td {
@@ -156,9 +162,11 @@ text-align: center;
 padding-bottom: 1em;
 }
 
+ 
 /* full-page ticket lists */
 #body>table.ticket-list {
-    border-bottom: 1px solid #ccc;
     margin-bottom: 2em;
 
 }
+
+
