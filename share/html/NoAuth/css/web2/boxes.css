@@ -145,8 +145,8 @@
  -webkit-border-bottom-left-radius: 0.25em;
  
  
- -moz-border-radius-bottomleft: 0.25em;
- -webkit-border-bottom-left-radius: 0.25em;
+ -moz-border-radius-topright: 0.25em;
+ -webkit-border-top-right-radius: 0.25em;
 
 }
 
