@@ -4525,7 +4525,7 @@ msgid "Offline upload"
 msgstr "Offline upload"
 
 #: share/html/Elements/SelectDateRelation:58
-msgid "On"
+msgid "on"
 msgstr "Pri"
 
 #: lib/RT/Transaction_Overlay.pm:347

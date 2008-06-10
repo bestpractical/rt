@@ -5938,7 +5938,7 @@ msgid "Offline upload"
 msgstr "离线上载"
 
 #: share/html/Elements/SelectDateRelation:58
-msgid "On"
+msgid "on"
 msgstr "等于"
 
 #: lib/RT/Transaction_Overlay.pm:346

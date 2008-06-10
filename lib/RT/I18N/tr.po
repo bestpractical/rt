@@ -3992,7 +3992,7 @@ msgid "Offline upload"
 msgstr "Çevrimdışı yükleme"
 
 #: share/html/Elements/SelectDateRelation:58
-msgid "On"
+msgid "on"
 msgstr "Tarih:"
 
 #: lib/RT/Transaction_Overlay.pm:346

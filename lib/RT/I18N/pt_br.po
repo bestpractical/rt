@@ -4782,7 +4782,7 @@ msgid "Offline upload"
 msgstr "Envio offline"
 
 #: share/html/Elements/SelectDateRelation:58
-msgid "On"
+msgid "on"
 msgstr "Em"
 
 #: lib/RT/Transaction_Overlay.pm:346

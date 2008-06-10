@@ -4881,7 +4881,7 @@ msgid "Offline upload"
 msgstr "Автономная закачка"
 
 #: share/html/Elements/SelectDateRelation:58
-msgid "On"
+msgid "on"
 msgstr "На"
 
 #: lib/RT/Transaction_Overlay.pm:346

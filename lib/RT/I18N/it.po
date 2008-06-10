@@ -4847,7 +4847,7 @@ msgid "Offline upload"
 msgstr "Upload richiesta offline"
 
 #: share/html/Elements/SelectDateRelation:58
-msgid "On"
+msgid "on"
 msgstr "il"
 
 #: lib/RT/Transaction_Overlay.pm:346

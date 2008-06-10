@@ -5922,7 +5922,7 @@ msgid "Offline upload"
 msgstr "離線上載"
 
 #: share/html/Elements/SelectDateRelation:58
-msgid "On"
+msgid "on"
 msgstr "等於"
 
 #: lib/RT/Transaction_Overlay.pm:346

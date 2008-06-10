@@ -3984,7 +3984,7 @@ msgid "Offline upload"
 msgstr "Off-line načtení"
 
 #: share/html/Elements/SelectDateRelation:58
-msgid "On"
+msgid "on"
 msgstr "Dne"
 
 #: lib/RT/Transaction_Overlay.pm:346

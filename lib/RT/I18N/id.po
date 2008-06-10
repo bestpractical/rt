@@ -4204,7 +4204,7 @@ msgid "Offline upload"
 msgstr "Upload Offline"
 
 #: share/html/Elements/SelectDateRelation:58
-msgid "On"
+msgid "on"
 msgstr "Pada"
 
 #: lib/RT/Transaction_Overlay.pm:346

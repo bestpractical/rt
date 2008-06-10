@@ -4409,7 +4409,7 @@ msgid "Offline upload"
 msgstr "オフラインからアップロード"
 
 #: share/html/Elements/SelectDateRelation:58
-msgid "On"
+msgid "on"
 msgstr "が以下である"
 
 #: lib/RT/Transaction_Overlay.pm:346

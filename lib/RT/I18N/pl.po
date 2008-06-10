@@ -4830,7 +4830,7 @@ msgid "Offline upload"
 msgstr "Załaduj modyfikowane zdalnie"
 
 #: share/html/Elements/SelectDateRelation:58
-msgid "On"
+msgid "on"
 msgstr "dnia"
 
 #: lib/RT/Transaction_Overlay.pm:346

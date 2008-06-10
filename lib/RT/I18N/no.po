@@ -4739,7 +4739,7 @@ msgid "Offline upload"
 msgstr ""
 
 #: share/html/Elements/SelectDateRelation:58
-msgid "On"
+msgid "on"
 msgstr "Ved"
 
 #: lib/RT/Transaction_Overlay.pm:346

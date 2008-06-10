@@ -4684,7 +4684,7 @@ msgid "Offline upload"
 msgstr "Off-line dataoverførsel"
 
 #: share/html/Elements/SelectDateRelation:58
-msgid "On"
+msgid "on"
 msgstr "Ved"
 
 #: lib/RT/Transaction_Overlay.pm:346
