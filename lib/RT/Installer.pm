@@ -119,8 +119,9 @@ my %Meta = (
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description =>
-              'Database password for RT( default is rt_pass )', #loc
-              Type => 'password',
+              'Database password for RT',    #loc
+            Type => 'password',
+            Hints => 'default is rt_pass',
         },
     },
     DatabaseRequireSSL => {
