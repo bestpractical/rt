@@ -173,7 +173,7 @@ if( $Plugin && ( $Search || $Wipeout ) ) { { # use additional block({}) to effec
     push @{ $messages{Success} }, 'executed plugin successfuly';
 
     my $shredder = new RT::Shredder;
-    foreach my $o( splice @objs ) {
+    foreach my $o( grep defined, splice @objs ) {
         eval { push @objs, $shredder->CastObjectsToRecords( Objects => $o ) };
         $catch_non_fatals->() && last if $@;
     }
