@@ -202,3 +202,8 @@ div#ticket-history .messagebody .messagebody{
 .unread-messages .titlebox-title .left { 
   background-color: #cce;
 }
+
+.ticket-inactive {
+  text-decoration: line-through;
+}
+
