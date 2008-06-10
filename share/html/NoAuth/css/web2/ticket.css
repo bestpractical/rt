@@ -178,7 +178,7 @@ div#ticket-history .messagebody .messagebody{
 .ticket-info-cfs .titlebox-title .left { background-color: #b32; color: #fff;}
 .ticket-info-basics .titlebox-title .left { background-color: #b32;  color: #fff;}
 .ticket-info-people .titlebox-title .left { background-color: #48c;  color: #fff;}
-.ticket-info-requestor .titlebox-title .left { background-color: #48c;  color: #fff;}
+.ticket-info-requestor .titlebox-title .left { white-space: nowrap; background-color: #48c;  color: #fff;}
 .ticket-info-links .titlebox-title .left { background-color: #316531;  color: #fff;}
 .ticket-info-reminders .titlebox-title .left { background-color: #369;  color: #fff;}
 .ticket-info-dates .titlebox-title .left { background-color: #633063;  color: #fff;}
