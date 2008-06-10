@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 8;
+use Test::More tests => 9;
 use RT::Test;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -26,7 +26,12 @@ $m->post("$baseurl/REST/1.0/ticket/new", [
 my $text = $m->content;
 my @lines = $text =~ m{.*}g;
 shift @lines; # header
+
+# CFs aren't in the default ticket form
+push @lines, "CF-fu()n:k/: maximum";
+
 $text = join "\n", @lines;
+
 ok($text =~ s/Subject:\s*$/Subject: REST interface/m, "successfully replaced subject");
 
 $m->post("$baseurl/REST/1.0/ticket/edit", [
@@ -43,3 +48,5 @@ my $ticket = RT::Ticket->new($RT::SystemUser);
 $ticket->Load($id);
 is($ticket->Id, $id, "loaded the REST-created ticket");
 is($ticket->Subject, "REST interface", "subject successfully set");
+is($ticket->FirstCustomFieldValue("fu()n:k/"), "maximum", "CF successfully set");
+
