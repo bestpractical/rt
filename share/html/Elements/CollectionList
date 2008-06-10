@@ -99,7 +99,7 @@ $Class =~ s/:/_/g;
 
 $m->out('<table border="0" cellspacing="0" cellpadding="1"' . 
 	' width="100%" class="' . 
-	($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . '>');
+	($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . '">');
 
 if ( $ShowHeader ) {
   $m->comp('/Elements/CollectionAsTable/Header',
