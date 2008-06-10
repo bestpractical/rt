@@ -260,7 +260,7 @@ our %META = (
     
     if ($gpg->{'Enable'}) {
         require RT::Crypt::GnuPG;
-        unless (RT::Crypt::GnuPG->Prove()) {
+        unless (RT::Crypt::GnuPG->Probe()) {
             $RT::Logger->debug(
             "RT's GnuPG libraries couldn't successfully execute gpg.".
             " PGP support has been disabled");
