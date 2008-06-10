@@ -301,7 +301,7 @@ $COLUMN_MAP = {
     Bookmark => {
         title => ' ',
         value => sub {
-            return \$m->comp( '/Ticket/Elements/Bookmark', id => $_[0]->id );
+            return \$m->scomp( '/Ticket/Elements/Bookmark', id => $_[0]->id );
         },
     },
 };
