@@ -55,6 +55,7 @@ $URLParams => undef
 </%ARGS>
 
 <%INIT>
+$m->out(qq{<div class="paging">});
 if ($Pages == 1) {
   $m->out(loc('Page 1 of 1'));
 }
@@ -65,35 +66,43 @@ my $prev = $m->comp(
 		    %$URLParams,
 		    Page    => ( $CurrentPage - 1 )
 		   );
-my %show;
-$show{1} = 1;
-$show{$_} = 1 for (($CurrentPage - 2)..($CurrentPage + 2));
-$show{$Pages} = 1;
-my $dots;
-for my $number (1..$Pages){
-  if ($show{$number}){
-    $dots = undef;
-    my $qs = $m->comp('/Elements/QueryString', %$URLParams, Page => $number);
-    $m->out(  qq{<a href="$BaseURL$qs">}
-	      . (($number == $CurrentPage)  ? "<em>$number</em>" : $number) 
-	      . qq{</a> });
-  }
-  elsif (not $dots){
-    $dots = 1;
-    $m->out(" ... ");
-  }
-}
-
 my $next = $m->comp(
 		    '/Elements/QueryString',
 		    %$URLParams,
 		    Page    => ( $CurrentPage + 1 )
 		   );
+my %show;
+$show{1} = 1;
+$show{$_} = 1 for (($CurrentPage - 2)..($CurrentPage + 2));
+$show{$Pages} = 1;
+my $dots;
+
+for my $number ( 1 .. $Pages ) {
+    if ( $show{$number} ) {
+        $dots = undef;
+        my $qs =
+          $m->comp( '/Elements/QueryString', %$URLParams, Page => $number );
+	$m->out(qq{<span class="pagenum">});
+        if ( $number == $CurrentPage ) {
+            $m->out(qq{<span class="currentpage">$number</span> });
+        }
+        else {
+            $m->out(qq{<a href="$BaseURL$qs">$number</a> });
+        }
+    }
+    elsif ( not $dots ) {
+        $dots = 1;
+        $m->out(qq{<span class="dots">...</span>});
+    }
+	$m->out(qq{</span>});
+}
+
 if ($CurrentPage > 1) {
-  $m->out(qq{<a href="$BaseURL$prev">}.loc('Previous ').qq{</a>});
+  $m->out(qq{<a href="$BaseURL$prev" class="nav">}.loc('Previous') . qq{</a>});
 }
 if (($CurrentPage * $Rows) < $TotalFound) {
-  $m->out(qq{<a href="$BaseURL$next">}.loc('Next').qq{</a>});
+  $m->out(qq{<a href="$BaseURL$next" class="nav">}.loc('Next').qq{</a>});
 }
 }
+$m->out(qq{</div>});
 </%INIT>

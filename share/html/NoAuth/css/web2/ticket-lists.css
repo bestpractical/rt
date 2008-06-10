@@ -136,6 +136,26 @@ th.collection-as-table , td.collection-as-table {
  padding-right: 0.5em;
 }
 
+.pagenum.a:hover, .paging a.nav:hover{
+text-decoration: underline;
+}
+
+
+.pagenum *, .paging a.nav{
+padding: .5em;
+}
+
+.currentpage{
+text-decoration: none;
+font-weight: bold;
+background: #eee;
+}
+
+div.paging{
+text-align: center;
+padding-bottom: 1em;
+}
+
 /* full-page ticket lists */
 #body>table.ticket-list {
     border-bottom: 1px solid #ccc;

@@ -134,7 +134,6 @@ while ( my $record = $Collection->Next ) {
 
 $m->out('</table>');
 if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
-  $m->out('<hr />');
   my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
   my $pages = int( $TotalFound / $Rows ) + $oddRows;
   $pages = 1 if $pages < 1;
