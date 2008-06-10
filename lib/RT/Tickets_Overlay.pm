@@ -1137,21 +1137,23 @@ sub _CustomFieldDecipher {
             $RT::Logger->warning("Queue '$queue' doesn't exist, parsed from '$string'");
             $queue = 0;
         }
-    } 
-    if (!$queue) {
+    }
+    else {
         $queue = '';
         my $cfs = RT::CustomFields->new( $self->CurrentUser );
         $cfs->Limit( FIELD => 'Name', VALUE => $field );
         $cfs->LimitToLookupType('RT::Queue-RT::Ticket');
-        my $count = $cfs->Count;
 
-        if ($count >= 1) { $cf = $cfs->First}
-        elsif ($count == 0 ) { $cf = undef }
+        # if there is more then one field the current user can
+        # see with the same name then we shouldn't return cf object
+        # as we don't know which one to use
+        $cf = $cfs->First;
+        if ( $cf ) {
+            $cf = undef if $cfs->Next;
+        }
     }
 
-
     return ($queue, $field, $cf, $column);
-
 }
 
 =head2 _CustomFieldJoin
