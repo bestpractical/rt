@@ -164,18 +164,21 @@ my %Meta = (
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description => 'Owner email',                   #loc
+            Hints => 'the address of a human who manages RT.',
         },
     },
     CommentAddress => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description => 'Comment address',                #loc
+            Hints => 'the default addresses that will be listed in From: and Reply-To: headers of comment mail.'
         },
     },
     CorrespondAddress => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description => 'Correspond address',             #loc
+            Hints => 'the default addresses that will be listed in From: and Reply-To: headers of correspondence mail.'
         },
     },
     SendmailArguments => {
