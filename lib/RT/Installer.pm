@@ -151,7 +151,7 @@ my %Meta = (
     Password => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'password of the user root',         #loc
+            Description => 'password of the user root in RT',         #loc
             Type => 'password',
         },
     },
