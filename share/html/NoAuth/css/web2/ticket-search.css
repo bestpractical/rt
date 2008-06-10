@@ -45,15 +45,16 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+
+
 #comp-Search-Build #body {
     position: relative;
 }
 
-
-
 #comp-Search-Build #pick-criteria select {
-  background: #eee;
-  border: 1px solid #ccc;
+    background: #eee;
+    border: 1px solid #eee;
+
 }
 
 #comp-Search-Build #pick-criteria tr {
@@ -62,18 +63,14 @@
 
 #comp-Search-Build #pick-criteria td.label {
     font-size: 0.9em;
-    padding-right: 0;
+    padding-right: 0.2em;
 }
-
 
 #comp-Search-Build #pick-criteria td.label * {
 }
 
-
 #comp-Search-Build #pick-criteria td.label select {
-  font-size: 0.9em;
   text-align: right;
-  width: 13em;
 }
 
 #comp-Search-Build #pick-criteria td.operator {
@@ -82,7 +79,7 @@
  font-size: 0.9em;
 }
 #comp-Search-Build #pick-criteria td.operator select {
- width: 8em;
+ text-align: right;
 }
 
 #comp-Search-Build #pick-criteria td.value input,
@@ -93,7 +90,6 @@
 
 #comp-Search-Build #pick-criteria td.value {
   padding-right: 0.5em;
- min-width: 8em;
  text-align: left;
  font-size: 0.9em;
 }
@@ -108,6 +104,9 @@
 /*  margin-top: -1em; */
 }
 
+#comp-Search-Build #editquery {
+   top: 1.3em;
+}    
 
 
 #comp-Search-Build #editsearches {
@@ -117,12 +116,12 @@
 
 #comp-Search-Build #pick-criteria {
  width: 58%;
- padding-top: 0.2em;
- margin-top: -0.1em;
+ padding-top: 0em;
+ margin-top: 0em;
 }
 
 #comp-Search-Build #pick-criteria .titlebox-content {
- overflow-x: scroll;
+ overflow-x: auto;
 }
 
 
