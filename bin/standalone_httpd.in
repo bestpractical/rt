@@ -81,7 +81,8 @@ if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
 RT::CheckPerlRequirements();
 
-my $port = shift @ARGV || RT->Config->Get('WebPort') || '8080';
+my $explicit_port = shift @ARGV;
+my $port = $explicit_port || RT->Config->Get('WebPort') || '8080';
 
 
 require RT::Handle;
@@ -117,24 +118,56 @@ EOF
     RT->InitPlugins();
 }
 
+
+
 require RT::Interface::Web::Standalone;
 my $server = RT::Interface::Web::Standalone->new;
-$server->port($port);
-eval { $server->run() };
+run_server($port);
+exit 0;
 
-if (my $err = $@) {
-   if ($err =~ /bind: Permission denied/ && $port <= 1024) {
-        print STDERR <<EOF;
-RT couldn't start up a web server on port @{[$port]}. This is often the case 
-if you're running @{[$0]} as someone other than your 
-system's "root" user.  
+sub run_server {
+    my $port = shift;
+    $server->port($port);
+    eval { $server->run() };
 
-For now, RT has picked a random alternate port to run on.
-EOF
-        $server->port( 8000 + int(rand(1024))) ;
-        $server->run;
-   } else {
-        die $err;
-   }
+    if ( my $err = $@ ) {
+        handle_startup_error($err);
+    }
 }
 
+sub handle_startup_error {
+    my $err = shift;
+    if ( $err =~ /bind: Permission denied/ ) {
+        handle_bind_error();
+    } else {
+        die
+            "Something went wrong while trying to run RT's standalone web server:\n\t"
+            . $err;
+    }
+}
+
+
+sub handle_bind_error {
+
+    print STDERR <<EOF;
+WARNINING: RT couldn't start up a web server on port @{[$port]}.
+This is often the case if you're running @{[$0]} as 
+someone other than your system's "root" user.  
+EOF
+
+    if ($explicit_port) {
+        print STDERR
+            "Please check your system configuration or choose another port\n\n";
+    } else {
+        print STDERR "\nFor now, RT has chosen an alternate port to run on.\n\n";
+        if ( !$integrity ) {
+            print STDERR <<EOF;
+You can use this server to configure and explore RT.  While configuring
+RT, you'll have a chance to set a permanent port and URL for your
+server.
+
+EOF
+        }
+        run_server( 8000 + int( rand(1024) ) );
+    }
+}

@@ -53,6 +53,7 @@ package RT::Interface::Web::Standalone;
 use base 'HTTP::Server::Simple::Mason';
 use RT::Interface::Web::Handler;
 use RT::Interface::Web;
+use URI;
 
 sub handler_class { "RT::Interface::Web::Handler" }
 
@@ -87,5 +88,30 @@ sub net_server {
     $self->{rt_net_server} = shift if @_;
     return $self->{rt_net_server};
 }
+
+
+=head2  print_banner
+
+This routine prints a banner before the server request-handling loop
+starts.
+
+Methods below this point are probably not terribly useful to define
+yourself in subclasses.
+
+=cut
+
+sub print_banner {
+    my $self = shift;
+    
+    my $url = URI->new(           RT->Config->Get('WebBaseURL'));
+    $url->host('127.0.0.1') if ($url->host() eq 'localhost');
+    $url->port($self->port);
+    print(   
+            "You can connect to your server at "
+            . $url->canonical
+            . "\n" );
+
+}
+
 
 1;
