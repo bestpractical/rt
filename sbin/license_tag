@@ -4,8 +4,8 @@
 # BEGIN BPS TAGGED BLOCK {{{
 # 
 # COPYRIGHT:
-#  
-# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+# 
+# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
 # 
 # (Except where explicitly superseded by other copyright notices)
@@ -51,8 +51,8 @@
 my $LICENSE  = <<'EOL';
 
 COPYRIGHT:
- 
-This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+
+This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
                                          <jesse@bestpractical.com>
 
 (Except where explicitly superseded by other copyright notices)
@@ -101,7 +101,7 @@ use File::Find;
 my @MAKE = qw(Makefile);
 
 File::Find::find({ no_chdir => 1, wanted => \&tag_pm}, 'lib');
-File::Find::find({ no_chdir => 1, wanted => \&tag_mason}, 'html');
+File::Find::find({ no_chdir => 1, wanted => \&tag_mason}, 'share/html');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'sbin');
 File::Find::find({ no_chdir => 1, wanted => \&tag_script}, 'bin');
 tag_makefile ('Makefile.in');
@@ -116,7 +116,7 @@ sub tag_mason {
         my $file = (join "", <FILE>); 
         close (FILE);
         print "$pm - ";
-        return if another_license($file) && print "has different license\n";
+        return if another_license($pm => $file) && print "has different license\n";
 
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/%# /mg;
@@ -148,7 +148,7 @@ sub tag_makefile {
         my $file = (join "", <FILE>); 
         close (FILE);
         print "$pm - ";
-        return if another_license($file) && print "has different license\n";
+        return if another_license($pm => $file) && print "has different license\n";
 
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/# /mg;
@@ -181,7 +181,7 @@ sub tag_pm {
         my $file = (join "", <FILE>); 
         close (FILE);
         print "$pm - ";
-        return if another_license($file) && print "has different license\n";
+        return if another_license($pm => $file) && print "has different license\n";
 
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/# /mg;
@@ -214,7 +214,7 @@ sub tag_script {
         my $file = (join "", <FILE>); 
         close (FILE);
         print "$pm - ";
-        return if another_license($file) && print "has different license\n";
+        return if another_license($pm => $file) && print "has different license\n";
 
         my $pmlic = $LICENSE;
         $pmlic =~ s/^/# /msg;
@@ -243,7 +243,11 @@ sub tag_script {
 }
 
 sub another_license {
+    my $name = shift;
     my $file = shift;
+
+    return 1 if ($name =~ /(?:FCKEditor|scriptaculous)/);
+
     return 0 if $file =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i;
     return 1 if $file =~ /\bcopyright\b/i; # common
     return 1 if $file =~ /\(c\)\s+\d\d\d\d(?:-\d\d\d\d)?/i; # prototype
