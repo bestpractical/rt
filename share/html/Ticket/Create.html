@@ -56,9 +56,9 @@
 <form action="<% RT->Config->Get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 <input type="hidden" class="hidden" name="id" value="new" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
-
+% if ($gnupg_widget) {
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
-
+% }
 <div id="Ticket-Create-basics">
 <a name="basics"></a>
 <&| /Widgets/TitleBox, title => loc("Create a new ticket") &>
