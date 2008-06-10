@@ -147,6 +147,13 @@ my %Meta = (
             Description => 'Minimum password length',         #loc
         },
     },
+    Password => {
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => {
+            Description => 'password of the user root',         #loc
+            Type => 'password',
+        },
+    },
     MaxAttachmentSize => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
@@ -273,6 +280,9 @@ sub SaveConfig {
 
     if ( open my $fh, '>', $file  ) {
         for ( keys %{$RT::Installer->{InstallConfig}} ) {
+            # we don't want to store root's password in config.
+            next if $_ eq 'Password';
+
             if (defined $RT::Installer->{InstallConfig}{$_}) {
                 # remove obsolete settings we'll add later
                 $content =~ s/^\s* Set \s* \( \s* \$$_ .*$//xm;

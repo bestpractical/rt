@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => 'Step 4: Customize Email Addresses' &> 
+<&| Elements/Wrapper, Title => 'Customize Email Addresses' &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -63,7 +63,7 @@
 
 <input type="hidden" name="Run" value="1">
 <& /Elements/Submit, Label => loc('Next: Email Configuration'), Back => 1,
-    BackLabel => loc('Back: Customize Basics') &>
+    BackLabel => loc('Back: Customize Password') &>
 </form>
 </&>
 <%init>
@@ -83,7 +83,7 @@ if ( $Run ) {
 
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'Install/Basics.html');
+'Install/Password.html');
     }
 
     unless ( @results ) {
