@@ -301,7 +301,11 @@ $COLUMN_MAP = {
     Bookmark => {
         title => ' ',
         value => sub {
-            return \$m->scomp( '/Ticket/Elements/Bookmark', id => $_[0]->id );
+            my $bookmark = $m->scomp( '/Ticket/Elements/Bookmark', id => $_[0]->id );
+            # the CollectionAsTable/Row template replaces newlines with <br>
+            $bookmark =~ s/\n//g;
+
+            return \$bookmark;
         },
     },
 };
