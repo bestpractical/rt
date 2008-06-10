@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 9;
+use Test::More tests => 13;
 use RT::Test;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -49,4 +49,20 @@ $ticket->Load($id);
 is($ticket->Id, $id, "loaded the REST-created ticket");
 is($ticket->Subject, "REST interface", "subject successfully set");
 is($ticket->FirstCustomFieldValue("fu()n:k/"), "maximum", "CF successfully set");
+
+$m->post("$baseurl/REST/1.0/search/ticket", [
+    user    => 'root',
+    pass    => 'password',
+    query   => "id=$id",
+    fields  => "Subject,CF-fu()n:k/,Status",
+]);
+
+# the fields are interpreted server-side a hash (why?), so we can't depend
+# on order
+for ("id: ticket/1",
+     "Subject: REST interface",
+     "CF-fu()n:k/: maximum",
+     "Status: new") {
+        $m->content_contains($_);
+}
 
