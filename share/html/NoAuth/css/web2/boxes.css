@@ -190,12 +190,3 @@
 .titlebox.rolled-up .titlebox-title .widget a {
     background-image: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/css/rolldown-arrow.gif);
 }
-
-
-
-/* Horrible IE hacks */ 
-* html .titlebox .titlebox-title .right {
-    right: 0.7em;
-    top: 1em;
-} 
-
