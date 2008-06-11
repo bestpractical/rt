@@ -79,7 +79,7 @@ $self => undef,
 <%INIT>
 return unless $self;
 
-return $m->comp( '/Elements/GnuPGKeyIssues',
+return $m->comp( '/Elements/GnuPG/KeyIssues',
     Issues => $self->{'GnuPGRecipientsKeyIssues'} || [],
     SignAddresses => $self->{'GnuPGCanNotSignAs'} || [],
 );
