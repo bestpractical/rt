@@ -77,6 +77,7 @@ sub DefaultHandlerArgs  { (
     autoflush            => 0,
     error_format         => (RT->Config->Get('DevelMode') ? 'html': 'brief'),
     request_class        => 'RT::Interface::Web::Request',
+    named_component_subs => $INC{'Devel/Cover.pm'} ? 1 : 0,
 ) };
 
 # {{{ sub new 
