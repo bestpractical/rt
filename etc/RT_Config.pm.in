@@ -1086,6 +1086,16 @@ See F<share/html/Elements/MakeClicky> for documentation on how to add your own.
 
 Set(@Active_MakeClicky, qw());
 
+=item C<$DefaultQueue>
+
+Use this to select the default queue name that will be used for creating new
+tickets. You may use either the queue's name or its ID. This only affects the
+queue selection boxes on the web interface.
+
+=cut
+
+#Set($DefaultQueue, 'General');
+
 =back
 
 =head1 L<Net::Server> (rt-server) Configuration
