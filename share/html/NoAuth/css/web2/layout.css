@@ -97,6 +97,10 @@ div#body {
 
 }
 
+.topaction form#CreateTicketInQueue select {
+    max-width: 12em;
+}
+
 .topaction form#CreateTicketInQueue {
  position: absolute;
  padding-right: 2em;
