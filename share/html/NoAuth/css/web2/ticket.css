@@ -121,6 +121,7 @@ div#ticket-history td.content {
  padding-top: 0.5em;
  border-top: 1px solid #ccc;
  margin-left: 2em;
+ overflow: auto;
 
 }
 
