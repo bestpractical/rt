@@ -57,8 +57,14 @@
 %     }
 %     for my $queue (@{$session{$cache_key}}) {
   <option value="<% ($NamedValues ? $queue->{Name} : $queue->{Id}) %>" 
-      <% ( $queue->{Id} eq ($Default||'') ? 'selected="selected"' : '') |n %>>
+
+% if ($queue->{Id} eq ($Default||'') || (!$Default && $queue->{Name} eq (RT->Config->Get('DefaultQueueName')||''))) {
+ selected="selected"
+% }
+
+>
     <%$queue->{Name}%>
+
 %             if ($Verbose and $queue->{Description}) {
     (<%$queue->{Description}%>)
 %             }
