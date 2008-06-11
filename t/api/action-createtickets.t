@@ -23,7 +23,7 @@ ok ($approvalsq->Id, "Created Approvals test queue");
 
 my $approvals = 
 '===Create-Ticket: approval
-Queue: ___Approvals
+Queue: Approvals
 Type: approval
 AdminCc: {join ("\nAdminCc: ",@admins) }
 Depended-On-By: {$Tickets{"TOP"}->Id}
@@ -38,7 +38,7 @@ ENDOFCONTENT
 ===Create-Ticket: two
 Subject: Manager approval.
 Depended-On-By: approval
-Queue: ___Approvals
+Queue: Approvals
 Content-Type: text/plain
 Content: 
 Your minion approved ticket {$Tickets{"TOP"}->Id}. you ok with that?
