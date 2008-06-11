@@ -172,7 +172,7 @@
 }
 
 .search-result-views li:after  {
- content: " · ";
+ content: " \00b7 ";
 }
 
 .search-result-views li:last-child:after  {
