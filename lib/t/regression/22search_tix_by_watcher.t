@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 103;
+use Test::More tests => 119;
 use_ok('RT');
 RT::LoadConfig();
 RT::Init();
@@ -106,6 +106,7 @@ run_tests();
         { xy => 0, x => 1, y => 0, '-' => 0, z => 0 },
     'Subject NOT LIKE "x" AND Requestor != "y@example.com"' =>
         { xy => 0, x => 0, y => 0, '-' => 1, z => 1 },
+
     'Subject LIKE "x" OR Requestor = "y@example.com"' =>
         { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
     'Subject NOT LIKE "x" OR Requestor = "y@example.com"' =>
@@ -114,6 +115,24 @@ run_tests();
         { xy => 1, x => 1, y => 0, '-' => 1, z => 1 },
     'Subject NOT LIKE "x" OR Requestor != "y@example.com"' =>
         { xy => 0, x => 1, y => 1, '-' => 1, z => 1 },
+
+# group of cases when user doesn't exist in DB at all
+    'Subject LIKE "x" AND Requestor = "not-exist@example.com"' =>
+        { xy => 0, x => 0, y => 0, '-' => 0, z => 0 },
+    'Subject NOT LIKE "x" AND Requestor = "not-exist@example.com"' =>
+        { xy => 0, x => 0, y => 0, '-' => 0, z => 0 },
+    'Subject LIKE "x" AND Requestor != "not-exist@example.com"' =>
+        { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
+    'Subject NOT LIKE "x" AND Requestor != "not-exist@example.com"' =>
+        { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
+    'Subject LIKE "x" OR Requestor = "not-exist@example.com"' =>
+        { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
+    'Subject NOT LIKE "x" OR Requestor = "not-exist@example.com"' =>
+        { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
+    'Subject LIKE "x" OR Requestor != "not-exist@example.com"' =>
+        { xy => 1, x => 1, y => 1, '-' => 1, z => 1 },
+    'Subject NOT LIKE "x" OR Requestor != "not-exist@example.com"' =>
+        { xy => 1, x => 1, y => 1, '-' => 1, z => 1 },
 
     'Subject LIKE "z" AND (Requestor = "x@example.com" OR Requestor = "y@example.com")' =>
         { xy => 0, x => 0, y => 0, '-' => 0, z => 0 },
