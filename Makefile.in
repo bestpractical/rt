@@ -259,7 +259,7 @@ upgrade-instruct:
 	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action upgrade"
 
 
-upgrade: config-install dirs files-install fixperms upgrade-instruct
+upgrade: testdeps config-install dirs files-install fixperms upgrade-instruct
 
 upgrade-noclobber: config-install libs-install html-install bin-install local-install doc-install fixperms
 
@@ -344,7 +344,7 @@ dirs:
 	$(INSTALL) -m 0755 -d $(DESTDIR)/$(LOCAL_LEXICON_PATH)
 # }}}
 
-install: config-install dirs files-install fixperms instruct
+install: testdeps config-install dirs files-install fixperms instruct
 
 files-install: libs-install etc-install bin-install sbin-install html-install local-install doc-install
 
