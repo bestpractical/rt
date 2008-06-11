@@ -52,18 +52,53 @@ div#body {
 
 }
 
-#header h1 {
-    top: 1.6em;
-    bottom: 4em;
-    height: 2em;
-    z-index: 99999;
+
+div#header h1 {
+ position: absolute;
+ left: 7.25em;
+ right: 25em;
+ overflow: hidden;
+ height: 1em;
+ font-size: 1.4em;
+ margin-top: 0.4em;
+ padding: 0.25em;
+}
+
+
+
+.topaction form * { 
+    vertical-align: top;
+   height: 2em; 
+   padding-top: 0.25em;
+   padding-bottom: 0.25em;
+}
+
+.topaction form button, topaction form input { 
+   height: 2em; 
+    margin-top: 0;
+}
+
+.topaction form input.field {
+   height: 1.6em; 
+    margin-top: 0;
+}
+
+.topaction form#CreateTicketInQueue {
+ top: 0;
+ left: -22em;
+ right: 10em;
+ text-align: right; 
 
 }
+
 
 div#page-navigation ul#actions-menu {
-    margin-top: -3em;
-    margin-right: -0.3em;
+    margin-top: -2.9em;
+    margin-right: -0.2em;
+    border-top: 1px solid #ccc;
+    border-right: none;
 }
+
 
 div#page-navigation {
     position: absolute;
@@ -82,13 +117,11 @@ div#page-navigation ul#page-menu {
     border: none;
 }
 
-div.titlebox  .titlebox-title .right {
-     top: 1.1em;
-     right: 1.1em;
+
+div#quickbar { height: 1.2em;
+
 
 }
-
-div#quickbar { height: 1.2em;}
 
 #comp-Search-Build #editquery {
   margin-top: 0.2em;
@@ -97,6 +130,9 @@ div#quickbar { height: 1.2em;}
 }
 
 div#nav li.first {
+    margin-top: 0.75em;
+}
+div#nav ul ul li.first {
     border-top: 1px solid #cccccc;
     margin-top: 0.25em;
 }
@@ -107,4 +143,81 @@ div#nav li.last {
     margin-bottom: 0;
 }
 
+
 .ticket-transaction .type a { font-weight: normal; text-decoration: none; color: #fff; }
+
+
+.titlebox {
+ border-top: none;
+ border-left: none;
+}
+
+.titlebox .titlebox-title .left {
+    padding: 0.25em;
+    padding-left: 0.5em;
+}
+
+.titlebox {
+}
+
+.titlebox .titlebox-title .right {
+    border-right: 2px solid #aaa;
+
+}
+
+
+
+#login-box .titlebox .titlebox-title .right {
+    margin-top: -0.2em;
+    margin-right: -1em;
+}
+
+.titlebox .titlebox-content {
+    padding-top: 1.2em;
+}
+
+.titlebox table.ticket-list, .titlebox table.queue-summary {
+    width: 95%;
+    padding: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+th.collection-as-table {
+    padding: 0.25em;
+}
+
+table.queue-summary td, td.collection-as-table {
+    padding: 0.25em;
+}
+
+ .titlebox-title {
+    position: relative;
+}
+
+.titlebox-title .widget {
+    position: absolute;
+    top: -1em;
+    left: 0.5em;
+
+}
+.titlebox-title .left {
+    position: absolute;
+    top: -0.75em;
+    left: 0.5em;
+}
+
+
+.titlebox .titlebox-title .right{
+    position: absolute;
+    top: 0.25em;
+    right: 1em;
+}
+
+/* nested things. like the ticket dates tab */
+.titlebox .titlebox .titlebox-title .right{
+    top: 0.25em;
+    right: 1.3em;
+}
+
+

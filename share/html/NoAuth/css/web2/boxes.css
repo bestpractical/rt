@@ -60,7 +60,6 @@
  padding-right: 1em;
 }
 
-/* horrible ie hack */
 * html .titlebox {
  border-top: none;
  border-left: none;

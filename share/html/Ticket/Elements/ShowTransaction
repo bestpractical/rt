@@ -53,7 +53,7 @@
   <tr class="metadata">
     <td rowspan="2" valign="top" class="type">
       <a name="txn-<% $Transaction->Id %>" href="<% $DisplayPath %>#txn-<% $Transaction->Id %>">#</a>
-      <% $LastTransaction ? '<a name="lasttrans">&nbsp;</a>' : '&nbsp;' |n %>
+      <% $LastTransaction ? '<a id="lasttrans" name="lasttrans"/>' : ''|n %>
     </td>
     <td class="date"><% $transdate|n %></td>
 % my $desc = $Transaction->BriefDescription;

@@ -85,10 +85,10 @@ div#body {
  font-size: 0.9em;
 }
 
-#topactions form button, #topactions form input[type=submit], #topactions form input[type=button]{
+#topactions button, #topactions select, #topactions input{
  padding-top: 0em;
  padding-bottom: 0em;
-
+ width: 8em;
 
 }
 
@@ -97,24 +97,14 @@ div#body {
 
 }
 
-.topaction form#CreateTicketInQueue select {
-    max-width: 12em;
-}
-
 .topaction form#CreateTicketInQueue {
  position: absolute;
  padding-right: 2em;
  top: 0;
- right: 15em; 
- left: -42.25em;
+ left: -26em;
+ right: 18em;
  text-align: right; 
 
-}
-
-.topaction form#CreateTicketInQueue:after {
- padding-left:0.5em;
- content: "";
- color: #fff;
 }
 
 div#footer {
