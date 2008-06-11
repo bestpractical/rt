@@ -132,7 +132,7 @@ sub conclude {
 
     unless ( $args{'list-deps'} ) {
         unless ( keys %missing_by_type ) {
-            print "\nEverything was found.\n";
+            print "\nAll dependencies have been found.\n";
             return;
         }
 
