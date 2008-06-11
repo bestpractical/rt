@@ -1503,7 +1503,7 @@ sub _CustomFieldLimit {
         FIELD      => 'Name',
         OPERATOR   => 'IS NOT',
         VALUE      => 'NULL',
-        QUOTEVALUE => 1,
+        QUOTEVALUE => 0,
         ENTRYAGGREGATOR => 'AND',
     ) if $CFs;
     $self->_CloseParen;
