@@ -215,6 +215,16 @@ if ($fields) {
         unshift @fields, "id";
         $fields{id} = ();
     }
+
+    # canonicalize cf-foo to cf.{foo}
+    for my $field (@fields) {
+        if ($field =~ /^(c(?:ustom)?f(?:ield)?)-(.+)/) {
+            $fields{"cf.{$2}"} = delete $fields{"$1-$2"};
+
+            # overwrite the element in @fields
+            $field = "cf.{$2}";
+        }
+    }
 }
 
 my (@comments, @output);
