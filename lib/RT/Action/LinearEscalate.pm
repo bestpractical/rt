@@ -138,7 +138,7 @@ package RT::Action::LinearEscalate;
 
 use strict;
 use warnings;
-use base qw(RT::Action::Generic);
+use base qw(RT::Action);
 
 our $VERSION = '0.06';
 

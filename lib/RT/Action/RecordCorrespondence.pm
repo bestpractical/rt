@@ -47,10 +47,10 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Action::RecordCorrespondence;
-require RT::Action::Generic;
+require RT::Action;
 use strict;
 use vars qw/@ISA/;
-@ISA = qw(RT::Action::Generic);
+@ISA = qw(RT::Action);
 
 =head1 NAME
 
