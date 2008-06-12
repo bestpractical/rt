@@ -47,14 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Condition::BeforeDue;
-require RT::Condition;
+use base 'RT::Condition';
 
 use RT::Date;
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Condition);
-
 
 sub IsApplicable {
     my $self = shift;

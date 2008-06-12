@@ -73,8 +73,8 @@ use Encode qw();
 
 our $_TABLE_ATTR = { };
 
-use RT::Base;
-our @ISA = qw(RT::Base);
+use base 'RT::Base';
+
 my $base = 'DBIx::SearchBuilder::Record::Cachable';
 if ( $RT::Config && $RT::Config->Get('DontCacheSearchBuilderRecords') ) {
     $base = 'DBIx::SearchBuilder::Record';

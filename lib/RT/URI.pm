@@ -46,11 +46,10 @@
 # 
 # END BPS TAGGED BLOCK }}}
 
-package RT::URI;;
+package RT::URI;
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Base);
+use base 'RT::Base';
 
 use RT::URI::base;
 use Carp;

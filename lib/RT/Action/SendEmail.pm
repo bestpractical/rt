@@ -71,9 +71,7 @@ RT::Action::AutoReply is a good example subclass.
 
 =head1 SYNOPSIS
 
-  require RT::Action::SendEmail;
-  @ISA  = qw(RT::Action::SendEmail);
-
+  use base 'RT::Action::SendEmail';
 
 =head1 DESCRIPTION
 

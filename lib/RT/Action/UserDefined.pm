@@ -47,11 +47,9 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Action::UserDefined;
-use RT::Action;
+use base 'RT::Action';
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Action);
 
 =head2 Prepare
 

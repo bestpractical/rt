@@ -47,11 +47,9 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Action::SetPriority;
-require RT::Action;
+use base 'RT::Action';
 
 use strict;
-use vars qw/@ISA/;
-@ISA=qw(RT::Action);
 
 #Do what we need to do and send it out.
 

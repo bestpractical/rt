@@ -54,12 +54,11 @@ use strict;
 use RT;
 
 BEGIN {
-    use Exporter ();
-    use vars qw($VERSION @ISA @EXPORT);
+    use base 'Exporter';
+    use vars qw($VERSION @EXPORT);
 
     $VERSION = do { my @r = (q$Revision: 1.00$ =~ /\d+/g); sprintf "%d."."%02d"x$#r, @r };
 
-    @ISA = qw(Exporter);
     @EXPORT = qw(expand_list form_parse form_compose vpush vsplit);
 }
 

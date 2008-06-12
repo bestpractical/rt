@@ -58,13 +58,11 @@ use File::Temp;
 use UNIVERSAL::require;
 
 BEGIN {
-    use Exporter ();
-    use vars qw ( @ISA @EXPORT_OK);
+    use base 'Exporter';
+    use vars qw ( @EXPORT_OK);
 
     # set the version for version checking
     our $VERSION = 2.0;
-
-    @ISA = qw(Exporter);
 
     # your exported package globals go here,
     # as well as any optionally exported functions

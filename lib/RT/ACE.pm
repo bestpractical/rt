@@ -69,11 +69,7 @@ RT::ACE
 =cut
 
 package RT::ACE;
-use RT::Record; 
-
-
-use vars qw( @ISA );
-@ISA= qw( RT::Record );
+use base 'RT::Record';
 
 sub _Init {
   my $self = shift; 

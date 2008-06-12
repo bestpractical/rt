@@ -72,11 +72,8 @@ use strict;
 
 package RT::ACL;
 
-use RT::SearchBuilder;
+use base 'RT::SearchBuilder';
 use RT::ACE;
-
-use vars qw( @ISA );
-@ISA= qw(RT::SearchBuilder);
 
 
 sub _Init {

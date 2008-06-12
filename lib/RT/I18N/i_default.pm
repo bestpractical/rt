@@ -47,10 +47,8 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::I18N::i_default;
-
+use base 'RT::I18N';
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::I18N);
 
 eval "require RT::I18N::i_default_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/I18N/i_default_Vendor.pm});

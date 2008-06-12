@@ -47,10 +47,8 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Action::RecordComment;
-require RT::Action;
+use base 'RT::Action';
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Action);
 
 =head1 NAME
 

@@ -49,12 +49,10 @@
 # This Action will resolve all members of a resolved group ticket
 
 package RT::Action::ResolveMembers;
-require RT::Action;
+use base 'RT::Action';
 require RT::Links;
 
 use strict;
-use vars qw/@ISA/;
-@ISA=qw(RT::Action);
 
 #Do what we need to do and send it out.
 

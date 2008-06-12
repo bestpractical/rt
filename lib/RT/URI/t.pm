@@ -75,8 +75,7 @@ use RT::Ticket;
 use RT::URI::base;
 
 use strict;
-use vars qw(@ISA);
-@ISA = qw/RT::URI::fsck_com_rt/;
+use base 'RT::URI::fsck_com_rt';
 
 my $scheme = "t";
 

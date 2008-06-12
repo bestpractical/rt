@@ -50,11 +50,9 @@ package RT::URI::fsck_com_rt;
 
 use RT::Ticket;
 
-use RT::URI::base;
+use base 'RT::URI::base';
 
 use strict;
-use vars qw(@ISA);
-@ISA = qw/RT::URI::base/;
 
 
 
