@@ -223,7 +223,10 @@ if (!keys(%data)) {
     # Display custom fields
     my $CustomFields = $ticket->QueueObj->TicketCustomFields();
     while (my $cf = $CustomFields->Next()) {
-	next unless (!%$fields || (exists $fields->{"cf-".lc $cf->Name}));
+        next unless !%$fields
+                 || exists $fields->{"cf.{".lc($cf->Name)."}"}
+                 || exists $fields->{"cf-".lc $cf->Name};
+
         my $vals = $ticket->CustomFieldValues($cf->Id());
         my @out = ();
         while (my $v = $vals->Next()) {

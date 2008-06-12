@@ -1,18 +1,20 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 13;
+use Test::More tests => 16;
 use RT::Test;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
-my $cf = RT::Test->load_or_create_custom_field(
-    Name  => 'fu()n:k/',
-    Type  => 'Freeform',
-    Queue => 'General',
-);
-ok($cf->Id, "created a CustomField");
-is($cf->Name, 'fu()n:k/', "correct CF name");
+for my $name ("severity", "fu()n:k/") {
+    my $cf = RT::Test->load_or_create_custom_field(
+        Name  => $name,
+        Type  => 'Freeform',
+        Queue => 'General',
+    );
+    ok($cf->Id, "created a CustomField");
+    is($cf->Name, $name, "correct CF name");
+}
 
 my $queue = RT::Test->load_or_create_queue(Name => 'General');
 ok($queue->Id, "loaded the General queue");
@@ -28,7 +30,8 @@ my @lines = $text =~ m{.*}g;
 shift @lines; # header
 
 # CFs aren't in the default ticket form
-push @lines, "CF-fu()n:k/: maximum";
+push @lines, "CF-fu()n:k/: maximum"; # old style
+push @lines, "CF.{severity}: explosive"; # new style
 
 $text = join "\n", @lines;
 
@@ -54,14 +57,15 @@ $m->post("$baseurl/REST/1.0/search/ticket", [
     user    => 'root',
     pass    => 'password',
     query   => "id=$id",
-    fields  => "Subject,CF-fu()n:k/,Status",
+    fields  => "Subject,CF-fu()n:k/,CF.{severity},Status",
 ]);
 
 # the fields are interpreted server-side a hash (why?), so we can't depend
 # on order
 for ("id: ticket/1",
      "Subject: REST interface",
-     "CF-fu()n:k/: maximum",
+     "CF.{fu()n:k/}: maximum",
+     "CF.{severity}: explosive",
      "Status: new") {
         $m->content_contains($_);
 }
