@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
       <table width="100%" class="ticket-summary">
       <tr>
-	<td valign="top" width="50%" class="boxcontainer">
+	<td valign="top" class="boxcontainer">
 	  <&| /Widgets/TitleBox, title => loc('The Basics'), 
 		title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id, 
 		class => 'ticket-info-basics' &>
@@ -73,7 +73,7 @@
 
 % $m->callback( %ARGS, CallbackName => 'LeftColumn' );
 	</td>
-	<td valign="top" width="50%" class="boxcontainer">
+	<td valign="top" class="boxcontainer">
 % if ( RT->Config->Get('EnableReminders') ) {
 	  <&|/Widgets/TitleBox, title => loc("Reminders"),
 		title_href => RT->Config->Get('WebPath')."/Ticket/Reminders.html?id=".$Ticket->Id, 
