@@ -93,11 +93,12 @@ sub DEBUG { warn @_ if $config{debug} >= shift }
 # These regexes are used by command handlers to parse arguments.
 # (XXX: Ask Autrijus how i18n changes these definitions.)
 
-my $name   = '[\w.-]+';
-my $field  = '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-(?:[a-z0-9_ :()/-]|\s)+)';
-my $label  = '[a-zA-Z0-9@_.+-]+';
-my $labels = "(?:$label,)*$label";
-my $idlist = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
+my $name    = '[\w.-]+';
+my $CF_name = '[\sa-z0-9_ :()/-]+';
+my $field   = '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-'.$CF_name.'|CF\.\{'.$CF_name.'\})';
+my $label   = '[a-zA-Z0-9@_.+-]+';
+my $labels  = "(?:$label,)*$label";
+my $idlist  = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
 
 # Our command line looks like this:
 #
