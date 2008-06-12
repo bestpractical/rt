@@ -2,8 +2,7 @@
 
 use strict;
 use Test::Expect;
-#use Test::More qw/no_plan/;
-use Test::More tests => 223;
+use Test::More tests => 241;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -148,16 +147,30 @@ expect_like(qr/Queue: EditedQueue$$/, 'Verified lack of change');
 
 # Test reading and setting custom fields without spaces
 expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking initial value');
-expect_like(qr/CF-myCF$$:/i, 'Verified initial empty value');
+expect_like(qr/CF\.{myCF$$}:/i, 'Verified initial empty value (CF-x syntax)');
+expect_send("show ticket/$ticket_id -f CF.{myCF$$}", 'Checking initial value');
+expect_like(qr/CF\.{myCF$$}:/i, 'Verified initial empty value (CF.{x} syntax)');
+
 expect_send("edit ticket/$ticket_id set 'CF-myCF$$=VALUE' ", 'Changing CF...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
 expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking new value');
-expect_like(qr/CF-myCF$$: VALUE/i, 'Verified change');
+expect_like(qr/CF\.{myCF$$}: VALUE/i, 'Verified change');
 # Test setting 0 as value of the custom field
 expect_send("edit ticket/$ticket_id set 'CF-myCF$$=0' ", 'Changing CF...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
 expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking new value');
-expect_like(qr/CF-myCF$$: 0/i, 'Verified change');
+expect_like(qr/CF\.{myCF$$}: 0/i, 'Verified change');
+
+expect_send("edit ticket/$ticket_id set 'CF.{myCF$$}=VALUE' ",'Changing CF...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
+expect_send("show ticket/$ticket_id -f CF.{myCF$$}", 'Checking new value');
+expect_like(qr/CF\.{myCF$$}: VALUE/i, 'Verified change');
+# Test setting 0 as value of the custom field
+expect_send("edit ticket/$ticket_id set 'CF.{myCF$$}=0' ", 'Changing CF...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
+expect_send("show ticket/$ticket_id -f CF.{myCF$$}", 'Checking new value');
+expect_like(qr/CF\.{myCF$$}: 0/i, 'Verified change');
+
 # Test reading and setting custom fields with spaces
 expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking initial value');
 expect_like(qr/my CF$$:/i, 'Verified change');
@@ -167,6 +180,15 @@ expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking new value');
 expect_like(qr/my CF$$: VALUE/i, 'Verified change');
 expect_send("ls 'id = $ticket_id' -f 'CF-my CF$$'", 'Checking new value');
 expect_like(qr/my CF$$: VALUE/i, 'Verified change');
+
+expect_send("show ticket/$ticket_id -f 'CF.{my CF$$}'", 'Checking initial value');
+expect_like(qr/CF\.{my CF$$}: VALUE/i, 'Verified change');
+expect_send("edit ticket/$ticket_id set 'CF.{my CF$$=NEW}' ", 'Changing CF...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
+expect_send("show ticket/$ticket_id -f 'CF.{my CF$$}'", 'Checking new value');
+expect_like(qr/CF\.{my CF$$}: NEW/i, 'Verified change');
+expect_send("ls 'id = $ticket_id' -f 'CF.{my CF$$}'", 'Checking new value');
+expect_like(qr/CF\.{my CF$$: NEW}/i, 'Verified change');
 
 # ...
 # change a ticket's ...[other properties]...
