@@ -45,10 +45,35 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<!--[if lt IE 8]>
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/msie.css" type="text/css" media="all" />
 
-<![endif]-->
-<!--[if lt IE 7]>
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/msie6.css" type="text/css" media="all" />
-<![endif]-->
+.topaction form#CreateTicketInQueue {
+ left: -22em;
+ right: 10em;
+
+}
+
+div#page-navigation ul#page-menu {
+    margin-top: -3.2em;
+}
+
+.titlebox-title .widget {
+    top: -1em;
+    left: 0.5em;
+
+}
+.titlebox .titlebox-title .right{
+    position: absolute;
+    top: 0.25em;
+    right: 1em;
+}
+
+/* nested things. like the ticket dates tab */
+.titlebox .titlebox .titlebox-title .right{
+    right: 1.3em;
+}
+
+#login-box .titlebox .titlebox-title .right {
+    margin-top: -0.1em;
+    right: 0em;
+}
+

@@ -53,6 +53,11 @@ div#body {
 }
 
 
+#footer {
+    padding: 1em;
+}
+
+
 div#header h1 {
  position: absolute;
  left: 7.25em;
@@ -68,12 +73,13 @@ div#header h1 {
 
 .topaction form * { 
     vertical-align: top;
-   height: 2em; 
+   height: 2em;
+   margin-top: 0.2em;
    padding-top: 0.25em;
    padding-bottom: 0.25em;
 }
 
-.topaction form button, topaction form input { 
+.topaction form button, .topaction form input { 
    height: 2em; 
     margin-top: 0;
 }
@@ -85,12 +91,11 @@ div#header h1 {
 
 .topaction form#CreateTicketInQueue {
  top: 0;
- left: -22em;
- right: 10em;
+ left: -30em;
+ right: 20em;
  text-align: right; 
 
 }
-
 
 div#page-navigation ul#actions-menu {
     margin-top: -2.9em;
@@ -111,7 +116,7 @@ div#page-navigation {
 
 
 div#page-navigation ul#page-menu {
-    margin-top: -3.2em;
+    margin-top: -2.5em;
     margin-left: 4em;
     background: none;
     border: none;
@@ -123,6 +128,14 @@ div#quickbar { height: 1.2em;
 
 }
 
+#pick-criteria td.label select {
+    width: 10em;    
+}
+
+    #pick-criteria select.select-queue, #pick-criteria select#ValueOfActor {
+    width: 10em;
+}
+
 #comp-Search-Build #editquery {
   margin-top: 0.2em;
   width: 39%;
@@ -131,6 +144,7 @@ div#quickbar { height: 1.2em;
 
 div#nav li.first {
     margin-top: 0.75em;
+    border-top: none;
 }
 div#nav ul ul li.first {
     border-top: 1px solid #cccccc;
@@ -166,14 +180,8 @@ div#nav li.last {
 }
 
 
-
-#login-box .titlebox .titlebox-title .right {
-    margin-top: -0.2em;
-    margin-right: -1em;
-}
-
 .titlebox .titlebox-content {
-    padding-top: 1.2em;
+    padding-top: 2.2em;
 }
 
 .titlebox table.ticket-list, .titlebox table.queue-summary {
@@ -197,8 +205,8 @@ table.queue-summary td, td.collection-as-table {
 
 .titlebox-title .widget {
     position: absolute;
-    top: -1em;
-    left: 0.5em;
+    top: -0.25em;
+    left: -0.25em;
 
 }
 .titlebox-title .left {
@@ -209,15 +217,13 @@ table.queue-summary td, td.collection-as-table {
 
 
 .titlebox .titlebox-title .right{
-    position: absolute;
-    top: 0.25em;
-    right: 1em;
+    top: 0.2em;
+    right: -0.2em;
 }
 
 /* nested things. like the ticket dates tab */
 .titlebox .titlebox .titlebox-title .right{
     top: 0.25em;
-    right: 1.3em;
 }
 
 
