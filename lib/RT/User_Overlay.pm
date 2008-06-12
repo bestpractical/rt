@@ -1273,6 +1273,10 @@ sub SetPreferences {
     my $self = shift;
     my $name = _PrefName( shift );
     my $value = shift;
+
+    return (0, $self->loc("No permission to set preferences"))
+        unless $self->CurrentUserCanModify('Preferences');
+
     my $attr = RT::Attribute->new( $self->CurrentUser );
     $attr->LoadByNameAndObject( Object => $self, Name => $name );
     if ( $attr->Id ) {
