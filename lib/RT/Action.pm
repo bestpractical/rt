@@ -48,11 +48,11 @@
 
 =head1 NAME
 
-  RT::Action::Generic - a generic baseclass for RT Actions
+  RT::Action - a generic baseclass for RT Actions
 
 =head1 SYNOPSIS
 
-  use RT::Action::Generic;
+  use RT::Action;
 
 =head1 DESCRIPTION
 
@@ -61,7 +61,7 @@
 
 =cut
 
-package RT::Action::Generic;
+package RT::Action;
 
 use strict;
 use Scalar::Util;
@@ -219,9 +219,9 @@ sub DESTROY {
 
 # }}}
 
-eval "require RT::Action::Generic_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Generic_Vendor.pm});
-eval "require RT::Action::Generic_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/Generic_Local.pm});
+eval "require RT::Action_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action_Vendor.pm});
+eval "require RT::Action_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action_Local.pm});
 
 1;

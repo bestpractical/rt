@@ -48,12 +48,12 @@
 
 =head1 NAME
 
-  RT::Condition::Generic - ;
+  RT::Condition - generic baseclass for scrip condition;
 
 =head1 SYNOPSIS
 
-    use RT::Condition::Generic;
-    my $foo = RT::Condition::Generic->new( 
+    use RT::Condition;
+    my $foo = RT::Condition->new( 
 		TransactionObj => $tr, 
 		TicketObj => $ti, 
 		ScripObj => $scr, 
@@ -75,7 +75,7 @@
 
 =cut
 
-package RT::Condition::Generic;
+package RT::Condition;
 
 use strict;
 use warnings;
@@ -225,9 +225,9 @@ sub DESTROY {
 
 # }}}
 
-eval "require RT::Condition::Generic_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/Generic_Vendor.pm});
-eval "require RT::Condition::Generic_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/Generic_Local.pm});
+eval "require RT::Condition_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition_Vendor.pm});
+eval "require RT::Condition_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition_Local.pm});
 
 1;

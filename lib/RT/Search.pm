@@ -48,14 +48,14 @@
 
 =head1 NAME
 
-  RT::Search::Generic - ;
+  RT::Search - generic baseclass for searches;
 
 =head1 SYNOPSIS
 
-    use RT::Search::Generic;
+    use RT::Search;
     my $tickets = RT::Tickets->new($CurrentUser);
-    my $foo = RT::Search::Generic->new(Argument => $arg,
-                                       TicketsObj => $tickets);
+    my $foo = RT::Search->new(Argument => $arg,
+                              TicketsObj => $tickets);
     $foo->Prepare();
     while ( my $ticket = $foo->Next ) {
         # Do something with each ticket we've found
@@ -72,7 +72,7 @@
 
 =cut
 
-package RT::Search::Generic;
+package RT::Search;
 
 use strict;
 
@@ -140,9 +140,9 @@ sub Prepare  {
 }
 # }}}
 
-eval "require RT::Search::Generic_Vendor";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Generic_Vendor.pm});
-eval "require RT::Search::Generic_Local";
-die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Generic_Local.pm});
+eval "require RT::Search_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search_Vendor.pm});
+eval "require RT::Search_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search_Local.pm});
 
 1;
