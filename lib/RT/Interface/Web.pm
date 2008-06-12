@@ -200,7 +200,10 @@ sub Redirect {
         $uri->port( $ENV{'SERVER_PORT'} );
     }
 
-    $HTML::Mason::Commands::m->redirect($uri->canonical);
+    # Perlbal expects a status message, but Mason's default redirect status 
+    # doesn't provide one. See also rt.cpan.org #36689.
+    $HTML::Mason::Commands::m->redirect($uri->canonical, "302 Found");
+
     $HTML::Mason::Commands::m->abort;
 }
 
