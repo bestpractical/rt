@@ -47,11 +47,11 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Action::ExtractSubjectTag;
-require RT::Action::Generic;
+require RT::Action;
 
 use strict;
 use vars qw/@ISA/;
-@ISA = qw(RT::Action::Generic);
+@ISA = qw(RT::Action);
 
 sub Describe {
     my $self = shift;

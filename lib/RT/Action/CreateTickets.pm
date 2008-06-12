@@ -47,12 +47,12 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Action::CreateTickets;
-require RT::Action::Generic;
+require RT::Action;
 
 use strict;
 use warnings;
 use vars qw/@ISA/;
-@ISA = qw(RT::Action::Generic);
+@ISA = qw(RT::Action);
 
 use MIME::Entity;
 

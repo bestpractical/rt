@@ -67,7 +67,7 @@ Use the argument passed in as a "Google-style" set of keywords
 package RT::Search::Googleish;
 
 use strict;
-use base qw(RT::Search::Generic);
+use base qw(RT::Search);
 
 
 # sub _Init {{{

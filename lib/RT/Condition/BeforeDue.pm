@@ -47,13 +47,13 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Condition::BeforeDue;
-require RT::Condition::Generic;
+require RT::Condition;
 
 use RT::Date;
 
 use strict;
 use vars qw/@ISA/;
-@ISA = qw(RT::Condition::Generic);
+@ISA = qw(RT::Condition);
 
 
 sub IsApplicable {

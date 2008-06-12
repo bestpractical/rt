@@ -53,7 +53,7 @@ package RT::Action::SendEmail;
 use strict;
 use warnings;
 
-use base qw(RT::Action::Generic);
+use base qw(RT::Action);
 
 use MIME::Words qw(encode_mimeword);
 

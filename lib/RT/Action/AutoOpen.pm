@@ -52,7 +52,7 @@ package RT::Action::AutoOpen;
 use strict;
 use warnings;
 
-use base qw(RT::Action::Generic);
+use base qw(RT::Action);
 
 =head1 DESCRIPTION
 
