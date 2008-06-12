@@ -173,22 +173,22 @@ expect_like(qr/CF\.{myCF$$}: 0/i, 'Verified change');
 
 # Test reading and setting custom fields with spaces
 expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking initial value');
-expect_like(qr/my CF$$:/i, 'Verified change');
+expect_like(qr/CF\.{my CF$$}:/i, 'Verified change');
 expect_send("edit ticket/$ticket_id set 'CF-my CF$$=VALUE' ", 'Changing CF...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
 expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking new value');
-expect_like(qr/my CF$$: VALUE/i, 'Verified change');
+expect_like(qr/CF\.{my CF$$}: VALUE/i, 'Verified change');
 expect_send("ls 'id = $ticket_id' -f 'CF-my CF$$'", 'Checking new value');
-expect_like(qr/my CF$$: VALUE/i, 'Verified change');
+expect_like(qr/CF\.{my CF$$}: VALUE/i, 'Verified change');
 
 expect_send("show ticket/$ticket_id -f 'CF.{my CF$$}'", 'Checking initial value');
 expect_like(qr/CF\.{my CF$$}: VALUE/i, 'Verified change');
-expect_send("edit ticket/$ticket_id set 'CF.{my CF$$=NEW}' ", 'Changing CF...');
+expect_send("edit ticket/$ticket_id set 'CF.{my CF$$}=NEW' ", 'Changing CF...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
 expect_send("show ticket/$ticket_id -f 'CF.{my CF$$}'", 'Checking new value');
 expect_like(qr/CF\.{my CF$$}: NEW/i, 'Verified change');
 expect_send("ls 'id = $ticket_id' -f 'CF.{my CF$$}'", 'Checking new value');
-expect_like(qr/CF\.{my CF$$: NEW}/i, 'Verified change');
+expect_like(qr/CF\.{my CF$$}: NEW/i, 'Verified change');
 
 # ...
 # change a ticket's ...[other properties]...
