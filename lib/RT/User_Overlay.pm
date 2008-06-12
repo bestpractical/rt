@@ -121,7 +121,7 @@ sub Create {
 
     #Check the ACL
     unless ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
-        return ( 0, $self->loc('No permission to create users') );
+        return ( 0, $self->loc('Permission Denied') );
     }
 
 
