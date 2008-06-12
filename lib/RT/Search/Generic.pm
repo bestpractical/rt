@@ -68,5 +68,10 @@ use warnings;
 package RT::Search::Generic;
 use base 'RT::Search';
 
+eval "require RT::Search::Generic_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Generic_Vendor.pm});
+eval "require RT::Search::Generic_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Generic_Local.pm});
+
 1;
 

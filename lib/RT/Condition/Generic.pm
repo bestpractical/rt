@@ -68,5 +68,10 @@ use warnings;
 package RT::Condition::Generic;
 use base 'RT::Condition';
 
+eval "require RT::Condition::Generic_Vendor";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/Generic_Vendor.pm});
+eval "require RT::Condition::Generic_Local";
+die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/Generic_Local.pm});
+
 1;
 
