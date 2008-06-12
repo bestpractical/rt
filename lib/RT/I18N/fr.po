@@ -6231,7 +6231,7 @@ msgstr "effacé"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:58 share/html/Search/Elements/PickBasics:74
 msgid "doesn't match"
-msgstr "ne correspond pas"
+msgstr "ne contient pas"
 
 #: lib/RT/Installer.pm:206
 msgid "domain name"
@@ -6324,7 +6324,7 @@ msgstr "marginale"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:57 share/html/Search/Elements/PickBasics:73
 msgid "matches"
-msgstr "correspond"
+msgstr "contient"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:56
 msgid "maximum depth"
