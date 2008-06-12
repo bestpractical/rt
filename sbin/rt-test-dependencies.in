@@ -312,7 +312,7 @@ Apache::DBI 0.92
 $deps{'MODPERL2'} = [ text_to_hash( << '.') ];
 CGI 3.35
 Apache::DBI
-HTML::Mason 1.31
+HTML::Mason 1.36
 .
 
 $deps{'MYSQL'} = [ text_to_hash( << '.') ];
