@@ -1006,7 +1006,7 @@ HTML::Mason's Apache or CGI Handler.  This is normally only useful
 for debugging, eg. profiling individual components with:
 
     use MasonX::Profiler; # available on CPAN
-    @MasonParameters = (preamble => 'my $p = MasonX::Profiler->new($m, $r);');
+    Set(@MasonParameters, (preamble => 'my $p = MasonX::Profiler->new($m, $r);'));
 
 =cut
 
