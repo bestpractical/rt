@@ -104,8 +104,8 @@ my ( $AvailableColumns, $CurrentFormat );
 
 if ($ARGS{'Save'}) {
     my $hash = {map { $_ => $ARGS{$_}} @fields};
-    my $pref = $user->SetPreferences ($search, $hash);
-    push @actions, loc ('Preferences saved.');
+    my ($ok, $msg) = $user->SetPreferences($search, $hash);
+    push @actions, $ok ? loc('Preferences saved.') : $msg;
 }
 
 </%INIT>

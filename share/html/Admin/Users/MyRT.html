@@ -78,7 +78,8 @@ $UserObj->Load($id) || Abort("Couldn't load user '" . ($id || '') . "'");
 my $title = loc("RT at a glance for the user [_1]", $UserObj->Name);
 
 if ($ARGS{Reset}) {
-    $UserObj->SetPreferences('HomepageSettings', {});
+    my ($ok, $msg) = $UserObj->SetPreferences('HomepageSettings', {});
+    push @actions, $ok ? loc('Preferences saved for user [_2].', $UserObj->Name) : $msg;
 }
 
 my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
@@ -119,8 +120,8 @@ my @panes = $m->comp(
     current_portlets => $portlets,
     OnSave => sub {
         my ( $conf, $pane ) = @_;
-        $UserObj->SetPreferences( 'HomepageSettings', $conf );
-        push @actions, loc( 'Preferences [_1] for user [_2] .', $pane, $UserObj->Name );
+        my ($ok, $msg) = $UserObj->SetPreferences( 'HomepageSettings', $conf );
+        push @actions, $ok ? loc('Preferences [_1] for user [_2].', $pane, $UserObj->Name) : $msg;
     }
 );
 

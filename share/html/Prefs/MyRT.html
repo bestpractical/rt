@@ -90,14 +90,15 @@ if ( $ARGS{'UpdateSummaryRows'} ) {
         $ARGS{SummaryRows} = 0;
     }
     else {
-        $user->SetPreferences( 'SummaryRows', int $ARGS{SummaryRows} );
-        push @results, loc ('Preferences saved for [_1].', loc('summary rows'));
+        my ($ok, $msg) = $user->SetPreferences( 'SummaryRows', int $ARGS{SummaryRows} );
+        push @results, $ok ? loc('Preferences saved for [_1].', loc('summary rows')) : $msg;
     }
 }
 $ARGS{'SummaryRows'} ||= $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
 
 if ($ARGS{Reset}) {
-    $user->SetPreferences('HomepageSettings', {});
+    my ($ok, $msg) = $user->SetPreferences('HomepageSettings', {});
+    push @results, $ok ? loc('Preferences saved.') : $msg;
     delete $session{'my_rt_portlets'};
 }
 
@@ -144,8 +145,8 @@ my @panes = $m->comp(
     current_portlets => $portlets,
     OnSave => sub {
         my ( $conf, $pane ) = @_;
-        $user->SetPreferences( 'HomepageSettings', $conf );
-        push @results, loc( 'Preferences saved for [_1].', $pane );
+        my ($ok, $msg) = $user->SetPreferences( 'HomepageSettings', $conf );
+        push @results, $ok ? loc('Preferences saved for [_1].', $pane) : $msg;
         delete $session{'my_rt_portlets'};
     }
 );

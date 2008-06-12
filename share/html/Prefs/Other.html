@@ -98,7 +98,9 @@ if ( $Update ) {
             DefaultValue => { map { $_ => RT->Config->Get($_) }
                 RT->Config->Options
             }, );
-    $UserObj->SetPreferences( $RT::System, $preferences );
+
+    my ($ok, $msg) = $UserObj->SetPreferences( $RT::System, $preferences );
+    push @results, $ok ? loc("Preferences saved.") : $msg;
 }
 my $finalize_meta = sub {
     my %meta = %{ shift() };
