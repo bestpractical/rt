@@ -63,7 +63,31 @@ BEGIN {
     @EXPORT = qw(expand_list form_parse form_compose vpush vsplit);
 }
 
-sub field_spec { '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-(?:[a-z0-9_ :()/-]|\s)+)' }
+sub custom_field_spec {
+    my $self    = shift;
+    my $capture = shift;
+
+    my $CF_char = '[\sa-z0-9_ :()/-]';
+    my $CF_name = $CF_char . '+';
+    $CF_name = '(' . $CF_name . ')' if $capture;
+
+    my $new_style = 'CF\.\{'.$CF_name.'\}';
+    my $old_style = 'C(?:ustom)?F(?:ield)?-'.$CF_name;
+
+    return '(?i:' . join('|', $new_style, $old_style) . ')';
+}
+
+sub field_spec {
+    my $self    = shift;
+    my $capture = shift;
+
+    my $field = '[a-z][a-z0-9_-]*';
+    $field = '(' . $field . ')' if $capture;
+
+    my $custom_field = __PACKAGE__->custom_field_spec($capture);
+
+    return '(?i:' . join('|', $field, $custom_field) . ')';
+}
 
 # WARN: this code is duplicated in bin/rt.in,
 # change both functions at once

@@ -55,6 +55,9 @@ $args => undef
 </%ARGS>
 <%INIT>
 use MIME::Entity;
+use RT::Interface::REST;
+
+my $cf_spec = RT::Interface::REST->custom_field_spec(1);
 
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
@@ -138,10 +141,9 @@ else {
                 $v{$create{lc $k}} = delete $data{$k};
             }
             # Set custom field
-            elsif ($k =~ /^CF-/i) {
+            elsif ($k =~ /^$cf_spec/) {
                 my $cf = RT::CustomField->new( $RT::SystemUser );
-                my $cfk = $k;
-                $cfk =~ s/^CF-//i;
+                my $cfk = $1 || $2;
                 unless($cf->LoadByName( Name => $cfk )) {
                     push @comments, "# Invalid custom field name ($cfk)";
                     delete $data{$k};
@@ -227,7 +229,7 @@ if (!keys(%data)) {
         while (my $v = $vals->Next()) {
             push @out, $v->Content;
         }
-        push @data, [ 'CF-' . $cf->Name => join ',', @out ];
+        push @data, [ ('CF.{' . $cf->Name . '}') => join ',', @out ];
     }
 
     my %k = map {@$_} @data;
@@ -314,9 +316,9 @@ else {
             }
         }
         # Set custom field
-        elsif ($key =~ /^CF-/i) {
+        elsif ($key =~ /^$cf_spec/) {
             my $cf = RT::CustomField->new( $RT::SystemUser );
-            $key =~ s/^CF-//i;
+            $key = $1 || $2;
             if (not $cf->LoadByName( Name => $key )) {
                 $n = 0;
                 $s = "Unknown custom field.";
