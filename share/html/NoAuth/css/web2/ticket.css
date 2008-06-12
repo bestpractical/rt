@@ -206,5 +206,6 @@ div#ticket-history .messagebody .messagebody{
 
 .ticket-inactive {
   text-decoration: line-through;
+  color: #666
 }
 

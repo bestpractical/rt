@@ -49,9 +49,29 @@
   <tr>
     <td class="labeltop"><&|/l&>Depends on</&>: (<a href="<%$clone->{'DependsOn-new'}%>"><% loc('Create') %></a>)</td>
     <td class="value">
+
+<%PERL>
+my ( @active, @inactive, @not_tickets );
+for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
+    my $target = $link->TargetObj;
+    if ( $target && $target->isa('RT::Ticket') ) {
+        if ( $target->QueueObj->IsInactiveStatus( $target->Status ) ) {
+            push( @inactive, $link->TargetURI );
+        }
+        else {
+            push( @active, $link->TargetURI );
+        }
+    }
+    else {
+        push( @not_tickets, $link->TargetURI );
+    }
+}
+</%PERL>
+
+
 <ul>
-% while (my $Link = $Ticket->DependsOn->Next) {
-<li><& ShowLink, URI => $Link->TargetURI &></li>
+% for my $Link (@not_tickets, @active, @inactive) {
+<li><& ShowLink, URI => $Link &></li>
 % }
 </ul>
     </td>
