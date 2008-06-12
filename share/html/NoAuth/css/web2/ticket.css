@@ -114,7 +114,7 @@ div#ticket-history td.content {
  font-size: 1.1em;
 }
 
-.ticket-transaction .content>.messagebody {
+.ticket-transaction .messagebody {
  font-size: 1em;
  padding-left: 1em;
  margin-top: 0.5em;
