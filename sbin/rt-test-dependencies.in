@@ -238,7 +238,7 @@ File::Glob
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
-HTML::Mason 1.23
+HTML::Mason 1.26
 Errno
 Digest::MD5 2.27
 CGI::Cookie 1.20
