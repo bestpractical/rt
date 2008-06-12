@@ -70,8 +70,11 @@ use base 'RT::Condition';
 
 eval "require RT::Condition::Generic_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/Generic_Vendor.pm});
+warn "RT::Condition::Generic has become RT::Condition. Please adjust your RT::Condition::Generic_Vendor file at " . $INC{"RT/Condition/Generic_Vendor.pm"} if !$@;
+
 eval "require RT::Condition::Generic_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Condition/Generic_Local.pm});
+warn "RT::Condition::Generic has become RT::Condition. Please adjust your RT::Condition::Generic_Local file at " . $INC{"RT/Condition/Generic_Local.pm"} if !$@;
 
 1;
 
