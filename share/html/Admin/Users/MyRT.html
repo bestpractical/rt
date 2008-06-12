@@ -71,6 +71,7 @@
 % }
 
 <%init>
+my @actions;
 my $current_tab;
 $current_tab = 'Admin/Users/MyRT.html?id='.$id if $id;
 my $UserObj = new RT::User($session{'CurrentUser'});
@@ -94,7 +95,6 @@ my $sys = RT::System->new( RT::CurrentUser->new($UserObj) );
 my @objs = ($sys);
 
 push @objs, RT::SavedSearches->new( RT::CurrentUser->new( $UserObj ) )->_PrivacyObjects;
-my @actions;
 
 for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
