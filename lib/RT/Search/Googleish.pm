@@ -139,6 +139,7 @@ sub QueryToSQL {
             and $User->Privileged )
         {
             push @owner_clauses, "Owner = '" . $User->Name . "'";
+            push @tql_clauses, join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray());
         }
 
         # Else, subject must contain $key
