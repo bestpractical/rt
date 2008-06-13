@@ -31,9 +31,9 @@ my @tests = (
     "General new open root"     => "( Owner = 'root' ) AND ( Queue = 'General' ) AND ( Status = 'new' OR Status = 'open' )", 
     "fulltext:jesse"       => "( Content LIKE 'jesse' )",
     $queue                 => "( Queue = '$queue' )",
-    "root $queue"          => "( Owner = 'root' ) AND ( Queue = '$queue' )",
+    "root $queue"          => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( Status = 'new' OR Status = 'open' OR Status = 'stalled' )",
     "notauser $queue"      => "( Queue = '$queue' ) AND ( Subject LIKE 'notauser' )",
-    "notauser $queue root" => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( Subject LIKE 'notauser' )");
+    "notauser $queue root" => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( Status = 'new' OR Status = 'open' OR Status = 'stalled' ) AND ( Subject LIKE 'notauser' )");
 
 while (my ($from, $to) = splice @tests, 0, 2) {
     is($quick->QueryToSQL($from), $to, "<$from> -> <$to>");
