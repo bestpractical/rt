@@ -68,3 +68,4 @@ a:hover  {
   text-decoration: underline;
 }
 
+textarea:focus, input:focus {   background-color: #ffd; }
