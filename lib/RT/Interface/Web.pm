@@ -67,6 +67,8 @@ package RT::Interface::Web;
 
 use RT::SavedSearches;
 use URI qw();
+use Digest::MD5 ();
+
 
 # {{{ EscapeUTF8
 

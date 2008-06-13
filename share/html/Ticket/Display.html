@@ -189,13 +189,15 @@ $m->callback(
 # This code does automatic redirection if any updates happen. 
 
 if (@Actions) {
-    # We've done something, so we need to clear the decks to avoid 
+
+    # We've done something, so we need to clear the decks to avoid
     # resubmission on refresh.
     # But we need to store Actions somewhere too, so we don't lose them.
-    push @{ $session{"Actions"} ||= [] }, @Actions;
+    my $key = Digest::MD5::md5_hex( rand(1024) );
+    push @{ $session{"Actions"}->{$key} ||= [] }, @Actions;
     $session{'i'}++;
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "Ticket/Display.html?id=" . $TicketObj->id . "&results=" . $key );
 
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') ."Ticket/Display.html?id=".$TicketObj->id);
 }
 
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);

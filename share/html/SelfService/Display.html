@@ -217,11 +217,10 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         # We've done something, so we need to clear the decks to avoid
         # resubmission on refresh.
         # But we need to store Actions somewhere too, so we don't lose them.
-        push @{ $session{"Actions"} ||= [] }, @results;
+        my $key = Digest::MD5::md5_hex(rand(1024));
+        push @{ $session{"Actions"}->{$key}  ||= [] }, @results;
         $session{'i'}++;
-        RT::Interface::Web::Redirect(
-            RT->Config->Get('WebURL') ."SelfService/Display.html?id=". $Ticket->id
-        );
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=". $Ticket->id."&results=".$key);
     }
 
     my $Transactions = $Ticket->Transactions;

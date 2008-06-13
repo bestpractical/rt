@@ -98,10 +98,9 @@ if ( $Forward || $ForwardAndReturn ) {
 
     if ( $ForwardAndReturn ) {
         $session{'i'}++;
-        push @{ $session{"Actions"} ||= [] }, @results;
-        RT::Interface::Web::Redirect(
-            RT->Config->Get('WebURL') ."Ticket/Display.html?id=". $id
-        );
+        my $key = Digest::MD5::md5_hex(rand(1024));
+        push @{ $session{"Actions"}->{$key}  ||= [] }, @results;
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."Ticket/Display.html?id=". $id."&results=".$key);
     }
 }
 

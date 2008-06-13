@@ -56,10 +56,12 @@
 </div>
 <%init>
 
-if ( ref( $session{'Actions'} ) eq 'ARRAY' ) {
-    unshift @actions, @{ $session{'Actions'} };
+my $actions_pointer = $m->request_args->{'results'};
+
+if ($actions_pointer &&  ref( $session{'Actions'}->{$actions_pointer} ) eq 'ARRAY' ) {
+    unshift @actions, @{ $session{'Actions'}->{$actions_pointer} };
+    delete $session{'Actions'}->{$actions_pointer};
 }
-delete $session{'Actions'};
 
 # XXX: run callbacks per row really crazy idea
 @actions =
