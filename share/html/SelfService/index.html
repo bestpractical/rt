@@ -47,8 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, Title => loc('Open tickets') &>
 <& /SelfService/Elements/MyRequests,
+    %ARGS,
     BaseURL => RT->Config->Get('WebPath') ."/SelfService/?",
-	Page    => $Page, %ARGS
+    Page    => $Page, 
 &>
 
 <%ARGS>

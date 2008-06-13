@@ -48,11 +48,11 @@
 <& /SelfService/Elements/Header, Title => loc('Closed tickets') &>
 
 <& /SelfService/Elements/MyRequests,
+    %ARGS,
     status          => ['rejected', 'resolved'],
     friendly_status => loc('closed'), 
 	BaseURL         => RT->Config->Get('WebPath') ."/SelfService/Closed.html?",
 	Page            => $Page,
-    %ARGS
 &>
 
 <%ARGS>
