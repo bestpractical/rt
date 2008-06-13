@@ -47,12 +47,25 @@
 %# END BPS TAGGED BLOCK }}}
 %# Released under the terms of version 2 of the GNU Public License
 <%INIT>
-warn caller;
-if ($style eq 'concise'){$m->comp('/Elements/ShowUserConcise', User => $User);}
-else {$m->comp('/Elements/ShowUserVerbose', User => $User);}
+if ($User) {
+    my $printable;
+    if ( $User->Privileged ) {
+             $printable = $User->NickName
+          || $User->RealName
+          || $User->Name
+          || $User->EmailAddress;
+    }
+    else {
+             $printable = $User->EmailAddress
+          || $User->Name
+          || $User->RealName
+          || $User->NickName;
+    }
+    $m->out( $printable);
+}
+
 </%INIT>
 <%ARGS>
 $User => undef
 $Address => undef
-$style => RT->Config->Get('UsernameFormat', $session{'CurrentUser'})
 </%ARGS>

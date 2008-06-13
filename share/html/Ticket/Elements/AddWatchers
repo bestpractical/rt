@@ -58,7 +58,7 @@
 <&|/l&>Username</&>
 </td></tr>
 % while (my $u = $Users->Next ) {
-<tr><td><&/Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-". $u->PrincipalId &></td><td><& '/Elements/ShowUser', User => $u &></td></tr>
+<tr><td><&/Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-". $u->PrincipalId &></td><td><& '/Elements/ShowUser', User => $u, style=>'verbose' &></td></tr>
 % }
 % }
 

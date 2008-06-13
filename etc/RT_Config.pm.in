@@ -700,6 +700,18 @@ option can be overridden by users in their preferences.
 
 Set($WebDefaultStylesheet, 'web2');
 
+=item C<$UsernameFormat>
+
+This determines how user info is displayed. Concise will show one of 
+either NickName, RealName, Name or EmailAddress, depending on what exists 
+and whether the user is privileged or not. Verbose will show RealName and
+EmailAddress.
+
+=cut
+
+  Set($UsernameFormat, 'concise');
+
+
 =item C<$WebPath>
 
 If you're putting the web ui somewhere other than at the root of
