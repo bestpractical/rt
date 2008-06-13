@@ -222,7 +222,7 @@ my $desc = $SavedSearch->{'Description'};
 my $privacy = $SavedSearch->{'Privacy'};
 
 my %params = map { $_ => $Query->{$_} } @SearchFields;
-my ($obj_type, $obj_id) = split(/\-/, ($privacy || ''));
+my ($new_obj_type, $new_obj_id) = split(/\-/, ($privacy || ''));
 
 if ( $obj && $obj->id ) {
     # permission check
@@ -235,11 +235,22 @@ if ( $obj && $obj->id ) {
 
     $obj->SetSubValues( %params );
     $obj->SetDescription( $desc );
-    if ( $obj_type && $obj_id ) {
-        my ($val, $msg ) = $obj->SetObjectType($obj_type);
-        push @results, loc ('Unable to set privacy object: [_1]', $msg) unless ( $val );
-        ($val, $msg) = $obj->SetObjectId($obj_id);
-        push @results, loc ('Unable to set privacy id: [_1]', $msg) unless ( $val );
+
+    my $obj_type = ref($obj->Object);
+    # We need to get current obj_id now, because when we change obj_type to
+    # RT::System, $obj->Object->Id returns 1, not the old one :(
+    my $obj_id = $obj->Object->Id;
+
+    if ( $new_obj_type && $new_obj_id ) {
+        my ($val, $msg);
+        if ( $new_obj_type ne $obj_type ) {
+            ($val, $msg ) = $obj->SetObjectType($new_obj_type);
+            push @results, loc ('Unable to set privacy object: [_1]', $msg) unless ( $val );
+        }
+        if ( $new_obj_id != $obj_id ) {
+            ($val, $msg) = $obj->SetObjectId($new_obj_id);
+            push @results, loc ('Unable to set privacy id: [_1]', $msg) unless ( $val );
+        }
     } else {
         push @results, loc('Unable to determine object type or id');
     }
