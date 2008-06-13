@@ -50,11 +50,7 @@
 %# Hide all the save functionality if the user shouldn't see it.
 % if ( $can_modify ) {
 <&|/l&>Privacy:</&>
-% if ( $Object && $Object->id ) {
-<& SearchPrivacy, Object => $Object->Object &>
-% } else {
-<& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@Objects &>
-% }
+<& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@Objects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
 <br />
 <&|/l&>Description</&>:
 <input size="25" name="SavedSearchDescription" value="<% $Description || '' %>" />
@@ -145,6 +141,7 @@ $SavedSearch => {}
 
 $SavedSearch->{'Id'}          = $ARGS{'SavedSearchId'}          || 'new';
 $SavedSearch->{'Description'} = $ARGS{'SavedSearchDescription'} || undef;
+$SavedSearch->{'Privacy'}     = $ARGS{'SavedSearchOwner'}       || undef;
 
 my @results;
 
@@ -212,8 +209,10 @@ my @results;
 my $obj  = $SavedSearch->{'Object'};
 my $id   = $SavedSearch->{'Id'};
 my $desc = $SavedSearch->{'Description'};
+my $privacy = $SavedSearch->{'Privacy'};
 
 my %params = map { $_ => $Query->{$_} } @SearchFields;
+my ($obj_type, $obj_id) = split(/\-/, ($privacy || ''));
 
 if ( $obj && $obj->id ) {
     # permission check
@@ -226,12 +225,20 @@ if ( $obj && $obj->id ) {
 
     $obj->SetSubValues( %params );
     $obj->SetDescription( $desc );
+    if ( $obj_type && $obj_id ) {
+        my ($val, $msg ) = $obj->SetObjectType($obj_type);
+        push @results, loc ('Unable to set privacy object: [_1]', $msg) unless ( $val );
+        ($val, $msg) = $obj->SetObjectId($obj_id);
+        push @results, loc ('Unable to set privacy id: [_1]', $msg) unless ( $val );
+    } else {
+        push @results, loc('Unable to determine object type or id');
+    }
     push @results, loc('Updated saved search "[_1]"', $desc);
 }
 elsif ( $id eq 'new' ) {
     my $saved_search = RT::SavedSearch->new( $session{'CurrentUser'} );
     my ($status, $msg) = $saved_search->Save(
-        Privacy      => $ARGS{'SavedSearchOwner'},
+        Privacy      => $privacy,
         Name         => $desc,
         Type         => $saved_search->{'Type'},
         SearchParams => \%params,
