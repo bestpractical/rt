@@ -47,6 +47,16 @@
 %# END BPS TAGGED BLOCK }}}
 %# Released under the terms of version 2 of the GNU Public License
 <%INIT>
+if ( ! $User && $Address ) {
+    $User = new RT::User ($session{'CurrentUser'});
+    # FIXME : sometimes $TicketObj->TransactionAddresses returns a
+    # Mail::Address object whose address is the Name :(
+    if ( $Address->address =~ /\@/ ) {
+        $User->LoadByEmail($Address->address);
+    } else {
+        $User->Load($Address->address);
+    }
+}
 if ($style eq 'concise'){$m->comp('/Elements/ShowUserConcise', User => $User);}
 else {$m->comp('/Elements/ShowUserVerbose', User => $User);}
 </%INIT>
