@@ -139,9 +139,6 @@ sub QueryToSQL {
             and $User->Privileged )
         {
             push @owner_clauses, "Owner = '" . $User->Name . "'";
-            if ( ! @status_clauses ) {
-                push @tql_clauses, join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray());
-            }
         }
 
         # Else, subject must contain $key
@@ -162,7 +159,11 @@ sub QueryToSQL {
 
     push @tql_clauses, join( " OR ", sort @id_clauses );
     push @tql_clauses, join( " OR ", sort @owner_clauses );
-    push @tql_clauses, join( " OR ", sort @status_clauses );
+    if ( ! @status_clauses ) {
+        push @tql_clauses, join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray());
+    } else {
+        push @tql_clauses, join( " OR ", sort @status_clauses );
+    }
     push @tql_clauses, join( " OR ", sort @user_clauses );
     push @tql_clauses, join( " OR ", sort @queue_clauses );
     @tql_clauses = grep { $_ ? $_ = "( $_ )" : undef } @tql_clauses;

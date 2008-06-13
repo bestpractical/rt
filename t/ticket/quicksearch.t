@@ -32,10 +32,10 @@ my $quick = RT::Search::Googleish->new(Argument => "",
                                  TicketsObj => $tickets);
 my @tests = (
     "General new open root"     => "( Owner = 'root' ) AND ( Queue = 'General' ) AND ( Status = 'new' OR Status = 'open' )", 
-    "fulltext:jesse"       => "( Content LIKE 'jesse' )",
-    $queue                 => "( Queue = '$queue' )",
+    "fulltext:jesse"       => "( Content LIKE 'jesse' ) AND ( $active_statuses )",
+    $queue                 => "( Queue = '$queue' ) AND ( $active_statuses )",
     "root $queue"          => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( $active_statuses )",
-    "notauser $queue"      => "( Queue = '$queue' ) AND ( Subject LIKE 'notauser' )",
+    "notauser $queue"      => "( Queue = '$queue' ) AND ( $active_statuses ) AND ( Subject LIKE 'notauser' )",
     "notauser $queue root" => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( $active_statuses ) AND ( Subject LIKE 'notauser' )");
 
 while (my ($from, $to) = splice @tests, 0, 2) {
