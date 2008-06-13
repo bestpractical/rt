@@ -61,40 +61,33 @@ div#body {
 div#header h1 {
  position: absolute;
  left: 7.25em;
- right: 25em;
  overflow: hidden;
  height: 1em;
  font-size: 1.4em;
  margin-top: 0.4em;
+ right: 23.5em;
  padding: 0.25em;
 }
 
 
-
+#topactions {
+    top: 4.1em;
+    width: 42em;
+}
 .topaction form * { 
     vertical-align: top;
-   height: 2em;
-   margin-top: 0.2em;
-   padding-top: 0.25em;
-   padding-bottom: 0.25em;
 }
 
 .topaction form button, .topaction form input { 
    height: 2em; 
-    margin-top: 0;
 }
 
 .topaction form input.field {
    height: 1.6em; 
-    margin-top: 0;
 }
 
-.topaction form#CreateTicketInQueue {
- top: 0;
- left: -30em;
- right: 20em;
- text-align: right; 
-
+.topaction .select-queue {
+    margin-top: 0.2em;
 }
 
 div#page-navigation ul#actions-menu {
@@ -225,5 +218,12 @@ table.queue-summary td, td.collection-as-table {
 .titlebox .titlebox .titlebox-title .right{
     top: 0.25em;
 }
+.combobox .combo-button {
+    color: ButtonText;
+    padding: 0;
+}
 
-
+.combobox .combo-list {
+    margin-top:0.5em;
+    margin-left: -0.2em;
+}

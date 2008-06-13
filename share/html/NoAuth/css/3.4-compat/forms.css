@@ -72,6 +72,7 @@ form .label, form label {
 %# ComboBox styles... some properties like height and width must be dynamically
 %# set in the JS (at least for now).
 .combobox {
+    position: relative;
     border: 2px inset ButtonHighlight;
     padding-left: 0.5em;
     padding-bottom: 0.1em;

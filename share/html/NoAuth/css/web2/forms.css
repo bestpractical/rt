@@ -170,3 +170,47 @@ div.widget .hints {
   font-style: italic;
 }
 
+
+%# ComboBox styles... some properties like height and width must be dynamically
+%# set in the JS (at least for now).
+.combobox {
+    border: 2px inset ButtonHighlight;
+    position: relative;
+    min-width: 10em;
+}
+
+.combobox .combo-button {
+    padding: 0;
+    margin-top: 0;
+    cursor: default;
+    color: ButtonFace;
+    padding-right: 0.2em;
+    background: ButtonFace;
+    border: 2px outset ButtonHighlight;
+}
+
+/* this style replaces the default down-triangle with one that looks more like
+ *  native widget sets. It does not work in IE as it's an :after pseudo element 
+ *  with a "content" value. but that's ok because IE can't display unicode 25be
+ *  anyway */
+
+.combobox .combo-button:after {
+    color: ButtonText;
+    margin: 0;
+    padding: 0;
+    margin-top: -0.5em;
+    margin-left: -0.8em;
+    content: "\25be";
+}
+
+.combobox .combo-text {
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+
+.combobox .combo-list {
+    border: 1px outset;
+    z-index: 150;
+}
+

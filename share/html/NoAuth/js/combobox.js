@@ -85,7 +85,6 @@ function ComboBox_Load( comboId ) {
     button.onclick = button.Toggle;
     button.onmouseover = function(e) { this.Container.List.DisableBlur(e); };
     button.onmouseout = function(e) { this.Container.List.EnableBlur(e); };
-    button.innerHTML = "\u25BC";
     button.onselectstart = function(e){ return false; };
     button.style.height = ( list.offsetHeight - 4 ) + "px";
     
@@ -93,7 +92,6 @@ function ComboBox_Load( comboId ) {
     text.TypeDown = ComboBox_TextTypeDown;
     text.KeyAccess = ComboBox_TextKeyAccess;
     text.onkeyup = function(e) { this.KeyAccess(e); this.TypeDown(e); };
-    text.style.width = ( list.offsetWidth ) + "px";
     
     list.Container = combo;
     list.Show = ComboBox_ShowList;
@@ -220,8 +218,8 @@ function ComboBox_ToggleList(e) {
 function ComboBox_ShowList(e) {
     if ( !this.IsShowing && !this.disabled ) {
         this.style.width = ( this.Container.offsetWidth ) + "px";
-        this.style.top = ( this.Container.offsetHeight + ComboBox_RecursiveOffsetTop(this.Container,true) ) + "px";
-        this.style.left = ( ComboBox_RecursiveOffsetLeft(this.Container,true) + 1 ) + "px";
+        this.style.top = '1.2em';//( this.Container.offsetHeight + ComboBox_RecursiveOffsetTop(this.Container,true) ) + "px";
+        this.style.left = '0px';// ( ComboBox_RecursiveOffsetLeft(this.Container,true) + 1 ) + "px";
         ComboBox_SetVisibility(this,true);
         this.focus();
         this.IsShowing = true;

@@ -46,10 +46,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-.topaction form#CreateTicketInQueue {
- left: -22em;
- right: 10em;
 
+.topaction .select-queue {
+    margin-top: 0;
 }
 
 div#page-navigation ul#page-menu {

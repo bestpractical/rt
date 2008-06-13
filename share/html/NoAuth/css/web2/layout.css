@@ -77,12 +77,18 @@ div#body {
 
 }
 
-
 #topactions {
  position: absolute;
+ background: transparent;
  right: 1em;
- top: 3.85em; 
+ top: 3.8em; 
+ width: 38em;
  font-size: 0.9em;
+ z-index: 99;
+}
+
+#topactions form * {
+    vertical-align: top;
 }
 
 #topactions button, #topactions select, #topactions input{
@@ -93,19 +99,24 @@ div#body {
 }
 
 #topactions form {
- display: inline;
+ display: block;
 
 }
 
-.topaction form#CreateTicketInQueue {
- position: absolute;
- padding-right: 2em;
- top: 0;
- left: -26em;
- right: 18em;
+#topactions #CreateTicketInQueue {
  text-align: right; 
 
 }
+#topactions #simple-search {
+    float: right;
+}
+
+#topactions #simple-search input.button {
+    width: 5em;
+}
+#topactions #simple-search .field{
+ margin-left: 1em;
+ }
 
 div#footer {
  position: absolute;
@@ -194,7 +205,7 @@ div#quick-personal {
 div#header h1 {
  position: absolute;
  left: 7.25em;
- right: 23em;
+ right: 20em;
  overflow: hidden;
  height: 1em;
  font-size: 1.4em;
