@@ -6170,11 +6170,11 @@ msgid "When anything happens"
 msgstr ""
 
 #: etc/initialdata:172 etc/upgrade/3.7.1/content:3
-msgid "Whenever a ticket is closed(inactivated)"
+msgid "Whenever a ticket is closed"
 msgstr ""
 
 #: etc/initialdata:177 etc/upgrade/3.7.1/content:8
-msgid "Whenever a ticket is reopened(activated)"
+msgid "Whenever a ticket is reopened"
 msgstr ""
 
 #: etc/initialdata:157
