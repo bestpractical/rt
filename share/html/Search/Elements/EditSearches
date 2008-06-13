@@ -66,7 +66,11 @@
 % }
 </nobr>
 % }
+% if ( $Object && $Object->Id ) {
+<input type="submit" class="button" name="SavedSearchSave"   value="<%loc('Update')%>" />
+% } else {
 <input type="submit" class="button" name="SavedSearchSave"   value="<%loc('Save')%>" />
+%}
 % }
 <br />
 <hr />
