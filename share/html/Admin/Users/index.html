@@ -83,7 +83,7 @@
 %     next unless defined $ARGS{ $field } && length $ARGS{ $field };
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
-<&|/l&>Find people whose</&> <& /Elements/SelectUsers, %ARGS &><br />
+<&|/l&>Find all users whose</&> <& /Elements/SelectUsers, %ARGS &><br />
 <input type="checkbox" class="checkbox" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
 <&|/l&>Include disabled users in search.</&>
 <br />
