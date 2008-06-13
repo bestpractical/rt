@@ -72,13 +72,13 @@ if ( $m->request_comp->attr_exists('AutoFlush') ) {
     ( !$type )
         ? Encode::is_utf8($_)
         ? $_
-        : Encode::decode( utf8 => $_, Encode::FB_PERLQQ )
+        : Encode::decode( 'UTF-8' => $_, Encode::FB_PERLQQ )
         : ( $type eq 'ARRAY' )
         ? [
         map {
             ( ref($_) or Encode::is_utf8($_) )
                 ? $_
-                : Encode::decode( utf8 => $_, Encode::FB_PERLQQ )
+                : Encode::decode( 'UTF-8' => $_, Encode::FB_PERLQQ )
             } @$_
         ]
         : ( $type eq 'HASH' )
@@ -86,7 +86,7 @@ if ( $m->request_comp->attr_exists('AutoFlush') ) {
         map {
             ( ref($_) or Encode::is_utf8($_) )
                 ? $_
-                : Encode::decode( utf8 => $_, Encode::FB_PERLQQ )
+                : Encode::decode( 'UTF-8' => $_, Encode::FB_PERLQQ )
             } %$_
         }
         : $_
