@@ -24,6 +24,9 @@ my ( $id, undef, $msg ) = $t1->Create(
 ok( $id, $msg );
 
 use_ok("RT::Search::Googleish");
+
+my $active_statuses = join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray());
+
 my $tickets = RT::Tickets->new($RT::SystemUser);
 my $quick = RT::Search::Googleish->new(Argument => "",
                                  TicketsObj => $tickets);
@@ -31,9 +34,9 @@ my @tests = (
     "General new open root"     => "( Owner = 'root' ) AND ( Queue = 'General' ) AND ( Status = 'new' OR Status = 'open' )", 
     "fulltext:jesse"       => "( Content LIKE 'jesse' )",
     $queue                 => "( Queue = '$queue' )",
-    "root $queue"          => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( Status = 'new' OR Status = 'open' OR Status = 'stalled' )",
+    "root $queue"          => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( $active_statuses )",
     "notauser $queue"      => "( Queue = '$queue' ) AND ( Subject LIKE 'notauser' )",
-    "notauser $queue root" => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( Status = 'new' OR Status = 'open' OR Status = 'stalled' ) AND ( Subject LIKE 'notauser' )");
+    "notauser $queue root" => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( $active_statuses ) AND ( Subject LIKE 'notauser' )");
 
 while (my ($from, $to) = splice @tests, 0, 2) {
     is($quick->QueryToSQL($from), $to, "<$from> -> <$to>");
