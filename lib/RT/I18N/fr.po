@@ -527,7 +527,7 @@ msgstr "<input type=\"submit\" value=\"Créer un ticket dans\">&nbsp;%1"
 
 #: share/html/User/Prefs.html:182
 msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
-msgstr "<p>Tous les FIXME iCal contiennent un code secret qui vous autorise à y accéder. Si une des URLs de vos FIXME iCal ont a été révélé à des personnes non souhaitées, vous pouvez obtenir un nouveau code, <b> ceci rendra inaccessibles tous les FIXME iCal existants</b> ci-dessous.</p>"
+msgstr "<p>Tous les flux iCal contiennent un code secret qui vous autorise à y accéder. Si une des URLs de vos flux iCal ont a été révélé à des personnes non souhaitées, vous pouvez obtenir un nouveau code, <b> ceci rendra inaccessibles tous les flux iCal existants</b> ci-dessous.</p>"
 
 #: etc/initialdata:187
 msgid "A blank template"
