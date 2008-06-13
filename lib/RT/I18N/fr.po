@@ -42,10 +42,10 @@ msgid "#"
 msgstr "n°"
 
 #: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:49 share/html/Ticket/Display.html:54
-#. ($Ticket->id, $Ticket->Subject)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
-#. ($ticket->Id, $ticket->Subject)
 #. ($TicketObj->Id, $TicketObj->Subject)
+#. ($Ticket->id, $Ticket->Subject)
+#. ($ticket->Id, $ticket->Subject)
+#. ($link->BaseObj->Id, $link->BaseObj->Subject)
 msgid "#%1: %2"
 msgstr "n°%1 : %2"
 
@@ -117,8 +117,8 @@ msgid "%1 %2 deleted"
 msgstr "%1 %2 supprimé"
 
 #: share/html/Elements/RT__Scrip/ColumnMap:85 share/html/Ticket/Elements/PreviewScrips:66
-#. ($_[0]->loc($_[0]->ConditionObj->Name),            $_[0]->loc($_[0]->ActionObj->Name),            $_[0]->loc($_[0]->TemplateObj->Name),)
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
+#. ($_[0]->loc($_[0]->ConditionObj->Name),            $_[0]->loc($_[0]->ActionObj->Name),            $_[0]->loc($_[0]->TemplateObj->Name),)
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 avec le modèle %3"
 
@@ -128,10 +128,10 @@ msgid "%1 (%2) by %3"
 msgstr "%1 (%2) par %3"
 
 #: share/html/SelfService/Update.html:62 share/html/Ticket/Elements/EditBasics:115 share/html/Ticket/Update.html:69 share/html/Ticket/Update.html:75 share/html/Tools/MyDay.html:68
-#. (loc($Ticket->Status))
 #. (loc($Ticket->Status()))
 #. (loc($TicketObj->Status))
 #. ($TicketObj->OwnerObj->Name)
+#. (loc($Ticket->Status))
 msgid "%1 (Unchanged)"
 msgstr "%1 (inchangé)"
 
@@ -224,8 +224,8 @@ msgid "%1 attribute load failure"
 msgstr "%1 erreur lors du chargement de l'attribut"
 
 #: lib/RT/Transaction_Overlay.pm:531 share/html/Ticket/Elements/ShowDates:80
-#. ($self->BriefDescription , $self->CreatorObj->Name)
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
+#. ($self->BriefDescription , $self->CreatorObj->Name)
 msgid "%1 by %2"
 msgstr "%1 par %2"
 
@@ -347,8 +347,8 @@ msgid "%1's dashboards"
 msgstr "Tableaux de bord de %1"
 
 #: share/html/Search/Elements/SearchPrivacy:54 share/html/Search/Elements/SelectSearchObject:65 share/html/Search/Elements/SelectSearchesForObjects:59
-#. ($object->Name)
 #. ($Object->Name)
+#. ($object->Name)
 msgid "%1's saved searches"
 msgstr "Recherches sauvées de %1"
 
@@ -748,7 +748,7 @@ msgstr "Appliquer"
 msgid "Apply your changes"
 msgstr "Appliquer vos changements"
 
-#: share/html/Elements/Tabs:80
+#: share/html/Elements/Tabs.orig:80 share/html/Elements/Tabs:80
 msgid "Approval"
 msgstr "Approbations"
 
@@ -1132,7 +1132,7 @@ msgstr "L'argument condition est obligatoire"
 msgid "Condition matches..."
 msgstr "La condition satisfait..."
 
-#: share/html/Elements/Tabs:87
+#: share/html/Elements/Tabs.orig:87 share/html/Elements/Tabs:87
 msgid "Configuration"
 msgstr "Configuration"
 
@@ -1371,8 +1371,8 @@ msgid "Couldn't load ticket '%1'"
 msgstr "Impossible de charger le ticket '%1'"
 
 #: share/html/Ticket/Forward.html:90 share/html/Ticket/GnuPG.html:75
-#. ($id)
 #. ($QuoteTransaction)
+#. ($id)
 msgid "Couldn't load transaction #%1"
 msgstr "Impossible de charger la transaction #%1"
 
@@ -2536,7 +2536,7 @@ msgstr "Historique du groupe %1"
 msgid "History of the user %1"
 msgstr "Historique de l'utilisateur %1"
 
-#: share/html/Elements/Tabs:68
+#: share/html/Elements/Tabs.orig:68 share/html/Elements/Tabs:68
 msgid "Homepage"
 msgstr "Accueil"
 
@@ -2650,8 +2650,8 @@ msgid "Input error"
 msgstr "Erreur à l'entrée"
 
 #: lib/RT/CustomField_Overlay.pm:1055 lib/RT/CustomField_Overlay.pm:919 share/html/Elements/ValidateCustomFields:87
-#. ($self->FriendlyPattern)
 #. ($CF->FriendlyPattern)
+#. ($self->FriendlyPattern)
 msgid "Input must match %1"
 msgstr "La valeur saisie doit correspondre à %1"
 
@@ -3725,7 +3725,7 @@ msgstr "Aucun droit accordé."
 msgid "No search to operate on."
 msgstr "Pas de critère de recherche."
 
-#: share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Results.rdf:81
+#: share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Results.rdf:91
 msgid "No subject"
 msgstr "Pas de sujet"
 
@@ -4708,8 +4708,8 @@ msgid "Saved searches"
 msgstr "Recherches sauvées"
 
 #: share/html/Admin/Global/Scrip.html:79 share/html/Admin/Queues/Scrip.html:86 share/html/Ticket/Elements/PreviewScrips:65
-#. ($id)
 #. ($scrip->id)
+#. ($id)
 msgid "Scrip #%1"
 msgstr "Scrip n°%1"
 
@@ -5074,7 +5074,7 @@ msgstr "Signature désactivée"
 msgid "Signing enabled"
 msgstr "Signature activée"
 
-#: share/html/Elements/Tabs:71
+#: share/html/Elements/Tabs.orig:71 share/html/Elements/Tabs:71
 msgid "Simple Search"
 msgstr "Recherche rapide"
 
@@ -5556,8 +5556,8 @@ msgid "Ticket %1 created in queue '%2'"
 msgstr "Ticket %1 créé dans la file '%2'"
 
 #: share/html/Search/Bulk.html:369 share/html/Tools/MyDay.html:100 share/html/Tools/MyDay.html:91 share/html/Tools/MyDay.html:94
-#. ($Ticket->Id, $_)
 #. ($id, $msg)
+#. ($Ticket->Id, $_)
 msgid "Ticket %1: %2"
 msgstr "Ticket %1 :  %2"
 
@@ -5615,7 +5615,7 @@ msgstr "Statut de ticket modifié"
 msgid "TicketSQL search module"
 msgstr "Module de recherche TicketSQL"
 
-#: lib/RT/CustomField_Overlay.pm:1099 share/html/Admin/Elements/GlobalCustomFieldTabs:75 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:74 share/html/Search/Chart:113 share/html/Search/Elements/Chart:115
+#: lib/RT/CustomField_Overlay.pm:1099 share/html/Admin/Elements/GlobalCustomFieldTabs:75 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs.orig:74 share/html/Elements/Tabs:74 share/html/Search/Chart:113 share/html/Search/Elements/Chart:115
 msgid "Tickets"
 msgstr "Tickets"
 
@@ -5690,7 +5690,7 @@ msgstr "Pour vous renseigner au sujet du support, de la formation, des développ
 msgid "Told"
 msgstr "Annoncé"
 
-#: share/html/Admin/Elements/Tabs:70 share/html/Admin/index.html:84 share/html/Elements/Tabs:77 share/html/Tools/index.html:48 share/html/Tools/index.html:51
+#: share/html/Admin/Elements/Tabs:70 share/html/Admin/index.html:84 share/html/Elements/Tabs.orig:77 share/html/Elements/Tabs:77 share/html/Tools/index.html:48 share/html/Tools/index.html:51
 msgid "Tools"
 msgstr "Outils"
 
@@ -6235,7 +6235,7 @@ msgstr "comme accordé à %1"
 msgid "before"
 msgstr "avant"
 
-#: share/html/SelfService/Closed.html:52
+#: share/html/SelfService/Closed.html:53
 msgid "closed"
 msgstr "fermé"
 
