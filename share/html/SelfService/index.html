@@ -48,7 +48,7 @@
 <& /SelfService/Elements/Header, Title => loc('Open tickets') &>
 <& /SelfService/Elements/MyRequests,
     BaseURL => RT->Config->Get('WebPath') ."/SelfService/?",
-	Page    => $Page,
+	Page    => $Page, %ARGS
 &>
 
 <%ARGS>

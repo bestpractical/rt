@@ -49,12 +49,13 @@
 <& /Elements/CollectionList, Title   => $title,
 			 Format  => $Format, 
 			 Query   => $Query, 
-			 Order   => $Order, 
-			 OrderBy => $OrderBy,
+			 Order   => @Order, 
+			 OrderBy => @OrderBy,
 			 BaseURL => $BaseURL,
 			 GenericQueryArgs => $GenericQueryArgs,
 			 AllowSorting => $AllowSorting,
 			 Class   => 'RT::Tickets',
+             Rows    => $Rows,
 			 Page    => $Page &>
 </&>
 
@@ -74,6 +75,7 @@ my $Format = qq{
    Status,
    Requestors,
    OwnerName};
+
 </%INIT>
 <%ARGS>
 $friendly_status => loc('open')
@@ -83,7 +85,8 @@ $title => loc("My [_1] tickets", $friendly_status)
 $BaseURL => undef
 $Page => 1
 $GenericQueryArgs => undef
-$AllowSorting => undef
-$Order => "ASC"
-$OrderBy => "Created"
+$AllowSorting => 1
+@Order => ('ASC')
+@OrderBy => ('Created')
+$Rows => 50
 </%ARGS>
