@@ -247,6 +247,7 @@ Apache::Session 1.53
 XML::RSS 1.05
 Text::WikiFormat 0.76
 CSS::Squish 0.06
+Devel::StackTrace 1.19
 .
 
 $deps{'STANDALONE'} = [ text_to_hash( << '.') ];
