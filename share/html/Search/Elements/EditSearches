@@ -62,7 +62,7 @@
 % }
 <input type="submit" class="button" name="SavedSearchDelete" value="<%loc('Delete')%>" />
 % if ( $AllowCopy ) {
-<input type="submit" class="button" name="SavedSearchCopy"   value="<%loc('Copy')%>" />
+<input type="submit" class="button" name="SavedSearchCopy"   value="<%loc('Save as New')%>" />
 % }
 </nobr>
 % }
