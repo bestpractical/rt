@@ -249,7 +249,7 @@ sub another_license {
     return 1 if ($name =~ /(?:FCKEditor|scriptaculous)/i);
 
     return 0 if $file =~ /Copyright\s+\(c\)\s+\d\d\d\d-\d\d\d\d Best Practical Solutions/i;
-    return 1 if $file =~ /\bcopyright\b/i; # common
+    return 1 if $file =~ /\b(copyright|GPL|Public Domain)\b/i; # common
     return 1 if $file =~ /\(c\)\s+\d\d\d\d(?:-\d\d\d\d)?/i; # prototype
     return 0;
 }
