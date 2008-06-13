@@ -16,8 +16,4 @@
 
 Set( $rtname, 'example.com');
 #Set(@Plugins,(qw(Extension-QuickDelete)));
-#1;
-
-use MasonX::Profiler; # available on CPAN
-Set(@MasonParameters, (preamble => 'my $p = MasonX::Profiler->new($m, $r);'));
-
+1;
