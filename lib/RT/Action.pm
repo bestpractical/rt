@@ -56,172 +56,21 @@
 
 =head1 DESCRIPTION
 
+This module is provided only for backwards compatibility.
+
 =head1 METHODS
 
 
 =cut
 
 package RT::Action;
-
-use strict;
-use Scalar::Util;
-
-use base qw/RT::Base/;
-
-# {{{ sub new 
-sub new  {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = {};
-  bless ($self, $class);
-  $self->_Init(@_);
-  return $self;
-}
-# }}}
-
-# {{{ sub _Init 
-sub _Init  {
-  my $self = shift;
-  my %args = ( Argument => undef,
-               CurrentUser => undef,
-               ScripActionObj => undef,
-               ScripObj => undef,
-               TemplateObj => undef,
-               TicketObj => undef,
-               TransactionObj => undef,
-               Type => undef,
-
-               @_ );
-
-  $self->{'Argument'} = $args{'Argument'};
-  $self->CurrentUser( $args{'CurrentUser'});
-  $self->{'ScripActionObj'} = $args{'ScripActionObj'};
-  $self->{'ScripObj'} = $args{'ScripObj'};
-  $self->{'TemplateObj'} = $args{'TemplateObj'};
-  $self->{'TicketObj'} = $args{'TicketObj'};
-  $self->{'TransactionObj'} = $args{'TransactionObj'};
-  $self->{'Type'} = $args{'Type'};
-
-  Scalar::Util::weaken($self->{'ScripActionObj'});
-  Scalar::Util::weaken($self->{'ScripObj'});
-  Scalar::Util::weaken($self->{'TemplateObj'});
-  Scalar::Util::weaken($self->{'TicketObj'});
-  Scalar::Util::weaken($self->{'TransactionObj'});
-
-}
-# }}}
-
-# Access Scripwide data
-
-# {{{ sub Argument 
-sub Argument  {
-  my $self = shift;
-  return($self->{'Argument'});
-}
-# }}}
-
-# {{{ sub TicketObj
-sub TicketObj  {
-  my $self = shift;
-  return($self->{'TicketObj'});
-}
-# }}}
-
-# {{{ sub TransactionObj
-sub TransactionObj  {
-  my $self = shift;
-  return($self->{'TransactionObj'});
-}
-# }}}
-
-# {{{ sub TemplateObj
-sub TemplateObj  {
-  my $self = shift;
-  return($self->{'TemplateObj'});
-}
-# }}}
-
-# {{{ sub ScripObj
-sub ScripObj  {
-  my $self = shift;
-  return($self->{'ScripObj'});
-}
-# }}}
-
-# {{{ sub ScripActionObj
-sub ScripActionObj  {
-  my $self = shift;
-  return($self->{'ScripActionObj'});
-}
-# }}}
-
-# {{{ sub Type
-sub Type  {
-  my $self = shift;
-  return($self->{'Type'});
-}
-# }}}
-
-
-# Scrip methods
-
-#Do what we need to do and send it out.
-
-# {{{ sub Commit 
-sub Commit  {
-  my $self = shift;
-  return(0, $self->loc("Commit Stubbed"));
-}
-# }}}
-
-
-#What does this type of Action does
-
-# {{{ sub Describe 
-sub Describe  {
-  my $self = shift;
-  return $self->loc("No description for [_1]", ref $self);
-}
-# }}}
-
-
-#Parse the templates, get things ready to go.
-
-# {{{ sub Prepare 
-sub Prepare  {
-  my $self = shift;
-  return (0, $self->loc("Prepare Stubbed"));
-}
-# }}}
-
-
-#If this rule applies to this transaction, return true.
-
-# {{{ sub IsApplicable 
-sub IsApplicable  {
-  my $self = shift;
-  return(undef);
-}
-# }}}
-
-# {{{ sub DESTROY
-sub DESTROY {
-    my $self = shift;
-
-    # We need to clean up all the references that might maybe get
-    # oddly circular
-    $self->{'ScripActionObj'} = undef;
-    $self->{'ScripObj'} = undef;
-    $self->{'TemplateObj'} =undef
-    $self->{'TicketObj'} = undef;
-    $self->{'TransactionObj'} = undef;
-}
-
-# }}}
+use base 'RT::Action';
 
 eval "require RT::Action_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action_Vendor.pm});
 eval "require RT::Action_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action_Local.pm});
+warn "RT::Action::Generic has become RT::Action. Please adjust your deprecated RT::Action::Generic_Local file at " . $INC{"RT/Action/Generic_Local.pm"} if !$@;
 
 1;
+
