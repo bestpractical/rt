@@ -156,7 +156,8 @@ my $QueryString = "?".$m->comp('/Elements/QueryString',
                                Order => $Order,
                                Page => $Page);
 my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
-my $RSSFeedURL = RT->Config->Get('WebPath')."/Search/Results.rdf$ShortQueryString";
+my $RSSQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query, Order => $Order, OrderBy => $OrderBy);
+my $RSSFeedURL = RT->Config->Get('WebPath')."/Search/Results.rdf$RSSQueryString";
 
 if ($ARGS{'TicketsRefreshInterval'}) {
 	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};

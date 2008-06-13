@@ -49,6 +49,16 @@
 
 my $Tickets = RT::Tickets->new($session{'CurrentUser'});
 $Tickets->FromSQL($ARGS{'Query'});
+if ($OrderBy =~ /\|/) {
+    # Multiple Sorts
+    my @OrderBy = split /\|/,$OrderBy;
+    my @Order = split /\|/,$Order;
+    $Tickets->OrderByCols(
+        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } } ( 0
+        .. $#OrderBy ) );;
+} else {
+    $Tickets->OrderBy(FIELD => $OrderBy, ORDER => $Order);
+}
 $r->content_type('application/rss+xml');
 
 
@@ -86,3 +96,7 @@ $r->content_type('application/rss+xml');
 $m->out($rss->as_string);
 $m->abort();
 </%INIT>
+<%ARGS>
+$OrderBy => 'Created'
+$Order => 'ASC'
+</%ARGS>
