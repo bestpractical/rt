@@ -177,9 +177,15 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
     push @results, loc("Deleted saved search");
 }
 elsif ( $ARGS{'SavedSearchCopy'} ) {
+    my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
+    $SavedSearch->{'Object'} = $container->Attributes->WithId( $id );
+    if ( $ARGS{'SavedSearchDescription'} && $ARGS{'SavedSearchDescription'} ne $SavedSearch->{'Object'}->Description ) {
+        $SavedSearch->{'Description'} = $ARGS{'SavedSearchDescription'};
+    } else {
+        $SavedSearch->{'Description'} = loc( "[_1] copy", $SavedSearch->{'Object'}->Description );
+    }
     $SavedSearch->{'Id'}          = 'new';
     $SavedSearch->{'Object'}      = undef;
-    $SavedSearch->{'Description'} = loc( "[_1] copy", $SavedSearch->{'Description'} );
 }
 
 if ( $SavedSearch->{'Id'} && $SavedSearch->{'Id'} ne 'new'
@@ -203,7 +209,7 @@ $SavedSearch  => {}
 </%ARGS>
 <%INIT>
 
-return unless $ARGS{'SavedSearchSave'};
+return unless $ARGS{'SavedSearchSave'} || $ARGS{'SavedSearchCopy'};
 
 my @results;
 my $obj  = $SavedSearch->{'Object'};
