@@ -1,2 +1,0 @@
-CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParentId);
-

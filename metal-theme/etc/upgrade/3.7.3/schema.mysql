@@ -1,1 +1,0 @@
-ALTER TABLE CustomFields CHANGE Pattern Pattern TEXT NULL;
