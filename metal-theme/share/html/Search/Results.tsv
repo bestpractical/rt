@@ -1,0 +1,138 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%ARGS>
+$OrderBy => 'id'
+$Order => 'ASC'
+</%ARGS>
+<%INIT>
+
+my $Tickets = RT::Tickets->new( $session{'CurrentUser'} );
+$Tickets->FromSQL( $ARGS{'Query'} );
+if ( $OrderBy =~ /\|/ ) {
+
+  # Multiple Sorts
+  my @OrderBy = split /\|/, $OrderBy;
+  my @Order   = split /\|/, $Order;
+  $Tickets->OrderByCols(
+    map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
+      ( 0 .. $#OrderBy ) );
+}
+else {
+  $Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
+}
+
+my @rows;
+my %known_cfs;
+
+my @attrs = qw( id QueueObj->Name Subject Status TimeEstimated TimeWorked TimeLeft Priority FinalPriority OwnerObj->Name 
+                Requestors->MemberEmailAddressesAsString Cc->MemberEmailAddressesAsString AdminCc->MemberEmailAddressesAsString
+                DueObj->ISO ToldObj->ISO CreatedObj->ISO ResolvedObj->ISO LastUpdatedObj->ISO);
+
+$r->content_type('application/vnd.ms-excel');
+while ( my $Ticket = $Tickets->Next()) {
+    my $row;
+    foreach my $attr (@attrs) {
+        if ($attr =~ /(.*)->ISO$/ and $Ticket->$1->Unix <= 0) {
+            $row->{$attr} = "";
+        } else {
+            my $method = '$Ticket->'.$attr.'()';
+            $row->{$attr} = eval $method;
+            if ($@) {die "Failed to find $attr - ". $@}; 
+        }
+    }
+
+    my $cfs = $Ticket->QueueObj->TicketCustomFields();
+    while (my $cf = $cfs->Next) {
+        $known_cfs{$cf->Id} = $cf->Name;
+        my @content;
+        my $values = $Ticket->CustomFieldValues($cf->Id);
+        while (my $value = $values->Next) {
+            push @content, $value->Content;
+        }
+        $row->{'CustomField-'.$cf->Id} = join(', ',@content);
+    }
+    push @rows, $row;
+}
+
+{ 
+    my @header;
+    foreach my $attr (@attrs) {
+        my $label = $attr;
+        $label =~ s'Obj-.(?:AsString|Name|ISO)''g;
+        $label =~ s'-\>MemberEmailAddressesAsString''g;
+	push @header, $label;
+    }
+    foreach my $id (sort keys %known_cfs) {
+        push @header, "CF-".$known_cfs{$id}; 
+    }
+    $m->out(join("\t", @header));
+    $m->out("\n");
+}
+
+foreach my $row (@rows) {
+    my @row;
+    foreach my $attr(@attrs) {
+        push @row, $row->{"$attr"};
+    }
+    foreach my $id (sort keys %known_cfs) {
+        my $val = $row->{'CustomField-'.$id};
+        $val =~ s/(\n|\r)//g;
+        push @row, $val;
+    }
+
+    # remove tabs from all field values, they screw up the tsv
+    for (@row) {
+        $_ =~ s{\t}{    }g;
+    }
+
+    $m->out(join("\t",@row));
+    $m->out("\n");
+}
+
+$m->abort();
+</%INIT>

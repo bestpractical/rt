@@ -1,0 +1,130 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/QueueTabs, id => $Queue, 
+    QueueObj => $QueueObj,
+     current_tab => 'Admin/Queues/Templates.html?id='.$Queue,
+     current_subtab => $current_subtab, 
+     subtabs => $subtabs, 
+     Title => $title &>
+<& /Elements/ListActions, actions => \@results &>
+
+<form method="post" action="Template.html">
+%if ($Create ) {
+<input type="hidden" class="hidden" name="Template" value="new" />
+% } else {
+<input type="hidden" class="hidden" name="Template" value="<%$TemplateObj->Id%>" />
+% }
+
+%# hang onto the queue id
+<input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
+<& /Admin/Elements/ModifyTemplate, Name => $TemplateObj->Name, Description =>
+$TemplateObj->Description, Content => $TemplateObj->Content &> 
+<& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
+</form>
+
+
+<%INIT>
+
+my $TemplateObj = new RT::Template($session{'CurrentUser'});
+my  ($title, @results, $current_subtab);
+
+my $subtabs = {
+		 A => { title => loc('Select template'),
+  		     	path => "Admin/Queues/Templates.html?id=$Queue"
+			   },
+		 B => { title => loc('New template'),
+  		     	path => "Admin/Queues/Template.html?Create=1&Queue=$Queue",
+			separator => 1,
+			   }
+	      };
+
+if ($Create) {
+  $title = loc("Create a template");
+  $current_subtab = "Admin/Queues/Template.html?Create=1&Queue=".$Queue;
+}
+
+else {
+  if ($Template eq 'new') {
+      my ($val, $msg) =  $TemplateObj->Create(Queue => $Queue, Name => $Name);
+      Abort(loc("Could not create template: [_1]", $msg)) unless ($val);
+     push @results, $msg;
+    }
+    else {
+       $TemplateObj->Load($Template) || Abort(loc('No Template'));
+    }
+     $title = loc('Modify template [_1]', loc($TemplateObj->Name())); 
+  
+    
+}
+my $QueueObj;
+if ($TemplateObj->Id()) {
+  $Queue = $TemplateObj->Queue;
+  $QueueObj = $TemplateObj->QueueObj;
+
+  my @attribs = qw( Description Content Queue Name);
+  my @aresults = UpdateRecordObject( AttributesRef => \@attribs, 
+				     Object => $TemplateObj, 
+				     ARGSRef => \%ARGS);
+  $current_subtab = "Admin/Queues/Template.html?Queue=$Queue&Template=".$TemplateObj->Id();
+  $subtabs->{"C"} = { title => loc('Template #[_1]', $TemplateObj->Id()),
+  		     	path => "Admin/Queues/Template.html?Queue=$Queue&Template=".$TemplateObj->Id(),
+			};
+  push @results, @aresults;
+} else {
+  $QueueObj = RT::Queue->new($session{'CurrentUser'});
+  $QueueObj->Load($Queue);
+}
+
+</%INIT>
+<%ARGS>
+$Queue => ''
+$Template => ''
+$Create => undef
+$Name => undef
+</%ARGS>

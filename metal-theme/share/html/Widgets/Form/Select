@@ -1,0 +1,162 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%DOC>
+see docs/using_forms_widgets.pod
+</%DOC>
+<div id="form-box-<% lc $Name %>" class="widget">
+% if ( $Description ) {
+<span class="label"><% $Description %></span>
+% }
+<span class="value"><& SELF:InputOnly, %ARGS &></span>
+</div>
+<%ARGS>
+$Name
+$Description      => undef,
+</%ARGS>
+
+<%METHOD InputOnly>
+<%ARGS>
+$Name
+$Description      => undef,
+
+@Values           => (),
+$ValuesCallback   => undef,
+%ValuesLabel      => (),
+@CurrentValue     => (),
+
+$Default            => 1,
+@DefaultValue       => (),
+$DefaultLabel       => loc('Use system default ([_1])', join ', ', @DefaultValue),
+
+$Alternative      => 0,
+$AlternativeLabel => loc('other...'),
+
+$Multiple         => 0,
+</%ARGS>
+<select name="<% $Name %>">
+
+% if ( $Default ) {
+% my $selected = '';
+% $selected = 'selected="selected"' unless @CurrentValue;
+<option value="__empty_value__" <% $selected |n %>><% $DefaultLabel %></option>
+% }
+
+% foreach my $v( @Values ) {
+% my $selected = '';
+% $selected = 'selected="selected"' if delete $CurrentValue{ $v };
+<option value="<% $v %>" <% $selected |n %>><% $ValuesLabel{ $v } || $v %></option>
+% }
+
+% if ( $Alternative ) {
+%     my $selected = '';
+%     $selected = 'selected="selected"' if keys %CurrentValue;
+<option value="__alternative_value__" <% $selected |n %>><% $AlternativeLabel %></option>
+% }
+
+</select>
+% if ( $Alternative ) {
+<input type="text" class="alternative" name="Alternative-<% $Name %>" value="<% join ', ', @CurrentValue %>" />
+% }
+<%INIT>
+my %CurrentValue = map {$_ => 1} grep defined, @CurrentValue;
+if ( $ValuesCallback ) {
+    my $values = $ValuesCallback->(
+        CurrentUser => $session{'CurrentUser'},
+        Name        => $Name,
+    );
+    if ( ref $values eq 'ARRAY' ) {
+        @Values = @$values;
+    } else {
+        %ValuesLabel = %$values;
+        @Values = keys %ValuesLabel;
+    }
+}
+</%INIT>
+</%METHOD>
+
+<%METHOD Process>
+<%ARGS>
+$Name
+
+$Arguments        => {},
+
+@Values           => (),
+%ValuesLabel      => (),
+
+$Default          => 0,
+@DefaultValue     => (),
+
+$Alternative      => 0,
+$Multiple         => 0,
+</%ARGS>
+<%INIT>
+my $value = $Arguments->{ $Name };
+if( !defined $value || $value eq '__empty_value__' ) {
+    return undef if $Default;
+    return [ @DefaultValue ] if $Multiple;
+    return $DefaultValue[0];
+}
+$value = [$value] unless ref $value;
+
+if ( $Alternative ) {
+    my $alt = $Arguments->{ "Alternative-". $Name };
+    if( $Multiple ) {
+        push @$value, split /\s*,\s*/, $alt;
+    } else {
+        push @$value, $alt;
+    }
+}
+
+splice @$value, 1 unless $Multiple;
+
+# XXX: check values
+
+return $value->[0] unless $Multiple;
+return $value;
+</%INIT>
+</%METHOD>

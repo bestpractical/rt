@@ -1,0 +1,222 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<div class="ticket-transaction <% $type_class %> <% $RowNum % 2 ? 'odd' : 'even' %>">
+% $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyDisplay' );
+
+<table width="100%" cellspacing="0" cellpadding="2" border="0" class="ticket-transaction">
+% $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyCommand' );
+  <tr class="metadata">
+    <td rowspan="2" valign="top" class="type">
+      <a name="txn-<% $Transaction->Id %>" href="<% $DisplayPath %>#txn-<% $Transaction->Id %>">#</a>
+      <% $LastTransaction ? '<a id="lasttrans" name="lasttrans"/>' : ''|n %>
+    </td>
+    <td class="date"><% $transdate|n %></td>
+% my $desc = $Transaction->BriefDescription;
+% $m->callback( text => \$desc, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyDisplay' );
+    <td class="description">
+      <% $Transaction->CreatorObj->Name %> - <% $TicketString %> <% $desc %>
+    </td>
+    <td class="time-taken"><% $TimeTaken %></td>
+    <td class="actions<% $titlebar_commands ? '': ' hidden'%>"><% $titlebar_commands |n %></td>
+  </tr>
+
+  <tr>
+    <td colspan="5" class="content">
+% if ( $Attachments->[0] && $Attachments->[0]->id ) {
+%   if (RT->Config->Get('GnuPG')->{'Enable'}) {
+        <& ShowGnuPGStatus, Attachment => $Attachments->[0], WarnUnsigned => $WarnUnsigned &>
+%   }
+% }
+% if ( $Transaction->CustomFieldValues->Count ) {
+      <& /Elements/ShowCustomFields, Object => $Transaction &>
+% }
+% $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
+    </td>
+  </tr>
+
+</table>
+</div>
+
+<%ARGS>
+$Ticket => undef
+$Transaction => undef
+$ShowHeaders => 0
+$Collapsed => undef
+$ShowTitleBarCommands => 1
+$RowNum => 1
+$DisplayPath => RT->Config->Get('WebPath')."/Ticket/Display.html?id=".$Ticket->id
+$AttachPath => RT->Config->Get('WebPath')."/Ticket/Attachment"
+$UpdatePath => RT->Config->Get('WebPath')."/Ticket/Update.html"
+$ForwardPath => RT->Config->Get('WebPath')."/Ticket/Forward.html"
+$EncryptionPath => RT->Config->Get('WebPath')."/Ticket/GnuPG.html"
+$EmailRecordPath => RT->Config->Get('WebPath')."/Ticket/ShowEmailRecord.html"
+$Attachments => undef
+$AttachmentContent => undef
+$ShowBody => 1
+$LastTransaction => 0
+$WarnUnsigned => undef
+</%ARGS>
+<%ONCE>
+
+my %class = (
+    Create     => 'message',
+    Correspond => 'message',
+    Comment    => 'message',
+
+    AddWatcher => 'people',
+    DelWatcher => 'people',
+    Take       => 'people',
+    Untake     => 'people',
+    Force      => 'people',
+    Steal      => 'people',
+    Give       => 'people',
+
+    AddLink    => 'links',
+    DeleteLink => 'links',
+);
+
+</%ONCE>
+<%INIT>
+
+my $transdate = $Transaction->CreatedAsString();
+$transdate =~ s/\s/&nbsp;/g;
+
+my ($type, $field) = ($Transaction->Type, $Transaction->Field || '');
+my $type_class = $class{ $type };
+
+unless ( $type_class ) {
+    if ( $field eq 'Owner' ) {
+        $type_class = 'people';
+    }
+    elsif ( $type =~ /^(Status|Set|Told)$/ ) {
+        if ( $field =~ /^(Told|Starts|Started|Due)$/ ) {
+            $type_class = 'dates';
+        }
+        else {
+            $type_class = 'basics';
+        }
+    }
+    else {
+        $type_class = 'other';
+    }
+}
+
+my $TicketString = '';
+if ( $Ticket->Id != $Transaction->Ticket ) {
+    $TicketString = "Ticket " . $Transaction->Ticket . ": ";
+}
+
+my $TimeTaken = '';
+$TimeTaken = $Transaction->TimeTaken . " min"
+    if $Transaction->TimeTaken;
+
+unless ($Attachments) { 
+    my $attachments = $Transaction->Attachments;
+    $attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId) );
+    $Attachments = $attachments->ItemsArrayRef();
+}
+my $titlebar_commands = '';
+
+if ( $type =~ /EmailRecord$/ ) {
+
+    $titlebar_commands .=
+        "[<a target=\"_blank\" href=\"$EmailRecordPath?id="
+      . $Transaction->Ticket
+      . "&Transaction="
+      . $Transaction->Id
+      . "&Attachment="
+      . ( $Attachments->[0] && $Attachments->[0]->id )
+      . '">' . loc('Show') . "</a>]&nbsp;";
+    $ShowBody = 0;
+}
+
+
+# If the transaction has anything attached to it at all
+else {
+
+    if ( $Attachments->[0] && $ShowTitleBarCommands ) {
+        my $ticket = $Transaction->TicketObj;
+        my $can_modify = $ticket->CurrentUserHasRight('ModifyTicket');
+        if ( $can_modify || $ticket->CurrentUserHasRight('ReplyToTicket') ) {
+            $titlebar_commands .=
+                "[<a href=\"".$UpdatePath
+              . "?id=" . $Transaction->Ticket
+              . "&QuoteTransaction=" . $Transaction->Id
+              . "&Action=Respond\">"
+              . loc('Reply')
+              . "</a>]&nbsp;";
+        }
+        if ( $can_modify || $ticket->CurrentUserHasRight('CommentOnTicket') ) {
+            $titlebar_commands .=
+                "[<a href=\"".$UpdatePath."?id="
+              . $Transaction->Ticket
+              . "&QuoteTransaction="
+              . $Transaction->Id
+              . "&Action=Comment\">"
+              . loc('Comment') . "</a>]";
+        }
+        if ( $ticket->CurrentUserHasRight('ForwardMessage') ) {
+            $titlebar_commands .=
+                "[<a href=\"". $ForwardPath
+              . "?id=". $Transaction->Ticket
+              . "&QuoteTransaction=". $Transaction->Id
+              . "\">". loc('Forward') . "</a>]";
+        }
+        if ( $can_modify
+            && RT->Config->Get('GnuPG')->{'Enable'}
+            && RT->Config->Get('GnuPG')->{'AllowEncryptDataInDB'}
+            && $ticket->CurrentUserHasRight('ForwardMessage')
+        ) {
+            $titlebar_commands .=
+                "[<a href=\"". $EncryptionPath
+              . "?id=". $Transaction->Id
+              . "\">". loc('Ecnrypt/Decrypt') . "</a>]";
+        }
+    }
+}
+</%INIT>

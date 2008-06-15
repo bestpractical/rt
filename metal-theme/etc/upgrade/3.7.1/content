@@ -1,0 +1,14 @@
+@ScripConditions = (
+    {  Name                 => 'On Close',                                 # loc
+       Description          => 'Whenever a ticket is closed', # loc
+       ApplicableTransTypes => 'Status,Set',
+       ExecModule           => 'CloseTicket',
+    },
+    {  Name                 => 'On Reopen',                                # loc
+       Description          => 'Whenever a ticket is reopened', # loc
+       ApplicableTransTypes => 'Status,Set',
+       ExecModule           => 'ReopenTicket',
+    },
+);
+
+

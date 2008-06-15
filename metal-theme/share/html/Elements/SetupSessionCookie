@@ -1,0 +1,88 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%INIT>
+return if $m->is_subrequest; # avoid reentrancy, as suggested by masonbook
+
+use RT::Interface::Web::Session;
+
+my %cookies      = CGI::Cookie->fetch;
+my $cookiename   = "RT_SID_". RT->Config->Get('rtname');
+$cookiename     .= ".". $ENV{'SERVER_PORT'} if $ENV{'SERVER_PORT'};
+$SessionCookie ||= ( $cookies{$cookiename} ? $cookies{$cookiename}->value : undef ),
+
+tie %session, 'RT::Interface::Web::Session', $SessionCookie;
+undef $cookies{$cookiename} unless $SessionCookie && $session{'_session_id'} eq $SessionCookie;
+
+if ( int RT->Config->Get('AutoLogoff') ) {
+    my $now = int(time/60);
+    my $last_update = $session{'_session_last_update'} || 0;
+
+    if ( $last_update && ($now - $last_update - RT->Config->Get('AutoLogoff')) > 0 ) {
+        # clean up sessions, but we should leave the session id
+        %session = (_session_id => $session{'_session_id'});
+    }
+
+    # save session on each request when AutoLogoff is turned on
+    $session{'_session_last_update'} = $now if $now != $last_update;
+}
+
+if ( !$cookies{$cookiename} ) {
+    my $cookie = new CGI::Cookie(
+        -name  => $cookiename,
+        -value => $session{_session_id},
+        -path  => RT->Config->Get('WebPath'),
+        -secure => (RT->Config->Get('WebSecureCookies') ? 1 :0)
+    );
+    $r->headers_out->{'Set-Cookie'} = $cookie->as_string;
+}
+
+return ();
+</%INIT>
+<%ARGS>
+$SessionCookie => undef
+</%ARGS>

@@ -1,0 +1,27 @@
+
+sub acl {
+    my $db_name = RT->Config->Get('DatabaseName');
+    my $db_rthost = RT->Config->Get('DatabaseRTHost');
+    my $db_user = RT->Config->Get('DatabaseUser');
+    my $db_pass = RT->Config->Get('DatabasePassword');
+    unless ( $db_user ) {
+        print STDERR "DatabaseUser option is not defined or empty. Skipping...\n";
+        return;
+    }
+    if ( $db_user eq 'root' ) {
+        print STDERR "DatabaseUser is root. Skipping...\n";
+        return;
+    }
+    print "Granting access to $db_user\@'$db_rthost' on $db_name.\n";
+    return (
+        "USE mysql;",
+        "DELETE FROM user WHERE user = '$db_user';",
+        "DELETE FROM db where db = '$db_name';",
+        "GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE
+               ON $db_name.*
+               TO '$db_user'\@'$db_rthost'
+               IDENTIFIED BY '$db_pass';",
+    );
+}
+
+1;

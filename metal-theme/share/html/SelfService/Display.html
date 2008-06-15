@@ -1,0 +1,236 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /SelfService/Elements/Header, Title => loc('#[_1]: [_2]', $Ticket->id, $Ticket->Subject) &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+  <table width="100%" class="ticketsummary" >
+      <tr>
+        <td valign="top" width="50%" class="boxcontainer">
+          <&| /Widgets/TitleBox, title => loc('The Basics'), 
+                title_class=> 'inverse',  
+                color => "#993333" &>
+                <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
+                <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
+          </&>
+</td>
+        <td valign="top" width="50%" class="boxcontainer">
+          <&| /Widgets/TitleBox, title => loc("Dates"),
+                title_class=> 'inverse',
+                 color => "#663366" &>
+          <& /Ticket/Elements/ShowDates, Ticket => $Ticket, UpdatedLink => 0 &>
+          </&>
+</td>
+</tr>
+</table>
+
+
+
+%#!!pape: selfservice_find_attachments.patch {{
+<& /Ticket/Elements/ShowHistory, 
+      Ticket => $Ticket, 
+      URIFile => "Display.html", 
+      ShowHeaders => $ARGS{'ShowHeaders'},
+      DownloadableHeaders => 0,
+      AttachPath => "Attachment", 
+      Attachments => $attachments, 
+      UpdatePath => "Update.html" 
+&>
+%#!!pape: selfservice_find_attachments.patch }}
+
+
+
+<%INIT>
+
+my ( $field, @results );
+
+# {{{ Load the ticket
+#If we get handed two ids, mason will make them an array. bleck.
+# We want teh first one. Just because there's no other sensible way
+# to deal
+my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
+
+my $Ticket = new RT::Ticket( $session{'CurrentUser'} );
+
+# store the uploaded attachment in session
+if ( $ARGS{'Attach'} ) {    # attachment?
+    $session{'Attachments'} = {} unless defined $session{'Attachments'};
+
+    my $subject = "$ARGS{'Attach'}";
+
+    # since CGI.pm deutf8izes the magic field, we need to add it back.
+    Encode::_utf8_on($subject);
+
+    # strip leading directories
+    $subject =~ s#^.*[\\/]##;
+
+    my $attachment = MakeMIMEEntity(
+        Subject             => $subject,
+        Body                => "",
+        AttachmentFieldName => 'Attach'
+    );
+
+    $session{'Attachments'} =
+    { %{ $session{'Attachments'} || {} },
+        $ARGS{'Attach'} => $attachment };
+}
+
+if ( defined ($id[0]) && $id[0] eq 'new' ) {
+
+    # {{{ Create a new ticket
+
+    my $Queue = new RT::Queue( $session{'CurrentUser'} );
+    unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
+        $m->comp( 'Error.html', Why => loc('Queue not found') );
+        $m->abort;
+    }
+
+    unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
+        $m->comp( 'Error.html',
+            Why =>
+              loc('You have no permission to create tickets in that queue.') );
+        $m->abort;
+    }
+
+
+    ( $Ticket, @results ) =
+    CreateTicket( Attachments => $session{'Attachments'}, %ARGS, Status => 'new' );
+
+    unless ( $Ticket->id ) {
+        $m->comp( 'Error.html', Why => join( "\n", @results ));
+              $m->abort();
+        }
+
+        # }}}
+
+        # delete temporary storage entry to make WebUI clean
+        unless ( keys %{ $session{'Attachments'} } and $ARGS{'UpdateAttach'} ) {
+            delete $session{'Attachments'};
+        }
+
+        # }}}
+    }
+    else {
+        unless ( $Ticket->Load( $id[0] ) ) {
+            $m->comp( 'Error.html',
+                Why => loc( "Couldn't load ticket '[_1]'", $id ) );
+            $m->abort();
+        }
+
+    my ( $code, $msg );
+
+
+    if (
+        $session{'Attachments'}
+        || ( defined $ARGS{'UpdateContent'}
+            && $ARGS{'UpdateContent'} ne ''
+            && $ARGS{'UpdateContent'} ne "-- \n"
+            . $session{'CurrentUser'}->UserObj->Signature )
+      )
+    {
+        $ARGS{UpdateAttachments} = $session{'Attachments'};
+    }
+    push @results, ProcessUpdateMessage(
+        ARGSRef   => \%ARGS,
+        TicketObj => $Ticket
+    );
+            delete $session{'Attachments'};
+
+    # delete temporary storage entry to make WebUI clean
+    unless ( keys %{ $session{'Attachments'} } and $ARGS{'UpdateAttach'} ) {
+        delete $session{'Attachments'};
+    }
+
+    my @cfupdates = ProcessObjectCustomFieldUpdates(Object => $Ticket, ARGSRef => \%ARGS);
+    push (@results, @cfupdates);
+
+    # }}}
+
+    #Update the status
+    if (    ( defined $ARGS{'Status'} )
+        and $ARGS{'Status'}
+        and ( $ARGS{'Status'} ne $Ticket->Status ) )
+    {
+        ( $code, $msg ) = $Ticket->SetStatus( $ARGS{'Status'} );
+        push @results, "$msg";
+    }
+    # }}}
+
+
+    }
+
+    # This code does automatic redirection if any updates happen.
+
+    unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
+        $m->comp( 'Error.html',
+            Why => loc("No permission to display that ticket") );
+        # XXX: Why abort? then we loose footer //ruz
+        $m->abort();
+    }
+
+    if (@results) {
+        # We've done something, so we need to clear the decks to avoid
+        # resubmission on refresh.
+        # But we need to store Actions somewhere too, so we don't lose them.
+        my $key = Digest::MD5::md5_hex(rand(1024));
+        push @{ $session{"Actions"}->{$key}  ||= [] }, @results;
+        $session{'i'}++;
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=". $Ticket->id."&results=".$key);
+    }
+
+    my $Transactions = $Ticket->Transactions;
+
+    my $attachments =
+      $m->comp( '/Ticket/Elements/FindAttachments', Ticket => $Ticket );
+
+</%INIT>
+
+
+<%ARGS>
+$id => undef
+</%ARGS>

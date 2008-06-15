@@ -1,0 +1,23 @@
+@Final = (
+    sub {
+        $RT::Logger->debug("Adding search for bookmarked tickets to defaults");
+        my $sys = RT::System->new($RT::SystemUser);
+
+        my $attrs = RT::Attributes->new( $RT::SystemUser );
+        $attrs->LimitToObject( $sys );
+        my ($attr) = $attrs->Named( 'HomepageSettings' );
+        unless ($attr) {
+            $RT::Logger->error("You have no global home page settings");
+            return;
+        }
+        my $content = $attr->Content;
+        unshift @{ $content->{'body'} ||= [] },
+            { type => 'system', name => 'Bookmarked Tickets' };
+
+        my ($status, $msg) = $attr->SetContent( $content );
+        $RT::Logger->error($msg) unless $status;
+
+        $RT::Logger->debug("done.");
+        return 1;
+    },
+);

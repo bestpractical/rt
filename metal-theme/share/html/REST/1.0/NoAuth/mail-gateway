@@ -1,0 +1,84 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%flags>
+inherit => undef # inhibit UTF8 conversion done in /autohandler
+</%flags>
+<%ARGS>
+$queue => 1
+$action => "correspond"
+$ticket => undef
+</%ARGS>
+<%init>
+$m->callback( %ARGS, CallbackName => 'Pre' );
+use RT::Interface::Email ();    # It's an exporter, but we don't care
+$r->content_type('text/plain; charset=utf-8');
+$m->error_format('text');
+my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway( \%ARGS );
+if ( $status == 1 ) {
+  $m->out('ok');
+  if ( $Ticket && $Ticket->Id ) {
+    $m->out( 'Ticket: '  . ($Ticket->Id             || '') );
+    $m->out( 'Queue: '   . ($Ticket->QueueObj->Name || '') );
+    $m->out( 'Owner: '   . ($Ticket->OwnerObj->Name || '') );
+    $m->out( 'Status: '  . ($Ticket->Status         || '') );
+    $m->out( 'Subject: ' . ($Ticket->Subject        || '') );
+    $m->out(
+      'Requestor: ' . ($Ticket->Requestors->MemberEmailAddressesAsString || '') );
+  }
+}
+else {
+  $RT::Logger->error( "Could not record email: " . $error );
+  if ( $status == -75 ) {
+    $m->out( "temporary failure - " . $error );
+  }
+  else {
+    $m->out( 'not ok - ' . $error );
+  }
+}
+$m->abort();
+</%init>

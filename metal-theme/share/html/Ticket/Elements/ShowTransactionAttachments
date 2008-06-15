@@ -1,0 +1,203 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%PERL>
+# Find all the attachments which have parent $Parent
+# For each of these attachments
+foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
+    $m->comp( 'ShowMessageHeaders',
+              Message        => $message,
+              DisplayHeaders => \@DisplayHeaders,
+            );
+
+    my $size = $message->ContentLength;
+    if ( $size ) {
+</%PERL>
+<div class="downloadattachment">
+<a href="<% $AttachPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% ($message->Filename ||'')| u%>"><&|/l&>Download</&> <% $message->Filename || loc('(untitled)') %></a>
+% if ( $DownloadableHeaders && !$message->Filename && $message->ContentType =~ /text/  ) {
+ / <a href="<% $AttachPath %>/WithHeaders/<% $message->Id %>"><% loc('with headers') %></a>
+% }
+<br/>
+<span class="downloadcontenttype"><% $message->ContentType %> <% $size_to_str->( $size ) %></span>
+</div>
+%   }
+
+<div class="messagebody">
+<%PERL>
+# {{{ if it has a content-disposition: attachment, don't show inline
+unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
+
+    my $content;
+
+    # If it's text
+    if (   $message->ContentType =~ m{^(text|message)}i
+        && !( $message->Filename && RT->Config->Get('SuppressInlineTextFiles', $session{'CurrentUser'} ) )
+        && (   !RT->Config->Get( 'MaxInlineBody', $session{'CurrentUser'} )
+            || $size <= RT->Config->Get('MaxInlineBody', $session{'CurrentUser'} ) ) )
+    {
+
+        if (
+
+            # it's a toplevel object
+            !$ParentObj
+
+            # or its parent isn't a multipart alternative
+            || ( $ParentObj->ContentType !~ m{^multipart/alternative$}i )
+
+            # or it's of our prefered alterative type
+            || (
+                (
+                    RT->Config->Get('PreferRichText')
+                    && ( $message->ContentType =~ m{^text/(?:html|enriched)$} )
+                )
+                || ( !RT->Config->Get('PreferRichText')
+                    && ( $message->ContentType !~ m{^text/(?:html|enriched)$} )
+                )
+            )
+          )
+        {
+
+            if ( $AttachmentContent->{ $message->id } ) {
+                $content = $AttachmentContent->{ $message->id }->Content;
+            }
+            else {
+                $content = $message->Content;
+            }
+
+            # if it's a text/html clean the body and show it
+            if ( $message->ContentType =~ m{^text/(?:html|enriched)$}i ) {
+                $m->out( $m->comp( '/Elements/ScrubHTML', Content => $content ) );
+            }
+
+            # if it's a text/plain show the body
+            elsif ( $message->ContentType =~ m{^(text|message)}i ) {
+
+                eval { require Text::Quoted;  $content = Text::Quoted::extract($content); };
+                if ($@) { $RT::Logger->warning( "Text::Quoted failed: $@" ) }
+
+                $m->comp(
+                    'ShowMessageStanza',
+                    Depth       => 0,
+                    Message     => $content,
+                    Transaction => $Transaction
+                );
+            }
+        }
+    }
+
+    # if it's an image, show it as an image
+    elsif ( RT->Config->Get('ShowTransactionImages') and  $message->ContentType =~ /^image\//i ) {
+        $m->out('<img src="'
+              . $AttachPath . '/'
+              . $Transaction->Id . '/'
+              . $message->Id
+              . '/" />' );
+    }
+    elsif ( $message->ContentLength > 0 ) {
+        $m->out(
+            loc( 'Message body not shown because it is too large or is not plain text.' )
+        );
+    }
+}
+
+# }}}
+
+$m->comp(
+    $m->current_comp,
+    %ARGS,
+    Parent    => $message->id,
+    ParentObj => $message
+);
+
+</%PERL>
+</div>
+% }
+<%ARGS>
+$Ticket => undef
+$Transaction => undef
+$ShowHeaders => 0
+$Collapsed => undef
+$DownloadableHeaders => 1
+$ShowTitleBarCommands => 1
+$RowNum => 1
+$AttachPath => RT->Config->Get('WebPath')."/Ticket/Attachment"
+$UpdatePath => RT->Config->Get('WebPath')."/Ticket/Update.html"
+$EmailRecordPath => RT->Config->Get('WebPath')."/Ticket/ShowEmailRecord.html"
+$Attachments => undef
+$AttachmentContent => {}
+$ShowBody => 1
+$Parent => 0
+$ParentObj => undef
+</%ARGS>
+<%INIT>
+my @DisplayHeaders=qw(_all);
+if ( $Transaction->Type =~ /EmailRecord$/ ) {
+    @DisplayHeaders = qw(To Cc Bcc);
+}
+
+# If the transaction has anything attached to it at all
+elsif (!$ShowHeaders)  {
+    @DisplayHeaders = qw(To From RT-Send-Cc Cc Bcc Date Subject);
+    push @DisplayHeaders, 'RT-Send-Bcc' if RT->Config->Get('ShowBccHeader');
+}
+
+my $size_to_str = sub {
+    my $size = shift;
+    # show a download link
+    if ( $size > 1024*1024 ) {
+        $size = loc( "[_1]b", int( $size / 1024 / 102.4 ) / 10 );
+    }
+    elsif ( $size > 1024 ) {
+        $size = loc( "[_1]k", int( $size / 102.4 ) / 10 );
+    }
+    else {
+        $size = loc( "[_1]b", $size );
+    }
+    return $size;
+};
+</%INIT>

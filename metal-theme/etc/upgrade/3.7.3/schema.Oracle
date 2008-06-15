@@ -1,0 +1,5 @@
+alter table CustomFields add Pattern_TMP clob;
+update CustomFields set Pattern_TMP = Pattern;
+commit;
+alter table CustomFields drop column Pattern;
+alter table CustomFields rename column Pattern_TMP to Pattern;

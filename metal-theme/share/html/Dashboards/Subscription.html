@@ -1,0 +1,281 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, title => $title &>
+<& /Dashboards/Elements/Tabs,
+    current_subtab => $current_subtab,
+    Title => $title,
+    DashboardObj => $DashboardObj &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<%RT->Config->Get('WebPath')%>/Dashboards/Subscription.html" method="post" enctype="multipart/form-data" name="SubscribeDashboard">
+<input type="hidden" class="hidden" name="DashboardId" value="<% $fields{'DashboardId'} %>" />
+<table width="100%" border="0">
+<tr>
+
+<td valign="top" class="boxcontainer">
+<&| /Widgets/TitleBox, title => loc('Dashboard') &>
+
+<table>
+<tr><td align="right">
+<&|/l&>Dashboard</&>:
+</td><td>
+<% $DashboardObj->Name %>
+</td></tr>
+
+<tr><td align="right">
+<&|/l&>Queries</&>:
+</td><td>
+% my @searches = $DashboardObj->Searches;
+% if (!@searches) {
+(none)
+% } else {
+<ol>
+%    for my $query (@searches) {
+%       my $name;
+%       if ($query->{Attribute}->Name =~ /^Search - (.*)$/) {
+%           $name = $1;
+%       } else {
+%           $name = $query->Name;
+%       }
+        <li>
+            <% loc($name, $fields{'Rows'}) %>
+        </li>
+%    }
+</ol>
+% }
+</td></tr>
+
+</table>
+</&>
+
+<&| /Widgets/TitleBox, title => loc('Subscription') &>
+
+<table>
+<tr><td align="right">
+<&|/l&>Hour</&>:
+</td><td>
+<select name="Hour">
+% for my $hour (0..23) {
+%     my $formatted = sprintf '%02d:00', $hour;
+%     my $selected = $formatted eq $fields{'Hour'}
+%                  ? 'selected="selected"'
+%                  : '';
+
+    <option value="<% $formatted %>" <%$selected%>><% $formatted %></option>
+% }
+</select>
+(in <%$timezone%>)
+</td></tr>
+<tr><td align="right">
+<&|/l&>Frequency</&>:
+</td><td>
+<input type="radio" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" %>>
+    daily
+</input><br />
+
+<input type="radio" name="Frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" %>>
+weekly</input>, on
+<select name="Dow">
+%   for my $dow (qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/) {
+    <option value="<% $dow %>" <% $fields{'Dow'} eq $dow ? 'selected="selected"' : '' %>><% loc($dow) %></option>
+%   }
+</select>
+<br />
+
+<input type="radio" name="Frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" %>>
+monthly</input> , on day
+<select name="Dom">
+%   for my $dom (1..31) {
+    <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' %>><% loc($dom) %></option>
+%   }
+</select>
+
+</td></tr>
+<tr><td align="right">
+<&|/l&>Rows</&>:
+</td><td>
+<select name="Rows">
+%   for my $rows (1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 0) {
+    <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' %>><% loc($rows || 'Unlimited') %></option>
+%   }
+</select>
+</td></tr>
+</table>
+</&>
+</td>
+</tr>
+</table>
+
+% if ($SubscriptionObj->Id) {
+    <& /Elements/Submit, Name => "Save", Label => loc('Save Changes') &>
+    <br />
+    <& /Elements/Submit, Name => "Unsubscribe", Label => loc('Unsubscribe') &>
+% } else {
+    <& /Elements/Submit, Name => "Save", Label => loc('Subscribe') &>
+% }
+</form>
+
+<%INIT>
+
+my $current_subtab = 'Dashboards/Subscription.html?DashboardId=' . $DashboardId;
+
+my ($title, @results);
+my ($val, $msg);
+my $Loaded = 0;
+my $timezone = eval{$session{'CurrentUser'}->UserObj->Timezone} || 'UTC';
+
+use RT::Dashboard;
+my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
+
+my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
+
+# first let's see if we already have a subscription to this DashboardId
+for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
+    next unless $sub->SubValue('DashboardId') == $DashboardId;
+    $SubscriptionObj = $sub;
+    last;
+}
+
+$DashboardId = $SubscriptionObj->Id
+             ? $SubscriptionObj->SubValue('DashboardId')
+             : $ARGS{'DashboardId'};
+
+($val, $msg) = $DashboardObj->LoadById($DashboardId);
+$val || Abort("Couldn't load dashboard $DashboardId: $msg.");
+
+if ($SubscriptionObj->Id && $Unsubscribe) {
+    my ($ok, $msg) = $SubscriptionObj->Delete();
+    $ok || Abort("Couldn't unsubscribe to dashboard $DashboardId.");
+
+    # put the user back into a useful place with a message
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Unsubscribe=$DashboardId");
+}
+
+my %fields = (
+    DashboardId => $DashboardId,
+    Frequency   => 'daily',
+    Hour        => '06:00',
+    Dow         => 'Monday',
+    Dom         => 1,
+    Rows        => 20,
+);
+
+# update any fields with the values from the subscription object
+if ($SubscriptionObj->Id) {
+    for my $field (keys %fields) {
+        $fields{$field} = $SubscriptionObj->SubValue($field);
+    }
+}
+
+# finally, update any fields with arguments passed in by the user
+for my $field (keys %fields) {
+    next if $field eq 'DashboardId'; # but this one is immutable
+    $fields{$field} = $ARGS{$field}
+        if defined($ARGS{$field});
+}
+
+
+# this'll be defined on submit
+if (defined $ARGS{Save}) {
+    # update
+    if ($SubscriptionObj->Id) {
+        $DashboardId = delete $fields{'DashboardId'}; # immutable
+        ($val, $msg) = $SubscriptionObj->SetSubValues(%fields);
+        $fields{'DashboardId'} = $DashboardId;
+
+        # not so good to spew base64-encoded data at the user :)
+        if ($msg =~ /^Content changed from/) {
+            $msg = "Subscription updated.";
+        }
+
+        push @results, $msg;
+    }
+    # create
+    else {
+        if ($session{'CurrentUser'}->HasRight(Right => 'SubscribeDashboard', Object => $RT::System)) {
+            ($val, $msg) = $SubscriptionObj->Create(
+                Name        => 'Subscription',
+                Description => 'Subscription to dashboard ' . $DashboardId,
+                ContentType => 'storable',
+                Object      => $session{'CurrentUser'}->UserObj,
+                Content     => \%fields,
+            );
+        }
+        else {
+            ($val, $msg) = (0, "No permission to subscribe to dashboards");
+        }
+        if ($val) {
+            push @results, loc("Subscribed to dashboard [_1]", $DashboardObj->Name);
+            push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
+                unless $session{'CurrentUser'}->EmailAddress;
+        }
+        else {
+            push @results, loc('Subscription could not be created: [_1]', $msg);
+        }
+    }
+}
+
+if ($SubscriptionObj->Id) {
+    $title = loc("Modify the subscription to dashboard [_1]", $DashboardObj->Name);
+}
+else {
+    $title = loc("Subscribe to dashboard [_1]", $DashboardObj->Name);
+}
+
+</%INIT>
+<%ARGS>
+$DashboardId => undef
+$Frequency   => undef
+$Hour        => undef
+$Dow         => undef
+$Dom         => undef
+$Rows        => undef
+$Unsubscribe => undef
+</%ARGS>
+

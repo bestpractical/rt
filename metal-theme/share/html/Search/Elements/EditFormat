@@ -1,0 +1,109 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<table>
+
+<tr>
+<th><&|/l&>Add Columns</&>:</th>
+<th><&|/l&>Format</&>:</th>
+<th></th>
+<th><&|/l&>Show Columns</&>:</th>
+</tr>
+
+<tr>
+
+<td valign="top"><select size="6" name="SelectDisplayColumns" multiple="multiple">
+% foreach my $field ( @$AvailableColumns) {
+<option value="<% $field %>"><% loc($field) %></option>
+% }
+</select></td>
+
+<td><&|/l&>Link</&>:
+<select name="Link">
+<option value="None">-</option>
+<option value="Display"><&|/l&>Display</&></option>
+<option value="Take"><&|/l&>Take</&></option>
+</select>
+<br /><&|/l&>Title</&>: <input name="Title" size="10" />
+<br /><&|/l&>Size</&>:
+<select name="Size">
+<option value="">-</option>
+<option value="Small"><&|/l&>Small</&></option>
+<option value="Large"><&|/l&>Large</&></option>
+</select>
+<br /><&|/l&>Style</&>:
+<select name="Face">
+<option value="">-</option>
+<option value="Bold"><&|/l&>Bold</&></option>
+<option value="Italic"><&|/l&>Italic</&></option>
+</select>
+</td>
+
+<td><input type="submit" class="button" name="AddCol" value=" &rarr; " /></td>
+
+<td valign="top">
+<select size="4" name="CurrentDisplayColumns">
+% my $i=0;
+% foreach my $field ( @$CurrentFormat ) {
+<option value="<% $i++ %>><% $field->{Column} %>"><% loc( $field->{Column} ) %></option>
+% }
+</select>
+<br />
+<center>
+<input type="submit" class="button" name="ColUp" value=" &uarr; " />
+<input type="submit" class="button" name="ColDown" value=" &darr; " />
+<input type="submit" class="button" name="RemoveCol" value="<%loc('Delete')%>" />
+</center>
+</td>
+
+</tr>
+</table>
+
+<%ARGS>
+$CurrentFormat => undef
+$AvailableColumns => undef
+</%ARGS>

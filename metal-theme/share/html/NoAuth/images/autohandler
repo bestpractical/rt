@@ -1,0 +1,28 @@
+<%INIT>
+&RT::Interface::Web::StaticFileHeaders();
+
+# This autohandler will spit out RT's images if the user hasn't 
+# properly configured their webserver to stop RT from passing 
+# images through the mason handler.
+my $file = $m->base_comp->source_file;
+
+
+my $type = "application/octet-stream";
+if ($file =~ /\.(gif|png|jpe?g)$/i) {
+    $type = "image/$1";
+    $type =~ s/jpg/jpeg/gi;
+}
+
+die "file not found" unless -f $file && -r _;
+
+$r->content_type($type);
+open my $fh, "<$file" or die "couldn't open file: $!";
+binmode($fh);
+{
+    local $/ = \16384;
+    $m->out($_) while (<$fh>);
+    $m->flush_buffer;
+}
+close $fh;
+$m->abort;
+</%INIT>

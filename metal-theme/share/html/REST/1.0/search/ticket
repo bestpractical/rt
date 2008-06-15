@@ -1,0 +1,159 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+%# REST/1.0/search/ticket
+%#
+<%ARGS>
+$query
+$format => undef
+$orderby => undef
+$fields => undef
+</%ARGS>
+<%INIT>
+use RT::Interface::REST;
+my $output = "";
+my $status = "200 Ok";
+my $tickets = new RT::Tickets $session{CurrentUser};
+
+# Parse and validate any field specifications.
+my $field  = RT::Interface::REST->field_spec;
+my (%fields, @fields);
+if ($fields) {
+    $format ||= "l";
+    unless ($fields =~ /^(?:$field,)*$field$/) {
+        $status = "400 Bad Request";
+        $output = "Invalid field specification: $fields";
+        goto OUTPUT;
+    }
+    @fields = map lc, split /,/, $fields;
+    @fields{@fields} = ();
+    unless (exists $fields{id}) {
+        unshift @fields, "id";
+        $fields{id} = ();
+    }
+}
+
+$format ||= "s";
+if ($format !~ /^[isl]$/) {
+    $status = "400 Bad request";
+    $output = "Unknown listing format: $format. (Use i, s, or l.)\n";
+    goto OUTPUT;
+}
+
+my ($n, $s);
+eval {
+    ($n, $s) = $tickets->FromSQL($query);
+};
+my $sortstring = "";
+if ($orderby) {
+    $sortstring = 'FIELD => ';
+    my $order = substr($orderby, 0, 1);
+    if ($order eq '+' || $order eq '-') {
+	$sortstring .= 'substr($orderby, 1)';
+	if ($order eq '+') {
+	    $sortstring .= ", ORDER => 'ASC'";
+	} elsif ($order eq '-') {
+	    $sortstring .= ", ORDER => 'DESC'";
+	}
+    } else {
+	$sortstring .= '$orderby';
+    }
+    my $foo = 'FIELD => ';
+    $foo .= '$orderby';
+    $tickets->OrderBy(eval $sortstring);
+}
+if ($@ || $n == 0) {
+    $s ||= $@;
+    $status = "400 Bad request";
+    $output = "Invalid query: '$s'.\n";
+    goto OUTPUT;
+}
+
+$n = 0;
+my @output;
+while (my $ticket = $tickets->Next) {
+    $n++;
+
+	my $id = $ticket->Id;
+    if ($format eq "i") {
+        $output .= "ticket/" . $id . "\n";
+    }
+    elsif ($format eq "s") {
+	if ($fields) {
+        	my $result = $m->comp("/REST/1.0/Forms/ticket/default", id => $id, format => $format, fields => \%fields);
+		my ($notes, $order, $key_values, $errors) = @$result;
+		# If it's the first time through, add our header
+		if ($n == 1) {
+			$output .= join("\t",@$order)."\n";
+		}
+		# Cut off the annoying ticket/ before the id;
+		$key_values->{'id'} = $id;
+		$output .= join("\t", map {$key_values->{$_}} @$order)."\n";
+	
+
+	} else {	
+        	$output .= $ticket->Id . ": ". $ticket->Subject . "\n";
+	}
+    }
+    else {
+        my $d = $m->comp("/REST/1.0/Forms/ticket/default", id => $id, format => $format, fields => \%fields);
+        my ($c, $o, $k, $e) = @$d;
+	push @output, [ $c, $o, $k ];
+    }
+}
+if ($n == 0 && $format ne "i") {
+    $output = "No matching results.\n";
+}
+
+$output = form_compose(\@output) if @output;
+
+OUTPUT:
+$m->out("RT/". $RT::VERSION . " " . $status ."\n\n");
+
+$m->out($output );
+return();
+</%INIT>

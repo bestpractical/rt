@@ -1,0 +1,175 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%INIT>
+if (!$Collection && $Class eq 'RT::Tickets') {
+    $Collection = RT::Tickets->new( $session{'CurrentUser'} );
+    $Collection->FromSQL($Query);
+}
+
+my $TotalFound = $Collection->CountAll();
+return '' if !$TotalFound && !$ShowEmpty;
+
+if ( @OrderBy ) {
+    if ( $OrderBy[0] =~ /\|/ ) {
+        @OrderBy = split /\|/, $OrderBy[0];
+        @Order = split /\|/,$Order[0];
+    }
+    $Collection->OrderByCols(
+        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
+        ( 0 .. $#OrderBy )
+    );
+}
+
+$Collection->RowsPerPage( $Rows ) if $Rows;
+$Page = 1 unless $Page && $Page > 0;    # workaround problems with $Page = '' or undef
+$Collection->GotoPage( $Page - 1 ); # SB uses page 0 as the first page
+
+# DisplayFormat lets us use a "temporary" format for display, while 
+# still using our original format for next/prev page links.
+# bulk update uses this feature to add checkboxes
+
+$DisplayFormat ||= $Format;
+
+# Scrub the html of the format string to remove any potential nasties.
+$Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
+$DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $DisplayFormat);
+
+my @Format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $DisplayFormat);
+
+# Find the maximum number of items in any row, so we can pad the table.
+my ($maxitems, $item) = (0, 0);
+foreach my $col (@Format) {
+    $item++;
+    if ( $col->{title} && ($col->{title} eq 'NEWLINE') ) {
+        $item = 0;
+    }
+    else {
+        $maxitems = $item if $item > $maxitems;
+    }
+}
+
+$Class ||= ref $Collection;
+$Class =~ s/s$//;
+$Class =~ s/:/_/g;
+
+$m->out('<table border="0" cellspacing="0" cellpadding="1"' . 
+	' width="100%" class="' . 
+	($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . '">');
+
+if ( $ShowHeader ) {
+  $m->comp('/Elements/CollectionAsTable/Header',
+	   %ARGS,
+	   Class        => $Class,
+	   Format       => \@Format,
+	   FormatString => $Format,
+	   Order        => \@Order,
+	   OrderBy      => \@OrderBy,
+	   Rows         => $Rows,
+	   Page         => $Page,
+	   AllowSorting => $AllowSorting, 
+	   BaseURL      => $BaseURL,
+	   GenericQueryArgs => $GenericQueryArgs,
+	   maxitems     => $maxitems,
+	   );
+}
+
+my ($i, $column_map) = (0, {});
+while ( my $record = $Collection->Next ) {
+    # Every ten rows, flush the buffer and put something on the page.
+    $m->flush_buffer unless ++$i % 10;
+    $m->comp('/Elements/CollectionAsTable/Row',
+        i => $i,
+        Format => \@Format,
+        record => $record,
+        maxitems => $maxitems,
+        ColumnMap => $column_map,
+        Class     => $Class,
+    );
+}
+
+$m->out('</table>');
+if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
+  my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
+  my $pages = int( $TotalFound / $Rows ) + $oddRows;
+  $pages = 1 if $pages < 1;
+
+
+  my %query_args = map { $_ => $ARGS{$_} } @PassArguments;
+  $m->comp(
+        '/Elements/CollectionListPaging',
+        BaseURL     => $BaseURL,
+        Rows        => $Rows,
+        TotalFound  => $TotalFound,
+        CurrentPage => $Page,
+        Pages       => $pages,
+        URLParams   => \%query_args
+    );
+
+}
+
+</%INIT>
+<%ARGS>
+$Class         => ''
+$Collection    => undef
+$Format        => undef
+$DisplayFormat => undef
+@Order         => ()
+@OrderBy       => ()
+$GenericQueryArgs => undef
+$Rows          => undef
+$Page          => 1
+$Title         => loc('Ticket Search')
+$BaseURL       => RT->Config->Get('WebPath') . $m->request_comp->path .'?'
+@PassArguments => qw( Query Format Rows Page Order OrderBy)
+
+$AllowSorting   => 0
+$ShowNavigation => 1
+$ShowHeader     => 1
+$ShowEmpty      => 0
+$Query => 0
+</%ARGS>

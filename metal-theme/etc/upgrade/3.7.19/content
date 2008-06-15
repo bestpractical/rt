@@ -1,0 +1,37 @@
+
+{ use strict;
+add_description_to_all_scrips();
+
+sub add_description_to_all_scrips {
+    require RT::Scrips;
+    my $scrips = RT::Scrips->new( $RT::SystemUser );
+    $scrips->Limit( FIELD => 'Description', OPERATOR => 'IS', VALUE => 'NULL' );
+    $scrips->Limit( FIELD => 'Description', VALUE => '' );
+    while ( my $scrip = $scrips->Next ) {
+        my $desc = $scrip->Description;
+        next if defined $desc && length $desc;
+
+        $desc = gen_scrip_description( $scrip );
+
+        my ($status, $msg) = $scrip->SetDescription( $desc );
+        unless ( $status ) {
+            print STDERR "Couldn't set description of a scrip: $msg";
+        } else {
+            print "Added description to scrip #". $scrip->id ."\n";
+        }
+    }
+}
+
+sub gen_scrip_description {
+    my $scrip = shift;
+    my $condition = $scrip->ConditionObj->Name
+        || $scrip->ConditionObj->Description
+        || ('On Condition #'. $scrip->Condition);
+    my $action = $scrip->ActionObj->Name
+        || $scrip->ActionObj->Description
+        || ('Run Action #'. $scrip->Action);
+    return join ' ', $condition, $action;
+}
+}
+
+1;

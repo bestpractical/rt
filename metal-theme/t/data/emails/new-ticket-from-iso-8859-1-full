@@ -1,0 +1,38 @@
+X-Mailer: QUALCOMM Windows Eudora Version 5.2.1
+To: Jesse Vincent <jesse@bestpractical.com>
+From: Wilhelmsen H�vard <hw@nordkapp.net>
+Subject: Re: rt-3.0.3pre1
+X-Spam-Status: No, hits=-1.9 required=5.0
+	tests=AWL,EMAIL_ATTRIBUTION,IN_REP_TO,QUOTED_EMAIL_TEXT,
+	      REFERENCES,REPLY_WITH_QUOTES
+	autolearn=ham version=2.55
+X-Spam-Level: 
+X-Spam-Checker-Version: SpamAssassin 2.55 (1.174.2.19-2003-05-19-exp)
+
+At 14:56 02.06.2003 -0400, you wrote:
+>> This patch didn't help us out.
+>> We still got problems with auto responding e-mails sent from the system
+>> when a new ticket is created.
+>> The same problem appears when one of the staff replays to an new ticket.
+>> All Norwegian letters is converted to strange letters like Ã¸
+>>
+>> We would love if this bug could be fixed. On our mail server we are 
+>running
+>> perl 5.6.1 since we are using debian stabel packet lists.
+>
+>I'd love it too. I just can't find it. Can you send me
+>(jesse@bestpractical.com) a couple of email messages containing
+>characters that break your RT?
+
+Hello again,
+
+Thanks for your fast replay!
+
+I don't know how this looks at your end but it is letters like: ø æ å
+If your want to make this in html it will be &oslash; &aring; and &aerlig;
+
+
+-- 
+Håvard 
+
+

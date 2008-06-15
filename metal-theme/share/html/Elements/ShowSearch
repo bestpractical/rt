@@ -1,0 +1,136 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<&|/Widgets/TitleBox,
+    title => loc($search->Description, $ProcessedSearchArg->{'Rows'}),
+    title_href => $query_link_url.$QueryString,
+    titleright => $customize ? loc('Edit') : '',
+    titleright_href => $customize &>
+<& $query_display_component, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Tickets' &>
+</&>
+<%init>
+my $search;
+my $user = $session{'CurrentUser'}->UserObj;
+my $SearchArg;
+my $customize;
+my $query_display_component = '/Elements/CollectionList';
+my $query_link_url = 'Search/Results.html';
+
+if ($SavedSearch) {
+    my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
+    $search = $container_object->Attributes->WithId($search_id);
+    unless ( $search->Id && ref( $SearchArg = $search->Content ) eq 'HASH' ) {
+        $m->out("Saved Search $SavedSearch not found") unless $IgnoreMissing;
+        return;
+    }
+    $SearchArg->{'SearchType'} ||= 'Ticket';
+    if ( $SearchArg->{SearchType} ne 'Ticket' ) {
+
+        # XXX: dispatch to different handler here
+        $query_display_component
+            = '/Search/Elements/' . $SearchArg->{SearchType};
+        $query_link_url = "Search/$SearchArg->{SearchType}.html";
+    } else {
+        $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
+            . $m->comp( '/Elements/QueryString',
+            LoadSavedSearch => $SavedSearch );
+    }
+} else {
+    ($search) = RT::System->new( $session{'CurrentUser'} ) ->Attributes->Named( 'Search - ' . $Name );
+    unless ( $search && $search->Id ) {
+        my (@custom_searches) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('SavedSearch');
+        foreach my $custom (@custom_searches) {
+            if ($custom->Description eq $Name) { $search = $custom; last }
+        }
+        unless ($search && $search->id) {
+            $m->out("Predefined search $Name not found");
+            return;
+        }
+    }
+
+    $SearchArg = $user->Preferences( $search, $search->Content );
+    $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
+        . $m->comp( '/Elements/QueryString',
+            name => ref($search) . '-' . $search->Id );
+}
+
+# ProcessedSearchArg is a search with overridings, but for link we use
+# orginal search's poperties
+my $ProcessedSearchArg = $SearchArg;
+$ProcessedSearchArg = { %$SearchArg, %Override } if keys %Override;
+
+$m->callback(
+    %ARGS,
+    CallbackName  => 'ModifySearch',
+    OriginalSearch => $SearchArg,
+    Search         => $ProcessedSearchArg,
+);
+
+foreach ( $SearchArg, $ProcessedSearchArg ) {
+    $_->{'Query'}  =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
+    $_->{'Format'} =~ s/__(Web(?:Path|Base|BaseURL))__/scalar RT->Config->Get($1)/ge;
+    $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
+    if ( $_->{'Query'} =~ /__Bookmarks__/ ) {
+        $_->{'Rows'} = 999;
+
+        my $bookmarks = $session{'CurrentUser'}->UserObj->FirstAttribute('Bookmarks');
+        $bookmarks = $bookmarks->Content if $bookmarks;
+        $bookmarks ||= {};
+        my $query = join(" OR ", map " id = '$_' ", grep $bookmarks->{ $_ }, keys %$bookmarks ) || 'id=0';
+        $_->{'Query'} =~ s/__Bookmarks__/( $query )/g;
+    }
+}
+
+my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
+
+</%init>
+<%ARGS>
+$Name        => undef
+$SavedSearch => undef
+%Override    => ()
+$IgnoreMissing => undef
+</%ARGS>
