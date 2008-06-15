@@ -160,6 +160,22 @@ SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/rt-dump-database \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-shredder \
 				$(DESTDIR)/$(RT_SBIN_PATH)/rt-notify-group-admin
 
+ETC_FILES		=	$(DESTDIR)/$(RT_ETC_PATH)/RT_Config.pm \
+			$(DESTDIR)/$(RT_ETC_PATH)/RT_SiteConfig.pm \
+			$(DESTDIR)/$(RT_ETC_PATH)/acl.Informix \
+			$(DESTDIR)/$(RT_ETC_PATH)/acl.Pg \
+			$(DESTDIR)/$(RT_ETC_PATH)/acl.Oracle \
+			$(DESTDIR)/$(RT_ETC_PATH)/acl.mysql \
+			$(DESTDIR)/$(RT_ETC_PATH)/acl.Sybase \
+			$(DESTDIR)/$(RT_ETC_PATH)/schema.Informix \
+			$(DESTDIR)/$(RT_ETC_PATH)/schema.Pg \
+			$(DESTDIR)/$(RT_ETC_PATH)/schema.Oracle \
+			$(DESTDIR)/$(RT_ETC_PATH)/schema.mysql \
+			$(DESTDIR)/$(RT_ETC_PATH)/schema.mysql-4.1 \
+			$(DESTDIR)/$(RT_ETC_PATH)/schema.Sybase \
+			$(DESTDIR)/$(RT_ETC_PATH)/schema.SQLite \
+			$(DESTDIR)/$(RT_ETC_PATH)/initialdata
+
 # }}}
 
 # {{{ Web frontend
@@ -290,7 +306,7 @@ fixperms:
 	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_BIN_PATH)	
 
 	chmod 0755 $(DESTDIR)/$(RT_ETC_PATH)
-	chmod 0400 $(DESTDIR)/$(RT_ETC_PATH)/*
+	chmod 0400 $(ETC_FILES)
 
 	#TODO: the config file should probably be able to have its
 	# owner set separately from the binaries.
@@ -416,11 +432,7 @@ doc-install:
 
 etc-install:
 	$(INSTALL) -m 0755 -d $(DESTDIR)/$(RT_ETC_PATH)
-	-$(INSTALL) -m 0644 \
-		etc/acl.* \
-		etc/initialdata \
-		etc/schema.* \
-		$(DESTDIR)/$(RT_ETC_PATH)/
+	-$(INSTALL) -m 0644 $(ETC_FILES) $(DESTDIR)/$(RT_ETC_PATH)/
 # }}}
 
 # {{{ sbin-install
