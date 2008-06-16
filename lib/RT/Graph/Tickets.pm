@@ -239,7 +239,12 @@ sub AddTicket {
     
     if ( $args{'FillUsing'} ) {
         my ($key, @subkeys) = $self->_SplitProperty( $args{'FillUsing'} );
-        my $value = $property_cb{ $key }->( $args{'Ticket'}, @subkeys );
+        my $value;
+        if ( $property_cb{ $key } ) {
+            $value = $property_cb{ $key }->( $args{'Ticket'}, @subkeys );
+        } else {
+            $RT::Logger->error("Couldn't find property callback for '$key'");
+        }
         if ( defined $value && length $value && $value =~ /\S/ ) {
             my $fill = $fill_cache{ $value };
             $fill = $fill_cache{ $value } = shift @available_colors
